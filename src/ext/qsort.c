@@ -21,7 +21,7 @@
    Engineering a sort function; Jon Bentley and M. Douglas McIlroy;
    Software - Practice and Experience; Vol. 23 (11), 1249-1265, 1993.  */
 
-#include <konoha.h>   // added to integrate konoha
+#include <konoha1.h>   // added to integrate konoha
 
 #ifdef K_USED_TO_BE_ON_LKM
 #include <linux/string.h>

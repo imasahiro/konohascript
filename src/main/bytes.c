@@ -138,7 +138,6 @@ knh_Bytes_t* new_Bytes(CTX ctx, size_t capacity)
 
 void knh_Bytes_clear(knh_Bytes_t *ba, size_t pos)
 {
-	DBG_ASSERT(!Bytes_isStatic(ba));
 	if(pos < BA_size(ba)) {
 		knh_bzero(ba->bu.ubuf + pos, BA_size(ba) - pos);
 		BA_size(ba) = pos;
@@ -147,7 +146,6 @@ void knh_Bytes_clear(knh_Bytes_t *ba, size_t pos)
 
 void knh_Bytes_ensureSize(CTX ctx, knh_Bytes_t *ba, size_t len)
 {
-	DBG_ASSERT(!Bytes_isStatic(ba));
 	if(ba->dim->capacity < len) {
 		Bytes_expands(ctx, ba, len);
 	}

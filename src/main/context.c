@@ -253,9 +253,8 @@ static knh_context_t* new_RootContext(void)
 	share->capacityEventTBL  = K_EVENTTBL_INIT;
 	knh_loadScriptSystemStructData(ctx, kapi);
 	{
-		knh_RawPtr_t *p = (knh_RawPtr_t*)new_hObject_(ctx, ClassTBL(CLASS_dynamic));
+		knh_Object_t *p = (knh_Object_t*)new_hObject_(ctx, ClassTBL(CLASS_Object));
 		Object_setNullObject(p, 1);
-		ctx->api->RawPtr_init(ctx, p, NULL, NULL);
 		KNH_INITv(share->constNull, p);
 	}
 	{

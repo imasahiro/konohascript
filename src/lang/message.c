@@ -229,7 +229,7 @@ knh_Token_t* ErrorMisplaced(CTX ctx)
 }
 knh_Token_t* ErrorStaticType(CTX ctx, const char *msg)
 {
-	return Gamma_perror(ctx, KC_ERR, _("non-static type: %s"), msg);
+	return Gamma_perror(ctx, KC_ERR, _("%s is not dynamic"), msg);
 }
 knh_Token_t* ErrorFieldAddition(CTX ctx, knh_class_t cid)
 {

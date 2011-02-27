@@ -323,7 +323,6 @@ static void knh_Bytes_remove(CTX ctx, knh_Bytes_t *ba, size_t offset, size_t len
 
 static void knh_Bytes_concatZero(CTX ctx, knh_Bytes_t *ba)
 {
-	DBG_ASSERT(!Bytes_isStatic(ba));
 	if(BA_size(ba) > 0 && ba->bu.ubuf[BA_size(ba)-1] == 0) {
 		BA_size(ba) -= 1;
 	}

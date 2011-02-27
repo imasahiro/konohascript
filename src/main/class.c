@@ -191,7 +191,7 @@ void knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
 {
 	const char *tname = NULL;
 	switch(cid) {
-	case TYPE_dynamic:  tname = "dynamic";    break;
+	case TYPE_Tdynamic:  tname = "dynamic";    break;
 	case TYPE_void: tname = "void";       break;
 	case TYPE_var:  tname = "var";        break;
 	case TYPE_This: tname = "This";       break;
@@ -415,7 +415,7 @@ void knh_ClassTBL_setCSPI2(knh_ClassTBL_t *ct, const knh_ObjectSPI2_t *cspi2)
 knh_bool_t ClassTBL_isa_(CTX ctx, const knh_ClassTBL_t *ct, const knh_ClassTBL_t *ct2)
 {
 	knh_class_t reqt = ct2->cid;
-	if(reqt == CLASS_Object || reqt == CLASS_dynamic) return 1;
+	if(reqt == CLASS_Object || reqt == CLASS_Tdynamic) return 1;
 	DBG_ASSERT(ct->cid != CLASS_Tvoid); DBG_ASSERT(ct->cid != CLASS_Tvar);
 	//if(cid == CLASS_Tvoid) return 0;
 //  if(ClassTBL(scid)->bcid == tcid) return 1; /* Int:km Int */

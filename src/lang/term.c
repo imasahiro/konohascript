@@ -451,7 +451,7 @@ static void Token_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
 		a = (tkB)->list;
 		DBG_ASSERT(knh_Array_size(a) > 0);
 		prev_idx = knh_Array_size(a)-1;
-		tkPREV = knh_TOKENs_n(a, prev_idx);
+		tkPREV = a->tokens[prev_idx];
 	}
 	knh_Array_add(ctx, a, tk);
 
@@ -470,7 +470,7 @@ static void Token_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
 	}
 
 	if(prev_idx > 0 && TT_(tk) == TT_CODE && TT_(tkPREV) == TT_DARROW) {
-		knh_Token_t *tkPREV2 = knh_TOKENs_n(a, prev_idx - 1);
+		knh_Token_t *tkPREV2 = a->tokens[prev_idx - 1];
 		if(TT_(tkPREV2) == TT_PARENTHESIS) {  // (n) = > {} ==> function(n) {}
 			TT_(tkPREV) = TT_FUNCTION;
 			knh_Array_swap(ctx, a, prev_idx-1, prev_idx);
@@ -577,7 +577,7 @@ static knh_Token_t *Token_lastChildNULL(knh_Token_t *tk)
 	if(IS_Array((tk)->data)) {
 		size_t n = knh_Array_size((tk)->list);
 		DBG_ASSERT(n>0);
-		return knh_TOKENs_n((tk)->list, n-1);
+		return (tk)->list->tokens[n-1];
 	}
 	else if(IS_Token((tk)->data)) {
 		return (tk)->token;
@@ -2573,7 +2573,7 @@ static void _PARAMs(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		int idx = ITR_indexTT(itr, TT_COMMA, itr->e);
 		tkitr_t abuf, *aitr = ITR_first(itr, idx, &abuf, +1);
 		if(ITR_is(aitr, TT_DOTS)) {
-			Stmt_setVARGs(stmtP, 1);
+			StmtMETHOD_setVARGs(stmtP, 1);
 			break;
 		}
 		if(ITR_is(aitr, TT_VOID)) {
@@ -2583,7 +2583,6 @@ static void _PARAMs(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			knh_Stmt_add(ctx, stmtP, ITR_nextTK(aitr));
 		}
 		if(DP(stmtP)->size % 3 != 1) {
-			//_ASIS(ctx, stmtP, aitr);
 			_VAR(ctx, stmtP, aitr);
 		}
 		if(ITR_isT(aitr, isVARN)) {
@@ -2603,13 +2602,6 @@ static void _PARAMs(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	}
 	if(ridx != -1) {
 		itr->e = e;
-//		if(DP(stmtP)->size == 0) {
-//			knh_Token_t *tkN = new_Token(ctx, TT_NAME);
-//			KNH_SETv(ctx, tkN->data, new_T("it"));
-//			_VAR(ctx, stmtP, NULL);
-//			knh_Stmt_add(ctx, stmtP, tkN);
-//			_ASIS(ctx, stmtP, NULL);
-//		}
 	}
 }
 
@@ -3008,6 +3000,17 @@ static void _CODE(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			_CODEDOC(ctx, stmt, stmtitr);
 			stmtitr->c += 1;
 			_RETURNEXPR(ctx, stmt, stmtitr);
+		}
+	}
+	else if(ITR_is(itr, TT_USING)) {
+		tkitr_t stmtbuf, *stmtitr = ITR_stmt(ctx, itr, 0, &stmtbuf, 1);
+		if(hasCODE) {
+			WarningIgnored(ctx, "using", "");
+		}
+		else {
+			StmtMETHOD_setFFI(stmt, 1);
+			stmtitr->c += 1;
+			_EXPR(ctx, stmt, stmtitr);
 		}
 	}
 	else {

@@ -327,7 +327,7 @@ KNHAPI2(void) knh_invoke(CTX ctx, knh_Func_t *fo, knh_sfp_t *sfp /*rtnidx*/, int
 //knh_class_t knh_class_Thunk(CTX ctx, knh_type_t rtype)
 //{
 //	knh_class_t cid = CLASS_Thunk;
-//	if(CLASS_t(rtype) != CLASS_dynamic) {
+//	if(CLASS_t(rtype) != CLASS_Tdynamic) {
 //		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 //		knh_write_cid0(ctx, cwb->w, CLASS_Thunk);
 //		knh_putc(ctx, cwb->w, '<');

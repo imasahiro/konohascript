@@ -9,7 +9,7 @@ extern "C" {
 #ifdef K_INTERNAL
 KNHAPI2(knh_bool_t) knh_loadScript(CTX ctx, knh_bytes_t path, knh_type_t reqt, knh_Array_t *resultsNULL);
 KNHAPI2(knh_Array_t*) new_Array(CTX ctx, knh_class_t p1, size_t capacity);
-KNHAPI2(void) knh_Array_add_(CTX ctx, knh_Array_t *a, dynamic *value);
+KNHAPI2(void) knh_Array_add_(CTX ctx, knh_Array_t *a, knh_Object_t *value);
 KNHAPI2(void) knh_Array_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m);
 KNHAPI2(knh_Iterator_t*) new_Iterator(CTX ctx, knh_class_t p1, knh_Object_t *source, knh_Fitrnext fnext);
 KNHAPI2(void) knh_addTypeMap(CTX ctx, knh_TypeMap_t *trl);
@@ -54,7 +54,7 @@ typedef struct knh_api2_t {
 	void (*ResultSet_setNULL)(CTX ctx, knh_ResultSet_t *o, size_t n);
 	void (*ResultSet_setName)(CTX ctx, knh_ResultSet_t *o, size_t n, knh_String_t *name);
 	void (*ResultSet_setText)(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t);
-	void  (*Array_add_)(CTX ctx, knh_Array_t *a, dynamic *value);
+	void  (*Array_add_)(CTX ctx, knh_Array_t *a, knh_Object_t *value);
 	void  (*Array_swap)(CTX ctx, knh_Array_t *a, size_t n, size_t m);
 	void  (*OutputStream_flush)(CTX ctx, knh_OutputStream_t *w);
 	void  (*OutputStream_putc)(CTX ctx, knh_OutputStream_t *w, int ch);
@@ -69,7 +69,7 @@ typedef struct knh_api2_t {
 	void  (*write_TAB)(CTX ctx, knh_OutputStream_t *w);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)2113281404)
+#define K_API2_CRC32 ((size_t)1772463717)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -289,17 +289,10 @@ void knh_loadScriptDriver(CTX ctx);
 METHOD Bytes_getSize(CTX ctx, knh_sfp_t *sfp, long rix);
 METHOD Tuple_getSize(CTX ctx, knh_sfp_t *sfp, long rix);
 METHOD Map_getSize(CTX ctx, knh_sfp_t *sfp, long rix);
-knh_bool_t knh_class_canObjectCopy(CTX ctx, knh_class_t cid);
-void NONE_reftrace(CTX ctx, Object *o FTRARG);
-void knh_ClassTBL_setObjectCSPI(knh_ClassTBL_t *ct);
-void knh_loadScriptSystemStructData(CTX ctx, const knh_PackageLoaderAPI_t *kapi);
-void knh_loadScriptSystemString(CTX ctx);
-void knh_loadScriptSystemData(CTX ctx, const knh_PackageLoaderAPI_t *kapi);
-void knh_loadScriptSystemMethod(CTX ctx, const knh_PackageLoaderAPI_t *kapi);
 void knh_Array_grow(CTX ctx, knh_Array_t *a, size_t newsize, size_t reqsize);
-void knh_Array_initAPI(CTX ctx, knh_Array_t *a);
-knh_Array_t* new_Array0(CTX ctx, size_t capacity);
 void knh_Array_clear(CTX ctx, knh_Array_t *a, size_t n);
+knh_Array_t* new_Array0(CTX ctx, size_t capacity);
+void knh_Array_initAPI(CTX ctx, knh_Array_t *a);
 void knh_Iterator_close(CTX ctx, knh_Iterator_t *it);
 size_t k_goodsize(size_t ss);
 size_t k_goodsize2(size_t ss, size_t wsize);
@@ -546,6 +539,13 @@ const knh_RegexSPI_t* knh_getRegexSPI(void);
 knh_StringDecoder_t* new_StringDecoderNULL(CTX ctx, knh_bytes_t t, knh_NameSpace_t *ns);
 knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, knh_bytes_t t, knh_NameSpace_t *ns);
 knh_String_t *knh_cwb_newStringDECODE(CTX ctx, knh_cwb_t *cwb, knh_StringDecoder_t *c);
+knh_bool_t knh_class_canObjectCopy(CTX ctx, knh_class_t cid);
+void NONE_reftrace(CTX ctx, Object *o FTRARG);
+void knh_ClassTBL_setObjectCSPI(knh_ClassTBL_t *ct);
+void knh_loadScriptSystemStructData(CTX ctx, const knh_PackageLoaderAPI_t *kapi);
+void knh_loadScriptSystemString(CTX ctx);
+void knh_loadScriptSystemData(CTX ctx, const knh_PackageLoaderAPI_t *kapi);
+void knh_loadScriptSystemMethod(CTX ctx, const knh_PackageLoaderAPI_t *kapi);
 knh_String_t* knh_getPropertyNULL(CTX ctx, knh_bytes_t key);
 void knh_setProperty(CTX ctx, knh_String_t *key, dynamic *value);
 Object *knh_getClassConstNULL(CTX ctx, knh_class_t cid, knh_bytes_t name);

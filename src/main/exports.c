@@ -92,37 +92,37 @@ const char* knh_String_text(CTX ctx, knh_String_t *s)
 /* ------------------------------------------------------------------------ */
 /* [RawPtr] */
 
-static void knh_FfreeRawPtr_NOP(CTX ctx, knh_RawPtr_t *p)
-{
-	p->ptr = NULL;
-	p->pfree = knh_FfreeRawPtr_NOP;
-}
-
-static void knh_RawPtr_init(CTX ctx, knh_RawPtr_t *p, void *ptr, knh_FfreeRawPtr pfree)
-{
-	DBG_ASSERT(IS_bdynamic(p));
-	p->ptr = ptr;
-	if(pfree == NULL) {
-		pfree = knh_FfreeRawPtr_NOP;
-	}
-	p->pfree = pfree;
-}
-
-static knh_RawPtr_t* new_RawPtr(CTX ctx, void *ptr, knh_FfreeRawPtr pfree, knh_class_t cid, const char *lname)
-{
-	knh_RawPtr_t *p = new_(RawPtr);
-	if(knh_class_bcid(cid) != CLASS_dynamic) {
-		knh_bytes_t t = {{lname}, knh_strlen(lname)};
-		cid = knh_getcid(ctx, t);
-		if(cid == CLASS_unknown) {
-			KNH_SYSLOG(ctx, LOG_WARNING, "UnknownRawPtrClass", "name=%s", lname);
-			cid = CLASS_dynamic;
-		}
-	}
-	p->h.cTBL = ClassTBL(cid);
-	knh_RawPtr_init(ctx, p, ptr, pfree);
-	return p;
-}
+//static void knh_FfreeRawPtr_NOP(CTX ctx, knh_RawPtr_t *p)
+//{
+//	p->ptr = NULL;
+//	p->pfree = knh_FfreeRawPtr_NOP;
+//}
+//
+//static void knh_RawPtr_init(CTX ctx, knh_RawPtr_t *p, void *ptr, knh_FfreeRawPtr pfree)
+//{
+//	DBG_ASSERT(IS_bdynamic(p));
+//	p->ptr = ptr;
+//	if(pfree == NULL) {
+//		pfree = knh_FfreeRawPtr_NOP;
+//	}
+//	p->pfree = pfree;
+//}
+//
+//static knh_RawPtr_t* new_RawPtr(CTX ctx, void *ptr, knh_FfreeRawPtr pfree, knh_class_t cid, const char *lname)
+//{
+//	knh_RawPtr_t *p = new_(RawPtr);
+//	if(knh_class_bcid(cid) != CLASS_Tdynamic) {
+//		knh_bytes_t t = {{lname}, knh_strlen(lname)};
+//		cid = knh_getcid(ctx, t);
+//		if(cid == CLASS_unknown) {
+//			KNH_SYSLOG(ctx, LOG_WARNING, "UnknownRawPtrClass", "name=%s", lname);
+//			cid = CLASS_Tdynamic;
+//		}
+//	}
+//	p->h.cTBL = ClassTBL(cid);
+//	knh_RawPtr_init(ctx, p, ptr, pfree);
+//	return p;
+//}
 
 static knh_InputStream_t *new_InputStreamNULL(CTX ctx, knh_String_t *s, const char *mode)
 {
@@ -190,7 +190,7 @@ const knh_ExportsAPI_t *knh_getExportsAPI(void)
 		knh_trace, knh_stack_perror, dbg_p, todo_p,
 		knh_cwb_clearAPI, knh_cwb_tocharAPI,
 		new_StringAPI, knh_String_text,
-		new_RawPtr, knh_RawPtr_init,
+//		new_RawPtr, knh_RawPtr_init,
 		new_InputStreamNULL, new_OutputStreamNULL,
 		_putc, _write,
 	};
@@ -228,7 +228,7 @@ static void knh_addConstData(CTX ctx, const char *dname, Object *value)
 		knh_bytes_t n = {{dname}, knh_strlen(dname)};
 		knh_index_t loc = knh_bytes_rindex(n, '.');
 		knh_String_t *name = new_T(dname + (loc+1));
-		knh_class_t cid = CLASS_dynamic;
+		knh_class_t cid = CLASS_Tdynamic;
 		if(loc != -1) {
 			if(ctx->gma != NULL && IS_Gamma(ctx->gma)) {
 				cid = knh_NameSpace_getcid(ctx, knh_getGammaNameSpace(ctx), knh_bytes_first(n, loc));
@@ -238,7 +238,7 @@ static void knh_addConstData(CTX ctx, const char *dname, Object *value)
 			}
 			if(cid == CLASS_unknown) {
 				DBG_P("unknown class const: %s", dname);
-				cid = CLASS_dynamic;
+				cid = CLASS_Tdynamic;
 			}
 		}
 		knh_addClassConst(ctx, cid, name, value);

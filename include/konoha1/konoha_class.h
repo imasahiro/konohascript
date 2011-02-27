@@ -40,7 +40,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* Type Variable */
 //## @TypeVariable class Tvoid_ Tvoid_;
-//## @Cyclic class Tvar_ Tvoid_;
+//## @TypeVariable class Tvar_ Tvoid_;
 
 #define CLASS_Tvoid             CLASS_Tvoid_
 #define CLASS_Tvar              CLASS_Tvar_
@@ -98,11 +98,11 @@ typedef struct {
 		knh_int_t     ivalue;
 		knh_float_t   fvalue;
 	};
-} knh_nObject_t ;
+} knh_num_t ;
 
 typedef struct knh_Boolean_t {
 	knh_hObject_t h;
-	knh_nObject_t n;
+	knh_num_t n;
 } knh_Boolean_t;
 
 #define IS_TRUE(o)         (O_bcid(o) == CLASS_Boolean && N_tobool(o))
@@ -114,7 +114,7 @@ typedef struct knh_Boolean_t {
 
 typedef struct knh_Number_t {
 	knh_hObject_t h;
-	knh_nObject_t n;
+	knh_num_t n;
 } knh_Number_t;
 
 #define N_toint(o)         (((knh_Number_t*)o)->n.ivalue)
@@ -126,7 +126,7 @@ typedef struct knh_Number_t {
 
 typedef struct knh_Int_t {
 	knh_hObject_t h;
-	knh_nObject_t n;
+	knh_num_t n;
 } knh_Int_t;
 
 /* ------------------------------------------------------------------------ */
@@ -134,7 +134,7 @@ typedef struct knh_Int_t {
 
 typedef struct knh_Float_t {
 	knh_hObject_t h;
-	knh_nObject_t n;
+	knh_num_t n;
 } knh_Float_t;
 
 /* ------------------------------------------------------------------------ */
@@ -148,11 +148,10 @@ typedef struct knh_String_t {
 	knh_hObject_t h;
 	knh_bytes_t str;
 	knh_hashcode_t hashCode;
-//	struct knh_String_t *memoNULL;
 } knh_String_t;
 
-#define new_T(msg)          new_TEXT(ctx, CLASS_String, msg, 1)
-#define new_S(ctx, msg)     new_String_(ctx, CLASS_String, msg, NULL)
+#define new_T(msg)            new_TEXT(ctx, CLASS_String, msg, 1)
+#define new_S(ctx, msg)       new_String_(ctx, CLASS_String, msg, NULL)
 
 #define S_tobytes(s)          ((s)->str)
 #define S_tochar(s)           ((s)->str.text)
@@ -166,7 +165,7 @@ typedef struct knh_String_t {
 
 /* ------------------------------------------------------------------------ */
 //## class Bytes Object;
-//## flag Bytes Static 1 - is set * *;
+//## @Immutable class BytesIm Object;
 
 typedef struct {
 	size_t capacity;
@@ -184,7 +183,6 @@ typedef struct knh_Bytes_t {
 	const knh_dim_t    *dim;
 } knh_Bytes_t ;
 
-//#define KNH_SIZE(v)     knh_size(v)
 #define KNH_SIZE(v)     v
 #define k_grow(N)       ((N)*2)
 
@@ -195,22 +193,6 @@ typedef struct knh_Bytes_t {
 #define B_equals(b, t)        (knh_bytes_strcmp(b, STEXT(t)) == 0)
 #define B_startsWith(b, t)    knh_bytes_startsWith(b, STEXT(t))
 #define B_endsWith(b, t)      knh_bytes_endsWith(b, STEXT(t))
-
-/* ------------------------------------------------------------------------ */
-//## @Cyclic class dynamic Object knh_dynamic_t;
-
-struct knh_RawPtr_t;
-typedef void (*knh_FfreeRawPtr)(CTX, struct knh_RawPtr_t *o);
-
-typedef struct knh_RawPtr_t {
-	knh_hObject_t h;
-	void *ptr;
-	knh_FfreeRawPtr pfree;
-} knh_RawPtr_t ;
-
-#define CLASS_RawPtr    CLASS_dynamic
-
-typedef knh_RawPtr_t knh_dynamic_t;
 
 /* ------------------------------------------------------------------------ */
 //## @Immutable @Struct @Param1(dynamic) class Iterator Object;
@@ -267,14 +249,13 @@ typedef struct knh_Range_t {
 //## class ArrayIm Object;
 //## flag Array   NDATA     1 - is set * *;
 //## flag ArrayIm NDATA     1 - is set * *;
-//## type CmprT1  Func 1 T1 T1 Int;
+//## type CmprT1  Func 1  T1 T1 Int;
 
 typedef struct {
 	size_t   (*index)(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t size);
 	void     (*get)(CTX ctx, knh_sfp_t *sfp, size_t n, long rix);
 	void     (*set)(CTX ctx, struct knh_Array_t *, size_t n, knh_sfp_t *sfp);
 	void     (*add)(CTX ctx, struct knh_Array_t *, knh_sfp_t *sfp);
-//	int      (*compare)(struct knh_Array_t *, size_t n, knh_sfp_t *sfp);
 } knh_ArrayAPI_t;
 
 typedef struct knh_Array_t {
@@ -299,11 +280,11 @@ typedef struct knh_Array_t {
 #define knh_Array_size(a)     (a)->size
 #define knh_Array_trimSize(ctx, a, newsize)  knh_Array_clear(ctx, a, newsize)
 #define knh_Array_add(ctx, a, o)    knh_Array_add_(ctx, a, UPCAST(o))
-
-#define knh_TOKENs_n(a, n)    ((knh_Token_t*)(a)->list[(n)])
+//#define knh_TOKENs_n(a, n)    ((knh_Token_t*)(a)->list[(n)])
 
 ///* ------------------------------------------------------------------------ */
-//## @Cyclic class Map Object;
+//## class Map Object;
+//## @Immutable class MapIm Object;
 
 #define K_USE_FASTDMAP(STMT)  STMT
 
@@ -431,9 +412,7 @@ typedef struct knh_Class_t {
 
 #define KNH_NULVAL(cid)  knh_getClassDefaultValue(ctx, cid)
 #define KNH_TNULL(T)      (knh_##T##_t*)knh_getClassDefaultValue(ctx, CLASS_##T)
-
 #define knh_Class_cid(c)     (knh_class_t)(c)->cid
-
 typedef void (*knh_Fwritecid)(CTX ctx, struct knh_OutputStream_t *w, knh_class_t cid);
 
 /* ------------------------------------------------------------------------ */
@@ -478,11 +457,11 @@ typedef struct knh_ParamArray_t {
 
 typedef struct {
 	knh_flag_t     flag;  knh_ushort_t   delta;
-	struct knh_ParamArray_t*  mp;
-	void*                     ccode;
+	struct knh_ParamArray_t*    mp;
+	void*                       cfunc;
 	union {
-		struct knh_String_t  *source;
-		struct knh_Gamma_t   *gma;       // Dynamic
+		struct knh_String_t     *source;
+		struct knh_Gamma_t      *gma;       // Dynamic
 		struct knh_KonohaCode_t *kcode;
 	};
 	knh_uri_t      uri;   knh_uri_t      domain;
@@ -515,12 +494,12 @@ typedef struct knh_Method_t {
 
 #define knh_stack_argc(ctx, sfp)      (ctx->esp - (sfp))
 
-#define KNH_NOTRACE         0
-#define KNH_SECURITYTRACE   1
-#define KNH_AUDITTRACE      2
-#define KNH_PROFILER        3
-#define KNH_STACKTRACE      4
-#define KNH_FUNCTIONTRACE   5
+//#define KNH_NOTRACE         0
+//#define KNH_SECURITYTRACE   1
+//#define KNH_AUDITTRACE      2
+//#define KNH_PROFILER        3
+//#define KNH_STACKTRACE      4
+//#define KNH_FUNCTIONTRACE   5
 
 /* ------------------------------------------------------------------------ */
 //## @Struct class TypeMap Object;
@@ -1115,8 +1094,10 @@ typedef struct knh_Token_t {
 //## flag Stmt Memo2      3 DP(%s)->flag0 is set * *;
 
 /* STT_METHOD*/
-#define Stmt_isVARGs(s)      Stmt_isMemo1(s)
-#define Stmt_setVARGs(s,b)   Stmt_setMemo1(s,b)
+#define StmtMETHOD_isVARGs(s)          Stmt_isMemo1(s)
+#define StmtMETHOD_setVARGs(s,b)       Stmt_setMemo1(s,b)
+#define StmtMETHOD_isFFI(s)            Stmt_isMemo2(s)
+#define StmtMETHOD_setFFI(s,b)         Stmt_setMemo2(s,b)
 
 /* STT_TCAST*/
 #define Stmt_isDOWNCAST(s)       Stmt_isMemo1(s)
@@ -1323,6 +1304,25 @@ typedef struct knh_KonohaCode_t {
 	knh_String_t *source;
 	knh_uri_t     uri; knh_uri_t     domain;
 } knh_KonohaCode_t;
+
+
+/* ------------------------------------------------------------------------ */
+//## @Cyclic class Tdynamic Object knh_dynamic_t;
+
+struct knh_RawPtr_t;
+//typedef void (*knh_FfreeRawPtr)(CTX, struct knh_RawPtr_t *o);
+
+typedef struct knh_RawPtr_t {
+	knh_hObject_t h;
+	void *ptr;
+//	knh_FfreeRawPtr pfree;
+} knh_RawPtr_t ;
+
+#define CLASS_dynamic   CLASS_Tdynamic
+#define TYPE_dynamic    TYPE_Tdynamic
+//#define CLASS_RawPtr    CLASS_Tdynamic
+
+//typedef knh_RawPtr_t knh_dynamic_t;
 
 /* ------------------------------------------------------------------------ */
 

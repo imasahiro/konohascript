@@ -194,16 +194,16 @@ static knh_class_t knh_TokenTYPE_cid(CTX ctx, knh_Token_t *tk, knh_class_t bcid)
 	knh_ParamArray_t *bpa = ClassTBL(bcid)->cparam;
 	size_t i;
 	for(i = 1; i < knh_Array_size((tk)->list); i++) {
-		knh_Token_t *tkT = knh_TOKENs_n((tk)->list, i);
+		knh_Token_t *tkT = (tk)->list->tokens[i];
 		if(TT_(tkT) == TT_DARROW) { i++; break; }
-		knh_param_t p = {knh_Token_cid(ctx, tkT, CLASS_dynamic), FN_NONAME};
+		knh_param_t p = {knh_Token_cid(ctx, tkT, CLASS_Tdynamic), FN_NONAME};
 		if(p.type == TYPE_void) continue;
 		knh_ParamArray_add(ctx, pa, p);
 	}
 	if(bcid == CLASS_Func) {
 		if(i < knh_Array_size((tk)->list)) {
-			knh_Token_t *tkT = knh_TOKENs_n((tk)->list, i);
-			knh_param_t p = {knh_Token_cid(ctx, tkT, CLASS_dynamic), FN_NONAME};
+			knh_Token_t *tkT = tk->list->tokens[i];
+			knh_param_t p = {knh_Token_cid(ctx, tkT, CLASS_Tdynamic), FN_NONAME};
 			if(p.type != TYPE_void) {
 				knh_ParamArray_radd(ctx, pa, p);
 			}
@@ -257,7 +257,7 @@ knh_class_t knh_Token_cid(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 			break;
 		}
 		case TT_VOID: cid = CLASS_Tvoid; break;
-		case TT_DYNAMIC: cid = CLASS_dynamic; break;
+		case TT_DYNAMIC: cid = CLASS_Tdynamic; break;
 		case TT_BYTE: {
 			WarningMuchBetter(ctx, "int");
 			cid = CLASS_Int;
@@ -285,7 +285,7 @@ knh_class_t knh_Token_cid(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 		}
 		case TT_TYPE: {
 			DBG_ASSERT(IS_Array((tk)->list));
-			knh_Token_t *tkC = knh_TOKENs_n((tk)->list, 0);
+			knh_Token_t *tkC = tk->list->tokens[0];
 			knh_class_t bcid = knh_Token_cid(ctx, tkC, CLASS_unknown);
 			if(bcid == CLASS_unknown || ClassTBL(bcid)->cparam == NULL) {  /* @CODE: String<T> // no such generics */
 				WarningTypeParameter(ctx, bcid);
@@ -2022,7 +2022,7 @@ static knh_Token_t* CALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 
 //static knh_Term_t* knh_StmtDOMAIN_typing(CTX ctx, knh_Stmt_t *stmt)
 //{
-//	if(Tn_typing(ctx, stmt, 2, CLASS_dynamic, TCHECK_)) {
+//	if(Tn_typing(ctx, stmt, 2, CLASS_Tdynamic, TCHECK_)) {
 //		knh_class_t cid;
 //		if(Tn_isCID(stmt, 2)) {
 //			cid = (tkNN(stmt, 2))->cid;
@@ -2034,7 +2034,7 @@ static knh_Token_t* CALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 //		Token_setCONST(ctx, tkNN(stmt, 1), UPCAST(new_Type(ctx, cid)));
 //		DP(stmt)->size = 2;
 //		knh_Token_toMTD(ctx, tkNN(stmt, 0), MN_domain, knh_NameSpace_getMethodNULL(ctx, CLASS_Class, MN_domain));
-//		return knh_Stmt_typed(ctx, stmt, TYPE_cid(knh_class_Generics(ctx, CLASS_Array, cid, CLASS_dynamic)));
+//		return knh_Stmt_typed(ctx, stmt, TYPE_cid(knh_class_Generics(ctx, CLASS_Array, cid, CLASS_Tdynamic)));
 //	}
 //	TODO();
 //	return NULL;
@@ -2556,7 +2556,7 @@ static knh_class_t OPADD_bcid(CTX ctx, knh_Stmt_t *stmt)
 	knh_class_t cid2 = Tn_cid(stmt, 2);
 	knh_class_t bcid1 = knh_class_bcid(cid1);
 	knh_class_t bcid2 = knh_class_bcid(cid2);
-	if(cid1 == CLASS_dynamic || cid2 == CLASS_dynamic) return CLASS_dynamic;
+	if(cid1 == CLASS_Tdynamic || cid2 == CLASS_Tdynamic) return CLASS_Tdynamic;
 	if(cid1 == cid2) return cid1;
 	if(bcid1 == bcid2) return bcid1;
 	if(bcid1 == CLASS_Float && bcid2 == CLASS_Int) return cid1;
@@ -2572,7 +2572,7 @@ static knh_class_t OPEQ_bcid(CTX ctx, knh_Stmt_t *stmt)
 	knh_class_t bcid1 = knh_class_bcid(cid1);
 	knh_class_t bcid2 = knh_class_bcid(cid2);
 	if(cid1 == cid2) return cid1;
-	if(cid1 == CLASS_dynamic || cid2 == CLASS_dynamic) return CLASS_dynamic;
+	if(cid1 == CLASS_Tdynamic || cid2 == CLASS_Tdynamic) return CLASS_Tdynamic;
 	if(bcid1 == cid2) return bcid1;
 	if(bcid2 == cid1) return bcid2;
 	if(bcid1 == CLASS_Float && bcid2 == CLASS_Int) return cid1;
@@ -2587,7 +2587,7 @@ static knh_Token_t* OP_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	size_t i, opsize = DP(stmt)->size - 1;
 	knh_Token_t *tkOP = tkNN(stmt, 0);
 	knh_methodn_t mn;
-	knh_class_t mtd_cid = CLASS_dynamic;
+	knh_class_t mtd_cid = CLASS_Tdynamic;
 	if(TT_(tkOP) == TT_MN) {
 		mn = (tkOP)->mn;
 		mtd_cid = Tn_cid(stmt, 1);
@@ -2713,7 +2713,7 @@ static knh_Token_t* OP_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		if(mtd_cid == CLASS_Exception){
 			goto L_LOOKUPMETHOD;
 		}
-		if(mtd_cid == cid || cid == CLASS_dynamic) {
+		if(mtd_cid == cid || cid == CLASS_Tdynamic) {
 			return Token_setCONST(ctx, tkC, KNH_TRUE);
 		}
 		if(!class_isa(cid, mtd_cid)) {
@@ -2764,9 +2764,9 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	knh_Token_t *tkRES = TTYPE_typing(ctx, tkC, CLASS_unknown);
 	if(TT_(tkRES) == TT_ERR) return tkRES;
 	tcid = (tkC)->cid;
-	if(tcid == CLASS_dynamic) {   /* (dynamic)expr */
+	if(tcid == CLASS_Tdynamic) {   /* (dynamic)expr */
 		tcid = CLASS_t(reqt);
-		if(tcid == CLASS_dynamic) {
+		if(tcid == CLASS_Tdynamic) {
 			TYPING(ctx, stmt, 1, TYPE_dynamic, _NOTCHECK);
 			return tkNN(stmt, 1);
 		}
@@ -2774,7 +2774,7 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	//DBG_P("TCID(reqt)= %s", CLASS__(tcid));
 	TYPING(ctx, stmt, 1, tcid, _NOTCHECK | _NOTCAST);
 	scid = Tn_cid(stmt, 1);
-	if(scid == CLASS_dynamic) {     /* (T)anyexpr */
+	if(scid == CLASS_Tdynamic) {     /* (T)anyexpr */
 		Token_toTCASTMPR(ctx, tkC, tcid, NULL);
 		return Stmt_typed(ctx, stmt, tcid);
 	}
@@ -2795,7 +2795,7 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	{
 		knh_TypeMap_t *trl = knh_getTypeMapNULL(ctx, scid, tcid);
 		if(trl == NULL) {
-			if(scid != CLASS_dynamic) {
+			if(scid != CLASS_Tdynamic) {
 				return ErrorNoSuchTransCast(ctx, scid, tcid);
 			}
 			Token_toTCASTMPR(ctx, tkC, tcid, NULL);
@@ -2976,7 +2976,7 @@ static knh_Term_t *new_TermTCAST(CTX ctx, knh_class_t reqt, knh_TypeMap_t *trlNU
 	}
 	else {
 		knh_Stmt_t *cstmt = new_Stmt2(ctx, STT_TCAST, NULL);
-		knh_Token_t *tk = new_TokenTYPED(ctx, TT_CID, TYPE_Class, CLASS_dynamic);
+		knh_Token_t *tk = new_TokenTYPED(ctx, TT_CID, TYPE_Class, CLASS_Tdynamic);
 		Token_toTCASTMPR(ctx, tk, reqt, trlNULL);
 		knh_Stmt_add(ctx, cstmt, tk);
 		knh_Stmt_add(ctx, cstmt, tk2);
@@ -3547,7 +3547,10 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM, knh_type_t reqt)
 	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, mn);
 	knh_ParamArray_t *mp = NULL;
 	knh_Stmt_t *stmtP = stmtNN(stmtM, 3/*PARAMs*/);
-	int isDynamic = 0;
+	int isDynamic = 0, allowDynamic = 1;
+	if(StmtMETHOD_isFFI(stmtM) || knh_StmtMETA_is(ctx, stmtM, "Native")) {
+		allowDynamic = 0;
+	}
 	if(mtd != NULL && (mtd)->mn < MN_OPSIZE) { /* op */
 		WarningDeprecated(ctx, "operator overriding");
 		mtd = NULL;
@@ -3562,7 +3565,6 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM, knh_type_t reqt)
 			mtd = NULL;
 		}
 	}
-
 	if(mtd != NULL) {  // overriding method
 		size_t i;
 		mp = DP(mtd)->mp;
@@ -3591,6 +3593,9 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM, knh_type_t reqt)
 					type = tkV->type;
 				}
 				if(type == TYPE_var) {
+					if(allowDynamic == 0) {
+						return ErrorStaticType(ctx, S_tochar(tkN->text));
+					}
 					isDynamic = 1;
 				}
 				else {
@@ -3649,6 +3654,9 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM, knh_type_t reqt)
 					type = tkV->type;
 				}
 				if(type == TYPE_var) {
+					if(allowDynamic == 0) {
+						return ErrorStaticType(ctx, S_tochar(tkN->text));
+					}
 					isDynamic = 1;
 				}
 				else {
@@ -3703,6 +3711,11 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM, knh_type_t reqt)
 				Method_setObjectCode(mtd, 1);
 			}
 		}
+	}
+	if(StmtMETHOD_isFFI(stmtM)) {
+		knh_Stmt_t *stmtD = stmtNN(stmtM, 4/*using DSL*/);
+//		knh_Method_ffi(ctx, mtd, stmtD);
+		return knh_Stmt_done(ctx, stmtM);
 	}
 	return knh_StmtMTD_typing(ctx, stmtM, mtd, mtd_cid);
 }
@@ -3834,7 +3847,7 @@ static knh_class_t knh_StmtPARAMs_getFmtClass(CTX ctx, knh_Stmt_t *stmt)
 	DBG_ASSERT(STT_(stmt) == STT_DECL);
 	if(DP(stmt)->size == 3) {
 		knh_Token_t *tkT = tkNN(stmt, 0);
-		cid = knh_Token_cid(ctx, tkT, CLASS_dynamic);
+		cid = knh_Token_cid(ctx, tkT, CLASS_Tdynamic);
 		return cid;
 	}
 	KNH_TODO("formatter method takes one parameter");
@@ -4468,7 +4481,7 @@ knh_bool_t knh_Method_typing(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_
 		DP(ctx->gma)->psize = i / 3;
 		DBG_ASSERT(DP(ctx->gma)->psize + 1 == DP(ctx->gma)->ebpidx);
 		DP(ctx->gma)->scridx = -1;
-		if(Stmt_isVARGs(stmtP)) {
+		if(StmtMETHOD_isVARGs(stmtP)) {
 			KNH_TODO("variable arguments..");
 		}
 		DBG_P("PSIZE = %d", DP(ctx->gma)->psize);
@@ -4500,7 +4513,7 @@ knh_bool_t knh_Method_typing(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_
 knh_bool_t knh_Fmt_typing(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t it, knh_Stmt_t *stmtB)
 {
 	Gamma_initThis(ctx, CLASS_OutputStream);
-	knh_Token_t *tkT = TTYPE_typing(ctx, tkNN(stmtP, 0), CLASS_dynamic);
+	knh_Token_t *tkT = TTYPE_typing(ctx, tkNN(stmtP, 0), CLASS_Tdynamic);
 	knh_Token_t *tkN = tkNN(stmtP, 1);
 	Gamma_addLOCAL(ctx, 0, tkT->type, Token_fn(ctx, tkN), 1/*ucnt*/);
 	KNH_SETv(ctx, DP(ctx->gma)->mtd, mtd);

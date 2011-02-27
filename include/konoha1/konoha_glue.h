@@ -55,9 +55,9 @@ typedef const struct _knh_ExportsAPI_t {
 	// String
 	knh_String_t* (*new_String)(CTX, const char*);
 	const char* (*tochar)(CTX, knh_String_t*);
-	// RawPtr
-	knh_RawPtr_t* (*new_RawPtr)(CTX, void*, knh_FfreeRawPtr, knh_class_t, const char*);
-	void (*RawPtr_init)(CTX, knh_RawPtr_t*, void *, knh_FfreeRawPtr);
+//	// RawPtr
+//	knh_RawPtr_t* (*new_RawPtr)(CTX, void*, knh_FfreeRawPtr, knh_class_t, const char*);
+//	void (*RawPtr_init)(CTX, knh_RawPtr_t*, void *, knh_FfreeRawPtr);
 	// Stream
 	knh_InputStream_t* (*new_InputStreamNULL)(CTX, knh_String_t *, const char *mode);
 	knh_OutputStream_t* (*new_OutputStreamNULL)(CTX, knh_String_t *, const char *mode);

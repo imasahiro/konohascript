@@ -42,7 +42,7 @@ extern "C" {
 #define knh_Object_RCinc(o)     (o)->h.refc ++
 #define DBG_Object_RCinc(o)    {\
 		(o)->h.refc ++; \
-		if(O_cid(o) == CLASS_dynamic) {\
+		if(O_cid(o) == CLASS_Tdynamic) {\
 			DBG_P("p=%p refc=%d", o, o->h.refc);\
 		}\
 	}\

@@ -969,10 +969,10 @@ static void ASM_BOX2(CTX ctx, knh_type_t reqt, knh_type_t atype, int a)
 			}
 		}
 	}
-	else if(atype == CLASS_dynamic && IS_Tnumbox(reqt)) {
+	else if(atype == CLASS_Tdynamic && IS_Tnumbox(reqt)) {
 		ASM(UNBOX, NC_(a), OC_(a), ClassTBL(reqt));
 	}
-	else if(IS_Tnumbox(atype) && reqt == CLASS_dynamic) {
+	else if(IS_Tnumbox(atype) && reqt == CLASS_Tdynamic) {
 		ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(atype), _OBOX);
 	}
 }
@@ -2243,7 +2243,7 @@ static void Gamma_pushLABEL(CTX ctx, knh_Stmt_t *stmt, knh_BasicBlock_t *lbC, kn
 		tkL = knh_DictMap_getNULL(ctx, DP(stmt)->metaDictCaseMap, S_tobytes(TS_ATlabel));
 	}
 	if(tkL == NULL) {
-		tkL = KNH_NULVAL(CLASS_dynamic);
+		tkL = KNH_NULVAL(CLASS_Tdynamic);
 	}
 	knh_Array_add(ctx, DP(ctx->gma)->lstacks, tkL);
 	knh_Array_add(ctx, DP(ctx->gma)->lstacks, lbC);
@@ -2350,7 +2350,7 @@ static void ASM_JUMPLABEL(CTX ctx, knh_Stmt_t *stmt, int delta)
 			int i;
 			knh_bytes_t lname = S_tobytes((tkL)->text);
 			for(i = s - 4; i >= 0; i -= 4) {
-				knh_Token_t *tkSTACK = knh_TOKENs_n(DP(ctx->gma)->lstacks, i);
+				knh_Token_t *tkSTACK = DP(ctx->gma)->lstacks->tokens[i];
 				if(IS_NOTNULL(tkSTACK) && S_equals((tkSTACK)->text, lname)) {
 					lbBLOCK = GammaLabel(ctx,  i + delta);
 					goto L_JUMP;

@@ -67,6 +67,21 @@
 #include"commons.h"
 #include"../../include/konoha1/konoha_code_.h"
 
+#ifndef TYPE_BytesIm
+#define CLASS_BytesIm CLASS_Bytes
+#define TYPE_BytesIm  TYPE_Bytes
+#endif
+
+#ifndef TYPE_ArrayIm
+#define CLASS_ArrayIm CLASS_Array
+#define TYPE_ArrayIm  TYPE_Array
+#endif
+
+#ifndef TYPE_MapIm
+#define CLASS_MapIm CLASS_Map
+#define TYPE_MapIm  TYPE_Map
+#endif
+
 /* ************************************************************************ */
 
 #ifdef __cplusplus
@@ -437,34 +452,6 @@ void knh_ClassTBL_setObjectCSPI(knh_ClassTBL_t *ct)
 }
 
 /* --------------- */
-/* dynamic */
-
-static void DYNAMIC_init(CTX ctx, Object *o)
-{
-	knh_RawPtr_t *g = (knh_RawPtr_t *)o;
-	ctx->api->RawPtr_init(ctx, g, NULL, NULL);
-}
-
-static void DYNAMIC_free(CTX ctx, Object *o)
-{
-	knh_RawPtr_t *g = (knh_RawPtr_t *)o;
-	if((Object*)g == KNH_NULL) {
-		DBG_P("freeing null");
-	}
-	else {
-		g->pfree(ctx, g);
-	}
-}
-
-static knh_ObjectSPI2_t dynamicSPI = {
-	"dynamic", 0, CFLAG_dynamic,
-	DYNAMIC_init, DEFAULT_initcopy, NONE_reftrace, DYNAMIC_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
-};
-
-/* --------------- */
 /* Boolean */
 
 static void NDATA_initcopy(CTX ctx, Object *o, const Object *src)
@@ -691,6 +678,14 @@ static knh_ObjectSPI2_t BytesSPI = {
 	DEFAULT_findTypeMapNULL,
 };
 
+static knh_ObjectSPI2_t BytesImSPI = {
+	"BytesIm", 0, CFLAG_BytesIm,
+	Bytes_init, Bytes_initcopy, NONE_reftrace, Bytes_free,
+	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
+	DEFAULT_checkin, DEFAULT_checkout,
+	DEFAULT_findTypeMapNULL,
+};
+
 /* --------------- */
 /* Range */
 
@@ -725,7 +720,7 @@ static void Range_reftrace(CTX ctx, Object *o FTRARG)
 ////	if(knh_class_bcid(tcid) == CLASS_Iterator) {
 ////		knh_class_t p1 = knh_class_p1(cid); //Range<p1>
 ////		knh_class_t tp1 = knh_class_p1(tcid);  //Iterator<tp2>
-////		if(p1 == tp1 || tp1 == CLASS_dynamic || knh_class_instanceof(ctx, p1, tp1)) {
+////		if(p1 == tp1 || tp1 == CLASS_Tdynamic || knh_class_instanceof(ctx, p1, tp1)) {
 ////			return new_TypeMap(ctx, FLAG_TypeMap_Iteration, cid, tcid, Range_Iterator);
 ////		}
 ////	}
@@ -802,7 +797,7 @@ static void Array_free(CTX ctx, Object *o)
 //	if(knh_class_bcid(tcid) == CLASS_Iterator) {
 //		knh_class_t p1 = knh_class_p1(cid);
 //		knh_class_t tp1 = knh_class_p1(tcid);
-//		if(p1 == tp1 || tp1 == CLASS_dynamic || knh_class_instanceof(ctx, p1, tp1)) {
+//		if(p1 == tp1 || tp1 == CLASS_Tdynamic || knh_class_instanceof(ctx, p1, tp1)) {
 //			return new_TypeMap(ctx, FLAG_TypeMap_Iteration, cid, tcid, Array_Iterator);
 //		}
 //	}
@@ -811,6 +806,14 @@ static void Array_free(CTX ctx, Object *o)
 
 static knh_ObjectSPI2_t ArraySPI = {
 	"Array", 0, CFLAG_Array,
+	Array_init, Array_initcopy, Array_reftrace, Array_free,
+	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
+	DEFAULT_checkin, DEFAULT_checkout,
+	DEFAULT_findTypeMapNULL,
+};
+
+static knh_ObjectSPI2_t ArrayImSPI = {
+	"ArrayIm", 0, CFLAG_ArrayIm,
 	Array_init, Array_initcopy, Array_reftrace, Array_free,
 	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
 	DEFAULT_checkin, DEFAULT_checkout,
@@ -886,7 +889,7 @@ static void Iterator_free(CTX ctx, Object *o)
 //	if(knh_class_bcid(tcid) == CLASS_Array) {
 //		knh_class_t p1 = knh_class_p1(cid);
 //		knh_class_t tp1 = knh_class_p1(tcid);
-//		if(p1 == tp1 || tp1 == CLASS_dynamic || knh_class_instanceof(ctx, p1, tp1)) {
+//		if(p1 == tp1 || tp1 == CLASS_Tdynamic || knh_class_instanceof(ctx, p1, tp1)) {
 //			return new_TypeMap(ctx, FLAG_TypeMap_Iteration, cid, tcid, Iterator_Array);
 //		}
 //	}
@@ -961,6 +964,16 @@ static void Map_free(CTX ctx, Object *o)
 
 static knh_ObjectSPI2_t MapSPI = {
 	"Map", 0, CFLAG_Map,
+	Map_init, DEFAULT_initcopy,
+	Map_reftrace, Map_free,
+	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
+	DEFAULT_checkin, DEFAULT_checkout,
+
+	DEFAULT_findTypeMapNULL,
+};
+
+static knh_ObjectSPI2_t MapImSPI = {
+	"MapIm", 0, CFLAG_MapIm,
 	Map_init, DEFAULT_initcopy,
 	Map_reftrace, Map_free,
 	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
@@ -2221,6 +2234,34 @@ static knh_ObjectSPI2_t KonohaCodeSPI = {
 };
 
 /* --------------- */
+/* dynamic */
+
+static void DYNAMIC_init(CTX ctx, Object *o)
+{
+//	knh_RawPtr_t *g = (knh_RawPtr_t *)o;
+//	ctx->api->RawPtr_init(ctx, g, NULL, NULL);
+}
+
+static void DYNAMIC_free(CTX ctx, Object *o)
+{
+//	knh_RawPtr_t *g = (knh_RawPtr_t *)o;
+//	if((Object*)g == KNH_NULL) {
+//		DBG_P("freeing null");
+//	}
+//	else {
+//		g->pfree(ctx, g);
+//	}
+}
+
+static knh_ObjectSPI2_t TdynamicSPI = {
+	"dynamic", 0, CFLAG_Tdynamic,
+	DYNAMIC_init, DEFAULT_initcopy, NONE_reftrace, DYNAMIC_free,
+	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
+	DEFAULT_checkin, DEFAULT_checkout,
+	DEFAULT_findTypeMapNULL,
+};
+
+/* --------------- */
 /* @data*/
 
 typedef struct {
@@ -2277,7 +2318,7 @@ static Object *knh_NameSpace_fdefault(CTX ctx, knh_class_t cid)
 static void knh_setDefaultValues(CTX ctx)
 {
 	knh_setClassDefaultValue(ctx, CLASS_Object, KNH_NULL, NULL);
-	knh_setClassDefaultValue(ctx, CLASS_dynamic, KNH_NULL, NULL);
+	knh_setClassDefaultValue(ctx, CLASS_Tdynamic, KNH_NULL, NULL);
 	knh_setClassDefaultValue(ctx, CLASS_Boolean, KNH_FALSE, NULL);
 #if defined(K_USING_SEMANTICS)
 	{

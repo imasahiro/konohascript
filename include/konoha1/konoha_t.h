@@ -311,7 +311,7 @@ typedef knh_ushort_t       knh_ebi_t;    /* knh_ebi_t */
 #define IS_Tnumbox(t)     (t == CLASS_Object || t == CLASS_Number)
 #define IS_Tfunc(t)       (ClassTBL(CLASS_t(t))->bcid == CLASS_Func)
 #define IS_Tstr(t)        (t == CLASS_String || ClassTBL(CLASS_t(t))->bcid == CLASS_String)
-#define IS_Tvany(t)       (t == CLASS_dynamic || t == TYPE_var || t == TYPE_void)
+#define IS_Tvany(t)       (t == CLASS_Tdynamic || t == TYPE_var || t == TYPE_void)
 
 #define ClassTBL_isa(t, reqt)   (t->cid == reqt || ClassTBL_isa_(ctx, t, ClassTBL(reqt)))
 #define class_isa(cid, reqt)    (cid == reqt || ClassTBL_isa_(ctx, ClassTBL(cid), ClassTBL(reqt)))
