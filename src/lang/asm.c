@@ -673,7 +673,7 @@ static knh_KonohaCode_t* BasicBlock_link(CTX ctx, knh_BasicBlock_t *bb, knh_Basi
 
 /* ------------------------------------------------------------------------ */
 
-METHOD knh_Fmethod_runVM(CTX ctx, knh_sfp_t *sfp, long rix)
+METHOD knh_Fmethod_runVM(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	DBG_ASSERT(rix == K_RTNIDX);
 	DBG_ASSERT(IS_Method(sfp[K_MTDIDX].mtdNC));
@@ -891,39 +891,39 @@ static knh_Method_t* _CHKMTD(CTX ctx, knh_sfp_t *sfp, int thisidx, knh_Method_t 
 //	return 0;
 //}
 /* SYSVAL */
-static METHOD Fmethod_CTX(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_CTX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_((Object*)toContext(ctx));
 }
-static METHOD Fmethod_CTXIN(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_CTXIN(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(ctx->in);
 }
-static METHOD Fmethod_CTXOUT(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_CTXOUT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(ctx->out);
 }
-static METHOD Fmethod_CTXERR(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_CTXERR(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(ctx->err);
 }
-static METHOD Fmethod_STDIN(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_STDIN(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(DP(ctx->sys)->in);
 }
-static METHOD Fmethod_STDOUT(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_STDOUT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(DP(ctx->sys)->out);
 }
-static METHOD Fmethod_STDERR(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_STDERR(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(DP(ctx->sys)->err);
 }
-static METHOD Fmethod_SYS(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_SYS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(ctx->sys);
 }
-static METHOD Fmethod_SCRIPT(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_SCRIPT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(ctx->script);
 }
@@ -2033,7 +2033,7 @@ static void CHKOUT_asm(CTX ctx, knh_Stmt_t *stmt)
 	knh_Stmt_done(ctx, stmt);
 }
 
-static METHOD Fmethod_dynamic(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_dynamic(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 }
 

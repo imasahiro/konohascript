@@ -161,7 +161,7 @@ KNHAPI2(knh_Float_t*) new_Float(CTX ctx, knh_class_t cid, knh_float_t value)
 ///* [mapper] */
 //
 //static
-//TCAST knh_AffineConv_fmap__i2i(CTX ctx, knh_sfp_t *sfp, long rix)
+//TCAST knh_AffineConv_fmap__i2i(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_AffineConv_t *af = (knh_AffineConv_t*)DP(sfp[1].mpr)->mapdata;
 //	DBG_ASSERT(IS_AffineConv(af));
@@ -171,7 +171,7 @@ KNHAPI2(knh_Float_t*) new_Float(CTX ctx, knh_class_t cid, knh_float_t value)
 //
 ///* ------------------------------------------------------------------------ */
 //
-//static TCAST knh_AffineConv_fmap__i2f(CTX ctx, knh_sfp_t *sfp, long rix)
+//static TCAST knh_AffineConv_fmap__i2f(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_AffineConv_t *af = (knh_AffineConv_t*)DP(sfp[1].mpr)->mapdata;
 //	DBG_ASSERT(IS_AffineConv(af));
@@ -181,7 +181,7 @@ KNHAPI2(knh_Float_t*) new_Float(CTX ctx, knh_class_t cid, knh_float_t value)
 //
 ///* ------------------------------------------------------------------------ */
 //
-//static TCAST knh_AffineConv_fmap__f2i(CTX ctx, knh_sfp_t *sfp, long rix)
+//static TCAST knh_AffineConv_fmap__f2i(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_AffineConv_t *af = (knh_AffineConv_t*)DP(sfp[1].mpr)->mapdata;
 //	DBG_ASSERT(IS_AffineConv(af));
@@ -191,7 +191,7 @@ KNHAPI2(knh_Float_t*) new_Float(CTX ctx, knh_class_t cid, knh_float_t value)
 //
 ///* ------------------------------------------------------------------------ */
 //
-//static TCAST knh_AffineConv_fmap__f2f(CTX ctx, knh_sfp_t *sfp, long rix)
+//static TCAST knh_AffineConv_fmap__f2f(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_AffineConv_t *af = (knh_AffineConv_t*)DP(sfp[1].mpr)->mapdata;
 //	DBG_ASSERT(IS_AffineConv(af));

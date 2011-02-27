@@ -44,7 +44,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 //## @Static method InputStream System.getIn();
 
-static METHOD System_getIn(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD System_getIn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(DP(ctx->sys)->in);
 }
@@ -52,7 +52,7 @@ static METHOD System_getIn(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Static method OutputStream System.getOut();
 
-static METHOD System_getOut(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD System_getOut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(DP(ctx->sys)->out);
 }
@@ -60,7 +60,7 @@ static METHOD System_getOut(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Static method OutputStream System.getErr();
 
-static METHOD System_getErr(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD System_getErr(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(DP(ctx->sys)->err);
 }
@@ -68,7 +68,7 @@ static METHOD System_getErr(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Static method dynamic System.getProperty(String key);
 
-static METHOD System_getProperty(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD System_getProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Object_t *v = (knh_Object_t*)knh_getPropertyNULL(ctx, S_tobytes(sfp[1].s));
 	if(v == NULL) {
@@ -81,7 +81,7 @@ static METHOD System_getProperty(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Static method dynamic System.setProperty(String key, dynamic value);
 
-static METHOD System_setProperty(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD System_setProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_setProperty(ctx, sfp[1].s, sfp[2].o);
 	RETURNa_(sfp[2].o);
@@ -115,7 +115,7 @@ static knh_bool_t knh_bytes_matchWildCard(knh_bytes_t t, knh_bytes_t p)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method String[] System.listProperties(String key);
 
-static METHOD System_listProperties(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD System_listProperties(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = new_Array(ctx, CLASS_String, 0);
 	knh_bytes_t prefix = IS_NULL(sfp[1].s) ? STEXT("") : S_tobytes(sfp[1].s);
@@ -133,7 +133,7 @@ static METHOD System_listProperties(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Static method void System.gc();
 
-static METHOD System_gc(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD System_gc(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_System_gc(ctx);
 }
@@ -141,7 +141,7 @@ static METHOD System_gc(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## @Static @Hidden method void System.push(Object value, ...);
 //
-//static METHOD System_push(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD System_push(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	long i, ac = knh_stack_argc(ctx, (sfp+1));
 //	for(i = 0; i < ac; i++) {
@@ -153,7 +153,7 @@ static METHOD System_gc(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## @Hidden method void System.test(Boolean result, String msg);
 //
-//static METHOD System_test(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD System_test(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	char *result = (sfp[1].bvalue) ? "PASS" : "FAILED";
 //	knh_intptr_t line = (knh_intptr_t)sfp[0].ivalue;
@@ -168,7 +168,7 @@ static METHOD System_gc(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method Int System.getTime();
 
-static METHOD System_getTime(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD System_getTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_getTimeMilliSecond());
 }
@@ -176,7 +176,7 @@ static METHOD System_getTime(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## @Static @Unsafe method void System.exit(Int status);
 //
-//static METHOD System_exit(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD System_exit(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //#if defined(K_USING_STDC_)
 //	int status = IS_NULL(sfp[1].o) ? 0 : Int_to(size_t, sfp[1]);
@@ -190,7 +190,7 @@ static METHOD System_getTime(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## method String[] System.listDir(String path);
 //
-//static METHOD System_listDir(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD System_listDir(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 //	knh_Array_t *a = new_Array(ctx, CLASS_String, 0);
@@ -223,7 +223,7 @@ static METHOD System_getTime(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Static method InputStream Context.setIn(InputStream? in);
 
-static METHOD CTX_setIn(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD CTX_setIn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	KNH_SETv(ctx, ((knh_context_t*)ctx)->in, sfp[1].o);
 	RETURN_(sfp[1].o);
@@ -232,7 +232,7 @@ static METHOD CTX_setIn(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Static method OutputStream Context.setOut(OutputStream? out);
 
-static METHOD CTX_setOut(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD CTX_setOut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	KNH_SETv(ctx, ((knh_context_t*)ctx)->out, sfp[1].o);
 	RETURN_(sfp[1].o);
@@ -241,7 +241,7 @@ static METHOD CTX_setOut(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Static method OutputStream Context.setErr(OutputStream? out);
 
-static METHOD CTX_setErr(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD CTX_setErr(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	KNH_SETv(ctx, ((knh_context_t*)ctx)->err, sfp[1].o);
 	RETURN_(sfp[1].o);
@@ -250,7 +250,7 @@ static METHOD CTX_setErr(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method Boolean Exception.opOF(String event);
 
-static METHOD Exception_opOF(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Exception_opOF(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int isa = 0;
 	knh_String_t *event = sfp[1].s;
@@ -269,7 +269,7 @@ static METHOD Exception_opOF(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Const method dynamic NameSpace.setConst(String name, Object value);
 
-static METHOD NameSpace_setConst(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD NameSpace_setConst(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_NameSpace_t *ns = sfp[0].ns;
 	if(DP(ns)->lconstDictCaseMapNULL == NULL) {
@@ -282,7 +282,7 @@ static METHOD NameSpace_setConst(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Const method dynamic Class.setConst(String name, Object value);
 
-static METHOD Class_setConst(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Class_setConst(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_addClassConst(ctx, (sfp[0].c)->cid, sfp[1].s, sfp[2].o);
 	RETURNa_(sfp[2].o);

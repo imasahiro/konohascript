@@ -198,7 +198,7 @@ typedef struct knh_threadcc_t {
 // sfp |   0   |   1   |   2   |   3  |
 //     |  self |  mtd  | arg1  | ...  |
 
-//void knh_stack_threadRun(CTX ctx, knh_sfp_t *sfp, long rix)
+//void knh_stack_threadRun(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_thread_t th;
 //	knh_threadcc_t ta = {ctx, sfp + 1};

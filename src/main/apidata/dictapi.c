@@ -43,7 +43,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 //## method Boolean Map.opHAS(T1 key);
 
-static METHOD Map_opHAS(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Map_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
 	RETURNb_(m->dspi->get(ctx, m->dmap, sfp + 1, sfp + rix));
@@ -52,7 +52,7 @@ static METHOD Map_opHAS(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method T2 Map.get(T1 key);
 
-static METHOD Map_get(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Map_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
 	if(!m->dspi->get(ctx, m->dmap, sfp + 1, sfp + rix)) {
@@ -63,7 +63,7 @@ static METHOD Map_get(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Map.set(T1 key, T2 value);
 
-static METHOD DictMap_set(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD DictMap_set(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
 	m->dspi->set(ctx, m->dmap, sfp + 1);
@@ -73,7 +73,7 @@ static METHOD DictMap_set(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Map.remove(T1 key);
 
-static METHOD DictMap_remove(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD DictMap_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
 	m->dspi->remove(ctx, m->dmap, sfp + 1);
@@ -83,7 +83,7 @@ static METHOD DictMap_remove(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## method T1[] Map.keys();
 //
-//static METHOD Map_keys(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD Map_keys(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_DictMap_t *o = (knh_DictMap_t*)sfp[0].o;
 //	knh_Array_t *a = new_Array(ctx, CLASS_String, o->size);
@@ -97,7 +97,7 @@ static METHOD DictMap_remove(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## method T1[] Map.values();
 //
-//static METHOD Map_values(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD Map_values(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_DictMap_t *o = (knh_DictMap_t*)sfp[0].o;
 //	knh_Array_t *a = new_Array0(ctx, o->size);

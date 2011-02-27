@@ -95,8 +95,8 @@ extern "C" {
 #define K_USING_DEFAULTAPI
 #include"apidata/dspi.c"
 
-static TCAST Array_Iterator(CTX ctx, knh_sfp_t *sfp, long rix);
-static TCAST Iterator_Array(CTX ctx, knh_sfp_t *sfp, long rix);
+static TCAST Array_Iterator(CTX ctx, knh_sfp_t *sfp _RIX);
+static TCAST Iterator_Array(CTX ctx, knh_sfp_t *sfp _RIX);
 
 #define knh_bodymalloc(ctx, C)   (knh_##C##EX_t*)KNH_MALLOC(ctx, sizeof(knh_##C##EX_t))
 #define knh_bodyfree(ctx, p, C)  KNH_FREE(ctx, p, sizeof(knh_##C##EX_t))
@@ -712,7 +712,7 @@ static void Range_reftrace(CTX ctx, Object *o FTRARG)
 	}
 }
 
-//static TCAST Range_Iterator(CTX ctx, knh_sfp_t *sfp, long rix);
+//static TCAST Range_Iterator(CTX ctx, knh_sfp_t *sfp _RIX);
 #define FLAG_TypeMap_Iteration (FLAG_TypeMap_Total)
 
 //static knh_TypeMap_t* knh_Range_genmap(CTX ctx, knh_class_t cid, knh_class_t tcid)
@@ -875,7 +875,7 @@ static void Iterator_free(CTX ctx, Object *o)
 //	return res;
 //}
 //
-//static TCAST Iterator_Iterator(CTX ctx, knh_sfp_t *sfp, long rix)
+//static TCAST Iterator_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_TypeMap_t *trl = sfp[K_TRLIDX].trlNC;
 //	RETURN_(new_Iterator(ctx, knh_class_p1(SP(trl)->tcid), sfp[K_TRLIDX].o, knh_Iterator_filterNext));
@@ -1117,7 +1117,7 @@ static knh_ObjectSPI2_t TypeMapSPI = {
 /* --------------- */
 /* Func */
 
-static METHOD Fmethod_funcRTYPE(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_funcRTYPE(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_type_t rtype = knh_ParamArray_rtype(DP(sfp[K_MTDIDX].mtdNC)->mp);
 	if(rtype != TYPE_void) {

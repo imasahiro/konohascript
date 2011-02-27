@@ -42,7 +42,7 @@ extern "C" {
 
 //## @Const @Final mapper Float Int;
 
-static TCAST Float_Int(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST Float_Int(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	DBG_ASSERT(IS_bFloat(sfp[K_TRLIDX].o));
 	knh_int_t v = (knh_int_t)(sfp[K_TRLIDX].f)->n.fvalue;
@@ -52,7 +52,7 @@ static TCAST Float_Int(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const @Final mapper String Int;
 
-static TCAST String_Int(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST String_Int(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_int_t v = 0;
 	if(!knh_bytes_parseint(S_tobytes(sfp[K_TRLIDX].s), &v)) {
@@ -66,7 +66,7 @@ static TCAST String_Int(CTX ctx, knh_sfp_t *sfp, long rix)
 
 //## @Const @Final mapper Int Float;
 
-static TCAST Int_Float(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST Int_Float(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	DBG_ASSERT(IS_bInt(sfp[K_TRLIDX].o));
 	knh_float_t v = (knh_float_t)(sfp[K_TRLIDX].i)->n.ivalue;
@@ -76,7 +76,7 @@ static TCAST Int_Float(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const @Final mapper String Float;
 
-static TCAST String_Float(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST String_Float(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_float_t v = 0.0;
 	if(!knh_bytes_parsefloat(S_tobytes(sfp[K_TRLIDX].s), &v)) {
@@ -92,7 +92,7 @@ static TCAST String_Float(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const @Final @LossLess mapper Boolean String;
 
-static TCAST Boolean_String(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST Boolean_String(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_String_t *s = (Boolean_to(int, (sfp[K_TRLIDX]))) ? TS_true : TS_false;
 	RETURN_(s);
@@ -101,7 +101,7 @@ static TCAST Boolean_String(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const @Final @LossLess mapper Int String;
 
-static TCAST Int_String(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST Int_String(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	char buf[256];
 	knh_snprintf(buf, sizeof(buf), K_INT_FMT, sfp[K_TRLIDX].ivalue);
@@ -111,7 +111,7 @@ static TCAST Int_String(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const @Final @LossLess mapper Float String;
 
-static TCAST Float_String(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST Float_String(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	char buf[256];
 	knh_snprintf(buf, sizeof(buf), K_FLOAT_FMT, sfp[K_TRLIDX].fvalue);
@@ -121,7 +121,7 @@ static TCAST Float_String(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## @Const @Final mapper Bytes String;
 //
-//static TCAST Bytes_String(CTX ctx, knh_sfp_t *sfp, long rix)
+//static TCAST Bytes_String(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_bytes_t t = knh_Bytes_tobytes((knh_Bytes_t*)sfp[K_TRLIDX].o);
 //	knh_String_t *s = TS_EMPTY;
@@ -137,7 +137,7 @@ static TCAST Float_String(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const @Final mapper String Bytes;
 
-static TCAST String_Bytes(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST String_Bytes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Bytes_t *b = new_Bytes(ctx, S_size(sfp[K_TRLIDX].s) + 1);
 	knh_Bytes_write(ctx, b, S_tobytes(sfp[K_TRLIDX].s));
@@ -151,7 +151,7 @@ static TCAST String_Bytes(CTX ctx, knh_sfp_t *sfp, long rix)
 //## @Const mapper Object Iterator!;
 //## method This.. Object.opITR();
 
-static TCAST Object_Iterator(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST Object_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	Object *o = sfp[K_TRLIDX].o;
 	RETURN_(new_Iterator(ctx, O_cid(o), o, NULL));
@@ -171,7 +171,7 @@ static TCAST Object_Iterator(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## mapper Iterator Array!;
 
-static TCAST Iterator_Array(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST Iterator_Array(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	KNH_TODO("Iterator_Array");
 //	knh_Iterator_t *it = sfp[K_TRLIDX].it;
@@ -189,7 +189,7 @@ static TCAST Iterator_Array(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## mapper Bytes InputStream;
 
-static TCAST Bytes_InputStream(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST Bytes_InputStream(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = (knh_Bytes_t*)sfp[K_TRLIDX].o;
 	RETURN_(new_BytesInputStream(ctx, ba));

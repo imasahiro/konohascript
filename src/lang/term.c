@@ -3366,7 +3366,7 @@ knh_Stmt_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, knh_uline_t uline)
 	END_LOCAL(ctx, lsfp, rVALUE);
 	return rVALUE;
 }
-//
+
 ///* ------------------------------------------------------------------------ */
 //
 //static void Array_addTEXT(CTX ctx, knh_Array_t *a, knh_cwb_t *cwb)

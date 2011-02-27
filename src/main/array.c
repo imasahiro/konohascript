@@ -110,13 +110,13 @@ void knh_Array_clear(CTX ctx, knh_Array_t *a, size_t n)
 /* ------------------------------------------------------------------------ */
 /* [api] */
 
-static void Farray_getO(CTX ctx, knh_sfp_t *sfp, size_t n2, long rix)
+static void Farray_getO(CTX ctx, knh_sfp_t *sfp, size_t n2 _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	RETURN_(a->list[n2]);
 }
 
-static void Farray_getN(CTX ctx, knh_sfp_t *sfp, size_t n2, long rix)
+static void Farray_getN(CTX ctx, knh_sfp_t *sfp, size_t n2 _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	RETURNd_(a->nlist[n2]);

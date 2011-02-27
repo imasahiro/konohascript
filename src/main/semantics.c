@@ -226,7 +226,7 @@ void knh_write_floatx(CTX ctx, knh_OutputStream_t *w, knh_Semantics_t *u, knh_fl
 
 /* ------------------------------------------------------------------------ */
 
-static TCAST knh_IntX_FloatX(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST knh_IntX_FloatX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_float_t v = (knh_float_t)sfp[0].ivalue;
 	KNH_MAPPED_Float(ctx, sfp, v);
@@ -234,7 +234,7 @@ static TCAST knh_IntX_FloatX(CTX ctx, knh_sfp_t *sfp, long rix)
 
 /* ------------------------------------------------------------------------ */
 
-static TCAST knh_FloatX_IntX(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST knh_FloatX_IntX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_int_t v = (knh_int_t)sfp[0].fvalue;
 	KNH_MAPPED_Int(ctx, sfp, v);
@@ -266,7 +266,7 @@ knh_int_t knh_Semantics_getVocabIdx(CTX ctx, knh_Semantics_t *u, knh_String_t *s
 
 /* ------------------------------------------------------------------------ */
 
-static TCAST knh_IntX_Vocab(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST knh_IntX_Vocab(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Semantics_t *u = (knh_Semantics_t*)DP(sfp[1].mpr)->mapdata;
 	KNH_ASSERT(IS_Semantics(u));
@@ -275,7 +275,7 @@ static TCAST knh_IntX_Vocab(CTX ctx, knh_sfp_t *sfp, long rix)
 
 /* ------------------------------------------------------------------------ */
 
-static TCAST knh_Vocab_IntX(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST knh_Vocab_IntX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Semantics_t *u = (knh_Semantics_t*)DP(sfp[1].mpr)->mapdata;
 	KNH_ASSERT(IS_Semantics(u));
@@ -430,7 +430,7 @@ knh_DictIdx_t* new_DictIdx__Array(CTX ctx, knh_Array_t *a)
 /* ------------------------------------------------------------------------ */
 
 static
-TCAST knh_Ftmapper_vocabidx(CTX ctx, knh_sfp_t *sfp, long rix)
+TCAST knh_Ftmapper_vocabidx(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Semantics_t *u = knh_getSemantics(ctx, O_cid(sfp[0].o));
 	knh_int_t n = knh_Semantics_getVocabIdx(ctx, u, sfp[0].s);
@@ -441,7 +441,7 @@ TCAST knh_Ftmapper_vocabidx(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 
 static
-TCAST knh_Ftmapper_vocab(CTX ctx, knh_sfp_t *sfp, long rix)
+TCAST knh_Ftmapper_vocab(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Semantics_t *u = (knh_Semantics_t*)DP(sfp[1].mpr)->mapdata;
 	size_t n = (size_t)(sfp[0].ivalue - DP(u)->imin);
@@ -493,7 +493,7 @@ knh_Semantics_t* new_Vocab(CTX ctx, char *tag, knh_bytes_t urn, int base, char *
 ///* ------------------------------------------------------------------------ */
 //
 //static
-//TCAST knh_TypeMap__fdict(CTX ctx, knh_sfp_t *sfp, long rix)
+//TCAST knh_TypeMap__fdict(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	String *s = sfp[0].s;
 //	Semantics *u = knh_getSemantics(ctx, O_cid(sfp[0].o)].cspec;

@@ -60,7 +60,7 @@ static ITRNEXT knh_String_nextChar(CTX ctx, knh_sfp_t *sfp, long rtnidx)
 //## mapper String String..;
 //## method String.. String.opITR();
 
-static TCAST String_Iterator(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST String_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(new_Iterator(ctx, CLASS_String, sfp[K_SELFIDX].o, knh_String_nextChar));
 }
@@ -183,7 +183,7 @@ static knh_Iterator_t* new_ArrayIterator(CTX ctx, knh_Array_t *a)
 ////## @General mapper Range Iterator;
 ////## method T1.. Range.opITR();
 //
-//static TCAST Range_Iterator(CTX ctx, knh_sfp_t *sfp, long rix)
+//static TCAST Range_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	RETURN_(new_RangeIterator(ctx, sfp[K_SELFIDX].range));
 //}
@@ -193,7 +193,7 @@ static knh_Iterator_t* new_ArrayIterator(CTX ctx, knh_Array_t *a)
 //## @General mapper Array Iterator;
 //## method T1.. Array.opITR();
 
-static TCAST Array_Iterator(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST Array_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(new_ArrayIterator(ctx, sfp[K_SELFIDX].a));
 }
@@ -251,7 +251,7 @@ static TCAST Array_Iterator(CTX ctx, knh_sfp_t *sfp, long rix)
 //## mapper Map String..!;
 //## method String.. Map.opITR();
 
-static TCAST DictMap_String__(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST DictMap_String__(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *o = sfp[0].m;
 	knh_Iterator_t *itr = new_Iterator(ctx, CLASS_Tuple, UPCAST(o), NULL);

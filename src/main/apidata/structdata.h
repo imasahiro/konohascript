@@ -3,28 +3,28 @@
 /* ------------------------------------------------------------------------ */
 /* flag */
 
-static METHOD _String_isASCII(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD _String_isASCII(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(String_isASCII((knh_String_t*)sfp[0].o));
 }
 
-static METHOD _OutputStream_isAutoFlush(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD _OutputStream_isAutoFlush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(OutputStream_isAutoFlush((knh_OutputStream_t*)sfp[0].o));
 }
 
-static METHOD _OutputStream_setAutoFlush(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD _OutputStream_setAutoFlush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	OutputStream_setAutoFlush((knh_OutputStream_t*)sfp[0].o, sfp[1].bvalue);
 	RETURNb_(sfp[1].bvalue);
 }
 
-static METHOD _Context_isDebug(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD _Context_isDebug(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(CTX_isDebug(((sfp[0].cx)->ctx)));
 }
 
-static METHOD _Context_setDebug(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD _Context_setDebug(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	CTX_setDebug(((sfp[0].cx)->ctx), sfp[1].bvalue);
 	RETURNb_(sfp[1].bvalue);

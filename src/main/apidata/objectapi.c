@@ -40,7 +40,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 //## @Const method Class! Object.getClass();
 
-static METHOD Object_getClass(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_getClass(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(new_Type(ctx, O_cid(sfp[0].o)));
 }
@@ -48,7 +48,7 @@ static METHOD Object_getClass(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method Int Object.hashCode();
 
-static METHOD Object_hashCode(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_hashCode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_hashcode_t h = ClassTBL(O_bcid(sfp[0].o))->cspi2->hashCode(ctx, sfp);
 	RETURNi_(h);
@@ -57,7 +57,7 @@ static METHOD Object_hashCode(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const @Hidden method Boolean Object.isNull();
 
-static METHOD Object_isNull(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(IS_NULL(sfp[0].o));
 }
@@ -65,7 +65,7 @@ static METHOD Object_isNull(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const @Hidden method Boolean Object.isNotNull();
 
-static METHOD Object_isNotNull(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_isNotNull(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(IS_NOTNULL(sfp[0].o));
 }
@@ -73,7 +73,7 @@ static METHOD Object_isNotNull(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const @Virtual method String Object.getKey();
 
-static METHOD Object_getKey(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_getKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_String_t *s = ClassTBL(O_bcid(sfp[0].o))->cspi2->getkey(ctx, sfp);
 	KNH_ASSERT(IS_String(s));
@@ -83,7 +83,7 @@ static METHOD Object_getKey(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const @Hidden method This Object.copy();
 
-static METHOD Object_copy(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Object_t *src = sfp[0].o;
 	knh_class_t cid = O_cid(src);
@@ -102,7 +102,7 @@ static METHOD Object_copy(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## @Hidden method Array! Class.domain();
 //
-//static METHOD Class_domain(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD Class_domain(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	RETURN_(knh_getClassDomain(ctx, (sfp[0].c)->cid));
 //}
@@ -113,7 +113,7 @@ static METHOD Object_copy(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Method.isAbstract();
 
-static METHOD Method_isAbstract_(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Method_isAbstract_(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(Method_isAbstract(sfp[0].mtd));
 }
@@ -121,7 +121,7 @@ static METHOD Method_isAbstract_(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method String Method.getName();
 
-static METHOD Method_getName(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Method_getName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
@@ -133,7 +133,7 @@ static METHOD Method_getName(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## @Const method void Method.setTrace(Int trace);
 //
-//static METHOD Method_setTrace(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD Method_setTrace(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	
 //	knh_Method_trace(ctx, sfp[0].mtd, (int)sfp[1].ivalue);
@@ -143,7 +143,7 @@ static METHOD Method_getName(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Private method dynamic Func.invoke(dynamic x);
 
-static METHOD Func_invoke(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Func_invoke(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Func_t* fo = sfp[0].fo;
 	if(fo->baseNULL != NULL) {
@@ -156,7 +156,7 @@ static METHOD Func_invoke(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## method T1 Thunk.eval();
 //
-//static METHOD Thunk_eval(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD Thunk_eval(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	
 //	knh_Thunk_t *thk = (knh_Thunk_t*)sfp[0].o;
@@ -178,7 +178,7 @@ static METHOD Func_invoke(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## method T1 Thunk.value();
 //
-//static METHOD Thunk_value(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD Thunk_value(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Thunk_t *thk = (knh_Thunk_t*)sfp[0].o;
 //	if(Thunk_isEvaluated(thk)) {

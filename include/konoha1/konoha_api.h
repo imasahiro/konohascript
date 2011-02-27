@@ -143,7 +143,7 @@ static const knh_api2_t* getapi2(void) {
 /* DEVELOPERS API */
 knh_BasicBlock_t* new_BasicBlockLABEL(CTX ctx);
 void knh_BasicBlock_add_(CTX ctx, knh_BasicBlock_t *bb, knh_ushort_t line, knh_opline_t *op, size_t size);
-METHOD knh_Fmethod_runVM(CTX ctx, knh_sfp_t *sfp, long rix);
+METHOD knh_Fmethod_runVM(CTX ctx, knh_sfp_t *sfp _RIX);
 void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t ittype, knh_Stmt_t *stmtB, knh_Ftyping typing);
 void knh_loadScriptSystemKonohaCode(CTX ctx);
 void knh_write_vmfunc(CTX ctx, knh_OutputStream_t *w, void *f);
@@ -286,9 +286,9 @@ const knh_StreamDSPI_t* knh_getPIPEStreamDSPI(void);
 knh_StreamDSPI_t *knh_getStreamDSPI(CTX ctx, knh_bytes_t path);
 knh_QueryDSPI_t *knh_getQueryDSPI(CTX ctx, knh_bytes_t path);
 void knh_loadScriptDriver(CTX ctx);
-METHOD Bytes_getSize(CTX ctx, knh_sfp_t *sfp, long rix);
-METHOD Tuple_getSize(CTX ctx, knh_sfp_t *sfp, long rix);
-METHOD Map_getSize(CTX ctx, knh_sfp_t *sfp, long rix);
+METHOD Bytes_getSize(CTX ctx, knh_sfp_t *sfp _RIX);
+METHOD Tuple_getSize(CTX ctx, knh_sfp_t *sfp _RIX);
+METHOD Map_getSize(CTX ctx, knh_sfp_t *sfp _RIX);
 void knh_Array_grow(CTX ctx, knh_Array_t *a, size_t newsize, size_t reqsize);
 void knh_Array_clear(CTX ctx, knh_Array_t *a, size_t n);
 knh_Array_t* new_Array0(CTX ctx, size_t capacity);

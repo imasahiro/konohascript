@@ -43,7 +43,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Object.opADDR();
 
-static METHOD Object_opADDR(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_opADDR(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	void *p = NULL;
 	if(IS_Boolean(sfp[0].o)) {
@@ -58,7 +58,7 @@ static METHOD Object_opADDR(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opOF(Class c);
 
-static METHOD Object_opOF(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_opOF(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_type_t reqt = Class_tocid(sfp[1]);
 	DBG_P("cid=%s", O__(sfp[0].o));
@@ -68,7 +68,7 @@ static METHOD Object_opOF(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opEQ(dynamic value);
 
-static METHOD Object_opEQ(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_opEQ(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(knh_Object_compareTo(sfp[0].o, sfp[1].o) == 0);
 }
@@ -76,7 +76,7 @@ static METHOD Object_opEQ(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opNOTEQ(dynamic value);
 
-static METHOD Object_opNOTEQ(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_opNOTEQ(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(knh_Object_compareTo(sfp[0].o, sfp[1].o) != 0);
 }
@@ -84,7 +84,7 @@ static METHOD Object_opNOTEQ(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opLT(dynamic value);
 
-static METHOD Object_opLT(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_opLT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(knh_Object_compareTo(sfp[0].o, sfp[1].o) < 0);
 }
@@ -92,7 +92,7 @@ static METHOD Object_opLT(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opLTE(dynamic value);
 
-static METHOD Object_opLTE(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_opLTE(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(knh_Object_compareTo(sfp[0].o, sfp[1].o) <= 0);
 }
@@ -100,7 +100,7 @@ static METHOD Object_opLTE(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opGT(dynamic value);
 
-static METHOD Object_opGT(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_opGT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(knh_Object_compareTo(sfp[0].o, sfp[1].o) > 0);
 }
@@ -108,7 +108,7 @@ static METHOD Object_opGT(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opGTE(dynamic value);
 
-static METHOD Object_opGTE(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_opGTE(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(knh_Object_compareTo(sfp[0].o, sfp[1].o) >= 0);
 }
@@ -116,7 +116,7 @@ static METHOD Object_opGTE(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Int.opEQ(Int value);
 
-static METHOD Int_opEQ(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opEQ(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].ivalue == sfp[1].ivalue);
 }
@@ -124,7 +124,7 @@ static METHOD Int_opEQ(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const  method Boolean Int.opNOTEQ(Int value);
 
-static METHOD Int_opNOTEQ(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opNOTEQ(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].ivalue != sfp[1].ivalue);
 }
@@ -132,7 +132,7 @@ static METHOD Int_opNOTEQ(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Int.opLT(Int value);
 
-static METHOD Int_opLT(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opLT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].ivalue < sfp[1].ivalue);
 }
@@ -140,7 +140,7 @@ static METHOD Int_opLT(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Int.opLTE(Int value);
 
-static METHOD Int_opLTE(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opLTE(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].ivalue <= sfp[1].ivalue);
 }
@@ -148,7 +148,7 @@ static METHOD Int_opLTE(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Int.opGT(Int value);
 
-static METHOD Int_opGT(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opGT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].ivalue > sfp[1].ivalue);
 }
@@ -156,7 +156,7 @@ static METHOD Int_opGT(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Int.opGTE(Int value);
 
-static METHOD Int_opGTE(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opGTE(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].ivalue >= sfp[1].ivalue);
 }
@@ -164,7 +164,7 @@ static METHOD Int_opGTE(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Float.opEQ(Float value);
 
-static METHOD Float_opEQ(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float_opEQ(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].fvalue == sfp[1].fvalue);
 }
@@ -172,7 +172,7 @@ static METHOD Float_opEQ(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Float.opNOTEQ(Float value);
 
-static METHOD Float_opNOTEQ(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float_opNOTEQ(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].fvalue != sfp[1].fvalue);
 }
@@ -180,7 +180,7 @@ static METHOD Float_opNOTEQ(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Float.opLT(Float! value);
 
-static METHOD Float_opLT(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float_opLT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].fvalue < sfp[1].fvalue);
 }
@@ -188,7 +188,7 @@ static METHOD Float_opLT(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Float.opLTE(Float! value);
 
-static METHOD Float_opLTE(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float_opLTE(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].fvalue <= sfp[1].fvalue);
 }
@@ -196,7 +196,7 @@ static METHOD Float_opLTE(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Float.opGT(Float! value);
 
-static METHOD Float_opGT(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float_opGT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].fvalue > sfp[1].fvalue);
 }
@@ -204,7 +204,7 @@ static METHOD Float_opGT(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Float.opGTE(Float! value);
 
-static METHOD Float_opGTE(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float_opGTE(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].fvalue >= sfp[1].fvalue);
 }
@@ -215,7 +215,7 @@ static METHOD Float_opGTE(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean String.opHAS(String s);
 
-static METHOD String_opHAS(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(knh_bytes_indexOf(S_tobytes(sfp[0].s), S_tobytes(sfp[1].s)) != -1);
 }
@@ -223,7 +223,7 @@ static METHOD String_opHAS(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## method Boolean Range.opHAS(dynamic v);
 //
-//static METHOD Range_opHAS(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD Range_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	int res = 0/*NotFound*/;
 //	knh_Range_t *o = sfp[0].range;
@@ -254,7 +254,7 @@ static METHOD String_opHAS(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method Boolean Array.opHAS(dynamic v);
 
-static METHOD Array_opHAS(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = (knh_Array_t*)sfp[0].o;
 	size_t i, res = 0/*NotFound*/;
@@ -277,7 +277,7 @@ static METHOD Array_opHAS(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## method Boolean Tuple.opHAS(dynamic v);
 
-//static METHOD Tuple_opHAS(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD Tuple_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	if(Tuple_isTriple(sfp[0].tuple)) {
 //		knh_Tuple_t *t = sfp[0].tuple;
@@ -299,7 +299,7 @@ static METHOD Array_opHAS(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opIS(dynamic v);
 
-static METHOD Object_opIS(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_opIS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 //	knh_class_t scid = O_cid(sfp[0].o);
 //	knh_class_t tcid = O_cid(sfp[1].o);
@@ -336,7 +336,7 @@ static METHOD Object_opIS(CTX ctx, knh_sfp_t *sfp, long rix)
 
 //## @Const method Int Int.opADD(Int v);
 
-static METHOD Int_opADD(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opADD(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(sfp[0].ivalue + sfp[1].ivalue);
 }
@@ -344,7 +344,7 @@ static METHOD Int_opADD(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opNEG();
 
-static METHOD Int_opNEG(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opNEG(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(-(sfp[0].ivalue));
 }
@@ -352,7 +352,7 @@ static METHOD Int_opNEG(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opSUB(Int n);
 
-static METHOD Int_opSUB(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opSUB(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(sfp[0].ivalue - sfp[1].ivalue);
 }
@@ -360,7 +360,7 @@ static METHOD Int_opSUB(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opMUL(Int n);
 
-static METHOD Int_opMUL(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opMUL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(sfp[0].ivalue * sfp[1].ivalue);
 }
@@ -368,7 +368,7 @@ static METHOD Int_opMUL(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opDIV(Int n);
 
-static METHOD Int_opDIV(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opDIV(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	SYSLOG_iZERODIV(ctx, sfp, sfp[1].ivalue);
 	RETURNi_(sfp[0].ivalue / sfp[1].ivalue);
@@ -377,7 +377,7 @@ static METHOD Int_opDIV(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opMOD(Int n);
 
-static METHOD Int_opMOD(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opMOD(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	SYSLOG_iZERODIV(ctx, sfp, sfp[1].ivalue);
 	RETURNi_(sfp[0].ivalue % sfp[1].ivalue);
@@ -387,7 +387,7 @@ static METHOD Int_opMOD(CTX ctx, knh_sfp_t *sfp, long rix)
 /* [Float] */
 //## @Const method Float! Float.opADD(Float! v);
 
-static METHOD Float_opADD(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float_opADD(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(sfp[0].fvalue + sfp[1].fvalue);
 }
@@ -395,7 +395,7 @@ static METHOD Float_opADD(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Float! Float.opNEG();
 
-static METHOD Float_opNEG(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float_opNEG(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(-(sfp[0].fvalue));
 }
@@ -403,7 +403,7 @@ static METHOD Float_opNEG(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Float! Float.opSUB(Float! n);
 
-static METHOD Float_opSUB(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float_opSUB(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(sfp[0].fvalue - sfp[1].fvalue);
 }
@@ -411,7 +411,7 @@ static METHOD Float_opSUB(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Float! Float.opMUL(Float! n);
 
-static METHOD Float_opMUL(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float_opMUL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(sfp[0].fvalue * sfp[1].fvalue);
 }
@@ -419,7 +419,7 @@ static METHOD Float_opMUL(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Float! Float.opDIV(Float! n);
 
-static METHOD Float_opDIV(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float_opDIV(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	SYSLOG_fZERODIV(ctx, sfp, sfp[1].fvalue);
 	RETURNf_(sfp[0].fvalue / sfp[1].fvalue);
@@ -428,7 +428,7 @@ static METHOD Float_opDIV(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method String String.opSUB(String s);
 
-static METHOD String_opSUB(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_opSUB(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t base = S_tobytes(sfp[0].s);
 	knh_bytes_t t = S_tobytes(sfp[1].s);
@@ -467,7 +467,7 @@ static METHOD String_opSUB(CTX ctx, knh_sfp_t *sfp, long rix)
 //## method dynamic dynamic.opMOD(dynamic value);
 //## method dynamic dynamic.opNEG();
 
-static METHOD dynamic_opADD(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD dynamic_opADD(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
 	mtd = ClassTBL_getMethod(ctx, O_cTBL(sfp[0].o), (mtd)->mn);
@@ -482,7 +482,7 @@ static METHOD dynamic_opADD(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Boolean.opNOT();
 
-static METHOD Boolean_opNOT(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Boolean_opNOT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(!sfp[0].bvalue);
 }
@@ -490,7 +490,7 @@ static METHOD Boolean_opNOT(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opLAND(Int n, ...);
 
-static METHOD Int_opLAND(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opLAND(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	size_t i, ac = knh_stack_argc(ctx, sfp);
 	knh_int_t n = sfp[0].ivalue;
@@ -503,7 +503,7 @@ static METHOD Int_opLAND(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opLOR(Int n, ...);
 
-static METHOD Int_opLOR(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opLOR(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	size_t i, ac = knh_stack_argc(ctx, sfp);
 	knh_int_t n = sfp[0].ivalue;
@@ -516,7 +516,7 @@ static METHOD Int_opLOR(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opLXOR(Int n);
 
-static METHOD Int_opLXOR(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opLXOR(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(sfp[0].ivalue ^ sfp[1].ivalue);
 }
@@ -524,7 +524,7 @@ static METHOD Int_opLXOR(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opLNOT();
 
-static METHOD Int_opLNOT(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opLNOT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(~(sfp[0].ivalue));
 }
@@ -532,7 +532,7 @@ static METHOD Int_opLNOT(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opLSFT(Int n);
 
-static METHOD Int_opLSFT(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opLSFT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(sfp[0].ivalue << sfp[1].ivalue);
 }
@@ -540,7 +540,7 @@ static METHOD Int_opLSFT(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opRSFT(Int n);
 
-static METHOD Int_opRSFT(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_opRSFT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(sfp[0].ivalue >> sfp[1].ivalue);
 }
@@ -552,7 +552,7 @@ static METHOD Int_opRSFT(CTX ctx, knh_sfp_t *sfp, long rix)
 //## method Int Bytes.getSize();
 //## method Int Array.getSize();
 
-METHOD Bytes_getSize(CTX ctx, knh_sfp_t *sfp, long rix)
+METHOD Bytes_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	//fprintf(stderr, "** rix=%ld sfp[rix]=%p\n", rix, sfp + rix);
 	RETURNi_((sfp[0].ba)->bu.len);
@@ -561,7 +561,7 @@ METHOD Bytes_getSize(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method Int Tuple.getSize();
 
-METHOD Tuple_getSize(CTX ctx, knh_sfp_t *sfp, long rix)
+METHOD Tuple_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(O_cTBL(sfp[0].o)->cparam->psize);
 }
@@ -569,7 +569,7 @@ METHOD Tuple_getSize(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method @Const Int String.getSize();
 
-static METHOD String_getSize(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	size_t size = IS_bString(sfp[0].s) ? S_size(sfp[0].s) : 0;
 	if(!String_isASCII(sfp[0].s)) {
@@ -580,7 +580,7 @@ static METHOD String_getSize(CTX ctx, knh_sfp_t *sfp, long rix)
 
 /* ------------------------------------------------------------------------ */
 //## method Int Map.getSize();
-METHOD Map_getSize(CTX ctx, knh_sfp_t *sfp, long rix)
+METHOD Map_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
 	RETURNi_(m->dspi->size(ctx, m->map));
@@ -589,7 +589,7 @@ METHOD Map_getSize(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## method Int Tuple.getSize();
 //
-//static METHOD Tuple_getSize(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD Tuple_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	size_t size = (IS_NULL(sfp[0].o)) ? 0 : 2;
 //	if(!Tuple_isTriple(sfp[0].tuple)) size = (sfp[0].tuple)->size;
@@ -602,7 +602,7 @@ METHOD Map_getSize(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method Int Bytes.get(Int n);
 
-static METHOD Bytes_get(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Bytes_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[0].ba;
 	size_t n2 = knh_array_index(ctx, sfp, Int_to(size_t, sfp[1]), ba->bu.len);
@@ -612,7 +612,7 @@ static METHOD Bytes_get(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method Int Bytes.set(Int n, Int c);
 
-static METHOD Bytes_set(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Bytes_set(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[0].ba;
 	size_t n2 = knh_array_index(ctx, sfp, Int_to(size_t, sfp[1]), ba->bu.len);
@@ -623,7 +623,7 @@ static METHOD Bytes_set(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Bytes.setAll(Int c);
 
-static METHOD Bytes_setAll(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Bytes_setAll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[0].ba;
 	size_t i, n = Int_to(size_t, sfp[1]);
@@ -636,7 +636,7 @@ static METHOD Bytes_setAll(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method String String.get(Int n);
 
-static METHOD String_get(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t base = S_tobytes(sfp[0].s);
 	knh_String_t *s;
@@ -657,7 +657,7 @@ static METHOD String_get(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## method dynamic Tuple.get(Int n);
 //
-//static METHOD Tuple_get(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD Tuple_get(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	if(Tuple_isTriple(sfp[0].tuple)) {
 //		Object *v = KNH_NULL;
@@ -719,7 +719,7 @@ static knh_Bytes_t *new_BytesRANGE(CTX ctx, knh_Bytes_t *ba, size_t s, size_t e)
 /* ------------------------------------------------------------------------ */
 //## method Bytes Bytes.opUNTIL(Int s, Int e);
 
-static METHOD Bytes_opUNTIL(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Bytes_opUNTIL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	size_t s, e;
 	_rangeUNTIL(ctx, sfp, (sfp[0].ba)->bu.len, &s, &e);
@@ -729,7 +729,7 @@ static METHOD Bytes_opUNTIL(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method Bytes Bytes.opTO(Int s, Int e);
 
-static METHOD Bytes_opTO(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Bytes_opTO(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	size_t s, e;
 	_rangeTO(ctx, sfp, (sfp[0].ba)->bu.len, &s, &e);
@@ -739,7 +739,7 @@ static METHOD Bytes_opTO(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method String String.substring(Int offset, Int length);
 
-static METHOD String_substring(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_substring(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_String_t *s;
 	knh_bytes_t base = S_tobytes(sfp[0].s);
@@ -765,7 +765,7 @@ static METHOD String_substring(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method String String.opUNTIL(Int s, Int e);
 
-static METHOD String_opUNTIL(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_opUNTIL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t t = S_tobytes(sfp[0].s);
 	if(sfp[2].ivalue != 0) {
@@ -787,7 +787,7 @@ static METHOD String_opUNTIL(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method String String.opTO(Int s, Int e);
 
-static METHOD String_opTO(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_opTO(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t t = S_tobytes(sfp[0].s);
 	if(sfp[2].ivalue != 0) {
@@ -837,7 +837,7 @@ static knh_Array_t *new_ArrayRANGE(CTX ctx, knh_Array_t *a, size_t s, size_t e /
 /* ------------------------------------------------------------------------ */
 //## method This Array.opUNTIL(Int s, Int e);
 
-static METHOD Array_opUNTIL(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_opUNTIL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	size_t s, e;
 	_rangeUNTIL(ctx, sfp, knh_Array_size(sfp[0].a), &s, &e);
@@ -847,7 +847,7 @@ static METHOD Array_opUNTIL(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method This Array.opTO(Int s, Int e);
 
-static METHOD Array_opTO(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_opTO(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	size_t s, e;
 	_rangeTO(ctx, sfp, knh_Array_size(sfp[0].a), &s, &e);
@@ -857,7 +857,7 @@ static METHOD Array_opTO(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## method dynamic Tuple.opEXPAND();
 //
-//static METHOD Tuple_opEXPAND(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD Tuple_opEXPAND(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	Object *res;
 //	if(Tuple_isTriple(sfp[0].tuple)) {
@@ -873,7 +873,7 @@ static METHOD Array_opTO(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## method T1! Array.opEXPAND();
 //
-//static METHOD Array_opEXPAND(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD Array_opEXPAND(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Array_t *a = sfp[0].a;
 //	RETURN_(knh_Array_n(a, knh_array_index(ctx, sfp, 0, knh_Array_size(a))));

@@ -253,7 +253,7 @@ typedef struct knh_Range_t {
 
 typedef struct {
 	size_t   (*index)(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t size);
-	void     (*get)(CTX ctx, knh_sfp_t *sfp, size_t n, long rix);
+	void     (*get)(CTX ctx, knh_sfp_t *sfp, size_t n _RIX);
 	void     (*set)(CTX ctx, struct knh_Array_t *, size_t n, knh_sfp_t *sfp);
 	void     (*add)(CTX ctx, struct knh_Array_t *, knh_sfp_t *sfp);
 } knh_ArrayAPI_t;

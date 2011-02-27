@@ -892,7 +892,7 @@ void knh_write_mn(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn)
 /* ------------------------------------------------------------------------ */
 /* [Method] */
 
-static METHOD Fmethod_abstract(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_abstract(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
 	knh_type_t rtype = knh_type_tocid(ctx, knh_ParamArray_rtype(DP(mtd)->mp), O_cid(sfp[0].o));
@@ -943,24 +943,24 @@ knh_Method_t* new_Method(CTX ctx, knh_flag_t flag, knh_class_t cid, knh_methodn_
 /* ------------------------------------------------------------------------ */
 /* [VirtualField] */
 
-static METHOD Fmethod_getter(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_getter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	RETURN_((sfp[0].ox)->fields[delta]);
 }
-static METHOD Fmethod_ngetter(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_ngetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	knh_ndata_t *data = (knh_ndata_t*)(&(sfp[0].ox->fields[delta]));
 	RETURNd_(data[0]);
 }
-static METHOD Fmethod_setter(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_setter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	KNH_SETv(ctx, (sfp[0].ox)->fields[delta], sfp[1].o);
 	RETURN_(sfp[1].o);
 }
-static METHOD Fmethod_nsetter(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_nsetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	knh_ndata_t *ndata = (knh_ndata_t*)(&((sfp[0].ox)->fields[delta]));
@@ -1037,7 +1037,7 @@ knh_Method_t* knh_ClassTBL_getTupleGetter(CTX ctx, const knh_ClassTBL_t *t, knh_
 
 /* ------------------------------------------------------------------------ */
 
-static METHOD Fmethod_NoSuchMethod(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Fmethod_NoSuchMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
 	KNH_ASSERT(IS_Method(mtd));
@@ -1304,7 +1304,7 @@ void knh_addTypeMapFunc(CTX ctx, knh_flag_t flag, knh_type_t stype, knh_type_t t
 
 /* ------------------------------------------------------------------------ */
 
-static TCAST knh_Ftmapper_null(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST knh_Ftmapper_null(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	KNH_TODO("null translator");
 //	DBG_(
@@ -1316,7 +1316,7 @@ static TCAST knh_Ftmapper_null(CTX ctx, knh_sfp_t *sfp, long rix)
 
 ///* ------------------------------------------------------------------------ */
 //
-//static TCAST knh_Ftmapper_method(CTX ctx, knh_sfp_t *sfp, long rix)
+//static TCAST knh_Ftmapper_method(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Method_t *mtd = DP(sfp[0].trlNC)->mtd;
 //	DBG_ASSERT(IS_Method(mtd));
@@ -1347,7 +1347,7 @@ KNHAPI2(knh_TypeMap_t*) new_TypeMap(CTX ctx, knh_flag_t flag, knh_class_t scid, 
 ///* ------------------------------------------------------------------------ */
 ///* [MapMap] */
 //
-//static TCAST knh_Ftmapper_mapmap(CTX ctx, knh_sfp_t *sfp, long rix)
+//static TCAST knh_Ftmapper_mapmap(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_TypeMap_t *trl = sfp[K_TRLIDX].trlNC;
 //	DBG_ASSERT(IS_TypeMap(trl));
@@ -1397,7 +1397,7 @@ static inline knh_TypeMap_t *Cache_setTypeMap(CTX ctx, knh_class_t scid, knh_cla
 
 /* ------------------------------------------------------------------------ */
 
-static TCAST Ftmap_asis(CTX ctx, knh_sfp_t *sfp, long rix)
+static TCAST Ftmap_asis(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	KNH_SWAPMOV(ctx, sfp, rix, 0);
 }

@@ -52,7 +52,7 @@ static const char *newfmt(char *buf, size_t bufsiz, knh_bytes_t fmt, const char 
 /* ------------------------------------------------------------------------ */
 //## @Const @FastCall method String Int.format(String fmt);
 
-static METHOD Int_format(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int_format(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_sfp_t *arg = ctx->esp - 1;
 	DBG_ASSERT(arg == sfp+1);
@@ -75,7 +75,7 @@ static METHOD Int_format(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const @FastCall method String Float.format(String fmt);
 
-static METHOD Float_format(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float_format(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_sfp_t *arg = ctx->esp - 1;
 	DBG_ASSERT(arg == sfp+1);
@@ -98,7 +98,7 @@ static METHOD Float_format(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const @FastCall method String String.format(String fmt);
 
-static METHOD String_format(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_format(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_sfp_t *arg = ctx->esp - 1;
 	DBG_ASSERT(arg == sfp+1);
@@ -149,7 +149,7 @@ static void knh_write_ObjectField(CTX ctx, knh_OutputStream_t *w, Object **v, si
 /* %empty */
 
 //## method void Object.%empty();
-static METHOD Object__empty(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object__empty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	if(CTX_isDebug(ctx)) {
 		KNH_SYSLOG(ctx, LOG_WARNING, "Format!!", "*%%empty(%s)", O__(sfp[1].o));
@@ -160,7 +160,7 @@ static METHOD Object__empty(CTX ctx, knh_sfp_t *sfp, long rix)
 /* %s */
 
 //## method void Object.%s();
-static METHOD Object__s(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object__s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	if(IS_NULL(sfp[1].o)) {
 		knh_write(ctx, sfp[0].w, STEXT("null"));
@@ -175,7 +175,7 @@ static METHOD Object__s(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Boolean.%s();
 
-static METHOD Boolean__s(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Boolean__s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_bool(ctx, sfp[0].w, sfp[1].bvalue);
 }
@@ -184,7 +184,7 @@ static METHOD Boolean__s(CTX ctx, knh_sfp_t *sfp, long rix)
 //## method void Int.%s();
 //## method void Int.%d();
 
-static METHOD Int__s(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int__s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_ifmt(ctx, sfp[0].w, K_INT_FMT, sfp[1].ivalue);
 }
@@ -193,7 +193,7 @@ static METHOD Int__s(CTX ctx, knh_sfp_t *sfp, long rix)
 //## method void Float.%s();
 //## method void Float.%f();
 
-static METHOD Float__s(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float__s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_ffmt(ctx, sfp[0].w, K_FLOAT_FMT, sfp[1].fvalue);
 }
@@ -237,7 +237,7 @@ static void knh_write_quote(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int q
 /* ------------------------------------------------------------------------ */
 //## method void String.%s();
 
-static METHOD String__s(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String__s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_print(ctx, sfp[0].w, S_tobytes(sfp[1].s));
 }
@@ -245,7 +245,7 @@ static METHOD String__s(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Bytes.%s();
 
-static METHOD Bytes__s(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Bytes__s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_printf(ctx, sfp[0].w, "byte[%d]", (sfp[1].ba)->bu.len);
 }
@@ -253,7 +253,7 @@ static METHOD Bytes__s(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Regex.%s();
 
-static METHOD Regex__s(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Regex__s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_quote(ctx, sfp[0].w, S_tobytes((sfp[1].re)->pattern), '/');
 }
@@ -261,7 +261,7 @@ static METHOD Regex__s(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Class.%s();
 
-static METHOD Class__s(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Class__s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_cid(ctx, sfp[0].w, knh_Class_cid(sfp[1].c));
 }
@@ -269,7 +269,7 @@ static METHOD Class__s(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Method.%s();
 
-static METHOD Method__s(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Method__s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_type(ctx, sfp[0].w, (sfp[1].mtd)->cid);
 	knh_putc(ctx, sfp[0].w, '.');
@@ -279,7 +279,7 @@ static METHOD Method__s(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Exception.%s();
 
-static METHOD Exception__s(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Exception__s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_text(ctx, sfp[0].w, EBI__(DP(sfp[1].e)->eid));
 	knh_write_text(ctx, sfp[0].w, "!!");
@@ -288,7 +288,7 @@ static METHOD Exception__s(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Goal.%s();
 
-static METHOD Goal__s(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Goal__s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Goal_t *g = sfp[1].goal;
 	knh_write(ctx, sfp[0].w, S_tobytes(g->type));
@@ -301,7 +301,7 @@ static METHOD Goal__s(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void UnitTest.%s();
 
-static METHOD UnitTest__s(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD UnitTest__s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_UnitTest_t *ut = (knh_UnitTest_t*)sfp[1].o;
 	knh_write_quote(ctx, sfp[0].w, S_tobytes(ut->msg), '\'');
@@ -310,7 +310,7 @@ static METHOD UnitTest__s(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Object.%k();
 
-static METHOD Object__k(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object__k(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	Object *o = sfp[1].o;
@@ -351,7 +351,7 @@ static METHOD Object__k(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Int.%k();
 
-static METHOD Int__k(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int__k(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 #if defined(K_USING_SEMANTICS)
 	knh_Semantics_t *u = knh_getSemantics(ctx, O_cid(sfp[1].o));
@@ -364,7 +364,7 @@ static METHOD Int__k(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Float.%k();
 
-static METHOD Float__k(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float__k(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 #if defined(K_USING_SEMANTICS)
 	knh_Semantics_t *u = knh_getSemantics(ctx, O_cid(sfp[1].o));
@@ -377,7 +377,7 @@ static METHOD Float__k(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void String.%k();
 
-static METHOD String__k(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String__k(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_quote(ctx, sfp[0].w, S_tobytes(sfp[1].s), '"');
 }
@@ -385,7 +385,7 @@ static METHOD String__k(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Tuple.%k();
 
-static METHOD Tuple__k(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Tuple__k(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	Object *o = sfp[1].o;
@@ -415,7 +415,7 @@ static METHOD Tuple__k(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Range.%k();
 
-static METHOD Range__k(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Range__k(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Range_t *o = sfp[1].range;
 	knh_OutputStream_t *w = sfp[0].w;
@@ -430,7 +430,7 @@ static METHOD Range__k(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Array.%k();
 
-static METHOD Array__k(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array__k(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	knh_putc(ctx, w, '[');
@@ -474,7 +474,7 @@ static METHOD Array__k(CTX ctx, knh_sfp_t *sfp, long rix)
 
 #define knh_Map_size(o) ((o)->dspi->size(ctx, o->map))
 
-static METHOD Map__k(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Map__k(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	knh_putc(ctx, w, '{');
@@ -489,7 +489,7 @@ static METHOD Map__k(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Class.%k();
 
-static METHOD Class__k(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Class__k(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_cid(ctx, sfp[0].w, ((knh_Class_t*)sfp[1].o)->type);
 }
@@ -497,7 +497,7 @@ static METHOD Class__k(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Method.%k();
 
-static METHOD Method__k(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Method__k(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *o = sfp[1].mtd;
 	knh_OutputStream_t *w = sfp[0].w;
@@ -536,7 +536,7 @@ static METHOD Method__k(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void TypeMap.%k();
 
-static METHOD TypeMap__k(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD TypeMap__k(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_TypeMap_t *o = sfp[1].trl;
 	knh_OutputStream_t *w = sfp[0].w;
@@ -548,7 +548,7 @@ static METHOD TypeMap__k(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void InputStream.%k();
 
-static METHOD InputStream__k(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD InputStream__k(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_quote(ctx, sfp[0].w, S_tobytes(DP((knh_InputStream_t*)sfp[1].o)->urn), '\'');
 }
@@ -556,7 +556,7 @@ static METHOD InputStream__k(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void OutputStream.%k();
 
-static METHOD OutputStream__k(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD OutputStream__k(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_quote(ctx, sfp[0].w, S_tobytes(DP(sfp[1].w)->urn), '\'');
 }
@@ -564,7 +564,7 @@ static METHOD OutputStream__k(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## method void dynamic.%k();
 //
-//static METHOD dynamic__k(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD dynamic__k(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	if(IS_NULL(sfp[1].o)) {
 //		knh_write(ctx, sfp[0].w, S_tobytes(TS_null));
@@ -580,7 +580,7 @@ static METHOD OutputStream__k(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Bytes.%dump();
 
-static METHOD Bytes__dump(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Bytes__dump(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[1].ba;
 	knh_OutputStream_t *w = sfp[0].w;
@@ -617,7 +617,7 @@ static METHOD Bytes__dump(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Iterator.%dump();
 
-static METHOD Iterator__dump(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Iterator__dump(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	knh_Iterator_t *it = sfp[1].it;
@@ -650,7 +650,7 @@ static METHOD Iterator__dump(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Method.%dump();
 
-static METHOD Method__dump(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Method__dump(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = sfp[1].mtd;
 	knh_OutputStream_t *w = sfp[0].w;
@@ -672,7 +672,7 @@ static METHOD Method__dump(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Script.%dump();
 
-static METHOD Script__dump(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Script__dump(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	knh_Script_t *o = sfp[1].scr;
@@ -693,7 +693,7 @@ static METHOD Script__dump(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Exception.%dump();
 
-static METHOD Exception__dump(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Exception__dump(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Exception_t *e = sfp[1].e;
 	knh_OutputStream_t *w = sfp[0].w;
@@ -733,7 +733,7 @@ static METHOD Exception__dump(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Object.%p();
 
-static METHOD Object__p(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object__p(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	void *p = NULL;
 	if(IS_bInt(sfp[1].o) || IS_bFloat(sfp[1].o)) {
@@ -751,7 +751,7 @@ static METHOD Object__p(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Int.%c();
 
-static METHOD Int__c(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int__c(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	char buf[16];
 	knh_uint_t c = (knh_uint_t) sfp[1].ivalue;
@@ -765,7 +765,7 @@ static METHOD Int__c(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Int.%u();
 
-static METHOD Int__u(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int__u(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_ifmt(ctx, sfp[0].w, K_UINT_FMT, sfp[1].ivalue);
 }
@@ -773,7 +773,7 @@ static METHOD Int__u(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Int.%f();
 
-static METHOD Int__f(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int__f(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_ffmt(ctx, sfp[0].w, K_FLOAT_FMT, (knh_float_t)sfp[1].ivalue);
 }
@@ -781,7 +781,7 @@ static METHOD Int__f(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Int.%x();
 
-static METHOD Int__x(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int__x(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_ifmt(ctx, sfp[0].w, K_INT_XFMT, sfp[1].ivalue);
 }
@@ -808,7 +808,7 @@ static void knh_write_bits(CTX ctx, knh_OutputStream_t *w, knh_uint64_t n, size_
 /* ------------------------------------------------------------------------ */
 //## method void Int.%bits();
 
-static METHOD Int__bits(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Int__bits(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_bits(ctx, sfp[0].w, sfp[1].ivalue, sizeof(knh_int_t) * 8);
 }
@@ -816,7 +816,7 @@ static METHOD Int__bits(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Float.%d();
 
-static METHOD Float__d(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float__d(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_ifmt(ctx, sfp[0].w, K_INT_FMT, (knh_int_t)sfp[1].fvalue);
 }
@@ -824,7 +824,7 @@ static METHOD Float__d(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Float.%bits();
 
-static METHOD Float__bits(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Float__bits(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_bits(ctx, sfp[0].w, sfp[1].ndata, sizeof(knh_float_t) * 8);
 }

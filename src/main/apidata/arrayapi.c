@@ -43,7 +43,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 //## method void Bytes.putc(Int char);
 
-static METHOD Bytes_putc(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Bytes_putc(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Bytes_t *o = (knh_Bytes_t*)sfp[0].o;
 	knh_Bytes_putc(ctx, o, Int_to(size_t, sfp[1]));
@@ -54,7 +54,7 @@ static METHOD Bytes_putc(CTX ctx, knh_sfp_t *sfp, long rix)
 //## method void Bytes.write(BytesIm buf, Int offset, Int length);
 //## method void Bytes.add(BytesIm buf, Int offset, Int length);
 
-static METHOD Bytes_write(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Bytes_write(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[0].ba;
 	knh_bytes_t t = BA_tobytes(sfp[1].ba);
@@ -77,7 +77,7 @@ static METHOD Bytes_write(CTX ctx, knh_sfp_t *sfp, long rix)
 //## method T1 Array.get(Int n);
 //## method T1 ArrayIm.get(Int n);
 
-static METHOD Array_get(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	size_t n2 = a->api->index(ctx, sfp, Int_to(size_t, ctx->esp[-1]), a->size);
@@ -88,7 +88,7 @@ static METHOD Array_get(CTX ctx, knh_sfp_t *sfp, long rix)
 //## @Hidden method T1 Array.get2(Int x, Int y);
 //## @Hidden method T1 ArrayIm.get2(Int x, Int y);
 
-static METHOD Array_get2(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_get2(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = a->dim;
@@ -101,7 +101,7 @@ static METHOD Array_get2(CTX ctx, knh_sfp_t *sfp, long rix)
 //## @Hidden method T1 Array.get3(Int x, Int y, Int z);
 //## @Hidden method T1 ArrayIm.get3(Int x, Int y, Int z);
 
-static METHOD Array_get3(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_get3(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = a->dim;
@@ -114,7 +114,7 @@ static METHOD Array_get3(CTX ctx, knh_sfp_t *sfp, long rix)
 //## @Hidden method T1 Array.get4(Int x, Int y, Int z, Int w);
 //## @Hidden method T1 ArrayIm.get4(Int x, Int y, Int z, Int w);
 
-static METHOD Array_get4(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_get4(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = a->dim;
@@ -126,7 +126,7 @@ static METHOD Array_get4(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method T1 Array.set(Int n, T1 v);
 
-static METHOD Array_set(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_set(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	knh_int_t n = sfp[1].ivalue;
@@ -138,7 +138,7 @@ static METHOD Array_set(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method T1 Array.set2(Int x, Int y, T1 v);
 
-static METHOD Array_set2(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_set2(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = (sfp[0].a)->dim;
@@ -151,7 +151,7 @@ static METHOD Array_set2(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method T1 Array.set3(Int x, Int y, Int z, T1 v);
 
-static METHOD Array_set3(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_set3(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = (sfp[0].a)->dim;
@@ -164,7 +164,7 @@ static METHOD Array_set3(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method T1 Array.set4(Int x, Int y, Int z, T1 v);
 
-static METHOD Array_set4(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_set4(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = (sfp[0].a)->dim;
@@ -177,7 +177,7 @@ static METHOD Array_set4(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method T1 Array.setAll(T1 v);
 
-static METHOD Array_setAll(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_setAll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	size_t i;
 	for(i = 0; i < (sfp[0].a)->size; i++) {
@@ -196,7 +196,7 @@ static METHOD Array_setAll(CTX ctx, knh_sfp_t *sfp, long rix)
 //## method void Array.add(T1 value, ...);
 //## method void Array.opSEND(T1 value, ...);
 
-static METHOD Array_add(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_add(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	a->api->add(ctx, a, sfp+1);
@@ -206,7 +206,7 @@ static METHOD Array_add(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Array.insert(Int n, T1 value);
 
-static METHOD Array_insert(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	size_t size, n = a->api->index(ctx, sfp, Int_to(size_t, sfp[1]), a->size);
@@ -232,7 +232,7 @@ static METHOD Array_insert(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Array.clear();
 
-static METHOD Array_clear(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_clear(ctx, sfp[0].a, 0);
 	RETURNvoid_();
@@ -257,7 +257,7 @@ static void knh_Array_remove_(CTX ctx, knh_Array_t *a, size_t n)
 /* ------------------------------------------------------------------------ */
 //## method void Array.remove(Int n);
 
-static METHOD Array_remove(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *o = (knh_Array_t*)sfp[0].o;
 	size_t n = knh_array_index(ctx, sfp, sfp[1].ivalue, o->size);
@@ -268,7 +268,7 @@ static METHOD Array_remove(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method T1! Array.pop();
 
-static METHOD Array_pop(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_pop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	if (a->size > 0) {
@@ -279,7 +279,7 @@ static METHOD Array_pop(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method Int Array.indexOf(T1 value);
 
-static METHOD Array_indexOf(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	knh_int_t res = -1;
@@ -304,7 +304,7 @@ static METHOD Array_indexOf(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method Int Array.lastIndexOf(T1 value);
 
-static METHOD Array_lastIndexOf(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_lastIndexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	long i;
@@ -347,7 +347,7 @@ static METHOD Array_lastIndexOf(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## method void Array.sort(Cmpr? cc);
 //
-//static METHOD Array_sort(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD Array_sort(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	
 //	knh_Array_t *o = sfp[0].a;
@@ -377,7 +377,7 @@ static METHOD Array_lastIndexOf(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## method void IArray.sort();
 //
-//static METHOD IArray_sort(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD IArray_sort(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	
 //	knh_IArray_t *o = (knh_IArray_t*)sfp[0].o;
@@ -399,7 +399,7 @@ static METHOD Array_lastIndexOf(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## method void FArray.sort();
 //
-//static METHOD FArray_sort(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD FArray_sort(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	
 //	knh_FArray_t *o = (knh_FArray_t*)sfp[0].o;
@@ -427,7 +427,7 @@ static inline void OArray_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m)
 /* ------------------------------------------------------------------------ */
 //## method void Array.swap(Int m, Int n);
 
-static METHOD Array_swap(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_swap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	size_t m = knh_array_index(ctx, sfp, (sfp[1].ivalue), a->size);
@@ -443,7 +443,7 @@ static METHOD Array_swap(CTX ctx, knh_sfp_t *sfp, long rix)
 
 /* ------------------------------------------------------------------------ */
 //## method void Array.shuffle();
-static METHOD Array_shuffle(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_shuffle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	size_t i;
 	knh_Array_t *a = sfp[0].a;
@@ -467,7 +467,7 @@ static METHOD Array_shuffle(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method void Array.reverse();
 
-static METHOD Array_reverse(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_reverse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	size_t i;
 	knh_Array_t *a = sfp[0].a;

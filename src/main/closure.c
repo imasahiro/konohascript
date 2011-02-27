@@ -241,7 +241,7 @@ KNHAPI2(void) knh_invoke(CTX ctx, knh_Func_t *fo, knh_sfp_t *sfp /*rtnidx*/, int
 ///* ------------------------------------------------------------------------ */
 //
 //static
-//knh_Iterator_t* new_Generator(CTX ctx, knh_sfp_t *sfp, long rix)
+//knh_Iterator_t* new_Generator(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Func_t *cc = (knh_Func_t*)new_Object_init(ctx, FLAG_Func, CLASS_Func, 0);
 //	KNH_INITv((cc)->mtd, sfp[K_MTDIDX].mtdNC);
@@ -267,7 +267,7 @@ KNHAPI2(void) knh_invoke(CTX ctx, knh_Func_t *fo, knh_sfp_t *sfp /*rtnidx*/, int
 ///* ------------------------------------------------------------------------ */
 //
 //static
-//METHOD knh_Fmethod_generator(CTX ctx, knh_sfp_t *sfp, long rix)
+//METHOD knh_Fmethod_generator(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	RETURN_(new_Generator(ctx, sfp));
 //}
@@ -423,7 +423,7 @@ KNHAPI2(void) knh_invoke(CTX ctx, knh_Func_t *fo, knh_sfp_t *sfp /*rtnidx*/, int
 // dummy_callback function is not used, but these replica use.
 //
 //// void Array.myqsort(Func c);
-//METHOD Array_myqsort(CTX ctx, knh_sfp_t *sfp, long rix)
+//METHOD Array_myqsort(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Array_t   *a  = (knh_Array_t *) sfp[0].o;
 //	knh_Func_t *cc = (knh_Func_t *) sfp[1].cc;

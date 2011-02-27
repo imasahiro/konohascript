@@ -40,7 +40,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean String.opEXISTS(NameSpace ns);
 
-static METHOD String_opEXISTS(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_opEXISTS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t path = S_tobytes(sfp[0].s);
 	DBG_ASSERT(IS_NameSpace(sfp[1].ns));
@@ -53,7 +53,7 @@ static METHOD String_opEXISTS(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Private method dynamic String.path(String qualifier, NameSpace ns, Class c);
 
-static METHOD String_path(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_path(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_class_t cid = (sfp[3].c)->cid;
 	knh_bytes_t path = S_tobytes(sfp[0].s);
@@ -101,7 +101,7 @@ static METHOD String_path(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean String.equals(String s);
 
-static METHOD String_equals(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_equals(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_((S_size(sfp[0].s) == S_size(sfp[1].s) &&
 		knh_bytes_strcmp(S_tobytes(sfp[0].s), S_tobytes(sfp[1].s)) == 0));
@@ -110,7 +110,7 @@ static METHOD String_equals(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean String.startsWith(String s);
 
-static METHOD String_startsWith(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_startsWith(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(knh_bytes_startsWith(S_tobytes(sfp[0].s), S_tobytes(sfp[1].s)));
 }
@@ -118,7 +118,7 @@ static METHOD String_startsWith(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean String.endsWith(String s);
 
-static METHOD String_endsWith(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_endsWith(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(knh_bytes_endsWith(S_tobytes(sfp[0].s), S_tobytes(sfp[1].s)));
 }
@@ -127,7 +127,7 @@ static METHOD String_endsWith(CTX ctx, knh_sfp_t *sfp, long rix)
 //## @Const method String String.concat(Object value, ...);
 //## @Const method String String.opADD(dynamic value);
 
-static METHOD String_concat(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_concat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int i, ac = knh_stack_argc(ctx, sfp);
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
@@ -146,7 +146,7 @@ static METHOD String_concat(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int String.indexOf(String s);
 
-static METHOD String_indexOf(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t base = S_tobytes(sfp[0].s);
 	if (IS_NULL(sfp[1].o)) RETURNi_(-1);
@@ -163,7 +163,7 @@ static METHOD String_indexOf(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int String.lastIndexOf(String s);
 
-static METHOD String_lastIndexOf(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_lastIndexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t base = S_tobytes(sfp[0].s);
 	if (IS_NULL(sfp[1].o)) RETURNi_(-1);
@@ -186,7 +186,7 @@ static METHOD String_lastIndexOf(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int String.search(Regex re);
 
-static METHOD String_search(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_search(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Regex_t *re = sfp[1].re;
 	if(IS_NULL(re) || S_size(re->pattern) == 0) RETURNi_(-1);
@@ -212,7 +212,7 @@ static METHOD String_search(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method String[] String.match(Regex re);
 
-static METHOD String_match(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_match(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_String_t *s0 = sfp[0].s;
 	knh_Regex_t *re = sfp[1].re;
@@ -259,7 +259,7 @@ static METHOD String_match(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method String String.replace(Regex re, String s);
 
-static METHOD String_replace(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_String_t *s0 = sfp[0].s;
 	knh_Regex_t *re = sfp[1].re;
@@ -335,7 +335,7 @@ static knh_bytes_t knh_bytes_trim(knh_bytes_t t)
 /* ------------------------------------------------------------------------ */
 //## @Const method String[] String.split(Regex re);
 
-static METHOD String_split(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_split(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_String_t *s0 = sfp[0].s;
 	knh_Regex_t *re = sfp[1].re;
@@ -369,7 +369,7 @@ static METHOD String_split(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Bytes Bytes.(Converter enc);
 
-static METHOD Bytes_convert(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Bytes_convert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
@@ -383,7 +383,7 @@ static METHOD Bytes_convert(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Bytes String.encode(StringEncoder enc);
 
-static METHOD String_encode(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_encode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
@@ -398,7 +398,7 @@ static METHOD String_encode(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method String Bytes.decode(StringDecoder c);
 
-static METHOD Bytes_toString(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Bytes_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
@@ -410,7 +410,7 @@ static METHOD Bytes_toString(CTX ctx, knh_sfp_t *sfp, long rix)
 //## @Const method String String.(StringConverter c);
 //## @Const method String String.convert(StringConverter c);
 
-static METHOD String_convert(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_convert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
@@ -423,7 +423,7 @@ static METHOD String_convert(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method String String.trim();
 
-static METHOD String_trim(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_trim(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t t = S_tobytes(sfp[0].s);
 	knh_bytes_t t2 = knh_bytes_trim(t);
@@ -437,7 +437,7 @@ static METHOD String_trim(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Regex.opHAS(String s);
 
-static METHOD Regex_opHAS(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Regex_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Regex_t *re = sfp[0].re;
 	knh_regmatch_t pmatch[1];

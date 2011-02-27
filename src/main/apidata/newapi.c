@@ -42,7 +42,7 @@ extern "C" {
 
 //## @Virtual method This Object.new();
 
-static METHOD Object_new(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(sfp[0].o);
 }
@@ -89,7 +89,7 @@ static METHOD Object_new(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method This Object.new:MAP(dynamic value, ...);
 
-static METHOD Object_newMAP(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Object_newMAP(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 //	knh_ObjectField_t *of = (knh_ObjectField_t*)sfp[0].o;
 //	knh_class_t cid = O_cid(of);
@@ -114,7 +114,7 @@ static METHOD Object_newMAP(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method Bytes Bytes.new(Int init);
 
-static METHOD Bytes_new(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Bytes_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[0].ba;
 	size_t init = sfp[1].ivalue <= 0 ? 0 : k_goodsize(Int_to(size_t, sfp[1]));
@@ -129,7 +129,7 @@ static METHOD Bytes_new(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method Bytes Bytes.new:ARRAY(Int init);
 
-static METHOD Bytes_newARRAY(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Bytes_newARRAY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	size_t size = sfp[1].ivalue <= 0 ? 0 : Int_to(size_t, sfp[1]);
 	Bytes_new(ctx, sfp, rix);
@@ -139,7 +139,7 @@ static METHOD Bytes_newARRAY(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method String String.new(Bytes buf, StringDecoder c);
 
-static METHOD String_new(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_String_t *s;
 	if(IS_NULL(sfp[2].o)) {
@@ -157,7 +157,7 @@ static METHOD String_new(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Regex Regex.new(String pattern, String option, NameSpace ns);
 
-static METHOD Regex_new(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Regex_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Regex_t *re = (knh_Regex_t*)sfp[0].o;
 	const char *ptn = ctx->api->tochar(ctx, sfp[1].s);
@@ -174,7 +174,7 @@ static METHOD Regex_new(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const mapper String Regex!;
 
-static METHOD String_Regex(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD String_Regex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Regex_t *re = new_(Regex);
 	const char *ptn = ctx->api->tochar(ctx, sfp[0].s);
@@ -190,7 +190,7 @@ static METHOD String_Regex(CTX ctx, knh_sfp_t *sfp, long rix)
 
 //## @Hidden @Const method This Tuple.new:TUPLE(dynamic value, ...);
 
-static METHOD Tuple_newTUPLE(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Tuple_newTUPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Tuple_t *tpl = (knh_Tuple_t*)sfp[0].o;
 	knh_sfp_t *v = sfp + 1;
@@ -214,7 +214,7 @@ static METHOD Tuple_newTUPLE(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Const method This Range.new:LIST(T1 start, T1 end);
 
-static METHOD Range_newLIST(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Range_newLIST(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Range_t *rng = (knh_Range_t*)sfp[0].o;
 	if(Range_isNDATA(rng)) {
@@ -233,7 +233,7 @@ static METHOD Range_newLIST(CTX ctx, knh_sfp_t *sfp, long rix)
 
 //## method This Array.new(Int initCapacity);
 
-static METHOD Array_new(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_grow(ctx, sfp[0].a, Int_to(size_t, sfp[1]), 0);
 	DBG_ASSERT((sfp[0].a)->size == 0);
@@ -243,7 +243,7 @@ static METHOD Array_new(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method This Array.new:ARRAY(Int size, ...);
 
-static METHOD Array_newARRAY(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_newARRAY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	knh_int_t init, x = 0, y = 1, z = 1, w = 1;
@@ -282,7 +282,7 @@ static METHOD Array_newARRAY(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method This Array.new:LIST(T1 value, ...);
 
-static METHOD Array_newLIST(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Array_newLIST(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	a->api->add(ctx, a, sfp+1);
@@ -292,7 +292,7 @@ static METHOD Array_newLIST(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method This Map.new(Int init, String path);
 
-static METHOD Map_new(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Map_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = (knh_Map_t *)sfp[0].o;
 	size_t init = sfp[1].ivalue <= 0 ? 0: Int_to(size_t, sfp[1]);
@@ -307,7 +307,7 @@ static METHOD Map_new(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method This Map.new:MAP(T1 value, ...);
 
-static METHOD Map_newMAP(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Map_newMAP(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *o = (knh_Map_t*)sfp[0].o;
 	knh_class_t cid = O_cid(o);
@@ -330,7 +330,7 @@ static METHOD Map_newMAP(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method Exception! Exception.new(String event, String msg, dynamic bag);
 
-static METHOD Exception_new(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Exception_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	Exception_setup(ctx, sfp[0].e, sfp[1].s, sfp[2].s, sfp[3].o);
 	RETURN_(sfp[0].e);
@@ -339,7 +339,7 @@ static METHOD Exception_new(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## method This Func.new(dynamic base, Method method);
 
-static METHOD Func_new(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Func_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Func_t   *fo = sfp[0].fo;
 	knh_Method_t *mtd = sfp[2].mtd;
@@ -354,7 +354,7 @@ static METHOD Func_new(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method Goal Goal.new(String type, String msg);
 
-static METHOD Goal_new(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Goal_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Goal_t *goal = sfp[0].goal;
 	KNH_SETv(ctx, goal->type, sfp[1].s);
@@ -365,7 +365,7 @@ static METHOD Goal_new(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Const method UnitTest UnitTest.new(String msg);
 
-static METHOD UnitTest_new(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD UnitTest_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_UnitTest_t *ut = (knh_UnitTest_t*)sfp[0].o;
 	KNH_SETv(ctx, ut->msg, sfp[1].s);

@@ -269,7 +269,7 @@ static void ClassTYPEMAP_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_
 /* ------------------------------------------------------------------------ */
 //## @Static method void Script.man(Object c, NameSpace ns);
 
-static METHOD Script_man(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD Script_man(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = KNH_STDOUT;
 	const knh_ClassTBL_t *ct = O_cTBL(sfp[1].o);
@@ -295,7 +295,7 @@ static METHOD Script_man(CTX ctx, knh_sfp_t *sfp, long rix)
 /* ------------------------------------------------------------------------ */
 //## @Static @Audit method String System.exec(String cmd, Class reqt);
 
-static METHOD System_exec(CTX ctx, knh_sfp_t *sfp, long rix)
+static METHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 #ifdef K_DEOS_TRACE
 	char cmd[1024];
@@ -332,7 +332,7 @@ static METHOD System_exec(CTX ctx, knh_sfp_t *sfp, long rix)
 ///* ------------------------------------------------------------------------ */
 ////## @Static @Audit method void Script.join();
 //
-//static METHOD Script_join(CTX ctx, knh_sfp_t *sfp, long rix)
+//static METHOD Script_join(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //
 //}

@@ -1081,19 +1081,21 @@ typedef struct {
 /* Functions */
 /* ------------------------------------------------------------------------ */
 
+#define _RIX   ,long rix
+
 #ifdef K_USING_WINTHREAD_
 #define METHOD  void CC_TYPE_FASTCALL
 #define TCAST   METHOD
 #define ITRNEXT int   CC_TYPE_FASTCALL
-typedef void (CC_TYPE_FASTCALL *knh_Fmethod)(CTX, knh_sfp_t*, long rix);
-typedef void (CC_TYPE_FASTCALL *knh_Ftmapper)(CTX, knh_sfp_t *, long rix);
+typedef void (CC_TYPE_FASTCALL *knh_Fmethod)(CTX, knh_sfp_t* _RIX);
+typedef void (CC_TYPE_FASTCALL *knh_Ftmapper)(CTX, knh_sfp_t * _RIX);
 typedef int  (CC_TYPE_FASTCALL *knh_Fitrnext)(CTX, knh_sfp_t *, long rtnidx);
 #else
 #define METHOD  void  CC_TYPE_FASTCALL
 #define TCAST   METHOD
 #define ITRNEXT int   CC_TYPE_FASTCALL
-typedef METHOD (*knh_Fmethod)(CTX, knh_sfp_t*, long rix);
-typedef TCAST (*knh_Ftmapper)(CTX, knh_sfp_t *, long rix);
+typedef METHOD (*knh_Fmethod)(CTX, knh_sfp_t* _RIX);
+typedef TCAST (*knh_Ftmapper)(CTX, knh_sfp_t * _RIX);
 typedef ITRNEXT (*knh_Fitrnext)(CTX, knh_sfp_t *, long rtnidx);
 #endif
 
