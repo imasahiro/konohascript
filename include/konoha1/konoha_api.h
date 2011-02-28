@@ -439,7 +439,7 @@ knh_bool_t knh_cwb_parentpath(CTX ctx, knh_cwb_t *cwb, char *subbuf);
 knh_bool_t knh_mkdir(CTX ctx, knh_bytes_t path);
 void knh_System_initPath(CTX ctx, knh_System_t *o);
 void *knh_dlopen(CTX ctx, int pe, const char* path);
-void *knh_cwb_dlopen(CTX ctx, knh_cwb_t *cwb, int isPERROR);
+void *knh_cwb_dlopen(CTX ctx, int pe, knh_cwb_t *cwb);
 void *knh_dlsym(CTX ctx, int pe, void* handler, const char* symbol);
 int knh_dlclose(CTX ctx, void* hdr);
 const char *knh_getSystemEncoding(void);

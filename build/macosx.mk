@@ -8,10 +8,15 @@ CFLAGS_64 = $(CFLAGS) -m64
 LDLIBS = -lpthread
 LIPO = lipo
 STRIP = strip
-PREFIX=/usr/local
 
 konoha = konoha1
+version = 1.0
+PREFIX = /usr/local
 dir    = build
+
+packages = \
+	$(dir)/lib$(konoha).dylib \
+	$(dir)/math.dylib \
 
 objs = \
 	$(dir)/asm.o \
@@ -107,19 +112,23 @@ objs_32 = \
 	$(dir)/mt19937ar_32.o \
 
 .PHONY: all
-all: $(dir)/$(konoha)_32 $(dir)/$(konoha)_64 $(dir)/lib$(konoha)_32.dylib $(dir)/lib$(konoha)_64.dylib
-	$(LIPO) -create -arch i386 $(dir)/$(konoha)_32 -arch x86_64 $(dir)/$(konoha)_64 -o $(dir)/$(konoha)
-	$(LIPO) -create -arch i386 $(dir)/lib$(konoha)_32.dylib -arch x86_64 $(dir)/$(konoha)_64 -o $(dir)/lib$(konoha).dylib
-	$(STRIP) $(dir)/$(konoha)
+all: $(dir)/$(konoha) $(packages)
+
+$(dir)/$(konoha) : $(dir)/$(konoha)_32 $(dir)/$(konoha)_64 
+	$(LIPO) -create -arch i386 $(dir)/$(konoha)_32 -arch x86_64 $(dir)/$(konoha)_64 -o $@
+	$(STRIP) $@
 
 $(dir)/$(konoha)_64 : $(objs_64) $(dir)/konoha_64.o
 	$(CC) $(CFLAGS_64) -o $@ $^ $(LDLIBS)
 	
-$(dir)/lib$(konoha)_64.dylib: $(objs_64)
-	$(CC) $(CFLAGS_64) -dynamiclib -o $@ $^ $(LDLIBS)
-
 $(dir)/$(konoha)_32 : $(objs_32) $(dir)/konoha_32.o
 	$(CC) $(CFLAGS_32) -o $@ $^ $(LDLIBS)
+
+$(dir)/lib$(konoha).dylib : $(dir)/lib$(konoha)_32.dylib $(dir)/lib$(konoha)_64.dylib
+	$(LIPO) -create -arch i386 $(dir)/lib$(konoha)_32.dylib -arch x86_64 $(dir)/lib$(konoha)_64.dylib -o $@
+
+$(dir)/lib$(konoha)_64.dylib: $(objs_64)
+	$(CC) $(CFLAGS_64) -dynamiclib -o $@ $^ $(LDLIBS)
 
 $(dir)/lib$(konoha)_32.dylib: $(objs_32)
 	$(CC) $(CFLAGS_32) -dynamiclib -o $@ $^ $(LDLIBS)
@@ -401,11 +410,36 @@ $(dir)/mt19937ar_32.o : src/ext/mt19937ar.c
 $(dir)/konoha_32.o : src/konoha.c
 	$(CC) $(CFLAGS_32) -c $^ -o $@
 
+## math
+LDLIBS_libmath = -lm
+
+libmath_64 = \
+	$(dir)/math_64.o\
+
+libmath_32 = \
+	$(dir)/math_32.o\
+	
+$(dir)/math.dylib: $(dir)/math_64.dylib $(dir)/math_32.dylib
+	$(LIPO) -create -arch i386 $(dir)/math_32.dylib -arch x86_64 $(dir)/math_64.dylib -o $@
+
+$(dir)/math_64.dylib: $(libmath_64)
+	$(CC) $(CFLAGS_64) -dynamiclib -o $@ $^ $(LDLIBS_libmath)
+	
+$(dir)/math_32.dylib: $(libmath_32)
+	$(CC) $(CFLAGS_32) -dynamiclib -o $@ $^ $(LDLIBS_libmath)
+
+$(dir)/math_64.o : package/konoha.math/math.c
+	$(CC) $(CFLAGS_64) -c $^ -o $@
+	
+$(dir)/math_32.o : package/konoha.math/math.c
+	$(CC) $(CFLAGS_32) -c $^ -o $@
+
 ## install
 .PHONY: install
 install:
 	bash $(dir)/uninstall.sh $(konoha) $(PREFIX)
 	bash $(dir)/install.sh $(konoha) $(PREFIX)
+	bash $(dir)/pkginstall.sh math $(PREFIX)/konoha/package/$(version) konoha.math
 
 ## uninstall
 .PHONY: uninstall

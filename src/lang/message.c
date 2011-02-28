@@ -149,7 +149,7 @@ static knh_Token_t *Gamma_perror(CTX ctx, int pe, const char *fmt, ...)
 
 knh_Token_t* ErrorCannotOpenObjectFile(CTX ctx, knh_bytes_t path)
 {
-	return Gamma_perror(ctx, KC_ERR, "cannot open objectfile for %B", path);
+	return Gamma_perror(ctx, KC_ERR, "cannot open nativelink for %B", path);
 }
 void WarningIncompatibleObjectFile(CTX ctx, knh_bytes_t path)
 {

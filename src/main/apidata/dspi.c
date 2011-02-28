@@ -379,14 +379,14 @@ static knh_uintptr_t LIB_exists(CTX ctx, knh_bytes_t path, knh_NameSpace_t *ns)
 	}
 	knh_cwb_write(ctx, cwb, libname);
 	knh_cwb_ospath(ctx, cwb);
-	void *p = knh_cwb_dlopen(ctx, cwb, 0/*isPERROR*/);
+	void *p = knh_cwb_dlopen(ctx, LOG_DEBUG, cwb);
 	knh_uintptr_t res = PATH_unknown;
 	if(p == NULL && !knh_bytes_startsWith(libname, STEXT("lib"))) {
 		knh_cwb_clear(cwb, 0);
 		knh_cwb_write(ctx, cwb, STEXT("lib"));
 		knh_cwb_write(ctx, cwb, libname);
 		knh_cwb_ospath(ctx, cwb);
-		p = knh_cwb_dlopen(ctx, cwb, 0/*isPERROR*/);
+		p = knh_cwb_dlopen(ctx, LOG_DEBUG, cwb);
 	}
 	if(p != NULL) {
 		res = PATH_found;

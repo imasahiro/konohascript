@@ -247,7 +247,7 @@ typedef knh_intptr_t knh_data_t;
 
 /* ------------------------------------------------------------------------ */
 
-typedef const struct _knh_PackageLoaderAPI_t {
+typedef struct knh_PackageLoaderAPI_t {
 	/* global */
 	void (*loadData)(CTX, knh_data_t *, knh_ParamArray_t **);
 	void (*loadIntData)(CTX, knh_IntData_t *);
@@ -267,14 +267,9 @@ typedef struct {
 	const char *url;      /* package url */
 	const char *info;     /* package info */
 	int buildid;
-	int (*importpkg)(CTX, knh_PackageLoaderAPI_t *);
-	int (*usingpkg)(CTX, knh_PackageLoaderAPI_t *, knh_NameSpace_t *ns);
 } knh_PackageDef_t;
 
-typedef void (*knh_Fsetuppkg)(CTX, knh_PackageLoaderAPI_t *, const char *, int);
-typedef const knh_PackageDef_t* (*knh_Fopenpkg)(void);
-
-#define knh_isSelectedDSPI(c, T)   (c == NULL || strstr(c, ":" T ":") != NULL)
+typedef const knh_PackageDef_t* (*knh_Fusingpkg)(CTX, const knh_PackageLoaderAPI_t *, knh_NameSpace_t *ns);
 
 typedef struct {
 	const char *name;
@@ -283,8 +278,6 @@ typedef struct {
 } knh_ClassData_t;
 
 typedef const knh_ClassData_t* (*knh_Fclass)(void);
-
-
 
 /* ------------------------------------------------------------------------ */
 /* new version */

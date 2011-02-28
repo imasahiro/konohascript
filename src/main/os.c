@@ -670,7 +670,7 @@ void *knh_dlopen(CTX ctx, int pe, const char* path)
 	return handler;
 }
 
-void *knh_cwb_dlopen(CTX ctx, knh_cwb_t *cwb, int isPERROR)
+void *knh_cwb_dlopen(CTX ctx, int pe, knh_cwb_t *cwb)
 {
 	const char *file;
 	if(!knh_bytes_endsWith(knh_cwb_tobytes(cwb), STEXT(K_OSDLLEXT))) {

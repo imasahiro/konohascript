@@ -189,28 +189,15 @@ static knh_bool_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, knh_A
 			knh_index_t idx = knh_bytes_rindex(path, '.'); //'.'
 			if(idx > 0) path = knh_bytes_first(path, idx);
 			knh_cwb_write(ctx, cwb, path);
-			knh_cwb_ospath(ctx, cwb);
-			DP(ctx->gma)->dlhdr = knh_cwb_dlopen(ctx, cwb, 0/*isPERROR*/);
+			DP(ctx->gma)->dlhdr = knh_cwb_dlopen(ctx, LOG_NOTICE, cwb);
 			if(DP(ctx->gma)->dlhdr != NULL) {
-				knh_Fsetuppkg f2 = (knh_Fsetuppkg)knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, "init");
-				if(f2 != NULL) f2(ctx, knh_getPackageAPI(), NULL, 0/*isOVERRIDE*/);
-				goto L_RETURN;
-			}
-		}
-		knh_Stmt_toERR(ctx, stmt, ErrorCannotOpenObjectFile(ctx, path));
-	}
-	else if(S_equals(pathS, STEXT("objectlink"))) {
-		knh_uri_t uri = ULINE_uri(stmt->uline);
-		knh_bytes_t path = S_tobytes(knh_getURN(ctx, uri));
-		if(path.ustr[0] != '(' && !knh_bytes_startsWith(path, STEXT("http://"))) {
-			knh_index_t idx = knh_bytes_rindex(path, '.'); //'.'
-			if(idx > 0) path = knh_bytes_first(path, idx);
-			knh_cwb_write(ctx, cwb, path);
-			knh_cwb_ospath(ctx, cwb);
-			DP(ctx->gma)->dlhdr = knh_cwb_dlopen(ctx, cwb, 0/*isPERROR*/);
-			if(DP(ctx->gma)->dlhdr != NULL) {
-				knh_Fsetuppkg f2 = (knh_Fsetuppkg)knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, "init");
-				if(f2 != NULL) f2(ctx, knh_getPackageAPI(), NULL, 0/*isOVERRIDE*/);
+				knh_Fusingpkg f2 = (knh_Fusingpkg)knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, "setup");
+				if(f2 != NULL) {
+					const knh_PackageDef_t *pkgdef = f2(ctx, knh_getPackageAPI(), NULL);
+					if(pkgdef->buildid != K_BUILDID) {
+						DP(ctx->gma)->dlhdr = NULL;
+					}
+				}
 				goto L_RETURN;
 			}
 		}
