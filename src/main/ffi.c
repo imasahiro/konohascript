@@ -35,6 +35,12 @@
 extern "C" {
 #endif
 
+/* ------------------------------------------------------------------------ */
+
+knh_Fmethod knh_makeFmethod(CTX ctx, void *func, int argc, knh_ffiparam_t *argv)
+{
+	return NULL; /* if FAILED */
+}
 
 /* ------------------------------------------------------------------------ */
 

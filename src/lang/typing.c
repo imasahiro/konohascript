@@ -3541,11 +3541,6 @@ static knh_Stmt_t *knh_Stmt_clone(CTX ctx, knh_Stmt_t *stmt)
 	return newstmt;
 }
 
-static knh_Fmethod knh_makeFmethod(CTX ctx, void *func, int argc, knh_ffiparam_t *argv)
-{
-	return NULL; /* FAILED */
-}
-
 static void* knh_lookupLibraryFunc(CTX ctx, knh_bytes_t libfunc)
 {
 	void *cfunc = NULL;
@@ -3614,7 +3609,7 @@ static knh_bool_t set_ffiparam(CTX ctx, knh_ffiparam_t *p, knh_Method_t *mtd, kn
 	return 0;
 }
 
-static void knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmt)
+static void Method_linkFFI(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmt)
 {
 	int argc = 0;
 	knh_ffiparam_t params[16] = {};
@@ -3836,7 +3831,7 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM, knh_type_t reqt)
 	}
 	if(StmtMETHOD_isFFI(stmtM)) {
 		knh_Stmt_t *stmtD = stmtNN(stmtM, 4/*using DSL*/);
-//		knh_Method_ffi(ctx, mtd, stmtD);
+		Method_linkFFI(ctx, mtd, stmtD);
 		return knh_Stmt_done(ctx, stmtM);
 	}
 	return knh_StmtMTD_typing(ctx, stmtM, mtd, mtd_cid);
