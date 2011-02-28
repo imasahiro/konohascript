@@ -318,8 +318,6 @@ void CTX_setThrowingException(CTX ctx, knh_Exception_t *e)
 	KNH_SETv(ctx, ((knh_context_t*)ctx)->e, e);
 }
 
-
-
 /* ------------------------------------------------------------------------ */
 
 #if defined(__i386__)

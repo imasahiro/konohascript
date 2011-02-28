@@ -40,7 +40,7 @@ objs = \
 	$(dir)/runtime.o \
 	$(dir)/security.o \
 	$(dir)/semantics.o\
-	$(dir)/setjmp.o \
+	$(dir)/ffi.o \
 	$(dir)/stack.o\
 	$(dir)/stream.o \
 	$(dir)/string.o \
@@ -71,7 +71,7 @@ objs_64 = \
 	$(dir)/runtime_64.o \
 	$(dir)/security_64.o \
 	$(dir)/semantics_64.o\
-	$(dir)/setjmp_64.o \
+	$(dir)/ffi_64.o \
 	$(dir)/stack_64.o\
 	$(dir)/stream_64.o \
 	$(dir)/string_64.o \
@@ -102,7 +102,7 @@ objs_32 = \
 	$(dir)/runtime_32.o \
 	$(dir)/security_32.o \
 	$(dir)/semantics_32.o\
-	$(dir)/setjmp_32.o \
+	$(dir)/ffi_32.o \
 	$(dir)/stack_32.o\
 	$(dir)/stream_32.o \
 	$(dir)/string_32.o \
@@ -198,7 +198,7 @@ $(dir)/security.o : src/main/security.c
 $(dir)/semantics.o: src/main/semantics.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-$(dir)/setjmp.o : src/main/setjmp.c
+$(dir)/ffi.o : src/main/ffi.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 $(dir)/stack.o: src/main/stack.c
@@ -291,7 +291,7 @@ $(dir)/security_64.o : src/main/security.c
 $(dir)/semantics_64.o: src/main/semantics.c
 	$(CC) $(CFLAGS_64) -c $^ -o $@
 
-$(dir)/setjmp_64.o : src/main/setjmp.c
+$(dir)/ffi_64.o : src/main/ffi.c
 	$(CC) $(CFLAGS_64) -c $^ -o $@
 
 $(dir)/stack_64.o: src/main/stack.c
@@ -383,7 +383,7 @@ $(dir)/security_32.o : src/main/security.c
 $(dir)/semantics_32.o: src/main/semantics.c
 	$(CC) $(CFLAGS_32) -c $^ -o $@
 
-$(dir)/setjmp_32.o : src/main/setjmp.c
+$(dir)/ffi_32.o : src/main/ffi.c
 	$(CC) $(CFLAGS_32) -c $^ -o $@
 
 $(dir)/stack_32.o: src/main/stack.c
