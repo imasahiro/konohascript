@@ -442,6 +442,12 @@ typedef struct knh_ParamArray_t {
 #define knh_param_hash(h, t, fn)    (fn + (((h * 31) + t) * 7))
 #define knh_ParamArray_rget(pa, n)  knh_ParamArray_get(pa, (pa->psize) + n)
 
+typedef struct {
+	knh_type_t type;
+	knh_short_t sfpidx;
+	void *conv_func;
+} knh_ffiparam_t;  // for ffi
+
 /* ------------------------------------------------------------------------ */
 //## @Struct class Method Object;
 //## flag Method Private!Public  0 DP(%s)->flag is set * *;

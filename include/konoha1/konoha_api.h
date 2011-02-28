@@ -340,7 +340,7 @@ knh_bool_t knh_ParamArray_equalsType(knh_ParamArray_t *pa, knh_ParamArray_t *pa2
 knh_type_t knh_ParamArray_rtype(knh_ParamArray_t *pa);
 void knh_write_mn(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn);
 knh_bool_t Method_isAbstract(knh_Method_t *mtd);
-void Method_setFunc(CTX ctx, knh_Method_t *mtd, knh_Fmethod func);
+void knh_Method_setFunc(CTX ctx, knh_Method_t *mtd, knh_Fmethod func);
 void knh_Method_toAbstract(CTX ctx, knh_Method_t *mtd);
 knh_Method_t* new_Method(CTX ctx, knh_flag_t flag, knh_class_t cid, knh_methodn_t mn, knh_Fmethod func);
 knh_index_t knh_Method_indexOfGetterField(knh_Method_t *o);

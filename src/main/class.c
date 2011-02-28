@@ -914,7 +914,7 @@ knh_bool_t Method_isAbstract(knh_Method_t *mtd)
 	return (mtd->fcall_1 == Fmethod_abstract);
 }
 
-void Method_setFunc(CTX ctx, knh_Method_t *mtd, knh_Fmethod func)
+void knh_Method_setFunc(CTX ctx, knh_Method_t *mtd, knh_Fmethod func)
 {
 	func = (func == NULL) ? Fmethod_abstract : func;
 	(mtd)->fcall_1 = func;
@@ -925,7 +925,7 @@ void Method_setFunc(CTX ctx, knh_Method_t *mtd, knh_Fmethod func)
 void knh_Method_toAbstract(CTX ctx, knh_Method_t *mtd)
 {
 	KNH_SETv(ctx, DP(mtd)->kcode, KNH_NULL);
-	Method_setFunc(ctx, mtd, Fmethod_abstract);
+	knh_Method_setFunc(ctx, mtd, Fmethod_abstract);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -936,7 +936,7 @@ knh_Method_t* new_Method(CTX ctx, knh_flag_t flag, knh_class_t cid, knh_methodn_
 	DP(mtd)->flag  = flag;
 	(mtd)->cid     = cid;
 	(mtd)->mn      = mn;
-	Method_setFunc(ctx, mtd, func);
+	knh_Method_setFunc(ctx, mtd, func);
 	return mtd;
 }
 

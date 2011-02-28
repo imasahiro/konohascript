@@ -682,7 +682,7 @@ METHOD knh_Fmethod_runVM(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static void Method_threadCode(CTX ctx, knh_Method_t *mtd, knh_KonohaCode_t *kcode)
 {
-	Method_setFunc(ctx, mtd, knh_Fmethod_runVM);
+	knh_Method_setFunc(ctx, mtd, knh_Fmethod_runVM);
 	if(Method_isObjectCode(mtd)) {
 		KNH_SETv(ctx, DP(mtd)->kcode, kcode);
 	}else {

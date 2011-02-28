@@ -29,6 +29,8 @@
 #define USE_STEXT 1
 #define USE_bytes_endsWith    1
 #define USE_bytes_index       1
+#define USE_bytes_first       1
+#define USE_bytes_last        1
 #define USE_bytes_parseint    1
 #define USE_bytes_parsefloat  1
 #define USE_cwb_open          1
@@ -3518,7 +3520,7 @@ static knh_Token_t* knh_StmtMTD_typing(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *
 		knh_Fmethod func = NULL;
 		func = Gamma_loadMethodFunc(ctx, mtd_cid, (mtd)->mn, knh_StmtMETA_is(ctx, stmt, "Native"));
 		if(func != NULL) {
-			Method_setFunc(ctx, mtd, func);
+			knh_Method_setFunc(ctx, mtd, func);
 			return knh_Stmt_done(ctx, stmt);
 		}
 	}
@@ -3537,6 +3539,126 @@ static knh_Stmt_t *knh_Stmt_clone(CTX ctx, knh_Stmt_t *stmt)
 	}
 	KNH_SETv(ctx, DP(newstmt)->metaDictCaseMap, DP(stmt)->metaDictCaseMap);
 	return newstmt;
+}
+
+static knh_Fmethod knh_makeFmethod(CTX ctx, void *func, int argc, knh_ffiparam_t *argv)
+{
+	return NULL; /* FAILED */
+}
+
+static void* knh_lookupLibraryFunc(CTX ctx, knh_bytes_t libfunc)
+{
+	void *cfunc = NULL;
+	knh_index_t loc = knh_bytes_index(libfunc, ':');
+	if(loc != -1) {
+		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+		knh_bytes_t libname = knh_bytes_first(libfunc, loc);
+		knh_bytes_t funcname = knh_bytes_last(libfunc, loc+1);
+		knh_Bytes_write(ctx, cwb->ba, libname);
+		void *p = knh_cwb_dlopen(ctx, LOG_DEBUG, cwb);
+		if(p != NULL) {
+			cfunc = knh_dlsym(ctx, LOG_DEBUG, p, funcname.text);
+		}
+		knh_cwb_close(cwb);
+	}
+	return cfunc;
+}
+
+static void* knh_fficonv(CTX ctx, knh_type_t type, knh_bytes_t t)
+{
+	return NULL;
+}
+
+static void set_ffireturn(CTX ctx, knh_ffiparam_t *p, knh_Method_t *mtd, knh_Token_t *tkF)
+{
+	p->type = 	knh_ParamArray_rtype(DP(mtd)->mp);
+	p->sfpidx = -1;
+	if(tkF != NULL) {
+		p->conv_func = knh_fficonv(ctx, p->type, S_tobytes(tkF->text));
+	}
+}
+
+static knh_bool_t set_ffiparam(CTX ctx, knh_ffiparam_t *p, knh_Method_t *mtd, knh_Token_t *tkN)
+{
+	knh_Token_t *tkF = NULL;
+	if(TT_(tkN) == STT_FUNCCALL) {
+		knh_Stmt_t *stmtF = (knh_Stmt_t*)tkF;
+		tkN = tkNN(stmtF, 2);
+		tkF = tkNN(stmtF, 0);
+	}
+	if(TT_(tkN) == TT_NAME) {
+		knh_fieldn_t fn = Token_fn(ctx, tkN);
+		if(fn == FN_this) {
+			p->sfpidx = 0;
+			p->type = mtd->cid;
+			if(tkF != NULL) {
+				p->conv_func = knh_fficonv(ctx, p->type, S_tobytes(tkF->text));
+			}
+		}
+		else {
+			size_t i;
+			knh_ParamArray_t *pa = DP(mtd)->mp;
+			for(i = 0; i < pa->psize; i++) {
+				knh_param_t *mp = knh_ParamArray_get(pa, i);
+				if(mp->fn == fn) {
+					p->sfpidx = 1 + i;
+					p->type = mp->type;
+					if(tkF != NULL) {
+						p->conv_func = knh_fficonv(ctx, p->type, S_tobytes(tkF->text));
+					}
+					return 1;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+static void knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmt)
+{
+	int argc = 0;
+	knh_ffiparam_t params[16] = {};
+	knh_Token_t *tkF;
+	if(STT_(stmt) != STT_FUNCCALL) goto L_ERROR;
+	tkF = tkNN(stmt, 0);
+	DBG_P("TT=%s, '%s'", TT__(tkF->tt), S_tochar(tkF->text));
+	if(TT_(tkF) != TT_URN) {
+		set_ffireturn(ctx, params, mtd, tkF);
+		if(DP(stmt)->size != 3) {
+			goto L_ERROR;
+		}
+		argc = 1;
+		stmt = stmtNN(stmt, 2);
+		tkF = tkNN(stmt, 0);
+	}
+	if(TT_(tkF) == TT_URN) {
+		size_t i;
+		void *cfunc = knh_lookupLibraryFunc(ctx, S_tobytes(tkF->text));
+		if(cfunc == NULL) {
+			goto L_ERROR;
+		}
+		if(argc == 0) {
+			set_ffireturn(ctx, params + argc, mtd, NULL);
+			argc = 1;
+		}
+		for(i = 2; (i < DP(stmt)->size && argc < 16); i++) {
+			if(set_ffiparam(ctx, params + argc, mtd, tkNN(stmt, i))) {
+				argc++;
+			}
+			else {
+				goto L_ERROR;
+			}
+		}
+		{
+			knh_Fmethod fmethod = knh_makeFmethod(ctx, cfunc, argc, params);
+			if(fmethod != NULL) {
+				knh_Method_setFunc(ctx, mtd, fmethod);
+				return;
+			}
+		}
+	}
+	L_ERROR:;
+	DBG_P("ERROR");
 }
 
 static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM, knh_type_t reqt)
