@@ -3577,7 +3577,7 @@ static knh_bool_t set_ffiparam(CTX ctx, knh_ffiparam_t *p, knh_Method_t *mtd, kn
 {
 	knh_Token_t *tkF = NULL;
 	if(TT_(tkN) == STT_FUNCCALL) {
-		knh_Stmt_t *stmtF = (knh_Stmt_t*)tkF;
+		knh_Stmt_t *stmtF = (knh_Stmt_t*)tkN;
 		tkN = tkNN(stmtF, 2);
 		tkF = tkNN(stmtF, 0);
 	}
@@ -3613,7 +3613,7 @@ static void Method_linkFFI(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmt)
 {
 	int argc = 0;
 	knh_ffiparam_t params[16] = {};
-	knh_Token_t *tkF;
+	knh_Token_t *tkF = NULL;
 	if(STT_(stmt) != STT_FUNCCALL) goto L_ERROR;
 	tkF = tkNN(stmt, 0);
 	DBG_P("TT=%s, '%s'", TT__(tkF->tt), S_tochar(tkF->text));
