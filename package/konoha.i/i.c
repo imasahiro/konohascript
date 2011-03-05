@@ -31,86 +31,46 @@
 // **************************************************************************
 
 /* inlinelibs */
-#define USE_B
-#define USE_STEXT
-#define USE_bytes_strcmp
-#define USE_cwb_tobytes
-#define USE_cwb_size
+//#define USE_B
+//#define USE_STEXT
+//#define USE_bytes_strcmp
+//#define USE_cwb_tobytes
+//#define USE_cwb_size
 
-#include <konoha.h>
-
-#define RL_NO_COMPAT
-#include<readline/readline.h>
-#include<readline/history.h>
-#ifdef RL_VERSION_MAJOR  /* 5, or later */
-	char **completion_matches(char *, rl_compentry_func_t *);
-#endif
+#include <konoha1.h>
 
 #ifdef __cplusplus 
 extern "C" {
 #endif
 
-/* ------------------------------------------------------------------------ */
-/* shell spi */
+#ifdef _SETUP
 
-static void* shell_init(Ctx *ctx, char *msg, char *optstr)
-{
-	fputs(msg, stdout);
-	return NULL; // nostatus
-}
+//static knh_FloatData_t FloatConstData[] = {
+//	{"Math.E", M_E},
+//	{"Math.LOG2E",M_LOG2E},
+//	{"Math.LOG10E",M_LOG10E},
+//	{"Math.LN2",M_LN2},
+//	{"Math.LN10",M_LN10},
+//	{"Math.PI", M_PI},
+//	{"Math.PI_2",M_PI_2},
+//	{"Math.PI_4",M_PI_4},
+//	{"Math.SQRT2",M_SQRT2},
+//	{NULL, K_FLOAT_ZERO}
+//};
 
-static knh_bool_t shell_readstmt(Ctx *ctx, void *status, knh_cwb_t *cwb, const knh_ShellAPI_t *api)
+
+const knh_PackageDef_t* setup(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
 {
-	int line = 1;
-	while(1) {
-		char *ln = readline(line == 1 ? ">>> " : "... ");
-		int check;
-		if(ln == NULL) {
-			knh_cwb_clear(cwb, 0); return 0;
-		}
-		if(line > 1) knh_putc(ctx, cwb->ba, '\n');
-		knh_write(ctx, cwb->ba, ln, strlen(ln));
-		free(ln);
-		if((check = api->checkstmt(knh_cwb_tobytes(cwb))) == 0) break;
-		if(check < 0) {
-			fputs("(Cancelled)...\n", stdout);
-			knh_cwb_clear(cwb, 0); line = 1;
-		}
-		else {
-			line++;
-		}
+	static const knh_PackageDef_t pkgdef =
+		KNH_PKGINFO("i", "1.0", "Konoha Shell Extension", NULL);
+	if(ns == NULL) {
+		kapi->loadFloatData(ctx, FloatConstData);
 	}
-	if(knh_cwb_size(cwb) > 0) {
-		const char *p = knh_cwb_tochar(ctx, cwb);
-		add_history(p);
-	}
-	return api->command(ctx, cwb);
+	return &pkgdef;
 }
+#endif
 
-static void shell_display(Ctx *ctx, void *status, char *msg, const knh_ShellAPI_t *api)
-{
-	fputs(msg, stdout);
-}
 
-static void shell_cleanup(Ctx *ctx, void *status)
-{
-	knh_Context_setInteractive(ctx, 0);
-}
-
-static const knh_ShellSPI_t ReadlineShell = {
-	"readline",
-	shell_init, shell_readstmt,
-	shell_display, shell_cleanup,
-};
-
-KNHAPI(int) kcheck(void) { return K_BUILDID; }
-
-KNHAPI(void) init(Ctx *ctx, knh_PackageLoaderAPI_t *kapi, char *dname, int isOVERRIDE)
-{
-	if(knh_isSelectedDSPI(dname, "shell")) {
-		kapi->setShellSPI(ctx, &ReadlineShell, isOVERRIDE);
-	}
-}
 
 #ifdef __cplusplus
 }

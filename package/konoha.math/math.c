@@ -187,6 +187,8 @@ METHOD Math_atanh(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
+#ifdef _SETUP
+
 static knh_FloatData_t FloatConstData[] = {
 	{"Math.E", M_E},
 	{"Math.LOG2E",M_LOG2E},
@@ -200,14 +202,10 @@ static knh_FloatData_t FloatConstData[] = {
 	{NULL, K_FLOAT_ZERO}
 };
 
-/* ------------------------------------------------------------------------ */
 
-#ifdef _SETUP
 const knh_PackageDef_t* setup(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
 {
-	static const knh_PackageDef_t pkgdef = {
-		"math", "1.0", K_URL, "Konoha Standard Math Library", K_BUILDID,
-	};
+	static const knh_PackageDef_t pkgdef = KNH_PKGINFO("math", "1.0", "Konoha Standard Math Library", NULL);
 	if(ns == NULL) {
 		kapi->loadFloatData(ctx, FloatConstData);
 	}

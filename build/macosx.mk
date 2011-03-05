@@ -410,6 +410,30 @@ $(dir)/mt19937ar_32.o : src/ext/mt19937ar.c
 $(dir)/konoha_32.o : src/konoha.c
 	$(CC) $(CFLAGS_32) -c $^ -o $@
 
+## konoha.i interactive mode
+LDLIBS_libi = 
+
+libi_64 = \
+	$(dir)/i_64.o\
+
+libi_32 = \
+	$(dir)/i_32.o\
+	
+$(dir)/i.dylib: $(dir)/i_64.dylib $(dir)/i_32.dylib
+	$(LIPO) -create -arch i386 $(dir)/i_32.dylib -arch x86_64 $(dir)/i_64.dylib -o $@
+
+$(dir)/i_64.dylib: $(libi_64)
+	$(CC) $(CFLAGS_64) -dynamiclib -o $@ $^ $(LDLIBS_libi)
+	
+$(dir)/i_32.dylib: $(libi_32)
+	$(CC) $(CFLAGS_32) -dynamiclib -o $@ $^ $(LDLIBS_libi)
+
+$(dir)/i_64.o : package/konoha.i/i.c
+	$(CC) $(CFLAGS_64) -D_SETUP -c $^ -o $@
+	
+$(dir)/i_32.o : package/konoha.i/i.c
+	$(CC) $(CFLAGS_32) -D_SETUP -c $^ -o $@
+
 ## math
 LDLIBS_libmath = -lm
 
@@ -429,10 +453,12 @@ $(dir)/math_32.dylib: $(libmath_32)
 	$(CC) $(CFLAGS_32) -dynamiclib -o $@ $^ $(LDLIBS_libmath)
 
 $(dir)/math_64.o : package/konoha.math/math.c
-	$(CC) $(CFLAGS_64) -c $^ -o $@
+	$(CC) $(CFLAGS_64) -D_SETUP -c $^ -o $@
 	
 $(dir)/math_32.o : package/konoha.math/math.c
-	$(CC) $(CFLAGS_32) -c $^ -o $@
+	$(CC) $(CFLAGS_32) -D_SETUP -c $^ -o $@
+
+
 
 ## install
 .PHONY: install

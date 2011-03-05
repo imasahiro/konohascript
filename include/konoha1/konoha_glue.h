@@ -261,12 +261,14 @@ typedef struct knh_PackageLoaderAPI_t {
 	void (*addConverterDSPI)(CTX, const char *, knh_ConvDSPI_t*, int);
 } knh_PackageLoaderAPI_t;
 
+#define KNH_PKGINFO(NAME, VERSION, URL, INFO) {K_BUILDID, NAME, VERSION, INFO, URL}
+
 typedef struct {
+	int buildid;
 	const char *name;     /* pacakge name */
 	const char *version;  /* pacakge version*/
-	const char *url;      /* package url */
 	const char *info;     /* package info */
-	int buildid;
+	const char *url;      /* package url */
 } knh_PackageDef_t;
 
 typedef const knh_PackageDef_t* (*knh_Fusingpkg)(CTX, const knh_PackageLoaderAPI_t *, knh_NameSpace_t *ns);
