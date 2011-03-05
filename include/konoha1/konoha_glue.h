@@ -272,7 +272,8 @@ typedef struct {
 	const char *url;      /* package url */
 } knh_PackageDef_t;
 
-typedef const knh_PackageDef_t* (*knh_Fpkgsetup)(CTX, const knh_PackageLoaderAPI_t *, knh_NameSpace_t *ns);
+typedef const knh_PackageDef_t* (*knh_Fpkginit)(CTX);
+typedef void (*knh_Fpkgload)(CTX, const knh_PackageLoaderAPI_t *, knh_NameSpace_t *ns);
 
 typedef struct {
 	const char *name;

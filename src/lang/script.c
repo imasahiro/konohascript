@@ -35,6 +35,7 @@
 #define USE_bytes_index       1
 #define USE_bytes_last        1
 #define USE_bytes_index       1
+#define USE_bytes_next        1
 #define USE_bytes_rindex      1
 #define USE_bytes_equals      1
 #define USE_bytes_startsWith  1
@@ -162,67 +163,65 @@ knh_type_t knh_NameSpace_tagcid(CTX ctx, knh_NameSpace_t *o, knh_class_t cid, kn
 /* ------------------------------------------------------------------------ */
 /* [include] */
 
-//static const knh_PackageDef_t* openPackageDef(CTX ctx, void *handler, knh_bytes_t pkgpath)
-//{
-//	if(handler == NULL) return NULL;
-//	knh_Fopenpkg openpkg = (knh_Fopenpkg)knh_dlsym(ctx, LOG_INFO, handler, "openpkg");
-//	if(openpkg == NULL) return NULL;
-//	const knh_PackageDef_t *pkgdef = openpkg();
-//	if(pkgdef == NULL) return NULL;
-//	if(pkgdef->buildid != K_BUILDID) {
-//		WarningIncompatibleObjectFile(ctx, pkgpath);
-//	}
-//	pkgdef->import(ctx, knh_getPackageAPI());
-//	return pkgdef;
-//}
-
 static knh_bool_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, knh_Array_t *resultsNULL)
 {
 	int isCONTINUE = 1;
-	BEGIN_LOCAL(ctx, lsfp, 1);
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	knh_String_t *pathS = (tkNN(stmt, 0))->text;
-	if(S_equals(pathS, STEXT("nativelink"))) {
-		knh_uri_t uri = ULINE_uri(stmt->uline);
-		knh_bytes_t path = S_tobytes(knh_getURN(ctx, uri));
+	knh_bytes_t include_name = S_tobytes(tkNN(stmt, 0)->text);
+	if(DP(ctx->gma)->dlhdr != NULL && knh_bytes_startsWith(include_name, STEXT("func:"))) {
+		const char *funcname = knh_bytes_next(include_name, ':').text;
+		knh_Fpkgload pkgload = (knh_Fpkgload)knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, funcname);
+		if(pkgload != NULL) {
+			pkgload(ctx, knh_getPackageAPI(), NULL);
+		}
+		else {
+			knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "loader function", funcname));
+			isCONTINUE = 0;
+		}
+	}
+	else if(knh_bytes_strcasecmp(include_name, STEXT("nativelink")) == 0) {
+		knh_bytes_t path = S_tobytes(knh_getURN(ctx, ULINE_uri(stmt->uline)));
 		if(path.ustr[0] != '(' && !knh_bytes_startsWith(path, STEXT("http://"))) {
+			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 			knh_index_t idx = knh_bytes_rindex(path, '.'); //'.'
 			if(idx > 0) path = knh_bytes_first(path, idx);
 			knh_cwb_write(ctx, cwb, path);
 			DP(ctx->gma)->dlhdr = knh_cwb_dlopen(ctx, LOG_NOTICE, cwb);
+			knh_cwb_close(cwb);
 			if(DP(ctx->gma)->dlhdr != NULL) {
-				knh_Fpkgsetup f2 = (knh_Fpkgsetup)knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, "setup");
-				if(f2 != NULL) {
-					const knh_PackageDef_t *pkgdef = f2(ctx, knh_getPackageAPI(), NULL);
+				knh_Fpkginit pkginit = (knh_Fpkginit)knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, "init");
+				if(pkginit != NULL) {
+					const knh_PackageDef_t *pkgdef = pkginit(ctx);
 					if(pkgdef->crc32 != K_API2_CRC32) {
 						DP(ctx->gma)->dlhdr = NULL;
-						knh_Stmt_toERR(ctx, stmt, ERROR_IncompatiblePackage(ctx, path, pkgdef));
+						knh_Stmt_toERR(ctx, stmt, ERROR_IncompatiblePackage(ctx, include_name, pkgdef));
+						isCONTINUE = 0;
 					}
 				}
 				else {
 					const knh_PackageDef_t pkgdef = {};
 					DP(ctx->gma)->dlhdr = NULL;
-					knh_Stmt_toERR(ctx, stmt, ERROR_IncompatiblePackage(ctx, path, &pkgdef));
+					knh_Stmt_toERR(ctx, stmt, ERROR_IncompatiblePackage(ctx, include_name, &pkgdef));
+					isCONTINUE = 0;
 				}
 				goto L_RETURN;
 			}
+			knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "package", path.text));
+			isCONTINUE = 0;
 		}
-		knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "package", path.text));
 	}
 	else {
-		knh_bytes_t path = S_tobytes(pathS);
-		if(knh_bytes_index(path, ':') > 0) {
-			isCONTINUE = knh_loadScript(ctx, S_tobytes(pathS), reqt, resultsNULL);
+		if(knh_bytes_index(include_name, ':') > 0) {
+			isCONTINUE = knh_loadScript(ctx, include_name, reqt, resultsNULL);
 		}
 		else {
+			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 			knh_Bytes_write(ctx, cwb->ba, STEXT("script:"));
-			knh_Bytes_write(ctx, cwb->ba, path);
+			knh_Bytes_write(ctx, cwb->ba, include_name);
 			isCONTINUE = knh_loadScript(ctx, knh_cwb_tobytes(cwb), reqt, resultsNULL);
+			knh_cwb_close(cwb);
 		}
 	}
 	L_RETURN:;
-	knh_cwb_close(cwb);
-	END_LOCAL_(ctx, lsfp);
 	knh_Stmt_done(ctx, stmt);
 	return isCONTINUE;
 }

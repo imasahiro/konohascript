@@ -132,6 +132,22 @@ static inline knh_index_t knh_bytes_index(knh_bytes_t v, int ch)
 }
 #endif
 
+#ifdef USE_bytes_next
+static inline knh_bytes_t knh_bytes_next(knh_bytes_t v, int ch)
+{
+	knh_bytes_t t = {{""}, 0};
+	size_t i;
+	for(i = 0; i < v.len; i++) {
+		if(v.ustr[i] == ch) {
+			t.text = v.text + (i+1);
+			t.len = v.len - (i+1);
+			break;
+		}
+	}
+	return t;
+}
+#endif
+
 #ifdef USE_bytes_rindex
 static knh_index_t knh_bytes_rindex(knh_bytes_t v, int ch)
 {

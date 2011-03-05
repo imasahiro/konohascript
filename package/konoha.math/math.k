@@ -25,9 +25,11 @@
  *
  ****************************************************************************/
 
+include nativelink;
+
 @Singleton class Math;
 
-include nativelink;
+include func:MathCONST;
 
 @Native float Math.abs(float x);
 @Native float Math.fabs(float x);
