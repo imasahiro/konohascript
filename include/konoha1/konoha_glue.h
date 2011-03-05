@@ -265,14 +265,14 @@ typedef struct knh_PackageLoaderAPI_t {
 
 typedef struct {
 	size_t buildid;
-	size_t api2crc32;
+	size_t crc32;
 	const char *name;     /* pacakge name */
 	const char *version;  /* pacakge version*/
 	const char *info;     /* package info */
 	const char *url;      /* package url */
 } knh_PackageDef_t;
 
-typedef const knh_PackageDef_t* (*knh_Fusingpkg)(CTX, const knh_PackageLoaderAPI_t *, knh_NameSpace_t *ns);
+typedef const knh_PackageDef_t* (*knh_Fpkgsetup)(CTX, const knh_PackageLoaderAPI_t *, knh_NameSpace_t *ns);
 
 typedef struct {
 	const char *name;

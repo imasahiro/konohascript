@@ -331,7 +331,7 @@ static void *Gamma_loadFunc(CTX ctx, char *funcname, int isREQUIRED)
 		void *f = knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, (const char*)funcname);
 		if(f != NULL) return f;
 		if (isREQUIRED) {
-			WarningNotFound(ctx, _("foreign function"), funcname);
+			WARNING_NotFound(ctx, _("foreign function"), funcname);
 		}
 	}
 	return NULL;

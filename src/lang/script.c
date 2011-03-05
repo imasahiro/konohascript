@@ -191,17 +191,23 @@ static knh_bool_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, knh_A
 			knh_cwb_write(ctx, cwb, path);
 			DP(ctx->gma)->dlhdr = knh_cwb_dlopen(ctx, LOG_NOTICE, cwb);
 			if(DP(ctx->gma)->dlhdr != NULL) {
-				knh_Fusingpkg f2 = (knh_Fusingpkg)knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, "setup");
+				knh_Fpkgsetup f2 = (knh_Fpkgsetup)knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, "setup");
 				if(f2 != NULL) {
 					const knh_PackageDef_t *pkgdef = f2(ctx, knh_getPackageAPI(), NULL);
-					if(pkgdef->buildid != K_BUILDID) {
+					if(pkgdef->crc32 != K_API2_CRC32) {
 						DP(ctx->gma)->dlhdr = NULL;
+						knh_Stmt_toERR(ctx, stmt, ERROR_IncompatiblePackage(ctx, path, pkgdef));
 					}
+				}
+				else {
+					const knh_PackageDef_t pkgdef = {};
+					DP(ctx->gma)->dlhdr = NULL;
+					knh_Stmt_toERR(ctx, stmt, ERROR_IncompatiblePackage(ctx, path, &pkgdef));
 				}
 				goto L_RETURN;
 			}
 		}
-		knh_Stmt_toERR(ctx, stmt, ErrorCannotOpenObjectFile(ctx, path));
+		knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "package", path.text));
 	}
 	else {
 		knh_bytes_t path = S_tobytes(pathS);
@@ -356,7 +362,7 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 		if(TT_(tkNN(stmt, n)) == TT_OR) return 0;
 		n++;
 	}
-	knh_Stmt_toERR(ctx, stmt, ErrorNotFound(ctx, S_tobytes((tkPKG)->text)));
+	knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "package", S_tochar((tkPKG)->text)));
 	return 0;
 }
 

@@ -147,13 +147,18 @@ static knh_Token_t *Gamma_perror(CTX ctx, int pe, const char *fmt, ...)
 /* ------------------------------------------------------------------------ */
 /* script */
 
-knh_Token_t* ErrorCannotOpenObjectFile(CTX ctx, knh_bytes_t path)
+knh_Token_t* ERROR_NotFound(CTX ctx, const char *whatis, const char *t)
 {
-	return Gamma_perror(ctx, KC_ERR, "cannot open nativelink for %B", path);
+	return Gamma_perror(ctx, KC_ERR, _("%s not found %s"), whatis, t);
 }
-void WarningIncompatibleObjectFile(CTX ctx, knh_bytes_t path)
+void WARNING_NotFound(CTX ctx, const char *whatis, const char *t)
 {
-	Gamma_perror(ctx, KC_DWARN, "objectfile might be incompatible: %B", path);
+	Gamma_perror(ctx, KC_DWARN, _("%s not found %s"), whatis, t);
+}
+knh_Token_t* ERROR_IncompatiblePackage(CTX ctx, knh_bytes_t path, const knh_PackageDef_t *pkgdef)
+{
+	return Gamma_perror(ctx, KC_ERR, "Incompatible: konoha(buildid=%d, CRC32=%d), %B(buildid=%d, CRC32=%d)",
+		(int)K_BUILDID, (int)K_API2_CRC32, path, (int)pkgdef->buildid, (int)pkgdef->crc32);
 }
 knh_Token_t* ErrorOverrideName(CTX ctx, const char *oldname, const char *newname, int isOVERRIDE)
 {
@@ -166,14 +171,6 @@ knh_Token_t* ErrorRedefinedClass(CTX ctx, knh_bytes_t cname, knh_class_t cid)
 knh_Token_t* ErrorExtendingFinalClass(CTX ctx, knh_class_t cid)
 {
 	return Gamma_perror(ctx, KC_ERR, _("cannot extends final class %C"), cid);
-}
-void WarningNotFound(CTX ctx, const char *whatis, const char *t)
-{
-	Gamma_perror(ctx, KC_DWARN, _("%s not found %s"), whatis, t);
-}
-knh_Token_t* ErrorNotFound(CTX ctx, knh_bytes_t t)
-{
-	return Gamma_perror(ctx, KC_ERR, _("not found: %B"), t);
 }
 void WarningMuchBetter(CTX ctx, const char *token)
 {

@@ -25,9 +25,10 @@
  *
  ****************************************************************************/
 
+@Singleton class Math;
+
 include nativelink;
 
-@Singleton class Math;
 @Native float Math.abs(float x);
 @Native float Math.fabs(float x);
 @Native float Math.pow(float x,float y);
@@ -36,8 +37,8 @@ include nativelink;
 @Native float Math.frexp(float x,int y);
 @Native float Math.fmod(float x,float d);
 @Native float Math.ceil(float x);
-@Native float Math.round(float x);
-@Native float Math.nearbyint(float x);
+//@Native float Math.round(float x);
+//@Native float Math.nearbyint(float x);
 @Native float Math.floor(float x);
 @Native float Math.sqrt(float x);
 @Native float Math.exp(float x);
@@ -53,6 +54,6 @@ include nativelink;
 @Native float Math.sinh(float x);
 @Native float Math.cosh(float x);
 @Native float Math.tanh(float x);
-@Native float Math.asinh(float x);
-@Native float Math.acosh(float x);
+//@Native float Math.asinh(float x);
+//@Native float Math.acosh(float x);
 
