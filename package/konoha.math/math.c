@@ -202,6 +202,7 @@ static knh_FloatData_t FloatConstData[] = {
 
 /* ------------------------------------------------------------------------ */
 
+#ifdef _SETUP
 const knh_PackageDef_t* setup(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
 {
 	static const knh_PackageDef_t pkgdef = {
@@ -212,6 +213,7 @@ const knh_PackageDef_t* setup(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_N
 	}
 	return &pkgdef;
 }
+#endif
 
 #ifdef __cplusplus
 }
