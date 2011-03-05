@@ -10,25 +10,21 @@ if test $uname = "Darwin" ; then
 	libext="dylib"
 fi
 
+if [ ! -z $1 ] ; then
+	ktarget=$1
+fi
+
+if [ ! -z $2 ] ; then
+	kpath=$2
+fi
+
 echo "install ${ktarget} to ${kpath}"
-
-if [ ! \( -d ${kpath} \) ] ; then
-	echo "setup ${kpath}"
-	mkdir ${kpath}
-	mkdir ${kpath}/bin
-	mkdir ${kpath}/lib
-	mkdir ${kpath}/include
-fi
-
-if [ ! \( -d ${kpath}/include/${ktarget} \) ] ; then
-	mkdir ${kpath}/include/${ktarget}
-fi
-
 echo "copying.."
 
-cp ${build}/${ktarget} ${kpath}/bin/${ktarget}
-cp ${build}/lib${ktarget}.${libext} ${kpath}/lib/lib${ktarget}.${libext}
-cp include/${ktarget}.h ${kpath}/include/${ktarget}.h
+install -D -m 755 ${build}/${ktarget} ${kpath}/bin/${ktarget}
+install -D -m 644 ${build}/lib${ktarget}.${libext} ${kpath}/lib/lib${ktarget}.${libext}
+install -D -m 644 include/${ktarget}.h ${kpath}/include/${ktarget}.h
+install -d ${kpath}/include/${ktarget}
 cp include/${ktarget}/*.h ${kpath}/include/${ktarget}
 
 if [ -h ${kpath}/bin/konoha ] ; then

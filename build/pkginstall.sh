@@ -13,14 +13,12 @@ fi
 
 echo "pkginstall ${ktarget} to ${kpath}"
 
-echo "copying ${pkgname} .."
 
 if [ -f ${build}/${ktarget}.${libext} ] ; then
-	if [ ! \( -d ${kpath}/${pkgname} \) ] ; then
-		mkdir -p ${kpath}/${pkgname}
-	fi
+	echo "copying ${pkgname} .."
+	install -d ${kpath}/${pkgname}
 	cp ${build}/${ktarget}.${libext} ${kpath}/${pkgname}
 	cp package/${pkgname}/${ktarget}.k ${kpath}/${pkgname}
+else
+	echo "package libfile has not found : ${build}/${ktarget}.${libext}"
 fi
-
-
