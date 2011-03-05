@@ -1068,14 +1068,8 @@ typedef struct {
 	size_t pos;
 } knh_cwb_t;
 
-#define knh_cwb_tochar(ctx, cwb)      ctx->api->cwb_tochar(ctx, cwb)
-#ifdef K_EXPORTS
-#define knh_cwb_clear(cwb,len)        ctx->api->cwb_clear(cwb, cwb->pos+len)
-#define knh_cwb_close(cwb)            ctx->api->cwb_clear(cwb, cwb->pos)
-#else
 #define knh_cwb_clear(cwb,len)        knh_Bytes_clear(cwb->ba, cwb->pos+len)
 #define knh_cwb_close(cwb)            knh_Bytes_clear(cwb->ba, cwb->pos)
-#endif
 
 /* ------------------------------------------------------------------------ */
 /* Functions */

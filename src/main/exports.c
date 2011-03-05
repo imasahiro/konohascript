@@ -53,18 +53,13 @@ static void knh_setsfp(CTX ctx, knh_sfp_t *sfp, void *v)
 	sfp[0].o = o;
 }
 
-static void knh_cwb_clearAPI(knh_cwb_t *cwb, size_t n)
-{
-	knh_Bytes_clear(cwb->ba, cwb->pos + n);
-}
-
-static const char *knh_cwb_tocharAPI(CTX ctx, knh_cwb_t *cwb)
+KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb)
 {
 	return knh_Bytes_ensureZero(ctx, cwb->ba) + cwb->pos;
 }
 
 
-static knh_String_t *new_StringAPI(CTX ctx, const char *str)
+KNHAPI2(knh_String_t*) new_StringAPI(CTX ctx, const char *str)
 {
 	if(str == NULL) {
 		return TS_EMPTY;
@@ -75,56 +70,7 @@ static knh_String_t *new_StringAPI(CTX ctx, const char *str)
 	}
 }
 
-const char* knh_String_text(CTX ctx, knh_String_t *s)
-{
-//	if(s->str.ustr[s->str.len] != '\0') {
-//		knh_uchar_t *newstr = (knh_uchar_t*)KNH_MALLOC(ctx, KNH_SIZE(s->str.len+1));
-//		knh_memcpy(newstr, s->str.ustr, s->str.len);
-//		newstr[s->str.len] = '\0';
-//		s->str.ubuf = newstr;
-//		DBG_ASSERT(s->memoNULL != NULL);
-//		KNH_FINALv(ctx, s->memoNULL);
-//		s->memoNULL = NULL;
-//	}
-	return s->str.text;
-}
-
-/* ------------------------------------------------------------------------ */
-/* [RawPtr] */
-
-//static void knh_FfreeRawPtr_NOP(CTX ctx, knh_RawPtr_t *p)
-//{
-//	p->ptr = NULL;
-//	p->pfree = knh_FfreeRawPtr_NOP;
-//}
-//
-//static void knh_RawPtr_init(CTX ctx, knh_RawPtr_t *p, void *ptr, knh_FfreeRawPtr pfree)
-//{
-//	DBG_ASSERT(IS_bdynamic(p));
-//	p->ptr = ptr;
-//	if(pfree == NULL) {
-//		pfree = knh_FfreeRawPtr_NOP;
-//	}
-//	p->pfree = pfree;
-//}
-//
-//static knh_RawPtr_t* new_RawPtr(CTX ctx, void *ptr, knh_FfreeRawPtr pfree, knh_class_t cid, const char *lname)
-//{
-//	knh_RawPtr_t *p = new_(RawPtr);
-//	if(knh_class_bcid(cid) != CLASS_Tdynamic) {
-//		knh_bytes_t t = {{lname}, knh_strlen(lname)};
-//		cid = knh_getcid(ctx, t);
-//		if(cid == CLASS_unknown) {
-//			KNH_SYSLOG(ctx, LOG_WARNING, "UnknownRawPtrClass", "name=%s", lname);
-//			cid = CLASS_Tdynamic;
-//		}
-//	}
-//	p->h.cTBL = ClassTBL(cid);
-//	knh_RawPtr_init(ctx, p, ptr, pfree);
-//	return p;
-//}
-
-static knh_InputStream_t *new_InputStreamNULL(CTX ctx, knh_String_t *s, const char *mode)
+KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_String_t *s, const char *mode)
 {
 	knh_bytes_t path = S_tobytes(s);
 	knh_StreamDSPI_t *dspi = knh_getStreamDSPI(ctx, path);
@@ -137,7 +83,7 @@ static knh_InputStream_t *new_InputStreamNULL(CTX ctx, knh_String_t *s, const ch
 	return NULL;
 }
 
-static knh_OutputStream_t *new_OutputStreamNULL(CTX ctx, knh_String_t *s, const char *mode)
+KNHAPI2(knh_OutputStream_t*) new_OutputStreamNULL(CTX ctx, knh_String_t *s, const char *mode)
 {
 	knh_bytes_t path = S_tobytes(s);
 	knh_StreamDSPI_t *dspi = knh_getStreamDSPI(ctx, path);
@@ -150,49 +96,17 @@ static knh_OutputStream_t *new_OutputStreamNULL(CTX ctx, knh_String_t *s, const 
 	return NULL;
 }
 
-
-static void _putc(CTX ctx, void *p, int ch)
-{
-	knh_Bytes_t *ba = (knh_Bytes_t*)p;
-	if(p == ctx->bufw) {
-		ba = ctx->bufa;
-	}
-	if(IS_OutputStream(ba)) {
-		knh_OutputStream_t *w = (knh_OutputStream_t*)ba;
-		knh_OutputStream_putc(ctx, w, ch);
-	}
-	else if(IS_Bytes(ba)) {
-		knh_Bytes_putc(ctx, ba, ch);
-	}
-}
-
-static void _write(CTX ctx, void *p, const char *buf, size_t i)
-{
-	knh_Bytes_t *ba = (knh_Bytes_t*)p;
-	knh_bytes_t t = {{buf}, i};
-	if(p == ctx->bufw) {
-		ba = ctx->bufa;
-	}
-	if(IS_Bytes(ba)) {
-		knh_Bytes_write(ctx, ba, t);
-	}
-	else if(IS_OutputStream(ba)) {
-		knh_OutputStream_t *w = (knh_OutputStream_t*)ba;
-		knh_OutputStream_write(ctx, w, t);
-	}
-}
-
 const knh_ExportsAPI_t *knh_getExportsAPI(void)
 {
 	static knh_ExportsAPI_t exports = {
 		knh_fastmalloc, knh_fastfree, /* memory.c */
 		knh_setsfp, knh_Iterator_close,
 		knh_trace, knh_stack_perror, dbg_p, todo_p,
-		knh_cwb_clearAPI, knh_cwb_tocharAPI,
-		new_StringAPI, knh_String_text,
+//		knh_cwb_clearAPI, knh_cwb_tocharAPI,
+//		new_StringAPI, knh_String_text,
 //		new_RawPtr, knh_RawPtr_init,
-		new_InputStreamNULL, new_OutputStreamNULL,
-		_putc, _write,
+//		new_InputStreamNULL, new_OutputStreamNULL,
+//		_putc, _write,
 	};
 	return &exports;
 }

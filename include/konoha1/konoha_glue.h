@@ -50,33 +50,33 @@ typedef const struct _knh_ExportsAPI_t {
 	void  (*dbg_p)(const char*, const char*, int, const char*, ...);
 	void  (*todo_p)(const char*, const char*, int, const char*, ...);
 	// cwbbuf
-	void (*cwb_clear)(knh_cwb_t *, size_t);
-	const char* (*cwb_tochar)(CTX, knh_cwb_t *);
+//	void (*cwb_clear)(knh_cwb_t *, size_t);
+//	const char* (*cwb_tochar)(CTX, knh_cwb_t *);
 	// String
-	knh_String_t* (*new_String)(CTX, const char*);
-	const char* (*tochar)(CTX, knh_String_t*);
+//	knh_String_t* (*new_String)(CTX, const char*);
+//	const char* (*tochar)(CTX, knh_String_t*);
 //	// RawPtr
 //	knh_RawPtr_t* (*new_RawPtr)(CTX, void*, knh_FfreeRawPtr, knh_class_t, const char*);
 //	void (*RawPtr_init)(CTX, knh_RawPtr_t*, void *, knh_FfreeRawPtr);
 	// Stream
-	knh_InputStream_t* (*new_InputStreamNULL)(CTX, knh_String_t *, const char *mode);
-	knh_OutputStream_t* (*new_OutputStreamNULL)(CTX, knh_String_t *, const char *mode);
+//	knh_InputStream_t* (*new_InputStreamNULL)(CTX, knh_String_t *, const char *mode);
+//	knh_OutputStream_t* (*new_OutputStreamNULL)(CTX, knh_String_t *, const char *mode);
 	// OutputStream, Bytes
-	void (*putcAPI)(CTX, void *, int);
-	void (*writeAPI)(CTX, void *, const char *, size_t);
+//	void (*putcAPI)(CTX, void *, int);
+//	void (*writeAPI)(CTX, void *, const char *, size_t);
 } knh_ExportsAPI_t;
 
 #ifdef K_EXPORTS
 //#define knh_cwb_open(ctx, cwbbuf)   ctx->api->cwb_open(ctx, cwbbuf)
 //#define knh_cwb_clear(cwb, s)       ctx->api->cwb_clear(cwb, s)
-#define knh_cwb_tochar(ctx, cwb)    ctx->api->cwb_tochar(ctx, cwb)
+//#define knh_cwb_tochar(ctx, cwb)    ctx->api->cwb_tochar(ctx, cwb)
 //#define knh_cwb_tobytes(cwb, s)     ctx->api->cwb_clear(cwb, s)
 //#define new_String(ctx, s)          ctx->api->new_String(ctx, s)
-//#define S_tochar(s)                 ctx->api->tochar(ctx, s)
-#define new_RawPtr(ctx, p, f, cid, n)  ctx->api->new_RawPtr(ctx, p, f, cid, n)
-#define knh_RawPtr_init(ctx, rp, p, f) ctx->api->RawPtr_init(ctx, rp, p, f)
-#define new_InputStreamNULL(ctx, s, mode)  ctx->api->new_InputStreamNULL(ctx, s, mode)
-#define new_OutputStreamNULL(ctx, s, mode)  ctx->api->new_OutputStreamNULL(ctx, s, mode)
+//#define S_tochar(s)                 S_tochar(s)
+//#define new_RawPtr(ctx, p, f, cid, n)  ctx->api->new_RawPtr(ctx, p, f, cid, n)
+//#define knh_RawPtr_init(ctx, rp, p, f) ctx->api->RawPtr_init(ctx, rp, p, f)
+//#define new_InputStreamNULL(ctx, s, mode)  ctx->api->new_InputStreamNULL(ctx, s, mode)
+//#define new_OutputStreamNULL(ctx, s, mode)  ctx->api->new_OutputStreamNULL(ctx, s, mode)
 //#define knh_putc(ctx, w, ch)         ctx->api->putc(ctx, w, ch)
 //#define knh_write(ctx, w, s, len)    ctx->api->write(ctx, w, s, len)
 #endif
@@ -261,10 +261,11 @@ typedef struct knh_PackageLoaderAPI_t {
 	void (*addConverterDSPI)(CTX, const char *, knh_ConvDSPI_t*, int);
 } knh_PackageLoaderAPI_t;
 
-#define KNH_PKGINFO(NAME, VERSION, URL, INFO) {K_BUILDID, NAME, VERSION, INFO, URL}
+#define KNH_PKGINFO(NAME, VERSION, URL, INFO) {K_BUILDID, K_API2_CRC32, NAME, VERSION, INFO, URL}
 
 typedef struct {
-	int buildid;
+	size_t buildid;
+	size_t api2crc32;
 	const char *name;     /* pacakge name */
 	const char *version;  /* pacakge version*/
 	const char *info;     /* package info */
@@ -287,8 +288,8 @@ typedef const knh_ClassData_t* (*knh_Fclass)(void);
 #define Boolean_to(T, a)         ((T)a.bvalue)
 #define Int_to(T, a)             ((T)a.ivalue)
 #define Float_to(T, a)           ((T)a.fvalue)
-#define String_to(T, a)          ((T)ctx->api->tochar(ctx, a.s))
-#define StringNull_to(T, a, def) ((T)(IS_bString(a.o) ? ctx->api->tochar(ctx, a.s) : def))
+#define String_to(T, a)          ((T)S_tochar(a.s))
+#define StringNull_to(T, a, def) ((T)(IS_bString(a.o) ? S_tochar(a.s) : def))
 #define RawPtr_to(T, a)            ((T)((a.p)->ptr))
 #define RawPtrNull_to(T, a, def)   (IS_bRawPtr(a.o) ? ((T)((a.p)->ptr)) : (def))
 #define Class_tocid(a)           ((a.c)->cid)

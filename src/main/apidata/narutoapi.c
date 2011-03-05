@@ -299,9 +299,9 @@ static METHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 #ifdef K_DEOS_TRACE
 	char cmd[1024];
-	knh_snprintf(cmd, sizeof(cmd), "%s=%s %s", K_DEOS_TRACE, ctx->trace, knh_String_text(ctx, sfp[1].s));
+	knh_snprintf(cmd, sizeof(cmd), "%s=%s %s", K_DEOS_TRACE, ctx->trace, S_tochar(sfp[1].s));
 #else
-	const char *cmd = knh_String_text(ctx, sfp[1].s);
+	const char *cmd = S_tochar(sfp[1].s);
 #endif
 	KNH_SYSLOG(ctx, LOG_NOTICE, "fork", "command='%s'", cmd);
 #ifdef K_USING_POSIX_

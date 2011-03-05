@@ -160,8 +160,8 @@ static METHOD String_new(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD Regex_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Regex_t *re = (knh_Regex_t*)sfp[0].o;
-	const char *ptn = ctx->api->tochar(ctx, sfp[1].s);
-	const char *opt = IS_NULL(sfp[2].o) ? "" : ctx->api->tochar(ctx, sfp[2].s);
+	const char *ptn = S_tochar(sfp[1].s);
+	const char *opt = IS_NULL(sfp[2].o) ? "" : S_tochar(sfp[2].s);
 	KNH_SETv(ctx, re->pattern, sfp[1].s);
 	knh_NameSpace_t *ns = IS_NULL(sfp[3].ns)?knh_getGammaNameSpace(ctx):sfp[3].ns;
 	re->spi = DP(ns)->regexSPI;
@@ -177,7 +177,7 @@ static METHOD Regex_new(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD String_Regex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Regex_t *re = new_(Regex);
-	const char *ptn = ctx->api->tochar(ctx, sfp[0].s);
+	const char *ptn = S_tochar(sfp[0].s);
 	KNH_SETv(ctx, re->pattern, sfp[0].s);
 	re->reg = re->spi->regmalloc(ctx, sfp[0].s);
 	re->spi->regcomp(ctx, re->reg, ptn, 0);

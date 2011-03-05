@@ -860,7 +860,6 @@ void DictMap_set_(CTX ctx, knh_DictMap_t *m, knh_String_t *key, dynamic *v)
 	knh_sfp_t* kvsfp = ctx->esp;
 	KNH_SETv(ctx, kvsfp[0].o, key);
 	KNH_SETv(ctx, kvsfp[1].o, v);
-	knh_String_text(ctx, key);
 	m->dspi->set(ctx, m->map, kvsfp);
 }
 

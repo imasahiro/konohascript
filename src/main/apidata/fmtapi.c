@@ -105,7 +105,7 @@ static METHOD String_format(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_bytes_t fmt = S_tobytes(arg[0].s);
 	if(fmt.ustr[0] == '%' && fmt.ustr[fmt.len-1] == 's') {
 		char buf[256];
-		knh_snprintf(buf, sizeof(buf), fmt.text, ctx->api->tochar(ctx, sfp[0].s));
+		knh_snprintf(buf, sizeof(buf), fmt.text, S_tochar(sfp[0].s));
 		RETURN_(new_S(ctx, B(buf)));
 	}
 	if(fmt.len != 0) {

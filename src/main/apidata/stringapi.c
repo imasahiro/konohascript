@@ -191,7 +191,7 @@ static METHOD String_search(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Regex_t *re = sfp[1].re;
 	if(IS_NULL(re) || S_size(re->pattern) == 0) RETURNi_(-1);
 	knh_index_t loc = -1;
-	const char *str = ctx->api->tochar(ctx, sfp[0].s);  // necessary
+	const char *str = S_tochar(sfp[0].s);  // necessary
 	knh_regmatch_t pmatch[1];
 	int res = re->spi->regexec(ctx, re->reg, str, 1, pmatch, re->eflags);
 	if(res == 0) {
@@ -221,7 +221,7 @@ static METHOD String_match(CTX ctx, knh_sfp_t *sfp _RIX)
 		a = new_Array(ctx, CLASS_String, 0);
 	}
 	else {
-		const char *str = ctx->api->tochar(ctx, sfp[0].s);  // necessary
+		const char *str = S_tochar(sfp[0].s);  // necessary
 		knh_regmatch_t pmatch[K_REGEX_MATCHSIZE];
 		int res = re->spi->regexec(ctx, re->reg, str, K_REGEX_MATCHSIZE, pmatch, re->eflags);
 		a = new_Array(ctx, CLASS_String, K_REGEX_MATCHSIZE);
@@ -267,7 +267,7 @@ static METHOD String_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 	if(!IS_NULL(re) && S_size(re->pattern) > 0) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_bytes_t tos = S_tobytes(sfp[2].s);
-		const char *str = ctx->api->tochar(ctx, s0);  // necessary
+		const char *str = S_tochar(s0);  // necessary
 		const char *estr = str + S_size(s0);
 		knh_regmatch_t pmatch[K_REGEX_MATCHSIZE];
 		while (str < estr) {
@@ -345,7 +345,7 @@ static METHOD String_split(CTX ctx, knh_sfp_t *sfp _RIX)
 		a = knh_String_toCharArray(ctx, s0, 0);
 	}
 	else {
-		const char *str = ctx->api->tochar(ctx, s0);  // necessary
+		const char *str = S_tochar(s0);  // necessary
 		const char *estr = str + S_size(s0);
 		knh_regmatch_t pmatch[K_REGEX_MATCHSIZE];
 		a = new_Array(ctx, CLASS_String, 0);
@@ -441,7 +441,7 @@ static METHOD Regex_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Regex_t *re = sfp[0].re;
 	knh_regmatch_t pmatch[1];
-	const char *str = ctx->api->tochar(ctx, sfp[1].s);
+	const char *str = S_tochar(sfp[1].s);
 	int res = re->spi->regexec(ctx, re->reg, str, 1, pmatch, re->eflags);
 	RETURNb_(res == 0);
 }

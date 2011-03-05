@@ -297,11 +297,11 @@ static knh_bool_t FILE_isTyped(CTX ctx, knh_class_t cid)
 static knh_Object_t* FILE_newObjectNULL(CTX ctx, knh_class_t cid, knh_String_t *s, knh_NameSpace_t *ns)
 {
 	if(cid == CLASS_InputStream) {
-		knh_InputStream_t *in = ctx->api->new_InputStreamNULL(ctx, s, "r");
+		knh_InputStream_t *in = new_InputStreamNULL(ctx, s, "r");
 		return (knh_Object_t*)in;
 	}
 	if(cid == CLASS_OutputStream) {
-		knh_OutputStream_t *out = ctx->api->new_OutputStreamNULL(ctx, s, "a");
+		knh_OutputStream_t *out = new_OutputStreamNULL(ctx, s, "a");
 		return (knh_Object_t*)out;
 	}
 	return NULL;
