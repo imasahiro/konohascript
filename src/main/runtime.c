@@ -185,7 +185,7 @@ static void opt_a(CTX ctx, int mode, const char *optstr)
 #endif
 }
 
-knh_bool_t knh_isSystemVerbose(void)
+KNHAPI2(knh_bool_t) knh_isSystemVerbose(void)
 {
 	return systemVerbose;
 }

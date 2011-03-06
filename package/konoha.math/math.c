@@ -196,8 +196,8 @@ static knh_FloatData_t FloatConstData[] = {
 	{"Math.LN2",M_LN2},
 	{"Math.LN10",M_LN10},
 	{"Math.PI", M_PI},
-	{"Math.PI_2",M_PI_2},
-	{"Math.PI_4",M_PI_4},
+//	{"Math.PI2",M_PI_2},
+//	{"Math.PI4",M_PI_4},
 	{"Math.SQRT2",M_SQRT2},
 	{NULL, K_FLOAT_ZERO}
 };

@@ -12,12 +12,21 @@ KNHAPI2(knh_Array_t*) new_Array(CTX ctx, knh_class_t p1, size_t capacity);
 KNHAPI2(void) knh_Array_add_(CTX ctx, knh_Array_t *a, knh_Object_t *value);
 KNHAPI2(void) knh_Array_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m);
 KNHAPI2(knh_Iterator_t*) new_Iterator(CTX ctx, knh_class_t p1, knh_Object_t *source, knh_Fitrnext fnext);
+KNHAPI2(void) knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid);
+KNHAPI2(void) knh_write_type(CTX ctx, knh_OutputStream_t *w, knh_type_t type);
+KNHAPI2(knh_class_t) knh_type_tocid(CTX ctx, knh_type_t ptype, knh_class_t this_cid);
+KNHAPI2(knh_param_t*) knh_ParamArray_get(knh_ParamArray_t *pa, size_t n);
+KNHAPI2(knh_type_t) knh_ParamArray_rtype(knh_ParamArray_t *pa);
+KNHAPI2(void) knh_write_mn(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn);
+KNHAPI2(knh_bool_t) Method_isAbstract(knh_Method_t *mtd);
 KNHAPI2(void) knh_addTypeMap(CTX ctx, knh_TypeMap_t *trl);
 KNHAPI2(knh_TypeMap_t*) new_TypeMap(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftmapper ftcast);
 KNHAPI2(void) knh_invoke(CTX ctx, knh_Func_t *fo, knh_sfp_t *sfp /*rtnidx*/, int argc);
 KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb);
 KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_String_t *s, const char *mode);
 KNHAPI2(knh_OutputStream_t*) new_OutputStreamNULL(CTX ctx, knh_String_t *s, const char *mode);
+KNHAPI2(knh_String_t*) knh_DictMap_keyAt(knh_DictMap_t *m, size_t n);
+KNHAPI2(Object*) knh_DictMap_valueAt(knh_DictMap_t *m, size_t n);
 KNHAPI2(Object*) new_Boxing(CTX ctx, knh_sfp_t *sfp, const knh_ClassTBL_t *ct);
 KNHAPI2(knh_Int_t*) new_Int(CTX ctx, knh_class_t cid, knh_int_t value);
 KNHAPI2(knh_Float_t*) new_Float(CTX ctx, knh_class_t cid, knh_float_t value);
@@ -29,6 +38,7 @@ KNHAPI2(void) ResultSet_setFloat(CTX ctx, knh_ResultSet_t *rs, size_t n, knh_flo
 KNHAPI2(void) ResultSet_setText(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t);
 KNHAPI2(void) ResultSet_setBlob(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t);
 KNHAPI2(void) ResultSet_setNULL(CTX ctx, knh_ResultSet_t *o, size_t n);
+KNHAPI2(knh_bool_t) knh_isSystemVerbose(void);
 KNHAPI2(knh_OutputStream_t*) new_BytesOutputStream(CTX ctx, knh_Bytes_t *ba);
 KNHAPI2(void) knh_OutputStream_putc(CTX ctx, knh_OutputStream_t *w, int ch);
 KNHAPI2(void) knh_OutputStream_write(CTX ctx, knh_OutputStream_t *w, knh_bytes_t buf);
@@ -37,13 +47,17 @@ KNHAPI2(void) knh_OutputStream_writeLine(CTX ctx, knh_OutputStream_t *w, knh_byt
 KNHAPI2(void) knh_write_EOL(CTX ctx, knh_OutputStream_t *w);
 KNHAPI2(void) knh_write_TAB(CTX ctx, knh_OutputStream_t *w);
 KNHAPI2(void) knh_write_BOL(CTX ctx, knh_OutputStream_t *w);
+KNHAPI2(void) knh_write_text(CTX ctx, knh_OutputStream_t *w, const char *text);
+KNHAPI2(void) knh_printf(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...);
 KNHAPI2(knh_String_t*) new_String_(CTX ctx, knh_class_t cid, knh_bytes_t t, knh_String_t *memoNULL);
 KNHAPI2(knh_String_t*) new_String(CTX ctx, const char *str);
 KNHAPI2(void) knh_setPropertyText(CTX ctx, char *key, char *value);
+KNHAPI2(knh_String_t*) knh_getFieldName(CTX ctx, knh_fieldn_t fn);
 #endif
 
 typedef struct knh_api2_t {
 	size_t crc32;
+	Object*  (*DictMap_valueAt)(knh_DictMap_t *m, size_t n);
 	Object* (*new_Boxing)(CTX ctx, knh_sfp_t *sfp, const knh_ClassTBL_t *ct);
 	knh_Array_t* (*new_Array)(CTX ctx, knh_class_t p1, size_t capacity);
 	knh_Float_t* (*new_Float)(CTX ctx, knh_class_t cid, knh_float_t value);
@@ -52,12 +66,19 @@ typedef struct knh_api2_t {
 	knh_Iterator_t* (*new_Iterator)(CTX ctx, knh_class_t p1, knh_Object_t *source, knh_Fitrnext fnext);
 	knh_OutputStream_t* (*new_BytesOutputStream)(CTX ctx, knh_Bytes_t *ba);
 	knh_OutputStream_t* (*new_OutputStreamNULL)(CTX ctx, knh_String_t *s, const char *mode);
+	knh_String_t*  (*DictMap_keyAt)(knh_DictMap_t *m, size_t n);
+	knh_String_t*  (*getFieldName)(CTX ctx, knh_fieldn_t fn);
 	knh_String_t* (*new_String)(CTX ctx, const char *str);
 	knh_String_t* (*new_String_)(CTX ctx, knh_class_t cid, knh_bytes_t t, knh_String_t *memoNULL);
 	knh_TypeMap_t* (*new_TypeMap)(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftmapper ftcast);
+	knh_bool_t (*Method_isAbstract)(knh_Method_t *mtd);
+	knh_bool_t  (*isSystemVerbose)(void);
 	knh_bool_t  (*loadScript)(CTX ctx, knh_bytes_t path, knh_type_t reqt, knh_Array_t *resultsNULL);
+	knh_class_t  (*type_tocid)(CTX ctx, knh_type_t ptype, knh_class_t this_cid);
+	knh_param_t*  (*ParamArray_get)(knh_ParamArray_t *pa, size_t n);
 	knh_text_t*  (*cwb_tochar)(CTX ctx, knh_cwb_t *cwb);
 	knh_text_t*  (*format_ospath)(CTX ctx, char *buf, size_t bufsiz, const char *path);
+	knh_type_t  (*ParamArray_rtype)(knh_ParamArray_t *pa);
 	void (*ResultSet_setBlob)(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t);
 	void (*ResultSet_setFloat)(CTX ctx, knh_ResultSet_t *rs, size_t n, knh_float_t value);
 	void (*ResultSet_setInt)(CTX ctx, knh_ResultSet_t *rs, size_t n, knh_int_t value);
@@ -73,17 +94,23 @@ typedef struct knh_api2_t {
 	void  (*ResultSet_initColumn)(CTX ctx, knh_ResultSet_t *o, size_t column_size);
 	void  (*addTypeMap)(CTX ctx, knh_TypeMap_t *trl);
 	void  (*invoke)(CTX ctx, knh_Func_t *fo, knh_sfp_t *sfp /*rtnidx*/, int argc);
+	void  (*printf)(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...);
 	void  (*setPropertyText)(CTX ctx, char *key, char *value);
 	void  (*write_BOL)(CTX ctx, knh_OutputStream_t *w);
 	void  (*write_EOL)(CTX ctx, knh_OutputStream_t *w);
 	void  (*write_TAB)(CTX ctx, knh_OutputStream_t *w);
+	void  (*write_cid)(CTX ctx, knh_OutputStream_t *w, knh_class_t cid);
+	void  (*write_mn)(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn);
+	void  (*write_text)(CTX ctx, knh_OutputStream_t *w, const char *text);
+	void  (*write_type)(CTX ctx, knh_OutputStream_t *w, knh_type_t type);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)1459933934)
+#define K_API2_CRC32 ((size_t)-1645121296)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
 		K_API2_CRC32,
+		knh_DictMap_valueAt,
 		new_Boxing,
 		new_Array,
 		new_Float,
@@ -92,12 +119,19 @@ static const knh_api2_t* getapi2(void) {
 		new_Iterator,
 		new_BytesOutputStream,
 		new_OutputStreamNULL,
+		knh_DictMap_keyAt,
+		knh_getFieldName,
 		new_String,
 		new_String_,
 		new_TypeMap,
+		Method_isAbstract,
+		knh_isSystemVerbose,
 		knh_loadScript,
+		knh_type_tocid,
+		knh_ParamArray_get,
 		knh_cwb_tochar,
 		knh_format_ospath,
+		knh_ParamArray_rtype,
 		ResultSet_setBlob,
 		ResultSet_setFloat,
 		ResultSet_setInt,
@@ -113,16 +147,22 @@ static const knh_api2_t* getapi2(void) {
 		knh_ResultSet_initColumn,
 		knh_addTypeMap,
 		knh_invoke,
+		knh_printf,
 		knh_setPropertyText,
 		knh_write_BOL,
 		knh_write_EOL,
 		knh_write_TAB,
+		knh_write_cid,
+		knh_write_mn,
+		knh_write_text,
+		knh_write_type,
 	};
 	return &DATA_API2;
 };
 #endif/*K_DEFINE_API2*/
 
 #ifndef K_INTERNAL
+#define knh_DictMap_valueAt   ctx->api2->DictMap_valueAt
 #define new_Boxing   ctx->api2->new_Boxing
 #define new_Array   ctx->api2->new_Array
 #define new_Float   ctx->api2->new_Float
@@ -131,12 +171,19 @@ static const knh_api2_t* getapi2(void) {
 #define new_Iterator   ctx->api2->new_Iterator
 #define new_BytesOutputStream   ctx->api2->new_BytesOutputStream
 #define new_OutputStreamNULL   ctx->api2->new_OutputStreamNULL
+#define knh_DictMap_keyAt   ctx->api2->DictMap_keyAt
+#define knh_getFieldName   ctx->api2->getFieldName
 #define new_String   ctx->api2->new_String
 #define new_String_   ctx->api2->new_String_
 #define new_TypeMap   ctx->api2->new_TypeMap
+#define Method_isAbstract   ctx->api2->Method_isAbstract
+#define knh_isSystemVerbose   ctx->api2->isSystemVerbose
 #define knh_loadScript   ctx->api2->loadScript
+#define knh_type_tocid   ctx->api2->type_tocid
+#define knh_ParamArray_get   ctx->api2->ParamArray_get
 #define knh_cwb_tochar   ctx->api2->cwb_tochar
 #define knh_format_ospath   ctx->api2->format_ospath
+#define knh_ParamArray_rtype   ctx->api2->ParamArray_rtype
 #define ResultSet_setBlob   ctx->api2->ResultSet_setBlob
 #define ResultSet_setFloat   ctx->api2->ResultSet_setFloat
 #define ResultSet_setInt   ctx->api2->ResultSet_setInt
@@ -152,10 +199,15 @@ static const knh_api2_t* getapi2(void) {
 #define knh_ResultSet_initColumn   ctx->api2->ResultSet_initColumn
 #define knh_addTypeMap   ctx->api2->addTypeMap
 #define knh_invoke   ctx->api2->invoke
+#define knh_printf   ctx->api2->printf
 #define knh_setPropertyText   ctx->api2->setPropertyText
 #define knh_write_BOL   ctx->api2->write_BOL
 #define knh_write_EOL   ctx->api2->write_EOL
 #define knh_write_TAB   ctx->api2->write_TAB
+#define knh_write_cid   ctx->api2->write_cid
+#define knh_write_mn   ctx->api2->write_mn
+#define knh_write_text   ctx->api2->write_text
+#define knh_write_type   ctx->api2->write_type
 #endif
 
 
@@ -332,8 +384,6 @@ const char *SAFETYPE__(CTX ctx, knh_type_t type);
 const knh_ClassTBL_t* DBG_ClassTBL(CTX ctx, knh_class_t cid);
 const char *SAFECLASS__(CTX ctx, knh_class_t cid);
 knh_Class_t *new_Type(CTX ctx, knh_type_t type);
-void knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid);
-void knh_write_type(CTX ctx, knh_OutputStream_t *w, knh_type_t type);
 void knh_setClassName(CTX ctx, knh_class_t cid, knh_String_t *lname, knh_String_t *snameNULL);
 knh_class_t knh_getcid(CTX ctx, knh_bytes_t lname);
 void knh_setClassDefaultValue_(CTX ctx, knh_class_t cid, Object *value, knh_Fdefnull f);
@@ -348,17 +398,12 @@ knh_class_t knh_class_Generics(CTX ctx, knh_class_t bcid, knh_ParamArray_t *pa);
 knh_class_t knh_class_P1(CTX ctx, knh_class_t bcid, knh_type_t p1);
 knh_bool_t knh_ParamArray_hasTypeVar(knh_ParamArray_t *pa);
 void knh_ParamArray_tocid(CTX ctx, knh_ParamArray_t *pa, knh_class_t this_cid, knh_ParamArray_t *npa);
-knh_class_t knh_type_tocid(CTX ctx, knh_type_t ptype, knh_class_t this_cid);
 knh_ParamArray_t *new_ParamArrayR0(CTX ctx, knh_type_t t);
 knh_ParamArray_t *new_ParamArrayP1(CTX ctx, knh_type_t rtype, knh_type_t p1, knh_fieldn_t fn1);
 void knh_ParamArray_add(CTX ctx, knh_ParamArray_t *pa, knh_param_t p);
 void knh_ParamArray_radd(CTX ctx, knh_ParamArray_t *pa, knh_param_t p);
-knh_param_t* knh_ParamArray_get(knh_ParamArray_t *pa, size_t n);
 knh_type_t knh_ParamArray_getptype(knh_ParamArray_t *pa, size_t n);
 knh_bool_t knh_ParamArray_equalsType(knh_ParamArray_t *pa, knh_ParamArray_t *pa2);
-knh_type_t knh_ParamArray_rtype(knh_ParamArray_t *pa);
-void knh_write_mn(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn);
-knh_bool_t Method_isAbstract(knh_Method_t *mtd);
 void knh_Method_setFunc(CTX ctx, knh_Method_t *mtd, knh_Fmethod func);
 void knh_Method_toAbstract(CTX ctx, knh_Method_t *mtd);
 knh_Method_t* new_Method(CTX ctx, knh_flag_t flag, knh_class_t cid, knh_methodn_t mn, knh_Fmethod func);
@@ -411,8 +456,6 @@ void dmap_sort_(knh_dmap_t *dmap, int isforced);
 int knh_bytes_strcasecmp2(knh_bytes_t t1, knh_bytes_t t2);
 knh_DictMap_t* new_DictMap0_(CTX ctx, size_t capacity, int isCaseMap, const char *DBGNAME);
 knh_DictSet_t* new_DictSet0_(CTX ctx, size_t capacity, int isCaseMap, const char *DBGNAME);
-knh_String_t* knh_DictMap_keyAt(knh_DictMap_t *m, size_t n);
-Object* knh_DictMap_valueAt(knh_DictMap_t *m, size_t n);
 knh_uintptr_t knh_DictSet_valueAt(knh_DictSet_t *m, size_t n);
 knh_index_t knh_DictMap_index(knh_DictMap_t *m, knh_bytes_t key);
 Object *knh_DictMap_getNULL(CTX ctx, knh_DictMap_t *m, knh_bytes_t key);
@@ -480,7 +523,6 @@ void knh_beginContext(CTX ctx, void **bottom);
 void knh_endContext(CTX ctx);
 knh_context_t* knh_getCurrentContext(void);
 knh_bool_t knh_isAuditLogging(int pe);
-knh_bool_t knh_isSystemVerbose(void);
 knh_bool_t knh_isVerboseLogging(int pe);
 knh_bool_t knh_shouldWarnMessage(int pe);
 void knh_loadScriptPackageList(CTX ctx, const char *pkglist);
@@ -538,13 +580,11 @@ void knh_write__p(CTX ctx, knh_OutputStream_t *w, void *ptr);
 void knh_write_dfmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, knh_intptr_t n);
 void knh_write_ifmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, knh_int_t n);
 void knh_write_ffmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, knh_float_t n);
-void knh_write_text(CTX ctx, knh_OutputStream_t *w, const char *text);
 void knh_write_flag(CTX ctx, knh_OutputStream_t *w, knh_flag_t flag);
 void knh_write_cap(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t);
 knh_bool_t knh_write_ndata(CTX ctx, knh_OutputStream_t *w, knh_class_t cid, knh_ndata_t d);
 void knh_write_Object(CTX ctx, knh_OutputStream_t *w, knh_sfp_t *esp, knh_mtdcache_t *mcache, knh_Object_t *o, knh_methodn_t mn);
 void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap);
-void knh_printf(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...);
 knh_bool_t knh_bytes_checkENCODING(knh_bytes_t v);
 size_t knh_bytes_mlen(knh_bytes_t v);
 knh_bytes_t knh_bytes_mofflen(knh_bytes_t v, size_t moff, size_t mlen);
@@ -571,7 +611,6 @@ Object *knh_getClassConstNULL(CTX ctx, knh_class_t cid, knh_bytes_t name);
 int knh_addClassConst(CTX ctx, knh_class_t cid, knh_String_t* name, Object *value);
 knh_fieldn_t knh_addname(CTX ctx, knh_String_t *s, knh_Fdictset f);
 knh_nameinfo_t *knh_getnameinfo(CTX ctx, knh_fieldn_t fn);
-knh_String_t *knh_getFieldName(CTX ctx, knh_fieldn_t fn);
 knh_fieldn_t knh_getfnq(CTX ctx, knh_bytes_t tname, knh_fieldn_t def);
 knh_methodn_t knh_getmn(CTX ctx, knh_bytes_t tname, knh_methodn_t def);
 const char* knh_getmnname(CTX ctx, knh_methodn_t mn);

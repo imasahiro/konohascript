@@ -91,32 +91,9 @@ const knh_ExportsAPI_t *knh_getExportsAPI(void)
 		knh_fastmalloc, knh_fastfree, /* memory.c */
 		knh_setsfp, knh_Iterator_close,
 		knh_trace, knh_stack_perror, dbg_p, todo_p,
-//		knh_cwb_clearAPI, knh_cwb_tocharAPI,
-//		new_StringAPI, knh_String_text,
-//		new_RawPtr, knh_RawPtr_init,
-//		new_InputStreamNULL, new_OutputStreamNULL,
-//		_putc, _write,
 	};
 	return &exports;
 }
-
-///* ------------------------------------------------------------------------ */
-///* [constructors] */
-//
-//KNHAPI2(knh_Iterator_t*) new_RawPtrIterator(CTX ctx, knh_class_t p1, void *ref, knh_Fitrnext fnext, knh_Ffree ffree)
-//{
-//	knh_class_t cid = knh_class_P1(ctx, CLASS_Iterator, p1);
-//	knh_Iterator_t *it = new_O(Iterator, cid);
-//	if(ref == NULL) {
-//		fnext = knh_fitrnext_end;
-//		ffree = NULL;
-//	}
-//	DP(it)->ref = ref;
-//	DP(it)->freffree = ffree;
-//	if(fnext != NULL) DP(it)->fnext = fnext;
-//	it->fnext_1 = DP(it)->fnext;
-//	return it;
-//}
 
 /* ------------------------------------------------------------------------ */
 /* [CONST/PROPERTY DATA] */

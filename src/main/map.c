@@ -789,13 +789,13 @@ knh_DictSet_t* new_DictSet0_(CTX ctx, size_t capacity, int isCaseMap, const char
 	return (knh_DictSet_t*)m;
 }
 
-knh_String_t* knh_DictMap_keyAt(knh_DictMap_t *m, size_t n)
+KNHAPI2(knh_String_t*) knh_DictMap_keyAt(knh_DictMap_t *m, size_t n)
 {
 	DBG_ASSERT(n < knh_DictMap_size(m));
 	return m->dmap->dentry[n].key;
 }
 
-Object* knh_DictMap_valueAt(knh_DictMap_t *m, size_t n)
+KNHAPI2(Object*) knh_DictMap_valueAt(knh_DictMap_t *m, size_t n)
 {
 	DBG_ASSERT(n < knh_DictMap_size(m));
 	return m->dmap->dentry[n].value;

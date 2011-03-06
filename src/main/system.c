@@ -185,7 +185,7 @@ knh_nameinfo_t *knh_getnameinfo(CTX ctx, knh_fieldn_t fn)
 /* ------------------------------------------------------------------------ */
 /* [fn] */
 
-knh_String_t *knh_getFieldName(CTX ctx, knh_fieldn_t fn)
+KNHAPI2(knh_String_t*) knh_getFieldName(CTX ctx, knh_fieldn_t fn)
 {
 	return knh_getnameinfo(ctx, fn)->name;
 }

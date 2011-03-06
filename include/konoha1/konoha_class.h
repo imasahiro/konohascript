@@ -810,36 +810,15 @@ typedef struct knh_OutputStream_t {
 	const struct _knh_StreamDSPI_t *dspi;
 } knh_OutputStream_t;
 
-#ifdef K_EXPORTS
-#define knh_putc(ctx, w, ch)     ctx->api->putcAPI(ctx, w, ch)
-#define knh_write(ctx, w, s, len)  ctx->api->writeAPI(ctx, w, s, len)
-#else
-#define knh_putc(ctx, w, ch)    knh_OutputStream_putc(ctx, w, ch)
-#define knh_write(ctx, w, s)    knh_OutputStream_write(ctx, w, s)
-#define knh_flush(ctx, w)       knh_OutputStream_flush(ctx, w)
-#define knh_print(ctx, w, s)    knh_OutputStream_writeLine(ctx, w, s, 0)
-#define knh_println(ctx, w, s)  knh_OutputStream_writeLine(ctx, w, s, 1)
-
-//#define knh_write_char(ctx, w, s) knh_write(ctx, w, B(s))
-
+#define knh_putc(ctx, w, ch)       knh_OutputStream_putc(ctx, w, ch)
+#define knh_write(ctx, w, s)       knh_OutputStream_write(ctx, w, s)
+#define knh_flush(ctx, w)          knh_OutputStream_flush(ctx, w)
+#define knh_print(ctx, w, s)       knh_OutputStream_writeLine(ctx, w, s, 0)
+#define knh_println(ctx, w, s)     knh_OutputStream_writeLine(ctx, w, s, 1)
 #define knh_write_delim(ctx, w)    knh_write_text(ctx, w, ", ")
 #define knh_write_dots(ctx, w)     knh_write_text(ctx, w, "...")
 #define knh_write_fn(ctx, w, fn)   knh_write_text(ctx, w, FN__(fn))
-//#define knh_write_type(ctx, w, type)   knh_write_cid(ctx, w, type)
-//#define knh_write_ltype(ctx, w, type)  knh_write_cid(ctx, w, type)
 #define knh_write__O(ctx, w, o)    knh_write_Object(ctx, w, MN__k, o)
-#endif
-
-///* ------------------------------------------------------------------------ */
-//// ## @Struct class0 Channel Object;
-//
-//typedef struct knh_Channel_t {
-//	knh_hObject_t h;
-//	knh_intptr_t sd;
-//	struct knh_String_t *urn;
-//	struct knh_InputStream_t  *in;
-//	struct knh_OutputStream_t *out;
-//} knh_Channel_t;
 
 /* ------------------------------------------------------------------------ */
 //## class Connection Object;

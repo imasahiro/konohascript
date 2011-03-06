@@ -27,3 +27,4 @@
 
 include nativelink;
 
+@Native void System.man(Object c, NameSpace ns);

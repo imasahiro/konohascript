@@ -187,7 +187,7 @@ knh_Class_t *new_Type(CTX ctx, knh_type_t type)
 
 /* ------------------------------------------------------------------------ */
 
-void knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
+KNHAPI2(void) knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
 {
 	const char *tname = NULL;
 	switch(cid) {
@@ -209,7 +209,7 @@ void knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
 	}
 }
 
-void knh_write_type(CTX ctx, knh_OutputStream_t *w, knh_type_t type)
+KNHAPI2(void) knh_write_type(CTX ctx, knh_OutputStream_t *w, knh_type_t type)
 {
 	const char *tname = NULL;
 	//DBG_P("type=%d", type);
@@ -705,7 +705,7 @@ void knh_ParamArray_tocid(CTX ctx, knh_ParamArray_t *pa, knh_class_t this_cid, k
 
 /* ------------------------------------------------------------------------ */
 
-knh_class_t knh_type_tocid(CTX ctx, knh_type_t ptype, knh_class_t this_cid)
+KNHAPI2(knh_class_t) knh_type_tocid(CTX ctx, knh_type_t ptype, knh_class_t this_cid)
 {
 	if(ptype == TYPE_This) {
 		return this_cid;
@@ -804,7 +804,7 @@ void knh_ParamArray_radd(CTX ctx, knh_ParamArray_t *pa, knh_param_t p)
 
 /* ------------------------------------------------------------------------ */
 
-knh_param_t* knh_ParamArray_get(knh_ParamArray_t *pa, size_t n)
+KNHAPI2(knh_param_t*) knh_ParamArray_get(knh_ParamArray_t *pa, size_t n)
 {
 	size_t size = pa->psize + pa->rsize;
 	DBG_ASSERT(n < size);
@@ -853,7 +853,7 @@ knh_bool_t knh_ParamArray_equalsType(knh_ParamArray_t *pa, knh_ParamArray_t *pa2
 
 /* ------------------------------------------------------------------------ */
 
-knh_type_t knh_ParamArray_rtype(knh_ParamArray_t *pa)
+KNHAPI2(knh_type_t) knh_ParamArray_rtype(knh_ParamArray_t *pa)
 {
 	if(pa->rsize != 0) {
 		knh_param_t *p = knh_ParamArray_rget(pa, 0);
@@ -865,7 +865,7 @@ knh_type_t knh_ParamArray_rtype(knh_ParamArray_t *pa)
 
 /* ------------------------------------------------------------------------ */
 
-void knh_write_mn(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn)
+KNHAPI2(void) knh_write_mn(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn)
 {
 	knh_bytes_t t = B(MN__(mn));
 	if(MN_isFMT(mn)) {
@@ -909,7 +909,7 @@ static METHOD Fmethod_abstract(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-knh_bool_t Method_isAbstract(knh_Method_t *mtd)
+KNHAPI2(knh_bool_t) Method_isAbstract(knh_Method_t *mtd)
 {
 	return (mtd->fcall_1 == Fmethod_abstract);
 }

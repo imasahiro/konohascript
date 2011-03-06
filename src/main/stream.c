@@ -497,7 +497,7 @@ void knh_write_ffmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, knh_float_t
 
 /* ------------------------------------------------------------------------ */
 
-void knh_write_text(CTX ctx, knh_OutputStream_t *w, const char *text)
+KNHAPI2(void) knh_write_text(CTX ctx, knh_OutputStream_t *w, const char *text)
 {
 	knh_bytes_t t;
 	t.text = text; t.len = knh_strlen(text);
@@ -850,9 +850,7 @@ void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap)
 	}
 }
 
-/* ------------------------------------------------------------------------ */
-
-void knh_printf(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...)
+KNHAPI2(void) knh_printf(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap , fmt);
