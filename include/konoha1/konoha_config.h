@@ -44,6 +44,8 @@
 /* configuration */
 
 /* language configuration */
+
+//#define K_USING_FFIDSL          1
 //#define K_USING_INT32         1
 #define K_USING_FASTMALLOC      1
 //#define K_USING_RCGC          1
