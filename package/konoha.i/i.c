@@ -299,7 +299,6 @@ METHOD System_man(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 
 #ifdef _SETUP
-
 const knh_PackageDef_t* init(CTX ctx)
 {
 	static const knh_PackageDef_t pkgdef =

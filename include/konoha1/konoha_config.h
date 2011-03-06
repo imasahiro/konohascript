@@ -74,7 +74,7 @@
 #define K_VERSION       "1.0"
 
 #define LIBK_VERSION     "1.0"
-#define K_CODENAME       "alpha"
+#define K_CODENAME       "alpha0"
 #define K_URL            "http://code.google.com/p/konoha"
 
 #ifdef K_PREVIEW
@@ -246,6 +246,7 @@ typedef struct knh_sysinfo_t {
 #define 	K_USING_MACOSX_     1
 #define		K_OSDLLEXT ".dylib"
 #define     K_USING_BSDSYSCTL_  1
+#define     K_USING_ICONV       1
 #endif
 
 #if defined(__FreeBSD__) /* FreeBSD */

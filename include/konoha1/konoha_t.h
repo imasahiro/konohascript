@@ -865,6 +865,7 @@ typedef struct {
 typedef struct {
 	size_t                    gcBoundary;
 	knh_mutex_t              *memlock;
+
 	/* system table */
 	const knh_ClassTBL_t    **ClassTBL;
 	size_t                    sizeClassTBL;
@@ -880,28 +881,37 @@ typedef struct {
 	struct knh_Object_t      *freeObjectList;
 	struct knh_Object_t      *freeObjectTail;
 
+	// reserved
+	knh_ObjectArenaTBL_t     *YoungArenaTBL;
+	size_t                    sizeYoungArenaTBL;
+	size_t                    capacityYoungArenaTBL;
+	struct knh_Object_t      *freeYoungList;
+	struct knh_Object_t      *freeYoungTail;
+
 	knh_MemoryArenaTBL_t     *MemoryArenaTBL;
 	size_t                    sizeMemoryArenaTBL;
 	size_t                    capacityMemoryArenaTBL;
 	struct knh_memslot_t     *freeMemoryList;
 	struct knh_memslot_t     *freeMemoryTail;
 
+	// reserved
 	knh_MemoryX2ArenaTBL_t   *MemoryX2ArenaTBL;
 	size_t                    MemoryX2ArenaTBLSize;
 	size_t                    capacityMemoryX2ArenaTBL;
 
+	// reserved
 	knh_Memory256ArenaTBL_t  *Memory256ArenaTBL;
 	size_t                    Memory256ArenaTBLSize;
 	size_t                    capacityMemory256ArenaTBL;
 
 	/* system shared const */
-	knh_Object_t         *constNull;
-	knh_Object_t         *constTrue;
-	knh_Object_t         *constFalse;
-	struct knh_Int_t     *constInt0;
-	struct knh_Float_t   *constFloat0;
-	struct knh_String_t  **tString;
-	struct knh_Array_t   *emptyArray;
+	knh_Object_t             *constNull;
+	knh_Object_t             *constTrue;
+	knh_Object_t             *constFalse;
+	struct knh_Int_t         *constInt0;
+	struct knh_Float_t       *constFloat0;
+	struct knh_String_t     **tString;
+	struct knh_Array_t       *emptyArray;
 	struct knh_context_t     *ctx0;
 	struct knh_NameSpace_t   *mainns;
 	struct knh_Script_t      *script;
@@ -909,13 +919,6 @@ typedef struct {
 	struct knh_opline_t      *PC_FUNCCALL;
 	struct knh_opline_t      *PC_VEXEC;
 	struct knh_opline_t      *PC_ABSTRACT;
-
-//	/* spi */
-//	const struct _knh_ShellSPI_t       *shellSPI;
-	const struct _knh_ConvDSPI_t       *iconvDSPI;
-//	const struct _knh_EvidenceSPI_t    *ebiSPI;
-//	const struct _knh_CompilerSPI_t    *jitSPI;
-//	const struct _knh_SyncSPI_t        *syncSPI;
 
 	/* thread */
 	size_t              contextCounter;
@@ -950,6 +953,12 @@ typedef struct knh_tmapcache_t {
 
 #define hashcode_tmap(scid, tcid, HMAX) (((((knh_hashcode_t)scid) << (sizeof(knh_class_t) * 8)) + tcid) % HMAX)
 
+#ifdef K_USING_ICONV
+#include<iconv.h>
+#else
+typedef long iconv_t;
+#endif
+
 typedef struct knh_ServiceSPI_t {
 	/* sync spi */
 #ifdef K_USING_DEBUG
@@ -965,11 +974,15 @@ typedef struct knh_ServiceSPI_t {
 	/* readline spi*/
 	char* (*readline)(const char*);
 	int (*add_history)(const char*);
+	/* iconv spi*/
+	iconv_t (*iconv_open)(const char*, const char*);
+	size_t (*iconv)(iconv_t, char**, size_t*, char**, size_t*);
+	int (*iconv_close)(iconv_t);
 	/* shell spi */
-	const char *syslogspi;  // debug
 	const char *syncspi;    // debug
+	const char *syslogspi;  // debug
 	const char *readlinespi; // debug
-	const char *shellspi;   // debug
+	const char *iconvspi;   // debug
 } knh_ServiceSPI_t;
 
 typedef struct knh_context_t {

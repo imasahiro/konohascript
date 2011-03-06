@@ -169,20 +169,13 @@ static knh_uintptr_t CHARSET_exists(CTX ctx, knh_bytes_t path, knh_NameSpace_t *
 {
 	knh_bytes_t t = knh_bytes_skipPATHHEAD(path);
 	knh_uintptr_t res = PATH_unknown;
-	if(ctx->share->iconvDSPI == NULL) {
-		((knh_share_t*)ctx->share)->iconvDSPI = knh_NameSpace_getConvTODSPINULL(ctx, ns, STEXT("iconv"));
+	iconv_t ic = ctx->spi->iconv_open(t.text, K_ENCODING);
+	if(ic != (iconv_t)(-1)) {
+		res = PATH_found;
+		ctx->spi->iconv_close(ic);
 	}
-	if(ctx->share->iconvDSPI != NULL) {
-		knh_conv_t *conv = ctx->share->iconvDSPI->open(ctx, t.text, K_ENCODING);
-		if(conv != NULL) {
-			res = PATH_found;
-			ctx->share->iconvDSPI->close(ctx, conv);
-		}
-	}
-	else {
-		if(knh_bytes_strcasecmp(t, STEXT(K_ENCODING)) == 0) {
-			res = PATH_found;
-		}
+	else if(knh_bytes_strcasecmp(t, STEXT(K_ENCODING)) == 0) {
+		res = PATH_found;
 	}
 	return res;
 }
@@ -196,10 +189,10 @@ static knh_Object_t* CHARSET_newObjectNULL(CTX ctx, knh_class_t cid, knh_String_
 {
 	knh_bytes_t t = knh_bytes_skipPATHHEAD(S_tobytes(s));
 	if(cid == CLASS_StringEncoder) {
-		return (knh_Object_t*)new_StringEncoderNULL(ctx, t, ns);
+		return (knh_Object_t*)new_StringEncoderNULL(ctx, t);
 	}
 	if(cid == CLASS_StringDecoder) {
-		return (knh_Object_t*)new_StringDecoderNULL(ctx, t, ns);
+		return (knh_Object_t*)new_StringDecoderNULL(ctx, t);
 	}
 	return NULL;
 }

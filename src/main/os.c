@@ -200,15 +200,18 @@ static void setkonohainfo(knh_sysinfo_t *sysinfo)
 #if defined(K_USING_FASTEST)
 	APPEND_OPTION(p, "fastest");
 #endif
+#if defined(K_USING_ICONV)
+	APPEND_OPTION(p, "iconv");
+#endif
 #if defined(K_USING_INT32)
 	APPEND_OPTION(p, "int32");
 #endif
-#if defined(K_USING_PREFETCH)
-	APPEND_OPTION(p, "prefetch");
-#endif
-#if defined(K_USING_READLINE)
-	APPEND_OPTION(p, "readline");
-#endif
+//#if defined(K_USING_PREFETCH)
+//	APPEND_OPTION(p, "prefetch");
+//#endif
+//#if defined(K_USING_READLINE)
+//	APPEND_OPTION(p, "readline");
+//#endif
 #if defined(K_USING_RCGC)
 	APPEND_OPTION(p, "rcgc");
 #else

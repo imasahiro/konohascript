@@ -357,6 +357,20 @@ static int _unlock(knh_mutex_t *m DBG_TRACE)
 	return 0;
 };
 
+#ifndef K_USING_ICONV
+iconv_t iconv_open(const char *t, const char *f)
+{
+	return (iconv_t)(-1);
+}
+size_t iconv(iconv_t i, char **t, size_t *ts, char **f, size_t *fs)
+{
+	return 0;
+}
+int iconv_close(iconv_t i)
+{
+	return 0;
+}
+#endif
 
 static void initServiceSPI(knh_ServiceSPI_t *spi)
 {
@@ -366,6 +380,14 @@ static void initServiceSPI(knh_ServiceSPI_t *spi)
 	spi->syslogspi = "fprintf(stderr)";
 	spi->syslog = pseudo_syslog;
 	spi->vsyslog = pseudo_vsyslog;
+	spi->iconv_open = iconv_open;
+	spi->iconv = (size_t (*)(iconv_t, char**, size_t*, char**, size_t*))iconv;
+	spi->iconv_close = iconv_close;
+#ifdef K_USING_ICONV
+	spi->iconvspi = "iconv";
+#else
+	spi->iconvspi = "noiconv";
+#endif
 }
 
 /* ------------------------------------------------------------------------ */
