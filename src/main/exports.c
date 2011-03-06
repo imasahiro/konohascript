@@ -59,17 +59,6 @@ KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb)
 }
 
 
-KNHAPI2(knh_String_t*) new_StringAPI(CTX ctx, const char *str)
-{
-	if(str == NULL) {
-		return TS_EMPTY;
-	}
-	else {
-		knh_bytes_t t = {{str}, knh_strlen(str)};
-		return new_String_(ctx, CLASS_String, t, NULL);
-	}
-}
-
 KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_String_t *s, const char *mode)
 {
 	knh_bytes_t path = S_tobytes(s);

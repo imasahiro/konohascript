@@ -38,7 +38,7 @@ extern "C" {
 #endif
 
 ////## Socket Socket.new(String! ip_addr, Int! port);
-//METHOD Socket_new(Ctx* ctx, knh_sfp_t* sfp, long rix)
+//METHOD Socket_new(Ctx* ctx, knh_sfp_t* sfp _RIX)
 //{
 //	Socket_t *so = malloc(sizeof(Socket_t));
 //	memset(so, 0, sizeof(Socket_t));
@@ -61,7 +61,7 @@ extern "C" {
 //}
 //
 ////## InputStream Socket.getInputStream();
-//METHOD Socket_getInputStream(Ctx* ctx,knh_sfp_t* sfp, long rix)
+//METHOD Socket_getInputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
 //{
 //	Socket_t *so = RawPtr_to(Socket_t*, sfp[0]);
 //	if ((SP(so)->sd) == -1){
@@ -71,7 +71,7 @@ extern "C" {
 //}
 //
 ////## OutputStream Socket.getOutputStream();
-//METHOD Socket_getOutputStream(Ctx* ctx,knh_sfp_t* sfp, long rix)
+//METHOD Socket_getOutputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
 //{
 //	Socket_t *so = RawPtr_to(Socket_t*, sfp[0]);
 //	if ((SP(so)->sd) == -1){
@@ -81,7 +81,7 @@ extern "C" {
 //}
 //
 ////## Socket ServerSocket.accept();
-//METHOD ServerSocket_accept(Ctx* ctx,knh_sfp_t* sfp, long rix)
+//METHOD ServerSocket_accept(Ctx* ctx,knh_sfp_t* sfp _RIX)
 //{
 //	Socket_t *entity = malloc(sizeof(Socket_t));
 //	memset(entity, 0, sizeof(Socket_t));
@@ -108,7 +108,7 @@ extern "C" {
 //}
 //
 ////## void Socket.close();
-//METHOD Socket_close(Ctx *ctx, knh_sfp_t* sfp, long rix)
+//METHOD Socket_close(CTX ctx, knh_sfp_t* sfp _RIX)
 //{
 //	Socket_t *so = RawPtr_to(Socket_t*, sfp[0]);
 //	close((int)SP(so)->sd);
@@ -116,14 +116,14 @@ extern "C" {
 //}
 //
 ////## boolean Socket.beClosed();
-//METHOD Socket_beClosed(Ctx *ctx, knh_sfp_t* sfp, long rix)
+//METHOD Socket_beClosed(CTX ctx, knh_sfp_t* sfp _RIX)
 //{
 //	Socket_t *so = RawPtr_to(Socket_t*, sfp[0]);
 //	RETURNb_(SP(so)->sd == -1);
 //}
 //
 ////## This ServerSocket.new(Int port, Int maxConnection);
-//METHOD ServerSocket_new(Ctx* ctx,knh_sfp_t* sfp, long rix)
+//METHOD ServerSocket_new(Ctx* ctx,knh_sfp_t* sfp _RIX)
 //{
 //	Socket_t *so = (Socket_t*)sfp[0].o;
 //	knh_RawPtr_t *ptr;

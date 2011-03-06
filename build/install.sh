@@ -21,10 +21,14 @@ fi
 echo "install ${ktarget} to ${kpath}"
 echo "copying.."
 
-install -D -m 755 ${build}/${ktarget} ${kpath}/bin/${ktarget}
-install -D -m 644 ${build}/lib${ktarget}.${libext} ${kpath}/lib/lib${ktarget}.${libext}
-install -D -m 644 include/${ktarget}.h ${kpath}/include/${ktarget}.h
+install -d ${kpath}/bin
+install -d ${kpath}/lib
+install -d ${kpath}/include
+install -m 755 ${build}/${ktarget} ${kpath}/bin/${ktarget}
+cp ${build}/lib${ktarget}.${libext} ${kpath}/lib/
+cp include/${ktarget}.h ${kpath}/include/
 install -d ${kpath}/include/${ktarget}
+
 cp include/${ktarget}/*.h ${kpath}/include/${ktarget}
 
 if [ -h ${kpath}/bin/konoha ] ; then

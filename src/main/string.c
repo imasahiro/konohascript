@@ -392,6 +392,17 @@ KNHAPI2(knh_String_t*) new_String_(CTX ctx, knh_class_t cid, knh_bytes_t t, knh_
 	return s;
 }
 
+KNHAPI2(knh_String_t*) new_String(CTX ctx, const char *str)
+{
+	if(str == NULL || str[0] == 0) {
+		return TS_EMPTY;
+	}
+	else {
+		knh_bytes_t t = {{str}, knh_strlen(str)};
+		return new_String_(ctx, CLASS_String, t, NULL);
+	}
+}
+
 knh_String_t *new_TEXT(CTX ctx, knh_class_t cid, knh_TEXT_t text, int isASCII)
 {
 	knh_String_t *s = (knh_String_t*)new_hObject(ctx, cid);

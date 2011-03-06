@@ -1,6 +1,6 @@
 #ifdef SSA_OPT_CP
 
-typedef void (*replace_f) (Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value);
+typedef void (*replace_f) (CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value);
 
 struct OP_REPLACE_RBP_TO_CONST {
 	replace_f replace[OPCODE_MAX];
@@ -18,7 +18,7 @@ struct OP_REPLACE_RBP_TO_CONST {
 	op->opcode = OPCODE_NSET;\
 	op->data[1] = value
 
-static void replaceRBPtoConst_OSET(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_OSET(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toOSET(op, index, value);
 	UNUSED(ctx);
@@ -26,7 +26,7 @@ static void replaceRBPtoConst_OSET(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_NSET(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_NSET(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value);
 	UNUSED(ctx);
@@ -34,7 +34,7 @@ static void replaceRBPtoConst_NSET(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_XMOV(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_XMOV(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	DBG_ASSERT(op->data[2] == index);
 	DBG_P("REPLACE XMOV to XOSET");
@@ -62,14 +62,14 @@ static void replaceRBPtoConst_XMOV(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	bbC->jumpNC = NULL;\
 	DP(bbC)->size -= 1;\
 
-static void replaceRBPtoConst_JMPF(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_JMPF(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toJMP(ssa, op, value);
 	UNUSED(ctx);
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_bNUL(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_bNUL(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, IS_NULL((knh_Object_t*)value));
 	UNUSED(ctx);
@@ -77,7 +77,7 @@ static void replaceRBPtoConst_bNUL(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_bNN(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_bNN(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, IS_NOTNULL((knh_Object_t*)value));
 	UNUSED(ctx);
@@ -85,7 +85,7 @@ static void replaceRBPtoConst_bNN(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, k
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_bNOT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_bNOT(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, !value);
 	UNUSED(ctx);
@@ -93,7 +93,7 @@ static void replaceRBPtoConst_bNOT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_NEG(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_NEG(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, -value);
 	UNUSED(ctx);
@@ -140,7 +140,7 @@ static knh_intptr_t getRegDef(knh_opline_t *op)
 */
 
 /*
-static void updateUseDef(Ctx *ctx, ssa_data_t *ssa, knh_BasicBlock_t *bb, knh_int_t opbuf)
+static void updateUseDef(CTX ctx, ssa_data_t *ssa, knh_BasicBlock_t *bb, knh_int_t opbuf)
 {
 	size_t i, j, k;
 	for (i = 0; i < DP(bb)->size; i++) {
@@ -191,7 +191,7 @@ L_END:;
 	}
 */
 
-static void replaceRBPtoConst_inoSWAP(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_inoSWAP(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_noSWAP(op, index, value, iOFFSET);
 	UNUSED(ctx);
@@ -199,7 +199,7 @@ static void replaceRBPtoConst_inoSWAP(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *o
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_iSWAP(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_iSWAP(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_SWAP(op, index, value, iOFFSET);
 	UNUSED(ctx);
@@ -207,7 +207,7 @@ static void replaceRBPtoConst_iSWAP(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op,
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_fnoSWAP(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_fnoSWAP(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_noSWAP(op, index, value, fOFFSET);
 	UNUSED(ctx);
@@ -215,7 +215,7 @@ static void replaceRBPtoConst_fnoSWAP(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *o
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_fSWAP(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_fSWAP(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_SWAP(op, index, value, fOFFSET);
 	UNUSED(ctx);
@@ -251,7 +251,7 @@ static void replaceRBPtoConst_fSWAP(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op,
 		op->data[2] = value;\
 	}
 
-static void replaceRBPtoConst_iLT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_iLT(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_LT(op, index, value, iOFFSET);
 	UNUSED(ctx);
@@ -259,7 +259,7 @@ static void replaceRBPtoConst_iLT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, k
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_iGT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_iGT(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_GT(op, index, value, iOFFSET);
 	UNUSED(ctx);
@@ -267,7 +267,7 @@ static void replaceRBPtoConst_iGT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, k
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_ADDn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_ADDn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value + op->data[2]);
 	UNUSED(ctx);
@@ -275,7 +275,7 @@ static void replaceRBPtoConst_ADDn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_SUBn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_SUBn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value - op->data[2]);
 	UNUSED(ctx);
@@ -283,7 +283,7 @@ static void replaceRBPtoConst_SUBn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_MULn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_MULn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value * op->data[2]);
 	UNUSED(ctx);
@@ -291,7 +291,7 @@ static void replaceRBPtoConst_MULn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_DIVn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_DIVn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value / op->data[2]);
 	UNUSED(ctx);
@@ -299,7 +299,7 @@ static void replaceRBPtoConst_DIVn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_iMODn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_iMODn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value % op->data[2]);
 	UNUSED(ctx);
@@ -307,7 +307,7 @@ static void replaceRBPtoConst_iMODn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op,
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_EQn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_EQn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value == op->data[2]);
 	UNUSED(ctx);
@@ -315,7 +315,7 @@ static void replaceRBPtoConst_EQn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, k
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_NEQn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_NEQn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value != op->data[2]);
 	UNUSED(ctx);
@@ -323,7 +323,7 @@ static void replaceRBPtoConst_NEQn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_LTn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_LTn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value < op->data[2]);
 	UNUSED(ctx);
@@ -331,7 +331,7 @@ static void replaceRBPtoConst_LTn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, k
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_LTEn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_LTEn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value <= op->data[2]);
 	UNUSED(ctx);
@@ -339,7 +339,7 @@ static void replaceRBPtoConst_LTEn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_GTn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_GTn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value > op->data[2]);
 	UNUSED(ctx);
@@ -347,7 +347,7 @@ static void replaceRBPtoConst_GTn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, k
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_GTEn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_GTEn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value >= op->data[2]);
 	UNUSED(ctx);
@@ -355,7 +355,7 @@ static void replaceRBPtoConst_GTEn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_iANDn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_iANDn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value & op->data[2]);
 	UNUSED(ctx);
@@ -363,7 +363,7 @@ static void replaceRBPtoConst_iANDn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op,
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_iORn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_iORn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value | op->data[2]);
 	UNUSED(ctx);
@@ -371,7 +371,7 @@ static void replaceRBPtoConst_iORn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_iXORn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_iXORn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value ^ op->data[2]);
 	UNUSED(ctx);
@@ -379,7 +379,7 @@ static void replaceRBPtoConst_iXORn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op,
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_iLSFTn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_iLSFTn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value << op->data[2]);
 	UNUSED(ctx);
@@ -387,7 +387,7 @@ static void replaceRBPtoConst_iLSFTn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_iRSFTn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_iRSFTn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_toNSET(op, index, value >> op->data[2]);
 	UNUSED(ctx);
@@ -395,7 +395,7 @@ static void replaceRBPtoConst_iRSFTn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_fLT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_fLT(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_LT(op, index, value, fOFFSET);
 	UNUSED(ctx);
@@ -403,7 +403,7 @@ static void replaceRBPtoConst_fLT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, k
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_fGT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_fGT(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_GT(op, index, value, fOFFSET);
 	UNUSED(ctx);
@@ -411,7 +411,7 @@ static void replaceRBPtoConst_fGT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, k
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_bJNUL(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_bJNUL(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	DBG_ASSERT(op->data[1] == index);
 	replaceRBPtoConst_toJMP(ssa, op, IS_NULL((knh_Object_t*)value));
@@ -420,7 +420,7 @@ static void replaceRBPtoConst_bJNUL(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op,
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_bJNN(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_bJNN(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	DBG_ASSERT(op->data[1] == index);
 	replaceRBPtoConst_toJMP(ssa, op, IS_NOTNULL((knh_Object_t*)value));
@@ -429,7 +429,7 @@ static void replaceRBPtoConst_bJNN(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_bJNOT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_bJNOT(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	DBG_ASSERT(op->data[1] == index);
 	replaceRBPtoConst_toJMP(ssa, op, !value);
@@ -440,7 +440,7 @@ static void replaceRBPtoConst_bJNOT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op,
 
 #define BOFFSET (OPCODE_iJEQn - OPCODE_iJEQ) // 6
 
-static void replaceRBPtoConst_JEQ(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_JEQ(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_SWAP(op, index, value, BOFFSET);
 	UNUSED(ctx);
@@ -448,7 +448,7 @@ static void replaceRBPtoConst_JEQ(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, k
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_JLT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_JLT(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_LT(op, index, value, BOFFSET);
 	UNUSED(ctx);
@@ -456,7 +456,7 @@ static void replaceRBPtoConst_JLT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, k
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_JGT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_JGT(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	replaceRBPtoConst_GT(op, index, value, BOFFSET);
 	UNUSED(ctx);
@@ -464,7 +464,7 @@ static void replaceRBPtoConst_JGT(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, k
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_JEQn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_JEQn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	DBG_ASSERT(op->data[1] == index);
 	replaceRBPtoConst_toJMP(ssa, op, value == op->data[2]);
@@ -473,7 +473,7 @@ static void replaceRBPtoConst_JEQn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_JNEQn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_JNEQn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	DBG_ASSERT(op->data[1] == index);
 	replaceRBPtoConst_toJMP(ssa, op, value != op->data[2]);
@@ -482,7 +482,7 @@ static void replaceRBPtoConst_JNEQn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op,
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_JLTn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_JLTn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	DBG_ASSERT(op->data[1] == index);
 	replaceRBPtoConst_toJMP(ssa, op, value < op->data[2]);
@@ -491,7 +491,7 @@ static void replaceRBPtoConst_JLTn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_JLTEn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_JLTEn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	DBG_ASSERT(op->data[1] == index);
 	replaceRBPtoConst_toJMP(ssa, op, value <= op->data[2]);
@@ -500,7 +500,7 @@ static void replaceRBPtoConst_JLTEn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op,
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_JGTn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_JGTn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	DBG_ASSERT(op->data[1] == index);
 	replaceRBPtoConst_toJMP(ssa, op, value > op->data[2]);
@@ -509,7 +509,7 @@ static void replaceRBPtoConst_JGTn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, 
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_JGTEn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_JGTEn(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	DBG_ASSERT(op->data[1] == index);
 	replaceRBPtoConst_toJMP(ssa, op, value >= op->data[2]);
@@ -518,7 +518,7 @@ static void replaceRBPtoConst_JGTEn(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op,
 	UNUSED(index);
 }
 
-static void replaceRBPtoConst_PHI(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_PHI(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	if (op->data[1] == index) {
 		DBG_P("REPLACE PHIARG 1 r%d to %d", op->data[1], value);
@@ -543,7 +543,7 @@ static void replaceRBPtoConst_PHI(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, k
 	UNUSED(ssa);
 }
 
-static void replaceRBPtoConst_NULL(Ctx *ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
+static void replaceRBPtoConst_NULL(CTX ctx, ssa_data_t *ssa, knh_opline_t *op, knh_r_t index, knh_int_t value)
 {
 	DBG_P("Don't replace %s r%d %d", knh_opcode_tochar(op->opcode), index, value);
 	UNUSED(ctx);
@@ -713,7 +713,7 @@ struct OP_REPLACE_RBP_TO_CONST op_replaceRBPtoConst = {{
 }};
 
 
-static void workwithList(Ctx *ctx, ssa_data_t *ssa, knh_Array_t *wlist, knh_Array_t *wlist_lazy)
+static void workwithList(CTX ctx, ssa_data_t *ssa, knh_Array_t *wlist, knh_Array_t *wlist_lazy)
 {
 	size_t i, j;
 	knh_opline_t *ops, *opT;
@@ -822,7 +822,7 @@ L_LAST:;
 	}
 }
 
-static void constantPropagation(Ctx *ctx, ssa_data_t *ssa)
+static void constantPropagation(CTX ctx, ssa_data_t *ssa)
 {
 	DBG_P("=== constnatPropagation ===");
 	size_t i, j;

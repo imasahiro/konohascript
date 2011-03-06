@@ -30,7 +30,7 @@ extern "C" {
 //	knh_OutputStream_t *out;
 //} Socket_t;
 //
-//KNHAPI(knh_intptr_t) knh_socket_open(Ctx *ctx, char *ip_or_host, int port, int isThrowable)
+//KNHAPI(knh_intptr_t) knh_socket_open(CTX ctx, char *ip_or_host, int port, int isThrowable)
 //{
 //#if defined(K_USING_POSIX)
 //#if defined(K_USING_WINDOWS)
@@ -97,7 +97,7 @@ extern "C" {
 //#endif
 //}
 //
-//KNHAPI(int) knh_socket_send(Ctx *ctx, knh_intptr_t sd, char *buf, size_t bufsiz, int flags)
+//KNHAPI(int) knh_socket_send(CTX ctx, knh_intptr_t sd, char *buf, size_t bufsiz, int flags)
 //{
 //	int res = -1;
 //#if defined(K_USING_WINDOWS)
@@ -114,7 +114,7 @@ extern "C" {
 //	return res;
 //}
 //
-//KNHAPI(int) knh_socket_recv(Ctx *ctx, knh_intptr_t sd, char *buf, size_t bufsiz, int flags)
+//KNHAPI(int) knh_socket_recv(CTX ctx, knh_intptr_t sd, char *buf, size_t bufsiz, int flags)
 //{
 //	int res = -1;
 //#if defined(K_USING_WINDOWS)
@@ -132,7 +132,7 @@ extern "C" {
 //}
 //
 //
-//KNHAPI(int) knh_socket_close(Ctx *ctx, knh_intptr_t sd)
+//KNHAPI(int) knh_socket_close(CTX ctx, knh_intptr_t sd)
 //{
 //#if defined(K_USING_WINDOWS)
 //	return closeChannel(sd);
@@ -170,7 +170,7 @@ extern "C" {
 //	return buf;
 //}
 //
-//static knh_io_t knh_iodrv_open__Channel(Ctx *ctx, knh_bytes_t file, knh_uri_t *uri, char *mode)
+//static knh_io_t knh_iodrv_open__Channel(CTX ctx, knh_bytes_t file, knh_uri_t *uri, char *mode)
 //{
 //	knh_bytes_t urn = knh_bytes_path(file);
 //	knh_index_t loc = knh_bytes_rindex(urn, ':');
@@ -187,21 +187,21 @@ extern "C" {
 //	return (knh_io_t)knh_socket_open(ctx, host_or_ip, port, 0/*isThrowable*/);
 //}
 //
-//static void knh_iodrv_init__Channel(Ctx *ctx, Object *stream, char *mode)
+//static void knh_iodrv_init__Channel(CTX ctx, Object *stream, char *mode)
 //{
 //}
 //
-//static knh_intptr_t knh_iodrv_read__Channel(Ctx *ctx, knh_io_t sd, char *buf, size_t bufsiz)
+//static knh_intptr_t knh_iodrv_read__Channel(CTX ctx, knh_io_t sd, char *buf, size_t bufsiz)
 //{
 //	return knh_socket_recv(ctx, (knh_intptr_t)sd, buf, bufsiz, 0);
 //}
 //
-//static knh_intptr_t knh_iodrv_write__Channel(Ctx *ctx, knh_io_t sd, char *buf, size_t bufsiz)
+//static knh_intptr_t knh_iodrv_write__Channel(CTX ctx, knh_io_t sd, char *buf, size_t bufsiz)
 //{
 //	return knh_socket_send(ctx, (knh_intptr_t)sd, buf, bufsiz, 0);
 //}
 //
-//static void knh_iodrv_close__Channel(Ctx *ctx, knh_io_t sd)
+//static void knh_iodrv_close__Channel(CTX ctx, knh_io_t sd)
 //{
 //	knh_socket_close(ctx, (knh_intptr_t)sd);
 //}
@@ -236,7 +236,7 @@ extern "C" {
 //		{NULL, -1} // end of const
 //};
 //
-//KNHAPI(void) init(Ctx *ctx, const knh_PackageLoaderAPI_t *kapi)
+//KNHAPI(void) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
 //{
 //    kapi->loadIntData(ctx, IntConstData);
 //}

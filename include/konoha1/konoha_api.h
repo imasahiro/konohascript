@@ -16,12 +16,12 @@ KNHAPI2(void) knh_addTypeMap(CTX ctx, knh_TypeMap_t *trl);
 KNHAPI2(knh_TypeMap_t*) new_TypeMap(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftmapper ftcast);
 KNHAPI2(void) knh_invoke(CTX ctx, knh_Func_t *fo, knh_sfp_t *sfp /*rtnidx*/, int argc);
 KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb);
-KNHAPI2(knh_String_t*) new_StringAPI(CTX ctx, const char *str);
 KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_String_t *s, const char *mode);
 KNHAPI2(knh_OutputStream_t*) new_OutputStreamNULL(CTX ctx, knh_String_t *s, const char *mode);
 KNHAPI2(Object*) new_Boxing(CTX ctx, knh_sfp_t *sfp, const knh_ClassTBL_t *ct);
 KNHAPI2(knh_Int_t*) new_Int(CTX ctx, knh_class_t cid, knh_int_t value);
 KNHAPI2(knh_Float_t*) new_Float(CTX ctx, knh_class_t cid, knh_float_t value);
+KNHAPI2(knh_text_t*) knh_format_ospath(CTX ctx, char *buf, size_t bufsiz, const char *path);
 KNHAPI2(void) knh_ResultSet_initColumn(CTX ctx, knh_ResultSet_t *o, size_t column_size);
 KNHAPI2(void) ResultSet_setName(CTX ctx, knh_ResultSet_t *o, size_t n, knh_String_t *name);
 KNHAPI2(void) ResultSet_setInt(CTX ctx, knh_ResultSet_t *rs, size_t n, knh_int_t value);
@@ -38,6 +38,7 @@ KNHAPI2(void) knh_write_EOL(CTX ctx, knh_OutputStream_t *w);
 KNHAPI2(void) knh_write_TAB(CTX ctx, knh_OutputStream_t *w);
 KNHAPI2(void) knh_write_BOL(CTX ctx, knh_OutputStream_t *w);
 KNHAPI2(knh_String_t*) new_String_(CTX ctx, knh_class_t cid, knh_bytes_t t, knh_String_t *memoNULL);
+KNHAPI2(knh_String_t*) new_String(CTX ctx, const char *str);
 KNHAPI2(void) knh_setPropertyText(CTX ctx, char *key, char *value);
 #endif
 
@@ -51,11 +52,12 @@ typedef struct knh_api2_t {
 	knh_Iterator_t* (*new_Iterator)(CTX ctx, knh_class_t p1, knh_Object_t *source, knh_Fitrnext fnext);
 	knh_OutputStream_t* (*new_BytesOutputStream)(CTX ctx, knh_Bytes_t *ba);
 	knh_OutputStream_t* (*new_OutputStreamNULL)(CTX ctx, knh_String_t *s, const char *mode);
-	knh_String_t* (*new_StringAPI)(CTX ctx, const char *str);
+	knh_String_t* (*new_String)(CTX ctx, const char *str);
 	knh_String_t* (*new_String_)(CTX ctx, knh_class_t cid, knh_bytes_t t, knh_String_t *memoNULL);
 	knh_TypeMap_t* (*new_TypeMap)(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftmapper ftcast);
 	knh_bool_t  (*loadScript)(CTX ctx, knh_bytes_t path, knh_type_t reqt, knh_Array_t *resultsNULL);
 	knh_text_t*  (*cwb_tochar)(CTX ctx, knh_cwb_t *cwb);
+	knh_text_t*  (*format_ospath)(CTX ctx, char *buf, size_t bufsiz, const char *path);
 	void (*ResultSet_setBlob)(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t);
 	void (*ResultSet_setFloat)(CTX ctx, knh_ResultSet_t *rs, size_t n, knh_float_t value);
 	void (*ResultSet_setInt)(CTX ctx, knh_ResultSet_t *rs, size_t n, knh_int_t value);
@@ -77,7 +79,7 @@ typedef struct knh_api2_t {
 	void  (*write_TAB)(CTX ctx, knh_OutputStream_t *w);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)-1222163933)
+#define K_API2_CRC32 ((size_t)1459933934)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -90,11 +92,12 @@ static const knh_api2_t* getapi2(void) {
 		new_Iterator,
 		new_BytesOutputStream,
 		new_OutputStreamNULL,
-		new_StringAPI,
+		new_String,
 		new_String_,
 		new_TypeMap,
 		knh_loadScript,
 		knh_cwb_tochar,
+		knh_format_ospath,
 		ResultSet_setBlob,
 		ResultSet_setFloat,
 		ResultSet_setInt,
@@ -128,11 +131,12 @@ static const knh_api2_t* getapi2(void) {
 #define new_Iterator   ctx->api2->new_Iterator
 #define new_BytesOutputStream   ctx->api2->new_BytesOutputStream
 #define new_OutputStreamNULL   ctx->api2->new_OutputStreamNULL
-#define new_StringAPI   ctx->api2->new_StringAPI
+#define new_String   ctx->api2->new_String
 #define new_String_   ctx->api2->new_String_
 #define new_TypeMap   ctx->api2->new_TypeMap
 #define knh_loadScript   ctx->api2->loadScript
 #define knh_cwb_tochar   ctx->api2->cwb_tochar
+#define knh_format_ospath   ctx->api2->format_ospath
 #define ResultSet_setBlob   ctx->api2->ResultSet_setBlob
 #define ResultSet_setFloat   ctx->api2->ResultSet_setFloat
 #define ResultSet_setInt   ctx->api2->ResultSet_setInt

@@ -45,31 +45,13 @@ extern "C" {
 
 #ifdef _SETUP
 
-//static knh_FloatData_t FloatConstData[] = {
-//	{"Math.E", M_E},
-//	{"Math.LOG2E",M_LOG2E},
-//	{"Math.LOG10E",M_LOG10E},
-//	{"Math.LN2",M_LN2},
-//	{"Math.LN10",M_LN10},
-//	{"Math.PI", M_PI},
-//	{"Math.PI_2",M_PI_2},
-//	{"Math.PI_4",M_PI_4},
-//	{"Math.SQRT2",M_SQRT2},
-//	{NULL, K_FLOAT_ZERO}
-//};
-
-
-const knh_PackageDef_t* setup(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
+const knh_PackageDef_t* init(CTX ctx)
 {
 	static const knh_PackageDef_t pkgdef =
-		KNH_PKGINFO("i", "1.0", "Konoha Shell Extension", NULL);
-	if(ns == NULL) {
-		kapi->loadFloatData(ctx, FloatConstData);
-	}
+		KNH_PKGINFO("i", "0.1", "Konoha Shell Extension", NULL);
 	return &pkgdef;
 }
 #endif
-
 
 
 #ifdef __cplusplus

@@ -353,6 +353,12 @@ const char* knh_cwb_ospath(CTX ctx, knh_cwb_t* cwb)
 	return knh_cwb_tochar(ctx, cwb);
 }
 
+KNHAPI2(knh_text_t*) knh_format_ospath(CTX ctx, char *buf, size_t bufsiz, const char *path)
+{
+	knh_snprintf(buf, bufsiz, "%s", path);
+	return (knh_text_t*)buf;
+}
+
 /* ------------------------------------------------------------------------ */
 
 const char* knh_cwb_realpath(CTX ctx, knh_cwb_t *cwb)
