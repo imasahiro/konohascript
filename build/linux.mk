@@ -8,11 +8,14 @@ STRIP = strip
 
 konoha = konoha1
 version = 1.0
-PREFIX = ${DESTDIR}/usr/local
+PREFIX = $(DESTDIR)/usr/local
 dir    = build
 
 packages = \
+	$(dir)/lib$(konoha).so \
+	$(dir)/i.so \
 	$(dir)/math.so \
+	$(dir)/posix.so \
 
 objs = \
 	$(dir)/asm.o \
@@ -46,14 +49,14 @@ objs = \
 	$(dir)/mt19937ar.o \
 
 .PHONY: all
-all: $(dir)/$(konoha) $(dir)/lib$(konoha).so $(packages)
+all: $(dir)/$(konoha) $(packages)
 
-$(dir)/$(konoha) : $(dir)/konoha.o $(objs)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
+$(dir)/$(konoha) : src/konoha.c $(dir)/lib$(konoha).so
+	$(CC) $(CFLAGS) -o $@ src/konoha.c -L./$(dir) -l$(konoha) $(LDLIBS)
 	$(STRIP) $@
 
 $(dir)/lib$(konoha).so: $(objs)
-	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDLIBS)
+	$(CC) $(CFLAGS) -L./$(dir) -shared -o $@ $^ $(LDLIBS)
 
 ## object files
 
@@ -147,20 +150,35 @@ $(dir)/thread.o: src/main/thread.c
 $(dir)/mt19937ar.o : src/ext/mt19937ar.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-$(dir)/konoha.o : src/konoha.c
-	$(CC) $(CFLAGS) -c $^ -o $@
+## konoha.i interactive mode
 
+LDLIBS_libi = 
+objs_i = $(dir)/i.o\
+
+$(dir)/i.so: $(objs_i)
+	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDLIBS_libi)
+
+$(dir)/i.o : package/konoha.i/i.c
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 ## math
 LDLIBS_libmath = -lm
+obj_math = $(dir)/math.o\
 
-libmath = \
-	$(dir)/math.o\
-
-$(dir)/math.so: $(libmath)
+$(dir)/math.so: $(obj_math)
 	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDLIBS_libmath)
 
 $(dir)/math.o : package/konoha.math/math.c
+	$(CC) $(CFLAGS) -c $^ -o $@
+
+## posix
+LDLIBS_libposix = 
+objs_posix = $(dir)/posix.o\
+
+$(dir)/posix.so: $(objs_posix)
+	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDLIBS_libposix)
+
+$(dir)/posix.o : package/konoha.posix/posix.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 ## install
@@ -168,7 +186,9 @@ $(dir)/math.o : package/konoha.math/math.c
 install:
 	bash $(dir)/uninstall.sh $(konoha) $(PREFIX)
 	bash $(dir)/install.sh $(konoha) $(PREFIX)
+	bash $(dir)/pkginstall.sh i $(PREFIX)/konoha/package/$(version) konoha.i
 	bash $(dir)/pkginstall.sh math $(PREFIX)/konoha/package/$(version) konoha.math
+	bash $(dir)/pkginstall.sh posix $(PREFIX)/konoha/package/$(version) konoha.posix
 
 ## uninstall
 .PHONY: uninstall
