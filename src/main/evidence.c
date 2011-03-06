@@ -238,7 +238,7 @@ void knh_throw(CTX ctx, knh_sfp_t *sfp, long start)
 				size_t i = 0, size = knh_Array_size(hdr->stacklist);
 				for(i = 0; i < size; i++) {
 					knh_Object_t *o = knh_Array_n(hdr->stacklist, i);
-					O_cTBL(o)->cspi2->checkout(ctx, o, 1);
+					O_cTBL(o)->ospi->checkout(ctx, o, 1);
 				}
 				knh_Array_trimSize(ctx, hdr->stacklist, 0);
 				DBG_ASSERT(DP(hdr)->return_address != NULL);

@@ -277,7 +277,7 @@ typedef void (*knh_Fpkgload)(CTX, const knh_PackageLoaderAPI_t *, knh_NameSpace_
 
 typedef struct {
 	const char *name;
-	knh_ObjectSPI2_t *cspi;  // if cspi is NULL, rawptr is be used instead.
+	knh_ClassDef_t *cspi;  // if cspi is NULL, rawptr is be used instead.
 	knh_Fdefnull      fdefault;
 } knh_ClassData_t;
 

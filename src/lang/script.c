@@ -629,7 +629,7 @@ static knh_bool_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 				Object_setNullObject(obj, 1);
 				ct->bcid = CLASS_Object;
 				ct->baseTBL = ClassTBL(CLASS_Object);
-				knh_ClassTBL_setCSPI2(ct, ct->baseTBL->cspi2);
+				knh_ClassTBL_setCSPI2(ct, ct->baseTBL->ospi);
 				obj->ref = NULL; tmp->ref = NULL;
 				knh_setClassDefaultValue(ctx, cid, obj, NULL);
 				KNH_INITv(ct->protoNULL, tmp);
@@ -664,11 +664,11 @@ static knh_bool_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 #else
 #define ARG ctx->refs
 #endif
-				ct->supTBL->cspi2->reftrace(ctx, suptmp, ARG);
+				ct->supTBL->ospi->reftrace(ctx, suptmp, ARG);
 #ifndef K_USING_CSTACK_TRAVERSE_
 				knh_RefTraverse(ctx, RCinc);
 #endif
-				ct->supTBL->cspi2->reftrace(ctx, supobj, ARG);
+				ct->supTBL->ospi->reftrace(ctx, supobj, ARG);
 #ifndef K_USING_CSTACK_TRAVERSE_
 				knh_RefTraverse(ctx, RCinc);
 #endif

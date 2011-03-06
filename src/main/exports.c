@@ -197,7 +197,7 @@ static void knh_loadScriptData(CTX ctx, knh_data_t *data, knh_ParamArray_t **buf
 		case DATA_END: return;
 		case DATA_STRUCT0: {
 			knh_class_t cid0 = _CID(data[0]);
-			knh_ObjectSPI2_t *cspi = (knh_ObjectSPI2_t*)data[1];
+			knh_ClassDef_t *cspi = (knh_ClassDef_t*)data[1];
 			knh_flag_t cflag = (knh_flag_t)data[2];
 			data += 3;
 			knh_class_t cid = new_ClassId(ctx);
@@ -224,9 +224,9 @@ static void knh_loadScriptData(CTX ctx, knh_data_t *data, knh_ParamArray_t **buf
 			t->bcid = _CID(data[3]);
 			t->baseTBL = ClassTBL(t->bcid);
 			if(cid0 != t->bcid) {
-				knh_ClassTBL_setCSPI2(t, ClassTBL(t->bcid)->cspi2);
+				knh_ClassTBL_setCSPI2(t, ClassTBL(t->bcid)->ospi);
 			}
-			DBG_ASSERT(t->cspi2 != NULL);
+			DBG_ASSERT(t->ospi != NULL);
 			t->supcid = _CID(data[4]);
 			t->supTBL = ClassTBL(t->supcid);
 			knh_setClassName(ctx, cid0, new_T(name), NULL);

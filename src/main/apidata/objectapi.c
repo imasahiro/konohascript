@@ -50,7 +50,7 @@ static METHOD Object_getClass(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static METHOD Object_hashCode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_hashcode_t h = ClassTBL(O_bcid(sfp[0].o))->cspi2->hashCode(ctx, sfp);
+	knh_hashcode_t h = ClassTBL(O_bcid(sfp[0].o))->ospi->hashCode(ctx, sfp);
 	RETURNi_(h);
 }
 
@@ -75,7 +75,7 @@ static METHOD Object_isNotNull(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static METHOD Object_getKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_String_t *s = ClassTBL(O_bcid(sfp[0].o))->cspi2->getkey(ctx, sfp);
+	knh_String_t *s = ClassTBL(O_bcid(sfp[0].o))->ospi->getkey(ctx, sfp);
 	KNH_ASSERT(IS_String(s));
 	RETURN_(s);
 }
@@ -91,7 +91,7 @@ static METHOD Object_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 		const knh_ClassTBL_t *ct = O_cTBL(src);
 		knh_Object_t *o = new_hObject_(ctx, ct);
 		o->h.magicflag = src->h.magicflag;
-		ct->cspi2->initcopy(ctx, o, src);
+		ct->ospi->initcopy(ctx, o, src);
 		src = o;
 	}
 	sfp[rix].ndata = sfp[0].ndata;

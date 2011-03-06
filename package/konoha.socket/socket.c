@@ -31,11 +31,15 @@
 // **************************************************************************
 
 #include <konoha1.h>
-#include "knh_socket.h"
+#include "socket.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/* ------------------------------------------------------------------------ */
+
+
 
 ////## Socket Socket.new(String! ip_addr, Int! port);
 //METHOD Socket_new(Ctx* ctx, knh_sfp_t* sfp _RIX)

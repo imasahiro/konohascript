@@ -639,36 +639,23 @@ typedef knh_uintptr_t                knh_hashcode_t;  /* knh_hashcode_t */
 
 typedef knh_Object_t* (*knh_Fdefnull)(CTX ctx, knh_class_t cid);
 
-typedef const struct _knh_ObjectSPI2_t {
-	const char             *name;
-	knh_ushort_t            size;
-	knh_flag_t              cflag;
-	void (*init)(CTX, Object*);
-	void (*initcopy)(CTX, Object *, const Object *);
-	void (*reftrace)(CTX, Object * FTRARG);
-	void (*free)(CTX, Object *);
-	int  (*compareTo)(const Object*, const Object*);
-	struct knh_String_t* (*getkey)(CTX, knh_sfp_t*);
-	knh_hashcode_t (*hashCode)(CTX, knh_sfp_t*);
-	void (*checkin)(CTX, Object*);
-	void (*checkout)(CTX, Object*, int isFailed);
-	struct knh_TypeMap_t* (*findTypeMapNULL)(CTX, knh_class_t, knh_class_t, int);
-	knh_Fdefnull  getDefaultNull;
-	size_t asize;  /* set it to zero usually */
-} knh_ObjectSPI2_t ;
-
-#define K_NUMBERCSPI_MAGIC   ((size_t)1234567)
-
-typedef const struct _knh_NumberSPI_t {
-	knh_ObjectSPI2_t        common;
-	size_t                  magic;
-	knh_int_t (*to_int)(CTX ctx, knh_sfp_t*);
-	knh_float_t (*to_float)(CTX ctx, knh_sfp_t*);
-} knh_NumberSPI_t ;
-
-/* ------------------------------------------------------------------------ */
-
-#define K_CLASSTABLE_INIT 128
+//typedef const struct _knh_ClassDef_t {
+//	const char             *name;
+//	knh_ushort_t            size;
+//	knh_flag_t              cflag;
+//	void (*init)(CTX, Object*);
+//	void (*initcopy)(CTX, Object *, const Object *);
+//	void (*reftrace)(CTX, Object * FTRARG);
+//	void (*free)(CTX, Object *);
+//	int  (*compareTo)(const Object*, const Object*);
+//	struct knh_String_t* (*getkey)(CTX, knh_sfp_t*);
+//	knh_hashcode_t (*hashCode)(CTX, knh_sfp_t*);
+//	void (*checkin)(CTX, Object*);
+//	void (*checkout)(CTX, Object*, int isFailed);
+//	struct knh_TypeMap_t* (*findTypeMapNULL)(CTX, knh_class_t, knh_class_t, int);
+//	knh_Fdefnull  getDefaultNull;
+//	size_t asize;  /* set it to zero usually */
+//} knh_ClassDef_t ;
 
 typedef struct {
 	knh_flag_t    flag  ;
@@ -677,12 +664,45 @@ typedef struct {
 	knh_fieldn_t  fn    ;
 } knh_fields_t ;
 
+typedef struct knh_ClassDef_t {
+	void (*init)(CTX, Object*);
+	void (*initcopy)(CTX, Object *, const Object *);
+	void (*reftrace)(CTX, Object * FTRARG);
+	void (*free)(CTX, Object *);
+
+	void (*checkin)(CTX, Object*);
+	void (*checkout)(CTX, Object*, int isFailed);
+	int  (*compareTo)(const Object*, const Object*);
+	void *RESERVED0;
+
+	struct knh_String_t* (*getkey)(CTX, knh_sfp_t*);
+	knh_hashcode_t       (*hashCode)(CTX, knh_sfp_t*);
+	knh_int_t   (*toint)(CTX ctx, knh_sfp_t*);
+	knh_float_t (*tofloat)(CTX ctx, knh_sfp_t*);
+
+	struct knh_TypeMap_t* (*findTypeMapNULL)(CTX, knh_class_t, knh_class_t, int);
+	void *RESERVED1;
+	void *RESERVED2;
+	void *RESERVED3;
+
+	const char             *name;
+	knh_flag_t              cflag;
+	knh_ushort_t            struct_size;
+	knh_fields_t            *fields;
+
+	knh_Fdefnull            getDefaultNull;
+	void *RESERVED4;
+	void *RESERVED5;
+	void *RESERVED6;
+	size_t asize;           /* set it to zero usually */
+} knh_ClassDef_t;
+
+/* ------------------------------------------------------------------------ */
+
+#define K_CLASSTABLE_INIT 128
+
 typedef struct knh_ClassTBL_t {
-	void (*fast_reftrace)(CTX, Object* FTRARG);
-	union {
-		const knh_ObjectSPI2_t *cspi2;
-		const knh_NumberSPI_t  *numspi;
-	};
+	const knh_ClassDef_t *ospi;
 	knh_uintptr_t magicflag;
 	knh_flag_t    cflag;        knh_uri_t     domain;
 	knh_class_t   cid;          knh_class_t   imcid;

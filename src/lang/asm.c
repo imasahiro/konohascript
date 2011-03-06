@@ -2023,13 +2023,13 @@ static void DOCU_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	knh_Token_t *tkIDX = tkNN(stmt, 1);
 	DBG_P("sfpidx = %d, tkIDX->index=%d", sfpidx, (tkIDX)->index);
 	LET_asm(ctx, stmt, reqt, sfpidx);
-	ASM(CHKIN, OC_(Token_index(tkIDX)), ClassTBL(CLASS_t(tkIDX->type))->cspi2->checkin);
+	ASM(CHKIN, OC_(Token_index(tkIDX)), ClassTBL(CLASS_t(tkIDX->type))->ospi->checkin);
 }
 
 static void CHKOUT_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 	knh_Token_t *tkIDX = tkNN(stmt, 0);
-	ASM(CHKOUT, OC_(Token_index(tkIDX)), ClassTBL(CLASS_t(tkIDX->type))->cspi2->checkout);
+	ASM(CHKOUT, OC_(Token_index(tkIDX)), ClassTBL(CLASS_t(tkIDX->type))->ospi->checkout);
 	knh_Stmt_done(ctx, stmt);
 }
 

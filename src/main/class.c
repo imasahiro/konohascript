@@ -67,7 +67,7 @@ int knh_Object_compareTo(Object *o1, Object *o2)
 	knh_class_t cid2 = O_cid(o2);
 	int res;
 	if(cid1 == cid2) {
-		res = O_cTBL(o1)->cspi2->compareTo(o1, o2);
+		res = O_cTBL(o1)->ospi->compareTo(o1, o2);
 	}
 	else {
 		res = (int)(o1 - o2);
@@ -127,7 +127,7 @@ void knh_Object_toNULL_(CTX ctx, Object *o)
 const char *SAFESTRUCT__(CTX ctx, knh_class_t bcid)
 {
 	if(bcid < ctx->share->sizeClassTBL) {
-		return ClassTBL(bcid)->cspi2->name;
+		return ClassTBL(bcid)->ospi->name;
 	}
 	KNH_P("unknown bcid=%d", bcid);
 	return "UNKNOWN";
@@ -251,7 +251,7 @@ void knh_setClassName(CTX ctx, knh_class_t cid, knh_String_t *lname, knh_String_
 		KNH_INITv(t->sname, snameNULL);
 	}
 	else if(t->bcid == cid) {
-		KNH_INITv(t->sname, new_T(t->cspi2->name));
+		KNH_INITv(t->sname, new_T(t->ospi->name));
 	}
 	if(t->sname == NULL) {
 		KNH_INITv(t->sname, t->lname);
@@ -327,13 +327,12 @@ Object *knh_getClassDefaultValue(CTX ctx, knh_class_t cid)
 	return ClassTBL(cid)->fdefnull(ctx, cid);
 }
 
-void knh_ClassTBL_setCSPI2(knh_ClassTBL_t *ct, const knh_ObjectSPI2_t *cspi2)
+void knh_ClassTBL_setCSPI2(knh_ClassTBL_t *ct, const knh_ClassDef_t *ospi)
 {
-	ct->cspi2 = cspi2;
-	if(cspi2->getDefaultNull != NULL) {
-		ct->fdefnull = cspi2->getDefaultNull;
+	ct->ospi = ospi;
+	if(ospi->getDefaultNull != NULL) {
+		ct->fdefnull = ospi->getDefaultNull;
 	}
-	ct->fast_reftrace = cspi2->reftrace;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -574,7 +573,7 @@ knh_class_t knh_addGenericsClass(CTX ctx, knh_class_t cid, knh_class_t bcid, knh
 		const knh_ClassTBL_t *bct = ClassTBL(bcid);
 		ct->magicflag  = bct->magicflag;
 		ct->cflag  = bct->cflag;
-		knh_ClassTBL_setCSPI2(ct, bct->cspi2);
+		knh_ClassTBL_setCSPI2(ct, bct->ospi);
 		ct->bcid   = bcid;
 		ct->baseTBL = bct;
 		ct->supcid = bct->supcid;
@@ -1495,7 +1494,7 @@ knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid, knh_class_t tcid, 
 		goto L_ADDTRL;
 	}
 
-	tmap = ClassTBL(scid)->cspi2->findTypeMapNULL(ctx, scid, tcid, 1);
+	tmap = ClassTBL(scid)->ospi->findTypeMapNULL(ctx, scid, tcid, 1);
 	if(tmap != NULL) {
 		goto L_ADDTRL;
 	}

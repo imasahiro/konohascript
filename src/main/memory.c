@@ -666,7 +666,7 @@ knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 	o->h.magicflag = ct->magicflag;
 	knh_Object_RCset(o, K_RCGC_INIT);
 	o->h.cTBL = ct;
-	ct->cspi2->init(ctx, o);
+	ct->ospi->init(ctx, o);
 	createClassObject(ct);
 	knh_useObject(ctx, 1);
 	O_unset_tenure(o); // collectable
@@ -697,7 +697,7 @@ void TR_NEW(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 	o->h.magicflag = ct->magicflag;
 	knh_Object_RCset(o, K_RCGC_INIT);
 	o->h.cTBL = ct;
-	ct->cspi2->init(ctx, o);
+	ct->ospi->init(ctx, o);
 	createClassObject(ct);
 	knh_useObject(ctx, 1);
 	O_unset_tenure(o); // collectable
@@ -715,7 +715,7 @@ static void knh_Object_finalfree(CTX ctx, knh_Object_t *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
 	RCGC_(DBG_ASSERT(Object_isRC0(o)));
-	ct->cspi2->free(ctx, o);
+	ct->ospi->free(ctx, o);
 	//o->h.magicflag = 0;
 	OBJECT_REUSE(o);
 	knh_unuseObject(ctx, 1);
@@ -825,8 +825,8 @@ void knh_Object_RCfree(CTX ctx, Object *o)
 	O_set_tenure(o);
 	RCGC_(DBG_ASSERT(Object_isRC0(o)));
 	o->h.magic = 0;
-	ct->cspi2->reftrace(ctx, o, knh_Object_RCsweep);
-	ct->cspi2->free(ctx, o);
+	ct->ospi->reftrace(ctx, o, knh_Object_RCsweep);
+	ct->ospi->free(ctx, o);
 	OBJECT_REUSE(o);
 	knh_unuseObject(ctx, 1);
 	disposeClassObject(ct);
@@ -842,7 +842,7 @@ void knh_Object_RCfree(CTX ctx, Object *o)
 	ostack_push(ctx, ostack, o);
 	while((ref = ostack_next(ostack)) != NULL) {
 		ctx_update_refs(ctx, ctx->ref_buf, 0);
-		O_cTBL(ref)->cspi2->reftrace(ctx, ref, ctx->refs);
+		O_cTBL(ref)->ospi->reftrace(ctx, ref, ctx->refs);
 		if (ctx->ref_size > 0) {
 			for(i = ctx->ref_size - 1; prefetch(ctx->refs[i-1]), i >= 0; i--)
 			//for (i = 0; prefetch(ctx->refs[i+1]), i < ctx->ref_size; i++) /* slow */
@@ -957,7 +957,7 @@ static inline int bit_test_and_set(knh_uintptr_t *b, size_t offset)
 //	knh_uintptr_t *b = opage->h.tenure;
 //	size_t n = K_OPAGEOFFSET(o, opage);
 //	if(!(bit_test_and_set(b, n))) {
-//		O_cTBL(o)->cspi2->traverse(ctx, o, knh_Object_toTenure);
+//		O_cTBL(o)->ospi->traverse(ctx, o, knh_Object_toTenure);
 //	}
 //}
 
@@ -985,7 +985,7 @@ static inline int bit_test_and_set(knh_uintptr_t *b, size_t offset)
 //	knh_uintptr_t *b = opage->h.tenure;
 //	size_t n = K_OPAGEOFFSET(o, opage);
 //	if(!(bit_test_and_set(b, n))) {
-//		O_cTBL(o)->cspi2->traverse(ctx, o, Object_toTenure);
+//		O_cTBL(o)->ospi->traverse(ctx, o, Object_toTenure);
 //	}
 //}
 
@@ -1011,7 +1011,7 @@ static void Object_mark1(CTX ctx, Object *o)
 	DBG_ASSERT(&(opage->slots[n-1]) == o);
 	if(!(bit_test_and_set(b, n))) {
 		STAT_(ctx->stat->markedObject++;)
-		O_cTBL(o)->cspi2->reftrace(ctx, o, Object_mark1);
+		O_cTBL(o)->ospi->reftrace(ctx, o, Object_mark1);
 	}
 }
 
@@ -1051,7 +1051,7 @@ static void gc_mark(CTX ctx)
 		DBG_ASSERT(O_hasRef(ref));
 		((knh_context_t*)ctx)->refs = ctx->ref_buf;
 		((knh_context_t*)ctx)->ref_size = 0;
-		cTBL->fast_reftrace(ctx, ref, ctx->refs);
+		cTBL->ospi->reftrace(ctx, ref, ctx->refs);
 		if(ctx->ref_size > 0) {
 			L_loophead:;
 			prefetch(ctx->refs[0]);
@@ -1068,7 +1068,7 @@ static inline void Object_MSfree(CTX ctx, knh_Object_t *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
 	//prefetch_tenure(o);
-	ct->cspi2->free(ctx, o);
+	ct->ospi->free(ctx, o);
 	OBJECT_REUSE(o);
 	disposeClassObject(ct);
 	O_set_tenure(o); // uncollectable

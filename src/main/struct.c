@@ -111,11 +111,6 @@ static void DEFAULT_init(CTX ctx, Object *o)
 	p[0] = K_INT0; p[1] = K_INT0; p[2] = K_INT0; p[3] = K_INT0;
 }
 
-static void ABSTRACT_init(CTX ctx, Object *o)
-{
-	KNH_P("ABSTRACT CLASS? %s", O__(o));
-}
-
 static void DEFAULT_initcopy(CTX ctx, Object *dst, const Object *src)
 {
 	KNH_TODO("copy operation");
@@ -124,20 +119,23 @@ static void DEFAULT_initcopy(CTX ctx, Object *dst, const Object *src)
 knh_bool_t knh_class_canObjectCopy(CTX ctx, knh_class_t cid)
 {
 	const knh_ClassTBL_t *ct = ClassTBL(cid);
-	return (ct->cspi2->initcopy != DEFAULT_initcopy);
+	return (ct->ospi->initcopy != DEFAULT_initcopy);
 }
 
-void NONE_reftrace(CTX ctx, Object *o FTRARG)
+static void DEFAULT_reftrace(CTX ctx, Object *o FTRARG)
 {
 }
 
 static void DEFAULT_free(CTX ctx, Object *o)
 {
-	const knh_ClassTBL_t *ct = O_cTBL(o);
-	if(ct->cspi2->size > 0) {
-		DBG_P("FREE? %s", O__(o));
-		KNH_FREE(ctx, o->ref, ct->cspi2->size);
-	}
+}
+
+static void DEFAULT_checkin(CTX ctx, Object *o)
+{
+}
+
+static void DEFAULT_checkout(CTX ctx, Object *o, int isFailed)
+{
 }
 
 static int DEFAULT_compareTo(const Object *o1, const Object *o2)
@@ -159,17 +157,45 @@ static knh_hashcode_t DEFAULT_hashCode(CTX ctx, knh_sfp_t *sfp)
 	return ((knh_hashcode_t)sfp[0].o) / sizeof(knh_Object_t);
 }
 
-static knh_TypeMap_t* DEFAULT_findTypeMapNULL(CTX ctx, knh_class_t scid, knh_class_t tcid, int mode)
+static knh_int_t DEFAULT_toint(CTX ctx, knh_sfp_t *sfp)
+{
+	return 0L;
+}
+
+static knh_float_t DEFAULT_tofloat(CTX ctx, knh_sfp_t *sfp)
+{
+	return K_FLOAT_ZERO;
+}
+
+knh_TypeMap_t* DEFAULT_findTypeMapNULL(CTX ctx, knh_class_t scid, knh_class_t tcid, int mode)
 {
 	//DBG_P("set default value cid=%d", cid);
 	return NULL;
 }
 
-static void DEFAULT_checkin(CTX ctx, Object *o) {
+#define DEFAULT_0 NULL
+#define DEFAULT_1 NULL
+#define DEFAULT_2 NULL
+#define DEFAULT_3 NULL
+#define DEFAULT_4 NULL
+#define DEFAULT_5 NULL
+#define DEFAULT_6 NULL
+
+static knh_ClassDef_t TdynamicDef = {
+	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"dynamic", 0, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
+KNHAPI2(knh_ClassDef_t*) knh_getDefaultClassDef(CTX *ctx)
+{
+	return &TdynamicDef;
 }
 
-static void DEFAULT_checkout(CTX ctx, Object *o, int isFailed) {
-}
+/* --------------------------------------------------------------------------*/
 
 static void Tuple_init(CTX ctx, Object *o)
 {
@@ -200,20 +226,13 @@ static void ObjectField_initcopy(CTX ctx, Object *o, const Object *src);
 static void ObjectField_reftrace(CTX ctx, Object *o FTRARG);
 static void ObjectField_free(CTX ctx, Object *o);
 
-static knh_ObjectSPI2_t Tvoid_SPI = {
-	"void", 0, CFLAG_Tvoid_,
+static knh_ClassDef_t Tvoid_Def = {
 	Tuple_init, ObjectField_initcopy, ObjectField_reftrace, ObjectField_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
-};
-
-static knh_ObjectSPI2_t Tvar_SPI = {
-	"var", 0, CFLAG_Tvoid_,
-	DEFAULT_init, DEFAULT_initcopy, NONE_reftrace, DEFAULT_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"dynamic", 0, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -308,12 +327,22 @@ static knh_String_t* ObjectField_getkey(CTX ctx, knh_sfp_t *sfp)
 	return DEFAULT_getkey(ctx, sfp);
 }
 
-static knh_ObjectSPI2_t ObjectSPI = {
-	"Object", 0, CFLAG_Object,
+static knh_ClassDef_t ObjectDef = {
 	ObjectField_init, ObjectField_initcopy, ObjectField_reftrace, ObjectField_free,
-	ObjectField_compareTo, ObjectField_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+	DEFAULT_checkin, DEFAULT_checkout, ObjectField_compareTo, DEFAULT_0,
+	ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Object", CFLAG_Object, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
+static knh_ClassDef_t Tvar_Def = {
+	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, ObjectField_compareTo, DEFAULT_0,
+	ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"var", CFLAG_Tvoid_, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 static void ObjectFieldN_init(CTX ctx, Object *o)
@@ -397,37 +426,47 @@ static void ObjectField4_reftrace(CTX ctx, Object *o FTRARG)
 #endif
 }
 
-static knh_ObjectSPI2_t ObjectNSPI[] = {
-	{"Object", 0, CFLAG_Object,
-		ObjectFieldN_init, ObjectFieldN_initcopy, NONE_reftrace, ObjectField_free,
-		ObjectField_compareTo, ObjectField_getkey, DEFAULT_hashCode,
-		DEFAULT_checkin, DEFAULT_checkout,
-		DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t ObjectNDef[] = {
+	{
+		ObjectFieldN_init, ObjectFieldN_initcopy, DEFAULT_reftrace, ObjectField_free,
+		DEFAULT_checkin, DEFAULT_checkout, ObjectField_compareTo, DEFAULT_0,
+		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+		DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+		"Object", CFLAG_Object, 0, NULL,
+		NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 	},
-	{"Object", 0, CFLAG_Object,
+	{
 		ObjectField_init, ObjectField_initcopy, ObjectField1_reftrace, ObjectField_free,
-		ObjectField_compareTo, ObjectField_getkey, DEFAULT_hashCode,
-		DEFAULT_checkin, DEFAULT_checkout,
-		DEFAULT_findTypeMapNULL,
+		DEFAULT_checkin, DEFAULT_checkout, ObjectField_compareTo, DEFAULT_0,
+		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+		DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+		"Object", CFLAG_Object, 0, NULL,
+		NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 	},
-	{"Object", 0, CFLAG_Object,
+	{
 		ObjectField_init, ObjectField_initcopy, ObjectField2_reftrace, ObjectField_free,
-		ObjectField_compareTo, ObjectField_getkey, DEFAULT_hashCode,
-		DEFAULT_checkin, DEFAULT_checkout,
-		DEFAULT_findTypeMapNULL,
+		DEFAULT_checkin, DEFAULT_checkout, ObjectField_compareTo, DEFAULT_0,
+		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+		DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+		"Object", CFLAG_Object, 0, NULL,
+		NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 	},
-	{"Object", 0, CFLAG_Object,
+	{
 		ObjectField_init, ObjectField_initcopy, ObjectField3_reftrace, ObjectField_free,
-		ObjectField_compareTo, ObjectField_getkey, DEFAULT_hashCode,
-		DEFAULT_checkin, DEFAULT_checkout,
-		DEFAULT_findTypeMapNULL,
+		DEFAULT_checkin, DEFAULT_checkout, ObjectField_compareTo, DEFAULT_0,
+		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+		DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+		"Object", CFLAG_Object, 0, NULL,
+		NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 	},
-	{"Object", 0, CFLAG_Object,
+	{
 		ObjectField_init, ObjectField_initcopy, ObjectField4_reftrace, ObjectField_free,
-		ObjectField_compareTo, ObjectField_getkey, DEFAULT_hashCode,
-		DEFAULT_checkin, DEFAULT_checkout,
-		DEFAULT_findTypeMapNULL,
-	},
+		DEFAULT_checkin, DEFAULT_checkout, ObjectField_compareTo, DEFAULT_0,
+		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+		DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+		"Object", CFLAG_Object, 0, NULL,
+		NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+	}
 };
 
 void knh_ClassTBL_setObjectCSPI(knh_ClassTBL_t *ct)
@@ -438,80 +477,38 @@ void knh_ClassTBL_setObjectCSPI(knh_ClassTBL_t *ct)
 	}
 	for(i = c + 1; i < ct->fsize; i++) {
 		if(ct->fields[i].israw == 0) {
-			knh_ClassTBL_setCSPI2(ct, &ObjectSPI);
+			knh_ClassTBL_setCSPI2(ct, &ObjectDef);
 			return;
 		}
 	}
 	if(c <= 4) {
 		DBG_P("NO OBJECT FIELD: %s c=%d", S_tochar(ct->lname), c);
-		knh_ClassTBL_setCSPI2(ct, ObjectNSPI + c);
+		knh_ClassTBL_setCSPI2(ct, ObjectNDef + c);
 	}
 	else {
-		knh_ClassTBL_setCSPI2(ct, &ObjectSPI);
+		knh_ClassTBL_setCSPI2(ct, &ObjectDef);
 	}
 }
 
 /* --------------- */
 /* Boolean */
 
-static void NDATA_initcopy(CTX ctx, Object *o, const Object *src)
+static void NDATA_init(CTX ctx, Object *o)
 {
-	o->ref = src->ref;
-	o->ref2_unused = src->ref2_unused;
-	o->ref3_unused = src->ref3_unused;
-	o->ref4_tail = src->ref4_tail;
+	knh_Number_t *no = (knh_Number_t*)o;
+	no->n.ivalue = 0;
 }
 
-static knh_ObjectSPI2_t BooleanSPI = {
-	"Boolean", 0, CFLAG_Boolean,
-	ABSTRACT_init, NDATA_initcopy, NONE_reftrace, DEFAULT_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
-};
+static void NDATA_initcopy(CTX ctx, Object *o, const Object *src)
+{
+	knh_Number_t *no = (knh_Number_t*)o;
+	knh_Number_t *so = (knh_Number_t*)src;
+	no->n.data = so->n.data;
+}
 
-/* --------------- */
-/* Number */
-
-static knh_ObjectSPI2_t NumberSPI = {
-	"Number", 0, CFLAG_Number,
-	ABSTRACT_init, DEFAULT_initcopy,
-	NONE_reftrace, DEFAULT_free, DEFAULT_compareTo,
-	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_checkin, DEFAULT_checkout,
-	 DEFAULT_findTypeMapNULL,
-};
-
-/* --------------- */
-/* Int */
-
-//static int Int_compareTo(CTX ctx, Object *o, Object *o2)
-//{
-//	return (int)(knh_Object_data(o) - knh_Object_data(o2));
-////	if(o->h.cid == CLASS_Int || o2->h.cid == CLASS_Int) {
-////		return (int)(o->n.ivalue - o2->n.ivalue);
-////	}
-////	else {
-////		knh_Semantics_t *u = knh_getSemantics(ctx, o->h.cid);
-////		return DP(u)->ficmp(u, o->n.ivalue, o2->n.ivalue);
-////	}
-//}
-//
-//static void* Int_hashkey(CTX ctx, knh_sfp_t *lsfp, int opt)
-//{
-//	if(opt == KNH_FOBJECT_KEY) {
-//		char buf[40];
-//#ifdef K_USING_INT32
-//		knh_snprintf(buf, sizeof(buf), "%016lu", lsfp[0].uvalue);
-//#else
-//		//18446744073709551615ULL
-//		knh_snprintf(buf, sizeof(buf), "%020llu", lsfp[0].uvalue);
-//#endif
-//		return (void*)new_S(ctx, B(buf));
-//	}
-//	else {
-//		return (void*)((knh_intptr_t)lsfp[0].uvalue);
-//	}
-//}
+static void NDATA_free(CTX ctx, Object *o)
+{
+}
 
 static knh_int_t Int_toint(CTX ctx, knh_sfp_t *sfp)
 {
@@ -523,29 +520,6 @@ static knh_float_t Int_tofloat(CTX ctx, knh_sfp_t *sfp)
 	return (knh_float_t)sfp[0].ivalue;
 }
 
-static knh_NumberSPI_t IntSPI = {
-	{
-		"Int", 0, CFLAG_Int,
-		DEFAULT_init, NDATA_initcopy, NONE_reftrace,  DEFAULT_free,
-		DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-		DEFAULT_checkin, DEFAULT_checkout,
-		DEFAULT_findTypeMapNULL, NULL, 0,
-	},
-	K_NUMBERCSPI_MAGIC,
-	Int_toint, Int_tofloat,
-};
-
-/* --------------- */
-/* Float */
-
-//static int Float_compareTo(CTX ctx, Object *o, Object *o2)
-//{
-//	knh_float_t f = (knh_float_t)knh_Object_data(o);
-//	knh_float_t f2 = (knh_float_t)knh_Object_data(o2);
-//	if(f == f2) return 0;
-//	if(f < f2) return -1; else return 1;
-//}
-
 static knh_int_t Float_toint(CTX ctx, knh_sfp_t *sfp)
 {
 	return (knh_int_t)sfp[0].fvalue;
@@ -556,16 +530,59 @@ static knh_float_t Float_tofloat(CTX ctx, knh_sfp_t *sfp)
 	return sfp[0].fvalue;
 }
 
-static knh_NumberSPI_t FloatSPI = {
-	{
-		"Float", 0, CFLAG_Float,
-		DEFAULT_init, NDATA_initcopy, NONE_reftrace,  DEFAULT_free,
-		DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-		DEFAULT_checkin, DEFAULT_checkout,
-		DEFAULT_findTypeMapNULL, NULL, 0,
-	},
-	K_NUMBERCSPI_MAGIC,
-	Float_toint, Float_tofloat,
+static knh_hashcode_t NDATA_hashCode(CTX ctx, knh_sfp_t *sfp)
+{
+	return (knh_hashcode_t)sfp[0].ndata;
+}
+
+static int Int_compareTo(const Object *o, const Object *o2)
+{
+	knh_int_t f = ((knh_Number_t*)o)->n.ivalue;
+	knh_int_t f2 = ((knh_Number_t*)o2)->n.ivalue;
+	return (f < f2) ? -1 : ((f == f2) ? 0 : 1);
+}
+
+static int Float_compareTo(const Object *o, const Object *o2)
+{
+	knh_float_t f = ((knh_Number_t*)o)->n.fvalue;
+	knh_float_t f2 = ((knh_Number_t*)o2)->n.fvalue;
+	return (f < f2) ? -1 : ((f == f2) ? 0 : 1);
+}
+
+static knh_ClassDef_t BooleanDef = {
+	NDATA_init, NDATA_initcopy, DEFAULT_reftrace, NDATA_free,
+	DEFAULT_checkin, DEFAULT_checkout, Int_compareTo, DEFAULT_0,
+	ObjectField_getkey, NDATA_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Boolean", CFLAG_Boolean, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
+static knh_ClassDef_t NumberDef = {
+	NDATA_init, NDATA_initcopy, DEFAULT_reftrace, NDATA_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	ObjectField_getkey, NDATA_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Number", CFLAG_Number, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
+static knh_ClassDef_t IntDef = {
+	NDATA_init, NDATA_initcopy, DEFAULT_reftrace, NDATA_free,
+	DEFAULT_checkin, DEFAULT_checkout, Int_compareTo, DEFAULT_0,
+	ObjectField_getkey, NDATA_hashCode, Int_toint, Int_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Int", CFLAG_Int, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
+static knh_ClassDef_t FloatDef = {
+	NDATA_init, NDATA_initcopy, DEFAULT_reftrace, NDATA_free,
+	DEFAULT_checkin, DEFAULT_checkout, Float_compareTo, DEFAULT_0,
+	ObjectField_getkey, NDATA_hashCode, Float_toint, Float_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Float", CFLAG_Float, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -583,7 +600,6 @@ static void String_init(CTX ctx, Object *o)
 static void String_free(CTX ctx, knh_Object_t *o)
 {
 	knh_String_t *s = (knh_String_t*)o;
-//	DBG_P("s='%s', isTextSgm=%d", s->str.text, String_isTextSgm(s));
 	if(!String_isTextSgm(s)) {
 		KNH_FREE(ctx, s->str.ubuf, KNH_SIZE(S_size(s) + 1));
 	}
@@ -610,16 +626,16 @@ static knh_String_t* String_getkey(CTX ctx, knh_sfp_t *sfp)
 
 static knh_hashcode_t String_hashCode(CTX ctx, knh_sfp_t *sfp)
 {
-	knh_bytes_t k = S_tobytes(sfp[0].s);
-	return knh_hash(0, k.text, k.len);
+	return (sfp[0].s)->hashCode;
 }
 
-static knh_ObjectSPI2_t StringSPI = {
-	"String", 0, CFLAG_String,
-	String_init, DEFAULT_initcopy, NONE_reftrace, String_free,
-	String_compareTo, String_getkey, String_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t StringDef = {
+	String_init, DEFAULT_initcopy, DEFAULT_reftrace, String_free,
+	DEFAULT_checkin, DEFAULT_checkout, String_compareTo, DEFAULT_0,
+	String_getkey, String_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"String", CFLAG_String, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -670,20 +686,35 @@ static void Bytes_free(CTX ctx, Object *o)
 	knh_dimfree(ctx, ba->bu.ubuf, ba->dim);
 }
 
-static knh_ObjectSPI2_t BytesSPI = {
-	"Bytes", 0, CFLAG_Bytes,
-	Bytes_init, Bytes_initcopy, NONE_reftrace, Bytes_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static int Bytes_compareTo(const knh_Object_t *o, const knh_Object_t *o2)
+{
+	knh_Bytes_t *s1 = (knh_Bytes_t*)o;
+	knh_Bytes_t *s2 = (knh_Bytes_t*)o2;
+	return knh_bytes_strcmp(BA_tobytes(s1) , BA_tobytes(s2));
+}
+
+static knh_hashcode_t Bytes_hashCode(CTX ctx, knh_sfp_t *sfp)
+{
+	knh_Bytes_t *ba = sfp[0].ba;
+	return knh_hash(0, ba->bu.text, ba->bu.len);
+}
+
+static knh_ClassDef_t BytesDef = {
+	Bytes_init, Bytes_initcopy, DEFAULT_reftrace, Bytes_free,
+	DEFAULT_checkin, DEFAULT_checkout, Bytes_compareTo, DEFAULT_0,
+	DEFAULT_getkey, Bytes_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Bytes", CFLAG_Bytes, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
-static knh_ObjectSPI2_t BytesImSPI = {
-	"BytesIm", 0, CFLAG_BytesIm,
-	Bytes_init, Bytes_initcopy, NONE_reftrace, Bytes_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t BytesImDef = {
+	Bytes_init, DEFAULT_initcopy, DEFAULT_reftrace, Bytes_free,
+	DEFAULT_checkin, DEFAULT_checkout, Bytes_compareTo, DEFAULT_0,
+	DEFAULT_getkey, Bytes_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"BytesIm", CFLAG_BytesIm, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -713,8 +744,7 @@ static void Range_reftrace(CTX ctx, Object *o FTRARG)
 }
 
 //static TCAST Range_Iterator(CTX ctx, knh_sfp_t *sfp _RIX);
-#define FLAG_TypeMap_Iteration (FLAG_TypeMap_Total)
-
+//#define FLAG_TypeMap_Iteration (FLAG_TypeMap_Total)
 //static knh_TypeMap_t* knh_Range_genmap(CTX ctx, knh_class_t cid, knh_class_t tcid)
 //{
 ////	if(knh_class_bcid(tcid) == CLASS_Iterator) {
@@ -727,12 +757,13 @@ static void Range_reftrace(CTX ctx, Object *o FTRARG)
 //	return NULL;
 //}
 
-static knh_ObjectSPI2_t RangeSPI = {
-	"Range", 0, CFLAG_Range,
+static knh_ClassDef_t RangeDef = {
 	Range_init, DEFAULT_initcopy, Range_reftrace, DEFAULT_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Range", CFLAG_Range, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -804,20 +835,22 @@ static void Array_free(CTX ctx, Object *o)
 //	return NULL;
 //}
 
-static knh_ObjectSPI2_t ArraySPI = {
-	"Array", 0, CFLAG_Array,
+static knh_ClassDef_t ArrayDef = {
 	Array_init, Array_initcopy, Array_reftrace, Array_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Array", CFLAG_Array, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
-static knh_ObjectSPI2_t ArrayImSPI = {
-	"ArrayIm", 0, CFLAG_ArrayIm,
-	Array_init, Array_initcopy, Array_reftrace, Array_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t ArrayImDef = {
+	Array_init, DEFAULT_initcopy, Array_reftrace, Array_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"ArrayIm", CFLAG_ArrayIm, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -859,95 +892,50 @@ static void Iterator_free(CTX ctx, Object *o)
 	knh_bodyfree(ctx, it->b, Iterator);
 }
 
-//static ITRNEXT knh_Iterator_filterNext(CTX ctx, knh_sfp_t *sfp, long rtnidx)
-//{
-//	knh_Iterator_t *itr2 = (knh_Iterator_t*)DP(sfp[0].it)->source;
-//	knh_class_t cid = O_p1(sfp[0].it);
-//	DBG_ASSERT(IS_bIterator(itr2));
-//	sfp = sfp + 1;
-//	rtnidx = rtnidx - 1;
-//	KNH_SETv(ctx, sfp[0].o, itr2);
-//	int res = SP(itr2)->fnext_1(ctx, sfp, rtnidx);
-//	while(res != 0) {
-//		if(knh_class_instanceof(ctx, O_cid(sfp[rtnidx].o), cid)) break;
-//		res = SP(itr2)->fnext_1(ctx, sfp, rtnidx);
-//	}
-//	return res;
-//}
-//
-//static TCAST Iterator_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_TypeMap_t *trl = sfp[K_TRLIDX].trlNC;
-//	RETURN_(new_Iterator(ctx, knh_class_p1(SP(trl)->tcid), sfp[K_TRLIDX].o, knh_Iterator_filterNext));
-//}
-//
-//static knh_TypeMap_t* knh_Iterator_genmap(CTX ctx, knh_class_t cid, knh_class_t tcid)
-//{
-//	if(cid == CLASS_Iterator && knh_class_bcid(cid) == CLASS_Iterator) {
-//		return new_TypeMap(ctx, FLAG_TypeMap_Iteration, CLASS_Iterator, cid, Iterator_Iterator);
-//	}
-//	if(knh_class_bcid(tcid) == CLASS_Array) {
-//		knh_class_t p1 = knh_class_p1(cid);
-//		knh_class_t tp1 = knh_class_p1(tcid);
-//		if(p1 == tp1 || tp1 == CLASS_Tdynamic || knh_class_instanceof(ctx, p1, tp1)) {
-//			return new_TypeMap(ctx, FLAG_TypeMap_Iteration, cid, tcid, Iterator_Array);
-//		}
-//	}
-//	return NULL;
-//}
-
-static knh_ObjectSPI2_t IteratorSPI = {
-	"Iterator", sizeof(knh_IteratorEX_t), CFLAG_Iterator,
+static knh_ClassDef_t IteratorDef = {
 	Iterator_init, DEFAULT_initcopy, Iterator_reftrace, Iterator_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Iterator", CFLAG_Iterator, sizeof(knh_IteratorEX_t), NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
 /* Map */
 
-static const knh_MapDSPI_t* nullmap_config(CTX ctx, knh_class_t p1, knh_class_t p2);
+static const knh_MapDSPI_t* NULLMAP_config(CTX ctx, knh_class_t p1, knh_class_t p2);
+static knh_map_t *NULLMAP_init(CTX ctx, size_t init, const char *path, void *option) { return NULL; }
+static void NULLMAP_reftrace(CTX ctx, knh_map_t *m FTRARG){}
+static void NULLMAP_free(CTX ctx, knh_map_t *m){}
+static knh_bool_t NULLMAP_get(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp) { return 0; }
+static void NULLMAP_set(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp) {}
+static void NULLMAP_remove(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp) {}
+static size_t NULLMAP_size(CTX ctx, knh_map_t* m) { return 0; }
+static knh_bool_t NULLMAP_setIterator(CTX ctx, knh_map_t* m, knh_Iterator_t *it) { return 0; }
 
-static knh_map_t *nullmap_init(CTX ctx, size_t init, const char *path, void *option)
-{
-	return NULL;
-}
-static void nullmap_reftrace(CTX ctx, knh_map_t *m FTRARG){}
-static void nullmap_free(CTX ctx, knh_map_t *m){}
-static knh_bool_t nullmap_get(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
-{
-	return 0;
-}
-static void nullmap_set(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp){}
-static void nullmap_remove(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp) {}
-
-static size_t nullmap_size(CTX ctx, knh_map_t* m)
-{
-	return 0;
-}
-static knh_bool_t nullmap_setIterator(CTX ctx, knh_map_t* m, knh_Iterator_t *it)
-{
-	return 0;
-}
-
-static const knh_MapDSPI_t NULLMap = {
+static const knh_MapDSPI_t NULLMAP = {
 	K_DSPI_MAP, "nullmap",
-	nullmap_config, nullmap_init, nullmap_reftrace, nullmap_free,
-	nullmap_get, nullmap_set, nullmap_remove, nullmap_size,
-	nullmap_setIterator,
+	NULLMAP_config, NULLMAP_init, NULLMAP_reftrace, NULLMAP_free,
+	NULLMAP_get, NULLMAP_set, NULLMAP_remove, NULLMAP_size,
+	NULLMAP_setIterator,
 };
 
-static const knh_MapDSPI_t* nullmap_config(CTX ctx, knh_class_t p1, knh_class_t p2)
+static const knh_MapDSPI_t* NULLMAP_config(CTX ctx, knh_class_t p1, knh_class_t p2)
 {
-	return &NULLMap;
+	return &NULLMAP;
 }
 
 static void Map_init(CTX ctx, Object *o)
 {
 	knh_Map_t *m = (knh_Map_t*)o;
-	m->dspi = &NULLMap;
+	m->dspi = &NULLMAP;
 	m->map = NULL;
+}
+
+static void TODO_initcopy(CTX ctx, Object *d, const Object *s)
+{
+	KNH_TODO(__FUNCTION__);
 }
 
 static void Map_reftrace(CTX ctx, Object *o FTRARG)
@@ -962,24 +950,22 @@ static void Map_free(CTX ctx, Object *o)
 	m->dspi->freemap(ctx, m->map);
 }
 
-static knh_ObjectSPI2_t MapSPI = {
-	"Map", 0, CFLAG_Map,
-	Map_init, DEFAULT_initcopy,
-	Map_reftrace, Map_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t MapDef = {
+	Map_init, TODO_initcopy, Map_reftrace, Map_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Map", CFLAG_Map, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
-static knh_ObjectSPI2_t MapImSPI = {
-	"MapIm", 0, CFLAG_MapIm,
-	Map_init, DEFAULT_initcopy,
-	Map_reftrace, Map_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t MapImDef = {
+	Map_init, DEFAULT_initcopy, Map_reftrace, Map_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"MapIm", CFLAG_MapIm, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1004,12 +990,13 @@ static knh_hashcode_t Class_hashCode(CTX ctx,knh_sfp_t *sfp)
 	return (knh_hashcode_t)c->cid;
 }
 
-static knh_ObjectSPI2_t ClassSPI = {
-	"Class", 0, CFLAG_Class,
-	DEFAULT_init, NDATA_initcopy, NONE_reftrace, DEFAULT_free,
-	Class_compareTo, Class_getkey, Class_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t ClassDef = {
+	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, Class_compareTo, DEFAULT_0,
+	Class_getkey, Class_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Class", CFLAG_Class, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1032,12 +1019,13 @@ static void ParamArray_free(CTX ctx, Object *o)
 	}
 }
 
-static knh_ObjectSPI2_t ParamArraySPI = {
-	"ParamArray", 0, CFLAG_ParamArray,
-	ParamArray_init, DEFAULT_initcopy, NONE_reftrace, ParamArray_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t ParamArrayDef = {
+	ParamArray_init, TODO_initcopy, DEFAULT_reftrace, ParamArray_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"ParamArray", CFLAG_ParamArray, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1064,17 +1052,20 @@ static void Method_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void Method_free(CTX ctx, Object *o)
+static void BODY_free(CTX ctx, Object *o)
 {
-	knh_bodyfree(ctx, o->ref, Method);
+	const knh_ClassTBL_t *ct = O_cTBL(o);
+	DBG_ASSERT(ct->ospi->struct_size > 0);
+	KNH_FREE(ctx, o->ref, ct->ospi->struct_size);
 }
 
-static knh_ObjectSPI2_t MethodSPI = {
-	"Method", sizeof(knh_MethodEX_t), CFLAG_Method,
-	Method_init, DEFAULT_initcopy, Method_reftrace, Method_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t MethodDef = {
+	Method_init, TODO_initcopy, Method_reftrace, BODY_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Method", CFLAG_Method, sizeof(knh_MethodEX_t), NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1101,17 +1092,13 @@ static void TypeMap_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void TypeMap_free(CTX ctx, Object *o)
-{
-	knh_bodyfree(ctx, o->ref, TypeMap);
-}
-
-static knh_ObjectSPI2_t TypeMapSPI = {
-	"TypeMap", sizeof(knh_TypeMapEX_t), CFLAG_TypeMap,
-	TypeMap_init, DEFAULT_initcopy, TypeMap_reftrace, TypeMap_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t TypeMapDef = {
+	TypeMap_init, TODO_initcopy, TypeMap_reftrace, BODY_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"TypeMap", CFLAG_TypeMap, sizeof(knh_TypeMapEX_t), NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1169,12 +1156,13 @@ static void Func_free(CTX ctx, Object *o)
 //	}
 }
 
-static knh_ObjectSPI2_t FuncSPI = {
-	"Func", 0, CFLAG_Func,
-	Func_init, DEFAULT_initcopy, Func_reftrace, Func_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t FuncDef = {
+	Func_init, TODO_initcopy, Func_reftrace, Func_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Func", CFLAG_Func, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1209,12 +1197,13 @@ static void Thunk_free(CTX ctx, Object *o)
 	}
 }
 
-static knh_ObjectSPI2_t ThunkSPI = {
-	"Thunk", 0, CFLAG_Thunk,
-	Thunk_init, DEFAULT_initcopy, Thunk_reftrace, Thunk_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t ThunkDef = {
+	Thunk_init, TODO_initcopy, Thunk_reftrace, Thunk_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Thunk", CFLAG_Thunk, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1243,16 +1232,13 @@ static void Exception_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void Exception_free(CTX ctx, Object *o)
-{
-	knh_bodyfree(ctx, o->ref, Exception);
-}
-
-static knh_ObjectSPI2_t ExceptionSPI = {
-	"Exception", sizeof(knh_ExceptionEX_t), CFLAG_Exception,
-	Exception_init, DEFAULT_initcopy, Exception_reftrace, Exception_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t ExceptionDef = {
+	Exception_init, TODO_initcopy, Exception_reftrace, BODY_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Exception", CFLAG_Exception, sizeof(knh_ExceptionEX_t), NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1274,16 +1260,13 @@ static void ExceptionHandler_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void ExceptionHandler_free(CTX ctx, Object *o)
-{
-	knh_bodyfree(ctx, o->ref, ExceptionHandler);
-}
-
-static knh_ObjectSPI2_t ExceptionHandlerSPI = {
-	"ExceptionHandler", 0, CFLAG_ExceptionHandler,
-	ExceptionHandler_init, DEFAULT_initcopy, ExceptionHandler_reftrace, ExceptionHandler_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t ExceptionHandlerDef = {
+	ExceptionHandler_init, TODO_initcopy, ExceptionHandler_reftrace, BODY_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"ExceptionHandler", CFLAG_ExceptionHandler, sizeof(knh_ExceptionHandlerEX_t), NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1314,13 +1297,14 @@ static void Regex_free(CTX ctx, Object *o)
 	}
 }
 
-static knh_ObjectSPI2_t RegexSPI = {
-	"Regex", 0, CFLAG_Regex,
+static knh_ClassDef_t RegexDef = {
 	Regex_init, DEFAULT_initcopy, Regex_reftrace, Regex_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_findTypeMapNULL,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Regex", CFLAG_Regex, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
-
 
 /* --------------- */
 /* StringEncoder */
@@ -1344,14 +1328,14 @@ static knh_ConvDSPI_t NOCONV_DSPI = {
 
 static void Converter_init(CTX ctx, Object *o)
 {
-	knh_StringEncoder_t *bc = (knh_StringEncoder_t*)o;
+	knh_Converter_t *bc = (knh_Converter_t*)o;
 	bc->conv = NULL;
 	bc->dspi = &NOCONV_DSPI;
 }
 
 static void Converter_free(CTX ctx, Object *o)
 {
-	knh_StringEncoder_t *bc = (knh_StringEncoder_t*)o;
+	knh_Converter_t *bc = (knh_Converter_t*)o;
 	if(bc->conv != NULL) {
 		bc->dspi->close(ctx, bc->conv);
 		bc->conv = NULL;
@@ -1359,36 +1343,40 @@ static void Converter_free(CTX ctx, Object *o)
 	}
 }
 
-static knh_ObjectSPI2_t ConverterSPI = {
-	"Converter", 0, CFLAG_Converter,
-	Converter_init, DEFAULT_initcopy, NONE_reftrace, Converter_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t ConverterDef = {
+	Converter_init, DEFAULT_initcopy, DEFAULT_reftrace, Converter_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Converter", CFLAG_Converter, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
-static knh_ObjectSPI2_t StringEncoderSPI = {
-	"StringEncoder", 0, CFLAG_StringEncoder,
-	Converter_init, DEFAULT_initcopy, NONE_reftrace, Converter_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t StringEncoderDef = {
+	Converter_init, DEFAULT_initcopy, DEFAULT_reftrace, Converter_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"StringEncoder", CFLAG_StringEncoder, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
-static knh_ObjectSPI2_t StringDecoderSPI = {
-	"StringEncoder", 0, CFLAG_StringDecoder,
-	Converter_init, DEFAULT_initcopy, NONE_reftrace, Converter_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t StringDecoderDef = {
+	Converter_init, DEFAULT_initcopy, DEFAULT_reftrace, Converter_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"StringDecoder", CFLAG_StringDecoder, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
-static knh_ObjectSPI2_t StringConverterSPI = {
-	"StringConverter", 0, CFLAG_StringConverter,
-	Converter_init, DEFAULT_initcopy, NONE_reftrace, Converter_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t StringConverterDef = {
+	Converter_init, DEFAULT_initcopy, DEFAULT_reftrace, Converter_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"StringConverter", CFLAG_StringConverter, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1434,9 +1422,8 @@ static int knh_fscmp__default(knh_Semantics_t *u, knh_bytes_t v1, knh_bytes_t v2
 
 #endif
 
-static void knh_Semantics_init(CTX ctx, Object *o)
+static void Semantics_init(CTX ctx, Object *o)
 {
-//	knh_Semantics_t *u = (knh_Semantics_t*)o;
 	knh_SemanticsEX_t *b = knh_bodymalloc(ctx, Semantics);
 	// common
 	b->flag = 0;
@@ -1478,7 +1465,7 @@ static void knh_Semantics_init(CTX ctx, Object *o)
 	o->ref = b;
 }
 
-static void knh_Semantics_reftrace(CTX ctx, Object *o FTRARG)
+static void Semantics_reftrace(CTX ctx, Object *o FTRARG)
 {
 	knh_Semantics_t *u = (knh_Semantics_t*)o;
 	knh_SemanticsEX_t *b = DP(u);
@@ -1493,25 +1480,13 @@ static void knh_Semantics_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void knh_Semantics_free(CTX ctx, Object *o)
-{
-	knh_bodyfree(ctx, o->ref, Semantics);
-}
-
-//static void* knh_Semantics_hashkey(CTX ctx, knh_sfp_t *sfp, int opt)
-//{
-//	if(opt == KNH_FOBJECT_KEY) {
-//		return (void*)DP((knh_Semantics_t*)sfp[0].o)->urn;
-//	}
-//	return DEFAULT_hashkey(ctx, sfp, opt);
-//}
-
-static knh_ObjectSPI2_t SemanticsSPI = {
-	"Semantics", sizeof(knh_SemanticsEX_t), CFLAG_Semantics,
-	knh_Semantics_init, DEFAULT_initcopy, knh_Semantics_reftrace, knh_Semantics_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t SemanticsDef = {
+	Semantics_init, TODO_initcopy, Semantics_reftrace, BODY_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Semantics", CFLAG_Semantics, sizeof(knh_SemanticsEX_t), NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1557,12 +1532,13 @@ static void InputStream_free(CTX ctx, Object *o)
 	knh_bodyfree(ctx, b, InputStream);
 }
 
-static knh_ObjectSPI2_t InputStreamSPI = {
-	"InputStream", sizeof(knh_InputStreamEX_t), CFLAG_InputStream,
+static knh_ClassDef_t InputStreamDef = {
 	InputStream_init, DEFAULT_initcopy, InputStream_reftrace, InputStream_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"InputStream", CFLAG_InputStream, sizeof(knh_InputStreamEX_t), NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1608,12 +1584,13 @@ static void OutputStream_free(CTX ctx, Object *o)
 	knh_bodyfree(ctx, b, OutputStream);
 }
 
-static knh_ObjectSPI2_t OutputStreamSPI = {
-	"OutputStream", sizeof(knh_InputStreamEX_t), CFLAG_OutputStream,
+static knh_ClassDef_t OutputStreamDef = {
 	OutputStream_init, DEFAULT_initcopy, OutputStream_reftrace, OutputStream_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"OutputStream", CFLAG_OutputStream, sizeof(knh_OutputStreamEX_t), NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1642,12 +1619,13 @@ static void Connection_free(CTX ctx, Object *o)
 	}
 }
 
-static knh_ObjectSPI2_t ConnectionSPI = {
-	"Connection", 0, CFLAG_Connection,
+static knh_ClassDef_t ConnectionDef = {
 	Connection_init, DEFAULT_initcopy, Connection_reftrace, Connection_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Connection", CFLAG_Connection, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1693,12 +1671,13 @@ static void ResultSet_free(CTX ctx, Object *o)
 	knh_bodyfree(ctx, b, ResultSet);
 }
 
-static knh_ObjectSPI2_t ResultSetSPI = {
-	"ResultSet", sizeof(knh_ResultSetEX_t), CFLAG_ResultSet,
+static knh_ClassDef_t ResultSetDef = {
 	ResultSet_init, DEFAULT_initcopy, ResultSet_reftrace, ResultSet_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"ResultSet", CFLAG_ResultSet, sizeof(knh_ResultSetEX_t), NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1708,30 +1687,31 @@ static void Script_init(CTX ctx, Object *o)
 {
 	knh_Script_t *scr = (knh_Script_t*)o;
 	knh_class_t cid = new_ClassId(ctx);
-	knh_ClassTBL_t *t = varClassTBL(cid);
-	scr->h.cTBL = (const knh_ClassTBL_t*)t;
-	DBG_ASSERT(t->cspi2 == NULL);
-	t->cflag  = CFLAG_Script;
-	t->magicflag = KNH_MAGICFLAG(t->cflag);
-	t->bcid   = CLASS_Script;
-	t->baseTBL = ClassTBL(CLASS_Script);
-	t->supcid = CLASS_Script;
-	t->supTBL = ClassTBL(CLASS_Script);
-	knh_ClassTBL_setCSPI2(t, ClassTBL(CLASS_Script)->cspi2);
-	KNH_INITv(t->methods, KNH_EMPTYLIST);
-	KNH_INITv(t->tmaps, KNH_EMPTYLIST);
+	knh_ClassTBL_t *ct = varClassTBL(cid);
+	scr->h.cTBL = (const knh_ClassTBL_t*)ct;
+	DBG_ASSERT(ct->ospi == NULL);
+	ct->cflag  = CFLAG_Script;
+	ct->magicflag = KNH_MAGICFLAG(ct->cflag);
+	ct->bcid   = CLASS_Script;
+	ct->baseTBL = ClassTBL(CLASS_Script);
+	ct->supcid = CLASS_Script;
+	ct->supTBL = ClassTBL(CLASS_Script);
+	knh_ClassTBL_setCSPI2(ct, ClassTBL(CLASS_Script)->ospi);
+	KNH_INITv(ct->methods, KNH_EMPTYLIST);
+	KNH_INITv(ct->tmaps, KNH_EMPTYLIST);
 	knh_setClassName(ctx, cid, ClassTBL(CLASS_Script)->sname, ClassTBL(CLASS_Script)->sname);
-	DBG_ASSERT(t->defnull == NULL);
+	DBG_ASSERT(ct->defnull == NULL);
 	scr->fields = NULL;
 	knh_setClassDefaultValue(ctx, cid, scr, NULL);
 }
 
-static knh_ObjectSPI2_t ScriptSPI = {
-	"Script", 0, CFLAG_Script,
+static knh_ClassDef_t ScriptDef = {
 	Script_init, DEFAULT_initcopy, ObjectField_reftrace, ObjectField_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Script", CFLAG_Script, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1767,17 +1747,13 @@ static void NameSpace_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void NameSpace_free(CTX ctx, Object *o)
-{
-	knh_bodyfree(ctx, o->ref, NameSpace);
-}
-
-static knh_ObjectSPI2_t NameSpaceSPI = {
-	"NameSpace", sizeof(knh_NameSpaceEX_t), CFLAG_NameSpace,
-	NameSpace_init, DEFAULT_initcopy, NameSpace_reftrace, NameSpace_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t NameSpaceDef = {
+	NameSpace_init, TODO_initcopy, NameSpace_reftrace, BODY_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"NameSpace", CFLAG_NameSpace, sizeof(knh_NameSpaceEX_t), NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1799,12 +1775,13 @@ static void Package_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static knh_ObjectSPI2_t PackageSPI = {
-	"Package", 0, CFLAG_Package,
+static knh_ClassDef_t PackageDef = {
 	Package_init, DEFAULT_initcopy, Package_reftrace, DEFAULT_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Package", CFLAG_Package, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1877,12 +1854,13 @@ static void System_free(CTX ctx, Object *o)
 	knh_bodyfree(ctx, sys, System);
 }
 
-static knh_ObjectSPI2_t SystemSPI = {
-	"System", sizeof(knh_SystemEX_t), CFLAG_System,
+static knh_ClassDef_t SystemDef = {
 	System_init, DEFAULT_initcopy, System_reftrace, System_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"System", CFLAG_System, sizeof(knh_SystemEX_t), NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1890,15 +1868,26 @@ static knh_ObjectSPI2_t SystemSPI = {
 
 static void Context_init(CTX ctx, Object *o)
 {
-	THROW_Halt(ctx, NULL, "Context can be only instatiated in new_Context()");
+	KNH_TODO(__FUNCTION__);
 }
 
-static knh_ObjectSPI2_t ContextSPI = {
-	"Context", 0, CFLAG_Context,
-	Context_init, DEFAULT_initcopy, NONE_reftrace, DEFAULT_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static void Context_reftrace(CTX ctx, Object *o FTRARG)
+{
+	KNH_TODO(__FUNCTION__);
+}
+
+static void Context_free(CTX ctx, Object *o)
+{
+	KNH_TODO(__FUNCTION__);
+}
+
+static knh_ClassDef_t ContextDef = {
+	Context_init, DEFAULT_initcopy, Context_reftrace, Context_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Context", CFLAG_Context, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1938,12 +1927,13 @@ static void Goal_checkout(CTX ctx, Object *o, int isFailed)
 	}
 }
 
-static knh_ObjectSPI2_t GoalSPI = {
-	"Goal", 0, CFLAG_Goal,
+static knh_ClassDef_t GoalDef = {
 	Goal_init, DEFAULT_initcopy, Goal_reftrace, DEFAULT_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	Goal_checkin, Goal_checkout,
-	DEFAULT_findTypeMapNULL,
+	Goal_checkin, Goal_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Goal", CFLAG_Goal, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -1980,12 +1970,13 @@ static void UnitTest_checkout(CTX ctx, Object *o, int isFailed)
 	}
 }
 
-static knh_ObjectSPI2_t UnitTestSPI = {
-	"UnitTest", 0, CFLAG_UnitTest,
+static knh_ClassDef_t UnitTestDef = {
 	UnitTest_init, DEFAULT_initcopy, UnitTest_reftrace, DEFAULT_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	UnitTest_checkin, UnitTest_checkout,
-	DEFAULT_findTypeMapNULL,
+	UnitTest_checkin, UnitTest_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"UnitTest", CFLAG_UnitTest, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -2009,20 +2000,13 @@ static void Token_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static knh_ObjectSPI2_t TermSPI = {
-	"Term", 0, 0,
-	ABSTRACT_init, DEFAULT_initcopy, NONE_reftrace, DEFAULT_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
-};
-
-static knh_ObjectSPI2_t TokenSPI = {
-	"Token", 0, CFLAG_Token,
-	Token_init, DEFAULT_initcopy, Token_reftrace, DEFAULT_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t TokenDef = {
+	Token_init, TODO_initcopy, Token_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Token", CFLAG_Token, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -2071,13 +2055,13 @@ static void Stmt_free(CTX ctx, Object *o)
 	knh_bodyfree(ctx, b, Stmt);
 }
 
-static knh_ObjectSPI2_t StmtSPI = {
-	"Stmt", sizeof(knh_StmtEX_t), CFLAG_Stmt,
-	Stmt_init, DEFAULT_initcopy,
-	Stmt_reftrace, Stmt_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t StmtDef = {
+	Stmt_init, TODO_initcopy, Stmt_reftrace, Stmt_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Stmt", CFLAG_Stmt, sizeof(knh_StmtEX_t), NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* Gamma */
@@ -2130,12 +2114,13 @@ static void Gamma_free(CTX ctx, Object *o)
 	knh_bodyfree(ctx, b, Gamma);
 }
 
-static knh_ObjectSPI2_t GammaSPI = {
-	"Gamma", sizeof(knh_GammaEX_t), CFLAG_Gamma,
-	Gamma_init, DEFAULT_initcopy, Gamma_reftrace, Gamma_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t GammaDef = {
+	Gamma_init, TODO_initcopy, Gamma_reftrace, Gamma_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Gamma", CFLAG_Gamma, sizeof(knh_GammaEX_t), NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -2175,12 +2160,13 @@ static void BasicBlock_free(CTX ctx, Object *o)
 	knh_bodyfree(ctx, DP(bb), BasicBlock);
 }
 
-static knh_ObjectSPI2_t BasicBlockSPI = {
-	"BasicBlock", 0, CFLAG_BasicBlock,
-	BasicBlock_init, DEFAULT_initcopy, BasicBlock_reftrace, BasicBlock_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t BasicBlockDef = {
+	BasicBlock_init, TODO_initcopy, BasicBlock_reftrace, BasicBlock_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"BasicBlock", CFLAG_BasicBlock, sizeof(knh_BasicBlockEX_t), NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */
@@ -2215,7 +2201,7 @@ static void KonohaCode_reftrace(CTX ctx, Object *o FTRARG)
 static void KonohaCode_free(CTX ctx, Object *o)
 {
 	knh_KonohaCode_t *b = (knh_KonohaCode_t*)o;
-#ifdef K_USING_VMCOUNT
+#ifdef K_USING_VMCOUNT  /* Who added this ?*/
 	knh_opline_t *pc = b->code;
 	while(pc->opcode != OPCODE_RET) {
 		knh_opcode_count(ctx, pc);
@@ -2225,40 +2211,13 @@ static void KonohaCode_free(CTX ctx, Object *o)
 	KNH_FREE(ctx, b->code, b->codesize);
 }
 
-static knh_ObjectSPI2_t KonohaCodeSPI = {
-	"KonohaCode", 0, CFLAG_KonohaCode,
-	KonohaCode_init, DEFAULT_initcopy, KonohaCode_reftrace, KonohaCode_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
-};
-
-/* --------------- */
-/* dynamic */
-
-static void DYNAMIC_init(CTX ctx, Object *o)
-{
-//	knh_RawPtr_t *g = (knh_RawPtr_t *)o;
-//	ctx->api->RawPtr_init(ctx, g, NULL, NULL);
-}
-
-static void DYNAMIC_free(CTX ctx, Object *o)
-{
-//	knh_RawPtr_t *g = (knh_RawPtr_t *)o;
-//	if((Object*)g == KNH_NULL) {
-//		DBG_P("freeing null");
-//	}
-//	else {
-//		g->pfree(ctx, g);
-//	}
-}
-
-static knh_ObjectSPI2_t TdynamicSPI = {
-	"dynamic", 0, CFLAG_Tdynamic,
-	DYNAMIC_init, DEFAULT_initcopy, NONE_reftrace, DYNAMIC_free,
-	DEFAULT_compareTo, DEFAULT_getkey, DEFAULT_hashCode,
-	DEFAULT_checkin, DEFAULT_checkout,
-	DEFAULT_findTypeMapNULL,
+static knh_ClassDef_t KonohaCodeDef = {
+	KonohaCode_init, TODO_initcopy, KonohaCode_reftrace, KonohaCode_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"KonohaCode", CFLAG_KonohaCode, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
 /* --------------- */

@@ -98,35 +98,7 @@ knh_float_t knh_float_rand(void)
 #endif
 }
 
-///* ------------------------------------------------------------------------ */
-///* [Number] */
-//
-//knh_bool_t Object_isNumber(CTX ctx, knh_Object_t *o)
-//{
-//	knh_NumberSPI_t *cspi = (knh_NumberSPI_t*)ClassTBL(O_cid(o))->cspi;
-//	return (cspi->magic == K_NUMBERCSPI_MAGIC);
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//FASTAPI(knh_int_t) knh_stack0_toint(CTX ctx, knh_sfp_t *sfp)
-//{
-//	knh_NumberSPI_t *cspi = (knh_NumberSPI_t*)ClassTBL(O_cid(sfp[0].o))->cspi;
-//	DBG_ASSERT(cspi->magic == K_NUMBERCSPI_MAGIC);
-//	return cspi->to_int(ctx, sfp);
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//FASTAPI(knh_float_t) knh_stack0_tofloat(CTX ctx, knh_sfp_t *sfp)
-//{
-//	knh_NumberSPI_t *cspi = (knh_NumberSPI_t*)ClassTBL(O_cid(sfp[0].o))->cspi;
-//	DBG_ASSERT(cspi->magic == K_NUMBERCSPI_MAGIC);
-//	return cspi->to_float(ctx, sfp);
-//}
-
 /* ------------------------------------------------------------------------ */
-/* [Int] */
 
 KNHAPI2(knh_Int_t*) new_Int(CTX ctx, knh_class_t cid, knh_int_t value)
 {
@@ -135,111 +107,12 @@ KNHAPI2(knh_Int_t*) new_Int(CTX ctx, knh_class_t cid, knh_int_t value)
 	return b;
 }
 
-/* ------------------------------------------------------------------------ */
-
 KNHAPI2(knh_Float_t*) new_Float(CTX ctx, knh_class_t cid, knh_float_t value)
 {
 	knh_Float_t *b = (knh_Float_t*)new_hObject_(ctx, ClassTBL(cid));
 	b->n.fvalue = value;
 	return b;
 }
-
-
-///* ------------------------------------------------------------------------ */
-///* [Affine] */
-//
-//static
-//knh_AffineConv_t *new_AffineConv(CTX ctx, knh_float_t fa, knh_float_t fb)
-//{
-//	knh_AffineConv_t *af = (knh_AffineConv_t*)new_Object_bcid(ctx, CLASS_AffineConv, 0);
-//	af->scale = (knh_affinefloat_t)fa;
-//	af->shift = (knh_affinefloat_t)fb;
-//	return af;
-//}
-//
-///* ------------------------------------------------------------------------ */
-///* [mapper] */
-//
-//static
-//TCAST knh_AffineConv_fmap__i2i(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_AffineConv_t *af = (knh_AffineConv_t*)DP(sfp[1].mpr)->mapdata;
-//	DBG_ASSERT(IS_AffineConv(af));
-//	knh_float_t y = (sfp[0].ivalue * af->scale) + af->shift;
-//	KNH_MAPPED_Int(ctx, sfp, (knh_int_t)y);
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//static TCAST knh_AffineConv_fmap__i2f(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_AffineConv_t *af = (knh_AffineConv_t*)DP(sfp[1].mpr)->mapdata;
-//	DBG_ASSERT(IS_AffineConv(af));
-//	knh_float_t y = (sfp[0].ivalue * af->scale) + af->shift;
-//	KNH_MAPPED_Float(ctx, sfp, y);
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//static TCAST knh_AffineConv_fmap__f2i(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_AffineConv_t *af = (knh_AffineConv_t*)DP(sfp[1].mpr)->mapdata;
-//	DBG_ASSERT(IS_AffineConv(af));
-//	knh_float_t y = (sfp[0].fvalue * af->scale) + af->shift;
-//	KNH_MAPPED_Int(ctx, sfp, (knh_int_t)y);
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//static TCAST knh_AffineConv_fmap__f2f(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_AffineConv_t *af = (knh_AffineConv_t*)DP(sfp[1].mpr)->mapdata;
-//	DBG_ASSERT(IS_AffineConv(af));
-//	knh_float_t y = (sfp[0].fvalue * af->scale) + af->shift;
-//	KNH_MAPPED_Float(ctx, sfp, y);
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//static knh_Ftmapper knh_Ftmapper_affine(knh_class_t scid, knh_class_t tcid)
-//{
-//	if(scid == CLASS_Int) {
-//		if(tcid == CLASS_Int) return knh_AffineConv_fmap__i2i;
-//		DBG_ASSERT(tcid == CLASS_Float);
-//		return knh_AffineConv_fmap__i2f;
-//	}
-//	//DBG_ASSERT(scid == CLASS_Float);
-//	{
-//		if(tcid == CLASS_Int) return knh_AffineConv_fmap__f2i;
-//		//DBG_ASSERT(tcid == CLASS_Float);
-//		return knh_AffineConv_fmap__f2f;
-//	}
-//}
-//
-///* ------------------------------------------------------------------------ */
-///* [TAFFINE] */
-//
-//static
-//void KNH_TAFFINE(CTX ctx, knh_class_t scid, knh_class_t tcid, knh_float_t scale, knh_float_t shift)
-//{
-//	knh_TypeMap_t *mpr = new_TypeMap(ctx, FLAG_TypeMap_Affine, scid, tcid,
-//			knh_Ftmapper_affine(ctx->share->ClassTBL[scid].bcid, ctx->share->ClassTBL[tcid].bcid),
-//			(Object*)new_AffineConv(ctx, scale, shift));
-//	knh_ClassMap_add(ctx, ctx->share->ClassTBL[scid].cmap, mpr);
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//KNHAPI2(void) knh_addAffineTypeMap(CTX ctx, knh_class_t scid, char *text, knh_float_t scale, knh_float_t shift)
-//{
-//	knh_class_t tcid = knh_getcid(ctx, B(text));
-//	if(tcid != CLASS_unknown && ClassTBL(tcid)->bcid != tcid) {
-//		KNH_TAFFINE(ctx, scid, tcid, scale, shift);
-//		if(scale != K_FLOAT_ZERO) {
-//			KNH_TAFFINE(ctx, tcid, scid, K_FLOAT_ONE / scale, -(shift/scale));
-//		}
-//	}
-//}
 
 /* ------------------------------------------------------------------------ */
 

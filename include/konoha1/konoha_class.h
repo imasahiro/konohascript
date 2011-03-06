@@ -994,29 +994,7 @@ typedef struct knh_UnitTest_t {
 /* konohac.h */
 
 /* ------------------------------------------------------------------------ */
-//## @Struct class Term Object;
-
-typedef knh_ushort_t   knh_term_t;
-#ifndef MN_OPSIZE
-#include "konohalang.h"
-#endif
-
-//#define K_FLAG_KEYWORD      K_FLAG_T0
-//#define TT_KEYWORD(tt)      ((tt) | K_FLAG_KEYWORD)
-//#define TT_ISKEYWORD(tt)    (((tt) & K_FLAG_KEYWORD) == K_FLAG_KEYWORD)
-//#define TT_UNMASK(tt)       ((tt) & ~(K_FLAG_KEYWORD))
-
-typedef struct knh_Term_t {
-	knh_hObject_t h;
-	void *ref;
-	knh_uline_t uline;                   //Term
-	knh_type_t type; knh_term_t  tt;     //Term
-} knh_Term_t;
-
-#define Term_isTyped(o)     (o->type != TYPE_var)
-
-/* ------------------------------------------------------------------------ */
-//## @Struct class Token Term;
+//## @Struct class Token Object;
 //## flag Token BOL           0 SP(%s)->flag0 is  set * *;
 //## flag Token DOT           1 SP(%s)->flag0 is  set * *;
 //## flag Token LCASE         2 SP(%s)->flag0 has set * *;
@@ -1046,6 +1024,20 @@ typedef struct knh_Term_t {
 #define Token_isReadOnly(tk)   Token_isBOL(tk)
 #define Token_setReadOnly(tk, b)   Token_setBOL(tk, b)
 
+typedef knh_ushort_t   knh_term_t;
+#ifndef MN_OPSIZE
+#include "konohalang.h"
+#endif
+
+typedef struct knh_Term_t {
+	knh_hObject_t h;
+	void *ref;
+	knh_uline_t uline;                   //Term
+	knh_type_t type; knh_term_t  tt;     //Term
+} knh_Term_t;
+
+#define Term_isTyped(o)     (o->type != TYPE_var)
+
 typedef struct knh_Token_t {
 	knh_hObject_t h;
 	union {
@@ -1073,7 +1065,7 @@ typedef struct knh_Token_t {
 #define new_TermCONST(ctx, d)   TM(new_TokenCONST_(ctx, UPCAST(d)))
 
 /* ------------------------------------------------------------------------ */
-//## @Struct class Stmt Term;
+//## @Struct class Stmt Object;
 //## flag Stmt TailReturn 1 DP(%s)->flag0 is set * *;
 //## flag Stmt Memo1      2 DP(%s)->flag0 is set * *;
 //## flag Stmt Memo2      3 DP(%s)->flag0 is set * *;
