@@ -140,20 +140,20 @@ knh_sfp_t* knh_stack_local(CTX ctx, size_t n)
 
 void knh_stack_gc(CTX ctx, int isALL)
 {
-	knh_sfp_t *sp = ctx->esp;
-	knh_Object_t *null = KNH_NULL;
+	knh_sfp_t *sp = ctx->esp + 1;
+	knh_Object_t *nullobj = KNH_NULL;
 	if(isALL) {
 		knh_sfp_t *stacktop = ctx->stack + ctx->stacksize;
 		while(sp < stacktop) {
-			KNH_SETv(ctx, sp[0].o, null);
+			KNH_SETv(ctx, sp[0].o, nullobj);
 			sp++;
 		}
 	}
 	else {
 		while(sp < ctx->stacktop) {
 			//DBG_P("stack[%d] o=%s", sp - ctx->stack, CLASS__(O_cid(sp[0].o)));
-			if(sp[0].o == null) break;
-			KNH_SETv(ctx, sp[0].o, null);
+			if(sp[0].o == nullobj) break;
+			KNH_SETv(ctx, sp[0].o, nullobj);
 			sp++;
 		}
 	}

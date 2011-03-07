@@ -439,10 +439,10 @@ void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize)
 #define prefetch_bitmap(o)   prefetch(K_OPAGE(o)->h.bitmap)
 #define prefetch_tenure(o)   prefetch(K_OPAGE(o)->h.tenure)
 
-#ifdef K_USING_RCGC
-#define O_set_tenure(o)
-#define O_unset_tenure(o) 
-#else
+//#ifdef K_USING_RCGC
+//#define O_set_tenure(o)
+//#define O_unset_tenure(o)
+//#else
 #define O_set_tenure(o) {\
 		knh_ObjectPage_t *opage = K_OPAGE(o);\
 		knh_uintptr_t *tenure = opage->h.tenure;\
@@ -456,8 +456,8 @@ void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize)
 		size_t offset = K_OPAGEOFFSET(o, opage);\
 		bit_unset(tenure, offset);\
 	}\
-
-#endif
+//
+//#endif
 
 static void ObjectPage_init(knh_ObjectPage_t *opage)
 {
@@ -502,7 +502,6 @@ static void ObjectArenaTBL_init(CTX ctx, knh_ObjectArenaTBL_t *oat, size_t arena
 	knh_fastmemset(oat->tenure, bitmapsize, ((knh_intptr_t)-1));
 	object_count = (oat->bottom - oat->head);
 	//knh_mlock(oat->bitmap, bitmapsize * K_NBITMAP);
-
 	for(; opage < oat->bottom; opage++) {
 		opage->h.bitmap = bitmap;
 		opage->h.tenure = (knh_uintptr_t*)K_SHIFTPTR(bitmap, bitmapsize);
@@ -519,8 +518,6 @@ static void ObjectArenaTBL_init(CTX ctx, knh_ObjectArenaTBL_t *oat, size_t arena
 		ctxshare->gcBoundary += (object_count * K_PAGEOBJECTSIZE) - ((gcBoundary == 0)? 1024:0);
 		//	(ctxshare)->gcBoundary = (((object_count * K_PAGEOBJECTSIZE) / 10) * 9);
 	}
-
-	//DBG_UNOBJinc(((knh_context_t*)ctx), (object_count * K_PAGEOBJECTSIZE));
 	DBG_(ObjectArenaTBL_checkSize(oat, arenasize, object_count););
 }
 
@@ -541,9 +538,7 @@ static knh_Object_t *new_ObjectArena(CTX ctx, size_t arenasize)
 	DBG_ASSERT(sizeof(knh_ObjectPage_t) == K_PAGESIZE);
 	oat = &ctxshare->ObjectArenaTBL[pageindex];
 	ObjectArenaTBL_init(ctx, oat, arenasize);
-
 	KNH_SYSLOG(ctx, LOG_INFO, "NEW_Arena", "*id=%d region=(%p-%p), %d objects", pageindex, oat->head, oat->bottom, ((oat->bottom - oat->head) * K_PAGEOBJECTSIZE));
-
 	{
 		knh_Object_t *p = oat->head->slots;
 		p->ref4_tail = &(((knh_Object_t*)(oat->bottom))[-1]);
@@ -705,11 +700,6 @@ void TR_NEW(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 }
 
 /* ------------------------------------------------------------------------ */
-
-//#endif/*K_USING_CSTACK_TRAVERSE_*/
-//#if defined(K_USING_RCGC) && defined(K_USING_CSTACK_TRAVERSE_)
-//static void knh_Object_finalRCsweep(CTX ctx, Object *o) {}
-//#endif
 
 static void knh_Object_finalfree(CTX ctx, knh_Object_t *o)
 {
@@ -873,37 +863,37 @@ void knh_ObjectObjectArenaTBL_free(CTX ctx, const knh_ObjectArenaTBL_t *oat)
 		for(i = 0; i < K_PAGEOBJECTSIZE; i++) {
 			Object *o = &opage->slots[i];
 			if(O_cTBL(o) == NULL) continue;
-#ifdef KNH_HOBJECT_REFC
-			DBG_({
-				fprintf(stderr, "async object %p cid=%s(%d), ref=%d ", o, STRUCT__(O_bcid(o)), (int)O_cid(o), (int)O_bcid(o));
-				switch(O_bcid(o)) {
-				case CLASS_Boolean:
-					fprintf(stderr, "bvalue='%d' true?=%d false?=%d\n", (int)((knh_Int_t*)o)->n.bvalue, (o == KNH_TRUE), (o == KNH_FALSE));
-				break;
-				case CLASS_Int:
-					fprintf(stderr, "ivalue='%lld'\n", (long long int)((knh_Int_t*)o)->n.ivalue);
-				break;
-				case CLASS_Class:
-					fprintf(stderr, "o->cid=%d\n", (int)((knh_Class_t*)o)->cid);
-				break;
-				case CLASS_String:
-					fprintf(stderr, "str='%s'\n", S_tochar((knh_String_t*)o));
-				break;
-				case CLASS_Token:
-					fprintf(stderr, "tt='%s'\n", TT__(((knh_Token_t*)o)->tt));
-				break;
-				case CLASS_Method: {
-					knh_Method_t *mtd = (knh_Method_t*)o;
-					fprintf(stderr, "(mtd)->cid=%s, (mtd)->mn=%d\n", STRUCT__((mtd)->cid), (mtd)->mn);
-					break;
-				}
-				case CLASS_Stmt:
-					fprintf(stderr, "stmt='%s'\n", TT__((SP(knh_Stmt_t*)o)->stt));
-				break;
-				default:
-					fprintf(stderr, "\n");
-				}
-			});
+#ifdef K_USING_RCGC
+//			DBG_({
+//				fprintf(stderr, "async object %p cid=%s(%d), ref=%d ", o, STRUCT__(O_bcid(o)), (int)O_cid(o), (int)O_bcid(o));
+//				switch(O_bcid(o)) {
+//				case CLASS_Boolean:
+//					fprintf(stderr, "bvalue='%d' true?=%d false?=%d\n", (int)((knh_Int_t*)o)->n.bvalue, (o == KNH_TRUE), (o == KNH_FALSE));
+//				break;
+//				case CLASS_Int:
+//					fprintf(stderr, "ivalue='%lld'\n", (long long int)((knh_Int_t*)o)->n.ivalue);
+//				break;
+//				case CLASS_Class:
+//					fprintf(stderr, "o->cid=%d\n", (int)((knh_Class_t*)o)->cid);
+//				break;
+//				case CLASS_String:
+//					fprintf(stderr, "str='%s'\n", S_tochar((knh_String_t*)o));
+//				break;
+//				case CLASS_Token:
+//					fprintf(stderr, "tt='%s'\n", TT__(((knh_Token_t*)o)->tt));
+//				break;
+//				case CLASS_Method: {
+//					knh_Method_t *mtd = (knh_Method_t*)o;
+//					fprintf(stderr, "(mtd)->cid=%s, (mtd)->mn=%d\n", STRUCT__((mtd)->cid), (mtd)->mn);
+//					break;
+//				}
+//				case CLASS_Stmt:
+//					fprintf(stderr, "stmt='%s'\n", TT__((SP(knh_Stmt_t*)o)->stt));
+//				break;
+//				default:
+//					fprintf(stderr, "\n");
+//				}
+//			});
 			o->h.refc = 0;
 #endif
 			knh_Object_finalfree(ctx, o);
@@ -1045,7 +1035,7 @@ static void gc_mark(CTX ctx)
 	((knh_context_t*)ctx)->ref_size = 0;
 	knh_reftraceAll(ctx, ctx->refs);
 	//fprintf(stderr, "%s first refs %ld\n", __FUNCTION__, ctx->ref_size);
-	goto L_loophead;
+	goto L_INLOOP;
 	while((ref = ostack_next(ostack)) != NULL) {
 		const knh_ClassTBL_t *cTBL = O_cTBL(ref);
 		DBG_ASSERT(O_hasRef(ref));
@@ -1053,7 +1043,7 @@ static void gc_mark(CTX ctx)
 		((knh_context_t*)ctx)->ref_size = 0;
 		cTBL->ospi->reftrace(ctx, ref, ctx->refs);
 		if(ctx->ref_size > 0) {
-			L_loophead:;
+			L_INLOOP:;
 			prefetch(ctx->refs[0]);
 			for(i = ctx->ref_size - 1; i >= 0; --i) {
 				mark_ostack(ctx, ctx->refs[i], ostack);
