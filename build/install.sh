@@ -36,6 +36,6 @@ if [ -h ${kpath}/bin/konoha ] ; then
 fi
 
 if [ ! \( -f ${kpath}/bin/konoha \) ] ; then
-	ln -s ${kpath}/bin/${ktarget} ${kpath}/bin/konoha
+	ln -s ${ktarget} ${kpath}/bin/konoha
 fi
 

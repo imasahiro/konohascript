@@ -159,7 +159,7 @@ $(dir)/i.so: $(objs_i)
 	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDLIBS_libi)
 
 $(dir)/i.o : package/konoha.i/i.c
-	$(CC) $(CFLAGS) -c $^ -o $@
+	$(CC) $(CFLAGS) -D_SETUP -c $^ -o $@
 
 ## math
 LDLIBS_libmath = -lm
@@ -169,7 +169,7 @@ $(dir)/math.so: $(obj_math)
 	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDLIBS_libmath)
 
 $(dir)/math.o : package/konoha.math/math.c
-	$(CC) $(CFLAGS) -c $^ -o $@
+	$(CC) $(CFLAGS) -D_SETUP -c $^ -o $@
 
 ## posix
 LDLIBS_libposix = 
@@ -179,7 +179,7 @@ $(dir)/posix.so: $(objs_posix)
 	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDLIBS_libposix)
 
 $(dir)/posix.o : package/konoha.posix/posix.c
-	$(CC) $(CFLAGS) -c $^ -o $@
+	$(CC) $(CFLAGS) -D_SETUP -c $^ -o $@
 
 ## install
 .PHONY: install
