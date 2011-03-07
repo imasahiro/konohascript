@@ -136,7 +136,6 @@
 #endif
 
 /* MALLOC */
-
 //#define K_USING_TRACEMALLOC 1
 
 #ifdef K_EXPORTS

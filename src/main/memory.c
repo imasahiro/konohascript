@@ -182,7 +182,7 @@ void TRACE_free(CTX ctx, void *p, size_t size K_TRACEARGV)
 	if(unlikely(size != block[0])) {
 		fprintf(stderr, "%s:%d(%s) ptr = %p, block.size = %d, free.size=%d\n",
 				_file, _line, _func, p, (int)block[0], (int)size);
-		DBG_ABORT();
+		KNH_ABORT();
 	}
 	knh_bzero(block, size + sizeof(size_t));
 	free(block);
@@ -212,7 +212,7 @@ void *TRACE_realloc(CTX ctx, void *p, size_t os, size_t ns, size_t wsize K_TRACE
 		if(unlikely(oldsize != block[0])) {
 			fprintf(stderr, "%s:%d(%s) ptr = %p, block.size = %d, free.size=%d\n",
 					_file, _line, _func, p, (int)block[0], (int)oldsize);
-			DBG_ABORT();
+			KNH_ABORT();
 		}
 		knh_bzero(block, oldsize + sizeof(size_t));
 		free(block);
@@ -1168,9 +1168,7 @@ void knh_System_gc(CTX ctx)
 {
 	knh_stat_t *ctxstat = ctx->stat;
 	size_t used = ctxstat->usedObjectSize;
-	//MSGC_(if(!(used < ctx->share->gcBoundary)) {)
 	knh_uint64_t stime = knh_getTimeMilliSecond(), mtime = 0, ctime = 0;
-//	fprintf(stderr, "** GC - Starting (used %d Mb) ***\n", ctxstat->usedMemorySize/1024/1024);
 	gc_init(ctx);
 	MTGC_(((knh_context_t*)ctx)->mscheck = 1);
 	gc_mark(ctx);
@@ -1198,7 +1196,6 @@ void knh_System_gc(CTX ctx)
 	ctxstat->markingTime += (mtime-stime);
 	ctxstat->sweepingTime += (ctime-mtime);
 	ctxstat->gcTime += (knh_getTimeMilliSecond() - stime);
-	//MSGC_(})
 }
 
 /* ------------------------------------------------------------------------ */

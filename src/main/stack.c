@@ -140,7 +140,7 @@ knh_sfp_t* knh_stack_local(CTX ctx, size_t n)
 
 void knh_stack_gc(CTX ctx, int isALL)
 {
-	knh_sfp_t *sp = ctx->esp + 1;
+	knh_sfp_t *sp = ctx->esp + 1;  // for safety
 	knh_Object_t *nullobj = KNH_NULL;
 	if(isALL) {
 		knh_sfp_t *stacktop = ctx->stack + ctx->stacksize;
