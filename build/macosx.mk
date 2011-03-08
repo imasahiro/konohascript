@@ -1,10 +1,10 @@
 # Makefile for macosx
 #
 
-CC = gcc
-CFLAGS = -g -O2 -Wall -fPIC -I./include
+CC ?= gcc
+CFLAGS ?= -g -O2 -Wall -fPIC -I./include
 ARCH = -arch i386 -arch x86_64
-LDLIBS = -liconv -lpthread
+LDLIBS ?= -liconv -lpthread
 STRIP = strip
 
 konoha = konoha1

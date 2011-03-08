@@ -190,7 +190,7 @@ static knh_ClassDef_t TdynamicDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
-KNHAPI2(knh_ClassDef_t*) knh_getDefaultClassDef(CTX *ctx)
+KNHAPI2(knh_ClassDef_t*) knh_getDefaultClassDef(void)
 {
 	return &TdynamicDef;
 }

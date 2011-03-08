@@ -39,7 +39,28 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
+typedef struct {
+	int sd;
+	knh_InputStream_t *in;
+	knh_OutputStream_t *out;
+	knh_intptr_t port;
+} knh_Socket_t ;
 
+EXPORTAPI(const knh_ClassDef_t*) Socket(CTX ctx)
+{
+	static knh_ClassDef_t cdef;
+	cdef = *(knh_getDefaultClassDef());
+	cdef.name = "Socket";
+	return (const knh_ClassDef_t*)&cdef;
+}
+
+EXPORTAPI(const knh_ClassDef_t*) ServerSocket(CTX ctx)
+{
+	static knh_ClassDef_t cdef;
+	cdef = *(knh_getDefaultClassDef());
+	cdef.name = "ServerSocket";
+	return (const knh_ClassDef_t*)&cdef;
+}
 
 ////## Socket Socket.new(String! ip_addr, Int! port);
 //METHOD Socket_new(Ctx* ctx, knh_sfp_t* sfp _RIX)

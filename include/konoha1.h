@@ -48,9 +48,6 @@
 #endif
 
 #include"konoha1/konoha_config.h"
-//#include"konoha1/konoha_tb.h"
-//#include"konoha1/konoha_lkm.h"
-//#include"konoha1/konoha_deps.h"
 
 /* types, symbols */
 #include"konoha1/konoha_t.h"
@@ -60,7 +57,6 @@
 #include"konoha1/konoha_debug.h"
 #include"konoha1/konoha_glue.h"
 #include"konoha1/konoha_gc.h"
-//#include"konoha1/konoha_vm.h"
 
 /* konohaapi, prototypes */
 

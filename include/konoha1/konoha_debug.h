@@ -26,7 +26,7 @@
 #endif
 
 #define LOG_NONE     (LOG_DEBUG+1)
-#define LOG_MSG    "Message"
+#define LOG_MSG      "Message"
 
 
 #define KNH_SYSLOG(ctx, p, e, fmt, ...) \
@@ -143,12 +143,12 @@
 	#define KNH_FREE(ctx, p, size)      ctx->api->free(ctx, p, size)
 #else
 #if defined(K_USING_TRACEMALLOC)
-	#define KNH_MALLOC(ctx, size)    TRACE_malloc(ctx, size K_TRACEPOINT)
-	#define KNH_FREE(ctx, p, size)   TRACE_free(ctx, p, size K_TRACEPOINT)
+	#define KNH_MALLOC(ctx, size)       TRACE_malloc(ctx, size K_TRACEPOINT)
+	#define KNH_FREE(ctx, p, size)      TRACE_free(ctx, p, size K_TRACEPOINT)
 	#define KNH_REALLOC(ctx, p, os, ns, wsize) TRACE_realloc(ctx, p, os, ns, wsize K_TRACEPOINT)
 #else
-	#define KNH_MALLOC(ctx, size)    knh_fastmalloc(ctx, size)
-	#define KNH_FREE(ctx, p, size)   knh_fastfree(ctx, p, size)
+	#define KNH_MALLOC(ctx, size)       knh_fastmalloc(ctx, size)
+	#define KNH_FREE(ctx, p, size)      knh_fastfree(ctx, p, size)
 	#define KNH_REALLOC(ctx, p, os, ns, wsize) knh_fastrealloc(ctx, p, os, ns, wsize)
 #endif
 #endif
@@ -156,18 +156,18 @@
 #define KNH_VALLOC(ctx, size)        knh_valloc(ctx, size)
 #define KNH_VFREE(ctx, p, size)      knh_vfree(ctx, p, size)
 
-#define KNH_P(fmt, ...)  ctx->api->dbg_p(__FILE__, __FUNCTION__, __LINE__, fmt, ## __VA_ARGS__)
+#define KNH_P(fmt, ...)   ctx->api->dbg_p(__FILE__, __FUNCTION__, __LINE__, fmt, ## __VA_ARGS__)
 
 #ifdef K_EXPORTS
-#define DBG_P(fmt, ...)  ctx->api->dbg_p(__FILE__, __FUNCTION__, __LINE__, fmt, ## __VA_ARGS__)
-#define TODO_P(fmt, ...) ctx->api->todo_p(__FILE__, __FUNCTION__, __LINE__, fmt, ## __VA_ARGS__)
+#define DBG_P(fmt, ...)   ctx->api->dbg_p(__FILE__, __FUNCTION__, __LINE__, fmt, ## __VA_ARGS__)
+#define TODO_P(fmt, ...)  ctx->api->todo_p(__FILE__, __FUNCTION__, __LINE__, fmt, ## __VA_ARGS__)
 
 #else/*K_EXPORTS*/
 #ifdef K_USING_DEBUG
-#define DBG_TRACE   ,const char* _file, const char* _func, int _line
-#define DBG_P(fmt, ...)  dbg_p(__FILE__, __FUNCTION__, __LINE__, fmt, ## __VA_ARGS__)
+#define DBG_TRACE         ,const char* _file, const char* _func, int _line
+#define DBG_P(fmt, ...)   dbg_p(__FILE__, __FUNCTION__, __LINE__, fmt, ## __VA_ARGS__)
 #define TRACE_P(fmt, ...) dbg_p(_file, _func, _line, fmt, ## __VA_ARGS__)
-#define TODO_P(fmt, ...) todo_p(__FILE__, __FUNCTION__, __LINE__, fmt, ## __VA_ARGS__)
+#define TODO_P(fmt, ...)  todo_p(__FILE__, __FUNCTION__, __LINE__, fmt, ## __VA_ARGS__)
 
 #define KNH_LOCK(ctx, m)    ctx->share->syncSPI->lock(m, __FILE__, __FUNCTION__, __LINE__)
 #define KNH_UNLOCK(ctx, m)  ctx->share->syncSPI->unlock(m, __FILE__, __FUNCTION__, __LINE__)

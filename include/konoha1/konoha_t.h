@@ -946,7 +946,7 @@ typedef struct {
 } knh_share_t ;
 
 #define KNH_ASSERT_CTX0(ctx)   KNH_ASSERT((ctx)->ctxid == 0)
-#ifdef K_USING_DEBUG
+#if defined(K_USING_DEBUG) && defined(K_INTERNAL)
 #define ClassTBL(cid)     DBG_ClassTBL(ctx, cid)
 #else
 #define ClassTBL(cid)     (ctx->share->ClassTBL[cid])

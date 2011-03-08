@@ -30,15 +30,6 @@
 //
 // **************************************************************************
 
-/* inlinelibs */
-//#define USE_B
-//#define USE_STEXT
-//#define USE_bytes_strcmp
-//#define USE_cwb_tobytes
-//#define USE_cwb_size
-
-#define K_EXPORTS   1
-
 #include <konoha1.h>
 
 #ifdef __cplusplus 
