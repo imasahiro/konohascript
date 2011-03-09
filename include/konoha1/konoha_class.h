@@ -604,21 +604,39 @@ typedef struct knh_Exception_t {
 //## @Private class ExceptionHandler Object;
 //## flag ExceptionHandler Catching   1 - is set * *;
 
+#ifdef K_USING_SETJMP_
+#ifdef K_USING_POSIX_
+typedef sigjmp_buf knh_jmpbuf_t;
+#define knh_setjmp(buf)         sigsetjmp(buf, 1)
+#define knh_longjmp(buf, val)   siglongjmp(buf, val)
+#else
+typedef jmp_buf knh_jmpbuf_t;
+#define knh_setjmp(buf)         setjmp(buf)
+#define knh_longjmp(buf, val)   longjmp(buf, val)
+#endif
+
+typedef struct {
+	knh_jmpbuf_t jmpbuf;
+	knh_intptr_t espidx;
+} knh_ExceptionHandlerEX_t;
+
+#else
+
 typedef struct {
 	struct knh_opline_t *pc;
-	struct knh_opline_t *vpc;
+	struct klr_TRY_t *op;
+	knh_intptr_t sfpidx;
 	void *return_address;
 	void *frame_address;
 	knh_uintptr_t stack_pointer;
-	struct klr_TRY_t *op;
-	knh_intptr_t sfpidx;
-	knh_intptr_t espidx;
-	knh_intptr_t vshift;
 } knh_ExceptionHandlerEX_t;
+
+#endif/*K_USING_SETJMP_*/
 
 typedef struct knh_ExceptionHandler_t {
 	knh_hObject_t h;
 	knh_ExceptionHandlerEX_t *b;
+	knh_intptr_t espidx;
 	struct knh_ExceptionHandler_t *parentNC;
 	struct knh_Array_t *stacklist;
 } knh_ExceptionHandler_t;

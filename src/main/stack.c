@@ -320,6 +320,8 @@ void CTX_setThrowingException(CTX ctx, knh_Exception_t *e)
 
 /* ------------------------------------------------------------------------ */
 
+#ifndef K_USING_SETJMP_
+
 #if defined(__i386__)
 #define reg(r) "%%e" r
 #elif defined(__x86_64__)
@@ -384,6 +386,7 @@ knh_ExceptionHandler_t *knh_ExceptionHandler_longjmp(CTX ctx, knh_ExceptionHandl
 #endif
 	return hdr;
 }
+#endif/*K_USING_SETJMP_*/
 
 /* ------------------------------------------------------------------------ */
 

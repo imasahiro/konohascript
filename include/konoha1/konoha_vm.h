@@ -420,6 +420,34 @@ extern "C" {
 
 //#define NPC  /* for KNH_TRY */
 
+#ifdef K_USING_SETJMP_
+
+#define KLR_TRY(ctx, PC, JUMP, hn)  {\
+	knh_ExceptionHandler_t* _hdr = Rh_(hn); \
+	if(!IS_ExceptionHandler(_hdr)) { \
+		_hdr = new_(ExceptionHandler); \
+		klr_mov(ctx, Ro_(hn), _hdr); \
+	} \
+	int jump = knh_setjmp(DP(_hdr)->jmpbuf); \
+	if(jump == 0) {\
+		_hdr->espidx = (ctx->esp - ctx->stack); \
+		_hdr->parentNC = ctx->ehdrNC;\
+		((knh_context_t*)ctx)->ehdrNC = _hdr; \
+	} else { \
+		klr_setesp(ctx, (ctx->stack + _hdr->espidx));\
+		((knh_context_t*)ctx)->ehdrNC = _hdr->parentNC;\
+		KLR_JMP(ctx, PC, JUMP);\
+	}\
+} \
+
+#define KLR_TRYEND(ctx, hn)  {\
+	knh_ExceptionHandler_t* _hdr = Rh_(hn); \
+	DBG_ASSERT(IS_ExceptionHandler(_hdr)); \
+	((knh_context_t*)ctx)->ehdrNC = _hdr->parentNC;\
+} \
+
+#else
+
 #define KLR_TRY(ctx, PC, JUMP, hn)  {\
 	knh_ExceptionHandler_t* _hdr = Rh_(hn); \
 	if(!IS_ExceptionHandler(_hdr)) { \
@@ -430,21 +458,17 @@ extern "C" {
 	if(_hdr == NULL) {\
 		knh_ExceptionHandlerEX_t* _hdrEX = DP(Rh_(hn));\
 		_hdrEX->pc  = PC_NEXT(pc); \
-		/* _hdrEX->vpc = (knh_opline_t*)vpc; */\
 		_hdrEX->op  = op;\
 		_hdrEX->sfpidx = (SFP(rbp) - ctx->stack); \
-		_hdrEX->espidx = (ctx->esp - ctx->stack); \
-		/*_hdrEX->vshift = vshift;*/ \
 		_hdr = Rh_(hn);\
+		_hdr->espidx = (ctx->esp - ctx->stack); \
 		_hdr->parentNC = ctx->ehdrNC;\
 		((knh_context_t*)ctx)->ehdrNC = _hdr; \
 	} else { \
 		knh_ExceptionHandlerEX_t* _hdrEX = DP(_hdr);\
 		pc = _hdrEX->pc; \
-		/* vpc = _hdrEX->vpc; */\
 		rbp = RBP(ctx->stack + _hdrEX->sfpidx);\
-		klr_setesp(ctx, (ctx->stack + _hdrEX->espidx));\
-		/* vshift = _hdrEX->vshift;*/ \
+		klr_setesp(ctx, (ctx->stack + _hdr->espidx));\
 		op = _hdrEX->op;\
 		((knh_context_t*)ctx)->ehdrNC = _hdr->parentNC;\
 		KLR_JMP(ctx, PC, JUMP);\
@@ -459,12 +483,7 @@ extern "C" {
 	((knh_context_t*)ctx)->ehdrNC = _hdr->parentNC;\
 } \
 
-
-#define KLR_THROW2(ctx, start) { \
-	if(IS_Exception(ctx->e)) {\
-		knh_throw(ctx, sfp, start); \
-	}\
-} \
+#endif
 
 #define KLR_THROW(ctx, start) { \
 	knh_throw(ctx, SFP(rbp), SFPIDX(start)); \

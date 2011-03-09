@@ -241,8 +241,12 @@ void knh_throw(CTX ctx, knh_sfp_t *sfp, long start)
 					O_cTBL(o)->ospi->checkout(ctx, o, 1);
 				}
 				knh_Array_trimSize(ctx, hdr->stacklist, 0);
-				DBG_ASSERT(DP(hdr)->return_address != NULL);
+				//DBG_ASSERT(DP(hdr)->return_address != NULL);
+#ifdef K_USING_SETJMP_
+				knh_longjmp(DP(hdr)->jmpbuf, 1);
+#else
 				knh_ExceptionHandler_longjmp(ctx, hdr);
+#endif
 				goto L_NOCATCH;
 			}
 			sp--;
