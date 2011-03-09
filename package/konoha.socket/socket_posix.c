@@ -40,11 +40,12 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 
 typedef struct {
-	int sd;
+	knh_io_t sd;
 	knh_InputStream_t *in;
 	knh_OutputStream_t *out;
-	knh_intptr_t port;
 } knh_Socket_t ;
+
+
 
 EXPORTAPI(const knh_ClassDef_t*) Socket(CTX ctx)
 {
@@ -62,29 +63,79 @@ EXPORTAPI(const knh_ClassDef_t*) ServerSocket(CTX ctx)
 	return (const knh_ClassDef_t*)&cdef;
 }
 
-////## Socket Socket.new(String! ip_addr, Int! port);
-//METHOD Socket_new(Ctx* ctx, knh_sfp_t* sfp _RIX)
-//{
-//	Socket_t *so = malloc(sizeof(Socket_t));
-//	memset(so, 0, sizeof(Socket_t));
-//	knh_RawPtr_t *ptr;
-//
-//	char* host = String_to(char*, sfp[1]);
-//	int port = Int_to(int, sfp[2]);
-//	knh_io_t fd = knh_socket_open(ctx, host, port, 0);
-//
-//	SP(so)->sd = fd;
-//	SP(so)->port = SP(so)->port;
-//	SP(so)->uri = knh_getURI(ctx, S_tobytes(sfp[1].s));
-//
-//	knh_StreamDSPI_t *drv = knh_getChannelDriver();
-//	KNH_INITv(SP(so)->urn, sfp[1].o);
-//	KNH_INITv(SP(so)->in,  new_InputStreamDSPI(ctx, (knh_io_t)SP(so)->sd, drv));
-//	KNH_INITv(SP(so)->out, new_OutputStreamDSPI(ctx, (knh_io_t)SP(so)->sd, drv));
-//	ptr = new_RawPtr(ctx, so, NULL, CLASS_Any, "socket");
-//	RETURN_(ptr);
-//}
-//
+static knh_io_t socket_open(CTX ctx, const char *ip_or_host, int port)
+{
+	knh_io_t sd = -1;
+	struct in_addr addr = {0};
+	struct hostent	*host;
+	struct sockaddr_in	server = {0};
+	if ((addr.s_addr = inet_addr(ip_or_host)) == -1) {
+		host = gethostbyname(ip_or_host);
+		if (host == NULL) {
+			KNH_SYSLOG(ctx, LOG_WARNING, "Socket!!", "gethostbyname", isThrowable);
+			return -1;
+		}
+		memcpy(&addr, (struct in_addr *)*host->h_addr_list, sizeof(struct in_addr));
+	}
+	server.sin_family = AF_INET;
+	server.sin_addr = addr;
+	server.sin_port = htons(port);
+	if((sd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+	  KNH_SYSLOG(ctx, LOG_WARNING, "Socket!!", "socket", isThrowable);
+		return -1;
+	}
+	if (connect(sd, (struct sockaddr *)&server, sizeof(server)) == -1) {
+	  KNH_SYSLOG(ctx, LOG_WARNING, "Socket!!", "connect", isThrowable);
+		return -1;
+	}
+	return sd;
+}
+
+static knh_io_t SOCKET_open(CTX ctx, knh_bytes_t n, const char *mode)
+{
+	return IO_NULL; // Always opened by external
+}
+static knh_intptr_t SOCKET_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
+{
+	return recv((int)fd, buf, bufsiz, 0);
+}
+static knh_intptr_t SOCKET_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
+{
+	return send((int)fd, buf, bufsiz, 0);
+}
+static void SOCKET_close(CTX ctx, knh_io_t fd)
+{
+
+}
+static int SOCKET_feof(CTX ctx, knh_io_t fd)
+{
+	return 1;
+}
+static int SOCKET_getc(CTX ctx, knh_io_t fd)
+{
+	return -1;
+}
+
+static knh_StreamDSPI_t SOCKET_DSPI = {
+	K_DSPI_STREAM, "socket", 0,
+	SOCKET_open, SOCKET_open, SOCKET_read, SOCKET_write, SOCKET_close,
+	SOCKET_feof, SOCKET_getc
+};
+
+//## Socket Socket.new(String! ip_addr, Int! port);
+METHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
+{
+	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
+	const char* host = String_to(const char*, sfp[1]);
+	int port = Int_to(int, sfp[2]);
+	if(port == 0) port = 80;
+	so->fd = socket_open(ctx, host, port, 0);
+	so->port = port;
+	KNH_SETv(so->urn, sfp[1].o);
+	KNH_SETv(so->in,  new_InputStreamDSPI(ctx, (knh_io_t)SP(so)->sd, &SOCKET_DSPI));
+	KNH_SETv(so->out, new_OutputStreamDSPI(ctx, (knh_io_t)SP(so)->sd, &SOCKET_DSPI));
+}
+
 ////## InputStream Socket.getInputStream();
 //METHOD Socket_getInputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
 //{
