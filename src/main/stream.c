@@ -46,7 +46,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [InputStream] */
 
-knh_InputStream_t* new_InputStreamDSPI(CTX ctx, knh_io_t fd, const knh_StreamDSPI_t *dspi)
+KNHAPI2(knh_InputStream_t*) new_InputStreamDSPI(CTX ctx, knh_io_t fd, const knh_StreamDSPI_t *dspi)
 {
 	knh_InputStream_t* in = new_(InputStream);
 	DP(in)->fd = fd;
@@ -247,7 +247,7 @@ void InputStream_setCharset(CTX ctx, knh_InputStream_t *in, knh_StringDecoder_t 
 /* ------------------------------------------------------------------------ */
 /* [OutputStream] */
 
-knh_OutputStream_t* new_OutputStreamDSPI(CTX ctx, knh_io_t fd, const knh_StreamDSPI_t *dspi)
+KNHAPI2(knh_OutputStream_t*) new_OutputStreamDSPI(CTX ctx, knh_io_t fd, const knh_StreamDSPI_t *dspi)
 {
 	knh_OutputStream_t* w = new_(OutputStream);
 //	KNH_SETv(ctx, DP(w)->urn, urn);

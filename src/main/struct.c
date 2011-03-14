@@ -477,16 +477,16 @@ void knh_ClassTBL_setObjectCSPI(knh_ClassTBL_t *ct)
 	}
 	for(i = c + 1; i < ct->fsize; i++) {
 		if(ct->fields[i].israw == 0) {
-			knh_ClassTBL_setCSPI2(ct, &ObjectDef);
+			knh_setClassDef(ct, &ObjectDef);
 			return;
 		}
 	}
 	if(c <= 4) {
 		DBG_P("NO OBJECT FIELD: %s c=%d", S_tochar(ct->lname), c);
-		knh_ClassTBL_setCSPI2(ct, ObjectNDef + c);
+		knh_setClassDef(ct, ObjectNDef + c);
 	}
 	else {
-		knh_ClassTBL_setCSPI2(ct, &ObjectDef);
+		knh_setClassDef(ct, &ObjectDef);
 	}
 }
 
@@ -1696,7 +1696,7 @@ static void Script_init(CTX ctx, Object *o)
 	ct->baseTBL = ClassTBL(CLASS_Script);
 	ct->supcid = CLASS_Script;
 	ct->supTBL = ClassTBL(CLASS_Script);
-	knh_ClassTBL_setCSPI2(ct, ClassTBL(CLASS_Script)->ospi);
+	knh_setClassDef(ct, ClassTBL(CLASS_Script)->ospi);
 	KNH_INITv(ct->methods, KNH_EMPTYLIST);
 	KNH_INITv(ct->tmaps, KNH_EMPTYLIST);
 	knh_setClassName(ctx, cid, ClassTBL(CLASS_Script)->sname, ClassTBL(CLASS_Script)->sname);

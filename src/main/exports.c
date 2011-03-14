@@ -204,7 +204,7 @@ static void knh_loadScriptData(CTX ctx, knh_data_t *data, knh_ParamArray_t **buf
 			knh_ClassTBL_t *t = varClassTBL(cid);
 			KNH_ASSERT(cid == cid0);
 			t->bcid = cid;
-			knh_ClassTBL_setCSPI2(t, cspi);
+			knh_setClassDef(t, cspi);
 			t->cflag = cflag;
 			t->magicflag = KNH_MAGICFLAG(cflag);
 			break;
@@ -224,7 +224,7 @@ static void knh_loadScriptData(CTX ctx, knh_data_t *data, knh_ParamArray_t **buf
 			t->bcid = _CID(data[3]);
 			t->baseTBL = ClassTBL(t->bcid);
 			if(cid0 != t->bcid) {
-				knh_ClassTBL_setCSPI2(t, ClassTBL(t->bcid)->ospi);
+				knh_setClassDef(t, ClassTBL(t->bcid)->ospi);
 			}
 			DBG_ASSERT(t->ospi != NULL);
 			t->supcid = _CID(data[4]);

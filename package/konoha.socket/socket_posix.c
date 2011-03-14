@@ -31,7 +31,13 @@
 // **************************************************************************
 
 #include <konoha1.h>
-#include "socket.h"
+
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,13 +51,39 @@ typedef struct {
 	knh_OutputStream_t *out;
 } knh_Socket_t ;
 
+static void Socket_init(CTX ctx, Object *o)
+{
+	knh_Socket_t *so = (knh_Socket_t*)o;
+	so->sd = IO_NULL;
+	KNH_INITv(so->in, KNH_TNULL(InputStream));
+	KNH_INITv(so->out, KNH_TNULL(OutputStream));
+}
 
+static void Socket_reftrace(CTX ctx, Object *o FTRARG)
+{
+	knh_Socket_t *so = (knh_Socket_t*)o;
+	KNH_ADDREF(ctx, so->in);
+	KNH_ADDREF(ctx, so->out);
+	KNH_SIZEREF(ctx);
+}
+
+static void Socket_free(CTX ctx, Object *o)
+{
+//	knh_Socket_t *so = (knh_Socket_t*)o;
+//	if(so->sd != IO_NULL) {
+//		close(so->sd);
+//		so->sd = IO_NULL;
+//	}
+}
 
 EXPORTAPI(const knh_ClassDef_t*) Socket(CTX ctx)
 {
 	static knh_ClassDef_t cdef;
 	cdef = *(knh_getDefaultClassDef());
 	cdef.name = "Socket";
+	cdef.init = Socket_init;
+	cdef.reftrace = Socket_reftrace;
+	cdef.free = Socket_free;
 	return (const knh_ClassDef_t*)&cdef;
 }
 
@@ -60,35 +92,10 @@ EXPORTAPI(const knh_ClassDef_t*) ServerSocket(CTX ctx)
 	static knh_ClassDef_t cdef;
 	cdef = *(knh_getDefaultClassDef());
 	cdef.name = "ServerSocket";
+	cdef.init = Socket_init;
+	cdef.reftrace = Socket_reftrace;
+	cdef.free = Socket_free;
 	return (const knh_ClassDef_t*)&cdef;
-}
-
-static knh_io_t socket_open(CTX ctx, const char *ip_or_host, int port)
-{
-	knh_io_t sd = -1;
-	struct in_addr addr = {0};
-	struct hostent	*host;
-	struct sockaddr_in	server = {0};
-	if ((addr.s_addr = inet_addr(ip_or_host)) == -1) {
-		host = gethostbyname(ip_or_host);
-		if (host == NULL) {
-			KNH_SYSLOG(ctx, LOG_WARNING, "Socket!!", "gethostbyname", isThrowable);
-			return -1;
-		}
-		memcpy(&addr, (struct in_addr *)*host->h_addr_list, sizeof(struct in_addr));
-	}
-	server.sin_family = AF_INET;
-	server.sin_addr = addr;
-	server.sin_port = htons(port);
-	if((sd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-	  KNH_SYSLOG(ctx, LOG_WARNING, "Socket!!", "socket", isThrowable);
-		return -1;
-	}
-	if (connect(sd, (struct sockaddr *)&server, sizeof(server)) == -1) {
-	  KNH_SYSLOG(ctx, LOG_WARNING, "Socket!!", "connect", isThrowable);
-		return -1;
-	}
-	return sd;
 }
 
 static knh_io_t SOCKET_open(CTX ctx, knh_bytes_t n, const char *mode)
@@ -105,14 +112,16 @@ static knh_intptr_t SOCKET_write(CTX ctx, knh_io_t fd, const char *buf, size_t b
 }
 static void SOCKET_close(CTX ctx, knh_io_t fd)
 {
-
+	close((int)fd);
 }
 static int SOCKET_feof(CTX ctx, knh_io_t fd)
 {
+	KNH_TODO(__FUNCTION__);
 	return 1;
 }
 static int SOCKET_getc(CTX ctx, knh_io_t fd)
 {
+	KNH_TODO(__FUNCTION__);
 	return -1;
 }
 
@@ -122,19 +131,55 @@ static knh_StreamDSPI_t SOCKET_DSPI = {
 	SOCKET_feof, SOCKET_getc
 };
 
-//## Socket Socket.new(String! ip_addr, Int! port);
+static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int port, int isNullable)
+{
+	knh_io_t sd = IO_NULL;
+	struct in_addr addr = {0};
+	struct hostent	*host;
+	struct sockaddr_in	server = {0};
+	const char *errfunc = NULL;
+	if ((addr.s_addr = inet_addr(ip_or_host)) == -1) {
+		host = gethostbyname(ip_or_host);
+		if (host == NULL) {
+			errfunc = "gethostname";
+			goto L_PERROR;
+		}
+		memcpy(&addr, (struct in_addr *)*host->h_addr_list, sizeof(struct in_addr));
+	}
+	server.sin_family = AF_INET;
+	server.sin_addr = addr;
+	server.sin_port = htons(port);
+	if((sd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+		errfunc = "socket";
+		goto L_PERROR;
+	}
+	if (connect(sd, (struct sockaddr *)&server, sizeof(server)) == -1) {
+		errfunc = "connect";
+		sd = IO_NULL;
+		goto L_PERROR;
+	}
+	L_PERROR:;
+	if(errfunc != NULL) {
+		ctx->api->trace(ctx, LOG_NULL(isNullable), "libc", errfunc, sfp, "*host='%s', port=%d", ip_or_host, port);
+	}
+	return sd;
+}
+
+//## Socket Socket.new(String! ip_addr, Int! port, Boolean isNullable);
 METHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	const char* host = String_to(const char*, sfp[1]);
 	int port = Int_to(int, sfp[2]);
+	int isNullable = Boolean_to(int, sfp[3]);
 	if(port == 0) port = 80;
-	so->fd = socket_open(ctx, host, port, 0);
-	so->port = port;
-	KNH_SETv(so->urn, sfp[1].o);
-	KNH_SETv(so->in,  new_InputStreamDSPI(ctx, (knh_io_t)SP(so)->sd, &SOCKET_DSPI));
-	KNH_SETv(so->out, new_OutputStreamDSPI(ctx, (knh_io_t)SP(so)->sd, &SOCKET_DSPI));
+	so->sd = socket_open(ctx, sfp, host, port, isNullable);
+	if(so->sd != IO_NULL) {
+		KNH_SETv(ctx, so->in,  new_InputStreamDSPI(ctx, so->sd, &SOCKET_DSPI));
+		KNH_SETv(ctx, so->out, new_OutputStreamDSPI(ctx, so->sd, &SOCKET_DSPI));
+	}
 }
+
 
 ////## InputStream Socket.getInputStream();
 //METHOD Socket_getInputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
@@ -247,6 +292,24 @@ METHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 //	ptr = new_RawPtr(ctx, so, NULL, CLASS_Any, "serversocket");
 //	RETURN_(ptr);
 //}
+
+#ifdef _SETUP
+
+EXPORTAPI(const knh_PackageDef_t*) init(CTX ctx)
+{
+	static const knh_PackageDef_t pkgdef = KNH_PKGINFO("socket", "0.0", "Konoha Socket Library", NULL);
+	return &pkgdef;
+}
+
+//EXPORTAPI(void) MathCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
+//{
+//	if(ns == NULL) {
+//		kapi->loadFloatData(ctx, FloatConstData);
+//	}
+//}
+
+#endif
+
 
 #ifdef __cplusplus
 }

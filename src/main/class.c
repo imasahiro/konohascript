@@ -322,16 +322,22 @@ void knh_setClassDefaultValue_(CTX ctx, knh_class_t cid, Object *value, knh_Fdef
 	t->fdefnull = f;
 }
 
-Object *knh_getClassDefaultValue(CTX ctx, knh_class_t cid)
+KNHAPI2(Object*) knh_getClassDefaultValue(CTX ctx, knh_class_t cid)
 {
 	return ClassTBL(cid)->fdefnull(ctx, cid);
 }
 
-void knh_ClassTBL_setCSPI2(knh_ClassTBL_t *ct, const knh_ClassDef_t *ospi)
+void knh_setClassDef(knh_ClassTBL_t *ct, const knh_ClassDef_t *cdef)
 {
-	ct->ospi = ospi;
-	if(ospi->getDefaultNull != NULL) {
-		ct->fdefnull = ospi->getDefaultNull;
+	ct->ospi = cdef;
+	if(cdef->fields != NULL) {
+		KNH_ASSERT(ct->fields = NULL);
+		ct->fields = cdef->fields;
+		ct->fsize = cdef->struct_size / sizeof(void*);
+		ct->fcapacity = 0;
+	}
+	if(cdef->getDefaultNull != NULL) {
+		ct->fdefnull = cdef->getDefaultNull;
 	}
 }
 
@@ -573,7 +579,7 @@ knh_class_t knh_addGenericsClass(CTX ctx, knh_class_t cid, knh_class_t bcid, knh
 		const knh_ClassTBL_t *bct = ClassTBL(bcid);
 		ct->magicflag  = bct->magicflag;
 		ct->cflag  = bct->cflag;
-		knh_ClassTBL_setCSPI2(ct, bct->ospi);
+		knh_setClassDef(ct, bct->ospi);
 		ct->bcid   = bcid;
 		ct->baseTBL = bct;
 		ct->supcid = bct->supcid;

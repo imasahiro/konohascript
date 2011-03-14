@@ -27,7 +27,7 @@
 
 #include <konoha1.h>
 
-#ifdef K_USING_WINTHREAD_
+#ifdef K_USING_WIN32_
 #define _USE_MATH_DEFINES
 #endif
 

@@ -325,7 +325,7 @@ static void knh_traceCFMT(CTX ctx, int pe, const char *ns, const char *event, kn
 	knh_format_uline(ctx, linefmt, sizeof(linefmt), uline);
 	knh_snprintf(newfmt, sizeof(newfmt), "%s+" K_INT_FMT K_EVENT_FORMAT "%s%s", ctx->trace, ctx->seq, ns, event, linefmt, fmt);
 	ctx->spi->vsyslog(pe, newfmt, ap);
-	if(ctx->ehdrNC != NULL && (pe == LOG_EMERG || pe == LOG_CRIT)) {
+	if(ctx->ehdrNC != NULL && (pe == LOG_EMERG || pe == LOG_CRIT || pe == LOG_ERR)) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_vprintf(ctx, cwb->w, fmt, ap);
 		knh_Exception_t *e = new_Error(ctx, EBI_Fatal, knh_cwb_newString(ctx, cwb));
@@ -350,7 +350,7 @@ static void knh_tracePERROR(CTX ctx, int pe, const char *ns, const char *event, 
 	knh_snprintf(newfmt, sizeof(newfmt), "%s+" K_INT_FMT K_EVENT_FORMAT "%s%s ERRNO=%d, ERR='%s'",
 		ctx->trace, ctx->seq, ns, event, linefmt, fmt, errno, emsg);
 	ctx->spi->vsyslog(pe, newfmt, ap);
-	if(ctx->ehdrNC != NULL && (pe == LOG_EMERG || pe == LOG_CRIT)) {
+	if(ctx->ehdrNC != NULL && (pe == LOG_EMERG || pe == LOG_CRIT || pe == LOG_ERR)) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_vprintf(ctx, cwb->w, fmt, ap);
 		knh_Exception_t *e = new_Error(ctx, EBI_Fatal, knh_cwb_newString(ctx, cwb));
@@ -367,7 +367,7 @@ static void knh_traceKFMT(CTX ctx, int pe, const char *ns, const char *event, kn
 	knh_write_uline(ctx, cwb->w, uline);
 	knh_vprintf(ctx, cwb->w, fmt, ap);
 	ctx->spi->syslog(pe, knh_cwb_tochar(ctx, cwb));
-	if(pe == LOG_EMERG || pe == LOG_CRIT) {
+	if(pe == LOG_EMERG || pe == LOG_CRIT || pe == LOG_ERR) {
 		knh_Exception_t *e = new_Error(ctx, EBI_Fatal, knh_cwb_newString(ctx, cwb));
 		DP(e)->uline = uline;
 		CTX_setThrowingException(ctx, e);

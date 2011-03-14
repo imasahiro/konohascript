@@ -546,38 +546,6 @@ static knh_flag_t knh_StmtCLASS_flag(CTX ctx, knh_Stmt_t *stmt)
 
 /* ------------------------------------------------------------------------ */
 
-
-static knh_bool_t CLASS_loadNativeClass(CTX ctx, const char* cname, knh_ClassTBL_t *t)
-{
-	return 0;
-//	if(DP(ctx->gma)->dlhdr != NULL) {
-//		knh_Fclass f = (knh_Fclass)knh_dlsym(ctx, DP(ctx->gma)->dlhdr, cname, 0/*isRequired*/);
-//		if(f != NULL) {
-//			knh_ClassData_t *cdef = f();
-//			if(cdef->cspi != NULL) {
-//				t->bcid = cid;
-//				t->baseTBL = t;
-//				t->cspi = cdef->cspi;
-//				t->cflag = t->cflag | t->cspi->cflag;
-//				t->oflag = KNH_MAGICFLAG(t->cflag);
-//			}
-//			else {
-//				t->bcid = CLASS_RawPtr;
-//				t->cspi = ClassTBL(CLASS_RawPtr)->cspi;
-//				t->baseTBL = ClassTBL(CLASS_RawPtr);
-//			}
-//			if(cdef->fdefault != NULL) {
-//				knh_setClassDefaultValue(ctx, cid, NULL, cdef->fdefault);
-//				return;
-//			}
-//		}
-//	}
-//	//t->defnull->ref = NULL;
-//	if(t->bcid == CLASS_Object) {
-//		//t->protoNULL->fields = NULL;
-//	}
-}
-
 void knh_RefTraverse(CTX ctx, knh_Ftraverse ftr)
 {
 #ifdef K_USING_RCGC
@@ -623,13 +591,28 @@ static knh_bool_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 			ct->metaidx = ct->supTBL->keyidx;
 			((knh_ClassTBL_t*)ct->supTBL)->subclass += 1;
 			KNH_SYSLOG(ctx, LOG_INFO, "NEW_CLASS", "*cid=%d, name='%s'", cid, CLASS__(cid));
-			if(!CLASS_loadNativeClass(ctx, S_tochar((tkC)->text), ct)) {
+			if(knh_StmtMETA_is(ctx, stmt, "Native")) {
+				if(DP(ctx->gma)->dlhdr != NULL) {
+					knh_Fclass classload = (knh_Fclass)knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, S_tochar((tkC)->text));
+					const knh_ClassDef_t *cdef = classload(ctx);
+					KNH_ASSERT(cdef != NULL);
+					ct->bcid = cid;
+					ct->baseTBL = ct;
+					knh_setClassDef(ct, cdef);
+					ct->cflag = ct->cflag | cdef->cflag;
+					ct->magicflag = KNH_MAGICFLAG(ct->cflag);
+				}
+				else {
+					KNH_TODO("error message");
+				}
+			}
+			else {
 				knh_Object_t *obj = new_hObject_(ctx, ct);
 				knh_Object_t *tmp = new_hObject_(ctx, ct);
 				Object_setNullObject(obj, 1);
 				ct->bcid = CLASS_Object;
 				ct->baseTBL = ClassTBL(CLASS_Object);
-				knh_ClassTBL_setCSPI2(ct, ct->baseTBL->ospi);
+				knh_setClassDef(ct, ct->baseTBL->ospi);
 				obj->ref = NULL; tmp->ref = NULL;
 				knh_setClassDefaultValue(ctx, cid, obj, NULL);
 				KNH_INITv(ct->protoNULL, tmp);

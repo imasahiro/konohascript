@@ -5,7 +5,6 @@
 #define USE_bytes_first
 #define USE_new_bytes
 
-#include <konoha1.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netinet/in.h>

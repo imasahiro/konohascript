@@ -14,6 +14,7 @@ KNHAPI2(void) knh_Array_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m);
 KNHAPI2(knh_Iterator_t*) new_Iterator(CTX ctx, knh_class_t p1, knh_Object_t *source, knh_Fitrnext fnext);
 KNHAPI2(void) knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid);
 KNHAPI2(void) knh_write_type(CTX ctx, knh_OutputStream_t *w, knh_type_t type);
+KNHAPI2(Object*) knh_getClassDefaultValue(CTX ctx, knh_class_t cid);
 KNHAPI2(knh_class_t) knh_type_tocid(CTX ctx, knh_type_t ptype, knh_class_t this_cid);
 KNHAPI2(knh_param_t*) knh_ParamArray_get(knh_ParamArray_t *pa, size_t n);
 KNHAPI2(knh_type_t) knh_ParamArray_rtype(knh_ParamArray_t *pa);
@@ -39,6 +40,8 @@ KNHAPI2(void) ResultSet_setText(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes
 KNHAPI2(void) ResultSet_setBlob(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t);
 KNHAPI2(void) ResultSet_setNULL(CTX ctx, knh_ResultSet_t *o, size_t n);
 KNHAPI2(knh_bool_t) knh_isSystemVerbose(void);
+KNHAPI2(knh_InputStream_t*) new_InputStreamDSPI(CTX ctx, knh_io_t fd, const knh_StreamDSPI_t *dspi);
+KNHAPI2(knh_OutputStream_t*) new_OutputStreamDSPI(CTX ctx, knh_io_t fd, const knh_StreamDSPI_t *dspi);
 KNHAPI2(knh_OutputStream_t*) new_BytesOutputStream(CTX ctx, knh_Bytes_t *ba);
 KNHAPI2(void) knh_OutputStream_putc(CTX ctx, knh_OutputStream_t *w, int ch);
 KNHAPI2(void) knh_OutputStream_write(CTX ctx, knh_OutputStream_t *w, knh_bytes_t buf);
@@ -59,14 +62,17 @@ KNHAPI2(knh_String_t*) knh_getFieldName(CTX ctx, knh_fieldn_t fn);
 typedef struct knh_api2_t {
 	size_t crc32;
 	Object*  (*DictMap_valueAt)(knh_DictMap_t *m, size_t n);
+	Object*  (*getClassDefaultValue)(CTX ctx, knh_class_t cid);
 	Object* (*new_Boxing)(CTX ctx, knh_sfp_t *sfp, const knh_ClassTBL_t *ct);
 	knh_Array_t* (*new_Array)(CTX ctx, knh_class_t p1, size_t capacity);
 	knh_ClassDef_t*  (*getDefaultClassDef)(void);
 	knh_Float_t* (*new_Float)(CTX ctx, knh_class_t cid, knh_float_t value);
+	knh_InputStream_t* (*new_InputStreamDSPI)(CTX ctx, knh_io_t fd, const knh_StreamDSPI_t *dspi);
 	knh_InputStream_t* (*new_InputStreamNULL)(CTX ctx, knh_String_t *s, const char *mode);
 	knh_Int_t* (*new_Int)(CTX ctx, knh_class_t cid, knh_int_t value);
 	knh_Iterator_t* (*new_Iterator)(CTX ctx, knh_class_t p1, knh_Object_t *source, knh_Fitrnext fnext);
 	knh_OutputStream_t* (*new_BytesOutputStream)(CTX ctx, knh_Bytes_t *ba);
+	knh_OutputStream_t* (*new_OutputStreamDSPI)(CTX ctx, knh_io_t fd, const knh_StreamDSPI_t *dspi);
 	knh_OutputStream_t* (*new_OutputStreamNULL)(CTX ctx, knh_String_t *s, const char *mode);
 	knh_String_t*  (*DictMap_keyAt)(knh_DictMap_t *m, size_t n);
 	knh_String_t*  (*getFieldName)(CTX ctx, knh_fieldn_t fn);
@@ -107,20 +113,23 @@ typedef struct knh_api2_t {
 	void  (*write_type)(CTX ctx, knh_OutputStream_t *w, knh_type_t type);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)581992640)
+#define K_API2_CRC32 ((size_t)38355346)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
 		K_API2_CRC32,
 		knh_DictMap_valueAt,
+		knh_getClassDefaultValue,
 		new_Boxing,
 		new_Array,
 		knh_getDefaultClassDef,
 		new_Float,
+		new_InputStreamDSPI,
 		new_InputStreamNULL,
 		new_Int,
 		new_Iterator,
 		new_BytesOutputStream,
+		new_OutputStreamDSPI,
 		new_OutputStreamNULL,
 		knh_DictMap_keyAt,
 		knh_getFieldName,
@@ -166,14 +175,17 @@ static const knh_api2_t* getapi2(void) {
 
 #ifndef K_INTERNAL
 #define knh_DictMap_valueAt   ctx->api2->DictMap_valueAt
+#define knh_getClassDefaultValue   ctx->api2->getClassDefaultValue
 #define new_Boxing   ctx->api2->new_Boxing
 #define new_Array   ctx->api2->new_Array
 #define knh_getDefaultClassDef   ctx->api2->getDefaultClassDef
 #define new_Float   ctx->api2->new_Float
+#define new_InputStreamDSPI   ctx->api2->new_InputStreamDSPI
 #define new_InputStreamNULL   ctx->api2->new_InputStreamNULL
 #define new_Int   ctx->api2->new_Int
 #define new_Iterator   ctx->api2->new_Iterator
 #define new_BytesOutputStream   ctx->api2->new_BytesOutputStream
+#define new_OutputStreamDSPI   ctx->api2->new_OutputStreamDSPI
 #define new_OutputStreamNULL   ctx->api2->new_OutputStreamNULL
 #define knh_DictMap_keyAt   ctx->api2->DictMap_keyAt
 #define knh_getFieldName   ctx->api2->getFieldName
@@ -391,8 +403,7 @@ knh_Class_t *new_Type(CTX ctx, knh_type_t type);
 void knh_setClassName(CTX ctx, knh_class_t cid, knh_String_t *lname, knh_String_t *snameNULL);
 knh_class_t knh_getcid(CTX ctx, knh_bytes_t lname);
 void knh_setClassDefaultValue_(CTX ctx, knh_class_t cid, Object *value, knh_Fdefnull f);
-Object *knh_getClassDefaultValue(CTX ctx, knh_class_t cid);
-void knh_ClassTBL_setCSPI2(knh_ClassTBL_t *ct, const knh_ClassDef_t *ospi);
+void knh_setClassDef(knh_ClassTBL_t *ct, const knh_ClassDef_t *ospi);
 knh_bool_t ClassTBL_isa_(CTX ctx, const knh_ClassTBL_t *ct, const knh_ClassTBL_t *ct2);
 int class_isGenerics(CTX ctx, knh_class_t cid);
 knh_class_t knh_class_p(CTX ctx, knh_class_t cid, size_t n);
@@ -566,7 +577,6 @@ knh_Exception_t* new_Error(CTX ctx, knh_ebi_t eid, knh_String_t *msg);
 void CTX_setThrowingException(CTX ctx, knh_Exception_t *e);
 knh_ExceptionHandler_t* ExceptionHandler_setjmp(CTX ctx, knh_ExceptionHandler_t *hdr);
 knh_ExceptionHandler_t *knh_ExceptionHandler_longjmp(CTX ctx, knh_ExceptionHandler_t *hdr);
-knh_InputStream_t* new_InputStreamDSPI(CTX ctx, knh_io_t fd, const knh_StreamDSPI_t *dspi);
 knh_InputStream_t* new_BytesInputStream(CTX ctx, knh_Bytes_t *ba);
 void BytesInputStream_setpos(CTX ctx, knh_InputStream_t *in, size_t s, size_t e);
 knh_InputStream_t* new_StringInputStream(CTX ctx, knh_String_t *str, size_t s, size_t e);
@@ -576,7 +586,6 @@ knh_String_t* knh_InputStream_readLine(CTX ctx, knh_InputStream_t *in);
 void knh_InputStream_close(CTX ctx, knh_InputStream_t *in);
 int InputStream_isClosed(CTX ctx, knh_InputStream_t *in);
 void InputStream_setCharset(CTX ctx, knh_InputStream_t *in, knh_StringDecoder_t *c);
-knh_OutputStream_t* new_OutputStreamDSPI(CTX ctx, knh_io_t fd, const knh_StreamDSPI_t *dspi);
 void knh_OutputStream_clear(CTX ctx, knh_OutputStream_t *w);
 void knh_OutputStream_close(CTX ctx, knh_OutputStream_t *w);
 int OutputStream_isClosed(knh_OutputStream_t *w);

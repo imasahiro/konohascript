@@ -49,37 +49,7 @@ typedef const struct _knh_ExportsAPI_t {
 	void  (*perror)(CTX, knh_sfp_t *sfp, const char*, const char*);
 	void  (*dbg_p)(const char*, const char*, int, const char*, ...);
 	void  (*todo_p)(const char*, const char*, int, const char*, ...);
-	// cwbbuf
-//	void (*cwb_clear)(knh_cwb_t *, size_t);
-//	const char* (*cwb_tochar)(CTX, knh_cwb_t *);
-	// String
-//	knh_String_t* (*new_String)(CTX, const char*);
-//	const char* (*tochar)(CTX, knh_String_t*);
-//	// RawPtr
-//	knh_RawPtr_t* (*new_RawPtr)(CTX, void*, knh_FfreeRawPtr, knh_class_t, const char*);
-//	void (*RawPtr_init)(CTX, knh_RawPtr_t*, void *, knh_FfreeRawPtr);
-	// Stream
-//	knh_InputStream_t* (*new_InputStreamNULL)(CTX, knh_String_t *, const char *mode);
-//	knh_OutputStream_t* (*new_OutputStreamNULL)(CTX, knh_String_t *, const char *mode);
-	// OutputStream, Bytes
-//	void (*putcAPI)(CTX, void *, int);
-//	void (*writeAPI)(CTX, void *, const char *, size_t);
 } knh_ExportsAPI_t;
-
-#ifdef K_EXPORTS
-//#define knh_cwb_open(ctx, cwbbuf)   ctx->api->cwb_open(ctx, cwbbuf)
-//#define knh_cwb_clear(cwb, s)       ctx->api->cwb_clear(cwb, s)
-//#define knh_cwb_tochar(ctx, cwb)    ctx->api->cwb_tochar(ctx, cwb)
-//#define knh_cwb_tobytes(cwb, s)     ctx->api->cwb_clear(cwb, s)
-//#define new_String(ctx, s)          ctx->api->new_String(ctx, s)
-//#define S_tochar(s)                 S_tochar(s)
-//#define new_RawPtr(ctx, p, f, cid, n)  ctx->api->new_RawPtr(ctx, p, f, cid, n)
-//#define knh_RawPtr_init(ctx, rp, p, f) ctx->api->RawPtr_init(ctx, rp, p, f)
-//#define new_InputStreamNULL(ctx, s, mode)  ctx->api->new_InputStreamNULL(ctx, s, mode)
-//#define new_OutputStreamNULL(ctx, s, mode)  ctx->api->new_OutputStreamNULL(ctx, s, mode)
-//#define knh_putc(ctx, w, ch)         ctx->api->putc(ctx, w, ch)
-//#define knh_write(ctx, w, s, len)    ctx->api->write(ctx, w, s, len)
-#endif
 
 /* ------------------------------------------------------------------------ */
 /* driver */
@@ -274,14 +244,7 @@ typedef struct {
 
 typedef const knh_PackageDef_t* (*knh_Fpkginit)(CTX);
 typedef void (*knh_Fpkgload)(CTX, const knh_PackageLoaderAPI_t *, knh_NameSpace_t *ns);
-
-typedef struct {
-	const char *name;
-	knh_ClassDef_t *cspi;  // if cspi is NULL, rawptr is be used instead.
-	knh_Fdefnull      fdefault;
-} knh_ClassData_t;
-
-typedef const knh_ClassData_t* (*knh_Fclass)(void);
+typedef const knh_ClassDef_t* (*knh_Fclass)(CTX);
 
 /* ------------------------------------------------------------------------ */
 /* new version */

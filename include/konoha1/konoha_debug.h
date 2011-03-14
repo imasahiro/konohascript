@@ -21,10 +21,12 @@
 #define LOG_DEBUG    7 /* debug-level messages */
 #endif
 
+
 #ifndef K_EVIDENCE_NAMESPACE
 #define K_EVIDENCE_NAMESPACE   "konoha"
 #endif
 
+#define LOG_NULL(isNullable)  ((isNullable) ? LOG_NOTICE : LOG_ERR)
 #define LOG_NONE     (LOG_DEBUG+1)
 #define LOG_MSG      "Message"
 

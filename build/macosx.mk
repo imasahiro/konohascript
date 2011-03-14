@@ -17,6 +17,7 @@ packages = \
 	$(dir)/lib$(konoha).dylib \
 	$(dir)/i.dylib \
 	$(dir)/math.dylib \
+	$(dir)/socket.dylib \
 	$(dir)/posix.dylib \
 
 objs = \
@@ -175,6 +176,16 @@ $(dir)/math.dylib: $(objs_math)
 $(dir)/math.o : package/konoha.math/math.c
 	$(CC) $(CFLAGS) $(ARCH) -D_SETUP -c $^ -o $@
 
+## socket
+LDLIBS_libsocket = 
+objs_socket = $(dir)/socket.o
+	
+$(dir)/socket.dylib: $(objs_socket)
+	$(CC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -o $@ $^ $(LDLIBS_libsocket)
+
+$(dir)/socket.o : package/konoha.socket/socket_posix.c
+	$(CC) $(CFLAGS) $(ARCH) -D_SETUP -c $^ -o $@
+
 ## posix
 LDLIBS_libposix = 
 objs_posix = $(dir)/posix.o
@@ -192,6 +203,7 @@ install:
 	bash $(dir)/install.sh $(konoha) $(PREFIX)
 	bash $(dir)/pkginstall.sh math $(PREFIX)/konoha/package/$(version) konoha.math
 	bash $(dir)/pkginstall.sh i $(PREFIX)/konoha/package/$(version) konoha.i
+	bash $(dir)/pkginstall.sh socket $(PREFIX)/konoha/package/$(version) konoha.socket
 	bash $(dir)/pkginstall.sh posix $(PREFIX)/konoha/package/$(version) konoha.posix
 
 ## uninstall
