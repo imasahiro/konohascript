@@ -596,7 +596,6 @@ static knh_bool_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 					knh_Fclass classload = (knh_Fclass)knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, S_tochar((tkC)->text));
 					const knh_ClassDef_t *cdef = classload(ctx);
 					KNH_ASSERT(cdef != NULL);
-					fprintf(stderr, "CDEF=%p, name=%s", cdef, cdef->name);
 					ct->bcid = cid;
 					ct->baseTBL = ct;
 					knh_setClassDef(ct, cdef);
