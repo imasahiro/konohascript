@@ -329,6 +329,7 @@ KNHAPI2(Object*) knh_getClassDefaultValue(CTX ctx, knh_class_t cid)
 
 void knh_setClassDef(knh_ClassTBL_t *ct, const knh_ClassDef_t *cdef)
 {
+	DBG_P("setClassDef(%s)", cdef->name);
 	ct->ospi = cdef;
 	if(cdef->fields != NULL) {
 		KNH_ASSERT(ct->fields = NULL);

@@ -84,6 +84,7 @@ EXPORTAPI(const knh_ClassDef_t*) Socket(CTX ctx)
 	cdef.init = Socket_init;
 	cdef.reftrace = Socket_reftrace;
 	cdef.free = Socket_free;
+	fprintf(stderr, "cdef=%p\n", &cdef);
 	return (const knh_ClassDef_t*)&cdef;
 }
 

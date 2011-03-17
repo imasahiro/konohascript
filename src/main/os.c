@@ -529,9 +529,9 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 	char *homepath = knh_getenv("KONOHAHOME");
 	knh_String_t *shome;
 	knh_bytes_t home = {{NULL}, 0};
-#if defined(KNH_PREFIX)
+#if defined(K_PATH_PREFIX)
 	if(homepath == NULL) {
-		homepath = KNH_PREFIX "/konoha";
+		homepath = K_PATH_PREFIX "/konoha";
 	}
 #endif
 	if(homepath != NULL) {

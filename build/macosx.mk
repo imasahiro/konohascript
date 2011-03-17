@@ -2,7 +2,9 @@
 #
 
 CC ?= gcc
-CFLAGS ?= -g -O2 -Wall -fPIC -I./include
+#CFLAGS ?= -g -O2 -Wall -fPIC -I./include
+CFLAGS ?= -g3 -O0 -Wall -fPIC -I./include -DK_USING_DEBUG
+
 ARCH = -arch i386 -arch x86_64
 LDLIBS ?= -liconv -lpthread
 STRIP = strip

@@ -51,9 +51,9 @@
 //#define K_USING_RCGC          1
 //#define K_USING_SQLITE3       1
 
-#ifdef K_USING_DEBUG  /* for debug*/
-#define K_USING_RCGC   1
-#endif
+//#ifdef K_USING_DEBUG  /* for debug*/
+//#define K_USING_RCGC   1
+//#endif
 
 /* optimization */
 //#define K_USING_FASTEST        1
