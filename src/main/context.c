@@ -168,10 +168,9 @@ static void knh_expandClassTBL(CTX ctx)
 {
 	size_t max = ctx->share->capacityClassTBL * 2;
 	const knh_ClassTBL_t **newt = (const knh_ClassTBL_t**)
-		KNH_REALLOC(ctx, ctx->share->ClassTBL, (ctx->share->capacityClassTBL), max, sizeof(knh_ClassTBL_t*));
+		KNH_REALLOC(ctx, "ClassTBL", ctx->share->ClassTBL, (ctx->share->capacityClassTBL), max, sizeof(knh_ClassTBL_t*));
 	((knh_share_t*)ctx->share)->ClassTBL = newt;
 	((knh_share_t*)ctx->share)->capacityClassTBL = max;
-	KNH_SYSLOG(ctx, LOG_NOTICE, "*ExtendedClassTBL", "*size=%ld", max);
 }
 
 knh_class_t new_ClassId(CTX ctx)
@@ -498,8 +497,7 @@ static void knh_share_free(CTX ctx, knh_share_t *share)
 				((double)ctx->stat->gcTime) / 1000.0);
 	}
 	if(ctx->stat->usedMemorySize != 0) {
-		DBG_P("memory leak %ldbytes", ctx->stat->usedMemorySize);
-		KNH_SYSLOG(ctx, LOG_NOTICE, "MemoryLeak", "*size=%ldbytes", ctx->stat->usedMemorySize);
+		KNH_WARN(ctx, "memory leaking size=%ldbytes", (long)ctx->stat->usedMemorySize);
 	}
 	knh_bzero(share, sizeof(knh_share_t) + sizeof(knh_stat_t) + sizeof(knh_ServiceSPI_t));
 	free(share);
@@ -589,7 +587,7 @@ void konoha_close(konoha_t konoha)
 	CTX ctx = (knh_context_t*)konoha.ctx;
 	KONOHA_CHECK_(konoha);
 	if(ctx->share->threadCounter > 1) {
-		KNH_SYSLOG(ctx, LOG_ERR, "konoha_close", "*running_threads=%ld", ctx->share->threadCounter);
+		KNH_WARN(ctx, "still %d thread(s) running", (int)ctx->share->threadCounter);
 		return;
 	}
 	knh_showMemoryStat(ctx);

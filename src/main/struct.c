@@ -67,6 +67,10 @@
 #include"commons.h"
 #include"../../include/konoha1/konoha_code_.h"
 
+#ifndef LIBNAME
+#define LIBNAME "konoha"
+#endif
+
 #ifndef TYPE_BytesIm
 #define CLASS_BytesIm CLASS_Bytes
 #define TYPE_BytesIm  TYPE_Bytes
@@ -1811,7 +1815,7 @@ static void System_init(CTX ctx, Object *o)
 	KNH_INITv(sys->props, new_DictMap0(ctx, 20, 1/*isCaseMap*/, "System.props"));
 	KNH_INITv(sys->nameDictCaseSet, new_DictSet0(ctx, K_TFIELD_SIZE + 10, 1/*isCaseMap*/, "System.nameDictSet"));
 	sys->namecapacity = k_goodsize2(K_TFIELD_SIZE + 10, sizeof(knh_nameinfo_t));
-	sys->nameinfo = (knh_nameinfo_t*)KNH_REALLOC(ctx, NULL, 0, sys->namecapacity, sizeof(knh_nameinfo_t));
+	sys->nameinfo = (knh_nameinfo_t*)KNH_REALLOC(ctx, "nameinfo", NULL, 0, sys->namecapacity, sizeof(knh_nameinfo_t));
 	KNH_INITv(sys->urnDictSet, new_DictSet0(ctx, 0, 0/*isCaseMap*/, "System.urnDictSet"));
 	KNH_INITv(sys->urns, new_Array0(ctx, 1));
 	KNH_INITv(sys->tokenDictSet, new_DictSet0(ctx, (TT_MAX - STT_MAX), 0/*isCaseMap*/, "System.tokenDictSet"));
@@ -1890,6 +1894,25 @@ static knh_ClassDef_t ContextDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
+
+/* --------------- */
+/* Monitor */
+
+static void Monitor_init(CTX ctx, Object *o)
+{
+	knh_Monitor_t *mon = (knh_Monitor_t*)o;
+	mon->loglevel = LOG_NOTICE;
+}
+
+static knh_ClassDef_t MonitorDef = {
+	Monitor_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_0,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Monitor", CFLAG_Monitor, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
 /* --------------- */
 /* Goal */
 
@@ -1913,17 +1936,17 @@ static void Goal_reftrace(CTX ctx, Object *o FTRARG)
 static void Goal_checkin(CTX ctx, Object *o)
 {
 	knh_Goal_t *g = (knh_Goal_t*)o;
-	KNH_SYSLOG(ctx, LOG_NOTICE, "CHECKIN", "G%d %s", g->id, S_tochar(g->msg));
+	KNH_SYSLOG(ctx, NULL, LOG_NOTICE, "CHECKIN", 0, "G%d %s", g->id, S_tochar(g->msg));
 }
 
 static void Goal_checkout(CTX ctx, Object *o, int isFailed)
 {
 	knh_Goal_t *g = (knh_Goal_t*)o;
 	if(isFailed) {
-		KNH_SYSLOG(ctx, LOG_WARNING, "FAILED", "G%d %s", g->id, S_tochar(g->msg));
+		KNH_SYSLOG(ctx, NULL, LOG_WARNING, "FAILED", 0, "G%d %s", g->id, S_tochar(g->msg));
 	}
 	else {
-		KNH_SYSLOG(ctx, LOG_NOTICE, "CHECKOUT", "G%d %s", g->id, S_tochar(g->msg));
+		KNH_SYSLOG(ctx, NULL, LOG_NOTICE, "CHECKOUT", 0, "G%d %s", g->id, S_tochar(g->msg));
 	}
 }
 
@@ -1963,10 +1986,10 @@ static void UnitTest_checkout(CTX ctx, Object *o, int isFailed)
 	knh_UnitTest_t *ut = (knh_UnitTest_t*)o;
 	size_t t = knh_getTimeMilliSecond() - ut->stime;
 	if(isFailed) {
-		KNH_SYSLOG(ctx, LOG_WARNING, "FAILED", "%s (%dms)", S_tochar(ut->msg), t);
+		KNH_SYSLOG(ctx, NULL, LOG_WARNING, "FAILED", 0, "%s (%dms)", S_tochar(ut->msg), t);
 	}
 	else {
-		KNH_SYSLOG(ctx, LOG_NOTICE, "PASSED", "%s (%dms)", S_tochar(ut->msg), t);
+		KNH_SYSLOG(ctx, NULL, LOG_NOTICE, "PASSED", 0, "%s (%dms)", S_tochar(ut->msg), t);
 	}
 }
 

@@ -990,6 +990,15 @@ typedef struct knh_Context_t {
 
 
 /* ------------------------------------------------------------------------ */
+//## class Monitor Object;
+//## flag Monitor Throwable        1 - is set * *;
+
+typedef struct knh_Monitor_t {
+	knh_hObject_t h;
+	int loglevel;
+} knh_Monitor_t;
+
+/* ------------------------------------------------------------------------ */
 //## class Goal Object;
 
 typedef struct knh_Goal_t {

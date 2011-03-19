@@ -264,9 +264,9 @@ void knh_setClassName(CTX ctx, knh_class_t cid, knh_String_t *lname, knh_String_
 		knh_DictSet_set(ctx, DP(ctx->sys)->ClassNameDictSet, lname, cid+1);
 	}
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
-	if(cid > CLASS_Gamma) {
-		DBG_SYSLOG("class=%d, lname=%s, sname=%s", cid, S_tochar(lname), S_tochar(t->sname));
-	}
+//	if(cid > CLASS_Gamma) {
+//		KNH_INFO("class=%d, lname=%s, sname=%s", cid, S_tochar(lname), S_tochar(t->sname));
+//	}
 	if(t->fdefnull == NULL) {
 		t->fdefnull = Fdefnull_newValue;
 	}
@@ -791,7 +791,7 @@ void knh_ParamArray_add(CTX ctx, knh_ParamArray_t *pa, knh_param_t p)
 	}
 	else {
 		if(pa->capacity == size) {
-			pa->params = (knh_param_t*)KNH_REALLOC(ctx, pa->params, pa->capacity, pa->capacity*2, sizeof(knh_param_t));
+			pa->params = (knh_param_t*)KNH_REALLOC(ctx, NULL, pa->params, pa->capacity, pa->capacity*2, sizeof(knh_param_t));
 			pa->capacity *= 2;
 		}
 		pa->params[size] = p;
@@ -1090,7 +1090,7 @@ void knh_ClassTBL_addMethod(CTX ctx, const knh_ClassTBL_t *t, knh_Method_t *mtd,
 		for(i = 0; i < knh_Array_size(a); i++) {
 			knh_Method_t *mtd2 = a->methods[i];
 			if((mtd2)->mn == (mtd)->mn) {
-				KNH_SYSLOG(ctx, LOG_WARNING, "MethodRedefinition", "%C.%M", (mtd)->cid, (mtd)->mn);
+				KNH_WARN(ctx, "redefined %s.%s", CLASS__((mtd)->cid), MN__((mtd)->mn));
 				return ;
 			}
 		}

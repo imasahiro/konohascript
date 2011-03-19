@@ -1458,7 +1458,7 @@ static void Stmt_expand(CTX ctx, knh_Stmt_t *stmt)
 	if(newcapacity == 0) {
 		newcapacity = (K_FASTMALLOC_SIZE / sizeof(knh_Object_t*));
 	}
-	stmt->terms = (knh_Term_t**)KNH_REALLOC(ctx, stmt->terms, DP(stmt)->capacity, newcapacity, sizeof(knh_Term_t*));
+	stmt->terms = (knh_Term_t**)KNH_REALLOC(ctx, NULL, stmt->terms, DP(stmt)->capacity, newcapacity, sizeof(knh_Term_t*));
 	DP(stmt)->capacity = newcapacity;
 }
 

@@ -142,12 +142,12 @@ knh_fieldn_t knh_addname(CTX ctx, knh_String_t *s, knh_Fdictset f)
 	size_t n = knh_DictSet_size(b->nameDictCaseSet);
 	if(n == b->namecapacity) {
 		b->namecapacity = k_grow(n);
-		b->nameinfo = (knh_nameinfo_t*)KNH_REALLOC(ctx, b->nameinfo, n, b->namecapacity, sizeof(knh_nameinfo_t));
+		b->nameinfo = (knh_nameinfo_t*)KNH_REALLOC(ctx, "nameinfo", b->nameinfo, n, b->namecapacity, sizeof(knh_nameinfo_t));
 	}
 	DBG_ASSERT(n < b->namecapacity);
 	KNH_INITv(b->nameinfo[n].name, s);
 	if(unlikely(!(n+1 < K_FLAG_MN_SETTER))) {  /* Integer overflowed */
-		KNH_SYSLOG(ctx, LOG_CRIT, "TooManyNames", "last nameid(fn)=%d < %d", (int)(n+1), (int)K_FLAG_MN_SETTER);
+		KNH_PANIC(ctx, "too many names, last nameid(fn)=%d < %d", (int)(n+1), (int)K_FLAG_MN_SETTER);
 	}
 	f(ctx, b->nameDictCaseSet, s, n + 1);
 	return (knh_fieldn_t)(n);
@@ -278,7 +278,7 @@ knh_uri_t knh_getURI(CTX ctx, knh_bytes_t t)
 		idx = knh_Array_size(DP(ctx->sys)->urns);
 		knh_DictSet_set(ctx, DP(ctx->sys)->urnDictSet, s, idx);
 		knh_Array_add(ctx, DP(ctx->sys)->urns, s);
-		KNH_SYSLOG(ctx, LOG_INFO, "NEW_URI", "URI=%d, URN='%B'", idx, S_tobytes(s));
+		KNH_INFO(ctx, "NEW_URI URI=%d, URN='%B'", idx, S_tobytes(s));
 	}
 	else {
 		idx = knh_DictSet_valueAt(DP(ctx->sys)->urnDictSet, idx);

@@ -49,7 +49,7 @@ static METHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 #else
 	const char *cmd = S_tochar(sfp[1].s);
 #endif
-	KNH_SYSLOG(ctx, LOG_NOTICE, "fork", "command='%s'", cmd);
+	KNH_SECINFO(ctx, "fork command='%s'", cmd);
 #ifdef K_USING_POSIX_
 	FILE *fp = popen((const char*)cmd, "r+");
 	if(fp != NULL) {
@@ -69,7 +69,7 @@ static METHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 		RETURN_(knh_cwb_newString(ctx, cwb));
 	}
 	else {
-		KNH_SYSLOG(ctx, LOG_ERR, "Failed", "command='%s'", cmd);
+		KNH_WARN(ctx, "command failed: %s", cmd);
 	}
 #endif
 	RETURN_(KNH_NULVAL(CLASS_String));

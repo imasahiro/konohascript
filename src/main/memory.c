@@ -55,10 +55,9 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [malloc] */
 
-static void SYSLOG_OutOfMemory(CTX ctx, size_t size)
+static void THROW_OutOfMemory(CTX ctx, size_t size)
 {
-	KNH_SYSLOG(ctx, LOG_CRIT, "OutOfMemory",
-		"*requested=%dbytes, used=%dbytes", size, ctx->stat->usedMemorySize);
+	KNH_THROW(ctx, NULL, LOG_CRIT, "OutOfMemory!!", "OutOfMemory!!: requested=%dbytes, used=%dbytes", size, ctx->stat->usedMemorySize);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -77,7 +76,7 @@ void *knh_malloc(CTX ctx, size_t size)
 	prefetch(ctx->stat);
 	void *block = malloc(size);
 	if (unlikely(block == NULL)) {
-		SYSLOG_OutOfMemory(ctx, size);
+		THROW_OutOfMemory(ctx, size);
 	}
 	STAT_useMemory(ctx, size);
 	return block;
@@ -101,26 +100,26 @@ void *knh_valloc(CTX ctx, size_t size)
 	void *block = NULL;
 	int ret = posix_memalign(&block, K_PAGESIZE, size);
 	if(ret != 0) {
-		SYSLOG_OutOfMemory(ctx, size);
+		THROW_OutOfMemory(ctx, size);
 	}
 	STAT_useMemory(ctx, size);
 	return block;
 #elif defined(HAVE_MEMALIGN)
 	void *block = memalign(K_PAGESIZE, size);
 	if (unlikely(block == NULL)) {
-		SYSLOG_OutOfMemory(ctx, size);
+		THROW_OutOfMemory(ctx, size);
 	}
 	return block;
 #elif defined(K_USING_WINDOWS)
 	void *block = VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 	if (unlikely(block == NULL)) {
-		SYSLOG_OutOfMemory(ctx, size);
+		THROW_OutOfMemory(ctx, size);
 	}
 	return block;
 #else
 	void *block = malloc(size + K_PAGESIZE);
 	if (unlikely(block == NULL)) {
-		SYSLOG_OutOfMemory(ctx, size);
+		THROW_OutOfMemory(ctx, size);
 	}
 	if((knh_uintptr_t)block % K_PAGESIZE != 0) {
 		char *t2 = (char*)((((knh_uintptr_t)block / K_PAGESIZE) + 1) * K_PAGESIZE);
@@ -168,7 +167,7 @@ void *TRACE_malloc(CTX ctx, size_t size K_TRACEARGV)
 	DBG_ASSERT(size != 0);
 	size_t *block = (size_t*)malloc(size + sizeof(size_t));
 	if (unlikely(block == NULL)) {
-		SYSLOG_OutOfMemory(ctx, size);
+		THROW_OutOfMemory(ctx, size);
 	}
 	STAT_useMemory(ctx, size);
 	block[0] = size;
@@ -195,7 +194,7 @@ void *TRACE_realloc(CTX ctx, void *p, size_t os, size_t ns, size_t wsize K_TRACE
 	size_t *block = (size_t*)malloc(newsize + sizeof(size_t));
 	knh_bzero(block, newsize + sizeof(size_t));
 	if (unlikely(block == NULL)) {
-		SYSLOG_OutOfMemory(ctx, newsize);
+		THROW_OutOfMemory(ctx, newsize);
 	}
 	STAT_useMemory(ctx, newsize);
 	block[0] = newsize;
@@ -263,9 +262,8 @@ static knh_fastmem_t *new_FastMemoryList(CTX ctx)
 	size_t pageindex = ctxshare->sizeMemoryArenaTBL;
 	if(unlikely(!(pageindex < ctxshare->capacityMemoryArenaTBL))) {
 		size_t newsize = ctxshare->capacityMemoryArenaTBL * 2;
-		ctxshare->MemoryArenaTBL = (knh_MemoryArenaTBL_t*)KNH_REALLOC(ctx, ctxshare->MemoryArenaTBL, ctxshare->capacityMemoryArenaTBL, newsize, sizeof(knh_MemoryArenaTBL_t));
+		ctxshare->MemoryArenaTBL = (knh_MemoryArenaTBL_t*)KNH_REALLOC(ctx, "MemoryArenaTBL", ctxshare->MemoryArenaTBL, ctxshare->capacityMemoryArenaTBL, newsize, sizeof(knh_MemoryArenaTBL_t));
 		ctxshare->capacityMemoryArenaTBL = newsize;
-		KNH_SYSLOG(ctx, LOG_INFO, "EXTENDED_MemoryArenaTBL", "*newsize=%d", newsize);
 	}
 	ctxshare->sizeMemoryArenaTBL += 1;
 	OLD_UNLOCK(ctx, LOCK_MEMORY, NULL);
@@ -281,7 +279,7 @@ static knh_fastmem_t *new_FastMemoryList(CTX ctx)
 			mslot->ref = (mslot + 1);
 		}
 		(mslot-1)->ref = NULL;
-		KNH_SYSLOG(ctx, LOG_INFO, "NEW_MemoryArena", "*id=%d region=(%p-%p)", pageindex, at->head, at->bottom);
+		KNH_MEMINFO(ctx, "allocated MemoryArena id=%d region=(%p-%p)", pageindex, at->head, at->bottom);
 	}
 	return ctx->freeMemoryList;
 }
@@ -368,7 +366,7 @@ void *knh_fastmalloc(CTX ctx, size_t size)
 	else {
 		void *block = malloc(size);
 		if (unlikely(block == NULL)) {
-			SYSLOG_OutOfMemory(ctx, size);
+			THROW_OutOfMemory(ctx, size);
 		}
 		STAT_useMemory(ctx, size);
 		return block;
@@ -410,7 +408,7 @@ void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize)
 		void *newblock = realloc(block, newsize);
 		DBG_ASSERT(newsize > oldsize);
 		if (unlikely(newblock == NULL)) {
-			SYSLOG_OutOfMemory(ctx, newsize);
+			THROW_OutOfMemory(ctx, newsize);
 		}
 		STAT_useMemory(ctx, (newsize - oldsize));
 		knh_bzero((char*)newblock + oldsize, (newsize - oldsize));
@@ -529,16 +527,15 @@ static knh_Object_t *new_ObjectArena(CTX ctx, size_t arenasize)
 	size_t pageindex = ctxshare->sizeObjectArenaTBL;
 	if(unlikely(!(pageindex < ctxshare->capacityObjectArenaTBL))) {
 		size_t newsize = ctxshare->capacityObjectArenaTBL * 2;
-		ctxshare->ObjectArenaTBL = (knh_ObjectArenaTBL_t*)KNH_REALLOC(ctx, ctxshare->ObjectArenaTBL, ctxshare->capacityObjectArenaTBL, newsize, sizeof(knh_ObjectArenaTBL_t));
+		ctxshare->ObjectArenaTBL = (knh_ObjectArenaTBL_t*)KNH_REALLOC(ctx, "ObjectArenaTBL", ctxshare->ObjectArenaTBL, ctxshare->capacityObjectArenaTBL, newsize, sizeof(knh_ObjectArenaTBL_t));
 		ctxshare->capacityObjectArenaTBL = newsize;
-		KNH_SYSLOG(ctx, LOG_INFO, "EXTENDED_ObjectArenaTBL", "*newsize=%d", newsize);
 	}
 	ctxshare->sizeObjectArenaTBL += 1;
 	OLD_UNLOCK(ctx, LOCK_MEMORY, NULL);
 	DBG_ASSERT(sizeof(knh_ObjectPage_t) == K_PAGESIZE);
 	oat = &ctxshare->ObjectArenaTBL[pageindex];
 	ObjectArenaTBL_init(ctx, oat, arenasize);
-	KNH_SYSLOG(ctx, LOG_INFO, "NEW_Arena", "*id=%d region=(%p-%p), %d objects", pageindex, oat->head, oat->bottom, ((oat->bottom - oat->head) * K_PAGEOBJECTSIZE));
+	KNH_MEMINFO(ctx, "allocated object arena id=%d region=(%p-%p), %d objects", pageindex, oat->head, oat->bottom, ((oat->bottom - oat->head) * K_PAGEOBJECTSIZE));
 	{
 		knh_Object_t *p = oat->head->slots;
 		p->ref4_tail = &(((knh_Object_t*)(oat->bottom))[-1]);
@@ -742,7 +739,7 @@ static void ostack_push(CTX ctx, knh_ostack_t *ostack, knh_Object_t *ref)
 	size_t ntail = (ostack->tail + 1 ) & ostack->capacity;
 	if(unlikely(ntail == ostack->cur)) {
 		size_t capacity = 1 << ostack->log2;
-		ostack->stack = (knh_Object_t**)KNH_REALLOC(ctx, ostack->stack, capacity, capacity * 2, sizeof(knh_Object_t*));
+		ostack->stack = (knh_Object_t**)KNH_REALLOC(ctx, "ostack", ostack->stack, capacity, capacity * 2, sizeof(knh_Object_t*));
 		knh_memcpy(ostack->stack + capacity, ostack->stack, sizeof(knh_Object_t*) * ostack->tail);
 		ntail += capacity;
 		ostack->tail += capacity;
@@ -784,7 +781,7 @@ knh_Object_t** knh_ensurerefs(CTX ctx, knh_Object_t** tail, size_t size)
 		while(newsize < size + ref_size) {
 			newsize *= 2;
 		}
-		wctx->ref_buf = (knh_Object_t**)KNH_REALLOC(ctx, ctx->ref_buf, ctx->ref_capacity, newsize, sizeof(knh_Object_t*));
+		wctx->ref_buf = (knh_Object_t**)KNH_REALLOC(ctx, "ctx->ref_buf", ctx->ref_buf, ctx->ref_capacity, newsize, sizeof(knh_Object_t*));
 		wctx->ref_capacity = newsize;
 		tail = ctx->ref_buf + ref_size;
 	}
@@ -904,7 +901,7 @@ void knh_ObjectObjectArenaTBL_free(CTX ctx, const knh_ObjectArenaTBL_t *oat)
 
 void knh_showMemoryStat(CTX ctx)
 {
-	knh_stat_t *stat = ctx->stat;
+//	knh_stat_t *stat = ctx->stat;
 //#if defined(K_USING_STAT)
 //	size_t i;
 //	for(i = 0; i < ctx->share->sizeClassTBL; i++) {
@@ -916,13 +913,13 @@ void knh_showMemoryStat(CTX ctx)
 //		}
 //	}
 //#endif
-	KNH_SYSLOG(ctx, LOG_DEBUG, "MemoryUsage", "*memory usage=%ld/%ld, object usage=%ld/%ld",
-		stat->usedMemorySize, stat->maxMemoryUsage, stat->usedObjectSize, stat->maxObjectUsage);
-	KNH_SYSLOG(ctx, LOG_DEBUG, "MemoryUsage", "*object generation=%ld", stat->countObjectGeneration);
-	KNH_SYSLOG(ctx, LOG_DEBUG, "MemoryUsage",
-			"*memory counter x1=%ld, x2=%ld, x4=%ld, x8=%ld, large=%ld",
-			stat->countMemorySize1, stat->countMemorySize2, stat->countMemorySize4,
-			stat->countMemorySize8, stat->countMemorySizeN);
+//	KNH_SYSLOG(ctx, LOG_DEBUG, "MemoryUsage", "*memory usage=%ld/%ld, object usage=%ld/%ld",
+//		stat->usedMemorySize, stat->maxMemoryUsage, stat->usedObjectSize, stat->maxObjectUsage);
+//	KNH_SYSLOG(ctx, LOG_DEBUG, "MemoryUsage", "*object generation=%ld", stat->countObjectGeneration);
+//	KNH_SYSLOG(ctx, LOG_DEBUG, "MemoryUsage",
+//			"*memory counter x1=%ld, x2=%ld, x4=%ld, x8=%ld, large=%ld",
+//			stat->countMemorySize1, stat->countMemorySize2, stat->countMemorySize4,
+//			stat->countMemorySize8, stat->countMemorySizeN);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -1152,7 +1149,7 @@ static void gc_extendObjectArena(CTX ctx)
 			((knh_context_t*)ctx)->freeObjectTail = newobj->ref4_tail;
 		}
 		if(knh_isSystemVerbose()) {
-			fprintf(stderr, "EXTEND_ARENA: %d times newarena=%dMb, total=%d\n",
+			KNH_MEMINFO(ctx, "EXTEND_ARENA: %d times newarena=%dMb, total=%d",
 					(int)(ctx->share->sizeObjectArenaTBL - 1),
 					(int)(arenasize) / MB_,
 					(int)(ctx->stat->usedMemorySize / MB_));
@@ -1183,7 +1180,7 @@ void knh_System_gc(CTX ctx)
 	ctime = knh_getTimeMilliSecond();
 	if(knh_isSystemVerbose()) {
 		STAT_(
-		fprintf(stderr, "GC(%dMb): marked=%d, collected=%d, used=%d=>%d, marking_time=%dms, sweeping_time=%dms\n",
+		KNH_MEMINFO(ctx, "GC(%dMb): marked=%d, collected=%d, used=%d=>%d, marking_time=%dms, sweeping_time=%dms",
 				(int)(ctxstat->usedMemorySize/ MB_),
 				(int)ctxstat->markedObject, (int)ctxstat->collectedObject,
 				(int)used, (int)ctxstat->usedObjectSize, (int)(mtime-stime), (int)(ctime-mtime));)

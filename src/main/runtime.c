@@ -38,7 +38,7 @@
 /* ************************************************************************ */
 // added by nakata
 //#define USE_cwb_write 1
-#define K_PERROR_LIBNAME "stdc"
+#define LIBNAME "konoha"
 
 /* ************************************************************************ */
 
@@ -200,19 +200,19 @@ static void opt_v(CTX ctx, int mode, const char *optstr)
 	if(mode == 0) {
 		systemVerbose = 1;
 		dump_sysinfo(NULL, NULL, 1/*isALL*/);
-		KNH_SYSLOG(ctx, LOG_DEBUG, "Memory", "*sizeof(knh_intptr_t)=%d, sizeof(void*)=%d", sizeof(knh_intptr_t), sizeof(void*));
+		verboseLevel = LOG_INFO;
 		KNH_ASSERT(sizeof(knh_intptr_t) == sizeof(void*));
 		KNH_ASSERT(sizeof(knh_Token_t) <= sizeof(knh_Object_t));
 		KNH_ASSERT(sizeof(knh_Stmt_t) <= sizeof(knh_Object_t));
-		KNH_SYSLOG(ctx, LOG_DEBUG, "Memory", "*sizeof(knh_int_t)=%d, sizeof(knh_float_t)=%d", sizeof(knh_int_t), sizeof(knh_float_t));
 		KNH_ASSERT(sizeof(knh_int_t) <= sizeof(knh_float_t));
-		KNH_SYSLOG(ctx, LOG_DEBUG, "Memory", "*sizeof(knh_sfp_t)=%d, sizeof(knh_rbp_t)=%d, sizeof(Ctx)=%d", sizeof(knh_sfp_t), sizeof(knh_rbp_t), sizeof(knh_context_t));
 #ifdef K_USING_RBP_
 		KNH_ASSERT(sizeof(knh_rbp_t) * 2 == sizeof(knh_sfp_t));
 #endif
-		KNH_SYSLOG(ctx, LOG_DEBUG, "Memory", "*sizeof(Object)=%d FASTMALLOC=%d", sizeof(knh_Object_t), K_FASTMALLOC_SIZE);
-		KNH_SYSLOG(ctx, LOG_DEBUG, "Memory", "*sizeof(knh_opline_t)=%d FASTMALLOC=%d", sizeof(knh_opline_t), K_FASTMALLOC_SIZE);
-		verboseLevel = LOG_INFO;
+//		KNH_SYSLOG(ctx, LOG_DEBUG, "Memory", "*sizeof(knh_intptr_t)=%d, sizeof(void*)=%d", sizeof(knh_intptr_t), sizeof(void*));
+//		KNH_SYSLOG(ctx, LOG_DEBUG, "Memory", "*sizeof(knh_int_t)=%d, sizeof(knh_float_t)=%d", sizeof(knh_int_t), sizeof(knh_float_t));
+//		KNH_SYSLOG(ctx, LOG_DEBUG, "Memory", "*sizeof(knh_sfp_t)=%d, sizeof(knh_rbp_t)=%d, sizeof(Ctx)=%d", sizeof(knh_sfp_t), sizeof(knh_rbp_t), sizeof(knh_context_t));
+//		KNH_SYSLOG(ctx, LOG_DEBUG, "Memory", "*sizeof(Object)=%d FASTMALLOC=%d", sizeof(knh_Object_t), K_FASTMALLOC_SIZE);
+//		KNH_SYSLOG(ctx, LOG_DEBUG, "Memory", "*sizeof(knh_opline_t)=%d FASTMALLOC=%d", sizeof(knh_opline_t), K_FASTMALLOC_SIZE);
 	}
 	else {
 		verboseLevel = (mode <= LOG_CRIT) ? auditLevel: mode;
@@ -296,7 +296,7 @@ void knh_loadScriptPackageList(CTX ctx, const char *pkglist)
 					*c = 0;
 					DBG_P("loading '%s'", buf);
 					if(!knh_loadScriptPackage(ctx, B(buf)) && isExists == 0) {
-						KNH_SYSLOG(ctx, LOG_WARNING, "PackageNotFound", "package=%s", buf+8);
+						KNH_WARN(ctx, "PackageNotFound package=%s", buf+8);
 					}
 					goto L_NEXT;
 				}
@@ -308,7 +308,7 @@ void knh_loadScriptPackageList(CTX ctx, const char *pkglist)
 				}
 				c++;
 				if(!(c - buf < 256)) {
-					KNH_SYSLOG(ctx, LOG_WARNING, "TooLongPackage", "%s", pkglist);
+					KNH_WARN(ctx, "too long name %s", pkglist);
 					return ;
 				}
 			}
@@ -492,7 +492,7 @@ static int konoha_parseopt(konoha_t konoha, int argc, const char **argv)
 #ifdef K_DEOS_TRACE
 		char *trace = knh_getenv(K_DEOS_TRACE);
 		if(trace != NULL) {
-			KNH_SYSLOG(ctx, LOG_NOTICE, K_DEOS_TRACE, "%s", trace);
+			KNH_SYSLOG(ctx, NULL, LOG_NOTICE, K_DEOS_TRACE, 0, "%s", trace);
 		}
 #endif
 	return n;
@@ -1498,9 +1498,9 @@ void konoha_main(konoha_t konoha, int argc, const char **argv)
 				}
 			}
 		}
-		else {
-			KNH_SYSLOG(konoha.ctx, LOG_CRIT, "FailedLaunchScript", "script='%s'", args[n]);
-		}
+//		else {
+//			KNH_SYSLOG(konoha.ctx, LOG_CRIT, "FailedLaunchScript", "script='%s'", args[n]);
+//		}
 	}
 }
 

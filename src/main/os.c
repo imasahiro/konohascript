@@ -86,14 +86,9 @@ extern "C" {
 #define K_PERROR_BEFORE_RETRUN
 
 #if defined(K_USING_WINDOWS)
-#define K_PERROR_LIBNAME "Windows"
-#define K_PERROR_OK  1
-#define K_PERROR_FAILED  0
-
+#define LIBNAME "Windows"
 #else
-#define K_PERROR_LIBNAME "libc"
-#define K_PERROR_OK       0
-#define K_PERROR_FAILED  -1
+#define LIBNAME "libc"
 
 #if !defined(K_USING_POSIX_)
 static int UnsupportedAPI(CTX ctx, const char *funcname)
@@ -492,7 +487,11 @@ static knh_bool_t knh_cwb_mkdir(CTX ctx, knh_cwb_t *cwb, char *subpath)
 #if defined(K_USING_WINDOWS)
 	PERROR_returnb_(CreateDirectory, pathname, NULL);
 #elif defined(K_USING_POSIX_)
-	PERROR_returnb_(mkdir, pathname, 0777);
+	int res = mkdir(pathname, 0777);
+	if(res == -1) {
+		KNH_SYSLOG(ctx, NULL, LOG_WARNING, "mkdir", 0, "pathname='%s'", pathname);
+	}
+	return (res != -1);
 #else
 	PERROR_returnb_(UnsupportedAPI, ctx, __FUNCTION__);
 #endif
@@ -671,10 +670,10 @@ void *knh_dlopen(CTX ctx, int pe, const char* path)
 
 #endif
 	if(handler == NULL) {
-		LIB_SYSLOG(ctx, pe, func, "path='%s'", path);
+		KNH_WARN(ctx, "%s cannot open path='%s'", func, path);
 	}
 	else {
-		KNH_SYSLOG(ctx, LOG_NOTICE, func, "path='%s' HANDLER=%p", path, handler);
+		KNH_INFO(ctx, "%s opened path='%s' HANDLER=%p", func, path, handler);
 	}
 	return handler;
 }
@@ -703,7 +702,7 @@ void *knh_dlsym(CTX ctx, int pe, void* handler, const char* symbol)
 #elif defined(K_USING_POSIX_)
 	void *p = dlsym(handler, symbol);
 	if(p == NULL) {
-		LIB_SYSLOG(ctx, pe, "dlsym", "func='%s', ERR='%s'", symbol, dlerror());
+		KNH_SYSLOG(ctx, NULL, pe, "dlsym", "symbol='%s', ERR='%s'", symbol, dlerror());
 	}
 	return p;
 #else

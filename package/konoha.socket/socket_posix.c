@@ -45,6 +45,8 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
+#define LIBNAME "libc"
+
 typedef struct {
 	knh_hObject_t h;
 	knh_io_t sd;
@@ -70,11 +72,11 @@ static void Socket_reftrace(CTX ctx, Object *o FTRARG)
 
 static void Socket_free(CTX ctx, Object *o)
 {
-//	knh_Socket_t *so = (knh_Socket_t*)o;
-//	if(so->sd != IO_NULL) {
-//		close(so->sd);
-//		so->sd = IO_NULL;
-//	}
+	knh_Socket_t *so = (knh_Socket_t*)o;
+	if(so->sd != IO_NULL) {
+		close(so->sd);
+		so->sd = IO_NULL;
+	}
 }
 
 EXPORTAPI(const knh_ClassDef_t*) Socket(CTX ctx)
@@ -132,7 +134,7 @@ static knh_StreamDSPI_t SOCKET_DSPI = {
 	SOCKET_feof, SOCKET_getc
 };
 
-static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int port, int isNullable)
+static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int port, knh_Monitor_t *mon)
 {
 	knh_io_t sd = IO_NULL;
 	struct in_addr addr = {0};
@@ -161,20 +163,19 @@ static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int
 	}
 	L_PERROR:;
 	if(errfunc != NULL) {
-		ctx->api->trace(ctx, LOG_NULL(isNullable), "libc", errfunc, sfp, "*host='%s', port=%d", ip_or_host, port);
+		KNH_SYSLOG(ctx, sfp, LOG_ERR, errfunc, 0, "!host='%s', port=%d", ip_or_host, port);
 	}
 	return sd;
 }
 
-//## Socket Socket.new(String! ip_addr, Int! port, Boolean isNullable);
+//## Socket Socket.new(String host, Int port, Monitor mon);
 METHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	const char* host = String_to(const char*, sfp[1]);
 	int port = Int_to(int, sfp[2]);
-	int isNullable = Boolean_to(int, sfp[3]);
 	if(port == 0) port = 80;
-	so->sd = socket_open(ctx, sfp, host, port, isNullable);
+	so->sd = socket_open(ctx, sfp, host, port, sfp[3].mon);
 	if(so->sd != IO_NULL) {
 		KNH_SETv(ctx, so->in,  new_InputStreamDSPI(ctx, so->sd, &SOCKET_DSPI));
 		KNH_SETv(ctx, so->out, new_OutputStreamDSPI(ctx, so->sd, &SOCKET_DSPI));

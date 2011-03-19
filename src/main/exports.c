@@ -90,7 +90,7 @@ const knh_ExportsAPI_t *knh_getExportsAPI(void)
 	static knh_ExportsAPI_t exports = {
 		knh_fastmalloc, knh_fastfree, /* memory.c */
 		knh_setsfp, knh_Iterator_close,
-		knh_trace, knh_stack_perror, dbg_p, todo_p,
+		knh_trace, dbg_p, todo_p,
 	};
 	return &exports;
 }
@@ -308,7 +308,7 @@ static void knh_loadScriptData(CTX ctx, knh_data_t *data, knh_ParamArray_t **buf
 			break;
 		}/*case DATA_PARAM*/
 		default :
-			KNH_SYSLOG(ctx, LOG_EMERG, "LoadingDataPanic", "unknown dataype=%d", (int)datatype);
+			KNH_PANIC(ctx, "loading Data unknown dataype=%d", (int)datatype);
 		}/*switch*/
 	}
 }
@@ -317,7 +317,6 @@ static void knh_loadScriptData(CTX ctx, knh_data_t *data, knh_ParamArray_t **buf
 
 static void knh_setRegexSPI(CTX ctx, const knh_RegexSPI_t *spi)
 {
-	KNH_SYSLOG(ctx, LOG_NOTICE, "UPDATE_SPI", "*name=%s", spi->name);
 	DP(knh_getGammaNameSpace(ctx))->regexSPI = spi;
 }
 

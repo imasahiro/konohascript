@@ -113,7 +113,7 @@ static Object* new_ConverterNULL(CTX ctx, knh_class_t cid, knh_bytes_t path, knh
 	if(dspi->open != NULL) {
 		conv = dspi->open(ctx, path.text, NULL);
 		if(conv == NULL) {
-			KNH_SYSLOG(ctx, LOG_WARNING, "Converter!!", "path='%B'", path);
+			KNH_WARN(ctx, "unknown path='%s'", path.text);
 			return NULL;
 		}
 	}
@@ -334,8 +334,7 @@ static knh_Object_t* DIR_newObjectNULL(CTX ctx, knh_class_t cid, knh_String_t *s
 #if defined(K_USING_POSIX_)
 			const char *dirname = knh_cwb_tochar(ctx, cwb);
 			DIR *dirptr = opendir(dirname);
-			KNH_PERROR_IF(ctx, NULL, (dirptr == NULL), "opendir");
-			if (dirptr != NULL) {
+			if(dirptr != NULL) {
 				struct dirent *direntp;
 				while ((direntp = readdir(dirptr)) != NULL) {
 					char *p = direntp->d_name;
@@ -444,7 +443,7 @@ static knh_io_t FILE_open(CTX ctx, knh_bytes_t path, const char *mode)
 }
 static knh_io_t NOFILE_wopen(CTX ctx, knh_bytes_t n, const char *mode)
 {
-	KNH_SYSLOG(ctx, LOG_ALERT, "ReadOnlyFile", "path=%B, mode='%s'", n, mode);
+	KNH_WARN(ctx, "nofile path='%s', mode='%s'", n.text, mode);
 	return IO_NULL;
 }
 static knh_intptr_t FILE_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
@@ -660,7 +659,7 @@ static knh_StreamDSPI_t SCRIPTFILE_DSPI = {
 
 static void SYSLOG_UnknownPathType(CTX ctx, knh_bytes_t path)
 {
-	KNH_SYSLOG(ctx, LOG_WARNING, "UnknownPathType", "path='%B'", path);
+	KNH_WARN(ctx, "undefined path='%s'", path.text);
 }
 
 knh_StreamDSPI_t *knh_getStreamDSPI(CTX ctx, knh_bytes_t path)

@@ -45,27 +45,27 @@
 extern "C" {
 #endif
 
-#define K_PERROR_LIBNAME "libc"
-#define K_PERROR_FAILED  -1
+#define LIBNAME "libc"
+#define FAILED  -1
 
 #define LOG_ERRNO(LOG, FMT, F, ...) {\
 		int res_ = F(__VA_ARGS__);\
-		if(res_ == K_PERROR_FAILED) {\
-			ctx->api->trace(ctx, LOG, K_PERROR_LIBNAME, #F, sfp, FMT, ## __VA_ARGS__);\
+		if(res_ == FAILED) {\
+			KNH_SYSLOG(ctx, sfp, LOG, LIBNAME, #F, 0, FMT, ## __VA_ARGS__);\
 		}\
 	}\
 
 #define LOG_RETURN_ERRNO(LOG, FMT, F, ...) {\
 		int res_ = F(__VA_ARGS__);\
-		if(res_ == K_PERROR_FAILED) {\
-			ctx->api->trace(ctx, LOG, K_PERROR_LIBNAME, #F, sfp, FMT, ## __VA_ARGS__);\
+		if(res_ == FAILED) {\
+			KNH_SYSLOG(ctx, sfp, LOG, LIBNAME, #F, 0, FMT, ## __VA_ARGS__);\
 		}\
-		RETURNb_(res_ != K_PERROR_FAILED);\
+		RETURNb_(res_ != FAILED);\
 	}\
 
 #define RETURN_ERRNO(F, ...) {\
 		int res_ = F(__VA_ARGS__);\
-		RETURNb_(res_ != K_PERROR_FAILED);\
+		RETURNb_(res_ != FAILED);\
 	}\
 
 /* ======================================================================== */

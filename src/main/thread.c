@@ -332,7 +332,7 @@ knh_mutex_t *knh_mutex_malloc(CTX ctx)
 	knh_mutex_t *m = (knh_mutex_t*)KNH_MALLOC(ctx, sizeof(knh_mutex_t));
 	knh_bzero(m, sizeof(knh_mutex_t));
 	if(knh_mutex_init(m) != 0) {
-		KNH_SYSLOG(ctx, LOG_CRIT, "Thread", "*uninitialized_mutex=%p", m);
+		KNH_PANIC(ctx, "uninitialized_mutex=%p", m);
 	}
 	return m;
 }
@@ -340,7 +340,7 @@ knh_mutex_t *knh_mutex_malloc(CTX ctx)
 void knh_mutex_free(CTX ctx, knh_mutex_t *m)
 {
 	if(knh_mutex_destroy(m) != 0) {
-		KNH_SYSLOG(ctx, LOG_WARNING, "Thread", "*unlocked_mutex=%p", m);
+		KNH_WARN(ctx, "*unlocked_mutex=%p", m);
 	}
 	KNH_FREE(ctx, m, sizeof(knh_mutex_t));
 }

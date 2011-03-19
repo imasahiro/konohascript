@@ -56,7 +56,7 @@ static knh_map_t *hmap_init(CTX ctx, size_t init, const char *path, void *option
 	knh_hmap_t *hmap = (knh_hmap_t*)KNH_MALLOC(ctx, sizeof(knh_hmap_t));
 	knh_bzero(hmap, sizeof(knh_hmap_t));
 	if(init < K_HASH_INITSIZE) init = K_HASH_INITSIZE;
-	hmap->hentry = (knh_hentry_t**)KNH_REALLOC(ctx, NULL, 0, init, sizeof(knh_hentry_t*));
+	hmap->hentry = (knh_hentry_t**)KNH_REALLOC(ctx, NULL, NULL, 0, init, sizeof(knh_hentry_t*));
 	hmap->hmax = init;
 	hmap->size = 0;
 	hmap->factor = KNH_HASH_FACTOR(hmap->hmax);
@@ -67,7 +67,7 @@ static knh_hmap_t *hmap_rehash(CTX ctx, knh_hmap_t *hmap)
 {
 	size_t i, newhmax = hmap->hmax * 2 + 1;
 	knh_hentry_t **hentry = knh_map_hentry(hmap);
-	knh_hentry_t **newhentry = (knh_hentry_t**)KNH_REALLOC(ctx, NULL, 0, newhmax, sizeof(knh_hentry_t*));
+	knh_hentry_t **newhentry = (knh_hentry_t**)KNH_REALLOC(ctx, NULL, NULL, 0, newhmax, sizeof(knh_hentry_t*));
 	for(i = 0; i < hmap->hmax; i++) {
 		knh_hentry_t *e = hentry[i];
 		while(e != NULL) {
@@ -365,7 +365,7 @@ static knh_map_t *dmap_init(CTX ctx, size_t init, const char *path, void *option
 {
 	knh_dmap_t *dmap = (knh_dmap_t*)KNH_MALLOC(ctx, sizeof(knh_dmap_t));
 	if(init < K_HASH_INITSIZE) init = 4;
-	dmap->dentry = (knh_dentry_t*)KNH_REALLOC(ctx, NULL, 0, init, sizeof(knh_dentry_t));
+	dmap->dentry = (knh_dentry_t*)KNH_REALLOC(ctx, NULL, NULL, 0, init, sizeof(knh_dentry_t));
 	dmap->capacity = init;
 	dmap->size = 0;
 	dmap->sorted = 0;
@@ -405,9 +405,6 @@ static void dmap_free(CTX ctx, knh_map_t *m)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	KNH_FREE(ctx, dmap->dentry, sizeof(knh_dentry_t)*dmap->capacity);
-	if(dmap->DBGNAME != NULL) {
-		KNH_SYSLOG(ctx, LOG_DEBUG, "USAGE", "*name=%s, size=%d", dmap->DBGNAME, dmap->size);
-	}
 	KNH_FREE(ctx, dmap, sizeof(knh_dmap_t));
 }
 
@@ -541,8 +538,7 @@ static knh_bool_t dmap_getdata(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp, knh_sfp_t
 #define dmap_grow(ctx, dmap) {\
 		if(!(dmap->size < dmap->capacity)) {\
 			size_t newsize = k_grow(dmap->capacity);\
-			DBG_P("GROW %s capacity=%d, newsize=%d", dmap->DBGNAME, dmap->capacity, newsize);\
-			dmap->dentry = (knh_dentry_t*)KNH_REALLOC(ctx, dmap->dentry, dmap->capacity, newsize, sizeof(knh_dentry_t));\
+			dmap->dentry = (knh_dentry_t*)KNH_REALLOC(ctx, dmap->DBGNAME, dmap->dentry, dmap->capacity, newsize, sizeof(knh_dentry_t));\
 			dmap->capacity = newsize;\
 		}\
 	}\

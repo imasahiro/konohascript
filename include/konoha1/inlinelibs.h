@@ -5,6 +5,10 @@
 extern "C" {
 #endif
 
+#ifndef LIBNAME
+#define LIBNAME "libc"
+#endif
+
 /* ------------------------------------------------------------------------ */
 /* [RCinc] */
 
@@ -373,7 +377,7 @@ static FILE* knh_fopen(CTX ctx, int pe, const char *filename, const char *mode)
 	fopen_s(&in, filename, mode);
 #endif
 	if(in == NULL) {
-		LIB_SYSLOG(ctx, pe, "fopen", "!file='%s' mode='%s'", filename, mode);
+		KNH_SYSLOG(ctx, NULL, pe, "fopen", 0, "!file='%s' mode='%s'", filename, mode);
 	}
 	return in;
 #else

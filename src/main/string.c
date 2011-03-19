@@ -586,7 +586,7 @@ static knh_conv_t* strconv_open(CTX ctx, const char* to, const char *from)
 {
 	iconv_t rc = ctx->spi->iconv_open(to, from);
 	if(rc == (iconv_t)-1){
-		KNH_SYSLOG(ctx, LOG_NOTICE, ctx->spi->iconvspi, "Invalid Sequence");
+		KNH_WARN(ctx, "%s: unknown codec from=%s to=%s", ctx->spi->iconvspi, from, to);
 		return NULL;
 	}
 	return (knh_conv_t*)rc;
@@ -604,7 +604,7 @@ static knh_bool_t strconv(Ctx *ctx, knh_conv_t *iconvp, knh_bytes_t from, knh_By
 		size_t rc = ctx->spi->iconv(cd, &ibuf, &ilen, &obuf, &olen);
 		olen = sizeof(buffer) - olen; rsize += olen;
 		if(rc == (size_t)-1 && errno == EILSEQ) {
-			KNH_SYSLOG(ctx, LOG_NOTICE, ctx->spi->iconvspi, "Invalid Sequence");
+			KNH_WARN(ctx, "%s: invalid sequence", ctx->spi->iconvspi);
 			return 0;
 		}
 		bbuf.len = olen;

@@ -530,11 +530,12 @@ typedef void *(*knh_Fthread)(void *);
 		struct knh_NameSpace_t *ns; \
 		struct knh_RawPtr_t   *p; \
 		struct knh_ObjectField_t *ox; \
-		struct knh_Converter_t *conv; \
-		struct knh_Context_t   *cx; \
-		struct knh_Script_t    *scr;   \
-		struct knh_Goal_t      *goal;  \
-		knh_int_t     dummy_ivalue; \
+		struct knh_Converter_t *conv;\
+		struct knh_Context_t   *cx;\
+		struct knh_Script_t    *scr;\
+		struct knh_Monitor_t   *mon;\
+		struct knh_Goal_t      *goal;\
+		knh_int_t     dummy_ivalue;\
 		knh_float_t   dummy_fvalue \
 
 typedef struct knh_sfp_t {

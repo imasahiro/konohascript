@@ -66,7 +66,7 @@ static METHOD Int_format(CTX ctx, knh_sfp_t *sfp _RIX)
 		RETURN_(new_S(ctx, B(buf)));
 	}
 	if(fmt.len != 0) {
-		KNH_SYSLOG(ctx, LOG_WARNING, "Format!!", "invalid format: %s", fmt.text);
+		KNH_WARN(ctx, "invalid format: %s", fmt.text);
 	}
 	fmt = STEXT("%d");
 	goto L_RETRY;
@@ -89,7 +89,7 @@ static METHOD Float_format(CTX ctx, knh_sfp_t *sfp _RIX)
 		RETURN_(new_S(ctx, B(buf)));
 	}
 	if(fmt.len != 0) {
-		KNH_SYSLOG(ctx, LOG_WARNING, "Format!!", "invalid format: %s", fmt.text);
+		KNH_WARN(ctx, "invalid format: %s", fmt.text);
 	}
 	fmt = STEXT("%f");
 	goto L_RETRY;
@@ -109,7 +109,7 @@ static METHOD String_format(CTX ctx, knh_sfp_t *sfp _RIX)
 		RETURN_(new_S(ctx, B(buf)));
 	}
 	if(fmt.len != 0) {
-		KNH_SYSLOG(ctx, LOG_WARNING, "Format!!", "invalid format: %s", fmt.text);
+		KNH_WARN(ctx, "invalid format: %s", fmt.text);
 	}
 	RETURN_(sfp[0].s);
 }
@@ -152,7 +152,7 @@ static void knh_write_ObjectField(CTX ctx, knh_OutputStream_t *w, Object **v, si
 static METHOD Object__empty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	if(CTX_isDebug(ctx)) {
-		KNH_SYSLOG(ctx, LOG_WARNING, "Format!!", "*%%empty(%s)", O__(sfp[1].o));
+		KNH_INFO(ctx, "*%%empty(%s)", O__(sfp[1].o));
 	}
 }
 

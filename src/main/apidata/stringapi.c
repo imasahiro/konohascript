@@ -80,7 +80,7 @@ static METHOD String_path(CTX ctx, knh_sfp_t *sfp _RIX)
 	else {
 		v = dspi->newObjectNULL(ctx, cid, spath, sfp[2].ns);
 		if(v == NULL && cid != CLASS_String) {
-			KNH_SYSLOG(ctx, LOG_WARNING, "MissingPath", "qpath='%B', path='%B' for %C", qpath, path, cid);
+			KNH_SYSLOG(ctx, sfp, LOG_WARNING, "MissingPath", 0, "qpath='%B', path='%B' for %C", qpath, path, cid);
 		}
 	}
 	if(v == NULL) {

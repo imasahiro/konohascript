@@ -67,7 +67,7 @@ void knh_Array_grow(CTX ctx, knh_Array_t *a, size_t newsize, size_t reqsize)
 	else {
 		((knh_dim_t*)a->dim)->capacity = newsize;
 	}
-	a->list = (knh_Object_t**)KNH_REALLOC(ctx, a->list, capacity, newsize, a->dim->wsize);
+	a->list = (knh_Object_t**)KNH_REALLOC(ctx, "Array", a->list, capacity, newsize, a->dim->wsize);
 }
 
 KNHAPI2(void) knh_Array_add_(CTX ctx, knh_Array_t *a, knh_Object_t *value)

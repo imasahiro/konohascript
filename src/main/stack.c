@@ -75,10 +75,11 @@ knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n)
 		/* TODO stack rewriting may not work on Linux */
 		KNH_TODO("stack rewriting");
 #endif
-		//ctxo->stack = (knh_sfp_t*)KNH_REALLOC(ctx, ctxo->stack, size, newsize, sizeof(knh_sfp_t));
+		// Don't use realloc
 		ctxo->stack = (knh_sfp_t*)KNH_MALLOC(ctx, newsize*sizeof(knh_sfp_t));
 		knh_memcpy(ctxo->stack, oldstack, size*sizeof(knh_sfp_t));
-		KNH_SYSLOG(ctx, LOG_NOTICE, "StackExpantion", "newsize=%d, oldstack=(%p,%p)", (int)newsize, oldstack, oldstack+size);
+		KNH_MEMINFO(ctx, "realloc ctx->stack oldsize=%d, newsize=%d, oldblock=(%p,%p) newblock=(%p,%p)",
+			(int)size, (int)newsize, oldstack, oldstack+size, ctxo->stack, ctxo->stack+newsize);
 		if(oldstack != ctxo->stack) {
 			knh_sfp_t **p = (knh_sfp_t**)ctxo->cstack_bottom;
 			if(!(ctxo->cstack_bottom < (void*)cstack_top)) {
@@ -286,7 +287,7 @@ knh_Exception_t* Exception_setup(CTX ctx, knh_Exception_t *e, knh_String_t *even
 	DBG_ASSERT(IS_Exception(e));
 	knh_ebi_t eid = knh_geteid(ctx, S_tobytes(event), EBI_unknown/*newid*/);
 	if(eid == EBI_unknown) {
-		KNH_SYSLOG(ctx, LOG_WARNING, "ThrownException", "unknown exception: %s", S_tochar(event));
+		KNH_WARN(ctx, "unknown exception: %s", S_tochar(event));
 		DP(e)->eid = EBI_Exception;
 	}
 	else {

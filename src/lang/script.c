@@ -590,7 +590,7 @@ static knh_bool_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 			ct->keyidx = ct->supTBL->keyidx;
 			ct->metaidx = ct->supTBL->keyidx;
 			((knh_ClassTBL_t*)ct->supTBL)->subclass += 1;
-			KNH_SYSLOG(ctx, LOG_INFO, "NEW_CLASS", "*cid=%d, name='%s'", cid, CLASS__(cid));
+			KNH_INFO(ctx, "NEW_CLASS cid=%d, name='%s'", cid, CLASS__(cid));
 			if(knh_StmtMETA_is(ctx, stmt, "Native")) {
 				if(DP(ctx->gma)->dlhdr != NULL) {
 					knh_Fclass classload = (knh_Fclass)knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, S_tochar((tkC)->text));
@@ -872,7 +872,7 @@ static knh_InputStream_t* knh_openPathNULL(CTX ctx, knh_bytes_t path)
 	knh_StreamDSPI_t *sdspi = knh_getStreamDSPI(ctx, path);
 	knh_io_t fd = sdspi->fopen(ctx, path, "r");
 	if(fd == IO_NULL) {
-		KNH_SYSLOG(ctx, LOG_ERR, "NotFound", "script='%B'", path);
+		KNH_WARN(ctx, "file not found '%s'", path.text);
 		return NULL;
 	}
 	else {
@@ -904,7 +904,7 @@ KNHAPI2(knh_bool_t) knh_loadScript(CTX ctx, knh_bytes_t path, knh_type_t reqt, k
 	}
 	KNH_SETv(ctx, lsfp[0].o, in);
 	if(!CTX_isCompiling(ctx)) {
-		KNH_SYSLOG(ctx, LOG_NOTICE, "RUN_SCRIPT", "*path='%s'", path.text);
+		KNH_SECINFO(ctx, "running script path='%s'", path.text);
 	}
 	L_READLINE:;
 	knh_Bytes_clear(ba, 0);

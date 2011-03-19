@@ -21,19 +21,34 @@
 #define LOG_DEBUG    7 /* debug-level messages */
 #endif
 
-
-#ifndef K_EVIDENCE_NAMESPACE
-#define K_EVIDENCE_NAMESPACE   "konoha"
-#endif
-
 #define LOG_NULL(isNullable)  ((isNullable) ? LOG_NOTICE : LOG_ERR)
 #define LOG_NONE     (LOG_DEBUG+1)
 #define LOG_MSG      "Message"
 
+#define KNH_SYSLOG(ctx, sfp, p, e, fmt, ...) \
+	ctx->api->trace(ctx, sfp, p, LIBNAME, e, 0, fmt, ## __VA_ARGS__)
 
-#define KNH_SYSLOG(ctx, p, e, fmt, ...) \
-	ctx->api->trace(ctx, p, K_EVIDENCE_NAMESPACE, e, NULL, fmt, ## __VA_ARGS__)
+#define KNH_THROW(ctx, sfp, p, e, fmt, ...) \
+	ctx->api->trace(ctx, sfp, p, "EXCEPTION", e, 1, fmt, ## __VA_ARGS__)
 
+#define KNH_PANIC(ctx, fmt, ...) \
+	ctx->api->trace(ctx, NULL, LOG_EMERG, "PANIC", __FUNCTION__, 0, "!(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
+
+#define KNH_WARN(ctx, fmt, ...) \
+	ctx->api->trace(ctx, NULL, LOG_WARNING, "WARN", __FUNCTION__, 0, "!(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
+
+#define KNH_INFO(ctx, fmt, ...) \
+	ctx->api->trace(ctx, NULL, LOG_INFO, "INFO", __FUNCTION__, 0, "*(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
+
+#define KNH_SECINFO(ctx, fmt, ...) \
+	ctx->api->trace(ctx, NULL, LOG_INFO, "AUDIT", __FUNCTION__, 0, "*(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
+
+#define KNH_MEMINFO(ctx, fmt, ...) \
+	ctx->api->trace(ctx, NULL, LOG_NOTICE, "MEM", __FUNCTION__, 0, "*(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
+
+#define LIB_SYSLOG(ctx) a
+
+#ifdef OLD
 #define KNH_THROW(ctx, sfp, p, e, fmt, ...) \
 	ctx->api->trace(ctx, p, K_EVIDENCE_NAMESPACE, e, sfp, fmt, ## __VA_ARGS__)
 
@@ -105,6 +120,8 @@
 		return (res_ != -1);\
 	}\
 
+#endif
+
 /* ------------------------------------------------------------------------ */
 /* [DBGMODE] */
 
@@ -151,7 +168,7 @@
 #else
 	#define KNH_MALLOC(ctx, size)       knh_fastmalloc(ctx, size)
 	#define KNH_FREE(ctx, p, size)      knh_fastfree(ctx, p, size)
-	#define KNH_REALLOC(ctx, p, os, ns, wsize) knh_fastrealloc(ctx, p, os, ns, wsize)
+	#define KNH_REALLOC(ctx, name, p, os, ns, wsize) knh_fastrealloc(ctx, p, os, ns, wsize)
 #endif
 #endif
 

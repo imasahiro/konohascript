@@ -45,8 +45,8 @@ typedef const struct _knh_ExportsAPI_t {
 	void  (*setsfp)(CTX, knh_sfp_t *, void *);
 	void  (*closeIterator)(CTX, knh_Iterator_t *);
 	// evidence
-	void  (*trace)(CTX, int, const char*, const char*, knh_sfp_t *, const char*, ...);
-	void  (*perror)(CTX, knh_sfp_t *sfp, const char*, const char*);
+	void  (*trace)(CTX, knh_sfp_t *, int, const char*, const char*, int, const char*, ...);
+//	void  (*perror)(CTX, knh_sfp_t *sfp, const char*, const char*);
 	void  (*dbg_p)(const char*, const char*, int, const char*, ...);
 	void  (*todo_p)(const char*, const char*, int, const char*, ...);
 } knh_ExportsAPI_t;

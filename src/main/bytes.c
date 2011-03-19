@@ -98,7 +98,7 @@ static void Bytes_checkstack(CTX ctx, knh_uchar_t*oldstart, knh_uchar_t *oldend,
 	while(p <= cstack_top) {
 		if((oldstart <= p[0] && p[0] < oldend)) {
 			knh_uchar_t *newc = p[0] + (newstart - oldstart);
-			KNH_SYSLOG(ctx, LOG_DEBUG, "RewrittenCharPointer", "*oldptr=%p, newptr=%p", p[0], newc);
+			KNH_WARN(ctx, "oldptr=%p, newptr=%p", p[0], newc);
 			p[0] = newc;
 		}
 		p++;
@@ -114,10 +114,10 @@ static void Bytes_expands(CTX ctx, knh_Bytes_t *ba, size_t newsize)
 	}
 	else {
 		knh_uchar_t *ubuf = ba->bu.ubuf;
-		ba->bu.ubuf = (knh_uchar_t*)KNH_REALLOC(ctx, ba->bu.ubuf, ba->dim->capacity, newsize, 1);
+		ba->bu.ubuf = (knh_uchar_t*)KNH_REALLOC(ctx, "Bytes", ba->bu.ubuf, ba->dim->capacity, newsize, 1);
 		((knh_dim_t*)ba->dim)->capacity = newsize;
 		if(unlikely(ctx->bufa == ba)) {
-			KNH_SYSLOG(ctx, LOG_INFO, "ExtendedContextBuffer", "*newsize=%ld, pointer=(%p => %p)", newsize, ubuf, ba->bu.ubuf);
+			KNH_INFO(ctx, "newsize=%ld, pointer=(%p => %p)", newsize, ubuf, ba->bu.ubuf);
 			Bytes_checkstack(ctx, ubuf, ubuf + ba->bu.len, ba->bu.ubuf);
 		}
 	}

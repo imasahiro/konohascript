@@ -411,7 +411,7 @@ static knh_gmafields_t* Gamma_expand(CTX ctx, knh_Gamma_t *gma, size_t minimum)
 	knh_gmafields_t *gf = NULL;
 	b->gcapacity = b->gcapacity * 2;
 	if(b->gcapacity < minimum) b->gcapacity = minimum;
-	b->gf = (knh_gmafields_t*)KNH_REALLOC(ctx, b->gf, s, b->gcapacity, sizeof(knh_gmafields_t));
+	b->gf = (knh_gmafields_t*)KNH_REALLOC(ctx, "gmafield", b->gf, s, b->gcapacity, sizeof(knh_gmafields_t));
 	gf = b->gf;
 	//DBG_P("Gamma_expand: b->gcapacity=%d=>%d", s, b->gcapacity);
 	for(i = s; i < b->gcapacity; i++) {
@@ -4059,7 +4059,7 @@ static knh_Token_t *DECLFIELD_typing(CTX ctx, knh_Stmt_t *stmt, size_t i)
 static knh_fields_t *ClassTBL_expandFields(CTX ctx, knh_ClassTBL_t *t)
 {
 	size_t newsize = (t->fcapacity == 0) ? sizeof(knh_Object_t) / sizeof(knh_fields_t) : t->fcapacity * 2;
-	t->fields = (knh_fields_t*)KNH_REALLOC(ctx, t->fields, t->fcapacity, newsize, sizeof(knh_fields_t));
+	t->fields = (knh_fields_t*)KNH_REALLOC(ctx, "fields", t->fields, t->fcapacity, newsize, sizeof(knh_fields_t));
 	t->fcapacity = newsize;
 	return t->fields;
 }
@@ -4105,7 +4105,7 @@ void knh_ObjectField_expand(CTX ctx, knh_ObjectField_t *of, size_t oldsize, size
 		of->fields = newf;
 	}
 	else {
-		of->fields = (knh_Object_t**)KNH_REALLOC(ctx, oldf, oldsize, newsize, sizeof(Object*));
+		of->fields = (knh_Object_t**)KNH_REALLOC(ctx, "ObjectField", oldf, oldsize, newsize, sizeof(Object*));
 	}
 	//DBG_P("fields=%p => %p, size=%d => %d", oldf, of->fields, oldsize, newsize);
 }
