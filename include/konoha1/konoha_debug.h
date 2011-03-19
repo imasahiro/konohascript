@@ -31,6 +31,10 @@
 #define KNH_THROW(ctx, sfp, p, e, fmt, ...) \
 	ctx->api->trace(ctx, sfp, p, "EXCEPTION", e, 1, fmt, ## __VA_ARGS__)
 
+#define KNH_TRACE(ctx, sfp, mon, e, fmt, ...) \
+	ctx->api->trace(ctx, sfp, (mon)->loglevel, LIBNAME, e, Monitor_isThrowable(mon), fmt, ## __VA_ARGS__)
+
+
 #define KNH_PANIC(ctx, fmt, ...) \
 	ctx->api->trace(ctx, NULL, LOG_EMERG, "PANIC", __FUNCTION__, 0, "!(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
 

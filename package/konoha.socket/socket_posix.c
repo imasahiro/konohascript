@@ -163,12 +163,12 @@ static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int
 	}
 	L_PERROR:;
 	if(errfunc != NULL) {
-		KNH_SYSLOG(ctx, sfp, LOG_ERR, errfunc, 0, "!host='%s', port=%d", ip_or_host, port);
+		KNH_TRACE(ctx, sfp, mon, errfunc, "!Socket!!: host='%s', port=%d", ip_or_host, port);
 	}
 	return sd;
 }
 
-//## Socket Socket.new(String host, Int port, Monitor mon);
+//## Socket Socket.new(String host, int port, Monitor mon);
 METHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
@@ -182,27 +182,30 @@ METHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 	}
 }
 
+//## InputStream Socket.getInputStream();
+METHOD Socket_getInputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
+{
+	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
+	RETURN_(so->in);
+}
 
-////## InputStream Socket.getInputStream();
-//METHOD Socket_getInputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
-//{
-//	Socket_t *so = RawPtr_to(Socket_t*, sfp[0]);
-//	if ((SP(so)->sd) == -1){
-//		KNH_SYSLOG(ctx, LOG_WARNING, "OutputStream!!", "getInputStream", 0);
-//	}
-//	RETURN_(SP(so)->in);
-//}
-//
-////## OutputStream Socket.getOutputStream();
-//METHOD Socket_getOutputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
-//{
-//	Socket_t *so = RawPtr_to(Socket_t*, sfp[0]);
-//	if ((SP(so)->sd) == -1){
-//		KNH_SYSLOG(ctx, LOG_WARNING, "OutputStream!!", "getInputStream", 0);
-//	}
-//	RETURN_(SP(so)->out);
-//}
-//
+//## OutputStream Socket.getOutputStream();
+METHOD Socket_getOutputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
+{
+	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
+	RETURN_(so->out);
+}
+
+//## void Socket.close();
+METHOD Socket_close(CTX ctx, knh_sfp_t* sfp _RIX)
+{
+	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
+	if(so->sd != IO_NULL) {
+		close((int)so->sd);
+	}
+	so->sd = IO_NULL;
+}
+
 ////## Socket ServerSocket.accept();
 //METHOD ServerSocket_accept(Ctx* ctx,knh_sfp_t* sfp _RIX)
 //{
@@ -230,20 +233,6 @@ METHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 //	RETURN_(ptr);
 //}
 //
-////## void Socket.close();
-//METHOD Socket_close(CTX ctx, knh_sfp_t* sfp _RIX)
-//{
-//	Socket_t *so = RawPtr_to(Socket_t*, sfp[0]);
-//	close((int)SP(so)->sd);
-//	SP(so)->sd = -1;
-//}
-//
-////## boolean Socket.beClosed();
-//METHOD Socket_beClosed(CTX ctx, knh_sfp_t* sfp _RIX)
-//{
-//	Socket_t *so = RawPtr_to(Socket_t*, sfp[0]);
-//	RETURNb_(SP(so)->sd == -1);
-//}
 //
 ////## This ServerSocket.new(Int port, Int maxConnection);
 //METHOD ServerSocket_new(Ctx* ctx,knh_sfp_t* sfp _RIX)
@@ -303,7 +292,7 @@ EXPORTAPI(const knh_PackageDef_t*) init(CTX ctx)
 	return &pkgdef;
 }
 
-//EXPORTAPI(void) MathCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
+//EXPORTAPI(void) SocketCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
 //{
 //	if(ns == NULL) {
 //		kapi->loadFloatData(ctx, FloatConstData);

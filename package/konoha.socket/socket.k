@@ -30,11 +30,10 @@ include nativelink;
 @Native class Socket;
 @Native class ServerSocket;
 
-@Native Socket Socket.new(String host, int port, boolean isNullable);
-//void Socket.close();
-//boolean Socket.beClosed();
-//InputStream Socket.getInputStream();
-//OutputStream Socket.getOutputStream();
+@Native Socket Socket.new(String host, int port=80, Monitor mon);
+@Native InputStream Socket.getInputStream();
+@Native OutputStream Socket.getOutputStream();
+@Native void Socket.close();
 
 //ServerSocket ServerSocket.new(Int port, Int maxConnection);
 //Socket ServerSocket.accept();
