@@ -31,7 +31,7 @@ include nativelink;
 
 include func:MathCONST;
 
-@Native float Math.abs(float x);
+@Native int Math.abs(int x);
 @Native float Math.fabs(float x);
 @Native float Math.pow(float x,float y);
 @Native float Math.ldexp(float x,int e);

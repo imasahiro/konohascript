@@ -41,7 +41,7 @@ extern "C" {
 
 METHOD Math_fabs(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURNf_(fabs(Float_to(double, sfp[1])));
+	RETURNf_(abs(Int_to(int, sfp[1])));
 }
 
 METHOD Math_abs(CTX ctx, knh_sfp_t *sfp _RIX)
