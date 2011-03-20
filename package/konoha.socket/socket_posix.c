@@ -57,7 +57,6 @@ typedef struct {
 static void Socket_init(CTX ctx, Object *o)
 {
 	knh_Socket_t *so = (knh_Socket_t*)o;
-	fprintf(stderr, "%s: so=%s\n", __FUNCTION__, O_cTBL(so)->ospi->name);
 	so->sd = IO_NULL;
 	KNH_INITv(so->in, KNH_TNULL(InputStream));
 	KNH_INITv(so->out, KNH_TNULL(OutputStream));
@@ -173,7 +172,6 @@ static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int
 METHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
-	fprintf(stderr, "%s: so=%s\n", __FUNCTION__, O_cTBL(so)->ospi->name);
 	const char* host = String_to(const char*, sfp[1]);
 	int port = Int_to(int, sfp[2]);
 	if(port == 0) port = 80;
@@ -182,14 +180,13 @@ METHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 		KNH_SETv(ctx, so->in,  new_InputStreamDSPI(ctx, so->sd, &SOCKET_DSPI));
 		KNH_SETv(ctx, so->out, new_OutputStreamDSPI(ctx, so->sd, &SOCKET_DSPI));
 	}
+	RETURN_(so);
 }
 
 //## InputStream Socket.getInputStream();
 METHOD Socket_getInputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
-	fprintf(stderr, "%s: so=%s\n", __FUNCTION__, O_cTBL(so)->ospi->name);
-
 	RETURN_(so->in);
 }
 
@@ -204,7 +201,6 @@ METHOD Socket_getOutputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
 METHOD Socket_close(CTX ctx, knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
-	fprintf(stderr, "%s: so=%s\n", __FUNCTION__, O_cTBL(so)->ospi->name);
 	if(so->sd != IO_NULL) {
 		close((int)so->sd);
 	}
