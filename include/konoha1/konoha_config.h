@@ -164,9 +164,9 @@ typedef struct knh_sysinfo_t {
 #if defined(__i386__) || (defined(__x86_64__) && !defined(__amd64__))
 #undef		fastcall
 #define		fastcall __attribute__((fastcall))
-#define		CC_FASTCALL   fastcall
+#define		CC_FASTCALL_   fastcall
 #else
-#define		CC_FASTCALL
+#define		CC_FASTCALL_
 #endif
 	#ifdef __linux__
 		#define CC_TYPE_TLS  __thread
@@ -174,7 +174,7 @@ typedef struct knh_sysinfo_t {
 #endif/*__GNUC__*/
 
 #ifdef _MSC_VER
-#define 	CC_FASTCALL  /* __fastcall */
+#define 	CC_FASTCALL_  /* __fastcall */
 #if _MSC_VER == 1500
 #define CC_TYPE "Microsoft Visual C++ 9.0 (1500)"
 #else

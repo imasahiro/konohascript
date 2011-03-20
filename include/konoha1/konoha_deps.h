@@ -166,7 +166,7 @@
 #else
 #define 	KNHAPI2(T__)      CC_EXPORT  T__ __cdecl
 //#define     FASTAPI(T__)     T__
-//#define 	KNHFASTAPI(T__)  CC_EXPORT T__ CC_FASTCALL
+//#define 	KNHFASTAPI(T__)  CC_EXPORT T__ CC_FASTCALL_
 #endif
 #define 	EXPORTAPI(T__)   CC_EXPORT T__ __cdecl
 #define 	K_OSDLLEXT ".dll"
