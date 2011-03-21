@@ -471,7 +471,7 @@ typedef knh_uintptr_t             knh_uline_t;
 #define knh_thread_t W
 #define knh_thread_key_t W
 #define knh_mutex_t W
-#elif defined(K_USING_WINTHREAD_)
+#elif defined(K_USING_WINTHREAD_) && !defined(K_USING_MINGW)
 #define knh_thread_t HANDLE
 #define knh_thread_key_t DWORD
 #define knh_mutex_t CRITICAL_SECTION

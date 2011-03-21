@@ -485,7 +485,7 @@ static knh_bool_t knh_cwb_mkdir(CTX ctx, knh_cwb_t *cwb, char *subpath)
 	}
 	pathname = knh_cwb_tochar(ctx, cwb);
 #if defined(K_USING_WINDOWS)
-	PERROR_returnb_(CreateDirectory, pathname, NULL);
+	//PERROR_returnb_(CreateDirectory, pathname, NULL);
 #elif defined(K_USING_POSIX_)
 	int res = mkdir(pathname, 0777);
 	if(res == -1) {
@@ -696,7 +696,7 @@ void *knh_dlsym(CTX ctx, int pe, void* handler, const char* symbol)
 #if defined(K_USING_WINDOWS)
 	void *p = GetProcAddress((HMODULE)handler, (LPCSTR)symbol);
 	if(p == NULL) {
-		LIB_SYSLOG(ctx, pe, "GetProcAddress", "func='%s', ERR='NotFound'", symbol);
+		//LIB_SYSLOG(ctx, pe, "GetProcAddress", "func='%s', ERR='NotFound'", symbol);
 	}
 	return p;
 #elif defined(K_USING_POSIX_)

@@ -370,7 +370,7 @@ static FILE* knh_fopen(CTX ctx, int pe, const char *filename, const char *mode)
 #if defined(K_USING_NOFILE)
 	return NULL;
 #elif defined(K_USING_STDC_) || defined(K_USING_POSIX_)
-#ifndef K_USING_WINTHREAD_
+#if !defined(K_USING_WINTHREAD_) || defined(K_USING_MINGW)
 	FILE *in = fopen(filename, mode);
 #else
 	FILE *in = NULL;

@@ -307,7 +307,7 @@ int knh_errno(int pe)
 const char *knh_strerror(void)
 {
 	int errno_ = errno;
-#ifndef K_USING_WINTHREAD_
+#if !defined(K_USING_WINTHREAD_) || defined(K_USING_MINGW)
 	return strerror(errno_);
 #else
 	const char emsg[256];
@@ -338,7 +338,7 @@ static void knh_traceCFMT(CTX ctx, int pe, int isThrowable, const char *ns, cons
 static void knh_tracePERROR(CTX ctx, int pe, int isThrowable, const char *ns, const char *event, knh_uline_t uline, knh_sfp_t *sfp, const char *fmt, va_list ap)
 {
 	int errno_ = errno;
-#ifndef K_USING_WINTHREAD_
+#if !defined(K_USING_WINTHREAD_) || defined(K_USING_MINGW)
 	char *emsg = strerror(errno_);
 #else
 	char emsg[256];

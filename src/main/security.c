@@ -32,12 +32,20 @@
 
 #include"commons.h"
 
-#ifdef K_USING_WIN32_
+#if K_USING_WIN32_
 #include <winsock2.h>
 #define _WIN32_DCOM
+
+#ifdef K_USING_MINGW
+#include <windows.h>
+#include <winsock.h>
+#include <process.h>
+#else
 #include <comdef.h>
 #include <Wbemidl.h>
 #include "atlstr.h"
+#endif
+
 #pragma comment(lib, "wbemuuid.lib")
 #else
 #include <sys/types.h>
@@ -181,7 +189,7 @@ static int getncpu(void)
 	if (sysctl(mib, 2, &ncpu, &len, NULL, 0) == -1) {
 		/* Error */ ncpu = 1;
 	}
-#elif defined(K_USING_WINTHREAD_)
+#elif defined(K_USING_WINTHREAD_) && !defined(K_USING_MINGW)
 	CAtlString strMessage;
 	SYSTEM_INFO sysInfo;
 	GetNativeSystemInfo(&sysInfo);
@@ -205,7 +213,7 @@ static unsigned int getmem(void)
 	size_t length = sizeof(int);
 	sysctl(mem_sels, 2, &mem, &length, NULL, 0);
 	mem = (unsigned int) mem / ONE_MB;
-#elif defined(K_USING_WIN32_)
+#elif defined(K_USING_WIN32_) && !defined(K_USING_MINGW)
 	MEMORYSTATUSEX stat;
 	GlobalMemoryStatusEx(&stat);
 	mem = (unsigned int) stat.ullTotalPhys / ONE_MB;
@@ -227,7 +235,7 @@ static unsigned int getclock(void)
 	size_t len = sizeof(int);
 	sysctl(cpu_sels, 2, &clock, &len, NULL, 0);
 	clock = (unsigned int) clock / (1000 * 1000);
-#elif defined(K_USING_WIN32_)
+#elif defined(K_USING_WIN32_) && !defined(K_USING_MINGW)
 	HRESULT hres;
 	hres = CoInitializeEx(0, COINIT_MULTITHREADED);
 	hres = CoInitializeSecurity(

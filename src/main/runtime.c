@@ -181,7 +181,7 @@ static void opt_a(CTX ctx, int mode, const char *optstr)
 	((knh_ServiceSPI_t*)ctx->spi)->vsyslog    = _vsyslog;
 	openlog("konoha", LOG_PID, LOG_LOCAL7);
 #else
-	KNH_SYSLOG(ctx, LOG_WARNING, LOG_MSG, "there is no available logging system.");
+	//KNH_SYSLOG(ctx, LOG_WARNING, LOG_MSG, "there is no available logging system.");
 #endif
 }
 
@@ -534,7 +534,7 @@ static void knh_showWelcome(CTX ctx, knh_OutputStream_t *w)
 		TERM_BBOLD(ctx),
 		sysinfo->konoha_type, sysinfo->konoha_version, sysinfo->konoha_codename,
 		K_DISTTYPE, ((knh_intptr_t)K_REVISION), __DATE__, __TIME__, TERM_EBOLD(ctx));
-	knh_printf(ctx, w, "[%s] on %s (%d, %s)\n", CC_TYPE, sysinfo->kern_ostype, sysinfo->konoha_systembits, knh_getSystemEncoding());
+	//knh_printf(ctx, w, "[%s] on %s (%d, %s)\n", CC_TYPE, sysinfo->kern_ostype, sysinfo->konoha_systembits, knh_getSystemEncoding());
 	knh_printf(ctx, w, "options: %sused_memory:%d kb\n",
 		sysinfo->konoha_options, (knh_intptr_t)(ctx->stat->usedMemorySize / 1024));
 }

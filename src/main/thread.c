@@ -47,6 +47,10 @@
 #include <process.h>
 #endif
 
+#ifdef K_USING_MINGW
+#undef K_USING_WINTHREAD_
+#endif
+
 /* ************************************************************************ */
 
 #ifdef __cplusplus

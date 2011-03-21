@@ -272,7 +272,7 @@ typedef struct knh_sysinfo_t {
 #if defined(__WIN32__)  /* mingw */
 #define		K_USING_STDC_    1
 #define		K_USING_WIN32_      1
-#define 	K_USING_POSIX_      1
+#undef		K_USING_POSIX_
 #endif
 
 #if defined(__CYGWIN__)

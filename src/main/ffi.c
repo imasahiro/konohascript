@@ -30,7 +30,9 @@
 #include"commons.h"
 
 #include <unistd.h>
+#ifndef K_USING_MINGW
 #include <sys/mman.h>
+#endif
 /* ************************************************************************ */
 
 #ifdef __cplusplus

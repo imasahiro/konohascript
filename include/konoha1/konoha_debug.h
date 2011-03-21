@@ -3,7 +3,7 @@
 
 #ifdef K_USED_TO_BE_ON_LKM
 #elif !defined(K_USING_WINTHREAD_)
-#define K_USING_SYSLOG 1
+#undef K_USING_SYSLOG
 #include<syslog.h>
 #endif
 

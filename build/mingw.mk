@@ -1,21 +1,22 @@
-# Makefile for linux
+# Makefile for mingw
 #
 
 CC = gcc
-CFLAGS = -g3 -O0 -Wall -fPIC -I./include -DK_USING_WINTHREAD_ -DK_USING_WINDOWS -DK_USING_MINGW
-LDLIBS =  -lpthread -ldl -lws2_32
+CFLAGS = -g3 -O0 -Wall -I./include -DK_USING_WINTHREAD_ -DK_USING_WINDOWS -DK_USING_MINGW
+LDLIBS =  -lpthread -lws2_32
 STRIP = strip
 
 konoha = konoha1
 version = 1.0
 PREFIX = $(DESTDIR)/usr/local
 dir    = build
+pkgdir = $(dir)/package/$(version)
 
-#packages = \
-#	$(dir)/lib$(konoha).so \
-#	$(dir)/i.so \
-#	$(dir)/math.so \
-#	$(dir)/posix.so \
+packages = \
+	$(dir)/lib$(konoha).dll \
+	$(pkgdir)/konoha.i/i.dll \
+	$(pkgdir)/konoha.math/math.dll \
+#	$(pkgdir)/konoha.posix/posix.dll \
 
 objs = \
 	$(dir)/asm.o \
@@ -49,14 +50,17 @@ objs = \
 	$(dir)/mt19937ar.o \
 
 .PHONY: all
-all: $(dir)/$(konoha)
+all: $(dir)/$(konoha) $(packages)
 
-$(dir)/$(konoha) : src/konoha.c $(dir)/lib$(konoha).dll
-	$(CC) $(CFLAGS) -o $@ src/konoha.c -L./$(dir) -l$(konoha) $(LDLIBS)
+$(dir)/$(konoha) : src/konoha.c $(dir)/lib$(konoha).dll $(dir)/konoha.res
+	$(CC) $(CFLAGS) -o $@ src/konoha.c -L./$(dir) -l$(konoha) $(LDLIBS) $(dir)/konoha.res
 #	$(STRIP) $@
 
 $(dir)/lib$(konoha).dll: $(objs)
 	$(CC) $(CFLAGS) -L./$(dir) -shared -o $@ $^ $(LDLIBS)
+
+$(dir)/konoha.res: $(dir)/konoha.rc
+	windres $(dir)/konoha.rc -O coff -o $(dir)/konoha.res
 
 ## object files
 
@@ -155,7 +159,7 @@ $(dir)/mt19937ar.o : src/ext/mt19937ar.c
 LDLIBS_libi = 
 objs_i = $(dir)/i.o\
 
-$(dir)/i.so: $(objs_i)
+$(pkgdir)/konoha.i/i.dll: $(objs_i)
 	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDLIBS_libi)
 
 $(dir)/i.o : package/konoha.i/i.c
@@ -165,7 +169,7 @@ $(dir)/i.o : package/konoha.i/i.c
 LDLIBS_libmath = -lm
 obj_math = $(dir)/math.o\
 
-$(dir)/math.so: $(obj_math)
+$(pkgdir)/konoha.math/math.dll: $(obj_math)
 	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDLIBS_libmath)
 
 $(dir)/math.o : package/konoha.math/math.c
@@ -175,7 +179,7 @@ $(dir)/math.o : package/konoha.math/math.c
 LDLIBS_libposix = 
 objs_posix = $(dir)/posix.o\
 
-$(dir)/posix.so: $(objs_posix)
+$(pkgdir)/konoha.posix/posix.dll: $(objs_posix)
 	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDLIBS_libposix)
 
 $(dir)/posix.o : package/konoha.posix/posix.c
@@ -198,4 +202,4 @@ uninstall:
 ## clean
 .PHONY: clean
 clean:
-	$(RM) -rf $(dir)/*.so $(dir)/*.o $(dir)/$(konoha)
+	$(RM) -rf $(dir)/*.dll $(dir)/*.o $(dir)/*.res $(dir)/$(konoha) $(pkgdir)/konoha.i/*.dll $(pkgdir)/konoha.math/*.dll $(pkgdir)/konoha.posix/*.dll
