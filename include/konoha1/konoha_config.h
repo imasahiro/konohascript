@@ -235,14 +235,13 @@ typedef struct knh_sysinfo_t {
 /* ------------------------------------------------------------------------ */
 /* [API] */
 
+/* officially supported */
+
 #if defined(__linux__)
 #define		K_USING_STDC_    1
 #define 	K_USING_POSIX_   1
 #define 	K_USING_LINUX_   1
-
-#ifdef HAVE_ICONV_H
-#define     K_USING_ICONV 1
-#endif
+#define     K_USING_ICONV    1
 #endif
 
 #if defined(__APPLE__) /* MacOS X */
@@ -255,11 +254,45 @@ typedef struct knh_sysinfo_t {
 #define     K_USING_ICONV       1
 #endif
 
+#if defined(__WIN32__)  /* mingw */
+#define		K_USING_STDC_       1
+#define		K_USING_WIN32_      1
+#define     K_USING_ICONV       1
+#if defined(K_USING_THREAD)
+#define		K_USING_WINTHREAD_   1
+#endif
+#define 	K_OSLINEFEED "\r\n"
+#define 	K_OSDLLEXT ".dll"
+#define		K_FILESEPARATOR '\\'
+#define     K_KONOHAFOLDER "Konoha"
+
+#endif
+
+#if defined(_MSC_VER)
+#define		K_USING_STDC_        1
+#define		K_USING_WIN32_       1
+#define     K_USING_ICONV        1
+#if defined(K_USING_THREAD)
+#define		K_USING_WINTHREAD_   1
+#endif
+#if defined(_WIN64)
+#define		K_USING_WIN64_   1
+#endif
+
+#define 	K_OSLINEFEED "\r\n"
+#define 	K_OSDLLEXT ".dll"
+#define		K_FILESEPARATOR '\\'
+#define     K_KONOHAFOLDER "Konoha"
+#endif/* _MSC_VER*/
+
+/* experimetally supported */
+
 #if defined(__FreeBSD__) /* FreeBSD */
 #define		K_USING_STDC_       1
 #define 	K_USING_POSIX_      1
 #define 	K_USING_BSD_        1
 #define     K_USING_BSDSYSCTL_  1
+#define     K_USING_ICONV       1
 #endif
 
 #if defined(__OpenBSD__) /* FreeBSD */
@@ -267,12 +300,7 @@ typedef struct knh_sysinfo_t {
 #define 	K_USING_POSIX_      1
 #define 	K_USING_BSD_        1
 #define     K_USING_BSDSYSCTL_  1
-#endif
-
-#if defined(__WIN32__)  /* mingw */
-#define		K_USING_STDC_    1
-#define		K_USING_WIN32_      1
-#undef		K_USING_POSIX_
+#define     K_USING_ICONV       1
 #endif
 
 #if defined(__CYGWIN__)
@@ -287,22 +315,6 @@ typedef struct knh_sysinfo_t {
 #define		K_USING_TSHELL_      1
 #endif
 
-#if defined(_MSC_VER)
-#define		K_USING_STDC_        1
-#define		K_USING_WIN32_       1
-#if defined(K_USING_THREAD)
-#define		K_USING_WINTHREAD_   1
-#endif
-#if defined(_WIN64)
-#define			K_USING_WIN64_   1
-#endif
-
-#define 	K_OSLINEFEED "\r\n"
-#define 	K_OSDLLEXT ".dll"
-#define		K_FILESEPARATOR '\\'
-#define     K_KONOHAFOLDER "Konoha"
-
-#endif
 
 /* THIS_MUST_BE_LAST_ONE */
 
