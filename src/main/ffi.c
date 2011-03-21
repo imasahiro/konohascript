@@ -29,21 +29,21 @@
 
 #include"commons.h"
 
-#include <unistd.h>
-#ifndef K_USING_MINGW
-#include <sys/mman.h>
-#endif
 /* ************************************************************************ */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifdef K_USING_FFIDSL
+#include <unistd.h>
+#ifndef K_USING_MINGW
+#include <sys/mman.h>
+#endif
 
+	
 /* 
- * Generating a wrapper function.
- * Copyright Shinpei Nakata(c)2011
+ * Contributors
+ *  Shinpei Nakata
  */
 
 
@@ -53,18 +53,18 @@ void bough_dumpBinary(unsigned char* ptr, size_t size);
 // Memory allocation
 // xmalloc freelist. each size is 
 #define XBLOCK_SIZE (128)
-#define XBLOCK_PAGESIZE (_SC_PAGESIZE)
+#define XBLOCK_PAGESIZE (sysconf(_SC_PAGESIZE))
 #define XBLOCK_NUMBER (XBLOCK_PAGESIZE / XBLOCK_SIZE)
 
-static void *knh_xmalloc(CTX ctx, size_t pageNum)
+static void *knh_xmalloc(CTX ctx, size_t page_num)
 {
-	size_t pageSize = sysconf(XBLOCK_PAGESIZE);
-	void *block = KNH_VALLOC(ctx, pageSize);
+	size_t page_size = XBLOCK_PAGESIZE;
+	void *block = KNH_VALLOC(ctx, page_size);
 	if (unlikely(block == NULL)) {
 		KNH_SYSLOG(ctx, LOG_CRIT, "OutOfMemory",
-			"*requested=%dbytes, used=%dbytes", pageNum * pageSize, ctx->stat->usedMemorySize);
+				   "*requested=%dbytes, used=%dbytes", page_num * page_size, ctx->stat->usedMemorySize);
 	}
-	int mret = mprotect(block, pageSize, PROT_READ | PROT_WRITE | PROT_EXEC);
+	int mret = mprotect(block, page_size, PROT_READ | PROT_WRITE | PROT_EXEC);
 	if (mret != -1) {
 		return block;
 	}
@@ -85,23 +85,35 @@ static knh_xblock_t* xfreelist = NULL;
 
 static void* get_unused_xblock(CTX ctx)
 {
+	if (unlikely(xfreelist == NULL)) {
+		unsigned char *xmem = (unsigned char*)knh_xmalloc(ctx, 1);
+		assert(xmem != NULL);
+		knh_xblock_t *p = (knh_xblock_t*)knh_malloc(ctx, XBLOCK_NUMBER * sizeof(knh_xblock_t));
+		size_t idx = 0;
+		for (idx = 0; idx < XBLOCK_NUMBER - 1; idx++) {
+			p[idx].block = &(xmem[idx * XBLOCK_SIZE]);
+			p[idx].next = &(p[idx + 1]);
+			//			fprintf(stderr, "idx:%d, p:%p, block:%p, next:%p\n", idx, &(p[idx]), p[idx].block, p[idx].next);
+		}
+		p[idx].block = &(xmem[idx * XBLOCK_SIZE]);
+		p[idx].next = NULL;
+		xfreelist = p;
+	}
 	if (xfreelist->next == NULL) {
 		unsigned char *xmem = (unsigned char*)knh_xmalloc(ctx, 1);
-		knh_xblock_t *xblks = (knh_xblock_t*)knh_malloc(ctx, XBLOCK_NUMBER * sizeof(knh_xblock_t));
+		knh_xblock_t *p = (knh_xblock_t*)knh_malloc(ctx, XBLOCK_NUMBER * sizeof(knh_xblock_t));
 		size_t idx = 0;
-		knh_xblock_t *p;
 		for (idx = 0; idx < XBLOCK_NUMBER - 1; idx++) {
-			p = &(xblks[idx]);
-			p->block = xmem[idx * XBLOCK_SIZE];
-			p->next = &(p[idx + 1]);
+			p[idx].block = &(xmem[idx * XBLOCK_SIZE]);
+			p[idx].next = &(p[idx + 1]);
 		}
-		p[idx].block = xmem[idx * XBLOCK_SIZE];
+		p[idx].block = &(xmem[idx * XBLOCK_SIZE]);
 		p[idx].next = NULL;
 		xfreelist->next = p;
 	}
 	assert(xfreelist->next != NULL);
 	knh_xblock_t *ret = xfreelist;
-	xfreelist = xfreelist->next;
+	xfreelist = ret->next;
 	return ret;
 }
 
@@ -115,9 +127,9 @@ static void* get_unused_xblock(CTX ctx)
 // (eax + disp8)
 #define MOD_PLUS8 (1)
 // (eax + disp32)
-#define MOD_PLUS32 (2 )
+#define MOD_PLUS32 (2)
 // $eax
-#define MOD_IMD (3 )
+#define MOD_IMD (3)
 
 // Reg/opcode
 #define _EAX (0)
@@ -129,15 +141,6 @@ static void* get_unused_xblock(CTX ctx)
 #define _ESI (6)
 #define _EDI (7)
 
-#define R_EAX (0 << 3)
-#define R_ECX (1 << 3)
-#define R_EDX (2 << 3)
-#define R_EBX (3 << 3)
-#define R_ESP (4 << 3)
-#define R_EBP (5 << 3)
-#define E_ESI (6 << 3)
-#define E_EDI (7 << 3)
-
 
 #define FUNCTION function
 #define FIDX fidx
@@ -145,25 +148,52 @@ static void* get_unused_xblock(CTX ctx)
 #define WRITE_ASM(MOD, REG, RM) FUNCTION[FIDX++] = (MOD << 6) | (REG << 3) | RM
 #define WRITE_HEX(hex) { FUNCTION[FIDX++] = hex; }
 
-void* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_t *argv)
-		//knh_xblock_t* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_t *argv)
+typedef struct knh_xcode_t {
+	void *code;
+	size_t codesize;
+} knh_xcode_t;
+
+void bough_shrinkBinary(CTX ctx, knh_xcode_t *xcode, size_t shrink_from, size_t shrink_size) {
+	
+}
+
+void bough_putSfpToCStack(CTX ctx, knh_xcode_t *xcode, knh_ffiparam_t *param, char reg_from, char reg_to)
 {
-	unsigned char *FUNCTION = (unsigned char*)knh_xmalloc(ctx, 1);
-	//  knh_xblock_t *blk = get_unused_xblock(ctx);
-	//  unsigned char *function = blk->block;
+	// put param to register reg
+	size_t fidx = xcode->codesize;
+	unsigned char *function = (xcode->code + fidx);
+
+	switch (param->type) {
+	case CLASS_Int:
+		WRITE_HEX(0x83);
+		WRITE_ASM(MOD_IMD, reg_from, reg_to);
+		WRITE_HEX((unsigned char)(param->sfpidx * 16));
+		break;
+	case CLASS_Float:
+
+		break;
+	default:
+
+		break;
+	}
+	
+}
+
+knh_xblock_t* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_t *argv)
+{
+	//unsigned char *FUNCTION = (unsigned char*)knh_xmalloc(ctx, 1);
+	knh_xblock_t *blk = get_unused_xblock(ctx);
+	unsigned char *function = blk->block;
+	
 	size_t fidx = 0;
 
 	// magick word
-	WRITE_HEX(0x55);
-	WRITE_HEX(0x89);
+	WRITE_HEX(0x55); // push ebp 
+	WRITE_HEX(0x89); // mov esp->ebp
 	WRITE_ASM(MOD_IMD, _ESP, _EBP);
-	//  WRITE_ASM(function, fidx, 0x55); // push ebp
-	//  WRITE_ASM(function, fidx, 0x89);
-	//  WRITE_ASM(function, fidx, (MOD_IMD | L_ESP | R_EBP));
 
 	// incase we use ebp, store it.
 	WRITE_HEX(0x53); // push ebx
-
 
 	// we need stack argc * 8bytes at most
 	size_t stacksize = argc * 8;
@@ -176,7 +206,7 @@ void* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_t *argv)
 	// mov edx --> -0x4(ebp)
 	WRITE_HEX(0x89); // mov r+disp r
 	WRITE_ASM(MOD_PLUS8, _EDX, _EBP);
-	WRITE_HEX(0xfc);
+    WRITE_HEX(0xfc);
 
 	//now, process first argument;
 	int i;
@@ -189,27 +219,29 @@ void* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_t *argv)
 			// prepare ebx (put sfp from edx);
 			WRITE_HEX(0x89);
 			WRITE_ASM(MOD_IMD, _EDX, _EBX);
-			//	  WRITE_ASM(function, fidx, (MOD_IMD) | L_EDX | R_EBX);
 
 			switch(t->type) {
+			case CLASS_Tvoid:
+				// do noting.
+				break;
 			case CLASS_Int:
 				// its 64bit int
 				//TODO: we need to call translater, but now, we ignore
 				//TODO: assume we cast Int --> int;
 				// add ebx[sfp] + sfpidx * 16;
-				//		WRITE_ASM(function, fidx, 0x83); //add
-				//		WRITE_ASM(function, fidx, MOD_IMD | L_EBX | R_EAX);
-				//		WRITE_ASM(function, fidx, (unsigned char)(t->sfpidx * 16));
+				WRITE_HEX(0x83); //add
+				WRITE_ASM(MOD_IMD,  _EAX , _EBX);
+				WRITE_HEX((unsigned char)(t->sfpidx * 16));
 
 				// move ivalue(offset is 8);
-				//		WRITE_ASM(function, fidx, 0x8b); // mov r+disp, r
-				//		WRITE_ASM(function, fidx, MOD_PLUS8 | L_EBX | R_EAX);
-				//		WRITE_ASM(function, fidx, 0x8);
+				WRITE_HEX(0x8b); // mov r+disp, r
+				WRITE_ASM(MOD_PLUS8, _EAX, _EBX);
+				WRITE_HEX(0x8);
 
 				// move eax to local value
-				//		WRITE_ASM(function, fidx, 0x89);
-				//		WRITE_ASM(function, fidx, (MOD_IMD | L_EAX | R_EBP));
-				//		WRITE_ASM(function, fidx, 0xf4);
+				//WRITE_HEX(0x89);
+				//WRITE_ASM(MOD_IMD, _EBP, _EAX);
+				//				WRITE_HEX(0xf4);
 				break;
 			case CLASS_Float:
 				WRITE_HEX(0x83);
@@ -217,6 +249,7 @@ void* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_t *argv)
 				WRITE_HEX((unsigned char)(t->sfpidx * 16));
 
 				// load fvalue;
+
 				WRITE_HEX(0xdd);// fld 64bit
 				WRITE_HEX(0x43);// eax
 				WRITE_HEX(0x8); // offset
@@ -248,7 +281,7 @@ void* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_t *argv)
 		// TODO : now, we only consider 32 bit values
 
 		if (argv[i].type == CLASS_Int) {
-			function[fidx++] = 0x8b; // mov r+disp r
+			function[fidx++] = 0x89; // mov r+disp r
 			function[fidx++] = 0x45; // 0xXX(ebp)
 			disp = default_disp + i * 4;
 			disp = 0x100 - disp;
@@ -258,29 +291,19 @@ void* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_t *argv)
 			function[fidx++] = 0x04;
 			function[fidx++] = 0x24;
 		}
-		/*	else if (argv[i].type == CLASS_Float) {
-		function[fidx++] = 0xdd; // fstp : store & pop 64
-		function[fidx++] = 0x1c; 
-		function[fidx++] = 0x20;
-		}*/
+
 	}
 
 	//now call.
 	// call foreign function
-	intptr_t ucallee = (intptr_t)callee;
-	intptr_t next_addr = (intptr_t)function + (intptr_t)fidx + 5 /*for call instruction */;
-	intptr_t rel = (ucallee > next_addr) ? ucallee - next_addr : next_addr - ucallee;
-	rel = -rel;
-	intptr_t dst = (intptr_t)function + (intptr_t)fidx;
-	unsigned char *src = (unsigned char*)&rel;
-	//  function[fidx++] = 0xe8;
-	//  function[fidx++] = src[0];
-	//  function[fidx++] = src[1];
-	//  function[fidx++] = src[2];
-	//  function[fidx++] = src[3];
+	//	intptr_t ucallee = (intptr_t)callee;
+	//	intptr_t next_addr = (intptr_t)function + (intptr_t)fidx + 5 /*for call instruction */;
+	//intptr_t rel = (ucallee > next_addr) ? ucallee - next_addr : next_addr - ucallee;
+	//rel = -rel;
+	//unsigned char *src = (unsigned char*)&rel;
 
 	// absolute call
-	src = (unsigned char*)&callee;
+	unsigned char *src = (unsigned char*)&callee;
 	// mov this to eax;
 	WRITE_HEX(0xb8); // mov to eax
 	WRITE_HEX(src[0]);
@@ -295,15 +318,15 @@ void* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_t *argv)
 	//  function[fidx++] = 0xcc;
 	// after calling, restore edx;
 	// restore edx;
-	//  WRITE_HEX(0x8b);
-	//  WRITE_ASM(MOD_PLUS8, _EBP, _EDX);
-	//  WRITE_HEX(0xfc);
-	function[fidx++] = 0x8b; // mov r r+ disp
-	function[fidx++] = 0x55; //(ebp):edx
-	function[fidx++] = 0xfc; // -0x4
+	WRITE_HEX(0x8b);
+	WRITE_ASM(MOD_PLUS8, _EDX, _EBP);
+	WRITE_HEX(0xfc);
 
 	if (argv[0].sfpidx == -1) {
 		switch(argv[0].type) {
+		case CLASS_Tvoid:
+			goto STEP_OUT;
+			break;
 		case CLASS_Int:
 			// get return value, and give it to Konoha
 			// ret value is on eax;
@@ -317,24 +340,23 @@ void* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_t *argv)
 	}
 
 	// get rix (at 0x8(ebp)) --> eax
-	function[fidx++] = 0x8b; // mov
-	function[fidx++] = 0x45; // 0xXX(ebp) eax
-	function[fidx++] = 0x08; // 8
+	WRITE_HEX(0x8b);  // mov
+	WRITE_ASM(MOD_PLUS8, _EAX, _EBP); // 0xXX(ebp) eax
+	WRITE_HEX(0x8); // 8
 
-	//  function[fidx++] = 0xcc; // int3;
 	// get edx --> ebx
-	function[fidx++] = 0x89; // mov
-	function[fidx++] = 0xd3; // edx --> ebx
+	WRITE_HEX(0x89);
+	WRITE_ASM(MOD_IMD, _EDX, _EBX);
 
 	// ebx[sfp] + 16 * rix
 	// first, 16 * rix = 2^4 * rix
-	function[fidx++] = 0xc1; // shl
-	function[fidx++] = 0xe0; //eax
-	function[fidx++] = 0x4; // 4
+	WRITE_HEX(0xc1); // shl
+	WRITE_ASM(MOD_IMD, _ESP, _EAX);
+	WRITE_HEX(0x4);
 
 	// second, add eax to ebx;
-	function[fidx++] = 0x01; // add
-	function[fidx++] = 0xc3; // add eax to ebx;
+	WRITE_HEX(0x01); //add
+	WRITE_ASM(MOD_IMD, _EAX, _EBX); // add eax -> ebx;
 
 	// now at ebx is pointing to sfp[rix];
 	// copy retvalue to sfp[rix].ivalue (offset is 0x8)
@@ -353,29 +375,31 @@ void* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_t *argv)
 			break;
 		case CLASS_Float:
 			//fstpl 0x8(ebx)
-			function[fidx++] = 0xdd;
-			function[fidx++] = 0x5b;
-			function[fidx++] = 0x8;
+			WRITE_HEX(0xdd);
+			WRITE_ASM(MOD_PLUS8, _EBX, _EBX);
+			WRITE_HEX(0x8);
 			break;
 		}
 	}
 
 	// from here, closing this function
 	// close stack; add 0xXX esp
-	function[fidx++] = 0x83;
-	function[fidx++] = 0xc4;
-	function[fidx++] = (unsigned char)(stacksize + 0x8); // 0x8 is default size
+ STEP_OUT:
+	WRITE_HEX(0x83);
+	WRITE_HEX(0xc4);
+	WRITE_HEX((unsigned char)(stacksize + 0x8));
 
 	// restore ebx
-	function[fidx++] = 0x5b; // pop ebx
-	// pop ebp;
-	function[fidx++] = 0x5d; // pop ebp
-	// ret $0x4
-	function[fidx++] = 0xc2; // ret
-	function[fidx++] = 0x4;
-	function[fidx++] = 0x0;
+	WRITE_HEX(0x5b); // pop ebx
+	WRITE_HEX(0x5d);	// pop ebp;
 
-	return function;
+	// ret $0x4
+	WRITE_HEX(0xc2); // ret
+	WRITE_HEX(0x4);
+	WRITE_HEX(0x0);
+
+	//	return function;
+	return blk;
 }
 
 //typedef struct {
@@ -387,7 +411,7 @@ void* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_t *argv)
 // sfp: 1+ --> arguments
 
 
-const char *hex_map[256] = {
+static const char *hex_map[256] = {
   "00","01","02","03","04","05","06","07","08","09","0a","0b","0c","0d","0e","0f",
   "10","11","12","13","14","15","16","17","18","19","1a","1b","1c","1d","1e","1f",
   "20","21","22","23","24","25","26","27","28","29","2a","2b","2c","2d","2e","2f",
@@ -405,7 +429,7 @@ const char *hex_map[256] = {
   "e0","e1","e2","e3","e4","e5","e6","e7","e8","e9","ea","eb","ec","ed","ee","ef",
   "f0","f1","f2","f3","f4","f5","f6","f7","f8","f9","fa","fb","fc","fd","fe","ff",
 };
-
+	
 void bough_dumpBinary(unsigned char *ptr, size_t size)
 {
 	int i = 0;
@@ -417,16 +441,26 @@ void bough_dumpBinary(unsigned char *ptr, size_t size)
 	}
 }
 
+
 #endif/*K_USING_FFIDSL*/
 
 knh_Fmethod knh_makeFmethod(CTX ctx, void *func, int argc, knh_ffiparam_t *argv)
 {
 #ifdef K_USING_FFIDSL
-	void* f = knh_generateWrapper(ctx, (void*)func, argc, argv);
-	//knh_xblock_t* blk = knh_generateWrapper(ctx, (void*)func, argc, argv);
+	//	void *f = knh_generateWrapper(ctx, (void*)func, argc, argv);
+	void *gl = knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, "glutWireTeapot");
+	if (gl != NULL) {
+		if (func == gl) {
+			if (argv[1].type != CLASS_Float) {
+				fprintf(stderr, "Mismatch Detected!! : guess type: double, your type:%s\n", CLASS__(argv[1].type));
+			}
+		}
+	}
+	knh_xblock_t* blk = knh_generateWrapper(ctx, (void*)func, argc, argv);
+	void *f = blk->block;
 
 	if (f != NULL) {
-		//	bough_dumpBinary(blk->block, 128);
+		//		bough_dumpBinary(f, 128);
 		return (void*)f;
 	}
 #endif
