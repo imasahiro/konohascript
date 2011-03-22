@@ -136,7 +136,7 @@ static METHOD String_concat(CTX ctx, knh_sfp_t *sfp _RIX)
 			knh_Bytes_write(ctx, cwb->ba, S_tobytes(sfp[i].s));
 		}
 		else {
-			knh_write_Object2(ctx, cwb->w, sfp[i].o, FMT_s);
+			knh_write_Object(ctx, cwb->w, sfp[i].o, FMT_s);
 		}
 	}
 	RETURN_(knh_cwb_newString(ctx, cwb));

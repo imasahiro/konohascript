@@ -283,7 +283,7 @@ static METHOD OutputStream_print(CTX ctx, knh_sfp_t *sfp _RIX)
 			_OutputStream_writeLine(ctx, w, v[i].s);
 		}
 		else {/*if(!knh_write_ndata(ctx, w, O_bcid(v[i].o), v[i].ndata)) {*/
-			knh_write_Object2(ctx, w, v[i].o, FMT_s);
+			knh_write_Object(ctx, w, v[i].o, FMT_s);
 		}
 	}
 	RETURNvoid_();
@@ -332,7 +332,7 @@ static METHOD OutputStream_writeData(CTX ctx, knh_sfp_t *sfp _RIX)
 	for(i = 0; i < ac; i++) {
 		DP(w)->indent = 0;
 //		if(!knh_write_ndata(ctx, w, O_bcid(v[i].o), v[i].ndata)) {
-		knh_write_Object2(ctx, w, v[i].o, FMT_data);
+		knh_write_Object(ctx, w, v[i].o, FMT_data);
 //		}
 		knh_putc(ctx, w, ';');
 		knh_write_EOL(ctx, w);

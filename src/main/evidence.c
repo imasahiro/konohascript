@@ -198,7 +198,7 @@ static void knh_write_sfp(CTX ctx, knh_OutputStream_t *w, knh_type_t type, knh_s
 		knh_write_bool(ctx, w, sfp[0].bvalue);
 	}
 	else {
-		knh_write_Object2(ctx, w, sfp[0].o, level);
+		knh_write_Object(ctx, w, sfp[0].o, level);
 	}
 }
 
@@ -265,7 +265,7 @@ void knh_throw(CTX ctx, knh_sfp_t *sfp, long start)
 			sp--;
 		}
 		L_NOCATCH:;
-		knh_write_Object2(ctx, KNH_STDERR, UPCAST(ctx->e), FMT_dump);
+		knh_write_Object(ctx, KNH_STDERR, UPCAST(ctx->e), FMT_dump);
 		knh_exit(ctx, 0);
 	}
 }

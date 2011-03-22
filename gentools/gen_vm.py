@@ -477,7 +477,6 @@ void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline
 {
 	size_t i, size = OPDATA[c->opcode].size;
 	const knh_ushort_t *vmt = OPDATA[c->opcode].types;
-	knh_mtdcache_t mcache = {0, 0, NULL};
 	if(pc_start == NULL) {
 		knh_printf(ctx, w, "[%p:%d] %s(%d)", c, c->line, OPCODE__(c->opcode), (knh_intptr_t)c->opcode);
 	}
@@ -537,7 +536,7 @@ void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline
 		case VMT_TRL:
 		case VMT_OBJECT:
 		case VMT_STRING: {
-			knh_write_Object(ctx, w, ctx->esp, &mcache, UPCAST(c->p[i]), MN__k);
+			knh_write_Object(ctx, w, UPCAST(c->p[i]), FMT_line);
 			break;
 		}
 		case VMT_INT: {

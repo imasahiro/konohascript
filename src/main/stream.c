@@ -831,11 +831,11 @@ void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap)
 						}
 					case 'O': case 'o':
 						DBG_ASSERT(args[index].atype == VA_OBJECT);
-						knh_write_Object2(ctx, w, args[index].ovalue, FMT_s);
+						knh_write_Object(ctx, w, args[index].ovalue, FMT_s);
 						break;
 					case 'K': case 'k':
 						DBG_ASSERT(args[index].atype == VA_OBJECT);
-						knh_write_Object2(ctx, w, args[index].ovalue, FMT_line);
+						knh_write_Object(ctx, w, args[index].ovalue, FMT_line);
 						break;
 					case 'N': case 'F':
 						DBG_ASSERT(args[index].atype == VA_FIELDN);

@@ -246,7 +246,7 @@ void knh_write_token(CTX ctx,  knh_OutputStream_t *w, knh_Token_t *tk)
 	}else if(TT_(tk) == TT_ASIS) {
 		knh_putc(ctx, w, '_');
 	}else {
-		knh_write_Object2(ctx, w, (tk)->data, FMT_line);
+		knh_write_Object(ctx, w, (tk)->data, FMT_line);
 	}
 }
 
@@ -298,7 +298,7 @@ void knh_dump_token(CTX ctx, knh_OutputStream_t *w, knh_Token_t *tk)
 			}else if(TT_(tk) == TT_ASIS) {
 				knh_putc(ctx, w, '_');
 			}else {
-				knh_write_Object2(ctx, w, (tk)->data, FMT_line);
+				knh_write_Object(ctx, w, (tk)->data, FMT_line);
 			}
 		}
 	}

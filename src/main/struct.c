@@ -153,7 +153,7 @@ static void DEFAULT_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 	knh_write__p(ctx, w, (void*)o->ref);
 }
 
-void knh_write_Object2(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+void knh_write_Object(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
 	if(level % 2 == 0) { // TYPED
 		knh_write_text(ctx, w, CLASS__(O_cid(o)));
@@ -190,7 +190,7 @@ static void knh_write_TObject(CTX ctx, knh_OutputStream_t *w, knh_type_t type, O
 			break;
 		}
 		default:{
-			knh_write_Object2(ctx, w, v[i], level);
+			knh_write_Object(ctx, w, v[i], level);
 		}
 	}
 }
@@ -1032,14 +1032,14 @@ static void Array_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 				}
 			}
 			else {
-				knh_write_Object2(ctx, w, a->list[0], level);
+				knh_write_Object(ctx, w, a->list[0], level);
 				if(IS_FMTline(level)) {
 					knh_write_dots(ctx, w);
 				}
 				else {
 					for(c = 1; c < size; c++) {
 						knh_write_delim(ctx, w);
-						knh_write_Object2(ctx, w, a->list[c], level);
+						knh_write_Object(ctx, w, a->list[c], level);
 					}
 				}
 			}
@@ -1135,7 +1135,7 @@ static void Iterator_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 				knh_write_ffmt(ctx, w, K_FLOAT_FMT, lsfp[2].fvalue);
 			}
 			else {
-				knh_write_Object2(ctx, w, lsfp[2].o, level);
+				knh_write_Object(ctx, w, lsfp[2].o, level);
 			}
 			c++;
 		}
@@ -1358,7 +1358,7 @@ static void Method_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 	if(IS_FMTdump(level)) {
 		knh_write_EOL(ctx, w);
 		if(Method_isObjectCode(mtd)) {
-			knh_write_Object2(ctx, w, DP(mtd)->objdata, level);
+			knh_write_Object(ctx, w, DP(mtd)->objdata, level);
 		}
 	}
 }

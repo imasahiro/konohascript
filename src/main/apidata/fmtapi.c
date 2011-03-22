@@ -162,7 +162,7 @@ static METHOD Object__empty(CTX ctx, knh_sfp_t *sfp _RIX)
 //## method void Object.%s();
 static METHOD Object__s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_write_Object2(ctx, sfp[0].w, sfp[1].o, FMT_s);
+	knh_write_Object(ctx, sfp[0].w, sfp[1].o, FMT_s);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -171,7 +171,7 @@ static METHOD Object__s(CTX ctx, knh_sfp_t *sfp _RIX)
 //## method void Object.%k();
 static METHOD Object__k(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_write_Object2(ctx, sfp[0].w, sfp[1].o, FMT_line);
+	knh_write_Object(ctx, sfp[0].w, sfp[1].o, FMT_line);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -180,7 +180,7 @@ static METHOD Object__k(CTX ctx, knh_sfp_t *sfp _RIX)
 //## method void Object.%data();
 static METHOD Object__data(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_write_Object2(ctx, sfp[0].w, sfp[1].o, FMT_data);
+	knh_write_Object(ctx, sfp[0].w, sfp[1].o, FMT_data);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -189,7 +189,7 @@ static METHOD Object__data(CTX ctx, knh_sfp_t *sfp _RIX)
 //## method void Object.%dump();
 static METHOD Object__dump(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_write_Object2(ctx, sfp[0].w, sfp[1].o, FMT_dump);
+	knh_write_Object(ctx, sfp[0].w, sfp[1].o, FMT_dump);
 }
 
 /* ------------------------------------------------------------------------ */

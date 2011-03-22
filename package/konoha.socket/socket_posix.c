@@ -163,7 +163,7 @@ static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int
 	}
 	L_PERROR:;
 	if(errfunc != NULL) {
-		KNH_TRACE(ctx, sfp, mon, errfunc, "!Socket!!: host='%s', port=%d", ip_or_host, port);
+		KNH_PTRACE(ctx, sfp, mon, errfunc, "Socket!!: host='%s', port=%d", ip_or_host, port);
 	}
 	return sd;
 }

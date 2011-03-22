@@ -468,7 +468,6 @@ void THROW_NoSuchMethod(CTX ctx, knh_sfp_t *sfp, knh_class_t cid, knh_methodn_t 
 void THROW_ParamTypeError(CTX ctx, knh_sfp_t *sfp, size_t n, knh_methodn_t mn, knh_class_t reqt, knh_class_t cid);
 const knh_ExportsAPI_t *knh_getExportsAPI(void);
 const knh_PackageLoaderAPI_t* knh_getPackageAPI(void);
-void bough_dumpBinary(unsigned char *ptr, size_t size);
 knh_Fmethod knh_makeFmethod(CTX ctx, void *func, int argc, knh_ffiparam_t *argv);
 void dmap_sort_(knh_dmap_t *dmap, int isforced);
 int knh_bytes_strcasecmp2(knh_bytes_t t1, knh_bytes_t t2);
@@ -614,7 +613,7 @@ knh_StringDecoder_t* new_StringDecoderNULL(CTX ctx, knh_bytes_t t);
 knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, knh_bytes_t t);
 knh_String_t *knh_cwb_newStringDECODE(CTX ctx, knh_cwb_t *cwb, knh_StringDecoder_t *c);
 knh_bool_t knh_class_canObjectCopy(CTX ctx, knh_class_t cid);
-void knh_write_Object2(CTX ctx, knh_OutputStream_t *w, Object *o, int level);
+void knh_write_Object(CTX ctx, knh_OutputStream_t *w, Object *o, int level);
 knh_TypeMap_t* DEFAULT_findTypeMapNULL(CTX ctx, knh_class_t scid, knh_class_t tcid, int mode);
 void knh_ClassTBL_setObjectCSPI(knh_ClassTBL_t *ct);
 void knh_loadScriptSystemStructData(CTX ctx, const knh_PackageLoaderAPI_t *kapi);

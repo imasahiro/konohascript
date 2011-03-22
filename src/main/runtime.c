@@ -805,7 +805,7 @@ static void knh_shell(CTX ctx)
 		}
 		for(i = 0; i < knh_Array_size(results); i++) {
 			knh_Object_t *o = results->list[i];
-			knh_write_Object2(ctx, cwb->w, o, FMT_dump);
+			knh_write_Object(ctx, cwb->w, o, FMT_dump);
 			knh_write_EOL(ctx, cwb->w);
 		}
 		knh_showSecurityAlert(ctx, cwb->w);

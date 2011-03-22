@@ -536,7 +536,7 @@ void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline
 		case VMT_TRL:
 		case VMT_OBJECT:
 		case VMT_STRING: {
-			knh_write_Object2(ctx, w, UPCAST(c->p[i]), FMT_line);
+			knh_write_Object(ctx, w, UPCAST(c->p[i]), FMT_line);
 			break;
 		}
 		case VMT_INT: {
