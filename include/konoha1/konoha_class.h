@@ -997,6 +997,7 @@ typedef struct knh_Context_t {
 typedef struct knh_Monitor_t {
 	knh_hObject_t h;
 	int loglevel;
+	void (*trace)(CTX, knh_sfp_t*, struct knh_Monitor_t*, const char *ns, const char *event, const char *fmt, ...);
 } knh_Monitor_t;
 
 /* ------------------------------------------------------------------------ */

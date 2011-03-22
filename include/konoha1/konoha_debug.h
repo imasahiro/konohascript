@@ -32,10 +32,10 @@
 	ctx->api->trace(ctx, sfp, p, "EXCEPTION", e, 1, fmt, ## __VA_ARGS__)
 
 #define KNH_TRACE(ctx, sfp, mon, e, fmt, ...) \
-	ctx->api->trace(ctx, sfp, (mon)->loglevel, LIBNAME, e, Monitor_isThrowable(mon), fmt, ## __VA_ARGS__)
+	mon->trace(ctx, sfp, mon, LIBNAME, e, fmt, ## __VA_ARGS__)
 
 #define KNH_PTRACE(ctx, sfp, mon, e, fmt, ...) \
-	ctx->api->trace(ctx, sfp, (mon)->loglevel, LIBNAME, e, Monitor_isThrowable(mon), "!" fmt, ## __VA_ARGS__)
+	mon->trace(ctx, sfp, mon, LIBNAME, e, "!" fmt, ## __VA_ARGS__)
 
 
 #define KNH_PANIC(ctx, fmt, ...) \
@@ -48,86 +48,11 @@
 	ctx->api->trace(ctx, NULL, LOG_INFO, "INFO", __FUNCTION__, 0, "*(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
 
 #define KNH_SECINFO(ctx, fmt, ...) \
-	ctx->api->trace(ctx, NULL, LOG_INFO, "AUDIT", __FUNCTION__, 0, "*(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
+	ctx->api->trace(ctx, NULL, LOG_INFO,   "AUDIT", __FUNCTION__, 0, "*(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
 
 #define KNH_MEMINFO(ctx, fmt, ...) \
 	ctx->api->trace(ctx, NULL, LOG_NOTICE, "MEM", __FUNCTION__, 0, "*(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
 
-#define LIB_SYSLOG(ctx) a
-
-#ifdef OLD
-#define KNH_THROW(ctx, sfp, p, e, fmt, ...) \
-	ctx->api->trace(ctx, p, K_EVIDENCE_NAMESPACE, e, sfp, fmt, ## __VA_ARGS__)
-
-#define LIB_SYSLOG(ctx, p, e, fmt, ...) \
-	ctx->api->trace(ctx, p, K_PERROR_LIBNAME, e, NULL, fmt, ## __VA_ARGS__)
-
-#define DBG_SYSLOG(fmt, ...) \
-	ctx->api->trace(ctx, LOG_DEBUG, K_EVIDENCE_NAMESPACE, __FUNCTION__, NULL, "*" fmt, ## __VA_ARGS__)
-
-#define KNH_PERROR(ctx, sfp, funcname) \
-	ctx->api->perror(ctx, sfp, K_PERROR_LIBNAME, funcname)\
-
-#define KNH_PERROR_IF(ctx, sfp, IS, funcname) \
-	if(unlikely(IS)) {\
-		ctx->api->perror(ctx, sfp, K_PERROR_LIBNAME, funcname);\
-	}\
-
-#define PERROR_RETURN_(C, F, ...) {\
-		int res_ = F(__VA_ARGS__);\
-		if(res_ == K_PERROR_FAILED) {\
-			ctx->api->perror(ctx, sfp, K_PERROR_LIBNAME, #F);\
-			K_PERROR_BEFORE_RETRUN;\
-			RETURN_(ctx->api->new_Null(ctx, CLASS_##C));\
-		}\
-	}\
-
-#define PERROR_RETURNs_(F, ...) {\
-		char *res_ = F(__VA_ARGS__);\
-		if(res_ == NULL) {\
-			ctx->api->perror(ctx, sfp, K_PERROR_LIBNAME, #F);\
-		}\
-		K_PERROR_BEFORE_RETRUN;\
-		RETURN_(ctx->api->new_String(ctx, res_));\
-	}\
-
-#define PERROR_RETURNi_(F, ...) {\
-		int res_ = F(__VA_ARGS__);\
-		if(res_ == K_PERROR_FAILED) {\
-			ctx->api->perror(ctx, sfp, K_PERROR_LIBNAME, #F);\
-		}\
-		K_PERROR_BEFORE_RETRUN;\
-		RETURNi_(res_);\
-	}\
-
-#define PERROR_returni_(F, ...) {\
-		int res_ = F(__VA_ARGS__);\
-		if(res_ == K_PERROR_FAILED) {\
-			ctx->api->perror(ctx, NULL, K_PERROR_LIBNAME, #F);\
-		}\
-		K_PERROR_BEFORE_RETRUN;\
-		return res_;\
-	}\
-
-#define PERROR_RETURNb_(F, ...) {\
-		int res_ = F(__VA_ARGS__);\
-		if(res_ == K_PERROR_FAILED) {\
-			ctx->api->perror(ctx, sfp, K_PERROR_LIBNAME, #F);\
-		}\
-		K_PERROR_BEFORE_RETRUN;\
-		RETURNb_((res_ != -1));\
-	}\
-
-#define PERROR_returnb_(F, ...) {\
-		int res_ = F(__VA_ARGS__);\
-		if(res_ == K_PERROR_FAILED) {\
-			ctx->api->perror(ctx, NULL, K_PERROR_LIBNAME, #F);\
-		}\
-		K_PERROR_BEFORE_RETRUN;\
-		return (res_ != -1);\
-	}\
-
-#endif
 
 /* ------------------------------------------------------------------------ */
 /* [DBGMODE] */

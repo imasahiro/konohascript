@@ -2294,10 +2294,19 @@ static knh_ClassDef_t ContextDef = {
 /* --------------- */
 /* Monitor */
 
+static void mtrace(CTX ctx, knh_sfp_t *sfp, struct knh_Monitor_t *mon, const char *ns, const char *evt, const char *fmt, ...)
+{
+	va_list ap;
+	va_start(ap , fmt);
+	knh_vtrace(ctx, sfp, (mon)->loglevel, ns, evt, Monitor_isThrowable(mon), fmt, ap);
+	va_end(ap);
+}
+
 static void Monitor_init(CTX ctx, Object *o)
 {
 	knh_Monitor_t *mon = (knh_Monitor_t*)o;
 	mon->loglevel = LOG_NOTICE;
+	mon->trace = mtrace;
 }
 
 static knh_ClassDef_t MonitorDef = {

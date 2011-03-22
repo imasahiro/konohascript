@@ -335,6 +335,7 @@ static void knh_traceCFMT(CTX ctx, int pe, int isThrowable, const char *ns, cons
 	knh_format_uline(ctx, linefmt, sizeof(linefmt), uline);
 	knh_snprintf(newfmt, sizeof(newfmt), "%s+" K_INT_FMT K_EVENT_FORMAT "%s%s", ctx->trace, ctx->seq, ns, event, linefmt, fmt);
 	ctx->spi->vsyslog(pe, newfmt, ap);
+	((knh_context_t*)ctx)->seq += 1;
 	if(ctx->ehdrNC != NULL && isThrowable) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_vprintf(ctx, cwb->w, fmt, ap);
@@ -360,6 +361,7 @@ static void knh_tracePERROR(CTX ctx, int pe, int isThrowable, const char *ns, co
 	knh_snprintf(newfmt, sizeof(newfmt), "%s+" K_INT_FMT K_EVENT_FORMAT "%s%s ERRNO=%d, ERR='%s'",
 			ctx->trace, ctx->seq, ns, event, linefmt, fmt, errno, emsg);
 	ctx->spi->vsyslog(pe, newfmt, ap);
+	((knh_context_t*)ctx)->seq += 1;
 	if(ctx->ehdrNC != NULL && isThrowable) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_vprintf(ctx, cwb->w, fmt, ap);
@@ -377,6 +379,7 @@ static void knh_traceKFMT(CTX ctx, int pe, int isThrowable, const char *ns, cons
 	knh_write_uline(ctx, cwb->w, uline);
 	knh_vprintf(ctx, cwb->w, fmt, ap);
 	ctx->spi->syslog(pe, knh_cwb_tochar(ctx, cwb));
+	((knh_context_t*)ctx)->seq += 1;
 	if(ctx->ehdrNC != NULL && isThrowable) {
 		knh_Exception_t *e = new_Error(ctx, EBI_Fatal, knh_cwb_newString(ctx, cwb));
 		DP(e)->uline = uline;
@@ -386,13 +389,11 @@ static void knh_traceKFMT(CTX ctx, int pe, int isThrowable, const char *ns, cons
 	knh_cwb_clear(cwb, 0);
 }
 
-void knh_trace(CTX ctx, knh_sfp_t *sfp, int pe,const char *ns, const char *event, int isThrowable, const char *fmt, ...)
+void knh_vtrace(CTX ctx, knh_sfp_t *sfp, int pe, const char *ns, const char *event, int isThrowable, const char *fmt, va_list ap)
 {
 	if(pe <= LOG_CRIT) isThrowable = 1;
 	if(knh_isAuditLogging(pe)) {
 		knh_uline_t uline = 0;
-		va_list ap;
-		va_start(ap , fmt);
 		if(ctx->ehdrNC != NULL) {
 			if(ctx->gma != NULL && SP(ctx->gma)->uline != 0) {
 				uline = SP(ctx->gma)->uline;
@@ -401,7 +402,6 @@ void knh_trace(CTX ctx, knh_sfp_t *sfp, int pe,const char *ns, const char *event
 				uline = knh_stack_uline(ctx, sfp);
 			}
 		}
-		//((knh_context_t*)ctx)->seq += 1;
 		if(fmt[0] == '*') {
 			knh_traceCFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
 		}
@@ -413,25 +413,21 @@ void knh_trace(CTX ctx, knh_sfp_t *sfp, int pe,const char *ns, const char *event
 			KNH_ASSERT(ctx->bufa != NULL);
 			knh_traceKFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt, ap);
 		}
-		va_end(ap);
 		if(pe == LOG_EMERG) {
 			knh_exit(ctx, 0);
 		}
 	}
 }
 
-//void knh_stack_perror(CTX ctx, knh_sfp_t *sfp, const char *ns, const char *event)
-//{
-//	int errno_ = errno;
-//	int p = (errno_ != 13) ? LOG_ERR : LOG_ALERT;
-//#ifndef K_USING_WINTHREAD_
-//	char *emsg = strerror(errno_);
-//#else
-//	char emsg[256];
-//	strerror_s(emsg, 256, errno_);
-//#endif
-//	ctx->spi->syslog(p, K_EVENT_FORMAT "errno=%d, msg='%s'", ns, event, errno_, emsg);
-//}
+void knh_trace(CTX ctx, knh_sfp_t *sfp, int pe,const char *ns, const char *evt, int isThrowable, const char *fmt, ...)
+{
+	if(knh_isAuditLogging(pe)) {
+		va_list ap;
+		va_start(ap , fmt);
+		knh_vtrace(ctx, sfp, pe, ns, evt, isThrowable, fmt, ap);
+		va_end(ap);
+	}
+}
 
 /* ------------------------------------------------------------------------ */
 

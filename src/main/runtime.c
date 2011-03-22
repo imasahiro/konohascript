@@ -35,13 +35,12 @@
 #define USE_cwb_tobytes   1
 #define USE_cwb_size      1
 
-/* ************************************************************************ */
 // added by nakata
 //#define USE_cwb_write 1
-#define LIBNAME "konoha"
 
 /* ************************************************************************ */
 
+#define LIBNAME "konoha"
 #include"commons.h"
 
 /* ************************************************************************ */
@@ -139,13 +138,14 @@ knh_context_t* knh_getCurrentContext(void)
 
 #if defined(K_USING_DEBUG)
 static int systemVerbose = 1;
+static int auditLevel    = LOG_NOTICE;
 static int verboseLevel  = LOG_INFO;
 #else
 static int systemVerbose = 0;
+static int auditLevel    = LOG_ERR;
 static int verboseLevel  = LOG_CRIT;
 #endif
 
-static int auditLevel = LOG_CRIT;
 
 knh_bool_t knh_isAuditLogging(int pe)
 {
@@ -180,6 +180,7 @@ static void opt_a(CTX ctx, int mode, const char *optstr)
 	((knh_ServiceSPI_t*)ctx->spi)->syslog    = _syslog;
 	((knh_ServiceSPI_t*)ctx->spi)->vsyslog    = _vsyslog;
 	openlog("konoha", LOG_PID, LOG_LOCAL7);
+	fprintf(stderr, "audit level=%d\n", auditLevel);
 #else
 	//KNH_SYSLOG(ctx, LOG_WARNING, LOG_MSG, "there is no available logging system.");
 #endif
