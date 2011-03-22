@@ -369,19 +369,17 @@ static FILE* knh_fopen(CTX ctx, int pe, const char *filename, const char *mode)
 {
 #if defined(K_USING_NOFILE)
 	return NULL;
-#elif defined(K_USING_STDC_) || defined(K_USING_POSIX_)
-#if !defined(K_USING_WINTHREAD_) || defined(K_USING_MINGW)
-	FILE *in = fopen(filename, mode);
 #else
+#if defined(K_USING_WIN32_)
 	FILE *in = NULL;
 	fopen_s(&in, filename, mode);
+#else
+	FILE *in = fopen(filename, mode);
 #endif
 	if(in == NULL) {
 		KNH_SYSLOG(ctx, NULL, pe, "fopen", 0, "!file='%s' mode='%s'", filename, mode);
 	}
 	return in;
-#else
-	return NULL;
 #endif
 }
 #endif

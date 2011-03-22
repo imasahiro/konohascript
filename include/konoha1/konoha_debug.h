@@ -51,7 +51,6 @@
 #define KNH_MEMINFO(ctx, fmt, ...) \
 	ctx->api->trace(ctx, NULL, LOG_NOTICE, "MEM", __FUNCTION__, 0, "*(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
 
-
 /* ------------------------------------------------------------------------ */
 /* [DBGMODE] */
 

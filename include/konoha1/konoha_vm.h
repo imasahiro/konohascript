@@ -724,13 +724,7 @@ extern "C" {
 
 #define KLR_NSETIDX(ctx, cidx, aidx, nidx, vidx) KLR_NSETIDXC(ctx, cidx, aidx, Ri_(nidx), vidx)
 
-/* ------------------------------------------------------------------------ */
-
-#ifndef K_USING_WINTHREAD_
-#define KLR_NOP(ctx)  asm("nop")
-#else
 #define KLR_NOP(ctx)
-#endif
 
 /* ------------------------------------------------------------------------ */
 

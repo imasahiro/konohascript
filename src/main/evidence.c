@@ -33,20 +33,9 @@
 #include"commons.h"
 #include"../../include/konoha1/konoha_code_.h"
 
-#ifndef K_USED_TO_BE_ON_LKM
+#if defined(K_USING_POSIX_)
 #include<time.h>
-#endif
-
-#ifdef K_USED_TO_BE_ON_LKM
-#include<linux/errno.h>
-static int errno;
-#else
-
-#ifdef K_USING_POSIX_
 #include<errno.h>
-#elif !defined(K_USING_WINTHREAD_)
-static int errno_WHO_ADDED_THIS;      //@ Who added this? (kimio)
-#endif
 #endif
 
 /* ************************************************************************ */
@@ -308,23 +297,23 @@ knh_Object_t *Context_pop(CTX ctx)
 /* ------------------------------------------------------------------------ */
 /* [syslog] */
 
-int knh_errno(int pe)
-{
-	int errno_ = errno;
-	return (errno_ != 13) ? pe : LOG_ALERT;
-}
-
-const char *knh_strerror(void)
-{
-	int errno_ = errno;
-#if !defined(K_USING_WINTHREAD_) || defined(K_USING_MINGW)
-	return strerror(errno_);
-#else
-	const char emsg[256];
-	strerror_s(emsg, 256, errno_);
-	return emsg;
-#endif
-}
+//int knh_errno(int pe)
+//{
+//	int errno_ = errno;
+//	return (errno_ != 13) ? pe : LOG_ALERT;
+//}
+//
+//const char *knh_strerror(void)
+//{
+//	int errno_ = errno;
+//#if !defined(K_USING_WINTHREAD_) || defined(K_USING_MINGW)
+//	return strerror(errno_);
+//#else
+//	const char emsg[256];
+//	strerror_s(emsg, 256, errno_);
+//	return emsg;
+//#endif
+//}
 
 #define K_EVENT_FORMAT " <%s:%s> "
 
@@ -349,11 +338,14 @@ static void knh_traceCFMT(CTX ctx, int pe, int isThrowable, const char *ns, cons
 static void knh_tracePERROR(CTX ctx, int pe, int isThrowable, const char *ns, const char *event, knh_uline_t uline, knh_sfp_t *sfp, const char *fmt, va_list ap)
 {
 	int errno_ = errno;
-#if !defined(K_USING_WINTHREAD_) || defined(K_USING_MINGW)
-	char *emsg = strerror(errno_);
-#else
+#if defined(K_USING_WIN32_)
 	char emsg[256];
-	strerror_s(emsg, 256, errno_);
+	strerror_s(emsg, sizeof(emsg), errno_);
+#elif defined(K_USING_POSIX_)
+	char emsg[256];
+	strerror_r(errno_, emsg, sizeof(emsg));
+#else
+	char *emsg = strerror(errno_);
 #endif
 	char newfmt[512];
 	char linefmt[80];

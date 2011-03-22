@@ -147,7 +147,7 @@ static void serverconnect(char *path)
 	struct sockaddr_in server = {0};
 	int fd;
 	
-#ifdef K_USING_WINTHREAD_
+#ifdef K_USING_WIN32_
 	WSADATA data;
 	WSAStartup(MAKEWORD(2,0), &data);
 #endif
@@ -169,7 +169,7 @@ static void serverconnect(char *path)
 	}
 	getmessage(fd, path);
 	
-#ifdef K_USING_WINTHREAD_
+#ifdef K_USING_WIN32_
 	closesocket(fd);
 	WSACleanup();
 #else
@@ -189,7 +189,7 @@ static int getncpu(void)
 	if (sysctl(mib, 2, &ncpu, &len, NULL, 0) == -1) {
 		/* Error */ ncpu = 1;
 	}
-#elif defined(K_USING_WINTHREAD_) && !defined(K_USING_MINGW)
+#elif defined(K_USING_WIN32_)
 	CAtlString strMessage;
 	SYSTEM_INFO sysInfo;
 	GetNativeSystemInfo(&sysInfo);

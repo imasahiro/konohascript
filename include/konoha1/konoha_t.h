@@ -463,7 +463,11 @@ typedef knh_uintptr_t             knh_uline_t;
 /* Thread */
 /* ------------------------------------------------------------------------ */
 
-#if defined(K_USING_PTHREAD)
+#if defined(K_USING_WINTHREAD_)
+#define knh_thread_t HANDLE
+#define knh_thread_key_t DWORD
+#define knh_mutex_t CRITICAL_SECTION
+#elif defined(K_USING_PTHREAD)
 #define knh_thread_t pthread_t
 #define knh_thread_key_t pthread_key_t
 #define knh_mutex_t pthread_mutex_t
@@ -471,10 +475,6 @@ typedef knh_uintptr_t             knh_uline_t;
 #define knh_thread_t W
 #define knh_thread_key_t W
 #define knh_mutex_t W
-#elif defined(K_USING_WINTHREAD_) && !defined(K_USING_MINGW)
-#define knh_thread_t HANDLE
-#define knh_thread_key_t DWORD
-#define knh_mutex_t CRITICAL_SECTION
 #else
 typedef knh_intptr_t knh_thread_t;
 typedef knh_intptr_t knh_thread_key_t;
