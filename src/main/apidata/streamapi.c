@@ -278,13 +278,12 @@ static METHOD OutputStream_print(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_OutputStream_t *w = sfp[0].w;
 	knh_sfp_t *v = sfp + 1;
 	size_t i, ac = knh_stack_argc(ctx, v);
-	knh_mtdcache_t mcache = {0, 0, NULL};
 	for(i = 0; i < ac; i++) {
 		if(IS_bString(v[i].o)) {
 			_OutputStream_writeLine(ctx, w, v[i].s);
 		}
-		else if(!knh_write_ndata(ctx, w, O_bcid(v[i].o), v[i].ndata)) {
-			knh_write_Object(ctx, w, v+ac, &mcache, v[i].o, MN__s);
+		else {/*if(!knh_write_ndata(ctx, w, O_bcid(v[i].o), v[i].ndata)) {*/
+			knh_write_Object2(ctx, w, v[i].o, FMT_s);
 		}
 	}
 	RETURNvoid_();
@@ -330,12 +329,11 @@ static METHOD OutputStream_writeData(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_sfp_t *v = sfp + 1;
 	int i, ac = knh_stack_argc(ctx, v);
 	knh_intptr_t indent = DP(w)->indent;
-	knh_mtdcache_t mcache = {0, 0, NULL};
 	for(i = 0; i < ac; i++) {
 		DP(w)->indent = 0;
-		if(!knh_write_ndata(ctx, w, O_bcid(v[i].o), v[i].ndata)) {
-			knh_write_Object(ctx, w, v+ac, &mcache, v[i].o, MN__k);
-		}
+//		if(!knh_write_ndata(ctx, w, O_bcid(v[i].o), v[i].ndata)) {
+		knh_write_Object2(ctx, w, v[i].o, FMT_data);
+//		}
 		knh_putc(ctx, w, ';');
 		knh_write_EOL(ctx, w);
 	}

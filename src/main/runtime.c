@@ -776,7 +776,6 @@ static void knh_shell(CTX ctx)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	void *shell_status = NULL;
-	knh_mtdcache_t mcache = {0, 0, NULL};
 	BEGIN_LOCAL(ctx, lsfp, 2);
 	LOCAL_NEW(ctx, lsfp, 0, knh_Array_t *, results, new_Array0(ctx, 0));
 	LOCAL_NEW(ctx, lsfp, 1, knh_InputStream_t *, bin, new_BytesInputStream(ctx, new_Bytes(ctx, K_PAGESIZE)));
@@ -806,7 +805,7 @@ static void knh_shell(CTX ctx)
 		}
 		for(i = 0; i < knh_Array_size(results); i++) {
 			knh_Object_t *o = results->list[i];
-			knh_write_Object(ctx, cwb->w, lsfp+1, &mcache, o, MN__dump);
+			knh_write_Object2(ctx, cwb->w, o, FMT_dump);
 			knh_write_EOL(ctx, cwb->w);
 		}
 		knh_showSecurityAlert(ctx, cwb->w);

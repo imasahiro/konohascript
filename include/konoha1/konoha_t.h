@@ -318,8 +318,8 @@ typedef knh_ushort_t       knh_ebi_t;    /* knh_ebi_t */
 
 #define CLASS__(cid)               SAFECLASS__(ctx, cid)
 #define STRUCT__(bcid)             SAFESTRUCT__(ctx, bcid)
-#define O__(o)                     S_tochar(O_cTBL(o)->lname)
-#define TYPE__(type)      SAFETYPE__(ctx,type)
+#define O__(o)                     S_tochar(O_cTBL(o)->sname)
+#define TYPE__(type)               SAFETYPE__(ctx,type)
 
 /* knh_ebi_t */
 #define EBI_unknown            ((knh_ebi_t)-1)
@@ -665,6 +665,19 @@ typedef struct {
 	knh_fieldn_t  fn    ;
 } knh_fields_t ;
 
+#define TFMT_s      0
+#define FMT_s       1
+#define TFMT_line   2
+#define FMT_line    3
+#define TFMT_data   4
+#define FMT_data    5
+#define TFMT_dump   6
+#define FMT_dump    7
+
+#define IS_FMTs(level)     (level <= FMT_s)
+#define IS_FMTline(level)  (level <= FMT_line)
+#define IS_FMTdump(level)  (level >= TFMT_dump)
+
 typedef struct knh_ClassDef_t {
 	void (*init)(CTX, Object*);
 	void (*initcopy)(CTX, Object *, const Object *);
@@ -672,9 +685,9 @@ typedef struct knh_ClassDef_t {
 	void (*free)(CTX, Object *);
 
 	void (*checkin)(CTX, Object*);
-	void (*checkout)(CTX, Object*, int isFailed);
+	void (*checkout)(CTX, Object*, int);
 	int  (*compareTo)(const Object*, const Object*);
-	void *RESERVED0;
+	void (*write)(CTX, struct knh_OutputStream_t*, Object*, int);
 
 	struct knh_String_t* (*getkey)(CTX, knh_sfp_t*);
 	knh_hashcode_t       (*hashCode)(CTX, knh_sfp_t*);

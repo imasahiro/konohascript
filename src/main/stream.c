@@ -504,6 +504,40 @@ KNHAPI2(void) knh_write_text(CTX ctx, knh_OutputStream_t *w, const char *text)
 	knh_write(ctx, w, t);
 }
 
+void knh_write_quote(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int quote)
+{
+	knh_bytes_t sub = t;
+	size_t i, s = 0;
+	knh_putc(ctx, w, quote);
+	for(i = 0; i < t.len; i++) {
+		int ch = t.ustr[i];
+		if(ch == '\t' || ch == '\n' || ch == '\r' || ch == '\\' || ch == quote) {
+			sub.ustr = t.ustr + s;
+			sub.len = i - s;
+			knh_print(ctx, w, sub); s = i + 1;
+			knh_putc(ctx, w, '\\');
+			if(ch == '\t') {
+				knh_putc(ctx, w, 't');
+			}
+			else if(ch == '\n') {
+				knh_putc(ctx, w, 'n');
+			}
+			else if(ch == '\r') {
+				knh_putc(ctx, w, 'r');
+			}
+			else {
+				knh_putc(ctx, w, ch);
+			}
+		}
+	}
+	if (s < t.len) {
+		sub.ustr = t.ustr + s;
+		sub.len = t.len - s;
+		knh_print(ctx, w, sub);
+	}
+	knh_putc(ctx, w, quote);
+}
+
 /* ------------------------------------------------------------------------ */
 /* [flag] */
 
@@ -533,47 +567,47 @@ void knh_write_cap(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t)
 	knh_write(ctx, w, t);
 }
 
-/* ------------------------------------------------------------------------ */
-/* [String] */
+///* ------------------------------------------------------------------------ */
+///* [String] */
+//
+//knh_bool_t knh_write_ndata(CTX ctx, knh_OutputStream_t *w, knh_class_t cid, knh_ndata_t d)
+//{
+//	switch(cid) {
+//	case CLASS_Boolean:
+//		knh_write_bool(ctx, w, (int)d);
+//		return 1;
+//	case CLASS_Int:
+//		knh_write_ifmt(ctx, w, K_INT_FMT, d);
+//		return 1;
+//	case CLASS_Float: {
+//		// removed warrning by ide
+//		union { knh_float_t f; knh_ndata_t n; } v;
+//		v.n = d;
+//		knh_write_ffmt(ctx, w, K_FLOAT_FMT, v.f);
+//		return 1;
+//	}
+//	}
+//	return 0;
+//}
 
-knh_bool_t knh_write_ndata(CTX ctx, knh_OutputStream_t *w, knh_class_t cid, knh_ndata_t d)
-{
-	switch(cid) {
-	case CLASS_Boolean:
-		knh_write_bool(ctx, w, (int)d);
-		return 1;
-	case CLASS_Int:
-		knh_write_ifmt(ctx, w, K_INT_FMT, d);
-		return 1;
-	case CLASS_Float: {
-		// removed warrning by ide
-		union { knh_float_t f; knh_ndata_t n; } v;
-		v.n = d;
-		knh_write_ffmt(ctx, w, K_FLOAT_FMT, v.f);
-		return 1;
-	}
-	}
-	return 0;
-}
-
-/* ------------------------------------------------------------------------ */
-
-void knh_write_Object(CTX ctx, knh_OutputStream_t *w, knh_sfp_t *esp, knh_mtdcache_t *mcache, knh_Object_t *o, knh_methodn_t mn)
-{
-	if(IS_NULL(o)) {
-		knh_write_text(ctx, w, "null");
-	}
-	else {
-		const knh_ClassTBL_t *t = O_cTBL(o);
-		if(mcache->cid != t->cid || mcache->mn != mn) {
-			mcache->mtd = knh_ClassTBL_getFmt(ctx, t, mn);
-		}
-		KNH_SETv(ctx, esp[K_CALLDELTA].o, w);
-		KNH_SETv(ctx, esp[K_CALLDELTA+1].o, o);
-		esp[K_CALLDELTA+1].ndata = O_data(o); // this is necessary
-		KNH_SCALL(ctx, esp, 0, mcache->mtd, 1);
-	}
-}
+///* ------------------------------------------------------------------------ */
+//
+//void knh_write_Object(CTX ctx, knh_OutputStream_t *w, knh_sfp_t *esp, knh_mtdcache_t *mcache, knh_Object_t *o, knh_methodn_t mn)
+//{
+//	if(IS_NULL(o)) {
+//		knh_write_text(ctx, w, "null");
+//	}
+//	else {
+//		const knh_ClassTBL_t *t = O_cTBL(o);
+//		if(mcache->cid != t->cid || mcache->mn != mn) {
+//			mcache->mtd = knh_ClassTBL_getFmt(ctx, t, mn);
+//		}
+//		KNH_SETv(ctx, esp[K_CALLDELTA].o, w);
+//		KNH_SETv(ctx, esp[K_CALLDELTA+1].o, o);
+//		esp[K_CALLDELTA+1].ndata = O_data(o); // this is necessary
+//		KNH_SCALL(ctx, esp, 0, mcache->mtd, 1);
+//	}
+//}
 
 /* ------------------------------------------------------------------------ */
 /* [printf] */
@@ -722,9 +756,6 @@ void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap)
 
 	L_FORMAT: {
 		knh_bytes_t b;
-		knh_mtdcache_t mcache = {0, 0, NULL};
-		//knh_Method_t *mtd = NULL;
-		knh_sfp_t *esp = ctx->esp;
 		c = fmt;
 		bindex = 0;
 		b.text = c;
@@ -800,11 +831,11 @@ void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap)
 						}
 					case 'O': case 'o':
 						DBG_ASSERT(args[index].atype == VA_OBJECT);
-						knh_write_Object(ctx, w, esp, &mcache, args[index].ovalue, MN__s);
+						knh_write_Object2(ctx, w, args[index].ovalue, FMT_s);
 						break;
 					case 'K': case 'k':
 						DBG_ASSERT(args[index].atype == VA_OBJECT);
-						knh_write_Object(ctx, w, esp, &mcache, args[index].ovalue, MN__k);
+						knh_write_Object2(ctx, w, args[index].ovalue, FMT_line);
 						break;
 					case 'N': case 'F':
 						DBG_ASSERT(args[index].atype == VA_FIELDN);

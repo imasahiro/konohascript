@@ -466,9 +466,10 @@ typedef struct {
 	struct knh_ParamArray_t*    mp;
 	void*                       cfunc;
 	union {
+		knh_Object_t            *objdata;
 		struct knh_String_t     *source;
-		struct knh_Gamma_t      *gma;       // Dynamic
 		struct knh_KonohaCode_t *kcode;
+		struct knh_Gamma_t      *gma;       // Dynamic
 	};
 	knh_uri_t      uri;   knh_uri_t      domain;
 	knh_uintptr_t  count;

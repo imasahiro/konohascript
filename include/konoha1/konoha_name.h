@@ -2,8 +2,8 @@
 
 /* ------------------------------------------------------------------------ */
 /* MACROS */
-#define K_REVISION                      40
-#define K_BUILDID                       1071
+#define K_REVISION                      49
+#define K_BUILDID                       1072
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -920,6 +920,7 @@
 #define MN_indexOf      FN_indexof
 #define MN_super        FN_super
 #define MN_getKey       MN_toGETTER(FN_key)
+#define MN_getString    MN_toGETTER(FN_string)
 #define MN_insert       FN_insert
 #define MN_putc         FN_putc
 #define MN_isAutoFlush  MN_toISBOOL(FN_autoflush)
@@ -982,7 +983,7 @@
 #define MN_encode       FN_encode
 #define MN_hashCode     FN_hashcode
 #define MN_equals       FN_equals
-#define MN_getString    MN_toGETTER(FN_string)
+#define MN__data        MN_toFMT(FN_data)
 #define MN_writeChar    FN_writechar
 #define MN_startsWith   FN_startswith
 #define MN_getInt       MN_toGETTER(FN_int)

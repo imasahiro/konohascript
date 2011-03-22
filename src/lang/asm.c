@@ -692,8 +692,7 @@ static void Method_threadCode(CTX ctx, knh_Method_t *mtd, knh_KonohaCode_t *kcod
 	//if(O_isTenure(mtd)) O_toTenure(kcode);
 	(mtd)->pc_start = knh_VirtualMachine_run(ctx, ctx->esp + 1, SP(kcode)->code);
 	if(knh_isSystemVerbose()) {
-		knh_mtdcache_t mcache = {0, 0, NULL};
-		knh_write_Object(ctx, KNH_STDOUT, ctx->esp, &mcache, UPCAST(mtd), MN__dump);
+		knh_write_Object2(ctx, KNH_STDOUT, UPCAST(mtd), FMT_dump);
 		knh_write_EOL(ctx, KNH_STDOUT);
 	}
 }
@@ -2852,9 +2851,7 @@ static knh_opline_t* opline_findOPCODE(CTX ctx, knh_opline_t *op, knh_opcode_t o
 static void _STACKTRACE(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t n, knh_opline_t *pc)
 {
 	if(IS_Exception(ctx->e)) {
-		knh_mtdcache_t mcache = {0, 0, NULL};
-		knh_write_Object(ctx, KNH_STDERR, sfp, &mcache, UPCAST(ctx->e), MN__dump);
-		//KNH_SETv(ctx, ((knh_context_t*)ctx)->e, KNH_NULL);
+		knh_write_Object2(ctx, KNH_STDERR, UPCAST(ctx->e), FMT_dump);
 	}
 }
 

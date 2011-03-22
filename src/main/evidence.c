@@ -186,6 +186,22 @@ static knh_uline_t knh_stack_uline(CTX ctx, knh_sfp_t *sfp)
 	return 0;
 }
 
+static void knh_write_sfp(CTX ctx, knh_OutputStream_t *w, knh_type_t type, knh_sfp_t *sfp, int level)
+{
+	if(IS_Tint(type)) {
+		knh_write_ifmt(ctx, w, K_INT_FMT, sfp[0].ivalue);
+	}
+	else if(IS_Tfloat(type)) {
+		knh_write_ffmt(ctx, w, K_FLOAT_FMT, sfp[0].fvalue);
+	}
+	else if(IS_Tbool(type)) {
+		knh_write_bool(ctx, w, sfp[0].bvalue);
+	}
+	else {
+		knh_write_Object2(ctx, w, sfp[0].o, level);
+	}
+}
+
 static void knh_Exception_addStackTrace(CTX ctx, knh_Exception_t *e, knh_sfp_t *sfp)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
@@ -193,7 +209,6 @@ static void knh_Exception_addStackTrace(CTX ctx, knh_Exception_t *e, knh_sfp_t *
 	if((mtd)->mn != MN_LAMBDA) {
 		int i = 0, psize = knh_Method_psize(mtd);
 		knh_uline_t uline = knh_stack_uline(ctx, sfp);
-		knh_mtdcache_t mcache = {0, 0, NULL};
 		knh_write_uline(ctx, cwb->w, uline);
 		knh_write_type(ctx, cwb->w, (mtd)->cid);
 		knh_putc(ctx, cwb->w, '.');
@@ -207,9 +222,7 @@ static void knh_Exception_addStackTrace(CTX ctx, knh_Exception_t *e, knh_sfp_t *
 			}
 			knh_write_fn(ctx, cwb->w, p->fn);
 			knh_putc(ctx, cwb->w, '=');
-			if(!knh_write_ndata(ctx, cwb->w, type, sfp[i+1].ndata)) {
-				knh_write_Object(ctx, cwb->w, ctx->esp, &mcache, sfp[i+1].o, MN__k);
-			}
+			knh_write_sfp(ctx, cwb->w, type, &sfp[i+1], FMT_line);
 		}
 		knh_putc(ctx, cwb->w, ')');
 		if(DP(e)->tracesNULL == NULL) {
@@ -252,10 +265,7 @@ void knh_throw(CTX ctx, knh_sfp_t *sfp, long start)
 			sp--;
 		}
 		L_NOCATCH:;
-		{
-			knh_mtdcache_t mcache = {0, 0, NULL};
-			knh_write_Object(ctx, KNH_STDERR, sfp, &mcache, UPCAST(ctx->e), MN__dump);
-		}
+		knh_write_Object2(ctx, KNH_STDERR, UPCAST(ctx->e), FMT_dump);
 		knh_exit(ctx, 0);
 	}
 }

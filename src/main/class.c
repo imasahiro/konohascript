@@ -1187,30 +1187,30 @@ knh_Method_t* knh_ClassTBL_findMethodNULL(CTX ctx, const knh_ClassTBL_t *t, knh_
 knh_Method_t *knh_ClassTBL_getFmtNULL(CTX ctx, const knh_ClassTBL_t *t, knh_methodn_t mn0)
 {
 	knh_methodn_t mn = mn0;
-	if(mn == MN__dump) {
-		knh_Method_t *mtd = knh_ClassTBL_findMethodNULL(ctx, t, mn, 0);
-		if(mtd != NULL) {
-			if(mtd->cid != CLASS_Object || t->bcid == CLASS_Object) {
-				return Cache_setMethod(ctx->mtdcache, t->cid, mn0, mtd);
-			}
-		}
-		mn = MN__k;
+//	if(mn == MN__dump) {
+//		knh_Method_t *mtd = knh_ClassTBL_findMethodNULL(ctx, t, mn, 0);
+//		if(mtd != NULL) {
+//			if(mtd->cid != CLASS_Object || t->bcid == CLASS_Object) {
+//				return Cache_setMethod(ctx->mtdcache, t->cid, mn0, mtd);
+//			}
+//		}
+//		mn = MN__k;
+//	}
+//	if(mn == MN__k) {
+//		knh_Method_t *mtd = knh_ClassTBL_findMethodNULL(ctx, t, mn, 0);
+//		if(mtd != NULL) {
+//			if(mtd->cid != CLASS_Object || t->bcid == CLASS_Object) {
+//				return Cache_setMethod(ctx->mtdcache, t->cid, mn0, mtd);
+//			}
+//		}
+//		mn = MN__s;
+//	}
+//	{
+	knh_Method_t *mtd = knh_ClassTBL_findMethodNULL(ctx, t, mn, 0);
+	if(mtd != NULL) {
+		return Cache_setMethod(ctx->mtdcache, t->cid, mn0, mtd);
 	}
-	if(mn == MN__k) {
-		knh_Method_t *mtd = knh_ClassTBL_findMethodNULL(ctx, t, mn, 0);
-		if(mtd != NULL) {
-			if(mtd->cid != CLASS_Object || t->bcid == CLASS_Object) {
-				return Cache_setMethod(ctx->mtdcache, t->cid, mn0, mtd);
-			}
-		}
-		mn = MN__s;
-	}
-	{
-		knh_Method_t *mtd = knh_ClassTBL_findMethodNULL(ctx, t, mn, 0);
-		if(mtd != NULL) {
-			return Cache_setMethod(ctx->mtdcache, t->cid, mn0, mtd);
-		}
-	}
+//	}
 	return NULL;
 }
 

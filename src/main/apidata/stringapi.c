@@ -131,13 +131,12 @@ static METHOD String_concat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int i, ac = knh_stack_argc(ctx, sfp);
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	knh_mtdcache_t mcache = {0, 0, NULL};
 	for(i = 0; i < ac; i++) {
 		if(IS_bString(sfp[i].o)) {
 			knh_Bytes_write(ctx, cwb->ba, S_tobytes(sfp[i].s));
 		}
-		else if(!knh_write_ndata(ctx, cwb->w, O_bcid(sfp[i].o), sfp[i].ndata)) {
-			knh_write_Object(ctx, cwb->w, sfp+ac, &mcache, sfp[i].o, MN__s);
+		else {
+			knh_write_Object2(ctx, cwb->w, sfp[i].o, FMT_s);
 		}
 	}
 	RETURN_(knh_cwb_newString(ctx, cwb));
