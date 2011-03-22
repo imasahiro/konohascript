@@ -182,7 +182,8 @@ static void opt_a(CTX ctx, int mode, const char *optstr)
 	openlog("konoha", LOG_PID, LOG_LOCAL7);
 	fprintf(stderr, "audit level=%d\n", auditLevel);
 #else
-	//KNH_SYSLOG(ctx, LOG_WARNING, LOG_MSG, "there is no available logging system.");
+	fprintf(stdout, "konoha: no available logging system.\n");
+	exit(0);
 #endif
 }
 
@@ -261,22 +262,7 @@ static void opt_O(CTX ctx, int mode, const char *optstr)
 	}
 }
 
-///* ----------------------------------------------------------------------- */
-//
-//static knh_bool_t isTestMode = 0;
-//
-//static void opt_t(CTX ctx, int mode, const char *optstr)
-//{
-//	isTestMode = 1;
-//}
-
 /* ----------------------------------------------------------------------- */
-
-//static void knh_setSyncURL(CTX ctx, int mode, const char *optstr)
-//{
-//	DBG_P("SYNC URL: %s", optstr);
-//	KNH_TODO("sync");
-//}
 
 void knh_loadScriptPackageList(CTX ctx, const char *pkglist)
 {
@@ -381,9 +367,7 @@ static knh_optdata_t optdata[] = {
 	{"-v", OPT_NUMBER, opt_v},
 	{"-O", OPT_NUMBER, opt_O},
 	{"-P", OPT_STRING, knh_setStartUpPackage},
-//	{"-u", OPT_STRING, knh_setSyncURL},
 	{"-W", OPT_NUMBER, opt_W},
-//	{"-t", OPT_EMPTY,  opt_t},
 	{"-h", OPT_EMPTY, opt_help},
 	{"--help", OPT_EMPTY, opt_help},
 	{"-V", OPT_EMPTY, opt_version},

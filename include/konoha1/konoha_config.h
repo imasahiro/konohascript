@@ -241,6 +241,7 @@ typedef struct knh_sysinfo_t {
 #define		K_USING_STDC_    1
 #define 	K_USING_POSIX_   1
 #define 	K_USING_LINUX_   1
+#define     K_USING_SYSLOG   1
 #define     K_USING_ICONV    1
 #endif
 
@@ -251,6 +252,7 @@ typedef struct knh_sysinfo_t {
 #define 	K_USING_MACOSX_     1
 #define		K_OSDLLEXT ".dylib"
 #define     K_USING_BSDSYSCTL_  1
+#define     K_USING_SYSLOG      1
 #define     K_USING_ICONV       1
 #endif
 
@@ -258,6 +260,7 @@ typedef struct knh_sysinfo_t {
 #define		K_USING_STDC_       1
 #define		K_USING_WIN32_      1
 #define     K_USING_ICONV       1
+#define     K_USING_SYSLOG       1   // if not available, report to konohaken
 #if defined(K_USING_THREAD)
 #define		K_USING_WINTHREAD_   1
 #endif
@@ -272,6 +275,7 @@ typedef struct knh_sysinfo_t {
 #define		K_USING_STDC_        1
 #define		K_USING_WIN32_       1
 #define     K_USING_ICONV        1
+#define     K_USING_SYSLOG       1   // if not available, report to konohaken
 #if defined(K_USING_THREAD)
 #define		K_USING_WINTHREAD_   1
 #endif
@@ -293,6 +297,7 @@ typedef struct knh_sysinfo_t {
 #define 	K_USING_BSD_        1
 #define     K_USING_BSDSYSCTL_  1
 #define     K_USING_ICONV       1
+#define     K_USING_SYSLOG   1
 #endif
 
 #if defined(__OpenBSD__) /* FreeBSD */
@@ -301,12 +306,14 @@ typedef struct knh_sysinfo_t {
 #define 	K_USING_BSD_        1
 #define     K_USING_BSDSYSCTL_  1
 #define     K_USING_ICONV       1
+#define     K_USING_SYSLOG   1
 #endif
 
 #if defined(__CYGWIN__)
 #define		K_USING_STDC_        1
 #define		K_USING_POSIX_       1
 #define		K_USING_CYGWIN_      1
+#define     K_USING_SYSLOG       1
 #endif
 
 #if defined(TBMX1)

@@ -1,9 +1,7 @@
 #ifndef KONOHA_DEBUG_H_
 #define KONOHA_DEBUG_H_
 
-#ifdef K_USED_TO_BE_ON_LKM
-#elif !defined(K_USING_WINTHREAD_)
-#undef K_USING_SYSLOG
+#ifdef K_USING_SYSLOG
 #include<syslog.h>
 #endif
 
