@@ -35,9 +35,9 @@
 extern "C" {
 #endif
 
-#ifdef K_USING_DEFAULTAPI
+#ifdef K_INCLUDE_BUILTINAPI
 
-#if !defined(K_USED_TO_BE_ON_LKM) && !defined(K_USING_BTRON) && !defined(K_USING_WINDOWS)
+#if defined(K_USING_POSIX_)
 #include <dirent.h>
 #endif
 
@@ -917,7 +917,7 @@ void knh_loadScriptDriver(CTX ctx)
 }
 
 /* ------------------------------------------------------------------------ */
-#endif/* K_USING_DEFAULTAPI*/
+#endif/* K_INCLUDE_BUILTINAPI*/
 
 #ifdef __cplusplus
 }

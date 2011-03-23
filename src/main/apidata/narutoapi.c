@@ -35,45 +35,9 @@
 extern "C" {
 #endif
 
-#ifdef K_USING_DEFAULTAPI
+#ifdef K_INCLUDE_BUILTINAPI
 
 
-/* ------------------------------------------------------------------------ */
-//## @Static @Audit method String System.exec(String cmd, Class reqt);
-
-static METHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-#ifdef K_DEOS_TRACE
-	char cmd[1024];
-	knh_snprintf(cmd, sizeof(cmd), "%s=%s %s", K_DEOS_TRACE, ctx->trace, S_tochar(sfp[1].s));
-#else
-	const char *cmd = S_tochar(sfp[1].s);
-#endif
-	KNH_SECINFO(ctx, "fork command='%s'", cmd);
-#ifdef K_USING_POSIX_
-	FILE *fp = popen((const char*)cmd, "r+");
-	if(fp != NULL) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-		char buf[K_PAGESIZE];
-		while(1) {
-			size_t size = fread(buf, 1, sizeof(buf), fp);
-			if(size > 0) {
-				knh_bytes_t t = {{buf}, size};
-				knh_Bytes_write(ctx, cwb->ba, t);
-			}
-			else {
-				break;
-			}
-		};
-		pclose(fp);
-		RETURN_(knh_cwb_newString(ctx, cwb));
-	}
-	else {
-		KNH_WARN(ctx, "command failed: %s", cmd);
-	}
-#endif
-	RETURN_(KNH_NULVAL(CLASS_String));
-}
 
 ///* ------------------------------------------------------------------------ */
 ////## @Static @Audit method void Script.join();
@@ -85,7 +49,7 @@ static METHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-#endif/* K_USING_DEFAULTAPI*/
+#endif/* K_INCLUDE_BUILTINAPI*/
 
 #ifdef __cplusplus
 }

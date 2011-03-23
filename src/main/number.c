@@ -27,15 +27,13 @@
 
 /* ************************************************************************ */
 
+#ifndef K_INCLUDE_BUILTINAPI
+
 #include"commons.h"
 
-#ifdef K_USED_TO_BE_ON_LKM
-#include <linux/random.h>
-#else
 #include<time.h>
 #ifdef K_USING_POSIX_
 #include<unistd.h>
-#endif
 #endif
 
 /* ************************************************************************ */
@@ -56,12 +54,10 @@ double genrand_real1(void);
 double genrand64_real1(void);
 #endif
 
-/* ------------------------------------------------------------------------ */
-
 void knh_srand(knh_uint_t seed)
 {
-#ifndef K_USED_TO_BE_ON_LKM
 	if(seed == 0) {
+		/* You may choose a more secure way of generating the seed */
 #ifdef K_USING_POSIX_
 		seed = (knh_uint_t)time(NULL) + getpid();
 #else
@@ -73,10 +69,7 @@ void knh_srand(knh_uint_t seed)
 #else
 	init_genrand64((unsigned long long int)seed);
 #endif
-#endif /* K_USED_TO_BE_ON_LKM */
 }
-
-/* ------------------------------------------------------------------------ */
 
 knh_uint_t knh_rand(void)
 {
@@ -119,3 +112,168 @@ KNHAPI2(knh_Float_t*) new_Float(CTX ctx, knh_class_t cid, knh_float_t value)
 #ifdef __cplusplus
 }
 #endif
+
+#else K_INCLUDE_BUILTINAPI
+
+/* ------------------------------------------------------------------------ */
+//## @Static method void System.setRandomSeed(Int seed);
+
+static METHOD System_setRandomSeed(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_uint_t seed = Int_to(knh_uint_t, sfp[1]);
+	knh_srand(seed);
+	RETURNvoid_();
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Static method Int Int.random(Int n);
+
+static METHOD Int_random(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_uint_t n = knh_rand();
+	knh_uint_t max = Int_to(knh_uint_t, sfp[1]);
+	if(max > 0) {
+		n = n % max;
+	}
+	RETURNi_(n);
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Static method Float! Float.random();
+
+static METHOD Float_random(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNf_(knh_float_rand());
+}
+
+/* ------------------------------------------------------------------------ */
+//## method void Int.%c();
+
+static METHOD Int__c(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	char buf[16];
+	knh_uint_t c = (knh_uint_t) sfp[1].ivalue;
+	knh_format_utf8(buf, sizeof(buf), c);
+	knh_write(ctx, sfp[0].w, B(buf));
+}
+
+/* ------------------------------------------------------------------------ */
+//## method void Int.%u();
+
+static METHOD Int__u(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_write_ifmt(ctx, sfp[0].w, K_UINT_FMT, sfp[1].ivalue);
+}
+
+/* ------------------------------------------------------------------------ */
+//## method void Int.%f();
+
+static METHOD Int__f(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_write_ffmt(ctx, sfp[0].w, K_FLOAT_FMT, (knh_float_t)sfp[1].ivalue);
+}
+
+/* ------------------------------------------------------------------------ */
+//## method void Int.%x();
+
+static METHOD Int__x(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_write_ifmt(ctx, sfp[0].w, K_INT_XFMT, sfp[1].ivalue);
+}
+
+/* ------------------------------------------------------------------------ */
+
+static void knh_write_bits(CTX ctx, knh_OutputStream_t *w, knh_uint64_t n, size_t bits)
+{
+	size_t i;
+	knh_uint64_t flag = 1ULL << (bits - 1);
+	for(i = 0; i < bits; i++) {
+		if(i > 0 && i % 8 == 0) {
+			knh_putc(ctx, w, ' ');
+		}
+		if((flag & n) == flag) {
+			knh_putc(ctx, w, '1');
+		}else{
+			knh_putc(ctx, w, '0');
+		}
+		flag = flag >> 1;
+	}
+}
+
+/* ------------------------------------------------------------------------ */
+//## method void Int.%bits();
+
+static METHOD Int__bits(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_write_bits(ctx, sfp[0].w, sfp[1].ivalue, sizeof(knh_int_t) * 8);
+}
+
+/* ------------------------------------------------------------------------ */
+//## method void Float.%d();
+
+static METHOD Float__d(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_write_ifmt(ctx, sfp[0].w, K_INT_FMT, (knh_int_t)sfp[1].fvalue);
+}
+
+/* ------------------------------------------------------------------------ */
+//## method void Float.%bits();
+
+static METHOD Float__bits(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_write_bits(ctx, sfp[0].w, sfp[1].ndata, sizeof(knh_float_t) * 8);
+}
+
+
+/* ------------------------------------------------------------------------ */
+//## @Const @Final @LossLess mapper Boolean String;
+
+static TCAST Boolean_String(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_String_t *s = (Boolean_to(int, (sfp[K_TRLIDX]))) ? TS_true : TS_false;
+	RETURN_(s);
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Const @Final @LossLess mapper Int String;
+
+static TCAST Int_String(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	char buf[256];
+	knh_snprintf(buf, sizeof(buf), K_INT_FMT, sfp[K_TRLIDX].ivalue);
+	RETURN_(new_S(ctx, B(buf)));
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Const @Final @LossLess mapper Float String;
+
+static TCAST Float_String(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	char buf[256];
+	knh_snprintf(buf, sizeof(buf), K_FLOAT_FMT, sfp[K_TRLIDX].fvalue);
+	RETURN_(new_S(ctx, B(buf)));
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Const @Final mapper Float Int;
+
+static TCAST Float_Int(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	DBG_ASSERT(IS_bFloat(sfp[K_TRLIDX].o));
+	knh_int_t v = (knh_int_t)(sfp[K_TRLIDX].f)->n.fvalue;
+	RETURNi_(v);
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Const @Final mapper Int Float;
+
+static TCAST Int_Float(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	DBG_ASSERT(IS_bInt(sfp[K_TRLIDX].o));
+	knh_float_t v = (knh_float_t)(sfp[K_TRLIDX].i)->n.ivalue;
+	RETURNf_(v);
+}
+
+/* ------------------------------------------------------------------------ */
+
+#endif /*K_INCLUDE_BUILTINAPI*/

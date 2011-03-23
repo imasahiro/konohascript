@@ -35,7 +35,7 @@
 extern "C" {
 #endif
 
-#ifdef K_USING_DEFAULTAPI
+#ifdef K_INCLUDE_BUILTINAPI
 
 /* ------------------------------------------------------------------------ */
 /* [new] */
@@ -375,7 +375,7 @@ static METHOD UnitTest_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-#endif/* K_USING_DEFAULTAPI*/
+#endif/* K_INCLUDE_BUILTINAPI*/
 
 #ifdef __cplusplus
 }

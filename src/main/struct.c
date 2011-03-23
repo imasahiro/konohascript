@@ -96,8 +96,8 @@ extern "C" {
 /* Data */
 /* --------------- */
 
-#define K_USING_DEFAULTAPI
-#include"apidata/dspi.c"
+#define K_INCLUDE_BUILTINAPI
+#include "dspi.c"
 
 static TCAST Array_Iterator(CTX ctx, knh_sfp_t *sfp _RIX);
 static TCAST Iterator_Array(CTX ctx, knh_sfp_t *sfp _RIX);
@@ -2804,24 +2804,21 @@ typedef struct {
 }
 #endif
 
-#define K_USING_DEFAULTAPI
+#define K_INCLUDE_BUILTINAPI
 
-#include"apidata/newapi.c"
-#include"apidata/objectapi.c"
-#include"apidata/numberapi.c"
-#include"apidata/stringapi.c"
-#include"apidata/arrayapi.c"
-#include"apidata/dictapi.c"
+#include"operator.c"
+#include"class.c"
+#include"number.c"
+#include"string.c"
+#include"bytes.c"
+#include"array.c"
+#include"map.c"
 
-#include"apidata/systemapi.c"
-#include"apidata/streamapi.c"
-#include"apidata/dbapi.c"
-#include"apidata/oprapi.c"
+#include"system.c"
+#include"stream.c"
+#include"query.c"
 #include"apidata/mprapi.c"
 #include"apidata/itrapi.c"
-#include"apidata/fmtapi.c"
-#include"apidata/compilerapi.c"
-#include"apidata/narutoapi.c"
 
 #include"apidata/structdata.h"
 

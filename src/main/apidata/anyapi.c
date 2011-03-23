@@ -35,11 +35,11 @@
 extern "C" {
 #endif
 
-#ifdef K_USING_DEFAULTAPI
+#ifdef K_INCLUDE_BUILTINAPI
 
 
 
-#endif/* K_USING_DEFAULTAPI*/
+#endif/* K_INCLUDE_BUILTINAPI*/
 
 /* ------------------------------------------------------------------------ */
 

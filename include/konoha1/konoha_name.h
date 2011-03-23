@@ -2,8 +2,8 @@
 
 /* ------------------------------------------------------------------------ */
 /* MACROS */
-#define K_REVISION                      55
-#define K_BUILDID                       1073
+#define K_REVISION                      59
+#define K_BUILDID                       1075
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -457,10 +457,10 @@
 #define TYPE_CmprT1             CLASS_CmprT1
 
 /* ------------------------------------------------------------------------ */
-/* StringITR */
-#define CLASS_StringITR         ((knh_class_t)50)
-#define IS_StringITR(o)         (O_cid(o) == CLASS_StringITR)
-#define TYPE_StringITR          CLASS_StringITR
+/* ThisITR */
+#define CLASS_ThisITR           ((knh_class_t)50)
+#define IS_ThisITR(o)           (O_cid(o) == CLASS_ThisITR)
+#define TYPE_ThisITR            CLASS_ThisITR
 
 /* ------------------------------------------------------------------------ */
 /* T1ITR */
@@ -469,10 +469,10 @@
 #define TYPE_T1ITR              CLASS_T1ITR
 
 /* ------------------------------------------------------------------------ */
-/* ThisITR */
-#define CLASS_ThisITR           ((knh_class_t)52)
-#define IS_ThisITR(o)           (O_cid(o) == CLASS_ThisITR)
-#define TYPE_ThisITR            CLASS_ThisITR
+/* StringITR */
+#define CLASS_StringITR         ((knh_class_t)52)
+#define IS_StringITR(o)         (O_cid(o) == CLASS_StringITR)
+#define TYPE_StringITR          CLASS_StringITR
 
 /* ------------------------------------------------------------------------ */
 /* StringARRAY */
@@ -827,61 +827,60 @@
 #define FN_offset       (MN_OPSIZE+83)
 #define FN_option       (MN_OPSIZE+84)
 #define FN_out          (MN_OPSIZE+85)
-#define FN_p            (MN_OPSIZE+86)
-#define FN_path         (MN_OPSIZE+87)
-#define FN_pattern      (MN_OPSIZE+88)
-#define FN_pop          (MN_OPSIZE+89)
-#define FN_print        (MN_OPSIZE+90)
-#define FN_println      (MN_OPSIZE+91)
-#define FN_property     (MN_OPSIZE+92)
-#define FN_putc         (MN_OPSIZE+93)
-#define FN_qualifier    (MN_OPSIZE+94)
-#define FN_query        (MN_OPSIZE+95)
-#define FN_random       (MN_OPSIZE+96)
-#define FN_randomSeed   (MN_OPSIZE+97)
-#define FN_randomseed   (MN_OPSIZE+97)
-#define FN_re           (MN_OPSIZE+98)
-#define FN_read         (MN_OPSIZE+99)
-#define FN_readLine     (MN_OPSIZE+100)
-#define FN_readline     (MN_OPSIZE+100)
-#define FN_remove       (MN_OPSIZE+101)
-#define FN_replace      (MN_OPSIZE+102)
-#define FN_reqt         (MN_OPSIZE+103)
-#define FN_reverse      (MN_OPSIZE+104)
-#define FN_s            (MN_OPSIZE+105)
-#define FN_search       (MN_OPSIZE+106)
-#define FN_second       (MN_OPSIZE+107)
-#define FN_seed         (MN_OPSIZE+108)
-#define FN_shuffle      (MN_OPSIZE+109)
-#define FN_size         (MN_OPSIZE+110)
-#define FN_split        (MN_OPSIZE+111)
-#define FN_start        (MN_OPSIZE+112)
-#define FN_startsWith   (MN_OPSIZE+113)
-#define FN_startswith   (MN_OPSIZE+113)
-#define FN_string       (MN_OPSIZE+114)
-#define FN_substring    (MN_OPSIZE+115)
-#define FN_super        (MN_OPSIZE+116)
-#define FN_swap         (MN_OPSIZE+117)
-#define FN_third        (MN_OPSIZE+118)
-#define FN_this         (MN_OPSIZE+119)
-#define FN_time         (MN_OPSIZE+120)
-#define FN_trim         (MN_OPSIZE+121)
-#define FN_type         (MN_OPSIZE+122)
-#define FN_u            (MN_OPSIZE+123)
-#define FN_urn          (MN_OPSIZE+124)
-#define FN_v            (MN_OPSIZE+125)
-#define FN_value        (MN_OPSIZE+126)
-#define FN_vargs        (MN_OPSIZE+127)
-#define FN_w            (MN_OPSIZE+128)
-#define FN_write        (MN_OPSIZE+129)
-#define FN_writeChar    (MN_OPSIZE+130)
-#define FN_writechar    (MN_OPSIZE+130)
-#define FN_writeData    (MN_OPSIZE+131)
-#define FN_writedata    (MN_OPSIZE+131)
-#define FN_x            (MN_OPSIZE+132)
-#define FN_y            (MN_OPSIZE+133)
-#define FN_z            (MN_OPSIZE+134)
-#define K_TFIELD_SIZE   135
+#define FN_path         (MN_OPSIZE+86)
+#define FN_pattern      (MN_OPSIZE+87)
+#define FN_pop          (MN_OPSIZE+88)
+#define FN_print        (MN_OPSIZE+89)
+#define FN_println      (MN_OPSIZE+90)
+#define FN_property     (MN_OPSIZE+91)
+#define FN_putc         (MN_OPSIZE+92)
+#define FN_qualifier    (MN_OPSIZE+93)
+#define FN_query        (MN_OPSIZE+94)
+#define FN_random       (MN_OPSIZE+95)
+#define FN_randomSeed   (MN_OPSIZE+96)
+#define FN_randomseed   (MN_OPSIZE+96)
+#define FN_re           (MN_OPSIZE+97)
+#define FN_read         (MN_OPSIZE+98)
+#define FN_readLine     (MN_OPSIZE+99)
+#define FN_readline     (MN_OPSIZE+99)
+#define FN_remove       (MN_OPSIZE+100)
+#define FN_replace      (MN_OPSIZE+101)
+#define FN_reqt         (MN_OPSIZE+102)
+#define FN_reverse      (MN_OPSIZE+103)
+#define FN_s            (MN_OPSIZE+104)
+#define FN_search       (MN_OPSIZE+105)
+#define FN_second       (MN_OPSIZE+106)
+#define FN_seed         (MN_OPSIZE+107)
+#define FN_shuffle      (MN_OPSIZE+108)
+#define FN_size         (MN_OPSIZE+109)
+#define FN_split        (MN_OPSIZE+110)
+#define FN_start        (MN_OPSIZE+111)
+#define FN_startsWith   (MN_OPSIZE+112)
+#define FN_startswith   (MN_OPSIZE+112)
+#define FN_string       (MN_OPSIZE+113)
+#define FN_substring    (MN_OPSIZE+114)
+#define FN_super        (MN_OPSIZE+115)
+#define FN_swap         (MN_OPSIZE+116)
+#define FN_third        (MN_OPSIZE+117)
+#define FN_this         (MN_OPSIZE+118)
+#define FN_time         (MN_OPSIZE+119)
+#define FN_trim         (MN_OPSIZE+120)
+#define FN_type         (MN_OPSIZE+121)
+#define FN_u            (MN_OPSIZE+122)
+#define FN_urn          (MN_OPSIZE+123)
+#define FN_v            (MN_OPSIZE+124)
+#define FN_value        (MN_OPSIZE+125)
+#define FN_vargs        (MN_OPSIZE+126)
+#define FN_w            (MN_OPSIZE+127)
+#define FN_write        (MN_OPSIZE+128)
+#define FN_writeChar    (MN_OPSIZE+129)
+#define FN_writechar    (MN_OPSIZE+129)
+#define FN_writeData    (MN_OPSIZE+130)
+#define FN_writedata    (MN_OPSIZE+130)
+#define FN_x            (MN_OPSIZE+131)
+#define FN_y            (MN_OPSIZE+132)
+#define FN_z            (MN_OPSIZE+133)
+#define K_TFIELD_SIZE   134
 
 /* ------------------------------------------------------------------------ */
 /* METHODN */
@@ -920,7 +919,6 @@
 #define MN_indexOf      FN_indexof
 #define MN_super        FN_super
 #define MN_getKey       MN_toGETTER(FN_key)
-#define MN_getString    MN_toGETTER(FN_string)
 #define MN_insert       FN_insert
 #define MN_putc         FN_putc
 #define MN_isAutoFlush  MN_toISBOOL(FN_autoflush)
@@ -928,7 +926,6 @@
 #define MN_             FN_
 #define MN_copy         FN_copy
 #define MN_swap         FN_swap
-#define MN__p           MN_toFMT(FN_p)
 #define MN__s           MN_toFMT(FN_s)
 #define MN_new__LIST    FN_new__list
 #define MN__k           MN_toFMT(FN_k)
@@ -986,13 +983,14 @@
 #define MN__data        MN_toFMT(FN_data)
 #define MN_writeChar    FN_writechar
 #define MN_startsWith   FN_startswith
+#define MN__u           MN_toFMT(FN_u)
 #define MN_getInt       MN_toGETTER(FN_int)
 #define MN_format       FN_format
 #define MN_set3         MN_toSETTER(FN_3)
 #define MN_set2         MN_toSETTER(FN_2)
 #define MN_setRandomSeed MN_toSETTER(FN_randomseed)
 #define MN_set4         MN_toSETTER(FN_4)
-#define MN__u           MN_toFMT(FN_u)
+#define MN_getString    MN_toGETTER(FN_string)
 #define MN_decode       FN_decode
 
 /* ------------------------------------------------------------------------ */
