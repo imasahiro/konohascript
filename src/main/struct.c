@@ -2817,10 +2817,8 @@ typedef struct {
 #include"system.c"
 #include"stream.c"
 #include"query.c"
-#include"apidata/mprapi.c"
-#include"apidata/itrapi.c"
 
-#include"apidata/structdata.h"
+#include"structdata.h"
 
 #ifdef __cplusplus
 extern "C" {
