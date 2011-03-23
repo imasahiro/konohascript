@@ -342,6 +342,8 @@ typedef struct {
 	void *ptr;
 } knh_mapitr_t;
 
+#define K_MAPITR_INIT   {0, NULL}
+
 typedef struct knh_Map_t {
 	knh_hObject_t h;
 	union {

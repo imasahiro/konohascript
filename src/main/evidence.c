@@ -175,16 +175,18 @@ static knh_uline_t knh_stack_uline(CTX ctx, knh_sfp_t *sfp)
 	return 0;
 }
 
-static void knh_write_sfp(CTX ctx, knh_OutputStream_t *w, knh_type_t type, knh_sfp_t *sfp, int level)
+void knh_write_sfp(CTX ctx, knh_OutputStream_t *w, knh_type_t type, knh_sfp_t *sfp, int level)
 {
-	if(IS_Tint(type)) {
-		knh_write_ifmt(ctx, w, K_INT_FMT, sfp[0].ivalue);
-	}
-	else if(IS_Tfloat(type)) {
-		knh_write_ffmt(ctx, w, K_FLOAT_FMT, sfp[0].fvalue);
-	}
-	else if(IS_Tbool(type)) {
-		knh_write_bool(ctx, w, sfp[0].bvalue);
+	if(IS_Tunbox(type)) {
+		if(IS_Tint(type)) {
+			knh_write_ifmt(ctx, w, K_INT_FMT, sfp[0].ivalue);
+		}
+		else if(IS_Tfloat(type)) {
+			knh_write_ffmt(ctx, w, K_FLOAT_FMT, sfp[0].fvalue);
+		}
+		else {
+			knh_write_bool(ctx, w, sfp[0].bvalue);
+		}
 	}
 	else {
 		knh_write_Object(ctx, w, sfp[0].o, level);

@@ -447,6 +447,7 @@ const char* knh_sfile(const char *file);
 void dbg_p(const char *file, const char *func, int line, const char *fmt, ...);
 void todo_p(const char *file, const char *func, int line, const char *fmt, ...);
 void knh_write_uline(CTX ctx, knh_OutputStream_t *w, knh_uline_t uline);
+void knh_write_sfp(CTX ctx, knh_OutputStream_t *w, knh_type_t type, knh_sfp_t *sfp, int level);
 void knh_throw(CTX ctx, knh_sfp_t *sfp, long start);
 knh_bool_t isCATCH(CTX ctx, knh_rbp_t *rbp, int en, knh_String_t *event);
 void Context_push(CTX ctx, knh_Object_t *o);

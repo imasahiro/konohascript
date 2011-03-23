@@ -1181,9 +1181,39 @@ static void Map_free(CTX ctx, Object *o)
 	m->dspi->freemap(ctx, m->map);
 }
 
+static void Map_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+{
+	knh_Map_t *m = (knh_Map_t*)o;
+	size_t n = m->dspi->size(ctx, m->map);
+	knh_putc(ctx, w, '{');
+	if(n > 0) {
+		BEGIN_LOCAL(ctx, lsfp, 2);
+		knh_class_t p1 = O_cTBL(o)->p1, p2 = O_cTBL(o)->p2;
+		knh_mapitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
+		if(m->dspi->next(ctx, m->map, mitr, lsfp)) {
+			knh_write_sfp(ctx, w, p1, lsfp, FMT_line);
+			knh_write(ctx, w, STEXT(": "));
+			knh_write_sfp(ctx, w, p2, lsfp+1, FMT_line);
+			if(!IS_FMTline(level)) {
+				while(m->dspi->next(ctx, m->map, mitr, lsfp)) {
+					knh_write(ctx, w, STEXT(", "));
+					knh_write_sfp(ctx, w, p1, lsfp, FMT_line);
+					knh_write(ctx, w, STEXT(": "));
+					knh_write_sfp(ctx, w, p2, lsfp+1, FMT_line);
+				}
+			}
+			else {
+				knh_write_dots(ctx, w);
+			}
+		}
+		END_LOCAL_NONGC(ctx, lsfp);
+	}
+	knh_putc(ctx, w, '}');
+}
+
 static knh_ClassDef_t MapDef = {
 	Map_init, TODO_initcopy, Map_reftrace, Map_free,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_write,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Map_write,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
 	"Map", CFLAG_Map, 0, NULL,
@@ -1192,7 +1222,7 @@ static knh_ClassDef_t MapDef = {
 
 static knh_ClassDef_t MapImDef = {
 	Map_init, DEFAULT_initcopy, Map_reftrace, Map_free,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_write,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Map_write,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
 	"MapIm", CFLAG_MapIm, 0, NULL,
@@ -1453,8 +1483,6 @@ static void Func_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
 
 }
-
-
 
 static knh_ClassDef_t FuncDef = {
 	Func_init, TODO_initcopy, Func_reftrace, Func_free,

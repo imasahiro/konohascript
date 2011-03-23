@@ -178,7 +178,7 @@ static knh_bool_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, knh_A
 		if(pkgload != NULL) {
 			pkgload(ctx, knh_getPackageAPI(), NULL);
 		}
-		else {
+		else {/*239ff5a9*/
 			knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "loader function", funcname));
 			isCONTINUE = 0;
 		}
