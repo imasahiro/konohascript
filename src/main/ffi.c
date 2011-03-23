@@ -48,7 +48,7 @@ extern "C" {
  */
 
 
-void bough_dumpBinary(unsigned char* ptr, size_t size);
+static void bough_dumpBinary(unsigned char* ptr, size_t size);
 
 /* ------------------------------------------------------------------------ */
 // Memory allocation
@@ -154,11 +154,14 @@ typedef struct knh_xcode_t {
 	size_t codesize;
 } knh_xcode_t;
 
-void bough_shrinkBinary(CTX ctx, knh_xcode_t *xcode, size_t shrink_from, size_t shrink_size) {
+/*
+  void bough_shrinkBinary(CTX ctx, knh_xcode_t *xcode, size_t shrink_from, size_t shrink_size) {
 	
 }
+*/
 
-void bough_putSfpToCStack(CTX ctx, knh_xcode_t *xcode, knh_ffiparam_t *param, char reg_from, char reg_to)
+/*
+  static void bough_putSfpToCStack(CTX ctx, knh_xcode_t *xcode, knh_ffiparam_t *param, char reg_from, char reg_to)
 {
 	// put param to register reg
 	size_t fidx = xcode->codesize;
@@ -179,8 +182,9 @@ void bough_putSfpToCStack(CTX ctx, knh_xcode_t *xcode, knh_ffiparam_t *param, ch
 	}
 	
 }
+*/
 
-knh_xblock_t* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_t *argv)
+static knh_xblock_t* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_t *argv)
 {
 	//unsigned char *FUNCTION = (unsigned char*)knh_xmalloc(ctx, 1);
 	knh_xblock_t *blk = get_unused_xblock(ctx);
@@ -412,7 +416,7 @@ knh_xblock_t* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_
 // sfp: 1+ --> arguments
 
 
-void bough_dumpBinary(unsigned char *ptr, size_t size)
+static void bough_dumpBinary(unsigned char *ptr, size_t size)
 {
 	int i = 0;
 	unsigned char byte;
@@ -429,18 +433,9 @@ void bough_dumpBinary(unsigned char *ptr, size_t size)
 knh_Fmethod knh_makeFmethod(CTX ctx, void *func, int argc, knh_ffiparam_t *argv)
 {
 #ifdef K_USING_FFIDSL
-	//	void *f = knh_generateWrapper(ctx, (void*)func, argc, argv);
-	void *gl = knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, "glutWireTeapot");
-	if (gl != NULL) {
-		if (func == gl) {
-			if (argv[1].type != CLASS_Float) {
-				fprintf(stderr, "Mismatch Detected!! : guess type: double, your type:%s\n", CLASS__(argv[1].type));
-			}
-		}
-	}
+//	void *f = knh_generateWrapper(ctx, (void*)func, argc, argv);
 	knh_xblock_t* blk = knh_generateWrapper(ctx, (void*)func, argc, argv);
 	void *f = blk->block;
-
 	if (f != NULL) {
 		//		bough_dumpBinary(f, 128);
 		return (void*)f;
