@@ -256,7 +256,7 @@ knh_bool_t knh_loadScriptPackage(CTX ctx, knh_bytes_t path)
 	knh_Package_t *pkg = (knh_Package_t*)knh_DictMap_getNULL(ctx, DP(ctx->sys)->PackageDictMap, name);
 	if(pkg == NULL) {
 		knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, ns, path);
-		if(dspi->exists(ctx, path, ns) != PATH_unknown) {
+		if(dspi->exists(ctx, ns, path) != PATH_unknown) {
 			knh_String_t *nameS = new_S(ctx, name);
 			knh_Array_t * a = KNH_TNULL(Array);
 			pkg = new_Package(ctx, nameS);
@@ -878,7 +878,7 @@ static knh_InputStream_t* knh_openPathNULL(CTX ctx, knh_bytes_t path)
 	else {
 		knh_uintptr_t id = 0;
 		knh_PathDSPI_t *pdspi = knh_NameSpace_getPathDSPINULL(ctx, ns, path);
-		if(pdspi != NULL) id = pdspi->exists(ctx, path, ns);
+		if(pdspi != NULL) id = pdspi->exists(ctx, ns, path);
 		knh_InputStream_t *in = new_InputStreamDSPI(ctx, fd, sdspi);
 		if(id != PATH_unknown) {
 			DBG_P("URI=%ld, URN='%s'", id, path.text);

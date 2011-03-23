@@ -1279,15 +1279,15 @@ static knh_Token_t* PATH_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 		return Token_toCONST(ctx, tk);
 	}
 	if(reqt == TYPE_dynamic) reqt = dspi->cid;
-	if(!dspi->isTyped(ctx, CLASS_t(reqt))) {
+	if(!dspi->hasType(ctx, CLASS_t(reqt))) {
 		return ErrorStaticType(ctx, TK__(tk));
 	}
 	if(reqt == TYPE_Boolean) {
-		knh_Object_t *tf = dspi->exists(ctx, path, ns) == PATH_unknown ? KNH_FALSE : KNH_TRUE;
+		knh_Object_t *tf = dspi->exists(ctx, ns, path) == PATH_unknown ? KNH_FALSE : KNH_TRUE;
 		return Token_setCONST(ctx, tk, tf);
 	}
 	else {
-		knh_Object_t *o = dspi->newObjectNULL(ctx, reqt, (tk)->text, ns);
+		knh_Object_t *o = dspi->newObjectNULL(ctx, ns, reqt, (tk)->text);
 		if(o == NULL) {
 			if(reqt == TYPE_String) {
 				o = (tk)->data;
@@ -2840,7 +2840,7 @@ static knh_Token_t* TPATH_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 				reqt = dspi->cid;
 				//InfoInferredType(ctx, "", path, reqt);
 			}
-			if(!dspi->isTyped(ctx, CLASS_t(reqt))) {
+			if(!dspi->hasType(ctx, CLASS_t(reqt))) {
 				return ErrorType(ctx, path, reqt);
 			}
 		}

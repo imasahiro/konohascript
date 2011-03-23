@@ -930,7 +930,7 @@ def genkonoha():
     data.parser['expt'] = parse_Expt
     readfile("include/konoha1/konoha_class.h", data)
     readdir("src", data)
-    f = open('src/main/apidata/structdata.h', 'w')
+    f = open('src/main/structdata.h', 'w')
     f.write('''// THIS FILE WAS AUTOMATICALLY GENERATED
 ''')
     write_Data(f, data)

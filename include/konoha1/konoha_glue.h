@@ -76,16 +76,15 @@ typedef const struct {
 #define K_PATHHEAD_MAXSIZ    32
 #define PATH_found          1
 #define PATH_unknown        ((knh_uintptr_t)(-1))
-#define PATH_isTyped(cid)   (cid == CLASS_Boolean || cid == CLASS_String)
+#define PATH_hasType(cid)   (cid == CLASS_Boolean || cid == CLASS_String)
 
-typedef const struct _knh_PathDSPI_t {
+typedef struct knh_PathDSPI_t {
 	int   type;
 	const char *name;
-	knh_class_t cid;
-	knh_class_t itrcid;
-	knh_uintptr_t (*exists)(CTX, knh_bytes_t, knh_NameSpace_t *);
-	knh_bool_t    (*isTyped)(CTX, knh_class_t);
-	Object*       (*newObjectNULL)(CTX, knh_class_t, knh_String_t *, knh_NameSpace_t *);
+	knh_class_t cid; knh_class_t itrcid;
+	knh_bool_t    (*hasType)(CTX, knh_class_t);
+	knh_uintptr_t (*exists)(CTX, knh_NameSpace_t *, knh_bytes_t);
+	Object*       (*newObjectNULL)(CTX, knh_NameSpace_t *, knh_class_t, knh_String_t *);
 } knh_PathDSPI_t;
 
 /* ------------------------------------------------------------------------ */
