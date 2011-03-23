@@ -42,20 +42,20 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [Connection] */
 
-void knh_Connection_open(CTX ctx, knh_Connection_t *c, knh_String_t *urn)
+void knh_Connection_open(CTX ctx, knh_Connection_t *c, knh_NameSpace_t *ns, knh_String_t *urn)
 {
 	knh_bytes_t u = S_tobytes(urn);
 	KNH_SETv(ctx, (c)->urn, urn);
-	(c)->dspi = knh_getQueryDSPI(ctx, S_tobytes(urn));
+	(c)->dspi = knh_getQueryDSPI(ctx, ns, S_tobytes(urn));
 	(c)->conn = (c)->dspi->qopen(ctx, u);
 }
 
 /* ------------------------------------------------------------------------ */
 
-knh_Connection_t* new_Connection(CTX ctx, knh_String_t *urn)
+knh_Connection_t* new_Connection(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn)
 {
 	knh_Connection_t *o = new_(Connection);
-	knh_Connection_open(ctx, o, urn);
+	knh_Connection_open(ctx, o, ns, urn);
 	return o;
 }
 
@@ -82,7 +82,7 @@ knh_bool_t knh_ResultSet_next(CTX ctx, knh_ResultSet_t *o)
 			knh_bytes_t t = {{""}, 0};
 			DP(o)->qcurfree(DP(o)->qcur);
 			DP(o)->qcur = NULL;
-			DP(o)->qcurfree = knh_getQueryDSPI(ctx, t)->qcurfree;
+			DP(o)->qcurfree = knh_getQueryDSPI(ctx, NULL, t)->qcurfree;
 		}
 	}
 	return 0;
@@ -96,7 +96,7 @@ void knh_ResultSet_close(CTX ctx, knh_ResultSet_t *o)
 		knh_bytes_t t = {{""}, 0};
 		DP(o)->qcurfree(DP(o)->qcur);
 		DP(o)->qcur = NULL;
-		DP(o)->qcurfree = knh_getQueryDSPI(ctx, t)->qcurfree;
+		DP(o)->qcurfree = knh_getQueryDSPI(ctx, NULL, t)->qcurfree;
 	}
 	KNH_SETv(ctx, DP(o)->conn, KNH_NULL);
 }
@@ -335,12 +335,12 @@ knh_String_t* knh_ResultSet_getString(CTX ctx, knh_ResultSet_t *o, size_t n)
 #else/*K_INCLUDE_BUILTINAPI*/
 
 /* ------------------------------------------------------------------------ */
-//## method This Connection.new(String urn);
+//## method This Connection.new(String urn, NameSpace ns, Monitor mon);
 
 static METHOD Connection_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Connection_t *o = (knh_Connection_t*)sfp[0].o;
-	knh_Connection_open(ctx, o, sfp[1].s);
+	knh_Connection_open(ctx, o, sfp[2].ns, sfp[1].s);
 	RETURN_(sfp[0].o);
 }
 
@@ -360,7 +360,7 @@ static METHOD Connection_query(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	else {
 		DP(rs)->qcur = NULL;
-		DP(rs)->qcurfree = knh_getQueryDSPI(ctx, K_DEFAULT_DSPI)->qcurfree;
+		DP(rs)->qcurfree = knh_getQueryDSPI(ctx, NULL, K_DEFAULT_DSPI)->qcurfree;
 	}
 	KNH_SETv(ctx, DP(rs)->conn, c);
 	RETURN_(rs);

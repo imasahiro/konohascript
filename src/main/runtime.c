@@ -471,7 +471,7 @@ static int konoha_parseopt(konoha_t konoha, int argc, const char **argv)
 			knh_String_t *s = new_T(argv[0]);
 			knh_DictMap_set(ctx, DP(ctx->sys)->props, new_T("script.name"), s);
 			s = new_S(ctx, knh_bytes_nsname(S_tobytes(s)));
-			KNH_SETv(ctx, DP(ctx->share->mainns)->nsname, s);
+			KNH_SETv(ctx, (ctx->share->rootns)->nsname, s);
 		}
 	}
 #ifdef K_DEOS_TRACE
@@ -563,9 +563,9 @@ static void shell_restart(CTX ctx)
 {
 	knh_NameSpace_t *ns = new_NameSpace(ctx, NULL);
 	DBG_ASSERT(ns->b->aliasDictMapNULL == NULL);
-	DP(ns)->aliasDictMapNULL = DP(ctx->share->mainns)->aliasDictMapNULL;
-	DP(ctx->share->mainns)->aliasDictMapNULL = NULL;
-	KNH_SETv(ctx, ((knh_share_t*)ctx->share)->mainns, ns);
+	DP(ns)->aliasDictMapNULL = DP(ctx->share->rootns)->aliasDictMapNULL;
+	DP(ctx->share->rootns)->aliasDictMapNULL = NULL;
+	KNH_SETv(ctx, ((knh_share_t*)ctx->share)->rootns, ns);
 	KNH_SETv(ctx, ((knh_context_t*)ctx)->script, new_(Script));
 	{
 		knh_Gamma_t *newgma = new_(Gamma);

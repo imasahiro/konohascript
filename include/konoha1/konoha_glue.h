@@ -90,7 +90,7 @@ typedef struct knh_PathDSPI_t {
 /* ------------------------------------------------------------------------ */
 /* K_BCONV_DSPI */
 
-typedef const struct _knh_ConvDSPI_t {
+typedef struct knh_ConvDSPI_t {
 	int  type;
 	const char *name;
 	knh_conv_t* (*open)(CTX, const char*, const char*);
@@ -107,7 +107,7 @@ typedef const struct _knh_ConvDSPI_t {
 
 typedef void   (*knh_Fclose)(CTX, knh_io_t);
 
-typedef const struct _knh_StreamDSPI_t {
+typedef struct knh_StreamDSPI_t {
 	int type;
 	const char *name;
 	size_t bufsiz;  /* knh_io_t == FILE* if bufsiz == 0 */
@@ -125,7 +125,7 @@ typedef const struct _knh_StreamDSPI_t {
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_QUERY */
 
-typedef const struct _knh_QueryDPI_t {
+typedef struct knh_QueryDPI_t {
 	int   type;
 	const char *name;
 	knh_qconn_t* (*qopen)(CTX ctx, knh_bytes_t);
@@ -138,18 +138,19 @@ typedef const struct _knh_QueryDPI_t {
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_MAP */
 
-typedef const struct _knh_MapDSPI_t {
+typedef struct knh_MapDSPI_t {
 	int   type;
 	const char *name;
-	const struct _knh_MapDSPI_t* (*config)(CTX, knh_class_t, knh_class_t);
+	const struct knh_MapDSPI_t* (*config)(CTX, knh_class_t, knh_class_t);
 	knh_map_t* (*init)(CTX, size_t, const char*, void *);
 	void (*reftrace)(CTX, knh_map_t* FTRARG);
 	void (*freemap)(CTX, knh_map_t*);
+	// main
 	knh_bool_t (*get)(CTX, knh_map_t*, knh_sfp_t*, knh_sfp_t *);
 	void (*set)(CTX, knh_map_t*, knh_sfp_t *);
 	void (*remove)(CTX, knh_map_t*, knh_sfp_t *);
 	size_t (*size)(CTX, knh_map_t*);
-	knh_bool_t (*setIterator)(CTX, knh_map_t*, knh_Iterator_t *);
+	knh_bool_t (*next)(CTX, knh_map_t*, knh_mapitr_t *, knh_sfp_t *);
 } knh_MapDSPI_t;
 
 /* ------------------------------------------------------------------------ */
@@ -165,7 +166,7 @@ typedef struct {
 	knh_bytes_t rm_name;  /* {NULL, 0}, if not NAMED */
 } knh_regmatch_t;
 
-typedef struct _knh_RegexSPI_t {
+typedef struct knh_RegexSPI_t {
 	const char *name;
 	knh_regex_t* (*regmalloc)(CTX, knh_String_t *);
 	int (*parse_cflags)(CTX, const char *opt);
@@ -218,16 +219,17 @@ typedef knh_intptr_t knh_data_t;
 
 typedef struct knh_PackageLoaderAPI_t {
 	/* global */
-	void (*loadData)(CTX, knh_data_t *, knh_ParamArray_t **);
-	void (*loadIntData)(CTX, knh_IntData_t *);
-	void (*loadFloatData)(CTX, knh_FloatData_t *);
-	void (*loadStringData)(CTX, knh_StringData_t *);
+	void (*loadData)(CTX, const knh_data_t *, knh_ParamArray_t **);
+	/* constant */
+	void (*loadIntData)(CTX, knh_NameSpace_t *ns, const knh_IntData_t *);
+	void (*loadFloatData)(CTX, knh_NameSpace_t *ns, const knh_FloatData_t *);
+	void (*loadStringData)(CTX, knh_NameSpace_t *ns, const knh_StringData_t *);
 	/* namespace */
-	void (*setRegexSPI)(CTX, const knh_RegexSPI_t *);
-	void (*addPathDSPI)(CTX, const char*, knh_PathDSPI_t *, int);
-	void (*addStreamDSPI)(CTX, const char*, knh_StreamDSPI_t *, int);
-	void (*addQueryDSPI)(CTX, const char *, knh_QueryDSPI_t *, int);
-	void (*addConverterDSPI)(CTX, const char *, knh_ConvDSPI_t*, int);
+	void (*setRegexSPI)(CTX, knh_NameSpace_t *ns, const knh_RegexSPI_t *);
+	void (*addPathDSPI)(CTX, knh_NameSpace_t *ns, const char*, const knh_PathDSPI_t *);
+	void (*addStreamDSPI)(CTX, knh_NameSpace_t *ns, const char*, const knh_StreamDSPI_t *);
+	void (*addQueryDSPI)(CTX, knh_NameSpace_t *ns, const char *, const knh_QueryDSPI_t *);
+	void (*addConvDSPI)(CTX, knh_NameSpace_t *ns, const char *, const knh_ConvDSPI_t*);
 } knh_PackageLoaderAPI_t;
 
 #define KNH_PKGINFO(NAME, VERSION, URL, INFO) {K_BUILDID, K_API2_CRC32, NAME, VERSION, INFO, URL}

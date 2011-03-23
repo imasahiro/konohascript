@@ -213,7 +213,7 @@ knh_String_t* knh_InputStream_readLine(CTX ctx, knh_InputStream_t *in)
 void knh_InputStream_close(CTX ctx, knh_InputStream_t *in)
 {
 	SP(in)->dspi->fclose(ctx, DP(in)->fd);
-	SP(in)->dspi = knh_getStreamDSPI(ctx, K_DEFAULT_DSPI);
+	SP(in)->dspi = knh_getStreamDSPI(ctx, NULL, K_DEFAULT_DSPI);
 	DP(in)->fd = IO_NULL;
 	KNH_SETv(ctx, DP(in)->ba, KNH_NULL);
 	InputStream_setFILE(in, 0);
@@ -326,7 +326,7 @@ void knh_OutputStream_close(CTX ctx, knh_OutputStream_t *w)
 {
 	knh_OutputStream_flush(ctx, w);
 	knh_Fclose f = SP(w)->dspi->fclose;
-	SP(w)->dspi = knh_getStreamDSPI(ctx, K_DEFAULT_DSPI);
+	SP(w)->dspi = knh_getStreamDSPI(ctx, NULL, K_DEFAULT_DSPI);
 	f(ctx, DP(w)->fd);
 	DP(w)->fd = IO_NULL;
 }
@@ -883,7 +883,7 @@ KNHAPI2(void) knh_printf(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...)
 #else /*K_INCLUDE_BUILTINAPI*/
 
 /* ------------------------------------------------------------------------ */
-//## method InputStream InputStream.new(String urn, String mode);
+//## method InputStream InputStream.new(String urn, String mode, NameSpace ns, Monitor mon);
 
 static METHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -893,10 +893,10 @@ static METHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const char *mode = IS_NULL(sfp[2].s) ? "r" : S_tochar(sfp[2].s);
 	knh_uri_t uri = 0;
 	if(loc == -1 || (loc == 1 && isalpha(path.ustr[0]))) {  /* 'C:/' */
-		SP(in)->dspi = knh_getStreamDSPI(ctx, STEXT("file"));
+		SP(in)->dspi = knh_getStreamDSPI(ctx, sfp[3].ns, STEXT("file"));
 	}
 	else {
-		SP(in)->dspi = knh_getStreamDSPI(ctx, knh_bytes_first(path, loc));
+		SP(in)->dspi = knh_getStreamDSPI(ctx, sfp[3].ns, knh_bytes_first(path, loc));
 	}
 	DP(in)->fd = SP(in)->dspi->fopen(ctx, path, mode);
 	if(DP(in)->fd != IO_NULL) {
@@ -915,7 +915,7 @@ static METHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	else {
 		knh_Object_toNULL(ctx, in);
-		SP(in)->dspi = knh_getStreamDSPI(ctx, K_DEFAULT_DSPI);
+		SP(in)->dspi = knh_getStreamDSPI(ctx, sfp[3].ns, K_DEFAULT_DSPI);
 	}
 	RETURN_(in);
 }
@@ -1027,7 +1027,7 @@ static TCAST knh_InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 /* [OutputStream] */
 
-//## method OutputStream OutputStream.new(String urn, String mode);
+//## method OutputStream OutputStream.new(String urn, String mode, NameSpace ns, Monitor mon);
 
 static METHOD OutputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -1037,10 +1037,10 @@ static METHOD OutputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const char *mode = IS_NULL(sfp[2].s) ? "w" : S_tochar(sfp[2].s);
 	knh_uri_t uri = 0;
 	if(loc == -1 || (loc == 1 && isalpha(path.ustr[0]))) {  /* 'C:/' */
-		SP(w)->dspi = knh_getStreamDSPI(ctx, STEXT("file"));
+		SP(w)->dspi = knh_getStreamDSPI(ctx, sfp[3].ns, STEXT("file"));
 	}
 	else {
-		SP(w)->dspi = knh_getStreamDSPI(ctx, knh_bytes_first(path, loc));
+		SP(w)->dspi = knh_getStreamDSPI(ctx, sfp[3].ns, knh_bytes_first(path, loc));
 	}
 	DP(w)->fd = SP(w)->dspi->wopen(ctx, path, mode);
 	if(DP(w)->fd != IO_NULL) {
@@ -1051,7 +1051,7 @@ static METHOD OutputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	else {
 		knh_Object_toNULL(ctx, w);
-		SP(w)->dspi = knh_getStreamDSPI(ctx, K_DEFAULT_DSPI);
+		SP(w)->dspi = knh_getStreamDSPI(ctx, sfp[3].ns, K_DEFAULT_DSPI);
 	}
 	RETURN_(w);
 }
@@ -1063,7 +1063,7 @@ static METHOD OutputStream_writeChar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	knh_Bytes_t *ba = DP(w)->ba;
-	const struct _knh_StreamDSPI_t *dspi = SP(w)->dspi;
+	const struct knh_StreamDSPI_t *dspi = SP(w)->dspi;
 	KNH_ASSERT(IS_Bytes(ba));
 	knh_Bytes_putc(ctx, ba, (int)(sfp[1].ivalue));
 	if(!OutputStream_isStoringBuffer(w) && BA_size(ba) > dspi->bufsiz) {

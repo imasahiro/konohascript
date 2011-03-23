@@ -1271,7 +1271,7 @@ static knh_Token_t* PATH_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 {
 	knh_bytes_t path = S_tobytes((tk)->text);
 	knh_NameSpace_t *ns = KNH_GMA_NS;
-	knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, ns, path);
+	const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, ns, path);
 	if(dspi == NULL) {
 		return ErrorUnknownResourceName(ctx, path);
 	}
@@ -2831,7 +2831,7 @@ static knh_Token_t* TPATH_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	DBG_ASSERT(TT_(tkTPATH) == TT_TPATH);
 	TYPING(ctx, stmt, 1, TYPE_String, 0);
 	{
-		knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, KNH_GMA_NS, path);
+		const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, KNH_GMA_NS, path);
 		if(dspi == NULL) {
 			return ErrorNoResourceHandler(ctx, path);
 		}

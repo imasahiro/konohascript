@@ -56,14 +56,19 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [namespace] */
 
+void knh_loadScriptAliasTokenData(CTX ctx, knh_NameSpace_t *ns);
+
 knh_NameSpace_t* new_NameSpace(CTX ctx, knh_NameSpace_t *nsNULL)
 {
 	knh_NameSpace_t* ns = new_(NameSpace);
 	if(nsNULL != NULL) {
 		DBG_ASSERT(IS_NameSpace(nsNULL));
 		KNH_INITv(DP(ns)->parentNULL, nsNULL);
-		KNH_SETv(ctx, DP(ns)->nsname, DP(nsNULL)->nsname);
-		DP(ns)->regexSPI = DP(nsNULL)->regexSPI;
+		KNH_SETv(ctx, ns->nsname, nsNULL->nsname);
+		ns->regexSPI = nsNULL->regexSPI;
+	}
+	else {
+		knh_loadScriptAliasTokenData(ctx, ns);
 	}
 	return ns;
 }
@@ -191,16 +196,16 @@ static knh_bool_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, knh_A
 				knh_Fpkginit pkginit = (knh_Fpkginit)knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, "init");
 				if(pkginit != NULL) {
 					const knh_PackageDef_t *pkgdef = pkginit(ctx);
-					if(pkgdef->crc32 != K_API2_CRC32) {
+					if((long)pkgdef->crc32 != (long)K_API2_CRC32) {
 						DP(ctx->gma)->dlhdr = NULL;
-						knh_Stmt_toERR(ctx, stmt, ERROR_IncompatiblePackage(ctx, include_name, pkgdef));
+						knh_Stmt_toERR(ctx, stmt, ERROR_IncompatiblePackage(ctx, path, pkgdef));
 						isCONTINUE = 0;
 					}
 				}
 				else {
 					const knh_PackageDef_t pkgdef = {};
 					DP(ctx->gma)->dlhdr = NULL;
-					knh_Stmt_toERR(ctx, stmt, ERROR_IncompatiblePackage(ctx, include_name, &pkgdef));
+					knh_Stmt_toERR(ctx, stmt, ERROR_IncompatiblePackage(ctx, path, &pkgdef));
 					isCONTINUE = 0;
 				}
 				goto L_RETURN;
@@ -233,7 +238,7 @@ static knh_Package_t *new_Package(CTX ctx, knh_String_t *nsname)
 {
 	knh_Package_t *pkg = new_(Package);
 	KNH_INITv(pkg->ns, new_NameSpace(ctx, NULL));
-	KNH_SETv(ctx, DP(pkg->ns)->nsname, nsname);
+	KNH_SETv(ctx, pkg->ns->nsname, nsname);
 	KNH_INITv(pkg->script, new_(Script));
 	return pkg;
 }
@@ -255,7 +260,7 @@ knh_bool_t knh_loadScriptPackage(CTX ctx, knh_bytes_t path)
 	knh_NameSpace_t *ns = KNH_GMA_NS;
 	knh_Package_t *pkg = (knh_Package_t*)knh_DictMap_getNULL(ctx, DP(ctx->sys)->PackageDictMap, name);
 	if(pkg == NULL) {
-		knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, ns, path);
+		const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, ns, path);
 		if(dspi->exists(ctx, ns, path) != PATH_unknown) {
 			knh_String_t *nameS = new_S(ctx, name);
 			knh_Array_t * a = KNH_TNULL(Array);
@@ -273,8 +278,8 @@ knh_bool_t knh_loadScriptPackage(CTX ctx, knh_bytes_t path)
 	if(pkg != NULL) {
 		knh_NameSpace_t *ns = knh_getGammaNameSpace(ctx);
 		knh_NameSpace_t *pkgns = SP(pkg)->ns;
-		if(DP(pkgns)->regexSPI != DP(pkgns)->strregexSPI) {
-			DP(ns)->regexSPI = DP(pkgns)->regexSPI;
+		if(pkgns->regexSPI != pkgns->strregexSPI) {
+			ns->regexSPI = pkgns->regexSPI;
 		}
 	}
 	return res;
@@ -566,7 +571,7 @@ static knh_bool_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 	knh_NameSpace_t *ns = knh_getGammaNameSpace(ctx);
 	{
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-		knh_Bytes_write(ctx, cwb->ba, S_tobytes(DP(ns)->nsname));
+		knh_Bytes_write(ctx, cwb->ba, S_tobytes(ns->nsname));
 		knh_Bytes_putc(ctx, cwb->ba, '.');
 		knh_Bytes_write(ctx, cwb->ba, TK_tobytes(tkC));
 		cid = knh_getcid(ctx, knh_cwb_tobytes(cwb));
@@ -869,7 +874,7 @@ static void Bytes_addCOMMENT(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in)
 static knh_InputStream_t* knh_openPathNULL(CTX ctx, knh_bytes_t path)
 {
 	knh_NameSpace_t *ns = KNH_GMA_NS;
-	knh_StreamDSPI_t *sdspi = knh_getStreamDSPI(ctx, path);
+	const knh_StreamDSPI_t *sdspi = knh_getStreamDSPI(ctx, ns, path);
 	knh_io_t fd = sdspi->fopen(ctx, path, "r");
 	if(fd == IO_NULL) {
 		KNH_WARN(ctx, "file not found '%s'", path.text);
@@ -877,7 +882,7 @@ static knh_InputStream_t* knh_openPathNULL(CTX ctx, knh_bytes_t path)
 	}
 	else {
 		knh_uintptr_t id = 0;
-		knh_PathDSPI_t *pdspi = knh_NameSpace_getPathDSPINULL(ctx, ns, path);
+		const knh_PathDSPI_t *pdspi = knh_NameSpace_getPathDSPINULL(ctx, ns, path);
 		if(pdspi != NULL) id = pdspi->exists(ctx, ns, path);
 		knh_InputStream_t *in = new_InputStreamDSPI(ctx, fd, sdspi);
 		if(id != PATH_unknown) {

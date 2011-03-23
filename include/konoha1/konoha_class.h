@@ -294,10 +294,11 @@ K_USE_FASTDMAP(knh_uint64_t ukey;)
 		knh_String_t  *key;
 		knh_intptr_t   ikey;
 		knh_floatptr_t fkey;
+		knh_ndata_t    nkey;
 	};
 	union {
 		Object           *value;
-		knh_uintptr_t    nvalue;
+		knh_ndata_t    nvalue;
 	};
 } knh_dentry_t;
 
@@ -315,13 +316,13 @@ K_USE_FASTDMAP(knh_uint64_t (*strkeyuint)(knh_bytes_t);)
 typedef struct knh_hentry_t {
 	knh_hashcode_t hcode;
 	union {
-		Object *key;
+		Object       *key;
 		knh_String_t *skey;
-		knh_ndata_t dkey;
+		knh_ndata_t   nkey;
 	};
 	union {
-		Object *value;
-		knh_ndata_t dvalue;
+		Object       *value;
+		knh_ndata_t   nvalue;
 	};
 	struct knh_hentry_t *next;
 } knh_hentry_t;
@@ -331,9 +332,15 @@ typedef struct knh_hmap_t {
 	size_t size;
 	size_t hmax;
 	size_t factor;
+	const char *DBGNAME;
 } knh_hmap_t;
 
 typedef void  knh_map_t;
+
+typedef struct {
+	size_t index;
+	void *ptr;
+} knh_mapitr_t;
 
 typedef struct knh_Map_t {
 	knh_hObject_t h;
@@ -342,7 +349,7 @@ typedef struct knh_Map_t {
 		knh_dmap_t    *dmap;
 		knh_hmap_t    *hmap;
 	};
-	const struct _knh_MapDSPI_t *dspi;
+	const struct knh_MapDSPI_t *dspi;
 } knh_Map_t;
 
 #define K_HASH_INITSIZE 83
@@ -357,7 +364,7 @@ typedef struct knh_DictMap_t {
 		knh_map_t     *map;
 		knh_dmap_t    *dmap;
 	};
-	const struct _knh_MapDSPI_t *dspi;
+	const struct knh_MapDSPI_t *dspi;
 } knh_DictMap_t;
 
 #define new_DictMap0(ctx, N, F, NAME)   new_DictMap0_(ctx, N, F, NAME)
@@ -370,7 +377,7 @@ typedef struct knh_DictSet_t {
 		knh_map_t     *map;
 		knh_dmap_t    *dmap;
 	};
-	const struct _knh_MapDSPI_t *dspi;
+	const struct knh_MapDSPI_t *dspi;
 } knh_DictSet_t;
 
 typedef void (*knh_Fdictset)(CTX, knh_DictSet_t*, knh_String_t *k, knh_uintptr_t);
@@ -659,7 +666,7 @@ typedef struct knh_Regex_t {
 	knh_hObject_t h;
 	knh_regex_t *reg;
 	int eflags;
-	const struct _knh_RegexSPI_t *spi;
+	const struct knh_RegexSPI_t *spi;
 	struct knh_String_t *pattern;
 } knh_Regex_t;
 
@@ -671,7 +678,7 @@ typedef void knh_conv_t;
 typedef struct knh_Converter_t {
 	knh_hObject_t h;
 	knh_conv_t *conv;
-	const struct _knh_ConvDSPI_t *dspi;
+	const struct knh_ConvDSPI_t *dspi;
 } knh_Converter_t;
 
 /* ------------------------------------------------------------------------ */
@@ -680,7 +687,7 @@ typedef struct knh_Converter_t {
 typedef struct knh_StringEncoder_t {
 	knh_hObject_t h;
 	knh_conv_t *conv;
-	const struct _knh_ConvDSPI_t *dspi;
+	const struct knh_ConvDSPI_t *dspi;
 } knh_StringEncoder_t;
 
 /* ------------------------------------------------------------------------ */
@@ -689,7 +696,7 @@ typedef struct knh_StringEncoder_t {
 typedef struct knh_StringDecoder_t {
 	knh_hObject_t h;
 	knh_conv_t *conv;
-	const struct _knh_ConvDSPI_t *dspi;
+	const struct knh_ConvDSPI_t *dspi;
 } knh_StringDecoder_t;
 
 /* ------------------------------------------------------------------------ */
@@ -698,7 +705,7 @@ typedef struct knh_StringDecoder_t {
 typedef struct knh_StringConveter_t {
 	knh_hObject_t h;
 	knh_conv_t *conv;
-	const struct _knh_ConvDSPI_t *dspi;
+	const struct knh_ConvDSPI_t *dspi;
 } knh_StringConverter_t;
 
 /* ------------------------------------------------------------------------ */
@@ -799,7 +806,7 @@ typedef struct knh_InputStream_t {
 	knh_hObject_t h;
 	knh_InputStreamEX_t *b;
 	knh_uline_t  uline;
-	const struct _knh_StreamDSPI_t *dspi;
+	const struct knh_StreamDSPI_t *dspi;
 } knh_InputStream_t;
 
 /* ------------------------------------------------------------------------ */
@@ -826,7 +833,7 @@ typedef struct knh_OutputStream_t {
 	knh_hObject_t h;
 	knh_OutputStreamEX_t *b;
 	knh_uline_t  uline;
-	const struct _knh_StreamDSPI_t *dspi;
+	const struct knh_StreamDSPI_t *dspi;
 } knh_OutputStream_t;
 
 #define knh_putc(ctx, w, ch)       knh_OutputStream_putc(ctx, w, ch)
@@ -848,9 +855,9 @@ typedef void   knh_qcur_t;
 
 typedef struct knh_Connection_t {
 	knh_hObject_t h;
-	knh_qconn_t              *conn;
-	const struct _knh_QueryDPI_t           *dspi;
-	knh_String_t             *urn;
+	knh_qconn_t                  *conn;
+	const struct knh_QueryDPI_t  *dspi;
+	knh_String_t                 *urn;
 } knh_Connection_t;
 
 /* ------------------------------------------------------------------------ */
@@ -904,17 +911,13 @@ typedef struct knh_Script_t {
 #define KNH_PATH_UNTRUSTED    2
 
 typedef struct knh_NameSpace {
-	knh_String_t*           nsname;
 	struct knh_NameSpace_t  *parentNULL;
 	struct knh_DictMap_t*   aliasDictMapNULL;
 	struct knh_DictSet_t*   name2cidDictSetNULL;
 	struct knh_DictSet_t*   func2cidDictSetNULL;
 	struct knh_DictMap_t*   lconstDictCaseMapNULL;
-	const struct _knh_RegexSPI_t  *strregexSPI;
-	const struct _knh_RegexSPI_t  *regexSPI;
 	struct knh_Array_t*     methodsNULL;
 	struct knh_Array_t*     formattersNULL;
-
 /*	struct knh_DictSet_t*   pathTrustDictSet; */
 /*	struct knh_DictMap_t*   tag2urnDictMap; */
 } knh_NameSpaceEX_t;
@@ -922,6 +925,9 @@ typedef struct knh_NameSpace {
 typedef struct knh_NameSpace_t {
 	knh_hObject_t h;
 	knh_NameSpaceEX_t *b;
+	knh_String_t*                 nsname;
+	const struct knh_RegexSPI_t  *strregexSPI;
+	const struct knh_RegexSPI_t  *regexSPI;
 } knh_NameSpace_t;
 
 /* ------------------------------------------------------------------------ */

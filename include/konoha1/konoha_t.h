@@ -928,8 +928,8 @@ typedef struct {
 	struct knh_Float_t       *constFloat0;
 	struct knh_String_t     **tString;
 	struct knh_Array_t       *emptyArray;
+	struct knh_NameSpace_t   *rootns;
 	struct knh_context_t     *ctx0;
-	struct knh_NameSpace_t   *mainns;
 	struct knh_Script_t      *script;
 	struct knh_opline_t      *PC_LAUNCH;
 	struct knh_opline_t      *PC_FUNCCALL;

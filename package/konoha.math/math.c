@@ -168,7 +168,7 @@ METHOD Math_tanh(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNf_(tanh(Float_to(double, sfp[1])));
 }
 
-#if defined(K_USING_WINTHREAD_)
+#if defined(K_USING_WIN32_)
 METHOD Math_asinh(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(asinh(Float_to(double, sfp[1])));
@@ -211,7 +211,7 @@ EXPORTAPI(const knh_PackageDef_t*) init(CTX ctx)
 EXPORTAPI(void) MathCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
 {
 	if(ns == NULL) {
-		kapi->loadFloatData(ctx, FloatConstData);
+		kapi->loadFloatData(ctx, ns, FloatConstData);
 	}
 }
 

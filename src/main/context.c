@@ -251,6 +251,7 @@ static knh_context_t* new_RootContext(void)
 	share->sizeEventTBL = 0;
 	share->capacityEventTBL  = K_EVENTTBL_INIT;
 	knh_loadScriptSystemStructData(ctx, kapi);
+
 	{
 		knh_Object_t *p = (knh_Object_t*)new_hObject_(ctx, ClassTBL(CLASS_Object));
 		Object_setNullObject(p, 1);
@@ -283,16 +284,16 @@ static knh_context_t* new_RootContext(void)
 		(a)->dim = &dimINIT;
 		KNH_INITv(share->emptyArray, a);
 	}
-
-	DBG_ASSERT(share->tString == NULL);
 	share->tString = (knh_String_t**)KNH_MALLOC(ctx, SIZEOF_TSTRING);
 	knh_bzero(share->tString, SIZEOF_TSTRING);
 	knh_loadScriptSystemString(ctx);
+
 	/* These are not shared, but needed to initialize System*/
 	knh_stack_initexpand(ctx, NULL, K_STACKSIZE);
 	KNH_INITv(ctx->sys, new_(System));
-	knh_loadScriptSystemData(ctx, kapi);
-	KNH_INITv(share->mainns, new_NameSpace(ctx, NULL));
+	KNH_INITv(share->rootns, new_NameSpace(ctx, NULL));
+
+	knh_loadScriptSystemData(ctx, share->rootns, kapi);
 	KNH_INITv(ctx->script, new_(Script));
 	{
 		knh_Gamma_t *gma = new_(Gamma);
@@ -307,7 +308,6 @@ static knh_context_t* new_RootContext(void)
 	knh_CommonContext_init(ctx, ctx);
 	knh_System_initPath(ctx, ctx->sys);
 	knh_loadScriptTokenData(ctx);
-	knh_loadScriptAliasTokenData(ctx);
 	return ctx;
 }
 
@@ -401,7 +401,7 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	KNH_ADDREF(ctx, (share->constFloat0));
 	KNH_ADDREF(ctx, (share->emptyArray));
 	KNH_ADDREF(ctx, (ctx->sys));
-	KNH_ADDREF(ctx, (share->mainns));
+	KNH_ADDREF(ctx, (share->rootns));
 	KNH_ENSUREREF(ctx, K_TSTRING_SIZE);
 	for(i = 0; i < K_TSTRING_SIZE; i++) {
 		KNH_ADDREF(ctx, (share->tString[i]));

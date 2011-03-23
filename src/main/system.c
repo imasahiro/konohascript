@@ -307,7 +307,7 @@ knh_String_t *knh_getURN(CTX ctx, knh_uri_t uri)
 /* ------------------------------------------------------------------------ */
 /* [Driver] */
 
-void knh_addDSPI(CTX ctx, const char *scheme, const knh_DSPI_t* p)
+void knh_NameSpace_addDSPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, const knh_DSPI_t* p)
 {
 	const char *name = (scheme == NULL) ? p->name : scheme;
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
@@ -321,7 +321,7 @@ void knh_addDSPI(CTX ctx, const char *scheme, const knh_DSPI_t* p)
 
 /* ------------------------------------------------------------------------ */
 
-const knh_DSPI_t *knh_getDSPINULL(CTX ctx, int type, knh_bytes_t path)
+const knh_DSPI_t *knh_NameSpace_getDSPINULL(CTX ctx, knh_NameSpace_t *ns, int type, knh_bytes_t path)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_index_t idx = knh_bytes_index(path, ':');
@@ -342,23 +342,23 @@ const knh_DSPI_t *knh_getDSPINULL(CTX ctx, int type, knh_bytes_t path)
 
 /* ------------------------------------------------------------------------ */
 
-knh_PathDSPI_t *knh_NameSpace_getPathDSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+const knh_PathDSPI_t *knh_NameSpace_getPathDSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
-	return (knh_PathDSPI_t *)knh_getDSPINULL(ctx, K_DSPI_PATH, path);
+	return (const knh_PathDSPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_PATH, path);
 }
 
 /* ------------------------------------------------------------------------ */
 
-knh_ConvDSPI_t *knh_NameSpace_getConvTODSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+const knh_ConvDSPI_t *knh_NameSpace_getConvTODSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
-	return (knh_ConvDSPI_t *)knh_getDSPINULL(ctx, K_DSPI_CONVTO, path);
+	return (const knh_ConvDSPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_CONVTO, path);
 }
 
 /* ------------------------------------------------------------------------ */
 
-knh_ConvDSPI_t *knh_NameSpace_getConvFROMDSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+const knh_ConvDSPI_t *knh_NameSpace_getConvFROMDSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
-	return (const knh_ConvDSPI_t *)knh_getDSPINULL(ctx, K_DSPI_CONVFROM, path);
+	return (const knh_ConvDSPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_CONVFROM, path);
 }
 
 /* ------------------------------------------------------------------------ */

@@ -480,8 +480,8 @@ static knh_String_t* NameSpace_getAliasNULL(CTX ctx, knh_NameSpace_t* ns, knh_by
 			ns = DP(ns)->parentNULL;
 			goto L_TAIL;
 		}
-		if(ns != ctx->share->mainns) {
-			ns = ctx->share->mainns;
+		if(ns != ctx->share->rootns) {
+			ns = ctx->share->rootns;
 			goto L_TAIL;
 		}
 	}
@@ -2026,8 +2026,8 @@ static void _REGEX(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, knh_Token_t *tk)
 	const char *opt = "";
 	int cflags = 0;
 	KNH_INITv(re->pattern, (tk)->text);
-	re->spi = DP(ns)->regexSPI;
-	if(re->spi == DP(ns)->strregexSPI) {
+	re->spi = ns->regexSPI;
+	if(re->spi == ns->strregexSPI) {
 		WarningNotInitialized(ctx, tk, "regex");
 	}
 	re->reg = re->spi->regmalloc(ctx, (tk)->text);

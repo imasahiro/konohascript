@@ -1144,13 +1144,12 @@ static knh_bool_t NULLMAP_get(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp, knh_sfp_t 
 static void NULLMAP_set(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp) {}
 static void NULLMAP_remove(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp) {}
 static size_t NULLMAP_size(CTX ctx, knh_map_t* m) { return 0; }
-static knh_bool_t NULLMAP_setIterator(CTX ctx, knh_map_t* m, knh_Iterator_t *it) { return 0; }
+static knh_bool_t NULLMAP_next(CTX ctx, knh_map_t* m, knh_mapitr_t *mitr, knh_sfp_t *rsfp) { return 0; }
 
 static const knh_MapDSPI_t NULLMAP = {
-	K_DSPI_MAP, "nullmap",
+	K_DSPI_MAP, "NULL",
 	NULLMAP_config, NULLMAP_init, NULLMAP_reftrace, NULLMAP_free,
-	NULLMAP_get, NULLMAP_set, NULLMAP_remove, NULLMAP_size,
-	NULLMAP_setIterator,
+	NULLMAP_get, NULLMAP_set, NULLMAP_remove, NULLMAP_size, NULLMAP_next,
 };
 
 static const knh_MapDSPI_t* NULLMAP_config(CTX ctx, knh_class_t p1, knh_class_t p2)
@@ -1845,7 +1844,7 @@ static void InputStream_init(CTX ctx, Object *o)
 {
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
 	knh_InputStreamEX_t *b = knh_bodymalloc(ctx, InputStream);
-	SP(in)->dspi = knh_getStreamDSPI(ctx, K_DEFAULT_DSPI);
+	SP(in)->dspi = knh_getStreamDSPI(ctx, NULL, K_DEFAULT_DSPI);
 	b->fd = -1;
 	KNH_INITv(b->ba, KNH_NULL);
 	b->buf = NULL;
@@ -1903,7 +1902,7 @@ static void OutputStream_init(CTX ctx, Object *o)
 {
 	knh_OutputStream_t *w = (knh_OutputStream_t*)o;
 	knh_OutputStreamEX_t *b = knh_bodymalloc(ctx, OutputStream);
-	SP(w)->dspi = knh_getStreamDSPI(ctx, K_DEFAULT_DSPI);
+	SP(w)->dspi = knh_getStreamDSPI(ctx, NULL, K_DEFAULT_DSPI);
 	b->fd = IO_NULL;
 	KNH_INITv(b->ba, new_Bytes(ctx, K_PAGESIZE));
 	b->encNULL = NULL;
@@ -1961,7 +1960,7 @@ static void Connection_init(CTX ctx, Object *o)
 {
 	knh_Connection_t *c = (knh_Connection_t*)o;
 	c->conn = NULL;
-	c->dspi = knh_getQueryDSPI(ctx, K_DEFAULT_DSPI);
+	c->dspi = knh_getQueryDSPI(ctx, NULL, K_DEFAULT_DSPI);
 	KNH_INITv(c->urn, TS_EMPTY);
 }
 
@@ -2001,7 +2000,7 @@ static void ResultSet_init(CTX ctx, Object *o)
 	b->column = NULL;
 	KNH_INITv(b->databuf, new_Bytes(ctx, 256));
 	KNH_INITv(b->conn, KNH_NULL);
-	b->qcurfree = knh_getQueryDSPI(ctx, K_DEFAULT_DSPI)->qcurfree;
+	b->qcurfree = knh_getQueryDSPI(ctx, NULL, K_DEFAULT_DSPI)->qcurfree;
 	b->count = 0;
 	o->ref = b;
 }
@@ -2102,8 +2101,9 @@ static knh_ClassDef_t ScriptDef = {
 
 static void NameSpace_init(CTX ctx, Object *o)
 {
+	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
 	knh_NameSpaceEX_t *b = knh_bodymalloc(ctx, NameSpace);
-	KNH_INITv(b->nsname, TS_main);
+	KNH_INITv(ns->nsname, TS_main);
 	b->parentNULL = NULL;
 	b->aliasDictMapNULL = NULL;
 	b->name2cidDictSetNULL = NULL;
@@ -2111,15 +2111,16 @@ static void NameSpace_init(CTX ctx, Object *o)
 	b->func2cidDictSetNULL = NULL;
 	b->formattersNULL = NULL;
 	b->methodsNULL = NULL;
-	b->strregexSPI = knh_getStrRegexSPI();
-	b->regexSPI = knh_getRegexSPI();
-	o->ref = b;
+	ns->strregexSPI = knh_getStrRegexSPI();
+	ns->regexSPI = knh_getRegexSPI();
+	ns->b = b;
 }
 
 static void NameSpace_reftrace(CTX ctx, Object *o FTRARG)
 {
-	knh_NameSpaceEX_t *b = DP((knh_NameSpace_t*)o);
-	KNH_ADDREF(ctx, (b->nsname));
+	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
+	knh_NameSpaceEX_t *b = DP(ns);
+	KNH_ADDREF(ctx, (ns->nsname));
 	KNH_ADDNNREF(ctx, (b->parentNULL));
 	KNH_ADDNNREF(ctx, (b->aliasDictMapNULL));
 	KNH_ADDNNREF(ctx, (b->name2cidDictSetNULL));
@@ -2187,9 +2188,9 @@ static void System_init(CTX ctx, Object *o)
 	KNH_INITv(sys->ClassNameDictSet, new_DictSet0(ctx, 128, 0/*isCaseMap*/, "System.ClassNameDictSet"));
 	KNH_INITv(sys->EventDictCaseSet, new_DictSet0(ctx, 32, 1/*isCaseMap*/, "System.EventDictSet"));
 	KNH_INITv(sys->enc,   new_T(knh_getSystemEncoding()));
-	KNH_INITv(sys->in,    new_InputStream__stdio(ctx, stdin, sys->enc));
-	KNH_INITv(sys->out,   new_OutputStream__stdio(ctx, stdout, sys->enc));
-	KNH_INITv(sys->err,   new_OutputStream__stdio(ctx, stderr, sys->enc));
+	KNH_INITv(sys->in,    new_InputStreamSTDIO(ctx, stdin, sys->enc));
+	KNH_INITv(sys->out,   new_OutputStreamSTDIO(ctx, stdout, sys->enc));
+	KNH_INITv(sys->err,   new_OutputStreamSTDIO(ctx, stderr, sys->enc));
 
 	KNH_INITv(sys->props, new_DictMap0(ctx, 20, 1/*isCaseMap*/, "System.props"));
 	KNH_INITv(sys->nameDictCaseSet, new_DictSet0(ctx, K_TFIELD_SIZE + 10, 1/*isCaseMap*/, "System.nameDictSet"));
@@ -2624,7 +2625,7 @@ static void Gamma_init(CTX ctx, Object *o)
 	knh_GammaEX_t *b = knh_bodymalloc(ctx, Gamma);
 	knh_bzero(b, sizeof(knh_GammaEX_t));
 	b->cflag = FLAG_Gamma_InlineFunction | FLAG_Gamma_TailRecursion;
-	KNH_INITv(b->ns, ctx->share->mainns);
+	KNH_INITv(b->ns, ctx->share->rootns);
 	DBG_ASSERT(IS_NameSpace(b->ns));
 	KNH_INITv(b->mtd, KNH_NULL);
 	KNH_INITv(b->stmt, KNH_NULL);
@@ -2832,7 +2833,7 @@ static Object *knh_Context_fdefault(CTX ctx, knh_class_t cid)
 }
 static Object *knh_NameSpace_fdefault(CTX ctx, knh_class_t cid)
 {
-	return UPCAST(ctx->share->mainns);
+	return UPCAST(ctx->share->rootns);
 }
 static void knh_setDefaultValues(CTX ctx)
 {
@@ -2849,10 +2850,10 @@ static void knh_setDefaultValues(CTX ctx)
 	}
 #endif
 	// load file/Channel/regex/db drivers
-	knh_loadScriptDriver(ctx);
 	knh_setClassDefaultValue(ctx, CLASS_Context, KNH_NULL, knh_Context_fdefault);
 	knh_setClassDefaultValue(ctx, CLASS_NameSpace, KNH_NULL, knh_NameSpace_fdefault);
 	knh_setClassDefaultValue(ctx, CLASS_System, UPCAST(ctx->sys), NULL);
+	knh_loadScriptDriver(ctx, KNH_TNULL(NameSpace));
 	{
 		knh_Token_t *tk = KNH_TNULL(Token);
 		tk->tt = TT_FUNCVAR;
@@ -2877,26 +2878,24 @@ static void knh_loadScriptFieldNameData0(CTX ctx, knh_FieldNameData0_t *data)
 /* ------------------------------------------------------------------------ */
 /* @data */
 
-static knh_IntData_t IntConstData0[] = {
+static const knh_IntData_t IntConstData0[] = {
 	{"Int.MAX", K_INT_MAX},
 	{"Int.MIN", K_INT_MIN},
 	{NULL, 0}
 };
 
-static knh_FloatData_t FloatConstData0[] = {
+static const knh_FloatData_t FloatConstData0[] = {
 	{"Float.MAX", K_FLOAT_MAX},
 	{"Float.MIN", K_FLOAT_MIN},
 	{NULL, K_FLOAT_ZERO}
 };
 
-static knh_StringData_t StringConstData0[] = {
+static const knh_StringData_t StringConstData0[] = {
 	{"$konoha.version", K_VERSION},
-//	{"$konoha.os", KONOHA_OS},
-//	{"$konoha.platform", CC_PLATFORM},
 	{NULL, NULL},
 };
 
-static knh_data_t CParamData0[] = {
+static const knh_data_t CParamData0[] = {
 	DATA_CPARAM, CLASS_Iterator, 1, 0, TYPE_dynamic, FN_V,
 	DATA_CPARAM, CLASS_Range, 1, 0, TYPE_dynamic, FN_V,
 	DATA_CPARAM, CLASS_Array, 1, 0, TYPE_dynamic, FN_V,
@@ -2930,16 +2929,16 @@ void knh_loadScriptSystemString(CTX ctx)
 	}
 }
 
-void knh_loadScriptSystemData(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+void knh_loadScriptSystemData(CTX ctx, knh_NameSpace_t *ns, const knh_PackageLoaderAPI_t *kapi)
 {
 	kapi->loadData(ctx, ClassData0, NULL);
 	kapi->loadData(ctx, CParamData0, NULL);
-	kapi->loadIntData(ctx, IntConstData0);
-	kapi->loadFloatData(ctx, FloatConstData0);
-	kapi->loadStringData(ctx, StringConstData0);
+	kapi->loadIntData(ctx, ns, IntConstData0);
+	kapi->loadFloatData(ctx, ns, FloatConstData0);
+	kapi->loadStringData(ctx, ns, StringConstData0);
 	knh_getURI(ctx, STEXT("(eval)"));  // URI_EVAL
 	knh_setDefaultValues(ctx);
-	knh_loadScriptDefaultMapDSPI(ctx);
+	knh_loadScriptDefaultMapDSPI(ctx, ns);
 }
 
 void knh_loadScriptSystemMethod(CTX ctx, const knh_PackageLoaderAPI_t *kapi)

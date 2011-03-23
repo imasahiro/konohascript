@@ -156,8 +156,8 @@ static METHOD Regex_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const char *ptn = S_tochar(sfp[1].s);
 	const char *opt = IS_NULL(sfp[2].o) ? "" : S_tochar(sfp[2].s);
 	KNH_SETv(ctx, re->pattern, sfp[1].s);
-	knh_NameSpace_t *ns = IS_NULL(sfp[3].ns)?knh_getGammaNameSpace(ctx):sfp[3].ns;
-	re->spi = DP(ns)->regexSPI;
+	knh_NameSpace_t *ns = IS_NULL(sfp[3].ns) ? knh_getGammaNameSpace(ctx) : sfp[3].ns;
+	re->spi = ns->regexSPI;
 	re->reg = re->spi->regmalloc(ctx, sfp[1].s);
 	re->spi->regcomp(ctx, re->reg, ptn, re->spi->parse_cflags(ctx, opt));
 	re->eflags = re->spi->parse_eflags(ctx, opt);
@@ -283,7 +283,7 @@ static METHOD Array_newLIST(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## method This Map.new(Int init, String path);
+//## method This Map.new(Int init, String path, NameSpace ns);
 
 static METHOD Map_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -291,7 +291,7 @@ static METHOD Map_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	size_t init = sfp[1].ivalue <= 0 ? 0: Int_to(size_t, sfp[1]);
 	knh_bytes_t path = S_tobytes(sfp[2].s);
 	knh_class_t cid = O_cid(m);
-	knh_MapDSPI_t *dspi = knh_getMapDSPI(ctx, path);
+	const knh_MapDSPI_t *dspi = knh_NameSpace_getMapDSPI(ctx, sfp[3].ns, path);
 	m->dspi = dspi->config(ctx, knh_class_p1(cid), knh_class_p2(cid));
 	m->map = m->dspi->init(ctx, init, path.text, NULL);
 	RETURN_(m);
@@ -308,7 +308,7 @@ static METHOD Map_newMAP(CTX ctx, knh_sfp_t *sfp _RIX)
 	size_t i, ac = knh_stack_argc(ctx, v);
 	knh_class_t p1 = knh_class_p1(cid);
 	knh_class_t p2 = knh_class_p2(cid);
-	knh_MapDSPI_t *dspi = knh_getMapDSPIfromCID(ctx, p1, p2);
+	const knh_MapDSPI_t *dspi = knh_NameSpace_getMapDSPIfromCID(ctx, NULL, p1, p2);
 	o->dspi = dspi->config(ctx, p1, p2);
 	o->map  = dspi->init(ctx, 0, dspi->name, NULL);
 	for(i = 0; i < ac; i+=2) {

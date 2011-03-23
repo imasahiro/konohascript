@@ -355,7 +355,7 @@ EXPORTAPI(const knh_PackageDef_t*) init(CTX ctx)
 EXPORTAPI(void) SystemCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
 {
 	if(ns == NULL) {
-		kapi->loadIntData(ctx, IntConstData);
+		kapi->loadIntData(ctx, ns, IntConstData);
 	}
 }
 

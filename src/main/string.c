@@ -634,7 +634,7 @@ static METHOD String_opEXISTS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t path = S_tobytes(sfp[0].s);
 	DBG_ASSERT(IS_NameSpace(sfp[1].ns));
-	knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, sfp[1].ns, path);
+	const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, sfp[1].ns, path);
 	knh_bool_t tf = 0;
 	if(dspi != NULL) tf = (dspi->exists(ctx, sfp[1].ns, path) != PATH_unknown) ? 1 : 0;
 	RETURNb_(tf);
@@ -648,7 +648,7 @@ static METHOD String_path(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_class_t cid = (sfp[3].c)->cid;
 	knh_bytes_t path = S_tobytes(sfp[0].s);
 	knh_bytes_t qpath = S_tobytes(sfp[1].s);
-	knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, sfp[2].ns, qpath);
+	const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, sfp[2].ns, qpath);
 	knh_String_t* spath = sfp[0].s;
 	Object *v = NULL;
 	int isTRIM = 0;
