@@ -153,24 +153,6 @@ static void DEFAULT_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 	knh_write__p(ctx, w, (void*)o->ref);
 }
 
-void knh_write_Object(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
-{
-	if(level % 2 == 0) { // TYPED
-		knh_write_text(ctx, w, CLASS__(O_cid(o)));
-		knh_putc(ctx, w, ':');
-	}
-	if(Object_isNullObject(o)) {
-		knh_write(ctx, w, STEXT("null"));
-	}
-	else {
-//		if(checkRecursiveCalls(ctx, sfp)) {
-//			knh_write_dots(ctx, w);
-//			goto L_CLOSE;
-//		}
-		O_cTBL(o)->ospi->write(ctx, w, o, level);
-	}
-}
-
 static void knh_write_TObject(CTX ctx, knh_OutputStream_t *w, knh_type_t type, Object **v, size_t i, int level)
 {
 	switch(type) {
@@ -190,7 +172,7 @@ static void knh_write_TObject(CTX ctx, knh_OutputStream_t *w, knh_type_t type, O
 			break;
 		}
 		default:{
-			knh_write_Object(ctx, w, v[i], level);
+			knh_write_InObject(ctx, w, v[i], level);
 		}
 	}
 }
@@ -1032,14 +1014,14 @@ static void Array_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 				}
 			}
 			else {
-				knh_write_Object(ctx, w, a->list[0], level);
+				knh_write_InObject(ctx, w, a->list[0], level);
 				if(IS_FMTline(level)) {
 					knh_write_dots(ctx, w);
 				}
 				else {
 					for(c = 1; c < size; c++) {
 						knh_write_delim(ctx, w);
-						knh_write_Object(ctx, w, a->list[c], level);
+						knh_write_InObject(ctx, w, a->list[c], level);
 					}
 				}
 			}
@@ -1358,7 +1340,7 @@ static void Method_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 	if(IS_FMTdump(level)) {
 		knh_write_EOL(ctx, w);
 		if(Method_isObjectCode(mtd)) {
-			knh_write_Object(ctx, w, DP(mtd)->objdata, level);
+			knh_write_InObject(ctx, w, DP(mtd)->objdata, level);
 		}
 	}
 }
@@ -2444,9 +2426,87 @@ static void Token_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
+const char* TT__(knh_term_t tt);
+
 static void Token_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
-
+	knh_Token_t *tk = (knh_Token_t*)o;
+	knh_term_t tt = tk->tt;
+	if(tt < TT_NUM) {
+		knh_write_text(ctx, w, TT__(tt));
+		if(tt == TT_PARENTHESIS || tt == TT_BRACE || tt == TT_BRANCET) {
+			if(IS_Token(tk->data)) {
+				knh_write_InObject(ctx, w, tk->data, level);
+			}
+			else if(IS_Array(tk->data)) {
+				size_t i;
+				for(i = 0; i < knh_Array_size(tk->list); i++) {
+					if(i > 0) knh_putc(ctx, w, ' ');
+					knh_write_InObject(ctx, w, tk->list->list[i], level);
+				}
+			}
+			if(tt == TT_PARENTHESIS) {
+				knh_putc(ctx, w, ']');
+			}else if(tt == TT_BRACE) {
+				knh_putc(ctx, w, '}');
+			}else {
+				knh_putc(ctx, w, ']');
+			}
+		}
+	}
+	else if(tt < TT_CONST) {
+		knh_bytes_t t = S_tobytes(tk->text);
+		switch(tt) {
+		case TT_NUM: knh_write(ctx, w, t); break;
+		case TT_STR:  knh_write_quote(ctx, w, t, '"'); break;
+		case TT_TSTR: knh_write_quote(ctx, w, t, '\''); break;
+		case TT_ESTR: knh_write_quote(ctx, w, t, '`'); break;
+		case TT_REGEX: knh_write_quote(ctx, w, t, '/'); break;
+//		case TT_DOC:
+		case TT_METAN: knh_putc(ctx, w, '@'); knh_write(ctx, w, t); break;
+		case TT_PROPN: knh_putc(ctx, w, '$'); knh_write(ctx, w, t); break;
+		case TT_URN: case TT_TPATH:
+			knh_write(ctx, w, t); break;
+		case TT_NAME: case TT_UNAME:
+			if(Token_isDOT(tk)) knh_putc(ctx, w, '.');
+			if(Token_isGetter(tk)) knh_write(ctx, w, STEXT("get_"));
+			else if(Token_isSetter(tk)) knh_write(ctx, w, STEXT("set_"));
+			else if(Token_isISBOOL(tk)) knh_write(ctx, w, STEXT("is_"));
+			knh_write(ctx, w, t); break;
+			if(Token_isExceptionType(tk)) {
+				knh_write(ctx, w, STEXT("!!"));
+			}
+			break;
+		case TT_FUNCNAME: case TT_UFUNCNAME:
+			knh_write(ctx, w, t); break;
+		case TT_TYPE:
+			knh_write_Object(ctx, w, tk->data, FMT_line); break;
+		case TT_CID:
+			knh_write_cid(ctx, w, tk->mn); break;
+		case TT_MN:
+			knh_write_mn(ctx, w, tk->mn); break;
+		case TT_CONST:
+			knh_write_Object(ctx, w, tk->data, FMT_line);
+		case TT_SYSVAL: case TT_LOCAL: case TT_FUNCVAR:
+		case TT_XLOCAL: case TT_FIELD: case TT_SCRFIELD:
+			knh_write_text(ctx, w, TT__(tt));
+			knh_putc(ctx, w, '=');
+			knh_write_ifmt(ctx, w, K_INT_FMT, (knh_int_t)tk->index);
+		case TT_ERR:
+			knh_write(ctx, w, t); break;
+		default:
+			fprintf(stderr, "DEFINE %s in Token_stmt", TT__(tt));
+		}
+	}
+	if(IS_FMTdump(level)) {
+		if(SP(tk)->uline != 0) {
+			knh_write(ctx, w, STEXT("+L"));
+			knh_write_ifmt(ctx, w, K_INT_FMT, ULINE_line(tk->uline));
+		}
+		if(SP(tk)->type != TYPE_var) {
+			knh_write(ctx, w, STEXT("+:")); knh_write_type(ctx, w, SP(tk)->type);
+		}
+	}
 }
 
 static knh_ClassDef_t TokenDef = {
@@ -2506,7 +2566,46 @@ static void Stmt_free(CTX ctx, Object *o)
 
 static void Stmt_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
-
+	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
+	knh_intptr_t i, size;
+	L_TAILCALLED:;
+	knh_putc(ctx, w, '(');
+	if(!IS_FMTs(level)) {
+		if(IS_Map(DP(stmt)->metaDictCaseMap)) {
+			size = knh_DictMap_size(DP(stmt)->metaDictCaseMap);
+			for(i = 0; i < size; i++) {
+				knh_String_t *k = knh_DictMap_keyAt(DP(stmt)->metaDictCaseMap, i);
+				knh_String_t *v = (knh_String_t*)knh_DictMap_valueAt(DP(stmt)->metaDictCaseMap, i);
+				if(k == v) {
+					knh_printf(ctx, w, "@%s ", S_tochar(k));
+				}
+				else {
+					knh_printf(ctx, w, "@%s(%O) ", S_tochar(k), v);
+				}
+			}
+		}
+	}
+	knh_write_text(ctx, w, TT__(stmt->stt));
+	for(i = 0; i < DP(stmt)->size; i++) {
+		knh_putc(ctx, w, ' ');
+		knh_write_InObject(ctx, w, (Object*)(stmt->terms[i]), FMT_line);
+	}
+	knh_putc(ctx, w, ')');
+	if(IS_FMTdump(level)) {
+		if(SP(stmt)->type != TYPE_var) {
+			knh_write(ctx, w, STEXT("+:")); knh_write_type(ctx, w, SP(stmt)->type);
+		}
+	}
+	if(DP(stmt)->nextNULL != NULL) {
+		if(IS_FMTdump(level)) {
+			knh_write_EOL(ctx, w);
+			stmt = DP(stmt)->nextNULL;
+			goto L_TAILCALLED;
+		}
+		else {
+			knh_write_dots(ctx, w);
+		}
+	}
 }
 
 static knh_ClassDef_t StmtDef = {
@@ -2668,9 +2767,9 @@ static void KonohaCode_free(CTX ctx, Object *o)
 static void KonohaCode_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
 	knh_KonohaCode_t *kcode = (knh_KonohaCode_t*)o;
-	knh_opline_t *pc = kcode->code;
+	knh_opline_t *pc = kcode->code + 1;
 	while(1) {
-		knh_opcode_dump(ctx, pc, w, kcode->code);
+		knh_opcode_dump(ctx, pc, w, kcode->code + 1);
 		if(pc->opcode == OPCODE_RET) break;
 		pc++;
 	}

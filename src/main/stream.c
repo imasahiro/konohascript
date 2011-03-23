@@ -538,9 +538,6 @@ void knh_write_quote(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int quote)
 	knh_putc(ctx, w, quote);
 }
 
-/* ------------------------------------------------------------------------ */
-/* [flag] */
-
 void knh_write_flag(CTX ctx, knh_OutputStream_t *w, knh_flag_t flag)
 {
 	knh_intptr_t i;
@@ -556,8 +553,6 @@ void knh_write_flag(CTX ctx, knh_OutputStream_t *w, knh_flag_t flag)
 	}
 }
 
-/* ------------------------------------------------------------------------ */
-
 void knh_write_cap(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t)
 {
 	if(islower(t.ustr[0])) {
@@ -567,47 +562,40 @@ void knh_write_cap(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t)
 	knh_write(ctx, w, t);
 }
 
-///* ------------------------------------------------------------------------ */
-///* [String] */
-//
-//knh_bool_t knh_write_ndata(CTX ctx, knh_OutputStream_t *w, knh_class_t cid, knh_ndata_t d)
-//{
-//	switch(cid) {
-//	case CLASS_Boolean:
-//		knh_write_bool(ctx, w, (int)d);
-//		return 1;
-//	case CLASS_Int:
-//		knh_write_ifmt(ctx, w, K_INT_FMT, d);
-//		return 1;
-//	case CLASS_Float: {
-//		// removed warrning by ide
-//		union { knh_float_t f; knh_ndata_t n; } v;
-//		v.n = d;
-//		knh_write_ffmt(ctx, w, K_FLOAT_FMT, v.f);
-//		return 1;
-//	}
-//	}
-//	return 0;
-//}
+void knh_write_Object(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+{
+	if(level % 2 == 0) { // TYPED
+		knh_write_text(ctx, w, CLASS__(O_cid(o)));
+		knh_putc(ctx, w, ':');
+	}
+	if(Object_isNullObject(o)) {
+		knh_write(ctx, w, STEXT("null"));
+	}
+	else {
+		O_cTBL(o)->ospi->write(ctx, w, o, level);
+	}
+	if(IS_FMTdump(level)) {
+		knh_write_EOL(ctx, w);
+	}
+}
 
-///* ------------------------------------------------------------------------ */
-//
-//void knh_write_Object(CTX ctx, knh_OutputStream_t *w, knh_sfp_t *esp, knh_mtdcache_t *mcache, knh_Object_t *o, knh_methodn_t mn)
-//{
-//	if(IS_NULL(o)) {
-//		knh_write_text(ctx, w, "null");
-//	}
-//	else {
-//		const knh_ClassTBL_t *t = O_cTBL(o);
-//		if(mcache->cid != t->cid || mcache->mn != mn) {
-//			mcache->mtd = knh_ClassTBL_getFmt(ctx, t, mn);
+void knh_write_InObject(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+{
+	if(level % 2 == 0) { // TYPED
+		knh_write_text(ctx, w, CLASS__(O_cid(o)));
+		knh_putc(ctx, w, ':');
+	}
+	if(Object_isNullObject(o)) {
+		knh_write(ctx, w, STEXT("null"));
+	}
+	else {
+//		if(checkRecursiveCalls(ctx, sfp)) {
+//			knh_write_dots(ctx, w);
+//			goto L_CLOSE;
 //		}
-//		KNH_SETv(ctx, esp[K_CALLDELTA].o, w);
-//		KNH_SETv(ctx, esp[K_CALLDELTA+1].o, o);
-//		esp[K_CALLDELTA+1].ndata = O_data(o); // this is necessary
-//		KNH_SCALL(ctx, esp, 0, mcache->mtd, 1);
-//	}
-//}
+		O_cTBL(o)->ospi->write(ctx, w, o, level);
+	}
+}
 
 /* ------------------------------------------------------------------------ */
 /* [printf] */
@@ -824,11 +812,6 @@ void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap)
 						knh_write__p(ctx, w, args[index].pvalue);
 						break;
 					case 'L':
-						DBG_ASSERT(args[index].atype == VA_OBJECT);
-						if(IS_Token(args[index].ovalue)) {
-							knh_write_token(ctx, w, (knh_Token_t*)args[index].ovalue);
-							break;
-						}
 					case 'O': case 'o':
 						DBG_ASSERT(args[index].atype == VA_OBJECT);
 						knh_write_Object(ctx, w, args[index].ovalue, FMT_s);

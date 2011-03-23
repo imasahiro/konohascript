@@ -326,14 +326,14 @@ static const char* LOG__(int p)
 	return "DEBUG2 ";
 }
 
-void pseudo_vsyslog(int p, const char *fmt, va_list ap)  // used by _vsyslog
+void pseudo_vsyslog(int p, const char *fmt, va_list ap)
 {
 	fprintf(stderr, "%s", LOG__(p));
 	vfprintf(stderr, fmt, ap);
 	fprintf(stderr, "\n");
 }
 
-void pseudo_syslog(int p, const char *fmt, ...)  // // used by _vsyslog
+void pseudo_syslog(int p, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap , fmt);

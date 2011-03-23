@@ -115,37 +115,6 @@ static METHOD String_format(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-/* [utils] */
-
-//static knh_bool_t checkRecursiveCalls(CTX ctx, knh_sfp_t *sfp)
-//{
-//	knh_sfp_t *sp = sfp - 3;
-//	while(ctx->stack < sp) {
-//		if(sp[0].mtdNC == sfp[0].mtdNC && sp[1].w == sfp[1].w && sp[2].o == sfp[2].o) {
-//			return 1;
-//		}
-//		sp--;
-//	}
-//	return 0;
-//}
-//
-//static inline knh_ndata_t O_ndata(void *p)
-//{
-//	if(sizeof(knh_int_t) < sizeof(knh_ndata_t)) {
-//		return ((knh_int_t*)p)[0];
-//	}
-//	return ((knh_ndata_t*)p)[0];
-//}
-//
-//static void knh_write_ObjectField(CTX ctx, knh_OutputStream_t *w, Object **v, size_t i, knh_type_t type, knh_methodn_t mn)
-//{
-//	if(!knh_write_ndata(ctx, w, CLASS_t(type), O_ndata(v+i))) {
-//		knh_mtdcache_t mcache = {0, 0, NULL};
-//		knh_write_Object(ctx, w, ctx->esp, &mcache, v[i], mn);
-//	}
-//}
-
-/* ------------------------------------------------------------------------ */
 /* %empty */
 
 //## method void Object.%empty();

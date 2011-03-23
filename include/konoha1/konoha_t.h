@@ -640,24 +640,6 @@ typedef knh_uintptr_t                knh_hashcode_t;  /* knh_hashcode_t */
 
 typedef knh_Object_t* (*knh_Fdefnull)(CTX ctx, knh_class_t cid);
 
-//typedef const struct _knh_ClassDef_t {
-//	const char             *name;
-//	knh_ushort_t            size;
-//	knh_flag_t              cflag;
-//	void (*init)(CTX, Object*);
-//	void (*initcopy)(CTX, Object *, const Object *);
-//	void (*reftrace)(CTX, Object * FTRARG);
-//	void (*free)(CTX, Object *);
-//	int  (*compareTo)(const Object*, const Object*);
-//	struct knh_String_t* (*getkey)(CTX, knh_sfp_t*);
-//	knh_hashcode_t (*hashCode)(CTX, knh_sfp_t*);
-//	void (*checkin)(CTX, Object*);
-//	void (*checkout)(CTX, Object*, int isFailed);
-//	struct knh_TypeMap_t* (*findTypeMapNULL)(CTX, knh_class_t, knh_class_t, int);
-//	knh_Fdefnull  getDefaultNull;
-//	size_t asize;  /* set it to zero usually */
-//} knh_ClassDef_t ;
-
 typedef struct {
 	knh_flag_t    flag  ;
 	knh_short_t   israw ;
