@@ -1065,38 +1065,39 @@ static knh_ClassDef_t ArrayImDef = {
 
 static ITRNEXT Fitrnext_single(CTX ctx, knh_sfp_t *sfp, long rtnidx)
 {
-	knh_Iterator_t *it = sfp[0].it;
-	if(DP(it)->pos == 0) {
-		DP(it)->pos = 1;
-		ITRNEXT_(DP(it)->source);
+	knh_Iterator_t *itr = ITR(sfp);
+	if(DP(itr)->mitr.index == 0) {
+		DP(itr)->mitr.index = 1;
+		ITRNEXT_(DP(itr)->source);
 	}
 	ITREND_();
 }
 
 static void Iterator_init(CTX ctx, Object *o)
 {
-	knh_Iterator_t *it = (knh_Iterator_t*)o;
+	knh_Iterator_t *itr = (knh_Iterator_t*)o;
 	knh_IteratorEX_t *b = knh_bodymalloc(ctx, Iterator);
-	b->fnext  =  Fitrnext_single;
+	itr->fnext_1  =  Fitrnext_single;
 	KNH_INITv(b->source, KNH_NULL);
-	b->pos      =  0;
-	b->ref      =  NULL;
+	b->nptr     =  NULL;
+	b->mitr.index = 0;
+	b->mitr.ptr = NULL;
 	b->freffree = NULL;
-	it->b = b;
+	itr->b = b;
 }
 
 static void Iterator_reftrace(CTX ctx, Object *o FTRARG)
 {
-	knh_Iterator_t *it = (knh_Iterator_t*)o;
-	KNH_ADDREF(ctx, DP(it)->source);
+	knh_Iterator_t *itr = (knh_Iterator_t*)o;
+	KNH_ADDREF(ctx, DP(itr)->source);
 	KNH_SIZEREF(ctx);
 }
 
 static void Iterator_free(CTX ctx, Object *o)
 {
-	knh_Iterator_t *it = (knh_Iterator_t*)o;
-	knh_Iterator_close(ctx, it);
-	knh_bodyfree(ctx, it->b, Iterator);
+	knh_Iterator_t *itr = (knh_Iterator_t*)o;
+	knh_Iterator_close(ctx, itr);
+	knh_bodyfree(ctx, itr->b, Iterator);
 }
 
 static void Iterator_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)

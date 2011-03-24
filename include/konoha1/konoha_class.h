@@ -198,18 +198,28 @@ typedef struct knh_Bytes_t {
 //## @Immutable @Struct @Param1(dynamic) class Iterator Object;
 //## cparam Iterator 0 T dynamic;
 
-typedef void (*knh_Ffree)(void *ptr);
+typedef struct knh_mapitr_t {
+	size_t index;
+	void *ptr;
+} knh_mapitr_t;
+
+#define K_MAPITR_INIT   {0, NULL}
+
+typedef void (*knh_Ffree)(void *nptr);
 
 typedef struct {
-	knh_Fitrnext fnext;
-	Object* source;
-	knh_int_t  pos;
-	union {
-		void*   ref;
-		struct knh_opline_t *pc; /* @see(Generator) */
-	};
+	Object    *source;
+	void      *nptr;
+	struct knh_mapitr_t mitr;
+//	knh_int_t  pos;
+//	union {
+//		void*   ref;
+//		struct knh_opline_t *pc; /* @see(Generator) */
+//	};
 	knh_Ffree freffree;
 } knh_IteratorEX_t;
+
+#define ITR(sfp)   sfp[0].it
 
 typedef struct knh_Iterator_t {
 	knh_hObject_t h;
@@ -336,13 +346,6 @@ typedef struct knh_hmap_t {
 } knh_hmap_t;
 
 typedef void  knh_map_t;
-
-typedef struct {
-	size_t index;
-	void *ptr;
-} knh_mapitr_t;
-
-#define K_MAPITR_INIT   {0, NULL}
 
 typedef struct knh_Map_t {
 	knh_hObject_t h;

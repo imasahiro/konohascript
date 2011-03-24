@@ -892,98 +892,64 @@ static METHOD DictMap_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-///* ------------------------------------------------------------------------ */
-////## method T1[] Map.keys();
-//
-//static METHOD Map_keys(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_DictMap_t *o = (knh_DictMap_t*)sfp[0].o;
-//	knh_Array_t *a = new_Array(ctx, CLASS_String, o->size);
-//	size_t i;
-//	for(i=0; i < o->size; i++) {
-//		knh_Array_add_(ctx, a, UPCAST(o->list[i].key));
-//	}
-//	RETURN_(UPCAST(a));
-//}
+/* ------------------------------------------------------------------------ */
+//## method T1[] Map.keys();
 
-///* ------------------------------------------------------------------------ */
-////## method T1[] Map.values();
-//
-//static METHOD Map_values(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_DictMap_t *o = (knh_DictMap_t*)sfp[0].o;
-//	knh_Array_t *a = new_Array0(ctx, o->size);
-//	size_t i;
-//	for(i=0; i < o->size; i++) {
-//		knh_Array_add_(ctx, a, UPCAST(o->list[i].value));
-//	}
-//	RETURN_(UPCAST(a));
-//}
+static METHOD Map_keys(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Map_t *m = sfp[0].m;
+	size_t size = m->dspi->size(ctx, m->map);
+	knh_class_t p1 = O_cTBL(m)->p1;
+	knh_Array_t *a = new_Array(ctx, p1, size);
+	knh_sfp_t *lsfp = ctx->esp;
+	knh_mapitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
+	while(m->dspi->next(ctx, m->map, mitr, lsfp)) {
+		a->api->add(ctx, a, lsfp);
+	}
+	RETURN_(a);
+}
 
 /* ------------------------------------------------------------------------ */
-/* [DictMap] */
 
-//static ITRNEXT knh_DictMap_key_next(CTX ctx, knh_sfp_t *sfp, long rtnidx)
-//{
-//	Iterator *it = sfp[0].it;
-//	DictMap *o = (DictMap*)DP(it)->source;
-//	size_t pos;
-//	for(pos = DP(it)->pos; pos < o->size; pos++) {
-//		if(IS_NOTNULL(o->list[pos].value)) {
-//			DP(it)->pos = pos+1;
-//			ITRNEXT_((Object*)o->list[pos].key);
-//		}
-//	}
-//	DP(it)->pos = pos;
-//	ITREND_();
-//}
+static ITRNEXT Fnext_mapkey(CTX ctx, knh_sfp_t *sfp, long rtnidx)
+{
+	knh_Iterator_t *itr = ITR(sfp);
+	knh_Map_t *m = (knh_Map_t*)DP(itr)->source;
+	knh_sfp_t *lsfp = ctx->esp;
+	if(m->dspi->next(ctx, m->map, &(DP(itr)->mitr), lsfp)) {
+		ITRNEXT_(lsfp[0].o);
+	}
+	else {
+		ITREND_();
+	}
+}
 
-///* ------------------------------------------------------------------------ */
-//
-//typedef void (*knh_fadd_dict)(CTX, knh_Array_t *a, knh_String_t *key, Object *value);
-//
-//static void knh_DictMap_array(CTX ctx, knh_DictMap_t *d, knh_Array_t *a, knh_fadd_dict fadd)
-//{
-//	size_t i;
-//	knh_DictMap_sort(d);
-//	for(i = 0; i < d->size; i++) {
-//		Object *v = knh_DictMap_valueAt(d, i);
-//		if(IS_NOTNULL(v)) {
-//			fadd(ctx, a, knh_DictMap_keyAt(d, i), v);
-//		}
-//	}
-//}
-//
-//static void knh_fadd_dictkey(CTX ctx, knh_Array_t *a, knh_String_t *key, Object *value)
-//{
-//	knh_Array_add_(ctx, a, UPCAST(key));
-//}
+static ITRNEXT Fnext_mapkeydata(CTX ctx, knh_sfp_t *sfp, long rtnidx)
+{
+	knh_Iterator_t *itr = ITR(sfp);
+	knh_Map_t *m = (knh_Map_t*)DP(itr)->source;
+	knh_sfp_t *lsfp = ctx->esp;
+	if(m->dspi->next(ctx, m->map, &(DP(itr)->mitr), lsfp)) {
+		ITRNEXTd_(lsfp[0].ndata);
+	}
+	else {
+		ITREND_();
+	}
+}
 
-//static void knh_fadd_dictentry(CTX ctx, knh_Array_t *a, knh_String_t *key, Object *value)
-//{
-//	TODO();DBG_ABORT();
-//	knh_Pair_t *p = (knh_Pair_t*)new_H(ctx, FLAG_Pair, CLASS_Pair, O_p1(a));
-//	KNH_INITv(p->first, key);
-//	KNH_INITv(p->second, value);
-//	knh_Array_add_(ctx, a, UPCAST(p));
-//}
 
-///* ------------------------------------------------------------------------ */
-////## mapper Map Iterator!;
-////## mapper Map String..!;
-////## method String.. Map.opITR();
-//
-//static TCAST DictMap_String__(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_Map_t *o = sfp[0].m;
-//	knh_Iterator_t *itr = new_Iterator(ctx, CLASS_Tuple, UPCAST(o), NULL);
-//	o->dspi->setIterator(ctx, o->map, itr);
-//	RETURN_(itr);
-////	long selfidx = K_SELFIDX;
-////	knh_Array_t *a = new_Array(ctx, CLASS_String, (sfp[selfidx].dmap)->size);
-////	knh_DictMap_array(ctx, sfp[selfidx].dmap, a, knh_fadd_dictkey);
-////	RETURN_(new_ArrayIterator(ctx, a));
-//}
+/* ------------------------------------------------------------------------ */
+//## mapper Map Iterator!;
+//## mapper Map T1..!;
+//## method T1.. Map.opITR();
+
+static TCAST Map_T1__(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Map_t *m = sfp[0].m;
+	knh_class_t p1 = O_cTBL(m)->p1;
+	knh_Iterator_t *itr = new_Iterator(ctx, p1, UPCAST(m), IS_Tunbox(p1) ? Fnext_mapkeydata : Fnext_mapkey);
+	RETURN_(itr);
+}
 
 /* ------------------------------------------------------------------------ */
 

@@ -215,13 +215,12 @@ void knh_Iterator_close(CTX ctx, knh_Iterator_t *it)
 	if(it->fnext_1 != Fitrnext_end) {
 		KNH_SETv(ctx, DP(it)->source, KNH_NULL);
 		if(DP(it)->freffree != NULL) {
-			if(DP(it)->ref != NULL) {
-				DP(it)->freffree(DP(it)->ref);
+			if(DP(it)->nptr != NULL) {
+				DP(it)->freffree(DP(it)->nptr);
 			}
 			DP(it)->freffree = NULL;
 		}
-		DP(it)->ref = NULL;
-		DP(it)->fnext = Fitrnext_end;
+		DP(it)->nptr = NULL;
 		it->fnext_1   = Fitrnext_end;
 	}
 }
@@ -233,12 +232,65 @@ KNHAPI2(knh_Iterator_t*) new_Iterator(CTX ctx, knh_class_t p1, knh_Object_t *sou
 	knh_class_t cid = knh_class_P1(ctx, CLASS_Iterator, p1);
 	knh_Iterator_t *it = new_O(Iterator, cid);
 	if(IS_NULL(source)) fnext = Fitrnext_end;
-	if(fnext != NULL) DP(it)->fnext = fnext;
 	KNH_SETv(ctx, DP(it)->source, source);
-	it->fnext_1 = DP(it)->fnext;
+	it->fnext_1 = fnext;
 	return it;
 }
 
+/* ------------------------------------------------------------------------ */
+/* [ArrayIterator] */
+
+static ITRNEXT Array_nextO(CTX ctx, knh_sfp_t *sfp, long rtnidx)
+{
+	DBG_ASSERT(IS_bIterator(sfp[0].it));
+	knh_Iterator_t *itr = ITR(sfp);
+	knh_Array_t *a = (knh_Array_t*)DP(itr)->source;
+	size_t pos = (size_t)DP(itr)->mitr.index;
+	if(pos < a->size) {
+		DP(itr)->mitr.index = pos + 1;
+		ITRNEXT_(a->list[pos]);
+	}
+	ITREND_();
+}
+
+static ITRNEXT Array_nextN(CTX ctx, knh_sfp_t *sfp, long rtnidx)
+{
+	DBG_ASSERT(IS_bIterator(sfp[0].it));
+	knh_Iterator_t *itr = ITR(sfp);
+	knh_Array_t *a = (knh_Array_t*)DP(itr)->source;
+	size_t pos = (size_t)DP(itr)->mitr.index;
+	if(pos < a->size) {
+		DP(itr)->mitr.index = pos+1;
+		ITRNEXTd_(a->nlist[pos]);
+	}
+	ITREND_();
+}
+
+knh_Iterator_t* new_ArrayIterator(CTX ctx, knh_Array_t *a)
+{
+	knh_class_t cid = O_p1(a);
+	knh_Fitrnext fnext = Array_isNDATA(a) ? Array_nextN : Array_nextO;
+	return new_Iterator(ctx, cid, UPCAST(a), fnext);
+}
+
+knh_bool_t knh_isArrayIterator(knh_Iterator_t *itr)
+{
+	return (itr->fnext_1 == Array_nextO || itr->fnext_1 == Array_nextN);
+}
+
+knh_Array_t* knh_Iterator_toArray(CTX ctx, knh_Iterator_t *itr)
+{
+	knh_Array_t *a = new_Array(ctx, O_cTBL(itr)->p1, 0);
+	BEGIN_LOCAL(ctx, lsfp, 2);
+	KNH_SETv(ctx, lsfp[1].o, itr);
+	while(itr->fnext_1(ctx, lsfp + 1, -1)) {
+		a->api->add(ctx, a, lsfp);
+	}
+	END_LOCAL_(ctx, lsfp);
+	return a;
+}
+
+/* ------------------------------------------------------------------------ */
 
 #ifdef __cplusplus
 }
@@ -639,7 +691,6 @@ static METHOD Array_shuffle(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 //## method void Array.reverse();
-
 static METHOD Array_reverse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	size_t i;
@@ -665,7 +716,7 @@ static METHOD Array_reverse(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static TCAST Object_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	Object *o = sfp[K_TRLIDX].o;
+	Object *o = sfp[0].o;
 	RETURN_(new_Iterator(ctx, O_cid(o), o, NULL));
 }
 
@@ -674,138 +725,8 @@ static TCAST Object_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static TCAST Iterator_Array(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	KNH_TODO("Iterator_Array");
-//	knh_Iterator_t *it = sfp[K_TRLIDX].it;
-//	knh_Array_t *a = new_Array(ctx, knh_class_p1(it->h.cid), 0);
-//	while(it->fnext_1(ctx, sfp, 1)) {
-//		knh_stack_boxing(ctx, sfp + 1);
-//		knh_Array_add_(ctx, a, sfp[1].o);
-//	}
-//	RETURN_(a);
+	RETURN_(knh_Iterator_toArray(ctx, sfp[0].it));
 }
-
-/* ------------------------------------------------------------------------ */
-/* [Range] */
-
-//static ITRNEXT knh_Range_inext(CTX ctx, knh_sfp_t *sfp, long rtnidx)
-//{
-//	knh_Iterator_t *itr = sfp[0].it;
-//	knh_Range_t *rng = (knh_Range_t*)DP(itr)->source;
-//	knh_int_t pos = DP(itr)->pos;
-//	if(pos < N_toint((rng)->end)) {
-//		DP(itr)->pos = pos+1;
-//		ITRNEXTi_(pos);
-//	}
-//	ITREND_();
-//}
-//
-//static ITRNEXT knh_Range_inextInclusive(CTX ctx, knh_sfp_t *sfp, long rtnidx)
-//{
-//	knh_Iterator_t *itr = sfp[0].it;
-//	knh_Range_t *rng = (knh_Range_t*)DP(itr)->source;
-//	knh_int_t pos = DP(itr)->pos;
-//	if(pos <= N_toint((rng)->end)) {
-//		DP(itr)->pos = pos+1;
-//		ITRNEXTi_(pos);
-//	}
-//	ITREND_();
-//}
-//
-//static ITRNEXT knh_Range_fnext(CTX ctx, knh_sfp_t *sfp, long rtnidx)
-//{
-//	knh_Iterator_t *itr = sfp[0].it;
-//	knh_Range_t *rng = (knh_Range_t*)DP(itr)->source;
-//	knh_int_t pos = DP(itr)->pos;
-//	if(pos < N_toint((rng)->end)) {
-//		DP(itr)->pos = pos+1;
-//		ITRNEXTf_((knh_float_t)pos);
-//	}
-//	ITREND_();
-//}
-//
-//static ITRNEXT knh_Range_fnextInclusive(CTX ctx, knh_sfp_t *sfp, long rtnidx)
-//{
-//	knh_Iterator_t *itr = sfp[0].it;
-//	knh_Range_t *rng = (knh_Range_t*)DP(itr)->source;
-//	knh_int_t pos = DP(itr)->pos;
-//	if(pos <= N_toint((rng)->end)) {
-//		DP(itr)->pos = pos+1;
-//		ITRNEXTf_((knh_float_t)pos);
-//	}
-//	ITREND_();
-//}
-//
-//static knh_Iterator_t *new_RangeIterator(CTX ctx, knh_Range_t *rng)
-//{
-//	knh_class_t p1 = O_p1(rng);
-//	if(ClassTBL(p1)->bcid == CLASS_Int) {
-//		knh_Iterator_t *itr = new_Iterator(ctx, p1, UPCAST(rng), Range_isInclusive(rng) ? knh_Range_inextInclusive : knh_Range_inext);
-//		DP(itr)->pos = N_toint(rng->start);
-//		return itr;
-//	}
-//	else if(ClassTBL(p1)->bcid == CLASS_Float) {
-//		knh_Iterator_t *itr = new_Iterator(ctx, p1, UPCAST(rng), Range_isInclusive(rng) ? knh_Range_fnextInclusive : knh_Range_fnext);
-//		knh_float_t s = N_tofloat((rng)->start);
-//		DP(itr)->pos = (knh_int_t)s;
-//		if((knh_float_t)DP(itr)->pos < s) DP(itr)->pos += 1;
-//		return itr;
-//	}
-//	else {
-//		knh_Array_t *a = new_Array(ctx, p1, 2);
-//		knh_Array_add(ctx, a, (rng)->start);
-//		if(Range_isInclusive(rng)) {
-//			knh_Array_add(ctx, a, (rng)->end);
-//		}
-//		return new_ArrayIterator(ctx, a);
-//	}
-//}
-//
-
-/* ------------------------------------------------------------------------ */
-/* [ArrayIterator] */
-
-static ITRNEXT knh_Array_nextO(CTX ctx, knh_sfp_t *sfp, long rtnidx)
-{
-	DBG_ASSERT(IS_bIterator(sfp[0].it));
-	knh_Array_t *a = (knh_Array_t*)DP(sfp[0].it)->source;
-	size_t pos = (size_t)(DP(sfp[0].it)->pos);
-	if(pos < a->size) {
-		DP(sfp[0].it)->pos = pos+1;
-		ITRNEXT_(a->list[pos]);
-	}
-	ITREND_();
-}
-
-static ITRNEXT knh_Array_nextN(CTX ctx, knh_sfp_t *sfp, long rtnidx)
-{
-	DBG_ASSERT(IS_bIterator(sfp[0].it));
-	knh_Array_t *a = (knh_Array_t*)DP(sfp[0].it)->source;
-	size_t pos = (size_t)(DP(sfp[0].it)->pos);
-	if(pos < a->size) {
-		DP(sfp[0].it)->pos = pos+1;
-		ITRNEXTd_(a->nlist[pos]);
-	}
-	ITREND_();
-}
-
-/* ------------------------------------------------------------------------ */
-
-static knh_Iterator_t* new_ArrayIterator(CTX ctx, knh_Array_t *a)
-{
-	knh_class_t cid = O_p1(a);
-	knh_Fitrnext fnext = Array_isNDATA(a) ? knh_Array_nextN : knh_Array_nextO;
-	return new_Iterator(ctx, cid, UPCAST(a), fnext);
-}
-
-
-///* ------------------------------------------------------------------------ */
-////## @General mapper Range Iterator;
-////## method T1.. Range.opITR();
-//
-//static TCAST Range_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	RETURN_(new_RangeIterator(ctx, sfp[K_SELFIDX].range));
-//}
 
 /* ------------------------------------------------------------------------ */
 /* [Array] */
@@ -814,7 +735,7 @@ static knh_Iterator_t* new_ArrayIterator(CTX ctx, knh_Array_t *a)
 
 static TCAST Array_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_(new_ArrayIterator(ctx, sfp[K_SELFIDX].a));
+	RETURN_(new_ArrayIterator(ctx, sfp[0].a));
 }
 
 /* ------------------------------------------------------------------------ */

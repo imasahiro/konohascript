@@ -1076,14 +1076,14 @@ static TCAST String_Bytes(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static ITRNEXT String_nextChar(CTX ctx, knh_sfp_t *sfp, long rtnidx)
 {
-	knh_Iterator_t *itr = sfp[0].it;
+	knh_Iterator_t *itr = ITR(sfp);
 	knh_String_t *s = (knh_String_t*)DP(itr)->source;
 	knh_bytes_t base = S_tobytes(s);
-	size_t pos = (size_t)DP(itr)->pos;
+	size_t pos = (size_t)DP(itr)->mitr.index;
 	if(pos < knh_bytes_mlen(base)) {
-		DP(itr)->pos = pos+1;
 		knh_bytes_t sub = knh_bytes_mofflen(base, pos, 1);
 		s = new_String_(ctx, CLASS_String, sub, s);
+		DP(itr)->mitr.index = pos + 1;
 		ITRNEXT_(s);
 	}
 	ITREND_();
