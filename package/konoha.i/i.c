@@ -88,7 +88,7 @@ static char *MNOP__(knh_methodn_t mn)
 	case MN_opNOT: return "!x";
 	case MN_opOF: return "x instanceof T";
 
-	case MN_opHAS:  return "y in x";
+	case MN_opHAS:  return "y in? x";
 	case MN_opIS:  return "x is y";
 //	case MN_opAs:  return "x as y";
 //	case MN_opInto:  return "x into y";
@@ -101,7 +101,7 @@ static char *MNOP__(knh_methodn_t mn)
 	case MN_opGTE:  return "x >= y";
 
 	case MN_opLSFT:  return "x << y";
-	case MN_opSEND:  return "x << y";
+	case MN_opSEND:  return "x <<< y";
 	case MN_opRSFT:  return "x >> y";
 
 	case MN_opMOD:  return "x mod y";
