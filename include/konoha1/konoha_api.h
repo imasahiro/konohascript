@@ -480,7 +480,7 @@ void knh_DictSet_append(CTX ctx, knh_DictSet_t *m, knh_String_t *key, knh_uintpt
 void knh_DictSet_sort(CTX ctx, knh_DictSet_t *m);
 void knh_loadScriptDefaultMapDSPI(CTX ctx, knh_NameSpace_t *ns);
 const knh_MapDSPI_t *knh_NameSpace_getMapDSPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path);
-const knh_MapDSPI_t *knh_NameSpace_getMapDSPIfromCID(CTX ctx, knh_NameSpace_t *ns, knh_class_t p1, knh_class_t p2);
+const knh_MapDSPI_t *knh_getDefaultMapDSPI(CTX ctx, knh_class_t p1, knh_class_t p2);
 void *knh_malloc(CTX ctx, size_t size);
 void knh_free(CTX ctx, void *block, size_t size);
 void *knh_valloc(CTX ctx, size_t size);

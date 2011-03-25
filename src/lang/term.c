@@ -2306,13 +2306,13 @@ static void _EXPRCALL(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			}
 			if(ITR_isT(itr, isTYPE) && ITR_isN(itr, +1, TT_CODE)) {
 				knh_Token_t *tkC = ITR_nextTK(itr);
-				TT_(tkCUR) = TT_MN; /* new [10] */
+				TT_(tkCUR) = TT_MN; /* new C {} */
 				(tkCUR)->mn = MN_newMAP;
 				_DICT(ctx, stmt, tkC, ITR_nextTK(itr));
 				break;
 			}
 			if(ITR_is(itr, TT_CODE)) {
-				(tkCUR)->mn = MN_newMAP;
+				(tkCUR)->mn = MN_newMAP;  /* new {} */
 				_DICT(ctx, stmt, new_Token(ctx, TT_ASIS), ITR_nextTK(itr));
 				break;
 			}

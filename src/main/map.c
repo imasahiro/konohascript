@@ -823,24 +823,15 @@ const knh_MapDSPI_t *knh_NameSpace_getMapDSPI(CTX ctx, knh_NameSpace_t *ns, knh_
 	}
 }
 
-const knh_MapDSPI_t *knh_NameSpace_getMapDSPIfromCID(CTX ctx, knh_NameSpace_t *ns, knh_class_t p1, knh_class_t p2)
+const knh_MapDSPI_t *knh_getDefaultMapDSPI(CTX ctx, knh_class_t p1, knh_class_t p2)
 {
 	if(IS_Tstr(p1)) {
 		if(IS_Tunbox(p2)) {
-			return &HMAP_StringNDATA;
-		}
-		return &HMAP_StringObject;
-	}
-	if(IS_Tstr(p1)) {
-		if(IS_Tint(p2) || p2 == TYPE_Boolean) {
-			return &DMAP_StringNDATA;
-		}
-		if(IS_Tfloat(p1)) {
 			return &DMAP_StringNDATA;
 		}
 		return &DMAP_StringObject;
 	}
-	return &DMAP_StringObject;
+	return NULL;
 }
 
 #ifdef __cplusplus

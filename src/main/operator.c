@@ -302,22 +302,16 @@ static METHOD Map_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static METHOD Map_newMAP(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Map_t *o = (knh_Map_t*)sfp[0].o;
-	knh_class_t cid = O_cid(o);
+	knh_Map_t *m = sfp[0].m;
 	knh_sfp_t *v = sfp + 1;
 	size_t i, ac = knh_stack_argc(ctx, v);
-	knh_class_t p1 = knh_class_p1(cid);
-	knh_class_t p2 = knh_class_p2(cid);
-	const knh_MapDSPI_t *dspi = knh_NameSpace_getMapDSPIfromCID(ctx, NULL, p1, p2);
-	o->dspi = dspi->config(ctx, p1, p2);
-	o->map  = dspi->init(ctx, 0, dspi->name, NULL);
+	m->dspi = knh_getDefaultMapDSPI(ctx, O_p1(m), O_p2(m));
+	KNH_ASSERT(m->dspi != NULL); // if NULL, it is unsupported
+	m->map  = m->dspi->init(ctx, 0, NULL, NULL);
 	for(i = 0; i < ac; i+=2) {
-		if(IS_bString(v[i].s)) {
-			//knh_stack_boxing(ctx, v + i + 1);
-			o->dspi->set(ctx, o->map, v+i);
-		}
+		m->dspi->set(ctx, m->map, v + i);
 	}
-	RETURN_(o);
+	RETURN_(m);
 }
 
 /* ------------------------------------------------------------------------ */

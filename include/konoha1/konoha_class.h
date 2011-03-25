@@ -81,6 +81,7 @@ typedef struct knh_ObjectField_t {
 #define O_bcid(o)  (((o)->h.cTBL)->bcid)
 #define O_cTBL(o)     ((o)->h.cTBL)
 #define O_p1(o)    (((o)->h.cTBL)->p1)
+#define O_p2(o)    (((o)->h.cTBL)->p2)
 #define IS_ObjectField(o)  (((o)->h.cTBL)->bcid == CLASS_Object)
 
 #define new_H(C)         (knh_##C##_t*)new_hObject_(ctx, ClassTBL(CLASS_##C))

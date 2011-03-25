@@ -41,12 +41,11 @@ typedef const struct _knh_ExportsAPI_t {
 	// memory
 	void* (*malloc)(CTX, size_t);
 	void  (*free)(CTX, void *, size_t);
-	// stack
+	// stack operation
 	void  (*setsfp)(CTX, knh_sfp_t *, void *);
 	void  (*closeIterator)(CTX, knh_Iterator_t *);
 	// evidence
 	void  (*trace)(CTX, knh_sfp_t *, int, const char*, const char*, int, const char*, ...);
-//	void  (*perror)(CTX, knh_sfp_t *sfp, const char*, const char*);
 	void  (*dbg_p)(const char*, const char*, int, const char*, ...);
 	void  (*todo_p)(const char*, const char*, int, const char*, ...);
 } knh_ExportsAPI_t;
@@ -175,6 +174,8 @@ typedef struct knh_RegexSPI_t {
 	int (*regexec)(CTX, knh_regex_t *, const char *, size_t, knh_regmatch_t*, int);
 	size_t (*regerror)(int, knh_regex_t *, char *, size_t);
 	void (*regfree)(CTX, knh_regex_t *);
+	// this must be defined by uh for named grouping
+	int (*regexec2)(CTX, knh_regex_t *, const char *, ...);
 } knh_RegexSPI_t;
 
 /* ------------------------------------------------------------------------ */
@@ -250,14 +251,14 @@ typedef const knh_ClassDef_t* (*knh_Fclass)(CTX);
 /* ------------------------------------------------------------------------ */
 /* new version */
 
-#define Boolean_to(T, a)         ((T)a.bvalue)
-#define Int_to(T, a)             ((T)a.ivalue)
-#define Float_to(T, a)           ((T)a.fvalue)
-#define String_to(T, a)          ((T)S_tochar(a.s))
-#define StringNull_to(T, a, def) ((T)(IS_bString(a.o) ? S_tochar(a.s) : def))
+#define Boolean_to(T, a)           ((T)a.bvalue)
+#define Int_to(T, a)               ((T)a.ivalue)
+#define Float_to(T, a)             ((T)a.fvalue)
+#define String_to(T, a)            ((T)S_tochar(a.s))
+#define StringNull_to(T, a, def)   ((T)(IS_bString(a.o) ? S_tochar(a.s) : def))
 #define RawPtr_to(T, a)            ((T)((a.p)->ptr))
 #define RawPtrNull_to(T, a, def)   (IS_bRawPtr(a.o) ? ((T)((a.p)->ptr)) : (def))
-#define Class_tocid(a)           ((a.c)->cid)
+#define Class_tocid(a)             ((a.c)->cid)
 
 /* ------------------------------------------------------------------------ */
 
@@ -276,6 +277,7 @@ typedef const knh_ClassDef_t* (*knh_Fclass)(CTX);
 	}\
 
 #else
+
 #define RETURN_(vv) {\
 		KNH_SETv(ctx, sfp[rix].o, vv);\
 		return; \
