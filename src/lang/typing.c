@@ -1902,7 +1902,7 @@ static knh_Token_t* CALLPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt
 		knh_type_t param_reqt = knh_ParamArray_getptype(pa, i);
 		param_reqt = knh_type_tocid(ctx, param_reqt, mtd_cid);
 		for(i = pa->psize; i + 2 < size; i++) {
-			TYPING(ctx, stmt, i+1, param_reqt, 0);
+			TYPING(ctx, stmt, i+2, param_reqt, 0);
 		}
 	}
 	else if(i + 2 < size) {
@@ -2098,19 +2098,6 @@ static knh_Token_t* this_typing(CTX ctx, knh_Stmt_t *stmt, knh_methodn_t mn)
 	Token_toCALLMTD(ctx, tkMTD, MN_new, mtd);
 	return TM(stmt);
 }
-
-//static knh_Token_t* knh_TRACE_typing(CTX ctx, knh_Stmt_t *stmt)
-//{
-//	/* trace(funcname, 1) */
-//	if(Tn_typing(ctx, stmt, 2, TYPE_Method, TCHECK_)) {
-//
-//	}
-//	if(Tn_typing(ctx, stmt, 3, TYPE_Int, TCHECK_)) {
-//
-//	}
-//	knh_Gamma_perror(ctx, KC_ERR, _("syntax error: %L"), tkNN(stmt, 0));
-//	return NULL;
-//}
 
 /* ------------------------------------------------------------------------ */
 /* [built-in function] */
@@ -2462,7 +2449,7 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 	}
 	if(mn == MN_newLIST) {  /* [1, 2, .. ] */
 		size_t i;
-		knh_class_t p1 = knh_class_p1(CLASS_t(reqt));
+		knh_class_t p1 = knh_class_p1(mtd_cid);
 		if(p1 != TYPE_void) {
 			for(i = 2; i < DP(stmt)->size; i++) {
 				TYPING(ctx, stmt, i, p1, 0);

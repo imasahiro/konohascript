@@ -1221,8 +1221,6 @@ static METHOD OutputStream_setCharaset(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-
-/* ------------------------------------------------------------------------ */
 /* [format] */
 
 static const char *newfmt(char *buf, size_t bufsiz, knh_bytes_t fmt, const char *t)
@@ -1235,7 +1233,7 @@ static const char *newfmt(char *buf, size_t bufsiz, knh_bytes_t fmt, const char 
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const @FastCall method String Int.format(String fmt);
+//## @Hidden @Const @FastCall method String Int.format(String fmt);
 
 static METHOD Int_format(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -1258,7 +1256,7 @@ static METHOD Int_format(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const @FastCall method String Float.format(String fmt);
+//## @Hidden @Const @FastCall method String Float.format(String fmt);
 
 static METHOD Float_format(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -1281,7 +1279,7 @@ static METHOD Float_format(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const @FastCall method String String.format(String fmt);
+//## @Hidden @Const @FastCall method String String.format(String fmt);
 
 static METHOD String_format(CTX ctx, knh_sfp_t *sfp _RIX)
 {
