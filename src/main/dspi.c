@@ -767,7 +767,7 @@ static const knh_ConvDSPI_t TO_upper = {
 
 void knh_loadScriptDriver(CTX ctx, knh_NameSpace_t *ns)
 {
-	const knh_PackageLoaderAPI_t *api = knh_getPackageAPI();
+	const knh_PackageLoaderAPI_t *api = knh_getPackageLoaderAPI();
 	api->addPathDSPI(ctx, ns, NULL, &PATH_NOPATH);
 	api->addPathDSPI(ctx, ns, "charset", &PATH_CHARSET);
 	api->addPathDSPI(ctx, ns, "to", &PATH_TOPATH);

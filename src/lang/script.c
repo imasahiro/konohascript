@@ -176,9 +176,9 @@ static knh_bool_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, knh_A
 		const char *funcname = knh_bytes_next(include_name, ':').text;
 		knh_Fpkgload pkgload = (knh_Fpkgload)knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, funcname);
 		if(pkgload != NULL) {
-			pkgload(ctx, knh_getPackageAPI(), NULL);
+			pkgload(ctx, knh_getPackageLoaderAPI(), DP(ctx->gma)->ns);
 		}
-		else {/*239ff5a9*/
+		else {/*pin: 239ff5a9*/
 			knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "loader function", funcname));
 			isCONTINUE = 0;
 		}

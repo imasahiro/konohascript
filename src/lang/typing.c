@@ -2486,22 +2486,22 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		goto L_LOOKUPMETHOD;
 	}
 
-	if(mn == MN_newMAP) {  /* {hoge: 1, hogo: 2} */
-		size_t i;
-		knh_type_t p1 = knh_class_p1(mtd_cid);
-		for(i = 2; i < DP(stmt)->size; i+= 2) {
-			TYPING(ctx, stmt, i, CLASS_String, _NOTCAST);
-			TYPING(ctx, stmt, i+1, p1, 0);
-		}
-		if(p1 == TYPE_dynamic) {
-			p1 = NEWLIST_bcid(ctx, stmt, 1/*isDictMap*/);
-			if(p1 != TYPE_dynamic) {
-				mtd_cid = knh_class_P1(ctx, knh_class_bcid(mtd_cid), p1);
-			}
-		}
-		knh_Token_toTYPED(ctx, tkC, TT_CID, CLASS_Class, mtd_cid);
-		goto L_LOOKUPMETHOD;
-	}
+//	if(mn == MN_newMAP) {  /* {hoge: 1, hogo: 2} */
+//		size_t i;
+//		knh_type_t p1 = knh_class_p1(mtd_cid);
+//		for(i = 2; i < DP(stmt)->size; i+= 2) {
+//			TYPING(ctx, stmt, i, CLASS_String, _NOTCAST);
+//			TYPING(ctx, stmt, i+1, p1, 0);
+//		}
+//		if(p1 == TYPE_dynamic) {
+//			p1 = NEWLIST_bcid(ctx, stmt, 1/*isDictMap*/);
+//			if(p1 != TYPE_dynamic) {
+//				mtd_cid = knh_class_P1(ctx, knh_class_bcid(mtd_cid), p1);
+//			}
+//		}
+//		knh_Token_toTYPED(ctx, tkC, TT_CID, CLASS_Class, mtd_cid);
+//		goto L_LOOKUPMETHOD;
+//	}
 
 	if(mn == MN_newTUPLE) {  /* (1, 2) */
 		size_t i;

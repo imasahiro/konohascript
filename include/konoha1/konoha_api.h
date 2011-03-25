@@ -463,7 +463,7 @@ void THROW_OutOfRange(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t max);
 void THROW_NoSuchMethod(CTX ctx, knh_sfp_t *sfp, knh_class_t cid, knh_methodn_t mn);
 void THROW_ParamTypeError(CTX ctx, knh_sfp_t *sfp, size_t n, knh_methodn_t mn, knh_class_t reqt, knh_class_t cid);
 const knh_ExportsAPI_t *knh_getExportsAPI(void);
-const knh_PackageLoaderAPI_t* knh_getPackageAPI(void);
+const knh_PackageLoaderAPI_t* knh_getPackageLoaderAPI(void);
 knh_Fmethod knh_makeFmethod(CTX ctx, void *func, int argc, knh_ffiparam_t *argv);
 void dmap_sort_(knh_dmap_t *dmap, int isforced);
 int knh_bytes_strcasecmp2(knh_bytes_t t1, knh_bytes_t t2);

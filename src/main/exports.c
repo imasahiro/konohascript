@@ -337,7 +337,7 @@ static void knh_addConvDSPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, co
 }
 
 
-const knh_PackageLoaderAPI_t* knh_getPackageAPI(void)
+const knh_PackageLoaderAPI_t* knh_getPackageLoaderAPI(void)
 {
 	static knh_PackageLoaderAPI_t exports = {
 		knh_loadScriptData,

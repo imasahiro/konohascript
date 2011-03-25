@@ -210,7 +210,7 @@ static void initServiceSPI(knh_ServiceSPI_t *spi);
 static knh_context_t* new_RootContext(void)
 {
 	knh_context_t *ctx = (knh_context_t*)new_hcontext(NULL);
-	const knh_PackageLoaderAPI_t *kapi = knh_getPackageAPI();
+	const knh_PackageLoaderAPI_t *kapi = knh_getPackageLoaderAPI();
 	knh_share_t *share = (knh_share_t*)malloc(sizeof(knh_share_t) + sizeof(knh_stat_t) + sizeof(knh_ServiceSPI_t));
 	ctx->share = share;
 	knh_bzero(share, sizeof(knh_share_t) + sizeof(knh_stat_t) + sizeof(knh_ServiceSPI_t));
