@@ -387,7 +387,7 @@ static METHOD Array_set3(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## method T1 Array.set4(Int x, Int y, Int z, T1 v);
+//## method T1 Array.set4(Int x, Int y, Int z, Int, w, T1 v);
 
 static METHOD Array_set4(CTX ctx, knh_sfp_t *sfp _RIX)
 {
