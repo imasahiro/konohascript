@@ -122,6 +122,7 @@ try       -          0
 catch     -          0
 throw     -          0
 print     -          0
+assure    -          0
 assert    -          0
 register  -          0
 go        -          0

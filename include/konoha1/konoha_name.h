@@ -3,7 +3,7 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #define K_REVISION                      73
-#define K_BUILDID                       1078
+#define K_BUILDID                       1079
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -369,12 +369,12 @@
 
 /* ------------------------------------------------------------------------ */
 /* Assurance */
-#define CLASS_Assurance              ((knh_class_t)40)
-#define IS_Assurance(o)              (O_cid(o) == CLASS_Assurance)
-#define IS_bAssurance(o)             (O_bcid(o) == CLASS_Assurance)
-#define TYPE_Assurance               CLASS_Assurance
-#define CFLAG_Assurance              ((knh_flag_t)0)
-#define FLAG_Assurance               KNH_MAGICFLAG(CFLAG_Assurance)
+#define CLASS_Assurance         ((knh_class_t)40)
+#define IS_Assurance(o)         (O_cid(o) == CLASS_Assurance)
+#define IS_bAssurance(o)        (O_bcid(o) == CLASS_Assurance)
+#define TYPE_Assurance          CLASS_Assurance
+#define CFLAG_Assurance         ((knh_flag_t)0)
+#define FLAG_Assurance          KNH_MAGICFLAG(CFLAG_Assurance)
 
 /* ------------------------------------------------------------------------ */
 /* Token */

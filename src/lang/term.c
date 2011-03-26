@@ -2374,13 +2374,20 @@ typedef void (*knh_Fstmt)(CTX, knh_Stmt_t *stmt, tkitr_t *itr);
 static void _PEXPR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 {
 	if(ITR_is(itr, TT_PARENTHESIS)) {
-		knh_term_t stt = STT_(stmt); (void)stt;
 		tkitr_t pbuf, *pitr = ITR_new(ITR_nextTK(itr), &pbuf);
 		_EXPR(ctx, stmt, pitr);
 	}
 	else {
 		_ERROR(ctx, stmt, itr, "()");
 	}
+}
+
+static void _ONEEXPR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
+{
+	int e = itr->e;
+	itr->e = itr->c + 1;
+	_EXPR(ctx, stmt, itr);
+	itr->e = e;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -2755,11 +2762,6 @@ static void _CATCH(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	}
 }
 
-static void _DOC(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
-{
-	knh_Stmt_add(ctx, stmt, ITR_nextTK(itr));
-}
-
 static void _PRAGMA(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 {
 	while(ITR_hasNext(itr)) {
@@ -3023,8 +3025,8 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 		CASE_(FOR, +1, _PSTMT3, _STMT1);
 		CASE_(FOREACH, +1, _PEACH, _STMT1, _ASIS);  /* it */
 		CASE_(TRY, +1, _STMT1, _CATCH, _ASIS);  /* it */
+		CASE_(ASSURE, +1, _ONEEXPR, _STMT1, _ASIS/*it*/);
 		CASE_L(ASSERT, +1, 1/*;*/, _EXPR);
-		CASE_L(DOCU, +0, 0/*;*/, _DOC, _ASIS/*it*/, _EXPR);
 		case TT_CODE:
 			Token_toBRACE(ctx, ITR_tk(itr), 1/*isEXPANDING*/);
 		case TT_BRACE:

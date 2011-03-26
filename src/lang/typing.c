@@ -1482,27 +1482,6 @@ static knh_Token_t *DECLSCRIPT_typing(CTX ctx, knh_Stmt_t *stmt)
 	}
 }
 
-static knh_Token_t *DOCU_typing(CTX ctx, knh_Stmt_t *stmt)
-{
-	knh_Stmt_t *stmtCALL;
-	knh_Token_t *tkC = tkNN(stmt, 0);
-//	knh_Token_t *tkN = new_TokenCONST(ctx, (tkC)->text);
-	knh_Token_t *tkCALL = tkNN(stmt, 1); // IT
-	knh_class_t cid = knh_Token_cid(ctx, tkC, CLASS_Assurance);
-	knh_Method_t* mtd = knh_NameSpace_getMethodNULL(ctx, cid, MN_new);
-	DBG_ASSERT(mtd != NULL);
-	knh_Token_toTYPED(ctx, tkC, TT_CID, CLASS_Class, CLASS_Assurance);
-	Token_toCALLMTD(ctx, tkCALL, MN_new, mtd);
-	stmtCALL = new_Stmt2(ctx, STT_NEW, tkCALL, tkC, tmNN(stmt, 2), NULL);
-	KNH_SETv(ctx, tmNN(stmt, 2), stmtCALL);
-	TYPING(ctx, stmt, 2, cid, 0);
-	{
-		knh_Token_t *tkIDX = Gamma_addLOCAL(ctx, _FCHKOUT, cid, FN_DOCUAssurance, 1);
-		KNH_SETv(ctx, tkNN(stmt, 1), tkIDX);
-	}
-	return Stmt_typed(ctx, stmt, TYPE_void);
-}
-
 #define MN_isNEW(mn)  MN_isNEW_(ctx, mn)
 
 static int MN_isNEW_(CTX ctx, knh_methodn_t mn)
@@ -3417,6 +3396,25 @@ static knh_Token_t* PRINT_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	return Stmt_typed(ctx, stmt, TYPE_void);
 }
 
+static knh_Token_t *ASSURE_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
+{
+	BEGIN_BLOCK(esp);
+	TYPING(ctx, stmt, 0, TYPE_String, 0);
+	{
+		knh_Token_t *tkC = new_TokenTYPED(ctx, TT_CID, CLASS_Class, CLASS_Assurance);
+		knh_Token_t *tkCALL = new_(Token);
+		knh_Method_t* mtd = knh_NameSpace_getMethodNULL(ctx, CLASS_Assurance, MN_new);
+		Token_toCALLMTD(ctx, tkCALL, MN_new, mtd);
+		knh_Stmt_t *stmtCALL = new_Stmt2(ctx, STT_NEW, tkCALL, tkC, tmNN(stmt, 0), NULL);
+		KNH_SETv(ctx, tmNN(stmt, 0), stmtCALL);
+		TYPING(ctx, stmt, 0, CLASS_Assurance, 0); // To make constant
+	}
+	TYPING_STMTs(ctx, stmt, 1/*{}*/, TYPE_void);
+	Tn_it(ctx, stmt, 2/*VAL*/, Tn_type(stmt, 0));
+	END_BLOCK(esp);
+	return Stmt_typed(ctx, stmt, TYPE_void);
+}
+
 static knh_Token_t* ASSERT_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
 	TYPING(ctx, stmt, 0, TYPE_Boolean, _NOTCAST);
@@ -3955,7 +3953,6 @@ static knh_Token_t* FORMAT_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		break;\
 	}\
 
-
 static int Gamma_initClassTBLField(CTX ctx, knh_class_t cid)
 {
 	const knh_ClassTBL_t *t = ClassTBL(cid);
@@ -4365,8 +4362,8 @@ static knh_Token_t *Stmt_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 //			CASE_STMT(SEND, stmt, reqt);
 			CASE_STMT(PRINT, stmt, reqt);
 			CASE_STMT(REGISTER, stmt);
+			CASE_STMT(ASSURE, stmt, reqt);
 			CASE_STMT(ASSERT, stmt, reqt);
-			CASE_STMT(DOCU, stmt);
 			case STT_ERR:
 			case STT_BREAK:
 			case STT_CONTINUE:

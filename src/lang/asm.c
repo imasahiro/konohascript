@@ -766,20 +766,18 @@ static void ASM_BRANCH_(CTX ctx, knh_BasicBlock_t *jump, knh_opline_t *op, size_
 	DP(ctx->gma)->bbNC = newbb;
 }
 
-static void CHKOUT_asm(CTX ctx, knh_Stmt_t *stmt);
-
 static void ASM_RET(CTX ctx, knh_Stmt_t *stmt)
 {
-	while(DP(stmt)->nextNULL != NULL) {
-		stmt = DP(stmt)->nextNULL;
-		if(STT_(stmt) == STT_CHKOUT) {
-			CHKOUT_asm(ctx, stmt);
-		}
-	}
-	{
+//	while(DP(stmt)->nextNULL != NULL) {
+//		stmt = DP(stmt)->nextNULL;
+//		if(STT_(stmt) == STT_CHKOUT) {
+//			CHKOUT_asm(ctx, stmt);
+//		}
+//	}
+//	{
 		knh_BasicBlock_t *bbEND = GammaLabel(ctx,  2);
 		ASM_JMP(ctx, bbEND);
-	}
+//	}
 }
 
 /* ------------------------------------------------------------------------ */
@@ -2017,24 +2015,7 @@ static void LET_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	}
 }
 
-static void DOCU_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
-{
-	knh_Token_t *tkIDX = tkNN(stmt, 1);
-	DBG_P("sfpidx = %d, tkIDX->index=%d", sfpidx, (tkIDX)->index);
-	LET_asm(ctx, stmt, reqt, sfpidx);
-	ASM(CHKIN, OC_(Token_index(tkIDX)), ClassTBL(CLASS_t(tkIDX->type))->ospi->checkin);
-}
-
-static void CHKOUT_asm(CTX ctx, knh_Stmt_t *stmt)
-{
-	knh_Token_t *tkIDX = tkNN(stmt, 0);
-	ASM(CHKOUT, OC_(Token_index(tkIDX)), ClassTBL(CLASS_t(tkIDX->type))->ospi->checkout);
-	knh_Stmt_done(ctx, stmt);
-}
-
-static METHOD Fmethod_dynamic(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-}
+static METHOD Fmethod_empty(CTX ctx, knh_sfp_t *sfp _RIX) {}
 
 static knh_Method_t* Gamma_getFmt(CTX ctx, knh_class_t cid, knh_methodn_t mn0)
 {
@@ -2042,19 +2023,8 @@ static knh_Method_t* Gamma_getFmt(CTX ctx, knh_class_t cid, knh_methodn_t mn0)
 	knh_NameSpace_t *ns = KNH_GMA_NS;
 	knh_Method_t *mtd = knh_NameSpace_getFmtNULL(ctx, ns, cid, mn);
 	if(mtd == NULL) {
-		mtd = knh_NameSpace_getFmtNULL(ctx, ns, cid, mn);
-	}
-	if(mtd == NULL && mn == MN__dump) {
-		mn  = MN__k;
-		mtd = knh_NameSpace_getFmtNULL(ctx, ns, cid, mn);
-	}
-	if(mtd == NULL && mn == MN__k) {
-		mn  = MN__s;
-		mtd = knh_NameSpace_getFmtNULL(ctx, ns, cid, mn);
-	}
-	if(mtd == NULL) {
 		WarningUndefinedFmt(ctx, cid, mn0);
-		mtd = new_Method(ctx, 0, cid, mn0, Fmethod_dynamic);
+		mtd = new_Method(ctx, 0, cid, mn0, Fmethod_empty);
 		KNH_SETv(ctx, DP(mtd)->mp, KNH_TNULL(ParamArray));
 		knh_NameSpace_addFmt(ctx, ns, mtd);
 	}
@@ -2514,6 +2484,16 @@ static void TRY_asm(CTX ctx, knh_Stmt_t *stmt)
 	ASM(THROW, SFP_(((tkIT)->index)-1));
 }
 
+static void ASSURE_asm(CTX ctx, knh_Stmt_t *stmt)
+{
+	int index = Token_index(tkNN(stmt, 2)); // it
+	Tn_asm(ctx, stmt, 0, CLASS_Assurance, index);
+	ASM(CHKIN, OC_(index), ClassTBL(CLASS_Assurance)->ospi->checkin);
+	Tn_asmBLOCK(ctx, stmt, 1, TYPE_void);
+	ASM(CHKOUT, OC_(index), ClassTBL(CLASS_Assurance)->ospi->checkout);
+}
+
+
 static void THROW_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 	int start = 0, espidx = DP(ctx->gma)->espidx;
@@ -2747,9 +2727,8 @@ static void BLOCK_asm(CTX ctx, knh_Stmt_t *stmtH, knh_type_t reqt)
 		CASE_ASM(RETURN);
 		CASE_ASM(YIELD);
 		CASE_ASM(PRINT);
+		CASE_ASM(ASSURE);
 		CASE_ASM(ASSERT);
-		CASE_ASM(DOCU, etype, DP(ctx->gma)->espidx);
-		CASE_ASM(CHKOUT);
 		CASE_ASM(ERR);
 		case STT_DECL: case STT_DONE: break;
 		default:
