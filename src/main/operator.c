@@ -339,23 +339,12 @@ static METHOD Func_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const method Goal Goal.new(String type, String msg);
+//## @Const method Assurance Assurance.new(String msg);
 
-static METHOD Goal_new(CTX ctx, knh_sfp_t *sfp _RIX)
+static METHOD Assurance_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Goal_t *goal = sfp[0].goal;
-	KNH_SETv(ctx, goal->type, sfp[1].s);
-	KNH_SETv(ctx, goal->msg, sfp[2].s);
-	RETURN_(sfp[0].o);
-}
-
-/* ------------------------------------------------------------------------ */
-//## @Const method UnitTest UnitTest.new(String msg);
-
-static METHOD UnitTest_new(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_UnitTest_t *ut = (knh_UnitTest_t*)sfp[0].o;
-	KNH_SETv(ctx, ut->msg, sfp[1].s);
+	knh_Assurance_t *Assurance = sfp[0].Assurance;
+	KNH_SETv(ctx, Assurance->msg, sfp[1].s);
 	RETURN_(sfp[0].o);
 }
 

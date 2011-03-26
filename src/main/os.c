@@ -489,7 +489,7 @@ static knh_bool_t knh_cwb_mkdir(CTX ctx, knh_cwb_t *cwb, char *subpath)
 #elif defined(K_USING_POSIX_)
 	int res = mkdir(pathname, 0777);
 	if(res == -1) {
-		KNH_SYSLOG(ctx, NULL, LOG_WARNING, "mkdir", 0, "pathname='%s'", pathname);
+		KNH_SYSLOG(ctx, NULL, LOG_WARNING, "mkdir", "pathname='%s'", pathname);
 	}
 	return (res != -1);
 #else

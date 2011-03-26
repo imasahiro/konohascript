@@ -1013,23 +1013,14 @@ typedef struct knh_Monitor_t {
 } knh_Monitor_t;
 
 /* ------------------------------------------------------------------------ */
-//## class Goal Object;
+//## class Assurance Object;
 
-typedef struct knh_Goal_t {
+typedef struct knh_Assurance_t {
 	knh_hObject_t h;
-	knh_uintptr_t id;
-	struct knh_String_t *type;
-	struct knh_String_t *msg;
-} knh_Goal_t;
-
-/* ------------------------------------------------------------------------ */
-//## class UnitTest Object;
-
-typedef struct knh_UnitTest_t {
-	knh_hObject_t h;
+	knh_uintptr_t aid;
 	struct knh_String_t *msg;
 	knh_uint64_t stime;
-} knh_UnitTest_t;
+} knh_Assurance_t;
 
 /* ------------------------------------------------------------------------ */
 /* konohac.h */
@@ -1240,7 +1231,7 @@ typedef knh_Method_t* (*klr_Fmethod)(CTX, knh_sfp_t *, int, knh_Method_t*);
 typedef long   (*klr_Finttr)(long u);
 typedef double (*klr_Ffloattr)(double u);
 typedef void (*klr_Ftr)(CTX, knh_sfp_t*, knh_sfpidx_t, const knh_ClassTBL_t *);
-typedef void (*klr_Fcheckin)(CTX, knh_Object_t *);
+typedef void (*klr_Fcheckin)(CTX, knh_sfp_t *, knh_Object_t *);
 typedef void (*klr_Fcheckout)(CTX, knh_Object_t *, int);
 struct klr_P_t;
 typedef void (*klr_Fprint)(CTX, knh_sfp_t*, struct klr_P_t*);

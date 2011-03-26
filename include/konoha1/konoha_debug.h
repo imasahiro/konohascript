@@ -27,7 +27,7 @@
 	ctx->api->trace(ctx, sfp, p, LIBNAME, e, 0, fmt, ## __VA_ARGS__)
 
 #define KNH_THROW(ctx, sfp, p, e, fmt, ...) \
-	ctx->api->trace(ctx, sfp, p, "EXCEPTION", e, 1, fmt, ## __VA_ARGS__)
+	ctx->api->trace(ctx, sfp, p, LIBNAME, e, 1, fmt, ## __VA_ARGS__)
 
 #define KNH_TRACE(ctx, sfp, mon, e, fmt, ...) \
 	mon->trace(ctx, sfp, mon, LIBNAME, e, fmt, ## __VA_ARGS__)

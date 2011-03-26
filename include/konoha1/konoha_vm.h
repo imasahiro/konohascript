@@ -505,7 +505,7 @@ extern "C" {
 
 #define KLR_CHKIN(ctx, on, fcheckin)  {\
 		knh_Object_t *o_ = Ro_(on);\
-		fcheckin(ctx, o_);\
+		fcheckin(ctx, SFP(rbp), o_);\
 		Context_push(ctx, o_);\
 	}\
 

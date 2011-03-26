@@ -1486,41 +1486,18 @@ static knh_Token_t *DOCU_typing(CTX ctx, knh_Stmt_t *stmt)
 {
 	knh_Stmt_t *stmtCALL;
 	knh_Token_t *tkC = tkNN(stmt, 0);
-	knh_Token_t *tkN = new_TokenCONST(ctx, (tkC)->text);
+//	knh_Token_t *tkN = new_TokenCONST(ctx, (tkC)->text);
 	knh_Token_t *tkCALL = tkNN(stmt, 1); // IT
-	knh_class_t cid = knh_Token_cid(ctx, tkC, CLASS_Goal);
+	knh_class_t cid = knh_Token_cid(ctx, tkC, CLASS_Assurance);
 	knh_Method_t* mtd = knh_NameSpace_getMethodNULL(ctx, cid, MN_new);
-	if(mtd != NULL) {
-		knh_ParamArray_t *pa = DP(mtd)->mp;
-		if(!(pa->psize == 1 && knh_ParamArray_get(pa, 0)->type == CLASS_String)) {
-			DBG_P("CONSTRUCTOR MISMATCH: %s (psize=%d)", CLASS__(cid), pa->psize);
-			mtd = NULL;
-		}
-	}
-	if(mtd == NULL) {
-		cid = CLASS_Goal;
-		knh_Token_toTYPED(ctx, tkC, TT_CID, CLASS_Class, cid);
-		mtd = knh_NameSpace_getMethodNULL(ctx, cid, MN_new);
-	}
+	DBG_ASSERT(mtd != NULL);
+	knh_Token_toTYPED(ctx, tkC, TT_CID, CLASS_Class, CLASS_Assurance);
 	Token_toCALLMTD(ctx, tkCALL, MN_new, mtd);
-	DBG_ASSERT(IS_String((tkN)->data));
-	if(cid == CLASS_Goal) {
-		stmtCALL = new_Stmt2(ctx, STT_NEW, tkCALL, tkC, tkN, tmNN(stmt, 2), NULL);
-	}
-	else {
-		stmtCALL = new_Stmt2(ctx, STT_NEW, tkCALL, tkC, tmNN(stmt, 2), NULL);
-		KNH_SETv(ctx, tmNN(stmt, 2), tkN);  // TO_AVOID GC
-	}
+	stmtCALL = new_Stmt2(ctx, STT_NEW, tkCALL, tkC, tmNN(stmt, 2), NULL);
 	KNH_SETv(ctx, tmNN(stmt, 2), stmtCALL);
 	TYPING(ctx, stmt, 2, cid, 0);
 	{
-		//	knh_index_t idx;
-		//	knh_gmafields_t *gf = DP(gma)->gf;
-		//	for(idx = DP(gma)->gsize - 1; idx >= 0; idx--) {
-		//		if(gf[idx].fn == FN_DOCUGOAL) {
-		//		}
-		//	}
-		knh_Token_t *tkIDX = Gamma_addLOCAL(ctx, _FCHKOUT, cid, FN_DOCUGOAL, 1);
+		knh_Token_t *tkIDX = Gamma_addLOCAL(ctx, _FCHKOUT, cid, FN_DOCUAssurance, 1);
 		KNH_SETv(ctx, tkNN(stmt, 1), tkIDX);
 	}
 	return Stmt_typed(ctx, stmt, TYPE_void);

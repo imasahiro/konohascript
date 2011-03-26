@@ -152,7 +152,7 @@ JMP        _JIT              addr:addr
 JMP_       _JIT              addr:addr
 #ONCE                        addr:addr
 JMPF       0                 addr:addr a:rn
-#DYJMP      0                 addr:addr a:sfpidx chk:f
+#DYJMP      0                addr:addr a:sfpidx chk:f
 NEXT       _DEF              addr:addr  a:r b:sfpidx rix:i
 
 BGETIDX    _DEF|_JIT         c:rn a:ro n:rn 

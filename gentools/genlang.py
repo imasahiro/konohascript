@@ -29,13 +29,14 @@ try       _BLOCK _CATCH
 catch     _DECL  _BLOCK
 throw     _EXPR
 print     _MEXPR
+assure    _EXPR  _BLOCK
 assert    _EXPR
 register  _MEXPR
 function  _PARAM _BLOCK
 
 METHOD    _TYPE  _CNAME _NAME _PARAM _BLOCK
 DECL      _TYPE  _NAME  _EXPR
-DOCU      _NOCHECK
+#DOCU      _NOCHECK
 CHKOUT    _NOCHECK
 LETM      _NOCHECK
 SWAP      _NOCHECK
@@ -87,6 +88,7 @@ try       0     _STMT _CATCH
 catch     0     _PEXPR  _STMT
 throw     0     _EXPR
 print     0     _MEXPR
+assure    0     _EXPR _STMT
 assert    0     _EXPR
 register  0     _MEXPR
 go        0     _STMT

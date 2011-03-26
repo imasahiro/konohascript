@@ -334,7 +334,7 @@ typedef knh_ushort_t          knh_methodn_t;
 
 #define FN_NONAME    ((knh_fieldn_t)-1)
 #define FN_NEWID     ((knh_fieldn_t)-2)
-#define FN_DOCUGOAL  ((knh_fieldn_t)-2)
+#define FN_DOCUAssurance  ((knh_fieldn_t)-2)
 #define FN_return    FN_
 #define MN_NONAME   ((knh_methodn_t)-1)
 #define MN_NEWID    ((knh_methodn_t)-2)
@@ -534,7 +534,7 @@ typedef void *(*knh_Fthread)(void *);
 		struct knh_Context_t   *cx;\
 		struct knh_Script_t    *scr;\
 		struct knh_Monitor_t   *mon;\
-		struct knh_Goal_t      *goal;\
+		struct knh_Assurance_t      *Assurance;\
 		knh_int_t     dummy_ivalue;\
 		knh_float_t   dummy_fvalue \
 
@@ -665,8 +665,7 @@ typedef struct knh_ClassDef_t {
 	void (*initcopy)(CTX, Object *, const Object *);
 	void (*reftrace)(CTX, Object * FTRARG);
 	void (*free)(CTX, Object *);
-
-	void (*checkin)(CTX, Object*);
+	void (*checkin)(CTX, knh_sfp_t *sfp, Object*);
 	void (*checkout)(CTX, Object*, int);
 	int  (*compareTo)(const Object*, const Object*);
 	void (*write)(CTX, struct knh_OutputStream_t*, Object*, int);

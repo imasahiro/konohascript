@@ -477,7 +477,7 @@ static int konoha_parseopt(konoha_t konoha, int argc, const char **argv)
 #ifdef K_DEOS_TRACE
 		char *trace = knh_getenv(K_DEOS_TRACE);
 		if(trace != NULL) {
-			KNH_SYSLOG(ctx, NULL, LOG_NOTICE, K_DEOS_TRACE, 0, "%s", trace);
+			KNH_SYSLOG(ctx, NULL, LOG_NOTICE, K_DEOS_TRACE, "%s", trace);
 		}
 #endif
 	return n;

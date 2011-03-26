@@ -51,14 +51,14 @@ extern "C" {
 #define LOG_ERRNO(LOG, FMT, F, ...) {\
 		int res_ = F(__VA_ARGS__);\
 		if(res_ == FAILED) {\
-			KNH_SYSLOG(ctx, sfp, LOG, LIBNAME, #F, 0, FMT, ## __VA_ARGS__);\
+			KNH_SYSLOG(ctx, sfp, LOG, LIBNAME, #F, FMT, ## __VA_ARGS__);\
 		}\
 	}\
 
 #define LOG_RETURN_ERRNO(LOG, FMT, F, ...) {\
 		int res_ = F(__VA_ARGS__);\
 		if(res_ == FAILED) {\
-			KNH_SYSLOG(ctx, sfp, LOG, LIBNAME, #F, 0, FMT, ## __VA_ARGS__);\
+			KNH_SYSLOG(ctx, sfp, LOG, LIBNAME, #F, FMT, ## __VA_ARGS__);\
 		}\
 		RETURNb_(res_ != FAILED);\
 	}\

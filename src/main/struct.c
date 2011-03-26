@@ -134,7 +134,7 @@ static void DEFAULT_free(CTX ctx, Object *o)
 {
 }
 
-static void DEFAULT_checkin(CTX ctx, Object *o)
+static void DEFAULT_checkin(CTX ctx, knh_sfp_t *sfp, Object *o)
 {
 }
 
@@ -2331,107 +2331,61 @@ static knh_ClassDef_t MonitorDef = {
 };
 
 /* --------------- */
-/* Goal */
+/* Assurance */
 
-static void Goal_init(CTX ctx, Object *o)
+static void Assurance_init(CTX ctx, Object *o)
 {
-	static knh_uintptr_t docuid = 0;
-	knh_Goal_t *g = (knh_Goal_t*)o;
-	KNH_INITv(g->type, TS_EMPTY);
+	knh_Assurance_t *g = (knh_Assurance_t*)o;
 	KNH_INITv(g->msg, TS_EMPTY);
-	g->id = docuid++;
+	g->aid = 0;
+	g->stime = 0;
 }
 
-static void Goal_reftrace(CTX ctx, Object *o FTRARG)
+static void Assurance_reftrace(CTX ctx, Object *o FTRARG)
 {
-	knh_Goal_t *g = (knh_Goal_t*)o;
-	KNH_ADDREF(ctx, g->type);
+	knh_Assurance_t *g = (knh_Assurance_t*)o;
 	KNH_ADDREF(ctx, g->msg);
 	KNH_SIZEREF(ctx);
 }
 
-static void Goal_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Assurance_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
-	knh_Goal_t *g = (knh_Goal_t*)o;
-	knh_write(ctx, w, S_tobytes(g->type));
-	knh_putc(ctx, w, '-');
-	knh_write_ifmt(ctx, w, K_INT_FMT, g->id);
-	knh_putc(ctx, w, ' ');
-	knh_write_quote(ctx, w, S_tobytes(g->msg), '"');
+	knh_Assurance_t *g = (knh_Assurance_t*)o;
+	knh_write_quote(ctx, w, S_tobytes(g->msg), '\'');
 }
 
-static void Goal_checkin(CTX ctx, Object *o)
+static void Assurance_checkin(CTX ctx, knh_sfp_t *sfp, Object *o)
 {
-	knh_Goal_t *g = (knh_Goal_t*)o;
-	KNH_SYSLOG(ctx, NULL, LOG_NOTICE, "CHECKIN", 0, "G%d %s", g->id, S_tochar(g->msg));
+	char buf[40];
+	knh_Assurance_t *g = (knh_Assurance_t*)o;
+	g->aid = sfp - ctx->stack;
+	knh_snprintf(buf, sizeof(buf), "CHECKIN:%d", (int)g->aid);
+	g->stime = knh_getTimeMilliSecond();
+	KNH_SYSLOG(ctx, sfp, LOG_NOTICE, buf, "%s", S_tochar(g->msg));
 }
 
-static void Goal_checkout(CTX ctx, Object *o, int isFailed)
+static void Assurance_checkout(CTX ctx, Object *o, int isFailed)
 {
-	knh_Goal_t *g = (knh_Goal_t*)o;
+	knh_Assurance_t *g = (knh_Assurance_t*)o;
+	knh_sfp_t *sfp = ctx->stack + g->aid;
+	char buf[40];
 	if(isFailed) {
-		KNH_SYSLOG(ctx, NULL, LOG_WARNING, "FAILED", 0, "G%d %s", g->id, S_tochar(g->msg));
+		knh_snprintf(buf, sizeof(buf), "FAILED:%d", (int)g->aid);
+		KNH_SYSLOG(ctx, sfp, LOG_WARNING, buf, "%s", S_tochar(g->msg));
 	}
 	else {
-		KNH_SYSLOG(ctx, NULL, LOG_NOTICE, "CHECKOUT", 0, "G%d %s", g->id, S_tochar(g->msg));
+		size_t t = knh_getTimeMilliSecond() - g->stime;
+		knh_snprintf(buf, sizeof(buf), "CHECKOUT:%d", (int)g->aid);
+		KNH_SYSLOG(ctx, sfp, LOG_NOTICE, buf, "%s, time=%dms", S_tochar(g->msg), (int)t);
 	}
 }
 
-static knh_ClassDef_t GoalDef = {
-	Goal_init, DEFAULT_initcopy, Goal_reftrace, DEFAULT_free,
-	Goal_checkin, Goal_checkout, DEFAULT_compareTo, Goal_write,
+static knh_ClassDef_t AssuranceDef = {
+	Assurance_init, DEFAULT_initcopy, Assurance_reftrace, DEFAULT_free,
+	Assurance_checkin, Assurance_checkout, DEFAULT_compareTo, Assurance_write,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"Goal", CFLAG_Goal, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
-};
-
-/* --------------- */
-/* UnitTest */
-
-static void UnitTest_init(CTX ctx, Object *o)
-{
-	knh_UnitTest_t *ut = (knh_UnitTest_t*)o;
-	KNH_INITv(ut->msg, TS_EMPTY);
-}
-
-static void UnitTest_reftrace(CTX ctx, Object *o FTRARG)
-{
-	knh_UnitTest_t *ut = (knh_UnitTest_t*)o;
-	KNH_ADDREF(ctx, ut->msg);
-	KNH_SIZEREF(ctx);
-}
-
-static void UnitTest_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
-{
-	knh_UnitTest_t *ut = (knh_UnitTest_t*)o;
-	knh_write_quote(ctx, w, S_tobytes(ut->msg), '\'');
-}
-
-static void UnitTest_checkin(CTX ctx, Object *o)
-{
-	knh_UnitTest_t *ut = (knh_UnitTest_t*)o;
-	ut->stime = knh_getTimeMilliSecond();
-}
-
-static void UnitTest_checkout(CTX ctx, Object *o, int isFailed)
-{
-	knh_UnitTest_t *ut = (knh_UnitTest_t*)o;
-	size_t t = knh_getTimeMilliSecond() - ut->stime;
-	if(isFailed) {
-		KNH_SYSLOG(ctx, NULL, LOG_WARNING, "FAILED", 0, "%s (%dms)", S_tochar(ut->msg), t);
-	}
-	else {
-		KNH_SYSLOG(ctx, NULL, LOG_NOTICE, "PASSED", 0, "%s (%dms)", S_tochar(ut->msg), t);
-	}
-}
-
-static knh_ClassDef_t UnitTestDef = {
-	UnitTest_init, DEFAULT_initcopy, UnitTest_reftrace, DEFAULT_free,
-	UnitTest_checkin, UnitTest_checkout, DEFAULT_compareTo, UnitTest_write,
-	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"UnitTest", CFLAG_UnitTest, 0, NULL,
+	"Assurance", CFLAG_Assurance, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
