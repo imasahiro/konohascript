@@ -180,7 +180,7 @@ static void opt_a(CTX ctx, int mode, const char *optstr)
 	((knh_ServiceSPI_t*)ctx->spi)->syslog    = _syslog;
 	((knh_ServiceSPI_t*)ctx->spi)->vsyslog    = _vsyslog;
 	openlog("konoha", LOG_PID, LOG_LOCAL7);
-	KNH_SYSLOG(ctx, NULL, LOG_NOTICE, "init", "version='%s', rev=%d, auditlevel=%d", K_VERSION, , K_REVISION, auditLevel);
+	KNH_SYSLOG(ctx, NULL, LOG_NOTICE, "init", "version='%s', rev=%d, auditlevel=%d", K_VERSION, K_REVISION, auditLevel);
 #ifdef K_DEOS_TRACE
 		char *trace = knh_getenv(K_DEOS_TRACE);
 		if(trace != NULL) {
