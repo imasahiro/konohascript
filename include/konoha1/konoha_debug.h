@@ -26,6 +26,9 @@
 #define KNH_SYSLOG(ctx, sfp, p, e, fmt, ...) \
 	ctx->api->trace(ctx, sfp, p, LIBNAME, e, 0, fmt, ## __VA_ARGS__)
 
+#define KNH_SYSLOG_(ctx, sfp, p, ns, e, fmt, ...) \
+	ctx->api->trace(ctx, sfp, p, ns, e, 0, fmt, ## __VA_ARGS__)
+
 #define KNH_THROW(ctx, sfp, p, e, fmt, ...) \
 	ctx->api->trace(ctx, sfp, p, LIBNAME, e, 1, fmt, ## __VA_ARGS__)
 

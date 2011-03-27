@@ -180,7 +180,14 @@ static void opt_a(CTX ctx, int mode, const char *optstr)
 	((knh_ServiceSPI_t*)ctx->spi)->syslog    = _syslog;
 	((knh_ServiceSPI_t*)ctx->spi)->vsyslog    = _vsyslog;
 	openlog("konoha", LOG_PID, LOG_LOCAL7);
-	fprintf(stderr, "audit level=%d\n", auditLevel);
+	KNH_SYSLOG(ctx, NULL, LOG_NOTICE, "init", "version='%s', rev=%d, auditlevel=%d", K_VERSION, , K_REVISION, auditLevel);
+#ifdef K_DEOS_TRACE
+		char *trace = knh_getenv(K_DEOS_TRACE);
+		if(trace != NULL) {
+			KNH_SYSLOG(ctx, NULL, LOG_NOTICE, K_DEOS_TRACE, "trace='%s'", trace);
+		}
+#endif
+	//fprintf(stderr, "audit level=%d\n", auditLevel);
 #else
 	fprintf(stdout, "konoha: no available logging system.\n");
 	exit(0);
@@ -474,12 +481,6 @@ static int konoha_parseopt(konoha_t konoha, int argc, const char **argv)
 			KNH_SETv(ctx, (ctx->share->rootns)->nsname, s);
 		}
 	}
-#ifdef K_DEOS_TRACE
-		char *trace = knh_getenv(K_DEOS_TRACE);
-		if(trace != NULL) {
-			KNH_SYSLOG(ctx, NULL, LOG_NOTICE, K_DEOS_TRACE, "%s", trace);
-		}
-#endif
 	return n;
 }
 

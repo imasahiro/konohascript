@@ -2356,27 +2356,27 @@ static void Assurance_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level
 
 static void Assurance_checkin(CTX ctx, knh_sfp_t *sfp, Object *o)
 {
-	char buf[40];
+	static knh_uintptr_t uid = 0;
 	knh_Assurance_t *g = (knh_Assurance_t*)o;
-	g->aid = sfp - ctx->stack;
-	knh_snprintf(buf, sizeof(buf), "CHECKIN:%d", (int)g->aid);
-	g->stime = knh_getTimeMilliSecond();
-	KNH_SYSLOG(ctx, sfp, LOG_NOTICE, buf, "%s", S_tochar(g->msg));
+	g->aid = uid++;
+	g->stime = (knh_getTimeMilliSecond() / 1000);
+	KNH_SYSLOG_(ctx, sfp, LOG_NOTICE, "ac", "CHECKIN", "id=%d, case='%s'", (int)g->aid, S_tochar(g->msg));
 }
 
 static void Assurance_checkout(CTX ctx, Object *o, int isFailed)
 {
 	knh_Assurance_t *g = (knh_Assurance_t*)o;
-	knh_sfp_t *sfp = ctx->stack + g->aid;
-	char buf[40];
 	if(isFailed) {
-		knh_snprintf(buf, sizeof(buf), "FAILED:%d", (int)g->aid);
-		KNH_SYSLOG(ctx, sfp, LOG_WARNING, buf, "%s", S_tochar(g->msg));
+		KNH_SYSLOG_(ctx, NULL, LOG_WARNING, "ac", "FAILED", "id=%d, case='%s'", (int)g->aid, S_tochar(g->msg));
 	}
 	else {
-		size_t t = knh_getTimeMilliSecond() - g->stime;
-		knh_snprintf(buf, sizeof(buf), "CHECKOUT:%d", (int)g->aid);
-		KNH_SYSLOG(ctx, sfp, LOG_NOTICE, buf, "%s, time=%dms", S_tochar(g->msg), (int)t);
+		knh_intptr_t t = (knh_getTimeMilliSecond() / 1000) - g->stime;
+		if(t > 1) {
+			KNH_SYSLOG_(ctx, NULL, LOG_NOTICE, "ac", "PASSED", "id=%d, case='%s', time=%ds", (int)g->aid, S_tochar(g->msg), (int)t);
+		}
+		else {
+			KNH_SYSLOG_(ctx, NULL, LOG_NOTICE, "ac", "PASSED", "id=%d, case='%s'", (int)g->aid, S_tochar(g->msg));
+		}
 	}
 }
 
