@@ -2657,7 +2657,7 @@ static knh_Token_t* OP_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		if(mtd_cid == cid || cid == CLASS_Tdynamic) {
 			return Token_setCONST(ctx, tkC, KNH_TRUE);
 		}
-		if(!class_isa(cid, mtd_cid)) {
+		if(!class_isa(mtd_cid, cid)) {
 			return Token_setCONST(ctx, tkC, KNH_FALSE);
 		}
 		goto L_LOOKUPMETHOD;
