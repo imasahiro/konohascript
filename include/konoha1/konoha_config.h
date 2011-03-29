@@ -244,6 +244,7 @@ typedef struct knh_sysinfo_t {
 #define     K_USING_SYSLOG   1
 #define     K_USING_ICONV    1
 #define     K_USING_SQLITE3  1
+#define     K_USING_PCRE     1
 #endif
 
 #if defined(__APPLE__) /* MacOS X */
@@ -256,6 +257,7 @@ typedef struct knh_sysinfo_t {
 #define     K_USING_SYSLOG      1
 #define     K_USING_ICONV       1
 #define     K_USING_SQLITE3  1
+#define     K_USING_PCRE     1
 #endif
 
 #if defined(__WIN32__)  /* mingw */
@@ -264,6 +266,7 @@ typedef struct knh_sysinfo_t {
 #define     K_USING_ICONV       1
 #define     K_USING_SYSLOG       1   // if not available, report to konohaken
 #define     K_USING_SQLITE3  1
+#define     K_USING_PCRE     1
 #if defined(K_USING_THREAD)
 #define		K_USING_WINTHREAD_   1
 #endif
@@ -280,6 +283,7 @@ typedef struct knh_sysinfo_t {
 #define     K_USING_ICONV        1
 #define     K_USING_SYSLOG       1   // if not available, report to konohaken
 #define     K_USING_SQLITE3  1
+#define     K_USING_PCRE     1
 #if defined(K_USING_THREAD)
 #define		K_USING_WINTHREAD_   1
 #endif

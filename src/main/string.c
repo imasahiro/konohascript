@@ -420,35 +420,59 @@ static int strregex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t n
 
 static void strregex_regfree(CTX ctx, knh_regex_t *reg) { }
 
-static const knh_RegexSPI_t STRREGEXSPI = {
+static const knh_RegexSPI_t REGEX_STR = {
 	"strregex",
-	strregex_malloc,
-	strregex_parsecflags, strregex_parseeflags,
+	strregex_malloc, strregex_parsecflags, strregex_parseeflags,
 	strregex_regcomp, strregex_regexec, strregex_regerror,
 	strregex_regfree
 };
 
 const knh_RegexSPI_t* knh_getStrRegexSPI(void)
 {
-	return &STRREGEXSPI;
+	return &REGEX_STR;
 }
 
 knh_bool_t Regex_isSTRREGEX(knh_Regex_t *re)
 {
-	return (re->spi == &STRREGEXSPI);
+	return (re->spi == &REGEX_STR);
 }
 
-#ifdef K_USING_REGEX
+#ifdef K_USING_PCRE1
+/* This part was implemented by Yutaro Hiraoka */
 
-static knh_regex_t* regex_malloc(CTX ctx, knh_String_t *pattern)
+#include <pcre.h>
+#include <pcreposix.h>
+
+#define PCRE_MAX_ERROR_MESSAGE_LEN 512
+#define REG_PCRE_GLOBAL REG_NOTBOL
+#define knh_TerminateREG(r) ((r)->rm_so = -1)
+#define knh_MatchedREG(r)   ((r)->rm_so != -1)
+#define knh_InitializeREG(r, size) \
+	{\
+		int _idx;\
+		for (_idx = 0; _idx < (size); _idx++) {	\
+			(r)[_idx].rm_so = -1;\
+			(r)[_idx].rm_eo = -1;\
+			(r)[_idx].rm_name.len = 0;\
+		}\
+	}
+
+
+typedef struct {
+	pcre *re;
+	const char *err;
+	int erroffset;
+} PCRE_regex_t;
+
+static knh_regex_t* pcre_regex_malloc(CTX ctx, knh_String_t* s)
 {
-	regex_t *preg = (regex_t*) KNH_MALLOC(ctx, sizeof(regex_t));
+	PCRE_regex_t *preg = (PCRE_regex_t*) KNH_MALLOC(ctx,sizeof(PCRE_regex_t));
 	return (knh_regex_t *) preg;
 }
 
-static int regex_parsecflags(CTX ctx, const char *option)
+static int pcre_regex_parsecflags(CTX ctx, const char *option)
 {
-	int i, cflags = 0 /*REG_UTF8*/;
+	int i, cflags = REG_UTF8;
 	int optlen = strlen(option);
 	for (i = 0; i < optlen; i++) {
 		switch(option[i]) {
@@ -470,55 +494,94 @@ static int regex_parsecflags(CTX ctx, const char *option)
 	return cflags;
 }
 
-static int regex_parseeflags(CTX ctx, const char *opt)
+static int pcre_regex_parseeflags(CTX ctx, const char *option)
 {
 	int i, eflags = 0;
 	int optlen = strlen(option);
 	for (i = 0; i < optlen; i++) {
 		switch(option[i]){
 		case 'g': // global
-		eflags |= REG_NOTBOL;
-		break;
+			eflags |= REG_PCRE_GLOBAL;
+			break;
 		default: break;
 		}
 	}
 	return eflags;
 }
-static int regex_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, int cflags)
+
+static size_t pcre_regex_regerror(int res, knh_regex_t *reg, char *ebuf, size_t ebufsize)
 {
-	regex_t* preg = (regex_t*)reg;
-	return regcomp(preg, pattern, cflags);
-}
-static size_t regex_regerror(int errcode, knh_regex_t *reg, char *ebuf, size_t ebuf_size)
-{
-	return regerror(res, (regex_t*)reg, ebuf, ebufsize);
-}
-static int regex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t nmatch, knh_regmatch_t p[], int flags)
-{
-	KNH_TODO("regexec IDE MUST DO THIS");
-	return regexec(preg, str, nmatch, (regmatch_t*)p, eflags);
+	PCRE_regex_t *pcre = (PCRE_regex_t*)reg;
+	snprintf(ebuf, ebufsize, "[%d]: %s", pcre->erroffset, pcre->err);
+	return 0;
 }
 
-static void regex_regfree(CTX ctx, knh_regex_t *reg)
+static int pcre_regex_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, int cflags)
 {
-	regex_t *preg = (regex_t*)reg;
-	regfree(preg);
-	KNH_FREE(ctx, preg, sizeof(regex_t));
+	PCRE_regex_t* preg = (PCRE_regex_t*)reg;
+	preg->re = pcre_compile(pattern, cflags, &preg->err, &preg->erroffset, NULL);
+	return (preg->re != NULL) ? 0 : -1;
 }
 
-static const knh_RegexSPI_t REGEXSPI = {
-	"posix.regex",
-	regex_malloc, regex_parsecflags, regex_parseeflags,
-	regex_regcomp, regex_regexec, regex_regerror, regex_regfree
+static int pcre_regex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t nmatch, knh_regmatch_t p[], int eflags)
+{
+	PCRE_regex_t *preg = (PCRE_regex_t*)reg;
+	int res, nm_count, nvector[nmatch];
+	size_t idx, matched;
+	if (strlen(str) == 0) return -1;
+	if ((res = pcre_exec(preg->re, NULL, str, strlen(str), 0, eflags, nvector, nmatch)) < 0) {
+		return (res == PCRE_ERROR_NOMATCH) ? 0 : -1;
+	}
+	matched = (res == 0) ? nmatch/3 : res;
+	for (idx = 0; idx < matched; idx++) {
+		p[idx].rm_so = nvector[2*idx];
+		p[idx].rm_eo = nvector[2*idx+1];
+	}
+	knh_TerminateREG(p+idx);
+	pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMECOUNT, &nm_count);
+	if (nm_count > 0) {
+		unsigned char *nm_table;
+		int nm_entry_size;
+		pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMETABLE, &nm_table);
+		pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMEENTRYSIZE, &nm_entry_size);
+		unsigned char *tbl_ptr = nm_table;
+		for (idx = 0; idx < nm_count; idx++) {
+			int n_idx = (tbl_ptr[0] << 8) | tbl_ptr[1];
+			unsigned char *n_name = tbl_ptr + 2;
+			p[n_idx].rm_name.ustr = n_name;
+			p[n_idx].rm_name.len = strlen((char*)n_name);
+			tbl_ptr += nm_entry_size;
+		}
+	}
+	return 0;
+}
+
+static void pcre_regex_regfree(CTX ctx, knh_regex_t *reg)
+{
+	PCRE_regex_t *preg = (PCRE_regex_t*)reg;
+	pcre_free(preg->re);
+	KNH_FREE(ctx, preg, sizeof(PCRE_regex_t));
+}
+
+static const knh_RegexSPI_t REGEX_PCRE = {
+	"pcre",
+	pcre_regex_malloc,
+	pcre_regex_parsecflags,
+	pcre_regex_parseeflags,
+	pcre_regex_regcomp,
+	pcre_regex_regexec,
+	pcre_regex_regerror,
+	pcre_regex_regfree
 };
-#endif
+
+#endif/*K_USING_PCRE*/
 
 const knh_RegexSPI_t* knh_getRegexSPI(void)
 {
-#ifdef K_USING_REGEX
-	return &REGEXSPI;
+#ifdef K_USING_PCRE1
+	return &REGEX_PCRE;
 #else
-	return &STRREGEXSPI;
+	return &REGEX_STR;
 #endif
 }
 
