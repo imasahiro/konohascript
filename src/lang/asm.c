@@ -1766,11 +1766,13 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	if(mtd_cid == CLASS_Object) {
 		if(mtd_mn == MN_isNull) {
 			int a = Tn_put(ctx, stmt, 1, cid, local + 1);
+			ASM_BOX2(ctx, CLASS_Object, cid, a); /* thanks ide */
 			ASM(bNUL, NC_(sfpidx), OC_(a));
 			return;
 		}
 		else if(mtd_mn == MN_isNotNull) {
 			int a = Tn_put(ctx, stmt, 1, cid, local + 1);
+			ASM_BOX2(ctx, CLASS_Object, cid, a);
 			ASM(bNN, NC_(sfpidx), OC_(a));
 			return;
 		}

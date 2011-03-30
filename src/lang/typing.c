@@ -2377,7 +2377,6 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 	knh_Token_t *tkNEW = tkNN(stmt, 0);
 	knh_Token_t *tkC = tkNN(stmt, 1);
 	knh_methodn_t mn = Token_mn(ctx, tkNEW);
-
 	knh_class_t mtd_cid = CLASS_unknown;
 	if(TT_(tkC) == TT_ASIS) { /* new () */
 		if(reqt == TYPE_dynamic || reqt == TYPE_void) {
@@ -2406,6 +2405,7 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 	if(mn == MN_newLIST) {  /* [1, 2, .. ] */
 		size_t i;
 		knh_class_t p1 = knh_class_p1(mtd_cid);
+		DBG_P("reqt=%s, mtd_cid=%d", CLASS__(reqt), CLASS__(mtd_cid));
 		if(p1 != TYPE_void) {
 			for(i = 2; i < DP(stmt)->size; i++) {
 				TYPING(ctx, stmt, i, p1, 0);

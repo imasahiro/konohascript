@@ -166,6 +166,25 @@ static void hmap_set(CTX ctx, knh_map_t* m, knh_sfp_t *kvsfp)
 static void hmap_remove(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp)
 {
 	KNH_TODO("HashMap.remove");
+//	 static void hmap_remove(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp)
+//	 {
+//	-       KNH_TODO("HashMap.remove");
+//	+       knh_hmap_t *hmap = knh_map_hmap(m);
+//	+       knh_hentry_t **hentry = knh_map_hentry(m);
+//	+       knh_bytes_t k = S_tobytes(ksfp[0].s);
+//	+       knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
+//	+       size_t idx = hcode % hmap->hmax;
+//	+       knh_hentry_t *e = hentry[idx];
+//	+       while(e != NULL) {
+//	+               knh_bytes_t k2 = S_tobytes(e->skey);
+//	+               if(e->hcode == hcode && knh_bytes_equals(k, k2)) {
+//	+                       KNH_SETv(ctx, e->value, KNH_NULVAL(O_cid(e->value)));
+//	+                       hmap->size -= 1;
+//	+                       return;
+//	+               }
+//	+               e = e->next;
+//	+       }
+//	 }
 }
 
 static size_t hmap_size(CTX ctx, knh_map_t* m)
@@ -542,7 +561,7 @@ static knh_bool_t dmap_nextdata(CTX ctx, knh_map_t *m, knh_mapitr_t* mitr, knh_s
 	if(mitr->index < dmap->size) {
 		knh_dentry_t *dentry = knh_map_dentry(m);
 		KNH_SETv(ctx, rsfp[0].o, dentry[mitr->index].key);
-		KNH_SETv(ctx, rsfp[1].o, dentry[mitr->index].value);
+		rsfp[1].ndata = dentry[mitr->index].nvalue; /* thanks, ide */
 		mitr->index += 1;
 		return 1;
 	}

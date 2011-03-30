@@ -2274,7 +2274,8 @@ static void _EXPRCALL(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			STT_(stmt) = STT_NEW;
 			isCALL = 1;
 			knh_Stmt_add(ctx, stmt, tkCUR);
-			if(ITR_is(itr, TT_UFUNCNAME)) { /* new T() */
+			if(ITR_is(itr, TT_UFUNCNAME) /* new T() */ /* thanks, ide */
+				|| (ITR_isT(itr, isTYPE) && ITR_isN(itr, +1, TT_PARENTHESIS)) /* new T<T>() */) {
 				knh_Stmt_add(ctx, stmt, ITR_nextTK(itr));
 				break;
 			}

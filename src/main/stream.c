@@ -1266,9 +1266,9 @@ static METHOD Float_format(CTX ctx, knh_sfp_t *sfp _RIX)
 	L_RETRY:;
 	int ch = fmt.ustr[fmt.len - 1];
 	if(fmt.ustr[0] == '%' && (ch == 'f' || ch == 'e')) {
-		char buf[80];
+		char fmtbuf[40], buf[80];
 		const char *ifmt = (ch == 'f') ? K_FLOAT_FMT : K_FLOAT_FMTE;
-		knh_snprintf(buf, sizeof(buf), ifmt, sfp[0].fvalue);
+		knh_snprintf(buf, sizeof(buf), newfmt(fmtbuf, sizeof(fmtbuf), fmt, ifmt + strlen(ifmt)-1), sfp[0].fvalue);
 		RETURN_(new_S(ctx, B(buf)));
 	}
 	if(fmt.len != 0) {
