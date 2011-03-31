@@ -287,7 +287,6 @@ knh_Token_t* ErrorUndefinedMethod(CTX ctx, knh_Token_t *tkMN);
 void WarningNoFmt(CTX ctx, const char *fmt);
 void WarningIllegalFormatting(CTX ctx, const char *fmt);
 knh_Token_t* ErrorNotStaticMethod(CTX ctx, knh_Method_t *mtd);
-knh_Token_t* ErrorUnknownClass(CTX ctx, knh_Token_t *tk);
 knh_Token_t* ErrorUndefinedClassConst(CTX ctx, knh_Token_t *tk, knh_bytes_t name);
 void WarningIgnored(CTX ctx, const char *what, const char *symbol);
 void WarningIgnoredRedefinition(CTX ctx, knh_Token_t *tk, knh_bytes_t name);
