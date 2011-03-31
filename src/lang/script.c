@@ -679,7 +679,7 @@ static knh_Method_t *Script_getEvalMethod(CTX ctx, knh_Script_t *scr)
 	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, O_cid(scr), MN_LAMBDA);
 	if(mtd == NULL) {
 		mtd = new_Method(ctx, FLAG_Method_Hidden, O_cid(scr), MN_LAMBDA, NULL);
-		KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayR0(ctx, TYPE_var));
+		KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayR0(ctx, TYPE_dyn/*TYPE_var*/));
 		knh_NameSpace_addMethod(ctx, O_cid(scr), mtd);
 	}
 	return mtd;

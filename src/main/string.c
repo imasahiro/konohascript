@@ -437,7 +437,7 @@ knh_bool_t Regex_isSTRREGEX(knh_Regex_t *re)
 	return (re->spi == &REGEX_STR);
 }
 
-#ifdef K_USING_PCRE1
+#ifdef K_USING_PCRE
 /* This part was implemented by Yutaro Hiraoka */
 
 #include <pcre.h>
@@ -578,7 +578,7 @@ static const knh_RegexSPI_t REGEX_PCRE = {
 
 const knh_RegexSPI_t* knh_getRegexSPI(void)
 {
-#ifdef K_USING_PCRE1
+#ifdef K_USING_PCRE
 	return &REGEX_PCRE;
 #else
 	return &REGEX_STR;
