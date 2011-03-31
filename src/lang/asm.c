@@ -1586,7 +1586,7 @@ static void ASM_CALL(CTX ctx, knh_type_t reqt, int sfpidx, knh_type_t rtype, knh
 #define isNativeCompiled(kcode) (IS_KonohaCode(kcode) && KonohaCode_isNativeCompiled(kcode))
 static inline knh_bool_t Method_isFASTCALL0(CTX ctx, knh_Method_t *mtd)
 {
-	if(Method_isAbstract(mtd) || Method_isKonohaCode(mtd) || isNativeCompiled(DP(mtd)->kcode)) return 0;
+	if(Method_isAbstract(mtd) || Method_isKonohaCode(mtd) || isNativeCompiled(DP(mtd)->kcode) || ParamArray_isVARGs(DP(mtd)->mp)) return 0;
 	return 1;
 }
 #endif
@@ -1594,8 +1594,8 @@ static inline knh_bool_t Method_isFASTCALL0(CTX ctx, knh_Method_t *mtd)
 static void ASM_CHKIDX(CTX ctx, int aidx, int nidx)
 {
 #ifdef OPCODE_CHKIDX
-	knh_BasicBlock_t *bb = DP(ctx->gma)->bbNC;
 	long i;
+	knh_BasicBlock_t *bb = DP(ctx->gma)->bbNC;
 	for(i = (long)DP(bb)->size - 1; i >= 0; i--) {
 		klr_CHKIDX_t *op = (klr_CHKIDX_t*)(DP(bb)->opbuf + i);
 		int opcode = op->opcode;

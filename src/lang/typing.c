@@ -2379,6 +2379,7 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 			for(i = 2; i < DP(stmt)->size; i++) {
 				TYPING(ctx, stmt, i, p1, 0);
 			}
+			mtd_cid = reqt;
 		}
 		goto L_LOOKUPMETHOD;
 	}
@@ -2413,6 +2414,7 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 			for(i = 2; i < DP(stmt)->size; i+=2) {
 				TYPING(ctx, stmt, i+1, p2, 0);       // value
 			}
+			mtd_cid = reqt;
 		}
 		goto L_LOOKUPMETHOD;
 	}
@@ -2455,6 +2457,7 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		Token_setCONST(ctx, tkC, new_Type(ctx, mtd_cid));
 		tkRES = CALLPARAMs_typing(ctx, stmt, mtd_cid, mtd_cid, mtd);
 		tkRES->type = mtd_cid;
+		DBG_P("mtd_cid=%s", CLASS__(mtd_cid));
 		return tkRES;
 	}
 }
