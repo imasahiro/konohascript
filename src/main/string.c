@@ -441,10 +441,9 @@ knh_bool_t Regex_isSTRREGEX(knh_Regex_t *re)
 /* This part was implemented by Yutaro Hiraoka */
 
 #include <pcre.h>
-#include <pcreposix.h>
 
 #define PCRE_MAX_ERROR_MESSAGE_LEN 512
-#define REG_PCRE_GLOBAL REG_NOTBOL
+#define PCRE_GLOBAL PCRE_NOTBOL
 #define knh_TerminateREG(r) ((r)->rm_so = -1)
 #define knh_MatchedREG(r)   ((r)->rm_so != -1)
 #define knh_InitializeREG(r, size) \
@@ -472,21 +471,21 @@ static knh_regex_t* pcre_regex_malloc(CTX ctx, knh_String_t* s)
 
 static int pcre_regex_parsecflags(CTX ctx, const char *option)
 {
-	int i, cflags = REG_UTF8;
+	int i, cflags = PCRE_UTF8;
 	int optlen = strlen(option);
 	for (i = 0; i < optlen; i++) {
 		switch(option[i]) {
 		case 'i': // caseless
-			cflags |= REG_ICASE;
+			cflags |= PCRE_CASELESS;
 			break;
 		case 'm': // multiline
-			cflags |= REG_NEWLINE;
+			cflags |= PCRE_MULTILINE;
 			break;
 		case 's': // dotall
-			cflags |= REG_DOTALL;
+			cflags |= PCRE_DOTALL;
 			break;
 		case 'x': //extended
-			cflags |= REG_EXTENDED;
+			cflags |= PCRE_EXTENDED;
 			break;
 		default: break;
 		}
@@ -501,7 +500,7 @@ static int pcre_regex_parseeflags(CTX ctx, const char *option)
 	for (i = 0; i < optlen; i++) {
 		switch(option[i]){
 		case 'g': // global
-			eflags |= REG_PCRE_GLOBAL;
+			eflags |= PCRE_GLOBAL;
 			break;
 		default: break;
 		}
