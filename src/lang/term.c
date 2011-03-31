@@ -272,6 +272,7 @@ static int ITR_findPTYPE(tkitr_t *itr)
 			itr->c = c; return 1;
 		}
 		c--; tk = itr->ts[c];
+		if(c < 0) return 0;
 		if(TT_(tk) == TT_COMMA) continue;
 		if(TT_(tk) == TT_LT) { e = 1; continue; }
 		if(f == 0 && TT_(tk) == TT_DARROW) {

@@ -2653,7 +2653,8 @@ static knh_Token_t* OP_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	{
 		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, mn);
 		if(mtd == NULL) {
-			return ErrorUnsupportedOperator(ctx, knh_getopname(mn), mtd_cid);
+			return ERROR_UnsupportedOperator(ctx,
+				mn == MN_NONAME ? S_tochar(tkOP->text) : knh_getopname(mn), mtd_cid);
 		}
 		Token_toCALLMTD(ctx, tkOP, mn, mtd);
 		TYPING(ctx, stmt, 1, mtd_cid, 0);

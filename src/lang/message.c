@@ -406,7 +406,7 @@ knh_Token_t* ErrorComparedDiffrentType(CTX ctx, knh_type_t t1, knh_type_t t2)
 {
 	return Gamma_perror(ctx, KC_TERROR, _("comparison of different type: %T %T"), t1, t2);
 }
-knh_Token_t* ErrorUnsupportedOperator(CTX ctx, const char *opname, knh_class_t mtd_cid)
+knh_Token_t* ERROR_UnsupportedOperator(CTX ctx, const char *opname, knh_class_t mtd_cid)
 {
 	return Gamma_perror(ctx, KC_ERR, _("unsupported %s in %C"), opname, mtd_cid);
 }
