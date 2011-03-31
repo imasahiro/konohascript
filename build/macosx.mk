@@ -2,11 +2,11 @@
 #
 
 CC ?= gcc
-CFLAGS ?= -g -O2 -Wall -fPIC -I./include
-#CFLAGS ?= -g3 -O0 -Wall -fPIC -I./include -DK_USING_DEBUG
+#CFLAGS ?= -g -O2 -Wall -fPIC -I./include
+CFLAGS ?= -g3 -O0 -Wall -fPIC -I./include -I/opt/local/include
 
 ARCH = -arch i386 -arch x86_64
-LDLIBS ?= -liconv -lsqlite3 -lpcre -lpthread
+LDLIBS ?= -L/usr/local/lib -liconv -lsqlite3 -lpcre -lpthread
 STRIP = strip
 
 konoha = konoha1
@@ -161,27 +161,27 @@ $(dir)/konoha.o : src/konoha.c
 
 LDLIBS_libi = 
 objs_i = $(dir)/i.o\
-	
+
 $(dir)/i.dylib: $(objs_i)
 	$(CC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -o $@ $^ $(LDLIBS_libi)
-	
+
 $(dir)/i.o : package/konoha.i/i.c
 	$(CC) $(CFLAGS) $(ARCH) -D_SETUP -c $^ -o $@
 
 ## math
 LDLIBS_libmath = -lm
 objs_math = $(dir)/math.o
-	
+
 $(dir)/math.dylib: $(objs_math)
 	$(CC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -o $@ $^ $(LDLIBS_libmath)
-	
+
 $(dir)/math.o : package/konoha.math/math.c
 	$(CC) $(CFLAGS) $(ARCH) -D_SETUP -c $^ -o $@
 
 ## socket
 LDLIBS_libsocket = 
 objs_socket = $(dir)/socket.o
-	
+
 $(dir)/socket.dylib: $(objs_socket)
 	$(CC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -o $@ $^ $(LDLIBS_libsocket)
 
@@ -191,7 +191,7 @@ $(dir)/socket.o : package/konoha.socket/socket_posix.c
 ## posix
 LDLIBS_libposix = 
 objs_posix = $(dir)/posix.o
-	
+
 $(dir)/posix.dylib: $(objs_posix)
 	$(CC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -o $@ $^ $(LDLIBS_libposix)
 

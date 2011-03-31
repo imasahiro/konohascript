@@ -3,7 +3,7 @@
 
 CC = gcc
 CFLAGS = -g -O2 -Wall -fPIC -I./include
-LDLIBS = -lpthread -lsqlite3 -ldl 
+LDLIBS = -lpthread -lsqlite3 -ldl -lpcre
 STRIP = strip
 
 konoha = konoha1
