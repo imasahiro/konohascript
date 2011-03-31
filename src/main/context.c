@@ -492,7 +492,7 @@ static void knh_share_free(CTX ctx, knh_share_t *share)
 	share->Memory256ArenaTBL = NULL;
 #endif
 	if(ctx->stat->gcCount > 0) {
-		fprintf(stderr, "GC %d times, marking_time=%dms, sweeping_time=%dms total=%fs\n",
+		KNH_MEMINFO(ctx, "GC %d times, marking_time=%dms, sweeping_time=%dms total=%fs",
 				(int)ctx->stat->gcCount, (int)ctx->stat->markingTime, (int)ctx->stat->sweepingTime,
 				((double)ctx->stat->gcTime) / 1000.0);
 	}

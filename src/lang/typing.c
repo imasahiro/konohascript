@@ -4393,8 +4393,8 @@ static knh_Stmt_t *StmtITR_typing(CTX ctx, knh_Stmt_t *stmtITR, knh_type_t reqt)
 	stmt = stmtITR;
 	while(stmt != NULL) {
 		knh_Token_t *tkRES;  // modifed TYPE_void => TYPE_var by kimio
-		knh_type_t return_type = (reqt == TYPE_var) ? TYPE_var : Gamma_getReturnType(ctx);
-		return_type = (DP(stmt)->nextNULL == NULL) ? return_type : TYPE_var;
+		knh_type_t return_type = (reqt == TYPE_void) ? TYPE_void : Gamma_getReturnType(ctx);
+		return_type = (DP(stmt)->nextNULL == NULL) ? return_type : TYPE_void;
 		ctx->gma->uline = stmt->uline;
 		if(Stmt_checkDepth(stmt, 0, 64)) {
 			tkRES = ErrorHazardousStatement(ctx);
