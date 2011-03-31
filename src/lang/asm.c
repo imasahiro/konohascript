@@ -1136,7 +1136,7 @@ static void ASM_XMOVx(CTX ctx, knh_type_t atype, knh_sfx_t ax, knh_type_t btype,
 		}
 	}
 	else {
-		DBG_ASSERT(atype == TYPE_dynamic || IS_Tnumbox(atype));
+		DBG_ASSERT(atype == TYPE_dyn || IS_Tnumbox(atype));
 		if(IS_Tunbox(btype)) { // dynamic a = b; // int b;
 			ASM(NMOVx, NC_(espidx), bx);
 			ASM(TR, OC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ClassTBL(CLASS_t(btype)), _BOX);
@@ -1436,7 +1436,7 @@ static int OP_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 static knh_type_t Tn_ptype(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_class_t cid, knh_Method_t *mtd)
 {
 	if(!IS_Method(mtd)) {
-		return TYPE_dynamic;  // boxing
+		return TYPE_dyn;  // boxing
 	}
 	if(n == 1) { // base
 		if(IS_Tunbox(cid) && cid != (mtd)->cid) {
@@ -1636,12 +1636,12 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	if(!IS_Method(mtd)) {
 		size_t i;
 		for(i = 1; i < DP(stmt)->size; i++) {
-			Tn_asm(ctx, stmt, i, TYPE_dynamic, local + i + (K_CALLDELTA-1));
+			Tn_asm(ctx, stmt, i, TYPE_dyn, local + i + (K_CALLDELTA-1));
 		}
 		mtd = KNH_TNULL(Method);
 		ASM(LOADMTD, SFP_(local+K_CALLDELTA), _CHKMTD, mtd);
 		ASM(CALL, SFP_(local+K_CALLDELTA), ESP_(local, DP(stmt)->size - 2));
-		ASM_MOVL(ctx, reqt, sfpidx, TYPE_dynamic, local);
+		ASM_MOVL(ctx, reqt, sfpidx, TYPE_dyn, local);
 		return;
 	}
 	knh_class_t mtd_cid = (mtd)->cid;
@@ -1650,7 +1650,7 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 //		knh_StmtPARAMs_asm(ctx, stmt, 1, local, cid, mtd);
 //		KNH_ASM(LDMETHOD, klr_invokeFunc, (local+K_CALLDELTA), mtd);
 //		KNH_ASM(CALL, (local), (knh_ushort_t)DP(stmt)->size + 1);
-//		KNH_ASM_MOVL(ctx, reqt, sfpidx, TYPE_dynamic, local);
+//		KNH_ASM_MOVL(ctx, reqt, sfpidx, TYPE_dyn, local);
 //		return;
 //	}
 	if(mtd_cid == CLASS_Array) {
@@ -2188,14 +2188,14 @@ static void Tn_asm(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, int loc
 	}
 	if(IS_Token(tkNN(stmt, n))) {
 		knh_Token_t *tk = tkNN(stmt, n);
-		DBG_P("@START %s tk=%p tk->index=%d local=%d esp=%d", TT__(tk->tt), tk, tk->index, local, DP(ctx->gma)->espidx);
+		//DBG_P("@START %s tk=%p tk->index=%d local=%d esp=%d", TT__(tk->tt), tk, tk->index, local, DP(ctx->gma)->espidx);
 		if(TT_(tk) == TT_LOCAL) {
 			knh_Token_toTYPED(ctx, tk, TT_FUNCVAR, tk->type, tk->index + DP(ctx->gma)->ebpidx);
 		}
 		if(TT_(tk) != TT_FUNCVAR) {
 			knh_Token_toTYPED(ctx, tk, TT_FUNCVAR, reqt, local);
 		}
-		DBG_P("@END %s tk=%p tk->index=%d local=%d esp=%d", TT__(tk->tt), tk, tk->index, local, DP(ctx->gma)->espidx);
+		//DBG_P("@END %s tk=%p tk->index=%d local=%d esp=%d", TT__(tk->tt), tk, tk->index, local, DP(ctx->gma)->espidx);
 	}
 	else {
 		knh_Token_t *tk = new_TokenTYPED(ctx, TT_FUNCVAR, reqt, local);

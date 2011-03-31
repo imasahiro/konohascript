@@ -219,7 +219,7 @@ KNHAPI2(void) knh_write_type(CTX ctx, knh_OutputStream_t *w, knh_type_t type)
 	case TYPE_Boolean: tname = "boolean"; break;
 	case TYPE_Int:    tname = "int";      break;
 	case TYPE_Float:  tname = "float";    break;
-	case TYPE_dynamic:  tname = "dynamic";    break;
+	case TYPE_dyn:  tname = "dynamic";    break;
 	case TYPE_void: tname = "void";       break;
 	case TYPE_var:  tname = "var";        break;
 	case TYPE_This: tname = "This";       break;
@@ -669,16 +669,36 @@ knh_class_t knh_class_Generics(CTX ctx, knh_class_t bcid, knh_ParamArray_t *pa)
 
 knh_class_t knh_class_P1(CTX ctx, knh_class_t bcid, knh_type_t p1)
 {
-	const knh_ClassTBL_t *t = ClassTBL(bcid);
-	while(t != NULL) {
-		if(t->p1 == p1) return t->cid;
-		t = t->simTBL;
+	const knh_ClassTBL_t *ct = ClassTBL(bcid);
+	while(ct != NULL) {
+		if(ct->p1 == p1) return ct->cid;
+		ct = ct->simTBL;
 	}
 	{
 		knh_ParamArray_t *bpa = ClassTBL(bcid)->cparam;
 		knh_param_t *bp = knh_ParamArray_get(bpa, 0);
 		knh_ParamArray_t *pa = new_ParamArray(ctx);
 		knh_param_t p = {p1, bp->fn};
+		knh_ParamArray_add(ctx, pa, p);
+		return knh_addGenericsClass(ctx, CLASS_newid, bcid, pa);
+	}
+}
+
+knh_class_t knh_class_P2(CTX ctx, knh_class_t bcid, knh_type_t p1, knh_type_t p2)
+{
+	const knh_ClassTBL_t *ct = ClassTBL(bcid);
+	while(ct != NULL) {
+		if(ct->p2 == p2 && ct->p1 == p1) return ct->cid;
+		ct = ct->simTBL;
+	}
+	{
+		knh_ParamArray_t *bpa = ClassTBL(bcid)->cparam;
+		knh_param_t *bp = knh_ParamArray_get(bpa, 0);
+		knh_ParamArray_t *pa = new_ParamArray(ctx);
+		knh_param_t p = {p1, bp->fn};
+		knh_ParamArray_add(ctx, pa, p);
+		bp = knh_ParamArray_get(bpa, 1);
+		p.type = p2; p.fn = bp->fn;
 		knh_ParamArray_add(ctx, pa, p);
 		return knh_addGenericsClass(ctx, CLASS_newid, bcid, pa);
 	}
@@ -834,7 +854,7 @@ KNHAPI2(knh_param_t*) knh_ParamArray_get(knh_ParamArray_t *pa, size_t n)
 knh_type_t knh_ParamArray_getptype(knh_ParamArray_t *pa, size_t n)
 {
 	if(!(n < pa->psize)) {
-		if(pa->psize == 0) return TYPE_dynamic;
+		if(pa->psize == 0) return TYPE_dyn;
 		n = pa->psize-1;
 	}
 	return knh_ParamArray_get(pa, n)->type;

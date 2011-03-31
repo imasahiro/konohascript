@@ -782,7 +782,7 @@ static void knh_shell(CTX ctx)
 		BytesInputStream_setpos(ctx, bin, 0, BA_size(DP(bin)->ba));
 		knh_cwb_clear(cwb, 0);
 		SP(bin)->uline = 1; // always line1
-		knh_eval(ctx, bin, TYPE_dynamic, results);
+		knh_eval(ctx, bin, TYPE_dyn, results);
 		knh_OutputStream_flush(ctx, ctx->out);
 		if(ctx->out != DP(ctx->sys)->out) {
 			knh_Bytes_t *outbuf = DP(ctx->out)->ba;

@@ -1318,20 +1318,13 @@ typedef struct knh_KonohaCode_t {
 /* ------------------------------------------------------------------------ */
 //## @Cyclic class Tdynamic Object knh_dynamic_t;
 
-struct knh_RawPtr_t;
-//typedef void (*knh_FfreeRawPtr)(CTX, struct knh_RawPtr_t *o);
-
 typedef struct knh_RawPtr_t {
 	knh_hObject_t h;
-	void *ptr;
-//	knh_FfreeRawPtr pfree;
 } knh_RawPtr_t ;
 
 #define CLASS_dynamic   CLASS_Tdynamic
+#define TYPE_dyn        TYPE_Tdynamic
 #define TYPE_dynamic    TYPE_Tdynamic
-//#define CLASS_RawPtr    CLASS_Tdynamic
-
-//typedef knh_RawPtr_t knh_dynamic_t;
 
 /* ------------------------------------------------------------------------ */
 

@@ -49,14 +49,6 @@ extern "C" {
 #define KC_INFO      LOG_INFO
 #define KC_DEBUG     LOG_DEBUG
 
-///* ------------------------------------------------------------------------ */
-///* [perror] */
-//
-//void knh_foundKonohaStyle(CTX ctx, size_t score)
-//{
-////	DP(ctx->gma)->statKonohaStyle += score;
-//}
-
 /* ------------------------------------------------------------------------ */
 /* @data */
 
@@ -260,9 +252,13 @@ knh_Token_t* ErrorRegexCompilation(CTX ctx, knh_Token_t *tk, const char *regname
 {
 	return knh_Token_toERR(ctx, tk, _("%s compile error: /%s/"), regname, regdata);
 }
-knh_Token_t* ErrorUndefinedName(CTX ctx, knh_Token_t *tk)
+knh_Token_t* ERROR_UndefinedName(CTX ctx, knh_Token_t *tk)
 {
-	return knh_Token_toERR(ctx, tk, _("undefined name: %L"), tk);
+	return knh_Token_toERR(ctx, tk, _("undefined name: %O"), tk);
+}
+void WARN_UndefinedName(CTX ctx, knh_Token_t *tk)
+{
+	Gamma_perror(ctx, KC_EWARN, _("undefined name: %O"), tk);
 }
 knh_Token_t* ErrorTokenAlreadyDefinedName(CTX ctx, knh_Token_t *tk)
 {
@@ -366,10 +362,6 @@ knh_Token_t* ErrorNotStaticMethod(CTX ctx, knh_Method_t *mtd)
 {
 	return Gamma_perror(ctx, KC_ERR, _("not static: %C.%M"), (mtd)->cid, (mtd)->mn);
 }
-knh_Token_t* ErrorUnknownClass(CTX ctx, knh_Token_t *tk)
-{
-	return Gamma_perror(ctx, KC_TERROR, "unknown class: %L", tk);
-}
 knh_Token_t* ErrorUndefinedClassConst(CTX ctx, knh_Token_t *tk, knh_bytes_t name)
 {
 	return Gamma_perror(ctx, KC_TERROR, "undefined const: %L.%B", tk, name);
@@ -394,9 +386,9 @@ void WarningTooManyParameters(CTX ctx)
 {
 	Gamma_perror(ctx, KC_DWARN, _("too many parameters"));
 }
-knh_Token_t* ErrorNewNeedsClass(CTX ctx)
+knh_Token_t* ERROR_Needs(CTX ctx, const char *what)
 {
-	return Gamma_perror(ctx, KC_TERROR, _("needs class"));
+	return Gamma_perror(ctx, KC_ERR, _("needs %s"), what);
 }
 knh_Token_t* ErrorUnknownConstructor(CTX ctx, knh_Token_t *tk, knh_class_t mtd_cid)
 {

@@ -678,8 +678,8 @@ static knh_Method_t *Script_getEvalMethod(CTX ctx, knh_Script_t *scr)
 {
 	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, O_cid(scr), MN_LAMBDA);
 	if(mtd == NULL) {
-		mtd = new_Method(ctx, 0, O_cid(scr), MN_LAMBDA, NULL);
-		KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayR0(ctx, TYPE_dynamic));
+		mtd = new_Method(ctx, FLAG_Method_Hidden, O_cid(scr), MN_LAMBDA, NULL);
+		KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayR0(ctx, TYPE_var));
 		knh_NameSpace_addMethod(ctx, O_cid(scr), mtd);
 	}
 	return mtd;
@@ -796,7 +796,7 @@ static knh_bool_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_type_t reqt, knh_A
 						cid = O_cid(lsfp[rtnidx].o);
 						if(cid != CLASS_ExceptionHandler && class_isa(cid, stmttype)) {
 							KNH_SETv(ctx, ((knh_context_t*)ctx)->evaled, lsfp[rtnidx].o);
-							if(reqt != TYPE_void && (reqt == TYPE_dynamic || class_isa(cid, reqt))) {
+							if(reqt != TYPE_void && (reqt == TYPE_dyn || class_isa(cid, reqt))) {
 								knh_Array_add(ctx, resultsNULL, lsfp[rtnidx].o);
 							}
 							else {

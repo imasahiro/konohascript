@@ -2975,17 +2975,25 @@ static knh_Stmt_t *new_StmtMETA(CTX ctx, knh_term_t stt, tkitr_t *itr, int shift
 
 static int Token_isMAP(CTX ctx, knh_Token_t *tk)
 {
+	int isMAP = 1;
 	if(TT_(tk) == TT_BRACE) {
 		tkitr_t tbuf, *titr = ITR_new(tk, &tbuf);
-		int i, c = 0;
-		for(i = 0; i < titr->e; i++) {
-			knh_Token_t *tkI = titr->ts[i];
-			if(TT_(tkI) < TT_DOTS || TT_(tkI) == TT_LET) return 0;
-			if(TT_(tkI) == TT_COLON) c++;
+		if(titr->e > 0) {
+			int i, c = 0;
+			for(i = 0; i < titr->e; i++) {
+				knh_Token_t *tkN = titr->ts[i];
+				if(TT_(tkN) <= TT_FINALLY) {
+					isMAP = 0;
+					goto L_RETURN;
+				}
+				if(TT_(tkN) == TT_COLON) c++;
+			}
+			if(c > 0) isMAP = 1;
 		}
-		if(titr->e == 0 || c > 0) return 1;
 	}
-	return 0;
+	DBG_P("@@@@@@@ RES=%d", isMAP);
+	L_RETURN:;
+	return isMAP;
 }
 
 static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
