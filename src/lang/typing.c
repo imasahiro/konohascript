@@ -50,6 +50,7 @@ static knh_Token_t *Stmt_typing(CTX ctx, knh_Stmt_t *stmtITR, knh_type_t reqt);
 static knh_Token_t *CALL_typing(CTX ctx, knh_Stmt_t *stmtITR, knh_class_t reqt);
 static knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh_flag_t opflag);
 
+#define TYPE_STMT      TYPE_var
 #define STT_DECLFIELD  STT_DECL
 #define STT_DECLSCRIPT STT_DECL
 
@@ -3384,8 +3385,8 @@ static knh_Token_t *ASSURE_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		KNH_SETv(ctx, tmNN(stmt, 0), stmtCALL);
 		TYPING(ctx, stmt, 0, CLASS_Assurance, 0); // To make constant
 	}
-	TYPING_STMTs(ctx, stmt, 1/*{}*/, TYPE_void);
 	Tn_it(ctx, stmt, 2/*VAL*/, Tn_type(stmt, 0));
+	TYPING_STMTs(ctx, stmt, 1/*{}*/, TYPE_void);
 	END_BLOCK(esp);
 	return Stmt_typed(ctx, stmt, TYPE_void);
 }
@@ -4334,7 +4335,6 @@ static knh_Token_t *Stmt_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 			CASE_STMT(THROW, stmt, reqt);
 			CASE_STMT(RETURN, stmt, reqt);
 			CASE_STMT(YIELD, stmt, reqt);
-//			CASE_STMT(SEND, stmt, reqt);
 			CASE_STMT(PRINT, stmt, reqt);
 			CASE_STMT(REGISTER, stmt);
 			CASE_STMT(ASSURE, stmt, reqt);

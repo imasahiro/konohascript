@@ -2372,11 +2372,15 @@ static void Assurance_checkout(CTX ctx, Object *o, int isFailed)
 	else {
 		knh_intptr_t t = (knh_getTimeMilliSecond() / 1000) - g->stime;
 		if(t > 1) {
-			KNH_SYSLOG_(ctx, NULL, LOG_NOTICE, "ac", "PASSED", "id=%d, case='%s', time=%ds", (int)g->aid, S_tochar(g->msg), (int)t);
+			KNH_SYSLOG_(ctx, NULL, LOG_NOTICE, "ac", "CHECKOUT", "id=%d, case='%s', time=%ds", (int)g->aid, S_tochar(g->msg), (int)t);
 		}
 		else {
-			KNH_SYSLOG_(ctx, NULL, LOG_NOTICE, "ac", "PASSED", "id=%d, case='%s'", (int)g->aid, S_tochar(g->msg));
+			KNH_SYSLOG_(ctx, NULL, LOG_NOTICE, "ac", "CHECKOUT", "id=%d, case='%s'", (int)g->aid, S_tochar(g->msg));
 		}
+	}
+	if(knh_getUFILE() != NULL) {
+		const char *results = (isFailed) ? "FAILED" : "PASSED";
+		fprintf(knh_getUFILE(), "@%s %s\n", S_tochar(g->msg), results);
 	}
 }
 

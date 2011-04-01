@@ -351,6 +351,20 @@ static void opt_help(CTX ctx, int mode, const char *optstr)
 	exit(0);
 }
 
+static FILE* uout = NULL;  // @see Assurance_write
+
+static void opt_utest(CTX ctx, int mode, const char *optstr)
+{
+	char fname[80];
+	knh_snprintf(fname, sizeof(fname), "UnitTest%d.txt", (int)K_REVISION);
+	uout = fopen(fname, "a");
+}
+
+FILE *knh_getUFILE(void)
+{
+	return uout;
+}
+
 /* ----------------------------------------------------------------------- */
 
 typedef void (*knh_Fsetopt)(CTX, int, const char *);
@@ -376,6 +390,7 @@ static knh_optdata_t optdata[] = {
 	{"-P", OPT_STRING, knh_setStartUpPackage},
 	{"-W", OPT_NUMBER, opt_W},
 	{"-h", OPT_EMPTY, opt_help},
+	{"--utest", OPT_EMPTY, opt_utest},
 	{"--help", OPT_EMPTY, opt_help},
 	{"-V", OPT_EMPTY, opt_version},
 	{"--version", OPT_EMPTY, opt_version},
@@ -610,7 +625,6 @@ static void* shell_init(CTX ctx, const char *msg, const char *optstr)
 	return NULL; // nostatus
 }
 
-
 static void shell_display(CTX ctx, void *status, const char *msg)
 {
 	fputs(msg, stdout);
@@ -811,13 +825,7 @@ static void konoha_shell(konoha_t konoha, char *optstr)
 	KONOHA_CHECK_(konoha);
 	CTX ctx = (CTX)konoha.ctx;
 	KONOHA_BEGIN(konoha.ctx);
-	char *path = knh_getenv("KONOHA_SHELL");
-	if(path != NULL) {
-		knh_loadScriptPackageList(ctx, path);
-	}
-	else {
-		knh_loadScriptPackageList(ctx, "konoha.i?");
-	}
+	knh_loadScriptPackageList(ctx, "konoha.i?");
 #ifdef K_USING_SECURITY_ALERT
 	knh_askSecurityAlert(ctx);
 #endif
@@ -830,18 +838,11 @@ static void konoha_shell(konoha_t konoha, char *optstr)
 
 void konoha_main(konoha_t konoha, int argc, const char **argv)
 {
-#if defined(K_USING_BTRON)
-	char **args = knh_tcstoeucs(argc, argv);
-#else
 	const char** args = argv;
-#endif
 	int n = konoha_parseopt(konoha, argc, args);
 	if(argc - n == 0) {
 		konoha_shell(konoha, NULL);
 	}
-//	else if(isTestMode) {
-//		konoha_runTest(konoha, argc - n, args + n);
-//	}
 	else {
 		int isCompileOnly = CTX_isCompiling(konoha.ctx);
 		if(konoha_load(konoha, B(args[n]), isCompileOnly) != -1) {
@@ -852,12 +853,13 @@ void konoha_main(konoha_t konoha, int argc, const char **argv)
 				}
 			}
 		}
-//		else {
-//			KNH_SYSLOG(konoha.ctx, LOG_CRIT, "FailedLaunchScript", "script='%s'", args[n]);
-//		}
+	}
+	if(uout != NULL) {
+		fclose(uout);
 	}
 }
 
+/*************************************************************************** */
 
 #ifdef __cplusplus
 }

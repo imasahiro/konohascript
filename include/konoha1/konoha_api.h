@@ -543,6 +543,7 @@ knh_bool_t knh_isAuditLogging(int pe);
 knh_bool_t knh_isVerboseLogging(int pe);
 knh_bool_t knh_shouldWarnMessage(int pe);
 void knh_loadScriptPackageList(CTX ctx, const char *pkglist);
+FILE *knh_getUFILE(void);
 knh_bytes_t knh_bytes_nsname(knh_bytes_t t);
 void knh_setSecurityAlertMessage(const char *msg, int isNeedFree);
 void konoha_main(konoha_t konoha, int argc, const char **argv);
