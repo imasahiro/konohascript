@@ -1039,16 +1039,19 @@ static void Token_addBLOCKERR(CTX ctx, knh_Token_t *tkB, knh_InputStream_t *in)
 {
 	tkB->uline = in->uline;
 	(ctx->gma)->uline = in->uline;
-	Token_add(ctx, tkB, ErrorBlock(ctx, "}"));
+	Token_add(ctx, tkB, ERROR_Block(ctx, "}"));
 }
 
 static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStream_t *in, int block_indent)
 {
-	int ch, prev = '{', level = 1;
+	int c, ch, prev = '{', level = 1;
 	Token_addBuf(ctx, tkB, cwb, TT_UNTYPED, '{');
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
+		if(ch != '\t' && ch != ' ') goto L_STARTLINE;
+	}
+	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
 		L_STARTLINE:;
-		if(ch == '}'/* && prev != '\\'*/) {
+		if(ch == '}') {
 			level--;
 			if(level == 0) {
 				Token_addBuf(ctx, tkB, cwb, TT_CODE, ch);
@@ -1056,13 +1059,11 @@ static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputS
 			}
 		}
 		knh_Bytes_putc(ctx, cwb->ba, ch);
-		/* ide's parser pactch ==> sorry, not s*/
-		//if(ch == '\n') break;
 		if(ch == '\n') {
 			prev = ch;
 			break;
 		}
-		if(ch == '{'/* && prev != '\\'*/) {
+		if(ch == '{') {
 			level++;
 		}
 		else if(ch == '\'' && (islower(prev) || prev == '\'')) {
@@ -1083,21 +1084,19 @@ static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputS
 		}
 		prev = ch;
 	}
-	/*NEWLINE*/{
-		int c = 0;
-		while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
-			if(ch == '\t') { c += 3; }
-			else if(ch == ' ') { c += 1; }
-			else {
-				if(block_indent <= c) {
-					goto L_STARTLINE;
-				}
-				DBG_P("block_indent=%d, c=%d", block_indent, c);
-				break;
-			}
+	c = 0;
+	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
+		if(ch == '\t') { c += 3; continue; }
+		if(ch == ' ') { c += 1; continue; }
+		//DBG_P("block_indent=%d, c=%d", block_indent, c);
+		if(block_indent <= c) {
+			goto L_STARTLINE;
 		}
+		//DBG_P("block_indent=%d, c=%d", block_indent, c);
+		break;
 	}
 	knh_cwb_clear(cwb, 0);
+	DBG_P("block_indent=%d, c=%d, last=%d", block_indent, c, ch);
 	Token_addBLOCKERR(ctx, tkB, in);
 }
 

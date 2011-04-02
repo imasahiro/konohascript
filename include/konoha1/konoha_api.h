@@ -257,7 +257,7 @@ void WarningNoEffect(CTX ctx);
 knh_Token_t* ErrorMisplaced(CTX ctx);
 knh_Token_t* ErrorStaticType(CTX ctx, const char *msg);
 knh_Token_t* ErrorFieldAddition(CTX ctx, knh_class_t cid);
-knh_Token_t* ErrorBlock(CTX ctx, const char* ch);
+knh_Token_t* ERROR_Block(CTX ctx, const char* ch);
 knh_Token_t* SyntaxErrorWithHint(CTX ctx, const char* keyword K_TRACEARGV);
 knh_Token_t* SyntaxErrorTokenIsNot(CTX ctx, knh_Token_t *tk, const char* whatis);
 knh_Token_t* ErrorRequired(CTX ctx, knh_Token_t *tk, const char *stmtexpr, const char *token);

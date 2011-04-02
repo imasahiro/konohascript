@@ -233,7 +233,7 @@ knh_Token_t* ErrorFieldAddition(CTX ctx, knh_class_t cid)
 {
 	return Gamma_perror(ctx, KC_ERR, _("%C is unable to add new fields"), cid);
 }
-knh_Token_t* ErrorBlock(CTX ctx, const char* ch)
+knh_Token_t* ERROR_Block(CTX ctx, const char* ch)
 {
 	return Gamma_perror(ctx, KC_ERR, _("syntax error: wrong block and indent"));
 }
