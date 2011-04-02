@@ -22,6 +22,12 @@
 /* Define to 1 if you have the `sqlite3' library (-lsqlite3). */
 #cmakedefine HAVE_LIBSQLITE3 1
 
+/* Define to 1 if you have the `iconv' library (-liconv). */
+#cmakedefine HAVE_LIBICONV 1
+
+/* Define to 1 if you have the `pthread' library (-lptread). */
+#cmakedefine HAVE_PTHREAD 1
+
 /* Define to 1 if you have the <limits.h> header file. */
 #cmakedefine HAVE_LIMITS_H 1
 
@@ -85,6 +91,21 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #cmakedefine HAVE_UNISTD_H
 
+/* Define to 1 if you have the <pcre.h> header file. */
+#cmakedefine HAVE_PCRE_H 1
+
+/* Define to 1 if you have the `libiconv_open' function. */
+#cmakedefine HAVE_ICONV_LIBICONV_OPEN 1
+
+/* Define to 1 if you have the `iconv_open' function. */
+#cmakedefine HAVE_ICONV_ICONV_OPEN    1
+
+/* Define to 1 if you have the `libiconv_open' function in libiconv. */
+#cmakedefine HAVE_ICONV_LIBICONV_OPEN_SYM   1
+
+/* Define to 1 if you have the `iconv_open' function in libiconv. */
+#cmakedefine HAVE_ICONV_ICONV_OPEN_SYM   1
+
 /* arch type */
 #cmakedefine K_CONFIG_ARCH "${K_CONFIG_ARCH}"
 
@@ -95,7 +116,7 @@
 #cmakedefine K_CONFIG_OS "${K_CONFIG_OS}"
 
 /* Difining konoha library prefix with default value */
-#undef K_PREFIX "${CMAKE_INSTALL_PREFIX}
+#undef K_PREFIX "${CMAKE_INSTALL_PREFIX}"
 
 /* Enable debug mode */
 #cmakedefine K_USING_DEBUG ${K_USING_DEBUG}
@@ -147,4 +168,3 @@
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
-
