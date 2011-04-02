@@ -20,6 +20,8 @@ extern "C" {
 #define MN_newTUPLE  MN_new__TUPLE
 #define MN_newMAP    MN_new__MAP
 
+#define TYPE_STMT      TYPE_var
+
 #define K_SYSVAL_CTX    0
 #define K_SYSVAL_CTXIN  1
 #define K_SYSVAL_CTXOUT 2

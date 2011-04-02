@@ -887,8 +887,7 @@ KNHAPI2(knh_type_t) knh_ParamArray_rtype(knh_ParamArray_t *pa)
 		knh_param_t *p = knh_ParamArray_rget(pa, 0);
 		return p->type;
 	}
-	if(ParamArray_isRVAR(pa)) return TYPE_var;
-	return TYPE_void;
+	return (ParamArray_isRVAR(pa)) ? TYPE_var : TYPE_void;
 }
 
 /* ------------------------------------------------------------------------ */

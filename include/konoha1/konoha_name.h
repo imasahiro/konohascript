@@ -2,8 +2,8 @@
 
 /* ------------------------------------------------------------------------ */
 /* MACROS */
-#define K_REVISION                      85
-#define K_BUILDID                       1081
+#define K_REVISION                      92
+#define K_BUILDID                       1082
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -664,13 +664,16 @@
 #define FLAG_Token_MEMO1 ((knh_flag_t)(1<<7))
 #define Token_isMEMO1(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Token_MEMO1))
 #define Token_setMEMO1(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Token_MEMO1,b)
-#define FLAG_Stmt_TailReturn ((knh_flag_t)(1<<1))
-#define Stmt_isTailReturn(o)  (TFLAG_is(knh_flag_t,DP(o)->flag0,FLAG_Stmt_TailReturn))
-#define Stmt_setTailReturn(o,b) TFLAG_set(knh_flag_t,DP(o)->flag0,FLAG_Stmt_TailReturn,b)
-#define FLAG_Stmt_Memo1 ((knh_flag_t)(1<<2))
+#define FLAG_Stmt_STOPITR ((knh_flag_t)(1<<1))
+#define Stmt_isSTOPITR(o)  (TFLAG_is(knh_flag_t,DP(o)->flag0,FLAG_Stmt_STOPITR))
+#define Stmt_setSTOPITR(o,b) TFLAG_set(knh_flag_t,DP(o)->flag0,FLAG_Stmt_STOPITR,b)
+#define FLAG_Stmt_CONST ((knh_flag_t)(1<<2))
+#define Stmt_isCONST(o)  (TFLAG_is(knh_flag_t,DP(o)->flag0,FLAG_Stmt_CONST))
+#define Stmt_setCONST(o,b) TFLAG_set(knh_flag_t,DP(o)->flag0,FLAG_Stmt_CONST,b)
+#define FLAG_Stmt_Memo1 ((knh_flag_t)(1<<4))
 #define Stmt_isMemo1(o)  (TFLAG_is(knh_flag_t,DP(o)->flag0,FLAG_Stmt_Memo1))
 #define Stmt_setMemo1(o,b) TFLAG_set(knh_flag_t,DP(o)->flag0,FLAG_Stmt_Memo1,b)
-#define FLAG_Stmt_Memo2 ((knh_flag_t)(1<<3))
+#define FLAG_Stmt_Memo2 ((knh_flag_t)(1<<5))
 #define Stmt_isMemo2(o)  (TFLAG_is(knh_flag_t,DP(o)->flag0,FLAG_Stmt_Memo2))
 #define Stmt_setMemo2(o,b) TFLAG_set(knh_flag_t,DP(o)->flag0,FLAG_Stmt_Memo2,b)
 #define FLAG_Gamma_Quiet ((knh_flag_t)(1<<1))

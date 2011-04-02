@@ -2152,7 +2152,6 @@ static void SEND_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 
 static void EXPR_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
-	if(Stmt_isTailReturn(stmt)) sfpidx = K_RTNIDX;
 	switch(STT_(stmt)) {
 	CASE_ASM(LET, reqt, sfpidx);
 	CASE_ASM(FUNCCALL, reqt, sfpidx);
@@ -2172,9 +2171,6 @@ static void EXPR_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 		DBG_ABORT("unknown stt=%s", TT__(STT_(stmt)));
 	}
 	ASM_BOX2(ctx, reqt, SP(stmt)->type, sfpidx);
-	if(sfpidx == K_RTNIDX) {
-		ASM_RET(ctx, stmt);
-	}
 }
 
 static void Tn_asm(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, int local)

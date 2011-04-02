@@ -1098,9 +1098,10 @@ typedef struct knh_Token_t {
 
 /* ------------------------------------------------------------------------ */
 //## @Struct class Stmt Object;
-//## flag Stmt TailReturn 1 DP(%s)->flag0 is set * *;
-//## flag Stmt Memo1      2 DP(%s)->flag0 is set * *;
-//## flag Stmt Memo2      3 DP(%s)->flag0 is set * *;
+//## flag Stmt STOPITR    1 DP(%s)->flag0 is set * *;
+//## flag Stmt CONST      2 DP(%s)->flag0 is set * *;
+//## flag Stmt Memo1      4 DP(%s)->flag0 is set * *;
+//## flag Stmt Memo2      5 DP(%s)->flag0 is set * *;
 
 /* STT_METHOD*/
 #define StmtMETHOD_isVARGs(s)          Stmt_isMemo1(s)
@@ -1115,6 +1116,8 @@ typedef struct knh_Token_t {
 /* STT_CALL*/
 #define Stmt_isTAILRECURSION(s)       Stmt_isMemo1(s)
 #define Stmt_setTAILRECURSION(s,b)    Stmt_setMemo1(s,b)
+#define Stmt_isCLASSCONSTDEF(s)       Stmt_isMemo2(s)
+#define Stmt_setCLASSCONSTDEF(s,b)    Stmt_setMemo2(s,b)
 
 /* STT_FUNCCALL*/
 #define Stmt_isDYNCALL(s)       Stmt_isMemo1(s)

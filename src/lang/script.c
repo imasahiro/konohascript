@@ -695,27 +695,27 @@ static knh_bool_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_type_t reqt, knh_A
 	while(stmt != NULL) {
 		ctx->gma->uline = stmt->uline;
 		switch(STT_(stmt)) {
-		case STT_NAMESPACE:
-		{
-			knh_NameSpace_t *ns = new_NameSpace(ctx, KNH_GMA_NS);
-			KNH_SETv(ctx, KNH_GMA_NS, ns);
-			isCONTINUE = Stmt_eval(ctx, stmtNN(stmt, 0), reqt, resultsNULL);
-			DBG_ASSERT(KNH_GMA_NS == ns);
-			DBG_ASSERT(DP(ns)->parentNULL != NULL);
-			KNH_SETv(ctx, KNH_GMA_NS, DP(ns)->parentNULL);
-			knh_Stmt_done(ctx, stmt);
-			break;
-		}
-		case STT_SCRIPT:
-		{
-			knh_Script_t *pscript = knh_getGammaScript(ctx);
-			knh_Script_t *script = new_(Script);
-			KNH_SETv(ctx, DP(ctx->gma)->script, script);
-			isCONTINUE = Stmt_eval(ctx, stmtNN(stmt, 0), reqt, resultsNULL);
-			KNH_SETv(ctx, DP(ctx->gma)->script, pscript);
-			knh_Stmt_done(ctx, stmt);
-			break;
-		}
+//		case STT_NAMESPACE:
+//		{
+//			knh_NameSpace_t *ns = new_NameSpace(ctx, KNH_GMA_NS);
+//			KNH_SETv(ctx, KNH_GMA_NS, ns);
+//			isCONTINUE = Stmt_eval(ctx, stmtNN(stmt, 0), reqt, resultsNULL);
+//			DBG_ASSERT(KNH_GMA_NS == ns);
+//			DBG_ASSERT(DP(ns)->parentNULL != NULL);
+//			KNH_SETv(ctx, KNH_GMA_NS, DP(ns)->parentNULL);
+//			knh_Stmt_done(ctx, stmt);
+//			break;
+//		}
+//		case STT_SCRIPT:
+//		{
+//			knh_Script_t *pscript = knh_getGammaScript(ctx);
+//			knh_Script_t *script = new_(Script);
+//			KNH_SETv(ctx, DP(ctx->gma)->script, script);
+//			isCONTINUE = Stmt_eval(ctx, stmtNN(stmt, 0), reqt, resultsNULL);
+//			KNH_SETv(ctx, DP(ctx->gma)->script, pscript);
+//			knh_Stmt_done(ctx, stmt);
+//			break;
+//		}
 //		case STT_IF: /* Conditional Compilation */
 //		if(knh_Stmt_flag(ctx, stmt, "Static", 1)) {
 //			knh_Gamma_initThisScript(ctx);
@@ -738,8 +738,8 @@ static knh_bool_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_type_t reqt, knh_A
 			break;
 		case STT_CONTINUE:
 			knh_Stmt_done(ctx, stmt); break;
-		case STT_RETURN:
-			WarningMuchBetter(ctx, "break");
+//		case STT_RETURN:
+//			WarningMuchBetter(ctx, "break");
 		case STT_BREAK:
 			isCONTINUE = 0;
 		}
@@ -768,7 +768,6 @@ static knh_bool_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_type_t reqt, knh_A
 		if(STT_(stmt) != STT_DONE) {
 			knh_Script_t *scr = knh_getGammaScript(ctx);
 			knh_Method_t *mtd = Script_getEvalMethod(ctx, scr);
-			int isExpr = stmt_isExpr(STT_(stmt));
 			int rtnidx=3+1, thisidx = rtnidx + K_CALLDELTA;
 			knh_class_t cid =  O_cid(ctx->evaled);
 			if(STT_(stmt) == STT_ERR) {
@@ -791,17 +790,12 @@ static knh_bool_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_type_t reqt, knh_A
 				}
 				klr_setesp(ctx, lsfp + thisidx+2);
 				if(knh_VirtualMachine_run(ctx, lsfp + thisidx, CODE_LAUNCH) == NULL) {
-					knh_type_t stmttype = SP(stmt)->type;
-					if(isExpr && stmttype != TYPE_void) {
+					//DBG_P("returning sfpidx=%d, rtnidx=%d, %s %lld %ld %f", sfpidx_, sfpidx_ + rtnidx, O__(lsfp[rtnidx].o), lsfp[rtnidx].ivalue, lsfp[rtnidx].bvalue, lsfp[rtnidx].fvalue);
+					if(STT_(stmt) == STT_RETURN) {
 						cid = O_cid(lsfp[rtnidx].o);
-						if(cid != CLASS_ExceptionHandler && class_isa(cid, stmttype)) {
-							KNH_SETv(ctx, ((knh_context_t*)ctx)->evaled, lsfp[rtnidx].o);
-							if(reqt != TYPE_void && (reqt == TYPE_dyn || class_isa(cid, reqt))) {
-								knh_Array_add(ctx, resultsNULL, lsfp[rtnidx].o);
-							}
-							else {
-								DBG_P("returning sfpidx=%d, rtnidx=%d, %s %lld %ld %f", sfpidx_, sfpidx_ + rtnidx, O__(lsfp[rtnidx].o), lsfp[rtnidx].ivalue, lsfp[rtnidx].bvalue, lsfp[rtnidx].fvalue);
-							}
+						KNH_SETv(ctx, ((knh_context_t*)ctx)->evaled, lsfp[rtnidx].o);
+						if(reqt != TYPE_void && (reqt == TYPE_dyn || class_isa(cid, reqt))) {
+							knh_Array_add(ctx, resultsNULL, lsfp[rtnidx].o);
 						}
 					}
 				}

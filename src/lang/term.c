@@ -1742,6 +1742,7 @@ static knh_Stmt_t *new_StmtREUSE(CTX ctx, knh_Stmt_t *stmt, knh_term_t stt)
 /* EXPR */
 
 knh_short_t TT_to(knh_term_t tt);
+
 static int ITR_indexLET(tkitr_t *itr)
 {
 	knh_Token_t **ts = itr->ts; int i;
@@ -1794,10 +1795,12 @@ static void _EXPRLET(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, knh_index_t idx)
 			KNH_SETv(ctx, (tkM)->data, (tkS)->data);
 			(tkM)->mn = (tkS)->mn;
 			KNH_SETv(ctx, tkNN(stmt, 0), tkM);
-			DBG_ASSERT(IS_Token(tkM));
 			if(Token_isGetter(tkM)) {
 				Token_setGetter(tkM, 0);
 				Token_setSetter(tkM, 1);
+				if(isupper(S_tochar(tkM->text)[0])) {
+					Stmt_setCLASSCONSTDEF(stmt, 1);
+				}
 				_EXPR(ctx, stmt, itr);
 				return;
 			}
@@ -2150,7 +2153,7 @@ static void _EXPR1(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			STT_(stmt) = STT_FUNCTION;
 			if(ITR_is(itr, TT_FUNCNAME) || ITR_is(itr, TT_UFUNCNAME)) {
 				knh_Token_t *tkN = ITR_nextTK(itr);
-				WarningIgnored(ctx, _("function name"), S_tochar(tkN->text));
+				WARN_Ignored(ctx, _("function name"), CLASS_unknown, S_tochar(tkN->text));
 			}
 			if(ITR_is(itr, TT_PARENTHESIS) && ITR_isN(itr, +1, TT_CODE)) {
 				tkCUR = new_Token(ctx, TT_DOC);
@@ -2485,6 +2488,59 @@ static void _PARAM(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	}
 }
 
+static knh_bool_t Stmt_checkDepth(knh_Stmt_t *stmt, int depth, int max)
+{
+	if(depth > max) return 1;
+	else {
+		size_t i;
+		for(i = 0; i < DP(stmt)->size; i++) {
+			knh_Stmt_t *stmt2 = stmtNN(stmt, i);
+			if(IS_Stmt(stmt2)) {
+				if(Stmt_checkDepth(stmt2, depth+1, max)) return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+static knh_Stmt_t *Stmt_norm(CTX ctx, knh_Stmt_t *stmt)
+{
+	knh_Stmt_t *stmtITR = stmt;
+	knh_Stmt_t *stmtPREV = NULL, *stmtLAST = NULL;
+	while(stmtITR != NULL) {
+		if(Stmt_checkDepth(stmtITR, 0, 64)) {
+			knh_Stmt_toERR(ctx, stmtITR, NULL); // TODO
+		}
+		if(STT_(stmtITR) == STT_RETURN || STT_(stmtITR) == STT_THROW) {
+			if(DP(stmtITR)->nextNULL != NULL) {
+				KNH_FINALv(ctx, DP(stmtITR)->nextNULL);
+			}
+			stmtLAST = NULL;
+			break;
+		}
+		stmtPREV = stmtLAST;
+		stmtLAST = stmtITR;
+		stmtITR = DP(stmtITR)->nextNULL;
+	}
+	if(stmtLAST != NULL) {
+		ctx->gma->uline = stmtLAST->uline;
+		if(STT_(stmtLAST) == STT_CALL1) {
+			STT_(stmtLAST) = STT_RETURN;
+		}
+		else if(stmt_isExpr(STT_(stmtLAST)) && STT_(stmtLAST) != STT_LET) {
+			knh_Stmt_t *stmtRETURN = new_Stmt2(ctx, STT_RETURN, stmtLAST, NULL);
+			if(stmtPREV != NULL) {
+				KNH_SETv(ctx, DP(stmtPREV)->nextNULL, stmtRETURN);
+			}
+			else {
+				stmt = stmtRETURN;
+			}
+			stmtLAST = NULL;
+		}
+	}
+	return stmt;
+}
+
 static void _STMTs(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 {
 	knh_Stmt_t *stmtHEAD = NULL, *stmtTAIL = NULL;
@@ -2502,7 +2558,7 @@ static void _STMTs(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	if(stmtHEAD == NULL) {
 		stmtHEAD = new_Stmt2(ctx, STT_DONE, NULL);
 	}
-	knh_Stmt_add(ctx, stmt, stmtHEAD);
+	knh_Stmt_add(ctx, stmt, Stmt_norm(ctx, stmtHEAD));
 }
 
 static void _STMT1(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
@@ -2515,7 +2571,7 @@ static void _STMT1(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		_STMTs(ctx, stmt, stmtitr);
 	}
 	else {
-		knh_Stmt_add(ctx, stmt, new_StmtSTMT1(ctx, itr));
+		knh_Stmt_add(ctx, stmt, Stmt_norm(ctx, new_StmtSTMT1(ctx, itr)));
 	}
 }
 
@@ -2842,7 +2898,7 @@ static void _CODE(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	}
 	if(ITR_is(itr, TT_CODE)) {
 		if(hasCODE) {
-			WarningIgnored(ctx, "block", S_tochar(ITR_nextTK(itr)->text));
+			WARN_Ignored(ctx, "block", CLASS_unknown, S_tochar(ITR_nextTK(itr)->text));
 		}
 		else {
 			_CODEDOC(ctx, stmt, itr);
@@ -2852,7 +2908,7 @@ static void _CODE(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	else if(ITR_is(itr, TT_DARROW) || ITR_is(itr, TT_COLON)) {
 		tkitr_t stmtbuf, *stmtitr = ITR_stmt(ctx, itr, 0, &stmtbuf, 1);
 		if(hasCODE) {
-			WarningIgnored(ctx, "=>", "");
+			WARN_Ignored(ctx, "=>", CLASS_unknown, NULL);
 		}
 		else {
 			_CODEDOC(ctx, stmt, stmtitr);
@@ -2863,7 +2919,7 @@ static void _CODE(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	else if(ITR_is(itr, TT_USING)) {
 		tkitr_t stmtbuf, *stmtitr = ITR_stmt(ctx, itr, 0, &stmtbuf, 1);
 		if(hasCODE) {
-			WarningIgnored(ctx, "using", "");
+			WARN_Ignored(ctx, "using", CLASS_unknown, NULL);
 		}
 		else {
 			StmtMETHOD_setFFI(stmt, 1);

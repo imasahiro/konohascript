@@ -104,7 +104,7 @@ static knh_String_t *Gamma_vperror(CTX ctx, int pe, const char *fmt, va_list ap)
 	if(pe != KC_DEBUG && (CTX_isInteractive(ctx) || CTX_isCompiling(ctx))) {
 		isPRINT = 1;
 	}
-	if(Gamma_isQuiet(ctx->gma)) {
+	if(Gamma_isQuiet(ctx->gma) || ctx->gma->uline == 0) {
 		isPRINT = 0;
 	}
 	if(isPRINT == 1) {
@@ -191,6 +191,15 @@ static knh_Token_t *knh_Token_toERR(CTX ctx, knh_Token_t *tk, const char *fmt, .
 	return tk;
 }
 
+knh_Token_t* ERROR_Unsupported(CTX ctx, const char *msg)
+{
+	return Gamma_perror(ctx, KC_ERR, _("unsupported %s"), msg);
+}
+void WARN_Unsupported(CTX ctx, const char *msg)
+{
+	Gamma_perror(ctx, KC_DWARN, _("unsupported %s"), msg);
+}
+
 void BadPracticeSemicolon(CTX ctx)
 {
 	if(!CTX_isInteractive(ctx))
@@ -251,6 +260,15 @@ void WarningNotInitialized(CTX ctx, knh_Token_t *tk, const char *tool)
 knh_Token_t* ErrorRegexCompilation(CTX ctx, knh_Token_t *tk, const char *regname, const char *regdata)
 {
 	return knh_Token_toERR(ctx, tk, _("%s compile error: /%s/"), regname, regdata);
+}
+knh_Token_t* ERROR_Undefined(CTX ctx, const char *whatis, knh_class_t cid, knh_Token_t *tk)
+{
+	if(cid != CLASS_unknown) {
+		return knh_Token_toERR(ctx, tk, _("undefined %s: %C.%O"), whatis, cid, tk);
+	}
+	else {
+		return knh_Token_toERR(ctx, tk, _("undefined %s: %O"), whatis, tk);
+	}
 }
 knh_Token_t* ERROR_UndefinedName(CTX ctx, knh_Token_t *tk)
 {
@@ -337,13 +355,13 @@ knh_Token_t* ErrorMustBeConst(CTX ctx)
 {
 	return Gamma_perror(ctx, KC_ERR, _("must be constant"));
 }
-void WarningTooManyReturnValues(CTX ctx)
+//void WarningTooManyReturnValues(CTX ctx)
+//{
+//	Gamma_perror(ctx, KC_DWARN, _("too many return values"));
+//}
+void WARN_UseDefaultValue(CTX ctx, const char *whatis, knh_type_t type)
 {
-	Gamma_perror(ctx, KC_DWARN, _("too many return values"));
-}
-void WarningReturnDefaultValue(CTX ctx, knh_type_t type)
-{
-	Gamma_perror(ctx, KC_DWARN, _("return default value of %T"), type);
+	Gamma_perror(ctx, KC_DWARN, _("%s default value of %T"), whatis, type);
 }
 knh_Token_t* ErrorUndefinedMethod(CTX ctx, knh_Token_t *tkMN)
 {
@@ -362,26 +380,30 @@ knh_Token_t* ErrorNotStaticMethod(CTX ctx, knh_Method_t *mtd)
 {
 	return Gamma_perror(ctx, KC_ERR, _("not static: %C.%M"), (mtd)->cid, (mtd)->mn);
 }
-knh_Token_t* ErrorUndefinedClassConst(CTX ctx, knh_Token_t *tk, knh_bytes_t name)
+//knh_Token_t* ErrorUndefinedClassConst(CTX ctx, knh_Token_t *tk, knh_bytes_t name)
+//{
+//	return Gamma_perror(ctx, KC_TERROR, "undefined const: %L.%B", tk, name);
+//}
+void WARN_Ignored(CTX ctx, const char *whatis, knh_class_t cid, const char *symbol)
 {
-	return Gamma_perror(ctx, KC_TERROR, "undefined const: %L.%B", tk, name);
-}
-void WarningIgnored(CTX ctx, const char *what, const char *symbol)
-{
-	Gamma_perror(ctx, KC_DWARN, "ignored %s: %s", what, symbol);
-}
-void WarningIgnoredRedefinition(CTX ctx, knh_Token_t *tk, knh_bytes_t name)
-{
-	Gamma_perror(ctx, KC_DWARN, "ignored redefinition of %L.%B", tk, name);
+	if(symbol == NULL) {
+		Gamma_perror(ctx, KC_DWARN, "ignored %s", whatis, symbol);
+	}
+	else if(cid == CLASS_unknown) {
+		Gamma_perror(ctx, KC_DWARN, "ignored %s: %s", whatis, symbol);
+	}
+	else {
+		Gamma_perror(ctx, KC_DWARN, "ignored %s: %C.%s", whatis, cid, symbol);
+	}
 }
 void WarningUnnecessaryOperation(CTX ctx, const char *msg)
 {
 	Gamma_perror(ctx, KC_DWARN, "unnecessary operation: %s", msg);
 }
-knh_Token_t* ErrorUndefinedMethod2(CTX ctx, knh_class_t mtd_cid, knh_methodn_t mn)
-{
-	return Gamma_perror(ctx, KC_ERR, _("undefined method: %C.%M"), mtd_cid, mn);
-}
+//knh_Token_t* ErrorUndefinedMethod2(CTX ctx, knh_class_t mtd_cid, knh_methodn_t mn)
+//{
+//	return Gamma_perror(ctx, KC_ERR, _("undefined method: %C.%M"), mtd_cid, mn);
+//}
 void WarningTooManyParameters(CTX ctx)
 {
 	Gamma_perror(ctx, KC_DWARN, _("too many parameters"));
@@ -455,10 +477,6 @@ knh_Token_t* ErrorNoResourceHandler(CTX ctx, knh_bytes_t path)
 knh_Token_t* ErrorType(CTX ctx, knh_bytes_t path, knh_type_t reqt)
 {
 	return Gamma_perror(ctx, KC_INFO, _("%B: must NOT be %T"), path, reqt);
-}
-knh_Token_t* ErrorUnsupportedMsg(CTX ctx, const char *msg)
-{
-	return Gamma_perror(ctx, KC_ERR, _("unsupported %s"), msg);
 }
 void WarningDuplicatedDefault(CTX ctx)
 {
