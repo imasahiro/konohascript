@@ -79,7 +79,7 @@ static knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t re
 
 static inline void Stmt_toSTT(knh_Stmt_t *stmt, knh_term_t stt)
 {
-	//DBG_P("SWITCH %s ==> %s", TT__(STT_(stmt)), TT__(stt));
+	DBG_ASSERT(stt < TT_PRAGMA);
 	STT_(stmt) = stt;
 }
 
@@ -3166,7 +3166,7 @@ static knh_Token_t* SWITCH_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		knh_Stmt_t *stmtCASE, *stmtDEFAULT = NULL;
 		stmtCASE = stmtNN(stmt, 1);
 		while(stmtCASE != NULL) {
-			if(SP(stmtCASE)->stt == STT_CASE) {
+			if(STT_(stmtCASE) == STT_CASE) {
 				Stmt_setESPIDX(ctx, stmtCASE);
 				if(Tn_isASIS(stmtCASE, 0)) {
 					if(stmtDEFAULT != NULL) {
@@ -3335,7 +3335,7 @@ static knh_Token_t* TRY_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	Tn_it(ctx, stmt, 3/*HDR*/, TYPE_ExceptionHandler);
 	TYPING_STMTs(ctx, stmt, 0/*try*/, TYPE_STMT, &hasReturn);
 	while(stmtCATCH != NULL) {
-		if(SP(stmtCATCH)->stt == STT_CATCH) {
+		if(STT_(stmtCATCH) == STT_CATCH) {
 			BEGIN_BLOCK(esp2);
 			knh_fieldn_t fn = Token_fn(ctx, tkNN(stmtCATCH, 1));
 			knh_Token_t *tkIDX = Gamma_addLOCAL(ctx, 0, TYPE_Exception, fn, 1/*ucnt*/);
@@ -4349,6 +4349,7 @@ static knh_Token_t *Stmt_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 				break;
 			default:
 				tkRES = ErrorMisplacedStmt(ctx, TT__(STT_(stmt)));
+				DBG_ABORT("Please check: %d, %d", STT_(stmt), STT_ERR);
 		}
 	}
 	return tkRES;
@@ -4358,6 +4359,7 @@ static knh_Stmt_t *StmtITR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, in
 {
 	knh_Stmt_t *stmtITR = stmt;
 	BEGIN_BLOCK(espidx);
+	DBG_ASSERT(IS_Stmt(stmtITR));
 	while(stmtITR != NULL) {
 		knh_Token_t *tkRES;
 		ctx->gma->uline = stmtITR->uline;
@@ -4571,10 +4573,10 @@ static void CLASS_asm(CTX ctx, knh_Stmt_t *stmt)
 	DP(kc)->this_cid = this_cid;
 	while(stmtFIELD != NULL) {
 		ctx->gma->uline = stmtFIELD->uline;
-		if(SP(stmtFIELD)->stt == STT_METHOD) {
+		if(STT_(stmtFIELD) == STT_METHOD) {
 			METHOD_asm(ctx, stmtFIELD);
 		}
-		else if(SP(stmtFIELD)->stt == STT_FORMAT) {
+		else if(STT_(stmtFIELD) == STT_FORMAT) {
 			FORMAT_asm(ctx, stmtFIELD);
 		}
 		stmtFIELD = DP(stmtFIELD)->nextNULL;

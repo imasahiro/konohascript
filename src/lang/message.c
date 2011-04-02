@@ -247,7 +247,8 @@ knh_Token_t* SyntaxErrorWithHint(CTX ctx, const char* keyword K_TRACEARGV)
 }
 knh_Token_t* SyntaxErrorTokenIsNot(CTX ctx, knh_Token_t *tk, const char* whatis)
 {
-	return Gamma_perror(ctx, KC_ERR, ("%L is not %s"), tk, whatis);
+	DBG_P("TT(tk)=%s", TT__(tk->tt));
+	return Gamma_perror(ctx, KC_ERR, ("%O is not %s"), tk, whatis);
 }
 knh_Token_t* ErrorRequired(CTX ctx, knh_Token_t *tk, const char *stmtexpr, const char *token)
 {

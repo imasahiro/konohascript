@@ -64,7 +64,8 @@ knh_Stmt_t* new_Stmt2(CTX ctx, knh_term_t stt, ...)
 	knh_Stmt_t *stmt = new_(Stmt);
 	knh_Term_t *tm = NULL;
 	va_list ap;
-	SP(stmt)->stt = stt;
+	DBG_ASSERT(stt < TT_PRAGMA);
+	stmt->stt = stt;
 	stmt->uline = ctx->gma->uline;
 	va_start(ap , stt);
 	while((tm = (knh_Term_t*)va_arg(ap, knh_Term_t*)) != NULL) {
@@ -97,7 +98,7 @@ void knh_Stmt_trimToSize(CTX ctx, knh_Stmt_t *stmt, size_t n)
 knh_Token_t *knh_Stmt_done(CTX ctx, knh_Stmt_t *stmt)
 {
 	knh_StmtEX_t *b = DP((knh_Stmt_t*)stmt);
-	SP(stmt)->stt = STT_DONE;
+	stmt->stt = STT_DONE;
 	if(stmt->terms != NULL) {
 		size_t i;
 		for(i = 0; i < b->size; i++) {
@@ -114,6 +115,7 @@ knh_Token_t *knh_Stmt_done(CTX ctx, knh_Stmt_t *stmt)
 
 void knh_Stmt_toERR(CTX ctx, knh_Stmt_t *stmt, knh_Token_t *tkERR)
 {
+	DBG_ASSERT(IS_Stmt(stmt));
 	if(STT_(stmt) == STT_ERR) return;
 	DBG_ASSERT(TT_(tkERR) == TT_ERR);
 	DBG_ASSERT(IS_String((tkERR)->text));
@@ -1289,6 +1291,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 static void Token_toBRACE(CTX ctx, knh_Token_t *tk, int isEXPANDING)
 {
 	if(S_size(tk->text) > 0) {
+		fprintf(stderr, "'''%s'''\n", S_tochar(tk->text));
 		BEGIN_LOCAL(ctx, lsfp, 1);
 		LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t*, in, new_StringInputStream(ctx, (tk)->text, 0, S_size((tk)->text)));
 		KNH_SETv(ctx, (tk)->data, KNH_NULL);
@@ -1512,14 +1515,19 @@ static void TT_skipMETA(CTX ctx, tkitr_t *itr)
 
 static void _DBGERROR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, const char *whatis K_TRACEARGV)
 {
-	knh_Token_t* tkERR;
-	if(whatis != NULL && ITR_hasNext(itr)) {
-		tkERR = SyntaxErrorTokenIsNot(ctx, ITR_tk(itr), whatis);
+	if(STT_(stmt) != STT_ERR) {
+		knh_Token_t* tkERR;
+		if(whatis != NULL && ITR_hasNext(itr)) {
+			tkERR = ITR_tk(itr);
+			if(TT_(tkERR) != TT_ERR) {
+				tkERR = SyntaxErrorTokenIsNot(ctx, ITR_tk(itr), whatis);
+			}
+		}
+		else {
+			tkERR = SyntaxErrorWithHint(ctx, TT__(STT_(stmt)), _file, _line, _func);
+		}
+		knh_Stmt_toERR(ctx, stmt, tkERR);
 	}
-	else {
-		tkERR = SyntaxErrorWithHint(ctx, TT__(STT_(stmt)), _file, _line, _func);
-	}
-	knh_Stmt_toERR(ctx, stmt, tkERR);
 	ITR_nextStmt(itr);
 }
 static void _ASIS(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
@@ -1545,7 +1553,7 @@ static int ITR_isT(tkitr_t *itr, knh_FisToken f)
 
 static void Stmt_tadd(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, knh_FisToken f, const char *whatis)
 {
-	if(SP(stmt)->stt == STT_ERR) return;
+	if(STT_(stmt) == STT_ERR) return;
 	if(ITR_hasNext(itr) && f(ITR_tk(itr))) {
 		knh_Stmt_add(ctx, stmt, ITR_nextTK(itr));
 	}
@@ -1556,7 +1564,7 @@ static void Stmt_tadd(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, knh_FisToken f, c
 
 static void Stmt_taddASIS(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, knh_FisToken f)
 {
-	if(SP(stmt)->stt == STT_ERR) return;
+	if(STT_(stmt) == STT_ERR) return;
 	if(ITR_hasNext(itr)) {
 		knh_Token_t *tk = ITR_tk(itr);
 		if(TT_(tk) != TT_SEMICOLON && f(tk)) {
@@ -3231,7 +3239,7 @@ knh_Stmt_t *knh_InputStream_parseStmt(CTX ctx, knh_InputStream_t *in)
 	if(TT_(tk) != TT_ERR) {
 		tkitr_t tbuf, *titr = ITR_new(tk, &tbuf);
 		_STMTs(ctx, rVALUE, titr);
-		DBG_ASSERT(DP(rVALUE)->size > 0);
+		DBG_ASSERT(DP(rVALUE)->size == 1);
 		if(IS_Stmt(stmtNN(rVALUE, 0))) {
 			rVALUE = stmtNN(rVALUE, 0);
 			DBG_(if(knh_isSystemVerbose() /*&& DP(in)->uri == URI_EVAL*/) {
@@ -3251,15 +3259,18 @@ knh_Stmt_t *knh_InputStream_parseStmt(CTX ctx, knh_InputStream_t *in)
 knh_Stmt_t *knh_Token_parseStmt(CTX ctx, knh_Token_t *tk)
 {
 	ctx->gma->uline = tk->uline;
-	knh_Stmt_t *rVALUE = new_Stmt2(ctx, STT_BLOCK, NULL);
 	BEGIN_LOCAL(ctx, lsfp, 1);
+	knh_Stmt_t *rVALUE = new_Stmt2(ctx, STT_BLOCK, NULL);
 	KNH_SETv(ctx, lsfp[0].o, rVALUE);
 	Token_toBRACE(ctx, tk, 1/*isEXPANDING*/);
 	if(TT_(tk) != TT_ERR) {
 		tkitr_t tbuf, *titr = ITR_new(tk, &tbuf);
 		_STMTs(ctx, rVALUE, titr);
-		DBG_ASSERT(DP(rVALUE)->size > 0);
-		rVALUE = stmtNN(rVALUE, 0);
+		DBG_ASSERT(DP(rVALUE)->size == 1);
+		if(STT_(rVALUE) != STT_ERR) {
+			rVALUE = stmtNN(rVALUE, 0);
+		}
+		DBG_ASSERT(IS_Stmt(rVALUE));
 	}
 	else {
 		knh_Stmt_toERR(ctx, rVALUE, tk);
