@@ -724,8 +724,7 @@ static void Bytes_addQUOTE(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, int 
 			if(ch == quote) {
 				if(isTQUOTE == 1) {
 					if(Bytes_isTripleQuote(ba, quote)) {
-						knh_Bytes_unputc(ba);
-						knh_Bytes_unputc(ba);
+						knh_Bytes_unputc(ba, 2);
 						return;
 					}
 				}
@@ -1013,7 +1012,7 @@ static int Token_addNUM(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStrea
 		if(isalnum(ch)) goto L_ADD;
 		if(ch == '_') continue; // nothing
 		if(prev == '.' && ch == '.') {  /* 1.. => 1 .. */
-			knh_Bytes_unputc(cwb->ba);
+			knh_Bytes_unputc(cwb->ba, 1);
 			Token_addBuf(ctx, tk, cwb, TT_NUM, ch);
 			knh_Bytes_putc(ctx, cwb->ba, '.');
 			knh_Bytes_putc(ctx, cwb->ba, '.');
@@ -1075,8 +1074,10 @@ static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputS
 			knh_Bytes_putc(ctx, cwb->ba, ch);
 		}
 		else if(prev == '/' && ch == '/') {
+			knh_Bytes_unputc(cwb->ba, 2);
 			InputStream_skipLINE(ctx, in);
 			knh_Bytes_putc(ctx, cwb->ba, '\n');
+			break;
 		}
 		else if(prev == '/' && ch == '*') {
 			InputStream_skipBLOCKCOMMENT(ctx, in, cwb->ba);
@@ -1088,7 +1089,12 @@ static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputS
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
 		if(ch == '\t') { c += 3; continue; }
 		if(ch == ' ') { c += 1; continue; }
+		if(ch == '\n') {c = 0; continue; }
 		//DBG_P("block_indent=%d, c=%d", block_indent, c);
+//		if(c > 0 && block_indent == c && ch == '}') {
+//			Token_addBuf(ctx, tkB, cwb, TT_CODE, ch);
+//			return;
+//		}
 		if(block_indent <= c) {
 			goto L_STARTLINE;
 		}
@@ -1114,6 +1120,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 		while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
 			if(ch == '\t') { c += 3; }
 			else if(ch == ' ') { c += 1; }
+			else if(ch == '\n') goto L_NEWLINE;
 			else {
 				if(block_line == 0) {
 					block_indent = c;
@@ -1290,7 +1297,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 static void Token_toBRACE(CTX ctx, knh_Token_t *tk, int isEXPANDING)
 {
 	if(S_size(tk->text) > 0) {
-		fprintf(stderr, "'''%s'''\n", S_tochar(tk->text));
+		//fprintf(stderr, "'''%s'''\n", S_tochar(tk->text));
 		BEGIN_LOCAL(ctx, lsfp, 1);
 		LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t*, in, new_StringInputStream(ctx, (tk)->text, 0, S_size((tk)->text)));
 		KNH_SETv(ctx, (tk)->data, KNH_NULL);

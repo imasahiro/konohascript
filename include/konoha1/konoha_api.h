@@ -380,7 +380,7 @@ void knh_Bytes_clear(knh_Bytes_t *ba, size_t pos);
 void knh_Bytes_ensureSize(CTX ctx, knh_Bytes_t *ba, size_t len);
 const char *knh_Bytes_ensureZero(CTX ctx, knh_Bytes_t *ba);
 void knh_Bytes_putc(CTX ctx, knh_Bytes_t *ba, int ch);
-void knh_Bytes_unputc(knh_Bytes_t *ba);
+void knh_Bytes_unputc(knh_Bytes_t *ba, int c);
 void knh_Bytes_write(CTX ctx, knh_Bytes_t *ba, knh_bytes_t t);
 knh_String_t *knh_cwb_newString(CTX ctx, knh_cwb_t *cwb);
 int knh_Object_compareTo(Object *o1, Object *o2);
