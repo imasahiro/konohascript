@@ -1,0 +1,7 @@
+#!/bin/bash
+
+find ./ac -maxdepth 2 -name '*.k' | while read utest; do
+	echo $utest
+	konoha --utest $utest
+done
+
