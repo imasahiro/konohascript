@@ -2433,7 +2433,6 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		DBG_ASSERT((tmNN(stmt, 2))->type == CLASS_String);
 		goto L_LOOKUPMETHOD;
 	}
-
 	L_LOOKUPMETHOD:
 	DBG_ASSERT_cid(mtd_cid);
 	{

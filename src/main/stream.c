@@ -453,12 +453,8 @@ void knh_write_end(CTX ctx, knh_OutputStream_t *w, int ch)
 
 void knh_write_bool(CTX ctx, knh_OutputStream_t *w, int b)
 {
-	if(b) {
-		knh_write(ctx, w, S_tobytes(TS_true));
-	}
-	else {
-		knh_write(ctx, w, S_tobytes(TS_false));
-	}
+	knh_String_t *s = (b) ? TS_true : TS_false;
+	knh_write(ctx, w, S_tobytes(s));
 }
 
 /* ------------------------------------------------------------------------ */
