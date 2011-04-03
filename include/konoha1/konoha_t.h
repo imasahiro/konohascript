@@ -710,7 +710,7 @@ typedef struct knh_ClassTBL_t {
 	struct knh_String_t         *lname;
 	struct knh_String_t         *sname;
 	struct knh_Array_t          *methods;
-	struct knh_Array_t          *tmaps;
+	struct knh_Array_t          *typemaps;
 	knh_fields_t                *fields;
 	knh_ushort_t  fsize;         knh_ushort_t  fcapacity;
 	knh_short_t   keyidx;       knh_short_t   metaidx;
@@ -961,12 +961,12 @@ typedef struct knh_mtdcache_t {
 
 #define hashcode_mtd(cid, mn, HMAX) (((((knh_hashcode_t)cid) << (sizeof(knh_class_t) * 8)) + mn) % HMAX)
 
-typedef struct knh_tmapcache_t {
+typedef struct knh_tmrcache_t {
 	knh_class_t scid; knh_class_t tcid;
-	struct knh_TypeMap_t *tmap;
-} knh_tmapcache_t ;
+	struct knh_TypeMap_t *tmr;
+} knh_tmrcache_t ;
 
-#define hashcode_tmap(scid, tcid, HMAX) (((((knh_hashcode_t)scid) << (sizeof(knh_class_t) * 8)) + tcid) % HMAX)
+#define hashcode_tmr(scid, tcid, HMAX) (((((knh_hashcode_t)scid) << (sizeof(knh_class_t) * 8)) + tcid) % HMAX)
 
 #ifdef K_USING_ICONV
 #include<iconv.h>
@@ -1025,7 +1025,7 @@ typedef struct knh_context_t {
 
 	/* cache */
 	knh_mtdcache_t              *mtdcache;
-	knh_tmapcache_t             *tmapcache;
+	knh_tmrcache_t             *tmrcache;
 	struct knh_Object_t        **refs;
 	size_t                       ref_size;
 	struct knh_Object_t        **ref_buf;
@@ -1107,17 +1107,17 @@ typedef struct {
 
 #ifdef K_USING_WINTHREAD_
 #define METHOD  void CC_FASTCALL_
-#define TCAST   METHOD
+#define TYPEMAP   METHOD
 #define ITRNEXT int   CC_FASTCALL_
 typedef void (CC_FASTCALL_ *knh_Fmethod)(CTX, knh_sfp_t* _RIX);
-typedef void (CC_FASTCALL_ *knh_Ftmapper)(CTX, knh_sfp_t * _RIX);
+typedef void (CC_FASTCALL_ *knh_Ftypemap)(CTX, knh_sfp_t * _RIX);
 typedef int  (CC_FASTCALL_ *knh_Fitrnext)(CTX, knh_sfp_t *, long rtnidx);
 #else
 #define METHOD  void  CC_FASTCALL_
-#define TCAST   METHOD
+#define TYPEMAP   METHOD
 #define ITRNEXT int   CC_FASTCALL_
 typedef METHOD (*knh_Fmethod)(CTX, knh_sfp_t* _RIX);
-typedef TCAST (*knh_Ftmapper)(CTX, knh_sfp_t * _RIX);
+typedef TYPEMAP (*knh_Ftypemap)(CTX, knh_sfp_t * _RIX);
 typedef ITRNEXT (*knh_Fitrnext)(CTX, knh_sfp_t *, long rtnidx);
 #endif
 

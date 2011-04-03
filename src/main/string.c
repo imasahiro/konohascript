@@ -1098,39 +1098,36 @@ static METHOD Regex_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-/* [String mapper] */
+//## @Const mapper String Int;
 
-/* ------------------------------------------------------------------------ */
-//## @Const @Final mapper String Int;
-
-static TCAST String_Int(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP String_Int(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_int_t v = 0;
-	if(!knh_bytes_parseint(S_tobytes(sfp[K_TRLIDX].s), &v)) {
+	if(!knh_bytes_parseint(S_tobytes(sfp[K_TMRIDX].s), &v)) {
 		KNH_SETv(ctx, sfp[rix].o, KNH_NULVAL(CLASS_Int));
 	}
 	RETURNi_(v);
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const @Final mapper String Float;
+//## @Const mapper String Float;
 
-static TCAST String_Float(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP String_Float(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_float_t v = 0.0;
-	if(!knh_bytes_parsefloat(S_tobytes(sfp[K_TRLIDX].s), &v)) {
+	if(!knh_bytes_parsefloat(S_tobytes(sfp[K_TMRIDX].s), &v)) {
 		KNH_SETv(ctx, sfp[rix].o, KNH_NULVAL(CLASS_Float));
 	}
 	RETURNf_(v);
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const @Final mapper String Bytes;
+//## @Const mapper String Bytes;
 
-static TCAST String_Bytes(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP String_Bytes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Bytes_t *b = new_Bytes(ctx, S_size(sfp[K_TRLIDX].s) + 1);
-	knh_Bytes_write(ctx, b, S_tobytes(sfp[K_TRLIDX].s));
+	knh_Bytes_t *b = new_Bytes(ctx, S_size(sfp[K_TMRIDX].s) + 1);
+	knh_Bytes_write(ctx, b, S_tobytes(sfp[K_TMRIDX].s));
 	RETURN_(b);
 }
 
@@ -1152,22 +1149,20 @@ static ITRNEXT String_nextChar(CTX ctx, knh_sfp_t *sfp, long rtnidx)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @General mapper String Iterator;
-//## mapper String String..;
+//## @Const mapper String String..;
 //## method String.. String.opITR();
 
-static TCAST String_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP String_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_(new_Iterator(ctx, CLASS_String, sfp[K_SELFIDX].o, String_nextChar));
+	RETURN_(new_Iterator(ctx, CLASS_String, sfp[0].o, String_nextChar));
 }
 
 /* ------------------------------------------------------------------------ */
 //## mapper Bytes InputStream;
 
-static TCAST Bytes_InputStream(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Bytes_InputStream(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Bytes_t *ba = (knh_Bytes_t*)sfp[K_TRLIDX].o;
-	RETURN_(new_BytesInputStream(ctx, ba));
+	RETURN_(new_BytesInputStream(ctx, sfp[0].ba));
 }
 
 /* ------------------------------------------------------------------------ */

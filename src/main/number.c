@@ -226,51 +226,79 @@ static METHOD Float__bits(CTX ctx, knh_sfp_t *sfp _RIX)
 
 
 /* ------------------------------------------------------------------------ */
-//## @Const @Final @LossLess mapper Boolean String;
+//## @Const mapper Boolean Object;
+//## @Const mapper Boolean Tdynamic;
 
-static TCAST Boolean_String(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Boolean_Object(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_String_t *s = (Boolean_to(int, (sfp[K_TRLIDX]))) ? TS_true : TS_false;
+	knh_Object_t *o = (Boolean_to(int, (sfp[0]))) ? KNH_TRUE : KNH_FALSE;
+	RETURN_(o);
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Const mapper Int Object;
+//## @Const mapper Int Number;
+//## @Const mapper Int Tdynamic;
+
+static TYPEMAP Int_Object(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURN_(new_Int(ctx, CLASS_Int, sfp[0].ivalue));
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Const mapper Float Object;
+//## @Const mapper Int   Number;
+//## @Const mapper Int   Tdynamic;
+
+static TYPEMAP Float_Object(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURN_(new_Float(ctx, CLASS_Float, sfp[0].fvalue));
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Const mapper Boolean String;
+
+static TYPEMAP Boolean_String(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_String_t *s = (Boolean_to(int, (sfp[0]))) ? TS_true : TS_false;
 	RETURN_(s);
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const @Final @LossLess mapper Int String;
+//## @Const mapper Int String;
 
-static TCAST Int_String(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Int_String(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	char buf[256];
-	knh_snprintf(buf, sizeof(buf), K_INT_FMT, sfp[K_TRLIDX].ivalue);
+	knh_snprintf(buf, sizeof(buf), K_INT_FMT, sfp[0].ivalue);
 	RETURN_(new_S(ctx, B(buf)));
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const @Final @LossLess mapper Float String;
+//## @Const mapper Float String;
 
-static TCAST Float_String(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Float_String(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	char buf[256];
-	knh_snprintf(buf, sizeof(buf), K_FLOAT_FMT, sfp[K_TRLIDX].fvalue);
+	knh_snprintf(buf, sizeof(buf), K_FLOAT_FMT, sfp[0].fvalue);
 	RETURN_(new_S(ctx, B(buf)));
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const @Final mapper Float Int;
+//## @Const @Semantic mapper Float Int;
 
-static TCAST Float_Int(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Float_Int(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	DBG_ASSERT(IS_bFloat(sfp[K_TRLIDX].o));
-	knh_int_t v = (knh_int_t)(sfp[K_TRLIDX].f)->n.fvalue;
+	knh_int_t v = (knh_int_t)sfp[0].fvalue;
 	RETURNi_(v);
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const @Final mapper Int Float;
+//## @Const @Semantic mapper Int Float;
 
-static TCAST Int_Float(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Int_Float(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	DBG_ASSERT(IS_bInt(sfp[K_TRLIDX].o));
-	knh_float_t v = (knh_float_t)(sfp[K_TRLIDX].i)->n.ivalue;
+	knh_float_t v = (knh_float_t)sfp[0].ivalue;
 	RETURNf_(v);
 }
 

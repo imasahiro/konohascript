@@ -211,7 +211,7 @@ typedef const struct {
 #define DATA_EXPT      5
 #define DATA_METHOD0   6
 #define DATA_METHOD    7
-#define DATA_TCAST     8
+#define DATA_TYPEMAP     8
 #define DATA_PARAM     9
 
 typedef knh_intptr_t knh_data_t;

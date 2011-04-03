@@ -79,7 +79,7 @@
 #define STT_NEW  ((knh_term_t)38)
 #define STT_FUNCCALL  ((knh_term_t)39)
 #define STT_OP  ((knh_term_t)40)
-#define STT_TCAST  ((knh_term_t)41)
+#define STT_TYPEMAP  ((knh_term_t)41)
 #define STT_TPATH  ((knh_term_t)42)
 #define STT_ALT  ((knh_term_t)43)
 #define STT_TRI  ((knh_term_t)44)
@@ -281,7 +281,7 @@ static TERMDATA_t TERMDATA[] = {
 	{"NEW", 0, -1}, 
 	{"FUNCCALL", 0, -1}, 
 	{"OP", 0, -1}, 
-	{"TCAST", 0, -1}, 
+	{"TYPEMAP", 0, -1}, 
 	{"TPATH", 0, -1}, 
 	{"ALT", 0, -1}, 
 	{"TRI", 0, -1}, 

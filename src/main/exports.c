@@ -232,8 +232,8 @@ static void knh_loadScriptData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 			else {
 				KNH_INITv(t->methods, KNH_EMPTYLIST);
 			}
-			if(t->tmaps == NULL) {
-				KNH_INITv(t->tmaps, KNH_EMPTYLIST);
+			if(t->typemaps == NULL) {
+				KNH_INITv(t->typemaps, KNH_EMPTYLIST);
 			}
 			data += 6;
 			break;
@@ -286,11 +286,11 @@ static void knh_loadScriptData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 			}
 			break;
 		}
-		case DATA_TCAST: { //{scid, tcid, flag, func},
+		case DATA_TYPEMAP: { //{scid, tcid, flag, func},
 			knh_class_t scid = _CID(data[0]);
 			knh_class_t tcid = _CID(data[1]);
 			knh_flag_t  flag = (knh_flag_t)data[2];
-			knh_Ftmapper func = (knh_Ftmapper)data[3];
+			knh_Ftypemap func = (knh_Ftypemap)data[3];
 			knh_addTypeMapFunc(ctx, flag, scid, tcid, func, KNH_NULL);
 			data += 4;
 			break;

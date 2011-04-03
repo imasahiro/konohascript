@@ -345,37 +345,33 @@ extern "C" {
 	Rf_(c) = (knh_float_t)Ri_(a); \
 }\
 
-#define KLR_SCAST(ctx, rtnidx, trlidx, rix, trl)  { \
-	knh_TypeMap_t *trl_ = trl;\
-	/*TODO klr_settrlNC(ctx, rbp[trlidx], trl_);*/\
-	(trl_)->ftcast_1(ctx, SFP(rshift(rbp,trlidx)), rix); \
-} \
+#define KLR_SCAST(ctx, rtnidx, thisidx, rix, tmr)  { \
+		knh_TypeMap_exec(ctx, tmr, SFP(rshift(rbp,thisidx)), rix); \
+	} \
 
-#define KLR_TCAST(ctx, rtnidx, trlidx, rix, trl)  { \
-	knh_TypeMap_t *trl_ = trl; \
-	knh_sfp_t *sfp_ = SFP(rshift(rbp,trlidx));\
-	knh_class_t scid = SP(trl_)->scid, this_cid = O_cid(sfp_[0].o);\
-	if(this_cid != scid) {\
-		trl_ = knh_findTypeMap(ctx, scid, SP(trl)->tcid);\
-		KNH_SETv(ctx, ((klr_TCAST_t*)op)->cast, trl_);\
-	}\
-	/*TODO klr_settrlNC(ctx, rbp[trlidx], trl_);*/\
-	(trl_)->ftcast_1(ctx, sfp_, rix);\
-} \
-
-#define KLR_ACAST(ctx, rtnidx, trlidx, rix, trl)  { \
-	knh_TypeMap_t *trl_ = trl; \
-	knh_class_t tcid = SP(trl_)->tcid, this_cid = O_cid(Ro_(trlidx));\
-	if(!class_isa(this_cid, tcid)) {\
-		knh_class_t scid = SP(trl_)->scid;\
+#define KLR_TCAST(ctx, rtnidx, thisidx, rix, tmr)  { \
+		knh_TypeMap_t *tmr_ = tmr; \
+		knh_sfp_t *sfp_ = SFP(rshift(rbp,thisidx));\
+		knh_class_t scid = SP(tmr_)->scid, this_cid = O_cid(sfp_[0].o);\
 		if(this_cid != scid) {\
-			trl_ = knh_findTypeMap(ctx, scid, tcid);\
-			KNH_SETv(ctx, ((klr_ACAST_t*)op)->cast, trl_);\
+			tmr_ = knh_findTypeMap(ctx, scid, SP(tmr)->tcid);\
+			KNH_SETv(ctx, ((klr_TCAST_t*)op)->cast, tmr_);\
 		}\
-		/*TODO klr_settrlNC(ctx, rbp[trlidx], trl_);*/\
-		(trl_)->ftcast_1(ctx, SFP(rshift(rbp,trlidx)), rix); \
-	}\
-} \
+		knh_TypeMap_exec(ctx, tmr_, sfp_, rix); \
+	} \
+
+#define KLR_ACAST(ctx, rtnidx, thisidx, rix, tmr)  { \
+		knh_TypeMap_t *tmr_ = tmr; \
+		knh_class_t tcid = SP(tmr_)->tcid, this_cid = O_cid(Ro_(thisidx));\
+		if(!class_isa(this_cid, tcid)) {\
+			knh_class_t scid = SP(tmr_)->scid;\
+			if(this_cid != scid) {\
+				tmr_ = knh_findTypeMap(ctx, scid, tcid);\
+				KNH_SETv(ctx, ((klr_ACAST_t*)op)->cast, tmr_);\
+			}\
+			knh_TypeMap_exec(ctx, tmr_, SFP(rshift(rbp,thisidx)), rix); \
+		}\
+	} \
 
 #define KLR_TR(Ctx, c, a, rix, ct, f) { \
 	f(ctx, SFP(rshift(rbp, a)), (long)rix, ct);\

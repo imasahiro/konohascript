@@ -166,9 +166,9 @@ static const knh_OPDATA_t OPDATA[] = {
 	{"RET", _JIT, 0, { VMT_VOID}}, 
 	{"TR", _DEF|_JIT, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_CID, VMT_F, VMT_VOID}}, 
 	{"UNBOX", _DEF, 3, { VMT_RN, VMT_RO, VMT_CID, VMT_VOID}}, 
-	{"SCAST", _DEF, 4, { VMT_R, VMT_SFPIDX, VMT_I, VMT_TRL, VMT_VOID}}, 
-	{"TCAST", _DEF, 4, { VMT_R, VMT_SFPIDX, VMT_I, VMT_TRL, VMT_VOID}}, 
-	{"ACAST", _DEF, 4, { VMT_R, VMT_SFPIDX, VMT_I, VMT_TRL, VMT_VOID}}, 
+	{"SCAST", _DEF, 4, { VMT_R, VMT_SFPIDX, VMT_I, VMT_TMR, VMT_VOID}}, 
+	{"TCAST", _DEF, 4, { VMT_R, VMT_SFPIDX, VMT_I, VMT_TMR, VMT_VOID}}, 
+	{"ACAST", _DEF, 4, { VMT_R, VMT_SFPIDX, VMT_I, VMT_TMR, VMT_VOID}}, 
 	{"iCAST", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}}, 
 	{"fCAST", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}}, 
 	{"JMP", _JIT, 1, { VMT_ADDR, VMT_VOID}}, 
@@ -533,7 +533,7 @@ void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline
 			knh_write_mn(ctx, w, (mtd)->mn); 
 		}
 		break;
-		case VMT_TRL:
+		case VMT_TMR:
 		case VMT_OBJECT:
 		case VMT_STRING: {
 			knh_write_Object(ctx, w, UPCAST(c->p[i]), FMT_line);

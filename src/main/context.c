@@ -145,9 +145,9 @@ static void knh_CommonContext_free(CTX ctx, knh_context_t *ctxo)
 	ctxo->stacktop = NULL;
 	ctxo->stacksize = 0;
 	KNH_FREE(ctx, ctxo->mtdcache,  K_MTDCACHE_SIZE * sizeof(knh_mtdcache_t));
-	KNH_FREE(ctx, ctxo->tmapcache, K_TMAPCACHE_SIZE * sizeof(knh_tmapcache_t));
+	KNH_FREE(ctx, ctxo->tmrcache, K_TMAPCACHE_SIZE * sizeof(knh_tmrcache_t));
 	ctxo->mtdcache  = NULL;
-	ctxo->tmapcache = NULL;
+	ctxo->tmrcache = NULL;
 	if(ctxo->queue_capacity > 0) {
 		KNH_FREE(ctx, ctxo->queue,  ctxo->queue_capacity * sizeof(knh_Object_t*));
 		ctxo->queue_capacity = 0;
@@ -419,7 +419,7 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 		DBG_ASSERT(t->lname != NULL);
 		KNH_ADDNNREF(ctx,  (t->typeNULL));
 		KNH_ADDREF(ctx, (t->methods));
-		KNH_ADDREF(ctx, t->tmaps);
+		KNH_ADDREF(ctx, t->typemaps);
 		KNH_ADDNNREF(ctx,  t->cparam);
 		KNH_ADDNNREF(ctx,  t->defnull);
 		KNH_ADDNNREF(ctx,  t->constDictCaseMapNULL);

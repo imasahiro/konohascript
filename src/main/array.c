@@ -691,6 +691,7 @@ static METHOD Array_shuffle(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 //## method void Array.reverse();
+
 static METHOD Array_reverse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	size_t i;
@@ -711,29 +712,49 @@ static METHOD Array_reverse(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const mapper Object Iterator!;
-//## method This.. Object.opITR();
+//## mapper Iterator Iterator;
 
-static TCAST Object_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Iterator_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	Object *o = sfp[0].o;
-	RETURN_(new_Iterator(ctx, O_cid(o), o, NULL));
+	KNH_TODO(__FUNCTION__);
+
 }
 
 /* ------------------------------------------------------------------------ */
-//## mapper Iterator Array!;
+//## mapper Array Array;
 
-static TCAST Iterator_Array(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Array_Array(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	KNH_TODO(__FUNCTION__);
+//	knh_TypeMap_t *tmr = sfp[K_TMRIDX].tmrNC;
+//	knh_Array_t *ta = sfp[0].a;
+//	knh_Array_t *sa = new_ArrayCTBL(ctx, ClassTBL(tmr->tcid), knh_Array_size(ta));
+//	size_t i;
+//	if(IS_TypeMap(tmr->tmr1)) {
+//		tmr = tmr->tmr1;
+//		for(i = 0; i < knh_Array_size(ta); i++) {
+//			ta->api->get(ctx, sfp, i, +1);
+//			knh_TypeMap_exec(ctx, tmr, sfp+1, 0); // results are on sfp[1]
+//			sa->api->add(ctx, sa, sfp+1);
+//		}
+//	}
+//	RETURN_(sa);
+}
+
+/* ------------------------------------------------------------------------ */
+//## mapper Iterator Array;
+
+static TYPEMAP Iterator_Array(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(knh_Iterator_toArray(ctx, sfp[0].it));
 }
 
 /* ------------------------------------------------------------------------ */
 /* [Array] */
-//## @General mapper Array Iterator;
+//## mapper Array Iterator;
 //## method T1.. Array.opITR();
 
-static TCAST Array_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Array_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(new_ArrayIterator(ctx, sfp[0].a));
 }

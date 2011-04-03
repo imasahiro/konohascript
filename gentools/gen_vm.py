@@ -142,9 +142,9 @@ RET        _JIT
 TR         _DEF|_JIT         a:r  b:sfpidx rix:i cid:cid tr:f
 UNBOX      _DEF              a:rn b:ro cid:cid
 
-SCAST      _DEF              a:r b:sfpidx rix:i cast:trl
-TCAST      _DEF              a:r b:sfpidx rix:i cast:trl
-ACAST      _DEF              a:r b:sfpidx rix:i cast:trl
+SCAST      _DEF              a:r b:sfpidx rix:i cast:tmr
+TCAST      _DEF              a:r b:sfpidx rix:i cast:tmr
+ACAST      _DEF              a:r b:sfpidx rix:i cast:tmr
 iCAST      _DEF|_JIT         a:rn b:rn
 fCAST      _DEF|_JIT         a:rn b:rn
 
@@ -217,7 +217,7 @@ CTYPE = {
 	'float':   'knh_float_t',
 	'cid':     'const knh_ClassTBL_t*',
 	'mtd':     'knh_Method_t*',
-	'trl':     'knh_TypeMap_t*',
+	'tmr':     'knh_TypeMap_t*',
 	'addr':    'knh_KLRInst_t*',
 	'u':       'knh_uintptr_t',
 	'i':       'knh_intptr_t',
@@ -329,7 +329,7 @@ def write_define_h(f):
 #define VMT_F        10
 #define VMT_CID      11
 #define VMT_MTD      12
-#define VMT_TRL      13
+#define VMT_TMR      13
 #define VMT_OBJECT   14
 #define VMT_STRING   15
 #define VMT_INT      16
@@ -533,7 +533,7 @@ void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline
 			knh_write_mn(ctx, w, (mtd)->mn); 
 		}
 		break;
-		case VMT_TRL:
+		case VMT_TMR:
 		case VMT_OBJECT:
 		case VMT_STRING: {
 			knh_write_Object(ctx, w, UPCAST(c->p[i]), FMT_line);

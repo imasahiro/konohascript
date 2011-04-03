@@ -1015,9 +1015,9 @@ static ITRNEXT knh_InputStream_nextLine(CTX ctx, knh_sfp_t *sfp, long rtnidx)
 /* ------------------------------------------------------------------------ */
 //## @Final mapper InputStream String..;
 
-static TCAST knh_InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP knh_InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_(new_Iterator(ctx, CLASS_String, sfp[K_TRLIDX].o, knh_InputStream_nextLine));
+	RETURN_(new_Iterator(ctx, CLASS_String, sfp[0].o, knh_InputStream_nextLine));
 }
 
 /* ------------------------------------------------------------------------ */

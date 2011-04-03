@@ -56,7 +56,7 @@ const char* TT__(knh_term_t tt);
 #define _NOTWARN     1
 #define _NOTCHECK    (1<<1)
 #define _BCHECK      (1<<2)
-#define _NOTCAST     (1<<3)
+#define _NOTYPEMAP     (1<<3)
 #define _ICAST       (1<<4)
 #define _CONSTASIS   (1<<5)
 #define _CONSTONLY   (1<<6)

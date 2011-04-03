@@ -583,7 +583,7 @@ static knh_bool_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 			ct->magicflag  = KNH_MAGICFLAG(ct->cflag);
 			NameSpace_setcid(ctx, ns, (tkC)->text, cid, 1);
 			KNH_INITv(ct->methods, KNH_EMPTYLIST);
-			KNH_INITv(ct->tmaps, KNH_EMPTYLIST);
+			KNH_INITv(ct->typemaps, KNH_EMPTYLIST);
 
 			// class C extends E ..
 			ct->supcid = knh_Token_cid(ctx, tkE, CLASS_Object);

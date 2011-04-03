@@ -2,8 +2,8 @@
 
 /* ------------------------------------------------------------------------ */
 /* MACROS */
-#define K_REVISION                      100
-#define K_BUILDID                       1082
+#define K_REVISION                      101
+#define K_BUILDID                       1083
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -448,35 +448,29 @@
 #define TYPE_CmprT1             CLASS_CmprT1
 
 /* ------------------------------------------------------------------------ */
-/* ThisITR */
-#define CLASS_ThisITR           ((knh_class_t)49)
-#define IS_ThisITR(o)           (O_cid(o) == CLASS_ThisITR)
-#define TYPE_ThisITR            CLASS_ThisITR
-
-/* ------------------------------------------------------------------------ */
 /* T1ITR */
-#define CLASS_T1ITR             ((knh_class_t)50)
+#define CLASS_T1ITR             ((knh_class_t)49)
 #define IS_T1ITR(o)             (O_cid(o) == CLASS_T1ITR)
 #define TYPE_T1ITR              CLASS_T1ITR
 
 /* ------------------------------------------------------------------------ */
 /* T1ARRAY */
-#define CLASS_T1ARRAY           ((knh_class_t)51)
+#define CLASS_T1ARRAY           ((knh_class_t)50)
 #define IS_T1ARRAY(o)           (O_cid(o) == CLASS_T1ARRAY)
 #define TYPE_T1ARRAY            CLASS_T1ARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringARRAY */
-#define CLASS_StringARRAY       ((knh_class_t)52)
+#define CLASS_StringARRAY       ((knh_class_t)51)
 #define IS_StringARRAY(o)       (O_cid(o) == CLASS_StringARRAY)
 #define TYPE_StringARRAY        CLASS_StringARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringITR */
-#define CLASS_StringITR         ((knh_class_t)53)
+#define CLASS_StringITR         ((knh_class_t)52)
 #define IS_StringITR(o)         (O_cid(o) == CLASS_StringITR)
 #define TYPE_StringITR          CLASS_StringITR
-#define K_CLASS_INITSIZE                55
+#define K_CLASS_INITSIZE                54
 
 /* ------------------------------------------------------------------------ */
 /* FLAG */
@@ -580,33 +574,15 @@
 #define FLAG_Method_Audit ((knh_flag_t)(1<<9))
 #define Method_isAudit(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Audit))
 #define Method_setAudit(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Audit,b)
-#define FLAG_TypeMap_Interface ((knh_flag_t)(1<<0))
-#define TypeMap_isInterface(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_TypeMap_Interface))
-#define TypeMap_setInterface(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_TypeMap_Interface,b)
-#define FLAG_TypeMap_Significant ((knh_flag_t)(1<<1))
-#define TypeMap_isSignificant(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_TypeMap_Significant))
-#define TypeMap_setSignificant(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_TypeMap_Significant,b)
-#define FLAG_TypeMap_Semantic ((knh_flag_t)(1<<2))
-#define TypeMap_isSemantic(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_TypeMap_Semantic))
-#define FLAG_TypeMap_Total ((knh_flag_t)(1<<3))
-#define TypeMap_isTotal(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_TypeMap_Total))
-#define TypeMap_isPartial(o)  (!TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_TypeMap_Total))
-#define TypeMap_setTotal(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_TypeMap_Total,b)
-#define TypeMap_setPartial(o,b)  TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_TypeMap_Total,(!(b)))
-#define FLAG_TypeMap_LossLess ((knh_flag_t)(1<<4))
-#define TypeMap_isLossLess(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_TypeMap_LossLess))
-#define TypeMap_setLossLess(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_TypeMap_LossLess,b)
-#define FLAG_TypeMap_Final ((knh_flag_t)(1<<6))
-#define TypeMap_isFinal(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_TypeMap_Final))
-#define TypeMap_setFinal(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_TypeMap_Final,b)
-#define FLAG_TypeMap_Const ((knh_flag_t)(1<<7))
-#define TypeMap_isConst(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_TypeMap_Const))
-#define TypeMap_isTemporal(o)  (!TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_TypeMap_Const))
-#define TypeMap_setConst(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_TypeMap_Const,b)
-#define TypeMap_setTemporal(o,b)  TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_TypeMap_Const,(!(b)))
-#define FLAG_TypeMap_MapMap ((knh_flag_t)(1<<8))
-#define TypeMap_isMapMap(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_TypeMap_MapMap))
-#define TypeMap_setMapMap(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_TypeMap_MapMap,b)
+#define FLAG_TypeMap_Interface FLAG_Object_Local1
+#define TypeMap_isInterface(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Interface))
+#define TypeMap_setInterface(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Interface,b)
+#define FLAG_TypeMap_Semantic FLAG_Object_Local2
+#define TypeMap_isSemantic(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Semantic))
+#define TypeMap_setSemantic(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Semantic,b)
+#define FLAG_TypeMap_Const FLAG_Object_Local3
+#define TypeMap_isConst(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Const))
+#define TypeMap_setConst(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Const,b)
 #define FLAG_Func_StoredEnv FLAG_Object_Local1
 #define Func_isStoredEnv(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Func_StoredEnv))
 #define Func_setStoredEnv(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Func_StoredEnv,b)

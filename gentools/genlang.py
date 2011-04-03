@@ -50,7 +50,7 @@ NEW         _NAME  _CNAME _MEXPR
 FUNCCALL    _EXPR  _      _MEXPR
 OP          _OP    _EXPR  _EXPR
 #FMTOP       _STR   _     _EXPR
-TCAST       _CNAME  _     _EXPR
+TYPEMAP       _CNAME  _     _EXPR
 TPATH       _
 ALT         _EXPR  _EXPR
 TRI         _EXPR  _EXPR  _EXPR

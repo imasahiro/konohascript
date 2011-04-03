@@ -241,13 +241,13 @@ static void ClassTYPEMAP_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_
 {
 	size_t i;
 	int hasCaption = 0;
-	knh_Array_t *tmaps = ct->tmaps;
-	for(i = 0; i < tmaps->size; i++) {
+	knh_Array_t *typemaps = ct->typemaps;
+	for(i = 0; i < typemaps->size; i++) {
 		if(hasCaption == 0) {
 			knh_write_ctext(ctx, w, _("TYPEMAP"));
 			hasCaption = 1;
 		}
-		knh_TypeMap_t *mpr = tmaps->trans[i];
+		knh_TypeMap_t *mpr = typemaps->trans[i];
 		knh_write_TAB(ctx, w); /*knh_write_TAB(ctx, w);*/
 		if(TypeMap_isInterface(mpr)) {
 			knh_write_text(ctx, w, "interface ");
@@ -256,9 +256,6 @@ static void ClassTYPEMAP_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_
 			knh_write_text(ctx, w, "to ");
 		}
 		knh_write_cid(ctx, w, SP(mpr)->tcid);
-		if(!TypeMap_isTotal(mpr)) {
-			knh_write_text(ctx, w, "or null");
-		}
 		knh_write_EOL(ctx, w);
 	}
 	if(hasCaption == 1) {

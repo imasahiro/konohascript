@@ -1965,7 +1965,7 @@ static knh_Token_t* CALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 
 //static knh_Token_t* FLIKELY_typing(CTX ctx, knh_Stmt_t *stmt)
 //{
-//	if(Tn_typing(ctx, stmt, 2, TYPE_Boolean, _NOTCAST)) {
+//	if(Tn_typing(ctx, stmt, 2, TYPE_Boolean, _NOTYPEMAP)) {
 //		return tkNN(stmt, 2);
 //	}
 //	return NULL;
@@ -2650,9 +2650,9 @@ static knh_Token_t* OP_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 }
 
 /* ------------------------------------------------------------------------ */
-/* [TCAST] */
+/* [TYPEMAP] */
 
-static void Token_toTCASTMPR(CTX ctx, knh_Token_t *tk, knh_class_t cid, knh_TypeMap_t *trlNULL)
+static void Token_toTYPEMAPMPR(CTX ctx, knh_Token_t *tk, knh_class_t cid, knh_TypeMap_t *trlNULL)
 {
 	(tk)->cid = cid;
 	if(trlNULL != NULL) {
@@ -2660,7 +2660,7 @@ static void Token_toTCASTMPR(CTX ctx, knh_Token_t *tk, knh_class_t cid, knh_Type
 	}
 }
 
-static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
+static knh_Token_t* TYPEMAP_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
 	knh_Token_t *tkC = tkNN(stmt, 0);
 	knh_class_t scid, tcid;
@@ -2675,10 +2675,10 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		}
 	}
 	//DBG_P("TCID(reqt)= %s", CLASS__(tcid));
-	TYPING(ctx, stmt, 1, tcid, _NOTCHECK | _NOTCAST);
+	TYPING(ctx, stmt, 1, tcid, _NOTCHECK | _NOTYPEMAP);
 	scid = Tn_cid(stmt, 1);
 	if(scid == CLASS_Tdynamic) {     /* (T)anyexpr */
-		Token_toTCASTMPR(ctx, tkC, tcid, NULL);
+		Token_toTYPEMAPMPR(ctx, tkC, tcid, NULL);
 		return Stmt_typed(ctx, stmt, tcid);
 	}
 	if(class_isa(scid, tcid)) {
@@ -2690,7 +2690,7 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 
 	if(class_isa(tcid, scid)) {  /* downcast */
 		Stmt_setDOWNCAST(stmt, 1);
-		Token_toTCASTMPR(ctx, tkC, tcid, NULL);
+		Token_toTYPEMAPMPR(ctx, tkC, tcid, NULL);
 		WarningDowncast(ctx, tcid, scid);
 		return Stmt_typed(ctx, stmt, tcid);
 	}
@@ -2701,7 +2701,7 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 			if(scid != CLASS_Tdynamic) {
 				return ErrorNoSuchTransCast(ctx, scid, tcid);
 			}
-			Token_toTCASTMPR(ctx, tkC, tcid, NULL);
+			Token_toTYPEMAPMPR(ctx, tkC, tcid, NULL);
 			return Stmt_typed(ctx, stmt, tcid);
 		}
 		if(TypeMap_isConst(trl) && Tn_isCONST(stmt, 1)) {
@@ -2710,13 +2710,13 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 			KNH_SETv(ctx, lsfp[0].o, (tk1)->data);
 			KNH_SCAST(ctx, lsfp, 0, trl);
 			boxSFP(ctx, &lsfp[0], SP(trl)->tcid);
-			DBG_P("TCAST TO CONST .. %s ==> %s, %s", CLASS__(SP(trl)->scid), CLASS__(SP(trl)->tcid), O__(lsfp[0].o));
+			DBG_P("TYPEMAP TO CONST .. %s ==> %s, %s", CLASS__(SP(trl)->scid), CLASS__(SP(trl)->tcid), O__(lsfp[0].o));
 			Token_setCONST(ctx, tk1, lsfp[0].o);
 			END_LOCAL_(ctx, lsfp);  // NEED TO CHECK
 			return TM(tk1);
 		}
 		else {
-			Token_toTCASTMPR(ctx, tkC, tcid, trl);
+			Token_toTYPEMAPMPR(ctx, tkC, tcid, trl);
 			return Stmt_typed(ctx, stmt, tcid);
 		}
 	}
@@ -2760,7 +2760,7 @@ static knh_Token_t* AND_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
 	size_t i;
 	for(i = 0; i < DP(stmt)->size; i++) {
-		TYPING(ctx, stmt, i, TYPE_Boolean, _NOTCAST);
+		TYPING(ctx, stmt, i, TYPE_Boolean, _NOTYPEMAP);
 		if(Tn_isFALSE(stmt, i)) {
 			return new_TermCONST(ctx, KNH_FALSE);
 		}
@@ -2772,7 +2772,7 @@ static knh_Token_t* OR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
 	size_t i;
 	for(i = 0; i < DP(stmt)->size; i++) {
-		TYPING(ctx, stmt, i, TYPE_Boolean, _NOTCAST);
+		TYPING(ctx, stmt, i, TYPE_Boolean, _NOTYPEMAP);
 		if(Tn_isTRUE(stmt, i)) {
 			return new_TermCONST(ctx, KNH_TRUE);
 		}
@@ -2792,7 +2792,7 @@ static knh_Token_t* ALT_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 
 static knh_Token_t* TRI_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
-	TYPING(ctx, stmt, 0, TYPE_Boolean, _NOTCAST);
+	TYPING(ctx, stmt, 0, TYPE_Boolean, _NOTYPEMAP);
 	TYPING(ctx, stmt, 1, reqt, 0);
 	if(reqt == TYPE_var) {
 		reqt = Tn_type(stmt, 1);
@@ -2820,7 +2820,7 @@ static knh_Token_t* EXPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		CASE_EXPR(CALL, stmt, reqt);
 		CASE_EXPR(NEW, stmt, reqt);
 		CASE_EXPR(OP, stmt, reqt);
-		CASE_EXPR(TCAST, stmt, reqt);
+		CASE_EXPR(TYPEMAP, stmt, reqt);
 		CASE_EXPR(TPATH, stmt, reqt);
 		CASE_EXPR(AND, stmt, reqt);
 		CASE_EXPR(OR, stmt, reqt);
@@ -2866,7 +2866,7 @@ static knh_Token_t* ErrorTypeError(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type
 	return tkERR;
 }
 
-static knh_Term_t *new_TermTCAST(CTX ctx, knh_class_t reqt, knh_TypeMap_t *trlNULL, knh_Token_t *tk2)
+static knh_Term_t *new_TermTYPEMAP(CTX ctx, knh_class_t reqt, knh_TypeMap_t *trlNULL, knh_Token_t *tk2)
 {
 	if(TT_(tk2) == TT_CONST && trlNULL != NULL && TypeMap_isConst(trlNULL)) {
 		BEGIN_LOCAL(ctx, lsfp, 1);
@@ -2878,9 +2878,9 @@ static knh_Term_t *new_TermTCAST(CTX ctx, knh_class_t reqt, knh_TypeMap_t *trlNU
 		return (knh_Term_t*)(tk2);
 	}
 	else {
-		knh_Stmt_t *cstmt = new_Stmt2(ctx, STT_TCAST, NULL);
+		knh_Stmt_t *cstmt = new_Stmt2(ctx, STT_TYPEMAP, NULL);
 		knh_Token_t *tk = new_TokenTYPED(ctx, TT_CID, TYPE_Class, CLASS_Tdynamic);
-		Token_toTCASTMPR(ctx, tk, reqt, trlNULL);
+		Token_toTYPEMAPMPR(ctx, tk, reqt, trlNULL);
 		knh_Stmt_add(ctx, cstmt, tk);
 		knh_Stmt_add(ctx, cstmt, tk2);
 		return (knh_Term_t*)Stmt_typed(ctx, cstmt, reqt);
@@ -2939,27 +2939,27 @@ static knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t re
 			tkRES = NULL;
 		}
 	}
-	if(FLAG_is(opflag, _NOTCAST)) {
+	if(FLAG_is(opflag, _NOTYPEMAP)) {
 		goto L_RETURN;
 	}
 	else {
 		knh_type_t vart = Tn_type(stmt, n);
 		if(vart == TYPE_dyn) {
-			KNH_SETv(ctx, tmNN(stmt, n), new_TermTCAST(ctx, reqt, NULL, tkNN(stmt, n)));
+			KNH_SETv(ctx, tmNN(stmt, n), new_TermTYPEMAP(ctx, reqt, NULL, tkNN(stmt, n)));
 			goto L_RETURN;
 		}
 		else {
-			knh_TypeMap_t *tmap = knh_getTypeMapNULL(ctx, vart, reqt);
+			knh_TypeMap_t *tmr = knh_getTypeMapNULL(ctx, vart, reqt);
 			if((vart == TYPE_Int && reqt == TYPE_Float) || (vart == TYPE_Float && vart == TYPE_Int)) {
-				KNH_SETv(ctx, tmNN(stmt, n), new_TermTCAST(ctx, reqt, tmap, tkNN(stmt, n)));
+				KNH_SETv(ctx, tmNN(stmt, n), new_TermTYPEMAP(ctx, reqt, tmr, tkNN(stmt, n)));
 				goto L_RETURN;
 			}
 			if(reqt == TYPE_Regex && vart == TYPE_String) {
-				KNH_SETv(ctx, tmNN(stmt, n), new_TermTCAST(ctx, reqt, tmap, tkNN(stmt, n)));
+				KNH_SETv(ctx, tmNN(stmt, n), new_TermTYPEMAP(ctx, reqt, tmr, tkNN(stmt, n)));
 				goto L_RETURN;
 			}
-			if((tmap != NULL && TypeMap_isSemantic(tmap)) || FLAG_is(opflag, _ICAST)) {
-				KNH_SETv(ctx, tmNN(stmt, n), new_TermTCAST(ctx, reqt, tmap, tkNN(stmt, n)));
+			if((tmr != NULL && TypeMap_isSemantic(tmr)) || FLAG_is(opflag, _ICAST)) {
+				KNH_SETv(ctx, tmNN(stmt, n), new_TermTYPEMAP(ctx, reqt, tmr, tkNN(stmt, n)));
 				goto L_RETURN;
 			}
 		}
@@ -3092,7 +3092,7 @@ static knh_Token_t* Stmt_toBLOCK(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t
 static knh_Token_t* IF_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
 	int hasReturnT = 0, hasReturnF = 0;
-	TYPING(ctx, stmt, 0, TYPE_Boolean, _NOTCAST);
+	TYPING(ctx, stmt, 0, TYPE_Boolean, _NOTYPEMAP);
 	if(Tn_isTRUE(stmt, 0)) {
 		knh_Stmt_done(ctx, stmtNN(stmt, 2));
 		TYPING_STMTs(ctx, stmt, 1, reqt, &hasReturnT);
@@ -3115,7 +3115,7 @@ static knh_Token_t* IF_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 //knh_Stmt_t *knh_StmtIF_decl(CTX ctx, knh_Stmt_t *stmt)
 //{
 //	knh_Stmt_t *thisStmt = NULL; /* Conditional Statement */
-//	if(Tn_typing(ctx, stmt, 0, TYPE_Boolean, _NOTCAST)) {
+//	if(Tn_typing(ctx, stmt, 0, TYPE_Boolean, _NOTYPEMAP)) {
 //		if(Tn_isTRUE(stmt, 0)) {
 //			knh_Stmt_done(ctx, stmtNN(stmt, 2));
 //			thisStmt = stmtNN(stmt, 1);
@@ -3189,7 +3189,7 @@ static knh_Token_t* SWITCH_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 				if(Tn_isCONST(stmtCASE, 0)) {
 					knh_Stmt_t *stmtOP = new_StmtCASE(ctx, tkIT, tkNN(stmtCASE, 0));
 					KNH_SETv(ctx, tmNN(stmtCASE, 0), stmtOP);
-					if(!Tn_typing(ctx, stmtCASE, 0, TYPE_Boolean, _NOTCAST)) {
+					if(!Tn_typing(ctx, stmtCASE, 0, TYPE_Boolean, _NOTYPEMAP)) {
 						knh_Stmt_done(ctx, stmtCASE);
 						goto L_NEXT;
 					}
@@ -3220,7 +3220,7 @@ static knh_Token_t* SWITCH_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 
 static knh_Token_t* WHILE_typing(CTX ctx, knh_Stmt_t *stmt)
 {
-	TYPING(ctx, stmt, 0, TYPE_Boolean, _NOTCAST);
+	TYPING(ctx, stmt, 0, TYPE_Boolean, _NOTYPEMAP);
 	if(Tn_isFALSE(stmt, 0)) {
 		return knh_Stmt_done(ctx, stmt);
 	}
@@ -3235,7 +3235,7 @@ static knh_Token_t* DO_typing(CTX ctx, knh_Stmt_t *stmt)
 {
 	int hasReturn = 0; // dummy
 	TYPING_STMTs(ctx, stmt, 0, TYPE_STMT, &hasReturn);
-	TYPING(ctx, stmt, 1, TYPE_Boolean, _NOTCAST);
+	TYPING(ctx, stmt, 1, TYPE_Boolean, _NOTYPEMAP);
 	return Stmt_typed(ctx, stmt, TYPE_void);
 }
 
@@ -3245,7 +3245,7 @@ static knh_Token_t* FOR_typing(CTX ctx, knh_Stmt_t *stmt)
 	BEGIN_BLOCK(esp);
 	tkRES = Stmt_typing(ctx, stmtNN(stmt, 0), TYPE_void);
 	if(tkRES != NULL) {
-		TYPING(ctx, stmt, 1, TYPE_Boolean, _NOTCAST);
+		TYPING(ctx, stmt, 1, TYPE_Boolean, _NOTYPEMAP);
 		if(Tn_isFALSE(stmt, 1)) {
 			return tkNN(stmt, 0);
 		}
@@ -3396,7 +3396,7 @@ static knh_Token_t *ASSURE_typing(CTX ctx, knh_Stmt_t *stmt)
 
 static knh_Token_t* ASSERT_typing(CTX ctx, knh_Stmt_t *stmt)
 {
-	TYPING(ctx, stmt, 0, TYPE_Boolean, _NOTCAST);
+	TYPING(ctx, stmt, 0, TYPE_Boolean, _NOTYPEMAP);
 	if(Tn_isTRUE(stmt, 0)) {
 		return knh_Stmt_done(ctx, stmt);
 	}

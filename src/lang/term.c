@@ -1872,7 +1872,7 @@ static int ITR_isCAST(tkitr_t *itr)
 
 static void _EXPRCAST(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 {
-	knh_Stmt_t *stmtCAST = new_StmtREUSE(ctx, stmt, STT_TCAST);
+	knh_Stmt_t *stmTYPEMAP = new_StmtREUSE(ctx, stmt, STT_TYPEMAP);
 	tkitr_t cbuf, *citr = ITR_new(ITR_nextTK(itr), &cbuf);
 	if(ITR_is(citr, TT_TO)) {
 		TODO();
@@ -1882,9 +1882,9 @@ static void _EXPRCAST(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 //			if(ITR_is(citr, TT_TYPE)) {
 //				Token_toStmtTYPEOF(ctx, ITR_tk(citr));
 //			}
-		knh_Stmt_add(ctx, stmtCAST, ITR_nextTK(citr));
+		knh_Stmt_add(ctx, stmTYPEMAP, ITR_nextTK(citr));
 	}
-	_EXPR(ctx, stmtCAST, itr); return;
+	_EXPR(ctx, stmTYPEMAP, itr); return;
 }
 
 
@@ -2389,10 +2389,10 @@ static void _EXPR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		}
 		else if(ITR_is(itr, TT_TPATH) && itr->c + 1 < itr->e) {
 			knh_Token_t *tkCUR = ITR_nextTK(itr);
-			knh_Stmt_t *stmtCAST = new_StmtREUSE(ctx, stmt, STT_TPATH);
-			_ASIS(ctx, stmtCAST, itr);
-			_EXPR(ctx, stmtCAST, itr);
-			knh_Stmt_add(ctx, stmtCAST, tkCUR);
+			knh_Stmt_t *stmTYPEMAP = new_StmtREUSE(ctx, stmt, STT_TPATH);
+			_ASIS(ctx, stmTYPEMAP, itr);
+			_EXPR(ctx, stmTYPEMAP, itr);
+			knh_Stmt_add(ctx, stmTYPEMAP, tkCUR);
 		}
 		else {
 			_EXPRCALL(ctx, stmt, itr);

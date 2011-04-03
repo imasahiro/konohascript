@@ -99,8 +99,8 @@ extern "C" {
 #define K_INCLUDE_BUILTINAPI
 #include "dspi.c"
 
-static TCAST Array_Iterator(CTX ctx, knh_sfp_t *sfp _RIX);
-static TCAST Iterator_Array(CTX ctx, knh_sfp_t *sfp _RIX);
+//static TYPEMAP Array_Iterator(CTX ctx, knh_sfp_t *sfp _RIX);
+//static TYPEMAP Iterator_Array(CTX ctx, knh_sfp_t *sfp _RIX);
 
 #define knh_bodymalloc(ctx, C)   (knh_##C##EX_t*)KNH_MALLOC(ctx, sizeof(knh_##C##EX_t))
 #define knh_bodyfree(ctx, p, C)  KNH_FREE(ctx, p, sizeof(knh_##C##EX_t))
@@ -203,7 +203,7 @@ static knh_float_t DEFAULT_tofloat(CTX ctx, knh_sfp_t *sfp)
 
 knh_TypeMap_t* DEFAULT_findTypeMapNULL(CTX ctx, knh_class_t scid, knh_class_t tcid, int mode)
 {
-	//DBG_P("set default value cid=%d", cid);
+	DBG_P("trying to generate scid=%s tcid=%s, isWrapper=%d", CLASS__(scid), CLASS__(tcid), mode);
 	return NULL;
 }
 
@@ -901,20 +901,6 @@ static void Range_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 	knh_putc(ctx, w, ']');
 }
 
-//static TCAST Range_Iterator(CTX ctx, knh_sfp_t *sfp _RIX);
-//#define FLAG_TypeMap_Iteration (FLAG_TypeMap_Total)
-//static knh_TypeMap_t* knh_Range_genmap(CTX ctx, knh_class_t cid, knh_class_t tcid)
-//{
-////	if(knh_class_bcid(tcid) == CLASS_Iterator) {
-////		knh_class_t p1 = knh_class_p1(cid); //Range<p1>
-////		knh_class_t tp1 = knh_class_p1(tcid);  //Iterator<tp2>
-////		if(p1 == tp1 || tp1 == CLASS_Tdynamic || knh_class_instanceof(ctx, p1, tp1)) {
-////			return new_TypeMap(ctx, FLAG_TypeMap_Iteration, cid, tcid, Range_Iterator);
-////		}
-////	}
-//	return NULL;
-//}
-
 static knh_ClassDef_t RangeDef = {
 	Range_init, DEFAULT_initcopy, Range_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Range_write,
@@ -1043,18 +1029,6 @@ static void Array_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 	}
 	knh_putc(ctx, w, ']');
 }
-
-//static knh_TypeMap_t* knh_Array_findTransNULL(CTX ctx, knh_class_t cid, knh_class_t tcid)
-//{
-//	if(knh_class_bcid(tcid) == CLASS_Iterator) {
-//		knh_class_t p1 = knh_class_p1(cid);
-//		knh_class_t tp1 = knh_class_p1(tcid);
-//		if(p1 == tp1 || tp1 == CLASS_Tdynamic || knh_class_instanceof(ctx, p1, tp1)) {
-//			return new_TypeMap(ctx, FLAG_TypeMap_Iteration, cid, tcid, Array_Iterator);
-//		}
-//	}
-//	return NULL;
-//}
 
 static knh_ClassDef_t ArrayDef = {
 	Array_init, Array_initcopy, Array_reftrace, Array_free,
@@ -1403,39 +1377,35 @@ static knh_ClassDef_t MethodDef = {
 
 static void TypeMap_init(CTX ctx, Object *o)
 {
-	knh_TypeMap_t *tmap = (knh_TypeMap_t*)o;
-	knh_TypeMapEX_t *b = knh_bodymalloc(ctx, TypeMap);
-	b->flag = 0;
-	SP(tmap)->scid = CLASS_Object;
-	SP(tmap)->tcid = CLASS_Object;
-	KNH_INITv(b->mapdata, KNH_NULL);
-	KNH_INITv(b->trl2, KNH_NULL);
-	tmap->b = b;
+	knh_TypeMap_t *tmr = (knh_TypeMap_t*)o;
+	tmr->scid = 0;
+	tmr->tcid = 0;
+	KNH_INITv(tmr->mapdata, KNH_NULL);
+	KNH_INITv(tmr->tmr2, KNH_NULL);
 }
 
 static void TypeMap_reftrace(CTX ctx, Object *o FTRARG)
 {
-	knh_TypeMap_t *tmap = (knh_TypeMap_t*)o;
-	knh_TypeMapEX_t *b = DP(tmap);
-	KNH_ADDREF(ctx, b->mapdata);
-	KNH_ADDREF(ctx, (b->trl2));
+	knh_TypeMap_t *tmr = (knh_TypeMap_t*)o;
+	KNH_ADDREF(ctx, tmr->mapdata);
+	KNH_ADDREF(ctx, tmr->tmr2);
 	KNH_SIZEREF(ctx);
 }
 
 static void TypeMap_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
-	knh_TypeMap_t *tmap = (knh_TypeMap_t*)o;
-	knh_write_type(ctx, w, tmap->scid);
+	knh_TypeMap_t *tmr = (knh_TypeMap_t*)o;
+	knh_write_type(ctx, w, tmr->scid);
 	knh_write(ctx, w, STEXT("=>"));
-	knh_write_type(ctx, w, tmap->tcid);
+	knh_write_type(ctx, w, tmr->tcid);
 }
 
 static knh_ClassDef_t TypeMapDef = {
-	TypeMap_init, TODO_initcopy, TypeMap_reftrace, BODY_free,
+	TypeMap_init, TODO_initcopy, TypeMap_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, TypeMap_write,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"TypeMap", CFLAG_TypeMap, sizeof(knh_TypeMapEX_t), NULL,
+	"TypeMap", CFLAG_TypeMap, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
@@ -2101,7 +2071,7 @@ static void Script_init(CTX ctx, Object *o)
 	ct->supTBL = ClassTBL(CLASS_Script);
 	knh_setClassDef(ct, ClassTBL(CLASS_Script)->ospi);
 	KNH_INITv(ct->methods, KNH_EMPTYLIST);
-	KNH_INITv(ct->tmaps, KNH_EMPTYLIST);
+	KNH_INITv(ct->typemaps, KNH_EMPTYLIST);
 	knh_setClassName(ctx, cid, ClassTBL(CLASS_Script)->sname, ClassTBL(CLASS_Script)->sname);
 	DBG_ASSERT(ct->defnull == NULL);
 	scr->fields = NULL;

@@ -447,18 +447,14 @@ class TypeMap:
             func = self.meta['@Func']
         flag = '0'
         flag = addflag(flag, self.meta, 'TypeMap', '@Const')
-        flag = addflag(flag, self.meta, 'TypeMap', '@Total')
         flag = addflag(flag, self.meta, 'TypeMap', '@Semantic')
-        flag = addflag(flag, self.meta, 'TypeMap', '@Final')
         fmt = '''
-\tDATA_TCAST, %s, %s, %s, _DATA(%s),''' % (CLASS_(self.fcname), CLASS_(self.tcname), flag, func)
+\tDATA_TYPEMAP, %s, %s, %s, _DATA(%s),''' % (CLASS_(self.fcname), CLASS_(self.tcname), flag, func)
         return fmt
 
 def parse_TypeMap(meta, tokens, data):
     mpr = TypeMap(tokens[0], tokens[1])
     mpr.meta = meta
-    if not tokens[1].endswith('?'):
-        meta['@Total'] = True
     data.add_TypeMap(mpr)
 
 class Data:
@@ -479,7 +475,7 @@ class Data:
         self.METHODFIELD_LIST = []
         self.METHODN = {}
         self.METHOD_LIST = []
-        self.TCAST_LIST = []
+        self.TYPEMAP_LIST = []
         self.STEXT = [
                       ("EMPTY", ""), ("TAB", "\\t"), ("ONE", "1"),
                       ("EOL", '"K_OSLINEFEED"'), ("BEGIN", "BEGIN"), ("END", "END"),
@@ -601,7 +597,7 @@ class Data:
                 c.method_size += 1
 
     def add_TypeMap(self, mpr):
-        self.TCAST_LIST.append(mpr)
+        self.TYPEMAP_LIST.append(mpr)
         c = self.get_Class(mpr.fcname)
         if c is not None: c.mapper_size += 1
 
@@ -903,7 +899,7 @@ def write_Data(f, data):
     #write_data(f, 'knh_data_t', 'MethodData0', dlist, '0')
     #
     #dlist = []
-    for mpr in data.TCAST_LIST:
+    for mpr in data.TYPEMAP_LIST:
         dlist.append(mpr.TypeMapData())
     write_data(f, 'knh_data_t', 'APIData0', dlist, '0')
     #write_KNHAPI2(f, data)

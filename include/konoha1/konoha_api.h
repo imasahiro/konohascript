@@ -21,7 +21,8 @@ KNHAPI2(knh_type_t) knh_ParamArray_rtype(knh_ParamArray_t *pa);
 KNHAPI2(void) knh_write_mn(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn);
 KNHAPI2(knh_bool_t) Method_isAbstract(knh_Method_t *mtd);
 KNHAPI2(void) knh_addTypeMap(CTX ctx, knh_TypeMap_t *trl);
-KNHAPI2(knh_TypeMap_t*) new_TypeMap(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftmapper ftcast);
+KNHAPI2(void) knh_TypeMap_exec(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp, long rix);
+KNHAPI2(knh_TypeMap_t*) new_TypeMap(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func);
 KNHAPI2(void) knh_invoke(CTX ctx, knh_Func_t *fo, knh_sfp_t *sfp /*rtnidx*/, int argc);
 KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb);
 KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *s, const char *mode);
@@ -78,7 +79,7 @@ typedef struct knh_api2_t {
 	knh_String_t*  (*getFieldName)(CTX ctx, knh_fieldn_t fn);
 	knh_String_t* (*new_String)(CTX ctx, const char *str);
 	knh_String_t* (*new_String_)(CTX ctx, knh_class_t cid, knh_bytes_t t, knh_String_t *memoNULL);
-	knh_TypeMap_t* (*new_TypeMap)(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftmapper ftcast);
+	knh_TypeMap_t* (*new_TypeMap)(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func);
 	knh_bool_t (*Method_isAbstract)(knh_Method_t *mtd);
 	knh_bool_t  (*isSystemVerbose)(void);
 	knh_bool_t  (*loadScript)(CTX ctx, knh_bytes_t path, knh_type_t reqt, knh_Array_t *resultsNULL);
@@ -100,6 +101,7 @@ typedef struct knh_api2_t {
 	void  (*OutputStream_write)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t buf);
 	void  (*OutputStream_writeLine)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, knh_bool_t isNEWLINE);
 	void  (*ResultSet_initColumn)(CTX ctx, knh_ResultSet_t *o, size_t column_size);
+	void  (*TypeMap_exec)(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp, long rix);
 	void  (*addTypeMap)(CTX ctx, knh_TypeMap_t *trl);
 	void  (*invoke)(CTX ctx, knh_Func_t *fo, knh_sfp_t *sfp /*rtnidx*/, int argc);
 	void  (*printf)(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...);
@@ -113,7 +115,7 @@ typedef struct knh_api2_t {
 	void  (*write_type)(CTX ctx, knh_OutputStream_t *w, knh_type_t type);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)-1631554196)
+#define K_API2_CRC32 ((size_t)839058177)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -157,6 +159,7 @@ static const knh_api2_t* getapi2(void) {
 		knh_OutputStream_write,
 		knh_OutputStream_writeLine,
 		knh_ResultSet_initColumn,
+		knh_TypeMap_exec,
 		knh_addTypeMap,
 		knh_invoke,
 		knh_printf,
@@ -213,6 +216,7 @@ static const knh_api2_t* getapi2(void) {
 #define knh_OutputStream_write   ctx->api2->OutputStream_write
 #define knh_OutputStream_writeLine   ctx->api2->OutputStream_writeLine
 #define knh_ResultSet_initColumn   ctx->api2->ResultSet_initColumn
+#define knh_TypeMap_exec   ctx->api2->TypeMap_exec
 #define knh_addTypeMap   ctx->api2->addTypeMap
 #define knh_invoke   ctx->api2->invoke
 #define knh_printf   ctx->api2->printf
@@ -387,8 +391,8 @@ int knh_Object_compareTo(Object *o1, Object *o2);
 void knh_Object_toNULL_(CTX ctx, Object *o);
 const char *SAFESTRUCT__(CTX ctx, knh_class_t bcid);
 const char *SAFETYPE__(CTX ctx, knh_type_t type);
-const knh_ClassTBL_t* DBG_ClassTBL(CTX ctx, knh_class_t cid);
 const char *SAFECLASS__(CTX ctx, knh_class_t cid);
+const knh_ClassTBL_t* DBG_ClassTBL(CTX ctx, knh_class_t cid);
 knh_Class_t *new_Type(CTX ctx, knh_type_t type);
 void knh_setClassName(CTX ctx, knh_class_t cid, knh_String_t *lname, knh_String_t *snameNULL);
 knh_class_t knh_getcid(CTX ctx, knh_bytes_t lname);
@@ -425,9 +429,9 @@ void knh_NameSpace_addMethod(CTX ctx, knh_class_t mtd_cid, knh_Method_t *mtd);
 knh_Method_t* knh_NameSpace_getMethodNULL(CTX ctx, knh_class_t cid, knh_methodn_t mn);
 knh_Method_t* knh_NameSpace_getFmtNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_methodn_t mn);
 void knh_NameSpace_addFmt(CTX ctx, knh_NameSpace_t *ns, knh_Method_t *mtd);
-void knh_addTypeMapFunc(CTX ctx, knh_flag_t flag, knh_type_t stype, knh_type_t ttype, knh_Ftmapper ftcast, Object *mapdata);
-knh_bool_t TypeMap_isNoSuchMapping(knh_TypeMap_t *trl);
-knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid, knh_class_t tcid, int isGEN);
+void knh_addTypeMapFunc(CTX ctx, knh_flag_t flag, knh_type_t stype, knh_type_t ttype, knh_Ftypemap fTYPEMAP, Object *mapdata);
+knh_bool_t TypeMap_isNoSuchMapping(knh_TypeMap_t *tmr);
+knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0, int isT);
 knh_class_t new_ClassId(CTX ctx);
 void knh_expandEventTBL(CTX ctx);
 void pseudo_vsyslog(int p, const char *fmt, va_list ap);

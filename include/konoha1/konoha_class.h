@@ -284,7 +284,7 @@ typedef struct knh_Array_t {
 	};
 	size_t size;
 	const knh_dim_t *dim;
-	knh_ArrayAPI_t *api;
+	const knh_ArrayAPI_t *api;
 } knh_Array_t;
 
 #define knh_Array_n(a,n)      (a)->list[(n)]
@@ -523,30 +523,20 @@ typedef struct knh_Method_t {
 
 /* ------------------------------------------------------------------------ */
 //## @Struct class TypeMap Object;
-//## flag TypeMap Interface        0 DP(%s)->flag is set * *;
-//## flag TypeMap Significant      1 DP(%s)->flag is set * *;
-//## flag TypeMap Semantic         2 DP(%s)->flag is * * *;
-//## flag TypeMap Total!Partial    3 DP(%s)->flag is set * *;
-//## flag TypeMap LossLess         4 DP(%s)->flag is set * *;
-//## flag TypeMap Final            6 DP(%s)->flag is set * *;
-//## flag TypeMap Const!Temporal   7 DP(%s)->flag is set * *;
-//## flag TypeMap MapMap           8 DP(%s)->flag is set * *;
-
-typedef struct {
-	knh_flag_t   flag;
-	union {
-		Object* mapdata;
-		struct knh_Method_t *mtd;
-		struct knh_TypeMap_t *trl1;
-	};
-	struct knh_TypeMap_t *trl2;
-} knh_TypeMapEX_t;
+//## flag TypeMap Interface  1 - is set * *;
+//## flag TypeMap Semantic   2 - is set * *;
+//## flag TypeMap Const      3 - is set * *;
 
 typedef struct knh_TypeMap_t {
 	knh_hObject_t h;
-	knh_TypeMapEX_t *b;
-	knh_class_t  scid; knh_class_t  tcid;  // must be safe as Null(0, 0)
-	knh_Ftmapper ftcast_1;
+	knh_class_t  scid; knh_class_t  tcid;
+	knh_Ftypemap ftypemap_1;
+	union {
+		Object* mapdata;
+		struct knh_Method_t  *mtd;
+		struct knh_TypeMap_t *tmr1;
+	};
+	struct knh_TypeMap_t *tmr2;
 } knh_TypeMap_t;
 
 #define knh_findTypeMap(ctx, scid, tcid)     knh_findTypeMapNULL(ctx, scid, tcid, 1)
@@ -1110,7 +1100,7 @@ typedef struct knh_Token_t {
 #define StmtMETHOD_isFFI(s)            Stmt_isMemo2(s)
 #define StmtMETHOD_setFFI(s,b)         Stmt_setMemo2(s,b)
 
-/* STT_TCAST*/
+/* STT_TYPEMAP*/
 #define Stmt_isDOWNCAST(s)       Stmt_isMemo1(s)
 #define Stmt_setDOWNCAST(s,b)    Stmt_setMemo1(s,b)
 
@@ -1350,7 +1340,7 @@ typedef struct knh_RawPtr_t {
 #define K_SHIFTIDX  (-3)
 #define K_PCIDX     (-2)
 #define K_MTDIDX    (-1)
-#define K_TRLIDX    0
+#define K_TMRIDX   0
 #define K_SELFIDX   0
 
 //#ifdef K_USING_RBP_
@@ -1400,7 +1390,7 @@ knh_opline_t* knh_VirtualMachine_run(CTX, knh_sfp_t *, knh_opline_t *);
 #define KNH_SCAST(ctx, lsfp, rtnidx, trl)  { \
 		knh_TypeMap_t *trl_ = trl;\
 		klr_settrlNC(ctx, lsfp[rtnidx], trl_);\
-		(trl_)->ftcast_1(ctx, lsfp + rtnidx, 0); \
+		(trl_)->ftypemap_1(ctx, lsfp + rtnidx, 0); \
 	} \
 
 #define BEGIN_LOCAL(ctx, lsfp, n) \

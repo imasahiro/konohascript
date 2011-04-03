@@ -953,7 +953,7 @@ static ITRNEXT Fnext_mapkeydata(CTX ctx, knh_sfp_t *sfp, long rtnidx)
 //## mapper Map T1..!;
 //## method T1.. Map.opITR();
 
-static TCAST Map_T1__(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Map_T1__(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
 	knh_class_t p1 = O_cTBL(m)->p1;

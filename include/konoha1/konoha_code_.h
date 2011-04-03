@@ -1276,7 +1276,7 @@ typedef struct klr_NOP_t {
 #define VMT_F        10
 #define VMT_CID      11
 #define VMT_MTD      12
-#define VMT_TRL      13
+#define VMT_TMR      13
 #define VMT_OBJECT   14
 #define VMT_STRING   15
 #define VMT_INT      16
