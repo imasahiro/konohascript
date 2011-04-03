@@ -1098,7 +1098,6 @@ static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputS
 		if(block_indent <= c) {
 			goto L_STARTLINE;
 		}
-		//DBG_P("block_indent=%d, c=%d", block_indent, c);
 		break;
 	}
 	knh_cwb_clear(cwb, 0);
@@ -1656,9 +1655,9 @@ static void _ASISEXPRs(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 
 static int ITR_indexKEY(tkitr_t *itr, int shift)
 {
-	int i;
 	knh_Token_t **ts = itr->ts;
-	for(i = itr->c + shift; i < itr->e - 1; i++) { /* BEGIN */
+	int i;
+	for(i = itr->c + shift; i < itr->e - 2; i++) { /* BEGIN */
 		if(TT_(ts[i+1]) == TT_COLON && IS_bString((ts[i])->text)) {
 			return i;
 		}
@@ -1666,11 +1665,25 @@ static int ITR_indexKEY(tkitr_t *itr, int shift)
 	return itr->e;
 }
 
+static int ITR_isImmutable(tkitr_t *titr)
+{
+	if(titr->e > 0) {
+		if(TT_(titr->ts[titr->e - 1]) == TT_DOTS) {
+			titr->e -= 1;
+			return 1;
+		}
+		return 0;
+	}
+	return 1;
+}
+
 static void _ARRAY(CTX ctx, knh_Stmt_t *stmt, knh_methodn_t mn, knh_class_t cid, tkitr_t *itr)
 {
+	knh_Token_t *tkC = new_TokenCID(ctx, cid);
 	DBG_ASSERT(STT_(stmt) == STT_NEW);
 	knh_Stmt_add(ctx, stmt, new_TokenMN(ctx, mn));
-	knh_Stmt_add(ctx, stmt, new_TokenCID(ctx, cid));
+	knh_Stmt_add(ctx, stmt, tkC);
+	Token_setImmutable(tkC, ITR_isImmutable(itr));
 	_EXPRs(ctx, stmt, itr);
 }
 
@@ -1683,19 +1696,20 @@ static knh_Stmt_t *Stmt_addNewStmt(CTX ctx, knh_Stmt_t *stmt, knh_term_t stt)
 
 static void _KEYVALUEs(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 {
-	int p = ITR_indexKEY(itr, +0);
+	int p = ITR_indexKEY(itr, +0), p_next;
 	while(p < itr->e) {
 		tkitr_t ebuf, *eitr = ITR_copy(itr, &ebuf, 0);
 		eitr->c = p;
-		eitr->e = ITR_indexKEY(eitr, +1);
-		if(ITR_size(eitr) > 0) {
+		p_next = ITR_indexKEY(eitr, +2);
+		eitr->e = p_next;
+		ITR_chop(eitr, TT_SEMICOLON);
+		ITR_chop(eitr, TT_COMMA);
+		if(ITR_size(eitr) > 2) {
 			knh_Token_t *tk = ITR_nextTK(eitr);
 			TT_(tk) = TT_STR;
 			knh_Stmt_add(ctx, stmt, tk);
 			DBG_ASSERT(ITR_is(eitr, TT_COLON));
 			ITR_next(eitr);
-			ITR_chop(eitr, TT_COMMA);
-			ITR_chop(eitr, TT_SEMICOLON);
 			if(!ITR_hasNext(eitr)) {
 				knh_Stmt_add(ctx, stmt, new_Token(ctx, TT_NULL));
 				return;
@@ -1708,7 +1722,7 @@ static void _KEYVALUEs(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 				_ARRAY(ctx, stmtARRAY, MN_newLIST, CLASS_Array, eitr);
 			}
 		}
-		p = eitr->e;
+		p = p_next;
 	}
 }
 
@@ -1722,6 +1736,7 @@ static void _DICT(CTX ctx, knh_Stmt_t *stmt, knh_Token_t *tkC, knh_Token_t *tkB)
 	DBG_ASSERT(TT_(tkB) == TT_BRACE);
 	{
 		tkitr_t pbuf, *pitr = ITR_new(tkB, &pbuf);
+		Token_setImmutable(tkC, ITR_isImmutable(pitr));
 		_KEYVALUEs(ctx, stmt, pitr);
 	}
 }
@@ -3062,7 +3077,7 @@ static int Token_isMAP(CTX ctx, knh_Token_t *tk)
 			if(c > 0) isMAP = 1;
 		}
 	}
-	DBG_P("@@@@@@@ RES=%d", isMAP);
+	DBG_P("@@@@@@@ isMAP=%d", isMAP);
 	L_RETURN:;
 	return isMAP;
 }

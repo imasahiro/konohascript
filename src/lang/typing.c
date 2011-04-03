@@ -2402,6 +2402,9 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 			}
 			mtd_cid = reqt;
 		}
+		if(IS_SCRIPTLEVEL(ctx)) {
+			DBG_P("** SCRIPT_LEVEL **");
+		}
 		goto L_LOOKUPMETHOD;
 	}
 
@@ -2443,7 +2446,6 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		Token_setCONST(ctx, tkC, new_Type(ctx, mtd_cid));
 		tkRES = CALLPARAMs_typing(ctx, stmt, mtd_cid, mtd_cid, mtd);
 		tkRES->type = mtd_cid;
-		DBG_P("mtd_cid=%s", CLASS__(mtd_cid));
 		return tkRES;
 	}
 }
@@ -2901,14 +2903,12 @@ static knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t re
 	/* TYPING */{
 		knh_Token_t *tk = tkNN(stmt, n);
 		tkRES = IS_Token(tk)
-			? Token_typing(ctx, tkNN(stmt, n), reqt) :
-			  Stmt_typing(ctx, stmtNN(stmt, n), reqt);
+			? Token_typing(ctx, tkNN(stmt, n), reqt) : Stmt_typing(ctx, stmtNN(stmt, n), reqt);
 		if(TT_(tkRES) == TT_ERR) goto L_PERROR;
 		if(tk != tkRES) {
 			KNH_SETv(ctx, tmNN(stmt, n), tkRES);
 		}
 	}
-
 	if(FLAG_is(opflag, _NOTCHECK)) {
 		goto L_RETURN;
 	}
@@ -2918,6 +2918,12 @@ static knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t re
 			goto L_PERROR;
 		}
 		goto L_RETURN;
+	}
+	if(reqt == TYPE_TEXT) {
+		if(TT_(tkNN(stmt, n)) == TT_CONST && Tn_cid(stmt, n) == CLASS_String) {
+			goto L_RETURN;
+		}
+		goto L_PERROR;
 	}
 	if(FLAG_is(opflag, _BCHECK)) {
 		knh_class_t cid = Tn_cid(stmt, n);
@@ -4315,6 +4321,7 @@ static knh_Token_t *Stmt_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
 	knh_Token_t *tkRES = NULL;
 	if(Stmt_isTyped(stmt)) return TM(stmt);
+	if(reqt == TYPE_TEXT) reqt = TYPE_String;
 	if(stmt_isExpr(STT_(stmt))) {
 		tkRES = EXPR_typing(ctx, stmt, reqt);
 		if(Gamma_hasREGISTER(ctx->gma) && IS_Stmt(tkRES)) {

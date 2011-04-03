@@ -1034,7 +1034,8 @@ typedef struct knh_Assurance_t {
 //## flag Token Getter        4 SP(%s)->flag0 is set * *;
 //## flag Token Setter        5 SP(%s)->flag0 is set * *;
 //## flag Token ExceptionType 6 SP(%s)->flag0 is set * *;
-//## flag Token MEMO1         7 SP(%s)->flag0 is set * *;
+//## flag Token Immutable     7 SP(%s)->flag0 is set * *;
+//## flag Token MEMO1         8 SP(%s)->flag0 is set * *;
 
 // TT_BRACE, TT_PARENTHESIS, TT_BRANCET
 #define Token_isPLUSLINE(o)  Token_isMEMO1(o)

@@ -2,7 +2,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* MACROS */
-#define K_REVISION                      97
+#define K_REVISION                      99
 #define K_BUILDID                       1082
 
 /* ------------------------------------------------------------------------ */
@@ -661,7 +661,10 @@
 #define FLAG_Token_ExceptionType ((knh_flag_t)(1<<6))
 #define Token_isExceptionType(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Token_ExceptionType))
 #define Token_setExceptionType(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Token_ExceptionType,b)
-#define FLAG_Token_MEMO1 ((knh_flag_t)(1<<7))
+#define FLAG_Token_Immutable ((knh_flag_t)(1<<7))
+#define Token_isImmutable(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Token_Immutable))
+#define Token_setImmutable(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Token_Immutable,b)
+#define FLAG_Token_MEMO1 ((knh_flag_t)(1<<8))
 #define Token_isMEMO1(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Token_MEMO1))
 #define Token_setMEMO1(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Token_MEMO1,b)
 #define FLAG_Stmt_STOPITR ((knh_flag_t)(1<<1))
