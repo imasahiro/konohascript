@@ -356,7 +356,9 @@ static FILE* uout = NULL;  // @see Assurance_write
 static void opt_utest(CTX ctx, int mode, const char *optstr)
 {
 	char fname[80];
-	knh_snprintf(fname, sizeof(fname), "UnitTest%d.txt", (int)K_REVISION);
+	const char *prefix = knh_getenv("UTEST");
+	if(prefix == NULL) prefix = "AssuranceCases";
+	knh_snprintf(fname, sizeof(fname), "%s%d.txt", prefix, (int)K_REVISION);
 	uout = fopen(fname, "a");
 }
 
