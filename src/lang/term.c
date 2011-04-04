@@ -2553,19 +2553,18 @@ static knh_Stmt_t *Stmt_norm(CTX ctx, knh_Stmt_t *stmt)
 	}
 	if(stmtLAST != NULL) {
 		ctx->gma->uline = stmtLAST->uline;
-		if(STT_(stmtLAST) == STT_CALL1) {
+		if(STT_(stmtLAST) == STT_CALL1 && !IS_Stmt(DP(stmtLAST)->stmtPOST)) {
 			STT_(stmtLAST) = STT_RETURN;
 		}
-		else if(stmt_isExpr(STT_(stmtLAST)) && STT_(stmtLAST) != STT_LET) {
-			knh_Stmt_t *stmtRETURN = new_Stmt2(ctx, STT_RETURN, stmtLAST, NULL);
-			if(stmtPREV != NULL) {
-				KNH_SETv(ctx, DP(stmtPREV)->nextNULL, stmtRETURN);
-			}
-			else {
-				stmt = stmtRETURN;
-			}
-			stmtLAST = NULL;
-		}
+//		else if(stmt_isExpr(STT_(stmtLAST)) && STT_(stmtLAST) != STT_LET) {
+//			knh_Stmt_t *stmtRETURN = new_Stmt2(ctx, STT_RETURN, stmtLAST, NULL);
+//			if(stmtPREV != NULL) {
+//				KNH_SETv(ctx, DP(stmtPREV)->nextNULL, stmtRETURN);
+//			}
+//			else {
+//				stmt = stmtRETURN;
+//			}
+//		}
 	}
 	return stmt;
 }

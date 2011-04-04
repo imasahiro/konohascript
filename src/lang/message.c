@@ -413,10 +413,10 @@ knh_Token_t* ERROR_Needs(CTX ctx, const char *what)
 {
 	return Gamma_perror(ctx, KC_ERR, _("needs %s"), what);
 }
-knh_Token_t* ErrorUnknownConstructor(CTX ctx, knh_Token_t *tk, knh_class_t mtd_cid)
-{
-	return Gamma_perror(ctx, KC_ERR, _("unknown constructor: %L %C(...)"), tk, mtd_cid);
-}
+//knh_Token_t* ErrorUnknownConstructor(CTX ctx, knh_Token_t *tk, knh_class_t mtd_cid)
+//{
+//	return Gamma_perror(ctx, KC_ERR, _("unknown constructor: %L %C(...)"), tk, mtd_cid);
+//}
 knh_Token_t* ErrorMustBinaryOperator(CTX ctx, const char*opname)
 {
 	return Gamma_perror(ctx, KC_ERR, "%s must be binary operator", opname);

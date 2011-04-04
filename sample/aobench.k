@@ -21,7 +21,6 @@ double dot(Vec v0, Vec v1) {
     return v0.x * v1.x + v0.y * v1.y + v0.z * v1.z;
 }
 
-
 void cross(Vec v0, Vec v1, Vec v2) {
     v2.x = v0.y * v1.z - v0.z * v1.y;
     v2.y = v0.z * v1.x - v0.x * v1.z;
