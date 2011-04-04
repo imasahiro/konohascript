@@ -525,13 +525,14 @@ static int pcre_regex_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, in
 static int pcre_regex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t nmatch, knh_regmatch_t p[], int eflags)
 {
 	PCRE_regex_t *preg = (PCRE_regex_t*)reg;
-	int res, nm_count, nvector[nmatch];
+	int res, nm_count, nvector[nmatch*3];
+	nvector[0] = 0;
 	size_t idx, matched;
 	if (strlen(str) == 0) return -1;
-	if ((res = pcre_exec(preg->re, NULL, str, strlen(str), 0, eflags, nvector, nmatch)) < 0) {
-		return (res == PCRE_ERROR_NOMATCH) ? 0 : -1;
+	if ((res = pcre_exec(preg->re, NULL, str, strlen(str), 0, eflags, nvector, nmatch*3)) < 0) {
+		return res;
 	}
-	matched = (res == 0) ? nmatch/3 : res;
+	matched = (res == 0 || res > nmatch) ? nmatch : res;
 	for (idx = 0; idx < matched; idx++) {
 		p[idx].rm_so = nvector[2*idx];
 		p[idx].rm_eo = nvector[2*idx+1];
