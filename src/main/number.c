@@ -113,7 +113,7 @@ KNHAPI2(knh_Float_t*) new_Float(CTX ctx, knh_class_t cid, knh_float_t value)
 }
 #endif
 
-#else K_INCLUDE_BUILTINAPI
+#else /*K_INCLUDE_BUILTINAPI*/
 
 /* ------------------------------------------------------------------------ */
 //## @Static method void System.setRandomSeed(Int seed);
@@ -247,8 +247,8 @@ static TYPEMAP Int_Object(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 //## @Const mapper Float Object;
-//## @Const mapper Int   Number;
-//## @Const mapper Int   Tdynamic;
+//## @Const mapper Float Number;
+//## @Const mapper Float Tdynamic;
 
 static TYPEMAP Float_Object(CTX ctx, knh_sfp_t *sfp _RIX)
 {

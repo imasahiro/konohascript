@@ -116,7 +116,7 @@
 #cmakedefine K_CONFIG_OS "${K_CONFIG_OS}"
 
 /* Difining konoha library prefix with default value */
-#undef K_PREFIX "${CMAKE_INSTALL_PREFIX}"
+#cmakedefine K_PREFIX "${CMAKE_INSTALL_PREFIX}"
 
 /* Enable debug mode */
 #cmakedefine K_USING_DEBUG ${K_USING_DEBUG}
