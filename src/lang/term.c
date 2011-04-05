@@ -1065,11 +1065,7 @@ static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputS
 		if(ch == '{') {
 			level++;
 		}
-		else if(ch == '\'' && (islower(prev) || prev == '\'')) {
-			Bytes_addQUOTE(ctx, cwb->ba, in, ch, -2/*skip*/, 1/*isRAW*/, 0);
-			knh_Bytes_putc(ctx, cwb->ba, ch);
-		}
-		else if(ch == '"' || ch == '`') {
+		else if(ch == '"' || ch == '`' || ch == '\'') {
 			Bytes_addQUOTE(ctx, cwb->ba, in, ch, -2/*skip*/, 1/*isRAW*/, 0);
 			knh_Bytes_putc(ctx, cwb->ba, ch);
 		}
@@ -1090,15 +1086,14 @@ static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputS
 		if(ch == '\t') { c += 3; continue; }
 		if(ch == ' ') { c += 1; continue; }
 		if(ch == '\n') {c = 0; continue; }
-		//DBG_P("block_indent=%d, c=%d", block_indent, c);
 //		if(c > 0 && block_indent == c && ch == '}') {
 //			Token_addBuf(ctx, tkB, cwb, TT_CODE, ch);
 //			return;
 //		}
-		if(block_indent <= c) {
-			goto L_STARTLINE;
-		}
 		break;
+	}
+	if(block_indent <= c) {
+		goto L_STARTLINE;
 	}
 	knh_cwb_clear(cwb, 0);
 	DBG_P("block_indent=%d, c=%d, last=%d", block_indent, c, ch);

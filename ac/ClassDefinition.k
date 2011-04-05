@@ -12,6 +12,7 @@ assure "UnitTest:ClassDefinition" {
 	p2 = new Person("sakura", 16);
 	Person p3 = new Person("sasuke", 17);
 	p2.age = 17;
+	print p1.age, p2.age, p3.age;
 	assert p1.age == p3.age;
 	assert p2.age == p3.age;
 }
