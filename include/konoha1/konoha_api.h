@@ -271,7 +271,7 @@ knh_Token_t* ERROR_Undefined(CTX ctx, const char *whatis, knh_class_t cid, knh_T
 knh_Token_t* ERROR_UndefinedName(CTX ctx, knh_Token_t *tk);
 void WARN_UndefinedName(CTX ctx, knh_Token_t *tk);
 knh_Token_t* ErrorTokenAlreadyDefinedName(CTX ctx, knh_Token_t *tk);
-knh_Token_t* ErrorTokenReadOnlyName(CTX ctx, knh_Token_t *tk);
+knh_Token_t* ERROR_Denied(CTX ctx, const char *why, knh_Token_t *tk);
 void WarningUndefined(CTX ctx, const char *whatis, const char *prefix, const char *msg);
 void WarningUndefinedOfClass(CTX ctx, const char *whatis, knh_class_t cid, const char *prefix, const char *msg);
 void WarningUnknownClass(CTX ctx, knh_Token_t *tk, knh_class_t defc);
@@ -297,7 +297,6 @@ void WARN_Ignored(CTX ctx, const char *whatis, knh_class_t cid, const char *symb
 void WarningUnnecessaryOperation(CTX ctx, const char *msg);
 void WarningTooManyParameters(CTX ctx);
 knh_Token_t* ERROR_Needs(CTX ctx, const char *what);
-knh_Token_t* ErrorUnknownConstructor(CTX ctx, knh_Token_t *tk, knh_class_t mtd_cid);
 knh_Token_t* ErrorMustBinaryOperator(CTX ctx, const char*opname);
 void WarningNullable(CTX ctx, knh_class_t cid);
 knh_Token_t* ErrorComparedDiffrentType(CTX ctx, knh_type_t t1, knh_type_t t2);

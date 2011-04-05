@@ -490,7 +490,7 @@ static knh_Token_t *Gamma_add(CTX ctx, knh_flag_t flag, knh_Token_t *tkT, knh_To
 	}
 	if(FLAG_is(op, GF_FUNCVAR)) {
 		knh_Token_toTYPED(ctx, tkN, TT_FUNCVAR, type, idx);
-		Token_setReadOnly(tkN, 1);
+		STRICT_(Token_setReadOnly(tkN, 1));
 		DP(ctx->gma)->ebpidx += 1;
 	}
 	else if(FLAG_is(op, GF_FIELD)) {
@@ -1559,7 +1559,7 @@ static knh_Token_t *LET_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 			if(Token_isReadOnly(tkRES)) {
 				knh_Method_t *mtd = DP(ctx->gma)->mtd;
 				if(!(TT_(tkRES) == TT_FIELD && MN_isNEW((mtd)->mn))) {
-					return ErrorTokenReadOnlyName(ctx, tkN);
+					return ERROR_Denied(ctx, "read only", tkN);
 				}
 			}
 			knh_Token_toTYPED(ctx, tkN, tkRES->tt, tkRES->type, (tkRES)->index);
@@ -1617,7 +1617,7 @@ static knh_Token_t *LETM_typing(CTX ctx, knh_Stmt_t *stmt)
 				if(Token_isReadOnly(tkRES)) {
 					knh_Method_t *mtd = DP(ctx->gma)->mtd;
 					if(!(TT_(tkRES) == TT_FIELD && MN_isNEW((mtd)->mn))) {
-						return ErrorTokenReadOnlyName(ctx, tkN);
+						return ERROR_Denied(ctx, "read only", tkN);
 					}
 				}
 			}
@@ -1704,7 +1704,7 @@ static knh_Token_t *SWAP_typing(CTX ctx, knh_Stmt_t *stmt)
 				if(Token_isReadOnly(tkRES)) {
 					knh_Method_t *mtd = DP(ctx->gma)->mtd;
 					if(!(TT_(tkRES) == TT_FIELD && MN_isNEW((mtd)->mn))) {
-						return ErrorTokenReadOnlyName(ctx, tkN);
+						return ERROR_Denied(ctx, "read only", tkN);
 					}
 				}
 				TYPING(ctx, stmt, msize+i, tkRES->type, 0);

@@ -283,9 +283,9 @@ knh_Token_t* ErrorTokenAlreadyDefinedName(CTX ctx, knh_Token_t *tk)
 {
 	return knh_Token_toERR(ctx, tk, _("already defined: %L"), tk);
 }
-knh_Token_t* ErrorTokenReadOnlyName(CTX ctx, knh_Token_t *tk)
+knh_Token_t* ERROR_Denied(CTX ctx, const char *why, knh_Token_t *tk)
 {
-	return knh_Token_toERR(ctx, tk, _("readonly name: %L"), tk);
+	return knh_Token_toERR(ctx, tk, _("%s: %O"), why, tk);
 }
 void WarningUndefined(CTX ctx, const char *whatis, const char *prefix, const char *msg)
 {

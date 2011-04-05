@@ -86,6 +86,8 @@
 #define DBG_ABORT(fmt, ...)
 #endif
 
+#define STRICT_(stmt)     //stmt
+
 /* MALLOC */
 //#define K_USING_TRACEMALLOC 1
 
