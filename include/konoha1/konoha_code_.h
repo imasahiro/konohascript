@@ -92,7 +92,6 @@ typedef struct klr_P_t {
 	klr_Fprint print;
 	knh_uintptr_t flag;
 	knh_String_t* msg;
-	knh_Method_t* fmt;
 	knh_sfpidx_t n;
 } klr_P_t;
 

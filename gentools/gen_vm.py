@@ -20,7 +20,7 @@ CATCH      _CONST            addr:addr en:ro msg:String
 CHKIN      0                 on:ro checkin:f
 CHKOUT     0                 on:ro checkout:f
 ERROR      _CONST            start:sfpidx msg:String
-P          _CONST            print:f flag:u  msg:String fmt:mtd n:sfpidx2
+P          _CONST            print:f flag:u  msg:String n:sfpidx2
 PROBE      0                 probe:f n:u
 EXIT       0
 

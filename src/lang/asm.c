@@ -2591,11 +2591,10 @@ static knh_flag_t PRINT_flag(CTX ctx, knh_Stmt_t *o)
 	return flag;
 }
 
-static void _PRINT(CTX ctx, knh_sfp_t *sfp, struct klr_P_t *op)
+static void _PRINTh(CTX ctx, knh_sfp_t *sfp, knh_OutputStream_t *w, struct klr_P_t *op)
 {
 	knh_flag_t flag = (knh_flag_t)op->flag;
-	knh_OutputStream_t *w = KNH_STDOUT;
-	knh_printf(ctx, w, "%s", TERM_BNOTE(ctx, LOG_NOTICE));
+	knh_write_text(ctx, w, TERM_BNOTE(ctx, LOG_NOTICE));
 	if(FLAG_is(flag, K_FLAG_PF_BOL)) {
 		if(FLAG_is(flag, K_FLAG_PF_LINE)) {
 			knh_Method_t *mtd = sfp[-1].mtdNC;
@@ -2613,34 +2612,64 @@ static void _PRINT(CTX ctx, knh_sfp_t *sfp, struct klr_P_t *op)
 	if(FLAG_is(flag, K_FLAG_PF_NAME)) {
 		knh_putc(ctx, w, '=');
 	}
-	if(op->fmt != NULL) {
-		long n = op->n;
-		long rtnidx = n + 1;
-		KNH_SETv(ctx, sfp[rtnidx+K_CALLDELTA].o, w);
-		KNH_SETv(ctx, sfp[rtnidx+K_CALLDELTA+1].o, sfp[n].o);
-		sfp[rtnidx+K_CALLDELTA+1].ndata = sfp[n].ndata;
-		KNH_SCALL(ctx, sfp, rtnidx, op->fmt, 1);
-	}
+}
+
+static void _PRINTln(CTX ctx, knh_sfp_t *sfp, knh_OutputStream_t *w, struct klr_P_t *op)
+{
+	knh_flag_t flag = (knh_flag_t)op->flag;
 	if(FLAG_is(flag, K_FLAG_PF_EOL)) {
 		knh_write_EOL(ctx, w);
 	}
 	else {
-		if(op->fmt != NULL) knh_putc(ctx, w, ',');
+		knh_putc(ctx, w, ',');
 		knh_putc(ctx, w, ' ');
 	}
 	knh_printf(ctx, w, "%s", TERM_ENOTE(ctx, LOG_NOTICE));
 }
 
+static void _PRINT(CTX ctx, knh_sfp_t *sfp, struct klr_P_t *op)
+{
+	knh_OutputStream_t *w = KNH_STDOUT;
+	_PRINTh(ctx, sfp, w, op);
+	knh_write_Object(ctx, w, sfp[op->n].o, FMT_data);
+	_PRINTln(ctx, sfp, w, op);
+}
+
+static void _PRINTm(CTX ctx, knh_sfp_t *sfp, struct klr_P_t *op)
+{
+	knh_OutputStream_t *w = KNH_STDOUT;
+	_PRINTh(ctx, sfp, w, op);
+	_PRINTln(ctx, sfp, w, op);
+}
+
+static void _PRINTi(CTX ctx, knh_sfp_t *sfp, struct klr_P_t *op)
+{
+	knh_OutputStream_t *w = KNH_STDOUT;
+	_PRINTh(ctx, sfp, w, op);
+	knh_write_ifmt(ctx, w, K_INT_FMT, sfp[op->n].ivalue);
+	_PRINTln(ctx, sfp, w, op);
+}
+
+static void _PRINTf(CTX ctx, knh_sfp_t *sfp, struct klr_P_t *op)
+{
+	knh_OutputStream_t *w = KNH_STDOUT;
+	_PRINTh(ctx, sfp, w, op);
+	knh_write_ffmt(ctx, w, K_FLOAT_FMT, sfp[op->n].fvalue);
+	_PRINTln(ctx, sfp, w, op);
+}
+
+static void _PRINTb(CTX ctx, knh_sfp_t *sfp, struct klr_P_t *op)
+{
+	knh_OutputStream_t *w = KNH_STDOUT;
+	_PRINTh(ctx, sfp, w, op);
+	knh_write_bool(ctx, w, sfp[op->n].bvalue);
+	_PRINTln(ctx, sfp, w, op);
+}
+
 static void PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
 {
-	if(DP(stmt)->size == 0) return ;
-	knh_flag_t flag = PRINT_flag(ctx, stmt);
-//	knh_BasicBlock_t*  lbskip = new_BasicBlockLABEL(ctx);
-//	ASM_SKIP(ctx, lbskip);
+	knh_flag_t flag = PRINT_flag(ctx, stmt) | K_FLAG_PF_BOL | K_FLAG_PF_LINE;
 	long i;
-//	if(!CTX_isInteractive(ctx)) {
-		flag = flag | K_FLAG_PF_BOL | K_FLAG_PF_LINE;
-//	}
 	for(i = 0; i < DP(stmt)->size; i++) {
 		knh_flag_t mask = 0;
 		knh_String_t *msg = (knh_String_t*)KNH_NULL;
@@ -2656,17 +2685,27 @@ static void PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
 				goto L_REDO;
 			}
 			DBG_ASSERT(stmt->uline == ctx->gma->uline);
-			ASM(P, _PRINT, flag | mask, (tkn)->text, NULL, 0); flag = 0;
+			ASM(P, _PRINTm, flag | mask, (tkn)->text, 0); flag = 0;
 		}
 		else {
 			long espidx = DP(ctx->gma)->espidx;
-			knh_Method_t *mtdf = Gamma_getFmt(ctx, Tn_cid(stmt, i), MN__s);
-			Tn_asm(ctx, stmt, i, Tn_type(stmt, i), espidx);
-			ASM(P, _PRINT, flag | mask, msg, mtdf, espidx);
+			knh_class_t cid = Tn_cid(stmt, i);
+			Tn_asm(ctx, stmt, i, cid, espidx);
+			if(IS_Tint(cid)) {
+				ASM(P, _PRINTi, flag | mask, msg, espidx);
+			}
+			else if(IS_Tfloat(cid)) {
+				ASM(P, _PRINTf, flag | mask, msg, espidx);
+			}
+			else if(cid == CLASS_Boolean) {
+				ASM(P, _PRINTb, flag | mask, msg, espidx);
+			}
+			else {
+				ASM(P, _PRINT, flag | mask, msg, espidx);
+			}
 			flag=0;
 		}
 	}
-//	ASM_LABEL(ctx, lbskip);
 }
 
 static void ASSERT_asm(CTX ctx, knh_Stmt_t *stmt)

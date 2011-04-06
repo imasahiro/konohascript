@@ -67,7 +67,7 @@ static const knh_OPDATA_t OPDATA[] = {
 	{"CHKIN", 0, 2, { VMT_RO, VMT_F, VMT_VOID}}, 
 	{"CHKOUT", 0, 2, { VMT_RO, VMT_F, VMT_VOID}}, 
 	{"ERROR", _CONST, 2, { VMT_SFPIDX, VMT_STRING, VMT_VOID}}, 
-	{"P", _CONST, 5, { VMT_F, VMT_U, VMT_STRING, VMT_MTD, VMT_SFPIDX2, VMT_VOID}}, 
+	{"P", _CONST, 4, { VMT_F, VMT_U, VMT_STRING, VMT_SFPIDX2, VMT_VOID}}, 
 	{"PROBE", 0, 2, { VMT_F, VMT_U, VMT_VOID}}, 
 	{"EXIT", 0, 0, { VMT_VOID}}, 
 	{"NSET", _DEF|_JIT, 2+VMTSIZE_int, { VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
@@ -743,7 +743,7 @@ knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc)
 	} 
 	CASE(P) {
 		klr_P_t *op = (klr_P_t*)pc; (void)op; VMCOUNT(pc); 
-		KLR_P(ctx, op->print, op->flag, op->msg, op->fmt, op->n);
+		KLR_P(ctx, op->print, op->flag, op->msg, op->n);
 		pc++;
 		GOTO_NEXT();
 	} 
