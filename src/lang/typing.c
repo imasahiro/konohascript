@@ -3041,24 +3041,31 @@ static knh_Token_t* RETURN_typing(CTX ctx, knh_Stmt_t *stmt)
 	if(ParamArray_isRVAR(pa)) {
 		DBG_ASSERT(pa->rsize == 0);
 		if(size > 0) {
-			TYPING(ctx, stmt, 0, TYPE_dyn, 0);
+			TYPING(ctx, stmt, 0, TYPE_var, 0);
 			Gamma_inferReturnType(ctx, Tn_type(stmt, 0));
 		}
 		else {
 			Gamma_inferReturnType(ctx, TYPE_void);
 		}
 	}
-	else if(rtype == TYPE_void) {
-		if(size > 0) {
-			WARN_Ignored(ctx, "return value", CLASS_unknown, NULL);
-			knh_Stmt_trimToSize(ctx, stmt, pa->rsize);
-		}
-	}
-	else {
-		if(size == 0) {
+	if(size == 0) {
+		if(rtype != TYPE_void) {
 			knh_Token_t *tk = new_TokenTYPED(ctx, TT_NULL/*DEFVAL*/, rtype, CLASS_t(rtype));
 			knh_Stmt_add(ctx, stmt, tk);
 			WARN_UseDefaultValue(ctx, "return", rtype);
+		}
+	}
+	else if(Stmt_isImplicit(stmt)) { /*size > 0 */
+		DBG_ASSERT(rtype == TYPE_dyn || rtype == TYPE_var);
+		TYPING(ctx, stmt, 0, TYPE_var, _NOTCHECK);
+		if(Tn_type(stmt, 0) != TYPE_void) {
+			Stmt_setImplicit(stmt, 0);
+		}
+	}
+	else { /* size > 0 */
+		if(rtype == TYPE_void) {
+			WARN_Ignored(ctx, "return value", CLASS_unknown, NULL);
+			knh_Stmt_trimToSize(ctx, stmt, pa->rsize);
 		}
 		else {
 			TYPING(ctx, stmt, 0, rtype, 0);

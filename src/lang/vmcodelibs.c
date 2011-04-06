@@ -63,6 +63,7 @@ static const knh_OPDATA_t OPDATA[] = {
 	{"TRY", 0, 2, { VMT_ADDR, VMT_RO, VMT_VOID}}, 
 	{"TRYEND", 0, 1, { VMT_RO, VMT_VOID}}, 
 	{"THROW", 0, 1, { VMT_SFPIDX, VMT_VOID}}, 
+	{"ASSERT", 0, 2, { VMT_SFPIDX, VMT_U, VMT_VOID}}, 
 	{"CATCH", _CONST, 3, { VMT_ADDR, VMT_RO, VMT_STRING, VMT_VOID}}, 
 	{"CHKIN", 0, 2, { VMT_RO, VMT_F, VMT_VOID}}, 
 	{"CHKOUT", 0, 2, { VMT_RO, VMT_F, VMT_VOID}}, 
@@ -230,6 +231,7 @@ void knh_opcode_check(void)
 	KNH_ASSERT(sizeof(klr_TRY_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_TRYEND_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_THROW_t) <= sizeof(knh_opline_t));
+	KNH_ASSERT(sizeof(klr_ASSERT_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_CATCH_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_CHKIN_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_CHKOUT_t) <= sizeof(knh_opline_t));
@@ -615,45 +617,45 @@ knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc)
 	static void *OPJUMP[] = {
 		&&L_HALT, &&L_THCODE, &&L_ENTER, &&L_VEXEC, 
 		&&L_YIELD, &&L_FUNCCALL, &&L_TRY, &&L_TRYEND, 
-		&&L_THROW, &&L_CATCH, &&L_CHKIN, &&L_CHKOUT, 
-		&&L_ERROR, &&L_P, &&L_PROBE, &&L_EXIT, 
-		&&L_NSET, &&L_NMOV, &&L_NNMOV, &&L_NSET2, 
-		&&L_NSET3, &&L_NSET4, &&L_NMOVx, &&L_XNSET, 
-		&&L_XNMOV, &&L_XNMOVx, &&L_bNUL, &&L_bNN, 
-		&&L_bNOT, &&L_iINC, &&L_iDEC, &&L_iNEG, 
-		&&L_fNEG, &&L_iTR, &&L_fTR, &&L_iADD, 
-		&&L_iSUB, &&L_iMUL, &&L_iDIV, &&L_iMOD, 
-		&&L_iEQ, &&L_iNEQ, &&L_iLT, &&L_iLTE, 
-		&&L_iGT, &&L_iGTE, &&L_iAND, &&L_iOR, 
-		&&L_iXOR, &&L_iLSFT, &&L_iRSFT, &&L_iADDC, 
-		&&L_iSUBC, &&L_iMULC, &&L_iDIVC, &&L_iMODC, 
-		&&L_iEQC, &&L_iNEQC, &&L_iLTC, &&L_iLTEC, 
-		&&L_iGTC, &&L_iGTEC, &&L_iANDC, &&L_iORC, 
-		&&L_iXORC, &&L_iLSFTC, &&L_iRSFTC, &&L_fADD, 
-		&&L_fSUB, &&L_fMUL, &&L_fDIV, &&L_fEQ, 
-		&&L_fNEQ, &&L_fLT, &&L_fLTE, &&L_fGT, 
-		&&L_fGTE, &&L_fADDC, &&L_fSUBC, &&L_fMULC, 
-		&&L_fDIVC, &&L_fEQC, &&L_fNEQC, &&L_fLTC, 
-		&&L_fLTEC, &&L_fGTC, &&L_fGTEC, &&L_RCINC, 
-		&&L_RCDEC, &&L_OSET, &&L_OMOV, &&L_OOMOV, 
-		&&L_ONMOV, &&L_OSET2, &&L_OSET3, &&L_OSET4, 
-		&&L_RCINCx, &&L_RCDECx, &&L_OMOVx, &&L_XMOV, 
-		&&L_XOSET, &&L_XMOVx, &&L_CHKSTACK, &&L_LOADMTD, 
-		&&L_CALL, &&L_SCALL, &&L_VCALL, &&L_VCALL_, 
-		&&L_FASTCALL0, &&L_RET, &&L_TR, &&L_UNBOX, 
-		&&L_SCAST, &&L_TCAST, &&L_ACAST, &&L_iCAST, 
-		&&L_fCAST, &&L_JMP, &&L_JMP_, &&L_JMPF, 
-		&&L_NEXT, &&L_BGETIDX, &&L_BSETIDX, &&L_BGETIDXC, 
-		&&L_BSETIDXC, &&L_NGETIDX, &&L_NSETIDX, &&L_NGETIDXC, 
-		&&L_NSETIDXC, &&L_OGETIDX, &&L_OSETIDX, &&L_OGETIDXC, 
-		&&L_OSETIDXC, &&L_bJNUL, &&L_bJNN, &&L_bJNOT, 
-		&&L_iJEQ, &&L_iJNEQ, &&L_iJLT, &&L_iJLTE, 
-		&&L_iJGT, &&L_iJGTE, &&L_iJEQC, &&L_iJNEQC, 
-		&&L_iJLTC, &&L_iJLTEC, &&L_iJGTC, &&L_iJGTEC, 
-		&&L_fJEQ, &&L_fJNEQ, &&L_fJLT, &&L_fJLTE, 
-		&&L_fJGT, &&L_fJGTE, &&L_fJEQC, &&L_fJNEQC, 
-		&&L_fJLTC, &&L_fJLTEC, &&L_fJGTC, &&L_fJGTEC, 
-		&&L_CHKIDX, &&L_CHKIDXC, &&L_NOP, 
+		&&L_THROW, &&L_ASSERT, &&L_CATCH, &&L_CHKIN, 
+		&&L_CHKOUT, &&L_ERROR, &&L_P, &&L_PROBE, 
+		&&L_EXIT, &&L_NSET, &&L_NMOV, &&L_NNMOV, 
+		&&L_NSET2, &&L_NSET3, &&L_NSET4, &&L_NMOVx, 
+		&&L_XNSET, &&L_XNMOV, &&L_XNMOVx, &&L_bNUL, 
+		&&L_bNN, &&L_bNOT, &&L_iINC, &&L_iDEC, 
+		&&L_iNEG, &&L_fNEG, &&L_iTR, &&L_fTR, 
+		&&L_iADD, &&L_iSUB, &&L_iMUL, &&L_iDIV, 
+		&&L_iMOD, &&L_iEQ, &&L_iNEQ, &&L_iLT, 
+		&&L_iLTE, &&L_iGT, &&L_iGTE, &&L_iAND, 
+		&&L_iOR, &&L_iXOR, &&L_iLSFT, &&L_iRSFT, 
+		&&L_iADDC, &&L_iSUBC, &&L_iMULC, &&L_iDIVC, 
+		&&L_iMODC, &&L_iEQC, &&L_iNEQC, &&L_iLTC, 
+		&&L_iLTEC, &&L_iGTC, &&L_iGTEC, &&L_iANDC, 
+		&&L_iORC, &&L_iXORC, &&L_iLSFTC, &&L_iRSFTC, 
+		&&L_fADD, &&L_fSUB, &&L_fMUL, &&L_fDIV, 
+		&&L_fEQ, &&L_fNEQ, &&L_fLT, &&L_fLTE, 
+		&&L_fGT, &&L_fGTE, &&L_fADDC, &&L_fSUBC, 
+		&&L_fMULC, &&L_fDIVC, &&L_fEQC, &&L_fNEQC, 
+		&&L_fLTC, &&L_fLTEC, &&L_fGTC, &&L_fGTEC, 
+		&&L_RCINC, &&L_RCDEC, &&L_OSET, &&L_OMOV, 
+		&&L_OOMOV, &&L_ONMOV, &&L_OSET2, &&L_OSET3, 
+		&&L_OSET4, &&L_RCINCx, &&L_RCDECx, &&L_OMOVx, 
+		&&L_XMOV, &&L_XOSET, &&L_XMOVx, &&L_CHKSTACK, 
+		&&L_LOADMTD, &&L_CALL, &&L_SCALL, &&L_VCALL, 
+		&&L_VCALL_, &&L_FASTCALL0, &&L_RET, &&L_TR, 
+		&&L_UNBOX, &&L_SCAST, &&L_TCAST, &&L_ACAST, 
+		&&L_iCAST, &&L_fCAST, &&L_JMP, &&L_JMP_, 
+		&&L_JMPF, &&L_NEXT, &&L_BGETIDX, &&L_BSETIDX, 
+		&&L_BGETIDXC, &&L_BSETIDXC, &&L_NGETIDX, &&L_NSETIDX, 
+		&&L_NGETIDXC, &&L_NSETIDXC, &&L_OGETIDX, &&L_OSETIDX, 
+		&&L_OGETIDXC, &&L_OSETIDXC, &&L_bJNUL, &&L_bJNN, 
+		&&L_bJNOT, &&L_iJEQ, &&L_iJNEQ, &&L_iJLT, 
+		&&L_iJLTE, &&L_iJGT, &&L_iJGTE, &&L_iJEQC, 
+		&&L_iJNEQC, &&L_iJLTC, &&L_iJLTEC, &&L_iJGTC, 
+		&&L_iJGTEC, &&L_fJEQ, &&L_fJNEQ, &&L_fJLT, 
+		&&L_fJLTE, &&L_fJGT, &&L_fJGTE, &&L_fJEQC, 
+		&&L_fJNEQC, &&L_fJLTC, &&L_fJLTEC, &&L_fJGTC, 
+		&&L_fJGTEC, &&L_CHKIDX, &&L_CHKIDXC, &&L_NOP, 
 	};
 #endif
 	knh_rbp_t *rbp = (knh_rbp_t*)sfp0;
@@ -714,6 +716,12 @@ knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc)
 	CASE(THROW) {
 		klr_THROW_t *op = (klr_THROW_t*)pc; (void)op; VMCOUNT(pc); 
 		KLR_THROW(ctx, op->start);
+		pc++;
+		GOTO_NEXT();
+	} 
+	CASE(ASSERT) {
+		klr_ASSERT_t *op = (klr_ASSERT_t*)pc; (void)op; VMCOUNT(pc); 
+		KLR_ASSERT(ctx, op->start, op->uline);
 		pc++;
 		GOTO_NEXT();
 	} 

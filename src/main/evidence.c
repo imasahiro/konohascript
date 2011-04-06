@@ -130,6 +130,52 @@ static const char* knh_format_uline(CTX ctx, char *buf, size_t bufsiz, knh_uline
 	return (const char*)buf;
 }
 
+void readuline(FILE *fp, char *buf, size_t bufsiz)
+{
+	int ch;
+	size_t p = 0;
+	while((ch = fgetc(fp)) == -1) {
+		if(ch == ' ' || ch == '\t') continue;
+	}
+	while((ch = fgetc(fp)) == -1) {
+		if(ch == '\n') break;
+		buf[p] = ch; p++;
+		if(p + 1 < bufsiz) continue;
+	}
+	buf[p] = 0;
+}
+
+const char* knh_readuline(CTX ctx, knh_uline_t uline, char *buf, size_t bufsiz)
+{
+	knh_uri_t uri = ULINE_uri(uline);
+	size_t line = ULINE_line(uline);
+	buf[0] = 0;
+	if(uline != 0 && uri != URI_unknown && line != 0) {
+		char const *fname = FILENAME__(uri);
+		FILE *fp = fopen(fname, "r");
+		if(fp != NULL) {
+			size_t linec = 1;
+			int ch;
+			if(line == line) {
+				readuline(fp, buf, bufsiz);
+			}
+			else {
+				while((ch = fgetc(fp)) == -1) {
+					if(ch == '\n') {
+						linec++;
+						if(linec == line) {
+							readuline(fp, buf, bufsiz);
+							break;
+						}
+					}
+				}
+			}
+			fclose(fp);
+		}
+	}
+	return (const char*)buf;
+}
+
 /* ------------------------------------------------------------------------ */
 /* [throw] */
 
@@ -174,6 +220,9 @@ static knh_uline_t knh_stack_uline(CTX ctx, knh_sfp_t *sfp)
 	}
 	return 0;
 }
+
+
+
 
 void knh_write_sfp(CTX ctx, knh_OutputStream_t *w, knh_type_t type, knh_sfp_t *sfp, int level)
 {
@@ -245,7 +294,6 @@ void knh_throw(CTX ctx, knh_sfp_t *sfp, long start)
 					O_cTBL(o)->ospi->checkout(ctx, o, 1);
 				}
 				knh_Array_trimSize(ctx, hdr->stacklist, 0);
-				//DBG_ASSERT(DP(hdr)->return_address != NULL);
 #ifdef K_USING_SETJMP_
 				knh_longjmp(DP(hdr)->jmpbuf, 1);
 #else
@@ -259,6 +307,34 @@ void knh_throw(CTX ctx, knh_sfp_t *sfp, long start)
 		knh_write_Object(ctx, KNH_STDERR, UPCAST(ctx->e), FMT_dump);
 		knh_exit(ctx, 0);
 	}
+}
+
+static knh_Exception_t* new_Assertion(CTX ctx, knh_uline_t uline)
+{
+	knh_Exception_t* e = new_(Exception);
+	char buf[256] = {'A', 's', 's', 'e', 'r', 't', 'i', 'o', 'n', '!', '!', ':', ' '};
+	char *mbuf = buf + 13;
+	knh_readuline(ctx, uline, mbuf, sizeof(buf)-13);
+	if(mbuf[0] == 0) {
+		knh_uri_t uri = ULINE_uri(uline);
+		size_t line = ULINE_line(uline);
+		knh_snprintf(buf, sizeof(buf), "Assertion!!: %s at line %ld", FILENAME__(uri), line);
+	}
+	DP(e)->eid = EBI_Assertion;
+	DP(e)->flag = ctx->share->EventTBL[0].flag;
+	{
+		knh_bytes_t t = {{(const char*)buf}, knh_strlen(buf)};
+		KNH_SETv(ctx, DP(e)->msg, new_S(ctx, t));
+		KNH_SETv(ctx, DP(e)->event, DP(e)->msg);
+	}
+	DP(e)->uline = uline;
+	return e;
+}
+
+void knh_assert(CTX ctx, knh_sfp_t *sfp, long start, knh_uline_t uline)
+{
+	CTX_setThrowingException(ctx, new_Assertion(ctx, uline));
+	knh_throw(ctx, sfp, start);
 }
 
 knh_bool_t isCATCH(CTX ctx, knh_rbp_t *rbp, int en, knh_String_t *event)
@@ -298,24 +374,6 @@ knh_Object_t *Context_pop(CTX ctx)
 
 /* ------------------------------------------------------------------------ */
 /* [syslog] */
-
-//int knh_errno(int pe)
-//{
-//	int errno_ = errno;
-//	return (errno_ != 13) ? pe : LOG_ALERT;
-//}
-//
-//const char *knh_strerror(void)
-//{
-//	int errno_ = errno;
-//#if !defined(K_USING_WINTHREAD_) || defined(K_USING_MINGW)
-//	return strerror(errno_);
-//#else
-//	const char emsg[256];
-//	strerror_s(emsg, 256, errno_);
-//	return emsg;
-//#endif
-//}
 
 #define K_EVENT_FORMAT " <%s:%s> "
 
@@ -453,6 +511,8 @@ void THROW_ParamTypeError(CTX ctx, knh_sfp_t *sfp, size_t n, knh_methodn_t mn, k
 {
 	KNH_THROW(ctx, sfp, LOG_CRIT, "Type!!", "Type!!: %d of %M NOT %T", n, mn, cid);
 }
+
+/* ------------------------------------------------------------------------ */
 
 #ifdef __cplusplus
 }

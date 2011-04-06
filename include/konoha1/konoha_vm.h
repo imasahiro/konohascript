@@ -485,6 +485,10 @@ extern "C" {
 	knh_throw(ctx, SFP(rbp), SFPIDX(start)); \
 } \
 
+#define KLR_ASSERT(ctx, start, uline) { \
+	knh_assert(ctx, SFP(rbp), SFPIDX(start), uline); \
+} \
+
 #define KLR_ERROR(ctx, start, msg) { \
 	knh_Exception_t *e_ = new_Error(ctx, EBI_SourceCode, msg);\
 	CTX_setThrowingException(ctx, e_);\

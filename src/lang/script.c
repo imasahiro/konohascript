@@ -773,6 +773,11 @@ static knh_bool_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_type_t reqt, knh_A
 			if(STT_(stmt) == STT_ERR) {
 				isCONTINUE = 0; goto L_BREAK;
 			}
+			if(stmt_isExpr(STT_(stmt)) && STT_(stmt) != STT_LET) {
+				stmt = new_Stmt2(ctx, STT_RETURN, stmt, NULL);
+				Stmt_setImplicit(stmt, 1);
+				KNH_SETv(ctx, lsfp[0].o, stmt);
+			}
 			knh_Method_asm(ctx, mtd, NULL, cid, stmt, knh_Method_typing);
 			if(Method_isAbstract(mtd) || STT_(stmt) == STT_ERR) {
 				isCONTINUE = 0; goto L_BREAK;
@@ -791,7 +796,7 @@ static knh_bool_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_type_t reqt, knh_A
 				klr_setesp(ctx, lsfp + thisidx+2);
 				if(knh_VirtualMachine_run(ctx, lsfp + thisidx, CODE_LAUNCH) == NULL) {
 					//DBG_P("returning sfpidx=%d, rtnidx=%d, %s %lld %ld %f", sfpidx_, sfpidx_ + rtnidx, O__(lsfp[rtnidx].o), lsfp[rtnidx].ivalue, lsfp[rtnidx].bvalue, lsfp[rtnidx].fvalue);
-					if(STT_(stmt) == STT_RETURN) {
+					if(STT_(stmt) == STT_RETURN && !Stmt_isImplicit(stmt)) {
 						cid = O_cid(lsfp[rtnidx].o);
 						KNH_SETv(ctx, ((knh_context_t*)ctx)->evaled, lsfp[rtnidx].o);
 						if(reqt != TYPE_void && (reqt == TYPE_dyn || class_isa(cid, reqt))) {

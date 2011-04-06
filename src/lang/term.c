@@ -2093,7 +2093,6 @@ static void _RETURNEXPR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	if(ITR_hasNext(itr)) {
 		_EXPR(ctx, stmtRTN, itr);
 	}
-	DBG_P("return expr");
 }
 
 static void _PARAM(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr);

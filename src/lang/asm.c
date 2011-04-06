@@ -2516,30 +2516,12 @@ static void RETURN_asm(CTX ctx, knh_Stmt_t *stmt)
 			ASM_BOX2(ctx, knh_type_tocid(ctx, p->type, DP(ctx->gma)->this_cid), rtype, K_RTNIDX);
 		}
 	}
-	else if(size > 1) {
-		long i, espidx = DP(stmt)->espidx;
-		for(i = size-1; i >= 1; i--) {
-			knh_type_t rtype = Tn_type(stmt, i);
-			Tn_asm(ctx, stmt, i, rtype, espidx + i);
-		}
-		for(i = size-1; i >= 1; i--) {
-			knh_type_t rtype = Tn_type(stmt, i);
-			if(IS_Tunbox(rtype)) {
-				knh_ParamArray_t *pa = DP(DP(ctx->gma)->mtd)->mp;
-				knh_param_t *p = knh_ParamArray_rget(pa, i);
-				ASM(NMOV, NC_(K_RTNIDX+i), NC_(espidx+i));
-				ASM_BOX2(ctx, knh_type_tocid(ctx, p->type, DP(ctx->gma)->this_cid), rtype, (K_RTNIDX+i));
-			}
-			else {
-				ASM(OMOV, OC_(K_RTNIDX+i), OC_(espidx+i));
-				ASM_UNBOX(ctx, rtype, K_RTNIDX+i);
-			}
-		}
-	}
 	if(IS_Stmt(DP(stmt)->stmtPOST)) {
 		EXPR_asm(ctx, DP(stmt)->stmtPOST, Tn_type(stmt, 0), DP(DP(stmt)->stmtPOST)->espidx+1);
 	}
-	ASM_RET(ctx, stmt);
+	if(!Stmt_isImplicit(stmt)) {
+		ASM_RET(ctx, stmt);
+	}
 }
 
 static void YIELD_asm(CTX ctx, knh_Stmt_t *stmt)
@@ -2719,9 +2701,9 @@ static void ASSERT_asm(CTX ctx, knh_Stmt_t *stmt)
 	Tn_JMPIF(ctx, stmt, 0, 1, lbskip, DP(ctx->gma)->espidx);
 	/*then*/
 	//Tn_asmBLOCK(ctx, stmt, 1, TYPE_void);
-	ASM(OSET, OC_(espidx), UPCAST(TS_AssertionException));
-	ASM(TR, OC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ClassTBL(CLASS_Exception), _ERR);
-	ASM(THROW, SFP_(espidx));
+//	ASM(OSET, OC_(espidx), UPCAST(TS_AssertionException));
+//	ASM(TR, OC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ClassTBL(CLASS_Exception), _ERR);
+	ASM(ASSERT, SFP_(espidx), stmt->uline);
 	ASM_LABEL(ctx, lbskip);
 }
 

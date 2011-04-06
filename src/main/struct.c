@@ -1558,10 +1558,10 @@ static void Exception_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level
 			knh_write_uline(ctx, w, DP(e)->uline);
 		}
 		{
-			knh_bytes_t emsg = S_tobytes(DP(e)->event);
+//			knh_bytes_t emsg = S_tobytes(DP(e)->event);
 			knh_bytes_t msg = S_tobytes(DP(e)->msg);
-			const char *fmt = (DP(e)->eid <= 1) ? "%B: %B" : "%BException: %B";
-			knh_printf(ctx, w, fmt, emsg, msg);
+//			const char *fmt = (DP(e)->eid <= 1) ? "%B: %B" : "%BException: %B";
+			knh_printf(ctx, w, "Exception: %B", msg);
 		}
 		if(DP(e)->tracesNULL != NULL) {
 			knh_Array_t *a = DP(e)->tracesNULL;

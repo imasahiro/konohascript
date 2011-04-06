@@ -16,6 +16,7 @@ FUNCCALL   0
 TRY        0                 addr:addr hn:ro
 TRYEND     0                 hn:ro
 THROW      0                 start:sfpidx
+ASSERT     0                 start:sfpidx uline:u
 CATCH      _CONST            addr:addr en:ro msg:String
 CHKIN      0                 on:ro checkin:f
 CHKOUT     0                 on:ro checkout:f

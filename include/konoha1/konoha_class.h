@@ -593,7 +593,7 @@ typedef struct {
 	knh_String_t *msg;
 	Object *bag;
 	knh_Array_t*    tracesNULL;
-	knh_uline_t    uline;
+	knh_uline_t     uline;
 	int             sysloglevel;
 } knh_ExceptionEX_t;
 
@@ -1113,6 +1113,10 @@ typedef struct knh_Token_t {
 /* STT_FUNCCALL*/
 #define Stmt_isDYNCALL(s)       Stmt_isMemo1(s)
 #define Stmt_setDYNCALL(s,b)    Stmt_setMemo1(s,b)
+
+/* STT_RETURN */
+#define Stmt_isImplicit(s)       Stmt_isMemo1(s)
+#define Stmt_setImplicit(s,b)    Stmt_setMemo1(s,b)
 
 typedef struct {
 	knh_flag_t   flag0;
