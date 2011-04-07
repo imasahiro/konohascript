@@ -867,7 +867,7 @@ static METHOD String_match(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	else {
 		const char *str = S_tochar(sfp[0].s);  // necessary
-		size_t nmatch = pcre_regex_nmatchsize(re->reg);
+		size_t nmatch = pcre_regex_nmatchsize((knh_regex_t*)re->reg);
 		knh_regmatch_t pmatch[nmatch];
 		int res = re->spi->regexec(ctx, re->reg, str, nmatch, pmatch, re->eflags);
 		a = new_Array(ctx, CLASS_String, nmatch);
