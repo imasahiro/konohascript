@@ -443,19 +443,6 @@ knh_bool_t Regex_isSTRREGEX(knh_Regex_t *re)
 #include <pcre.h>
 
 #define PCRE_MAX_ERROR_MESSAGE_LEN 512
-#define PCRE_GLOBAL PCRE_NOTBOL
-#define knh_TerminateREG(r) ((r)->rm_so = -1)
-#define knh_MatchedREG(r)   ((r)->rm_so != -1)
-#define knh_InitializeREG(r, size) \
-	{\
-		int _idx;\
-		for (_idx = 0; _idx < (size); _idx++) {	\
-			(r)[_idx].rm_so = -1;\
-			(r)[_idx].rm_eo = -1;\
-			(r)[_idx].rm_name.len = 0;\
-		}\
-	}
-
 
 typedef struct {
 	pcre *re;
@@ -467,6 +454,14 @@ static knh_regex_t* pcre_regex_malloc(CTX ctx, knh_String_t* s)
 {
 	PCRE_regex_t *preg = (PCRE_regex_t*) KNH_MALLOC(ctx,sizeof(PCRE_regex_t));
 	return (knh_regex_t *) preg;
+}
+
+size_t pcre_regex_nmatchsize(knh_regex_t *reg)
+{
+	PCRE_regex_t *preg = (PCRE_regex_t*)reg;
+	size_t capsize;
+	pcre_fullinfo(preg->re, NULL, PCRE_INFO_CAPTURECOUNT, &capsize);
+	return (capsize > 0) ? capsize+1 : K_REGEX_MATCHSIZE;
 }
 
 static int pcre_regex_parsecflags(CTX ctx, const char *option)
@@ -499,9 +494,6 @@ static int pcre_regex_parseeflags(CTX ctx, const char *option)
 	int optlen = strlen(option);
 	for (i = 0; i < optlen; i++) {
 		switch(option[i]){
-		case 'g': // global
-			eflags |= PCRE_GLOBAL;
-			break;
 		default: break;
 		}
 	}
@@ -529,31 +521,32 @@ static int pcre_regex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t
 	nvector[0] = 0;
 	size_t idx, matched;
 	if (strlen(str) == 0) return -1;
-	if ((res = pcre_exec(preg->re, NULL, str, strlen(str), 0, eflags, nvector, nmatch*3)) < 0) {
-		return res;
-	}
-	matched = (res == 0 || res > nmatch) ? nmatch : res;
-	for (idx = 0; idx < matched; idx++) {
-		p[idx].rm_so = nvector[2*idx];
-		p[idx].rm_eo = nvector[2*idx+1];
-	}
-	knh_TerminateREG(p+idx);
-	pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMECOUNT, &nm_count);
-	if (nm_count > 0) {
-		unsigned char *nm_table;
-		int nm_entry_size;
-		pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMETABLE, &nm_table);
-		pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMEENTRYSIZE, &nm_entry_size);
-		unsigned char *tbl_ptr = nm_table;
-		for (idx = 0; idx < nm_count; idx++) {
-			int n_idx = (tbl_ptr[0] << 8) | tbl_ptr[1];
-			unsigned char *n_name = tbl_ptr + 2;
-			p[n_idx].rm_name.ustr = n_name;
-			p[n_idx].rm_name.len = strlen((char*)n_name);
-			tbl_ptr += nm_entry_size;
+	if ((res = pcre_exec(preg->re, NULL, str, strlen(str), 0, eflags, nvector, nmatch*3)) >= 0) {
+		matched = (res > 0) ? res : nmatch;
+		res = 0;
+		for (idx = 0; idx < matched; idx++) {
+			p[idx].rm_so = nvector[2*idx];
+			p[idx].rm_eo = nvector[2*idx+1];
+		}
+		p[idx].rm_so = -1;
+		
+		pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMECOUNT, &nm_count);
+		if (nm_count > 0) {
+			unsigned char *nm_table;
+			int nm_entry_size;
+			pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMETABLE, &nm_table);
+			pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMEENTRYSIZE, &nm_entry_size);
+			unsigned char *tbl_ptr = nm_table;
+			for (idx = 0; idx < nm_count; idx++) {
+				int n_idx = (tbl_ptr[0] << 8) | tbl_ptr[1];
+				unsigned char *n_name = tbl_ptr + 2;
+				p[n_idx].rm_name.ustr = n_name;
+				p[n_idx].rm_name.len = strlen((char*)n_name);
+				tbl_ptr += nm_entry_size;
+			}
 		}
 	}
-	return 0;
+	return res;
 }
 
 static void pcre_regex_regfree(CTX ctx, knh_regex_t *reg)
@@ -874,13 +867,14 @@ static METHOD String_match(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	else {
 		const char *str = S_tochar(sfp[0].s);  // necessary
-		knh_regmatch_t pmatch[K_REGEX_MATCHSIZE];
-		int res = re->spi->regexec(ctx, re->reg, str, K_REGEX_MATCHSIZE, pmatch, re->eflags);
-		a = new_Array(ctx, CLASS_String, K_REGEX_MATCHSIZE);
+		size_t nmatch = pcre_regex_nmatchsize(re->reg);
+		knh_regmatch_t pmatch[nmatch];
+		int res = re->spi->regexec(ctx, re->reg, str, nmatch, pmatch, re->eflags);
+		a = new_Array(ctx, CLASS_String, nmatch);
 		if(res == 0) {
 			knh_bytes_t sub = S_tobytes(s0);
 			int i;
-			for(i = 0; i < K_REGEX_MATCHSIZE; i++) {
+			for(i = 0; i < nmatch; i++) {
 				if(pmatch[i].rm_so == -1) break;
 				//DBG_P("[%d], rm_so=%d, rm_eo=%d", i, pmatch[i].rm_so, pmatch[i].rm_eo);
 				sub.text = str + pmatch[i].rm_so;
