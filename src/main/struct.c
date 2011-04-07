@@ -383,7 +383,7 @@ static void ObjectField_write(CTX ctx, knh_OutputStream_t *w, Object *o, int lev
 			knh_write_delim(ctx, w);
 			knh_write_fn(ctx, w, tf[i].fn);
 			knh_write(ctx, w, STEXT(": "));
-			knh_write_TObject(ctx, w, tf[0].type, v, i, level);
+			knh_write_TObject(ctx, w, tf[i].type, v, i, level);
 		}
 	}
 	knh_putc(ctx, w, '}');
@@ -2451,7 +2451,7 @@ static void Token_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 			break;
 		case TT_FUNCNAME: case TT_UFUNCNAME:
 			knh_write(ctx, w, t); break;
-		case TT_TYPE:
+		case TT_PTYPE:
 			knh_write_Object(ctx, w, tk->data, FMT_line); break;
 		case TT_CID:
 			knh_write_cid(ctx, w, tk->mn); break;

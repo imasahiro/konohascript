@@ -1100,7 +1100,7 @@ typedef struct knh_Token_t {
 #define StmtMETHOD_isFFI(s)            Stmt_isMemo2(s)
 #define StmtMETHOD_setFFI(s,b)         Stmt_setMemo2(s,b)
 
-/* STT_TYPEMAP*/
+/* STT_PTYPEMAP*/
 #define Stmt_isDOWNCAST(s)       Stmt_isMemo1(s)
 #define Stmt_setDOWNCAST(s,b)    Stmt_setMemo1(s,b)
 

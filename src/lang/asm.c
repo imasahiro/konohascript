@@ -1882,7 +1882,7 @@ static void NEW_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	}
 }
 
-static void TYPEMAP_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
+static void TCAST_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
 	knh_type_t srct = Tn_type(stmt, 1);
 	if(srct != reqt) {
@@ -2159,7 +2159,7 @@ static void EXPR_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	CASE_ASM(CALL1, reqt, sfpidx);
 	CASE_ASM(OP, reqt, sfpidx);
 	CASE_ASM(NEW, reqt, sfpidx);
-	CASE_ASM(TYPEMAP, reqt, sfpidx);
+	CASE_ASM(TCAST, reqt, sfpidx);
 	CASE_ASM(AND, reqt, sfpidx);
 	CASE_ASM(OR, reqt, sfpidx);
 	CASE_ASM(ALT, reqt, sfpidx);

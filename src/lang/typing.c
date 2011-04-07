@@ -27,6 +27,7 @@
 /* ************************************************************************ */
 
 #define USE_STEXT 1
+#define USE_bytes_equals
 #define USE_bytes_endsWith    1
 #define USE_bytes_index       1
 #define USE_bytes_first       1
@@ -59,7 +60,7 @@ static knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t re
 
 #define END_BLOCK(X) \
 	if((size_t)DP(ctx->gma)->espidx > X) {\
-		DBG_P("ESP %s start=%d, end=%d, stmt->espidx=%d", TT__(STT_(stmt)), X, DP(ctx->gma)->espidx, DP(stmt)->espidx);\
+		/*DBG_P("ESP %s start=%d, end=%d, stmt->espidx=%d", TT__(STT_(stmt)), X, DP(ctx->gma)->espidx, DP(stmt)->espidx);*/ \
 		/*DP(stmt)->espidx = DP(ctx->gma)->espidx;*/ \
 		Gamma_clear(ctx, (DP(ctx->gma)->gsize - (DP(ctx->gma)->espidx - (knh_short_t)X)), stmt);\
 	}\
@@ -268,7 +269,7 @@ knh_class_t knh_Token_cid(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 			WarningMuchBetter(ctx, "int");
 			cid = CLASS_Int;
 		}
-		case TT_UNAME: case TT_UFUNCNAME: case TT_DOCU: {
+		case TT_UNAME: case TT_UFUNCNAME: {
 			knh_NameSpace_t *ns = KNH_GMA_NS;
 			if(Token_isExceptionType(tk)) {
 				(tk)->cid = CLASS_Exception;
@@ -289,13 +290,18 @@ knh_class_t knh_Token_cid(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 			}
 			break;
 		}
-		case TT_TYPE: {
+		case TT_PTYPE: {
 			DBG_ASSERT(IS_Array((tk)->list));
 			knh_Token_t *tkC = tk->list->tokens[0];
 			knh_class_t bcid = knh_Token_cid(ctx, tkC, CLASS_unknown);
 			if(bcid == CLASS_unknown || ClassTBL(bcid)->cparam == NULL) {  /* @CODE: String<T> // no such generics */
-				WarningTypeParameter(ctx, bcid);
-				cid = bcid;
+				if(IS_String(tkC->text) && knh_bytes_equals(S_tobytes(tkC->text), STEXT("Tuple"))) {
+					cid = TokenTYPE_cid(ctx, tk, CLASS_Tuple);
+				}
+				else {
+					WarningTypeParameter(ctx, bcid);
+					cid = bcid;
+				}
 			}
 			else {
 				cid = TokenTYPE_cid(ctx, tk, bcid);
@@ -361,7 +367,7 @@ static knh_Fmethod Gamma_loadMethodFunc(CTX ctx, knh_class_t cid, knh_methodn_t 
 	}
 	else if(MN_isISBOOL(mn)) {
 		int off = knh_strlen(cname)+4;
-		knh_snprintf(buf, sizeof(buf), "%s_sis%s", cname, FN__(MN_toFN(mn)));
+		knh_snprintf(buf, sizeof(buf), "%s_is%s", cname, FN__(MN_toFN(mn)));
 		if(islower(buf[off])) buf[off] = toupper(buf[off]);
 	}
 	else {
@@ -425,7 +431,6 @@ static knh_gmafields_t* Gamma_expand(CTX ctx, knh_Gamma_t *gma, size_t minimum)
 		gf[i].fn    = FN_NONAME;
 		DBG_ASSERT(gf[i].value == NULL);
 		KNH_INITv(gf[i].value, KNH_NULL);
-		//DBG_P("INIT %p gf[%d].value=%s(%p)", gf, i, O__(gf[i].value), gf[i].value);
 		KNH_INITv(gf[i].tkIDX, KNH_NULL);
 	}
 	return b->gf;
@@ -1322,7 +1327,7 @@ static knh_Token_t *Token_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 	case TT_NAME:  return TNAME_typing(ctx, tk, reqt, _FINDLOCAL|_FINDFIELD|_FINDSCRIPT|_FINDFUNC|_TOERROR);
 	case TT_UNAME: return TUNAME_typing(ctx, tk, NULL/*rval*/);
 	case TT_TYPEOF:
-	case TT_TYPE:  return TTYPE_typing(ctx, tk, reqt);
+	case TT_PTYPE:  return TTYPE_typing(ctx, tk, reqt);
 	case TT_PROPN: return TPROPN_typing(ctx, tk, reqt, 0/*isLVALUE*/);
 	case TT_REGEX: case TT_STR: return Token_toCONST(ctx, tk);
 	case TT_TSTR: return TSTR_typing(ctx, tk, reqt);
@@ -2322,7 +2327,7 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 	knh_Token_t *tkC = tkNN(stmt, 1);
 	knh_methodn_t mn = Token_mn(ctx, tkMTD);
 	knh_class_t mtd_cid = CLASS_unknown;
-	int needsTypingPARAMs = 0;
+	int needsTypingPARAMs = 1;
 	if(reqt == TYPE_var || reqt == TYPE_void) reqt = TYPE_dyn;
 	if(TT_(tkC) == TT_ASIS) { /* new () */
 		if(reqt == TYPE_dyn) {
@@ -2669,7 +2674,7 @@ static void Token_toTYPEMAPMPR(CTX ctx, knh_Token_t *tk, knh_class_t cid, knh_Ty
 	}
 }
 
-static knh_Token_t* TYPEMAP_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
+static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
 	knh_Token_t *tkC = tkNN(stmt, 0);
 	knh_class_t scid, tcid;
@@ -2829,7 +2834,7 @@ static knh_Token_t* EXPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		CASE_EXPR(CALL, stmt, reqt);
 		CASE_EXPR(NEW, stmt, reqt);
 		CASE_EXPR(OP, stmt, reqt);
-		CASE_EXPR(TYPEMAP, stmt, reqt);
+		CASE_EXPR(TCAST, stmt, reqt);
 		CASE_EXPR(TPATH, stmt, reqt);
 		CASE_EXPR(AND, stmt, reqt);
 		CASE_EXPR(OR, stmt, reqt);
@@ -2887,7 +2892,7 @@ static knh_Term_t *new_TermTYPEMAP(CTX ctx, knh_class_t reqt, knh_TypeMap_t *trl
 		return (knh_Term_t*)(tk2);
 	}
 	else {
-		knh_Stmt_t *cstmt = new_Stmt2(ctx, STT_TYPEMAP, NULL);
+		knh_Stmt_t *cstmt = new_Stmt2(ctx, STT_TCAST, NULL);
 		knh_Token_t *tk = new_TokenTYPED(ctx, TT_CID, TYPE_Class, CLASS_Tdynamic);
 		Token_toTYPEMAPMPR(ctx, tk, reqt, trlNULL);
 		knh_Stmt_add(ctx, cstmt, tk);

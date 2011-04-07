@@ -79,7 +79,7 @@
 #define STT_NEW  ((knh_term_t)38)
 #define STT_FUNCCALL  ((knh_term_t)39)
 #define STT_OP  ((knh_term_t)40)
-#define STT_TYPEMAP  ((knh_term_t)41)
+#define STT_TCAST  ((knh_term_t)41)
 #define STT_TPATH  ((knh_term_t)42)
 #define STT_ALT  ((knh_term_t)43)
 #define STT_TRI  ((knh_term_t)44)
@@ -213,7 +213,7 @@
 #define TT_UNAME   ((knh_term_t)172)
 #define TT_FUNCNAME   ((knh_term_t)173)
 #define TT_UFUNCNAME   ((knh_term_t)174)
-#define TT_TYPE   ((knh_term_t)175)
+#define TT_PTYPE   ((knh_term_t)175)
 #define TT_CID   ((knh_term_t)176)
 #define TT_MN   ((knh_term_t)177)
 #define TT_FMT   ((knh_term_t)178)
@@ -281,7 +281,7 @@ static TERMDATA_t TERMDATA[] = {
 	{"NEW", 0, -1}, 
 	{"FUNCCALL", 0, -1}, 
 	{"OP", 0, -1}, 
-	{"TYPEMAP", 0, -1}, 
+	{"TCAST", 0, -1}, 
 	{"TPATH", 0, -1}, 
 	{"ALT", 0, -1}, 
 	{"TRI", 0, -1}, 
@@ -415,7 +415,7 @@ static TERMDATA_t TERMDATA[] = {
 	{"UNAME", 0, -1}, 
 	{"FUNCNAME", 0, -1}, 
 	{"UFUNCNAME", 0, -1}, 
-	{"TYPE", 0, -1}, 
+	{"PTYPE", 0, -1}, 
 	{"CID", 0, -1}, 
 	{"MN", 0, -1}, 
 	{"FMT", 0, -1}, 

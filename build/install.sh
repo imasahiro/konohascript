@@ -36,6 +36,6 @@ if [ -h ${kpath}/bin/konoha ] ; then
 fi
 
 if [ ! \( -f ${kpath}/bin/konoha \) ] ; then
-	ln -s ${ktarget} ${kpath}/bin/konoha
+	install -m 755 ${build}/${ktarget} ${kpath}/bin/konoha	
 fi
 

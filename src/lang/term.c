@@ -239,7 +239,7 @@ static knh_term_t TT_ch(int ch)
 static int isTYPE(knh_Token_t *tk)
 {
 	knh_term_t tt = TT_(tk);
-	return (tt == TT_TYPE || tt == TT_UNAME || (TT_TYPEOF <= tt && tt <= TT_DYNAMIC));
+	return (tt == TT_PTYPE || tt == TT_UNAME || (TT_TYPEOF <= tt && tt <= TT_DYNAMIC));
 }
 
 static knh_Token_t *new_TokenCID(CTX ctx, knh_class_t cid)
@@ -254,7 +254,7 @@ static knh_Token_t *new_TokenCID(CTX ctx, knh_class_t cid)
 
 static knh_Token_t *new_TokenPTYPE(CTX ctx, knh_class_t cid, knh_Token_t *tk)
 {
-	knh_Token_t *tkT = new_Token(ctx, TT_TYPE);
+	knh_Token_t *tkT = new_Token(ctx, TT_PTYPE);
 	knh_Token_t *tkC = new_TokenCID(ctx, cid);
 	Token_add(ctx, tkT, tkC);
 	if(cid == CLASS_Map) {
@@ -394,7 +394,7 @@ static void Token_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
 		if(TT_(tk) == TT_GT || TT_(tk) == TT_RSFT || TT_(tk) == TT_RECV) { // String> or String>>
 			tkitr_t itrbuf, *itr = ITR_new(tkB, &itrbuf);
 			if(ITR_findPTYPE(itr)) {
-				knh_Token_t *tkT = new_Token(ctx, TT_TYPE);
+				knh_Token_t *tkT = new_Token(ctx, TT_PTYPE);
 				prev_idx = itr->c;
 				while(ITR_hasNext(itr)) {
 					knh_Token_t *tkPT = ITR_nextTK(itr);
@@ -1867,19 +1867,19 @@ static int ITR_isCAST(tkitr_t *itr)
 
 static void _EXPRCAST(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 {
-	knh_Stmt_t *stmTYPEMAP = new_StmtREUSE(ctx, stmt, STT_TYPEMAP);
+	knh_Stmt_t *stmtTCST = new_StmtREUSE(ctx, stmt, STT_TCAST);
 	tkitr_t cbuf, *citr = ITR_new(ITR_nextTK(itr), &cbuf);
 	if(ITR_is(citr, TT_TO)) {
 		TODO();
 		ITR_next(citr)
 	}
 	if(ITR_isT(citr, isTYPE)) {
-//			if(ITR_is(citr, TT_TYPE)) {
+//			if(ITR_is(citr, TT_PTYPE)) {
 //				Token_toStmtTYPEOF(ctx, ITR_tk(citr));
 //			}
-		knh_Stmt_add(ctx, stmTYPEMAP, ITR_nextTK(citr));
+		knh_Stmt_add(ctx, stmtTCST, ITR_nextTK(citr));
 	}
-	_EXPR(ctx, stmTYPEMAP, itr); return;
+	_EXPR(ctx, stmtTCST, itr); return;
 }
 
 
@@ -2109,7 +2109,7 @@ static void _EXPR1(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		case TT_NULL:    /* @CODE: null */
 		case TT_TRUE:    /* @CODE: true */
 		case TT_FALSE:   /* @CODE: false */
-		case TT_TYPE:    /* @CODE: T<T> */
+		case TT_PTYPE:    /* @CODE: T<T> */
 		case TT_PROPN:   /* @CODE: $NAME */
 		case TT_TYPEOF:  /* @CODE: typeof(expr) */
 		case TT_STR:     /* @CODE: "hoge" */
@@ -3129,7 +3129,7 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 				break;
 			}
 		}
-		case TT_VAR: case TT_TYPE: case TT_DYNAMIC:
+		case TT_VAR: case TT_PTYPE: case TT_DYNAMIC:
 		case TT_TYPEOF: case TT_BYTE:
 		case TT_UNAME: {
 			tkitr_t mbuf, *mitr = ITR_copy(itr, &mbuf, +1);

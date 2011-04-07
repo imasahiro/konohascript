@@ -36,7 +36,6 @@ function  _PARAM _BLOCK
 
 METHOD    _TYPE  _CNAME _NAME _PARAM _BLOCK
 DECL      _TYPE  _NAME  _EXPR
-#DOCU      _NOCHECK
 CHKOUT    _NOCHECK
 LETM      _NOCHECK
 SWAP      _NOCHECK
@@ -49,8 +48,8 @@ CALL        _NAME  _EXPR  _MEXPR
 NEW         _NAME  _CNAME _MEXPR
 FUNCCALL    _EXPR  _      _MEXPR
 OP          _OP    _EXPR  _EXPR
-#FMTOP       _STR   _     _EXPR
-TYPEMAP       _CNAME  _     _EXPR
+#FMTOP      _STR   _     _EXPR
+TCAST       _CNAME  _     _EXPR
 TPATH       _
 ALT         _EXPR  _EXPR
 TRI         _EXPR  _EXPR  _EXPR
@@ -148,7 +147,7 @@ _    TT_ASIS       0
 function   _       0
 new        -       0
 null       -       0
-#define isTYPE(tt) return (tt == TT_TYPE || tt == TT_UNAME || (TT_TYPEOF <= tt && tt <= TT_DYNAMIC));
+#define isTYPE(tt) return (tt == TT_PTYPE || tt == TT_UNAME || (TT_TYPEOF <= tt && tt <= TT_DYNAMIC));
 typeof     -       0
 void       -       0
 var        -       0
@@ -246,7 +245,7 @@ NAME     -
 UNAME    - 
 FUNCNAME - 
 UFUNCNAME -
-TYPE     - 
+PTYPE    - 
 CID      - 
 MN       - 
 FMT      - 
