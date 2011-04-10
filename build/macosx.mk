@@ -2,11 +2,11 @@
 #
 
 CC ?= gcc
-CFLAGS ?= -g -O2 -Wall -fPIC -I./include
+CFLAGS ?= -O2 -Wall -fPIC -I./include
 #CFLAGS ?= -g3 -O0 -Wall -fPIC -I./include -DK_USING_DEBUG
 
 ARCH = -arch i386 -arch x86_64
-LDLIBS ?= -liconv -lsqlite3 -lpcre -lpthread
+LDLIBS ?= $(dir)/libpcre.a -liconv -lsqlite3 -lpthread
 STRIP = strip
 
 konoha = konoha1
@@ -56,11 +56,11 @@ objs = \
 .PHONY: all
 all: $(dir)/$(konoha) $(packages)
 
-$(dir)/$(konoha) : src/konoha.c $(dir)/lib$(konoha).dylib
-	$(CC) $(CFLAGS) $(ARCH) -o $@ src/konoha.c -L./$(dir) -l$(konoha) $(LDLIBS) 
+$(dir)/$(konoha) : src/konoha.c $(dir)/lib$(konoha).dylib $(dir)/lib$(konoha).a
+	$(CC) $(CFLAGS) $(ARCH) -o $@ src/konoha.c -L./$(dir) -l$(konoha) 
 
 $(dir)/lib$(konoha).dylib : $(objs)
-	$(CC) $(CFLAGS) $(ARCH) -L./$(dir) -dynamiclib $(LIBVER) -o $@ $^ $(LDLIBS)
+	$(CC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -install_name /usr/local/lib/lib$(konoha).dylib -o $@ $^ $(LDLIBS)
 
 $(dir)/lib$(konoha).a: $(objs)
 	$(AR) rv $@ $^
@@ -216,5 +216,5 @@ uninstall:
 ## clean
 .PHONY: clean
 clean:
-	$(RM) -rf $(dir)/*.dylib $(dir)/*.o $(dir)/*.a $(dir)/$(konoha)_32 $(dir)/$(konoha)_64 $(dir)/$(konoha)
+	$(RM) -rf $(dir)/*.dylib $(dir)/*.o $(dir)/$(konoha) $(dir)/lib$(konoha).a
 

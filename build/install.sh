@@ -25,17 +25,11 @@ install -d ${kpath}/bin
 install -d ${kpath}/lib
 install -d ${kpath}/include
 install -m 755 ${build}/${ktarget} ${kpath}/bin/${ktarget}
+install -m 755 ${build}/${ktarget} ${kpath}/bin/konoha
 cp ${build}/lib${ktarget}.${libext} ${kpath}/lib/
 cp include/${ktarget}.h ${kpath}/include/
 install -d ${kpath}/include/${ktarget}
 
 cp include/${ktarget}/*.h ${kpath}/include/${ktarget}
 
-if [ -h ${kpath}/bin/konoha ] ; then
-	rm -f ${kpath}/bin/konoha
-fi
-
-if [ ! \( -f ${kpath}/bin/konoha \) ] ; then
-	install -m 755 ${build}/${ktarget} ${kpath}/bin/konoha	
-fi
 
