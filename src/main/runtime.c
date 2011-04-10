@@ -364,7 +364,11 @@ static void opt_utest(CTX ctx, int mode, const char *optstr)
 
 FILE *knh_getUFILE(void)
 {
+#ifdef K_USING_DEBUG
+	return stdout;
+#else
 	return uout;
+#endif
 }
 
 /* ----------------------------------------------------------------------- */
@@ -847,6 +851,10 @@ void konoha_main(konoha_t konoha, int argc, const char **argv)
 	}
 	else {
 		int isCompileOnly = CTX_isCompiling(konoha.ctx);
+		if(uout != NULL) {
+			fprintf(uout, "testing: %s\n", args[n]);
+			fflush(uout);
+		}
 		if(konoha_load(konoha, B(args[n]), isCompileOnly) != -1) {
 			if(!isCompileOnly) {
 				konoha_runMain(konoha, argc - n, args + n);

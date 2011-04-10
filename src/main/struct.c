@@ -2808,6 +2808,10 @@ static Object *knh_NameSpace_fdefault(CTX ctx, knh_class_t cid)
 }
 static void knh_setDefaultValues(CTX ctx)
 {
+	knh_ClassTBL_t *ct = (knh_ClassTBL_t *)ClassTBL(CLASS_Tuple);
+	DBG_P("Tuple's super=%s", CLASS__(ct->supcid));
+	ct->supcid = CLASS_Object;
+	ct->supTBL = ClassTBL(CLASS_Object);
 	knh_setClassDefaultValue(ctx, CLASS_Object, KNH_NULL, NULL);
 	knh_setClassDefaultValue(ctx, CLASS_Tdynamic, KNH_NULL, NULL);
 	knh_setClassDefaultValue(ctx, CLASS_Boolean, KNH_FALSE, NULL);

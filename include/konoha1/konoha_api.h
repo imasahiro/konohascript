@@ -249,7 +249,7 @@ knh_Token_t* ERROR_IncompatiblePackage(CTX ctx, knh_bytes_t path, const knh_Pack
 knh_Token_t* ErrorOverrideName(CTX ctx, const char *oldname, const char *newname, int isOVERRIDE);
 knh_Token_t* ErrorRedefinedClass(CTX ctx, knh_bytes_t cname, knh_class_t cid);
 knh_Token_t* ErrorExtendingFinalClass(CTX ctx, knh_class_t cid);
-void WarningMuchBetter(CTX ctx, const char *token);
+void WARN_MuchBetter(CTX ctx, const char *token);
 void WarningMethodName(CTX ctx, const char *name);
 knh_Token_t* ERROR_Unsupported(CTX ctx, const char *msg);
 void WARN_Unsupported(CTX ctx, const char *msg);
@@ -615,6 +615,7 @@ knh_String_t *new_TEXT(CTX ctx, knh_class_t cid, knh_TEXT_t text, int isASCII);
 int knh_bytes_strcasecmp(knh_bytes_t v1, knh_bytes_t v2);
 const knh_RegexSPI_t* knh_getStrRegexSPI(void);
 knh_bool_t Regex_isSTRREGEX(knh_Regex_t *re);
+size_t pcre_regex_nmatchsize(knh_regex_t *reg);
 const knh_RegexSPI_t* knh_getRegexSPI(void);
 knh_StringDecoder_t* new_StringDecoderNULL(CTX ctx, knh_bytes_t t);
 knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, knh_bytes_t t);

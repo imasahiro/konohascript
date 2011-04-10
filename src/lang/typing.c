@@ -266,7 +266,7 @@ knh_class_t knh_Token_cid(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 		case TT_VOID: cid = CLASS_Tvoid; break;
 		case TT_DYNAMIC: cid = CLASS_Tdynamic; break;
 		case TT_BYTE: {
-			WarningMuchBetter(ctx, "int");
+			WARN_MuchBetter(ctx, "int");
 			cid = CLASS_Int;
 		}
 		case TT_UNAME: case TT_UFUNCNAME: {
@@ -327,7 +327,7 @@ static knh_Token_t *TTYPE_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 {
 	knh_class_t cid = knh_Token_cid(ctx, tk, reqt);
 	if(cid == CLASS_unknown) {
-		return ERROR_UndefinedName(ctx, tk);
+		return ERROR_Undefined(ctx, "name", CLASS_unknown, tk);
 	}
 	return tk;
 }
@@ -389,17 +389,15 @@ static void Gamma_clear(CTX ctx, size_t offset, knh_Stmt_t *stmt)
 		if(gf[i].ucnt == 0 && IS_Token(gf[i].tkIDX)) {
 			WarningUnusedName(ctx, gf[i].tkIDX, gf[i].fn);
 		}
-		if(stmt != NULL && FLAG_is(gf[i].flag, _FCHKOUT)) {
-			knh_Stmt_t *stmt2 = new_Stmt2(ctx, STT_CHKOUT, gf[i].tkIDX, NULL);
-			gf[i].tkIDX->type = gf[i].type;
-			KNH_INITv(DP(stmt)->nextNULL, stmt2);
-			DBG_P("ADD CHKOUT stt=%s", TT__(stmt->stt));
-			stmt = stmt2;
-		}
+//		if(stmt != NULL && FLAG_is(gf[i].flag, _FCHKOUT)) {
+//			knh_Stmt_t *stmt2 = new_Stmt2(ctx, STT_CHKOUT, gf[i].tkIDX, NULL);
+//			gf[i].tkIDX->type = gf[i].type;
+//			KNH_INITv(DP(stmt)->nextNULL, stmt2);
+//			stmt = stmt2;
+//		}
 		gf[i].flag  = 0;
 		gf[i].type  = TYPE_void;
 		gf[i].fn    = FN_NONAME;
-		//DBG_P("CLEAR %p gf[%d].value=%s(%p)", gf, i, O__(gf[i].value), gf[i].value);
 		KNH_SETv(ctx, gf[i].value, KNH_NULL);
 		KNH_SETv(ctx, gf[i].tkIDX, KNH_NULL);
 	}
@@ -603,6 +601,8 @@ static knh_fields_t* class_rindexFNQ(CTX ctx, knh_class_t cid, knh_fieldn_t fnq,
 	return NULL;
 }
 
+#define IS_SYSVAL(t,v)  (knh_bytes_strcasecmp(t, STEXT(v)) == 0)
+
 #define _FINDLOCAL   (1<<1)
 #define _FINDFIELD   (1<<2)
 #define _FINDSCRIPT  (1<<3)
@@ -627,7 +627,6 @@ static knh_Token_t *TNAME_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt, knh_
 		if(tkIDX != NULL) {
 			knh_Token_toTYPED(ctx, tk, tkIDX->tt, tkIDX->type, (tkIDX)->index);
 			Token_setReadOnly(tk, Token_isReadOnly(tkIDX));
-			//DBG_P("%s tk=%p tk->index=%d", TT__(tk->tt), tk, tk->index);
 			return tk;
 		}
 		if(DP(ctx->gma)->parentNULL != NULL) {
@@ -669,7 +668,7 @@ static knh_Token_t *TNAME_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt, knh_
 			}
 		}
 	}
-	if(FLAG_is(op, _FINDFUNC)) {
+	if(FLAG_is(op, _FINDFUNC)) { // TODO_AC
 		knh_Method_t *mtd = NULL;
 		knh_NameSpace_t *ns = KNH_GMA_NS;
 		knh_class_t this_cid = DP(ctx->gma)->this_cid;
@@ -697,7 +696,23 @@ static knh_Token_t *TNAME_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt, knh_
 		}
 	}
 	if(FLAG_is(op, _TOERROR)) {
-		return ERROR_UndefinedName(ctx, tk);
+		knh_bytes_t t = TK_tobytes(tk);
+		if(IS_SYSVAL(t, "__line__")) {
+			return Token_setCONST(ctx, tk, new_Int(ctx, CLASS_Int, ULINE_line(tk->uline)));
+		}
+		else if(IS_SYSVAL(t, "__file__")) {
+			return Token_setCONST(ctx, tk, knh_getURN(ctx, ULINE_uri(tk->uline)));
+		}
+		else if(IS_SYSVAL(t, "__method__") || IS_SYSVAL(t, "__func__")) {
+			return Token_setCONST(ctx, tk, DP(ctx->gma)->mtd);
+		}
+		else if(IS_SYSVAL(t, "__namespace__") || IS_SYSVAL(t, "__ns__")) {
+			knh_NameSpace_t *ns = knh_getGammaNameSpace(ctx);
+			return Token_setCONST(ctx, tk, ns);
+		}
+		else {
+			return ERROR_Undefined(ctx, "variable", CLASS_unknown, tk);
+		}
 	}
 	return NULL;
 }
@@ -717,8 +732,6 @@ static Object *NameSpace_getConstNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t 
 	}
 	return knh_getClassConstNULL(ctx, DP(ctx->gma)->this_cid, name);
 }
-
-#define IS_SYSVAL(t,v)  (knh_bytes_strcasecmp(t, STEXT(v)) == 0)
 
 static knh_Token_t* Token_toSYSVAL(CTX ctx, knh_Token_t *tk)
 {
@@ -752,23 +765,19 @@ static knh_Token_t* Token_toSYSVAL(CTX ctx, knh_Token_t *tk)
 	else if(IS_SYSVAL(t, "OS")) {
 		TK_typing(tk, TT_SYSVAL, TYPE_System, K_SYSVAL_OS);
 	}
-	else if(ISB(t, "__")) {
-		TT_(tk) = TT_SYSVAL;
-		(tk)->index = K_SYSVAL_SCRIPT; SP(tk)->type = TYPE_Script;
-	}
-	else if(IS_SYSVAL(t, "__line__")) {
-		Token_setCONST(ctx, tk, new_Int(ctx, CLASS_Int, ULINE_line(tk->uline)));
-	}
-	else if(IS_SYSVAL(t, "__file__")) {
-		Token_setCONST(ctx, tk, knh_getURN(ctx, ULINE_uri(tk->uline)));
-	}
+//	else if(IS_SYSVAL(t, "__line__")) {
+//		Token_setCONST(ctx, tk, new_Int(ctx, CLASS_Int, ULINE_line(tk->uline)));
+//	}
+//	else if(IS_SYSVAL(t, "__file__")) {
+//		Token_setCONST(ctx, tk, knh_getURN(ctx, ULINE_uri(tk->uline)));
+//	}
 //	else if(IS_SYSVAL(t, "__method__") || IS_SYSVAL(t, "__function__")) {
 //		Token_setCONST(ctx, tk, knh_Object_getkey(ctx, UPCAST(DP(ctx->gma)->mtd)));
 //	}
-	else if(IS_SYSVAL(t, "__namespace__") || IS_SYSVAL(t, "__ns__")) {
-		knh_NameSpace_t *ns = knh_getGammaNameSpace(ctx);
-		Token_setCONST(ctx, tk, ns);
-	}
+//	else if(IS_SYSVAL(t, "__namespace__") || IS_SYSVAL(t, "__ns__")) {
+//		knh_NameSpace_t *ns = knh_getGammaNameSpace(ctx);
+//		Token_setCONST(ctx, tk, ns);
+//	}
 	else if(IS_SYSVAL(t, "EOL")) {
 		Token_setCONST(ctx, tk, TS_EOL);
 	}
@@ -779,7 +788,7 @@ static knh_Token_t* Token_toSYSVAL(CTX ctx, knh_Token_t *tk)
 		Token_setCONST(ctx, tk, TS_END);
 	}
 	else {
-		return ERROR_UndefinedName(ctx, tk);
+		return ERROR_Undefined(ctx, "name", CLASS_unknown, tk);
 	}
 	return tk;
 }
@@ -943,11 +952,11 @@ static knh_Token_t* NUM_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 	knh_class_t breqc = knh_class_bcid(reqt);
 	if(reqt == CLASS_Boolean) {
 		if(t.ustr[0] == '0') {
-			WarningMuchBetter(ctx, "false");
+			WARN_MuchBetter(ctx, "false");
 			return Token_setCONST(ctx, tk, KNH_FALSE);
 		}
 		else {
-			WarningMuchBetter(ctx, "true");
+			WARN_MuchBetter(ctx, "true");
 			return Token_setCONST(ctx, tk, KNH_TRUE);
 		}
 	}
@@ -1510,13 +1519,18 @@ static int MN_isNEW_(CTX ctx, knh_methodn_t mn)
 	return 0;
 }
 
+static knh_Token_t *OP_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt);
+
 static knh_Token_t *LET_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
 	knh_Token_t *tkN = tkNN(stmt, 1);
 	knh_Token_t *tkRES = NULL;
-	DBG_(if(reqt == TYPE_Boolean) {
-		KNH_TODO("== as =");
-	});
+	if(reqt == TYPE_Boolean) {
+		WARN_MuchBetter(ctx, "==");
+		STT_(stmt) = STT_OP;
+		KNH_SETv(ctx, tkNN(stmt, 0), new_TokenMN(ctx, MN_opEQ));
+		return OP_typing(ctx, stmt, reqt);
+	};
 	if(TT_(tkN) == TT_UNAME) {
 		if(!IS_SCRIPTLEVEL(ctx)) {
 			WarningMisplaced(ctx);
@@ -2629,12 +2643,13 @@ static knh_Token_t* OP_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		if(mtd_cid == CLASS_Exception){
 			goto L_LOOKUPMETHOD;
 		}
-		if(mtd_cid == cid || cid == CLASS_Tdynamic) {
-			return Token_setCONST(ctx, tkC, KNH_TRUE);
-		}
-		if(!class_isa(mtd_cid, cid)) {
-			return Token_setCONST(ctx, tkC, KNH_FALSE);
-		}
+//		This must be checked later
+//		if(mtd_cid == cid || cid == CLASS_Tdynamic) {
+//			return Token_setCONST(ctx, tkC, KNH_TRUE);
+//		}
+//		if(!class_isa(mtd_cid, cid)) {
+//			return Token_setCONST(ctx, tkC, KNH_FALSE);
+//		}
 		goto L_LOOKUPMETHOD;
 	}
 
