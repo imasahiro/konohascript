@@ -6,7 +6,7 @@ CFLAGS ?= -O2 -Wall -fPIC -I./include
 #CFLAGS ?= -g3 -O0 -Wall -fPIC -I./include -DK_USING_DEBUG
 
 ARCH = -arch i386 -arch x86_64
-LDLIBS ?= $(dir)/libpcre.a -liconv -lsqlite3 -lpthread
+LDLIBS ?= $(dir)/libpcre_macosx.a -liconv -lsqlite3 -lpthread
 STRIP = strip
 
 konoha = konoha1

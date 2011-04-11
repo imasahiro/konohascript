@@ -31,6 +31,14 @@
 
 /* ************************************************************************ */
 
+//#ifdef K_USING_DEBUG
+//#define K_USING_CURL 1
+//#endif
+
+#ifdef K_USING_CURL
+#include<curl/curl.h>
+#endif/*K_USING_CURL*/
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -61,7 +69,7 @@ knh_bytes_t knh_bytes_skipPATHHEAD(knh_bytes_t path)
 /* ------------------------------------------------------------------------ */
 /* [PATH] */
 
-static knh_uintptr_t NOPATH_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_path_t NOPATH_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	return PATH_unknown;
 }
@@ -89,10 +97,10 @@ static knh_bool_t CHARSET_hasType(CTX ctx, knh_class_t cid)
 	return (cid == CLASS_StringEncoder || cid == CLASS_StringDecoder || PATH_hasType(cid));
 }
 
-static knh_uintptr_t CHARSET_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_path_t CHARSET_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	knh_bytes_t t = knh_bytes_skipPATHHEAD(path);
-	knh_uintptr_t res = PATH_unknown;
+	knh_path_t res = PATH_unknown;
 	iconv_t ic = ctx->spi->iconv_open(t.text, K_ENCODING);
 	if(ic != (iconv_t)(-1)) {
 		res = PATH_found;
@@ -159,7 +167,7 @@ static knh_bool_t TOPATH_hasType(CTX ctx, knh_class_t cid)
 	return PATH_hasType(cid);
 }
 
-static knh_uintptr_t TOPATH_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_path_t TOPATH_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvTODSPINULL(ctx, ns, knh_bytes_skipPATHHEAD(path));
 	return (dspi != NULL) ? PATH_found : PATH_unknown;
@@ -176,7 +184,7 @@ static knh_Object_t* TOPATH_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_clas
 	return NULL;
 }
 
-static knh_uintptr_t FROMPATH_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_path_t FROMPATH_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvFROMDSPINULL(ctx, ns, knh_bytes_skipPATHHEAD(path));
 	return (dspi != NULL) ? PATH_found : PATH_unknown;
@@ -213,12 +221,12 @@ static knh_bool_t FILE_hasType(CTX ctx, knh_class_t cid)
 	return (cid == CLASS_InputStream || cid == CLASS_OutputStream || PATH_hasType(cid));
 }
 
-static knh_uintptr_t FILE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_path_t FILE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	knh_bytes_t n = knh_bytes_skipPATHHEAD(path);
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_openinit(ctx, &cwbbuf, n);
 	knh_cwb_ospath(ctx, cwb);
-	knh_uintptr_t res = cwb_isfile(ctx, cwb) ? 1: PATH_unknown;
+	knh_path_t res = cwb_isfile(ctx, cwb) ? 1: PATH_unknown;
 	if(res != PATH_unknown) {
 		res = knh_getURI(ctx, knh_cwb_tobytes(cwb));
 	}
@@ -245,7 +253,7 @@ static const knh_PathDSPI_t PATH_FILE = {
 	FILE_hasType, FILE_exists, FILE_newObjectNULL,
 };
 
-static knh_uintptr_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_path_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_bytes_t libname = knh_bytes_skipPATHHEAD(path), funcname = STEXT(""); /* lib:m.sin */
@@ -257,7 +265,7 @@ static knh_uintptr_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 	knh_cwb_write(ctx, cwb, libname);
 	knh_cwb_ospath(ctx, cwb);
 	void *p = knh_cwb_dlopen(ctx, LOG_DEBUG, cwb);
-	knh_uintptr_t res = PATH_unknown;
+	knh_path_t res = PATH_unknown;
 	if(p == NULL && !knh_bytes_startsWith(libname, STEXT("lib"))) {
 		knh_cwb_clear(cwb, 0);
 		knh_cwb_write(ctx, cwb, STEXT("lib"));
@@ -449,10 +457,10 @@ static knh_bool_t knh_cwb_existsPKG(CTX ctx, knh_cwb_t *cwb, knh_bytes_t path)
 	return 0;
 }
 
-static knh_uintptr_t PKG_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_path_t PKG_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	knh_uintptr_t res =
+	knh_path_t res =
 		knh_cwb_existsPKG(ctx, cwb, knh_bytes_skipPATHHEAD(path)) ? knh_getURI(ctx, knh_cwb_tobytes(cwb)) : PATH_unknown;
 	knh_cwb_close(cwb);
 	return res;
@@ -506,11 +514,11 @@ static void knh_cwb_writeSCRIPT(CTX ctx, knh_cwb_t *cwb, knh_bytes_t path)
 	knh_cwb_ospath(ctx, cwb);
 }
 
-static knh_uintptr_t SCRIPT_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_path_t SCRIPT_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_cwb_writeSCRIPT(ctx, cwb, knh_bytes_skipPATHHEAD(path));
-	knh_uintptr_t res = cwb_isfile(ctx, cwb) ? knh_getURI(ctx, knh_cwb_tobytes(cwb)) : PATH_unknown;
+	knh_path_t res = cwb_isfile(ctx, cwb) ? knh_getURI(ctx, knh_cwb_tobytes(cwb)) : PATH_unknown;
 	knh_cwb_close(cwb);
 	return res;
 }
@@ -557,6 +565,287 @@ const knh_StreamDSPI_t *knh_getStreamDSPI(CTX ctx, knh_NameSpace_t *ns, knh_byte
 		return p;
 	}
 }
+
+#ifdef K_USING_CURL
+
+typedef struct {
+	CURL *curl;
+	const char *charset;
+	const char *contenttype;
+	char *buffer;               /* buffer to store cached data*/
+	long pos;
+	long buffer_len;             /* currently allocated buffers length */
+	long buffer_pos;             /* end of data in buffer*/
+	int still_running;          /* Is background url fetch still in progress */
+} CURLFILE;
+
+/* This global variable was originated in a sample code in libcurl */
+static CURLM *multi_handle = NULL;
+static CURLM *emulti_handle = NULL;
+
+static size_t write_callback(char *buffer, size_t size, size_t nitems, void *userp)
+{
+	char *newbuff;
+	CURLFILE *url = (CURLFILE *)userp;
+	size *= nitems;
+	long rembuff = url->buffer_len - url->buffer_pos; /* remaining space in buffer */
+	if(size > rembuff) {
+		newbuff = realloc(url->buffer, url->buffer_len + (size - rembuff));
+		if(newbuff == NULL) {
+			size = rembuff;
+		}
+		else {
+			url->buffer_len += size - rembuff;
+			url->buffer = newbuff;
+		}
+	}
+	memcpy(&url->buffer[url->buffer_pos], buffer, size);
+	url->buffer_pos += size;
+	if(url->contenttype == NULL){
+		char *type = NULL;
+		curl_easy_getinfo(url->curl, CURLINFO_CONTENT_TYPE, &type);
+		if(type != NULL){
+			char *charset = NULL;
+			charset = strrchr(type, '=');
+			if(charset != NULL){
+				charset++;
+				type = strtok(type, ";");
+			}
+			url->charset = (const char*)charset;
+			url->contenttype = (const char*)type;
+		}
+	}
+	return size;
+}
+
+static int fill_buffer(CURLFILE *file, int want, int waittime)
+{
+	fd_set fdread;
+	fd_set fdwrite;
+	fd_set fdexcep;
+	struct timeval timeout;
+	int rc;
+	/* only attempt to fill buffer if transactions still running and buffer
+	 * doesnt exceed required size already
+	 */
+	if((!file->still_running) || (file->buffer_pos > want))
+		return 0;
+
+	/* attempt to fill buffer */
+	do {
+		int maxfd = -1;
+		FD_ZERO(&fdread);
+		FD_ZERO(&fdwrite);
+		FD_ZERO(&fdexcep);
+
+		/* set a suitable timeout to fail on */
+		timeout.tv_sec = 60; /* 1 minute */
+		timeout.tv_usec = 0;
+
+		/* get file descriptors from the transfers */
+		curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
+
+		/* In a real-world program you OF COURSE check the return code of the
+           function calls.  On success, the value of maxfd is guaranteed to be
+           greater or equal than -1.  We call select(maxfd + 1, ...), specially
+           in case of (maxfd == -1), we call select(0, ...), which is basically
+           equal to sleep. */
+
+		rc = select(maxfd+1, &fdread, &fdwrite, &fdexcep, &timeout);
+		switch(rc) {
+		case -1: /* select error */
+		case 0: break;
+		default:
+			/* timeout or readable/writable sockets */
+			/* note we *could* be more efficient and not wait for
+			 * CURLM_CALL_MULTI_PERFORM to clear here and check it on re-entry
+			 * but that gets messy */
+			while(curl_multi_perform(multi_handle, &file->still_running) == CURLM_CALL_MULTI_PERFORM);
+			break;
+		}
+	} while(file->still_running && (file->buffer_pos < want));
+	return 1;
+}
+
+/* use to remove want bytes from the front of a files buffer */
+static int use_buffer(CURLFILE *file, int want)
+{
+	/* sort out buffer */
+	if((file->buffer_pos - want) <= 0) {
+		/* ditch buffer - write will recreate */
+		if(file->buffer != NULL) free(file->buffer);
+		file->buffer=NULL;
+		file->buffer_pos=0;
+		file->buffer_len=0;
+	} else { /* move rest down make it available for later */
+		memmove(file->buffer, &file->buffer[want], (file->buffer_pos - want));
+		file->buffer_pos -= want;
+	}
+	return 0;
+}
+
+static knh_io_t CURL_open(Ctx *ctx, knh_bytes_t path, const char *mode)
+{
+	//TODO mode treats as method
+	CURLFILE *file = malloc(sizeof(CURLFILE));
+	if(file == NULL) return (knh_io_t)NULL;
+	memset(file, 0, sizeof(CURLFILE));
+	file->curl = curl_easy_init();
+	curl_easy_setopt(file->curl, CURLOPT_URL, path.ubuf);
+	curl_easy_setopt(file->curl, CURLOPT_WRITEDATA, file);
+	curl_easy_setopt(file->curl, CURLOPT_VERBOSE, 0L);
+	curl_easy_setopt(file->curl, CURLOPT_WRITEFUNCTION, write_callback);
+	if(!multi_handle) multi_handle = curl_multi_init();
+	curl_multi_add_handle(multi_handle, file->curl);
+
+	/* lets start the fetch */
+	while(curl_multi_perform(multi_handle, &file->still_running) == CURLM_CALL_MULTI_PERFORM );
+
+	if((file->buffer_pos == 0) && (!file->still_running)) {
+		/* if still_running is 0 now, we should return NULL */
+		/* make sure the easy handle is not in the multi handle anymore */
+		curl_multi_remove_handle(multi_handle, file->curl);
+		/* cleanup */
+		curl_easy_cleanup(file->curl);
+		free(file);
+		file = NULL;
+	}
+	return (knh_io_t)file;
+}
+
+//new OutputStream(http://...)
+static knh_io_t CURL_init(Ctx *ctx, knh_bytes_t path, const char *mode)
+{
+	return (knh_io_t)NULL;
+}
+
+static void CURL_close(Ctx *ctx, knh_io_t fd)
+{
+	CURLFILE *file = (CURLFILE*)fd;
+	curl_multi_remove_handle(multi_handle, file->curl);
+	curl_easy_cleanup(file->curl);
+	if(file->buffer) free(file->buffer);
+	free(file);
+}
+
+static int url_feof(CURLFILE *file)
+{
+	int ret=0;
+	if((file->buffer_pos == 0) && (!file->still_running))
+		ret = 1;
+	return ret;
+}
+
+static knh_intptr_t CURL_read(Ctx *ctx, knh_io_t fd, char *buf, size_t bufsiz)
+{
+	CURLFILE *file = (CURLFILE*)fd;
+	if(file == NULL) return 0;
+	fill_buffer(file, bufsiz, 1);
+	if(!file->buffer_pos) return 0;
+	/* ensure only available data is considered */
+	if(file->buffer_pos < bufsiz) bufsiz = file->buffer_pos;
+	/* xfer data to caller */
+	memcpy(buf, file->buffer, bufsiz);
+	use_buffer(file, bufsiz);
+	return bufsiz;
+}
+
+static knh_intptr_t CURL_write(Ctx *ctx, knh_io_t fd, const char *buf, size_t bufsiz)
+{
+	return 0;
+}
+
+static int CURL_feof(Ctx *ctx, knh_io_t fd)
+{
+	return url_feof((CURLFILE*)fd);
+}
+
+static int CURL_getc(Ctx *ctx, knh_io_t fd)
+{
+	CURLFILE *file = (CURLFILE*)fd;
+	if(!file->buffer_pos || file->buffer_pos < file->buffer_len)
+		fill_buffer(file, 1024, 1);
+	return file->buffer[file->buffer_pos++];
+}
+
+static const char* CURL_getContentType(Ctx *ctx, knh_io_t fd)
+{
+	CURLFILE *file = (CURLFILE*)fd;
+	if(file != NULL){
+		if(file->contenttype != NULL){
+			return file->contenttype;
+		}
+	}
+	return NULL;
+}
+
+static const char* CURL_getCharset(Ctx *ctx, knh_io_t fd)
+{
+	CURLFILE *file = (CURLFILE*)fd;
+	if(file != NULL){
+		if(file->charset != NULL){
+			return file->charset;
+		}
+	}
+	return NULL;
+}
+
+static knh_StreamDSPI_t STREAM_CURL = {
+		K_DSPI_STREAM, "curl", 0,
+		CURL_open, CURL_init, CURL_read, CURL_write, CURL_close,
+		CURL_feof, CURL_getc, CURL_getContentType, CURL_getCharset
+};
+
+static knh_path_t CURL_exists(Ctx *ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+{
+	CURLFILE *file = knh_malloc(ctx, sizeof(CURLFILE));
+	if(file == NULL) return PATH_unknown;
+	memset(file, 0, sizeof(CURLFILE));
+	file->curl = curl_easy_init();
+	curl_easy_setopt(file->curl, CURLOPT_URL, path.ubuf);
+	curl_easy_setopt(file->curl, CURLOPT_WRITEDATA, file);
+	curl_easy_setopt(file->curl, CURLOPT_VERBOSE, 0L);
+	curl_easy_setopt(file->curl, CURLOPT_WRITEFUNCTION, write_callback);
+
+	emulti_handle = curl_multi_init();
+	curl_multi_add_handle(emulti_handle, file->curl);
+
+	/* lets start the fetch */
+	while(curl_multi_perform(emulti_handle, &file->still_running) == CURLM_CALL_MULTI_PERFORM );
+	if((file->buffer_pos == 0) && (!file->still_running)) {
+		/* if still_running is 0 now, we should return NULL */
+		/* make sure the easy handle is not in the multi handle anymore */
+		curl_multi_remove_handle(emulti_handle, file->curl);
+		/* cleanup */
+		curl_easy_cleanup(file->curl);
+		knh_free(ctx, file, sizeof(CURLFILE));
+		emulti_handle = NULL;
+		file = NULL;
+		return PATH_unknown;
+	}
+	emulti_handle = NULL;
+	knh_free(ctx, file, sizeof(CURLFILE));
+	return (knh_path_t)1;
+}
+
+static knh_bool_t CURL_hasType(Ctx *ctx, knh_class_t cid)
+{
+	return (cid == CLASS_InputStream || PATH_hasType(cid));
+}
+
+static Object* CURL_newObjectNULL(Ctx *ctx, knh_NameSpace_t *n, knh_class_t cid, knh_String_t *s)
+{
+	return (Object*)s;
+}
+
+static knh_PathDSPI_t PATH_CURL = {
+		K_DSPI_PATH, "curl",
+		CLASS_InputStream, CLASS_Tvoid,
+		CURL_hasType, CURL_exists, CURL_newObjectNULL
+};
+
+#endif/*K_USING_CURL*/
+
 
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_QUERY */
@@ -794,6 +1083,10 @@ void knh_loadScriptDriver(CTX ctx, knh_NameSpace_t *ns)
 	api->addQueryDSPI(ctx, ns, NULL, &QUERY_NOP);
 #ifdef K_USING_SQLITE3
 	api->addQueryDSPI(ctx, ns, "sqlite3", &QUERY_SQLITE3);
+#endif
+#ifdef K_USING_CURL
+	api->addPathDSPI(ctx, ns, "http", &PATH_CURL);
+	api->addStreamDSPI(ctx, ns, "http", &STREAM_CURL);
 #endif
 }
 
