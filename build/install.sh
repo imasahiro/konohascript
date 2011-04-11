@@ -26,8 +26,9 @@ install -d ${kpath}/lib
 install -d ${kpath}/include
 install -m 755 ${build}/${ktarget} ${kpath}/bin/${ktarget}
 install -m 755 ${build}/${ktarget} ${kpath}/bin/konoha
-cp ${build}/lib${ktarget}.${libext} ${kpath}/lib/
-cp include/${ktarget}.h ${kpath}/include/
+cp -f ${build}/lib${ktarget}.${libext} ${kpath}/lib/
+cp -f ${build}/lib${ktarget}.a ${kpath}/lib/
+cp -f include/${ktarget}.h ${kpath}/include/
 install -d ${kpath}/include/${ktarget}
 
 cp include/${ktarget}/*.h ${kpath}/include/${ktarget}

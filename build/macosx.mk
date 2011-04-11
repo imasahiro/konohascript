@@ -1,7 +1,7 @@
 # Makefile for macosx
 #
 
-CC ?= gcc
+CC = MACOSX_DEPLOYMENT_TARGET=10.5 gcc
 CFLAGS ?= -O2 -Wall -fPIC -I./include
 #CFLAGS ?= -g3 -O0 -Wall -fPIC -I./include -DK_USING_DEBUG
 
