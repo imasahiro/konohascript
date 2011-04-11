@@ -31,10 +31,6 @@
 
 /* ************************************************************************ */
 
-//#ifdef K_USING_DEBUG
-//#define K_USING_CURL 1
-//#endif
-
 #ifdef K_USING_CURL
 #include<curl/curl.h>
 #endif/*K_USING_CURL*/
@@ -45,9 +41,9 @@ extern "C" {
 
 #ifdef K_INCLUDE_BUILTINAPI
 
-#if defined(K_USING_POSIX_)
-#include <dirent.h>
-#endif
+//#if defined(K_USING_POSIX_)
+//#include <dirent.h>
+//#endif
 
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_PATH */
