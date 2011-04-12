@@ -1864,12 +1864,12 @@ static void InputStream_init(CTX ctx, Object *o)
 	b->bufpos = 0;
 	b->bufend = 0;
 	b->bufsiz = 0;
-	b->decNULL = NULL;
 	KNH_INITv(b->urn, TS_DEVNULL);
 	b->size    = 0;
 	b->prev    = '\n';
 	in->b = b;
 	in->uline = 1;
+	in->decNULL = NULL;
 }
 
 static void InputStream_reftrace(CTX ctx, Object *o FTRARG)
@@ -1877,7 +1877,7 @@ static void InputStream_reftrace(CTX ctx, Object *o FTRARG)
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
 	knh_InputStreamEX_t *b = DP(in);
 	KNH_ADDREF(ctx, (b->ba));
-	KNH_ADDNNREF(ctx, b->decNULL);
+	KNH_ADDNNREF(ctx, in->decNULL);
 	KNH_ADDREF(ctx, (b->urn));
 	KNH_SIZEREF(ctx);
 }
@@ -1918,12 +1918,12 @@ static void OutputStream_init(CTX ctx, Object *o)
 	SP(w)->dspi = knh_getStreamDSPI(ctx, NULL, K_DEFAULT_DSPI);
 	b->fd = IO_NULL;
 	KNH_INITv(b->ba, new_Bytes(ctx, K_PAGESIZE));
-	b->encNULL = NULL;
 	KNH_INITv(b->urn, TS_DEVNULL);
 	b->size = 0;
 	KNH_INITv(b->NEWLINE, TS_EOL);
 	KNH_INITv(b->TAB, TS_TAB);
 	b->indent = 0;
+	w->encNULL = NULL;
 	w->uline = 0;
 	w->b = b;
 }
@@ -1933,7 +1933,7 @@ static void OutputStream_reftrace(CTX ctx, Object *o FTRARG)
 	knh_OutputStream_t *w = (knh_OutputStream_t*)o;
 	knh_OutputStreamEX_t *b = DP(w);
 	KNH_ADDREF(ctx, (b->ba));
-	KNH_ADDNNREF(ctx, (b->encNULL));
+	KNH_ADDNNREF(ctx, (w->encNULL));
 	KNH_ADDREF(ctx, (b->urn));
 	KNH_ADDREF(ctx, (b->NEWLINE));
 	KNH_ADDREF(ctx, (b->TAB));

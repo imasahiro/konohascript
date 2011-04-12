@@ -792,7 +792,6 @@ typedef struct {
 	size_t bufpos;
 	size_t bufend;
 	size_t bufsiz;
-	struct knh_StringDecoder_t* decNULL;
 	knh_String_t*  urn;
 	size_t size;
 	knh_ushort_t  prev;
@@ -803,6 +802,7 @@ typedef struct knh_InputStream_t {
 	knh_InputStreamEX_t *b;
 	knh_uline_t  uline;
 	const struct knh_StreamDSPI_t *dspi;
+	struct knh_StringDecoder_t*    decNULL;
 } knh_InputStream_t;
 
 /* ------------------------------------------------------------------------ */
@@ -817,7 +817,6 @@ typedef struct {
 		struct knh_Bytes_t *ba;
 //		struct knh_String_t *str;
 	};
-	struct knh_StringEncoder_t* encNULL;
 	knh_String_t*  urn;
 	size_t size;
 	knh_String_t*  NEWLINE;
@@ -830,6 +829,7 @@ typedef struct knh_OutputStream_t {
 	knh_OutputStreamEX_t *b;
 	knh_uline_t  uline;
 	const struct knh_StreamDSPI_t *dspi;
+	struct knh_StringEncoder_t* encNULL;
 } knh_OutputStream_t;
 
 #define knh_putc(ctx, w, ch)       knh_OutputStream_putc(ctx, w, ch)

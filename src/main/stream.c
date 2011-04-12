@@ -176,7 +176,7 @@ knh_String_t* knh_InputStream_readLine(CTX ctx, knh_InputStream_t *in)
 {
 	int ch;
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	if(DP(in)->decNULL == NULL && in->dspi->getCharset != NULL) {
+	if(in->decNULL == NULL && in->dspi->getCharset != NULL) {
 		char *charset = (char*)in->dspi->getCharset(ctx, DP(in)->fd);
 		if(charset != NULL) {
 			InputStream_setCharset(ctx, in, new_StringDecoderNULL(ctx, B(charset)));
@@ -198,11 +198,11 @@ knh_String_t* knh_InputStream_readLine(CTX ctx, knh_InputStream_t *in)
 	}
 	L_TOSTRING:;
 	if(knh_cwb_size(cwb) != 0) {
-		if(DP(in)->decNULL == NULL) {
+		if(in->decNULL == NULL) {
 			return knh_cwb_newString(ctx, cwb);
 		}
 		else {
-			return knh_cwb_newStringDECODE(ctx, cwb, DP(in)->decNULL);
+			return knh_cwb_newStringDECODE(ctx, cwb, in->decNULL);
 		}
 	}
 	return KNH_TNULL(String);
@@ -230,18 +230,18 @@ int InputStream_isClosed(CTX ctx, knh_InputStream_t *in)
 
 void InputStream_setCharset(CTX ctx, knh_InputStream_t *in, knh_StringDecoder_t *c)
 {
-	if(DP(in)->decNULL == NULL) {
+	if(in->decNULL == NULL) {
 		if(c != NULL) {
-			KNH_INITv(DP(in)->decNULL, c);
+			KNH_INITv(in->decNULL, c);
 		}
 	}
 	else {
 		if(c != NULL) {
-			KNH_SETv(ctx, DP(in)->decNULL, c);
+			KNH_SETv(ctx, in->decNULL, c);
 		}
 		else {
-			KNH_FINALv(ctx, DP(in)->decNULL);
-			DP(in)->decNULL = c;
+			KNH_FINALv(ctx, in->decNULL);
+			in->decNULL = c;
 		}
 	}
 }
@@ -342,11 +342,11 @@ int OutputStream_isClosed(knh_OutputStream_t *w)
 
 void OutputStream_setCharset(CTX ctx, knh_OutputStream_t *w, knh_StringEncoder_t *c)
 {
-	if(DP(w)->encNULL == NULL) {
-		KNH_INITv(DP(w)->encNULL, c);
+	if(w->encNULL == NULL) {
+		KNH_INITv(w->encNULL, c);
 	}
 	else {
-		KNH_SETv(ctx, DP(w)->encNULL, c);
+		KNH_SETv(ctx, w->encNULL, c);
 	}
 }
 
@@ -372,13 +372,13 @@ KNHAPI2(void) knh_OutputStream_writeLine(CTX ctx, knh_OutputStream_t *w, knh_byt
 		knh_write_BOL(ctx, w);
 	}
 	if(t.len > 0) {
-		if(DP(w)->encNULL != NULL && !bytes_isASCII(t)) {
+		if(w->encNULL != NULL && !bytes_isASCII(t)) {
 			if(knh_bytes_in(ctx->bufa->bu, t.ubuf)) {
 				KNH_TODO("write cwb->buf with encoding");
 			}
 			else {
 				knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-				knh_StringEncoder_t *c = DP(w)->encNULL;
+				knh_StringEncoder_t *c = w->encNULL;
 				c->dspi->enc(ctx, c->conv, t, cwb->ba);
 				knh_write(ctx, w, knh_cwb_tobytes(cwb));
 				knh_cwb_close(cwb);
