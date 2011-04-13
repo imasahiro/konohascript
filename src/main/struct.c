@@ -721,10 +721,10 @@ static void String_write(CTX ctx, knh_OutputStream_t *w, knh_Object_t *o, int le
 {
 	knh_String_t *s = (knh_String_t*)o;
 	if(IS_FMTs(level)) {
-		knh_print(ctx, w, S_tobytes(s));
+		knh_write_utf8(ctx, w, S_tobytes(s), !String_isASCII(s));
 	}
 	else {
-		knh_write_quote(ctx, w, S_tobytes(s), '"');
+		knh_write_quote(ctx, w, S_tobytes(s), '"', !String_isASCII(s));
 	}
 }
 
@@ -760,6 +760,7 @@ static void Bytes_init(CTX ctx, Object *o)
 	ba->bu.len = 0;
 	ba->bu.ubuf = NULL;
 	ba->dim = &dimINIT;
+	ba->DBG_name = NULL;
 }
 
 static const knh_dim_t* dim_copy(CTX ctx, const knh_dim_t *dim_src)
@@ -1549,8 +1550,8 @@ static void Exception_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level
 {
 	knh_Exception_t *e = (knh_Exception_t*)o;
 	if(!IS_FMTdump(level)) {
-		knh_write_text(ctx, w, EBI__(DP(e)->eid));
-		knh_write_text(ctx, w, "!!");
+		knh_write_ascii(ctx, w, EBI__(DP(e)->eid));
+		knh_write_ascii(ctx, w, "!!");
 	}
 	else {
 		knh_write_EOL(ctx, w);
@@ -1655,7 +1656,7 @@ static void Regex_free(CTX ctx, Object *o)
 static void Regex_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
 	knh_Regex_t *re = (knh_Regex_t*)o;
-	knh_write_quote(ctx, w, S_tobytes(re->pattern), '/');
+	knh_write_quote(ctx, w, S_tobytes(re->pattern), '/', !String_isASCII(re->pattern));
 }
 
 static knh_ClassDef_t RegexDef = {
@@ -1856,20 +1857,16 @@ static knh_ClassDef_t SemanticsDef = {
 static void InputStream_init(CTX ctx, Object *o)
 {
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
-	knh_InputStreamEX_t *b = knh_bodymalloc(ctx, InputStream);
-	SP(in)->dspi = knh_getStreamDSPI(ctx, NULL, K_DEFAULT_DSPI);
-	b->fd = -1;
-	KNH_INITv(b->ba, KNH_NULL);
-	b->buf = NULL;
-	b->bufpos = 0;
-	b->bufend = 0;
-	b->bufsiz = 0;
-	KNH_INITv(b->urn, TS_DEVNULL);
-	b->size    = 0;
-	b->prev    = '\n';
-	in->b = b;
 	in->uline = 1;
 	in->decNULL = NULL;
+	knh_InputStreamEX_t *b = knh_bodymalloc(ctx, InputStream);
+	in->dspi = knh_getDefaultStreamDSPI();
+	b->fio = IO_BUF;
+	KNH_INITv(b->ba, new_Bytes(ctx, 0));
+	KNH_INITv(b->urn, TS_DEVNULL);
+	b->pos = 0; b->posend = 0;
+	b->stat_size = 0;
+	in->b = b;
 }
 
 static void InputStream_reftrace(CTX ctx, Object *o FTRARG)
@@ -1886,9 +1883,9 @@ static void InputStream_free(CTX ctx, Object *o)
 {
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
 	knh_InputStreamEX_t *b = DP(in);
-	if(b->fd != IO_NULL) {
-		SP(in)->dspi->fclose(ctx, b->fd);
-		b->fd = IO_NULL;
+	if(b->fio != IO_NULL) {
+		in->dspi->fclose(ctx, b->fio);
+		b->fio = IO_NULL;
 	}
 	knh_bodyfree(ctx, b, InputStream);
 }
@@ -1896,7 +1893,7 @@ static void InputStream_free(CTX ctx, Object *o)
 static void InputStream_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
 	knh_InputStream_t *ins = (knh_InputStream_t*)o;
-	knh_write_quote(ctx, w, S_tobytes(DP(ins)->urn), '\'');
+	knh_write_quote(ctx, w, S_tobytes(DP(ins)->urn), '\'', !String_isASCII(DP(ins)->urn));
 }
 
 static knh_ClassDef_t InputStreamDef = {
@@ -1915,17 +1912,18 @@ static void OutputStream_init(CTX ctx, Object *o)
 {
 	knh_OutputStream_t *w = (knh_OutputStream_t*)o;
 	knh_OutputStreamEX_t *b = knh_bodymalloc(ctx, OutputStream);
-	SP(w)->dspi = knh_getStreamDSPI(ctx, NULL, K_DEFAULT_DSPI);
-	b->fd = IO_NULL;
-	KNH_INITv(b->ba, new_Bytes(ctx, K_PAGESIZE));
+	w->dspi = knh_getDefaultStreamDSPI();
+	b->fio = IO_NULL;
+	KNH_INITv(b->ba, new_Bytes(ctx, 0));
 	KNH_INITv(b->urn, TS_DEVNULL);
-	b->size = 0;
+	b->stat_size = 0;
 	KNH_INITv(b->NEWLINE, TS_EOL);
 	KNH_INITv(b->TAB, TS_TAB);
 	b->indent = 0;
 	w->encNULL = NULL;
 	w->uline = 0;
 	w->b = b;
+	OutputStream_setBOL(w,1);
 }
 
 static void OutputStream_reftrace(CTX ctx, Object *o FTRARG)
@@ -1944,9 +1942,9 @@ static void OutputStream_free(CTX ctx, Object *o)
 {
 	knh_OutputStream_t *w = (knh_OutputStream_t*)o;
 	knh_OutputStreamEX_t *b = DP(w);
-	if(b->fd != IO_NULL) {
-		SP(w)->dspi->fclose(ctx, b->fd);
-		b->fd = IO_NULL;
+	if(b->fio != IO_NULL) {
+		w->dspi->fclose(ctx, b->fio);
+		b->fio = IO_NULL;
 	}
 	knh_bodyfree(ctx, b, OutputStream);
 }
@@ -1954,7 +1952,7 @@ static void OutputStream_free(CTX ctx, Object *o)
 static void OutputStream_write_(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
 	knh_OutputStream_t *ous = (knh_OutputStream_t*)o;
-	knh_write_quote(ctx, w, S_tobytes(DP(ous)->urn), '\'');
+	knh_write_quote(ctx, w, S_tobytes(DP(ous)->urn), '\'', !String_isASCII(DP(ous)->urn));
 }
 
 static knh_ClassDef_t OutputStreamDef = {
@@ -2335,7 +2333,7 @@ static void Assurance_reftrace(CTX ctx, Object *o FTRARG)
 static void Assurance_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
 	knh_Assurance_t *g = (knh_Assurance_t*)o;
-	knh_write_quote(ctx, w, S_tobytes(g->msg), '\'');
+	knh_write_quote(ctx, w, S_tobytes(g->msg), '\'', !String_isASCII(g->msg));
 }
 
 static void Assurance_checkin(CTX ctx, knh_sfp_t *sfp, Object *o)
@@ -2405,7 +2403,7 @@ static void Token_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 	knh_Token_t *tk = (knh_Token_t*)o;
 	knh_term_t tt = tk->tt;
 	if(tt < TT_NUM) {
-		knh_write_text(ctx, w, TT__(tt));
+		knh_write_ascii(ctx, w, TT__(tt));
 		if(tt == TT_PARENTHESIS || tt == TT_BRACE || tt == TT_BRANCET) {
 			if(IS_Token(tk->data)) {
 				knh_write_InObject(ctx, w, tk->data, level);
@@ -2428,17 +2426,18 @@ static void Token_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 	}
 	else if(tt < TT_CONST) {
 		knh_bytes_t t = S_tobytes(tk->text);
+		int hasUTF8 = !(String_isASCII(tk->text));
 		switch(tt) {
 		case TT_NUM: knh_write(ctx, w, t); break;
-		case TT_STR:  knh_write_quote(ctx, w, t, '"'); break;
-		case TT_TSTR: knh_write_quote(ctx, w, t, '\''); break;
-		case TT_ESTR: knh_write_quote(ctx, w, t, '`'); break;
-		case TT_REGEX: knh_write_quote(ctx, w, t, '/'); break;
+		case TT_STR:  knh_write_quote(ctx, w, t, '"', hasUTF8); break;
+		case TT_TSTR: knh_write_quote(ctx, w, t, '\'', hasUTF8); break;
+		case TT_ESTR: knh_write_quote(ctx, w, t, '`', hasUTF8); break;
+		case TT_REGEX: knh_write_quote(ctx, w, t, '/', hasUTF8); break;
 //		case TT_DOC:
 		case TT_METAN: knh_putc(ctx, w, '@'); knh_write(ctx, w, t); break;
 		case TT_PROPN: knh_putc(ctx, w, '$'); knh_write(ctx, w, t); break;
 		case TT_URN: case TT_TPATH:
-			knh_write(ctx, w, t); break;
+			knh_write_utf8(ctx, w, t, hasUTF8); break;
 		case TT_NAME: case TT_UNAME:
 			if(Token_isDOT(tk)) knh_putc(ctx, w, '.');
 			if(Token_isGetter(tk)) knh_write(ctx, w, STEXT("get_"));
@@ -2461,7 +2460,7 @@ static void Token_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 			knh_write_Object(ctx, w, tk->data, FMT_line);
 		case TT_SYSVAL: case TT_LOCAL: case TT_FUNCVAR:
 		case TT_XLOCAL: case TT_FIELD: case TT_SCRFIELD:
-			knh_write_text(ctx, w, TT__(tt));
+			knh_write_ascii(ctx, w, TT__(tt));
 			knh_putc(ctx, w, '=');
 			knh_write_ifmt(ctx, w, K_INT_FMT, (knh_int_t)tk->index);
 		case TT_ERR:
@@ -2557,7 +2556,7 @@ static void Stmt_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 			}
 		}
 	}
-	knh_write_text(ctx, w, TT__(stmt->stt));
+	knh_write_ascii(ctx, w, TT__(stmt->stt));
 	for(i = 0; i < DP(stmt)->size; i++) {
 		knh_putc(ctx, w, ' ');
 		knh_write_InObject(ctx, w, (Object*)(stmt->terms[i]), FMT_line);

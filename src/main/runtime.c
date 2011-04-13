@@ -660,10 +660,10 @@ void knh_setSecurityAlertMessage(const char *msg, int isNeedFree)
 static void knh_showSecurityAlert(CTX ctx, knh_OutputStream_t *w)
 {
 	if(SecurityAlertMessage != NULL /*&& CTX_isInteractive(ctx)*/) {
-		knh_write_text(ctx, w, TERM_BBOLD(ctx));
-		knh_write_text(ctx, w, "SECURITY ALERT: ");
-		knh_write_text(ctx, w, SecurityAlertMessage);
-		knh_write_text(ctx, w, TERM_EBOLD(ctx));
+		knh_write_ascii(ctx, w, TERM_BBOLD(ctx));
+		knh_write_ascii(ctx, w, "SECURITY ALERT: ");
+		knh_write_ascii(ctx, w, SecurityAlertMessage);
+		knh_write_ascii(ctx, w, TERM_EBOLD(ctx));
 		knh_write_EOL(ctx, w); knh_write_EOL(ctx, w);
 		knh_setSecurityAlertMessage(NULL, 0);
 	}
@@ -799,11 +799,11 @@ static void knh_shell(CTX ctx)
 		if(status == K_REDO) continue;
 		knh_Bytes_clear(DP(bin)->ba, 0);
 		knh_Bytes_write(ctx, DP(bin)->ba, knh_cwb_tobytes(cwb));
-		BytesInputStream_setpos(ctx, bin, 0, BA_size(DP(bin)->ba));
+		knh_InputStream_setpos(ctx, bin, 0, BA_size(DP(bin)->ba));
 		knh_cwb_clear(cwb, 0);
 		SP(bin)->uline = 1; // always line1
 		knh_eval(ctx, bin, TYPE_dyn, results);
-		knh_OutputStream_flush(ctx, ctx->out);
+		knh_OutputStream_flush(ctx, ctx->out, 1);
 		if(ctx->out != DP(ctx->sys)->out) {
 			knh_Bytes_t *outbuf = DP(ctx->out)->ba;
 			knh_write(ctx, cwb->w, outbuf->bu);

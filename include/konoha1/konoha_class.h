@@ -182,6 +182,7 @@ typedef struct knh_Bytes_t {
 	knh_hObject_t h;
 	knh_bytes_t   bu;
 	const knh_dim_t    *dim;
+	const char *DBG_name;
 } knh_Bytes_t ;
 
 #define KNH_SIZE(v)     v
@@ -774,27 +775,24 @@ typedef struct knh_Semantics_t {
 
 /* ------------------------------------------------------------------------ */
 //## @Struct class InputStream Object;
-//## flag InputStream FILE 1 - is set * *;
 
-typedef knh_intptr_t knh_io_t;
+typedef knh_uintptr_t knh_io_t;
 #define IO_NULL   ((knh_io_t)0)
+#define IO_BUF    ((knh_io_t)1)
+#define K_STREAM_BUFSIZ  K_PAGESIZE
 
 typedef struct {
+	knh_String_t*  urn;
 	union {
-		knh_io_t fd;
-		FILE *fp;
+		knh_io_t fio;
 	};
 	union {
-		struct knh_Bytes_t *ba;
+		struct knh_Bytes_t  *ba;
 		struct knh_String_t *str;
 	};
-	char *buf;
-	size_t bufpos;
-	size_t bufend;
-	size_t bufsiz;
-	knh_String_t*  urn;
-	size_t size;
-	knh_ushort_t  prev;
+	size_t pos;  size_t posend;
+	struct knh_Monitor_t *mon;
+	size_t stat_size;
 } knh_InputStreamEX_t;
 
 typedef struct knh_InputStream_t {
@@ -809,16 +807,14 @@ typedef struct knh_InputStream_t {
 //## @Struct class OutputStream Object;
 //## flag OutputStream BOL            1 - is set * *;
 //## flag OutputStream AutoFlush      2 - is set is set;
-//## flag OutputStream StoringBuffer  3 - is set * *;
+//## flag OutputStream UTF8           3 - has set * *;
 
 typedef struct {
-	knh_io_t fd;
-	union {
-		struct knh_Bytes_t *ba;
-//		struct knh_String_t *str;
-	};
 	knh_String_t*  urn;
-	size_t size;
+	knh_io_t fio;
+	struct knh_Bytes_t *ba;
+	struct knh_Monitor_t *mon;
+	size_t stat_size;
 	knh_String_t*  NEWLINE;
 	knh_String_t*  TAB;
 	knh_short_t    indent;
@@ -834,12 +830,10 @@ typedef struct knh_OutputStream_t {
 
 #define knh_putc(ctx, w, ch)       knh_OutputStream_putc(ctx, w, ch)
 #define knh_write(ctx, w, s)       knh_OutputStream_write(ctx, w, s)
-#define knh_flush(ctx, w)          knh_OutputStream_flush(ctx, w)
-#define knh_print(ctx, w, s)       knh_OutputStream_writeLine(ctx, w, s, 0)
-#define knh_println(ctx, w, s)     knh_OutputStream_writeLine(ctx, w, s, 1)
-#define knh_write_delim(ctx, w)    knh_write_text(ctx, w, ", ")
-#define knh_write_dots(ctx, w)     knh_write_text(ctx, w, "...")
-#define knh_write_fn(ctx, w, fn)   knh_write_text(ctx, w, FN__(fn))
+#define knh_flush(ctx, w)          knh_OutputStream_flush(ctx, w, 0)
+#define knh_write_delim(ctx, w)    knh_write_ascii(ctx, w, ", ")
+#define knh_write_dots(ctx, w)     knh_write_ascii(ctx, w, "...")
+#define knh_write_fn(ctx, w, fn)   knh_write_ascii(ctx, w, FN__(fn))
 #define knh_write__O(ctx, w, o)    knh_write_Object(ctx, w, MN__k, o)
 
 /* ------------------------------------------------------------------------ */

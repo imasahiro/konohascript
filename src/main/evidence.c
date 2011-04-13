@@ -98,7 +98,7 @@ void todo_p(const char *file, const char *func, int line, const char *fmt, ...)
 static void knh_write_cline(CTX ctx, knh_OutputStream_t *w, const char *file, knh_uintptr_t line)
 {
 	knh_putc(ctx, w, '(');
-	knh_write_text(ctx, w, knh_sfile(file));
+	knh_write_ascii(ctx, w, knh_sfile(file));
 	knh_putc(ctx, w, ':');
 	knh_write_dfmt(ctx, w, K_INTPTR_FMT, line);
 	knh_putc(ctx, w, ')');
@@ -110,7 +110,7 @@ void knh_write_uline(CTX ctx, knh_OutputStream_t *w, knh_uline_t uline)
 	knh_uri_t uri = ULINE_uri(uline);
 	knh_uintptr_t line = ULINE_line(uline);
 	if(uline == 0 || uri == URI_unknown || line == 0) {
-		//knh_write_text(ctx, w, "");
+		//knh_write_ascii(ctx, w, "");
 	}
 	else {
 		knh_write_cline(ctx, w, FILENAME__(uri), line);
@@ -411,7 +411,8 @@ static void knh_tracePERROR(CTX ctx, int pe, int isThrowable, const char *ns, co
 	char linefmt[80];
 	knh_format_uline(ctx, linefmt, sizeof(linefmt), uline);
 	knh_snprintf(newfmt, sizeof(newfmt), "%s+" K_INT_FMT K_EVENT_FORMAT "%s%s ERRNO=%d, ERR='%s'",
-			ctx->trace, ctx->seq, ns, event, linefmt, fmt, errno, emsg);
+			ctx->trace, ctx->seq, ns, event, linefmt, fmt, errno_, emsg);
+	errno = 0;
 	ctx->spi->vsyslog(pe, newfmt, ap);
 	((knh_context_t*)ctx)->seq += 1;
 	if(ctx->ehdrNC != NULL && isThrowable) {
@@ -458,8 +459,13 @@ void knh_vtrace(CTX ctx, knh_sfp_t *sfp, int pe, const char *ns, const char *eve
 			knh_traceCFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
 		}
 		else if(fmt[0] == '!') {
-			if(errno != 13) pe = LOG_ALERT;
-			knh_tracePERROR(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
+			if(errno > 0) {
+				if(errno != EACCES) pe = LOG_ALERT;
+				knh_tracePERROR(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
+			}
+			else {
+				knh_traceCFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
+			}
 		}
 		else {
 			KNH_ASSERT(ctx->bufa != NULL);

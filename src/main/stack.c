@@ -61,8 +61,6 @@ knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n)
 		ctxo->tmrcache = (knh_tmrcache_t*)KNH_MALLOC(ctx, K_TMAPCACHE_SIZE * sizeof(knh_tmrcache_t));
 		knh_bzero(ctxo->tmrcache, K_TMAPCACHE_SIZE * sizeof(knh_tmrcache_t));
 		KNH_INITv(ctxo->bufw, new_(OutputStream));
-		OutputStream_setBOL(ctxo->bufw, 1);
-		OutputStream_setStoringBuffer(ctxo->bufw, 1);
 		KNH_INITv(ctxo->bufa, DP(ctxo->bufw)->ba);
 	}
 	else {

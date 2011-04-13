@@ -1293,7 +1293,7 @@ static void Token_toBRACE(CTX ctx, knh_Token_t *tk, int isEXPANDING)
 	if(S_size(tk->text) > 0) {
 		//fprintf(stderr, "'''%s'''\n", S_tochar(tk->text));
 		BEGIN_LOCAL(ctx, lsfp, 1);
-		LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t*, in, new_StringInputStream(ctx, (tk)->text, 0, S_size((tk)->text)));
+		LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t*, in, new_StringInputStream(ctx, (tk)->text));
 		KNH_SETv(ctx, (tk)->data, KNH_NULL);
 		TT_(tk) = TT_BRACE;
 		in->uline = tk->uline;

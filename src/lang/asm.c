@@ -2576,7 +2576,7 @@ static knh_flag_t PRINT_flag(CTX ctx, knh_Stmt_t *o)
 static void _PRINTh(CTX ctx, knh_sfp_t *sfp, knh_OutputStream_t *w, struct klr_P_t *op)
 {
 	knh_flag_t flag = (knh_flag_t)op->flag;
-	knh_write_text(ctx, w, TERM_BNOTE(ctx, LOG_NOTICE));
+	knh_write_ascii(ctx, w, TERM_BNOTE(ctx, LOG_NOTICE));
 	if(FLAG_is(flag, K_FLAG_PF_BOL)) {
 		if(FLAG_is(flag, K_FLAG_PF_LINE)) {
 			knh_Method_t *mtd = sfp[-1].mtdNC;
@@ -2588,7 +2588,7 @@ static void _PRINTh(CTX ctx, knh_sfp_t *sfp, knh_OutputStream_t *w, struct klr_P
 	}
 	if(IS_bString(op->msg)) {
 		if((op->msg)->str.len > 0) {
-			knh_print(ctx, w, S_tobytes(op->msg));
+			knh_write_utf8(ctx, w, S_tobytes(op->msg), !String_isASCII(op->msg));
 		}
 	}
 	if(FLAG_is(flag, K_FLAG_PF_NAME)) {

@@ -1014,6 +1014,7 @@ typedef struct knh_context_t {
 	knh_sfp_t*                   stacktop;
 	void*                        cstack_bottom;
 	struct knh_Exception_t      *e;
+	struct knh_Monitor_t        *mon;
 
 	/* memory */
 	knh_Object_t                *freeObjectList;

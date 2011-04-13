@@ -470,7 +470,7 @@ void knh_dumpKeyword(CTX ctx, knh_OutputStream_t *w)
 	TERMDATA_t *data = TERMDATA + STT_MAX;
 	while(data->name != NULL) {
 		if(islower(data->name[0])) {
-			knh_write_text(ctx, w, data->name);
+			knh_write_ascii(ctx, w, data->name);
 			knh_putc(ctx, w, ' ');
 		}
 		data++;

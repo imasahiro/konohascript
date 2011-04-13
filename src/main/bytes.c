@@ -102,7 +102,7 @@ static void Bytes_checkstack(CTX ctx, knh_uchar_t*oldstart, knh_uchar_t *oldend,
 	}
 }
 
-static void Bytes_expands(CTX ctx, knh_Bytes_t *ba, size_t newsize)
+void knh_Bytes_expands(CTX ctx, knh_Bytes_t *ba, size_t newsize)
 {
 	if(ba->dim->capacity == 0) {
 		newsize = k_goodsize(newsize);
@@ -111,12 +111,23 @@ static void Bytes_expands(CTX ctx, knh_Bytes_t *ba, size_t newsize)
 	}
 	else {
 		knh_uchar_t *ubuf = ba->bu.ubuf;
-		ba->bu.ubuf = (knh_uchar_t*)KNH_REALLOC(ctx, "Bytes", ba->bu.ubuf, ba->dim->capacity, newsize, 1);
+		ba->bu.ubuf = (knh_uchar_t*)KNH_REALLOC(ctx, ba->DBG_name, ba->bu.ubuf, ba->dim->capacity, newsize, 1);
 		((knh_dim_t*)ba->dim)->capacity = newsize;
 		if(unlikely(ctx->bufa == ba)) {
 			KNH_INFO(ctx, "newsize=%ld, pointer=(%p => %p)", newsize, ubuf, ba->bu.ubuf);
 			Bytes_checkstack(ctx, ubuf, ubuf + ba->bu.len, ba->bu.ubuf);
 		}
+	}
+}
+
+void knh_Bytes_dispose(CTX ctx, knh_Bytes_t *ba)
+{
+	if(ba->dim->capacity > 0) {
+		DBG_P("dispose %p %p size=%ld", ba, ba->bu.ubuf, ba->bu.len);
+		KNH_FREE(ctx, ba->bu.ubuf, ba->dim->capacity);
+		ba->bu.ubuf = NULL;
+		ba->bu.len = 0;
+		((knh_dim_t*)ba->dim)->capacity = 0;
 	}
 }
 
@@ -127,7 +138,7 @@ knh_Bytes_t* new_Bytes(CTX ctx, size_t capacity)
 {
 	knh_Bytes_t *ba = new_(Bytes);
 	if(capacity > 0) {
-		Bytes_expands(ctx, ba, capacity);
+		knh_Bytes_expands(ctx, ba, capacity);
 	}
 	return ba;
 }
@@ -144,7 +155,7 @@ void knh_Bytes_clear(knh_Bytes_t *ba, size_t pos)
 void knh_Bytes_ensureSize(CTX ctx, knh_Bytes_t *ba, size_t len)
 {
 	if(ba->dim->capacity < len) {
-		Bytes_expands(ctx, ba, len);
+		knh_Bytes_expands(ctx, ba, len);
 	}
 	BA_size(ba) = len;
 }
@@ -154,7 +165,7 @@ const char *knh_Bytes_ensureZero(CTX ctx, knh_Bytes_t *ba)
 	size_t size = BA_size(ba);
 	size_t capacity = ba->dim->capacity;
 	if(size == capacity) {
-		Bytes_expands(ctx, ba, k_grow(capacity));
+		knh_Bytes_expands(ctx, ba, k_grow(capacity));
 	}
 	ba->bu.ubuf[BA_size(ba)] = 0;
 	return ba->bu.text;
@@ -164,7 +175,7 @@ void knh_Bytes_putc(CTX ctx, knh_Bytes_t *ba, int ch)
 {
 	size_t capacity = ba->dim->capacity;
 	if(BA_size(ba) == capacity) {
-		Bytes_expands(ctx, ba, k_grow(capacity));
+		knh_Bytes_expands(ctx, ba, k_grow(capacity));
 	}
 	ba->bu.ubuf[BA_size(ba)] = ch;
 	BA_size(ba) += 1;
@@ -185,7 +196,7 @@ void knh_Bytes_write(CTX ctx, knh_Bytes_t *ba, knh_bytes_t t)
 	if(BA_size(ba) + t.len >= capacity) {
 		size_t newsize = k_grow(capacity);
 		if(newsize < BA_size(ba) + t.len) newsize = k_goodsize(BA_size(ba) + t.len);
-		Bytes_expands(ctx, ba, newsize);
+		knh_Bytes_expands(ctx, ba, newsize);
 	}
 	knh_memcpy(ba->bu.ubuf + BA_size(ba), t.ustr, t.len);
 	BA_size(ba) += t.len;

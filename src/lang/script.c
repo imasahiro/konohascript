@@ -874,7 +874,7 @@ static knh_InputStream_t* knh_openPathNULL(CTX ctx, knh_bytes_t path)
 {
 	knh_NameSpace_t *ns = KNH_GMA_NS;
 	const knh_StreamDSPI_t *sdspi = knh_getStreamDSPI(ctx, ns, path);
-	knh_io_t fd = sdspi->fopen(ctx, path, "r");
+	knh_io_t fd = sdspi->fopen(ctx, path, "r", ctx->mon);
 	if(fd == IO_NULL) {
 		KNH_WARN(ctx, "file not found '%s'", path.text);
 		return NULL;
@@ -942,7 +942,7 @@ KNHAPI2(knh_bool_t) knh_loadScript(CTX ctx, knh_bytes_t path, knh_type_t reqt, k
 	L_PARSE:;
 	if(!bytes_isempty(ba->bu)) {
 		knh_uri_t uri = ULINE_uri(in->uline);
-		BytesInputStream_setpos(ctx, bin, 0, BA_size(ba));
+		knh_InputStream_setpos(ctx, bin, 0, BA_size(ba));
 		bin->uline = linenum;
 		ULINE_setURI(bin->uline, uri);
 		//InputStream_setCharset(ctx, bin, DP(in)->enc);

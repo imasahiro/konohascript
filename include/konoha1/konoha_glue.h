@@ -107,21 +107,17 @@ typedef struct knh_ConvDSPI_t {
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_STREAM */
 
-typedef void   (*knh_Fclose)(CTX, knh_io_t);
+#define K_OUTBUF_MAXSIZ      (64L * 1024 * 1024)
 
 typedef struct knh_StreamDSPI_t {
 	int type;
 	const char *name;
-	size_t bufsiz;  /* knh_io_t == FILE* if bufsiz == 0 */
-	knh_io_t (*fopen)(CTX, knh_bytes_t, const char *);
-	knh_io_t (*wopen)(CTX, knh_bytes_t, const char *);
-	knh_intptr_t (*fread)(CTX, knh_io_t, char *, size_t);
-	knh_intptr_t (*fwrite)(CTX, knh_io_t, const char *, size_t);
+	knh_io_t (*fopen)(CTX, knh_bytes_t, const char *, struct knh_Monitor_t *);
+	knh_io_t (*wopen)(CTX, knh_bytes_t, const char *, struct knh_Monitor_t *);
+	knh_intptr_t (*fread)(CTX, knh_io_t, char *, size_t, struct knh_Monitor_t *);
+	knh_intptr_t (*fwrite)(CTX, knh_io_t, const char *, size_t, struct knh_Monitor_t *);
 	void   (*fclose)(CTX, knh_io_t);
-	int (*feof)(CTX, knh_io_t);
-	int (*fgetc)(CTX, knh_io_t);
-	const char* (*getContentType)(CTX, knh_io_t);
-	const char* (*getCharset)(CTX, knh_io_t);
+	size_t wbufsiz;  // write bufsize
 } knh_StreamDSPI_t;
 
 /* ------------------------------------------------------------------------ */

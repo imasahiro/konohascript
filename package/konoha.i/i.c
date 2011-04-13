@@ -41,9 +41,9 @@ extern "C" {
 
 static void knh_write_ctext(CTX ctx, knh_OutputStream_t *w, const char *msg)
 {
-//	knh_write_text(ctx, w, TERM_BBOLD(ctx));
-	knh_write_text(ctx, w, msg);
-//	knh_write_text(ctx, w, TERM_EBOLD(ctx));
+//	knh_write_ascii(ctx, w, TERM_BBOLD(ctx));
+	knh_write_ascii(ctx, w, msg);
+//	knh_write_ascii(ctx, w, TERM_EBOLD(ctx));
 	knh_write_EOL(ctx, w);
 }
 
@@ -57,7 +57,7 @@ static void ClassNAME_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *
 	while(ct->supcid != CLASS_Object) {
 		knh_class_t cid = ct->supcid;
 		knh_write_TAB(ctx, w);
-		knh_write_text(ctx, w, _("extends "));
+		knh_write_ascii(ctx, w, _("extends "));
 		knh_write_cid(ctx, w, cid);
 		knh_write_EOL(ctx, w);
 		ct = ct->supTBL;
@@ -148,7 +148,7 @@ static void ClassOP_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *ct
 			isBOL = 0;
 		}
 		knh_snprintf(buf, sizeof(buf), "%-14s", op);
-		knh_write_text(ctx, w, buf);
+		knh_write_ascii(ctx, w, buf);
 		if(cnt % 5 == 4) {
 			knh_write_EOL(ctx, w);
 			isBOL = 1;
@@ -167,12 +167,12 @@ static void knh_write_Method(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_
 {
 	knh_write_TAB(ctx, w);
 	if(Method_isAbstract(o)) {
-		knh_write_text(ctx, w, "@Abstract ");
+		knh_write_ascii(ctx, w, "@Abstract ");
 	}
 	knh_write_type(ctx, w, knh_type_tocid(ctx, knh_ParamArray_rtype(DP(o)->mp), ct->cid));
 	knh_putc(ctx, w, ' ');
 	if(Method_isStatic(o)) {
-		knh_write_text(ctx, w, S_tochar(ct->sname));
+		knh_write_ascii(ctx, w, S_tochar(ct->sname));
 		knh_putc(ctx, w, '.');
 	}
 	knh_write_mn(ctx, w, SP(o)->mn);
@@ -185,7 +185,7 @@ static void knh_write_Method(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_
 		}
 		knh_write_type(ctx, w, knh_type_tocid(ctx, p->type, ct->cid));
 		knh_putc(ctx, w, ' ');
-		knh_write_text(ctx, w, FN__(p->fn));
+		knh_write_ascii(ctx, w, FN__(p->fn));
 	}
 	if(ParamArray_isVARGs(DP(o)->mp)) {
 		knh_write_delim(ctx, w);
@@ -250,10 +250,10 @@ static void ClassTYPEMAP_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_
 		knh_TypeMap_t *mpr = typemaps->trans[i];
 		knh_write_TAB(ctx, w); /*knh_write_TAB(ctx, w);*/
 		if(TypeMap_isInterface(mpr)) {
-			knh_write_text(ctx, w, "interface ");
+			knh_write_ascii(ctx, w, "interface ");
 		}
 		else {
-			knh_write_text(ctx, w, "to ");
+			knh_write_ascii(ctx, w, "to ");
 		}
 		knh_write_cid(ctx, w, SP(mpr)->tcid);
 		knh_write_EOL(ctx, w);

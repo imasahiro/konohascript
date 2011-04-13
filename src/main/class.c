@@ -196,7 +196,7 @@ KNHAPI2(void) knh_write_type(CTX ctx, knh_OutputStream_t *w, knh_type_t type)
 			return ;
 		}
 	}
-	knh_write_text(ctx, w, tname);
+	knh_write_ascii(ctx, w, tname);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -443,7 +443,7 @@ void knh_setClassParam(CTX ctx, knh_ClassTBL_t *t, knh_ParamArray_t *pa)
 static void write_tuplecid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
 {
 	if(cid == CLASS_Tuple) {
-		knh_write_text(ctx, w, "konoha.Tuple");
+		knh_write_ascii(ctx, w, "konoha.Tuple");
 	}
 	else {
 		knh_write_cid(ctx, w, cid);
@@ -453,7 +453,7 @@ static void write_tuplecid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
 static void write_tupletype(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
 {
 	if(cid == CLASS_Tuple) {
-		knh_write_text(ctx, w, "Tuple");
+		knh_write_ascii(ctx, w, "Tuple");
 	}
 	else {
 		knh_write_type(ctx, w, cid);
@@ -788,15 +788,15 @@ KNHAPI2(void) knh_write_mn(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn)
 	}
 	else if(MN_isISBOOL(mn)) {
 		knh_write(ctx, w, STEXT("is"));
-		knh_write_cap(ctx, w, t);
+		knh_write_cap(ctx, w, t, 0);
 	}
 	else if(MN_isGETTER(mn)) {
 		knh_write(ctx, w, STEXT("get"));
-		knh_write_cap(ctx, w, t);
+		knh_write_cap(ctx, w, t, 0);
 	}
 	else if(MN_isSETTER(mn)) {
 		knh_write(ctx, w, STEXT("set"));
-		knh_write_cap(ctx, w, t);
+		knh_write_cap(ctx, w, t, 0);
 	}
 	else {
 		knh_write(ctx, w, t);

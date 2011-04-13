@@ -101,15 +101,15 @@ EXPORTAPI(const knh_ClassDef_t*) ServerSocket(CTX ctx)
 	return (const knh_ClassDef_t*)&cdef;
 }
 
-static knh_io_t SOCKET_open(CTX ctx, knh_bytes_t n, const char *mode)
+static knh_io_t SOCKET_open(CTX ctx, knh_bytes_t n, const char *mode, knh_Monitor_t *mon)
 {
 	return IO_NULL; // Always opened by external
 }
-static knh_intptr_t SOCKET_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
+static knh_intptr_t SOCKET_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz, knh_Monitor_t *mon)
 {
 	return recv((int)fd, buf, bufsiz, 0);
 }
-static knh_intptr_t SOCKET_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
+static knh_intptr_t SOCKET_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz, knh_Monitor_t *mon)
 {
 	return send((int)fd, buf, bufsiz, 0);
 }
@@ -117,21 +117,11 @@ static void SOCKET_close(CTX ctx, knh_io_t fd)
 {
 	close((int)fd);
 }
-static int SOCKET_feof(CTX ctx, knh_io_t fd)
-{
-	KNH_TODO(__FUNCTION__);
-	return 1;
-}
-static int SOCKET_getc(CTX ctx, knh_io_t fd)
-{
-	KNH_TODO(__FUNCTION__);
-	return -1;
-}
 
 static knh_StreamDSPI_t SOCKET_DSPI = {
-	K_DSPI_STREAM, "socket", 0,
+	K_DSPI_STREAM, "socket",
 	SOCKET_open, SOCKET_open, SOCKET_read, SOCKET_write, SOCKET_close,
-	SOCKET_feof, SOCKET_getc
+	K_OUTBUF_MAXSIZ
 };
 
 static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int port, knh_Monitor_t *mon)

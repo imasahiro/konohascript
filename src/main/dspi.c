@@ -233,11 +233,11 @@ static knh_path_t FILE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 static knh_Object_t* FILE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
 {
 	if(cid == CLASS_InputStream) {
-		knh_InputStream_t *in = new_InputStreamNULL(ctx, ns, s, "r");
+		knh_InputStream_t *in = new_InputStreamNULL(ctx, ns, s, "r", ctx->mon);
 		return (knh_Object_t*)in;
 	}
 	if(cid == CLASS_OutputStream) {
-		knh_OutputStream_t *out = new_OutputStreamNULL(ctx, ns, s, "a");
+		knh_OutputStream_t *out = new_OutputStreamNULL(ctx, ns, s, "a", ctx->mon);
 		return (knh_Object_t*)out;
 	}
 	return NULL;
@@ -290,39 +290,31 @@ static const knh_PathDSPI_t PATH_LIB = {
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_STREAM */
 
-static knh_io_t NOFILE_open(CTX ctx, knh_bytes_t n, const char *mode)
+static knh_io_t NOFILE_open(CTX ctx, knh_bytes_t n, const char *mode, knh_Monitor_t *mon)
 {
 	return IO_NULL;
 }
-static knh_intptr_t NOFILE_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
+static knh_intptr_t NOFILE_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz, knh_Monitor_t *mon)
 {
-	return 0;
+	return 0;  // read nothing. this means that we reach the end of the stream.
 }
-static knh_intptr_t NOFILE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
+static knh_intptr_t NOFILE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz, knh_Monitor_t *mon)
 {
-	return bufsiz;
+	DBG_P("fd=%d, bufsiz=%ld", (int)fd, bufsiz);
+	return 0; // write nothing. this means that we are unable to clear buffer
 }
 static void NOFILE_close(CTX ctx, knh_io_t fd)
 {
 }
-static int NOFILE_feof(CTX ctx, knh_io_t fd)
-{
-	return 1;
-}
-static int NOFILE_getc(CTX ctx, knh_io_t fd)
-{
-	return -1;
-}
 
 static const knh_StreamDSPI_t STREAM_NOFILE = {
-	K_DSPI_STREAM, "NOFILE", 0,
-	NOFILE_open, NOFILE_open, NOFILE_read, NOFILE_write, NOFILE_close,
-	NOFILE_feof, NOFILE_getc
+	K_DSPI_STREAM, "NOFILE",
+	NOFILE_open, NOFILE_open, NOFILE_read, NOFILE_write, NOFILE_close, 0
 };
 
 /* ------------------------------------------------------------------------ */
 
-static knh_io_t FILE_open(CTX ctx, knh_bytes_t path, const char *mode)
+static knh_io_t FILE_open(CTX ctx, knh_bytes_t path, const char *mode, knh_Monitor_t *mon)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_openinit(ctx, &cwbbuf, knh_bytes_skipPATHHEAD(path));
 	knh_cwb_ospath(ctx, cwb);
@@ -330,17 +322,17 @@ static knh_io_t FILE_open(CTX ctx, knh_bytes_t path, const char *mode)
 	knh_cwb_close(cwb);
 	return (knh_io_t)fp;
 }
-static knh_io_t NOFILE_wopen(CTX ctx, knh_bytes_t n, const char *mode)
+static knh_io_t NOFILE_wopen(CTX ctx, knh_bytes_t n, const char *mode, knh_Monitor_t *mon)
 {
 	KNH_WARN(ctx, "nofile path='%s', mode='%s'", n.text, mode);
 	return IO_NULL;
 }
-static knh_intptr_t FILE_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
+static knh_intptr_t FILE_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz, knh_Monitor_t *mon)
 {
 	return knh_fread(ctx, buf, bufsiz, (FILE*)fd);
 }
 
-static knh_intptr_t FILE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
+static knh_intptr_t FILE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz, knh_Monitor_t *mon)
 {
 	size_t ssize = knh_fwrite(ctx, buf, bufsiz, (FILE*)fd);
 	knh_fflush(ctx, (FILE*)fd);
@@ -351,25 +343,17 @@ static void FILE_close(CTX ctx, knh_io_t fd)
 {
 	knh_fclose(ctx, (FILE*)fd);
 }
-static int FILE_feof(CTX ctx, knh_io_t fd)
-{
-	return feof((FILE*)fd);
-}
-static int FILE_getc(CTX ctx, knh_io_t fd)
-{
-	return fgetc((FILE*)fd);
-}
 
 static const knh_StreamDSPI_t STREAM_FILE = {
-	K_DSPI_STREAM, "file", 0,
+	K_DSPI_STREAM, "file",
 	FILE_open, FILE_open, FILE_read, FILE_write, FILE_close,
-	FILE_feof, FILE_getc,
+	K_OUTBUF_MAXSIZ,
 };
 
 static const knh_StreamDSPI_t STREAM_STDIO = {
-	K_DSPI_STREAM, "stdio", 0,
+	K_DSPI_STREAM, "stdio",
 	NOFILE_open, NOFILE_open, FILE_read, FILE_write, NOFILE_close,
-	FILE_feof, FILE_getc,
+	K_OUTBUF_MAXSIZ,
 };
 
 static knh_InputStream_t *new_InputStreamSTDIO(CTX ctx, FILE *fp, knh_String_t *enc)
@@ -392,25 +376,6 @@ static knh_OutputStream_t *new_OutputStreamSTDIO(CTX ctx, FILE *fp, knh_String_t
 	OutputStream_setAutoFlush(o, 1);
 	return o;
 }
-
-//#ifdef K_USING_POSIX_
-//static void PIPE_close(CTX ctx, knh_io_t fd)
-//{
-//	pclose((FILE*)fd);
-//}
-//
-//static const knh_StreamDSPI_t PIPE_DSPI = {
-//	K_DSPI_STREAM, "pipe", 0,
-//	NOFILE_open, NOFILE_open, FILE_read, FILE_write, PIPE_close,
-//	FILE_feof, FILE_getc,
-//};
-//
-//const knh_StreamDSPI_t* knh_getPIPEStreamDSPI(void)
-//{
-//	return &PIPE_DSPI;
-//}
-//#endif
-
 
 static knh_bytes_t knh_bytes_lastname(knh_bytes_t t)
 {
@@ -468,7 +433,7 @@ static const knh_PathDSPI_t PATH_PKG = {
 	NOPATH_hasType, PKG_exists, NOPATH_newObjectNULL,
 };
 
-static knh_io_t PKG_open(CTX ctx, knh_bytes_t path, const char *mode)
+static knh_io_t PKG_open(CTX ctx, knh_bytes_t path, const char *mode, knh_Monitor_t *mon)
 {
 	FILE *fp = NULL;
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
@@ -481,9 +446,9 @@ static knh_io_t PKG_open(CTX ctx, knh_bytes_t path, const char *mode)
 }
 
 static const knh_StreamDSPI_t STREAM_PKG = {
-	K_DSPI_STREAM, "pkg", 0,
+	K_DSPI_STREAM, "pkg",
 	PKG_open, NOFILE_wopen, FILE_read, NOFILE_write, FILE_close,
-	FILE_feof, FILE_getc,
+	0,
 };
 
 static void knh_cwb_writeSCRIPT(CTX ctx, knh_cwb_t *cwb, knh_bytes_t path)
@@ -519,7 +484,7 @@ static knh_path_t SCRIPT_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 	return res;
 }
 
-static knh_io_t SCRIPT_open(CTX ctx, knh_bytes_t path, const char *mode)
+static knh_io_t SCRIPT_open(CTX ctx, knh_bytes_t path, const char *mode, knh_Monitor_t *mon)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_cwb_writeSCRIPT(ctx, cwb, knh_bytes_skipPATHHEAD(path));
@@ -535,9 +500,9 @@ static const knh_PathDSPI_t PATH_SCRIPT = {
 };
 
 static const knh_StreamDSPI_t STREAM_SCRIPT = {
-	K_DSPI_STREAM, "script", 0,
+	K_DSPI_STREAM, "script",
 	SCRIPT_open, NOFILE_wopen, FILE_read, FILE_write, FILE_close,
-	FILE_feof, FILE_getc,
+	K_OUTBUF_MAXSIZ,
 };
 
 /* ------------------------------------------------------------------------ */
@@ -547,19 +512,19 @@ static void SYSLOG_UnknownPathType(CTX ctx, knh_bytes_t path)
 	KNH_WARN(ctx, "undefined path='%s'", path.text);
 }
 
+const knh_StreamDSPI_t *knh_getDefaultStreamDSPI(void)
+{
+	return &STREAM_NOFILE;
+}
+
 const knh_StreamDSPI_t *knh_getStreamDSPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
-	if(path.len == 0) {
-		return &STREAM_NOFILE;
+	const knh_StreamDSPI_t *p = (const knh_StreamDSPI_t*)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_STREAM, path);
+	if(p == NULL) {
+		SYSLOG_UnknownPathType(ctx, path);
+		p = &STREAM_NOFILE;
 	}
-	else {
-		const knh_StreamDSPI_t *p = (const knh_StreamDSPI_t*)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_STREAM, path);
-		if(p == NULL) {
-			SYSLOG_UnknownPathType(ctx, path);
-			p = &STREAM_NOFILE;
-		}
-		return p;
-	}
+	return p;
 }
 
 #ifdef K_USING_CURL
@@ -680,7 +645,7 @@ static int use_buffer(CURLFILE *file, int want)
 	return 0;
 }
 
-static knh_io_t CURL_open(Ctx *ctx, knh_bytes_t path, const char *mode)
+static knh_io_t CURL_open(Ctx *ctx, knh_bytes_t path, const char *mode, knh_Monitor_t *mon)
 {
 	//TODO mode treats as method
 	CURLFILE *file = malloc(sizeof(CURLFILE));
@@ -710,7 +675,7 @@ static knh_io_t CURL_open(Ctx *ctx, knh_bytes_t path, const char *mode)
 }
 
 //new OutputStream(http://...)
-static knh_io_t CURL_init(Ctx *ctx, knh_bytes_t path, const char *mode)
+static knh_io_t CURL_init(Ctx *ctx, knh_bytes_t path, const char *mode, knh_Monitor_t *mon)
 {
 	return (knh_io_t)NULL;
 }

@@ -629,7 +629,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		/* $konoha.temp.path ${user.path}/temp */
 		knh_cwb_write(ctx, cwb, home);
 		knh_cwb_write(ctx, cwb, STEXT("/temp/"));
-		knh_write_text(ctx, cwb->w, (const char*)ctx->trace);
+		knh_write_ascii(ctx, cwb->w, (const char*)ctx->trace);
 		DictMap_set_(ctx, sys->props, new_T("konoha.temp.path"), UPCAST(knh_cwb_newString(ctx, cwb)));
 
 		/* $user.package.path ${user.path}/package */
@@ -647,7 +647,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 	}
 	else {
 		knh_cwb_write(ctx, cwb, STEXT("/tmp/"));
-		knh_write_text(ctx, cwb->w, (const char*)ctx->trace);
+		knh_write_ascii(ctx, cwb->w, (const char*)ctx->trace);
 		DictMap_set_(ctx, sys->props, new_T("konoha.temp.path"), UPCAST(knh_cwb_newString(ctx, cwb)));
 	}
 	knh_cwb_close(cwb);

@@ -58,33 +58,6 @@ KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb)
 	return knh_Bytes_ensureZero(ctx, cwb->ba) + cwb->pos;
 }
 
-
-KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *s, const char *mode)
-{
-	knh_bytes_t path = S_tobytes(s);
-	const knh_StreamDSPI_t *dspi = knh_getStreamDSPI(ctx, ns, path);
-	knh_io_t fd = dspi->fopen(ctx, path, mode);
-	if(fd != IO_NULL) {
-		knh_InputStream_t *in = new_InputStreamDSPI(ctx, fd, dspi);
-		KNH_SETv(ctx, DP(in)->urn, s);
-		return in;
-	}
-	return NULL;
-}
-
-KNHAPI2(knh_OutputStream_t*) new_OutputStreamNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *s, const char *mode)
-{
-	knh_bytes_t path = S_tobytes(s);
-	const knh_StreamDSPI_t *dspi = knh_getStreamDSPI(ctx, ns, path);
-	knh_io_t fd = dspi->fopen(ctx, path, mode);
-	if(fd != IO_NULL) {
-		knh_OutputStream_t *in = new_OutputStreamDSPI(ctx, fd, dspi);
-		KNH_SETv(ctx, DP(in)->urn, s);
-		return in;
-	}
-	return NULL;
-}
-
 const knh_ExportsAPI_t *knh_getExportsAPI(void)
 {
 	static knh_ExportsAPI_t exports = {
