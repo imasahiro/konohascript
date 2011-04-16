@@ -532,7 +532,7 @@ static METHOD ResultSet_get(CTX ctx, knh_sfp_t *sfp _RIX)
 		}
 		case knh_ResultSet_CTYPE__bytes :
 			{
-				knh_Bytes_t *ba = new_Bytes(ctx, DP(o)->column[n].len);
+				knh_Bytes_t *ba = new_Bytes(ctx, "blob", DP(o)->column[n].len);
 				knh_bytes_t t = {{BA_tochar(DP(o)->databuf) + DP(o)->column[n].start}, DP(o)->column[n].len};
 				knh_Bytes_write(ctx, ba, t);
 				v = UPCAST(ba);

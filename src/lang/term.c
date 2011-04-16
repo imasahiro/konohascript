@@ -475,12 +475,12 @@ static knh_String_t* NameSpace_getAliasNULL(CTX ctx, knh_NameSpace_t* ns, knh_by
 {
 	knh_String_t *s = NULL;
 	L_TAIL:;
-	if(DP(ns)->aliasDictMapNULL != NULL) {
-		s = (knh_String_t*)knh_DictMap_getNULL(ctx, DP(ns)->aliasDictMapNULL, t);
+	if(ctx->wshare->sysAliasDictMapNULL != NULL) {
+		s = (knh_String_t*)knh_DictMap_getNULL(ctx, ctx->wshare->sysAliasDictMapNULL, t);
 	}
 	if(s == NULL) {
-		if(DP(ns)->parentNULL != NULL) {
-			ns = DP(ns)->parentNULL;
+		if(ns->parentNULL != NULL) {
+			ns = ns->parentNULL;
 			goto L_TAIL;
 		}
 		if(ns != ctx->share->rootns) {
@@ -494,18 +494,18 @@ static knh_String_t* NameSpace_getAliasNULL(CTX ctx, knh_NameSpace_t* ns, knh_by
 static void Token_setNAME(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 {
 	knh_bytes_t t = knh_cwb_tobytes(cwb);
-	if(t.ustr[0] == '.') {
+	if(t.utext[0] == '.') {
 		Token_setDOT(tk, 1);
 	}
-	if(t.ustr[0] == '@') {  /* alias */
-		t.ustr = t.ustr + 1; t.len = t.len - 1;
+	if(t.utext[0] == '@') {  /* alias */
+		t.utext = t.utext + 1; t.len = t.len - 1;
 		TT_(tk) = TT_METAN;
 		KNH_SETv(ctx, (tk)->data, new_StringSYMBOL(ctx, t));
 	}
-	else if(isupper(t.ustr[0]) || (t.ustr[0] == '.' && isupper(t.ustr[1]))) {
+	else if(isupper(t.utext[0]) || (t.utext[0] == '.' && isupper(t.utext[1]))) {
 		TT_(tk) = TT_UNAME;
-		if(t.ustr[0] == '.') {
-			t.ustr = t.ustr + 1; t.len = t.len - 1;
+		if(t.utext[0] == '.') {
+			t.utext = t.utext + 1; t.len = t.len - 1;
 		}
 		KNH_SETv(ctx, (tk)->data, new_StringSYMBOL(ctx, t));
 	}
@@ -614,7 +614,7 @@ static void Token_setTEXT(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 				if(O_cid(o) == CLASS_String) {
 					if(S_equals((knh_String_t*)o, t)) {
 						knh_cwb_clear(cwb, 0);
-						if(isdigit(t.ustr[0]) && TT_(tk) == TT_NUM) {
+						if(isdigit(t.utext[0]) && TT_(tk) == TT_NUM) {
 							KNH_SETv(ctx, (tk)->data, o);
 						}
 						s = (knh_String_t*)o;
@@ -686,8 +686,8 @@ static void InputStream_skipBLOCKCOMMENT(CTX ctx, knh_InputStream_t *in, knh_Byt
 static knh_bool_t Bytes_isTripleQuote(knh_Bytes_t *ba, int quote)
 {
 	if(BA_size(ba) > 2 &&
-		ba->bu.ustr[BA_size(ba)-1] == quote
-		&& ba->bu.ustr[BA_size(ba)-2] == quote) return 1;
+		ba->bu.utext[BA_size(ba)-1] == quote
+		&& ba->bu.utext[BA_size(ba)-2] == quote) return 1;
 	return 0;
 }
 
@@ -786,8 +786,8 @@ static int Token_addQUOTE(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputSt
 	return ch;
 }
 
-#define ISB1_(t, c)  (t.ustr[0] == c)
-#define ISB2_(t, c, c2)  (t.ustr[0] == c && t.ustr[1] == c2)
+#define ISB1_(t, c)  (t.utext[0] == c)
+#define ISB2_(t, c, c2)  (t.utext[0] == c && t.utext[1] == c2)
 
 static int bytes_isOPR(knh_bytes_t t, int ch)
 {
@@ -991,13 +991,13 @@ static int Token_addURN(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStrea
 		knh_term_t tt = TT_URN;
 #ifdef K_USING_SEMANTICS
 		if(knh_bytes_startsWith(t, STEXT("int:")) || knh_bytes_startsWith(t, STEXT("float:"))) {
-			t.ubuf[0] = toupper(t.ustr[0]);
+			t.ubuf[0] = toupper(t.utext[0]);
 		}
 #endif
 		if(knh_bytes_startsWith(t, STEXT("new:"))) {
 			tt = TT_NEW;
 		}
-		Token_addBuf(ctx, tk, cwb, (isupper(t.ustr[0])) ? TT_UNAME : TT_URN, ch);
+		Token_addBuf(ctx, tk, cwb, (isupper(t.utext[0])) ? TT_UNAME : TT_URN, ch);
 	}
 	return ch;
 }
@@ -2049,13 +2049,12 @@ static void _EXPROP(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, int idx, int isCAST
 
 static void _REGEX(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, knh_Token_t *tk)
 {
-	knh_NameSpace_t *ns = knh_getGammaNameSpace(ctx);
 	knh_Regex_t *re = new_H(Regex);
 	const char *opt = "";
 	int cflags = 0;
 	KNH_INITv(re->pattern, (tk)->text);
-	re->spi = ns->regexSPI;
-	if(re->spi == ns->strregexSPI) {
+	re->spi = knh_getRegexSPI();
+	if(re->spi == knh_getStrRegexSPI()) {
 		WarningNotInitialized(ctx, tk, "regex");
 	}
 	re->reg = re->spi->regmalloc(ctx, (tk)->text);
@@ -2864,7 +2863,7 @@ static int isCLASSAME(knh_Token_t* tk)
 	if(TT_(tk) == TT_UNAME || TT_(tk) == TT_UFUNCNAME) {
 //		knh_bytes_t t = S_tobytes((tk)->text);
 //		if(knh_bytes_index(t, ':') == -1) {
-//			return isupper(t.ustr[0]);
+//			return isupper(t.utext[0]);
 //		}
 		TT_(tk) = TT_UNAME;
 		return 1;
@@ -3327,7 +3326,7 @@ knh_Stmt_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, knh_uline_t uline)
 //static knh_bool_t Array_addEXPR(CTX ctx, knh_Array_t *a, knh_bytes_t mt, knh_bytes_t expr, knh_uline_t uline)
 //{
 //	knh_Array_add(ctx, a, new_S(ctx, mt));
-//	if(expr.ustr[0] == '#') {
+//	if(expr.utext[0] == '#') {
 //		knh_Array_add(ctx, a, new_S(ctx, expr));
 //		return 1;
 //	}
@@ -3351,24 +3350,24 @@ knh_Stmt_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, knh_uline_t uline)
 //	size_t i = 0, s = 0;
 //	L_TEXT:;
 //	for(;i < t.len; i++) {
-//		if(t.ustr[i] == '%') {
+//		if(t.utext[i] == '%') {
 //			i++;
-//			if(t.ustr[i] == '%') {
+//			if(t.utext[i] == '%') {
 //				knh_Bytes_putc(ctx, cwb->ba, '%');
 //				continue;
 //			}
 //			goto L_FMT;
 //		}
-//		if(t.ustr[i] == '\n') uline++;
-//		knh_Bytes_putc(ctx, cwb->ba, t.ustr[i]);
+//		if(t.utext[i] == '\n') uline++;
+//		knh_Bytes_putc(ctx, cwb->ba, t.utext[i]);
 //	}
 //	Array_addTEXT(ctx, a, cwb);
 //	return 1;
 //	L_FMT:;
 //	s = i-1;
 //	for(;i < t.len; i++) {
-//		if(t.ustr[i] == '\n') uline++;
-//		if(t.ustr[i] == '{') {
+//		if(t.utext[i] == '\n') uline++;
+//		if(t.utext[i] == '{') {
 //			knh_bytes_t mt = {{t.text + s}, i - s};
 //			knh_bytes_t t2 = {{t.text + (i+1)}, t.len - (i+1)};
 //			knh_index_t loc = knh_bytes_index(t2, '}');
@@ -3379,7 +3378,7 @@ knh_Stmt_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, knh_uline_t uline)
 //				}
 //				knh_cwb_close(cwb);
 //				i = i + 1 + loc + 1; s = i;
-//				//DBG_P("START='%c'", t.ustr[s]);
+//				//DBG_P("START='%c'", t.utext[s]);
 //				if(s < t.len) goto L_TEXT;
 //				return 1;
 //			}

@@ -114,7 +114,7 @@ typedef knh_intptr_t      knh_boolean_t;
 
 typedef enum {
 	K_CONTINUE, K_BREAK, K_REDO
-} knh_break_t;
+} knh_status_t;
 
 /* ------------------------------------------------------------------------ */
 /* Integer, knh_int_t */
@@ -230,13 +230,14 @@ typedef double                  knh_float_t;
 
 typedef unsigned char           knh_uchar_t;    /* byte */
 typedef const char              knh_text_t;
-typedef const unsigned char     knh_ustr_t;
+typedef const unsigned char     knh_utext_t;
 
 typedef struct {
 	union {
 		const char *text;
-		const unsigned char *ustr;
-		knh_uchar_t *ubuf;    // deprecated in the future
+		const unsigned char *utext;
+		char *buf;
+		knh_uchar_t *ubuf;
 	};
 	size_t       len;
 } knh_bytes_t;
@@ -246,6 +247,18 @@ typedef struct {
 #define B(c)      new_bytes((char*)c)
 #define STEXT(c)  new_bytes2(c,sizeof(c)-1)
 #define ISB(t,c) (t.len == (sizeof(c)-1) && knh_strncmp(t.text, c, t.len) == 0)
+
+typedef struct {
+	size_t pstart;
+	size_t pbody;
+	size_t plen;
+	int isRealPath;
+} knh_path_t;
+
+#define P_buf(ph)     (ctx->bufa->bu.buf + ph->pstart)
+#define P_ubuf(ph)    (ctx->bufa->bu.ubuf + ph->pstart)
+#define P_text(ph)    (ctx->bufa->bu.text + ph->pstart)
+#define P_utext(ph)   (ctx->bufa->bu.utextbuf + ph->pstart)
 
 /* ------------------------------------------------------------------------ */
 /* knh_flag_t */
@@ -935,6 +948,9 @@ typedef struct {
 	struct knh_opline_t      *PC_VEXEC;
 	struct knh_opline_t      *PC_ABSTRACT;
 
+	/* system */
+	struct knh_DictMap_t     *sysAliasDictMapNULL;
+
 	/* thread */
 	size_t              contextCounter;
 	size_t              threadCounter;
@@ -1002,7 +1018,10 @@ typedef struct knh_ServiceSPI_t {
 
 typedef struct knh_context_t {
 	/* shared table */
-	const knh_share_t              *share;
+	union {
+		const knh_share_t              *share;
+		knh_share_t *wshare;   // writable
+	};
 	knh_stat_t                     *stat;
 	const knh_ServiceSPI_t         *spi;
 	struct knh_System_t*            sys;

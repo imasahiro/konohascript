@@ -101,7 +101,7 @@ static knh_String_t *Gamma_vperror(CTX ctx, int pe, const char *fmt, va_list ap)
 {
 	knh_String_t *msg = TS_EMPTY;
 	int isPRINT = (pe <= KC_DWARN) ? 1 : 0;
-	if(pe != KC_DEBUG && (CTX_isInteractive(ctx) || CTX_isCompiling(ctx))) {
+	if(pe != KC_DEBUG && (CTX_isInteractive(ctx) || knh_isCompileOnly(ctx))) {
 		isPRINT = 1;
 	}
 	if(Gamma_isQuiet(ctx->gma) || ctx->gma->uline == 0) {

@@ -2,8 +2,8 @@
 
 /* ------------------------------------------------------------------------ */
 /* MACROS */
-#define K_REVISION                      121
-#define K_BUILDID                       1087
+#define K_REVISION                      124
+#define K_BUILDID                       1088
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -601,15 +601,18 @@
 #define FLAG_OutputStream_UTF8 FLAG_Object_Local3
 #define OutputStream_hasUTF8(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_OutputStream_UTF8))
 #define OutputStream_setUTF8(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_OutputStream_UTF8,b)
+#define FLAG_NameSpace_SharedEx FLAG_Object_Local1
+#define NameSpace_isSharedEx(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_NameSpace_SharedEx))
+#define NameSpace_setSharedEx(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_NameSpace_SharedEx,b)
 #define FLAG_Context_Debug ((knh_flag_t)(1<<1))
 #define CTX_isDebug(o)  (TFLAG_is(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_Debug))
 #define CTX_setDebug(o,b) TFLAG_set(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_Debug,b)
-#define FLAG_Context_Interactive ((knh_flag_t)(1<<2))
+#define FLAG_Context_CompileOnly ((knh_flag_t)(1<<2))
+#define CTX_isCompileOnly(o)  (TFLAG_is(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_CompileOnly))
+#define CTX_setCompileOnly(o,b) TFLAG_set(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_CompileOnly,b)
+#define FLAG_Context_Interactive ((knh_flag_t)(1<<3))
 #define CTX_isInteractive(o)  (TFLAG_is(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_Interactive))
 #define CTX_setInteractive(o,b) TFLAG_set(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_Interactive,b)
-#define FLAG_Context_Compiling ((knh_flag_t)(1<<3))
-#define CTX_isCompiling(o)  (TFLAG_is(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_Compiling))
-#define CTX_setCompiling(o,b) TFLAG_set(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_Compiling,b)
 #define FLAG_Monitor_Throwable FLAG_Object_Local1
 #define Monitor_isThrowable(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Monitor_Throwable))
 #define Monitor_setThrowable(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Monitor_Throwable,b)

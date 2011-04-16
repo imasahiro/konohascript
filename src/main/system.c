@@ -55,7 +55,7 @@ static void knh_cwb_nzenvkey(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t)
 {
 	size_t i;
 	for(i = 0; i < t.len; i++) {
-		knh_Bytes_putc(ctx, (cwb->ba), toupper(t.ustr[i]));
+		knh_Bytes_putc(ctx, (cwb->ba), toupper(t.utext[i]));
 	}
 }
 
@@ -206,15 +206,15 @@ knh_fieldn_t knh_getfnq(CTX ctx, knh_bytes_t tname, knh_fieldn_t def)
 		tname = knh_bytes_last(tname, 6);
 	}
 	else if(!knh_bytes_endsWith(tname, STEXT("__"))) {
-		if(tname.ustr[0] == '_' && def != FN_NONAME) {
+		if(tname.utext[0] == '_' && def != FN_NONAME) {
 			mask = K_FLAG_FN_U1;
 			tname = knh_bytes_last(tname, 1);
 		}
-		if(tname.ustr[0] == '_' && def != FN_NONAME) {
+		if(tname.utext[0] == '_' && def != FN_NONAME) {
 			mask = K_FLAG_FN_U2;
 			tname = knh_bytes_last(tname, 1);
 		}
-		while(tname.ustr[0] == '_') {
+		while(tname.utext[0] == '_') {
 			tname = knh_bytes_last(tname, 1);
 		}
 	}
@@ -228,9 +228,9 @@ static knh_bytes_t knh_bytes_skipFMTOPT(knh_bytes_t t)
 {
 	size_t i;
 	for(i = 1; i < t.len; i++) {
-		if(isalnum(t.ustr[i])) break;
+		if(isalnum(t.utext[i])) break;
 	}
-	t.ustr = t.ustr + i;
+	t.utext = t.utext + i;
 	t.len = t.len - i;
 	return t;
 }
@@ -238,19 +238,19 @@ static knh_bytes_t knh_bytes_skipFMTOPT(knh_bytes_t t)
 knh_methodn_t knh_getmn(CTX ctx, knh_bytes_t tname, knh_methodn_t def)
 {
 	knh_fieldn_t mask = 0;
-	if(tname.ustr[0] == '%') {
+	if(tname.utext[0] == '%') {
 		tname = knh_bytes_skipFMTOPT(tname);
 		if(def != MN_NONAME) mask |= K_FLAG_MN_FMT;
 	}
-	else if(tname.ustr[0] == 'i' && tname.ustr[1] == 's') { /* is => get */
+	else if(tname.utext[0] == 'i' && tname.utext[1] == 's') { /* is => get */
 		tname = knh_bytes_last(tname, 2);
 		if(def != MN_NONAME) mask |= K_FLAG_MN_ISBOOL;
 	}
-	else if(tname.ustr[0] == 'g' && tname.ustr[1] == 'e' && tname.ustr[2] == 't') {
+	else if(tname.utext[0] == 'g' && tname.utext[1] == 'e' && tname.utext[2] == 't') {
 		tname = knh_bytes_last(tname, 3);
 		if(def != MN_NONAME) mask |= K_FLAG_MN_GETTER;
 	}
-	else if(tname.ustr[0] == 's' && tname.ustr[1] == 'e' && tname.ustr[2] == 't') {
+	else if(tname.utext[0] == 's' && tname.utext[1] == 'e' && tname.utext[2] == 't') {
 		tname = knh_bytes_last(tname, 3);
 		if(def != MN_NONAME) mask |= K_FLAG_MN_SETTER;
 	}
@@ -430,12 +430,12 @@ static METHOD System_setProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static knh_bool_t knh_bytes_matchWildCard(knh_bytes_t t, knh_bytes_t p)
 {
-	if(p.ustr[0] == '*') {
-		p.ustr = p.ustr + 1;
+	if(p.utext[0] == '*') {
+		p.utext = p.utext + 1;
 		p.len = p.len - 1;
 		return knh_bytes_endsWith(t, p);
 	}
-	else if(p.ustr[p.len-1] == '*') {
+	else if(p.utext[p.len-1] == '*') {
 		p.len -= 1;
 		return knh_bytes_startsWith(t, p);
 	}
@@ -611,10 +611,10 @@ static METHOD Exception_opOF(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD NameSpace_setConst(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_NameSpace_t *ns = sfp[0].ns;
-	if(DP(ns)->lconstDictCaseMapNULL == NULL) {
-		KNH_INITv(DP(ns)->lconstDictCaseMapNULL, new_DictMap0(ctx, 0, 1/*isCaseMap*/, "NameSpace.lconstDictMap"));
+	if(DP(ns)->constDictCaseMapNULL == NULL) {
+		KNH_INITv(DP(ns)->constDictCaseMapNULL, new_DictMap0(ctx, 0, 1/*isCaseMap*/, "NameSpace.lconstDictMap"));
 	}
-	DictMap_set_(ctx, DP(ns)->lconstDictCaseMapNULL, sfp[1].s, sfp[2].o);
+	DictMap_set_(ctx, DP(ns)->constDictCaseMapNULL, sfp[1].s, sfp[2].o);
 	RETURNa_(sfp[2].o);
 }
 

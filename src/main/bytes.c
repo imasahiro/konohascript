@@ -123,7 +123,7 @@ void knh_Bytes_expands(CTX ctx, knh_Bytes_t *ba, size_t newsize)
 void knh_Bytes_dispose(CTX ctx, knh_Bytes_t *ba)
 {
 	if(ba->dim->capacity > 0) {
-		DBG_P("dispose %p %p size=%ld", ba, ba->bu.ubuf, ba->bu.len);
+		DBG_P("dispose %p %p size=%ld,%ld", ba, ba->bu.ubuf, ba->bu.len, ba->dim->capacity);
 		KNH_FREE(ctx, ba->bu.ubuf, ba->dim->capacity);
 		ba->bu.ubuf = NULL;
 		ba->bu.len = 0;
@@ -134,15 +134,15 @@ void knh_Bytes_dispose(CTX ctx, knh_Bytes_t *ba)
 /* ------------------------------------------------------------------------ */
 /* [Bytes] */
 
-knh_Bytes_t* new_Bytes(CTX ctx, size_t capacity)
+knh_Bytes_t* new_Bytes(CTX ctx, const char *name, size_t capacity)
 {
 	knh_Bytes_t *ba = new_(Bytes);
+	ba->DBG_name = name;
 	if(capacity > 0) {
 		knh_Bytes_expands(ctx, ba, capacity);
 	}
 	return ba;
 }
-
 
 void knh_Bytes_clear(knh_Bytes_t *ba, size_t pos)
 {
@@ -154,10 +154,12 @@ void knh_Bytes_clear(knh_Bytes_t *ba, size_t pos)
 
 void knh_Bytes_ensureSize(CTX ctx, knh_Bytes_t *ba, size_t len)
 {
-	if(ba->dim->capacity < len) {
-		knh_Bytes_expands(ctx, ba, len);
+	size_t blen = ba->bu.len + len;
+	if(ba->dim->capacity < blen) {
+		size_t newsize = k_grow(ba->dim->capacity);
+		if(newsize < blen) newsize = k_goodsize(blen);
+		knh_Bytes_expands(ctx, ba, newsize);
 	}
-	BA_size(ba) = len;
 }
 
 const char *knh_Bytes_ensureZero(CTX ctx, knh_Bytes_t *ba)
@@ -198,7 +200,7 @@ void knh_Bytes_write(CTX ctx, knh_Bytes_t *ba, knh_bytes_t t)
 		if(newsize < BA_size(ba) + t.len) newsize = k_goodsize(BA_size(ba) + t.len);
 		knh_Bytes_expands(ctx, ba, newsize);
 	}
-	knh_memcpy(ba->bu.ubuf + BA_size(ba), t.ustr, t.len);
+	knh_memcpy(ba->bu.ubuf + BA_size(ba), t.utext, t.len);
 	BA_size(ba) += t.len;
 }
 

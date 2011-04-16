@@ -896,28 +896,26 @@ typedef struct knh_Script_t {
 
 /* ------------------------------------------------------------------------ */
 //## @Struct class NameSpace Object;
-
-#define KNH_PATH_TRUSTED      1
-#define KNH_PATH_UNTRUSTED    2
+//## flag NameSpace SharedEx     1 - is set * *;
 
 typedef struct knh_NameSpace {
-	struct knh_NameSpace_t  *parentNULL;
-	struct knh_DictMap_t*   aliasDictMapNULL;
+	knh_String_t *nsname;
+	struct knh_DictSet_t*   dspiDictSetNULL;
+	struct knh_DictMap_t*   constDictCaseMapNULL;
+	struct knh_DictMap_t*   macroDictMapNULL;
+
 	struct knh_DictSet_t*   name2cidDictSetNULL;
 	struct knh_DictSet_t*   func2cidDictSetNULL;
-	struct knh_DictMap_t*   lconstDictCaseMapNULL;
 	struct knh_Array_t*     methodsNULL;
 	struct knh_Array_t*     formattersNULL;
-/*	struct knh_DictSet_t*   pathTrustDictSet; */
-/*	struct knh_DictMap_t*   tag2urnDictMap; */
 } knh_NameSpaceEX_t;
 
 typedef struct knh_NameSpace_t {
 	knh_hObject_t h;
 	knh_NameSpaceEX_t *b;
-	knh_String_t*                 nsname;
-	const struct knh_RegexSPI_t  *strregexSPI;
-	const struct knh_RegexSPI_t  *regexSPI;
+	struct knh_NameSpace_t   *parentNULL;
+	knh_String_t             *rpath;
+	void                     *dlhdr;
 } knh_NameSpace_t;
 
 /* ------------------------------------------------------------------------ */
@@ -927,7 +925,6 @@ typedef struct knh_Package_t {
 	knh_hObject_t h;
 	struct knh_NameSpace_t    *ns;
 	struct knh_Script_t       *script;
-	void *hdlr;
 } knh_Package_t;
 
 /* ------------------------------------------------------------------------ */
@@ -977,8 +974,8 @@ typedef struct knh_System_t {
 /* ------------------------------------------------------------------------ */
 //## class Context Object;
 //## flag Context Debug        1 ((knh_context_t*)%s)->flag is set is set;
-//## flag Context Interactive  2 ((knh_context_t*)%s)->flag is set * *;
-//## flag Context Compiling    3 ((knh_context_t*)%s)->flag is set * *;
+//## flag Context CompileOnly  2 ((knh_context_t*)%s)->flag is set * *;
+//## flag Context Interactive  3 ((knh_context_t*)%s)->flag is set * *;
 
 typedef struct knh_Context_t {
 	knh_hObject_t h;
@@ -1195,7 +1192,7 @@ typedef struct {
 	struct knh_Array_t         *insts;  // bbNC->listNC
 	struct knh_Array_t         *lstacks;
 	struct knh_Stmt_t          *finallyStmt;
-	void                       *dlhdr;
+//	void                       *dlhdr;
 	struct knh_Array_t         *errmsgs;
 	struct knh_DictMap_t       *symbolDictMap;
 } knh_GammaEX_t;

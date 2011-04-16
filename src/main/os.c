@@ -31,9 +31,10 @@
 #define USE_B     1
 #define USE_bytes_startsWith    1
 #define USE_bytes_endsWith      1
+#define USE_bytes_index         1
 
 #define USE_cwb_open      1
-#define USE_cwb_openinit  1
+#define USE_cwb_open2     1
 #define USE_cwb_tobytes   1
 #define USE_cwb_write     1
 #define USE_cwb_putc      1
@@ -310,232 +311,283 @@ void dump_sysinfo(CTX ctx, knh_OutputStream_t *w, int isALL)
 
 /* ------------------------------------------------------------------------ */
 
-
-static void knh_Bytes_remove(CTX ctx, knh_Bytes_t *ba, size_t offset, size_t len)
+knh_path_t* knh_path_open_(CTX ctx, const char *scheme, knh_bytes_t t, knh_path_t *ph)
 {
-	DBG_ASSERT(offset + len < BA_size(ba));
-	knh_memmove(ba->bu.ubuf + offset, ba->bu.ustr + offset + len, BA_size(ba) - (offset + len));
-	knh_bzero(ba->bu.ubuf + (BA_size(ba) - len), len);
-	BA_size(ba) = BA_size(ba) - len;
+	knh_Bytes_t *ba = ctx->bufa;
+	ph->pstart = ba->bu.len;
+	if(!(ba->bu.len + K_PATHMAX < ba->dim->capacity)) {
+		knh_Bytes_expands(ctx, ba, K_PAGESIZE);  // K_PATHMAX < KPAGESIZE;
+	}
+	ba->bu.len += K_PATHMAX;
+	knh_path_reset(ctx, ph, scheme, t);
+	return ph;
 }
 
-static void knh_Bytes_concatZero(CTX ctx, knh_Bytes_t *ba)
+knh_path_t* knh_path_open(CTX ctx, const char *scheme, const char *name, knh_path_t *ph)
 {
-	if(BA_size(ba) > 0 && ba->bu.ubuf[BA_size(ba)-1] == 0) {
-		BA_size(ba) -= 1;
+	return knh_path_open_(ctx, scheme, B(name), ph);
+}
+
+knh_cwb_t* knh_cwb_copy(CTX ctx, knh_cwb_t *cwbbuf, knh_path_t *ph, int hasScheme)
+{
+	knh_cwb_t *cwb = knh_cwb_open(ctx, cwbbuf);
+	knh_bytes_t t = {{P_text(ph)}, ph->plen};
+	if(!hasScheme) {
+		t.text = t.text + ph->pbody;
+		t.len = t.len - ph->pbody;
 	}
+	knh_Bytes_ensureSize(ctx, cwb->ba, t.len + 1);
+	knh_Bytes_write(ctx, cwb->ba, t);
+	return cwb;
+}
+
+void knh_path_reset(CTX ctx, knh_path_t *ph, const char *scheme, knh_bytes_t t)
+{
+	knh_index_t idx = knh_bytes_index(t, ':');
+	char *buf = P_buf(ph);
+	if(t.len + 1 > K_PATHMAX) {
+		t.len = K_PATHMAX - 1;
+	}
+	if(idx > 0 || scheme == NULL) {
+		knh_memcpy(buf, t.text, t.len); buf[t.len] = 0;
+		ph->pbody = idx + 1;
+		ph->plen = t.len;
+	}
+	else {
+		knh_snprintf(buf, K_PATHMAX, "%s:%s", scheme, t.text);
+		ph->pbody = knh_strlen(scheme) + 2;
+		ph->plen = t.len + ph->pbody;
+	}
+	DBG_ASSERT(buf[ph->plen] == 0);
+	ph->isRealPath = 0;
+	DBG_P("ph='%s', size=%d", buf, ph->plen);
+}
+
+void knh_path_close(CTX ctx, knh_path_t *ph)
+{
+	knh_Bytes_t *ba = ctx->bufa;
+	KNH_ASSERT(ph->pstart < ba->bu.len);
+	//DBG_P("ph='%s', size=%d", P_text(ph), ph->plen);
+	knh_Bytes_clear(ba, ph->pstart);
+	ph->pstart = 0;
+	ph->pbody = 0;
+	ph->plen = 0;
 }
 
 /* ------------------------------------------------------------------------ */
 
-const char* knh_cwb_ospath(CTX ctx, knh_cwb_t* cwb)
+const char* knh_realpath(CTX ctx, const char *path, knh_path_t *ph)
 {
-	knh_bytes_t path = knh_cwb_tobytes(cwb);
-	int hasUTF8 = 0;
-	if(knh_bytes_startsWith(path, STEXT("file:"))) {
-		knh_Bytes_remove(ctx, cwb->ba, cwb->pos, 5);
+	char *buf = P_buf(ph);
+#if defined(K_USING_WINDOWS)
+	char *ptr = _fullpath(buf, path, K_PATHMAX);
+#elif defined(K_USING_POSIX_)
+	char *ptr = realpath(path, buf);
+#else
+	char *ptr = NULL;
+	KNH_TODO("realpath in your new environment");
+#endif
+	if(ptr != buf) {
+		if(ptr != NULL) free(ptr);
+		return NULL;
 	}
-	{
+	ph->pbody = 0;
+	ph->plen = knh_strlen(buf);
+	ph->isRealPath = 1;
+	return ptr;
+}
+
+const char* knh_ospath(CTX ctx, knh_path_t *ph)
+{
+	knh_uchar_t *ubuf = P_ubuf(ph);
+	if(!ph->isRealPath) {
+		int hasUTF8 = 0;
 		size_t i;
-		for(i = 0; i < path.len; i++) {
-			int ch = path.ubuf[i];
+		for(i = ph->pbody; i < ph->plen; i++) {
+			int ch = ubuf[i];
 			if(ch == '/' || ch == '\\') {
-				path.ubuf[i] = K_FILESEPARATOR;
+				ubuf[i] = K_FILESEPARATOR;
 			}
 			if(ch > 127) hasUTF8 = 1;
 		}
+		if(hasUTF8) {
+			KNH_TODO("multibytes file path");
+		}
 	}
-	if(hasUTF8) {
-		KNH_TODO("multibytes file path");
+	DBG_ASSERT(ubuf[ph->plen] == 0);
+	if(!ph->isRealPath) {
+		knh_cwb_t cwbbuf, *cwb = knh_cwb_copy(ctx, &cwbbuf, ph, 0);
+		knh_realpath(ctx, knh_cwb_tochar(ctx, cwb), ph);
+		knh_cwb_close(cwb);
 	}
-	return knh_cwb_tochar(ctx, cwb);
+	return (const char*) ubuf + ph->pbody;
 }
 
-KNHAPI2(knh_text_t*) knh_format_ospath(CTX ctx, char *buf, size_t bufsiz, const char *path)
+knh_String_t* knh_path_newString(CTX ctx, knh_path_t *ph, int hasScheme)
 {
-	knh_snprintf(buf, bufsiz, "%s", path);
-	return (knh_text_t*)buf;
+	knh_uchar_t *ubuf = P_ubuf(ph);
+	if(ph->isRealPath) {
+		int hasUTF8 = 0;
+		size_t i;
+		for(i = ph->pbody; i < ph->plen; i++) {
+			int ch = ubuf[i];
+			if(ch == '\\') {
+				ubuf[i] = '/';
+			}
+			if(ch > 127) hasUTF8 = 1;
+		}
+		if(hasUTF8) {
+			KNH_TODO("multibytes file path");
+		}
+	}
+	knh_bytes_t t = {{P_text(ph)}, ph->plen};
+	if(!hasScheme) {
+		t.text = t.text + ph->pbody;
+		t.len = t.len - ph->pbody;
+	}
+	DBG_P("ph='%s', size=%d", P_text(ph), ph->plen);
+	return new_String_(ctx, CLASS_String, t, NULL);
 }
 
 /* ------------------------------------------------------------------------ */
 
-const char* knh_cwb_realpath(CTX ctx, knh_cwb_t *cwb)
-{
-	const char *p = knh_cwb_tochar(ctx, cwb);
-#if defined(K_USING_POSIX_)
-#if defined(PATH_MAX)
-	char buf[PATH_MAX] = {0};
-#else
-	char *buf = NULL;
-#endif
-	p = realpath(p, buf);
-	if(p == NULL) {
-		knh_cwb_clear(cwb, 0);
-		knh_Bytes_write(ctx, cwb->ba, B(buf));
-#if !defined(PATH_MAX)
-	free(p);
-#endif
-	}
-	p = knh_cwb_tochar(ctx, cwb);
-#elif defined(K_USING_WINDOWS)
-#if defined(PATH_MAX)
-	char buf[PATH_MAX] = {0};
-	int path_max = PATH_MAX;
-#else
-	char *buf = NULL;
-	int path_max = 0;
-#endif
-	if(_fullpath(buf, p, path_max) == NULL) {
-		knh_cwb_clear(cwb, 0);
-		knh_Bytes_write(ctx, cwb->ba, B(buf));
-#if !defined(PATH_MAX)
-	free(buf);
-#endif
-	}
-	p = knh_cwb_tochar(ctx, cwb);
-#else
-	KNH_HELP("realpath function for this architecture");
-#endif
-	return p;
-}
-
-/* ------------------------------------------------------------------------ */
-
-knh_bool_t cwb_isfile(CTX ctx, knh_cwb_t *cwb)
+knh_bool_t knh_path_isfile(CTX ctx, knh_path_t *ph)
 {
 	knh_bool_t res = 1;
-	const char *pathname = knh_cwb_tochar(ctx, cwb);
+	const char *phname = P_text(ph) + ph->pbody;
 #if defined(K_USING_WINDOWS)
-	DWORD attr = GetFileAttributesA(pathname);
+	DWORD attr = GetFileAttributesA(phname);
 	if(attr == -1 || (attr & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY) res = 0;
 #elif defined(K_USING_POSIX_)
-    struct stat buf;
-	if(stat(pathname, &buf) == -1) res = 0;
+	struct stat buf;
+	if(stat(phname, &buf) == -1) res = 0;
 	else res = S_ISREG(buf.st_mode);
-#elif defined(K_USING_BTRON)
-	FILE* in = fopen(pathname,"r");
+#else
+	FILE* in = fopen(phname,"r");
 	if(in == NULL)  res = 0;
 	else fclose(in);
-#else
-	(void)pathname;
-	return 0;
 #endif
-//	if(res == 0) {
-//		DBG_P("isfile='%s' NOTFOUND", pathname);
-//	}
+	if(res == 0) {
+		DBG_P("isfile='%s' NOTFOUND", P_text(ph));
+	}
 	return res;
 }
 
-/* ------------------------------------------------------------------------ */
-
-knh_bool_t cwb_isdir(CTX ctx, knh_cwb_t *cwb)
+knh_bool_t knh_path_isdir(CTX ctx, knh_path_t *ph)
 {
-	const char *pathname = knh_cwb_tochar(ctx, cwb);
+	const char *pname = P_text(ph) + ph->pbody;
 #if defined(K_USING_WINDOWS)
-	DWORD attr = GetFileAttributesA(pathname);
+	DWORD attr = GetFileAttributesA(pname);
 	if(attr == -1) return 0;
 	return ((attr & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY);
 #elif defined(K_USING_POSIX_)
-    struct stat buf;
-	if(stat(pathname, &buf) == -1) return 0;
+	struct stat buf;
+	if(stat(pname, &buf) == -1) return 0;
 	return S_ISDIR(buf.st_mode);
 #else
 	// avoid "unused variable" warning unused variable
-	(void)pathname;
+	(void)phname;
 	return 0;
 #endif
 }
 
 /* ------------------------------------------------------------------------ */
 
-#define SUBPATH_BUFSIZ 40
-
-knh_bool_t knh_cwb_parentpath(CTX ctx, knh_cwb_t *cwb, char *subbuf)
+static knh_bool_t knh_mkdir0(CTX ctx, knh_path_t *ph)
 {
-	knh_bytes_t path = knh_cwb_tobytes(cwb);
-	knh_intptr_t i;
-	for(i = path.len - 1; i > 0; i--) {
-		if(path.ustr[i] == '/' || path.ustr[i] == '\\') {
-			if(subbuf != NULL) {
-				knh_snprintf(subbuf, SUBPATH_BUFSIZ, "%s", path.text + i);
-			}
-			knh_cwb_clear(cwb, i);
-			return 1;
-		}
-	}
-	knh_cwb_clear(cwb, 0);
-	return 0;
-}
-
-/* ------------------------------------------------------------------------ */
-
-static knh_bool_t knh_cwb_mkdir(CTX ctx, knh_cwb_t *cwb, char *subpath)
-{
-	const char *pathname;
-	if(cwb_isdir(ctx, cwb)) {
-		char subbuf[SUBPATH_BUFSIZ];
-		if(knh_cwb_parentpath(ctx, cwb, subbuf)) {
-			if(knh_cwb_mkdir(ctx, cwb, subpath) == 0) {
-				knh_cwb_write(ctx, cwb, B(subbuf));
-			}
-			else {
-				return 0;
-			}
-		}
-	}
-	pathname = knh_cwb_tochar(ctx, cwb);
+	const char *pname = P_text(ph) + ph->pbody;
 #if defined(K_USING_WINDOWS)
-	//PERROR_returnb_(CreateDirectory, pathname, NULL);
+	CreateDirectory(pname, NULL);
 #elif defined(K_USING_POSIX_)
-	int res = mkdir(pathname, 0777);
-	if(res == -1) {
-		KNH_SYSLOG(ctx, NULL, LOG_WARNING, "mkdir", "pathname='%s'", pathname);
-	}
-	return (res != -1);
+	return (mkdir(pname, 0777) != -1);
 #else
-	PERROR_returnb_(UnsupportedAPI, ctx, __FUNCTION__);
+	return 0;
 #endif
 }
 
-/* ------------------------------------------------------------------------ */
-
-knh_bool_t knh_mkdir(CTX ctx, knh_bytes_t path)
+knh_bool_t knh_path_mkdir(CTX ctx, knh_path_t *ph)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_openinit(ctx, &cwbbuf, path);
-	knh_bool_t res = 1;
-	knh_cwb_ospath(ctx, cwb);
-	if(!cwb_isdir(ctx, cwb)) {
-		knh_cwb_realpath(ctx, cwb);
-		res = knh_cwb_mkdir(ctx, cwb, NULL);
+	knh_uchar_t *ubuf = P_ubuf(ph);
+	size_t i;
+	for(i = ph->pbody; i < ph->plen; i++) {
+		int ch = ubuf[i];
+		if(ch == K_FILESEPARATOR) {
+			int res = 0;
+			ubuf[i] = 0;
+			if(!knh_path_isdir(ctx, ph)) {
+				res = knh_mkdir0(ctx, ph);
+			}
+			ubuf[i] = ch;
+			if(res == -1) return 0;
+		}
 	}
-	knh_cwb_close(cwb);
-	return res;
+	return knh_mkdir0(ctx, ph);
 }
 
 /* ------------------------------------------------------------------------ */
 /* [homepath] */
 
+const char* knh_path_reduce(CTX ctx, knh_path_t *ph, int ch)
+{
+	knh_uchar_t *ubuf = P_ubuf(ph) + ph->pbody;
+	long i;
+	if(ph->isRealPath && ch == '/' && ch != K_FILESEPARATOR) {
+		ch = K_FILESEPARATOR;
+	}
+	for(i = ph->plen - 1; i >= ph->pbody; i--) {
+		if(ubuf[i] == ch) {
+			ubuf[i] = 0;
+			ph->plen = i;
+			return (const char*)ubuf + i + 1;
+		}
+	}
+	return NULL;
+}
+
+void knh_path_append(CTX ctx, knh_path_t *ph, int issep, const char *name)
+{
+	char *buf = P_buf(ph) + ph->pbody, *p = (char*)name;
+	size_t i, plen = ph->plen;
+	if(issep && plen > 0 && (buf[plen-1] != '/' && buf[plen-1] != K_FILESEPARATOR)) {
+		buf[plen] = ph->isRealPath ? K_FILESEPARATOR : '/';
+		plen++;
+		ph->plen = plen;
+	}
+	for(i = plen; *p != 0; i++) {
+		if(!(i + 1< K_PATHMAX)) {
+			break;
+		}
+		buf[i] = *p; p++;
+		if(ph->isRealPath && (buf[i] == '\\' || buf[i] == '/')) {
+			buf[i] = K_FILESEPARATOR;
+		}
+	}
+	buf[i] = 0;
+	ph->plen = i;
+}
+
 /* Linux, MacOSX */
-// $konoha.path /usr/local/konoha
+// $konoha.home.path /usr/local/konoha
 // $konoha.bin.path  /usr/local/bin/konoha
-// $konoha.package.path {$konoha.path}/package
-// $konoha.script.path  {$konoha.path}/script
+// $konoha.package.path {$konoha.home.path}/package
+// $konoha.script.path  {$konoha.home.path}/script
+
+#define SETPROP(K, V)  DictMap_set_(ctx, sysprops, new_T(K), UPCAST(V));
 
 void knh_System_initPath(CTX ctx, knh_System_t *o)
 {
-	knh_SystemEX_t *sys = DP(o);
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	char *homepath = knh_getenv("KONOHAHOME");
-	knh_String_t *shome;
-	knh_bytes_t home = {{NULL}, 0};
-#if defined(K_PATH_PREFIX)
-	if(homepath == NULL) {
-		homepath = K_PATH_PREFIX "/konoha";
+	knh_DictMap_t *sysprops = DP(o)->props;
+	knh_path_t phbuf, *ph = NULL;
+	knh_bytes_t home = {{NULL}, 0}, user = {{NULL}, 0};
+	home.text = (const char*)knh_getenv("KONOHAHOME");
+#if defined(K_KONOHAHOME)
+	if(home.text == NULL) {
+		home = STEXT(K_KONOHAHOME);
 	}
 #endif
-	if(homepath != NULL) {
-		DictMap_set_(ctx, sys->props, new_T("konoha.path"), UPCAST(new_T(homepath)));
-		home = B(homepath);
+	if(home.text != NULL) {
+		home.len = knh_strlen(home.text);
+		SETPROP("konoha.home.path", new_T(home.text));
 	}
 #if defined(K_USING_WINDOWS)
 	{
@@ -544,15 +596,14 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		HMODULE h = LoadLibrary(NULL);
 		GetModuleFileNameA(h, buf, bufsiz);
 		knh_cwb_write(ctx, cwb, B(buf));
-		DictMap_set_(ctx, sys->props,
-			new_T("konoha.bin.path"), UPCAST(knh_cwb_newString(ctx, cwb)));
+		SETPROP("konoha.bin.path", knh_cwb_newString(ctx, cwb));
 		if(homepath == NULL) {
 			GetModuleFileNameA(h, buf, bufsiz);
 			knh_cwb_write(ctx, cwb, B(buf));
 			knh_cwb_parentpath(ctx, cwb, NULL);
 			shome = knh_cwb_newString(ctx, cwb);
 			home = S_tobytes(shome);
-			DictMap_set_(ctx, sys->props, new_T("konoha.path"), UPCAST(shome));
+			SETPROP("konoha.home.path"), UPCAST(shome));
 		}
 	}
 #elif defined(K_USING_LINUX_)
@@ -563,7 +614,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		int bufsiz = FILEPATH_BUFSIZ;
 		size_t size = readlink("/proc/self/exe", buf, bufsiz);
 		knh_cwb_write(ctx, cwb, new_bytes2(buf, size));
-		DictMap_set_(ctx, sys->props,
+		DictMap_set_(ctx, sysprops,
 			new_T("konoha.bin.path"), UPCAST(knh_cwb_newString(ctx, cwb)));
 		if(homepath == NULL) {
 			size = readlink("/proc/self/exe", buf, bufsiz);
@@ -573,90 +624,67 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 			knh_cwb_write(ctx, cwb, B("/konoha"));
 			shome = knh_cwb_newString(ctx, cwb);
 			home = S_tobytes(shome);
-			DictMap_set_(ctx, sys->props, new_T("konoha.path"), UPCAST(shome));
+			SETPROP("konoha.home.path"), UPCAST(shome));
 		}
 	}
 #elif defined(K_USING_MACOSX_)
-	{
-		char buf[PATH_MAX];
-		char *s = (char*)_dyld_get_image_name(0);
-		s = realpath(s, buf);
-		knh_cwb_write(ctx, cwb, B(buf));
-		DictMap_set_(ctx, sys->props,
-			new_T("konoha.bin.path"), UPCAST(knh_cwb_newString(ctx, cwb)));
-		if(homepath == NULL) {
-			knh_cwb_write(ctx, cwb, B(s));
-			knh_cwb_parentpath(ctx, cwb, NULL);
-			knh_cwb_parentpath(ctx, cwb, NULL);
-			knh_cwb_write(ctx, cwb, B("/konoha"));
-			shome = knh_cwb_newString(ctx, cwb);
-			home = S_tobytes(shome);
-			DictMap_set_(ctx, sys->props, new_T("konoha.path"), UPCAST(shome));
-		}
-		//free(s);
+	ph = knh_path_open(ctx, NULL, _dyld_get_image_name(0), &phbuf);
+	knh_ospath(ctx, ph);
+	SETPROP("konoha.bin.path", knh_path_newString(ctx, ph, 0/*hasScheme*/));
+	if(home.text == NULL) {
+		knh_String_t *s;
+		knh_path_reduce(ctx, ph, '/');
+		knh_path_reduce(ctx, ph, '/');
+		knh_path_append(ctx, ph, 1/*isSep*/, "konoha");
+		s = knh_path_newString(ctx, ph, 0/*hasScheme*/);
+		SETPROP("konoha.home.path", UPCAST(s));
+		home = S_tobytes(s);
 	}
 #else
-	home = STEXT("/konoha");
-	DictMap_set_(ctx, sys->props, new_T("konoha.path"), UPCAST(new_T("/konoha")));
+	home = STEXT("/opt/konoha");
+	SETPROP("konoha.home.path", new_T("/opt/konoha"));
 #endif
-	DBG_ASSERT(home.ustr != NULL);
+	DBG_ASSERT(home.utext != NULL);
 
-	/* $konoha.package.path {$konoha.path}/package */
-	knh_cwb_clear(cwb, 0);
-	knh_cwb_write(ctx, cwb, home);
-	knh_cwb_write(ctx, cwb, STEXT("/package/" LIBK_VERSION));
-	DictMap_set_(ctx, sys->props,
-		new_T("konoha.package.path"), UPCAST(knh_cwb_newString(ctx, cwb)));
+	/* $konoha.package.path {$konoha.home.path}/package */
+	knh_path_reset(ctx, ph, NULL, home);
+	knh_path_append(ctx, ph, 1/*sep*/, "package");
+	knh_path_append(ctx, ph, 1/*sep*/, LIBK_VERSION);
+	SETPROP("konoha.package.path", knh_path_newString(ctx, ph, 0/*hasScheme*/));
 
-	/* $konoha.script.path {$konoha.path}/script */
-	knh_cwb_write(ctx, cwb, home);
-	knh_cwb_write(ctx, cwb, STEXT("/script/" LIBK_VERSION));
-	DictMap_set_(ctx, sys->props, new_T("konoha.tool.path"), UPCAST(knh_cwb_newString(ctx, cwb)));
+	/* $konoha.script.path {$konoha.home.path}/script */
+	knh_path_reset(ctx, ph, NULL, home);
+	knh_path_append(ctx, ph, 1/*sep*/, "script");
+	knh_path_append(ctx, ph, 1/*sep*/, LIBK_VERSION);
+	SETPROP("konoha.package.path", knh_path_newString(ctx, ph, 0/*hasScheme*/));
 
 #if defined(K_USING_WINDOWS)
-	homepath = knh_getenv("USERPROFILE");
+	user.text = knh_getenv("USERPROFILE");
 #else
-	homepath = knh_getenv("HOME");
+	user.text = knh_getenv("HOME");
 #endif
-	if(homepath != NULL) {
+	if(user.text != NULL) {
 		/* $user.path */
-		knh_cwb_write(ctx, cwb, B(homepath));
-		knh_cwb_putc(ctx, cwb, '/');
-		knh_cwb_write(ctx, cwb, STEXT(K_KONOHAFOLDER));
-		shome = knh_cwb_newString(ctx, cwb);
-		home = S_tobytes(shome);
-		DictMap_set_(ctx, sys->props, new_T("user.path"), UPCAST(shome));
-		/* $konoha.temp.path ${user.path}/temp */
-		knh_cwb_write(ctx, cwb, home);
-		knh_cwb_write(ctx, cwb, STEXT("/temp/"));
-		knh_write_ascii(ctx, cwb->w, (const char*)ctx->trace);
-		DictMap_set_(ctx, sys->props, new_T("konoha.temp.path"), UPCAST(knh_cwb_newString(ctx, cwb)));
+		user.len = knh_strlen(user.text);
+		knh_path_reset(ctx, ph, NULL, user);
+		knh_path_append(ctx, ph, 1/*sep*/, K_KONOHAFOLDER);
+		SETPROP("user.path", knh_path_newString(ctx, ph, 0));
+		knh_ospath(ctx, ph);
+		knh_path_mkdir(ctx, ph);
 
-		/* $user.package.path ${user.path}/package */
-		knh_cwb_write(ctx, cwb, home);
-		knh_cwb_write(ctx, cwb, STEXT("/package/" LIBK_VERSION));
-		DictMap_set_(ctx, sys->props, new_T("user.package.path"), UPCAST(knh_cwb_newString(ctx, cwb)));
-
-		/* $user.script.path ${user.path}/script */
-		knh_cwb_write(ctx, cwb, home);
-		knh_cwb_write(ctx, cwb, STEXT("/script/" LIBK_VERSION));
-		DictMap_set_(ctx, sys->props, new_T("user.tool.path"), UPCAST(knh_cwb_newString(ctx, cwb)));
-		// Generating Directory
-		knh_mkdir(ctx, S_tobytes(knh_getPropertyNULL(ctx, STEXT("user.path"))));
-		//knh_mkdir(ctx, S_tobytes(knh_getPropertyNULL(ctx, STEXT("konoha.temp.path"))));
+		knh_path_reset(ctx, ph, NULL, user); /* user.package.path */
+		knh_path_append(ctx, ph, 1/*sep*/, K_KONOHAFOLDER);
+		knh_path_append(ctx, ph, 1/*sep*/, "package");
+		knh_path_append(ctx, ph, 1/*sep*/, LIBK_VERSION);
+		SETPROP("user.package.path", knh_path_newString(ctx, ph, 0));
 	}
-	else {
-		knh_cwb_write(ctx, cwb, STEXT("/tmp/"));
-		knh_write_ascii(ctx, cwb->w, (const char*)ctx->trace);
-		DictMap_set_(ctx, sys->props, new_T("konoha.temp.path"), UPCAST(knh_cwb_newString(ctx, cwb)));
-	}
-	knh_cwb_close(cwb);
+	knh_path_close(ctx, ph);
 }
 
 /* ------------------------------------------------------------------------ */
 /* [dlopen] */
 
-void *knh_dlopen(CTX ctx, int pe, const char* path)
+void *knh_dlopen(CTX ctx, const char* path)
 {
 	const char *func = __FUNCTION__;
 	void *handler = NULL;
@@ -678,18 +706,15 @@ void *knh_dlopen(CTX ctx, int pe, const char* path)
 	return handler;
 }
 
-void *knh_cwb_dlopen(CTX ctx, int pe, knh_cwb_t *cwb)
+void *knh_path_dlopen(CTX ctx, knh_path_t *ph)
 {
-	const char *file;
-	if(!knh_bytes_endsWith(knh_cwb_tobytes(cwb), STEXT(K_OSDLLEXT))) {
-		knh_Bytes_concatZero(ctx, cwb->ba);
-		knh_Bytes_write(ctx, cwb->ba, STEXT(K_OSDLLEXT));
+	knh_bytes_t t = {{P_text(ph)}, ph->plen};
+	if(!knh_bytes_endsWith(t, STEXT(K_OSDLLEXT))) {
+		knh_path_append(ctx, ph, 0/*sep*/, K_OSDLLEXT);
 	}
-	file = knh_cwb_ospath(ctx, cwb);
-	return knh_dlopen(ctx, LOG_NOTICE, file);
+	knh_ospath(ctx, ph);
+	return knh_dlopen(ctx, P_text(ph) + ph->pbody);
 }
-
-/* ------------------------------------------------------------------------ */
 
 void *knh_dlsym(CTX ctx, int pe, void* handler, const char* symbol)
 {
@@ -709,8 +734,6 @@ void *knh_dlsym(CTX ctx, int pe, void* handler, const char* symbol)
 #endif
 	return NULL;
 }
-
-/* ------------------------------------------------------------------------ */
 
 int knh_dlclose(CTX ctx, void* hdr)
 {

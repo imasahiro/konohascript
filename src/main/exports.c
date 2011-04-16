@@ -283,11 +283,11 @@ static void knh_loadScriptData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 
 /* ------------------------------------------------------------------------ */
 
-static void knh_setRegexSPI(CTX ctx, knh_NameSpace_t *ns, const knh_RegexSPI_t *spi)
-{
-	KNH_ASSERT(ns != NULL);
-	ns->regexSPI = spi;
-}
+//static void knh_setRegexSPI(CTX ctx, knh_NameSpace_t *ns, const knh_RegexSPI_t *spi)
+//{
+//	KNH_ASSERT(ns != NULL);
+//	ns->regexSPI = spi;
+//}
 
 static void knh_addPathDSPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, const knh_PathDSPI_t *d)
 {
@@ -315,8 +315,7 @@ const knh_PackageLoaderAPI_t* knh_getPackageLoaderAPI(void)
 	static knh_PackageLoaderAPI_t exports = {
 		knh_loadScriptData,
 		knh_loadScriptIntData, knh_loadScriptFloatData, knh_loadScriptStringData,
-		knh_setRegexSPI, knh_addPathDSPI, knh_addStreamDSPI, knh_addQueryDSPI,
-		knh_addConvDSPI,
+		knh_addPathDSPI, knh_addStreamDSPI, knh_addQueryDSPI, knh_addConvDSPI,
 	};
 	return &exports;
 }

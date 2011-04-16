@@ -185,33 +185,33 @@ METHOD System_getCwd(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(new_String(ctx, (const char*)tmpbuf));
 }
 
-/* ------------------------------------------------------------------------ */
-//## @Native boolean System.chDir(String dirname);
-
-METHOD System_chDir(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	char tmpbuf[FILEPATH_BUFSIZ];
-	if(IS_NULL(sfp[1].s)) {
-		knh_format_ospath(ctx, tmpbuf, sizeof(tmpbuf), ".");
-	}
-	else {
-		knh_format_ospath(ctx, tmpbuf, sizeof(tmpbuf), S_tochar(sfp[1].s));
-	}
-	LOG_RETURN_ERRNO(LOG_DEBUG, "path='%s'", chdir, tmpbuf);
-}
+///* ------------------------------------------------------------------------ */
+////## @Native boolean System.chDir(String dirname);
+//
+//METHOD System_chDir(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	char tmpbuf[FILEPATH_BUFSIZ];
+//	if(IS_NULL(sfp[1].s)) {
+//		knh_format_ospath(ctx, tmpbuf, sizeof(tmpbuf), ".");
+//	}
+//	else {
+//		knh_format_ospath(ctx, tmpbuf, sizeof(tmpbuf), S_tochar(sfp[1].s));
+//	}
+//	LOG_RETURN_ERRNO(LOG_DEBUG, "path='%s'", chdir, tmpbuf);
+//}
 
 ///* ------------------------------------------------------------------------ */
 //
 //knh_bool_t knh_unlink(CTX ctx, knh_bytes_t path)
 //{
 //	knh_cwb_t cwbbuf, *cwb = knh_cwb_openinit(ctx, &cwbbuf, path);
-//	char *pathname = knh_cwb_ospath(ctx, cwb);
+//	char *phname = knh_cwb_ospath(ctx, cwb);
 //#if defined(K_USING_POSIX)
-//	PERROR_returnb_(unlink, pathname);
+//	PERROR_returnb_(unlink, phname);
 //#elif defined(K_USING_WINDOWS)
-//	PERROR_returnb_(DeleteFileA, pathname);
+//	PERROR_returnb_(DeleteFileA, phname);
 //#else
-//	(void)pathname;
+//	(void)phname;
 //	PERROR_returnb_(UnsupportedAPI, ctx, __FUNCTION__);
 //#endif
 //}
@@ -221,15 +221,15 @@ METHOD System_chDir(CTX ctx, knh_sfp_t *sfp _RIX)
 //knh_bool_t knh_rename(CTX ctx, knh_bytes_t on, knh_bytes_t nn)
 //{
 //	knh_cwb_t cwbbuf, *cwb = knh_cwb_openinit(ctx, &cwbbuf, on);
-//	char *pathname = knh_cwb_ospath(ctx, cwb);
+//	char *phname = knh_cwb_ospath(ctx, cwb);
 //	knh_cwb_t cwbbuf2, *cwb2 = knh_cwb_openinit(ctx, &cwbbuf2, nn);
-//	char *pathname2 = knh_cwb_ospath(ctx, cwb2);
+//	char *phname2 = knh_cwb_ospath(ctx, cwb2);
 //#if defined(K_USING_POSIX)
-//	PERROR_returnb_(rename, pathname, pathname2);
+//	PERROR_returnb_(rename, phname, phname2);
 //#elif defined(K_USING_WINDOWS)
-//	PERROR_returnb_(MoveFileA, pathname, pathnema2);
+//	PERROR_returnb_(MoveFileA, phname, pathnema2);
 //#else
-//	(void)pathname; (void)pathname2;
+//	(void)phname; (void)phname2;
 //	PERROR_returnb_(UnsupportedAPI, ctx, __FUNCTION__);
 //#endif
 //}

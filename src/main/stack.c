@@ -60,8 +60,8 @@ knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n)
 		knh_bzero(ctxo->mtdcache, K_MTDCACHE_SIZE * sizeof(knh_mtdcache_t));
 		ctxo->tmrcache = (knh_tmrcache_t*)KNH_MALLOC(ctx, K_TMAPCACHE_SIZE * sizeof(knh_tmrcache_t));
 		knh_bzero(ctxo->tmrcache, K_TMAPCACHE_SIZE * sizeof(knh_tmrcache_t));
-		KNH_INITv(ctxo->bufw, new_(OutputStream));
-		KNH_INITv(ctxo->bufa, DP(ctxo->bufw)->ba);
+		KNH_INITv(ctxo->bufa, new_Bytes(ctx, "cwbbuf", K_PAGESIZE));
+		KNH_INITv(ctxo->bufw, new_BytesOutputStream(ctx, ctxo->bufa));
 	}
 	else {
 		knh_sfp_t **cstack_top = &sfp;
@@ -260,7 +260,7 @@ knh_ebi_t knh_geteid(CTX ctx, knh_bytes_t msg, knh_ebi_t def)
 	knh_ebi_t eid = EBI_Exception;
 	knh_intptr_t loc = knh_bytes_index(msg, '!');
 	if(loc != -1) {
-		if(msg.ustr[loc+1] != '!') return eid;
+		if(msg.utext[loc+1] != '!') return eid;
 		msg = knh_bytes_first(msg, loc);
 	}
 	if(msg.len == 0) return EBI_Exception; /* '!!' */

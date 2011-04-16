@@ -505,11 +505,11 @@ static ALIASDATA_t __AliasData[] = {''')
 	{NULL, NULL}
 };
 
-void knh_loadScriptAliasTokenData(CTX ctx, knh_NameSpace_t *ns)
+void knh_loadScriptAliasTokenData(CTX ctx)
 {
 	ALIASDATA_t *data = __AliasData;
-	knh_DictMap_t *dm = new_DictMap0(ctx, sizeof(__AliasData), 0/*isCaseMap*/, "NameSpace.AliasDictMap");
-	KNH_INITv(DP(ns)->aliasDictMapNULL, dm);
+	knh_DictMap_t *dm = new_DictMap0(ctx, sizeof(__AliasData), 0/*isCaseMap*/, "AliasDictMap");
+	KNH_INITv(ctx->wshare->sysAliasDictMapNULL, dm);
 	while(data->name != NULL) {
 		knh_DictMap_append(ctx, dm, new_T(data->name), UPCAST(new_T(data->alias)));
 		data++;

@@ -148,7 +148,7 @@ static METHOD String_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const method Regex Regex.new(String pattern, String option, NameSpace ns);
+//## @Const method Regex Regex.new(String pattern, String option);
 
 static METHOD Regex_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -156,8 +156,7 @@ static METHOD Regex_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const char *ptn = S_tochar(sfp[1].s);
 	const char *opt = IS_NULL(sfp[2].o) ? "" : S_tochar(sfp[2].s);
 	KNH_SETv(ctx, re->pattern, sfp[1].s);
-	knh_NameSpace_t *ns = IS_NULL(sfp[3].ns) ? knh_getGammaNameSpace(ctx) : sfp[3].ns;
-	re->spi = ns->regexSPI;
+	re->spi = knh_getRegexSPI();
 	re->reg = re->spi->regmalloc(ctx, sfp[1].s);
 	re->spi->regcomp(ctx, re->reg, ptn, re->spi->parse_cflags(ctx, opt));
 	re->eflags = re->spi->parse_eflags(ctx, opt);
@@ -743,21 +742,21 @@ static METHOD String_opSUB(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t base = S_tobytes(sfp[0].s);
 	knh_bytes_t t = S_tobytes(sfp[1].s);
-	knh_uchar_t c = t.ustr[0];
+	knh_uchar_t c = t.utext[0];
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	size_t i;
 	for(i = 0; i < base.len; i++) {
-		if(base.ustr[i] == c) {
+		if(base.utext[i] == c) {
 			size_t j;
 			for(j = 1; j < t.len; j++) {
-				if(base.ustr[i+j] != t.ustr[j]) break;
+				if(base.utext[i+j] != t.utext[j]) break;
 			}
 			if(j == t.len) {
 				i += t.len - 1;
 				continue;
 			}
 		}
-		knh_Bytes_putc(ctx, cwb->ba, base.ustr[i]);
+		knh_Bytes_putc(ctx, cwb->ba, base.utext[i]);
 	}
 	if(base.len == knh_cwb_size(cwb)) {
 		knh_cwb_close(cwb);
@@ -917,7 +916,7 @@ static METHOD Bytes_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[0].ba;
 	size_t n2 = knh_array_index(ctx, sfp, Int_to(size_t, sfp[1]), ba->bu.len);
-	RETURNi_(ba->bu.ustr[n2]);
+	RETURNi_(ba->bu.utext[n2]);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -928,7 +927,7 @@ static METHOD Bytes_set(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Bytes_t *ba = sfp[0].ba;
 	size_t n2 = knh_array_index(ctx, sfp, Int_to(size_t, sfp[1]), ba->bu.len);
 	ba->bu.ubuf[n2] = Int_to(knh_uchar_t, sfp[2]);
-	RETURNi_(ba->bu.ustr[n2]);
+	RETURNi_(ba->bu.utext[n2]);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -953,7 +952,7 @@ static METHOD String_get(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_String_t *s;
 	if(String_isASCII(sfp[0].s)) {
 		size_t n = knh_array_index(ctx, sfp, Int_to(size_t, sfp[1]), S_size(sfp[0].s));
-		base.ustr = base.ustr + n;
+		base.utext = base.utext + n;
 		base.len = 1;
 		s = new_String_(ctx, CLASS_String, base, sfp[0].s);
 	}
@@ -1016,7 +1015,7 @@ static knh_Bytes_t *new_BytesRANGE(CTX ctx, knh_Bytes_t *ba, size_t s, size_t e)
 			if(capacity < 256) capacity = 256;
 			newa->bu.ubuf = (knh_uchar_t*)KNH_MALLOC(ctx, capacity);
 			knh_bzero(newa->bu.ubuf, capacity);
-			knh_memcpy(newa->bu.ubuf, ba->bu.ustr + s, newsize);
+			knh_memcpy(newa->bu.ubuf, ba->bu.utext + s, newsize);
 		}
 		else {
 			newa->bu.ubuf = NULL;

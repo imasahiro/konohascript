@@ -1146,8 +1146,8 @@ knh_Method_t* knh_NameSpace_getFmtNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t
 			}
 		}
 	}
-	if(DP(ns)->parentNULL != NULL) {
-		ns = DP(ns)->parentNULL;
+	if(ns->parentNULL != NULL) {
+		ns = ns->parentNULL;
 		goto L_TAIL;
 	}
 	return knh_ClassTBL_getFmtNULL(ctx, ClassTBL(cid), mn);

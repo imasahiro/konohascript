@@ -83,7 +83,7 @@ static const knh_uchar_t _utf8len[] = {
 //	knh_uchar_t ch;
 //	size_t bytes = 0;
 //	for (i=0; i < s.len; i++) {
-//		ch = s.ustr[i];
+//		ch = s.utext[i];
 //		/* UTF8 must be in
 //		 * single: 0x00 - 0x7f
 //		 * lead: 0xC0 - 0xFD (actually, 0xC2-0xF4)
@@ -96,7 +96,7 @@ static const knh_uchar_t _utf8len[] = {
 //			bytes = utf8_getBytes(ch);
 //			for (j=1;j<bytes;j++)
 //			{
-//				ch = s.ustr[i+j];
+//				ch = s.utext[i+j];
 //				if (!utf8_isTrail(ch)) {
 //					DBG_P("invalid UTF!");
 //					return 0;
@@ -114,7 +114,7 @@ static const knh_uchar_t _utf8len[] = {
 knh_bool_t knh_bytes_checkENCODING(knh_bytes_t v)
 {
 #ifdef K_USING_UTF8
-	const unsigned char *s = v.ustr;
+	const unsigned char *s = v.utext;
 	const unsigned char *e = s + v.len;
 	while (s < e) {
 		size_t ulen = utf8len(s[0]);
@@ -146,7 +146,7 @@ size_t knh_bytes_mlen(knh_bytes_t v)
 {
 #ifdef K_USING_UTF8
 	size_t size = 0;
-	const unsigned char *s = v.ustr;
+	const unsigned char *s = v.utext;
 	const unsigned char *e = s + v.len;
 	while (s < e) {
 		size_t ulen = utf8len(s[0]);
@@ -163,7 +163,7 @@ knh_bytes_t knh_bytes_mofflen(knh_bytes_t v, size_t moff, size_t mlen)
 {
 #ifdef K_USING_UTF8
 	size_t i;
-	const unsigned char *s = v.ustr;
+	const unsigned char *s = v.utext;
 	const unsigned char *e = s + v.len;
 	for(i = 0; i < moff; i++) {
 		s += utf8len(s[0]);
@@ -180,7 +180,7 @@ knh_bytes_t knh_bytes_mofflen(knh_bytes_t v, size_t moff, size_t mlen)
 #endif
 }
 
-knh_int_t knh_uchar_toucs4(knh_ustr_t *utf8)   /* utf8 -> ucs4 */
+knh_int_t knh_uchar_toucs4(knh_utext_t *utf8)   /* utf8 -> ucs4 */
 {
 #if defined(K_USING_UTF8)
 	knh_int_t ucs4 = 0;
@@ -315,14 +315,14 @@ KNHAPI2(knh_String_t*) new_String_(CTX ctx, knh_class_t cid, knh_bytes_t t, knh_
 	if(t.len + 1 < sizeof(void*) * 2) {
 		s->str.ubuf = (knh_uchar_t*)(&(s->hashCode));
 		s->str.len = t.len;
-		knh_memcpy(s->str.ubuf, t.ustr, t.len);
+		knh_memcpy(s->str.ubuf, t.utext, t.len);
 		s->str.ubuf[s->str.len] = '\0';
 		String_setTextSgm(s, 1);
 	}
 	else {
 		s->str.len = t.len;
 		s->str.ubuf = (knh_uchar_t*)KNH_MALLOC(ctx, KNH_SIZE(s->str.len+1));
-		knh_memcpy(s->str.ubuf, t.ustr, t.len);
+		knh_memcpy(s->str.ubuf, t.utext, t.len);
 		s->str.ubuf[s->str.len] = '\0';
 		s->hashCode = 0;
 	}
@@ -540,7 +540,7 @@ static int pcre_regex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t
 			for (idx = 0; idx < nm_count; idx++) {
 				int n_idx = (tbl_ptr[0] << 8) | tbl_ptr[1];
 				unsigned char *n_name = tbl_ptr + 2;
-				p[n_idx].rm_name.ustr = n_name;
+				p[n_idx].rm_name.utext = n_name;
 				p[n_idx].rm_name.len = strlen((char*)n_name);
 				tbl_ptr += nm_entry_size;
 			}
@@ -816,7 +816,7 @@ static METHOD String_lastIndexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_index_t loc = base.len - delim.len;
 	if(delim.len == 0) loc--;
 	for(; loc >= 0; loc--) {
-		if(base.ustr[loc] == delim.ustr[0]) {
+		if(base.utext[loc] == delim.utext[0]) {
 			knh_bytes_t sub = {{base.text + loc}, delim.len};
 			if(knh_bytes_strcmp(sub, delim) == 0) break;
 		}
@@ -899,7 +899,7 @@ static METHOD String_match(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	size_t i;
 //	for(i = 1; i < target.len; i++) {
-//		if(base.ustr[s+i] != target.ustr[i]) return 0;
+//		if(base.utext[s+i] != target.utext[i]) return 0;
 //	}
 //	return 1;
 //}
@@ -946,7 +946,7 @@ static knh_Array_t *knh_String_toCharArray(CTX ctx, knh_String_t *bs, int istrim
 		size_t i, n = base.len;
 		knh_Array_t *a = new_Array(ctx, CLASS_String, n);
 		for(i = 0; i < n; i++) {
-			if(istrim && isspace(base.ustr[i])) continue;
+			if(istrim && isspace(base.utext[i])) continue;
 			knh_bytes_t sub = {{base.text + i}, 1};
 			knh_Array_add(ctx, a, new_String_(ctx, CLASS_String, sub, bs));
 		}
@@ -956,7 +956,7 @@ static knh_Array_t *knh_String_toCharArray(CTX ctx, knh_String_t *bs, int istrim
 		size_t i, n = knh_bytes_mlen(base);
 		knh_Array_t *a = new_Array(ctx, CLASS_String, n);
 		for(i = 0; i < n; i++) {
-			if(istrim && isspace(base.ustr[i])) continue;
+			if(istrim && isspace(base.utext[i])) continue;
 			knh_bytes_t sub = knh_bytes_mofflen(base, i, 1);
 			knh_Array_add(ctx, a, new_String_(ctx, CLASS_String, sub, bs));
 		}
@@ -968,12 +968,12 @@ static knh_Array_t *knh_String_toCharArray(CTX ctx, knh_String_t *bs, int istrim
 
 static knh_bytes_t knh_bytes_trim(knh_bytes_t t)
 {
-	while(isspace(t.ustr[0])) {
-		t.ustr++;
+	while(isspace(t.utext[0])) {
+		t.utext++;
 		t.len--;
 	}
 	if(t.len == 0) return t;
-	while(isspace(t.ustr[t.len-1])) {
+	while(isspace(t.utext[t.len-1])) {
 		t.len--;
 		if(t.len == 0) return t;
 	}
@@ -1022,7 +1022,7 @@ static METHOD Bytes_convert(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
 	c->dspi->conv(ctx, c->conv, BA_tobytes(sfp[0].ba), cwb->ba);
-	knh_Bytes_t *ba = new_Bytes(ctx, knh_cwb_size(cwb));
+	knh_Bytes_t *ba = new_Bytes(ctx, NULL, knh_cwb_size(cwb));
 	knh_Bytes_write(ctx, ba, knh_cwb_tobytes(cwb));
 	knh_cwb_close(cwb);
 	RETURN_(ba);
@@ -1037,7 +1037,7 @@ static METHOD String_encode(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Converter_t *c = sfp[1].conv;
 	//fprintf(stderr, "%s, c=%p, c->dspi=%p, c->dspi->enc=****\n", CLASS__(c->h.cid), c, c->dspi);
 	c->dspi->enc(ctx, c->conv, S_tobytes(sfp[0].s), cwb->ba);
-	knh_Bytes_t *ba = new_Bytes(ctx, knh_cwb_size(cwb));
+	knh_Bytes_t *ba = new_Bytes(ctx, NULL, knh_cwb_size(cwb));
 	knh_Bytes_write(ctx, ba, knh_cwb_tobytes(cwb));
 	knh_cwb_close(cwb);
 	RETURN_(ba);
@@ -1123,7 +1123,7 @@ static TYPEMAP String_Float(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static TYPEMAP String_Bytes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Bytes_t *b = new_Bytes(ctx, S_size(sfp[K_TMRIDX].s) + 1);
+	knh_Bytes_t *b = new_Bytes(ctx, "UTF8", S_size(sfp[K_TMRIDX].s) + 1);
 	knh_Bytes_write(ctx, b, S_tobytes(sfp[K_TMRIDX].s));
 	RETURN_(b);
 }

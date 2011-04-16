@@ -671,7 +671,7 @@ extern "C" {
 		knh_bytes_t *b_ = &BA_tobytes(rbp[aidx].ba);\
 		size_t n_ = klr_array_index(ctx, N, b_->len);\
 		klr_array_check(n_, b_->len);\
-		Ri_(cidx) = b_->ustr[n_];\
+		Ri_(cidx) = b_->utext[n_];\
 	}\
 
 #define KLR_BGETIDX(ctx, cidx, aidx, nidx) KLR_BGETIDXC(ctx, cidx, aidx, Ri_(nidx))

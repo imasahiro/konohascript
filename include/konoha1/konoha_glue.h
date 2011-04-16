@@ -72,11 +72,11 @@ typedef const struct {
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_PATH */
 
-typedef knh_uintptr_t knh_path_t;
+typedef knh_uintptr_t knh_pathid_t;
 
 #define K_PATHHEAD_MAXSIZ    32
 #define PATH_found          1
-#define PATH_unknown        ((knh_path_t)(-1))
+#define PATH_unknown        ((knh_pathid_t)(-1))
 #define PATH_hasType(cid)   (cid == CLASS_Boolean || cid == CLASS_String)
 
 
@@ -85,7 +85,7 @@ typedef struct knh_PathDSPI_t {
 	const char *name;
 	knh_class_t cid; knh_class_t itrcid;
 	knh_bool_t    (*hasType)(CTX, knh_class_t);
-	knh_path_t    (*exists)(CTX, knh_NameSpace_t *, knh_bytes_t);
+	knh_pathid_t   (*exists)(CTX, knh_NameSpace_t *, knh_bytes_t);
 	Object*       (*newObjectNULL)(CTX, knh_NameSpace_t *, knh_class_t, knh_String_t *);
 } knh_PathDSPI_t;
 
@@ -107,17 +107,24 @@ typedef struct knh_ConvDSPI_t {
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_STREAM */
 
-#define K_OUTBUF_MAXSIZ      (64L * 1024 * 1024)
+#ifdef PATH_MAX
+#define K_PATHMAX PATH_MAX
+#else
+#define K_PATHMAX 256
+#endif
+
+#define K_OUTBUF_MAXSIZ      (512L * 1024 * 1024)  // 512Mb
 
 typedef struct knh_StreamDSPI_t {
 	int type;
 	const char *name;
-	knh_io_t (*fopen)(CTX, knh_bytes_t, const char *, struct knh_Monitor_t *);
-	knh_io_t (*wopen)(CTX, knh_bytes_t, const char *, struct knh_Monitor_t *);
+	knh_bool_t (*realpath)(CTX, knh_NameSpace_t *ns, knh_path_t*);
+	knh_io_t (*fopen)(CTX, knh_path_t*, const char *, struct knh_Monitor_t *);
+	knh_io_t (*wopen)(CTX, knh_path_t*, const char *, struct knh_Monitor_t *);
 	knh_intptr_t (*fread)(CTX, knh_io_t, char *, size_t, struct knh_Monitor_t *);
+	size_t wbufsiz;  // write bufsize
 	knh_intptr_t (*fwrite)(CTX, knh_io_t, const char *, size_t, struct knh_Monitor_t *);
 	void   (*fclose)(CTX, knh_io_t);
-	size_t wbufsiz;  // write bufsize
 } knh_StreamDSPI_t;
 
 /* ------------------------------------------------------------------------ */
@@ -225,7 +232,7 @@ typedef struct knh_PackageLoaderAPI_t {
 	void (*loadFloatData)(CTX, knh_NameSpace_t *ns, const knh_FloatData_t *);
 	void (*loadStringData)(CTX, knh_NameSpace_t *ns, const knh_StringData_t *);
 	/* namespace */
-	void (*setRegexSPI)(CTX, knh_NameSpace_t *ns, const knh_RegexSPI_t *);
+//	void (*setRegexSPI)(CTX, knh_NameSpace_t *ns, const knh_RegexSPI_t *);
 	void (*addPathDSPI)(CTX, knh_NameSpace_t *ns, const char*, const knh_PathDSPI_t *);
 	void (*addStreamDSPI)(CTX, knh_NameSpace_t *ns, const char*, const knh_StreamDSPI_t *);
 	void (*addQueryDSPI)(CTX, knh_NameSpace_t *ns, const char *, const knh_QueryDSPI_t *);

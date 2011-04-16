@@ -130,7 +130,7 @@ static inline knh_index_t knh_bytes_index(knh_bytes_t v, int ch)
 {
 	size_t i;
 	for(i = 0; i < v.len; i++) {
-		if(v.ustr[i] == ch) return (knh_index_t)i;
+		if(v.utext[i] == ch) return (knh_index_t)i;
 	}
 	return -1;
 }
@@ -142,7 +142,7 @@ static inline knh_bytes_t knh_bytes_next(knh_bytes_t v, int ch)
 	knh_bytes_t t = {{""}, 0};
 	size_t i;
 	for(i = 0; i < v.len; i++) {
-		if(v.ustr[i] == ch) {
+		if(v.utext[i] == ch) {
 			t.text = v.text + (i+1);
 			t.len = v.len - (i+1);
 			break;
@@ -157,7 +157,7 @@ static knh_index_t knh_bytes_rindex(knh_bytes_t v, int ch)
 {
 	knh_index_t i;
 	for(i = v.len - 1; i >= 0; i--) {
-		if(v.ustr[i] == ch) return i;
+		if(v.utext[i] == ch) return i;
 	}
 	return -1;
 }
@@ -168,7 +168,7 @@ static knh_index_t knh_bytes_rindex(knh_bytes_t v, int ch)
 static inline knh_bytes_t knh_bytes_first(knh_bytes_t t, knh_intptr_t loc)
 {
 	knh_bytes_t t2;
-	t2.ustr = t.ustr;
+	t2.utext = t.utext;
 	t2.len = loc;
 	return t2;
 }
@@ -178,7 +178,7 @@ static inline knh_bytes_t knh_bytes_first(knh_bytes_t t, knh_intptr_t loc)
 static inline knh_bytes_t knh_bytes_last(knh_bytes_t t, knh_intptr_t loc)
 {
 	knh_bytes_t t2;
-	t2.ustr = t.ustr + loc;
+	t2.utext = t.utext + loc;
 	t2.len = t.len - loc;
 	return t2;
 }
@@ -188,7 +188,7 @@ static inline knh_bytes_t knh_bytes_last(knh_bytes_t t, knh_intptr_t loc)
 static inline knh_bytes_t knh_bytes_slice(knh_bytes_t t, size_t s, size_t e)
 {
 	knh_bytes_t t2;
-	t2.ustr = t.ustr + s;
+	t2.utext = t.utext + s;
 	t2.len = e - s;
 	DBG_ASSERT(s + t2.len <= t.len);
 	return t2;
@@ -199,7 +199,7 @@ static inline knh_bytes_t knh_bytes_slice(knh_bytes_t t, size_t s, size_t e)
 static inline knh_bytes_t knh_bytes_subbytes(knh_bytes_t t, size_t off, size_t len)
 {
 	knh_bytes_t t2;
-	t2.ustr = t.ustr + off;
+	t2.utext = t.utext + off;
 	t2.len = len;
 	DBG_ASSERT(off + len <= t.len);
 	return t2;
@@ -212,19 +212,19 @@ static int knh_bytes_parseint(knh_bytes_t t, knh_int_t *value)
 	knh_uint_t n = 0, prev = 0, base = 10;
 	size_t i = 0;
 	if(t.len > 1) {
-		if(t.ustr[0] == '0') {
-			if(t.ustr[1] == 'x') {
+		if(t.utext[0] == '0') {
+			if(t.utext[1] == 'x') {
 				base = 16; i = 2;
 			}
-			else if(t.ustr[1] == 'b') {
+			else if(t.utext[1] == 'b') {
 				base = 2;  i = 2;
 			}
-		}else if(t.ustr[0] == '-') {
+		}else if(t.utext[0] == '-') {
 			base = 10; i = 1;
 		}
 	}
 	for(;i < t.len; i++) {
-		int c = t.ustr[i];
+		int c = t.utext[i];
 		if('0' <= c && c <= '9') {
 			prev = n;
 			n = n * base + (c - '0');
@@ -248,7 +248,7 @@ static int knh_bytes_parseint(knh_bytes_t t, knh_int_t *value)
 			return 0;
 		}
 	}
-	if(t.ustr[0] == '-') n = -((knh_int_t)n);
+	if(t.utext[0] == '-') n = -((knh_int_t)n);
 	*value = n;
 	return 1;
 }
@@ -303,14 +303,13 @@ static inline knh_cwb_t *knh_cwb_open(CTX ctx, knh_cwb_t *cwb)
 }
 #endif
 
-#if defined(USE_cwb_openinit)
-static knh_cwb_t *knh_cwb_openinit(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t)
+#if defined(USE_cwb_open2)
+static knh_cwb_t *knh_cwb_open2(CTX ctx, knh_cwb_t *cwb, size_t size)
 {
 	cwb->ba = ctx->bufa;
 	cwb->w  = ctx->bufw;
 	cwb->pos = BA_size(ctx->bufa);
-	KNH_ASSERT(!(cwb->ba->bu.ustr <= t.ustr && t.ustr < (cwb->ba->bu.ustr + cwb->pos)));
-	knh_Bytes_write(ctx, (cwb->ba), t);
+	knh_Bytes_ensureSize(ctx, cwb->ba, size);
 	return cwb;
 }
 #endif
@@ -325,7 +324,7 @@ static void knh_cwb_putc(CTX ctx, knh_cwb_t *cwb, int ch)
 #if defined(USE_cwb_write)
 static void knh_cwb_write(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t)
 {
-	KNH_ASSERT(!(cwb->ba->bu.ustr <= t.ustr && t.ustr < (cwb->ba->bu.ustr + cwb->pos)));
+	KNH_ASSERT(!(cwb->ba->bu.utext <= t.utext && t.utext < (cwb->ba->bu.utext + cwb->pos)));
 	knh_Bytes_write(ctx, (cwb->ba), t);
 }
 #endif

@@ -337,8 +337,9 @@ static knh_Token_t *TTYPE_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 
 static void *Gamma_loadFunc(CTX ctx, char *funcname, int isREQUIRED)
 {
-	if(DP(ctx->gma)->dlhdr != NULL) {
-		void *f = knh_dlsym(ctx, LOG_DEBUG, DP(ctx->gma)->dlhdr, (const char*)funcname);
+	knh_NameSpace_t *ns = DP(ctx->gma)->ns;
+	if(ns->dlhdr != NULL) {
+		void *f = knh_dlsym(ctx, LOG_DEBUG, ns->dlhdr, (const char*)funcname);
 		if(f != NULL) return f;
 		if (isREQUIRED) {
 			WARNING_NotFound(ctx, _("foreign function"), funcname);
@@ -462,7 +463,6 @@ static knh_Gamma_t *Gamma_clone(CTX ctx)
 	KNH_SETv(ctx, DP(newgma)->stmt, DP(oldgma)->stmt);
 	KNH_INITv(DP(newgma)->script, DP(oldgma)->script);
 	DP(newgma)->this_cid   = DP(oldgma)->this_cid;
-	DP(newgma)->dlhdr = DP(oldgma)->dlhdr;
 	KNH_INITv(DP(newgma)->symbolDictMap, DP(oldgma)->symbolDictMap);
 	KNH_SETv(ctx, DP(newgma)->errmsgs, DP(oldgma)->errmsgs);
 	return newgma;
@@ -722,12 +722,12 @@ static knh_Token_t *TNAME_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt, knh_
 static Object *NameSpace_getConstNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t name)
 {
 	L_TAIL:
-	if(DP(ns)->lconstDictCaseMapNULL != NULL) {
-		knh_index_t idx = knh_DictMap_index(DP(ns)->lconstDictCaseMapNULL, name);
-		if(idx != -1) return knh_DictMap_valueAt(DP(ns)->lconstDictCaseMapNULL, idx);
+	if(DP(ns)->constDictCaseMapNULL != NULL) {
+		knh_index_t idx = knh_DictMap_index(DP(ns)->constDictCaseMapNULL, name);
+		if(idx != -1) return knh_DictMap_valueAt(DP(ns)->constDictCaseMapNULL, idx);
 	}
-	if(DP(ns)->parentNULL != NULL) {
-		ns = DP(ns)->parentNULL;
+	if(ns->parentNULL != NULL) {
+		ns = ns->parentNULL;
 		goto L_TAIL;
 	}
 	return knh_getClassConstNULL(ctx, DP(ctx->gma)->this_cid, name);
@@ -875,14 +875,14 @@ static knh_class_t knh_Token_tagcNUM(CTX ctx, knh_Token_t *tk, knh_class_t reqc,
 	knh_bytes_t t = TK_tobytes(ctx, tk), tag = STEXT("");
 	size_t i = 1;
 	int ishex = 0;
-	if(t.ustr[0] == '0' && (t.ustr[1] == 'x' || t.ustr[1] == 'b')) {
+	if(t.utext[0] == '0' && (t.utext[1] == 'x' || t.utext[1] == 'b')) {
 		i = 2;
 		ishex = 1;
 		knh_style(ctx, 1);
 	}
 	for(; i < t.len; i++) {
-		if(isdigit(t.ustr[i]) || t.ustr[i] == '_' || t.ustr[i] == '.') continue;
-		if(t.ustr[i] == '[') {
+		if(isdigit(t.utext[i]) || t.utext[i] == '_' || t.utext[i] == '.') continue;
+		if(t.utext[i] == '[') {
 			int loc;
 			tag.buf = t.buf + i + 1;
 			tag.len = t.len - (i + 1);
@@ -892,14 +892,14 @@ static knh_class_t knh_Token_tagcNUM(CTX ctx, knh_Token_t *tk, knh_class_t reqc,
 			}
 			break;
 		}
-		else if(t.ustr[i] == ':') {
+		else if(t.utext[i] == ':') {
 			tag.buf = t.buf + i + 1;
 			tag.len = t.len - (i + 1);
 			break;
 		}
 		else {
-			if((t.ustr[i] == 'E' || t.ustr[i] == 'e')) {
-				if(isdigit(t.ustr[i+1]) || t.ustr[i+1] == '-' || t.ustr[i+1] == '+') {
+			if((t.utext[i] == 'E' || t.utext[i] == 'e')) {
+				if(isdigit(t.utext[i+1]) || t.utext[i+1] == '-' || t.utext[i+1] == '+') {
 					i++;
 					continue;
 				}
@@ -929,19 +929,19 @@ static knh_class_t knh_Token_tagcNUM(CTX ctx, knh_Token_t *tk, knh_class_t reqc,
 static knh_class_t bytes_guessNUMcid(CTX ctx, knh_bytes_t t)
 {
 	size_t i;
-	if(t.ustr[0] == 0 && (t.ustr[1] == 'x' || t.ustr[1]=='b')) {
+	if(t.utext[0] == 0 && (t.utext[1] == 'x' || t.utext[1]=='b')) {
 		return CLASS_Int;
 	}
 	for(i = 1; i < t.len; i++) {
-		if(t.ustr[i] == '_') {
+		if(t.utext[i] == '_') {
 #ifdef CLASS_Decimal
 			return CLASS_Decimal;
 #endif
 		}
-		else if(t.ustr[i] == '.') {
+		else if(t.utext[i] == '.') {
 			return CLASS_Float;
 		}
-		if(!isdigit(t.ustr[i])) break;
+		if(!isdigit(t.utext[i])) break;
 	}
 	return CLASS_Int;
 }
@@ -951,7 +951,7 @@ static knh_Token_t* NUM_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 	knh_bytes_t t = TK_tobytes(tk);
 	knh_class_t breqc = knh_class_bcid(reqt);
 	if(reqt == CLASS_Boolean) {
-		if(t.ustr[0] == '0') {
+		if(t.utext[0] == '0') {
 			WARN_MuchBetter(ctx, "false");
 			return Token_setCONST(ctx, tk, KNH_FALSE);
 		}
@@ -1015,7 +1015,7 @@ static knh_Token_t* TSTR_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 	if(CLASS_t(reqt) != CLASS_String && knh_bytes_mlen(t) == 1) {
 		/* 'A' ==> int if not String */
 		knh_bytes_t sub = knh_bytes_mofflen(t, 0, 1);
-		return Token_setCONST(ctx, tk, new_Int(ctx, CLASS_Int, knh_uchar_toucs4(&sub.ustr[0])));
+		return Token_setCONST(ctx, tk, new_Int(ctx, CLASS_Int, knh_uchar_toucs4(&sub.utext[0])));
 	}
 	return Token_toCONST(ctx, tk);
 }
@@ -1026,27 +1026,27 @@ static knh_bool_t bytes_isLONGFMT(knh_bytes_t t)
 	if(t.len < 1) return 0;
 	L_AGAIN:;
 	for(;i < size; i++) {
-		if(t.ustr[i] == '%') {
-			int ch = t.ustr[i+1];
+		if(t.utext[i] == '%') {
+			int ch = t.utext[i+1];
 			i++;
 			if(isdigit(ch) || ch == ' ' || ch == '.' || ch == '+' || ch == '-' || ch == '#') {
 				goto L_CFMT;
 			}
 			if(isalpha(ch)) goto L_KFMT;
 		}
-		if(t.ustr[i] == '$' && isalpha(t.ustr[i+1])) return 1;
+		if(t.utext[i] == '$' && isalpha(t.utext[i+1])) return 1;
 	}
 	return 0;
 	L_CFMT:;
 	for(; i < size; i++) {
-		int ch = t.ustr[i];
-		if(isalpha(ch) || t.ustr[i+1] == '{') return 1;
+		int ch = t.utext[i];
+		if(isalpha(ch) || t.utext[i+1] == '{') return 1;
 		if(!isdigit(ch) && ch != '.') goto L_AGAIN;
 	}
 	return 0;
 	L_KFMT:;
 	for(; i < size; i++) {
-		int ch = t.ustr[i];
+		int ch = t.utext[i];
 		if(ch == '{') return 1;
 		if(!isalnum(ch) && ch != ':') goto L_AGAIN;
 	}
@@ -1055,8 +1055,8 @@ static knh_bool_t bytes_isLONGFMT(knh_bytes_t t)
 
 static knh_class_t knh_bytes_CFMT(knh_bytes_t t)
 {
-	if(t.ustr[0] == '%' && (isdigit(t.ustr[1]) || t.ustr[1] == ' ' || t.ustr[1] == '.')) {
-		int ch = t.ustr[t.len - 1];
+	if(t.utext[0] == '%' && (isdigit(t.utext[1]) || t.utext[1] == ' ' || t.utext[1] == '.')) {
+		int ch = t.utext[t.len - 1];
 		switch(ch) {
 		case 'd': case 'u': case 'x': case 'c': return CLASS_Int;
 		case 'e': case 'f': return CLASS_Float;
@@ -1068,12 +1068,12 @@ static knh_class_t knh_bytes_CFMT(knh_bytes_t t)
 
 static knh_methodn_t bytes_parsemn(CTX ctx, knh_bytes_t t)
 {
-	if(t.ustr[0] == '%' && t.ustr[1] != '%') {
+	if(t.utext[0] == '%' && t.utext[1] != '%') {
 		size_t i;
 		for(i = 1; i < t.len; i++) {
-			int ch = t.ustr[i];
+			int ch = t.utext[i];
 			if(isalnum(ch) || ch == ':' || ch == ' ') continue;
-			if(ch == '.' && !isalpha(t.ustr[i-1])) continue;
+			if(ch == '.' && !isalpha(t.utext[i-1])) continue;
 			break;
 		}
 		if(i == t.len) {
@@ -1164,7 +1164,7 @@ static knh_Token_t *FMTCALL_typing(CTX ctx, knh_Stmt_t *stmt)
 	size_t i = 0, s = 0;
 	while(i < t.len) {
 		for(;i < t.len; i++) {
-			int ch = t.ustr[i];
+			int ch = t.utext[i];
 			if(ch == '\n') uline++;
 			if(ch == '%') {
 				i++;
@@ -1186,13 +1186,13 @@ static knh_Token_t *FMTCALL_typing(CTX ctx, knh_Stmt_t *stmt)
 		}
 		if(!(i < t.len)) break;
 		s = i - 1;
-		DBG_P("FMT t[%d]=%c", s, t.ustr[s]);
-		if(t.ustr[s] == '$') {
+		DBG_P("FMT t[%d]=%c", s, t.utext[s]);
+		if(t.utext[s] == '$') {
 			for(;i < t.len; i++) {
-				int ch = t.ustr[i];
+				int ch = t.utext[i];
 				if(!isalnum(ch)) break;
 			}
-			DBG_P("nm last t[%d]=%c", i-1, t.ustr[-1]);
+			DBG_P("nm last t[%d]=%c", i-1, t.utext[-1]);
 			knh_bytes_t name = {{t.text + s + 1}, i - (s + 1)};
 			knh_Token_t *tkN = new_(Token);
 			tkN->tt = isupper(t.text[0]) ? TT_UNAME : TT_NAME;
@@ -1201,9 +1201,9 @@ static knh_Token_t *FMTCALL_typing(CTX ctx, knh_Stmt_t *stmt)
 			stmtW = new_StmtW1(ctx, new_TokenCONST(ctx, new_S(ctx, STEXT("%s"))), tkNN(stmt, 1), tkN);
 			APPEND_TAIL(stmtHEAD, stmtTAIL, stmtW);
 		}
-		else if(t.ustr[s] == '%') {
+		else if(t.utext[s] == '%') {
 			for(;i < t.len; i++) {
-				int ch = t.ustr[i];
+				int ch = t.utext[i];
 				DBG_P("t[%d]=%c", i, ch);
 				if(ch == '{') {
 					knh_bytes_t mt = {{t.text + s}, i - s};
@@ -3517,18 +3517,19 @@ static knh_Stmt_t *knh_Stmt_clone(CTX ctx, knh_Stmt_t *stmt)
 static void* knh_lookupLibraryFunc(CTX ctx, knh_bytes_t libfunc)
 {
 	void *cfunc = NULL;
-	knh_index_t loc = knh_bytes_index(libfunc, ':');
-	if(loc != -1) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-		knh_bytes_t libname = knh_bytes_first(libfunc, loc);
-		knh_bytes_t funcname = knh_bytes_last(libfunc, loc+1);
-		knh_Bytes_write(ctx, cwb->ba, libname);
-		void *p = knh_cwb_dlopen(ctx, LOG_DEBUG, cwb);
-		if(p != NULL) {
-			cfunc = knh_dlsym(ctx, LOG_DEBUG, p, funcname.text);
-		}
-		knh_cwb_close(cwb);
-	}
+//	knh_index_t loc = knh_bytes_index(libfunc, ':');
+//	if(loc != -1) {
+//		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//		knh_bytes_t libname = knh_bytes_first(libfunc, loc);
+//		knh_bytes_t funcname = knh_bytes_last(libfunc, loc+1);
+//		knh_Bytes_write(ctx, cwb->ba, libname);
+//		void *p = knh_path_dlopen(ctx, LOG_DEBUG, cwb);
+//		if(p != NULL) {
+//			cfunc = knh_dlsym(ctx, LOG_DEBUG, p, funcname.text);
+//		}
+//		knh_cwb_close(cwb);
+//	}
+	fprintf(stderr, "Hey!, Shinpei, If you want to use this, email me!\n");
 	return cfunc;
 }
 

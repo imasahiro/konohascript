@@ -206,6 +206,7 @@ void knh_expandEventTBL(CTX ctx)
 }
 
 static void initServiceSPI(knh_ServiceSPI_t *spi);
+void knh_loadScriptAliasTokenData(CTX ctx);
 
 static knh_context_t* new_RootContext(void)
 {
@@ -291,6 +292,7 @@ static knh_context_t* new_RootContext(void)
 	/* These are not shared, but needed to initialize System*/
 	knh_stack_initexpand(ctx, NULL, K_STACKSIZE);
 	KNH_INITv(ctx->sys, new_(System));
+	knh_loadScriptAliasTokenData(ctx);
 	KNH_INITv(share->rootns, new_NameSpace(ctx, NULL));
 
 	knh_loadScriptSystemData(ctx, share->rootns, kapi);

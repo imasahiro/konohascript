@@ -61,13 +61,21 @@ KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_NameSpace_t *ns, kn
 {
 	knh_bytes_t path = S_tobytes(urn);
 	const knh_StreamDSPI_t *dspi = knh_getStreamDSPI(ctx, ns, path);
-	knh_io_t fd = dspi->fopen(ctx, path, mode, mon);
-	if(fd != IO_NULL) {
-		knh_InputStream_t *in = new_InputStreamDSPI(ctx, fd, dspi);
-		KNH_SETv(ctx, DP(in)->urn, urn);
-		KNH_SETv(ctx, DP(in)->mon, mon);
-		return in;
+	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
+	if(dspi->realpath(ctx, ns, ph)) {
+		knh_io_t fd = dspi->fopen(ctx, ph, mode, mon);
+		if(fd != IO_NULL) {
+			knh_InputStream_t *in = new_InputStreamDSPI(ctx, fd, dspi);
+			KNH_SETv(ctx, DP(in)->urn, urn);
+			KNH_SETv(ctx, DP(in)->mon, mon);
+			knh_path_close(ctx, ph);
+			return in;
+		}
 	}
+	else {
+		KNH_TODO("not found");
+	}
+	knh_path_close(ctx, ph);
 	return NULL;
 }
 
@@ -178,6 +186,7 @@ void knh_InputStream_close(CTX ctx, knh_InputStream_t *in)
 	in->dspi->fclose(ctx, DP(in)->fio);
 	DP(in)->fio = IO_NULL;
 	in->dspi = knh_getDefaultStreamDSPI();
+	DBG_P("stream in=%s", S_tochar(DP(in)->urn));
 	knh_Bytes_dispose(ctx, DP(in)->ba);
 }
 
@@ -219,13 +228,21 @@ KNHAPI2(knh_OutputStream_t*) new_OutputStreamNULL(CTX ctx, knh_NameSpace_t *ns, 
 {
 	knh_bytes_t path = S_tobytes(urn);
 	const knh_StreamDSPI_t *dspi = knh_getStreamDSPI(ctx, ns, path);
-	knh_io_t fd = dspi->wopen(ctx, path, mode, mon);
-	if(fd != IO_NULL) {
-		knh_OutputStream_t *out = new_OutputStreamDSPI(ctx, fd, dspi);
-		KNH_SETv(ctx, DP(out)->urn, urn);
-		KNH_SETv(ctx, DP(out)->mon, mon);
-		return out;
+	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
+	if(dspi->realpath(ctx, ns, ph)) {
+		knh_io_t fd = dspi->wopen(ctx, ph, mode, mon);
+		if(fd != IO_NULL) {
+			knh_OutputStream_t *out = new_OutputStreamDSPI(ctx, fd, dspi);
+			KNH_SETv(ctx, DP(out)->urn, urn);
+			KNH_SETv(ctx, DP(out)->mon, mon);
+			knh_path_close(ctx, ph);
+			return out;
+		}
 	}
+	else {
+		KNH_TODO("not found");
+	}
+	knh_path_close(ctx, ph);
 	return NULL;
 }
 
@@ -290,6 +307,10 @@ void knh_OutputStream_close(CTX ctx, knh_OutputStream_t *w)
 	if(DP(w)->fio != IO_NULL) {
 		knh_OutputStream_flush(ctx, w, 1);
 		w->dspi->fclose(ctx, DP(w)->fio);
+		if(DP(w)->fio != IO_BUF) {
+			DBG_P("stream out=%s", S_tochar(DP(w)->urn));
+			knh_Bytes_dispose(ctx, DP(w)->ba);
+		}
 		DP(w)->fio = IO_NULL;
 		w->dspi = knh_getDefaultStreamDSPI();
 	}
@@ -442,9 +463,9 @@ void knh_write_quote(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8,
 	size_t i, s = 0;
 	knh_putc(ctx, w, quote);
 	for(i = 0; i < t.len; i++) {
-		int ch = t.ustr[i];
+		int ch = t.utext[i];
 		if(ch == '\t' || ch == '\n' || ch == '\r' || ch == '\\' || ch == quote) {
-			sub.ustr = t.ustr + s;
+			sub.utext = t.utext + s;
 			sub.len = i - s;
 			knh_write_utf8(ctx, w, sub, hasUTF8);
 			s = i + 1;
@@ -464,7 +485,7 @@ void knh_write_quote(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8,
 		}
 	}
 	if (s < t.len) {
-		sub.ustr = t.ustr + s;
+		sub.utext = t.utext + s;
 		sub.len = t.len - s;
 		knh_write_utf8(ctx, w, sub, hasUTF8);
 	}
@@ -473,9 +494,9 @@ void knh_write_quote(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8,
 
 void knh_write_cap(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8)
 {
-	if(islower(t.ustr[0])) {
-		knh_putc(ctx, w, toupper(t.ustr[0]));
-		t.ustr = t.ustr+1; t.len = t.len -1;
+	if(islower(t.utext[0])) {
+		knh_putc(ctx, w, toupper(t.utext[0]));
+		t.utext = t.utext+1; t.len = t.len -1;
 	}
 	knh_write_utf8(ctx, w, t, hasUTF8);
 }
@@ -802,24 +823,23 @@ static METHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_InputStream_t *in = sfp[0].in;
 	knh_bytes_t path = S_tobytes(sfp[1].s);
-	knh_index_t loc = knh_bytes_index(path, ':');
 	const char *mode = IS_NULL(sfp[2].s) ? "r" : S_tochar(sfp[2].s);
 	knh_NameSpace_t *ns = sfp[3].ns;
-	if(loc == -1 || (loc == 1 && isalpha(path.ustr[0]))) {  /* 'C:/' */
-		in->dspi = knh_getStreamDSPI(ctx, ns, STEXT("script"));
+	knh_path_t phbuf, *ph = knh_path_open_(ctx, "script", path, &phbuf);
+	path.text = P_text(ph); path.len = ph->plen;
+	in->dspi = knh_getStreamDSPI(ctx, ns, path);
+	if(in->dspi->realpath(ctx, ns, ph)) {
+		KNH_SETv(ctx, DP(in)->mon, sfp[4].mon);
+		DP(in)->fio = in->dspi->fopen(ctx, ph, mode, DP(in)->mon);
+		if(DP(in)->fio != IO_NULL) {
+			KNH_SETv(ctx, DP(in)->urn, sfp[1].s);
+			goto L_RETURN;
+		}
 	}
-	else {
-		in->dspi = knh_getStreamDSPI(ctx, ns, knh_bytes_first(path, loc));
-	}
-	KNH_SETv(ctx, DP(in)->mon, sfp[4].mon);
-	DP(in)->fio = in->dspi->fopen(ctx, path, mode, DP(in)->mon);
-	if(DP(in)->fio != IO_NULL) {
-		KNH_SETv(ctx, DP(in)->urn, sfp[1].s);
-	}
-	else {
-		knh_Object_toNULL(ctx, in);
-		in->dspi = knh_getDefaultStreamDSPI();
-	}
+	knh_Object_toNULL(ctx, in);
+	in->dspi = knh_getDefaultStreamDSPI();
+	L_RETURN:;
+	knh_path_close(ctx, ph);
 	RETURN_(in);
 }
 
@@ -845,7 +865,7 @@ static METHOD InputStream_getChar(CTX ctx, knh_sfp_t *sfp _RIX)
 //	}
 //	buf = knh_bytes_last(buf, offset);
 //	if(len != 0) {
-//		knh_Bytes_ensureSize(ctx, ba, offset + len);
+//		knh_Bytes_ensureSize(ctx, ba, offset + len);  // DONT USE ensureSize
 //		buf.len = len;
 //		buf.ubuf = ba->bu.ubuf;
 //	}
@@ -964,25 +984,23 @@ static METHOD OutputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	knh_bytes_t path = S_tobytes(sfp[1].s);
-	knh_index_t loc = knh_bytes_index(path, ':');
 	const char *mode = IS_NULL(sfp[2].s) ? "w" : S_tochar(sfp[2].s);
-	if(loc == -1 || (loc == 1 && isalpha(path.ustr[0]))) {  /* 'C:/' */
-		w->dspi = knh_getStreamDSPI(ctx, sfp[3].ns, STEXT("file"));
+	knh_NameSpace_t *ns = sfp[3].ns;
+	knh_path_t phbuf, *ph = knh_path_open_(ctx, "script", path, &phbuf);
+	path.text = P_text(ph); path.len = ph->plen;
+	w->dspi = knh_getStreamDSPI(ctx, ns, path);
+	if(w->dspi->realpath(ctx, ns, ph)) {
+		KNH_SETv(ctx, DP(w)->mon, sfp[4].mon);
+		DP(w)->fio = w->dspi->fopen(ctx, ph, mode, DP(w)->mon);
+		if(DP(w)->fio != IO_NULL) {
+			KNH_SETv(ctx, DP(w)->urn, sfp[1].s);
+			goto L_RETURN;
+		}
 	}
-	else {
-		w->dspi = knh_getStreamDSPI(ctx, sfp[3].ns, knh_bytes_first(path, loc));
-	}
-	KNH_SETv(ctx, DP(w)->mon, sfp[4].mon);
-	DP(w)->fio = w->dspi->wopen(ctx, path, mode, DP(w)->mon);
-	if(DP(w)->fio != IO_NULL) {
-		KNH_SETv(ctx, DP(w)->urn, sfp[1].s);
-		knh_Bytes_expands(ctx, DP(w)->ba, K_PAGESIZE);
-		OutputStream_setBOL(w,1);
-	}
-	else {
-		knh_Object_toNULL(ctx, w);
-		w->dspi = knh_getDefaultStreamDSPI();
-	}
+	knh_Object_toNULL(ctx, w);
+	w->dspi = knh_getDefaultStreamDSPI();
+	L_RETURN:;
+	knh_path_close(ctx, ph);
 	RETURN_(w);
 }
 
@@ -1008,7 +1026,7 @@ static METHOD OutputStream_write(CTX ctx, knh_sfp_t *sfp _RIX)
 	size_t offset = (sfp[2].ivalue == 0) ? 0 : knh_array_index(ctx, sfp, Int_to(size_t, sfp[2]), t.len);
 	size_t len = (sfp[3].ivalue == 0) ? (t.len - offset) : Int_to(size_t, sfp[3]);
 	if(offset + len > t.len) len = t.len - offset;
-	t.ustr = &(t.ustr[offset]);
+	t.utext = &(t.utext[offset]);
 	t.len = len;
 	knh_OutputStream_write(ctx, sfp[0].w, t);
 	RETURNvoid_();
@@ -1160,8 +1178,8 @@ static METHOD Int_format(CTX ctx, knh_sfp_t *sfp _RIX)
 	DBG_ASSERT(arg == sfp+1);
 	knh_bytes_t fmt = S_tobytes(arg[0].s);
 	L_RETRY:;
-	int ch = fmt.ustr[fmt.len - 1];
-	if(fmt.ustr[0] == '%' && (ch == 'u' || ch == 'd' || ch == 'x')) {
+	int ch = fmt.utext[fmt.len - 1];
+	if(fmt.utext[0] == '%' && (ch == 'u' || ch == 'd' || ch == 'x')) {
 		char fmtbuf[40], buf[80];
 		const char *ifmt = (ch == 'd') ? K_INT_FMT : ((ch == 'x') ? K_INT_XFMT : K_UINT_FMT);
 		knh_snprintf(buf, sizeof(buf), newfmt(fmtbuf, sizeof(fmtbuf), fmt, ifmt + 1), sfp[0].ivalue);
@@ -1183,8 +1201,8 @@ static METHOD Float_format(CTX ctx, knh_sfp_t *sfp _RIX)
 	DBG_ASSERT(arg == sfp+1);
 	knh_bytes_t fmt = S_tobytes(arg[0].s);
 	L_RETRY:;
-	int ch = fmt.ustr[fmt.len - 1];
-	if(fmt.ustr[0] == '%' && (ch == 'f' || ch == 'e')) {
+	int ch = fmt.utext[fmt.len - 1];
+	if(fmt.utext[0] == '%' && (ch == 'f' || ch == 'e')) {
 		char fmtbuf[40], buf[80];
 		const char *ifmt = (ch == 'f') ? K_FLOAT_FMT : K_FLOAT_FMTE;
 		knh_snprintf(buf, sizeof(buf), newfmt(fmtbuf, sizeof(fmtbuf), fmt, ifmt + strlen(ifmt)-1), sfp[0].fvalue);
@@ -1205,7 +1223,7 @@ static METHOD String_format(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_sfp_t *arg = ctx->esp - 1;
 	DBG_ASSERT(arg == sfp+1);
 	knh_bytes_t fmt = S_tobytes(arg[0].s);
-	if(fmt.ustr[0] == '%' && fmt.ustr[fmt.len-1] == 's') {
+	if(fmt.utext[0] == '%' && fmt.utext[fmt.len-1] == 's') {
 		char buf[256];
 		knh_snprintf(buf, sizeof(buf), fmt.text, S_tochar(sfp[0].s));
 		RETURN_(new_S(ctx, B(buf)));

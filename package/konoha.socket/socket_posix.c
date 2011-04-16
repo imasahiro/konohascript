@@ -100,8 +100,11 @@ EXPORTAPI(const knh_ClassDef_t*) ServerSocket(CTX ctx)
 	cdef.free = Socket_free;
 	return (const knh_ClassDef_t*)&cdef;
 }
-
-static knh_io_t SOCKET_open(CTX ctx, knh_bytes_t n, const char *mode, knh_Monitor_t *mon)
+static knh_bool_t SOCKET_realpath(CTX ctx, knh_NameSpace_t *ns, knh_path_t *ph)
+{
+	return 0;
+}
+static knh_io_t SOCKET_open(CTX ctx, knh_path_t *ph, const char *mode, knh_Monitor_t *mon)
 {
 	return IO_NULL; // Always opened by external
 }
@@ -119,9 +122,8 @@ static void SOCKET_close(CTX ctx, knh_io_t fd)
 }
 
 static knh_StreamDSPI_t SOCKET_DSPI = {
-	K_DSPI_STREAM, "socket",
-	SOCKET_open, SOCKET_open, SOCKET_read, SOCKET_write, SOCKET_close,
-	K_OUTBUF_MAXSIZ
+	K_DSPI_STREAM, "socket", SOCKET_realpath,
+	SOCKET_open, SOCKET_open, SOCKET_read, SOCKET_write, K_OUTBUF_MAXSIZ, SOCKET_close,
 };
 
 static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int port, knh_Monitor_t *mon)

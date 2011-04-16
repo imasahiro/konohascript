@@ -818,7 +818,7 @@ static void Bytes_write_(CTX ctx, knh_OutputStream_t *w, knh_Object_t *o, int le
 			for(i = 0; i < 16; i++) {
 				n = j * 16 + i;
 				if(n < ba->bu.len) {
-					knh_snprintf(buf, sizeof(buf), " %2x", (int)ba->bu.ustr[n]);
+					knh_snprintf(buf, sizeof(buf), " %2x", (int)ba->bu.utext[n]);
 					knh_write(ctx, w, B(buf));
 				}
 				else {
@@ -828,8 +828,8 @@ static void Bytes_write_(CTX ctx, knh_OutputStream_t *w, knh_Object_t *o, int le
 			knh_write(ctx, w, STEXT("    "));
 			for(i = 0; i < 16; i++) {
 				n = j * 16 + i;
-				if(n < ba->bu.len && isprint(ba->bu.ustr[n])) {
-					knh_snprintf(buf, sizeof(buf), "%c", (int)ba->bu.ustr[n]);
+				if(n < ba->bu.len && isprint(ba->bu.utext[n])) {
+					knh_snprintf(buf, sizeof(buf), "%c", (int)ba->bu.utext[n]);
 					knh_write(ctx, w, B(buf));
 				}
 				else {
@@ -1862,7 +1862,7 @@ static void InputStream_init(CTX ctx, Object *o)
 	knh_InputStreamEX_t *b = knh_bodymalloc(ctx, InputStream);
 	in->dspi = knh_getDefaultStreamDSPI();
 	b->fio = IO_BUF;
-	KNH_INITv(b->ba, new_Bytes(ctx, 0));
+	KNH_INITv(b->ba, new_Bytes(ctx, "stream", 0));
 	KNH_INITv(b->urn, TS_DEVNULL);
 	b->pos = 0; b->posend = 0;
 	b->stat_size = 0;
@@ -1914,7 +1914,7 @@ static void OutputStream_init(CTX ctx, Object *o)
 	knh_OutputStreamEX_t *b = knh_bodymalloc(ctx, OutputStream);
 	w->dspi = knh_getDefaultStreamDSPI();
 	b->fio = IO_NULL;
-	KNH_INITv(b->ba, new_Bytes(ctx, 0));
+	KNH_INITv(b->ba, new_Bytes(ctx, "stream", 0));
 	KNH_INITv(b->urn, TS_DEVNULL);
 	b->stat_size = 0;
 	KNH_INITv(b->NEWLINE, TS_EOL);
@@ -2009,7 +2009,7 @@ static void ResultSet_init(CTX ctx, Object *o)
 	b->tcid = CLASS_ResultSet;
 	b->column_size = 0;
 	b->column = NULL;
-	KNH_INITv(b->databuf, new_Bytes(ctx, 256));
+	KNH_INITv(b->databuf, new_Bytes(ctx, "resultset", 0));
 	KNH_INITv(b->conn, KNH_NULL);
 	b->qcurfree = knh_getQueryDSPI(ctx, NULL, K_DEFAULT_DSPI)->qcurfree;
 	b->count = 0;
@@ -2114,36 +2114,47 @@ static void NameSpace_init(CTX ctx, Object *o)
 {
 	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
 	knh_NameSpaceEX_t *b = knh_bodymalloc(ctx, NameSpace);
-	KNH_INITv(ns->nsname, TS_main);
-	b->parentNULL = NULL;
-	b->aliasDictMapNULL = NULL;
+	KNH_INITv(b->nsname, TS_main);
+	b->macroDictMapNULL = NULL;
 	b->name2cidDictSetNULL = NULL;
-	b->lconstDictCaseMapNULL = NULL;
+	b->constDictCaseMapNULL = NULL;
 	b->func2cidDictSetNULL = NULL;
 	b->formattersNULL = NULL;
 	b->methodsNULL = NULL;
-	ns->strregexSPI = knh_getStrRegexSPI();
-	ns->regexSPI = knh_getRegexSPI();
+	b->dspiDictSetNULL = NULL;
 	ns->b = b;
+	ns->parentNULL = NULL;
+	ns->dlhdr = NULL;
+	KNH_INITv(ns->rpath, TS_EMPTY);
 }
 
 static void NameSpace_reftrace(CTX ctx, Object *o FTRARG)
 {
 	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
 	knh_NameSpaceEX_t *b = DP(ns);
-	KNH_ADDREF(ctx, (ns->nsname));
-	KNH_ADDNNREF(ctx, (b->parentNULL));
-	KNH_ADDNNREF(ctx, (b->aliasDictMapNULL));
-	KNH_ADDNNREF(ctx, (b->name2cidDictSetNULL));
-	KNH_ADDNNREF(ctx, (b->func2cidDictSetNULL));
-	KNH_ADDNNREF(ctx, (b->lconstDictCaseMapNULL));
-	KNH_ADDNNREF(ctx, (b->formattersNULL));
-	KNH_ADDNNREF(ctx, (b->methodsNULL));
+	KNH_ADDNNREF(ctx, ns->parentNULL);
+	KNH_ADDREF(ctx, ns->rpath);
+	KNH_ADDREF(ctx, b->nsname);
+	KNH_ADDNNREF(ctx, b->dspiDictSetNULL);
+	KNH_ADDNNREF(ctx, b->macroDictMapNULL);
+	KNH_ADDNNREF(ctx, b->name2cidDictSetNULL);
+	KNH_ADDNNREF(ctx, b->func2cidDictSetNULL);
+	KNH_ADDNNREF(ctx, b->constDictCaseMapNULL);
+	KNH_ADDNNREF(ctx, b->formattersNULL);
+	KNH_ADDNNREF(ctx, b->methodsNULL);
 	KNH_SIZEREF(ctx);
 }
 
+static void NameSpace_free(CTX ctx, Object *o)
+{
+	BODY_free(ctx, o);
+	if(((knh_NameSpace_t*)o)->dlhdr) {
+		knh_dlclose(ctx, ((knh_NameSpace_t*)o)->dlhdr);
+	}
+}
+
 static knh_ClassDef_t NameSpaceDef = {
-	NameSpace_init, TODO_initcopy, NameSpace_reftrace, BODY_free,
+	NameSpace_init, TODO_initcopy, NameSpace_reftrace, NameSpace_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_write,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
@@ -2159,7 +2170,6 @@ static void Package_init(CTX ctx, Object *o)
 	knh_Package_t *pkg = (knh_Package_t*)o;
 	pkg->ns = NULL;
 	pkg->script = NULL;
-	pkg->hdlr = NULL;
 }
 
 static void Package_reftrace(CTX ctx, Object *o FTRARG)
