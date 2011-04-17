@@ -331,12 +331,12 @@ knh_path_t* knh_path_open(CTX ctx, const char *scheme, const char *name, knh_pat
 knh_cwb_t* knh_cwb_copy(CTX ctx, knh_cwb_t *cwbbuf, knh_path_t *ph, int hasScheme)
 {
 	knh_cwb_t *cwb = knh_cwb_open(ctx, cwbbuf);
+	knh_Bytes_ensureSize(ctx, cwb->ba, ph->plen + 1);
 	knh_bytes_t t = {{P_text(ph)}, ph->plen};
 	if(!hasScheme) {
 		t.text = t.text + ph->pbody;
 		t.len = t.len - ph->pbody;
 	}
-	knh_Bytes_ensureSize(ctx, cwb->ba, t.len + 1);
 	knh_Bytes_write(ctx, cwb->ba, t);
 	return cwb;
 }
@@ -400,6 +400,7 @@ const char* knh_realpath(CTX ctx, const char *path, knh_path_t *ph)
 const char* knh_ospath(CTX ctx, knh_path_t *ph)
 {
 	knh_uchar_t *ubuf = P_ubuf(ph);
+	DBG_ASSERT(ubuf[ph->plen] == 0);
 	if(!ph->isRealPath) {
 		int hasUTF8 = 0;
 		size_t i;
@@ -414,13 +415,12 @@ const char* knh_ospath(CTX ctx, knh_path_t *ph)
 			KNH_TODO("multibytes file path");
 		}
 	}
-	DBG_ASSERT(ubuf[ph->plen] == 0);
 	if(!ph->isRealPath) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_copy(ctx, &cwbbuf, ph, 0);
 		knh_realpath(ctx, knh_cwb_tochar(ctx, cwb), ph);
 		knh_cwb_close(cwb);
 	}
-	return (const char*) ubuf + ph->pbody;
+	return P_text(ph) + ph->pbody;
 }
 
 knh_String_t* knh_path_newString(CTX ctx, knh_path_t *ph, int hasScheme)
