@@ -595,15 +595,15 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		int bufsiz = FILEPATH_BUFSIZ;
 		HMODULE h = LoadLibrary(NULL);
 		GetModuleFileNameA(h, buf, bufsiz);
-		knh_cwb_write(ctx, cwb, B(buf));
-		SETPROP("konoha.bin.path", knh_cwb_newString(ctx, cwb));
+		ph = knh_path_open_(ctx, NULL, B(buf), &phbuf);
+		SETPROP("konoha.bin.path", knh_path_newString(ctx, ph, 0));
 		if(homepath == NULL) {
+			knh_String_t *s;
 			GetModuleFileNameA(h, buf, bufsiz);
-			knh_cwb_write(ctx, cwb, B(buf));
-			knh_cwb_parentpath(ctx, cwb, NULL);
-			shome = knh_cwb_newString(ctx, cwb);
+			knh_path_reduce(ctx, ph, '/');
+			s = knh_path_newString(ctx, ph);
+			SETPROP("konoha.home.path", UPCAST(s));
 			home = S_tobytes(shome);
-			SETPROP("konoha.home.path"), UPCAST(shome));
 		}
 	}
 #elif defined(K_USING_LINUX_)
@@ -613,18 +613,16 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		char buf[FILEPATH_BUFSIZ];
 		int bufsiz = FILEPATH_BUFSIZ;
 		size_t size = readlink("/proc/self/exe", buf, bufsiz);
-		knh_cwb_write(ctx, cwb, new_bytes2(buf, size));
-		DictMap_set_(ctx, sysprops,
-			new_T("konoha.bin.path"), UPCAST(knh_cwb_newString(ctx, cwb)));
-		if(homepath == NULL) {
-			size = readlink("/proc/self/exe", buf, bufsiz);
-			knh_cwb_write(ctx, cwb, new_bytes2(buf, size));
-			knh_cwb_parentpath(ctx, cwb, NULL);
-			knh_cwb_parentpath(ctx, cwb, NULL);
-			knh_cwb_write(ctx, cwb, B("/konoha"));
-			shome = knh_cwb_newString(ctx, cwb);
-			home = S_tobytes(shome);
-			SETPROP("konoha.home.path"), UPCAST(shome));
+		ph = knh_path_open_(ctx, NULL, new_bytes2(buf, size), &phbuf);
+		SETPROP("konoha.bin.path", knh_path_newString(ctx, ph, 0));
+		if(home.text == NULL) {
+			knh_String_t *s;
+			knh_path_reduce(ctx, ph, '/');
+			knh_path_reduce(ctx, ph, '/');
+			knh_path_append(ctx, ph, 1/*isSep*/, "konoha");
+			s = knh_path_newString(ctx, ph, 0/*hasScheme*/);
+			SETPROP("konoha.home.path", UPCAST(s));
+			home = S_tobytes(s);
 		}
 	}
 #elif defined(K_USING_MACOSX_)
