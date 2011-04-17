@@ -41,6 +41,113 @@ extern "C" {
 #endif
 
 /* ------------------------------------------------------------------------ */
+
+int knh_bytes_parseint(knh_bytes_t t, knh_int_t *value)
+{
+	knh_uint_t n = 0, prev = 0, base = 10;
+	size_t i = 0;
+	if(t.len > 1) {
+		if(t.utext[0] == '0') {
+			if(t.utext[1] == 'x') {
+				base = 16; i = 2;
+			}
+			else if(t.utext[1] == 'b') {
+				base = 2;  i = 2;
+			}
+		}else if(t.utext[0] == '-') {
+			base = 10; i = 1;
+		}
+	}
+	for(;i < t.len; i++) {
+		int c = t.utext[i];
+		if('0' <= c && c <= '9') {
+			prev = n;
+			n = n * base + (c - '0');
+		}else if(base == 16) {
+			if('A' <= c && c <= 'F') {
+				prev = n;
+				n = n * 16 + (10 + c - 'A');
+			}else if('a' <= c && c <= 'f') {
+				prev = n;
+				n = n * 16 + (10 + c - 'a');
+			}else {
+				break;
+			}
+		}else if(c == '_') {
+			continue;
+		}else {
+			break;
+		}
+		if(!(n >= prev)) {
+			*value = 0;
+			return 0;
+		}
+	}
+	if(t.utext[0] == '-') n = -((knh_int_t)n);
+	*value = n;
+	return 1;
+}
+
+int knh_bytes_parsefloat(knh_bytes_t t, knh_float_t *value)
+{
+#if defined(K_USING_NOFLOAT)
+	{
+		knh_int_t v = 0;
+		knh_bytes_parseint(t, &v);
+		*value = (knh_float_t)v;
+	}
+#else
+	*value = strtod(t.text, NULL);
+#endif
+	return 1;
+}
+
+
+knh_index_t knh_bytes_indexOf(knh_bytes_t base, knh_bytes_t sub)
+{
+	const char *const str0 = base.text;  /* ide version */
+	const char *const str1 = sub.text;
+	knh_index_t len  = sub.len;
+	knh_index_t loop = base.len - len;
+	knh_index_t index = -1;
+	if (loop >= 0) {
+		knh_index_t i;
+		const char *s0 = str0, *s1 = str1;
+		const char *const s0end = s0 + loop;
+		while(s0 <= s0end) {
+			for (i = 0; i < len; i++) {
+				if (s0[i] != s1[i]) {
+					goto L_END;
+				}
+			}
+			if (i == len) {
+				return s0 - str0;
+			}
+			L_END:
+			s0++;
+		}
+	}
+	return index;
+}
+
+int knh_bytes_strcmp(knh_bytes_t v1, knh_bytes_t v2)
+{
+	int res1;
+	if(v1.len < v2.len) {
+		int res = knh_strncmp(v1.text, v2.text, v1.len);
+		res1 = (res == 0) ? -1 : res;
+	}
+	else if(v1.len > v2.len) {
+		int res = knh_strncmp(v1.text, v2.text, v2.len);
+		res1 = (res == 0) ? 1 : res;
+	}
+	else {
+		res1 = knh_strncmp(v1.text, v2.text, v1.len);
+	}
+	return res1;
+}
+
+/* ------------------------------------------------------------------------ */
 /* These utf8 functions were originally written by Shinpei Nakata */
 
 #define utf8_isLead(c)      ((c & 0xC0) != 0x80)

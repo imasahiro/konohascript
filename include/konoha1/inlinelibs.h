@@ -22,8 +22,9 @@ static void RCinc(CTX ctx, Object *o)
 /* ------------------------------------------------------------------------ */
 /* [bytes] */
 
-#if defined(USE_new_bytes) || defined(USE_B)
-static inline knh_bytes_t new_bytes(char *c_buf)
+#if defined(USE_new_bytes) || defined(USE_B) || defined(USE_bytes)
+static inline knh_bytes_t new_bytes(char *c_buf) CC_UNUSED;
+static knh_bytes_t new_bytes(char *c_buf)
 {
 	DBG_ASSERT(c_buf != NULL);
 	knh_bytes_t t;
@@ -33,8 +34,9 @@ static inline knh_bytes_t new_bytes(char *c_buf)
 }
 #endif
 
-#if defined(USE_new_bytes2) || defined(USE_STEXT)
-static inline knh_bytes_t new_bytes2(const char *text, size_t len)
+#if defined(USE_new_bytes2) || defined(USE_STEXT) || defined(USE_bytes)
+static inline knh_bytes_t new_bytes2(const char *text, size_t len) CC_UNUSED;
+static knh_bytes_t new_bytes2(const char *text, size_t len)
 {
 	knh_bytes_t v;
 	v.text = text;
@@ -43,81 +45,37 @@ static inline knh_bytes_t new_bytes2(const char *text, size_t len)
 }
 #endif
 
-#if defined(USE_bytes_indexOf)
-knh_index_t knh_bytes_indexOf(knh_bytes_t base, knh_bytes_t sub)
-{
-	const char *const str0 = base.text;  /* ide version */
-	const char *const str1 = sub.text;
-	knh_index_t len  = sub.len;
-	knh_index_t loop = base.len - len;
-	knh_index_t index = -1;
-	if (loop >= 0) {
-		knh_index_t i;
-		const char *s0 = str0, *s1 = str1;
-		const char *const s0end = s0 + loop;
-		while(s0 <= s0end) {
-			for (i = 0; i < len; i++) {
-				if (s0[i] != s1[i]) {
-					goto L_END;
-				}
-			}
-			if (i == len) {
-				return s0 - str0;
-			}
-			L_END:
-			s0++;
-		}
-	}
-	return index;
-}
-#endif
-
-#ifdef USE_bytes_strcmp
-static int knh_bytes_strcmp(knh_bytes_t v1, knh_bytes_t v2)
-{
-	int res1;
-	if(v1.len < v2.len) {
-		int res = knh_strncmp(v1.text, v2.text, v1.len);
-		res1 = (res == 0) ? -1 : res;
-	}
-	else if(v1.len > v2.len) {
-		int res = knh_strncmp(v1.text, v2.text, v2.len);
-		res1 = (res == 0) ? 1 : res;
-	}
-	else {
-		res1 = knh_strncmp(v1.text, v2.text, v1.len);
-	}
-	return res1;
-}
-#endif
-
 /* ------------------------------------------------------------------------ */
 
-#ifdef USE_bytes_equals
-static inline knh_bool_t knh_bytes_equals(knh_bytes_t v1, knh_bytes_t v2)
+#if defined(USE_bytes) || defined(USE_bytes_equals)
+static inline knh_bool_t knh_bytes_equals(knh_bytes_t v1, knh_bytes_t v2) CC_UNUSED;
+static knh_bool_t knh_bytes_equals(knh_bytes_t v1, knh_bytes_t v2)
 {
 	return (v1.len == v2.len && knh_strncmp(v1.text, v2.text, v1.len) == 0);
 }
 #endif
 
-#ifdef USE_bytes_equalsIgnoreCase
-static inline knh_bool_t knh_bytes_equalsIgnoreCase(knh_bytes_t v1, knh_bytes_t v2)
+#if defined(USE_bytes) || defined(USE_bytes_equalsIgnoreCase)
+static inline knh_bool_t knh_bytes_equalsIgnoreCase(knh_bytes_t v1, knh_bytes_t v2) CC_UNUSED;
+static knh_bool_t knh_bytes_equalsIgnoreCase(knh_bytes_t v1, knh_bytes_t v2)
 {
 	return (v1.len == v2.len && knh_strncasecmp(v1.text, v2.text, v1.len) == 0);
 }
 #endif
 
 
-#ifdef USE_bytes_startsWith
-static inline int knh_bytes_startsWith(knh_bytes_t v1, knh_bytes_t v2)
+#if defined(USE_bytes) || defined(USE_bytes_startsWith)
+static inline int knh_bytes_startsWith(knh_bytes_t v1, knh_bytes_t v2) CC_UNUSED;
+static int knh_bytes_startsWith(knh_bytes_t v1, knh_bytes_t v2)
 {
 	if(v1.len < v2.len) return 0;
 	return (knh_strncmp(v1.text, v2.text, v2.len) == 0);
 }
 #endif
 
-#ifdef USE_bytes_endsWith
-static inline knh_bool_t knh_bytes_endsWith(knh_bytes_t v1, knh_bytes_t v2)
+#if defined(USE_bytes) || defined(USE_bytes_endsWith)
+static inline knh_bool_t knh_bytes_endsWith(knh_bytes_t v1, knh_bytes_t v2) CC_UNUSED;
+static knh_bool_t knh_bytes_endsWith(knh_bytes_t v1, knh_bytes_t v2)
 {
 	if(v1.len < v2.len) return 0;
 	knh_text_t *p = v1.text + (v1.len-v2.len);
@@ -125,8 +83,9 @@ static inline knh_bool_t knh_bytes_endsWith(knh_bytes_t v1, knh_bytes_t v2)
 }
 #endif
 
-#ifdef USE_bytes_index
-static inline knh_index_t knh_bytes_index(knh_bytes_t v, int ch)
+#if defined(USE_bytes_index) || defined(USE_bytes)
+static inline knh_index_t knh_bytes_index(knh_bytes_t v, int ch) CC_UNUSED;
+static knh_index_t knh_bytes_index(knh_bytes_t v, int ch)
 {
 	size_t i;
 	for(i = 0; i < v.len; i++) {
@@ -136,8 +95,21 @@ static inline knh_index_t knh_bytes_index(knh_bytes_t v, int ch)
 }
 #endif
 
-#ifdef USE_bytes_next
-static inline knh_bytes_t knh_bytes_next(knh_bytes_t v, int ch)
+#if defined(USE_bytes_rindex) || defined(USE_bytes)
+static inline knh_index_t knh_bytes_rindex(knh_bytes_t v, int ch) CC_UNUSED;
+static knh_index_t knh_bytes_rindex(knh_bytes_t v, int ch)
+{
+	knh_index_t i;
+	for(i = v.len - 1; i >= 0; i--) {
+		if(v.utext[i] == ch) return i;
+	}
+	return -1;
+}
+#endif
+
+#if defined(USE_bytes) || defined(USE_bytes_next)
+static inline knh_bytes_t knh_bytes_next(knh_bytes_t v, int ch) CC_UNUSED;
+static knh_bytes_t knh_bytes_next(knh_bytes_t v, int ch)
 {
 	knh_bytes_t t = {{""}, 0};
 	size_t i;
@@ -152,131 +124,45 @@ static inline knh_bytes_t knh_bytes_next(knh_bytes_t v, int ch)
 }
 #endif
 
-#ifdef USE_bytes_rindex
-static knh_index_t knh_bytes_rindex(knh_bytes_t v, int ch)
+#if defined(USE_bytes) || defined(USE_bytes_first)
+static inline knh_bytes_t knh_bytes_first(knh_bytes_t t, knh_intptr_t loc) CC_UNUSED;
+static knh_bytes_t knh_bytes_first(knh_bytes_t t, knh_intptr_t loc)
 {
-	knh_index_t i;
-	for(i = v.len - 1; i >= 0; i--) {
-		if(v.utext[i] == ch) return i;
-	}
-	return -1;
-}
-#endif
-
-
-#ifdef USE_bytes_first
-static inline knh_bytes_t knh_bytes_first(knh_bytes_t t, knh_intptr_t loc)
-{
-	knh_bytes_t t2;
-	t2.utext = t.utext;
-	t2.len = loc;
+	knh_bytes_t t2 = {{t.text}, loc};
 	return t2;
 }
 #endif
 
-#ifdef USE_bytes_last
-static inline knh_bytes_t knh_bytes_last(knh_bytes_t t, knh_intptr_t loc)
+#if defined(USE_bytes) || defined(USE_bytes_last)
+static inline knh_bytes_t knh_bytes_last(knh_bytes_t t, knh_intptr_t loc) CC_UNUSED;
+static knh_bytes_t knh_bytes_last(knh_bytes_t t, knh_intptr_t loc)
 {
-	knh_bytes_t t2;
-	t2.utext = t.utext + loc;
-	t2.len = t.len - loc;
+	knh_bytes_t t2 = {{t.text + loc}, t.len - loc};
 	return t2;
 }
 #endif
 
-#ifdef USE_bytes_slice
-static inline knh_bytes_t knh_bytes_slice(knh_bytes_t t, size_t s, size_t e)
-{
-	knh_bytes_t t2;
-	t2.utext = t.utext + s;
-	t2.len = e - s;
-	DBG_ASSERT(s + t2.len <= t.len);
-	return t2;
-}
+#if defined(USE_bytes) || defined(USE_bytes_slice)
+//static inline knh_bytes_t knh_bytes_slice(knh_bytes_t t, size_t s, size_t e)
+//{
+//	knh_bytes_t t2;
+//	t2.utext = t.utext + s;
+//	t2.len = e - s;
+//	DBG_ASSERT(s + t2.len <= t.len);
+//	return t2;
+//}
 #endif
 
-#ifdef USE_bytes_subbytes
-static inline knh_bytes_t knh_bytes_subbytes(knh_bytes_t t, size_t off, size_t len)
-{
-	knh_bytes_t t2;
-	t2.utext = t.utext + off;
-	t2.len = len;
-	DBG_ASSERT(off + len <= t.len);
-	return t2;
-}
+#if defined(USE_bytes) || defined(USE_bytes_subbytes)
+//static inline knh_bytes_t knh_bytes_subbytes(knh_bytes_t t, size_t off, size_t len)
+//{
+//	knh_bytes_t t2;
+//	t2.utext = t.utext + off;
+//	t2.len = len;
+//	DBG_ASSERT(off + len <= t.len);
+//	return t2;
+//}
 #endif
-
-#ifdef USE_bytes_parseint
-static int knh_bytes_parseint(knh_bytes_t t, knh_int_t *value)
-{
-	knh_uint_t n = 0, prev = 0, base = 10;
-	size_t i = 0;
-	if(t.len > 1) {
-		if(t.utext[0] == '0') {
-			if(t.utext[1] == 'x') {
-				base = 16; i = 2;
-			}
-			else if(t.utext[1] == 'b') {
-				base = 2;  i = 2;
-			}
-		}else if(t.utext[0] == '-') {
-			base = 10; i = 1;
-		}
-	}
-	for(;i < t.len; i++) {
-		int c = t.utext[i];
-		if('0' <= c && c <= '9') {
-			prev = n;
-			n = n * base + (c - '0');
-		}else if(base == 16) {
-			if('A' <= c && c <= 'F') {
-				prev = n;
-				n = n * 16 + (10 + c - 'A');
-			}else if('a' <= c && c <= 'f') {
-				prev = n;
-				n = n * 16 + (10 + c - 'a');
-			}else {
-				break;
-			}
-		}else if(c == '_') {
-			continue;
-		}else {
-			break;
-		}
-		if(!(n >= prev)) {
-			*value = 0;
-			return 0;
-		}
-	}
-	if(t.utext[0] == '-') n = -((knh_int_t)n);
-	*value = n;
-	return 1;
-}
-
-#endif
-
-/* ------------------------------------------------------------------------ */
-
-#ifdef USE_bytes_parsefloat
-static int knh_bytes_parsefloat(knh_bytes_t t, knh_float_t *value)
-{
-#if defined(K_USING_NOFLOAT)
-	{
-		knh_int_t v = 0;
-		knh_bytes_parseint(t, &v);
-		*value = (knh_float_t)v;
-	}
-#elif defined(K_USING_LONGDOUBLE)
-	*value = strtold(t.text, NULL);
-#elif defined(K_USING_FLOAT)
-	*value = strtof(t.text, NULL);
-#else
-	*value = strtod(t.text, NULL);
-#endif
-	return 1;
-}
-#endif
-
 
 #if defined(USE_hash)
 static knh_hashcode_t knh_hash(knh_hashcode_t h, const char *p, size_t len)
@@ -293,8 +179,9 @@ static knh_hashcode_t knh_hash(knh_hashcode_t h, const char *p, size_t len)
 /* ------------------------------------------------------------------------ */
 /* [cwb] */
 
-#if defined(USE_cwb_open)
-static inline knh_cwb_t *knh_cwb_open(CTX ctx, knh_cwb_t *cwb)
+#if defined(USE_cwb_open) || defined(USE_cwb)
+static inline knh_cwb_t *knh_cwb_open(CTX ctx, knh_cwb_t *cwb) CC_UNUSED ;
+static knh_cwb_t *knh_cwb_open(CTX ctx, knh_cwb_t *cwb)
 {
 	cwb->ba = ctx->bufa;
 	cwb->w  = ctx->bufw;
@@ -303,41 +190,33 @@ static inline knh_cwb_t *knh_cwb_open(CTX ctx, knh_cwb_t *cwb)
 }
 #endif
 
-#if defined(USE_cwb_open2)
-static knh_cwb_t *knh_cwb_open2(CTX ctx, knh_cwb_t *cwb, size_t size)
-{
-	cwb->ba = ctx->bufa;
-	cwb->w  = ctx->bufw;
-	cwb->pos = BA_size(ctx->bufa);
-	knh_Bytes_ensureSize(ctx, cwb->ba, size);
-	return cwb;
-}
-#endif
-
-#if defined(USE_cwb_putc)
+#if defined(USE_cwb_putc) || defined(USE_cwb)
+static inline void knh_cwb_putc(CTX ctx, knh_cwb_t *cwb, int ch) CC_UNUSED ;
 static void knh_cwb_putc(CTX ctx, knh_cwb_t *cwb, int ch)
 {
 	knh_Bytes_putc(ctx, (cwb->ba), ch);
 }
 #endif
 
-#if defined(USE_cwb_write)
+#if defined(USE_cwb_write) || defined(USE_cwb)
+static inline void knh_cwb_write(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t) CC_UNUSED ;
 static void knh_cwb_write(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t)
 {
-	KNH_ASSERT(!(cwb->ba->bu.utext <= t.utext && t.utext < (cwb->ba->bu.utext + cwb->pos)));
 	knh_Bytes_write(ctx, (cwb->ba), t);
 }
 #endif
 
-#if defined(USE_cwb_size)
-static inline size_t knh_cwb_size(knh_cwb_t *cwb)
+#if defined(USE_cwb_size) || defined(USE_cwb)
+static inline size_t knh_cwb_size(knh_cwb_t *cwb) CC_UNUSED ;
+static size_t knh_cwb_size(knh_cwb_t *cwb)
 {
 	return (cwb->ba)->bu.len - cwb->pos;
 }
 #endif
 
-#if defined(USE_cwb_tobytes)
-static inline knh_bytes_t knh_cwb_tobytes(knh_cwb_t *cwb)
+#if defined(USE_cwb_tobytes) || defined(USE_cwb)
+static inline knh_bytes_t knh_cwb_tobytes(knh_cwb_t *cwb) CC_UNUSED ;
+static knh_bytes_t knh_cwb_tobytes(knh_cwb_t *cwb)
 {
 	knh_bytes_t t;
 	t.text = (cwb->ba)->bu.text + cwb->pos;

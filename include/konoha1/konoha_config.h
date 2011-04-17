@@ -157,6 +157,7 @@ typedef struct knh_sysinfo_t {
 //In most case, it makes slower a little
 //#define		likely(x)       __builtin_expect(!!(x), 1)
 //#define		unlikely(x)     __builtin_expect(!!(x), 0)
+#define		CC_UNUSED           __attribute__((unused))
 #ifdef 		K_USING_PREFETCH
 #define			prefetch(...)   __builtin_prefetch(__VA_ARGS__)
 #endif
@@ -221,6 +222,10 @@ typedef struct knh_sysinfo_t {
 #ifndef prefetch
 #undef K_USING_PREFETCH
 #define prefetch(...)
+#endif
+
+#ifndef CC_UNUSED
+#define CC_UNUSED
 #endif
 
 #ifndef CC_EXPORT

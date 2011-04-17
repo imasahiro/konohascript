@@ -123,7 +123,12 @@ static void SOCKET_close(CTX ctx, knh_io_t fd)
 
 static knh_StreamDSPI_t SOCKET_DSPI = {
 	K_DSPI_STREAM, "socket", SOCKET_realpath,
-	SOCKET_open, SOCKET_open, SOCKET_read, SOCKET_write, K_OUTBUF_MAXSIZ, SOCKET_close,
+	SOCKET_open,
+	SOCKET_open,
+	SOCKET_read,
+	K_OUTBUF_MAXSIZ,
+	SOCKET_write,
+	SOCKET_close,
 };
 
 static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int port, knh_Monitor_t *mon)

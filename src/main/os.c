@@ -721,7 +721,7 @@ void *knh_dlsym(CTX ctx, int pe, void* handler, const char* symbol)
 #if defined(K_USING_WINDOWS)
 	void *p = GetProcAddress((HMODULE)handler, (LPCSTR)symbol);
 	if(p == NULL) {
-		//LIB_SYSLOG(ctx, pe, "GetProcAddress", "func='%s', ERR='NotFound'", symbol);
+		KNH_SYSLOG(ctx, NULL, pe, "GetProcAddress", "func='%s', ERR='NotFound'", symbol);
 	}
 	return p;
 #elif defined(K_USING_POSIX_)
@@ -752,16 +752,13 @@ int knh_dlclose(CTX ctx, void* hdr)
 /* [charset] */
 
 #if defined(K_USING_WINDOWS)
-
 #define HAVE_LOCALCHARSET_H 1
-
 static char *locale_charset(void)
 {
 	static char codepage[64];
 	knh_snprintf(codepage, sizeof(codepage), "CP%d", (int)GetACP());
 	return codepage;
 }
-
 #endif
 
 /* ------------------------------------------------------------------------ */
