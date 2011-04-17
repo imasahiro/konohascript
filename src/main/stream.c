@@ -185,11 +185,15 @@ knh_String_t* knh_InputStream_readLine(CTX ctx, knh_InputStream_t *in)
 
 void knh_InputStream_close(CTX ctx, knh_InputStream_t *in)
 {
-	in->dspi->fclose(ctx, DP(in)->fio);
-	DP(in)->fio = IO_NULL;
-	in->dspi = knh_getDefaultStreamDSPI();
-	DBG_P("stream in=%s", S_tochar(DP(in)->urn));
-	knh_Bytes_dispose(ctx, DP(in)->ba);
+	if(DP(in)->fio != IO_NULL) {
+		in->dspi->fclose(ctx, DP(in)->fio);
+		if(DP(in)->fio != IO_BUF) {
+			DBG_P("stream in=%s", S_tochar(DP(in)->urn));
+			knh_Bytes_dispose(ctx, DP(in)->ba);
+		}
+		DP(in)->fio = IO_NULL;
+		in->dspi = knh_getDefaultStreamDSPI();
+	}
 }
 
 int InputStream_isClosed(CTX ctx, knh_InputStream_t *in)
@@ -461,7 +465,7 @@ KNHAPI2(void) knh_write_utf8(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int 
 
 /* ------------------------------------------------------------------------ */
 
-void knh_write_quote(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8, int quote)
+void knh_write_quote(CTX ctx, knh_OutputStream_t *w, int quote, knh_bytes_t t, int hasUTF8)
 {
 	knh_bytes_t sub = t;
 	size_t i, s = 0;

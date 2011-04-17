@@ -720,11 +720,12 @@ static int String_compareTo(const knh_Object_t *o, const knh_Object_t *o2)
 static void String_write(CTX ctx, knh_OutputStream_t *w, knh_Object_t *o, int level)
 {
 	knh_String_t *s = (knh_String_t*)o;
+//	fprintf(stderr, "*'%s'\n", S_tochar(s));
 	if(IS_FMTs(level)) {
 		knh_write_utf8(ctx, w, S_tobytes(s), !String_isASCII(s));
 	}
 	else {
-		knh_write_quote(ctx, w, S_tobytes(s), '"', !String_isASCII(s));
+		knh_write_quote(ctx, w, '"', S_tobytes(s), !String_isASCII(s));
 	}
 }
 
@@ -1656,7 +1657,7 @@ static void Regex_free(CTX ctx, Object *o)
 static void Regex_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
 	knh_Regex_t *re = (knh_Regex_t*)o;
-	knh_write_quote(ctx, w, S_tobytes(re->pattern), '/', !String_isASCII(re->pattern));
+	knh_write_quote(ctx, w, '/', S_tobytes(re->pattern), !String_isASCII(re->pattern));
 }
 
 static knh_ClassDef_t RegexDef = {
@@ -1893,7 +1894,7 @@ static void InputStream_free(CTX ctx, Object *o)
 static void InputStream_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
 	knh_InputStream_t *ins = (knh_InputStream_t*)o;
-	knh_write_quote(ctx, w, S_tobytes(DP(ins)->urn), '\'', !String_isASCII(DP(ins)->urn));
+	knh_write_quote(ctx, w, '\'', S_tobytes(DP(ins)->urn), !String_isASCII(DP(ins)->urn));
 }
 
 static knh_ClassDef_t InputStreamDef = {
@@ -1952,7 +1953,7 @@ static void OutputStream_free(CTX ctx, Object *o)
 static void OutputStream_write_(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
 	knh_OutputStream_t *ous = (knh_OutputStream_t*)o;
-	knh_write_quote(ctx, w, S_tobytes(DP(ous)->urn), '\'', !String_isASCII(DP(ous)->urn));
+	knh_write_quote(ctx, w, '\'', S_tobytes(DP(ous)->urn) , !String_isASCII(DP(ous)->urn));
 }
 
 static knh_ClassDef_t OutputStreamDef = {
@@ -2343,7 +2344,7 @@ static void Assurance_reftrace(CTX ctx, Object *o FTRARG)
 static void Assurance_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
 	knh_Assurance_t *g = (knh_Assurance_t*)o;
-	knh_write_quote(ctx, w, S_tobytes(g->msg), '\'', !String_isASCII(g->msg));
+	knh_write_quote(ctx, w, '\'', S_tobytes(g->msg), !String_isASCII(g->msg));
 }
 
 static void Assurance_checkin(CTX ctx, knh_sfp_t *sfp, Object *o)
@@ -2439,10 +2440,10 @@ static void Token_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 		int hasUTF8 = !(String_isASCII(tk->text));
 		switch(tt) {
 		case TT_NUM: knh_write(ctx, w, t); break;
-		case TT_STR:  knh_write_quote(ctx, w, t, '"', hasUTF8); break;
-		case TT_TSTR: knh_write_quote(ctx, w, t, '\'', hasUTF8); break;
-		case TT_ESTR: knh_write_quote(ctx, w, t, '`', hasUTF8); break;
-		case TT_REGEX: knh_write_quote(ctx, w, t, '/', hasUTF8); break;
+		case TT_STR:  knh_write_quote(ctx, w, '"', t, hasUTF8); break;
+		case TT_TSTR: knh_write_quote(ctx, w, '\'', t, hasUTF8); break;
+		case TT_ESTR: knh_write_quote(ctx, w, '`', t, hasUTF8); break;
+		case TT_REGEX: knh_write_quote(ctx, w, '/', t, hasUTF8); break;
 //		case TT_DOC:
 		case TT_METAN: knh_putc(ctx, w, '@'); knh_write(ctx, w, t); break;
 		case TT_PROPN: knh_putc(ctx, w, '$'); knh_write(ctx, w, t); break;

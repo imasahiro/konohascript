@@ -606,7 +606,7 @@ void knh_write_dfmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, knh_intptr_
 void knh_write_ifmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, knh_int_t n);
 void knh_write_ffmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, knh_float_t n);
 void knh_write_flag(CTX ctx, knh_OutputStream_t *w, knh_flag_t flag);
-void knh_write_quote(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8, int quote);
+void knh_write_quote(CTX ctx, knh_OutputStream_t *w, int quote, knh_bytes_t t, int hasUTF8);
 void knh_write_cap(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 void knh_write_Object(CTX ctx, knh_OutputStream_t *w, Object *o, int level);
 void knh_write_InObject(CTX ctx, knh_OutputStream_t *w, Object *o, int level);

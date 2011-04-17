@@ -368,9 +368,7 @@ knh_bool_t ClassTBL_isa_(CTX ctx, const knh_ClassTBL_t *ct, const knh_ClassTBL_t
 int class_isGenerics(CTX ctx, knh_class_t cid)
 {
 	const knh_ClassTBL_t *ct = ClassTBL(cid);
-	return (ct->p1 != TYPE_void);
-	//DBG_ASSERT_cid(cid);
-	//return (ClassTBL(cid)->cparam != NULL && IS_ParamArray(ClassTBL(cid)->cparam));
+	return (ct->cparam != NULL);
 }
 
 knh_class_t knh_class_p(CTX ctx, knh_class_t cid, size_t n)
