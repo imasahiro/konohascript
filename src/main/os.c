@@ -360,7 +360,6 @@ void knh_path_reset(CTX ctx, knh_path_t *ph, const char *scheme, knh_bytes_t t)
 	}
 	DBG_ASSERT(buf[ph->plen] == 0);
 	ph->isRealPath = 0;
-	DBG_P("ph='%s', size=%d", buf, ph->plen);
 }
 
 void knh_path_close(CTX ctx, knh_path_t *ph)
@@ -389,6 +388,7 @@ const char* knh_realpath(CTX ctx, const char *path, knh_path_t *ph)
 #endif
 	if(ptr != buf) {
 		if(ptr != NULL) free(ptr);
+		buf[0] = 0;
 		return NULL;
 	}
 	ph->pbody = 0;
@@ -414,11 +414,12 @@ const char* knh_ospath(CTX ctx, knh_path_t *ph)
 		if(hasUTF8) {
 			KNH_TODO("multibytes file path");
 		}
-	}
-	if(!ph->isRealPath) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_copy(ctx, &cwbbuf, ph, 0);
-		knh_realpath(ctx, knh_cwb_tochar(ctx, cwb), ph);
-		knh_cwb_close(cwb);
+		{
+			knh_cwb_t cwbbuf, *cwb = knh_cwb_copy(ctx, &cwbbuf, ph, 0);
+			const char *p = knh_realpath(ctx, knh_cwb_tochar(ctx, cwb), ph);
+			knh_cwb_close(cwb);
+			return p; // p is NULL if not found;
+		}
 	}
 	return P_text(ph) + ph->pbody;
 }
@@ -455,6 +456,7 @@ knh_bool_t knh_path_isfile(CTX ctx, knh_path_t *ph)
 {
 	knh_bool_t res = 1;
 	const char *phname = P_text(ph) + ph->pbody;
+	if(phname[0] == 0) return 0;
 #if defined(K_USING_WINDOWS)
 	DWORD attr = GetFileAttributesA(phname);
 	if(attr == -1 || (attr & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY) res = 0;
@@ -476,6 +478,7 @@ knh_bool_t knh_path_isfile(CTX ctx, knh_path_t *ph)
 knh_bool_t knh_path_isdir(CTX ctx, knh_path_t *ph)
 {
 	const char *pname = P_text(ph) + ph->pbody;
+	if(pname[0] == 0) return 0;
 #if defined(K_USING_WINDOWS)
 	DWORD attr = GetFileAttributesA(pname);
 	if(attr == -1) return 0;

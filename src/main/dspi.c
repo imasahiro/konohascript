@@ -41,10 +41,6 @@ extern "C" {
 
 #ifdef K_INCLUDE_BUILTINAPI
 
-//#if defined(K_USING_POSIX_)
-//#include <dirent.h>
-//#endif
-
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_PATH */
 
@@ -81,8 +77,7 @@ static knh_Object_t* NOPATH_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_clas
 }
 
 static const knh_PathDSPI_t PATH_NOPATH = {
-	K_DSPI_PATH, "NOPATH",
-	CLASS_Tvoid, CLASS_Tvoid,
+	K_DSPI_PATH, "NOPATH", CLASS_Tvoid, CLASS_Tvoid,
 	NOPATH_hasType, NOPATH_exists, NOPATH_newObjectNULL,
 };
 
@@ -302,7 +297,12 @@ static knh_intptr_t NOFILE_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz, 
 }
 static knh_intptr_t NOFILE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz, knh_Monitor_t *mon)
 {
-	DBG_P("fd=%d, bufsiz=%ld", (int)fd, bufsiz);
+	DBG_ASSERT(fd != IO_BUF);
+	return bufsiz;
+}
+static knh_intptr_t BYTE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz, knh_Monitor_t *mon)
+{
+	DBG_ASSERT(fd == IO_BUF);
 	return 0; // write nothing. this means that we are unable to clear buffer
 }
 static void NOFILE_close(CTX ctx, knh_io_t fd)
@@ -311,7 +311,12 @@ static void NOFILE_close(CTX ctx, knh_io_t fd)
 
 static const knh_StreamDSPI_t STREAM_NOFILE = {
 	K_DSPI_STREAM, "NOFILE", NOFILE_realpath,
-	NOFILE_open, NOFILE_open, NOFILE_read, 0, NOFILE_write, NOFILE_close
+	NOFILE_open, NOFILE_open, NOFILE_read, K_PAGESIZE, NOFILE_write, NOFILE_close
+};
+
+static const knh_StreamDSPI_t STREAM_BYTE = {
+	K_DSPI_STREAM, "BYTE", NOFILE_realpath,
+	NOFILE_open, NOFILE_open, NOFILE_read, K_OUTBUF_MAXSIZ, BYTE_write, NOFILE_close
 };
 
 /* ------------------------------------------------------------------------ */
@@ -489,6 +494,11 @@ static void SYSLOG_UnknownPathType(CTX ctx, knh_bytes_t path)
 const knh_StreamDSPI_t *knh_getDefaultStreamDSPI(void)
 {
 	return &STREAM_NOFILE;
+}
+
+const knh_StreamDSPI_t *knh_getByteStreamDSPI(void)
+{
+	return &STREAM_BYTE;
 }
 
 const knh_StreamDSPI_t *knh_getStreamDSPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)

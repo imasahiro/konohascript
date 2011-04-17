@@ -444,6 +444,7 @@ void knh_reftraceAll(CTX ctx FTRARG);
 void konoha_close(konoha_t konoha);
 knh_bytes_t knh_bytes_skipPATHHEAD(knh_bytes_t path);
 const knh_StreamDSPI_t *knh_getDefaultStreamDSPI(void);
+const knh_StreamDSPI_t *knh_getByteStreamDSPI(void);
 const knh_StreamDSPI_t *knh_getStreamDSPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path);
 const knh_QueryDSPI_t *knh_getQueryDSPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path);
 void knh_loadScriptDriver(CTX ctx, knh_NameSpace_t *ns);

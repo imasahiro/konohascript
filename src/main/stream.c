@@ -105,7 +105,9 @@ void knh_InputStream_setpos(CTX ctx, knh_InputStream_t *in, size_t s, size_t e)
 	DBG_ASSERT(e <= BA_size(DP(in)->ba));
 	DBG_ASSERT(s <= e);
 	DP(in)->pos   = s;
-	DP(in)->posend   = e;
+	DP(in)->posend = e;
+	DP(in)->fio = IO_BUF;
+	in->dspi = knh_getByteStreamDSPI();
 }
 
 /* ------------------------------------------------------------------------ */
@@ -192,6 +194,7 @@ void knh_InputStream_close(CTX ctx, knh_InputStream_t *in)
 
 int InputStream_isClosed(CTX ctx, knh_InputStream_t *in)
 {
+	DBG_P("fio=%ld", DP(in)->fio);
 	return (DP(in)->fio == IO_NULL);
 }
 
@@ -250,6 +253,7 @@ KNHAPI2(knh_OutputStream_t*) new_BytesOutputStream(CTX ctx, knh_Bytes_t *ba)
 {
 	knh_OutputStream_t* w = new_(OutputStream);
 	DP(w)->fio = IO_BUF;
+	w->dspi = knh_getByteStreamDSPI();
 	KNH_SETv(ctx, DP(w)->ba, ba);
 	return w;
 }
