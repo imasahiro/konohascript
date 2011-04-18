@@ -54,6 +54,9 @@ KNHAPI2(knh_InputStream_t*) new_InputStreamDSPI(CTX ctx, knh_io_t fio, const knh
 	knh_InputStream_t* in = new_(InputStream);
 	DP(in)->fio  = fio;
 	in->dspi = dspi;
+	if(DP(in)->ba->bu.len == 0) {
+		knh_Bytes_expands(ctx, DP(in)->ba, K_STREAM_BUFSIZ);
+	}
 	return in;
 }
 
@@ -68,6 +71,9 @@ KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_NameSpace_t *ns, kn
 			knh_InputStream_t *in = new_InputStreamDSPI(ctx, fd, dspi);
 			KNH_SETv(ctx, DP(in)->urn, urn);
 			KNH_SETv(ctx, DP(in)->mon, mon);
+			if(DP(in)->ba->bu.len == 0) {
+				knh_Bytes_expands(ctx, DP(in)->ba, K_STREAM_BUFSIZ);
+			}
 			knh_path_close(ctx, ph);
 			return in;
 		}
@@ -114,15 +120,11 @@ void knh_InputStream_setpos(CTX ctx, knh_InputStream_t *in, size_t s, size_t e)
 
 static int readbuf(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
 {
-	long ssize;
-	if(ba->bu.len == 0) {
-		knh_Bytes_expands(ctx, ba, K_STREAM_BUFSIZ);
-	}
-	ssize = in->dspi->fread(ctx, DP(in)->fio, (char*)ba->bu.ubuf, ba->bu.len, DP(in)->mon);
+	long ssize = in->dspi->fread(ctx, DP(in)->fio, ba->bu.buf, ba->dim->capacity, DP(in)->mon);
 	if(ssize > 0) {
 		DP(in)->stat_size += ssize;
 		DP(in)->pos = 0;
-		DP(in)->posend = ba->bu.len;
+		DP(in)->posend = ssize;
 		return 1;
 	}
 	knh_InputStream_close(ctx, in);
@@ -842,6 +844,7 @@ static METHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 		DP(in)->fio = in->dspi->fopen(ctx, ph, mode, DP(in)->mon);
 		if(DP(in)->fio != IO_NULL) {
 			KNH_SETv(ctx, DP(in)->urn, sfp[1].s);
+			//knh_Byte_ensureSize(ctx, DP(in)->ba, K_PAGESIZE);
 			goto L_RETURN;
 		}
 	}
