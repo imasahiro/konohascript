@@ -227,7 +227,9 @@ knh_Token_t* ErrorMisplaced(CTX ctx)
 }
 knh_Token_t* ErrorStaticType(CTX ctx, const char *msg)
 {
-	return Gamma_perror(ctx, KC_ERR, _("%s is not dynamic"), msg);
+	knh_Token_t* tkERR = Gamma_perror(ctx, KC_ERR, _("%s is not dynamic"), msg);
+	DBG_ABORT("stop why?");
+	return tkERR;
 }
 knh_Token_t* ErrorFieldAddition(CTX ctx, knh_class_t cid)
 {
@@ -333,10 +335,10 @@ void WarningOverflow(CTX ctx, const char *floatorint, knh_bytes_t t)
 {
 	Gamma_perror(ctx, KC_EWARN, _("%s overflow: %B"), floatorint, t);
 }
-knh_Token_t* ErrorUnknownResourceName(CTX ctx, knh_bytes_t path)
-{
-	return Gamma_perror(ctx, KC_ERR, "unknown path: %B", path);
-}
+//knh_Token_t* ErrorUnknownResourceName(CTX ctx, knh_bytes_t path)
+//{
+//	return Gamma_perror(ctx, KC_ERR, "unknown path: %B", path);
+//}
 void WarningUnusedName(CTX ctx, knh_Token_t *tk, knh_fieldn_t fn)
 {
 	knh_uline_t uline = ctx->gma->uline;
@@ -434,9 +436,9 @@ knh_Token_t* ERROR_UnsupportedOperator(CTX ctx, const char *opname, knh_class_t 
 	return Gamma_perror(ctx, KC_ERR, _("unsupported %s in %C"), opname, mtd_cid);
 }
 /* type error */
-knh_Token_t *TypeErrorToken(CTX ctx, knh_Token_t *tk, knh_class_t reqt, knh_class_t type)
+knh_Token_t *TERROR_Token(CTX ctx, knh_Token_t *tk, knh_class_t type, knh_class_t reqt)
 {
-	return knh_Token_toERR(ctx, tk, ("%L has type %T, not %T"), tk, reqt, type);
+	return knh_Token_toERR(ctx, tk, ("%O has type %T, not %T"), tk, type, reqt);
 }
 knh_Token_t *TypeErrorStmtNN(CTX ctx, knh_Stmt_t *stmt, int n, knh_type_t reqt, knh_type_t type)
 {

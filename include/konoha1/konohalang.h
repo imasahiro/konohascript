@@ -80,7 +80,7 @@
 #define STT_FUNCCALL  ((knh_term_t)39)
 #define STT_OP  ((knh_term_t)40)
 #define STT_TCAST  ((knh_term_t)41)
-#define STT_TPATH  ((knh_term_t)42)
+#define STT_TSCHEME  ((knh_term_t)42)
 #define STT_ALT  ((knh_term_t)43)
 #define STT_TRI  ((knh_term_t)44)
 #define STT_AND  ((knh_term_t)45)
@@ -208,7 +208,7 @@
 #define TT_METAN   ((knh_term_t)167)
 #define TT_PROPN   ((knh_term_t)168)
 #define TT_URN   ((knh_term_t)169)
-#define TT_TPATH   ((knh_term_t)170)
+#define TT_TSCHEME   ((knh_term_t)170)
 #define TT_NAME   ((knh_term_t)171)
 #define TT_UNAME   ((knh_term_t)172)
 #define TT_FUNCNAME   ((knh_term_t)173)
@@ -282,7 +282,7 @@ static TERMDATA_t TERMDATA[] = {
 	{"FUNCCALL", 0, -1}, 
 	{"OP", 0, -1}, 
 	{"TCAST", 0, -1}, 
-	{"TPATH", 0, -1}, 
+	{"TSCHEME", 0, -1}, 
 	{"ALT", 0, -1}, 
 	{"TRI", 0, -1}, 
 	{"AND", 0, -1}, 
@@ -410,7 +410,7 @@ static TERMDATA_t TERMDATA[] = {
 	{"METAN", 0, -1}, 
 	{"PROPN", 0, -1}, 
 	{"URN", 0, -1}, 
-	{"TPATH", 0, -1}, 
+	{"TSCHEME", 0, -1}, 
 	{"NAME", 0, -1}, 
 	{"UNAME", 0, -1}, 
 	{"FUNCNAME", 0, -1}, 

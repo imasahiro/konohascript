@@ -2409,7 +2409,7 @@ static void Token_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 //		case TT_DOC:
 		case TT_METAN: knh_putc(ctx, w, '@'); knh_write(ctx, w, t); break;
 		case TT_PROPN: knh_putc(ctx, w, '$'); knh_write(ctx, w, t); break;
-		case TT_URN: case TT_TPATH:
+		case TT_URN: case TT_TSCHEME:
 			knh_write_utf8(ctx, w, t, hasUTF8); break;
 		case TT_NAME: case TT_UNAME:
 			if(Token_isDOT(tk)) knh_putc(ctx, w, '.');

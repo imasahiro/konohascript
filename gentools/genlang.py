@@ -50,7 +50,7 @@ FUNCCALL    _EXPR  _      _MEXPR
 OP          _OP    _EXPR  _EXPR
 #FMTOP      _STR   _     _EXPR
 TCAST       _CNAME  _     _EXPR
-TPATH       _
+TSCHEME       _
 ALT         _EXPR  _EXPR
 TRI         _EXPR  _EXPR  _EXPR
 AND         _MEXPR
@@ -240,7 +240,7 @@ DOC      -
 METAN    - 
 PROPN    - 
 URN      - 
-TPATH    - 
+TSCHEME    - 
 NAME     - 
 UNAME    - 
 FUNCNAME - 

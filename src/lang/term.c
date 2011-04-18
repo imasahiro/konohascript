@@ -957,7 +957,7 @@ static int Token_addURN(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStrea
 	if(ch == '+') {  /* hoge:+ */
 		//knh_Bytes_putc(ctx, cwb->ba, ':');
 		ch = knh_InputStream_getc(ctx, in);
-		Token_addBuf(ctx, tk, cwb, TT_TPATH, ch);
+		Token_addBuf(ctx, tk, cwb, TT_TSCHEME, ch);
 		return ch;
 	}
 	if(ch == '=') {   /* a:=1*/
@@ -1859,7 +1859,7 @@ static int ITR_isCAST(tkitr_t *itr)
 	else if(ITR_is(itr, TT_FROM) && itr->c + 1 < itr->e) {
 		return 1;
 	}
-	else if(ITR_is(itr, TT_TPATH) && itr->c + 1 < itr->e) {
+	else if(ITR_is(itr, TT_TSCHEME) && itr->c + 1 < itr->e) {
 		return 1;
 	}
 	return 0;
@@ -2380,9 +2380,9 @@ static void _EXPR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		else if(isCAST) {
 			_EXPRCAST(ctx, stmt, itr);
 		}
-		else if(ITR_is(itr, TT_TPATH) && itr->c + 1 < itr->e) {
+		else if(ITR_is(itr, TT_TSCHEME) && itr->c + 1 < itr->e) {
 			knh_Token_t *tkCUR = ITR_nextTK(itr);
-			knh_Stmt_t *stmTYPEMAP = new_StmtREUSE(ctx, stmt, STT_TPATH);
+			knh_Stmt_t *stmTYPEMAP = new_StmtREUSE(ctx, stmt, STT_TSCHEME);
 			_ASIS(ctx, stmTYPEMAP, itr);
 			_EXPR(ctx, stmTYPEMAP, itr);
 			knh_Stmt_add(ctx, stmTYPEMAP, tkCUR);
@@ -3209,7 +3209,7 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 		case TT_PARENTHESIS:
 		case TT_BRANCET:
 		case TT_TRUE: case TT_FALSE: case TT_NULL:
-		case TT_NOT: case TT_EXISTS: case TT_TPATH:
+		case TT_NOT: case TT_EXISTS: case TT_TSCHEME:
 		case TT_LNOT:
 		case TT_NEXT: case TT_PREV:  /* Prev */
 		case TT_ITR: case TT_NEW:

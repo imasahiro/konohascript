@@ -394,9 +394,7 @@ static knh_bool_t hasPKG(CTX ctx, knh_path_t *ph, knh_bytes_t tpath, knh_bytes_t
 	knh_path_append(ctx, ph, 1, path.text); // konoha.math
 	knh_path_append(ctx, ph, 1, knh_bytes_rnext(path, '.').text); // math
 	knh_path_append(ctx, ph, 0, ".k");
-	DBG_P("BEFORE: %s", P_text(ph));
 	knh_ospath(ctx, ph);
-	DBG_P("AFTER: %s", P_text(ph));
 	return knh_path_isfile(ctx, ph);
 }
 

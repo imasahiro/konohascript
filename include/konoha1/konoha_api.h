@@ -297,7 +297,7 @@ knh_Token_t* ErrorMustBinaryOperator(CTX ctx, const char*opname);
 void WarningNullable(CTX ctx, knh_class_t cid);
 knh_Token_t* ErrorComparedDiffrentType(CTX ctx, knh_type_t t1, knh_type_t t2);
 knh_Token_t* ERROR_UnsupportedOperator(CTX ctx, const char *opname, knh_class_t mtd_cid);
-knh_Token_t *TypeErrorToken(CTX ctx, knh_Token_t *tk, knh_class_t reqt, knh_class_t type);
+knh_Token_t *TERROR_Token(CTX ctx, knh_Token_t *tk, knh_class_t reqt, knh_class_t type);
 knh_Token_t *TypeErrorStmtNN(CTX ctx, knh_Stmt_t *stmt, int n, knh_type_t reqt, knh_type_t type);
 knh_Token_t* TypeErrorCallParam(CTX ctx, int n, knh_Method_t *mtd, knh_class_t reqt, knh_class_t type);
 knh_Token_t *TypeErrorNotFuncion(CTX ctx, knh_type_t reqt);

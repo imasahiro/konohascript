@@ -841,7 +841,7 @@ static knh_Token_t* TPROPN_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt, knh
 				SP(tk)->type = O_cid(v);
 				TYPING(ctx, sLET, 2, tk->type, 0);
 				if(Tn_type(sLET, 2) != tk->type) {
-					return TypeErrorToken(ctx, tk, tk->type, Tn_type(sLET, 2));
+					return TERROR_Token(ctx, tk, tk->type, Tn_type(sLET, 2));
 				}
 			}
 			else {
@@ -1287,33 +1287,30 @@ static knh_Token_t* ESTR_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 
 static knh_Token_t* PATH_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 {
+	knh_NameSpace_t *ns = DP(ctx->gma)->ns;
 	knh_bytes_t path = S_tobytes((tk)->text);
-	knh_NameSpace_t *ns = KNH_GMA_NS;
 	const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, ns, path);
 	if(dspi == NULL) {
-		return ErrorUnknownResourceName(ctx, path);
+		return ERROR_Undefined(ctx, "scheme", CLASS_unknown, tk);
 	}
-	if(TT_(tk) == TT_TPATH) {
+	if(TT_(tk) == TT_TSCHEME) {
 		return Token_toCONST(ctx, tk);
 	}
-	if(reqt == TYPE_dyn) reqt = dspi->cid;
-	if(!dspi->hasType(ctx, CLASS_t(reqt))) {
-		return ErrorStaticType(ctx, TK__(tk));
-	}
-	if(reqt == TYPE_Boolean) {
-		knh_Object_t *tf = dspi->exists(ctx, ns, path) == PATH_unknown ? KNH_FALSE : KNH_TRUE;
+	if(reqt == TYPE_dyn || reqt == TYPE_var) reqt = dspi->cid;
+	DBG_P("reqt=%s", TYPE__(reqt));
+	if(reqt == TYPE_Boolean || reqt == TYPE_void) {
+		knh_Object_t *tf = (dspi->exists(ctx, ns, path) == PATH_unknown) ? KNH_FALSE : KNH_TRUE;
 		return Token_setCONST(ctx, tk, tf);
+	}
+	else if(reqt == TYPE_String) {
+		return Token_toCONST(ctx, tk);
+	}
+	else if(!dspi->hasType(ctx, CLASS_t(reqt))) {
+		return TERROR_Token(ctx, tk, dspi->cid, reqt);
 	}
 	else {
 		knh_Object_t *o = dspi->newObjectNULL(ctx, ns, reqt, (tk)->text);
-		if(o == NULL) {
-			if(reqt == TYPE_String) {
-				o = (tk)->data;
-			}
-			else {
-				o = KNH_NULVAL(reqt);
-			}
-		}
+		if(o == NULL) o = KNH_NULVAL(reqt);
 		return Token_setCONST(ctx, tk, o);
 	}
 }
@@ -1342,7 +1339,7 @@ static knh_Token_t *Token_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 	case TT_TSTR: return TSTR_typing(ctx, tk, reqt);
 	case TT_ESTR: return ESTR_typing(ctx, tk, reqt);
 	case TT_NUM: return NUM_typing(ctx, tk, reqt);
-	case TT_URN: case TT_TPATH: return PATH_typing(ctx, tk, reqt);
+	case TT_URN: case TT_TSCHEME: return PATH_typing(ctx, tk, reqt);
 	case TT_ERR: return tk;
 	case TT_MN: DBG_ABORT("why MN?");
 	default:
@@ -2754,11 +2751,11 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 /* ------------------------------------------------------------------------ */
 /* [QCAST] */
 
-static knh_Token_t* TPATH_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
+static knh_Token_t* TSCHEME_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
-	knh_Token_t *tkTPATH = tkNN(stmt, 2);
-	knh_bytes_t path = S_tobytes((tkTPATH)->text);
-	DBG_ASSERT(TT_(tkTPATH) == TT_TPATH);
+	knh_Token_t *tkTSCHEME = tkNN(stmt, 2);
+	knh_bytes_t path = S_tobytes((tkTSCHEME)->text);
+	DBG_ASSERT(TT_(tkTSCHEME) == TT_TSCHEME);
 	TYPING(ctx, stmt, 1, TYPE_String, 0);
 	{
 		const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, KNH_GMA_NS, path);
@@ -2777,7 +2774,7 @@ static knh_Token_t* TPATH_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		DBG_ASSERT(DP(stmt)->size == 3);
 		STT_(stmt) = STT_CALL;
 		Token_toCALLMTD(ctx, tkNN(stmt, 0), MN_path, knh_NameSpace_getMethodNULL(ctx, CLASS_String, MN_path));
-		TT_(tkTPATH) = TT_CONST;
+		TT_(tkTSCHEME) = TT_CONST;
 		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, KNH_GMA_NS));
 		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, new_Type(ctx, reqt)));
 		return Stmt_typed(ctx, stmt, reqt);
@@ -2850,7 +2847,7 @@ static knh_Token_t* EXPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		CASE_EXPR(NEW, stmt, reqt);
 		CASE_EXPR(OP, stmt, reqt);
 		CASE_EXPR(TCAST, stmt, reqt);
-		CASE_EXPR(TPATH, stmt, reqt);
+		CASE_EXPR(TSCHEME, stmt, reqt);
 		CASE_EXPR(AND, stmt, reqt);
 		CASE_EXPR(OR, stmt, reqt);
 		CASE_EXPR(ALT, stmt, reqt);
@@ -2885,7 +2882,7 @@ static knh_Token_t* ErrorTypeError(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type
 	}
 	case STT_LET:
 	case STT_DECL:
-		tkERR = TypeErrorToken(ctx, tkNN(stmt, 1), reqt, type);
+		tkERR = TERROR_Token(ctx, tkNN(stmt, 1), type, reqt);
 		break;
 	default :
 		tkERR = TypeErrorStmtNN(ctx, stmt, n, reqt, type);
