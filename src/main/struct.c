@@ -27,27 +27,8 @@
 
 /* ************************************************************************ */
 
-#define USE_STEXT 1
-#define USE_B     1
-#define USE_bytes_first       1
-#define USE_bytes_index       1
-#define USE_bytes_last        1
-#define USE_bytes_index       1
-#define USE_bytes_rindex      1
-#define USE_bytes_indexOf     1
-#define USE_bytes_strcmp      1
-#define USE_bytes_startsWith  1
-#define USE_bytes_endsWith    1
-#define USE_bytes_parseint    1
-#define USE_bytes_parsefloat  1
-//#define USE_bytes_subbytes    1
-
-#define USE_cwb_open      1
-#define USE_cwb_openinit  1
-#define USE_cwb_tobytes   1
-#define USE_cwb_write     1
-#define USE_cwb_putc      1
-#define USE_cwb_size      1
+#define USE_bytes         1
+#define USE_cwb           1
 
 #define USE_array_index   1
 

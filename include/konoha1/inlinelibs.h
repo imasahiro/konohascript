@@ -111,16 +111,31 @@ static knh_index_t knh_bytes_rindex(knh_bytes_t v, int ch)
 static inline knh_bytes_t knh_bytes_next(knh_bytes_t v, int ch) CC_UNUSED;
 static knh_bytes_t knh_bytes_next(knh_bytes_t v, int ch)
 {
-	knh_bytes_t t = {{""}, 0};
 	size_t i;
 	for(i = 0; i < v.len; i++) {
 		if(v.utext[i] == ch) {
-			t.text = v.text + (i+1);
-			t.len = v.len - (i+1);
+			v.text = v.text + (i+1);
+			v.len = v.len - (i+1);
 			break;
 		}
 	}
-	return t;
+	return v;
+}
+#endif
+
+#if defined(USE_bytes) || defined(USE_bytes_rnext)
+static inline knh_bytes_t knh_bytes_rnext(knh_bytes_t v, int ch) CC_UNUSED;
+static knh_bytes_t knh_bytes_rnext(knh_bytes_t v, int ch)
+{
+	long i;
+	for(i = v.len - 1; i >= 0; i--) {
+		if(v.utext[i] == ch) {
+			v.text = v.text + (i+1);
+			v.len = v.len - (i+1);
+			break;
+		}
+	}
+	return v;
 }
 #endif
 

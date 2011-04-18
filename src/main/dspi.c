@@ -388,51 +388,44 @@ static knh_OutputStream_t *new_OutputStreamSTDIO(CTX ctx, FILE *fp, knh_String_t
 
 /* ------------------------------------------------------------------------ */
 
-static knh_bytes_t knh_bytes_lastname(knh_bytes_t t)
-{
-	knh_index_t loc = knh_bytes_rindex(t, '.');
-	if(loc != -1) {
-		return knh_bytes_last(t, loc+1);
-	}
-	return t;
-}
-
 static knh_bool_t hasPKG(CTX ctx, knh_path_t *ph, knh_bytes_t tpath, knh_bytes_t path)
 {
 	knh_path_reset(ctx, ph, NULL, tpath);
 	knh_path_append(ctx, ph, 1, path.text); // konoha.math
-	knh_path_append(ctx, ph, 1, knh_bytes_lastname(path).text); // math
+	knh_path_append(ctx, ph, 1, knh_bytes_rnext(path, '.').text); // math
 	knh_path_append(ctx, ph, 0, ".k");
+	DBG_P("BEFORE: %s", P_text(ph));
 	knh_ospath(ctx, ph);
+	DBG_P("AFTER: %s", P_text(ph));
 	return knh_path_isfile(ctx, ph);
 }
 
 static knh_bool_t PKG_realpath(CTX ctx, knh_NameSpace_t *ns, knh_path_t *ph)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_copy(ctx, &cwbbuf, ph, 0/*hasScheme*/);
+	int res = 1;
 	char *epath = knh_getenv("KONOHA_PACKAGE");
 	if(epath != NULL) {
 		if(hasPKG(ctx, ph, B(epath), knh_cwb_tobytes(cwb))) {
-			knh_cwb_close(cwb);
-			return 1;
+			goto L_RETURN;
 		}
 	}
 	knh_String_t *tpath = knh_getPropertyNULL(ctx, STEXT("konoha.package.path"));
 	if(tpath != NULL) {
 		if(hasPKG(ctx, ph, S_tobytes(tpath), knh_cwb_tobytes(cwb))) {
-			knh_cwb_close(cwb);
-			return 1;
+			goto L_RETURN;
 		}
 	}
 	tpath = knh_getPropertyNULL(ctx, STEXT("user.package.path"));
 	if(tpath != NULL) {
 		if(hasPKG(ctx, ph, S_tobytes(tpath), knh_cwb_tobytes(cwb))) {
-			knh_cwb_close(cwb);
-			return 1;
+			goto L_RETURN;
 		}
 	}
+	res = 0;
+	L_RETURN:;
 	knh_cwb_close(cwb);
-	return 0;
+	return res;
 }
 
 static knh_pathid_t PKG_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
@@ -440,6 +433,7 @@ static knh_pathid_t PKG_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
 	knh_bool_t res = PKG_realpath(ctx, ns, ph);
 	knh_path_close(ctx, ph);
+	DBG_P("********************** path=%s, res=%d", path.text, res);
 	return res;
 }
 

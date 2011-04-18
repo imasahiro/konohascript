@@ -662,7 +662,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 	knh_path_reset(ctx, ph, NULL, home);
 	knh_path_append(ctx, ph, 1/*sep*/, "script");
 	knh_path_append(ctx, ph, 1/*sep*/, LIBK_VERSION);
-	SETPROP("konoha.package.path", knh_path_newString(ctx, ph, 0/*hasScheme*/));
+	SETPROP("konoha.script.path", knh_path_newString(ctx, ph, 0/*hasScheme*/));
 
 #if defined(K_USING_WINDOWS)
 	user.text = knh_getenv("USERPROFILE");
