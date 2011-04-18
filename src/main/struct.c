@@ -2143,9 +2143,16 @@ static void NameSpace_free(CTX ctx, Object *o)
 	}
 }
 
+static void NameSpace_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+{
+	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
+	knh_write_ascii(ctx, w, "ns:");
+	knh_write_ascii(ctx, w, S_tochar(ns->rpath));
+}
+
 static knh_ClassDef_t NameSpaceDef = {
 	NameSpace_init, TODO_initcopy, NameSpace_reftrace, NameSpace_free,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_write,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, NameSpace_write,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
 	"NameSpace", CFLAG_NameSpace, sizeof(knh_NameSpaceEX_t), NULL,
