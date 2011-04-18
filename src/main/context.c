@@ -298,17 +298,15 @@ static knh_context_t* new_RootContext(void)
 	KNH_INITv(ctx->sys, new_(System));
 	KNH_INITv(share->rootns, new_(NameSpace));
 	knh_loadScriptSystemData(ctx, share->rootns, kapi);
+	knh_System_initPath(ctx, ctx->sys);
 
 	KNH_INITv(ctx->script, new_(Script));
-	{
-		knh_Gamma_t *gma = new_(Gamma);
-		KNH_INITv(ctx->gma, gma);
-	}
+	KNH_INITv(ctx->gma, new_(Gamma));
 	knh_loadScriptSystemKonohaCode(ctx);
 	knh_loadScriptSystemMethod(ctx, kapi);
 	share->ctx0 = ctx;
 	knh_CommonContext_init(ctx, ctx);
-	knh_System_initPath(ctx, ctx->sys);
+
 	knh_loadScriptTokenData(ctx);
 	knh_loadScriptAliasTokenData(ctx);
 	return ctx;

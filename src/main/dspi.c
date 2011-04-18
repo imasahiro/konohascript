@@ -442,7 +442,7 @@ static knh_bool_t SCRIPT_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, 
 }
 
 static const knh_PathDSPI_t PATH_SCRIPT = {
-	K_DSPI_PATH, "script", CLASS_Script, CLASS_InputStream, NULL,
+	K_DSPI_PATH, "script", CLASS_Boolean, CLASS_InputStream, NULL,
 	FILE_hasType, SCRIPT_exists, FILE_newObjectNULL,
 };
 

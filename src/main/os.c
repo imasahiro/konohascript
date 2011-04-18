@@ -345,9 +345,7 @@ void knh_path_reset(CTX ctx, knh_path_t *ph, const char *scheme, knh_bytes_t t)
 {
 	knh_index_t idx = knh_bytes_index(t, ':');
 	char *buf = P_buf(ph);
-	if(t.len + 1 > K_PATHMAX) {
-		t.len = K_PATHMAX - 1;
-	}
+	if(t.len + 1 > K_PATHMAX) t.len = K_PATHMAX - 1;
 	if(idx > 0 || scheme == NULL) {
 		knh_memcpy(buf, t.text, t.len); buf[t.len] = 0;
 		ph->pbody = idx + 1;
@@ -355,7 +353,7 @@ void knh_path_reset(CTX ctx, knh_path_t *ph, const char *scheme, knh_bytes_t t)
 	}
 	else {
 		knh_snprintf(buf, K_PATHMAX, "%s:%s", scheme, t.text);
-		ph->pbody = knh_strlen(scheme) + 2;
+		ph->pbody = knh_strlen(scheme) + 1;
 		ph->plen = t.len + ph->pbody;
 	}
 	DBG_ASSERT(buf[ph->plen] == 0);

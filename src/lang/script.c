@@ -63,6 +63,7 @@ knh_NameSpace_t* new_NameSpace(CTX ctx, knh_NameSpace_t *parent)
 	KNH_INITv(ns->parentNULL, parent);
 	KNH_SETv(ctx, DP(ns)->nsname, DP(parent)->nsname);
 	KNH_SETv(ctx, ns->rpath, parent->rpath);
+	DBG_P("ns=%p, rpath='%s'", ns, S_tochar(ns->rpath));
 	return ns;
 }
 
@@ -230,12 +231,12 @@ static knh_bool_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *resultsNU
 		}
 	}
 	else {
-		BEGIN_LOCAL(ctx, lsfp, 1);
-		LOCAL_NEW(ctx, lsfp, 0, knh_NameSpace_t*, ns, new_NameSpace(ctx, K_GMANS));
-		NameSpace_beginINCLUDE(ctx, ns, K_GMANS);
-		isCONTINUE = knh_load(ctx, ns, include_name, resultsNULL);
-		NameSpace_endINCLUDE(ctx, ns, K_GMANS);
-		END_LOCAL_(ctx, lsfp);
+		knh_NameSpace_t *ns = new_NameSpace(ctx, K_GMANS);
+		KNH_SETv(ctx, ctx->gma->scr->ns, ns);
+		NameSpace_beginINCLUDE(ctx, ns, ns->parentNULL);
+		isCONTINUE = knh_load(ctx, include_name, resultsNULL);
+		NameSpace_endINCLUDE(ctx, ns, ns->parentNULL);
+		KNH_SETv(ctx, ctx->gma->scr->ns, ns->parentNULL);
 	}
 	L_RETURN:;
 	knh_Stmt_done(ctx, stmt);
@@ -261,7 +262,7 @@ knh_status_t knh_loadScriptPackage(CTX ctx, knh_bytes_t path)
 			knh_DictMap_set(ctx, dmap, nsname, newscr);
 			scr = ctx->gma->scr;
 			KNH_SETv(ctx, ctx->gma->scr, newscr);
-			status = knh_load(ctx, newscr->ns, path, NULL);
+			status = knh_load(ctx, path, NULL);
 			KNH_SETv(ctx, ctx->gma->scr, scr);
 		}
 	}
@@ -737,7 +738,6 @@ static knh_bool_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *resultsNU
 	}
 
 	SCRIPT_typing(ctx, stmtITR);
-
 	stmt = stmtITR;
 	while(stmt != NULL) {
 		knh_Stmt_t *stmtNEXT = DP(stmt)->nextNULL;
@@ -794,7 +794,6 @@ static knh_bool_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *resultsNU
 		}
 		stmt = stmtNEXT;
 	}
-
 	L_BREAK:;
 	END_LOCAL_(ctx, lsfp);
 	ctx->gma->uline = 0;
@@ -862,10 +861,10 @@ static knh_InputStream_t* openScriptInputStreamNULL(CTX ctx, knh_NameSpace_t *ns
 			knh_InputStream_t *in = new_InputStreamDSPI(ctx, fio, dspi);
 			knh_bytes_t rpath = B(P_text(ph));
 			knh_uri_t uri = knh_getURI(ctx, rpath);
-			DBG_P("URI=%d, URN='%s'", (int)uri, rpath);
 			ULINE_setURI(in->uline, uri);
 			KNH_SETv(ctx, DP(in)->urn, knh_getURN(ctx, uri));
 			KNH_SETv(ctx, ns->rpath, knh_path_newString(ctx, ph, 0));
+			DBG_P("URI=%d, nsname='%s' rpath='%s'", (int)uri, S_tochar(DP(ns)->nsname), S_tochar(ns->rpath));
 			return in;
 		}
 	}
@@ -903,17 +902,15 @@ static int readchunk(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
 	return linenum;
 }
 
-KNHAPI2(knh_status_t) knh_load(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, knh_Array_t *resultsNULL)
+KNHAPI2(knh_status_t) knh_load(CTX ctx, knh_bytes_t path, knh_Array_t *resultsNULL)
 {
 	knh_bool_t res = 0;
-	knh_InputStream_t *in = openScriptInputStreamNULL(ctx, ns, path);
+	knh_InputStream_t *in = openScriptInputStreamNULL(ctx, K_GMANS, path);
 	if(in != NULL) {
 		knh_Bytes_t *ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
-		BEGIN_LOCAL(ctx, lsfp, 3);
-		LOCAL_NEW(ctx, lsfp, 0, knh_NameSpace_t*, oldns, K_GMANS);
+		BEGIN_LOCAL(ctx, lsfp, 2);
 		LOCAL_NEW(ctx, lsfp, 1, knh_InputStream_t*, bin, new_BytesInputStream(ctx, ba));
 		KNH_SETv(ctx, lsfp[2].o, in);
-		KNH_SETv(ctx, K_GMANS, ns);
 		if(!knh_isCompileOnly(ctx)) {
 			KNH_SECINFO(ctx, "running script path='%s'", path.text);
 		}
@@ -938,7 +935,6 @@ KNHAPI2(knh_status_t) knh_load(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, k
 				}
 			}
 		} while(BA_size(ba) > 0);
-		KNH_SETv(ctx, K_GMANS, oldns);
 		END_LOCAL_(ctx, lsfp);
 	}
 	return res;
@@ -952,12 +948,7 @@ knh_status_t konoha_initload(konoha_t konoha, const char *path)
 	KONOHA_CHECK(konoha, 0);
 	CTX ctx = (CTX)konoha.ctx;
 	KONOHA_BEGIN(ctx);
-	{
-		BEGIN_LOCAL(ctx, lsfp, 1);
-		LOCAL_NEW(ctx, lsfp, 0, knh_NameSpace_t*, ns, new_NameSpace(ctx, ctx->share->rootns));
-		status = knh_load(ctx, ns, B(path), NULL);
-		END_LOCAL_(ctx, lsfp);
-	}
+	status = knh_load(ctx, B(path), NULL);
 	knh_stack_clear(ctx, ctx->stack);
 	KONOHA_END(ctx);
 	return status;

@@ -834,6 +834,7 @@ static METHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const char *mode = IS_NULL(sfp[2].s) ? "r" : S_tochar(sfp[2].s);
 	knh_NameSpace_t *ns = sfp[3].ns;
 	knh_path_t phbuf, *ph = knh_path_open_(ctx, "script", path, &phbuf);
+	DBG_ASSERT(IS_NameSpace(ns));
 	path.text = P_text(ph); path.len = ph->plen;
 	in->dspi = knh_getStreamDSPI(ctx, ns, path);
 	if(in->dspi->realpath(ctx, ns, ph)) {
