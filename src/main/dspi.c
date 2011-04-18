@@ -44,68 +44,49 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_PATH */
 
-knh_bytes_t knh_bytes_skipPATHHEAD(knh_bytes_t path)
-{
-	size_t i;
-	size_t len = (K_PATHHEAD_MAXSIZ < path.len) ? K_PATHHEAD_MAXSIZ : path.len;
-	for(i = 1; i < len; i++) {
-		if(path.utext[i] == ':') {
-			path.utext = path.utext + (i + 1);
-			path.len = path.len - (i + 1);
-			return path;
-		}
-	}
-	return path;
-}
-
 /* ------------------------------------------------------------------------ */
 /* [PATH] */
 
-static knh_pathid_t NOPATH_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	return PATH_unknown;
-}
-
-static knh_bool_t NOPATH_hasType(CTX ctx, knh_class_t cid)
+static knh_bool_t NOPATH_hasType(CTX ctx, knh_class_t cid, void *thunk)
 {
 	return 0;
 }
-
-static knh_Object_t* NOPATH_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+static knh_bool_t NOPATH_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
+{
+	return 0;
+}
+static knh_Object_t* NOPATH_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s, void *thunk)
 {
 	return NULL/*(knh_Object_t*)s*/;
 }
 
 static const knh_PathDSPI_t PATH_NOPATH = {
-	K_DSPI_PATH, "NOPATH", CLASS_Tvoid, CLASS_Tvoid,
+	K_DSPI_PATH, "NOPATH", CLASS_Tvoid, CLASS_Tvoid, NULL,
 	NOPATH_hasType, NOPATH_exists, NOPATH_newObjectNULL,
 };
 
 /* charset:UTF-8 */
-
-static knh_bool_t CHARSET_hasType(CTX ctx, knh_class_t cid)
+static knh_bool_t CHARSET_hasType(CTX ctx, knh_class_t cid, void *thunk)
 {
-	return (cid == CLASS_StringEncoder || cid == CLASS_StringDecoder || PATH_hasType(cid));
+	return (cid == CLASS_StringEncoder || cid == CLASS_StringDecoder);
 }
 
-static knh_pathid_t CHARSET_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_bool_t CHARSET_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
 {
-	knh_bytes_t t = knh_bytes_skipPATHHEAD(path);
-	knh_pathid_t res = PATH_unknown;
+	knh_bytes_t t = knh_bytes_next(path, ':');
 	iconv_t ic = ctx->spi->iconv_open(t.text, K_ENCODING);
 	if(ic != (iconv_t)(-1)) {
-		res = PATH_found;
 		ctx->spi->iconv_close(ic);
 	}
 	else if(knh_bytes_strcasecmp(t, STEXT(K_ENCODING)) == 0) {
-		res = PATH_found;
+		return 1;
 	}
-	return res;
+	return 0;
 }
 
-static knh_Object_t* CHARSET_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+static knh_Object_t* CHARSET_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s, void *thunk)
 {
-	knh_bytes_t t = knh_bytes_skipPATHHEAD(S_tobytes(s));
+	knh_bytes_t t = knh_bytes_next(S_tobytes(s), ':');
 	if(cid == CLASS_StringEncoder) {
 		return (knh_Object_t*)new_StringEncoderNULL(ctx, t);
 	}
@@ -116,8 +97,7 @@ static knh_Object_t* CHARSET_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_cla
 }
 
 static const knh_PathDSPI_t PATH_CHARSET = {
-	K_DSPI_PATH, "charset",
-	CLASS_Boolean, CLASS_Tvoid,
+	K_DSPI_PATH, "charset", CLASS_Boolean, CLASS_Tvoid, NULL,
 	CHARSET_hasType, CHARSET_exists, CHARSET_newObjectNULL,
 };
 
@@ -152,40 +132,37 @@ static Object* new_ConverterNULL(CTX ctx, knh_class_t cid, knh_bytes_t path, con
 	}
 }
 
-static knh_bool_t TOPATH_hasType(CTX ctx, knh_class_t cid)
+static knh_bool_t TOPATH_hasType(CTX ctx, knh_class_t cid, void *thunk)
 {
-	if(IS_CONV(cid)) return 1;
-	return PATH_hasType(cid);
+	return (IS_CONV(cid));
 }
-
-static knh_pathid_t TOPATH_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_bool_t TOPATH_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
 {
-	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvTODSPINULL(ctx, ns, knh_bytes_skipPATHHEAD(path));
-	return (dspi != NULL) ? PATH_found : PATH_unknown;
+	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvTODSPINULL(ctx, ns, knh_bytes_next(path, ':'));
+	return (dspi != NULL);
 }
-
-static knh_Object_t* TOPATH_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+static knh_Object_t* TOPATH_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s, void *thunk)
 {
-	knh_bytes_t path = knh_bytes_skipPATHHEAD(S_tobytes(s));
+	knh_bytes_t path = knh_bytes_next(S_tobytes(s), ':');
 	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvTODSPINULL(ctx, ns, path);
-	KNH_ASSERT(dspi != NULL);
+	KNH_ASSERT(dspi != NULL); // checked before
 	if(IS_CONV(cid)) {
 		return new_ConverterNULL(ctx, cid, path, dspi);
 	}
 	return NULL;
 }
 
-static knh_pathid_t FROMPATH_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_bool_t FROMPATH_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
 {
-	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvFROMDSPINULL(ctx, ns, knh_bytes_skipPATHHEAD(path));
-	return (dspi != NULL) ? PATH_found : PATH_unknown;
+	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvFROMDSPINULL(ctx, ns, knh_bytes_next(path, ':'));
+	return (dspi != NULL);
 }
 
-static knh_Object_t* FROMPATH_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+static knh_Object_t* FROMPATH_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s, void *thunk)
 {
-	knh_bytes_t path = knh_bytes_skipPATHHEAD(S_tobytes(s));
+	knh_bytes_t path = knh_bytes_next(S_tobytes(s), ':');
 	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvFROMDSPINULL(ctx, ns, path);
-	KNH_ASSERT(dspi != NULL);
+	KNH_ASSERT(dspi != NULL); // checked before
 	if(IS_CONV(cid)) {
 		return new_ConverterNULL(ctx, cid, path, dspi);
 	}
@@ -193,35 +170,32 @@ static knh_Object_t* FROMPATH_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_cl
 }
 
 static const knh_PathDSPI_t PATH_TOPATH = {
-	K_DSPI_PATH, "to",
-	CLASS_Converter, CLASS_Tvoid,
+	K_DSPI_PATH, "to", CLASS_Converter, CLASS_Tvoid, NULL,
 	TOPATH_hasType, TOPATH_exists, TOPATH_newObjectNULL,
 };
 
 static const knh_PathDSPI_t PATH_FROMPATH = {
-	K_DSPI_PATH, "from",
-	CLASS_Converter, CLASS_Tvoid,
+	K_DSPI_PATH, "from", CLASS_Converter, CLASS_Tvoid, NULL,
 	TOPATH_hasType, FROMPATH_exists, FROMPATH_newObjectNULL,
 };
 
 /* ------------------------------------------------------------------------ */
 /* file:/usr/local */
 
-static knh_bool_t FILE_hasType(CTX ctx, knh_class_t cid)
+static knh_bool_t FILE_hasType(CTX ctx, knh_class_t cid, void *thunk)
 {
-	return (cid == CLASS_InputStream || cid == CLASS_OutputStream || PATH_hasType(cid));
+	return (cid == CLASS_InputStream || cid == CLASS_OutputStream);
 }
-
-static knh_pathid_t FILE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_bool_t FILE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
 {
 	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
 	knh_ospath(ctx, ph);
-	knh_pathid_t res = knh_path_isfile(ctx, ph) ? 1: PATH_unknown;
+	knh_bool_t res = knh_path_isfile(ctx, ph);
 	knh_path_close(ctx, ph);
 	return res;
 }
 
-static knh_Object_t* FILE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+static knh_Object_t* FILE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s, void *thunk)
 {
 	if(cid == CLASS_InputStream) {
 		knh_InputStream_t *in = new_InputStreamNULL(ctx, ns, s, "r", ctx->mon);
@@ -235,25 +209,27 @@ static knh_Object_t* FILE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_
 }
 
 static const knh_PathDSPI_t PATH_FILE = {
-	K_DSPI_PATH, "file",
-	CLASS_Boolean, CLASS_InputStream,
+	K_DSPI_PATH, "file", CLASS_Boolean, CLASS_InputStream, NULL,
 	FILE_hasType, FILE_exists, FILE_newObjectNULL,
 };
 
-static knh_pathid_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_bool_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
 {
 	KNH_TODO("lib:m.sin");
-//	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
-//	knh_bytes_t libname = knh_path_body(ph), funcname = STEXT(""); /* lib:m.sin */
+//	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, libname, &phbuf);
+//	knh_bytes_t libname = knh_path_next(path, ':'), funcname = STEXT(""); /* lib:m.sin */
 //	knh_index_t loc = knh_bytes_index(libname, '.');
 //	if(loc != -1) {
 //		libname = knh_bytes_first(libname, loc);
 //		funcname = knh_bytes_last(libname, loc+1);
 //	}
+//	{
+//
+//	}
 //	knh_cwb_write(ctx, cwb, libname);
 //	knh_ospath(ctx, cwb);
 //	void *p = knh_path_dlopen(ctx, LOG_DEBUG, cwb);
-//	knh_pathid_t res = PATH_unknown;
+//	knh_bool_t res = PATH_unknown;
 //	if(p == NULL && !knh_bytes_startsWith(libname, STEXT("lib"))) {
 //		knh_cwb_clear(cwb, 0);
 //		knh_cwb_write(ctx, cwb, STEXT("lib"));
@@ -270,12 +246,11 @@ static knh_pathid_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 //		knh_dlclose(ctx, p);
 //	}
 //	knh_path_close(ctx, ph)
-	return PATH_unknown;
+	return 0;
 }
 
 static const knh_PathDSPI_t PATH_LIB = {
-	K_DSPI_PATH, "lib",
-	CLASS_Boolean, CLASS_Tvoid,
+	K_DSPI_PATH, "lib", CLASS_Boolean, CLASS_Tvoid, NULL,
 	NOPATH_hasType, LIB_exists, NOPATH_newObjectNULL,
 };
 
@@ -338,15 +313,15 @@ static knh_io_t NOFILE_wopen(CTX ctx, knh_path_t *ph, const char *mode, knh_Moni
 	KNH_WARN(ctx, "nofile path='%s', mode='%s'", P_text(ph), mode);
 	return IO_NULL;
 }
-static knh_intptr_t FILE_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz, knh_Monitor_t *mon)
+static knh_intptr_t FILE_read(CTX ctx, knh_io_t fio, char *buf, size_t bufsiz, knh_Monitor_t *mon)
 {
-	return knh_fread(ctx, buf, bufsiz, (FILE*)fd);
+	return knh_fread(ctx, buf, bufsiz, (FILE*)fio);
 }
 
-static knh_intptr_t FILE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz, knh_Monitor_t *mon)
+static knh_intptr_t FILE_write(CTX ctx, knh_io_t fio, const char *buf, size_t bufsiz, knh_Monitor_t *mon)
 {
-	size_t ssize = knh_fwrite(ctx, buf, bufsiz, (FILE*)fd);
-	knh_fflush(ctx, (FILE*)fd);
+	size_t ssize = knh_fwrite(ctx, buf, bufsiz, (FILE*)fio);
+	knh_fflush(ctx, (FILE*)fio);
 	return ssize;
 }
 
@@ -426,7 +401,7 @@ static knh_bool_t PKG_realpath(CTX ctx, knh_NameSpace_t *ns, knh_path_t *ph)
 	return res;
 }
 
-static knh_pathid_t PKG_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_bool_t PKG_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
 {
 	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
 	knh_bool_t res = PKG_realpath(ctx, ns, ph);
@@ -436,7 +411,7 @@ static knh_pathid_t PKG_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 }
 
 static const knh_PathDSPI_t PATH_PKG = {
-	K_DSPI_PATH, "pkg", CLASS_Boolean, CLASS_InputStream,
+	K_DSPI_PATH, "pkg", CLASS_Boolean, CLASS_InputStream, NULL,
 	NOPATH_hasType, PKG_exists, NOPATH_newObjectNULL,
 };
 
@@ -458,7 +433,7 @@ static knh_bool_t SCRIPT_realpath(CTX ctx, knh_NameSpace_t *ns, knh_path_t *ph)
 	return knh_path_isfile(ctx, ph);
 }
 
-static knh_pathid_t SCRIPT_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_bool_t SCRIPT_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
 {
 	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
 	knh_bool_t res = SCRIPT_realpath(ctx, ns, ph);
@@ -467,7 +442,7 @@ static knh_pathid_t SCRIPT_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path
 }
 
 static const knh_PathDSPI_t PATH_SCRIPT = {
-	K_DSPI_PATH, "script", CLASS_Script, CLASS_InputStream,
+	K_DSPI_PATH, "script", CLASS_Script, CLASS_InputStream, NULL,
 	FILE_hasType, SCRIPT_exists, FILE_newObjectNULL,
 };
 
@@ -733,7 +708,7 @@ static knh_StreamDSPI_t STREAM_CURL = {
 		CURL_feof, CURL_getc, CURL_getContentType, CURL_getCharset
 };
 
-static knh_pathid_t CURL_exists(Ctx *ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_bool_t CURL_exists(Ctx *ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
 {
 	CURLFILE *file = knh_malloc(ctx, sizeof(CURLFILE));
 	if(file == NULL) return PATH_unknown;
@@ -762,7 +737,7 @@ static knh_pathid_t CURL_exists(Ctx *ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 	}
 	emulti_handle = NULL;
 	knh_free(ctx, file, sizeof(CURLFILE));
-	return (knh_pathid_t)1;
+	return (knh_bool_t)1;
 }
 
 static knh_bool_t CURL_hasType(Ctx *ctx, knh_class_t cid)
@@ -782,7 +757,6 @@ static knh_PathDSPI_t PATH_CURL = {
 };
 
 #endif/*K_USING_CURL*/
-
 
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_QUERY */
@@ -827,7 +801,7 @@ static void knh_sqlite3_perror(CTX ctx, sqlite3 *db, int r)
 static knh_qconn_t *SQLITE3_qopen(CTX ctx, knh_bytes_t url)
 {
 	sqlite3 *db = NULL;
-	url = knh_bytes_skipPATHHEAD(url);
+	url = knh_bytes_next(url, ':');
 	int r = sqlite3_open(url.text, &db);
 	if (r != SQLITE_OK) {
 		return NULL;

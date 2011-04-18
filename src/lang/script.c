@@ -253,7 +253,7 @@ knh_status_t knh_loadScriptPackage(CTX ctx, knh_bytes_t path)
 	if(scr == NULL) {
 		const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, ctx->share->rootns, path);
 		status = K_BREAK;
-		if(dspi->exists(ctx, ctx->share->rootns, path) != PATH_unknown) {
+		if(dspi->exists(ctx, ctx->share->rootns, path, dspi->thunk)) {
 			knh_String_t *nsname = new_S(ctx, name);
 			knh_Script_t *newscr = new_(Script);
 			KNH_SETv(ctx, DP(newscr->ns)->nsname, nsname);

@@ -1299,19 +1299,46 @@ static knh_Token_t* PATH_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 	if(reqt == TYPE_dyn || reqt == TYPE_var) reqt = dspi->cid;
 	DBG_P("reqt=%s", TYPE__(reqt));
 	if(reqt == TYPE_Boolean || reqt == TYPE_void) {
-		knh_Object_t *tf = (dspi->exists(ctx, ns, path) == PATH_unknown) ? KNH_FALSE : KNH_TRUE;
+		knh_Object_t *tf = dspi->exists(ctx, ns, path, dspi->thunk) ? KNH_TRUE : KNH_FALSE;
 		return Token_setCONST(ctx, tk, tf);
 	}
 	else if(reqt == TYPE_String) {
 		return Token_toCONST(ctx, tk);
 	}
-	else if(!dspi->hasType(ctx, CLASS_t(reqt))) {
+	else if(!dspi->hasType(ctx, CLASS_t(reqt), dspi->thunk)) {
 		return TERROR_Token(ctx, tk, dspi->cid, reqt);
 	}
 	else {
-		knh_Object_t *o = dspi->newObjectNULL(ctx, ns, reqt, (tk)->text);
+		knh_Object_t *o = dspi->newObjectNULL(ctx, ns, reqt, (tk)->text, dspi->thunk);
 		if(o == NULL) o = KNH_NULVAL(reqt);
 		return Token_setCONST(ctx, tk, o);
+	}
+}
+
+static knh_Token_t* TSCHEME_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
+{
+	knh_Token_t *tkSCM = tkNN(stmt, 2);
+	knh_bytes_t path = S_tobytes((tkSCM)->text);
+	knh_NameSpace_t *ns = DP(ctx->gma)->ns;
+	DBG_ASSERT(TT_(tkSCM) == TT_TSCHEME);
+	TYPING(ctx, stmt, 1, TYPE_String, 0);
+	const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, ns, path);
+	if(dspi == NULL) {
+		return ERROR_Undefined(ctx, "scheme", CLASS_unknown, tkSCM);
+	}
+	if(reqt == TYPE_dyn || reqt == TYPE_var) reqt = dspi->cid;
+	if(reqt == TYPE_Boolean || reqt == TYPE_void || reqt == TYPE_String ||
+			dspi->hasType(ctx, CLASS_t(reqt), dspi->thunk)) {
+		DBG_ASSERT(DP(stmt)->size == 3);
+		STT_(stmt) = STT_CALL;
+		Token_toCALLMTD(ctx, tkNN(stmt, 0), MN_path, knh_NameSpace_getMethodNULL(ctx, CLASS_String, MN_path));
+		TT_(tkSCM) = TT_CONST;
+		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, KNH_GMA_NS));
+		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, new_Type(ctx, reqt)));
+		return Stmt_typed(ctx, stmt, reqt);
+	}
+	else {
+		return TERROR_Token(ctx, tkSCM, dspi->cid, reqt);
 	}
 }
 
@@ -2745,39 +2772,6 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 			Token_toTYPEMAPMPR(ctx, tkC, tcid, trl);
 			return Stmt_typed(ctx, stmt, tcid);
 		}
-	}
-}
-
-/* ------------------------------------------------------------------------ */
-/* [QCAST] */
-
-static knh_Token_t* TSCHEME_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
-{
-	knh_Token_t *tkTSCHEME = tkNN(stmt, 2);
-	knh_bytes_t path = S_tobytes((tkTSCHEME)->text);
-	DBG_ASSERT(TT_(tkTSCHEME) == TT_TSCHEME);
-	TYPING(ctx, stmt, 1, TYPE_String, 0);
-	{
-		const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, KNH_GMA_NS, path);
-		if(dspi == NULL) {
-			return ErrorNoResourceHandler(ctx, path);
-		}
-		else {
-			if(reqt == TYPE_dyn) {
-				reqt = dspi->cid;
-				//InfoInferredType(ctx, "", path, reqt);
-			}
-			if(!dspi->hasType(ctx, CLASS_t(reqt))) {
-				return ErrorType(ctx, path, reqt);
-			}
-		}
-		DBG_ASSERT(DP(stmt)->size == 3);
-		STT_(stmt) = STT_CALL;
-		Token_toCALLMTD(ctx, tkNN(stmt, 0), MN_path, knh_NameSpace_getMethodNULL(ctx, CLASS_String, MN_path));
-		TT_(tkTSCHEME) = TT_CONST;
-		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, KNH_GMA_NS));
-		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, new_Type(ctx, reqt)));
-		return Stmt_typed(ctx, stmt, reqt);
 	}
 }
 

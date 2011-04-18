@@ -473,14 +473,14 @@ knh_Token_t* ErrorNoSuchTransCast(CTX ctx, knh_class_t tcid, knh_class_t scid)
 {
 	return Gamma_perror(ctx, KC_ERR, _("no translation: %C ==> %C"), scid, tcid);
 }
-knh_Token_t* ErrorNoResourceHandler(CTX ctx, knh_bytes_t path)
-{
-	return Gamma_perror(ctx, KC_ERR, _("path may be uninstalled: %B"), path);
-}
-knh_Token_t* ErrorType(CTX ctx, knh_bytes_t path, knh_type_t reqt)
-{
-	return Gamma_perror(ctx, KC_INFO, _("%B: must NOT be %T"), path, reqt);
-}
+//knh_Token_t* ErrorNoResourceHandler(CTX ctx, knh_bytes_t path)
+//{
+//	return Gamma_perror(ctx, KC_ERR, _("path may be uninstalled: %B"), path);
+//}
+//knh_Token_t* ErrorType(CTX ctx, knh_bytes_t path, knh_type_t reqt)
+//{
+//	return Gamma_perror(ctx, KC_INFO, _("%B: must NOT be %T"), path, reqt);
+//}
 void WarningDuplicatedDefault(CTX ctx)
 {
 	Gamma_perror(ctx, KC_EWARN, _("multiple default in switch"));
