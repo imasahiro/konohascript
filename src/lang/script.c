@@ -29,17 +29,17 @@
 
 #define USE_RCinc 1
 
-#define USE_STEXT 1
-#define USE_B     1
-#define USE_bytes_first       1
-#define USE_bytes_index       1
-#define USE_bytes_last        1
-#define USE_bytes_index       1
-#define USE_bytes_next        1
-#define USE_bytes_rindex      1
-#define USE_bytes_equals      1
-#define USE_bytes_startsWith  1
-//#define USE_bytes_endsWith    1
+//#define USE_STEXT 1
+//#define USE_B     1
+#define USE_bytes
+//#define USE_bytes_index       1
+//#define USE_bytes_last        1
+//#define USE_bytes_index       1
+//#define USE_bytes_next        1
+//#define USE_bytes_rindex      1
+//#define USE_bytes_equals      1
+//#define USE_bytes_startsWith  1
+////#define USE_bytes_endsWith    1
 
 #define USE_cwb_open      1
 #define USE_cwb_tobytes   1
@@ -56,14 +56,12 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [namespace] */
 
-knh_NameSpace_t* new_NameSpace(CTX ctx, knh_NameSpace_t *nsNULL)
+knh_NameSpace_t* new_NameSpace(CTX ctx, knh_NameSpace_t *parent)
 {
 	knh_NameSpace_t* ns = new_(NameSpace);
-	if(nsNULL != NULL) {
-		DBG_ASSERT(IS_NameSpace(nsNULL));
-		KNH_INITv(ns->parentNULL, nsNULL);
-		KNH_SETv(ctx, DP(ns)->nsname, DP(nsNULL)->nsname);
-	}
+	DBG_ASSERT(IS_NameSpace(parent));
+	KNH_INITv(ns->parentNULL, parent);
+	KNH_SETv(ctx, DP(ns)->nsname, DP(parent)->nsname);
 	return ns;
 }
 
@@ -246,48 +244,27 @@ static knh_bool_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *resultsNU
 /* ------------------------------------------------------------------------ */
 /* [using] */
 
-static knh_Package_t *new_Package(CTX ctx, knh_String_t *nsname)
+knh_status_t knh_loadScriptPackage(CTX ctx, knh_bytes_t path)
 {
-	knh_Package_t *pkg = new_(Package);
-	KNH_INITv(pkg->ns, new_NameSpace(ctx, ctx->share->rootns));
-	KNH_SETv(ctx, DP(pkg->ns)->nsname, nsname);
-	KNH_INITv(pkg->script, new_(Script));
-	return pkg;
-}
-
-static void Gamma_swapPackage(CTX ctx, knh_Package_t *pkg)
-{
-	knh_NameSpace_t *ns = KNH_GMA_NS;
-	knh_Script_t *script = DP(ctx->gma)->script;
-	KNH_GMA_NS = pkg->ns;
-	pkg->ns = ns;
-	DP(ctx->gma)->script = pkg->script;
-	pkg->script = script;
-}
-
-knh_bool_t knh_loadScriptPackage(CTX ctx, knh_bytes_t path)
-{
-	int res = 1;
-	knh_bytes_t name = knh_bytes_last(path, sizeof("pkg:") - 1);
-	knh_NameSpace_t *ns = KNH_GMA_NS;
-	knh_Package_t *pkg = (knh_Package_t*)knh_DictMap_getNULL(ctx, DP(ctx->sys)->PackageDictMap, name);
-	if(pkg == NULL) {
-		const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, ns, path);
-		if(dspi->exists(ctx, ns, path) != PATH_unknown) {
-			knh_String_t *nameS = new_S(ctx, name);
-			knh_Array_t * a = KNH_TNULL(Array);
-			pkg = new_Package(ctx, nameS);
-			knh_DictMap_set(ctx, DP(ctx->sys)->PackageDictMap, nameS, pkg);
-			Gamma_swapPackage(ctx, pkg);
-			res = knh_load(ctx, pkg->ns, path, a);
-			knh_Array_clear(ctx, a, 0);
-			Gamma_swapPackage(ctx, pkg);
-		}
-		else {
-			res = 0;
+	knh_status_t status = K_CONTINUE;
+	knh_bytes_t name = knh_bytes_next(path, ':');
+	knh_DictMap_t *dmap = DP(ctx->sys)->PackageDictMap;
+	knh_Script_t *scr = (knh_Script_t*)knh_DictMap_getNULL(ctx, dmap, name);
+	if(scr == NULL) {
+		const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, ctx->share->rootns, path);
+		status = K_BREAK;
+		if(dspi->exists(ctx, ctx->share->rootns, path) != PATH_unknown) {
+			knh_String_t *nsname = new_S(ctx, name);
+			knh_Script_t *newscr = new_(Script);
+			KNH_SETv(ctx, DP(newscr->ns)->nsname, nsname);
+			knh_DictMap_set(ctx, dmap, nsname, newscr);
+			scr = DP(ctx->gma)->script;
+			KNH_SETv(ctx, DP(ctx->gma)->script, newscr);
+			status = knh_load(ctx, newscr->ns, path, NULL);
+			KNH_SETv(ctx, DP(ctx->gma)->script, scr);
 		}
 	}
-	return res;
+	return status;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -587,8 +564,8 @@ static knh_bool_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 			ct->cflag  = knh_StmtCLASS_flag(ctx, stmt);
 			ct->magicflag  = KNH_MAGICFLAG(ct->cflag);
 			NameSpace_setcid(ctx, ns, (tkC)->text, cid, 1);
-			KNH_INITv(ct->methods, KNH_EMPTYLIST);
-			KNH_INITv(ct->typemaps, KNH_EMPTYLIST);
+			KNH_INITv(ct->methods, K_EMPTYARRAY);
+			KNH_INITv(ct->typemaps, K_EMPTYARRAY);
 
 			// class C extends E ..
 			ct->supcid = knh_Token_cid(ctx, tkE, CLASS_Object);

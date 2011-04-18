@@ -2069,12 +2069,13 @@ static void Script_init(CTX ctx, Object *o)
 	ct->supcid = CLASS_Script;
 	ct->supTBL = ClassTBL(CLASS_Script);
 	knh_setClassDef(ct, ClassTBL(CLASS_Script)->ospi);
-	KNH_INITv(ct->methods, KNH_EMPTYLIST);
-	KNH_INITv(ct->typemaps, KNH_EMPTYLIST);
+	KNH_INITv(ct->methods, K_EMPTYARRAY);
+	KNH_INITv(ct->typemaps, K_EMPTYARRAY);
 	knh_setClassName(ctx, cid, ClassTBL(CLASS_Script)->sname, ClassTBL(CLASS_Script)->sname);
 	DBG_ASSERT(ct->defnull == NULL);
 	scr->fields = NULL;
 	knh_setClassDefaultValue(ctx, cid, scr, NULL);
+	KNH_INITv(scr->ns, new_NameSpace(ctx, ctx->share->rootns));
 }
 
 static void Script_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
@@ -2099,8 +2100,15 @@ static void Script_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 	}
 }
 
+static void Script_reftrace(CTX ctx, Object *o FTRARG)
+{
+	knh_Script_t *scr = (knh_Script_t*)o;
+	KNH_ADDREF(ctx, scr->ns);
+	ObjectField_reftrace(ctx, o FTRDATA);
+}
+
 static knh_ClassDef_t ScriptDef = {
-	Script_init, DEFAULT_initcopy, ObjectField_reftrace, ObjectField_free,
+	Script_init, DEFAULT_initcopy, Script_reftrace, ObjectField_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Script_write,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
@@ -2160,33 +2168,6 @@ static knh_ClassDef_t NameSpaceDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
 	"NameSpace", CFLAG_NameSpace, sizeof(knh_NameSpaceEX_t), NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
-};
-
-/* --------------- */
-/* Package */
-
-static void Package_init(CTX ctx, Object *o)
-{
-	knh_Package_t *pkg = (knh_Package_t*)o;
-	pkg->ns = NULL;
-	pkg->script = NULL;
-}
-
-static void Package_reftrace(CTX ctx, Object *o FTRARG)
-{
-	knh_Package_t *pkg = (knh_Package_t*)o;
-	KNH_ADDNNREF(ctx, pkg->ns);
-	KNH_ADDNNREF(ctx, pkg->script);
-	KNH_SIZEREF(ctx);
-}
-
-static knh_ClassDef_t PackageDef = {
-	Package_init, DEFAULT_initcopy, Package_reftrace, DEFAULT_free,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_write,
-	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"Package", CFLAG_Package, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
@@ -2810,12 +2791,10 @@ extern "C" {
 
 static Object *knh_Context_fdefault(CTX ctx, knh_class_t cid)
 {
+	KNH_TODO(__FUNCTION__);
 	return (Object*)ctx;
 }
-static Object *knh_NameSpace_fdefault(CTX ctx, knh_class_t cid)
-{
-	return UPCAST(ctx->share->rootns);
-}
+
 static void knh_setDefaultValues(CTX ctx)
 {
 	knh_ClassTBL_t *ct = (knh_ClassTBL_t *)ClassTBL(CLASS_Tuple);
@@ -2836,9 +2815,9 @@ static void knh_setDefaultValues(CTX ctx)
 #endif
 	// load file/Channel/regex/db drivers
 	knh_setClassDefaultValue(ctx, CLASS_Context, KNH_NULL, knh_Context_fdefault);
-	knh_setClassDefaultValue(ctx, CLASS_NameSpace, KNH_NULL, knh_NameSpace_fdefault);
+	knh_setClassDefaultValue(ctx, CLASS_NameSpace, UPCAST(ctx->share->rootns), NULL);
 	knh_setClassDefaultValue(ctx, CLASS_System, UPCAST(ctx->sys), NULL);
-	knh_loadScriptDriver(ctx, KNH_TNULL(NameSpace));
+	knh_loadScriptDriver(ctx, ctx->share->rootns);
 	{
 		knh_Token_t *tk = KNH_TNULL(Token);
 		tk->tt = TT_FUNCVAR;

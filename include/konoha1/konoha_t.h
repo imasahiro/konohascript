@@ -810,7 +810,7 @@ typedef struct {
 #define KNH_FALSE           (ctx->share->constFalse)
 #define KNH_INT0            (ctx->share->constInt0)
 #define KNH_FLOAT0          (ctx->share->constFloat0)
-#define KNH_EMPTYLIST       (ctx->share->emptyArray)
+#define K_EMPTYARRAY       (ctx->share->emptyArray)
 #define KNH_SYSTEM          (ctx->sys)
 #define knh_Object_sweep    knh_Object_RCsweep
 

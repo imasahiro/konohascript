@@ -709,7 +709,7 @@ knh_class_t knh_addSpecializedType(CTX ctx, knh_class_t cid, knh_class_t supcid,
 		KNH_INITv(t->methods, ClassTBL(supcid).methods);
 
 		if(t->cmap == NULL) {
-			KNH_INITv(t->typemaps, KNH_EMPTYLIST);
+			KNH_INITv(t->typemaps, K_EMPTYARRAY);
 		}
 		else {
 			KNH_ASSERT(IS_ClassMap(t->cmap));

@@ -514,7 +514,7 @@ knh_class_t knh_addGenericsClass(CTX ctx, knh_class_t cid, knh_class_t bcid, knh
 				}
 				fi++;
 			}
-			KNH_INITv(ct->methods, KNH_EMPTYLIST);
+			KNH_INITv(ct->methods, K_EMPTYARRAY);
 			write_cid = write_tuplecid;
 			write_type = write_tupletype;
 		}
@@ -524,7 +524,7 @@ knh_class_t knh_addGenericsClass(CTX ctx, knh_class_t cid, knh_class_t bcid, knh
 			ct->fcapacity = bct->fcapacity;
 			KNH_INITv(ct->methods, bct->methods);
 		}
-		KNH_INITv(ct->typemaps, KNH_EMPTYLIST);
+		KNH_INITv(ct->typemaps, K_EMPTYARRAY);
 	}
 	{
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
@@ -986,7 +986,7 @@ void knh_ClassTBL_addMethod(CTX ctx, const knh_ClassTBL_t *t, knh_Method_t *mtd,
 {
 	DBG_ASSERT(IS_Method(mtd));
 	knh_Array_t *a = t->methods;
-	if(unlikely(a == KNH_EMPTYLIST)) {
+	if(unlikely(a == K_EMPTYARRAY)) {
 		KNH_ASSERT(knh_Array_size(a) == 0);
 		a = new_Array0(ctx, K_FASTMALLOC_SIZE/sizeof(knh_Method_t*));
 		KNH_SETv(ctx, ((knh_ClassTBL_t*)t)->methods, a);
@@ -1166,7 +1166,7 @@ static void knh_readyTransMapList(CTX ctx, knh_class_t cid)
 {
 	DBG_ASSERT_cid(cid);
 	knh_ClassTBL_t *t = varClassTBL(cid);
-	if(t->typemaps == KNH_EMPTYLIST) {
+	if(t->typemaps == K_EMPTYARRAY) {
 		KNH_ASSERT(knh_Array_size(t->typemaps) == 0);
 		KNH_SETv(ctx, t->typemaps, new_Array0(ctx, 1));
 	}

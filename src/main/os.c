@@ -580,8 +580,13 @@ void knh_path_append(CTX ctx, knh_path_t *ph, int issep, const char *name)
 void knh_System_initPath(CTX ctx, knh_System_t *o)
 {
 	knh_DictMap_t *sysprops = DP(o)->props;
-	knh_path_t phbuf, *ph = NULL;
+	knh_path_t phbuf, *ph = knh_path_open(ctx, NULL, ".", &phbuf);
 	knh_bytes_t home = {{NULL}, 0}, user = {{NULL}, 0};
+
+	// current working directory
+	knh_ospath(ctx, ph);
+	KNH_SETv(ctx, ctx->share->rootns->rpath, knh_path_newString(ctx, ph, 0));
+
 	home.text = (const char*)knh_getenv("KONOHAHOME");
 #if defined(K_KONOHAHOME)
 	if(home.text == NULL) {

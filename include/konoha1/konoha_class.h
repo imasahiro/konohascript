@@ -885,15 +885,6 @@ typedef struct knh_ResultSet_t {
 	knh_ResultSetEX_t *b;
 } knh_ResultSet_t;
 
-
-/* ------------------------------------------------------------------------ */
-//## @Private @Singleton class Script Object;
-
-typedef struct knh_Script_t {
-	knh_hObject_t h;
-	Object **fields;
-} knh_Script_t ;
-
 /* ------------------------------------------------------------------------ */
 //## @Struct class NameSpace Object;
 //## flag NameSpace SharedEx     1 - is set * *;
@@ -919,13 +910,23 @@ typedef struct knh_NameSpace_t {
 } knh_NameSpace_t;
 
 /* ------------------------------------------------------------------------ */
-//## @Struct class Package Object;
+//## @Private @Singleton class Script Object;
 
-typedef struct knh_Package_t {
+typedef struct knh_Script_t {
 	knh_hObject_t h;
-	struct knh_NameSpace_t    *ns;
-	struct knh_Script_t       *script;
-} knh_Package_t;
+	Object **fields;
+	size_t dummy;
+	struct knh_NameSpace_t *ns;
+} knh_Script_t ;
+
+///* ------------------------------------------------------------------------ */
+////## @Struct class Package Object;
+//
+//typedef struct knh_Package_t {
+//	knh_hObject_t h;
+//	struct knh_NameSpace_t    *ns;
+//	struct knh_Script_t       *script;
+//} knh_Package_t;
 
 /* ------------------------------------------------------------------------ */
 //## @Singleton @Struct class System Object;

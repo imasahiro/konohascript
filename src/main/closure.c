@@ -316,7 +316,7 @@ KNHAPI2(void) knh_invoke(CTX ctx, knh_Func_t *fo, knh_sfp_t *sfp /*rtnidx*/, int
 //	t->bsize  = ClassTBL(CLASS_Thunk).bsize;
 //
 //	KNH_INITv(t->methods, ClassTBL(CLASS_Thunk).methods);
-//	KNH_INITv(t->typemaps, KNH_EMPTYLIST);
+//	KNH_INITv(t->typemaps, K_EMPTYARRAY);
 //	t->p1 = rtype;
 //	t->p2 = CLASS_Tvoid;
 //	return cid;

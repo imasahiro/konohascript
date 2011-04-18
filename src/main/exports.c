@@ -203,10 +203,10 @@ static void knh_loadScriptData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 				KNH_INITv(t->methods, new_Array0(ctx, data[5]));
 			}
 			else {
-				KNH_INITv(t->methods, KNH_EMPTYLIST);
+				KNH_INITv(t->methods, K_EMPTYARRAY);
 			}
 			if(t->typemaps == NULL) {
-				KNH_INITv(t->typemaps, KNH_EMPTYLIST);
+				KNH_INITv(t->typemaps, K_EMPTYARRAY);
 			}
 			data += 6;
 			break;

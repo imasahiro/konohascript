@@ -2,7 +2,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* MACROS */
-#define K_REVISION                      130
+#define K_REVISION                      133
 #define K_BUILDID                       1090
 
 /* ------------------------------------------------------------------------ */
@@ -314,17 +314,8 @@
 #define FLAG_ResultSet          KNH_MAGICFLAG(CFLAG_ResultSet)
 
 /* ------------------------------------------------------------------------ */
-/* Script */
-#define CLASS_Script            ((knh_class_t)34)
-#define IS_Script(o)            (O_cid(o) == CLASS_Script)
-#define IS_bScript(o)           (O_bcid(o) == CLASS_Script)
-#define TYPE_Script             CLASS_Script
-#define CFLAG_Script            ((knh_flag_t)FLAG_Class_Singleton|FLAG_Class_Private)
-#define FLAG_Script             KNH_MAGICFLAG(CFLAG_Script)
-
-/* ------------------------------------------------------------------------ */
 /* NameSpace */
-#define CLASS_NameSpace         ((knh_class_t)35)
+#define CLASS_NameSpace         ((knh_class_t)34)
 #define IS_NameSpace(o)         (O_cid(o) == CLASS_NameSpace)
 #define IS_bNameSpace(o)        (O_bcid(o) == CLASS_NameSpace)
 #define TYPE_NameSpace          CLASS_NameSpace
@@ -332,17 +323,17 @@
 #define FLAG_NameSpace          KNH_MAGICFLAG(CFLAG_NameSpace)
 
 /* ------------------------------------------------------------------------ */
-/* Package */
-#define CLASS_Package           ((knh_class_t)36)
-#define IS_Package(o)           (O_cid(o) == CLASS_Package)
-#define IS_bPackage(o)          (O_bcid(o) == CLASS_Package)
-#define TYPE_Package            CLASS_Package
-#define CFLAG_Package           ((knh_flag_t)0)
-#define FLAG_Package            KNH_MAGICFLAG(CFLAG_Package)
+/* Script */
+#define CLASS_Script            ((knh_class_t)35)
+#define IS_Script(o)            (O_cid(o) == CLASS_Script)
+#define IS_bScript(o)           (O_bcid(o) == CLASS_Script)
+#define TYPE_Script             CLASS_Script
+#define CFLAG_Script            ((knh_flag_t)FLAG_Class_Singleton|FLAG_Class_Private)
+#define FLAG_Script             KNH_MAGICFLAG(CFLAG_Script)
 
 /* ------------------------------------------------------------------------ */
 /* System */
-#define CLASS_System            ((knh_class_t)37)
+#define CLASS_System            ((knh_class_t)36)
 #define IS_System(o)            (O_cid(o) == CLASS_System)
 #define IS_bSystem(o)           (O_bcid(o) == CLASS_System)
 #define TYPE_System             CLASS_System
@@ -351,7 +342,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* Context */
-#define CLASS_Context           ((knh_class_t)38)
+#define CLASS_Context           ((knh_class_t)37)
 #define IS_Context(o)           (O_cid(o) == CLASS_Context)
 #define IS_bContext(o)          (O_bcid(o) == CLASS_Context)
 #define TYPE_Context            CLASS_Context
@@ -360,7 +351,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* Monitor */
-#define CLASS_Monitor           ((knh_class_t)39)
+#define CLASS_Monitor           ((knh_class_t)38)
 #define IS_Monitor(o)           (O_cid(o) == CLASS_Monitor)
 #define IS_bMonitor(o)          (O_bcid(o) == CLASS_Monitor)
 #define TYPE_Monitor            CLASS_Monitor
@@ -369,7 +360,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* Assurance */
-#define CLASS_Assurance         ((knh_class_t)40)
+#define CLASS_Assurance         ((knh_class_t)39)
 #define IS_Assurance(o)         (O_cid(o) == CLASS_Assurance)
 #define IS_bAssurance(o)        (O_bcid(o) == CLASS_Assurance)
 #define TYPE_Assurance          CLASS_Assurance
@@ -378,7 +369,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* Token */
-#define CLASS_Token             ((knh_class_t)41)
+#define CLASS_Token             ((knh_class_t)40)
 #define IS_Token(o)             (O_cid(o) == CLASS_Token)
 #define IS_bToken(o)            (O_bcid(o) == CLASS_Token)
 #define TYPE_Token              CLASS_Token
@@ -387,7 +378,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* Stmt */
-#define CLASS_Stmt              ((knh_class_t)42)
+#define CLASS_Stmt              ((knh_class_t)41)
 #define IS_Stmt(o)              (O_cid(o) == CLASS_Stmt)
 #define IS_bStmt(o)             (O_bcid(o) == CLASS_Stmt)
 #define TYPE_Stmt               CLASS_Stmt
@@ -396,7 +387,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* Gamma */
-#define CLASS_Gamma             ((knh_class_t)43)
+#define CLASS_Gamma             ((knh_class_t)42)
 #define IS_Gamma(o)             (O_cid(o) == CLASS_Gamma)
 #define IS_bGamma(o)            (O_bcid(o) == CLASS_Gamma)
 #define TYPE_Gamma              CLASS_Gamma
@@ -405,7 +396,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* BasicBlock */
-#define CLASS_BasicBlock        ((knh_class_t)44)
+#define CLASS_BasicBlock        ((knh_class_t)43)
 #define IS_BasicBlock(o)        (O_cid(o) == CLASS_BasicBlock)
 #define IS_bBasicBlock(o)       (O_bcid(o) == CLASS_BasicBlock)
 #define TYPE_BasicBlock         CLASS_BasicBlock
@@ -414,7 +405,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* KonohaCode */
-#define CLASS_KonohaCode        ((knh_class_t)45)
+#define CLASS_KonohaCode        ((knh_class_t)44)
 #define IS_KonohaCode(o)        (O_cid(o) == CLASS_KonohaCode)
 #define IS_bKonohaCode(o)       (O_bcid(o) == CLASS_KonohaCode)
 #define TYPE_KonohaCode         CLASS_KonohaCode
@@ -423,7 +414,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* Tdynamic */
-#define CLASS_Tdynamic          ((knh_class_t)46)
+#define CLASS_Tdynamic          ((knh_class_t)45)
 #define IS_Tdynamic(o)          (O_cid(o) == CLASS_Tdynamic)
 #define TYPE_Tdynamic           CLASS_Tdynamic
 #define CFLAG_Tdynamic          ((knh_flag_t)0)
@@ -437,40 +428,40 @@
 
 /* ------------------------------------------------------------------------ */
 /* Channel */
-#define CLASS_Channel           ((knh_class_t)47)
+#define CLASS_Channel           ((knh_class_t)46)
 #define IS_Channel(o)           (O_cid(o) == CLASS_Channel)
 #define TYPE_Channel            CLASS_Channel
 
 /* ------------------------------------------------------------------------ */
 /* CmprT1 */
-#define CLASS_CmprT1            ((knh_class_t)48)
+#define CLASS_CmprT1            ((knh_class_t)47)
 #define IS_CmprT1(o)            (O_cid(o) == CLASS_CmprT1)
 #define TYPE_CmprT1             CLASS_CmprT1
 
 /* ------------------------------------------------------------------------ */
 /* T1ITR */
-#define CLASS_T1ITR             ((knh_class_t)49)
+#define CLASS_T1ITR             ((knh_class_t)48)
 #define IS_T1ITR(o)             (O_cid(o) == CLASS_T1ITR)
 #define TYPE_T1ITR              CLASS_T1ITR
 
 /* ------------------------------------------------------------------------ */
 /* T1ARRAY */
-#define CLASS_T1ARRAY           ((knh_class_t)50)
+#define CLASS_T1ARRAY           ((knh_class_t)49)
 #define IS_T1ARRAY(o)           (O_cid(o) == CLASS_T1ARRAY)
 #define TYPE_T1ARRAY            CLASS_T1ARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringARRAY */
-#define CLASS_StringARRAY       ((knh_class_t)51)
+#define CLASS_StringARRAY       ((knh_class_t)50)
 #define IS_StringARRAY(o)       (O_cid(o) == CLASS_StringARRAY)
 #define TYPE_StringARRAY        CLASS_StringARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringITR */
-#define CLASS_StringITR         ((knh_class_t)52)
+#define CLASS_StringITR         ((knh_class_t)51)
 #define IS_StringITR(o)         (O_cid(o) == CLASS_StringITR)
 #define TYPE_StringITR          CLASS_StringITR
-#define K_CLASS_INITSIZE                54
+#define K_CLASS_INITSIZE                53
 
 /* ------------------------------------------------------------------------ */
 /* FLAG */

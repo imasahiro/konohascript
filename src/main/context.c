@@ -292,10 +292,9 @@ static knh_context_t* new_RootContext(void)
 	/* These are not shared, but needed to initialize System*/
 	knh_stack_initexpand(ctx, NULL, K_STACKSIZE);
 	KNH_INITv(ctx->sys, new_(System));
-	knh_loadScriptAliasTokenData(ctx);
-	KNH_INITv(share->rootns, new_NameSpace(ctx, NULL));
-
+	KNH_INITv(share->rootns, new_(NameSpace));
 	knh_loadScriptSystemData(ctx, share->rootns, kapi);
+
 	KNH_INITv(ctx->script, new_(Script));
 	{
 		knh_Gamma_t *gma = new_(Gamma);
@@ -310,6 +309,7 @@ static knh_context_t* new_RootContext(void)
 	knh_CommonContext_init(ctx, ctx);
 	knh_System_initPath(ctx, ctx->sys);
 	knh_loadScriptTokenData(ctx);
+	knh_loadScriptAliasTokenData(ctx);
 	return ctx;
 }
 
