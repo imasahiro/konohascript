@@ -2022,7 +2022,7 @@ static METHOD Fmethod_empty(CTX ctx, knh_sfp_t *sfp _RIX) {}
 static knh_Method_t* Gamma_getFmt(CTX ctx, knh_class_t cid, knh_methodn_t mn0)
 {
 	knh_methodn_t mn = mn0;
-	knh_NameSpace_t *ns = KNH_GMA_NS;
+	knh_NameSpace_t *ns = K_GMANS;
 	knh_Method_t *mtd = knh_NameSpace_getFmtNULL(ctx, ns, cid, mn);
 	if(mtd == NULL) {
 		WarningUndefinedFmt(ctx, cid, mn0);

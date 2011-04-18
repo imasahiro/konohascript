@@ -1166,14 +1166,14 @@ typedef struct {
 	knh_Token_t   *tkIDX;
 } knh_gmafields_t ;
 
-#define knh_getGammaScript(ctx)   DP(ctx->gma)->script
-#define knh_getGammaNameSpace(ctx)   DP(ctx->gma)->ns
+#define K_GMASCR   ((ctx->gma)->scr)
+#define K_GMANS    ((ctx->gma)->scr->ns)
 
 typedef struct {
 	knh_flag_t                 flag;
 	knh_flag_t                 cflag;
-	struct knh_NameSpace_t*    ns;
-	struct knh_Script_t*       script;
+//	struct knh_NameSpace_t*    ns;
+//	struct knh_Script_t*       script;
 	struct knh_Stmt_t*         stmt;
 	struct knh_Method_t*       mtd;
 	knh_class_t                this_cid;
@@ -1188,20 +1188,18 @@ typedef struct {
 	knh_ushort_t               psize; /* param size */
 	knh_short_t                scridx;
 
-	struct knh_Array_t         *constPools;
 	struct knh_BasicBlock_t    *bbNC;
 	struct knh_Array_t         *insts;  // bbNC->listNC
 	struct knh_Array_t         *lstacks;
 	struct knh_Stmt_t          *finallyStmt;
-//	void                       *dlhdr;
 	struct knh_Array_t         *errmsgs;
-	struct knh_DictMap_t       *symbolDictMap;
 } knh_GammaEX_t;
 
 typedef struct knh_Gamma_t {
 	knh_hObject_t h;
 	knh_GammaEX_t *b;
-	knh_uline_t uline;         // Term
+	knh_uline_t uline;         // same as Term
+	knh_Script_t *scr;
 } knh_Gamma_t;
 
 typedef knh_bool_t (*knh_Ftyping)(CTX, knh_Method_t *, knh_Stmt_t *, knh_type_t, knh_Stmt_t *);

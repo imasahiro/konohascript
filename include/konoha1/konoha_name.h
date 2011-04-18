@@ -2,7 +2,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* MACROS */
-#define K_REVISION                      135
+#define K_REVISION                      139
 #define K_BUILDID                       1091
 
 /* ------------------------------------------------------------------------ */
@@ -804,20 +804,20 @@
 #define FN_println      (MN_OPSIZE+91)
 #define FN_property     (MN_OPSIZE+92)
 #define FN_putc         (MN_OPSIZE+93)
-#define FN_qualifier    (MN_OPSIZE+94)
-#define FN_query        (MN_OPSIZE+95)
-#define FN_random       (MN_OPSIZE+96)
-#define FN_randomSeed   (MN_OPSIZE+97)
-#define FN_randomseed   (MN_OPSIZE+97)
-#define FN_re           (MN_OPSIZE+98)
-#define FN_readLine     (MN_OPSIZE+99)
-#define FN_readline     (MN_OPSIZE+99)
-#define FN_remove       (MN_OPSIZE+100)
-#define FN_replace      (MN_OPSIZE+101)
-#define FN_reqt         (MN_OPSIZE+102)
-#define FN_reset        (MN_OPSIZE+103)
-#define FN_reverse      (MN_OPSIZE+104)
-#define FN_s            (MN_OPSIZE+105)
+#define FN_query        (MN_OPSIZE+94)
+#define FN_random       (MN_OPSIZE+95)
+#define FN_randomSeed   (MN_OPSIZE+96)
+#define FN_randomseed   (MN_OPSIZE+96)
+#define FN_re           (MN_OPSIZE+97)
+#define FN_readLine     (MN_OPSIZE+98)
+#define FN_readline     (MN_OPSIZE+98)
+#define FN_remove       (MN_OPSIZE+99)
+#define FN_replace      (MN_OPSIZE+100)
+#define FN_reqt         (MN_OPSIZE+101)
+#define FN_reset        (MN_OPSIZE+102)
+#define FN_reverse      (MN_OPSIZE+103)
+#define FN_s            (MN_OPSIZE+104)
+#define FN_scheme       (MN_OPSIZE+105)
 #define FN_search       (MN_OPSIZE+106)
 #define FN_second       (MN_OPSIZE+107)
 #define FN_seed         (MN_OPSIZE+108)

@@ -71,7 +71,7 @@ knh_NameSpace_t* new_NameSpace(CTX ctx, knh_NameSpace_t *parent)
 knh_class_t knh_NameSpace_getcid(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t sname)
 {
 	if(knh_bytes_equals(sname, STEXT("Script"))) {
-		return O_cid(knh_getGammaScript(ctx));
+		return O_cid(K_GMASCR);
 	}
 	L_TAIL:
 	if(DP(ns)->name2cidDictSetNULL != NULL) {
@@ -185,7 +185,7 @@ static knh_bool_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *resultsNU
 {
 	int isCONTINUE = 1;
 	knh_bytes_t include_name = S_tobytes(tkNN(stmt, 0)->text);
-	knh_NameSpace_t *ns = DP(ctx->gma)->ns;
+	knh_NameSpace_t *ns = K_GMANS;
 	if(knh_bytes_startsWith(include_name, STEXT("func:"))) {
 		if(ns->dlhdr != NULL) {
 			const char *funcname = knh_bytes_next(include_name, ':').text;
@@ -231,10 +231,10 @@ static knh_bool_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *resultsNU
 	}
 	else {
 		BEGIN_LOCAL(ctx, lsfp, 1);
-		LOCAL_NEW(ctx, lsfp, 0, knh_NameSpace_t*, ns, new_NameSpace(ctx, DP(ctx->gma)->ns));
-		NameSpace_beginINCLUDE(ctx, ns, DP(ctx->gma)->ns);
+		LOCAL_NEW(ctx, lsfp, 0, knh_NameSpace_t*, ns, new_NameSpace(ctx, K_GMANS));
+		NameSpace_beginINCLUDE(ctx, ns, K_GMANS);
 		isCONTINUE = knh_load(ctx, ns, include_name, resultsNULL);
-		NameSpace_endINCLUDE(ctx, ns, DP(ctx->gma)->ns);
+		NameSpace_endINCLUDE(ctx, ns, K_GMANS);
 		END_LOCAL_(ctx, lsfp);
 	}
 	L_RETURN:;
@@ -259,10 +259,10 @@ knh_status_t knh_loadScriptPackage(CTX ctx, knh_bytes_t path)
 			knh_Script_t *newscr = new_(Script);
 			KNH_SETv(ctx, DP(newscr->ns)->nsname, nsname);
 			knh_DictMap_set(ctx, dmap, nsname, newscr);
-			scr = DP(ctx->gma)->script;
-			KNH_SETv(ctx, DP(ctx->gma)->script, newscr);
+			scr = ctx->gma->scr;
+			KNH_SETv(ctx, ctx->gma->scr, newscr);
 			status = knh_load(ctx, newscr->ns, path, NULL);
-			KNH_SETv(ctx, DP(ctx->gma)->script, scr);
+			KNH_SETv(ctx, ctx->gma->scr, scr);
 		}
 	}
 	return status;
@@ -305,7 +305,7 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 	}
 	KNH_SETv(ctx, (tkPKG)->data, knh_cwb_newString(ctx, cwb));
 	if(knh_loadScriptPackage(ctx, S_tobytes((tkPKG)->text))) {
-		knh_NameSpace_t *ns = knh_getGammaNameSpace(ctx);
+		knh_NameSpace_t *ns = K_GMANS;
 		int isOVERRIDE = knh_Stmt_flag(ctx, stmt, "Override", 1);
 		if(TT_(tkN) == TT_MUL) {
 			knh_bytes_t pkgname = knh_bytes_last(S_tobytes((tkPKG)->text), 4/* strlen("pkg:") */);
@@ -394,7 +394,7 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 //static int knh_StmtXCLASS_decl(CTX ctx, knh_Stmt_t *stmt, knh_class_t bcid)
 //{
 //
-//	knh_NameSpace_t *ns = knh_getGammaNameSpace(ctx);
+//	knh_NameSpace_t *ns = K_GMANS;
 //	knh_Token_t *tkclassn = tkNN(stmt, 0);
 //	knh_Token_t *tkurn = tkNN(stmt, 1);
 //
@@ -443,7 +443,7 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 
 //static int knh_StmtUFUNC_decl(CTX ctx, knh_Stmt_t *stmt)
 //{
-//	knh_NameSpace_t *ns = knh_getGammaNameSpace(ctx);
+//	knh_NameSpace_t *ns = K_GMANS;
 //	knh_Token_t *tk = tkNN(stmt, 0);
 //	knh_bytes_t name = knh_Token_tobytes(ctx, tk);
 //	if(SP(tk)->tt == TT_LONGNAME) {
@@ -551,7 +551,7 @@ static knh_bool_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 	knh_Token_t *tkC = tkNN(stmt, 0); // CNAME
 	knh_Token_t *tkE = tkNN(stmt, 2); // extends
 	knh_ClassTBL_t *ct = NULL;
-	knh_NameSpace_t *ns = knh_getGammaNameSpace(ctx);
+	knh_NameSpace_t *ns = K_GMANS;
 	{
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_Bytes_write(ctx, cwb->ba, S_tobytes(DP(ns)->nsname));
@@ -580,7 +580,7 @@ static knh_bool_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 			((knh_ClassTBL_t*)ct->supTBL)->subclass += 1;
 			KNH_INFO(ctx, "NEW_CLASS cid=%d, name='%s'", cid, CLASS__(cid));
 			if(knh_StmtMETA_is(ctx, stmt, "Native")) {
-				knh_NameSpace_t *ns = DP(ctx->gma)->ns;
+				knh_NameSpace_t *ns = K_GMANS;
 				if(ns->dlhdr != NULL) {
 					knh_Fclass classload = (knh_Fclass)knh_dlsym(ctx, LOG_DEBUG, ns->dlhdr, S_tochar((tkC)->text));
 					const knh_ClassDef_t *cdef = classload(ctx);
@@ -681,18 +681,18 @@ static knh_bool_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *resultsNU
 		switch(STT_(stmt)) {
 //		case STT_NAMESPACE:
 //		{
-//			knh_NameSpace_t *ns = new_NameSpace(ctx, KNH_GMA_NS);
-//			KNH_SETv(ctx, KNH_GMA_NS, ns);
+//			knh_NameSpace_t *ns = new_NameSpace(ctx, K_GMANS);
+//			KNH_SETv(ctx, K_GMANS, ns);
 //			isCONTINUE = Stmt_eval(ctx, stmtNN(stmt, 0), reqt, resultsNULL);
-//			DBG_ASSERT(KNH_GMA_NS == ns);
+//			DBG_ASSERT(K_GMANS == ns);
 //			DBG_ASSERT(ns->parentNULL != NULL);
-//			KNH_SETv(ctx, KNH_GMA_NS, ns->parentNULL);
+//			KNH_SETv(ctx, K_GMANS, ns->parentNULL);
 //			knh_Stmt_done(ctx, stmt);
 //			break;
 //		}
 //		case STT_SCRIPT:
 //		{
-//			knh_Script_t *pscript = knh_getGammaScript(ctx);
+//			knh_Script_t *pscript = K_GMASCR;
 //			knh_Script_t *script = new_(Script);
 //			KNH_SETv(ctx, DP(ctx->gma)->script, script);
 //			isCONTINUE = Stmt_eval(ctx, stmtNN(stmt, 0), reqt, resultsNULL);
@@ -750,7 +750,7 @@ static knh_bool_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *resultsNU
 		ctx->gma->uline = stmt->uline;
 		SCRIPT_asm(ctx, stmt);
 		if(STT_(stmt) != STT_DONE) {
-			knh_Script_t *scr = knh_getGammaScript(ctx);
+			knh_Script_t *scr = K_GMASCR;
 			knh_Method_t *mtd = Script_getEvalMethod(ctx, scr);
 			int rtnidx=3+1, thisidx = rtnidx + K_CALLDELTA;
 			knh_class_t cid =  O_cid(ctx->evaled);
@@ -910,10 +910,10 @@ KNHAPI2(knh_status_t) knh_load(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, k
 	if(in != NULL) {
 		knh_Bytes_t *ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
 		BEGIN_LOCAL(ctx, lsfp, 3);
-		LOCAL_NEW(ctx, lsfp, 0, knh_NameSpace_t*, oldns, DP(ctx->gma)->ns);
+		LOCAL_NEW(ctx, lsfp, 0, knh_NameSpace_t*, oldns, K_GMANS);
 		LOCAL_NEW(ctx, lsfp, 1, knh_InputStream_t*, bin, new_BytesInputStream(ctx, ba));
 		KNH_SETv(ctx, lsfp[2].o, in);
-		KNH_SETv(ctx, DP(ctx->gma)->ns, ns);
+		KNH_SETv(ctx, K_GMANS, ns);
 		if(!knh_isCompileOnly(ctx)) {
 			KNH_SECINFO(ctx, "running script path='%s'", path.text);
 		}
@@ -938,7 +938,7 @@ KNHAPI2(knh_status_t) knh_load(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, k
 				}
 			}
 		} while(BA_size(ba) > 0);
-		KNH_SETv(ctx, DP(ctx->gma)->ns, oldns);
+		KNH_SETv(ctx, K_GMANS, oldns);
 		END_LOCAL_(ctx, lsfp);
 	}
 	return res;

@@ -436,6 +436,7 @@ knh_Token_t* ERROR_UnsupportedOperator(CTX ctx, const char *opname, knh_class_t 
 	return Gamma_perror(ctx, KC_ERR, _("unsupported %s in %C"), opname, mtd_cid);
 }
 /* type error */
+
 knh_Token_t *TERROR_Token(CTX ctx, knh_Token_t *tk, knh_class_t type, knh_class_t reqt)
 {
 	return knh_Token_toERR(ctx, tk, ("%O has type %T, not %T"), tk, type, reqt);

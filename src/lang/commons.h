@@ -11,8 +11,6 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-#define KNH_GMA_NS  DP(ctx->gma)->ns
-
 #define TT_UNTYPED TT_EOT
 
 #define MN_newLIST   MN_new__LIST

@@ -270,7 +270,7 @@ knh_class_t knh_Token_cid(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 			cid = CLASS_Int;
 		}
 		case TT_UNAME: case TT_UFUNCNAME: {
-			knh_NameSpace_t *ns = KNH_GMA_NS;
+			knh_NameSpace_t *ns = K_GMANS;
 			if(Token_isExceptionType(tk)) {
 				(tk)->cid = CLASS_Exception;
 				return CLASS_Exception;
@@ -337,7 +337,7 @@ static knh_Token_t *TTYPE_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 
 static void *Gamma_loadFunc(CTX ctx, char *funcname, int isREQUIRED)
 {
-	knh_NameSpace_t *ns = DP(ctx->gma)->ns;
+	knh_NameSpace_t *ns = K_GMANS;
 	if(ns->dlhdr != NULL) {
 		void *f = knh_dlsym(ctx, LOG_DEBUG, ns->dlhdr, (const char*)funcname);
 		if(f != NULL) return f;
@@ -458,12 +458,10 @@ static knh_Gamma_t *Gamma_clone(CTX ctx)
 	DP(newgma)->ebpidx  = DP(oldgma)->ebpidx;
 	DP(newgma)->scridx  = DP(oldgma)->scridx;
 	DP(newgma)->psize   = DP(oldgma)->psize;
-	KNH_SETv(ctx, DP(newgma)->ns, DP(oldgma)->ns);
 	KNH_SETv(ctx, DP(newgma)->mtd, DP(oldgma)->mtd);
 	KNH_SETv(ctx, DP(newgma)->stmt, DP(oldgma)->stmt);
-	KNH_INITv(DP(newgma)->script, DP(oldgma)->script);
+	KNH_SETv(ctx, newgma->scr, oldgma->scr);
 	DP(newgma)->this_cid   = DP(oldgma)->this_cid;
-	KNH_INITv(DP(newgma)->symbolDictMap, DP(oldgma)->symbolDictMap);
 	KNH_SETv(ctx, DP(newgma)->errmsgs, DP(oldgma)->errmsgs);
 	return newgma;
 }
@@ -619,7 +617,7 @@ static knh_Token_t *TNAME_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt, knh_
 	DBG_ASSERT(fnq != FN_NONAME);
 	if(FN_isU1(fnq) || FN_isSUPER(fnq)) goto L_FIELD;  /* _name */
 	if(FN_isU2(fnq)) {
-		if(DP(ctx->gma)->this_cid == O_cid(knh_getGammaScript(ctx))) goto L_FIELD;
+		if(DP(ctx->gma)->this_cid == O_cid(K_GMASCR)) goto L_FIELD;
 		goto L_SCRIPT; /* __name */
 	}
 	if(FLAG_is(op, _FINDLOCAL)){
@@ -653,7 +651,7 @@ static knh_Token_t *TNAME_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt, knh_
 	}
 	L_SCRIPT:;
 	if(FLAG_is(op, _FINDSCRIPT)) {
-		knh_class_t scrcid = O_cid(knh_getGammaScript(ctx));
+		knh_class_t scrcid = O_cid(K_GMASCR);
 		if(DP(ctx->gma)->this_cid != scrcid) {
 			knh_index_t idx = -1;
 			knh_fields_t *cf = class_rindexFNQ(ctx, scrcid, fnq, &idx);
@@ -670,7 +668,7 @@ static knh_Token_t *TNAME_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt, knh_
 	}
 	if(FLAG_is(op, _FINDFUNC)) { // TODO_AC
 		knh_Method_t *mtd = NULL;
-		knh_NameSpace_t *ns = KNH_GMA_NS;
+		knh_NameSpace_t *ns = K_GMANS;
 		knh_class_t this_cid = DP(ctx->gma)->this_cid;
 		knh_class_t mtd_cid = knh_NameSpace_getFuncClass(ctx, ns, fnq);
 		if(mtd_cid != CLASS_unknown) {
@@ -684,7 +682,7 @@ static knh_Token_t *TNAME_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt, knh_
 			}
 		}
 		if(mtd == NULL) {
-			mtd_cid = O_cid(knh_getGammaScript(ctx));
+			mtd_cid = O_cid(K_GMASCR);
 			mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, fnq);
 			if(mtd != NULL && !Method_isStatic(mtd)) {
 				mtd = NULL;
@@ -707,7 +705,7 @@ static knh_Token_t *TNAME_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt, knh_
 			return Token_setCONST(ctx, tk, DP(ctx->gma)->mtd);
 		}
 		else if(IS_SYSVAL(t, "__namespace__") || IS_SYSVAL(t, "__ns__")) {
-			knh_NameSpace_t *ns = knh_getGammaNameSpace(ctx);
+			knh_NameSpace_t *ns = K_GMANS;
 			return Token_setCONST(ctx, tk, ns);
 		}
 		else {
@@ -775,7 +773,7 @@ static knh_Token_t* Token_toSYSVAL(CTX ctx, knh_Token_t *tk)
 //		Token_setCONST(ctx, tk, knh_Object_getkey(ctx, UPCAST(DP(ctx->gma)->mtd)));
 //	}
 //	else if(IS_SYSVAL(t, "__namespace__") || IS_SYSVAL(t, "__ns__")) {
-//		knh_NameSpace_t *ns = knh_getGammaNameSpace(ctx);
+//		knh_NameSpace_t *ns = K_GMANS;
 //		Token_setCONST(ctx, tk, ns);
 //	}
 	else if(IS_SYSVAL(t, "EOL")) {
@@ -805,7 +803,7 @@ static knh_Token_t* TUNAME_typing(CTX ctx, knh_Token_t *tk, knh_Stmt_t *sLET)
 		}
 	}
 	else {
-		knh_NameSpace_t *ns = knh_getGammaNameSpace(ctx);
+		knh_NameSpace_t *ns = K_GMANS;
 		Object *value = NameSpace_getConstNULL(ctx, ns, TK_tobytes(tk));
 		if(value != NULL) {
 			if(sLET == NULL) {
@@ -1120,7 +1118,7 @@ static knh_Token_t *W1_typing(CTX ctx, knh_Stmt_t *stmt)
 		STT_(stmt) = STT_W1;
 		TYPING(ctx, stmt, 2, TYPE_var, 0);
 		knh_methodn_t mn = bytes_parsemn(ctx, fmt);
-		knh_Method_t *mtdf = knh_NameSpace_getFmtNULL(ctx, KNH_GMA_NS, Tn_cid(stmt, 2), mn);
+		knh_Method_t *mtdf = knh_NameSpace_getFmtNULL(ctx, K_GMANS, Tn_cid(stmt, 2), mn);
 		if(mtdf != NULL) {
 			KNH_SETv(ctx, (tkFMT)->data, mtdf);
 		}
@@ -1287,7 +1285,7 @@ static knh_Token_t* ESTR_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 
 static knh_Token_t* PATH_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 {
-	knh_NameSpace_t *ns = DP(ctx->gma)->ns;
+	knh_NameSpace_t *ns = K_GMANS;
 	knh_bytes_t path = S_tobytes((tk)->text);
 	const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, ns, path);
 	if(dspi == NULL) {
@@ -1319,7 +1317,7 @@ static knh_Token_t* TSCHEME_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
 	knh_Token_t *tkSCM = tkNN(stmt, 2);
 	knh_bytes_t path = S_tobytes((tkSCM)->text);
-	knh_NameSpace_t *ns = DP(ctx->gma)->ns;
+	knh_NameSpace_t *ns = K_GMANS;
 	DBG_ASSERT(TT_(tkSCM) == TT_TSCHEME);
 	TYPING(ctx, stmt, 1, TYPE_String, 0);
 	const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, ns, path);
@@ -1333,7 +1331,7 @@ static knh_Token_t* TSCHEME_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		STT_(stmt) = STT_CALL;
 		Token_toCALLMTD(ctx, tkNN(stmt, 0), MN_path, knh_NameSpace_getMethodNULL(ctx, CLASS_String, MN_path));
 		TT_(tkSCM) = TT_CONST;
-		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, KNH_GMA_NS));
+		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, K_GMANS));
 		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, new_Type(ctx, reqt)));
 		return Stmt_typed(ctx, stmt, reqt);
 	}
@@ -1403,7 +1401,7 @@ static knh_type_t Gamma_lookupVariableType(CTX ctx, knh_Token_t *tkN, knh_flag_t
 				}
 			}
 		}
-		if(FLAG_is(op, _VFINDSCRIPT) && DP(ctx->gma)->this_cid != O_cid(DP(ctx->gma)->script)) {
+		if(FLAG_is(op, _VFINDSCRIPT) && DP(ctx->gma)->this_cid != O_cid(K_GMASCR)) {
 			knh_index_t idx;
 			knh_fields_t *cf = class_rindexFNQ(ctx, DP(ctx->gma)->this_cid, fn, &idx);
 			if(cf != NULL) return cf->type;
@@ -1504,7 +1502,7 @@ static knh_Token_t *DECLSCRIPT_typing(CTX ctx, knh_Stmt_t *stmt)
 		TYPING(ctx, stmt, 2, (tkT)->cid, 0);
 	}
 	{
-		knh_Script_t *scr = knh_getGammaScript(ctx);
+		knh_Script_t *scr = K_GMASCR;
 		knh_fieldn_t fn = Token_fn(ctx, tkN);
 		const knh_ClassTBL_t *t = O_cTBL(scr);
 		knh_index_t idx = -1;
@@ -1564,7 +1562,7 @@ static knh_Token_t *LET_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		if(tkRES == NULL) {
 			Stmt_toSTT(stmt, STT_CALL);
 			KNH_SETv(ctx, tkNN(stmt, 0), new_TokenMN(ctx, MN_setConst));
-			Stmt_insert(ctx, stmt, 1, new_TokenCONST(ctx, KNH_GMA_NS));
+			Stmt_insert(ctx, stmt, 1, new_TokenCONST(ctx, K_GMANS));
 			TT_(tkN) = TT_STR;
 			return CALL_typing(ctx, stmt, reqt);
 		}
@@ -1591,7 +1589,7 @@ static knh_Token_t *LET_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 			InfoType(ctx, "", TK_tobytes(tkN), reqt);
 			if(IS_SCRIPTLEVEL(ctx)) {
 				knh_fieldn_t fn = Token_fn(ctx, tkN);
-				knh_index_t idx = Script_addField(ctx, knh_getGammaScript(ctx), 0, reqt, fn);
+				knh_index_t idx = Script_addField(ctx, K_GMASCR, 0, reqt, fn);
 				knh_Token_toTYPED(ctx, tkN, TT_FIELD, reqt, idx);
 			}
 			else {
@@ -1648,7 +1646,7 @@ static knh_Token_t *LETM_typing(CTX ctx, knh_Stmt_t *stmt)
 				}
 				if(IS_SCRIPTLEVEL(ctx)) {
 					knh_fieldn_t fn = Token_fn(ctx, tkN);
-					knh_index_t idx = Script_addField(ctx, knh_getGammaScript(ctx), 0, type, fn);
+					knh_index_t idx = Script_addField(ctx, K_GMASCR, 0, type, fn);
 					knh_Token_toTYPED(ctx, tkN, TT_FIELD, type, idx);
 				}
 				else {
@@ -1735,7 +1733,7 @@ static knh_Token_t *SWAP_typing(CTX ctx, knh_Stmt_t *stmt)
 				knh_type_t type = Tn_type(stmt, msize+i);
 				if(IS_SCRIPTLEVEL(ctx)) {
 					knh_fieldn_t fn = Token_fn(ctx, tkN);
-					knh_index_t idx = Script_addField(ctx, knh_getGammaScript(ctx), 0, type, fn);
+					knh_index_t idx = Script_addField(ctx, K_GMASCR, 0, type, fn);
 					knh_Token_toTYPED(ctx, tkN, TT_FIELD, type, idx);
 				}
 				else {
@@ -1872,7 +1870,7 @@ static knh_Token_t *new_TokenDEFAULT(CTX ctx, knh_class_t cid, knh_type_t reqt)
 	case CLASS_Class:
 		reqt = (reqt == TYPE_var) ? TYPE_dyn : reqt;
 		return new_TokenCONST(ctx, new_Type(ctx, reqt));
-	case CLASS_NameSpace: return new_TokenCONST(ctx, DP(ctx->gma)->ns);
+	case CLASS_NameSpace: return new_TokenCONST(ctx, K_GMANS);
 	default:
 		return new_TokenTYPED(ctx, TT_NULL/*DEFVAL*/, cid, cid);
 	}
@@ -2261,7 +2259,7 @@ static knh_Token_t* func_typingNULL(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 			return FUNCCALLPARAMs_typing(ctx, stmt, reqt);
 		}
 	}
-	knh_class_t mtd_cid = knh_NameSpace_getFuncClass(ctx, KNH_GMA_NS, mn);
+	knh_class_t mtd_cid = knh_NameSpace_getFuncClass(ctx, K_GMANS, mn);
 	knh_Method_t *mtd = NULL;
 	/* 3. static function in namespace */
 	if(mtd_cid != CLASS_unknown) {
@@ -2279,8 +2277,8 @@ static knh_Token_t* func_typingNULL(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		knh_Token_toTYPED(ctx, tkNN(stmt, 1), TT_FUNCVAR, mtd_cid, 0);
 		goto L_CALLPARAMs;
 	}
-	if(mtd_cid != O_cid(knh_getGammaScript(ctx))) {
-		mtd_cid = O_cid(knh_getGammaScript(ctx));
+	if(mtd_cid != O_cid(K_GMASCR)) {
+		mtd_cid = O_cid(K_GMASCR);
 		mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, mn);
 		if(mtd != NULL) {
 			knh_Token_toTYPED(ctx, tkNN(stmt, 1), TT_NULL/*DEFVAL*/, mtd_cid, mtd_cid);
@@ -2679,7 +2677,7 @@ static knh_Token_t* OP_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 
 	case MN_opEXISTS:
 	{
-		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, KNH_GMA_NS));
+		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, K_GMANS));
 		goto L_LOOKUPMETHOD;
 	}
 
@@ -3460,7 +3458,7 @@ static knh_class_t METHOD_cid(CTX ctx, knh_Stmt_t *stmt)
 	}
 	else {
 		knh_class_t cid = knh_Token_cid(ctx, tkC, DP(ctx->gma)->this_cid);
-		if(this_cid != O_cid(knh_getGammaScript(ctx)) && this_cid != cid) {
+		if(this_cid != O_cid(K_GMASCR) && this_cid != cid) {
 			cid = this_cid;
 			WarningDifferentMethodClass(ctx, TK_tobytes(tkC), cid);
 		}
@@ -3942,11 +3940,11 @@ static knh_Token_t* FORMAT_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	knh_class_t cid = knh_StmtPARAMs_getFmtClass(ctx, stmtNN(stmt, 3));
 	knh_methodn_t mn = MN_toFMT(Token_mn(ctx, tkNN(stmt, 2)));
 	if(cid != CLASS_unknown) {
-		knh_Method_t *mtd = knh_NameSpace_getFmtNULL(ctx, KNH_GMA_NS, cid, mn);
+		knh_Method_t *mtd = knh_NameSpace_getFmtNULL(ctx, K_GMANS, cid, mn);
 		if(mtd == NULL) {
 			mtd = new_Method(ctx, 0, cid, mn, NULL);
 			KNH_SETv(ctx, DP(mtd)->mp, KNH_TNULL(ParamArray));
-			knh_NameSpace_addFmt(ctx, KNH_GMA_NS, mtd);
+			knh_NameSpace_addFmt(ctx, K_GMANS, mtd);
 		}
 		return knh_StmtMTD_typing(ctx, stmt, mtd, cid);
 	}
@@ -4457,7 +4455,7 @@ static void Gamma_initThis(CTX ctx, knh_class_t cid)
 void SCRIPT_typing(CTX ctx, knh_Stmt_t *stmtITR)
 {
 	knh_Stmt_t *stmt = stmtITR;
-	knh_class_t this_cid = O_cid(knh_getGammaScript(ctx));
+	knh_class_t this_cid = O_cid(K_GMASCR);
 	if(DP(ctx->gma)->gcapacity == 0) {
 		Gamma_expand(ctx, ctx->gma, 8/*init*/);
 	}

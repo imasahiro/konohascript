@@ -1025,6 +1025,7 @@ typedef struct knh_context_t {
 	knh_stat_t                     *stat;
 	const knh_ServiceSPI_t         *spi;
 	struct knh_System_t*            sys;
+	struct knh_Script_t*         script;
 
 	/* stack */
 	knh_sfp_t*                   stack;
@@ -1060,7 +1061,8 @@ typedef struct knh_context_t {
 	struct knh_Bytes_t*          bufa;
 	struct knh_OutputStream_t*   bufw;
 	struct knh_Gamma_t*          gma;
-	struct knh_Script_t*         script;
+	struct knh_DictMap_t*        symbolDictMap;
+	struct knh_Array_t*          constPools;
 
 	knh_flag_t                   flag;
 	knh_ushort_t                 ctxid;

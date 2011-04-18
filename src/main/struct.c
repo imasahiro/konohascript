@@ -2575,8 +2575,6 @@ static void Gamma_init(CTX ctx, Object *o)
 	knh_GammaEX_t *b = knh_bodymalloc(ctx, Gamma);
 	knh_bzero(b, sizeof(knh_GammaEX_t));
 	b->cflag = FLAG_Gamma_InlineFunction | FLAG_Gamma_TailRecursion;
-	KNH_INITv(b->ns, ctx->share->rootns);
-	DBG_ASSERT(IS_NameSpace(b->ns));
 	KNH_INITv(b->mtd, KNH_NULL);
 	KNH_INITv(b->stmt, KNH_NULL);
 	KNH_INITv(b->lstacks, new_Array0(ctx, 0));
@@ -2584,6 +2582,7 @@ static void Gamma_init(CTX ctx, Object *o)
 	KNH_INITv(b->errmsgs, new_Array0(ctx, 0));
 	KNH_INITv(b->finallyStmt, KNH_NULL);
 	o->ref = b;
+	KNH_INITv(((knh_Gamma_t*)o)->scr, ctx->script);
 }
 
 static void Gamma_reftrace(CTX ctx, Object *o FTRARG)
@@ -2592,20 +2591,16 @@ static void Gamma_reftrace(CTX ctx, Object *o FTRARG)
 	knh_GammaEX_t *b = DP((knh_Gamma_t*)o);
 	KNH_ENSUREREF(ctx, b->gcapacity * 2);
 	for(i = 0; i < b->gcapacity; i++) {
-		//DBG_P("FTR %p gf[%d].value=%s(%p)", b->gf, i, O__(b->gf[i].value), b->gf[i].value);
 		KNH_ADDREF(ctx, b->gf[i].value);
 		KNH_ADDREF(ctx, b->gf[i].tkIDX);
 	}
-	KNH_ADDREF(ctx, (b->ns));
-	KNH_ADDREF(ctx, (b->script));
 	KNH_ADDREF(ctx, (b->mtd));
 	KNH_ADDREF(ctx, (b->stmt));
 	KNH_ADDREF(ctx, (b->lstacks));
 	KNH_ADDREF(ctx, (b->insts));
 	KNH_ADDREF(ctx, (b->errmsgs));
 	KNH_ADDREF(ctx, (b->finallyStmt));
-	KNH_ADDNNREF(ctx, b->symbolDictMap);
-	KNH_ADDNNREF(ctx, b->constPools);
+	KNH_ADDREF(ctx, ((knh_Gamma_t*)o)->scr);
 	KNH_SIZEREF(ctx);
 }
 

@@ -139,7 +139,7 @@ static knh_ParamArray_t *knh_loadScriptParamArray(CTX ctx, const knh_data_t **d,
 	data += 2;
 	for(i = 0; i < psize+rsize; i++) {
 		knh_type_t type = (data[0] < _MAX || (TYPE_This <= data[0] && data[0] <= TYPE_T3)) ?
-			(knh_type_t)data[0] : knh_NameSpace_gettype(ctx, knh_getGammaNameSpace(ctx), knh_data_tobytes(data[0]));
+			(knh_type_t)data[0] : knh_NameSpace_gettype(ctx, K_GMANS, knh_data_tobytes(data[0]));
 		knh_fieldn_t fn = (data[1] < _MAX) ?
 			(knh_fieldn_t)data[1] : knh_getfnq(ctx, knh_data_tobytes(data[1]), FN_NEWID);
 		knh_param_t p = {type, fn};
@@ -153,7 +153,7 @@ static knh_ParamArray_t *knh_loadScriptParamArray(CTX ctx, const knh_data_t **d,
 	return pa;
 }
 
-#define _CID(d)  (d < _MAX) ? (knh_class_t)(d) : knh_NameSpace_getcid(ctx, knh_getGammaNameSpace(ctx), knh_data_tobytes(d))
+#define _CID(d)  (d < _MAX) ? (knh_class_t)(d) : knh_NameSpace_getcid(ctx, K_GMANS, knh_data_tobytes(d))
 #define _EXPTID(d)  (d < _MAX) ? (knh_ebi_t)(d) : knh_geteid(ctx, knh_data_tobytes(d), EBI_newid)
 
 static void knh_loadScriptData(CTX ctx, const knh_data_t *data, knh_ParamArray_t **buf)

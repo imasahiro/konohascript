@@ -459,7 +459,7 @@ static int Token_startsWithExpr(CTX ctx, knh_Token_t *tkB)
 
 static knh_String_t *new_StringSYMBOL(CTX ctx, knh_bytes_t t)
 {
-	knh_DictMap_t *symbolDictMap = DP(ctx->gma)->symbolDictMap;
+	knh_DictMap_t *symbolDictMap = ctx->symbolDictMap;
 	knh_index_t idx = knh_DictMap_index(symbolDictMap, t);
 	if(idx == -1) {
 		knh_String_t *s = new_S(ctx, t);
@@ -546,12 +546,8 @@ static size_t presize = 0;
 Object* knh_getConstPools(CTX ctx, void *p)
 {
 	knh_Object_t *v = UPCAST(p), *result = NULL;
-	knh_Array_t *a = DP(ctx->gma)->constPools;
+	knh_Array_t *a = ctx->constPools;
 	long i;
-	if(a == NULL) {
-		KNH_INITv(DP(ctx->gma)->constPools, new_Array0(ctx, K_POOLSIZE));
-		a = DP(ctx->gma)->constPools;
-	}
 	for(i = knh_Array_size(a) - 1; i >= 0; i--) {
 		knh_Object_t *o = a->list[i];
 		if(O_cid(o) == O_cid(v) && knh_Object_compareTo(o, v) == 0) {
@@ -581,7 +577,7 @@ static void Token_setTEXT(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 {
 	knh_bytes_t t = knh_cwb_tobytes(cwb);
 	if(TT_(tk) == TT_UNTYPED) {
-		knh_String_t *text = NameSpace_getAliasNULL(ctx, knh_getGammaNameSpace(ctx), t);
+		knh_String_t *text = NameSpace_getAliasNULL(ctx, K_GMANS, t);
 		if(text != NULL) {
 			t = S_tobytes(text);
 			KNH_SETv(ctx, (tk)->data, text);
@@ -605,7 +601,7 @@ static void Token_setTEXT(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 		KNH_SETv(ctx, (tk)->data, new_StringSYMBOL(ctx, t));
 	}
 	else {
-		knh_Array_t *a = DP(ctx->gma)->constPools;
+		knh_Array_t *a = ctx->constPools;
 		knh_String_t *s = NULL;
 		if(a != NULL) {
 			long i;

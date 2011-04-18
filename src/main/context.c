@@ -99,12 +99,16 @@ static void knh_CommonContext_init(CTX ctx, knh_context_t *o)
 	KNH_INITv(o->err, DP(ctx->sys)->err);
 	KNH_INITv(o->e, KNH_NULL);
 	KNH_INITv(o->evaled, KNH_NULL);
+	KNH_INITv(o->symbolDictMap, new_DictMap0(ctx, 256, 0/*isCaseMap*/, "Context.symbolDictMap"));
+	KNH_INITv(o->constPools, new_Array0(ctx, 0));
 	o->ctxlock = knh_mutex_malloc(ctx);
 }
 
 static knh_Object_t** knh_CommonContext_reftrace(CTX ctx, knh_context_t *ctxo FTRARG)
 {
 	size_t i;
+	KNH_ADDREF(ctx, ctxo->symbolDictMap);
+	KNH_ADDREF(ctx, ctxo->constPools);
 	KNH_ADDREF(ctx, ctxo->e);
 	KNH_ADDREF(ctx, ctxo->evaled);
 	KNH_ADDREF(ctx, (ctxo->script));
@@ -299,9 +303,6 @@ static knh_context_t* new_RootContext(void)
 	{
 		knh_Gamma_t *gma = new_(Gamma);
 		KNH_INITv(ctx->gma, gma);
-		KNH_INITv(DP(gma)->symbolDictMap, new_DictMap0(ctx, 256, 0/*isCaseMap*/, "Context.symbolDictMap"));
-		KNH_INITv(DP(gma)->constPools, new_Array0(ctx, 0));
-		KNH_INITv(DP(gma)->script, ctx->script);
 	}
 	knh_loadScriptSystemKonohaCode(ctx);
 	knh_loadScriptSystemMethod(ctx, kapi);
