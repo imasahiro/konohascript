@@ -2600,13 +2600,13 @@ static void _PRINTln(CTX ctx, knh_sfp_t *sfp, knh_OutputStream_t *w, struct klr_
 {
 	knh_flag_t flag = (knh_flag_t)op->flag;
 	if(FLAG_is(flag, K_FLAG_PF_EOL)) {
+		knh_write_ascii(ctx, w, TERM_ENOTE(ctx, LOG_NOTICE));
 		knh_write_EOL(ctx, w);
 	}
 	else {
 		knh_putc(ctx, w, ',');
 		knh_putc(ctx, w, ' ');
 	}
-	knh_printf(ctx, w, "%s", TERM_ENOTE(ctx, LOG_NOTICE));
 }
 
 static void _PRINT(CTX ctx, knh_sfp_t *sfp, struct klr_P_t *op)
@@ -2621,7 +2621,10 @@ static void _PRINTm(CTX ctx, knh_sfp_t *sfp, struct klr_P_t *op)
 {
 	knh_OutputStream_t *w = KNH_STDOUT;
 	_PRINTh(ctx, sfp, w, op);
-	_PRINTln(ctx, sfp, w, op);
+	if(FLAG_is(((knh_flag_t)op->flag), K_FLAG_PF_EOL)) {
+		knh_write_ascii(ctx, w, TERM_ENOTE(ctx, LOG_NOTICE));
+		knh_write_EOL(ctx, w);
+	}
 }
 
 static void _PRINTi(CTX ctx, knh_sfp_t *sfp, struct klr_P_t *op)
@@ -2700,9 +2703,6 @@ static void ASSERT_asm(CTX ctx, knh_Stmt_t *stmt)
 	/* if */
 	Tn_JMPIF(ctx, stmt, 0, 1, lbskip, DP(ctx->gma)->espidx);
 	/*then*/
-	//Tn_asmBLOCK(ctx, stmt, 1, TYPE_void);
-//	ASM(OSET, OC_(espidx), UPCAST(TS_AssertionException));
-//	ASM(TR, OC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ClassTBL(CLASS_Exception), _ERR);
 	ASM(ASSERT, SFP_(espidx), stmt->uline);
 	ASM_LABEL(ctx, lbskip);
 }

@@ -120,6 +120,7 @@ void knh_InputStream_setpos(CTX ctx, knh_InputStream_t *in, size_t s, size_t e)
 
 static int readbuf(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
 {
+	DBG_P("bufsiz=%d", ba->dim->capacity);
 	long ssize = in->dspi->fread(ctx, DP(in)->fio, ba->bu.buf, ba->dim->capacity, DP(in)->mon);
 	if(ssize > 0) {
 		DP(in)->stat_size += ssize;
@@ -139,7 +140,7 @@ int knh_InputStream_getc(CTX ctx, knh_InputStream_t *in)
 			return EOF;
 		}
 	}
-	int ch = (knh_uchar_t)ba->bu.ubuf[DP(in)->pos++];
+	int ch = ba->bu.ubuf[DP(in)->pos++];
 	if(ch == '\n') {
 		in->uline += 1;
 	}

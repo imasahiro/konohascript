@@ -316,7 +316,7 @@ static knh_io_t NOFILE_wopen(CTX ctx, knh_path_t *ph, const char *mode, knh_Moni
 static knh_intptr_t FILE_read(CTX ctx, knh_io_t fio, char *buf, size_t bufsiz, knh_Monitor_t *mon)
 {
 	long l = knh_fread(ctx, buf, bufsiz, (FILE*)fio);
-	DBG_P("bufsiz=%d, read=%d");
+	DBG_P("bufsiz=%d, read=%d", bufsiz, l);
 	return l;
 }
 
