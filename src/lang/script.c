@@ -766,7 +766,7 @@ static knh_bool_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *resultsNU
 			if(Method_isAbstract(mtd) || STT_(stmt) == STT_ERR) {
 				isCONTINUE = 0; goto L_BREAK;
 			}
-			if(resultsNULL != NULL) {
+			if(!knh_isCompileOnly(ctx)) {
 				DP(mtd)->uri = ULINE_uri(stmt->uline);
 				KNH_SETv(ctx, lsfp[1+1].o, DP(mtd)->kcode);
 				// lsfp[2+1] exception handler
@@ -783,7 +783,9 @@ static knh_bool_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *resultsNU
 					if(STT_(stmt) == STT_RETURN && !Stmt_isImplicit(stmt)) {
 						cid = O_cid(lsfp[rtnidx].o);
 						KNH_SETv(ctx, ((knh_context_t*)ctx)->evaled, lsfp[rtnidx].o);
-						knh_Array_add(ctx, resultsNULL, lsfp[rtnidx].o);
+						if(resultsNULL != NULL) {
+							knh_Array_add(ctx, resultsNULL, lsfp[rtnidx].o);
+						}
 					}
 				}
 				else {
