@@ -35,9 +35,6 @@ set(ARCHIVE_NAME ${PACKAGE_STRING})
 
 set(INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
 		${CMAKE_CURRENT_SOURCE_DIR}/include  ${CMAKE_CURRENT_BINARY_DIR})
-if(APPLE)
-	set(INCLUDE_DIRS ${INCLUDE_DIRS} /opt/local/include)
-endif(APPLE)
 include_directories(${INCLUDE_DIRS})
 
 add_definitions(-DHAVE_CONFIG_H)
@@ -88,9 +85,9 @@ check_include_files("sys/param.h" HAVE_SYS_PARAM_H)
 check_include_files("sys/stat.h" HAVE_SYS_STAT_H)
 check_include_files("sys/sysctl.h" HAVE_SYS_SYSCTL_H)
 check_include_files("sys/types.h" HAVE_SYS_SYSCTL_H)
-check_include_files(pcre.h HAVE_PCRE_H)
-check_include_files(iconv.h HAVE_ICONV_H)
 
+find_path(HAVE_PCRE_H  pcre.h  PATHS ${include_locations})
+find_path(HAVE_ICONV_H iconv.h PATHS ${include_locations})
 find_path(HAVE_SYS_MMAM_H mman.h PATHS ${include_locations} PATH_SUFFIXES sys)
 find_path(HAVE_SYS_STAT_H stat.h PATHS ${include_locations} PATH_SUFFIXES sys)
 find_path(HAVE_UNISTD_H unistd.h ${include_locations})
