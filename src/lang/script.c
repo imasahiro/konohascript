@@ -854,6 +854,7 @@ static void Bytes_addCOMMENT(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in)
 static knh_InputStream_t* openScriptInputStreamNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	knh_path_t phbuf, *ph = knh_path_open_(ctx, "script", path, &phbuf);
+	path.text = P_text(ph); path.len = ph->plen;
 	const knh_StreamDSPI_t *dspi = knh_getStreamDSPI(ctx, ns, path);
 	if(dspi->realpath(ctx, ns, ph)) {
 		knh_io_t fio = dspi->fopen(ctx, ph, "r", ctx->mon);

@@ -123,7 +123,7 @@ void knh_Bytes_expands(CTX ctx, knh_Bytes_t *ba, size_t newsize)
 void knh_Bytes_dispose(CTX ctx, knh_Bytes_t *ba)
 {
 	if(ba->dim->capacity > 0) {
-		DBG_P("dispose %p %p size=%ld,%ld", ba, ba->bu.ubuf, ba->bu.len, ba->dim->capacity);
+		//DBG_P("dispose %p %p size=%ld,%ld", ba, ba->bu.ubuf, ba->bu.len, ba->dim->capacity);
 		KNH_FREE(ctx, ba->bu.ubuf, ba->dim->capacity);
 		ba->bu.ubuf = NULL;
 		ba->bu.len = 0;

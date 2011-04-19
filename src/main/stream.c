@@ -120,13 +120,14 @@ void knh_InputStream_setpos(CTX ctx, knh_InputStream_t *in, size_t s, size_t e)
 
 static int readbuf(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
 {
-	DBG_P("bufsiz=%d", ba->dim->capacity);
-	long ssize = in->dspi->fread(ctx, DP(in)->fio, ba->bu.buf, ba->dim->capacity, DP(in)->mon);
-	if(ssize > 0) {
-		DP(in)->stat_size += ssize;
-		DP(in)->pos = 0;
-		DP(in)->posend = ssize;
-		return 1;
+	if(IS_Bytes(ba)) {
+		long ssize = in->dspi->fread(ctx, DP(in)->fio, ba->bu.buf, ba->dim->capacity, DP(in)->mon);
+		if(ssize > 0) {
+			DP(in)->stat_size += ssize;
+			DP(in)->pos = 0;
+			DP(in)->posend = ssize;
+			return 1;
+		}
 	}
 	knh_InputStream_close(ctx, in);
 	return 0;
@@ -191,7 +192,7 @@ void knh_InputStream_close(CTX ctx, knh_InputStream_t *in)
 	if(DP(in)->fio != IO_NULL) {
 		in->dspi->fclose(ctx, DP(in)->fio);
 		if(DP(in)->fio != IO_BUF) {
-			DBG_P("stream in=%s", S_tochar(DP(in)->urn));
+//			DBG_P("stream in=%s", S_tochar(DP(in)->urn));
 			knh_Bytes_dispose(ctx, DP(in)->ba);
 		}
 		DP(in)->fio = IO_NULL;
@@ -201,7 +202,6 @@ void knh_InputStream_close(CTX ctx, knh_InputStream_t *in)
 
 int InputStream_isClosed(CTX ctx, knh_InputStream_t *in)
 {
-	DBG_P("fio=%ld", DP(in)->fio);
 	return (DP(in)->fio == IO_NULL);
 }
 

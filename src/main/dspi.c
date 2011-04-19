@@ -311,9 +311,7 @@ static knh_io_t NOFILE_wopen(CTX ctx, knh_path_t *ph, const char *mode, knh_Moni
 }
 static knh_intptr_t FILE_read(CTX ctx, knh_io_t fio, char *buf, size_t bufsiz, knh_Monitor_t *mon)
 {
-	long l = knh_fread(ctx, buf, bufsiz, (FILE*)fio);
-	DBG_P("bufsiz=%d, read=%d", bufsiz, l);
-	return l;
+	return knh_fread(ctx, buf, bufsiz, (FILE*)fio);
 }
 
 static knh_intptr_t FILE_write(CTX ctx, knh_io_t fio, const char *buf, size_t bufsiz, knh_Monitor_t *mon)
@@ -738,19 +736,18 @@ static knh_bool_t CURL_exists(Ctx *ctx, knh_NameSpace_t *ns, knh_bytes_t path, v
 	return (knh_bool_t)1;
 }
 
-static knh_bool_t CURL_hasType(Ctx *ctx, knh_class_t cid)
+static knh_bool_t CURL_hasType(Ctx *ctx, knh_class_t cid, void *thunk)
 {
-	return (cid == CLASS_InputStream || PATH_hasType(cid));
+	return (cid == CLASS_InputStream);
 }
 
-static Object* CURL_newObjectNULL(Ctx *ctx, knh_NameSpace_t *n, knh_class_t cid, knh_String_t *s)
+static Object* CURL_newObjectNULL(Ctx *ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s, void *thunk)
 {
 	return (Object*)s;
 }
 
 static knh_PathDSPI_t PATH_CURL = {
-		K_DSPI_PATH, "curl",
-		CLASS_InputStream, CLASS_Tvoid,
+		K_DSPI_PATH, "curl", CLASS_InputStream, CLASS_Tvoid,
 		CURL_hasType, CURL_exists, CURL_newObjectNULL
 };
 
