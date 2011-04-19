@@ -530,15 +530,16 @@ knh_bool_t knh_path_mkdir(CTX ctx, knh_path_t *ph)
 
 const char* knh_path_reduce(CTX ctx, knh_path_t *ph, int ch)
 {
-	knh_uchar_t *ubuf = P_ubuf(ph) + ph->pbody;
+	knh_uchar_t *ubuf = P_ubuf(ph);
 	long i;
+	DBG_ASSERT((int)ph->plen > 0);
 	if(ph->isRealPath && ch == '/' && ch != K_FILESEPARATOR) {
 		ch = K_FILESEPARATOR;
 	}
 	for(i = ph->plen - 1; i >= ph->pbody; i--) {
 		if(ubuf[i] == ch) {
-			ubuf[i] = 0;
 			ph->plen = i;
+			ubuf[ph->plen] = 0;
 			return (const char*)ubuf + i + 1;
 		}
 	}
@@ -547,8 +548,9 @@ const char* knh_path_reduce(CTX ctx, knh_path_t *ph, int ch)
 
 void knh_path_append(CTX ctx, knh_path_t *ph, int issep, const char *name)
 {
-	char *buf = P_buf(ph) + ph->pbody, *p = (char*)name;
+	char *buf = P_buf(ph), *p = (char*)name;
 	size_t i, plen = ph->plen;
+	DBG_ASSERT((int)plen > 0);
 	if(issep && plen > 0 && (buf[plen-1] != '/' && buf[plen-1] != K_FILESEPARATOR)) {
 		buf[plen] = ph->isRealPath ? K_FILESEPARATOR : '/';
 		plen++;
@@ -563,8 +565,9 @@ void knh_path_append(CTX ctx, knh_path_t *ph, int issep, const char *name)
 			buf[i] = K_FILESEPARATOR;
 		}
 	}
-	buf[i] = 0;
 	ph->plen = i;
+	buf[ph->plen] = 0;
+	//DBG_P("APPEND_END=%s + %s (%d)", buf, name, ph->plen);
 }
 
 /* Linux, MacOSX */
@@ -716,7 +719,6 @@ void *knh_path_dlopen(CTX ctx, knh_path_t *ph)
 	if(!knh_bytes_endsWith(t, STEXT(K_OSDLLEXT))) {
 		knh_path_append(ctx, ph, 0/*sep*/, K_OSDLLEXT);
 	}
-	knh_ospath(ctx, ph);
 	return knh_dlopen(ctx, P_text(ph) + ph->pbody);
 }
 

@@ -43,7 +43,6 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* kcode */
 
-//#define K_INLINECODE    (10)
 #define K_INLINECODE    (10)
 
 static void Tn_asm(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, int local);

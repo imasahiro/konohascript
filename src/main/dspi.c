@@ -215,38 +215,34 @@ static const knh_PathDSPI_t PATH_FILE = {
 
 static knh_bool_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
 {
-	KNH_TODO("lib:m.sin");
-//	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, libname, &phbuf);
-//	knh_bytes_t libname = knh_path_next(path, ':'), funcname = STEXT(""); /* lib:m.sin */
-//	knh_index_t loc = knh_bytes_index(libname, '.');
-//	if(loc != -1) {
-//		libname = knh_bytes_first(libname, loc);
-//		funcname = knh_bytes_last(libname, loc+1);
-//	}
-//	{
-//
-//	}
-//	knh_cwb_write(ctx, cwb, libname);
-//	knh_ospath(ctx, cwb);
-//	void *p = knh_path_dlopen(ctx, LOG_DEBUG, cwb);
-//	knh_bool_t res = PATH_unknown;
-//	if(p == NULL && !knh_bytes_startsWith(libname, STEXT("lib"))) {
-//		knh_cwb_clear(cwb, 0);
-//		knh_cwb_write(ctx, cwb, STEXT("lib"));
-//		knh_cwb_write(ctx, cwb, libname);
-//		knh_ospath(ctx, cwb);
-//		p = knh_path_dlopen(ctx, LOG_DEBUG, cwb);
-//	}
-//	if(p != NULL) {
-//		res = PATH_found;
-//		if(funcname.len != 0) {
-//			void *f = knh_dlsym(ctx, LOG_DEBUG, p, funcname.text);
-//			res = (f != NULL) ? PATH_found : PATH_unknown;
-//		}
-//		knh_dlclose(ctx, p);
-//	}
-//	knh_path_close(ctx, ph)
-	return 0;
+	void *p = NULL;
+	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
+	knh_bytes_t libname = knh_bytes_next(path, ':');
+	knh_bytes_t funcname = knh_bytes_rnext(path, '.');
+	int res = 0;
+	knh_path_reduce(ctx, ph, '.');
+	knh_path_append(ctx, ph, 0, K_OSDLLEXT);
+	DBG_P("BEFORE: %s", P_text(ph) + ph->pbody);
+	//knh_ospath(ctx, ph);
+	p = knh_path_dlopen(ctx, ph);
+	if(p == NULL && !knh_bytes_startsWith(libname, STEXT("lib"))) {
+		knh_path_reset(ctx, ph, NULL, STEXT("lib"));
+		knh_path_append(ctx, ph, 0, libname.text);
+		//knh_path_reduce(ctx, ph, '.');
+		knh_path_append(ctx, ph, 0, K_OSDLLEXT);
+		DBG_P("BEFORE: %s", P_text(ph));
+		//knh_ospath(ctx, ph);
+		p = knh_path_dlopen(ctx, ph);
+	}
+	if(p != NULL) {
+		if(funcname.len != libname.len) {
+			void *f = knh_dlsym(ctx, LOG_DEBUG, p, funcname.text);
+			res = (f != NULL);
+		}
+		knh_dlclose(ctx, p);
+	}
+	knh_path_close(ctx, ph);
+	return res;
 }
 
 static const knh_PathDSPI_t PATH_LIB = {
