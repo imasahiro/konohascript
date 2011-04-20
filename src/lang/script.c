@@ -193,6 +193,7 @@ static knh_bool_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *resultsNU
 			knh_Fpkgload pkgload = (knh_Fpkgload)knh_dlsym(ctx, LOG_DEBUG, ns->dlhdr, funcname);
 			if(pkgload != NULL) {
 				pkgload(ctx, knh_getPackageLoaderAPI(), ns);
+				goto L_RETURN;
 			}
 		}
 		knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "loader function", include_name.text));

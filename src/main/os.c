@@ -732,6 +732,7 @@ void *knh_dlsym(CTX ctx, int pe, void* handler, const char* symbol)
 	return p;
 #elif defined(K_USING_POSIX_)
 	void *p = dlsym(handler, symbol);
+	//DBG_P("handler=%p,%p, symbol='%s' ERR='%s'", handler, p, symbol, dlerror());
 	if(p == NULL) {
 		KNH_SYSLOG(ctx, NULL, pe, "dlsym", "symbol='%s', ERR='%s'", symbol, dlerror());
 	}
