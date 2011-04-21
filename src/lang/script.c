@@ -860,15 +860,12 @@ static knh_InputStream_t* openScriptInputStreamNULL(CTX ctx, knh_NameSpace_t *ns
 			KNH_SETv(ctx, ns->rpath, knh_path_newString(ctx, ph, 0));
 			DBG_P("URI=%d, nsname='%s' rpath='%s'", (int)uri, S_tochar(DP(ns)->nsname), S_tochar(ns->rpath));
 		}
-		else {
-			in = NULL;
-		}
 	}
 	if(in == NULL) {
 		KNH_WARN(ctx, "file not found '%s'", path.text);
 	}
 	knh_path_close(ctx, ph);
-	return NULL;
+	return in;
 }
 
 static int readchunk(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)

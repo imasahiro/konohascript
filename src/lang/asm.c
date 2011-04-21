@@ -2653,7 +2653,14 @@ static void _PRINTb(CTX ctx, knh_sfp_t *sfp, struct klr_P_t *op)
 static void PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 	knh_flag_t flag = PRINT_flag(ctx, stmt) | K_FLAG_PF_BOL | K_FLAG_PF_LINE;
-	long i;
+	long i, espidx = DP(ctx->gma)->espidx;
+	for(i = 0; i < DP(stmt)->size; i++) {
+		knh_Token_t *tkn = tkNN(stmt, i);
+		if(TT_(tkn) != TT_CONST || !IS_String((tkn)->data)) {
+			knh_class_t cid = Tn_cid(stmt, i);
+			Tn_asm(ctx, stmt, i, cid, espidx + i);
+		}
+	}
 	for(i = 0; i < DP(stmt)->size; i++) {
 		knh_flag_t mask = 0;
 		knh_String_t *msg = (knh_String_t*)KNH_NULL;
@@ -2672,20 +2679,19 @@ static void PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
 			ASM(P, _PRINTm, flag | mask, (tkn)->text, 0); flag = 0;
 		}
 		else {
-			long espidx = DP(ctx->gma)->espidx;
 			knh_class_t cid = Tn_cid(stmt, i);
-			Tn_asm(ctx, stmt, i, cid, espidx);
+//			Tn_asm(ctx, stmt, i, cid, espidx);
 			if(IS_Tint(cid)) {
-				ASM(P, _PRINTi, flag | mask, msg, espidx);
+				ASM(P, _PRINTi, flag | mask, msg, espidx+i);
 			}
 			else if(IS_Tfloat(cid)) {
-				ASM(P, _PRINTf, flag | mask, msg, espidx);
+				ASM(P, _PRINTf, flag | mask, msg, espidx+i);
 			}
 			else if(cid == CLASS_Boolean) {
-				ASM(P, _PRINTb, flag | mask, msg, espidx);
+				ASM(P, _PRINTb, flag | mask, msg, espidx+i);
 			}
 			else {
-				ASM(P, _PRINT, flag | mask, msg, espidx);
+				ASM(P, _PRINT, flag | mask, msg, espidx+i);
 			}
 			flag=0;
 		}
