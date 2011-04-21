@@ -701,7 +701,6 @@ static int String_compareTo(const knh_Object_t *o, const knh_Object_t *o2)
 static void String_write(CTX ctx, knh_OutputStream_t *w, knh_Object_t *o, int level)
 {
 	knh_String_t *s = (knh_String_t*)o;
-//	fprintf(stderr, "*'%s'\n", S_tochar(s));
 	if(IS_FMTs(level)) {
 		knh_write_utf8(ctx, w, S_tobytes(s), !String_isASCII(s));
 	}

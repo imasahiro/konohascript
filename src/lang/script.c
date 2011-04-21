@@ -28,19 +28,7 @@
 /* ************************************************************************ */
 
 #define USE_RCinc 1
-
-//#define USE_STEXT 1
-//#define USE_B     1
 #define USE_bytes
-//#define USE_bytes_index       1
-//#define USE_bytes_last        1
-//#define USE_bytes_index       1
-//#define USE_bytes_next        1
-//#define USE_bytes_rindex      1
-//#define USE_bytes_equals      1
-//#define USE_bytes_startsWith  1
-////#define USE_bytes_endsWith    1
-
 #define USE_cwb_open      1
 #define USE_cwb_tobytes   1
 #define USE_cwb_write     1
@@ -344,6 +332,7 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 			}
 			knh_cwb_clear(cwb, 0);
 		}
+		knh_Stmt_done(ctx, stmt);
 		return 1;
 	}
 	L_ERROR:;
@@ -859,20 +848,26 @@ static knh_InputStream_t* openScriptInputStreamNULL(CTX ctx, knh_NameSpace_t *ns
 	knh_path_t phbuf, *ph = knh_path_open_(ctx, "script", path, &phbuf);
 	path.text = P_text(ph); path.len = ph->plen;
 	const knh_StreamDSPI_t *dspi = knh_getStreamDSPI(ctx, ns, path);
+	knh_InputStream_t *in = NULL;
 	if(dspi->realpath(ctx, ns, ph)) {
 		knh_io_t fio = dspi->fopen(ctx, ph, "r", ctx->mon);
 		if(fio != IO_NULL) {
-			knh_InputStream_t *in = new_InputStreamDSPI(ctx, fio, dspi);
+			in = new_InputStreamDSPI(ctx, fio, dspi);
 			knh_bytes_t rpath = B(P_text(ph));
 			knh_uri_t uri = knh_getURI(ctx, rpath);
 			ULINE_setURI(in->uline, uri);
 			KNH_SETv(ctx, DP(in)->urn, knh_getURN(ctx, uri));
 			KNH_SETv(ctx, ns->rpath, knh_path_newString(ctx, ph, 0));
 			DBG_P("URI=%d, nsname='%s' rpath='%s'", (int)uri, S_tochar(DP(ns)->nsname), S_tochar(ns->rpath));
-			return in;
+		}
+		else {
+			in = NULL;
 		}
 	}
-	KNH_WARN(ctx, "file not found '%s'", path.text);
+	if(in == NULL) {
+		KNH_WARN(ctx, "file not found '%s'", path.text);
+	}
+	knh_path_close(ctx, ph);
 	return NULL;
 }
 

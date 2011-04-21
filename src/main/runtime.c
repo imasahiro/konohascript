@@ -813,6 +813,7 @@ static void knh_shell(CTX ctx)
 			knh_write(ctx, cwb->w, outbuf->bu);
 			knh_Bytes_clear(outbuf, 0);
 		}
+		knh_cwb_clear(cwb, 0); // necessary (because of some bugs)
 		for(i = 0; i < knh_Array_size(results); i++) {
 			knh_Object_t *o = results->list[i];
 			knh_write_Object(ctx, cwb->w, o, FMT_dump);
