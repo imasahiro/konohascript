@@ -12,6 +12,7 @@ cmake_minimum_required(VERSION 2.8)
 set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g")
 set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
 set(CMAKE_BUILD_TYPE Release)
+#set(CMAKE_BUILD_TYPE Debug)
 
 #if("${CMAKE_C_COMPILER}" STREQUAL "/usr/bin/gcc")
 #	set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
@@ -25,6 +26,7 @@ set(VERSION_PATCH "0")
 set(PACKAGE_NAME    ${PROJECT_NAME})
 set(PACKAGE_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 set(PACKAGE_STRING  ${CMAKE_PROJECT_NAME}-${PACKAGE_VERSION})
+set(KONOHA_VERSION  ${VERSION_MAJOR}.${VERSION_MINOR})
 
 set(K_CONFIG_ARCH ${CMAKE_SYSTEM})
 set(K_CONFIG_OS   ${CMAKE_SYSTEM_NAME})
@@ -33,8 +35,9 @@ set(K_CONFIG_CPU  ${CMAKE_SYSTEM_PROCESSOR})
 set(SO_VERSION   ${VERSION_MAJOR}.${VERSION_MINOR})
 set(ARCHIVE_NAME ${PACKAGE_STRING})
 
+set(KONOHA_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/include  ${CMAKE_CURRENT_BINARY_DIR})
+		${KONOHA_INCLUDE_DIRS}  ${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${INCLUDE_DIRS})
 
 add_definitions(-DHAVE_CONFIG_H)
@@ -204,10 +207,19 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(K_USING_DEBUG 1)
 endif()
 
-#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake 
-#		${CMAKE_CURRENT_BINARY_DIR}/config.h)
+find_package(Subversion)
+if(Subversion_FOUND)
+	Subversion_WC_INFO(${CMAKE_CURRENT_SOURCE_DIR}/include ER)
+	set(SUBVERSION_REVISION ${ER_WC_REVISION})
+	add_definitions(-DK_REVISION=${SUBVERSION_REVISION})
+endif(Subversion_FOUND)
+
+if(HAVE_ICONV_ICONV_OPEN_SYM)
+	add_definitions(-DLIBICONV_PLUG)
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake 
-		${CMAKE_CURRENT_SOURCE_DIR}/config.h)
+		${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 add_library(konoha SHARED ${KONOHA_SRC})
 target_link_libraries(konoha ${ExtraLibs})
@@ -216,6 +228,12 @@ set_target_properties(konoha PROPERTIES VERSION ${PACKAGE_VERSION} SOVERSION ${S
 add_executable(konoha1 src/konoha.c)
 target_link_libraries(konoha1 konoha)
 set_target_properties(konoha1 PROPERTIES OUTPUT_NAME konoha)
+
+file(GLOB dirs "${CMAKE_CURRENT_SOURCE_DIR}/package/konoha.*")
+foreach(dir ${dirs})
+	add_subdirectory(${dir})
+endforeach()
+
 
 install(TARGETS konoha1 konoha 
 		RUNTIME DESTINATION bin
@@ -230,12 +248,11 @@ install(DIRECTORY include/ DESTINATION include
 
 #set(CPACK_SOURCE_GENERATOR "TGZ;DEB")
 set(CPACK_SOURCE_GENERATOR "TGZ")
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "uh")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME ${ARCHIVE_NAME})
 set(CPACK_PACKAGE_NAME "Konoha")
-#set(CPACK_PACKAGE_VENDOR "konoha.org")
+set(CPACK_PACKAGE_VENDOR "Konoha")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Konoha - Statically-typed scripting language")
-set(CPACK_PACKAGE_VERSION       ${PACKAGE_VERSION})
+set(CPACK_PACKAGE_VERSION       "konoha-${VERSION_MAJOR}.${VERSION_MINOR}-alpha1")
 set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
@@ -247,12 +264,13 @@ MESSAGE(STATUS "CMAKE_C_COMPILER = ${CMAKE_C_COMPILER}")
 MESSAGE(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
 MESSAGE(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 MESSAGE(STATUS "Change a value with: cmake -D<Variable>=<Value>" )
-if(NOT HAVE_PCRE_H)
-		MESSAGE(STATUS "pcre.h is not found")
-endif(NOT HAVE_PCRE_H)
-
-#MESSAGE(STATUS "iconv.h=${HAVE_ICONV_H}")
-#MESSAGE(STATUS "iconv.dylib=${HAVE_LIBICONV}")
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+	if(NOT HAVE_PCRE_H)
+			MESSAGE(STATUS "pcre.h is not found")
+	endif(NOT HAVE_PCRE_H)
+	MESSAGE(STATUS "iconv.h=${HAVE_ICONV_H}")
+	MESSAGE(STATUS "iconv.dylib=${HAVE_LIBICONV}")
+endif()
 
 MESSAGE(STATUS)
 foreach(lib ${MessageLibs})
