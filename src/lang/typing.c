@@ -1366,9 +1366,9 @@ static knh_Token_t *Token_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 	case TT_NUM: return NUM_typing(ctx, tk, reqt);
 	case TT_URN: case TT_TSCHEME: return PATH_typing(ctx, tk, reqt);
 	case TT_ERR: return tk;
-	case TT_MN: DBG_ABORT("why MN?");
+	case TT_MN:
 	default:
-		return SyntaxErrorWithHint(ctx, TK__(tk) K_TRACEPOINT);
+		return ERROR_Token(ctx, tk K_TRACEPOINT);
 	}
 }
 
@@ -1664,7 +1664,7 @@ static knh_Token_t *LETM_typing(CTX ctx, knh_Stmt_t *stmt)
 			}
 		}
 		else {
-			return SyntaxErrorWithHint(ctx, "assignment" K_TRACEPOINT);
+			return ERROR_text(ctx, "assignment" K_TRACEPOINT);
 		}
 	}
 	tuplecid = Tn_cid(stmt, msize);
@@ -1752,7 +1752,7 @@ static knh_Token_t *SWAP_typing(CTX ctx, knh_Stmt_t *stmt)
 			}
 		}
 		else {
-			return SyntaxErrorWithHint(ctx, "assignment" K_TRACEPOINT);
+			return ERROR_text(ctx, "assignment" K_TRACEPOINT);
 		}
 	}
 	{
@@ -1896,7 +1896,7 @@ static knh_Token_t* CALLPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt
 		else {
 			if(!(n < size) && !ParamArray_isVARGs(pa)) {
 				if(param_reqt == TYPE_var) {
-					return ErrorRequiredParameter(ctx);
+					return ERROR_RequiredParameter(ctx);
 				}
 				else {
 					knh_Stmt_add(ctx, stmt, new_TokenDEFAULT(ctx, CLASS_t(param_reqt), TYPE_Class));
@@ -2158,7 +2158,7 @@ static knh_Token_t* delegate_typing(CTX ctx, knh_Stmt_t *stmt)
 		}
 	}
 	else {
-		return SyntaxErrorWithHint(ctx, "delegate" K_TRACEPOINT);
+		return ERROR_text(ctx, "delegate" K_TRACEPOINT);
 	}
 }
 

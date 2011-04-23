@@ -235,24 +235,34 @@ knh_Token_t* ErrorFieldAddition(CTX ctx, knh_class_t cid)
 {
 	return Gamma_perror(ctx, KC_ERR, _("%C is unable to add new fields"), cid);
 }
-knh_Token_t* ERROR_Block(CTX ctx, const char* ch)
+knh_Token_t* ERROR_Block(CTX ctx, const char* block)
 {
-	return Gamma_perror(ctx, KC_ERR, _("syntax error: wrong block and indent"));
+	return Gamma_perror(ctx, KC_ERR, _("syntax error: wrong %s"), block);
 }
-knh_Token_t* SyntaxErrorWithHint(CTX ctx, const char* keyword K_TRACEARGV)
+knh_Token_t* ERROR_text(CTX ctx, const char *keyword K_TRACEARGV)
 {
-	knh_Token_t *tkERR = Gamma_perror(ctx, KC_ERR, ("syntax error: %s"), keyword);
-	DBG_P("%s:%d keyword=%s", _func, _line, keyword);
+	knh_Token_t *tk = Gamma_perror(ctx, KC_ERR, ("syntax error: %s"), keyword);
 	KNH_HINT(ctx, keyword);
-	DBG_ABORT("stop why?");
-	return tkERR;
+	return tk;
+}
+knh_Token_t* ERROR_Token(CTX ctx, knh_Token_t *tk K_TRACEARGV)
+{
+	if(TT_(tk) != TT_ERR) {
+		tk = ERROR_text(ctx, IS_String((tk)->text) ? S_tochar((tk)->text) : TK__(tk) K_TRACEDATA);
+	}
+	return tk;
+}
+knh_Token_t* ERROR_Stmt(CTX ctx, knh_Stmt_t *stmt K_TRACEARGV)
+{
+	DBG_ASSERT(STT_(stmt) != STT_ERR);
+	return ERROR_text(ctx, TT__(stmt->stt) K_TRACEDATA);
 }
 knh_Token_t* SyntaxErrorTokenIsNot(CTX ctx, knh_Token_t *tk, const char* whatis)
 {
 	DBG_P("TT(tk)=%s", TT__(tk->tt));
 	return Gamma_perror(ctx, KC_ERR, ("%O is not %s"), tk, whatis);
 }
-knh_Token_t* ErrorRequired(CTX ctx, knh_Token_t *tk, const char *stmtexpr, const char *token)
+knh_Token_t* ERROR_Required(CTX ctx, knh_Token_t *tk, const char *stmtexpr, const char *token)
 {
 	return knh_Token_toERR(ctx, tk, _("%s? needs %s"), stmtexpr, token);
 }
@@ -313,7 +323,7 @@ knh_Token_t* ErrorUndefinedBehavior(CTX ctx, const char *token)
 {
 	return Gamma_perror(ctx, KC_ERR, _("undefined behavior of %s"), token);
 }
-knh_Token_t* ErrorRequiredParameter(CTX ctx)
+knh_Token_t* ERROR_RequiredParameter(CTX ctx)
 {
 	return Gamma_perror(ctx, KC_ERR, _("needs a parameter to infer its type"));
 }

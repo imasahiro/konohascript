@@ -40,7 +40,6 @@
 #include"commons.h"
 
 #define TT_SIZE TT_LOR   /* |a| */
-#define TKERR(tk)    IS_String((tk)->text) ? S_tochar((tk)->text) : TK__(tk)
 
 /* ************************************************************************ */
 
@@ -132,10 +131,9 @@ void knh_Stmt_toERR(CTX ctx, knh_Stmt_t *stmt, knh_Token_t *tkERR)
 	STT_(stmt) = STT_ERR;
 }
 
-static void knh_Stmt_toErrorWithHint(CTX ctx, knh_Stmt_t *stmt, knh_Token_t *tk K_TRACEARGV)
+static void Stmt_toSyntaxError(CTX ctx, knh_Stmt_t *stmt, knh_Token_t *tk K_TRACEARGV)
 {
-	knh_Stmt_toERR(ctx, stmt,
-		SyntaxErrorWithHint(ctx, TKERR(tk) K_TRACEDATA));
+	knh_Stmt_toERR(ctx, stmt, ERROR_Token(ctx, tk K_TRACEDATA));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -1030,11 +1028,14 @@ static int Token_addNUM(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStrea
 	return ch;
 }
 
-static void Token_addBLOCKERR(CTX ctx, knh_Token_t *tkB, knh_InputStream_t *in)
+static void Token_addBLOCKERR(CTX ctx, knh_Token_t *tkB, knh_InputStream_t *in, int ch)
 {
+	const char *block = "indent";
+	if(ch == ')') block = ")";
+	if(ch == ']') block = "]";
 	tkB->uline = in->uline;
 	(ctx->gma)->uline = in->uline;
-	Token_add(ctx, tkB, ERROR_Block(ctx, "}"));
+	Token_add(ctx, tkB, ERROR_Block(ctx, block));
 }
 
 static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStream_t *in, int block_indent)
@@ -1093,7 +1094,7 @@ static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputS
 	}
 	knh_cwb_clear(cwb, 0);
 	DBG_P("block_indent=%d, c=%d, last=%d", block_indent, c, ch);
-	Token_addBLOCKERR(ctx, tkB, in);
+	Token_addBLOCKERR(ctx, tkB, in, 0);
 }
 
 static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *tkB)
@@ -1121,7 +1122,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 						Token_setPLUSLINE(tkB, 1);
 					}
 					else if(c < block_indent) {
-						Token_addBLOCKERR(ctx, tkB, in);
+						Token_addBLOCKERR(ctx, tkB, in, 0);
 						return;
 					}
 				}
@@ -1182,7 +1183,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 			}
 		case '}':
 			Token_addBuf(ctx, tkB, cwb, TT_UNTYPED, ch);
-			Token_addBLOCKERR(ctx, tkB, in);
+			Token_addBLOCKERR(ctx, tkB, in, ch);
 			return;
 			/*goto L_NEWTOKEN;*/
 
@@ -1520,7 +1521,7 @@ static void _DBGERROR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, const char *whati
 			}
 		}
 		else {
-			tkERR = SyntaxErrorWithHint(ctx, TT__(STT_(stmt)), _file, _line, _func);
+			tkERR = ERROR_Stmt(ctx, stmt, _file, _line, _func);
 		}
 		knh_Stmt_toERR(ctx, stmt, tkERR);
 	}
@@ -1902,7 +1903,7 @@ static int ITR_indexOPR(CTX ctx, tkitr_t *itr)
 	for(i = itr->c; i < itr->e; i++) {
 		int p = TT_priority(TT_(ts[i]));
 		if(p == 0) {
-			KNH_SETv(ctx, ts[i], SyntaxErrorWithHint(ctx, TKERR(ts[i]) K_TRACEPOINT));
+			KNH_SETv(ctx, ts[i], ERROR_Token(ctx, ts[i] K_TRACEPOINT));
 			itr->e = i;
 			return i;
 		}
@@ -1956,7 +1957,7 @@ static void _EXPROP(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, int idx, int isCAST
 	knh_Token_t *tkOP = itr->ts[idx];
 	knh_term_t tt = TT_(tkOP);
 	if(ITR_size(itr) == 1) {
-		knh_Stmt_toErrorWithHint(ctx, stmt, tkOP K_TRACEPOINT);
+		Stmt_toSyntaxError(ctx, stmt, tkOP K_TRACEPOINT);
 		return;
 	}
 	switch(tt){
@@ -1976,7 +1977,7 @@ static void _EXPROP(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, int idx, int isCAST
 			_EXPR(ctx, stmtOPR, itr);
 		}
 		else {
-			knh_Stmt_toErrorWithHint(ctx, stmt, tkOP K_TRACEPOINT);
+			Stmt_toSyntaxError(ctx, stmt, tkOP K_TRACEPOINT);
 		}
 		return;
 	}
@@ -2016,7 +2017,7 @@ static void _EXPROP(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, int idx, int isCAST
 			_EXPRs(ctx, stmt, itr);
 		}
 		else {
-			knh_Stmt_toERR(ctx, stmt, ErrorRequired(ctx, tkOP, _("trinary"), ":"));
+			knh_Stmt_toERR(ctx, stmt, ERROR_Required(ctx, tkOP, _("trinary"), ":"));
 		}
 		return;
 	}
@@ -2190,7 +2191,7 @@ static void _EXPR1(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			break;
 		default: {
 			L_ERROR:;
-			knh_Stmt_toErrorWithHint(ctx, stmt, tkCUR K_TRACEPOINT);
+			Stmt_toSyntaxError(ctx, stmt, tkCUR K_TRACEPOINT);
 		}
 	}
 }
@@ -2339,7 +2340,7 @@ static void _EXPRCALL(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 				_DICT(ctx, stmt, new_Token(ctx, TT_ASIS), ITR_nextTK(itr));
 				break;
 			}
-			knh_Stmt_toERR(ctx, stmt, SyntaxErrorWithHint(ctx, "new" K_TRACEPOINT));
+			knh_Stmt_toERR(ctx, stmt, ERROR_Token(ctx, tkCUR K_TRACEPOINT));
 			return;
 		}/*TT_NEW*/
 		default: {
@@ -3169,6 +3170,7 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 			int comma = ITR_count(sitr, TT_COMMA);
 			if(comma > 0) {  //  check multiple assingment
 				int idx = ITR_indexTT(sitr, TT_LET, itr->e);
+				knh_Token_t *tkLET = sitr->ts[idx];
 				tkitr_t lbuf, *litr = ITR_first(sitr, idx, &lbuf, +1);
 				int lcomma = ITR_count(litr, TT_COMMA);
 				if(lcomma == comma) {  // @CODE: a, b = t
@@ -3185,7 +3187,7 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 				}
 				else {
 					stmt = new_StmtMETA(ctx, STT_CALL, sitr, 0, NULL);
-					knh_Stmt_toERR(ctx, stmt, SyntaxErrorWithHint(ctx, "assignment" K_TRACEPOINT));
+					knh_Stmt_toERR(ctx, stmt, ERROR_Token(ctx,  tkLET K_TRACEPOINT));
 				}
 				break;
 			}
