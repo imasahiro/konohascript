@@ -731,7 +731,9 @@ def svnrev():
 
 def write_name_h(f, data):
     write_chapter(f, 'MACROS')
+    f.write('#ifndef K_REVISION\n')
     write_define(f, 'K_REVISION', '%d' % svnrev(), 40)
+    f.write('#endif\n')
     write_define(f, 'K_BUILDID', '%d' % data.serial_number, 40)
     #if not '-c' in data.OPTIONS:
         #write_define(f,  'KONOHA_EXPIRE', '%dLL' % (int(time.time()) + 259200), 40)
