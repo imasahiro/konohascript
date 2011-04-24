@@ -403,7 +403,6 @@ static knh_bool_t PKG_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, voi
 	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
 	knh_bool_t res = PKG_realpath(ctx, ns, ph);
 	knh_path_close(ctx, ph);
-	DBG_P("********************** path=%s, res=%d", path.text, res);
 	return res;
 }
 
@@ -446,6 +445,47 @@ static const knh_PathDSPI_t PATH_SCRIPT = {
 static const knh_StreamDSPI_t STREAM_SCRIPT = {
 	K_DSPI_STREAM, "script", SCRIPT_realpath,
 	FILE_open, NOFILE_wopen, FILE_read, K_OUTBUF_MAXSIZ, FILE_write, FILE_close,
+};
+
+static knh_bool_t START_realpath(CTX ctx, knh_NameSpace_t *ns, knh_path_t *ph)
+{
+	knh_cwb_t cwbbuf, *cwb = knh_cwb_copy(ctx, &cwbbuf, ph, 0/*hasScheme*/);
+	knh_bytes_t t = knh_cwb_tobytes(cwb);
+	if(!knh_bytes_endsWith(t, STEXT(".k"))) {
+		knh_String_t *s = knh_getPropertyNULL(ctx, STEXT("konoha.script.path"));
+		if(s != NULL) {
+			knh_path_reset(ctx, ph, NULL, S_tobytes(s));
+			knh_path_append(ctx, ph, 1/*sep*/, knh_cwb_tochar(ctx, cwb));
+			knh_ospath(ctx, ph);
+			if(knh_path_isfile(ctx, ph)) return 1;
+		}
+	}
+	knh_path_reset(ctx, ph, NULL, S_tobytes(ns->rpath));
+	if(!knh_path_isdir(ctx, ph)) {
+		knh_path_reduce(ctx, ph, '/');
+	}
+	knh_path_append(ctx, ph, 1/*sep*/, knh_cwb_tochar(ctx, cwb));
+	knh_cwb_close(cwb);
+	knh_ospath(ctx, ph);
+	return knh_path_isfile(ctx, ph);
+}
+
+static knh_bool_t START_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
+{
+	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
+	knh_bool_t res = START_realpath(ctx, ns, ph);
+	knh_path_close(ctx, ph);
+	return res;
+}
+
+static const knh_PathDSPI_t PATH_START = {
+		K_DSPI_PATH, "start", CLASS_Boolean, CLASS_InputStream, NULL,
+		FILE_hasType, START_exists, FILE_newObjectNULL,
+};
+
+static const knh_StreamDSPI_t STREAM_START = {
+		K_DSPI_STREAM, "start", START_realpath,
+		FILE_open, NOFILE_wopen, FILE_read, K_OUTBUF_MAXSIZ, FILE_write, FILE_close,
 };
 
 /* ------------------------------------------------------------------------ */
@@ -976,16 +1016,16 @@ void knh_loadScriptDriver(CTX ctx, knh_NameSpace_t *ns)
 
 	api->addPathDSPI(ctx, ns, "pkg", &PATH_PKG);
 	api->addPathDSPI(ctx, ns, "script", &PATH_SCRIPT);
-//	api->addPathDSPI(ctx, ns, "tool", &TOOLPATH_DSPI);
+	api->addPathDSPI(ctx, ns, "start", &PATH_START);
 
 	api->addConvDSPI(ctx, ns, "lower", &TO_lower);
 	api->addConvDSPI(ctx, ns, "upper", &TO_upper);
 
 	api->addStreamDSPI(ctx, ns, NULL, &STREAM_NOFILE);
 	api->addStreamDSPI(ctx, ns, "file", &STREAM_FILE);
-	api->addStreamDSPI(ctx, ns, "script", &STREAM_SCRIPT);
-//	api->addStreamDSPI(ctx, ns, "tool", &TOOLFILE_DSPI);
 	api->addStreamDSPI(ctx, ns, "pkg", &STREAM_PKG);
+	api->addStreamDSPI(ctx, ns, "script", &STREAM_SCRIPT);
+	api->addStreamDSPI(ctx, ns, "start",  &STREAM_START);
 
 	api->addQueryDSPI(ctx, ns, NULL, &QUERY_NOP);
 #ifdef K_USING_SQLITE3

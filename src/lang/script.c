@@ -223,7 +223,7 @@ static knh_bool_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *resultsNU
 		knh_NameSpace_t *ns = new_NameSpace(ctx, K_GMANS);
 		KNH_SETv(ctx, ctx->gma->scr->ns, ns);
 		NameSpace_beginINCLUDE(ctx, ns, ns->parentNULL);
-		isCONTINUE = knh_load(ctx, include_name, resultsNULL);
+		isCONTINUE = knh_load(ctx, "script", include_name, resultsNULL);
 		NameSpace_endINCLUDE(ctx, ns, ns->parentNULL);
 		KNH_SETv(ctx, ctx->gma->scr->ns, ns->parentNULL);
 	}
@@ -251,7 +251,7 @@ knh_status_t knh_loadScriptPackage(CTX ctx, knh_bytes_t path)
 			knh_DictMap_set(ctx, dmap, nsname, newscr);
 			scr = ctx->gma->scr;
 			KNH_SETv(ctx, ctx->gma->scr, newscr);
-			status = knh_load(ctx, path, NULL);
+			status = knh_load(ctx, "pkg", path, NULL);
 			KNH_SETv(ctx, ctx->gma->scr, scr);
 		}
 	}
@@ -843,9 +843,9 @@ static void Bytes_addCOMMENT(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in)
 	}
 }
 
-static knh_InputStream_t* openScriptInputStreamNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static knh_InputStream_t* openScriptInputStreamNULL(CTX ctx, knh_NameSpace_t *ns, const char *scheme, knh_bytes_t path)
 {
-	knh_path_t phbuf, *ph = knh_path_open_(ctx, "script", path, &phbuf);
+	knh_path_t phbuf, *ph = knh_path_open_(ctx, scheme, path, &phbuf);
 	path.text = P_text(ph); path.len = ph->plen;
 	const knh_StreamDSPI_t *dspi = knh_getStreamDSPI(ctx, ns, path);
 	knh_InputStream_t *in = NULL;
@@ -898,10 +898,10 @@ static int readchunk(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
 	return linenum;
 }
 
-KNHAPI2(knh_status_t) knh_load(CTX ctx, knh_bytes_t path, knh_Array_t *resultsNULL)
+KNHAPI2(knh_status_t) knh_load(CTX ctx, const char *scheme, knh_bytes_t path, knh_Array_t *resultsNULL)
 {
 	knh_bool_t res = 0;
-	knh_InputStream_t *in = openScriptInputStreamNULL(ctx, K_GMANS, path);
+	knh_InputStream_t *in = openScriptInputStreamNULL(ctx, K_GMANS, scheme, path);
 	if(in != NULL) {
 		knh_Bytes_t *ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
 		BEGIN_LOCAL(ctx, lsfp, 2);
@@ -944,7 +944,7 @@ knh_status_t konoha_initload(konoha_t konoha, const char *path)
 	KONOHA_CHECK(konoha, 0);
 	CTX ctx = (CTX)konoha.ctx;
 	KONOHA_BEGIN(ctx);
-	status = knh_load(ctx, B(path), NULL);
+	status = knh_load(ctx, "start", B(path), NULL);
 	knh_stack_clear(ctx, ctx->stack);
 	KONOHA_END(ctx);
 	return status;

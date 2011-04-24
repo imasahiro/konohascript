@@ -7,7 +7,7 @@ extern "C" {
 
 
 #ifdef K_INTERNAL
-KNHAPI2(knh_status_t) knh_load(CTX ctx, knh_bytes_t path, knh_Array_t *resultsNULL);
+KNHAPI2(knh_status_t) knh_load(CTX ctx, const char *scheme, knh_bytes_t path, knh_Array_t *resultsNULL);
 KNHAPI2(knh_Array_t*) new_Array(CTX ctx, knh_class_t p1, size_t capacity);
 KNHAPI2(void) knh_Array_add_(CTX ctx, knh_Array_t *a, knh_Object_t *value);
 KNHAPI2(void) knh_Array_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m);
@@ -83,7 +83,7 @@ typedef struct knh_api2_t {
 	knh_bool_t  (*isSystemVerbose)(void);
 	knh_class_t  (*type_tocid)(CTX ctx, knh_type_t ptype, knh_class_t this_cid);
 	knh_param_t*  (*ParamArray_get)(knh_ParamArray_t *pa, size_t n);
-	knh_status_t  (*load)(CTX ctx, knh_bytes_t path, knh_Array_t *resultsNULL);
+	knh_status_t  (*load)(CTX ctx, const char *scheme, knh_bytes_t path, knh_Array_t *resultsNULL);
 	knh_text_t*  (*cwb_tochar)(CTX ctx, knh_cwb_t *cwb);
 	knh_type_t  (*ParamArray_rtype)(knh_ParamArray_t *pa);
 	void (*ResultSet_setBlob)(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t);
@@ -113,7 +113,7 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)-865032160)
+#define K_API2_CRC32 ((size_t)-2054853571)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
