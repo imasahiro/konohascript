@@ -25,7 +25,9 @@ include_directories(${INCLUDE_DIRS})
 
 add_definitions(-D_SETUP)
 
+
 add_library(${PACKAGE_NAME} SHARED ${PACKAGE_SOURCE_CODE})
+set_target_properties(${PACKAGE_NAME} PROPERTIES PREFIX "")
 target_link_libraries(${PACKAGE_NAME} konoha)
 target_link_libraries(${PACKAGE_NAME} ${PACKAGE_EXTRA_LIBRARY})
 
