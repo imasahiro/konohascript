@@ -49,7 +49,6 @@ extern "C" {
 
 static knh_Token_t *Stmt_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt);
 static knh_Token_t *CALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt);
-static knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh_flag_t opflag);
 
 #define STT_DECLFIELD  STT_DECL
 #define STT_DECLSCRIPT STT_DECL
@@ -2908,7 +2907,7 @@ static knh_Term_t *new_TermTYPEMAP(CTX ctx, knh_class_t reqt, knh_TypeMap_t *trl
 #define ERROR_IF(c)     if(c)  goto L_ERROR;
 #define PERROR_IF(c)    if(c)  goto L_PERROR;
 
-static knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh_flag_t opflag)
+knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh_flag_t opflag)
 {
 	knh_flag_t flag = DP(ctx->gma)->flag;
 	knh_Token_t *tkRES = NULL;
@@ -3136,25 +3135,6 @@ static knh_Token_t* IF_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	}
 	return Stmt_typed(ctx, stmt, reqt);
 }
-
-//knh_Stmt_t *knh_StmtIF_decl(CTX ctx, knh_Stmt_t *stmt)
-//{
-//	knh_Stmt_t *thisStmt = NULL; /* Conditional Statement */
-//	if(Tn_typing(ctx, stmt, 0, TYPE_Boolean, _NOTYPEMAP)) {
-//		if(Tn_isTRUE(stmt, 0)) {
-//			knh_Stmt_done(ctx, stmtNN(stmt, 2));
-//			thisStmt = stmtNN(stmt, 1);
-//		}
-//		else if(Tn_isFALSE(stmt, 0)) {
-//			knh_Stmt_done(ctx, stmtNN(stmt, 1));
-//			thisStmt = stmtNN(stmt, 1);
-//		}
-//	}
-//	if(thisStmt == NULL) {
-//		knh_Gamma_perror(ctx, KC_EWARN, _("not static condition"));
-//	}
-//	return thisStmt;
-//}
 
 static knh_Token_t *Tn_it(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t type)
 {

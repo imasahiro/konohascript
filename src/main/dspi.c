@@ -1008,25 +1008,18 @@ void knh_loadScriptDriver(CTX ctx, knh_NameSpace_t *ns)
 	api->addPathDSPI(ctx, ns, "charset", &PATH_CHARSET);
 	api->addPathDSPI(ctx, ns, "to", &PATH_TOPATH);
 	api->addPathDSPI(ctx, ns, "from", &PATH_FROMPATH);
-//	api->addPathDSPI(ctx, ns, "class", &CLASSPATH_DSPI);
-//	api->addPathDSPI(ctx, ns, "method", &METHODPATH_DSPI);
 	api->addPathDSPI(ctx, ns, "file", &PATH_FILE);
-//	api->addPathDSPI(ctx, ns, "dir", &DIRPATH_DSPI);
 	api->addPathDSPI(ctx, ns, "lib", &PATH_LIB);
-
 	api->addPathDSPI(ctx, ns, "pkg", &PATH_PKG);
 	api->addPathDSPI(ctx, ns, "script", &PATH_SCRIPT);
 	api->addPathDSPI(ctx, ns, "start", &PATH_START);
-
 	api->addConvDSPI(ctx, ns, "lower", &TO_lower);
 	api->addConvDSPI(ctx, ns, "upper", &TO_upper);
-
 	api->addStreamDSPI(ctx, ns, NULL, &STREAM_NOFILE);
 	api->addStreamDSPI(ctx, ns, "file", &STREAM_FILE);
 	api->addStreamDSPI(ctx, ns, "pkg", &STREAM_PKG);
 	api->addStreamDSPI(ctx, ns, "script", &STREAM_SCRIPT);
 	api->addStreamDSPI(ctx, ns, "start",  &STREAM_START);
-
 	api->addQueryDSPI(ctx, ns, NULL, &QUERY_NOP);
 #ifdef K_USING_SQLITE3
 	api->addQueryDSPI(ctx, ns, "sqlite3", &QUERY_SQLITE3);
