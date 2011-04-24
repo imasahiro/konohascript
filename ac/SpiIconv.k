@@ -1,5 +1,5 @@
 
 assure "UnitTest:SpiIconv" {
-	assert charset:SJIS;
+	assert exists charset:SJIS;
 }
 

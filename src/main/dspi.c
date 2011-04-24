@@ -77,6 +77,7 @@ static knh_bool_t CHARSET_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path,
 	iconv_t ic = ctx->spi->iconv_open(t.text, K_ENCODING);
 	if(ic != (iconv_t)(-1)) {
 		ctx->spi->iconv_close(ic);
+		return 1;
 	}
 	else if(knh_bytes_strcasecmp(t, STEXT(K_ENCODING)) == 0) {
 		return 1;

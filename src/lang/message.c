@@ -199,11 +199,9 @@ void WARN_Unsupported(CTX ctx, const char *msg)
 {
 	Gamma_perror(ctx, KC_DWARN, _("unsupported %s"), msg);
 }
-
 void BadPracticeSemicolon(CTX ctx)
 {
-	if(!CTX_isInteractive(ctx))
-		Gamma_perror(ctx, KC_BAD, "needs ;");
+	if(!CTX_isInteractive(ctx)) Gamma_perror(ctx, KC_BAD, "needs ;");
 }
 void WarningUnexpectedCharacter(CTX ctx)
 {
@@ -516,12 +514,6 @@ knh_Token_t* ErrorFinalMethod(CTX ctx, knh_class_t cid, knh_methodn_t mn)
 {
 	return Gamma_perror(ctx, KC_ERR, _("%C.%M is final"), cid, mn);
 }
-//void WarningMethodOverridden(CTX ctx, knh_class_t mtd_cid, knh_methodn_t mn)
-//{
-//	if(!CTX_isInteractive(ctx)) {
-//		knh_Gamma_perror(ctx, KC_DWARN, _("%C.%M is overridden"), mtd_cid, mn);
-//	}
-//}
 knh_Token_t* ErrorDifferentlyDefinedMethod(CTX ctx, knh_class_t mtd_cid, knh_methodn_t mn)
 {
 	return Gamma_perror(ctx, KC_TERROR, _("%C.%M must be defined the same"), mtd_cid, mn);
