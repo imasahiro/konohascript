@@ -1100,9 +1100,9 @@ static METHOD OutputStream_println(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## method void OutputStream.opSEND(String s, ...);
+//## method void OutputStream.send(String s, ...);
 
-static METHOD OutputStream_opSEND(CTX ctx, knh_sfp_t *sfp _RIX)
+static METHOD OutputStream_send(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	knh_sfp_t *v = sfp + 1;

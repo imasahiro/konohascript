@@ -237,7 +237,7 @@ static knh_term_t TT_ch(int ch)
 static int isTYPE(knh_Token_t *tk)
 {
 	knh_term_t tt = TT_(tk);
-	return (tt == TT_PTYPE || tt == TT_UNAME || (TT_TYPEOF <= tt && tt <= TT_DYNAMIC));
+	return (tt == TT_PTYPE || tt == TT_UNAME || (TT_TYPEOF <= tt && tt <= TT_DYN));
 }
 
 static knh_Token_t *new_TokenCID(CTX ctx, knh_class_t cid)
@@ -377,19 +377,25 @@ static void Token_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
 		}
 	}
 	if(isTYPE(tkPREV)) {
-		if(TT_(tk) == TT_ITR) {  // String..
-			KNH_SETv(ctx, a->list[prev_idx], new_TokenPTYPE(ctx, CLASS_Iterator, tkPREV));
-			goto L_JOIN1;
-		}
 		if(TT_(tk) == TT_BRANCET && IS_NULL((tk)->data)) { // String[]
 			KNH_SETv(ctx, a->list[prev_idx], new_TokenPTYPE(ctx, CLASS_Array, tkPREV));
 			goto L_JOIN1;
 		}
-		if(TT_(tk) == TT_CODE && S_size((tk)->text) == 0) { // String{}
-			KNH_SETv(ctx, a->list[prev_idx], new_TokenPTYPE(ctx, CLASS_Map, tkPREV));
+		if(TT_(tk) == TT_ITR) {  // String..
+			KNH_SETv(ctx, a->list[prev_idx], new_TokenPTYPE(ctx, CLASS_Iterator, tkPREV));
 			goto L_JOIN1;
 		}
-		if(TT_(tk) == TT_GT || TT_(tk) == TT_RSFT || TT_(tk) == TT_RECV) { // String> or String>>
+		if(TT_(tk) == TT_DMUL) { // String** => Thunk<String>
+			KNH_SETv(ctx, a->list[prev_idx], new_TokenPTYPE(ctx, CLASS_Thunk, tkPREV));
+			goto L_JOIN1;
+		}
+#ifdef CLASS_Immutable
+		if(TT_(tk) == TT_TSTR && S_size(tk->text) == 0) { // String'' => Immutable<String>
+			KNH_SETv(ctx, a->list[prev_idx], new_TokenPTYPE(ctx, CLASS_Immutable, tkPREV));
+			goto L_JOIN1;
+		}
+#endif
+		if(TT_(tk) == TT_GT || TT_(tk) == TT_RSFT || TT_(tk) == TT_RSEND) { // String> or String>>
 			tkitr_t itrbuf, *itr = ITR_new(tkB, &itrbuf);
 			if(ITR_findPTYPE(itr)) {
 				knh_Token_t *tkT = new_Token(ctx, TT_PTYPE);
@@ -403,7 +409,7 @@ static void Token_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
 					ITR_next(itr);
 				}
 				KNH_SETv(ctx, a->list[prev_idx], tkT);
-				if(TT_(tk) == TT_RECV) {
+				if(TT_(tk) == TT_RSEND) {
 					TT_(tk) = TT_RSFT;
 					tkPREV = tkT;
 					KNH_SETv(ctx, a->list[prev_idx+1], tk);
@@ -3071,6 +3077,65 @@ static int Token_isMAP(CTX ctx, knh_Token_t *tk)
 	return isMAP;
 }
 
+static void _STMTEXPR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
+{
+	knh_index_t idx = ITR_indexTT(itr, TT_LET, -1);
+	if(idx != -1) {
+		int comma = ITR_count(itr, TT_COMMA);
+		if(comma > 0) {  //  check multiple assingment
+			tkitr_t lbuf, *litr = ITR_first(itr, idx, &lbuf, +1);
+			int lcomma = ITR_count(litr, TT_COMMA);
+			if(lcomma == comma) {  // @CODE: a, b = t
+				STT_(stmt) = STT_LETM;
+				_EXPRs(ctx, stmt, litr);
+				_EXPR(ctx, stmt, itr);
+			}
+			else if(lcomma * 2 == comma) {   // @CODE: a, b = b, a
+				STT_(stmt) = STT_SWAP;
+				_EXPRs(ctx, stmt, litr);
+				_EXPRs(ctx, stmt, itr);
+			}
+			else {
+				knh_Stmt_toERR(ctx, stmt, ERROR_text(ctx,  "mismatched assignment" K_TRACEPOINT));
+			}
+			return;
+		}
+		else if(ITR_is(itr, TT_UNAME) && itr->c+1 == idx) {
+			STT_(stmt) = STT_CONST;
+			ITR_replace(itr, TT_LET, TT_COMMA);
+			_EXPRs(ctx, stmt, itr);
+			return;
+		}
+		_EXPR(ctx, stmt, itr);
+		return;
+	}
+	idx = ITR_indexTT(itr, TT_LSEND, -1);
+	if(idx != -1) {
+		STT_(stmt) = STT_SEND;
+		knh_Stmt_add(ctx, stmt, new_TokenMN(ctx, MN_send));
+		ITR_replace(itr, TT_LSEND, TT_COMMA);
+		_EXPRs(ctx, stmt, itr);
+		return;
+	}
+	idx = ITR_indexTT(itr, TT_RSEND, -1);
+	if(idx != -1) {
+		int e = itr->e;
+		itr->e = idx;
+		_EXPR(ctx, stmt, itr);
+		if(STT_(stmt) == STT_FUNCCALL) {
+			itr->c = idx + 1; itr->e = e;
+			KNH_SETv(ctx, stmtNN(stmt, 1), new_StmtMETA(ctx, STT_CALL1, itr, 0, _EXPR, NULL));
+		}
+		else {
+			if(STT_(stmt) != STT_ERR) {
+				knh_Stmt_toERR(ctx, stmt, ERROR_text(ctx,  "message should be sent" K_TRACEPOINT));
+			}
+		}
+		return;
+	}
+	_EXPR(ctx, stmt, itr);
+}
+
 static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 {
 	knh_term_t tt;
@@ -3125,7 +3190,7 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 				break;
 			}
 		}
-		case TT_VAR: case TT_PTYPE: case TT_DYNAMIC:
+		case TT_VAR: case TT_PTYPE: case TT_DYN:
 		case TT_TYPEOF: case TT_BYTE:
 		case TT_UNAME: {
 			tkitr_t mbuf, *mitr = ITR_copy(itr, &mbuf, +1);
@@ -3164,44 +3229,14 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 			}
 			break /*L_EXPR*/;
 		}
-		case TT_PROPN:
-		case TT_NAME: {
-			tkitr_t sbuf, *sitr = ITR_stmt(ctx, itr, /*pos*/0, &sbuf, 0/*needs;*/);
-			int comma = ITR_count(sitr, TT_COMMA);
-			if(comma > 0) {  //  check multiple assingment
-				int idx = ITR_indexTT(sitr, TT_LET, itr->e);
-				knh_Token_t *tkLET = sitr->ts[idx];
-				tkitr_t lbuf, *litr = ITR_first(sitr, idx, &lbuf, +1);
-				int lcomma = ITR_count(litr, TT_COMMA);
-				if(lcomma == comma) {  // @CODE: a, b = t
-					stmt = new_StmtMETA(ctx, STT_LETM, litr, 0, _EXPRs, NULL);
-					if(STT_(stmt) != STT_ERR) {
-						_EXPR(ctx, stmt, sitr);
-					}
-				}
-				else if(lcomma * 2 == comma) {   // @CODE: a, b = a, b
-					stmt = new_StmtMETA(ctx, STT_SWAP, litr, 0, _EXPRs, NULL);
-					if(STT_(stmt) != STT_ERR) {
-						_EXPRs(ctx, stmt, sitr);
-					}
-				}
-				else {
-					stmt = new_StmtMETA(ctx, STT_CALL, sitr, 0, NULL);
-					knh_Stmt_toERR(ctx, stmt, ERROR_Token(ctx,  tkLET K_TRACEPOINT));
-				}
-				break;
-			}
-			else {
-				itr->c = sitr->c;
-			}
-			break; // EXPR
-		}
 		case TT_UFUNCNAME: {
 			if(ITR_isN(itr, +2, TT_CODE)) {
 				stmt = new_StmtMETA(ctx, STT_METHOD, itr, 0, _CONSTRUCTOR, NULL);
 				break;
 			}
 		}
+		case TT_PROPN:
+		case TT_NAME:
 		case TT_FUNCNAME:
 		case TT_FMT:
 		case TT_PARENTHESIS:
@@ -3226,7 +3261,7 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 	}
 	if(stmt == NULL) {
 		tkitr_t sbuf, *sitr = ITR_stmt(ctx, itr, /*pos*/0, &sbuf, 0/*needs;*/);
-		stmt = new_StmtMETA(ctx, STT_CALL1, sitr, 0, _EXPR, NULL);
+		stmt = new_StmtMETA(ctx, STT_CALL1, sitr, 0, _STMTEXPR, NULL);
 	}
 	L_RETURN:;
 	return stmt;

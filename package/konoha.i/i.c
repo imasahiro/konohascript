@@ -101,7 +101,7 @@ static char *MNOP__(knh_methodn_t mn)
 	case MN_opGTE:  return "x >= y";
 
 	case MN_opLSFT:  return "x << y";
-	case MN_opSEND:  return "x <<< y";
+	case MN_send:  return "x <<< y";
 	case MN_opRSFT:  return "x >> y";
 
 	case MN_opMOD:  return "x mod y";

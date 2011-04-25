@@ -8,9 +8,10 @@ BLOCK     _BLOCK
 pragma    _NOCHECK
 namespace _BLOCK
 script    _BLOCK
-macro     _NAME _PARAM _BLOCK
+defmacro  _NAME _PARAM _BLOCK
 include   _NOCHECK
-#import   0
+allow     _CNAME _MEXPR
+deny      _CNAME _MEXPR
 using     _NOCHECK
 class     _CNAME _PARAM _CNAME _NOCHECK _
 format    _NOCHECK
@@ -39,17 +40,17 @@ DECL      _TYPE  _NAME  _EXPR
 CHKOUT    _NOCHECK
 LETM      _NOCHECK
 SWAP      _NOCHECK
-CMD       _NOCHECK
+CONST     _NOCHECK
 ERR       _ERR
 
 # @expr: let - call1
 LET         _      _NAME  _EXPR
+TCAST       _CNAME _      _EXPR
+OP          _OP    _EXPR  _EXPR
 CALL        _NAME  _EXPR  _MEXPR
 NEW         _NAME  _CNAME _MEXPR
 FUNCCALL    _EXPR  _      _MEXPR
-OP          _OP    _EXPR  _EXPR
-#FMTOP      _STR   _     _EXPR
-TCAST       _CNAME  _     _EXPR
+ACALL       _NAME  _      _MEXPR
 TSCHEME       _
 ALT         _EXPR  _EXPR
 TRI         _EXPR  _EXPR  _EXPR
@@ -68,7 +69,8 @@ pragma    0     _FUTURE
 namespace 0     _STMT
 script    0     _STMT
 include   0     _FILE
-include   0     _FUNCNAME _PARAM _STMT0
+allow     0     _CNAME _MEXPR
+deny      0     _CNAME _MEXPR
 using     0     _FUTURE
 class     0     _CLASS
 return    0     _EXPR
@@ -139,8 +141,11 @@ finally    -         0
 =>         TT_DARROW     0
 -->        TT_TARROW     0
 ==>        TT_TDARROW    0
-...        TT_DOTS       0
 !!         TT_EXPT       0
+<<<        TT_LSEND      0
+>>>        TT_RSEND      0
+...        TT_DOTS       0
+**         TT_DMUL       0
 
 #beg_inexpr
 _    TT_ASIS       0
@@ -152,7 +157,7 @@ typeof     -       0
 void       -       0
 var        -       0
 byte       -       0
-dynamic    -       0
+dyn        -       0
 true       -       0
 false      -       0
 
@@ -178,8 +183,8 @@ false      -       0
 OPTOKEN = '''
 #                       FLAG   PRI
 =       TT_LET          0      2       MN_NONAME
-<<<     TT_SEND         0      2       MN_opSEND
->>>     TT_RECV         0      2       MN_NONAME
+#<<<     TT_SEND         0      2       MN_send
+#>>>     TT_RECV         0      2       MN_NONAME
 #a = a >>> function(it) {
 #}
 
@@ -196,9 +201,9 @@ to      TT_TO           0      7       MN_opTO
 as      TT_AS           0      7       MN_NONAME
 until   TT_UNTIL        0      7       MN_opUNTIL
 
-#define TT_isBINARY(tt) (TT_IS <= (tt) && (tt) <= TT_RSFT)
+#define    TT_isBINARY(tt) (TT_IS <= (tt) && (tt) <= TT_RSFT)
 is?        TT_IS        _BIN    10      MN_opIS
-instanceof TT_OF        _BIN    10      MN_opOF
+<:         TT_OF        _BIN    10      MN_opOF
 in?        TT_IN        _BIN    10      MN_opHAS
 ==         TT_EQ        _BIN    10      MN_opEQ
 !=         TT_NEQ       _BIN    10      MN_opNOTEQ
@@ -276,7 +281,7 @@ mod     %
 &&      and
 !       not
 ===     is
-<:      instanceof
+instanceof   <:
 
 char    Int
 short   Int
@@ -286,7 +291,7 @@ float   Float
 double  Float
 boolean Boolean
 string  String
-def     var
+def     function
 ArrayList Array
 Integer Int
 
@@ -556,7 +561,7 @@ knh_methodn_t TT_toMN(knh_term_t tt)
 
 const char* knh_getopname(knh_methodn_t mn)
 {
-	DBG_ASSERT(mn + TT_SEND <= TT_TSUB);
+	DBG_ASSERT(mn + TT_NOT <= TT_TSUB);
 	return OPNAME[mn];
 }
 

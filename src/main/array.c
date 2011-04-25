@@ -419,7 +419,7 @@ static METHOD Array_setAll(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 //## method void Array.add(T1 value, ...);
-//## method void Array.opSEND(T1 value, ...);
+//## method void Array.send(T1 value, ...);
 
 static METHOD Array_add(CTX ctx, knh_sfp_t *sfp _RIX)
 {

@@ -263,7 +263,7 @@ knh_class_t knh_Token_cid(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 			break;
 		}
 		case TT_VOID: cid = CLASS_Tvoid; break;
-		case TT_DYNAMIC: cid = CLASS_Tdynamic; break;
+		case TT_DYN: cid = CLASS_Tdynamic; break;
 		case TT_BYTE: {
 			WARN_MuchBetter(ctx, "int");
 			cid = CLASS_Int;
@@ -2632,21 +2632,6 @@ static knh_Token_t* OP_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	{
 		knh_Stmt_swap(ctx, stmt, 1, 2);
 		mtd_cid = Tn_cid(stmt, 1);
-		goto L_LOOKUPMETHOD;
-	}
-
-	case MN_opSEND:
-	{
-		mtd_cid = Tn_cid(stmt, 1);
-		if(mtd_cid == CLASS_OutputStream) {
-			size_t i;
-			TYPING(ctx, stmt, 1, mtd_cid, 0);
-			for(i = 2; i < DP(stmt)->size; i++) {
-				TYPING(ctx, stmt, i, TYPE_var, 0);
-			}
-			STT_(stmt) = STT_SEND;
-			return Stmt_typed(ctx, stmt, TYPE_void);
-		}
 		goto L_LOOKUPMETHOD;
 	}
 

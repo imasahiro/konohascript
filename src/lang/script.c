@@ -119,8 +119,6 @@ knh_class_t knh_NameSpace_getFuncClass(CTX ctx, knh_NameSpace_t *ns, knh_methodn
 	return CLASS_unknown; /* if not found */
 }
 
-/* ------------------------------------------------------------------------ */
-
 knh_type_t knh_NameSpace_gettype(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t name)
 {
 	if(name.utext[0] == 'v') {
@@ -132,8 +130,6 @@ knh_type_t knh_NameSpace_gettype(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t name)
 	}
 	return knh_NameSpace_getcid(ctx, ns, name);
 }
-
-/* ------------------------------------------------------------------------ */
 
 knh_type_t knh_NameSpace_tagcid(CTX ctx, knh_NameSpace_t *o, knh_class_t cid, knh_bytes_t tag)
 {
@@ -982,11 +978,9 @@ KNHAPI2(knh_status_t) knh_load(CTX ctx, const char *scheme, knh_bytes_t path, kn
 					fprintf(stderr, "\n>>>--------------------------------\n");
 					fprintf(stderr, "%s<<<--------------------------------\n", knh_Bytes_ensureZero(ctx, ba));
 				});
-				if(knh_eval(ctx, bin, resultsNULL) == 0) {
-					break;
-				}
+				status  = knh_eval(ctx, bin, resultsNULL);
 			}
-		} while(BA_size(ba) > 0);
+		} while(BA_size(ba) > 0 && status == K_CONTINUE);
 		END_LOCAL_(ctx, lsfp);
 	}
 	return status;
