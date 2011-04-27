@@ -1,12 +1,12 @@
 # Makefile for macosx
 #
 
-CC = MACOSX_DEPLOYMENT_TARGET=10.5 gcc
-CFLAGS ?= -O2 -Wall -fPIC -I./include
+CC ?= MACOSX_DEPLOYMENT_TARGET=10.5 /usr/bin/gcc
+CFLAGS ?= -O0 -g3 -Wall -fPIC -I./include
 #CFLAGS ?= -g3 -O0 -Wall -fPIC -I./include -DK_USING_DEBUG
 
-ARCH = -arch i386 -arch x86_64
-LDLIBS ?= $(dir)/libpcre_macosx.a -liconv -lsqlite3 -lpthread
+ARCH ?= -arch i386 -arch x86_64
+LDLIBS ?= -lpcre -liconv -lsqlite3 -lpthread
 STRIP = strip
 
 konoha = konoha1
@@ -53,14 +53,25 @@ objs = \
 	$(dir)/thread.o\
 	$(dir)/mt19937ar.o \
 
+svnversion_exists := $(shell which svnversion)
+define compile_with_revision
+	$(CC) -DK_REVISION=$(shell $(svnversion_exists) -n ./ | sed -e 's/[MSP]//')
+endef
+
+define compile
+	$(CC) -DK_REVISION=$(shell $(svnversion_exists) -n ./)
+endef
+
+MYCC =$(if $(svnversion_exists) ,$(compile_with_revision), $(compile))
+
 .PHONY: all
 all: $(dir)/$(konoha) $(packages)
 
 $(dir)/$(konoha) : src/konoha.c $(dir)/lib$(konoha).dylib $(dir)/lib$(konoha).a
-	$(CC) $(CFLAGS) $(ARCH) -o $@ src/konoha.c -L./$(dir) -l$(konoha) 
+	$(MYCC) $(CFLAGS) $(ARCH) -o $@ src/konoha.c -L./$(dir) -l$(konoha) 
 
 $(dir)/lib$(konoha).dylib : $(objs)
-	$(CC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -install_name /usr/local/lib/lib$(konoha).dylib -o $@ $^ $(LDLIBS)
+	$(MYCC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -install_name /usr/local/lib/lib$(konoha).dylib -o $@ $^ $(LDLIBS)
 
 $(dir)/lib$(konoha).a: $(objs)
 	$(AR) rv $@ $^
@@ -68,94 +79,94 @@ $(dir)/lib$(konoha).a: $(objs)
 ## object files
 
 $(dir)/asm.o : src/lang/asm.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/term.o : src/lang/term.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@	
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@	
 
 $(dir)/typing.o : src/lang/typing.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/script.o : src/lang/script.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/vmcodelibs.o : src/lang/vmcodelibs.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/message.o : src/lang/message.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/array.o : src/main/array.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/bytes.o : src/main/bytes.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/class.o : src/main/class.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/closure.o : src/main/closure.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/context.o: src/main/context.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/evidence.o : src/main/evidence.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/exports.o : src/main/exports.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/map.o : src/main/map.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/memory.o: src/main/memory.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/number.o : src/main/number.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/os.o: src/main/os.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/query.o : src/main/query.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/runtime.o : src/main/runtime.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/security.o : src/main/security.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/semantics.o: src/main/semantics.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/ffi.o : src/main/ffi.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/stack.o: src/main/stack.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/stream.o : src/main/stream.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/string.o : src/main/string.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/struct.o : src/main/struct.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/system.o : src/main/system.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/thread.o: src/main/thread.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/mt19937ar.o : src/ext/mt19937ar.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/konoha.o : src/konoha.c
-	$(CC) $(CFLAGS) $(ARCH) -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 ## konoha.i interactive mode
 
@@ -163,40 +174,40 @@ LDLIBS_libi =
 objs_i = $(dir)/i.o\
 	
 $(dir)/i.dylib: $(objs_i)
-	$(CC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -o $@ $^ $(LDLIBS_libi)
+	$(MYCC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -o $@ $^ $(LDLIBS_libi)
 	
 $(dir)/i.o : package/konoha.i/i.c
-	$(CC) $(CFLAGS) $(ARCH) -D_SETUP -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -D_SETUP -c $^ -o $@
 
 ## math
 LDLIBS_libmath = -lm
 objs_math = $(dir)/math.o
 	
 $(dir)/math.dylib: $(objs_math)
-	$(CC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -o $@ $^ $(LDLIBS_libmath)
+	$(MYCC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -o $@ $^ $(LDLIBS_libmath)
 	
 $(dir)/math.o : package/konoha.math/math.c
-	$(CC) $(CFLAGS) $(ARCH) -D_SETUP -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -D_SETUP -c $^ -o $@
 
 ## socket
 LDLIBS_libsocket = 
 objs_socket = $(dir)/socket.o
 	
 $(dir)/socket.dylib: $(objs_socket)
-	$(CC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -o $@ $^ $(LDLIBS_libsocket)
+	$(MYCC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -o $@ $^ $(LDLIBS_libsocket)
 
 $(dir)/socket.o : package/konoha.socket/socket_posix.c
-	$(CC) $(CFLAGS) $(ARCH) -D_SETUP -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -D_SETUP -c $^ -o $@
 
 ## posix
 LDLIBS_libposix = 
 objs_posix = $(dir)/posix.o
 	
 $(dir)/posix.dylib: $(objs_posix)
-	$(CC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -o $@ $^ $(LDLIBS_libposix)
+	$(MYCC) $(CFLAGS) $(ARCH) -dynamiclib $(LIBVER) -o $@ $^ $(LDLIBS_libposix)
 
 $(dir)/posix.o : package/konoha.posix/posix.c
-	$(CC) $(CFLAGS) $(ARCH) -D_SETUP -c $^ -o $@
+	$(MYCC) $(CFLAGS) $(ARCH) -D_SETUP -c $^ -o $@
 
 ## install
 .PHONY: install
