@@ -27,15 +27,8 @@
 
 /* ************************************************************************ */
 
-#define USE_STEXT   1
-#define USE_bytes_index       1
-#define USE_bytes_first       1
-#define USE_bytes_equals      1
-#define USE_bytes_startsWith  1
-
-#define USE_cwb_open      1
-#define USE_cwb_tobytes   1
-#define USE_cwb_size      1
+#define USE_bytes   1
+#define USE_cwb     1
 
 #include"commons.h"
 
@@ -846,6 +839,9 @@ static int bytes_isOPR(knh_bytes_t t, int ch)
 		case '~':
 			if(ISB1_(t, '=')) return 1;  /* ~= */
 			return 0;
+		case ':':
+			if(ISB1_(t, '<')) return 1;  /* <: */
+			return 0;
 		}
 	}
 	else if(t.len == 2) {
@@ -955,7 +951,6 @@ static int Token_addURN(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStrea
 {
 	int ch = knh_InputStream_getc(ctx, in);
 	if(ch == '+') {  /* hoge:+ */
-		//knh_Bytes_putc(ctx, cwb->ba, ':');
 		ch = knh_InputStream_getc(ctx, in);
 		Token_addBuf(ctx, tk, cwb, TT_TSCHEME, ch);
 		return ch;
@@ -1205,7 +1200,6 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 		case '#':
 			ch = Token_addQUOTE(ctx, tkB, cwb, in, ch, 0/*isRAW*/);
 			goto L_AGAIN;
-
 		case '$':
 			ch = Token_addPROPN(ctx, tkB, cwb, in);
 			goto L_AGAIN;
@@ -1959,7 +1953,7 @@ static void ITR_toLET(CTX ctx, tkitr_t *itr, knh_Token_t *tk)
 
 static void _EXPROP(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, int idx, int isCAST)
 {
-	knh_term_t stt = STT_OP;
+	knh_term_t stt = STT_OPR;
 	knh_Token_t *tkOP = itr->ts[idx];
 	knh_term_t tt = TT_(tkOP);
 	if(ITR_size(itr) == 1) {
@@ -2033,7 +2027,7 @@ static void _EXPROP(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, int idx, int isCAST
 	default: {
 		L_OPR:;
 		knh_Stmt_t *stmtOPR = new_StmtREUSE(ctx, stmt, stt);
-		if(stt == STT_OP) {
+		if(stt == STT_OPR) {
 			knh_Stmt_add(ctx, stmtOPR, tkOP);
 		}
 		if(TT_isBINARY(tt)) {

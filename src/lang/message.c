@@ -143,7 +143,7 @@ knh_Token_t* ERROR_NotFound(CTX ctx, const char *whatis, const char *t)
 {
 	return Gamma_perror(ctx, KC_ERR, _("%s not found %s"), whatis, t);
 }
-void WARNING_NotFound(CTX ctx, const char *whatis, const char *t)
+void WARN_NotFound(CTX ctx, const char *whatis, const char *t)
 {
 	Gamma_perror(ctx, KC_DWARN, _("%s not found %s"), whatis, t);
 }
@@ -191,14 +191,6 @@ static knh_Token_t *knh_Token_toERR(CTX ctx, knh_Token_t *tk, const char *fmt, .
 	return tk;
 }
 
-knh_Token_t* ERROR_Unsupported(CTX ctx, const char *msg)
-{
-	return Gamma_perror(ctx, KC_ERR, _("unsupported %s"), msg);
-}
-void WARN_Unsupported(CTX ctx, const char *msg)
-{
-	Gamma_perror(ctx, KC_DWARN, _("unsupported %s"), msg);
-}
 void BadPracticeSemicolon(CTX ctx)
 {
 	if(!CTX_isInteractive(ctx)) Gamma_perror(ctx, KC_BAD, "needs ;");
@@ -289,9 +281,9 @@ void WARN_UndefinedName(CTX ctx, knh_Token_t *tk)
 {
 	Gamma_perror(ctx, KC_EWARN, _("undefined name: %O"), tk);
 }
-knh_Token_t* ErrorTokenAlreadyDefinedName(CTX ctx, knh_Token_t *tk)
+void WARN_AlreadyDefined(CTX ctx, knh_Token_t *tk)
 {
-	return knh_Token_toERR(ctx, tk, _("already defined: %L"), tk);
+	Gamma_perror(ctx, KC_DWARN, _("already defined: %O"), tk);
 }
 knh_Token_t* ERROR_Denied(CTX ctx, const char *why, knh_Token_t *tk)
 {
@@ -362,10 +354,6 @@ knh_Token_t* ErrorTooManyVariables(CTX ctx)
 {
 	return Gamma_perror(ctx, KC_ERR, _("too many variables"));
 }
-knh_Token_t* ErrorMustBeConst(CTX ctx)
-{
-	return Gamma_perror(ctx, KC_ERR, _("must be constant"));
-}
 //void WarningTooManyReturnValues(CTX ctx)
 //{
 //	Gamma_perror(ctx, KC_DWARN, _("too many return values"));
@@ -391,10 +379,22 @@ knh_Token_t* ErrorNotStaticMethod(CTX ctx, knh_Method_t *mtd)
 {
 	return Gamma_perror(ctx, KC_ERR, _("not static: %C.%M"), (mtd)->cid, (mtd)->mn);
 }
-//knh_Token_t* ErrorUndefinedClassConst(CTX ctx, knh_Token_t *tk, knh_bytes_t name)
-//{
-//	return Gamma_perror(ctx, KC_TERROR, "undefined const: %L.%B", tk, name);
-//}
+knh_Token_t *ERROR_Unsupported(CTX ctx, const char *whatis, knh_class_t cid, const char *symbol)
+{
+	if(symbol == NULL) {
+		return Gamma_perror(ctx, KC_ERR, "unsupported %s", whatis);
+	}
+	else if(cid == CLASS_unknown) {
+		return Gamma_perror(ctx, KC_ERR, "unsupported %s: %s", whatis, symbol);
+	}
+	else {
+		return Gamma_perror(ctx, KC_ERR, "unsupported %s: %s in %C", whatis, symbol, cid);
+	}
+}
+void WARN_Unsupported(CTX ctx, const char *msg)
+{
+	Gamma_perror(ctx, KC_DWARN, _("unsupported %s"), msg);
+}
 void WARN_Ignored(CTX ctx, const char *whatis, knh_class_t cid, const char *symbol)
 {
 	if(symbol == NULL) {
@@ -411,25 +411,17 @@ void WarningUnnecessaryOperation(CTX ctx, const char *msg)
 {
 	Gamma_perror(ctx, KC_DWARN, "unnecessary operation: %s", msg);
 }
-//knh_Token_t* ErrorUndefinedMethod2(CTX ctx, knh_class_t mtd_cid, knh_methodn_t mn)
-//{
-//	return Gamma_perror(ctx, KC_ERR, _("undefined method: %C.%M"), mtd_cid, mn);
-//}
 void WarningTooManyParameters(CTX ctx)
 {
 	Gamma_perror(ctx, KC_DWARN, _("too many parameters"));
 }
-knh_Token_t* ERROR_Needs(CTX ctx, const char *what)
+knh_Token_t* ERROR_Needs(CTX ctx, const char *whatis)
 {
-	return Gamma_perror(ctx, KC_ERR, _("needs %s"), what);
+	return Gamma_perror(ctx, KC_ERR, _("%s is necessary"), whatis);
 }
-//knh_Token_t* ErrorUnknownConstructor(CTX ctx, knh_Token_t *tk, knh_class_t mtd_cid)
-//{
-//	return Gamma_perror(ctx, KC_ERR, _("unknown constructor: %L %C(...)"), tk, mtd_cid);
-//}
-knh_Token_t* ErrorMustBinaryOperator(CTX ctx, const char*opname)
+knh_Token_t* ERROR_MustBe(CTX ctx, const char *whatis, const char* token)
 {
-	return Gamma_perror(ctx, KC_ERR, "%s must be binary operator", opname);
+	return Gamma_perror(ctx, KC_ERR, "%s must be %s", token, whatis);
 }
 void WarningNullable(CTX ctx, knh_class_t cid)
 {
@@ -439,12 +431,7 @@ knh_Token_t* ErrorComparedDiffrentType(CTX ctx, knh_type_t t1, knh_type_t t2)
 {
 	return Gamma_perror(ctx, KC_TERROR, _("comparison of different type: %T %T"), t1, t2);
 }
-knh_Token_t* ERROR_UnsupportedOperator(CTX ctx, const char *opname, knh_class_t mtd_cid)
-{
-	return Gamma_perror(ctx, KC_ERR, _("unsupported %s in %C"), opname, mtd_cid);
-}
 /* type error */
-
 knh_Token_t *TERROR_Token(CTX ctx, knh_Token_t *tk, knh_class_t type, knh_class_t reqt)
 {
 	return knh_Token_toERR(ctx, tk, ("%O has type %T, not %T"), tk, type, reqt);
@@ -521,9 +508,9 @@ knh_Token_t* ErrorDifferentlyDefinedMethod(CTX ctx, knh_class_t mtd_cid, knh_met
 
 /* ------------------------------------------------------------------------ */
 
-knh_Token_t* ErrorMisplacedStmt(CTX ctx, const char* stmt)
+knh_Token_t* ERROR_OnlyTopLevel(CTX ctx, const char* stmt)
 {
-	return Gamma_perror(ctx, KC_ERR, _("don't use %s HERE"), stmt);
+	return Gamma_perror(ctx, KC_ERR, _("available only at the top level: %s"), stmt);
 }
 knh_Token_t* ErrorUndefinedLabel(CTX ctx, knh_Token_t *tk)
 {

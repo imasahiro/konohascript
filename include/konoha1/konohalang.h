@@ -77,7 +77,7 @@
 #define STT_ERR  ((knh_term_t)37)
 #define STT_LET  ((knh_term_t)38)
 #define STT_TCAST  ((knh_term_t)39)
-#define STT_OP  ((knh_term_t)40)
+#define STT_OPR  ((knh_term_t)40)
 #define STT_CALL  ((knh_term_t)41)
 #define STT_NEW  ((knh_term_t)42)
 #define STT_FUNCCALL  ((knh_term_t)43)
@@ -283,7 +283,7 @@ static TERMDATA_t TERMDATA[] = {
 	{"ERR", 0, -1}, 
 	{"LET", 0, -1}, 
 	{"TCAST", 0, -1}, 
-	{"OP", 0, -1}, 
+	{"OPR", 0, -1}, 
 	{"CALL", 0, -1}, 
 	{"NEW", 0, -1}, 
 	{"FUNCCALL", 0, -1}, 

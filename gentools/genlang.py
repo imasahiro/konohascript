@@ -46,7 +46,7 @@ ERR       _ERR
 # @expr: let - call1
 LET         _      _NAME  _EXPR
 TCAST       _CNAME _      _EXPR
-OP          _OP    _EXPR  _EXPR
+OPR         _OP    _EXPR  _EXPR
 CALL        _NAME  _EXPR  _MEXPR
 NEW         _NAME  _CNAME _MEXPR
 FUNCCALL    _EXPR  _      _MEXPR

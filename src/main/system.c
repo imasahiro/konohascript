@@ -605,18 +605,18 @@ static METHOD Exception_opOF(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNb_(isa);
 }
 
-/* ------------------------------------------------------------------------ */
-//## @Hidden @Const method dynamic NameSpace.setConst(String name, Object value);
-
-static METHOD NameSpace_setConst(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_NameSpace_t *ns = sfp[0].ns;
-	if(DP(ns)->constDictCaseMapNULL == NULL) {
-		KNH_INITv(DP(ns)->constDictCaseMapNULL, new_DictMap0(ctx, 0, 1/*isCaseMap*/, "NameSpace.lconstDictMap"));
-	}
-	DictMap_set_(ctx, DP(ns)->constDictCaseMapNULL, sfp[1].s, sfp[2].o);
-	RETURNa_(sfp[2].o);
-}
+///* ------------------------------------------------------------------------ */
+////## @Hidden @Const method dynamic NameSpace.setConst(String name, Object value);
+//
+//static METHOD NameSpace_setConst(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_NameSpace_t *ns = sfp[0].ns;
+//	if(DP(ns)->constDictCaseMapNULL == NULL) {
+//		KNH_INITv(DP(ns)->constDictCaseMapNULL, new_DictMap0(ctx, 0, 1/*isCaseMap*/, "NameSpace.lconstDictMap"));
+//	}
+//	DictMap_set_(ctx, DP(ns)->constDictCaseMapNULL, sfp[1].s, sfp[2].o);
+//	RETURNa_(sfp[2].o);
+//}
 
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Const method dynamic Class.setConst(String name, Object value);

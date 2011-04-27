@@ -1361,7 +1361,7 @@ static knh_bool_t OPR_hasCONST(CTX ctx, knh_Stmt_t *stmt, knh_methodn_t *mn, int
 
 static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx);
 
-static int OP_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
+static int OPR_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
 	int local = ASML(sfpidx);
 	knh_Method_t *mtd = (tkNN(stmt, 0))->mtd;
@@ -2156,7 +2156,7 @@ static void EXPR_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	CASE_ASM(FUNCCALL, reqt, sfpidx);
 	CASE_ASM(CALL, reqt, sfpidx);
 	CASE_ASM(CALL1, reqt, sfpidx);
-	CASE_ASM(OP, reqt, sfpidx);
+	CASE_ASM(OPR, reqt, sfpidx);
 	CASE_ASM(NEW, reqt, sfpidx);
 	CASE_ASM(TCAST, reqt, sfpidx);
 	CASE_ASM(AND, reqt, sfpidx);
@@ -2303,7 +2303,7 @@ static void ASM_JUMPLABEL(CTX ctx, knh_Stmt_t *stmt, int delta)
 {
 	size_t s = knh_Array_size(DP(ctx->gma)->lstacks);
 	if(s < 4) {
-		knh_Stmt_toERR(ctx, stmt, ErrorMisplacedStmt(ctx, cSTT_(stmt)));
+		knh_Stmt_toERR(ctx, stmt, ERROR_OnlyTopLevel(ctx, cSTT_(stmt)));
 	}
 	else {
 		knh_Token_t *tkL = NULL;
