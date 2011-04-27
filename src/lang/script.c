@@ -502,6 +502,150 @@ static knh_status_t USING_eval(CTX ctx, knh_Stmt_t *stmt)
 }
 
 /* ------------------------------------------------------------------------ */
+
+static knh_Method_t *Script_getEvalMethod(CTX ctx, knh_Script_t *scr)
+{
+	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, O_cid(scr), MN_LAMBDA);
+	if(mtd == NULL) {
+		mtd = new_Method(ctx, FLAG_Method_Hidden, O_cid(scr), MN_LAMBDA, NULL);
+		KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayR0(ctx, TYPE_dyn/*TYPE_var*/));
+		knh_NameSpace_addMethod(ctx, O_cid(scr), mtd);
+	}
+	return mtd;
+}
+
+void SCRIPT_asm(CTX ctx, knh_Stmt_t *stmtITR);
+
+static knh_status_t SCRIPT_eval(CTX ctx, knh_Stmt_t *stmt, int isCompileOnly, knh_Array_t *resultsNULL)
+{
+	knh_status_t status = K_CONTINUE;
+	BEGIN_LOCAL(ctx, lsfp, 5);
+	knh_Script_t *scr = K_GMASCR;
+	knh_Method_t *mtd = Script_getEvalMethod(ctx, scr);
+	knh_class_t cid =  O_cid(ctx->evaled);
+	if(stmt_isExpr(STT_(stmt)) && STT_(stmt) != STT_LET) {
+		stmt = new_Stmt2(ctx, STT_RETURN, stmt, NULL);
+		Stmt_setImplicit(stmt, 1);
+	}
+	KNH_SETv(ctx, lsfp[0].o, stmt);
+	knh_Method_asm(ctx, mtd, NULL, cid, stmt, knh_Method_typing);
+	if(Method_isAbstract(mtd) || STT_(stmt) == STT_ERR) {
+		status = K_BREAK; goto L_RETURN;
+	}
+	if(!isCompileOnly) {
+		int rtnidx=3+1, thisidx = rtnidx + K_CALLDELTA;
+		DP(mtd)->uri = ULINE_uri(stmt->uline);
+		KNH_SETv(ctx, lsfp[1+1].o, DP(mtd)->kcode);
+		lsfp[thisidx+K_PCIDX].pc = NULL;
+		klr_setmtdNC(ctx, lsfp[thisidx+K_MTDIDX], mtd);
+		KNH_SETv(ctx, lsfp[thisidx].o, scr);
+		KNH_SETv(ctx, lsfp[thisidx+1].o, ctx->evaled);
+		lsfp[thisidx+1].ndata = O_data(ctx->evaled);
+		klr_setesp(ctx, lsfp + thisidx+2);
+		if(knh_VirtualMachine_run(ctx, lsfp + thisidx, CODE_LAUNCH) == NULL) {
+			//DBG_P("returning sfpidx=%d, rtnidx=%d, %s %lld %ld %f", sfpidx_, sfpidx_ + rtnidx, O__(lsfp[rtnidx].o), lsfp[rtnidx].ivalue, lsfp[rtnidx].bvalue, lsfp[rtnidx].fvalue);
+			if(STT_(stmt) == STT_RETURN && !Stmt_isImplicit(stmt)) {
+				cid = O_cid(lsfp[rtnidx].o);
+				KNH_SETv(ctx, ((knh_context_t*)ctx)->evaled, lsfp[rtnidx].o);
+				if(resultsNULL != NULL) {
+					knh_Array_add(ctx, resultsNULL, lsfp[rtnidx].o);
+				}
+			}
+		}
+		else {
+			status = K_BREAK;
+		}
+	}
+	L_RETURN:;
+	END_LOCAL_(ctx, lsfp);
+	return status;
+}
+
+static knh_status_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *resultsNULL);
+
+static knh_status_t IF_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *resultsNULL)
+{
+	knh_status_t status = K_BREAK;
+	if(Tn_typing(ctx, stmt, 0, TYPE_Boolean, 0)) {
+		int isTrue = 1;
+		if(!Tn_isCONST(stmt, 0)) {
+			knh_Stmt_t *stmt2 = new_Stmt2(ctx, STT_RETURN, stmtNN(stmt, 0), NULL);
+			//Stmt_setImplicit(stmt2, 1);
+			status = SCRIPT_eval(ctx, stmt2, 0/*isCompileOnly*/, NULL);
+			if(status != K_CONTINUE) goto L_RETURN;
+			isTrue = IS_TRUE(ctx->evaled) ? 1 : 0;
+		}
+		else {
+			isTrue = (Tn_isTRUE(stmt, 0)) ? 1: 0;
+		}
+		if(isTrue) {
+			status = Stmt_eval(ctx, stmtNN(stmt, 1), resultsNULL);
+		}
+		else {
+			status = Stmt_eval(ctx, stmtNN(stmt, 2), resultsNULL);
+		}
+	}
+	L_RETURN: ;
+	knh_Stmt_done(ctx, stmt);
+	return status;
+}
+
+
+Object *knh_NameSpace_getConstNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t name)
+{
+	L_TAIL:
+	if(DP(ns)->constDictCaseMapNULL != NULL) {
+		knh_index_t idx = knh_DictMap_index(DP(ns)->constDictCaseMapNULL, name);
+		if(idx != -1) return knh_DictMap_valueAt(DP(ns)->constDictCaseMapNULL, idx);
+	}
+	if(ns->parentNULL != NULL) {
+		ns = ns->parentNULL;
+		goto L_TAIL;
+	}
+	return knh_getClassConstNULL(ctx, DP(ctx->gma)->this_cid, name);
+}
+
+static knh_status_t CONST_decl(CTX ctx, knh_Stmt_t *stmt)
+{
+	knh_status_t status = K_CONTINUE;
+	knh_Token_t *tkN = tkNN(stmt, 0);
+	knh_class_t cid = knh_Token_cid(ctx, tkN, CLASS_unknown);
+	knh_NameSpace_t *ns = K_GMANS;
+	Object *value = knh_NameSpace_getConstNULL(ctx, ns, TK_tobytes(tkN));
+	if(cid != CLASS_unknown || value != NULL) {
+		WARN_AlreadyDefined(ctx, tkN);
+		_RETURN(K_BREAK);
+	}
+	if(Tn_typing(ctx, stmt, 1, TYPE_dyn, 0)) {
+		if(Tn_isCONST(stmt, 1)) {
+			value = Tn_const(stmt, 1);
+		}
+		else {
+			knh_Stmt_t *stmt2 = new_Stmt2(ctx, STT_RETURN, stmtNN(stmt, 1), NULL);
+			status = SCRIPT_eval(ctx, stmt2, 0/*isCompileOnly*/, NULL);
+			if(status != K_CONTINUE) {
+				_RETURN(K_BREAK);
+			}
+			value = ctx->evaled;
+		}
+		if(IS_Class(value)) {
+			DBG_P("new cname %s %s", S_tochar(tkN->text), CLASS__(((knh_Class_t*)value)->cid));
+			NameSpace_setcid(ctx, ns, tkN->text, ((knh_Class_t*)value)->cid, 0);
+		}
+		else {
+			if(DP(ns)->constDictCaseMapNULL == NULL) {
+				KNH_INITv(DP(ns)->constDictCaseMapNULL,
+					new_DictMap0(ctx, 0, 1/*isCaseMap*/, "NameSpace.lconstDictMap"));
+			}
+			DictMap_set_(ctx, DP(ns)->constDictCaseMapNULL, tkN->text, value);
+		}
+	}
+	L_RETURN: ;
+	knh_Stmt_done(ctx, stmt);
+	return status;
+}
+
+/* ------------------------------------------------------------------------ */
 /* [CLASS] */
 
 static knh_flag_t knh_StmtCLASS_flag(CTX ctx, knh_Stmt_t *stmt)
@@ -639,144 +783,6 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 		knh_Stmt_done(ctx, stmt);
 	}
 	return K_CONTINUE;
-}
-
-/* ------------------------------------------------------------------------ */
-
-static knh_Method_t *Script_getEvalMethod(CTX ctx, knh_Script_t *scr)
-{
-	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, O_cid(scr), MN_LAMBDA);
-	if(mtd == NULL) {
-		mtd = new_Method(ctx, FLAG_Method_Hidden, O_cid(scr), MN_LAMBDA, NULL);
-		KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayR0(ctx, TYPE_dyn/*TYPE_var*/));
-		knh_NameSpace_addMethod(ctx, O_cid(scr), mtd);
-	}
-	return mtd;
-}
-
-void SCRIPT_asm(CTX ctx, knh_Stmt_t *stmtITR);
-
-static knh_status_t SCRIPT_eval(CTX ctx, knh_Stmt_t *stmt, int isCompileOnly, knh_Array_t *resultsNULL)
-{
-	knh_status_t status = K_CONTINUE;
-	BEGIN_LOCAL(ctx, lsfp, 5);
-	knh_Script_t *scr = K_GMASCR;
-	knh_Method_t *mtd = Script_getEvalMethod(ctx, scr);
-	knh_class_t cid =  O_cid(ctx->evaled);
-	if(stmt_isExpr(STT_(stmt)) && STT_(stmt) != STT_LET) {
-		stmt = new_Stmt2(ctx, STT_RETURN, stmt, NULL);
-		Stmt_setImplicit(stmt, 1);
-	}
-	KNH_SETv(ctx, lsfp[0].o, stmt);
-	knh_Method_asm(ctx, mtd, NULL, cid, stmt, knh_Method_typing);
-	if(Method_isAbstract(mtd) || STT_(stmt) == STT_ERR) {
-		status = K_BREAK; goto L_RETURN;
-	}
-	if(!isCompileOnly) {
-		int rtnidx=3+1, thisidx = rtnidx + K_CALLDELTA;
-		DP(mtd)->uri = ULINE_uri(stmt->uline);
-		KNH_SETv(ctx, lsfp[1+1].o, DP(mtd)->kcode);
-		lsfp[thisidx+K_PCIDX].pc = NULL;
-		klr_setmtdNC(ctx, lsfp[thisidx+K_MTDIDX], mtd);
-		KNH_SETv(ctx, lsfp[thisidx].o, scr);
-		KNH_SETv(ctx, lsfp[thisidx+1].o, ctx->evaled);
-		lsfp[thisidx+1].ndata = O_data(ctx->evaled);
-		klr_setesp(ctx, lsfp + thisidx+2);
-		if(knh_VirtualMachine_run(ctx, lsfp + thisidx, CODE_LAUNCH) == NULL) {
-			//DBG_P("returning sfpidx=%d, rtnidx=%d, %s %lld %ld %f", sfpidx_, sfpidx_ + rtnidx, O__(lsfp[rtnidx].o), lsfp[rtnidx].ivalue, lsfp[rtnidx].bvalue, lsfp[rtnidx].fvalue);
-			if(STT_(stmt) == STT_RETURN && !Stmt_isImplicit(stmt)) {
-				cid = O_cid(lsfp[rtnidx].o);
-				KNH_SETv(ctx, ((knh_context_t*)ctx)->evaled, lsfp[rtnidx].o);
-				if(resultsNULL != NULL) {
-					knh_Array_add(ctx, resultsNULL, lsfp[rtnidx].o);
-				}
-			}
-		}
-		else {
-			status = K_BREAK;
-		}
-	}
-	L_RETURN:;
-	END_LOCAL_(ctx, lsfp);
-	return status;
-}
-
-static knh_status_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *resultsNULL);
-
-static knh_status_t IF_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *resultsNULL)
-{
-	knh_status_t status = K_BREAK;
-	if(Tn_typing(ctx, stmt, 0, TYPE_Boolean, 0)) {
-		int isTrue = 1;
-		if(!Tn_isCONST(stmt, 0)) {
-			knh_Stmt_t *stmt2 = new_Stmt2(ctx, STT_RETURN, stmtNN(stmt, 0), NULL);
-			//Stmt_setImplicit(stmt2, 1);
-			status = SCRIPT_eval(ctx, stmt2, 0/*isCompileOnly*/, NULL);
-			if(status != K_CONTINUE) goto L_RETURN;
-			isTrue = IS_TRUE(ctx->evaled) ? 1 : 0;
-		}
-		else {
-			isTrue = (Tn_isTRUE(stmt, 0)) ? 1: 0;
-		}
-		if(isTrue) {
-			status = Stmt_eval(ctx, stmtNN(stmt, 1), resultsNULL);
-		}
-		else {
-			status = Stmt_eval(ctx, stmtNN(stmt, 2), resultsNULL);
-		}
-	}
-	L_RETURN: ;
-	knh_Stmt_done(ctx, stmt);
-	return status;
-}
-
-
-Object *knh_NameSpace_getConstNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t name)
-{
-	L_TAIL:
-	if(DP(ns)->constDictCaseMapNULL != NULL) {
-		knh_index_t idx = knh_DictMap_index(DP(ns)->constDictCaseMapNULL, name);
-		if(idx != -1) return knh_DictMap_valueAt(DP(ns)->constDictCaseMapNULL, idx);
-	}
-	if(ns->parentNULL != NULL) {
-		ns = ns->parentNULL;
-		goto L_TAIL;
-	}
-	return knh_getClassConstNULL(ctx, DP(ctx->gma)->this_cid, name);
-}
-
-static knh_status_t CONST_decl(CTX ctx, knh_Stmt_t *stmt)
-{
-	knh_status_t status = K_CONTINUE;
-	knh_Token_t *tkN = tkNN(stmt, 0);
-	knh_class_t cid = knh_Token_cid(ctx, tkN, CLASS_unknown);
-	knh_NameSpace_t *ns = K_GMANS;
-	Object *value = knh_NameSpace_getConstNULL(ctx, ns, TK_tobytes(tkN));
-	if(cid != CLASS_unknown || value != NULL) {
-		WARN_AlreadyDefined(ctx, tkN);
-		_RETURN(K_BREAK);
-	}
-	if(Tn_typing(ctx, stmt, 1, TYPE_dyn, 0)) {
-		if(Tn_isCONST(stmt, 1)) {
-			value = Tn_const(stmt, 1);
-		}
-		else {
-			knh_Stmt_t *stmt2 = new_Stmt2(ctx, STT_RETURN, stmtNN(stmt, 0), NULL);
-			status = SCRIPT_eval(ctx, stmt2, 0/*isCompileOnly*/, NULL);
-			if(status != K_CONTINUE) {
-				_RETURN(K_BREAK);
-			}
-			value = ctx->evaled;
-		}
-		if(DP(ns)->constDictCaseMapNULL == NULL) {
-			KNH_INITv(DP(ns)->constDictCaseMapNULL,
-				new_DictMap0(ctx, 0, 1/*isCaseMap*/, "NameSpace.lconstDictMap"));
-		}
-		DictMap_set_(ctx, DP(ns)->constDictCaseMapNULL, tkN->text, value);
-	}
-	L_RETURN: ;
-	knh_Stmt_done(ctx, stmt);
-	return status;
 }
 
 static knh_status_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *resultsNULL)

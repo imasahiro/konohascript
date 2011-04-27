@@ -2720,13 +2720,30 @@ static void KonohaCode_write(CTX ctx, knh_OutputStream_t *w, Object *o, int leve
 	}
 }
 
-
 static knh_ClassDef_t KonohaCodeDef = {
 	KonohaCode_init, TODO_initcopy, KonohaCode_reftrace, KonohaCode_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, KonohaCode_write,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
 	"KonohaCode", CFLAG_KonohaCode, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
+static knh_ClassDef_t ImmutableDef = {
+	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_write,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Immutable", CFLAG_Immutable, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
+static knh_ClassDef_t StructDef = {
+	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_write,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Struct", CFLAG_KonohaCode, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
@@ -2842,11 +2859,14 @@ static const knh_StringData_t StringConstData0[] = {
 };
 
 static const knh_data_t CParamData0[] = {
-	DATA_CPARAM, CLASS_Iterator, 1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Range, 1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Array, 1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Map, 2, 0, TYPE_String, FN_K, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Func, 0, 0,
+	DATA_CPARAM, CLASS_Iterator,  1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Range,     1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Array,     1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Map,       2, 0, TYPE_String, FN_K, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Func,      0, 0,
+	DATA_CPARAM, CLASS_Thunk,     1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Immutable, 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Struct,    1, 0, TYPE_dyn, FN_V,
 	0,
 };
 

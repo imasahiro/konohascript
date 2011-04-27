@@ -40,7 +40,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* Type Variable */
 //## @TypeVariable class Tvoid_ Tvoid_;
-//## @TypeVariable class Tvar_ Tvoid_;
+//## @TypeVariable class Tvar_  Tvoid_;
 
 #define CLASS_Tvoid             CLASS_Tvoid_
 #define CLASS_Tvar              CLASS_Tvar_
@@ -197,8 +197,7 @@ typedef struct knh_Bytes_t {
 #define B_endsWith(b, t)      knh_bytes_endsWith(b, STEXT(t))
 
 /* ------------------------------------------------------------------------ */
-//## @Immutable @Struct @Param1(dynamic) class Iterator Object;
-//## cparam Iterator 0 T dynamic;
+//## class Iterator Object;
 
 typedef struct knh_mapitr_t {
 	size_t index;
@@ -231,18 +230,17 @@ typedef struct knh_Iterator_t {
 
 /* ------------------------------------------------------------------------ */
 //## Tuple Object;
-//## typeO PairSS Tuple 0 String String;
-//## typeO PairST1 Tuple 0 String T1;
+//## typeO PairSS   Tuple 0 String String;
+//## typeO PairST1  Tuple 0 String T1;
 //## typeO PairT1T2 Tuple 0 T1 T2;
-//## type Channel Tuple 0 InputStream OutputStream;
 
 typedef knh_ObjectField_t knh_Tuple_t;
 
 /* ------------------------------------------------------------------------ */
 //## @Immutable class Range Object;
-//## cparam Range 0 T dynamic;
 //## flag Range NDATA     1 - is set * *;
 //## flag Range Inclusive 2 - is set * *;
+//## type RangeInt  Range 0 Int;
 
 typedef struct knh_Range_t {
 	knh_hObject_t h;
@@ -257,11 +255,11 @@ typedef struct knh_Range_t {
 } knh_Range_t;
 
 /* ------------------------------------------------------------------------ */
-//## class Array Object;
+//## class Array   Object;
 //## class ArrayIm Object;
 //## flag Array   NDATA     1 - is set * *;
 //## flag ArrayIm NDATA     1 - is set * *;
-//## type CmprT1  Func 1  T1 T1 Int;
+//## type CmprT1  Func 1 T1 T1 Int;
 
 typedef struct {
 	size_t   (*index)(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t size);
@@ -430,7 +428,7 @@ typedef struct knh_Class_t {
 typedef void (*knh_Fwritecid)(CTX ctx, struct knh_OutputStream_t *w, knh_class_t cid);
 
 /* ------------------------------------------------------------------------ */
-//## @Private class ParamArray Object;
+//## @Private @Immutable class ParamArray Object;
 //## flag ParamArray VARGs  1 - is set * *;
 //## flag ParamArray RVAR   2 - is set * *;
 
@@ -463,7 +461,7 @@ typedef struct {
 } knh_ffiparam_t;  // for ffi
 
 /* ------------------------------------------------------------------------ */
-//## @Struct class Method Object;
+//## class Method Object;
 //## flag Method Private!Public  0 DP(%s)->flag is set * *;
 //## flag Method Virtual!Final   1 DP(%s)->flag is set * *;
 //## flag Method Debug           2 DP(%s)->flag is set * *;
@@ -523,7 +521,7 @@ typedef struct knh_Method_t {
 //#define KNH_FUNCTIONTRACE   5
 
 /* ------------------------------------------------------------------------ */
-//## @Struct class TypeMap Object;
+//## class TypeMap Object;
 //## flag TypeMap Interface  1 - is set * *;
 //## flag TypeMap Semantic   2 - is set * *;
 //## flag TypeMap Const      3 - is set * *;
@@ -544,7 +542,7 @@ typedef struct knh_TypeMap_t {
 #define knh_getTypeMapNULL(ctx, scid, tcid)  knh_findTypeMapNULL(ctx, scid, tcid, 0)
 
 /* ------------------------------------------------------------------------ */
-//## class Func Object;
+//## @Immutable class Func Object;
 //## cparam Func 1 R dynamic P dynamic;
 //## flag Func StoredEnv 1 - is set * *;
 
@@ -557,7 +555,7 @@ typedef struct knh_Func_t {
 } knh_Func_t ;
 
 /* ------------------------------------------------------------------------ */
-//## @Param1(dynamic) class Thunk Object;
+//## class Thunk Object;
 //## flag Thunk Evaluated 1 - is set * *;
 
 typedef struct knh_Thunk_t {
@@ -566,17 +564,17 @@ typedef struct knh_Thunk_t {
 	size_t     envsize;
 } knh_Thunk_t;
 
-/* ------------------------------------------------------------------------ */
-//## class0 Thread Object;
+///* ------------------------------------------------------------------------ */
+////## class0 Thread Object;
+//
+//typedef struct knh_Thread_t {
+//	knh_hObject_t h;
+//	knh_context_t *context;
+//	knh_thread_t  th;
+//} knh_Thread_t;
 
-typedef struct knh_Thread_t {
-	knh_hObject_t h;
-	knh_context_t *context;
-	knh_thread_t  th;
-} knh_Thread_t;
-
 /* ------------------------------------------------------------------------ */
-//## @Struct class Exception Object;
+//## class Exception Object;
 //## flag0 Exception Logging 0 DP(%s)->flag is * * *;
 //## flag0 Exception Caught  1 DP(%s)->flag is set * *;
 
@@ -668,7 +666,7 @@ typedef struct knh_Regex_t {
 } knh_Regex_t;
 
 /* ------------------------------------------------------------------------ */
-//## class Converter Object;
+//## @Immutable class Converter Object;
 
 typedef void knh_conv_t;
 
@@ -679,7 +677,7 @@ typedef struct knh_Converter_t {
 } knh_Converter_t;
 
 /* ------------------------------------------------------------------------ */
-//## class StringEncoder Object;
+//## @Immutable class StringEncoder Object;
 
 typedef struct knh_StringEncoder_t {
 	knh_hObject_t h;
@@ -688,7 +686,7 @@ typedef struct knh_StringEncoder_t {
 } knh_StringEncoder_t;
 
 /* ------------------------------------------------------------------------ */
-//## class StringDecoder Object;
+//## @Immutable class StringDecoder Object;
 
 typedef struct knh_StringDecoder_t {
 	knh_hObject_t h;
@@ -697,7 +695,7 @@ typedef struct knh_StringDecoder_t {
 } knh_StringDecoder_t;
 
 /* ------------------------------------------------------------------------ */
-//## class StringConverter Object;
+//## @Immutable class StringConverter Object;
 
 typedef struct knh_StringConveter_t {
 	knh_hObject_t h;
@@ -706,7 +704,7 @@ typedef struct knh_StringConveter_t {
 } knh_StringConverter_t;
 
 /* ------------------------------------------------------------------------ */
-//## @Struct @Private class Semantics Object;
+//## @Private class Semantics Object;
 
 #define KNH_SEMANTICS_FMT    "%s{%s}"
 struct  knh_Semantics_t;
@@ -774,7 +772,7 @@ typedef struct knh_Semantics_t {
 #define KNH_STDERR         (ctx->err)
 
 /* ------------------------------------------------------------------------ */
-//## @Struct class InputStream Object;
+//## class InputStream Object;
 
 typedef knh_uintptr_t knh_io_t;
 #define IO_NULL   ((knh_io_t)0)
@@ -804,7 +802,7 @@ typedef struct knh_InputStream_t {
 } knh_InputStream_t;
 
 /* ------------------------------------------------------------------------ */
-//## @Struct class OutputStream Object;
+//## class OutputStream Object;
 //## flag OutputStream BOL            1 - is set * *;
 //## flag OutputStream AutoFlush      2 - is set is set;
 //## flag OutputStream UTF8           3 - has set * *;
@@ -838,7 +836,7 @@ typedef struct knh_OutputStream_t {
 
 /* ------------------------------------------------------------------------ */
 //## class Connection Object;
-//## @Struct class ResultSet Object;
+//## class ResultSet Object;
 
 typedef void   knh_qconn_t;
 typedef void   knh_qcur_t;
@@ -886,8 +884,7 @@ typedef struct knh_ResultSet_t {
 } knh_ResultSet_t;
 
 /* ------------------------------------------------------------------------ */
-//## @Struct class NameSpace Object;
-//## flag NameSpace SharedEx     1 - is set * *;
+//## class NameSpace Object;
 
 typedef struct knh_NameSpace {
 	knh_String_t *nsname;
@@ -918,15 +915,6 @@ typedef struct knh_Script_t {
 	size_t dummy;
 	struct knh_NameSpace_t *ns;
 } knh_Script_t ;
-
-///* ------------------------------------------------------------------------ */
-////## @Struct class Package Object;
-//
-//typedef struct knh_Package_t {
-//	knh_hObject_t h;
-//	struct knh_NameSpace_t    *ns;
-//	struct knh_Script_t       *script;
-//} knh_Package_t;
 
 /* ------------------------------------------------------------------------ */
 //## @Singleton @Struct class System Object;
@@ -986,7 +974,7 @@ typedef struct knh_Context_t {
 
 /* ------------------------------------------------------------------------ */
 //## class Monitor Object;
-//## flag Monitor Throwable        1 - is set * *;
+//## flag Monitor  Throwable        1 - is set * *;
 
 typedef struct knh_Monitor_t {
 	knh_hObject_t h;
@@ -1302,6 +1290,19 @@ typedef struct knh_KonohaCode_t {
 	knh_uri_t     uri; knh_uri_t     domain;
 } knh_KonohaCode_t;
 
+/* ------------------------------------------------------------------------ */
+//## class Immutable Object;
+
+typedef struct knh_Immutable_t {
+	knh_hObject_t h;
+} knh_Immutable_t;
+
+/* ------------------------------------------------------------------------ */
+//## class Struct Object;
+
+typedef struct knh_Struct_t {
+	knh_hObject_t h;
+} knh_Struct_t;
 
 /* ------------------------------------------------------------------------ */
 //## @Cyclic class Tdynamic Object knh_dynamic_t;

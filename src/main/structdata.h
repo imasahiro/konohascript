@@ -107,6 +107,8 @@ static knh_data_t StructData0[] = {
 	DATA_STRUCT0, CLASS_Gamma, _DATA(&GammaDef), CFLAG_Gamma,
 	DATA_STRUCT0, CLASS_BasicBlock, _DATA(&BasicBlockDef), CFLAG_BasicBlock,
 	DATA_STRUCT0, CLASS_KonohaCode, _DATA(&KonohaCodeDef), CFLAG_KonohaCode,
+	DATA_STRUCT0, CLASS_Immutable, _DATA(&ImmutableDef), CFLAG_Immutable,
+	DATA_STRUCT0, CLASS_Struct, _DATA(&StructDef), CFLAG_Struct,
 	DATA_STRUCT0, CLASS_Tdynamic, _DATA(&TdynamicDef), CFLAG_Tdynamic,
 	0
 };
@@ -157,8 +159,10 @@ static knh_data_t ClassData0[] = {
 	DATA_CLASS0, CLASS_Gamma, _DATA("konoha.Gamma"), CFLAG_Gamma, CLASS_Gamma, CLASS_Object, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_BasicBlock, _DATA("konoha.BasicBlock"), CFLAG_BasicBlock, CLASS_BasicBlock, CLASS_Object, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_KonohaCode, _DATA("konoha.KonohaCode"), CFLAG_KonohaCode, CLASS_KonohaCode, CLASS_Object, 0 + 0 /*0*/,
+	DATA_CLASS0, CLASS_Immutable, _DATA("konoha.Immutable"), CFLAG_Immutable, CLASS_Immutable, CLASS_Object, 0 + 0 /*0*/,
+	DATA_CLASS0, CLASS_Struct, _DATA("konoha.Struct"), CFLAG_Struct, CLASS_Struct, CLASS_Object, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Tdynamic, _DATA("konoha.Tdynamic"), CFLAG_Tdynamic, CLASS_dynamic, CLASS_Object, 0 + 0 /*0*/,
-	DATA_GENERICS/*Channel*/, CLASS_Tuple, 2, 0, TYPE_InputStream, FN_, TYPE_OutputStream, FN_,
+	DATA_GENERICS/*RangeInt*/, CLASS_Range, 1, 0, TYPE_Int, FN_,
 	DATA_GENERICS/*CmprT1*/, CLASS_Func, 2, 1, TYPE_T1, FN_, TYPE_T1, FN_, TYPE_Int, FN_,
 	DATA_GENERICS/*T1ITR*/, CLASS_Iterator, 1, 0, TYPE_T1, FN_,
 	DATA_GENERICS/*T1ARRAY*/, CLASS_Array, 1, 0, TYPE_T1, FN_,

@@ -5,7 +5,7 @@
 #ifndef K_REVISION
 #define K_REVISION                      160
 #endif
-#define K_BUILDID                       1093
+#define K_BUILDID                       1094
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -105,7 +105,7 @@
 #define IS_Iterator(o)          (O_cid(o) == CLASS_Iterator)
 #define IS_bIterator(o)         (O_bcid(o) == CLASS_Iterator)
 #define TYPE_Iterator           CLASS_Iterator
-#define CFLAG_Iterator          ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_Iterator          ((knh_flag_t)0)
 #define FLAG_Iterator           KNH_MAGICFLAG(CFLAG_Iterator)
 
 /* ------------------------------------------------------------------------ */
@@ -168,7 +168,7 @@
 #define IS_ParamArray(o)        (O_cid(o) == CLASS_ParamArray)
 #define IS_bParamArray(o)       (O_bcid(o) == CLASS_ParamArray)
 #define TYPE_ParamArray         CLASS_ParamArray
-#define CFLAG_ParamArray        ((knh_flag_t)FLAG_Class_Private)
+#define CFLAG_ParamArray        ((knh_flag_t)FLAG_Class_Immutable|FLAG_Class_Private)
 #define FLAG_ParamArray         KNH_MAGICFLAG(CFLAG_ParamArray)
 
 /* ------------------------------------------------------------------------ */
@@ -195,7 +195,7 @@
 #define IS_Func(o)              (O_cid(o) == CLASS_Func)
 #define IS_bFunc(o)             (O_bcid(o) == CLASS_Func)
 #define TYPE_Func               CLASS_Func
-#define CFLAG_Func              ((knh_flag_t)0)
+#define CFLAG_Func              ((knh_flag_t)FLAG_Class_Immutable)
 #define FLAG_Func               KNH_MAGICFLAG(CFLAG_Func)
 
 /* ------------------------------------------------------------------------ */
@@ -240,7 +240,7 @@
 #define IS_Converter(o)         (O_cid(o) == CLASS_Converter)
 #define IS_bConverter(o)        (O_bcid(o) == CLASS_Converter)
 #define TYPE_Converter          CLASS_Converter
-#define CFLAG_Converter         ((knh_flag_t)0)
+#define CFLAG_Converter         ((knh_flag_t)FLAG_Class_Immutable)
 #define FLAG_Converter          KNH_MAGICFLAG(CFLAG_Converter)
 
 /* ------------------------------------------------------------------------ */
@@ -249,7 +249,7 @@
 #define IS_StringEncoder(o)     (O_cid(o) == CLASS_StringEncoder)
 #define IS_bStringEncoder(o)    (O_bcid(o) == CLASS_StringEncoder)
 #define TYPE_StringEncoder      CLASS_StringEncoder
-#define CFLAG_StringEncoder     ((knh_flag_t)0)
+#define CFLAG_StringEncoder     ((knh_flag_t)FLAG_Class_Immutable)
 #define FLAG_StringEncoder      KNH_MAGICFLAG(CFLAG_StringEncoder)
 
 /* ------------------------------------------------------------------------ */
@@ -258,7 +258,7 @@
 #define IS_StringDecoder(o)     (O_cid(o) == CLASS_StringDecoder)
 #define IS_bStringDecoder(o)    (O_bcid(o) == CLASS_StringDecoder)
 #define TYPE_StringDecoder      CLASS_StringDecoder
-#define CFLAG_StringDecoder     ((knh_flag_t)0)
+#define CFLAG_StringDecoder     ((knh_flag_t)FLAG_Class_Immutable)
 #define FLAG_StringDecoder      KNH_MAGICFLAG(CFLAG_StringDecoder)
 
 /* ------------------------------------------------------------------------ */
@@ -267,7 +267,7 @@
 #define IS_StringConverter(o)   (O_cid(o) == CLASS_StringConverter)
 #define IS_bStringConverter(o)  (O_bcid(o) == CLASS_StringConverter)
 #define TYPE_StringConverter    CLASS_StringConverter
-#define CFLAG_StringConverter   ((knh_flag_t)0)
+#define CFLAG_StringConverter   ((knh_flag_t)FLAG_Class_Immutable)
 #define FLAG_StringConverter    KNH_MAGICFLAG(CFLAG_StringConverter)
 
 /* ------------------------------------------------------------------------ */
@@ -415,8 +415,26 @@
 #define FLAG_KonohaCode         KNH_MAGICFLAG(CFLAG_KonohaCode)
 
 /* ------------------------------------------------------------------------ */
+/* Immutable */
+#define CLASS_Immutable         ((knh_class_t)45)
+#define IS_Immutable(o)         (O_cid(o) == CLASS_Immutable)
+#define IS_bImmutable(o)        (O_bcid(o) == CLASS_Immutable)
+#define TYPE_Immutable          CLASS_Immutable
+#define CFLAG_Immutable         ((knh_flag_t)0)
+#define FLAG_Immutable          KNH_MAGICFLAG(CFLAG_Immutable)
+
+/* ------------------------------------------------------------------------ */
+/* Struct */
+#define CLASS_Struct            ((knh_class_t)46)
+#define IS_Struct(o)            (O_cid(o) == CLASS_Struct)
+#define IS_bStruct(o)           (O_bcid(o) == CLASS_Struct)
+#define TYPE_Struct             CLASS_Struct
+#define CFLAG_Struct            ((knh_flag_t)0)
+#define FLAG_Struct             KNH_MAGICFLAG(CFLAG_Struct)
+
+/* ------------------------------------------------------------------------ */
 /* Tdynamic */
-#define CLASS_Tdynamic          ((knh_class_t)45)
+#define CLASS_Tdynamic          ((knh_class_t)47)
 #define IS_Tdynamic(o)          (O_cid(o) == CLASS_Tdynamic)
 #define TYPE_Tdynamic           CLASS_Tdynamic
 #define CFLAG_Tdynamic          ((knh_flag_t)0)
@@ -429,41 +447,41 @@
 /* CLASS */
 
 /* ------------------------------------------------------------------------ */
-/* Channel */
-#define CLASS_Channel           ((knh_class_t)46)
-#define IS_Channel(o)           (O_cid(o) == CLASS_Channel)
-#define TYPE_Channel            CLASS_Channel
+/* RangeInt */
+#define CLASS_RangeInt          ((knh_class_t)48)
+#define IS_RangeInt(o)          (O_cid(o) == CLASS_RangeInt)
+#define TYPE_RangeInt           CLASS_RangeInt
 
 /* ------------------------------------------------------------------------ */
 /* CmprT1 */
-#define CLASS_CmprT1            ((knh_class_t)47)
+#define CLASS_CmprT1            ((knh_class_t)49)
 #define IS_CmprT1(o)            (O_cid(o) == CLASS_CmprT1)
 #define TYPE_CmprT1             CLASS_CmprT1
 
 /* ------------------------------------------------------------------------ */
 /* T1ITR */
-#define CLASS_T1ITR             ((knh_class_t)48)
+#define CLASS_T1ITR             ((knh_class_t)50)
 #define IS_T1ITR(o)             (O_cid(o) == CLASS_T1ITR)
 #define TYPE_T1ITR              CLASS_T1ITR
 
 /* ------------------------------------------------------------------------ */
 /* T1ARRAY */
-#define CLASS_T1ARRAY           ((knh_class_t)49)
+#define CLASS_T1ARRAY           ((knh_class_t)51)
 #define IS_T1ARRAY(o)           (O_cid(o) == CLASS_T1ARRAY)
 #define TYPE_T1ARRAY            CLASS_T1ARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringARRAY */
-#define CLASS_StringARRAY       ((knh_class_t)50)
+#define CLASS_StringARRAY       ((knh_class_t)52)
 #define IS_StringARRAY(o)       (O_cid(o) == CLASS_StringARRAY)
 #define TYPE_StringARRAY        CLASS_StringARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringITR */
-#define CLASS_StringITR         ((knh_class_t)51)
+#define CLASS_StringITR         ((knh_class_t)53)
 #define IS_StringITR(o)         (O_cid(o) == CLASS_StringITR)
 #define TYPE_StringITR          CLASS_StringITR
-#define K_CLASS_INITSIZE                53
+#define K_CLASS_INITSIZE                55
 
 /* ------------------------------------------------------------------------ */
 /* FLAG */
@@ -594,9 +612,6 @@
 #define FLAG_OutputStream_UTF8 FLAG_Object_Local3
 #define OutputStream_hasUTF8(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_OutputStream_UTF8))
 #define OutputStream_setUTF8(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_OutputStream_UTF8,b)
-#define FLAG_NameSpace_SharedEx FLAG_Object_Local1
-#define NameSpace_isSharedEx(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_NameSpace_SharedEx))
-#define NameSpace_setSharedEx(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_NameSpace_SharedEx,b)
 #define FLAG_Context_Debug ((knh_flag_t)(1<<1))
 #define CTX_isDebug(o)  (TFLAG_is(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_Debug))
 #define CTX_setDebug(o,b) TFLAG_set(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_Debug,b)
