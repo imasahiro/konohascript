@@ -1,0 +1,6 @@
+// konoha status script
+
+OUT <<< $konoha.version <<< EOL;
+
+OUT <<< "PACKAGE" <<< EOL;
+
