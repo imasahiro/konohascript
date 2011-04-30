@@ -233,6 +233,7 @@ file(GLOB dirs "${CMAKE_CURRENT_SOURCE_DIR}/package/konoha.*")
 foreach(dir ${dirs})
 	add_subdirectory(${dir})
 endforeach()
+add_subdirectory(dist/script)
 
 
 install(TARGETS konoha1 konoha 
