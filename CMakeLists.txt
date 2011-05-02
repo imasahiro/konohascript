@@ -247,6 +247,17 @@ install(DIRECTORY include/ DESTINATION include
 		PATTERN ".svn" EXCLUDE
 		)
 
+
+# test
+enable_testing()
+set(ktest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/konoha)
+set(ac_dir ${CMAKE_CURRENT_SOURCE_DIR}/ac)
+file(GLOB files "${CMAKE_CURRENT_SOURCE_DIR}/ac/*.k")
+foreach(f ${files})
+	string(REGEX REPLACE ".*/([^ ]+).k" "\\1" res "${f}" )
+	add_test(NAME ${res} COMMAND ${ktest} --utest "file:${f}")
+endforeach()
+
 #set(CPACK_SOURCE_GENERATOR "TGZ;DEB")
 set(CPACK_SOURCE_GENERATOR "TGZ")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME ${ARCHIVE_NAME})

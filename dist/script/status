@@ -1,6 +1,16 @@
 // konoha status script
+OUT <<< "Konoha Version:" + $konoha.version <<< EOL;
+OUT <<< $konoha.bin.path <<< EOL;
 
-OUT <<< $konoha.version <<< EOL;
+void dumpInstalledPackages(String path) {
+	OUT <<< "Installed Packages at " + path <<< EOL;
+	installedPackages = System.exec("ls " + path).split("\n");
+	for (i=0; i < |installedPackages|; i++) {
+		OUT <<< "	" + installedPackages[i] <<< EOL;
+	}
+}
 
-OUT <<< "PACKAGE" <<< EOL;
+dumpInstalledPackages($konoha.package.path);
+dumpInstalledPackages($user.package.path);
+
 
