@@ -288,7 +288,7 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 		break;
 	}
 	KNH_SETv(ctx, (tkPKG)->data, knh_cwb_newString(ctx, cwb));
-	if(knh_loadScriptPackage(ctx, S_tobytes((tkPKG)->text))) {
+	if(knh_loadScriptPackage(ctx, S_tobytes((tkPKG)->text)) == K_CONTINUE) {
 		knh_NameSpace_t *ns = K_GMANS;
 		int isOVERRIDE = knh_Stmt_flag(ctx, stmt, "Override", 1);
 		if(TT_(tkN) == TT_MUL) {
