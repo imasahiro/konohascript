@@ -6,7 +6,7 @@
  * All rights reserved.
  *
  * You may choose one of the following two licenses when you use konoha.
- * If you want to use the latter license, please contact us.
+ * If you want to use the latter license, please contact us
  * (1) GNU General Public License 3.0 (with K_UNDER_GPL)
  * (2) Konoha Non-Disclosure License 1.0
  *
