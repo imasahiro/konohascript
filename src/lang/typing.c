@@ -1515,34 +1515,40 @@ static int MN_isNEW_(CTX ctx, knh_methodn_t mn)
 
 static knh_Token_t *OPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt);
 
+static knh_Token_t *SETPROPN_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
+{
+	knh_Token_t *tkN = tkNN(stmt, 1);
+	knh_String_t *v = knh_getPropertyNULL(ctx, S_tobytes(tkN->text));
+	knh_type_t type;
+	if(v != NULL) {
+		type = O_cid(v);
+		TYPING(ctx, stmt, 2, type, 0);
+	}
+	else {
+		TYPING(ctx, stmt, 2, TYPE_dyn, 0);
+		type = Tn_type(stmt, 2);
+		InfoType(ctx, "$", S_tobytes(tkN->text), type);
+	}
+	Stmt_toSTT(stmt, STT_CALL);
+	KNH_SETv(ctx, tkNN(stmt, 0), new_TokenMN(ctx, MN_setProperty));
+	Stmt_insert(ctx, stmt, 1, new_TokenTYPED(ctx, TT_CID, CLASS_Class, CLASS_System));
+	TT_(tkN) = TT_STR;  // reset
+	return CALL_typing(ctx, stmt, type);
+}
+
 static knh_Token_t *LET_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
 	knh_Token_t *tkN = tkNN(stmt, 1);
-	knh_Token_t *tkRES = NULL;
+	Token_setReadOnly(tkN, 0);
 	if(reqt == TYPE_Boolean) {
 		WARN_MuchBetter(ctx, "==");
 		STT_(stmt) = STT_OPR;
 		KNH_SETv(ctx, tkNN(stmt, 0), new_TokenMN(ctx, MN_opEQ));
 		return OPR_typing(ctx, stmt, reqt);
-	};
-	if(TT_(tkN) == TT_UNAME) {
-		return ERROR_OnlyTopLevel(ctx, "constant definition");
 	}
-	else if(TT_(tkN) == TT_PROPN) {
-		tkRES = TPROPN_typing(ctx, tkN, reqt, stmt);
-		if(tkRES == NULL) {
-			Stmt_toSTT(stmt, STT_CALL);
-			KNH_SETv(ctx, tkNN(stmt, 0), new_TokenMN(ctx, MN_setProperty));
-			Stmt_insert(ctx, stmt, 1, new_TokenTYPED(ctx, TT_CID, CLASS_Class, CLASS_System));
-			reqt = SP(tkN)->type;
-			TT_(tkN) = TT_STR; SP(tkN)->type = TYPE_var; // reset
-			return CALL_typing(ctx, stmt, reqt);
-		}
-		return tkRES;
-	}
-	else if(TT_(tkN) == TT_NAME) {
-		Token_setReadOnly(tkN, 0);
-		tkRES = TNAME_typing(ctx, tkN, reqt, _FINDLOCAL | _FINDFIELD | _FINDSCRIPT);
+	if(TT_(tkN) == TT_NAME) {
+		knh_Token_t *tkRES = TNAME_typing(ctx, tkN, reqt, _FINDLOCAL | _FINDFIELD | _FINDSCRIPT);
+		DBG_P("%p %p", tkN, tkRES);
 		if(tkRES == NULL) { /* not found */
 			TYPING(ctx, stmt, 2, reqt, _NOTCHECK);
 			reqt = Tn_type(stmt, 2);
@@ -1563,10 +1569,16 @@ static knh_Token_t *LET_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 					return ERROR_Denied(ctx, "read only", tkN);
 				}
 			}
-			knh_Token_toTYPED(ctx, tkN, tkRES->tt, tkRES->type, (tkRES)->index);
 			TYPING(ctx, stmt, 2, tkRES->type, 0);
+			knh_Token_toTYPED(ctx, tkN, tkRES->tt, tkRES->type, (tkRES)->index);
 		}
 		return Stmt_typed(ctx, stmt, tkN->type);
+	}
+	if(TT_(tkN) == TT_PROPN) {
+		return SETPROPN_typing(ctx, stmt, reqt);
+	}
+	if(TT_(tkN) == TT_UNAME) {
+		return ERROR_OnlyTopLevel(ctx, "constant definition");
 	}
 	return ErrorTokenCannotAssign(ctx, tkN);
 }
@@ -2858,7 +2870,7 @@ static knh_Token_t* ErrorTypeError(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type
 	return tkERR;
 }
 
-static knh_Term_t *new_TermTYPEMAP(CTX ctx, knh_class_t reqt, knh_TypeMap_t *trlNULL, knh_Token_t *tk2)
+static knh_Term_t *new_TermTCAST(CTX ctx, knh_class_t reqt, knh_TypeMap_t *trlNULL, knh_Token_t *tk2)
 {
 	if(TT_(tk2) == TT_CONST && trlNULL != NULL && TypeMap_isConst(trlNULL)) {
 		BEGIN_LOCAL(ctx, lsfp, 1);
@@ -2937,21 +2949,21 @@ knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh
 	else {
 		knh_type_t vart = Tn_type(stmt, n);
 		if(vart == TYPE_dyn) {
-			KNH_SETv(ctx, tmNN(stmt, n), new_TermTYPEMAP(ctx, reqt, NULL, tkNN(stmt, n)));
+			KNH_SETv(ctx, tmNN(stmt, n), new_TermTCAST(ctx, reqt, NULL, tkNN(stmt, n)));
 			goto L_RETURN;
 		}
 		else {
 			knh_TypeMap_t *tmr = knh_getTypeMapNULL(ctx, vart, reqt);
 			if((vart == TYPE_Int && reqt == TYPE_Float) || (vart == TYPE_Float && vart == TYPE_Int)) {
-				KNH_SETv(ctx, tmNN(stmt, n), new_TermTYPEMAP(ctx, reqt, tmr, tkNN(stmt, n)));
+				KNH_SETv(ctx, tmNN(stmt, n), new_TermTCAST(ctx, reqt, tmr, tkNN(stmt, n)));
 				goto L_RETURN;
 			}
 			if(reqt == TYPE_Regex && vart == TYPE_String) {
-				KNH_SETv(ctx, tmNN(stmt, n), new_TermTYPEMAP(ctx, reqt, tmr, tkNN(stmt, n)));
+				KNH_SETv(ctx, tmNN(stmt, n), new_TermTCAST(ctx, reqt, tmr, tkNN(stmt, n)));
 				goto L_RETURN;
 			}
 			if((tmr != NULL && TypeMap_isSemantic(tmr)) || FLAG_is(opflag, _ICAST)) {
-				KNH_SETv(ctx, tmNN(stmt, n), new_TermTYPEMAP(ctx, reqt, tmr, tkNN(stmt, n)));
+				KNH_SETv(ctx, tmNN(stmt, n), new_TermTCAST(ctx, reqt, tmr, tkNN(stmt, n)));
 				goto L_RETURN;
 			}
 		}

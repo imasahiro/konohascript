@@ -2403,7 +2403,7 @@ static void Token_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 			}
 		}
 	}
-	else if(tt < TT_CONST) {
+	else {
 		knh_bytes_t t = S_tobytes(tk->text);
 		int hasUTF8 = !(String_isASCII(tk->text));
 		switch(tt) {
@@ -2437,11 +2437,15 @@ static void Token_write(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 			knh_write_mn(ctx, w, tk->mn); break;
 		case TT_CONST:
 			knh_write_Object(ctx, w, tk->data, FMT_line);
+			break;
 		case TT_SYSVAL: case TT_LOCAL: case TT_FUNCVAR:
 		case TT_XLOCAL: case TT_FIELD: case TT_SCRFIELD:
-			knh_write_ascii(ctx, w, TT__(tt));
-			knh_putc(ctx, w, '=');
-			knh_write_ifmt(ctx, w, K_INT_FMT, (knh_int_t)tk->index);
+			if(IS_FMTdump(level) || !IS_String(tk->data)) {
+				knh_write_ascii(ctx, w, TT__(tt));
+				knh_putc(ctx, w, '=');
+				knh_write_ifmt(ctx, w, K_INT_FMT, (knh_int_t)tk->index);
+				break;
+			}
 		case TT_ERR:
 			knh_write(ctx, w, t); break;
 		default:
