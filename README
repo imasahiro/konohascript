@@ -7,7 +7,7 @@ THE KONOHA SCRIPTING LANGUAGE
 Konoha is a statically-typed scripting language for ubiquitous and 
 dependable computing. It is featured by:
 
- * hibrid static/dynamic typing with type inferencing
+ * static typing
  * "run anytime" compiler
  * highly portable language runtime
  * Java-like grammar and libraries
