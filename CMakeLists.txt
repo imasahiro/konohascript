@@ -218,6 +218,35 @@ if(HAVE_ICONV_ICONV_OPEN_SYM)
 	add_definitions(-DLIBICONV_PLUG)
 endif()
 
+option(USE_LLVM "Use llvm" OFF)
+if(USE_LLVM)
+	find_program(LLVM_CONFIG NAMES llvm-config DOC "llvm-config")
+	execute_process(
+			COMMAND ${LLVM_CONFIG} --cppflags
+			OUTPUT_VARIABLE LLVM_CFLAGS
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			)
+	execute_process(
+			COMMAND ${LLVM_CONFIG} --cxxflags
+			OUTPUT_VARIABLE LLVM_CXXFLAGS
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			)
+	execute_process(
+			COMMAND ${LLVM_CONFIG} --ldflags
+			OUTPUT_VARIABLE LLVM_LDFLAGS
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			)
+	execute_process(
+		COMMAND ${LLVM_CONFIG} --libs core jit native linker ipo
+		OUTPUT_VARIABLE LLVM_JIT_LIBS
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		)
+	set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} ${LLVM_CFLAGS})
+	set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${LLVM_CXXFLAGS})
+	set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_LD_FLAGS} "${LLVM_LDFLAGS} ${LLVM_JIT_LIBS}")
+	set(KONOHA_SRC ${KONOHA_SRC} src/lang/llvm.cpp)
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake 
 		${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
