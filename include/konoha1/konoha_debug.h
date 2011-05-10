@@ -38,6 +38,10 @@
 #define KNH_PTRACE(ctx, sfp, mon, e, fmt, ...) \
 	mon->trace(ctx, sfp, mon, LIBNAME, e, "!" fmt, ## __VA_ARGS__)
 
+#define KNH_DIE(fmt, ...) {\
+		fprintf(stderr, "%s(): " fmt, __FUNCTION__, ## __VA_ARGS__);\
+		exit(70);  /* EX_SOFTWARE */ \
+	}\
 
 #define KNH_PANIC(ctx, fmt, ...) \
 	ctx->api->trace(ctx, NULL, LOG_EMERG, "PANIC", __FUNCTION__, 0, "!(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)

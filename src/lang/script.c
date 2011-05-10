@@ -57,6 +57,7 @@ knh_NameSpace_t* new_NameSpace(CTX ctx, knh_NameSpace_t *parent)
 
 knh_class_t knh_NameSpace_getcid(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t sname)
 {
+	DBG_ASSERT(IS_NameSpace(ns));
 	if(knh_bytes_equals(sname, STEXT("Script"))) {
 		return O_cid(K_GMASCR);
 	}
@@ -70,6 +71,15 @@ knh_class_t knh_NameSpace_getcid(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t sname
 		goto L_TAIL;
 	}
 	return knh_getcid(ctx, sname);
+}
+
+KNHAPI2(knh_Object_t*) new_ObjectNS(CTX ctx, knh_NameSpace_t *ns, const char *sname)
+{
+	knh_class_t cid = knh_NameSpace_getcid(ctx, ns, B(sname));
+	if(cid == CLASS_unknown) {
+		KNH_DIE("unknown class name: %s\n", sname);
+	}
+	return new_Object_init2(ctx, ClassTBL(cid));
 }
 
 /* ------------------------------------------------------------------------ */

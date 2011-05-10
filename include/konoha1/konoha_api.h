@@ -7,6 +7,7 @@ extern "C" {
 
 
 #ifdef K_INTERNAL
+KNHAPI2(knh_Object_t*) new_ObjectNS(CTX ctx, knh_NameSpace_t *ns, const char *sname);
 KNHAPI2(knh_status_t) knh_load(CTX ctx, const char *scheme, knh_bytes_t path, knh_Array_t *resultsNULL);
 KNHAPI2(knh_Array_t*) new_Array(CTX ctx, knh_class_t p1, size_t capacity);
 KNHAPI2(void) knh_Array_add_(CTX ctx, knh_Array_t *a, knh_Object_t *value);
@@ -71,6 +72,7 @@ typedef struct knh_api2_t {
 	knh_InputStream_t* (*new_InputStreamNULL)(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn, const char *mode, knh_Monitor_t *mon);
 	knh_Int_t* (*new_Int)(CTX ctx, knh_class_t cid, knh_int_t value);
 	knh_Iterator_t* (*new_Iterator)(CTX ctx, knh_class_t p1, knh_Object_t *source, knh_Fitrnext fnext);
+	knh_Object_t* (*new_ObjectNS)(CTX ctx, knh_NameSpace_t *ns, const char *sname);
 	knh_OutputStream_t* (*new_BytesOutputStream)(CTX ctx, knh_Bytes_t *ba);
 	knh_OutputStream_t* (*new_OutputStreamDSPI)(CTX ctx, knh_io_t fio, const knh_StreamDSPI_t *dspi);
 	knh_OutputStream_t* (*new_OutputStreamNULL)(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn, const char *mode, knh_Monitor_t *mon);
@@ -113,7 +115,7 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)-2054853571)
+#define K_API2_CRC32 ((size_t)1562612672)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -128,6 +130,7 @@ static const knh_api2_t* getapi2(void) {
 		new_InputStreamNULL,
 		new_Int,
 		new_Iterator,
+		new_ObjectNS,
 		new_BytesOutputStream,
 		new_OutputStreamDSPI,
 		new_OutputStreamNULL,
@@ -184,6 +187,7 @@ static const knh_api2_t* getapi2(void) {
 #define new_InputStreamNULL   ctx->api2->new_InputStreamNULL
 #define new_Int   ctx->api2->new_Int
 #define new_Iterator   ctx->api2->new_Iterator
+#define new_ObjectNS   ctx->api2->new_ObjectNS
 #define new_BytesOutputStream   ctx->api2->new_BytesOutputStream
 #define new_OutputStreamDSPI   ctx->api2->new_OutputStreamDSPI
 #define new_OutputStreamNULL   ctx->api2->new_OutputStreamNULL
