@@ -798,11 +798,17 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 static knh_status_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *resultsNULL)
 {
 	knh_status_t status = K_CONTINUE;
-	BEGIN_LOCAL(ctx, lsfp, 5);
-	knh_Stmt_t *stmt = NULL;
+	BEGIN_LOCAL(ctx, lsfp, 3);
+	knh_Stmt_t *stmt = stmtITR;
 	KNH_SETv(ctx, lsfp[0].o, stmtITR); // lsfp[1] stmtNEXT
-	stmt = stmtITR;
 	while(stmt != NULL) {
+		knh_Stmt_t *stmtNEXT = DP(stmt)->nextNULL;
+		if(stmtNEXT != NULL) {
+			KNH_SETv(ctx, lsfp[1].o, stmt);
+			KNH_SETv(ctx, lsfp[2].o, stmtNEXT);
+			KNH_FINALv(ctx, DP(stmt)->nextNULL);
+			DP(stmt)->nextNULL = NULL;
+		}
 		ctx->gma->uline = stmt->uline;
 		switch(STT_(stmt)) {
 		case STT_NAMESPACE:
@@ -832,31 +838,17 @@ static knh_status_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *results
 			status = CONST_decl(ctx, stmt);
 			break;
 		case STT_ERR:
-			knh_Stmt_done(ctx, stmt);
-			_RETURN(K_BREAK);
 		case STT_BREAK:
 			knh_Stmt_done(ctx, stmt);
-			_RETURN(K_CONTINUE);  //
+			_RETURN(K_BREAK);
 		}
-		if(STT_(stmt) == STT_ERR) {
-			DBG_ASSERT(status != K_CONTINUE);
+		if(status != K_CONTINUE) {
+			goto L_RETURN;
 		}
-		if(status != K_CONTINUE) goto L_RETURN;
-		stmt = DP(stmt)->nextNULL;
-	}
-
-	SCRIPT_typing(ctx, stmtITR);
-	stmt = stmtITR;
-	while(stmt != NULL) {
-		knh_Stmt_t *stmtNEXT = DP(stmt)->nextNULL;
-		if(stmtNEXT != NULL) {
-			KNH_SETv(ctx, lsfp[0].o, stmt);
-			KNH_SETv(ctx, lsfp[1].o, stmtNEXT);
-			KNH_FINALv(ctx, DP(stmt)->nextNULL);
-			DP(stmt)->nextNULL = NULL;
+		if(STT_(stmt) != STT_DONE) {
+			SCRIPT_typing(ctx, stmt);
+			SCRIPT_asm(ctx, stmt);
 		}
-		ctx->gma->uline = stmt->uline;
-		SCRIPT_asm(ctx, stmt);
 		if(STT_(stmt) != STT_DONE) {
 			status = SCRIPT_eval(ctx, stmt, knh_isCompileOnly(ctx), resultsNULL);
 			if(status != K_CONTINUE) {

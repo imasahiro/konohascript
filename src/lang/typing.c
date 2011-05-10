@@ -4405,33 +4405,29 @@ static void Gamma_initThis(CTX ctx, knh_class_t cid)
 		break;\
 	}\
 
-void SCRIPT_typing(CTX ctx, knh_Stmt_t *stmtITR)
+void SCRIPT_typing(CTX ctx, knh_Stmt_t *stmt)
 {
-	knh_Stmt_t *stmt = stmtITR;
 	knh_class_t this_cid = O_cid(K_GMASCR);
+	knh_Token_t *tkRES = TM(stmt);
 	if(DP(ctx->gma)->gcapacity == 0) {
 		Gamma_expand(ctx, ctx->gma, 8/*init*/);
 	}
-	while(stmt != NULL) {
-		knh_Token_t *tkRES = TM(stmt);
-		ctx->gma->uline = stmt->uline;
-		KNH_SETv(ctx, DP(ctx->gma)->mtd, KNH_NULL);
-		switch(STT_(stmt)) {
-			CASE_STMT(CLASS, stmt, TYPE_void);
-			CASE_STMT2(METHOD, stmt, TYPE_void);
-			CASE_STMT(FORMAT, stmt, TYPE_void);
-			CASE_STMT2(DECLSCRIPT, stmt);
-			CASE_STMT2(LET, stmt, TYPE_void);
-			CASE_STMT2(SWAP, stmt);
-			CASE_STMT2(LETM, stmt);
-		}
-		if(TT_(tkRES) == TT_ERR) {
-			knh_Stmt_toERR(ctx, stmt, tkRES);
-		}
-		else if(IS_Token(tkRES)) {
-			knh_Stmt_done(ctx, stmt);
-		}
-		stmt = DP(stmt)->nextNULL;
+	ctx->gma->uline = stmt->uline;
+	KNH_SETv(ctx, DP(ctx->gma)->mtd, KNH_NULL);
+	switch(STT_(stmt)) {
+		CASE_STMT(CLASS, stmt, TYPE_void);
+		CASE_STMT2(METHOD, stmt, TYPE_void);
+		CASE_STMT(FORMAT, stmt, TYPE_void);
+		CASE_STMT2(DECLSCRIPT, stmt);
+		CASE_STMT2(LET, stmt, TYPE_void);
+		CASE_STMT2(SWAP, stmt);
+		CASE_STMT2(LETM, stmt);
+	}
+	if(TT_(tkRES) == TT_ERR) {
+		knh_Stmt_toERR(ctx, stmt, tkRES);
+	}
+	if(IS_Token(tkRES)) {
+		knh_Stmt_done(ctx, stmt);
 	}
 }
 
