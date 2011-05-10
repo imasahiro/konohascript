@@ -156,6 +156,8 @@ typedef struct knh_MapDSPI_t {
 	knh_bool_t (*next)(CTX, knh_map_t*, knh_mapitr_t *, knh_sfp_t *);
 } knh_MapDSPI_t;
 
+
+
 /* ------------------------------------------------------------------------ */
 /* REGEX_SPI */
 

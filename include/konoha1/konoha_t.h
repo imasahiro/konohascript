@@ -673,6 +673,54 @@ typedef struct {
 #define IS_FMTline(level)  (level <= FMT_line)
 #define IS_FMTdump(level)  (level >= TFMT_dump)
 
+/* ------------------------------------------------------------------------ */
+
+typedef struct {
+	struct knh_OutputStream_t *w;  // always set
+	void *pk;      // for msgpack
+	void *sbuffer; // for msgpack
+} knh_packer_t;
+
+typedef struct knh_PackSPI_t {
+	const char *name;
+	void* (*pack_init)(CTX, knh_packer_t *);
+	void  (*pack_flushfree)(CTX, knh_packer_t *);
+	void  (*pack_null)(CTX, void*);
+	void  (*pack_bool)(CTX, void*, int d);
+	void  (*pack_int)(CTX, void*, knh_int_t d);
+	void  (*pack_float)(CTX, void*, knh_int_t d);
+	void  (*pack_string)(CTX, void*, const char *str, size_t n);
+	void  (*pack_raw)(CTX, void*, const char *str, size_t n);
+	void  (*pack_putc)(CTX, void*, int ch);  // use for delim : or ,
+	void  (*pack_beginarray)(CTX, void*, size_t n);
+	void  (*pack_endarray)(CTX, void*);   // unnecessary for msgpack
+	void  (*pack_beginmap)(CTX, void*, size_t n);
+	void  (*pack_endmap)(CTX, void*);     // unnecessary for msgpack
+	knh_type_t (*unpack)(CTX, struct knh_InputStream_t *, knh_sfp_t*);   // put sfp[0]
+} knh_PackSPI_t;
+
+/***
+void knh_OutputStream_writeObject(CTX ctx, knh_OutputStream_t *w, knh_Object_t *o, const knh_PackSPI_t *packspi)
+{
+	knh_packer_t packer = {w, NULL, NULL};
+	void *pkr = packspi->packinit(ctx, &packer);
+	if(O_cTBL(o)->ospi->wdata == NULL) {
+		O_cTBL(o)->ospi->wdata(ctx, pkr, o, packspi);
+	}
+	packspi->pack_flushfree(ctx, &packer);
+}
+
+knh_Object_t *knh_InputStream_readObject(CTX ctx, knh_InputStream_t *in, knh_type_t reqc, const knh_PackSPI_t *packspi)
+{
+	BEGIN_LOCAL(ctx, lsfp, 2);
+	knh_type_t type = packspi->unpack(ctx, in, lsfp);
+	if(type != TYPE_void) {
+		// convert type to reqc;
+	}
+	END_LOCAL_(ctx, lsfp);
+}
+***/
+
 typedef struct knh_ClassDef_t {
 	void (*init)(CTX, Object*);
 	void (*initcopy)(CTX, Object *, const Object *);
@@ -688,7 +736,7 @@ typedef struct knh_ClassDef_t {
 	knh_int_t   (*toint)(CTX ctx, knh_sfp_t*);
 	knh_float_t (*tofloat)(CTX ctx, knh_sfp_t*);
 	struct knh_TypeMap_t* (*findTypeMapNULL)(CTX, knh_class_t, knh_class_t, int);
-	void *RESERVED1;
+	void (*wdata)(CTX, void *, Object*, const knh_PackSPI_t *);
 	void *RESERVED2;
 	void *RESERVED3;
 
