@@ -2354,7 +2354,6 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 	if(mtd_cid == CLASS_unknown) { /* new UnknownClass(...) */
 		if(reqt == TYPE_dyn) return ERROR_UndefinedName(ctx, tkC);
 		mtd_cid = CLASS_t(reqt);
-		knh_Token_toTYPED(ctx, tkC, TT_CID, CLASS_Class, mtd_cid);
 	}
 	if(mn == MN_newARRAY) {  /* new C [10, 10] */
 		size_t i;
