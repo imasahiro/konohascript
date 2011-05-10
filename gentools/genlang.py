@@ -137,6 +137,7 @@ finally    -         0
 
 ;          TT_SEMICOLON  0
 ,          TT_COMMA      0
+<>         TT_DIAMOND    0
 ->         TT_ARROW      0
 =>         TT_DARROW     0
 -->        TT_TARROW     0

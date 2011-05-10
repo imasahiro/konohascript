@@ -2313,6 +2313,25 @@ static knh_Token_t* typingFIELD(CTX ctx, knh_class_t cid, knh_Stmt_t *stmt, size
 	return TYPE_void;
 }
 
+static knh_Token_t* NEWPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t mtd_cid, knh_methodn_t mn, int needsTypingPARAMs)
+{
+	knh_Token_t *tkMTD = tkNN(stmt, 0);
+	knh_Token_t *tkC = tkNN(stmt, 1);
+	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, mn);
+	knh_Token_t *tkRES = (knh_Token_t*)stmt;
+	if(mtd == NULL || ClassTBL((mtd)->cid)->bcid != ClassTBL(mtd_cid)->bcid) {
+		return ERROR_Undefined(ctx, _("constructor"), mtd_cid, tkMTD);
+	}
+	Token_toCALLMTD(ctx, tkMTD, mn, mtd);
+	//DBG_P("mtd_cid=%s, reqt=%s", CLASS__(mtd_cid), CLASS__(reqt));
+	knh_Token_toTYPED(ctx, tkC, TT_CID, CLASS_Class, mtd_cid);
+	if(needsTypingPARAMs) {
+		tkRES = CALLPARAMs_typing(ctx, stmt, mtd_cid, mtd_cid, mtd);
+	}
+	tkRES->type = mtd_cid;
+	return tkRES;
+}
+
 #define IS_NEWLIST(cid)  (cid == CLASS_Array || cid == CLASS_ArrayIm || cid == CLASS_Range)
 #define IS_NEWMAP(cid)  (cid == CLASS_Map || cid == CLASS_MapIm)
 
@@ -2322,14 +2341,12 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 	knh_Token_t *tkC = tkNN(stmt, 1);
 	knh_methodn_t mn = Token_mn(ctx, tkMTD);
 	knh_class_t mtd_cid = CLASS_unknown;
-	int needsTypingPARAMs = 1;
 	if(reqt == TYPE_var || reqt == TYPE_void) reqt = TYPE_dyn;
 	if(TT_(tkC) == TT_ASIS) { /* new () */
 		if(reqt == TYPE_dyn) {
-			return ERROR_Needs(ctx, "constructor class");
+			return ERROR_Needs(ctx, "class");
 		}
 		mtd_cid = CLASS_t(reqt);
-		knh_Token_toTYPED(ctx, tkC, TT_CID, CLASS_Class, mtd_cid);
 	}
 	else {
 		mtd_cid = knh_Token_cid(ctx, tkC, CLASS_unknown);
@@ -2344,8 +2361,7 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		for(i = 2; i < DP(stmt)->size; i++) {
 			TYPING(ctx, stmt, i, TYPE_Int, 0);
 		}
-		needsTypingPARAMs = 0;
-		goto L_LOOKUPMETHOD;
+		return NEWPARAMs_typing(ctx, stmt, mtd_cid, mn, 0/*needsTypingPARAMs*/);
 	}
 	if(mn == MN_newLIST) {  /* [1, 2, .. ] */
 		size_t i;
@@ -2361,7 +2377,6 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 			}
 			if(p1 != TYPE_dyn) {
 				mtd_cid = knh_class_P1(ctx, mtd_cid, p1);
-				knh_Token_toTYPED(ctx, tkC, TT_CID, CLASS_Class, mtd_cid);
 			}
 		}
 		else {
@@ -2371,8 +2386,7 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 			}
 			mtd_cid = (reqt != TYPE_dyn) ? reqt : mtd_cid;
 		}
-		needsTypingPARAMs = 0;
-		goto L_LOOKUPMETHOD;
+		return NEWPARAMs_typing(ctx, stmt, mtd_cid, mn, 0/*needsTypingPARAMs*/);
 	}
 
 	if(mn == MN_newMAP) {  /* {hoge: 1, hogo: 2} */
@@ -2398,7 +2412,6 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 			}
 			if(p2 != TYPE_dyn) {
 				mtd_cid = knh_class_P2(ctx, mtd_cid, CLASS_String, p2);
-				knh_Token_toTYPED(ctx, tkC, TT_CID, CLASS_Class, mtd_cid);
 			}
 		}
 		else {
@@ -2411,8 +2424,7 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		if(IS_SCRIPTLEVEL(ctx)) {
 			DBG_P("** SCRIPT_LEVEL **");
 		}
-		needsTypingPARAMs = 0;
-		goto L_LOOKUPMETHOD;
+		return NEWPARAMs_typing(ctx, stmt, mtd_cid, mn, 0/*needsTypingPARAMs*/);
 	}
 
 	if(mn == MN_newTUPLE) {  /* (1, 2) */
@@ -2427,7 +2439,7 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		mtd_cid = knh_class_Generics(ctx, CLASS_Tuple, pa);
 		knh_Token_toTYPED(ctx, tkC, TT_CID, CLASS_Class, mtd_cid);
 		END_LOCAL_(ctx, lsfp);
-		goto L_LOOKUPMETHOD;
+		return NEWPARAMs_typing(ctx, stmt, mtd_cid, mn, 0/*needsTypingPARAMs*/);
 	}
 
 	if(mtd_cid == CLASS_Exception) {
@@ -2438,24 +2450,8 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		Stmt_insert(ctx, stmt, 1, tkC);
 		DBG_ASSERT(TT_(tmNN(stmt, 2)) == TT_CONST);
 		DBG_ASSERT((tmNN(stmt, 2))->type == CLASS_String);
-		goto L_LOOKUPMETHOD;
 	}
-	L_LOOKUPMETHOD:
-	DBG_ASSERT_cid(mtd_cid);
-	{
-		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, mn);
-		knh_Token_t *tkRES = (knh_Token_t*)stmt;
-		if(mtd == NULL || ClassTBL((mtd)->cid)->bcid != ClassTBL(mtd_cid)->bcid) {
-			return ERROR_Undefined(ctx, _("constructor"), mtd_cid, tkMTD);
-		}
-		Token_toCALLMTD(ctx, tkMTD, mn, mtd);
-		Token_setCONST(ctx, tkC, new_Type(ctx, mtd_cid));
-		if(needsTypingPARAMs) {
-			tkRES = CALLPARAMs_typing(ctx, stmt, mtd_cid, mtd_cid, mtd);
-		}
-		tkRES->type = mtd_cid;
-		return tkRES;
-	}
+	return NEWPARAMs_typing(ctx, stmt, mtd_cid, mn, 1/*needsTypingPARAMs*/);
 }
 
 /* ------------------------------------------------------------------------ */

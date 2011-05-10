@@ -823,7 +823,8 @@ static int bytes_isOPR(knh_bytes_t t, int ch)
 			if(ISB1_(t, ':')) return 1;   /* >= */
 			return 0;
 		case '>':
-			if(ISB1_(t, '-')) return 1; /* -> */
+			if(ISB1_(t, '<')) return 1;  /* <> */
+			if(ISB1_(t, '-')) return 1;  /* -> */
 			if(ISB1_(t, '=')) return 1;  /* => */
 			if(ISB1_(t, '>')) return 1;  /* >> */
 			return 0;
