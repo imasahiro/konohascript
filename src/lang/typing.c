@@ -792,47 +792,34 @@ static knh_Token_t* TUNAME_typing(CTX ctx, knh_Token_t *tk)
 	return Token_toSYSVAL(ctx, tk);
 }
 
-static knh_Token_t* TPROPN_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt, knh_Stmt_t *sLET)
+static knh_Token_t* TPROPN_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 {
-	knh_bytes_t n = S_tobytes((tk)->text);
-	if(B_endsWith(n, "*")) { /* name.* */
-		if(sLET != NULL) {
-			return ErrorTokenCannotAssign(ctx, tk);
-		}
-		Token_toCONST(ctx, tk);
+	knh_bytes_t t = S_tobytes((tk)->text);
+	if(B_endsWith(t, "*")) { /* name.* */
 		knh_Stmt_t *stmt =
 			new_Stmt2(ctx, STT_CALL, new_TokenMN(ctx, MN_listProperties), new_TokenCONST(ctx, ctx->sys), tk, NULL);
+		Token_toCONST(ctx, tk);
 		return CALL_typing(ctx, stmt, reqt);
 	}
 	else {
-		knh_String_t *v = knh_getPropertyNULL(ctx, n);
-		if(sLET != NULL) { /* $prop = rval */
-			if(v != NULL) {
-				SP(tk)->type = O_cid(v);
-				TYPING(ctx, sLET, 2, tk->type, 0);
-				if(Tn_type(sLET, 2) != tk->type) {
-					return TERROR_Token(ctx, tk, tk->type, Tn_type(sLET, 2));
-				}
-			}
-			else {
-				TYPING(ctx, sLET, 2, TYPE_var, 0);
-				SP(tk)->type = Tn_type(sLET, 2);
-			}
-			return NULL;/* see LET_typing */
+		size_t i;
+		knh_Object_t *v = (knh_Object_t*)knh_getPropertyNULL(ctx, t);
+		if(v != NULL) {
+			SP(tk)->type = O_cid(v);
 		}
 		else {
-			if(v != NULL) {
-				SP(tk)->type = O_cid(v);
+			if(IS_Tvany(reqt)) {
+				reqt = TYPE_String;
+				InfoType(ctx, "$", t, TYPE_String);
 			}
-			else {
-				if(IS_Tvany(reqt)) {
-					reqt = TYPE_String;
-					InfoType(ctx, "$", n, TYPE_String);
-				}
-				tk->type = reqt;
-			}
+			tk->type = reqt;
+			v = KNH_NULVAL(CLASS_t(reqt));
+			knh_setProperty(ctx, tk->text, v);
 		}
-		return TM(tk);
+		for(i = 0; i < t.len; i++) {
+			if(islower(t.buf[i])) return TM(tk);
+		}
+		return Token_setCONST(ctx, tk, v);
 	}
 }
 
@@ -1331,7 +1318,7 @@ static knh_Token_t *Token_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 	case TT_UNAME: return TUNAME_typing(ctx, tk);
 	case TT_TYPEOF:
 	case TT_PTYPE:  return TTYPE_typing(ctx, tk, reqt);
-	case TT_PROPN: return TPROPN_typing(ctx, tk, reqt, 0/*isLVALUE*/);
+	case TT_PROPN: return TPROPN_typing(ctx, tk, reqt);
 	case TT_REGEX: case TT_STR: return Token_toCONST(ctx, tk);
 	case TT_TSTR: return TSTR_typing(ctx, tk, reqt);
 	case TT_ESTR: return ESTR_typing(ctx, tk, reqt);

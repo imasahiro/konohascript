@@ -1,11 +1,10 @@
-WELCOME TO KONOHA SCRIPTING LANGUAGE
-====================================
+KONOHA SCRIPTING LANGUAGE
+=========================
 
-THE KONOHA SCRIPTING LANGUAGE
------------------------------
+KONOHA SCRIPTING LANGUAGE
+-------------------------
 
-Konoha is a statically-typed scripting language for ubiquitous and 
-dependable computing. It is featured by:
+Konoha is a newly designed statically-typed scripting language.
 
  * static typing
  * "run anytime" compiler
