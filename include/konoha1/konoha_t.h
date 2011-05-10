@@ -681,13 +681,12 @@ typedef struct knh_ClassDef_t {
 	void (*checkin)(CTX, knh_sfp_t *sfp, Object*);
 	void (*checkout)(CTX, Object*, int);
 	int  (*compareTo)(const Object*, const Object*);
-	void (*write)(CTX, struct knh_OutputStream_t*, Object*, int);
+	void (*p)(CTX, struct knh_OutputStream_t*, Object*, int);
 
 	struct knh_String_t* (*getkey)(CTX, knh_sfp_t*);
 	knh_hashcode_t       (*hashCode)(CTX, knh_sfp_t*);
 	knh_int_t   (*toint)(CTX ctx, knh_sfp_t*);
 	knh_float_t (*tofloat)(CTX ctx, knh_sfp_t*);
-
 	struct knh_TypeMap_t* (*findTypeMapNULL)(CTX, knh_class_t, knh_class_t, int);
 	void *RESERVED1;
 	void *RESERVED2;
