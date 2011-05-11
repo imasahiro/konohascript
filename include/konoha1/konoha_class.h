@@ -39,16 +39,17 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 /* Type Variable */
-//## @TypeVariable class Tvoid_ Tvoid_;
-//## @TypeVariable class Tvar_  Tvoid_;
+//## @TypeVariable class Tvoid Tvoid;
+//## @TypeVariable class Tvar  Tvoid;
 
-#define CLASS_Tvoid             CLASS_Tvoid_
-#define CLASS_Tvar              CLASS_Tvar_
-#define TYPE_var                CLASS_Tvar
+//#define CLASS_Tvoid             CLASS_Tvoid_
+//#define CLASS_Tvar              CLASS_Tvar_
+#define TYPE_void                 CLASS_Tvoid
+#define TYPE_var                  CLASS_Tvar
 
 // Tuple does not exist. See
-#define CLASS_Tuple             CLASS_Tvoid
-#define TYPE_Tuple              CLASS_Tvoid
+//#define CLASS_Tuple             CLASS_Tvoid
+//#define TYPE_Tuple              CLASS_Tvoid
 
 /* ------------------------------------------------------------------------ */
 //## class Object Object knh_ObjectField_t;
@@ -229,7 +230,7 @@ typedef struct knh_Iterator_t {
 } knh_Iterator_t;
 
 /* ------------------------------------------------------------------------ */
-//## Tuple Object;
+//## class Tuple Object;
 //## typeO PairSS   Tuple 0 String String;
 //## typeO PairST1  Tuple 0 String T1;
 //## typeO PairT1T2 Tuple 0 T1 T2;
@@ -257,8 +258,8 @@ typedef struct knh_Range_t {
 /* ------------------------------------------------------------------------ */
 //## class Array   Object;
 //## class ArrayIm Object;
-//## flag Array   NDATA     1 - is set * *;
-//## flag ArrayIm NDATA     1 - is set * *;
+//## flag  Array   NDATA     1 - is set * *;
+//## flag  ArrayIm NDATA     1 - is set * *;
 //## type CmprT1  Func 1 T1 T1 Int;
 
 typedef struct {
@@ -470,8 +471,9 @@ typedef struct {
 //## flag Method ObjectCode      5 DP(%s)->flag is set * *;
 //## flag Method Hidden          6 DP(%s)->flag is set * *;
 //## flag Method Dynamic         7 DP(%s)->flag is set * *;
-//## flag Method Multi           8 DP(%s)->flag is set * *;
-//## flag Method Audit           9 DP(%s)->flag is set * *;
+//## flag Method Immutable       8 DP(%s)->flag is set * *;
+//## flag Method Message         9 DP(%s)->flag is set * *;
+//## flag Method Controlled     10 DP(%s)->flag is set * *;
 
 typedef struct {
 	knh_flag_t     flag;  knh_ushort_t   delta;
@@ -1291,18 +1293,18 @@ typedef struct knh_KonohaCode_t {
 } knh_KonohaCode_t;
 
 /* ------------------------------------------------------------------------ */
-//## class Immutable Object;
+//## @Immutable class Immutable Object;
 
 typedef struct knh_Immutable_t {
 	knh_hObject_t h;
 } knh_Immutable_t;
 
 /* ------------------------------------------------------------------------ */
-//## class Struct Object;
+//## class KindOf Object;
 
-typedef struct knh_Struct_t {
+typedef struct knh_KindOf_t {
 	knh_hObject_t h;
-} knh_Struct_t;
+} knh_KindOf_t;
 
 /* ------------------------------------------------------------------------ */
 //## @Cyclic class Tdynamic Object knh_dynamic_t;

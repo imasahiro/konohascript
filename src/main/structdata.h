@@ -62,8 +62,8 @@ static const char * StringData0[] = {
 };
 
 static knh_data_t StructData0[] = {
-	DATA_STRUCT0, CLASS_Tvoid_, _DATA(&Tvoid_Def), CFLAG_Tvoid_,
-	DATA_STRUCT0, CLASS_Tvar_, _DATA(&Tvar_Def), CFLAG_Tvar_,
+	DATA_STRUCT0, CLASS_Tvoid, _DATA(&TvoidDef), CFLAG_Tvoid,
+	DATA_STRUCT0, CLASS_Tvar, _DATA(&TvarDef), CFLAG_Tvar,
 	DATA_STRUCT0, CLASS_Object, _DATA(&ObjectDef), CFLAG_Object,
 	DATA_STRUCT0, CLASS_Boolean, _DATA(&BooleanDef), CFLAG_Boolean,
 	DATA_STRUCT0, CLASS_Number, _DATA(&NumberDef), CFLAG_Number,
@@ -73,6 +73,7 @@ static knh_data_t StructData0[] = {
 	DATA_STRUCT0, CLASS_Bytes, _DATA(&BytesDef), CFLAG_Bytes,
 	DATA_STRUCT0, CLASS_BytesIm, _DATA(&BytesImDef), CFLAG_BytesIm,
 	DATA_STRUCT0, CLASS_Iterator, _DATA(&IteratorDef), CFLAG_Iterator,
+	DATA_STRUCT0, CLASS_Tuple, _DATA(&TupleDef), CFLAG_Tuple,
 	DATA_STRUCT0, CLASS_Range, _DATA(&RangeDef), CFLAG_Range,
 	DATA_STRUCT0, CLASS_Array, _DATA(&ArrayDef), CFLAG_Array,
 	DATA_STRUCT0, CLASS_ArrayIm, _DATA(&ArrayImDef), CFLAG_ArrayIm,
@@ -108,14 +109,14 @@ static knh_data_t StructData0[] = {
 	DATA_STRUCT0, CLASS_BasicBlock, _DATA(&BasicBlockDef), CFLAG_BasicBlock,
 	DATA_STRUCT0, CLASS_KonohaCode, _DATA(&KonohaCodeDef), CFLAG_KonohaCode,
 	DATA_STRUCT0, CLASS_Immutable, _DATA(&ImmutableDef), CFLAG_Immutable,
-	DATA_STRUCT0, CLASS_Struct, _DATA(&StructDef), CFLAG_Struct,
+	DATA_STRUCT0, CLASS_KindOf, _DATA(&KindOfDef), CFLAG_KindOf,
 	DATA_STRUCT0, CLASS_Tdynamic, _DATA(&TdynamicDef), CFLAG_Tdynamic,
 	0
 };
 
 static knh_data_t ClassData0[] = {
-	DATA_CLASS0, CLASS_Tvoid_, _DATA("konoha.Tvoid_"), CFLAG_Tvoid_, CLASS_Tvoid_, CLASS_Tvoid_, 0 + 0 /*0*/,
-	DATA_CLASS0, CLASS_Tvar_, _DATA("konoha.Tvar_"), CFLAG_Tvar_, CLASS_Tvar_, CLASS_Tvoid_, 0 + 0 /*0*/,
+	DATA_CLASS0, CLASS_Tvoid, _DATA("konoha.Tvoid"), CFLAG_Tvoid, CLASS_Tvoid, CLASS_Tvoid, 0 + 0 /*0*/,
+	DATA_CLASS0, CLASS_Tvar, _DATA("konoha.Tvar"), CFLAG_Tvar, CLASS_Tvar, CLASS_Tvoid, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Object, _DATA("konoha.Object"), CFLAG_Object, CLASS_ObjectField, CLASS_Object, 17 + 5 /*0*/,
 	DATA_CLASS0, CLASS_Boolean, _DATA("konoha.Boolean"), CFLAG_Boolean, CLASS_Boolean, CLASS_Object, 1 + 4 /*3*/,
 	DATA_CLASS0, CLASS_Number, _DATA("konoha.Number"), CFLAG_Number, CLASS_Number, CLASS_Object, 0 + 0 /*0*/,
@@ -125,6 +126,7 @@ static knh_data_t ClassData0[] = {
 	DATA_CLASS0, CLASS_Bytes, _DATA("konoha.Bytes"), CFLAG_Bytes, CLASS_Bytes, CLASS_Object, 13 + 0 /*1*/,
 	DATA_CLASS0, CLASS_BytesIm, _DATA("konoha.BytesIm"), CFLAG_BytesIm, CLASS_BytesIm, CLASS_Object, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Iterator, _DATA("konoha.Iterator"), CFLAG_Iterator, CLASS_Iterator, CLASS_Object, 0 + 0 /*2*/,
+	DATA_CLASS0, CLASS_Tuple, _DATA("konoha.Tuple"), CFLAG_Tuple, CLASS_Tuple, CLASS_Object, 2 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Range, _DATA("konoha.Range"), CFLAG_Range, CLASS_Range, CLASS_Object, 1 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Array, _DATA("konoha.Array"), CFLAG_Array, CLASS_Array, CLASS_Object, 28 + 0 /*2*/,
 	DATA_CLASS0, CLASS_ArrayIm, _DATA("konoha.ArrayIm"), CFLAG_ArrayIm, CLASS_ArrayIm, CLASS_Object, 4 + 0 /*0*/,
@@ -160,7 +162,7 @@ static knh_data_t ClassData0[] = {
 	DATA_CLASS0, CLASS_BasicBlock, _DATA("konoha.BasicBlock"), CFLAG_BasicBlock, CLASS_BasicBlock, CLASS_Object, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_KonohaCode, _DATA("konoha.KonohaCode"), CFLAG_KonohaCode, CLASS_KonohaCode, CLASS_Object, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Immutable, _DATA("konoha.Immutable"), CFLAG_Immutable, CLASS_Immutable, CLASS_Object, 0 + 0 /*0*/,
-	DATA_CLASS0, CLASS_Struct, _DATA("konoha.Struct"), CFLAG_Struct, CLASS_Struct, CLASS_Object, 0 + 0 /*0*/,
+	DATA_CLASS0, CLASS_KindOf, _DATA("konoha.KindOf"), CFLAG_KindOf, CLASS_KindOf, CLASS_Object, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Tdynamic, _DATA("konoha.Tdynamic"), CFLAG_Tdynamic, CLASS_dynamic, CLASS_Object, 0 + 0 /*0*/,
 	DATA_GENERICS/*RangeInt*/, CLASS_Range, 1, 0, TYPE_Int, FN_,
 	DATA_GENERICS/*CmprT1*/, CLASS_Func, 2, 1, TYPE_T1, FN_, TYPE_T1, FN_, TYPE_Int, FN_,

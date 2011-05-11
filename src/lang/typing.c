@@ -188,21 +188,22 @@ static knh_methodn_t Token_mn(CTX ctx, knh_Token_t *tk)
 	return (tk)->mn;
 }
 
-static knh_class_t TokenTYPE_cid(CTX ctx, knh_Token_t *tk, knh_class_t bcid)
+static knh_class_t TokenPTYPE_cid(CTX ctx, knh_Token_t *tk, knh_class_t bcid)
 {
 	knh_class_t cid;
 	BEGIN_LOCAL(ctx, lsfp, 1);
 	LOCAL_NEW(ctx, lsfp, 0, knh_ParamArray_t*, pa, new_ParamArray(ctx));
 	knh_ParamArray_t *bpa = ClassTBL(bcid)->cparam;
 	size_t i;
+	int psize = knh_Array_size(tk->list) - 1;
 	for(i = 1; i < knh_Array_size((tk)->list); i++) {
 		knh_Token_t *tkT = (tk)->list->tokens[i];
 		if(TT_(tkT) == TT_DARROW) { i++; break; }
 		knh_param_t p = {knh_Token_cid(ctx, tkT, CLASS_Tdynamic), FN_NONAME};
 		if(p.type == TYPE_void) continue;
-		if((bcid == CLASS_Map || bcid == CLASS_MapIm) && knh_Array_size(tk->list) == 2) { // Map<T> => Map<String, T>
-			knh_param_t p1 = {CLASS_String, FN_NONAME};
-			knh_ParamArray_add(ctx, pa, p1);
+		if(psize == 1 && (bcid == CLASS_Map || bcid == CLASS_MapIm || bcid == CLASS_Tuple)) {
+			knh_param_t p1 = {CLASS_String, FN_k}; // Map<T> => Map<String, T>
+			knh_ParamArray_add(ctx, pa, p1);       // Tuple<T> => Tuple<String, T>
 		}
 		knh_ParamArray_add(ctx, pa, p);
 	}
@@ -219,13 +220,12 @@ static knh_class_t TokenTYPE_cid(CTX ctx, knh_Token_t *tk, knh_class_t bcid)
 			goto L_END;
 		}
 	}
-	if(bcid == CLASS_Func || bcid == CLASS_Tuple) {
+	if(bcid == CLASS_Func && bcid == CLASS_Tuple) {
 		cid = knh_class_Generics(ctx, bcid, pa);
 		goto L_END;
 	}
-
 	if((pa)->psize != (bpa)->psize || (pa)->rsize != (bpa)->rsize) {
-		WarningTypeParameter(ctx, bcid);
+		WARN_WrongTypeParam(ctx, bcid);
 		cid = bcid;
 		goto L_END;
 	}
@@ -238,7 +238,7 @@ static knh_class_t TokenTYPE_cid(CTX ctx, knh_Token_t *tk, knh_class_t bcid)
 		{
 			knh_class_t tcid = knh_type_tocid(ctx, p->type, DP(ctx->gma)->this_cid);
 			if(!class_isa(tcid, bp->type)) {
-				WarningTypeParameter(ctx, bcid);
+				WARN_WrongTypeParam(ctx, bcid);
 				cid = bcid;
 				goto L_END;
 			}
@@ -293,17 +293,12 @@ knh_class_t knh_Token_cid(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 			DBG_ASSERT(IS_Array((tk)->list));
 			knh_Token_t *tkC = tk->list->tokens[0];
 			knh_class_t bcid = knh_Token_cid(ctx, tkC, CLASS_unknown);
-			if(bcid == CLASS_unknown || ClassTBL(bcid)->cparam == NULL) {  /* @CODE: String<T> // no such generics */
-				if(IS_String(tkC->text) && knh_bytes_equals(S_tobytes(tkC->text), STEXT("Tuple"))) {
-					cid = TokenTYPE_cid(ctx, tk, CLASS_Tuple);
-				}
-				else {
-					WarningTypeParameter(ctx, bcid);
-					cid = bcid;
-				}
+			if(bcid == CLASS_unknown || (bcid != CLASS_Tuple && ClassTBL(bcid)->cparam == NULL)) {
+				WARN_WrongTypeParam(ctx, bcid);  /* @CODE: String<T> // no such generics */
+				cid = bcid;
 			}
 			else {
-				cid = TokenTYPE_cid(ctx, tk, bcid);
+				cid = TokenPTYPE_cid(ctx, tk, bcid);
 			}
 		}
 		default : {
@@ -3391,9 +3386,11 @@ static knh_flag_t METHOD_flag(CTX ctx, knh_Stmt_t *o, knh_class_t cid)
 		ADD_FLAG(flag, "Private", FLAG_Method_Private);
 		ADD_FLAG(flag, "Const", FLAG_Method_Const);
 		ADD_FLAG(flag, "Static", FLAG_Method_Static);
-		ADD_FLAG(flag, "Debug", FLAG_Method_Debug);
+		ADD_FLAG(flag, "Immutable", FLAG_Method_Static);
 		if(class_isSingleton(cid)) flag |= FLAG_Method_Static;
+		if(class_isImmutable(cid)) flag |= FLAG_Method_Immutable;
 //		if(class_isDebug(cid)) flag |= FLAG_Method_Debug;
+		ADD_FLAG(flag, "Debug", FLAG_Method_Debug);
 	}
 	return flag;
 }

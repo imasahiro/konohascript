@@ -347,17 +347,10 @@ typedef knh_ushort_t          knh_methodn_t;
 
 #define FN_NONAME    ((knh_fieldn_t)-1)
 #define FN_NEWID     ((knh_fieldn_t)-2)
-#define FN_DOCUAssurance  ((knh_fieldn_t)-2)
 #define FN_return    FN_
-#define MN_NONAME   ((knh_methodn_t)-1)
-#define MN_NEWID    ((knh_methodn_t)-2)
 
-#define FN_K FN_k
-#define FN_V FN_v
-#define FN_T FN_t
-#define FN_U FN_u
-#define FN_P FN_p
-#define FN_R FN_r
+#define MN_NONAME    ((knh_methodn_t)-1)
+#define MN_NEWID     ((knh_methodn_t)-2)
 
 #define K_FLAG_FN_U1         K_FLAG_H0
 #define K_FLAG_FN_U2         K_FLAG_H1
@@ -367,7 +360,11 @@ typedef knh_ushort_t          knh_methodn_t;
 #define FN_isU1(fnq)         ((fnq & K_FLAG_FN_U1) == K_FLAG_FN_U1)
 #define FN_isU2(fnq)         ((fnq & K_FLAG_FN_U2) == K_FLAG_FN_U2)
 
-#define FN_UNMASK(fnq)       (fnq & (~(K_FLAG_FN_SUPER|K_FLAG_FN_U1|K_FLAG_FN_U2)))
+#define K_FLAG_FN_REF        K_FLAG_H0
+#define K_FLAG_FN_NEMPTY     K_FLAG_H1
+#define K_FLAG_FN_SYSTEM     K_FLAG_H2
+
+#define FN_UNMASK(fnq)       (fnq & (~(K_FLAG_H0|K_FLAG_H1|K_FLAG_H2)))
 
 #define K_FLAG_MN_ISBOOL     K_FLAG_H0
 #define K_FLAG_MN_GETTER     K_FLAG_H1

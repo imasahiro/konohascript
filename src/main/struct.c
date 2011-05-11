@@ -209,60 +209,21 @@ KNHAPI2(knh_ClassDef_t*) knh_getDefaultClassDef(void)
 	return &TdynamicDef;
 }
 
-/* --------------------------------------------------------------------------*/
-
-static void Tuple_init(CTX ctx, Object *o)
-{
-	knh_Tuple_t *of = (knh_Tuple_t*)o;
-	const knh_ClassTBL_t *t = O_cTBL(o);
-	if(t->fsize > 0) {
-		Object **v = &(of->smallobject);
-		if(t->fsize > K_SMALLOBJECT_FIELDSIZE) {
-			v = (Object**)KNH_MALLOC(ctx, t->fsize * sizeof(knh_Object_t*));
-		}
-		of->fields = v;
-		knh_memcpy(v, t->defnull->ref, t->fsize * sizeof(knh_Object_t*));
-#ifdef K_USING_RCGC
-		size_t i;
-		for(i = 0; i < t->fsize; i++) {
-			if(t->fields[i].israw == 0) {
-				knh_Object_RCinc(of->fields[i]);
-			}
-		}
-#endif
-	}
-	else {
-		of->fields = NULL;
-	}
-}
-
-static void ObjectField_initcopy(CTX ctx, Object *o, const Object *src);
-static void ObjectField_reftrace(CTX ctx, Object *o FTRARG);
-static void ObjectField_free(CTX ctx, Object *o);
-
-static void TUPLE_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
-{
-	knh_putc(ctx, w, '(');
-	{
-		knh_fields_t *tf = O_cTBL(o)->fields;
-		size_t i, fsize = O_cTBL(o)->fsize;
-		Object **v = (Object**)o->ref;
-		knh_write_TObject(ctx, w, tf[0].type, v, 0, level);
-		for(i = 1; i < fsize; i++) {
-			if(tf[i].type == TYPE_void) continue;
-			knh_write_delim(ctx, w);
-			knh_write_TObject(ctx, w, tf[i].type, v, i, level);
-		}
-	}
-	knh_putc(ctx, w, ')');
-}
-
-static knh_ClassDef_t Tvoid_Def = {
-	Tuple_init, ObjectField_initcopy, ObjectField_reftrace, ObjectField_free,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, TUPLE_p,
+static knh_ClassDef_t TvoidDef = {
+	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"dynamic", 0, 0, NULL,
+	"void", CFLAG_Tvoid, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
+static knh_ClassDef_t TvarDef = {
+	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"var", CFLAG_Tvar, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
@@ -387,15 +348,6 @@ static knh_ClassDef_t ObjectDef = {
 	ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
 	"Object", CFLAG_Object, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
-};
-
-static knh_ClassDef_t Tvar_Def = {
-	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
-	DEFAULT_checkin, DEFAULT_checkout, ObjectField_compareTo, DEFAULT_p,
-	ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"var", CFLAG_Tvoid_, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
@@ -843,6 +795,60 @@ static knh_ClassDef_t BytesImDef = {
 	DEFAULT_getkey, Bytes_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
 	"BytesIm", CFLAG_BytesIm, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
+/* --------------------------------------------------------------------------*/
+/* Tuple */
+
+static void Tuple_init(CTX ctx, Object *o)
+{
+	knh_Tuple_t *of = (knh_Tuple_t*)o;
+	const knh_ClassTBL_t *t = O_cTBL(o);
+	if(t->fsize > 0) {
+		Object **v = &(of->smallobject);
+		if(t->fsize > K_SMALLOBJECT_FIELDSIZE) {
+			v = (Object**)KNH_MALLOC(ctx, t->fsize * sizeof(knh_Object_t*));
+		}
+		of->fields = v;
+		knh_memcpy(v, t->defnull->ref, t->fsize * sizeof(knh_Object_t*));
+#ifdef K_USING_RCGC
+		size_t i;
+		for(i = 0; i < t->fsize; i++) {
+			if(t->fields[i].israw == 0) {
+				knh_Object_RCinc(of->fields[i]);
+			}
+		}
+#endif
+	}
+	else {
+		of->fields = NULL;
+	}
+}
+
+static void TUPLE_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+{
+	knh_putc(ctx, w, '(');
+	{
+		knh_fields_t *tf = O_cTBL(o)->fields;
+		size_t i, fsize = O_cTBL(o)->fsize;
+		Object **v = (Object**)o->ref;
+		knh_write_TObject(ctx, w, tf[0].type, v, 0, level);
+		for(i = 1; i < fsize; i++) {
+			if(tf[i].type == TYPE_void) continue;
+			knh_write_delim(ctx, w);
+			knh_write_TObject(ctx, w, tf[i].type, v, i, level);
+		}
+	}
+	knh_putc(ctx, w, ')');
+}
+
+static knh_ClassDef_t TupleDef = {
+	Tuple_init, ObjectField_initcopy, ObjectField_reftrace, ObjectField_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, TUPLE_p,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Tuple", 0, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
@@ -2192,7 +2198,7 @@ static void System_init(CTX ctx, Object *o)
 	sys->sysid = knh_autoSystemId++;
 	sys->ctxcount = 0;
 
-	KNH_INITv(sys->ClassNameDictSet, new_DictSet0(ctx, 128, 0/*isCaseMap*/, "System.ClassNameDictSet"));
+	KNH_INITv(sys->ClassNameDictSet, new_DictSet0(ctx, 128, 1/*isCaseMap*/, "System.ClassNameDictSet"));
 	KNH_INITv(sys->EventDictCaseSet, new_DictSet0(ctx, 32, 1/*isCaseMap*/, "System.EventDictSet"));
 	KNH_INITv(sys->enc,   new_T(knh_getSystemEncoding()));
 	KNH_INITv(sys->in,    new_InputStreamSTDIO(ctx, stdin, sys->enc));
@@ -2759,12 +2765,12 @@ static knh_ClassDef_t ImmutableDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
-static knh_ClassDef_t StructDef = {
+static knh_ClassDef_t KindOfDef = {
 	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"Struct", CFLAG_KonohaCode, 0, NULL,
+	"KindOf", CFLAG_KonohaCode, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
@@ -2879,15 +2885,23 @@ static const knh_StringData_t StringConstData0[] = {
 	{NULL, NULL},
 };
 
+#define FN_K FN_k
+#define FN_V FN_v
+#define FN_T FN_t
+#define FN_U FN_u
+#define FN_P FN_p
+#define FN_R FN_r
+
 static const knh_data_t CParamData0[] = {
-	DATA_CPARAM, CLASS_Iterator,  1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Range,     1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Array,     1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Map,       2, 0, TYPE_String, FN_K, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Func,      0, 0,
-	DATA_CPARAM, CLASS_Thunk,     1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Immutable, 1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Struct,    1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Iterator,  (knh_data_t)"konoha.Iterator<dyn>", 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Range,     (knh_data_t)"konoha.Range<dyn>", 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Array,     (knh_data_t)"konoha.Array<dyn>", 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Map,       (knh_data_t)"konoha.Map<konoha.String,dyn>", 2, 0, TYPE_String, FN_K, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Tuple,     (knh_data_t)"konoha.Map<konoha.String,dyn>", 2, 0, TYPE_String, FN_K, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Func,      (knh_data_t)"konoha.Func<void>", 0, 0,
+	DATA_CPARAM, CLASS_Thunk,     (knh_data_t)"konoha.Thunk<dyn>", 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Immutable, (knh_data_t)"konoha.Immutable<dyn>", 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_KindOf,    (knh_data_t)"konoha.KindOf<void>", 1, 0, TYPE_void, FN_V,
 	0,
 };
 

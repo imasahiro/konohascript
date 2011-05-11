@@ -264,17 +264,16 @@ knh_status_t knh_loadScriptPackage(CTX ctx, knh_bytes_t path)
 
 /* ------------------------------------------------------------------------ */
 
-static void NameSpace_setcid(CTX ctx, knh_NameSpace_t *ns, knh_String_t *name, knh_class_t cid, int isOVERRIDE)
+static void NameSpace_setcid(CTX ctx, knh_NameSpace_t *ns, knh_String_t *name, knh_class_t cid)
 {
 	if(DP(ns)->name2cidDictSetNULL == NULL) {
-		KNH_INITv(DP(ns)->name2cidDictSetNULL, new_DictSet0(ctx, 0, 0/*isCaseMap*/, "NameSpace.name2cid"));
+		KNH_INITv(DP(ns)->name2cidDictSetNULL, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "NameSpace.name2cid"));
 	}
 	else {
-		knh_class_t oldcid = knh_NameSpace_getcid(ctx, ns, S_tobytes(name));
-		if(oldcid != CLASS_unknown && cid != oldcid) {
-			ErrorOverrideName(ctx, CLASS__(oldcid), CLASS__(cid), isOVERRIDE);
-			KNH_TODO("error handling");
-			if(!isOVERRIDE) return;
+		knh_uintptr_t oldcid = knh_DictSet_get(ctx, DP(ns)->name2cidDictSetNULL, S_tobytes(name));
+		if(oldcid != 0 && cid != oldcid - 1) {
+			WARN_AlreadyDefinedClass(ctx, cid, (knh_class_t)(oldcid - 1));
+			return;
 		}
 	}
 	knh_DictSet_set(ctx, DP(ns)->name2cidDictSetNULL, name, (knh_uintptr_t)(cid+1));
@@ -300,7 +299,7 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 	KNH_SETv(ctx, (tkPKG)->data, knh_cwb_newString(ctx, cwb));
 	if(knh_loadScriptPackage(ctx, S_tobytes((tkPKG)->text)) == K_CONTINUE) {
 		knh_NameSpace_t *ns = K_GMANS;
-		int isOVERRIDE = knh_Stmt_flag(ctx, stmt, "Override", 1);
+//		int isOVERRIDE = knh_Stmt_flag(ctx, stmt, "Override", 1);
 		if(TT_(tkN) == TT_MUL) {
 			knh_bytes_t pkgname = knh_bytes_last(S_tobytes((tkPKG)->text), 4/* strlen("pkg:") */);
 			size_t cid;
@@ -310,7 +309,7 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 				knh_bytes_t cname = S_tobytes(ClassTBL(cid)->lname);
 				if(knh_bytes_startsWith(cname, pkgname)
 						&& cname.utext[pkgname.len] == '.' && isupper(cname.utext[pkgname.len+1])) {
-					NameSpace_setcid(ctx, ns, ClassTBL(cid)->sname, (knh_class_t)cid, isOVERRIDE);
+					NameSpace_setcid(ctx, ns, ClassTBL(cid)->sname, (knh_class_t)cid);
 				}
 			}
 		}
@@ -332,7 +331,7 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 //					cname = (tkNN(stmt, n+2))->text;
 //				}
 //#endif
-				NameSpace_setcid(ctx, ns, cname, newcid, isOVERRIDE);
+				NameSpace_setcid(ctx, ns, cname, newcid);
 			}
 			knh_cwb_clear(cwb, 0);
 		}
@@ -640,7 +639,7 @@ static knh_status_t CONST_decl(CTX ctx, knh_Stmt_t *stmt)
 		}
 		if(IS_Class(value)) {
 			DBG_P("new cname %s %s", S_tochar(tkN->text), CLASS__(((knh_Class_t*)value)->cid));
-			NameSpace_setcid(ctx, ns, tkN->text, ((knh_Class_t*)value)->cid, 0);
+			NameSpace_setcid(ctx, ns, tkN->text, ((knh_Class_t*)value)->cid);
 		}
 		else {
 			if(DP(ns)->constDictCaseMapNULL == NULL) {
@@ -703,7 +702,7 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 			knh_setClassName(ctx, cid, knh_cwb_newString(ctx, cwb), (tkC)->text);
 			ct->cflag  = knh_StmtCLASS_flag(ctx, stmt);
 			ct->magicflag  = KNH_MAGICFLAG(ct->cflag);
-			NameSpace_setcid(ctx, ns, (tkC)->text, cid, 1);
+			NameSpace_setcid(ctx, ns, (tkC)->text, cid);
 			KNH_INITv(ct->methods, K_EMPTYARRAY);
 			KNH_INITv(ct->typemaps, K_EMPTYARRAY);
 

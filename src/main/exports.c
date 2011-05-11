@@ -181,40 +181,43 @@ static void knh_loadScriptData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 		case DATA_CLASS0: {
 			knh_class_t cid0 = _CID(data[0]);
 			char *name = (char*)data[1];
-			knh_ClassTBL_t *t = varClassTBL(cid0);
-			if(t == NULL) {
+			knh_ClassTBL_t *ct = varClassTBL(cid0);
+			if(ct == NULL) {
 				knh_class_t cid = new_ClassId(ctx);
-				t = varClassTBL(cid0);
+				ct = varClassTBL(cid0);
 				KNH_ASSERT(cid == cid0);
 			}
-			t->cflag = (knh_flag_t)data[2];
-			t->magicflag = KNH_MAGICFLAG(t->cflag);
-			t->bcid = _CID(data[3]);
-			t->baseTBL = ClassTBL(t->bcid);
-			if(cid0 != t->bcid) {
-				knh_setClassDef(t, ClassTBL(t->bcid)->ospi);
+			ct->cflag = (knh_flag_t)data[2];
+			ct->magicflag = KNH_MAGICFLAG(ct->cflag);
+			ct->bcid = _CID(data[3]);
+			ct->baseTBL = ClassTBL(ct->bcid);
+			if(cid0 != ct->bcid) {
+				knh_setClassDef(ct, ClassTBL(ct->bcid)->ospi);
 			}
-			DBG_ASSERT(t->ospi != NULL);
-			t->supcid = _CID(data[4]);
-			t->supTBL = ClassTBL(t->supcid);
+			DBG_ASSERT(ct->ospi != NULL);
+			ct->supcid = _CID(data[4]);
+			ct->supTBL = ClassTBL(ct->supcid);
 			knh_setClassName(ctx, cid0, new_T(name), NULL);
-			DBG_ASSERT(t->methods == NULL);
-			if(data[5] > 0 || cid0 == CLASS_Tuple) {
-				KNH_INITv(t->methods, new_Array0(ctx, data[5]));
+			DBG_ASSERT(ct->methods == NULL);
+			if(data[5] > 0/* || cid0 == CLASS_Tvoid*/) {
+				KNH_INITv(ct->methods, new_Array0(ctx, data[5]));
 			}
 			else {
-				KNH_INITv(t->methods, K_EMPTYARRAY);
+				KNH_INITv(ct->methods, K_EMPTYARRAY);
 			}
-			if(t->typemaps == NULL) {
-				KNH_INITv(t->typemaps, K_EMPTYARRAY);
+			if(ct->typemaps == NULL) {
+				KNH_INITv(ct->typemaps, K_EMPTYARRAY);
 			}
 			data += 6;
 			break;
 		}
 		case DATA_CPARAM: {
 			knh_class_t cid = _CID(data[0]);
-			knh_ParamArray_t *pa = knh_loadScriptParamArray(ctx, &data, 0/*hflag*/, +1);
-			knh_setClassParam(ctx, varClassTBL(cid), pa);
+			const char *lname = (const char*)data[1];
+			knh_ClassTBL_t *ct = varClassTBL(cid);
+			knh_ParamArray_t *pa = knh_loadScriptParamArray(ctx, &data, 0/*hflag*/, +2);
+			knh_setClassParam(ctx, ct, pa);
+			KNH_SETv(ctx, ct->lname, new_T(lname));
 			break;
 		}
 		case DATA_GENERICS: {

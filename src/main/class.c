@@ -153,7 +153,7 @@ KNHAPI2(void) knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
 {
 	const char *tname = NULL;
 	switch(cid) {
-	case TYPE_Tdynamic:  tname = "dynamic";    break;
+	case TYPE_Tdynamic:  tname = "dyn";    break;
 	case TYPE_void: tname = "void";       break;
 	case TYPE_var:  tname = "var";        break;
 	case TYPE_This: tname = "This";       break;
@@ -176,14 +176,14 @@ KNHAPI2(void) knh_write_type(CTX ctx, knh_OutputStream_t *w, knh_type_t type)
 	const char *tname = NULL;
 	//DBG_P("type=%d", type);
 	switch(type) {
-	case TYPE_Boolean: tname = "boolean"; break;
-	case TYPE_Int:    tname = "int";      break;
-	case TYPE_Float:  tname = "float";    break;
-	case TYPE_dyn:  tname = "dynamic";    break;
-	case TYPE_void: tname = "void";       break;
-	case TYPE_var:  tname = "var";        break;
-	case TYPE_This: tname = "This";       break;
-	case TYPE_TEXT: tname = "@Secure String"; break;
+	case TYPE_Boolean: tname = "boolean";    break;
+	case TYPE_Int:     tname = "int";        break;
+	case TYPE_Float:   tname = "float";      break;
+	case TYPE_dyn:     tname = "dyn";        break;
+	case TYPE_void:    tname = "void";       break;
+	case TYPE_var:     tname = "var";        break;
+	case TYPE_This:    tname = "This";       break;
+	case TYPE_TEXT:    tname = "@Secure String"; break;
 	default :{
 			knh_class_t cid = CLASS_t(type);
 			if(cid > TYPE_This) {
@@ -438,26 +438,6 @@ void knh_setClassParam(CTX ctx, knh_ClassTBL_t *t, knh_ParamArray_t *pa)
 	}
 }
 
-static void write_tuplecid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
-{
-	if(cid == CLASS_Tuple) {
-		knh_write_ascii(ctx, w, "konoha.Tuple");
-	}
-	else {
-		knh_write_cid(ctx, w, cid);
-	}
-}
-
-static void write_tupletype(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
-{
-	if(cid == CLASS_Tuple) {
-		knh_write_ascii(ctx, w, "Tuple");
-	}
-	else {
-		knh_write_type(ctx, w, cid);
-	}
-}
-
 knh_class_t knh_addGenericsClass(CTX ctx, knh_class_t cid, knh_class_t bcid, knh_ParamArray_t *pa)
 {
 	knh_Fwritecid write_cid = knh_write_cid;
@@ -515,8 +495,8 @@ knh_class_t knh_addGenericsClass(CTX ctx, knh_class_t cid, knh_class_t bcid, knh
 				fi++;
 			}
 			KNH_INITv(ct->methods, K_EMPTYARRAY);
-			write_cid = write_tuplecid;
-			write_type = write_tupletype;
+			write_cid = knh_write_cid;
+			write_type = knh_write_type;
 		}
 		else {
 			ct->fields = bct->fields;
@@ -549,6 +529,10 @@ knh_class_t knh_class_Generics(CTX ctx, knh_class_t bcid, knh_ParamArray_t *pa)
 		}
 		t = t->simTBL;
 	}
+	if(bcid == CLASS_Immutable) {
+		knh_class_t p1 = knh_ParamArray_get(pa,0)->type;
+		if(p1 < ctx->share->sizeClassTBL && class_isImmutable(p1)) return p1;
+	}
 	return knh_addGenericsClass(ctx, CLASS_newid, bcid, pa);
 }
 
@@ -560,6 +544,9 @@ knh_class_t knh_class_P1(CTX ctx, knh_class_t bcid, knh_type_t p1)
 	while(ct != NULL) {
 		if(ct->p1 == p1) return ct->cid;
 		ct = ct->simTBL;
+	}
+	if(bcid == CLASS_Immutable && p1 < ctx->share->sizeClassTBL && class_isImmutable(p1)) {
+		return p1;
 	}
 	{
 		knh_ParamArray_t *bpa = ClassTBL(bcid)->cparam;

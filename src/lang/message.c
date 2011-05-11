@@ -152,10 +152,6 @@ knh_Token_t* ERROR_IncompatiblePackage(CTX ctx, knh_bytes_t path, const knh_Pack
 	return Gamma_perror(ctx, KC_ERR, "Incompatible: konoha(buildid=%d, CRC32=%d), %B(buildid=%d, CRC32=%d)",
 		(int)K_BUILDID, (int)K_API2_CRC32, path, (int)pkgdef->buildid, (int)pkgdef->crc32);
 }
-knh_Token_t* ErrorOverrideName(CTX ctx, const char *oldname, const char *newname, int isOVERRIDE)
-{
-	return Gamma_perror(ctx, isOVERRIDE ? KC_INFO : KC_ERR, _("override %s => %s"), oldname, newname);
-}
 knh_Token_t* ErrorRedefinedClass(CTX ctx, knh_bytes_t cname, knh_class_t cid)
 {
 	return Gamma_perror(ctx, KC_ERR, _("re-definition of %B(%d)"), cname, cid);
@@ -285,6 +281,10 @@ void WARN_AlreadyDefined(CTX ctx, knh_Token_t *tk)
 {
 	Gamma_perror(ctx, KC_DWARN, _("already defined: %O"), tk);
 }
+void WARN_AlreadyDefinedClass(CTX ctx, knh_class_t cid, knh_class_t oldcid)
+{
+	Gamma_perror(ctx, KC_DWARN, _("%C is already defined: %C"), cid, oldcid);
+}
 knh_Token_t* ERROR_Denied(CTX ctx, const char *why, knh_Token_t *tk)
 {
 	return knh_Token_toERR(ctx, tk, _("%s: %O"), why, tk);
@@ -317,11 +317,12 @@ knh_Token_t* ERROR_RequiredParameter(CTX ctx)
 {
 	return Gamma_perror(ctx, KC_ERR, _("needs a parameter to infer its type"));
 }
-void WarningTypeParameter(CTX ctx, knh_class_t cid)
+void WARN_WrongTypeParam(CTX ctx, knh_class_t cid)
 {
 	if(cid != CLASS_unknown) {
-		Gamma_perror(ctx, KC_DWARN, "wrong type parameter of %C", cid);
+		Gamma_perror(ctx, KC_DWARN, "%C<>: wrong type parameter", cid);
 	}
+	DBG_ABORT("h");
 }
 void InfoType(CTX ctx, const char *prefix, knh_bytes_t name, knh_type_t type)
 {
