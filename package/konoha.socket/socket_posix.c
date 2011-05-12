@@ -27,7 +27,7 @@
 // **************************************************************************
 // LIST OF CONTRIBUTERS
 //  kimio - Kimio Kuramitsu, Yokohama National University, Japan
-//
+//  goccy - Masaaki Goshima, Yokohama National University, Japan
 // **************************************************************************
 
 #include <konoha1.h>
@@ -66,9 +66,13 @@ typedef struct {
 static void Socket_init(CTX ctx, Object *o)
 {
 	knh_Socket_t *so = (knh_Socket_t*)o;
-	DP(so)->sd = IO_NULL;
-	KNH_INITv(DP(so)->in, KNH_TNULL(InputStream));
-	KNH_INITv(DP(so)->out, KNH_TNULL(OutputStream));
+	knh_SocketEX_t *b = (knh_SocketEX_t *)KNH_MALLOC(ctx, sizeof(knh_SocketEX_t));
+	b->sd = IO_NULL;
+	b->port = 0;
+	KNH_INITv(b->urn, TS_DEVNULL);
+	KNH_INITv(b->in, KNH_TNULL(InputStream));
+	KNH_INITv(b->out, KNH_TNULL(OutputStream));
+	so->b = b;
 }
 
 static void Socket_reftrace(CTX ctx, Object *o FTRARG)
@@ -158,7 +162,7 @@ static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int
 	server.sin_family = AF_INET;
 	server.sin_addr = addr;
 	server.sin_port = htons(port);
-	if((sd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+	if ((sd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		errfunc = "socket";
 		goto L_PERROR;
 	}
@@ -168,7 +172,7 @@ static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int
 		goto L_PERROR;
 	}
 	L_PERROR:;
-	if(errfunc != NULL) {
+	if (errfunc != NULL) {
 		KNH_PTRACE(ctx, sfp, mon, errfunc, "Socket!!: host='%s', port=%d", ip_or_host, port);
 	}
 	return sd;
@@ -213,98 +217,74 @@ METHOD Socket_close(CTX ctx, knh_sfp_t* sfp _RIX)
 	DP(so)->sd = IO_NULL;
 }
 
-////## Socket ServerSocket.accept(NameSpace ns);
-METHOD ServerSocket_accept(Ctx* ctx,knh_sfp_t* sfp _RIX)
-{
-	//Socket_t *entity = malloc(sizeof(Socket_t));
-	//memset(entity, 0, sizeof(Socket_t));
-	knh_NameSpace_t *ns = sfp[1].ns;
-	knh_Socket_t *entity = (knh_Socket_t *)new_ObjectNS(ctx, ns, "Socket");
-	//knh_RawPtr_t *ptr;
-	//knh_Socket_t *so = RawPtr_to(knh_Socket_t*, sfp[0]);//ServerSocket
-	knh_Socket_t *so = (knh_Socket_t *)sfp[0].p;
-	int fd = accept(DP(so)->sd, NULL, NULL);
-	if (fd == -1) {
-		perror("accept");
-		//KNH_THROW__T(ctx, "Socket!!: cannot accept socket!");
-	}
-
-	DP(entity)->sd = fd;
-	DP(entity)->port = DP(so)->port;
-	DP(entity)->uri = DP(so)->uri;
-
-	//knh_StreamDSPI_t *drv = knh_getChannelDriver();
-	knh_StreamDSPI_t *drv = &SOCKET_DSPI;
-	KNH_INITv(DP(entity)->urn, DP(so)->urn);
-	KNH_INITv(DP(entity)->in,  new_InputStreamDSPI(ctx, (knh_io_t)DP(entity)->sd, drv));
-	KNH_INITv(DP(entity)->out, new_OutputStreamDSPI(ctx, (knh_io_t)DP(entity)->sd, drv));
-	//ptr = new_RawPtr(ctx, entity, NULL, CLASS_Any, "socket");
-	//RETURN_(ptr);
-	RETURN_(entity);
-}
-//
-//
 ////## This ServerSocket.new(Int port, Int maxConnection);
 METHOD ServerSocket_new(Ctx* ctx,knh_sfp_t* sfp _RIX)
 {
-	
-	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
-	//knh_RawPtr_t *ptr;
+	knh_Socket_t *ssock = (knh_Socket_t*)sfp[0].o;
 	struct sockaddr_in addr;
 	int optval = 1;
 	int port = Int_to(int ,sfp[1]);
 	int backlog = Int_to(int, sfp[2]);
 	//	char *host = String_to(char *,sfp[3]);
 	char *host = "127.0.0.1";
-
 	int fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd  == -1) {
 		perror("soket");
-		//KNH_THROW__T(ctx, "Socket!!: cannot make socket!");
+		KNH_THROW(ctx, sfp, LOG_CRIT, "Socket!!", "cannot make socket!");
 	}
-
 	in_addr_t hostinfo = inet_addr(host);
 	if (hostinfo == INADDR_NONE) {
-		//KNH_THROW__T(ctx, "Socket!!: invalid ip");
+		KNH_THROW(ctx, sfp, LOG_CRIT, "Socket!!", "ivalid ip");
 	}
-
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	addr.sin_port = htons((short)port);
-
 	setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
-
 	if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
-	  perror("bind");
-	  //KNH_THROW__T(ctx, "Socket!!: cannot connect");
+		perror("bind");
+		KNH_THROW(ctx, sfp, LOG_CRIT, "Socket!!", "cannot connect!");
 	}
-
 	if (listen(fd, backlog) == -1) {
 		perror("listen");
 	}
-
-	//knh_StreamDSPI_t *dspi = knh_getChannelDriver();
 	knh_StreamDSPI_t *dspi = &SOCKET_DSPI;
-	DP(so)->sd = fd;
-	DP(so)->port = port;
-	knh_InputStream_t *in = new_InputStreamDSPI(ctx, fd, dspi);//(knh_io_t)DP(so)->sd, dspi);
-	knh_OutputStream_t *out = new_OutputStreamDSPI(ctx, fd, dspi);//(knh_io_t)DP(so)->sd, dspi);
-	//knh_String_t *urn = sfp[3].o;
+	DP(ssock)->sd = fd;
+	DP(ssock)->port = port;
 	//KNH_INITv(DP(so)->urn, sfp[3].o);
-	//KNH_INITv(DP(so)->in,  new_InputStreamDSPI(ctx, (knh_io_t)DP(so)->sd, dspi));
-	//KNH_INITv(DP(so)->out, new_OutputStreamDSPI(ctx, (knh_io_t)DP(so)->sd, dspi));
-	//ptr = new_RawPtr(ctx, so, NULL, CLASS_Any, "serversocket");
-	//RETURN_(ptr);
-	DP(so)->in = in;
-	DP(so)->out = out;
-	//DP(so)->urn = urn;
-	RETURN_(so);
+	KNH_INITv(DP(ssock)->in,  new_InputStreamDSPI(ctx, (knh_io_t)DP(ssock)->sd, dspi));
+	KNH_INITv(DP(ssock)->out, new_OutputStreamDSPI(ctx, (knh_io_t)DP(ssock)->sd, dspi));
+	RETURN_(ssock);
+}
+
+////## Socket ServerSocket.accept(NameSpace ns);
+METHOD ServerSocket_accept(Ctx* ctx,knh_sfp_t* sfp _RIX)
+{
+	knh_Socket_t *ssock = (knh_Socket_t *)sfp[0].o;
+	knh_NameSpace_t *ns = sfp[1].ns;
+	knh_Socket_t *ret = (knh_Socket_t *)new_ObjectNS(ctx, ns, "Socket");
+	int fd = accept(DP(ssock)->sd, NULL, NULL);
+	if (fd == -1) {
+		perror("accept");
+		KNH_THROW(ctx, sfp, LOG_CRIT, "Socket!!", "cannot accept socket!");
+	}
+	DP(ret)->sd = fd;
+	DP(ret)->port = DP(ssock)->port;
+	DP(ret)->uri = DP(ssock)->uri;
+	knh_StreamDSPI_t *drv = &SOCKET_DSPI;
+	KNH_INITv(DP(ret)->urn, DP(ssock)->urn);
+	KNH_INITv(DP(ret)->in,  new_InputStreamDSPI(ctx, (knh_io_t)DP(ret)->sd, drv));
+	KNH_INITv(DP(ret)->out, new_OutputStreamDSPI(ctx, (knh_io_t)DP(ret)->sd, drv));
+	RETURN_(ret);
 }
 
 METHOD ServerSocket_close(Ctx* ctx,knh_sfp_t* sfp _RIX)
 {
-	
+	knh_Socket_t *ssock = (knh_Socket_t*)sfp[0].o;
+	if (DP(ssock)->sd != IO_NULL) {
+		close((int)DP(ssock)->sd);
+	}
+	DP(ssock)->sd = IO_NULL;	
 }
 
 #ifdef _SETUP

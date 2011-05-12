@@ -172,7 +172,8 @@ knh_String_t* knh_InputStream_readLine(CTX ctx, knh_InputStream_t *in)
 		for(i = pos; i < posend; i++) {
 			int ch = p[i];
 			if(ch == '\n') {
-				knh_bytes_t buf = {{ba->bu.text + pos}, (i-1) - pos};
+				DP(in)->pos = i + 1;
+				knh_bytes_t buf = {{ba->bu.text + pos}, i - pos};
 				knh_Bytes_write(ctx, cwb->ba, buf);
 				goto L_TOSTRING;
 			}
@@ -845,7 +846,7 @@ static METHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 		DP(in)->fio = in->dspi->fopen(ctx, ph, mode, DP(in)->mon);
 		if(DP(in)->fio != IO_NULL) {
 			KNH_SETv(ctx, DP(in)->urn, sfp[1].s);
-			//knh_Byte_ensureSize(ctx, DP(in)->ba, K_PAGESIZE);
+			knh_Bytes_ensureSize(ctx, DP(in)->ba, K_PAGESIZE);
 			goto L_RETURN;
 		}
 	}
@@ -1164,6 +1165,7 @@ static void knh_msgpack_bool(CTX ctx, void *_pk, int b)
 #ifdef K_USING_MSGPACK
 	knh_packer_t *pk = (knh_packer_t *)_pk;
 	(b) ? msgpack_pack_true(pk->pk) : msgpack_pack_false(pk->pk);
+	//fprintf(stdout, "b = [%d]\n", b);
 #endif
 }
 
@@ -1172,6 +1174,7 @@ static void knh_msgpack_int(CTX ctx, void *_pk, knh_int_t i)
 #ifdef K_USING_MSGPACK
 	knh_packer_t *pk = (knh_packer_t *)_pk;
 	msgpack_pack_int64(pk->pk, i);
+	//fprintf(stdout, "i = [%d]\n", i);
 #endif
 }
 
@@ -1180,6 +1183,7 @@ static void knh_msgpack_float(CTX ctx, void *_pk, knh_float_t f)
 #ifdef K_USING_MSGPACK
 	knh_packer_t *pk = (knh_packer_t *)_pk;
 	msgpack_pack_double(pk->pk, f);
+	//fprintf(stdout, "f = [%f]\n", f);
 #endif
 }
 
@@ -1189,6 +1193,7 @@ static void knh_msgpack_string(CTX ctx, void *_pk, const char *str, size_t len)
 	knh_packer_t *pk = (knh_packer_t *)_pk;
 	msgpack_pack_raw(pk->pk, len);
 	msgpack_pack_raw_body(pk->pk, str, len);
+	//fprintf(stdout, "str = [%s]\n", str);
 #endif
 }
 
@@ -1198,6 +1203,7 @@ static void knh_msgpack_raw(CTX ctx, void *_pk, const char *str, size_t len)
 	knh_packer_t *pk = (knh_packer_t *)_pk;
 	msgpack_pack_raw(pk->pk, len);
 	msgpack_pack_raw_body(pk->pk, str, len);
+	//fprintf(stdout, "str = [%s]\n", str);
 #endif
 }
 
@@ -1211,6 +1217,7 @@ static void knh_msgpack_array(CTX ctx, void *_pk, size_t array_size)
 #ifdef K_USING_MSGPACK
 	knh_packer_t *pk = (knh_packer_t *)_pk;
 	msgpack_pack_array(pk->pk, array_size);
+	//fprintf(stdout, "array_size = [%ld]\n", array_size);
 #endif
 }
 
@@ -1219,11 +1226,13 @@ static void knh_msgpack_map(CTX ctx, void *_pk, size_t map_size)
 #ifdef K_USING_MSGPACK
 	knh_packer_t *pk = (knh_packer_t *)_pk;
 	msgpack_pack_map(pk->pk, map_size);
+	//fprintf(stdout, "map_size = [%ld]\n", map_size);
 #endif
 }
 
 static knh_type_t knh_msgpack_unpack(CTX ctx, struct knh_InputStream_t *ins, knh_sfp_t *sfp)
 {
+	
 	return 0;
 }
 

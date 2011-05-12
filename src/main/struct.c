@@ -342,34 +342,48 @@ static knh_String_t* ObjectField_getkey(CTX ctx, knh_sfp_t *sfp)
 	return DEFAULT_getkey(ctx, sfp);
 }
 
+static void Array_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi);
+#define is32BIT() sizeof(void *) / 4 == 1
 static void Object_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
 {
 	const knh_ClassTBL_t *tbl = o->h.cTBL;
 	int i = 0;
 	Object **v = (Object **)o->ref;
-	packspi->pack_beginmap(ctx, pkr, tbl->fsize);
-	packspi->pack_string(ctx, pkr, "ks:class", sizeof("ks:class"));
-	packspi->pack_string(ctx, pkr, tbl->sname->str.text, tbl->sname->str.len);
-	for (i = 0; i < tbl->fsize - 1; i++) {
+	size_t map_size = 0;
+	for (i = 0; i < tbl->fsize; i++) {
 		knh_fields_t *field = tbl->fields + i;
 		knh_type_t type = field->type;
-		if (type == 0) continue;
+		if (is32BIT() &&
+			type == CLASS_Boolean || type == CLASS_Int || type == CLASS_Float) {
+			i++;
+		}
+		map_size++;
+	}
+	packspi->pack_beginmap(ctx, pkr, map_size + 1);
+	packspi->pack_string(ctx, pkr, "ks:class", sizeof("ks:class"));
+	packspi->pack_string(ctx, pkr, tbl->sname->str.text, tbl->sname->str.len);
+	for (i = 0; i < tbl->fsize; i++) {
+		knh_fields_t *field = tbl->fields + i;
+		knh_type_t type = field->type;
 		knh_String_t *key = knh_getFieldName(ctx, field->fn);
 		packspi->pack_string(ctx, pkr, key->str.text, key->str.len);
 		switch (type) {
 		case CLASS_Boolean: {
 			knh_boolean_t *value = (knh_boolean_t *)(v + i);
 			packspi->pack_bool(ctx, pkr, value[0]);
+			if (is32BIT()) i++;
 			break;
 		}
 		case CLASS_Int: {
 			knh_int_t *value = (knh_int_t *)(v + i);
 			packspi->pack_int(ctx, pkr, value[0]);
+			if (is32BIT()) i++;
 			break;
 		}
 		case CLASS_Float: {
 			knh_float_t *value = (knh_float_t *)(v + i);
 			packspi->pack_float(ctx, pkr, value[0]);
+			if (is32BIT()) i++;
 			break;
 		}
 		case CLASS_String: {
@@ -378,7 +392,12 @@ static void Object_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *pac
 			break;
 		}
 		default:
-			//Sorry, Array and Object is still not supported.
+			//Array or Object
+			if (O_cTBL(v[i])->bcid == CLASS_Array) {
+				Array_wdata(ctx, pkr, v[i], packspi);
+			} else {
+				Object_wdata(ctx, pkr, v[i], packspi);
+			}
 			break;
 		}
 	}
@@ -1953,6 +1972,7 @@ static void InputStream_init(CTX ctx, Object *o)
 	b->fio = IO_BUF;
 	KNH_INITv(b->ba, new_Bytes(ctx, "stream", 0));
 	KNH_INITv(b->urn, TS_DEVNULL);
+	KNH_INITv(b->mon, KNH_NULL);
 	b->pos = 0; b->posend = 0;
 	b->stat_size = 0;
 	in->b = b;
