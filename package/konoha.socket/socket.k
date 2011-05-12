@@ -35,6 +35,6 @@ include nativelink;
 @Native OutputStream Socket.getOutputStream();
 @Native void Socket.close();
 
-//ServerSocket ServerSocket.new(Int port, Int maxConnection);
-//Socket ServerSocket.accept();
-
+@Native ServerSocket ServerSocket.new(int port, int maxConnection);
+@Native Socket ServerSocket.accept(NameSpace ns);
+@Native void ServerSocket.close();

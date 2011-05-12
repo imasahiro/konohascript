@@ -342,11 +342,53 @@ static knh_String_t* ObjectField_getkey(CTX ctx, knh_sfp_t *sfp)
 	return DEFAULT_getkey(ctx, sfp);
 }
 
+static void Object_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
+{
+	const knh_ClassTBL_t *tbl = o->h.cTBL;
+	int i = 0;
+	Object **v = (Object **)o->ref;
+	packspi->pack_beginmap(ctx, pkr, tbl->fsize);
+	packspi->pack_string(ctx, pkr, "ks:class", sizeof("ks:class"));
+	packspi->pack_string(ctx, pkr, tbl->sname->str.text, tbl->sname->str.len);
+	for (i = 0; i < tbl->fsize - 1; i++) {
+		knh_fields_t *field = tbl->fields + i;
+		knh_type_t type = field->type;
+		if (type == 0) continue;
+		knh_String_t *key = knh_getFieldName(ctx, field->fn);
+		packspi->pack_string(ctx, pkr, key->str.text, key->str.len);
+		switch (type) {
+		case CLASS_Boolean: {
+			knh_boolean_t *value = (knh_boolean_t *)(v + i);
+			packspi->pack_bool(ctx, pkr, value[0]);
+			break;
+		}
+		case CLASS_Int: {
+			knh_int_t *value = (knh_int_t *)(v + i);
+			packspi->pack_int(ctx, pkr, value[0]);
+			break;
+		}
+		case CLASS_Float: {
+			knh_float_t *value = (knh_float_t *)(v + i);
+			packspi->pack_float(ctx, pkr, value[0]);
+			break;
+		}
+		case CLASS_String: {
+			knh_String_t *value = (knh_String_t *)v[i];
+			packspi->pack_string(ctx, pkr, value->str.text, value->str.len);
+			break;
+		}
+		default:
+			//Sorry, Array and Object is still not supported.
+			break;
+		}
+	}
+}
+
 static knh_ClassDef_t ObjectDef = {
 	ObjectField_init, ObjectField_initcopy, ObjectField_reftrace, ObjectField_free,
 	DEFAULT_checkin, DEFAULT_checkout, ObjectField_compareTo, ObjectField_p,
 	ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	DEFAULT_findTypeMapNULL, Object_wdata, DEFAULT_2, DEFAULT_3,
 	"Object", CFLAG_Object, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
@@ -437,7 +479,7 @@ static knh_ClassDef_t ObjectNDef[] = {
 		ObjectFieldN_init, ObjectFieldN_initcopy, DEFAULT_reftrace, ObjectField_free,
 		DEFAULT_checkin, DEFAULT_checkout, ObjectField_compareTo, ObjectField_p,
 		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-		DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+		DEFAULT_findTypeMapNULL, Object_wdata, DEFAULT_2, DEFAULT_3,
 		"Object", CFLAG_Object, 0, NULL,
 		NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 	},
@@ -445,7 +487,7 @@ static knh_ClassDef_t ObjectNDef[] = {
 		ObjectField_init, ObjectField_initcopy, ObjectField1_reftrace, ObjectField_free,
 		DEFAULT_checkin, DEFAULT_checkout, ObjectField_compareTo, ObjectField_p,
 		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-		DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+		DEFAULT_findTypeMapNULL, Object_wdata, DEFAULT_2, DEFAULT_3,
 		"Object", CFLAG_Object, 0, NULL,
 		NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 	},
@@ -453,7 +495,7 @@ static knh_ClassDef_t ObjectNDef[] = {
 		ObjectField_init, ObjectField_initcopy, ObjectField2_reftrace, ObjectField_free,
 		DEFAULT_checkin, DEFAULT_checkout, ObjectField_compareTo, ObjectField_p,
 		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-		DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+		DEFAULT_findTypeMapNULL, Object_wdata, DEFAULT_2, DEFAULT_3,
 		"Object", CFLAG_Object, 0, NULL,
 		NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 	},
@@ -461,7 +503,7 @@ static knh_ClassDef_t ObjectNDef[] = {
 		ObjectField_init, ObjectField_initcopy, ObjectField3_reftrace, ObjectField_free,
 		DEFAULT_checkin, DEFAULT_checkout, ObjectField_compareTo, ObjectField_p,
 		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-		DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+		DEFAULT_findTypeMapNULL, Object_wdata, DEFAULT_2, DEFAULT_3,
 		"Object", CFLAG_Object, 0, NULL,
 		NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 	},
@@ -469,7 +511,7 @@ static knh_ClassDef_t ObjectNDef[] = {
 		ObjectField_init, ObjectField_initcopy, ObjectField4_reftrace, ObjectField_free,
 		DEFAULT_checkin, DEFAULT_checkout, ObjectField_compareTo, ObjectField_p,
 		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-		DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+		DEFAULT_findTypeMapNULL, Object_wdata, DEFAULT_2, DEFAULT_3,
 		"Object", CFLAG_Object, 0, NULL,
 		NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 	}
@@ -580,11 +622,26 @@ static void Float_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 #endif
 }
 
+static void Boolean_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
+{
+	packspi->pack_bool(ctx, pkr, ((knh_Boolean_t *)o)->n.bvalue);
+}
+
+static void Int_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
+{
+	packspi->pack_int(ctx, pkr, ((knh_Int_t *)o)->n.ivalue);
+}
+
+static void Float_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
+{
+	packspi->pack_float(ctx, pkr, ((knh_Float_t *)o)->n.fvalue);
+}
+
 static knh_ClassDef_t BooleanDef = {
 	NDATA_init, NDATA_initcopy, DEFAULT_reftrace, NDATA_free,
 	DEFAULT_checkin, DEFAULT_checkout, Int_compareTo, Boolean_p,
 	ObjectField_getkey, NDATA_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	DEFAULT_findTypeMapNULL, Boolean_wdata, DEFAULT_2, DEFAULT_3,
 	"Boolean", CFLAG_Boolean, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
@@ -602,7 +659,7 @@ static knh_ClassDef_t IntDef = {
 	NDATA_init, NDATA_initcopy, DEFAULT_reftrace, NDATA_free,
 	DEFAULT_checkin, DEFAULT_checkout, Int_compareTo, Int_p,
 	ObjectField_getkey, NDATA_hashCode, Int_toint, Int_tofloat,
-	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	DEFAULT_findTypeMapNULL, Int_wdata, DEFAULT_2, DEFAULT_3,
 	"Int", CFLAG_Int, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
@@ -611,7 +668,7 @@ static knh_ClassDef_t FloatDef = {
 	NDATA_init, NDATA_initcopy, DEFAULT_reftrace, NDATA_free,
 	DEFAULT_checkin, DEFAULT_checkout, Float_compareTo, Float_p,
 	ObjectField_getkey, NDATA_hashCode, Float_toint, Float_tofloat,
-	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	DEFAULT_findTypeMapNULL, Float_wdata, DEFAULT_2, DEFAULT_3,
 	"Float", CFLAG_Float, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
@@ -671,11 +728,17 @@ static knh_hashcode_t String_hashCode(CTX ctx, knh_sfp_t *sfp)
 	return (sfp[0].s)->hashCode;
 }
 
+static void String_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
+{
+	knh_String_t *s = (knh_String_t *)o;
+	packspi->pack_string(ctx, pkr, s->str.text, s->str.len);
+}
+
 static knh_ClassDef_t StringDef = {
 	String_init, DEFAULT_initcopy, DEFAULT_reftrace, String_free,
 	DEFAULT_checkin, DEFAULT_checkout, String_compareTo, String_p,
 	String_getkey, String_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	DEFAULT_findTypeMapNULL, String_wdata, DEFAULT_2, DEFAULT_3,
 	"String", CFLAG_String, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
@@ -1018,11 +1081,33 @@ static void Array_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 	knh_putc(ctx, w, ']');
 }
 
+static void Array_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
+{
+	knh_Array_t *a = (knh_Array_t *)o;
+	packspi->pack_beginarray(ctx, pkr, a->size);
+	int i = 0;
+	for (i = 0; i < a->size; i++) {
+		switch (O_cTBL(a)->p1) {
+		case CLASS_Int:
+			packspi->pack_int(ctx, pkr, a->ilist[i]);
+			break;
+		case CLASS_Float:
+			packspi->pack_float(ctx, pkr, a->flist[i]);
+			break;
+		default:
+			if (O_cTBL(a->list[i])->ospi->wdata != NULL) {
+				O_cTBL(a->list[i])->ospi->wdata(ctx, pkr, a->list[i], packspi);
+			}
+			break;
+		}
+	}
+}
+
 static knh_ClassDef_t ArrayDef = {
 	Array_init, Array_initcopy, Array_reftrace, Array_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Array_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	DEFAULT_findTypeMapNULL, Array_wdata, DEFAULT_2, DEFAULT_3,
 	"Array", CFLAG_Array, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };

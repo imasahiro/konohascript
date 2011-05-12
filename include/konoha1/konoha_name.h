@@ -3,7 +3,7 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      178
+#define K_REVISION                      180
 #endif
 #define K_BUILDID                       1098
 
@@ -876,10 +876,12 @@
 #define FN_writeascii   (MN_OPSIZE+130)
 #define FN_writeData    (MN_OPSIZE+131)
 #define FN_writedata    (MN_OPSIZE+131)
-#define FN_x            (MN_OPSIZE+132)
-#define FN_y            (MN_OPSIZE+133)
-#define FN_z            (MN_OPSIZE+134)
-#define K_TFIELD_SIZE   135
+#define FN_writeObject  (MN_OPSIZE+132)
+#define FN_writeobject  (MN_OPSIZE+132)
+#define FN_x            (MN_OPSIZE+133)
+#define FN_y            (MN_OPSIZE+134)
+#define FN_z            (MN_OPSIZE+135)
+#define K_TFIELD_SIZE   136
 
 /* ------------------------------------------------------------------------ */
 /* METHODN */
@@ -918,6 +920,7 @@
 #define MN_super        FN_super
 #define MN_getKey       MN_toGETTER(FN_key)
 #define MN_insert       FN_insert
+#define MN_writeObject  FN_writeobject
 #define MN_putc         FN_putc
 #define MN_isAutoFlush  MN_toISBOOL(FN_autoflush)
 #define MN__x           MN_toFMT(FN_x)

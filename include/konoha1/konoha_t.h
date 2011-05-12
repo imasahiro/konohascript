@@ -685,7 +685,7 @@ typedef struct knh_PackSPI_t {
 	void  (*pack_null)(CTX, void*);
 	void  (*pack_bool)(CTX, void*, int d);
 	void  (*pack_int)(CTX, void*, knh_int_t d);
-	void  (*pack_float)(CTX, void*, knh_int_t d);
+	void  (*pack_float)(CTX, void*, knh_float_t d);
 	void  (*pack_string)(CTX, void*, const char *str, size_t n);
 	void  (*pack_raw)(CTX, void*, const char *str, size_t n);
 	void  (*pack_putc)(CTX, void*, int ch);  // use for delim : or ,
