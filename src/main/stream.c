@@ -117,7 +117,6 @@ void knh_InputStream_setpos(CTX ctx, knh_InputStream_t *in, size_t s, size_t e)
 }
 
 /* ------------------------------------------------------------------------ */
-
 static int readbuf(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
 {
 	if(IS_Bytes(ba)) {
@@ -1266,7 +1265,6 @@ static METHOD OutputStream_writeObject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	Object *o = sfp[1].o;
-	knh_NameSpace_t *ns = sfp[2].ns;
 	knh_PackSPI_t *packspi = knh_getPackSPI();
 	knh_packer_t packer = {w, NULL, NULL};
 	knh_packer_t *pkr = packspi->pack_init(ctx, &packer);

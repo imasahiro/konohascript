@@ -354,7 +354,7 @@ static void Object_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *pac
 		knh_fields_t *field = tbl->fields + i;
 		knh_type_t type = field->type;
 		if (is32BIT() &&
-			type == CLASS_Boolean || type == CLASS_Int || type == CLASS_Float) {
+			(type == CLASS_Boolean || type == CLASS_Int || type == CLASS_Float)) {
 			i++;
 		}
 		map_size++;
