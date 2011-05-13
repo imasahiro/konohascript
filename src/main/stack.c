@@ -272,7 +272,7 @@ knh_ebi_t knh_geteid(CTX ctx, knh_bytes_t msg, knh_ebi_t def)
 			eid = knh_addEvent(ctx, 0, EBI_newid, new_S(ctx, msg), EBI_Exception);
 			DBG_P("NEW '%s', eid=%d", msg.text, eid);
 		}
-		return eid;
+		return (eid == 0) ? def : eid;
 	}
 	return def;
 }

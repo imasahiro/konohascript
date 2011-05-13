@@ -220,7 +220,7 @@ static knh_class_t TokenPTYPE_cid(CTX ctx, knh_Token_t *tk, knh_class_t bcid)
 			goto L_END;
 		}
 	}
-	if(bcid == CLASS_Func && bcid == CLASS_Tuple) {
+	if(bcid == CLASS_Func || bcid == CLASS_Tuple) {
 		cid = knh_class_Generics(ctx, bcid, pa);
 		goto L_END;
 	}
