@@ -1185,8 +1185,7 @@ void knh_addTypeMapFunc(CTX ctx, knh_flag_t flag, knh_type_t stype, knh_type_t t
 	knh_class_t cid = CLASS_t(stype);
 	DBG_ASSERT_cid(cid);
 	knh_readyTransMapList(ctx, cid);
-	knh_Array_add(ctx, ClassTBL(cid)->typemaps,
-		new_TypeMap(ctx, flag, CLASS_t(stype), CLASS_t(ttype), fTYPEMAP));
+	knh_Array_add(ctx, ClassTBL(cid)->typemaps, new_TypeMap(ctx, flag, CLASS_t(stype), CLASS_t(ttype), fTYPEMAP));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -1212,6 +1211,7 @@ static TYPEMAP Ftypemap_null(CTX ctx, knh_sfp_t *sfp _RIX)
 KNHAPI2(knh_TypeMap_t*) new_TypeMap(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func)
 {
 	knh_TypeMap_t* tmr = new_(TypeMap);
+	tmr->h.magicflag |= (knh_uintptr_t)flag;
 	SP(tmr)->scid = scid;
 	SP(tmr)->tcid = tcid;
 	tmr->ftypemap_1 = (func == NULL) ? Ftypemap_null : func;
