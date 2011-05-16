@@ -24,9 +24,9 @@ void copytoset(int[] a, int[] b) {
 }
 
 assure "AlgorithmArraySet" {
-	int[] a = [1, 3, 1, 2, 3, 5]
+	int[] a = [1, 3, 1, 2, 3, 5];
 	int[] b = [];
-	copytoset(a, b)
+	copytoset(a, b);
 	assert |b| == 4;
 	assert b[0] == 1;
 	assert b[1] == 3;
