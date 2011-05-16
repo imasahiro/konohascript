@@ -2469,7 +2469,7 @@ static void Assurance_checkout(CTX ctx, Object *o, int isFailed)
 	}
 	if(knh_getUFILE() != NULL) {
 		const char *results = (isFailed) ? "FAILED" : "PASSED";
-		fprintf(knh_getUFILE(), "%s @%s\n", results, S_tochar(g->msg));
+		fprintf(knh_getUFILE(), "\t%s @%s\n", results, S_tochar(g->msg));
 	}
 }
 
