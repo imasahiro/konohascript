@@ -1,6 +1,10 @@
 
-assure "UnitTest:BuiltInFunction typeof" {
-	a = 1.2;
-	assert typeof(a) == Float;
+assure "UnitTest:BuiltInFunction:typeof" {
+	int[] a;
+	float f;
+	assert typeof(a) == int[];
+	assert typeof(a[0]) == int;
+	assert typeof(f) == Float;
 }
+
 

@@ -5,6 +5,6 @@ def f(int n) {
 
 assure "UnitTest:InferenceReturnType" {
 	a = f(1);
-	assert a instanceof Int;
+	assert typeof(a) == Int;
 }
 
