@@ -1,3 +1,9 @@
+/****************************************************************************
+ * KONOHA ASSURANCE CASE
+ *  written by Kimio Kuramitsu  twitter: @konohakun 
+ ***************************************************************************/
+
+print "This grammar should be depricated";
 
 Int.ZERO = 0; // definition
 

@@ -1,3 +1,8 @@
+/****************************************************************************
+ * KONOHA ASSURANCE CASE
+ *  written by Kimio Kuramitsu  twitter: @konohakun 
+ ***************************************************************************/
+
 class Person {
   String name;
   int age;
@@ -16,5 +21,4 @@ assure "UnitTest:ClassDefinition" {
 	assert p1.age == p3.age;
 	assert p2.age == p3.age;
 }
-
 

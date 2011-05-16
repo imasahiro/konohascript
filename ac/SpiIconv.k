@@ -1,5 +1,9 @@
+/****************************************************************************
+ * KONOHA ASSURANCE CASE
+ *  written by Kimio Kuramitsu  twitter: @konohakun 
+ ***************************************************************************/
 
-assure "UnitTest:SpiIconv" {
+assure "UnitTest:SupportCharacterConversion" {
 	assert charset:SJIS;
 }
 

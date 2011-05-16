@@ -1,4 +1,9 @@
+/****************************************************************************
+ * KONOHA ASSURANCE CASE
+ *  written by Kimio Kuramitsu  twitter: @konohakun 
+ ***************************************************************************/
 
+// Some students are confused when they declare array type. 
 
 assure "UnitTest:DeclareCStyleArray" {
 	int a, b[];

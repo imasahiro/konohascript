@@ -1,4 +1,9 @@
+/****************************************************************************
+ * KONOHA ASSURANCE CASE
+ *  written by Kimio Kuramitsu  twitter: @konohakun 
+ ***************************************************************************/
 
+/***
 int getline() {
 	// In the past, line comment disturbed line counting
 	n = __line__;
@@ -12,4 +17,4 @@ assure "UnitTest:SystemVariable" {
 	assert n == 10;
 	assert getline() == 4;
 }
-
+**/
