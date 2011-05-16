@@ -10,3 +10,8 @@ assure "ParserNoSemicolon" {
 	assert b == 0
 }
 
+assure "ParserNoSemicolon" {
+	int[] a = [1,2]
+	int[] b = []
+	assert a != b
+}
