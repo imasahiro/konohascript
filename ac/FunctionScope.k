@@ -7,6 +7,7 @@ val = 2
 
 String f() {
 	int a = 1;
+	print "val must 2 ", val;
 	if(val == 1) {
 		String n1;
 		name = "naruto";
