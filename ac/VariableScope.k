@@ -6,17 +6,17 @@
 val = 1
 
 class C {
-	int val = 2;
+	int val;
 	void testLocalVariable() {
 		int val = 3;
 		print __val, _val, val;
 		assert __val == 1;
-		assert _val == 2;
+		assert _val == 0;
 		assert val == 3;
 	}
 }
 
-assert "UnitTest:VariableScope" {
+assure "UnitTest:VariableScope" {
 	c = new C();
 	c.testLocalVariable()
 }
