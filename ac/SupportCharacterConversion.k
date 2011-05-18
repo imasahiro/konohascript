@@ -3,7 +3,10 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-assure "UnitTest:SupportCharacterConversion" {
-	assert charset:SJIS;
+
+// We need more tests for character conversion. 
+
+assure "SupportCharacterConversion" {
+	assert charset:SJIS;   // This means we succeed to link to libiconv 
 }
 

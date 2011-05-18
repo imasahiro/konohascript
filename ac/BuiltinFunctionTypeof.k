@@ -3,7 +3,7 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-assure "UnitTest:BuiltinFunctionTypeof" {
+assure "BuiltinFunctionTypeof" {
 	int[] a;
 	float f;
 	assert typeof(a) == int[];

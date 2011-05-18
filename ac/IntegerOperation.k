@@ -53,7 +53,7 @@ assure "UnitTest: Integer negative operator" {
   assert ((-i1) == -1 );
 }
 
-assert "Integer increment operator" {
+assure "Integer increment operator" {
   int i = 0;
   assert ((i) == 0);
   assert ((i++) == 0);
@@ -62,7 +62,7 @@ assert "Integer increment operator" {
   assert ((i) == 2);
 }
 
-assert "Integer increment operator" {
+assure "Integer increment operator" {
   int i = 0;
   assert ((i) == 0 );
   assert ((++i) == 1 );
@@ -71,7 +71,7 @@ assert "Integer increment operator" {
   assert ((i) == 2 );
 }
 
-assert "Integer decrement operator" {
+assure "Integer decrement operator" {
   int i = 0;
   assert ((i) == 0 );
   assert ((i--) == 0 );
@@ -80,7 +80,7 @@ assert "Integer decrement operator" {
   assert ((i) == -2 );
 }
 
-assert "Integer decrement operator" {
+assure "Integer decrement operator" {
   int i = 0;
   assert ((i) == 0);
   assert ((--i) == -1);
@@ -89,7 +89,7 @@ assert "Integer decrement operator" {
   assert ((i) == -2);
 }
 
-assert "Integer operator" {
+assure "Integer operator" {
   int i0 = 0;
   int i1 = 1;
   int i5 = 5;
