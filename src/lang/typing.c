@@ -2852,7 +2852,8 @@ static knh_Term_t *new_TermTCAST(CTX ctx, knh_class_t reqt, knh_TypeMap_t *trlNU
 	if(TT_(tk2) == TT_CONST && trlNULL != NULL && TypeMap_isConst(trlNULL)) {
 		BEGIN_LOCAL(ctx, lsfp, 1);
 		KNH_SETv(ctx, lsfp[0].o, (tk2)->data);
-		KNH_SCAST(ctx, lsfp, 0, trlNULL);
+		unboxSFP(ctx, lsfp);
+		knh_TypeMap_exec(ctx, trlNULL, lsfp, 0);
 		boxSFP(ctx, lsfp, SP(trlNULL)->tcid);
 		Token_setCONST(ctx, tk2, lsfp[0].o);
 		END_LOCAL(ctx, lsfp, tk2);

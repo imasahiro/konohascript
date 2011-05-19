@@ -218,9 +218,9 @@ in?        TT_IN        _BIN    10      MN_opHAS
 /          TT_DIV       _BIN    25      MN_opDIV
 %          TT_MOD       _BIN    25      MN_opMOD
 *          TT_MUL       _BIN    25      MN_opMUL
-&          TT_LAND      _BIN    30      MN_opLAND
-|          TT_LOR       _BIN    31      MN_opLOR
-^          TT_XOR       _BIN    33      MN_opLXOR
+&          TT_LAND      _BIN    18      MN_opLAND
+|          TT_LOR       _BIN    14      MN_opLOR
+^          TT_XOR       _BIN    16      MN_opLXOR
 <<         TT_LSFT      _BIN    35      MN_opLSFT
 >>         TT_RSFT      _BIN    35      MN_opRSFT
 

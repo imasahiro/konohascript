@@ -568,9 +568,9 @@ static OPDATA_t OPDATA[] = {
 	{25, MN_opDIV}, /* / */
 	{25, MN_opMOD}, /* % */
 	{25, MN_opMUL}, /* * */
-	{30, MN_opLAND}, /* & */
-	{31, MN_opLOR}, /* | */
-	{33, MN_opLXOR}, /* ^ */
+	{18, MN_opLAND}, /* & */
+	{14, MN_opLOR}, /* | */
+	{16, MN_opLXOR}, /* ^ */
 	{35, MN_opLSFT}, /* << */
 	{35, MN_opRSFT}, /* >> */
 	{40, MN_opLNOT}, /* ~ */

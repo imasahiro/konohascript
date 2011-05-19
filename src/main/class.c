@@ -1173,7 +1173,6 @@ KNHAPI2(void) knh_TypeMap_exec(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp, long
 		sfp[rix].ivalue = 0;
 	}
 	else {
-		sfp[K_TMRIDX].tmrNC = tmr;
 		tmr->ftypemap_1(ctx, sfp, rix);
 	}
 }
