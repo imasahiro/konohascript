@@ -137,7 +137,6 @@ assure "Integer operator" {
 //}
 //
 
-  @UnitTest ## int % operator
   i1 = 1;
   i2 = 2;
   i3 = 3;
