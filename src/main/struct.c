@@ -2028,6 +2028,7 @@ static void OutputStream_init(CTX ctx, Object *o)
 	b->stat_size = 0;
 	KNH_INITv(b->NEWLINE, TS_EOL);
 	KNH_INITv(b->TAB, TS_TAB);
+	KNH_INITv(b->mon, KNH_NULL);
 	b->indent = 0;
 	w->encNULL = NULL;
 	w->uline = 0;

@@ -272,7 +272,7 @@ void run() {
     out <<< EOL;
 
     for (i = 0; i < img.size; i++) {
-        out.writeChar(img[i]);
+        out.writeASCII(img[i]);
     }
     out.close();
 }
