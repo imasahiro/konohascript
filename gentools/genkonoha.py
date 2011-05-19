@@ -726,7 +726,7 @@ def svnrev():
     t = f.read()
     print t
     f.close()
-    t = t.split('Revision: ')[1].split()[0]
+    t = t.split('\n')[4].split(":")[1].strip();
     return int(t) + 1
 
 def write_name_h(f, data):

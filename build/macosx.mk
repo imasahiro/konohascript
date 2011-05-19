@@ -55,7 +55,7 @@ objs = \
 
 svnversion_exists := $(shell which svnversion)
 define compile_with_revision
-	$(CC) -DK_REVISION=$(shell $(svnversion_exists) -n ./ | sed -e 's/[MSP]//')
+	$(CC) -DK_REVISION=$(shell svn info  2>&1 | python -c 'import sys;print sys.stdin.readlines()[4].split(":")[1].strip();')
 endef
 
 define compile
