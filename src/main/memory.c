@@ -377,12 +377,13 @@ void knh_fastfree(CTX ctx, void *block, size_t size)
 {
 	if(size <= K_FASTMALLOC_SIZE) {
 		knh_fastmem_t *m = (knh_fastmem_t*)block;
-		knh_bzero(m, K_FASTMALLOC_SIZE);
+		KNH_FREEZERO(m, K_FASTMALLOC_SIZE);
 		m->ref = ctx->freeMemoryList;
 		((knh_context_t*)ctx)->freeMemoryList = m;
 	}
 	else {
 		prefetch(ctx->stat);
+		KNH_FREEZERO(block, size);
 		free(block);
 		STAT_unuseMemory(ctx, size);
 	}
@@ -1054,7 +1055,7 @@ static void gc_mark(CTX ctx)
 static inline void Object_MSfree(CTX ctx, knh_Object_t *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
-	//prefetch_tenure(o);
+	DBG_P("sweep %p %s", o, CLASS__(O_cid(o)));
 	ct->ospi->free(ctx, o);
 	OBJECT_REUSE(o);
 	disposeClassObject(ct);

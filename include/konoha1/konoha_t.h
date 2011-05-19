@@ -295,7 +295,7 @@ typedef const struct knh_context_t    Ctx;
 
 typedef knh_ushort_t       knh_class_t;  /* class id */
 typedef knh_ushort_t       knh_type_t;   /* extended knh_type_t */
-typedef knh_ushort_t       knh_ebi_t;    /* knh_ebi_t */
+typedef knh_ushort_t       knh_event_t;    /* knh_event_t */
 
 /* knh_class_t */
 #define CLASS_newid                ((knh_class_t)-1)
@@ -334,11 +334,11 @@ typedef knh_ushort_t       knh_ebi_t;    /* knh_ebi_t */
 #define O__(o)                     S_tochar(O_cTBL(o)->sname)
 #define TYPE__(type)               SAFETYPE__(ctx,type)
 
-/* knh_ebi_t */
-#define EBI_unknown            ((knh_ebi_t)-1)
-#define EBI_newid              ((knh_ebi_t)0)
+/* knh_event_t */
+#define EVENT_unknown            ((knh_event_t)-1)
+#define EVENT_newid              ((knh_event_t)0)
 #define ASSERT_ebi(eid)        DBG_ASSERT(eid < ctx->share->sizeEventTBL + 1)
-#define EBI__(eid)             S_tochar(knh_getEventName(ctx, eid))
+#define EVENT__(eid)             S_tochar(knh_getEventName(ctx, eid))
 
 /* ------------------------------------------------------------------------ */
 
@@ -529,22 +529,22 @@ typedef void *(*knh_Fthread)(void *);
 		struct knh_Range_t  *range; \
 		struct knh_Array_t  *a; \
 		struct knh_Iterator_t *it; \
-		struct knh_Map_t    *m;    \
+		struct knh_Map_t           *m;    \
 		struct knh_Func_t         *fo; \
 		struct knh_InputStream_t  *in; \
 		struct knh_OutputStream_t *w;  \
-		struct knh_Method_t *mtd;   \
-		struct knh_TypeMap_t *trl; \
-		struct knh_Exception_t *e;       \
-		struct knh_ExceptionHandler_t *hdr; \
-		struct knh_NameSpace_t *ns; \
+		struct knh_Method_t            *mtd;\
+		struct knh_TypeMap_t           *tmr;\
+		struct knh_Exception_t         *e;\
+		struct knh_ExceptionHandler_t  *hdr; \
+		struct knh_NameSpace_t         *ns;\
 		struct knh_RawPtr_t   *p; \
 		struct knh_ObjectField_t *ox; \
-		struct knh_Converter_t *conv;\
-		struct knh_Context_t   *cx;\
-		struct knh_Script_t    *scr;\
-		struct knh_Monitor_t   *mon;\
-		struct knh_Assurance_t      *Assurance;\
+		struct knh_Converter_t         *conv;\
+		struct knh_Context_t           *cx;\
+		struct knh_Script_t            *scr;\
+		struct knh_Monitor_t           *mon;\
+		struct knh_Assurance_t         *as;\
 		knh_int_t     dummy_ivalue;\
 		knh_float_t   dummy_fvalue \
 
@@ -608,6 +608,7 @@ typedef void (*knh_Ftraverse)(CTX, Object *);
 #define KNH_ENSUREREF(ctx, SIZE)  tail_ = knh_ensurerefs(ctx, tail_, SIZE)
 
 #define KNH_ADDREF(ctx, p)  {\
+		DBG_ASSERT(p != NULL);\
 		tail_[0] = (Object*)p;\
 		tail_++;\
 	}\
@@ -788,10 +789,19 @@ typedef struct knh_ClassTBL_t {
 	size_t total;
 } knh_ClassTBL_t;
 
-#define knh_class_bcid(c)   ClassTBL(c)->bcid
-#define knh_class_p1(c)     ClassTBL(c)->p1
-#define knh_class_p2(c)     ClassTBL(c)->p2
+#define C_bcid(c)           ClassTBL(c)->bcid
+#define C_bname(c)          knh_class_bname(ctx, cid)
+#define C_p1(c)             ClassTBL(c)->p1
+#define C_p2(c)             ClassTBL(c)->p2
+#define C_p(c, n)           knh_class_p(ctx, c, n)
+#define C_isGenerics(c)     knh_class_isGenerics(ctx, c)
+
 #define IS_Tcparam(cid)     (ClassTBL(cid)->cparam != NULL)
+
+#define PTYPE_Array           "[]"
+#define PTYPE_Iterator        ".."
+#define PTYPE_Immutable       "!"
+#define PTYPE_KindOf          "?"
 
 /* ------------------------------------------------------------------------ */
 
@@ -803,7 +813,7 @@ typedef struct knh_ClassTBL_t {
 
 typedef struct {
 	knh_flag_t   flag;
-	knh_ebi_t   parent;
+	knh_event_t   parent;
 	struct knh_String_t     *name;
 } knh_EventTBL_t;
 

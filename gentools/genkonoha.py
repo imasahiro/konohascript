@@ -78,7 +78,7 @@ def STRUCT_(cname): return 'STRUCT_%s' % cname
 def CLASS_(cname): return 'CLASS_%s' % cname
 def FN_(fn):   return 'FN_%s' % fn.replace(':', '__')
 def MN_(mn):  return 'MN_%s' % mn.replace('%', '_').replace(':', '__')
-def EBI_(cname):  return 'EBI_%s' % cname.replace('!!', '')
+def EVENT_(cname):  return 'EVENT_%s' % cname.replace('!!', '')
 
 def TYPE_(type):
     p = ''
@@ -225,7 +225,7 @@ class Expt:
 
     def ExptData(self):
         fmt = '''
-\tDATA_EXPT, _DATA("%s"), 0, %s, %s, ''' % (self.cname, EBI_(self.cname), EBI_(self.parent))
+\tDATA_EXPT, _DATA("%s"), 0, %s, %s, ''' % (self.cname, EVENT_(self.cname), EVENT_(self.parent))
         return fmt
 
 def parse_Expt(meta, tokens, data):
@@ -404,6 +404,7 @@ class Method:
         flag = addflag(flag, self.meta, 'Method', '@Virtual')
         flag = addflag(flag, self.meta, 'Method', '@Hidden')
         flag = addflag(flag, self.meta, 'Method', '@Private')
+        flag = addflag(flag, self.meta, 'Method', '@Immutable')
         fmt = '''
 \tDATA_METHOD0, %s, %s, %s, _DATA(%s), /*P=*/%s,''' % (CLASS_(self.cname), MN_(self.mn), flag, func, self.mf)
         return fmt
@@ -448,6 +449,7 @@ class TypeMap:
         flag = '0'
         flag = addflag(flag, self.meta, 'TypeMap', '@Const')
         flag = addflag(flag, self.meta, 'TypeMap', '@Semantic')
+        flag = addflag(flag, self.meta, 'TypeMap', '@FastCall')
         fmt = '''
 \tDATA_TYPEMAP, %s, %s, %s, _DATA(%s),''' % (CLASS_(self.fcname), CLASS_(self.tcname), flag, func)
         return fmt
@@ -469,7 +471,7 @@ class Data:
         self.CPARAM_LIST = []
         self.PTYPE_LIST = []
         self.EXPT = {}
-        self.EBI_LIST = []
+        self.EVENT_LIST = []
         self.FLAG_LIST = []
         self.METHODFIELD = {"void": 0}
         self.METHODFIELD_LIST = []
@@ -604,7 +606,7 @@ class Data:
     def add_Expt(self, expt):
         if not self.EXPT.has_key(expt.cname):
             self.EXPT[expt.cname] = expt
-            self.EBI_LIST.append(expt)
+            self.EVENT_LIST.append(expt)
         else:
             perror('duplicated', expt.cname)
     
@@ -762,10 +764,10 @@ def write_name_h(f, data):
     for fg in data.FLAG_LIST :
         write_flag_h(f, fg)
 
-    write_chapter(f, 'EXPT')
-    cid = 1
-    for c in data.EBI_LIST :
-        write_define(f, EBI_(c.cname), '%d' % cid, 32)
+    write_chapter(f, 'EVENT')
+    cid = 0
+    for c in data.EVENT_LIST :
+        write_define(f, EVENT_(c.cname), '%d' % cid, 32)
         cid += 1
         
     write_chapter(f, 'FIELDN')
@@ -876,7 +878,7 @@ def write_Data(f, data):
     for c in data.PTYPE_LIST :
         dlist.append(c.ClassData())
     #dlist=[]
-    for c in data.EBI_LIST :
+    for c in data.EVENT_LIST :
         dlist.append(c.ExptData())
     write_data(f, 'knh_data_t', 'ClassData0', dlist, '0')
     #

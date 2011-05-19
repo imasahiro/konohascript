@@ -305,7 +305,7 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 			size_t cid;
 			for(cid = 0; cid < ctx->share->sizeClassTBL; cid++) {
 				if(ClassTBL(cid)->lname == NULL) continue;
-				if(class_isPrivate(cid) && class_isGenerics(ctx, cid)) continue;
+				if(class_isPrivate(cid) && C_isGenerics(cid)) continue;
 				knh_bytes_t cname = S_tobytes(ClassTBL(cid)->lname);
 				if(knh_bytes_startsWith(cname, pkgname)
 						&& cname.utext[pkgname.len] == '.' && isupper(cname.utext[pkgname.len+1])) {
@@ -623,7 +623,7 @@ static knh_status_t CONST_decl(CTX ctx, knh_Stmt_t *stmt)
 	Object *value = knh_NameSpace_getConstNULL(ctx, ns, TK_tobytes(tkN));
 	if(cid != CLASS_unknown || value != NULL) {
 		WARN_AlreadyDefined(ctx, tkN);
-		_RETURN(K_BREAK);
+		_RETURN(K_CONTINUE);
 	}
 	if(Tn_typing(ctx, stmt, 1, TYPE_dyn, 0)) {
 		if(Tn_isCONST(stmt, 1)) {
@@ -972,9 +972,9 @@ KNHAPI2(knh_status_t) knh_load(CTX ctx, const char *scheme, knh_bytes_t path, kn
 	knh_InputStream_t *in = openScriptInputStreamNULL(ctx, K_GMANS, scheme, path);
 	if(in != NULL) {
 		knh_Bytes_t *ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
-		BEGIN_LOCAL(ctx, lsfp, 2);
+		BEGIN_LOCAL(ctx, lsfp, 3);
 		LOCAL_NEW(ctx, lsfp, 1, knh_InputStream_t*, bin, new_BytesInputStream(ctx, ba));
-		KNH_SETv(ctx, lsfp[2].o, in);
+		KNH_SETv(ctx, lsfp[0].o, in);
 		if(!knh_isCompileOnly(ctx)) {
 			KNH_SECINFO(ctx, "running script path='%s'", path.text);
 		}
@@ -982,6 +982,7 @@ KNHAPI2(knh_status_t) knh_load(CTX ctx, const char *scheme, knh_bytes_t path, kn
 			int linenum = 0;
 			knh_Bytes_clear(ba, 0);
 			if(!InputStream_isClosed(ctx, in)) {
+				status = K_CONTINUE;
 				linenum = readchunk(ctx, in, ba);
 			}
 			if(!bytes_isempty(ba->bu)) {
@@ -996,6 +997,7 @@ KNHAPI2(knh_status_t) knh_load(CTX ctx, const char *scheme, knh_bytes_t path, kn
 				});
 				status  = knh_eval(ctx, bin, resultsNULL);
 			}
+			//DBG_P("ba->size=%d, status=%d", ba->bu.len, status);
 		} while(BA_size(ba) > 0 && status == K_CONTINUE);
 		END_LOCAL_(ctx, lsfp);
 	}

@@ -354,7 +354,7 @@ extern "C" {
 		knh_sfp_t *sfp_ = SFP(rshift(rbp,thisidx));\
 		knh_class_t scid = SP(tmr_)->scid, this_cid = O_cid(sfp_[0].o);\
 		if(this_cid != scid) {\
-			tmr_ = knh_findTypeMap(ctx, scid, SP(tmr)->tcid);\
+			tmr_ = knh_findTypeMapNULL(ctx, scid, SP(tmr)->tcid, 1);\
 			KNH_SETv(ctx, ((klr_TCAST_t*)op)->cast, tmr_);\
 		}\
 		knh_TypeMap_exec(ctx, tmr_, sfp_, rix); \
@@ -366,7 +366,7 @@ extern "C" {
 		if(!class_isa(this_cid, tcid)) {\
 			knh_class_t scid = SP(tmr_)->scid;\
 			if(this_cid != scid) {\
-				tmr_ = knh_findTypeMap(ctx, scid, tcid);\
+				tmr_ = knh_findTypeMapNULL(ctx, scid, tcid, 0);\
 				KNH_SETv(ctx, ((klr_ACAST_t*)op)->cast, tmr_);\
 			}\
 			knh_TypeMap_exec(ctx, tmr_, SFP(rshift(rbp,thisidx)), rix); \
@@ -490,7 +490,7 @@ extern "C" {
 } \
 
 #define KLR_ERROR(ctx, start, msg) { \
-	knh_Exception_t *e_ = new_Error(ctx, EBI_SourceCode, msg);\
+	knh_Exception_t *e_ = new_Error(ctx, msg);\
 	CTX_setThrowingException(ctx, e_);\
 	knh_throw(ctx, SFP(rbp), SFPIDX(start)); \
 } \

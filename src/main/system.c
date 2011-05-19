@@ -591,17 +591,9 @@ static METHOD CTX_setErr(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static METHOD Exception_opOF(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	int isa = 0;
-	knh_String_t *event = sfp[1].s;
-	if(knh_bytes_strcasecmp(S_tobytes(event), S_tobytes(DP(sfp[0].e)->event)) != 0) {
-		knh_ebi_t eid = knh_geteid(ctx, S_tobytes(event), EBI_unknown);
-		if(eid != EBI_unknown) {
-			isa = expt_isa(ctx, DP(sfp[0].e)->eid, eid);
-		}
-	}
-	else {
-		isa = 1;
-	}
+	knh_event_t eid = knh_geteid(ctx, S_tobytes(sfp[1].s));
+	knh_event_t eid0 = knh_geteid(ctx, S_tobytes((sfp[0].e)->emsg));
+	int isa = event_isa(ctx, eid0, eid);
 	RETURNb_(isa);
 }
 

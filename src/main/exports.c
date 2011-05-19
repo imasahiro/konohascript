@@ -154,7 +154,7 @@ static knh_ParamArray_t *knh_loadScriptParamArray(CTX ctx, const knh_data_t **d,
 }
 
 #define _CID(d)  (d < _MAX) ? (knh_class_t)(d) : knh_NameSpace_getcid(ctx, K_GMANS, knh_data_tobytes(d))
-#define _EXPTID(d)  (d < _MAX) ? (knh_ebi_t)(d) : knh_geteid(ctx, knh_data_tobytes(d), EBI_newid)
+#define _EXPTID(d)  (d < _MAX) ? (knh_event_t)(d) : knh_geteid(ctx, knh_data_tobytes(d))
 
 static void knh_loadScriptData(CTX ctx, const knh_data_t *data, knh_ParamArray_t **buf)
 {
@@ -214,10 +214,12 @@ static void knh_loadScriptData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 		case DATA_CPARAM: {
 			knh_class_t cid = _CID(data[0]);
 			const char *lname = (const char*)data[1];
+			//const char *sname = (const char*)data[2];
 			knh_ClassTBL_t *ct = varClassTBL(cid);
-			knh_ParamArray_t *pa = knh_loadScriptParamArray(ctx, &data, 0/*hflag*/, +2);
+			knh_ParamArray_t *pa = knh_loadScriptParamArray(ctx, &data, 0/*hflag*/, +3);
 			knh_setClassParam(ctx, ct, pa);
 			KNH_SETv(ctx, ct->lname, new_T(lname));
+			//KNH_SETv(ctx, ct->sname, new_T(sname));
 			break;
 		}
 		case DATA_GENERICS: {
@@ -229,9 +231,9 @@ static void knh_loadScriptData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 		case DATA_EXPT: {
 			char *name = (char*)data[0];
 			knh_flag_t flag = (knh_flag_t)data[1];
-			knh_ebi_t eid = _EXPTID(data[2]);
-			knh_ebi_t pid = _EXPTID(data[3]);
-			knh_addEvent(ctx, flag, eid, new_T(name), pid);
+//			knh_event_t eid = _EXPTID(data[2]);
+			knh_event_t pid = _EXPTID(data[3]);
+			knh_addEvent(ctx, flag, new_T(name), pid);
 			data += 4;
 			break;
 		}

@@ -576,6 +576,10 @@ void knh_path_append(CTX ctx, knh_path_t *ph, int issep, const char *name)
 // $konoha.package.path {$konoha.home.path}/package
 // $konoha.script.path  {$konoha.home.path}/script
 
+#ifdef K_USING_DEBUG
+#define K_KONOHAHOME "/usr/local/konoha"
+#endif
+
 #define SETPROP(K, V)  DictMap_set_(ctx, sysprops, new_T(K), UPCAST(V));
 
 void knh_System_initPath(CTX ctx, knh_System_t *o)
@@ -591,7 +595,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 	home.text = (const char*)knh_getenv("KONOHAHOME");
 #if defined(K_KONOHAHOME)
 	if(home.text == NULL) {
-		home = STEXT(K_KONOHAHOME);
+		home.text = K_KONOHAHOME;
 	}
 #endif
 	if(home.text != NULL) {

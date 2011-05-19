@@ -188,20 +188,19 @@ void knh_stack_typecheck(CTX ctx, knh_sfp_t *sfp, knh_Method_t *mtd, knh_opline_
 //KNHAPI2(void) konoha_throwSecurityException(void)
 //{
 //	CTX ctx = knh_getCurrentContext();
-//	knh_stack_throw(ctx, new_Exception(ctx, knh_getEventName(ctx, EBI_Security)), NULL, 0);
+//	knh_stack_throw(ctx, new_Exception(ctx, knh_getEventName(ctx, EVENT_Security)), NULL, 0);
 //}
 
 
 /* ------------------------------------------------------------------------ */
 /* [Event] */
 
-int expt_isa(CTX ctx, knh_ebi_t eid, knh_ebi_t parent)
+int event_isa(CTX ctx, knh_event_t eid, knh_event_t parent)
 {
 	ASSERT_ebi(eid);
 	DBG_ASSERT(parent <= ctx->share->sizeEventTBL);
-	if(eid == parent || parent == 1) return 1;
-	if(eid == 1) return 0;
-	while((eid = ctx->share->EventTBL[eid-1].parent) != 1) {
+	if(eid == parent || parent == EVENT_Exception) return 1;
+	while((eid = ctx->share->EventTBL[eid].parent) != EVENT_Exception) {
 		if(eid == parent) return 1;
 	}
 	return 0;
@@ -209,7 +208,7 @@ int expt_isa(CTX ctx, knh_ebi_t eid, knh_ebi_t parent)
 
 /* ------------------------------------------------------------------------ */
 
-knh_String_t *knh_getEventName(CTX ctx, knh_ebi_t eid)
+knh_String_t *knh_getEventName(CTX ctx, knh_event_t eid)
 {
 	ASSERT_ebi(eid);
 	return ctx->share->EventTBL[eid-1].name;
@@ -218,103 +217,107 @@ knh_String_t *knh_getEventName(CTX ctx, knh_ebi_t eid)
 /* ------------------------------------------------------------------------ */
 /* [TABLE] */
 
-static knh_ebi_t new_EventId(CTX ctx)
+knh_event_t knh_addEvent(CTX ctx, knh_flag_t flag, knh_String_t *name, knh_class_t peid)
 {
-	knh_class_t newid = 0;
+	knh_event_t eid = 0;
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 	if(ctx->share->sizeEventTBL == ctx->share->capacityEventTBL) {
 		knh_expandEventTBL(ctx);
 	}
+	eid = ctx->share->sizeEventTBL;
 	((knh_share_t*)ctx->share)->sizeEventTBL += 1;
-	newid = ctx->share->sizeEventTBL;
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
-	return newid;
-}
 
-knh_ebi_t knh_addEvent(CTX ctx, knh_flag_t flag, knh_class_t eid, knh_String_t *name, knh_class_t peid)
-{
-	if(eid == EBI_newid) {
-		eid = new_EventId(ctx);
-	}else {
-		((knh_share_t*)ctx->share)->sizeEventTBL += 1;
-		DBG_ASSERT(eid == ctx->share->sizeEventTBL);
-	}
-	ASSERT_ebi(eid);
 	{
-		knh_EventTBL_t *t = pEventTBL(eid-1);
-		DBG_ASSERT(t->name == NULL);
-		t->flag = flag;
-		t->parent = peid;
-		KNH_INITv(t->name, name);
+		knh_EventTBL_t *et = pEventTBL(eid);
+		DBG_ASSERT(et->name == NULL);
+		et->flag = flag;
+		et->parent = peid;
+		KNH_INITv(et->name, name);
+		DBG_P("eid=%d, name='%s'", eid, S_tochar(name));
 		OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
-		knh_DictSet_set(ctx, DP(ctx->sys)->EventDictCaseSet, name, eid);
+		knh_DictSet_set(ctx, DP(ctx->sys)->EventDictCaseSet, name, eid+1);
 		OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
 	}
 	return eid;
 }
 
-/* ------------------------------------------------------------------------ */
-
-knh_ebi_t knh_geteid(CTX ctx, knh_bytes_t msg, knh_ebi_t def)
+knh_bool_t knh_isDefinedEvent(CTX ctx, knh_bytes_t t)
 {
-	knh_ebi_t eid = EBI_Exception;
-	knh_intptr_t loc = knh_bytes_index(msg, '!');
+	int eid;
+	knh_intptr_t loc = knh_bytes_index(t, '!');
 	if(loc != -1) {
-		if(msg.utext[loc+1] != '!') return eid;
-		msg = knh_bytes_first(msg, loc);
+		t = knh_bytes_first(t, loc);
 	}
-	if(msg.len == 0) return EBI_Exception; /* '!!' */
-	{
-		OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
-		eid = (knh_ebi_t)knh_DictSet_get(ctx, DP(ctx->sys)->EventDictCaseSet, msg);
-		OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
-		if(eid == 0 && def == EBI_newid) {
-			eid = knh_addEvent(ctx, 0, EBI_newid, new_S(ctx, msg), EBI_Exception);
-			DBG_P("NEW '%s', eid=%d", msg.text, eid);
-		}
-		return (eid == 0) ? def : eid;
-	}
-	return def;
+	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
+	eid = (knh_event_t)knh_DictSet_get(ctx, DP(ctx->sys)->EventDictCaseSet, t);
+	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
+	return eid;
 }
+
+knh_event_t knh_geteid(CTX ctx, knh_bytes_t t)
+{
+	knh_event_t eid = EVENT_Exception;
+	knh_intptr_t loc = knh_bytes_index(t, '!');
+	if(loc != -1) {
+		t = knh_bytes_first(t, loc);
+	}
+	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
+	eid = (knh_event_t)knh_DictSet_get(ctx, DP(ctx->sys)->EventDictCaseSet, t);
+	DBG_P("@@@@ '%s' is %d", t.text, eid);
+	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
+	if(eid == 0) {
+		return knh_addEvent(ctx, 0, new_S(ctx, t), EVENT_Exception);
+	}
+	else {
+		return eid - 1;
+	}
+}
+
 
 /* ------------------------------------------------------------------------ */
 /* [Exception.new] */
 
-knh_Exception_t* Exception_setup(CTX ctx, knh_Exception_t *e, knh_String_t *event, knh_String_t *msg, Object *bag)
-{
-	DBG_ASSERT(IS_Exception(e));
-	knh_ebi_t eid = knh_geteid(ctx, S_tobytes(event), EBI_unknown/*newid*/);
-	if(eid == EBI_unknown) {
-		KNH_WARN(ctx, "unknown exception: %s", S_tochar(event));
-		DP(e)->eid = EBI_Exception;
-	}
-	else {
-		DP(e)->eid = eid;
-	}
-	ASSERT_ebi(DP(e)->eid);
-	DP(e)->flag = ctx->share->EventTBL[DP(e)->eid - 1].flag;
-	KNH_SETv(ctx, DP(e)->event, event);
-	KNH_SETv(ctx, DP(e)->msg, msg);
-	KNH_SETv(ctx, DP(e)->bag, bag);
-	return e;
-}
-
-knh_Exception_t* new_Error(CTX ctx, knh_ebi_t eid, knh_String_t *msg)
+knh_Exception_t* new_Error(CTX ctx, knh_String_t *emsg)
 {
 	knh_Exception_t* e = new_(Exception);
-	if(eid == EBI_newid) {
-		eid = knh_geteid(ctx, S_tobytes(msg), EBI_newid);
-	}
-	DP(e)->eid = eid;
-	DP(e)->flag = ctx->share->EventTBL[eid - 1].flag;
-	KNH_SETv(ctx, DP(e)->event, ctx->share->EventTBL[eid - 1].name);
-	KNH_SETv(ctx, DP(e)->msg, msg);
+	KNH_SETv(ctx, e->emsg, emsg);
 	return e;
 }
 
 void CTX_setThrowingException(CTX ctx, knh_Exception_t *e)
 {
 	KNH_SETv(ctx, ((knh_context_t*)ctx)->e, e);
+}
+
+knh_bool_t isCATCH(CTX ctx, knh_rbp_t *rbp, int en, knh_event_t peid)
+{
+	knh_Exception_t *e = ctx->e;
+	knh_event_t eid = knh_geteid(ctx, S_tobytes(e->emsg));
+	int res = event_isa(ctx, eid, peid);
+	if(res == 1) {
+		KNH_SETv(ctx, rbp[en].o, e);
+		KNH_SETv(ctx, ((knh_context_t*)ctx)->e, KNH_NULL);
+	}
+	return res;
+}
+
+void Context_push(CTX ctx, knh_Object_t *o)
+{
+	knh_Array_t *a = ctx->ehdrNC->stacklist;
+	knh_Array_add(ctx, a, o);
+}
+
+knh_Object_t *Context_pop(CTX ctx)
+{
+	knh_Array_t *a = ctx->ehdrNC->stacklist;
+	DBG_ASSERT(a->size > 0);
+	a->size -= 1;
+	{
+		knh_Object_t *o = a->list[a->size];
+		KNH_FINALv(ctx, a->list[a->size]);
+		return o;
+	}
 }
 
 /* ------------------------------------------------------------------------ */

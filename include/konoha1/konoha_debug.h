@@ -95,6 +95,8 @@
 /* MALLOC */
 //#define K_USING_TRACEMALLOC 1
 
+#define KNH_FREEZERO(p, size)            knh_bzero(p, size)
+
 #ifdef K_EXPORTS
 	#define KNH_MALLOC(ctx, size)       ctx->api->malloc(ctx, size)
 	#define KNH_FREE(ctx, p, size)      ctx->api->free(ctx, p, size)

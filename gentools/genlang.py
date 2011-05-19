@@ -46,12 +46,13 @@ ERR       _ERR
 # @expr: let - call1
 LET         _      _NAME  _EXPR
 TCAST       _CNAME _      _EXPR
+BOX         _EXPR
 OPR         _OP    _EXPR  _EXPR
 CALL        _NAME  _EXPR  _MEXPR
 NEW         _NAME  _CNAME _MEXPR
 FUNCCALL    _EXPR  _      _MEXPR
 ACALL       _NAME  _      _MEXPR
-TSCHEME       _
+TLINK       _
 ALT         _EXPR  _EXPR
 TRI         _EXPR  _EXPR  _EXPR
 AND         _MEXPR
@@ -213,14 +214,14 @@ in?        TT_IN        _BIN    10      MN_opHAS
 >          TT_GT        _BIN    10      MN_opGT
 >=         TT_GTE       _BIN    10      MN_opGTE
 
+|          TT_LOR       _BIN    14      MN_opLOR
+^          TT_XOR       _BIN    16      MN_opLXOR
+&          TT_LAND      _BIN    18      MN_opLAND
 +          TT_ADD       _BIN    20      MN_opADD
 -          TT_SUB       _BIN    20      MN_opSUB
 /          TT_DIV       _BIN    25      MN_opDIV
 %          TT_MOD       _BIN    25      MN_opMOD
 *          TT_MUL       _BIN    25      MN_opMUL
-&          TT_LAND      _BIN    18      MN_opLAND
-|          TT_LOR       _BIN    14      MN_opLOR
-^          TT_XOR       _BIN    16      MN_opLXOR
 <<         TT_LSFT      _BIN    35      MN_opLSFT
 >>         TT_RSFT      _BIN    35      MN_opRSFT
 
@@ -229,6 +230,7 @@ in?        TT_IN        _BIN    10      MN_opHAS
 --         TT_PREV      0       40      MN_opPREV
 ..         TT_ITR       0       40      MN_opITR
 &&&        TT_TAND      0       40      MN_opADDR
+***        TT_TMUL      0       40      MN_opCAST
 +++        TT_TADD      0       40      MN_opPLUS
 ---        TT_TSUB      0       40      MN_opNEG
 '''
@@ -246,7 +248,7 @@ DOC      -
 METAN    - 
 PROPN    - 
 URN      - 
-TSCHEME    - 
+TLINK    - 
 NAME     - 
 UNAME    - 
 FUNCNAME - 

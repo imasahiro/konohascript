@@ -107,6 +107,7 @@ static knh_String_t *Gamma_vperror(CTX ctx, int pe, const char *fmt, va_list ap)
 	if(Gamma_isQuiet(ctx->gma) || ctx->gma->uline == 0) {
 		isPRINT = 0;
 	}
+	//DBG_P("/*isPRINT=%d*/ uline=%d", isPRINT, ctx->gma->uline);
 	if(isPRINT == 1) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_write_uline(ctx, cwb->w, ctx->gma->uline);
@@ -187,7 +188,7 @@ static knh_Token_t *knh_Token_toERR(CTX ctx, knh_Token_t *tk, const char *fmt, .
 	return tk;
 }
 
-void BadPracticeSemicolon(CTX ctx)
+void WARN_Semicolon(CTX ctx)
 {
 	if(!CTX_isInteractive(ctx)) Gamma_perror(ctx, KC_BAD, "needs ;");
 }
@@ -211,12 +212,12 @@ knh_Token_t* ErrorMisplaced(CTX ctx)
 {
 	return Gamma_perror(ctx, KC_ERR, _("misplaced"));
 }
-knh_Token_t* ErrorStaticType(CTX ctx, const char *msg)
-{
-	knh_Token_t* tkERR = Gamma_perror(ctx, KC_ERR, _("%s is not dynamic"), msg);
-	DBG_ABORT("stop why?");
-	return tkERR;
-}
+//knh_Token_t* ErrorStaticType(CTX ctx, const char *msg)
+//{
+//	knh_Token_t* tkERR = Gamma_perror(ctx, KC_ERR, _("%s is not dynamic"), msg);
+//	DBG_ABORT("stop why?");
+//	return tkERR;
+//}
 knh_Token_t* ErrorFieldAddition(CTX ctx, knh_class_t cid)
 {
 	return Gamma_perror(ctx, KC_ERR, _("%C is unable to add new fields"), cid);
@@ -229,6 +230,7 @@ knh_Token_t* ERROR_text(CTX ctx, const char *keyword K_TRACEARGV)
 {
 	knh_Token_t *tk = Gamma_perror(ctx, KC_ERR, ("syntax error: %s"), keyword);
 	KNH_HINT(ctx, keyword);
+	DBG_ABORT("why?");
 	return tk;
 }
 knh_Token_t* ERROR_Token(CTX ctx, knh_Token_t *tk K_TRACEARGV)
@@ -243,9 +245,8 @@ knh_Token_t* ERROR_Stmt(CTX ctx, knh_Stmt_t *stmt K_TRACEARGV)
 	DBG_ASSERT(STT_(stmt) != STT_ERR);
 	return ERROR_text(ctx, TT__(stmt->stt) K_TRACEDATA);
 }
-knh_Token_t* SyntaxErrorTokenIsNot(CTX ctx, knh_Token_t *tk, const char* whatis)
+knh_Token_t* ERROR_TokenIsNot(CTX ctx, knh_Token_t *tk, const char* whatis)
 {
-	DBG_P("TT(tk)=%s", TT__(tk->tt));
 	return Gamma_perror(ctx, KC_ERR, ("%O is not %s"), tk, whatis);
 }
 knh_Token_t* ERROR_Required(CTX ctx, knh_Token_t *tk, const char *stmtexpr, const char *token)
@@ -263,7 +264,7 @@ knh_Token_t* ErrorRegexCompilation(CTX ctx, knh_Token_t *tk, const char *regname
 knh_Token_t* ERROR_Undefined(CTX ctx, const char *whatis, knh_class_t cid, knh_Token_t *tk)
 {
 	if(cid != CLASS_unknown) {
-		return knh_Token_toERR(ctx, tk, _("undefined %s: %C.%O"), whatis, cid, tk);
+		return knh_Token_toERR(ctx, tk, _("undefined %s: %T.%O"), whatis, cid, tk);
 	}
 	else {
 		return knh_Token_toERR(ctx, tk, _("undefined %s: %O"), whatis, tk);
@@ -273,9 +274,14 @@ knh_Token_t* ERROR_UndefinedName(CTX ctx, knh_Token_t *tk)
 {
 	return knh_Token_toERR(ctx, tk, _("undefined name: %O"), tk);
 }
-void WARN_UndefinedName(CTX ctx, knh_Token_t *tk)
+void WARN_Undefined(CTX ctx, const char *whatis, knh_class_t cid, knh_Token_t *tk)
 {
-	Gamma_perror(ctx, KC_EWARN, _("undefined name: %O"), tk);
+	if(cid != CLASS_unknown) {
+		Gamma_perror(ctx, KC_EWARN, _("undefined %s: %T.%O"), whatis, cid, tk);
+	}
+	else {
+		Gamma_perror(ctx, KC_EWARN, _("undefined %s: %O"), whatis, tk);
+	}
 }
 void WARN_AlreadyDefined(CTX ctx, knh_Token_t *tk)
 {
@@ -289,17 +295,17 @@ knh_Token_t* ERROR_Denied(CTX ctx, const char *why, knh_Token_t *tk)
 {
 	return knh_Token_toERR(ctx, tk, _("%s: %O"), why, tk);
 }
-void WarningUndefined(CTX ctx, const char *whatis, const char *prefix, const char *msg)
-{
-	Gamma_perror(ctx, KC_DWARN, _("undefined %s: %s%s"), whatis, prefix, msg);
-}
-void WarningUndefinedOfClass(CTX ctx, const char *whatis, knh_class_t cid, const char *prefix, const char *msg)
-{
-	Gamma_perror(ctx, KC_DWARN, _("undefined %s of %C: %s%s"), whatis, cid, prefix, msg);
-}
+//void WarningUndefined(CTX ctx, const char *whatis, const char *prefix, const char *msg)
+//{
+//	Gamma_perror(ctx, KC_DWARN, _("undefined %s: %s%s"), whatis, prefix, msg);
+//}
+//void WarningUndefinedOfClass(CTX ctx, const char *whatis, knh_class_t cid, const char *prefix, const char *msg)
+//{
+//	Gamma_perror(ctx, KC_DWARN, _("undefined %s of %C: %s%s"), whatis, cid, prefix, msg);
+//}
 void WarningUnknownClass(CTX ctx, knh_Token_t *tk, knh_class_t defc)
 {
-	Gamma_perror(ctx, KC_DWARN, _("unknown class: %L ==> %C"), tk, defc);
+	Gamma_perror(ctx, KC_DWARN, _("unknown class: %L ==> %T"), tk, defc);
 }
 knh_Token_t* ErrorTokenCannotAssign(CTX ctx, knh_Token_t *tk)
 {
@@ -307,11 +313,11 @@ knh_Token_t* ErrorTokenCannotAssign(CTX ctx, knh_Token_t *tk)
 }
 knh_Token_t* ErrorUnsupportedConstructor(CTX ctx, knh_class_t mtd_cid)
 {
-	return Gamma_perror(ctx, KC_ERR, _("the constructor of %C is not supported"), mtd_cid);
+	return Gamma_perror(ctx, KC_ERR, _("the constructor of %T is not supported"), mtd_cid);
 }
-knh_Token_t* ErrorUndefinedBehavior(CTX ctx, const char *token)
+knh_Token_t* ERROR_UndefinedBehavior(CTX ctx, const char *token)
 {
-	return Gamma_perror(ctx, KC_ERR, _("undefined behavior of %s"), token);
+	return Gamma_perror(ctx, KC_ERR, _("undefined behavior: %s"), token);
 }
 knh_Token_t* ERROR_RequiredParameter(CTX ctx)
 {
@@ -320,9 +326,9 @@ knh_Token_t* ERROR_RequiredParameter(CTX ctx)
 void WARN_WrongTypeParam(CTX ctx, knh_class_t cid)
 {
 	if(cid != CLASS_unknown) {
-		Gamma_perror(ctx, KC_DWARN, "%C<>: wrong type parameter", cid);
+		knh_bytes_t bname = C_bname(cid);
+		Gamma_perror(ctx, KC_DWARN, "%B<>: wrong type parameter", bname);
 	}
-	DBG_ABORT("h");
 }
 void InfoType(CTX ctx, const char *prefix, knh_bytes_t name, knh_type_t type)
 {
@@ -412,9 +418,9 @@ void WarningUnnecessaryOperation(CTX ctx, const char *msg)
 {
 	Gamma_perror(ctx, KC_DWARN, "unnecessary operation: %s", msg);
 }
-void WarningTooManyParameters(CTX ctx)
+void WARN_TooMany(CTX ctx, const char *whatis, const char *symbol)
 {
-	Gamma_perror(ctx, KC_DWARN, _("too many parameters"));
+	Gamma_perror(ctx, KC_DWARN, _("%s: too many %s, and be ignored."), symbol, whatis);
 }
 knh_Token_t* ERROR_Needs(CTX ctx, const char *whatis)
 {
@@ -452,24 +458,14 @@ knh_Token_t* TypeErrorCallParam(CTX ctx, int n, knh_Method_t *mtd, knh_class_t r
 		return Gamma_perror(ctx, KC_TERROR, _("%s(#d) has type %T, not %T"), fname, n - 1, reqt, type);
 	}
 }
-knh_Token_t *TypeErrorNotFuncion(CTX ctx, knh_type_t reqt)
+void WARN_Cast(CTX ctx, const char *whatis, knh_class_t tcid, knh_class_t scid)
 {
-	return Gamma_perror(ctx, KC_TERROR, _("function is typed as %T"), reqt);
+	Gamma_perror(ctx, KC_EWARN, _("%s (%C)expr of %C"), whatis, tcid, scid);
 }
-void WarningUpcast(CTX ctx, knh_class_t tcid, knh_class_t scid)
-{
-	Gamma_perror(ctx, KC_DWARN, _("upcast (%C)expr of %C"), tcid, scid);
-}
-
-void WarningDowncast(CTX ctx, knh_class_t tcid, knh_class_t scid)
-{
-	Gamma_perror(ctx, KC_DWARN, _("downcast (%C)expr of %C"), tcid, scid);
-}
-
-knh_Token_t* ErrorNoSuchTransCast(CTX ctx, knh_class_t tcid, knh_class_t scid)
-{
-	return Gamma_perror(ctx, KC_ERR, _("no translation: %C ==> %C"), scid, tcid);
-}
+//knh_Token_t* ErrorNoSuchTransCast(CTX ctx, knh_class_t tcid, knh_class_t scid)
+//{
+//	return Gamma_perror(ctx, KC_ERR, _("no translation: %C ==> %C"), scid, tcid);
+//}
 //knh_Token_t* ErrorNoResourceHandler(CTX ctx, knh_bytes_t path)
 //{
 //	return Gamma_perror(ctx, KC_ERR, _("path may be uninstalled: %B"), path);

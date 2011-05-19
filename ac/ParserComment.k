@@ -8,7 +8,7 @@ int f() { // comment
 	return 1;
 }
 
-assure "UnitTest:Comment" {
+assure "ParserComment" {
 	assert f() == 1;
 }
 assure "UnitTest:Comment2" {

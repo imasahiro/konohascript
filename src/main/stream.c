@@ -777,7 +777,7 @@ void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap)
 						break;
 					case 'C':
 						DBG_ASSERT(args[index].atype == VA_CLASS);
-						knh_write_type(ctx, w, args[index].cid);
+						knh_write_cid(ctx, w, args[index].cid);
 						break;
 					case 'T':
 						DBG_ASSERT(args[index].atype == VA_TYPE);
@@ -1133,6 +1133,8 @@ static METHOD OutputStream_writeData(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	RETURNvoid_();
 }
+
+/* ------------------------------------------------------------------------ */
 
 //======================================  MSGPACK  =======================================//
 

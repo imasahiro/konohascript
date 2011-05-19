@@ -680,7 +680,7 @@ Object *knh_ClassTBL_fdefault__SSPEC(CTX ctx, knh_class_t cid)
 static
 knh_class_t knh_addSpecializedType(CTX ctx, knh_class_t cid, knh_class_t supcid, knh_Semantics_t *u)
 {
-	knh_class_t bcid = knh_class_bcid(supcid);
+	knh_class_t bcid = C_bcid(supcid);
 	char bufcn[CLASS__AME_BUFSIZ];
 	if(cid == CLASS_newid) {
 		cid = new_ClassId(ctx);

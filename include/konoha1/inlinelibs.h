@@ -107,6 +107,21 @@ static knh_index_t knh_bytes_rindex(knh_bytes_t v, int ch)
 }
 #endif
 
+#if defined(USE_bytes) || defined(USE_bytes_head)
+static inline knh_bytes_t knh_bytes_head(knh_bytes_t t, int ch) CC_UNUSED;
+static knh_bytes_t knh_bytes_head(knh_bytes_t t, int ch)
+{
+	size_t i;
+	for(i = 0; i < t.len; i++) {
+		if(t.utext[i] == ch) {
+			t.len = i;
+			break;
+		}
+	}
+	return t;
+}
+#endif
+
 #if defined(USE_bytes) || defined(USE_bytes_next)
 static inline knh_bytes_t knh_bytes_next(knh_bytes_t v, int ch) CC_UNUSED;
 static knh_bytes_t knh_bytes_next(knh_bytes_t v, int ch)

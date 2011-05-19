@@ -130,37 +130,39 @@ static const char* knh_format_uline(CTX ctx, char *buf, size_t bufsiz, knh_uline
 	return (const char*)buf;
 }
 
-void readuline(FILE *fp, char *buf, size_t bufsiz)
+static void readuline(FILE *fp, char *buf, size_t bufsiz)
 {
 	int ch;
-	size_t p = 0;
-	while((ch = fgetc(fp)) == -1) {
+	size_t p = 1;
+	while((ch = fgetc(fp)) != -1) {
 		if(ch == ' ' || ch == '\t') continue;
+		break;
 	}
-	while((ch = fgetc(fp)) == -1) {
+	buf[0] = ch;
+	while((ch = fgetc(fp)) != -1) {
 		if(ch == '\n') break;
 		buf[p] = ch; p++;
-		if(p + 1 < bufsiz) continue;
+		if(!(p + 1 < bufsiz)) break;
 	}
 	buf[p] = 0;
 }
 
-const char* knh_readuline(CTX ctx, knh_uline_t uline, char *buf, size_t bufsiz)
+static const char* knh_readuline(CTX ctx, knh_uline_t uline, char *buf, size_t bufsiz)
 {
 	knh_uri_t uri = ULINE_uri(uline);
 	size_t line = ULINE_line(uline);
 	buf[0] = 0;
-	if(uline != 0 && uri != URI_unknown && line != 0) {
-		char const *fname = FILENAME__(uri);
+	if(uline != 0 && uri > URI_EVAL && line != 0) {
+		char const *fname = URI__(uri);
 		FILE *fp = fopen(fname, "r");
 		if(fp != NULL) {
-			size_t linec = 1;
-			int ch;
-			if(line == line) {
+			if(line == 1) {
 				readuline(fp, buf, bufsiz);
 			}
 			else {
-				while((ch = fgetc(fp)) == -1) {
+				size_t linec = 1;
+				int ch;
+				while((ch = fgetc(fp)) != -1) {
 					if(ch == '\n') {
 						linec++;
 						if(linec == line) {
@@ -265,10 +267,10 @@ static void knh_Exception_addStackTrace(CTX ctx, knh_Exception_t *e, knh_sfp_t *
 			knh_write_sfp(ctx, cwb->w, type, &sfp[i+1], FMT_line);
 		}
 		knh_putc(ctx, cwb->w, ')');
-		if(DP(e)->tracesNULL == NULL) {
-			KNH_INITv(DP(e)->tracesNULL, new_Array(ctx, CLASS_String, 0));
+		if(e->tracesNULL == NULL) {
+			KNH_INITv(e->tracesNULL, new_Array(ctx, CLASS_String, 0));
 		}
-		knh_Array_add(ctx, DP(e)->tracesNULL, knh_cwb_newString(ctx, cwb));
+		knh_Array_add(ctx, e->tracesNULL, knh_cwb_newString(ctx, cwb));
 	}
 }
 
@@ -279,8 +281,8 @@ void knh_throw(CTX ctx, knh_sfp_t *sfp, long start)
 	if(IS_Exception(ctx->e)) {
 		knh_sfp_t *sp = (sfp == NULL) ? ctx->esp : sfp + start;
 		knh_ExceptionHandler_t *hdr = ctx->ehdrNC;
-		if(DP(ctx->e)->uline == 0) {
-			DP(ctx->e)->uline = knh_stack_uline(ctx, sfp);
+		if((ctx->e)->uline == 0) {
+			(ctx->e)->uline = knh_stack_uline(ctx, sfp);
 		}
 		while(ctx->stack <= sp) {
 			if(sp[0].mtdNC != NULL && isCalledMethod(ctx, sp)) {
@@ -314,20 +316,17 @@ static knh_Exception_t* new_Assertion(CTX ctx, knh_uline_t uline)
 	knh_Exception_t* e = new_(Exception);
 	char buf[256] = {'A', 's', 's', 'e', 'r', 't', 'i', 'o', 'n', '!', '!', ':', ' '};
 	char *mbuf = buf + 13;
+	knh_bytes_t t;
 	knh_readuline(ctx, uline, mbuf, sizeof(buf)-13);
 	if(mbuf[0] == 0) {
 		knh_uri_t uri = ULINE_uri(uline);
 		size_t line = ULINE_line(uline);
 		knh_snprintf(buf, sizeof(buf), "Assertion!!: %s at line %ld", FILENAME__(uri), line);
 	}
-	DP(e)->eid = EBI_Assertion;
-	DP(e)->flag = ctx->share->EventTBL[0].flag;
-	{
-		knh_bytes_t t = {{(const char*)buf}, knh_strlen(buf)};
-		KNH_SETv(ctx, DP(e)->msg, new_S(ctx, t));
-		KNH_SETv(ctx, DP(e)->event, DP(e)->msg);
-	}
-	DP(e)->uline = uline;
+	t.buf = buf;
+	t.len = knh_strlen(buf);
+	KNH_SETv(ctx, e->emsg, new_S(ctx, t));
+	e->uline = uline;
 	return e;
 }
 
@@ -335,41 +334,6 @@ void knh_assert(CTX ctx, knh_sfp_t *sfp, long start, knh_uline_t uline)
 {
 	CTX_setThrowingException(ctx, new_Assertion(ctx, uline));
 	knh_throw(ctx, sfp, start);
-}
-
-knh_bool_t isCATCH(CTX ctx, knh_rbp_t *rbp, int en, knh_String_t *event)
-{
-	knh_Exception_t *e = ctx->e;
-	int res = 0;
-	if(knh_bytes_strcasecmp(S_tobytes(event), S_tobytes(DP(e)->event)) != 0) {
-		knh_ebi_t eid = knh_geteid(ctx, S_tobytes(event), EBI_unknown);
-		if(eid != EBI_unknown) {
-			res = expt_isa(ctx, DP(e)->eid, eid);
-		}
-	}
-	if(res == 1) {
-		KNH_SETv(ctx, rbp[en].o, e);
-		KNH_SETv(ctx, ((knh_context_t*)ctx)->e, KNH_NULL);
-	}
-	return res;
-}
-
-void Context_push(CTX ctx, knh_Object_t *o)
-{
-	knh_Array_t *a = ctx->ehdrNC->stacklist;
-	knh_Array_add(ctx, a, o);
-}
-
-knh_Object_t *Context_pop(CTX ctx)
-{
-	knh_Array_t *a = ctx->ehdrNC->stacklist;
-	DBG_ASSERT(a->size > 0);
-	a->size -= 1;
-	{
-		knh_Object_t *o = a->list[a->size];
-		KNH_FINALv(ctx, a->list[a->size]);
-		return o;
-	}
 }
 
 /* ------------------------------------------------------------------------ */
@@ -388,8 +352,8 @@ static void knh_traceCFMT(CTX ctx, int pe, int isThrowable, const char *ns, cons
 	if(ctx->ehdrNC != NULL && isThrowable) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_vprintf(ctx, cwb->w, fmt, ap);
-		knh_Exception_t *e = new_Error(ctx, EBI_Fatal, knh_cwb_newString(ctx, cwb));
-		DP(e)->uline = uline;
+		knh_Exception_t *e = new_Error(ctx, knh_cwb_newString(ctx, cwb));
+		e->uline = uline;
 		CTX_setThrowingException(ctx, e);
 		knh_throw(ctx, sfp, 0);
 	}
@@ -418,8 +382,8 @@ static void knh_tracePERROR(CTX ctx, int pe, int isThrowable, const char *ns, co
 	if(ctx->ehdrNC != NULL && isThrowable) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_vprintf(ctx, cwb->w, fmt, ap);
-		knh_Exception_t *e = new_Error(ctx, EBI_Fatal, knh_cwb_newString(ctx, cwb));
-		DP(e)->uline = uline;
+		knh_Exception_t *e = new_Error(ctx, knh_cwb_newString(ctx, cwb));
+		e->uline = uline;
 		CTX_setThrowingException(ctx, e);
 		knh_throw(ctx, sfp, 0);
 	}
@@ -434,8 +398,8 @@ static void knh_traceKFMT(CTX ctx, int pe, int isThrowable, const char *ns, cons
 	ctx->spi->syslog(pe, knh_cwb_tochar(ctx, cwb));
 	((knh_context_t*)ctx)->seq += 1;
 	if(ctx->ehdrNC != NULL && isThrowable) {
-		knh_Exception_t *e = new_Error(ctx, EBI_Fatal, knh_cwb_newString(ctx, cwb));
-		DP(e)->uline = uline;
+		knh_Exception_t *e = new_Error(ctx, knh_cwb_newString(ctx, cwb));
+		e->uline = uline;
 		CTX_setThrowingException(ctx, e);
 		knh_throw(ctx, sfp, 0);
 	}

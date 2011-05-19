@@ -307,6 +307,7 @@ static knh_context_t* new_RootContext(void)
 	knh_loadScriptTokenData(ctx);
 	knh_loadScriptAliasTokenData(ctx);
 	share->ctx0 = ctx;
+	knh_Gamma_init(ctx);  // initalize gamma->gf, reported by uh
 	return ctx;
 }
 
@@ -401,6 +402,8 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	KNH_ADDREF(ctx, (share->emptyArray));
 	KNH_ADDREF(ctx, (ctx->sys));
 	KNH_ADDREF(ctx, (share->rootns));
+	KNH_ADDNNREF(ctx, (share->sysAliasDictMapNULL));
+
 	KNH_ENSUREREF(ctx, K_TSTRING_SIZE);
 	for(i = 0; i < K_TSTRING_SIZE; i++) {
 		KNH_ADDREF(ctx, (share->tString[i]));
@@ -414,18 +417,18 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	/* tclass */
 	KNH_ENSUREREF(ctx, share->sizeClassTBL * 10);
 	for(i = 0; i < share->sizeClassTBL; i++) {
-		const knh_ClassTBL_t *t = ClassTBL(i);
-		DBG_ASSERT(t->lname != NULL);
-		KNH_ADDNNREF(ctx,  (t->typeNULL));
-		KNH_ADDREF(ctx, (t->methods));
-		KNH_ADDREF(ctx, t->typemaps);
-		KNH_ADDNNREF(ctx,  t->cparam);
-		KNH_ADDNNREF(ctx,  t->defnull);
-		KNH_ADDNNREF(ctx,  t->constDictCaseMapNULL);
-		KNH_ADDREF(ctx, t->sname);
-		KNH_ADDREF(ctx, t->lname);
-		if(t->bcid == CLASS_Object && t->cid > t->bcid) {
-			KNH_ADDREF(ctx, t->protoNULL);
+		const knh_ClassTBL_t *ct = ClassTBL(i);
+		DBG_ASSERT(ct->lname != NULL);
+		KNH_ADDNNREF(ctx,  (ct->typeNULL));
+		KNH_ADDREF(ctx, (ct->methods));
+		KNH_ADDREF(ctx, ct->typemaps);
+		KNH_ADDNNREF(ctx,  ct->cparam);
+		KNH_ADDNNREF(ctx,  ct->defnull);
+		KNH_ADDNNREF(ctx,  ct->constDictCaseMapNULL);
+		KNH_ADDREF(ctx, ct->sname);
+		KNH_ADDREF(ctx, ct->lname);
+		if(ct->bcid == CLASS_Object && ct->cid > ct->bcid) {
+			KNH_ADDREF(ctx, ct->protoNULL);
 		}
 	}
 #ifdef K_USING_CSTACK_TRAVERSE_

@@ -110,6 +110,7 @@ typedef struct knh_Boolean_t {
 #define IS_TRUE(o)         (O_bcid(o) == CLASS_Boolean && N_tobool(o))
 #define IS_FALSE(o)        (O_bcid(o) == CLASS_Boolean && N_tobool(o) == 0)
 #define new_Boolean(ctx, c)    ((c) ? KNH_TRUE : KNH_FALSE)
+#define O_ndata(o)        (((knh_Number_t*)o)->n.data)
 
 /* ------------------------------------------------------------------------ */
 //## @Immutable class Number Object;
@@ -167,7 +168,6 @@ typedef struct knh_String_t {
 
 /* ------------------------------------------------------------------------ */
 //## class Bytes Object;
-//## @Immutable class BytesIm Object;
 
 typedef struct {
 	size_t capacity;
@@ -199,6 +199,7 @@ typedef struct knh_Bytes_t {
 
 /* ------------------------------------------------------------------------ */
 //## class Iterator Object;
+//## type IteratorVar  Iterator 0 Tvar;
 
 typedef struct knh_mapitr_t {
 	size_t index;
@@ -231,9 +232,6 @@ typedef struct knh_Iterator_t {
 
 /* ------------------------------------------------------------------------ */
 //## class Tuple Object;
-//## typeO PairSS   Tuple 0 String String;
-//## typeO PairST1  Tuple 0 String T1;
-//## typeO PairT1T2 Tuple 0 T1 T2;
 
 typedef knh_ObjectField_t knh_Tuple_t;
 
@@ -257,9 +255,7 @@ typedef struct knh_Range_t {
 
 /* ------------------------------------------------------------------------ */
 //## class Array   Object;
-//## class ArrayIm Object;
 //## flag  Array   NDATA     1 - is set * *;
-//## flag  ArrayIm NDATA     1 - is set * *;
 //## type CmprT1  Func 1 T1 T1 Int;
 
 typedef struct {
@@ -295,7 +291,6 @@ typedef struct knh_Array_t {
 
 ///* ------------------------------------------------------------------------ */
 //## class Map Object;
-//## @Immutable class MapIm Object;
 
 #define K_USE_FASTDMAP(STMT)  STMT
 
@@ -527,6 +522,8 @@ typedef struct knh_Method_t {
 //## flag TypeMap Interface  1 - is set * *;
 //## flag TypeMap Semantic   2 - is set * *;
 //## flag TypeMap Const      3 - is set * *;
+//## flag TypeMap FastCall   4 - is set * *;
+
 
 typedef struct knh_TypeMap_t {
 	knh_hObject_t h;
@@ -540,8 +537,8 @@ typedef struct knh_TypeMap_t {
 	struct knh_TypeMap_t *tmr2;
 } knh_TypeMap_t;
 
-#define knh_findTypeMap(ctx, scid, tcid)     knh_findTypeMapNULL(ctx, scid, tcid, 1)
-#define knh_getTypeMapNULL(ctx, scid, tcid)  knh_findTypeMapNULL(ctx, scid, tcid, 0)
+//#define knh_findTypeMap(ctx, scid, tcid)     knh_findTypeMapNULL(ctx, scid, tcid, 1)
+//#define knh_getTypeMapNULL(ctx, scid, tcid)  knh_findTypeMapNULL(ctx, scid, tcid, 0)
 
 /* ------------------------------------------------------------------------ */
 //## @Immutable class Func Object;
@@ -577,8 +574,6 @@ typedef struct knh_Thunk_t {
 
 /* ------------------------------------------------------------------------ */
 //## class Exception Object;
-//## flag0 Exception Logging 0 DP(%s)->flag is * * *;
-//## flag0 Exception Caught  1 DP(%s)->flag is set * *;
 
 //## expt Exception!! -;
 //## expt Fatal!! -;
@@ -588,19 +583,11 @@ typedef struct knh_Thunk_t {
 //## expt Type!! -;
 //## expt Assertion!! -;
 
-typedef struct {
-	knh_flag_t flag;   knh_ebi_t eid;
-	knh_String_t *event;
-	knh_String_t *msg;
-	Object *bag;
-	knh_Array_t*    tracesNULL;
-	knh_uline_t     uline;
-	int             sysloglevel;
-} knh_ExceptionEX_t;
-
 typedef struct knh_Exception_t {
 	knh_hObject_t h;
-	knh_ExceptionEX_t *b;
+	knh_String_t   *emsg;
+	knh_uline_t     uline;
+	knh_Array_t*    tracesNULL;
 } knh_Exception_t;
 
 #define new_Exception__s(ctx, s)     new_Exception__T(ctx, B(s))
@@ -999,14 +986,14 @@ typedef struct knh_Assurance_t {
 
 /* ------------------------------------------------------------------------ */
 //## @Struct class Token Object;
-//## flag Token BOL           0 SP(%s)->flag0 is  set * *;
-//## flag Token DOT           1 SP(%s)->flag0 is  set * *;
-//## flag Token LCASE         2 SP(%s)->flag0 has set * *;
+//## flag Token BOL           0 SP(%s)->flag0 is set * *;
+//## flag Token DOT           1 SP(%s)->flag0 is set * *;
+//## flag Token NWS           2 SP(%s)->flag0 is set * *;
 //## flag Token ISBOOL        3 SP(%s)->flag0 is set * *;
 //## flag Token Getter        4 SP(%s)->flag0 is set * *;
 //## flag Token Setter        5 SP(%s)->flag0 is set * *;
 //## flag Token ExceptionType 6 SP(%s)->flag0 is set * *;
-//## flag Token Immutable     7 SP(%s)->flag0 is set * *;
+//## flag Token Diamond       7 SP(%s)->flag0 is set * *;
 //## flag Token MEMO1         8 SP(%s)->flag0 is set * *;
 
 // TT_BRACE, TT_PARENTHESIS, TT_BRANCET
@@ -1014,12 +1001,12 @@ typedef struct knh_Assurance_t {
 #define Token_setPLUSLINE(o, b) Token_setMEMO1(o, b)
 
 // TT_NAME
-#define Token_isPNAME(o)  Token_isMEMO1(o)
-#define Token_setPNAME(o, b) Token_setMEMO1(o, b)
+#define Token_isPNAME(o)      Token_isMEMO1(o)
+#define Token_setPNAME(o, b)  Token_setMEMO1(o, b)
 
 // TT_UNAME
-#define Token_isBYTE(o)  Token_isMEMO1(o)
-#define Token_setBYTE(o, b) Token_setMEMO1(o, b)
+#define Token_isBYTE(o)       Token_isMEMO1(o)
+#define Token_setBYTE(o, b)   Token_setMEMO1(o, b)
 
 // TT_LOCAL,
 #define Token_isSUPER(o)      Token_isMEMO1(o)
@@ -1071,7 +1058,7 @@ typedef struct knh_Token_t {
 
 /* ------------------------------------------------------------------------ */
 //## @Struct class Stmt Object;
-//## flag Stmt STOPITR    1 DP(%s)->flag0 is set * *;
+//## flag Stmt STOPITR    0 DP(%s)->flag0 is set * *;
 //## flag Stmt CONST      2 DP(%s)->flag0 is set * *;
 //## flag Stmt Memo1      4 DP(%s)->flag0 is set * *;
 //## flag Stmt Memo2      5 DP(%s)->flag0 is set * *;
@@ -1082,9 +1069,11 @@ typedef struct knh_Token_t {
 #define StmtMETHOD_isFFI(s)            Stmt_isMemo2(s)
 #define StmtMETHOD_setFFI(s,b)         Stmt_setMemo2(s,b)
 
-/* STT_PTYPEMAP*/
-#define Stmt_isDOWNCAST(s)       Stmt_isMemo1(s)
-#define Stmt_setDOWNCAST(s,b)    Stmt_setMemo1(s,b)
+/* STT_TCAST*/
+#define Stmt_isTRANS(s)          Stmt_isMemo1(s)
+#define Stmt_setTRANS(s,b)       Stmt_setMemo1(s,b)
+#define Stmt_isDOWNCAST(s)       Stmt_isMemo2(s)
+#define Stmt_setDOWNCAST(s,b)    Stmt_setMemo2(s,b)
 
 /* STT_CALL*/
 #define Stmt_isTAILRECURSION(s)       Stmt_isMemo1(s)
@@ -1337,7 +1326,7 @@ typedef struct knh_RawPtr_t {
 #define K_SHIFTIDX  (-3)
 #define K_PCIDX     (-2)
 #define K_MTDIDX    (-1)
-#define K_TMRIDX   0
+#define K_TMRIDX    (0)
 #define K_SELFIDX   0
 
 //#ifdef K_USING_RBP_
@@ -1382,13 +1371,6 @@ knh_opline_t* knh_VirtualMachine_run(CTX, knh_sfp_t *, knh_opline_t *);
 		(mtd)->fcall_1(ctx, sfp, rix);\
 	} \
 
-#define klr_settrlNC(ctx, sfpA, trlO)   sfpA.tmrNC = trlO
-
-#define KNH_SCAST(ctx, lsfp, rtnidx, trl)  { \
-		knh_TypeMap_t *trl_ = trl;\
-		klr_settrlNC(ctx, lsfp[rtnidx], trl_);\
-		(trl_)->ftypemap_1(ctx, lsfp + rtnidx, 0); \
-	} \
 
 #define BEGIN_LOCAL(ctx, lsfp, n) \
 		knh_sfp_t *lsfp = knh_stack_local(ctx, n);\

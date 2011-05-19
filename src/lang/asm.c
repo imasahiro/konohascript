@@ -49,7 +49,6 @@ static void Tn_asm(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, int loc
 static void BLOCK_asm(CTX ctx, knh_Stmt_t *stmtH, knh_type_t reqt);
 #define GammaLabel(ctx, n)   (knh_BasicBlock_t*)knh_Array_n(DP(ctx->gma)->lstacks, n)
 #define HAS_OPCODE(C)     1
-//#define HAS_OPCODE(C)     ctx->share->jitSPI->isOPCODE(OPCODE_##C)
 
 knh_BasicBlock_t* new_BasicBlockLABEL(CTX ctx)
 {
@@ -142,7 +141,7 @@ void knh_BasicBlock_add_(CTX ctx, knh_BasicBlock_t *bb, knh_ushort_t line, knh_o
 
 static void _bBOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct);
 static void _BOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct);
-static void _OBOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct);
+//static void _OBOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct);
 
 static void Gamma_asm(CTX ctx, knh_opline_t *op, size_t size)
 {
@@ -159,20 +158,20 @@ static void Gamma_asm(CTX ctx, knh_opline_t *op, size_t size)
 			return;
 		}
 		L_REMOVE:;
-		if(opP->opcode == OPCODE_UNBOX && op->opcode == OPCODE_TR) {
-			klr_UNBOX_t *opUNBOX = (klr_UNBOX_t*)opP;
-			klr_TR_t *opTR = (klr_TR_t*)op;
-			if(opUNBOX->b == opTR->a && (opTR->tr == _OBOX || opTR->tr == _BOX || opTR->tr == _bBOX)) {
-				DBG_ASSERT(opUNBOX->a == opTR->b); // CHECK Object o = 1;
-				DP(bb)->size -= 1;
-				KNH_P("PEEPHOLE: removed UNBOX. IS OK?"); // is it ok?
-				return;
-			}
-		}
+//		if(opP->opcode == OPCODE_UNBOX && op->opcode == OPCODE_TR) {
+//			klr_UNBOX_t *opUNBOX = (klr_UNBOX_t*)opP;
+//			klr_TR_t *opTR = (klr_TR_t*)op;
+//			if(opUNBOX->b == opTR->a && (opTR->tr == _BOX || opTR->tr == _bBOX)) {
+//				DBG_ASSERT(opUNBOX->a == opTR->b); // CHECK Object o = 1;
+//				DP(bb)->size -= 1;
+//				KNH_P("PEEPHOLE: removed UNBOX. IS OK?"); // is it ok?
+//				return;
+//			}
+//		}
 		if(opP->opcode == OPCODE_OSET && op->opcode == OPCODE_TR) {
 			klr_OSET_t *opOSET = (klr_OSET_t*)opP;
 			klr_TR_t *opTR = (klr_TR_t*)op;
-			if(opOSET->a == opTR->a && (opTR->tr == _OBOX || opTR->tr == _BOX || opTR->tr == _bBOX)) {
+			if(opOSET->a == opTR->a && (opTR->tr == _BOX || opTR->tr == _bBOX)) {
 				KNH_P("PEEPHOLE: removed unnecesarry BOX"); // is it ok?
 				return;
 			}
@@ -818,14 +817,14 @@ static void _BOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *
 	Object *v = new_Boxing(ctx, sfp, ct);
 	KNH_SETv(ctx, sfp[c].o, v);
 }
-static void _OBOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
-{
-	knh_class_t cid2 = O_cid(sfp[0].o);
-	if(IS_Tunbox(cid2)) {
-		Object *v = new_Boxing(ctx, sfp, O_cTBL(sfp[0].o));
-		KNH_SETv(ctx, sfp[c].o, v);
-	}
-}
+//static void _OBOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
+//{
+//	knh_class_t cid2 = O_cid(sfp[0].o);
+//	if(IS_Tunbox(cid2)) {
+//		Object *v = new_Boxing(ctx, sfp, O_cTBL(sfp[0].o));
+//		KNH_SETv(ctx, sfp[c].o, v);
+//	}
+//}
 static void _CWB(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
 	size_t pos = BA_size(ctx->bufa);
@@ -845,20 +844,34 @@ static void _TOSTR(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t
 static void _ERR(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
 	if(IS_bString(sfp[0].o)) {
-		CTX_setThrowingException(ctx, new_Error(ctx, EBI_newid, sfp[0].s));
+		CTX_setThrowingException(ctx, new_Error(ctx, sfp[0].s));
 	}
 	else {
 		DBG_ASSERT(IS_Exception(sfp[0].o));
 		CTX_setThrowingException(ctx, sfp[0].e);
 	}
 }
-static void _CHKTYPE(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
+static void _TCHECK(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
-	if(!ClassTBL_isa_(ctx, O_cTBL(sfp[0].o), ct)) {
+	const knh_ClassTBL_t *ct0 = O_cTBL(sfp[0].o);
+	if(ct0->cid != ct->cid && !ClassTBL_isa_(ctx, ct0, ct)) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_printf(ctx, cwb->w, "ClassCast!!: %C is not %C", O_cid(sfp[0].o), ct->cid);
-		CTX_setThrowingException(ctx, new_Error(ctx, EBI_newid, knh_cwb_newString(ctx, cwb)));
-		knh_throw(ctx, sfp, c);
+		CTX_setThrowingException(ctx, new_Error(ctx, knh_cwb_newString(ctx, cwb)));
+		knh_throw(ctx, NULL, 0);
+	}
+}
+static void _TUNBOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
+{
+	const knh_ClassTBL_t *ct0 = O_cTBL(sfp[0].o);
+	if(ct0->cid != ct->cid && !ClassTBL_isa_(ctx, ct0, ct)) {
+		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+		knh_printf(ctx, cwb->w, "ClassCast!!: %C is not %C", O_cid(sfp[0].o), ct->cid);
+		CTX_setThrowingException(ctx, new_Error(ctx, knh_cwb_newString(ctx, cwb)));
+		knh_throw(ctx, NULL, 0);
+	}
+	else{
+		sfp[c].ndata = O_ndata(sfp[0].o);
 	}
 }
 static knh_Method_t* _SETMTD(CTX ctx, knh_sfp_t *sfp, int thisidx, knh_Method_t *mtd)
@@ -946,39 +959,42 @@ static inline int Token_index_(CTX ctx, knh_Token_t *tk)
 	return (int)(tk)->index + ((TT_(tk) == TT_LOCAL) ? DP(ctx->gma)->ebpidx : 0);
 }
 
-static void ASM_BOX2(CTX ctx, knh_type_t reqt, knh_type_t atype, int a)
-{
-	knh_class_t cid = CLASS_t(atype);
-	knh_class_t bcid = ClassTBL(cid)->bcid;
-	if(bcid == CLASS_Boolean || bcid == CLASS_Int || bcid == CLASS_Float) {
-		knh_class_t rcid = ClassTBL(CLASS_t(reqt))->bcid;
-		if(rcid != bcid && reqt != TYPE_void) {
-			if(cid == CLASS_Boolean) {
-				ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(cid), _bBOX);
-			}
-			else if (IS_Tnumbox(reqt)) {
-				Object *v = (cid == CLASS_Int) ? UPCAST(KNH_INT0) : UPCAST(KNH_FLOAT0);
-				ASM(OSET, OC_(a), v);
-			}
-			else {
-				ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(cid), _BOX);
-			}
-		}
-	}
-	else if(atype == CLASS_Tdynamic && IS_Tnumbox(reqt)) {
-		ASM(UNBOX, NC_(a), OC_(a), ClassTBL(reqt));
-	}
-	else if(IS_Tnumbox(atype) && reqt == CLASS_Tdynamic) {
-		ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(atype), _OBOX);
-	}
-}
+#define ASM_BOX2(ctx, reqt, atype, a)
+#define ASM_UNBOX(ctx, atype, a)
 
-static void ASM_UNBOX(CTX ctx, knh_type_t atype, int a)
-{
-	if(IS_Tunbox(atype) || IS_Tnumbox(atype)) {
-		ASM(UNBOX, NC_(a), OC_(a), ClassTBL(atype));
-	}
-}
+//static void ASM_BOX2(CTX ctx, knh_type_t reqt, knh_type_t atype, int a)
+//{
+//	knh_class_t cid = CLASS_t(atype);
+//	knh_class_t bcid = ClassTBL(cid)->bcid;
+//	if(bcid == CLASS_Boolean || bcid == CLASS_Int || bcid == CLASS_Float) {
+//		knh_class_t rcid = ClassTBL(CLASS_t(reqt))->bcid;
+//		if(rcid != bcid && reqt != TYPE_void) {
+//			if(cid == CLASS_Boolean) {
+//				ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(cid), _bBOX);
+//			}
+//			else if (IS_Tnumbox(reqt)) {
+//				Object *v = (cid == CLASS_Int) ? UPCAST(KNH_INT0) : UPCAST(KNH_FLOAT0);
+//				ASM(OSET, OC_(a), v);
+//			}
+//			else {
+//				ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(cid), _BOX);
+//			}
+//		}
+//	}
+//	else if(atype == CLASS_Tdynamic && IS_Tnumbox(reqt)) {
+//		ASM(UNBOX, NC_(a), OC_(a), ClassTBL(reqt));
+//	}
+//	else if(IS_Tnumbox(atype) && reqt == CLASS_Tdynamic) {
+//		ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(atype), _OBOX);
+//	}
+//}
+//
+//static void ASM_UNBOX(CTX ctx, knh_type_t atype, int a)
+//{
+//	if(IS_Tunbox(atype) || IS_Tnumbox(atype)) {
+//		ASM(UNBOX, NC_(a), OC_(a), ClassTBL(atype));
+//	}
+//}
 
 #define ASML(idx) (idx < DP(ctx->gma)->espidx) ? (DP(ctx->gma)->espidx) : idx
 
@@ -1021,7 +1037,7 @@ static knh_Token_t* Tn_putTK(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t req
 static void ASM_SMOVx(CTX ctx, knh_type_t atype, int a, knh_type_t btype, knh_sfx_t bx)
 {
 	if(IS_Tunbox(btype)) {
-		ASM(NMOVx, NC_(a), bx)
+		ASM(NMOVx, NC_(a), bx);
 		ASM_BOX2(ctx, atype, btype, (a));
 	}
 	else {
@@ -1053,10 +1069,6 @@ static void ASM_SMOV(CTX ctx, knh_type_t atype, int a/*flocal*/, knh_Token_t *tk
 			if(IS_Tunbox(atype)) {
 				ASM(NSET, NC_(a), O_data((tkb)->data));
 			}
-			else if(IS_Tnumbox(atype)) {
-				ASM(NSET, NC_(a), O_data((tkb)->data));
-				ASM(OSET, OC_(a), v);
-			}
 			else {
 				ASM(OSET, OC_(a), v);
 			}
@@ -1072,14 +1084,14 @@ static void ASM_SMOV(CTX ctx, knh_type_t atype, int a/*flocal*/, knh_Token_t *tk
 			}
 			else {
 				ASM(OMOV, OC_(a), OC_(b));
-				if(IS_Tnumbox(btype)) {
-					if(IS_Tnumbox(atype)) {
-						ASM(NMOV, NC_(a), NC_(b));
-					}
-					else {
-						ASM(TR, OC_(a), SFP_(b), RIX_(a-b), ClassTBL(atype), _OBOX);
-					}
-				}
+//				if(IS_Tnumbox(btype)) {
+//					if(IS_Tnumbox(atype)) {
+//						ASM(NMOV, NC_(a), NC_(b));
+//					}
+//					else {
+//						ASM(TR, OC_(a), SFP_(b), RIX_(a-b), ClassTBL(atype), _OBOX);
+//					}
+//				}
 			}
 			break;
 		}
@@ -1153,6 +1165,7 @@ static void ASM_XMOV(CTX ctx, knh_type_t atype, int a, size_t an, knh_Token_t *t
 	knh_type_t btype = SP(tkb)->type;
 	long espidx = -1;
 	DBG_ASSERT(DP(ctx->gma)->espidx != -1);
+	//DBG_P("@@@ cid=%d,%s type=%s", tkb->cid, CLASS__(tkb->cid), CLASS__(tkb->type));
 	switch(TT_(tkb)) {
 		case TT_NULL/*DEFVAL*/: {
 			knh_class_t cid = (tkb)->cid;
@@ -1569,18 +1582,6 @@ static void ASM_CALL(CTX ctx, knh_type_t reqt, int sfpidx, knh_type_t rtype, knh
 	}
 }
 
-//static knh_Method_t* knh_lookupDynamicMethod(CTX ctx, knh_methodn_t mn)
-//{
-//	size_t cid, i, size = ctx->share->sizeClassTBL;
-//	for(cid = 0; cid < size; cid++) {
-//		knh_Array_t *a = ClassTBL(cid)->methods;
-//		for(i = 0; i < knh_Array_size(a); i++) {
-//			if((a->methods[i])->mn == mn) return a->methods[i];
-//		}
-//	}
-//	return knh_ClassTBL_getMethod(ctx, CLASS_Tvoid, mn);
-//}
-
 #ifdef OPCODE_FASTCALL0
 #define isNativeCompiled(kcode) (IS_KonohaCode(kcode) && KonohaCode_isNativeCompiled(kcode))
 static inline knh_bool_t Method_isFASTCALL0(CTX ctx, knh_Method_t *mtd)
@@ -1625,7 +1626,6 @@ static void ASM_CHKIDXC(CTX ctx, int aidx, int n)
 #endif
 }
 
-
 static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
 	int local = ASML(sfpidx);
@@ -1653,7 +1653,7 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 //		return;
 //	}
 	if(mtd_cid == CLASS_Array) {
-		knh_class_t p1 = knh_class_p1(cid);
+		knh_class_t p1 = C_p1(cid);
 		if(mtd_mn == MN_get) {
 			int a = Tn_put(ctx, stmt, 1, cid, local + 1);
 			if(Tn_isCONST(stmt, 2)) {
@@ -1695,7 +1695,7 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 				if(n < 0) {
 					goto L_USECALL;
 				}
-				knh_class_t p1 = knh_class_p1(cid);
+				knh_class_t p1 = C_p1(cid);
 				ASM_CHKIDXC(ctx, OC_(a), n);
 				if(IS_Tunbox(p1)) {
 					ASM(NSETIDXC, NC_(sfpidx), OC_(a), n, NC_(v));
@@ -1843,7 +1843,7 @@ static void FUNCCALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	Tn_asm(ctx, stmt, 1, cid, local + K_CALLDELTA);
 	if(Stmt_isDYNCALL(stmt)) {
 		int a = local + K_CALLDELTA;
-		ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(cid), _CHKTYPE);
+		ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(cid), _TCHECK);
 	}
 	knh_type_t rtype = knh_type_tocid(ctx, knh_ParamArray_rtype(DP(mtd)->mp), cid);
 	ASM_CALL(ctx, reqt, local, rtype, mtd, Method_isStatic(mtd), DP(stmt)->size - 2);
@@ -1862,6 +1862,19 @@ static void CALL1_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	}
 	else {
 		Tn_asm(ctx, stmt, 0, reqt, sfpidx);
+	}
+}
+
+static void BOX_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int a)
+{
+	knh_class_t cid = Tn_cid(stmt, 0);
+	Tn_asm(ctx, stmt, 0, cid, a);
+	DBG_ASSERT(IS_Tunbox(cid));
+	if(cid == CLASS_Boolean) {
+		ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(cid), _bBOX);
+	}
+	else {
+		ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(cid), _BOX);
 	}
 }
 
@@ -1887,10 +1900,10 @@ static void TCAST_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	if(srct != reqt) {
 		int local = ASML(sfpidx);
 		knh_Token_t *tkC = tkNN(stmt, 0);
-		knh_TypeMap_t *trl = (tkC)->mpr;
+		knh_TypeMap_t *tmr = (tkC)->mpr;
 		Tn_asm(ctx, stmt, 1, srct, local);
-		if(IS_TypeMap(trl)) {
-			knh_class_t scid = SP(trl)->scid, tcid = SP(trl)->tcid;
+		if(IS_TypeMap(tmr)) {
+			knh_class_t scid = SP(tmr)->scid, tcid = SP(tmr)->tcid;
 			if(1/*TypeMap_isFinal(trl)*/) {
 				if(scid == CLASS_Int && tcid == CLASS_Float) {
 					ASM(fCAST, NC_(local), NC_(local));
@@ -1900,27 +1913,16 @@ static void TCAST_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 				}
 				else {
 					ASM_BOX2(ctx, TYPE_Object, srct, local);
-					ASM(SCAST, RTNIDX_(ctx, local, stmt->type), SFP_(local), RIX_(local-local), trl);
+					ASM(SCAST, RTNIDX_(ctx, local, stmt->type), SFP_(local), RIX_(local-local), tmr);
 				}
 			}
 			else {
-				ASM_BOX2(ctx, TYPE_Object, srct, local);
-				if(IS_Tunbox(srct) && IS_Tnumbox(reqt)) {
-
-				}
-				else {
-					ASM(TCAST, RTNIDX_(ctx, local, stmt->type), SFP_(local), RIX_(local-local), trl);
-				}
+				ASM(TCAST, RTNIDX_(ctx, local, stmt->type), SFP_(local), RIX_(local-local), tmr);
 			}
 		}
-		else {
-			if(Stmt_isDOWNCAST(stmt)) {
-				ASM(TR, OC_(local), SFP_(local), RIX_(local-local), ClassTBL((tkC)->cid), _CHKTYPE);
-			}
-			else {
-				DBG_ABORT("TODO: ACAST?");
-				//KNH_ASM(ACAST, local, KNH_NULVAL(CLASS_TypeMap));
-			}
+		else { // downcast
+			klr_Ftr f = (IS_Tunbox(tkC->cid)) ? _TUNBOX : _TCHECK;
+			ASM(TR, OC_(local), SFP_(local), RIX_(local-local), ClassTBL((tkC)->cid), f);
 		}
 		ASM_MOVL(ctx, reqt, sfpidx, SP(stmt)->type, local);
 	}
@@ -1994,12 +1996,17 @@ static void TRI_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 static void LET_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
 	knh_Token_t *tkL = tkNN(stmt, 1);
+	knh_Token_t *tkV = tkNN(stmt, 2);
+//	if(TT_(tkV) == TT_NULL) {  // FIXME in DECL3_typing
+//		tkV->cid = CLASS_t(tkL->type);
+//		tkV->type = tkL->type;
+//	}
 	if(TT_(tkL) == TT_LOCAL || TT_(tkL) == TT_FUNCVAR) {
 		int index = Token_index(tkL);
 		Tn_asm(ctx, stmt, 2, SP(tkL)->type, index);
 	}
-	else if(IS_Token(tkNN(stmt, 2))) {
-		ASM_MOV(ctx, tkL, tkNN(stmt, 2));
+	else if(IS_Token(tkV)) {
+		ASM_MOV(ctx, tkL, tkV);
 	}
 	else {
 		int local = ASML(sfpidx);
@@ -2156,6 +2163,7 @@ static void EXPR_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	CASE_ASM(FUNCCALL, reqt, sfpidx);
 	CASE_ASM(CALL, reqt, sfpidx);
 	CASE_ASM(CALL1, reqt, sfpidx);
+	CASE_ASM(BOX, reqt, sfpidx);
 	CASE_ASM(OPR, reqt, sfpidx);
 	CASE_ASM(NEW, reqt, sfpidx);
 	CASE_ASM(TCAST, reqt, sfpidx);
@@ -2174,6 +2182,11 @@ static void EXPR_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 
 static void Tn_asm(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, int local)
 {
+	if(reqt != Tn_type(stmt, n)) {
+		DBG_P("@@@@ STT=%s reqt=%s, stmt[%d]->type=%s", TT__(stmt->stt), TYPE__(reqt), n, TYPE__(Tn_type(stmt, n)));
+		reqt = Tn_type(stmt, n);
+		//DBG_ASSERT(reqt == Tn_type(stmt, n));
+	}
 	if(IS_Token(tkNN(stmt, n))) {
 		knh_Token_t *tk = tkNN(stmt, n);
 		ASM_SMOV(ctx, reqt, local, tk);
@@ -2183,14 +2196,12 @@ static void Tn_asm(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, int loc
 	}
 	if(IS_Token(tkNN(stmt, n))) {
 		knh_Token_t *tk = tkNN(stmt, n);
-		//DBG_P("@START %s tk=%p tk->index=%d local=%d esp=%d", TT__(tk->tt), tk, tk->index, local, DP(ctx->gma)->espidx);
 		if(TT_(tk) == TT_LOCAL) {
 			knh_Token_toTYPED(ctx, tk, TT_FUNCVAR, tk->type, tk->index + DP(ctx->gma)->ebpidx);
 		}
 		if(TT_(tk) != TT_FUNCVAR) {
 			knh_Token_toTYPED(ctx, tk, TT_FUNCVAR, reqt, local);
 		}
-		//DBG_P("@END %s tk=%p tk->index=%d local=%d esp=%d", TT__(tk->tt), tk, tk->index, local, DP(ctx->gma)->espidx);
 	}
 	else {
 		knh_Token_t *tk = new_TokenTYPED(ctx, TT_FUNCVAR, reqt, local);
@@ -2468,8 +2479,11 @@ static void TRY_asm(CTX ctx, knh_Stmt_t *stmt)
 			knh_Token_t *tkN = tkNN(stmtCATCH, 1);
 			DBG_ASSERT(IS_String(emsg));
 			DBG_ASSERT(TT_(tkN) == TT_LOCAL);
+			if(knh_isDefinedEvent(ctx, S_tobytes(emsg))) {
+				WARN_Undefined(ctx, "fault", CLASS_Exception, tkNN(stmtCATCH, 0));
+			}
 			lbCATCH = new_BasicBlockLABEL(ctx);
-			ASMbranch(CATCH, lbCATCH, OC_((tkN)->index), emsg);
+			ASMbranch(CATCH, lbCATCH, OC_((tkN)->index), knh_geteid(ctx, S_tobytes(emsg)));
 			Tn_asmBLOCK(ctx, stmtCATCH, 2, TYPE_void);
 			ASM_JMP(ctx, lbFINALLY);  /* GOTO FINALLY */
 			ASM_LABEL(ctx, lbCATCH); /* _CATCH_NEXT_ */
@@ -2489,7 +2503,6 @@ static void ASSURE_asm(CTX ctx, knh_Stmt_t *stmt)
 	Tn_asmBLOCK(ctx, stmt, 1, TYPE_void);
 	ASM(CHKOUT, OC_(index), ClassTBL(CLASS_Assurance)->ospi->checkout);
 }
-
 
 static void THROW_asm(CTX ctx, knh_Stmt_t *stmt)
 {
@@ -2528,16 +2541,18 @@ static void YIELD_asm(CTX ctx, knh_Stmt_t *stmt)
 	KNH_TODO("yield");
 }
 
-
 static void ERR_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 	int start = 0, espidx = DP(ctx->gma)->espidx;
 	knh_Token_t *tkERR = tkNN(stmt, 0);
+	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	DBG_ASSERT(DP(stmt)->size > 0);
 	DBG_ASSERT(TT_(tkERR) == TT_ERR);
 	if(Gamma_inTry(ctx)) start = espidx;
 	DBG_ASSERT(IS_String((tkERR)->text));
-	ASM(ERROR, SFP_(start), (tkERR)->text);
+	knh_write_ascii(ctx, cwb->w, "Script!!: ");
+	knh_write_ascii(ctx, cwb->w, S_tochar(tkERR->text));
+	ASM(ERROR, SFP_(start), knh_cwb_newString(ctx, cwb));
 	if(DP(stmt)->nextNULL != NULL) {
 		KNH_FINALv(ctx, DP(stmt)->nextNULL);
 		DP(stmt)->nextNULL = NULL;
@@ -2546,19 +2561,6 @@ static void ERR_asm(CTX ctx, knh_Stmt_t *stmt)
 
 /* ------------------------------------------------------------------------ */
 /* [PRINT] */
-
-//static int Gamma_isDEBUG(CTX ctx)
-//{
-//	if(Method_isDebug(DP(ctx->gma)->mtd)) return 1;
-//	return CTX_isDebug(ctx);
-//}
-
-//static void ASM_SKIP(CTX ctx, knh_BasicBlock_t* lbskip)
-//{
-//	if(!Method_isDebug(DP(ctx->gma)->mtd)) {
-//		ASMbranch(DYJMP, lbskip, SFP_(0), _ISSKIP);
-//	}
-//}
 
 static knh_flag_t PRINT_flag(CTX ctx, knh_Stmt_t *o)
 {
@@ -2680,7 +2682,6 @@ static void PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
 		}
 		else {
 			knh_class_t cid = Tn_cid(stmt, i);
-//			Tn_asm(ctx, stmt, i, cid, espidx);
 			if(IS_Tint(cid)) {
 				ASM(P, _PRINTi, flag | mask, msg, espidx+i);
 			}
@@ -2702,9 +2703,6 @@ static void ASSERT_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 	int espidx = DP(ctx->gma)->espidx;
 	knh_BasicBlock_t* lbskip = new_BasicBlockLABEL(ctx);
-//	if(!isRelease) {
-//		ASMbranch(DYJMP, lbskip, SFP_(0), _ISSKIP);
-//	}
 	/* if */
 	Tn_JMPIF(ctx, stmt, 0, 1, lbskip, DP(ctx->gma)->espidx);
 	/*then*/
@@ -2806,7 +2804,7 @@ void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t it
 		for(; i < DP(ctx->gma)->ebpidx; i++) {
 			knh_type_t type = gf[i].type;
 			if(gf[i].fn == FN_vargs) {
-				knh_class_t cid = knh_class_p1(CLASS_t(type));
+				knh_class_t cid = C_p1(CLASS_t(type));
 				DBG_ASSERT_cid(cid);
 				ASM(TR, OC_(i), SFP_(i), RIX_(i-i), ClassTBL(cid), _VARGS);// i++;
 				continue;
@@ -2908,8 +2906,8 @@ static struct knh_funcname_t _FuncData[] = {
 	_FUNC(_PRINT, "PRINT"), _FUNC(_BOX, "BOX"), _FUNC(TR_NEW, "NEW"),
 	_FUNC(_NULVAL, "NULL"), _FUNC(_CWB, "CWB"), _FUNC(_TOSTR, "TOSTR"),
 	_FUNC(_SETMTD, "setMethod"), _FUNC(_LOOKUPMTD, "lookupMethod"),
-	_FUNC(_PROP, "PROP"), _FUNC(_bBOX, "bBOX"), _FUNC(_OBOX, "OBOX"), _FUNC(_VARGS, "VARGS"),
-	_FUNC(_ERR, "ERR"), _FUNC(_CHKTYPE, "CHKTYPE"),
+	_FUNC(_PROP, "PROP"), _FUNC(_bBOX, "bBOX"), /*_FUNC(_OBOX, "OBOX"),*/ _FUNC(_VARGS, "VARGS"),
+	_FUNC(_ERR, "ERR"), _FUNC(_TCHECK, "CHKTYPE"),
 	_FUNC(_CHKMTD, "checkParams"),
 	_FUNC(NULL, NULL),
 };

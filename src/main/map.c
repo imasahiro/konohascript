@@ -388,6 +388,7 @@ static void dmap_reftrace(CTX ctx, knh_map_t *m FTRARG)
 static void dmap_free(CTX ctx, knh_map_t *m)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
+	//DBG_P("DBGNAME=%s", dmap->DBGNAME);
 	KNH_FREE(ctx, dmap->dentry, sizeof(knh_dentry_t)*dmap->capacity);
 	KNH_FREE(ctx, dmap, sizeof(knh_dmap_t));
 }
@@ -878,7 +879,7 @@ static METHOD Map_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
 	if(!m->dspi->get(ctx, m->dmap, sfp + 1, sfp + rix)) {
-		RETURNa_(KNH_NULVAL(knh_class_p2(O_cid(m))));
+		RETURNa_(KNH_NULVAL(C_p2(O_cid(m))));
 	}
 }
 

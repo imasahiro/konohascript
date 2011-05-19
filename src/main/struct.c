@@ -200,7 +200,7 @@ static knh_ClassDef_t TdynamicDef = {
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"dynamic", 0, 0, NULL,
+	"dyn", 0, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
@@ -549,7 +549,7 @@ void knh_ClassTBL_setObjectCSPI(knh_ClassTBL_t *ct)
 		}
 	}
 	if(c <= 4) {
-		DBG_P("NO OBJECT FIELD: %s c=%d", S_tochar(ct->lname), c);
+		DBG_P("%s: SIZE OF OBJECT FIELD: %d", S_tochar(ct->lname), c);
 		knh_setClassDef(ct, ObjectNDef + c);
 	}
 	else {
@@ -871,15 +871,6 @@ static knh_ClassDef_t BytesDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
-static knh_ClassDef_t BytesImDef = {
-	Bytes_init, DEFAULT_initcopy, DEFAULT_reftrace, Bytes_free,
-	DEFAULT_checkin, DEFAULT_checkout, Bytes_compareTo, Bytes_p,
-	DEFAULT_getkey, Bytes_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"BytesIm", CFLAG_BytesIm, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
-};
-
 /* --------------------------------------------------------------------------*/
 /* Tuple */
 
@@ -1131,15 +1122,6 @@ static knh_ClassDef_t ArrayDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
-static knh_ClassDef_t ArrayImDef = {
-	Array_init, DEFAULT_initcopy, Array_reftrace, Array_free,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Array_p,
-	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"ArrayIm", CFLAG_ArrayIm, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
-};
-
 /* --------------- */
 /* Iterator */
 
@@ -1298,15 +1280,6 @@ static knh_ClassDef_t MapDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
 	"Map", CFLAG_Map, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
-};
-
-static knh_ClassDef_t MapImDef = {
-	Map_init, DEFAULT_initcopy, Map_reftrace, Map_free,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Map_p,
-	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"MapIm", CFLAG_MapIm, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
@@ -1633,75 +1606,57 @@ static knh_ClassDef_t ThunkDef = {
 
 static void Exception_init(CTX ctx, Object *o)
 {
-	knh_ExceptionEX_t *b = knh_bodymalloc(ctx, Exception);
-	b->eid  = 1; b->flag = 0;
-	KNH_INITv(b->event, O_cTBL(o)->sname);
-	KNH_INITv(b->msg, TS_EMPTY);
-	KNH_INITv(b->bag, KNH_NULL);
-	b->tracesNULL = NULL;
-	b->uline = 0;
-	b->sysloglevel = LOG_ERR;
-	o->ref = b;
+	knh_Exception_t *e = (knh_Exception_t*)o;
+	KNH_INITv(e->emsg, TS_EMPTY);
+	e->tracesNULL = NULL;
+	e->uline = 0;
 }
 
 static void Exception_reftrace(CTX ctx, Object *o FTRARG)
 {
-	knh_ExceptionEX_t *b = DP((knh_Exception_t*)o);
-	KNH_ADDREF(ctx, b->event);
-	KNH_ADDREF(ctx, b->msg);
-	KNH_ADDREF(ctx, b->bag);
-	KNH_ADDNNREF(ctx, b->tracesNULL);
+	knh_Exception_t *e = (knh_Exception_t*)o;
+	KNH_ADDREF(ctx, e->emsg);
+	KNH_ADDNNREF(ctx, e->tracesNULL);
 	KNH_SIZEREF(ctx);
 }
 
 static void Exception_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
 	knh_Exception_t *e = (knh_Exception_t*)o;
-	if(!IS_FMTdump(level)) {
-		knh_write_ascii(ctx, w, EBI__(DP(e)->eid));
-		knh_write_ascii(ctx, w, "!!");
+	if(e->uline != 0 && IS_FMTdump(level)) {
+		knh_write_uline(ctx, w, e->uline);
 	}
-	else {
+	knh_write(ctx, w, S_tobytes(e->emsg));
+	if(e->tracesNULL != NULL && IS_FMTdump(level)) {
+		knh_Array_t *a = e->tracesNULL;
+		size_t i, size = knh_Array_size(a), c = 0;
+		knh_bytes_t prev = STEXT("?");
 		knh_write_EOL(ctx, w);
-		if(DP(e)->uline != 0) {
-			knh_write_uline(ctx, w, DP(e)->uline);
-		}
-		{
-//			knh_bytes_t emsg = S_tobytes(DP(e)->event);
-			knh_bytes_t msg = S_tobytes(DP(e)->msg);
-//			const char *fmt = (DP(e)->eid <= 1) ? "%B: %B" : "%BException: %B";
-			knh_printf(ctx, w, "Exception: %B", msg);
-		}
-		if(DP(e)->tracesNULL != NULL) {
-			knh_Array_t *a = DP(e)->tracesNULL;
-			size_t i, size = knh_Array_size(a), c = 0;
-			knh_bytes_t prev = STEXT("?");
-			for(i = 0; i < size; i++) {
-				knh_String_t *s = a->strings[i];
-				if(S_startsWith(s, prev)) {
-					c++; continue;
-				}
-				if(c > 0) {
-					knh_write_EOL(ctx, w);
-					knh_printf(ctx, w, "  *** called %d times recursively ***", c);
-					c = 0;
-				}
-				knh_write_EOL(ctx, w);
-				knh_printf(ctx, w, "  at %s", S_tochar(s));
-				prev = S_tobytes(s);
-				prev = knh_bytes_first(prev, knh_bytes_rindex(prev, '('));
+		for(i = 0; i < size; i++) {
+			knh_String_t *s = a->strings[i];
+			if(S_startsWith(s, prev)) {
+				c++; continue;
 			}
+			if(c > 0) {
+				knh_write_EOL(ctx, w);
+				knh_printf(ctx, w, "  *** called %d times recursively ***", c);
+				c = 0;
+			}
+			knh_write_EOL(ctx, w);
+			knh_printf(ctx, w, "  at %s", S_tochar(s));
+			prev = S_tobytes(s);
+			prev = knh_bytes_first(prev, knh_bytes_rindex(prev, '('));
 		}
 		knh_write_EOL(ctx, w);
 	}
 }
 
 static knh_ClassDef_t ExceptionDef = {
-	Exception_init, TODO_initcopy, Exception_reftrace, BODY_free,
+	Exception_init, TODO_initcopy, Exception_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Exception_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"Exception", CFLAG_Exception, sizeof(knh_ExceptionEX_t), NULL,
+	"Exception", CFLAG_Exception, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
@@ -1976,15 +1931,17 @@ static void InputStream_init(CTX ctx, Object *o)
 	b->pos = 0; b->posend = 0;
 	b->stat_size = 0;
 	in->b = b;
+	DBG_P("@@@@@@@@@@@@@@@@ INIT InputStream !! %p @@@@@@@@@@@@@@@@@@@", o);
 }
 
 static void InputStream_reftrace(CTX ctx, Object *o FTRARG)
 {
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
 	knh_InputStreamEX_t *b = DP(in);
-	KNH_ADDREF(ctx, (b->ba));
+	KNH_ADDREF(ctx, b->ba);
+	KNH_ADDREF(ctx, b->urn);
+	KNH_ADDREF(b->mon, KNH_NULL);
 	KNH_ADDNNREF(ctx, in->decNULL);
-	KNH_ADDREF(ctx, (b->urn));
 	KNH_SIZEREF(ctx);
 }
 
@@ -1992,6 +1949,7 @@ static void InputStream_free(CTX ctx, Object *o)
 {
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
 	knh_InputStreamEX_t *b = DP(in);
+	DBG_P("@@@@@@@@@@@@@@@@ FREE InputStream !! %p %s", o, S_tochar(b->urn));
 	if(b->fio != IO_NULL) {
 		in->dspi->fclose(ctx, b->fio);
 		b->fio = IO_NULL;
@@ -2233,28 +2191,28 @@ static void NameSpace_init(CTX ctx, Object *o)
 	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
 	knh_NameSpaceEX_t *b = knh_bodymalloc(ctx, NameSpace);
 	KNH_INITv(b->nsname, TS_main);
-	b->macroDictMapNULL = NULL;
-	b->name2cidDictSetNULL = NULL;
-	b->constDictCaseMapNULL = NULL;
-	b->func2cidDictSetNULL = NULL;
-	b->formattersNULL = NULL;
-	b->methodsNULL = NULL;
-	b->dspiDictSetNULL = NULL;
-	ns->b = b;
-	ns->parentNULL = NULL;
-	ns->dlhdr = NULL;
 	KNH_INITv(ns->rpath, TS_EMPTY);
+	ns->parentNULL          = NULL;
+	b->macroDictMapNULL     = NULL;
+	b->dspiDictSetNULL      = NULL;
+	b->name2cidDictSetNULL  = NULL;
+	b->func2cidDictSetNULL  = NULL;
+	b->constDictCaseMapNULL = NULL;
+	b->formattersNULL       = NULL;
+	b->methodsNULL          = NULL;
+	ns->b = b;
+	ns->dlhdr = NULL;
 }
 
 static void NameSpace_reftrace(CTX ctx, Object *o FTRARG)
 {
 	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
 	knh_NameSpaceEX_t *b = DP(ns);
-	KNH_ADDNNREF(ctx, ns->parentNULL);
-	KNH_ADDREF(ctx, ns->rpath);
 	KNH_ADDREF(ctx, b->nsname);
-	KNH_ADDNNREF(ctx, b->dspiDictSetNULL);
+	KNH_ADDREF(ctx, ns->rpath);
+	KNH_ADDNNREF(ctx, ns->parentNULL);
 	KNH_ADDNNREF(ctx, b->macroDictMapNULL);
+	KNH_ADDNNREF(ctx, b->dspiDictSetNULL);
 	KNH_ADDNNREF(ctx, b->name2cidDictSetNULL);
 	KNH_ADDNNREF(ctx, b->func2cidDictSetNULL);
 	KNH_ADDNNREF(ctx, b->constDictCaseMapNULL);
@@ -2266,7 +2224,7 @@ static void NameSpace_reftrace(CTX ctx, Object *o FTRARG)
 static void NameSpace_free(CTX ctx, Object *o)
 {
 	BODY_free(ctx, o);
-	if(((knh_NameSpace_t*)o)->dlhdr) {
+	if(((knh_NameSpace_t*)o)->dlhdr != NULL) {
 		knh_dlclose(ctx, ((knh_NameSpace_t*)o)->dlhdr);
 	}
 }
@@ -2544,7 +2502,7 @@ static void Token_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 //		case TT_DOC:
 		case TT_METAN: knh_putc(ctx, w, '@'); knh_write(ctx, w, t); break;
 		case TT_PROPN: knh_putc(ctx, w, '$'); knh_write(ctx, w, t); break;
-		case TT_URN: case TT_TSCHEME:
+		case TT_URN: case TT_TLINK:
 			knh_write_utf8(ctx, w, t, hasUTF8); break;
 		case TT_NAME: case TT_UNAME:
 			if(Token_isDOT(tk)) knh_putc(ctx, w, '.');
@@ -2558,10 +2516,20 @@ static void Token_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 			break;
 		case TT_FUNCNAME: case TT_UFUNCNAME:
 			knh_write(ctx, w, t); break;
-		case TT_PTYPE:
-			knh_write_Object(ctx, w, tk->data, FMT_line); break;
+		case TT_PTYPE: {
+			knh_Array_t *a = tk->list;
+			size_t i;
+			knh_write_Object(ctx, w, a->list[0], FMT_line);
+			knh_putc(ctx, w, '<');
+			for(i = 1; i < a->size; i++) {
+				if(i > 1) knh_putc(ctx, w, ',');
+				knh_write_Object(ctx, w, a->list[i], FMT_line);
+			}
+			knh_putc(ctx, w, '>');
+			break;
+		}
 		case TT_CID:
-			knh_write_cid(ctx, w, tk->mn); break;
+			knh_write_cid(ctx, w, tk->cid); break;
 		case TT_MN:
 			knh_write_mn(ctx, w, tk->mn); break;
 		case TT_CONST:
@@ -2608,6 +2576,7 @@ static void Stmt_init(CTX ctx, Object *o)
 {
 	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
 	knh_StmtEX_t *b = knh_bodymalloc(ctx, Stmt);
+	o->ref = b;
 	SP(stmt)->uline = 0;
 	SP(stmt)->stt   = STT_DONE;
 	SP(stmt)->type = TYPE_var;
@@ -2616,9 +2585,8 @@ static void Stmt_init(CTX ctx, Object *o)
 	b->espidx = 0;
 	b->size = 0;
 	b->capacity = 0;
-	b->nextNULL = NULL;
 	KNH_INITv(b->metaDictCaseMap,  KNH_NULL);
-	o->ref = b;
+	b->nextNULL = NULL;
 }
 
 static void Stmt_reftrace(CTX ctx, Object *o FTRARG)
@@ -2643,6 +2611,7 @@ static void Stmt_free(CTX ctx, Object *o)
 	knh_StmtEX_t *b = DP((knh_Stmt_t*)o);
 	if(stmt->terms != NULL) {
 		KNH_FREE(ctx, stmt->terms, sizeof(knh_Term_t*) * b->capacity);
+		stmt->terms = NULL;
 	}
 	knh_bodyfree(ctx, b, Stmt);
 }
@@ -2929,10 +2898,10 @@ static Object *knh_Context_fdefault(CTX ctx, knh_class_t cid)
 
 static void knh_setDefaultValues(CTX ctx)
 {
-	knh_ClassTBL_t *ct = (knh_ClassTBL_t *)ClassTBL(CLASS_Tuple);
-	DBG_P("Tuple's super=%s", CLASS__(ct->supcid));
-	ct->supcid = CLASS_Object;
-	ct->supTBL = ClassTBL(CLASS_Object);
+//	knh_ClassTBL_t *ct = (knh_ClassTBL_t *)ClassTBL(CLASS_Tuple);
+//	DBG_P("Tuple's super=%s", CLASS__(ct->supcid));
+//	ct->supcid = CLASS_Object;
+//	ct->supTBL = ClassTBL(CLASS_Object);
 	knh_setClassDefaultValue(ctx, CLASS_Object, KNH_NULL, NULL);
 	knh_setClassDefaultValue(ctx, CLASS_Tdynamic, KNH_NULL, NULL);
 	knh_setClassDefaultValue(ctx, CLASS_Boolean, KNH_FALSE, NULL);
@@ -2998,16 +2967,17 @@ static const knh_StringData_t StringConstData0[] = {
 #define FN_P FN_p
 #define FN_R FN_r
 
+#define _D(s)  (knh_data_t)s
 static const knh_data_t CParamData0[] = {
-	DATA_CPARAM, CLASS_Iterator,  (knh_data_t)"konoha.Iterator<dyn>", 1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Range,     (knh_data_t)"konoha.Range<dyn>", 1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Array,     (knh_data_t)"konoha.Array<dyn>", 1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Map,       (knh_data_t)"konoha.Map<konoha.String,dyn>", 2, 0, TYPE_String, FN_K, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Tuple,     (knh_data_t)"konoha.Map<konoha.String,dyn>", 2, 0, TYPE_String, FN_K, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Func,      (knh_data_t)"konoha.Func<void>", 0, 0,
-	DATA_CPARAM, CLASS_Thunk,     (knh_data_t)"konoha.Thunk<dyn>", 1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Immutable, (knh_data_t)"konoha.Immutable<dyn>", 1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_KindOf,    (knh_data_t)"konoha.KindOf<void>", 1, 0, TYPE_void, FN_V,
+	DATA_CPARAM, CLASS_Iterator,  _D("konoha.Iterator<dyn>"), _D("dyn" PTYPE_Iterator), 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Range,     _D("konoha.Range<dyn>"), _D("Range<dyn>"), 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Array,     _D("konoha.Array<dyn>"), _D("dyn" PTYPE_Array), 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Map,       _D("konoha.Map<konoha.String,dyn>"), _D("Map<String,dyn>"), 2, 0, TYPE_String, FN_K, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Tuple,     _D("konoha.Map<konoha.String,dyn>"), _D("Tuple<String,dyn>"), 2, 0, TYPE_String, FN_K, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Func,      _D("konoha.Func<void>"), _D("Func<void>"), 0, 0,
+	DATA_CPARAM, CLASS_Thunk,     _D("konoha.Thunk<dyn>"), _D("Thunk<dyn>"), 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Immutable, _D("konoha.Immutable<dyn>"), _D("dyn" PTYPE_Immutable), 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_KindOf,    _D("konoha.KindOf<void>"), _D("dyn" PTYPE_KindOf), 1, 0, TYPE_void, FN_V,
 	0,
 };
 

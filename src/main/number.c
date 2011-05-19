@@ -224,39 +224,8 @@ static METHOD Float__bits(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_write_bits(ctx, sfp[0].w, sfp[1].ndata, sizeof(knh_float_t) * 8);
 }
 
-
 /* ------------------------------------------------------------------------ */
-//## @Const mapper Boolean Object;
-//## @Const mapper Boolean Tdynamic;
-
-static TYPEMAP Boolean_Object(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Object_t *o = (Boolean_to(int, (sfp[0]))) ? KNH_TRUE : KNH_FALSE;
-	RETURN_(o);
-}
-
-/* ------------------------------------------------------------------------ */
-//## @Const mapper Int Object;
-//## @Const mapper Int Number;
-//## @Const mapper Int Tdynamic;
-
-static TYPEMAP Int_Object(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	RETURN_(new_Int(ctx, CLASS_Int, sfp[0].ivalue));
-}
-
-/* ------------------------------------------------------------------------ */
-//## @Const mapper Float Object;
-//## @Const mapper Float Number;
-//## @Const mapper Float Tdynamic;
-
-static TYPEMAP Float_Object(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	RETURN_(new_Float(ctx, CLASS_Float, sfp[0].fvalue));
-}
-
-/* ------------------------------------------------------------------------ */
-//## @Const mapper Boolean String;
+//## @Const @FastCall mapper Boolean String;
 
 static TYPEMAP Boolean_String(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -265,7 +234,7 @@ static TYPEMAP Boolean_String(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const mapper Int String;
+//## @Const @FastCall mapper Int String;
 
 static TYPEMAP Int_String(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -275,7 +244,7 @@ static TYPEMAP Int_String(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const mapper Float String;
+//## @Const @FastCall mapper Float String;
 
 static TYPEMAP Float_String(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -285,7 +254,7 @@ static TYPEMAP Float_String(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const @Semantic mapper Float Int;
+//## @Const @Semantic @FastCall mapper Float Int;
 
 static TYPEMAP Float_Int(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -294,7 +263,7 @@ static TYPEMAP Float_Int(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const @Semantic mapper Int Float;
+//## @Const @Semantic @FastCall mapper Int Float;
 
 static TYPEMAP Int_Float(CTX ctx, knh_sfp_t *sfp _RIX)
 {

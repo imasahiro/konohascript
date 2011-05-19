@@ -164,7 +164,7 @@ static METHOD Regex_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const mapper String Regex!;
+//## @Const @Semantic mapper String Regex!;
 
 static METHOD String_Regex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -178,8 +178,6 @@ static METHOD String_Regex(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-/* [Pair, Tuple, Range] */
-
 //## @Hidden @Const method This Tuple.new:TUPLE(dynamic value, ...);
 
 static METHOD Tuple_newTUPLE(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -192,6 +190,7 @@ static METHOD Tuple_newTUPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 		if(tf[ti].israw == 1) {
 			knh_ndata_t *n = (knh_ndata_t*)(tpl->fields + ti);
 			n[0] = v[i].ndata;
+			DBG_P("i=%d, ti=%d, n=%d", i, ti, n[0]);
 			ti++;
 			DBLNDATA_(ti++);
 		}
@@ -291,7 +290,7 @@ static METHOD Map_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_bytes_t path = S_tobytes(sfp[2].s);
 	knh_class_t cid = O_cid(m);
 	const knh_MapDSPI_t *dspi = knh_NameSpace_getMapDSPI(ctx, sfp[3].ns, path);
-	m->dspi = dspi->config(ctx, knh_class_p1(cid), knh_class_p2(cid));
+	m->dspi = dspi->config(ctx, C_p1(cid), C_p2(cid));
 	m->map = m->dspi->init(ctx, init, path.text, NULL);
 	RETURN_(m);
 }
@@ -314,11 +313,20 @@ static METHOD Map_newMAP(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## method Exception! Exception.new(String event, String msg, dynamic bag);
+//## method Exception! Exception.new(String event, String msg);
 
 static METHOD Exception_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	Exception_setup(ctx, sfp[0].e, sfp[1].s, sfp[2].s, sfp[3].o);
+	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	knh_write(ctx, cwb->w, S_tobytes(sfp[1].s));
+	if(IS_NULL(sfp[2].s)) {
+		knh_write_ascii(ctx, cwb->w, "!!");
+	}
+	else {
+		knh_write_ascii(ctx, cwb->w, "!!: ");
+		knh_write(ctx, cwb->w, S_tobytes(sfp[2].s));
+	}
+	KNH_SETv(ctx, (sfp[0].e)->emsg, knh_cwb_newString(ctx, cwb));
 	RETURN_(sfp[0].e);
 }
 
@@ -342,7 +350,7 @@ static METHOD Func_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static METHOD Assurance_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Assurance_t *Assurance = sfp[0].Assurance;
+	knh_Assurance_t *Assurance = sfp[0].as;
 	KNH_SETv(ctx, Assurance->msg, sfp[1].s);
 	RETURN_(sfp[0].o);
 }

@@ -349,7 +349,7 @@ static const char *HELPMSG =
 
 static void opt_help(CTX ctx, int mode, const char *optstr)
 {
-	knh_String_t* home = knh_getPropertyNULL(ctx, STEXT("konoha.path"));
+	knh_String_t* home = knh_getPropertyNULL(ctx, STEXT("konoha.home.path"));
 	fprintf(stdout, HELPMSG, S_tochar(home), knh_getSystemEncoding());
 	exit(0);
 }

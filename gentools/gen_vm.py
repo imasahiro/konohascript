@@ -17,7 +17,7 @@ TRY        0                 addr:addr hn:ro
 TRYEND     0                 hn:ro
 THROW      0                 start:sfpidx
 ASSERT     0                 start:sfpidx uline:u
-CATCH      _CONST            addr:addr en:ro msg:String
+CATCH      _CONST            addr:addr en:ro eid:int
 CHKIN      0                 on:ro checkin:f
 CHKOUT     0                 on:ro checkout:f
 ERROR      _CONST            start:sfpidx msg:String
@@ -141,7 +141,7 @@ FASTCALL0  _DEF|_JIT         a:r thisidx:sfpidx rix:i fcall:f   mtdNC:mtd
 RET        _JIT
 
 TR         _DEF|_JIT         a:r  b:sfpidx rix:i cid:cid tr:f
-UNBOX      _DEF              a:rn b:ro cid:cid
+#UNBOX      _DEF              a:rn b:ro cid:cid
 
 SCAST      _DEF              a:r b:sfpidx rix:i cast:tmr
 TCAST      _DEF              a:r b:sfpidx rix:i cast:tmr
