@@ -3,7 +3,7 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-assure "UnitTest:ArrayLiteral" {
+assure "ArrayLiteral" {
 	a = [1, 1.0];
 	b = [];
 	Array c = [];
@@ -15,7 +15,7 @@ assure "UnitTest:ArrayLiteral" {
 }
 
 
-assure "UnitTest:ArrayLiteral:BooleanArray" {
+assure "ArrayLiteral:BooleanArray" {
 	a = [true, false];
 	boolean[] b = [];
 	assert typeof(a) == boolean[];
@@ -24,8 +24,7 @@ assure "UnitTest:ArrayLiteral:BooleanArray" {
 	assert not a[1];
 }
 
-
-assure "UnitTest:ArrayLiteral:StringArray" {
+assure "ArrayLiteral:StringArray" {
 	a = ["true", "false"];
 	String[] b = [];
 	assert typeof(a) == Array<String>;
@@ -33,3 +32,4 @@ assure "UnitTest:ArrayLiteral:StringArray" {
 	assert a[0] == "true";
 	assert a[1] == "false";
 }
+

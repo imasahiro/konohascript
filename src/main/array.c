@@ -434,21 +434,21 @@ static METHOD Array_add(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD Array_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
-	size_t size, n = a->api->index(ctx, sfp, Int_to(size_t, sfp[1]), a->size);
+	size_t n = a->api->index(ctx, sfp, Int_to(size_t, sfp[1]), a->size);
 	const knh_dim_t *dim = a->dim;
 	BEGIN_LOCAL(ctx, lsfp, 1);
 	if(a->size == dim->capacity) {
 		knh_Array_grow(ctx, a, k_grow(dim->capacity), a->size + 1);
 	}
 	if(Array_isNDATA(a)) {
-		size = sizeof(knh_ndata_t);
-		lsfp[0].ndata = a->nlist[a->size];
+//		lsfp[0].ndata = a->nlist[a->size];  why?
+		knh_memmove(a->nlist+(n+1), a->nlist+n, sizeof(knh_ndata_t*) * (a->size - n));
 	}else {
-		size = sizeof(knh_Object_t*);
-		KNH_SETv(ctx, lsfp[0].o, a->list[a->size]);
+//		KNH_SETv(ctx, lsfp[0].o, a->list[a->size]); why?
+		knh_memmove(a->list+(n+1), a->list+n, sizeof(knh_Object_t*) * (a->size - n));
+		KNH_INITv(a->list[n], KNH_NULL); // for RCGC
 	}
 	a->size++;
-	knh_memmove(a->list+(n+1), a->list+n, size * (a->size - n));
 	a->api->set(ctx, a, n, sfp+2);
 	END_LOCAL_(ctx, lsfp);
 	RETURNvoid_();
@@ -468,14 +468,12 @@ static METHOD Array_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 static void knh_Array_remove_(CTX ctx, knh_Array_t *a, size_t n)
 {
 	DBG_ASSERT(n < a->size);
-	size_t size;
 	if (Array_isNDATA(a)) {
-		size = sizeof(knh_ndata_t);
+		knh_memmove(a->nlist+n, a->nlist+(n+1), sizeof(knh_ndata_t) * (a->size - n - 1));
 	} else {
-		size = sizeof(knh_Object_t*);
 		KNH_FINALv(ctx, a->list[n]);
+		knh_memmove(a->list+n, a->list+(n+1), sizeof(knh_Object_t*) * (a->size - n - 1));
 	}
-	knh_memmove(a->list+n, a->list+(n+1), size * (a->size - n - 1));
 	a->size--;
 }
 
