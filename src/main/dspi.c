@@ -375,12 +375,13 @@ static knh_bool_t PKG_realpath(CTX ctx, knh_NameSpace_t *ns, knh_path_t *ph)
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_copy(ctx, &cwbbuf, ph, 0/*hasScheme*/);
 	int res = 1;
 	char *epath = knh_getenv("KONOHA_PACKAGE");
+	knh_String_t *tpath;
 	if(epath != NULL) {
 		if(hasPKG(ctx, ph, B(epath), knh_cwb_tobytes(cwb))) {
 			goto L_RETURN;
 		}
 	}
-	knh_String_t *tpath = knh_getPropertyNULL(ctx, STEXT("konoha.package.path"));
+	tpath = knh_getPropertyNULL(ctx, STEXT("konoha.package.path"));
 	if(tpath != NULL) {
 		if(hasPKG(ctx, ph, S_tobytes(tpath), knh_cwb_tobytes(cwb))) {
 			goto L_RETURN;

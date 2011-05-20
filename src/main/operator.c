@@ -27,6 +27,9 @@
 
 /* ************************************************************************ */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifdef K_INCLUDE_BUILTINAPI
 

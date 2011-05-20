@@ -1,5 +1,10 @@
 // THIS FILE WAS AUTOMATICALLY GENERATED
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #ifndef MN_OPSIZE
 #define STT_MAX  (56)
 #define TT_MAX   (139)
@@ -648,4 +653,11 @@ const char* knh_getopname(knh_methodn_t mn)
 }
 
 #endif/*K_USING_LOADDATA*/
+
+
+#ifdef __cplusplus
+}
+#endif
+
+// THIS FILE WAS AUTOMATICALLY GENERATED. DON'T EDIT.
 

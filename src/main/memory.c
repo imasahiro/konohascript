@@ -1026,6 +1026,7 @@ static void gc_mark(CTX ctx)
 	knh_reftraceAll(ctx, Object_mark1);
 #else
 	long i;
+	const knh_ClassTBL_t *cTBL;
 	knh_ostack_t ostackbuf, *ostack = ostack_init(ctx, &ostackbuf);
 	knh_Object_t *ref = NULL;
 	knh_ensurerefs(ctx, ctx->ref_buf, K_PAGESIZE);
@@ -1035,7 +1036,7 @@ static void gc_mark(CTX ctx)
 	//fprintf(stderr, "%s first refs %ld\n", __FUNCTION__, ctx->ref_size);
 	goto L_INLOOP;
 	while((ref = ostack_next(ostack)) != NULL) {
-		const knh_ClassTBL_t *cTBL = O_cTBL(ref);
+		cTBL = O_cTBL(ref);
 		DBG_ASSERT(O_hasRef(ref));
 		((knh_context_t*)ctx)->refs = ctx->ref_buf;
 		((knh_context_t*)ctx)->ref_size = 0;

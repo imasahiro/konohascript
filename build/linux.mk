@@ -1,7 +1,7 @@
 # Makefile for linux
 #
 
-CC = gcc
+CC ?= gcc
 CFLAGS ?= -g -O2 -Wall -fPIC -I./include
 LDLIBS ?= -lpthread -lsqlite3 -ldl -lpcre
 STRIP = strip

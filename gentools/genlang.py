@@ -575,9 +575,23 @@ const char* knh_getopname(knh_methodn_t mn)
 def gen_stmt(bdir):
     f = open('include/konoha1/konohalang.h', 'w')
     f.write('''// THIS FILE WAS AUTOMATICALLY GENERATED
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 ''')
     readData()
     write_hfile(f)
+    f.write('''
+#ifdef __cplusplus
+}
+#endif
+
+// THIS FILE WAS AUTOMATICALLY GENERATED. DON'T EDIT.
+
+''')
+
     f.close()
 
 if __name__ == '__main__':

@@ -323,7 +323,7 @@ knh_type_t knh_NameSpace_tagcid(CTX ctx, knh_NameSpace_t *o, knh_class_t cid, kn
 knh_status_t knh_loadScriptPackage(CTX ctx, knh_bytes_t path);
 Object *knh_NameSpace_getConstNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t name);
 void knh_RefTraverse(CTX ctx, knh_Ftraverse ftr);
-knh_bool_t knh_eval(CTX ctx, knh_InputStream_t *in, knh_Array_t *resultsNULL);
+knh_status_t knh_eval(CTX ctx, knh_InputStream_t *in, knh_Array_t *resultsNULL);
 knh_status_t konoha_initload(konoha_t konoha, const char *path);
 void knh_BasicBlock_optimize(CTX ctx, knh_BasicBlock_t *bb);
 knh_Token_t* new_Token(CTX ctx, knh_term_t tt);

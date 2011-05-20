@@ -183,7 +183,7 @@ static knh_Token_t *new_TermTCAST(CTX ctx, knh_class_t reqt, knh_TypeMap_t *tmrN
 knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh_flag_t opflag)
 {
 	knh_flag_t flagorig = DP(ctx->gma)->flag;
-	knh_Token_t *tk = tkNN(stmt, n), *tkRES;
+	knh_Token_t *tk = tkNN(stmt, n), *tkRES = NULL;
 	knh_type_t vart;
 	DBG_ASSERT(STT_(stmt) != STT_ERR);
 	if(FLAG_is(opflag, _NOWARN)) {

@@ -27,6 +27,10 @@
 
 /* ************************************************************************ */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef K_INCLUDE_BUILTINAPI
 
 #define USE_STEXT 1
@@ -40,10 +44,6 @@
 #include"commons.h"
 
 /* ************************************************************************ */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /* ------------------------------------------------------------------------ */
 /* [InputStream] */
@@ -821,10 +821,6 @@ KNHAPI2(void) knh_printf(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...)
 
 /* ------------------------------------------------------------------------ */
 
-#ifdef __cplusplus
-}
-#endif
-
 #else /*K_INCLUDE_BUILTINAPI*/
 
 /* ------------------------------------------------------------------------ */
@@ -1269,7 +1265,7 @@ static METHOD OutputStream_writeObject(CTX ctx, knh_sfp_t *sfp _RIX)
 	Object *o = sfp[1].o;
 	knh_PackSPI_t *packspi = knh_getPackSPI();
 	knh_packer_t packer = {w, NULL, NULL};
-	knh_packer_t *pkr = packspi->pack_init(ctx, &packer);
+	knh_packer_t *pkr = (knh_packer_t*) packspi->pack_init(ctx, &packer);
 	if (O_cTBL(o)->ospi->wdata != NULL) {
 		O_cTBL(o)->ospi->wdata(ctx, pkr, o, packspi);
 	} else if (O_cTBL(o)->bcid == CLASS_Array) {

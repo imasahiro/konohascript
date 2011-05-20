@@ -205,7 +205,7 @@ extern "C" {
 
 #define KLR_SCALL(ctx, rtnidx, thisidx, espshift, mtdO) { \
 		knh_Method_t *mtd_ = mtdO;\
-		prefetch((mtd_)->fcall_1);\
+		/*prefetch((mtd_)->fcall_1);*/\
 		knh_sfp_t *sfp_ = SFP(rshift(rbp, thisidx)); \
 		sfp_[K_SHIFTIDX].shift = thisidx; \
 		sfp_[K_PCIDX].pc = PC_NEXT(pc);\

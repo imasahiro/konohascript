@@ -710,7 +710,7 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 			ct->supcid = knh_Token_cid(ctx, tkE, CLASS_Object);
 			if(class_isFinal(ct->supcid)) {
 				knh_Stmt_toERR(ctx, stmt, ErrorExtendingFinalClass(ctx, ct->supcid));
-				return 0;
+				return K_CONTINUE;
 			}
 			ct->supTBL = ClassTBL(ct->supcid);
 			ct->keyidx = ct->supTBL->keyidx;
@@ -750,7 +750,7 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 			ct = varClassTBL(cid);
 			if(!(ct->bcid == CLASS_Object && ct->fields == NULL)) {
 				knh_Stmt_toERR(ctx, stmt, ErrorRedefinedClass(ctx, S_tobytes((tkC)->text), cid));
-				return 0;
+				return K_CONTINUE;
 			}
 		}
 	}
@@ -862,18 +862,18 @@ static knh_status_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *results
 	return status;
 }
 
-knh_bool_t knh_eval(CTX ctx, knh_InputStream_t *in, knh_Array_t *resultsNULL)
+knh_status_t knh_eval(CTX ctx, knh_InputStream_t *in, knh_Array_t *resultsNULL)
 {
-	int isCONTINUE = 1;
+	knh_status_t status = K_CONTINUE;
 	BEGIN_LOCAL(ctx, lsfp, 3);
 	KNH_SETv(ctx, lsfp[0].o, in);
 	if(resultsNULL != NULL) {
 		KNH_SETv(ctx, lsfp[1].o, resultsNULL);
 	}
 	LOCAL_NEW(ctx, lsfp, 2, knh_Stmt_t *, stmt, knh_InputStream_parseStmt(ctx, in));
-	isCONTINUE = Stmt_eval(ctx, stmt, resultsNULL);
+	status = Stmt_eval(ctx, stmt, resultsNULL);
 	END_LOCAL_(ctx, lsfp);
-	return isCONTINUE;
+	return status;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -968,7 +968,7 @@ static int readchunk(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
 
 KNHAPI2(knh_status_t) knh_load(CTX ctx, const char *scheme, knh_bytes_t path, knh_Array_t *resultsNULL)
 {
-	knh_bool_t status = K_BREAK;
+	knh_status_t status = K_BREAK;
 	knh_InputStream_t *in = openScriptInputStreamNULL(ctx, K_GMANS, scheme, path);
 	if(in != NULL) {
 		knh_Bytes_t *ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
@@ -1009,7 +1009,7 @@ KNHAPI2(knh_status_t) knh_load(CTX ctx, const char *scheme, knh_bytes_t path, kn
 knh_status_t konoha_initload(konoha_t konoha, const char *path)
 {
 	knh_status_t status;
-	KONOHA_CHECK(konoha, 0);
+	KONOHA_CHECK(konoha, K_CONTINUE);
 	CTX ctx = (CTX)konoha.ctx;
 	KONOHA_BEGIN(ctx);
 	status = knh_load(ctx, "start", B(path), NULL);
