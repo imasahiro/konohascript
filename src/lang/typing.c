@@ -1911,40 +1911,63 @@ static knh_Token_t *SWAP_typing(CTX ctx, knh_Stmt_t *stmt)
 			}
 			if(TT_(tkRES) == TT_ERR) return tkRES;
 			TYPING_TypedExpr(ctx, stmt, msize+i, tkRES->type);
+			continue;
 		}
-		else {
+		if(STT_(stmtNN(stmt, i)) == STT_CALL){
+			knh_Stmt_t *stmtGET = stmtNN(stmt, i);
+			knh_Token_t *tkM = tkNN(stmtGET, 0);
 			TYPING_UntypedExpr(ctx, stmt, msize+i);
-			TYPING_TypedExpr(ctx, stmt, i, Tn_type(stmt, msize+i));
+			if(Token_isGetter(tkM)) {
+				Token_setGetter(tkM, 0);
+				Token_setSetter(tkM, 1);
+				knh_Stmt_add(ctx, stmtGET, tkNN(stmt, msize+i));
+				TYPING_TypedExpr(ctx, stmt, i, TYPE_void);
+				continue;
+			}
 		}
+		return ERROR_UnableToAssign(ctx, tkN);
 	}
 	{
 		BEGIN_BLOCK(espidx);
 		knh_Token_t *tkASIS = new_(Token);
-		knh_Stmt_t *stmtLET = NULL, *stmtLET2 = NULL;
-		knh_Stmt_t *stmtTAIL = NULL, *stmtTAIL2 = NULL;
+		knh_Stmt_t *stmtLET = NULL;
+		knh_Stmt_t *stmtTAIL = NULL;
 		for(i = 0; i < msize; i++) {
-			knh_Token_t *tkL = tkNN(stmt, i);
-			knh_Token_t *tkIDX = Gamma_addLOCAL(ctx, 0, tkL->type, FN_, 1);
+			knh_Token_t *tkV = tkNN(stmt, msize + i);
+			if(TT_(tkV) == TT_CONST) continue;
+			knh_Token_t *tkIDX = Gamma_addLOCAL(ctx, 0, tkV->type, FN_, 1);
 			knh_Stmt_t *stmtR = new_Stmt2(ctx, STT_LET, tkASIS, tkIDX, tmNN(stmt, msize+i), NULL);
-			knh_Stmt_t *stmtL = new_Stmt2(ctx, STT_LET, tkASIS, tkL, tkIDX, NULL);
-			if(stmtLET == NULL) {
-				stmtLET = stmtR; stmtLET2 = stmtL;
-			}
+			KNH_SETv(ctx, tmNN(stmt, msize+i), tkIDX);
+			Stmt_setESPIDX(ctx, stmtR);
+			if(stmtLET == NULL) { stmtLET = stmtR; }
 			else {
 				KNH_INITv(DP(stmtTAIL)->nextNULL, stmtR);
-				KNH_INITv(DP(stmtTAIL2)->nextNULL, stmtL);
 			}
-			stmtTAIL = stmtR; stmtTAIL2 = stmtL;
-			stmtTAIL->type = stmtTAIL2->type = TYPE_void;
+			stmtTAIL = stmtR;
+			stmtTAIL->type = TYPE_void;
 		}
+		for(i = 0; i < msize; i++) {
+			knh_Stmt_t *stmtL;
+			knh_Token_t *tkIDX = tkNN(stmt, msize+i);
+			if(STT_(stmtNN(stmt, i)) == STT_CALL) {
+				stmtL = stmtNN(stmt, i);
+				KNH_SETv(ctx, tkNN(stmtL, (DP(stmt)->size-1)), tkIDX);
+			}
+			else {
+				stmtL = new_Stmt2(ctx, STT_LET, tkASIS, tkNN(stmt, i), tkIDX, NULL);
+			}
+			Stmt_setESPIDX(ctx, stmtL);
+			if(stmtLET == NULL) { stmtLET = stmtL; }
+			else {
+				KNH_INITv(DP(stmtTAIL)->nextNULL, stmtL);
+			}
+			stmtTAIL = stmtL;
+			stmtTAIL->type = TYPE_void;
+		}
+		knh_Stmt_add(ctx, stmt, tkASIS); // for RCGC;
 		Stmt_toSTT(stmt, STT_BLOCK);
 		knh_Stmt_trimToSize(ctx, stmt, 1);
 		KNH_SETv(ctx, stmtNN(stmt, 0), stmtLET);
-		KNH_INITv(DP(stmtTAIL)->nextNULL, stmtLET2);
-		while(stmtLET != NULL) {
-			Stmt_setESPIDX(ctx, stmtLET);
-			stmtLET = DP(stmtLET)->nextNULL;
-		}
 		END_BLOCK(espidx);
 	}
 	return Stmt_typed(ctx, stmt, TYPE_void);
