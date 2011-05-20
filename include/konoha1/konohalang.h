@@ -17,14 +17,14 @@
 #define MN_opLTE                        ((knh_methodn_t)10)
 #define MN_opGT                         ((knh_methodn_t)11)
 #define MN_opGTE                        ((knh_methodn_t)12)
-#define MN_opADD                        ((knh_methodn_t)13)
-#define MN_opSUB                        ((knh_methodn_t)14)
-#define MN_opDIV                        ((knh_methodn_t)15)
-#define MN_opMOD                        ((knh_methodn_t)16)
-#define MN_opMUL                        ((knh_methodn_t)17)
-#define MN_opLAND                       ((knh_methodn_t)18)
-#define MN_opLOR                        ((knh_methodn_t)19)
-#define MN_opLXOR                       ((knh_methodn_t)20)
+#define MN_opLOR                        ((knh_methodn_t)13)
+#define MN_opLXOR                       ((knh_methodn_t)14)
+#define MN_opLAND                       ((knh_methodn_t)15)
+#define MN_opADD                        ((knh_methodn_t)16)
+#define MN_opSUB                        ((knh_methodn_t)17)
+#define MN_opDIV                        ((knh_methodn_t)18)
+#define MN_opMOD                        ((knh_methodn_t)19)
+#define MN_opMUL                        ((knh_methodn_t)20)
 #define MN_opLSFT                       ((knh_methodn_t)21)
 #define MN_opRSFT                       ((knh_methodn_t)22)
 #define MN_opLNOT                       ((knh_methodn_t)23)
@@ -186,14 +186,14 @@
 #define TT_LTE   ((knh_term_t)145)
 #define TT_GT   ((knh_term_t)146)
 #define TT_GTE   ((knh_term_t)147)
-#define TT_ADD   ((knh_term_t)148)
-#define TT_SUB   ((knh_term_t)149)
-#define TT_DIV   ((knh_term_t)150)
-#define TT_MOD   ((knh_term_t)151)
-#define TT_MUL   ((knh_term_t)152)
-#define TT_LAND   ((knh_term_t)153)
-#define TT_LOR   ((knh_term_t)154)
-#define TT_XOR   ((knh_term_t)155)
+#define TT_LOR   ((knh_term_t)148)
+#define TT_XOR   ((knh_term_t)149)
+#define TT_LAND   ((knh_term_t)150)
+#define TT_ADD   ((knh_term_t)151)
+#define TT_SUB   ((knh_term_t)152)
+#define TT_DIV   ((knh_term_t)153)
+#define TT_MOD   ((knh_term_t)154)
+#define TT_MUL   ((knh_term_t)155)
 #define TT_LSFT   ((knh_term_t)156)
 #define TT_RSFT   ((knh_term_t)157)
 #define TT_LNOT   ((knh_term_t)158)
@@ -395,14 +395,14 @@ static TERMDATA_t TERMDATA[] = {
 	{"<=", _BIN, MN_opLTE}, 
 	{">", _BIN, MN_opGT}, 
 	{">=", _BIN, MN_opGTE}, 
+	{"|", _BIN, MN_opLOR}, 
+	{"^", _BIN, MN_opLXOR}, 
+	{"&", _BIN, MN_opLAND}, 
 	{"+", _BIN, MN_opADD}, 
 	{"-", _BIN, MN_opSUB}, 
 	{"/", _BIN, MN_opDIV}, 
 	{"%", _BIN, MN_opMOD}, 
 	{"*", _BIN, MN_opMUL}, 
-	{"&", _BIN, MN_opLAND}, 
-	{"|", _BIN, MN_opLOR}, 
-	{"^", _BIN, MN_opLXOR}, 
 	{"<<", _BIN, MN_opLSFT}, 
 	{">>", _BIN, MN_opRSFT}, 
 	{"~", 0, MN_opLNOT}, 
@@ -568,14 +568,14 @@ static OPDATA_t OPDATA[] = {
 	{10, MN_opLTE}, /* <= */
 	{10, MN_opGT}, /* > */
 	{10, MN_opGTE}, /* >= */
+	{14, MN_opLOR}, /* | */
+	{16, MN_opLXOR}, /* ^ */
+	{18, MN_opLAND}, /* & */
 	{20, MN_opADD}, /* + */
 	{20, MN_opSUB}, /* - */
 	{25, MN_opDIV}, /* / */
 	{25, MN_opMOD}, /* % */
 	{25, MN_opMUL}, /* * */
-	{18, MN_opLAND}, /* & */
-	{14, MN_opLOR}, /* | */
-	{16, MN_opLXOR}, /* ^ */
 	{35, MN_opLSFT}, /* << */
 	{35, MN_opRSFT}, /* >> */
 	{40, MN_opLNOT}, /* ~ */
@@ -602,14 +602,14 @@ static const char *OPNAME[] = {
 	"<=",
 	">",
 	">=",
+	"|",
+	"^",
+	"&",
 	"+",
 	"-",
 	"/",
 	"%",
 	"*",
-	"&",
-	"|",
-	"^",
 	"<<",
 	">>",
 	"~",
