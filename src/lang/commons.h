@@ -96,10 +96,6 @@ const char* TT__(knh_term_t tt);
 #define STT_(stmt)   SP(stmt)->stt
 #define knh_Stmt_add(ctx, stmt, ...)   knh_Stmt_add_(ctx, stmt, ## __VA_ARGS__, NULL)
 
-//#define TK1(tc)          (tc)->ts[((tc)->c)+1]
-//#define IST_(tk, t)      S_equals((tk)->text, STEXT(t))
-//#define TTn_(tk)         (tk)->tt_next
-
 /* ------------------------------------------------------------------------ */
 
 #define FL(o)            ((Object*)o)

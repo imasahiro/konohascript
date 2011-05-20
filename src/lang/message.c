@@ -307,9 +307,9 @@ void WarningUnknownClass(CTX ctx, knh_Token_t *tk, knh_class_t defc)
 {
 	Gamma_perror(ctx, KC_DWARN, _("unknown class: %L ==> %T"), tk, defc);
 }
-knh_Token_t* ErrorTokenCannotAssign(CTX ctx, knh_Token_t *tk)
+knh_Token_t* ERROR_UnableToAssign(CTX ctx, knh_Token_t *tk)
 {
-	return knh_Token_toERR(ctx, tk, _("unable to assign to %L"), tk);
+	return Gamma_perror(ctx, KC_ERR, _("unable to make assignment"));
 }
 knh_Token_t* ErrorUnsupportedConstructor(CTX ctx, knh_class_t mtd_cid)
 {

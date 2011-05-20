@@ -1778,13 +1778,33 @@ static knh_Token_t *LET_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		}
 		return tkRES;
 	}
+	if(TT_(tkN) == STT_CALL) {
+		knh_Stmt_t *stmtGET = (knh_Stmt_t*)tkN;
+		knh_Token_t *tkS = tkNN(stmtGET, 0);
+		if(Token_isGetter(tkS)) {  // required copy for a[i] += 1
+			knh_Token_t *tkM = new_Token(ctx, TT_(tkS));
+			(tkM)->flag0 = (tkS)->flag0;
+			KNH_SETv(ctx, (tkM)->data, (tkS)->data);
+			(tkM)->mn = (tkS)->mn;
+			Token_setGetter(tkM, 0);
+			Token_setSetter(tkM, 1);
+			Stmt_toSTT(stmt, STT_CALL);
+			KNH_SETv(ctx, tkNN(stmt, 0), tkM);
+			KNH_SETv(ctx, tkNN(stmt, 1), tkNN(stmtGET, 1));
+			size_t i;
+			for(i = 2; i < DP(stmtGET)->size; i++) {
+				Stmt_insert(ctx, stmt, 2, tmNN(stmtGET, i));
+			}
+			return CALL_typing(ctx, stmt, reqt);
+		}
+	}
 	if(TT_(tkN) == TT_PROPN) {
 		return SETPROPN_typing(ctx, stmt, reqt);
 	}
 	if(TT_(tkN) == TT_UNAME) {
 		return ERROR_OnlyTopLevel(ctx, "constant definition");
 	}
-	return ErrorTokenCannotAssign(ctx, tkN);
+	return ERROR_UnableToAssign(ctx, tkN);
 }
 
 static inline void Stmt_setESPIDX(CTX ctx, knh_Stmt_t *stmt)
@@ -1876,6 +1896,8 @@ static knh_Token_t *LETM_typing(CTX ctx, knh_Stmt_t *stmt)
 	return Stmt_typed(ctx, stmt, TYPE_void);
 }
 
+/* a[i], a[2] = a, j */
+
 static knh_Token_t *SWAP_typing(CTX ctx, knh_Stmt_t *stmt)
 {
 	size_t i, msize = DP(stmt)->size / 2;
@@ -1891,7 +1913,8 @@ static knh_Token_t *SWAP_typing(CTX ctx, knh_Stmt_t *stmt)
 			TYPING_TypedExpr(ctx, stmt, msize+i, tkRES->type);
 		}
 		else {
-			return ERROR_text(ctx, "assignment" K_TRACEPOINT);
+			TYPING_UntypedExpr(ctx, stmt, msize+i);
+			TYPING_TypedExpr(ctx, stmt, i, Tn_type(stmt, msize+i));
 		}
 	}
 	{
