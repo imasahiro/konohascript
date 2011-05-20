@@ -1805,15 +1805,6 @@ static int ITR_indexLET(tkitr_t *itr)
 	return -1;
 }
 
-//static int isLVALUE(knh_Token_t *tk)
-//{
-//	knh_term_t tt = TT_(tk);
-//	if(tt == TT_NAME /* || tt == TT_UNAME*/ || tt == TT_PROPN) {
-//		return 1;
-//	}
-//	return 0;
-//}
-
 static void _EXPRLET(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, knh_index_t idx)
 {
 	knh_Token_t *tkCUR = itr->ts[idx];
@@ -1821,46 +1812,10 @@ static void _EXPRLET(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, knh_index_t idx)
 	if(TT_(tkCUR) != TT_LET) { /* i += 1 ==> i = i + 1 */
 		itr->c = litr->c;
 	}
-//	if(ITR_size(litr) == 1) {
-//		if(ITR_isT(litr, isLVALUE)) {
 	stmt = new_StmtREUSE(ctx, stmt, STT_LET);
 	_VAR(ctx, stmt, litr);
 	_EXPR(ctx, stmt, litr);
-//	if(ITR_size(litr) == 1) {
-//		knh_Stmt_add(ctx, stmt, ITR_nextTK(litr));
-//	}
-//	else {
-//
-//	}
 	_EXPR(ctx, stmt, itr); return;
-
-//	}
-//	else {
-//		if(STT_(stmt) != STT_CALL1) {
-//			knh_Stmt_t *stmt1 = new_Stmt2(ctx, STT_CALL1, NULL);
-//			knh_Stmt_add(ctx, stmt, stmt1);
-//			stmt = stmt1;
-//		}
-//		_EXPR(ctx, stmt, litr);
-//		if(STT_(stmt) == STT_CALL) {
-//			knh_Token_t *tkS = tkNN(stmt, 0);
-//			knh_Token_t *tkM = new_Token(ctx, TT_(tkS));
-//			(tkM)->flag0 = (tkS)->flag0;
-//			KNH_SETv(ctx, (tkM)->data, (tkS)->data);
-//			(tkM)->mn = (tkS)->mn;
-//			KNH_SETv(ctx, tkNN(stmt, 0), tkM);
-//			if(Token_isGetter(tkM)) {
-//				Token_setGetter(tkM, 0);
-//				Token_setSetter(tkM, 1);
-//				if(isupper(S_tochar(tkM->text)[0])) {
-//					Stmt_setCLASSCONSTDEF(stmt, 1);
-//				}
-//				_EXPR(ctx, stmt, itr);
-//				return;
-//			}
-//		}
-//	}
-//	_ERROR(ctx, stmt, itr, NULL);
 }
 
 static int ITR_isDOTNAME(tkitr_t *itr, int shift)
