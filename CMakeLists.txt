@@ -8,17 +8,6 @@ cmake_minimum_required(VERSION 2.8)
 # -DCMAKE_BUILD_TYPE=Debug
 # -DCMAKE_INSTALL_PREFIX=$HOME
 # -DCMAKE_VERBOSE_MAKEFILE=1
-
-set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g")
-set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release" )
-endif()
-
-#if("${CMAKE_C_COMPILER}" STREQUAL "/usr/bin/gcc")
-#	set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
-#endif()
-
 project(konoha)
 set(VERSION_MAJOR "1")
 set(VERSION_MINOR "0")
@@ -40,6 +29,17 @@ set(KONOHA_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
 		${KONOHA_INCLUDE_DIRS}  ${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${INCLUDE_DIRS})
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" )
+endif()
+
+SET(CMAKE_C_FLAGS         "-Wall")
+SET(CMAKE_C_FLAGS_RELEASE "-O2 -g")
+SET(CMAKE_C_FLAGS_DEBUG   "-O0 -g3")
+#if("${CMAKE_C_COMPILER}" STREQUAL "/usr/bin/gcc")
+#	set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
+#endif()
 
 add_definitions(-DHAVE_CONFIG_H)
 
