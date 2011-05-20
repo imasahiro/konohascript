@@ -576,12 +576,10 @@ typedef struct knh_Thunk_t {
 //## class Exception Object;
 
 //## expt Exception!! -;
-//## expt Fatal!! -;
-//## expt System!! -;
-//## expt Security!! -;
-//## expt SourceCode!! -;
-//## expt Type!! -;
 //## expt Assertion!! -;
+//## expt Script!! -;
+//## expt StackOverflow!! Script!!;
+//## expt Security!! -;
 
 typedef struct knh_Exception_t {
 	knh_hObject_t h;
@@ -589,8 +587,6 @@ typedef struct knh_Exception_t {
 	knh_uline_t     uline;
 	knh_Array_t*    tracesNULL;
 } knh_Exception_t;
-
-#define new_Exception__s(ctx, s)     new_Exception__T(ctx, B(s))
 
 /* ------------------------------------------------------------------------ */
 //## @Private class ExceptionHandler Object;

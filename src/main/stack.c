@@ -63,7 +63,8 @@ knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n)
 		KNH_INITv(ctxo->bufa, new_Bytes(ctx, "cwbbuf", K_PAGESIZE * 4));
 		KNH_INITv(ctxo->bufw, new_BytesOutputStream(ctx, ctxo->bufa));
 	}
-	else {
+#ifdef K_USING_STACKEXPANSION
+	else if(ctxo->stacksize < K_STACK_MAXSIZ) {
 		knh_sfp_t **cstack_top = &sfp;
 		knh_sfp_t *oldstack = ctxo->stack;
 		size_t espidx = (ctxo->esp - ctxo->stack);
@@ -100,6 +101,12 @@ knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n)
 		ctxo->esp = ctxo->stack + espidx;
 		KNH_FREE(ctx, oldstack, size*sizeof(knh_sfp_t));
 		s = size;
+	}
+#endif
+	else {
+		knh_Exception_t *e = new_Error(ctx, new_T("StackOverflow!!"));
+		CTX_setThrowingException(ctx, e);
+		knh_throw(ctx, sfp, 0);
 	}
 	for(i = s; i < ctxo->stacksize; i++) {
 		KNH_INITv(ctxo->stack[i].o, KNH_NULL);

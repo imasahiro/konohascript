@@ -3,7 +3,7 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      210
+#define K_REVISION                      213
 #endif
 #define K_BUILDID                       1103
 
@@ -696,12 +696,10 @@
 /* ------------------------------------------------------------------------ */
 /* EVENT */
 #define EVENT_Exception         0
-#define EVENT_Fatal             1
-#define EVENT_System            2
-#define EVENT_Security          3
-#define EVENT_SourceCode        4
-#define EVENT_Type              5
-#define EVENT_Assertion         6
+#define EVENT_Assertion         1
+#define EVENT_Script            2
+#define EVENT_StackOverflow     3
+#define EVENT_Security          4
 
 /* ------------------------------------------------------------------------ */
 /* FIELDN */

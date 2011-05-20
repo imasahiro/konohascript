@@ -138,7 +138,13 @@ typedef struct knh_sysinfo_t {
 #define K_TMAPCACHE_SIZE     91
 
 #define K_FIELDSIZE                    64
+
+#define K_STACK_MAXSIZ              (4096*32)
+#ifdef K_USING_STACKEXPANSION
 #define K_STACKSIZE                  1024
+#else
+#define K_STACKSIZE                  K_STACK_MAXSIZ
+#endif
 
 #ifdef K_USING_UTF8
 #define K_ENCODING                    "UTF-8"

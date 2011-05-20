@@ -166,12 +166,10 @@ static knh_data_t ClassData0[] = {
 	DATA_GENERICS/*StringARRAY*/, CLASS_Array, 1, 0, TYPE_String, FN_,
 	DATA_GENERICS/*StringITR*/, CLASS_Iterator, 1, 0, TYPE_String, FN_,
 	DATA_EXPT, _DATA("Exception"), 0, EVENT_Exception, EVENT_Exception, 
-	DATA_EXPT, _DATA("Fatal"), 0, EVENT_Fatal, EVENT_Exception, 
-	DATA_EXPT, _DATA("System"), 0, EVENT_System, EVENT_Exception, 
-	DATA_EXPT, _DATA("Security"), 0, EVENT_Security, EVENT_Exception, 
-	DATA_EXPT, _DATA("SourceCode"), 0, EVENT_SourceCode, EVENT_Exception, 
-	DATA_EXPT, _DATA("Type"), 0, EVENT_Type, EVENT_Exception, 
 	DATA_EXPT, _DATA("Assertion"), 0, EVENT_Assertion, EVENT_Exception, 
+	DATA_EXPT, _DATA("Script"), 0, EVENT_Script, EVENT_Exception, 
+	DATA_EXPT, _DATA("StackOverflow"), 0, EVENT_StackOverflow, EVENT_Script, 
+	DATA_EXPT, _DATA("Security"), 0, EVENT_Security, EVENT_Exception, 
 	0
 };
 
