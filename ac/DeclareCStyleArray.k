@@ -5,7 +5,7 @@
 
 // Some students are confused when they declare array type. 
 
-assure "UnitTest:DeclareCStyleArray" {
+assure "DeclareCStyleArray" {
 	int a, b[];
 	b = new int[10];
 	assert a == 0;

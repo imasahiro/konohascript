@@ -3,26 +3,7 @@
  *  written by twitter@imasahiro 
  ***************************************************************************/
 
-assure "UnitTest:Integer Literal" {
-	int i;
-	i = 0x0;
-	assert i == 0;
-	i = 0x1;
-	assert i == 1;
-	i = 0xf;
-	assert i == 15;
-	i = 0xff;
-	assert i == 255;
-
-	assert ((0b0)  == 0);
-	assert ((0b1)  == 1);
-	assert ((0b10) == 2);
-	assert ((0b11) == 3);
-	assert (0b11 == 0x03);
-
-}
-
-assure "UnitTest:Integer Comparator" {
+assure "IntegerComparator" {
 	int i1 = 1;
 	int i2 = 2;
 	assert ((i1 == i2) == false);
@@ -41,14 +22,14 @@ assure "UnitTest:Integer Comparator" {
 	assert ((i1 <= 2)  == true );
 }
 
-assure "UnitTest: Integer instanceof" {
+assure "IntegerInstanceof" {
 	Int i1 = 0;
 	assert((i1 instanceof Integer) == true);
 	assert((i1 instanceof Int) == true);
 	assert((i1 instanceof Object) == true);
 }
 
-assure "UnitTest: Integer negative operator" {
+assure "IntegerNegativeOperator" {
   int i0 = 0;
   int i1 = 1;
   assert ((-1) == -1 );
@@ -57,16 +38,7 @@ assure "UnitTest: Integer negative operator" {
   assert ((-i1) == -1 );
 }
 
-assure "Integer increment operator" {
-  int i = 0;
-  assert ((i) == 0);
-  assert ((i++) == 0);
-  assert ((i) == 1);
-  assert ((i++) == 1);
-  assert ((i) == 2);
-}
-
-assure "Integer increment operator" {
+assure "IntegerPreIncrementOperator" {
   int i = 0;
   assert ((i) == 0 );
   assert ((++i) == 1 );
@@ -75,16 +47,17 @@ assure "Integer increment operator" {
   assert ((i) == 2 );
 }
 
-assure "Integer decrement operator" {
+assure "IntegerPostIncrementOperator" {
   int i = 0;
-  assert ((i) == 0 );
-  assert ((i--) == 0 );
-  assert ((i) == -1 );
-  assert ((i--) == -1 );
-  assert ((i) == -2 );
+  assert ((i) == 0);
+  assert ((i++) == 0);
+  assert ((i) == 1);
+  assert ((i++) == 1);
+  assert ((i) == 2);
+  
 }
 
-assure "Integer decrement operator" {
+assure "IntegerPreDecrementOperator" {
   int i = 0;
   assert ((i) == 0);
   assert ((--i) == -1);
@@ -93,7 +66,17 @@ assure "Integer decrement operator" {
   assert ((i) == -2);
 }
 
-assure "Integer operator" {
+assure "IntegerPostDecrementOperator" {
+  int i = 0;
+  assert ((i) == 0 );
+  assert ((i--) == 0 );
+  assert ((i) == -1 );
+  assert ((i--) == -1 );
+  assert ((i) == -2 );
+}
+
+
+assure "IntegerArithemeticOperator" {
   int i0 = 0;
   int i1 = 1;
   int i5 = 5;
@@ -213,16 +196,6 @@ assure "Integer operator" {
   assert (((i8 >> i1) >> i1) == 2 );
 }
 
-assure "type inference of Integer"
-{
-  Int i;
-  newvar_i = 0
-  assert ((newvar_i) == 0 );
-  assert ((typeof(newvar_i)) == Int );
-  newvar_i2 = i
-  assert ((typeof(newvar_i2)) == Int );
-}
-
 assure "Integer operator with increment" {
   i1 = 1
   i2 = 2
@@ -239,23 +212,7 @@ assure "Integer operator with increment" {
   i2 = 2;
 }
 
-assure "Integer operator with increment" {
-  i1 = 1
-  i2 = 2
-  assert ((++i1 + 1) == 3 );
-  assert ((i1) == 2 );
-  i1 = 1;
-  assert ((1 + ++i1) == 3 );
-  assert ((i1) == 2 );
-  i1 = 1;
-  assert ((++i1 + ++i2) == 5 );
-  assert ((i1) == 2 );
-  assert ((i2) == 3 );
-  i1 = 1;
-  i2 = 2;
-}
-
-assure "Integer assignment operators"
+assure "IntegerAssignmentOperator"
 {
   i = 1;
   assert ((i += 1) == 2 );
@@ -289,7 +246,24 @@ assure "Integer assignment operators"
   assert ((i) == 1 );
 }
 
-assure "Integer operation"
+assure "IntegerOperatorWithIncrement" {
+  i1 = 1
+  i2 = 2
+  assert ((++i1 + 1) == 3 );
+  assert ((i1) == 2 );
+  i1 = 1;
+  assert ((1 + ++i1) == 3 );
+  assert ((i1) == 2 );
+  i1 = 1;
+  assert ((++i1 + ++i2) == 5 );
+  assert ((i1) == 2 );
+  assert ((i2) == 3 );
+  i1 = 1;
+  i2 = 2;
+}
+
+
+assure "IntegerOperatorPriority"
 {
   i2 = 2;
   i3 = 3;
@@ -379,8 +353,7 @@ assure "Int.MIN" {
   assert ((min = Int.MIN) == -9223372036854775808 );
 }
 
-
-assure "Int boundary operation" {
+assure "IntegerBoundaryOperation" {
   max = Int.MAX;
   min = Int.MIN;
   assert ((max + max) == -2 );

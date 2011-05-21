@@ -3,7 +3,7 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-assure "UnitTest:FuncType" {
+assure "FuncType" {
 	Func f;
 	Func<int,int=>void> f2;
 	Func<void=>int> f3;

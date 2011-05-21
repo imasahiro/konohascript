@@ -271,7 +271,7 @@ knh_event_t knh_geteid(CTX ctx, knh_bytes_t t)
 	}
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 	eid = (knh_event_t)knh_DictSet_get(ctx, DP(ctx->sys)->EventDictCaseSet, t);
-	DBG_P("@@@@ '%s' is %d", t.text, eid);
+	//DBG_P("@@@@ '%s' is %d", t.text, eid);
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
 	if(eid == 0) {
 		return knh_addEvent(ctx, 0, new_S(ctx, t), EVENT_Exception);

@@ -3,7 +3,7 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-assure "UnitTest:TupleLiteral" {
+assure "TupleLiteral" {
 	t2 = ("naruto", 17);
 	t3 = ("naruto", 17, "rasengan");
 	assert typeof(t2) == Tuple<String,Int>;

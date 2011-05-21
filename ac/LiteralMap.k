@@ -3,7 +3,7 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-assure "UnitTest:LiteralMap" {
+assure "MapLiteral" {
 	a = {}
 	b = {name: "naruto", age: 17};
 	assert typeof(a) == Map;

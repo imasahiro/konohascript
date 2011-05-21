@@ -16,7 +16,7 @@ class C {
 	}
 }
 
-assure "UnitTest:VariableScope" {
+assure "ScriptVariableScope" {
 	c = new C();
 	c.testLocalVariable()
 }

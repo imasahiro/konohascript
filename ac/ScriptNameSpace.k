@@ -13,7 +13,7 @@ namespace {
 	}
 }
 
-assure "UnitTest:ScriptNameSpace" {
+assure "ScriptNameSpace" {
 	assert defined(Person);
 	assert !defined(Dog);
 }

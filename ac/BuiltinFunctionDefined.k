@@ -23,3 +23,13 @@ assure "BuiltinFunctionDefined" {
 	assert not defined(nn);
 }
 
+class C {
+	String name;
+}
+
+assure "BuiltinFunctionDefined:ClassField" {
+	C c = new C();
+	assert defined(c.name);
+	assert not defined(c.nname);
+}
+

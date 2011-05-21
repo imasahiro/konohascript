@@ -12,7 +12,7 @@ else {
 	TEST2 = 1;
 }
 
-assure "UnitTest:ScriptDynamicIf" {
+assure "ScriptDynamicIf" {
 	assert defined(TEST);
 	assert !defined(TEST2);
 }

@@ -12,7 +12,7 @@ class Person {
   }
 }
 
-assure "UnitTest:ClassDefinition" {
+assure "DeclareClass" {
 	Person p1 = new("naruto", 17);
 	p2 = new Person("sakura", 16);
 	Person p3 = new Person("sasuke", 17);

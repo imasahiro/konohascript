@@ -11,7 +11,8 @@ int f() { // comment
 assure "ParserComment" {
 	assert f() == 1;
 }
-assure "UnitTest:Comment2" {
+
+assure "ParserComment2" {
     int i = -1;
     /*/parse_comment=10;i = 20;*/
     print i;
