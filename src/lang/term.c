@@ -671,7 +671,7 @@ static void InputStream_skipLINE(CTX ctx, knh_InputStream_t *in)
 
 static void InputStream_skipBLOCKCOMMENT(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
 {
-	int ch, prev = '*', level = 1;
+	int ch, prev = 0, level = 1;
 	if(ba != NULL) {
 		while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
 			if(prev == '*' && ch == '/') {
