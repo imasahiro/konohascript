@@ -3,13 +3,14 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-// Scala-style class
+String first = "Naruto";
+String last  = "Uzumaki";
+String name;
 
-class Person(String name, int age);
-
-assure "DeclareScalaClass" {
-	Person p1 = new Person("naruto", 17);
-	assert p1.name == "naruto";
-	assert p1.age == 17;
+assure "StringConcatenation" {
+	name = first + " " + last;
+	assert name == "Naruto Uzumaki";
+	name2 = "%s{#0} %s{#1}" (first, last);
+	assert name == name2;
 }
 

@@ -174,6 +174,7 @@ class PType :
         self.bname = bname
         self.rsize = int(rsize)
         self.cparams = None
+        self.mapper_size = 0
 
     def ClassData(self):
         args = ''
@@ -601,7 +602,7 @@ class Data:
     def add_TypeMap(self, mpr):
         self.TYPEMAP_LIST.append(mpr)
         c = self.get_Class(mpr.fcname)
-        if c is not None: c.mapper_size += 1
+        if c != None: c.mapper_size += 1
 
     def add_Expt(self, expt):
         if not self.EXPT.has_key(expt.cname):

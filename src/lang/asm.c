@@ -2462,23 +2462,23 @@ static void TRY_asm(CTX ctx, knh_Stmt_t *stmt)
 	knh_BasicBlock_t*  lbCATCH   = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t*  lbFINALLY = new_BasicBlockLABEL(ctx);
 	knh_Token_t *tkIT = Tn_it(stmt, 3/*HDR*/);
+	knh_Stmt_t *stmtCATCH = stmtNN(stmt, 1);
 	Gamma_setFINALLY(ctx, stmtNN(stmt, 2/*finally*/));
 	/* try { */
 	ASMbranch(TRY, lbCATCH, OC_((tkIT)->index));
 	Tn_asmBLOCK(ctx, stmt, 0/*try*/, TYPE_void);
-	//KNH_ASM(TRYEND, ((tkIT)->index));
 	ASM_JMP(ctx, lbFINALLY);
 	Gamma_setFINALLY(ctx, (knh_Stmt_t*)KNH_NULL); // InTry
 	/* catch */
 	ASM_LABEL(ctx, lbCATCH);
-	knh_Stmt_t *stmtCATCH = stmtNN(stmt, 1/*catch*/);
-	DBG_ASSERT(IS_Stmt(stmtCATCH));
+	DBG_P("stmtCATCH=%s", CLASS__(O_cid(stmtCATCH)));
 	while(stmtCATCH != NULL) {
+		DBG_ASSERT(IS_Stmt(stmtCATCH));
 		if(SP(stmtCATCH)->stt == STT_CATCH) {
 			knh_String_t *emsg = tkNN(stmtCATCH, 0)->text;
 			knh_Token_t *tkN = tkNN(stmtCATCH, 1);
 			DBG_ASSERT(IS_String(emsg));
-			DBG_ASSERT(TT_(tkN) == TT_LOCAL);
+			DBG_ASSERT(TT_(tkN) == TT_FUNCVAR || TT_(tkN) == TT_LOCAL);
 			if(knh_isDefinedEvent(ctx, S_tobytes(emsg))) {
 				WARN_Undefined(ctx, "fault", CLASS_Exception, tkNN(stmtCATCH, 0));
 			}

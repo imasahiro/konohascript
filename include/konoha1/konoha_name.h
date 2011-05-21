@@ -3,7 +3,7 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      213
+#define K_REVISION                      214
 #endif
 #define K_BUILDID                       1103
 
@@ -441,35 +441,41 @@
 #define TYPE_RangeInt           CLASS_RangeInt
 
 /* ------------------------------------------------------------------------ */
+/* ArrayInt */
+#define CLASS_ArrayInt          ((knh_class_t)48)
+#define IS_ArrayInt(o)          (O_cid(o) == CLASS_ArrayInt)
+#define TYPE_ArrayInt           CLASS_ArrayInt
+
+/* ------------------------------------------------------------------------ */
 /* CmprT1 */
-#define CLASS_CmprT1            ((knh_class_t)48)
+#define CLASS_CmprT1            ((knh_class_t)49)
 #define IS_CmprT1(o)            (O_cid(o) == CLASS_CmprT1)
 #define TYPE_CmprT1             CLASS_CmprT1
 
 /* ------------------------------------------------------------------------ */
 /* T1ITR */
-#define CLASS_T1ITR             ((knh_class_t)49)
+#define CLASS_T1ITR             ((knh_class_t)50)
 #define IS_T1ITR(o)             (O_cid(o) == CLASS_T1ITR)
 #define TYPE_T1ITR              CLASS_T1ITR
 
 /* ------------------------------------------------------------------------ */
 /* T1ARRAY */
-#define CLASS_T1ARRAY           ((knh_class_t)50)
+#define CLASS_T1ARRAY           ((knh_class_t)51)
 #define IS_T1ARRAY(o)           (O_cid(o) == CLASS_T1ARRAY)
 #define TYPE_T1ARRAY            CLASS_T1ARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringARRAY */
-#define CLASS_StringARRAY       ((knh_class_t)51)
+#define CLASS_StringARRAY       ((knh_class_t)52)
 #define IS_StringARRAY(o)       (O_cid(o) == CLASS_StringARRAY)
 #define TYPE_StringARRAY        CLASS_StringARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringITR */
-#define CLASS_StringITR         ((knh_class_t)52)
+#define CLASS_StringITR         ((knh_class_t)53)
 #define IS_StringITR(o)         (O_cid(o) == CLASS_StringITR)
 #define TYPE_StringITR          CLASS_StringITR
-#define K_CLASS_INITSIZE                54
+#define K_CLASS_INITSIZE                55
 
 /* ------------------------------------------------------------------------ */
 /* FLAG */

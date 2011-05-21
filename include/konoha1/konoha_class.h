@@ -256,7 +256,8 @@ typedef struct knh_Range_t {
 /* ------------------------------------------------------------------------ */
 //## class Array   Object;
 //## flag  Array   NDATA     1 - is set * *;
-//## type CmprT1  Func 1 T1 T1 Int;
+//## type ArrayInt  Array 0 Int;
+//## type CmprT1    Func  1 T1 T1 Int;
 
 typedef struct {
 	size_t   (*index)(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t size);

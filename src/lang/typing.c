@@ -3441,11 +3441,12 @@ static knh_Token_t* TRY_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	Tn_it(ctx, stmt, 3/*HDR*/, TYPE_ExceptionHandler);
 	TYPING_STMTs(ctx, stmt, 0/*try*/, TYPE_stmtexpr, &hasReturn);
 	while(stmtCATCH != NULL) {
+		DBG_ASSERT(IS_Stmt(stmtCATCH));
 		if(STT_(stmtCATCH) == STT_CATCH) {
 			BEGIN_BLOCK(esp2);
 			knh_fieldn_t fn = Token_fn(ctx, tkNN(stmtCATCH, 1));
 			knh_Token_t *tkIDX = Gamma_addLOCAL(ctx, 0, TYPE_Exception, fn, 1/*ucnt*/);
-			KNH_SETv(ctx, tkNN(stmt, 1), tkIDX);
+			KNH_SETv(ctx, tkNN(stmtCATCH, 1), tkIDX);
 			Stmt_setESPIDX(ctx, stmtCATCH);
 			TYPING_STMTs(ctx, stmtCATCH, 2, TYPE_stmtexpr, &hasReturn);
 			END_BLOCK(esp2);

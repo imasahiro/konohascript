@@ -758,5 +758,22 @@ static TYPEMAP Array_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
+/* [RangeInt] */
+
+//## @Semantic @Const mapper RangeInt ArrayInt;
+
+static TYPEMAP RangeInt_ArrayInt(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Range_t *rng = (knh_Range_t*)sfp[0].o;
+	knh_Array_t *a = new_Array(ctx, CLASS_Int, (rng->nend - rng->nstart) + 1);
+	knh_intptr_t i = 0, n;
+	for(n = (knh_intptr_t)rng->nstart; n <= (knh_intptr_t)rng->nend; n++) {
+		a->nlist[i] = n;
+		i++;
+	}
+	RETURN_(a);
+}
+
+/* ------------------------------------------------------------------------ */
 
 #endif/*K_INCLUDE_BUILTINAPI*/

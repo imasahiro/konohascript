@@ -3,7 +3,7 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-assure "UnitTest:HelloWorld" {
+assure "HelloWorld" {
 	print "hello,world";
 }
 

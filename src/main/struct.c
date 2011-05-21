@@ -931,7 +931,9 @@ static knh_ClassDef_t TupleDef = {
 static void Range_init(CTX ctx, Object *o)
 {
 	knh_Range_t *rng = (knh_Range_t*)o;
-	if(Range_isNDATA(o)) {
+	knh_class_t p1 = O_p1(rng);
+	if(IS_Tunbox(p1)) {
+		Range_setNDATA(rng, 1);
 		rng->nstart = 0;
 		rng->nend = 0;
 	}
@@ -1931,7 +1933,7 @@ static void InputStream_init(CTX ctx, Object *o)
 	b->pos = 0; b->posend = 0;
 	b->stat_size = 0;
 	in->b = b;
-	DBG_P("@@@@@@@@@@@@@@@@ INIT InputStream !! %p @@@@@@@@@@@@@@@@@@@", o);
+//	DBG_P("@@@@@@@@@@@@@@@@ INIT InputStream !! %p @@@@@@@@@@@@@@@@@@@", o);
 }
 
 static void InputStream_reftrace(CTX ctx, Object *o FTRARG)
@@ -1949,7 +1951,6 @@ static void InputStream_free(CTX ctx, Object *o)
 {
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
 	knh_InputStreamEX_t *b = DP(in);
-	DBG_P("@@@@@@@@@@@@@@@@ FREE InputStream !! %p %s", o, S_tochar(b->urn));
 	if(b->fio != IO_NULL) {
 		in->dspi->fclose(ctx, b->fio);
 		b->fio = IO_NULL;

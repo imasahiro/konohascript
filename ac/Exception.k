@@ -5,11 +5,14 @@
 
 // Scala-style class
 
-class Person(String name, int age);
-
-assure "DeclareScalaClass" {
-	Person p1 = new Person("naruto", 17);
-	assert p1.name == "naruto";
-	assert p1.age == 17;
+assure "Exception" {
+	e = new Exception();
+	e2 = new Security!!("Permission Denied");
+	assert e <: "Exception";
+	assert e2 <: "Security";
+	assert e2 <: "Security";
+	assert e2 <: Security!!;
+	assert not e2 <: "Assertion";
+	assert e2 <: "Exception";
 }
 
