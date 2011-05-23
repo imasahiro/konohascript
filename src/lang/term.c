@@ -206,7 +206,7 @@ static int ITR_count(tkitr_t *itr, knh_term_t tt)
 /* ------------------------------------------------------------------------ */
 /* [tokenizer] */
 
-static void Token_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk);
+static void TokenBlock_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk);
 
 static knh_term_t TT_ch(int ch)
 {
@@ -248,15 +248,15 @@ static knh_Token_t *new_TokenPTYPE(CTX ctx, knh_class_t cid, knh_Token_t *tk)
 	knh_Token_t *tkT = new_Token(ctx, TT_PTYPE);
 	knh_Token_t *tkC = new_TokenCID(ctx, cid);
 	if(cid == CLASS_Tvar) {
-		Token_add(ctx, tkT, tk);
-		Token_add(ctx, tkT, tkC);
+		TokenBlock_add(ctx, tkT, tk);
+		TokenBlock_add(ctx, tkT, tkC);
 	}
 	else {
-		Token_add(ctx, tkT, tkC);
+		TokenBlock_add(ctx, tkT, tkC);
 		if(cid == CLASS_Map) {
-			Token_add(ctx, tkT, new_TokenCID(ctx, CLASS_String));
+			TokenBlock_add(ctx, tkT, new_TokenCID(ctx, CLASS_String));
 		}
-		Token_add(ctx, tkT, tk);
+		TokenBlock_add(ctx, tkT, tk);
 	}
 	return tkT;
 }
@@ -284,21 +284,23 @@ static int ITR_findPTYPE(tkitr_t *itr)
 
 static void Token_setTYPEOFEXPR(CTX ctx, knh_Token_t *tk);
 
-static void Token_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
+static void TokenBlock_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
 {
+	knh_Token_t *tkPREV = NULL;
+	knh_Array_t *a = NULL;
 	int prev_idx = 0;
-	knh_Token_t *tkPREV;
-	knh_Array_t *a;
 	DBG_ASSERT(tkB->uline != 0 && tk->uline != 0);
+
 	if(IS_NULL((tkB)->data)) {
 		KNH_SETv(ctx, (tkB)->data, tk);
 		return;
 	}
+
 	if(IS_Token((tkB)->data)) {
-		a = new_Array0(ctx, 0);
 		tkPREV = (tkB)->token;
-		knh_Array_add(ctx, a, (tkB)->data);
+		a = new_Array0(ctx, 0);
 		KNH_SETv(ctx, (tkB)->data, a);
+		knh_Array_add(ctx, a, tkPREV);
 	}
 	else {
 		DBG_ASSERT(IS_Array((tkB)->data));
@@ -307,15 +309,43 @@ static void Token_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
 		prev_idx = knh_Array_size(a)-1;
 		tkPREV = a->tokens[prev_idx];
 	}
-	knh_Array_add(ctx, a, tk);
 
 	if(TT_(tk) == TT_SEMICOLON) {
+		knh_Array_add(ctx, a, tk);
 		Token_setBOL(tk, 1);
 		return;
 	}
-	if((tk->uline > tkPREV->uline) && !(Token_isPLUSLINE(tkB))) {
-		Token_setBOL(tk, 1);
+
+	if((tk->uline > tkPREV->uline) && TT_(tkPREV) != TT_SEMICOLON) {
+//		if(TT_(tk) == TT_ELSE || TT_(tk) == TT_CATCH || TT_(tk) == TT_FINALLY) {
+//			knh_Array_add(ctx, a, tk);
+//			return;
+//		}
+		DBG_P("isSAMELINE(tkB)=%d, prev=%s,%d cur=%s,%d", Token_isSAMELINE(tkB), TT__(tkPREV->tt), (short)tkPREV->uline, TT__(tk->tt), (short)tk->uline);
+		if(TT_(tkPREV) == TT_CODE) {
+			knh_bytes_t t = S_tobytes(tkPREV->text);
+			size_t i;
+			knh_uline_t uline = tkPREV->uline;
+			for(i = 0; i < t.len; i++) {
+				if(t.buf[i] == '\n') uline++;
+			}
+			DBG_P("BLOCK uline %d => %d cur=%d", (short)tkPREV->uline, (short)uline, (short)tk->uline);
+			if(uline == tk->uline) {
+				Token_setSAMELINE(tkB, 1);
+			}
+		}
+		if(!Token_isSAMELINE(tkB)) {
+//			knh_Token_t *tkSMC = new_Token(ctx, TT_SEMICOLON);
+			DBG_P("BOL: cur=%s,%d", TT__(tk->tt), (short)tk->uline);
+			DBG_P("*isSAMELINE(tkB)=%d, prev=%s,%d cur=%s,%d", Token_isSAMELINE(tkB), TT__(tkPREV->tt), (short)tkPREV->uline, TT__(tk->tt), (short)tk->uline);
+//			knh_Array_add(ctx, a, tkSMC);
+//			Token_setBOL(tkSMC, 1);
+			knh_Array_add(ctx, a, tk);
+			Token_setBOL(tk, 1);
+			return;
+		}
 	}
+	knh_Array_add(ctx, a, tk);
 
 	// 1. translation
 	if(TT_(tk) == TT_DECLLET) {
@@ -407,9 +437,9 @@ static void Token_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
 				prev_idx = itr->c;
 				while(ITR_hasNext(itr)) {
 					knh_Token_t *tkPT = ITR_nextTK(itr);
-					Token_add(ctx, tkT, tkPT);
+					TokenBlock_add(ctx, tkT, tkPT);
 					if(ITR_is(itr, TT_DARROW)) {
-						Token_add(ctx, tkT, ITR_tk(itr));
+						TokenBlock_add(ctx, tkT, ITR_tk(itr));
 					}
 					ITR_next(itr);
 				}
@@ -438,15 +468,21 @@ static void Token_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
 	knh_Array_trimSize(ctx, a, prev_idx+1);
 }
 
-static knh_Token_t *Token_lastChildNULL(knh_Token_t *tk)
+static void TokenB_setline(knh_Token_t *tkB, knh_uline_t uline)
 {
-	if(IS_Array((tk)->data)) {
-		size_t n = knh_Array_size((tk)->list);
+	knh_Token_t *tk = IS_Array((tkB)->data) ? (tkB)->list->tokens[knh_Array_size((tkB)->list) - 1] : (tkB)->token;
+	tk->uline = uline;
+}
+
+static knh_Token_t *Token_lastChildNULL(knh_Token_t *tkB)
+{
+	if(IS_Array((tkB)->data)) {
+		size_t n = knh_Array_size((tkB)->list);
 		DBG_ASSERT(n>0);
-		return (tk)->list->tokens[n-1];
+		return (tkB)->list->tokens[n-1];
 	}
-	else if(IS_Token((tk)->data)) {
-		return (tk)->token;
+	else if(IS_Token((tkB)->data)) {
+		return (tkB)->token;
 	}
 	return NULL;
 }
@@ -649,13 +685,13 @@ static void Token_addBuf(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_term_t t
 	if(knh_cwb_size(cwb) != 0) {
 		knh_Token_t *tk = addNewToken(ctx, tkB, tt, ch);
 		Token_setTEXT(ctx, tk, cwb);
-		Token_add(ctx, tkB, tk);  // must add after setting data
+		TokenBlock_add(ctx, tkB, tk);  // must add after setting data
 		knh_cwb_clear(cwb, 0);
 	}
 	else if(tt == TT_CODE || TT_isSTR(tt) || tt == TT_REGEX) {
 		knh_Token_t *tk = addNewToken(ctx, tkB, tt, ch);
 		KNH_SETv(ctx, (tk)->data, TS_EMPTY);
-		Token_add(ctx, tkB, tk);   // must add after setting data
+		TokenBlock_add(ctx, tkB, tk);   // must add after setting data
 	}
 }
 
@@ -793,9 +829,10 @@ static int Token_addQUOTE(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputSt
 		knh_term_t tt = TT_ch(quote);
 		if(tt == TT_TSTR) tt = TT_STR;
 		Bytes_addQUOTE(ctx, cwb->ba, in, quote, '\n'/*skip*/, isRAW, 1/*isTQUOTE*/);
+		knh_uline_t uline = in->uline;
 		ch = knh_InputStream_getc(ctx, in);
 		Token_addBuf(ctx, tkB, cwb, tt, ch);
-		Token_setPLUSLINE(tkB, 1); /* ... hoge """ <<< EOL; */
+		TokenB_setline(tkB, uline); Token_setSAMELINE(tkB, 1); /* ... hoge """ <<< EOL; */
 	}
 	return ch;
 }
@@ -1063,7 +1100,7 @@ static void Token_addBLOCKERR(CTX ctx, knh_Token_t *tkB, knh_InputStream_t *in, 
 	if(ch == ']') block = "]";
 	tkB->uline = in->uline;
 	(ctx->gma)->uline = in->uline;
-	Token_add(ctx, tkB, ERROR_Block(ctx, block));
+	TokenBlock_add(ctx, tkB, ERROR_Block(ctx, block));
 }
 
 static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStream_t *in, int block_indent)
@@ -1131,7 +1168,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 	int block_indent = 0, block_line = 0;
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	DBG_ASSERT(in->uline != 0);
-	Token_setPLUSLINE(tkB, 0);
+	Token_setSAMELINE(tkB, 0);
 	L_NEWLINE:;
 	{
 		int c = 0;
@@ -1147,7 +1184,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 				else {
 					if(block_indent < c) {
 						DBG_P("indent %d < %d", block_indent, c);
-						Token_setPLUSLINE(tkB, 1);
+						Token_setSAMELINE(tkB, 1);
 					}
 					else if(c < block_indent) {
 						Token_addBLOCKERR(ctx, tkB, in, 0);
@@ -1167,12 +1204,12 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 		switch(ch) {
 		case '\n':
 			Token_addBuf(ctx, tkB, cwb, TT_UNTYPED, ch);
-			Token_setPLUSLINE(tkB, 0);
+			Token_setSAMELINE(tkB, 0);
 			goto L_NEWLINE;
 
 		case '\\':
 			InputStream_skipLINE(ctx, in);
-			Token_setPLUSLINE(tkB, 1);
+			Token_setSAMELINE(tkB, 1);
 			goto L_NEWLINE;
 
 		case ' ': case '\t': case '\v': case '\r':
@@ -1186,27 +1223,27 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 			goto L_NEWTOKEN;
 
 		case '{':
-			Token_setPLUSLINE(tkB, 1);
+			Token_setSAMELINE(tkB, 1);
 			Token_addBLOCK(ctx, tkB, cwb, in, block_indent);
 			goto L_NEWTOKEN;
 
 		case '[': case '(':
-			Token_setPLUSLINE(tkB, 1);
 			Token_addBuf(ctx, tkB, cwb, TT_UNTYPED, ch);
 			{
-				knh_Token_t *ctk = new_Token(ctx, TT_ch(ch));
-				ctk->h.meta = tkB;
-				tkB = ctk;
+				knh_Token_t *tkSUB = new_Token(ctx, TT_ch(ch));
+				tkSUB->h.meta = tkB;
+				tkB = tkSUB;
 			}
 			goto L_NEWTOKEN;
 
 		case ')': case ']':
 			Token_addBuf(ctx, tkB, cwb, TT_UNTYPED, ch);
 			if(TT_ch(ch) == TT_(tkB)) {
-				knh_Token_t *ctk = tkB;
-				tkB = (knh_Token_t*)(ctk)->h.meta;
-				(ctk)->h.meta = NULL;
-				Token_add(ctx, tkB, ctk);
+				knh_Token_t *tkSUB = tkB;
+				tkB = (knh_Token_t*)(tkSUB)->h.meta;
+				(tkSUB)->h.meta = NULL;
+				TokenBlock_add(ctx, tkB, tkSUB);
+				TokenB_setline(tkB, ctx->gma->uline);
 				goto L_NEWTOKEN;
 			}
 		case '}':
@@ -1239,7 +1276,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 				knh_Token_t *ctk = tkB;
 				tkB = (knh_Token_t*)(ctk)->h.meta;
 				(ctk)->h.meta = NULL;
-				Token_add(ctx, tkB, ctk);
+				TokenBlock_add(ctx, tkB, ctk);
 				TT_(ctk) = TT_PARENTHESIS;
 				knh_Bytes_write(ctx, cwb->ba, STEXT(".size"));
 				Token_addBuf(ctx, tkB, cwb, TT_UNTYPED, ' ');

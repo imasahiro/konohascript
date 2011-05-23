@@ -994,8 +994,8 @@ typedef struct knh_Assurance_t {
 //## flag Token MEMO1         8 SP(%s)->flag0 is set * *;
 
 // TT_BRACE, TT_PARENTHESIS, TT_BRANCET
-#define Token_isPLUSLINE(o)  Token_isMEMO1(o)
-#define Token_setPLUSLINE(o, b) Token_setMEMO1(o, b)
+#define Token_isSAMELINE(o)  Token_isMEMO1(o)
+#define Token_setSAMELINE(o, b) Token_setMEMO1(o, b)
 
 // TT_NAME
 #define Token_isPNAME(o)      Token_isMEMO1(o)
