@@ -377,7 +377,6 @@ void WarningIllegalFormatting(CTX ctx, const char *fmt)
 {
 	Gamma_perror(ctx, KC_DWARN, "illegal formatting at: `.. %s`", fmt);
 }
-
 knh_Token_t* ErrorNotStaticMethod(CTX ctx, knh_Method_t *mtd)
 {
 	return Gamma_perror(ctx, KC_ERR, _("not static: %C.%M"), (mtd)->cid, (mtd)->mn);
@@ -412,7 +411,7 @@ void WARN_Ignored(CTX ctx, const char *whatis, knh_class_t cid, const char *symb
 }
 void WARN_Unnecesary(CTX ctx, knh_Token_t *tk)
 {
-	Gamma_perror(ctx, KC_DWARN, _("unnecesary %O"), tk);
+	Gamma_perror(ctx, KC_DWARN, _("unnecessary %O"), tk);
 }
 void WarningUnnecessaryOperation(CTX ctx, const char *msg)
 {
