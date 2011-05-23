@@ -37,7 +37,7 @@ extern "C" {
 
 #ifdef K_USING_FFIDSL
 #include <unistd.h>
-#ifndef K_USING_MINGW
+#ifndef K_USING_MINGW_
 #include <sys/mman.h>
 #endif
 

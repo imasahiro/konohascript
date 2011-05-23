@@ -110,7 +110,7 @@ void *knh_valloc(CTX ctx, size_t size)
 		THROW_OutOfMemory(ctx, size);
 	}
 	return block;
-#elif defined(K_USING_WINDOWS)
+#elif defined(K_USING_WINDOWS_)
 	void *block = VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 	if (unlikely(block == NULL)) {
 		THROW_OutOfMemory(ctx, size);
@@ -150,7 +150,7 @@ void knh_vfree(CTX ctx, void *block, size_t size)
 #elif defined(HAVE_MEMALIGN)
 	free(block);
 	STAT_unuseMemory(ctx, size);
-#elif defined(K_USING_WINDOWS)
+#elif defined(K_USING_WINDOWS_)
 	VirtualFree(block, 0, MEM_RELEASE);
 	STAT_unuseMemory(ctx, size);
 #else

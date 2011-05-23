@@ -56,7 +56,7 @@
 #endif
 #endif/*K_USING_POSIX_*/
 
-#ifdef K_USING_WINDOWS
+#ifdef K_USING_WINDOWS_
 #include<windows.h>
 #endif
 
@@ -86,7 +86,11 @@ extern "C" {
 
 #define K_PERROR_BEFORE_RETRUN
 
-#if defined(K_USING_WINDOWS)
+#ifdef LIBNAME
+#undef LIBNAME
+#endif
+
+#if defined(K_USING_WINDOWS_)
 #define LIBNAME "Windows"
 #else
 #define LIBNAME "libc"
@@ -376,7 +380,7 @@ void knh_path_close(CTX ctx, knh_path_t *ph)
 const char* knh_realpath(CTX ctx, const char *path, knh_path_t *ph)
 {
 	char *buf = P_buf(ph);
-#if defined(K_USING_WINDOWS)
+#if defined(K_USING_WINDOWS_)
 	char *ptr = _fullpath(buf, path, K_PATHMAX);
 #elif defined(K_USING_POSIX_)
 	char *ptr = realpath(path, buf);
@@ -455,7 +459,7 @@ knh_bool_t knh_path_isfile(CTX ctx, knh_path_t *ph)
 	knh_bool_t res = 1;
 	const char *phname = P_text(ph) + ph->pbody;
 	if(phname[0] == 0) return 0;
-#if defined(K_USING_WINDOWS)
+#if defined(K_USING_WINDOWS_)
 	DWORD attr = GetFileAttributesA(phname);
 	if(attr == -1 || (attr & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY) res = 0;
 #elif defined(K_USING_POSIX_)
@@ -477,7 +481,7 @@ knh_bool_t knh_path_isdir(CTX ctx, knh_path_t *ph)
 {
 	const char *pname = P_text(ph) + ph->pbody;
 	if(pname[0] == 0) return 0;
-#if defined(K_USING_WINDOWS)
+#if defined(K_USING_WINDOWS_)
 	DWORD attr = GetFileAttributesA(pname);
 	if(attr == -1) return 0;
 	return ((attr & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY);
@@ -497,8 +501,8 @@ knh_bool_t knh_path_isdir(CTX ctx, knh_path_t *ph)
 static knh_bool_t knh_mkdir0(CTX ctx, knh_path_t *ph)
 {
 	const char *pname = P_text(ph) + ph->pbody;
-#if defined(K_USING_WINDOWS)
-	CreateDirectory(pname, NULL);
+#if defined(K_USING_WINDOWS_)
+	return (CreateDirectory(pname, NULL) != 0);
 #elif defined(K_USING_POSIX_)
 	return (mkdir(pname, 0777) != -1);
 #else
@@ -602,7 +606,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		home.len = knh_strlen(home.text);
 		SETPROP("konoha.home.path", new_T(home.text));
 	}
-#if defined(K_USING_WINDOWS)
+#if defined(K_USING_WINDOWS_)
 	{
 		char buf[FILEPATH_BUFSIZ];
 		int bufsiz = FILEPATH_BUFSIZ;
@@ -610,13 +614,13 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		GetModuleFileNameA(h, buf, bufsiz);
 		ph = knh_path_open_(ctx, NULL, B(buf), &phbuf);
 		SETPROP("konoha.bin.path", knh_path_newString(ctx, ph, 0));
-		if(homepath == NULL) {
+		if(home.text == NULL) {
 			knh_String_t *s;
 			GetModuleFileNameA(h, buf, bufsiz);
-			knh_path_reduce(ctx, ph, '/');
-			s = knh_path_newString(ctx, ph);
+			knh_path_reduce(ctx, ph, '\\');
+			s = knh_path_newString(ctx, ph, 0);
 			SETPROP("konoha.home.path", UPCAST(s));
-			home = S_tobytes(shome);
+			home = S_tobytes(s);
 		}
 	}
 #elif defined(K_USING_LINUX_)
@@ -669,7 +673,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 	knh_path_append(ctx, ph, 1/*sep*/, LIBK_VERSION);
 	SETPROP("konoha.script.path", knh_path_newString(ctx, ph, 0/*hasScheme*/));
 
-#if defined(K_USING_WINDOWS)
+#if defined(K_USING_WINDOWS_)
 	user.text = knh_getenv("USERPROFILE");
 #else
 	user.text = knh_getenv("HOME");
@@ -699,7 +703,7 @@ void *knh_dlopen(CTX ctx, const char* path)
 {
 	const char *func = __FUNCTION__;
 	void *handler = NULL;
-#if defined(K_USING_WINDOWS)
+#if defined(K_USING_WINDOWS_)
 	func = "LoadLibrary";
 	handler = (void*)LoadLibraryA((LPCTSTR)path);
 #elif defined(K_USING_POSIX_)
@@ -728,7 +732,7 @@ void *knh_path_dlopen(CTX ctx, knh_path_t *ph)
 
 void *knh_dlsym(CTX ctx, int pe, void* handler, const char* symbol)
 {
-#if defined(K_USING_WINDOWS)
+#if defined(K_USING_WINDOWS_)
 	void *p = GetProcAddress((HMODULE)handler, (LPCSTR)symbol);
 	if(p == NULL) {
 		KNH_SYSLOG(ctx, NULL, pe, "GetProcAddress", "func='%s', ERR='NotFound'", symbol);
@@ -748,7 +752,7 @@ void *knh_dlsym(CTX ctx, int pe, void* handler, const char* symbol)
 
 int knh_dlclose(CTX ctx, void* hdr)
 {
-#if defined(K_USING_WINDOWS)
+#if defined(K_USING_WINDOWS_)
     return (int)FreeLibrary((HMODULE)hdr);
 #elif defined(K_USING_POSIX_)
     return dlclose(hdr);
@@ -762,7 +766,7 @@ int knh_dlclose(CTX ctx, void* hdr)
 /* ------------------------------------------------------------------------ */
 /* [charset] */
 
-#if defined(K_USING_WINDOWS)
+#if defined(K_USING_WINDOWS_)
 #define HAVE_LOCALCHARSET_H 1
 static char *locale_charset(void)
 {

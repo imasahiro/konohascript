@@ -198,7 +198,7 @@ typedef struct knh_sysinfo_t {
 #define		CC_TYPE_TLS   __declspec( thread )
 #define		_CRT_SECURE_NO_WARNINGS
 
-#ifdef defined(_WIN64)
+#if defined(_WIN64)
 #define CC_PLATFORM "windows-x86_64"
 #else
 #define CC_PLATFORM "windows-i386"
@@ -275,11 +275,13 @@ typedef struct knh_sysinfo_t {
 #define     K_USING_PCRE     1
 #endif
 
-#if defined(__WIN32__)  /* mingw */
+#if defined(__MINGW32__)  /* mingw */
 #define		K_USING_STDC_       1
 #define		K_USING_WIN32_      1
+#define		K_USING_WINDOWS_      1
+#define		K_USING_MINGW_      1
 #define     K_USING_ICONV       1
-#define     K_USING_SYSLOG       1   // if not available, report to konohaken
+//#define     K_USING_SYSLOG       1   // if not available, report to konohaken
 #define     K_USING_SQLITE3  1
 #define     K_USING_PCRE     1
 #if defined(K_USING_THREAD)

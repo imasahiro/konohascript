@@ -278,7 +278,7 @@ static FILE* knh_fopen(CTX ctx, int pe, const char *filename, const char *mode)
 #if defined(K_USING_NOFILE)
 	return NULL;
 #else
-#if defined(K_USING_WIN32_)
+#if defined(K_USING_WIN32_) && !defined(K_USING_MINGW_)
 	FILE *in = NULL;
 	fopen_s(&in, filename, mode);
 #else
@@ -366,7 +366,7 @@ static int knh_fclose(CTX ctx, FILE *in)
 #if defined(K_USING_POSIX_)
 #include<time.h>
 #include<sys/time.h>
-#elif defined(K_USING_WINDOWS)
+#elif defined(K_USING_WINDOWS_)
 #include<windows.h>
 #include <time.h>
 #elif defined(K_USING_BTRON)
@@ -378,7 +378,7 @@ static int knh_fclose(CTX ctx, FILE *in)
 #ifdef USE_time
 static knh_uint_t knh_time(void)
 {
-#if defined(K_USING_WINDOWS)
+#if defined(K_USING_WINDOWS_)
 	return (knh_uint_t)time(NULL);
 #elif defined(K_USING_POSIX_)
 	return (knh_uint_t)time(NULL);
@@ -391,7 +391,7 @@ static knh_uint_t knh_time(void)
 #ifdef USE_getTimeMilliSecond
 static knh_uint64_t knh_getTimeMilliSecond(void)
 {
-#if defined(K_USING_WINDOWS)
+#if defined(K_USING_WINDOWS_)
 	DWORD tickCount = GetTickCount();
 	return (knh_int64_t)tickCount;
 #elif defined(K_USING_POSIX_)

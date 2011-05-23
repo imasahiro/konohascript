@@ -1181,13 +1181,13 @@ typedef struct {
 
 #define _RIX   ,long rix
 
-#ifdef K_USING_WINTHREAD_
-#define METHOD  void CC_FASTCALL_
+#ifdef K_USING_WIN32_
+#define METHOD  void CC_EXPORT
 #define TYPEMAP   METHOD
-#define ITRNEXT int   CC_FASTCALL_
-typedef void (CC_FASTCALL_ *knh_Fmethod)(CTX, knh_sfp_t* _RIX);
-typedef void (CC_FASTCALL_ *knh_Ftypemap)(CTX, knh_sfp_t * _RIX);
-typedef int  (CC_FASTCALL_ *knh_Fitrnext)(CTX, knh_sfp_t *, long rtnidx);
+#define ITRNEXT int   CC_EXPORT
+typedef void (CC_EXPORT *knh_Fmethod)(CTX, knh_sfp_t* _RIX);
+typedef void (CC_EXPORT *knh_Ftypemap)(CTX, knh_sfp_t * _RIX);
+typedef int  (CC_EXPORT *knh_Fitrnext)(CTX, knh_sfp_t *, long rtnidx);
 #else
 #define METHOD  void  CC_FASTCALL_
 #define TYPEMAP   METHOD

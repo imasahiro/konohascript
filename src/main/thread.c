@@ -47,7 +47,7 @@
 #include <process.h>
 #endif
 
-#ifdef K_USING_MINGW
+#ifdef K_USING_MINGW_
 #undef K_USING_WINTHREAD_
 #endif
 

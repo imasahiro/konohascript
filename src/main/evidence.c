@@ -362,7 +362,7 @@ static void knh_traceCFMT(CTX ctx, int pe, int isThrowable, const char *ns, cons
 static void knh_tracePERROR(CTX ctx, int pe, int isThrowable, const char *ns, const char *event, knh_uline_t uline, knh_sfp_t *sfp, const char *fmt, va_list ap)
 {
 	int errno_ = errno;
-#if defined(K_USING_WIN32_)
+#if defined(K_USING_WIN32_) && !defined(K_USING_MINGW_)
 	char emsg[256];
 	strerror_s(emsg, sizeof(emsg), errno_);
 #elif defined(K_USING_POSIX_)
