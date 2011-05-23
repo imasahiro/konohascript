@@ -1,7 +1,15 @@
 INSTALL
 =======
 
+1. If 'cmake' does not exist, install cmake.
+2. Run cmake, witch will generate Makefile.
+3. Run make.
+4. Run 'make install'
+Thisgs will be installed under /usr/local/bin/, /usr/local/lib/,
+and /usr/local/konoha/.
 
+For more installation documents, see
+http://konoha.sourceforge.jp/d/doku.php?id=main:source
 
 MacOSX  (Kimio Kuramitsu kkuramitsu [at] gmail.com)
 ======
@@ -20,4 +28,3 @@ Second, just type in:
 	$ sudo make install
 
 
- 
