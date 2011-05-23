@@ -196,10 +196,6 @@ void WarningUnexpectedCharacter(CTX ctx)
 {
 	Gamma_perror(ctx, KC_DWARN, _("unexpected multi-byte character"));
 }
-void WarningMisplaced(CTX ctx)
-{
-	Gamma_perror(ctx, KC_DWARN, _("misplaced and then ignored"));
-}
 knh_Token_t *ErrorHazardousStatement(CTX ctx)
 {
 	return Gamma_perror(ctx, KC_ERR, _("hazardous statement"));
@@ -413,6 +409,10 @@ void WARN_Ignored(CTX ctx, const char *whatis, knh_class_t cid, const char *symb
 	else {
 		Gamma_perror(ctx, KC_DWARN, "ignored %s: %C.%s", whatis, cid, symbol);
 	}
+}
+void WARN_Unnecesary(CTX ctx, knh_Token_t *tk)
+{
+	Gamma_perror(ctx, KC_DWARN, _("unnecesary %O"), tk);
 }
 void WarningUnnecessaryOperation(CTX ctx, const char *msg)
 {

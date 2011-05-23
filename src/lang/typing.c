@@ -4214,7 +4214,7 @@ static knh_Token_t* CLASS_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 				CASE_STMT(FORMAT, stmtFIELD, TYPE_void);
 				case STT_DONE: case STT_DECL: case STT_LET: case STT_ERR: break;
 				default: {
-					WarningMisplaced(ctx /*TT__(STT_(stmtFIELD))*/);
+					WARN_Ignored(ctx, "statement", CLASS_unknown, TT__(STT_(stmtFIELD)));
 				}
 			}
 			stmtFIELD = DP(stmtFIELD)->nextNULL;

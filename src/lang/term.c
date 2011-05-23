@@ -247,6 +247,7 @@ static knh_Token_t *new_TokenPTYPE(CTX ctx, knh_class_t cid, knh_Token_t *tk)
 {
 	knh_Token_t *tkT = new_Token(ctx, TT_PTYPE);
 	knh_Token_t *tkC = new_TokenCID(ctx, cid);
+	Token_setBOL(tkT, Token_isBOL(tk));
 	if(cid == CLASS_Tvar) {
 		TokenBlock_add(ctx, tkT, tk);
 		TokenBlock_add(ctx, tkT, tkC);
@@ -1491,7 +1492,6 @@ static tkitr_t *ITR_stmt(CTX ctx, tkitr_t *itr, int pos, tkitr_t *buf, int isNee
 	int i;
 	*buf = *itr;
 	for(i = itr->c + 1 + pos; i < itr->e; i++) {
-		//DBG_P("tt=%s isBOL=%d", TT__(itr->ts[i]->tt), Token_isBOL(itr->ts[i]));
 		if(Token_isBOL(itr->ts[i])) {
 			if(isNeedSemicolon && TT_(itr->ts[i]) != TT_SEMICOLON) {
 				WARN_Semicolon(ctx);
@@ -2394,7 +2394,7 @@ static void _EXPRCALL(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	}
 	else {
 		STT_(stmt) = STT_CALL1;
-		if(ITR_hasNext(itr)) WarningMisplaced(ctx);
+		if(ITR_hasNext(itr)) WARN_Unnecesary(ctx, itr->ts[itr->c]);
 	}
 }
 
