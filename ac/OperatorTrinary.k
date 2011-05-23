@@ -9,6 +9,6 @@ assure "OperatorTrinary" {
 	n = (a == 2) ? 10 : 100;
 	assert n == 100;
 	n = (a == 1) ? 10 : 100;
-	return n == 10;
+	assert n == 10;
 }
 
