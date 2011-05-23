@@ -973,13 +973,13 @@ static METHOD String_match(CTX ctx, knh_sfp_t *sfp _RIX)
 		int res = re->spi->regexec(ctx, re->reg, str, nmatch, pmatch, re->eflags);
 		a = new_Array(ctx, CLASS_String, nmatch);
 		if(res == 0) {
-			knh_bytes_t sub = S_tobytes(s0);
-			int i;
+			knh_regmatch_t *p;
+			size_t i;
 			for(i = 0; i < nmatch; i++) {
-				if(pmatch[i].rm_so == -1) break;
-				//DBG_P("[%d], rm_so=%d, rm_eo=%d", i, pmatch[i].rm_so, pmatch[i].rm_eo);
-				sub.text = str + pmatch[i].rm_so;
-				sub.len = pmatch[i].rm_eo - pmatch[i].rm_so;
+				p = pmatch + i;
+				if (p->rm_so == -1) break;
+				//DBG_P("[%d], rm_so=%d, rm_eo=%d", i, p->rm_so, p->rm_eo);
+				knh_bytes_t sub = {{str + (p->rm_so)}, ((p->rm_eo) - (p->rm_so))};
 				knh_Array_add(ctx, a, new_String_(ctx, CLASS_String, sub, s0));
 			}
 		}
@@ -1015,23 +1015,31 @@ static METHOD String_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_bytes_t tos = S_tobytes(sfp[2].s);
 		const char *str = S_tochar(s0);  // necessary
-		const char *estr = str + S_size(s0);
+		const char *base = str;
+		const char *eos = str + S_size(s0);
 		knh_regmatch_t pmatch[K_REGEX_MATCHSIZE];
-		while (str < estr) {
+		while (str < eos) {
 			int res = re->spi->regexec(ctx, re->reg, str, K_REGEX_MATCHSIZE, pmatch, re->eflags);
 			if (res == 0) {
-				knh_bytes_t sub = {{str},  pmatch[0].rm_so};
-				knh_Bytes_write(ctx, cwb->ba, sub);
-				knh_Bytes_write(ctx, cwb->ba, tos);
-				str += (pmatch[0].rm_eo);
+				size_t len = pmatch[0].rm_eo;
+				KNH_ASSERT(len >= 0);
+				knh_bytes_t hos = {{str},  pmatch[0].rm_so};
+				knh_Bytes_write(ctx, cwb->ba, hos);
+				if (len > 0) {
+					knh_Bytes_write(ctx, cwb->ba, tos);
+					str += len;
+					continue;
+				}
+				if (str == base) {
+					knh_Bytes_write(ctx, cwb->ba, tos);
+				}
 			}
-			else {
-				knh_bytes_t sub = {{str}, knh_strlen(str)};
-				knh_Bytes_write(ctx, cwb->ba, sub);
-				break;
-			}
+			knh_bytes_t eos = {{str}, knh_strlen(str)};
+			knh_Bytes_write(ctx, cwb->ba, eos);
+			break;
 		}
 		s = knh_cwb_newString(ctx, cwb);
+		knh_cwb_close(cwb);
 	}
 	RETURN_(s);
 }
@@ -1093,21 +1101,29 @@ static METHOD String_split(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	else {
 		const char *str = S_tochar(s0);  // necessary
-		const char *estr = str + S_size(s0);
+		const char *eos = str + S_size(s0);
 		knh_regmatch_t pmatch[K_REGEX_MATCHSIZE];
 		a = new_Array(ctx, CLASS_String, 0);
-		while (str < estr) {
+		while (str < eos) {
 			int res = re->spi->regexec(ctx, re->reg, str, K_REGEX_MATCHSIZE, pmatch, re->eflags);
-			if(res == 0) {
-				knh_bytes_t sub = {{str},  pmatch[0].rm_so};
-				knh_Array_add(ctx, a, new_String_(ctx, CLASS_String, sub, s0));
-				str += (pmatch[0].rm_eo);
+			if (res == 0) {
+				size_t len = pmatch[0].rm_eo;
+				KNH_ASSERT(len >= 0);
+				if (len > 0) {
+					knh_bytes_t sub = {{str},  pmatch[0].rm_so};
+					knh_Array_add(ctx, a, new_String_(ctx, CLASS_String, sub, s0));
+					str += len;
+					continue;
+				}
+				knh_Array_t* ca = knh_String_toCharArray(ctx, new_String(ctx, str), 0);
+				size_t i, size = knh_Array_size(ca);
+				for (i = 0; i < size; i++) {
+					knh_Array_add(ctx, a, knh_Array_n(ca, i));
+				}
+			} else {
+				knh_Array_add(ctx, a, new_String(ctx, str));
 			}
-			else {
-				knh_bytes_t sub = {{str}, knh_strlen(str)};
-				knh_Array_add(ctx, a, new_String_(ctx, CLASS_String, sub, s0));
-				break;
-			}
+			break;
 		}
 	}
 	RETURN_(a);
