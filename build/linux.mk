@@ -16,6 +16,7 @@ packages = \
 	$(dir)/i.so \
 	$(dir)/math.so \
 	$(dir)/posix.so \
+	$(dir)/socket.so \
 
 objs = \
 	$(dir)/asm.o \
@@ -181,6 +182,16 @@ $(dir)/posix.so: $(objs_posix)
 $(dir)/posix.o : package/konoha.posix/posix.c
 	$(CC) $(CFLAGS) -D_SETUP -c $^ -o $@
 
+## socket
+LDLIBS_libsocket = 
+objs_socket = $(dir)/socket.o\
+
+$(dir)/socket.so: $(objs_socket)
+	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDLIBS_libsocket)
+
+$(dir)/socket.o : package/konoha.socket/socket_posix.c
+	$(CC) $(CFLAGS) -D_SETUP -c $^ -o $@
+
 ## install
 .PHONY: install
 install:
@@ -189,6 +200,7 @@ install:
 	bash $(dir)/pkginstall.sh i $(PREFIX)/konoha/package/$(version) konoha.i
 	bash $(dir)/pkginstall.sh math $(PREFIX)/konoha/package/$(version) konoha.math
 	bash $(dir)/pkginstall.sh posix $(PREFIX)/konoha/package/$(version) konoha.posix
+	bash $(dir)/pkginstall.sh socket $(PREFIX)/konoha/package/$(version) konoha.socket
 
 ## uninstall
 .PHONY: uninstall
