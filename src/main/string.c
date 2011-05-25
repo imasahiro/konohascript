@@ -566,9 +566,11 @@ static knh_regex_t* pcre_regex_malloc(CTX ctx, knh_String_t* s)
 size_t pcre_regex_nmatchsize(knh_regex_t *reg)
 {
 	PCRE_regex_t *preg = (PCRE_regex_t*)reg;
-	size_t capsize;
-	pcre_fullinfo(preg->re, NULL, PCRE_INFO_CAPTURECOUNT, &capsize);
-	return (capsize > 0) ? capsize+1 : K_REGEX_MATCHSIZE;
+	size_t capsize = 0;
+	if (pcre_fullinfo(preg->re, NULL, PCRE_INFO_CAPTURECOUNT, &capsize) != 0) {
+		return K_REGEX_MATCHSIZE;
+	}
+	return capsize + 1;
 }
 
 static int pcre_regex_parsecflags(CTX ctx, const char *option)
@@ -1104,7 +1106,7 @@ static METHOD String_split(CTX ctx, knh_sfp_t *sfp _RIX)
 		const char *eos = str + S_size(s0);
 		knh_regmatch_t pmatch[K_REGEX_MATCHSIZE];
 		a = new_Array(ctx, CLASS_String, 0);
-		while (str < eos) {
+		while (str <= eos) {
 			int res = re->spi->regexec(ctx, re->reg, str, K_REGEX_MATCHSIZE, pmatch, re->eflags);
 			if (res == 0) {
 				size_t len = pmatch[0].rm_eo;
@@ -1120,9 +1122,9 @@ static METHOD String_split(CTX ctx, knh_sfp_t *sfp _RIX)
 				for (i = 0; i < size; i++) {
 					knh_Array_add(ctx, a, knh_Array_n(ca, i));
 				}
-			} else {
-				knh_Array_add(ctx, a, new_String(ctx, str));
+				break;
 			}
+			knh_Array_add(ctx, a, new_String(ctx, str));
 			break;
 		}
 	}
