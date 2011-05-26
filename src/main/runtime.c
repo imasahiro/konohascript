@@ -559,26 +559,27 @@ static int shell_checkstmt(knh_bytes_t t)
 		ch = t.ubuf[i];
 		if(ch == '{' || ch == '[' || ch == '(') nest++;
 		if(ch == '}' || ch == ']' || ch == ')') nest--;
-		if(ch == '\'' && i > 0 && (islower(t.text[i-1]) || t.text[i-1] == '\'')) continue; // a' prime
 		if(ch == '\'' || ch == '"' || ch == '`') {
-			quote = ch; i++;
-			goto L_QUOTE;
+			if(t.ubuf[i+1] == ch && t.ubuf[i+2] == ch) {
+				quote = ch; i+=2;
+				goto L_TQUOTE;
+			}
 		}
 		if(ch == '\n') hasDOC = 0;
 		if(ch == '#') {
 			hasDOC = 1;
-//			quote = '\n'; i++;
-//			goto L_QUOTE;
 		}
 	}
 	return (hasDOC == 1) ? 1 : nest;
-	L_QUOTE:
+	L_TQUOTE:
 	DBG_ASSERT(i > 0);
 	for(; i < t.len; i++) {
 		ch = t.ubuf[i];
 		if(t.ubuf[i-1] != '\\' && ch == quote) {
-			i++;
-			goto L_NORMAL;
+			if(t.ubuf[i+1] == ch && t.ubuf[i+2] == ch) {
+				i+=2;
+				goto L_NORMAL;
+			}
 		}
 	}
 	return 1;
