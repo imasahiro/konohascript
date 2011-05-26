@@ -158,6 +158,7 @@ static METHOD Regex_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Regex_t *re = (knh_Regex_t*)sfp[0].o;
 	const char *ptn = S_tochar(sfp[1].s);
 	const char *opt = IS_NULL(sfp[2].o) ? "" : S_tochar(sfp[2].s);
+	knh_Regex_setGlobalOption(ctx, re, opt);
 	KNH_SETv(ctx, re->pattern, sfp[1].s);
 	re->spi = knh_getRegexSPI();
 	re->reg = re->spi->regmalloc(ctx, sfp[1].s);

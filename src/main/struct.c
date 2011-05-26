@@ -1721,7 +1721,17 @@ static void Regex_free(CTX ctx, Object *o)
 static void Regex_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
 	knh_Regex_t *re = (knh_Regex_t*)o;
-	knh_write_quote(ctx, w, '/', S_tobytes(re->pattern), !String_isASCII(re->pattern));
+	knh_bytes_t t = S_tobytes(re->pattern);
+	size_t i;
+	knh_putc(ctx, w, '/');
+	for(i = 0; i < t.len; i++) {
+		int ch = t.buf[i];
+		if(ch == '/') {
+			knh_putc(ctx, w, '\\');
+		}
+		knh_putc(ctx, w, ch);
+	}
+	knh_putc(ctx, w, '/');
 }
 
 static knh_ClassDef_t RegexDef = {

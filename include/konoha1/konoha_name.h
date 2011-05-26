@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      228
+#define K_REVISION                      233
 #endif
-#define K_BUILDID                       1104
+#define K_BUILDID                       1106
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -600,6 +600,9 @@
 #define FLAG_ExceptionHandler_Catching FLAG_Object_Local1
 #define ExceptionHandler_isCatching(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_ExceptionHandler_Catching))
 #define ExceptionHandler_setCatching(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_ExceptionHandler_Catching,b)
+#define FLAG_Regex_GlobalOption FLAG_Object_Local1
+#define Regex_isGlobalOption(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Regex_GlobalOption))
+#define Regex_setGlobalOption(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Regex_GlobalOption,b)
 #define FLAG_OutputStream_BOL FLAG_Object_Local1
 #define OutputStream_isBOL(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_OutputStream_BOL))
 #define OutputStream_setBOL(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_OutputStream_BOL,b)

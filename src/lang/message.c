@@ -137,6 +137,21 @@ static knh_Token_t *Gamma_perror(CTX ctx, int pe, const char *fmt, ...)
 	return NULL;
 }
 
+static knh_Token_t *knh_Token_toERR(CTX ctx, knh_Token_t *tk, const char *fmt, ...)
+{
+	if(TT_(tk) != TT_ERR) {
+		knh_String_t *msg;
+		va_list ap;
+		va_start(ap, fmt);
+		ctx->gma->uline = tk->uline;
+		msg = Gamma_vperror(ctx, KC_ERR, fmt, ap);
+		va_end(ap);
+		TT_(tk) = TT_ERR;
+		KNH_SETv(ctx, (tk)->data, msg);
+	}
+	return tk;
+}
+
 /* ------------------------------------------------------------------------ */
 /* script */
 
@@ -170,27 +185,16 @@ void WarningMethodName(CTX ctx, const char *name)
 	Gamma_perror(ctx, KC_DWARN, _("%s should starts with lowercase"), name);
 }
 
-/* ------------------------------------------------------------------------ */
-/* tokenizer */
-
-static knh_Token_t *knh_Token_toERR(CTX ctx, knh_Token_t *tk, const char *fmt, ...)
+void WARN_MustCloseWith(CTX ctx, int ch)
 {
-	if(TT_(tk) != TT_ERR) {
-		knh_String_t *msg;
-		va_list ap;
-		va_start(ap, fmt);
-		ctx->gma->uline = tk->uline;
-		msg = Gamma_vperror(ctx, KC_ERR, fmt, ap);
-		va_end(ap);
-		TT_(tk) = TT_ERR;
-		KNH_SETv(ctx, (tk)->data, msg);
-	}
-	return tk;
+	char buf[40];
+	knh_snprintf(buf, sizeof(buf), "%c", ch);
+	Gamma_perror(ctx, KC_DWARN, "must closed with %s", buf);
 }
 
 void WARN_Semicolon(CTX ctx)
 {
-	if(!CTX_isInteractive(ctx)) Gamma_perror(ctx, KC_BAD, "needs ;");
+	if(!CTX_isInteractive(ctx)) Gamma_perror(ctx, KC_BAD, "needs ");
 }
 void WarningUnexpectedCharacter(CTX ctx)
 {
@@ -253,9 +257,9 @@ void WarningNotInitialized(CTX ctx, knh_Token_t *tk, const char *tool)
 {
 	Gamma_perror(ctx, KC_EWARN, _("%s is not installed"), tool);
 }
-knh_Token_t* ErrorRegexCompilation(CTX ctx, knh_Token_t *tk, const char *regname, const char *regdata)
+knh_Token_t* ERROR_RegexCompilation(CTX ctx, knh_Token_t *tk, const char *regname, const char *regdata)
 {
-	return knh_Token_toERR(ctx, tk, _("%s compile error: /%s/"), regname, regdata);
+	return knh_Token_toERR(ctx, tk, _("%s compile error: %s"), regname, regdata);
 }
 knh_Token_t* ERROR_Undefined(CTX ctx, const char *whatis, knh_class_t cid, knh_Token_t *tk)
 {

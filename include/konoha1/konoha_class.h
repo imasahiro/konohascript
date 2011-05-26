@@ -640,6 +640,7 @@ typedef struct knh_ExceptionHandler_t {
 
 /* ------------------------------------------------------------------------ */
 //## @Immutable class Regex Object;
+//## flag Regex GlobalOption  1 - is set * *;
 
 typedef void knh_regex_t;
 

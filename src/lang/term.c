@@ -772,6 +772,10 @@ static void Bytes_addQUOTE(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, int 
 		if(ch != skip) goto L_INLOOP;
 		while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
 			L_INLOOP:;
+			if(ch == '\n' && isTQUOTE != 1) {
+				WARN_MustCloseWith(ctx, quote);
+				return ;
+			}
 			if(ch == quote) {
 				if(isTQUOTE == 1) {
 					if(Bytes_isTripleQuote(ba, quote)) {
@@ -2085,6 +2089,18 @@ static void _EXPROP(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, int idx)
 	}
 }
 
+void knh_Regex_setGlobalOption(CTX ctx, knh_Regex_t *re, const char *opt)
+{
+	const char *p = opt;
+	while(*p != 0) {
+		if(*p == 'g') {
+			Regex_setGlobalOption(re, 1);
+			break;
+		}
+		p++;
+	}
+}
+
 static void _REGEX(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, knh_Token_t *tk)
 {
 	knh_Regex_t *re = new_H(Regex);
@@ -2098,16 +2114,18 @@ static void _REGEX(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, knh_Token_t *tk)
 	re->reg = re->spi->regmalloc(ctx, (tk)->text);
 	if(ITR_is(itr, TT_NAME)) {
 		opt = S_tochar((ITR_nextTK(itr))->text);
-		DBG_P("opt=%s", opt);
+		knh_Regex_setGlobalOption(ctx, re, opt);
 	}
 	cflags = re->spi->parse_cflags(ctx, opt);
 	if(re->spi->regcomp(ctx, re->reg, S_tochar(re->pattern), cflags) != 0) {
-		knh_Stmt_toERR(ctx, stmt, ErrorRegexCompilation(ctx, tk, re->spi->name, S_tochar((tk)->text)));
+		knh_Stmt_toERR(ctx, stmt, ERROR_RegexCompilation(ctx, tk, re->spi->name, S_tochar((tk)->text)));
 	}
-	re->eflags = re->spi->parse_eflags(ctx, opt);
-	KNH_SETv(ctx, (tk)->data, re);
-	knh_Stmt_add(ctx, stmt, tk);
-	ITR_ignore(ctx, itr, +0);
+	else {
+		re->eflags = re->spi->parse_eflags(ctx, opt);
+		KNH_SETv(ctx, (tk)->data, re);
+		knh_Stmt_add(ctx, stmt, tk);
+		ITR_ignore(ctx, itr, +0);
+	}
 }
 
 static void _CODEDOC(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
