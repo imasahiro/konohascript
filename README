@@ -30,7 +30,7 @@ INSTALL AND TRY
 
 You'll have to make only three steps. Try:
 
-	./configure
+	cmake ./
 	make
 	sudo make install
 
@@ -38,10 +38,10 @@ If Konoha is installed succeedly, you can try Konoha as an
 interactive mode.
 
 	$ konoha
-	Konoha 0.1-GPL2 (#367, Sep  5 2008, 16:35:22)
-	[4.0.1 (Apple Inc. build 5465)] on MacOSX (32, UTF-8)
+	konoha 1.0(beta1) svn (rev:234, May 27 2011 13:16:36)
+	options: iconv msgc thcode sqlite3 syslog used_memory:6389 kb
 	>>> print "hello,world"
-	hello,world
+	((eval):1) hello,world
 	
 DO YOU WANT TO KNOW MORE?
 -------------------------

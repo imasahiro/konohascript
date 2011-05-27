@@ -14,3 +14,5 @@ dumpInstalledPackages($konoha.package.path);
 dumpInstalledPackages($user.package.path);
 
 
+OUT <<< "For bug reporting instructions, please see:" <<< EOL;
+OUT <<< "URL: http://code.google.com/p/konoha/issues/list" <<< EOL;

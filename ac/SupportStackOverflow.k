@@ -7,7 +7,7 @@ void f(int n) {
 	f(n+1);
 }
 
-assure "SupportCharacterConversion" {
+assure "SupportStackOverflow" {
 	boolean isCaught = false;
 	try {
 		f(0);
