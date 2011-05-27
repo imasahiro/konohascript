@@ -1,30 +1,18 @@
 INSTALL
 =======
 
-1. If 'cmake' does not exist, install cmake.
-2. Run cmake, witch will generate Makefile.
-3. Run make.
-4. Run 'make install'
-Thisgs will be installed under /usr/local/bin/, /usr/local/lib/,
-and /usr/local/konoha/.
+First, make sure the following tools are ready:
 
-For more installation documents, see
-http://konoha.sourceforge.jp/d/doku.php?id=main:source
+	* GCC
+	* Latest PCRE libraries
+	* cmake
 
-MacOSX  (Kimio Kuramitsu kkuramitsu [at] gmail.com)
-======
+Second, just type in 
 
-The binary distribution MacOSX has been built the following steps:
-
-First, make sure the necessary tools and libraries are ready:
-
-	* Xcode (or gcc, icc)
-	* Latest PCRE libraries (and also pcre.h)
-
-Second, just type in:
-
-	$ ln -s build/macosx.mk Makefile
+	$ cmake .
 	$ make
 	$ sudo make install
 
+For further information, see (in Japanese):
+http://konoha.sourceforge.jp/d/doku.php?id=main:source
 
