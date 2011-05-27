@@ -9,7 +9,8 @@ First, make sure the following tools are ready:
 
 Second, just type in 
 
-	$ cmake .
+	$ cd build
+	$ cmake ../
 	$ make
 	$ sudo make install
 

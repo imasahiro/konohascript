@@ -288,6 +288,10 @@ foreach(f ${files})
 	add_test(NAME ${res} COMMAND ${ktest} --utest "file:${f}")
 endforeach()
 
+#add_executable(test_class ctest/class.c)
+#target_link_libraries(test_class konoha)
+#add_test(NAME "class" COMMAND ./test_class)
+
 #set(CPACK_SOURCE_GENERATOR "TGZ;DEB")
 set(CPACK_SOURCE_GENERATOR "TGZ")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME ${ARCHIVE_NAME})
