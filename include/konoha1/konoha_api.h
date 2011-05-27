@@ -631,6 +631,7 @@ knh_String_t *knh_cwb_newStringDECODE(CTX ctx, knh_cwb_t *cwb, knh_StringDecoder
 knh_bool_t knh_class_canObjectCopy(CTX ctx, knh_class_t cid);
 knh_TypeMap_t* DEFAULT_findTypeMapNULL(CTX ctx, knh_class_t scid, knh_class_t tcid, int mode);
 void knh_ClassTBL_setObjectCSPI(knh_ClassTBL_t *ct);
+knh_Thunk_t* new_Thunk(CTX ctx, knh_class_t p1, size_t envsize);
 void knh_loadScriptSystemStructData(CTX ctx, const knh_PackageLoaderAPI_t *kapi);
 void knh_loadScriptSystemString(CTX ctx);
 void knh_loadScriptSystemData(CTX ctx, knh_NameSpace_t *ns, const knh_PackageLoaderAPI_t *kapi);

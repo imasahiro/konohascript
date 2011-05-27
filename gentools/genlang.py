@@ -52,6 +52,7 @@ CALL        _NAME  _EXPR  _MEXPR
 NEW         _NAME  _CNAME _MEXPR
 FUNCCALL    _EXPR  _      _MEXPR
 ACALL       _NAME  _      _MEXPR
+THUNK       _NAME  _EXPR  _MEXPR
 TLINK       _
 ALT         _EXPR  _EXPR
 TRI         _EXPR  _EXPR  _EXPR
@@ -85,7 +86,6 @@ for       0     _PSTMT3  _STMT
 foreach   0     _PEACH   _STMT
 break     0     _LABEL
 continue  0     _LABEL
-#goto     0     _FUTURE
 try       0     _STMT _CATCH
 catch     0     _PEXPR  _STMT
 throw     0     _EXPR

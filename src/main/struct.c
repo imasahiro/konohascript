@@ -1565,33 +1565,51 @@ static knh_ClassDef_t FuncDef = {
 /* --------------- */
 /* Thunk */
 
+static void Thunk_newenv(CTX ctx, knh_Thunk_t *thk, size_t envsize)
+{
+	size_t i;
+	thk->envsize = envsize;
+	thk->envsfp = (knh_sfp_t*)KNH_MALLOC(ctx, sizeof(knh_sfp_t) * envsize);
+	for(i = 0; i < envsize; i++) {
+		KNH_INITv((thk)->envsfp[i].o, KNH_NULL);
+		(thk)->envsfp[i].ndata = 0;
+	}
+}
+
 static void Thunk_init(CTX ctx, Object *o)
 {
-	knh_Thunk_t *thunk = (knh_Thunk_t*)o;
-	thunk->envsfp = NULL;
-	thunk->envsize = 0;
+	knh_Thunk_t *thk = (knh_Thunk_t*)o;
+	knh_Method_t *mtd = ClassTBL_getMethodNULL(ctx, ClassTBL(CLASS_Thunk), MN_);
+	DBG_ASSERT(mtd != NULL);
+	Thunk_newenv(ctx, thk, K_CALLDELTA);
+	KNH_SETv(ctx, thk->envsfp[0].o, KNH_NULVAL(O_p1(thk)));
+	thk->envsfp[K_CALLDELTA+K_MTDIDX].mtdNC = mtd;
+}
+
+knh_Thunk_t* new_Thunk(CTX ctx, knh_class_t p1, size_t envsize)
+{
+	knh_class_t cid = knh_class_P1(ctx, CLASS_Thunk, p1);
+	knh_Thunk_t *thk = (knh_Thunk_t*)new_hObject_(ctx, ClassTBL(cid));
+	Thunk_newenv(ctx, thk, envsize);
+	return thk;
 }
 
 static void Thunk_reftrace(CTX ctx, Object *o FTRARG)
 {
-	knh_Thunk_t *thunk = (knh_Thunk_t*)o;
-	if(thunk->envsize > 0) {
-		size_t i;
-		for(i = 0; i < (thunk)->envsize; i++) {
-			KNH_ADDREF(ctx, (thunk)->envsfp[i].o);
-		}
-		KNH_SIZEREF(ctx);
+	knh_Thunk_t *thk = (knh_Thunk_t*)o;
+	size_t i;
+	for(i = 0; i < (thk)->envsize; i++) {
+		KNH_ADDREF(ctx, (thk)->envsfp[i].o);
 	}
+	KNH_SIZEREF(ctx);
 }
 
 static void Thunk_free(CTX ctx, Object *o)
 {
 	knh_Thunk_t *thunk = (knh_Thunk_t*)o;
-	if(thunk->envsize > 0) {
-		KNH_FREE(ctx, thunk->envsfp, sizeof(knh_sfp_t) * thunk->envsize);
-		thunk->envsize = 0;
-		thunk->envsfp = NULL;
-	}
+	KNH_FREE(ctx, thunk->envsfp, sizeof(knh_sfp_t) * thunk->envsize);
+	thunk->envsfp = NULL;
+	thunk->envsize = 0;
 }
 
 static knh_ClassDef_t ThunkDef = {

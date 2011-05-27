@@ -1601,7 +1601,6 @@ static METHOD Method_getName(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(knh_cwb_newString(ctx, cwb));
 }
 
-
 ///* ------------------------------------------------------------------------ */
 ////## @Const method void Method.setTrace(Int trace);
 //
@@ -1625,42 +1624,54 @@ static METHOD Func_invoke(CTX ctx, knh_sfp_t *sfp _RIX)
 	KNH_SELFCALL(ctx, sfp, fo->mtd, rix);
 }
 
-///* ------------------------------------------------------------------------ */
-////## method T1 Thunk.eval();
-//
-//static METHOD Thunk_eval(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//
-//	knh_Thunk_t *thk = (knh_Thunk_t*)sfp[0].o;
-//	size_t i;
-//	if((thk)->envsize > 0) {
-//		for(i = 2; i < (thk)->envsize; i++) {
-//			KNH_SETv(ctx, sfp[i].o, (thk)->envsfp[i].o);
-//			sfp[i].ndata = (thk)->envsfp[i].ndata;
-//		}
-//		KNH_SCALL(ctx, sfp, 1, (thk)->envsfp[1].mtd, ((thk)->envsize-3));
-//		KNH_SETv(ctx, (thk)->envsfp[0].o, sfp[1].o);
-//		(thk)->envsfp[0].ndata = sfp[1].ndata;
-//		Thunk_setEvaluated(thk, 1);
-//	}
-//	KNH_SETv(ctx, sfp[-1].o, (thk)->envsfp[0].o);
-//	sfp[-1].ndata = (thk)->envsfp[0].ndata;
-//}
+/* ------------------------------------------------------------------------ */
+//## @Hidden method T1 Thunk.();
 
-///* ------------------------------------------------------------------------ */
-////## method T1 Thunk.value();
-//
-//static METHOD Thunk_value(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_Thunk_t *thk = (knh_Thunk_t*)sfp[0].o;
-//	if(Thunk_isEvaluated(thk)) {
-//		KNH_SETv(ctx, sfp[-1].o, (thk)->envsfp[0].o);
-//		sfp[-1].ndata = (thk)->envsfp[0].ndata;
-//	}
-//	else {
-//		Thunk_eval(ctx, sfp);
-//	}
-//}
+static METHOD Fmethod_returnConst(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	// return values are always set at sfp[_rix] correctly
+}
+
+/* ------------------------------------------------------------------------ */
+//## method T1 Thunk.eval();
+
+static METHOD Thunk_eval(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+
+	knh_Thunk_t *thk = (knh_Thunk_t*)sfp[0].o;
+	knh_sfp_t *lsfp = sfp + 1;
+	DBG_P("rix=%d, sfpidx=%d, espidx=%d", rix, sfp-ctx->stack, ctx->esp - ctx->stack);
+	knh_Method_t *mtd = (thk)->envsfp[K_CALLDELTA+K_MTDIDX].mtdNC;
+	size_t i;
+	for(i = 0; i < (thk)->envsize; i++) {
+		KNH_SETv(ctx, lsfp[i].o, (thk)->envsfp[i].o);
+		lsfp[i].ndata = (thk)->envsfp[i].ndata;
+	}
+	KNH_SCALL(ctx, lsfp, 0, mtd, ((thk)->envsize-K_CALLDELTA));
+	KNH_SETv(ctx, (thk)->envsfp[0].o, lsfp[0].o);
+	(thk)->envsfp[0].ndata = lsfp[0].ndata;
+	Thunk_setEvaluated(thk, 1);
+	KNH_SETv(ctx, sfp[rix].o, (thk)->envsfp[0].o);
+	sfp[rix].ndata = (thk)->envsfp[0].ndata;
+}
+
+/* ------------------------------------------------------------------------ */
+//## method T1 Thunk.getValue();
+//## mapper Thunk Tvoid;
+
+static METHOD Thunk_value(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Thunk_t *thk = (knh_Thunk_t*)sfp[0].o;
+	if(Thunk_isEvaluated(thk)) {
+		KNH_SETv(ctx, sfp[rix].o, (thk)->envsfp[0].o);
+		sfp[rix].ndata = (thk)->envsfp[0].ndata;
+	}
+	else {
+		Thunk_eval(ctx, sfp, rix);
+	}
+}
+
+/* ------------------------------------------------------------------------ */
 
 #endif/* K_INCLUDE_BUILTINAPI*/
 
