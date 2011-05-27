@@ -363,12 +363,13 @@ knh_ExceptionHandler_t *knh_ExceptionHandler_longjmp(CTX ctx, knh_ExceptionHandl
 {
 #if defined(__GNUC__)
 #if defined(__i386__)
+	//@shinpei_NKT : fixed offset of knh_ExceptionHandler_t, i386 code
 	asm volatile(
 			"pop %%ebp;"
 			"mov 0x10(%%eax),%%esi;" /* esi = DP(hdr) */
-			"mov 0x08(%%esi),%%edx;" /* edx = DP(hdr)->return_address */
-			"mov 0x0c(%%esi),%%ebp;" /* ebp = DP(hdr)->frame_address */
-			"mov 0x10(%%esi),%%esp;" /* esp = DP(hdr)->stack_pointer */
+			"mov 0x0c(%%esi),%%edx;" /* edx = DP(hdr)->return_address */
+			"mov 0x10(%%esi),%%ebp;" /* ebp = DP(hdr)->frame_address */
+			"mov 0x14(%%esi),%%esp;" /* esp = DP(hdr)->stack_pointer */
 			"pop %%esi;"
 			"jmp *%%edx;"
 			::
