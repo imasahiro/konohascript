@@ -2939,6 +2939,7 @@ static knh_Token_t *new_TermTCAST(CTX ctx, knh_class_t reqt, knh_TypeMap_t *tmrN
 			BEGIN_LOCAL(ctx, lsfp, 1);
 			KNH_SETv(ctx, lsfp[0].o, (tkO)->data);
 			lsfp[0].ndata = O_ndata((tkO)->data);
+			klr_setesp(ctx, lsfp+1);
 			knh_TypeMap_exec(ctx, tmrNULL, lsfp, 0);
 			boxSFP(ctx, lsfp, SP(tmrNULL)->tcid);
 			Token_setCONST(ctx, tkO, lsfp[0].o);
@@ -3001,6 +3002,7 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		knh_Token_t *tk1 = tkNN(stmt, 1);
 		KNH_SETv(ctx, lsfp[0].o, (tk1)->data);
 		lsfp[0].ndata = (lsfp[0].i)->n.data;
+		klr_setesp(ctx, lsfp+1);
 		knh_TypeMap_exec(ctx, tmr, lsfp, 0);
 		boxSFP(ctx, &lsfp[0], SP(tmr)->tcid);
 		Token_setCONST(ctx, tk1, lsfp[0].o);

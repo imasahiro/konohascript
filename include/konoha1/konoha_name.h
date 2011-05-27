@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      244
+#define K_REVISION                      245
 #endif
-#define K_BUILDID                       1107
+#define K_BUILDID                       1110
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -900,7 +900,6 @@
 #define MN_get3         MN_toGETTER(FN_3)
 #define MN_get2         MN_toGETTER(FN_2)
 #define MN_flush        FN_flush
-#define MN_value        FN_value
 #define MN_send         FN_send
 #define MN_getChar      MN_toGETTER(FN_char)
 #define MN_getSize      MN_toGETTER(FN_size)
@@ -940,6 +939,7 @@
 #define MN_defined      FN_defined
 #define MN_getProperty  MN_toGETTER(FN_property)
 #define MN_setIn        MN_toSETTER(FN_in)
+#define MN_getValue     MN_toGETTER(FN_value)
 #define MN_isDebug      MN_toISBOOL(FN_debug)
 #define MN_concat       FN_concat
 #define MN_setErr       MN_toSETTER(FN_err)

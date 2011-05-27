@@ -107,12 +107,6 @@ fGTEC      _DEF|_JIT         c:rn a:rn n:float
 
 RCINC      _JIT              a:ro
 RCDEC      _JIT              a:ro
-#@RCINC2    0                a:ro   b:ro
-#@RCINC3    0                a:ro   b:ro   c:ro
-#@RCINC4    0                a:ro   b:ro   c:ro    d:ro
-#@RCDEC2    0                a:ro   b:ro
-#@RCDEC3    0                a:ro   b:ro   c:ro
-#@RCDEC4    0                a:ro   b:ro   c:ro    d:ro
 
 @OSET      _DEF|_JIT|_CONST  a:ro o:Object
 @OMOV      _DEF|_JIT         a:ro b:ro
@@ -133,19 +127,19 @@ RCDECx     0                 a:sfx
 
 CHKSTACK   0                 n:sfpidx
 LOADMTD    0                 thisidx:sfpidx method:f mtdNC:mtd
-CALL       _DEF|_JIT         a:r thisidx:sfpidx espshift:sfpidx
-SCALL      _DEF|_JIT         a:r thisidx:sfpidx espshift:sfpidx mtdNC:mtd
-VCALL      _DEF|_JIT         a:r thisidx:sfpidx espshift:sfpidx mtdNC:mtd
-VCALL_     _DEF|_JIT         a:r thisidx:sfpidx espshift:sfpidx mtdNC:mtd
-FASTCALL0  _DEF|_JIT         a:r thisidx:sfpidx rix:i fcall:f   mtdNC:mtd
+CALL       _DEF|_JIT         a:r thisidx:sfpidx espshift:i
+SCALL      _DEF|_JIT         a:r thisidx:sfpidx espshift:i mtdNC:mtd
+VCALL      _DEF|_JIT         a:r thisidx:sfpidx espshift:i mtdNC:mtd
+VCALL_     _DEF|_JIT         a:r thisidx:sfpidx espshift:i mtdNC:mtd
+FASTCALL0  _DEF|_JIT         a:r thisidx:sfpidx rix:i espshift:i fcall:f
 RET        _JIT
 
 TR         _DEF|_JIT         a:r  b:sfpidx rix:i cid:cid tr:f
 #UNBOX      _DEF              a:rn b:ro cid:cid
 
-SCAST      _DEF              a:r b:sfpidx rix:i cast:tmr
-TCAST      _DEF              a:r b:sfpidx rix:i cast:tmr
-ACAST      _DEF              a:r b:sfpidx rix:i cast:tmr
+SCAST      _DEF              a:r b:sfpidx rix:i espshift:i cast:tmr
+TCAST      _DEF              a:r b:sfpidx rix:i espshift:i cast:tmr
+#ACAST      _DEF              a:r b:sfpidx rix:i espshift:i cast:tmr
 iCAST      _DEF|_JIT         a:rn b:rn
 fCAST      _DEF|_JIT         a:rn b:rn
 
@@ -154,7 +148,7 @@ JMP_       _JIT              addr:addr
 #ONCE                        addr:addr
 JMPF       0                 addr:addr a:rn
 #DYJMP      0                addr:addr a:sfpidx chk:f
-NEXT       _DEF              addr:addr  a:r b:sfpidx rix:i
+NEXT       _DEF              addr:addr a:r b:sfpidx rix:i espshift:i
 
 BGETIDX    _DEF|_JIT         c:rn a:ro n:rn 
 BSETIDX    _DEF|_JIT         c:rn a:ro n:rn  v:rn

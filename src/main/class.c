@@ -1639,8 +1639,8 @@ static METHOD Thunk_eval(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 
 	knh_Thunk_t *thk = (knh_Thunk_t*)sfp[0].o;
-	knh_sfp_t *lsfp = sfp + 1;
-	DBG_P("rix=%d, sfpidx=%d, espidx=%d", rix, sfp-ctx->stack, ctx->esp - ctx->stack);
+	knh_sfp_t *lsfp = ctx->esp;
+	//DBG_P("rix=%d, sfpidx=%d, espidx=%d", rix, sfp-ctx->stack, ctx->esp - ctx->stack);
 	knh_Method_t *mtd = (thk)->envsfp[K_CALLDELTA+K_MTDIDX].mtdNC;
 	size_t i;
 	for(i = 0; i < (thk)->envsize; i++) {

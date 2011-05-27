@@ -215,7 +215,8 @@ extern "C" {
 		sfp_[K_MTDIDX].mtdNC = NULL;\
 	} \
 
-#define KLR_FASTCALL0(ctx, c, thisidx, rix, fcall, mtdO) { \
+#define KLR_FASTCALL0(ctx, c, thisidx, rix, espidx, fcall) { \
+		klr_setesp(ctx, SFP(rshift(rbp, espidx)));\
 		fcall(ctx, SFP(rshift(rbp, thisidx)), (long)rix);\
 	} \
 
@@ -345,11 +346,12 @@ extern "C" {
 	Rf_(c) = (knh_float_t)Ri_(a); \
 }\
 
-#define KLR_SCAST(ctx, rtnidx, thisidx, rix, tmr)  { \
+#define KLR_SCAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  { \
+		klr_setesp(ctx, SFP(rshift(rbp, espidx)));\
 		knh_TypeMap_exec(ctx, tmr, SFP(rshift(rbp,thisidx)), rix); \
 	} \
 
-#define KLR_TCAST(ctx, rtnidx, thisidx, rix, tmr)  { \
+#define KLR_TCAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  { \
 		knh_TypeMap_t *tmr_ = tmr; \
 		knh_sfp_t *sfp_ = SFP(rshift(rbp,thisidx));\
 		knh_class_t scid = SP(tmr_)->scid, this_cid = O_cid(sfp_[0].o);\
@@ -357,9 +359,11 @@ extern "C" {
 			tmr_ = knh_findTypeMapNULL(ctx, scid, SP(tmr)->tcid, 1);\
 			KNH_SETv(ctx, ((klr_TCAST_t*)op)->cast, tmr_);\
 		}\
+		klr_setesp(ctx, SFP(rshift(rbp, espidx)));\
 		knh_TypeMap_exec(ctx, tmr_, sfp_, rix); \
 	} \
 
+/**
 #define KLR_ACAST(ctx, rtnidx, thisidx, rix, tmr)  { \
 		knh_TypeMap_t *tmr_ = tmr; \
 		knh_class_t tcid = SP(tmr_)->tcid, this_cid = O_cid(Ro_(thisidx));\
@@ -372,6 +376,7 @@ extern "C" {
 			knh_TypeMap_exec(ctx, tmr_, SFP(rshift(rbp,thisidx)), rix); \
 		}\
 	} \
+**/
 
 #define KLR_TR(Ctx, c, a, rix, ct, f) { \
 	f(ctx, SFP(rshift(rbp, a)), (long)rix, ct);\
@@ -404,9 +409,10 @@ extern "C" {
 
 /* ------------------------------------------------------------------------- */
 
-#define KLR_NEXT(ctx, PC, JUMP, rtnidx, ib, rix) { \
+#define KLR_NEXT(ctx, PC, JUMP, rtnidx, ib, rix, espidx) { \
 	knh_sfp_t *itrsfp_ = SFP(rshift(rbp, ib)); \
 	DBG_ASSERT(IS_bIterator(itrsfp_[0].it));\
+	klr_setesp(ctx, SFP(rshift(rbp, espidx)));\
 	if(!((itrsfp_[0].it)->fnext_1(ctx, itrsfp_, rix))) { \
 		KLR_JMP(ctx, PC, JUMP); \
 	} \

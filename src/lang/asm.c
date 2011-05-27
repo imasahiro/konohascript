@@ -931,6 +931,8 @@ static knh_Fmethod SYSVAL_MTD[] = {
 
 #define TT_isSFPIDX(tk)   (TT_(tk) == TT_LOCAL || TT_(tk) == TT_FUNCVAR)
 #define Token_index(tk)   Token_index_(ctx, tk)
+#define _ESPIDX           DP(ctx->gma)->espidx
+
 static inline int Token_index_(CTX ctx, knh_Token_t *tk)
 {
 	return (int)(tk)->index + ((TT_(tk) == TT_LOCAL) ? DP(ctx->gma)->ebpidx : 0);
@@ -1045,7 +1047,7 @@ static void ASM_SMOV(CTX ctx, knh_type_t atype, int a/*flocal*/, knh_Token_t *tk
 		case TT_SYSVAL: {
 			size_t sysid = (tkb)->index;
 			KNH_ASSERT(sysid < K_SYSVAL_MAX);
-			ASM(FASTCALL0, SFP_(a), SFP_(a), 0, SYSVAL_MTD[sysid]);
+			ASM(FASTCALL0, SFP_(a), SFP_(a), 0, SFP_(_ESPIDX), SYSVAL_MTD[sysid]);
 			break;
 		}
 		case TT_PROPN: {
@@ -1150,7 +1152,7 @@ static void ASM_XMOV(CTX ctx, knh_type_t atype, int a, size_t an, knh_Token_t *t
 			size_t sysid = (tkb)->index;
 			KNH_ASSERT(sysid < K_SYSVAL_MAX);
 			espidx = DP(ctx->gma)->espidx;
-			ASM(FASTCALL0, SFP_(espidx), SFP_(espidx), 0, SYSVAL_MTD[sysid]);
+			ASM(FASTCALL0, SFP_(espidx), SFP_(espidx), 0, SFP_(espidx + 1), SYSVAL_MTD[sysid]);
 			break;
 		}
 		case TT_PROPN: {
@@ -1722,7 +1724,7 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 				a = Tn_put(ctx, stmt, 1, TYPE_cid(mtd_cid), local + 1);
 			}
 			//KNH_P("FASTCALL %s.%s", CLASS__((mtd)->cid), MN__((mtd)->mn));
-			ASM(FASTCALL0, RTNIDX_(ctx, sfpidx, rtype), SFP_(a), RIX_(sfpidx - a), SP(mtd)->fcall_1, mtd);
+			ASM(FASTCALL0, RTNIDX_(ctx, sfpidx, rtype), SFP_(a), RIX_(sfpidx - a), SFP_(local + 2), SP(mtd)->fcall_1/*, mtd*/);
 			return;
 		}
 		if(DP(stmt)->size == 3 && Method_isStatic(mtd) && Method_isFASTCALL0(ctx, mtd)) {
@@ -1730,7 +1732,7 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 			knh_type_t ptype = knh_type_tocid(ctx, p->type, mtd_cid);
 			int a = Tn_put(ctx, stmt, 2, ptype, local + 2);
 			//KNH_P("STATIC FASTCALL %s.%s", CLASS__((mtd)->cid), MN__((mtd)->mn));
-			ASM(FASTCALL0, RTNIDX_(ctx, sfpidx, rtype), SFP_(a - 1), RIX_(sfpidx - (a - 1)), SP(mtd)->fcall_1, mtd);
+			ASM(FASTCALL0, RTNIDX_(ctx, sfpidx, rtype), SFP_(a - 1), RIX_(sfpidx - (a - 1)), SFP_(local + 2), SP(mtd)->fcall_1/*, mtd*/);
 			return;
 		}
 #endif
@@ -1738,6 +1740,7 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 			knh_type_t rtype = knh_type_tocid(ctx, knh_ParamArray_rtype(DP(mtd)->mp), cid);
 			ASM_CALL(ctx, reqt, local, rtype, mtd, Method_isStatic(mtd), DP(stmt)->size - 2);
 			ASM_MOVL(ctx, reqt, sfpidx, SP(stmt)->type, local);
+
 		}
 	}
 }
@@ -1826,11 +1829,11 @@ static void TCAST_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 					ASM(iCAST, NC_(local), NC_(local));
 				}
 				else {
-					ASM(SCAST, RTNIDX_(ctx, local, stmt->type), SFP_(local), RIX_(local-local), tmr);
+					ASM(SCAST, RTNIDX_(ctx, local, stmt->type), SFP_(local), RIX_(local-local), SFP_(_ESPIDX), tmr);
 				}
 			}
 			else {
-				ASM(TCAST, RTNIDX_(ctx, local, stmt->type), SFP_(local), RIX_(local-local), tmr);
+				ASM(TCAST, RTNIDX_(ctx, local, stmt->type), SFP_(local), RIX_(local-local), SFP_(_ESPIDX), tmr);
 			}
 		}
 		else { // downcast
@@ -2331,9 +2334,8 @@ static void FOREACH_asm(CTX ctx, knh_Stmt_t *stmt)
 		int itridx = Token_index(tkNN(stmt, 3));
 		Tn_asm(ctx, stmt, 1, TYPE_Iterator, itridx);
 		ASM_LABEL(ctx, lbC);
-		DBG_P("variable=%d, iterator=%d", varidx, itridx);
-		//DBG_ASSERT(varidx == itridx);
-		ASMbranch(NEXT, lbB, RTNIDX_(ctx, varidx, (tkN)->type), SFP_(itridx), RIX_(varidx - itridx));
+		DBG_P("variable=%d, iterator=%d espidx=%d", varidx, itridx, _ESPIDX);
+		ASMbranch(NEXT, lbB, RTNIDX_(ctx, varidx, (tkN)->type), SFP_(itridx), RIX_(varidx - itridx), SFP_(_ESPIDX));
 	}
 	Tn_asmBLOCK(ctx, stmt, 2, TYPE_void);
 	ASM_JMP(ctx, lbC);
