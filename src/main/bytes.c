@@ -183,11 +183,11 @@ void knh_Bytes_putc(CTX ctx, knh_Bytes_t *ba, int ch)
 	BA_size(ba) += 1;
 }
 
-void knh_Bytes_unputc(knh_Bytes_t *ba, int c)
+void knh_Bytes_reduce(knh_Bytes_t *ba, size_t size)
 {
-	if(BA_size(ba) >= c) {
-		BA_size(ba) -= c;
-		knh_bzero(ba->bu.ubuf + BA_size(ba), c);
+	if(BA_size(ba) >= size) {
+		BA_size(ba) -= size;
+		knh_bzero(ba->bu.ubuf + BA_size(ba), size);
 	}
 }
 

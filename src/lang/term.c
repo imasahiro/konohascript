@@ -762,6 +762,10 @@ static void Bytes_addQUOTE(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, int 
 			if(ch == quote && prev != '\\') {
 				return;
 			}
+			if(ch == '\n') {
+				WARN_MustCloseWith(ctx, quote);
+				return ;
+			}
 			knh_Bytes_putc(ctx, ba, ch);
 			if(prev == '\\' && ch == '\\') ch = 0;
 			prev = ch;
@@ -779,7 +783,7 @@ static void Bytes_addQUOTE(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, int 
 			if(ch == quote) {
 				if(isTQUOTE == 1) {
 					if(Bytes_isTripleQuote(ba, quote)) {
-						knh_Bytes_unputc(ba, 2);
+						knh_Bytes_reduce(ba, 2);
 						return;
 					}
 				}
@@ -799,9 +803,6 @@ static void Bytes_addQUOTE(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, int 
 static int Token_addQUOTE(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStream_t *in, int quote, int isRAW)
 {
 	int ch;
-	if(quote != '/') {
-		Token_addBuf(ctx, tkB, cwb, TT_UNTYPED, quote);
-	}
 	ch = knh_InputStream_getc(ctx, in);
 	if(quote == '#') {
 		if(ch == '#') {
@@ -841,6 +842,30 @@ static int Token_addQUOTE(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputSt
 	}
 	return ch;
 }
+
+static int Token_addREGEX(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStream_t *in, int ch0)
+{
+	int prev = 0;
+	int ch = (ch0 == 0) ? knh_InputStream_getc(ctx, in) : ch0;
+	do {
+		if(ch == '\n'/* && isTQUOTE != 1*/) {
+			WARN_MustCloseWith(ctx, '/');
+			Token_addBuf(ctx, tkB, cwb, TT_ch('/'), ch);
+			return ch;
+		}
+		if(ch == '/') {
+			if(prev != '\\') break;
+			knh_Bytes_reduce(cwb->ba, 1);
+		}
+		knh_Bytes_putc(ctx, cwb->ba, ch);
+		if(prev == '\\' && ch == '\\') ch = 0;
+		prev = ch;
+	} while((ch = knh_InputStream_getc(ctx, in)) != EOF);
+	ch = knh_InputStream_getc(ctx, in);
+	Token_addBuf(ctx, tkB, cwb, TT_ch('/'), ch);
+	return ch;
+}
+
 
 #define ISB1_(t, c)  (t.utext[0] == c)
 #define ISB2_(t, c, c2)  (t.utext[0] == c && t.utext[1] == c2)
@@ -954,8 +979,8 @@ static int Token_addOPR(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStre
 			return knh_InputStream_getc(ctx, in);
 		}
 		if(Token_startsWithExpr(ctx, tkB)) {
-			knh_Bytes_putc(ctx, cwb->ba, ch);
-			return Token_addQUOTE(ctx, tkB, cwb, in, '/', 1/*isRAW*/);
+			WARN_MuchBetter(ctx, "$/.../");
+			return Token_addREGEX(ctx, tkB, cwb, in, ch);
 		}
 		knh_Bytes_putc(ctx, cwb->ba, '/');
 		goto L_INLOOP;
@@ -1002,17 +1027,22 @@ static int Token_addMETAN(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStr
 	return ch;
 }
 
-static int Token_addPROPN(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStream_t *in)
+static int Token_addPROPN(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStream_t *in)
 {
 	int ch;
-	Token_addBuf(ctx, tk, cwb, TT_UNTYPED, '$');
-	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
+	Token_addBuf(ctx, tkB, cwb, TT_UNTYPED, '$');
+	ch = knh_InputStream_getc(ctx, in);
+	if(ch == '/') {
+		return Token_addREGEX(ctx, tkB, cwb, in, 0);
+	}
+	do {
 		if(!isalnum(ch) && ch != '_' && ch != '.' && ch != '*') {
 			break;
 		}
 		knh_Bytes_putc(ctx, cwb->ba, ch);
 	}
-	Token_addBuf(ctx, tk, cwb, TT_PROPN, ch);
+	while((ch = knh_InputStream_getc(ctx, in)) != EOF);
+	Token_addBuf(ctx, tkB, cwb, TT_PROPN, ch);
 	return ch;
 }
 
@@ -1076,7 +1106,7 @@ static int Token_addNUM(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStrea
 		if(isalnum(ch)) goto L_ADD;
 		if(ch == '_') continue; // nothing
 		if(prev == '.' && ch == '.') {  /* 1.. => 1 .. */
-			knh_Bytes_unputc(cwb->ba, 1);
+			knh_Bytes_reduce(cwb->ba, 1);
 			Token_addBuf(ctx, tk, cwb, TT_NUM, '.');
 			knh_Bytes_putc(ctx, cwb->ba, '.');
 			knh_Bytes_putc(ctx, cwb->ba, '.');
@@ -1108,6 +1138,19 @@ static void Token_addBLOCKERR(CTX ctx, knh_Token_t *tkB, knh_InputStream_t *in, 
 	TokenBlock_add(ctx, tkB, ERROR_Block(ctx, block));
 }
 
+static void Bytes_addRAW(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, int end)
+{
+	int prev = 0, ch;
+	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
+		knh_Bytes_putc(ctx, ba, ch);
+		if(ch == end && prev != '\\') {
+			return;
+		}
+		if(prev == '\\' && ch == '\\') ch = 0;
+		prev = ch;
+	}
+}
+
 static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStream_t *in, int block_indent)
 {
 	int c, ch, prev = '{', level = 1;
@@ -1132,15 +1175,22 @@ static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputS
 		if(ch == '{') {
 			level++;
 		}
-		else if(ch == '"' || ch == '`' || ch == '\'') {
-			Bytes_addQUOTE(ctx, cwb->ba, in, ch, -2/*skip*/, 1/*isRAW*/, 0);
-			knh_Bytes_putc(ctx, cwb->ba, ch);
+		else if(prev == '#' && ch == '#') {
+			Bytes_addRAW(ctx, cwb->ba, in, '\n');
 		}
-		else if(prev == '/' && ch == '/') {
-			knh_Bytes_unputc(cwb->ba, 2);
-			InputStream_skipLINE(ctx, in);
-			knh_Bytes_putc(ctx, cwb->ba, '\n');
-			break;
+		else if(ch == '"' || ch == '`' || ch == '\'') {
+			Bytes_addRAW(ctx, cwb->ba, in, ch);
+		}
+		else if(ch == '/') {
+			if(prev == '$' || prev == '@') {
+				Bytes_addRAW(ctx, cwb->ba, in, ch);
+			}
+			else if(prev == '/') {
+				knh_Bytes_reduce(cwb->ba, 2);
+				InputStream_skipLINE(ctx, in);
+				knh_Bytes_putc(ctx, cwb->ba, '\n');
+				break;
+			}
 		}
 		else if(prev == '/' && ch == '*') {
 			InputStream_skipBLOCKCOMMENT(ctx, in, cwb->ba);
@@ -1258,14 +1308,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 			/*goto L_NEWTOKEN;*/
 
 		/* token */
-		case '\'': {  // @CODE prime'
-			knh_bytes_t t = knh_cwb_tobytes(cwb);
-			if(t.len > 0 && (islower(t.text[t.len-1]) || t.text[t.len-1] == '\'')) {
-				knh_Bytes_putc(ctx, cwb->ba, ch);
-				break;
-			}
-		}
-		case '"': case '`' :
+		case '\'': case '"': case '`' :
 		case '#':
 			ch = Token_addQUOTE(ctx, tkB, cwb, in, ch, 0/*isRAW*/);
 			goto L_AGAIN;
@@ -1724,17 +1767,17 @@ static int ITR_indexKEY(tkitr_t *itr, int shift)
 	return itr->e;
 }
 
-static int ITR_isImmutable(tkitr_t *titr)
-{
-	if(titr->e > 0) {
-		if(TT_(titr->ts[titr->e - 1]) == TT_DOTS) {
-			titr->e -= 1;
-			return 1;
-		}
-		return 0;
-	}
-	return 1;
-}
+//static int ITR_isImmutable(tkitr_t *titr)
+//{
+//	if(titr->e > 0) {
+//		if(TT_(titr->ts[titr->e - 1]) == TT_DOTS) {
+//			titr->e -= 1;
+//			return 1;
+//		}
+//		return 0;
+//	}
+//	return 1;
+//}
 
 static void _ARRAY(CTX ctx, knh_Stmt_t *stmt, knh_methodn_t mn, knh_class_t cid, tkitr_t *itr)
 {
