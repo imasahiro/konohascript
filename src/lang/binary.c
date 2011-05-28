@@ -27,11 +27,6 @@
 
 /* ************************************************************************ */
 
-//#define USE_STEXT 1
-//#define USE_bytes_endsWith    1
-//#define USE_bytes_parseint    1
-//#define USE_bytes_parsefloat  1
-
 #include"commons.h"
 
 /* ************************************************************************ */

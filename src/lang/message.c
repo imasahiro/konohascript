@@ -189,7 +189,7 @@ void WARN_MustCloseWith(CTX ctx, int ch)
 {
 	char buf[40];
 	knh_snprintf(buf, sizeof(buf), "%c", ch);
-	Gamma_perror(ctx, KC_DWARN, "must closed with %s", buf);
+	Gamma_perror(ctx, KC_DWARN, "must close with %s", buf);
 }
 
 void WARN_Semicolon(CTX ctx)
@@ -431,7 +431,16 @@ knh_Token_t* ERROR_Needs(CTX ctx, const char *whatis)
 }
 knh_Token_t* ERROR_MustBe(CTX ctx, const char *whatis, const char* token)
 {
-	return Gamma_perror(ctx, KC_ERR, "%s must be %s", token, whatis);
+	if(token == NULL) {
+		return Gamma_perror(ctx, KC_ERR, "must be %s", whatis);
+	}
+	else {
+		return Gamma_perror(ctx, KC_ERR, "%s must be %s", token, whatis);
+	}
+}
+knh_Token_t* ERROR_OutOfIndex(CTX ctx, knh_int_t s, knh_int_t n, knh_int_t e)
+{
+	return Gamma_perror(ctx, KC_ERR, "index must be %i <= %i < %i", s, n, e);
 }
 void WarningNullable(CTX ctx, knh_class_t cid)
 {

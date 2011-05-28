@@ -531,7 +531,7 @@ static void ClassTBL_addTuple(CTX ctx, knh_ClassTBL_t *ct, const knh_ClassTBL_t 
 		knh_param_t *p = knh_ParamArray_get(pa, i);
 		ct->fields[fi].flag = FLAG_Field_Getter;
 		ct->fields[fi].type = p->type;
-		ct->fields[fi].fn = FN_index(ctx, i);
+		ct->fields[fi].fn = FN_key;
 		ct->fields[fi].israw = 0;
 		if(IS_Tunbox(p->type)) {
 			ct->fields[fi].israw = 1;
@@ -972,36 +972,36 @@ knh_index_t knh_Method_indexOfSetterField(knh_Method_t *o)
 	return -1;
 }
 
-knh_fieldn_t FN_index(CTX ctx, size_t idx)
-{
-	switch(idx) {
-		case 0: return FN_first;
-		case 1: return FN_second;
-		case 2: return FN_third;
-		default: {
-			knh_bytes_t t;
-			char buf[20];
-			knh_snprintf(buf, sizeof(buf), "%d", (int)idx);
-			t.text = (const char*)buf; t.len = knh_strlen(buf);
-			return knh_getfnq(ctx, t, FN_NEWID);
-		}
-	}
-}
-
-knh_Method_t* knh_ClassTBL_getTupleGetter(CTX ctx, const knh_ClassTBL_t *t, knh_methodn_t mn, size_t idx)
-{
-	size_t i = 0, ti = 0;
-	for(i = 0; i < t->fsize; i++) {
-		if(ti == idx) {
-			knh_Method_t *mtd = new_GetterMethod(ctx, t->cid, mn, t->fields[i].type, i);
-			knh_ClassTBL_addMethod(ctx, t, mtd, 0);
-			return mtd;
-		}
-		if(t->fields[i].type == TYPE_void) continue;
-		ti++;
-	}
-	return NULL;
-}
+//knh_fieldn_t FN_index(CTX ctx, size_t idx)
+//{
+//	switch(idx) {
+//		case 0: return FN_first;
+//		case 1: return FN_second;
+//		case 2: return FN_third;
+//		default: {
+//			knh_bytes_t t;
+//			char buf[20];
+//			knh_snprintf(buf, sizeof(buf), "%d", (int)idx);
+//			t.text = (const char*)buf; t.len = knh_strlen(buf);
+//			return knh_getfnq(ctx, t, FN_NEWID);
+//		}
+//	}
+//}
+//
+//knh_Method_t* knh_ClassTBL_getTupleGetter(CTX ctx, const knh_ClassTBL_t *t, knh_methodn_t mn, size_t idx)
+//{
+//	size_t i = 0, ti = 0;
+//	for(i = 0; i < t->fsize; i++) {
+//		if(ti == idx) {
+//			knh_Method_t *mtd = new_GetterMethod(ctx, t->cid, mn, t->fields[i].type, i);
+//			knh_ClassTBL_addMethod(ctx, t, mtd, 0);
+//			return mtd;
+//		}
+//		if(t->fields[i].type == TYPE_void) continue;
+//		ti++;
+//	}
+//	return NULL;
+//}
 
 /* ------------------------------------------------------------------------ */
 

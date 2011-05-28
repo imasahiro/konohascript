@@ -263,13 +263,13 @@ knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh
 	if(FLAG_is(opflag, _CONSTASIS)) {
 		knh_term_t tt = TT_(tkRES);
 		if(tt != TT_ASIS && tt != TT_CONST && tt != TT_NULL) {
-			tkRES = ERROR_MustBe(ctx, "a constant value", TT__(tkNN(stmt, n)->tt));
+			tkRES = ERROR_MustBe(ctx, "a constant value", NULL/*TT__(tkNN(stmt, n)->tt)*/);
 		}
 	}
 	else if(FLAG_is(opflag, _CONSTONLY)) {
 		knh_term_t tt = TT_(tkRES);
 		if(tt != TT_CONST && tt != TT_NULL) {
-			tkRES = ERROR_MustBe(ctx, "a constant value", TT__(tkNN(stmt, n)->tt));
+			tkRES = ERROR_MustBe(ctx, "a constant value", NULL/*TT__(tkNN(stmt, n)->tt)*/);
 		}
 	}
 	return tkRES;
@@ -2141,6 +2141,13 @@ static knh_Token_t* CALLPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt
 	return CALL_toCONST(ctx, stmt, mtd);
 }
 
+static inline knh_int_t Tn_int(knh_Stmt_t *stmt, size_t n)
+{
+	knh_Token_t *tk = tkNN(stmt, n);
+	DBG_ASSERT(TT_(tk) == TT_CONST);
+	return ((tk)->num)->n.ivalue;
+}
+
 static knh_Token_t* CALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 {
 	knh_Token_t *tkM = tkNN(stmt, 0);
@@ -2165,36 +2172,55 @@ static knh_Token_t* CALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 	}
 	else {
 		size_t i;
-		const char *name = "method";
 		if(maybeCLASSCONST) {
 			knh_Object_t *v = knh_getClassConstNULL(ctx, mtd_cid, S_tobytes((tkM)->text));
 			if(v != NULL) {
 				return Token_setCONST(ctx, tkM, v);
 			}
-			name = "const"; TT_(tkM) = TT_UNAME; tkM->flag0 = 0;
+			TT_(tkM) = TT_UNAME; tkM->flag0 = 0;
+			return ERROR_Undefined(ctx, "const", mtd_cid, tkM);
+		}
+//		if(Stmt_isCLASSCONSTDEF(stmt)) {
+//			knh_Object_t *v = knh_getClassConstNULL(ctx, mtd_cid, S_tobytes((tkM)->text));
+//			if(v != NULL) {
+//				WARN_Ignored(ctx, "redefinition", mtd_cid, S_tochar((tkM)->text));
+//				return knh_Stmt_done(ctx, stmt);
+//			}
+//			Token_setCONST(ctx, tkO, new_Type(ctx, mtd_cid));
+//			Token_setCONST(ctx, tkM, tkM->data);
+//			Stmt_insert(ctx, stmt, 0, new_TokenMN(ctx, MN_setConst));
+//			knh_Stmt_swap(ctx, stmt, 1, 2);
+//			mtd = knh_NameSpace_getMethodNULL(ctx, CLASS_Class, MN_setConst);
+//			Token_setMethod(ctx, tkNN(stmt, 0), MN_setConst, mtd);
+//			Stmt_typed(ctx, stmt, TYPE_void);
+//			return CALL_toCONST(ctx, stmt, mtd);
+//		}
+		Token_setMethod(ctx, tkM, mn, mtd);
+		if(C_bcid(mtd_cid) == CLASS_Tuple && (mn == MN_get || mn == MN_set)) { // t[0] = 1;
+			knh_ParamArray_t *pa = ClassTBL(mtd_cid)->cparam;
+			size_t psize = pa->psize;
+			TYPING(ctx, stmt, 2, TYPE_Int, _CONSTONLY);
+			knh_int_t ivalue = (knh_int_t)Tn_int(stmt, 2);
+			size_t n = (ivalue < 0) ? psize + ivalue : ivalue;
+			if(!(n < psize)) {
+				return ERROR_OutOfIndex(ctx, 0, ivalue, psize);
+			}
+			tkNN(stmt,2)->index = n;
+			knh_param_t *p = knh_ParamArray_get(pa, n);
+			if(mn == MN_get) {
+				return Stmt_typed(ctx, stmt, p->type);
+			}
+			else { /* mtd_mn == MN_set */
+				TYPING_TypedExpr(ctx, stmt, 3, p->type);
+				return Stmt_typed(ctx, stmt, TYPE_void);
+			}
+		}
+		if(mtd_cid != TYPE_dyn) {
+			return ERROR_Undefined(ctx, "method", mtd_cid, tkM);
 		}
 		for(i = 2; i < DP(stmt)->size; i++) {
 			TYPING_UntypedObject(ctx, stmt, i);
 		}
-		if(Stmt_isCLASSCONSTDEF(stmt)) {
-			knh_Object_t *v = knh_getClassConstNULL(ctx, mtd_cid, S_tobytes((tkM)->text));
-			if(v != NULL) {
-				WARN_Ignored(ctx, "redefinition", mtd_cid, S_tochar((tkM)->text));
-				return knh_Stmt_done(ctx, stmt);
-			}
-			Token_setCONST(ctx, tkO, new_Type(ctx, mtd_cid));
-			Token_setCONST(ctx, tkM, tkM->data);
-			Stmt_insert(ctx, stmt, 0, new_TokenMN(ctx, MN_setConst));
-			knh_Stmt_swap(ctx, stmt, 1, 2);
-			mtd = knh_NameSpace_getMethodNULL(ctx, CLASS_Class, MN_setConst);
-			Token_setMethod(ctx, tkNN(stmt, 0), MN_setConst, mtd);
-			Stmt_typed(ctx, stmt, TYPE_void);
-			return CALL_toCONST(ctx, stmt, mtd);
-		}
-		if(mtd_cid != TYPE_dyn) {
-			return ERROR_Undefined(ctx, name, mtd_cid, tkM);
-		}
-		Token_setMethod(ctx, tkM, mn, mtd);
 		return Stmt_typed(ctx, stmt, TYPE_dyn);
 	}
 }
