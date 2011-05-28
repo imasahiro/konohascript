@@ -259,7 +259,7 @@ knh_bool_t knh_isDefinedEvent(CTX ctx, knh_bytes_t t)
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 	eid = (knh_event_t)knh_DictSet_get(ctx, DP(ctx->sys)->EventDictCaseSet, t);
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
-	return eid;
+	return (eid > 0) ;
 }
 
 knh_event_t knh_geteid(CTX ctx, knh_bytes_t t)

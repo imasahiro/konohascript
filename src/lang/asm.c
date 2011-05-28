@@ -2393,7 +2393,7 @@ static void TRY_asm(CTX ctx, knh_Stmt_t *stmt)
 			knh_Token_t *tkN = tkNN(stmtCATCH, 1);
 			DBG_ASSERT(IS_String(emsg));
 			DBG_ASSERT(TT_(tkN) == TT_FUNCVAR || TT_(tkN) == TT_LOCAL);
-			if(knh_isDefinedEvent(ctx, S_tobytes(emsg))) {
+			if(!knh_isDefinedEvent(ctx, S_tobytes(emsg))) {
 				WARN_Undefined(ctx, "fault", CLASS_Exception, tkNN(stmtCATCH, 0));
 			}
 			lbCATCH = new_BasicBlockLABEL(ctx);
