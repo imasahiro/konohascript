@@ -299,19 +299,17 @@ knh_Array_t* knh_Iterator_toArray(CTX ctx, knh_Iterator_t *itr)
 #else /*K_INCLUDE_BUILTINAPI*/
 
 /* ------------------------------------------------------------------------ */
-//## method T1 Array.get(Int n);
-//## method T1 ArrayIm.get(Int n);
+//## @Immutable method T1 Array.get(Int n);
 
 static METHOD Array_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
-	size_t n2 = a->api->index(ctx, sfp, Int_to(size_t, ctx->esp[-1]), a->size);
+	size_t n2 = a->api->index(ctx, sfp, Int_to(knh_int_t, ctx->esp[-1]), a->size);
 	a->api->get(ctx, sfp, n2, rix);
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Hidden method T1 Array.get2(Int x, Int y);
-//## @Hidden method T1 ArrayIm.get2(Int x, Int y);
+//## @Immutable @Hidden method T1 Array.get2(Int x, Int y);
 
 static METHOD Array_get2(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -323,8 +321,7 @@ static METHOD Array_get2(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Hidden method T1 Array.get3(Int x, Int y, Int z);
-//## @Hidden method T1 ArrayIm.get3(Int x, Int y, Int z);
+//## @Immutable @Hidden method T1 Array.get3(Int x, Int y, Int z);
 
 static METHOD Array_get3(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -336,8 +333,7 @@ static METHOD Array_get3(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Hidden method T1 Array.get4(Int x, Int y, Int z, Int w);
-//## @Hidden method T1 ArrayIm.get4(Int x, Int y, Int z, Int w);
+//## @Immutable @Hidden method T1 Array.get4(Int x, Int y, Int z, Int w);
 
 static METHOD Array_get4(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -361,7 +357,7 @@ static METHOD Array_set(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## method T1 Array.set2(Int x, Int y, T1 v);
+//## @Hidden method T1 Array.set2(Int x, Int y, T1 v);
 
 static METHOD Array_set2(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -374,7 +370,7 @@ static METHOD Array_set2(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## method T1 Array.set3(Int x, Int y, Int z, T1 v);
+//## @Hidden method T1 Array.set3(Int x, Int y, Int z, T1 v);
 
 static METHOD Array_set3(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -387,7 +383,7 @@ static METHOD Array_set3(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## method T1 Array.set4(Int x, Int y, Int z, Int, w, T1 v);
+//## @Hidden method T1 Array.set4(Int x, Int y, Int z, Int, w, T1 v);
 
 static METHOD Array_set4(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -441,10 +437,8 @@ static METHOD Array_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 		knh_Array_grow(ctx, a, k_grow(dim->capacity), a->size + 1);
 	}
 	if(Array_isNDATA(a)) {
-//		lsfp[0].ndata = a->nlist[a->size];  why?
 		knh_memmove(a->nlist+(n+1), a->nlist+n, sizeof(knh_ndata_t*) * (a->size - n));
 	}else {
-//		KNH_SETv(ctx, lsfp[0].o, a->list[a->size]); why?
 		knh_memmove(a->list+(n+1), a->list+n, sizeof(knh_Object_t*) * (a->size - n));
 		KNH_INITv(a->list[n], KNH_NULL); // for RCGC
 	}
