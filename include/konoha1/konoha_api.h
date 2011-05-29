@@ -459,6 +459,7 @@ void knh_vtrace(CTX ctx, knh_sfp_t *sfp, int pe, const char *ns, const char *eve
 void knh_trace(CTX ctx, knh_sfp_t *sfp, int pe,const char *ns, const char *evt, int isThrowable, const char *fmt, ...);
 void THROW_Halt(CTX ctx, knh_sfp_t *sfp, const char *msg);
 void THROW_OutOfMemory(CTX ctx, size_t size);
+void THROW_StackOverflow(CTX ctx, knh_sfp_t *sfp);
 void THROW_Arithmetic(CTX ctx, knh_sfp_t *sfp, const char *msg);
 void THROW_OutOfRange(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t max);
 void THROW_NoSuchMethod(CTX ctx, knh_sfp_t *sfp, knh_class_t cid, knh_methodn_t mn);
