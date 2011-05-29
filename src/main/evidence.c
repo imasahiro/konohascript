@@ -463,7 +463,7 @@ void THROW_OutOfMemory(CTX ctx, size_t size)
 }
 void THROW_StackOverflow(CTX ctx, knh_sfp_t *sfp)
 {
-	KNH_THROW(ctx, sfp, LOG_CRIT, "Script!!", "Script!!: stack overflow: stacksize=%d", (ctx->esp - ctx->stack));
+	KNH_THROW(ctx, sfp, LOG_CRIT, "Script!!", "Script!!: stack overflow: stacksize=%i", (ctx->esp - ctx->stack));
 }
 void THROW_Arithmetic(CTX ctx, knh_sfp_t *sfp, const char *msg)
 {

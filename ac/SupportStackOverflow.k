@@ -12,6 +12,9 @@ assure "SupportStackOverflow" {
 	try {
 		f(0);
 	}
+	catch(Script!! e) {
+		isCaught = true;
+	}
 	catch(StackOverflow!! e) {
 		isCaught = true;
 	}
