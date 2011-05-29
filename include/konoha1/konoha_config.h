@@ -80,7 +80,7 @@
 #define K_VERSION       "1.0"
 
 #define LIBK_VERSION     "1.0"
-#define K_CODENAME       "beta1"
+#define K_CODENAME       "beta"
 #define K_URL            "http://code.google.com/p/konoha"
 
 #ifdef K_PREVIEW
