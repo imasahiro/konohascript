@@ -113,7 +113,7 @@ static METHOD Object_newMAP(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD Bytes_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[0].ba;
-	size_t init = sfp[1].ivalue <= 0 ? 0 : k_goodsize(Int_to(size_t, sfp[1]));
+	size_t init = sfp[1].ivalue <= K_FASTMALLOC_SIZE ? K_FASTMALLOC_SIZE : k_goodsize(Int_to(size_t, sfp[1]));
 	DBG_ASSERT(ba->dim->capacity == 0);
 	ba->bu.ubuf = (knh_uchar_t*)KNH_MALLOC(ctx, init);
 	knh_bzero(ba->bu.ubuf, init);
@@ -127,7 +127,7 @@ static METHOD Bytes_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static METHOD Bytes_newARRAY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	size_t size = sfp[1].ivalue <= 0 ? 0 : Int_to(size_t, sfp[1]);
+	size_t size = sfp[1].ivalue <=0 ? 0 : Int_to(size_t, sfp[1]);
 	Bytes_new(ctx, sfp, rix);
 	sfp[rix].ba->bu.len = size;
 }

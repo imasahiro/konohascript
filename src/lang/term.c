@@ -2412,6 +2412,7 @@ static void _EXPRCALL(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 				TT_(tkCUR) = TT_MN; /* new byte[10] */
 				(tkCUR)->mn = MN_newARRAY;
 				knh_Stmt_add(ctx, stmt, new_TokenCID(ctx, CLASS_Bytes));
+				ITR_nextTK(itr);
 				TT_(itr->ts[itr->c]) = TT_PARENTHESIS;
 				break;
 			}
@@ -2442,7 +2443,7 @@ static void _EXPRCALL(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 				_DICT(ctx, stmt, new_Token(ctx, TT_ASIS), ITR_nextTK(itr));
 				break;
 			}
-			knh_Stmt_toERR(ctx, stmt, ERROR_Token(ctx, tkCUR K_TRACEPOINT));
+			knh_Stmt_toERR(ctx, stmt, ERROR_Undefined(ctx, "class for new", CLASS_unknown, ITR_nextTK(itr)/*tkCUR*/));
 			return;
 		}/*TT_NEW*/
 		default: {

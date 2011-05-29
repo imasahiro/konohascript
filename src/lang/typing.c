@@ -2580,18 +2580,18 @@ static knh_Token_t* NEWPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t mtd_
 	knh_Token_t *tkMTD = tkNN(stmt, 0);
 	knh_Token_t *tkC = tkNN(stmt, 1);
 	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, mn);
-	DBG_P("mtd_cid=%s mtd=%p", CLASS__(mtd_cid), mtd);
+	//DBG_P("mtd_cid=%s mtd=%p", CLASS__(mtd_cid), mtd);
 	knh_Token_t *tkRES = (knh_Token_t*)stmt;
 	if(mtd == NULL || ClassTBL((mtd)->cid)->bcid != ClassTBL(mtd_cid)->bcid) {
 		return ERROR_Undefined(ctx, _("constructor"), mtd_cid, tkMTD);
 	}
 	Token_setMethod(ctx, tkMTD, mn, mtd);
-	//DBG_P("mtd_cid=%s, reqt=%s", CLASS__(mtd_cid), CLASS__(reqt));
 	knh_Token_toCID(ctx, tkC, mtd_cid);
 	if(needsTypingPARAMs) {
 		tkRES = CALLPARAMs_typing(ctx, stmt, mtd_cid, mtd_cid, mtd);
 	}
 	tkRES->type = mtd_cid;
+	//DBG_P("stt=%s, type=%s", TT__(stmt->stt), CLASS__(tkRES->type));
 	return tkRES;
 }
 
