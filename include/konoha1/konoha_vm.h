@@ -363,8 +363,7 @@ extern "C" {
 		knh_TypeMap_exec(ctx, tmr_, sfp_, rix); \
 	} \
 
-/**
-#define KLR_ACAST(ctx, rtnidx, thisidx, rix, tmr)  { \
+#define KLR_ACAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  { \
 		knh_TypeMap_t *tmr_ = tmr; \
 		knh_class_t tcid = SP(tmr_)->tcid, this_cid = O_cid(Ro_(thisidx));\
 		if(!class_isa(this_cid, tcid)) {\
@@ -373,10 +372,10 @@ extern "C" {
 				tmr_ = knh_findTypeMapNULL(ctx, scid, tcid, 0);\
 				KNH_SETv(ctx, ((klr_ACAST_t*)op)->cast, tmr_);\
 			}\
+			/*klr_setesp(ctx, SFP(rshift(rbp, espidx)));*/\
 			knh_TypeMap_exec(ctx, tmr_, SFP(rshift(rbp,thisidx)), rix); \
 		}\
 	} \
-**/
 
 #define KLR_TR(Ctx, c, a, rix, ct, f) { \
 	f(ctx, SFP(rshift(rbp, a)), (long)rix, ct);\

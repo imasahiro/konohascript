@@ -139,7 +139,7 @@ TR         _DEF|_JIT         a:r  b:sfpidx rix:i cid:cid tr:f
 
 SCAST      _DEF              a:r b:sfpidx rix:i espshift:i cast:tmr
 TCAST      _DEF              a:r b:sfpidx rix:i espshift:i cast:tmr
-#ACAST      _DEF              a:r b:sfpidx rix:i espshift:i cast:tmr
+ACAST      _DEF              a:r b:sfpidx rix:i espshift:i cast:tmr
 iCAST      _DEF|_JIT         a:rn b:rn
 fCAST      _DEF|_JIT         a:rn b:rn
 
