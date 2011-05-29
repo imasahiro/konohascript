@@ -430,7 +430,7 @@ static METHOD Array_add(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD Array_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
-	size_t n = a->api->index(ctx, sfp, Int_to(size_t, sfp[1]), a->size);
+	size_t n = a->api->index(ctx, sfp, Int_to(knh_int_t, sfp[1]), a->size);
 	const knh_dim_t *dim = a->dim;
 	BEGIN_LOCAL(ctx, lsfp, 1);
 	if(a->size == dim->capacity) {
@@ -477,7 +477,7 @@ static void knh_Array_remove_(CTX ctx, knh_Array_t *a, size_t n)
 static METHOD Array_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *o = (knh_Array_t*)sfp[0].o;
-	size_t n = knh_array_index(ctx, sfp, sfp[1].ivalue, o->size);
+	size_t n = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), o->size);
 	knh_Array_remove_(ctx, o, n);
 	RETURNvoid_();
 }
@@ -647,8 +647,8 @@ static inline void OArray_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m)
 static METHOD Array_swap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
-	size_t m = knh_array_index(ctx, sfp, (sfp[1].ivalue), a->size);
-	size_t n = knh_array_index(ctx, sfp, (sfp[2].ivalue), a->size);
+	size_t m = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), a->size);
+	size_t n = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), a->size);
 	if(Array_isNDATA(a)) {
 		NArray_swap(ctx, a, n, m);
 	}

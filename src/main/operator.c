@@ -927,7 +927,7 @@ METHOD Map_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD Bytes_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[0].ba;
-	size_t n2 = knh_array_index(ctx, sfp, Int_to(size_t, sfp[1]), ba->bu.len);
+	size_t n2 = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), ba->bu.len);
 	RETURNi_(ba->bu.utext[n2]);
 }
 
@@ -937,7 +937,7 @@ static METHOD Bytes_get(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD Bytes_set(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[0].ba;
-	size_t n2 = knh_array_index(ctx, sfp, Int_to(size_t, sfp[1]), ba->bu.len);
+	size_t n2 = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), ba->bu.len);
 	ba->bu.ubuf[n2] = Int_to(knh_uchar_t, sfp[2]);
 	RETURNi_(ba->bu.utext[n2]);
 }
@@ -963,13 +963,13 @@ static METHOD String_get(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_bytes_t base = S_tobytes(sfp[0].s);
 	knh_String_t *s;
 	if(String_isASCII(sfp[0].s)) {
-		size_t n = knh_array_index(ctx, sfp, Int_to(size_t, sfp[1]), S_size(sfp[0].s));
+		size_t n = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), S_size(sfp[0].s));
 		base.utext = base.utext + n;
 		base.len = 1;
 		s = new_String_(ctx, CLASS_String, base, sfp[0].s);
 	}
 	else {
-		size_t off = knh_array_index(ctx, sfp, Int_to(size_t, sfp[1]), knh_bytes_mlen(base));
+		size_t off = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), knh_bytes_mlen(base));
 		knh_bytes_t sub = knh_bytes_mofflen(base, off, 1);
 		s = new_String_(ctx, CLASS_String, sub, sfp[0].s);
 	}
@@ -987,7 +987,7 @@ static METHOD String_get(CTX ctx, knh_sfp_t *sfp _RIX)
 //		case 0: v = (sfp[0].tuple)->first; break;
 //		case 1: v = (sfp[1].tuple)->first; break;
 //		case 2: v = (sfp[2].tuple)->first; break;
-//		default: knh_array_index(ctx, Int_to(size_t, sfp[1]), 3);
+//		default: knh_array_index(ctx, Int_to(knh_int_t, sfp[1]), 3);
 //		}
 //		RETURN_(v);
 //	}
@@ -1001,14 +1001,14 @@ static METHOD String_get(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static void _rangeUNTIL(CTX ctx, knh_sfp_t *sfp, size_t size, size_t *s, size_t *e)
 {
-	*s = sfp[1].ivalue == 0 ? 0 : knh_array_index(ctx, sfp, Int_to(size_t, sfp[1]), size);
-	*e = sfp[2].ivalue == 0 ? (size) : knh_array_index(ctx, sfp, Int_to(size_t, sfp[2]), size);
+	*s = sfp[1].ivalue == 0 ? 0 : knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), size);
+	*e = sfp[2].ivalue == 0 ? (size) : knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), size);
 }
 
 static void _rangeTO(CTX ctx, knh_sfp_t *sfp, size_t size, size_t *s, size_t *e)
 {
-	*s = sfp[1].ivalue == 0 ? 0 : knh_array_index(ctx, sfp, Int_to(size_t, sfp[1]), size);
-	*e = sfp[2].ivalue == 0 ? (size) : knh_array_index(ctx, sfp, Int_to(size_t, sfp[2]), size) + 1;
+	*s = sfp[1].ivalue == 0 ? 0 : knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), size);
+	*e = sfp[2].ivalue == 0 ? (size) : knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), size) + 1;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -1067,7 +1067,7 @@ static METHOD String_substring(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_bytes_t base = S_tobytes(sfp[0].s);
 	knh_bytes_t t;
 	if(String_isASCII(sfp[0].s)) {
-		size_t offset = knh_array_index(ctx, sfp, (sfp[1].ivalue), base.len);
+		size_t offset = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), base.len);
 		t = knh_bytes_last(base, offset);
 		if(sfp[2].ivalue != 0) {
 			size_t len = (size_t)sfp[2].ivalue;
@@ -1076,7 +1076,7 @@ static METHOD String_substring(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	else { // multibytes
 		size_t mlen = knh_bytes_mlen(base);
-		size_t offset = knh_array_index(ctx, sfp, (sfp[1].ivalue), mlen);
+		size_t offset = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), mlen);
 		size_t length = sfp[2].ivalue == 0  ? (mlen - offset) : (size_t)sfp[2].ivalue;
 		t = knh_bytes_mofflen(base, offset, length);
 	}
@@ -1093,14 +1093,14 @@ static METHOD String_opUNTIL(CTX ctx, knh_sfp_t *sfp _RIX)
 	if(sfp[2].ivalue != 0) {
 		if(!String_isASCII(sfp[0].s)) {
 			size_t mlen = knh_bytes_mlen(t);
-			size_t offset = knh_array_index(ctx, sfp, (sfp[1].ivalue), mlen);
-			size_t length = knh_array_index(ctx, sfp, (sfp[2].ivalue), mlen) - offset;
+			size_t offset = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), mlen);
+			size_t length = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), mlen) - offset;
 			t = knh_bytes_mofflen(t, offset, length);
 			RETURN_(new_String_(ctx, CLASS_String, t, sfp[0].s));
 		}
 		else {
 			size_t offset = Int_to(size_t, sfp[1]);
-			sfp[2].ivalue = knh_array_index(ctx, sfp, Int_to(knh_intptr_t, sfp[2]), (sfp[0].s)->str.len) - offset;
+			sfp[2].ivalue = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), (sfp[0].s)->str.len) - offset;
 		}
 	}
 	String_substring(ctx, sfp, rix);
@@ -1115,14 +1115,14 @@ static METHOD String_opTO(CTX ctx, knh_sfp_t *sfp _RIX)
 	if(sfp[2].ivalue != 0) {
 		if(!String_isASCII(sfp[0].s)) {
 			size_t mlen = knh_bytes_mlen(t);
-			size_t offset = knh_array_index(ctx, sfp, (sfp[1].ivalue), mlen);
-			size_t length = knh_array_index(ctx, sfp, (sfp[2].ivalue), mlen) - offset + 1;
+			size_t offset = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), mlen);
+			size_t length = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), mlen) - offset + 1;
 			t = knh_bytes_mofflen(t, offset, length);
 			RETURN_(new_String_(ctx, CLASS_String, t, sfp[0].s));
 		}
 		else {
 			size_t offset = Int_to(size_t, sfp[1]);
-			sfp[2].ivalue = knh_array_index(ctx, sfp, Int_to(knh_intptr_t, sfp[2]), (sfp[0].s)->str.len) - offset + 1;
+			sfp[2].ivalue = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), (sfp[0].s)->str.len) - offset + 1;
 		}
 	}
 	String_substring(ctx, sfp, rix);

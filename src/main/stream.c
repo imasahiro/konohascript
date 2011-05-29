@@ -1032,7 +1032,7 @@ static METHOD OutputStream_writeASCII(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD OutputStream_write(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t t = BA_tobytes(sfp[1].ba);
-	size_t offset = (sfp[2].ivalue == 0) ? 0 : knh_array_index(ctx, sfp, Int_to(size_t, sfp[2]), t.len);
+	size_t offset = (sfp[2].ivalue == 0) ? 0 : knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), t.len);
 	size_t len = (sfp[3].ivalue == 0) ? (t.len - offset) : Int_to(size_t, sfp[3]);
 	if(offset + len > t.len) len = t.len - offset;
 	t.utext = &(t.utext[offset]);

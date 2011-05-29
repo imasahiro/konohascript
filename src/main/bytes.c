@@ -242,7 +242,7 @@ static METHOD Bytes_write(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Bytes_t *ba = sfp[0].ba;
 	knh_bytes_t t = BA_tobytes(sfp[1].ba);
 	if(sfp[2].ivalue != 0) {
-		size_t n = knh_array_index(ctx, sfp, Int_to(size_t, sfp[2]), t.len);
+		size_t n = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), t.len);
 		t = knh_bytes_last(t, n);
 	}
 	if(sfp[3].ivalue != 0) {
