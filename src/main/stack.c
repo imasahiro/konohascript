@@ -98,9 +98,7 @@ knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n)
 	}
 #endif
 	else {
-		knh_Exception_t *e = new_Error(ctx, new_T("StackOverflow!!"));
-		CTX_setThrowingException(ctx, e);
-		knh_throw(ctx, sfp, 0);
+		THROW_StackOverflow(ctx, sfp);
 	}
 	for(i = s; i < ctxo->stacksize; i++) {
 		KNH_INITv(ctxo->stack[i].o, KNH_NULL);
@@ -275,14 +273,14 @@ knh_event_t knh_geteid(CTX ctx, knh_bytes_t t)
 	}
 }
 
-
 /* ------------------------------------------------------------------------ */
 /* [Exception.new] */
 
-knh_Exception_t* new_Error(CTX ctx, knh_String_t *emsg)
+knh_Exception_t* new_Error(CTX ctx, knh_uline_t uline, knh_String_t *emsg)
 {
 	knh_Exception_t* e = new_(Exception);
 	KNH_SETv(ctx, e->emsg, emsg);
+	e->uline = uline;
 	return e;
 }
 
@@ -291,6 +289,7 @@ void CTX_setThrowingException(CTX ctx, knh_Exception_t *e)
 	KNH_SETv(ctx, ((knh_context_t*)ctx)->e, e);
 }
 
+/* rbp is ok, because isCATCH is called from only vm */
 knh_bool_t isCATCH(CTX ctx, knh_rbp_t *rbp, int en, knh_event_t peid)
 {
 	knh_Exception_t *e = ctx->e;

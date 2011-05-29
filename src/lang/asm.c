@@ -825,7 +825,7 @@ static void _TOSTR(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t
 static void _ERR(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
 	if(IS_bString(sfp[0].o)) {
-		CTX_setThrowingException(ctx, new_Error(ctx, sfp[0].s));
+		CTX_setThrowingException(ctx, new_Error(ctx, 0, sfp[0].s));
 	}
 	else {
 		DBG_ASSERT(IS_Exception(sfp[0].o));
@@ -838,7 +838,7 @@ static void _TCHECK(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_
 	if(ct0->cid != ct->cid && !ClassTBL_isa_(ctx, ct0, ct)) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_printf(ctx, cwb->w, "ClassCast!!: %C is not %C", O_cid(sfp[0].o), ct->cid);
-		CTX_setThrowingException(ctx, new_Error(ctx, knh_cwb_newString(ctx, cwb)));
+		CTX_setThrowingException(ctx, new_Error(ctx, 0, knh_cwb_newString(ctx, cwb)));
 		knh_throw(ctx, NULL, 0);
 	}
 }
@@ -848,7 +848,7 @@ static void _TUNBOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_
 	if(ct0->cid != ct->cid && !ClassTBL_isa_(ctx, ct0, ct)) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_printf(ctx, cwb->w, "ClassCast!!: %C is not %C", O_cid(sfp[0].o), ct->cid);
-		CTX_setThrowingException(ctx, new_Error(ctx, knh_cwb_newString(ctx, cwb)));
+		CTX_setThrowingException(ctx, new_Error(ctx, 0, knh_cwb_newString(ctx, cwb)));
 		knh_throw(ctx, NULL, 0);
 	}
 	else{

@@ -27,12 +27,11 @@
 
 /* ************************************************************************ */
 
+#define LIBNAME   "stdc"
 #define USE_bytes         1
 #define USE_cwb           1
-
 #define USE_array_index   1
 
-#define K_PERROR_LIBNAME   "stdc"
 #define USE_fopen   1
 #define USE_fclose  1
 #define USE_fread   1

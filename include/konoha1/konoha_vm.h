@@ -495,7 +495,7 @@ extern "C" {
 } \
 
 #define KLR_ERROR(ctx, start, msg) { \
-	knh_Exception_t *e_ = new_Error(ctx, msg);\
+	knh_Exception_t *e_ = new_Error(ctx, 0, msg);\
 	CTX_setThrowingException(ctx, e_);\
 	knh_throw(ctx, SFP(rbp), SFPIDX(start)); \
 } \

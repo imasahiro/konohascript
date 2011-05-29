@@ -5,10 +5,6 @@
 extern "C" {
 #endif
 
-#ifndef LIBNAME
-#define LIBNAME "libc"
-#endif
-
 /* ------------------------------------------------------------------------ */
 /* [RCinc] */
 

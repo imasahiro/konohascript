@@ -223,9 +223,6 @@ static knh_uline_t knh_stack_uline(CTX ctx, knh_sfp_t *sfp)
 	return 0;
 }
 
-
-
-
 void knh_write_sfp(CTX ctx, knh_OutputStream_t *w, knh_type_t type, knh_sfp_t *sfp, int level)
 {
 	if(IS_Tunbox(type)) {
@@ -352,8 +349,7 @@ static void knh_traceCFMT(CTX ctx, int pe, int isThrowable, const char *ns, cons
 	if(ctx->ehdrNC != NULL && isThrowable) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_vprintf(ctx, cwb->w, fmt, ap);
-		knh_Exception_t *e = new_Error(ctx, knh_cwb_newString(ctx, cwb));
-		e->uline = uline;
+		knh_Exception_t *e = new_Error(ctx, uline, knh_cwb_newString(ctx, cwb));
 		CTX_setThrowingException(ctx, e);
 		knh_throw(ctx, sfp, 0);
 	}
@@ -382,8 +378,7 @@ static void knh_tracePERROR(CTX ctx, int pe, int isThrowable, const char *ns, co
 	if(ctx->ehdrNC != NULL && isThrowable) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_vprintf(ctx, cwb->w, fmt, ap);
-		knh_Exception_t *e = new_Error(ctx, knh_cwb_newString(ctx, cwb));
-		e->uline = uline;
+		knh_Exception_t *e = new_Error(ctx, uline, knh_cwb_newString(ctx, cwb));
 		CTX_setThrowingException(ctx, e);
 		knh_throw(ctx, sfp, 0);
 	}
@@ -398,8 +393,9 @@ static void knh_traceKFMT(CTX ctx, int pe, int isThrowable, const char *ns, cons
 	ctx->spi->syslog(pe, knh_cwb_tochar(ctx, cwb));
 	((knh_context_t*)ctx)->seq += 1;
 	if(ctx->ehdrNC != NULL && isThrowable) {
-		knh_Exception_t *e = new_Error(ctx, knh_cwb_newString(ctx, cwb));
-		e->uline = uline;
+		knh_cwb_clear(cwb, 0);
+		knh_vprintf(ctx, cwb->w, fmt, ap);
+		knh_Exception_t *e = new_Error(ctx, uline, knh_cwb_newString(ctx, cwb));
 		CTX_setThrowingException(ctx, e);
 		knh_throw(ctx, sfp, 0);
 	}
@@ -461,25 +457,29 @@ void THROW_Halt(CTX ctx, knh_sfp_t *sfp, const char *msg)
 {
 	KNH_THROW(ctx, sfp, LOG_CRIT, "InternalError!!", "InternalError!!: %s", msg);
 }
-
+void THROW_OutOfMemory(CTX ctx, size_t size)
+{
+	KNH_THROW(ctx, NULL, LOG_CRIT, "OutOfMemory!!", "OutOfMemory!!: requested=%dbytes, used=%dbytes", size, ctx->stat->usedMemorySize);
+}
+void THROW_StackOverflow(CTX ctx, knh_sfp_t *sfp)
+{
+	KNH_THROW(ctx, sfp, LOG_CRIT, "Script!!: stack overflow: stacksize=%d", (ctx->esp - ctx->stack));
+}
 void THROW_Arithmetic(CTX ctx, knh_sfp_t *sfp, const char *msg)
 {
-	KNH_THROW(ctx, sfp, LOG_CRIT, "Arithmetic!!", "Arithmetic!!: %s", msg);
+	KNH_THROW(ctx, sfp, LOG_CRIT, "Script!!", "Script!!: arithmetic error %s", msg);
 }
-
 void THROW_OutOfRange(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t max)
 {
-	KNH_THROW(ctx, sfp, LOG_CRIT, "Model!!", "OutOfRange!!: %i not < %i", n, (knh_int_t)max);
+	KNH_THROW(ctx, sfp, LOG_CRIT, "Script!!", "Script!!: out of index range: %i not < %i", n, (knh_int_t)max);
 }
-
 void THROW_NoSuchMethod(CTX ctx, knh_sfp_t *sfp, knh_class_t cid, knh_methodn_t mn)
 {
-	KNH_THROW(ctx, sfp, LOG_CRIT, "Type!!", "NoSuchMethod!! %C.%M", cid, mn);
+	KNH_THROW(ctx, sfp, LOG_CRIT, "Script!!", "Script!!: undefined method: %C.%M", cid, mn);
 }
-
 void THROW_ParamTypeError(CTX ctx, knh_sfp_t *sfp, size_t n, knh_methodn_t mn, knh_class_t reqt, knh_class_t cid)
 {
-	KNH_THROW(ctx, sfp, LOG_CRIT, "Type!!", "Type!!: %d of %M NOT %T", n, mn, cid);
+	KNH_THROW(ctx, sfp, LOG_CRIT, "Script!!", "Script!!: type error: argument %d of %M is not %T", n, mn, cid);
 }
 
 /* ------------------------------------------------------------------------ */

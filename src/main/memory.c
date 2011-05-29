@@ -55,11 +55,6 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [malloc] */
 
-static void THROW_OutOfMemory(CTX ctx, size_t size)
-{
-	KNH_THROW(ctx, NULL, LOG_CRIT, "OutOfMemory!!", "OutOfMemory!!: requested=%dbytes, used=%dbytes", size, ctx->stat->usedMemorySize);
-}
-
 /* ------------------------------------------------------------------------ */
 
 #define STAT_useMemory(ctx, SIZE) { \
