@@ -52,9 +52,18 @@ assure "StringRegexSplit" {
 }
 
 assure "StringRegexReplace" {
+	String ab = "aaabbb";
+	assert ab.replace($/a*/, "AAA") == "AAAbbb";
+	assert ab.replace($/z*/, "AAA") == "AAAaaabbb";
+	assert ab.replace($/$/, "AAA") == "aaabbbAAA";
+	String str = "this is konoha";
+	assert str.replace($/this is (.+?)$/, "that is $1") == "that is konoha";
+	assert str.replace($/this is (.+?)$/, "$1 is this") == "konoha is this";
+	assert str.replace($/((t)(h)(i)(s))( )(i)(s)( )(.+?)$/, "$1 is $10") == "this is konoha";
 	String text = "abc\"def\"gh";
 	res = text.replace($/"([^"]*)"/, "``$1''");
 	print res;
+	assert res == "abc``def''gh";
 }
 
 assure "ParserRegex" {
