@@ -2253,7 +2253,8 @@ static void NameSpace_free(CTX ctx, Object *o)
 {
 	BODY_free(ctx, o);
 	if(((knh_NameSpace_t*)o)->dlhdr != NULL) {
-		knh_dlclose(ctx, ((knh_NameSpace_t*)o)->dlhdr);
+		// This must be fixed (by chen_ji and utr.hira) in the future
+		// knh_dlclose(ctx, ((knh_NameSpace_t*)o)->dlhdr);
 	}
 }
 
