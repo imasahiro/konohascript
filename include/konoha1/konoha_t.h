@@ -443,9 +443,9 @@ typedef struct knh_Object_t {
 #define Object          knh_Object_t
 #define ObjectNULL      Object
 #define dynamic         knh_Object_t
-#define This            knh_Object_t
-#define T1              knh_Object_t
-#define T2              knh_Object_t
+//#define This            knh_Object_t
+//#define T1              knh_Object_t
+//#define T2              knh_Object_t
 #define UPCAST(o)       (Object*)(o)
 
 #define knh_Object_toNULL(ctx, o)   knh_Object_toNULL_(ctx, UPCAST(o))
