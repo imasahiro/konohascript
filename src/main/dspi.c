@@ -60,7 +60,7 @@ static knh_Object_t* NOPATH_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_clas
 	return NULL/*(knh_Object_t*)s*/;
 }
 
-static const knh_PathDSPI_t PATH_NOPATH = {
+static const knh_LinkDPI_t PATH_NOPATH = {
 	K_DSPI_PATH, "NOPATH", CLASS_Tvoid, CLASS_Tvoid, NULL,
 	NOPATH_hasType, NOPATH_exists, NOPATH_newObjectNULL,
 };
@@ -97,7 +97,7 @@ static knh_Object_t* CHARSET_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_cla
 	return NULL;
 }
 
-static const knh_PathDSPI_t PATH_CHARSET = {
+static const knh_LinkDPI_t PATH_CHARSET = {
 	K_DSPI_PATH, "charset", CLASS_Boolean, CLASS_Tvoid, NULL,
 	CHARSET_hasType, CHARSET_exists, CHARSET_newObjectNULL,
 };
@@ -170,12 +170,12 @@ static knh_Object_t* FROMPATH_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_cl
 	return NULL;
 }
 
-static const knh_PathDSPI_t PATH_TOPATH = {
+static const knh_LinkDPI_t PATH_TOPATH = {
 	K_DSPI_PATH, "to", CLASS_Converter, CLASS_Tvoid, NULL,
 	TOPATH_hasType, TOPATH_exists, TOPATH_newObjectNULL,
 };
 
-static const knh_PathDSPI_t PATH_FROMPATH = {
+static const knh_LinkDPI_t PATH_FROMPATH = {
 	K_DSPI_PATH, "from", CLASS_Converter, CLASS_Tvoid, NULL,
 	TOPATH_hasType, FROMPATH_exists, FROMPATH_newObjectNULL,
 };
@@ -209,7 +209,7 @@ static knh_Object_t* FILE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_
 	return NULL;
 }
 
-static const knh_PathDSPI_t PATH_FILE = {
+static const knh_LinkDPI_t PATH_FILE = {
 	K_DSPI_PATH, "file", CLASS_Boolean, CLASS_InputStream, NULL,
 	FILE_hasType, FILE_exists, FILE_newObjectNULL,
 };
@@ -246,7 +246,7 @@ static knh_bool_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, voi
 	return res;
 }
 
-static const knh_PathDSPI_t PATH_LIB = {
+static const knh_LinkDPI_t PATH_LIB = {
 	K_DSPI_PATH, "lib", CLASS_Boolean, CLASS_Tvoid, NULL,
 	NOPATH_hasType, LIB_exists, NOPATH_newObjectNULL,
 };
@@ -407,7 +407,7 @@ static knh_bool_t PKG_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, voi
 	return res;
 }
 
-static const knh_PathDSPI_t PATH_PKG = {
+static const knh_LinkDPI_t PATH_PKG = {
 	K_DSPI_PATH, "pkg", CLASS_Boolean, CLASS_InputStream, NULL,
 	NOPATH_hasType, PKG_exists, NOPATH_newObjectNULL,
 };
@@ -438,7 +438,7 @@ static knh_bool_t SCRIPT_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, 
 	return res;
 }
 
-static const knh_PathDSPI_t PATH_SCRIPT = {
+static const knh_LinkDPI_t PATH_SCRIPT = {
 	K_DSPI_PATH, "script", CLASS_Boolean, CLASS_InputStream, NULL,
 	FILE_hasType, SCRIPT_exists, FILE_newObjectNULL,
 };
@@ -479,7 +479,7 @@ static knh_bool_t START_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, v
 	return res;
 }
 
-static const knh_PathDSPI_t PATH_START = {
+static const knh_LinkDPI_t PATH_START = {
 		K_DSPI_PATH, "start", CLASS_Boolean, CLASS_InputStream, NULL,
 		FILE_hasType, START_exists, FILE_newObjectNULL,
 };
@@ -788,7 +788,7 @@ static Object* CURL_newObjectNULL(Ctx *ctx, knh_NameSpace_t *ns, knh_class_t cid
 	return (Object*)s;
 }
 
-static knh_PathDSPI_t PATH_CURL = {
+static knh_LinkDPI_t PATH_CURL = {
 		K_DSPI_PATH, "curl", CLASS_InputStream, CLASS_Tvoid,
 		CURL_hasType, CURL_exists, CURL_newObjectNULL
 };
@@ -1002,18 +1002,18 @@ static const knh_ConvDSPI_t TO_upper = {
 	NULL, touppercase, touppercase, touppercase, touppercase, NULL, NULL,
 };
 
-void knh_loadScriptDriver(CTX ctx, knh_NameSpace_t *ns)
+void knh_loadSystemDriver(CTX ctx, knh_NameSpace_t *ns)
 {
 	const knh_PackageLoaderAPI_t *api = knh_getPackageLoaderAPI();
-	api->addPathDSPI(ctx, ns, NULL, &PATH_NOPATH);
-	api->addPathDSPI(ctx, ns, "charset", &PATH_CHARSET);
-	api->addPathDSPI(ctx, ns, "to", &PATH_TOPATH);
-	api->addPathDSPI(ctx, ns, "from", &PATH_FROMPATH);
-	api->addPathDSPI(ctx, ns, "file", &PATH_FILE);
-	api->addPathDSPI(ctx, ns, "lib", &PATH_LIB);
-	api->addPathDSPI(ctx, ns, "pkg", &PATH_PKG);
-	api->addPathDSPI(ctx, ns, "script", &PATH_SCRIPT);
-	api->addPathDSPI(ctx, ns, "start", &PATH_START);
+	api->addLinkDPI(ctx, ns, "charset", &PATH_CHARSET);
+	api->addLinkDPI(ctx, ns, "to", &PATH_TOPATH);
+	api->addLinkDPI(ctx, ns, "from", &PATH_FROMPATH);
+	api->addLinkDPI(ctx, ns, "file", &PATH_FILE);
+	api->addLinkDPI(ctx, ns, "lib", &PATH_LIB);
+	api->addLinkDPI(ctx, ns, "pkg", &PATH_PKG);
+	api->addLinkDPI(ctx, ns, "script", &PATH_SCRIPT);
+	api->addLinkDPI(ctx, ns, "start", &PATH_START);
+
 	api->addConvDSPI(ctx, ns, "lower", &TO_lower);
 	api->addConvDSPI(ctx, ns, "upper", &TO_upper);
 	api->addStreamDSPI(ctx, ns, NULL, &STREAM_NOFILE);
@@ -1026,7 +1026,7 @@ void knh_loadScriptDriver(CTX ctx, knh_NameSpace_t *ns)
 	api->addQueryDSPI(ctx, ns, "sqlite3", &QUERY_SQLITE3);
 #endif
 #ifdef K_USING_CURL
-	api->addPathDSPI(ctx, ns, "http", &PATH_CURL);
+	api->addLinkDPI(ctx, ns, "http", &PATH_CURL);
 	api->addStreamDSPI(ctx, ns, "http", &STREAM_CURL);
 #endif
 }

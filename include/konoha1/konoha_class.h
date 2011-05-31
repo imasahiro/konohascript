@@ -525,6 +525,9 @@ typedef struct knh_Method_t {
 //## flag TypeMap Const      3 - is set * *;
 //## flag TypeMap FastCall   4 - is set * *;
 
+// Int : (Int n) {
+//	mapper ();
+// }
 
 typedef struct knh_TypeMap_t {
 	knh_hObject_t h;
@@ -540,6 +543,29 @@ typedef struct knh_TypeMap_t {
 
 //#define knh_findTypeMap(ctx, scid, tcid)     knh_findTypeMapNULL(ctx, scid, tcid, 1)
 //#define knh_getTypeMapNULL(ctx, scid, tcid)  knh_findTypeMapNULL(ctx, scid, tcid, 0)
+
+/* ------------------------------------------------------------------------ */
+//## class Link Object;
+
+#define K_PATHHEAD_MAXSIZ   32
+
+typedef struct knh_LinkDPI_t {
+	int   type;
+	const char *name;
+	knh_class_t cid;  knh_class_t itrcid;
+	void *thunk; // nullable
+	knh_bool_t    (*hasType)(CTX, knh_class_t, void*);
+	knh_bool_t    (*exists)(CTX, struct knh_NameSpace_t *, knh_bytes_t, void *);
+	Object*       (*newObjectNULL)(CTX, struct knh_NameSpace_t *, knh_class_t, knh_String_t *, void*);
+} knh_LinkDPI_t;
+
+typedef struct knh_Link_t {
+	knh_hObject_t h;
+	knh_String_t *scheme;
+	const knh_LinkDPI_t *dpi;
+	knh_Array_t *list;
+} knh_Link_t;
+
 
 /* ------------------------------------------------------------------------ */
 //## @Immutable class Func Object;
@@ -875,7 +901,7 @@ typedef struct knh_ResultSet_t {
 
 typedef struct knh_NameSpace {
 	knh_String_t *nsname;
-	struct knh_DictSet_t*   dspiDictSetNULL;
+	struct knh_DictMap_t*   linkDictMapNULL;
 	struct knh_DictMap_t*   constDictCaseMapNULL;
 	struct knh_DictMap_t*   macroDictMapNULL;
 
@@ -1005,6 +1031,10 @@ typedef struct knh_Assurance_t {
 // TT_UNAME
 #define Token_isBYTE(o)       Token_isMEMO1(o)
 #define Token_setBYTE(o, b)   Token_setMEMO1(o, b)
+
+// TT_URN
+#define Token_isDYNAMIC(o)  Token_isMEMO1(o)
+#define Token_setDYNAMIC(o, b) Token_setMEMO1(o, b)
 
 // TT_LOCAL,
 #define Token_isSUPER(o)      Token_isMEMO1(o)

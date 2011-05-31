@@ -246,9 +246,9 @@ knh_status_t knh_loadScriptPackage(CTX ctx, knh_bytes_t path)
 	knh_DictMap_t *dmap = DP(ctx->sys)->PackageDictMap;
 	knh_Script_t *scr = (knh_Script_t*)knh_DictMap_getNULL(ctx, dmap, name);
 	if(scr == NULL) {
-		const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, ctx->share->rootns, path);
+		knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, ctx->share->rootns, path);
 		status = K_BREAK;
-		if(dspi->exists(ctx, ctx->share->rootns, path, dspi->thunk)) {
+		if(lnk != NULL && knh_Link_exists(ctx, lnk, ctx->share->rootns, path)) {
 			knh_String_t *nsname = new_S(ctx, name);
 			knh_Script_t *newscr = new_(Script);
 			KNH_SETv(ctx, DP(newscr->ns)->nsname, nsname);

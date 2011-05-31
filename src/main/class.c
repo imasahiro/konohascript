@@ -41,6 +41,8 @@
 extern "C" {
 #endif
 
+/* ------------------------------------------------------------------------ */
+
 #ifndef K_INCLUDE_BUILTINAPI
 
 /* ------------------------------------------------------------------------ */
@@ -972,37 +974,6 @@ knh_index_t knh_Method_indexOfSetterField(knh_Method_t *o)
 	return -1;
 }
 
-//knh_fieldn_t FN_index(CTX ctx, size_t idx)
-//{
-//	switch(idx) {
-//		case 0: return FN_first;
-//		case 1: return FN_second;
-//		case 2: return FN_third;
-//		default: {
-//			knh_bytes_t t;
-//			char buf[20];
-//			knh_snprintf(buf, sizeof(buf), "%d", (int)idx);
-//			t.text = (const char*)buf; t.len = knh_strlen(buf);
-//			return knh_getfnq(ctx, t, FN_NEWID);
-//		}
-//	}
-//}
-//
-//knh_Method_t* knh_ClassTBL_getTupleGetter(CTX ctx, const knh_ClassTBL_t *t, knh_methodn_t mn, size_t idx)
-//{
-//	size_t i = 0, ti = 0;
-//	for(i = 0; i < t->fsize; i++) {
-//		if(ti == idx) {
-//			knh_Method_t *mtd = new_GetterMethod(ctx, t->cid, mn, t->fields[i].type, i);
-//			knh_ClassTBL_addMethod(ctx, t, mtd, 0);
-//			return mtd;
-//		}
-//		if(t->fields[i].type == TYPE_void) continue;
-//		ti++;
-//	}
-//	return NULL;
-//}
-
 /* ------------------------------------------------------------------------ */
 
 static METHOD Fmethod_NoSuchMethod(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1469,6 +1440,69 @@ knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0
 
 	L_SETCACHE:
 	return Cache_setTypeMap(ctx, scid0, tcid0, tmr);
+}
+
+/* ------------------------------------------------------------------------ */
+
+knh_bool_t knh_Link_hasType(CTX ctx, knh_Link_t *flnk, knh_class_t tcid)
+{
+	size_t i;
+	for(i = 0; i < knh_Array_size(flnk->list); i++) {
+		knh_Method_t *mtd = flnk->list->methods[i];
+		if(mtd->cid == tcid) return 1;
+	}
+	return flnk->dpi->hasType(ctx, tcid, (void*)flnk);
+}
+
+//link file:: {
+//	boolean : (String path) {
+//  }
+//}
+
+knh_bool_t knh_Link_exists(CTX ctx, knh_Link_t *flnk, knh_NameSpace_t *ns, knh_bytes_t fn)
+{
+	size_t i;
+	for(i = 0; i < knh_Array_size(flnk->list); i++) {
+		knh_Method_t *mtd = flnk->list->methods[i];
+		if(mtd->cid == CLASS_Boolean) {
+
+		}
+	}
+	return flnk->dpi->exists(ctx, ns, fn, (void*)flnk);
+}
+
+knh_Object_t *knh_Link_newObjectNULL(CTX ctx, knh_Link_t *flnk, knh_NameSpace_t *ns, knh_String_t *fi, knh_class_t tcid)
+{
+	size_t i;
+	for(i = 0; i < knh_Array_size(flnk->list); i++) {
+		knh_Method_t *mtd = flnk->list->methods[i];
+		if(mtd->cid == tcid) {
+
+		}
+	}
+	return flnk->dpi->newObjectNULL(ctx, ns, tcid, fi, (void*)flnk);
+}
+
+knh_Link_t *knh_NameSpace_getLinkNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t fi)
+{
+	fi = knh_bytes_head(fi, ':');
+	while(ns != NULL) {
+		if(DP(ns)->linkDictMapNULL != NULL) {
+			knh_DictMap_t *dm = DP(ns)->linkDictMapNULL;
+			knh_Link_t *lnk = (knh_Link_t*)knh_DictMap_getNULL(ctx, dm, fi);
+			if(lnk != NULL) return lnk;
+		}
+		ns = ns->parentNULL;
+	}
+	return NULL;
+}
+
+void knh_NameSpace_setLink(CTX ctx, knh_NameSpace_t *ns, knh_Link_t *lnk)
+{
+	if(DP(ns)->linkDictMapNULL == NULL) {
+		KNH_INITv(DP(ns)->linkDictMapNULL, new_DictMap0(ctx, 4, 1/*isCaseMap*/, "linkDictMap"));
+	}
+	knh_DictMap_set(ctx, DP(ns)->linkDictMapNULL, lnk->scheme, lnk);
 }
 
 #else/*K_INCLUDE_BUILTINAPI*/

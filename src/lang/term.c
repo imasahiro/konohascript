@@ -1951,8 +1951,8 @@ static void _EXPRCAST(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		knh_Token_t *tkTL = ITR_nextTK(itr);
 		STT_(stmtT) = STT_TLINK;
 		_ASIS(ctx, stmtT, itr);
-		_EXPR(ctx, stmtT, itr);
 		knh_Stmt_add(ctx, stmtT, tkTL);
+		_EXPR(ctx, stmtT, itr);
 		return;
 	}
 	if(ITR_is(itr, TT_FROM)) {
@@ -2441,6 +2441,13 @@ static void _EXPRCALL(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			if(ITR_is(itr, TT_CODE)) {
 				(tkCUR)->mn = MN_newMAP;  /* new {} */
 				_DICT(ctx, stmt, new_Token(ctx, TT_ASIS), ITR_nextTK(itr));
+				break;
+			}
+			if(ITR_is(itr, TT_URN)) {    /* new file:text.txt */
+				STT_(stmt) = STT_TLINK;
+				_ASIS(ctx, stmt, itr);
+				knh_Stmt_add(ctx, stmt, ITR_nextTK(itr));
+				_ASIS(ctx, stmt, itr);
 				break;
 			}
 			knh_Stmt_toERR(ctx, stmt, ERROR_Undefined(ctx, "class for new", CLASS_unknown, ITR_nextTK(itr)/*tkCUR*/));

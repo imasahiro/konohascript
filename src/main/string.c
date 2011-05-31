@@ -794,56 +794,47 @@ knh_String_t *knh_cwb_newStringDECODE(CTX ctx, knh_cwb_t *cwb, knh_StringDecoder
 #else /*K_INCLUDE_BUILTINAPI*/
 
 /* ------------------------------------------------------------------------ */
-//## @Const method Boolean String.opEXISTS(NameSpace ns);
+//## @Hidden @Private method dynamic Link.newObject(String fi, NameSpace ns, Class c);
 
-static METHOD String_opEXISTS(CTX ctx, knh_sfp_t *sfp _RIX)
+static METHOD Link_newObject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_bytes_t path = S_tobytes(sfp[0].s);
-	DBG_ASSERT(IS_NameSpace(sfp[1].ns));
-	const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, sfp[1].ns, path);
-	knh_bool_t tf = 0;
-	if(dspi != NULL) tf = dspi->exists(ctx, sfp[1].ns, path, dspi->thunk);
-	RETURNb_(tf);
-}
-
-/* ------------------------------------------------------------------------ */
-//## @Hidden @Private method dynamic String.path(String scheme, NameSpace ns, Class c);
-
-static METHOD String_path(CTX ctx, knh_sfp_t *sfp _RIX)
-{
+	knh_Link_t *lnk = (knh_Link_t*)sfp[0].o;
 	knh_class_t cid = (sfp[3].c)->cid;
-	knh_bytes_t path = S_tobytes(sfp[0].s);
-	knh_bytes_t qpath = S_tobytes(sfp[1].s);
-	const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, sfp[2].ns, qpath);
-	knh_String_t* spath = sfp[0].s;
-	Object *v = NULL;
-	int isTRIM = 0;
-	if(!knh_bytes_startsWith(path, qpath)) {
+	knh_String_t* fi = sfp[0].s;
+	knh_Object_t *v = NULL;
+	if(!knh_bytes_startsWith(S_tobytes(fi), S_tobytes(lnk->scheme))) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-		knh_Bytes_write(ctx, cwb->ba, qpath);
-		knh_Bytes_write(ctx, cwb->ba, path);
-		spath = knh_cwb_newString(ctx, cwb);
-		KNH_SETv(ctx, sfp[rix].s, spath);
-		path = S_tobytes(spath);
-		isTRIM = 1;
+		knh_Bytes_write(ctx, cwb->ba, S_tobytes(lnk->scheme));
+		knh_Bytes_putc(ctx, cwb->ba, ':');
+		knh_Bytes_write(ctx, cwb->ba, S_tobytes(fi));
+		fi = knh_cwb_newString(ctx, cwb);
+		KNH_SETv(ctx, sfp[rix].s, fi);
 	}
-	KNH_ASSERT(dspi != NULL);
-	KNH_ASSERT(dspi->hasType(ctx, cid, dspi->thunk));
 	if(cid == CLASS_Boolean) {
-		sfp[rix].bvalue = dspi->exists(ctx, sfp[2].ns, path, dspi->thunk);
+		sfp[rix].bvalue = knh_Link_exists(ctx, lnk, sfp[2].ns, S_tobytes(fi));
 		v = sfp[rix].bvalue ? KNH_TRUE : KNH_FALSE;
 	}
-	else if(cid == CLASS_String) {
-		v = UPCAST(spath);
-	}
 	else {
-		v = dspi->newObjectNULL(ctx, sfp[2].ns, cid, spath, dspi->thunk);
+		v = knh_Link_newObjectNULL(ctx, lnk, sfp[2].ns, fi, cid);
 		if(v == NULL) {
-			KNH_SYSLOG(ctx, sfp, LOG_WARNING, "MissingPath", "qpath='%B', path='%B' for %C", qpath, path, cid);
+			KNH_SYSLOG(ctx, sfp, LOG_WARNING, "MissingLink", "fi='%s' for %C", S_tochar(fi), cid);
 			v = KNH_NULVAL(cid);
 		}
 	}
 	RETURN_(v);
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Hidden method Boolean String.opEXISTS(NameSpace ns);
+
+static METHOD String_opEXISTS(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_bool_t tf = 0;
+	knh_bytes_t path = S_tobytes(sfp[0].s);
+	DBG_ASSERT(IS_NameSpace(sfp[1].ns));
+	knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, sfp[1].ns, path);
+	if(lnk != NULL) tf = knh_Link_exists(ctx, lnk, sfp[1].ns, path);
+	RETURNb_(tf);
 }
 
 /* ------------------------------------------------------------------------ */

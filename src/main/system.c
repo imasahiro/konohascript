@@ -342,13 +342,6 @@ const knh_DSPI_t *knh_NameSpace_getDSPINULL(CTX ctx, knh_NameSpace_t *ns, int ty
 
 /* ------------------------------------------------------------------------ */
 
-const knh_PathDSPI_t *knh_NameSpace_getPathDSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	return (const knh_PathDSPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_PATH, path);
-}
-
-/* ------------------------------------------------------------------------ */
-
 const knh_ConvDSPI_t *knh_NameSpace_getConvTODSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	return (const knh_ConvDSPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_CONVTO, path);

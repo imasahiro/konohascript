@@ -1493,6 +1493,68 @@ static knh_ClassDef_t TypeMapDef = {
 };
 
 /* --------------- */
+/* Link */
+
+static knh_bool_t NOLINK_hasType(CTX ctx, knh_class_t cid, void *thunk)
+{
+	return 0;
+}
+static knh_bool_t NOLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
+{
+	return 0;
+}
+static knh_Object_t* NOLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s, void *thunk)
+{
+	return NULL/*(knh_Object_t*)s*/;
+}
+
+static const knh_LinkDPI_t PATH_NOLINK = {
+	K_DSPI_PATH, "NOLINK", CLASS_Tvoid, CLASS_Tvoid, NULL,
+	NOLINK_hasType, NOLINK_exists, NOLINK_newObjectNULL,
+};
+
+static void Link_init(CTX ctx, Object *o)
+{
+	knh_Link_t *flnk = (knh_Link_t*)o;
+	flnk->dpi = &PATH_NOLINK;
+	KNH_INITv(flnk->scheme, TS_EMPTY);
+	KNH_INITv(flnk->list, K_EMPTYARRAY);
+}
+
+knh_Link_t *new_Link(CTX ctx, knh_String_t *scheme, const knh_LinkDPI_t *dpi)
+{
+	knh_Link_t *flnk = (knh_Link_t*)new_hObject_(ctx, ClassTBL(CLASS_Link));
+	flnk->dpi = (dpi == NULL) ? &PATH_NOLINK : dpi;
+	KNH_INITv(flnk->scheme, scheme);
+	KNH_INITv(flnk->list, K_EMPTYARRAY);
+	return flnk;
+}
+
+static void Link_reftrace(CTX ctx, Object *o FTRARG)
+{
+	knh_Link_t *flnk = (knh_Link_t*)o;
+	KNH_ADDREF(ctx, flnk->scheme);
+	KNH_ADDREF(ctx, flnk->list);
+	KNH_SIZEREF(ctx);
+}
+
+static void Link_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+{
+	knh_Link_t *flnk = (knh_Link_t*)o;
+	knh_write(ctx, w, S_tobytes(flnk->scheme));
+	knh_write(ctx, w, STEXT("::"));
+}
+
+static knh_ClassDef_t LinkDef = {
+	Link_init, TODO_initcopy, Link_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Link_p,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Link", CFLAG_Link, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
+/* --------------- */
 /* Func */
 
 static METHOD Fmethod_funcRTYPE(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -2222,7 +2284,7 @@ static void NameSpace_init(CTX ctx, Object *o)
 	KNH_INITv(ns->rpath, TS_EMPTY);
 	ns->parentNULL          = NULL;
 	b->macroDictMapNULL     = NULL;
-	b->dspiDictSetNULL      = NULL;
+	b->linkDictMapNULL      = NULL;
 	b->name2cidDictSetNULL  = NULL;
 	b->func2cidDictSetNULL  = NULL;
 	b->constDictCaseMapNULL = NULL;
@@ -2240,7 +2302,7 @@ static void NameSpace_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_ADDREF(ctx, ns->rpath);
 	KNH_ADDNNREF(ctx, ns->parentNULL);
 	KNH_ADDNNREF(ctx, b->macroDictMapNULL);
-	KNH_ADDNNREF(ctx, b->dspiDictSetNULL);
+	KNH_ADDNNREF(ctx, b->linkDictMapNULL);
 	KNH_ADDNNREF(ctx, b->name2cidDictSetNULL);
 	KNH_ADDNNREF(ctx, b->func2cidDictSetNULL);
 	KNH_ADDNNREF(ctx, b->constDictCaseMapNULL);
@@ -2947,7 +3009,7 @@ static void knh_setDefaultValues(CTX ctx)
 	knh_setClassDefaultValue(ctx, CLASS_Context, KNH_NULL, knh_Context_fdefault);
 	knh_setClassDefaultValue(ctx, CLASS_NameSpace, UPCAST(ctx->share->rootns), NULL);
 	knh_setClassDefaultValue(ctx, CLASS_System, UPCAST(ctx->sys), NULL);
-	knh_loadScriptDriver(ctx, ctx->share->rootns);
+	knh_loadSystemDriver(ctx, ctx->share->rootns);
 	{
 		knh_Token_t *tk = KNH_TNULL(Token);
 		tk->tt = TT_FUNCVAR;

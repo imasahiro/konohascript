@@ -72,20 +72,6 @@ typedef const struct {
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_PATH */
 
-#define K_PATHHEAD_MAXSIZ   32
-//#define PATH_found          1
-//#define PATH_unknown        ((knh_bool_t)(-1))
-//#define PATH_hasType(cid)   (cid == CLASS_Boolean || cid == CLASS_String)
-
-typedef struct knh_PathDSPI_t {
-	int   type;
-	const char *name;
-	knh_class_t cid;  knh_class_t itrcid;
-	void *thunk; // nullable
-	knh_bool_t    (*hasType)(CTX, knh_class_t, void*);
-	knh_bool_t    (*exists)(CTX, knh_NameSpace_t *, knh_bytes_t, void *);
-	Object*       (*newObjectNULL)(CTX, knh_NameSpace_t *, knh_class_t, knh_String_t *, void*);
-} knh_PathDSPI_t;
 
 /* ------------------------------------------------------------------------ */
 /* K_BCONV_DSPI */
@@ -233,7 +219,7 @@ typedef struct knh_PackageLoaderAPI_t {
 	void (*loadStringData)(CTX, knh_NameSpace_t *ns, const knh_StringData_t *);
 	/* namespace */
 //	void (*setRegexSPI)(CTX, knh_NameSpace_t *ns, const knh_RegexSPI_t *);
-	void (*addPathDSPI)(CTX, knh_NameSpace_t *ns, const char*, const knh_PathDSPI_t *);
+	void (*addLinkDPI)(CTX, knh_NameSpace_t *ns, const char*, const knh_LinkDPI_t *);
 	void (*addStreamDSPI)(CTX, knh_NameSpace_t *ns, const char*, const knh_StreamDSPI_t *);
 	void (*addQueryDSPI)(CTX, knh_NameSpace_t *ns, const char *, const knh_QueryDSPI_t *);
 	void (*addConvDSPI)(CTX, knh_NameSpace_t *ns, const char *, const knh_ConvDSPI_t*);

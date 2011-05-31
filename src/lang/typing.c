@@ -242,8 +242,8 @@ knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh
 				DBG_P("reqt=%s, vart=%s isSemantic=%d, isConst=%d", TYPE__(reqt), TYPE__(vart), isCOERCION, TypeMap_isConst(tmr));
 				if(isCOERCION) {
 					KNH_SETv(ctx, tmNN(stmt, n), new_TermTCAST(ctx, reqt, tmr, tkNN(stmt, n)));
+					goto L_RETURN;
 				}
-				goto L_RETURN;
 			}
 		}
 	}
@@ -1477,55 +1477,65 @@ static knh_Token_t* ESTR_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 static knh_Token_t* PATH_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 {
 	knh_NameSpace_t *ns = K_GMANS;
-	knh_bytes_t path = S_tobytes((tk)->text);
-	const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, ns, path);
-	if(dspi == NULL) {
-		return ERROR_Undefined(ctx, "scheme", CLASS_unknown, tk);
+	knh_bytes_t fi = S_tobytes((tk)->text);
+	knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, ns, fi);
+	if(lnk == NULL) {
+		return ERROR_Undefined(ctx, "link", CLASS_unknown, tk);
 	}
 	if(TT_(tk) == TT_TLINK) {
+		DBG_ABORT("This must be modified");
 		return Token_toCONST(ctx, tk);
 	}
-	if(reqt == TYPE_dyn || reqt == TYPE_var) reqt = dspi->cid;
-	if(reqt == TYPE_Boolean || reqt == TYPE_void) {
-		knh_Object_t *tf = dspi->exists(ctx, ns, path, dspi->thunk) ? KNH_TRUE : KNH_FALSE;
+	if(reqt == TYPE_dyn || reqt == TYPE_var || reqt == TYPE_void) reqt = TYPE_Boolean;
+	if(reqt == TYPE_Boolean) {
+		knh_Object_t *tf = knh_Link_exists(ctx, lnk, ns, fi) ? KNH_TRUE : KNH_FALSE;
 		return Token_setCONST(ctx, tk, tf);
 	}
 	else if(reqt == TYPE_String) {
 		return Token_toCONST(ctx, tk);
 	}
-	else if(!dspi->hasType(ctx, CLASS_t(reqt), dspi->thunk)) {
-		return TERROR_Token(ctx, tk, dspi->cid, reqt);
+	knh_class_t cid = CLASS_t(reqt);
+	if(!knh_Link_hasType(ctx, lnk, cid)) {
+		return TERROR_Token(ctx, tk, TYPE_Boolean, reqt);
 	}
 	else {
-		knh_Object_t *o = dspi->newObjectNULL(ctx, ns, reqt, (tk)->text, dspi->thunk);
-		if(o == NULL) o = KNH_NULVAL(reqt);
+		knh_Object_t *o = knh_Link_newObjectNULL(ctx, lnk, ns, (tk)->text, cid);
+		if(o == NULL) {
+			o = KNH_NULVAL(reqt);
+			WARN_Undefined(ctx, "link", cid, tk);
+		}
 		return Token_setCONST(ctx, tk, o);
 	}
 }
 
+/* @see _EXPRCAST */
 static knh_Token_t* TLINK_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
-	knh_Token_t *tkSCM = tkNN(stmt, 2);
-	knh_bytes_t path = S_tobytes((tkSCM)->text);
+	knh_Token_t *tkLNK = tkNN(stmt, 1);
 	knh_NameSpace_t *ns = K_GMANS;
-	const knh_PathDSPI_t *dspi = knh_NameSpace_getPathDSPINULL(ctx, ns, path);
-	if(dspi == NULL) {
-		return ERROR_Undefined(ctx, "link", CLASS_unknown, tkSCM);
+	knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, ns, S_tobytes((tkLNK)->text));
+	if(lnk == NULL) {
+		return ERROR_Undefined(ctx, "link", CLASS_unknown, tkLNK);
 	}
-	DBG_ASSERT(TT_(tkSCM) == TT_TLINK);
-	TYPING_TypedExpr(ctx, stmt, 1, TYPE_String);
-	if(reqt == TYPE_dyn || reqt == TYPE_var) reqt = dspi->cid;
-	if(reqt == TYPE_Boolean || reqt == TYPE_void || reqt == TYPE_String || dspi->hasType(ctx, CLASS_t(reqt), dspi->thunk)) {
+	if(TT_(tkNN(stmt, 2)) == TT_ASIS) {
+		Token_setCONST(ctx, tkNN(stmt, 2), tkLNK->data);
+	}
+	else {
+		TYPING_TypedExpr(ctx, stmt, 2, TYPE_String);
+	}
+	if(reqt == TYPE_dyn || reqt == TYPE_var || reqt == TYPE_void) reqt = TYPE_Boolean;
+	if(knh_Link_hasType(ctx, lnk, CLASS_t(reqt))) {
 		DBG_ASSERT(DP(stmt)->size == 3);
 		STT_(stmt) = STT_CALL;
-		Token_setMethod(ctx, tkNN(stmt, 0), MN_path, knh_NameSpace_getMethodNULL(ctx, CLASS_String, MN_path));
-		TT_(tkSCM) = TT_CONST;
+		Token_setMethod(ctx, tkNN(stmt, 0), MN_newObject, knh_NameSpace_getMethodNULL(ctx, CLASS_Link, MN_newObject));
+		Token_setCONST(ctx, tkLNK, lnk);
+		// expr
 		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, K_GMANS));
 		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, new_Type(ctx, reqt)));
 		return Stmt_typed(ctx, stmt, reqt);
 	}
 	else {
-		return TERROR_Token(ctx, tkSCM, dspi->cid, reqt);
+		return TERROR_Token(ctx, tkLNK, TYPE_Boolean, reqt);
 	}
 }
 
