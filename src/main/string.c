@@ -970,20 +970,42 @@ static METHOD String_match(CTX ctx, knh_sfp_t *sfp _RIX)
 		a = new_Array(ctx, CLASS_String, 0);
 	}
 	else {
-		const char *str = S_tochar(sfp[0].s);  // necessary
+		const char *str = S_tochar(s0);  // necessary
+		const char *base = str;
+		const char *eos = base + S_size(s0);
 		size_t nmatch = pcre_regex_nmatchsize(re->reg);
 		knh_regmatch_t pmatch[nmatch+1];
-		int res = re->spi->regexec(ctx, re->reg, str, nmatch, pmatch, re->eflags);
 		a = new_Array(ctx, CLASS_String, nmatch);
-		if(res == 0) {
-			knh_regmatch_t *p;
-			size_t i;
-			for(i = 0; i < nmatch; i++) {
-				p = pmatch + i;
-				if (p->rm_so == -1) break;
-				//DBG_P("[%d], rm_so=%d, rm_eo=%d", i, p->rm_so, p->rm_eo);
-				knh_bytes_t sub = {{str + (p->rm_so)}, ((p->rm_eo) - (p->rm_so))};
-				knh_Array_add(ctx, a, new_String_(ctx, CLASS_String, sub, s0));
+		if (!Regex_isGlobalOption(re)) {
+			int res = re->spi->regexec(ctx, re->reg, str, nmatch, pmatch, re->eflags);
+			if(res == 0) {
+				knh_regmatch_t *p;
+				size_t i;
+				for(p = pmatch, i = 0; i < nmatch; p++, i++) {
+					if (p->rm_so == -1) break;
+					//DBG_P("[%d], rm_so=%d, rm_eo=%d", i, p->rm_so, p->rm_eo);
+					knh_bytes_t sub = {{str + (p->rm_so)}, ((p->rm_eo) - (p->rm_so))};
+					knh_Array_add(ctx, a, new_String_(ctx, CLASS_String, sub, s0));
+				}
+			}
+		} else {
+		L_REGMATCH:;
+			int res = re->spi->regexec(ctx, re->reg, str, nmatch, pmatch, re->eflags);
+			if(res == 0) {
+				knh_regmatch_t *p;
+				size_t i;
+				for(p = pmatch, i = 0; i < nmatch; p++, i++) {
+					if (p->rm_so == -1) break;
+					//DBG_P("[%d], rm_so=%d, rm_eo=%d", i, p->rm_so, p->rm_eo);
+					knh_bytes_t sub = {{str + (p->rm_so)}, ((p->rm_eo) - (p->rm_so))};
+					knh_Array_add(ctx, a, new_String_(ctx, CLASS_String, sub, s0));
+				}
+				size_t eo = pmatch[0].rm_eo; // shift matched pattern
+				str += (eo > 0) ? eo : 1;
+				if (str < eos) {
+					knh_Array_grow(ctx, a, (a->dim->capacity)+nmatch, nmatch);
+					goto L_REGMATCH;
+				}
 			}
 		}
 //		else {

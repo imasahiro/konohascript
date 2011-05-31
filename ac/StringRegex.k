@@ -33,9 +33,11 @@ assure "StringRegexSearch" {
 assure "StringRegexMatch" {
 	String text = "1 plus 2 equal 3";
 	res = text.match($/\d+/);
-	print res;
+	assert |res| == 1;
+	assert res[0] == "1";
 	res = text.match($/\d+/g);
-	print res;
+	assert |res| == 3;
+	assert res[2] == "3";
 }
 
 assure "StringRegexSplit" {
