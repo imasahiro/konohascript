@@ -1187,6 +1187,55 @@ static METHOD String_split(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
+//## @Const method Map String.extract(Regex re, NameSpace ns);
+
+static void knh_regex_map_set(CTX ctx, knh_Map_t *m, const char *str, size_t nmatch, knh_regmatch_t *r)
+{
+	knh_regmatch_t *rp;
+	knh_String_t *s_name, *s_value;
+	int idx;
+	BEGIN_LOCAL(ctx, lsfp, 2);
+	for (idx = 0; idx < (int)nmatch && r[idx].rm_so != -1; idx++) {
+		rp = &r[idx];
+		if (rp->rm_name.len > 0) {
+			s_name = new_S(ctx, rp->rm_name);
+			s_value = new_S(ctx, new_bytes2(&str[rp->rm_so], (rp->rm_eo - rp->rm_so)));
+			KNH_SETv(ctx, lsfp[0].s, s_name);
+			KNH_SETv(ctx, lsfp[1].s, s_value);
+			m->dspi->set(ctx, m->map, lsfp);
+		}
+	}
+	END_LOCAL(ctx, lsfp, m);
+}
+
+static METHOD String_extract(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_String_t *s = sfp[0].s;
+	knh_Regex_t *re = sfp[1].re;
+	knh_NameSpace_t *ns = sfp[2].ns;
+	knh_Map_t *m = new_H(Map);
+	const knh_MapDSPI_t *dspi = knh_NameSpace_getMapDSPI(ctx, ns, B("hash"));
+	m->dspi = dspi->config(ctx, CLASS_String, CLASS_String);
+	m->map = dspi->init(ctx, 0, dspi->name, NULL);
+	if (IS_NOTNULL(re) && S_size(re->pattern) > 0) {
+		size_t nmatch = pcre_regex_nmatchsize(re->reg);
+		const char *str = s->str.text;
+		knh_regmatch_t p[nmatch];
+		int idx;
+		for (idx = 0; idx < nmatch; idx++) {
+			p[idx].rm_so = -1;
+			p[idx].rm_eo = -1;
+			p[idx].rm_name.len = 0;
+		}
+		if (re->spi->regexec(ctx, re->reg, str, nmatch, p, re->eflags) == 0) {
+			size_t matched = knh_regex_matched(p, nmatch);
+			knh_regex_map_set(ctx, m, str, matched, p);
+		}
+	}
+	RETURN_(m);
+}
+
+/* ------------------------------------------------------------------------ */
 //## @Const method Bytes Bytes.(Converter enc);
 
 static METHOD Bytes_convert(CTX ctx, knh_sfp_t *sfp _RIX)
