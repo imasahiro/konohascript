@@ -1482,8 +1482,7 @@ static knh_Token_t* PATH_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 	if(lnk == NULL) {
 		return ERROR_Undefined(ctx, "link", CLASS_unknown, tk);
 	}
-	if(TT_(tk) == TT_TLINK) {
-		DBG_ABORT("This must be modified");
+	if(TT_(tk) != TT_URN) {  // this is necessary for exists URN;
 		return Token_toCONST(ctx, tk);
 	}
 	if(reqt == TYPE_dyn || reqt == TYPE_var || reqt == TYPE_void) reqt = TYPE_Boolean;
@@ -1677,6 +1676,9 @@ static knh_Token_t *DECL_typing(CTX ctx, knh_Stmt_t *stmt) /* LOCAL*/
 			return Stmt_typed(ctx, stmt, TYPE_void);
 		}
 	}
+	else {
+		knh_Stmt_toERR(ctx, stmt, tkT);
+	}
 	return tkT;
 }
 
@@ -1723,6 +1725,9 @@ static knh_Token_t *DECLSCRIPT_typing(CTX ctx, knh_Stmt_t *stmt)
 		Stmt_toSTT(stmt, STT_LET);
 		Stmt_typed(ctx, stmt, TYPE_void);
 		return TM(stmt);
+	}
+	else {
+		knh_Stmt_toERR(ctx, stmt, tkT);
 	}
 	return tkT;
 }
@@ -2766,6 +2771,13 @@ static knh_class_t OPEQ_bcid(CTX ctx, knh_Stmt_t *stmt)
 
 knh_methodn_t TT_toMN(knh_term_t tt);
 
+static const char* _unbox(knh_class_t cid)
+{
+	if(cid == TYPE_Boolean) return "boolean";
+	if(cid == TYPE_Float) return "float";
+	return "int";
+}
+
 static knh_Token_t* OPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
 	size_t i, opsize = DP(stmt)->size - 1;
@@ -2781,9 +2793,10 @@ static knh_Token_t* OPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		if(TT_isBINARY(TT_(tkOP)) && opsize != 2) {
 			return ERROR_MustBe(ctx, _("binary operator"), knh_getopname(mn));
 		}
-		if(TT_(tkOP) == TT_EXISTS) mtd_cid = CLASS_String;
-		for(i = 1; i < opsize + 1; i++) {
-			TYPING_UntypedExpr(ctx, stmt, i);
+		if(mn != MN_opEXISTS) {
+			for(i = 1; i < opsize + 1; i++) {
+				TYPING_UntypedExpr(ctx, stmt, i);
+			}
 		}
 	}
 
@@ -2794,10 +2807,10 @@ static knh_Token_t* OPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		}
 		if(Tn_isNULL(stmt, 2)) { /* o == null, o != null */
 			knh_class_t cid = Tn_cid(stmt, 1);
-			mn = (mn == MN_opEQ) ? MN_isNull : MN_isNotNull;
 			if(IS_Tunbox(cid)) {
-				WarningNullable(ctx, cid);
+				return ERROR_UndefinedBehavior(ctx, _unbox(cid));
 			}
+			mn = (mn == MN_opEQ) ? MN_isNull : MN_isNotNull;
 			mtd_cid = CLASS_Object;
 			knh_Stmt_trimToSize(ctx, stmt, 2);
 			goto L_LOOKUPMETHOD;
@@ -2811,7 +2824,7 @@ static knh_Token_t* OPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	}
 
 	switch(mn) {
-	case MN_opADD: /* a + b*/
+	case MN_opADD: /* a + b */
 	case MN_opSUB: /* a - b */
 	case MN_opMUL: /* a * b */
 	case MN_opDIV: /* a / b */
@@ -2895,10 +2908,29 @@ static knh_Token_t* OPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 
 	case MN_opEXISTS:
 	{
-		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, K_GMANS));
+		if(TT_(tkNN(stmt,1)) == TT_URN) {
+			TT_(tkNN(stmt,1)) = TT_CONST;
+			PATH_typing(ctx, tkNN(stmt, 1), TYPE_Boolean);
+		}
+		else if(STT_(stmtNN(stmt,1)) == STT_TLINK) {
+			return TLINK_typing(ctx, stmtNN(stmt, 1), TYPE_Boolean);
+		}
+		else {
+			TYPING_UntypedExpr(ctx, stmt, 1);
+		}
+		mtd_cid = Tn_cid(stmt, 1);
+		if(mtd_cid == CLASS_String) {
+			knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, K_GMANS));
+		}
+		else if(IS_Tunbox(mtd_cid)) {
+			return ERROR_UndefinedBehavior(ctx, _unbox(mtd_cid));
+		}
+		else {
+			mtd_cid = CLASS_Object;
+			mn = MN_isNotNull;
+		}
 		goto L_LOOKUPMETHOD;
 	}
-
 	default:
 		mtd_cid = Tn_cid(stmt, 1);
 		break;
@@ -3020,9 +3052,9 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	if(scid == CLASS_Tdynamic) goto L_DYNCAST;  /* (T)dyn */
 	DBG_P("TRANS=%d", Stmt_isTRANS(stmt));
 	if(class_isa(scid, tcid) && !(Stmt_isTRANS(stmt))) {
-		if(!Tn_isCONST(stmt, 1) && tcid == scid) {
-			WARN_Cast(ctx, "upcast", tcid, scid);
-		}
+//		if(!Tn_isCONST(stmt, 1) && tcid == scid) { sometimes, really annoying
+//			WARN_Cast(ctx, "upcast", tcid, scid);
+//		}
 		return tkNN(stmt, 1);
 	}
 	if(class_isa(tcid, scid) && !(Stmt_isTRANS(stmt))) {  /* downcast */
@@ -3774,7 +3806,10 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM, knh_type_t reqt)
 			size_t n = i / 3;
 			knh_param_t *p = knh_ParamArray_get(mp, n);
 			knh_Token_t *tkT = DECL3_typing(ctx, stmtP, i, p->type, _VFINDTHIS | _VFINDSCRIPT, allowDynamic);
-			if(TT_(tkT) == TT_ERR) return tkT;
+			if(TT_(tkT) == TT_ERR) {
+				knh_Stmt_toERR(ctx, stmtM, tkT);
+				return tkT;
+			}
 			if(tkT->cid == TYPE_var) {
 				isDynamic = 1; continue;
 			}
@@ -3820,6 +3855,7 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM, knh_type_t reqt)
 				}
 			}
 			else{
+				knh_Stmt_toERR(ctx, stmtM, tkT);
 				return tkT;
 			}
 		}
@@ -3892,7 +3928,10 @@ static knh_Token_t* FUNCTION_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 			size_t n = i / 3;
 			knh_param_t *p = knh_ParamArray_get(cpm, n);
 			knh_Token_t *tkT = DECL3_typing(ctx, stmtP, i+0, p->type, _VFINDTHIS | _VFINDSCRIPT, 0);
-			if(TT_(tkT) == TT_ERR) return tkT;
+			if(TT_(tkT) == TT_ERR) {
+				knh_Stmt_toERR(ctx, stmt, tkT);
+				return tkT;
+			}
 			if(tkT->cid != p->type) {
 				return ErrorDifferentlyDefinedMethod(ctx, (mtd)->cid, (mtd)->mn);
 			}
@@ -3919,6 +3958,7 @@ static knh_Token_t* FUNCTION_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 				knh_ParamArray_add(ctx, mp, p);
 			}
 			else {
+				knh_Stmt_toERR(ctx, stmt, tkT);
 				return tkT;
 			}
 		}
@@ -4025,7 +4065,6 @@ static knh_Token_t *DECLFIELD_typing(CTX ctx, knh_Stmt_t *stmt, size_t i)
 {
 	knh_flag_t flag  = DECL_flag(ctx, stmt, _FGETTER | _FSETTER);
 	knh_Token_t *tkT = DECL3_typing(ctx, stmt, i, TYPE_var, _VFINDSCRIPT, 0);
-
 	if(TT_(tkT) != TT_ERR) {
 		return Gamma_add(ctx, flag, tkT, tkNN(stmt,i+1), tkNN(stmt,i+2), GF_UNIQUE|GF_FIELD|GF_USEDCOUNT);
 	}
@@ -4186,7 +4225,10 @@ static knh_Token_t* CLASS_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 				ctx->gma->uline = stmtFIELD->uline;
 				if(STT_(stmtFIELD) == STT_DECLFIELD) {
 					tkRES = DECLFIELD_typing(ctx, stmtFIELD, /*n*/0);
-					if(TT_(tkRES) == TT_ERR) return tkRES;
+					if(TT_(tkRES) == TT_ERR) {
+						knh_Stmt_toERR(ctx, stmt, tkRES);
+						return tkRES;
+					}
 				}
 //				else if(STT_(stmtFIELD) == STT_LET) {
 //					tkRES = LET_typing(ctx, stmtFIELD, TYPE_void);

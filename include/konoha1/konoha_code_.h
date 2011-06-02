@@ -801,7 +801,7 @@ typedef struct klr_CALL_t {
 	KCODE_HEAD;
 	knh_r_t a;
 	knh_sfpidx_t thisidx;
-	knh_intptr_t espshift;
+	knh_sfpidx_t espshift;
 } klr_CALL_t;
 
 #define OPCODE_SCALL ((knh_opcode_t)106)
@@ -809,7 +809,7 @@ typedef struct klr_SCALL_t {
 	KCODE_HEAD;
 	knh_r_t a;
 	knh_sfpidx_t thisidx;
-	knh_intptr_t espshift;
+	knh_sfpidx_t espshift;
 	knh_Method_t* mtdNC;
 } klr_SCALL_t;
 
@@ -818,7 +818,7 @@ typedef struct klr_VCALL_t {
 	KCODE_HEAD;
 	knh_r_t a;
 	knh_sfpidx_t thisidx;
-	knh_intptr_t espshift;
+	knh_sfpidx_t espshift;
 	knh_Method_t* mtdNC;
 } klr_VCALL_t;
 
@@ -827,7 +827,7 @@ typedef struct klr_VCALL__t {
 	KCODE_HEAD;
 	knh_r_t a;
 	knh_sfpidx_t thisidx;
-	knh_intptr_t espshift;
+	knh_sfpidx_t espshift;
 	knh_Method_t* mtdNC;
 } klr_VCALL__t;
 
@@ -837,7 +837,7 @@ typedef struct klr_FASTCALL0_t {
 	knh_r_t a;
 	knh_sfpidx_t thisidx;
 	knh_intptr_t rix;
-	knh_intptr_t espshift;
+	knh_sfpidx_t espshift;
 	klr_Ffcall fcall;
 } klr_FASTCALL0_t;
 
@@ -862,7 +862,7 @@ typedef struct klr_SCAST_t {
 	knh_r_t a;
 	knh_sfpidx_t b;
 	knh_intptr_t rix;
-	knh_intptr_t espshift;
+	knh_sfpidx_t espshift;
 	knh_TypeMap_t* cast;
 } klr_SCAST_t;
 
@@ -872,7 +872,7 @@ typedef struct klr_TCAST_t {
 	knh_r_t a;
 	knh_sfpidx_t b;
 	knh_intptr_t rix;
-	knh_intptr_t espshift;
+	knh_sfpidx_t espshift;
 	knh_TypeMap_t* cast;
 } klr_TCAST_t;
 
@@ -882,7 +882,7 @@ typedef struct klr_ACAST_t {
 	knh_r_t a;
 	knh_sfpidx_t b;
 	knh_intptr_t rix;
-	knh_intptr_t espshift;
+	knh_sfpidx_t espshift;
 	knh_TypeMap_t* cast;
 } klr_ACAST_t;
 
@@ -926,7 +926,7 @@ typedef struct klr_NEXT_t {
 	knh_r_t a;
 	knh_sfpidx_t b;
 	knh_intptr_t rix;
-	knh_intptr_t espshift;
+	knh_sfpidx_t espshift;
 } klr_NEXT_t;
 
 #define OPCODE_BGETIDX ((knh_opcode_t)121)

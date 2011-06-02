@@ -68,7 +68,7 @@ static const knh_LinkDPI_t PATH_NOPATH = {
 /* charset:UTF-8 */
 static knh_bool_t CHARSET_hasType(CTX ctx, knh_class_t cid, void *thunk)
 {
-	return (cid == CLASS_StringEncoder || cid == CLASS_StringDecoder);
+	return (cid == CLASS_Boolean || cid == CLASS_String || cid == CLASS_StringEncoder || cid == CLASS_StringDecoder);
 }
 
 static knh_bool_t CHARSET_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
@@ -135,7 +135,7 @@ static Object* new_ConverterNULL(CTX ctx, knh_class_t cid, knh_bytes_t path, con
 
 static knh_bool_t TOPATH_hasType(CTX ctx, knh_class_t cid, void *thunk)
 {
-	return (IS_CONV(cid));
+	return (cid == CLASS_Boolean || cid == CLASS_String || IS_CONV(cid));
 }
 static knh_bool_t TOPATH_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
 {
@@ -185,7 +185,7 @@ static const knh_LinkDPI_t PATH_FROMPATH = {
 
 static knh_bool_t FILE_hasType(CTX ctx, knh_class_t cid, void *thunk)
 {
-	return (cid == CLASS_InputStream || cid == CLASS_OutputStream);
+	return (cid == CLASS_Boolean || cid == CLASS_String || cid == CLASS_InputStream || cid == CLASS_OutputStream);
 }
 static knh_bool_t FILE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
 {
@@ -213,6 +213,11 @@ static const knh_LinkDPI_t PATH_FILE = {
 	K_DSPI_PATH, "file", CLASS_Boolean, CLASS_InputStream, NULL,
 	FILE_hasType, FILE_exists, FILE_newObjectNULL,
 };
+
+static knh_bool_t LIB_hasType(CTX ctx, knh_class_t cid, void *thunk)
+{
+	return (cid == CLASS_Boolean || cid == CLASS_String);
+}
 
 static knh_bool_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
 {
@@ -248,7 +253,7 @@ static knh_bool_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, voi
 
 static const knh_LinkDPI_t PATH_LIB = {
 	K_DSPI_PATH, "lib", CLASS_Boolean, CLASS_Tvoid, NULL,
-	NOPATH_hasType, LIB_exists, NOPATH_newObjectNULL,
+	LIB_hasType, LIB_exists, NOPATH_newObjectNULL,
 };
 
 /* ------------------------------------------------------------------------ */
@@ -409,7 +414,7 @@ static knh_bool_t PKG_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, voi
 
 static const knh_LinkDPI_t PATH_PKG = {
 	K_DSPI_PATH, "pkg", CLASS_Boolean, CLASS_InputStream, NULL,
-	NOPATH_hasType, PKG_exists, NOPATH_newObjectNULL,
+	LIB_hasType, PKG_exists, NOPATH_newObjectNULL,
 };
 
 static const knh_StreamDSPI_t STREAM_PKG = {

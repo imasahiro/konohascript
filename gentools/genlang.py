@@ -36,6 +36,7 @@ register  _MEXPR
 function  _PARAM _BLOCK
 
 METHOD    _TYPE  _CNAME _NAME _PARAM _BLOCK
+TYPEMAP   _TYPE  _PARAM _BLOCK
 DECL      _TYPE  _NAME  _EXPR
 CHKOUT    _NOCHECK
 LETM      _NOCHECK
@@ -197,11 +198,11 @@ OPTOKEN = '''
 or      TT_OR           0      5       MN_NONAME
 and     TT_AND          0      6       MN_NONAME
 not     TT_NOT          0      7       MN_opNOT
-exists  TT_EXISTS       0      7       MN_opEXISTS
-from    TT_FROM         0      7       MN_NONAME
-to      TT_TO           0      7       MN_opTO
-as      TT_AS           0      7       MN_NONAME
-until   TT_UNTIL        0      7       MN_opUNTIL
+exists  TT_EXISTS       0      8       MN_opEXISTS
+from    TT_FROM         0      9       MN_NONAME
+to      TT_TO           0      9       MN_opTO
+as      TT_AS           0      9       MN_NONAME
+until   TT_UNTIL        0      9       MN_opUNTIL
 
 #define    TT_isBINARY(tt) (TT_IS <= (tt) && (tt) <= TT_RSFT)
 is?        TT_IS        _BIN    10      MN_opIS

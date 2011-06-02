@@ -793,6 +793,14 @@ knh_String_t *knh_cwb_newStringDECODE(CTX ctx, knh_cwb_t *cwb, knh_StringDecoder
 
 #else /*K_INCLUDE_BUILTINAPI*/
 
+static knh_bool_t bytes_startsWithLink(knh_bytes_t t, knh_bytes_t scheme)
+{
+	if(knh_bytes_startsWith(t, scheme)) {
+		if(t.text[scheme.len] == ':') return 1;
+	}
+	return 0;
+}
+
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Private method dynamic Link.newObject(String fi, NameSpace ns, Class c);
 
@@ -800,9 +808,10 @@ static METHOD Link_newObject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Link_t *lnk = (knh_Link_t*)sfp[0].o;
 	knh_class_t cid = (sfp[3].c)->cid;
-	knh_String_t* fi = sfp[0].s;
+	knh_String_t* fi = sfp[1].s;
+	DBG_ASSERT(IS_String(fi));
 	knh_Object_t *v = NULL;
-	if(!knh_bytes_startsWith(S_tobytes(fi), S_tobytes(lnk->scheme))) {
+	if(!bytes_startsWithLink(S_tobytes(fi), S_tobytes(lnk->scheme))) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_Bytes_write(ctx, cwb->ba, S_tobytes(lnk->scheme));
 		knh_Bytes_putc(ctx, cwb->ba, ':');

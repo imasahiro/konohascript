@@ -1062,7 +1062,7 @@ static int Token_addURN(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStrea
 		Token_addBuf(ctx, tk, cwb, TT_UNTYPED, ch);
 		return ch;
 	}
-	if(isspace(ch) || ch == ';' || ch == '"' || ch == '\'') {
+	if(isspace(ch) || ch == EOF || ch == ';' || ch == '"' || ch == '\'') {
 		Token_addBuf(ctx, tk, cwb, TT_UNTYPED, ':');
 		knh_Bytes_putc(ctx, cwb->ba, ':');
 		Token_addBuf(ctx, tk, cwb, TT_UNTYPED, ch);
@@ -1596,7 +1596,7 @@ static void TT_skipMETA(CTX ctx, tkitr_t *itr)
 	while(ITR_hasNext(itr)) {
 		knh_term_t tt = ITR_tt(itr);
 		ctx->gma->uline = ITR_tk(itr)->uline;
-		if(ITR_isN(itr, +1, TT_COLON) && (tt == TT_NAME || tt == TT_UNAME)) {
+		if(ITR_isN(itr, +1, TT_COLON) && (tt == TT_NAME || tt == TT_UNAME) && !ITR_isN(itr, +2, TT_PARENTHESIS)) {
 			if(itr->meta == -1) itr->meta = itr->c;
 			ITR_next(itr);
 		}
@@ -2014,6 +2014,7 @@ static int ITR_indexOPR(CTX ctx, tkitr_t *itr, int offset)
 			}
 		}
 	}
+	DBG_P("idx=%d=<%d<%d %s", itr->c, idx, itr->e, TT__(ts[idx]->tt));
 	return idx;
 }
 
@@ -2445,9 +2446,15 @@ static void _EXPRCALL(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			}
 			if(ITR_is(itr, TT_URN)) {    /* new file:text.txt */
 				STT_(stmt) = STT_TLINK;
-				_ASIS(ctx, stmt, itr);
 				knh_Stmt_add(ctx, stmt, ITR_nextTK(itr));
 				_ASIS(ctx, stmt, itr);
+				break;
+			}
+			if(ITR_is(itr, TT_TLINK)) {    /* new file:: text.txt */
+				STT_(stmt) = STT_TLINK;
+				WARN_Unnecesary(ctx, tkCUR);
+				knh_Stmt_add(ctx, stmt, ITR_nextTK(itr));
+				_EXPR(ctx, stmt, itr);
 				break;
 			}
 			knh_Stmt_toERR(ctx, stmt, ERROR_Undefined(ctx, "class for new", CLASS_unknown, ITR_nextTK(itr)/*tkCUR*/));
@@ -2458,12 +2465,15 @@ static void _EXPRCALL(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			_EXPR1(ctx, stmt, itr);
 		}
 	}
-	if(isCALL || ITR_isDOTNAME(itr, 0) || ITR_is(itr, TT_PARENTHESIS) || ITR_is(itr, TT_BRACE)) {
+	if(isCALL || ITR_isDOTNAME(itr, 0) || ITR_is(itr, TT_PARENTHESIS) || /*ITR_is(itr, TT_BRACE) || error*/ ITR_is(itr, TT_BRANCET)) {
 		_CALLPARAM(ctx, stmt, itr);
 	}
 	else {
 		STT_(stmt) = STT_CALL1;
-		if(ITR_hasNext(itr)) WARN_Unnecesary(ctx, itr->ts[itr->c]);
+		if(ITR_hasNext(itr)) {
+			WARN_Unnecesary(ctx, itr->ts[itr->c]);
+			itr->c = itr->e;
+		}
 	}
 }
 
@@ -3113,6 +3123,7 @@ static void _METHOD(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	ADD(stmt, _CODE(ctx, stmt, itr));
 }
 
+
 static void _CONSTRUCTOR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 {
 	knh_Token_t *tkT = ITR_tk(itr);
@@ -3120,6 +3131,15 @@ static void _CONSTRUCTOR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	Stmt_tadd(ctx, stmt, itr, isCLASSAME, _("class name"));
 	_ASIS(ctx, stmt, itr);
 	knh_Stmt_add(ctx, stmt, new_TokenMN(ctx, MN_new));
+	ADD(stmt, _PARAM(ctx, stmt, itr));
+	ADD(stmt, _CODE(ctx, stmt, itr));
+}
+
+static void _TYPEMAP(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
+{
+	_ASIS(ctx, stmt, itr);    // TLINK or ASIS
+	knh_Stmt_add(ctx, stmt, ITR_nextTK(itr));  /* T */
+	ITR_nextTK(itr); // skip ':'
 	ADD(stmt, _PARAM(ctx, stmt, itr));
 	ADD(stmt, _CODE(ctx, stmt, itr));
 }
@@ -3360,6 +3380,10 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 				WarningMethodName(ctx, S_tochar(tkUF->text));
 				stmt = new_StmtMETA(ctx, STT_METHOD, itr, 0, _METHOD, NULL);
 				break;
+			}
+			DBG_P("isCOLON=%d, isPARENTHESIS=%d, ", ITR_is(mitr, TT_COLON), ITR_isN(mitr, +1, TT_PARENTHESIS));
+			if(ITR_is(mitr, TT_COLON) && ITR_isN(mitr, +1, TT_PARENTHESIS) && tt != TT_VAR && tt != TT_DYN && tt != TT_VOID) {
+				stmt = new_StmtMETA(ctx, STT_TYPEMAP, itr, 0, _TYPEMAP, NULL);
 			}
 			break /*L_EXPR*/;
 		}

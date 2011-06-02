@@ -416,6 +416,7 @@ void WARN_Ignored(CTX ctx, const char *whatis, knh_class_t cid, const char *symb
 void WARN_Unnecesary(CTX ctx, knh_Token_t *tk)
 {
 	Gamma_perror(ctx, KC_DWARN, _("unnecessary %O"), tk);
+	DBG_ABORT("why?");
 }
 void WarningUnnecessaryOperation(CTX ctx, const char *msg)
 {
