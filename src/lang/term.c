@@ -2014,7 +2014,7 @@ static int ITR_indexOPR(CTX ctx, tkitr_t *itr, int offset)
 			}
 		}
 	}
-	DBG_P("idx=%d=<%d<%d %s", itr->c, idx, itr->e, TT__(ts[idx]->tt));
+	//DBG_P("idx=%d=<%d<%d %s", itr->c, idx, itr->e, TT__(ts[idx]->tt));
 	return idx;
 }
 

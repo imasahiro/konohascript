@@ -12,6 +12,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 
 #define TT_UNTYPED TT_EOT
+#define TT_DYN     TT_DYNAMIC
 
 #define MN_newLIST   MN_new__LIST
 #define MN_newARRAY  MN_new__ARRAY

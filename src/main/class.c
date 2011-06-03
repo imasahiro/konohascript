@@ -156,7 +156,7 @@ KNHAPI2(void) knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
 {
 	const char *tname = NULL;
 	switch(cid) {
-	case TYPE_Tdynamic:  tname = "dyn";    break;
+	case TYPE_Tdynamic:  tname = "dynamic";    break;
 	case TYPE_void: tname = "void";       break;
 	case TYPE_var:  tname = "var";        break;
 	case TYPE_This: tname = "This";       break;
@@ -191,10 +191,10 @@ KNHAPI2(void) knh_write_type(CTX ctx, knh_OutputStream_t *w, knh_type_t type)
 	case TYPE_Int: tname = "int"; break;
 	case TYPE_Float: tname = "float"; break;
 	case TYPE_Bytes:  tname = "byte[]";    break;
-	case TYPE_Array: tname = "dyn" PTYPE_Array;  break;
-	case TYPE_Iterator:  tname = "dyn" PTYPE_Iterator;  break;
-	case TYPE_KindOf: tname = "dyn" PTYPE_KindOf; break;
-	case TYPE_Immutable: tname = "dyn" PTYPE_Immutable; break;
+	case TYPE_Array: tname = "dynamic" PTYPE_Array;  break;
+	case TYPE_Iterator:  tname = "dynamic" PTYPE_Iterator;  break;
+	case TYPE_KindOf: tname = "dynamic" PTYPE_KindOf; break;
+	case TYPE_Immutable: tname = "dynamic" PTYPE_Immutable; break;
 	default :
 		tname = NULL;
 	}
@@ -1578,7 +1578,7 @@ static METHOD Object_cast(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const @Hidden @Private method dyn Object.to(Class auto);
+//## @Const @Hidden @Private method dynamic Object.to(Class auto);
 
 static METHOD Object_to(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -1596,6 +1596,29 @@ static METHOD Object_to(CTX ctx, knh_sfp_t *sfp _RIX)
 		}
 	}
 	else {
+		RETURN_(sfp[0].o);
+	}
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Const @Hidden @Private method dynamic Object.typeCheck(Class auto);
+
+static METHOD Object_typeCheck(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_class_t scid = O_cid(sfp[0].o), tcid = (sfp[1].c)->cid;
+	if(scid != tcid && !class_isa(scid, tcid)) {
+		knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, scid, tcid, 1);
+		if(tmr != NULL && TypeMap_isSemantic(tmr)) {
+			sfp[0].ndata = O_ndata(sfp[0].i); // UNBOX
+			knh_TypeMap_exec(ctx, tmr, sfp, rix);
+		}
+		else {
+			DBG_P("reqt=%s", TYPE__(tcid));
+			THROW_TypeError(ctx, sfp, tcid, scid);
+		}
+	}
+	else {
+		sfp[rix].ndata = O_ndata(sfp[0].o);
 		RETURN_(sfp[0].o);
 	}
 }

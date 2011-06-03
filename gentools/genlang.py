@@ -160,7 +160,7 @@ typeof     -       0
 void       -       0
 var        -       0
 byte       -       0
-dyn        -       0
+dynamic    -       0
 true       -       0
 false      -       0
 

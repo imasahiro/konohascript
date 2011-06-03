@@ -387,15 +387,19 @@ static void knh_tracePERROR(CTX ctx, int pe, int isThrowable, const char *ns, co
 static void knh_traceKFMT(CTX ctx, int pe, int isThrowable, const char *ns, const char *event, knh_uline_t uline, knh_sfp_t *sfp, const char *fmt, va_list ap)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	size_t msgpos = 0;
 	knh_printf(ctx, cwb->w, "%s+%i" K_EVENT_FORMAT, ctx->trace, ctx->seq, ns, event);
 	knh_write_uline(ctx, cwb->w, uline);
+	msgpos = BA_size(cwb->ba);
 	knh_vprintf(ctx, cwb->w, fmt, ap);
 	ctx->spi->syslog(pe, knh_cwb_tochar(ctx, cwb));
 	((knh_context_t*)ctx)->seq += 1;
 	if(ctx->ehdrNC != NULL && isThrowable) {
-		knh_cwb_clear(cwb, 0);
-		knh_vprintf(ctx, cwb->w, fmt, ap);
+		size_t cwbpos = cwb->pos;
+		cwb->pos = msgpos;
 		knh_Exception_t *e = new_Error(ctx, uline, knh_cwb_newString(ctx, cwb));
+		cwb->pos = cwbpos;
+		knh_cwb_clear(cwb, 0);
 		CTX_setThrowingException(ctx, e);
 		knh_throw(ctx, sfp, 0);
 	}
@@ -473,13 +477,17 @@ void THROW_OutOfRange(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t max)
 {
 	KNH_THROW(ctx, sfp, LOG_CRIT, "Script!!", "Script!!: out of index range: %i not < %i", n, (knh_int_t)max);
 }
+void THROW_TypeError(CTX ctx, knh_sfp_t *sfp, knh_type_t reqt, knh_type_t type)
+{
+	KNH_THROW(ctx, sfp, LOG_ERR, "Script!!", "Script!!: type error: requested=%T, but given=%T", reqt, type);
+}
 void THROW_NoSuchMethod(CTX ctx, knh_sfp_t *sfp, knh_class_t cid, knh_methodn_t mn)
 {
-	KNH_THROW(ctx, sfp, LOG_CRIT, "Script!!", "Script!!: undefined method: %C.%M", cid, mn);
+	KNH_THROW(ctx, sfp, LOG_ERR, "Script!!", "Script!!: undefined method: %C.%M", cid, mn);
 }
 void THROW_ParamTypeError(CTX ctx, knh_sfp_t *sfp, size_t n, knh_methodn_t mn, knh_class_t reqt, knh_class_t cid)
 {
-	KNH_THROW(ctx, sfp, LOG_CRIT, "Script!!", "Script!!: type error: argument %d of %M is not %T", n, mn, cid);
+	KNH_THROW(ctx, sfp, LOG_ERR, "Script!!", "Script!!: type error: argument %d of %M is not %T", n, mn, cid);
 }
 
 /* ------------------------------------------------------------------------ */

@@ -178,7 +178,8 @@ static knh_Token_t *CALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt);
 static knh_Token_t *EXPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt);
 static knh_Token_t* CALLPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, knh_class_t mtd_cid, knh_Method_t *mtd);
 
-static knh_Token_t *new_TermTCAST(CTX ctx, knh_class_t reqt, knh_TypeMap_t *tmrNULL, knh_Token_t *tkO);
+static knh_Token_t *new_TermDYNCAST(CTX ctx, knh_class_t reqt, knh_methodn_t mn, knh_Token_t *tkO);
+static knh_Token_t *new_TermTCAST(CTX ctx, knh_class_t reqt, knh_TypeMap_t *mpr, knh_Token_t *tkO);
 
 knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh_flag_t opflag)
 {
@@ -232,7 +233,7 @@ knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh
 	}
 	if(!FLAG_is(opflag, _NOCAST)) {
 		if(vart == TYPE_dyn) {
-			KNH_SETv(ctx, tmNN(stmt, n), new_TermTCAST(ctx, reqt, NULL, tkNN(stmt, n)));
+			KNH_SETv(ctx, tmNN(stmt, n), new_TermDYNCAST(ctx, reqt, MN_typeCheck, tkNN(stmt, n)));
 			goto L_RETURN;
 		}
 		else {
@@ -2990,36 +2991,36 @@ static void Token_setTypeMap(CTX ctx, knh_Token_t *tk, knh_class_t tcid, knh_Typ
 	}
 }
 
+static knh_Token_t *new_TermDYNCAST(CTX ctx, knh_class_t reqt, knh_methodn_t mn, knh_Token_t *tkO)
+{
+	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, CLASS_Object, mn);
+	DBG_ASSERT(mtd != NULL);
+	knh_Token_t *tkMN = new_TokenTYPED(ctx, TT_MN,  TYPE_var, mn);
+	knh_Token_t *tkC = new_TokenTYPED(ctx, TT_CID, TYPE_Class, CLASS_t(reqt));
+	knh_Stmt_t *stmt = new_Stmt2(ctx, STT_CALL, tkMN, tkO, tkC, NULL);
+	Token_setMethod(ctx, tkMN, mn, mtd);
+	return Stmt_typed(ctx, stmt, reqt);
+}
+
 static knh_Token_t *new_TermTCAST(CTX ctx, knh_class_t reqt, knh_TypeMap_t *tmrNULL, knh_Token_t *tkO)
 {
-	if(tmrNULL == NULL) {
-		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, CLASS_Object, MN_to);
-		knh_Token_t *tkMN = new_TokenTYPED(ctx, TT_MN,  TYPE_var, MN_to);
-		knh_Token_t *tkC = new_TokenTYPED(ctx, TT_CID, TYPE_Class, CLASS_t(reqt));
-		knh_Stmt_t *stmt = new_Stmt2(ctx, STT_CALL, tkMN, tkO, tkC, NULL);
-		Token_setMethod(ctx, tkMN, MN_to, mtd);
-		return Stmt_typed(ctx, stmt, reqt);
+	DBG_ASSERT(tmrNULL != NULL);
+	if(TT_(tkO) == TT_CONST && TypeMap_isConst(tmrNULL)) {
+		BEGIN_LOCAL(ctx, lsfp, 1);
+		KNH_SETv(ctx, lsfp[0].o, (tkO)->data);
+		lsfp[0].ndata = O_ndata((tkO)->data);
+		klr_setesp(ctx, lsfp+1);
+		knh_TypeMap_exec(ctx, tmrNULL, lsfp, 0);
+		boxSFP(ctx, lsfp, SP(tmrNULL)->tcid);
+		Token_setCONST(ctx, tkO, lsfp[0].o);
+		END_LOCAL(ctx, lsfp, tkO);
+		return tkO;
 	}
 	else {
-		DBG_P("@@@@@ reqt=%s, srct=%s", TYPE__(reqt), TYPE__(tkO->type));
-//		DBG_ABORT("why??");
-		if(TT_(tkO) == TT_CONST && TypeMap_isConst(tmrNULL)) {
-			BEGIN_LOCAL(ctx, lsfp, 1);
-			KNH_SETv(ctx, lsfp[0].o, (tkO)->data);
-			lsfp[0].ndata = O_ndata((tkO)->data);
-			klr_setesp(ctx, lsfp+1);
-			knh_TypeMap_exec(ctx, tmrNULL, lsfp, 0);
-			boxSFP(ctx, lsfp, SP(tmrNULL)->tcid);
-			Token_setCONST(ctx, tkO, lsfp[0].o);
-			END_LOCAL(ctx, lsfp, tkO);
-			return tkO;
-		}
-		else {
-			knh_Token_t *tkC = new_TokenTYPED(ctx, TT_CID, TYPE_Class, CLASS_Tdynamic);
-			knh_Stmt_t *stmt = new_Stmt2(ctx, STT_TCAST, tkC, tkO, NULL);
-			Token_setTypeMap(ctx, tkC, reqt, tmrNULL);
-			return Stmt_typed(ctx, stmt, reqt);
-		}
+		knh_Token_t *tkC = new_TokenTYPED(ctx, TT_CID, TYPE_Class, CLASS_Tdynamic);
+		knh_Stmt_t *stmt = new_Stmt2(ctx, STT_TCAST, tkC, tkO, NULL);
+		Token_setTypeMap(ctx, tkC, reqt, tmrNULL);
+		return Stmt_typed(ctx, stmt, reqt);
 	}
 }
 
@@ -3028,9 +3029,7 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	knh_class_t scid, tcid;
 	knh_Token_t *tkC = TTYPE_typing(ctx, tkNN(stmt, 0), CLASS_unknown);
 	knh_TypeMap_t *tmr = NULL;
-	if(TT_(tkC) == TT_ERR) {
-		return tkC;
-	}
+	if(TT_(tkC) == TT_ERR) return tkC;
 	tcid = (tkC)->cid;
 	if(tcid == CLASS_Tdynamic) {   /* (dyn)expr */
 		tcid = CLASS_t(reqt);
@@ -3049,7 +3048,14 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 			tcid = knh_class_P1(ctx, tcid, scid); /* (Im<>)T => (Im<T>)T */
 		}
 	}
-	if(scid == CLASS_Tdynamic) goto L_DYNCAST;  /* (T)dyn */
+	if(scid == CLASS_Tdynamic) {
+		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, CLASS_Object, MN_typeCheck);
+		Token_setMethod(ctx, tkC, MN_typeCheck, mtd);
+		knh_Stmt_add(ctx, stmt, new_TokenTYPED(ctx, TT_CID, TYPE_Class, CLASS_t(tcid)));
+		Stmt_toSTT(stmt, STT_CALL);
+		return Stmt_typed(ctx, stmt, tcid);
+	}
+
 	DBG_P("TRANS=%d", Stmt_isTRANS(stmt));
 	if(class_isa(scid, tcid) && !(Stmt_isTRANS(stmt))) {
 //		if(!Tn_isCONST(stmt, 1) && tcid == scid) { sometimes, really annoying
@@ -3064,7 +3070,17 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	}
 
 	tmr = knh_findTypeMapNULL(ctx, scid, tcid, Stmt_isTRANS(stmt));
-	if(tmr == NULL) goto L_DYNCAST;
+	if(tmr == NULL) {
+		WARN_Cast(ctx, "undefined cast", tcid, scid);
+		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, CLASS_Object, MN_to);
+		Token_setMethod(ctx, tkC, MN_to, mtd);
+		knh_Stmt_add(ctx, stmt, new_TokenTYPED(ctx, TT_CID, TYPE_Class, CLASS_t(tcid)));
+		Stmt_toSTT(stmt, STT_CALL);
+		if(IS_Tunbox(scid)) {
+			Stmt_boxAll(ctx, stmt, 1, 2, CLASS_Object);
+		}
+		return Stmt_typed(ctx, stmt, tcid);
+	}
 	if(TypeMap_isConst(tmr) && Tn_isCONST(stmt, 1)) {
 		BEGIN_LOCAL(ctx, lsfp, 1);
 		knh_Token_t *tk1 = tkNN(stmt, 1);
@@ -3081,18 +3097,6 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	else {
 		DBG_P("tmr=%p, tcid=%s", tmr, TYPE__(tcid));
 		Token_setTypeMap(ctx, tkC, tcid, tmr);
-		return Stmt_typed(ctx, stmt, tcid);
-	}
-	L_DYNCAST:;
-	{
-		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, CLASS_Object, MN_to);
-		Token_setMethod(ctx, tkC, MN_to, mtd);
-		knh_Stmt_add(ctx, stmt, new_TokenTYPED(ctx, TT_CID, TYPE_Class, CLASS_t(tcid)));
-		WARN_Cast(ctx, "undefined cast", tcid, scid);
-		Stmt_toSTT(stmt, STT_CALL);
-		if(IS_Tunbox(scid)) {
-			Stmt_boxAll(ctx, stmt, 1, 2, CLASS_Object);
-		}
 		return Stmt_typed(ctx, stmt, tcid);
 	}
 }

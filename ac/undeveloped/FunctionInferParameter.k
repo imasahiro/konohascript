@@ -4,11 +4,13 @@
  ***************************************************************************/
 
 int f(n) {
-	return 0;
+	if(n == 1) return 1;
+	return f(n-1)*n;
 }
 
 assure "FunctionInferParameter" {
 	a = f(1);
-	assert a == 0;
+	assert a == 1;
+	assert f(2) == 2;
 }
 

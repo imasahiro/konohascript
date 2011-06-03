@@ -154,7 +154,7 @@ extern "C" {
 #define TT_VOID   ((knh_term_t)108)
 #define TT_VAR   ((knh_term_t)109)
 #define TT_BYTE   ((knh_term_t)110)
-#define TT_DYN   ((knh_term_t)111)
+#define TT_DYNAMIC   ((knh_term_t)111)
 #define TT_TRUE   ((knh_term_t)112)
 #define TT_FALSE   ((knh_term_t)113)
 #define TT_BRACE   ((knh_term_t)114)
@@ -365,7 +365,7 @@ static TERMDATA_t TERMDATA[] = {
 	{"void", 0, -1}, 
 	{"var", 0, -1}, 
 	{"byte", 0, -1}, 
-	{"dyn", 0, -1}, 
+	{"dynamic", 0, -1}, 
 	{"true", 0, -1}, 
 	{"false", 0, -1}, 
 	{"{", 0, -1}, 

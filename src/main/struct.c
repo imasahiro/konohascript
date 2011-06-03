@@ -199,7 +199,7 @@ static knh_ClassDef_t TdynamicDef = {
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"dyn", 0, 0, NULL,
+	"dynamic", 0, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
@@ -3060,15 +3060,15 @@ static const knh_StringData_t StringConstData0[] = {
 
 #define _D(s)  (knh_data_t)s
 static const knh_data_t CParamData0[] = {
-	DATA_CPARAM, CLASS_Iterator,  _D("konoha.Iterator<dyn>"), _D("dyn" PTYPE_Iterator), 1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Range,     _D("konoha.Range<dyn>"), _D("Range<dyn>"), 1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Array,     _D("konoha.Array<dyn>"), _D("dyn" PTYPE_Array), 1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Map,       _D("konoha.Map<konoha.String,dyn>"), _D("Map<String,dyn>"), 2, 0, TYPE_String, FN_K, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Tuple,     _D("konoha.Map<konoha.String,dyn>"), _D("Tuple<String,dyn>"), 2, 0, TYPE_String, FN_K, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Iterator,  _D("konoha.Iterator<dynamic>"), _D("dynamic" PTYPE_Iterator), 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Range,     _D("konoha.Range<dynamic>"), _D("Range<dynamic>"), 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Array,     _D("konoha.Array<dynamic>"), _D("dynamic" PTYPE_Array), 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Map,       _D("konoha.Map<konoha.String,dynamic>"), _D("Map<String,dynamic>"), 2, 0, TYPE_String, FN_K, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Tuple,     _D("konoha.Map<konoha.String,dynamic>"), _D("Tuple<String,dynamic>"), 2, 0, TYPE_String, FN_K, TYPE_dyn, FN_V,
 	DATA_CPARAM, CLASS_Func,      _D("konoha.Func<void>"), _D("Func<void>"), 0, 0,
-	DATA_CPARAM, CLASS_Thunk,     _D("konoha.Thunk<dyn>"), _D("Thunk<dyn>"), 1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_Immutable, _D("konoha.Immutable<dyn>"), _D("dyn" PTYPE_Immutable), 1, 0, TYPE_dyn, FN_V,
-	DATA_CPARAM, CLASS_KindOf,    _D("konoha.KindOf<void>"), _D("dyn" PTYPE_KindOf), 1, 0, TYPE_void, FN_V,
+	DATA_CPARAM, CLASS_Thunk,     _D("konoha.Thunk<dynamic>"), _D("Thunk<dynamic>"), 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_Immutable, _D("konoha.Immutable<dynamic>"), _D("dynamic" PTYPE_Immutable), 1, 0, TYPE_dyn, FN_V,
+	DATA_CPARAM, CLASS_KindOf,    _D("konoha.KindOf<void>"), _D("dynamic" PTYPE_KindOf), 1, 0, TYPE_void, FN_V,
 	0,
 };
 
