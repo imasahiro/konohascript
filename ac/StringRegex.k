@@ -3,14 +3,6 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
- 
-String text = """
- 
-""";
- 
-String date = "04/20/2009";
-
-  
 assure "StringRegex" {
 	String abc = "abcdefg";
 	assert abc in? $/def/;
@@ -58,6 +50,16 @@ assure "StringRegexReplace" {
 	assert ab.replace($/a*/, "AAA") == "AAAbbb";
 	assert ab.replace($/z*/, "AAA") == "AAAaaabbb";
 	assert ab.replace($/$/, "AAA") == "aaabbbAAA";
+}
+
+assure "StringRegexGlobalReplace" {  // added by @konohakun
+	String lang = "C, python, perl, php";
+	assert lang.replace("python", "konoha") == "C, konoha, perl, php";
+	assert lang.replace($/python/g, "konoha") == "C, konoha, perl, php";
+	assert lang.replace($/p\w*/g, "konoha") == "C, konoha, konoha, konoha";
+}
+
+assure "StringRegexReplaceMatchedSubstring" { // modified by @konohakun 
 	String str = "this is konoha";
 	assert str.replace($/this is (.+?)$/, "that is $1") == "that is konoha";
 	assert str.replace($/this is (.+?)$/, "$1 is this") == "konoha is this";
@@ -67,6 +69,18 @@ assure "StringRegexReplace" {
 	print res;
 	assert res == "abc``def''gh";
 }
+
+assure "StringRegexExtract" {  // added by konohakun
+	String date = "2011-03-11";
+	d = date.extract($/(?<year>\d+)-(?<month>\d+)-(?<day>\d+)/);
+	print d;
+	print d.class;
+	assert |d| == 3;
+	assert d["year"] == "2011";
+	assert d["month"] == "03";
+	assert d["day"] = "11";
+}
+
 
 assure "ParserRegex" {
 	Regex pattern = $/\\/;
