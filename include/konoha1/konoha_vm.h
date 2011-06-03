@@ -274,6 +274,10 @@ extern "C" {
 		klr_setmtdNC(ctx, rbp[thisidx+K_MTDIDX2], mtd_);\
 	} \
 
+#define KLR_LDMTD(ctx, thisidx, ldmtd, hc, mtdO) { \
+		ldmtd(ctx, SFP(rbp), op);\
+	} \
+
 #define KLR_CALL(ctx, rtnidx, thisidx, espshift) { \
 		knh_Method_t *mtd_ = rbp[thisidx+K_MTDIDX2].mtdNC;\
 		prefetch((mtd_)->pc_start);\

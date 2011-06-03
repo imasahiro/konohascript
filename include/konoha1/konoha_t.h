@@ -1024,6 +1024,10 @@ typedef struct {
 
 /* ------------------------------------------------------------------------ */
 
+typedef struct {
+	knh_class_t cid; knh_methodn_t mn;
+} knh_hcache_t;
+
 typedef struct knh_mtdcache_t {
 	knh_class_t cid; knh_methodn_t mn;
 	struct knh_Method_t *mtd;

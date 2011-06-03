@@ -788,13 +788,14 @@ typedef struct klr_CHKSTACK_t {
 	knh_sfpidx_t n;
 } klr_CHKSTACK_t;
 
-#define OPCODE_LOADMTD ((knh_opcode_t)104)
-typedef struct klr_LOADMTD_t {
+#define OPCODE_LDMTD ((knh_opcode_t)104)
+typedef struct klr_LDMTD_t {
 	KCODE_HEAD;
 	knh_sfpidx_t thisidx;
-	klr_Fmethod method;
+	klr_Floadmtd loadmtd;
+	knh_hcache_t cache;
 	knh_Method_t* mtdNC;
-} klr_LOADMTD_t;
+} klr_LDMTD_t;
 
 #define OPCODE_CALL ((knh_opcode_t)105)
 typedef struct klr_CALL_t {
@@ -1277,11 +1278,12 @@ typedef struct klr_NOP_t {
 #define VMT_I        9
 #define VMT_F        10
 #define VMT_CID      11
-#define VMT_MTD      12
-#define VMT_TMR      13
-#define VMT_OBJECT   14
-#define VMT_STRING   15
-#define VMT_INT      16
-#define VMT_FLOAT    17
+#define VMT_HCACHE    12
+#define VMT_MTD      13
+#define VMT_TMR      14
+#define VMT_OBJECT   15
+#define VMT_STRING   16
+#define VMT_INT      17
+#define VMT_FLOAT    18
 
 #endif /* KONOHA_CODE_H_ */

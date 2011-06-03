@@ -78,7 +78,7 @@ assure "StringRegexExtract" {  // added by konohakun
 	assert |d| == 3;
 	assert d["year"] == "2011";
 	assert d["month"] == "03";
-	assert d["day"] = "11";
+	assert d["day"] == "11";
 }
 
 

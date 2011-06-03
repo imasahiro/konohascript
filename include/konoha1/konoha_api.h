@@ -467,7 +467,7 @@ void THROW_OutOfMemory(CTX ctx, size_t size);
 void THROW_StackOverflow(CTX ctx, knh_sfp_t *sfp);
 void THROW_Arithmetic(CTX ctx, knh_sfp_t *sfp, const char *msg);
 void THROW_OutOfRange(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t max);
-void THROW_TypeError(CTX ctx, knh_sfp_t *sfp, knh_type_t type, knh_type_t reqt);
+void THROW_TypeError(CTX ctx, knh_sfp_t *sfp, knh_type_t reqt, knh_type_t type);
 void THROW_NoSuchMethod(CTX ctx, knh_sfp_t *sfp, knh_class_t cid, knh_methodn_t mn);
 void THROW_ParamTypeError(CTX ctx, knh_sfp_t *sfp, size_t n, knh_methodn_t mn, knh_class_t reqt, knh_class_t cid);
 const knh_ExportsAPI_t *knh_getExportsAPI(void);

@@ -158,7 +158,7 @@ static const knh_OPDATA_t OPDATA[] = {
 	{"XOSET", _JIT|_CONST, 2+1, { VMT_SFX, VMT_VOID, VMT_OBJECT, VMT_VOID}}, 
 	{"XMOVx", 0, 2+1+1, { VMT_SFX, VMT_VOID, VMT_SFX, VMT_VOID, VMT_VOID}}, 
 	{"CHKSTACK", 0, 1, { VMT_SFPIDX, VMT_VOID}}, 
-	{"LOADMTD", 0, 3, { VMT_SFPIDX, VMT_F, VMT_MTD, VMT_VOID}}, 
+	{"LDMTD", 0, 4, { VMT_SFPIDX, VMT_F, VMT_HCACHE, VMT_MTD, VMT_VOID}}, 
 	{"CALL", _DEF|_JIT, 3, { VMT_R, VMT_SFPIDX, VMT_SFPIDX, VMT_VOID}}, 
 	{"SCALL", _DEF|_JIT, 4, { VMT_R, VMT_SFPIDX, VMT_SFPIDX, VMT_MTD, VMT_VOID}}, 
 	{"VCALL", _DEF|_JIT, 4, { VMT_R, VMT_SFPIDX, VMT_SFPIDX, VMT_MTD, VMT_VOID}}, 
@@ -325,7 +325,7 @@ void knh_opcode_check(void)
 	KNH_ASSERT(sizeof(klr_XOSET_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_XMOVx_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_CHKSTACK_t) <= sizeof(knh_opline_t));
-	KNH_ASSERT(sizeof(klr_LOADMTD_t) <= sizeof(knh_opline_t));
+	KNH_ASSERT(sizeof(klr_LDMTD_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_CALL_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_SCALL_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_VCALL_t) <= sizeof(knh_opline_t));
@@ -527,10 +527,20 @@ void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline
 			knh_write_vmfunc(ctx, w, c->p[i]); break;
 		case VMT_CID:
 			knh_write_cid(ctx, w, ((knh_ClassTBL_t*)c->data[i])->cid); break;
+		case VMT_HCACHE: {
+			knh_hcache_t *hc = (knh_hcache_t*)&(c->p[i]);
+			knh_write_cid(ctx, w, hc->cid); 
+			knh_putc(ctx, w, '/');
+			knh_write_mn(ctx, w, hc->mn); 
+		}
+		break;
 		case VMT_MTD: if(c->p[i] != NULL) {
 			knh_Method_t *mtd = (knh_Method_t*)c->p[i];
 			knh_write_cid(ctx, w, (mtd)->cid); knh_putc(ctx, w, '.');
 			knh_write_mn(ctx, w, (mtd)->mn); 
+		}
+		else {
+			knh_write_ascii(ctx, w, "NULL");
 		}
 		break;
 		case VMT_TMR:
@@ -643,7 +653,7 @@ knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc)
 		&&L_OOMOV, &&L_ONMOV, &&L_OSET2, &&L_OSET3, 
 		&&L_OSET4, &&L_RCINCx, &&L_RCDECx, &&L_OMOVx, 
 		&&L_XMOV, &&L_XOSET, &&L_XMOVx, &&L_CHKSTACK, 
-		&&L_LOADMTD, &&L_CALL, &&L_SCALL, &&L_VCALL, 
+		&&L_LDMTD, &&L_CALL, &&L_SCALL, &&L_VCALL, 
 		&&L_VCALL_, &&L_FASTCALL0, &&L_RET, &&L_TR, 
 		&&L_SCAST, &&L_TCAST, &&L_ACAST, &&L_iCAST, 
 		&&L_fCAST, &&L_JMP, &&L_JMP_, &&L_JMPF, 
@@ -1291,9 +1301,9 @@ knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc)
 		pc++;
 		GOTO_NEXT();
 	} 
-	CASE(LOADMTD) {
-		klr_LOADMTD_t *op = (klr_LOADMTD_t*)pc; (void)op; VMCOUNT(pc); 
-		KLR_LOADMTD(ctx, op->thisidx, op->method, op->mtdNC);
+	CASE(LDMTD) {
+		klr_LDMTD_t *op = (klr_LDMTD_t*)pc; (void)op; VMCOUNT(pc); 
+		KLR_LDMTD(ctx, op->thisidx, op->loadmtd, op->cache, op->mtdNC);
 		pc++;
 		GOTO_NEXT();
 	} 

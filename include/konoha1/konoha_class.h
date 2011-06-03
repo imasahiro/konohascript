@@ -1222,7 +1222,8 @@ typedef void*                  knh_dummyptr_t;
 
 #define klr_Ffcall    knh_Fmethod
 typedef void (*klr_Fth)(CTX, struct knh_opline_t *, void**);
-typedef knh_Method_t* (*klr_Fmethod)(CTX, knh_sfp_t *, int, knh_Method_t*);
+struct klr_LDMTD_t;
+typedef void (*klr_Floadmtd)(CTX, knh_sfp_t *, struct klr_LDMTD_t *);
 typedef long   (*klr_Finttr)(long u);
 typedef double (*klr_Ffloattr)(double u);
 typedef void (*klr_Ftr)(CTX, knh_sfp_t*, knh_sfpidx_t, const knh_ClassTBL_t *);

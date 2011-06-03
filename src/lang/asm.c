@@ -855,27 +855,53 @@ static void _TUNBOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_
 		sfp[c].ndata = O_ndata(sfp[0].o);
 	}
 }
-static knh_Method_t* _SETMTD(CTX ctx, knh_sfp_t *sfp, int thisidx, knh_Method_t *mtd)
+//static knh_Method_t* _SETMTD(CTX ctx, knh_sfp_t *sfp, int thisidx, knh_Method_t *mtd)
+//{
+//	return mtd;
+//}
+static void _LOOKUPMTD(CTX ctx, knh_sfp_t *sfp, struct klr_LDMTD_t *op)
 {
-	return mtd;
-}
-static knh_Method_t* _LOOKUPMTD(CTX ctx, knh_sfp_t *sfp, int thisidx, knh_Method_t *mtd)
-{
-	const knh_ClassTBL_t *t = O_cTBL(sfp[thisidx].o);
-	if(t->cid != (mtd)->cid) {
-		mtd = ClassTBL_getMethod(ctx, t, (mtd)->mn);
+	size_t thisidx = op->thisidx / 2;
+	const knh_ClassTBL_t *ct = O_cTBL(sfp[thisidx].o);
+	if(op->cache.cid != ct->cid) {
+		knh_Method_t *mtd = ClassTBL_getMethod(ctx, ct, op->cache.mn);
+		op->mtdNC = mtd;
+		op->cache.cid = ct->cid;
 	}
-	return mtd;
+	sfp[thisidx+K_MTDIDX].mtdNC = op->mtdNC;
 }
-static knh_Method_t* _CHKMTD(CTX ctx, knh_sfp_t *sfp, int thisidx, knh_Method_t *mtd)
+static void _DYNMTD(CTX ctx, knh_sfp_t *sfp, struct klr_LDMTD_t *op)
 {
-	const knh_ClassTBL_t *t = O_cTBL(sfp[thisidx].o);
-	if(t->cid != (mtd)->cid) {
-		mtd = ClassTBL_getMethod(ctx, t, (mtd)->mn);
+	size_t thisidx = op->thisidx / 2;
+	const knh_ClassTBL_t *ct = O_cTBL(sfp[thisidx].o);
+	knh_class_t this_cid = ct->cid;
+	if(this_cid != op->cache.cid) {
+		knh_Method_t* mtd = knh_ClassTBL_findMethodNULL(ctx, ct, op->cache.mn, 0);
+		if(mtd == NULL) {
+			THROW_NoSuchMethod(ctx, sfp, this_cid, op->cache.mn);
+		}
+		op->mtdNC = mtd;
+		op->cache.cid = ct->cid;
 	}
-	knh_stack_typecheck(ctx, sfp + thisidx, mtd, NULL);
-	return mtd;
+	knh_Method_t* mtd = op->mtdNC;
+	size_t i, argc = ParamArray_isVARGs(DP(mtd)->mp) ? (ctx->esp - sfp) : knh_Method_psize(mtd);
+	for(i = 1; i < argc; i++) {
+		size_t idx = thisidx+i;
+		knh_Object_t *o = sfp[idx].o;
+		knh_type_t reqt = knh_Method_ptype(ctx, mtd, this_cid, i - 1);
+		ct = O_cTBL(o);
+		DBG_P("i=%d, reqt=%s, O_cid=%s", i, TYPE__(reqt), CLASS__(ct->cid));
+		if(reqt == ct->cid && ClassTBL_isa(ct, reqt)) {
+			if(IS_Tunbox(reqt)) {
+				sfp[idx].ndata = O_ndata(o);
+			}
+			continue;
+		}
+		THROW_ParamTypeError(ctx, sfp, (mtd)->mn, i, reqt, O_cid(o));
+	}
+	sfp[thisidx+K_MTDIDX].mtdNC = op->mtdNC;
 }
+
 /* SYSVAL */
 static METHOD Fmethod_CTX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -1479,11 +1505,11 @@ static void ASM_CALL(CTX ctx, knh_type_t reqt, int sfpidx, knh_type_t rtype, knh
 	DBG_ASSERT(IS_Method(mtd));
 	KNH_ASSERT(sfpidx >= DP(ctx->gma)->espidx);
 	if(Method_isFinal(mtd) || isStatic) {
-		if(Gamma_hasJIT(ctx)) {
-			ASM(LOADMTD, SFP_(thisidx), _SETMTD, mtd);
-			ASM(CALL, RTNIDX_(ctx, sfpidx, rtype), SFP_(thisidx), ESP_(sfpidx, args));
-		}
-		else if(Method_isKonohaCode(mtd) || DP(ctx->gma)->mtd == mtd) {
+//		if(Gamma_hasJIT(ctx)) {
+//			ASM(LOADMTD, SFP_(thisidx), _SETMTD, mtd);
+//			ASM(CALL, RTNIDX_(ctx, sfpidx, rtype), SFP_(thisidx), ESP_(sfpidx, args));
+//		}else
+		if(Method_isKonohaCode(mtd) || DP(ctx->gma)->mtd == mtd) {
 			if(Gamma_isInlineFunction(ctx->gma) && DP(ctx->gma)->mtd != mtd) {
 				knh_KonohaCode_t *kcode = DP(mtd)->kcode;
 				size_t isize = kcode->codesize / sizeof(knh_opline_t);
@@ -1507,7 +1533,7 @@ static void ASM_CALL(CTX ctx, knh_type_t reqt, int sfpidx, knh_type_t rtype, knh
 		}
 	}
 	else {
-		ASM(LOADMTD, SFP_(thisidx), _LOOKUPMTD, mtd);
+		ASM(LDMTD, SFP_(thisidx), _LOOKUPMTD, {mtd->cid, mtd->mn}, mtd);
 		ASM(CALL, RTNIDX_(ctx, sfpidx, rtype), SFP_(thisidx), ESP_(sfpidx, args));
 	}
 }
@@ -1584,7 +1610,6 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 		size_t psize = pa->psize;
 		size_t n = tkNN(stmt, 2)->index;
 		int ti = Tuple_index(ctx, pa, n, psize);
-		DBG_P("n=%d psize=%d, ti=%d", n, psize, ti);
 		knh_param_t *p = knh_ParamArray_get(pa, n);
 		knh_sfx_t tx = {OC_(a), ti};
 		if(tkMTD->mn == MN_get) {
@@ -1606,8 +1631,7 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 		for(i = 1; i < DP(stmt)->size; i++) {
 			Tn_asm(ctx, stmt, i, TYPE_dyn, local + i + (K_CALLDELTA-1));
 		}
-		mtd = KNH_TNULL(Method);
-		ASM(LOADMTD, SFP_(local+K_CALLDELTA), _CHKMTD, mtd);
+		ASM(LDMTD, SFP_(local+K_CALLDELTA), _DYNMTD, {TYPE_void, tkMTD->mn}, NULL);
 		ASM(CALL, SFP_(local+K_CALLDELTA), ESP_(local, DP(stmt)->size - 2));
 		ASM_MOVL(ctx, reqt, sfpidx, TYPE_dyn, local);
 		return;
@@ -2842,10 +2866,10 @@ typedef struct knh_funcname_t {
 static struct knh_funcname_t _FuncData[] = {
 	_FUNC(_PRINT, "PRINT"), _FUNC(_BOX, "BOX"), _FUNC(TR_NEW, "NEW"),
 	_FUNC(_NULVAL, "NULL"), _FUNC(_CWB, "CWB"), _FUNC(_TOSTR, "TOSTR"),
-	_FUNC(_SETMTD, "setMethod"), _FUNC(_LOOKUPMTD, "lookupMethod"),
+	_FUNC(_LOOKUPMTD, "LOOKUPMTD"),
 	_FUNC(_PROP, "PROP"), _FUNC(_bBOX, "bBOX"), _FUNC(_VARGS, "VARGS"),
 	_FUNC(_ERR, "ERR"), _FUNC(_TCHECK, "CHKTYPE"),
-	_FUNC(_CHKMTD, "checkParams"),
+	_FUNC(_DYNMTD, "DYNMTD"),
 	_FUNC(NULL, NULL),
 };
 

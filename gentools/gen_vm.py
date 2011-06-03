@@ -126,7 +126,7 @@ RCDECx     0                 a:sfx
 #MOVe   a:sfpidx xspidx:u
 
 CHKSTACK   0                 n:sfpidx
-LOADMTD    0                 thisidx:sfpidx method:f mtdNC:mtd
+LDMTD      0                 thisidx:sfpidx loadmtd:f cache:hcache mtdNC:mtd
 CALL       _DEF|_JIT         a:r thisidx:sfpidx espshift:sfpidx
 SCALL      _DEF|_JIT         a:r thisidx:sfpidx espshift:sfpidx mtdNC:mtd
 VCALL      _DEF|_JIT         a:r thisidx:sfpidx espshift:sfpidx mtdNC:mtd
@@ -211,6 +211,7 @@ CTYPE = {
 	'int':     'knh_int_t',
 	'float':   'knh_float_t',
 	'cid':     'const knh_ClassTBL_t*',
+	'hcache':  'knh_hcache_t',
 	'mtd':     'knh_Method_t*',
 	'tmr':     'knh_TypeMap_t*',
 	'addr':    'knh_KLRInst_t*',
@@ -323,12 +324,13 @@ def write_define_h(f):
 #define VMT_I        9
 #define VMT_F        10
 #define VMT_CID      11
-#define VMT_MTD      12
-#define VMT_TMR      13
-#define VMT_OBJECT   14
-#define VMT_STRING   15
-#define VMT_INT      16
-#define VMT_FLOAT    17
+#define VMT_HCACHE    12
+#define VMT_MTD      13
+#define VMT_TMR      14
+#define VMT_OBJECT   15
+#define VMT_STRING   16
+#define VMT_INT      17
+#define VMT_FLOAT    18
 
 ''' % (n))
 
@@ -450,7 +452,6 @@ knh_Object_t** knh_opline_reftrace(CTX ctx, knh_opline_t *c FTRARG)
 }
 /* ------------------------------------------------------------------------ */
 
-//#ifdef K_USING_RBP_
 #define RBP_ASSERT0(N)   \
 	if((N % 2) != 0) {\
 		DBG_P("r=%d", N); \
@@ -462,11 +463,6 @@ knh_Object_t** knh_opline_reftrace(CTX ctx, knh_opline_t *c FTRARG)
 		DBG_P("r=%d", N); \
 		DBG_ASSERT((N % 2) != 0);\
 	}\
-	
-//#else
-//#define RBP_ASSER0(N)
-//#define RBP_ASSER1(N)
-//#endif
 
 void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline_t *pc_start)
 {
@@ -522,10 +518,20 @@ void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline
 			knh_write_vmfunc(ctx, w, c->p[i]); break;
 		case VMT_CID:
 			knh_write_cid(ctx, w, ((knh_ClassTBL_t*)c->data[i])->cid); break;
+		case VMT_HCACHE: {
+			knh_hcache_t *hc = (knh_hcache_t*)&(c->p[i]);
+			knh_write_cid(ctx, w, hc->cid); 
+			knh_putc(ctx, w, '/');
+			knh_write_mn(ctx, w, hc->mn); 
+		}
+		break;
 		case VMT_MTD: if(c->p[i] != NULL) {
 			knh_Method_t *mtd = (knh_Method_t*)c->p[i];
 			knh_write_cid(ctx, w, (mtd)->cid); knh_putc(ctx, w, '.');
 			knh_write_mn(ctx, w, (mtd)->mn); 
+		}
+		else {
+			knh_write_ascii(ctx, w, "NULL");
 		}
 		break;
 		case VMT_TMR:
