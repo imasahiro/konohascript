@@ -321,7 +321,6 @@ typedef knh_ushort_t       knh_event_t;    /* knh_event_t */
 #define IS_Tfloat(t)      (t == CLASS_Float || ClassTBL(CLASS_t(t))->bcid == CLASS_Float)
 #define IS_Tbool(t)       (TYPE_Boolean == t)
 #define IS_Tunbox(t)      (IS_Tint(t) || IS_Tfloat(t) || IS_Tbool(t))
-#define IS_Tnumbox(t)     (t == CLASS_Object || t == CLASS_Number)
 #define IS_Tfunc(t)       (ClassTBL(CLASS_t(t))->bcid == CLASS_Func)
 #define IS_Tstr(t)        (t == CLASS_String || ClassTBL(CLASS_t(t))->bcid == CLASS_String)
 #define IS_Tvany(t)       (t == CLASS_Tdynamic || t == TYPE_var || t == TYPE_void)

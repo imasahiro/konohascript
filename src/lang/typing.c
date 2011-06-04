@@ -132,7 +132,12 @@ static void Stmt_boxAll(CTX ctx, knh_Stmt_t *stmt, size_t s, size_t e, knh_type_
 	for(i = s; i < e; i++) {
 		knh_class_t bcid = C_bcid(Tn_cid(stmt, i));
 		if(bcid == CLASS_Int || bcid == CLASS_Float || bcid == CLASS_Boolean) {
-			KNH_SETv(ctx, stmtNN(stmt, i), new_StmtBOX(ctx, tkNN(stmt, i), reqt/*Tn_cid(stmt, i)*/));
+			if(TT_(tkNN(stmt, i)) == TT_CONST) {
+				tkNN(stmt, i)->type = reqt;  // re-typing as boxed value
+			}
+			else {
+				KNH_SETv(ctx, stmtNN(stmt, i), new_StmtBOX(ctx, tkNN(stmt, i), reqt/*Tn_cid(stmt, i)*/));
+			}
 		}
 	}
 }
@@ -2942,8 +2947,12 @@ static knh_Token_t* OPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	{
 		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, mn);
 		if(mtd == NULL) {
-			return ERROR_Unsupported(ctx, "operator", mtd_cid,
-				mn == MN_NONAME ? S_tochar(tkOP->text) : knh_getopname(mn));
+			if(mtd_cid != CLASS_Tdynamic) {
+				return ERROR_Unsupported(ctx, "operator", mtd_cid, mn == MN_NONAME ? S_tochar(tkOP->text) : knh_getopname(mn));
+			}
+			Stmt_boxAll(ctx, stmt, 2, DP(stmt)->size, TYPE_dyn);
+			Token_setMethod(ctx, tkOP, mn, mtd);
+			return Stmt_typed(ctx, stmt, TYPE_dyn);
 		}
 		Token_setMethod(ctx, tkOP, mn, mtd);
 		TYPING_TypedExpr(ctx, stmt, 1, mtd_cid);

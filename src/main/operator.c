@@ -782,12 +782,12 @@ static METHOD String_opSUB(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 /* [dynamic] */
 
-//## method dynamic dynamic.opADD(dynamic value);
-//## method dynamic dynamic.opSUB(dynamic value);
-//## method dynamic dynamic.opMUL(dynamic value);
-//## method dynamic dynamic.opDIV(dynamic value);
-//## method dynamic dynamic.opMOD(dynamic value);
-//## method dynamic dynamic.opNEG();
+//## method0 dynamic dynamic.opADD(dynamic value);
+//## method0 dynamic dynamic.opSUB(dynamic value);
+//## method0 dynamic dynamic.opMUL(dynamic value);
+//## method0 dynamic dynamic.opDIV(dynamic value);
+//## method0 dynamic dynamic.opMOD(dynamic value);
+//## method0 dynamic dynamic.opNEG();
 
 static METHOD dynamic_opADD(CTX ctx, knh_sfp_t *sfp _RIX)
 {

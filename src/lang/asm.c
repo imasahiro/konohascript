@@ -885,6 +885,9 @@ static void _DYNMTD(CTX ctx, knh_sfp_t *sfp, struct klr_LDMTD_t *op)
 		op->cache.cid = ct->cid;
 	}
 	knh_Method_t* mtd = op->mtdNC;
+	if(IS_Tunbox(mtd->cid)) {
+		sfp[thisidx].ndata = O_ndata(sfp[thisidx].o);
+	}
 	size_t i, argc = ParamArray_isVARGs(DP(mtd)->mp) ? (ctx->esp - sfp) : knh_Method_psize(mtd);
 	for(i = 0; i < argc; i++) {
 		size_t idx = thisidx+1+i;
@@ -898,7 +901,13 @@ static void _DYNMTD(CTX ctx, knh_sfp_t *sfp, struct klr_LDMTD_t *op)
 			}
 			continue;
 		}
-		THROW_ParamTypeError(ctx, sfp, (mtd)->mn, i, reqt, O_cid(o));
+		if(IS_Tfloat(reqt) && IS_Tint(ct->cid)) {
+			sfp[idx].fvalue = (knh_float_t)N_toint(o); continue;
+		}
+		if(IS_Tint(reqt) && IS_Tfloat(ct->cid)) {
+			sfp[idx].ivalue = (knh_int_t)N_tofloat(o); continue;
+		}
+		THROW_ParamTypeError(ctx, sfp, i, (mtd)->mn, reqt, O_cid(o));
 	}
 	sfp[thisidx+K_MTDIDX].mtdNC = op->mtdNC;
 }
@@ -1103,27 +1112,34 @@ static void ASM_SMOV(CTX ctx, knh_type_t atype, int a/*flocal*/, knh_Token_t *tk
 
 static void ASM_XMOVx(CTX ctx, knh_type_t atype, knh_sfx_t ax, knh_type_t btype, knh_sfx_t bx)
 {
-	int espidx = DP(ctx->gma)->espidx;
 	if(IS_Tunbox(atype)) {
-		if(IS_Tunbox(btype)) {
-			ASM(XNMOVx, ax, bx);
-		}
-		else {
-			ASM(OMOVx, NC_(espidx), bx);
-			ASM(XNMOV, ax, NC_(espidx));
-		}
+		DBG_ASSERT(IS_Tunbox(btype));
+		ASM(XNMOVx, ax, bx);
 	}
 	else {
-		DBG_ASSERT(atype == TYPE_dyn || IS_Tnumbox(atype));
-		if(IS_Tunbox(btype)) { // dynamic a = b; // int b;
-			ASM(NMOVx, NC_(espidx), bx);
-			ASM(TR, OC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ClassTBL(CLASS_t(btype)), _BOX);
-			ASM(XMOV, ax, OC_(espidx));
-		}
-		else {
-			ASM(XMOVx, ax, bx);
-		}
+		DBG_ASSERT(!IS_Tunbox(btype));
+		ASM(XMOVx, ax, bx);
 	}
+//	int espidx = DP(ctx->gma)->espidx;
+//	if(IS_Tunbox(atype)) {
+//		if(IS_Tunbox(btype)) {
+//			ASM(XNMOVx, ax, bx);
+//		}
+//		else {
+//			ASM(OMOVx, NC_(espidx), bx);
+//			ASM(XNMOV, ax, NC_(espidx));
+//		}
+//	}
+//	else {
+//		if(IS_Tunbox(btype)) { // dynamic a = b; // int b;
+//			ASM(NMOVx, NC_(espidx), bx);
+//			ASM(TR, OC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ClassTBL(CLASS_t(btype)), _BOX);
+//			ASM(XMOV, ax, OC_(espidx));
+//		}
+//		else {
+//			ASM(XMOVx, ax, bx);
+//		}
+//	}
 }
 
 static void ASM_XMOV(CTX ctx, knh_type_t atype, int a, size_t an, knh_Token_t *tkb)
@@ -2787,9 +2803,6 @@ void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t it
 				}
 				else {
 					ASM(OSET, OC_(i), v);
-				}
-				if(IS_Tnumbox(type)) {
-					ASM(NSET, NC_(i), 0);
 				}
 			}
 		}
