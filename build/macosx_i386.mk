@@ -2,7 +2,7 @@
 #
 
 CC = /usr/bin/arch -arch i386 /usr/bin/gcc
-CFLAGS = -O0 -g3 -Wall -fPIC -I./include 
+CFLAGS = -O2 -g -Wall -fPIC -I./include
 #CFLAGS ?= -g3 -O0 -Wall -fPIC -I./include -DK_USING_DEBUG
 
 ARCH = -arch i386 
