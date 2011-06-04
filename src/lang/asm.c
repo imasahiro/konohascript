@@ -8,7 +8,7 @@
  * If you want to use the latter license, please contact us.
  *
  * (1) GNU General Public License 3.0 (with K_UNDER_GPL)
- * (2) Konoha Non-Disclosure License 1.0
+ * (2) Konoha Non-Disclosure License 1.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -1637,8 +1637,8 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 			Tn_asm(ctx, stmt, i, TYPE_dyn, local + i + (K_CALLDELTA-1));
 		}
 		ASM(LDMTD, SFP_(local+K_CALLDELTA), _DYNMTD, {TYPE_void, tkMTD->mn}, NULL);
-		ASM(CALL, SFP_(sfpidx), SFP_(local+K_CALLDELTA), ESP_(local, DP(stmt)->size - 2));
-		ASM(PROBE, SFP2_(sfpidx), _PBOX, 0, 0);
+		ASM(CALL, SFP_(local), SFP_(local+K_CALLDELTA), ESP_(local, DP(stmt)->size - 2));
+		ASM(PROBE, SFP2_(local), _PBOX, 0, 0);
 		ASM_MOVL(ctx, reqt, sfpidx, TYPE_dyn, local);
 		return;
 	}
@@ -2878,7 +2878,7 @@ static struct knh_funcname_t _FuncData[] = {
 	_FUNC(_LOOKUPMTD, "LOOKUPMTD"),
 	_FUNC(_PROP, "PROP"), _FUNC(_bBOX, "bBOX"), _FUNC(_VARGS, "VARGS"),
 	_FUNC(_ERR, "ERR"), _FUNC(_TCHECK, "CHKTYPE"),
-	_FUNC(_DYNMTD, "DYNMTD"),
+	_FUNC(_DYNMTD, "DYNMTD"), _FUNC(_PBOX, "PBOX"),
 	_FUNC(NULL, NULL),
 };
 
