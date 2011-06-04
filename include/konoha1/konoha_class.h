@@ -1231,7 +1231,8 @@ typedef void (*klr_Fcheckin)(CTX, knh_sfp_t *, knh_Object_t *);
 typedef void (*klr_Fcheckout)(CTX, knh_Object_t *, int);
 struct klr_P_t;
 typedef void (*klr_Fprint)(CTX, knh_sfp_t*, struct klr_P_t*);
-typedef void (*klr_Fprobe)(CTX, knh_sfp_t* , knh_sfpidx_t n, struct knh_opline_t *pc);
+struct klr_PROBE_t;
+typedef void (*klr_Fprobe)(CTX, knh_sfp_t* , struct klr_PROBE_t *pc);
 
 typedef struct {
 	knh_dummyptr_t _d1;

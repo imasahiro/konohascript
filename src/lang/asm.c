@@ -91,6 +91,7 @@ knh_BasicBlock_t* new_BasicBlockLABEL(CTX ctx)
 #define NC_(sfpidx)    (((sfpidx) * 2) + 1)
 #define OC_(sfpidx)    ((sfpidx) * 2)
 #define SFP_(sfpidx)   ((sfpidx) * 2)
+#define SFP2_(sfpidx)   (sfpidx)
 #else
 #define NC_(sfpidx)    sfpidx
 #define OC_(sfpidx)    sfpidx
@@ -885,10 +886,10 @@ static void _DYNMTD(CTX ctx, knh_sfp_t *sfp, struct klr_LDMTD_t *op)
 	}
 	knh_Method_t* mtd = op->mtdNC;
 	size_t i, argc = ParamArray_isVARGs(DP(mtd)->mp) ? (ctx->esp - sfp) : knh_Method_psize(mtd);
-	for(i = 1; i < argc; i++) {
-		size_t idx = thisidx+i;
+	for(i = 0; i < argc; i++) {
+		size_t idx = thisidx+1+i;
 		knh_Object_t *o = sfp[idx].o;
-		knh_type_t reqt = knh_Method_ptype(ctx, mtd, this_cid, i - 1);
+		knh_type_t reqt = knh_Method_ptype(ctx, mtd, this_cid, i);
 		ct = O_cTBL(o);
 		DBG_P("i=%d, reqt=%s, O_cid=%s", i, TYPE__(reqt), CLASS__(ct->cid));
 		if(reqt == ct->cid && ClassTBL_isa(ct, reqt)) {
@@ -900,6 +901,17 @@ static void _DYNMTD(CTX ctx, knh_sfp_t *sfp, struct klr_LDMTD_t *op)
 		THROW_ParamTypeError(ctx, sfp, (mtd)->mn, i, reqt, O_cid(o));
 	}
 	sfp[thisidx+K_MTDIDX].mtdNC = op->mtdNC;
+}
+static void _PBOX(CTX ctx, knh_sfp_t *sfp, struct klr_PROBE_t *op)
+{
+	size_t rtnidx = op->sfpidx;
+	klr_LDMTD_t *opP = (klr_LDMTD_t*)(((knh_opline_t*)op) - 2);
+	DBG_ASSERT(opP->opcode == OPCODE_LDMTD);
+	knh_type_t rtype = knh_ParamArray_rtype(DP(opP->mtdNC)->mp);
+	rtype = knh_type_tocid(ctx, rtype, O_cid(sfp[rtnidx+K_CALLDELTA].o));
+	if(IS_Tunbox(rtype)) {
+		KNH_SETv(ctx, sfp[rtnidx].o, new_Boxing(ctx, sfp+rtnidx, ClassTBL(rtype)));
+	}
 }
 
 /* SYSVAL */
@@ -963,9 +975,6 @@ static inline int Token_index_(CTX ctx, knh_Token_t *tk)
 {
 	return (int)(tk)->index + ((TT_(tk) == TT_LOCAL) ? DP(ctx->gma)->ebpidx : 0);
 }
-
-#define ASM_BOX2(ctx, reqt, atype, a, b)
-#define ASM_UNBOX(ctx, atype, a, b)
 
 #define ASML(idx) (idx < DP(ctx->gma)->espidx) ? (DP(ctx->gma)->espidx) : idx
 
@@ -1505,10 +1514,6 @@ static void ASM_CALL(CTX ctx, knh_type_t reqt, int sfpidx, knh_type_t rtype, knh
 	DBG_ASSERT(IS_Method(mtd));
 	KNH_ASSERT(sfpidx >= DP(ctx->gma)->espidx);
 	if(Method_isFinal(mtd) || isStatic) {
-//		if(Gamma_hasJIT(ctx)) {
-//			ASM(LOADMTD, SFP_(thisidx), _SETMTD, mtd);
-//			ASM(CALL, RTNIDX_(ctx, sfpidx, rtype), SFP_(thisidx), ESP_(sfpidx, args));
-//		}else
 		if(Method_isKonohaCode(mtd) || DP(ctx->gma)->mtd == mtd) {
 			if(Gamma_isInlineFunction(ctx->gma) && DP(ctx->gma)->mtd != mtd) {
 				knh_KonohaCode_t *kcode = DP(mtd)->kcode;
@@ -1632,7 +1637,8 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 			Tn_asm(ctx, stmt, i, TYPE_dyn, local + i + (K_CALLDELTA-1));
 		}
 		ASM(LDMTD, SFP_(local+K_CALLDELTA), _DYNMTD, {TYPE_void, tkMTD->mn}, NULL);
-		ASM(CALL, SFP_(local+K_CALLDELTA), ESP_(local, DP(stmt)->size - 2));
+		ASM(CALL, SFP_(sfpidx), SFP_(local+K_CALLDELTA), ESP_(local, DP(stmt)->size - 2));
+		ASM(PROBE, SFP2_(sfpidx), _PBOX, 0, 0);
 		ASM_MOVL(ctx, reqt, sfpidx, TYPE_dyn, local);
 		return;
 	}
@@ -2810,10 +2816,13 @@ static knh_opline_t* opline_findOPCODE(CTX ctx, knh_opline_t *op, knh_opcode_t o
 	return NULL;
 }
 
-static void _STACKTRACE(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t n, knh_opline_t *pc)
+static void _STACKTRACE(CTX ctx, knh_sfp_t *sfp, klr_PROBE_t *op)
 {
 	if(IS_Exception(ctx->e)) {
-		knh_write_Object(ctx, KNH_STDERR, UPCAST(ctx->e), FMT_dump);
+		knh_OutputStream_t *w = KNH_STDOUT;
+		knh_write_ascii(ctx, w, TERM_BNOTE(ctx, LOG_ERR));
+		knh_write_Object(ctx, w, UPCAST(ctx->e), FMT_dump);
+		knh_write_ascii(ctx, w, TERM_ENOTE(ctx, LOG_ERR));
 	}
 }
 
@@ -2836,7 +2845,7 @@ void knh_loadScriptSystemKonohaCode(CTX ctx)
 	BasicBlock_add(ctx, ib, TRYEND, OC_(-(K_CALLDELTA+1)));
 	BasicBlock_add(ctx, ib, EXIT);
 	ib->nextNC = ic;
-	BasicBlock_add(ctx, ic, PROBE, _STACKTRACE, 0);
+	BasicBlock_add(ctx, ic, PROBE, 0, _STACKTRACE, 0, 0);
 	BasicBlock_add(ctx, ic, EXIT);
 	BasicBlock_add(ctx, ic, FUNCCALL);               // FUNCCALL
 	BasicBlock_add(ctx, ic, VEXEC);                  // VEXEC

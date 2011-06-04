@@ -22,7 +22,7 @@ CHKIN      0                 on:ro checkin:f
 CHKOUT     0                 on:ro checkout:f
 ERROR      _CONST            start:sfpidx msg:String
 P          _CONST            print:f flag:u  msg:String n:sfpidx2
-PROBE      0                 probe:f n:u
+PROBE      0                 sfpidx:sfpidx2 probe:f n:u n2:u
 EXIT       0
 
 NSET       _DEF|_JIT         a:rn n:int

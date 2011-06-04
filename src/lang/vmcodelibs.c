@@ -69,7 +69,7 @@ static const knh_OPDATA_t OPDATA[] = {
 	{"CHKOUT", 0, 2, { VMT_RO, VMT_F, VMT_VOID}}, 
 	{"ERROR", _CONST, 2, { VMT_SFPIDX, VMT_STRING, VMT_VOID}}, 
 	{"P", _CONST, 4, { VMT_F, VMT_U, VMT_STRING, VMT_SFPIDX2, VMT_VOID}}, 
-	{"PROBE", 0, 2, { VMT_F, VMT_U, VMT_VOID}}, 
+	{"PROBE", 0, 4, { VMT_SFPIDX2, VMT_F, VMT_U, VMT_U, VMT_VOID}}, 
 	{"EXIT", 0, 0, { VMT_VOID}}, 
 	{"NSET", _DEF|_JIT, 2+VMTSIZE_int, { VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
 	{"NMOV", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}}, 
@@ -465,14 +465,8 @@ knh_Object_t** knh_opline_reftrace(CTX ctx, knh_opline_t *c FTRARG)
 }
 /* ------------------------------------------------------------------------ */
 
-//#ifdef K_USING_RBP_
 #define RBP_ASSERT0(N)   	if((N % 2) != 0) {		DBG_P("r=%d", N); 		DBG_ASSERT((N % 2) == 0);	}
-#define RBP_ASSERT1(N)   	if((N % 2) == 0) {		DBG_P("r=%d", N); 		DBG_ASSERT((N % 2) != 0);	}	
-//#else
-//#define RBP_ASSER0(N)
-//#define RBP_ASSER1(N)
-//#endif
-
+#define RBP_ASSERT1(N)   	if((N % 2) == 0) {		DBG_P("r=%d", N); 		DBG_ASSERT((N % 2) != 0);	}
 void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline_t *pc_start)
 {
 	size_t i, size = OPDATA[c->opcode].size;
@@ -769,7 +763,7 @@ knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc)
 	} 
 	CASE(PROBE) {
 		klr_PROBE_t *op = (klr_PROBE_t*)pc; (void)op; VMCOUNT(pc); 
-		KLR_PROBE(ctx, op->probe, op->n);
+		KLR_PROBE(ctx, op->sfpidx, op->probe, op->n, op->n2);
 		pc++;
 		GOTO_NEXT();
 	} 

@@ -105,8 +105,10 @@ typedef struct klr_P_t {
 #define OPCODE_PROBE ((knh_opcode_t)15)
 typedef struct klr_PROBE_t {
 	KCODE_HEAD;
+	knh_sfpidx_t sfpidx;
 	klr_Fprobe probe;
 	knh_uintptr_t n;
+	knh_uintptr_t n2;
 } klr_PROBE_t;
 
 #define OPCODE_EXIT ((knh_opcode_t)16)

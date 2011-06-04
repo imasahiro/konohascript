@@ -86,8 +86,13 @@ const char* TERM_EBOLD(CTX ctx)
 const char* TERM_BNOTE(CTX ctx, int pe)
 {
 	if(CTX_isTERM(ctx)) {
-		if(pe <= LOG_WARNING) return "\x1b[1m\x1b[31m";
-		return "\x1b[1m\x1b[32m";
+		if(pe <= LOG_ERR) {
+			return "\x1b[1m\x1b[31m";
+		}
+		else if(pe == LOG_WARNING) {
+			return "\x1b[1m\x1b[35m";
+		}
+		return "\x1b[1m\x1b[34m";
 	}
 	return "";
 }

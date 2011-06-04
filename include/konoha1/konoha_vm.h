@@ -528,8 +528,8 @@ extern "C" {
 
 #define KLR_P(ctx, fprint, flag, msg, n) fprint(ctx, SFP(rbp), op)
 
-#define KLR_PROBE(ctx, fprobe, n) { \
-	fprobe(ctx, SFP(rbp), n, pc);\
+#define KLR_PROBE(ctx, sfpidx, fprobe, n, ns) { \
+	fprobe(ctx, SFP(rbp), pc);\
 }\
 
 /* ------------------------------------------------------------------------ */
