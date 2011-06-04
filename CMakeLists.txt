@@ -257,12 +257,13 @@ endif()
 option(USE_MPI "Using MPI" OFF)
 if(USE_MPI)
 	check_include_files(mpi.h HAVE_MPI_H)
-	if(not HAVE_MPI_H)
+	if(${HAVE_MPI_H})
+		add_executable(mpikonoha src/mpikonoha.c)
+		# TODO
+		target_link_libraries(mpikonoha konoha mpi)
+	else()
 		message(FATAL_ERROR "Header file 'mpi.h ' is not found")
 	endif()
-	add_executable(mpikonoha src/mpikonoha.c)
-	# TODO
-	target_link_libraries(mpikonoha konoha)
 endif(USE_MPI)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake 
