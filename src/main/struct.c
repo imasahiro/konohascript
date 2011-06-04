@@ -784,7 +784,14 @@ static const knh_dim_t* dim_copy(CTX ctx, const knh_dim_t *dim_src)
 	}
 	else {
 		knh_dim_t *dim = (knh_dim_t*)KNH_MALLOC(ctx, sizeof(knh_dim_t));
-		dim = (knh_dim_t*)dim_src;
+		/* copy dim_src to dim. @imasahiro */
+		dim->capacity = dim_src->capacity;
+		dim->wsize    = dim_src->wsize;
+		dim->sorted   = dim_src->sorted;
+		dim->dim      = dim_src->dim;
+		dim->x        = dim_src->x;
+		dim->xy       = dim_src->xy;
+		dim->xyz      = dim_src->xyz;
 		return (const knh_dim_t*)dim;
 	}
 }
