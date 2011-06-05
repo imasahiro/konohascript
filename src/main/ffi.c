@@ -35,20 +35,20 @@
 extern "C" {
 #endif
 
-#ifdef K_USING_FFIDSL
 #include <unistd.h>
 #ifndef K_USING_MINGW_
 #include <sys/mman.h>
 #endif
 
-	
+
 /* 
  * Contributors
- *  Shinpei Nakata
+ *  Shinpei Nakata <shinpei.nakata(at)gmail.com>
  */
 
-
-static void bough_dumpBinary(unsigned char* ptr, size_t size);
+/*
+static void dumpBinary(unsigned char* ptr, size_t size);
+*/
 
 /* ------------------------------------------------------------------------ */
 // Memory allocation
@@ -57,30 +57,111 @@ static void bough_dumpBinary(unsigned char* ptr, size_t size);
 #define XBLOCK_PAGESIZE (sysconf(_SC_PAGESIZE))
 #define XBLOCK_NUMBER (XBLOCK_PAGESIZE / XBLOCK_SIZE)
 
-static void *knh_xmalloc(CTX ctx, size_t page_num)
+#define XMEM_TOTAL_SIZE (1024 * 64)
+	
+typedef struct knh_xmem_allocator {
+	void *root;
+	size_t totalSize;
+	size_t usedSize;
+	void *freelist;
+} knh_xmem_allocator;
+
+static knh_xmem_allocator g_xmem_allocator = {0};
+
+static void initXmemAllocator(CTX ctx)
 {
-	size_t page_size = XBLOCK_PAGESIZE;
-	void *block = KNH_VALLOC(ctx, page_size);
-	if (unlikely(block == NULL)) {
-		KNH_SYSLOG(ctx, NULL, LOG_CRIT, "OutOfMemory",
-				   "*requested=%dbytes, used=%dbytes", page_num * page_size, ctx->stat->usedMemorySize);
-	}
-	int mret = mprotect(block, page_size, PROT_READ | PROT_WRITE | PROT_EXEC);
+	knh_xmem_allocator *xalc = &g_xmem_allocator;
+	void *ptr = (void *)KNH_VALLOC(ctx, XMEM_TOTAL_SIZE);
+#ifndef K_USING_MINGW_
+	int mret = mprotect(ptr, XMEM_TOTAL_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC);
+#endif
 	if (mret != -1) {
-		return block;
+		xalc->root = ptr;
+		xalc->totalSize = XMEM_TOTAL_SIZE;
+		xalc->usedSize = 0;
+		xalc->freelist = ptr;
 	}
+}
+
+#define XMEM_IS_PROPSIZE(size) (size <= XMEM_TOTAL_SIZE)
+#define XMEM_DOES_FIT(xalc, size) 	(size <= (xalc->totalSize - xalc->usedSize))
+	
+void *knh_xmalloc(CTX ctx, size_t size)
+{
+	KNH_ASSERT(size >= 0);
+	knh_xmem_allocator *xalc = &g_xmem_allocator;
+	if (unlikely(xalc->totalSize == 0)) {
+		initXmemAllocator(ctx);
+	}
+	if (XMEM_IS_PROPSIZE(size)) {
+		if (XMEM_DOES_FIT(xalc, size)) {
+			// It fits.
+			xalc->usedSize += size;
+			void *ptr = xalc->freelist;
+			xalc->freelist += size;
+			bzero(ptr, size);
+			return ptr;
+		}
+	}
+	fprintf(stderr,
+			"Reach the limit allocation for executable memory!!\n"
+			"You're using:%dbytes, and allocating additional %dbytes\n", (int)xalc->usedSize, (int)size); 
 	return NULL;
 }
+
 
 static inline void knh_xfree(CTX ctx, void* block, size_t size)
 {
 	knh_vfree(ctx, block, size);
 }
 
+
+#define CLOSURE_start(argc) \
+  CTX lctx = (CTX)knh_getCurrentContext(); \
+  knh_intptr_t thisidx = K_CALLDELTA; \
+  BEGIN_LOCAL(lctx, lsfp, thisidx + argc + 1);
+
+#define CLOSURE_putInt(idx, val) \
+  lsfp[idx].ivalue = val
+
+#define CLOSURE_putFloat(idx, val) \
+  lsfp[idx].fvalue = val
+
+#define CLOSURE_putBoolean(idx, val) \
+  lsfp[idx].bvalue = val
+
+#define CLOSURE_putArg(idx, type, val) \
+  CLOSURE_put##type(idx, val)
+
+#define CLOSURE_call(fo) \
+if (fo->baseNULL != NULL) { \
+  KNH_SETv(lctx, fo, fo->baseNULL); \
+} \
+ klr_setmtdNC(lctx, lsfp[K_MTDIDX], fo->mtd); \
+ KNH_SELFCALL(lctx, lsfp, fo->mtd, K_RTNIDX);
+
+#define CLOSURE_getInt() \
+  lsfp[K_RTNIDX].ivalue
+
+#define CLOSURE_getFloat() \
+  lsfp[K_RTNIDX].fvalue
+
+#define CLOSURE_getBoolean() \
+  lsfp[K_RTNIDX].bvalue
+
+#define CLOSURE_end(exp) \
+  END_LOCAL_(lctx, lsfp); \
+  exp
+
+
+
+/*
+// for FFI DSL
 typedef struct knh_xblock_t {
 	unsigned char *block;
 	struct knh_xblock_t *next;
 } knh_xblock_t;
+
 
 static knh_xblock_t* xfreelist = NULL;
 
@@ -117,11 +198,41 @@ static void* get_unused_xblock(CTX ctx)
 	xfreelist = ret->next;
 	return ret;
 }
+*/
+
+/*
+	// this supposed to be a libffi version
+static knh_xblock_t *knh_generateWrapper(CTX ctx, void *callee, int argc, knh_ffiparam_t *argv)
+{
+  knh_xblock_t *blk = get_unused_xblock(ctx);
+  void *function = blk->block;
+
+  size_t fidx = 0;
+  int i = 0;
+  knh_ffiparam_t *t;
+
+  for (i = 0; i < argc; i++) {
+	t = &argv[i];
+	if (t->sfpidx = -1) {
+	  // it means arguments	
+	  switch(t->type) {
+	    case CLASS_Tvoid:
+		  // do nothing
+		  break;
+	    case CLASS_Int:
+		  break;
+	  }
+	}
+  }
+}
+  */
+
 
 
 /* ------------------------------------------------------------------------ */
-// generator
+// FFI DSL generator
 //  knh_Fmethod : void 
+#ifdef K_USING_FFIDSL
 
 // (eax)
 #define MOD_EADDR (0)
@@ -149,40 +260,12 @@ static void* get_unused_xblock(CTX ctx)
 #define WRITE_ASM(MOD, REG, RM) FUNCTION[FIDX++] = (MOD << 6) | (REG << 3) | RM
 #define WRITE_HEX(hex) { FUNCTION[FIDX++] = hex; }
 
+
 typedef struct knh_xcode_t {
 	void *code;
 	size_t codesize;
 } knh_xcode_t;
 
-/*
-  void bough_shrinkBinary(CTX ctx, knh_xcode_t *xcode, size_t shrink_from, size_t shrink_size) {
-	
-}
-*/
-
-/*
-  static void bough_putSfpToCStack(CTX ctx, knh_xcode_t *xcode, knh_ffiparam_t *param, char reg_from, char reg_to)
-{
-	// put param to register reg
-	size_t fidx = xcode->codesize;
-	unsigned char *function = (xcode->code + fidx);
-
-	switch (param->type) {
-	case CLASS_Int:
-		WRITE_HEX(0x83);
-		WRITE_ASM(MOD_IMD, reg_from, reg_to);
-		WRITE_HEX((unsigned char)(param->sfpidx * 16));
-		break;
-	case CLASS_Float:
-
-		break;
-	default:
-
-		break;
-	}
-	
-}
-*/
 
 static knh_xblock_t* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ffiparam_t *argv)
 {
@@ -406,7 +489,7 @@ static knh_xblock_t* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ff
 	//	return function;
 	return blk;
 }
-
+#endif/*K_USING_FFIDSL*/
 //typedef struct {
 //	knh_type_t type;
 //	knh_short_t sfpidx;
@@ -415,8 +498,185 @@ static knh_xblock_t* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ff
 // sfp: -1 --> return
 // sfp: 1+ --> arguments
 
+#define FUNC_SIZE (256)
 
-static void bough_dumpBinary(unsigned char *ptr, size_t size)
+#ifndef __x86_64__
+
+static void *knh_generateCallbackFunc32(CTX ctx, void *template, void *dest, knh_Func_t *fo)
+{
+  knh_uchar_t *function = NULL;
+#if !defined(K_USING_WINDOWS) && !defined(K_USING_BTRON)
+  function = (knh_uchar_t*)template;
+  //search -1
+  int i, marker = -1, jmp_pos = -1, shrink_pos = -1;
+  for (i = 0; i < FUNC_SIZE; i++) {
+	//	fprintf(stderr, "dump:%02x\n", *(int*)&function[i]);
+	if (*(int*)&function[i] == -1 && marker == -1) {
+	  marker = i;
+	  i += 3;
+	}
+
+	// for thunk.bx, they call thunk, and add.
+	if (function[i] == 0xe8 && function[i+5] == 0x81 && function[i+6] == 0xc3){
+	  shrink_pos = i;
+	  continue;
+	} else 	if (function[i] == 0xe8 && *(int*)&function[i+1] < 0 && jmp_pos < 0) {
+	  jmp_pos = i;
+	}
+	// loop condition
+	if (function[i] == 0x5d && function[i + 1] == 0xc3) {
+	  i += 14;
+	  break;
+	}
+	if (i != 0 && function[i] == 0x55 && function[i + 1] == 0x89 && function[i+2] == 0xe5) {
+	  // next prologue
+	  i -= 1;
+	  break;
+	}
+  }
+  //  fprintf(stderr, "i=%d\n", i);
+  function = knh_xmalloc(ctx, i);
+  memcpy(function, template, i);
+  //  fprintf(stderr, "marker:%d, jmp:%d, shrink:%d\n", marker, jmp_pos, shrink_pos);
+  knh_uchar_t buf[FUNC_SIZE]={0};
+  //  dumpBinary(function, 48);
+  size_t funcsize = i;
+  if (shrink_pos > 0) {
+	// shrinking call xxx, add xxx
+	// they always moving ebx;
+	memcpy(buf, &function[shrink_pos + 11], funcsize - (shrink_pos + 11));
+	function[shrink_pos] = 0x90;
+	memcpy(&function[shrink_pos + 1], buf, funcsize - (shrink_pos + 11));
+	marker -= 10;
+	jmp_pos -= 10;
+	funcsize -= 10;
+	//	fprintf(stderr, "marker:%d, jmp:%d, shrink:%d\n", marker, jmp_pos, shrink_pos);
+  }
+
+  if (marker > 0){
+	*(intptr_t*)&function[marker] = (intptr_t)fo;
+  }
+
+
+  //  fprintf(stderr, "jpos:%x\n", *(int*)&function[jmp_pos]);
+  if (jmp_pos > 0) {
+	//	int disp =  (intptr_t)dest - (intptr_t)&function[jmp_pos + 5];
+	// it is too far.. make far calling
+	function[jmp_pos] = 0xb8;
+	*(intptr_t*)&function[jmp_pos+1] = (intptr_t)dest;
+	memcpy(buf, &function[jmp_pos + 5], funcsize - (jmp_pos + 5));
+	// insert 2 values;
+	//before jmp!
+	size_t seekidx = jmp_pos + 5;
+	function[seekidx] = 0x90;
+	function[seekidx+1] = 0xff;
+	function[seekidx+2] = 0xd0;
+	// shift the rest;
+	memcpy(&function[seekidx+3], buf, funcsize - (seekidx+3));
+	//	dumpBinary(function, 48);
+  }
+
+#endif
+  return function;
+}
+#endif
+
+#ifdef __x86_64__
+static void *knh_generateCallbackFunc64(CTX ctx, void *template, void *dest, knh_Func_t *fo)
+{
+  knh_uchar_t *function = NULL;
+#if !defined(K_USING_WINDOWS) && !defined(K_USING_BTRON)
+  function = (knh_uchar_t*)template;
+  // search -1 (0xffffffffffffffff)
+  int i, marker = -1, jmp_pos = -1;
+  for (i = 0; i < FUNC_SIZE; i++) {
+	if (*(int*)&function[i] == -1 && marker == -1) {
+	  marker = i;
+	  i += 3;
+	}
+
+	if (function[i] == 0xe8 && function[i] == 0x66) {
+	  jmp_pos = i;
+	}
+	// jmppos for x86_64
+	// c9 : leave
+	// e9 xxxxxxxx : jmp xxxxxxxx
+	if(function[i] == 0xc9 && function[i + 1] == 0xe9) {
+	  jmp_pos = i + 1;
+	  i += 4; // rel address is 4 bytes
+	  break; 
+	}
+	//linux amd64
+	if (function[i] == 0xe9 && *(int*)&function[i+1] < 0) {
+	  jmp_pos = i;
+	  i += 5 + 4;
+	  break;
+	}
+
+	// typical epilogue.
+	if (function[i] == 0xc9 && function[i+1] == 0xc3) {
+	  i += 2;
+	  break;
+	}
+  }
+  // copy function
+  function = knh_xmalloc(ctx, i);
+  memcpy(function, template, i);
+  knh_uchar_t buf[FUNC_SIZE]={0};
+  size_t funcsize = i;
+  if (marker > 0) {
+	// resize;
+    //      :          mm <-- marker
+	//Linux : 48 c7 c7 xx xx xx xx ....
+	// -->    48 bf xx xx xx xx xx xx xx xx ....
+	// first arguments is rdi (...?)
+	//	diff test
+	memcpy(buf, &function[marker+4], funcsize - (marker + 4));
+	function[marker - 2] = 0xbf;
+	memcpy(&function[marker-1], &fo, 8);
+	memcpy(&function[marker + 7], buf, funcsize - (marker + 4));
+	// shift
+	jmp_pos += 3;
+	funcsize += 3;
+  }
+  // now, patch
+  if (jmp_pos > 0) {
+	//linux
+	// happend to use r15.
+	function[jmp_pos] = 0x49;
+	function[jmp_pos+1] = 0xbf;
+	*(intptr_t*)&function[jmp_pos + 2] = (intptr_t)dest; // 8 byte?
+	//	memcpy(&function[jmp_pos + 2 + 8], buf, funcsize - (jmp_pos + 5));
+	//	dumpBinary(function, 32);		
+	// insert 2 values;
+	//before jmp!
+	size_t seekidx = jmp_pos + 2 + 8;
+	// jmp r15
+	function[seekidx] = 0x41;
+	function[seekidx+1] = 0xff;
+	function[seekidx+2] = 0xe7;
+	// shift the rest;
+	//	memcpy(&function[seekidx+3], buf, funcsize - (seekidx+3));
+	//	dumpBinary(function, 48);
+  }
+#endif /* tron, lkm */
+  return function;
+}
+#endif /*__x86_64__ */
+
+void *knh_copyCallbackFunc(CTX ctx, void *template, void *dest, knh_Func_t *fo)
+{
+  void *function = NULL;
+#ifdef __x86_64__
+  function = knh_generateCallbackFunc64(ctx, template, dest, fo);
+#else
+  function = knh_generateCallbackFunc32(ctx, template, dest, fo);
+#endif
+  return function;
+}
+
+  /*
+static void dumpBinary(unsigned char *ptr, size_t size)
 {
 	int i = 0;
 	unsigned char byte;
@@ -426,9 +686,8 @@ static void bough_dumpBinary(unsigned char *ptr, size_t size)
 		if (i % 16 == 15) fprintf(stderr, "\n");
 	}
 }
+  */
 
-
-#endif/*K_USING_FFIDSL*/
 
 knh_Fmethod knh_makeFmethod(CTX ctx, void *func, int argc, knh_ffiparam_t *argv)
 {
@@ -437,7 +696,7 @@ knh_Fmethod knh_makeFmethod(CTX ctx, void *func, int argc, knh_ffiparam_t *argv)
 	knh_xblock_t* blk = knh_generateWrapper(ctx, (void*)func, argc, argv);
 	void *f = blk->block;
 	if (f != NULL) {
-		//		bough_dumpBinary(f, 128);
+		//		dumpBinary(f, 128);
 		return (void*)f;
 	}
 #endif
