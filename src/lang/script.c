@@ -622,7 +622,7 @@ static knh_status_t CONST_decl(CTX ctx, knh_Stmt_t *stmt)
 	knh_NameSpace_t *ns = K_GMANS;
 	Object *value = knh_NameSpace_getConstNULL(ctx, ns, TK_tobytes(tkN));
 	if(cid != CLASS_unknown || value != NULL) {
-		WARN_AlreadyDefined(ctx, tkN);
+		WARN_AlreadyDefined(ctx, "const", tkN);
 		_RETURN(K_CONTINUE);
 	}
 	if(Tn_typing(ctx, stmt, 1, TYPE_dyn, 0)) {
@@ -652,6 +652,60 @@ static knh_status_t CONST_decl(CTX ctx, knh_Stmt_t *stmt)
 	L_RETURN: ;
 	knh_Stmt_done(ctx, stmt);
 	return status;
+}
+
+static knh_status_t LINK_decl(CTX ctx, knh_Stmt_t *stmt)
+{
+	knh_Token_t *tkN = tkNN(stmt, 0);
+	knh_Stmt_t *stmtIN = stmtNN(stmt, 1);
+	int count = 0;
+	knh_NameSpace_t *ns = K_GMANS;
+	if(TT_(tkN) != TT_TLINK && TT_(tkN) != TT_NAME) {
+		knh_Stmt_toERR(ctx, stmt, ERROR_TokenIsNot(ctx, tkN, "link name"));
+		return K_BREAK;
+	}
+	knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, ns, S_tobytes(tkN->text));
+	if(lnk != NULL && !knh_StmtMETA_is(ctx, stmt, "Override")) {
+		knh_Stmt_toERR(ctx, stmt, ERROR_AlreadyDefined(ctx, "link", tkN));
+		return K_CONTINUE;
+	}
+	if(STT_(stmtIN) == TT_CODE) {
+		stmtIN = knh_Token_parseStmt(ctx, tkNN(stmt, 1));
+		KNH_SETv(ctx, stmtNN(stmt, 1), stmtIN);
+	}
+	while(stmtIN != NULL) {
+		if(STT_(stmtIN) == STT_TYPEMAP) {
+			KNH_SETv(ctx, tkNN(stmtIN, 0), tkN);
+			count++;
+		}
+		else if(STT_(stmtIN) == STT_DONE) {
+		}
+		else {
+			WARN_Ignored(ctx, "statement", CLASS_unknown, TT__(STT_(stmtIN)));
+			knh_Stmt_done(ctx, stmtIN);
+		}
+		stmtIN = DP(stmtIN)->nextNULL;
+	}
+	const knh_LinkDPI_t *dpi = NULL;
+	if(knh_StmtMETA_is(ctx, stmt, "Native")) {
+		if(ns->dlhdr != NULL) {
+			const char *funcname = S_tochar((tkN)->text);
+			knh_Flinkdef loadlink = (knh_Flinkdef)knh_dlsym(ctx, LOG_DEBUG, ns->dlhdr, funcname);
+			if(loadlink == NULL) {
+				knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, _("linkdef function"), funcname));
+				return K_BREAK;
+			}
+			dpi = loadlink(ctx);
+		}
+	}
+	if(count > 0) {
+		DBG_P("define new link %s", S_tochar(tkN->text));
+		knh_NameSpace_setLink(ctx, ns, new_Link(ctx, tkN->text, dpi));
+	}
+	else {
+		knh_Stmt_done(ctx, stmt);
+	}
+	return K_CONTINUE;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -707,10 +761,14 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 			KNH_INITv(ct->typemaps, K_EMPTYARRAY);
 
 			// class C extends E ..
-			ct->supcid = knh_Token_cid(ctx, tkE, CLASS_Object);
+			ct->supcid = knh_Token_cid(ctx, tkE, CLASS_unknown);
+			if(ct->supcid == CLASS_unknown) {
+				knh_Stmt_toERR(ctx, stmt, ERROR_Undefined(ctx, "class", ct->supcid, tkE));
+				return K_BREAK;
+			}
 			if(class_isFinal(ct->supcid)) {
 				knh_Stmt_toERR(ctx, stmt, ErrorExtendingFinalClass(ctx, ct->supcid));
-				return K_CONTINUE;
+				return K_BREAK;
 			}
 			ct->supTBL = ClassTBL(ct->supcid);
 			ct->keyidx = ct->supTBL->keyidx;
@@ -720,7 +778,7 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 			if(knh_StmtMETA_is(ctx, stmt, "Native")) {
 				knh_NameSpace_t *ns = K_GMANS;
 				if(ns->dlhdr != NULL) {
-					knh_Fclass classload = (knh_Fclass)knh_dlsym(ctx, LOG_DEBUG, ns->dlhdr, S_tochar((tkC)->text));
+					knh_Fclassdef classload = (knh_Fclassdef)knh_dlsym(ctx, LOG_DEBUG, ns->dlhdr, S_tochar((tkC)->text));
 					const knh_ClassDef_t *cdef = classload(ctx);
 					KNH_ASSERT(cdef != NULL);
 					ct->bcid = cid;
@@ -822,6 +880,9 @@ static knh_status_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *results
 			break;
 		case STT_CLASS:
 			status = CLASS_decl(ctx, stmt);
+			break;
+		case STT_LINK:
+			status = LINK_decl(ctx, stmt);
 			break;
 		case STT_CONST:
 			status = CONST_decl(ctx, stmt);

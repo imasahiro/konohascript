@@ -173,6 +173,11 @@ knh_Token_t* ERROR_IncompatiblePackage(CTX ctx, knh_bytes_t path, const knh_Pack
 	return Gamma_perror(ctx, KC_ERR, "Incompatible: konoha(buildid=%d, CRC32=%d), %B(buildid=%d, CRC32=%d)",
 		(int)K_BUILDID, (int)K_API2_CRC32, path, (int)pkgdef->buildid, (int)pkgdef->crc32);
 }
+knh_Token_t* ERROR_SingleParam(CTX ctx)
+{
+	return Gamma_perror(ctx, KC_ERR, _("syntax error: always takes only one parameter"));
+}
+
 knh_Token_t* ErrorRedefinedClass(CTX ctx, knh_bytes_t cname, knh_class_t cid)
 {
 	return Gamma_perror(ctx, KC_ERR, _("re-definition of %B(%d)"), cname, cid);
@@ -288,9 +293,13 @@ void WARN_Undefined(CTX ctx, const char *whatis, knh_class_t cid, knh_Token_t *t
 		Gamma_perror(ctx, KC_EWARN, _("undefined %s: %O"), whatis, tk);
 	}
 }
-void WARN_AlreadyDefined(CTX ctx, knh_Token_t *tk)
+knh_Token_t* ERROR_AlreadyDefined(CTX ctx, const char *whatis, knh_Token_t *tk)
 {
-	Gamma_perror(ctx, KC_DWARN, _("already defined: %O"), tk);
+	return Gamma_perror(ctx, KC_ERR, _("already defined %s: %O"), whatis, tk);
+}
+void WARN_AlreadyDefined(CTX ctx, const char *whatis, knh_Token_t *tk)
+{
+	Gamma_perror(ctx, KC_DWARN, _("already defined %s: %O"), whatis, tk);
 }
 void WARN_AlreadyDefinedClass(CTX ctx, knh_class_t cid, knh_class_t oldcid)
 {
@@ -335,7 +344,7 @@ void WARN_WrongTypeParam(CTX ctx, knh_class_t cid)
 		Gamma_perror(ctx, KC_DWARN, "%B<>: wrong type parameter", bname);
 	}
 }
-void InfoType(CTX ctx, const char *prefix, knh_bytes_t name, knh_type_t type)
+void INFO_Typing(CTX ctx, const char *prefix, knh_bytes_t name, knh_type_t type)
 {
 	Gamma_perror(ctx, KC_TINFO, "suppose %s%B has type %T", prefix, name, type);
 }
@@ -421,7 +430,6 @@ void WARN_Ignored(CTX ctx, const char *whatis, knh_class_t cid, const char *symb
 void WARN_Unnecesary(CTX ctx, knh_Token_t *tk)
 {
 	Gamma_perror(ctx, KC_DWARN, _("unnecessary %O"), tk);
-	DBG_ABORT("why?");
 }
 void WarningUnnecessaryOperation(CTX ctx, const char *msg)
 {
@@ -480,18 +488,6 @@ void WARN_Cast(CTX ctx, const char *whatis, knh_class_t tcid, knh_class_t scid)
 {
 	Gamma_perror(ctx, KC_EWARN, _("%s (%C)expr of %C"), whatis, tcid, scid);
 }
-//knh_Token_t* ErrorNoSuchTransCast(CTX ctx, knh_class_t tcid, knh_class_t scid)
-//{
-//	return Gamma_perror(ctx, KC_ERR, _("no translation: %C ==> %C"), scid, tcid);
-//}
-//knh_Token_t* ErrorNoResourceHandler(CTX ctx, knh_bytes_t path)
-//{
-//	return Gamma_perror(ctx, KC_ERR, _("path may be uninstalled: %B"), path);
-//}
-//knh_Token_t* ErrorType(CTX ctx, knh_bytes_t path, knh_type_t reqt)
-//{
-//	return Gamma_perror(ctx, KC_INFO, _("%B: must NOT be %T"), path, reqt);
-//}
 void WarningDuplicatedDefault(CTX ctx)
 {
 	Gamma_perror(ctx, KC_EWARN, _("multiple default in switch"));

@@ -238,7 +238,8 @@ typedef struct {
 
 typedef const knh_PackageDef_t* (*knh_Fpkginit)(CTX);
 typedef void (*knh_Fpkgload)(CTX, const knh_PackageLoaderAPI_t *, knh_NameSpace_t *ns);
-typedef const knh_ClassDef_t* (*knh_Fclass)(CTX);
+typedef const knh_ClassDef_t* (*knh_Fclassdef)(CTX);
+typedef const knh_LinkDPI_t* (*knh_Flinkdef)(CTX);
 
 /* ------------------------------------------------------------------------ */
 /* new version */

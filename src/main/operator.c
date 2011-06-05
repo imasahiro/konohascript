@@ -780,28 +780,6 @@ static METHOD String_opSUB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-/* [dynamic] */
-
-//## method0 dynamic dynamic.opADD(dynamic value);
-//## method0 dynamic dynamic.opSUB(dynamic value);
-//## method0 dynamic dynamic.opMUL(dynamic value);
-//## method0 dynamic dynamic.opDIV(dynamic value);
-//## method0 dynamic dynamic.opMOD(dynamic value);
-//## method0 dynamic dynamic.opNEG();
-
-static METHOD dynamic_opADD(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
-	mtd = ClassTBL_getMethod(ctx, O_cTBL(sfp[0].o), (mtd)->mn);
-	klr_setmtdNC(ctx, sfp[K_MTDIDX], mtd);
-	knh_stack_typecheck(ctx, sfp, mtd, NULL);
-	(sfp[K_MTDIDX].mtdNC)->fcall_1(ctx, sfp, rix);
-}
-
-/* ------------------------------------------------------------------------ */
-/* [Logical] */
-
-/* ------------------------------------------------------------------------ */
 //## @Const method Boolean Boolean.opNOT();
 
 static METHOD Boolean_opNOT(CTX ctx, knh_sfp_t *sfp _RIX)

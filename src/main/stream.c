@@ -102,7 +102,7 @@ knh_InputStream_t* new_StringInputStream(CTX ctx, knh_String_t *str)
 	DP(in)->fio = IO_BUF;
 	KNH_SETv(ctx, DP(in)->str, str);
 	DP(in)->pos   = 0;
-	DP(in)->posend   = S_size(str);
+	DP(in)->posend = S_size(str);
 	return in;
 }
 

@@ -7,7 +7,7 @@ DONE      _NOCHECK
 BLOCK     _BLOCK
 pragma    _NOCHECK
 namespace _BLOCK
-script    _BLOCK
+link      _EXPR _BLOCK
 defmacro  _NAME _PARAM _BLOCK
 include   _NOCHECK
 allow     _CNAME _MEXPR
@@ -70,7 +70,7 @@ PSTMT = '''
 #keyword  FLAG  _PARSE
 pragma    0     _FUTURE
 namespace 0     _STMT
-script    0     _STMT
+link      0     _EXPR  _STMT
 include   0     _FILE
 allow     0     _CNAME _MEXPR
 deny      0     _CNAME _MEXPR
@@ -103,7 +103,7 @@ TOKEN = '''
 # begin_stmt
 pragma    -          0
 namespace -          0
-script    -          0
+link      -          0
 include   -          0
 import    -          0
 using     -          0

@@ -161,25 +161,25 @@ void knh_stack_gc(CTX ctx, int isALL)
 }
 
 
-/* ------------------------------------------------------------------------ */
-/* [call] */
-
-void knh_stack_typecheck(CTX ctx, knh_sfp_t *sfp, knh_Method_t *mtd, knh_opline_t *pc)
-{
-	knh_class_t this_cid = O_cid(sfp[0].o);
-	int i, argc;
-	DBG_ASSERT(IS_Method(sfp[K_MTDIDX].mtdNC));
-	argc = ParamArray_isVARGs(DP(mtd)->mp) ? (ctx->esp - sfp) : knh_Method_psize(mtd);
-	for(i = 1; i < argc; i++) {
-		knh_type_t reqt = knh_Method_ptype(ctx, mtd, this_cid, i - 1);
-		const knh_ClassTBL_t *t = O_cTBL(sfp[i].o);
-		if(!ClassTBL_isa(t, reqt)) {
-			THROW_ParamTypeError(ctx, sfp, (mtd)->mn, i, reqt, O_cid(sfp[i].o));
-			break;
-		}
-	}
-	return;
-}
+///* ------------------------------------------------------------------------ */
+///* [call] */
+//
+//void knh_stack_typecheck(CTX ctx, knh_sfp_t *sfp, knh_Method_t *mtd, knh_opline_t *pc)
+//{
+//	knh_class_t this_cid = O_cid(sfp[0].o);
+//	int i, argc;
+//	DBG_ASSERT(IS_Method(sfp[K_MTDIDX].mtdNC));
+//	argc = ParamArray_isVARGs(DP(mtd)->mp) ? (ctx->esp - sfp) : knh_Method_psize(mtd);
+//	for(i = 1; i < argc; i++) {
+//		knh_type_t reqt = knh_Method_ptype(ctx, mtd, this_cid, i - 1);
+//		const knh_ClassTBL_t *t = O_cTBL(sfp[i].o);
+//		if(!ClassTBL_isa(t, reqt)) {
+//			THROW_ParamTypeError(ctx, sfp, (mtd)->mn, i, reqt, O_cid(sfp[i].o));
+//			break;
+//		}
+//	}
+//	return;
+//}
 
 
 ///* ------------------------------------------------------------------------ */

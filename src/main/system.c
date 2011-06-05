@@ -470,33 +470,6 @@ static METHOD System_gc(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_System_gc(ctx);
 }
 
-///* ------------------------------------------------------------------------ */
-////## @Static @Hidden method void System.push(Object value, ...);
-//
-//static METHOD System_push(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	long i, ac = knh_stack_argc(ctx, (sfp+1));
-//	for(i = 0; i < ac; i++) {
-//		KNH_SETv(ctx, sfp[rix+i].o, sfp[i+1].o);
-//		sfp[rix+i].ndata = sfp[i+1].ndata;
-//	}
-//}
-
-///* ------------------------------------------------------------------------ */
-////## @Hidden method void System.test(Boolean result, String msg);
-//
-//static METHOD System_test(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	char *result = (sfp[1].bvalue) ? "PASS" : "FAILED";
-//	knh_intptr_t line = (knh_intptr_t)sfp[0].ivalue;
-//	knh_printf(ctx, KNH_STDERR, "[%s:%d]", result, line);
-//	if(IS_bString(sfp[2].s)) {
-//		knh_putc(ctx, KNH_STDERR, ' ');
-//		knh_print(ctx, KNH_STDERR, S_tobytes(sfp[2].s));
-//	}
-//	knh_write_EOL(ctx, KNH_STDERR);
-//}
-
 /* ------------------------------------------------------------------------ */
 //## method Int System.getTime();
 
@@ -603,17 +576,17 @@ static METHOD Exception_opOF(CTX ctx, knh_sfp_t *sfp _RIX)
 //	RETURNa_(sfp[2].o);
 //}
 
-/* ------------------------------------------------------------------------ */
-//## @Hidden @Const method dynamic Class.setConst(String name, Object value);
+///* ------------------------------------------------------------------------ */
+////## @Hidden @Const method dynamic Class.setConst(String name, Object value);
+//
+//static METHOD Class_setConst(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_addClassConst(ctx, (sfp[0].c)->cid, sfp[1].s, sfp[2].o);
+//	RETURNa_(sfp[2].o);
+//}
 
-static METHOD Class_setConst(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_addClassConst(ctx, (sfp[0].c)->cid, sfp[1].s, sfp[2].o);
-	RETURNa_(sfp[2].o);
-}
-
 /* ------------------------------------------------------------------------ */
-//## @Static @Audit method String System.exec(String cmd, Class reqt);
+//## @Static @Audit method String System.exec(String cmd);
 
 static METHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -647,6 +620,55 @@ static METHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 #endif
 	RETURN_(KNH_NULVAL(CLASS_String));
+}
+
+/* ------------------------------------------------------------------------ */
+//## method Tvar System.eval(String cmd, Script scr, NameSpace _, Class _, Exception _);
+
+static METHOD System_eval(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+//	fprintf(stderr, "TESTING: '%s'\n", 	S_tochar(sfp[1].s));
+//	fprintf(stderr, "RETURN VALUE: '%s'\n", CLASS__(sfp[4].c->cid));
+	knh_Script_t *scr = ctx->gma->scr;
+	knh_NameSpace_t *ns = K_GMANS;
+	if(scr != sfp[2].scr) {
+		KNH_SETv(ctx, ctx->gma->scr, sfp[2].scr);
+		sfp[2].scr = scr;
+	}
+	if(ns != sfp[3].ns) {
+		KNH_SETv(ctx, K_GMANS, sfp[3].ns);
+		sfp[3].ns = ns;
+	}
+	KNH_SETv(ctx, ((knh_context_t*)ctx)->evaled, KNH_NULL);
+	KNH_SETv(ctx, ((knh_context_t*)ctx)->e, KNH_NULL);
+	knh_InputStream_t *bin = new_StringInputStream(ctx, sfp[1].s);
+	knh_class_t tcid = sfp[4].c->cid;
+	knh_status_t status = knh_eval(ctx, bin, NULL);
+	scr = ctx->gma->scr;
+	ns = K_GMANS;
+	if(scr != sfp[2].scr) {
+		KNH_SETv(ctx, ctx->gma->scr, sfp[2].scr);
+		sfp[2].scr = scr;
+	}
+	if(ns != sfp[3].ns) {
+		KNH_SETv(ctx, K_GMANS, sfp[3].ns);
+		sfp[3].ns = ns;
+	}
+	DBG_P("status=%d, ctx->e=%s", status, CLASS__(O_cid(ctx->e)));
+	if(status == K_CONTINUE) {
+		knh_Object_t *v = ctx->evaled;
+		if(tcid == CLASS_Tvoid) return;
+		if(v != KNH_NULL && ClassTBL_isa(O_cTBL(v), tcid)) {
+			if(IS_Tunbox(tcid)) {
+				RETURNi_(N_toint(v));
+			}
+			else {
+				RETURN_(v);
+			}
+		}
+	}
+	sfp[rix].ndata = 0;
+	RETURN_(KNH_NULVAL(tcid));
 }
 
 /* ------------------------------------------------------------------------ */

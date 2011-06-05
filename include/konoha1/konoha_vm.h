@@ -266,14 +266,6 @@ extern "C" {
 		goto L_RETURN;\
 	}\
 
-#define KLR_LOADMTD(ctx, thisidx, fmtd, mtdO) { \
-		knh_Method_t *mtd_ = fmtd(ctx, SFP(rbp), SFPIDX(thisidx), mtdO);\
-		if(mtd_ != mtdO) { \
-			((klr_LOADMTD_t*)op)->mtdNC = mtd_;\
-		}\
-		klr_setmtdNC(ctx, rbp[thisidx+K_MTDIDX2], mtd_);\
-	} \
-
 #define KLR_LDMTD(ctx, thisidx, ldmtd, hc, mtdO) { \
 		ldmtd(ctx, SFP(rbp), op);\
 	} \
@@ -289,6 +281,7 @@ extern "C" {
 		GOTO_PC(pc); \
 	} \
 
+/**
 #define KLR_VINVOKE(ctx, rtnidx, thisidx, espshift) { \
 		knh_Method_t *mtd_ = (rbp[thisidx].fo)->mtd;\
 		prefetch((mtd_)->pc_start);\
@@ -300,6 +293,7 @@ extern "C" {
 		pc = (mtd_)->pc_start;\
 		GOTO_PC(pc); \
 	} \
+**/
 
 #define KLR_THUNK(ctx, rtnidx, thisidx, espshift, mtdO) { \
 		knh_Method_t *mtd_ = mtdO == NULL ? rbp[thisidx+K_MTDIDX2].mtdNC : mtdO;\
@@ -529,7 +523,7 @@ extern "C" {
 #define KLR_P(ctx, fprint, flag, msg, n) fprint(ctx, SFP(rbp), op)
 
 #define KLR_PROBE(ctx, sfpidx, fprobe, n, ns) { \
-	fprobe(ctx, SFP(rbp), pc);\
+	fprobe(ctx, SFP(rbp), op);\
 }\
 
 /* ------------------------------------------------------------------------ */

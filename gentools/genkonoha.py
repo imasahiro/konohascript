@@ -426,6 +426,7 @@ def parse_Method(meta, tokens, data):
     while c + 1 < len(tt):
         type = tt[c]
         fn = tt[c+1]
+        if fn == "_" : fn = ""
         data.check_type(tt[c])
         data.add_name(fn)
         mtd.add(type, fn)

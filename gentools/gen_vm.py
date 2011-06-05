@@ -135,7 +135,6 @@ FASTCALL0  _DEF|_JIT         a:r thisidx:sfpidx rix:i espshift:sfpidx fcall:f
 RET        _JIT
 
 TR         _DEF|_JIT         a:r  b:sfpidx rix:i cid:cid tr:f
-#UNBOX      _DEF              a:rn b:ro cid:cid
 
 SCAST      _DEF              a:r b:sfpidx rix:i espshift:sfpidx cast:tmr
 TCAST      _DEF              a:r b:sfpidx rix:i espshift:sfpidx cast:tmr

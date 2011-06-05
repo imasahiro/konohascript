@@ -47,7 +47,7 @@ extern "C" {
 #define STT_BLOCK  ((knh_term_t)1)
 #define STT_PRAGMA  ((knh_term_t)2)
 #define STT_NAMESPACE  ((knh_term_t)3)
-#define STT_SCRIPT  ((knh_term_t)4)
+#define STT_LINK  ((knh_term_t)4)
 #define STT_DEFMACRO  ((knh_term_t)5)
 #define STT_INCLUDE  ((knh_term_t)6)
 #define STT_ALLOW  ((knh_term_t)7)
@@ -103,7 +103,7 @@ extern "C" {
 #define STT_GO  ((knh_term_t)57)
 #define TT_PRAGMA   ((knh_term_t)58)
 #define TT_NAMESPACE   ((knh_term_t)59)
-#define TT_SCRIPT   ((knh_term_t)60)
+#define TT_LINK   ((knh_term_t)60)
 #define TT_INCLUDE   ((knh_term_t)61)
 #define TT_IMPORT   ((knh_term_t)62)
 #define TT_USING   ((knh_term_t)63)
@@ -258,7 +258,7 @@ static TERMDATA_t TERMDATA[] = {
 	{"BLOCK", 0, -1}, 
 	{"pragma", 0, -1}, 
 	{"namespace", 0, -1}, 
-	{"script", 0, -1}, 
+	{"link", 0, -1}, 
 	{"defmacro", 0, -1}, 
 	{"include", 0, -1}, 
 	{"allow", 0, -1}, 
@@ -314,7 +314,7 @@ static TERMDATA_t TERMDATA[] = {
 	{"*go", 0, -1}, 
 	{"pragma", 0, STT_PRAGMA}, 
 	{"namespace", 0, STT_NAMESPACE}, 
-	{"script", 0, STT_SCRIPT}, 
+	{"link", 0, STT_LINK}, 
 	{"include", 0, STT_INCLUDE}, 
 	{"import", 0, -1}, 
 	{"using", 0, STT_USING}, 

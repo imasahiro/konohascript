@@ -1062,7 +1062,7 @@ static int Token_addURN(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStrea
 		Token_addBuf(ctx, tk, cwb, TT_UNTYPED, ch);
 		return ch;
 	}
-	if(isspace(ch) || ch == EOF || ch == ';' || ch == '"' || ch == '\'') {
+	if(isspace(ch) || ch == EOF || ch == ';' || ch == '"' || ch == '\'' || ch == '(' || ch == '{' || ch == '[') {
 		Token_addBuf(ctx, tk, cwb, TT_UNTYPED, ':');
 		knh_Bytes_putc(ctx, cwb->ba, ':');
 		Token_addBuf(ctx, tk, cwb, TT_UNTYPED, ch);
@@ -2216,6 +2216,8 @@ static void _EXPR1(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		case TT_ESTR:    /* @CODE: `hoge` */
 		case TT_NUM:     /* @CODE: 123m */
 		case TT_URN:     /* @CODE: URL */
+		case TT_TLINK:   /* @CODE: link:: */
+		case TT_DYN:
 			knh_Stmt_add(ctx, stmt, tkCUR);
 			break;
 		case TT_BYTE:    /* @CODE: byte */
@@ -3141,6 +3143,7 @@ static void _TYPEMAP(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	knh_Stmt_add(ctx, stmt, ITR_nextTK(itr));  /* T */
 	ITR_nextTK(itr); // skip ':'
 	ADD(stmt, _PARAM(ctx, stmt, itr));
+	_ASIS(ctx, stmt, itr);    // TLINK or ASIS
 	ADD(stmt, _CODE(ctx, stmt, itr));
 }
 
@@ -3217,21 +3220,29 @@ static knh_Stmt_t *new_StmtMETA(CTX ctx, knh_term_t stt, tkitr_t *itr, int shift
 
 static int Token_isMAP(CTX ctx, knh_Token_t *tk)
 {
-	int isMAP = 1;
-	if(TT_(tk) == TT_BRACE) {
-		tkitr_t tbuf, *titr = ITR_new(tk, &tbuf);
-		if(titr->e > 0) {
-			int i, c = 0;
-			for(i = 0; i < titr->e; i++) {
-				knh_Token_t *tkN = titr->ts[i];
-				if(TT_(tkN) <= TT_FINALLY) {
-					isMAP = 0;
-					goto L_RETURN;
-				}
-				if(TT_(tkN) == TT_COLON) c++;
-			}
-			if(c > 0) isMAP = 1;
+	DBG_ASSERT(TT_(tk) == TT_BRACE);
+	tkitr_t tbuf, *titr = ITR_new(tk, &tbuf);
+	int i, colon = 0, comma = 0;
+	int isMAP = titr->e == 0 ? 1 : 0;
+	for(i = 0; i < titr->e; i++) {
+		knh_term_t tt = TT_(titr->ts[i]);
+		if(tt <= TT_FINALLY || tt == TT_LSEND || tt == TT_RSEND || tt == TT_LET) {
+			isMAP = 0;
+			goto L_RETURN;
 		}
+		else if(tt == TT_SEMICOLON && colon == 0) {
+			isMAP = 0;
+			goto L_RETURN;
+		}
+		else if(tt == TT_COLON) colon++;
+		else if(tt == TT_COMMA) comma++;
+	}
+	if(colon == 0 && titr->e > 0) {
+		TT_(tk) = TT_BRANCET;
+		isMAP = 1;
+	}
+	if(colon > 0) {
+		isMAP = 1;
 	}
 	DBG_P("@@@@@@@ isMAP=%d", isMAP);
 	L_RETURN:;
@@ -3317,7 +3328,7 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 		}
 		CASE_L(PRAGMA, +1, 1/*;*/, _PRAGMA)
 		CASE_(NAMESPACE, +1, _STMT1);
-		CASE_(SCRIPT, +1, _STMT1);
+		CASE_(LINK, +1, _ONEEXPR, _STMT1);
 		CASE_L(INCLUDE, +1, 1/*;*/, _EXPRs);
 		CASE_L(USING, +1, 1/*;*/, _USING);
 		CASE_(CLASS, +1, _CLASS);
@@ -3381,7 +3392,6 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 				stmt = new_StmtMETA(ctx, STT_METHOD, itr, 0, _METHOD, NULL);
 				break;
 			}
-			DBG_P("isCOLON=%d, isPARENTHESIS=%d, ", ITR_is(mitr, TT_COLON), ITR_isN(mitr, +1, TT_PARENTHESIS));
 			if(ITR_is(mitr, TT_COLON) && ITR_isN(mitr, +1, TT_PARENTHESIS) && tt != TT_VAR && tt != TT_DYN && tt != TT_VOID) {
 				stmt = new_StmtMETA(ctx, STT_TYPEMAP, itr, 0, _TYPEMAP, NULL);
 			}
