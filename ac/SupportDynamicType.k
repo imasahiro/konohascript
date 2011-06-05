@@ -9,7 +9,6 @@ assure "SupportDynamicType" {
 	assert n == 1;
 	float f = d;
 	assert f == 1.0;
-	Object o = d;
 	boolean isCaught = false;
 	try {
 		String s = d;
@@ -21,3 +20,19 @@ assure "SupportDynamicType" {
 	assert isCaught; // s is not assigned 
 }
 
+dynamic fibo (dynamic n) {
+        if(n < 3) return 1;
+        return fibo(n-1) + fibo(n-2);
+}
+
+assure "SupportDynamicType" {
+	n = fibo(10);
+	assert typeof(n) == dynamic;
+	assert n == 55;
+}
+
+assure "SupportDynamicTypeCall" {
+	dynamic d = "naruto";
+	assert d.startsWith("n");
+	assert not d.startsWith("A");
+}
