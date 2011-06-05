@@ -2,7 +2,7 @@ using konoha.i.*;
 void main (String[] args)
 {
 	if (args.size > 0) {
-		System.man(args[0]);
+		System.dump(args[0]);
 	} else {
 		/* TODO usage */
 	}
