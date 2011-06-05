@@ -3,7 +3,7 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      283
+#define K_REVISION                      285
 #endif
 #define K_BUILDID                       1123
 
@@ -462,35 +462,29 @@
 #define TYPE_CmprT1             CLASS_CmprT1
 
 /* ------------------------------------------------------------------------ */
-/* CmprInt */
-#define CLASS_CmprInt           ((knh_class_t)51)
-#define IS_CmprInt(o)           (O_cid(o) == CLASS_CmprInt)
-#define TYPE_CmprInt            CLASS_CmprInt
-
-/* ------------------------------------------------------------------------ */
 /* T1ITR */
-#define CLASS_T1ITR             ((knh_class_t)52)
+#define CLASS_T1ITR             ((knh_class_t)51)
 #define IS_T1ITR(o)             (O_cid(o) == CLASS_T1ITR)
 #define TYPE_T1ITR              CLASS_T1ITR
 
 /* ------------------------------------------------------------------------ */
 /* T1ARRAY */
-#define CLASS_T1ARRAY           ((knh_class_t)53)
+#define CLASS_T1ARRAY           ((knh_class_t)52)
 #define IS_T1ARRAY(o)           (O_cid(o) == CLASS_T1ARRAY)
 #define TYPE_T1ARRAY            CLASS_T1ARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringARRAY */
-#define CLASS_StringARRAY       ((knh_class_t)54)
+#define CLASS_StringARRAY       ((knh_class_t)53)
 #define IS_StringARRAY(o)       (O_cid(o) == CLASS_StringARRAY)
 #define TYPE_StringARRAY        CLASS_StringARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringITR */
-#define CLASS_StringITR         ((knh_class_t)55)
+#define CLASS_StringITR         ((knh_class_t)54)
 #define IS_StringITR(o)         (O_cid(o) == CLASS_StringITR)
 #define TYPE_StringITR          CLASS_StringITR
-#define K_CLASS_INITSIZE                57
+#define K_CLASS_INITSIZE                56
 
 /* ------------------------------------------------------------------------ */
 /* FLAG */
