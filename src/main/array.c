@@ -542,6 +542,37 @@ static METHOD Array_lastIndexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	RETURNi_(i);
 }
+/* ------------------------------------------------------------------------ */
+//## method void Array.sort(Func cc);
+
+// added by @shinpei_NKT
+int knh_compare(knh_Func_t *fo, const void *v1, const void *v2)
+{
+  knh_int_t a = *((knh_int_t*)v1);
+  knh_int_t b = *((knh_int_t*)v2);
+  CLOSURE_start(2);
+  CLOSURE_putArg(1, Int, a);
+  CLOSURE_putArg(2, Int, b);
+  CLOSURE_call(fo);
+  int ret = CLOSURE_getReturn(Int);
+  CLOSURE_end(return ret);
+}
+
+int dummyCallbackCompare(const void *v1, const void *v2)
+{
+  return knh_compare((knh_Func_t*)-1, v1, v2);
+}
+
+static METHOD Array_sort(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+  knh_Array_t *a = sfp[0].a;
+  knh_Func_t *fo = sfp[1].fo;
+  void *cfunc = knh_copyCallbackFunc(ctx, dummyCallbackCompare, knh_compare, fo);
+  qsort(a->ilist, a->size, sizeof(knh_int_t),  cfunc);
+  RETURNvoid_();
+}
+
+
 
 ///* ------------------------------------------------------------------------ */
 ///* [Collections] */

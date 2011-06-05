@@ -116,43 +116,6 @@ static inline void knh_xfree(CTX ctx, void* block, size_t size)
 }
 
 
-#define CLOSURE_start(argc) \
-  CTX lctx = (CTX)knh_getCurrentContext(); \
-  knh_intptr_t thisidx = K_CALLDELTA; \
-  BEGIN_LOCAL(lctx, lsfp, thisidx + argc + 1);
-
-#define CLOSURE_putInt(idx, val) \
-  lsfp[idx].ivalue = val
-
-#define CLOSURE_putFloat(idx, val) \
-  lsfp[idx].fvalue = val
-
-#define CLOSURE_putBoolean(idx, val) \
-  lsfp[idx].bvalue = val
-
-#define CLOSURE_putArg(idx, type, val) \
-  CLOSURE_put##type(idx, val)
-
-#define CLOSURE_call(fo) \
-if (fo->baseNULL != NULL) { \
-  KNH_SETv(lctx, fo, fo->baseNULL); \
-} \
- klr_setmtdNC(lctx, lsfp[K_MTDIDX], fo->mtd); \
- KNH_SELFCALL(lctx, lsfp, fo->mtd, K_RTNIDX);
-
-#define CLOSURE_getInt() \
-  lsfp[K_RTNIDX].ivalue
-
-#define CLOSURE_getFloat() \
-  lsfp[K_RTNIDX].fvalue
-
-#define CLOSURE_getBoolean() \
-  lsfp[K_RTNIDX].bvalue
-
-#define CLOSURE_end(exp) \
-  END_LOCAL_(lctx, lsfp); \
-  exp
-
 
 
 /*
