@@ -282,7 +282,7 @@ METHOD System_dump(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_String_t *name = sfp[1].s;
 	if (IS_NOTNULL(name)) {
-		knh_class_t cid = knh_getcid(ctx, S_tobytes(name));
+		knh_class_t cid = CLASS_unknown; //knh_getcid(ctx, S_tobytes(name));  // FIXME
 		if (cid != CLASS_unknown) {
 			const knh_ClassTBL_t *ct = ClassTBL(cid);
 			knh_NameSpace_t *ns = sfp[2].ns;
