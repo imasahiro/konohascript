@@ -262,16 +262,9 @@ static void ClassTYPEMAP_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_
 		knh_write_EOL(ctx, w);
 	}
 }
-
-//## @Static method void System.man(Object c, NameSpace ns);
-METHOD System_man(CTX ctx, knh_sfp_t *sfp _RIX)
+static void _System_man(CTX ctx, const knh_ClassTBL_t *ct, knh_NameSpace_t *ns)
 {
 	knh_OutputStream_t *w = KNH_STDOUT;
-	const knh_ClassTBL_t *ct = O_cTBL(sfp[1].o);
-	knh_NameSpace_t *ns = sfp[2].ns;
-	if(IS_Class(sfp[1].o)) {
-		ct = ClassTBL(((knh_Class_t*)sfp[1].o)->cid);
-	}
 	ClassNAME_man(ctx, w, ct);
 	if(!class_isPrivate(ct->cid)) {
 		if(ct->constDictCaseMapNULL != NULL) {
@@ -282,6 +275,31 @@ METHOD System_man(CTX ctx, knh_sfp_t *sfp _RIX)
 		ClassFMT_man(ctx, w, ct, ns);
 		ClassTYPEMAP_man(ctx, w, ct, ns);
 	}
+}
+
+//## @Static method void System.man:String(String name, NameSpace ns);
+METHOD System_dump(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_String_t *name = sfp[1].s;
+	if (IS_NOTNULL(name)) {
+		knh_class_t cid = knh_getcid(ctx, S_tobytes(name));
+		if (cid != CLASS_unknown) {
+			const knh_ClassTBL_t *ct = ClassTBL(cid);
+			knh_NameSpace_t *ns = sfp[2].ns;
+			_System_man(ctx, ct, ns);
+		}
+	}
+}
+
+//## @Static method void System.man(Object c, NameSpace ns);
+METHOD System_man(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	const knh_ClassTBL_t *ct = O_cTBL(sfp[1].o);
+	knh_NameSpace_t *ns = sfp[2].ns;
+	if(IS_Class(sfp[1].o)) {
+		ct = ClassTBL(((knh_Class_t*)sfp[1].o)->cid);
+	}
+	_System_man(ctx, ct, ns);
 }
 
 /* ------------------------------------------------------------------------ */

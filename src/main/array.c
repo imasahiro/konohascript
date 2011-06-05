@@ -543,7 +543,8 @@ static METHOD Array_lastIndexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(i);
 }
 /* ------------------------------------------------------------------------ */
-//## method void Array.sort(Func cc);
+//## type CmprInt Func 1 Int Int Int;
+//## method void Array.sort(CmprInt cc);
 
 // added by @shinpei_NKT
 int knh_compare(knh_Func_t *fo, const void *v1, const void *v2)

@@ -375,6 +375,8 @@ void knh_Iterator_close(CTX ctx, knh_Iterator_t *it);
 knh_Iterator_t* new_ArrayIterator(CTX ctx, knh_Array_t *a);
 knh_bool_t knh_isArrayIterator(knh_Iterator_t *itr);
 knh_Array_t* knh_Iterator_toArray(CTX ctx, knh_Iterator_t *itr);
+int knh_compare(knh_Func_t *fo, const void *v1, const void *v2);
+int dummyCallbackCompare(const void *v1, const void *v2);
 size_t k_goodsize(size_t ss);
 size_t k_goodsize2(size_t ss, size_t wsize);
 const knh_dim_t *new_dim(CTX ctx, size_t capacity, size_t wsize);
