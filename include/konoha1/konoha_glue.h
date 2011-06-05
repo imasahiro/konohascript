@@ -249,8 +249,8 @@ typedef const knh_LinkDPI_t* (*knh_Flinkdef)(CTX);
 #define Float_to(T, a)             ((T)a.fvalue)
 #define String_to(T, a)            ((T)S_tochar(a.s))
 #define StringNull_to(T, a, def)   ((T)(IS_bString(a.o) ? S_tochar(a.s) : def))
-#define RawPtr_to(T, a)            ((T)((a.p)->ptr))
-#define RawPtrNull_to(T, a, def)   (IS_bRawPtr(a.o) ? ((T)((a.p)->ptr)) : (def))
+#define RawPtr_to(T, a)            ((T)((a.p)->rawptr))
+//#define RawPtrNull_to(T, a, def)   (IS_bRawPtr(a.o) ? ((T)((a.p)->rawptr)) : (def))
 #define Class_tocid(a)             ((a.c)->cid)
 
 /* ------------------------------------------------------------------------ */

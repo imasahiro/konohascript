@@ -1330,6 +1330,7 @@ typedef struct knh_KindOf_t {
 
 typedef struct knh_RawPtr_t {
 	knh_hObject_t h;
+	void *rawptr;
 } knh_RawPtr_t ;
 
 #define CLASS_dynamic   CLASS_Tdynamic

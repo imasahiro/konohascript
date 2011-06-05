@@ -86,7 +86,7 @@ static char *MNOP__(knh_methodn_t mn)
 {
 	switch(mn) {
 	case MN_opNOT: return "!x";
-	case MN_opOF: return "x instanceof T";
+	case MN_opOF: return "x <: T";
 
 	case MN_opHAS:  return "y in? x";
 	case MN_opIS:  return "x is y";
@@ -124,7 +124,7 @@ static char *MNOP__(knh_methodn_t mn)
 	case MN_set:          return "x[n]=y";
 	case MN_setAll:       return "x[]=y";
 	case MN_opTO:    return "x[m to n]";
-	case MN_opUNTIL: return "x[m until n]";
+	case MN_opUNTIL: return "x[m : n]";
 	}
 	return NULL;
 }

@@ -542,120 +542,86 @@ static METHOD Array_lastIndexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	RETURNi_(i);
 }
+
 /* ------------------------------------------------------------------------ */
-//## type CmprInt Func 1 Int Int Int;
-//## method void Array.sort(CmprInt cc);
+
+static int qsort_icmp(const void* ap, const void* bp)
+{
+	knh_int_t a = *((knh_int_t*)ap);
+	knh_int_t b = *((knh_int_t*)bp);
+	if(a < b) return -1;
+	return (a > b);
+}
+
+static int qsort_fcmp(const void* ap, const void* bp)
+{
+	knh_float_t a = *((knh_float_t*)ap);
+	knh_float_t b = *((knh_float_t*)bp);
+	if(a < b) return -1;
+	return (a > b);
+}
+
+static int qsort_ocmp(const void *ap, const void* bp)
+{
+	Object* o1 = *((Object**)ap);
+	Object* o2 = *((Object**)bp);
+	knh_class_t bcid1 = O_bcid(o1);
+	knh_class_t bcid2 = O_bcid(o2);
+	int res;
+	if(bcid1 == bcid2) {
+		res = O_cTBL(o1)->ospi->compareTo(o1, o2);
+	}
+	else {
+		res = (int)(o1 - o2);
+	}
+	return res;
+}
 
 // added by @shinpei_NKT
 int knh_compare(knh_Func_t *fo, const void *v1, const void *v2)
 {
-  knh_int_t a = *((knh_int_t*)v1);
-  knh_int_t b = *((knh_int_t*)v2);
-  CLOSURE_start(2);
-  CLOSURE_putArg(1, Int, a);
-  CLOSURE_putArg(2, Int, b);
-  CLOSURE_call(fo);
-  int ret = CLOSURE_getReturn(Int);
-  CLOSURE_end(return ret);
+	knh_int_t a = *((knh_int_t*)v1);
+	knh_int_t b = *((knh_int_t*)v2);
+	CLOSURE_start(2);
+	CLOSURE_putArg(1, Int, a);
+	CLOSURE_putArg(2, Int, b);
+	CLOSURE_call(fo);
+	int ret = CLOSURE_getReturn(Int);
+	CLOSURE_end(return ret);
 }
 
 int dummyCallbackCompare(const void *v1, const void *v2)
 {
-  return knh_compare((knh_Func_t*)-1, v1, v2);
+	return knh_compare((knh_Func_t*)-1L, v1, v2);
 }
+
+/* ------------------------------------------------------------------------ */
+//## method void Array.sort(CmprT1 cmr);
 
 static METHOD Array_sort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-  knh_Array_t *a = sfp[0].a;
-  knh_Func_t *fo = sfp[1].fo;
-  void *cfunc = knh_copyCallbackFunc(ctx, dummyCallbackCompare, knh_compare, fo);
-  qsort(a->ilist, a->size, sizeof(knh_int_t),  cfunc);
-  RETURNvoid_();
+	knh_Array_t *a = sfp[0].a;
+	if(IS_NULL(sfp[1].o)) {
+		knh_class_t p1 = O_p1(a);
+		if(Array_isNDATA(a)) {
+			if(p1 == TYPE_Boolean || IS_Tint(p1)) {
+				knh_qsort(a->nlist, a->size, sizeof(knh_int_t), qsort_icmp);
+			}
+			else {
+				knh_qsort(a->nlist, a->size, sizeof(knh_float_t), qsort_fcmp);
+			}
+		}
+		else {
+			knh_qsort(a->list, a->size, sizeof(Object*), qsort_ocmp);
+		}
+	}
+	else {
+		// added by @shinpei_NKT
+		void *cfunc = knh_copyCallbackFunc(ctx, dummyCallbackCompare, knh_compare, sfp[1].fo);
+		knh_qsort(a->ilist, a->size, sizeof(knh_int_t), cfunc);
+	}
 }
 
-
-
-///* ------------------------------------------------------------------------ */
-///* [Collections] */
-//
-//typedef struct {
-//	CTX ctx;
-//	knh_sfp_t *sfp;
-//} knh_env_t;
-//
-//static int knh_env_comp(knh_env_t *env, Object **a1, Object **a2)
-//{
-//	CTX ctx = env->ctx;
-//	knh_sfp_t *lsfp = env->sfp + 2;
-//	knh_putsfp(ctx, lsfp, 2, a1[0]);
-//	knh_putsfp(ctx, lsfp, 3, a2[0]);
-//	knh_Func_invokesfp(ctx, env->sfp[1].cc, lsfp, 1/*rtnidx*/, 2);
-//	return (int)lsfp[0].ivalue;
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## method void Array.sort(Cmpr? cc);
-//
-//static METHOD Array_sort(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//
-//	knh_Array_t *o = sfp[0].a;
-//	if(IS_NULL(sfp[1].o)) {
-//		knh_qsort_r(o->list, o->size, sizeof(Object*),
-//			(void*)ctx, (int (*)(void*, const void*, const void*))knh_Object_compareTo2);
-//	}
-//	else {
-//		knh_env_t env = {ctx, sfp};
-//		knh_qsort_r(o->list, o->size, sizeof(Object*), (void*)&env,
-//				(int (*)(void *, const void* , const void*))knh_env_comp);
-//	}
-//	RETURNvoid_();
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//static int qsort_icmp(const void* ap, const void* bp)
-//{
-//	knh_int_t a = *((knh_int_t*)ap);
-//	knh_int_t b = *((knh_int_t*)bp);
-//	if(a < b) return -1;
-//	if(a > b) return 1;
-//	return 0;
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## method void IArray.sort();
-//
-//static METHOD IArray_sort(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//
-//	knh_IArray_t *o = (knh_IArray_t*)sfp[0].o;
-//	knh_qsort(o->ilist, o->size, sizeof(knh_int_t), qsort_icmp);
-//	RETURNvoid_();
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//static int qsort_fcmp(const void* ap, const void* bp)
-//{
-//	knh_float_t a = *((knh_float_t*)ap);
-//	knh_float_t b = *((knh_float_t*)bp);
-//	if(a < b) return -1;
-//	if(a > b) return 1;
-//	return 0;
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## method void FArray.sort();
-//
-//static METHOD FArray_sort(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//
-//	knh_FArray_t *o = (knh_FArray_t*)sfp[0].o;
-//	knh_qsort(o->flist, o->size, sizeof(knh_float_t), qsort_fcmp);
-//	RETURNvoid_();
-//}
-//
 /* ------------------------------------------------------------------------ */
 
 static inline void NArray_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m)

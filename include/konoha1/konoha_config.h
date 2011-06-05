@@ -412,7 +412,7 @@ typedef struct knh_sysinfo_t {
 #endif
 
 #define knh_getenv(n)                  getenv(n)
-#define  knh_qsort(b,s,w,f)            qsort(b,s,w,f)
+#define knh_qsort(b,s,w,f)            qsort(b,s,w,f)
 
 //void knh_qsort_r (void *const pbase, size_t total_elems, size_t size,
 //        void* thunk,int (*cmp)(void* ,const void*,const void*));
