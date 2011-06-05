@@ -769,20 +769,10 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 				knh_memcpy(ct->protoNULL->fields, suptmp->ref, ct->fsize*sizeof(knh_Object_t*));
 				knh_memcpy(ct->defnull->ref, supobj->ref, ct->fsize*sizeof(knh_Object_t*));
 #ifdef K_USING_RCGC
-#ifdef K_USING_CSTACK_TRAVERSE_
-#define ARG RCinc
-#else
-#define ARG ctx->refs
-#endif
-				ct->supTBL->ospi->reftrace(ctx, suptmp, ARG);
-#ifndef K_USING_CSTACK_TRAVERSE_
+				ct->supTBL->ospi->reftrace(ctx, suptmp, ctx->refs);
 				knh_RefTraverse(ctx, RCinc);
-#endif
-				ct->supTBL->ospi->reftrace(ctx, supobj, ARG);
-#ifndef K_USING_CSTACK_TRAVERSE_
+				ct->supTBL->ospi->reftrace(ctx, supobj, ctx->refs);
 				knh_RefTraverse(ctx, RCinc);
-#endif
-#undef ARG
 #endif
 			}
 		}

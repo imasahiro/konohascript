@@ -126,14 +126,8 @@ void knh_BasicBlock_add_(CTX ctx, knh_BasicBlock_t *bb, knh_ushort_t line, knh_o
 		knh_opline_t *pc = DP(bb)->opbuf + DP(bb)->size;
 		knh_memcpy(pc, op, size == 0 ? sizeof(knh_opline_t) : size);
 #ifdef K_USING_RCGC
-#ifdef K_USING_CSTACK_TRAVERSE_
-#define ARG RCinc
-#else
-#define ARG ctx->refs
-#endif
-		knh_opline_reftrace(ctx, op, ARG);
+		knh_opline_reftrace(ctx, op, ctx->refs);
 		knh_RefTraverse(ctx, RCinc);
-#undef ARG
 #endif
 		pc->line = line;
 		DP(bb)->size += 1;

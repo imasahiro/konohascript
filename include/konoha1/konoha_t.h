@@ -579,26 +579,9 @@ typedef struct knh_rbp_t {
 /* ------------------------------------------------------------------------ */
 /* [ObjectFunc] */
 
-//#define K_USING_CSTACK_TRAVERSE_ 1
-
 #define O_hasRef(o)   (1/*O_cTBL(o)->fast_reftrace != NONE_reftrace*/)
 
 typedef void (*knh_Ftraverse)(CTX, Object *);
-#ifdef K_USING_CSTACK_TRAVERSE_
-#define FTRARG    , knh_Ftraverse _ftr
-#define FTRDATA   , _ftr
-
-#define KNH_ADDREF(ctx, p)  _ftr(ctx, UPCAST(p))
-
-#define KNH_ADDNNREF(ctx, p)  if(p != NULL) {\
-		KNH_ADDREF(ctx, p);\
-	}\
-
-#define KNH_ENSUREREF(ctx, SIZE)
-
-#define KNH_SIZEREF(ctx) 
-
-#else
 #define K_USING_FASTREFS_  1
 
 #define FTRARG    , knh_Object_t** tail_
@@ -642,7 +625,6 @@ typedef void (*knh_Ftraverse)(CTX, Object *);
 		KNH_ASSERT(ctx->ref_size == (tail_ - ctx->refs));\
 	}\
 
-#endif
 typedef void (*knh_Freftrace)(CTX, Object * FTRARG);
 
 typedef knh_uintptr_t                knh_hashcode_t;  /* knh_hashcode_t */

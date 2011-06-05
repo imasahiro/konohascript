@@ -706,8 +706,6 @@ static void knh_Object_finalfree(CTX ctx, knh_Object_t *o)
 	O_set_tenure(o); // uncollectable
 }
 
-#ifndef K_USING_CSTACK_TRAVERSE_
-
 typedef struct knh_ostack_t {
 	knh_Object_t **stack;
 	size_t cur;
@@ -783,9 +781,7 @@ knh_Object_t** knh_ensurerefs(CTX ctx, knh_Object_t** tail, size_t size)
 	}
 	return tail;
 }
-#endif/*K_USING_CSTACK_TRAVERSE_*/
-
-#if defined(K_USING_RCGC) && !defined(K_USING_CSTACK_TRAVERSE_)
+#if defined(K_USING_RCGC)
 static void deref_ostack(CTX ctx, knh_Object_t *ref, knh_ostack_t *ostack)
 {
 	if (knh_Object_RCdec(ref) == 1) {
@@ -801,19 +797,6 @@ static void deref_ostack(CTX ctx, knh_Object_t *ref, knh_ostack_t *ostack)
 #if defined(K_USING_RCGC)
 void knh_Object_RCfree(CTX ctx, Object *o)
 {
-#ifdef K_USING_CSTACK_TRAVERSE_
-	const knh_ClassTBL_t *ct = O_cTBL(o);
-	DBG_ASSERT(o->h.magic != 0);
-	if(unlikely(o->h.magic == 0)) return;
-	O_set_tenure(o);
-	RCGC_(DBG_ASSERT(Object_isRC0(o)));
-	o->h.magic = 0;
-	ct->ospi->reftrace(ctx, o, knh_Object_RCsweep);
-	ct->ospi->free(ctx, o);
-	OBJECT_REUSE(o);
-	knh_unuseObject(ctx, 1);
-	disposeClassObject(ct);
-#else
 #define ctx_update_refs(ctx, buf, size) \
 		((knh_context_t*)ctx)->refs = buf;\
 		((knh_context_t*)ctx)->ref_size = size;
@@ -836,7 +819,6 @@ void knh_Object_RCfree(CTX ctx, Object *o)
 		knh_Object_finalfree(ctx, ref);
 	}
 	ostack_free(ctx, ostack);
-#endif
 }
 
 void knh_Object_RCsweep(CTX ctx, Object *o)
@@ -983,23 +965,6 @@ static void gc_init(CTX ctx)
 	STAT_(ctx->stat->markedObject = 0;)
 }
 
-#ifdef K_USING_CSTACK_TRAVERSE_
-static void Object_mark1(CTX ctx, Object *o)
-{
-	DBG_ASSERT(o->h.magic == K_OBJECT_MAGIC);
-	knh_ObjectPage_t *opage = K_OPAGE(o);
-	knh_uintptr_t *b = opage->h.bitmap;
-	size_t n = K_OPAGEOFFSET(o, opage);
-	DBG_ASSERT(n < (K_PAGESIZE / sizeof(knh_Object_t)));
-	DBG_ASSERT(&(opage->slots[n-1]) == o);
-	if(!(bit_test_and_set(b, n))) {
-		STAT_(ctx->stat->markedObject++;)
-		O_cTBL(o)->ospi->reftrace(ctx, o, Object_mark1);
-	}
-}
-
-#else
-
 static void mark_ostack(CTX ctx, knh_Object_t *ref, knh_ostack_t *ostack)
 {
 	knh_ObjectPage_t *opage = K_OPAGE(ref);
@@ -1013,13 +978,9 @@ static void mark_ostack(CTX ctx, knh_Object_t *ref, knh_ostack_t *ostack)
 		}
 	}
 }
-#endif
 
 static void gc_mark(CTX ctx)
 {
-#ifdef K_USING_CSTACK_TRAVERSE_
-	knh_reftraceAll(ctx, Object_mark1);
-#else
 	long i;
 	const knh_ClassTBL_t *cTBL;
 	knh_ostack_t ostackbuf, *ostack = ostack_init(ctx, &ostackbuf);
@@ -1045,7 +1006,6 @@ static void gc_mark(CTX ctx)
 		}
 	}
 	ostack_free(ctx, ostack);
-#endif
 }
 
 static inline void Object_MSfree(CTX ctx, knh_Object_t *o)

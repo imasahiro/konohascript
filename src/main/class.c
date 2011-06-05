@@ -1387,7 +1387,7 @@ static knh_TypeMap_t *knh_findParam1TypeMapNULL(CTX ctx, const knh_ClassTBL_t *s
 	else {  // Array<S> => Iterator<T>
 		knh_TypeMap_t *tmr = knh_findTypeMap1NULL(ctx, sct->baseTBL, tct->bcid, isT);
 		if(tmr != NULL) {
-			knh_TypeMap_t *tmr2 = knh_findTypeMapNULL(ctx, sct->p1, tct->p2, isT);
+			knh_TypeMap_t *tmr2 = knh_findTypeMapNULL(ctx, sct->p1, tct->p1, isT);
 			if(tmr2 != NULL) {
 				tmr = new_TypeMapNested(ctx, tmr, tmr2);
 				return tmr;

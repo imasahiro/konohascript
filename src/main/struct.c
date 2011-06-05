@@ -2840,11 +2840,7 @@ static void BasicBlock_reftrace(CTX ctx, Object *o FTRARG)
 	size_t i;
 	KNH_ENSUREREF(ctx, DP(bb)->size);
 	for(i = 0; i < DP(bb)->size; i++) {
-#ifdef K_USING_CSTACK_TRAVERSE_
-		knh_opline_reftrace(ctx, DP(bb)->opbuf + i FTRDATA);
-#else
 		tail_ = knh_opline_reftrace(ctx, DP(bb)->opbuf + i FTRDATA);
-#endif
 	}
 	KNH_SIZEREF(ctx);
 }
@@ -2886,11 +2882,7 @@ static void KonohaCode_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_ADDREF(ctx, b->source);
 	KNH_ENSUREREF(ctx, b->codesize / sizeof(knh_opline_t));
 	while(pc->opcode != OPCODE_RET) {
-#ifdef K_USING_CSTACK_TRAVERSE_
-		knh_opline_reftrace(ctx, pc FTRDATA);
-#else
 		tail_ = knh_opline_reftrace(ctx, pc FTRDATA);
-#endif
 		pc++;
 	}
 	KNH_SIZEREF(ctx);

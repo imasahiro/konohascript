@@ -457,11 +457,7 @@ knh_Object_t** knh_opline_reftrace(CTX ctx, knh_opline_t *c FTRARG)
 			}
 		}
 	}
-#ifdef K_USING_CSTACK_TRAVERSE_
-	return NULL;
-#else
 	return tail_;
-#endif
 }
 /* ------------------------------------------------------------------------ */
 

@@ -134,11 +134,7 @@ static knh_Object_t** knh_CommonContext_reftrace(CTX ctx, knh_context_t *ctxo FT
 		}
 	}
 #endif
-#ifdef K_USING_CSTACK_TRAVERSE_
-	return NULL;
-#else
 	return tail_;
-#endif
 }
 
 static void knh_CommonContext_free(CTX ctx, knh_context_t *ctxo)
@@ -431,11 +427,7 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 			KNH_ADDREF(ctx, ct->protoNULL);
 		}
 	}
-#ifdef K_USING_CSTACK_TRAVERSE_
-	return NULL;
-#else
 	return tail_;
-#endif
 }
 
 static void knh_share_free(CTX ctx, knh_share_t *share)
@@ -528,18 +520,11 @@ static knh_context_t* knh_getRootContext(CTX ctx)
 
 void knh_context_reftrace(CTX ctx, knh_context_t *o FTRARG)
 {
-#ifdef K_USING_CSTACK_TRAVERSE_
-	knh_CommonContext_reftrace(ctx, (knh_context_t*)o FTRDATA);
-	if(knh_getRootContext(ctx) == (CTX)o) {
-		knh_share_reftrace(ctx, (knh_share_t*)o->share FTRDATA);
-	}
-#else
 	tail_ = knh_CommonContext_reftrace(ctx, (knh_context_t*)o FTRDATA);
 	if(knh_getRootContext(ctx) == (CTX)o) {
 		tail_ = knh_share_reftrace(ctx, (knh_share_t*)o->share FTRDATA);
 	}
 	KNH_SIZEREF(ctx);
-#endif
 }
 
 void knh_Context_free(CTX ctx, knh_context_t* ctxo)
@@ -594,16 +579,8 @@ void konoha_close(konoha_t konoha)
 	}
 	knh_showMemoryStat(ctx);
 #ifdef K_USING_RCGC
-#ifdef K_USING_CSTACK_TRAVERSE_
-#define ARG knh_Object_RCsweep
-#else
-#define ARG ctx->ref_buf
-#endif
-	knh_context_reftrace(ctx, (knh_context_t*)ctx, ARG);
-#ifndef K_USING_CSTACK_TRAVERSE_
+	knh_context_reftrace(ctx, (knh_context_t*)ctx, ctx->ref_buf);
 	//knh_RefTraverse(ctx, knh_Object_RCsweep);
-#endif
-#undef ARG
 #endif
 	((knh_context_t*)ctx)->bufa = NULL; // necessary for KNH_SYSLOG
 	knh_Context_free(ctx, (knh_context_t*)ctx);
