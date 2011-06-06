@@ -477,7 +477,7 @@ void THROW_ParamTypeError(CTX ctx, knh_sfp_t *sfp, size_t n, knh_methodn_t mn, k
 const knh_ExportsAPI_t *knh_getExportsAPI(void);
 const knh_PackageLoaderAPI_t* knh_getPackageLoaderAPI(void);
 void *knh_xmalloc(CTX ctx, size_t size);
-void *knh_copyCallbackFunc(CTX ctx, void *template, void *dest, knh_Func_t *fo);
+void *knh_copyCallbackFunc(CTX ctx, void *tmpl, void *dest, knh_Func_t *fo);
 knh_Fmethod knh_makeFmethod(CTX ctx, void *func, int argc, knh_ffiparam_t *argv);
 void dmap_sort_(knh_dmap_t *dmap, int isforced);
 int knh_bytes_strcasecmp2(knh_bytes_t t1, knh_bytes_t t2);

@@ -465,11 +465,11 @@ static knh_xblock_t* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ff
 
 #ifndef __x86_64__
 
-static void *knh_generateCallbackFunc32(CTX ctx, void *template, void *dest, knh_Func_t *fo)
+static void *knh_generateCallbackFunc32(CTX ctx, void *tmpl, void *dest, knh_Func_t *fo)
 {
   knh_uchar_t *function = NULL;
 #if !defined(K_USING_WINDOWS) && !defined(K_USING_BTRON)
-  function = (knh_uchar_t*)template;
+  function = (knh_uchar_t*)tmpl;
   //search -1
   int i, marker = -1, jmp_pos = -1, shrink_pos = -1;
   for (i = 0; i < FUNC_SIZE; i++) {
@@ -499,7 +499,7 @@ static void *knh_generateCallbackFunc32(CTX ctx, void *template, void *dest, knh
   }
   //  fprintf(stderr, "i=%d\n", i);
   function = knh_xmalloc(ctx, i);
-  memcpy(function, template, i);
+  memcpy(function, tmpl, i);
   //  fprintf(stderr, "marker:%d, jmp:%d, shrink:%d\n", marker, jmp_pos, shrink_pos);
   knh_uchar_t buf[FUNC_SIZE]={0};
   //  dumpBinary(function, 48);
@@ -545,11 +545,11 @@ static void *knh_generateCallbackFunc32(CTX ctx, void *template, void *dest, knh
 #endif
 
 #ifdef __x86_64__
-static void *knh_generateCallbackFunc64(CTX ctx, void *template, void *dest, knh_Func_t *fo)
+static void *knh_generateCallbackFunc64(CTX ctx, void *tmpl, void *dest, knh_Func_t *fo)
 {
   knh_uchar_t *function = NULL;
 #if !defined(K_USING_WINDOWS) && !defined(K_USING_BTRON)
-  function = (knh_uchar_t*)template;
+  function = (knh_uchar_t*)tmpl;
   // search -1 (0xffffffffffffffff)
   int i, marker = -1, jmp_pos = -1;
   for (i = 0; i < FUNC_SIZE; i++) {
@@ -584,7 +584,7 @@ static void *knh_generateCallbackFunc64(CTX ctx, void *template, void *dest, knh
   }
   // copy function
   function = knh_xmalloc(ctx, i);
-  memcpy(function, template, i);
+  memcpy(function, tmpl, i);
   knh_uchar_t buf[FUNC_SIZE]={0};
   size_t funcsize = i;
   if (marker > 0) {
@@ -627,13 +627,13 @@ static void *knh_generateCallbackFunc64(CTX ctx, void *template, void *dest, knh
 }
 #endif /*__x86_64__ */
 
-void *knh_copyCallbackFunc(CTX ctx, void *template, void *dest, knh_Func_t *fo)
+void *knh_copyCallbackFunc(CTX ctx, void *tmpl, void *dest, knh_Func_t *fo)
 {
   void *function = NULL;
 #ifdef __x86_64__
-  function = knh_generateCallbackFunc64(ctx, template, dest, fo);
+  function = knh_generateCallbackFunc64(ctx, tmpl, dest, fo);
 #else
-  function = knh_generateCallbackFunc32(ctx, template, dest, fo);
+  function = knh_generateCallbackFunc32(ctx, tmpl, dest, fo);
 #endif
   return function;
 }
