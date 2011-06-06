@@ -617,8 +617,8 @@ static METHOD Array_sort(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	else {
 		// added by @shinpei_NKT
-		void *cfunc = knh_copyCallbackFunc(ctx, dummyCallbackCompare, knh_compare, sfp[1].fo);
-		knh_qsort(a->ilist, a->size, sizeof(knh_int_t), cfunc);
+	  int(*cfunc)(const void*, const void*) = (int(*)(const void*, const void*))(knh_copyCallbackFunc(ctx, (void*)dummyCallbackCompare, (void*)knh_compare, sfp[1].fo));
+	  knh_qsort(a->ilist, a->size, sizeof(knh_int_t), cfunc);
 	}
 }
 

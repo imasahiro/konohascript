@@ -98,7 +98,7 @@ void *knh_xmalloc(CTX ctx, size_t size)
 			// It fits.
 			xalc->usedSize += size;
 			void *ptr = xalc->freelist;
-			xalc->freelist += size;
+			xalc->freelist = (knh_uchar_t*)((intptr_t)xalc->freelist + (intptr_t)size);
 			bzero(ptr, size);
 			return ptr;
 		}
@@ -498,7 +498,7 @@ static void *knh_generateCallbackFunc32(CTX ctx, void *tmpl, void *dest, knh_Fun
 	}
   }
   //  fprintf(stderr, "i=%d\n", i);
-  function = knh_xmalloc(ctx, i);
+  function = (knh_uchar_t*)knh_xmalloc(ctx, i);
   memcpy(function, tmpl, i);
   //  fprintf(stderr, "marker:%d, jmp:%d, shrink:%d\n", marker, jmp_pos, shrink_pos);
   knh_uchar_t buf[FUNC_SIZE]={0};
@@ -583,7 +583,7 @@ static void *knh_generateCallbackFunc64(CTX ctx, void *tmpl, void *dest, knh_Fun
 	}
   }
   // copy function
-  function = knh_xmalloc(ctx, i);
+  function = (knh_uchar_t*)knh_xmalloc(ctx, i);
   memcpy(function, tmpl, i);
   knh_uchar_t buf[FUNC_SIZE]={0};
   size_t funcsize = i;
