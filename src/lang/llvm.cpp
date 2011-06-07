@@ -1439,23 +1439,98 @@ static knh_Method_t* Gamma_getFmt(CTX ctx, knh_class_t cid, knh_methodn_t mn0)
 	return mtd;
 }
 
-static int _W1_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
-{
-	LLVM_TODO("W1");
-	return 0;
-}
-
 static int _FMTCALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
 	LLVM_TODO("FMTCALL");
 	return 0;
 }
 
-static int _SEND_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
+static int _W1_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
-	LLVM_TODO("SEND");
+	LLVM_TODO("W1");
 	return 0;
 }
+
+static int ASM_SEND(CTX ctx, int sfpidx, int thisidx, const knh_ClassTBL_t *ct, const char *s)
+{
+	IRBuilder<> *builder = LLVM_BUILDER(ctx);
+	std::vector<const Type*> argsTy;
+	argsTy.push_back(LLVMTYPE_context);
+	argsTy.push_back(LLVMTYPE_sfp);
+	argsTy.push_back(LLVMTYPE_Int);
+	argsTy.push_back(LLVMTYPE_Int);
+	FunctionType *fnTy = FunctionType::get(LLVMTYPE_Void, argsTy, false);
+	std::vector<Value*> params;
+	param_setCtxSfp(ctx, params, sfpidx - thisidx);
+	params.push_back(LLVMInt(sfpidx));
+	params.push_back(LLVMInt((knh_int_t)ct));
+	asm_shift_esp(ctx, 1+thisidx);
+
+	Function *func = cast<Function>(LLVM_MODULE(ctx)->getOrInsertFunction(s, fnTy));
+	builder->CreateCall(func, params.begin(), params.end());
+	return 0;
+}
+
+static int ASM_SCALL(CTX ctx, int sfpidx, int thisidx, knh_Method_t* mtd)
+{
+	IRBuilder<> *builder = LLVM_BUILDER(ctx);
+	Value *func = LLVMValue(LLVMTYPE_fcall, mtd->fcall_1);
+	std::vector<Value*> params;
+	param_setCtxSfp(ctx, params, thisidx);
+	params.push_back(LLVMInt(K_RTNIDX));
+	asm_shift_esp(ctx, 1+/*argc*/1+thisidx);
+	builder->CreateCall(func, params.begin(), params.end());
+	return 0;
+}
+
+static int _SEND_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
+{
+	int local = ASML(sfpidx);
+	size_t i, thisidx = local + K_CALLDELTA;
+	int isCWB = 0;
+	if(TT_(tmNN(stmt, 1)) == TT_ASIS) {
+		fprintf(stderr, "asis\n");
+		isCWB = 1;
+		size_t pos = BA_size(ctx->bufa);
+		ASM_SEND(ctx, sfpidx, thisidx, ClassTBL(CLASS_OutputStream), "_CWB");
+		KNH_SETv(ctx, tmNN(stmt, 1), knh_Token_toTYPED(ctx, tkNN(stmt, 1), TT_FUNCVAR, TYPE_OutputStream, thisidx));
+	}
+	else {
+		int j = Tn_put(ctx, stmt, 1, TYPE_OutputStream, thisidx);
+		Value *v = ValueStack_get(ctx, j);
+		sfp_store(ctx, thisidx, CLASS_OutputStream, v);
+	}
+	for(i = 2; i < DP(stmt)->size; i++) {
+		if(STT_(stmtNN(stmt, i)) == STT_W1) {
+			knh_Stmt_t *stmtIN = stmtNN(stmt, i);
+			DBG_ASSERT(TT_(tkNN(stmtIN, 1)) == TT_ASIS);
+			KNH_SETv(ctx, tkNN(stmtIN, 1), tkNN(stmt, 1));
+			_W1_asm(ctx, stmtIN, TYPE_void, local + 1);
+		}
+		else {
+			knh_Method_t *mtd = NULL;
+			knh_class_t cid = Tn_cid(stmt, i);
+			int j = Tn_put(ctx, stmt, i, cid/* not TYPE_Object*/, thisidx + 1);
+			Value *v = ValueStack_get(ctx, j);
+			sfp_store(ctx, thisidx+1, cid, v);
+			if(cid == CLASS_String) {
+				mtd = knh_NameSpace_getMethodNULL(ctx, CLASS_OutputStream, MN_send);
+				DBG_ASSERT(mtd != NULL);
+			}
+			else {
+				mtd = Gamma_getFmt(ctx, cid, MN__s);
+			}
+			ASM_SCALL(ctx, sfpidx, thisidx, mtd);
+		}
+	}
+	if(isCWB) {
+		fprintf(stderr, "tostr\n");
+		ASM_SEND(ctx, sfpidx, thisidx, ClassTBL(CLASS_String), "_TOSTR");
+		//ASM(TR,OC_(sfpidx), SFP_(thisidx), RIX_(sfpidx-thisidx), ClassTBL(CLASS_String), _TOSTR);
+	}
+	return 0;
+}
+
 
 /* ------------------------------------------------------------------------ */
 
@@ -1474,6 +1549,7 @@ static int _EXPR_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	CASE_ASM(OPR, reqt, sfpidx);
 	CASE_ASM(NEW, reqt, sfpidx);
 	CASE_ASM(TCAST, reqt, sfpidx);
+	CASE_ASM(BOX, reqt, sfpidx);
 	CASE_ASM(AND, reqt, sfpidx);
 	CASE_ASM(OR, reqt, sfpidx);
 	CASE_ASM(ALT, reqt, sfpidx);
