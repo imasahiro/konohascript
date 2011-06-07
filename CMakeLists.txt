@@ -227,6 +227,7 @@ endif()
 
 option(USE_LLVM "Use llvm" OFF)
 if(USE_LLVM)
+	add_definitions(-DK_USING_LLVM)
 	find_program(LLVM_CONFIG NAMES llvm-config DOC "llvm-config")
 	execute_process(
 			COMMAND ${LLVM_CONFIG} --cppflags
@@ -244,14 +245,26 @@ if(USE_LLVM)
 			OUTPUT_STRIP_TRAILING_WHITESPACE
 			)
 	execute_process(
-		COMMAND ${LLVM_CONFIG} --libs core jit native linker ipo
+		COMMAND ${LLVM_CONFIG} --libs core jit native linker ipo engine interpreter
 		OUTPUT_VARIABLE LLVM_JIT_LIBS
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 		)
-	set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} ${LLVM_CFLAGS})
-	set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${LLVM_CXXFLAGS})
-	set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_LD_FLAGS} "${LLVM_LDFLAGS} ${LLVM_JIT_LIBS}")
+	execute_process(
+			COMMAND ${LLVM_CONFIG} --libdir
+			OUTPUT_VARIABLE LLVM_LIBDIR
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LLVM_CFLAGS}")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LLVM_CXXFLAGS}")
 	set(KONOHA_SRC ${KONOHA_SRC} src/lang/llvm.cpp)
+	string(REPLACE " " ";" v ${LLVM_JIT_LIBS})
+	find_library(HAVE_LIBFFI   NAMES ffi)
+	if("${HAVE_LIBFFI}" STREQUAL "")
+		message(FATAL_ERROR "libffi not found. please install libffi-dev")
+	endif()
+	set(ExtraLibs ${ExtraLibs} ${v} ${HAVE_LIBFFI})
+	link_directories(${LINK_DIRECTORIES} ${LLVM_LIBDIR})
+
 endif()
 
 option(USE_MPI "Using MPI" OFF)

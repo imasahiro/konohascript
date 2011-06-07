@@ -2754,6 +2754,11 @@ static void _THCODE(CTX ctx, knh_opline_t *pc, void **codeaddr)
 void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t ittype, knh_Stmt_t *stmtB, knh_Ftyping typing)
 {
 	typing(ctx, mtd, stmtP, ittype, stmtB);
+#ifdef K_USING_LLVM
+	void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t ittype, knh_Stmt_t *stmtB);
+
+	knh_LLVMMethod_asm(ctx, mtd, stmtP, ittype, stmtB);
+#else
 	DBG_ASSERT(knh_Array_size(DP(ctx->gma)->insts) == 0);
 	knh_BasicBlock_t* lbINIT = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t* lbBEGIN = new_BasicBlockLABEL(ctx);
@@ -2807,6 +2812,7 @@ void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t it
 	Gamma_popLABEL(ctx);
 	DBG_ASSERT(knh_Array_size(DP(ctx->gma)->lstacks) == 0);
 	Gamma_compile(ctx, lbINIT, lbEND);
+#endif /* K_USING_LLVM */
 }
 
 /* ------------------------------------------------------------------------ */

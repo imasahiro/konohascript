@@ -36,7 +36,9 @@
 #include<float.h>
 //#include<setjmp.h>
 
+#ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS
+#endif
 #include<stdint.h>
 #define __STDC_FORMAT_MACROS
 #include<inttypes.h>
@@ -866,9 +868,14 @@ typedef struct {
 
 #define K_PAGEOBJECTSIZE ((K_PAGESIZE / sizeof(knh_Object_t)) - 1)
 
+/* TODO @imasahiro */
+#ifdef K_INTERNAL
+#define slots_ slots
+#endif
+
 typedef struct {
 	knh_hOArena_t h;
-	knh_Object_t  slots[K_PAGEOBJECTSIZE];
+	knh_Object_t  slots_[K_PAGEOBJECTSIZE];
 } knh_ObjectPage_t;
 
 typedef struct {
