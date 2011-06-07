@@ -307,38 +307,6 @@ static knh_context_t* new_RootContext(void)
 	return ctx;
 }
 
-static const char* LOG__(int p)
-{
-	switch(p) {
-	case LOG_EMERG:   return "PANIC ";
-	case LOG_ALERT:   return "ALERT ";
-	case LOG_CRIT:    return "CRIT ";
-	case LOG_ERR:     return "ERROR ";
-	case LOG_WARNING: return "WARNING ";
-	case LOG_NOTICE:  return "NOTICE ";
-	case LOG_INFO:    return "INFO ";
-	case LOG_DEBUG:   return "DEBUG ";
-	}
-	return "DEBUG2 ";
-}
-
-void pseudo_vsyslog(int p, const char *fmt, va_list ap)
-{
-	fprintf(stderr, "%s", LOG__(p));
-	vfprintf(stderr, fmt, ap);
-	fprintf(stderr, "\n");
-}
-
-void pseudo_syslog(int p, const char *fmt, ...)
-{
-	va_list ap;
-	va_start(ap , fmt);
-	fprintf(stderr, "%s", LOG__(p));
-	vfprintf(stderr, fmt, ap);
-	fprintf(stderr, "\n");
-	va_end(ap);
-}
-
 static int _lock(knh_mutex_t *m DBG_TRACE)
 {
 	TRACE_P("UNLOCK mutex=%p", m);
@@ -486,12 +454,16 @@ static void knh_share_free(CTX ctx, knh_share_t *share)
 	share->Memory256ArenaTBL = NULL;
 #endif
 	if(ctx->stat->gcCount > 0) {
+//		LOGDATA = {uDATA("gc_count", ctx->stat->gcCount),
+//				   uDATA("marking_time(ms)", ctx->stat->markingTime),
+//				   uDATA("sweeping_time(ms)", ctx->stat->sweepingTime),
+//				   uDATA("total_time(ms)", ctx->stat->gcTime)};
 		KNH_MEMINFO(ctx, "GC %d times, marking_time=%dms, sweeping_time=%dms total=%fs",
-				(int)ctx->stat->gcCount, (int)ctx->stat->markingTime, (int)ctx->stat->sweepingTime,
+				(int), (int)ctx->stat->markingTime, (int)ctx->stat->sweepingTime,
 				((double)ctx->stat->gcTime) / 1000.0);
 	}
 	if(ctx->stat->usedMemorySize != 0) {
-		KNH_WARN(ctx, "memory leaking size=%ldbytes", (long)ctx->stat->usedMemorySize);
+		knh_logprintf("memory leaking size=%ldbytes", (long)ctx->stat->usedMemorySize);
 	}
 	knh_bzero(share, sizeof(knh_share_t) + sizeof(knh_stat_t) + sizeof(knh_ServiceSPI_t));
 	free(share);

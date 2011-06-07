@@ -517,7 +517,7 @@ static knh_Method_t *Script_getEvalMethod(CTX ctx, knh_Script_t *scr)
 	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, O_cid(scr), MN_LAMBDA);
 	if(mtd == NULL) {
 		mtd = new_Method(ctx, FLAG_Method_Hidden, O_cid(scr), MN_LAMBDA, NULL);
-		KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayR0(ctx, TYPE_dyn/*TYPE_var*/));
+		KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayR0(ctx, TYPE_dyn/*TYPE_void*/));
 		knh_NameSpace_addMethod(ctx, O_cid(scr), mtd);
 	}
 	return mtd;
@@ -1042,7 +1042,7 @@ KNHAPI2(knh_status_t) knh_load(CTX ctx, const char *scheme, knh_bytes_t path, kn
 				bin->uline = linenum;
 				ULINE_setURI(bin->uline, uri);
 				//InputStream_setCharset(ctx, bin, DP(in)->enc);
-				DBG_(if(knh_isSystemVerbose()) {
+				DBG_(if(knh_isVerboseLang()) {
 					fprintf(stderr, "\n>>>--------------------------------\n");
 					fprintf(stderr, "%s<<<--------------------------------\n", knh_Bytes_ensureZero(ctx, ba));
 				});

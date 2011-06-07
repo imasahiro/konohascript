@@ -400,7 +400,7 @@ void knh_write_bool(CTX ctx, knh_OutputStream_t *w, int b)
 	knh_Bytes_write(ctx, DP(w)->ba, S_tobytes(s));
 }
 
-void knh_write__p(CTX ctx, knh_OutputStream_t *w, void *ptr)
+void knh_write_ptr(CTX ctx, knh_OutputStream_t *w, void *ptr)
 {
 	char buf[K_INT_FMTSIZ];
 	knh_snprintf(buf, sizeof(buf), "%p", ptr);
@@ -756,7 +756,7 @@ void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap)
 						break;
 					case 'p':
 						DBG_ASSERT(args[index].atype == VA_POINTER);
-						knh_write__p(ctx, w, args[index].pvalue);
+						knh_write_ptr(ctx, w, args[index].pvalue);
 						break;
 					case 'L':
 					case 'O': case 'o':

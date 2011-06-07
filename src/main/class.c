@@ -713,8 +713,10 @@ KNHAPI2(knh_class_t) knh_type_tocid(CTX ctx, knh_type_t ptype, knh_class_t this_
 knh_ParamArray_t *new_ParamArrayR0(CTX ctx, knh_type_t t)
 {
 	knh_ParamArray_t *pa = new_ParamArray(ctx);
-	knh_param_t p = {t, FN_return};
-	knh_ParamArray_radd(ctx, pa, p);
+	if(t != TYPE_void) {
+		knh_param_t p = {t, FN_return};
+		knh_ParamArray_radd(ctx, pa, p);
+	}
 	return pa;
 }
 

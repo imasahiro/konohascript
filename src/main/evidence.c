@@ -29,6 +29,7 @@
 
 #define USE_bytes_rindex  1
 #define USE_cwb_open      1
+#define USE_cwb_size      1
 
 #include"commons.h"
 #include"../../include/konoha1/konoha_code_.h"
@@ -36,6 +37,7 @@
 #if defined(K_USING_POSIX_)
 #include<time.h>
 #include<errno.h>
+#include<unistd.h>
 #endif
 
 /* ************************************************************************ */
@@ -61,12 +63,220 @@ const char* knh_sfile(const char *file)
 	return "(unknown)";
 }
 
+static const char* LOG__(int p)
+{
+	switch(p) {
+	case LOG_EMERG:   return "PANIC ";
+	case LOG_ALERT:   return "ALERT ";
+	case LOG_CRIT:    return "CRIT ";
+	case LOG_ERR:     return "ERROR ";
+	case LOG_WARNING: return "WARNING ";
+	case LOG_NOTICE:  return "NOTICE ";
+	case LOG_INFO:    return "INFO ";
+	case LOG_DEBUG:   return "DEBUG ";
+	}
+	return "DEBUG2 ";
+}
+
+/* ------------------------------------------------------------------------ */
+
+static int isAudit         = 0;
+
+#ifdef K_USING_DEBUG
+static int isVerbose       = 1;
+static int isVerboseLang   = 1;
+static int isVerboseGC     = 1;
+static int isVerbosePref   = 1;
+static int isVerboseVM     = 1;
+#else
+static int isVerbose       = 0;
+static int isVerboseLang   = 0;
+static int isVerboseGC     = 0;
+static int isVerbosePref   = 0;
+static int isVerboseVM     = 0;
+#endif
+
+static FILE *stdlog        = NULL;
+#define K_LOGMSGSIZE       1024
+
+knh_bool_t knh_openlog(CTX ctx)
+{
+	if(stdlog == NULL) {
+		char fbuf[80];
+		knh_bytes_t t = {{"script.name"}, sizeof("script.name")};
+		knh_String_t *sname = knh_getPropertyNULL(ctx, t);
+		const char *fname = (sname == NULL) ? "konoha" : S_tochar(sname);
+		knh_snprintf(fbuf, sizeof(fbuf), "%s-%d.log", fname, getpid());
+		stdlog = fopen(fbuf, "w");
+		if(stdlog != NULL) return 1;
+	}
+	return 0;
+}
+
+void knh_log(const char *msg)
+{
+	if(stdlog != NULL) {
+		fputs(msg, stdlog);
+		fputs(K_OSLINEFEED, stdlog);
+	}
+	if(isVerbose) {
+		fputs(msg, stdout);
+		fputs(K_OSLINEFEED, stdout);
+		fflush(stdout);
+	}
+}
+
+void knh_synclog(const char *msg)
+{
+	if(stdlog != NULL) {
+		fputs(msg, stdlog);
+		fputs(K_OSLINEFEED, stdlog);
+		fflush(stdlog);
+	}
+	if(isVerbose) {
+		fputs(msg, stdout);
+		fputs(K_OSLINEFEED, stdout);
+		fflush(stdout);
+	}
+}
+
+void knh_logprintf(const char *fmt, ...)
+{
+	va_list ap;
+	va_start(ap , fmt);
+	char buf[K_LOGMSGSIZE];
+	vsnprintf(buf, sizeof(buf), fmt, ap);
+	knh_synclog(buf);
+	va_end(ap);
+}
+
+void knh_vlogprintf(const char *fmt, va_list ap)
+{
+	char buf[K_LOGMSGSIZE];
+	vsnprintf(buf, sizeof(buf), fmt, ap);
+	knh_synclog(buf);
+}
+
+void knh_closelog(void)
+{
+	if(stdlog != NULL) {
+		fclose(stdlog);
+		stdlog = NULL;
+	}
+}
+
+void pseudo_vsyslog(int p, const char *fmt, va_list ap)
+{
+	char buf[K_LOGMSGSIZE];
+	vsnprintf(buf, sizeof(buf), fmt, ap);
+	if(stdlog != NULL) {
+		fputs(LOG__(p), stdlog);
+		fputs(buf, stdlog);
+		fputs(K_OSLINEFEED, stdlog);
+		fflush(stdlog);
+	}
+	if(isVerbose) {
+		fputs(LOG__(p), stdout);
+		fputs(buf, stdout);
+		fputs(K_OSLINEFEED, stdout);
+		fflush(stdout);
+	}
+}
+
+void pseudo_syslog(int p, const char *fmt, ...)
+{
+	va_list ap;
+	va_start(ap , fmt);
+	pseudo_vsyslog(p, fmt, ap);
+	va_end(ap);
+}
+
+void opt_l(CTX ctx, int mode, const char *optstr)
+{
+	knh_openlog(ctx);
+}
+
+/* ------------------------------------------------------------------------ */
+
+void opt_a(CTX ctx, int mode, const char *optstr)
+{
+	isAudit = 1;
+#if defined(K_USING_SYSLOG)
+	((knh_ServiceSPI_t*)ctx->spi)->syslogspi = "syslog";
+	((knh_ServiceSPI_t*)ctx->spi)->syslog    = syslog;
+	((knh_ServiceSPI_t*)ctx->spi)->vsyslog   = vsyslog;
+	openlog("konoha", LOG_PID, LOG_LOCAL7);
+	//KNH_SYSLOG(ctx, NULL, LOG_NOTICE, "init", "version='%s', rev=%d, auditlevel=%d", K_VERSION, K_REVISION, auditLevel);
+#else
+	if(knh_openlog(ctx)) {
+		((knh_ServiceSPI_t*)ctx->spi)->syslogspi = "konohalog";
+	}
+	else {
+		fprintf(stdout, "konoha: no available logging system.\n");
+		exit(0);
+	}
+#endif
+
+#ifdef K_DEOS_TRACE
+	char *trace = knh_getenv(K_DEOS_TRACE);
+	if(trace != NULL) {
+		void *sfp = NULL;
+		LOGDATA = {sDATA("traceid", trace)};
+		NOTE_OK("trace");
+	}
+#endif
+}
+
+KNHAPI2(int) knh_isVerbose(void)
+{
+	return isVerboseLang;
+}
+
+void opt_v(CTX ctx, int mode, const char *optstr)
+{
+	if(mode == 0) {
+		isVerboseLang   = 1;
+		isVerboseGC     = 1;
+		isVerbosePref   = 1;
+		isVerboseVM     = 1;
+		dump_sysinfo(NULL, NULL, 1/*isALL*/);
+		KNH_ASSERT(sizeof(knh_intptr_t) == sizeof(void*));
+		KNH_ASSERT(sizeof(knh_Token_t) <= sizeof(knh_Object_t));
+		KNH_ASSERT(sizeof(knh_Stmt_t) <= sizeof(knh_Object_t));
+		KNH_ASSERT(sizeof(knh_int_t) <= sizeof(knh_float_t));
+#ifdef K_USING_RBP_
+		KNH_ASSERT(sizeof(knh_rbp_t) * 2 == sizeof(knh_sfp_t));
+#endif
+	}
+	isVerbose = 1;
+}
+
+int knh_isVerboseLang(void)
+{
+	return isVerboseLang;
+}
+
+void opt_verbose_lang(CTX ctx, int mode, const char *optstr)
+{
+	isVerboseLang = 1;
+}
+
+int knh_isVerboseGC(void)
+{
+	return isVerboseGC;
+}
+
+void opt_verbose_gc(CTX ctx, int mode, const char *optstr)
+{
+	isVerboseGC = 1;
+}
+
 /* ------------------------------------------------------------------------ */
 
 void dbg_p(const char *file, const char *func, int line, const char *fmt, ...)
 {
 #ifndef K_USING_DEBUG
-	if(knh_isSystemVerbose()) {
+	if(isVerbose) {
 #endif
 		va_list ap;
 		va_start(ap , fmt);
@@ -409,46 +619,217 @@ static void knh_traceKFMT(CTX ctx, int pe, int isThrowable, const char *ns, cons
 void knh_vtrace(CTX ctx, knh_sfp_t *sfp, int pe, const char *ns, const char *event, int isThrowable, const char *fmt, va_list ap)
 {
 	if(pe <= LOG_CRIT) isThrowable = 1;
-	if(knh_isAuditLogging(pe)) {
-		knh_uline_t uline = 0;
-		if(ctx->ehdrNC != NULL) {
-			if(ctx->gma != NULL && SP(ctx->gma)->uline != 0) {
-				uline = SP(ctx->gma)->uline;
-			}
-			else {
-				uline = knh_stack_uline(ctx, sfp);
-			}
-		}
-		if(fmt[0] == '*') {
-			knh_traceCFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
-		}
-		else if(fmt[0] == '!') {
-			if(errno > 0) {
-				if(errno != EACCES) pe = LOG_ALERT;
-				knh_tracePERROR(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
-			}
-			else {
-				knh_traceCFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
-			}
+	knh_uline_t uline = 0;
+	if(ctx->ehdrNC != NULL) {
+		if(ctx->gma != NULL && SP(ctx->gma)->uline != 0) {
+			uline = SP(ctx->gma)->uline;
 		}
 		else {
-			KNH_ASSERT(ctx->bufa != NULL);
-			knh_traceKFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt, ap);
+			uline = knh_stack_uline(ctx, sfp);
 		}
-		if(pe == LOG_EMERG) {
-			knh_exit(ctx, 0);
+	}
+	if(fmt[0] == '*') {
+		knh_traceCFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
+	}
+	else if(fmt[0] == '!') {
+		if(errno > 0) {
+			if(errno != EACCES) pe = LOG_ALERT;
+			knh_tracePERROR(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
 		}
+		else {
+			knh_traceCFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
+		}
+	}
+	else {
+		KNH_ASSERT(ctx->bufa != NULL);
+		knh_traceKFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt, ap);
+	}
+	if(pe == LOG_EMERG) {
+		knh_exit(ctx, 0);
 	}
 }
 
-void knh_trace(CTX ctx, knh_sfp_t *sfp, int pe,const char *ns, const char *evt, int isThrowable, const char *fmt, ...)
+void knh_trace(CTX ctx, knh_sfp_t *sfp, int pe, const char *ns, const char *evt, int isThrowable, const char *fmt, ...)
 {
-	if(knh_isAuditLogging(pe)) {
-		va_list ap;
-		va_start(ap , fmt);
-		knh_vtrace(ctx, sfp, pe, ns, evt, isThrowable, fmt, ap);
-		va_end(ap);
+	va_list ap;
+	va_start(ap , fmt);
+	knh_vtrace(ctx, sfp, pe, ns, evt, isThrowable, fmt, ap);
+	va_end(ap);
+}
+
+/* ------------------------------------------------------------------------ */
+
+static void knh_write_key(CTX ctx, knh_OutputStream_t *w, const char *key)
+{
+	knh_putc(ctx, w, '\'');
+	knh_write_ascii(ctx, w, key);
+	knh_putc(ctx, w, '\'');
+	knh_putc(ctx, w, ':'); knh_putc(ctx, w, ' ');
+}
+
+static void knh_write_logdata(CTX ctx, knh_OutputStream_t *w, const knh_logdata_t *d, size_t max)
+{
+	int c = 0, p = 0, sch = '[', ech = ']';
+	knh_putc(ctx, w, '{');
+	while(p < max && d->key != NULL) {
+		int ch = d->key[0];
+		const char *key = d->key + 1;
+		const knh_logdata_t *d1 = d+1;
+		const knh_logdata_t *d2 = d+2;
+		if(c > 0) {
+			knh_putc(ctx, w, ','); knh_putc(ctx, w, ' ');
+		}
+		c++;
+		knh_write_key(ctx, w, key);
+		switch(ch) {
+			case 'i': {
+				knh_write_ifmt(ctx, w, K_INT_FMT, (knh_int_t)d1->ivalue);
+				break;
+			}
+			case 'u': {
+				knh_write_ifmt(ctx, w, K_INT_FMT, (knh_uint_t)d1->uvalue);
+				break;
+			}
+			case 'f': {
+				knh_write_ffmt(ctx, w, K_FLOAT_FMT, (knh_float_t)d1->fvalue);
+				break;
+			}
+			case 's': {
+				knh_bytes_t t = {{d1->svalue}, knh_strlen(d1->svalue)};
+				knh_write_quote(ctx, w, '"', t, 1/*hasUTF8*/);
+				break;
+			}
+			case 'p': {
+				knh_write_ptr(ctx, w, d1->ptr);
+				break;
+			}
+			case 'o': {
+				knh_write_Object(ctx, w, d1->ovalue, FMT_line);
+				break;
+			}
+			case 'I': {
+				knh_putc(ctx, w, sch);
+				knh_write_ifmt(ctx, w, K_INT_FMT, (knh_int_t)d1->ivalue);
+				knh_putc(ctx, w, ','); 	knh_putc(ctx, w, ' ');
+				knh_write_ifmt(ctx, w, K_INT_FMT, (knh_int_t)d2->ivalue);
+				knh_putc(ctx, w, ech);
+				d++; p++;
+				break;
+			}
+			case 'U': {
+				knh_putc(ctx, w, sch);
+				knh_write_ifmt(ctx, w, K_UINT_FMT, (knh_uint_t)d1->uvalue);
+				knh_putc(ctx, w, ','); 	knh_putc(ctx, w, ' ');
+				knh_write_ifmt(ctx, w, K_UINT_FMT, (knh_uint_t)d2->uvalue);
+				knh_putc(ctx, w, ech);
+				d++; p++;
+				break;
+			}
+			case 'F': {
+				knh_putc(ctx, w, sch);
+				knh_write_ffmt(ctx, w, K_FLOAT_FMT, (knh_float_t)d1->fvalue);
+				knh_putc(ctx, w, ','); 	knh_putc(ctx, w, ' ');
+				knh_write_ffmt(ctx, w, K_FLOAT_FMT, (knh_float_t)d2->fvalue);
+				knh_putc(ctx, w, ech);
+				d++; p++;
+				break;
+			}
+			case 'S': {
+				knh_bytes_t t0 = {{d1->svalue}, knh_strlen(d1->svalue)};
+				knh_bytes_t t =  {{d2->svalue}, knh_strlen(d2->svalue)};
+				knh_putc(ctx, w, sch);
+				knh_write_quote(ctx, w, '"', t0, 1/*hasUTF8*/);
+				knh_putc(ctx, w, ','); 	knh_putc(ctx, w, ' ');
+				knh_write_quote(ctx, w, '"', t, 1/*hasUTF8*/);
+				knh_putc(ctx, w, ech);
+				d++; p++;
+				break;
+			}
+			case 'P': {
+				knh_putc(ctx, w, sch);
+				knh_write_ptr(ctx, w, d1->ptr);
+				knh_putc(ctx, w, ','); 	knh_putc(ctx, w, ' ');
+				knh_write_ptr(ctx, w, d2->ptr);
+				knh_putc(ctx, w, ech);
+				d++; p++;
+				break;
+			}
+			case 'O': {
+				knh_putc(ctx, w, sch);
+				knh_write_Object(ctx, w, d1->ovalue, FMT_line);
+				knh_putc(ctx, w, ','); 	knh_putc(ctx, w, ' ');
+				knh_write_Object(ctx, w, d2->ovalue, FMT_line);
+				knh_putc(ctx, w, ech);
+				d++; p++;
+				break;
+			}
+			case '+': {
+				KNH_TODO("OPTLOGER");
+			}
+			default : {
+				DBG_P("unknown key=%s", key); return;
+			}
+		}
+		d += 2;
+		p += 2;
 	}
+	knh_putc(ctx, w, '}');
+}
+
+void knh_record(CTX ctx, knh_sfp_t *sfp, int op, int pe, const char *action, const char *emsg, const knh_logdata_t *data, size_t datasize)
+{
+	KNH_ASSERT(ctx->bufa != NULL);
+	if(op > 0 || isVerbose) {
+		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+		knh_uline_t uline = 0;
+		if(ctx->gma != NULL && SP(ctx->gma)->uline != 0) {
+			uline = SP(ctx->gma)->uline;
+		}
+		else if(ctx->ehdrNC != NULL) {
+			uline = knh_stack_uline(ctx, sfp);
+		}
+		knh_write_ascii(ctx, cwb->w, ctx->trace);
+		knh_putc(ctx, cwb->w, '+');
+		knh_write_ifmt(ctx, cwb->w, K_INT_FMT, ctx->seq);
+		knh_putc(ctx, cwb->w, ' ');
+		knh_write_uline(ctx, cwb->w, uline);
+		knh_putc(ctx, cwb->w, ' ');
+		knh_write_ascii(ctx, cwb->w, action);
+		if(FLAG_is(op, K_RECFAILED)) {
+			knh_write_ascii(ctx, cwb->w, "<<FAILED>> ");
+		}
+		else {
+			knh_putc(ctx, cwb->w, ' ');
+		}
+		DBG_P("datasize=%d", datasize);
+		knh_write_logdata(ctx, cwb->w, data, datasize);
+		ctx->spi->syslog(pe, knh_cwb_tochar(ctx, cwb));
+		((knh_context_t*)ctx)->seq += 1;
+		knh_cwb_clear(cwb, 0);
+
+		if(FLAG_is(op, K_RECFAILED) && ctx->ehdrNC != NULL) {
+			if(FLAG_is(op, K_RECCRIT) || ctx->e == (knh_Exception_t*)TS_EMPTY) {
+				knh_write_ascii(ctx, cwb->w, emsg);
+//				knh_putc(ctx, cwb->w, '!'); knh_putc(ctx, cwb->w, '!');
+				knh_putc(ctx, cwb->w, ':'); knh_putc(ctx, cwb->w, ' ');
+				knh_write_logdata(ctx, cwb->w, data, datasize);
+			}
+			else if(IS_String(ctx->e)) {
+				knh_String_t *emsg = (knh_String_t*)ctx->e;
+				knh_write(ctx, cwb->w, S_tobytes(emsg));
+//				knh_putc(ctx, cwb->w, '!'); knh_putc(ctx, cwb->w, '!');
+				knh_putc(ctx, cwb->w, ':'); knh_putc(ctx, cwb->w, ' ');
+				knh_write_logdata(ctx, cwb->w, data, datasize);
+			}
+			if(knh_cwb_size(cwb) > 0) {
+				knh_Exception_t *e = new_Error(ctx, uline, knh_cwb_newString(ctx, cwb));
+				CTX_setThrowingException(ctx, e);
+				knh_throw(ctx, sfp, 0);
+			}
+		}
+	}
+	KNH_SETv(ctx, ((knh_context_t*)ctx)->e, KNH_NULL);
+
 }
 
 /* ------------------------------------------------------------------------ */
@@ -463,7 +844,9 @@ void THROW_Halt(CTX ctx, knh_sfp_t *sfp, const char *msg)
 }
 void THROW_OutOfMemory(CTX ctx, size_t size)
 {
-	KNH_THROW(ctx, NULL, LOG_CRIT, "OutOfMemory!!", "OutOfMemory!!: requested=%dbytes, used=%dbytes", size, ctx->stat->usedMemorySize);
+	void *sfp = NULL;
+	LOGDATA = {uDATA("requested_size(bytes)", size), uDATA("used_size", ctx->stat->usedMemorySize)};
+	CRIT_Failed("malloc", "OutOfMemory!!");
 }
 void THROW_StackOverflow(CTX ctx, knh_sfp_t *sfp)
 {
@@ -489,6 +872,7 @@ void THROW_ParamTypeError(CTX ctx, knh_sfp_t *sfp, size_t n, knh_methodn_t mn, k
 {
 	KNH_THROW(ctx, sfp, LOG_ERR, "Script!!", "Script!!: type error: argument %d of %M is not %T", n, mn, cid);
 }
+
 
 /* ------------------------------------------------------------------------ */
 

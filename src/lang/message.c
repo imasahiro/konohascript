@@ -121,6 +121,7 @@ static knh_String_t *Gamma_vperror(CTX ctx, int pe, const char *fmt, va_list ap)
 		msg = knh_cwb_newString(ctx, cwb);
 		knh_Array_add(ctx, DP(ctx->gma)->errmsgs, msg);
 		fprintf(stderr, "%s - %s%s\n", TERM_BNOTE(ctx, pe), S_tochar(msg), TERM_ENOTE(ctx, pe));
+		knh_log(S_tochar(msg));
 	}
 	return msg;
 }

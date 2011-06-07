@@ -203,7 +203,7 @@ static void ClassMETHOD_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t
 		knh_Method_t *mtd = a->methods[i];
 		if(mtd->mn < MN_OPSIZE) continue;
 		if(MN_isFMT(mtd->mn)) continue;
-		if(Method_isHidden(mtd) && !knh_isSystemVerbose()) continue;
+		if(Method_isHidden(mtd) && !knh_isVerbose()) continue;
 		if(hasCaption == 0) {
 			knh_write_ctext(ctx, w, _("METHOD"));
 			hasCaption = 1;

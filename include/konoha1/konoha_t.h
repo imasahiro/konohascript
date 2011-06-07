@@ -1065,7 +1065,7 @@ typedef struct knh_ServiceSPI_t {
 typedef struct knh_context_t {
 	/* shared table */
 	union {
-		const knh_share_t              *share;
+		const knh_share_t         *share;
 		knh_share_t *wshare;   // writable
 	};
 	knh_stat_t                     *stat;
@@ -1126,6 +1126,60 @@ typedef struct knh_context_t {
 	struct knh_Object_t            *evaled;
 } knh_context_t ;
 
+/* ------------------------------------------------------------------------ */
+/* logdata */
+
+struct knh_logdata_t;
+
+typedef struct knh_logdata_t {
+	union {
+		const char *key;
+		knh_intptr_t ivalue;
+		knh_uintptr_t uvalue;
+		knh_floatptr_t fvalue;
+		const char *svalue;
+		void *ptr;
+		Object *ovalue;
+		const struct knh_logdata_t* (*logger)(CTX);
+	};
+} knh_logdata_t;
+
+#define K_RECFAILED         1
+#define K_RECCRIT       (1<<1)
+#define K_RECNOTE       (1<<2)
+
+#define LOGDATA         const knh_logdata_t _logdata[]
+#define LOGDATASIZE     (sizeof(_logdata)/sizeof(knh_logdata_t))
+
+#define sDATA(K, V)        {{"s" K}}, {{(V)}}
+#define iDATA(K, V)        {{"i" K}}, {{(const char*)((knh_intptr_t)V)}}
+#define dDATA(K, V)        {{"i" K}}, {{(const char*)((knh_intptr_t)V)}}
+#define uDATA(K, V)        {{"u" K}}, {{(const char*)((knh_intptr_t)V)}}
+#define fDATA(K, V)        {{"f" K}}, {{(const char*)((knh_floatptr_t)V)}}
+#define pDATA(K, V)        {{"p" K}}, {{(const char*)(V)}}
+#define oDATA(K, V)        {{"o" K}}, {{(const char*)(V)}}
+#define sRANGE(K, V, V2)   {{"S" K}}, {{(V)}}, {{(V2)}}
+#define iRANGE(K, V, V2)   {{"I" K}}, {{(const char*)((knh_intptr_t)V)}}, {{(const char*)((knh_intptr_t)V2)}}
+#define dRANGE(K, V, V2)   {{"I" K}}, {{(const char*)((knh_intptr_t)V)}}, {{(const char*)((knh_intptr_t)V2)}}
+#define uRANGE(K, V, V2)   {{"U" K}}, {{(const char*)((knh_intptr_t)V)}}, {{(const char*)((knh_intptr_t)V2)}}
+#define fRANGE(K, V, V2)   {{"F" K}}, {{(const char*)((knh_floatptr_t)V)}}, {{(const char*)((knh_floatptr_t)V2)}}
+#define pRANGE(K, V, V2)   {{"P" K}}, {{(const char*)(V)}}, {{(const char*)(V2)}}
+#define oRANGE(K, V, V2)   {{"O" K}}, {{(const char*)(V)}}, {{(const char*)(V2)}}
+
+#define KNH_RECORD knh_record
+
+#define CRIT_OK(action)
+#define CRIT_Failed(action, event)  {  \
+		KNH_RECORD(ctx, sfp, K_RECFAILED|K_RECCRIT, LOG_CRIT, action, event, _logdata, LOGDATASIZE);  \
+	}  \
+
+#define NOTE_OK(action) {  \
+		KNH_RECORD(ctx, sfp, K_RECNOTE, LOG_NOTICE, action, NULL, _logdata, LOGDATASIZE);  \
+	}  \
+
+#define NOTE_Failed(action, event)   {   \
+		KNH_RECORD(ctx, sfp, K_RECFAILED|K_RECNOTE, LOG_WARNING, action, event, _logdata, LOGDATASIZE);  \
+	}  \
 
 /* ------------------------------------------------------------------------ */
 /* ------------------------------------------------------------------------ */

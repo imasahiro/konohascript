@@ -1406,7 +1406,7 @@ static void Token_toBRACE(CTX ctx, knh_Token_t *tk, int isEXPANDING)
 		in->uline = tk->uline;
 		InputStream_parseToken(ctx, in, tk);
 		DBG_(
-		if(knh_isSystemVerbose() && ULINE_uri(in->uline) == URI_EVAL) {
+		if(knh_isVerboseLang() && ULINE_uri(in->uline) == URI_EVAL) {
 			knh_write_Object(ctx, KNH_STDOUT, UPCAST(tk), FMT_dump);
 		});
 		END_LOCAL_(ctx, lsfp);
@@ -3454,7 +3454,7 @@ knh_Stmt_t *knh_InputStream_parseStmt(CTX ctx, knh_InputStream_t *in)
 	KNH_SETv(ctx, lsfp[0].o, rVALUE);
 	KNH_SETv(ctx, lsfp[1].o, tk);
 	InputStream_parseToken(ctx, in, tk);
-	DBG_(if(knh_isSystemVerbose() /*&& DP(in)->uri == URI_EVAL*/) {
+	DBG_(if(knh_isVerboseLang() /*&& DP(in)->uri == URI_EVAL*/) {
 		knh_write_Object(ctx, KNH_STDOUT, UPCAST(tk), FMT_dump);
 	})
 	if(TT_(tk) != TT_ERR) {
@@ -3463,7 +3463,7 @@ knh_Stmt_t *knh_InputStream_parseStmt(CTX ctx, knh_InputStream_t *in)
 		DBG_ASSERT(DP(rVALUE)->size == 1);
 		if(IS_Stmt(stmtNN(rVALUE, 0))) {
 			rVALUE = stmtNN(rVALUE, 0);
-			DBG_(if(knh_isSystemVerbose() /*&& DP(in)->uri == URI_EVAL*/) {
+			DBG_(if(knh_isVerboseLang() /*&& DP(in)->uri == URI_EVAL*/) {
 				knh_write_Object(ctx, KNH_STDOUT, UPCAST(rVALUE), FMT_dump);
 			})
 			goto L_RETURN;

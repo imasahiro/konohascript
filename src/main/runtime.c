@@ -136,106 +136,8 @@ knh_context_t* knh_getCurrentContext(void)
 /* ------------------------------------------------------------------------ */
 /* [opt] */
 
-#if defined(K_USING_DEBUG)
-static int systemVerbose = 1;
-static int auditLevel    = LOG_NOTICE;
-static int verboseLevel  = LOG_INFO;
-#else
-static int systemVerbose = 0;
-static int auditLevel    = LOG_ERR;
-static int verboseLevel  = LOG_CRIT;
-#endif
-
-
-knh_bool_t knh_isAuditLogging(int pe)
-{
-	return (pe <= auditLevel);
-}
-
-#ifdef K_USING_SYSLOG
-static void _vsyslog(int pe, const char *fmt, va_list ap)
-{
-	vsyslog(pe, fmt, ap);
-	if((pe <= verboseLevel)) {
-		pseudo_vsyslog(pe, fmt, ap);
-	}
-}
-static void _syslog(int pe, const char *fmt, ...)
-{
-	va_list ap;
-	va_start(ap , fmt);
-	vsyslog(pe, fmt, ap);
-	if((pe <= verboseLevel)) {
-		pseudo_vsyslog(pe, fmt, ap);
-	}
-	va_end(ap);
-}
-#endif
-
-static void opt_a(CTX ctx, int mode, const char *optstr)
-{
-	auditLevel = (mode <= LOG_CRIT) ? LOG_NOTICE /*defaults*/: mode;
-#if defined(K_USING_SYSLOG)
-	((knh_ServiceSPI_t*)ctx->spi)->syslogspi = "syslog";
-	((knh_ServiceSPI_t*)ctx->spi)->syslog    = _syslog;
-	((knh_ServiceSPI_t*)ctx->spi)->vsyslog    = _vsyslog;
-	openlog("konoha", LOG_PID, LOG_LOCAL7);
-	KNH_SYSLOG(ctx, NULL, LOG_NOTICE, "init", "version='%s', rev=%d, auditlevel=%d", K_VERSION, K_REVISION, auditLevel);
-#ifdef K_DEOS_TRACE
-		char *trace = knh_getenv(K_DEOS_TRACE);
-		if(trace != NULL) {
-			KNH_SYSLOG(ctx, NULL, LOG_NOTICE, K_DEOS_TRACE, "trace='%s'", trace);
-		}
-#endif
-#else
-	fprintf(stdout, "konoha: no available logging system.\n");
-	exit(0);
-#endif
-}
-
-KNHAPI2(knh_bool_t) knh_isSystemVerbose(void)
-{
-	return systemVerbose;
-}
-
-knh_bool_t knh_isVerboseLogging(int pe)
-{
-	return (pe <= verboseLevel);
-}
-
-static void opt_v(CTX ctx, int mode, const char *optstr)
-{
-	if(mode == 0) {
-		systemVerbose = 1;
-		dump_sysinfo(NULL, NULL, 1/*isALL*/);
-		verboseLevel = LOG_INFO;
-		KNH_ASSERT(sizeof(knh_intptr_t) == sizeof(void*));
-		KNH_ASSERT(sizeof(knh_Token_t) <= sizeof(knh_Object_t));
-		KNH_ASSERT(sizeof(knh_Stmt_t) <= sizeof(knh_Object_t));
-		KNH_ASSERT(sizeof(knh_int_t) <= sizeof(knh_float_t));
-#ifdef K_USING_RBP_
-		KNH_ASSERT(sizeof(knh_rbp_t) * 2 == sizeof(knh_sfp_t));
-#endif
-	}
-	else {
-		verboseLevel = (mode <= LOG_CRIT) ? auditLevel: mode;
-		if(auditLevel < verboseLevel) auditLevel = verboseLevel;
-	}
-}
-
-static int warningLevel = LOG_WARNING;
-
-knh_bool_t knh_shouldWarnMessage(int pe)
-{
-	return (pe <= warningLevel);
-}
-
 static void opt_W(CTX ctx, int mode, const char *optstr)
 {
-	if(mode == 0) mode = 10;
-	if(mode > LOG_WARNING) {
-		warningLevel = mode;
-	}
 }
 
 static knh_bool_t isInteractiveMode = 0;
@@ -245,7 +147,6 @@ static void opt_i(CTX ctx, int mode, const char *optstr)
 {
 	isInteractiveMode = 1;
 }
-
 
 knh_bool_t knh_isCompileOnly(CTX ctx /* for future extension*/)
 {
@@ -395,10 +296,13 @@ static knh_optdata_t optdata[] = {
 	{"--version", OPT_EMPTY, opt_v},
 	{"-g", OPT_NUMBER, opt_g},
 	{"-v", OPT_NUMBER, opt_v},
+	{"-l", OPT_EMPTY, opt_l},
 	{"-O", OPT_NUMBER, opt_O},
 	{"-P", OPT_STRING, knh_setStartUpPackage},
 	{"-W", OPT_NUMBER, opt_W},
 	{"-h", OPT_EMPTY, opt_help},
+	{"--verbose:gc", OPT_EMPTY, opt_verbose_gc},
+	{"--verbose:lang", OPT_EMPTY, opt_verbose_lang},
 	{"--utest", OPT_EMPTY, opt_utest},
 	{"--help", OPT_EMPTY, opt_help},
 	{"-V", OPT_EMPTY, opt_version},
@@ -851,6 +755,8 @@ static void konoha_shell(konoha_t konoha, char *optstr)
 void konoha_main(konoha_t konoha, int argc, const char **argv)
 {
 	const char** args = argv;
+//	LOGDATA = {sDATA("test", "test"), iDATA("size", 10), iRANGE("range", 10, 20)};
+//	knh_record(konoha.ctx, NULL, K_RECFAILED, LOG_ERR, "test", "Test!!", _logdata, sizeof(_logdata)/sizeof(knh_logdata_t));
 	int n = konoha_parseopt(konoha, argc, args);
 	if(argc - n == 0) {
 		konoha_shell(konoha, NULL);

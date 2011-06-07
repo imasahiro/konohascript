@@ -19,6 +19,7 @@
 #define LOG_DEBUG    7 /* debug-level messages */
 #endif
 
+#ifdef OLD
 #define LOG_NULL(isNullable)  ((isNullable) ? LOG_NOTICE : LOG_ERR)
 #define LOG_NONE     (LOG_DEBUG+1)
 #define LOG_MSG      "Message"
@@ -57,6 +58,21 @@
 
 #define KNH_MEMINFO(ctx, fmt, ...) \
 	ctx->api->trace(ctx, NULL, LOG_NOTICE, "MEM", __FUNCTION__, 0, "*(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
+#else
+#define KNH_SYSLOG(ctx, sfp, p, e, fmt, ...)
+#define KNH_SYSLOG_(ctx, sfp, p, ns, e, fmt, ...)
+#define KNH_THROW(ctx, sfp, p, e, fmt, ...)
+#define KNH_TRACE(ctx, sfp, mon, e, fmt, ...)
+#define KNH_PTRACE(ctx, sfp, mon, e, fmt, ...)
+#define KNH_DIE(fmt, ...)
+
+#define KNH_PANIC(ctx, fmt, ...)
+#define KNH_WARN(ctx, fmt, ...)
+#define KNH_INFO(ctx, fmt, ...)
+#define KNH_SECINFO(ctx, fmt, ...)
+#define KNH_MEMINFO(ctx, fmt, ...)
+
+#endif
 
 /* ------------------------------------------------------------------------ */
 /* [DBGMODE] */

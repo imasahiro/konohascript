@@ -1105,7 +1105,7 @@ static void gc_extendObjectArena(CTX ctx)
 			p->ref = newobj;
 			((knh_context_t*)ctx)->freeObjectTail = newobj->ref4_tail;
 		}
-		if(knh_isSystemVerbose()) {
+		if(knh_isVerboseGC()) {
 			KNH_MEMINFO(ctx, "EXTEND_ARENA: %d times newarena=%dMb, total=%d",
 					(int)(ctx->share->sizeObjectArenaTBL - 1),
 					(int)(arenasize) / MB_,
@@ -1135,7 +1135,7 @@ void knh_System_gc(CTX ctx)
 	mtime = knh_getTimeMilliSecond();
 	gc_sweep(ctx);
 	ctime = knh_getTimeMilliSecond();
-	if(knh_isSystemVerbose()) {
+	if(knh_isVerboseGC()) {
 		STAT_(
 		KNH_MEMINFO(ctx, "GC(%dMb): marked=%d, collected=%d, used=%d=>%d, marking_time=%dms, sweeping_time=%dms",
 				(int)(ctxstat->usedMemorySize/ MB_),

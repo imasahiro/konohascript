@@ -114,7 +114,7 @@ void knh_Bytes_expands(CTX ctx, knh_Bytes_t *ba, size_t newsize)
 		ba->bu.ubuf = (knh_uchar_t*)KNH_REALLOC(ctx, ba->DBG_name, ba->bu.ubuf, ba->dim->capacity, newsize, 1);
 		((knh_dim_t*)ba->dim)->capacity = newsize;
 		if(unlikely(ctx->bufa == ba)) {
-			KNH_INFO(ctx, "newsize=%ld, pointer=(%p => %p)", newsize, ubuf, ba->bu.ubuf);
+//			KNH_INFO(ctx, "newsize=%ld, pointer=(%p => %p)", newsize, ubuf, ba->bu.ubuf);
 			Bytes_checkstack(ctx, ubuf, ubuf + ba->bu.len, ba->bu.ubuf);
 		}
 	}

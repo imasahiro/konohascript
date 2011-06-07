@@ -130,7 +130,7 @@ static int DEFAULT_compareTo(const Object *o1, const Object *o2)
 static void DEFAULT_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
 	KNH_WARN(ctx, "TODO: must be defined %s_write", O__(o));
-	knh_write__p(ctx, w, (void*)o->ref);
+	knh_write_ptr(ctx, w, (void*)o->ref);
 }
 
 static void knh_write_TObject(CTX ctx, knh_OutputStream_t *w, knh_type_t type, Object **v, size_t i, int level)
@@ -162,7 +162,7 @@ static knh_String_t* DEFAULT_getkey(CTX ctx, knh_sfp_t *sfp)
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_write_type(ctx, cwb->w, O_cid(sfp[0].o));
 	knh_putc(ctx, cwb->w, ':');
-	knh_write__p(ctx, cwb->w, sfp[0].o);
+	knh_write_ptr(ctx, cwb->w, sfp[0].o);
 	return knh_cwb_newString(ctx, cwb);
 }
 

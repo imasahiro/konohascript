@@ -673,7 +673,7 @@ static void Method_threadCode(CTX ctx, knh_Method_t *mtd, knh_KonohaCode_t *kcod
 	}
 	//if(O_isTenure(mtd)) O_toTenure(kcode);
 	(mtd)->pc_start = knh_VirtualMachine_run(ctx, ctx->esp + 1, SP(kcode)->code);
-	if(knh_isSystemVerbose()) {
+	if(knh_isVerboseLang()) {
 		knh_write_Object(ctx, KNH_STDOUT, UPCAST(mtd), FMT_dump);
 		knh_write_EOL(ctx, KNH_STDOUT);
 	}
