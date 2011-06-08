@@ -1466,7 +1466,7 @@ static int _FMTCALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	return 0;
 }
 
-static int ASM_SEND(CTX ctx, int sfpidx, int thisidx, const char *s);
+static int ASM_SEND(CTX ctx, int sfpidx, int thisidx,const char* s);
 static int _W1_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
 	int isCWB = 0;
@@ -1507,10 +1507,12 @@ static int ASM_SEND(CTX ctx, int sfpidx, int thisidx, const char *s)
 	std::vector<Value*> params;
 	param_setCtxSfp(ctx, params, thisidx);
 	params.push_back(LLVMInt(sfpidx-thisidx));
-	//asm_shift_esp(ctx, 1+thisidx);
+	//asm_shift_esp(ctx, thisidx);
 
 	Function *func = cast<Function>(LLVM_MODULE(ctx)->getOrInsertFunction(fname+"_llvm", fnTy));
+	
 	builder->CreateCall(func, params.begin(), params.end());
+
 	return 0;
 }
 
@@ -1528,15 +1530,20 @@ static int ASM_SCALL(CTX ctx, int sfpidx, int thisidx, knh_Method_t* mtd)
 
 static int _SEND_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
-	int isCWB = 0, local = ASML(sfpidx);
+	static int isTOSTR;
+	int local = ASML(sfpidx);
 	size_t i, thisidx = local + K_CALLDELTA;
+	int isCWB = 0;
 	if(TT_(tmNN(stmt, 1)) == TT_ASIS) {
 		isCWB = 1;
-		ASM_SEND(ctx, thisidx, thisidx, "CWB");
+		//size_t pos = BA_size(ctx->bufa);
+
+		ASM_SEND(ctx, thisidx,  thisidx, "CWB");
+
 		KNH_SETv(ctx, tmNN(stmt, 1), knh_Token_toTYPED(ctx, tkNN(stmt, 1), TT_FUNCVAR, TYPE_OutputStream, thisidx));
 	}
 	else {
-		int j = Tn_put(ctx, stmt, 1, TYPE_OutputStream, thisidx);
+		int j = Tn_put(ctx, stmt, 1, TYPE_OutputStream, thisidx+1);
 		Value *v = ValueStack_get(ctx, j);
 		sfp_store(ctx, thisidx, CLASS_OutputStream, v);
 	}
@@ -1550,24 +1557,36 @@ static int _SEND_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 		else {
 			knh_Method_t *mtd = NULL;
 			knh_class_t cid = Tn_cid(stmt, i);
-			int j = Tn_put(ctx, stmt, i, cid, thisidx + 1);
-			Value *v = ValueStack_get_or_load(ctx, j, cid);
-			sfp_store(ctx, thisidx+1, cid, v);
-			if(cid == CLASS_String) {
+			int j = Tn_put(ctx, stmt, i, cid/* not TYPE_Object*/, thisidx+1);
+			Value *v;
+			if (isTOSTR == 1){
+				isTOSTR = 0;
+				v = ValueStack_load(ctx, j, cid);
+			} else {
+				Value *v = ValueStack_get_or_load(ctx, j, cid);
+					sfp_store(ctx, thisidx+1, cid, v);
+			}
+
+
+			if(false && cid == CLASS_String) {
 				mtd = knh_NameSpace_getMethodNULL(ctx, CLASS_OutputStream, MN_send);
 				DBG_ASSERT(mtd != NULL);
 			}
 			else {
 				mtd = Gamma_getFmt(ctx, cid, MN__s);
 			}
-			ASM_SCALL(ctx, sfpidx, thisidx, mtd);
+			ASM_SCALL(ctx, thisidx, thisidx, mtd);
 		}
 	}
 	if(isCWB) {
 		ASM_SEND(ctx, sfpidx, thisidx, "TOSTR");
+		isTOSTR = 1;
+	} else {
+		isTOSTR = 0;
 	}
 	return 0;
 }
+
 
 /* ------------------------------------------------------------------------ */
 
