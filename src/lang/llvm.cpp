@@ -86,10 +86,19 @@ struct llvm_context {
 	BasicBlock *curBB;
 	IRBuilder<> *builder;
 };
+
+struct label_stack {
+	BasicBlock *bbCon;
+	BasicBlock *bbBreak;
+	knh_Array_t *phiCon;
+	knh_Array_t *phiBreak;
+};
+
 #define LLVM_IDX_MODULE    (0)
 #define LLVM_IDX_FUNCTION  (1)
 #define LLVM_IDX_BB        (2)
 #define LLVM_IDX_BUILDER   (3)
+#define LLVM_IDX_LABELSTACK (4)
 static inline Module *LLVM_MODULE(CTX ctx)
 {
 	Module *m = (Module*) DP(ctx->gma)->bbNC;
@@ -114,8 +123,24 @@ static inline IRBuilder<> *LLVM_BUILDER(CTX ctx)
 	knh_Array_t *a = DP(ctx->gma)->insts;
 	return (IRBuilder<>*)a->ilist[LLVM_IDX_BUILDER];
 }
-#define PUSH_LABEL(ctx, ...) /*TODO*/
-#define POP_LABEL(ctx)       /*TODO*/
+static inline std::vector<label_stack*> *LLVM_BBSTACK(CTX ctx)
+{
+	knh_Array_t *a = DP(ctx->gma)->insts;
+	return (std::vector<label_stack*> *)a->ilist[LLVM_IDX_LABELSTACK];
+}
+
+static void PUSH_LABEL(CTX ctx, struct label_stack *l)
+{
+	std::vector<label_stack *> *bbstack = LLVM_BBSTACK(ctx);
+	bbstack->push_back(l);
+}
+
+static void POP_LABEL(CTX ctx)
+{
+	std::vector<label_stack *> *bbstack = LLVM_BBSTACK(ctx);
+	bbstack->back();
+	bbstack->pop_back();
+}
 
 #define NC_(sfpidx)    (((sfpidx) * 2) + 1)
 #define OC_(sfpidx)    ((sfpidx) * 2)
@@ -407,15 +432,15 @@ static Value *GetCTX_IO(CTX ctx, Value *arg_ctx, int idx)
 }
 static Value *Fset_CTXIN(CTX ctx, Value *arg_ctx)
 {
-	return GetCTX_IO(ctx, arg_ctx, 27);
+	return GetCTX_IO(ctx, arg_ctx, 28);
 }
 static Value *Fset_CTXOUT(CTX ctx, Value *arg_ctx)
 {
-	return GetCTX_IO(ctx, arg_ctx, 28);
+	return GetCTX_IO(ctx, arg_ctx, 29);
 }
 static Value *Fset_CTXERR(CTX ctx, Value *arg_ctx)
 {
-	return GetCTX_IO(ctx, arg_ctx, 29);
+	return GetCTX_IO(ctx, arg_ctx, 30);
 }
 static Value *Fset_SYS(CTX ctx, Value *arg_ctx)
 {
@@ -964,7 +989,7 @@ static void asm_shift_esp(CTX ctx, size_t idx)
 {
 	IRBuilder<> *builder = LLVM_BUILDER(ctx);
 	Value *vsfp, *vesp;
-	vesp = builder->CreateStructGEP(getctx(ctx), 6, "gep"); /* esp */
+	vesp = builder->CreateStructGEP(getctx(ctx), 7, "gep"); /* esp */
 	vsfp = builder->CreateConstInBoundsGEP1_32(getsfp(ctx), idx);
 	builder->CreateStore(vsfp, vesp, false);
 }
@@ -1655,7 +1680,7 @@ static void ASM_BBLAST(CTX ctx, void *ptr, void (*func)(CTX, void*))
 	BasicBlock::iterator itr;
 	for(itr = bb->begin(); itr != bb->end(); itr++) {
 		Instruction &inst = *itr;
-		if(ReturnInst::classof(&inst)){
+		if(ReturnInst::classof(&inst) || BranchInst::classof(&inst)){
 			return;
 		}
 	}
@@ -1666,7 +1691,7 @@ static bool BB_hasReturn(BasicBlock *bb)
 	BasicBlock::iterator itr;
 	for(itr = bb->begin(); itr != bb->end(); itr++) {
 		Instruction &inst = *itr;
-		if(ReturnInst::classof(&inst)){
+		if(ReturnInst::classof(&inst) || BranchInst::classof(&inst)){
 			return true;
 		}
 	}
@@ -1832,7 +1857,7 @@ static int _SWITCH_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 
 	LLVM_WARN("TODO: undeveloped");
 	knh_Token_t *tkIT = Tn_it(stmt, 2);
-	PUSH_LABEL(ctx, stmt, bbContinue, bbBreak);
+	//PUSH_LABEL(ctx, bbContinue, bbBreak);
 	Tn_asm(ctx, stmt, 0, SP(tkIT)->type, Token_index(tkIT));
 	cond = ValueStack_get(ctx, Token_index(tkIT));
 
@@ -1862,68 +1887,58 @@ static void ASM_JUMPLABEL(CTX ctx, knh_Stmt_t *stmt, int delta)
 	LLVM_TODO("JUMPLABEL");
 }
 
+static int addPhiArray(CTX ctx, knh_Array_t *phi, knh_Array_t *block, BasicBlock *bb, int esp);
+
 static int _CONTINUE_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt _UNUSED_, int sfpidx _UNUSED_)
 {
-	LLVM_TODO("CONTINUE");
+	std::vector<label_stack *> *bbstack = LLVM_BBSTACK(ctx);
+	label_stack *l = bbstack->back();
+	IRBuilder<> *builder = LLVM_BUILDER(ctx);
+	BasicBlock *bb = l->bbCon;
+	knh_Array_t *phi = l->phiCon;
+	addPhiArray(ctx, phi, DP(ctx->gma)->lstacks, builder->GetInsertBlock(), DP(ctx->gma)->espidx);
+	builder->CreateBr(bb);
 	return 0;
 }
 
 static int _BREAK_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt _UNUSED_, int sfpidx _UNUSED_)
 {
-	LLVM_TODO("BREAK");
+	std::vector<label_stack *> *bbstack = LLVM_BBSTACK(ctx);
+	label_stack *l = bbstack->back();
+	IRBuilder<> *builder = LLVM_BUILDER(ctx);
+	BasicBlock *bb = l->bbBreak;
+	knh_Array_t *phi = l->phiBreak;
+	addPhiArray(ctx, phi, DP(ctx->gma)->lstacks, builder->GetInsertBlock(), DP(ctx->gma)->espidx);
+	builder->CreateBr(bb);
 	return 0;
 }
-static knh_Array_t *create_argument(CTX ctx, knh_Array_t *a)
+
+static knh_Array_t *createPhiArray(CTX ctx, BasicBlock *bb, knh_Array_t *a, int esp)
 {
 	knh_Array_t *newlstacks = ValueStack_copy(ctx, a);
-	int i, size = knh_Array_capacity(newlstacks);
+	int i, size = esp + K_CALLDELTA;//knh_Array_capacity(newlstacks);
 	for (i = K_CALLDELTA; i < size; i++){
 		Value *v = (Value *)knh_Array_n(a, i);
 		if (v != NULL){
-			knh_Array_n(newlstacks, i) = (knh_Object_t *)new Argument(v->getType());
+			PHINode *phi = PHINode::Create(v->getType(), "phi", bb);
+			knh_Array_n(newlstacks, i) = (knh_Object_t *) phi;
 		}
 	}
 	return newlstacks;
 }
 
-static int replace_argument(CTX ctx, knh_Array_t *args, knh_Array_t *block, int esp)
-{
+static int addPhiArray(CTX ctx, knh_Array_t *phi, knh_Array_t *block, BasicBlock *bb, int esp) {
 	int i, size;
 	size = esp + K_CALLDELTA;
 	for (i = K_CALLDELTA; i < size; i++) {
-		//int idx = i + (-1*K_RTNIDX);
+		Value *p = (Value *)knh_Array_n(phi, i);
 		Value *v = (Value *)knh_Array_n(block, i);
-		Argument *a = (Argument *)knh_Array_n(args, i);
-		if (a != NULL && v != NULL) {
-			a->replaceAllUsesWith(v);
-			KNH_SETv(ctx, knh_Array_n(args, i), v);
-			}
-	}
-	return 0;
-}
-
-static int add_PHI(CTX ctx, knh_Array_t *args, knh_Array_t *prev, BasicBlock *bbPrev, knh_Array_t *block, BasicBlock *bbBlock, int esp)
-{
-	int i, size;
-	size = esp + K_CALLDELTA;
-	for (i = K_CALLDELTA; i < size; i++) {
-		//int idx = i + (-1*K_RTNIDX);
-		Value *v = (Value *)knh_Array_n(block, i);
-		Value *p = (Value *)knh_Array_n(prev, i);
-		Argument *a = (Argument *)knh_Array_n(args, i);
 		if (p != NULL && v != NULL) {
-				if (v->getType() == a->getType()) {
-				//fprintf(stderr, "*add**%d, esp  = %d\n", i, esp);
-					PHINode *phi = LLVM_BUILDER(ctx)->CreatePHI(a->getType(), "arg");
-					phi->addIncoming(p, bbPrev);
-					phi->addIncoming(v, bbBlock);
-					//a->replaceAllUsesWith(phi);
-					KNH_SETv(ctx, knh_Array_n(block, i), phi);
-				} else {
-				 //a->replaceAllUsesWith(p);
-				KNH_SETv(ctx, knh_Array_n(block, i), p);
-				}
+			if (PHINode::classof(p) && p->getType() == v->getType()) {
+				PHINode *phi = static_cast<PHINode*>(p);
+				phi->addIncoming(v, bb);
 			}
+		}
 	}
 	return 0;
 }
@@ -1938,36 +1953,41 @@ static int _WHILE_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt _UNUSED_, int s
 	BasicBlock *bbBlock    = BB_CREATE(ctx, "block");
 	BasicBlock *bbPrev     = builder->GetInsertBlock();
 
-	PUSH_LABEL(ctx, stmt, bbContinue, bbBreak);
-
-	builder->CreateBr(bbContinue);
-
+	// create phi array
 	knh_Array_t *prev = DP(ctx->gma)->lstacks;
-	knh_Array_t *args = create_argument(ctx, prev);
-	DP(ctx->gma)->lstacks = ValueStack_copy(ctx, args);
-
-	builder->SetInsertPoint(bbBlock);
-	Tn_asmBLOCK(ctx, stmt, 1, TYPE_void);
+	knh_Array_t *conPhi = createPhiArray(ctx, bbContinue, prev, local);
+	knh_Array_t *brPhi = createPhiArray(ctx, bbBreak, prev, local);
+	DP(ctx->gma)->lstacks = ValueStack_copy(ctx, conPhi);
 
 	builder->CreateBr(bbContinue);
-	BasicBlock *bbTemp = builder->GetInsertBlock();
+	addPhiArray(ctx, conPhi, prev, bbPrev, local);
+
+	// continue part
 	builder->SetInsertPoint(bbContinue);
-
-	add_PHI(ctx, args, prev, bbPrev, DP(ctx->gma)->lstacks, bbTemp,DP(ctx->gma)->espidx);
-
 	if (!Tn_isTRUE(stmt, 0)) {
 		int n = Tn_CondAsm(ctx, stmt, 0, 0, local+1);
 		cond = ValueStack_get(ctx, n);
 	} else {
 		cond = LLVMBool(1);
 	}
-
-	replace_argument(ctx, args, DP(ctx->gma)->lstacks,DP(ctx->gma)->espidx);
 	builder->CreateCondBr(VBOOL(cond), bbBlock, bbBreak);
+	addPhiArray(ctx, brPhi, DP(ctx->gma)->lstacks, builder->GetInsertBlock(), local);
 
-	builder->SetInsertPoint(bbBreak);
-
+	// block part
+	builder->SetInsertPoint(bbBlock);
+	struct label_stack l = {bbContinue, bbBreak, conPhi, brPhi};
+	PUSH_LABEL(ctx, &l);
+	Tn_asmBLOCK(ctx, stmt, 1, TYPE_void);
 	POP_LABEL(ctx);
+	BasicBlock *bbTemp = builder->GetInsertBlock();
+	if (!BB_hasReturn(bbTemp)) {
+		builder->CreateBr(bbContinue);
+		addPhiArray(ctx, conPhi, DP(ctx->gma)->lstacks, bbTemp, local);
+	}
+	
+	// break part
+	builder->SetInsertPoint(bbBreak);
+	DP(ctx->gma)->lstacks = brPhi;
 	return 0;
 }
 
@@ -1980,83 +2000,106 @@ static int _DO_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt _UNUSED_, int sfpi
 	BasicBlock *bbBreak    = BB_CREATE(ctx, "break");
 	BasicBlock *bbBlock    = BB_CREATE(ctx, "block");
 	BasicBlock *bbPrev     = builder->GetInsertBlock();
-	BasicBlock *bbArg      = BasicBlock::Create(LLVM_CONTEXT(), "temp");
 
-	PUSH_LABEL(ctx, stmt, bbContinue, bbBreak);
+	// create phi array
+	knh_Array_t *prev = DP(ctx->gma)->lstacks;
+	knh_Array_t *blockPhi = createPhiArray(ctx, bbBlock, prev, local);
+	knh_Array_t *conPhi = createPhiArray(ctx, bbContinue, prev, local);
+	knh_Array_t *brPhi = createPhiArray(ctx, bbBreak, prev, local);
+	DP(ctx->gma)->lstacks = ValueStack_copy(ctx, blockPhi);
 
 	builder->CreateBr(bbBlock);
+	addPhiArray(ctx, blockPhi, prev, bbPrev, local);
 
-	knh_Array_t *prev = DP(ctx->gma)->lstacks;
-	knh_Array_t *args = create_argument(ctx, prev);
-	DP(ctx->gma)->lstacks = ValueStack_copy(ctx, args);
-
+	// block part
 	builder->SetInsertPoint(bbBlock);
-	add_PHI(ctx, args, prev, bbPrev, DP(ctx->gma)->lstacks, bbArg,DP(ctx->gma)->espidx);
+	struct label_stack l = {bbContinue, bbBreak, conPhi, brPhi};
+	PUSH_LABEL(ctx, &l);
 	Tn_asmBLOCK(ctx, stmt, 0, TYPE_void);
-
-	builder->CreateBr(bbContinue);
+	POP_LABEL(ctx);
+	BasicBlock *bbTemp = builder->GetInsertBlock();
+	if (!BB_hasReturn(bbTemp)) {
+		builder->CreateBr(bbContinue);
+		addPhiArray(ctx, conPhi, DP(ctx->gma)->lstacks, bbTemp, local);
+	}	
+	
+	// continue part
+	DP(ctx->gma)->lstacks = conPhi;
 	builder->SetInsertPoint(bbContinue);
-
-
 	if (!Tn_isTRUE(stmt, 1)) {
 		int n = Tn_CondAsm(ctx, stmt, 1, 0, local+1);
 		cond = ValueStack_get(ctx, n);
 	} else {
 		cond = LLVMBool(1);
 	}
-
-	replace_argument(ctx, args, DP(ctx->gma)->lstacks,DP(ctx->gma)->espidx);
 	builder->CreateCondBr(VBOOL(cond), bbBlock, bbBreak);
-	bbArg->replaceAllUsesWith(builder->GetInsertBlock());
+	addPhiArray(ctx, blockPhi, DP(ctx->gma)->lstacks, builder->GetInsertBlock(), local);
+	addPhiArray(ctx, brPhi, DP(ctx->gma)->lstacks, builder->GetInsertBlock(), local);
 
+	// break part
 	builder->SetInsertPoint(bbBreak);
-
-	POP_LABEL(ctx);
+	DP(ctx->gma)->lstacks = brPhi;
 	return 0;
 }
 
 static int _FOR_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt _UNUSED_, int sfpidx _UNUSED_)
 {
-	int local = DP(ctx->gma)->espidx;
+	int local = DP(ctx->gma)->espidx + 1;
 	Value *cond;
 	IRBuilder<> *builder = LLVM_BUILDER(ctx);
 	BasicBlock *bbContinue = BB_CREATE(ctx, "continue");
+	BasicBlock *bbCond     = BB_CREATE(ctx, "cond");
 	BasicBlock *bbBreak    = BB_CREATE(ctx, "break");
 	BasicBlock *bbBlock    = BB_CREATE(ctx, "block");
 	BasicBlock *bbPrev     = builder->GetInsertBlock();
 
-	PUSH_LABEL(ctx, stmt, bbContinue, bbBreak);
+	// init part
 	Tn_asm(ctx, stmt, 0, TYPE_void, local);
+	builder->CreateBr(bbCond);
 
-	builder->CreateBr(bbContinue);
-
+	// create phi array
 	knh_Array_t *prev = DP(ctx->gma)->lstacks;
-	knh_Array_t *args = create_argument(ctx, prev);
-	DP(ctx->gma)->lstacks = ValueStack_copy(ctx, args);
+	knh_Array_t *condPhi = createPhiArray(ctx, bbCond, prev, local);
+	knh_Array_t *contPhi = createPhiArray(ctx, bbContinue, prev, local);
+	knh_Array_t *brPhi   = createPhiArray(ctx, bbBreak, prev, local);
+	DP(ctx->gma)->lstacks = ValueStack_copy(ctx, condPhi);
 
-	builder->SetInsertPoint(bbBlock);
-	Tn_asmBLOCK(ctx, stmt, 3, TYPE_void);
-	Tn_asmBLOCK(ctx, stmt, 2, TYPE_void);
-
-	builder->CreateBr(bbContinue);
-	BasicBlock *bbTemp = builder->GetInsertBlock();
-	builder->SetInsertPoint(bbContinue);
-
-	add_PHI(ctx, args, prev, bbPrev, DP(ctx->gma)->lstacks, bbTemp,DP(ctx->gma)->espidx);
-
+	addPhiArray(ctx, condPhi, prev, bbPrev, local);
+	
+	// condition part
+	builder->SetInsertPoint(bbCond);
 	if (!Tn_isTRUE(stmt, 1)) {
 		int n = Tn_CondAsm(ctx, stmt, 1, 0, local+1);
 		cond = ValueStack_get(ctx, n);
 	} else {
 		cond = LLVMBool(1);
-	}
-
-	replace_argument(ctx, args, DP(ctx->gma)->lstacks,DP(ctx->gma)->espidx);
+	}	
 	builder->CreateCondBr(VBOOL(cond), bbBlock, bbBreak);
+	addPhiArray(ctx, brPhi, DP(ctx->gma)->lstacks, builder->GetInsertBlock(), local);
 
-	builder->SetInsertPoint(bbBreak);
-
+	// block part
+	builder->SetInsertPoint(bbBlock);
+	struct label_stack l = {bbContinue, bbBreak, contPhi, brPhi};
+	PUSH_LABEL(ctx, &l);
+	Tn_asmBLOCK(ctx, stmt, 3, TYPE_void);
 	POP_LABEL(ctx);
+	BasicBlock *bbTemp = builder->GetInsertBlock();
+	if (!BB_hasReturn(bbTemp)) {
+		builder->CreateBr(bbContinue);
+		addPhiArray(ctx, contPhi, DP(ctx->gma)->lstacks, bbTemp, local);
+	}
+	
+	// continue part
+	builder->SetInsertPoint(bbContinue);
+	DP(ctx->gma)->lstacks = contPhi;
+	Tn_asmBLOCK(ctx, stmt, 2, TYPE_void);
+	builder->CreateBr(bbCond);
+	addPhiArray(ctx, condPhi, DP(ctx->gma)->lstacks, builder->GetInsertBlock(), local);
+	
+	// break part
+	builder->SetInsertPoint(bbBreak);
+	DP(ctx->gma)->lstacks = brPhi;
+
 	return 0;
 }
 
@@ -2557,43 +2600,44 @@ static void ConstructObjectStruct(Module *m)
 	/* 00 */fields.push_back(voidPtr);   /* share */
 	/* 01 */fields.push_back(voidPtr);   /* stat */
 	/* 02 */fields.push_back(voidPtr);   /* spi */
-	/* 03 */fields.push_back(sysPtr);    /* sys */
-	/* 04 */fields.push_back(voidPtr); /* script */
+	/* 03 */fields.push_back(voidPtr);   //const struct knh_api2_t        *api2;
+	/* 04 */fields.push_back(sysPtr);    /* sys */
+	/* 05 */fields.push_back(voidPtr); /* script */
 	/* stack */
-	/* 05 */fields.push_back(sfpPtr); //knh_sfp_t*                   stack;
-	/* 06 */fields.push_back(sfpPtr); //knh_sfp_t*                   esp;
-	/* 07 */fields.push_back(longTy); //size_t                       stacksize;
-	/* 08 */fields.push_back(sfpPtr); //knh_sfp_t*                   stacktop;
-	/* 09 */fields.push_back(voidPtr); //void*                        cstack_bottom;
-	/* 10 */fields.push_back(objectPtr); //struct knh_Exception_t      *e;
-	/* 11 */fields.push_back(objectPtr); //struct knh_Monitor_t        *mon;
+	/* 06 */fields.push_back(sfpPtr); //knh_sfp_t*                   stack;
+	/* 07 */fields.push_back(sfpPtr); //knh_sfp_t*                   esp;
+	/* 08 */fields.push_back(longTy); //size_t                       stacksize;
+	/* 09 */fields.push_back(sfpPtr); //knh_sfp_t*                   stacktop;
+	/* 10 */fields.push_back(voidPtr); //void*                        cstack_bottom;
+	/* 11 */fields.push_back(objectPtr); //struct knh_Exception_t      *e;
+	/* 12 */fields.push_back(objectPtr); //struct knh_Monitor_t        *mon;
 	/* memory */
-	/* 12 */fields.push_back(objectPtr); //knh_Object_t                *freeObjectList;
-	/* 13 */fields.push_back(objectPtr); //knh_Object_t                *freeObjectTail;
-	/* 14 */fields.push_back(longTy); //size_t                       freeObjectListSize;
-	/* 15 */fields.push_back(longTy); //knh_uintptr_t                mscheck;
-	/* 16 */fields.push_back(voidPtr); //knh_fastmem_t               *freeMemoryList;
-	/* 17 */fields.push_back(voidPtr); //knh_fastmem_t               *freeMemoryTail;
+	/* 13 */fields.push_back(objectPtr); //knh_Object_t                *freeObjectList;
+	/* 14 */fields.push_back(objectPtr); //knh_Object_t                *freeObjectTail;
+	/* 15 */fields.push_back(longTy); //size_t                       freeObjectListSize;
+	/* 16 */fields.push_back(longTy); //knh_uintptr_t                mscheck;
+	/* 17 */fields.push_back(voidPtr); //knh_fastmem_t               *freeMemoryList;
+	/* 18 */fields.push_back(voidPtr); //knh_fastmem_t               *freeMemoryTail;
 
 	/* cache */
-	/* 18 */fields.push_back(voidPtr); //knh_mtdcache_t              *mtdcache;
-	/* 19 */fields.push_back(voidPtr); //knh_tmrcache_t             *tmrcache;
-	/* 20 */fields.push_back(voidPtr); //struct knh_Object_t        **refs;
-	/* 21 */fields.push_back(longTy); //size_t                       ref_size;
-	/* 22 */fields.push_back(voidPtr); //struct knh_Object_t        **ref_buf;
-	/* 23 */fields.push_back(longTy); //size_t                       ref_capacity;
-	/* 24 */fields.push_back(voidPtr); //struct knh_Object_t        **queue;
-	/* 25 */fields.push_back(longTy); //size_t                       queue_capacity;
+	/* 19 */fields.push_back(voidPtr); //knh_mtdcache_t              *mtdcache;
+	/* 20 */fields.push_back(voidPtr); //knh_tmrcache_t             *tmrcache;
+	/* 21 */fields.push_back(voidPtr); //struct knh_Object_t        **refs;
+	/* 22 */fields.push_back(longTy); //size_t                       ref_size;
+	/* 23 */fields.push_back(voidPtr); //struct knh_Object_t        **ref_buf;
+	/* 24 */fields.push_back(longTy); //size_t                       ref_capacity;
+	/* 25 */fields.push_back(voidPtr); //struct knh_Object_t        **queue;
+	/* 26 */fields.push_back(longTy); //size_t                       queue_capacity;
 
-	/* 26 */fields.push_back(objectPtr); //struct knh_String_t*         enc;
-	/* 27 */fields.push_back(objectPtr); //struct knh_InputStream_t*    in;
-	/* 28 */fields.push_back(objectPtr); //struct knh_OutputStream_t*   out;
-	/* 29 */fields.push_back(objectPtr); //struct knh_OutputStream_t*   err;
-	/* 30 */fields.push_back(objectPtr); //struct knh_Bytes_t*          bufa;
-	/* 31 */fields.push_back(objectPtr); //struct knh_OutputStream_t*   bufw;
-	/* 32 */fields.push_back(objectPtr); //struct knh_Gamma_t*          gma;
-	/* 33 */fields.push_back(objectPtr); //struct knh_DictMap_t*        symbolDictMap;
-	/* 34 */fields.push_back(objectPtr); //struct knh_Array_t*          constPools;
+	/* 27 */fields.push_back(objectPtr); //struct knh_String_t*         enc;
+	/* 28 */fields.push_back(objectPtr); //struct knh_InputStream_t*    in;
+	/* 29 */fields.push_back(objectPtr); //struct knh_OutputStream_t*   out;
+	/* 30 */fields.push_back(objectPtr); //struct knh_OutputStream_t*   err;
+	/* 31 */fields.push_back(objectPtr); //struct knh_Bytes_t*          bufa;
+	/* 32 */fields.push_back(objectPtr); //struct knh_OutputStream_t*   bufw;
+	/* 33 */fields.push_back(objectPtr); //struct knh_Gamma_t*          gma;
+	/* 34 */fields.push_back(objectPtr); //struct knh_DictMap_t*        symbolDictMap;
+	/* 35 */fields.push_back(objectPtr); //struct knh_Array_t*          constPools;
 
 	fields.push_back(shortTy);   //knh_flag_t                   flag;
 	fields.push_back(shortTy);   //knh_ushort_t                 ctxid;
@@ -2602,7 +2646,6 @@ static void ConstructObjectStruct(Module *m)
 	fields.push_back(voidPtr);   //knh_mutex_t                 *ctxlock;
 
 	fields.push_back(voidPtr);   //const struct _knh_ExportsAPI_t *api;
-	fields.push_back(voidPtr);   //const struct knh_api2_t        *api2;
 	fields.push_back(voidPtr);   //char                            trace[16];
 	fields.push_back(voidPtr);   //knh_uint_t                      seq;
 	// add here for new entry
@@ -2743,7 +2786,7 @@ static Function *build_wrapper_func(CTX ctx, Module *m, knh_Method_t *mtd, Funct
 	Function::arg_iterator args = f->arg_begin();
 	Value *arg_ctx = VNAME_(args++, "ctx");
 	Value *arg_sfp = VNAME_(args++, "sfp");
-	Value *arg_rix = VNAME_(args++, "rix");
+	VNAME_(args++, "rix");
 
 	builder->SetInsertPoint(bb);
 
@@ -2796,6 +2839,7 @@ static void Init(CTX ctx, knh_Method_t *mtd, knh_Array_t *a)
 	a->ilist[LLVM_IDX_FUNCTION] = (knh_int_t) func;
 	a->ilist[LLVM_IDX_BB] = (knh_int_t) bb;
 	a->ilist[LLVM_IDX_BUILDER] = (knh_int_t) builder;
+	a->ilist[LLVM_IDX_LABELSTACK] = (knh_int_t) new std::vector<label_stack *>();
 
 	size_t i;
 	Function::arg_iterator args = func->arg_begin();
@@ -2841,6 +2885,7 @@ static void Finish(CTX ctx, knh_Method_t *mtd, knh_Array_t *a, knh_Stmt_t *stmt)
 	f = (knh_Fmethod) ee->getPointerToFunction(func1);
 	knh_Method_setFunc(ctx, mtd, f);
 	delete LLVM_BUILDER(ctx);
+	delete LLVM_BBSTACK(ctx);
 }
 
 #define _ALLOW_asm _EXPR_asm
