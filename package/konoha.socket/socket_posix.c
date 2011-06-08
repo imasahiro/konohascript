@@ -173,7 +173,12 @@ static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int
 	}
 	L_PERROR:;
 	if (errfunc != NULL) {
-		KNH_PTRACE(ctx, sfp, mon, errfunc, "Socket!!: host='%s', port=%d", ip_or_host, port);
+		LOGDATA = {sDATA("host", ip_or_host), iDATA("port", port)};
+		LIB_Failed(errfunc, "Socket!!");
+	}
+	else {
+		LOGDATA = {sDATA("host", ip_or_host), iDATA("port", port)};
+		NOTE_OK("socket");
 	}
 	return sd;
 }
@@ -229,12 +234,13 @@ METHOD ServerSocket_new(Ctx* ctx,knh_sfp_t* sfp _RIX)
 	char *host = "127.0.0.1";
 	int fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd  == -1) {
-		perror("soket");
-		KNH_THROW(ctx, sfp, LOG_CRIT, "Socket!!", "cannot make socket!");
+		LOGDATA = {iDATA("port", port)};
+		LIB_Failed("socket", "Socket!!");
 	}
 	in_addr_t hostinfo = inet_addr(host);
 	if (hostinfo == INADDR_NONE) {
-		KNH_THROW(ctx, sfp, LOG_CRIT, "Socket!!", "ivalid ip");
+		LOGDATA = {sDATA("host", host)};
+		LIB_Failed("inet_addr", "Socket!!");
 	}
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
@@ -242,11 +248,12 @@ METHOD ServerSocket_new(Ctx* ctx,knh_sfp_t* sfp _RIX)
 	addr.sin_port = htons((short)port);
 	setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 	if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
-		perror("bind");
-		KNH_THROW(ctx, sfp, LOG_CRIT, "Socket!!", "cannot connect!");
+		LOGDATA = {sDATA("host", host), iDATA("port", port)};
+		LIB_Failed("bind", "Socket!!");
 	}
 	if (listen(fd, backlog) == -1) {
-		perror("listen");
+		LOGDATA = {sDATA("host", host), iDATA("port", port), iDATA("max_connection", backlog)};
+		LIB_Failed("listen", "Socket!!");
 	}
 	knh_StreamDSPI_t *dspi = &SOCKET_DSPI;
 	DP(ssock)->sd = fd;
@@ -265,8 +272,8 @@ METHOD ServerSocket_accept(Ctx* ctx,knh_sfp_t* sfp _RIX)
 	knh_Socket_t *ret = (knh_Socket_t *)new_ObjectNS(ctx, ns, "Socket");
 	int fd = accept(DP(ssock)->sd, NULL, NULL);
 	if (fd == -1) {
-		perror("accept");
-		KNH_THROW(ctx, sfp, LOG_CRIT, "Socket!!", "cannot accept socket!");
+		LOGDATA = {{{NULL}}};
+		LIB_Failed("accept", "Socket!!");
 	}
 	DP(ret)->sd = fd;
 	DP(ret)->port = DP(ssock)->port;

@@ -149,7 +149,7 @@ knh_fieldn_t knh_addname(CTX ctx, knh_String_t *s, knh_Fdictset f)
 	DBG_ASSERT(n < b->namecapacity);
 	KNH_INITv(b->nameinfo[n].name, s);
 	if(unlikely(!(n+1 < K_FLAG_MN_SETTER))) {  /* Integer overflowed */
-		KNH_PANIC(ctx, "too many names, last nameid(fn)=%d < %d", (int)(n+1), (int)K_FLAG_MN_SETTER);
+		KNH_DIE("too many names, last nameid(fn)=%d < %d", (int)(n+1), (int)K_FLAG_MN_SETTER);
 	}
 	f(ctx, b->nameDictCaseSet, s, n + 1);
 	return (knh_fieldn_t)(n);
@@ -280,7 +280,11 @@ knh_uri_t knh_getURI(CTX ctx, knh_bytes_t t)
 		idx = knh_Array_size(DP(ctx->sys)->urns);
 		knh_DictSet_set(ctx, DP(ctx->sys)->urnDictSet, s, idx);
 		knh_Array_add(ctx, DP(ctx->sys)->urns, s);
-		KNH_INFO(ctx, "NEW_URI URI=%d, URN='%B'", idx, S_tobytes(s));
+		{
+			void *sfp = NULL;
+			LOGDATA = {sDATA("URN", S_tochar(s)), iDATA("uri", idx)};
+			LIB_OK("konoha:new_uri");
+		}
 	}
 	else {
 		idx = knh_DictSet_valueAt(DP(ctx->sys)->urnDictSet, idx);
@@ -574,7 +578,7 @@ static METHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 #else
 	const char *cmd = S_tochar(sfp[1].s);
 #endif
-	KNH_SECINFO(ctx, "fork command='%s'", cmd);
+	//NOTE_(ctx, "fork command='%s'", cmd);
 #ifdef K_USING_POSIX_
 	FILE *fp = popen((const char*)cmd, "r+");
 	if(fp != NULL) {
@@ -594,7 +598,7 @@ static METHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 		RETURN_(knh_cwb_newString(ctx, cwb));
 	}
 	else {
-		KNH_WARN(ctx, "command failed: %s", cmd);
+		KNH_LOG("command failed: %s", cmd);
 	}
 #endif
 	RETURN_(KNH_NULVAL(CLASS_String));

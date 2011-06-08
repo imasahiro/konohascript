@@ -1036,6 +1036,8 @@ typedef struct knh_tmrcache_t {
 typedef long iconv_t;
 #endif
 
+struct knh_logdata_t;
+
 typedef struct knh_ServiceSPI_t {
 	/* sync spi */
 #ifdef K_USING_DEBUG
@@ -1060,6 +1062,8 @@ typedef struct knh_ServiceSPI_t {
 	const char *syslogspi;  // debug
 	const char *readlinespi; // debug
 	const char *iconvspi;   // debug
+	/* konoha spi */
+	void (*recordSPI)(CTX, knh_sfp_t *, int, int, const char *, const char *, const struct knh_logdata_t *, size_t);
 } knh_ServiceSPI_t;
 
 typedef struct knh_context_t {
@@ -1129,8 +1133,6 @@ typedef struct knh_context_t {
 /* ------------------------------------------------------------------------ */
 /* logdata */
 
-struct knh_logdata_t;
-
 typedef struct knh_logdata_t {
 	union {
 		const char *key;
@@ -1147,10 +1149,12 @@ typedef struct knh_logdata_t {
 #define K_RECFAILED         1
 #define K_RECCRIT       (1<<1)
 #define K_RECNOTE       (1<<2)
+#define K_RECNOTESTART  ((1<<3)|(1<<2))
 
 #define LOGDATA         const knh_logdata_t _logdata[]
 #define LOGDATASIZE     (sizeof(_logdata)/sizeof(knh_logdata_t))
 
+#define LOGMSG(V)          {{"smsg"}}, {{(V)}}
 #define sDATA(K, V)        {{"s" K}}, {{(V)}}
 #define iDATA(K, V)        {{"i" K}}, {{(const char*)((knh_intptr_t)V)}}
 #define dDATA(K, V)        {{"i" K}}, {{(const char*)((knh_intptr_t)V)}}
@@ -1158,6 +1162,11 @@ typedef struct knh_logdata_t {
 #define fDATA(K, V)        {{"f" K}}, {{(const char*)((knh_floatptr_t)V)}}
 #define pDATA(K, V)        {{"p" K}}, {{(const char*)(V)}}
 #define oDATA(K, V)        {{"o" K}}, {{(const char*)(V)}}
+#define cDATA(K, V)        {{"c" K}}, {{(const char*)((knh_intptr_t)V)}}
+#define tDATA(K, V)        {{"t" K}}, {{(const char*)((knh_intptr_t)V)}}
+#define fnDATA(K, V)       {{"n" K}}, {{(const char*)((knh_intptr_t)V)}}
+#define mnDATA(K, V)       {{"m" K}}, {{(const char*)((knh_intptr_t)V)}}
+
 #define sRANGE(K, V, V2)   {{"S" K}}, {{(V)}}, {{(V2)}}
 #define iRANGE(K, V, V2)   {{"I" K}}, {{(const char*)((knh_intptr_t)V)}}, {{(const char*)((knh_intptr_t)V2)}}
 #define dRANGE(K, V, V2)   {{"I" K}}, {{(const char*)((knh_intptr_t)V)}}, {{(const char*)((knh_intptr_t)V2)}}
@@ -1165,21 +1174,43 @@ typedef struct knh_logdata_t {
 #define fRANGE(K, V, V2)   {{"F" K}}, {{(const char*)((knh_floatptr_t)V)}}, {{(const char*)((knh_floatptr_t)V2)}}
 #define pRANGE(K, V, V2)   {{"P" K}}, {{(const char*)(V)}}, {{(const char*)(V2)}}
 #define oRANGE(K, V, V2)   {{"O" K}}, {{(const char*)(V)}}, {{(const char*)(V2)}}
+#define MDATA(K, V, V2)    {{"M" K}}, {{(const char*)((knh_intptr_t)V)}}, {{(const char*)((knh_intptr_t)V2)}}
 
+#define __TRACE__          {{"ssource"}}, {{knh_sfile(__FILE__)}}, {{"sfunction"}}, {{__FUNCTION__}}, iDATA("line", __LINE__)
+#define __ERRNO__          {{"eerrno"}}, {{NULL}}
+
+#define KNH_RESET_ERRNO()
+#ifdef K_EXPORTS
+#define KNH_RECORD ctx->spi->recordSPI
+#else
 #define KNH_RECORD knh_record
+#endif
 
 #define CRIT_OK(action)
 #define CRIT_Failed(action, event)  {  \
 		KNH_RECORD(ctx, sfp, K_RECFAILED|K_RECCRIT, LOG_CRIT, action, event, _logdata, LOGDATASIZE);  \
 	}  \
 
+#define LIB_OK(action) {  \
+		KNH_RECORD(ctx, sfp, K_RECNOTE, LOG_INFO, action, NULL, _logdata, LOGDATASIZE);  \
+	}  \
+
+#define LIB_Failed(action, event)   {   \
+		KNH_RECORD(ctx, sfp, K_RECFAILED|K_RECNOTE, LOG_ERR, action, event, _logdata, LOGDATASIZE);  \
+	}  \
+
+#define NOTE_START(action) {  \
+		KNH_RECORD(ctx, sfp, K_RECNOTESTART, LOG_NOTICE, action, NULL, _logdata, LOGDATASIZE);  \
+	}  \
+
 #define NOTE_OK(action) {  \
 		KNH_RECORD(ctx, sfp, K_RECNOTE, LOG_NOTICE, action, NULL, _logdata, LOGDATASIZE);  \
 	}  \
 
-#define NOTE_Failed(action, event)   {   \
-		KNH_RECORD(ctx, sfp, K_RECFAILED|K_RECNOTE, LOG_WARNING, action, event, _logdata, LOGDATASIZE);  \
+#define NOTE_Failed(action)   {   \
+		KNH_RECORD(ctx, sfp, K_RECFAILED|K_RECNOTE, LOG_WARNING, action, NULL, _logdata, LOGDATASIZE);  \
 	}  \
+
 
 /* ------------------------------------------------------------------------ */
 /* ------------------------------------------------------------------------ */

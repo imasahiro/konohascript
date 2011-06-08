@@ -1339,7 +1339,8 @@ static METHOD Int_format(CTX ctx, knh_sfp_t *sfp _RIX)
 		RETURN_(new_S(ctx, B(buf)));
 	}
 	if(fmt.len != 0) {
-		KNH_WARN(ctx, "invalid format: %s", fmt.text);
+		LOGDATA = {LOGMSG("invalid format"), sDATA("format", fmt.text)};
+		NOTE_Failed("format");
 	}
 	fmt = STEXT("%d");
 	goto L_RETRY;
@@ -1362,7 +1363,8 @@ static METHOD Float_format(CTX ctx, knh_sfp_t *sfp _RIX)
 		RETURN_(new_S(ctx, B(buf)));
 	}
 	if(fmt.len != 0) {
-		KNH_WARN(ctx, "invalid format: %s", fmt.text);
+		LOGDATA = {LOGMSG("invalid format"), sDATA("format", fmt.text)};
+		NOTE_Failed("format");
 	}
 	fmt = STEXT("%f");
 	goto L_RETRY;
@@ -1382,7 +1384,8 @@ static METHOD String_format(CTX ctx, knh_sfp_t *sfp _RIX)
 		RETURN_(new_S(ctx, B(buf)));
 	}
 	if(fmt.len != 0) {
-		KNH_WARN(ctx, "invalid format: %s", fmt.text);
+		LOGDATA = {LOGMSG("invalid format"), sDATA("format", fmt.text)};
+		NOTE_Failed("format");
 	}
 	RETURN_(sfp[0].s);
 }
@@ -1394,7 +1397,7 @@ static METHOD String_format(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD Object__empty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	if(CTX_isDebug(ctx)) {
-		KNH_INFO(ctx, "*%%empty(%s)", O__(sfp[1].o));
+		KNH_LOG("%%empty(%s)", O__(sfp[1].o));
 	}
 }
 

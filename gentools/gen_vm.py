@@ -379,12 +379,12 @@ static int opcode_count[OPCODE_MAX] = {0};
 /* ------------------------------------------------------------------------ */
 void knh_opcode_stat(CTX ctx)
 {
-	int i;
+/*	int i;
 	for(i = 0; i < OPCODE_MAX; i++) {
 		KNH_SYSLOG(ctx, LOG_INFO,
 				"[VMCODE COUNTER] %s count=%d",
 				OPCODE__(i), opcode_count[i]);
-	}
+	}*/
 }
 
 /* ------------------------------------------------------------------------ */
@@ -667,7 +667,7 @@ def write_exec(f):
 #define JUMP        L_HEAD
 #define TC(c)
 #define DISPATCH_START(pc) L_HEAD:;switch(pc->opcode) {
-#define DISPATCH_END(pc)   } KNH_SYSLOG(ctx, LOG_CRIT, "VM", "unknown opcode=%d", pc->opcode); 
+#define DISPATCH_END(pc)   } KNH_DIE("unknown opcode=%d", (int)pc->opcode); 
 #define GOTO_PC(pc)         GOTO_NEXT()
 #endif/*K_USING_THCODE_*/
 

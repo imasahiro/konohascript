@@ -169,7 +169,7 @@ void pseudo_vsyslog(int p, const char *fmt, va_list ap)
 {
 	char buf[K_LOGMSGSIZE];
 	vsnprintf(buf, sizeof(buf), fmt, ap);
-	if(stdlog != NULL) {
+	if(stdlog != NULL && p < LOG_ERR) {
 		fputs(LOG__(p), stdlog);
 		fputs(buf, stdlog);
 		fputs(K_OSLINEFEED, stdlog);
@@ -687,24 +687,53 @@ static void knh_write_logdata(CTX ctx, knh_OutputStream_t *w, const knh_logdata_
 				break;
 			}
 			case 'u': {
-				knh_write_ifmt(ctx, w, K_INT_FMT, (knh_uint_t)d1->uvalue);
+				knh_write_ifmt(ctx, w, K_UINT_FMT, (knh_uint_t)d1->uvalue);
+				break;
+			}
+			case 'e': {
+				int errno_ = errno;
+				knh_write_ifmt(ctx, w, K_INT_FMT, (knh_int_t)errno);
+				knh_putc(ctx, w, ','); knh_putc(ctx, w, ' ');
+				knh_write_key(ctx, w, "strerror");
+				knh_putc(ctx, w, '"');
+				knh_write_ascii(ctx, w, strerror(errno_));
+				knh_putc(ctx, w, '"');
 				break;
 			}
 			case 'f': {
 				knh_write_ffmt(ctx, w, K_FLOAT_FMT, (knh_float_t)d1->fvalue);
 				break;
 			}
-			case 's': {
+			case 's': if(d1->svalue != NULL) {
 				knh_bytes_t t = {{d1->svalue}, knh_strlen(d1->svalue)};
 				knh_write_quote(ctx, w, '"', t, 1/*hasUTF8*/);
-				break;
 			}
+			else {
+				knh_write_ascii(ctx, w, "null");
+			}
+			break;
 			case 'p': {
 				knh_write_ptr(ctx, w, d1->ptr);
 				break;
 			}
 			case 'o': {
 				knh_write_Object(ctx, w, d1->ovalue, FMT_line);
+				break;
+			}
+			case 'c': {
+				knh_write_cid(ctx, w, (knh_class_t)d1->ivalue);
+				break;
+			}
+			case 't': {
+				knh_write_type(ctx, w, (knh_type_t)d1->ivalue);
+				break;
+			}
+			case 'n': {
+				knh_write_fn(ctx, w, (knh_fieldn_t)d1->ivalue);
+				break;
+			}
+			case 'm': {
+				knh_write_mn(ctx, w, (knh_methodn_t)d1->ivalue);
 				break;
 			}
 			case 'I': {
@@ -763,8 +792,15 @@ static void knh_write_logdata(CTX ctx, knh_OutputStream_t *w, const knh_logdata_
 				d++; p++;
 				break;
 			}
+			case 'M': {
+				knh_write_cname(ctx, w, (knh_class_t)d1->ivalue);
+				knh_putc(ctx, w, '.');
+				knh_write_mn(ctx, w, (knh_methodn_t)d2->ivalue);
+				d++; p++;
+				break;
+			}
 			case '+': {
-				KNH_TODO("OPTLOGER");
+				knh_write_logdata(ctx, w, d1->logger(ctx), 256);
 			}
 			default : {
 				DBG_P("unknown key=%s", key); return;
@@ -801,7 +837,6 @@ void knh_record(CTX ctx, knh_sfp_t *sfp, int op, int pe, const char *action, con
 		else {
 			knh_putc(ctx, cwb->w, ' ');
 		}
-		DBG_P("datasize=%d", datasize);
 		knh_write_logdata(ctx, cwb->w, data, datasize);
 		ctx->spi->syslog(pe, knh_cwb_tochar(ctx, cwb));
 		((knh_context_t*)ctx)->seq += 1;
@@ -828,8 +863,6 @@ void knh_record(CTX ctx, knh_sfp_t *sfp, int op, int pe, const char *action, con
 			}
 		}
 	}
-	KNH_SETv(ctx, ((knh_context_t*)ctx)->e, KNH_NULL);
-
 }
 
 /* ------------------------------------------------------------------------ */
@@ -840,7 +873,8 @@ void knh_record(CTX ctx, knh_sfp_t *sfp, int op, int pe, const char *action, con
 
 void THROW_Halt(CTX ctx, knh_sfp_t *sfp, const char *msg)
 {
-	KNH_THROW(ctx, sfp, LOG_CRIT, "InternalError!!", "InternalError!!: %s", msg);
+	LOGDATA = {sDATA("msg", msg)};
+	CRIT_Failed("konoha", "InternalError!!");
 }
 void THROW_OutOfMemory(CTX ctx, size_t size)
 {
@@ -850,27 +884,33 @@ void THROW_OutOfMemory(CTX ctx, size_t size)
 }
 void THROW_StackOverflow(CTX ctx, knh_sfp_t *sfp)
 {
-	KNH_THROW(ctx, sfp, LOG_CRIT, "Script!!", "Script!!: stack overflow: stacksize=%i", (ctx->esp - ctx->stack));
+	LOGDATA = {sDATA("msg", "stack overflow"), uDATA("stacksize", (ctx->esp - ctx->stack))};
+	CRIT_Failed("stack", "Script!!");
 }
 void THROW_Arithmetic(CTX ctx, knh_sfp_t *sfp, const char *msg)
 {
-	KNH_THROW(ctx, sfp, LOG_CRIT, "Script!!", "Script!!: arithmetic error %s", msg);
+	LOGDATA = {sDATA("msg", msg)};
+	CRIT_Failed("arithmetics", "Script!!");
 }
 void THROW_OutOfRange(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t max)
 {
-	KNH_THROW(ctx, sfp, LOG_CRIT, "Script!!", "Script!!: out of index range: %i not < %i", n, (knh_int_t)max);
+	LOGDATA = {sDATA("msg", "out of index range"), iDATA("idx", n), iDATA("max", max)};
+	CRIT_Failed("range", "Script!!");
 }
 void THROW_TypeError(CTX ctx, knh_sfp_t *sfp, knh_type_t reqt, knh_type_t type)
 {
-	KNH_THROW(ctx, sfp, LOG_ERR, "Script!!", "Script!!: type error: requested=%T, but given=%T", reqt, type);
+	LOGDATA = {tDATA("requested_type", reqt), tDATA("given_type", type)};
+	CRIT_Failed("typecheck", "Script!!");
 }
 void THROW_NoSuchMethod(CTX ctx, knh_sfp_t *sfp, knh_class_t cid, knh_methodn_t mn)
 {
-	KNH_THROW(ctx, sfp, LOG_ERR, "Script!!", "Script!!: undefined method: %C.%M", cid, mn);
+	LOGDATA = {tDATA("msg", "undefined method"), MDATA("method", cid, mn)};
+	CRIT_Failed("typecheck", "Script!!");
 }
 void THROW_ParamTypeError(CTX ctx, knh_sfp_t *sfp, size_t n, knh_methodn_t mn, knh_class_t reqt, knh_class_t cid)
 {
-	KNH_THROW(ctx, sfp, LOG_ERR, "Script!!", "Script!!: type error: argument %d of %M is not %T", n, mn, cid);
+	LOGDATA = {MDATA("method", cid, mn), iDATA("argument", n), tDATA("requested_type", reqt), tDATA("given_type", cid)};
+	CRIT_Failed("typecheck", "Script!!");
 }
 
 

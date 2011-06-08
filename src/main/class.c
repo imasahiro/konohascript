@@ -166,6 +166,28 @@ KNHAPI2(void) knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
 				knh_write_ifmt(ctx, w, K_INT_FMT, cid - TYPE_This);
 			}
 			else {
+				knh_write(ctx, w, S_tobytes(ClassTBL(cid)->lname));
+			}
+			return ;
+		}
+	}
+	knh_write_ascii(ctx, w, tname);
+}
+
+void knh_write_cname(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
+{
+	const char *tname = NULL;
+	switch(cid) {
+	case TYPE_Tdynamic:  tname = "dynamic";    break;
+	case TYPE_void: tname = "void";       break;
+	case TYPE_var:  tname = "var";        break;
+	case TYPE_This: tname = "This";       break;
+	default :{
+			if(cid > TYPE_This) {
+				knh_write(ctx, w, STEXT("T"));
+				knh_write_ifmt(ctx, w, K_INT_FMT, cid - TYPE_This);
+			}
+			else {
 				knh_write(ctx, w, S_tobytes(ClassTBL(cid)->sname));
 			}
 			return ;
@@ -1025,8 +1047,9 @@ void knh_ClassTBL_addMethod(CTX ctx, const knh_ClassTBL_t *t, knh_Method_t *mtd,
 		for(i = 0; i < knh_Array_size(a); i++) {
 			knh_Method_t *mtd2 = a->methods[i];
 			if((mtd2)->mn == (mtd)->mn) {
-				KNH_WARN(ctx, "redefined %s.%s", CLASS__((mtd)->cid), MN__((mtd)->mn));
-				return ;
+				void *sfp = NULL;
+				LOGDATA = {sDATA("msg", "redefined method"), MDATA("method", CLASS__((mtd)->cid), MN__((mtd)->mn)), __TRACE__};
+				NOTE_Failed("konoha");
 			}
 		}
 	}

@@ -85,7 +85,7 @@ static void knh_addConstData(CTX ctx, knh_NameSpace_t *ns, const char *dname, Ob
 		if(loc != -1) {
 			cid = knh_NameSpace_getcid(ctx, ns, knh_bytes_first(n, loc));
 			if(cid == CLASS_unknown) {
-				KNH_WARN(ctx, "unknown class constant: %s", dname);
+				KNH_LOG("unknown class constant: %s", dname);
 				cid = CLASS_Tdynamic;
 			}
 		}
@@ -156,7 +156,7 @@ static knh_ParamArray_t *knh_loadScriptParamArray(CTX ctx, const knh_data_t **d,
 #define _CID(d)  (d < _MAX) ? (knh_class_t)(d) : knh_NameSpace_getcid(ctx, K_GMANS, knh_data_tobytes(d))
 #define _EXPTID(d)  (d < _MAX) ? (knh_event_t)(d) : knh_geteid(ctx, knh_data_tobytes(d))
 
-static void knh_loadScriptData(CTX ctx, const knh_data_t *data, knh_ParamArray_t **buf)
+static void knh_loadSystemData(CTX ctx, const knh_data_t *data, knh_ParamArray_t **buf)
 {
 	size_t c = 0;
 	while(1) {
@@ -281,7 +281,7 @@ static void knh_loadScriptData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 			break;
 		}/*case DATA_PARAM*/
 		default :
-			KNH_PANIC(ctx, "loading Data unknown dataype=%d", (int)datatype);
+			KNH_DIE("unknown datatype=%d", (int)datatype);
 		}/*switch*/
 	}
 }
@@ -312,7 +312,7 @@ static void knh_addConvDSPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, co
 const knh_PackageLoaderAPI_t* knh_getPackageLoaderAPI(void)
 {
 	static knh_PackageLoaderAPI_t exports = {
-		knh_loadScriptData,
+		knh_loadSystemData,
 		knh_loadScriptIntData, knh_loadScriptFloatData, knh_loadScriptStringData,
 		knh_addLinkDPI, knh_addStreamDSPI, knh_addQueryDSPI, knh_addConvDSPI,
 	};

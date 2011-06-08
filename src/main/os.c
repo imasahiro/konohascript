@@ -84,25 +84,7 @@
 extern "C" {
 #endif
 
-#define K_PERROR_BEFORE_RETRUN
-
-#ifdef LIBNAME
-#undef LIBNAME
-#endif
-
-#if defined(K_USING_WINDOWS_)
-#define LIBNAME "Windows"
-#else
-#define LIBNAME "libc"
-
-#if !defined(K_USING_POSIX_)
-static int UnsupportedAPI(CTX ctx, const char *funcname)
-{
-	ctx->api->perror(ctx, NULL, K_PERROR_LIBNAME, funcname);
-	return K_PERROR_OK;
-}
-#endif
-#endif
+#define sfp NULL  /* for NOTE_ */
 
 /* ------------------------------------------------------------------------ */
 /* sysinfo */
@@ -713,10 +695,12 @@ void *knh_dlopen(CTX ctx, const char* path)
 
 #endif
 	if(handler == NULL) {
-		KNH_WARN(ctx, "%s cannot open path='%s'", func, path);
+		LOGDATA = {sDATA("path", path)};
+		NOTE_Failed(func);
 	}
 	else {
-		KNH_INFO(ctx, "%s opened path='%s' HANDLER=%p", func, path, handler);
+		LOGDATA = {sDATA("path", path), pDATA("handler", handler)};
+		NOTE_OK(func);
 	}
 	return handler;
 }
@@ -730,34 +714,41 @@ void *knh_path_dlopen(CTX ctx, knh_path_t *ph)
 	return knh_dlopen(ctx, P_text(ph) + ph->pbody);
 }
 
-void *knh_dlsym(CTX ctx, int pe, void* handler, const char* symbol)
+void *knh_dlsym(CTX ctx, void* handler, const char* symbol, int isTest)
 {
+	const char *func = __FUNCTION__, *emsg = NULL;
+	void *p = NULL;
 #if defined(K_USING_WINDOWS_)
-	void *p = GetProcAddress((HMODULE)handler, (LPCSTR)symbol);
-	if(p == NULL) {
-		KNH_SYSLOG(ctx, NULL, pe, "GetProcAddress", "func='%s', ERR='NotFound'", symbol);
-	}
+	func = "GetProcAddress";
+	p = GetProcAddress((HMODULE)handler, (LPCSTR)symbol);
 	return p;
 #elif defined(K_USING_POSIX_)
-	void *p = dlsym(handler, symbol);
-	//DBG_P("handler=%p,%p, symbol='%s' ERR='%s'", handler, p, symbol, dlerror());
+	func = "dlsym";
+	p = dlsym(handler, symbol);
 	if(p == NULL) {
-		KNH_SYSLOG(ctx, NULL, pe, "dlsym", "symbol='%s', ERR='%s'", symbol, dlerror());
+		emsg = dlerror();
 	}
-	return p;
 #else
 #endif
-	return NULL;
+	if(!isTest) {
+		if(p == NULL) {
+			LOGDATA = {pDATA("handler", handler), sDATA("symbol", symbol), LOGMSG(emsg)};
+			NOTE_Failed(func);
+		}
+		else {
+			LOGDATA = {pDATA("handler", handler), sDATA("symbol", symbol)};
+			NOTE_OK(func);
+		}
+	}
+	return p;
 }
 
-int knh_dlclose(CTX ctx, void* hdr)
+int knh_dlclose(CTX ctx, void* handler)
 {
 #if defined(K_USING_WINDOWS_)
-    return (int)FreeLibrary((HMODULE)hdr);
+	return (int)FreeLibrary((HMODULE)handler);
 #elif defined(K_USING_POSIX_)
-    return dlclose(hdr);
-#elif defined(K_USING_BTRON)
-    return b_dlclose((W)hdr);
+	return dlclose(handler);
 #else
     return 0;
 #endif

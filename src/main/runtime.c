@@ -194,7 +194,7 @@ void knh_loadScriptPackageList(CTX ctx, const char *pkglist)
 					*c = 0;
 					DBG_P("loading '%s'", buf);
 					if(!knh_loadScriptPackage(ctx, B(buf)) && isExists == 0) {
-						KNH_WARN(ctx, "PackageNotFound package=%s", buf+8);
+						KNH_LOG("package not found: package=%s", buf+8);
 					}
 					goto L_NEXT;
 				}
@@ -206,7 +206,7 @@ void knh_loadScriptPackageList(CTX ctx, const char *pkglist)
 				}
 				c++;
 				if(!(c - buf < 256)) {
-					KNH_WARN(ctx, "too long name %s", pkglist);
+					KNH_LOG("too long name %s", pkglist);
 					return ;
 				}
 			}
@@ -217,7 +217,6 @@ void knh_loadScriptPackageList(CTX ctx, const char *pkglist)
 static void knh_setStartUpPackage(CTX ctx, int mode, const char *optstr)
 {
 	if(optstr != NULL) {
-		DBG_P("package loading='%s'", optstr);
 		knh_loadScriptPackageList(ctx, optstr);
 	}
 }
@@ -663,7 +662,7 @@ static void knh_linkDynamicReadline(CTX ctx)
 	if(ctx->spi->readline == NULL) {
 		void *handler = knh_dlopen(ctx, "libreadline" K_OSDLLEXT);
 		if(handler != NULL) {
-			void *f = knh_dlsym(ctx, LOG_DEBUG, handler, "readline");
+			void *f = knh_dlsym(ctx, handler, "readline", 0/*isTest*/);
 			if(f != NULL) {
 				((knh_ServiceSPI_t*)ctx->spi)->readlinespi = "libreadline";
 				((knh_ServiceSPI_t*)ctx->spi)->readline = (char* (*)(const char*))f;
@@ -671,7 +670,7 @@ static void knh_linkDynamicReadline(CTX ctx)
 			else {
 				goto L_STDIN;
 			}
-			f = knh_dlsym(ctx, LOG_DEBUG, handler, "add_history");
+			f = knh_dlsym(ctx, handler, "add_history", 0/*isTest*/);
 			if(f != NULL) {
 				((knh_ServiceSPI_t*)ctx->spi)->add_history = (int (*)(const char*))f;
 			}

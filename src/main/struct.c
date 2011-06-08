@@ -129,7 +129,7 @@ static int DEFAULT_compareTo(const Object *o1, const Object *o2)
 
 static void DEFAULT_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 {
-	KNH_WARN(ctx, "TODO: must be defined %s_write", O__(o));
+	KNH_LOG("TODO: must be defined %s_write", O__(o));
 	knh_write_ptr(ctx, w, (void*)o->ref);
 }
 
@@ -2505,24 +2505,23 @@ static void Assurance_checkin(CTX ctx, knh_sfp_t *sfp, Object *o)
 	static knh_uintptr_t uid = 0;
 	knh_Assurance_t *g = (knh_Assurance_t*)o;
 	g->aid = uid++;
+	g->sfp = sfp;
 	g->stime = (knh_getTimeMilliSecond() / 1000);
-	KNH_SYSLOG_(ctx, sfp, LOG_NOTICE, "ac", "CHECKIN", "id=%d, case='%s'", g->aid, S_tochar(g->msg));
+	LOGDATA = {iDATA("id", g->aid), sDATA("case", S_tochar(g->msg))};
+	NOTE_OK("checkin_assurance");
 }
 
 static void Assurance_checkout(CTX ctx, Object *o, int isFailed)
 {
 	knh_Assurance_t *g = (knh_Assurance_t*)o;
+	knh_sfp_t *sfp = g->sfp;
+	knh_intptr_t t = (knh_getTimeMilliSecond() / 1000) - g->stime;
+	LOGDATA = {iDATA("id", g->aid), sDATA("case", S_tochar(g->msg)), iDATA("elapsed_time(s)", t)};
 	if(isFailed) {
-		KNH_SYSLOG_(ctx, NULL, LOG_WARNING, "ac", "FAILED", "id=%d, case='%s'", g->aid, S_tochar(g->msg));
+		NOTE_Failed("assure");
 	}
 	else {
-		knh_intptr_t t = (knh_getTimeMilliSecond() / 1000) - g->stime;
-		if(t > 1) {
-			KNH_SYSLOG_(ctx, NULL, LOG_NOTICE, "ac", "CHECKOUT", "id=%d, case='%s', time=%ds", g->aid, S_tochar(g->msg), t);
-		}
-		else {
-			KNH_SYSLOG_(ctx, NULL, LOG_NOTICE, "ac", "CHECKOUT", "id=%d, case='%s'", g->aid, S_tochar(g->msg));
-		}
+		NOTE_OK("assure");
 	}
 	if(knh_getUFILE() != NULL) {
 		const char *results = (isFailed) ? "FAILED" : "PASSED";

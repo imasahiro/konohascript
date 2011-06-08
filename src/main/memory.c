@@ -274,7 +274,7 @@ static knh_fastmem_t *new_FastMemoryList(CTX ctx)
 			mslot->ref = (mslot + 1);
 		}
 		(mslot-1)->ref = NULL;
-		KNH_MEMINFO(ctx, "allocated MemoryArena id=%d region=(%p-%p)", pageindex, at->head, at->bottom);
+		MEM_LOG("Allocated MemoryArena id=%d region=(%p-%p)", pageindex, at->head, at->bottom);
 	}
 	return ctx->freeMemoryList;
 }
@@ -531,7 +531,7 @@ static knh_Object_t *new_ObjectArena(CTX ctx, size_t arenasize)
 	DBG_ASSERT(sizeof(knh_ObjectPage_t) == K_PAGESIZE);
 	oat = &ctxshare->ObjectArenaTBL[pageindex];
 	ObjectArenaTBL_init(ctx, oat, arenasize);
-	KNH_MEMINFO(ctx, "allocated object arena id=%d region=(%p-%p), %d objects", pageindex, oat->head, oat->bottom, ((oat->bottom - oat->head) * K_PAGEOBJECTSIZE));
+	MEM_LOG("Allocated object arena id=%d region=(%p-%p), %d objects", pageindex, oat->head, oat->bottom, ((oat->bottom - oat->head) * K_PAGEOBJECTSIZE));
 	{
 		knh_Object_t *p = oat->head->slots;
 		p->ref4_tail = &(((knh_Object_t*)(oat->bottom))[-1]);
@@ -1105,12 +1105,9 @@ static void gc_extendObjectArena(CTX ctx)
 			p->ref = newobj;
 			((knh_context_t*)ctx)->freeObjectTail = newobj->ref4_tail;
 		}
-		if(knh_isVerboseGC()) {
-			KNH_MEMINFO(ctx, "EXTEND_ARENA: %d times newarena=%dMb, total=%d",
-					(int)(ctx->share->sizeObjectArenaTBL - 1),
-					(int)(arenasize) / MB_,
-					(int)(ctx->stat->usedMemorySize / MB_));
-		}
+		MEM_LOG("EXTEND_ARENA: %d times newarena=%dMb, used_memory=%dMb",
+				(int)(ctx->share->sizeObjectArenaTBL - 1),
+				(int)(arenasize) / MB_, (int)(ctx->stat->usedMemorySize / MB_));
 	}
 }
 #endif
@@ -1137,7 +1134,7 @@ void knh_System_gc(CTX ctx)
 	ctime = knh_getTimeMilliSecond();
 	if(knh_isVerboseGC()) {
 		STAT_(
-		KNH_MEMINFO(ctx, "GC(%dMb): marked=%d, collected=%d, used=%d=>%d, marking_time=%dms, sweeping_time=%dms",
+		MEM_LOG("GC(%dMb): marked=%d, collected=%d, used=%d=>%d, marking_time=%dms, sweeping_time=%dms",
 				(int)(ctxstat->usedMemorySize/ MB_),
 				(int)ctxstat->markedObject, (int)ctxstat->collectedObject,
 				(int)used, (int)ctxstat->usedObjectSize, (int)(mtime-stime), (int)(ctime-mtime));)

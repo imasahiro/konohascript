@@ -351,6 +351,7 @@ static void initServiceSPI(knh_ServiceSPI_t *spi)
 #else
 	spi->iconvspi = "noiconv";
 #endif
+	spi->recordSPI = knh_record;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -406,7 +407,6 @@ static void knh_share_free(CTX ctx, knh_share_t *share)
 	KNH_FREE(ctx, share->tString, SIZEOF_TSTRING);
 	share->tString = NULL;
 	//((knh_context_t*)ctx)->fsweep = knh_Object_finalSweep;
-
 	DBG_ASSERT(share->ObjectArenaTBL != NULL);
 	for(i = 0; i < share->sizeObjectArenaTBL; i++) {
 		knh_ObjectArenaTBL_t *t = share->ObjectArenaTBL + i;
@@ -453,15 +453,6 @@ static void knh_share_free(CTX ctx, knh_share_t *share)
 	KNH_FREE(ctx, share->Memory256ArenaTBL, share->capacityMemory256ArenaTBL * sizeof(knh_Memory256ArenaTBL_t));
 	share->Memory256ArenaTBL = NULL;
 #endif
-	if(ctx->stat->gcCount > 0) {
-//		LOGDATA = {uDATA("gc_count", ctx->stat->gcCount),
-//				   uDATA("marking_time(ms)", ctx->stat->markingTime),
-//				   uDATA("sweeping_time(ms)", ctx->stat->sweepingTime),
-//				   uDATA("total_time(ms)", ctx->stat->gcTime)};
-		KNH_MEMINFO(ctx, "GC %d times, marking_time=%dms, sweeping_time=%dms total=%fs",
-				(int), (int)ctx->stat->markingTime, (int)ctx->stat->sweepingTime,
-				((double)ctx->stat->gcTime) / 1000.0);
-	}
 	if(ctx->stat->usedMemorySize != 0) {
 		knh_logprintf("memory leaking size=%ldbytes", (long)ctx->stat->usedMemorySize);
 	}
@@ -546,7 +537,9 @@ void konoha_close(konoha_t konoha)
 	CTX ctx = (knh_context_t*)konoha.ctx;
 	KONOHA_CHECK_(konoha);
 	if(ctx->share->threadCounter > 1) {
-		KNH_WARN(ctx, "still %d thread(s) running", (int)ctx->share->threadCounter);
+		void *sfp = NULL;
+		LOGDATA = {LOGMSG("stil threads running"), iDATA("threads", ctx->share->threadCounter)};
+		LIB_Failed("konoha_close", NULL);
 		return;
 	}
 	knh_showMemoryStat(ctx);
@@ -554,6 +547,14 @@ void konoha_close(konoha_t konoha)
 	knh_context_reftrace(ctx, (knh_context_t*)ctx, ctx->ref_buf);
 	//knh_RefTraverse(ctx, knh_Object_RCsweep);
 #endif
+	{
+		void *sfp = NULL;
+		LOGDATA = {uDATA("gc_count", ctx->stat->gcCount),
+				   uDATA("marking_time(ms)", ctx->stat->markingTime),
+				   uDATA("sweeping_time(ms)", ctx->stat->sweepingTime),
+				   uDATA("total_time(ms)", ctx->stat->gcTime), __ERRNO__};
+		NOTE_OK("GC");
+	}
 	((knh_context_t*)ctx)->bufa = NULL; // necessary for KNH_SYSLOG
 	knh_Context_free(ctx, (knh_context_t*)ctx);
 }

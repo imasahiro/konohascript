@@ -280,9 +280,6 @@ static FILE* knh_fopen(CTX ctx, int pe, const char *filename, const char *mode)
 #else
 	FILE *in = fopen(filename, mode);
 #endif
-	if(in == NULL) {
-		KNH_SYSLOG(ctx, NULL, pe, "fopen", "!file='%s' mode='%s'", filename, mode);
-	}
 	return in;
 #endif
 }

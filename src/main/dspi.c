@@ -121,7 +121,7 @@ static Object* new_ConverterNULL(CTX ctx, knh_class_t cid, knh_bytes_t path, con
 	if(dspi->open != NULL) {
 		conv = dspi->open(ctx, path.text, NULL);
 		if(conv == NULL) {
-			KNH_WARN(ctx, "unknown path='%s'", path.text);
+			KNH_LOG("unknown path='%s'", path.text);
 			return NULL;
 		}
 	}
@@ -242,7 +242,7 @@ static knh_bool_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, voi
 	}
 	if(p != NULL) {
 		if(funcname.len != libname.len) {
-			void *f = knh_dlsym(ctx, LOG_DEBUG, p, funcname.text);
+			void *f = knh_dlsym(ctx, p, funcname.text, 1/*isTest*/);
 			res = (f != NULL);
 		}
 		knh_dlclose(ctx, p);
@@ -261,7 +261,7 @@ static const knh_LinkDPI_t PATH_LIB = {
 
 static knh_bool_t NOFILE_realpath(CTX ctx, knh_NameSpace_t *ns, knh_path_t *ph)
 {
-	KNH_WARN(ctx, "unsupported scheme: %s", P_text(ph));
+	KNH_LOG("unsupported scheme: %s", P_text(ph));
 	return 0;
 }
 static knh_io_t NOFILE_open(CTX ctx, knh_path_t *ph, const char *mode, knh_Monitor_t *mon)
@@ -312,7 +312,7 @@ static knh_io_t FILE_open(CTX ctx, knh_path_t *ph, const char *mode, knh_Monitor
 
 static knh_io_t NOFILE_wopen(CTX ctx, knh_path_t *ph, const char *mode, knh_Monitor_t *mon)
 {
-	KNH_WARN(ctx, "nofile path='%s', mode='%s'", P_text(ph), mode);
+	KNH_LOG("nofile path='%s', mode='%s'", P_text(ph), mode);
 	return IO_NULL;
 }
 static knh_intptr_t FILE_read(CTX ctx, knh_io_t fio, char *buf, size_t bufsiz, knh_Monitor_t *mon)
@@ -498,7 +498,7 @@ static const knh_StreamDSPI_t STREAM_START = {
 
 static void SYSLOG_UnknownPathType(CTX ctx, knh_bytes_t path)
 {
-	KNH_WARN(ctx, "undefined path='%s'", path.text);
+	KNH_LOG("undefined path='%s'", path.text);
 }
 
 const knh_StreamDSPI_t *knh_getDefaultStreamDSPI(void)
@@ -837,7 +837,7 @@ static void knh_sqlite3_perror(CTX ctx, sqlite3 *db, int r)
 	if(r == SQLITE_PERM || r == SQLITE_AUTH) {
 		msg = "Security";
 	}
-	KNH_WARN(ctx, "sqlite3_error='%s'", sqlite3_errmsg(db));
+	KNH_LOG("sqlite3_error='%s'", sqlite3_errmsg(db));
 }
 
 static knh_qconn_t *SQLITE3_qopen(CTX ctx, knh_bytes_t url)

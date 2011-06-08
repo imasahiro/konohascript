@@ -694,7 +694,10 @@ static knh_conv_t* strconv_open(CTX ctx, const char* to, const char *from)
 {
 	iconv_t rc = ctx->spi->iconv_open(to, from);
 	if(rc == (iconv_t)-1){
-		KNH_WARN(ctx, "%s: unknown codec from=%s to=%s", ctx->spi->iconvspi, from, to);
+		void *sfp = NULL;
+		LOGDATA = {LOGMSG("unknown codec"), sDATA("spi", ctx->spi->iconvspi),
+			sDATA("from", from), sDATA("to", to)};
+		LIB_Failed("iconv", "IO!!");
 		return NULL;
 	}
 	return (knh_conv_t*)rc;
@@ -712,7 +715,9 @@ static knh_bool_t strconv(Ctx *ctx, knh_conv_t *iconvp, knh_bytes_t from, knh_By
 		size_t rc = ctx->spi->iconv(cd, &ibuf, &ilen, &obuf, &olen);
 		olen = sizeof(buffer) - olen; rsize += olen;
 		if(rc == (size_t)-1 && errno == EILSEQ) {
-			KNH_WARN(ctx, "%s: invalid sequence", ctx->spi->iconvspi);
+			void *sfp=NULL;
+			LOGDATA = {LOGMSG("invalid sequence"), sDATA("spi", ctx->spi->iconvspi)};
+			NOTE_Failed("iconv");
 			return 0;
 		}
 		bbuf.len = olen;
@@ -826,7 +831,8 @@ static METHOD Link_newObject(CTX ctx, knh_sfp_t *sfp _RIX)
 	else {
 		v = knh_Link_newObjectNULL(ctx, lnk, sfp[2].ns, fi, cid);
 		if(v == NULL) {
-			KNH_SYSLOG(ctx, sfp, LOG_WARNING, "MissingLink", "fi='%s' for %C", S_tochar(fi), cid);
+			LOGDATA = {sDATA("fid", S_tochar(fi)), tDATA("requested_type", cid)};
+			LIB_Failed("link", "Link!!");
 			v = KNH_NULVAL(cid);
 		}
 	}

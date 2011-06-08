@@ -559,7 +559,7 @@ static void *Gamma_loadFunc(CTX ctx, char *funcname, int isREQUIRED)
 {
 	knh_NameSpace_t *ns = K_GMANS;
 	if(ns->dlhdr != NULL) {
-		void *f = knh_dlsym(ctx, LOG_DEBUG, ns->dlhdr, (const char*)funcname);
+		void *f = knh_dlsym(ctx, ns->dlhdr, (const char*)funcname, 0/*isTest*/);
 		if(f != NULL) return f;
 		if (isREQUIRED) {
 			WARN_NotFound(ctx, _("foreign function"), funcname);
@@ -2139,7 +2139,7 @@ static knh_Token_t* CALLPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt
 	if(Method_isDynamic(mtd)) {
 		knh_Gamma_t *lgma = DP(mtd)->gma;
 		BEGIN_LOCAL(ctx, lsfp, 2);
-		KNH_WARN(ctx, "dynamic compiled method");
+		DBG_P("dynamic compiled method");
 		LOCAL_NEW(ctx, lsfp, 0, knh_Gamma_t*, gma, ctx->gma);
 		LOCAL_NEW(ctx, lsfp, 1, knh_Stmt_t*, stmtM, DP(lgma)->stmt);
 		Method_setDynamic(mtd, 0);

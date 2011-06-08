@@ -45,29 +45,6 @@
 extern "C" {
 #endif
 
-#define LIBNAME "libc"
-#define FAILED  -1
-
-#define LOG_ERRNO(LOG, FMT, F, ...) {\
-		int res_ = F(__VA_ARGS__);\
-		if(res_ == FAILED) {\
-			KNH_SYSLOG(ctx, sfp, LOG, LIBNAME, #F, FMT, ## __VA_ARGS__);\
-		}\
-	}\
-
-#define LOG_RETURN_ERRNO(LOG, FMT, F, ...) {\
-		int res_ = F(__VA_ARGS__);\
-		if(res_ == FAILED) {\
-			KNH_SYSLOG(ctx, sfp, LOG, LIBNAME, #F, FMT, ## __VA_ARGS__);\
-		}\
-		RETURNb_(res_ != FAILED);\
-	}\
-
-#define RETURN_ERRNO(F, ...) {\
-		int res_ = F(__VA_ARGS__);\
-		RETURNb_(res_ != FAILED);\
-	}\
-
 /* ======================================================================== */
 /* ConstData */
 
@@ -102,10 +79,17 @@ static knh_IntData_t IntConstData[] = {
 //## @Native String System.getHostName();
 METHOD System_getHostName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
+	knh_String_t *res = TS_EMPTY;
 	char buf[256];
-	buf[0] = 0;
-	LOG_ERRNO(LOG_DEBUG, "", gethostname, buf, sizeof(buf));
-	RETURN_(new_String(ctx, (const char*)buf));
+	KNH_RESET_ERRNO();
+	if(gethostname(buf, sizeof(buf)) == -1) {
+		LOGDATA = {__ERRNO__};
+		NOTE_Failed("gethostname");
+	}
+	else {
+		res = new_String(ctx, (const char*)buf);
+	}
+	RETURN_(res);
 }
 
 //## @Native String System.getLogin();
@@ -153,8 +137,14 @@ METHOD System_getPPid(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Native Boolean System.kill(int pid, int signal);
 METHOD System_kill(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	//KNH_SECURE(ctx, sfp);
-	RETURN_ERRNO(kill, Int_to(int, sfp[1]), Int_to(int, sfp[2]));
+	int tf = 1;
+	KNH_RESET_ERRNO();
+	if(kill(Int_to(int, sfp[1]), Int_to(int, sfp[2])) == -1) {
+		LOGDATA = {iDATA("pid", Int_to(int, sfp[1])), iDATA("signal", Int_to(int, sfp[1])), __ERRNO__};
+		NOTE_Failed("kill");
+		tf = 0;
+	}
+	RETURNb_(tf);
 }
 
 //## @Native int System.sleep(int sec);
@@ -166,13 +156,15 @@ METHOD System_sleep(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Native Boolean System.usleep(int sec);
 METHOD System_usleep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_ERRNO(usleep, Int_to(int, sfp[1]));
+//  FIXME
+//	RETURN_ERRNO(usleep, Int_to(int, sfp[1]));
 }
 
 //## @Native Boolean System.raise(int signal);
 METHOD System_raise(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_ERRNO(raise, Int_to(int, sfp[1]));
+//  FIXME
+//	RETURN_ERRNO(raise, Int_to(int, sfp[1]));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -180,7 +172,7 @@ METHOD System_raise(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Native String System.getCwd();
 METHOD System_getCwd(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	char tmpbuf[FILEPATH_BUFSIZ];
+	char tmpbuf[K_PATHMAX];
 	getcwd(tmpbuf, sizeof(tmpbuf));
 	RETURN_(new_String(ctx, (const char*)tmpbuf));
 }

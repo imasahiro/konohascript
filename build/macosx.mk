@@ -9,7 +9,7 @@ ARCH ?= -arch i386 -arch x86_64
 LDLIBS ?= -lpcre -liconv -lsqlite3 -lpthread
 STRIP = strip
 
-konoha = konoha
+konoha = konoha1
 version = 1.0
 LIBVER = -current_version 1.0.0 -compatibility_version $(version)
 PREFIX = /usr/local

@@ -182,7 +182,7 @@ static knh_status_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *results
 	if(knh_bytes_startsWith(include_name, STEXT("func:"))) {
 		if(ns->dlhdr != NULL) {
 			const char *funcname = knh_bytes_next(include_name, ':').text;
-			knh_Fpkgload pkgload = (knh_Fpkgload)knh_dlsym(ctx, LOG_DEBUG, ns->dlhdr, funcname);
+			knh_Fpkgload pkgload = (knh_Fpkgload)knh_dlsym(ctx, ns->dlhdr, funcname, 1/*isTest*/);
 			if(pkgload != NULL) {
 				pkgload(ctx, knh_getPackageLoaderAPI(), ns);
 				_RETURN(K_CONTINUE);
@@ -198,7 +198,7 @@ static knh_status_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *results
 			knh_path_append(ctx, ph, 0, K_OSDLLEXT);
 			ns->dlhdr = knh_path_dlopen(ctx, ph);
 			if(ns->dlhdr != NULL) {
-				knh_Fpkginit pkginit = (knh_Fpkginit)knh_dlsym(ctx, LOG_DEBUG, ns->dlhdr, "init");
+				knh_Fpkginit pkginit = (knh_Fpkginit)knh_dlsym(ctx, ns->dlhdr, "init", 1/*isTest*/);
 				if(pkginit != NULL) {
 					const knh_PackageDef_t *pkgdef = pkginit(ctx);
 					if((long)pkgdef->crc32 != (long)K_API2_CRC32) {
@@ -690,7 +690,7 @@ static knh_status_t LINK_decl(CTX ctx, knh_Stmt_t *stmt)
 	if(knh_StmtMETA_is(ctx, stmt, "Native")) {
 		if(ns->dlhdr != NULL) {
 			const char *funcname = S_tochar((tkN)->text);
-			knh_Flinkdef loadlink = (knh_Flinkdef)knh_dlsym(ctx, LOG_DEBUG, ns->dlhdr, funcname);
+			knh_Flinkdef loadlink = (knh_Flinkdef)knh_dlsym(ctx, ns->dlhdr, funcname, 0/*isTest*/);
 			if(loadlink == NULL) {
 				knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, _("linkdef function"), funcname));
 				return K_BREAK;
@@ -774,11 +774,15 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 			ct->keyidx = ct->supTBL->keyidx;
 			ct->metaidx = ct->supTBL->keyidx;
 			((knh_ClassTBL_t*)ct->supTBL)->subclass += 1;
-			KNH_INFO(ctx, "NEW_CLASS cid=%d, name='%s'", cid, CLASS__(cid));
+			{
+				void *sfp = NULL;
+				LOGDATA = {cDATA("name", cid), iDATA("cid", cid)};
+				LIB_OK("konoha:new_class");
+			}
 			if(knh_StmtMETA_is(ctx, stmt, "Native")) {
 				knh_NameSpace_t *ns = K_GMANS;
 				if(ns->dlhdr != NULL) {
-					knh_Fclassdef classload = (knh_Fclassdef)knh_dlsym(ctx, LOG_DEBUG, ns->dlhdr, S_tochar((tkC)->text));
+					knh_Fclassdef classload = (knh_Fclassdef)knh_dlsym(ctx, ns->dlhdr, S_tochar((tkC)->text), 0/*isTest*/);
 					const knh_ClassDef_t *cdef = classload(ctx);
 					KNH_ASSERT(cdef != NULL);
 					ct->bcid = cid;
@@ -968,6 +972,7 @@ static knh_InputStream_t* openScriptInputStreamNULL(CTX ctx, knh_NameSpace_t *ns
 	path.text = P_text(ph); path.len = ph->plen;
 	const knh_StreamDSPI_t *dspi = knh_getStreamDSPI(ctx, ns, path);
 	knh_InputStream_t *in = NULL;
+	void *sfp = NULL;
 	if(dspi->realpath(ctx, ns, ph)) {
 		knh_io_t fio = dspi->fopen(ctx, ph, "r", ctx->mon);
 		if(fio != IO_NULL) {
@@ -981,7 +986,12 @@ static knh_InputStream_t* openScriptInputStreamNULL(CTX ctx, knh_NameSpace_t *ns
 		}
 	}
 	if(in == NULL) {
-		KNH_WARN(ctx, "file not found '%s'", path.text);
+		LOGDATA = {sDATA("path", path.text)};
+		LIB_Failed("open_script", "Script!!");
+	}
+	else {
+		LOGDATA = {sDATA("path", path.text), sDATA("realpath", S_tochar(ns->rpath))};
+		LIB_OK("open_script");
 	}
 	knh_path_close(ctx, ph);
 	return in;
@@ -1021,13 +1031,15 @@ KNHAPI2(knh_status_t) knh_load(CTX ctx, const char *scheme, knh_bytes_t path, kn
 {
 	knh_status_t status = K_BREAK;
 	knh_InputStream_t *in = openScriptInputStreamNULL(ctx, K_GMANS, scheme, path);
+	void *sfp = NULL;
 	if(in != NULL) {
 		knh_Bytes_t *ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
 		BEGIN_LOCAL(ctx, lsfp, 3);
 		LOCAL_NEW(ctx, lsfp, 1, knh_InputStream_t*, bin, new_BytesInputStream(ctx, ba));
 		KNH_SETv(ctx, lsfp[0].o, in);
 		if(!knh_isCompileOnly(ctx)) {
-			KNH_SECINFO(ctx, "running script path='%s'", path.text);
+			LOGDATA = {sDATA("path", path.text)};
+			NOTE_OK("script_start");
 		}
 		do {
 			int linenum = 0;

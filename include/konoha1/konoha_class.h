@@ -1000,8 +1000,9 @@ typedef struct knh_Monitor_t {
 
 typedef struct knh_Assurance_t {
 	knh_hObject_t h;
-	knh_uintptr_t aid;
 	struct knh_String_t *msg;
+	knh_uintptr_t aid;
+	knh_sfp_t *sfp;
 	knh_intptr_t stime;
 } knh_Assurance_t;
 

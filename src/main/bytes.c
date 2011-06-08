@@ -95,7 +95,7 @@ static void Bytes_checkstack(CTX ctx, knh_uchar_t*oldstart, knh_uchar_t *oldend,
 	while(p <= cstack_top) {
 		if((oldstart <= p[0] && p[0] < oldend)) {
 			knh_uchar_t *newc = p[0] + (newstart - oldstart);
-			KNH_WARN(ctx, "oldptr=%p, newptr=%p", p[0], newc);
+			KNH_LOG("oldptr=%p, newptr=%p", p[0], newc);
 			p[0] = newc;
 		}
 		p++;
