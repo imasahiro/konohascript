@@ -341,18 +341,19 @@ static knh_String_t* ObjectField_getkey(CTX ctx, knh_sfp_t *sfp)
 	return DEFAULT_getkey(ctx, sfp);
 }
 
+/* for serializer (OutputStream.writeObject) @goccy */
 static void Array_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi);
-#define is32BIT() sizeof(void *) / 4 == 1
 static void Object_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
 {
-	const knh_ClassTBL_t *tbl = o->h.cTBL;
+	const knh_ClassTBL_t *tbl = O_cTBL(o);
 	int i = 0;
 	Object **v = (Object **)o->ref;
 	size_t map_size = 0;
+	int is32BIT = 4 / sizeof(void *);
 	for (i = 0; i < tbl->fsize; i++) {
 		knh_fields_t *field = tbl->fields + i;
 		knh_type_t type = field->type;
-		if (is32BIT() &&
+		if (is32BIT &&
 			(type == CLASS_Boolean || type == CLASS_Int || type == CLASS_Float)) {
 			i++;
 		}
@@ -370,24 +371,51 @@ static void Object_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *pac
 		case CLASS_Boolean: {
 			knh_boolean_t *value = (knh_boolean_t *)(v + i);
 			packspi->pack_bool(ctx, pkr, value[0]);
-			if (is32BIT()) i++;
+			if (is32BIT) i++;
 			break;
 		}
 		case CLASS_Int: {
 			knh_int_t *value = (knh_int_t *)(v + i);
 			packspi->pack_int(ctx, pkr, value[0]);
-			if (is32BIT()) i++;
+			if (is32BIT) i++;
 			break;
 		}
 		case CLASS_Float: {
 			knh_float_t *value = (knh_float_t *)(v + i);
 			packspi->pack_float(ctx, pkr, value[0]);
-			if (is32BIT()) i++;
+			if (is32BIT) i++;
 			break;
 		}
 		case CLASS_String: {
 			knh_String_t *value = (knh_String_t *)v[i];
 			packspi->pack_string(ctx, pkr, value->str.text, value->str.len);
+			break;
+		}
+		case CLASS_Tdynamic: {
+			switch (O_cTBL(v[i])->cid) {
+			case CLASS_Int:
+				packspi->pack_int(ctx, pkr, ((knh_Int_t *)v[i])->n.ivalue);
+				break;
+			case CLASS_Float:
+				packspi->pack_float(ctx, pkr, ((knh_Float_t *)v[i])->n.fvalue);
+				break;
+			case CLASS_Boolean:
+				packspi->pack_bool(ctx, pkr, ((knh_Boolean_t *)v[i])->n.bvalue);
+				break;
+			case CLASS_String: {
+				knh_String_t *value = (knh_String_t *)v[i];
+				packspi->pack_string(ctx, pkr, value->str.text, value->str.len);
+				break;
+			}
+			default:
+				//Array or Object
+				if (O_cTBL(v[i])->bcid == CLASS_Array) {
+					Array_wdata(ctx, pkr, v[i], packspi);
+				} else {
+					Object_wdata(ctx, pkr, v[i], packspi);
+				}
+				break;
+			}
 			break;
 		}
 		default:
@@ -400,6 +428,7 @@ static void Object_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *pac
 			break;
 		}
 	}
+	//fprintf(stderr, " }");
 }
 
 static knh_ClassDef_t ObjectDef = {
@@ -640,6 +669,7 @@ static void Float_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 #endif
 }
 
+/* for serializer (OutputStream.writeObject) @goccy */
 static void Boolean_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
 {
 	packspi->pack_bool(ctx, pkr, ((knh_Boolean_t *)o)->n.bvalue);
@@ -746,6 +776,7 @@ static knh_hashcode_t String_hashCode(CTX ctx, knh_sfp_t *sfp)
 	return (sfp[0].s)->hashCode;
 }
 
+/* for serializer (OutputStream.writeObject) @goccy */
 static void String_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
 {
 	knh_String_t *s = (knh_String_t *)o;
@@ -1099,9 +1130,14 @@ static void Array_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 	knh_putc(ctx, w, ']');
 }
 
+/* for serializer (OutputStream.writeObject) @goccy */
 static void Array_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
 {
 	knh_Array_t *a = (knh_Array_t *)o;
+	packspi->pack_beginmap(ctx, pkr, 2);
+	packspi->pack_string(ctx, pkr, "ks:atype", sizeof("ks:atype"));
+	packspi->pack_int(ctx, pkr, O_cTBL(a)->p1);//for type check
+	packspi->pack_string(ctx, pkr, "abody", sizeof("abody"));
 	packspi->pack_beginarray(ctx, pkr, a->size);
 	int i = 0;
 	for (i = 0; i < a->size; i++) {
@@ -1111,6 +1147,9 @@ static void Array_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *pack
 			break;
 		case CLASS_Float:
 			packspi->pack_float(ctx, pkr, a->flist[i]);
+			break;
+		case CLASS_Boolean:
+			packspi->pack_bool(ctx, pkr, a->ilist[i]);
 			break;
 		default:
 			if (O_cTBL(a->list[i])->ospi->wdata != NULL) {
