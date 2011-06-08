@@ -72,7 +72,7 @@ int knh_Object_compareTo(Object *o1, Object *o2)
 	knh_class_t cid2 = O_cid(o2);
 	int res;
 	if(cid1 == cid2) {
-		res = O_cTBL(o1)->ospi->compareTo(o1, o2);
+		res = O_cTBL(o1)->ospi->compareTo(RAWPTR(o1), RAWPTR(o2));
 	}
 	else {
 		res = (int)(o1 - o2);
@@ -1586,7 +1586,7 @@ static METHOD Object_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 		const knh_ClassTBL_t *ct = O_cTBL(src);
 		knh_Object_t *o = new_hObject_(ctx, ct);
 		o->h.magicflag = src->h.magicflag;
-		ct->ospi->initcopy(ctx, o, src);
+		ct->ospi->initcopy(ctx, RAWPTR(o), RAWPTR(src));
 		src = o;
 	}
 	sfp[rix].ndata = sfp[0].ndata;

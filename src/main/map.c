@@ -732,6 +732,8 @@ knh_DictSet_t* new_DictSet0_(CTX ctx, size_t capacity, int isCaseMap, const char
 	return (knh_DictSet_t*)m;
 }
 
+// @see ClassCONST_man
+
 KNHAPI2(knh_String_t*) knh_DictMap_keyAt(knh_DictMap_t *m, size_t n)
 {
 	DBG_ASSERT(n < knh_DictMap_size(m));
@@ -780,7 +782,7 @@ knh_uintptr_t knh_DictSet_get(CTX ctx, knh_DictSet_t *m, knh_bytes_t key)
 	return (loc == -1) ? 0 : (knh_uintptr_t)dmap->dentry[loc].nvalue;
 }
 
-void DictMap_set_(CTX ctx, knh_DictMap_t *m, knh_String_t *key, dynamic *v)
+void knh_DictMap_set_(CTX ctx, knh_DictMap_t *m, knh_String_t *key, dynamic *v)
 {
 	knh_sfp_t* kvsfp = ctx->esp;
 	KNH_SETv(ctx, kvsfp[0].o, key);
@@ -815,6 +817,42 @@ void knh_DictSet_append(CTX ctx, knh_DictSet_t *m, knh_String_t *key, knh_uintpt
 void knh_DictSet_sort(CTX ctx, knh_DictSet_t *m)
 {
 	dmap_sort(m->dmap);
+}
+
+/* ------------------------------------------------------------------------ */
+/* API2 */
+
+KNHAPI2(knh_Map_t*) new_Map(CTX ctx)
+{
+	knh_Map_t *m = new_H(Map);
+	m->dspi = &DMAP_StringObject;
+	m->map = m->dspi->init(ctx, 4, NULL, NULL);
+	DBG_ASSERT(m->map != NULL);
+	return m;
+}
+
+KNHAPI2(void) knh_Map_set(CTX ctx, knh_Map_t *m, knh_String_t *key, knh_Object_t *value)
+{
+	knh_sfp_t* kvsfp = ctx->esp;
+	KNH_SETv(ctx, kvsfp[0].o, key);
+	KNH_SETv(ctx, kvsfp[1].o, value);
+	m->dspi->set(ctx, m->map, kvsfp);
+}
+
+KNHAPI2(void) knh_Map_setString(CTX ctx, knh_Map_t *m, const char *key, const char *value)
+{
+	knh_sfp_t* kvsfp = ctx->esp;
+	KNH_SETv(ctx, kvsfp[0].o, new_T(key));
+	KNH_SETv(ctx, kvsfp[1].o, new_String(ctx, value));
+	m->dspi->set(ctx, m->map, kvsfp);
+}
+
+KNHAPI2(void) knh_Map_setInt(CTX ctx, knh_Map_t *m, const char *key, knh_int_t value)
+{
+	knh_sfp_t* kvsfp = ctx->esp;
+	KNH_SETv(ctx, kvsfp[0].o, new_T(key));
+	KNH_SETv(ctx, kvsfp[1].o, new_Int(ctx, CLASS_Int, value));
+	m->dspi->set(ctx, m->map, kvsfp);
 }
 
 /* ------------------------------------------------------------------------ */

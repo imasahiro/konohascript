@@ -563,8 +563,8 @@ static int qsort_fcmp(const void* ap, const void* bp)
 
 static int qsort_ocmp(const void *ap, const void* bp)
 {
-	Object* o1 = *((Object**)ap);
-	Object* o2 = *((Object**)bp);
+	knh_RawPtr_t* o1 = *((knh_RawPtr_t**)ap);
+	knh_RawPtr_t* o2 = *((knh_RawPtr_t**)bp);
 	knh_class_t bcid1 = O_bcid(o1);
 	knh_class_t bcid2 = O_bcid(o2);
 	int res;

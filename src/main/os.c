@@ -346,11 +346,16 @@ void knh_path_reset(CTX ctx, knh_path_t *ph, const char *scheme, knh_bytes_t t)
 	ph->isRealPath = 0;
 }
 
+knh_bytes_t knh_path_tobytes(CTX ctx, knh_path_t *ph)
+{
+	knh_bytes_t t = {{P_text(ph)}, ph->plen};
+	return t;
+}
+
 void knh_path_close(CTX ctx, knh_path_t *ph)
 {
 	knh_Bytes_t *ba = ctx->bufa;
 	KNH_ASSERT(ph->pstart < ba->bu.len);
-	//DBG_P("ph='%s', size=%d", P_text(ph), ph->plen);
 	knh_Bytes_clear(ba, ph->pstart);
 	ph->pstart = 0;
 	ph->pbody = 0;
@@ -432,6 +437,20 @@ knh_String_t* knh_path_newString(CTX ctx, knh_path_t *ph, int hasScheme)
 	}
 	DBG_P("ph='%s', size=%d", P_text(ph), ph->plen);
 	return new_String_(ctx, CLASS_String, t, NULL);
+}
+
+KNHAPI2(void) knh_String_ospath(CTX ctx, knh_String_t *s, knh_NameSpace_t *ns, char *buf, size_t bufsiz)
+{
+//	knh_path_t phbuf, *ph = knh_path_open_(ctx, "script", S_tobytes(s), &phbuf);
+//	knh_bytes_t path = knh_path_tobytes(ph);
+	size_t i;
+	const char *p = S_tochar(s);   // FIXME: encoding, convertion \  => /
+	for(i = 0; i < bufsiz-1; i++) {
+		if(*p == 0) break;
+		buf[i] = *p;
+		p++;
+	}
+	buf[i] = 0;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -566,7 +585,7 @@ void knh_path_append(CTX ctx, knh_path_t *ph, int issep, const char *name)
 #define K_KONOHAHOME "/usr/local/konoha"
 #endif
 
-#define SETPROP(K, V)  DictMap_set_(ctx, sysprops, new_T(K), UPCAST(V));
+#define SETPROP(K, V)  knh_DictMap_set_(ctx, sysprops, new_T(K), UPCAST(V));
 
 void knh_System_initPath(CTX ctx, knh_System_t *o)
 {

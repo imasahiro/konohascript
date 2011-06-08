@@ -444,7 +444,10 @@ KNHAPI2(knh_String_t*) new_String_(CTX ctx, knh_class_t cid, knh_bytes_t t, knh_
 
 KNHAPI2(knh_String_t*) new_String(CTX ctx, const char *str)
 {
-	if(str == NULL || str[0] == 0) {
+	if(str == NULL) {
+		return KNH_TNULL(String);
+	}
+	else if(str[0] == 0) {
 		return TS_EMPTY;
 	}
 	else {

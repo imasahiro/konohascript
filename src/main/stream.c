@@ -520,7 +520,7 @@ void knh_write_Object(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 		knh_write(ctx, w, STEXT("null"));
 	}
 	else {
-		O_cTBL(o)->ospi->p(ctx, w, o, level);
+		O_cTBL(o)->ospi->p(ctx, w, RAWPTR(o), level);
 	}
 	if(IS_FMTdump(level)) {
 		knh_write_EOL(ctx, w);
@@ -541,7 +541,7 @@ void knh_write_InObject(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 //			knh_write_dots(ctx, w);
 //			goto L_CLOSE;
 //		}
-		O_cTBL(o)->ospi->p(ctx, w, o, level);
+		O_cTBL(o)->ospi->p(ctx, w, RAWPTR(o), level);
 	}
 }
 

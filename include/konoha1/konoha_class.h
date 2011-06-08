@@ -214,11 +214,6 @@ typedef struct {
 	Object    *source;
 	void      *nptr;
 	struct knh_mapitr_t mitr;
-//	knh_int_t  pos;
-//	union {
-//		void*   ref;
-//		struct knh_opline_t *pc; /* @see(Generator) */
-//	};
 	knh_Ffree freffree;
 } knh_IteratorEX_t;
 
@@ -229,6 +224,9 @@ typedef struct knh_Iterator_t {
 	knh_IteratorEX_t *b;
 	knh_Fitrnext fnext_1;
 } knh_Iterator_t;
+
+// f = delegate(g, next);
+
 
 /* ------------------------------------------------------------------------ */
 //## class Tuple Object;
@@ -371,7 +369,7 @@ typedef struct knh_DictMap_t {
 
 #define new_DictMap0(ctx, N, F, NAME)   new_DictMap0_(ctx, N, F, NAME)
 #define knh_DictMap_size(m)    ((m)->dmap)->size
-#define knh_DictMap_set(ctx, m, k, v)      DictMap_set_(ctx, m, k, UPCAST(v))
+#define knh_DictMap_set(ctx, m, k, v)      knh_DictMap_set_(ctx, m, k, UPCAST(v))
 
 typedef struct knh_DictSet_t {
 	knh_hObject_t h;
@@ -468,8 +466,10 @@ typedef struct {
 //## flag Method Hidden          6 DP(%s)->flag is set * *;
 //## flag Method Dynamic         7 DP(%s)->flag is set * *;
 //## flag Method Immutable       8 DP(%s)->flag is set * *;
-//## flag Method Message         9 DP(%s)->flag is set * *;
-//## flag Method Controlled     10 DP(%s)->flag is set * *;
+//## flag Method Iterator        9 DP(%s)->flag is set * *;
+//## flag Method Throwable      10 DP(%s)->flag is set * *;
+//## flag Method Message        11 DP(%s)->flag is set * *;
+//## flag Method Controlled     12 DP(%s)->flag is set * *;
 
 typedef struct {
 	knh_flag_t     flag;  knh_ushort_t   delta;
@@ -1226,8 +1226,8 @@ typedef void (*klr_Floadmtd)(CTX, knh_sfp_t *, struct klr_LDMTD_t *);
 typedef long   (*klr_Finttr)(long u);
 typedef double (*klr_Ffloattr)(double u);
 typedef void (*klr_Ftr)(CTX, knh_sfp_t*, knh_sfpidx_t, const knh_ClassTBL_t *);
-typedef void (*klr_Fcheckin)(CTX, knh_sfp_t *, knh_Object_t *);
-typedef void (*klr_Fcheckout)(CTX, knh_Object_t *, int);
+typedef void (*klr_Fcheckin)(CTX, knh_sfp_t *, struct knh_RawPtr_t *);
+typedef void (*klr_Fcheckout)(CTX, struct knh_RawPtr_t *, int);
 struct klr_P_t;
 typedef void (*klr_Fprint)(CTX, knh_sfp_t*, struct klr_P_t*);
 struct klr_PROBE_t;

@@ -88,14 +88,14 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* DEFAULT */
 
-static void DEFAULT_init(CTX ctx, Object *o)
+static void DEFAULT_init(CTX ctx, knh_RawPtr_t *o)
 {
 	DBG_ASSERT((sizeof(knh_Object_t) - sizeof(knh_hObject_t)) == sizeof(knh_intptr_t) * 4);
-	knh_intptr_t *p = (knh_intptr_t*)&(o->ref);
+	knh_intptr_t *p = (knh_intptr_t*)&(o->rawptr);
 	p[0] = K_INT0; p[1] = K_INT0; p[2] = K_INT0; p[3] = K_INT0;
 }
 
-static void DEFAULT_initcopy(CTX ctx, Object *dst, const Object *src)
+static void DEFAULT_initcopy(CTX ctx, knh_RawPtr_t *dst, knh_RawPtr_t *src)
 {
 	KNH_TODO("copy operation");
 }
@@ -106,31 +106,31 @@ knh_bool_t knh_class_canObjectCopy(CTX ctx, knh_class_t cid)
 	return (ct->ospi->initcopy != DEFAULT_initcopy);
 }
 
-static void DEFAULT_reftrace(CTX ctx, Object *o FTRARG)
+static void DEFAULT_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 }
 
-static void DEFAULT_free(CTX ctx, Object *o)
+static void DEFAULT_free(CTX ctx, knh_RawPtr_t *o)
 {
 }
 
-static void DEFAULT_checkin(CTX ctx, knh_sfp_t *sfp, Object *o)
+static void DEFAULT_checkin(CTX ctx, knh_sfp_t *sfp, knh_RawPtr_t *o)
 {
 }
 
-static void DEFAULT_checkout(CTX ctx, Object *o, int isFailed)
+static void DEFAULT_checkout(CTX ctx, knh_RawPtr_t *o, int isFailed)
 {
 }
 
-static int DEFAULT_compareTo(const Object *o1, const Object *o2)
+static int DEFAULT_compareTo(knh_RawPtr_t *o1, knh_RawPtr_t *o2)
 {
 	return (int)((knh_intptr_t)o1 - (knh_intptr_t)o2);
 }
 
-static void DEFAULT_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void DEFAULT_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	KNH_LOG("TODO: must be defined %s_write", O__(o));
-	knh_write_ptr(ctx, w, (void*)o->ref);
+	knh_write_ptr(ctx, w, (void*)o->rawptr);
 }
 
 static void knh_write_TObject(CTX ctx, knh_OutputStream_t *w, knh_type_t type, Object **v, size_t i, int level)
@@ -229,7 +229,7 @@ static knh_ClassDef_t TvarDef = {
 /* --------------- */
 /* Object */
 
-static void ObjectField_init(CTX ctx, Object *o)
+static void ObjectField_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_ObjectField_t *of = (knh_ObjectField_t*)o;
 	const knh_ClassTBL_t *t = O_cTBL(o);
@@ -254,7 +254,7 @@ static void ObjectField_init(CTX ctx, Object *o)
 	}
 }
 
-static void ObjectField_initcopy(CTX ctx, Object *o, const Object *src)
+static void ObjectField_initcopy(CTX ctx, knh_RawPtr_t *o, knh_RawPtr_t *src)
 {
 	knh_ObjectField_t *of = (knh_ObjectField_t*)o;
 	const knh_ClassTBL_t *t = O_cTBL(o);
@@ -264,7 +264,7 @@ static void ObjectField_initcopy(CTX ctx, Object *o, const Object *src)
 			v = (Object**)KNH_MALLOC(ctx, t->fsize * sizeof(knh_Object_t*));
 		}
 		of->fields = v;
-		knh_memcpy(v, src->ref, t->fsize * sizeof(knh_Object_t*));
+		knh_memcpy(v, src->rawptr, t->fsize * sizeof(knh_Object_t*));
 #ifdef K_USING_RCGC
 		size_t i;
 		for(i = 0; i < t->fsize; i++) {
@@ -279,7 +279,7 @@ static void ObjectField_initcopy(CTX ctx, Object *o, const Object *src)
 	}
 }
 
-static void ObjectField_reftrace(CTX ctx, Object *o FTRARG)
+static void ObjectField_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_ObjectField_t *of = (knh_ObjectField_t*)o;
 	const knh_ClassTBL_t *ct = O_cTBL(o);
@@ -292,7 +292,7 @@ static void ObjectField_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void ObjectField_free(CTX ctx, Object *o)
+static void ObjectField_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_ObjectField_t *of = (knh_ObjectField_t*)o;
 	const knh_ClassTBL_t *t = O_cTBL(o);
@@ -302,18 +302,18 @@ static void ObjectField_free(CTX ctx, Object *o)
 	DBG_(of->fields = NULL);
 }
 
-static int ObjectField_compareTo(const Object *o, const Object *o2)
+static int ObjectField_compareTo(knh_RawPtr_t *o, knh_RawPtr_t *o2)
 {
 	return o - o2;
 }
 
-static void ObjectField_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void ObjectField_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_putc(ctx, w, '{');
 	{
 		knh_fields_t *tf = O_cTBL(o)->fields;
 		size_t i, fsize = O_cTBL(o)->fsize;
-		Object **v = (Object**)o->ref;
+		Object **v = (Object**)o->rawptr;
 		if(fsize > 0) {
 			knh_write_fn(ctx, w, tf[0].fn);
 			knh_write(ctx, w, STEXT(": "));
@@ -341,13 +341,13 @@ static knh_String_t* ObjectField_getkey(CTX ctx, knh_sfp_t *sfp)
 	return DEFAULT_getkey(ctx, sfp);
 }
 
-/* for serializer (OutputStream.writeObject) @goccy */
-static void Array_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi);
-static void Object_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
+static void Array_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t *packspi);
+
+static void Object_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t *packspi)
 {
 	const knh_ClassTBL_t *tbl = O_cTBL(o);
 	int i = 0;
-	Object **v = (Object **)o->ref;
+	Object **v = (Object **)o->rawptr;
 	size_t map_size = 0;
 	int is32BIT = 4 / sizeof(void *);
 	for (i = 0; i < tbl->fsize; i++) {
@@ -440,7 +440,7 @@ static knh_ClassDef_t ObjectDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
-static void ObjectFieldN_init(CTX ctx, Object *o)
+static void ObjectFieldN_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_ObjectField_t *of = (knh_ObjectField_t*)o;
 	const knh_ClassTBL_t *t = O_cTBL(o);
@@ -457,7 +457,7 @@ static void ObjectFieldN_init(CTX ctx, Object *o)
 	}
 }
 
-static void ObjectFieldN_initcopy(CTX ctx, Object *o, const Object *src)
+static void ObjectFieldN_initcopy(CTX ctx, knh_RawPtr_t *o, knh_RawPtr_t *src)
 {
 	knh_ObjectField_t *of = (knh_ObjectField_t*)o;
 	const knh_ClassTBL_t *ct = O_cTBL(o);
@@ -467,14 +467,14 @@ static void ObjectFieldN_initcopy(CTX ctx, Object *o, const Object *src)
 			v = (Object**)KNH_MALLOC(ctx, ct->fsize * sizeof(knh_Object_t*));
 		}
 		of->fields = v;
-		knh_memcpy(v, src->ref, ct->fsize * sizeof(knh_Object_t*));
+		knh_memcpy(v, src->rawptr, ct->fsize * sizeof(knh_Object_t*));
 	}
 	else {
 		of->fields = NULL;
 	}
 }
 
-static void ObjectField1_reftrace(CTX ctx, Object *o FTRARG)
+static void ObjectField1_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_ObjectField_t *of = (knh_ObjectField_t*)o;
 #ifdef K_USING_FASTREFS_
@@ -484,7 +484,7 @@ static void ObjectField1_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 #endif
 }
-static void ObjectField2_reftrace(CTX ctx, Object *o FTRARG)
+static void ObjectField2_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_ObjectField_t *of = (knh_ObjectField_t*)o;
 #ifdef K_USING_FASTREFS_
@@ -495,7 +495,7 @@ static void ObjectField2_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 #endif
 }
-static void ObjectField3_reftrace(CTX ctx, Object *o FTRARG)
+static void ObjectField3_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_ObjectField_t *of = (knh_ObjectField_t*)o;
 #ifdef K_USING_FASTREFS_
@@ -507,7 +507,7 @@ static void ObjectField3_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 #endif
 }
-static void ObjectField4_reftrace(CTX ctx, Object *o FTRARG)
+static void ObjectField4_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_ObjectField_t *of = (knh_ObjectField_t*)o;
 #ifdef K_USING_FASTREFS_
@@ -523,7 +523,10 @@ static void ObjectField4_reftrace(CTX ctx, Object *o FTRARG)
 
 static knh_ClassDef_t ObjectNDef[] = {
 	{
-		ObjectFieldN_init, ObjectFieldN_initcopy, DEFAULT_reftrace, ObjectField_free,
+		ObjectFieldN_init,
+		ObjectFieldN_initcopy,
+		DEFAULT_reftrace,
+		ObjectField_free,
 		DEFAULT_checkin, DEFAULT_checkout, ObjectField_compareTo, ObjectField_p,
 		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 		DEFAULT_findTypeMapNULL, Object_wdata, DEFAULT_2, DEFAULT_3,
@@ -588,20 +591,20 @@ void knh_ClassTBL_setObjectCSPI(knh_ClassTBL_t *ct)
 /* --------------- */
 /* Boolean */
 
-static void NDATA_init(CTX ctx, Object *o)
+static void NDATA_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Number_t *no = (knh_Number_t*)o;
 	no->n.ivalue = 0;
 }
 
-static void NDATA_initcopy(CTX ctx, Object *o, const Object *src)
+static void NDATA_initcopy(CTX ctx, knh_RawPtr_t *o, knh_RawPtr_t *src)
 {
 	knh_Number_t *no = (knh_Number_t*)o;
 	knh_Number_t *so = (knh_Number_t*)src;
 	no->n.data = so->n.data;
 }
 
-static void NDATA_free(CTX ctx, Object *o)
+static void NDATA_free(CTX ctx, knh_RawPtr_t *o)
 {
 }
 
@@ -630,26 +633,26 @@ static knh_hashcode_t NDATA_hashCode(CTX ctx, knh_sfp_t *sfp)
 	return (knh_hashcode_t)sfp[0].ndata;
 }
 
-static int Int_compareTo(const Object *o, const Object *o2)
+static int Int_compareTo(knh_RawPtr_t *o, knh_RawPtr_t *o2)
 {
 	knh_int_t f = ((knh_Number_t*)o)->n.ivalue;
 	knh_int_t f2 = ((knh_Number_t*)o2)->n.ivalue;
 	return (f < f2) ? -1 : ((f == f2) ? 0 : 1);
 }
 
-static int Float_compareTo(const Object *o, const Object *o2)
+static int Float_compareTo(knh_RawPtr_t *o, knh_RawPtr_t *o2)
 {
 	knh_float_t f = ((knh_Number_t*)o)->n.fvalue;
 	knh_float_t f2 = ((knh_Number_t*)o2)->n.fvalue;
 	return (f < f2) ? -1 : ((f == f2) ? 0 : 1);
 }
 
-static void Boolean_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Boolean_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_write_bool(ctx, w, ((knh_Number_t*)o)->n.bvalue);
 }
 
-static void Int_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Int_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 #if defined(K_USING_SEMANTICS)
 	knh_Semantics_t *u = knh_getSemantics(ctx, O_cid(sfp[1].o));
@@ -659,7 +662,7 @@ static void Int_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 #endif
 }
 
-static void Float_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Float_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 #if defined(K_USING_SEMANTICS)
 	knh_Semantics_t *u = knh_getSemantics(ctx, O_cid(sfp[1].o));
@@ -669,18 +672,17 @@ static void Float_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 #endif
 }
 
-/* for serializer (OutputStream.writeObject) @goccy */
-static void Boolean_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
+static void Boolean_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t *packspi)
 {
 	packspi->pack_bool(ctx, pkr, ((knh_Boolean_t *)o)->n.bvalue);
 }
 
-static void Int_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
+static void Int_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t *packspi)
 {
 	packspi->pack_int(ctx, pkr, ((knh_Int_t *)o)->n.ivalue);
 }
 
-static void Float_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
+static void Float_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t *packspi)
 {
 	packspi->pack_float(ctx, pkr, ((knh_Float_t *)o)->n.fvalue);
 }
@@ -724,7 +726,7 @@ static knh_ClassDef_t FloatDef = {
 /* --------------- */
 /* String */
 
-static void String_init(CTX ctx, Object *o)
+static void String_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_String_t *s = (knh_String_t*)o;
 	s->str.text = "";
@@ -733,7 +735,7 @@ static void String_init(CTX ctx, Object *o)
 	String_setTextSgm(s, 1);
 }
 
-static void String_free(CTX ctx, knh_Object_t *o)
+static void String_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_String_t *s = (knh_String_t*)o;
 	if(!String_isTextSgm(s)) {
@@ -741,7 +743,7 @@ static void String_free(CTX ctx, knh_Object_t *o)
 	}
 }
 
-static int String_compareTo(const knh_Object_t *o, const knh_Object_t *o2)
+static int String_compareTo(knh_RawPtr_t *o, knh_RawPtr_t *o2)
 {
 	knh_String_t *s1 = (knh_String_t*)o;
 	knh_String_t *s2 = (knh_String_t*)o2;
@@ -755,7 +757,7 @@ static int String_compareTo(const knh_Object_t *o, const knh_Object_t *o2)
 #endif
 }
 
-static void String_p(CTX ctx, knh_OutputStream_t *w, knh_Object_t *o, int level)
+static void String_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_String_t *s = (knh_String_t*)o;
 	if(IS_FMTs(level)) {
@@ -776,8 +778,7 @@ static knh_hashcode_t String_hashCode(CTX ctx, knh_sfp_t *sfp)
 	return (sfp[0].s)->hashCode;
 }
 
-/* for serializer (OutputStream.writeObject) @goccy */
-static void String_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
+static void String_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t *packspi)
 {
 	knh_String_t *s = (knh_String_t *)o;
 	packspi->pack_string(ctx, pkr, s->str.text, s->str.len);
@@ -799,7 +800,7 @@ static const knh_dim_t dimINIT = {
 	0, 0, 0, 0, 0, 0, 0,
 };
 
-static void Bytes_init(CTX ctx, Object *o)
+static void Bytes_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Bytes_t *ba = (knh_Bytes_t*)o;
 	ba->bu.len = 0;
@@ -827,7 +828,7 @@ static const knh_dim_t* dim_copy(CTX ctx, const knh_dim_t *dim_src)
 	}
 }
 
-static void Bytes_initcopy(CTX ctx, Object *o, const Object *src)
+static void Bytes_initcopy(CTX ctx, knh_RawPtr_t *o, knh_RawPtr_t *src)
 {
 	knh_Bytes_t *ba = (knh_Bytes_t*)o, *ba_src = (knh_Bytes_t*)src;
 	if(ba_src->dim->capacity > 0) {
@@ -842,20 +843,20 @@ static void Bytes_initcopy(CTX ctx, Object *o, const Object *src)
 	ba->dim = dim_copy(ctx, ba_src->dim);
 }
 
-static void Bytes_free(CTX ctx, Object *o)
+static void Bytes_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Bytes_t *ba = (knh_Bytes_t*)o;
 	knh_dimfree(ctx, ba->bu.ubuf, ba->dim);
 }
 
-static int Bytes_compareTo(const knh_Object_t *o, const knh_Object_t *o2)
+static int Bytes_compareTo(knh_RawPtr_t *o, knh_RawPtr_t *o2)
 {
 	knh_Bytes_t *s1 = (knh_Bytes_t*)o;
 	knh_Bytes_t *s2 = (knh_Bytes_t*)o2;
 	return knh_bytes_strcmp(BA_tobytes(s1) , BA_tobytes(s2));
 }
 
-static void Bytes_p(CTX ctx, knh_OutputStream_t *w, knh_Object_t *o, int level)
+static void Bytes_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_Bytes_t *ba = (knh_Bytes_t*)o;
 	if(IS_FMTs(level)) {
@@ -911,7 +912,7 @@ static knh_ClassDef_t BytesDef = {
 /* --------------------------------------------------------------------------*/
 /* Tuple */
 
-static void Tuple_init(CTX ctx, Object *o)
+static void Tuple_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Tuple_t *of = (knh_Tuple_t*)o;
 	const knh_ClassTBL_t *t = O_cTBL(o);
@@ -936,13 +937,13 @@ static void Tuple_init(CTX ctx, Object *o)
 	}
 }
 
-static void TUPLE_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void TUPLE_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_putc(ctx, w, '(');
 	{
 		knh_fields_t *tf = O_cTBL(o)->fields;
 		size_t i, fsize = O_cTBL(o)->fsize;
-		Object **v = (Object**)o->ref;
+		Object **v = (Object**)o->rawptr;
 		knh_write_TObject(ctx, w, tf[0].type, v, 0, level);
 		for(i = 1; i < fsize; i++) {
 			if(tf[i].type == TYPE_void) continue;
@@ -965,7 +966,7 @@ static knh_ClassDef_t TupleDef = {
 /* --------------- */
 /* Range */
 
-static void Range_init(CTX ctx, Object *o)
+static void Range_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Range_t *rng = (knh_Range_t*)o;
 	knh_class_t p1 = O_p1(rng);
@@ -980,7 +981,7 @@ static void Range_init(CTX ctx, Object *o)
 	}
 }
 
-static void Range_reftrace(CTX ctx, Object *o FTRARG)
+static void Range_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Range_t *rng = (knh_Range_t*)o;
 	if(!Range_isNDATA(o)) {
@@ -990,7 +991,7 @@ static void Range_reftrace(CTX ctx, Object *o FTRARG)
 	}
 }
 
-static void Range_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Range_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_Range_t *range = (knh_Range_t*)o;
 	knh_class_t p1 = O_p1(range);
@@ -1013,7 +1014,7 @@ static knh_ClassDef_t RangeDef = {
 /* --------------- */
 /* Array */
 
-static void Array_init(CTX ctx, Object *o)
+static void Array_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Array_t *a = (knh_Array_t*)o;
 	knh_Array_initAPI(ctx, a);
@@ -1022,7 +1023,7 @@ static void Array_init(CTX ctx, Object *o)
 	a->size = 0;
 }
 
-static void Array_initcopy(CTX ctx, Object *o, const Object *src)
+static void Array_initcopy(CTX ctx, knh_RawPtr_t *o, knh_RawPtr_t *src)
 {
 	knh_Array_t *a = (knh_Array_t*)o, *a_src = (knh_Array_t*)src;
 	a->api = a_src->api;
@@ -1045,7 +1046,7 @@ static void Array_initcopy(CTX ctx, Object *o, const Object *src)
 	a->dim = dim_copy(ctx, a_src->dim);
 }
 
-static void Array_reftrace(CTX ctx, Object *o FTRARG)
+static void Array_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Array_t *a = (knh_Array_t*)o;
 	if(!Array_isNDATA(a)) {
@@ -1061,13 +1062,13 @@ static void Array_reftrace(CTX ctx, Object *o FTRARG)
 	}
 }
 
-static void Array_free(CTX ctx, Object *o)
+static void Array_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Array_t *a = (knh_Array_t*)o;
 	knh_dimfree(ctx, a->list, a->dim);
 }
 
-static void Array_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Array_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_putc(ctx, w, '[');
 	{
@@ -1130,8 +1131,7 @@ static void Array_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 	knh_putc(ctx, w, ']');
 }
 
-/* for serializer (OutputStream.writeObject) @goccy */
-static void Array_wdata(CTX ctx, void *pkr, Object *o, const knh_PackSPI_t *packspi)
+static void Array_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t *packspi)
 {
 	knh_Array_t *a = (knh_Array_t *)o;
 	packspi->pack_beginmap(ctx, pkr, 2);
@@ -1182,7 +1182,7 @@ static ITRNEXT Fitrnext_single(CTX ctx, knh_sfp_t *sfp, long rtnidx)
 	ITREND_();
 }
 
-static void Iterator_init(CTX ctx, Object *o)
+static void Iterator_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Iterator_t *itr = (knh_Iterator_t*)o;
 	knh_IteratorEX_t *b = knh_bodymalloc(ctx, Iterator);
@@ -1195,21 +1195,21 @@ static void Iterator_init(CTX ctx, Object *o)
 	itr->b = b;
 }
 
-static void Iterator_reftrace(CTX ctx, Object *o FTRARG)
+static void Iterator_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Iterator_t *itr = (knh_Iterator_t*)o;
 	KNH_ADDREF(ctx, DP(itr)->source);
 	KNH_SIZEREF(ctx);
 }
 
-static void Iterator_free(CTX ctx, Object *o)
+static void Iterator_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Iterator_t *itr = (knh_Iterator_t*)o;
 	knh_Iterator_close(ctx, itr);
 	knh_bodyfree(ctx, itr->b, Iterator);
 }
 
-static void Iterator_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Iterator_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_Iterator_t *it = (knh_Iterator_t*)o;
 	knh_class_t p1 = O_p1(it);
@@ -1267,31 +1267,31 @@ static const knh_MapDSPI_t* NULLMAP_config(CTX ctx, knh_class_t p1, knh_class_t 
 	return &NULLMAP;
 }
 
-static void Map_init(CTX ctx, Object *o)
+static void Map_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Map_t *m = (knh_Map_t*)o;
 	m->dspi = &NULLMAP;
 	m->map = NULL;
 }
 
-static void TODO_initcopy(CTX ctx, Object *d, const Object *s)
+static void TODO_initcopy(CTX ctx, knh_RawPtr_t *d, knh_RawPtr_t *s)
 {
 	KNH_TODO(__FUNCTION__);
 }
 
-static void Map_reftrace(CTX ctx, Object *o FTRARG)
+static void Map_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Map_t *m = (knh_Map_t*)o;
 	m->dspi->reftrace(ctx, m->map FTRDATA);
 }
 
-static void Map_free(CTX ctx, Object *o)
+static void Map_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Map_t *m = (knh_Map_t*)o;
 	m->dspi->freemap(ctx, m->map);
 }
 
-static void Map_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Map_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_Map_t *m = (knh_Map_t*)o;
 	size_t n = m->dspi->size(ctx, m->map);
@@ -1333,7 +1333,7 @@ static knh_ClassDef_t MapDef = {
 /* --------------- */
 /* Class */
 
-static int Class_compareTo(const knh_Object_t *o, const knh_Object_t *o2)
+static int Class_compareTo(knh_RawPtr_t *o, knh_RawPtr_t *o2)
 {
 	knh_Class_t *c = (knh_Class_t*)o;
 	knh_Class_t *c2 = (knh_Class_t*)o2;
@@ -1352,7 +1352,7 @@ static knh_hashcode_t Class_hashCode(CTX ctx,knh_sfp_t *sfp)
 	return (knh_hashcode_t)c->cid;
 }
 
-static void Class_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Class_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_write_cid(ctx, w, knh_Class_cid((knh_Class_t*)o));
 }
@@ -1369,7 +1369,7 @@ static knh_ClassDef_t ClassDef = {
 /* --------------- */
 /* ParamArray */
 
-static void ParamArray_init(CTX ctx, Object *o)
+static void ParamArray_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_ParamArray_t *pa = (knh_ParamArray_t*)o;
 	pa->psize = 0;
@@ -1378,7 +1378,7 @@ static void ParamArray_init(CTX ctx, Object *o)
 	pa->capacity = 0;
 }
 
-static void ParamArray_free(CTX ctx, Object *o)
+static void ParamArray_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_ParamArray_t *pa = (knh_ParamArray_t*)o;
 	if(pa->psize + pa->rsize > 3) {
@@ -1386,7 +1386,7 @@ static void ParamArray_free(CTX ctx, Object *o)
 	}
 }
 
-static void ParamArray_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void ParamArray_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_ParamArray_t *pa = (knh_ParamArray_t*)o;
 	size_t i;
@@ -1420,7 +1420,7 @@ static knh_ClassDef_t ParamArrayDef = {
 /* --------------- */
 /* Method */
 
-static void Method_init(CTX ctx, Object *o)
+static void Method_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Method_t *mtd = (knh_Method_t*)o;
 	knh_MethodEX_t *b = knh_bodymalloc(ctx, Method);
@@ -1432,7 +1432,7 @@ static void Method_init(CTX ctx, Object *o)
 	mtd->b = b;
 }
 
-static void Method_reftrace(CTX ctx, Object *o FTRARG)
+static void Method_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Method_t *mtd = (knh_Method_t*)o;
 	knh_MethodEX_t *b = DP(mtd);
@@ -1441,14 +1441,14 @@ static void Method_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void BODY_free(CTX ctx, Object *o)
+static void BODY_free(CTX ctx, knh_RawPtr_t *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
 	DBG_ASSERT(ct->ospi->struct_size > 0);
-	KNH_FREE(ctx, o->ref, ct->ospi->struct_size);
+	KNH_FREE(ctx, o->rawptr, ct->ospi->struct_size);
 }
 
-static void Method_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Method_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_Method_t *mtd = (knh_Method_t*)o;
 	if(!(IS_FMTline(level))) {
@@ -1504,7 +1504,7 @@ static knh_ClassDef_t MethodDef = {
 /* --------------- */
 /* TypeMap */
 
-static void TypeMap_init(CTX ctx, Object *o)
+static void TypeMap_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_TypeMap_t *tmr = (knh_TypeMap_t*)o;
 	tmr->scid = 0;
@@ -1513,7 +1513,7 @@ static void TypeMap_init(CTX ctx, Object *o)
 	KNH_INITv(tmr->tmr2, KNH_NULL);
 }
 
-static void TypeMap_reftrace(CTX ctx, Object *o FTRARG)
+static void TypeMap_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_TypeMap_t *tmr = (knh_TypeMap_t*)o;
 	KNH_ADDREF(ctx, tmr->mapdata);
@@ -1521,7 +1521,7 @@ static void TypeMap_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void TypeMap_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void TypeMap_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_TypeMap_t *tmr = (knh_TypeMap_t*)o;
 	knh_write_type(ctx, w, tmr->scid);
@@ -1559,7 +1559,7 @@ static const knh_LinkDPI_t PATH_NOLINK = {
 	NOLINK_hasType, NOLINK_exists, NOLINK_newObjectNULL,
 };
 
-static void Link_init(CTX ctx, Object *o)
+static void Link_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Link_t *flnk = (knh_Link_t*)o;
 	flnk->dpi = &PATH_NOLINK;
@@ -1576,7 +1576,7 @@ knh_Link_t *new_Link(CTX ctx, knh_String_t *scheme, const knh_LinkDPI_t *dpi)
 	return flnk;
 }
 
-static void Link_reftrace(CTX ctx, Object *o FTRARG)
+static void Link_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Link_t *flnk = (knh_Link_t*)o;
 	KNH_ADDREF(ctx, flnk->scheme);
@@ -1584,7 +1584,7 @@ static void Link_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void Link_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Link_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_Link_t *flnk = (knh_Link_t*)o;
 	knh_write(ctx, w, S_tobytes(flnk->scheme));
@@ -1616,7 +1616,7 @@ static METHOD Fmethod_funcRTYPE(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-static void Func_init(CTX ctx, Object *o)
+static void Func_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Func_t *fo = (knh_Func_t*)o;
 	const knh_ClassTBL_t *t = O_cTBL(o);
@@ -1632,7 +1632,7 @@ static void Func_init(CTX ctx, Object *o)
 	fo->baseNULL = NULL;
 }
 
-static void Func_reftrace(CTX ctx, Object *o FTRARG)
+static void Func_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Func_t *fo = (knh_Func_t*)o;
 	KNH_ADDREF(ctx, (fo->mtd));
@@ -1644,7 +1644,7 @@ static void Func_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void Func_free(CTX ctx, Object *o)
+static void Func_free(CTX ctx, knh_RawPtr_t *o)
 {
 //	knh_Func_t *cc = (knh_Func_t*)o;
 //	if(Func_isStoredEnv(cc)) {
@@ -1655,7 +1655,7 @@ static void Func_free(CTX ctx, Object *o)
 //	}
 }
 
-static void Func_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Func_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 
 }
@@ -1683,7 +1683,7 @@ static void Thunk_newenv(CTX ctx, knh_Thunk_t *thk, size_t envsize)
 	}
 }
 
-static void Thunk_init(CTX ctx, Object *o)
+static void Thunk_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Thunk_t *thk = (knh_Thunk_t*)o;
 	knh_Method_t *mtd = ClassTBL_getMethodNULL(ctx, ClassTBL(CLASS_Thunk), MN_);
@@ -1701,7 +1701,7 @@ knh_Thunk_t* new_Thunk(CTX ctx, knh_class_t p1, size_t envsize)
 	return thk;
 }
 
-static void Thunk_reftrace(CTX ctx, Object *o FTRARG)
+static void Thunk_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Thunk_t *thk = (knh_Thunk_t*)o;
 	size_t i;
@@ -1711,7 +1711,7 @@ static void Thunk_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void Thunk_free(CTX ctx, Object *o)
+static void Thunk_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Thunk_t *thunk = (knh_Thunk_t*)o;
 	KNH_FREE(ctx, thunk->envsfp, sizeof(knh_sfp_t) * thunk->envsize);
@@ -1731,7 +1731,7 @@ static knh_ClassDef_t ThunkDef = {
 /* --------------- */
 /* Exception */
 
-static void Exception_init(CTX ctx, Object *o)
+static void Exception_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Exception_t *e = (knh_Exception_t*)o;
 	KNH_INITv(e->emsg, TS_EMPTY);
@@ -1739,7 +1739,7 @@ static void Exception_init(CTX ctx, Object *o)
 	e->uline = 0;
 }
 
-static void Exception_reftrace(CTX ctx, Object *o FTRARG)
+static void Exception_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Exception_t *e = (knh_Exception_t*)o;
 	KNH_ADDREF(ctx, e->emsg);
@@ -1747,7 +1747,7 @@ static void Exception_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void Exception_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Exception_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_Exception_t *e = (knh_Exception_t*)o;
 	if(e->uline != 0 && IS_FMTdump(level)) {
@@ -1790,16 +1790,16 @@ static knh_ClassDef_t ExceptionDef = {
 /* --------------- */
 /* ExceptionHandler */
 
-static void ExceptionHandler_init(CTX ctx, Object *o)
+static void ExceptionHandler_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_ExceptionHandler_t *hdr = (knh_ExceptionHandler_t*)o;
 	knh_ExceptionHandlerEX_t *b = knh_bodymalloc(ctx, ExceptionHandler);
 	knh_bzero(b, sizeof(knh_ExceptionHandlerEX_t));
-	o->ref = b;
+	o->rawptr = b;
 	KNH_INITv(hdr->stacklist, new_Array0(ctx, 0));
 }
 
-static void ExceptionHandler_reftrace(CTX ctx, Object *o FTRARG)
+static void ExceptionHandler_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_ExceptionHandler_t *hdr = (knh_ExceptionHandler_t*)o;
 	KNH_ADDREF(ctx, hdr->stacklist);
@@ -1818,7 +1818,7 @@ static knh_ClassDef_t ExceptionHandlerDef = {
 /* --------------- */
 /* Regex */
 
-static void Regex_init(CTX ctx, Object *o)
+static void Regex_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Regex_t *re = (knh_Regex_t*)o;
 	KNH_INITv(re->pattern, TS_EMPTY);
@@ -1826,14 +1826,14 @@ static void Regex_init(CTX ctx, Object *o)
 	re->reg = (knh_regex_t*)TS_EMPTY;
 }
 
-static void Regex_reftrace(CTX ctx, Object *o FTRARG)
+static void Regex_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Regex_t *re = (knh_Regex_t*)o;
 	KNH_ADDREF(ctx, (re->pattern));
 	KNH_SIZEREF(ctx);
 }
 
-static void Regex_free(CTX ctx, Object *o)
+static void Regex_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Regex_t *re = (knh_Regex_t*)o;
 	if(re->reg != NULL) {
@@ -1843,7 +1843,7 @@ static void Regex_free(CTX ctx, Object *o)
 	}
 }
 
-static void Regex_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Regex_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_Regex_t *re = (knh_Regex_t*)o;
 	knh_bytes_t t = S_tobytes(re->pattern);
@@ -1888,14 +1888,14 @@ static knh_ConvDSPI_t NOCONV_DSPI = {
 	NULL/*knh_conv_NOSET*/,
 };
 
-static void Converter_init(CTX ctx, Object *o)
+static void Converter_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Converter_t *bc = (knh_Converter_t*)o;
 	bc->conv = NULL;
 	bc->dspi = &NOCONV_DSPI;
 }
 
-static void Converter_free(CTX ctx, Object *o)
+static void Converter_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Converter_t *bc = (knh_Converter_t*)o;
 	if(bc->conv != NULL) {
@@ -1984,7 +1984,7 @@ static int knh_fscmp__default(knh_Semantics_t *u, knh_bytes_t v1, knh_bytes_t v2
 
 #endif
 
-static void Semantics_init(CTX ctx, Object *o)
+static void Semantics_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_SemanticsEX_t *b = knh_bodymalloc(ctx, Semantics);
 	// common
@@ -2024,10 +2024,10 @@ static void Semantics_init(CTX ctx, Object *o)
 	b->bytelen = 0;
 	KNH_INITv(b->pattern, KNH_NULL);
 //	KNH_INITv(b->vocabDictIdx, KNH_NULL);
-	o->ref = b;
+	o->rawptr = b;
 }
 
-static void Semantics_reftrace(CTX ctx, Object *o FTRARG)
+static void Semantics_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Semantics_t *u = (knh_Semantics_t*)o;
 	knh_SemanticsEX_t *b = DP(u);
@@ -2054,7 +2054,7 @@ static knh_ClassDef_t SemanticsDef = {
 /* --------------- */
 /* InputStream */
 
-static void InputStream_init(CTX ctx, Object *o)
+static void InputStream_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
 	in->uline = 1;
@@ -2070,7 +2070,7 @@ static void InputStream_init(CTX ctx, Object *o)
 //	DBG_P("@@@@@@@@@@@@@@@@ INIT InputStream !! %p @@@@@@@@@@@@@@@@@@@", o);
 }
 
-static void InputStream_reftrace(CTX ctx, Object *o FTRARG)
+static void InputStream_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
 	knh_InputStreamEX_t *b = DP(in);
@@ -2081,7 +2081,7 @@ static void InputStream_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void InputStream_free(CTX ctx, Object *o)
+static void InputStream_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
 	knh_InputStreamEX_t *b = DP(in);
@@ -2092,7 +2092,7 @@ static void InputStream_free(CTX ctx, Object *o)
 	knh_bodyfree(ctx, b, InputStream);
 }
 
-static void InputStream_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void InputStream_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_InputStream_t *ins = (knh_InputStream_t*)o;
 	knh_write_quote(ctx, w, '\'', S_tobytes(DP(ins)->urn), !String_isASCII(DP(ins)->urn));
@@ -2110,7 +2110,7 @@ static knh_ClassDef_t InputStreamDef = {
 /* --------------- */
 /* OutputStream */
 
-static void OutputStream_init(CTX ctx, Object *o)
+static void OutputStream_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_OutputStream_t *w = (knh_OutputStream_t*)o;
 	knh_OutputStreamEX_t *b = knh_bodymalloc(ctx, OutputStream);
@@ -2128,7 +2128,7 @@ static void OutputStream_init(CTX ctx, Object *o)
 	OutputStream_setBOL(w,1);
 }
 
-static void OutputStream_reftrace(CTX ctx, Object *o FTRARG)
+static void OutputStream_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_OutputStream_t *w = (knh_OutputStream_t*)o;
 	knh_OutputStreamEX_t *b = DP(w);
@@ -2140,7 +2140,7 @@ static void OutputStream_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void OutputStream_free(CTX ctx, Object *o)
+static void OutputStream_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_OutputStream_t *w = (knh_OutputStream_t*)o;
 	knh_OutputStreamEX_t *b = DP(w);
@@ -2151,7 +2151,7 @@ static void OutputStream_free(CTX ctx, Object *o)
 	knh_bodyfree(ctx, b, OutputStream);
 }
 
-static void OutputStream_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void OutputStream_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_OutputStream_t *ous = (knh_OutputStream_t*)o;
 	knh_write_quote(ctx, w, '\'', S_tobytes(DP(ous)->urn) , !String_isASCII(DP(ous)->urn));
@@ -2169,7 +2169,7 @@ static knh_ClassDef_t OutputStreamDef = {
 /* --------------- */
 /* Connection */
 
-static void Connection_init(CTX ctx, Object *o)
+static void Connection_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Connection_t *c = (knh_Connection_t*)o;
 	c->conn = NULL;
@@ -2177,14 +2177,14 @@ static void Connection_init(CTX ctx, Object *o)
 	KNH_INITv(c->urn, TS_EMPTY);
 }
 
-static void Connection_reftrace(CTX ctx, Object *o FTRARG)
+static void Connection_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Connection_t *c = (knh_Connection_t*)o;
 	KNH_ADDREF(ctx, (c->urn));
 	KNH_SIZEREF(ctx);
 }
 
-static void Connection_free(CTX ctx, Object *o)
+static void Connection_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Connection_t *c = (knh_Connection_t*)o;
 	if(c->conn != NULL) {
@@ -2204,7 +2204,7 @@ static knh_ClassDef_t ConnectionDef = {
 /* --------------- */
 /* ResultSet */
 
-static void ResultSet_init(CTX ctx, Object *o)
+static void ResultSet_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_ResultSetEX_t *b = knh_bodymalloc(ctx, ResultSet);
 	b->qcur = NULL;
@@ -2215,10 +2215,10 @@ static void ResultSet_init(CTX ctx, Object *o)
 	KNH_INITv(b->conn, KNH_NULL);
 	b->qcurfree = knh_getQueryDSPI(ctx, NULL, K_DEFAULT_DSPI)->qcurfree;
 	b->count = 0;
-	o->ref = b;
+	o->rawptr = b;
 }
 
-static void ResultSet_reftrace(CTX ctx, Object *o FTRARG)
+static void ResultSet_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	size_t i = 0;
 	knh_ResultSetEX_t *b = DP((knh_ResultSet_t*)o);
@@ -2230,7 +2230,7 @@ static void ResultSet_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void ResultSet_free(CTX ctx, Object *o)
+static void ResultSet_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_ResultSetEX_t *b = DP((knh_ResultSet_t*)o);
 	if(b->column != NULL) {
@@ -2256,7 +2256,7 @@ static knh_ClassDef_t ResultSetDef = {
 /* --------------- */
 /* Script */
 
-static void Script_init(CTX ctx, Object *o)
+static void Script_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Script_t *scr = (knh_Script_t*)o;
 	knh_class_t cid = new_ClassId(ctx);
@@ -2279,7 +2279,7 @@ static void Script_init(CTX ctx, Object *o)
 	KNH_INITv(scr->ns, new_NameSpace(ctx, ctx->share->rootns));
 }
 
-static void Script_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Script_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	if(IS_FMTdump(level)) {
 		const knh_ClassTBL_t *ct = O_cTBL(o);
@@ -2301,7 +2301,7 @@ static void Script_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 	}
 }
 
-static void Script_reftrace(CTX ctx, Object *o FTRARG)
+static void Script_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Script_t *scr = (knh_Script_t*)o;
 	KNH_ADDREF(ctx, scr->ns);
@@ -2320,7 +2320,7 @@ static knh_ClassDef_t ScriptDef = {
 /* --------------- */
 /* NameSpace */
 
-static void NameSpace_init(CTX ctx, Object *o)
+static void NameSpace_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
 	knh_NameSpaceEX_t *b = knh_bodymalloc(ctx, NameSpace);
@@ -2338,7 +2338,7 @@ static void NameSpace_init(CTX ctx, Object *o)
 	ns->dlhdr = NULL;
 }
 
-static void NameSpace_reftrace(CTX ctx, Object *o FTRARG)
+static void NameSpace_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
 	knh_NameSpaceEX_t *b = DP(ns);
@@ -2355,7 +2355,7 @@ static void NameSpace_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void NameSpace_free(CTX ctx, Object *o)
+static void NameSpace_free(CTX ctx, knh_RawPtr_t *o)
 {
 	BODY_free(ctx, o);
 	if(((knh_NameSpace_t*)o)->dlhdr != NULL) {
@@ -2364,7 +2364,7 @@ static void NameSpace_free(CTX ctx, Object *o)
 	}
 }
 
-static void NameSpace_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void NameSpace_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
 	knh_write_ascii(ctx, w, "ns:");
@@ -2391,7 +2391,7 @@ static knh_uintptr_t knh_autoSystemId = 0;
 #define stderr NULL
 #endif
 
-static void System_init(CTX ctx, Object *o)
+static void System_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_SystemEX_t *sys = knh_bodymalloc(ctx, System);
 	sys->sysid = knh_autoSystemId++;
@@ -2414,10 +2414,10 @@ static void System_init(CTX ctx, Object *o)
 	KNH_INITv(sys->dspiDictSet, new_DictSet0(ctx, 32, 0/*isCaseMap*/, "System.dspiDictSet"));
 	KNH_INITv(sys->PackageDictMap, new_DictMap0(ctx, 0, 0/*isCaseMap*/, "System.PackageDictMap"));
 	KNH_INITv(sys->URNAliasDictMap, new_DictMap0(ctx, 0, 0/*isCaseMap*/, "System.URNAliasDictMap"));
-	o->ref = sys;
+	o->rawptr = sys;
 }
 
-static void System_reftrace(CTX ctx, Object *o FTRARG)
+static void System_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_SystemEX_t *sys = DP((knh_System_t*)o);
 	size_t i, size = knh_DictSet_size(sys->nameDictCaseSet);
@@ -2442,7 +2442,7 @@ static void System_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void System_free(CTX ctx, Object *o)
+static void System_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_SystemEX_t *sys = DP((knh_System_t*)o);
 	KNH_FREE(ctx, sys->nameinfo, sizeof(knh_nameinfo_t) * sys->namecapacity);
@@ -2462,17 +2462,17 @@ static knh_ClassDef_t SystemDef = {
 /* --------------- */
 /* Context */
 
-static void Context_init(CTX ctx, Object *o)
+static void Context_init(CTX ctx, knh_RawPtr_t *o)
 {
 	KNH_TODO(__FUNCTION__);
 }
 
-static void Context_reftrace(CTX ctx, Object *o FTRARG)
+static void Context_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	KNH_TODO(__FUNCTION__);
 }
 
-static void Context_free(CTX ctx, Object *o)
+static void Context_free(CTX ctx, knh_RawPtr_t *o)
 {
 	KNH_TODO(__FUNCTION__);
 }
@@ -2490,7 +2490,7 @@ static knh_ClassDef_t ContextDef = {
 /* --------------- */
 /* Assurance */
 
-static void Assurance_init(CTX ctx, Object *o)
+static void Assurance_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Assurance_t *g = (knh_Assurance_t*)o;
 	KNH_INITv(g->msg, TS_EMPTY);
@@ -2498,20 +2498,20 @@ static void Assurance_init(CTX ctx, Object *o)
 	g->stime = 0;
 }
 
-static void Assurance_reftrace(CTX ctx, Object *o FTRARG)
+static void Assurance_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Assurance_t *g = (knh_Assurance_t*)o;
 	KNH_ADDREF(ctx, g->msg);
 	KNH_SIZEREF(ctx);
 }
 
-static void Assurance_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Assurance_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_Assurance_t *g = (knh_Assurance_t*)o;
 	knh_write_quote(ctx, w, '\'', S_tobytes(g->msg), !String_isASCII(g->msg));
 }
 
-static void Assurance_checkin(CTX ctx, knh_sfp_t *sfp, Object *o)
+static void Assurance_checkin(CTX ctx, knh_sfp_t *sfp, knh_RawPtr_t *o)
 {
 	static knh_uintptr_t uid = 0;
 	knh_Assurance_t *g = (knh_Assurance_t*)o;
@@ -2522,7 +2522,7 @@ static void Assurance_checkin(CTX ctx, knh_sfp_t *sfp, Object *o)
 	NOTE_OK("checkin_assurance");
 }
 
-static void Assurance_checkout(CTX ctx, Object *o, int isFailed)
+static void Assurance_checkout(CTX ctx, knh_RawPtr_t *o, int isFailed)
 {
 	knh_Assurance_t *g = (knh_Assurance_t*)o;
 	knh_sfp_t *sfp = g->sfp;
@@ -2552,7 +2552,7 @@ static knh_ClassDef_t AssuranceDef = {
 /* --------------- */
 /* Token */
 
-static void Token_init(CTX ctx, Object *o)
+static void Token_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Token_t *tk = (knh_Token_t*)o;
 	tk->tt        =  TT_ASIS;
@@ -2563,7 +2563,7 @@ static void Token_init(CTX ctx, Object *o)
 	KNH_INITv(tk->data, KNH_NULL);
 }
 
-static void Token_reftrace(CTX ctx, Object *o FTRARG)
+static void Token_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Token_t *tk = (knh_Token_t*)o;
 	KNH_ADDREF(ctx, tk->data);
@@ -2572,7 +2572,7 @@ static void Token_reftrace(CTX ctx, Object *o FTRARG)
 
 const char* TT__(knh_term_t tt);
 
-static void Token_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Token_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_Token_t *tk = (knh_Token_t*)o;
 	knh_term_t tt = tk->tt;
@@ -2680,11 +2680,11 @@ static knh_ClassDef_t TokenDef = {
 /* --------------- */
 /* Stmt */
 
-static void Stmt_init(CTX ctx, Object *o)
+static void Stmt_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
 	knh_StmtEX_t *b = knh_bodymalloc(ctx, Stmt);
-	o->ref = b;
+	o->rawptr = b;
 	SP(stmt)->uline = 0;
 	SP(stmt)->stt   = STT_DONE;
 	SP(stmt)->type = TYPE_var;
@@ -2697,7 +2697,7 @@ static void Stmt_init(CTX ctx, Object *o)
 	b->nextNULL = NULL;
 }
 
-static void Stmt_reftrace(CTX ctx, Object *o FTRARG)
+static void Stmt_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
 	knh_StmtEX_t *b = DP((knh_Stmt_t*)o);
@@ -2713,7 +2713,7 @@ static void Stmt_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void Stmt_free(CTX ctx, Object *o)
+static void Stmt_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
 	knh_StmtEX_t *b = DP((knh_Stmt_t*)o);
@@ -2724,7 +2724,7 @@ static void Stmt_free(CTX ctx, Object *o)
 	knh_bodyfree(ctx, b, Stmt);
 }
 
-static void Stmt_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void Stmt_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
 	knh_intptr_t i, size;
@@ -2779,7 +2779,7 @@ static knh_ClassDef_t StmtDef = {
 
 /* Gamma */
 
-static void Gamma_init(CTX ctx, Object *o)
+static void Gamma_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_GammaEX_t *b = knh_bodymalloc(ctx, Gamma);
 	knh_bzero(b, sizeof(knh_GammaEX_t));
@@ -2790,11 +2790,11 @@ static void Gamma_init(CTX ctx, Object *o)
 	KNH_INITv(b->insts, new_Array0(ctx, 0));
 	KNH_INITv(b->errmsgs, new_Array0(ctx, 0));
 	KNH_INITv(b->finallyStmt, KNH_NULL);
-	o->ref = b;
+	o->rawptr = b;
 	KNH_INITv(((knh_Gamma_t*)o)->scr, ctx->script);
 }
 
-static void Gamma_reftrace(CTX ctx, Object *o FTRARG)
+static void Gamma_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	size_t i;
 	knh_GammaEX_t *b = DP((knh_Gamma_t*)o);
@@ -2813,7 +2813,7 @@ static void Gamma_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void Gamma_free(CTX ctx, Object *o)
+static void Gamma_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_GammaEX_t *b = DP((knh_Gamma_t*)o);
 	if(b->gcapacity) {
@@ -2834,7 +2834,7 @@ static knh_ClassDef_t GammaDef = {
 /* --------------- */
 /* BasicBlock */
 
-static void BasicBlock_init(CTX ctx, Object *o)
+static void BasicBlock_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_BasicBlock_t *bb = (knh_BasicBlock_t*)o;
 	bb->b = knh_bodymalloc(ctx, BasicBlock);
@@ -2844,7 +2844,7 @@ static void BasicBlock_init(CTX ctx, Object *o)
 	bb->jumpNC  = NULL;
 }
 
-static void BasicBlock_reftrace(CTX ctx, Object *o FTRARG)
+static void BasicBlock_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_BasicBlock_t *bb = (knh_BasicBlock_t*)o;
 	size_t i;
@@ -2855,7 +2855,7 @@ static void BasicBlock_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void BasicBlock_free(CTX ctx, Object *o)
+static void BasicBlock_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_BasicBlock_t *bb = (knh_BasicBlock_t*)o;
 	if(DP(bb)->capacity > 0) {
@@ -2876,7 +2876,7 @@ static knh_ClassDef_t BasicBlockDef = {
 /* --------------- */
 /* KonohaCode */
 
-static void KonohaCode_init(CTX ctx, Object *o)
+static void KonohaCode_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_KonohaCode_t *b = (knh_KonohaCode_t*)o;
 	b->codesize = 0;
@@ -2885,7 +2885,7 @@ static void KonohaCode_init(CTX ctx, Object *o)
 	KNH_INITv(b->source, TS_EMPTY);
 }
 
-static void KonohaCode_reftrace(CTX ctx, Object *o FTRARG)
+static void KonohaCode_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_KonohaCode_t *b = (knh_KonohaCode_t*)o;
 	knh_opline_t *pc = b->code;
@@ -2898,7 +2898,7 @@ static void KonohaCode_reftrace(CTX ctx, Object *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void KonohaCode_free(CTX ctx, Object *o)
+static void KonohaCode_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_KonohaCode_t *b = (knh_KonohaCode_t*)o;
 #ifdef K_USING_VMCOUNT  /* Who added this ?*/
@@ -2911,7 +2911,7 @@ static void KonohaCode_free(CTX ctx, Object *o)
 	KNH_FREE(ctx, b->code, b->codesize);
 }
 
-static void KonohaCode_p(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+static void KonohaCode_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_KonohaCode_t *kcode = (knh_KonohaCode_t*)o;
 	knh_opline_t *pc = kcode->code + 1;

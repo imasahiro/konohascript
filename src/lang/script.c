@@ -646,7 +646,7 @@ static knh_status_t CONST_decl(CTX ctx, knh_Stmt_t *stmt)
 				KNH_INITv(DP(ns)->constDictCaseMapNULL,
 					new_DictMap0(ctx, 0, 1/*isCaseMap*/, "NameSpace.lconstDictMap"));
 			}
-			DictMap_set_(ctx, DP(ns)->constDictCaseMapNULL, tkN->text, value);
+			knh_DictMap_set_(ctx, DP(ns)->constDictCaseMapNULL, tkN->text, value);
 		}
 	}
 	L_RETURN: ;

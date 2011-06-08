@@ -63,9 +63,9 @@ typedef struct {
 	void *data2;
 } knh_Socket_t ;
 
-static void Socket_init(CTX ctx, Object *o)
+static void Socket_init(CTX ctx, knh_RawPtr_t *po)
 {
-	knh_Socket_t *so = (knh_Socket_t*)o;
+	knh_Socket_t *so = (knh_Socket_t*)po;
 	knh_SocketEX_t *b = (knh_SocketEX_t *)KNH_MALLOC(ctx, sizeof(knh_SocketEX_t));
 	b->sd = IO_NULL;
 	b->port = 0;
@@ -75,17 +75,17 @@ static void Socket_init(CTX ctx, Object *o)
 	so->b = b;
 }
 
-static void Socket_reftrace(CTX ctx, Object *o FTRARG)
+static void Socket_reftrace(CTX ctx, knh_RawPtr_t *po FTRARG)
 {
-	knh_Socket_t *so = (knh_Socket_t*)o;
+	knh_Socket_t *so = (knh_Socket_t*)po;
 	KNH_ADDREF(ctx, DP(so)->in);
 	KNH_ADDREF(ctx, DP(so)->out);
 	KNH_SIZEREF(ctx);
 }
 
-static void Socket_free(CTX ctx, Object *o)
+static void Socket_free(CTX ctx, knh_RawPtr_t *po)
 {
-	knh_Socket_t *so = (knh_Socket_t*)o;
+	knh_Socket_t *so = (knh_Socket_t*)po;
 	if (DP(so)->sd != IO_NULL) {
 		close((int)DP(so)->sd);
 		DP(so)->sd = IO_NULL;

@@ -177,6 +177,7 @@ METHOD System_getCwd(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(new_String(ctx, (const char*)tmpbuf));
 }
 
+
 ///* ------------------------------------------------------------------------ */
 ////## @Native boolean System.chDir(String dirname);
 //
@@ -191,6 +192,92 @@ METHOD System_getCwd(CTX ctx, knh_sfp_t *sfp _RIX)
 //	}
 //	LOG_RETURN_ERRNO(LOG_DEBUG, "path='%s'", chdir, tmpbuf);
 //}
+
+
+/* ------------------------------------------------------------------------ */
+/* [DIR] */
+
+static void Dir_init(CTX ctx, knh_RawPtr_t *po)
+{
+	po->rawptr = NULL;
+}
+
+static void Dir_free(CTX ctx, knh_RawPtr_t *po)
+{
+	if (po->rawptr != NULL) {
+		closedir((DIR*)po->rawptr);
+		po->rawptr = NULL;
+	}
+}
+
+EXPORTAPI(const knh_ClassDef_t*) Dir(CTX ctx)
+{
+	static knh_ClassDef_t cdef;
+	cdef = *(knh_getDefaultClassDef());
+	cdef.name = "Dir";
+	cdef.init = Dir_init;
+	cdef.free = Dir_free;
+	return (const knh_ClassDef_t*)&cdef;
+}
+
+/* ------------------------------------------------------------------------ */
+
+//## @Native @Throwable Dir System.openDir(String path, NameSpace _, Dir _);
+METHOD System_openDir(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	char path[K_PATHMAX];
+	knh_String_ospath(ctx, sfp[1].s, sfp[2].ns, path, sizeof(path));
+	DIR *dirptr = opendir(path);
+	knh_RawPtr_t *po = new_RawPtr(ctx, sfp[3].p, dirptr);
+	LOGDATA = {sDATA("path", S_tochar(sfp[1].s)), sDATA("realpath", (const char*)path)};
+	if(dirptr != NULL) {
+		LIB_OK("opendir");
+	}
+	else {
+		LIB_Failed("opendir", "IO!!");
+	}
+	RETURN_(po);
+}
+
+//## @Native void Dir.close();
+METHOD Dir_close(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	DIR *dirptr = (DIR*)sfp[0].p->rawptr;
+	if(dirptr != NULL) {
+		sfp[0].p->rawptr = NULL;
+		closedir(dirptr);
+	}
+	RETURNvoid_();
+}
+
+//## @Native @Iterator Map Dir.read();
+METHOD Dir_read(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Map_t *map = KNH_TNULL(Map);
+	DIR *dirptr = (DIR*)sfp[0].p->rawptr;
+	if(dirptr != NULL) {
+		struct dirent *dp = readdir(dirptr);
+		if(dp != NULL) {
+			map = new_Map(ctx);
+			knh_Map_setString(ctx, map, "d_name", dp->d_name);
+		}
+	}
+	RETURN_(map);
+}
+
+//## @Native @Iterator String Dir.readName();
+METHOD Dir_readName(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	const char *dname = NULL;
+	DIR *dirptr = sfp[0].p->rawptr;
+	if(dirptr != NULL) {
+		struct dirent *dp = readdir(dirptr);
+		if(dp != NULL) {
+			dname = dp->d_name;
+		}
+	}
+	RETURN_(new_String(ctx, dname));
+}
 
 ///* ------------------------------------------------------------------------ */
 //

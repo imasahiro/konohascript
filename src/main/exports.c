@@ -46,7 +46,7 @@ static void knh_addConstData(CTX ctx, knh_NameSpace_t *ns, const char *dname, Ob
 {
 	if(dname[0] == '$') {
 		knh_String_t *n = new_T(dname + 1);
-		DictMap_set_(ctx, DP(ctx->sys)->props, n, value);
+		knh_DictMap_set_(ctx, DP(ctx->sys)->props, n, value);
 	}
 	else {
 		knh_bytes_t n = {{dname}, knh_strlen(dname)};

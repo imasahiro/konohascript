@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      295
+#define K_REVISION                      301
 #endif
-#define K_BUILDID                       1127
+#define K_BUILDID                       1128
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -573,10 +573,16 @@
 #define FLAG_Method_Immutable ((knh_flag_t)(1<<8))
 #define Method_isImmutable(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Immutable))
 #define Method_setImmutable(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Immutable,b)
-#define FLAG_Method_Message ((knh_flag_t)(1<<9))
+#define FLAG_Method_Iterator ((knh_flag_t)(1<<9))
+#define Method_isIterator(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Iterator))
+#define Method_setIterator(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Iterator,b)
+#define FLAG_Method_Throwable ((knh_flag_t)(1<<10))
+#define Method_isThrowable(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Throwable))
+#define Method_setThrowable(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Throwable,b)
+#define FLAG_Method_Message ((knh_flag_t)(1<<11))
 #define Method_isMessage(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Message))
 #define Method_setMessage(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Message,b)
-#define FLAG_Method_Controlled ((knh_flag_t)(1<<10))
+#define FLAG_Method_Controlled ((knh_flag_t)(1<<12))
 #define Method_isControlled(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Controlled))
 #define Method_setControlled(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Controlled,b)
 #define FLAG_TypeMap_Interface FLAG_Object_Local1

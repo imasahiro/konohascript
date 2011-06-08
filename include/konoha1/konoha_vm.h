@@ -508,14 +508,14 @@ extern "C" {
 
 #define KLR_CHKIN(ctx, on, fcheckin)  {\
 		knh_Object_t *o_ = Ro_(on);\
-		fcheckin(ctx, SFP(rbp), o_);\
+		fcheckin(ctx, SFP(rbp), RAWPTR(o_));\
 		Context_push(ctx, o_);\
 	}\
 
 #define KLR_CHKOUT(ctx, on, fcheckout)  {\
 		knh_Object_t *o_ = Context_pop(ctx);\
 		DBG_ASSERT(o_ == Ro_(on));\
-		fcheckout(ctx, o_, 0);\
+		fcheckout(ctx, RAWPTR(o_), 0);\
 	}\
 
 /* ------------------------------------------------------------------------ */

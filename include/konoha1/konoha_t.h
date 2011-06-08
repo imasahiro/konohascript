@@ -441,13 +441,13 @@ typedef struct knh_Object_t {
 
 /* types of basic objects (not type-checked) */
 
-#define Object          knh_Object_t
-#define ObjectNULL      Object
-#define dynamic         knh_Object_t
-//#define This            knh_Object_t
-//#define T1              knh_Object_t
-//#define T2              knh_Object_t
-#define UPCAST(o)       (Object*)(o)
+#define Object          struct knh_Object_t
+#define dynamic         struct knh_Object_t
+//#define This          knh_Object_t
+//#define T1            knh_Object_t
+//#define T2            knh_Object_t
+#define UPCAST(o)       (knh_Object_t*)(o)
+#define RAWPTR(o)       (knh_RawPtr_t*)(o)
 
 #define knh_Object_toNULL(ctx, o)   knh_Object_toNULL_(ctx, UPCAST(o))
 #define O_data(o)       (((knh_Int_t*)(o))->n.data)
@@ -702,21 +702,21 @@ knh_Object_t *knh_InputStream_readObject(CTX ctx, knh_InputStream_t *in, knh_typ
 ***/
 
 typedef struct knh_ClassDef_t {
-	void (*init)(CTX, Object*);
-	void (*initcopy)(CTX, Object *, const Object *);
-	void (*reftrace)(CTX, Object * FTRARG);
-	void (*free)(CTX, Object *);
-	void (*checkin)(CTX, knh_sfp_t *sfp, Object*);
-	void (*checkout)(CTX, Object*, int);
-	int  (*compareTo)(const Object*, const Object*);
-	void (*p)(CTX, struct knh_OutputStream_t*, Object*, int);
+	void (*init)(CTX, struct knh_RawPtr_t*);
+	void (*initcopy)(CTX, struct knh_RawPtr_t*, struct knh_RawPtr_t*);
+	void (*reftrace)(CTX, struct knh_RawPtr_t* FTRARG);
+	void (*free)(CTX, struct knh_RawPtr_t*);
+	void (*checkin)(CTX, knh_sfp_t *sfp, struct knh_RawPtr_t*);
+	void (*checkout)(CTX, struct knh_RawPtr_t*, int);
+	int  (*compareTo)(struct knh_RawPtr_t*, struct knh_RawPtr_t*);
+	void (*p)(CTX, struct knh_OutputStream_t*, struct knh_RawPtr_t*, int);
 
 	struct knh_String_t* (*getkey)(CTX, knh_sfp_t*);
 	knh_hashcode_t       (*hashCode)(CTX, knh_sfp_t*);
 	knh_int_t   (*toint)(CTX ctx, knh_sfp_t*);
 	knh_float_t (*tofloat)(CTX ctx, knh_sfp_t*);
 	struct knh_TypeMap_t* (*findTypeMapNULL)(CTX, knh_class_t, knh_class_t, int);
-	void (*wdata)(CTX, void *, Object*, const knh_PackSPI_t *);
+	void (*wdata)(CTX, void *, struct knh_RawPtr_t*, const knh_PackSPI_t *);
 	void *RESERVED2;
 	void *RESERVED3;
 

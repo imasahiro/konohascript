@@ -646,6 +646,13 @@ knh_Object_t *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
 	return o;
 }
 
+KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, knh_RawPtr_t *po, void *rawptr)
+{
+	knh_RawPtr_t *npo = (knh_RawPtr_t*)new_hObject_(ctx, O_cTBL(po));
+	npo->rawptr = rawptr;
+	return npo;
+}
+
 knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 {
 	knh_Object_t *o = NULL;
@@ -654,7 +661,7 @@ knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 	o->h.magicflag = ct->magicflag;
 	knh_Object_RCset(o, K_RCGC_INIT);
 	o->h.cTBL = ct;
-	ct->ospi->init(ctx, o);
+	ct->ospi->init(ctx, RAWPTR(o));
 	createClassObject(ct);
 	knh_useObject(ctx, 1);
 	O_unset_tenure(o); // collectable
@@ -685,7 +692,7 @@ void TR_NEW(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 	o->h.magicflag = ct->magicflag;
 	knh_Object_RCset(o, K_RCGC_INIT);
 	o->h.cTBL = ct;
-	ct->ospi->init(ctx, o);
+	ct->ospi->init(ctx, RAWPTR(o));
 	createClassObject(ct);
 	knh_useObject(ctx, 1);
 	O_unset_tenure(o); // collectable
@@ -698,7 +705,7 @@ static void knh_Object_finalfree(CTX ctx, knh_Object_t *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
 	RCGC_(DBG_ASSERT(Object_isRC0(o)));
-	ct->ospi->free(ctx, o);
+	ct->ospi->free(ctx, RAWPTR(o));
 	//o->h.magicflag = 0;
 	OBJECT_REUSE(o);
 	knh_unuseObject(ctx, 1);
@@ -996,7 +1003,7 @@ static void gc_mark(CTX ctx)
 		DBG_ASSERT(O_hasRef(ref));
 		((knh_context_t*)ctx)->refs = ctx->ref_buf;
 		((knh_context_t*)ctx)->ref_size = 0;
-		cTBL->ospi->reftrace(ctx, ref, ctx->refs);
+		cTBL->ospi->reftrace(ctx, RAWPTR(ref), ctx->refs);
 		if(ctx->ref_size > 0) {
 			L_INLOOP:;
 			prefetch(ctx->refs[0]);
@@ -1012,7 +1019,7 @@ static inline void Object_MSfree(CTX ctx, knh_Object_t *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
 	DBG_P("sweep %p %s", o, CLASS__(O_cid(o)));
-	ct->ospi->free(ctx, o);
+	ct->ospi->free(ctx, RAWPTR(o));
 	OBJECT_REUSE(o);
 	disposeClassObject(ct);
 	O_set_tenure(o); // uncollectable
