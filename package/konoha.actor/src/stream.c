@@ -14,8 +14,7 @@ static void *knh_msgpack_init(CTX ctx, knh_packer_t *pk)
 static void knh_msgpack_flushfree(CTX ctx, knh_packer_t *pk)
 {
 	msgpack_sbuffer *sbuffer = pk->sbuffer;
-	pk->w->dspi->fwrite(ctx, DP(pk->w)->fio, sbuffer->data, sbuffer->size, NULL);
-	fprintf(stderr, "send packing data!!\n");
+	pk->w->dspi->fwrite(ctx, DP(pk->w)->fio, sbuffer->data, sbuffer->size);
 }
 
 static void knh_msgpack_null(CTX ctx, void *pk)
@@ -27,21 +26,18 @@ static void knh_msgpack_bool(CTX ctx, void *_pk, int b)
 {
 	knh_packer_t *pk = (knh_packer_t *)_pk;
 	(b) ? msgpack_pack_true(pk->pk) : msgpack_pack_false(pk->pk);
-	fprintf(stderr, " %d", b);
 }
 
 static void knh_msgpack_int(CTX ctx, void *_pk, knh_int_t i)
 {
 	knh_packer_t *pk = (knh_packer_t *)_pk;
 	msgpack_pack_int64(pk->pk, i);
-	fprintf(stderr, " %lld", i);
 }
 
 static void knh_msgpack_float(CTX ctx, void *_pk, knh_float_t f)
 {
 	knh_packer_t *pk = (knh_packer_t *)_pk;
 	msgpack_pack_double(pk->pk, f);
-	fprintf(stderr, " %f", f);
 }
 
 static void knh_msgpack_string(CTX ctx, void *_pk, const char *str, size_t len)
@@ -49,7 +45,6 @@ static void knh_msgpack_string(CTX ctx, void *_pk, const char *str, size_t len)
 	knh_packer_t *pk = (knh_packer_t *)_pk;
 	msgpack_pack_raw(pk->pk, len + 1);
 	msgpack_pack_raw_body(pk->pk, str, len + 1);
-	fprintf(stderr, " %s", str);
 }
 
 static void knh_msgpack_raw(CTX ctx, void *_pk, const char *str, size_t len)
@@ -57,7 +52,6 @@ static void knh_msgpack_raw(CTX ctx, void *_pk, const char *str, size_t len)
 	knh_packer_t *pk = (knh_packer_t *)_pk;
 	msgpack_pack_raw(pk->pk, len + 1);
 	msgpack_pack_raw_body(pk->pk, str, len + 1);
-	fprintf(stderr, " %s", str);
 }
 
 static void knh_msgpack_putc(CTX ctx, void *pk, int ch)
@@ -69,14 +63,12 @@ static void knh_msgpack_array(CTX ctx, void *_pk, size_t array_size)
 {
 	knh_packer_t *pk = (knh_packer_t *)_pk;
 	msgpack_pack_array(pk->pk, array_size);
-	fprintf(stderr, "[ ");//, array_size);
 }
 
 static void knh_msgpack_map(CTX ctx, void *_pk, size_t map_size)
 {
 	knh_packer_t *pk = (knh_packer_t *)_pk;
 	msgpack_pack_map(pk->pk, map_size);
-	fprintf(stderr, "{ ");
 }
 
 #define MAX_MSG_BUFFER_SIZE 1024
@@ -93,7 +85,6 @@ static Object *knh_msgpack_getObject(CTX ctx, knh_ClassTBL_t *c, msgpack_unpacke
 static knh_Array_t *knh_msgpack_getArray(CTX ctx, knh_ClassTBL_t *c, msgpack_object_kv *map)
 {
 	knh_Array_t *o;
-	//fprintf(stderr, "[");
 	msgpack_object _value = map->val;
 	knh_class_t cid = _value.via.u64;
 	map++;
@@ -140,7 +131,6 @@ static knh_Array_t *knh_msgpack_getArray(CTX ctx, knh_ClassTBL_t *c, msgpack_obj
 		i++;
 	}
 	END_LOCAL_(ctx, lsfp);
-	//fprintf(stderr, "]\n");
 	return o;
 }
 
@@ -239,11 +229,11 @@ static Object *knh_msgpack_getClassObject(CTX ctx, knh_ClassTBL_t *c, msgpack_ob
 			msgpack_object val = map->val;
 			Object *target = knh_msgpack_getObject(ctx, c, (msgpack_unpacked *)&val, 1);
 			if (target == NULL) {
-				KNH_THROW(ctx, NULL, LOG_CRIT, "Message !!", "cannnot create object from : \"%s\"", var_name);
+				//KNH_THROW(ctx, NULL, LOG_CRIT, "Message !!", "cannnot create object from : \"%s\"", var_name);
 			}
 			knh_msgpack_setFieldInfo(ctx, &info, c, var_name, target);
 			if (!info.isFind) {
-				KNH_THROW(ctx, NULL, LOG_CRIT, "Message !!", "cannnot find field variable name : \"%s\"", var_name);
+				//KNH_THROW(ctx, NULL, LOG_CRIT, "Message !!", "cannnot find field variable name : \"%s\"", var_name);
 				break;
 			}
 			Object **v = (Object **)o->ref;
@@ -271,7 +261,7 @@ static Object *knh_msgpack_getClassObject(CTX ctx, knh_ClassTBL_t *c, msgpack_ob
 			}
 		}
 	} else {
-		KNH_THROW(ctx, NULL, LOG_CRIT, "Message !!", "cannnot find class name : \"%s\"", class_name);
+		//KNH_THROW(ctx, NULL, LOG_CRIT, "Message !!", "cannnot find class name : \"%s\"", class_name);
 	}
 	return o;
 }
@@ -314,7 +304,7 @@ static Object *knh_msgpack_getObject(CTX ctx, knh_ClassTBL_t *c, msgpack_unpacke
 		}
 		break;
 	default:
-		KNH_THROW(ctx, NULL, LOG_CRIT, "Message !!", "undefined msgpack object");
+		//KNH_THROW(ctx, NULL, LOG_CRIT, "Message !!", "undefined msgpack object");
 		break;
 	}
 	return o;
@@ -325,7 +315,7 @@ static knh_type_t knh_msgpack_unpack(CTX ctx, knh_ClassTBL_t *c, struct knh_Inpu
 	char buf[MAX_MSG_BUFFER_SIZE] = {0};
 	msgpack_unpacker upk;
 	msgpack_unpacked result;
-	in->dspi->fread(ctx, DP(in)->fio, buf, MAX_MSG_BUFFER_SIZE, NULL);
+	in->dspi->fread(ctx, DP(in)->fio, buf, MAX_MSG_BUFFER_SIZE);
 	knh_msgapck_setUnpacker(&upk, &result, buf);
 	msgpack_unpacker_next(&upk, &result);
 	Object *o = knh_msgpack_getObject(ctx, c, &result, 0);
@@ -373,7 +363,6 @@ METHOD OutputStream_writeObject(CTX ctx, knh_sfp_t *sfp _RIX)
 		O_cTBL(o)->ospi->wdata(ctx, pkr, o, packspi);
 	}
 	packspi->pack_flushfree(ctx, pkr);
-	fprintf(stderr, "\n");
 	RETURNvoid_();
 }
 
@@ -383,7 +372,6 @@ METHOD OutputStream_writeObject(CTX ctx, knh_sfp_t *sfp _RIX)
 METHOD InputStream_readObject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	BEGIN_LOCAL(ctx, lsfp, 1);
-	//BEGIN_LOCAL(ctx, lsfp, 2);
 	knh_InputStream_t *in = sfp[0].in;
 	knh_Class_t *class = sfp[1].c;
 	//knh_NameSpace_t *ns = sfp[2].ns; //needs getPackSPI
