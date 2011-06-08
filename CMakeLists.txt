@@ -281,6 +281,8 @@ if(USE_MPI)
 	endif()
 endif(USE_MPI)
 
+option(USE_ACTOR "Compiling Actor package" OFF)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake 
 		${CMAKE_CURRENT_BINARY_DIR}/config.h)
 

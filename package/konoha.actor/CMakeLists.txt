@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.6)
 set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g")
 set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
 set(CMAKE_BUILD_TYPE Release)
+
+if(USE_ACTOR)
 project(actor)
 set(PACKAGE_SOURCE_CODE src/actor.c src/stream.c)
 
@@ -26,3 +28,4 @@ target_link_libraries(${PACKAGE_NAME} konoha pthread memcached msgpack)
 install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
 
+endif(USE_ACTOR)
