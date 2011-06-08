@@ -316,7 +316,6 @@ METHOD CActor_setMethodInfo(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-#ifdef K_USING_THREAD
 static void knh_sfp_copy(CTX ctx, knh_sfp_t *dst, knh_sfp_t *src, size_t size)
 {
 	size_t i;
@@ -344,17 +343,13 @@ static void delivery_thread_func(void *arg)
 	KNH_SCALL(ctx, sfp, 0, f->mtd, 1);
 	//KNH_SCALL(ctx, lsfp, 0, f->mtd, 2);
 	//END_LOCAL_(ctx, lsfp);
-	fprintf(stderr, "end of thread_func\n");
 	KONOHA_END(info->ctx);
 }
-#endif
 
 METHOD CActor_startDeliver(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	//asm volatile("int3");
 	knh_Actor_t *a = (knh_Actor_t *)sfp[0].o;
 	knh_Func_t *func = sfp[1].fo;
-#ifdef K_USING_THREAD
 	knh_ThreadInfo_t *th_info = (knh_ThreadInfo_t *)KNH_MALLOC(ctx, sizeof(knh_ThreadInfo_t));
 	pthread_t th;
 	th_info->ctx = (knh_context_t *)KNH_MALLOC(ctx, sizeof(knh_context_t));
@@ -365,28 +360,12 @@ METHOD CActor_startDeliver(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_sfp_copy(th_info->ctx, th_info->sfp, sfp, th_info->ctx->stacksize);
 	pthread_create(&th, NULL, (void *)delivery_thread_func, (void *)th_info);
 	pthread_detach(th);
-#else
-	#include <unistd.h>
-	int pid;
-	if ((pid = fork()) == 0) {
-		RETURNvoid_();
-	} else if (pid > 0) {
-		BEGIN_LOCAL(ctx, lsfp, 5);
-		KNH_SETv(ctx, lsfp[5].o, UPCAST(a));
-		klr_setesp(ctx, lsfp + 6);
-		KNH_SCALL(ctx, lsfp, 0, func->mtd, 2);
-		wait(0);
-		END_LOCAL_(ctx, lsfp);
-	}
-#endif
-	//fprintf(stderr, "return to main thread\n");
 	RETURNvoid_();
 }
 
 METHOD CActor_startScheduler(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Actor_t *a = (knh_Actor_t *)sfp[0].o;
-	//fprintf(stderr, "start Scheduler\n");
 	while (true) {
 		if (knh_MailBox_existsMessage(a->mailbox)) {
 			knh_Actor_invokeMethod(ctx, a);

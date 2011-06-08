@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O0 -g3 -Wall -fmessage-length=0 -fPIC -DK_USING_THREAD -I/usr/local/include/
+CFLAGS = -O0 -g3 -Wall -fmessage-length=0 -fPIC -I/usr/local/include/
 LDLIBS = -L/usr/local/lib/ -lkonoha1 -lpthread -lmemcached -lmsgpack
 version = 1.0
 LIBVER = -current_version 1.0.0 -compatibility_version $(version)
