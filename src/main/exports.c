@@ -40,35 +40,6 @@ extern "C" {
 #endif
 
 /* ------------------------------------------------------------------------ */
-
-static void knh_setsfp(CTX ctx, knh_sfp_t *sfp, void *v)
-{
-	knh_Object_t *o = (knh_Object_t*)v;
-	DBG_ASSERT_ISOBJECT(o);
-	knh_Object_RCinc(o);
-	knh_Object_RCdec(sfp[0].o);
-	if(Object_isRC0(sfp[0].o)) {
-		knh_Object_RCfree(ctx, sfp[0].o);
-	}
-	sfp[0].o = o;
-}
-
-KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb)
-{
-	return knh_Bytes_ensureZero(ctx, cwb->ba) + cwb->pos;
-}
-
-const knh_ExportsAPI_t *knh_getExportsAPI(void)
-{
-	static knh_ExportsAPI_t exports = {
-		knh_fastmalloc, knh_fastfree, /* memory.c */
-		knh_setsfp, knh_Iterator_close,
-		knh_trace, dbg_p, todo_p,
-	};
-	return &exports;
-}
-
-/* ------------------------------------------------------------------------ */
 /* [CONST/PROPERTY DATA] */
 
 static void knh_addConstData(CTX ctx, knh_NameSpace_t *ns, const char *dname, Object *value)

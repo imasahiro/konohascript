@@ -199,11 +199,11 @@ static knh_bool_t FILE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, vo
 static knh_Object_t* FILE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s, void *thunk)
 {
 	if(cid == CLASS_InputStream) {
-		knh_InputStream_t *in = new_InputStreamNULL(ctx, ns, s, "r", ctx->mon);
+		knh_InputStream_t *in = new_InputStreamNULL(ctx, ns, s, "r");
 		return (knh_Object_t*)in;
 	}
 	if(cid == CLASS_OutputStream) {
-		knh_OutputStream_t *out = new_OutputStreamNULL(ctx, ns, s, "a", ctx->mon);
+		knh_OutputStream_t *out = new_OutputStreamNULL(ctx, ns, s, "a");
 		return (knh_Object_t*)out;
 	}
 	return NULL;
@@ -264,20 +264,20 @@ static knh_bool_t NOFILE_realpath(CTX ctx, knh_NameSpace_t *ns, knh_path_t *ph)
 	KNH_LOG("unsupported scheme: %s", P_text(ph));
 	return 0;
 }
-static knh_io_t NOFILE_open(CTX ctx, knh_path_t *ph, const char *mode, knh_Monitor_t *mon)
+static knh_io_t NOFILE_open(CTX ctx, knh_path_t *ph, const char *mode)
 {
 	return IO_NULL;
 }
-static knh_intptr_t NOFILE_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz, knh_Monitor_t *mon)
+static knh_intptr_t NOFILE_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
 {
 	return 0;  // read nothing. this means that we reach the end of the stream.
 }
-static knh_intptr_t NOFILE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz, knh_Monitor_t *mon)
+static knh_intptr_t NOFILE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
 {
 	DBG_ASSERT(fd != IO_BUF);
 	return bufsiz;
 }
-static knh_intptr_t BYTE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz, knh_Monitor_t *mon)
+static knh_intptr_t BYTE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
 {
 	DBG_ASSERT(fd == IO_BUF);
 	return 0; // write nothing. this means that we are unable to clear buffer
@@ -304,23 +304,23 @@ static knh_bool_t FILE_realpath(CTX ctx, knh_NameSpace_t *ns, knh_path_t *ph)
 	return knh_path_isfile(ctx, ph);
 }
 
-static knh_io_t FILE_open(CTX ctx, knh_path_t *ph, const char *mode, knh_Monitor_t *mon)
+static knh_io_t FILE_open(CTX ctx, knh_path_t *ph, const char *mode)
 {
 	const char *fname = P_text(ph) + ph->pbody;
 	return (knh_io_t)knh_fopen(ctx, LOG_ERR, fname, mode);
 }
 
-static knh_io_t NOFILE_wopen(CTX ctx, knh_path_t *ph, const char *mode, knh_Monitor_t *mon)
+static knh_io_t NOFILE_wopen(CTX ctx, knh_path_t *ph, const char *mode)
 {
 	KNH_LOG("nofile path='%s', mode='%s'", P_text(ph), mode);
 	return IO_NULL;
 }
-static knh_intptr_t FILE_read(CTX ctx, knh_io_t fio, char *buf, size_t bufsiz, knh_Monitor_t *mon)
+static knh_intptr_t FILE_read(CTX ctx, knh_io_t fio, char *buf, size_t bufsiz)
 {
 	return knh_fread(ctx, buf, bufsiz, (FILE*)fio);
 }
 
-static knh_intptr_t FILE_write(CTX ctx, knh_io_t fio, const char *buf, size_t bufsiz, knh_Monitor_t *mon)
+static knh_intptr_t FILE_write(CTX ctx, knh_io_t fio, const char *buf, size_t bufsiz)
 {
 	size_t ssize = knh_fwrite(ctx, buf, bufsiz, (FILE*)fio);
 	knh_fflush(ctx, (FILE*)fio);
@@ -639,7 +639,7 @@ static int use_buffer(CURLFILE *file, int want)
 	return 0;
 }
 
-static knh_io_t CURL_open(Ctx *ctx, knh_bytes_t path, const char *mode, knh_Monitor_t *mon)
+static knh_io_t CURL_open(Ctx *ctx, knh_bytes_t path, const char *mode)
 {
 	//TODO mode treats as method
 	CURLFILE *file = malloc(sizeof(CURLFILE));
@@ -669,7 +669,7 @@ static knh_io_t CURL_open(Ctx *ctx, knh_bytes_t path, const char *mode, knh_Moni
 }
 
 //new OutputStream(http://...)
-static knh_io_t CURL_init(Ctx *ctx, knh_bytes_t path, const char *mode, knh_Monitor_t *mon)
+static knh_io_t CURL_init(Ctx *ctx, knh_bytes_t path, const char *mode)
 {
 	return (knh_io_t)NULL;
 }

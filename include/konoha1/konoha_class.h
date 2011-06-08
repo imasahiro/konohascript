@@ -802,7 +802,6 @@ typedef struct {
 		struct knh_String_t *str;
 	};
 	size_t pos;  size_t posend;
-	struct knh_Monitor_t *mon;
 	size_t stat_size;
 } knh_InputStreamEX_t;
 
@@ -824,7 +823,6 @@ typedef struct {
 	knh_String_t*  urn;
 	knh_io_t fio;
 	struct knh_Bytes_t *ba;
-	struct knh_Monitor_t *mon;
 	size_t stat_size;
 	knh_String_t*  NEWLINE;
 	knh_String_t*  TAB;
@@ -985,15 +983,15 @@ typedef struct knh_Context_t {
 } knh_Context_t;
 
 
-/* ------------------------------------------------------------------------ */
-//## class Monitor Object;
-//## flag Monitor  Throwable        1 - is set * *;
-
-typedef struct knh_Monitor_t {
-	knh_hObject_t h;
-	int loglevel;
-	void (*trace)(CTX, knh_sfp_t*, struct knh_Monitor_t*, const char *ns, const char *event, const char *fmt, ...);
-} knh_Monitor_t;
+///* ------------------------------------------------------------------------ */
+////## class Monitor Object;
+////## flag Monitor  Throwable        1 - is set * *;
+//
+//typedef struct knh_Monitor_t {
+//	knh_hObject_t h;
+//	int loglevel;
+//	void (*trace)(CTX, knh_sfp_t*, struct knh_Monitor_t*, const char *ns, const char *event, const char *fmt, ...);
+//} knh_Monitor_t;
 
 /* ------------------------------------------------------------------------ */
 //## class Assurance Object;

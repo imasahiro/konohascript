@@ -974,7 +974,7 @@ static knh_InputStream_t* openScriptInputStreamNULL(CTX ctx, knh_NameSpace_t *ns
 	knh_InputStream_t *in = NULL;
 	void *sfp = NULL;
 	if(dspi->realpath(ctx, ns, ph)) {
-		knh_io_t fio = dspi->fopen(ctx, ph, "r", ctx->mon);
+		knh_io_t fio = dspi->fopen(ctx, ph, "r");
 		if(fio != IO_NULL) {
 			in = new_InputStreamDSPI(ctx, fio, dspi);
 			knh_bytes_t rpath = B(P_text(ph));

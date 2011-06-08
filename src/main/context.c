@@ -66,7 +66,6 @@ static knh_context_t* new_hcontext(CTX ctx0)
 	ctx->freeObjectList = NULL;
 	ctx->freeMemoryList = NULL;
 	ctx->parent = (knh_context_t*)ctx;
-	ctx->api = knh_getExportsAPI();
 	ctx->api2 = getapi2();
 	{
 		knh_uintptr_t i = 0, ch;
@@ -335,6 +334,18 @@ int iconv_close(iconv_t i)
 }
 #endif
 
+static void _setsfp(CTX ctx, knh_sfp_t *sfp, void *v)
+{
+	knh_Object_t *o = (knh_Object_t*)v;
+	DBG_ASSERT_ISOBJECT(o);
+	knh_Object_RCinc(o);
+	knh_Object_RCdec(sfp[0].o);
+	if(Object_isRC0(sfp[0].o)) {
+		knh_Object_RCfree(ctx, sfp[0].o);
+	}
+	sfp[0].o = o;
+}
+
 static void initServiceSPI(knh_ServiceSPI_t *spi)
 {
 	spi->syncspi = "nothread";
@@ -351,7 +362,12 @@ static void initServiceSPI(knh_ServiceSPI_t *spi)
 #else
 	spi->iconvspi = "noiconv";
 #endif
+	spi->mallocSPI = knh_fastmalloc;
+	spi->freeSPI = knh_fastfree;
+	spi->setsfpSPI = _setsfp;
+	spi->closeItrSPI = knh_Iterator_close;
 	spi->recordSPI = knh_record;
+	spi->pSPI = dbg_p;
 }
 
 /* ------------------------------------------------------------------------ */

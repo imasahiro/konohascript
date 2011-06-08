@@ -609,7 +609,7 @@ void knh_opcode_shift(knh_opline_t *c, int shift)
 #define JUMP        L_HEAD
 #define TC(c)
 #define DISPATCH_START(pc) L_HEAD:;switch(pc->opcode) {
-#define DISPATCH_END(pc)   } KNH_DIE("unknown opcode=%d", pc->opcode); 
+#define DISPATCH_END(pc)   } KNH_DIE("unknown opcode=%d", (int)pc->opcode); 
 #define GOTO_PC(pc)         GOTO_NEXT()
 #endif/*K_USING_THCODE_*/
 

@@ -544,7 +544,6 @@ typedef void *(*knh_Fthread)(void *);
 		struct knh_Converter_t         *conv;\
 		struct knh_Context_t           *cx;\
 		struct knh_Script_t            *scr;\
-		struct knh_Monitor_t           *mon;\
 		struct knh_Assurance_t         *as;\
 		knh_int_t     dummy_ivalue;\
 		knh_float_t   dummy_fvalue \
@@ -1037,6 +1036,7 @@ typedef long iconv_t;
 #endif
 
 struct knh_logdata_t;
+struct knh_Iterator_t;
 
 typedef struct knh_ServiceSPI_t {
 	/* sync spi */
@@ -1058,12 +1058,19 @@ typedef struct knh_ServiceSPI_t {
 	size_t (*iconv)(iconv_t, char**, size_t*, char**, size_t*);
 	int (*iconv_close)(iconv_t);
 	/* shell spi */
-	const char *syncspi;    // debug
-	const char *syslogspi;  // debug
+	const char *syncspi;     // debug
+	const char *syslogspi;   // debug
 	const char *readlinespi; // debug
-	const char *iconvspi;   // debug
+	const char *iconvspi;    // debug
 	/* konoha spi */
+	void* (*mallocSPI)(CTX, size_t);       	// memory
+	void  (*freeSPI)(CTX, void *, size_t);
+	// stack operation
+	void  (*setsfpSPI)(CTX, knh_sfp_t *, void *);
+	void  (*closeItrSPI)(CTX, struct knh_Iterator_t *);
+	// evidence
 	void (*recordSPI)(CTX, knh_sfp_t *, int, int, const char *, const char *, const struct knh_logdata_t *, size_t);
+	void  (*pSPI)(const char*, const char*, int, const char*, ...);
 } knh_ServiceSPI_t;
 
 typedef struct knh_context_t {
@@ -1074,6 +1081,7 @@ typedef struct knh_context_t {
 	};
 	knh_stat_t                     *stat;
 	const knh_ServiceSPI_t         *spi;
+	const struct knh_api2_t        *api2;
 	struct knh_System_t*            sys;
 	struct knh_Script_t*         script;
 
@@ -1084,7 +1092,6 @@ typedef struct knh_context_t {
 	knh_sfp_t*                   stacktop;
 	void*                        cstack_bottom;
 	struct knh_Exception_t      *e;
-	struct knh_Monitor_t        *mon;
 
 	/* memory */
 	knh_Object_t                *freeObjectList;
@@ -1120,8 +1127,6 @@ typedef struct knh_context_t {
 	struct knh_context_t        *parent;
 	knh_mutex_t                 *ctxlock;
 
-	const struct _knh_ExportsAPI_t *api;
-	const struct knh_api2_t        *api2;
 	char                            trace[16];
 	knh_uint_t                      seq;
 

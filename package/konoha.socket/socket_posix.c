@@ -117,15 +117,15 @@ static knh_bool_t SOCKET_realpath(CTX ctx, knh_NameSpace_t *ns, knh_path_t *ph)
 {
 	return 0;
 }
-static knh_io_t SOCKET_open(CTX ctx, knh_path_t *ph, const char *mode, knh_Monitor_t *mon)
+static knh_io_t SOCKET_open(CTX ctx, knh_path_t *ph, const char *mode)
 {
 	return IO_NULL; // Always opened by external
 }
-static knh_intptr_t SOCKET_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz, knh_Monitor_t *mon)
+static knh_intptr_t SOCKET_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
 {
 	return recv((int)fd, buf, bufsiz, 0);
 }
-static knh_intptr_t SOCKET_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz, knh_Monitor_t *mon)
+static knh_intptr_t SOCKET_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
 {
 	return send((int)fd, buf, bufsiz, 0);
 }
@@ -144,7 +144,7 @@ static knh_StreamDSPI_t SOCKET_DSPI = {
 	SOCKET_close,
 };
 
-static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int port, knh_Monitor_t *mon)
+static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int port)
 {
 	knh_io_t sd = IO_NULL;
 	struct in_addr addr = {0};
@@ -183,14 +183,14 @@ static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int
 	return sd;
 }
 
-//## Socket Socket.new(String host, int port, Monitor mon);
+//## Socket Socket.new(String host, int port);
 METHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	const char* host = String_to(const char*, sfp[1]);
 	int port = Int_to(int, sfp[2]);
 	if (port == 0) port = 80;
-	DP(so)->sd = socket_open(ctx, sfp, host, port, sfp[3].mon);
+	DP(so)->sd = socket_open(ctx, sfp, host, port);
 	if (DP(so)->sd != IO_NULL) {
 		KNH_SETv(ctx, DP(so)->in,  new_InputStreamDSPI(ctx, DP(so)->sd, &SOCKET_DSPI));
 		KNH_SETv(ctx, DP(so)->out, new_OutputStreamDSPI(ctx, DP(so)->sd, &SOCKET_DSPI));

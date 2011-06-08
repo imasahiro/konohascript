@@ -335,7 +335,7 @@ knh_String_t* knh_ResultSet_getString(CTX ctx, knh_ResultSet_t *o, size_t n)
 #else/*K_INCLUDE_BUILTINAPI*/
 
 /* ------------------------------------------------------------------------ */
-//## method This Connection.new(String urn, NameSpace ns, Monitor mon);
+//## method This Connection.new(String urn, NameSpace ns);
 
 static METHOD Connection_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {

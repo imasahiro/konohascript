@@ -35,22 +35,6 @@ extern "C" {
 #endif
 
 /* ------------------------------------------------------------------------ */
-/* UTILS_API */
-
-typedef const struct _knh_ExportsAPI_t {
-	// memory
-	void* (*malloc)(CTX, size_t);
-	void  (*free)(CTX, void *, size_t);
-	// stack operation
-	void  (*setsfp)(CTX, knh_sfp_t *, void *);
-	void  (*closeIterator)(CTX, knh_Iterator_t *);
-	// evidence
-	void  (*trace)(CTX, knh_sfp_t *, int, const char*, const char*, int, const char*, ...);
-	void  (*dbg_p)(const char*, const char*, int, const char*, ...);
-	void  (*todo_p)(const char*, const char*, int, const char*, ...);
-} knh_ExportsAPI_t;
-
-/* ------------------------------------------------------------------------ */
 /* driver */
 
 typedef const struct {
@@ -103,11 +87,11 @@ typedef struct knh_StreamDSPI_t {
 	int type;
 	const char *name;
 	knh_bool_t (*realpath)(CTX, knh_NameSpace_t *ns, knh_path_t*);
-	knh_io_t (*fopen)(CTX, knh_path_t*, const char *, struct knh_Monitor_t *);
-	knh_io_t (*wopen)(CTX, knh_path_t*, const char *, struct knh_Monitor_t *);
-	knh_intptr_t (*fread)(CTX, knh_io_t, char *, size_t, struct knh_Monitor_t *);
+	knh_io_t (*fopen)(CTX, knh_path_t*, const char *);
+	knh_io_t (*wopen)(CTX, knh_path_t*, const char *);
+	knh_intptr_t (*fread)(CTX, knh_io_t, char *, size_t);
 	size_t wbufsiz;  // write bufsize
-	knh_intptr_t (*fwrite)(CTX, knh_io_t, const char *, size_t, struct knh_Monitor_t *);
+	knh_intptr_t (*fwrite)(CTX, knh_io_t, const char *, size_t);
 	void   (*fclose)(CTX, knh_io_t);
 } knh_StreamDSPI_t;
 
@@ -298,13 +282,13 @@ typedef const knh_LinkDPI_t* (*knh_Flinkdef)(CTX);
 #ifdef K_EXPORTS
 
 #define RETURN_(vv) {\
-		ctx->api->setsfp(ctx, sfp+rix, vv);\
+		ctx->spi->setsfpSPI(ctx, sfp+rix, vv);\
 		return; \
 	}\
 
 #define RETURNa_(v) {\
 		Object *vv_ = (Object*)v;\
-		ctx->api->setsfp(ctx, sfp+rix, vv_);\
+		ctx->spi->setsfpSPI(ctx, sfp+rix, vv_);\
 		sfp[rix].ndata = O_data(vv_);\
 		return; \
 	}\
@@ -350,19 +334,24 @@ typedef const knh_LinkDPI_t* (*knh_Flinkdef)(CTX);
 	}\
 
 
+#ifdef K_EXPORTS
+
 #define ITREND_() {\
-		ctx->api->closeIterator(ctx, sfp[0].it);\
+		ctx->spi->closeItrSPI(ctx, sfp[0].it);\
 		return 0; \
 	}\
 
-#ifdef K_EXPORTS
-
 #define ITRNEXT_(vv) {\
-		ctx->api->setsfp(ctx, sfp+rtnidx, vv);\
+		ctx->spi->setsfpSPI(ctx, sfp+rtnidx, vv);\
 		return 1; \
 	}\
 
 #else
+
+#define ITREND_() {\
+		knh_Iterator_close(ctx, sfp[0].it);\
+		return 0; \
+	}\
 
 #define ITRNEXT_(vv) {\
 		KNH_SETv(ctx, sfp[rtnidx].o, vv);\

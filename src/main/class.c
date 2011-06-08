@@ -1615,7 +1615,6 @@ static METHOD Object_to(CTX ctx, knh_sfp_t *sfp _RIX)
 			knh_TypeMap_exec(ctx, tmr, sfp, rix);
 		}
 		else {
-			//knh_Monitor_throw(ctx, mon);
 			sfp[rix].ivalue = 0;
 			RETURN_(KNH_NULVAL(tcid));
 		}

@@ -60,17 +60,16 @@ KNHAPI2(knh_InputStream_t*) new_InputStreamDSPI(CTX ctx, knh_io_t fio, const knh
 	return in;
 }
 
-KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn, const char *mode, knh_Monitor_t *mon)
+KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn, const char *mode)
 {
 	knh_bytes_t path = S_tobytes(urn);
 	const knh_StreamDSPI_t *dspi = knh_getStreamDSPI(ctx, ns, path);
 	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
 	if(dspi->realpath(ctx, ns, ph)) {
-		knh_io_t fd = dspi->fopen(ctx, ph, mode, mon);
+		knh_io_t fd = dspi->fopen(ctx, ph, mode);
 		if(fd != IO_NULL) {
 			knh_InputStream_t *in = new_InputStreamDSPI(ctx, fd, dspi);
 			KNH_SETv(ctx, DP(in)->urn, urn);
-			KNH_SETv(ctx, DP(in)->mon, mon);
 			if(DP(in)->ba->bu.len == 0) {
 				knh_Bytes_expands(ctx, DP(in)->ba, K_STREAM_BUFSIZ);
 			}
@@ -120,7 +119,7 @@ void knh_InputStream_setpos(CTX ctx, knh_InputStream_t *in, size_t s, size_t e)
 static int readbuf(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
 {
 	if(IS_Bytes(ba)) {
-		long ssize = in->dspi->fread(ctx, DP(in)->fio, ba->bu.buf, ba->dim->capacity, DP(in)->mon);
+		long ssize = in->dspi->fread(ctx, DP(in)->fio, ba->bu.buf, ba->dim->capacity);
 		if(ssize > 0) {
 			DP(in)->stat_size += ssize;
 			DP(in)->pos = 0;
@@ -234,17 +233,16 @@ KNHAPI2(knh_OutputStream_t*) new_OutputStreamDSPI(CTX ctx, knh_io_t fio, const k
 	return w;
 }
 
-KNHAPI2(knh_OutputStream_t*) new_OutputStreamNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn, const char *mode, knh_Monitor_t *mon)
+KNHAPI2(knh_OutputStream_t*) new_OutputStreamNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn, const char *mode)
 {
 	knh_bytes_t path = S_tobytes(urn);
 	const knh_StreamDSPI_t *dspi = knh_getStreamDSPI(ctx, ns, path);
 	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
 	if(dspi->realpath(ctx, ns, ph)) {
-		knh_io_t fd = dspi->wopen(ctx, ph, mode, mon);
+		knh_io_t fd = dspi->wopen(ctx, ph, mode);
 		if(fd != IO_NULL) {
 			knh_OutputStream_t *out = new_OutputStreamDSPI(ctx, fd, dspi);
 			KNH_SETv(ctx, DP(out)->urn, urn);
-			KNH_SETv(ctx, DP(out)->mon, mon);
 			knh_path_close(ctx, ph);
 			return out;
 		}
@@ -278,13 +276,13 @@ KNHAPI2(void) knh_OutputStream_flush(CTX ctx, knh_OutputStream_t *w, int isNEWLI
 			KNH_ASSERT(ba != cwb->ba);
 			c->dspi->enc(ctx, c->conv, BA_tobytes(ba), cwb->ba);
 			ba = cwb->ba;
-			if(w->dspi->fwrite(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len, DP(w)->mon) > 0) {
+			if(w->dspi->fwrite(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len) > 0) {
 				knh_Bytes_clear(DP(w)->ba, 0);
 			}
 			knh_cwb_close(cwb);
 			OutputStream_setUTF8(w, 0);
 		}
-		else if(w->dspi->fwrite(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len, DP(w)->mon) > 0) {
+		else if(w->dspi->fwrite(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len) > 0) {
 			knh_Bytes_clear(ba, 0);
 		}
 	}
@@ -824,7 +822,7 @@ KNHAPI2(void) knh_printf(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...)
 #else /*K_INCLUDE_BUILTINAPI*/
 
 /* ------------------------------------------------------------------------ */
-//## method InputStream InputStream.new(String urn, String mode, NameSpace ns, Monitor mon);
+//## method InputStream InputStream.new(String urn, String mode, NameSpace ns);
 
 static METHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -837,8 +835,7 @@ static METHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	path.text = P_text(ph); path.len = ph->plen;
 	in->dspi = knh_getStreamDSPI(ctx, ns, path);
 	if(in->dspi->realpath(ctx, ns, ph)) {
-		KNH_SETv(ctx, DP(in)->mon, sfp[4].mon);
-		DP(in)->fio = in->dspi->fopen(ctx, ph, mode, DP(in)->mon);
+		DP(in)->fio = in->dspi->fopen(ctx, ph, mode);
 		if(DP(in)->fio != IO_NULL) {
 			KNH_SETv(ctx, DP(in)->urn, sfp[1].s);
 			knh_Bytes_ensureSize(ctx, DP(in)->ba, K_PAGESIZE);
@@ -987,7 +984,7 @@ static TYPEMAP knh_InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 /* [OutputStream] */
 
-//## method OutputStream OutputStream.new(String urn, String mode, NameSpace ns, Monitor mon);
+//## method OutputStream OutputStream.new(String urn, String mode, NameSpace ns);
 
 static METHOD OutputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -999,8 +996,7 @@ static METHOD OutputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	path.text = P_text(ph); path.len = ph->plen;
 	w->dspi = knh_getStreamDSPI(ctx, ns, path);
 	if(w->dspi->realpath(ctx, ns, ph)) {
-		KNH_SETv(ctx, DP(w)->mon, sfp[4].mon);
-		DP(w)->fio = w->dspi->fopen(ctx, ph, mode, DP(w)->mon);
+		DP(w)->fio = w->dspi->fopen(ctx, ph, mode);
 		if(DP(w)->fio != IO_NULL) {
 			KNH_SETv(ctx, DP(w)->urn, sfp[1].s);
 			goto L_RETURN;

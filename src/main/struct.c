@@ -2025,7 +2025,6 @@ static void InputStream_init(CTX ctx, Object *o)
 	b->fio = IO_BUF;
 	KNH_INITv(b->ba, new_Bytes(ctx, "stream", 0));
 	KNH_INITv(b->urn, TS_DEVNULL);
-	KNH_INITv(b->mon, KNH_NULL);
 	b->pos = 0; b->posend = 0;
 	b->stat_size = 0;
 	in->b = b;
@@ -2083,7 +2082,6 @@ static void OutputStream_init(CTX ctx, Object *o)
 	b->stat_size = 0;
 	KNH_INITv(b->NEWLINE, TS_EOL);
 	KNH_INITv(b->TAB, TS_TAB);
-	KNH_INITv(b->mon, KNH_NULL);
 	b->indent = 0;
 	w->encNULL = NULL;
 	w->uline = 0;
@@ -2449,32 +2447,6 @@ static knh_ClassDef_t ContextDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
-/* --------------- */
-/* Monitor */
-
-static void mtrace(CTX ctx, knh_sfp_t *sfp, struct knh_Monitor_t *mon, const char *ns, const char *evt, const char *fmt, ...)
-{
-	va_list ap;
-	va_start(ap , fmt);
-	knh_vtrace(ctx, sfp, (mon)->loglevel, ns, evt, Monitor_isThrowable(mon), fmt, ap);
-	va_end(ap);
-}
-
-static void Monitor_init(CTX ctx, Object *o)
-{
-	knh_Monitor_t *mon = (knh_Monitor_t*)o;
-	mon->loglevel = LOG_NOTICE;
-	mon->trace = mtrace;
-}
-
-static knh_ClassDef_t MonitorDef = {
-	Monitor_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
-	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"Monitor", CFLAG_Monitor, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
-};
 
 /* --------------- */
 /* Assurance */

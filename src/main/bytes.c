@@ -206,6 +206,12 @@ void knh_Bytes_write(CTX ctx, knh_Bytes_t *ba, knh_bytes_t t)
 
 /* ------------------------------------------------------------------------ */
 
+KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb)
+{
+	return knh_Bytes_ensureZero(ctx, cwb->ba) + cwb->pos;
+}
+
+
 knh_String_t *knh_cwb_newString(CTX ctx, knh_cwb_t *cwb)
 {
 	if(cwb->pos == (cwb->ba)->bu.len) {
