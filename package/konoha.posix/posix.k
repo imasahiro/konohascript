@@ -47,4 +47,11 @@ include nativelink;
 @Native String System.getCwd();
 @Native Boolean System.chDir(String dirname);
 
+// dir
+@Native class Dir;
+@Native @Throwable Dir System.openDir(String path, NameSpace _, Dir _);
+@Native @Iterator String Dir.readName();
+@Native void Dir.close();
+@Native @Iterator Map Dir.read();
+
 include func:SystemCONST;

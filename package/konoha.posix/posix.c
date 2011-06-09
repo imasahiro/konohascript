@@ -280,7 +280,7 @@ METHOD Dir_read(CTX ctx, knh_sfp_t *sfp _RIX)
 METHOD Dir_readName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	const char *dname = NULL;
-	DIR *dirptr = sfp[0].p->rawptr;
+	DIR *dirptr = (DIR*) sfp[0].p->rawptr;
 	if(dirptr != NULL) {
 		struct dirent *dp = readdir(dirptr);
 		if(dp != NULL) {
