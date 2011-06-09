@@ -193,6 +193,17 @@ METHOD System_getCwd(CTX ctx, knh_sfp_t *sfp _RIX)
 //	LOG_RETURN_ERRNO(LOG_DEBUG, "path='%s'", chdir, tmpbuf);
 //}
 
+//void test (const char *name)
+//{
+//	DIR * dirptr = opendir(".");
+//	struct *dirent dp;
+//	while ((dp = readdir(dirptr)) != NULL) {
+//		if (dp->d_namlen == len && !strcmp(dp->d_name, name)) {
+//			printf("found!!");
+//		}
+//	}
+//	closedir(dirptr);
+//}
 
 /* ------------------------------------------------------------------------ */
 /* [DIR] */

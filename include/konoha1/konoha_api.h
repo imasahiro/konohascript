@@ -301,6 +301,7 @@ void WarningUnknownClass(CTX ctx, knh_Token_t *tk, knh_class_t defc);
 knh_Token_t* ERROR_UnableToAssign(CTX ctx, knh_Token_t *tk);
 knh_Token_t* ErrorUnsupportedConstructor(CTX ctx, knh_class_t mtd_cid);
 knh_Token_t* ERROR_UndefinedBehavior(CTX ctx, const char *token);
+knh_Token_t* ERROR_CompilerControlledParameter(CTX ctx, knh_class_t mtd_cid, knh_methodn_t mn, int n);
 knh_Token_t* ERROR_RequiredParameter(CTX ctx);
 void WARN_WrongTypeParam(CTX ctx, knh_class_t cid);
 void INFO_Typing(CTX ctx, const char *prefix, knh_bytes_t name, knh_type_t type);

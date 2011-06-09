@@ -1684,7 +1684,7 @@ static void Stmt_taddASIS(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, knh_FisToken 
 
 static int isVARN(knh_Token_t* tk)
 {
-	return (TT_(tk) == TT_NAME && !Token_isDOT(tk));
+	return ((TT_(tk) == TT_NAME && !Token_isDOT(tk)) || TT_(tk) == TT_ASIS);
 }
 
 static void _PNAME(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)

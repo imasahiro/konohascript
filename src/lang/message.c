@@ -334,6 +334,11 @@ knh_Token_t* ERROR_UndefinedBehavior(CTX ctx, const char *token)
 {
 	return Gamma_perror(ctx, KC_ERR, _("undefined behavior: %s"), token);
 }
+knh_Token_t* ERROR_CompilerControlledParameter(CTX ctx, knh_class_t mtd_cid, knh_methodn_t mn, int n)
+{
+	return Gamma_perror(ctx, KC_ERR, _("compiler controlled parameter: %C.%M(#%d)"), mtd_cid, mn, n);
+}
+
 knh_Token_t* ERROR_RequiredParameter(CTX ctx)
 {
 	return Gamma_perror(ctx, KC_ERR, _("needs a parameter to infer its type"));

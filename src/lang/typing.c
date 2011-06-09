@@ -378,7 +378,7 @@ static void Stmt_insert_(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_Term_t *tm)
 
 static knh_fieldn_t Token_fnq(CTX ctx, knh_Token_t *tk)
 {
-	knh_fieldn_t fn = FN_NONAME;
+	knh_fieldn_t fn = FN_;
 	if(TT_(tk) == TT_NAME || TT_(tk) == TT_UNAME) {
 		fn = knh_getfnq(ctx, TK_tobytes(tk), FN_NEWID);
 	}
@@ -2109,6 +2109,9 @@ static knh_Token_t* CALLPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt
 		knh_param_t* p = knh_ParamArray_get(pa, i);
 		knh_type_t param_reqt = knh_type_tocid(ctx, p->type, mtd_cid);
 		if(n < size) {
+			if(p->fn == FN_) {
+				return ERROR_CompilerControlledParameter(ctx, mtd->cid, mtd->mn, i+1);
+			}
 			TYPING_TypedExpr(ctx, stmt, n, param_reqt);
 		}
 		else {
@@ -3605,6 +3608,7 @@ static knh_flag_t METHOD_flag(CTX ctx, knh_Stmt_t *o, knh_class_t cid)
 		ADD_FLAG(flag, "Const", FLAG_Method_Const);
 		ADD_FLAG(flag, "Static", FLAG_Method_Static);
 		ADD_FLAG(flag, "Immutable", FLAG_Method_Static);
+		ADD_FLAG(flag, "Throwable", FLAG_Method_Throwable);
 		if(class_isSingleton(cid)) flag |= FLAG_Method_Static;
 		if(class_isImmutable(cid)) flag |= FLAG_Method_Immutable;
 //		if(class_isDebug(cid)) flag |= FLAG_Method_Debug;
@@ -4592,8 +4596,9 @@ knh_bool_t knh_Method_typing(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_
 			knh_Token_t *tkT = TTYPE_typing(ctx, tkNN(stmtP, i+0), TYPE_dyn);
 			knh_Token_t *tkN = tkNN(stmtP, i+1);
 			knh_Token_t *tkV = tkNN(stmtP, i+2);
+			int op = GF_FUNCVAR | GF_USEDCOUNT; /*  | (TT_(tkN) != TT_ASIS ? GF_UNIQUE : 0); */
 			if(Token_isDOT(tkN)) break;
-			tkN = Gamma_add(ctx, flag, tkT, tkN, tkV, GF_UNIQUE | GF_FUNCVAR | GF_USEDCOUNT);
+			tkN = Gamma_add(ctx, flag, tkT, tkN, tkV, op);
 			if(TT_(tkN) == TT_ERR) return 0;
 		}
 		DP(ctx->gma)->psize = i / 3;
