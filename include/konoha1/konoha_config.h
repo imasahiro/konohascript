@@ -289,7 +289,7 @@ typedef struct knh_sysinfo_t {
 #endif
 #define 	K_OSLINEFEED "\r\n"
 #define 	K_OSDLLEXT ".dll"
-#define		K_FILESEPARATOR '\\'
+#define		K_SEP '\\'
 #define     K_KONOHAFOLDER "Konoha"
 
 #endif
@@ -310,7 +310,7 @@ typedef struct knh_sysinfo_t {
 
 #define 	K_OSLINEFEED "\r\n"
 #define 	K_OSDLLEXT ".dll"
-#define		K_FILESEPARATOR '\\'
+#define		K_SEP '\\'
 #define     K_KONOHAFOLDER "Konoha"
 #endif/* _MSC_VER*/
 
@@ -374,8 +374,8 @@ typedef struct knh_sysinfo_t {
 #define K_OSDLLEXT ".so"
 #endif
 
-#ifndef K_FILESEPARATOR
-#define K_FILESEPARATOR '/'
+#ifndef K_SEP
+#define K_SEP '/'
 #endif
 
 #ifndef K_KONOHAFOLDER

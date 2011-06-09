@@ -1557,7 +1557,10 @@ static tkitr_t *ITR_stmt(CTX ctx, tkitr_t *itr, int pos, tkitr_t *buf, int isNee
 {
 	int i;
 	*buf = *itr;
-	for(i = itr->c + 1 + pos; i < itr->e; i++) {
+	DBG_P("pos=%d", pos);
+	DBG_ASSERT(pos > 0);
+	for(i = itr->c + pos; i < itr->e; i++) {
+		//DBG_P("i=%d, TT=%s", i, TT__(itr->ts[i]->tt));
 		if(Token_isBOL(itr->ts[i])) {
 			if(isNeedSemicolon && TT_(itr->ts[i]) != TT_SEMICOLON) {
 				WARN_Semicolon(ctx);
@@ -2767,6 +2770,8 @@ static void _STMT1(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		_STMTs(ctx, stmt, stmtitr);
 	}
 	else {
+//		knh_Stmt_add(ctx, stmt, Stmt_norm(ctx, new_StmtSTMT1(ctx, itr)));
+		DBG_P("itr->c =%d, TT=%s", itr->c, TT__(itr->ts[itr->c]->tt));
 		knh_Stmt_add(ctx, stmt, Stmt_norm(ctx, new_StmtSTMT1(ctx, itr)));
 	}
 }
@@ -3102,7 +3107,7 @@ static void _CODE(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		}
 	}
 	else if(ITR_is(itr, TT_DARROW) || ITR_is(itr, TT_COLON)) {
-		tkitr_t stmtbuf, *stmtitr = ITR_stmt(ctx, itr, 0, &stmtbuf, 1);
+		tkitr_t stmtbuf, *stmtitr = ITR_stmt(ctx, itr, +1, &stmtbuf, 1);
 		if(hasCODE) {
 			WARN_Ignored(ctx, "=>", CLASS_unknown, NULL);
 		}
@@ -3113,7 +3118,7 @@ static void _CODE(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		}
 	}
 	else if(ITR_is(itr, TT_USING)) {
-		tkitr_t stmtbuf, *stmtitr = ITR_stmt(ctx, itr, 0, &stmtbuf, 1);
+		tkitr_t stmtbuf, *stmtitr = ITR_stmt(ctx, itr, +1, &stmtbuf, 1);
 		if(hasCODE) {
 			WARN_Ignored(ctx, "using", CLASS_unknown, NULL);
 		}
@@ -3263,7 +3268,6 @@ static int Token_isMAP(CTX ctx, knh_Token_t *tk)
 	if(colon > 0) {
 		isMAP = 1;
 	}
-	DBG_P("@@@@@@@ isMAP=%d", isMAP);
 	L_RETURN:;
 	return isMAP;
 }
@@ -3386,7 +3390,7 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 		case TT_UNAME: {
 			tkitr_t mbuf, *mitr = ITR_copy(itr, &mbuf, +1);
 			if(ITR_isT(mitr, isVARN) && tt != TT_VOID) {
-				tkitr_t dbuf, *ditr = ITR_stmt(ctx, itr, /*pos*/0, &dbuf, 1/*needs;*/);
+				tkitr_t dbuf, *ditr = ITR_stmt(ctx, itr, /*pos*/+1, &dbuf, 1/*needs;*/);
 				stmt = new_StmtMETA(ctx, STT_DECL, ditr, 0, _DECL2, NULL);
 				break;
 			}
@@ -3447,14 +3451,14 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 		case TT_URN:
 			break; // EXPR
 		case TT_ERR:  default: {
-			tkitr_t sbuf, *sitr = ITR_stmt(ctx, itr, /*pos*/0, &sbuf, 0/*needs;*/);
+			tkitr_t sbuf, *sitr = ITR_stmt(ctx, itr, /*pos*/+1, &sbuf, 0/*needs;*/);
 			stmt = new_StmtMETA(ctx, STT_CALL1, sitr, 0, NULL);
 			_DBGERROR(ctx, stmt, sitr, "value" K_TRACEPOINT);
 	 		break;
 		}
 	}
 	if(stmt == NULL) {
-		tkitr_t sbuf, *sitr = ITR_stmt(ctx, itr, /*pos*/0, &sbuf, 0/*needs;*/);
+		tkitr_t sbuf, *sitr = ITR_stmt(ctx, itr, /*pos*/+1, &sbuf, 0/*needs;*/);
 		stmt = new_StmtMETA(ctx, STT_CALL1, sitr, 0, _STMTEXPR, NULL);
 	}
 	L_RETURN:;
