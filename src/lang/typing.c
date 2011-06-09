@@ -2339,6 +2339,7 @@ static knh_Token_t* this_typing(CTX ctx, knh_Stmt_t *stmt, knh_methodn_t mn)
 	return TM(stmt);
 }
 
+
 static knh_class_t class_FuncType(CTX ctx, knh_class_t this_cid, knh_Method_t *mtd)
 {
 	knh_class_t cid;
@@ -2357,6 +2358,8 @@ static knh_class_t class_FuncType(CTX ctx, knh_class_t this_cid, knh_Method_t *m
 	return cid;
 }
 
+/* delegate, iterate */
+
 static knh_Func_t * new_StaticFunc(CTX ctx, knh_class_t bcid, knh_Method_t *mtd)
 {
 	knh_Func_t *fo = new_H(Func);
@@ -2372,30 +2375,28 @@ static knh_Token_t* delegate_typing(CTX ctx, knh_Stmt_t *stmt)
 {
 	if(DP(stmt)->size == 4) {
 		knh_Token_t *tkMN = tkNN(stmt, 3);
-		TYPING_UntypedObject(ctx, stmt, 2);
+		TYPING_UntypedExpr(ctx, stmt, 2);
+		knh_class_t cid = Tn_cid(stmt, 2), this_cid = DP(ctx->gma)->this_cid;
 		if(Tn_isCID(stmt, 2)) { /* delegate(Class, f) */
 			knh_Token_t *tkC = tkNN(stmt, 2);
 			knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, (tkC)->cid, Token_mn(ctx, tkMN));
 			if(mtd == NULL) {
-				return ErrorUndefinedMethod(ctx, tkMN);
+				return ERROR_Undefined(ctx, "method", (tkC)->cid, tkMN);
 			}
 			if(!Method_isStatic(mtd)) {
-				return ErrorNotStaticMethod(ctx, mtd);
+				return ERROR_MethodIsNot(ctx, mtd, "static");
 			}
-			{
-				knh_class_t cid = class_FuncType(ctx, DP(ctx->gma)->this_cid, mtd);
-				return Token_setCONST(ctx, tkMN, new_StaticFunc(ctx, cid, mtd));
-			}
+			cid = class_FuncType(ctx, this_cid, mtd);
+			return Token_setCONST(ctx, tkMN, new_StaticFunc(ctx, cid, mtd));
 		}
 		else {
 			knh_class_t cid = Tn_cid(stmt, 2);
 			knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, cid, Token_mn(ctx, tkMN));
 			if(mtd == NULL) {
-				return ErrorUndefinedMethod(ctx, tkMN);
+				return ERROR_Undefined(ctx, "method", cid, tkMN);
 			}
-			cid = class_FuncType(ctx, DP(ctx->gma)->this_cid, mtd);
+			cid = class_FuncType(ctx, this_cid, mtd);
 			if(Method_isStatic(mtd)) {
-				cid = class_FuncType(ctx, DP(ctx->gma)->this_cid, mtd);
 				return Token_setCONST(ctx, tkMN, new_StaticFunc(ctx, cid, mtd));
 			}
 			knh_Token_toCID(ctx, tkNN(stmt, 1), cid);
@@ -2408,7 +2409,7 @@ static knh_Token_t* delegate_typing(CTX ctx, knh_Stmt_t *stmt)
 		}
 	}
 	else {
-		return ERROR_text(ctx, "delegate" K_TRACEPOINT);
+		return ERROR_text(ctx, "delegate(expr, methodname)" K_TRACEPOINT);
 	}
 }
 

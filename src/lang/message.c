@@ -389,10 +389,10 @@ void WARN_UseDefaultValue(CTX ctx, const char *whatis, knh_type_t type)
 {
 	Gamma_perror(ctx, KC_DWARN, _("%s default value of %T"), whatis, type);
 }
-knh_Token_t* ErrorUndefinedMethod(CTX ctx, knh_Token_t *tkMN)
-{
-	return Gamma_perror(ctx, KC_ERR, _("undefined method: %L"), tkMN);
-}
+//knh_Token_t* ErrorUndefinedMethod(CTX ctx, knh_Token_t *tkMN)
+//{
+//	return Gamma_perror(ctx, KC_ERR, _("undefined method: %L"), tkMN);
+//}
 void WarningNoFmt(CTX ctx, const char *fmt)
 {
 	Gamma_perror(ctx, KC_DWARN, "no such formatter: '%s'", fmt);
@@ -401,9 +401,9 @@ void WarningIllegalFormatting(CTX ctx, const char *fmt)
 {
 	Gamma_perror(ctx, KC_DWARN, "illegal formatting at: `.. %s`", fmt);
 }
-knh_Token_t* ErrorNotStaticMethod(CTX ctx, knh_Method_t *mtd)
+knh_Token_t* ERROR_MethodIsNot(CTX ctx, knh_Method_t *mtd, const char *how)
 {
-	return Gamma_perror(ctx, KC_ERR, _("not static: %C.%M"), (mtd)->cid, (mtd)->mn);
+	return Gamma_perror(ctx, KC_ERR, _("%C.%M is not %s"), (mtd)->cid, (mtd)->mn, how);
 }
 knh_Token_t *ERROR_Unsupported(CTX ctx, const char *whatis, knh_class_t cid, const char *symbol)
 {

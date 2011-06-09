@@ -568,7 +568,7 @@ void konoha_close(konoha_t konoha)
 		LOGDATA = {uDATA("gc_count", ctx->stat->gcCount),
 				   uDATA("marking_time(ms)", ctx->stat->markingTime),
 				   uDATA("sweeping_time(ms)", ctx->stat->sweepingTime),
-				   uDATA("total_time(ms)", ctx->stat->gcTime), __ERRNO__};
+				   uDATA("total_time(ms)", ctx->stat->gcTime)};
 		NOTE_OK("GC");
 	}
 	((knh_context_t*)ctx)->bufa = NULL; // necessary for KNH_SYSLOG

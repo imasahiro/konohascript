@@ -154,11 +154,6 @@ int knh_bytes_strcmp(knh_bytes_t v1, knh_bytes_t v2)
 #define utf8_isTrail(c)     ((0x80 <= c) && (c <= 0xBF))
 #define utf8_isSingleton(c) (c <= 0x7f)
 
-//static knh_ushort_t utf8_getBytes0(knh_uchar_t c)
-//{
-//	return (utf8_isSingleton(c))?1:(c<=0x7f)?2:(c<=0xef)?3:(c<=0xf7)?4:(c<=0xfb)?5:6;
-//}
-
 static const knh_uchar_t _utf8len[] = {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -180,43 +175,12 @@ static const knh_uchar_t _utf8len[] = {
 
 #define utf8len(c)    _utf8len[(knh_uchar_t)c]
 
+int knh_utf8len(int c)
+{
+	return utf8len[c];
+}
 
 /* ------------------------------------------------------------------------ */
-
-//knh_bool_t knh_bytes_checkENCODING0(knh_bytes_t s)
-//{
-//#ifdef K_USING_UTF8
-//	size_t i, j;
-//	knh_uchar_t ch;
-//	size_t bytes = 0;
-//	for (i=0; i < s.len; i++) {
-//		ch = s.utext[i];
-//		/* UTF8 must be in
-//		 * single: 0x00 - 0x7f
-//		 * lead: 0xC0 - 0xFD (actually, 0xC2-0xF4)
-//		 * trail: 0x80 - 0xBF
-//		 * consequently, invalid utf8 is ranged
-//		 * 0xC0 - 0xC1, 0xF5 - 0xFF
-//		 *  */
-//		if (utf8_isSingleton(ch)) {
-//		} else if (utf8_isLead(ch)) {
-//			bytes = utf8_getBytes(ch);
-//			for (j=1;j<bytes;j++)
-//			{
-//				ch = s.utext[i+j];
-//				if (!utf8_isTrail(ch)) {
-//					DBG_P("invalid UTF!");
-//					return 0;
-//				}
-//			}
-//			i += bytes;
-//		}
-//	}
-//	return 1;
-//#else
-//	return 1;
-//#endif
-//}
 
 knh_bool_t knh_bytes_checkENCODING(knh_bytes_t v)
 {
