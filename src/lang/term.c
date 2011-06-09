@@ -1217,6 +1217,25 @@ static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputS
 	Token_addBLOCKERR(ctx, tkB, in, 0);
 }
 
+static int InputStream_skipMultiByteChar(CTX ctx, knh_InputStream_t *in, int ch)
+{
+	char buf[8] = {ch, 0};
+	int i, size = knh_utf8len(ch);
+	if(size > 2) {
+		for(i = 1; i < size; i++) {
+			ch = knh_InputStream_getc(ctx, in);
+			buf[i] = ch;
+		}
+		WARN_UnxpectedMultiByteChar(ctx, buf);
+		return ' ';
+	}
+	else {
+		while((ch = knh_InputStream_getc(ctx, in)) > 127);
+		WARN_UnxpectedMultiByteChar(ctx, NULL);
+		return ch;
+	}
+}
+
 static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *tkB)
 {
 	int ch;
@@ -1384,8 +1403,8 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 
 		default:
 			if(ch > 127) {
-				WarningUnexpectedCharacter(ctx);
-				ch = ' ';
+				ch = InputStream_skipMultiByteChar(ctx, in, ch);
+				goto L_AGAIN;
 			}
 			knh_Bytes_putc(ctx, cwb->ba, ch);
 		} /* switch */

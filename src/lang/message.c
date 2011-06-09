@@ -207,9 +207,10 @@ void WARN_Semicolon(CTX ctx)
 {
 	if(!CTX_isInteractive(ctx)) Gamma_perror(ctx, KC_BAD, "needs ");
 }
-void WarningUnexpectedCharacter(CTX ctx)
+void WARN_UnxpectedMultiByteChar(CTX ctx, const char *ch)
 {
-	Gamma_perror(ctx, KC_DWARN, _("unexpected multi-byte character"));
+	if(ch == NULL) ch = "???";
+	Gamma_perror(ctx, KC_DWARN, _("unexpected multi-byte character: '%s'"), ch);
 }
 knh_Token_t *ErrorHazardousStatement(CTX ctx)
 {

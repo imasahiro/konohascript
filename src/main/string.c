@@ -177,7 +177,7 @@ static const knh_uchar_t _utf8len[] = {
 
 int knh_utf8len(int c)
 {
-	return utf8len[c];
+	return _utf8len[c];
 }
 
 /* ------------------------------------------------------------------------ */
