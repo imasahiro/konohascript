@@ -605,19 +605,19 @@ static void *knh_generateCallbackFunc64(CTX ctx, void *tmpl, void *dest, knh_Fun
   // now, patch
   if (jmp_pos > 0) {
 	//linux
-	// happend to use r15.
+	// happend to use r11
 	function[jmp_pos] = 0x49;
-	function[jmp_pos+1] = 0xbf;
+	function[jmp_pos+1] = 0xbb;
 	*(intptr_t*)&function[jmp_pos + 2] = (intptr_t)dest; // 8 byte?
 	//	memcpy(&function[jmp_pos + 2 + 8], buf, funcsize - (jmp_pos + 5));
 	//	dumpBinary(function, 32);		
 	// insert 2 values;
 	//before jmp!
 	size_t seekidx = jmp_pos + 2 + 8;
-	// jmp r15
+	// jmp r11
 	function[seekidx] = 0x41;
 	function[seekidx+1] = 0xff;
-	function[seekidx+2] = 0xe7;
+	function[seekidx+2] = 0xe3;
 	// shift the rest;
 	//	memcpy(&function[seekidx+3], buf, funcsize - (seekidx+3));
 	//	dumpBinary(function, 48);
