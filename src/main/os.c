@@ -396,7 +396,7 @@ const char* knh_ospath(CTX ctx, knh_path_t *ph)
 		for(i = ph->pbody; i < ph->plen; i++) {
 			int ch = ubuf[i];
 			if(ch == '/' || ch == '\\') {
-				ubuf[i] = K_FILESEPARATOR;
+				ubuf[i] = K_SEP;
 			}
 			if(ch > 127) hasUTF8 = 1;
 		}
@@ -517,7 +517,7 @@ knh_bool_t knh_path_mkdir(CTX ctx, knh_path_t *ph)
 	size_t i;
 	for(i = ph->pbody; i < ph->plen; i++) {
 		int ch = ubuf[i];
-		if(ch == K_FILESEPARATOR) {
+		if(ch == K_SEP) {
 			int res = 0;
 			ubuf[i] = 0;
 			if(!knh_path_isdir(ctx, ph)) {
@@ -538,8 +538,8 @@ const char* knh_path_reduce(CTX ctx, knh_path_t *ph, int ch)
 	knh_uchar_t *ubuf = P_ubuf(ph);
 	long i;
 	DBG_ASSERT((int)ph->plen > 0);
-	if(ph->isRealPath && ch == '/' && ch != K_FILESEPARATOR) {
-		ch = K_FILESEPARATOR;
+	if(ph->isRealPath && ch == '/' && ch != K_SEP) {
+		ch = K_SEP;
 	}
 	for(i = ph->plen - 1; i >= ph->pbody; i--) {
 		if(ubuf[i] == ch) {
@@ -556,8 +556,8 @@ void knh_path_append(CTX ctx, knh_path_t *ph, int issep, const char *name)
 	char *buf = P_buf(ph), *p = (char*)name;
 	size_t i, plen = ph->plen;
 	DBG_ASSERT((int)plen > 0);
-	if(issep && plen > 0 && (buf[plen-1] != '/' && buf[plen-1] != K_FILESEPARATOR)) {
-		buf[plen] = ph->isRealPath ? K_FILESEPARATOR : '/';
+	if(issep && plen > 0 && (buf[plen-1] != '/' && buf[plen-1] != K_SEP)) {
+		buf[plen] = ph->isRealPath ? K_SEP : '/';
 		plen++;
 		ph->plen = plen;
 	}
@@ -567,7 +567,7 @@ void knh_path_append(CTX ctx, knh_path_t *ph, int issep, const char *name)
 		}
 		buf[i] = *p; p++;
 		if(ph->isRealPath && (buf[i] == '\\' || buf[i] == '/')) {
-			buf[i] = K_FILESEPARATOR;
+			buf[i] = K_SEP;
 		}
 	}
 	ph->plen = i;
