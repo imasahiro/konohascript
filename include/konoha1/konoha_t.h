@@ -250,18 +250,6 @@ typedef struct {
 #define STEXT(c)  new_bytes2(c,sizeof(c)-1)
 #define ISB(t,c) (t.len == (sizeof(c)-1) && knh_strncmp(t.text, c, t.len) == 0)
 
-typedef struct {
-	size_t pstart;
-	size_t pbody;
-	size_t plen;
-	int isRealPath;
-} knh_path_t;
-
-#define P_buf(ph)     (ctx->bufa->bu.buf + ph->pstart)
-#define P_ubuf(ph)    (ctx->bufa->bu.ubuf + ph->pstart)
-#define P_text(ph)    (ctx->bufa->bu.text + ph->pstart)
-#define P_utext(ph)   (ctx->bufa->bu.utextbuf + ph->pstart)
-
 /* ------------------------------------------------------------------------ */
 /* knh_flag_t */
 /* ------------------------------------------------------------------------ */
@@ -1156,6 +1144,7 @@ typedef struct knh_logdata_t {
 #define K_RECNOTE       (1<<2)
 #define K_RECNOTESTART  ((1<<3)|(1<<2))
 
+#define LOGSFP()        knh_sfp_t *sfp = NULL;
 #define LOGDATA         const knh_logdata_t _logdata[]
 #define LOGDATASIZE     (sizeof(_logdata)/sizeof(knh_logdata_t))
 

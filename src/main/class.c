@@ -1472,11 +1472,12 @@ knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0
 knh_bool_t knh_Link_hasType(CTX ctx, knh_Link_t *flnk, knh_class_t tcid)
 {
 	size_t i;
+	if(tcid == CLASS_Boolean || tcid == CLASS_String) return 1;
 	for(i = 0; i < knh_Array_size(flnk->list); i++) {
 		knh_Method_t *mtd = flnk->list->methods[i];
 		if(mtd->cid == tcid) return 1;
 	}
-	return flnk->dpi->hasType(ctx, tcid, (void*)flnk);
+	return flnk->dpi->hasType(ctx, tcid);
 }
 
 //link file:: {
@@ -1493,19 +1494,23 @@ knh_bool_t knh_Link_exists(CTX ctx, knh_Link_t *flnk, knh_NameSpace_t *ns, knh_b
 
 		}
 	}
-	return flnk->dpi->exists(ctx, ns, fn, (void*)flnk);
+	return flnk->dpi->exists(ctx, ns, fn);
 }
 
 knh_Object_t *knh_Link_newObjectNULL(CTX ctx, knh_Link_t *flnk, knh_NameSpace_t *ns, knh_String_t *fi, knh_class_t tcid)
 {
 	size_t i;
+	if(tcid == CLASS_String) return UPCAST(fi);
 	for(i = 0; i < knh_Array_size(flnk->list); i++) {
 		knh_Method_t *mtd = flnk->list->methods[i];
 		if(mtd->cid == tcid) {
 
 		}
 	}
-	return flnk->dpi->newObjectNULL(ctx, ns, tcid, fi, (void*)flnk);
+	if(tcid == CLASS_Boolean) {
+		return flnk->dpi->exists(ctx, ns, S_tobytes(fi)) ? KNH_TRUE : KNH_FALSE;
+	}
+	return flnk->dpi->newObjectNULL(ctx, ns, tcid, fi);
 }
 
 knh_Link_t *knh_NameSpace_getLinkNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t fi)

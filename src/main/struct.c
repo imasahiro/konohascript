@@ -1493,22 +1493,21 @@ static knh_ClassDef_t TypeMapDef = {
 /* --------------- */
 /* Link */
 
-static knh_bool_t NOLINK_hasType(CTX ctx, knh_class_t cid, void *thunk)
+static knh_bool_t NOLINK_hasType(CTX ctx, knh_class_t cid)
 {
 	return 0;
 }
-static knh_bool_t NOLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
+static knh_bool_t NOLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	return 0;
 }
-static knh_Object_t* NOLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s, void *thunk)
+static knh_Object_t* NOLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
 {
 	return NULL/*(knh_Object_t*)s*/;
 }
 
 static const knh_LinkDPI_t PATH_NOLINK = {
-	K_DSPI_PATH, "NOLINK", CLASS_Tvoid, CLASS_Tvoid, NULL,
-	NOLINK_hasType, NOLINK_exists, NOLINK_newObjectNULL,
+	"NOLINK", NULL, NOLINK_hasType, NOLINK_exists, NOLINK_newObjectNULL,
 };
 
 static void Link_init(CTX ctx, knh_RawPtr_t *o)
@@ -2012,7 +2011,7 @@ static void InputStream_init(CTX ctx, knh_RawPtr_t *o)
 	in->uline = 1;
 	in->decNULL = NULL;
 	knh_InputStreamEX_t *b = knh_bodymalloc(ctx, InputStream);
-	in->dspi = knh_getDefaultStreamDSPI();
+	in->dspi = knh_getDefaultStreamDPI();
 	b->fio = IO_BUF;
 	KNH_INITv(b->ba, new_Bytes(ctx, "stream", 0));
 	KNH_INITv(b->urn, TS_DEVNULL);
@@ -2038,7 +2037,7 @@ static void InputStream_free(CTX ctx, knh_RawPtr_t *o)
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
 	knh_InputStreamEX_t *b = DP(in);
 	if(b->fio != IO_NULL) {
-		in->dspi->fclose(ctx, b->fio);
+		in->dspi->fcloseSPI(ctx, b->fio);
 		b->fio = IO_NULL;
 	}
 	knh_bodyfree(ctx, b, InputStream);
@@ -2066,7 +2065,7 @@ static void OutputStream_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_OutputStream_t *w = (knh_OutputStream_t*)o;
 	knh_OutputStreamEX_t *b = knh_bodymalloc(ctx, OutputStream);
-	w->dspi = knh_getDefaultStreamDSPI();
+	w->dspi = knh_getDefaultStreamDPI();
 	b->fio = IO_NULL;
 	KNH_INITv(b->ba, new_Bytes(ctx, "stream", 0));
 	KNH_INITv(b->urn, TS_DEVNULL);
@@ -2097,7 +2096,7 @@ static void OutputStream_free(CTX ctx, knh_RawPtr_t *o)
 	knh_OutputStream_t *w = (knh_OutputStream_t*)o;
 	knh_OutputStreamEX_t *b = DP(w);
 	if(b->fio != IO_NULL) {
-		w->dspi->fclose(ctx, b->fio);
+		w->dspi->fcloseSPI(ctx, b->fio);
 		b->fio = IO_NULL;
 	}
 	knh_bodyfree(ctx, b, OutputStream);

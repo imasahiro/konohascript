@@ -83,17 +83,16 @@ typedef struct knh_ConvDSPI_t {
 
 #define K_OUTBUF_MAXSIZ      (512L * 1024 * 1024)  // 512Mb
 
-typedef struct knh_StreamDSPI_t {
+typedef struct knh_StreamDPI_t {
 	int type;
 	const char *name;
-	knh_bool_t (*realpath)(CTX, knh_NameSpace_t *ns, knh_path_t*);
-	knh_io_t (*fopen)(CTX, knh_path_t*, const char *);
-	knh_io_t (*wopen)(CTX, knh_path_t*, const char *);
-	knh_intptr_t (*fread)(CTX, knh_io_t, char *, size_t);
 	size_t wbufsiz;  // write bufsize
-	knh_intptr_t (*fwrite)(CTX, knh_io_t, const char *, size_t);
-	void   (*fclose)(CTX, knh_io_t);
-} knh_StreamDSPI_t;
+	knh_io_t (*fopenSPI)(CTX, const char*, const char *);
+	knh_io_t (*wopenSPI)(CTX, const char*, const char *);
+	knh_intptr_t (*freadSPI)(CTX, knh_io_t, char *, size_t);
+	knh_intptr_t (*fwriteSPI)(CTX, knh_io_t, const char *, size_t);
+	void (*fcloseSPI)(CTX, knh_io_t);
+} knh_StreamDPI_t;
 
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_QUERY */
@@ -204,7 +203,7 @@ typedef struct knh_PackageLoaderAPI_t {
 	/* namespace */
 //	void (*setRegexSPI)(CTX, knh_NameSpace_t *ns, const knh_RegexSPI_t *);
 	void (*addLinkDPI)(CTX, knh_NameSpace_t *ns, const char*, const knh_LinkDPI_t *);
-	void (*addStreamDSPI)(CTX, knh_NameSpace_t *ns, const char*, const knh_StreamDSPI_t *);
+	void (*addStreamDPI)(CTX, knh_NameSpace_t *ns, const char*, const knh_StreamDPI_t *);
 	void (*addQueryDSPI)(CTX, knh_NameSpace_t *ns, const char *, const knh_QueryDSPI_t *);
 	void (*addConvDSPI)(CTX, knh_NameSpace_t *ns, const char *, const knh_ConvDSPI_t*);
 } knh_PackageLoaderAPI_t;

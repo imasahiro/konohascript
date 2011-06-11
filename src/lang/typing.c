@@ -2061,6 +2061,9 @@ static knh_Token_t* CALL_toCONST(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *mtd)
 		DBG_P("STMT = %s TURNED INTO CONST", TT__(STT_(stmt)));
 		for(; i < size; i++) {
 			knh_Token_t *tk = tkNN(stmt, i);
+			if(TT_(tk) == TT_NULL) {    // Int.class
+				KNH_SETv(ctx, (tk)->data, KNH_NULVAL(tk->type));
+			}
 			KNH_SETv(ctx, lsfp[thisidx+(i-1)].o, (tk)->data);
 			unboxSFP(ctx, &lsfp[thisidx+(i-1)]);
 		}

@@ -1557,10 +1557,8 @@ static tkitr_t *ITR_stmt(CTX ctx, tkitr_t *itr, int pos, tkitr_t *buf, int isNee
 {
 	int i;
 	*buf = *itr;
-	DBG_P("pos=%d", pos);
 	DBG_ASSERT(pos > 0);
 	for(i = itr->c + pos; i < itr->e; i++) {
-		//DBG_P("i=%d, TT=%s", i, TT__(itr->ts[i]->tt));
 		if(Token_isBOL(itr->ts[i])) {
 			if(isNeedSemicolon && TT_(itr->ts[i]) != TT_SEMICOLON) {
 				WARN_Semicolon(ctx);

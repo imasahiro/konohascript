@@ -36,6 +36,7 @@ objs = \
 	$(dir)/context.o\
 	$(dir)/evidence.o \
 	$(dir)/exports.o \
+	$(dir)/link.o \
 	$(dir)/map.o \
 	$(dir)/memory.o\
 	$(dir)/number.o \
@@ -142,6 +143,9 @@ $(dir)/semantics.o: src/main/semantics.c
 	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/ffi.o : src/main/ffi.c
+	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
+
+$(dir)/link.o : src/main/link.c
 	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
 $(dir)/stack.o: src/main/stack.c

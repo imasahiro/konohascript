@@ -547,16 +547,12 @@ typedef struct knh_TypeMap_t {
 /* ------------------------------------------------------------------------ */
 //## class Link Object;
 
-#define K_PATHHEAD_MAXSIZ   32
-
 typedef struct knh_LinkDPI_t {
-	int   type;
 	const char *name;
-	knh_class_t cid;  knh_class_t itrcid;
-	void *thunk; // nullable
-	knh_bool_t    (*hasType)(CTX, knh_class_t, void*);
-	knh_bool_t    (*exists)(CTX, struct knh_NameSpace_t *, knh_bytes_t, void *);
-	Object*       (*newObjectNULL)(CTX, struct knh_NameSpace_t *, knh_class_t, knh_String_t *, void*);
+	const char *utype;
+	knh_bool_t    (*hasType)(CTX, knh_class_t);
+	knh_bool_t    (*exists)(CTX, struct knh_NameSpace_t *, knh_bytes_t);
+	Object*       (*newObjectNULL)(CTX, struct knh_NameSpace_t *, knh_class_t, knh_String_t *);
 } knh_LinkDPI_t;
 
 typedef struct knh_Link_t {
@@ -788,7 +784,7 @@ typedef struct knh_Semantics_t {
 //## class InputStream Object;
 
 typedef knh_uintptr_t knh_io_t;
-#define IO_NULL   ((knh_io_t)0)
+#define IO_NULL   ((knh_io_t)(NULL))
 #define IO_BUF    ((knh_io_t)1)
 #define K_STREAM_BUFSIZ  K_PAGESIZE
 
@@ -809,7 +805,7 @@ typedef struct knh_InputStream_t {
 	knh_hObject_t h;
 	knh_InputStreamEX_t *b;
 	knh_uline_t  uline;
-	const struct knh_StreamDSPI_t *dspi;
+	const struct knh_StreamDPI_t *dspi;
 	struct knh_StringDecoder_t*    decNULL;
 } knh_InputStream_t;
 
@@ -833,7 +829,7 @@ typedef struct knh_OutputStream_t {
 	knh_hObject_t h;
 	knh_OutputStreamEX_t *b;
 	knh_uline_t  uline;
-	const struct knh_StreamDSPI_t *dspi;
+	const struct knh_StreamDPI_t *dspi;
 	struct knh_StringEncoder_t* encNULL;
 } knh_OutputStream_t;
 

@@ -193,41 +193,47 @@ static knh_status_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *results
 	}
 	else if(knh_bytes_strcasecmp(include_name, STEXT("nativelink")) == 0) {
 		if(ns->dlhdr == NULL) {
-			knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, S_tobytes(ns->rpath), &phbuf);
-			knh_path_reduce(ctx, ph, '.');
-			knh_path_append(ctx, ph, 0, K_OSDLLEXT);
-			ns->dlhdr = knh_path_dlopen(ctx, ph);
+			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+			knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(ns->rpath));
+			knh_buff_trim(ctx, cwb->ba, cwb->pos, '.');
+			knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT(K_OSDLLEXT));
+			ns->dlhdr = knh_dlopen(ctx, knh_cwb_tochar(ctx, cwb));
+			if(ns->dlhdr == NULL) {
+				knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "nativelink", knh_cwb_tochar(ctx, cwb)));
+				status = K_BREAK;
+			}
+			knh_cwb_close(cwb);
 			if(ns->dlhdr != NULL) {
 				knh_Fpkginit pkginit = (knh_Fpkginit)knh_dlsym(ctx, ns->dlhdr, "init", 1/*isTest*/);
 				if(pkginit != NULL) {
 					const knh_PackageDef_t *pkgdef = pkginit(ctx);
+					LOGSFP();
+					LOGDATA = {sDATA("package_name", pkgdef->name), sDATA("package_version", pkgdef->version),
+						iRANGE("buildid", K_BUILDID, pkgdef->buildid), iRANGE("crc32", K_API2_CRC32, pkgdef->crc32)};
 					if((long)pkgdef->crc32 != (long)K_API2_CRC32) {
-						knh_dlclose(ctx, ns->dlhdr);
-						ns->dlhdr = NULL;
-						knh_Stmt_toERR(ctx, stmt, ERROR_IncompatiblePackage(ctx, include_name, pkgdef));
+						LIB_Failed("load_nativelink", NULL);
+						knh_Stmt_toERR(ctx, stmt, ERROR_Incompatible(ctx, "package", pkgdef->name));
 						status = K_BREAK;
+					}
+					else {
+						LIB_OK("load_nativelink");
+						goto L_RETURN;
 					}
 				}
 				else {
-					const knh_PackageDef_t pkgdef = {};
-					knh_dlclose(ctx, ns->dlhdr);
-					ns->dlhdr = NULL;
-					knh_Stmt_toERR(ctx, stmt, ERROR_IncompatiblePackage(ctx, include_name, &pkgdef));
-					status = K_BREAK;
+					knh_Stmt_toERR(ctx, stmt, ERROR_Undefined(ctx, "init function", CLASS_unknown, tkNN(stmt, 0)));
 				}
-				knh_path_close(ctx, ph);
-				goto L_RETURN;
+				knh_dlclose(ctx, ns->dlhdr);
+				ns->dlhdr = NULL;
+				status = K_BREAK;
 			}
-			knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "package", P_text(ph)));
-			knh_path_close(ctx, ph);
-			status = K_BREAK;
 		}
 	}
 	else {
 		knh_NameSpace_t *ns = new_NameSpace(ctx, K_GMANS);
 		KNH_SETv(ctx, ctx->gma->scr->ns, ns);
 		NameSpace_beginINCLUDE(ctx, ns, ns->parentNULL);
-		status = knh_load(ctx, "script", include_name, resultsNULL);
+		status = knh_load(ctx, K_GMANS, tkNN(stmt, 0)->text, resultsNULL);
 		NameSpace_endINCLUDE(ctx, ns, ns->parentNULL);
 		KNH_SETv(ctx, ctx->gma->scr->ns, ns->parentNULL);
 	}
@@ -242,20 +248,19 @@ static knh_status_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *results
 knh_status_t knh_loadScriptPackage(CTX ctx, knh_bytes_t path)
 {
 	knh_status_t status = K_CONTINUE;
-	knh_bytes_t name = knh_bytes_next(path, ':');
 	knh_DictMap_t *dmap = DP(ctx->sys)->PackageDictMap;
-	knh_Script_t *scr = (knh_Script_t*)knh_DictMap_getNULL(ctx, dmap, name);
+	knh_Script_t *scr = (knh_Script_t*)knh_DictMap_getNULL(ctx, dmap, path);
 	if(scr == NULL) {
 		knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, ctx->share->rootns, path);
 		status = K_BREAK;
 		if(lnk != NULL && knh_Link_exists(ctx, lnk, ctx->share->rootns, path)) {
-			knh_String_t *nsname = new_S(ctx, name);
+			knh_String_t *pathname = new_S(ctx, path);
 			knh_Script_t *newscr = new_(Script);
-			KNH_SETv(ctx, DP(newscr->ns)->nsname, nsname);
-			knh_DictMap_set(ctx, dmap, nsname, newscr);
+			KNH_SETv(ctx, DP(newscr->ns)->nsname, new_S(ctx, knh_bytes_next(path, ':')));
+			knh_DictMap_set(ctx, dmap, pathname, newscr);
 			scr = ctx->gma->scr;
 			KNH_SETv(ctx, ctx->gma->scr, newscr);
-			status = knh_load(ctx, "pkg", path, NULL);
+			status = knh_load(ctx, K_GMANS, pathname, NULL);
 			KNH_SETv(ctx, ctx->gma->scr, scr);
 		}
 	}
@@ -966,37 +971,6 @@ static void Bytes_addCOMMENT(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in)
 	}
 }
 
-static knh_InputStream_t* openScriptInputStreamNULL(CTX ctx, knh_NameSpace_t *ns, const char *scheme, knh_bytes_t path)
-{
-	knh_path_t phbuf, *ph = knh_path_open_(ctx, scheme, path, &phbuf);
-	path.text = P_text(ph); path.len = ph->plen;
-	const knh_StreamDSPI_t *dspi = knh_getStreamDSPI(ctx, ns, path);
-	knh_InputStream_t *in = NULL;
-	void *sfp = NULL;
-	if(dspi->realpath(ctx, ns, ph)) {
-		knh_io_t fio = dspi->fopen(ctx, ph, "r");
-		if(fio != IO_NULL) {
-			in = new_InputStreamDSPI(ctx, fio, dspi);
-			knh_bytes_t rpath = B(P_text(ph));
-			knh_uri_t uri = knh_getURI(ctx, rpath);
-			ULINE_setURI(in->uline, uri);
-			KNH_SETv(ctx, DP(in)->urn, knh_getURN(ctx, uri));
-			KNH_SETv(ctx, ns->rpath, knh_path_newString(ctx, ph, 0));
-			DBG_P("URI=%d, nsname='%s' rpath='%s'", (int)uri, S_tochar(DP(ns)->nsname), S_tochar(ns->rpath));
-		}
-	}
-	if(in == NULL) {
-		LOGDATA = {sDATA("path", path.text)};
-		LIB_Failed("open_script", "Script!!");
-	}
-	else {
-		LOGDATA = {sDATA("path", path.text), sDATA("realpath", S_tochar(ns->rpath))};
-		LIB_OK("open_script");
-	}
-	knh_path_close(ctx, ph);
-	return in;
-}
-
 static int readchunk(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
 {
 	int ch;
@@ -1027,55 +1001,100 @@ static int readchunk(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
 	return linenum;
 }
 
-KNHAPI2(knh_status_t) knh_load(CTX ctx, const char *scheme, knh_bytes_t path, knh_Array_t *resultsNULL)
+knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in, knh_Array_t *resultsNULL)
 {
 	knh_status_t status = K_BREAK;
-	knh_InputStream_t *in = openScriptInputStreamNULL(ctx, K_GMANS, scheme, path);
 	void *sfp = NULL;
-	if(in != NULL) {
-		knh_Bytes_t *ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
-		BEGIN_LOCAL(ctx, lsfp, 3);
-		LOCAL_NEW(ctx, lsfp, 1, knh_InputStream_t*, bin, new_BytesInputStream(ctx, ba));
-		KNH_SETv(ctx, lsfp[0].o, in);
-		if(!knh_isCompileOnly(ctx)) {
-			LOGDATA = {sDATA("path", path.text)};
-			NOTE_OK("script_start");
-		}
-		do {
-			int linenum = 0;
-			knh_Bytes_clear(ba, 0);
-			if(!InputStream_isClosed(ctx, in)) {
-				status = K_CONTINUE;
-				linenum = readchunk(ctx, in, ba);
-			}
-			if(!bytes_isempty(ba->bu)) {
-				knh_uri_t uri = ULINE_uri(in->uline);
-				knh_InputStream_setpos(ctx, bin, 0, BA_size(ba));
-				bin->uline = linenum;
-				ULINE_setURI(bin->uline, uri);
-				//InputStream_setCharset(ctx, bin, DP(in)->enc);
-				DBG_(if(knh_isVerboseLang()) {
-					fprintf(stderr, "\n>>>--------------------------------\n");
-					fprintf(stderr, "%s<<<--------------------------------\n", knh_Bytes_ensureZero(ctx, ba));
-				});
-				status  = knh_eval(ctx, bin, resultsNULL);
-			}
-			//DBG_P("ba->size=%d, status=%d", ba->bu.len, status);
-		} while(BA_size(ba) > 0 && status == K_CONTINUE);
-		END_LOCAL_(ctx, lsfp);
+	knh_Bytes_t *ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
+	BEGIN_LOCAL(ctx, lsfp, 3);
+	LOCAL_NEW(ctx, lsfp, 1, knh_InputStream_t*, bin, new_BytesInputStream(ctx, ba));
+	KNH_SETv(ctx, lsfp[0].o, in);
+	if(!knh_isCompileOnly(ctx)) {
+		LOGDATA = {sDATA("path", S_tochar(DP(in)->urn))};
+		NOTE_OK("script_start");
 	}
+	do {
+		int linenum = 0;
+		knh_Bytes_clear(ba, 0);
+		if(!InputStream_isClosed(ctx, in)) {
+			status = K_CONTINUE;
+			linenum = readchunk(ctx, in, ba);
+		}
+		if(!bytes_isempty(ba->bu)) {
+			knh_uri_t uri = ULINE_uri(in->uline);
+			knh_InputStream_setpos(ctx, bin, 0, BA_size(ba));
+			bin->uline = linenum;
+			ULINE_setURI(bin->uline, uri);
+			DBG_(if(knh_isVerboseLang()) {
+				fprintf(stderr, "\n>>>--------------------------------\n");
+				fprintf(stderr, "%s<<<--------------------------------\n", knh_Bytes_ensureZero(ctx, ba));
+			});
+			status  = knh_eval(ctx, bin, resultsNULL);
+		}
+	} while(BA_size(ba) > 0 && status == K_CONTINUE);
+	END_LOCAL_(ctx, lsfp);
 	return status;
+}
+
+knh_status_t knh_load(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn, knh_Array_t *resultsNULL)
+{
+	const knh_StreamDPI_t *dspi = knh_getStreamDPI(ctx, ns, S_tobytes(urn));
+	if(knh_isFILEStreamDPI(dspi)) {
+		char buf[K_PATHMAX];
+		knh_String_ospath(ctx, urn, ns, buf, sizeof(buf));
+		knh_io_t fd = dspi->fopenSPI(ctx, buf, "r");
+		if(fd != IO_NULL) {
+			knh_InputStream_t *in = new_InputStreamDPI(ctx, fd, dspi);
+			knh_uri_t uri = knh_getURI(ctx, B(buf));
+			ULINE_setURI(in->uline, uri);
+			KNH_SETv(ctx, DP(in)->urn, urn);
+			KNH_SETv(ctx, ns->rpath, new_String(ctx, buf));
+			return knh_InputStream_load(ctx, in, resultsNULL);
+		}
+	}
+	return K_BREAK;
 }
 
 /* ------------------------------------------------------------------------ */
 
+static void knh_buff_addStartPath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_bytes_t path)
+{
+	if(!knh_isfile(ctx, path.text) && !knh_bytes_endsWith(path, STEXT(".k"))) {
+		knh_String_t *s = knh_getPropertyNULL(ctx, STEXT("konoha.script.path"));
+		if(s != NULL) {
+			knh_buff_addospath(ctx, ba, pos, 0, S_tobytes(s));
+			knh_buff_addospath(ctx, ba, pos, 1/*sep*/, path);
+			if(knh_isfile(ctx, knh_Bytes_ensureZero(ctx, ba) + pos)) {
+				return ;
+			}
+			knh_Bytes_clear(ba, pos);
+		}
+	}
+	knh_buff_addospath(ctx, ba, pos, 0, path);
+}
+
 knh_status_t konoha_initload(konoha_t konoha, const char *path)
 {
-	knh_status_t status;
-	KONOHA_CHECK(konoha, K_CONTINUE);
+	knh_status_t status = K_BREAK;
+	KONOHA_CHECK(konoha, K_BREAK);
 	CTX ctx = (CTX)konoha.ctx;
 	KONOHA_BEGIN(ctx);
-	status = knh_load(ctx, "start", B(path), NULL);
+	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	knh_buff_addStartPath(ctx, cwb->ba, cwb->pos, B(path));
+	FILE *fp = fopen(knh_cwb_tochar(ctx, cwb), "r");
+	if(fp != NULL) {
+		knh_NameSpace_t *ns = K_GMANS;
+		knh_InputStream_t *in = new_InputStreamDPI(ctx, (knh_io_t)fp, NULL);
+		KNH_SETv(ctx, ns->rpath, knh_buff_newRealPath(ctx, cwb->ba, cwb->pos));
+		knh_uri_t uri = knh_getURI(ctx, knh_cwb_tobytes(cwb));
+		ULINE_setURI(in->uline, uri);
+		KNH_SETv(ctx, DP(in)->urn, ns->rpath);
+		status = knh_InputStream_load(ctx, in, NULL);
+	}
+	else {
+		fprintf(stderr, "script not found: %s\n", path);
+	}
+	knh_cwb_close(cwb);
 	knh_stack_clear(ctx, ctx->stack);
 	KONOHA_END(ctx);
 	return status;

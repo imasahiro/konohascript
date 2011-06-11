@@ -39,7 +39,7 @@
 extern "C" {
 #endif
 
-#ifdef K_INCLUDE_BUILTINAPI
+#ifdef K_INCLUDE_BUILTINAPIOLD
 
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_PATH */
@@ -180,40 +180,6 @@ static const knh_LinkDPI_t PATH_FROMPATH = {
 	TOPATH_hasType, FROMPATH_exists, FROMPATH_newObjectNULL,
 };
 
-/* ------------------------------------------------------------------------ */
-/* file:/usr/local */
-
-static knh_bool_t FILE_hasType(CTX ctx, knh_class_t cid, void *thunk)
-{
-	return (cid == CLASS_Boolean || cid == CLASS_String || cid == CLASS_InputStream || cid == CLASS_OutputStream);
-}
-static knh_bool_t FILE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
-{
-	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
-	knh_ospath(ctx, ph);
-	knh_bool_t res = knh_path_isfile(ctx, ph);
-	knh_path_close(ctx, ph);
-	return res;
-}
-
-static knh_Object_t* FILE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s, void *thunk)
-{
-	if(cid == CLASS_InputStream) {
-		knh_InputStream_t *in = new_InputStreamNULL(ctx, ns, s, "r");
-		return (knh_Object_t*)in;
-	}
-	if(cid == CLASS_OutputStream) {
-		knh_OutputStream_t *out = new_OutputStreamNULL(ctx, ns, s, "a");
-		return (knh_Object_t*)out;
-	}
-	return NULL;
-}
-
-static const knh_LinkDPI_t PATH_FILE = {
-	K_DSPI_PATH, "file", CLASS_Boolean, CLASS_InputStream, NULL,
-	FILE_hasType, FILE_exists, FILE_newObjectNULL,
-};
-
 static knh_bool_t LIB_hasType(CTX ctx, knh_class_t cid, void *thunk)
 {
 	return (cid == CLASS_Boolean || cid == CLASS_String);
@@ -227,15 +193,15 @@ static knh_bool_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, voi
 	knh_bytes_t funcname = knh_bytes_rnext(path, '.');
 	int res = 0;
 	knh_path_reduce(ctx, ph, '.');
-	knh_path_append(ctx, ph, 0, K_OSDLLEXT);
+	knh_buff_addospath(ctx, ph, 0, K_OSDLLEXT);
 	DBG_P("BEFORE: %s", P_text(ph) + ph->pbody);
 	//knh_ospath(ctx, ph);
 	p = knh_path_dlopen(ctx, ph);
 	if(p == NULL && !knh_bytes_startsWith(libname, STEXT("lib"))) {
 		knh_path_reset(ctx, ph, NULL, STEXT("lib"));
-		knh_path_append(ctx, ph, 0, libname.text);
+		knh_buff_addospath(ctx, ph, 0, libname.text);
 		//knh_path_reduce(ctx, ph, '.');
-		knh_path_append(ctx, ph, 0, K_OSDLLEXT);
+		knh_buff_addospath(ctx, ph, 0, K_OSDLLEXT);
 		DBG_P("BEFORE: %s", P_text(ph));
 		//knh_ospath(ctx, ph);
 		p = knh_path_dlopen(ctx, ph);
@@ -255,6 +221,112 @@ static const knh_LinkDPI_t PATH_LIB = {
 	K_DSPI_PATH, "lib", CLASS_Boolean, CLASS_Tvoid, NULL,
 	LIB_hasType, LIB_exists, NOPATH_newObjectNULL,
 };
+
+
+/* ------------------------------------------------------------------------ */
+/* file:/usr/local */
+
+static knh_bool_t FILE_hasType(CTX ctx, knh_class_t cid, void *thunk)
+{
+	return (cid == CLASS_Boolean || cid == CLASS_String || cid == CLASS_Bytes || cid == CLASS_InputStream || cid == CLASS_OutputStream);
+}
+static knh_bool_t FILE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, void *thunk)
+{
+	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
+	knh_ospath(ctx, ph);
+	knh_bool_t res = knh_path_isfile(ctx, ph);
+	knh_path_close(ctx, ph);
+	return res;
+}
+
+static knh_Object_t* FILE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s, void *thunk)
+{
+	if(cid == CLASS_Bytes) {
+		knh_Bytes_t* ba = new_Bytes(ctx, NULL, S_size(s));
+		knh_buff_addospath(ctx, ba, 0, knh_bytes_next(S_tobytes(s), ':'));
+		return UPCAST(ba);
+	}
+	if(cid == CLASS_InputStream) {
+		knh_InputStream_t *in = new_InputStreamNULL(ctx, ns, s, "r");
+		return (knh_Object_t*)in;
+	}
+	if(cid == CLASS_OutputStream) {
+		knh_OutputStream_t *out = new_OutputStreamNULL(ctx, ns, s, "a");
+		return (knh_Object_t*)out;
+	}
+	return NULL;
+}
+
+static const knh_LinkDPI_t PATH_FILE = {
+	K_DSPI_PATH, "file", CLASS_Boolean, CLASS_InputStream, NULL,
+	FILE_hasType, FILE_exists, FILE_newObjectNULL,
+};
+
+static knh_bool_t isFoundPackage(CTX ctx, knh_Bytes_t* ba, size_t pos, knh_bytes_t tpath, knh_bytes_t bpath)
+{
+	knh_Bytes_clear(ba, pos);
+	knh_buff_addospath(ctx, ba, 0, tpath);
+	knh_buff_addospath(ctx, ba, 1, bpath); // konoha.math
+	knh_buff_addospath(ctx, ba, 1, knh_bytes_rnext(bpath, '.')); // math
+	knh_buff_addospath(ctx, ba, 0, STEXT(".k"));
+	return knh_Bytes_isfile(ctx, ba);
+}
+
+knh_bool_t knh_Bytes_addPackagePath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_bytes_t path)
+{
+	char *epath = knh_getenv("KONOHA_PACKAGE");
+	knh_bytes_t bpath = knh_bytes_next(path, ':');
+	if(epath != NULL && isFoundPackage(ctx, ba, pos, B(epath), bpath)) {
+		return 1;
+	}
+	knh_String_t *tpath = knh_getPropertyNULL(ctx, STEXT("konoha.package.path"));
+	if(tpath != NULL && isFoundPackage(ctx, ba, pos, S_tobytes(tpath), bpath)) {
+		return 1;
+	}
+	tpath = knh_getPropertyNULL(ctx, STEXT("user.package.path"));
+	if(tpath != NULL && isFoundPackage(ctx, ba, pos, S_tobytes(tpath), bpath)) {
+		return 1;
+	}
+	return 0;
+}
+
+static knh_Object_t* PACKAGE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s, void *thunk)
+{
+	if(cid == CLASS_Bytes) {
+		knh_Bytes_t* ba = new_Bytes(ctx, NULL, 256);
+		if(!knh_Bytes_addPackagePath(ctx, ba, 0, S_tobytes(s))) {
+			knh_Object_toNULL(ctx, ba);
+		}
+		return UPCAST(ba);
+	}
+	if(cid == CLASS_InputStream) {
+		knh_InputStream_t *in = new_InputStreamNULL(ctx, ns, s, "r");
+		return (knh_Object_t*)in;
+	}
+	return NULL;
+}
+
+void knh_Bytes_addScriptPath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_NameSpace_t *ns, knh_bytes_t path)
+{
+	knh_bytes_t bpath = knh_bytes_next(path, ':');
+	knh_buff_addospath(ctx, ba, 0, S_tobytes(ns->rpath));
+	knh_buff_addospath(ctx, ba, 1, bpath);
+}
+
+static knh_Object_t* SCRIPT_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s, void *thunk)
+{
+	if(cid == CLASS_Bytes) {
+		knh_Bytes_t* ba = new_Bytes(ctx, NULL, 256);
+		knh_Bytes_addScriptPath(ctx, ba, 0, ns, S_tobytes(s));
+		return UPCAST(ba);
+	}
+	if(cid == CLASS_InputStream) {
+		knh_InputStream_t *in = new_InputStreamNULL(ctx, ns, s, "r");
+		return (knh_Object_t*)in;
+	}
+	return NULL;
+}
+
 
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_STREAM */
@@ -286,12 +358,12 @@ static void NOFILE_close(CTX ctx, knh_io_t fd)
 {
 }
 
-static const knh_StreamDSPI_t STREAM_NOFILE = {
+static const knh_StreamDPI_t STREAM_NOFILE = {
 	K_DSPI_STREAM, "NOFILE", NOFILE_realpath,
 	NOFILE_open, NOFILE_open, NOFILE_read, K_PAGESIZE, NOFILE_write, NOFILE_close
 };
 
-static const knh_StreamDSPI_t STREAM_BYTE = {
+static const knh_StreamDPI_t STREAM_BYTE = {
 	K_DSPI_STREAM, "BYTE", NOFILE_realpath,
 	NOFILE_open, NOFILE_open, NOFILE_read, K_OUTBUF_MAXSIZ, BYTE_write, NOFILE_close
 };
@@ -332,19 +404,19 @@ static void FILE_close(CTX ctx, knh_io_t fd)
 	knh_fclose(ctx, (FILE*)fd);
 }
 
-static const knh_StreamDSPI_t STREAM_FILE = {
+static const knh_StreamDPI_t STREAM_FILE = {
 	K_DSPI_STREAM, "file", FILE_realpath,
 	FILE_open, FILE_open, FILE_read, K_OUTBUF_MAXSIZ, FILE_write, FILE_close,
 };
 
-static const knh_StreamDSPI_t STREAM_STDIO = {
+static const knh_StreamDPI_t STREAM_STDIO = {
 	K_DSPI_STREAM, "stdio", NOFILE_realpath,
 	NOFILE_open, NOFILE_open, FILE_read, K_OUTBUF_MAXSIZ, FILE_write, NOFILE_close,
 };
 
 static knh_InputStream_t *new_InputStreamSTDIO(CTX ctx, FILE *fp, knh_String_t *enc)
 {
-	knh_InputStream_t* in = new_InputStreamDSPI(ctx, (knh_io_t)stdin, &STREAM_STDIO);
+	knh_InputStream_t* in = new_InputStreamDPI(ctx, (knh_io_t)stdin, &STREAM_STDIO);
 	KNH_SETv(ctx, DP(in)->urn, TS_DEVSTDIN);
 	return in;
 }
@@ -355,7 +427,7 @@ static knh_OutputStream_t *new_OutputStreamSTDIO(CTX ctx, FILE *fp, knh_String_t
 	knh_OutputStream_t* o = new_OutputStream__FILE(ctx, TS_DEVSTDOUT, NULL, &STREAM_STDIO);
 #else
 	KNH_ASSERT(fp == stdout || fp == stderr);
-	knh_OutputStream_t* o = new_OutputStreamDSPI(ctx, (knh_io_t)fp, &STREAM_STDIO);
+	knh_OutputStream_t* o = new_OutputStreamDPI(ctx, (knh_io_t)fp, &STREAM_STDIO);
 	knh_String_t *urn = (fp == stdout) ? TS_DEVSTDOUT : TS_DEVSTDERR;
 	KNH_SETv(ctx, DP(o)->urn, urn);
 #endif
@@ -368,9 +440,9 @@ static knh_OutputStream_t *new_OutputStreamSTDIO(CTX ctx, FILE *fp, knh_String_t
 static knh_bool_t hasPKG(CTX ctx, knh_path_t *ph, knh_bytes_t tpath, knh_bytes_t path)
 {
 	knh_path_reset(ctx, ph, NULL, tpath);
-	knh_path_append(ctx, ph, 1, path.text); // konoha.math
-	knh_path_append(ctx, ph, 1, knh_bytes_rnext(path, '.').text); // math
-	knh_path_append(ctx, ph, 0, ".k");
+	knh_buff_addospath(ctx, ph, 1, path.text); // konoha.math
+	knh_buff_addospath(ctx, ph, 1, knh_bytes_rnext(path, '.').text); // math
+	knh_buff_addospath(ctx, ph, 0, ".k");
 	knh_ospath(ctx, ph);
 	return knh_path_isfile(ctx, ph);
 }
@@ -417,7 +489,7 @@ static const knh_LinkDPI_t PATH_PKG = {
 	LIB_hasType, PKG_exists, NOPATH_newObjectNULL,
 };
 
-static const knh_StreamDSPI_t STREAM_PKG = {
+static const knh_StreamDPI_t STREAM_PKG = {
 	K_DSPI_STREAM, "pkg", PKG_realpath,
 	FILE_open, NOFILE_wopen, FILE_read, 0, NOFILE_write, FILE_close,
 };
@@ -429,7 +501,7 @@ static knh_bool_t SCRIPT_realpath(CTX ctx, knh_NameSpace_t *ns, knh_path_t *ph)
 	if(!knh_path_isdir(ctx, ph)) {
 		knh_path_reduce(ctx, ph, '/');
 	}
-	knh_path_append(ctx, ph, 1/*sep*/, knh_cwb_tochar(ctx, cwb));
+	knh_buff_addospath(ctx, ph, 1/*sep*/, knh_cwb_tochar(ctx, cwb));
 	knh_cwb_close(cwb);
 	knh_ospath(ctx, ph);
 	return knh_path_isfile(ctx, ph);
@@ -448,7 +520,7 @@ static const knh_LinkDPI_t PATH_SCRIPT = {
 	FILE_hasType, SCRIPT_exists, FILE_newObjectNULL,
 };
 
-static const knh_StreamDSPI_t STREAM_SCRIPT = {
+static const knh_StreamDPI_t STREAM_SCRIPT = {
 	K_DSPI_STREAM, "script", SCRIPT_realpath,
 	FILE_open, NOFILE_wopen, FILE_read, K_OUTBUF_MAXSIZ, FILE_write, FILE_close,
 };
@@ -461,7 +533,7 @@ static knh_bool_t START_realpath(CTX ctx, knh_NameSpace_t *ns, knh_path_t *ph)
 		knh_String_t *s = knh_getPropertyNULL(ctx, STEXT("konoha.script.path"));
 		if(s != NULL) {
 			knh_path_reset(ctx, ph, NULL, S_tobytes(s));
-			knh_path_append(ctx, ph, 1/*sep*/, knh_cwb_tochar(ctx, cwb));
+			knh_buff_addospath(ctx, ph, 1/*sep*/, knh_cwb_tochar(ctx, cwb));
 			knh_ospath(ctx, ph);
 			if(knh_path_isfile(ctx, ph)) return 1;
 		}
@@ -470,7 +542,7 @@ static knh_bool_t START_realpath(CTX ctx, knh_NameSpace_t *ns, knh_path_t *ph)
 	if(!knh_path_isdir(ctx, ph)) {
 		knh_path_reduce(ctx, ph, '/');
 	}
-	knh_path_append(ctx, ph, 1/*sep*/, knh_cwb_tochar(ctx, cwb));
+	knh_buff_addospath(ctx, ph, 1/*sep*/, knh_cwb_tochar(ctx, cwb));
 	knh_cwb_close(cwb);
 	knh_ospath(ctx, ph);
 	return knh_path_isfile(ctx, ph);
@@ -489,7 +561,7 @@ static const knh_LinkDPI_t PATH_START = {
 		FILE_hasType, START_exists, FILE_newObjectNULL,
 };
 
-static const knh_StreamDSPI_t STREAM_START = {
+static const knh_StreamDPI_t STREAM_START = {
 		K_DSPI_STREAM, "start", START_realpath,
 		FILE_open, NOFILE_wopen, FILE_read, K_OUTBUF_MAXSIZ, FILE_write, FILE_close,
 };
@@ -501,19 +573,19 @@ static void SYSLOG_UnknownPathType(CTX ctx, knh_bytes_t path)
 	KNH_LOG("undefined path='%s'", path.text);
 }
 
-const knh_StreamDSPI_t *knh_getDefaultStreamDSPI(void)
+const knh_StreamDPI_t *knh_getDefaultStreamDPI(void)
 {
 	return &STREAM_NOFILE;
 }
 
-const knh_StreamDSPI_t *knh_getByteStreamDSPI(void)
+const knh_StreamDPI_t *knh_getByteStreamDPI(void)
 {
 	return &STREAM_BYTE;
 }
 
-const knh_StreamDSPI_t *knh_getStreamDSPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+const knh_StreamDPI_t *knh_getStreamDPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
-	const knh_StreamDSPI_t *p = (const knh_StreamDSPI_t*)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_STREAM, path);
+	const knh_StreamDPI_t *p = (const knh_StreamDPI_t*)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_STREAM, path);
 	if(p == NULL) {
 		SYSLOG_UnknownPathType(ctx, path);
 		p = &STREAM_NOFILE;
@@ -745,7 +817,7 @@ static const char* CURL_getCharset(Ctx *ctx, knh_io_t fd)
 	return NULL;
 }
 
-static knh_StreamDSPI_t STREAM_CURL = {
+static knh_StreamDPI_t STREAM_CURL = {
 		K_DSPI_STREAM, "curl", 0,
 		CURL_open, CURL_init, CURL_read, CURL_write, CURL_close,
 		CURL_feof, CURL_getc, CURL_getContentType, CURL_getCharset
@@ -1021,18 +1093,18 @@ void knh_loadSystemDriver(CTX ctx, knh_NameSpace_t *ns)
 
 	api->addConvDSPI(ctx, ns, "lower", &TO_lower);
 	api->addConvDSPI(ctx, ns, "upper", &TO_upper);
-	api->addStreamDSPI(ctx, ns, NULL, &STREAM_NOFILE);
-	api->addStreamDSPI(ctx, ns, "file", &STREAM_FILE);
-	api->addStreamDSPI(ctx, ns, "pkg", &STREAM_PKG);
-	api->addStreamDSPI(ctx, ns, "script", &STREAM_SCRIPT);
-	api->addStreamDSPI(ctx, ns, "start",  &STREAM_START);
+	api->addStreamDPI(ctx, ns, NULL, &STREAM_NOFILE);
+	api->addStreamDPI(ctx, ns, "file", &STREAM_FILE);
+	api->addStreamDPI(ctx, ns, "pkg", &STREAM_PKG);
+	api->addStreamDPI(ctx, ns, "script", &STREAM_SCRIPT);
+	api->addStreamDPI(ctx, ns, "start",  &STREAM_START);
 	api->addQueryDSPI(ctx, ns, NULL, &QUERY_NOP);
 #ifdef K_USING_SQLITE3
 	api->addQueryDSPI(ctx, ns, "sqlite3", &QUERY_SQLITE3);
 #endif
 #ifdef K_USING_CURL
 	api->addLinkDPI(ctx, ns, "http", &PATH_CURL);
-	api->addStreamDSPI(ctx, ns, "http", &STREAM_CURL);
+	api->addStreamDPI(ctx, ns, "http", &STREAM_CURL);
 #endif
 }
 

@@ -12,15 +12,16 @@ assure "OperatorExists" {
 }
 
 assure "OperatorExists:String" {
-	String path = "script:nofile";
-	print "path", path, exists path;
-	assert exists path == script:nofile;
+	String path = "link:link";
+	assert exists path;
+	path = "naruto";
+	assert not exists path;
 }
 
 assure "OperatorExists:Link" {
-	print "charset:UTF8", charset:UTF8;
-	assert exists charset:UTF8 == charset:UTF8;
-	print "charset:: UTF8", charset:: "UTF8";
-	assert exists charset:: "UTF8" == charset:UTF8;
+	String s = "link";
+	assert exists link:: s;
+	s = "die hard 4";
+	assert not exists link:: s;
 }
 

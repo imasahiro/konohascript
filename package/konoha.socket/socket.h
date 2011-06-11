@@ -139,7 +139,7 @@ extern "C" {
 //	knh_socket_close(ctx, (knh_intptr_t)sd);
 //}
 //
-//static knh_StreamDSPI_t IO__Channel = {
+//static knh_StreamDPI_t IO__Channel = {
 //	K_DSPI_STREAM, "Channel",
 //	4096,
 //	knh_iodrv_open__Channel,
@@ -149,7 +149,7 @@ extern "C" {
 //	knh_iodrv_close__Channel
 //};
 //
-//knh_StreamDSPI_t *knh_getChannelDriver(void)
+//knh_StreamDPI_t *knh_getChannelDriver(void)
 //{
 //	return &IO__Channel;
 //}

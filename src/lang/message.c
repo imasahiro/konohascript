@@ -169,10 +169,9 @@ void WARN_NotFound(CTX ctx, const char *whatis, const char *t)
 {
 	Gamma_perror(ctx, KC_DWARN, _("%s not found %s"), whatis, t);
 }
-knh_Token_t* ERROR_IncompatiblePackage(CTX ctx, knh_bytes_t path, const knh_PackageDef_t *pkgdef)
+knh_Token_t* ERROR_Incompatible(CTX ctx, const char *whatis, const char *name)
 {
-	return Gamma_perror(ctx, KC_ERR, "Incompatible: konoha(buildid=%d, CRC32=%d), %B(buildid=%d, CRC32=%d)",
-		(int)K_BUILDID, (int)K_API2_CRC32, path, (int)pkgdef->buildid, (int)pkgdef->crc32);
+	return Gamma_perror(ctx, KC_ERR, "incompatible %s: %s", whatis, name);
 }
 knh_Token_t* ERROR_SingleParam(CTX ctx)
 {

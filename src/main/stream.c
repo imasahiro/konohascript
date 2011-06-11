@@ -45,42 +45,25 @@ extern "C" {
 
 /* ************************************************************************ */
 
-/* ------------------------------------------------------------------------ */
-/* [InputStream] */
-
-
-KNHAPI2(knh_InputStream_t*) new_InputStreamDSPI(CTX ctx, knh_io_t fio, const knh_StreamDSPI_t *dspi)
-{
-	knh_InputStream_t* in = new_(InputStream);
-	DP(in)->fio  = fio;
-	in->dspi = dspi;
-	if(DP(in)->ba->bu.len == 0) {
-		knh_Bytes_expands(ctx, DP(in)->ba, K_STREAM_BUFSIZ);
-	}
-	return in;
-}
 
 KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn, const char *mode)
 {
 	knh_bytes_t path = S_tobytes(urn);
-	const knh_StreamDSPI_t *dspi = knh_getStreamDSPI(ctx, ns, path);
-	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
-	if(dspi->realpath(ctx, ns, ph)) {
-		knh_io_t fd = dspi->fopen(ctx, ph, mode);
-		if(fd != IO_NULL) {
-			knh_InputStream_t *in = new_InputStreamDSPI(ctx, fd, dspi);
-			KNH_SETv(ctx, DP(in)->urn, urn);
-			if(DP(in)->ba->bu.len == 0) {
-				knh_Bytes_expands(ctx, DP(in)->ba, K_STREAM_BUFSIZ);
-			}
-			knh_path_close(ctx, ph);
-			return in;
-		}
+	const knh_StreamDPI_t *dspi = knh_getStreamDPI(ctx, ns, path);
+	knh_io_t fd = IO_NULL;
+	if(knh_isFILEStreamDPI(dspi)) {
+		char buf[K_PATHMAX];
+		knh_String_ospath(ctx, urn, ns, buf, sizeof(buf));
+		fd = dspi->fopenSPI(ctx, buf, mode);
 	}
 	else {
-		KNH_TODO("not found");
+		fd = dspi->fopenSPI(ctx, S_tochar(urn), mode);
 	}
-	knh_path_close(ctx, ph);
+	if(fd != IO_NULL) {
+		knh_InputStream_t *in = new_InputStreamDPI(ctx, fd, dspi);
+		KNH_SETv(ctx, DP(in)->urn, urn);
+		return in;
+	}
 	return NULL;
 }
 
@@ -112,14 +95,14 @@ void knh_InputStream_setpos(CTX ctx, knh_InputStream_t *in, size_t s, size_t e)
 	DP(in)->pos   = s;
 	DP(in)->posend = e;
 	DP(in)->fio = IO_BUF;
-	in->dspi = knh_getByteStreamDSPI();
+	in->dspi = knh_getByteStreamDPI();
 }
 
 /* ------------------------------------------------------------------------ */
 static int readbuf(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
 {
 	if(IS_Bytes(ba)) {
-		long ssize = in->dspi->fread(ctx, DP(in)->fio, ba->bu.buf, ba->dim->capacity);
+		long ssize = in->dspi->freadSPI(ctx, DP(in)->fio, ba->bu.buf, ba->dim->capacity);
 		if(ssize > 0) {
 			DP(in)->stat_size += ssize;
 			DP(in)->pos = 0;
@@ -189,13 +172,13 @@ knh_String_t* knh_InputStream_readLine(CTX ctx, knh_InputStream_t *in)
 void knh_InputStream_close(CTX ctx, knh_InputStream_t *in)
 {
 	if(DP(in)->fio != IO_NULL) {
-		in->dspi->fclose(ctx, DP(in)->fio);
+		in->dspi->fcloseSPI(ctx, DP(in)->fio);
 		if(DP(in)->fio != IO_BUF) {
 //			DBG_P("stream in=%s", S_tochar(DP(in)->urn));
 			knh_Bytes_dispose(ctx, DP(in)->ba);
 		}
 		DP(in)->fio = IO_NULL;
-		in->dspi = knh_getDefaultStreamDSPI();
+		in->dspi = knh_getDefaultStreamDPI();
 	}
 }
 
@@ -225,32 +208,24 @@ void InputStream_setCharset(CTX ctx, knh_InputStream_t *in, knh_StringDecoder_t 
 /* ------------------------------------------------------------------------ */
 /* [OutputStream] */
 
-KNHAPI2(knh_OutputStream_t*) new_OutputStreamDSPI(CTX ctx, knh_io_t fio, const knh_StreamDSPI_t *dspi)
-{
-	knh_OutputStream_t* w = new_(OutputStream);
-	DP(w)->fio = fio;
-	w->dspi = dspi;
-	return w;
-}
-
 KNHAPI2(knh_OutputStream_t*) new_OutputStreamNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn, const char *mode)
 {
 	knh_bytes_t path = S_tobytes(urn);
-	const knh_StreamDSPI_t *dspi = knh_getStreamDSPI(ctx, ns, path);
-	knh_path_t phbuf, *ph = knh_path_open_(ctx, NULL, path, &phbuf);
-	if(dspi->realpath(ctx, ns, ph)) {
-		knh_io_t fd = dspi->wopen(ctx, ph, mode);
-		if(fd != IO_NULL) {
-			knh_OutputStream_t *out = new_OutputStreamDSPI(ctx, fd, dspi);
-			KNH_SETv(ctx, DP(out)->urn, urn);
-			knh_path_close(ctx, ph);
-			return out;
-		}
+	const knh_StreamDPI_t *dspi = knh_getStreamDPI(ctx, ns, path);
+	knh_io_t fd = IO_NULL;
+	if(knh_isFILEStreamDPI(dspi)) {
+		char buf[K_PATHMAX];
+		knh_String_ospath(ctx, urn, ns, buf, sizeof(buf));
+		fd = dspi->wopenSPI(ctx, buf, mode);
 	}
 	else {
-		KNH_TODO("not found");
+		fd = dspi->wopenSPI(ctx, S_tochar(urn), mode);
 	}
-	knh_path_close(ctx, ph);
+	if(fd != IO_NULL) {
+		knh_OutputStream_t *out = new_OutputStreamDPI(ctx, fd, dspi);
+		KNH_SETv(ctx, DP(out)->urn, urn);
+		return out;
+	}
 	return NULL;
 }
 
@@ -258,7 +233,7 @@ KNHAPI2(knh_OutputStream_t*) new_BytesOutputStream(CTX ctx, knh_Bytes_t *ba)
 {
 	knh_OutputStream_t* w = new_(OutputStream);
 	DP(w)->fio = IO_BUF;
-	w->dspi = knh_getByteStreamDSPI();
+	w->dspi = knh_getByteStreamDPI();
 	KNH_SETv(ctx, DP(w)->ba, ba);
 	return w;
 }
@@ -276,13 +251,13 @@ KNHAPI2(void) knh_OutputStream_flush(CTX ctx, knh_OutputStream_t *w, int isNEWLI
 			KNH_ASSERT(ba != cwb->ba);
 			c->dspi->enc(ctx, c->conv, BA_tobytes(ba), cwb->ba);
 			ba = cwb->ba;
-			if(w->dspi->fwrite(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len) > 0) {
+			if(w->dspi->fwriteSPI(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len) > 0) {
 				knh_Bytes_clear(DP(w)->ba, 0);
 			}
 			knh_cwb_close(cwb);
 			OutputStream_setUTF8(w, 0);
 		}
-		else if(w->dspi->fwrite(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len) > 0) {
+		else if(w->dspi->fwriteSPI(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len) > 0) {
 			knh_Bytes_clear(ba, 0);
 		}
 	}
@@ -315,13 +290,13 @@ void knh_OutputStream_close(CTX ctx, knh_OutputStream_t *w)
 {
 	if(DP(w)->fio != IO_NULL) {
 		knh_OutputStream_flush(ctx, w, 1);
-		w->dspi->fclose(ctx, DP(w)->fio);
+		w->dspi->fcloseSPI(ctx, DP(w)->fio);
 		if(DP(w)->fio != IO_BUF) {
 			DBG_P("stream out=%s", S_tochar(DP(w)->urn));
 			knh_Bytes_dispose(ctx, DP(w)->ba);
 		}
 		DP(w)->fio = IO_NULL;
-		w->dspi = knh_getDefaultStreamDSPI();
+		w->dspi = knh_getDefaultStreamDPI();
 	}
 }
 
@@ -822,30 +797,32 @@ KNHAPI2(void) knh_printf(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...)
 #else /*K_INCLUDE_BUILTINAPI*/
 
 /* ------------------------------------------------------------------------ */
-//## method InputStream InputStream.new(String urn, String mode, NameSpace ns);
+//## @Throwable method InputStream InputStream.new(String urn, String mode, NameSpace _);
 
 static METHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_InputStream_t *in = sfp[0].in;
+	knh_String_t *urn = sfp[1].s;
 	knh_bytes_t path = S_tobytes(sfp[1].s);
 	const char *mode = IS_NULL(sfp[2].s) ? "r" : S_tochar(sfp[2].s);
 	knh_NameSpace_t *ns = sfp[3].ns;
-	knh_path_t phbuf, *ph = knh_path_open_(ctx, "script", path, &phbuf);
-	DBG_ASSERT(IS_NameSpace(ns));
-	path.text = P_text(ph); path.len = ph->plen;
-	in->dspi = knh_getStreamDSPI(ctx, ns, path);
-	if(in->dspi->realpath(ctx, ns, ph)) {
-		DP(in)->fio = in->dspi->fopen(ctx, ph, mode);
-		if(DP(in)->fio != IO_NULL) {
-			KNH_SETv(ctx, DP(in)->urn, sfp[1].s);
-			knh_Bytes_ensureSize(ctx, DP(in)->ba, K_PAGESIZE);
-			goto L_RETURN;
-		}
+	in->dspi = knh_getStreamDPI(ctx, ns, path);
+	if(knh_isFILEStreamDPI(in->dspi)) {
+		char buf[K_PATHMAX];
+		knh_String_ospath(ctx, urn, ns, buf, sizeof(buf));
+		DP(in)->fio = in->dspi->fopenSPI(ctx, (const char*)buf, mode);
 	}
-	knh_Object_toNULL(ctx, in);
-	in->dspi = knh_getDefaultStreamDSPI();
-	L_RETURN:;
-	knh_path_close(ctx, ph);
+	else {
+		DP(in)->fio = in->dspi->fopenSPI(ctx, S_tochar(urn), mode);
+	}
+	KNH_SETv(ctx, DP(in)->urn, sfp[1].s);
+	if(DP(in)->fio != IO_NULL) {
+		knh_Bytes_ensureSize(ctx, DP(in)->ba, K_PAGESIZE);
+	}
+	else {
+		knh_Object_toNULL(ctx, in);
+		in->dspi = knh_getDefaultStreamDPI();
+	}
 	RETURN_(in);
 }
 
@@ -883,7 +860,7 @@ static METHOD InputStream_getChar(CTX ctx, knh_sfp_t *sfp _RIX)
 //size_t knh_InputStream_read(CTX ctx, knh_InputStream_t *in, char *buf, size_t bufsiz)
 //{
 //	if(InputStream_isFILE(in)) {
-//		return in->dspi->fread(ctx, DP(in)->fd, buf, bufsiz);
+//		return in->dspi->freadSPI(ctx, DP(in)->fd, buf, bufsiz);
 //	}
 //	else {
 //		size_t inbufsiz = (DP(in)->bufend - DP(in)->bufpos);
@@ -901,7 +878,7 @@ static METHOD InputStream_getChar(CTX ctx, knh_sfp_t *sfp _RIX)
 //		DP(in)->bufpos += inbufsiz;
 //		DP(in)->size += bufsiz;
 //		buf += inbufsiz;
-//		size_t s = in->dspi->fread(ctx, DP(in)->fd, buf+inbufsiz, bufsiz-inbufsiz);
+//		size_t s = in->dspi->freadSPI(ctx, DP(in)->fd, buf+inbufsiz, bufsiz-inbufsiz);
 //		DP(in)->size += s;
 //		return s + inbufsiz;
 //	}
@@ -984,28 +961,29 @@ static TYPEMAP knh_InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 /* [OutputStream] */
 
-//## method OutputStream OutputStream.new(String urn, String mode, NameSpace ns);
+//## @Throwable method OutputStream OutputStream.new(String urn, String mode, NameSpace _);
 
 static METHOD OutputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
+	knh_String_t *urn = sfp[1].s;
 	knh_bytes_t path = S_tobytes(sfp[1].s);
 	const char *mode = IS_NULL(sfp[2].s) ? "w" : S_tochar(sfp[2].s);
 	knh_NameSpace_t *ns = sfp[3].ns;
-	knh_path_t phbuf, *ph = knh_path_open_(ctx, "script", path, &phbuf);
-	path.text = P_text(ph); path.len = ph->plen;
-	w->dspi = knh_getStreamDSPI(ctx, ns, path);
-	if(w->dspi->realpath(ctx, ns, ph)) {
-		DP(w)->fio = w->dspi->fopen(ctx, ph, mode);
-		if(DP(w)->fio != IO_NULL) {
-			KNH_SETv(ctx, DP(w)->urn, sfp[1].s);
-			goto L_RETURN;
-		}
+	w->dspi = knh_getStreamDPI(ctx, ns, path);
+	if(knh_isFILEStreamDPI(w->dspi)) {
+		char buf[K_PATHMAX];
+		knh_String_ospath(ctx, urn, ns, buf, sizeof(buf));
+		DP(w)->fio = w->dspi->fopenSPI(ctx, (const char*)buf, mode);
 	}
-	knh_Object_toNULL(ctx, w);
-	w->dspi = knh_getDefaultStreamDSPI();
-	L_RETURN:;
-	knh_path_close(ctx, ph);
+	else {
+		DP(w)->fio = w->dspi->fopenSPI(ctx, S_tochar(urn), mode);
+	}
+	KNH_SETv(ctx, DP(w)->urn, sfp[1].s);
+	if(DP(w)->fio == IO_NULL) {
+		knh_Object_toNULL(ctx, w);
+		w->dspi = knh_getDefaultStreamDPI();
+	}
 	RETURN_(w);
 }
 

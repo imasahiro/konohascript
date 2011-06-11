@@ -264,7 +264,7 @@ static void knh_addLinkDPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, con
 	knh_NameSpace_setLink(ctx, ns, new_Link(ctx, new_T(scheme), d));
 }
 
-static void knh_addStreamDSPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, const knh_StreamDSPI_t *d)
+static void knh_addStreamDPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, const knh_StreamDPI_t *d)
 {
 	knh_NameSpace_addDSPI(ctx, ns, scheme, (knh_DSPI_t*)d);
 }
@@ -285,7 +285,7 @@ const knh_PackageLoaderAPI_t* knh_getPackageLoaderAPI(void)
 	static knh_PackageLoaderAPI_t exports = {
 		knh_loadSystemData,
 		knh_loadScriptIntData, knh_loadScriptFloatData, knh_loadScriptStringData,
-		knh_addLinkDPI, knh_addStreamDSPI, knh_addQueryDSPI, knh_addConvDSPI,
+		knh_addLinkDPI, knh_addStreamDPI, knh_addQueryDSPI, knh_addConvDSPI,
 	};
 	return &exports;
 }

@@ -206,6 +206,23 @@ void knh_Bytes_write(CTX ctx, knh_Bytes_t *ba, knh_bytes_t t)
 
 /* ------------------------------------------------------------------------ */
 
+knh_bytes_t knh_cwb_ensure(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t, size_t reqsize)
+{
+	if(!(cwb->ba->bu.len + reqsize < cwb->ba->dim->capacity)) {
+		const char *p = cwb->ba->bu.text;
+		if(p <= t.text && t.text <= p + cwb->pos) {
+			size_t s = t.text - p;
+			knh_Bytes_expands(ctx, cwb->ba, reqsize);
+			t.text = cwb->ba->bu.text + s;
+		}
+		else {
+			knh_Bytes_expands(ctx, cwb->ba, reqsize);
+		}
+	}
+	return t;
+}
+
+
 KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb)
 {
 	return knh_Bytes_ensureZero(ctx, cwb->ba) + cwb->pos;

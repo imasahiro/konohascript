@@ -407,7 +407,7 @@ METHOD Dir_readName(CTX ctx, knh_sfp_t *sfp _RIX)
 ///* ------------------------------------------------------------------------ */
 ///* @data */
 //
-//static knh_StreamDSPI_t IO__PIPE = {
+//static knh_StreamDPI_t IO__PIPE = {
 //	KNH_STREAM_DSPI, "pipe",
 //	0,
 //	knh_iodrv_open__PIPE,

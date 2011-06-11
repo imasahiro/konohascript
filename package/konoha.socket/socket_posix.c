@@ -113,11 +113,7 @@ EXPORTAPI(const knh_ClassDef_t*) ServerSocket(CTX ctx)
 	cdef.free = Socket_free;
 	return (const knh_ClassDef_t*)&cdef;
 }
-static knh_bool_t SOCKET_realpath(CTX ctx, knh_NameSpace_t *ns, knh_path_t *ph)
-{
-	return 0;
-}
-static knh_io_t SOCKET_open(CTX ctx, knh_path_t *ph, const char *mode)
+static knh_io_t SOCKET_open(CTX ctx, const char *ph, const char *mode)
 {
 	return IO_NULL; // Always opened by external
 }
@@ -134,14 +130,9 @@ static void SOCKET_close(CTX ctx, knh_io_t fd)
 	close((int)fd);
 }
 
-static knh_StreamDSPI_t SOCKET_DSPI = {
-	K_DSPI_STREAM, "socket", SOCKET_realpath,
-	SOCKET_open,
-	SOCKET_open,
-	SOCKET_read,
-	K_OUTBUF_MAXSIZ,
-	SOCKET_write,
-	SOCKET_close,
+static knh_StreamDPI_t SOCKET_DSPI = {
+	K_DSPI_STREAM, "socket",  K_OUTBUF_MAXSIZ,
+	SOCKET_open, SOCKET_open, SOCKET_read, SOCKET_write, SOCKET_close,
 };
 
 static knh_io_t socket_open(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int port)
@@ -192,8 +183,8 @@ METHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 	if (port == 0) port = 80;
 	DP(so)->sd = socket_open(ctx, sfp, host, port);
 	if (DP(so)->sd != IO_NULL) {
-		KNH_SETv(ctx, DP(so)->in,  new_InputStreamDSPI(ctx, DP(so)->sd, &SOCKET_DSPI));
-		KNH_SETv(ctx, DP(so)->out, new_OutputStreamDSPI(ctx, DP(so)->sd, &SOCKET_DSPI));
+		KNH_SETv(ctx, DP(so)->in,  new_InputStreamDPI(ctx, DP(so)->sd, &SOCKET_DSPI));
+		KNH_SETv(ctx, DP(so)->out, new_OutputStreamDPI(ctx, DP(so)->sd, &SOCKET_DSPI));
 	}
 	RETURN_(so);
 }
@@ -255,12 +246,12 @@ METHOD ServerSocket_new(Ctx* ctx,knh_sfp_t* sfp _RIX)
 		LOGDATA = {sDATA("host", host), iDATA("port", port), iDATA("max_connection", backlog)};
 		LIB_Failed("listen", "Socket!!");
 	}
-	knh_StreamDSPI_t *dspi = &SOCKET_DSPI;
+	knh_StreamDPI_t *dspi = &SOCKET_DSPI;
 	DP(ssock)->sd = fd;
 	DP(ssock)->port = port;
 	//KNH_INITv(DP(so)->urn, sfp[3].o);
-	KNH_INITv(DP(ssock)->in,  new_InputStreamDSPI(ctx, (knh_io_t)DP(ssock)->sd, dspi));
-	KNH_INITv(DP(ssock)->out, new_OutputStreamDSPI(ctx, (knh_io_t)DP(ssock)->sd, dspi));
+	KNH_INITv(DP(ssock)->in,  new_InputStreamDPI(ctx, (knh_io_t)DP(ssock)->sd, dspi));
+	KNH_INITv(DP(ssock)->out, new_OutputStreamDPI(ctx, (knh_io_t)DP(ssock)->sd, dspi));
 	RETURN_(ssock);
 }
 
@@ -278,10 +269,10 @@ METHOD ServerSocket_accept(Ctx* ctx,knh_sfp_t* sfp _RIX)
 	DP(ret)->sd = fd;
 	DP(ret)->port = DP(ssock)->port;
 	DP(ret)->uri = DP(ssock)->uri;
-	knh_StreamDSPI_t *drv = &SOCKET_DSPI;
+	knh_StreamDPI_t *drv = &SOCKET_DSPI;
 	KNH_INITv(DP(ret)->urn, DP(ssock)->urn);
-	KNH_INITv(DP(ret)->in,  new_InputStreamDSPI(ctx, (knh_io_t)DP(ret)->sd, drv));
-	KNH_INITv(DP(ret)->out, new_OutputStreamDSPI(ctx, (knh_io_t)DP(ret)->sd, drv));
+	KNH_INITv(DP(ret)->in,  new_InputStreamDPI(ctx, (knh_io_t)DP(ret)->sd, drv));
+	KNH_INITv(DP(ret)->out, new_OutputStreamDPI(ctx, (knh_io_t)DP(ret)->sd, drv));
 	RETURN_(ret);
 }
 
@@ -298,7 +289,7 @@ METHOD ServerSocket_close(Ctx* ctx,knh_sfp_t* sfp _RIX)
 
 EXPORTAPI(const knh_PackageDef_t*) init(CTX ctx)
 {
-	static const knh_PackageDef_t pkgdef = KNH_PKGINFO("socket", "0.0", "Konoha Socket Library", NULL);
+	static const knh_PackageDef_t pkgdef = KNH_PKGINFO("socket", "0.1", "Konoha Socket Library", NULL);
 	return &pkgdef;
 }
 
