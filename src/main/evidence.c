@@ -661,9 +661,9 @@ void knh_trace(CTX ctx, knh_sfp_t *sfp, int pe, const char *ns, const char *evt,
 
 static void knh_write_key(CTX ctx, knh_OutputStream_t *w, const char *key)
 {
-	knh_putc(ctx, w, '\'');
+	knh_putc(ctx, w, '"');
 	knh_write_ascii(ctx, w, key);
-	knh_putc(ctx, w, '\'');
+	knh_putc(ctx, w, '"');
 	knh_putc(ctx, w, ':'); knh_putc(ctx, w, ' ');
 }
 

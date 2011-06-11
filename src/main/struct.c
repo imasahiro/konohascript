@@ -341,94 +341,58 @@ static knh_String_t* ObjectField_getkey(CTX ctx, knh_sfp_t *sfp)
 	return DEFAULT_getkey(ctx, sfp);
 }
 
-static void Array_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t *packspi);
+static void pack_unbox(CTX ctx, void *pkr, knh_class_t cid, knh_Object_t **v, const knh_PackSPI_t *packspi)
+{
+	knh_num_t n = *((knh_num_t*)(v[0]));
+	if (IS_Tint(cid)) {
+		packspi->pack_int(ctx, pkr, n.ivalue);
+	} else if (IS_Tfloat(cid)) {
+		packspi->pack_int(ctx, pkr, n.fvalue);
+	} else {
+		packspi->pack_bool(ctx, pkr, n.bvalue);
+	}
+}
 
 static void Object_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t *packspi)
 {
-	const knh_ClassTBL_t *tbl = O_cTBL(o);
+	const knh_ClassTBL_t *ct = O_cTBL(o);
 	int i = 0;
-	Object **v = (Object **)o->rawptr;
-	size_t map_size = 0;
-	int is32BIT = 4 / sizeof(void *);
-	for (i = 0; i < tbl->fsize; i++) {
-		knh_fields_t *field = tbl->fields + i;
-		knh_type_t type = field->type;
-		if (is32BIT &&
-			(type == CLASS_Boolean || type == CLASS_Int || type == CLASS_Float)) {
-			i++;
-		}
-		map_size++;
-	}
-	packspi->pack_beginmap(ctx, pkr, map_size + 1);
+	knh_ObjectField_t *of = (knh_ObjectField_t*) o;
+	Object **v = of->fields;
+	size_t field_count = ct->fsize;
+	DBLNDATA_(
+			for (i = 0; i < ct->fsize; i++) {
+			knh_fields_t *field = ct->fields + i;
+			if (field->type == CLASS_Tvoid) {
+			field_count--;
+			}
+	});
+
+	// { "ks:class" : "main.Person", 
+	packspi->pack_beginmap(ctx, pkr, field_count + 1);
 	packspi->pack_string(ctx, pkr, "ks:class", sizeof("ks:class"));
-	packspi->pack_string(ctx, pkr, tbl->sname->str.text, tbl->sname->str.len);
-	for (i = 0; i < tbl->fsize; i++) {
-		knh_fields_t *field = tbl->fields + i;
+	packspi->pack_putc(ctx, pkr, ':');
+	packspi->pack_string(ctx, pkr, S_tochar(ct->sname), S_size(ct->sname));
+
+	for (i = 0; i < ct->fsize; i++) {
+		knh_fields_t *field = ct->fields + i;
 		knh_type_t type = field->type;
-		knh_String_t *key = knh_getFieldName(ctx, field->fn);
-		packspi->pack_string(ctx, pkr, key->str.text, key->str.len);
-		switch (type) {
-		case CLASS_Boolean: {
-			knh_boolean_t *value = (knh_boolean_t *)(v + i);
-			packspi->pack_bool(ctx, pkr, value[0]);
-			if (is32BIT) i++;
-			break;
+		knh_String_t *key;
+
+		if (type == CLASS_Tvoid) continue;
+		if (i != 0) {
+			packspi->pack_putc(ctx, pkr, ',');
 		}
-		case CLASS_Int: {
-			knh_int_t *value = (knh_int_t *)(v + i);
-			packspi->pack_int(ctx, pkr, value[0]);
-			if (is32BIT) i++;
-			break;
-		}
-		case CLASS_Float: {
-			knh_float_t *value = (knh_float_t *)(v + i);
-			packspi->pack_float(ctx, pkr, value[0]);
-			if (is32BIT) i++;
-			break;
-		}
-		case CLASS_String: {
-			knh_String_t *value = (knh_String_t *)v[i];
-			packspi->pack_string(ctx, pkr, value->str.text, value->str.len);
-			break;
-		}
-		case CLASS_Tdynamic: {
-			switch (O_cTBL(v[i])->cid) {
-			case CLASS_Int:
-				packspi->pack_int(ctx, pkr, ((knh_Int_t *)v[i])->n.ivalue);
-				break;
-			case CLASS_Float:
-				packspi->pack_float(ctx, pkr, ((knh_Float_t *)v[i])->n.fvalue);
-				break;
-			case CLASS_Boolean:
-				packspi->pack_bool(ctx, pkr, ((knh_Boolean_t *)v[i])->n.bvalue);
-				break;
-			case CLASS_String: {
-				knh_String_t *value = (knh_String_t *)v[i];
-				packspi->pack_string(ctx, pkr, value->str.text, value->str.len);
-				break;
-			}
-			default:
-				//Array or Object
-				if (O_cTBL(v[i])->bcid == CLASS_Array) {
-					Array_wdata(ctx, pkr, v[i], packspi);
-				} else {
-					Object_wdata(ctx, pkr, v[i], packspi);
-				}
-				break;
-			}
-			break;
-		}
-		default:
-			//Array or Object
-			if (O_cTBL(v[i])->bcid == CLASS_Array) {
-				Array_wdata(ctx, pkr, v[i], packspi);
-			} else {
-				Object_wdata(ctx, pkr, v[i], packspi);
-			}
-			break;
+		key = knh_getFieldName(ctx, field->fn);
+		packspi->pack_string(ctx, pkr, S_tochar(key), S_size(key));
+		if (IS_Tunbox(type)) {
+			pack_unbox(ctx, pkr, type, v + i, packspi);
+		} else {
+			knh_Object_t *o = v[i];
+			O_cTBL(o)->ospi->wdata(ctx, pkr, RAWPTR(o), packspi);
 		}
 	}
-	//fprintf(stderr, " }");
+	packspi->pack_endmap(ctx, pkr);
 }
 
 static knh_ClassDef_t ObjectDef = {
@@ -781,7 +745,7 @@ static knh_hashcode_t String_hashCode(CTX ctx, knh_sfp_t *sfp)
 static void String_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t *packspi)
 {
 	knh_String_t *s = (knh_String_t *)o;
-	packspi->pack_string(ctx, pkr, s->str.text, s->str.len);
+	packspi->pack_string(ctx, pkr, S_tochar(s), S_size(s));
 }
 
 static knh_ClassDef_t StringDef = {
@@ -1134,28 +1098,16 @@ static void Array_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 static void Array_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t *packspi)
 {
 	knh_Array_t *a = (knh_Array_t *)o;
-	packspi->pack_beginmap(ctx, pkr, 2);
-	packspi->pack_string(ctx, pkr, "ks:atype", sizeof("ks:atype"));
-	packspi->pack_int(ctx, pkr, O_cTBL(a)->p1);//for type check
-	packspi->pack_string(ctx, pkr, "abody", sizeof("abody"));
 	packspi->pack_beginarray(ctx, pkr, a->size);
 	int i = 0;
-	for (i = 0; i < a->size; i++) {
-		switch (O_cTBL(a)->p1) {
-		case CLASS_Int:
-			packspi->pack_int(ctx, pkr, a->ilist[i]);
-			break;
-		case CLASS_Float:
-			packspi->pack_float(ctx, pkr, a->flist[i]);
-			break;
-		case CLASS_Boolean:
-			packspi->pack_bool(ctx, pkr, a->ilist[i]);
-			break;
-		default:
-			if (O_cTBL(a->list[i])->ospi->wdata != NULL) {
-				O_cTBL(a->list[i])->ospi->wdata(ctx, pkr, a->list[i], packspi);
-			}
-			break;
+	knh_class_t p1 = O_p1(a);
+	if (Array_isNDATA(a)) {
+		for (i = 0; i < a->size; i++) {
+			pack_unbox(ctx, pkr, p1, (knh_Object_t**)(a->ilist+i), packspi);
+		}
+	} else {
+		for (i = 0; i < a->size; i++) {
+			O_cTBL(a->list[i])->ospi->wdata(ctx, pkr, RAWPTR(a->list[i]), packspi);
 		}
 	}
 }
@@ -2359,7 +2311,7 @@ static void NameSpace_free(CTX ctx, knh_RawPtr_t *o)
 {
 	BODY_free(ctx, o);
 	if(((knh_NameSpace_t*)o)->dlhdr != NULL) {
-		// This must be fixed (by chen_ji and utr.hira) in the future
+		// TODO This must be fixed (by chen_ji and utr.hira) in the future
 		// knh_dlclose(ctx, ((knh_NameSpace_t*)o)->dlhdr);
 	}
 }
