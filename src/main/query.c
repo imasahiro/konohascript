@@ -426,7 +426,8 @@ static int knh_ResultSet_indexof_(CTX ctx, knh_sfp_t *sfp)
 {
 	knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
 	if(IS_bInt(sfp[1].o)) {
-		size_t n = Int_to(size_t, sfp[1]);
+		size_t n = O_ndata(sfp[1].i);
+		//size_t n = Int_to(size_t, sfp[1]);
 		if(!(n < DP(o)->column_size)) {
 			THROW_OutOfRange(ctx, sfp, sfp[1].ivalue, DP(o)->column_size);
 			return -1;
