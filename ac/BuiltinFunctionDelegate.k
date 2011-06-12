@@ -16,22 +16,22 @@ assure "BuiltinFunctionDelegate:StaticMethod" {
 	assert f(1) == 0;
 }
 
-@Iterative InputStream.readLine();
-String.. itr = new InputStream().readLine()..;
-
-(new InputStream()!!).readLine();
-
-"hoge".readLine
-
-itr = (as Iterator)ins.readLine();
-
-while((line = ins.readLine() != null) {
-
-}
-(to Iterator<>)a;
-a.. ==> (iterate (CALL a)
-foreach(String line from ins.readLine()..) {
-}
-ins.readLine)
-
-
+//@Iterative InputStream.readLine();
+//String.. itr = new InputStream().readLine()..;
+//
+//(new InputStream()!!).readLine();
+//
+//"hoge".readLine
+//
+//itr = (as Iterator)ins.readLine();
+//
+//while((line = ins.readLine() != null) {
+//
+//}
+//(to Iterator<>)a;
+//a.. ==> (iterate (CALL a)
+//foreach(String line from ins.readLine()..) {
+//}
+//ins.readLine)
+//
+//

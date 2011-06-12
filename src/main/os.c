@@ -558,14 +558,17 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		int bufsiz = FILEPATH_BUFSIZ;
 		HMODULE h = LoadLibrary(NULL);
 		GetModuleFileNameA(h, buf, bufsiz);
-		ph = knh_path_open_(ctx, NULL, B(buf), &phbuf);
-		SETPROP("konoha.bin.path", knh_path_newString(ctx, ph, 0));
+		knh_cwb_clear(cwb, 0);
+		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, B(buf));
+		SETPROP("konoha.bin.path", knh_buff_newRealPath(ctx, cwb->ba, cwb->pos));
 		if(home.text == NULL) {
 			knh_String_t *s;
-			GetModuleFileNameA(h, buf, bufsiz);
-			knh_path_reduce(ctx, ph, '\\');
-			s = knh_path_newString(ctx, ph, 0);
-			SETPROP("konoha.home.path", UPCAST(s));
+			knh_cwb_clear(cwb, 0);
+			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, new_bytes2(buf, size));
+			knh_buff_trim(ctx, cwb->ba, cwb->pos, '\\');
+			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1/*isSep*/, STEXT("konoha"));
+			s = knh_cwb_newString(ctx, cwb);
+			SETPROP("konoha.home.path", s);
 			home = S_tobytes(s);
 		}
 	}
@@ -576,15 +579,18 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		char buf[FILEPATH_BUFSIZ];
 		int bufsiz = FILEPATH_BUFSIZ;
 		size_t size = readlink("/proc/self/exe", buf, bufsiz);
-		ph = knh_path_open_(ctx, NULL, new_bytes2(buf, size), &phbuf);
-		SETPROP("konoha.bin.path", knh_path_newString(ctx, ph, 0));
+		knh_cwb_clear(cwb, 0);
+		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, new_bytes2(buf, size));
+		SETPROP("konoha.bin.path", knh_buff_newRealPath(ctx, cwb->ba, cwb->pos));
 		if(home.text == NULL) {
 			knh_String_t *s;
-			knh_path_reduce(ctx, ph, '/');
-			knh_path_reduce(ctx, ph, '/');
-			knh_buff_addospath(ctx, ph, 1/*isSep*/, "konoha");
-			s = knh_path_newString(ctx, ph, 0/*hasScheme*/);
-			SETPROP("konoha.home.path", UPCAST(s));
+			knh_cwb_clear(cwb, 0);
+			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, new_bytes2(buf, size));
+			knh_buff_trim(ctx, cwb->ba, cwb->pos, '/');
+			knh_buff_trim(ctx, cwb->ba, cwb->pos, '/');
+			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1/*isSep*/, STEXT("konoha"));
+			s = knh_cwb_newString(ctx, cwb);
+			SETPROP("konoha.home.path", s);
 			home = S_tobytes(s);
 		}
 	}

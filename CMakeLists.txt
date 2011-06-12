@@ -63,6 +63,7 @@ set(KONOHA_SRC
 	src/main/memory.c
 	src/main/number.c
 	src/main/os.c
+	src/main/link.c
 	src/main/query.c
 	src/main/runtime.c
 	src/main/security.c
