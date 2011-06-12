@@ -910,7 +910,7 @@ static METHOD InputStream_setCharset_(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## method String InputStream.readLine();
+//## @Iterative method String InputStream.readLine();
 
 static METHOD InputStream_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {

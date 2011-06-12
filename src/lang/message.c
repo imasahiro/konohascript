@@ -494,6 +494,15 @@ void WARN_Cast(CTX ctx, const char *whatis, knh_class_t tcid, knh_class_t scid)
 {
 	Gamma_perror(ctx, KC_EWARN, _("%s (%C)expr of %C"), whatis, tcid, scid);
 }
+knh_Token_t* ERROR_ForeachNotIterative(CTX ctx, knh_class_t p1, knh_class_t type)
+{
+	if(p1 == CLASS_Tvar) {
+		return Gamma_perror(ctx, KC_ERR, "foreach %T is not iterative", p1, type);
+	}
+	else {
+		return Gamma_perror(ctx, KC_ERR, "foreach: %T is not iteration of %T", p1, type);
+	}
+}
 void WarningDuplicatedDefault(CTX ctx)
 {
 	Gamma_perror(ctx, KC_EWARN, _("multiple default in switch"));

@@ -129,8 +129,10 @@ static int DEFAULT_compareTo(knh_RawPtr_t *o1, knh_RawPtr_t *o2)
 
 static void DEFAULT_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
-	KNH_LOG("TODO: must be defined %s_write", O__(o));
-	knh_write_ptr(ctx, w, (void*)o->rawptr);
+	KNH_LOG("TODO: must be defined %s_p", O__(o));
+	knh_write_type(ctx, w, O_cid(o));
+	knh_putc(ctx, w, ':');
+	knh_write_ptr(ctx, w, (void*)o);
 }
 
 static void knh_write_TObject(CTX ctx, knh_OutputStream_t *w, knh_type_t type, Object **v, size_t i, int level)
@@ -1140,6 +1142,7 @@ static void Iterator_init(CTX ctx, knh_RawPtr_t *o)
 	knh_IteratorEX_t *b = knh_bodymalloc(ctx, Iterator);
 	itr->fnext_1  =  Fitrnext_single;
 	KNH_INITv(b->source, KNH_NULL);
+	b->mtdNULL  =  NULL;
 	b->nptr     =  NULL;
 	b->mitr.index = 0;
 	b->mitr.ptr = NULL;
@@ -1151,6 +1154,7 @@ static void Iterator_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Iterator_t *itr = (knh_Iterator_t*)o;
 	KNH_ADDREF(ctx, DP(itr)->source);
+	KNH_ADDNNREF(ctx, DP(itr)->mtdNULL);
 	KNH_SIZEREF(ctx);
 }
 
@@ -1167,21 +1171,25 @@ static void Iterator_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int leve
 	knh_class_t p1 = O_p1(it);
 	if(IS_FMTdump(level)) {
 		knh_sfp_t *lsfp = ctx->esp;
+		KNH_SETv(ctx, lsfp[1].o, it);
+		klr_setesp(ctx, lsfp + 2);
 		size_t c = 0;
-		while(it->fnext_1(ctx, lsfp+1, /*1+*/1)) {
+		while(it->fnext_1(ctx, lsfp+1, -1)) {
 			if(c > 0) {
 				knh_write_EOL(ctx, w);
 			}
 			if(IS_Tint(p1)) {
-				knh_write_ifmt(ctx, w, K_INT_FMT, lsfp[2].ivalue);
+				knh_write_ifmt(ctx, w, K_INT_FMT, lsfp[0].ivalue);
 			}
 			else if(IS_Tfloat(p1)) {
-				knh_write_ffmt(ctx, w, K_FLOAT_FMT, lsfp[2].fvalue);
+				knh_write_ffmt(ctx, w, K_FLOAT_FMT, lsfp[0].fvalue);
 			}
 			else {
-				knh_write_Object(ctx, w, lsfp[2].o, level);
+				knh_write_Object(ctx, w, lsfp[0].o, level);
 			}
 			c++;
+			KNH_SETv(ctx, lsfp[1].o, it);
+			klr_setesp(ctx, lsfp + 2);
 		}
 	}
 }
@@ -1537,9 +1545,22 @@ static void Link_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 
 static void Link_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
-	knh_Link_t *flnk = (knh_Link_t*)o;
-	knh_write(ctx, w, S_tobytes(flnk->scheme));
+	knh_Link_t *lnk = (knh_Link_t*)o;
+	knh_write(ctx, w, S_tobytes(lnk->scheme));
 	knh_write(ctx, w, STEXT("::"));
+	if(IS_FMTdump(level)) {
+		size_t i;
+		knh_write(ctx, w, STEXT("=boolean|String"));
+		if(lnk->dpi->utype != NULL) {
+			knh_putc(ctx, w, '|');
+			knh_write_ascii(ctx, w, lnk->dpi->utype);
+		}
+		for(i = 0; i < knh_Array_size(lnk->list); i++) {
+			knh_Method_t *mtd = lnk->list->methods[i];
+			knh_putc(ctx, w, '|');
+			knh_write_cname(ctx, w, mtd->cid);
+		}
+	}
 }
 
 static knh_ClassDef_t LinkDef = {

@@ -242,6 +242,7 @@ KNHAPI2(knh_Iterator_t*) new_Iterator(CTX ctx, knh_class_t p1, knh_Object_t *sou
 
 static ITRNEXT Array_nextO(CTX ctx, knh_sfp_t *sfp, long rtnidx)
 {
+	DBG_P("sfp[0]=%s", CLASS__(O_cid(sfp[0].it)));
 	DBG_ASSERT(IS_bIterator(sfp[0].it));
 	knh_Iterator_t *itr = ITR(sfp);
 	knh_Array_t *a = (knh_Array_t*)DP(itr)->source;
@@ -766,6 +767,7 @@ static TYPEMAP RangeInt_ArrayInt(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	RETURN_(a);
 }
+
 
 /* ------------------------------------------------------------------------ */
 

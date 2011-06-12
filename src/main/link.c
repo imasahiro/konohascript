@@ -171,13 +171,17 @@ knh_OutputStream_t *new_OutputStreamSTDIO(CTX ctx, FILE *fp, knh_String_t *enc)
 knh_InputStream_t* knh_Bytes_openInputStream(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_String_t *path)
 {
 	FILE *fp = fopen(knh_Bytes_ensureZero(ctx, ba)+pos, "r");
-	return new_InputStreamDPI(ctx, (knh_io_t)fp, &STREAM_FILE);
+	knh_InputStream_t *in = new_InputStreamDPI(ctx, (knh_io_t)fp, &STREAM_FILE);
+	KNH_SETv(ctx, DP(in)->urn, path);
+	return in;
 }
 
 knh_OutputStream_t* knh_Bytes_openOutputStream(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_String_t *path)
 {
 	FILE *fp = fopen(knh_Bytes_ensureZero(ctx, ba)+pos, "a");
-	return new_OutputStreamDPI(ctx, (knh_io_t)fp, &STREAM_FILE);
+	knh_OutputStream_t *out = new_OutputStreamDPI(ctx, (knh_io_t)fp, &STREAM_FILE);
+	KNH_SETv(ctx, DP(out)->urn, path);
+	return out;
 }
 
 static void SYSLOG_UnknownPathType(CTX ctx, knh_bytes_t path)
@@ -521,6 +525,9 @@ void knh_Bytes_addScriptPath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_NameSpace
 {
 	knh_bytes_t bpath = knh_bytes_next(path, ':');
 	knh_buff_addospath(ctx, ba, pos, 0, S_tobytes(ns->rpath));
+	if(!knh_isdir(ctx, S_tochar(ns->rpath))) {
+		knh_buff_trim(ctx, ba, pos, '/');
+	}
 	knh_buff_addospath(ctx, ba, pos, 1, bpath);
 }
 
@@ -555,15 +562,12 @@ static knh_Object_t* SCRIPT_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_clas
 		}
 		knh_cwb_clear(cwb, 0);
 	}
-	return NULL;
+	return res;
 }
 
 static const knh_LinkDPI_t LINK_SCRIPT = {
 	"script", "byte[]|InputStream|OutputStream", FILE_hasType, SCRIPT_exists, SCRIPT_newObjectNULL,
 };
-
-/* ------------------------------------------------------------------------ */
-/* class:Int */
 
 static knh_bool_t CLASS_hasType(CTX ctx, knh_class_t cid)
 {

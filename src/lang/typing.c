@@ -1507,7 +1507,7 @@ static knh_Token_t* PATH_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 		knh_Object_t *o = knh_Link_newObjectNULL(ctx, lnk, ns, (tk)->text, cid);
 		if(o == NULL) {
 			o = KNH_NULVAL(reqt);
-			WARN_Undefined(ctx, "link", cid, tk);
+			WARN_Undefined(ctx, "linked resource", CLASS_unknown, tk);
 		}
 		return Token_setCONST(ctx, tk, o);
 	}
@@ -3435,9 +3435,8 @@ static knh_Token_t* DO_typing(CTX ctx, knh_Stmt_t *stmt)
 
 static knh_Token_t* FOR_typing(CTX ctx, knh_Stmt_t *stmt)
 {
-	knh_Token_t *tkRES;
 	BEGIN_BLOCK(esp);
-	tkRES = Stmt_typing(ctx, stmtNN(stmt, 0), TYPE_void);
+	knh_Token_t *tkRES = Stmt_typing(ctx, stmtNN(stmt, 0), TYPE_void);
 	if(tkRES != NULL) {
 		TYPING_Condition(ctx, stmt, 1);
 		if(Tn_isFALSE(stmt, 1)) {
@@ -3454,63 +3453,95 @@ static knh_Token_t* FOR_typing(CTX ctx, knh_Stmt_t *stmt)
 	return tkRES;
 }
 
-static knh_class_t FOREACH1_inferITR(CTX ctx, knh_Stmt_t *stmt, size_t n)
+static knh_Method_t* knh_NameSpace_getIterativeMethodNULL(CTX ctx, knh_class_t cid, knh_class_t p1)
+{
+	return NULL;
+}
+
+static knh_Token_t *new_TokenCID(CTX ctx, knh_class_t cid)
+{
+	knh_Token_t *tk = new_(Token);
+	TT_(tk) = TT_UNAME;
+	tk->uline = ctx->gma->uline;
+	(tk)->cid = cid;
+	return tk;
+}
+
+static knh_Token_t* FOREACH1_toIterator(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_class_t p1)
 {
 	knh_class_t cid = Tn_cid(stmt, n);
-	if(C_bcid(cid) != CLASS_Iterator) {
-		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, cid, MN_opITR);
+	if(C_bcid(cid != CLASS_Iterator)) {
+		knh_Method_t *mtd = knh_NameSpace_getIterativeMethodNULL(ctx, cid, p1);
+		if(mtd != NULL) {
+			knh_Stmt_t *stmtC = new_Stmt2(ctx, STT_NEW, new_TokenMN(ctx, MN_new), new_TokenCID(ctx, CLASS_Iterator),
+					tmNN(stmt, n), new_TokenCONST(ctx, mtd), NULL);
+			KNH_SETv(ctx, tmNN(stmt, n), NEW_typing(ctx, stmtC, CLASS_Iterator));
+			cid = knh_class_P1(ctx, CLASS_Iterator, p1);
+			stmtNN(stmt, n)->type = cid;
+			return tkNN(stmt, n);
+		}
+		knh_NameSpace_getMethodNULL(ctx, cid, MN_opITR);
 		if(mtd != NULL) {
 			knh_Stmt_t *stmtC = new_Stmt2(ctx, STT_CALL, new_TokenMN(ctx, MN_opITR), tmNN(stmt, n), NULL);
 			KNH_SETv(ctx, tmNN(stmt, n), CALL_typing(ctx, stmtC, TYPE_var));
 			cid = knh_type_tocid(ctx, knh_ParamArray_rtype(DP(mtd)->mp), cid);
+			if(p1 == CLASS_Tvar) {
+				return tkNN(stmt, n);
+			}
 		}
-		else {
-			KNH_TODO("NO opITR")
-			return TYPE_Iterator;
-		}
+		return ERROR_ForeachNotIterative(ctx, p1, cid);
 	}
-	return cid;
+	if(C_p1(cid) != p1) {
+		return ERROR_ForeachNotIterative(ctx, p1, cid);
+	}
+	return tkNN(stmt, n); // OK
 }
 
 static knh_Token_t* FOREACH1_typing(CTX ctx, knh_Stmt_t *stmt)
 {
-	BEGIN_BLOCK(esp);
 	knh_Stmt_t *stmtDECL = stmtNN(stmt, 0);
-	knh_class_t itrcid = CLASS_unknown;
-	//DBG_P("tkT=%s", TT__(tkNN(stmtDECL, 0)->tt));
-	knh_Token_t *tkT = TTYPE_typing(ctx, tkNN(stmtDECL, 0), TYPE_var);
-	knh_Token_t *tkN = tkNN(stmtDECL, 1);
-	knh_fieldn_t fn = Token_fn(ctx, tkN);
-	if((tkT)->cid == TYPE_var) {
-		knh_Token_t *tkN2 = TNAME_typing(ctx, tkN, TYPE_dyn, _FINDLOCAL | _FINDFIELD | _FINDSCRIPT | _USEDCOUNT);
-		if(tkN2 == NULL) {
-			knh_type_t iftype;
-			TYPING(ctx, stmt, 1, TYPE_Iterator, _NOCHECK);
-			itrcid = FOREACH1_inferITR(ctx, stmt, 1);
-			iftype = C_p1(itrcid);
-			KNH_SETv(ctx, tkNN(stmt, 0), Gamma_addLOCAL(ctx, 0, iftype, fn, 1/*ucnt*/));
-			INFO_Typing(ctx, "", TK_tobytes(tkN), iftype);
-		}
-		else {
+	if(IS_Stmt(stmtDECL)) {
+		BEGIN_BLOCK(esp);
+		knh_class_t itrcid = CLASS_unknown;
+		knh_Token_t *tkT = TTYPE_typing(ctx, tkNN(stmtDECL, 0), TYPE_var);
+		knh_Token_t *tkN = tkNN(stmtDECL, 1);
+		knh_fieldn_t fn = Token_fn(ctx, tkN);
+		knh_class_t p1 = tkT->cid;
+		if(p1 == TYPE_var) {  // foreach(s from in..) ;
+			knh_Token_t *tkN2 = TNAME_typing(ctx, tkN, TYPE_dyn, _FINDLOCAL | _FINDFIELD | _FINDSCRIPT | _USEDCOUNT);
+			if(tkN2 == NULL) {
+				TYPING(ctx, stmt, 1, TYPE_Iterator, _NOCHECK);
+				tkT = FOREACH1_toIterator(ctx, stmt, 1, p1/*CLASS_Tvar*/);
+				if(TT_(tkT) == TT_ERR) return tkT;
+				itrcid = Tn_cid(stmt, 1);
+				p1 = C_p1(itrcid);
+				KNH_SETv(ctx, tkNN(stmt, 0), Gamma_addLOCAL(ctx, 0, p1, fn, 1/*ucnt*/));
+				INFO_Typing(ctx, "", TK_tobytes(tkN), p1);
+				Tn_it(ctx, stmt, 3, itrcid);
+				goto L_BLOCK;
+			}
+			p1 = tkN2->type;
 			if(TT_(tkN2) != TT_LOCAL || TT_(tkN2) != TT_FUNCVAR) {
-				KNH_SETv(ctx, tkNN(stmt, 0), Gamma_addLOCAL(ctx, 0, tkN2->type, fn, 1/*ucnt*/));
+				KNH_SETv(ctx, tkNN(stmt, 0), Gamma_addLOCAL(ctx, 0, p1, fn, 1/*ucnt*/));
 			}
 			else {
 				KNH_SETv(ctx, tkNN(stmt, 0), tkN);
 			}
-			itrcid = knh_class_P1(ctx, CLASS_Iterator, CLASS_t(tkN2->type));
 		}
+		else {
+			KNH_SETv(ctx, tkNN(stmt, 0), Gamma_addLOCAL(ctx, 0, p1, fn, 1/*ucnt*/));
+		}
+		itrcid = knh_class_P1(ctx, CLASS_Iterator, p1);
 		TYPING(ctx, stmt, 1, itrcid, _COERCION);
+		tkT = FOREACH1_toIterator(ctx, stmt, 1, p1/*CLASS_Tvar*/);
+		if(TT_(tkT) == TT_ERR) return tkT;
+		Tn_it(ctx, stmt, 3, itrcid);
+
+		L_BLOCK:;
+		int hasReturn = 0; // dummy
+		TYPING_STMTs(ctx, stmt, 2, TYPE_stmtexpr, &hasReturn);
+		END_BLOCK(esp);
 	}
-	else {
-		KNH_SETv(ctx, tkNN(stmt, 0), Gamma_addLOCAL(ctx, 0, (tkT)->cid, fn, 1/*ucnt*/));
-		itrcid = knh_class_P1(ctx, CLASS_Iterator, (tkT)->cid);
-		TYPING(ctx, stmt, 1, itrcid, _COERCION);
-	}
-	Tn_it(ctx, stmt, 3, itrcid);
-	int hasReturn = 0; // dummy
-	TYPING_STMTs(ctx, stmt, 2, TYPE_stmtexpr, &hasReturn);
-	END_BLOCK(esp);
 	return Stmt_typed(ctx, stmt, TYPE_void);
 }
 
@@ -3520,9 +3551,8 @@ static knh_Token_t* FOREACH_typing(CTX ctx, knh_Stmt_t *stmt)
 		return FOREACH1_typing(ctx, stmt);
 	}
 	else {
-		KNH_TODO("multiple foreach");
+		return ERROR_Unsupported(ctx, "multiple foreach", CLASS_unknown, NULL);
 	}
-	return NULL;
 }
 
 static knh_Token_t* TRY_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)

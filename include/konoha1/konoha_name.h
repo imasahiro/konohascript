@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      316
+#define K_REVISION                      318
 #endif
-#define K_BUILDID                       1128
+#define K_BUILDID                       1129
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -429,53 +429,47 @@
 /* CLASS */
 
 /* ------------------------------------------------------------------------ */
-/* IteratorVar */
-#define CLASS_IteratorVar       ((knh_class_t)46)
-#define IS_IteratorVar(o)       (O_cid(o) == CLASS_IteratorVar)
-#define TYPE_IteratorVar        CLASS_IteratorVar
-
-/* ------------------------------------------------------------------------ */
 /* RangeInt */
-#define CLASS_RangeInt          ((knh_class_t)47)
+#define CLASS_RangeInt          ((knh_class_t)46)
 #define IS_RangeInt(o)          (O_cid(o) == CLASS_RangeInt)
 #define TYPE_RangeInt           CLASS_RangeInt
 
 /* ------------------------------------------------------------------------ */
 /* ArrayInt */
-#define CLASS_ArrayInt          ((knh_class_t)48)
+#define CLASS_ArrayInt          ((knh_class_t)47)
 #define IS_ArrayInt(o)          (O_cid(o) == CLASS_ArrayInt)
 #define TYPE_ArrayInt           CLASS_ArrayInt
 
 /* ------------------------------------------------------------------------ */
 /* CmprT1 */
-#define CLASS_CmprT1            ((knh_class_t)49)
+#define CLASS_CmprT1            ((knh_class_t)48)
 #define IS_CmprT1(o)            (O_cid(o) == CLASS_CmprT1)
 #define TYPE_CmprT1             CLASS_CmprT1
 
 /* ------------------------------------------------------------------------ */
 /* T1ITR */
-#define CLASS_T1ITR             ((knh_class_t)50)
+#define CLASS_T1ITR             ((knh_class_t)49)
 #define IS_T1ITR(o)             (O_cid(o) == CLASS_T1ITR)
 #define TYPE_T1ITR              CLASS_T1ITR
 
 /* ------------------------------------------------------------------------ */
 /* T1ARRAY */
-#define CLASS_T1ARRAY           ((knh_class_t)51)
+#define CLASS_T1ARRAY           ((knh_class_t)50)
 #define IS_T1ARRAY(o)           (O_cid(o) == CLASS_T1ARRAY)
 #define TYPE_T1ARRAY            CLASS_T1ARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringARRAY */
-#define CLASS_StringARRAY       ((knh_class_t)52)
+#define CLASS_StringARRAY       ((knh_class_t)51)
 #define IS_StringARRAY(o)       (O_cid(o) == CLASS_StringARRAY)
 #define TYPE_StringARRAY        CLASS_StringARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringITR */
-#define CLASS_StringITR         ((knh_class_t)53)
+#define CLASS_StringITR         ((knh_class_t)52)
 #define IS_StringITR(o)         (O_cid(o) == CLASS_StringITR)
 #define TYPE_StringITR          CLASS_StringITR
-#define K_CLASS_INITSIZE                55
+#define K_CLASS_INITSIZE                54
 
 /* ------------------------------------------------------------------------ */
 /* FLAG */
@@ -573,9 +567,9 @@
 #define FLAG_Method_Immutable ((knh_flag_t)(1<<8))
 #define Method_isImmutable(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Immutable))
 #define Method_setImmutable(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Immutable,b)
-#define FLAG_Method_Iterator ((knh_flag_t)(1<<9))
-#define Method_isIterator(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Iterator))
-#define Method_setIterator(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Iterator,b)
+#define FLAG_Method_Iterative ((knh_flag_t)(1<<9))
+#define Method_isIterative(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Iterative))
+#define Method_setIterative(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Iterative,b)
 #define FLAG_Method_Throwable ((knh_flag_t)(1<<10))
 #define Method_isThrowable(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Throwable))
 #define Method_setThrowable(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Throwable,b)
@@ -799,85 +793,86 @@
 #define FN_method       (MN_OPSIZE+73)
 #define FN_mode         (MN_OPSIZE+74)
 #define FN_msg          (MN_OPSIZE+75)
-#define FN_n            (MN_OPSIZE+76)
-#define FN_name         (MN_OPSIZE+77)
-#define FN_new          (MN_OPSIZE+78)
-#define FN_new__ARRAY   (MN_OPSIZE+79)
-#define FN_new__array   (MN_OPSIZE+79)
-#define FN_new__LIST    (MN_OPSIZE+80)
-#define FN_new__list    (MN_OPSIZE+80)
-#define FN_new__MAP     (MN_OPSIZE+81)
-#define FN_new__map     (MN_OPSIZE+81)
-#define FN_new__TUPLE   (MN_OPSIZE+82)
-#define FN_new__tuple   (MN_OPSIZE+82)
-#define FN_newObject    (MN_OPSIZE+83)
-#define FN_newobject    (MN_OPSIZE+83)
-#define FN_next         (MN_OPSIZE+84)
-#define FN_notNull      (MN_OPSIZE+85)
-#define FN_notnull      (MN_OPSIZE+85)
-#define FN_ns           (MN_OPSIZE+86)
-#define FN_null         (MN_OPSIZE+87)
-#define FN_offset       (MN_OPSIZE+88)
-#define FN_option       (MN_OPSIZE+89)
-#define FN_out          (MN_OPSIZE+90)
-#define FN_path         (MN_OPSIZE+91)
-#define FN_pattern      (MN_OPSIZE+92)
-#define FN_pop          (MN_OPSIZE+93)
-#define FN_print        (MN_OPSIZE+94)
-#define FN_println      (MN_OPSIZE+95)
-#define FN_property     (MN_OPSIZE+96)
-#define FN_putc         (MN_OPSIZE+97)
-#define FN_query        (MN_OPSIZE+98)
-#define FN_random       (MN_OPSIZE+99)
-#define FN_randomSeed   (MN_OPSIZE+100)
-#define FN_randomseed   (MN_OPSIZE+100)
-#define FN_re           (MN_OPSIZE+101)
-#define FN_readLine     (MN_OPSIZE+102)
-#define FN_readline     (MN_OPSIZE+102)
-#define FN_remove       (MN_OPSIZE+103)
-#define FN_replace      (MN_OPSIZE+104)
-#define FN_reset        (MN_OPSIZE+105)
-#define FN_reverse      (MN_OPSIZE+106)
-#define FN_s            (MN_OPSIZE+107)
-#define FN_scr          (MN_OPSIZE+108)
-#define FN_search       (MN_OPSIZE+109)
-#define FN_second       (MN_OPSIZE+110)
-#define FN_seed         (MN_OPSIZE+111)
-#define FN_send         (MN_OPSIZE+112)
-#define FN_shuffle      (MN_OPSIZE+113)
-#define FN_size         (MN_OPSIZE+114)
-#define FN_sort         (MN_OPSIZE+115)
-#define FN_split        (MN_OPSIZE+116)
-#define FN_start        (MN_OPSIZE+117)
-#define FN_startsWith   (MN_OPSIZE+118)
-#define FN_startswith   (MN_OPSIZE+118)
-#define FN_string       (MN_OPSIZE+119)
-#define FN_substring    (MN_OPSIZE+120)
-#define FN_super        (MN_OPSIZE+121)
-#define FN_swap         (MN_OPSIZE+122)
-#define FN_third        (MN_OPSIZE+123)
-#define FN_this         (MN_OPSIZE+124)
-#define FN_time         (MN_OPSIZE+125)
-#define FN_tmr          (MN_OPSIZE+126)
-#define FN_to           (MN_OPSIZE+127)
-#define FN_trim         (MN_OPSIZE+128)
-#define FN_typeCheck    (MN_OPSIZE+129)
-#define FN_typecheck    (MN_OPSIZE+129)
-#define FN_u            (MN_OPSIZE+130)
-#define FN_urn          (MN_OPSIZE+131)
-#define FN_v            (MN_OPSIZE+132)
-#define FN_value        (MN_OPSIZE+133)
-#define FN_vargs        (MN_OPSIZE+134)
-#define FN_w            (MN_OPSIZE+135)
-#define FN_write        (MN_OPSIZE+136)
-#define FN_writeASCII   (MN_OPSIZE+137)
-#define FN_writeascii   (MN_OPSIZE+137)
-#define FN_writeData    (MN_OPSIZE+138)
-#define FN_writedata    (MN_OPSIZE+138)
-#define FN_x            (MN_OPSIZE+139)
-#define FN_y            (MN_OPSIZE+140)
-#define FN_z            (MN_OPSIZE+141)
-#define K_TFIELD_SIZE   142
+#define FN_mtd          (MN_OPSIZE+76)
+#define FN_n            (MN_OPSIZE+77)
+#define FN_name         (MN_OPSIZE+78)
+#define FN_new          (MN_OPSIZE+79)
+#define FN_new__ARRAY   (MN_OPSIZE+80)
+#define FN_new__array   (MN_OPSIZE+80)
+#define FN_new__LIST    (MN_OPSIZE+81)
+#define FN_new__list    (MN_OPSIZE+81)
+#define FN_new__MAP     (MN_OPSIZE+82)
+#define FN_new__map     (MN_OPSIZE+82)
+#define FN_new__TUPLE   (MN_OPSIZE+83)
+#define FN_new__tuple   (MN_OPSIZE+83)
+#define FN_newObject    (MN_OPSIZE+84)
+#define FN_newobject    (MN_OPSIZE+84)
+#define FN_next         (MN_OPSIZE+85)
+#define FN_notNull      (MN_OPSIZE+86)
+#define FN_notnull      (MN_OPSIZE+86)
+#define FN_ns           (MN_OPSIZE+87)
+#define FN_null         (MN_OPSIZE+88)
+#define FN_offset       (MN_OPSIZE+89)
+#define FN_option       (MN_OPSIZE+90)
+#define FN_out          (MN_OPSIZE+91)
+#define FN_path         (MN_OPSIZE+92)
+#define FN_pattern      (MN_OPSIZE+93)
+#define FN_pop          (MN_OPSIZE+94)
+#define FN_print        (MN_OPSIZE+95)
+#define FN_println      (MN_OPSIZE+96)
+#define FN_property     (MN_OPSIZE+97)
+#define FN_putc         (MN_OPSIZE+98)
+#define FN_query        (MN_OPSIZE+99)
+#define FN_random       (MN_OPSIZE+100)
+#define FN_randomSeed   (MN_OPSIZE+101)
+#define FN_randomseed   (MN_OPSIZE+101)
+#define FN_re           (MN_OPSIZE+102)
+#define FN_readLine     (MN_OPSIZE+103)
+#define FN_readline     (MN_OPSIZE+103)
+#define FN_remove       (MN_OPSIZE+104)
+#define FN_replace      (MN_OPSIZE+105)
+#define FN_reset        (MN_OPSIZE+106)
+#define FN_reverse      (MN_OPSIZE+107)
+#define FN_s            (MN_OPSIZE+108)
+#define FN_scr          (MN_OPSIZE+109)
+#define FN_search       (MN_OPSIZE+110)
+#define FN_second       (MN_OPSIZE+111)
+#define FN_seed         (MN_OPSIZE+112)
+#define FN_send         (MN_OPSIZE+113)
+#define FN_shuffle      (MN_OPSIZE+114)
+#define FN_size         (MN_OPSIZE+115)
+#define FN_sort         (MN_OPSIZE+116)
+#define FN_split        (MN_OPSIZE+117)
+#define FN_start        (MN_OPSIZE+118)
+#define FN_startsWith   (MN_OPSIZE+119)
+#define FN_startswith   (MN_OPSIZE+119)
+#define FN_string       (MN_OPSIZE+120)
+#define FN_substring    (MN_OPSIZE+121)
+#define FN_super        (MN_OPSIZE+122)
+#define FN_swap         (MN_OPSIZE+123)
+#define FN_third        (MN_OPSIZE+124)
+#define FN_this         (MN_OPSIZE+125)
+#define FN_time         (MN_OPSIZE+126)
+#define FN_tmr          (MN_OPSIZE+127)
+#define FN_to           (MN_OPSIZE+128)
+#define FN_trim         (MN_OPSIZE+129)
+#define FN_typeCheck    (MN_OPSIZE+130)
+#define FN_typecheck    (MN_OPSIZE+130)
+#define FN_u            (MN_OPSIZE+131)
+#define FN_urn          (MN_OPSIZE+132)
+#define FN_v            (MN_OPSIZE+133)
+#define FN_value        (MN_OPSIZE+134)
+#define FN_vargs        (MN_OPSIZE+135)
+#define FN_w            (MN_OPSIZE+136)
+#define FN_write        (MN_OPSIZE+137)
+#define FN_writeASCII   (MN_OPSIZE+138)
+#define FN_writeascii   (MN_OPSIZE+138)
+#define FN_writeData    (MN_OPSIZE+139)
+#define FN_writedata    (MN_OPSIZE+139)
+#define FN_x            (MN_OPSIZE+140)
+#define FN_y            (MN_OPSIZE+141)
+#define FN_z            (MN_OPSIZE+142)
+#define K_TFIELD_SIZE   143
 
 /* ------------------------------------------------------------------------ */
 /* METHODN */

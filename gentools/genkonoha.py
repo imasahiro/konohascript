@@ -404,6 +404,8 @@ class Method:
         flag = addflag(flag, self.meta, 'Method', '@Static')
         flag = addflag(flag, self.meta, 'Method', '@Virtual')
         flag = addflag(flag, self.meta, 'Method', '@Hidden')
+        flag = addflag(flag, self.meta, 'Method', '@Iterative')
+        flag = addflag(flag, self.meta, 'Method', '@Throwable')
         flag = addflag(flag, self.meta, 'Method', '@Private')
         flag = addflag(flag, self.meta, 'Method', '@Immutable')
         fmt = '''

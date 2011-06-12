@@ -411,10 +411,10 @@ knh_bool_t knh_exists(CTX ctx, const char *fname)
 	struct stat buf;
 	res = (stat(fname, &buf) != -1);
 #else
-	if(res == 0) {
-		DBG_P("isfile='%s' NOTFOUND", fname);
-	}
 #endif
+	if(res == 0) {
+		DBG_P("'%s' NOTFOUND", fname);
+	}
 	return res;
 }
 

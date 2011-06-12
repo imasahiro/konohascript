@@ -199,7 +199,6 @@ typedef struct knh_Bytes_t {
 
 /* ------------------------------------------------------------------------ */
 //## class Iterator Object;
-//## type IteratorVar  Iterator 0 Tvar;
 
 typedef struct knh_mapitr_t {
 	size_t index;
@@ -212,6 +211,7 @@ typedef void (*knh_Ffree)(void *nptr);
 
 typedef struct {
 	Object    *source;
+	struct knh_Method_t *mtdNULL;
 	void      *nptr;
 	struct knh_mapitr_t mitr;
 	knh_Ffree freffree;
@@ -466,7 +466,7 @@ typedef struct {
 //## flag Method Hidden          6 DP(%s)->flag is set * *;
 //## flag Method Dynamic         7 DP(%s)->flag is set * *;
 //## flag Method Immutable       8 DP(%s)->flag is set * *;
-//## flag Method Iterator        9 DP(%s)->flag is set * *;
+//## flag Method Iterative       9 DP(%s)->flag is set * *;
 //## flag Method Throwable      10 DP(%s)->flag is set * *;
 //## flag Method Message        11 DP(%s)->flag is set * *;
 //## flag Method Controlled     12 DP(%s)->flag is set * *;

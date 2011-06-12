@@ -285,6 +285,37 @@ static METHOD Array_newLIST(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
+
+static ITRNEXT Iterator_next(CTX ctx, knh_sfp_t *sfp, long rtnidx)
+{
+	DBG_ASSERT(IS_bIterator(sfp[0].it));
+	knh_Iterator_t *itr = ITR(sfp);
+	knh_sfp_t *lsfp = ctx->esp;
+	DBG_ASSERT(sfp < lsfp);
+	long rtnidx_ = 0, thisidx = rtnidx_ + K_CALLDELTA;
+	KNH_SETv(ctx, lsfp[thisidx].o, DP(itr)->source);
+	KNH_SCALL(ctx, lsfp, rtnidx_, DP(itr)->mtdNULL, 0);
+	if(IS_NULL(lsfp[rtnidx_].o)) {
+		ITREND_();
+	}
+	else {
+		ITRNEXT_(lsfp[rtnidx_].o);
+	}
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Hidden method This Iterator.new(Object value, Method mtd);
+
+static METHOD Iterator_new(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Iterator_t *it = sfp[0].it;
+	KNH_SETv(ctx, DP(it)->source, sfp[1].o);
+	KNH_INITv(DP(it)->mtdNULL, sfp[2].mtd);
+	it->fnext_1 = Iterator_next;
+	RETURN_(it);
+}
+
+/* ------------------------------------------------------------------------ */
 //## method This Map.new(Int init, String path, NameSpace ns);
 
 static METHOD Map_new(CTX ctx, knh_sfp_t *sfp _RIX)
