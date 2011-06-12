@@ -3666,6 +3666,7 @@ static knh_flag_t METHOD_flag(CTX ctx, knh_Stmt_t *o, knh_class_t cid)
 		ADD_FLAG(flag, "Static", FLAG_Method_Static);
 		ADD_FLAG(flag, "Immutable", FLAG_Method_Static);
 		ADD_FLAG(flag, "Throwable", FLAG_Method_Throwable);
+		ADD_FLAG(flag, "Iterative", FLAG_Method_Iterative);
 		if(class_isSingleton(cid)) flag |= FLAG_Method_Static;
 		if(class_isImmutable(cid)) flag |= FLAG_Method_Immutable;
 //		if(class_isDebug(cid)) flag |= FLAG_Method_Debug;
@@ -3976,6 +3977,11 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 		knh_Stmt_t *stmtD = stmtNN(stmtM, 4/*using DSL*/);
 		Method_linkFFI(ctx, mtd, stmtD);
 		return knh_Stmt_done(ctx, stmtM);
+	}
+	if(knh_StmtMETA_is(ctx, stmtM, "Iterative")) {
+		if(DP(mtd)->mp->psize != 0) {
+			return ERROR_Unsupported(ctx, "parameterized iterative method", CLASS_unknown, NULL);
+		}
 	}
 	return knh_StmtMTD_typing(ctx, stmtM, mtd, mtd_cid);
 }
