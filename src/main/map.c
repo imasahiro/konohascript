@@ -851,7 +851,7 @@ KNHAPI2(void) knh_Map_setInt(CTX ctx, knh_Map_t *m, const char *key, knh_int_t v
 {
 	knh_sfp_t* kvsfp = ctx->esp;
 	KNH_SETv(ctx, kvsfp[0].o, new_T(key));
-	KNH_SETv(ctx, kvsfp[1].o, new_Int(ctx, CLASS_Int, value));
+	KNH_SETv(ctx, kvsfp[1].o, new_Int_(ctx, CLASS_Int, value));
 	m->dspi->set(ctx, m->map, kvsfp);
 }
 

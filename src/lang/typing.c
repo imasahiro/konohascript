@@ -946,7 +946,7 @@ static knh_Token_t *TNAME_typing(CTX ctx, knh_Token_t *tkN, knh_type_t reqt, knh
 	if(FLAG_is(op, _TOERROR)) {
 		knh_bytes_t t = TK_tobytes(tkN);
 		if(IS_SYSVAL(t, "__line__")) {
-			return Token_setCONST(ctx, tkN, new_Int(ctx, CLASS_Int, ULINE_line(tkN->uline)));
+			return Token_setCONST(ctx, tkN, new_Int_(ctx, CLASS_Int, ULINE_line(tkN->uline)));
 		}
 		else if(IS_SYSVAL(t, "__file__")) {
 			return Token_setCONST(ctx, tkN, knh_getURN(ctx, ULINE_uri(tkN->uline)));
@@ -1000,7 +1000,7 @@ static knh_Token_t* Token_toSYSVAL(CTX ctx, knh_Token_t *tk)
 		TK_typing(tk, TT_SYSVAL, TYPE_System, K_SYSVAL_OS);
 	}
 //	else if(IS_SYSVAL(t, "__line__")) {
-//		Token_setCONST(ctx, tk, new_Int(ctx, CLASS_Int, ULINE_line(tk->uline)));
+//		Token_setCONST(ctx, tk, new_Int_(ctx, CLASS_Int, ULINE_line(tk->uline)));
 //	}
 //	else if(IS_SYSVAL(t, "__file__")) {
 //		Token_setCONST(ctx, tk, knh_getURN(ctx, ULINE_uri(tk->uline)));
@@ -1190,10 +1190,10 @@ static knh_Token_t* NUM_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 			return Token_setCONST(ctx, tk, UPCAST(DP(u)->fvalue));
 		}
 		else {
-			return Token_setCONST(ctx, tk, UPCAST(new_FloatX(ctx, tagc, n)));
+			return Token_setCONST(ctx, tk, UPCAST(new_Float_X(ctx, tagc, n)));
 		}
 #else
-		return Token_setCONST(ctx, tk, CONSTPOOL(new_Float(ctx, CLASS_Float, n)));
+		return Token_setCONST(ctx, tk, CONSTPOOL(new_Float_(ctx, CLASS_Float, n)));
 #endif/*K_USING_SEMANTICS*/
 	}
 	else { /* if(req_bcid == CLASS_Int) */
@@ -1209,10 +1209,10 @@ static knh_Token_t* NUM_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 			return Token_setCONST(ctx, tk, UPCAST(DP(u)->ivalue));
 		}
 		else {
-			return Token_setCONST(ctx, tk, UPCAST(new_IntX(ctx, tagc, n)));
+			return Token_setCONST(ctx, tk, UPCAST(new_Int_X(ctx, tagc, n)));
 		}
 #else
-		return Token_setCONST(ctx, tk, CONSTPOOL(new_Int(ctx, CLASS_Int, n)));
+		return Token_setCONST(ctx, tk, CONSTPOOL(new_Int_(ctx, CLASS_Int, n)));
 #endif/*K_USING_SEMANTICS*/
 	}
 }
@@ -1223,7 +1223,7 @@ static knh_Token_t* TSTR_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 	if(CLASS_t(reqt) != CLASS_String && knh_bytes_mlen(t) == 1) {
 		/* 'A' ==> int if not String */
 		knh_bytes_t sub = knh_bytes_mofflen(t, 0, 1);
-		return Token_setCONST(ctx, tk, new_Int(ctx, CLASS_Int, knh_uchar_toucs4(&sub.utext[0])));
+		return Token_setCONST(ctx, tk, new_Int_(ctx, CLASS_Int, knh_uchar_toucs4(&sub.utext[0])));
 	}
 	return Token_toCONST(ctx, tk);
 }
@@ -2595,7 +2595,7 @@ static knh_Token_t* FIELD_typing(CTX ctx, knh_class_t cid, knh_Stmt_t *stmt, siz
 	for(i = 0; i < ct->fsize; i++) {
 		if(ct->fields[i].fn == fn) {
 			TYPING_TypedExpr(ctx, stmt, n+1, ct->fields[i].type);
-			Token_setCONST(ctx, tkK, new_Int(ctx, CLASS_Int, i));
+			Token_setCONST(ctx, tkK, new_Int_(ctx, CLASS_Int, i));
 			return tkK; // OK
 		}
 	}

@@ -272,10 +272,10 @@ static Object *knh_msgpack_getObject(CTX ctx, knh_ClassTBL_t *c, msgpack_unpacke
 	Object *o;
 	switch (obj.type) {
 	case MSGPACK_OBJECT_POSITIVE_INTEGER:
-		o = (Object *)new_Int(ctx, CLASS_Int, obj.via.u64);
+		o = (Object *)new_Int_(ctx, CLASS_Int, obj.via.u64);
 		break;
 	case MSGPACK_OBJECT_DOUBLE:
-		o = (Object *)new_Float(ctx, CLASS_Float, obj.via.dec);
+		o = (Object *)new_Float_(ctx, CLASS_Float, obj.via.dec);
 		break;
 	case MSGPACK_OBJECT_BOOLEAN:
 		if (obj.via.boolean) {

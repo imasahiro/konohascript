@@ -42,7 +42,7 @@ knh_class_t knh_addSpecializedType(CTX ctx, knh_class_t cid, knh_class_t bcid, k
 
 /* ------------------------------------------------------------------------ */
 
-knh_Int_t* new_IntX(CTX ctx, knh_class_t cid, knh_int_t value)
+knh_Int_t* new_Int_X(CTX ctx, knh_class_t cid, knh_int_t value)
 {
 	knh_Semantics_t *u = knh_getSemantics(ctx, cid);
 	if(DP(u)->fichk(u, value)) {
@@ -63,7 +63,7 @@ knh_Int_t* new_IntX(CTX ctx, knh_class_t cid, knh_int_t value)
 
 /* ------------------------------------------------------------------------ */
 
-knh_Float_t* new_FloatX(CTX ctx, knh_class_t cid, knh_float_t value)
+knh_Float_t* new_Float_X(CTX ctx, knh_class_t cid, knh_float_t value)
 {
 	DBG_ASSERT_cid(cid);
 	knh_Semantics_t *u = knh_getSemantics(ctx, cid);
@@ -293,7 +293,7 @@ void knh_Semantics_reuse(CTX ctx, knh_Semantics_t *u, knh_class_t cid)
 			v = DP(u)->imin;
 		}
 		KNH_ASSERT(DP(u)->ivalue == NULL);
-		KNH_INITv(DP(u)->ivalue, new_Int(ctx, cid, v));
+		KNH_INITv(DP(u)->ivalue, new_Int_(ctx, cid, v));
 		if(DP(u)->fvalue != NULL) {
 			knh_TypeMap_t *mpr = new_TypeMap(ctx, FLAG_TypeMap_Affine, DP(u)->ucid, cid, knh_FloatX_IntX, (Object*)u);
 			knh_addTypeMap(ctx, mpr);
@@ -315,7 +315,7 @@ void knh_Semantics_reuse(CTX ctx, knh_Semantics_t *u, knh_class_t cid)
 			v = DP(u)->fmin;
 		}
 		KNH_ASSERT(DP(u)->fvalue == NULL);
-		KNH_INITv(DP(u)->fvalue, new_Float(ctx, cid, v));
+		KNH_INITv(DP(u)->fvalue, new_Float_(ctx, cid, v));
 		if(DP(u)->ivalue != NULL) {
 			knh_TypeMap_t *mpr = new_TypeMap(ctx, FLAG_TypeMap_Affine, cid, DP(u)->ucid, knh_FloatX_IntX, (Object*)u);
 			knh_addTypeMap(ctx, mpr);
@@ -343,10 +343,10 @@ knh_Semantics_t* new_Enum(CTX ctx, char *tag, knh_bytes_t urn, knh_int_t min, kn
 	}
 	knh_Semantics_initIntRange(ctx, u, min, max);
 	if(!DP(u)->fichk(u, 0)) {
-		KNH_INITv(DP(u)->ivalue, new_Int(ctx, cid, min));
+		KNH_INITv(DP(u)->ivalue, new_Int_(ctx, cid, min));
 	}
 	else {
-		KNH_INITv(DP(u)->ivalue, new_Int(ctx, cid, 0));
+		KNH_INITv(DP(u)->ivalue, new_Int_(ctx, cid, 0));
 	}
 	knh_addSpecializedType(ctx, cid, CLASS_Int, u);
 	return u;
@@ -368,10 +368,10 @@ knh_Semantics_t* new_Unit(CTX ctx, char *tag, knh_bytes_t urn, knh_float_t min, 
 	knh_Semantics_initFloatRange(ctx, u, min, max, step);
 #if !defined(K_USING_NOFLOT)
 	if(!DP(u)->ffchk(u, 0.0)) {
-		KNH_INITv(DP(u)->fvalue, new_Float(ctx, cid, min));
+		KNH_INITv(DP(u)->fvalue, new_Float_(ctx, cid, min));
 	}
 	else {
-		KNH_INITv(DP(u)->fvalue, new_Float(ctx, cid, 0.0));
+		KNH_INITv(DP(u)->fvalue, new_Float_(ctx, cid, 0.0));
 	}
 #endif
 	knh_addSpecializedType(ctx, cid, CLASS_Float, u);

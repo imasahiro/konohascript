@@ -67,7 +67,7 @@ static void knh_addConstData(CTX ctx, knh_NameSpace_t *ns, const char *dname, Ob
 static void knh_loadScriptIntData(CTX ctx, knh_NameSpace_t *ns, const knh_IntData_t *data)
 {
 	while(data->name != NULL) {
-		Object *value = UPCAST(new_Int(ctx, CLASS_Int, data->ivalue));
+		Object *value = UPCAST(new_Int_(ctx, CLASS_Int, data->ivalue));
 		knh_addConstData(ctx, ns, data->name, value);
 		data++;
 	}
@@ -76,7 +76,7 @@ static void knh_loadScriptIntData(CTX ctx, knh_NameSpace_t *ns, const knh_IntDat
 static void knh_loadScriptFloatData(CTX ctx, knh_NameSpace_t *ns, const knh_FloatData_t *data)
 {
 	while(data->name != NULL) {
-		Object *value = UPCAST(new_Float(ctx, CLASS_Float, data->fvalue));
+		Object *value = UPCAST(new_Float_(ctx, CLASS_Float, data->fvalue));
 		knh_addConstData(ctx, ns, data->name, value);
 		data++;
 	}

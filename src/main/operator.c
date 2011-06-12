@@ -581,10 +581,10 @@ static METHOD String_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 //	int res = 0/*NotFound*/;
 //	knh_Range_t *o = sfp[0].range;
 //	if(IS_Int((o)->start) && IS_Float(sfp[1].o)) {
-//		KNH_SETv(ctx, sfp[1].o, new_Int(ctx, CLASS_Int, (knh_int_t)sfp[1].fvalue));
+//		KNH_SETv(ctx, sfp[1].o, new_Int_(ctx, CLASS_Int, (knh_int_t)sfp[1].fvalue));
 //	}
 //	else if(IS_Float((o)->start) && IS_Int(sfp[1].o)) {
-//		KNH_SETv(ctx, sfp[1].o, new_Float(ctx, CLASS_Float, (knh_float_t)sfp[1].ivalue));
+//		KNH_SETv(ctx, sfp[1].o, new_Float_(ctx, CLASS_Float, (knh_float_t)sfp[1].ivalue));
 //	}
 //	else {
 //		knh_stack_boxing(ctx, sfp + 1);

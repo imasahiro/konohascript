@@ -36,8 +36,8 @@ KNHAPI2(void) knh_Map_setString(CTX ctx, knh_Map_t *m, const char *key, const ch
 KNHAPI2(void) knh_Map_setInt(CTX ctx, knh_Map_t *m, const char *key, knh_int_t value);
 KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, knh_RawPtr_t *po, void *rawptr);
 KNHAPI2(Object*) new_Boxing(CTX ctx, knh_sfp_t *sfp, const knh_ClassTBL_t *ct);
-KNHAPI2(knh_Int_t*) new_Int(CTX ctx, knh_class_t cid, knh_int_t value);
-KNHAPI2(knh_Float_t*) new_Float(CTX ctx, knh_class_t cid, knh_float_t value);
+KNHAPI2(knh_Int_t*) new_Int(CTX ctx, knh_int_t value);
+KNHAPI2(knh_Float_t*) new_Float(CTX ctx, knh_float_t value);
 KNHAPI2(knh_bool_t) knh_String_ospath(CTX ctx, knh_String_t *s, knh_NameSpace_t *ns, char *buf, size_t bufsiz);
 KNHAPI2(void) knh_ResultSet_initColumn(CTX ctx, knh_ResultSet_t *o, size_t column_size);
 KNHAPI2(void) ResultSet_setName(CTX ctx, knh_ResultSet_t *o, size_t n, knh_String_t *name);
@@ -73,10 +73,10 @@ typedef struct knh_api2_t {
 	int  (*isVerbose)(void);
 	knh_Array_t* (*new_Array)(CTX ctx, knh_class_t p1, size_t capacity);
 	knh_ClassDef_t*  (*getDefaultClassDef)(void);
-	knh_Float_t* (*new_Float)(CTX ctx, knh_class_t cid, knh_float_t value);
+	knh_Float_t* (*new_Float)(CTX ctx, knh_float_t value);
 	knh_InputStream_t* (*new_InputStreamDPI)(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dspi);
 	knh_InputStream_t* (*new_InputStreamNULL)(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn, const char *mode);
-	knh_Int_t* (*new_Int)(CTX ctx, knh_class_t cid, knh_int_t value);
+	knh_Int_t* (*new_Int)(CTX ctx, knh_int_t value);
 	knh_Iterator_t* (*new_Iterator)(CTX ctx, knh_class_t p1, knh_Object_t *source, knh_Fitrnext fnext);
 	knh_Map_t* (*new_Map)(CTX ctx);
 	knh_Object_t* (*new_ObjectNS)(CTX ctx, knh_NameSpace_t *ns, const char *sname);
@@ -125,7 +125,7 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)-263309949)
+#define K_API2_CRC32 ((size_t)695832354)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -570,6 +570,8 @@ void knh_System_gc(CTX ctx);
 void knh_srand(knh_uint_t seed);
 knh_uint_t knh_rand(void);
 knh_float_t knh_float_rand(void);
+knh_Int_t* new_Int_(CTX ctx, knh_class_t cid, knh_int_t value);
+knh_Float_t* new_Float_(CTX ctx, knh_class_t cid, knh_float_t value);
 METHOD Bytes_getSize(CTX ctx, knh_sfp_t *sfp _RIX);
 METHOD Tuple_getSize(CTX ctx, knh_sfp_t *sfp _RIX);
 METHOD Map_getSize(CTX ctx, knh_sfp_t *sfp _RIX);
@@ -614,8 +616,8 @@ void knh_setSecurityAlertMessage(const char *msg, int isNeedFree);
 void konoha_main(konoha_t konoha, int argc, const char **argv);
 void knh_askSecurityAlert(CTX ctx);
 void knh_checkSecurityManager(CTX ctx, knh_sfp_t *sfp);
-knh_Int_t* new_IntX(CTX ctx, knh_class_t cid, knh_int_t value);
-knh_Float_t* new_FloatX(CTX ctx, knh_class_t cid, knh_float_t value);
+knh_Int_t* new_Int_X(CTX ctx, knh_class_t cid, knh_int_t value);
+knh_Float_t* new_Float_X(CTX ctx, knh_class_t cid, knh_float_t value);
 void knh_write_intx(CTX ctx, knh_OutputStream_t *w, knh_Semantics_t *u, knh_int_t v);
 void knh_write_floatx(CTX ctx, knh_OutputStream_t *w, knh_Semantics_t *u, knh_float_t v);
 void knh_Semantics_reuse(CTX ctx, knh_Semantics_t *u, knh_class_t cid);

@@ -435,8 +435,8 @@ KNHAPI2(void) knh_invoke(CTX ctx, knh_Func_t *fo, knh_sfp_t *sfp /*rtnidx*/, int
 //{
 //	CTX ctx = knh_getCurrentContext();
 //	BEGIN_LOCAL(ctx, lsfp);
-//	Object *arg1 = (Object *)new_Int(ctx,(int)d1);
-//	Object *arg2 = (Object *)new_Int(ctx,(int)d2);
+//	Object *arg1 = (Object *)new_Int_(ctx,(int)d1);
+//	Object *arg2 = (Object *)new_Int_(ctx,(int)d2);
 //	knh_putsfp(ctx, lsfp, 2, arg1);
 //	knh_putsfp(ctx, lsfp, 3, arg2);
 //	knh_Func_invokesfp(ctx, cc, lsfp, /* argc*/ 2);

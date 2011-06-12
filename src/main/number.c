@@ -93,16 +93,30 @@ knh_float_t knh_float_rand(void)
 
 /* ------------------------------------------------------------------------ */
 
-KNHAPI2(knh_Int_t*) new_Int(CTX ctx, knh_class_t cid, knh_int_t value)
+knh_Int_t* new_Int_(CTX ctx, knh_class_t cid, knh_int_t value)
 {
 	knh_Int_t *b = (knh_Int_t*)new_hObject_(ctx, ClassTBL(cid));
 	b->n.ivalue = value;
 	return b;
 }
 
-KNHAPI2(knh_Float_t*) new_Float(CTX ctx, knh_class_t cid, knh_float_t value)
+knh_Float_t* new_Float_(CTX ctx, knh_class_t cid, knh_float_t value)
 {
 	knh_Float_t *b = (knh_Float_t*)new_hObject_(ctx, ClassTBL(cid));
+	b->n.fvalue = value;
+	return b;
+}
+
+KNHAPI2(knh_Int_t*) new_Int(CTX ctx, knh_int_t value)
+{
+	knh_Int_t *b = (knh_Int_t*)new_hObject_(ctx, ClassTBL(CLASS_Int));
+	b->n.ivalue = value;
+	return b;
+}
+
+KNHAPI2(knh_Float_t*) new_Float(CTX ctx, knh_float_t value)
+{
+	knh_Float_t *b = (knh_Float_t*)new_hObject_(ctx, ClassTBL(CLASS_Float));
 	b->n.fvalue = value;
 	return b;
 }

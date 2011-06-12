@@ -584,7 +584,7 @@ static knh_Object_t* CLASS_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class
 	knh_bytes_t bpath = knh_bytes_next(S_tobytes(s), ':');
 	knh_class_t reqt = knh_getcid(ctx, bpath);
 	if (cid == CLASS_Int) {
-		return UPCAST(new_Int(ctx, reqt, reqt));
+		return UPCAST(new_Int_(ctx, reqt, reqt));
 	}
 	else if (cid == CLASS_Class) {
 		return UPCAST(new_Type(ctx, reqt));
