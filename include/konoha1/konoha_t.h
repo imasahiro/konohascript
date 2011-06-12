@@ -590,7 +590,7 @@ typedef void (*knh_Ftraverse)(CTX, Object *);
 	}\
 
 #define KNH_SIZEREF(ctx)  {\
-		((knh_context_t*)ctx)->ref_size = (tail_ - ctx->refs);\
+		((knh_context_t*)ctx)->ref_size = (tail_ - ctx->ref_buf);\
 	}\
 
 #define KNH_SETREF(ctx, LIST, SIZE)  {\
@@ -1098,6 +1098,7 @@ typedef struct knh_context_t {
 	size_t                       ref_capacity;
 	struct knh_Object_t        **queue;
 	size_t                       queue_capacity;
+	size_t                       queue_log2;
 
 	struct knh_String_t*         enc;
 	struct knh_InputStream_t*    in;

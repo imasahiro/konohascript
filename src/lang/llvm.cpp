@@ -432,15 +432,15 @@ static Value *GetCTX_IO(CTX ctx, Value *arg_ctx, int idx)
 }
 static Value *Fset_CTXIN(CTX ctx, Value *arg_ctx)
 {
-	return GetCTX_IO(ctx, arg_ctx, 28);
+	return GetCTX_IO(ctx, arg_ctx, 29);
 }
 static Value *Fset_CTXOUT(CTX ctx, Value *arg_ctx)
 {
-	return GetCTX_IO(ctx, arg_ctx, 29);
+	return GetCTX_IO(ctx, arg_ctx, 30);
 }
 static Value *Fset_CTXERR(CTX ctx, Value *arg_ctx)
 {
-	return GetCTX_IO(ctx, arg_ctx, 30);
+	return GetCTX_IO(ctx, arg_ctx, 31);
 }
 static Value *Fset_SYS(CTX ctx, Value *arg_ctx)
 {
@@ -2653,16 +2653,17 @@ static void ConstructObjectStruct(Module *m)
 	/* 24 */fields.push_back(longTy); //size_t                       ref_capacity;
 	/* 25 */fields.push_back(voidPtr); //struct knh_Object_t        **queue;
 	/* 26 */fields.push_back(longTy); //size_t                       queue_capacity;
+	/* 27 */fields.push_back(longTy); //size_t                       queue_log2;
 
-	/* 27 */fields.push_back(objectPtr); //struct knh_String_t*         enc;
-	/* 28 */fields.push_back(objectPtr); //struct knh_InputStream_t*    in;
-	/* 29 */fields.push_back(objectPtr); //struct knh_OutputStream_t*   out;
-	/* 30 */fields.push_back(objectPtr); //struct knh_OutputStream_t*   err;
-	/* 31 */fields.push_back(objectPtr); //struct knh_Bytes_t*          bufa;
-	/* 32 */fields.push_back(objectPtr); //struct knh_OutputStream_t*   bufw;
-	/* 33 */fields.push_back(objectPtr); //struct knh_Gamma_t*          gma;
-	/* 34 */fields.push_back(objectPtr); //struct knh_DictMap_t*        symbolDictMap;
-	/* 35 */fields.push_back(objectPtr); //struct knh_Array_t*          constPools;
+	/* 28 */fields.push_back(objectPtr); //struct knh_String_t*         enc;
+	/* 29 */fields.push_back(objectPtr); //struct knh_InputStream_t*    in;
+	/* 20 */fields.push_back(objectPtr); //struct knh_OutputStream_t*   out;
+	/* 31 */fields.push_back(objectPtr); //struct knh_OutputStream_t*   err;
+	/* 32 */fields.push_back(objectPtr); //struct knh_Bytes_t*          bufa;
+	/* 33 */fields.push_back(objectPtr); //struct knh_OutputStream_t*   bufw;
+	/* 34 */fields.push_back(objectPtr); //struct knh_Gamma_t*          gma;
+	/* 35 */fields.push_back(objectPtr); //struct knh_DictMap_t*        symbolDictMap;
+	/* 36 */fields.push_back(objectPtr); //struct knh_Array_t*          constPools;
 
 	fields.push_back(shortTy);   //knh_flag_t                   flag;
 	fields.push_back(shortTy);   //knh_ushort_t                 ctxid;

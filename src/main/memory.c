@@ -725,6 +725,7 @@ static knh_ostack_t *ostack_init(CTX ctx, knh_ostack_t *ostack)
 {
 	ostack->capacity = ctx->queue_capacity;
 	ostack->stack = ctx->queue;
+	ostack->log2  = ctx->queue_log2;
 	if(ostack->capacity == 0) {
 		ostack->capacity = K_PAGESIZE - 1;
 		ostack->log2 = 12; /* K_PAGESIZE == 1 << 12 */
@@ -741,11 +742,9 @@ static void ostack_push(CTX ctx, knh_ostack_t *ostack, knh_Object_t *ref)
 	if(unlikely(ntail == ostack->cur)) {
 		size_t capacity = 1 << ostack->log2;
 		ostack->stack = (knh_Object_t**)KNH_REALLOC(ctx, "ostack", ostack->stack, capacity, capacity * 2, sizeof(knh_Object_t*));
-		knh_memcpy(ostack->stack + capacity, ostack->stack, sizeof(knh_Object_t*) * ostack->tail);
-		ntail += capacity;
-		ostack->tail += capacity;
 		ostack->log2 += 1;
 		ostack->capacity = (1 << ostack->log2) - 1;
+		ntail = (ostack->tail + 1) & ostack->capacity;
 	}
 	ostack->stack[ostack->tail] = ref;
 	ostack->tail = ntail;
@@ -771,6 +770,7 @@ static void ostack_free(CTX ctx, knh_ostack_t *ostack)
 	knh_context_t *wctx = (knh_context_t*)ctx;
 	wctx->queue_capacity = ostack->capacity;
 	wctx->queue = ostack->stack;
+	wctx->queue_log2 = ostack->log2;
 }
 
 knh_Object_t** knh_ensurerefs(CTX ctx, knh_Object_t** tail, size_t size)
@@ -784,6 +784,7 @@ knh_Object_t** knh_ensurerefs(CTX ctx, knh_Object_t** tail, size_t size)
 		}
 		wctx->ref_buf = (knh_Object_t**)KNH_REALLOC(ctx, "ctx->ref_buf", ctx->ref_buf, ctx->ref_capacity, newsize, sizeof(knh_Object_t*));
 		wctx->ref_capacity = newsize;
+		wctx->refs = ctx->ref_buf;
 		tail = ctx->ref_buf + ref_size;
 	}
 	return tail;

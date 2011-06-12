@@ -148,7 +148,10 @@ static void knh_CommonContext_free(CTX ctx, knh_context_t *ctxo)
 	ctxo->mtdcache  = NULL;
 	ctxo->tmrcache = NULL;
 	if(ctxo->queue_capacity > 0) {
-		KNH_FREE(ctx, ctxo->queue,  ctxo->queue_capacity * sizeof(knh_Object_t*));
+		/* XXX(@imasahiro) */
+		/* to remove memory leaks, queue_capacity must increment */
+		/* see src/main/memory.c ostack_init() */
+		KNH_FREE(ctx, ctxo->queue,  (ctxo->queue_capacity + 1) * sizeof(knh_Object_t*));
 		ctxo->queue_capacity = 0;
 	}
 	if(ctx->ref_capacity > 0) {

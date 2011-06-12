@@ -1404,17 +1404,24 @@ knh_opline_t* knh_VirtualMachine_run(CTX, knh_sfp_t *, knh_opline_t *);
 
 #define UPDATE_LOCAL(ctx, lsfp)   lsfp = ctx->stack + sfpidx_;
 
+#ifdef __cplusplus
+#define __CONST_CAST__(T, expr) (const_cast<T>(expr))
+#else
+#define __CONST_CAST__(T, expr) ((T)expr)
+#endif
+
 #define END_LOCAL(ctx, lsfp, rvalue) \
-	((knh_context_t*)ctx)->esp = ctx->stack + sfpidx_ + 1;\
-	KNH_SETv(ctx, ((knh_context_t*)ctx)->esp[-1].o, rvalue);\
+	(__CONST_CAST__(knh_context_t*, ctx))->esp = ctx->stack + sfpidx_ + 1;\
+	KNH_SETv(ctx, (__CONST_CAST__(knh_context_t*, ctx))->esp[-1].o, rvalue);\
 	knh_stack_gc(ctx, 0/*isALL*/);\
 
 #define END_LOCAL_(ctx, lsfp) \
-	((knh_context_t*)ctx)->esp = ctx->stack + sfpidx_;\
+	(__CONST_CAST__(knh_context_t*, ctx))->esp = ctx->stack + sfpidx_;\
 	knh_stack_gc(ctx, 0/*isALL*/);\
 
 #define END_LOCAL_NONGC(ctx, lsfp) \
 	((knh_context_t*)ctx)->esp = ctx->stack + sfpidx_;\
+	(__CONST_CAST__(knh_context_t*, ctx))->esp = ctx->stack + sfpidx_;\
 
 #define LOCAL_NEW(ctx, lsfp, n, T, V, O) \
 	T V = O;\
