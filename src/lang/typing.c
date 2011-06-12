@@ -2324,15 +2324,15 @@ static knh_Token_t* this_typing(CTX ctx, knh_Stmt_t *stmt, knh_methodn_t mn)
 	knh_class_t mtd_cid = DP(ctx->gma)->this_cid;
 	knh_Token_t *tkMTD = tkNN(stmt, 0); /* change */
 	knh_Method_t *mtd;
-	if(mn == MN_super) {
-		DBG_ASSERT_cid(mtd_cid);
-		if(ClassTBL(mtd_cid)->supcid == CLASS_Object) {
-			//knh_Gamma_perror(ctx, KC_ERR, _("not extended: %C"), mtd_cid);
-			KNH_TODO("not extend?");
-			return NULL;
-		}
-		mtd_cid = ClassTBL(mtd_cid)->supcid;
-	}
+//	if(mn == MN_super) {
+//		DBG_ASSERT_cid(mtd_cid);
+//		if(ClassTBL(mtd_cid)->supcid == CLASS_Object) {
+//			//knh_Gamma_perror(ctx, KC_ERR, _("not extended: %C"), mtd_cid);
+//			KNH_TODO("not extend?");
+//			return NULL;
+//		}
+//		mtd_cid = ClassTBL(mtd_cid)->supcid;
+//	}
 	mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, MN_new);
 	if(mtd == NULL || (mtd)->cid != mtd_cid) {
 		return ErrorUnsupportedConstructor(ctx, mtd_cid);
@@ -2498,8 +2498,7 @@ static knh_Token_t* func_typingNULL(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 //				case MN_domain:  return knh_StmtDOMAIN_typing(ctx, stmt);
 			case MN_copy: return copy_typing(ctx, stmt);
 			case MN_defined: return defined_typing(ctx, stmt);
-			case MN_this:
-			case MN_super: return this_typing(ctx, stmt, mn);
+			case MN_this: return this_typing(ctx, stmt, mn);
 			case MN_delegate: return delegate_typing(ctx, stmt);
 		}
 	}

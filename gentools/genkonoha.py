@@ -494,17 +494,17 @@ class Data:
                       ]
         self.add_mn('main')
         self.add_mn('this')
-        self.add_mn('super')
+#        self.add_mn('super')
         self.add_name('it')
         self.add_name('vargs')
-        #self.add_mn('invoke')
+#        #self.add_mn('invoke')
         self.add_mn('defined')
         self.add_mn('delegate')
         #self.add_mn('likely')
         #self.add_mn('unlikely')
-        self.add_mn('first')
-        self.add_mn('second')
-        self.add_mn('third')
+#        self.add_mn('first')
+#        self.add_mn('second')
+#        self.add_mn('third')
         
     def add_name(self, name):
         if name.startswith('*'): perror('[bugs?]', name)
