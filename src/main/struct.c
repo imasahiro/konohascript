@@ -1185,7 +1185,7 @@ static void Iterator_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int leve
 				knh_write_ffmt(ctx, w, K_FLOAT_FMT, lsfp[0].fvalue);
 			}
 			else {
-				knh_write_Object(ctx, w, lsfp[0].o, level);
+				knh_write_Object(ctx, w, lsfp[0].o, FMT_line);
 			}
 			c++;
 			KNH_SETv(ctx, lsfp[1].o, it);

@@ -2792,6 +2792,32 @@ static const char* _unbox(knh_class_t cid)
 	return "int";
 }
 
+static knh_Token_t *new_TokenCID(CTX ctx, knh_class_t cid)
+{
+	knh_Token_t *tk = new_(Token);
+	TT_(tk) = TT_CID;
+	tk->uline = ctx->gma->uline;
+	(tk)->cid = cid;
+	return tk;
+}
+
+static knh_Token_t* StmtCALL_toIterator(CTX ctx, knh_Stmt_t *stmt)
+{
+	knh_Token_t *tkMN = tkNN(stmt, 0);
+	knh_Method_t *mtd = tkMN->mtd;
+	if(IS_Method(mtd) && Method_isIterative(mtd)) {
+		knh_type_t rtype = knh_type_tocid(ctx, knh_ParamArray_rtype(DP(mtd)->mp), Tn_cid(stmt, 1));
+		knh_class_t itrcid = knh_class_P1(ctx, CLASS_Iterator, rtype);
+		Stmt_insert(ctx, stmt, 1, new_TokenCID(ctx, itrcid));
+		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, mtd));
+		KNH_SETv(ctx, tkMN->mtd, knh_NameSpace_getMethodNULL(ctx, CLASS_Iterator, MN_new));
+		tkMN->mn = MN_new;
+		STT_(stmt) = STT_NEW;
+		return NEW_typing(ctx, stmt, itrcid);
+	}
+	return ERROR_MethodIsNot(ctx, mtd, "@Iterative");
+}
+
 static knh_Token_t* OPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
 	size_t i, opsize = DP(stmt)->size - 1;
@@ -2945,6 +2971,13 @@ static knh_Token_t* OPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		}
 		goto L_LOOKUPMETHOD;
 	}
+	case MN_opITR:
+	{
+		if(STT_(stmtNN(stmt, 1)) == STT_CALL) {
+			return StmtCALL_toIterator(ctx, stmtNN(stmt, 1));
+		}
+	}
+
 	default:
 		mtd_cid = Tn_cid(stmt, 1);
 		break;
@@ -3455,15 +3488,6 @@ static knh_Token_t* FOR_typing(CTX ctx, knh_Stmt_t *stmt)
 static knh_Method_t* knh_NameSpace_getIterativeMethodNULL(CTX ctx, knh_class_t cid, knh_class_t p1)
 {
 	return NULL;
-}
-
-static knh_Token_t *new_TokenCID(CTX ctx, knh_class_t cid)
-{
-	knh_Token_t *tk = new_(Token);
-	TT_(tk) = TT_UNAME;
-	tk->uline = ctx->gma->uline;
-	(tk)->cid = cid;
-	return tk;
 }
 
 static knh_Token_t* FOREACH1_toIterator(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_class_t p1)

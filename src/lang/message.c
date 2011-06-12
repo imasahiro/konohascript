@@ -403,7 +403,12 @@ void WarningIllegalFormatting(CTX ctx, const char *fmt)
 }
 knh_Token_t* ERROR_MethodIsNot(CTX ctx, knh_Method_t *mtd, const char *how)
 {
-	return Gamma_perror(ctx, KC_ERR, _("%C.%M is not %s"), (mtd)->cid, (mtd)->mn, how);
+	if(IS_Method(mtd)) {
+		return Gamma_perror(ctx, KC_ERR, _("%C.%M is not %s"), (mtd)->cid, (mtd)->mn, how);
+	}
+	else {
+		return Gamma_perror(ctx, KC_ERR, _("method is not %s"), how);
+	}
 }
 knh_Token_t *ERROR_Unsupported(CTX ctx, const char *whatis, knh_class_t cid, const char *symbol)
 {
