@@ -42,6 +42,16 @@
 #define knh_unmlock(p)
 #endif
 
+#ifdef K_USING_DEBUG
+#define K_USING_CTRACE 1
+#endif
+
+#ifdef K_USING_CTRACE
+#define _GNU_SOURCE
+#include <dlfcn.h>
+#include <execinfo.h>
+#endif
+
 /* ************************************************************************ */
 
 #ifdef __cplusplus
@@ -551,6 +561,56 @@ knh_bool_t knh_isObject(CTX ctx, void *p)
 	}
 	return 0;
 }
+
+/* ------------------------------------------------------------------------ */
+/* [cstack trace] */
+#ifdef K_USING_CTRACE
+#define K_TRACE_LENGTH 128
+static const char* addr_to_name(void* p)
+{
+	Dl_info info;
+	if (dladdr(p, &info) != 0) {
+		return info.dli_sname;
+	}
+	return NULL;
+}
+
+static void dumpObject(CTX ctx, knh_uintptr_t* p)
+{
+	knh_Object_t* o = (knh_Object_t*)(*p);
+	if (knh_isObject(ctx, (void*) o) && O_cTBL(o) != NULL) {
+		if (O_cid(o) < K_CLASS_INITSIZE) {
+			knh_putc(ctx, KNH_STDERR, '\t');
+			knh_write_Object(ctx, KNH_STDERR, o, FMT_s);
+		}
+		else {
+			knh_printf(ctx, KNH_STDERR, "\t%p %p %s\n", p, o, S_tochar(O_cTBL(o)->sname));
+		}
+	}
+}
+
+static void knh_dump_cstack(CTX ctx)
+{
+	void *trace[K_TRACE_LENGTH];
+	int i = 1;
+	backtrace(trace, K_TRACE_LENGTH);
+	void* bottom = ctx->cstack_bottom;
+	void* stack = __builtin_frame_address(0);
+	knh_printf(ctx, KNH_STDERR, "========== backtrace start ==========\n");
+	for (; stack < bottom; stack++) {
+		knh_uintptr_t** ptr = (knh_uintptr_t**) stack;
+		dumpObject(ctx, (knh_uintptr_t*) ptr);
+		if (trace[i] == *ptr) {
+			knh_printf(ctx, KNH_STDERR, "TRACE: %p %s\n", trace[i], addr_to_name(trace[i]));
+			i++;
+		}
+	}
+	knh_printf(ctx, KNH_STDERR, "========== backtrace end ==========\n");
+	knh_flush(ctx, KNH_STDERR);
+}
+#endif /* K_USING_CTRACE */
+/* ------------------------------------------------------------------------ */
+
 
 #ifdef K_USING_DEBUG
 #define DBG_CHECK_ONARENA(ctx, p) DBG_checkOnArena(ctx, p K_TRACEPOINT)
@@ -1128,6 +1188,11 @@ void knh_System_gc(CTX ctx)
 	knh_stat_t *ctxstat = ctx->stat;
 	size_t used = ctxstat->usedObjectSize;
 	knh_uint64_t stime = knh_getTimeMilliSecond(), mtime = 0, ctime = 0;
+
+#ifdef K_USING_CTRACE
+	knh_dump_cstack(ctx);
+#endif
+
 	gc_init(ctx);
 	MTGC_(((knh_context_t*)ctx)->mscheck = 1);
 	gc_mark(ctx);
