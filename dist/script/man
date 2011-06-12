@@ -2,7 +2,8 @@ using konoha.i.*;
 void main (String[] args)
 {
 	if (args.size > 0) {
-		System.dump(args[0]);
+		Class c = class:: args[0];
+		System.man(c);
 	} else {
 		/* TODO usage */
 	}

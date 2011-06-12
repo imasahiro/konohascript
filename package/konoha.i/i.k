@@ -28,4 +28,3 @@
 include nativelink;
 
 @Native void System.man(Object c, NameSpace ns);
-@Native void System.dump(String c, NameSpace ns);

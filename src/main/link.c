@@ -562,6 +562,38 @@ static const knh_LinkDPI_t LINK_SCRIPT = {
 	"script", "byte[]|InputStream|OutputStream", FILE_hasType, SCRIPT_exists, SCRIPT_newObjectNULL,
 };
 
+/* ------------------------------------------------------------------------ */
+/* class:Int */
+
+static knh_bool_t CLASS_hasType(CTX ctx, knh_class_t cid)
+{
+	return (cid == CLASS_Int || cid == CLASS_Class);
+}
+static knh_bool_t CLASS_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+{
+	knh_bytes_t bpath = knh_bytes_next(path, ':');
+	return (knh_getcid(ctx, bpath) != CLASS_unknown);
+}
+
+static knh_Object_t* CLASS_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+{
+	knh_bytes_t bpath = knh_bytes_next(S_tobytes(s), ':');
+	knh_class_t reqt = knh_getcid(ctx, bpath);
+	if (cid == CLASS_Int) {
+		return UPCAST(new_Int(ctx, reqt, reqt));
+	}
+	else if (cid == CLASS_Class) {
+		return UPCAST(new_Type(ctx, reqt));
+	}
+	return NULL;
+}
+
+static const knh_LinkDPI_t LINK_CLASS = {
+	"class", "int|Class", CLASS_hasType, CLASS_exists, CLASS_newObjectNULL,
+};
+
+/* ------------------------------------------------------------------------ */
+
 
 /* ------------------------------------------------------------------------ */
 
@@ -1062,6 +1094,7 @@ void knh_loadSystemDriver(CTX ctx, knh_NameSpace_t *ns)
 	api->addLinkDPI(ctx, ns, "lib", &LINK_LIB);
 	api->addLinkDPI(ctx, ns, "pkg", &LINK_PKG);
 	api->addLinkDPI(ctx, ns, "script", &LINK_SCRIPT);
+	api->addLinkDPI(ctx, ns, "class", &LINK_CLASS);
 
 	api->addConvDSPI(ctx, ns, "lower", &TO_lower);
 	api->addConvDSPI(ctx, ns, "upper", &TO_upper);
