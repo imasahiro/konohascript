@@ -50,8 +50,8 @@ include nativelink;
 // dir
 @Native class Dir;
 @Native @Throwable Dir System.openDir(String path, NameSpace _, Dir _);
-@Native @Iterator String Dir.readName();
+@Native @Iterative String Dir.readName();
 @Native void Dir.close();
-@Native @Iterator Map Dir.read();
+@Native @Iterative Map Dir.read();
 
 include func:SystemCONST;
