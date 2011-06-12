@@ -1680,24 +1680,22 @@ static void Tn_asm(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, int loc
 
 /* ------------------------------------------------------------------------ */
 /* [IF, WHILE, DO, FOR, FOREACH]  */
-static void ASM_BBLAST(CTX ctx, void *ptr, void (*func)(CTX, void*))
+static bool BB_hasReturn(BasicBlock *bb, BasicBlock *bbTo)
 {
-	BasicBlock *bb = LLVM_BUILDER(ctx)->GetInsertBlock();
 	BasicBlock::iterator itr;
 	for (itr = bb->begin(); itr != bb->end(); itr++) {
 		Instruction &inst = *itr;
-		if(ReturnInst::classof(&inst) || BranchInst::classof(&inst)) {
-			return;
+		if (ReturnInst::classof(&inst)) {
+			return true;
 		}
-	}
-	func(ctx, ptr);
-}
-static bool BB_hasReturn(BasicBlock *bb)
-{
-	BasicBlock::iterator itr;
-	for (itr = bb->begin(); itr != bb->end(); itr++) {
-		Instruction &inst = *itr;
-		if(ReturnInst::classof(&inst)) {
+		if (BranchInst::classof(&inst)) {
+			BranchInst *bi = (BranchInst *)&inst;
+			int n = bi->getNumSuccessors();
+			for (int i = 0; i < n; i++) {
+				if (bi->getSuccessor(i) == bbTo) {
+					return false;
+				}
+			}
 			return true;
 		}
 	}
@@ -1714,6 +1712,15 @@ static bool BB_hasReturnOrBreak(BasicBlock *bb)
 	}
 	return false;
 }
+
+static void ASM_BBLAST(CTX ctx, void *ptr, void (*func)(CTX, void*))
+{
+	BasicBlock *bb = LLVM_BUILDER(ctx)->GetInsertBlock();
+	if (!BB_hasReturnOrBreak(bb)) {
+		func(ctx, ptr);
+	}
+}
+
 static int Tn_CondAsm(CTX ctx, knh_Stmt_t *stmt, size_t n, int isTRUE, int flocal)
 {
 	knh_Token_t *tk = tkNN(stmt, n);
@@ -1797,15 +1804,15 @@ static void phi_phi(CTX ctx, knh_Array_t *a, int i, Value *v0, Value *v1, Value 
 
 typedef void (*fphi_t)(CTX ctx, knh_Array_t *a, int i, Value *, Value *, Value *, BasicBlock *, BasicBlock *);
 
-static int PHI_asm(CTX ctx, knh_Array_t *prev, knh_Array_t *thenArray, knh_Array_t *elseArray, BasicBlock *bbThen, BasicBlock *bbElse)
+static int PHI_asm(CTX ctx, knh_Array_t *prev, knh_Array_t *thenArray, knh_Array_t *elseArray, BasicBlock *bbThen, BasicBlock *bbElse, BasicBlock *bbMerge)
 {
 	int i, size = DP(ctx->gma)->espidx + (-1 * K_RTNIDX);
 	fphi_t fphi = NULL;
-	if (BB_hasReturn(bbThen) && BB_hasReturn(bbElse)) {
+	if (BB_hasReturn(bbThen, bbMerge) && BB_hasReturn(bbElse, bbMerge)) {
 		fphi = phi_nop;
-	} else if (BB_hasReturn(bbThen)) {
+	} else if (BB_hasReturn(bbThen, bbMerge)) {
 		fphi = phi_else;
-	} else if (BB_hasReturn(bbElse)) {
+	} else if (BB_hasReturn(bbElse, bbMerge)) {
 		fphi = phi_then;
 	} else {
 		fphi = phi_phi;
@@ -1856,7 +1863,7 @@ static int _IF_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx _UNUSE
 	bbElse = builder->GetInsertBlock();
 
 	builder->SetInsertPoint(bbMerge);
-	PHI_asm(ctx, prev, st1, st2, bbThen, bbElse);
+	PHI_asm(ctx, prev, st1, st2, bbThen, bbElse, bbMerge);
 	KNH_SETv(ctx, DP(ctx->gma)->lstacks, prev);
 
 	END_LOCAL_NONGC(ctx, lsfp);
