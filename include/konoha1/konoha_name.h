@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      324
+#define K_REVISION                      326
 #endif
-#define K_BUILDID                       1130
+#define K_BUILDID                       1131
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -429,47 +429,59 @@
 /* CLASS */
 
 /* ------------------------------------------------------------------------ */
+/* FuncEach */
+#define CLASS_FuncEach          ((knh_class_t)46)
+#define IS_FuncEach(o)          (O_cid(o) == CLASS_FuncEach)
+#define TYPE_FuncEach           CLASS_FuncEach
+
+/* ------------------------------------------------------------------------ */
+/* FuncWhere */
+#define CLASS_FuncWhere         ((knh_class_t)47)
+#define IS_FuncWhere(o)         (O_cid(o) == CLASS_FuncWhere)
+#define TYPE_FuncWhere          CLASS_FuncWhere
+
+/* ------------------------------------------------------------------------ */
 /* RangeInt */
-#define CLASS_RangeInt          ((knh_class_t)46)
+#define CLASS_RangeInt          ((knh_class_t)48)
 #define IS_RangeInt(o)          (O_cid(o) == CLASS_RangeInt)
 #define TYPE_RangeInt           CLASS_RangeInt
 
 /* ------------------------------------------------------------------------ */
 /* ArrayInt */
-#define CLASS_ArrayInt          ((knh_class_t)47)
+#define CLASS_ArrayInt          ((knh_class_t)49)
 #define IS_ArrayInt(o)          (O_cid(o) == CLASS_ArrayInt)
 #define TYPE_ArrayInt           CLASS_ArrayInt
 
 /* ------------------------------------------------------------------------ */
 /* CmprT1 */
-#define CLASS_CmprT1            ((knh_class_t)48)
+#define CLASS_CmprT1            ((knh_class_t)50)
 #define IS_CmprT1(o)            (O_cid(o) == CLASS_CmprT1)
 #define TYPE_CmprT1             CLASS_CmprT1
 
 /* ------------------------------------------------------------------------ */
 /* T1ITR */
-#define CLASS_T1ITR             ((knh_class_t)49)
+#define CLASS_T1ITR             ((knh_class_t)51)
 #define IS_T1ITR(o)             (O_cid(o) == CLASS_T1ITR)
 #define TYPE_T1ITR              CLASS_T1ITR
 
 /* ------------------------------------------------------------------------ */
 /* T1ARRAY */
-#define CLASS_T1ARRAY           ((knh_class_t)50)
+#define CLASS_T1ARRAY           ((knh_class_t)52)
 #define IS_T1ARRAY(o)           (O_cid(o) == CLASS_T1ARRAY)
 #define TYPE_T1ARRAY            CLASS_T1ARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringARRAY */
-#define CLASS_StringARRAY       ((knh_class_t)51)
+#define CLASS_StringARRAY       ((knh_class_t)53)
 #define IS_StringARRAY(o)       (O_cid(o) == CLASS_StringARRAY)
 #define TYPE_StringARRAY        CLASS_StringARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringITR */
-#define CLASS_StringITR         ((knh_class_t)52)
+#define CLASS_StringITR         ((knh_class_t)54)
 #define IS_StringITR(o)         (O_cid(o) == CLASS_StringITR)
 #define TYPE_StringITR          CLASS_StringITR
-#define K_CLASS_INITSIZE                54
+#define K_CLASS_INITSIZE                56
 
 /* ------------------------------------------------------------------------ */
 /* FLAG */
@@ -503,6 +515,9 @@
 #define FLAG_String_ASCII FLAG_Object_Local2
 #define String_isASCII(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_String_ASCII))
 #define String_setASCII(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_String_ASCII,b)
+#define FLAG_Range_NDATA FLAG_Object_Local1
+#define Range_isNDATA(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Range_NDATA))
+#define Range_setNDATA(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Range_NDATA,b)
 #define FLAG_Range_NDATA FLAG_Object_Local1
 #define Range_isNDATA(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Range_NDATA))
 #define Range_setNDATA(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Range_NDATA,b)

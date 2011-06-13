@@ -649,7 +649,7 @@ static METHOD System_eval(CTX ctx, knh_sfp_t *sfp _RIX)
 			}
 		}
 	}
-	sfp[rix].ndata = 0;
+	sfp[K_RIX].ndata = 0;
 	RETURN_(KNH_NULVAL(tcid));
 }
 

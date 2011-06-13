@@ -4783,8 +4783,8 @@ static TYPEMAP Ftypemap_method(CTX ctx, knh_sfp_t *sfp _RIX)
 	KNH_SETv(ctx, lsfp[0+K_CALLDELTA+1].o, sfp[0].o);
 	lsfp[0+K_CALLDELTA+1].ndata = sfp[0].ndata;
 	KNH_SCALL(ctx, lsfp, 0, mtd, 1);
-	KNH_SETv(ctx, sfp[rix].o, lsfp[0].o);
-	sfp[rix].ndata = lsfp[0].ndata;
+	KNH_SETv(ctx, sfp[K_RIX].o, lsfp[0].o);
+	sfp[K_RIX].ndata = lsfp[0].ndata;
 }
 
 static void TYPEMAP_asm(CTX ctx, knh_Stmt_t *stmt)

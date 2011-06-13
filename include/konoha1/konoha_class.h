@@ -199,6 +199,9 @@ typedef struct knh_Bytes_t {
 
 /* ------------------------------------------------------------------------ */
 //## class Iterator Object;
+//## flag Range NDATA     1 - is set * *;
+//## type FuncEach        Func  1 T1 T1;
+//## type FuncWhere       Func  1 T1 Boolean;
 
 typedef struct knh_mapitr_t {
 	size_t index;
@@ -211,7 +214,10 @@ typedef void (*knh_Ffree)(void *nptr);
 
 typedef struct {
 	Object    *source;
-	struct knh_Method_t *mtdNULL;
+	union {
+		struct knh_Method_t *mtdNULL;
+		struct knh_Func_t *funcNULL;
+	};
 	void      *nptr;
 	struct knh_mapitr_t mitr;
 	knh_Ffree freffree;
@@ -224,9 +230,6 @@ typedef struct knh_Iterator_t {
 	knh_IteratorEX_t *b;
 	knh_Fitrnext fnext_1;
 } knh_Iterator_t;
-
-// f = delegate(g, next);
-
 
 /* ------------------------------------------------------------------------ */
 //## class Tuple Object;
@@ -1397,6 +1400,15 @@ knh_opline_t* knh_VirtualMachine_run(CTX, knh_sfp_t *, knh_opline_t *);
 		(mtd)->fcall_1(ctx, sfp, rix);\
 	} \
 
+#define KNH_FINVOKE(ctx, lsfp, rtnidx, fo, argc) {             \
+		knh_intptr_t thisidx_ = rtnidx+ K_CALLDELTA;           \
+		KNH_SETv(ctx, lsfp[thisidx].o, fo);                    \
+		if (fo->baseNULL != NULL) {					           \
+			KNH_SETv(ctx, lsfp[thisidx].o, fo->baseNULL);      \
+		}												       \
+		klr_setmtdNC(ctx, lsfp[thisidx_+K_MTDIDX], fo->mtd);   \
+		klr_setesp(ctx, lsfp + thisidx_ + argc + 1);           \
+		KNH_SELFCALL(ctx, lsfp, fo->mtd, K_RTNIDX);            \
 
 #define BEGIN_LOCAL(ctx, lsfp, n) \
 		knh_sfp_t *lsfp = knh_stack_local(ctx, n);\

@@ -929,7 +929,7 @@ static METHOD InputStream_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 /* [iterators] */
 
-static ITRNEXT knh_InputStream_nextLine(CTX ctx, knh_sfp_t *sfp, long rtnidx)
+static ITRNEXT knh_InputStream_nextLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int ch;
 	knh_Iterator_t *it = sfp[0].it;

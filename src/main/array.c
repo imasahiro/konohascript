@@ -202,7 +202,7 @@ void knh_Array_initAPI(CTX ctx, knh_Array_t *a)
 /* ------------------------------------------------------------------------ */
 /* Iterator */
 
-static ITRNEXT Fitrnext_end(CTX ctx, knh_sfp_t *sfp, long rtnidx)
+static ITRNEXT Fitrnext_end(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	ITREND_();
 }
@@ -240,7 +240,7 @@ KNHAPI2(knh_Iterator_t*) new_Iterator(CTX ctx, knh_class_t p1, knh_Object_t *sou
 /* ------------------------------------------------------------------------ */
 /* [ArrayIterator] */
 
-static ITRNEXT Array_nextO(CTX ctx, knh_sfp_t *sfp, long rtnidx)
+static ITRNEXT Array_nextO(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	DBG_ASSERT(IS_bIterator(sfp[0].it));
 	knh_Iterator_t *itr = ITR(sfp);
@@ -253,7 +253,7 @@ static ITRNEXT Array_nextO(CTX ctx, knh_sfp_t *sfp, long rtnidx)
 	ITREND_();
 }
 
-static ITRNEXT Array_nextN(CTX ctx, knh_sfp_t *sfp, long rtnidx)
+static ITRNEXT Array_nextN(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	DBG_ASSERT(IS_bIterator(sfp[0].it));
 	knh_Iterator_t *itr = ITR(sfp);
@@ -305,7 +305,7 @@ static METHOD Array_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	size_t n2 = a->api->index(ctx, sfp, Int_to(knh_int_t, ctx->esp[-1]), a->size);
-	a->api->get(ctx, sfp, n2, rix);
+	a->api->get(ctx, sfp, n2, K_RIX);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -317,7 +317,7 @@ static METHOD Array_get2(CTX ctx, knh_sfp_t *sfp _RIX)
 	const knh_dim_t *dim = a->dim;
 	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
-	a->api->get(ctx, sfp, n2, rix);
+	a->api->get(ctx, sfp, n2, K_RIX);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -329,7 +329,7 @@ static METHOD Array_get3(CTX ctx, knh_sfp_t *sfp _RIX)
 	const knh_dim_t *dim = a->dim;
 	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x) + (sfp[3].ivalue * dim->xy);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
-	a->api->get(ctx, sfp, n2, rix);
+	a->api->get(ctx, sfp, n2, K_RIX);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -341,7 +341,7 @@ static METHOD Array_get4(CTX ctx, knh_sfp_t *sfp _RIX)
 	const knh_dim_t *dim = a->dim;
 	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x) + (sfp[3].ivalue * dim->xy) + (sfp[4].ivalue * dim->xyz);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
-	a->api->get(ctx, sfp, n2, rix);
+	a->api->get(ctx, sfp, n2, K_RIX);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -353,7 +353,7 @@ static METHOD Array_set(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_int_t n = sfp[1].ivalue;
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
 	a->api->set(ctx, sfp[0].a, n2, sfp+2);
-	a->api->get(ctx, sfp, n2, rix);
+	a->api->get(ctx, sfp, n2, K_RIX);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -366,7 +366,7 @@ static METHOD Array_set2(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
 	a->api->set(ctx, a, n2, sfp+3);
-	a->api->get(ctx, sfp, n2, rix);
+	a->api->get(ctx, sfp, n2, K_RIX);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -379,7 +379,7 @@ static METHOD Array_set3(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x) + (sfp[3].ivalue * dim->xy);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
 	a->api->set(ctx, a, n2, sfp+4);
-	a->api->get(ctx, sfp, n2, rix);
+	a->api->get(ctx, sfp, n2, K_RIX);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -392,7 +392,7 @@ static METHOD Array_set4(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x) + (sfp[3].ivalue * dim->xy) + (sfp[4].ivalue * dim->xyz);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
 	a->api->set(ctx, a, n2, sfp+5);
-	a->api->get(ctx, sfp, n2, rix);
+	a->api->get(ctx, sfp, n2, K_RIX);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -405,10 +405,10 @@ static METHOD Array_setAll(CTX ctx, knh_sfp_t *sfp _RIX)
 		(sfp[0].a)->api->set(ctx, sfp[0].a, i, sfp+1);
 	}
 	if((sfp[0].a)->size > 0) {
-		(sfp[0].a)->api->get(ctx, sfp, 0, rix);
+		(sfp[0].a)->api->get(ctx, sfp, 0, K_RIX);
 	}
 	else {
-		sfp[rix].ndata = sfp[1].ndata;
+		sfp[K_RIX].ndata = sfp[1].ndata;
 		RETURN_(sfp[1].o);
 	}
 }
@@ -489,7 +489,7 @@ static METHOD Array_pop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	if (a->size > 0) {
-		(a)->api->get(ctx, sfp, a->size - 1, rix);
+		(a)->api->get(ctx, sfp, a->size - 1, K_RIX);
 		knh_Array_clear(ctx, a, a->size - 1);
 	}
 }
@@ -699,6 +699,74 @@ static METHOD Array_reverse(CTX ctx, knh_sfp_t *sfp _RIX)
 		}
 	}
 	RETURNvoid_();
+}
+
+/* ------------------------------------------------------------------------ */
+
+static ITRNEXT ITR_where(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	DBG_ASSERT(IS_bIterator(sfp[0].it));
+	knh_Iterator_t *itr = ITR(sfp);
+	knh_sfp_t *lsfp = ctx->esp;
+	DBG_ASSERT(sfp < lsfp);
+	long rtnidx_ = 0, thisidx = rtnidx_ + K_CALLDELTA;
+	knh_Iterator_t *itrIN = (knh_Iterator_t*)DP(itr)->source;
+	KNH_SETv(ctx, lsfp[thisidx+2].o, itrIN);
+	klr_setesp(ctx, lsfp + thisidx+2);
+	while(itrIN->fnext_1(ctx, lsfp+thisidx+2, -1)) {
+		knh_Func_t *fo = DP(itr)->funcNULL;
+		//KNH_FINVOKE(ctx, lsfp, rtnidx_, fo, 1);
+		if(lsfp[rtnidx_].bvalue) {
+			sfp[K_RIX].ndata = lsfp[thisidx+1].ndata;
+			ITRNEXT_(lsfp[thisidx+1].o);
+		}
+		KNH_SETv(ctx, lsfp[thisidx+2].o, itrIN);
+		klr_setesp(ctx, lsfp + thisidx+2);
+	}
+	ITREND_();
+}
+
+static ITRNEXT ITR_each(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	DBG_ASSERT(IS_bIterator(sfp[0].it));
+	knh_Iterator_t *itr = ITR(sfp);
+	knh_sfp_t *lsfp = ctx->esp;
+	DBG_ASSERT(sfp < lsfp);
+	long rtnidx_ = 0, thisidx = rtnidx_ + K_CALLDELTA;
+	knh_Iterator_t *itrIN = (knh_Iterator_t*)DP(itr)->source;
+	KNH_SETv(ctx, lsfp[thisidx+2].o, itrIN);
+	klr_setesp(ctx, lsfp + thisidx+2);
+	if(!itrIN->fnext_1(ctx, lsfp+thisidx+2, -1)) {
+		ITREND_();
+	}
+	knh_Func_t *fo = DP(itr)->funcNULL;
+	//KNH_FINVOKE(ctx, lsfp, rtnidx_, fo, 1);
+	sfp[K_RIX].ndata = lsfp[rtnidx_].ndata;
+	ITRNEXT_(lsfp[rtnidx_].o);
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Hidden method This Iterator.opWHERE(FuncWhere f);
+
+static METHOD Iterator_opWHERE(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Iterator_t *it = (knh_Iterator_t*)new_Object_init2(ctx, O_cTBL(sfp[0].it));
+	KNH_SETv(ctx, DP(it)->source, sfp[1].o);
+	KNH_INITv(DP(it)->funcNULL, sfp[1].o);
+	it->fnext_1 = ITR_where;
+	RETURN_(it);
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Hidden method This Iterator.opWHERE(FuncEach f);
+
+static METHOD Iterator_opEACH(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Iterator_t *it = (knh_Iterator_t*)new_Object_init2(ctx, O_cTBL(sfp[0].it));
+	KNH_SETv(ctx, DP(it)->source, sfp[1].o);
+	KNH_INITv(DP(it)->funcNULL, sfp[1].o);
+	it->fnext_1 = ITR_each;
+	RETURN_(it);
 }
 
 /* ------------------------------------------------------------------------ */

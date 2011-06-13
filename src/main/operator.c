@@ -128,8 +128,8 @@ static METHOD Bytes_new(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD Bytes_newARRAY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	size_t size = sfp[1].ivalue <=0 ? 0 : Int_to(size_t, sfp[1]);
-	Bytes_new(ctx, sfp, rix);
-	sfp[rix].ba->bu.len = size;
+	Bytes_new(ctx, sfp, K_RIX);
+	sfp[K_RIX].ba->bu.len = size;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -286,7 +286,7 @@ static METHOD Array_newLIST(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-static ITRNEXT Iterator_next(CTX ctx, knh_sfp_t *sfp, long rtnidx)
+static ITRNEXT Iterator_next(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	DBG_ASSERT(IS_bIterator(sfp[0].it));
 	knh_Iterator_t *itr = ITR(sfp);
@@ -885,7 +885,7 @@ static METHOD Int_opRSFT(CTX ctx, knh_sfp_t *sfp _RIX)
 
 METHOD Bytes_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	//fprintf(stderr, "** rix=%ld sfp[rix]=%p\n", rix, sfp + rix);
+	//fprintf(stderr, "** rix=%ld sfp[K_RIX]=%p\n", rix, sfp + rix);
 	RETURNi_((sfp[0].ba)->bu.len);
 }
 
@@ -1112,7 +1112,7 @@ static METHOD String_opUNTIL(CTX ctx, knh_sfp_t *sfp _RIX)
 			sfp[2].ivalue = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), (sfp[0].s)->str.len) - offset;
 		}
 	}
-	String_substring(ctx, sfp, rix);
+	String_substring(ctx, sfp, K_RIX);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -1134,7 +1134,7 @@ static METHOD String_opTO(CTX ctx, knh_sfp_t *sfp _RIX)
 			sfp[2].ivalue = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), (sfp[0].s)->str.len) - offset + 1;
 		}
 	}
-	String_substring(ctx, sfp, rix);
+	String_substring(ctx, sfp, K_RIX);
 }
 
 /* ------------------------------------------------------------------------ */

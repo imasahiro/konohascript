@@ -907,7 +907,7 @@ const knh_MapDSPI_t *knh_getDefaultMapDSPI(CTX ctx, knh_class_t p1, knh_class_t 
 static METHOD Map_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
-	RETURNb_(m->dspi->get(ctx, m->dmap, sfp + 1, sfp + rix));
+	RETURNb_(m->dspi->get(ctx, m->dmap, sfp + 1, sfp + K_RIX));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -916,7 +916,7 @@ static METHOD Map_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD Map_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
-	if(!m->dspi->get(ctx, m->dmap, sfp + 1, sfp + rix)) {
+	if(!m->dspi->get(ctx, m->dmap, sfp + 1, sfp + K_RIX)) {
 		RETURNa_(KNH_NULVAL(C_p2(O_cid(m))));
 	}
 }
@@ -960,7 +960,7 @@ static METHOD Map_keys(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-static ITRNEXT Fnext_mapkey(CTX ctx, knh_sfp_t *sfp, long rtnidx)
+static ITRNEXT Fnext_mapkey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Iterator_t *itr = ITR(sfp);
 	knh_Map_t *m = (knh_Map_t*)DP(itr)->source;
@@ -973,7 +973,7 @@ static ITRNEXT Fnext_mapkey(CTX ctx, knh_sfp_t *sfp, long rtnidx)
 	}
 }
 
-static ITRNEXT Fnext_mapkeydata(CTX ctx, knh_sfp_t *sfp, long rtnidx)
+static ITRNEXT Fnext_mapkeydata(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Iterator_t *itr = ITR(sfp);
 	knh_Map_t *m = (knh_Map_t*)DP(itr)->source;

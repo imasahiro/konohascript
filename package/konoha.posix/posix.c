@@ -233,6 +233,21 @@ EXPORTAPI(const knh_ClassDef_t*) Dir(CTX ctx)
 
 /* ------------------------------------------------------------------------ */
 
+static knh_IntData_t DirConstInt[] = {
+//#define DT_UNKNOWN       0
+//#define DT_FIFO          1
+//#define DT_CHR           2
+//#define DT_DIR           4
+//#define DT_BLK           6
+//#define DT_REG           8
+//#define DT_LNK          10
+//#define DT_SOCK         12
+//#define DT_WHT          14
+	{"Dir.UNKNOWN", DT_UNKNOWN},
+	{"Dir.FIFO", DT_FIFO},
+	{NULL}
+};
+
 //## @Native @Throwable Dir System.openDir(String path, NameSpace _, Dir _);
 METHOD System_openDir(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -261,22 +276,23 @@ METHOD Dir_close(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//## @Native @Iterator Map Dir.read();
+//## @Native @Iterative Map Dir.read();
 METHOD Dir_read(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Map_t *map = KNH_TNULL(Map);
+	knh_Map_t *mdata = KNH_TNULL(Map);
 	DIR *dirptr = (DIR*)sfp[0].p->rawptr;
 	if(dirptr != NULL) {
 		struct dirent *dp = readdir(dirptr);
 		if(dp != NULL) {
-			map = new_Map(ctx);
-			knh_Map_setString(ctx, map, "d_name", dp->d_name);
+			mdata = new_Map(ctx);
+			knh_Map_setString(ctx, mdata, "d_name", dp->d_name);
+			knh_Map_setInt(ctx, mdata, "d_type", dp->d_type);
 		}
 	}
-	RETURN_(map);
+	RETURN_(mdata);
 }
 
-//## @Native @Iterator String Dir.readName();
+//## @Native @Iterative String Dir.readName();
 METHOD Dir_readName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	const char *dname = NULL;
@@ -289,6 +305,23 @@ METHOD Dir_readName(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	RETURN_(new_String(ctx, dname));
 }
+
+static knh_bool_t DIRLINK_hasType(CTX ctx, knh_class_t cid)
+{
+	return 0;
+}
+static knh_bool_t DIRLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+{
+	return 0;
+}
+static knh_Object_t* DIRLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+{
+	return NULL/*(knh_Object_t*)s*/;
+}
+
+static const knh_LinkDPI_t LINK_NOLINK = {
+	"DIRLINK", NULL, DIRLINK_hasType, DIRLINK_exists, DIRLINK_newObjectNULL,
+};
 
 ///* ------------------------------------------------------------------------ */
 //
@@ -444,9 +477,7 @@ EXPORTAPI(const knh_PackageDef_t*) init(CTX ctx)
 
 EXPORTAPI(void) SystemCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
 {
-	if(ns == NULL) {
-		kapi->loadIntData(ctx, ns, IntConstData);
-	}
+	kapi->loadIntData(ctx, ns, IntConstData);
 }
 
 #endif

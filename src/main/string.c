@@ -789,11 +789,11 @@ static METHOD Link_newObject(CTX ctx, knh_sfp_t *sfp _RIX)
 		knh_Bytes_putc(ctx, cwb->ba, ':');
 		knh_Bytes_write(ctx, cwb->ba, S_tobytes(fi));
 		fi = knh_cwb_newString(ctx, cwb);
-		KNH_SETv(ctx, sfp[rix].s, fi);
+		KNH_SETv(ctx, sfp[K_RIX].s, fi);
 	}
 	if(cid == CLASS_Boolean) {
-		sfp[rix].bvalue = knh_Link_exists(ctx, lnk, sfp[2].ns, S_tobytes(fi));
-		v = sfp[rix].bvalue ? KNH_TRUE : KNH_FALSE;
+		sfp[K_RIX].bvalue = knh_Link_exists(ctx, lnk, sfp[2].ns, S_tobytes(fi));
+		v = sfp[K_RIX].bvalue ? KNH_TRUE : KNH_FALSE;
 	}
 	else {
 		v = knh_Link_newObjectNULL(ctx, lnk, sfp[2].ns, fi, cid);
@@ -1304,7 +1304,7 @@ static TYPEMAP String_Int(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_int_t v = 0;
 	if(!knh_bytes_parseint(S_tobytes(sfp[K_TMRIDX].s), &v)) {
-		KNH_SETv(ctx, sfp[rix].o, KNH_NULVAL(CLASS_Int));
+		KNH_SETv(ctx, sfp[K_RIX].o, KNH_NULVAL(CLASS_Int));
 	}
 	RETURNi_(v);
 }
@@ -1316,7 +1316,7 @@ static TYPEMAP String_Float(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_float_t v = 0.0;
 	if(!knh_bytes_parsefloat(S_tobytes(sfp[K_TMRIDX].s), &v)) {
-		KNH_SETv(ctx, sfp[rix].o, KNH_NULVAL(CLASS_Float));
+		KNH_SETv(ctx, sfp[K_RIX].o, KNH_NULVAL(CLASS_Float));
 	}
 	RETURNf_(v);
 }
@@ -1333,7 +1333,7 @@ static TYPEMAP String_Bytes(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-static ITRNEXT String_nextChar(CTX ctx, knh_sfp_t *sfp, long rtnidx)
+static ITRNEXT String_nextChar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Iterator_t *itr = ITR(sfp);
 	knh_String_t *s = (knh_String_t*)DP(itr)->source;

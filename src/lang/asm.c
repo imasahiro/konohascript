@@ -657,7 +657,7 @@ static knh_KonohaCode_t* BasicBlock_link(CTX ctx, knh_BasicBlock_t *bb, knh_Basi
 
 METHOD knh_Fmethod_runVM(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	DBG_ASSERT(rix == K_RTNIDX);
+	DBG_ASSERT(K_RIX == K_RTNIDX);
 	DBG_ASSERT(IS_Method(sfp[K_MTDIDX].mtdNC));
 	knh_VirtualMachine_run(ctx, sfp, CODE_VEXEC);
 }

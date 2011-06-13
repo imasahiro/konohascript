@@ -464,7 +464,7 @@ static METHOD ResultSet_getInt(CTX ctx, knh_sfp_t *sfp _RIX)
 			res = (knh_int_t)(*((knh_float_t*)p)); break;
 		case knh_ResultSet_CTYPE__null :
 		default:
-			KNH_SETv(ctx, sfp[rix].o, KNH_NULVAL(CLASS_Int));
+			KNH_SETv(ctx, sfp[K_RIX].o, KNH_NULVAL(CLASS_Int));
 		}
 	}
 	RETURNi_(res);
@@ -488,7 +488,7 @@ static METHOD ResultSet_getFloat(CTX ctx, knh_sfp_t *sfp _RIX)
 			res = (*((knh_float_t*)p)); break;
 		case knh_ResultSet_CTYPE__null :
 		default:
-			KNH_SETv(ctx, sfp[rix].o, KNH_NULVAL(CLASS_Float));
+			KNH_SETv(ctx, sfp[K_RIX].o, KNH_NULVAL(CLASS_Float));
 		}
 	}
 	RETURNf_(res);
@@ -521,10 +521,10 @@ static METHOD ResultSet_get(CTX ctx, knh_sfp_t *sfp _RIX)
 		const char *p = BA_tochar(DP(o)->databuf) + DP(o)->column[n].start;
 		switch(DP(o)->column[n].ctype) {
 		case knh_ResultSet_CTYPE__integer :
-			KNH_SETv(ctx, sfp[rix].o, KNH_INT0);
+			KNH_SETv(ctx, sfp[K_RIX].o, KNH_INT0);
 			RETURNi_((*((knh_int_t*)p)));
 		case knh_ResultSet_CTYPE__float :
-			KNH_SETv(ctx, sfp[rix].o, KNH_FLOAT0);
+			KNH_SETv(ctx, sfp[K_RIX].o, KNH_FLOAT0);
 			RETURNf_((*((knh_float_t*)p)));
 		case knh_ResultSet_CTYPE__text : {
 			knh_bytes_t t = {{BA_tochar(DP(o)->databuf) + DP(o)->column[n].start}, DP(o)->column[n].len};

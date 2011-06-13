@@ -281,50 +281,50 @@ typedef const knh_LinkDPI_t* (*knh_Flinkdef)(CTX);
 #ifdef K_EXPORTS
 
 #define RETURN_(vv) {\
-		ctx->spi->setsfpSPI(ctx, sfp+rix, vv);\
+		ctx->spi->setsfpSPI(ctx, sfp+_rix, vv);\
 		return; \
 	}\
 
 #define RETURNa_(v) {\
 		Object *vv_ = (Object*)v;\
-		ctx->spi->setsfpSPI(ctx, sfp+rix, vv_);\
-		sfp[rix].ndata = O_data(vv_);\
+		ctx->spi->setsfpSPI(ctx, sfp+_rix, vv_);\
+		sfp[_rix].ndata = O_data(vv_);\
 		return; \
 	}\
 
 #else
 
 #define RETURN_(vv) {\
-		KNH_SETv(ctx, sfp[rix].o, vv);\
+		KNH_SETv(ctx, sfp[_rix].o, vv);\
 		return; \
 	}\
 
 #define RETURNa_(v) {\
 		Object *vv_ = (Object*)v;\
-		KNH_SETv(ctx, sfp[rix].o, vv_);\
-		sfp[rix].ndata = O_data(vv_);\
+		KNH_SETv(ctx, sfp[_rix].o, vv_);\
+		sfp[_rix].ndata = O_data(vv_);\
 		return; \
 	}\
 
 #endif
 
 #define RETURNd_(d) {\
-		sfp[rix].ndata = d; \
+		sfp[_rix].ndata = d; \
 		return; \
 	}\
 
 #define RETURNb_(c) {\
-		sfp[rix].bvalue = c; \
+		sfp[_rix].bvalue = c; \
 		return; \
 	}\
 
 #define RETURNi_(c) {\
-		sfp[rix].ivalue = c; \
+		sfp[_rix].ivalue = c; \
 		return; \
 	}\
 
 #define RETURNf_(c) {\
-		sfp[rix].fvalue = c; \
+		sfp[_rix].fvalue = c; \
 		return; \
 	}\
 
@@ -341,7 +341,7 @@ typedef const knh_LinkDPI_t* (*knh_Flinkdef)(CTX);
 	}\
 
 #define ITRNEXT_(vv) {\
-		ctx->spi->setsfpSPI(ctx, sfp+rtnidx, vv);\
+		ctx->spi->setsfpSPI(ctx, sfp+rix_, vv);\
 		return 1; \
 	}\
 
@@ -353,24 +353,24 @@ typedef const knh_LinkDPI_t* (*knh_Flinkdef)(CTX);
 	}\
 
 #define ITRNEXT_(vv) {\
-		KNH_SETv(ctx, sfp[rtnidx].o, vv);\
+		KNH_SETv(ctx, sfp[_rix].o, vv);\
 		return 1; \
 	}\
 
 #endif
 
 #define ITRNEXTd_(d) {\
-		sfp[rtnidx].ndata = d;\
+		sfp[_rix].ndata = d;\
 		return 1; \
 	}\
 
 #define ITRNEXTi_(n) {\
-		sfp[rtnidx].ivalue = n;\
+		sfp[_rix].ivalue = n;\
 		return 1; \
 	}\
 
 #define ITRNEXTf_(n) {\
-		sfp[rtnidx].fvalue = n;\
+		sfp[_rix].fvalue = n;\
 		return 1; \
 	}\
 

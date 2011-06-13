@@ -409,8 +409,8 @@ static knh_xblock_t* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ff
 	WRITE_HEX(0x01); //add
 	WRITE_ASM(MOD_IMD, _EAX, _EBX); // add eax -> ebx;
 
-	// now at ebx is pointing to sfp[rix];
-	// copy retvalue to sfp[rix].ivalue (offset is 0x8)
+	// now at ebx is pointing to sfp[K_RIX];
+	// copy retvalue to sfp[K_RIX].ivalue (offset is 0x8)
 	// pop eax;
 
 

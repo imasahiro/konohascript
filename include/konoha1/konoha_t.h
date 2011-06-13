@@ -1251,7 +1251,8 @@ typedef struct {
 /* Functions */
 /* ------------------------------------------------------------------------ */
 
-#define _RIX   ,long rix
+#define _RIX   ,long _rix
+#define K_RIX  _rix
 
 #ifdef K_USING_WIN32_
 #define METHOD  void CC_EXPORT
@@ -1259,14 +1260,14 @@ typedef struct {
 #define ITRNEXT int   CC_EXPORT
 typedef void (CC_EXPORT *knh_Fmethod)(CTX, knh_sfp_t* _RIX);
 typedef void (CC_EXPORT *knh_Ftypemap)(CTX, knh_sfp_t * _RIX);
-typedef int  (CC_EXPORT *knh_Fitrnext)(CTX, knh_sfp_t *, long rtnidx);
+typedef int  (CC_EXPORT *knh_Fitrnext)(CTX, knh_sfp_t * _RIX);
 #else
 #define METHOD  void  CC_FASTCALL_
 #define TYPEMAP   METHOD
 #define ITRNEXT int   CC_FASTCALL_
 typedef METHOD (*knh_Fmethod)(CTX, knh_sfp_t* _RIX);
 typedef TYPEMAP (*knh_Ftypemap)(CTX, knh_sfp_t * _RIX);
-typedef ITRNEXT (*knh_Fitrnext)(CTX, knh_sfp_t *, long rtnidx);
+typedef ITRNEXT (*knh_Fitrnext)(CTX, knh_sfp_t * _RIX);
 #endif
 
 /* ------------------------------------------------------------------------ */

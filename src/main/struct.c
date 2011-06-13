@@ -1126,7 +1126,7 @@ static knh_ClassDef_t ArrayDef = {
 /* --------------- */
 /* Iterator */
 
-static ITRNEXT Fitrnext_single(CTX ctx, knh_sfp_t *sfp, long rtnidx)
+static ITRNEXT Fitrnext_single(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Iterator_t *itr = ITR(sfp);
 	if(DP(itr)->mitr.index == 0) {

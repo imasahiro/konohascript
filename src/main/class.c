@@ -1234,17 +1234,17 @@ KNHAPI2(void) knh_addTypeMap(CTX ctx, knh_TypeMap_t *trl)
 	knh_Array_add(ctx, ClassTBL(cid)->typemaps, trl);
 }
 
-KNHAPI2(void) knh_TypeMap_exec(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp, long rix)
+KNHAPI2(void) knh_TypeMap_exec(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp _RIX)
 {
 	if(IS_NULL(sfp[0].o)) {
-		KNH_SETv(ctx, sfp[rix].o, KNH_NULVAL(tmr->tcid))
-		sfp[rix].ivalue = 0;
+		KNH_SETv(ctx, sfp[K_RIX].o, KNH_NULVAL(tmr->tcid))
+		sfp[K_RIX].ivalue = 0;
 	}
 	else {
 		if(!TypeMap_isFastCall(tmr)) {
 			sfp[K_TMRIDX].tmrNC = tmr;
 		}
-		tmr->ftypemap_1(ctx, sfp, rix);
+		tmr->ftypemap_1(ctx, sfp, K_RIX);
 	}
 }
 
@@ -1594,7 +1594,7 @@ static METHOD Object_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 		ct->ospi->initcopy(ctx, RAWPTR(o), RAWPTR(src));
 		src = o;
 	}
-	sfp[rix].ndata = sfp[0].ndata;
+	sfp[K_RIX].ndata = sfp[0].ndata;
 	RETURN_(src);
 }
 
@@ -1604,7 +1604,7 @@ static METHOD Object_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD Object_cast(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	sfp[0].ndata = O_ndata(sfp[0].o); // UNBOX
-	knh_TypeMap_exec(ctx, sfp[1].tmr, sfp, rix);
+	knh_TypeMap_exec(ctx, sfp[1].tmr, sfp, K_RIX);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -1617,10 +1617,10 @@ static METHOD Object_to(CTX ctx, knh_sfp_t *sfp _RIX)
 		knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, scid, tcid, 1);
 		if(tmr != NULL) {
 			sfp[0].ndata = O_ndata(sfp[0].i); // UNBOX
-			knh_TypeMap_exec(ctx, tmr, sfp, rix);
+			knh_TypeMap_exec(ctx, tmr, sfp, K_RIX);
 		}
 		else {
-			sfp[rix].ivalue = 0;
+			sfp[K_RIX].ivalue = 0;
 			RETURN_(KNH_NULVAL(tcid));
 		}
 	}
@@ -1639,7 +1639,7 @@ static METHOD Object_typeCheck(CTX ctx, knh_sfp_t *sfp _RIX)
 		knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, scid, tcid, 1);
 		if(tmr != NULL && TypeMap_isSemantic(tmr)) {
 			sfp[0].ndata = O_ndata(sfp[0].i); // UNBOX
-			knh_TypeMap_exec(ctx, tmr, sfp, rix);
+			knh_TypeMap_exec(ctx, tmr, sfp, K_RIX);
 		}
 		else {
 			DBG_P("reqt=%s", TYPE__(tcid));
@@ -1647,7 +1647,7 @@ static METHOD Object_typeCheck(CTX ctx, knh_sfp_t *sfp _RIX)
 		}
 	}
 	else {
-		sfp[rix].ndata = O_ndata(sfp[0].o);
+		sfp[K_RIX].ndata = O_ndata(sfp[0].o);
 		RETURN_(sfp[0].o);
 	}
 }
@@ -1707,7 +1707,7 @@ static METHOD Func_invoke(CTX ctx, knh_sfp_t *sfp _RIX)
 		KNH_SETv(ctx, sfp[0].o, fo->baseNULL);
 	}
 	klr_setmtdNC(ctx, sfp[K_MTDIDX], fo->mtd);
-	KNH_SELFCALL(ctx, sfp, fo->mtd, rix);
+	KNH_SELFCALL(ctx, sfp, fo->mtd, K_RIX);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -1737,8 +1737,8 @@ static METHOD Thunk_eval(CTX ctx, knh_sfp_t *sfp _RIX)
 	KNH_SETv(ctx, (thk)->envsfp[0].o, lsfp[0].o);
 	(thk)->envsfp[0].ndata = lsfp[0].ndata;
 	Thunk_setEvaluated(thk, 1);
-	KNH_SETv(ctx, sfp[rix].o, (thk)->envsfp[0].o);
-	sfp[rix].ndata = (thk)->envsfp[0].ndata;
+	KNH_SETv(ctx, sfp[K_RIX].o, (thk)->envsfp[0].o);
+	sfp[K_RIX].ndata = (thk)->envsfp[0].ndata;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -1749,11 +1749,11 @@ static METHOD Thunk_value(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Thunk_t *thk = (knh_Thunk_t*)sfp[0].o;
 	if(Thunk_isEvaluated(thk)) {
-		KNH_SETv(ctx, sfp[rix].o, (thk)->envsfp[0].o);
-		sfp[rix].ndata = (thk)->envsfp[0].ndata;
+		KNH_SETv(ctx, sfp[K_RIX].o, (thk)->envsfp[0].o);
+		sfp[K_RIX].ndata = (thk)->envsfp[0].ndata;
 	}
 	else {
-		Thunk_eval(ctx, sfp, rix);
+		Thunk_eval(ctx, sfp, K_RIX);
 	}
 }
 

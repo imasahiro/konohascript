@@ -144,7 +144,6 @@ finally    -         0
 =>         TT_DARROW     0
 -->        TT_TARROW     0
 ==>        TT_TDARROW    0
-!!         TT_EXPT       0
 <<<        TT_LSEND      0
 >>>        TT_RSEND      0
 ...        TT_DOTS       0
@@ -200,20 +199,26 @@ and     TT_AND          0      6       MN_NONAME
 not     TT_NOT          0      7       MN_opNOT
 exists  TT_EXISTS       0      8       MN_opEXISTS
 from    TT_FROM         0      9       MN_NONAME
-to      TT_TO           0      9       MN_opTO
-as      TT_AS           0      9       MN_NONAME
 until   TT_UNTIL        0      9       MN_opUNTIL
+
+# f() as Class == 1
 
 #define    TT_isBINARY(tt) (TT_IS <= (tt) && (tt) <= TT_RSFT)
 is?        TT_IS        _BIN    10      MN_opIS
 <:         TT_OF        _BIN    10      MN_opOF
 in?        TT_IN        _BIN    10      MN_opHAS
+to         TT_TO        _BIN    10      MN_opTO
 ==         TT_EQ        _BIN    10      MN_opEQ
 !=         TT_NEQ       _BIN    10      MN_opNOTEQ
 <          TT_LT        _BIN    10      MN_opLT
 <=         TT_LTE       _BIN    10      MN_opLTE
 >          TT_GT        _BIN    10      MN_opGT
 >=         TT_GTE       _BIN    10      MN_opGTE
+
+with       TT_WITH      _BIN    12      MN_opWITH
+as         TT_AS        _BIN    12      MN_opAS
+where      TT_WHERE     _BIN    12      MN_opWHERE
+each       TT_EACH      _BIN    12      MN_opEACH
 
 |          TT_LOR       _BIN    14      MN_opLOR
 ^          TT_XOR       _BIN    16      MN_opLXOR
@@ -230,6 +235,7 @@ in?        TT_IN        _BIN    10      MN_opHAS
 ++         TT_NEXT      0       40      MN_opNEXT
 --         TT_PREV      0       40      MN_opPREV
 ..         TT_ITR       0       40      MN_opITR
+!!         TT_EXPT      0       40      MN_opEXPT
 &&&        TT_TAND      0       40      MN_opADDR
 ***        TT_TMUL      0       40      MN_opCAST
 +++        TT_TADD      0       40      MN_opPLUS
