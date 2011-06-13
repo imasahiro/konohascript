@@ -2189,13 +2189,16 @@ static knh_Token_t* CALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 	if(MN_isNEW(mn)) { /* reported by Maeda */
 		return ERROR_Unsupported(ctx, "calling new as method", CLASS_unknown, NULL);
 	}
-	TYPING_UntypedObject(ctx, stmt, 1);
+	TYPING_UntypedExpr(ctx, stmt, 1);
 	if(Tn_isCID(stmt, 1)) {
 		knh_Token_toTYPED(ctx, tkO, TT_NULL/*DEFVAL*/, (tkO)->cid, (tkO)->cid);
 	}
 	mtd_cid = Tn_cid(stmt, 1);
 	mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, mn);
 	if(mtd != NULL) {
+		if(IS_Tunbox(mtd_cid) && !IS_Tunbox(mtd->cid)) {
+			Stmt_boxAll(ctx, stmt, 1, 2, mtd->cid);
+		}
 		Token_setMethod(ctx, tkM, mn, mtd);
 		return CALLPARAMs_typing(ctx, stmt, reqt, mtd_cid, mtd);
 	}
