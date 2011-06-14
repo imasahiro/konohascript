@@ -3496,7 +3496,7 @@ static knh_Method_t* knh_NameSpace_getIterativeMethodNULL(CTX ctx, knh_class_t c
 static knh_Token_t* FOREACH1_toIterator(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_class_t p1)
 {
 	knh_class_t cid = Tn_cid(stmt, n);
-	if(C_bcid(cid != CLASS_Iterator)) {
+	if(C_bcid(cid) != CLASS_Iterator) {
 		knh_Method_t *mtd = knh_NameSpace_getIterativeMethodNULL(ctx, cid, p1);
 		if(mtd != NULL) {
 			knh_Stmt_t *stmtC = new_Stmt2(ctx, STT_NEW, new_TokenMN(ctx, MN_new), new_TokenCID(ctx, CLASS_Iterator),
@@ -3506,7 +3506,7 @@ static knh_Token_t* FOREACH1_toIterator(CTX ctx, knh_Stmt_t *stmt, size_t n, knh
 			stmtNN(stmt, n)->type = cid;
 			return tkNN(stmt, n);
 		}
-		knh_NameSpace_getMethodNULL(ctx, cid, MN_opITR);
+		mtd = knh_NameSpace_getMethodNULL(ctx, cid, MN_opITR);
 		if(mtd != NULL) {
 			knh_Stmt_t *stmtC = new_Stmt2(ctx, STT_CALL, new_TokenMN(ctx, MN_opITR), tmNN(stmt, n), NULL);
 			KNH_SETv(ctx, tmNN(stmt, n), CALL_typing(ctx, stmtC, TYPE_var));
@@ -3526,48 +3526,48 @@ static knh_Token_t* FOREACH1_toIterator(CTX ctx, knh_Stmt_t *stmt, size_t n, knh
 static knh_Token_t* FOREACH1_typing(CTX ctx, knh_Stmt_t *stmt)
 {
 	knh_Stmt_t *stmtDECL = stmtNN(stmt, 0);
-	if(IS_Stmt(stmtDECL)) {
-		BEGIN_BLOCK(esp);
-		knh_class_t itrcid = CLASS_unknown;
-		knh_Token_t *tkT = TTYPE_typing(ctx, tkNN(stmtDECL, 0), TYPE_var);
-		knh_Token_t *tkN = tkNN(stmtDECL, 1);
-		knh_fieldn_t fn = Token_fn(ctx, tkN);
-		knh_class_t p1 = tkT->cid;
-		if(p1 == TYPE_var) {  // foreach(s from in..) ;
-			knh_Token_t *tkN2 = TNAME_typing(ctx, tkN, TYPE_dyn, _FINDLOCAL | _FINDFIELD | _FINDSCRIPT | _USEDCOUNT);
-			if(tkN2 == NULL) {
-				TYPING(ctx, stmt, 1, TYPE_Iterator, _NOCHECK);
-				tkT = FOREACH1_toIterator(ctx, stmt, 1, p1/*CLASS_Tvar*/);
-				if(TT_(tkT) == TT_ERR) return tkT;
-				itrcid = Tn_cid(stmt, 1);
-				p1 = C_p1(itrcid);
-				KNH_SETv(ctx, tkNN(stmt, 0), Gamma_addLOCAL(ctx, 0, p1, fn, 1/*ucnt*/));
-				INFO_Typing(ctx, "", TK_tobytes(tkN), p1);
-				Tn_it(ctx, stmt, 3, itrcid);
-				goto L_BLOCK;
-			}
-			p1 = tkN2->type;
-			if(TT_(tkN2) != TT_LOCAL || TT_(tkN2) != TT_FUNCVAR) {
-				KNH_SETv(ctx, tkNN(stmt, 0), Gamma_addLOCAL(ctx, 0, p1, fn, 1/*ucnt*/));
-			}
-			else {
-				KNH_SETv(ctx, tkNN(stmt, 0), tkN);
-			}
+//	if(IS_Stmt(stmtDECL)) {
+	BEGIN_BLOCK(esp);
+	knh_class_t itrcid = CLASS_unknown;
+	knh_Token_t *tkT = TTYPE_typing(ctx, tkNN(stmtDECL, 0), TYPE_var);
+	knh_Token_t *tkN = tkNN(stmtDECL, 1);
+	knh_fieldn_t fn = Token_fn(ctx, tkN);
+	knh_class_t p1 = tkT->cid;
+	if(p1 == TYPE_var) {  // foreach(s from in..) ;
+		knh_Token_t *tkN2 = TNAME_typing(ctx, tkN, TYPE_dyn, _FINDLOCAL | _FINDFIELD | _FINDSCRIPT | _USEDCOUNT);
+		if(tkN2 == NULL) {
+			TYPING(ctx, stmt, 1, TYPE_Iterator, _NOCHECK);
+			tkT = FOREACH1_toIterator(ctx, stmt, 1, p1/*CLASS_Tvar*/);
+			if(TT_(tkT) == TT_ERR) return tkT;
+			itrcid = Tn_cid(stmt, 1);
+			p1 = C_p1(itrcid);
+			KNH_SETv(ctx, tkNN(stmt, 0), Gamma_addLOCAL(ctx, 0, p1, fn, 1/*ucnt*/));
+			INFO_Typing(ctx, "", TK_tobytes(tkN), p1);
+			Tn_it(ctx, stmt, 3, itrcid);
+			goto L_BLOCK;
 		}
-		else {
+		p1 = tkN2->type;
+		if(TT_(tkN2) != TT_LOCAL || TT_(tkN2) != TT_FUNCVAR) {
 			KNH_SETv(ctx, tkNN(stmt, 0), Gamma_addLOCAL(ctx, 0, p1, fn, 1/*ucnt*/));
 		}
-		itrcid = knh_class_P1(ctx, CLASS_Iterator, p1);
-		TYPING(ctx, stmt, 1, itrcid, _COERCION);
-		tkT = FOREACH1_toIterator(ctx, stmt, 1, p1/*CLASS_Tvar*/);
-		if(TT_(tkT) == TT_ERR) return tkT;
-		Tn_it(ctx, stmt, 3, itrcid);
-
-		L_BLOCK:;
-		int hasReturn = 0; // dummy
-		TYPING_STMTs(ctx, stmt, 2, TYPE_stmtexpr, &hasReturn);
-		END_BLOCK(esp);
+		else {
+			KNH_SETv(ctx, tkNN(stmt, 0), tkN);
+		}
 	}
+	else {
+		KNH_SETv(ctx, tkNN(stmt, 0), Gamma_addLOCAL(ctx, 0, p1, fn, 1/*ucnt*/));
+	}
+	itrcid = knh_class_P1(ctx, CLASS_Iterator, p1);
+	TYPING(ctx, stmt, 1, itrcid, _COERCION);
+	tkT = FOREACH1_toIterator(ctx, stmt, 1, p1/*CLASS_Tvar*/);
+	if(TT_(tkT) == TT_ERR) return tkT;
+	Tn_it(ctx, stmt, 3, itrcid);
+
+	L_BLOCK:;
+	int hasReturn = 0; // dummy
+	TYPING_STMTs(ctx, stmt, 2, TYPE_stmtexpr, &hasReturn);
+	END_BLOCK(esp);
+//	}
 	return Stmt_typed(ctx, stmt, TYPE_void);
 }
 

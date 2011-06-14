@@ -502,7 +502,7 @@ void WARN_Cast(CTX ctx, const char *whatis, knh_class_t tcid, knh_class_t scid)
 knh_Token_t* ERROR_ForeachNotIterative(CTX ctx, knh_class_t p1, knh_class_t type)
 {
 	if(p1 == CLASS_Tvar) {
-		return Gamma_perror(ctx, KC_ERR, "foreach %T is not iterative", p1, type);
+		return Gamma_perror(ctx, KC_ERR, "foreach %T is not iterative", type);
 	}
 	else {
 		return Gamma_perror(ctx, KC_ERR, "foreach: %T is not iteration of %T", p1, type);
