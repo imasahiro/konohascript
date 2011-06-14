@@ -710,6 +710,9 @@ KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, knh_RawPtr_t *po, void *rawptr)
 {
 	knh_RawPtr_t *npo = (knh_RawPtr_t*)new_hObject_(ctx, O_cTBL(po));
 	npo->rawptr = rawptr;
+	if(rawptr == NULL) {
+		knh_Object_toNULL(ctx, npo);
+	}
 	return npo;
 }
 

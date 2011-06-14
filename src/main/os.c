@@ -369,8 +369,8 @@ KNHAPI2(knh_bool_t) knh_String_ospath(CTX ctx, knh_String_t *s, knh_NameSpace_t 
 	knh_index_t loc = knh_bytes_index(S_tobytes(s), ':');
 	if(loc == -1) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(ns->rpath));
-		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 1, S_tobytes(s));
+//		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(ns->rpath));
+		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(s));
 		const char *p = knh_cwb_tochar(ctx, cwb);
 		size_t len = knh_strlen(p) + 1;
 		if(len < bufsiz) {
