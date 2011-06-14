@@ -373,6 +373,7 @@ knh_Token_t* new_TokenTYPED(CTX ctx, knh_term_t tt, knh_type_t type, knh_short_t
 knh_bool_t StmtMETA_is_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name);
 knh_class_t knh_Token_cid(CTX ctx, knh_Token_t *tk, knh_type_t reqt);
 void knh_Gamma_init(CTX ctx);
+knh_class_t Link_type(CTX ctx, knh_Link_t *lnk, knh_class_t reqt);
 void knh_class_addField(CTX ctx, knh_class_t bcid, knh_flag_t flag, knh_type_t type, knh_fieldn_t fn);
 void knh_ObjectField_expand(CTX ctx, knh_ObjectField_t *of, size_t oldsize, size_t newsize);
 void SCRIPT_typing(CTX ctx, knh_Stmt_t *stmt);

@@ -42,14 +42,8 @@ extern "C" {
 //## @TypeVariable class Tvoid Tvoid;
 //## @TypeVariable class Tvar  Tvoid;
 
-//#define CLASS_Tvoid             CLASS_Tvoid_
-//#define CLASS_Tvar              CLASS_Tvar_
 #define TYPE_void                 CLASS_Tvoid
 #define TYPE_var                  CLASS_Tvar
-
-// Tuple does not exist. See
-//#define CLASS_Tuple             CLASS_Tvoid
-//#define TYPE_Tuple              CLASS_Tvoid
 
 /* ------------------------------------------------------------------------ */
 //## class Object Object knh_ObjectField_t;
@@ -199,7 +193,8 @@ typedef struct knh_Bytes_t {
 
 /* ------------------------------------------------------------------------ */
 //## class Iterator Object;
-//## flag Range NDATA     1 - is set * *;
+//## flag Iterator NDATA     1 - is set * *;
+//## type IteratorVar     Iterator 0 Tvar;
 //## type FuncEach        Func  1 T1 T1;
 //## type FuncWhere       Func  1 T1 Boolean;
 

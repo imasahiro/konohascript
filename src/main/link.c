@@ -396,7 +396,9 @@ static knh_bool_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 	knh_cwb_close(cwb);
 	knh_bool_t res = 0;
 	if(p != NULL) {
-		if(funcname.len != libname.len) {
+		res = 1;
+		DBG_P("funcname.len=%d,%d, func='%s'", funcname.len, libname.len, funcname.text);
+		if(funcname.len < libname.len) {
 			void *f = knh_dlsym(ctx, p, funcname.text, 1/*isTest*/);
 			res = (f != NULL);
 		}

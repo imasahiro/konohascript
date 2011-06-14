@@ -61,7 +61,6 @@ extern "C" {
 		Gamma_clear(ctx, (DP(ctx->gma)->gsize - (DP(ctx->gma)->espidx - (knh_short_t)X)), stmt);\
 	}\
 
-
 #define _TINFER      0        // for readability
 #define _NOWARN      1
 #define _NOVOID      (1<<1)
@@ -1480,6 +1479,41 @@ static knh_Token_t* ESTR_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 	}
 }
 
+knh_class_t Link_type(CTX ctx, knh_Link_t *lnk, knh_class_t reqt)
+{
+	if(knh_Link_hasType(ctx, lnk, reqt)) {
+		return reqt;
+	}
+	DBG_P("reqt=%s", TYPE__(reqt));
+	knh_class_t bcid = C_bcid(reqt);
+	if(bcid == CLASS_Iterator) {
+		knh_class_t p1 = C_p1(reqt);
+		if(p1 != CLASS_Tvar) {
+			knh_class_t cid = knh_class_P1(ctx, CLASS_Array, C_p1(reqt));
+			if(knh_Link_hasType(ctx, lnk, cid)) {
+				return cid;
+			}
+		}
+		else {
+			DBG_P("CHECK type=%s", TYPE__(reqt));
+			if(knh_Link_hasType(ctx, lnk, CLASS_StringARRAY)) {
+				return CLASS_StringARRAY;
+			}
+		}
+		if(knh_Link_hasType(ctx, lnk, CLASS_InputStream)) {
+			return CLASS_InputStream;
+		}
+		return reqt;
+	}
+	if(bcid == CLASS_Object) {
+		if(knh_Link_hasType(ctx, lnk, CLASS_Map)) {
+			return CLASS_Map;
+		}
+		return reqt;
+	}
+	return CLASS_t(reqt);
+}
+
 static knh_Token_t* PATH_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 {
 	knh_NameSpace_t *ns = K_GMANS;
@@ -1499,14 +1533,14 @@ static knh_Token_t* PATH_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 	else if(reqt == TYPE_String) {
 		return Token_toCONST(ctx, tk);
 	}
-	knh_class_t cid = CLASS_t(reqt);
+	knh_class_t cid = Link_type(ctx, lnk, reqt);
 	if(!knh_Link_hasType(ctx, lnk, cid)) {
 		return TERROR_Token(ctx, tk, TYPE_Boolean, reqt);
 	}
 	else {
 		knh_Object_t *o = knh_Link_newObjectNULL(ctx, lnk, ns, (tk)->text, cid);
 		if(o == NULL) {
-			o = KNH_NULVAL(reqt);
+			o = KNH_NULVAL(cid);
 			WARN_Undefined(ctx, "linked resource", CLASS_unknown, tk);
 		}
 		return Token_setCONST(ctx, tk, o);
@@ -1529,7 +1563,8 @@ static knh_Token_t* TLINK_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		TYPING_TypedExpr(ctx, stmt, 2, TYPE_String);
 	}
 	if(reqt == TYPE_dyn || reqt == TYPE_var || reqt == TYPE_void) reqt = TYPE_Boolean;
-	if(knh_Link_hasType(ctx, lnk, CLASS_t(reqt))) {
+	knh_class_t cid = Link_type(ctx, lnk, reqt);
+	if(knh_Link_hasType(ctx, lnk, cid)) {
 		DBG_ASSERT(DP(stmt)->size == 3);
 		STT_(stmt) = STT_CALL;
 		Token_setMethod(ctx, tkNN(stmt, 0), MN_newObject, knh_NameSpace_getMethodNULL(ctx, CLASS_Link, MN_newObject));
@@ -1537,7 +1572,7 @@ static knh_Token_t* TLINK_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		// expr
 		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, K_GMANS));
 		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, new_Type(ctx, reqt)));
-		return Stmt_typed(ctx, stmt, reqt);
+		return Stmt_typed(ctx, stmt, cid);
 	}
 	else {
 		return TERROR_Token(ctx, tkLNK, TYPE_Boolean, reqt);
@@ -3536,7 +3571,7 @@ static knh_Token_t* FOREACH1_typing(CTX ctx, knh_Stmt_t *stmt)
 	if(p1 == TYPE_var) {  // foreach(s from in..) ;
 		knh_Token_t *tkN2 = TNAME_typing(ctx, tkN, TYPE_dyn, _FINDLOCAL | _FINDFIELD | _FINDSCRIPT | _USEDCOUNT);
 		if(tkN2 == NULL) {
-			TYPING(ctx, stmt, 1, TYPE_Iterator, _NOCHECK);
+			TYPING(ctx, stmt, 1, TYPE_IteratorVar, _NOCHECK);
 			tkT = FOREACH1_toIterator(ctx, stmt, 1, p1/*CLASS_Tvar*/);
 			if(TT_(tkT) == TT_ERR) return tkT;
 			itrcid = Tn_cid(stmt, 1);

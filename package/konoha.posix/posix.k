@@ -45,7 +45,7 @@ include nativelink;
 
 // file system
 @Native String System.getCwd();
-@Native Boolean System.chDir(String dirname);
+//@Native Boolean System.chDir(String dirname);
 
 // dir
 @Native class Dir;

@@ -158,6 +158,7 @@ static knh_data_t ClassData0[] = {
 	DATA_CLASS0, CLASS_Immutable, _DATA("konoha.Immutable"), CFLAG_Immutable, CLASS_Immutable, CLASS_Object, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_KindOf, _DATA("konoha.KindOf"), CFLAG_KindOf, CLASS_KindOf, CLASS_Object, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Tdynamic, _DATA("konoha.Tdynamic"), CFLAG_Tdynamic, CLASS_dynamic, CLASS_Object, 0 + 0 /*0*/,
+	DATA_GENERICS/*IteratorVar*/, CLASS_Iterator, 1, 0, TYPE_Tvar, FN_,
 	DATA_GENERICS/*FuncEach*/, CLASS_Func, 1, 1, TYPE_T1, FN_, TYPE_T1, FN_,
 	DATA_GENERICS/*FuncWhere*/, CLASS_Func, 1, 1, TYPE_T1, FN_, TYPE_Boolean, FN_,
 	DATA_GENERICS/*RangeInt*/, CLASS_Range, 1, 0, TYPE_Int, FN_,

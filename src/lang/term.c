@@ -2220,105 +2220,110 @@ static void _STMT1(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr);
 
 static void _EXPR1(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 {
-	knh_Token_t *tkCUR = ITR_nextTK(itr);
-	switch(TT_(tkCUR)) {
-		case TT_NAME:    /* @CODE: name */
-		case TT_UNAME:   /* @CODE: NAME */
-			DBG_ASSERT(!ITR_hasNext(itr));  // to avoid name. hoge
-		case TT_NULL:    /* @CODE: null */
-		case TT_TRUE:    /* @CODE: true */
-		case TT_FALSE:   /* @CODE: false */
-		case TT_PTYPE:    /* @CODE: T<T> */
-		case TT_PROPN:   /* @CODE: $NAME */
-		case TT_TYPEOF:  /* @CODE: typeof(expr) */
-		case TT_STR:     /* @CODE: "hoge" */
-		case TT_TSTR:    /* @CODE: 'hoge' */
-		case TT_ESTR:    /* @CODE: `hoge` */
-		case TT_NUM:     /* @CODE: 123m */
-		case TT_URN:     /* @CODE: URL */
-		case TT_TLINK:   /* @CODE: link:: */
-		case TT_DYN:
-			knh_Stmt_add(ctx, stmt, tkCUR);
-			break;
-		case TT_BYTE:    /* @CODE: byte */
-			TT_(tkCUR) = TT_NAME;
-			knh_Stmt_add(ctx, stmt, tkCUR);
-			break;
-		case TT_REGEX:
-			_REGEX(ctx, stmt, itr, tkCUR);
-			break;
-		case TT_PARENTHESIS: /* @CODE: () */ {
-			tkitr_t pbuf, *pitr = ITR_new(tkCUR, &pbuf);
-			int c = ITR_indexTT(pitr, TT_DARROW, -1);
-			if(c != -1) {
-				STT_(stmt) = STT_FUNCTION;
-				_PARAMs(ctx, stmt, pitr);
-				_CODEDOC(ctx, stmt, pitr);
-				pitr->c = c + 1;
-				_RETURNEXPR(ctx, stmt, pitr);
+	//if(ITR_hasNext(itr)) {
+		knh_Token_t *tkCUR = ITR_nextTK(itr);
+		switch(TT_(tkCUR)) {
+			case TT_NAME:    /* @CODE: name */
+			case TT_UNAME:   /* @CODE: NAME */
+				DBG_ASSERT(!ITR_hasNext(itr));  // to avoid name. hoge
+			case TT_NULL:    /* @CODE: null */
+			case TT_TRUE:    /* @CODE: true */
+			case TT_FALSE:   /* @CODE: false */
+			case TT_PTYPE:    /* @CODE: T<T> */
+			case TT_PROPN:   /* @CODE: $NAME */
+			case TT_TYPEOF:  /* @CODE: typeof(expr) */
+			case TT_STR:     /* @CODE: "hoge" */
+			case TT_TSTR:    /* @CODE: 'hoge' */
+			case TT_ESTR:    /* @CODE: `hoge` */
+			case TT_NUM:     /* @CODE: 123m */
+			case TT_URN:     /* @CODE: URL */
+			case TT_TLINK:   /* @CODE: link:: */
+			case TT_DYN:
+				knh_Stmt_add(ctx, stmt, tkCUR);
+				break;
+			case TT_BYTE:    /* @CODE: byte */
+				TT_(tkCUR) = TT_NAME;
+				knh_Stmt_add(ctx, stmt, tkCUR);
+				break;
+			case TT_REGEX:
+				_REGEX(ctx, stmt, itr, tkCUR);
+				break;
+			case TT_PARENTHESIS: /* @CODE: () */ {
+				tkitr_t pbuf, *pitr = ITR_new(tkCUR, &pbuf);
+				int c = ITR_indexTT(pitr, TT_DARROW, -1);
+				if(c != -1) {
+					STT_(stmt) = STT_FUNCTION;
+					_PARAMs(ctx, stmt, pitr);
+					_CODEDOC(ctx, stmt, pitr);
+					pitr->c = c + 1;
+					_RETURNEXPR(ctx, stmt, pitr);
+					break;
+				}
+				c = ITR_count(pitr, TT_COMMA);
+				if(c == 0) {
+					if(ITR_hasNext(pitr)) {   /* @CODE: (expr) => expr */
+						_EXPR(ctx, stmt, pitr);
+					}
+					else { /* @CODE: () => null */
+						TT_(tkCUR) = TT_NULL;
+						knh_Stmt_add(ctx, stmt, tkCUR);
+					}
+				}
+				else {  /* @CODE: (1, 2) */
+					stmt = new_StmtREUSE(ctx, stmt, STT_NEW);
+					_ARRAY(ctx, stmt, MN_newTUPLE, CLASS_Tuple, pitr);
+				}
 				break;
 			}
-			c = ITR_count(pitr, TT_COMMA);
-			if(c == 0) {
-				if(ITR_hasNext(pitr)) {   /* @CODE: (expr) => expr */
-					_EXPR(ctx, stmt, pitr);
+			case TT_BRANCET: {  /* @CODE: [] */
+				tkitr_t pbuf, *pitr = ITR_new(tkCUR, &pbuf);
+				knh_class_t cid = CLASS_Array;
+				knh_index_t idx = ITR_indexTT(pitr, TT_TO, -1);
+				if(idx != -1) { /* [1 to 2] => [1, 2] */
+					cid = CLASS_Range;
+					TT_(pitr->ts[idx]) = TT_COMMA;
 				}
-				else { /* @CODE: () => null */
-					TT_(tkCUR) = TT_NULL;
-					knh_Stmt_add(ctx, stmt, tkCUR);
-				}
-			}
-			else {  /* @CODE: (1, 2) */
 				stmt = new_StmtREUSE(ctx, stmt, STT_NEW);
-				_ARRAY(ctx, stmt, MN_newTUPLE, CLASS_Tuple, pitr);
+				_ARRAY(ctx, stmt, MN_newLIST, cid, pitr);
+				break;
 			}
-			break;
-		}
-		case TT_BRANCET: {  /* @CODE: [] */
-			tkitr_t pbuf, *pitr = ITR_new(tkCUR, &pbuf);
-			knh_class_t cid = CLASS_Array;
-			knh_index_t idx = ITR_indexTT(pitr, TT_TO, -1);
-			if(idx != -1) { /* [1 to 2] => [1, 2] */
-				cid = CLASS_Range;
-				TT_(pitr->ts[idx]) = TT_COMMA;
+			case TT_CODE:
+			case TT_BRACE: {
+				stmt = new_StmtREUSE(ctx, stmt, STT_NEW);
+				knh_Stmt_add(ctx, stmt, new_TokenMN(ctx, MN_newMAP));
+				_DICT(ctx, stmt, new_TokenCID(ctx, CLASS_Map), tkCUR);
+				break;
 			}
-			stmt = new_StmtREUSE(ctx, stmt, STT_NEW);
-			_ARRAY(ctx, stmt, MN_newLIST, cid, pitr);
-			break;
-		}
-		case TT_CODE:
-		case TT_BRACE: {
-			stmt = new_StmtREUSE(ctx, stmt, STT_NEW);
-			knh_Stmt_add(ctx, stmt, new_TokenMN(ctx, MN_newMAP));
-			_DICT(ctx, stmt, new_TokenCID(ctx, CLASS_Map), tkCUR);
-			break;
-		}
-		case TT_FUNCTION: { /* function () */
-			STT_(stmt) = STT_FUNCTION;
-			if(ITR_is(itr, TT_FUNCNAME) || ITR_is(itr, TT_UFUNCNAME)) {
-				knh_Token_t *tkN = ITR_nextTK(itr);
-				WARN_Ignored(ctx, _("function name"), CLASS_unknown, S_tochar(tkN->text));
+			case TT_FUNCTION: { /* function () */
+				STT_(stmt) = STT_FUNCTION;
+				if(ITR_is(itr, TT_FUNCNAME) || ITR_is(itr, TT_UFUNCNAME)) {
+					knh_Token_t *tkN = ITR_nextTK(itr);
+					WARN_Ignored(ctx, _("function name"), CLASS_unknown, S_tochar(tkN->text));
+				}
+				if(ITR_is(itr, TT_PARENTHESIS) && ITR_isN(itr, +1, TT_CODE)) {
+					tkCUR = new_Token(ctx, TT_DOC);
+					KNH_SETv(ctx, (tkCUR)->data, (ITR_tk(itr))->text);
+					_PARAM(ctx, stmt, itr);
+					knh_Stmt_add(ctx, stmt, tkCUR);
+					_STMT1(ctx, stmt, itr);
+				}
+				else {
+					tkCUR = ITR_tk(itr); goto L_ERROR;
+				}
+				break;
 			}
-			if(ITR_is(itr, TT_PARENTHESIS) && ITR_isN(itr, +1, TT_CODE)) {
-				tkCUR = new_Token(ctx, TT_DOC);
-				KNH_SETv(ctx, (tkCUR)->data, (ITR_tk(itr))->text);
-				_PARAM(ctx, stmt, itr);
-				knh_Stmt_add(ctx, stmt, tkCUR);
-				_STMT1(ctx, stmt, itr);
+			case TT_ERR:
+				knh_Stmt_toERR(ctx, stmt, tkCUR);
+				break;
+			default: {
+				L_ERROR:;
+				Stmt_toSyntaxError(ctx, stmt, tkCUR K_TRACEPOINT);
 			}
-			else {
-				tkCUR = ITR_tk(itr); goto L_ERROR;
-			}
-			break;
 		}
-		case TT_ERR:
-			knh_Stmt_toERR(ctx, stmt, tkCUR);
-			break;
-		default: {
-			L_ERROR:;
-			Stmt_toSyntaxError(ctx, stmt, tkCUR K_TRACEPOINT);
-		}
-	}
+//	}
+//	else {
+//		knh_Stmt_toERR(ctx, stmt, ERROR_text(ctx, TT__(stmt->stt) K_TRACEPOINT));
+//	}
 }
 
 static knh_Stmt_t *Stmt_addFUNC(CTX ctx, knh_Stmt_t *stmt, knh_Token_t *tkF)
