@@ -454,6 +454,57 @@ static const knh_LinkDPI_t LINK_FILE = {
 	"file", "byte[]|InputStream|OutputStream", FILE_hasType, FILE_exists, FILE_newObjectNULL,
 };
 
+#if K_USING_POSIX_
+#include <unistd.h>
+#include <dirent.h>
+
+static knh_bool_t DIRLINK_hasType(CTX ctx, knh_class_t cid)
+{
+	return (cid == CLASS_Bytes || cid == CLASS_StringARRAY);
+}
+static knh_bool_t DIRLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+{
+	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	knh_bytes_t bpath = knh_bytes_next(path, ':');
+	bpath = knh_cwb_ensure(ctx, cwb, bpath, K_PATHMAX);
+	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, bpath);
+	knh_bool_t res = knh_isdir(ctx, knh_Bytes_ensureZero(ctx, cwb->ba) + cwb->pos);
+	knh_cwb_clear(cwb, 0);
+	return res;
+}
+static knh_Object_t* DIRLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+{
+	if(cid == CLASS_Bytes) {
+		knh_Bytes_t* ba = new_Bytes(ctx, NULL, S_size(s));
+		knh_buff_addospath(ctx, ba, 0, 0, knh_bytes_next(S_tobytes(s), ':'));
+		return UPCAST(ba);
+	}
+	if(cid == CLASS_StringARRAY) {
+		knh_Array_t *a = new_Array(ctx, CLASS_String, 0);
+		char path[K_PATHMAX];
+		knh_String_ospath(ctx, s, ns, path, sizeof(path));
+		DIR *dirptr = opendir(path);
+		if(dirptr != NULL) {
+			struct dirent *dp;
+			while((dp = readdir(dirptr)) != NULL) {
+				knh_Array_add(ctx, a, new_String(ctx, dp->d_name));
+			}
+			closedir(dirptr);
+		}
+		else {
+			knh_Object_toNULL(ctx, a);
+		}
+		return UPCAST(a);
+	}
+	return NULL/*(knh_Object_t*)s*/;
+}
+
+static const knh_LinkDPI_t LINK_DIR = {
+	"dir", "byte[]|String[]", DIRLINK_hasType, DIRLINK_exists, DIRLINK_newObjectNULL,
+};
+
+#endif
+
 static knh_bool_t isFoundPackage(CTX ctx, knh_Bytes_t* ba, size_t pos, knh_bytes_t tpath, knh_bytes_t bpath)
 {
 	knh_Bytes_clear(ba, pos);
@@ -1099,6 +1150,9 @@ void knh_loadSystemDriver(CTX ctx, knh_NameSpace_t *ns)
 	api->addLinkDPI(ctx, ns, "pkg", &LINK_PKG);
 	api->addLinkDPI(ctx, ns, "script", &LINK_SCRIPT);
 	api->addLinkDPI(ctx, ns, "class", &LINK_CLASS);
+#ifdef K_USING_POSIX_
+	api->addLinkDPI(ctx, ns, "dir", &LINK_DIR);
+#endif
 
 	api->addConvDSPI(ctx, ns, "lower", &TO_lower);
 	api->addConvDSPI(ctx, ns, "upper", &TO_upper);

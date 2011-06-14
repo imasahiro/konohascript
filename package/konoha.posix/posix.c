@@ -306,23 +306,6 @@ METHOD Dir_readName(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(new_String(ctx, dname));
 }
 
-static knh_bool_t DIRLINK_hasType(CTX ctx, knh_class_t cid)
-{
-	return 0;
-}
-static knh_bool_t DIRLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	return 0;
-}
-static knh_Object_t* DIRLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
-{
-	return NULL/*(knh_Object_t*)s*/;
-}
-
-static const knh_LinkDPI_t LINK_NOLINK = {
-	"DIRLINK", NULL, DIRLINK_hasType, DIRLINK_exists, DIRLINK_newObjectNULL,
-};
-
 ///* ------------------------------------------------------------------------ */
 //
 //knh_bool_t knh_unlink(CTX ctx, knh_bytes_t path)
