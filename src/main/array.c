@@ -569,7 +569,7 @@ static int qsort_ocmp(const void *ap, const void* bp)
 	knh_class_t bcid2 = O_bcid(o2);
 	int res;
 	if(bcid1 == bcid2) {
-		res = O_cTBL(o1)->ospi->compareTo(o1, o2);
+		res = O_cTBL(o1)->cdef->compareTo(o1, o2);
 	}
 	else {
 		res = (int)(o1 - o2);

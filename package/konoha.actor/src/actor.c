@@ -69,7 +69,7 @@ typedef struct _knh_Actor_t {
 } knh_Actor_t;
 
 
-EXPORTAPI(const knh_ClassDef_t *) CActor(CTX ctx)
+DEFAPI(const knh_ClassDef_t *) CActor(CTX ctx)
 {
 	static knh_ClassDef_t cdef;
 	cdef = *(knh_getDefaultClassDef());
@@ -386,7 +386,7 @@ METHOD CActor_addMessageToMailBox(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_MailBox_pushMessage(a->mailbox, &m);
 }
 
-EXPORTAPI(const knh_PackageDef_t*) init(CTX ctx)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx)
 {
 	static const knh_PackageDef_t pkgdef = KNH_PKGINFO("actor", "0.0", "Konoha Actor Library", NULL);
 	return &pkgdef;

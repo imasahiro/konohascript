@@ -79,7 +79,7 @@ static knh_IntData_t IntConstData[] = {
 //## @Native String System.getHostName();
 METHOD System_getHostName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_String_t *res = TS_EMPTY;
+	const char *s = NULL;
 	char buf[256];
 	KNH_RESET_ERRNO();
 	if(gethostname(buf, sizeof(buf)) == -1) {
@@ -87,9 +87,9 @@ METHOD System_getHostName(CTX ctx, knh_sfp_t *sfp _RIX)
 		NOTE_Failed("gethostname");
 	}
 	else {
-		res = new_String(ctx, (const char*)buf);
+		s = (const char*)buf;
 	}
-	RETURN_(res);
+	RETURN_(new_String(ctx, s));
 }
 
 //## @Native String System.getLogin();
@@ -134,13 +134,16 @@ METHOD System_getPPid(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(getppid());
 }
 
-//## @Native Boolean System.kill(int pid, int signal);
+/* ------------------------------------------------------------------------ */
+/* [signal] */
+
+//## @Native boolean System.kill(int pid, int signal);
 METHOD System_kill(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int tf = 1;
 	KNH_RESET_ERRNO();
 	if(kill(Int_to(int, sfp[1]), Int_to(int, sfp[2])) == -1) {
-		LOGDATA = {iDATA("pid", Int_to(int, sfp[1])), iDATA("signal", Int_to(int, sfp[1])), __ERRNO__};
+		LOGDATA = {iDATA("pid", Int_to(int, sfp[1])), iDATA("signal", Int_to(int, sfp[2])), __ERRNO__};
 		NOTE_Failed("kill");
 		tf = 0;
 	}
@@ -153,18 +156,28 @@ METHOD System_sleep(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(sleep(Int_to(int, sfp[1])));
 }
 
-//## @Native Boolean System.usleep(int sec);
+//## @Native boolean System.usleep(int usec);
 METHOD System_usleep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-//  FIXME
-//	RETURN_ERRNO(usleep, Int_to(int, sfp[1]));
+	int tf = (usleep(Int_to(useconds_t, sfp[1])) != -1);
+	if(!tf) {
+		LOGDATA = {iDATA("usec", sfp[1].ivalue), __ERRNO__};
+		NOTE_Failed("usleep");
+	}
+	RETURNb_(tf);
 }
 
-//## @Native Boolean System.raise(int signal);
+//## @Native boolean System.raise(int signal);
 METHOD System_raise(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-//  FIXME
-//	RETURN_ERRNO(raise, Int_to(int, sfp[1]));
+	int tf = 1;
+	KNH_RESET_ERRNO();
+	if(raise(Int_to(int, sfp[1])) == -1) {
+		LOGDATA = {iDATA("signal", Int_to(int, sfp[1])), __ERRNO__};
+		NOTE_Failed("raise");
+		tf = 0;
+	}
+	RETURNb_(tf);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -177,33 +190,35 @@ METHOD System_getCwd(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(new_String(ctx, (const char*)tmpbuf));
 }
 
+//## @Native boolean System.chDir(String path, NameSpace _);
 
-///* ------------------------------------------------------------------------ */
-////## @Native boolean System.chDir(String dirname);
-//
-//METHOD System_chDir(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	char tmpbuf[FILEPATH_BUFSIZ];
-//	if(IS_NULL(sfp[1].s)) {
-//		knh_format_ospath(ctx, tmpbuf, sizeof(tmpbuf), ".");
-//	}
-//	else {
-//		knh_format_ospath(ctx, tmpbuf, sizeof(tmpbuf), S_tochar(sfp[1].s));
-//	}
-//	LOG_RETURN_ERRNO(LOG_DEBUG, "path='%s'", chdir, tmpbuf);
-//}
+METHOD System_chDir(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	int tf = 1;
+	char path[K_PATHMAX];
+	knh_String_ospath(ctx, sfp[1].s, sfp[2].ns, path, sizeof(path));
+	if(chdir(path) == -1) {
+		LOGDATA = {sDATA("path", S_tochar(sfp[1].s)), sDATA("ospath", (const char*)path), __ERRNO__};
+		NOTE_Failed("chdir");
+		tf = 0;
+	}
+	RETURNb_(tf);
+}
 
-//void test (const char *name)
-//{
-//	DIR * dirptr = opendir(".");
-//	struct *dirent dp;
-//	while ((dp = readdir(dirptr)) != NULL) {
-//		if (dp->d_namlen == len && !strcmp(dp->d_name, name)) {
-//			printf("found!!");
-//		}
-//	}
-//	closedir(dirptr);
-//}
+//## @Native @Root @Controlled boolean System.chroot(String path, NameSpace _);
+
+METHOD System_chRoot(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	int tf = 1;
+	char path[K_PATHMAX];
+	knh_String_ospath(ctx, sfp[1].s, sfp[2].ns, path, sizeof(path));
+	if(chroot(path) == -1) {
+		LOGDATA = {sDATA("path", S_tochar(sfp[1].s)), sDATA("ospath", (const char*)path), __ERRNO__};
+		NOTE_Failed("chroot");
+		tf = 0;
+	}
+	RETURNb_(tf);
+}
 
 /* ------------------------------------------------------------------------ */
 /* [DIR] */
@@ -221,47 +236,43 @@ static void Dir_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-EXPORTAPI(const knh_ClassDef_t*) Dir(CTX ctx)
+DEFAPI(void) defDir(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
-	static knh_ClassDef_t cdef;
-	cdef = *(knh_getDefaultClassDef());
-	cdef.name = "Dir";
-	cdef.init = Dir_init;
-	cdef.free = Dir_free;
-	return (const knh_ClassDef_t*)&cdef;
+	cdef->name = "Dir";
+	cdef->init = Dir_init;
+	cdef->free = Dir_free;
+}
+
+static knh_IntData_t DirConstInt[] = {
+	{"DT_UNKNOWN", DT_UNKNOWN},
+	{"DT_FIFO",    DT_FIFO},
+	{"DT_CHR",     DT_CHR},
+	{"DT_DIR",     DT_DIR},
+	{"DT_BLK",     DT_BLK},
+	{"DT_REG",     DT_REG},
+	{"DT_LNK",     DT_LNK},
+	{"DT_SOCK",    DT_SOCK},
+	{"DT_WHT",     DT_WHT},
+	{NULL}
+};
+
+DEFAPI(void) constDir(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+{
+	kapi->loadIntClassConst(ctx, cid, DirConstInt);
 }
 
 /* ------------------------------------------------------------------------ */
-
-static knh_IntData_t DirConstInt[] = {
-//#define DT_UNKNOWN       0
-//#define DT_FIFO          1
-//#define DT_CHR           2
-//#define DT_DIR           4
-//#define DT_BLK           6
-//#define DT_REG           8
-//#define DT_LNK          10
-//#define DT_SOCK         12
-//#define DT_WHT          14
-	{"Dir.UNKNOWN", DT_UNKNOWN},
-	{"Dir.FIFO", DT_FIFO},
-	{NULL}
-};
 
 //## @Native @Throwable Dir System.openDir(String path, NameSpace _, Dir _);
 METHOD System_openDir(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	char path[K_PATHMAX];
 	knh_String_ospath(ctx, sfp[1].s, sfp[2].ns, path, sizeof(path));
+	KNH_RESET_ERRNO();
 	DIR *dirptr = opendir(path);
 	knh_RawPtr_t *po = new_RawPtr(ctx, sfp[3].p, dirptr);
-	LOGDATA = {sDATA("path", S_tochar(sfp[1].s)), sDATA("realpath", (const char*)path)};
-	if(dirptr != NULL) {
-		LIB_OK("opendir");
-	}
-	else {
-		LIB_Failed("opendir", "IO!!");
-	}
+	LOGDATA = {sDATA("path", S_tochar(sfp[1].s)), sDATA("ospath", (const char*)path), __ERRNO__};
+	LIB_log("opendir", (dirptr != NULL), "IO!!");
 	RETURN_(po);
 }
 
@@ -451,14 +462,14 @@ METHOD Dir_readName(CTX ctx, knh_sfp_t *sfp _RIX)
 
 #ifdef _SETUP
 
-EXPORTAPI(const knh_PackageDef_t*) init(CTX ctx)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx)
 {
 	static const knh_PackageDef_t pkgdef = KNH_PKGINFO("posix", "0.1", "Konoha POSIX Library", NULL);
 	return &pkgdef;
 }
 
 
-EXPORTAPI(void) SystemCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
+DEFAPI(void) SystemCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
 {
 	kapi->loadIntData(ctx, ns, IntConstData);
 }

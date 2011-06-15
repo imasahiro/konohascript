@@ -554,8 +554,8 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 	}
 #if defined(K_USING_WINDOWS_)
 	{
-		char buf[FILEPATH_BUFSIZ];
-		int bufsiz = FILEPATH_BUFSIZ;
+		char buf[K_PATHMAX];
+		int bufsiz = K_PATHMAX;
 		HMODULE h = LoadLibrary(NULL);
 		GetModuleFileNameA(h, buf, bufsiz);
 		knh_cwb_clear(cwb, 0);
@@ -576,8 +576,8 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 	// @url(http://shinh.skr.jp/binary/b2con.html)
 	// http://doc.trolltech.com/3.3/qapplication.html#applicationDirPath
 	{
-		char buf[FILEPATH_BUFSIZ];
-		int bufsiz = FILEPATH_BUFSIZ;
+		char buf[K_PATHMAX];
+		int bufsiz = K_PATHMAX;
 		size_t size = readlink("/proc/self/exe", buf, bufsiz);
 		knh_cwb_clear(cwb, 0);
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, new_bytes2(buf, size));

@@ -72,7 +72,7 @@ int knh_Object_compareTo(Object *o1, Object *o2)
 	knh_class_t cid2 = O_cid(o2);
 	int res;
 	if(cid1 == cid2) {
-		res = O_cTBL(o1)->ospi->compareTo(RAWPTR(o1), RAWPTR(o2));
+		res = O_cTBL(o1)->cdef->compareTo(RAWPTR(o1), RAWPTR(o2));
 	}
 	else {
 		res = (int)(o1 - o2);
@@ -94,7 +94,7 @@ void knh_Object_toNULL_(CTX ctx, Object *o)
 const char *SAFESTRUCT__(CTX ctx, knh_class_t bcid)
 {
 	if(bcid < ctx->share->sizeClassTBL) {
-		return ClassTBL(bcid)->ospi->name;
+		return ClassTBL(bcid)->cdef->name;
 	}
 	KNH_P("unknown bcid=%d", bcid);
 	return "UNKNOWN";
@@ -242,7 +242,7 @@ void knh_setClassName(CTX ctx, knh_class_t cid, knh_String_t *lname, knh_String_
 		KNH_INITv(ct->sname, snameNULL);
 	}
 	else if(ct->bcid == cid) {
-		KNH_INITv(ct->sname, new_T(ct->ospi->name));
+		KNH_INITv(ct->sname, new_T(ct->cdef->name));
 	}
 	if(ct->sname == NULL) {
 		KNH_INITv(ct->sname, ct->lname);
@@ -323,7 +323,7 @@ KNHAPI2(Object*) knh_getClassDefaultValue(CTX ctx, knh_class_t cid)
 void knh_setClassDef(knh_ClassTBL_t *ct, const knh_ClassDef_t *cdef)
 {
 	//DBG_P("setClassDef(%s)", cdef->name);
-	ct->ospi = cdef;
+	ct->cdef = cdef;
 	if(cdef->fields != NULL) {
 		KNH_ASSERT(ct->fields = NULL);
 		ct->fields = cdef->fields;
@@ -526,7 +526,7 @@ static void ClassTBL_addTuple(CTX ctx, knh_ClassTBL_t *ct, const knh_ClassTBL_t 
 	size_t i, fi = 0;
 	ct->magicflag  = bct->magicflag;
 	ct->cflag  = bct->cflag;
-	knh_setClassDef(ct, bct->ospi);
+	knh_setClassDef(ct, bct->cdef);
 	ct->bcid   = bct->cid;
 	ct->baseTBL = bct;
 	ct->supcid = bct->supcid;
@@ -586,7 +586,7 @@ knh_class_t knh_addGenericsClass(CTX ctx, knh_class_t cid, knh_class_t bcid, knh
 		const knh_ClassTBL_t *bct = ClassTBL(bcid);
 		ct->magicflag  = bct->magicflag;
 		ct->cflag  = bct->cflag;
-		knh_setClassDef(ct, bct->ospi);
+		knh_setClassDef(ct, bct->cdef);
 		ct->bcid   = bcid;
 		ct->baseTBL = bct;
 		ct->supcid = bct->supcid;
@@ -1550,7 +1550,7 @@ static METHOD Object_getClass(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static METHOD Object_hashCode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_hashcode_t h = ClassTBL(O_bcid(sfp[0].o))->ospi->hashCode(ctx, sfp);
+	knh_hashcode_t h = ClassTBL(O_bcid(sfp[0].o))->cdef->hashCode(ctx, sfp);
 	RETURNi_(h);
 }
 
@@ -1575,7 +1575,7 @@ static METHOD Object_isNotNull(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static METHOD Object_getKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_String_t *s = ClassTBL(O_bcid(sfp[0].o))->ospi->getkey(ctx, sfp);
+	knh_String_t *s = ClassTBL(O_bcid(sfp[0].o))->cdef->getkey(ctx, sfp);
 	KNH_ASSERT(IS_String(s));
 	RETURN_(s);
 }
@@ -1591,7 +1591,7 @@ static METHOD Object_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 		const knh_ClassTBL_t *ct = O_cTBL(src);
 		knh_Object_t *o = new_hObject_(ctx, ct);
 		o->h.magicflag = src->h.magicflag;
-		ct->ospi->initcopy(ctx, RAWPTR(o), RAWPTR(src));
+		ct->cdef->initcopy(ctx, RAWPTR(o), RAWPTR(src));
 		src = o;
 	}
 	sfp[K_RIX].ndata = sfp[0].ndata;

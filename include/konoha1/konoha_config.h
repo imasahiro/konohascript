@@ -193,7 +193,7 @@ typedef struct knh_sysinfo_t {
 #endif
 #define		CC_EXPORT __declspec(dllexport)
 #define		CC_IMPORT __declspec(dllimport)
-#define 	EXPORTAPI(T__)   CC_EXPORT T__ __cdecl
+#define 	DEFAPI(T__)   CC_EXPORT T__ __cdecl
 
 #define		CC_TYPE_TLS   __declspec( thread )
 #define		_CRT_SECURE_NO_WARNINGS
@@ -244,7 +244,7 @@ typedef struct knh_sysinfo_t {
 
 #ifndef KNHAPI2
 #define KNHAPI2(T)        T
-#define EXPORTAPI(T)      T
+#define DEFAPI(T)      T
 #endif
 
 /* ------------------------------------------------------------------------ */

@@ -16,7 +16,7 @@ static void knh_MPIContext_init(CTX ctx, Object *o)
 	mctx->proc_name = NULL;
 }
 
-EXPORTAPI(const knh_ClassDef_t*) MPIContext(CTX ctx)
+DEFAPI(const knh_ClassDef_t*) MPIContext(CTX ctx)
 {
 	static knh_ClassDef_t cdef;
 	cdef = *(knh_getDefaultClassDef());
@@ -63,7 +63,7 @@ static void knh_MPIContext_errhandler(MPI_Comm *comm, int *errcode, ...)
 }
 */
 
-EXPORTAPI(const knh_ClassDef_t*) MPIRequest(CTX ctx)
+DEFAPI(const knh_ClassDef_t*) MPIRequest(CTX ctx)
 {
 	static knh_ClassDef_t cdef;
 	cdef = *(knh_getDefaultClassDef());
@@ -73,7 +73,7 @@ EXPORTAPI(const knh_ClassDef_t*) MPIRequest(CTX ctx)
 	return &cdef;
 }
 
-EXPORTAPI(const knh_PackageDef_t*) init(CTX ctx)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx)
 {
 	int flag = 0;
 	MPI_Initialized(&flag);

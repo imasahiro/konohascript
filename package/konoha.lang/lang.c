@@ -79,7 +79,7 @@ static void Symbol_free(CTX ctx, knh_RawPtr_t *o)
 	o->rawptr = NULL;
 }
 
-EXPORTAPI(const knh_ClassDef_t*) Symbol(CTX ctx)
+DEFAPI(const knh_ClassDef_t*) Symbol(CTX ctx)
 {
 	static knh_ClassDef_t cdef;
 	cdef = *(knh_getDefaultClassDef());
@@ -366,7 +366,7 @@ static void Basicblock_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int le
 }
 
 
-EXPORTAPI(const knh_ClassDef_t*) Basicblock(CTX ctx)
+DEFAPI(const knh_ClassDef_t*) Basicblock(CTX ctx)
 {
 	static knh_ClassDef_t cdef;
 	cdef = *(knh_getDefaultClassDef());
@@ -586,7 +586,7 @@ static void Controlflow_free(CTX ctx, knh_RawPtr_t *o)
 	o->rawptr = NULL;
 }
 
-EXPORTAPI(const knh_ClassDef_t*) Controlflow(CTX ctx)
+DEFAPI(const knh_ClassDef_t*) Controlflow(CTX ctx)
 {
 	static knh_ClassDef_t cdef;
 	cdef = *(knh_getDefaultClassDef());
@@ -597,7 +597,7 @@ EXPORTAPI(const knh_ClassDef_t*) Controlflow(CTX ctx)
 	return (const knh_ClassDef_t*)&cdef;
 }
 
-EXPORTAPI(const knh_ClassDef_t*) ByteCode(CTX ctx)
+DEFAPI(const knh_ClassDef_t*) ByteCode(CTX ctx)
 {
 	static knh_ClassDef_t cdef;
 	cdef = *(knh_getDefaultClassDef());
@@ -679,7 +679,7 @@ static void Instruction_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int l
 	}
 }
 
-EXPORTAPI(const knh_ClassDef_t*) Instruction(CTX ctx)
+DEFAPI(const knh_ClassDef_t*) Instruction(CTX ctx)
 {
 	static knh_ClassDef_t cdef;
 	cdef = *(knh_getDefaultClassDef());
@@ -842,13 +842,13 @@ static knh_IntData_t IntConstData[] = {
 	{NULL, K_INT0}
 };
 
-EXPORTAPI(const knh_PackageDef_t*) init(CTX ctx)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx)
 {
 	static const knh_PackageDef_t pkgdef = KNH_PKGINFO("klrcode", "0.0", "Konoha Bytecode Manipulation Library", NULL);
 	return &pkgdef;
 }
 
-EXPORTAPI(void) InstructionCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
+DEFAPI(void) InstructionCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
 {
 	kapi->loadIntData(ctx, ns, IntConstData);
 }

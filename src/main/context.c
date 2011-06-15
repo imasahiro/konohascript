@@ -425,19 +425,22 @@ static void knh_share_free(CTX ctx, knh_share_t *share)
 	share->EventTBL = NULL;
 	KNH_FREE(ctx, share->tString, SIZEOF_TSTRING);
 	share->tString = NULL;
-	//((knh_context_t*)ctx)->fsweep = knh_Object_finalSweep;
 	DBG_ASSERT(share->ObjectArenaTBL != NULL);
 	for(i = 0; i < share->sizeObjectArenaTBL; i++) {
 		knh_ObjectArenaTBL_t *t = share->ObjectArenaTBL + i;
 		knh_ObjectObjectArenaTBL_free(ctx, t);
 	}
 	for(i = 0; i < share->sizeClassTBL; i++) {
-		knh_ClassTBL_t *t = varClassTBL(i);
-		if(t->fcapacity > 0) {
-			KNH_FREE(ctx, t->fields, sizeof(knh_fields_t) * t->fcapacity);
-			t->fields = NULL;
+		knh_ClassTBL_t *ct = varClassTBL(i);
+		if(ct->cdef->asize > 0) {
+			DBG_P("freeing ClassDef cid=%d %s", i, ct->cdef->name);
+			KNH_FREE(ctx, ct->cdef, ct->cdef->asize);
 		}
-		KNH_FREE(ctx, t, sizeof(knh_ClassTBL_t));
+		if(ct->fcapacity > 0) {
+			KNH_FREE(ctx, ct->fields, sizeof(knh_fields_t) * ct->fcapacity);
+			ct->fields = NULL;
+		}
+		KNH_FREE(ctx, ct, sizeof(knh_ClassTBL_t));
 	}
 	KNH_FREE(ctx, (void*)share->ClassTBL, sizeof(knh_ClassTBL_t*)*(share->capacityClassTBL));
 	share->ClassTBL = NULL;

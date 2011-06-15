@@ -729,6 +729,41 @@ static knh_flag_t knh_StmtCLASS_flag(CTX ctx, knh_Stmt_t *stmt)
 	return flag;
 }
 
+
+static void knh_loadNativeClass(CTX ctx, const char *cname, knh_ClassTBL_t *ct)
+{
+	char fname[256];
+	knh_NameSpace_t *ns = K_GMANS;
+	const knh_ClassDef_t *cdef = NULL;
+	if(ns->dlhdr != NULL) {
+		knh_snprintf(fname, sizeof(fname), "def%s", cname);
+		knh_Fclassdef classdef = (knh_Fclassdef)knh_dlsym(ctx, ns->dlhdr, fname, 0/*isTest*/);
+		if(classdef != NULL) {
+			knh_ClassDef_t *cdefbuf = (knh_ClassDef_t*)KNH_MALLOC(ctx, sizeof(knh_ClassDef_t));
+			knh_memcpy(cdefbuf, knh_getDefaultClassDef(), sizeof(knh_ClassDef_t));
+			classdef(ctx, ct->cid, cdefbuf);
+			cdefbuf->asize = sizeof(knh_ClassDef_t);
+			cdef = (const knh_ClassDef_t*)cdefbuf;
+		}
+	}
+	if(cdef == NULL) {
+		cdef = knh_getDefaultClassDef();
+		WARN_NotFound(ctx, _("class definition function"), fname);
+	}
+	ct->bcid = ct->cid;
+	ct->baseTBL = ct;
+	knh_setClassDef(ct, cdef);
+	ct->cflag = ct->cflag | cdef->cflag;
+	ct->magicflag = KNH_MAGICFLAG(ct->cflag);
+	if(ns->dlhdr != NULL) {
+		knh_snprintf(fname, sizeof(fname), "const%s", cname);
+		knh_Fconstdef constdef = (knh_Fconstdef)knh_dlsym(ctx, ns->dlhdr, fname, 0/*isTest*/);
+		if(constdef != NULL) {
+			constdef(ctx, ct->cid, knh_getPackageLoaderAPI());
+		}
+	}
+}
+
 /* ------------------------------------------------------------------------ */
 
 void knh_RefTraverse(CTX ctx, knh_Ftraverse ftr)
@@ -785,20 +820,7 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 				LIB_OK("konoha:new_class");
 			}
 			if(knh_StmtMETA_is(ctx, stmt, "Native")) {
-				knh_NameSpace_t *ns = K_GMANS;
-				if(ns->dlhdr != NULL) {
-					knh_Fclassdef classload = (knh_Fclassdef)knh_dlsym(ctx, ns->dlhdr, S_tochar((tkC)->text), 0/*isTest*/);
-					const knh_ClassDef_t *cdef = classload(ctx);
-					KNH_ASSERT(cdef != NULL);
-					ct->bcid = cid;
-					ct->baseTBL = ct;
-					knh_setClassDef(ct, cdef);
-					ct->cflag = ct->cflag | cdef->cflag;
-					ct->magicflag = KNH_MAGICFLAG(ct->cflag);
-				}
-				else {
-					KNH_TODO("error message");
-				}
+				knh_loadNativeClass(ctx, S_tochar((tkC)->text), ct);
 			}
 			else {
 				knh_Object_t *obj = new_hObject_(ctx, ct);
@@ -806,7 +828,7 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 				Object_setNullObject(obj, 1);
 				ct->bcid = CLASS_Object;
 				ct->baseTBL = ClassTBL(CLASS_Object);
-				knh_setClassDef(ct, ct->baseTBL->ospi);
+				knh_setClassDef(ct, ct->baseTBL->cdef);
 				obj->ref = NULL; tmp->ref = NULL;
 				knh_setClassDefaultValue(ctx, cid, obj, NULL);
 				KNH_INITv(ct->protoNULL, tmp);
@@ -836,9 +858,9 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 				knh_memcpy(ct->protoNULL->fields, suptmp->ref, ct->fsize*sizeof(knh_Object_t*));
 				knh_memcpy(ct->defnull->ref, supobj->ref, ct->fsize*sizeof(knh_Object_t*));
 #ifdef K_USING_RCGC
-				ct->supTBL->ospi->reftrace(ctx, suptmp, ctx->refs);
+				ct->supTBL->cdef->reftrace(ctx, suptmp, ctx->refs);
 				knh_RefTraverse(ctx, RCinc);
-				ct->supTBL->ospi->reftrace(ctx, supobj, ctx->refs);
+				ct->supTBL->cdef->reftrace(ctx, supobj, ctx->refs);
 				knh_RefTraverse(ctx, RCinc);
 #endif
 			}

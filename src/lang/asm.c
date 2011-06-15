@@ -2481,9 +2481,9 @@ static void ASSURE_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 	int index = Token_index(tkNN(stmt, 2)); // it
 	Tn_asm(ctx, stmt, 0, CLASS_Assurance, index);
-	ASM(CHKIN, OC_(index), ClassTBL(CLASS_Assurance)->ospi->checkin);
+	ASM(CHKIN, OC_(index), ClassTBL(CLASS_Assurance)->cdef->checkin);
 	Tn_asmBLOCK(ctx, stmt, 1, TYPE_void);
-	ASM(CHKOUT, OC_(index), ClassTBL(CLASS_Assurance)->ospi->checkout);
+	ASM(CHKOUT, OC_(index), ClassTBL(CLASS_Assurance)->cdef->checkout);
 }
 
 static void THROW_asm(CTX ctx, knh_Stmt_t *stmt)

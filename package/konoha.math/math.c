@@ -202,13 +202,13 @@ static knh_FloatData_t FloatConstData[] = {
 	{NULL, K_FLOAT_ZERO}
 };
 
-EXPORTAPI(const knh_PackageDef_t*) init(CTX ctx)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx)
 {
 	static const knh_PackageDef_t pkgdef = KNH_PKGINFO("math", "1.0", "Konoha Standard Math Library", NULL);
 	return &pkgdef;
 }
 
-EXPORTAPI(void) MathCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
+DEFAPI(void) MathCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
 {
 	kapi->loadFloatData(ctx, ns, FloatConstData);
 }

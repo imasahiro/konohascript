@@ -42,7 +42,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [CONST/PROPERTY DATA] */
 
-static void knh_addConstData(CTX ctx, knh_NameSpace_t *ns, const char *dname, Object *value)
+static void loadData(CTX ctx, knh_NameSpace_t *ns, const char *dname, Object *value)
 {
 	if(dname[0] == '$') {
 		knh_String_t *n = new_T(dname + 1);
@@ -64,29 +64,56 @@ static void knh_addConstData(CTX ctx, knh_NameSpace_t *ns, const char *dname, Ob
 	}
 }
 
-static void knh_loadScriptIntData(CTX ctx, knh_NameSpace_t *ns, const knh_IntData_t *data)
+static void loadIntData(CTX ctx, knh_NameSpace_t *ns, const knh_IntData_t *data)
 {
 	while(data->name != NULL) {
-		Object *value = UPCAST(new_Int_(ctx, CLASS_Int, data->ivalue));
-		knh_addConstData(ctx, ns, data->name, value);
+		Object *value = UPCAST(new_Int(ctx, data->ivalue));
+		loadData(ctx, ns, data->name, value);
 		data++;
 	}
 }
 
-static void knh_loadScriptFloatData(CTX ctx, knh_NameSpace_t *ns, const knh_FloatData_t *data)
+static void loadFloatData(CTX ctx, knh_NameSpace_t *ns, const knh_FloatData_t *data)
 {
 	while(data->name != NULL) {
-		Object *value = UPCAST(new_Float_(ctx, CLASS_Float, data->fvalue));
-		knh_addConstData(ctx, ns, data->name, value);
+		Object *value = UPCAST(new_Float(ctx, data->fvalue));
+		loadData(ctx, ns, data->name, value);
 		data++;
 	}
 }
 
-static void knh_loadScriptStringData(CTX ctx, knh_NameSpace_t *ns, const knh_StringData_t *data)
+static void loadStringData(CTX ctx, knh_NameSpace_t *ns, const knh_StringData_t *data)
 {
 	while(data->name != NULL) {
 		Object *value = UPCAST(new_T(data->value));
-		knh_addConstData(ctx, ns, data->name, value);
+		loadData(ctx, ns, data->name, value);
+		data++;
+	}
+}
+
+static void loadIntClassConst(CTX ctx, knh_class_t cid, const knh_IntData_t *data)
+{
+	while(data->name != NULL) {
+		Object *value = UPCAST(new_Int(ctx, data->ivalue));
+		knh_addClassConst(ctx, cid, new_T(data->name), value);
+		data++;
+	}
+}
+
+static void loadFloatClassConst(CTX ctx, knh_class_t cid, const knh_FloatData_t *data)
+{
+	while(data->name != NULL) {
+		Object *value = UPCAST(new_Float(ctx, data->fvalue));
+		knh_addClassConst(ctx, cid, new_T(data->name), value);
+		data++;
+	}
+}
+
+static void loadStringClassConst(CTX ctx, knh_class_t cid, const knh_StringData_t *data)
+{
+	while(data->name != NULL) {
+		Object *value = UPCAST(new_T(data->value));
+		knh_addClassConst(ctx, cid, new_T(data->name), value);
 		data++;
 	}
 }
@@ -163,9 +190,9 @@ static void knh_loadSystemData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 			ct->bcid = _CID(data[3]);
 			ct->baseTBL = ClassTBL(ct->bcid);
 			if(cid0 != ct->bcid) {
-				knh_setClassDef(ct, ClassTBL(ct->bcid)->ospi);
+				knh_setClassDef(ct, ClassTBL(ct->bcid)->cdef);
 			}
-			DBG_ASSERT(ct->ospi != NULL);
+			DBG_ASSERT(ct->cdef != NULL);
 			ct->supcid = _CID(data[4]);
 			ct->supTBL = ClassTBL(ct->supcid);
 			knh_setClassName(ctx, cid0, new_T(name), NULL);
@@ -259,7 +286,7 @@ static void knh_loadSystemData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 
 /* ------------------------------------------------------------------------ */
 
-static void knh_addLinkDPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, const knh_LinkDPI_t *d)
+static void addLinkDPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, const knh_LinkDPI_t *d)
 {
 	knh_NameSpace_setLink(ctx, ns, new_Link(ctx, new_T(scheme), d));
 }
@@ -279,15 +306,15 @@ static void knh_addConvDSPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, co
 	knh_NameSpace_addDSPI(ctx, ns, scheme, (knh_DSPI_t*)d);
 }
 
-
 const knh_PackageLoaderAPI_t* knh_getPackageLoaderAPI(void)
 {
-	static knh_PackageLoaderAPI_t exports = {
+	static knh_PackageLoaderAPI_t pkgapi = {
 		knh_loadSystemData,
-		knh_loadScriptIntData, knh_loadScriptFloatData, knh_loadScriptStringData,
-		knh_addLinkDPI, knh_addStreamDPI, knh_addQueryDSPI, knh_addConvDSPI,
+		loadIntData, loadFloatData, loadStringData,
+		loadIntClassConst, loadFloatClassConst, loadStringClassConst,
+		addLinkDPI, knh_addStreamDPI, knh_addQueryDSPI, knh_addConvDSPI,
 	};
-	return &exports;
+	return &pkgapi;
 }
 
 /* ------------------------------------------------------------------------ */

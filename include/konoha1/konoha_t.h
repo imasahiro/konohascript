@@ -450,7 +450,6 @@ typedef knh_ushort_t              knh_uri_t;
 
 #define URI__(uri) S_tochar(knh_getURN(ctx, uri))
 #define FILENAME__(uri) knh_sfile(URI__(uri))
-#define FILEPATH_BUFSIZ           512
 
 typedef knh_uintptr_t             knh_uline_t;
 #define new_ULINE(uri, line)       ((((knh_uline_t)uri) << (sizeof(knh_uri_t) * 8)) | ((knh_ushort_t)line))
@@ -725,7 +724,7 @@ typedef struct knh_ClassDef_t {
 #define K_CLASSTABLE_INIT 128
 
 typedef struct knh_ClassTBL_t {
-	const knh_ClassDef_t *ospi;
+	const knh_ClassDef_t *cdef;
 	knh_uintptr_t magicflag;
 	knh_flag_t    cflag;        knh_uri_t     domain;
 	knh_class_t   cid;          knh_class_t   imcid;
@@ -1192,6 +1191,13 @@ typedef struct knh_logdata_t {
 
 #define LIB_Failed(action, event)   {   \
 		KNH_RECORD(ctx, sfp, K_RECFAILED|K_RECNOTE, LOG_ERR, action, event, _logdata, LOGDATASIZE);  \
+	}  \
+
+#define LIB_log(action, tf, event)   {   \
+		int op_ = (tf) ? K_RECNOTE : K_RECFAILED|K_RECNOTE; \
+		const char *ac_ = (tf) ? NULL : event;              \
+		int pe_ = (tf) ? LOG_INFO : LOG_ERR;                \
+		KNH_RECORD(ctx, sfp, op_, pe_, action, ac_, _logdata, LOGDATASIZE);  \
 	}  \
 
 #define NOTE_START(action) {  \

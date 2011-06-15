@@ -422,7 +422,7 @@ void knh_checkSecurityManager(CTX ctx, knh_sfp_t *sfp)
 //	while(ctx->stack < sp) {
 //		if(IS_Method(sp[0].mtd)) {
 //			if(!URI_ISTRUSTED(DP(sp[0].mtd)->uri)) {
-//				char buf[FILEPATH_BUFSIZ];
+//				char buf[K_PATHMAX];
 //				knh_snprintf(buf, sizeof(buf), "Security!!: untrusted domain='%s'", URI__(DP(sp[0].mtd)->uri));
 //				KNH_THROW__T(ctx, buf);
 //			}

@@ -103,7 +103,7 @@ static void DEFAULT_initcopy(CTX ctx, knh_RawPtr_t *dst, knh_RawPtr_t *src)
 knh_bool_t knh_class_canObjectCopy(CTX ctx, knh_class_t cid)
 {
 	const knh_ClassTBL_t *ct = ClassTBL(cid);
-	return (ct->ospi->initcopy != DEFAULT_initcopy);
+	return (ct->cdef->initcopy != DEFAULT_initcopy);
 }
 
 static void DEFAULT_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
@@ -391,7 +391,7 @@ static void Object_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_
 			pack_unbox(ctx, pkr, type, v + i, packspi);
 		} else {
 			knh_Object_t *o = v[i];
-			O_cTBL(o)->ospi->wdata(ctx, pkr, RAWPTR(o), packspi);
+			O_cTBL(o)->cdef->wdata(ctx, pkr, RAWPTR(o), packspi);
 		}
 	}
 	packspi->pack_endmap(ctx, pkr);
@@ -1109,7 +1109,7 @@ static void Array_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t
 		}
 	} else {
 		for (i = 0; i < a->size; i++) {
-			O_cTBL(a->list[i])->ospi->wdata(ctx, pkr, RAWPTR(a->list[i]), packspi);
+			O_cTBL(a->list[i])->cdef->wdata(ctx, pkr, RAWPTR(a->list[i]), packspi);
 		}
 	}
 }
@@ -1404,8 +1404,8 @@ static void Method_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 static void BODY_free(CTX ctx, knh_RawPtr_t *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
-	DBG_ASSERT(ct->ospi->struct_size > 0);
-	KNH_FREE(ctx, o->rawptr, ct->ospi->struct_size);
+	DBG_ASSERT(ct->cdef->struct_size > 0);
+	KNH_FREE(ctx, o->rawptr, ct->cdef->struct_size);
 }
 
 static void Method_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
@@ -2234,14 +2234,14 @@ static void Script_init(CTX ctx, knh_RawPtr_t *o)
 	knh_class_t cid = new_ClassId(ctx);
 	knh_ClassTBL_t *ct = varClassTBL(cid);
 	scr->h.cTBL = (const knh_ClassTBL_t*)ct;
-	DBG_ASSERT(ct->ospi == NULL);
+	DBG_ASSERT(ct->cdef == NULL);
 	ct->cflag  = CFLAG_Script;
 	ct->magicflag = KNH_MAGICFLAG(ct->cflag);
 	ct->bcid   = CLASS_Script;
 	ct->baseTBL = ClassTBL(CLASS_Script);
 	ct->supcid = CLASS_Script;
 	ct->supTBL = ClassTBL(CLASS_Script);
-	knh_setClassDef(ct, ClassTBL(CLASS_Script)->ospi);
+	knh_setClassDef(ct, ClassTBL(CLASS_Script)->cdef);
 	KNH_INITv(ct->methods, K_EMPTYARRAY);
 	KNH_INITv(ct->typemaps, K_EMPTYARRAY);
 	knh_setClassName(ctx, cid, ClassTBL(CLASS_Script)->sname, ClassTBL(CLASS_Script)->sname);

@@ -244,7 +244,7 @@ static knh_Array_t *ValueStack_copy(CTX ctx, knh_Array_t *a)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(a);
 	knh_Array_t *newlstacks = (knh_Array_t*) new_hObject_(ctx, ct);
-	ct->ospi->initcopy(ctx, RAWPTR(newlstacks), RAWPTR(a));
+	ct->cdef->initcopy(ctx, RAWPTR(newlstacks), RAWPTR(a));
 	return newlstacks;
 }
 
@@ -2227,7 +2227,7 @@ static void ASM_CHECKIN(CTX ctx, int thisidx, int sfpidx, knh_class_t cid)
 {
 	IRBuilder<> *builder = LLVM_BUILDER(ctx);
 	std::vector<Value*> params;
-  int *func = (int*)ClassTBL(CLASS_Assurance)->ospi->checkin;
+  int *func = (int*)ClassTBL(CLASS_Assurance)->cdef->checkin;
 	Value *vfunc = LLVMValue(LLVMTYPE_checkin, func);
 
 
@@ -2245,7 +2245,7 @@ static void ASM_CHECKOUT(CTX ctx, int thisidx, int sfpidx, knh_class_t cid, int 
 
 	IRBuilder<> *builder = LLVM_BUILDER(ctx);
 	std::vector<Value*> params;
-  int *func = (int*)ClassTBL(CLASS_Assurance)->ospi->checkout;
+  int *func = (int*)ClassTBL(CLASS_Assurance)->cdef->checkout;
 	Value *vfunc = LLVMValue(LLVMTYPE_checkout, func);
 
 	Function::arg_iterator args = LLVM_FUNCTION(ctx)->arg_begin();

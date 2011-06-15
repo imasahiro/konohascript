@@ -18,7 +18,7 @@ static knh_IntData_t IntConstData[] = {
 	{"MPIContext.OP_REPLACE", MPI_REPLACE},
 };
 
-EXPORTAPI(void) MPICONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
+DEFAPI(void) MPICONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
 {
 	kapi->loadIntData(ctx, ns, IntConstData);
 }

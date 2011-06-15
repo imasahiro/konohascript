@@ -92,7 +92,7 @@ static void Socket_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-EXPORTAPI(const knh_ClassDef_t*) Socket(CTX ctx)
+DEFAPI(const knh_ClassDef_t*) Socket(CTX ctx)
 {
 	static knh_ClassDef_t cdef;
 	cdef = *(knh_getDefaultClassDef());
@@ -103,7 +103,7 @@ EXPORTAPI(const knh_ClassDef_t*) Socket(CTX ctx)
 	return (const knh_ClassDef_t*)&cdef;
 }
 
-EXPORTAPI(const knh_ClassDef_t*) ServerSocket(CTX ctx)
+DEFAPI(const knh_ClassDef_t*) ServerSocket(CTX ctx)
 {
 	static knh_ClassDef_t cdef;
 	cdef = *(knh_getDefaultClassDef());
@@ -287,13 +287,13 @@ METHOD ServerSocket_close(Ctx* ctx,knh_sfp_t* sfp _RIX)
 
 #ifdef _SETUP
 
-EXPORTAPI(const knh_PackageDef_t*) init(CTX ctx)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx)
 {
 	static const knh_PackageDef_t pkgdef = KNH_PKGINFO("socket", "0.1", "Konoha Socket Library", NULL);
 	return &pkgdef;
 }
 
-//EXPORTAPI(void) SocketCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
+//DEFAPI(void) SocketCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
 //{
 //	if(ns == NULL) {
 //		kapi->loadFloatData(ctx, FloatConstData);
