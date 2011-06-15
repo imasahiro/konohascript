@@ -3225,7 +3225,9 @@ static knh_Stmt_t *new_StmtMETA(CTX ctx, knh_term_t stt, tkitr_t *itr, int shift
 		if(STT_(stmt) == STT_ERR) {
 			return stmt;
 		}
-		func(ctx, stmt, itr);
+		if(ITR_hasNext(itr)) {
+			func(ctx, stmt, itr);
+		}
 	}
 	va_end(ap);
 	return stmt;
