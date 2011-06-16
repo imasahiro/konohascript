@@ -581,13 +581,13 @@ static knh_status_t readstmt(CTX ctx, knh_cwb_t *cwb)
 {
 	int line = 1;
 	knh_status_t status = K_CONTINUE;
-	knh_cwb_clear(cwb, 0);
+	knh_cwb_clear2(cwb, 0);
 	fputs(TERM_BBOLD(ctx), stdout);
 	while(1) {
 		int check;
 		char *ln = ctx->spi->readline(line == 1 ? ">>> " : "    ");
 		if(ln == NULL) {
-			knh_cwb_clear(cwb, 0);
+			knh_cwb_clear2(cwb, 0);
 			status = K_BREAK;
 			break;
 		}
@@ -600,7 +600,7 @@ static knh_status_t readstmt(CTX ctx, knh_cwb_t *cwb)
 		}
 		if(check < 0) {
 			fputs("(Cancelled)...\n", stdout);
-			knh_cwb_clear(cwb, 0);
+			knh_cwb_clear2(cwb, 0);
 		}
 		break;
 	}
@@ -708,7 +708,7 @@ static void knh_shell(CTX ctx)
 		knh_Bytes_clear(DP(bin)->ba, 0);
 		knh_Bytes_write(ctx, DP(bin)->ba, knh_cwb_tobytes(cwb));
 		knh_InputStream_setpos(ctx, bin, 0, BA_size(DP(bin)->ba));
-		knh_cwb_clear(cwb, 0);
+		knh_cwb_clear2(cwb, 0);
 		SP(bin)->uline = 1; // always line1
 		knh_eval(ctx, bin, results);
 		knh_OutputStream_flush(ctx, ctx->out, 1);
@@ -717,7 +717,7 @@ static void knh_shell(CTX ctx)
 			knh_write(ctx, cwb->w, outbuf->bu);
 			knh_Bytes_clear(outbuf, 0);
 		}
-		knh_cwb_clear(cwb, 0); // necessary (because of some bugs)
+		knh_cwb_clear2(cwb, 0); // necessary (because of some bugs)
 		for(i = 0; i < knh_Array_size(results); i++) {
 			knh_Object_t *o = results->list[i];
 			knh_write_Object(ctx, cwb->w, o, FMT_dump);
@@ -725,10 +725,10 @@ static void knh_shell(CTX ctx)
 		knh_showSecurityAlert(ctx, cwb->w);
 		if(knh_cwb_size(cwb) !=0) {
 			shell_display(ctx, shell_status, knh_cwb_tochar(ctx, cwb));
-			knh_cwb_clear(cwb, 0);
+			knh_cwb_clear2(cwb, 0);
 		}
 		knh_Array_clear(ctx, results, 0);
-		knh_cwb_clear(cwb, 0);
+		knh_cwb_clear2(cwb, 0);
 	}
 	shell_cleanup(ctx, shell_status);
 	knh_cwb_close(cwb);
@@ -753,20 +753,17 @@ static void konoha_shell(konoha_t konoha, char *optstr)
 
 void konoha_main(konoha_t konoha, int argc, const char **argv)
 {
-	const char** args = argv;
-//	LOGDATA = {sDATA("test", "test"), iDATA("size", 10), iRANGE("range", 10, 20)};
-//	knh_record(konoha.ctx, NULL, K_RECFAILED, LOG_ERR, "test", "Test!!", _logdata, sizeof(_logdata)/sizeof(knh_logdata_t));
-	int n = konoha_parseopt(konoha, argc, args);
+	int n = konoha_parseopt(konoha, argc, argv);
 	if(argc - n == 0) {
 		konoha_shell(konoha, NULL);
 	}
 	else {
 		if(uout != NULL) {
-			fprintf(uout, "testing: %s\n", args[n]);
+			fprintf(uout, "testing: %s\n", argv[n]);
 			fflush(uout);
 		}
-		if(konoha_initload(konoha, args[n]) == K_CONTINUE && !knh_isCompileOnly(konoha.ctx)) {
-			konoha_runMain(konoha, argc - n, args + n);
+		if(konoha_initload(konoha, argv[n]) == K_CONTINUE && !knh_isCompileOnly(konoha.ctx)) {
+			konoha_runMain(konoha, argc - n, argv + n);
 			if(isInteractiveMode) {
 				konoha_shell(konoha, NULL);
 			}

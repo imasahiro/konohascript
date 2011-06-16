@@ -386,7 +386,7 @@ static knh_bool_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT(K_OSDLLEXT));
 	void *p = knh_dlopen(ctx, knh_cwb_tochar(ctx, cwb));
 	if(p == NULL && !knh_bytes_startsWith(libname, STEXT("lib"))) {
-		knh_cwb_clear(cwb, 0);
+		knh_cwb_clear2(cwb, 0);
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT("lib"));
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, libname);
 		knh_buff_trim(ctx, cwb->ba, cwb->pos, '.');
@@ -394,6 +394,7 @@ static knh_bool_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 		p = knh_dlopen(ctx, knh_cwb_tochar(ctx, cwb));
 	}
 	knh_cwb_close(cwb);
+
 	knh_bool_t res = 0;
 	if(p != NULL) {
 		res = 1;
@@ -425,7 +426,7 @@ static knh_bool_t FILE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 	bpath = knh_cwb_ensure(ctx, cwb, bpath, K_PATHMAX);
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, bpath);
 	knh_bool_t res = knh_Bytes_isfile(ctx, cwb->ba, cwb->pos);
-	knh_cwb_clear(cwb, 0);
+	knh_cwb_close(cwb);
 	return res;
 }
 
@@ -447,7 +448,7 @@ static knh_Object_t* FILE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_
 		else {
 			res = (knh_Object_t*)knh_Bytes_openOutputStream(ctx, cwb->ba, cwb->pos, s);
 		}
-		knh_cwb_clear(cwb, 0);
+		knh_cwb_close(cwb);
 	}
 	return res;
 }
@@ -471,7 +472,7 @@ static knh_bool_t DIRLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 	bpath = knh_cwb_ensure(ctx, cwb, bpath, K_PATHMAX);
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, bpath);
 	knh_bool_t res = knh_isdir(ctx, knh_Bytes_ensureZero(ctx, cwb->ba) + cwb->pos);
-	knh_cwb_clear(cwb, 0);
+	knh_cwb_close(cwb);
 	return res;
 }
 static knh_Object_t* DIRLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
@@ -546,7 +547,7 @@ static knh_bool_t PACKAGE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 	knh_bytes_t bpath = knh_bytes_next(path, ':');
 	bpath = knh_cwb_ensure(ctx, cwb, bpath, K_PATHMAX);
 	knh_bool_t res = knh_Bytes_addPackagePath(ctx, cwb->ba, cwb->pos, bpath);
-	knh_cwb_clear(cwb, 0);
+	knh_cwb_close(cwb);
 	return res;
 }
 
@@ -565,7 +566,7 @@ static knh_Object_t* PACKAGE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_cla
 		knh_bytes_t bpath = knh_bytes_next(S_tobytes(s), ':');
 		knh_Bytes_addPackagePath(ctx, cwb->ba, cwb->pos, bpath);
 		res = (knh_Object_t*)knh_Bytes_openInputStream(ctx, cwb->ba, cwb->pos, s);
-		knh_cwb_clear(cwb, 0);
+		knh_cwb_close(cwb);
 	}
 	return res;
 }
@@ -591,7 +592,7 @@ static knh_bool_t SCRIPT_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 	bpath = knh_cwb_ensure(ctx, cwb, bpath, K_PATHMAX);
 	knh_Bytes_addScriptPath(ctx, cwb->ba, cwb->pos, ns, bpath);
 	knh_bool_t res = knh_exists(ctx, knh_cwb_tochar(ctx, cwb));
-	knh_cwb_clear(cwb, 0);
+	knh_cwb_close(cwb);
 	return res;
 }
 
@@ -613,7 +614,7 @@ static knh_Object_t* SCRIPT_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_clas
 		else {
 			res = (knh_Object_t*)knh_Bytes_openOutputStream(ctx, cwb->ba, cwb->pos, s);
 		}
-		knh_cwb_clear(cwb, 0);
+		knh_cwb_close(cwb);
 	}
 	return res;
 }

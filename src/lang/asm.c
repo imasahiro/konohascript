@@ -803,18 +803,15 @@ static void _BOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *
 }
 static void _CWB(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
-	size_t pos = BA_size(ctx->bufa);
-	KNH_SETv(ctx, sfp[c].o, ctx->bufw);
-	sfp[c].ivalue = pos;
-	//DBG_P("sfpidx=%d, pos=%zd", (sfp + c) - ctx->stack, pos);
+	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	KNH_SETv(ctx, sfp[c].o, cwb->w);
+	sfp[c].ivalue = cwb->pos;
 }
 static void _TOSTR(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
 	DBG_ASSERT(IS_OutputStream(sfp[0].w));
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	cwb->pos = (size_t)(sfp[0].ivalue); // reset
-	//DBG_P("sfpidx=%d, pos=%zd", (sfp) - ctx->stack, cwb->pos);
-	knh_String_t *s = knh_cwb_newString(ctx, cwb);
+	knh_cwb_t cwbbuf = {ctx->bufa, ctx->bufw, (size_t)(sfp[0].ivalue)};
+	knh_String_t *s = knh_cwb_newString(ctx, &cwbbuf);
 	KNH_SETv(ctx, sfp[c].o, s);
 }
 static void _ERR(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)

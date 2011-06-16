@@ -33,6 +33,7 @@ extern "C" {
 
 #ifndef K_INCLUDE_BUILTINAPI
 
+#define USE_cwb_open    1
 #define USE_cwb_tobytes 1
 
 #include"commons.h"
@@ -225,6 +226,7 @@ knh_bytes_t knh_cwb_ensure(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t, size_t reqsiz
 
 KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb)
 {
+	DBG_P("CHAR: cwb->pos=%d", cwb->pos);
 	return knh_Bytes_ensureZero(ctx, cwb->ba) + cwb->pos;
 }
 

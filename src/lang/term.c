@@ -627,7 +627,7 @@ static void Token_setTEXT(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 		if(text != NULL) {
 			t = S_tobytes(text);
 			KNH_SETv(ctx, (tk)->data, text);
-			knh_cwb_clear(cwb, 0);
+			knh_cwb_clear2(cwb, 0);
 			knh_Bytes_write(ctx, cwb->ba, t);  // alias
 		}
 		knh_DictSet_t *tokenDictSet = DP(ctx->sys)->tokenDictSet;
@@ -655,7 +655,7 @@ static void Token_setTEXT(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 				knh_Object_t *o = a->list[i];
 				if(O_cid(o) == CLASS_String) {
 					if(S_equals((knh_String_t*)o, t)) {
-						knh_cwb_clear(cwb, 0);
+						knh_cwb_clear2(cwb, 0);
 						if(isdigit(t.utext[0]) && TT_(tk) == TT_NUM) {
 							KNH_SETv(ctx, (tk)->data, o);
 						}
@@ -687,7 +687,7 @@ static void Token_addBuf(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_term_t t
 		knh_Token_t *tk = addNewToken(ctx, tkB, tt, ch);
 		Token_setTEXT(ctx, tk, cwb);
 		TokenBlock_add(ctx, tkB, tk);  // must add after setting data
-		knh_cwb_clear(cwb, 0);
+		knh_cwb_clear2(cwb, 0);
 	}
 	else if(tt == TT_CODE || TT_isSTR(tt) || tt == TT_REGEX) {
 		knh_Token_t *tk = addNewToken(ctx, tkB, tt, ch);
@@ -1212,7 +1212,7 @@ static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputS
 	if(block_indent <= c) {
 		goto L_STARTLINE;
 	}
-	knh_cwb_clear(cwb, 0);
+	knh_cwb_clear2(cwb, 0);
 	DBG_P("block_indent=%d, c=%d, last=%d", block_indent, c, ch);
 	Token_addBLOCKERR(ctx, tkB, in, 0);
 }
@@ -1262,6 +1262,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 					}
 					else if(c < block_indent) {
 						Token_addBLOCKERR(ctx, tkB, in, 0);
+						knh_cwb_close(cwb);
 						return;
 					}
 				}
@@ -1271,7 +1272,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 		}
 	}
 	L_NEWTOKEN:;
-	knh_cwb_clear(cwb, 0);
+	knh_cwb_clear2(cwb, 0);
 	ctx->gma->uline = in->uline;
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
 		L_AGAIN:;
@@ -1410,6 +1411,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 		} /* switch */
 	}/*while*/
 	Token_addBuf(ctx, tkB, cwb, TT_UNTYPED, EOF);
+	knh_cwb_close(cwb);
 }
 
 /* ------------------------------------------------------------------------ */

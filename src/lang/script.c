@@ -285,22 +285,25 @@ static void NameSpace_setcid(CTX ctx, knh_NameSpace_t *ns, knh_String_t *name, k
 
 static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	knh_Bytes_write(ctx, cwb->ba, STEXT("pkg:"));
 	knh_Token_t *tkPKG = tkNN(stmt, n), *tkN;
-	knh_Bytes_write(ctx, cwb->ba, S_tobytes((tkPKG)->text));
-	while(1) {
-		tkN = tkNN(stmt, ++n);
-		if(TT_(tkN) == TT_ASIS) break;
-		if(TT_(tkN) == TT_DOT) continue;
-		if(TT_(tkN) == TT_NAME) {
-			knh_Bytes_putc(ctx, cwb->ba, '.');
-			knh_Bytes_write(ctx, cwb->ba, S_tobytes((tkN)->text));
-			continue;
+	{
+		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+		knh_Bytes_write(ctx, cwb->ba, STEXT("pkg:"));
+		knh_Bytes_write(ctx, cwb->ba, S_tobytes((tkPKG)->text));
+		while(1) {
+			tkN = tkNN(stmt, ++n);
+			if(TT_(tkN) == TT_ASIS) break;
+			if(TT_(tkN) == TT_DOT) continue;
+			if(TT_(tkN) == TT_NAME) {
+				knh_Bytes_putc(ctx, cwb->ba, '.');
+				knh_Bytes_write(ctx, cwb->ba, S_tobytes((tkN)->text));
+				continue;
+			}
+			break;
 		}
-		break;
+		KNH_SETv(ctx, (tkPKG)->data, knh_cwb_newString(ctx, cwb));
 	}
-	KNH_SETv(ctx, (tkPKG)->data, knh_cwb_newString(ctx, cwb));
+
 	if(knh_loadScriptPackage(ctx, S_tobytes((tkPKG)->text)) == K_CONTINUE) {
 		knh_NameSpace_t *ns = K_GMANS;
 //		int isOVERRIDE = knh_Stmt_flag(ctx, stmt, "Override", 1);
@@ -320,24 +323,20 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 		else if(TT_(tkN) == TT_UNAME) {
 			knh_class_t newcid;
 			knh_String_t* cname = (tkN)->text;
+			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 			knh_Bytes_write(ctx, cwb->ba, knh_bytes_last(S_tobytes((tkPKG)->text), sizeof("pkg")));
 			knh_Bytes_putc(ctx, cwb->ba, '.');
 			knh_Bytes_write(ctx, cwb->ba, S_tobytes(cname));
 			newcid = knh_getcid(ctx, knh_cwb_tobytes(cwb));
 			if(newcid == CLASS_unknown) {
 				KNH_SETv(ctx, (tkPKG)->data, knh_cwb_newString(ctx, cwb));
+				knh_cwb_close(cwb);
 				goto L_ERROR;
 			}
 			else {
-//#ifdef TT_AS
-//				if(n+2 < DP(stmt)->size &&
-//					TT_(tkNN(stmt, n+1]) == TT_AS && TT_(DP(stmt)->tokens[n+2)) == TT_UNAME) {
-//					cname = (tkNN(stmt, n+2))->text;
-//				}
-//#endif
 				NameSpace_setcid(ctx, ns, cname, newcid);
 			}
-			knh_cwb_clear(cwb, 0);
+			knh_cwb_close(cwb);
 		}
 		knh_Stmt_done(ctx, stmt);
 		return 1;

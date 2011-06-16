@@ -1250,8 +1250,9 @@ typedef struct {
 	size_t pos;
 } knh_cwb_t;
 
-#define knh_cwb_clear(cwb,len)        knh_Bytes_clear(cwb->ba, cwb->pos+len)
-#define knh_cwb_close(cwb)            knh_Bytes_clear(cwb->ba, cwb->pos)
+#define knh_cwb_clear(cwb, len, j)      knh_Bytes_clear(cwb->ba, cwb->pos+len)
+#define knh_cwb_clear2(cwb, len)        knh_Bytes_clear(cwb->ba, (cwb->pos)+len)
+//#define knh_cwb_close(cwb)            knh_Bytes_clear(cwb->ba, cwb->pos)
 
 /* ------------------------------------------------------------------------ */
 /* Functions */

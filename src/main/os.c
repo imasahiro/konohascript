@@ -579,12 +579,12 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		char buf[K_PATHMAX];
 		int bufsiz = K_PATHMAX;
 		size_t size = readlink("/proc/self/exe", buf, bufsiz);
-		knh_cwb_clear(cwb, 0);
+		knh_cwb_clear2(cwb, 0);
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, new_bytes2(buf, size));
 		SETPROP("konoha.bin.path", knh_buff_newRealPath(ctx, cwb->ba, cwb->pos));
 		if(home.text == NULL) {
 			knh_String_t *s;
-			knh_cwb_clear(cwb, 0);
+			knh_cwb_clear2(cwb, 0);
 			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, new_bytes2(buf, size));
 			knh_buff_trim(ctx, cwb->ba, cwb->pos, '/');
 			knh_buff_trim(ctx, cwb->ba, cwb->pos, '/');
@@ -595,11 +595,11 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		}
 	}
 #elif defined(K_USING_MACOSX_)
-	knh_cwb_clear(cwb, 0);
+	knh_cwb_clear2(cwb, 0);
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, B(_dyld_get_image_name(0)));
 	SETPROP("konoha.bin.path", knh_buff_newRealPath(ctx, cwb->ba, cwb->pos));
 	if(home.text == NULL) {
-		knh_cwb_clear(cwb, 0);
+		knh_cwb_clear2(cwb, 0);
 		knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, B(_dyld_get_image_name(0)));
 		knh_buff_trim(ctx, cwb->ba, cwb->pos, '/');
 		knh_buff_trim(ctx, cwb->ba, cwb->pos, '/');
@@ -615,7 +615,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 	DBG_ASSERT(home.utext != NULL);
 
 	/* $konoha.package.path {$konoha.home.path}/package */
-	knh_cwb_clear(cwb, 0);
+	knh_cwb_clear2(cwb, 0);
 	knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, home);
 	knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1/*sep*/, STEXT("package"));
 	knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1/*sep*/, STEXT(LIBK_VERSION));
@@ -641,7 +641,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, user);
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 1, STEXT(K_KONOHAFOLDER));
 		knh_Bytes_mkdir(ctx, cwb->ba, cwb->pos);
-		knh_cwb_clear(cwb, 0);
+		knh_cwb_clear2(cwb, 0);
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, user);
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 1/*sep*/, STEXT(K_KONOHAFOLDER));
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 1/*sep*/, STEXT("package"));

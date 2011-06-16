@@ -209,11 +209,22 @@ static knh_hashcode_t knh_hash(knh_hashcode_t h, const char *p, size_t len)
 static inline knh_cwb_t *knh_cwb_open(CTX ctx, knh_cwb_t *cwb) CC_UNUSED ;
 static knh_cwb_t *knh_cwb_open(CTX ctx, knh_cwb_t *cwb)
 {
-	knh_Bytes_putc(ctx, ctx->bufa, '\0');  // FIXME knh_cwb_close()
+	knh_Bytes_putc(ctx, ctx->bufa, 0);  // FIXME knh_cwb_close()
 	cwb->ba = ctx->bufa;
 	cwb->w  = ctx->bufw;
 	cwb->pos = BA_size(cwb->ba);
 	return cwb;
+}
+
+static inline void knh_cwb_close(knh_cwb_t *cwb) CC_UNUSED ;
+static void knh_cwb_close(knh_cwb_t *cwb)
+{
+	size_t pos = cwb->pos - 1;
+	if(pos > 0) {
+		DBG_ASSERT(cwb->ba->bu.buf[pos] == 0);
+		knh_Bytes_clear(cwb->ba, pos);
+		cwb->pos = 0;
+	}
 }
 #endif
 
