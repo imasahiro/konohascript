@@ -434,7 +434,7 @@ static void knh_share_free(CTX ctx, knh_share_t *share)
 		knh_ClassTBL_t *ct = varClassTBL(i);
 		if(ct->cdef->asize > 0) {
 			DBG_P("freeing ClassDef cid=%d %s", i, ct->cdef->name);
-			KNH_FREE(ctx, ct->cdef, ct->cdef->asize);
+			KNH_FREE(ctx, (void*)ct->cdef, ct->cdef->asize);
 		}
 		if(ct->fcapacity > 0) {
 			KNH_FREE(ctx, ct->fields, sizeof(knh_fields_t) * ct->fcapacity);

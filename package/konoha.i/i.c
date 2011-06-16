@@ -291,11 +291,9 @@ METHOD System_man(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 
 #ifdef _SETUP
-const knh_PackageDef_t* init(CTX ctx)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
 {
-	static const knh_PackageDef_t pkgdef =
-		KNH_PKGINFO("i", "0.1", "Konoha Shell Extension", NULL);
-	return &pkgdef;
+	RETURN_PKGINFO("konoha.i");
 }
 #endif
 

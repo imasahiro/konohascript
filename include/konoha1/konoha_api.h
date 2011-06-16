@@ -13,6 +13,7 @@ KNHAPI2(void) knh_Array_add_(CTX ctx, knh_Array_t *a, knh_Object_t *value);
 KNHAPI2(void) knh_Array_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m);
 KNHAPI2(knh_Iterator_t*) new_Iterator(CTX ctx, knh_class_t p1, knh_Object_t *source, knh_Fitrnext fnext);
 KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb);
+KNHAPI2(void) knh_Object_toNULL_(CTX ctx, Object *o);
 KNHAPI2(void) knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid);
 KNHAPI2(void) knh_write_type(CTX ctx, knh_OutputStream_t *w, knh_type_t type);
 KNHAPI2(Object*) knh_getClassDefaultValue(CTX ctx, knh_class_t cid);
@@ -106,6 +107,7 @@ typedef struct knh_api2_t {
 	void  (*Map_set)(CTX ctx, knh_Map_t *m, knh_String_t *key, knh_Object_t *value);
 	void  (*Map_setInt)(CTX ctx, knh_Map_t *m, const char *key, knh_int_t value);
 	void  (*Map_setString)(CTX ctx, knh_Map_t *m, const char *key, const char *value);
+	void  (*Object_toNULL_)(CTX ctx, Object *o);
 	void  (*OutputStream_flush)(CTX ctx, knh_OutputStream_t *w, int isNEWLINE);
 	void  (*OutputStream_putc)(CTX ctx, knh_OutputStream_t *w, int ch);
 	void  (*OutputStream_write)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t buf);
@@ -125,7 +127,7 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)-557364480)
+#define K_API2_CRC32 ((size_t)574766482)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -169,6 +171,7 @@ static const knh_api2_t* getapi2(void) {
 		knh_Map_set,
 		knh_Map_setInt,
 		knh_Map_setString,
+		knh_Object_toNULL_,
 		knh_OutputStream_flush,
 		knh_OutputStream_putc,
 		knh_OutputStream_write,
@@ -231,6 +234,7 @@ static const knh_api2_t* getapi2(void) {
 #define knh_Map_set   ctx->api2->Map_set
 #define knh_Map_setInt   ctx->api2->Map_setInt
 #define knh_Map_setString   ctx->api2->Map_setString
+#define knh_Object_toNULL_   ctx->api2->Object_toNULL_
 #define knh_OutputStream_flush   ctx->api2->OutputStream_flush
 #define knh_OutputStream_putc   ctx->api2->OutputStream_putc
 #define knh_OutputStream_write   ctx->api2->OutputStream_write
@@ -417,7 +421,6 @@ void knh_Bytes_write(CTX ctx, knh_Bytes_t *ba, knh_bytes_t t);
 knh_bytes_t knh_cwb_ensure(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t, size_t reqsize);
 knh_String_t *knh_cwb_newString(CTX ctx, knh_cwb_t *cwb);
 int knh_Object_compareTo(Object *o1, Object *o2);
-void knh_Object_toNULL_(CTX ctx, Object *o);
 const char *SAFESTRUCT__(CTX ctx, knh_class_t bcid);
 const char *SAFETYPE__(CTX ctx, knh_type_t type);
 const char *SAFECLASS__(CTX ctx, knh_class_t cid);

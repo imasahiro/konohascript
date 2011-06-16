@@ -83,7 +83,7 @@ int knh_Object_compareTo(Object *o1, Object *o2)
 
 /* ------------------------------------------------------------------------ */
 
-void knh_Object_toNULL_(CTX ctx, Object *o)
+KNHAPI2(void) knh_Object_toNULL_(CTX ctx, Object *o)
 {
 	Object_setNullObject(o, 1);
 }

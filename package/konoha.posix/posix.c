@@ -464,7 +464,7 @@ METHOD Dir_readName(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
 {
-	kapi->loadIntData(ctx, ns, IntConstData);
+	kapi->loadIntClassConst(ctx, CLASS_System, IntConstData);
 	RETURN_PKGINFO("konoha.posix");
 }
 
