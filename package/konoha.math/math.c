@@ -45,13 +45,13 @@ DEFAPI(void) defMath(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 }
 
 static knh_FloatData_t MathConstFloat[] = {
-		{"Math.E", M_E},
-		{"Math.LOG2E",M_LOG2E},
-		{"Math.LOG10E",M_LOG10E},
-		{"Math.LN2",M_LN2},
-		{"Math.LN10",M_LN10},
-		{"Math.PI", M_PI},
-		{"Math.SQRT2",M_SQRT2},
+		{"E", M_E},
+		{"LOG2E",M_LOG2E},
+		{"LOG10E",M_LOG10E},
+		{"LN2",M_LN2},
+		{"LN10",M_LN10},
+		{"PI", M_PI},
+		{"SQRT2",M_SQRT2},
 		{NULL, K_FLOAT_ZERO}
 };
 
