@@ -838,19 +838,20 @@ METHOD ByteCode_save(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static knh_IntData_t IntConstData[] = {
 #include "./code_.h"
-	{"Instruction.PHI", OPCODE_MAX},
+	{"PHI", OPCODE_MAX},
 	{NULL, K_INT0}
 };
 
-DEFAPI(const knh_PackageDef_t*) init(CTX ctx)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
 {
-	static const knh_PackageDef_t pkgdef = KNH_PKGINFO("klrcode", "0.0", "Konoha Bytecode Manipulation Library", NULL);
-	return &pkgdef;
+	kapi->setPackageProperty(ctx, "name", "lang");
+	kapi->setPackageProperty(ctx, "version", "0.0");
+	RETURN_PKGINFO("konoha.lang");
 }
 
-DEFAPI(void) InstructionCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
+DEFAPI(void) constInstruction(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
 {
-	kapi->loadIntData(ctx, ns, IntConstData);
+	kapi->loadIntClassConst(ctx, cid, IntConstData);
 }
 
 #endif
