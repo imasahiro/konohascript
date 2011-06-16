@@ -27,9 +27,9 @@
 
 include nativelink;
 
-@Singleton class Math;
+@Singleton @Native class Math;
 
-include func:MathCONST;
+//include func:MathCONST;
 
 @Native int Math.abs(int x);
 @Native float Math.fabs(float x);

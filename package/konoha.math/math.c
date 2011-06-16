@@ -39,6 +39,27 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
+DEFAPI(void) defMath(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	cdef->name = "Math";
+}
+
+static knh_FloatData_t MathConstFloat[] = {
+		{"Math.E", M_E},
+		{"Math.LOG2E",M_LOG2E},
+		{"Math.LOG10E",M_LOG10E},
+		{"Math.LN2",M_LN2},
+		{"Math.LN10",M_LN10},
+		{"Math.PI", M_PI},
+		{"Math.SQRT2",M_SQRT2},
+		{NULL, K_FLOAT_ZERO}
+};
+
+DEFAPI(void) constMath(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+{
+	kapi->loadFloatClassConst(ctx, cid, MathConstFloat);
+}
+
 METHOD Math_abs(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(abs(Int_to(int, sfp[1])));
@@ -189,29 +210,17 @@ METHOD Math_atanh(CTX ctx, knh_sfp_t *sfp _RIX)
 
 #ifdef _SETUP
 
-static knh_FloatData_t FloatConstData[] = {
-	{"Math.E", M_E},
-	{"Math.LOG2E",M_LOG2E},
-	{"Math.LOG10E",M_LOG10E},
-	{"Math.LN2",M_LN2},
-	{"Math.LN10",M_LN10},
-	{"Math.PI", M_PI},
-//	{"Math.PI2",M_PI_2},
-//	{"Math.PI4",M_PI_4},
-	{"Math.SQRT2",M_SQRT2},
-	{NULL, K_FLOAT_ZERO}
-};
-
-DEFAPI(const knh_PackageDef_t*) init(CTX ctx)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
 {
-	static const knh_PackageDef_t pkgdef = KNH_PKGINFO("math", "1.0", "Konoha Standard Math Library", NULL);
-	return &pkgdef;
+	kapi->setPackageProperty(ctx, "name", "math");
+	kapi->setPackageProperty(ctx, "version", "1.0");
+	RETURN_PKGINFO("konoha.math");
 }
 
-DEFAPI(void) MathCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
-{
-	kapi->loadFloatData(ctx, ns, FloatConstData);
-}
+//DEFAPI(void) MathCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
+//{
+//	kapi->loadFloatData(ctx, ns, FloatConstData);
+//}
 
 #endif
 

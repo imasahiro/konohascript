@@ -118,6 +118,31 @@ static void loadStringClassConst(CTX ctx, knh_class_t cid, const knh_StringData_
 	}
 }
 
+static void setProperty(CTX ctx, const char *name, const char *data)
+{
+	char pname[256];
+	const char *nsn = S_tochar(DP(ctx->gma->scr->ns)->nsname);
+	knh_snprintf(pname, sizeof(pname), "%s.%s", nsn, name);
+	knh_DictMap_set(ctx, DP(ctx->sys)->props, new_String(ctx, pname), new_T(data));
+}
+
+static void setIntProperty(CTX ctx, const char *name, knh_int_t data)
+{
+	char pname[256];
+	const char *nsn = S_tochar(DP(ctx->gma->scr->ns)->nsname);
+	knh_snprintf(pname, sizeof(pname), "%s.%s", nsn, name);
+	knh_DictMap_set(ctx, DP(ctx->sys)->props, new_String(ctx, pname), new_Int(ctx, data));
+}
+
+static void setFloatProperty(CTX ctx, const char *name, knh_float_t data)
+{
+	char pname[256];
+	const char *nsn = S_tochar(DP(ctx->gma->scr->ns)->nsname);
+	knh_snprintf(pname, sizeof(pname), "%s.%s", nsn, name);
+	knh_DictMap_set(ctx, DP(ctx->sys)->props, new_String(ctx, pname), new_Float(ctx, data));
+}
+
+
 /* ------------------------------------------------------------------------ */
 
 #define _MAX 1024
@@ -312,6 +337,7 @@ const knh_PackageLoaderAPI_t* knh_getPackageLoaderAPI(void)
 		knh_loadSystemData,
 		loadIntData, loadFloatData, loadStringData,
 		loadIntClassConst, loadFloatClassConst, loadStringClassConst,
+		setProperty, setIntProperty, setFloatProperty,
 		addLinkDPI, knh_addStreamDPI, knh_addQueryDSPI, knh_addConvDSPI,
 	};
 	return &pkgapi;

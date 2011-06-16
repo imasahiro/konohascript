@@ -462,17 +462,16 @@ METHOD Dir_readName(CTX ctx, knh_sfp_t *sfp _RIX)
 
 #ifdef _SETUP
 
-DEFAPI(const knh_PackageDef_t*) init(CTX ctx)
-{
-	static const knh_PackageDef_t pkgdef = KNH_PKGINFO("posix", "0.1", "Konoha POSIX Library", NULL);
-	return &pkgdef;
-}
-
-
-DEFAPI(void) SystemCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
 {
 	kapi->loadIntData(ctx, ns, IntConstData);
+	RETURN_PKGINFO("konoha.posix");
 }
+
+//DEFAPI(void) SystemCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
+//{
+//	kapi->loadIntData(ctx, ns, IntConstData);
+//}
 
 #endif
 

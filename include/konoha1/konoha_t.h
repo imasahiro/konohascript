@@ -1144,7 +1144,7 @@ typedef struct knh_logdata_t {
 #define K_RECNOTE       (1<<2)
 #define K_RECNOTESTART  ((1<<3)|(1<<2))
 
-#define LOGSFP()        knh_sfp_t *sfp = NULL;
+#define LOGSFPDATA      knh_sfp_t *sfp = NULL; const knh_logdata_t _logdata[]
 #define LOGDATA         const knh_logdata_t _logdata[]
 #define LOGDATASIZE     (sizeof(_logdata)/sizeof(knh_logdata_t))
 

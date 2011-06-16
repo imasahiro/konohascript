@@ -206,9 +206,8 @@ static knh_status_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *results
 			if(ns->dlhdr != NULL) {
 				knh_Fpkginit pkginit = (knh_Fpkginit)knh_dlsym(ctx, ns->dlhdr, "init", 1/*isTest*/);
 				if(pkginit != NULL) {
-					const knh_PackageDef_t *pkgdef = pkginit(ctx);
-					LOGSFP();
-					LOGDATA = {sDATA("package_name", pkgdef->name), sDATA("package_version", pkgdef->version),
+					const knh_PackageDef_t *pkgdef = pkginit(ctx, knh_getPackageLoaderAPI());
+					LOGSFPDATA = {sDATA("package_name", pkgdef->name),
 						iRANGE("buildid", K_BUILDID, pkgdef->buildid), iRANGE("crc32", K_API2_CRC32, pkgdef->crc32)};
 					if((long)pkgdef->crc32 != (long)K_API2_CRC32) {
 						LIB_Failed("load_nativelink", NULL);
@@ -748,7 +747,7 @@ static void knh_loadNativeClass(CTX ctx, const char *cname, knh_ClassTBL_t *ct)
 	}
 	if(cdef == NULL) {
 		cdef = knh_getDefaultClassDef();
-		WARN_NotFound(ctx, _("class definition function"), fname);
+		WARN_NotFound(ctx, _("ClassDef function"), fname);
 	}
 	ct->bcid = ct->cid;
 	ct->baseTBL = ct;

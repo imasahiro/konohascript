@@ -203,6 +203,9 @@ typedef struct knh_PackageLoaderAPI_t {
 	void (*loadIntClassConst)(CTX, knh_class_t cid, const knh_IntData_t *);
 	void (*loadFloatClassConst)(CTX, knh_class_t cid, const knh_FloatData_t *);
 	void (*loadStringClassConst)(CTX, knh_class_t cid, const knh_StringData_t *);
+	void (*setPackageProperty)(CTX, const char*, const char*);
+	void (*setPackageIntProperty)(CTX, const char*, knh_int_t);
+	void (*setPackageFloatProperty)(CTX, const char*, knh_float_t);
 	/* namespace */
 //	void (*setRegexSPI)(CTX, knh_NameSpace_t *ns, const knh_RegexSPI_t *);
 	void (*addLinkDPI)(CTX, knh_NameSpace_t *ns, const char*, const knh_LinkDPI_t *);
@@ -211,18 +214,18 @@ typedef struct knh_PackageLoaderAPI_t {
 	void (*addConvDSPI)(CTX, knh_NameSpace_t *ns, const char *, const knh_ConvDSPI_t*);
 } knh_PackageLoaderAPI_t;
 
-#define KNH_PKGINFO(NAME, VERSION, URL, INFO) {K_BUILDID, K_API2_CRC32, NAME, VERSION, INFO, URL}
+#define RETURN_PKGINFO(NAME) {\
+		static const knh_PackageDef_t pkginfo_ = {K_BUILDID, K_API2_CRC32, NAME};\
+		return &pkginfo_;\
+	}\
 
 typedef struct {
 	size_t buildid;
 	size_t crc32;
 	const char *name;     /* pacakge name */
-	const char *version;  /* pacakge version*/
-	const char *info;     /* package info */
-	const char *url;      /* package url */
 } knh_PackageDef_t;
 
-typedef const knh_PackageDef_t* (*knh_Fpkginit)(CTX);
+typedef const knh_PackageDef_t* (*knh_Fpkginit)(CTX, const knh_PackageLoaderAPI_t *);
 typedef void (*knh_Fpkgload)(CTX, const knh_PackageLoaderAPI_t *, knh_NameSpace_t *ns);
 typedef void (*knh_Fclassdef)(CTX, knh_class_t, knh_ClassDef_t*);
 typedef void (*knh_Fconstdef)(CTX, knh_class_t, const knh_PackageLoaderAPI_t*);
