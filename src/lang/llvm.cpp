@@ -994,6 +994,18 @@ static void asm_shift_esp(CTX ctx, size_t idx)
 	builder->CreateStore(vsfp, vesp, false);
 }
 
+static int ASM_SCALL(CTX ctx, int sfpidx, int thisidx, knh_Method_t* mtd)
+{
+	IRBuilder<> *builder = LLVM_BUILDER(ctx);
+	Value *func = LLVMValue(LLVMTYPE_fcall, mtd->fcall_1);
+	std::vector<Value*> params;
+	param_setCtxSfp(ctx, params, thisidx);
+	params.push_back(LLVMInt(0/*K_RTNIDX*/));
+	asm_shift_esp(ctx, 1+/*argc*/1+thisidx);
+	builder->CreateCall(func, params.begin(), params.end());
+	return 0;
+}
+
 static void _CALL(CTX ctx, knh_type_t reqt, int sfpidx, knh_type_t rtype, knh_Method_t *mtd, int isStatic, size_t argc)
 {
 	int thisidx = sfpidx + K_CALLDELTA;
@@ -1030,7 +1042,14 @@ static void _CALL(CTX ctx, knh_type_t reqt, int sfpidx, knh_type_t rtype, knh_Me
 		}
 	}
 	else {
-		LLVM_TODO("LOADMTD");
+		ASM_SCALL(ctx,thisidx,thisidx,mtd);
+		knh_class_t retTy;
+		retTy = knh_ParamArray_rtype(DP(mtd)->mp);
+		if(retTy != TYPE_void) {
+			Value *ptr = create_loadsfp(ctx, builder, getsfp(ctx), retTy, thisidx+K_RTNIDX);
+			Value *ret_v = builder->CreateLoad(ptr, "ret_v");
+			ValueStack_set(ctx, thisidx+K_RTNIDX, ret_v);
+		}
 	}
 }
 
@@ -1223,7 +1242,35 @@ static int _CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 
 static int _FUNCCALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
-	LLVM_TODO("FUNCCALL");
+	int local = ASML(sfpidx);
+	IRBuilder<> *builder = LLVM_BUILDER(ctx);
+	knh_Method_t *mtd = (tkNN(stmt, 0))->mtd;
+	knh_class_t cid = Tn_cid(stmt, 1);
+	knh_ParamArray_t *pa = ClassTBL(cid)->cparam;
+	size_t i;
+	for(i = 0; i < pa->psize; i++) {
+		knh_param_t *p = knh_ParamArray_get(pa, i);
+		knh_type_t reqt = knh_type_tocid(ctx, p->type, DP(ctx->gma)->this_cid);
+		int n = local + i + (K_CALLDELTA + 1);
+		Tn_asm(ctx, stmt, i+2, reqt, n);
+		Value *gep = create_loadsfp(ctx, builder, getsfp(ctx), reqt, n);
+		builder->CreateStore(ValueStack_get(ctx, n), gep);
+	}
+	int n = local + K_CALLDELTA;
+	Tn_asm(ctx, stmt, 1, cid, n);
+	Value *gep = create_loadsfp(ctx, builder, getsfp(ctx), cid, n);
+	builder->CreateStore(ValueStack_get(ctx, n), gep);
+
+	if(Stmt_isDYNCALL(stmt)) {
+		//int a = local + K_CALLDELTA;
+	//ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(cid), _TCHECK);
+	LLVM_TODO("Support Dynamic Call");
+	}
+
+	knh_type_t rtype = knh_type_tocid(ctx, knh_ParamArray_rtype(DP(mtd)->mp), cid);
+	int thisidx = local + K_CALLDELTA;
+	ASM_SCALL(ctx, thisidx, thisidx, mtd);
+	ValueStack_set(ctx, sfpidx, ValueStack_load(ctx, local, rtype));
 	return 0;
 }
 
@@ -1547,17 +1594,6 @@ static int ASM_SEND(CTX ctx, int sfpidx, int thisidx, const char *s)
 	return 0;
 }
 
-static int ASM_SCALL(CTX ctx, int sfpidx, int thisidx, knh_Method_t* mtd)
-{
-	IRBuilder<> *builder = LLVM_BUILDER(ctx);
-	Value *func = LLVMValue(LLVMTYPE_fcall, mtd->fcall_1);
-	std::vector<Value*> params;
-	param_setCtxSfp(ctx, params, thisidx);
-	params.push_back(LLVMInt(0/*K_RTNIDX*/));
-	asm_shift_esp(ctx, 1+/*argc*/1+thisidx);
-	builder->CreateCall(func, params.begin(), params.end());
-	return 0;
-}
 
 static int _SEND_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
@@ -1611,6 +1647,8 @@ static int _SEND_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	}
 	if(isCWB) {
 		ASM_SEND(ctx, sfpidx, thisidx, "TOSTR");
+		Value *v = ValueStack_load(ctx, sfpidx, CLASS_String);
+		ValueStack_set(ctx,sfpidx, v);
 		isTOSTR = 1;
 	} else {
 		isTOSTR = 0;
@@ -2467,7 +2505,11 @@ static int _PRINT_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt _UNUSED_, int s
 				goto L_REDO;
 			}
 			DBG_ASSERT(stmt->uline == ctx->gma->uline);
-			//ASM(P, _PRINTm, flag | mask, (tkn)->text, 0); flag = 0;
+			knh_class_t cid = CLASS_String;
+			int n = Tn_put(ctx, stmt, i, cid, espidx+i);
+			Value *v = ValueStack_get(ctx, n);
+			const char *fname = "llvm_PRINT";
+			ASM_P(ctx, fname, flag | mask, tkNN(stmt, i)->uline, msg, cid, v);
 		}
 		else {
 			knh_class_t cid = Tn_cid(stmt, i);
@@ -2760,9 +2802,15 @@ static void ConstructObjectStruct(Module *m)
 
 static std::string build_function_name(CTX ctx, knh_Method_t *mtd, std::string suffix)
 {
+	static int count = 0;
+	std::string fname(knh_getmnname(ctx, SP(mtd)->mn));
 	std::stringstream ss;
 	ss << CLASS__(SP(mtd)->cid);
-	ss <<  "_" << knh_getmnname(ctx, SP(mtd)->mn) << suffix;
+
+	if (fname == "")
+		ss << "_" << (count++/2) << suffix;
+	else
+		ss <<  "_" << fname << suffix;
 	return ss.str();
 }
 

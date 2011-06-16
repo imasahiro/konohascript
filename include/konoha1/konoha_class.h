@@ -1427,7 +1427,6 @@ knh_opline_t* knh_VirtualMachine_run(CTX, knh_sfp_t *, knh_opline_t *);
 	knh_stack_gc(ctx, 0/*isALL*/);\
 
 #define END_LOCAL_NONGC(ctx, lsfp) \
-	((knh_context_t*)ctx)->esp = ctx->stack + sfpidx_;\
 	(__CONST_CAST__(knh_context_t*, ctx))->esp = ctx->stack + sfpidx_;\
 
 #define LOCAL_NEW(ctx, lsfp, n, T, V, O) \
