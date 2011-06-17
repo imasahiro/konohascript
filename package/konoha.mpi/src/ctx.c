@@ -8,7 +8,7 @@ METHOD MPIContext_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	MPI_Initialized(&flag);
 	if (!flag) {
 		KNH_NOT_ON_MPI(mctx);
-		KNH_WARN(ctx, "MPI is not initialized");
+		KNH_LOG("MPI is not initialized");
 	} else {
 		static char proc_name[MPI_MAX_PROCESSOR_NAME] = {0};
 		mctx->proc_name = (char*)&proc_name;

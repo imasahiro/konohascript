@@ -212,10 +212,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 
-#set(svndir "${CMAKE_CURRENT_SOURCE_DIR}/include/.svn")
-find_file(ret "${svndir}")
 FIND_FILE(HAS_DOTSVN .svn PATHS "${CMAKE_CURRENT_SOURCE_DIR}/include")
-if(${ret})
+if(${HAS_DOTSVN})
 	find_package(Subversion)
 	if(Subversion_FOUND)
 		Subversion_WC_INFO(${CMAKE_CURRENT_SOURCE_DIR}/include ER)

@@ -8,7 +8,7 @@ extern "C" {
 
 #ifdef _SETUP
 
-static void knh_MPIContext_init(CTX ctx, Object *o)
+static void knh_MPIContext_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_MPIContext_t *mctx = (knh_MPIContext_t*)o;
 	KNH_NOT_ON_MPI(mctx);
@@ -16,22 +16,19 @@ static void knh_MPIContext_init(CTX ctx, Object *o)
 	mctx->proc_name = NULL;
 }
 
-DEFAPI(const knh_ClassDef_t*) MPIContext(CTX ctx)
+DEFAPI(void) defMPIContext(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
-	static knh_ClassDef_t cdef;
-	cdef = *(knh_getDefaultClassDef());
-	cdef.init = knh_MPIContext_init;
-	cdef.name = "MPIContext";
-	return &cdef;
+	cdef->name = "MPIContext";
+	cdef->init = knh_MPIContext_init;
 }
 
-static void knh_MPIRequest_init(CTX ctx, Object *o)
+static void knh_MPIRequest_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_MPIRequest_t *mreq = (knh_MPIRequest_t*)o;
 	mreq->mpi_req = (MPI_Request*)KNH_MALLOC(ctx, sizeof(MPI_Request));
 }
 
-static void knh_MPIRequest_free(CTX ctx, Object *o)
+static void knh_MPIRequest_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_MPIRequest_t *mreq = (knh_MPIRequest_t*)o;
 	if (!KNH_MPI_REQUEST_IS_NULL(mreq)) {
@@ -63,17 +60,14 @@ static void knh_MPIContext_errhandler(MPI_Comm *comm, int *errcode, ...)
 }
 */
 
-DEFAPI(const knh_ClassDef_t*) MPIRequest(CTX ctx)
+DEFAPI(void) defMPIRequest(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
-	static knh_ClassDef_t cdef;
-	cdef = *(knh_getDefaultClassDef());
-	cdef.init = knh_MPIRequest_init;
-	cdef.free = knh_MPIRequest_free;
-	cdef.name = "MPIRequest";
-	return &cdef;
+	cdef->name = "MPIRequest";
+	cdef->init = knh_MPIRequest_init;
+	cdef->free = knh_MPIRequest_free;
 }
 
-DEFAPI(const knh_PackageDef_t*) init(CTX ctx)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
 {
 	int flag = 0;
 	MPI_Initialized(&flag);
@@ -84,8 +78,7 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx)
 		//MPI_Errhandler_set(MPI_COMM_WORLD, err_hdr);
 		MPI_Errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
 	}
-	static const knh_PackageDef_t pkgdef = KNH_PKGINFO("mpi", "0.1", "Konoha MPI Package", NULL);
-	return &pkgdef;
+	RETURN_PKGINFO("konoha.mpi");
 }
 
 #endif /* _SETUP */

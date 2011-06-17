@@ -763,7 +763,7 @@ METHOD ByteCode_save(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_KonohaCode_t *kcode = DP(org)->kcode;
 	knh_RawPtr_t *bbrooto = cf->root;
 	knh_opline_t *newcode = malloc(sizeof(knh_opline_t)*1024);
-	knh_opline_t *op = newcode;
+	//knh_opline_t *op = newcode;
 
 	knh_RawPtr_t *bbo = bbrooto;
 	KBlock_t *bb = (KBlock_t*)bbo->rawptr;

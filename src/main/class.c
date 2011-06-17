@@ -1026,7 +1026,7 @@ static inline knh_Method_t *Cache_setMethod(knh_mtdcache_t *mcache, knh_class_t 
 		if(mcache->cid != 0 && mcache->mn != 0) {
 			//DBG_P("MISSED h=%d mcache=%d.%d %d.%d", h, mcache->cid, mcache->mn, cid, mn);
 		}
-	})
+	});
 	mcache->cid = cid;
 	mcache->mn  = mn;
 	mcache->mtd = mtd;
@@ -1047,8 +1047,7 @@ void knh_ClassTBL_addMethod(CTX ctx, const knh_ClassTBL_t *t, knh_Method_t *mtd,
 		for(i = 0; i < knh_Array_size(a); i++) {
 			knh_Method_t *mtd2 = a->methods[i];
 			if((mtd2)->mn == (mtd)->mn) {
-				void *sfp = NULL;
-				LOGDATA = {sDATA("msg", "redefined method"), MDATA("method", CLASS__((mtd)->cid), MN__((mtd)->mn)), __TRACE__};
+				LOGSFPDATA = {sDATA("msg", "redefined method"), MDATA("method", CLASS__((mtd)->cid), MN__((mtd)->mn)), __TRACE__};
 				NOTE_Failed("konoha");
 			}
 		}

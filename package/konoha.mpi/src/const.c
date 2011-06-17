@@ -3,24 +3,24 @@
 #ifdef _SETUP
 
 static knh_IntData_t IntConstData[] = {
-	{"MPIContext.OP_MAX",     MPI_MAX},
-	{"MPIContext.OP_MIN",     MPI_MIN},
-	{"MPIContext.OP_SUM",     MPI_SUM},
-	{"MPIContext.OP_PROD",    MPI_PROD},
-	{"MPIContext.OP_LAND",    MPI_LAND},
-	{"MPIContext.OP_BAND",    MPI_BAND},
-	{"MPIContext.OP_LOD",     MPI_LOR},
-	{"MPIContext.OP_BOR",     MPI_BOR},
-	{"MPIContext.OP_LXOR",    MPI_LXOR},
-	{"MPIContext.OP_BXOR",    MPI_BXOR},
-	{"MPIContext.OP_MINLOC",  MPI_MINLOC},
-	{"MPIContext.OP_MAXLOC",  MPI_MAXLOC},
-	{"MPIContext.OP_REPLACE", MPI_REPLACE},
+	{"OP_MAX",     MPI_MAX},
+	{"OP_MIN",     MPI_MIN},
+	{"OP_SUM",     MPI_SUM},
+	{"OP_PROD",    MPI_PROD},
+	{"OP_LAND",    MPI_LAND},
+	{"OP_BAND",    MPI_BAND},
+	{"OP_LOD",     MPI_LOR},
+	{"OP_BOR",     MPI_BOR},
+	{"OP_LXOR",    MPI_LXOR},
+	{"OP_BXOR",    MPI_BXOR},
+	{"OP_MINLOC",  MPI_MINLOC},
+	{"OP_MAXLOC",  MPI_MAXLOC},
+	{"OP_REPLACE", MPI_REPLACE},
 };
 
-DEFAPI(void) MPICONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
+DEFAPI(void) constMPI(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
 {
-	kapi->loadIntData(ctx, ns, IntConstData);
+	kapi->loadIntClassConst(ctx, cid, IntConstData);
 }
 
 #endif

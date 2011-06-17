@@ -813,8 +813,7 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 			ct->metaidx = ct->supTBL->keyidx;
 			((knh_ClassTBL_t*)ct->supTBL)->subclass += 1;
 			{
-				void *sfp = NULL;
-				LOGDATA = {cDATA("name", cid), iDATA("cid", cid)};
+				LOGSFPDATA = {cDATA("name", cid), iDATA("cid", cid)};
 				LIB_OK("konoha:new_class");
 			}
 			if(knh_StmtMETA_is(ctx, stmt, "Native")) {
@@ -1024,13 +1023,12 @@ static int readchunk(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
 knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in, knh_Array_t *resultsNULL)
 {
 	knh_status_t status = K_BREAK;
-	void *sfp = NULL;
 	knh_Bytes_t *ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
 	BEGIN_LOCAL(ctx, lsfp, 3);
 	LOCAL_NEW(ctx, lsfp, 1, knh_InputStream_t*, bin, new_BytesInputStream(ctx, ba));
 	KNH_SETv(ctx, lsfp[0].o, in);
 	if(!knh_isCompileOnly(ctx)) {
-		LOGDATA = {sDATA("path", S_tochar(DP(in)->urn))};
+		LOGSFPDATA = {sDATA("path", S_tochar(DP(in)->urn))};
 		NOTE_OK("script_start");
 	}
 	do {

@@ -281,8 +281,7 @@ knh_uri_t knh_getURI(CTX ctx, knh_bytes_t t)
 		knh_DictSet_set(ctx, DP(ctx->sys)->urnDictSet, s, idx);
 		knh_Array_add(ctx, DP(ctx->sys)->urns, s);
 		{
-			void *sfp = NULL;
-			LOGDATA = {sDATA("URN", S_tochar(s)), iDATA("uri", idx)};
+			LOGSFPDATA = {sDATA("URN", S_tochar(s)), iDATA("uri", idx)};
 			LIB_OK("konoha:new_uri");
 		}
 	}

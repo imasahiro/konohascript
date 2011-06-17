@@ -43,7 +43,7 @@ extern "C" {
 knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n)
 {
 	knh_context_t *ctxo = (knh_context_t*)ctx;
-	size_t i, s;
+	size_t i, s = 0;
 	if(sfp == NULL) {
 		DBG_ASSERT(ctxo->stacksize == 0);
 		s = 0;

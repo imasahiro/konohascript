@@ -958,7 +958,6 @@ static knh_type_t Tn_ptype(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_class_t cid,
 }
 static int CALLPARAMs_asm(CTX ctx, knh_Stmt_t *stmt, size_t s, int local, knh_class_t cid, knh_Method_t *mtd)
 {
-	size_t i;
 	if(s == 1 && Method_isStatic(mtd))
 		// ignoring static caller, like Script
 		s = 2;
@@ -967,7 +966,7 @@ static int CALLPARAMs_asm(CTX ctx, knh_Stmt_t *stmt, size_t s, int local, knh_cl
 	}
 	Value *arg_sfp = getsfp(ctx);
 	IRBuilder<> *builder = LLVM_BUILDER(ctx);
-	for (i = s; i < DP(stmt)->size; i++) {
+	for (size_t i = s; i < DP(stmt)->size; i++) {
 		knh_type_t reqt = Tn_ptype(ctx, stmt, i, cid, mtd);
 		int a = local + i + (K_CALLDELTA-1);
 		Tn_asm(ctx, stmt, i, reqt, a);
@@ -1247,8 +1246,7 @@ static int _FUNCCALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	knh_Method_t *mtd = (tkNN(stmt, 0))->mtd;
 	knh_class_t cid = Tn_cid(stmt, 1);
 	knh_ParamArray_t *pa = ClassTBL(cid)->cparam;
-	size_t i;
-	for(i = 0; i < pa->psize; i++) {
+	for (size_t i = 0; i < pa->psize; i++) {
 		knh_param_t *p = knh_ParamArray_get(pa, i);
 		knh_type_t reqt = knh_type_tocid(ctx, p->type, DP(ctx->gma)->this_cid);
 		int n = local + i + (K_CALLDELTA + 1);
@@ -1395,13 +1393,13 @@ static int _ALT_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 
 static int _OR_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
-	int i, local = ASML(sfpidx),  size = DP(stmt)->size;
+	int local = ASML(sfpidx),  size = DP(stmt)->size;
 	IRBuilder<> *builder = LLVM_BUILDER(ctx);
 	BasicBlock *bbTrue = BB_CREATE(ctx, "true");
 	BasicBlock *bbNext = BB_CREATE(ctx, "next");
 	std::vector<BasicBlock *> blocks;
 
-	for (i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) {
 		int n = Tn_put(ctx, stmt, i, TYPE_Boolean, local + 1);
 		Value *cond = ValueStack_get(ctx, n);
 		builder->CreateCondBr(VBOOL(cond), bbTrue, bbNext);
@@ -1428,12 +1426,12 @@ static int _OR_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 
 static int _AND_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
-	int i, local = ASML(sfpidx), size = DP(stmt)->size;
+	int local = ASML(sfpidx), size = DP(stmt)->size;
 	IRBuilder<> *builder = LLVM_BUILDER(ctx);
 	BasicBlock *bbFalse = BB_CREATE(ctx, "false");
 	BasicBlock *bbNext  = BB_CREATE(ctx, "next");
 	std::vector<BasicBlock *> blocks;
-	for (i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) {
 		int n = Tn_put(ctx, stmt, i, TYPE_Boolean, local + 1);
 		Value *cond = ValueStack_get(ctx, n);
 		builder->CreateCondBr(VBOOL(cond), bbNext, bbFalse);
@@ -1599,7 +1597,7 @@ static int _SEND_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
 	static int isTOSTR;
 	int local = ASML(sfpidx);
-	size_t i, thisidx = local + K_CALLDELTA;
+	size_t thisidx = local + K_CALLDELTA;
 	int isCWB = 0;
 	if(TT_(tmNN(stmt, 1)) == TT_ASIS) {
 		isCWB = 1;
@@ -1614,7 +1612,7 @@ static int _SEND_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 		Value *v = ValueStack_get(ctx, j);
 		sfp_store(ctx, thisidx, CLASS_OutputStream, v);
 	}
-	for (i = 2; i < DP(stmt)->size; i++) {
+	for (size_t i = 2; i < DP(stmt)->size; i++) {
 		if(STT_(stmtNN(stmt, i)) == STT_W1) {
 			knh_Stmt_t *stmtIN = stmtNN(stmt, i);
 			DBG_ASSERT(TT_(tkNN(stmtIN, 1)) == TT_ASIS);
@@ -1844,7 +1842,7 @@ typedef void (*fphi_t)(CTX ctx, knh_Array_t *a, int i, Value *, Value *, Value *
 
 static int PHI_asm(CTX ctx, knh_Array_t *prev, knh_Array_t *thenArray, knh_Array_t *elseArray, BasicBlock *bbThen, BasicBlock *bbElse, BasicBlock *bbMerge)
 {
-	int i, size = DP(ctx->gma)->espidx + (-1 * K_RTNIDX);
+	int size = DP(ctx->gma)->espidx + (-1 * K_RTNIDX);
 	fphi_t fphi = NULL;
 	if (BB_hasReturn(bbThen, bbMerge) && BB_hasReturn(bbElse, bbMerge)) {
 		fphi = phi_nop;
@@ -1855,7 +1853,7 @@ static int PHI_asm(CTX ctx, knh_Array_t *prev, knh_Array_t *thenArray, knh_Array
 	} else {
 		fphi = phi_phi;
 	}
-	for (i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) {
 		Value *vp = (Value *)prev->nlist[i];
 		if(vp == NULL) continue;
 		Value *v1 = (Value *)thenArray->nlist[i];
@@ -1951,8 +1949,8 @@ static int _BREAK_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt _UNUSED_, int s
 static knh_Array_t *createPhiArray(CTX ctx, BasicBlock *bb, knh_Array_t *a, int esp)
 {
 	knh_Array_t *newlstacks = ValueStack_copy(ctx, a);
-	int i, size = esp + K_CALLDELTA;//knh_Array_capacity(newlstacks);
-	for (i = K_CALLDELTA; i < size; i++) {
+	int size = esp + K_CALLDELTA;
+	for (int i = K_CALLDELTA; i < size; i++) {
 		Value *v = (Value *)knh_Array_n(a, i);
 		if (v != NULL) {
 			PHINode *phi = PHINode::Create(v->getType(), "phi", bb);
@@ -1963,9 +1961,8 @@ static knh_Array_t *createPhiArray(CTX ctx, BasicBlock *bb, knh_Array_t *a, int 
 }
 
 static int addPhiArray(CTX ctx, knh_Array_t *phi, knh_Array_t *block, BasicBlock *bb, int esp) {
-	int i, size;
-	size = esp + K_CALLDELTA;
-	for (i = K_CALLDELTA; i < size; i++) {
+	int size = esp + K_CALLDELTA;
+	for (int i = K_CALLDELTA; i < size; i++) {
 		Value *p = (Value *)knh_Array_n(phi, i);
 		Value *v = (Value *)knh_Array_n(block, i);
 		if (p != NULL && v != NULL) {
@@ -1980,8 +1977,8 @@ static int addPhiArray(CTX ctx, knh_Array_t *phi, knh_Array_t *block, BasicBlock
 
 static bool hasNoEntryPhi(CTX ctx, knh_Array_t *phi, int esp)
 {
-	int i, size = esp + K_CALLDELTA;
-	for (i = K_CALLDELTA; i < size; i++) {
+	int size = esp + K_CALLDELTA;
+	for (int i = K_CALLDELTA; i < size; i++) {
 		Value *v = (Value *)knh_Array_n(phi, i);
 		if (v != NULL && PHINode::classof(v)) {
 			PHINode *phi = static_cast<PHINode*>(v);
@@ -2446,10 +2443,8 @@ static struct print_data PRINT_DATA[] = {
 static void init_print_func(CTX ctx)
 {
 	Module *m = LLVM_MODULE(ctx);
-	Function* func;
 	std::vector<const Type*>args;
-	size_t i;
-	for (i = 0; i < ARRAY_SIZE(PRINT_DATA); i++) {
+	for (size_t i = 0; i < ARRAY_SIZE(PRINT_DATA); i++) {
 		knh_class_t cid = PRINT_DATA[i].cid;
 		const char *name = PRINT_DATA[i].name;
 		args.push_back(LLVMTYPE_context);
@@ -2460,7 +2455,7 @@ static void init_print_func(CTX ctx)
 		args.push_back(convert_type(ctx, cid));
 
 		FunctionType* fnTy = FunctionType::get(LLVMTYPE_Void, args, false);
-		func = Function::Create(fnTy, GlobalValue::ExternalLinkage, name, m);
+		Function* func = Function::Create(fnTy, GlobalValue::ExternalLinkage, name, m);
 		func->setCallingConv(CallingConv::C);
 		args.clear();
 	}
@@ -2848,7 +2843,6 @@ static Value *create_loadsfp(CTX ctx, IRBuilder<> *builder, Value *v, knh_type_t
 
 static Function *build_wrapper_func(CTX ctx, Module *m, knh_Method_t *mtd, Function *orig_func)
 {
-	size_t i;
 	knh_ParamArray_t *pa = DP(mtd)->mp;
 	knh_class_t retTy = knh_ParamArray_rtype(pa);
 	std::string name = build_function_name(ctx, mtd, "_wrapper");
@@ -2868,7 +2862,7 @@ static Function *build_wrapper_func(CTX ctx, Module *m, knh_Method_t *mtd, Funct
 	std::vector<Value*> params;
 	params.push_back(arg_ctx);
 	params.push_back(arg_sfp);
-	for (i = 0; i < pa->psize; i++) {
+	for (size_t i = 0; i < pa->psize; i++) {
 		knh_param_t *p = knh_ParamArray_get(DP(mtd)->mp, i);
 		Value *v = arg_sfp;
 		//Value *idx = LLVMInt(i+1);
@@ -2901,11 +2895,10 @@ static void init_first(CTX ctx)
 static void Init(CTX ctx, knh_Method_t *mtd, knh_Array_t *a)
 {
 	Module *m = LLVM_MODULE(ctx);
-	Function *func;
 	BasicBlock *bb;
 	IRBuilder<> *builder;
 
-	func = build_function(ctx, m, mtd);
+	Function *func = build_function(ctx, m, mtd);
 	bb = BasicBlock::Create(LLVM_CONTEXT(), "EntryBlock", func);
 	builder = new IRBuilder<>(bb);
 
@@ -2915,11 +2908,10 @@ static void Init(CTX ctx, knh_Method_t *mtd, knh_Array_t *a)
 	a->ilist[LLVM_IDX_BUILDER] = (knh_int_t) builder;
 	a->ilist[LLVM_IDX_LABELSTACK] = (knh_int_t) new std::vector<label_stack *>();
 
-	size_t i;
 	Function::arg_iterator args = func->arg_begin();
 	args++;/*ctx*/
 	args++;/*sfp*/
-	for (i = 0; i < DP(mtd)->mp->psize; i++) {
+	for (size_t i = 0; i < DP(mtd)->mp->psize; i++) {
 		knh_param_t *p = knh_ParamArray_get(DP(mtd)->mp, i);
 		Value *arg = VNAME_(args++, FN__(p->fn));
 		ValueStack_set(ctx, i+1, arg);
@@ -2939,22 +2931,36 @@ static void Finish(CTX ctx, knh_Method_t *mtd, knh_Array_t *a, knh_Stmt_t *stmt)
 	Function *func1 = build_wrapper_func(ctx, m, mtd, func);
 
 #ifdef K_USING_DEBUG
-	(*m).dump();
 #endif
+	(*m).dump();
 
 	/* optimization */
-	FunctionPassManager OurFPM(m);
-	OurFPM.add(new TargetData(*ee->getTargetData()));
-	OurFPM.add(createBasicAliasAnalysisPass());
-	OurFPM.add(createInstructionCombiningPass());
-	OurFPM.add(createReassociatePass());
-	OurFPM.add(createGVNPass());
-	OurFPM.add(createCFGSimplificationPass());
-	OurFPM.doInitialization();
-	verifyFunction(*func);
-	OurFPM.run(*func);
-	verifyFunction(*func1);
-	OurFPM.run(*func1);
+
+
+	FunctionPassManager pm(m);
+	pm.add(new TargetData(*(ee->getTargetData())));
+	pm.add(createVerifierPass());
+	pm.add(createInstructionCombiningPass()); // Cleanup for scalarrepl.
+	pm.add(createLICMPass());                 // Hoist loop invariants
+	pm.add(createIndVarSimplifyPass());       // Canonicalize indvars
+	pm.add(createLoopDeletionPass());         // Delete dead loops
+
+	//Simplify code
+	for(int repeat=0; repeat < 3; repeat++) {
+		pm.add(createGVNPass());                  // Remove redundancies
+		pm.add(createSCCPPass());                 // Constant prop with SCCP
+		pm.add(createCFGSimplificationPass());    // Merge & remove BBs
+		pm.add(createInstructionCombiningPass());
+		pm.add(createConstantPropagationPass());
+		pm.add(createAggressiveDCEPass());        // Delete dead instructions
+		pm.add(createCFGSimplificationPass());    // Merge & remove BBs
+		pm.add(createDeadStoreEliminationPass()); // Delete dead stores
+		pm.add(createDemoteRegisterToMemoryPass());
+	}
+
+	pm.doInitialization();
+	pm.run(*func);
+	pm.run(*func1);
 
 	f = (knh_Fmethod) ee->getPointerToFunction(func1);
 	knh_Method_setFunc(ctx, mtd, f);

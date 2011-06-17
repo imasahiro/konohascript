@@ -194,13 +194,14 @@ METHOD ServerSocket_new(Ctx* ctx,knh_sfp_t* sfp _RIX)
 	int optval = 1;
 	const char *errfunc = NULL;
 	const char *host = "127.0.0.1";
+	in_addr_t hostinfo;
 
 	int fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd  == -1) {
 		errfunc = "socket"; goto L_RETURN;
 	}
 
-	in_addr_t hostinfo = inet_addr(host);
+	hostinfo = inet_addr(host);
 	if (hostinfo == INADDR_NONE) {
 		errfunc = "inet_addr"; goto L_RETURN;
 	}

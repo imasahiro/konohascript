@@ -220,8 +220,7 @@ void opt_a(CTX ctx, int mode, const char *optstr)
 #ifdef K_DEOS_TRACE
 	char *trace = knh_getenv(K_DEOS_TRACE);
 	if(trace != NULL) {
-		void *sfp = NULL;
-		LOGDATA = {sDATA("traceid", trace)};
+		LOGSFPDATA = {sDATA("traceid", trace)};
 		NOTE_OK("trace");
 	}
 #endif
@@ -877,8 +876,7 @@ void THROW_Halt(CTX ctx, knh_sfp_t *sfp, const char *msg)
 }
 void THROW_OutOfMemory(CTX ctx, size_t size)
 {
-	void *sfp = NULL;
-	LOGDATA = {uDATA("requested_size(bytes)", size), uDATA("used_size", ctx->stat->usedMemorySize)};
+	LOGSFPDATA = {uDATA("requested_size(bytes)", size), uDATA("used_size", ctx->stat->usedMemorySize)};
 	CRIT_Failed("malloc", "OutOfMemory!!");
 }
 void THROW_StackOverflow(CTX ctx, knh_sfp_t *sfp)

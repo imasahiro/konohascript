@@ -559,8 +559,7 @@ void konoha_close(konoha_t konoha)
 	CTX ctx = (knh_context_t*)konoha.ctx;
 	KONOHA_CHECK_(konoha);
 	if(ctx->share->threadCounter > 1) {
-		void *sfp = NULL;
-		LOGDATA = {LOGMSG("stil threads running"), iDATA("threads", ctx->share->threadCounter)};
+		LOGSFPDATA = {LOGMSG("stil threads running"), iDATA("threads", ctx->share->threadCounter)};
 		LIB_Failed("konoha_close", NULL);
 		return;
 	}
@@ -570,11 +569,10 @@ void konoha_close(konoha_t konoha)
 	//knh_RefTraverse(ctx, knh_Object_RCsweep);
 #endif
 	{
-		void *sfp = NULL;
-		LOGDATA = {uDATA("gc_count", ctx->stat->gcCount),
-				   uDATA("marking_time(ms)", ctx->stat->markingTime),
-				   uDATA("sweeping_time(ms)", ctx->stat->sweepingTime),
-				   uDATA("total_time(ms)", ctx->stat->gcTime)};
+		LOGSFPDATA = {uDATA("gc_count", ctx->stat->gcCount),
+				uDATA("marking_time(ms)", ctx->stat->markingTime),
+				uDATA("sweeping_time(ms)", ctx->stat->sweepingTime),
+				uDATA("total_time(ms)", ctx->stat->gcTime)};
 		NOTE_OK("GC");
 	}
 	((knh_context_t*)ctx)->bufa = NULL; // necessary for KNH_SYSLOG
