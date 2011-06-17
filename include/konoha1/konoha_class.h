@@ -1404,6 +1404,7 @@ knh_opline_t* knh_VirtualMachine_run(CTX, knh_sfp_t *, knh_opline_t *);
 		klr_setmtdNC(ctx, lsfp[thisidx_+K_MTDIDX], fo->mtd);   \
 		klr_setesp(ctx, lsfp + thisidx_ + argc + 1);           \
 		KNH_SELFCALL(ctx, lsfp, fo->mtd, K_RTNIDX);            \
+	}                                                          \
 
 #define BEGIN_LOCAL(ctx, lsfp, n) \
 		knh_sfp_t *lsfp = knh_stack_local(ctx, n);\

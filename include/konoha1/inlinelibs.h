@@ -205,11 +205,49 @@ static knh_hashcode_t knh_hash(knh_hashcode_t h, const char *p, size_t len)
 /* ------------------------------------------------------------------------ */
 /* [cwb] */
 
+#if defined(USE_cwb_open0) || defined(USE_cwb)
+static inline knh_cwb_t *knh_cwb_open0(CTX ctx, knh_cwb_t *cwb) CC_UNUSED ;
+static knh_cwb_t *knh_cwb_open0(CTX ctx, knh_cwb_t *cwb)
+{
+	knh_Bytes_putc(ctx, ctx->bufa, 0);  // FIXME knh_cwb_close()
+	cwb->ba = ctx->bufa;
+	cwb->w  = ctx->bufw;
+	cwb->pos = BA_size(cwb->ba);
+	return cwb;
+}
+
+static inline void knh_cwb_close0(knh_cwb_t *cwb) CC_UNUSED ;
+static void knh_cwb_close0(knh_cwb_t *cwb)
+{
+	size_t pos = cwb->pos - 1;
+	DBG_ASSERT(pos > 0);
+	DBG_ASSERT(cwb->ba->bu.buf[pos] == 0);
+	knh_Bytes_clear(cwb->ba, pos);
+	cwb->ba = NULL;
+	cwb->w = NULL;
+	cwb->pos = 0;
+}
+
+static knh_String_t *knh_cwb_newString0(CTX ctx, knh_cwb_t *cwb) CC_UNUSED ;
+static knh_String_t *knh_cwb_newString0(CTX ctx, knh_cwb_t *cwb)
+{
+	knh_String_t *s = TS_EMPTY;
+	if(cwb->pos < (cwb->ba)->bu.len) {
+		knh_bytes_t t;
+		t.text = (cwb->ba)->bu.text + cwb->pos;
+		t.len =  (cwb->ba)->bu.len - cwb->pos;
+		s = new_S(ctx, t);
+	}
+	knh_cwb_close0(cwb);
+	return s;
+}
+
+#endif
+
 #if defined(USE_cwb_open) || defined(USE_cwb)
 static inline knh_cwb_t *knh_cwb_open(CTX ctx, knh_cwb_t *cwb) CC_UNUSED ;
 static knh_cwb_t *knh_cwb_open(CTX ctx, knh_cwb_t *cwb)
 {
-	knh_Bytes_putc(ctx, ctx->bufa, 0);  // FIXME knh_cwb_close()
 	cwb->ba = ctx->bufa;
 	cwb->w  = ctx->bufw;
 	cwb->pos = BA_size(cwb->ba);
@@ -219,12 +257,7 @@ static knh_cwb_t *knh_cwb_open(CTX ctx, knh_cwb_t *cwb)
 static inline void knh_cwb_close(knh_cwb_t *cwb) CC_UNUSED ;
 static void knh_cwb_close(knh_cwb_t *cwb)
 {
-	size_t pos = cwb->pos - 1;
-	if(pos > 0) {
-		DBG_ASSERT(cwb->ba->bu.buf[pos] == 0);
-		knh_Bytes_clear(cwb->ba, pos);
-		cwb->pos = 0;
-	}
+	knh_Bytes_clear(cwb->ba, cwb->pos);
 }
 #endif
 

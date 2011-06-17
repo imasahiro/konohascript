@@ -715,7 +715,7 @@ static ITRNEXT ITR_where(CTX ctx, knh_sfp_t *sfp _RIX)
 	klr_setesp(ctx, lsfp + thisidx+2);
 	while(itrIN->fnext_1(ctx, lsfp+thisidx+2, -1)) {
 		knh_Func_t *fo = DP(itr)->funcNULL;
-		//KNH_FINVOKE(ctx, lsfp, rtnidx_, fo, 1);
+		KNH_FINVOKE(ctx, lsfp, rtnidx_, fo, 1);
 		if(lsfp[rtnidx_].bvalue) {
 			sfp[K_RIX].ndata = lsfp[thisidx+1].ndata;
 			ITRNEXT_(lsfp[thisidx+1].o);
@@ -740,7 +740,7 @@ static ITRNEXT ITR_each(CTX ctx, knh_sfp_t *sfp _RIX)
 		ITREND_();
 	}
 	knh_Func_t *fo = DP(itr)->funcNULL;
-	//KNH_FINVOKE(ctx, lsfp, rtnidx_, fo, 1);
+	KNH_FINVOKE(ctx, lsfp, rtnidx_, fo, 1);
 	sfp[K_RIX].ndata = lsfp[rtnidx_].ndata;
 	ITRNEXT_(lsfp[rtnidx_].o);
 }

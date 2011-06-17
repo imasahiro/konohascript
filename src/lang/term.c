@@ -356,7 +356,7 @@ static void TokenBlock_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
 
 	if(prev_idx > 0 && TT_(tk) == TT_CODE && TT_(tkPREV) == TT_DARROW) {
 		knh_Token_t *tkPREV2 = a->tokens[prev_idx - 1];
-		if(TT_(tkPREV2) == TT_PARENTHESIS) {  // (n) = > {} ==> function(n) {}
+		if(TT_(tkPREV2) == TT_PARENTHESIS) {  // (n) => {} ==> function(n) {}
 			TT_(tkPREV) = TT_FUNCTION;
 			knh_Array_swap(ctx, a, prev_idx-1, prev_idx);
 			return;
@@ -1854,10 +1854,10 @@ static void _KEYVALUEs(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 static void _DICT(CTX ctx, knh_Stmt_t *stmt, knh_Token_t *tkC, knh_Token_t *tkB)
 {
 	DBG_ASSERT(STT_(stmt) == STT_NEW);
-	knh_Stmt_add(ctx, stmt, tkC);
 	if(TT_(tkB) == TT_CODE) {
 		Token_toBRACE(ctx, tkB, 1/*isEXPANDING*/);
 	}
+	knh_Stmt_add(ctx, stmt, tkC);
 	DBG_ASSERT(TT_(tkB) == TT_BRACE);
 	{
 		tkitr_t pbuf, *pitr = ITR_new(tkB, &pbuf);
@@ -2252,16 +2252,16 @@ static void _EXPR1(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 				break;
 			case TT_PARENTHESIS: /* @CODE: () */ {
 				tkitr_t pbuf, *pitr = ITR_new(tkCUR, &pbuf);
-				int c = ITR_indexTT(pitr, TT_DARROW, -1);
-				if(c != -1) {
-					STT_(stmt) = STT_FUNCTION;
-					_PARAMs(ctx, stmt, pitr);
-					_CODEDOC(ctx, stmt, pitr);
-					pitr->c = c + 1;
-					_RETURNEXPR(ctx, stmt, pitr);
-					break;
-				}
-				c = ITR_count(pitr, TT_COMMA);
+//				int c = ITR_indexTT(pitr, TT_DARROW, -1);
+//				if(c != -1) {
+//					STT_(stmt) = STT_FUNCTION;
+//					_PARAMs(ctx, stmt, pitr);
+//					_CODEDOC(ctx, stmt, pitr);
+//					pitr->c = c + 1;
+//					_RETURNEXPR(ctx, stmt, pitr);
+//					break;
+//				}
+				int c = ITR_count(pitr, TT_COMMA);
 				if(c == 0) {
 					if(ITR_hasNext(pitr)) {   /* @CODE: (expr) => expr */
 						_EXPR(ctx, stmt, pitr);
@@ -2289,28 +2289,22 @@ static void _EXPR1(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 				_ARRAY(ctx, stmt, MN_newLIST, cid, pitr);
 				break;
 			}
-			case TT_CODE:
-			case TT_BRACE: {
-				stmt = new_StmtREUSE(ctx, stmt, STT_NEW);
-				knh_Stmt_add(ctx, stmt, new_TokenMN(ctx, MN_newMAP));
-				_DICT(ctx, stmt, new_TokenCID(ctx, CLASS_Map), tkCUR);
-				break;
-			}
-			case TT_FUNCTION: { /* function () */
-				STT_(stmt) = STT_FUNCTION;
-				if(ITR_is(itr, TT_FUNCNAME) || ITR_is(itr, TT_UFUNCNAME)) {
-					knh_Token_t *tkN = ITR_nextTK(itr);
-					WARN_Ignored(ctx, _("function name"), CLASS_unknown, S_tochar(tkN->text));
-				}
-				if(ITR_is(itr, TT_PARENTHESIS) && ITR_isN(itr, +1, TT_CODE)) {
-					tkCUR = new_Token(ctx, TT_DOC);
-					KNH_SETv(ctx, (tkCUR)->data, (ITR_tk(itr))->text);
-					_PARAM(ctx, stmt, itr);
-					knh_Stmt_add(ctx, stmt, tkCUR);
-					_STMT1(ctx, stmt, itr);
+			case TT_CODE: {
+				knh_bytes_t t = S_tobytes(tkCUR->text);
+				if(t.len == 0 || knh_bytes_index(t, ':') != -1) {
+					stmt = new_StmtREUSE(ctx, stmt, STT_NEW);
+					knh_Stmt_add(ctx, stmt, new_TokenMN(ctx, MN_newMAP));
+					_DICT(ctx, stmt, new_TokenCID(ctx, CLASS_Map), tkCUR);
 				}
 				else {
-					tkCUR = ITR_tk(itr); goto L_ERROR;
+					stmt = new_StmtREUSE(ctx, stmt, STT_FUNCTION);
+					knh_Stmt_add(ctx, stmt, new_Stmt2(ctx, STT_DECL, NULL));
+					knh_Token_t *tkDOC = new_Token(ctx, TT_DOC);
+					KNH_SETv(ctx, (tkDOC)->data, (tkCUR)->text);
+					knh_Stmt_add(ctx, stmt, tkDOC);
+					itr->c -= 1;
+					_STMT1(ctx, stmt, itr);
+					DBG_P("SIZE=%d", DP(stmt)->size);
 				}
 				break;
 			}
@@ -2318,7 +2312,6 @@ static void _EXPR1(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 				knh_Stmt_toERR(ctx, stmt, tkCUR);
 				break;
 			default: {
-				L_ERROR:;
 				Stmt_toSyntaxError(ctx, stmt, tkCUR K_TRACEPOINT);
 			}
 		}
@@ -2425,6 +2418,25 @@ static void _EXPRCALL(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			_REGEX(ctx, stmt, itr, tkCUR);
 			break;
 		}
+		case TT_FUNCTION: {
+			STT_(stmt) = STT_FUNCTION;
+			if(ITR_is(itr, TT_FUNCNAME) || ITR_is(itr, TT_UFUNCNAME)) {
+				knh_Token_t *tkN = ITR_nextTK(itr);
+				WARN_Ignored(ctx, _("function name"), CLASS_unknown, S_tochar(tkN->text));
+			}
+			if(ITR_is(itr, TT_PARENTHESIS) && ITR_isN(itr, +1, TT_CODE)) {
+				tkCUR = new_Token(ctx, TT_DOC);
+				KNH_SETv(ctx, (tkCUR)->data, (ITR_tk(itr))->text);
+				_PARAM(ctx, stmt, itr);
+				knh_Stmt_add(ctx, stmt, tkCUR);
+				_STMT1(ctx, stmt, itr);
+			}
+			else {
+				knh_Stmt_toERR(ctx, stmt, ERROR_text(ctx, "syntax error: function() {...}" K_TRACEPOINT));
+				return;
+			}
+			break;
+		}
 		case TT_NEW: {
 			STT_(stmt) = STT_NEW;
 			isCALL = 1;
@@ -2494,11 +2506,13 @@ static void _EXPRCALL(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			_EXPR1(ctx, stmt, itr);
 		}
 	}
-	if(isCALL || ITR_isDOTNAME(itr, 0) || ITR_is(itr, TT_PARENTHESIS) || /*ITR_is(itr, TT_BRACE) || error*/ ITR_is(itr, TT_BRANCET)) {
+	if(isCALL || ITR_isDOTNAME(itr, 0) || ITR_is(itr, TT_PARENTHESIS) || ITR_is(itr, TT_BRANCET)) {
 		_CALLPARAM(ctx, stmt, itr);
 	}
 	else {
-		STT_(stmt) = STT_CALL1;
+		if(STT_(stmt) != STT_FUNCTION) {
+			STT_(stmt) = STT_CALL1;
+		}
 		if(ITR_hasNext(itr)) {
 			WARN_Unnecesary(ctx, itr->ts[itr->c]);
 			itr->c = itr->e;
@@ -2729,6 +2743,7 @@ static knh_Stmt_t *Stmt_norm(CTX ctx, knh_Stmt_t *stmt)
 	}
 	if(stmtLAST != NULL) {
 		ctx->gma->uline = stmtLAST->uline;
+		//DBG_P("@@@@ STT=%s", TT__(stmtLAST->stt));
 		if(STT_(stmtLAST) == STT_CALL1 && !IS_Stmt(DP(stmtLAST)->stmtPOST)) {
 			STT_(stmtLAST) = STT_RETURN;
 		}
@@ -3247,36 +3262,6 @@ static knh_Stmt_t *new_StmtMETA(CTX ctx, knh_term_t stt, tkitr_t *itr, int shift
 		break;\
 	}\
 
-static int Token_isMAP(CTX ctx, knh_Token_t *tk)
-{
-	DBG_ASSERT(TT_(tk) == TT_BRACE);
-	tkitr_t tbuf, *titr = ITR_new(tk, &tbuf);
-	int i, colon = 0, comma = 0;
-	int isMAP = titr->e == 0 ? 1 : 0;
-	for(i = 0; i < titr->e; i++) {
-		knh_term_t tt = TT_(titr->ts[i]);
-		if(tt <= TT_FINALLY || tt == TT_LSEND || tt == TT_RSEND || tt == TT_LET) {
-			isMAP = 0;
-			goto L_RETURN;
-		}
-		else if(tt == TT_SEMICOLON && colon == 0) {
-			isMAP = 0;
-			goto L_RETURN;
-		}
-		else if(tt == TT_COLON) colon++;
-		else if(tt == TT_COMMA) comma++;
-	}
-	if(colon == 0 && titr->e > 0) {
-		TT_(tk) = TT_BRANCET;
-		isMAP = 1;
-	}
-	if(colon > 0) {
-		isMAP = 1;
-	}
-	L_RETURN:;
-	return isMAP;
-}
-
 static void _STMTEXPR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 {
 	knh_index_t idx = ITR_indexTT(itr, TT_LET, -1);
@@ -3334,6 +3319,36 @@ static void _STMTEXPR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		return;
 	}
 	_EXPR(ctx, stmt, itr);
+}
+
+static int Token_isMAP(CTX ctx, knh_Token_t *tk)
+{
+	DBG_ASSERT(TT_(tk) == TT_BRACE);
+	tkitr_t tbuf, *titr = ITR_new(tk, &tbuf);
+	int i, colon = 0, comma = 0;
+	int isMAP = titr->e == 0 ? 1 : 0;
+	for(i = 0; i < titr->e; i++) {
+		knh_term_t tt = TT_(titr->ts[i]);
+		if(tt <= TT_FINALLY || tt == TT_LSEND || tt == TT_RSEND || tt == TT_LET) {
+			isMAP = 0;
+			goto L_RETURN;
+		}
+		else if(tt == TT_SEMICOLON && colon == 0) {
+			isMAP = 0;
+			goto L_RETURN;
+		}
+		else if(tt == TT_COLON) colon++;
+		else if(tt == TT_COMMA) comma++;
+	}
+	if(colon == 0 && titr->e > 0) {
+		TT_(tk) = TT_BRANCET;
+		isMAP = 1;
+	}
+	if(colon > 0) {
+		isMAP = 1;
+	}
+	L_RETURN:;
+	return isMAP;
 }
 
 static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)

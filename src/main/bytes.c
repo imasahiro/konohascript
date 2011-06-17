@@ -223,25 +223,19 @@ knh_bytes_t knh_cwb_ensure(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t, size_t reqsiz
 	return t;
 }
 
-
 KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb)
 {
-	DBG_P("CHAR: cwb->pos=%d", cwb->pos);
 	return knh_Bytes_ensureZero(ctx, cwb->ba) + cwb->pos;
 }
 
-
 knh_String_t *knh_cwb_newString(CTX ctx, knh_cwb_t *cwb)
 {
-	if(cwb->pos == (cwb->ba)->bu.len) {
-		return TS_EMPTY;
+	knh_String_t *s = TS_EMPTY;
+	if(cwb->pos < (cwb->ba)->bu.len) {
+		s = new_S(ctx, knh_cwb_tobytes(cwb));
 	}
-	else {
-		knh_bytes_t t = knh_cwb_tobytes(cwb);
-		knh_String_t *s = new_S(ctx, t);
-		knh_cwb_close(cwb);
-		return s;
-	}
+	knh_cwb_close(cwb);
+	return s;
 }
 
 #else/*K_INCLUDE_BUILTINAPI*/

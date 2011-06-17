@@ -2460,12 +2460,12 @@ static knh_Token_t* FUNCCALLPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t 
 	knh_class_t cid = Tn_cid(stmt, 0);
 	DBG_ASSERT(IS_Tfunc(cid));
 	knh_ParamArray_t *pa = ClassTBL(cid)->cparam;
-	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, cid, MN_invoke);
+	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, cid, MN_);
 	KNH_ASSERT(mtd != NULL);
 		/* 0 1 2 3 4 .. 5 */
 	knh_Stmt_swap(ctx, stmt, 0, 1);
 	DBG_ASSERT(TT_(tkNN(stmt, 0)) == TT_ASIS);
-	Token_setMethod(ctx, tkNN(stmt, 0), MN_invoke, mtd);
+	Token_setMethod(ctx, tkNN(stmt, 0), MN_, mtd);
 	for(i = 0; i < pa->psize; i++) {
 		knh_param_t *p = knh_ParamArray_get(pa, i);
 		knh_type_t type = Gamma_type(ctx, p->type);
@@ -2511,11 +2511,11 @@ static knh_Token_t* FUNCDYNCALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t req
 	tkNN(stmt, 0)->type = cid;
 	Stmt_setDYNCALL(stmt, 1);
 	{
-		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, cid, MN_invoke);
+		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, cid, MN_);
 		KNH_ASSERT(mtd != NULL);
 		knh_Stmt_swap(ctx, stmt, 0, 1);
 		DBG_ASSERT(TT_(tkNN(stmt, 0)) == TT_ASIS);
-		Token_setMethod(ctx, tkNN(stmt, 0), MN_invoke, mtd);
+		Token_setMethod(ctx, tkNN(stmt, 0), MN_, mtd);
 	}
 	END_LOCAL_(ctx, lsfp);
 	STT_(stmt) = STT_FUNCCALL;

@@ -1698,7 +1698,7 @@ static METHOD Method_getName(CTX ctx, knh_sfp_t *sfp _RIX)
 //}
 
 /* ------------------------------------------------------------------------ */
-//## @Hidden @Private method dynamic Func.invoke(dynamic x);
+//## @Hidden method void Func.();
 
 static METHOD Func_invoke(CTX ctx, knh_sfp_t *sfp _RIX)
 {

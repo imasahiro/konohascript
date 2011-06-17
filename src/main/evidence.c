@@ -28,7 +28,7 @@
 /* ************************************************************************ */
 
 #define USE_bytes_rindex  1
-#define USE_cwb_open      1
+#define USE_cwb_open0      1
 #define USE_cwb_size      1
 
 #include"commons.h"
@@ -327,18 +327,18 @@ void knh_write_uline(CTX ctx, knh_OutputStream_t *w, knh_uline_t uline)
 	}
 }
 
-static const char* knh_format_uline(CTX ctx, char *buf, size_t bufsiz, knh_uline_t uline)
-{
-	knh_uri_t uri = ULINE_uri(uline);
-	knh_uintptr_t line = ULINE_line(uline);
-	if(uline == 0 || uri == URI_unknown || line == 0) {
-		buf[0] = 0;
-	}
-	else {
-		snprintf(buf, bufsiz, "(%s:%d) ", knh_sfile(FILENAME__(uri)), (int)line);
-	}
-	return (const char*)buf;
-}
+//static const char* knh_format_uline(CTX ctx, char *buf, size_t bufsiz, knh_uline_t uline)
+//{
+//	knh_uri_t uri = ULINE_uri(uline);
+//	knh_uintptr_t line = ULINE_line(uline);
+//	if(uline == 0 || uri == URI_unknown || line == 0) {
+//		buf[0] = 0;
+//	}
+//	else {
+//		snprintf(buf, bufsiz, "(%s:%d) ", knh_sfile(FILENAME__(uri)), (int)line);
+//	}
+//	return (const char*)buf;
+//}
 
 static void readuline(FILE *fp, char *buf, size_t bufsiz)
 {
@@ -453,7 +453,7 @@ void knh_write_sfp(CTX ctx, knh_OutputStream_t *w, knh_type_t type, knh_sfp_t *s
 
 static void knh_Exception_addStackTrace(CTX ctx, knh_Exception_t *e, knh_sfp_t *sfp)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	knh_cwb_t cwbbuf, *cwb = knh_cwb_open0(ctx, &cwbbuf);
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
 	if((mtd)->mn != MN_LAMBDA) {
 		int i = 0, psize = knh_Method_psize(mtd);
@@ -477,7 +477,7 @@ static void knh_Exception_addStackTrace(CTX ctx, knh_Exception_t *e, knh_sfp_t *
 		if(e->tracesNULL == NULL) {
 			KNH_INITv(e->tracesNULL, new_Array(ctx, CLASS_String, 0));
 		}
-		knh_Array_add(ctx, e->tracesNULL, knh_cwb_newString(ctx, cwb));
+		knh_Array_add(ctx, e->tracesNULL, knh_cwb_newString0(ctx, cwb));
 	}
 }
 
@@ -543,119 +543,119 @@ void knh_assert(CTX ctx, knh_sfp_t *sfp, long start, knh_uline_t uline)
 	knh_throw(ctx, sfp, start);
 }
 
-/* ------------------------------------------------------------------------ */
-/* [syslog] */
-
-#define K_EVENT_FORMAT " <%s:%s> "
-
-static void knh_traceCFMT(CTX ctx, int pe, int isThrowable, const char *ns, const char *event, knh_uline_t uline, knh_sfp_t *sfp, const char *fmt, va_list ap)
-{
-	char newfmt[256];
-	char linefmt[80];
-	knh_format_uline(ctx, linefmt, sizeof(linefmt), uline);
-	knh_snprintf(newfmt, sizeof(newfmt), "%s+" K_INT_FMT K_EVENT_FORMAT "%s%s", ctx->trace, ctx->seq, ns, event, linefmt, fmt);
-	ctx->spi->vsyslog(pe, newfmt, ap);
-	((knh_context_t*)ctx)->seq += 1;
-	if(ctx->ehdrNC != NULL && isThrowable) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-		knh_vprintf(ctx, cwb->w, fmt, ap);
-		knh_Exception_t *e = new_Error(ctx, uline, knh_cwb_newString(ctx, cwb));
-		CTX_setThrowingException(ctx, e);
-		knh_throw(ctx, sfp, 0);
-	}
-}
-
-static void knh_tracePERROR(CTX ctx, int pe, int isThrowable, const char *ns, const char *event, knh_uline_t uline, knh_sfp_t *sfp, const char *fmt, va_list ap)
-{
-	int errno_ = errno;
-#if defined(K_USING_WIN32_) && !defined(K_USING_MINGW_)
-	char emsg[256];
-	strerror_s(emsg, sizeof(emsg), errno_);
-#elif defined(K_USING_POSIX_)
-	char emsg[256];
-	strerror_r(errno_, emsg, sizeof(emsg));
-#else
-	char *emsg = strerror(errno_);
-#endif
-	char newfmt[512];
-	char linefmt[80];
-	knh_format_uline(ctx, linefmt, sizeof(linefmt), uline);
-	knh_snprintf(newfmt, sizeof(newfmt), "%s+" K_INT_FMT K_EVENT_FORMAT "%s%s ERRNO=%d, ERR='%s'",
-			ctx->trace, ctx->seq, ns, event, linefmt, fmt, errno_, emsg);
-	errno = 0;
-	ctx->spi->vsyslog(pe, newfmt, ap);
-	((knh_context_t*)ctx)->seq += 1;
-	if(ctx->ehdrNC != NULL && isThrowable) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-		knh_vprintf(ctx, cwb->w, fmt, ap);
-		knh_Exception_t *e = new_Error(ctx, uline, knh_cwb_newString(ctx, cwb));
-		CTX_setThrowingException(ctx, e);
-		knh_throw(ctx, sfp, 0);
-	}
-}
-
-static void knh_traceKFMT(CTX ctx, int pe, int isThrowable, const char *ns, const char *event, knh_uline_t uline, knh_sfp_t *sfp, const char *fmt, va_list ap)
-{
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	size_t msgpos = 0;
-	knh_printf(ctx, cwb->w, "%s+%i" K_EVENT_FORMAT, ctx->trace, ctx->seq, ns, event);
-	knh_write_uline(ctx, cwb->w, uline);
-	msgpos = BA_size(cwb->ba);
-	knh_vprintf(ctx, cwb->w, fmt, ap);
-	ctx->spi->syslog(pe, knh_cwb_tochar(ctx, cwb));
-	((knh_context_t*)ctx)->seq += 1;
-	if(ctx->ehdrNC != NULL && isThrowable) {
-		size_t cwbpos = cwb->pos;
-		cwb->pos = msgpos;
-		knh_Exception_t *e = new_Error(ctx, uline, knh_cwb_newString(ctx, cwb));
-		cwb->pos = cwbpos;
-		knh_cwb_close(cwb);
-		CTX_setThrowingException(ctx, e);
-		knh_throw(ctx, sfp, 0);
-	}
-	knh_cwb_close(cwb);
-}
-
-void knh_vtrace(CTX ctx, knh_sfp_t *sfp, int pe, const char *ns, const char *event, int isThrowable, const char *fmt, va_list ap)
-{
-	if(pe <= LOG_CRIT) isThrowable = 1;
-	knh_uline_t uline = 0;
-	if(ctx->ehdrNC != NULL) {
-		if(ctx->gma != NULL && SP(ctx->gma)->uline != 0) {
-			uline = SP(ctx->gma)->uline;
-		}
-		else {
-			uline = knh_stack_uline(ctx, sfp);
-		}
-	}
-	if(fmt[0] == '*') {
-		knh_traceCFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
-	}
-	else if(fmt[0] == '!') {
-		if(errno > 0) {
-			if(errno != EACCES) pe = LOG_ALERT;
-			knh_tracePERROR(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
-		}
-		else {
-			knh_traceCFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
-		}
-	}
-	else {
-		KNH_ASSERT(ctx->bufa != NULL);
-		knh_traceKFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt, ap);
-	}
-	if(pe == LOG_EMERG) {
-		knh_exit(ctx, 0);
-	}
-}
-
-void knh_trace(CTX ctx, knh_sfp_t *sfp, int pe, const char *ns, const char *evt, int isThrowable, const char *fmt, ...)
-{
-	va_list ap;
-	va_start(ap , fmt);
-	knh_vtrace(ctx, sfp, pe, ns, evt, isThrowable, fmt, ap);
-	va_end(ap);
-}
+///* ------------------------------------------------------------------------ */
+///* [syslog] */
+//
+//#define K_EVENT_FORMAT " <%s:%s> "
+//
+//static void knh_traceCFMT(CTX ctx, int pe, int isThrowable, const char *ns, const char *event, knh_uline_t uline, knh_sfp_t *sfp, const char *fmt, va_list ap)
+//{
+//	char newfmt[256];
+//	char linefmt[80];
+//	knh_format_uline(ctx, linefmt, sizeof(linefmt), uline);
+//	knh_snprintf(newfmt, sizeof(newfmt), "%s+" K_INT_FMT K_EVENT_FORMAT "%s%s", ctx->trace, ctx->seq, ns, event, linefmt, fmt);
+//	ctx->spi->vsyslog(pe, newfmt, ap);
+//	((knh_context_t*)ctx)->seq += 1;
+//	if(ctx->ehdrNC != NULL && isThrowable) {
+//		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//		knh_vprintf(ctx, cwb->w, fmt, ap);
+//		knh_Exception_t *e = new_Error(ctx, uline, knh_cwb_newString(ctx, cwb));
+//		CTX_setThrowingException(ctx, e);
+//		knh_throw(ctx, sfp, 0);
+//	}
+//}
+//
+//static void knh_tracePERROR(CTX ctx, int pe, int isThrowable, const char *ns, const char *event, knh_uline_t uline, knh_sfp_t *sfp, const char *fmt, va_list ap)
+//{
+//	int errno_ = errno;
+//#if defined(K_USING_WIN32_) && !defined(K_USING_MINGW_)
+//	char emsg[256];
+//	strerror_s(emsg, sizeof(emsg), errno_);
+//#elif defined(K_USING_POSIX_)
+//	char emsg[256];
+//	strerror_r(errno_, emsg, sizeof(emsg));
+//#else
+//	char *emsg = strerror(errno_);
+//#endif
+//	char newfmt[512];
+//	char linefmt[80];
+//	knh_format_uline(ctx, linefmt, sizeof(linefmt), uline);
+//	knh_snprintf(newfmt, sizeof(newfmt), "%s+" K_INT_FMT K_EVENT_FORMAT "%s%s ERRNO=%d, ERR='%s'",
+//			ctx->trace, ctx->seq, ns, event, linefmt, fmt, errno_, emsg);
+//	errno = 0;
+//	ctx->spi->vsyslog(pe, newfmt, ap);
+//	((knh_context_t*)ctx)->seq += 1;
+//	if(ctx->ehdrNC != NULL && isThrowable) {
+//		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//		knh_vprintf(ctx, cwb->w, fmt, ap);
+//		knh_Exception_t *e = new_Error(ctx, uline, knh_cwb_newString(ctx, cwb));
+//		CTX_setThrowingException(ctx, e);
+//		knh_throw(ctx, sfp, 0);
+//	}
+//}
+//
+//static void knh_traceKFMT(CTX ctx, int pe, int isThrowable, const char *ns, const char *event, knh_uline_t uline, knh_sfp_t *sfp, const char *fmt, va_list ap)
+//{
+//	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//	size_t msgpos = 0;
+//	knh_printf(ctx, cwb->w, "%s+%i" K_EVENT_FORMAT, ctx->trace, ctx->seq, ns, event);
+//	knh_write_uline(ctx, cwb->w, uline);
+//	msgpos = BA_size(cwb->ba);
+//	knh_vprintf(ctx, cwb->w, fmt, ap);
+//	ctx->spi->syslog(pe, knh_cwb_tochar(ctx, cwb));
+//	((knh_context_t*)ctx)->seq += 1;
+//	if(ctx->ehdrNC != NULL && isThrowable) {
+//		size_t cwbpos = cwb->pos;
+//		cwb->pos = msgpos;
+//		knh_Exception_t *e = new_Error(ctx, uline, knh_cwb_newString(ctx, cwb));
+//		cwb->pos = cwbpos;
+//		knh_cwb_close(cwb);
+//		CTX_setThrowingException(ctx, e);
+//		knh_throw(ctx, sfp, 0);
+//	}
+//	knh_cwb_close(cwb);
+//}
+//
+//void knh_vtrace(CTX ctx, knh_sfp_t *sfp, int pe, const char *ns, const char *event, int isThrowable, const char *fmt, va_list ap)
+//{
+//	if(pe <= LOG_CRIT) isThrowable = 1;
+//	knh_uline_t uline = 0;
+//	if(ctx->ehdrNC != NULL) {
+//		if(ctx->gma != NULL && SP(ctx->gma)->uline != 0) {
+//			uline = SP(ctx->gma)->uline;
+//		}
+//		else {
+//			uline = knh_stack_uline(ctx, sfp);
+//		}
+//	}
+//	if(fmt[0] == '*') {
+//		knh_traceCFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
+//	}
+//	else if(fmt[0] == '!') {
+//		if(errno > 0) {
+//			if(errno != EACCES) pe = LOG_ALERT;
+//			knh_tracePERROR(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
+//		}
+//		else {
+//			knh_traceCFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt+1, ap);
+//		}
+//	}
+//	else {
+//		KNH_ASSERT(ctx->bufa != NULL);
+//		knh_traceKFMT(ctx, pe, isThrowable, ns, event, uline, sfp, fmt, ap);
+//	}
+//	if(pe == LOG_EMERG) {
+//		knh_exit(ctx, 0);
+//	}
+//}
+//
+//void knh_trace(CTX ctx, knh_sfp_t *sfp, int pe, const char *ns, const char *evt, int isThrowable, const char *fmt, ...)
+//{
+//	va_list ap;
+//	va_start(ap , fmt);
+//	knh_vtrace(ctx, sfp, pe, ns, evt, isThrowable, fmt, ap);
+//	va_end(ap);
+//}
 
 /* ------------------------------------------------------------------------ */
 
@@ -814,10 +814,10 @@ static void knh_write_logdata(CTX ctx, knh_OutputStream_t *w, const knh_logdata_
 
 void knh_record(CTX ctx, knh_sfp_t *sfp, int op, int pe, const char *action, const char *emsg, const knh_logdata_t *data, size_t datasize)
 {
+	knh_uline_t uline = 0;
 	KNH_ASSERT(ctx->bufa != NULL);
 	if(op > 0 || isVerbose) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-		knh_uline_t uline = 0;
+		knh_cwb_t cwbbuf, *cwb = knh_cwb_open0(ctx, &cwbbuf);
 		if(ctx->gma != NULL && SP(ctx->gma)->uline != 0) {
 			uline = SP(ctx->gma)->uline;
 		}
@@ -840,28 +840,27 @@ void knh_record(CTX ctx, knh_sfp_t *sfp, int op, int pe, const char *action, con
 		knh_write_logdata(ctx, cwb->w, data, datasize);
 		ctx->spi->syslog(pe, knh_cwb_tochar(ctx, cwb));
 		((knh_context_t*)ctx)->seq += 1;
-		knh_cwb_close(cwb);
-
-		if(FLAG_is(op, K_RECFAILED) && ctx->ehdrNC != NULL) {
-			cwb = knh_cwb_open(ctx, &cwbbuf);
-			if(FLAG_is(op, K_RECCRIT) || ctx->e == (knh_Exception_t*)TS_EMPTY) {
-				knh_write_ascii(ctx, cwb->w, emsg);
-				knh_putc(ctx, cwb->w, ':'); knh_putc(ctx, cwb->w, ' ');
-				knh_write_logdata(ctx, cwb->w, data, datasize);
-			}
-			else if(IS_String(ctx->e)) {
-				knh_String_t *emsg = (knh_String_t*)ctx->e;
-				knh_write(ctx, cwb->w, S_tobytes(emsg));
-				knh_putc(ctx, cwb->w, ':'); knh_putc(ctx, cwb->w, ' ');
-				knh_write_logdata(ctx, cwb->w, data, datasize);
-			}
-			if(knh_cwb_size(cwb) > 0) {
-				knh_Exception_t *e = new_Error(ctx, uline, knh_cwb_newString(ctx, cwb));
-				CTX_setThrowingException(ctx, e);
-				knh_throw(ctx, sfp, 0);
-			}
-			knh_cwb_close(cwb);
+		knh_cwb_close0(cwb);
+	}
+	if(FLAG_is(op, K_RECFAILED) && ctx->ehdrNC != NULL) {
+		knh_cwb_t cwbbuf, *cwb = knh_cwb_open0(ctx, &cwbbuf);
+		if(FLAG_is(op, K_RECCRIT) || ctx->e == (knh_Exception_t*)TS_EMPTY) {
+			knh_write_ascii(ctx, cwb->w, emsg);
+			knh_putc(ctx, cwb->w, ':'); knh_putc(ctx, cwb->w, ' ');
+			knh_write_logdata(ctx, cwb->w, data, datasize);
 		}
+		else if(IS_String(ctx->e)) {
+			knh_String_t *emsg = (knh_String_t*)ctx->e;
+			knh_write(ctx, cwb->w, S_tobytes(emsg));
+			knh_putc(ctx, cwb->w, ':'); knh_putc(ctx, cwb->w, ' ');
+			knh_write_logdata(ctx, cwb->w, data, datasize);
+		}
+		if(knh_cwb_size(cwb) > 0) {
+			knh_Exception_t *e = new_Error(ctx, uline, knh_cwb_newString0(ctx, cwb));
+			CTX_setThrowingException(ctx, e);
+			knh_throw(ctx, sfp, 0);
+		}
+		knh_cwb_close0(cwb);
 	}
 }
 

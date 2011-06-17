@@ -688,50 +688,70 @@ static void knh_linkDynamicReadline(CTX ctx)
 
 static void knh_shell(CTX ctx)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	void *shell_status = NULL;
 	BEGIN_LOCAL(ctx, lsfp, 2);
 	LOCAL_NEW(ctx, lsfp, 0, knh_Array_t *, results, new_Array0(ctx, 0));
 	LOCAL_NEW(ctx, lsfp, 1, knh_InputStream_t *, bin, new_BytesInputStream(ctx, new_Bytes(ctx, "shell", K_PAGESIZE)));
 	knh_linkDynamicReadline(ctx);
-	knh_showWelcome(ctx, cwb->w);
-	knh_showSecurityAlert(ctx, cwb->w);
-	shell_status = shell_init(ctx, knh_cwb_tochar(ctx, cwb), NULL);
+	{
+		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+		knh_showWelcome(ctx, cwb->w);
+		knh_showSecurityAlert(ctx, cwb->w);
+		shell_status = shell_init(ctx, knh_cwb_tochar(ctx, cwb), NULL);
+		knh_cwb_close(cwb);
+	}
 	while(1) {
 		size_t i;
-		knh_status_t status = readstmt(ctx, cwb);
-		if(status == K_BREAK) break;
-		if(knh_cwb_size(cwb) == 0) continue;
-		status = shell_command(ctx, knh_cwb_tochar(ctx, cwb));
-		if(status == K_BREAK) break;
-		if(status == K_REDO) continue;
-		knh_Bytes_clear(DP(bin)->ba, 0);
-		knh_Bytes_write(ctx, DP(bin)->ba, knh_cwb_tobytes(cwb));
+		{
+			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+			knh_status_t status = readstmt(ctx, cwb);
+			if(status == K_BREAK) {
+				knh_cwb_close(cwb);
+				break;
+			}
+			if(knh_cwb_size(cwb) == 0) {
+				knh_cwb_close(cwb);
+				continue;
+			}
+			status = shell_command(ctx, knh_cwb_tochar(ctx, cwb));
+			if(status == K_BREAK) {
+				knh_cwb_close(cwb);
+				break;
+			}
+			if(status == K_REDO) {
+				knh_cwb_close(cwb);
+				continue;
+			}
+			knh_Bytes_clear(DP(bin)->ba, 0);
+			knh_Bytes_write(ctx, DP(bin)->ba, knh_cwb_tobytes(cwb));
+			knh_cwb_close(cwb);
+		}
 		knh_InputStream_setpos(ctx, bin, 0, BA_size(DP(bin)->ba));
-		knh_cwb_clear2(cwb, 0);
 		SP(bin)->uline = 1; // always line1
 		knh_eval(ctx, bin, results);
 		knh_OutputStream_flush(ctx, ctx->out, 1);
-		if(ctx->out != DP(ctx->sys)->out) {
-			knh_Bytes_t *outbuf = DP(ctx->out)->ba;
-			knh_write(ctx, cwb->w, outbuf->bu);
-			knh_Bytes_clear(outbuf, 0);
+
+//		if(ctx->out != DP(ctx->sys)->out) {
+//			knh_Bytes_t *outbuf = DP(ctx->out)->ba;
+//			knh_write(ctx, cwb->w, outbuf->bu);
+//			knh_Bytes_clear(outbuf, 0);
+//		}
+//		knh_cwb_clear2(cwb, 0); // necessary (because of some bugs)
+		{
+			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+			for(i = 0; i < knh_Array_size(results); i++) {
+				knh_Object_t *o = results->list[i];
+				knh_write_Object(ctx, cwb->w, o, FMT_dump);
+			}
+			knh_showSecurityAlert(ctx, cwb->w);
+			if(knh_cwb_size(cwb) !=0) {
+				shell_display(ctx, shell_status, knh_cwb_tochar(ctx, cwb));
+			}
+			knh_Array_clear(ctx, results, 0);
+			knh_cwb_close(cwb);
 		}
-		knh_cwb_clear2(cwb, 0); // necessary (because of some bugs)
-		for(i = 0; i < knh_Array_size(results); i++) {
-			knh_Object_t *o = results->list[i];
-			knh_write_Object(ctx, cwb->w, o, FMT_dump);
-		}
-		knh_showSecurityAlert(ctx, cwb->w);
-		if(knh_cwb_size(cwb) !=0) {
-			shell_display(ctx, shell_status, knh_cwb_tochar(ctx, cwb));
-			knh_cwb_clear2(cwb, 0);
-		}
-		knh_Array_clear(ctx, results, 0);
-		knh_cwb_clear2(cwb, 0);
 	}
 	shell_cleanup(ctx, shell_status);
-	knh_cwb_close(cwb);
 	END_LOCAL_(ctx, lsfp);
 }
 
