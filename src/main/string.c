@@ -661,8 +661,7 @@ static knh_conv_t* strconv_open(CTX ctx, const char* to, const char *from)
 {
 	iconv_t rc = ctx->spi->iconv_open(to, from);
 	if(rc == (iconv_t)-1){
-		void *sfp = NULL;
-		LOGDATA = {LOGMSG("unknown codec"), sDATA("spi", ctx->spi->iconvspi),
+		LOGSFPDATA = {LOGMSG("unknown codec"), sDATA("spi", ctx->spi->iconvspi),
 			sDATA("from", from), sDATA("to", to)};
 		LIB_Failed("iconv", "IO!!");
 		return NULL;
@@ -682,8 +681,7 @@ static knh_bool_t strconv(Ctx *ctx, knh_conv_t *iconvp, knh_bytes_t from, knh_By
 		size_t rc = ctx->spi->iconv(cd, &ibuf, &ilen, &obuf, &olen);
 		olen = sizeof(buffer) - olen; rsize += olen;
 		if(rc == (size_t)-1 && errno == EILSEQ) {
-			void *sfp=NULL;
-			LOGDATA = {LOGMSG("invalid sequence"), sDATA("spi", ctx->spi->iconvspi)};
+			LOGSFPDATA = {LOGMSG("invalid sequence"), sDATA("spi", ctx->spi->iconvspi)};
 			NOTE_Failed("iconv");
 			return 0;
 		}

@@ -34,6 +34,7 @@
 #include <llvm/Function.h>
 #include <llvm/BasicBlock.h>
 #include <llvm/Instructions.h>
+#include <llvm/Support/ManagedStatic.h>
 #include <llvm/Pass.h>
 #include <llvm/PassManager.h>
 #include <llvm/Analysis/Verifier.h>
@@ -41,6 +42,7 @@
 #include <llvm/Support/IRBuilder.h>
 #include <llvm/ExecutionEngine/JIT.h>
 #include <llvm/ExecutionEngine/Interpreter.h>
+#include <llvm/ExecutionEngine/ExecutionEngine.h>
 #include <llvm/Target/TargetSelect.h>
 #include <llvm/Target/TargetData.h>
 #include <llvm/DerivedTypes.h>
@@ -85,6 +87,7 @@ struct llvm_context {
 	Function *curFunc;
 	BasicBlock *curBB;
 	IRBuilder<> *builder;
+	struct label_stack *lstack;
 };
 
 struct label_stack {
@@ -99,6 +102,10 @@ struct label_stack {
 #define LLVM_IDX_BB        (2)
 #define LLVM_IDX_BUILDER   (3)
 #define LLVM_IDX_LABELSTACK (4)
+static ExecutionEngine *ee_global;
+static inline ExecutionEngine *LLVM_EE(CTX ctx){
+	return ee_global;
+}
 static inline Module *LLVM_MODULE(CTX ctx)
 {
 	Module *m = (Module*) DP(ctx->gma)->bbNC;
@@ -523,7 +530,6 @@ static void ASM_SMOV(CTX ctx, knh_type_t atype, int a/*flocal*/, knh_Token_t *tk
 			}
 			else if(IS_Tnumbox(atype)) {
 				Value *v = LLVMValue(LLVMTYPE_Object, o);
-				LLVM_TODO("NumBox type");
 				ValueStack_set(ctx, a, v);
 			}
 			else {
@@ -564,8 +570,19 @@ static void ASM_SMOV(CTX ctx, knh_type_t atype, int a/*flocal*/, knh_Token_t *tk
 		}
 		case TT_SCRFIELD: {
 			int b = (int)(tkb)->index;
-			knh_sfx_t bx = {OC_(DP(ctx->gma)->scridx), (size_t)b};
-			ASM_SMOVx(ctx, atype, a, btype, bx);
+			//knh_sfx_t bx = {OC_(DP(ctx->gma)->scridx), (size_t)b};
+			//ASM_SMOVx(ctx, atype, a, btype, bx);
+			IRBuilder<> *builder = LLVM_BUILDER(ctx);
+			const Type *ty = convert_type(ctx, btype);
+			Value *v = ConstantInt::get(Type::getInt64Ty(LLVM_CONTEXT()), (knh_uint_t)(ctx->script));
+			v = builder->CreateBitCast(v, LLVMTYPE_ObjectField, "cast");
+			v = builder->CreateStructGEP(v, 1, "gep");
+			v = builder->CreateLoad(v, "load");
+			v = builder->CreateBitCast(v, PointerType::get(ty, 0), "cast");
+			v = builder->CreateConstInBoundsGEP1_32(v, b, "get_");
+			v = builder->CreateLoad(v);
+			ValueStack_set(ctx, a, v);
+
 			break;
 		}
 		case TT_SYSVAL: {
@@ -1261,14 +1278,16 @@ static int _FUNCCALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 
 	if(Stmt_isDYNCALL(stmt)) {
 		//int a = local + K_CALLDELTA;
-	//ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(cid), _TCHECK);
-	LLVM_TODO("Support Dynamic Call");
+		//ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(cid), _TCHECK);
+		LLVM_TODO("Support Dynamic Call");
 	}
 
-	knh_type_t rtype = knh_type_tocid(ctx, knh_ParamArray_rtype(DP(mtd)->mp), cid);
 	int thisidx = local + K_CALLDELTA;
 	ASM_SCALL(ctx, thisidx, thisidx, mtd);
-	ValueStack_set(ctx, sfpidx, ValueStack_load(ctx, local, rtype));
+	//TODO reqt is correct type?
+	//knh_type_t rtype = knh_type_tocid(ctx, knh_ParamArray_rtype(DP(mtd)->mp), cid);
+	//ValueStack_set(ctx, sfpidx, ValueStack_load(ctx, local, rtype));
+	ValueStack_set(ctx, sfpidx, ValueStack_load(ctx, local, reqt));
 	return 0;
 }
 
@@ -1595,13 +1614,11 @@ static int ASM_SEND(CTX ctx, int sfpidx, int thisidx, const char *s)
 
 static int _SEND_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
-	static int isTOSTR;
 	int local = ASML(sfpidx);
 	size_t thisidx = local + K_CALLDELTA;
 	int isCWB = 0;
 	if(TT_(tmNN(stmt, 1)) == TT_ASIS) {
 		isCWB = 1;
-		//size_t pos = BA_size(ctx->bufa);
 
 		ASM_SEND(ctx, thisidx,  thisidx, "CWB");
 
@@ -1623,17 +1640,11 @@ static int _SEND_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 			knh_Method_t *mtd = NULL;
 			knh_class_t cid = Tn_cid(stmt, i);
 			int j = Tn_put(ctx, stmt, i, cid/* not TYPE_Object*/, thisidx+1);
-			Value *v;
-			if (isTOSTR == 1) {
-				isTOSTR = 0;
-				v = ValueStack_load(ctx, j, cid);
-			} else {
-				Value *v = ValueStack_get_or_load(ctx, j, cid);
-					sfp_store(ctx, thisidx+1, cid, v);
-			}
+			Value *v = ValueStack_get_or_load(ctx, j, cid);
+			sfp_store(ctx, thisidx+1, cid, v);
 
 
-			if(false && cid == CLASS_String) {
+			if(cid == CLASS_String) {
 				mtd = knh_NameSpace_getMethodNULL(ctx, CLASS_OutputStream, MN_send);
 				DBG_ASSERT(mtd != NULL);
 			}
@@ -1647,9 +1658,6 @@ static int _SEND_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 		ASM_SEND(ctx, sfpidx, thisidx, "TOSTR");
 		Value *v = ValueStack_load(ctx, sfpidx, CLASS_String);
 		ValueStack_set(ctx,sfpidx, v);
-		isTOSTR = 1;
-	} else {
-		isTOSTR = 0;
 	}
 	return 0;
 }
@@ -2881,15 +2889,8 @@ static Function *build_wrapper_func(CTX ctx, Module *m, knh_Method_t *mtd, Funct
 		}
 		builder->CreateRetVoid();
 	}
+	delete builder;
 	return f;
-}
-
-static void init_first(CTX ctx)
-{
-	Module *m = new Module("test", LLVM_CONTEXT());
-	ConstructObjectStruct(m);
-	LLVM_MODULE_SET(ctx, m);
-	init_print_func(ctx);
 }
 
 static void Init(CTX ctx, knh_Method_t *mtd, knh_Array_t *a)
@@ -2927,16 +2928,14 @@ static void Finish(CTX ctx, knh_Method_t *mtd, knh_Array_t *a, knh_Stmt_t *stmt)
 	/* asm for script function is done. */
 
 	/* build wrapper function and compile to native code. */
-	ExecutionEngine *ee = EngineBuilder(m).setEngineKind(EngineKind::JIT).create();
+	ExecutionEngine *ee = LLVM_EE(ctx);
 	Function *func1 = build_wrapper_func(ctx, m, mtd, func);
 
 #ifdef K_USING_DEBUG
-#endif
 	(*m).dump();
+#endif
 
 	/* optimization */
-
-
 	FunctionPassManager pm(m);
 	pm.add(new TargetData(*(ee->getTargetData())));
 	pm.add(createVerifierPass());
@@ -3020,6 +3019,24 @@ struct CodeAsm CODEASM_ = {{
 extern "C" {
 #endif
 
+void llvm_init(CTX ctx)
+{
+	using namespace llvm;
+	using namespace llvmasm;
+	InitializeNativeTarget();
+	Module *m = new Module("test", LLVM_CONTEXT());
+	ee_global = EngineBuilder(m).setEngineKind(EngineKind::JIT).create();
+	ConstructObjectStruct(m);
+	LLVM_MODULE_SET(ctx, m);
+	init_print_func(ctx);
+}
+
+void llvm_close(CTX ctx)
+{
+	delete llvmasm::ee_global;
+	llvm::llvm_shutdown();
+}
+
 void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t ittype, knh_Stmt_t *stmtB)
 {
 	knh_Array_t *lstack_org, *lstack;
@@ -3028,9 +3045,8 @@ void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_
 
 	static int LLVM_IS_INITED = 0;
 	if (!LLVM_IS_INITED) {
-		llvm::InitializeNativeTarget();
 		LLVM_IS_INITED = 1;
-		llvmasm::init_first(ctx);
+		llvm_init(ctx);
 	}
 #define STACK_N 64
 	insts     = new_Array(ctx, CLASS_Int, 8);
@@ -3147,17 +3163,16 @@ static void llvm_PRINTb(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, knh_uline_t ul
 
 void CWB_llvm(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c)
 {
-	size_t pos = BA_size(ctx->bufa);
-	KNH_SETv(ctx, sfp[c].o, ctx->bufw);
-	sfp[c].ivalue = pos;
+	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	KNH_SETv(ctx, sfp[c].o, cwb->w);
+	sfp[c].ivalue = cwb->pos;
 }
 
 void TOSTR_llvm(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c)
 {
 	DBG_ASSERT(IS_OutputStream(sfp[0].w));
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	cwb->pos = (size_t)(sfp[0].ivalue); // reset
-	knh_String_t *s = knh_cwb_newString(ctx, cwb);
+	knh_cwb_t cwbbuf = {ctx->bufa, ctx->bufw, (size_t)(sfp[0].ivalue)};
+	knh_String_t *s = knh_cwb_newString(ctx, &cwbbuf);
 	KNH_SETv(ctx, sfp[c].o, s);
 }
 
