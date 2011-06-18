@@ -103,6 +103,7 @@ struct label_stack {
 #define LLVM_IDX_BUILDER   (3)
 #define LLVM_IDX_LABELSTACK (4)
 static ExecutionEngine *ee_global;
+static Module *mod_global;
 static inline ExecutionEngine *LLVM_EE(CTX ctx){
 	return ee_global;
 }
@@ -322,7 +323,7 @@ static knh_Token_t* Tn_putTK(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t req
 	return tk;
 }
 
-static const Type *convert_type(CTX ctx, knh_class_t cid)
+static const Type *convert_type(knh_class_t cid)
 {
 	switch (cid) {
 		case TYPE_void:    return LLVMTYPE_Void;
@@ -408,7 +409,7 @@ static void ASM_SMOVx(CTX ctx, knh_type_t atype, int a, knh_type_t btype, knh_sf
 {
 	IRBuilder<> *builder = LLVM_BUILDER(ctx);
 	Value *v = ValueStack_get_or_load(ctx, bx.i, CLASS_Object);
-	const Type *ty = convert_type(ctx, btype);
+	const Type *ty = convert_type(btype);
 	v = builder->CreateBitCast(v, LLVMTYPE_ObjectField, "cast");
 	v = builder->CreateStructGEP(v, 1, "gep");
 	v = builder->CreateLoad(v, "load");
@@ -573,7 +574,7 @@ static void ASM_SMOV(CTX ctx, knh_type_t atype, int a/*flocal*/, knh_Token_t *tk
 			//knh_sfx_t bx = {OC_(DP(ctx->gma)->scridx), (size_t)b};
 			//ASM_SMOVx(ctx, atype, a, btype, bx);
 			IRBuilder<> *builder = LLVM_BUILDER(ctx);
-			const Type *ty = convert_type(ctx, btype);
+			const Type *ty = convert_type(btype);
 			Value *v = ConstantInt::get(Type::getInt64Ty(LLVM_CONTEXT()), (knh_uint_t)(ctx->script));
 			v = builder->CreateBitCast(v, LLVMTYPE_ObjectField, "cast");
 			v = builder->CreateStructGEP(v, 1, "gep");
@@ -637,7 +638,7 @@ static void ASM_XMOVx(CTX ctx, knh_type_t atype, knh_sfx_t ax, knh_type_t btype,
 
 static void ASM_XMOV_local(CTX ctx, IRBuilder<> *builder, knh_class_t ty, knh_sfx_t ax, Value *val)
 {
-	const Type *ptype = PointerType::get(convert_type(ctx, ty), 0);
+	const Type *ptype = PointerType::get(convert_type(ty), 0);
 	Value *v = ValueStack_get_or_load(ctx, ax.i, CLASS_Object);
 	v = builder->CreateBitCast(v, LLVMTYPE_ObjectField, "cast");
 	v = builder->CreateStructGEP(v, 1, "oxp");
@@ -1113,7 +1114,7 @@ static Value *ASM_ARRAY_N(CTX ctx, int a, knh_class_t cid, int sfpidx, Value *n)
 {
 	IRBuilder<> *builder = LLVM_BUILDER(ctx);
 	Value *vobj = ValueStack_get(ctx, a);
-	const Type *type = convert_type(ctx, C_p1(cid));
+	const Type *type = convert_type(C_p1(cid));
 	const Type *ptype = PointerType::get(type, 0);
 
 	Value *array = builder->CreateBitCast(vobj, LLVMTYPE_Array, "array");
@@ -1497,7 +1498,7 @@ static int _TRI_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	builder->CreateBr(bbMerge);
 
 	builder->SetInsertPoint(bbMerge);
-	PHINode *phi = builder->CreatePHI(convert_type(ctx, reqt), "tri_result");
+	PHINode *phi = builder->CreatePHI(convert_type(reqt), "tri_result");
 	phi->addIncoming(vb, bbThen);
 	phi->addIncoming(vc, bbElse);
 	ValueStack_set(ctx, sfpidx, phi);
@@ -2430,7 +2431,7 @@ static Function *PRINT_func(CTX ctx, const char *name, knh_class_t cid)
 	args_list.push_back(LLVMTYPE_Int); /* flag */
 	args_list.push_back(LLVMTYPE_Int); /* uline */
 	args_list.push_back(LLVMTYPE_Object); /* msg */
-	args_list.push_back(convert_type(ctx, cid));
+	args_list.push_back(convert_type(cid));
 	FunctionType* fnTy = FunctionType::get(LLVMTYPE_Void, args_list, false);
 	Function *func = cast<Function>(m->getOrInsertFunction(name, fnTy));
 	return func;
@@ -2448,9 +2449,8 @@ static struct print_data PRINT_DATA[] = {
 };
 
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
-static void init_print_func(CTX ctx)
+static void init_print_func(llvm::Module *m)
 {
-	Module *m = LLVM_MODULE(ctx);
 	std::vector<const Type*>args;
 	for (size_t i = 0; i < ARRAY_SIZE(PRINT_DATA); i++) {
 		knh_class_t cid = PRINT_DATA[i].cid;
@@ -2460,7 +2460,7 @@ static void init_print_func(CTX ctx)
 		args.push_back(LLVMTYPE_Int); /* flag */
 		args.push_back(LLVMTYPE_Int); /* uline */
 		args.push_back(LLVMTYPE_Object); /* msg */
-		args.push_back(convert_type(ctx, cid));
+		args.push_back(convert_type(cid));
 
 		FunctionType* fnTy = FunctionType::get(LLVMTYPE_Void, args, false);
 		Function* func = Function::Create(fnTy, GlobalValue::ExternalLinkage, name, m);
@@ -2829,9 +2829,9 @@ static Function *build_function(CTX ctx, Module *m, knh_Method_t *mtd)
 	argsTy.push_back(LLVMTYPE_sfp);
 	for (i = 0; i < pa->psize; i++) {
 		knh_type_t type = knh_ParamArray_getptype(pa, i);
-		argsTy.push_back(convert_type(ctx, type));
+		argsTy.push_back(convert_type(type));
 	}
-	FunctionType *fnTy = FunctionType::get(convert_type(ctx, retTy), argsTy, false);
+	FunctionType *fnTy = FunctionType::get(convert_type(retTy), argsTy, false);
 	Function *func = cast<Function>(m->getOrInsertFunction(name, fnTy));
 	Function::arg_iterator args = func->arg_begin();
 	VNAME_(args++, "ctx");
@@ -2844,7 +2844,7 @@ static Value *create_loadsfp(CTX ctx, IRBuilder<> *builder, Value *v, knh_type_t
 	unsigned int idx = TC_(type, 0);
 	v = builder->CreateConstGEP2_32(v, (unsigned)idx0, (unsigned)idx, "gep");
 	if (IS_Tint(type) || IS_Tbool(type)) {
-		v = builder->CreateBitCast(v, PointerType::get(convert_type(ctx, type), 0), "cast");
+		v = builder->CreateBitCast(v, PointerType::get(convert_type(type), 0), "cast");
 	}
 	return v;
 }
@@ -2895,6 +2895,8 @@ static Function *build_wrapper_func(CTX ctx, Module *m, knh_Method_t *mtd, Funct
 
 static void Init(CTX ctx, knh_Method_t *mtd, knh_Array_t *a)
 {
+
+	LLVM_MODULE_SET(ctx, mod_global);
 	Module *m = LLVM_MODULE(ctx);
 	BasicBlock *bb;
 	IRBuilder<> *builder;
@@ -3019,21 +3021,21 @@ struct CodeAsm CODEASM_ = {{
 extern "C" {
 #endif
 
-void llvm_init(CTX ctx)
+void knh_llvm_init(int argc, int n, const char **argv)
 {
 	using namespace llvm;
 	using namespace llvmasm;
 	InitializeNativeTarget();
-	Module *m = new Module("test", LLVM_CONTEXT());
-	ee_global = EngineBuilder(m).setEngineKind(EngineKind::JIT).create();
-	ConstructObjectStruct(m);
-	LLVM_MODULE_SET(ctx, m);
-	init_print_func(ctx);
+	mod_global = new Module("test", LLVM_CONTEXT());
+	ee_global = EngineBuilder(mod_global).setEngineKind(EngineKind::JIT).create();
+	ConstructObjectStruct(mod_global);
+	init_print_func(mod_global);
 }
 
-void llvm_close(CTX ctx)
+void knh_llvm_exit(void)
 {
 	delete llvmasm::ee_global;
+	delete llvmasm::mod_global;
 	llvm::llvm_shutdown();
 }
 
@@ -3043,11 +3045,6 @@ void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_
 	knh_Array_t *insts_org, *insts;
 	int i;
 
-	static int LLVM_IS_INITED = 0;
-	if (!LLVM_IS_INITED) {
-		LLVM_IS_INITED = 1;
-		llvm_init(ctx);
-	}
 #define STACK_N 64
 	insts     = new_Array(ctx, CLASS_Int, 8);
 	lstack    = new_Array(ctx, CLASS_Int, STACK_N);

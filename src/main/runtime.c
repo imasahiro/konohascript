@@ -771,6 +771,56 @@ static void konoha_shell(konoha_t konoha, char *optstr)
 
 /*************************************************************************** */
 
+struct konoha_module_driver {
+	const char *name;
+	void (*init)(int argc, int n, const char **argv);
+	void (*exit)(void);
+};
+
+static void ac_init(int argc, int n, const char **argv)
+{
+	if(uout != NULL) {
+		fprintf(uout, "testing: %s\n", argv[n]);
+		fflush(uout);
+	}
+}
+
+static void ac_exit(void)
+{
+	if(uout != NULL) {
+		fclose(uout);
+	}
+}
+
+#ifdef K_USING_MPI
+static void mpi_init(int argc, int n, const char **argv)
+{
+	MPI_Init(&argc, &argv);
+}
+static void mpi_exit(void)
+{
+	MPI_Finalize();
+}
+#endif
+
+#ifdef K_USING_LLVM
+extern void knh_llvm_init(int, int, const char **);
+extern void knh_llvm_exit(void);
+#endif
+struct konoha_module_driver konoha_modules[] = {
+	{"ac", ac_init, ac_exit},
+#ifdef K_USING_LLVM
+	{"llvm", knh_llvm_init, knh_llvm_exit},
+#endif
+#ifdef K_USING_MPI
+	{"mpi", mpi_init, mpi_exit}
+#endif
+	{"null", NULL, NULL}
+};
+#ifndef ARRAY_SIZE
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+#endif
+
 void konoha_main(konoha_t konoha, int argc, const char **argv)
 {
 	int n = konoha_parseopt(konoha, argc, argv);
@@ -778,9 +828,9 @@ void konoha_main(konoha_t konoha, int argc, const char **argv)
 		konoha_shell(konoha, NULL);
 	}
 	else {
-		if(uout != NULL) {
-			fprintf(uout, "testing: %s\n", argv[n]);
-			fflush(uout);
+		int i;
+		for (i = 0; konoha_modules[i].init != NULL; ++i) {
+			konoha_modules[i].init(argc, n, argv);
 		}
 		if(konoha_initload(konoha, argv[n]) == K_CONTINUE && !knh_isCompileOnly(konoha.ctx)) {
 			konoha_runMain(konoha, argc - n, argv + n);
@@ -788,9 +838,9 @@ void konoha_main(konoha_t konoha, int argc, const char **argv)
 				konoha_shell(konoha, NULL);
 			}
 		}
-	}
-	if(uout != NULL) {
-		fclose(uout);
+		for (i = 0; konoha_modules[i].exit != NULL; ++i) {
+			konoha_modules[i].exit();
+		}
 	}
 }
 

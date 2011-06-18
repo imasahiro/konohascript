@@ -557,10 +557,6 @@ void knh_reftraceAll(CTX ctx FTRARG)
 void konoha_close(konoha_t konoha)
 {
 	CTX ctx = (knh_context_t*)konoha.ctx;
-#ifdef K_USING_LLVM
-	extern void llvm_close(CTX);
-	llvm_close(ctx);
-#endif
 	KONOHA_CHECK_(konoha);
 	if(ctx->share->threadCounter > 1) {
 		LOGSFPDATA = {LOGMSG("stil threads running"), iDATA("threads", ctx->share->threadCounter)};
