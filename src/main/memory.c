@@ -48,6 +48,7 @@
 
 #ifdef K_USING_CTRACE
 #define _GNU_SOURCE
+#define __USE_GNU
 #include <dlfcn.h>
 #include <execinfo.h>
 #endif
