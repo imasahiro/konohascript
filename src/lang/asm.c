@@ -2544,10 +2544,12 @@ static void _PRINTh(CTX ctx, knh_sfp_t *sfp, knh_OutputStream_t *w, struct klr_P
 	knh_write_ascii(ctx, w, TERM_BNOTE(ctx, LOG_NOTICE));
 	if(FLAG_is(flag, K_FLAG_PF_BOL)) {
 		if(FLAG_is(flag, K_FLAG_PF_LINE)) {
+#ifndef K_USING_LLVM
 			knh_Method_t *mtd = sfp[-1].mtdNC;
 			knh_uline_t uline = op->line;
 			DBG_ASSERT(IS_Method(mtd));
 			ULINE_setURI(uline, DP(mtd)->uri);
+#endif
 			knh_write_uline(ctx, w, uline);
 		}
 	}
@@ -2614,6 +2616,42 @@ static void _PRINTb(CTX ctx, knh_sfp_t *sfp, struct klr_P_t *op)
 	_PRINTh(ctx, sfp, w, op);
 	knh_write_bool(ctx, w, sfp[op->n].bvalue);
 	_PRINTln(ctx, sfp, w, op);
+}
+
+void knh_PRINT(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, knh_uline_t uline, knh_String_t *msg, knh_Object_t *o)
+{
+	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
+	knh_OutputStream_t *w = KNH_STDOUT;
+	_PRINTh(ctx, sfp, w, &op);
+	knh_write_Object(ctx, w, o, FMT_data);
+	_PRINTln(ctx, sfp, w, &op);
+}
+
+void knh_PRINTi(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, knh_uline_t uline, knh_String_t *msg, knh_int_t n)
+{
+	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
+	knh_OutputStream_t *w = KNH_STDOUT;
+	_PRINTh(ctx, sfp, w, &op);
+	knh_write_ifmt(ctx, w, K_INT_FMT, n);
+	_PRINTln(ctx, sfp, w, &op);
+}
+
+void knh_PRINTf(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, knh_uline_t uline, knh_String_t *msg, knh_float_t f)
+{
+	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
+	knh_OutputStream_t *w = KNH_STDOUT;
+	_PRINTh(ctx, sfp, w, &op);
+	knh_write_ffmt(ctx, w, K_FLOAT_FMT, f);
+	_PRINTln(ctx, sfp, w, &op);
+}
+
+void knh_PRINTb(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, knh_uline_t uline, knh_String_t *msg, knh_bool_t b)
+{
+	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
+	knh_OutputStream_t *w = KNH_STDOUT;
+	_PRINTh(ctx, sfp, w, &op);
+	knh_write_bool(ctx, w, b);
+	_PRINTln(ctx, sfp, w, &op);
 }
 
 static void PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
