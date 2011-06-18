@@ -267,13 +267,12 @@ FMT      -
 #MT       - 
 
 #Typed Token
-CONST  -
-SYSVAL -
-LOCAL  -
-FUNCVAR -
-XLOCAL -
-FIELD  -
-SCRFIELD -
+CONST   -
+SYSVAL  -
+FVAR    -
+LVAR    -
+FIELD   -
+LFIELD  -
 ERR -
 EOT -
 '''

@@ -37,13 +37,12 @@ XNSET      0                 a:sfx b:int
 XNMOV      0                 a:sfx b:rn
 XNMOVx     0                 a:sfx b:sfx
 
-bNUL       _DEF|_JIT         c:rn a:ro
-bNN        _DEF|_JIT         c:rn a:ro
-
-bNOT       _DEF|_JIT         c:rn a:rn
 @iINC      _DEF|_JIT         a:rn
 @iDEC      _DEF|_JIT         a:rn
 
+bNUL       _DEF|_JIT         c:rn a:ro
+bNN        _DEF|_JIT         c:rn a:ro
+bNOT       _DEF|_JIT         c:rn a:rn
 iNEG       _DEF|_JIT         c:rn a:rn
 fNEG       _DEF|_JIT         c:rn a:rn       
 iTR        _DEF|_JIT         c:rn a:rn  inttr:f
@@ -166,35 +165,35 @@ NSETIDXC   _DEF|_JIT         c:rn a:ro n:u  v:rn
 
 # level 3 instruction
 
-bJNUL     _DEF|_JIT addr:addr a:ro
+bJNUL     _DEF|_JIT   addr:addr a:ro
 bJNN      _DEF|_JIT   addr:addr a:ro
 
-bJNOT     _DEF|_JIT  addr:addr a:rn
+bJNOT     _DEF|_JIT   addr:addr a:rn
 iJEQ      _DEF|_JIT   addr:addr a:rn b:rn
-iJNEQ     _DEF|_JIT  addr:addr a:rn b:rn
+iJNEQ     _DEF|_JIT   addr:addr a:rn b:rn
 iJLT      _DEF|_JIT   addr:addr a:rn b:rn
-iJLTE     _DEF|_JIT  addr:addr a:rn b:rn
+iJLTE     _DEF|_JIT   addr:addr a:rn b:rn
 iJGT      _DEF|_JIT   addr:addr a:rn b:rn
-iJGTE     _DEF|_JIT  addr:addr a:rn b:rn
-iJEQC     _DEF|_JIT  addr:addr a:rn n:int
-iJNEQC    _DEF|_JIT addr:addr a:rn n:int
-iJLTC     _DEF|_JIT  addr:addr a:rn n:int
-iJLTEC    _DEF|_JIT addr:addr a:rn n:int
-iJGTC     _DEF|_JIT  addr:addr a:rn n:int
-iJGTEC    _DEF|_JIT addr:addr a:rn n:int
+iJGTE     _DEF|_JIT   addr:addr a:rn b:rn
+iJEQC     _DEF|_JIT   addr:addr a:rn n:int
+iJNEQC    _DEF|_JIT   addr:addr a:rn n:int
+iJLTC     _DEF|_JIT   addr:addr a:rn n:int
+iJLTEC    _DEF|_JIT   addr:addr a:rn n:int
+iJGTC     _DEF|_JIT   addr:addr a:rn n:int
+iJGTEC    _DEF|_JIT   addr:addr a:rn n:int
 
 fJEQ      _DEF|_JIT   addr:addr a:rn b:rn
-fJNEQ     _DEF|_JIT  addr:addr a:rn b:rn
+fJNEQ     _DEF|_JIT   addr:addr a:rn b:rn
 fJLT      _DEF|_JIT   addr:addr a:rn b:rn
-fJLTE     _DEF|_JIT  addr:addr a:rn b:rn
+fJLTE     _DEF|_JIT   addr:addr a:rn b:rn
 fJGT      _DEF|_JIT   addr:addr a:rn b:rn
-fJGTE     _DEF|_JIT  addr:addr a:rn b:rn
-fJEQC     _DEF|_JIT  addr:addr a:rn n:float
-fJNEQC    _DEF|_JIT addr:addr a:rn n:float
-fJLTC     _DEF|_JIT  addr:addr a:rn n:float
-fJLTEC    _DEF|_JIT addr:addr a:rn n:float
-fJGTC     _DEF|_JIT  addr:addr a:rn n:float
-fJGTEC    _DEF|_JIT addr:addr a:rn n:float
+fJGTE     _DEF|_JIT   addr:addr a:rn b:rn
+fJEQC     _DEF|_JIT   addr:addr a:rn n:float
+fJNEQC    _DEF|_JIT   addr:addr a:rn n:float
+fJLTC     _DEF|_JIT   addr:addr a:rn n:float
+fJLTEC    _DEF|_JIT   addr:addr a:rn n:float
+fJGTC     _DEF|_JIT   addr:addr a:rn n:float
+fJGTEC    _DEF|_JIT   addr:addr a:rn n:float
 
 CHKIDX     _JIT              a:ro n:rn
 CHKIDXC    _JIT              a:ro n:u

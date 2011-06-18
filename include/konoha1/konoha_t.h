@@ -271,8 +271,8 @@ typedef knh_ushort_t              knh_flag_t;    /* flag field */
 #define TFLAG_set(T,f,op,b)       if(b) {TFLAG_set1(T,f,op);} else {TFLAG_set0(T,f,op);}
 #define TFLAG_setNOT(T,f,op,b)    if(!(b)) {TFLAG_set0(T,f,op);} else {TFLAG_set1(T,f,op);}
 
-#define FLAG_set(f,op)            TFLAG_set(knh_flag_t,f,op)
-#define FLAG_unset(f,op)          TFLAG_unset(knh_flag_t,f,op)
+#define FLAG_set(f,op)            TFLAG_set1(knh_flag_t,f,op)
+#define FLAG_unset(f,op)          TFLAG_set0(knh_flag_t,f,op)
 #define FLAG_is(f,op)             TFLAG_is(knh_flag_t,f,op)
 
 /* ------------------------------------------------------------------------ */

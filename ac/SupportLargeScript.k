@@ -9998,3 +9998,8 @@ int f9996(int a, int b) { return 9996;}
 int f9997(int a, int b) { return 9997;}
 int f9998(int a, int b) { return 9998;}
 int f9999(int a, int b) { return 9999;}
+
+assure "SupportLargeScript" {
+	assert f9999(1,2) == 9999;
+}
+

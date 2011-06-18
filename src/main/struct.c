@@ -2615,11 +2615,24 @@ static void Token_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 		case TT_CONST:
 			knh_write_Object(ctx, w, tk->data, FMT_line);
 			break;
-		case TT_SYSVAL: case TT_LOCAL: case TT_FUNCVAR:
-		case TT_XLOCAL: case TT_FIELD: case TT_SCRFIELD:
+		case TT_SYSVAL: case TT_FVAR: case TT_LVAR:
 			if(IS_FMTdump(level) || !IS_String(tk->data)) {
 				knh_write_ascii(ctx, w, TT__(tt));
 				knh_putc(ctx, w, '=');
+				knh_write_ifmt(ctx, w, K_INT_FMT, (knh_int_t)tk->index);
+				break;
+			}
+		case TT_FIELD: case TT_LFIELD:
+			if(IS_FMTdump(level) || !IS_String(tk->data)) {
+				knh_write_ascii(ctx, w, TT__(tt));
+				knh_putc(ctx, w, '=');
+				if(IS_Token(tk->data)) {
+					knh_write_ifmt(ctx, w, K_INT_FMT, (knh_int_t)tk->index);
+				}
+				else {
+					knh_putc(ctx, w, '0');
+				}
+				knh_putc(ctx, w, '+');
 				knh_write_ifmt(ctx, w, K_INT_FMT, (knh_int_t)tk->index);
 				break;
 			}
@@ -2763,6 +2776,7 @@ static void Gamma_init(CTX ctx, knh_RawPtr_t *o)
 	KNH_INITv(b->errmsgs, new_Array0(ctx, 0));
 	KNH_INITv(b->finallyStmt, KNH_NULL);
 	o->rawptr = b;
+	b->funcbase = -1;
 	KNH_INITv(((knh_Gamma_t*)o)->scr, ctx->script);
 }
 
@@ -2770,10 +2784,10 @@ static void Gamma_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	size_t i;
 	knh_GammaEX_t *b = DP((knh_Gamma_t*)o);
-	KNH_ENSUREREF(ctx, b->gcapacity * 2);
+	KNH_ENSUREREF(ctx, b->gcapacity * 3);
 	for(i = 0; i < b->gcapacity; i++) {
-		KNH_ADDREF(ctx, b->gf[i].value);
 		KNH_ADDREF(ctx, b->gf[i].tkIDX);
+		KNH_ADDREF(ctx, b->gf[i].tk);
 	}
 	KNH_ADDREF(ctx, (b->mtd));
 	KNH_ADDREF(ctx, (b->stmt));
@@ -2789,7 +2803,7 @@ static void Gamma_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_GammaEX_t *b = DP((knh_Gamma_t*)o);
 	if(b->gcapacity) {
-		KNH_FREE(ctx, b->gf, b->gcapacity * sizeof(knh_gmafields_t));
+		KNH_FREE(ctx, b->gf, b->gcapacity * sizeof(knh_gamma2_t));
 	}
 	knh_bodyfree(ctx, b, Gamma);
 }
@@ -2993,7 +3007,7 @@ static void knh_setDefaultValues(CTX ctx)
 	knh_loadSystemDriver(ctx, ctx->share->rootns);
 	{
 		knh_Token_t *tk = KNH_TNULL(Token);
-		tk->tt = TT_FUNCVAR;
+		tk->tt = TT_FVAR;
 		(tk)->index = 0;
 	}
 }

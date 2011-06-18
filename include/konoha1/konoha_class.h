@@ -396,15 +396,14 @@ typedef void (*knh_Fdictset)(CTX, knh_DictSet_t*, knh_String_t *k, knh_uintptr_t
 //## flag Class Interface      8 (ClassTBL(%s))->cflag  is * * *;
 //## flag Class TypeVariable   9 (ClassTBL(%s))->cflag  is set * *;
 
-#define FLAG_Field_Hidden          (knh_flag_t)(1<<0)
-#define FLAG_Field_Protected       (knh_flag_t)(1<<1)
-#define FLAG_Field_Getter          (knh_flag_t)(1<<2)
-#define FLAG_Field_Setter          (knh_flag_t)(1<<3)
-#define FLAG_Field_Key             (knh_flag_t)(1<<4)
-#define FLAG_Field_Volatile        (knh_flag_t)(1<<5)
-#define FLAG_Field_ReadOnly        (knh_flag_t)(1<<6)
-#define FLAG_Field_Property        (knh_flag_t)(1<<7)
-#define FLAG_Field_Principle       (knh_flag_t)(1<<8)
+#define FLAG_Field_Hidden          ((knh_flag_t)(1<<0))
+#define FLAG_Field_Protected       ((knh_flag_t)(1<<1))
+#define FLAG_Field_Getter          ((knh_flag_t)(1<<2))
+#define FLAG_Field_Setter          ((knh_flag_t)(1<<3))
+#define FLAG_Field_Key             ((knh_flag_t)(1<<4))
+#define FLAG_Field_Volatile        ((knh_flag_t)(1<<5))
+#define FLAG_Field_ReadOnly        ((knh_flag_t)(1<<6))
+#define FLAG_Field_Property        ((knh_flag_t)(1<<7))
 
 typedef struct knh_Class_t {
 	knh_hObject_t h;
@@ -1029,11 +1028,11 @@ typedef struct knh_Assurance_t {
 #define Token_isDYNAMIC(o)  Token_isMEMO1(o)
 #define Token_setDYNAMIC(o, b) Token_setMEMO1(o, b)
 
-// TT_LOCAL,
+// TT_LVAR,
 #define Token_isSUPER(o)      Token_isMEMO1(o)
 #define Token_setSUPER(o, b)  Token_setMEMO1(o, b)
 
-// TT_LOCAL, TT_FIELD, TT_SCRIPT
+// TT_LVAR, TT_FIELD, TT_SCRIPT
 #define Token_isReadOnly(tk)   Token_isBOL(tk)
 #define Token_setReadOnly(tk, b)   Token_setBOL(tk, b)
 
@@ -1055,12 +1054,13 @@ typedef struct knh_Token_t {
 	knh_hObject_t h;
 	union {
 		Object* data;
-		struct knh_Array_t*  list;
-		struct knh_String_t* text;
-		struct knh_Token_t*  token;
-		struct knh_Stmt_t*   stmt;
-		struct knh_Method_t* mtd;
-		struct knh_TypeMap_t* mpr;
+		struct knh_Array_t   *list;
+		struct knh_String_t  *text;
+		struct knh_Token_t   *token;
+		struct knh_Stmt_t    *stmt;
+		struct knh_Method_t  *mtd;
+		struct knh_TypeMap_t *mpr;
+		struct knh_Token_t   *tkIDX;
 		struct knh_Int_t     *num;
 	};
 	knh_uline_t uline;                  // Term
@@ -1111,16 +1111,13 @@ typedef struct knh_Token_t {
 #define Stmt_setImplicit(s,b)    Stmt_setMemo1(s,b)
 
 typedef struct {
-	knh_flag_t   flag0;
-	knh_ushort_t espidx;
-	knh_ushort_t size;
-	knh_ushort_t capacity;
+	knh_flag_t   flag0;   knh_ushort_t espidx;
+	knh_ushort_t size;    knh_ushort_t capacity;
 	union {
 		struct knh_DictMap_t* metaDictCaseMap;
 		struct knh_String_t*  errMsg;
 		struct knh_Stmt_t*    stmtPOST;
 	};
-	//size_t wstart;
 	struct knh_Stmt_t* nextNULL;
 } knh_StmtEX_t;
 
@@ -1157,14 +1154,19 @@ typedef struct knh_Stmt_t {
 #define K_GAMMAMAX 64
 #endif
 
+typedef knh_short_t knh_gint_t;
+
 typedef struct {
-	knh_flag_t    flag  ;
-	knh_short_t   ucnt  ;
-	knh_type_t    type  ;
-	knh_fieldn_t  fn    ;
-	Object        *value;
-	knh_Token_t   *tkIDX;
-} knh_gmafields_t ;
+	knh_flag_t    flag;  knh_term_t    ucnt;
+	knh_type_t    type;  knh_fieldn_t  fn;
+	union {
+		knh_Token_t   *tkIDX;
+	};
+	union {
+		knh_Token_t   *tk;
+		knh_Stmt_t    *stmt;
+	};
+} knh_gamma2_t ;
 
 #define K_GMASCR   ((ctx->gma)->scr)
 #define K_GMANS    ((ctx->gma)->scr->ns)
@@ -1172,21 +1174,25 @@ typedef struct {
 typedef struct {
 	knh_flag_t                 flag;
 	knh_flag_t                 cflag;
-//	struct knh_NameSpace_t*    ns;
-//	struct knh_Script_t*       script;
 	struct knh_Stmt_t*         stmt;
 	struct knh_Method_t*       mtd;
 	knh_class_t                this_cid;
 
 	/*gamma*/
-	struct knh_Gamma_t        *parentNULL;
-	knh_gmafields_t*           gf; /* type environment */
-	knh_ushort_t               gsize;
-	knh_ushort_t               gcapacity;
-	knh_short_t                ebpidx;
-	knh_short_t                espidx;
-	knh_ushort_t               psize; /* param size */
-	knh_short_t                scridx;
+	knh_gamma2_t*             gf;
+	knh_gint_t                gsize;
+	knh_gint_t                gcapacity;
+	knh_gint_t                psize; /* param size */
+	knh_gint_t                fvarsize;
+	knh_gint_t                funcbase;
+	knh_gint_t                funcfvarsize;
+
+	knh_Token_t              *tkScriptNC;
+	knh_Token_t              *tkFuncThisNC;
+	knh_Token_t              *tkFuncScriptNC;
+
+//	knh_short_t                ebpidx;
+//	knh_short_t                espidx;
 
 	struct knh_BasicBlock_t    *bbNC;
 	struct knh_Array_t         *insts;  // bbNC->listNC

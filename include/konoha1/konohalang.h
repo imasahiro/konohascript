@@ -7,7 +7,7 @@ extern "C" {
 
 #ifndef MN_OPSIZE
 #define STT_MAX  (58)
-#define TT_MAX   (142)
+#define TT_MAX   (141)
 #define MN_OPSIZE  (36)
 #define MN_opNOT                        ((knh_methodn_t)0)
 #define MN_opEXISTS                     ((knh_methodn_t)1)
@@ -241,13 +241,12 @@ extern "C" {
 #define TT_FMT   ((knh_term_t)190)
 #define TT_CONST   ((knh_term_t)191)
 #define TT_SYSVAL   ((knh_term_t)192)
-#define TT_LOCAL   ((knh_term_t)193)
-#define TT_FUNCVAR   ((knh_term_t)194)
-#define TT_XLOCAL   ((knh_term_t)195)
-#define TT_FIELD   ((knh_term_t)196)
-#define TT_SCRFIELD   ((knh_term_t)197)
-#define TT_ERR   ((knh_term_t)198)
-#define TT_EOT   ((knh_term_t)199)
+#define TT_FVAR   ((knh_term_t)193)
+#define TT_LVAR   ((knh_term_t)194)
+#define TT_FIELD   ((knh_term_t)195)
+#define TT_LFIELD   ((knh_term_t)196)
+#define TT_ERR   ((knh_term_t)197)
+#define TT_EOT   ((knh_term_t)198)
 #endif/*MN_OPSIZE*/
 
 
@@ -455,11 +454,10 @@ static TERMDATA_t TERMDATA[] = {
 	{"FMT", 0, -1}, 
 	{"CONST", 0, -1}, 
 	{"SYSVAL", 0, -1}, 
-	{"LOCAL", 0, -1}, 
-	{"FUNCVAR", 0, -1}, 
-	{"XLOCAL", 0, -1}, 
+	{"FVAR", 0, -1}, 
+	{"LVAR", 0, -1}, 
 	{"FIELD", 0, -1}, 
-	{"SCRFIELD", 0, -1}, 
+	{"LFIELD", 0, -1}, 
 	{"ERR", 0, -1}, 
 	{"EOT", 0, -1}, 
 	{NULL, 0, 0}

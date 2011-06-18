@@ -366,7 +366,7 @@ void WarningOverflow(CTX ctx, const char *floatorint, knh_bytes_t t)
 //{
 //	return Gamma_perror(ctx, KC_ERR, "unknown path: %B", path);
 //}
-void WarningUnusedName(CTX ctx, knh_Token_t *tk, knh_fieldn_t fn)
+void WARN_Unused(CTX ctx, knh_Token_t *tk, knh_fieldn_t fn)
 {
 	knh_uline_t uline = ctx->gma->uline;
 	ctx->gma->uline = tk->uline;
@@ -551,7 +551,7 @@ void WarningAbstractMethod(CTX ctx, knh_Method_t *mtd)
 {
 	Gamma_perror(ctx, KC_DWARN, "abstract? %C.%M", (mtd)->cid, (mtd)->mn);
 }
-void WarningDividedByZero(CTX ctx)
+void WARN_DividedByZero(CTX ctx)
 {
 	Gamma_perror(ctx, KC_DWARN, _("divided by zero"));
 }

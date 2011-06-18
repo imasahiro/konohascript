@@ -220,7 +220,7 @@ static inline void knh_cwb_close0(knh_cwb_t *cwb) CC_UNUSED ;
 static void knh_cwb_close0(knh_cwb_t *cwb)
 {
 	size_t pos = cwb->pos - 1;
-	DBG_ASSERT(pos > 0);
+	DBG_ASSERT(cwb->pos > 0);
 	DBG_ASSERT(cwb->ba->bu.buf[pos] == 0);
 	knh_Bytes_clear(cwb->ba, pos);
 	cwb->ba = NULL;
