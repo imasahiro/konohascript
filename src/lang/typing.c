@@ -1719,7 +1719,7 @@ static knh_Token_t *DECL_typing(CTX ctx, knh_Stmt_t *stmt) /* LOCAL*/
 }
 
 void knh_class_addField(CTX ctx, knh_class_t bcid, knh_flag_t flag, knh_type_t type, knh_fieldn_t fn);
-static void ObjectField_add(CTX ctx, knh_ObjectField_t *of, size_t i, knh_type_t type, knh_Object_t *v);
+static void ObjectField_add(CTX ctx, knh_ObjectField_t *of, size_t i, knh_type_t type, knh_Token_t *tk);
 #define k_goodbsize(n)   (k_goodsize((n) * sizeof(void*)) / sizeof(void*))
 
 static knh_index_t Script_addField(CTX ctx, knh_Script_t *scr, knh_flag_t flag, knh_type_t type, knh_fieldn_t fn)
@@ -1732,7 +1732,7 @@ static knh_index_t Script_addField(CTX ctx, knh_Script_t *scr, knh_flag_t flag, 
 		DBG_P("fsize=%d=>%d, fcapacity=%d=>%d", fsize, t->fsize, fcapacity, t->fcapacity);
 		knh_ObjectField_expand(ctx, (knh_ObjectField_t*)t->defnull, fcapacity, t->fcapacity);
 	}
-	ObjectField_add(ctx, (knh_ObjectField_t*)t->defnull, fsize, type, KNH_NULL);
+	ObjectField_add(ctx, (knh_ObjectField_t*)t->defnull, fsize, type, (knh_Token_t*)KNH_NULL);
 	return (knh_index_t)fsize;
 }
 
@@ -4255,35 +4255,33 @@ void knh_ObjectField_expand(CTX ctx, knh_ObjectField_t *of, size_t oldsize, size
 	//DBG_P("fields=%p => %p, size=%d => %d", oldf, of->fields, oldsize, newsize);
 }
 
-static void ObjectField_add(CTX ctx, knh_ObjectField_t *of, size_t i, knh_type_t type, knh_Object_t *v)
+static void ObjectField_add(CTX ctx, knh_ObjectField_t *of, size_t i, knh_type_t type, knh_Token_t *tk)
 {
 	knh_class_t cid = knh_type_tocid(ctx, type, O_cid(of));
 	knh_class_t bcid = C_bcid(cid);
-	//DBG_P("i=%d type=%s bcid=%s object_type=%s", i, CLASS__(cid), CLASS__(bcid), CLASS__(O_cid(v)));
 	switch(bcid) {
 		case CLASS_Boolean: {
 			knh_ndata_t *nn = (knh_ndata_t*)(of->fields + i);
-			nn[0] = IS_bBoolean(v) ? N_tobool(v) : 0;
+			nn[0] = (IS_Token(tk) && IS_Boolean(tk->data)) ? N_tobool(tk->data) : 0;
 			break;
 		}
 		case CLASS_Int: {
 			knh_int_t *nn = (knh_int_t*)(of->fields + i);
-			nn[0] = IS_bInt(v) ? N_toint(v) : 0;
+			nn[0] = (IS_Token(tk) && IS_bInt(tk->data)) ? N_toint(tk->data) : 0;
 			break;
 		}
 		case CLASS_Float: {
 			knh_float_t *nn = (knh_float_t*)(of->fields + i);
-			nn[0] = IS_bFloat(v) ? N_tofloat(v) : K_FLOAT_ZERO;
+			nn[0] = (IS_Token(tk) && IS_bFloat(tk->data)) ? N_tofloat(tk->data) : K_FLOAT_ZERO;
 			break;
 		}
 		case CLASS_Tvoid: {
 			if(cid == CLASS_Tvoid) return ;
 		}
 		default: {
-			if(IS_NOTNULL(v)) {
-
-				DBG_ASSERT(cid == O_cid(v));
-				KNH_INITv(of->fields[i], v);
+			if(IS_Token(tk) && IS_NOTNULL(tk->data)) {
+				DBG_ASSERT(cid == O_cid(tk->data));
+				KNH_INITv(of->fields[i], tk->data);
 			}
 			else {
 				KNH_INITv(of->fields[i], KNH_NULVAL(cid));
@@ -4291,12 +4289,6 @@ static void ObjectField_add(CTX ctx, knh_ObjectField_t *of, size_t i, knh_type_t
 			DBG_ASSERT(of->fields[i] != NULL);
 		}
 	}
-}
-
-knh_Object_t *Token_value(CTX ctx, knh_Token_t *tk)
-{
-	DBG_ASSERT(TT_(tk) == TT_CONST);
-	return tk->data;
 }
 
 static void Gamma_declareClassField(CTX ctx, knh_class_t cid, size_t s)
@@ -4316,14 +4308,14 @@ static void Gamma_declareClassField(CTX ctx, knh_class_t cid, size_t s)
 			size_t fi = 0;
 			knh_ObjectField_expand(ctx, ct->protoNULL, fsize, ct->fsize);
 			for(i = s; i < gsize; i++) {
-				ObjectField_add(ctx, ct->protoNULL, fsize + fi, gf[i].type, Token_value(ctx, gf[i].tk));
+				ObjectField_add(ctx, ct->protoNULL, fsize + fi, gf[i].type, gf[i].tk);
 				fi++;
 				DBLNDATA_(if(IS_Tunbox(gf[i].type)) fi++;)
 			}
 			knh_ObjectField_expand(ctx, ct->defobj, fsize, ct->fsize);
 			fi = 0;
 			for(i = s; i < gsize; i++) {
-				ObjectField_add(ctx, ct->defobj, fsize + fi, gf[i].type, Token_value(ctx, gf[i].tk));
+				ObjectField_add(ctx, ct->defobj, fsize + fi, gf[i].type, gf[i].tk);
 				fi++;
 				DBLNDATA_(if(IS_Tunbox(gf[i].type)) fi++;)
 			}

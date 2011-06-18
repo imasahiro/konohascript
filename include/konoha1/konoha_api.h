@@ -380,7 +380,6 @@ void knh_Gamma_init(CTX ctx);
 knh_class_t Link_type(CTX ctx, knh_Link_t *lnk, knh_class_t reqt);
 void knh_class_addField(CTX ctx, knh_class_t bcid, knh_flag_t flag, knh_type_t type, knh_fieldn_t fn);
 void knh_ObjectField_expand(CTX ctx, knh_ObjectField_t *of, size_t oldsize, size_t newsize);
-knh_Object_t *Token_value(CTX ctx, knh_Token_t *tk);
 void SCRIPT_typing(CTX ctx, knh_Stmt_t *stmt);
 knh_bool_t knh_Method_typing(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t it, knh_Stmt_t *stmtB);
 knh_bool_t knh_Fmt_typing(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t it, knh_Stmt_t *stmtB);
