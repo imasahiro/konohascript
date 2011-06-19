@@ -758,7 +758,7 @@ static knh_Token_t *Gamma_addLVAR(CTX ctx, knh_flag_t flag, knh_type_t type, knh
 	return tkIDX;
 }
 
-static knh_Token_t *Gamma_addFVAR(CTX ctx, knh_flag_t flag, knh_type_t type, knh_Token_t *tkN, int ucnt)
+static knh_Token_t *Gamma_addFVAR(CTX ctx, knh_flag_t flag, knh_type_t type, knh_fieldn_t fn, int ucnt)
 {
 	knh_index_t idx = DP(ctx->gma)->fvarsize;
 	knh_gamma2_t *gf = DP(ctx->gma)->gf;
@@ -776,19 +776,12 @@ static knh_Token_t *Gamma_addFVAR(CTX ctx, knh_flag_t flag, knh_type_t type, knh
 	}
 	gf[idx].flag  = flag;
 	gf[idx].type  = type;
-	if(tkN == NULL) {
-		gf[idx].fn    = FN_;
-		tkN = new_TokenTYPED(ctx, TT_FVAR, type, idx);
-	}
-	else {
-		gf[idx].fn    = Token_fn(ctx, tkN);
-		knh_Token_toTYPED(ctx, tkN, TT_FVAR, type, idx);
-	}
-	KNH_SETv(ctx, gf[idx].tkIDX, tkN);
+	gf[idx].fn    = fn;
+	KNH_SETv(ctx, gf[idx].tkIDX, new_TokenTYPED(ctx, TT_FVAR, type, idx));
 	gf[idx].ucnt  = 1;
 	DP(ctx->gma)->fvarsize += 1;
 	DP(ctx->gma)->gsize  += 1;
-	return tkN;
+	return gf[idx].tkIDX;
 }
 
 static knh_Token_t* Gamma_rindexFNQ(CTX ctx, knh_Gamma_t *gma, knh_fieldn_t fnq, int ucnt)
@@ -894,7 +887,8 @@ static knh_Token_t *TNAME_typing(CTX ctx, knh_Token_t *tkN, knh_type_t reqt, knh
 				knh_type_t type = Gamma_type(ctx, cf->type);
 				knh_Token_toTYPED(ctx, tkN, TT_FIELD, type, idx);
 				if(DP(ctx->gma)->tkScriptNC == NULL) {
-					DP(ctx->gma)->tkScriptNC = Gamma_addFVAR(ctx, 0, scrcid, new_(Token), 1);
+					DP(ctx->gma)->tkScriptNC = Gamma_addFVAR(ctx, 0, scrcid, FN_, 1);
+					DBG_P("@@SCRIPT IDX=%d", DP(ctx->gma)->tkScriptNC->index);
 				}
 				KNH_SETv(ctx, tkN->tkIDX, DP(ctx->gma)->tkScriptNC);
 				return Gamma_tokenIDX(ctx, tkN);
@@ -1796,14 +1790,14 @@ static knh_Token_t *TNAME_infer(CTX ctx, knh_Token_t *tkN, knh_Stmt_t *stmt, siz
 	TYPING(ctx, stmt, n, TYPE_var, _NOCHECK|_NOVOID);
 	knh_type_t type = Tn_type(stmt, n);
 	INFO_Typing(ctx, "", TK_tobytes(tkN), type);
+	knh_fieldn_t fn = Token_fn(ctx, tkN);
 	if(IS_SCRIPTLEVEL(ctx)) {
-		knh_fieldn_t fn = Token_fn(ctx, tkN);
 		knh_index_t idx = Script_addField(ctx, K_GMASCR, 0, type, fn);
 		knh_Token_toTYPED(ctx, tkN, TT_FIELD, type, idx);
 		return tkN;
 	}
 	else {
-		return Gamma_addFVAR(ctx, 0, type, tkN, 0);
+		return Gamma_addFVAR(ctx, 0, type, fn, 0);
 	}
 }
 
@@ -1876,13 +1870,13 @@ static knh_type_t StmtTUPLE_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, size_t i
 
 static void LET_addVAR(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t type, knh_Token_t *tkN)
 {
+	knh_fieldn_t fn = Token_fn(ctx, tkN);
 	if(IS_SCRIPTLEVEL(ctx)) {
-		knh_fieldn_t fn = Token_fn(ctx, tkN);
 		knh_index_t idx = Script_addField(ctx, K_GMASCR, 0, type, fn);
 		knh_Token_toTYPED(ctx, tkN, TT_FIELD, type, idx);
 	}
 	else {
-		tkN = Gamma_addFVAR(ctx, 0, type, tkN, 0);
+		tkN = Gamma_addFVAR(ctx, 0, type, fn, 0);
 	}
 	KNH_SETv(ctx, tmNN(stmt, n), tkN);
 }
@@ -4086,7 +4080,7 @@ static knh_Token_t* FUNCTION_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		KNH_SETv(ctx, tkNN(stmt, 0), tkM);
 		reqt = class_FuncType(ctx, DP(ctx->gma)->this_cid, mtd);
 		if(Gamma_hasXLOCAL(lgma)) {
-			knh_Token_t *tkIDX = Gamma_addFVAR(ctx, _FCHKOUT, reqt, NULL, 1);
+			knh_Token_t *tkIDX = Gamma_addFVAR(ctx, _FCHKOUT, reqt, FN_, 1);
 			KNH_SETv(ctx, tkNN(stmt, 1), tkIDX);
 		}
 		else {

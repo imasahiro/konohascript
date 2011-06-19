@@ -1024,6 +1024,16 @@ static void ASM_SMOVx(CTX ctx, int alocal, knh_type_t btype, knh_sfx_t bx)
 	}
 }
 
+static void Token_setsfx(CTX ctx, knh_Token_t *tk, knh_sfx_t *x)
+{
+	x->i = 0;
+	x->n = (tk)->index;
+	if(IS_Token(tk->tkIDX) && TT_(tk->tkIDX) == TT_FVAR) {
+		x->i = OC_(Token_index(tk->tkIDX));
+	}
+	DBG_P("tk=%s, x->i=%d, x->n=%d", TT__(tk->tt), x->i/2, x->n);
+}
+
 static void ASM_SMOV(CTX ctx, int alocal, knh_Token_t *tk)
 {
 	knh_type_t type = SP(tk)->type;
@@ -1063,11 +1073,8 @@ static void ASM_SMOV(CTX ctx, int alocal, knh_Token_t *tk)
 			break;
 		}
 		case TT_FIELD: {
-			int b = (int)(tk)->index;
-			knh_sfx_t bx = {OC_(0), (size_t)b};
-			if(IS_Token(tk->tkIDX) && TT_(tk->tkIDX) == TT_FVAR) {
-				bx.i = OC_(Token_index(tk->tkIDX));
-			}
+			knh_sfx_t bx;
+			Token_setsfx(ctx, tk, &bx);
 			ASM_SMOVx(ctx, alocal, type, bx);
 			break;
 		}
@@ -1143,11 +1150,8 @@ static void ASM_XMOV(CTX ctx, int alocal, size_t an, knh_Token_t *tkb, int espid
 			break;
 		}
 		case TT_FIELD: {
-			int b = (int)(tkb)->index;
-			knh_sfx_t bx = {OC_(0), (size_t)b};
-			if(IS_Token(tkb->tkIDX) && TT_(tkb->tkIDX) == TT_FVAR) {
-				bx.i = OC_(Token_index(tkb->tkIDX));
-			}
+			knh_sfx_t bx;
+			Token_setsfx(ctx, tkb, &bx);
 			ASM_XMOVx(ctx, ax, btype, bx);
 			break;
 		}
@@ -1193,12 +1197,9 @@ static void ASM_MOV(CTX ctx, knh_Token_t *tka, knh_Token_t *tkb, int espidx)
 	}
 	else {
 		DBG_ASSERT(TT_(tka) == TT_FIELD);
-		int idx = 0;
-		int an = (int)(tka)->index;
-		if(IS_Token(tka->tkIDX) && TT_(tka->tkIDX) == TT_FVAR) {
-			idx = Token_index(tka->tkIDX);
-		}
-		ASM_XMOV(ctx, idx, an, tkb, espidx);
+		knh_sfx_t x;
+		Token_setsfx(ctx, tka, &x);
+		ASM_XMOV(ctx, x.i, x.n, tkb, espidx);
 	}
 }
 
@@ -1930,10 +1931,8 @@ static void LETEXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	}
 	else {
 		DBG_ASSERT(TT_(tkL) == TT_FIELD);
-		knh_sfx_t ax = {OC_(0), (size_t)(tkL)->index};
-		if(IS_Token(tkL->tkIDX) && TT_(tkL->tkIDX) == TT_FVAR) {
-			ax.i = OC_(Token_index(tkL->tkIDX));
-		}
+		knh_sfx_t ax;
+		Token_setsfx(ctx, tkL, &ax);
 		if(IS_Tunbox(atype)) {
 			ASM(XNMOV, ax, NC_(espidx));
 		}
@@ -2207,10 +2206,8 @@ static void LET_asm(CTX ctx, knh_Stmt_t *stmt)
 		else {
 			DBG_ASSERT(TT_(tkL) == TT_FIELD);
 			knh_type_t atype = tkL->type;
-			knh_sfx_t ax = {OC_(0), (size_t)(tkL)->index};
-			if(IS_Token(tkL->tkIDX) && TT_(tkL->tkIDX) == TT_FVAR) {
-				ax.i = OC_(Token_index(tkL->tkIDX));
-			}
+			knh_sfx_t ax;
+			Token_setsfx(ctx, tkL, &ax);
 			if(IS_Tunbox(atype)) {
 				ASM(XNMOV, ax, NC_(DP(stmt)->espidx));
 			}
@@ -2799,7 +2796,6 @@ static void Gamma_shiftLocalScope(CTX ctx)
 		}
 	}
 	knh_Array_clear(ctx, a, 0);
-	DP(ctx->gma)->fvarsize = 0;
 }
 
 void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t ittype, knh_Stmt_t *stmtB, knh_Ftyping typing)
@@ -2859,6 +2855,7 @@ void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t it
 			}
 		}
 	}
+	DP(ctx->gma)->fvarsize = 0;
 	BLOCK_asm(ctx, stmtB);
 	ASM_LABEL(ctx, lbEND);
 	ASM(RET);
