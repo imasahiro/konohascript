@@ -545,100 +545,115 @@ static void *knh_generateCallbackFunc32(CTX ctx, void *tmpl, void *dest, knh_Fun
 #endif
 
 #ifdef __x86_64__
+enum last_inst {
+	jmp_only,
+	leave_jmp,
+	call_leave_ret
+};
 static void *knh_generateCallbackFunc64(CTX ctx, void *tmpl, void *dest, knh_Func_t *fo)
 {
-  knh_uchar_t *function = NULL;
+	knh_uchar_t *function = NULL;
 #if !defined(K_USING_WINDOWS) && !defined(K_USING_BTRON)
-  function = (knh_uchar_t*)tmpl;
-  // search -1 (0xffffffffffffffff)
-  int i, marker = -1, jmp_pos = -1;
-  for (i = 0; i < FUNC_SIZE; i++) {
-	if (*(int*)&function[i] == -1 && marker == -1) {
-	  marker = i;
-	  i += 3;
+	function = (knh_uchar_t*)tmpl;
+	// search -1 (0xfffffff0fffffff0)
+	int i, marker = -1, jmp_pos = -1;
+	enum last_inst lastInst = call_leave_ret;
+	for (i = 0; i < FUNC_SIZE; i++) {
+		if (*(intptr_t*)&function[i] == 0xfffffff0fffffff0 && marker == -1) {
+			marker = i;
+			i += 8;
+		}
+		// XXX ??? function[i] == 0xe8 && 0x66
+		/* jmp instruction
+		 * e8 00 00 00  */
+		if (function[i] == 0xe8 /*&& function[i] == 0x66*/) {
+			jmp_pos = i;
+		}
+		// jmppos for x86_64
+		// c9 : leave
+		// e9 xxxxxxxx : jmp xxxxxxxx
+		if(function[i] == 0xc9 && function[i + 1] == 0xe9) {
+			lastInst = leave_jmp;
+			jmp_pos = i + 1;
+			i += 4; // rel address is 4 bytes
+			break; 
+		}
+		//linux amd64
+		if (function[i] == 0xe9 && *(int*)&function[i+1] < 0) {
+			lastInst = jmp_only;
+			jmp_pos = i;
+			i += 5 + 4;
+			break;
+		}
+
+		// typical epilogue.
+		if (function[i] == 0xc9 && function[i+1] == 0xc3) {
+			i += 2;
+			break;
+		}
+	}
+	// copy function
+	size_t funcsize = i;
+	function = (knh_uchar_t*)knh_xmalloc(ctx, funcsize);
+	memcpy(function, tmpl, i);
+	if (marker > 0) {
+		memcpy(&function[marker], &fo, sizeof(void*));
+	}
+	// now, patch
+	if (jmp_pos > 0) {
+		//linux
+		// happend to use rax
+		// movq 0x(dest) %rax
+		function[jmp_pos+0] = 0x48;
+		function[jmp_pos+1] = 0xb8;
+		union {
+			unsigned char code[sizeof(intptr_t)];
+			intptr_t v;
+		} code;
+		code.v = (intptr_t) dest;
+		memcpy(function+(jmp_pos+2), code.code, sizeof(code));
+
+		size_t seekidx = jmp_pos + 2 + sizeof(intptr_t);
+		// call
+		switch (lastInst) {
+		case leave_jmp:
+			/* leave */
+			function[seekidx++] = 0xc9;
+			/* fall through */
+		case jmp_only:
+			/* jmp *%rax */
+			function[seekidx++] = 0xff;
+			function[seekidx++] = 0xe0;
+			break;
+		case call_leave_ret:
+			/* callq *%rax */
+			function[seekidx+0] = 0xff;
+			function[seekidx+1] = 0xd0;
+			/* leave */
+			function[seekidx+2] = 0xc9;
+			/* ret */
+			function[seekidx+3] = 0xc3;
+			break;
+		}
 	}
 
-	if (function[i] == 0xe8 && function[i] == 0x66) {
-	  jmp_pos = i;
-	}
-	// jmppos for x86_64
-	// c9 : leave
-	// e9 xxxxxxxx : jmp xxxxxxxx
-	if(function[i] == 0xc9 && function[i + 1] == 0xe9) {
-	  jmp_pos = i + 1;
-	  i += 4; // rel address is 4 bytes
-	  break; 
-	}
-	//linux amd64
-	if (function[i] == 0xe9 && *(int*)&function[i+1] < 0) {
-	  jmp_pos = i;
-	  i += 5 + 4;
-	  break;
-	}
-
-	// typical epilogue.
-	if (function[i] == 0xc9 && function[i+1] == 0xc3) {
-	  i += 2;
-	  break;
-	}
-  }
-  // copy function
-  function = (knh_uchar_t*)knh_xmalloc(ctx, i);
-  memcpy(function, tmpl, i);
-  knh_uchar_t buf[FUNC_SIZE]={0};
-  size_t funcsize = i;
-  if (marker > 0) {
-	// resize;
-    //      :          mm <-- marker
-	//Linux : 48 c7 c7 xx xx xx xx ....
-	// -->    48 bf xx xx xx xx xx xx xx xx ....
-	// first arguments is rdi (...?)
-	//	diff test
-	memcpy(buf, &function[marker+4], funcsize - (marker + 4));
-	function[marker - 2] = 0xbf;
-	memcpy(&function[marker-1], &fo, 8);
-	memcpy(&function[marker + 7], buf, funcsize - (marker + 4));
-	// shift
-	jmp_pos += 3;
-	funcsize += 3;
-  }
-  // now, patch
-  if (jmp_pos > 0) {
-	//linux
-	// happend to use r11
-	function[jmp_pos] = 0x49;
-	function[jmp_pos+1] = 0xbb;
-	*(intptr_t*)&function[jmp_pos + 2] = (intptr_t)dest; // 8 byte?
-	//	memcpy(&function[jmp_pos + 2 + 8], buf, funcsize - (jmp_pos + 5));
-	//	dumpBinary(function, 32);		
-	// insert 2 values;
-	//before jmp!
-	size_t seekidx = jmp_pos + 2 + 8;
-	// jmp r11
-	function[seekidx] = 0x41;
-	function[seekidx+1] = 0xff;
-	function[seekidx+2] = 0xe3;
-	// shift the rest;
-	//	memcpy(&function[seekidx+3], buf, funcsize - (seekidx+3));
-	//	dumpBinary(function, 48);
-  }
 #endif /* tron, lkm */
-  return function;
+	return function;
 }
 #endif /*__x86_64__ */
 
 void *knh_copyCallbackFunc(CTX ctx, void *tmpl, void *dest, knh_Func_t *fo)
 {
-  void *function = NULL;
+	void *function = NULL;
 #ifdef __x86_64__
-  function = knh_generateCallbackFunc64(ctx, tmpl, dest, fo);
+	function = knh_generateCallbackFunc64(ctx, tmpl, dest, fo);
 #else
-  function = knh_generateCallbackFunc32(ctx, tmpl, dest, fo);
+	function = knh_generateCallbackFunc32(ctx, tmpl, dest, fo);
 #endif
-  return function;
+	return function;
 }
 
-  /*
+/*
 static void dumpBinary(unsigned char *ptr, size_t size)
 {
 	int i = 0;
@@ -649,7 +664,7 @@ static void dumpBinary(unsigned char *ptr, size_t size)
 		if (i % 16 == 15) fprintf(stderr, "\n");
 	}
 }
-  */
+*/
 
 
 knh_Fmethod knh_makeFmethod(CTX ctx, void *func, int argc, knh_ffiparam_t *argv)

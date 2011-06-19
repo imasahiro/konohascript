@@ -592,7 +592,7 @@ int knh_compare(knh_Func_t *fo, const void *v1, const void *v2)
 
 int dummyCallbackCompare(const void *v1, const void *v2)
 {
-	return knh_compare((knh_Func_t*)(-1LL), v1, v2);
+	return knh_compare((knh_Func_t*)(0xfffffff0fffffff0), v1, v2);
 }
 
 /* ------------------------------------------------------------------------ */

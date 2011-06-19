@@ -264,34 +264,6 @@ static int Token_index_(CTX ctx, knh_Token_t *tk)
 	return (int)(tk)->index + ((TT_(tk) == TT_LVAR) ? DP(ctx->gma)->ebpidx : 0);
 }
 
-static void ASM_BOX2(CTX ctx, knh_type_t reqt, knh_type_t atype, int a)
-{
-	//knh_class_t cid = CLASS_t(atype);
-	//knh_class_t bcid = ClassTBL(cid)->bcid;
-	//if(bcid == CLASS_Boolean || bcid == CLASS_Int || bcid == CLASS_Float) {
-	//	knh_class_t rcid = ClassTBL(CLASS_t(reqt))->bcid;
-	//	if(rcid != bcid && reqt != TYPE_void) {
-	//		if(cid == CLASS_Boolean) {
-	//			//ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(cid), _bBOX);
-	//		}
-	//		else if (IS_Tnumbox(reqt)) {
-	//			LLVM_TODO("Boxing");
-	//			//Object *v = (cid == CLASS_Int) ? UPCAST(KNH_INT0) : UPCAST(KNH_FLOAT0);
-	//			//ASM(OSET, OC_(a), v);
-	//		}
-	//		else {
-	//			//ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(cid), _BOX);
-	//		}
-	//	}
-	//}
-	//else if(atype == CLASS_Tdynamic && IS_Tnumbox(reqt)) {
-	//	//ASM(UNBOX, NC_(a), OC_(a), ClassTBL(reqt));
-	//}
-	//else if(IS_Tnumbox(atype) && reqt == CLASS_Tdynamic) {
-	//	//ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(atype), _OBOX);
-	//}
-}
-
 static void ASM_UNBOX(CTX ctx, knh_type_t atype, int a)
 {
 	LLVM_TODO("ASM_UNBOX");
@@ -404,7 +376,6 @@ static int _BOX_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	return 0;
 }
 
-
 static void ASM_SMOVx(CTX ctx, knh_type_t atype, int a, knh_type_t btype, knh_sfx_t bx)
 {
 	IRBuilder<> *builder = LLVM_BUILDER(ctx);
@@ -416,13 +387,6 @@ static void ASM_SMOVx(CTX ctx, knh_type_t atype, int a, knh_type_t btype, knh_sf
 	v = builder->CreateBitCast(v, PointerType::get(ty, 0), "cast");
 	v = builder->CreateConstInBoundsGEP1_32(v, bx.n, "get_");
 	v = builder->CreateLoad(v);
-	//if(IS_Tunbox(btype)) {
-	//	ASM_BOX2(ctx, atype, btype, (a)); /* TODO */
-	//}
-	//else {
-	//	ASM_UNBOX(ctx, btype, a); /* TODO */
-	//}
-
 	ValueStack_set(ctx, a, v);
 }
 
@@ -601,7 +565,6 @@ static void ASM_SMOV(CTX ctx, knh_type_t atype, int a/*flocal*/, knh_Token_t *tk
 			else {
 				ASM(TR, OC_(a), SFP_(a), RIX_(a-a), ClassTBL(CLASS_t(btype)), _PROP);
 			}
-			ASM_BOX2(ctx, atype, btype, a);
 			break;
 		}
 		default: {
@@ -684,7 +647,6 @@ static void ASM_XMOV(CTX ctx, knh_type_t atype, int a, size_t an, knh_Token_t *t
 		case TT_LVAR: {
 			int b = Token_index(tkb);
 			Value *v = ValueStack_get(ctx, b);
-			//ASM_BOX2(ctx, atype, btype, b);
 			ASM_XMOV_local(ctx, builder, atype, ax, v);
 			break;
 		}
@@ -718,7 +680,6 @@ static void ASM_XMOV(CTX ctx, knh_type_t atype, int a, size_t an, knh_Token_t *t
 			else {
 				ASM(TR, OC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ClassTBL(CLASS_t(atype)), _PROP);
 			}
-			ASM_BOX2(ctx, atype, btype, espidx);
 			break;
 		}
 		default: {
@@ -1441,7 +1402,6 @@ static int _TCAST_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 					builder->CreateCall(func, params.begin(), params.end());
 					v = ValueStack_load_set(ctx, local, (stmt)->type);
 
-					//ASM_BOX2(ctx, TYPE_Object, srct, local);
 					//ASM(SCAST, RTNIDX_(ctx, local, stmt->type), SFP_(local), RIX_(local-local), trl);
 				}
 			}
@@ -1754,7 +1714,6 @@ static int _EXPR_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	default:
 		DBG_ABORT("unknown stt=%s", TT__(STT_(stmt)));
 	}
-	ASM_BOX2(ctx, reqt, SP(stmt)->type, sfpidx);
 	return 0;
 }
 
@@ -2432,7 +2391,6 @@ static int _RETURN_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt _UNUSED_, int 
 		if(IS_Tunbox(rtype)) {
 			knh_ParamArray_t *pa = DP(DP(ctx->gma)->mtd)->mp;
 			knh_param_t *p = knh_ParamArray_rget(pa, 0);
-			ASM_BOX2(ctx, knh_type_tocid(ctx, p->type, DP(ctx->gma)->this_cid), rtype, K_RTNIDX);
 		}
 	}
 	if(IS_Stmt(DP(stmt)->stmtPOST)) {
