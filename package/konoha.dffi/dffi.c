@@ -28,7 +28,7 @@ static void Clib_free(CTX ctx, knh_RawPtr_t *po)
 	if (po->rawptr != NULL) {
 	  knh_CLib_t *clib = (knh_CLib_t*)po->rawptr;
 	  if (clib->handler != NULL) {
-		dlclose(clib->handler);
+		knh_dlclose(ctx, clib->handler);
 	  }
 	  KNH_FREE(ctx, clib, sizeof(knh_CLib_t));
 	  po->rawptr = NULL;
@@ -103,11 +103,11 @@ METHOD Clib_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
   knh_CLib_t *clib = (knh_CLib_t *)(sfp[0].p->rawptr);
   const char *libname = String_to(const char *, sfp[1]);
-  clib->handler = dlopen(libname, RTLD_LAZY);
+  clib->handler = knh_dlopen(ctx, libname);
   RETURN_(sfp[0].o);
 }
 
-static METHOD Fmethod_funcRTYPE2(CTX ctx, knh_sfp_t *sfp _RIX)
+static METHOD Fmethod_wrapCLib(CTX ctx, knh_sfp_t *sfp _RIX)
 {
   knh_type_t rtype = knh_ParamArray_rtype(DP(sfp[K_MTDIDX].mtdNC)->mp);
   knh_Func_t *fo = sfp[0].fo;
@@ -185,7 +185,7 @@ METHOD Dglue_getFunc(CTX ctx, knh_sfp_t *sfp _RIX)
   const knh_ClassTBL_t *tbl = ClassTBL(klass->cid);
   knh_ParamArray_t *pa = tbl->cparam;
 
-  if ((dg->fptr = dlsym(clib->handler, symstr))== NULL) {
+  if ((dg->fptr = knh_dlsym(ctx, clib->handler, symstr, 0))== NULL) {
 	fprintf(stderr, "dlsym_ERROR!!!\n");
   }
 
@@ -199,7 +199,7 @@ METHOD Dglue_getFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 	} else if (pa->p0.type == TYPE_Float) {
 	  dg->retT = &ffi_type_double;
 	} else {
-	  // TODO!!
+	  TODO();
 	}
   } else {
 	TODO();
@@ -247,7 +247,7 @@ METHOD Dglue_getFunc(CTX ctx, knh_sfp_t *sfp _RIX)
   //cid = knh_class_Generics(ctx, CLASS_Func, pa);
   
   // set wrapper method
-  knh_Method_t *mtd = new_Method(ctx, 0, O_cid(klass), MN_LAMBDA, Fmethod_funcRTYPE2);
+  knh_Method_t *mtd = new_Method(ctx, 0, O_cid(klass), MN_LAMBDA, Fmethod_wrapCLib);
   mtd->b->cfunc = (void*)dg;
   KNH_SETv(ctx, ((mtd)->b)->mp, tbl->cparam);
   KNH_INITv(fo->mtd, mtd);
@@ -263,7 +263,7 @@ METHOD Dglue_getFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
 {
 	kapi->setPackageProperty(ctx, "name", "dffi");
-	kapi->setPackageProperty(ctx, "version", "0.0");
+	kapi->setPackageProperty(ctx, "version", "0.1");
 	RETURN_PKGINFO("konoha.dffi");
 }
 #endif /* _SETUP */
