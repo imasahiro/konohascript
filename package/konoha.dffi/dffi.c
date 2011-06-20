@@ -358,10 +358,8 @@ static METHOD Fmethod_wrapProcess(CTX ctx, knh_sfp_t *sfp _RIX)
   knh_type_t rtype = knh_ParamArray_rtype(DP(sfp[K_MTDIDX].mtdNC)->mp);
   knh_Func_t *fo = sfp[0].fo;
   knh_ProcessGlue_t *pglue = (knh_ProcessGlue_t*)(((fo->mtd)->b)->cfunc);
-  //  knh_Process_t *proc = (knh_Process_t*)glue->componentInfo;
-  //const char *arg1 = String_to(const char *, sfp[1]);
-  //  char **args = {proc->path, arg1, NULL};
-  char *args[] = {"ls", "-l", NULL};
+  const char *arg1 = String_to(const char *, sfp[1]);
+  char *args[] = {pglue->path, arg1, NULL};
 #ifdef K_USING_POSIX_
   // create pipe
   int pipe_c2p[2], pipe_p2c[2];
