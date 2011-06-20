@@ -8,8 +8,8 @@ String sl = "i love konoha";
 String su = "I LOVE KONOHA";
 
 assure "StringUpperLower" {
-	assure (s.(to:lower) == sl);
-	assure (s.(to:upper) == su);
-	assure (s.convert(to:lower) == sl);
-	assure (s.convert(to:upper) == su);
+	assert (s.(to:lower) == sl);
+	assert (s.(to:upper) == su);
+	assert (s.convert(to:lower) == sl);
+	assert (s.convert(to:upper) == su);
 }

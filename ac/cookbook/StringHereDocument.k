@@ -20,13 +20,13 @@ String lyrics1() {
 
 assure "StringHereDocument" {
 	String s = "Peter Piper picked a peck of pickled peppers,\nA peck of pickled peppers Peter Piper picked;\nIf Peter Piper picked a peck of pickled peppers,\nWhere's the peck of pickled peppers Peter Piper picked?\n";
-	assure (s == lyrics0);
-	assure (s == lyrics1());
+	assert (s == lyrics0);
+	assert (s == lyrics1());
 }
 
 assure "StringSharpLiteral" {
 	String file = "pizza.txt";
 	String cmd = ## echo $$file
 
-	assure (cmd == "echo pizza.txt");
+	assert (cmd == "echo pizza.txt");
 }
