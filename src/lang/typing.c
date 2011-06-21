@@ -924,23 +924,7 @@ static knh_Token_t *TNAME_typing(CTX ctx, knh_Token_t *tkN, knh_type_t reqt, knh
 		}
 	}
 	if(FLAG_is(op, _TOERROR)) {
-//		knh_bytes_t t = TK_tobytes(tkN);
-//		if(IS_SYSVAL(t, "__line__")) {
-//			return Token_setCONST(ctx, tkN, new_Int_(ctx, CLASS_Int, ULINE_line(tkN->uline)));
-//		}
-//		else if(IS_SYSVAL(t, "__file__")) {
-//			return Token_setCONST(ctx, tkN, knh_getURN(ctx, ULINE_uri(tkN->uline)));
-//		}
-//		else if(IS_SYSVAL(t, "__method__") || IS_SYSVAL(t, "__func__")) {
-//			return Token_setCONST(ctx, tkN, DP(ctx->gma)->mtd);
-//		}
-//		else if(IS_SYSVAL(t, "__namespace__") || IS_SYSVAL(t, "__ns__")) {
-//			knh_NameSpace_t *ns = K_GMANS;
-//			return Token_setCONST(ctx, tkN, ns);
-//		}
-//		else {
-			return ERROR_Undefined(ctx, "variable", CLASS_unknown, tkN);
-//		}
+		return ERROR_Undefined(ctx, "variable", CLASS_unknown, tkN);
 	}
 	return NULL;
 }
@@ -1993,7 +1977,7 @@ static knh_Token_t *SWAP_typing(CTX ctx, knh_Stmt_t *stmt)
 			knh_Token_t *tkIDX = tkNN(stmt, msize+i); //
 			if(STT_(stmtNN(stmt, i)) == STT_CALL) {
 				stmtL = stmtNN(stmt, i);
-				KNH_SETv(ctx, tkNN(stmtL, (DP(stmt)->size-1)), tkIDX);
+				KNH_SETv(ctx, tkNN(stmtL, (DP(stmtL)->size-1)), tkIDX);
 			}
 			else {
 				DBG_P("TT=%s", TT__(tkNN(stmt, i)->tt));
@@ -2644,9 +2628,9 @@ static knh_Token_t* NEWPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t mtd_
 	}
 	Token_setMethod(ctx, tkMTD, mn, mtd);
 	knh_Token_toCID(ctx, tkC, mtd_cid);
-	if(needsTypingPARAMs) {
+//	if(needsTypingPARAMs) {
 		tkRES = CALLPARAMs_typing(ctx, stmt, mtd_cid, mtd_cid, mtd);
-	}
+//	}
 	tkRES->type = mtd_cid;
 	//DBG_P("stt=%s, type=%s", TT__(stmt->stt), CLASS__(tkRES->type));
 	return tkRES;
@@ -3707,6 +3691,7 @@ static knh_class_t METHOD_cid(CTX ctx, knh_Stmt_t *stmt)
 {
 	knh_Token_t *tkC = tkNN(stmt, 1); DBG_ASSERT(IS_Token(tkC));
 	knh_class_t this_cid = DP(ctx->gma)->this_cid;
+	DBG_P("this_cid=%s", CLASS__(this_cid));
 	if(TT_(tkC) == TT_ASIS) {
 		return this_cid;
 	}
@@ -4653,16 +4638,11 @@ void SCRIPT_typing(CTX ctx, knh_Stmt_t *stmt)
 		Gamma_expand(ctx, ctx->gma, 8/*init*/);
 	}
 	ctx->gma->uline = stmt->uline;
+	DP(ctx->gma)->this_cid = O_cid(ctx->gma->scr);
 	KNH_SETv(ctx, DP(ctx->gma)->mtd, KNH_NULL);
 	switch(STT_(stmt)) {
 		CASE_STMT(CLASS, stmt);
-		// TODO why we need init Gamma
-		//CASE_STMT(METHOD, stmt);
-		case STT_METHOD : {
-			Gamma_initThis(ctx, this_cid, TYPE_void);
-			tkRES = METHOD_typing(ctx, stmt);
-			break;
-		}
+		CASE_STMT(METHOD, stmt);
 		CASE_STMT(FORMAT, stmt);
 		CASE_STMT(TYPEMAP, stmt);
 		CASE_STMT2(DECLSCRIPT, stmt);

@@ -5,6 +5,6 @@
 
 
 assure "OperatorStaticCall" {
-	assure Int.class == Int;
+	assert Int.class == Int;
 }
 

@@ -14,8 +14,8 @@ assure "StatementSwap" {
 assure "StatementSwap" {
 	b, c = 1, 2;
 	b, c = c, b + c;
-	assert c == 2;
-	assert b == 3;
+	assert b == 2;
+	assert c == 3;
 }
 
 assure "StatementSwap:Array" {

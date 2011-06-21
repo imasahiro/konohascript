@@ -2150,39 +2150,49 @@ static inline void Tn_asmBLOCK(CTX ctx, knh_Stmt_t *stmt, size_t n)
 static void ASM_PMOV(CTX ctx, int isUNBOX, int a, int b)
 {
 	knh_BasicBlock_t *bb = DP(ctx->gma)->bbNC;
-	knh_opline_t *opP = DP(bb)->opbuf + (DP(bb)->size - 1);
-	klr_TR_t *opTR = (klr_TR_t*)opP;
-	int defidx = opTR->a;
-	if(isUNBOX) {
-		int r0 = NC_(a), r1 = NC_(b);
-		if(r1 == defidx) {
-			int opcode = opP->opcode;
-			DBG_P("r0=%d, r1=%d, def=%d", r0, r1, defidx);
-			if((OPCODE_bNOT <= opcode && opcode <= OPCODE_fGTEC)
-			  || (OPCODE_iCAST <= opcode && opcode <= OPCODE_fCAST)
-			  || (OPCODE_BGETIDX <= opcode && opcode <= OPCODE_NSETIDXC)) {
-				opTR->a = r0;
-				return ;
+	if(DP(bb)->size > 0) {
+		knh_opline_t *opP = DP(bb)->opbuf + (DP(bb)->size - 1);
+		klr_TR_t *opTR = (klr_TR_t*)opP;
+		int defidx = opTR->a;
+		if(isUNBOX) {
+			int r0 = NC_(a), r1 = NC_(b);
+			if(r1 == defidx) {
+				int opcode = opP->opcode;
+				DBG_P("r0=%d, r1=%d, def=%d", r0, r1, defidx);
+				if((OPCODE_bNOT <= opcode && opcode <= OPCODE_fGTEC)
+				  || (OPCODE_iCAST <= opcode && opcode <= OPCODE_fCAST)
+				  || (OPCODE_BGETIDX <= opcode && opcode <= OPCODE_NSETIDXC)) {
+					opTR->a = r0;
+					return ;
+				}
 			}
+			ASM(NMOV, r0, r1);
 		}
-		ASM(NMOV, r0, r1);
+		else {
+			int r0 = OC_(a), r1 = OC_(b);
+			if(r1 == defidx) {
+				int opcode = opP->opcode;
+				DBG_P("r0=%d, r1=%d, def=%d", r0, r1, defidx);
+				if(opcode == OPCODE_TR) {
+					opTR->a = r0;
+					opTR->rix = (r0 - opTR->b) / 2;
+					return ;
+				}
+				if((OPCODE_OGETIDX <= opcode && opcode <= OPCODE_OSETIDXC)) {
+					opTR->a = r0;
+					return ;
+				}
+			}
+			ASM(OMOV, r0, r1);
+		}
 	}
 	else {
-		int r0 = OC_(a), r1 = OC_(b);
-		if(r1 == defidx) {
-			int opcode = opP->opcode;
-			DBG_P("r0=%d, r1=%d, def=%d", r0, r1, defidx);
-			if(opcode == OPCODE_TR) {
-				opTR->a = r0;
-				opTR->rix = (r0 - opTR->b) / 2;
-				return ;
-			}
-			if((OPCODE_OGETIDX <= opcode && opcode <= OPCODE_OSETIDXC)) {
-				opTR->a = r0;
-				return ;
-			}
+		if(isUNBOX) {
+			ASM(NMOV, NC_(a), NC_(b));
 		}
-		ASM(OMOV, r0, r1);
+		else {
+			ASM(OMOV, OC_(a), OC_(b));
+		}
 	}
 }
 
