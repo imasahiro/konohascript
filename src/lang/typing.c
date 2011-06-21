@@ -4656,12 +4656,13 @@ void SCRIPT_typing(CTX ctx, knh_Stmt_t *stmt)
 	KNH_SETv(ctx, DP(ctx->gma)->mtd, KNH_NULL);
 	switch(STT_(stmt)) {
 		CASE_STMT(CLASS, stmt);
-		CASE_STMT(METHOD, stmt);
-//		case STT_METHOD : {
-//			Gamma_initThis(ctx, this_cid, TYPE_void);
-//			tkRES = METHOD_typing(ctx, stmt);
-//			break;
-//		}
+		// TODO why we need init Gamma
+		//CASE_STMT(METHOD, stmt);
+		case STT_METHOD : {
+			Gamma_initThis(ctx, this_cid, TYPE_void);
+			tkRES = METHOD_typing(ctx, stmt);
+			break;
+		}
 		CASE_STMT(FORMAT, stmt);
 		CASE_STMT(TYPEMAP, stmt);
 		CASE_STMT2(DECLSCRIPT, stmt);
