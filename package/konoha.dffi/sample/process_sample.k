@@ -1,8 +1,7 @@
-using konoha.dffi.*;
+using konoha.clib.*;
+Process pls = new Process("ls");
+Glue g = pls.genGlue();
+Func<String=>String> ls = g.getFunc("");
 
-Process p = new Process("ls");
-Lglue l = p.genGlue();
-Func<String=>String> ls = l.getFunc();
-
-s = ls("-la");
-OUT <<< s <<< EOL;
+ret = ls("-la");
+OUT <<< ret <<< EOL;

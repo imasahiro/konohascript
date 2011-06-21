@@ -1,0 +1,24 @@
+2011-06-22  Shinpei Nakata  <shinpei.nakata@gmail.com>
+
+	* dffi.c: mod newRawPtr, support Obj
+	 - set return value of genGlue, Clib.new, Process.new
+	 - support for opendir
+	 - add samples
+	TODO:
+	 - support for readdir. struct dirent binding
+
+2011-06-21  Shinpei Nakata  <shinpei.nakata@gmail.com>
+
+	* dffi.c: add string support, unlimited arguments support
+	 - use knh_ParamArray_get
+	 - ffi_type_uchar -> ffi_type_pointer
+	TODO:
+	 - remember a original type of argT, since the mapping is done at wrapCLib()
+	* dffi.c: add class Process
+	 - add knh_GlueSPI_t
+	 - add class Process
+	 - function name modified wrapClib, wrapProcess
+	TODO:
+	 - make Func<Array<String> => String> for Process getFunc
+	 - fix bug of loading libc.so (reported by imasahiro)-->(done)
+

@@ -1,7 +1,7 @@
-using konoha.dffi.*;
+using konoha.clib.*;
 
 Clib c = new Clib("/usr/lib/libm.dylib");
-Dglue d = c.genGlue();
+Glue d = c.genGlue();
 
 Func<Float=>Float> sin = d.getFunc("sin"); /* typing */
 print sin(1.5);
