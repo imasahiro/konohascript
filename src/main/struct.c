@@ -28,21 +28,6 @@
 /* ************************************************************************ */
 
 #define LIBNAME   "stdc"
-#define USE_bytes         1
-#define USE_cwb           1
-#define USE_array_index   1
-
-#define USE_fopen   1
-#define USE_fclose  1
-#define USE_fread   1
-#define USE_fwrite  1
-#define USE_fflush  1
-#define USE_fclose  1
-
-#define USE_hash    1
-
-#define USE_TIME_H
-#define USE_getTimeMilliSecond 1
 
 #include"commons.h"
 #include"../../include/konoha1/konoha_code_.h"
@@ -2887,13 +2872,6 @@ static void KonohaCode_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 static void KonohaCode_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_KonohaCode_t *b = (knh_KonohaCode_t*)o;
-#ifdef K_USING_VMCOUNT  /* Who added this ?*/
-	knh_opline_t *pc = b->code;
-	while(pc->opcode != OPCODE_RET) {
-		knh_opcode_count(ctx, pc);
-		pc++;
-	}
-#endif
 	KNH_FREE(ctx, b->code, b->codesize);
 }
 

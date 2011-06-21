@@ -26,17 +26,6 @@
 
 /* ************************************************************************ */
 
-#define USE_STEXT 1
-#define USE_bytes_equals
-#define USE_bytes_endsWith    1
-#define USE_bytes_index       1
-#define USE_bytes_first       1
-#define USE_bytes_last        1
-#define USE_bytes_parseint    1
-#define USE_bytes_parsefloat  1
-#define USE_cwb_open          1
-#define USE_cwb_size          1
-
 #include"commons.h"
 
 /* ************************************************************************ */

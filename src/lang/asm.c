@@ -26,12 +26,6 @@
 
 /* ************************************************************************ */
 
-#define USE_STEXT 1
-#define USE_B     1
-#define USE_bytes_equals    1
-#define USE_cwb_open      1
-#define USE_RCinc
-
 #include"commons.h"
 
 /* ************************************************************************ */

@@ -1,9 +1,3 @@
-//#define USE_cwb_open    1
-//#define USE_cwb_size    1
-//#define USE_cwb_tobytes 1
-#define USE_B           1
-//#define USE_array_index 1
-
 #include <konoha1.h>
 #include <konoha1/konohalang.h>
 #include <konoha1/konoha_code_.h>

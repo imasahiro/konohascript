@@ -27,18 +27,6 @@
 
 /* ************************************************************************ */
 
-#define USE_STEXT 1
-#define USE_B     1
-#define USE_bytes_startsWith    1
-#define USE_bytes_endsWith      1
-#define USE_bytes_index         1
-
-#define USE_cwb_open      1
-#define USE_cwb_open2     1
-#define USE_cwb_tobytes   1
-#define USE_cwb_write     1
-#define USE_cwb_putc      1
-
 #include"commons.h"
 
 #ifdef K_USING_POSIX_

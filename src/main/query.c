@@ -29,8 +29,6 @@
 
 #ifndef K_INCLUDE_BUILTINAPI
 
-#define USE_cwb_open      1
-
 #include"commons.h"
 
 /* ************************************************************************ */

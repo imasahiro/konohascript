@@ -1,10 +1,3 @@
-#define USE_bytes_index
-#define USE_bytes_last
-#define USE_bytes_rindex
-#define USE_bytes_parseint
-#define USE_bytes_first
-#define USE_new_bytes
-
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netinet/in.h>

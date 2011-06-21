@@ -27,17 +27,6 @@
 
 /* ************************************************************************ */
 
-#define USE_STEXT 1
-#define USE_B     1
-#define USE_bytes_strcmp    1
-#define USE_bytes_parseint  1
-#define USE_cwb_open      1
-#define USE_cwb_tobytes   1
-#define USE_cwb_size      1
-
-// added by nakata
-//#define USE_cwb_write 1
-
 /* ************************************************************************ */
 
 #define LIBNAME "konoha"

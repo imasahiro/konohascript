@@ -27,9 +27,6 @@
 
 /* ************************************************************************ */
 
-#define USE_STEXT 1
-#define USE_cwb_open      1
-
 #include"commons.h"
 
 #if K_USING_WIN32_

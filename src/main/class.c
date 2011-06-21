@@ -27,12 +27,6 @@
 
 /* ************************************************************************ */
 
-#define USE_B     1
-#define USE_STEXT 1
-#define USE_bytes_head       1
-#define USE_bytes_startsWith 1
-#define USE_cwb_open      1
-
 #include"commons.h"
 
 /* ************************************************************************ */

@@ -27,9 +27,6 @@
 
 /* ************************************************************************ */
 
-#define USE_TIME_H
-#define USE_getTimeMilliSecond
-
 #include"commons.h"
 #ifdef HAVE_MMAP
 #include <sys/mman.h>

@@ -1199,6 +1199,7 @@ typedef struct {
 	struct knh_Array_t         *lstacks;
 	struct knh_Stmt_t          *finallyStmt;
 	struct knh_Array_t         *errmsgs;
+	void  *asm_data;
 } knh_GammaEX_t;
 
 typedef struct knh_Gamma_t {

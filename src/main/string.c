@@ -29,8 +29,6 @@
 
 #ifndef K_INCLUDE_BUILTINAPI
 
-#define USE_STEXT
-
 #include"commons.h"
 #include <errno.h>
 

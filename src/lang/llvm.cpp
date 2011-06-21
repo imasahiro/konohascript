@@ -52,8 +52,6 @@
 #include <sstream>
 #include <string>
 
-#define USE_STEXT     1
-#define USE_cwb_open  1
 #undef HAVE_SYS_TYPES_H
 #include "commons.h"
 #define ASM_PREFIX llvmasm::

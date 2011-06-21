@@ -372,31 +372,6 @@ void knh_opcode_check(void)
 }
 
 /* ------------------------------------------------------------------------ */
-#ifdef K_USING_VMCOUNT
-static int opcode_count[OPCODE_MAX] = {0};
-
-/* ------------------------------------------------------------------------ */
-void knh_opcode_stat(CTX ctx)
-{
-/*	int i;
-	for(i = 0; i < OPCODE_MAX; i++) {
-		KNH_SYSLOG(ctx, LOG_INFO,
-				"[VMCODE COUNTER] %s count=%d",
-				OPCODE__(i), opcode_count[i]);
-	}*/
-}
-
-/* ------------------------------------------------------------------------ */
-
-void knh_opcode_count(CTX ctx, knh_opline_t *c)
-{
-	int count = c->count;
-	opcode_count[c->opcode] += count;
-}
-
-#endif
-/* ------------------------------------------------------------------------ */
-
 const char *OPCODE__(knh_opcode_t opcode)
 {
 	if(opcode < OPCODE_MAX) {
@@ -693,7 +668,7 @@ knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc)
 # DBG_P("%%p %%s", pc-1, OPCODE__((pc-1)->opcode));
 		f.write('''
 	%s(%s) {
-		%s *op = (%s*)pc; (void)op; VMCOUNT(pc); 
+		%s *op = (%s*)pc; (void)op;
 		%s;
 		pc++;
 		GOTO_NEXT();

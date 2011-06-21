@@ -29,8 +29,6 @@
 
 #ifndef K_INCLUDE_BUILTINAPI
 
-#define USE_array_index  1
-
 #include"commons.h"
 
 /* ************************************************************************ */

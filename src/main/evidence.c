@@ -27,10 +27,6 @@
 
 /* ************************************************************************ */
 
-#define USE_bytes_rindex  1
-#define USE_cwb_open0      1
-#define USE_cwb_size      1
-
 #include"commons.h"
 #include"../../include/konoha1/konoha_code_.h"
 

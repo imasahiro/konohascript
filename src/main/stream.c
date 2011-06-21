@@ -33,14 +33,6 @@ extern "C" {
 
 #ifndef K_INCLUDE_BUILTINAPI
 
-#define USE_STEXT 1
-#define USE_B     1
-//#define USE_bytes_startsWith  1
-
-#define USE_cwb_open      1
-#define USE_cwb_size      1
-#define USE_cwb_tobytes   1
-
 #include"commons.h"
 
 /* ************************************************************************ */

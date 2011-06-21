@@ -27,9 +27,6 @@
 
 /* ************************************************************************ */
 
-#define USE_bytes   1
-#define USE_cwb     1
-
 #include"commons.h"
 
 #define TT_SIZE TT_LOR   /* |a| */

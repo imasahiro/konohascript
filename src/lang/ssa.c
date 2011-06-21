@@ -26,10 +26,6 @@
 
 #ifdef K_USING_SSA
 
-#define USE_cwb_open    1
-#define USE_cwb_size    1
-#define USE_STEXT       1
-
 #include"commons.h"
 
 #define VERTEX(n)       ((knh_BasicBlock_t*)knh_Array_n(vertex, n))

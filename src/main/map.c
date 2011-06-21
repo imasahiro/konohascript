@@ -29,11 +29,6 @@
 
 #ifndef K_INCLUDE_BUILTINAPI
 
-#define USE_bytes_strcmp      1
-//#define USE_bytes_strcasecmp  1
-#define USE_bytes_equals      1
-#define USE_hash              1
-
 #include"commons.h"
 
 /* ************************************************************************ */
