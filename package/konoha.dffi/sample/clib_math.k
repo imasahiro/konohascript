@@ -1,4 +1,4 @@
-using konoha.clib.*;
+using konoha.dffi.*;
 
 Clib c = new Clib("/usr/lib/libm.dylib");
 Glue d = c.genGlue();

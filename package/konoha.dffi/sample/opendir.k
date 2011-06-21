@@ -1,4 +1,4 @@
-using konoha.clib.*;
+using konoha.dffi.*;
 
 class Dir;
 Clib libc = new Clib("/usr/lib/libc.dylib");

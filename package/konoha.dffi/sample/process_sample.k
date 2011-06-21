@@ -1,4 +1,4 @@
-using konoha.clib.*;
+using konoha.dffi.*;
 Process pls = new Process("ls");
 Glue g = pls.genGlue();
 Func<String=>String> ls = g.getFunc("");
