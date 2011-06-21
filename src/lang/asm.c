@@ -45,7 +45,7 @@ extern "C" {
 
 #define K_INLINECODE    (10)
 
-static void Tn_asm(CTX ctx, knh_Stmt_t *stmt, size_t n, int alocal);
+static void Tn_asm(CTX ctx, knh_Stmt_t *stmt, size_t n, int espidx);
 static void BLOCK_asm(CTX ctx, knh_Stmt_t *stmtH);
 #define GammaLabel(ctx, n)   (knh_BasicBlock_t*)knh_Array_n(DP(ctx->gma)->lstacks, n)
 #define HAS_OPCODE(C)     1
@@ -1196,6 +1196,7 @@ static void ASM_MOV(CTX ctx, knh_Token_t *tka, knh_Token_t *tkb, int espidx)
 		ASM_SMOV(ctx, Token_index(tka), tkb);
 	}
 	else {
+		DBG_P("TT=%s", TT__(tka->tt));
 		DBG_ASSERT(TT_(tka) == TT_FIELD);
 		knh_sfx_t x;
 		Token_setsfx(ctx, tka, &x);
@@ -1723,71 +1724,71 @@ static knh_bool_t OPR_hasCONST(CTX ctx, knh_Stmt_t *stmt, knh_methodn_t *mn, int
 	return isCONST;
 }
 
-static void OPR_asm(CTX ctx, knh_Stmt_t *stmt, int alocal)
+static void OPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 	knh_Method_t *mtd = (tkNN(stmt, 0))->mtd;
 	if(IS_NULL(mtd)) {
-		CALL_asm(ctx, stmt, alocal); return ;
+		CALL_asm(ctx, stmt, espidx); return ;
 	}
 	knh_methodn_t mn = (mtd)->mn;
 	knh_class_t cid = CLASS_t(SP(tkNN(stmt, 1))->type);
 	knh_opcode_t opcode;
 	if(cid == CLASS_Boolean && mn == MN_opNOT) {
-		int a = Tn_put(ctx, stmt, 1, alocal + 1);
-		ASM(bNOT, NC_(alocal), NC_(a));
+		int a = Tn_put(ctx, stmt, 1, espidx + 1);
+		ASM(bNOT, NC_(espidx), NC_(a));
 		return;
 	}
 	if(cid == CLASS_Int && ((opcode = OPCODE_imn(mn, 0)) != OPCODE_NOP)) {
 		int swap = 1;
 		if(mn == MN_opNEG) {
-			int a = Tn_put(ctx, stmt, 1, alocal + 1);
-			ASM(iNEG, NC_(alocal), NC_(a));
+			int a = Tn_put(ctx, stmt, 1, espidx + 1);
+			ASM(iNEG, NC_(espidx), NC_(a));
 			return;
 		}
 		if(mn == MN_opSUB || mn == MN_opDIV || mn == MN_opMOD ||
 				mn == MN_opLSFT || mn == MN_opRSFT) swap = 0;
 		if(OPR_hasCONST(ctx, stmt, &mn, swap)) {
-			int a = Tn_put(ctx, stmt, 1, alocal + 1);
+			int a = Tn_put(ctx, stmt, 1, espidx + 1);
 			knh_int_t b = Tn_int(stmt, 2);
 			if(b == 0 && (mn == MN_opDIV || mn == MN_opMOD)) {
 				b = 1;
 				WARN_DividedByZero(ctx);
 			}
 			opcode = OPCODE_imn(mn, (OPCODE_iADDC - OPCODE_iADD));
-			ASMop(iADDC, opcode, NC_(alocal), NC_(a), b);
+			ASMop(iADDC, opcode, NC_(espidx), NC_(a), b);
 		}
 		else {
-			int a = Tn_put(ctx, stmt, 1, alocal + 1);
-			int b = Tn_put(ctx, stmt, 2, alocal + 2);
-			ASMop(iADD, opcode, NC_(alocal), NC_(a), NC_(b));
+			int a = Tn_put(ctx, stmt, 1, espidx + 1);
+			int b = Tn_put(ctx, stmt, 2, espidx + 2);
+			ASMop(iADD, opcode, NC_(espidx), NC_(a), NC_(b));
 		}
 		return;
 	} /* CLASS_Int */
 	if(cid == CLASS_Float && ((opcode = OPCODE_fmn(mn, 0)) != OPCODE_NOP)) {
 		int swap = 1;
 		if(mn == MN_opNEG) {
-			int a = Tn_put(ctx, stmt, 1, alocal + 1);
-			ASM(fNEG, NC_(alocal), NC_(a)); return;
+			int a = Tn_put(ctx, stmt, 1, espidx + 1);
+			ASM(fNEG, NC_(espidx), NC_(a)); return;
 		}
 		if(mn == MN_opSUB || mn == MN_opDIV || mn == MN_opMOD) swap = 0;
 		if(OPR_hasCONST(ctx, stmt, &mn, swap)) {
-			int a = Tn_put(ctx, stmt, 1, alocal + 1);
+			int a = Tn_put(ctx, stmt, 1, espidx + 1);
 			knh_float_t b = Tn_float(stmt, 2);
 			if(b == K_FLOAT_ZERO && mn == MN_opDIV) {
 				b = K_FLOAT_ONE;
 				WARN_DividedByZero(ctx);
 			}
 			opcode = OPCODE_fmn(mn, (OPCODE_fADDC - OPCODE_fADD));
-			ASMop(fADDC, opcode, NC_(alocal), NC_(a), b);
+			ASMop(fADDC, opcode, NC_(espidx), NC_(a), b);
 		}
 		else {
-			int a = Tn_put(ctx, stmt, 1, alocal + 1);
-			int b = Tn_put(ctx, stmt, 2, alocal + 2);
-			ASMop(fADD, opcode, NC_(alocal), NC_(a), NC_(b));
+			int a = Tn_put(ctx, stmt, 1, espidx + 1);
+			int b = Tn_put(ctx, stmt, 2, espidx + 2);
+			ASMop(fADD, opcode, NC_(espidx), NC_(a), NC_(b));
 		}
 		return;
 	} /* CLASS_Float */
-	CALL_asm(ctx, stmt, alocal);
+	CALL_asm(ctx, stmt, espidx);
 }
 
 
@@ -1921,6 +1922,7 @@ static void LETEXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	knh_Token_t *tkL = tkNN(stmt, 1);
 	Tn_asm(ctx, stmt, 2, espidx);
 	knh_type_t atype = tkL->type;
+	DBG_P("LETEXPR TT=%s", TT__(tkL->tt));
 	if(TT_(tkL) == TT_FVAR) {
 		if(IS_Tunbox(atype)) {
 			ASM(NMOV, NC_(Token_index(tkL)), NC_(espidx));
@@ -2201,7 +2203,7 @@ static void LET_asm(CTX ctx, knh_Stmt_t *stmt)
 	else {
 		Tn_asm(ctx, stmt, 2, DP(stmt)->espidx);
 		if(TT_(tkL) == TT_FVAR) {
-			ASM_PMOV(ctx, IS_Tunbox(atype), Token_index(tkL), NC_(DP(stmt)->espidx));
+			ASM_PMOV(ctx, IS_Tunbox(atype), Token_index(tkL), DP(stmt)->espidx);
 		}
 		else {
 			DBG_ASSERT(TT_(tkL) == TT_FIELD);
@@ -2715,8 +2717,6 @@ static void BLOCK_asm(CTX ctx, knh_Stmt_t *stmtH)
 	knh_Stmt_t *stmt = stmtH;
 	while(stmt != NULL) {
 		ctx->gma->uline = stmt->uline;
-		//@@DP(stmt)->espidx = DP(stmt)->espidx + DP(ctx->gma)->ebpidx;
-		//DBG_P("ASM %s %p etype=%s,%s, espidx=%d", TT__(STT_(stmt)), stmt, TYPE__(etype), TYPE__(stmt->type), DP(stmt)->espidx);
 		switch(STT_(stmt)) {
 		case STT_REGISTER:
 		{
@@ -2735,6 +2735,7 @@ static void BLOCK_asm(CTX ctx, knh_Stmt_t *stmtH)
 			BLOCK_asm(ctx, stmtNN(stmt, 0));
 			break;
 		}
+		CASE_ASM(LET);
 		CASE_ASM(IF);
 		CASE_ASM(SWITCH);
 		CASE_ASM(WHILE);
@@ -2773,7 +2774,7 @@ static void _THCODE(CTX ctx, knh_opline_t *pc, void **codeaddr)
 #endif
 }
 
-static void Gamma_shiftLocalScope(CTX ctx)
+void Gamma_shiftLocalScope(CTX ctx)
 {
 	knh_gint_t shift = DP(ctx->gma)->fvarsize;
 	size_t i;
@@ -2798,11 +2799,17 @@ static void Gamma_shiftLocalScope(CTX ctx)
 	knh_Array_clear(ctx, a, 0);
 }
 
-void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t ittype, knh_Stmt_t *stmtB, knh_Ftyping typing)
+void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_Stmt_t *stmtB, knh_Ftyping typing)
 {
-	knh_Array_clear(ctx, DP(ctx->gma)->insts, 0);
-	typing(ctx, mtd, stmtP, ittype, stmtB);
+	DBG_ASSERT(knh_Array_size(DP(ctx->gma)->insts) == 0);
+	DP(ctx->gma)->flag  = 0;
+	DP(ctx->gma)->tkScriptNC = NULL;
+	DP(ctx->gma)->funcbase = -1;
+	KNH_SETv(ctx, DP(ctx->gma)->mtd, mtd);
+	knh_Method_toAbstract(ctx, mtd);
+	typing(ctx, mtd, stmtP, stmtB);
 	Gamma_shiftLocalScope(ctx);
+	knh_Array_clear(ctx, DP(ctx->gma)->lstacks, 0);
 
 #ifdef K_USING_LLVM
 	void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t ittype, knh_Stmt_t *stmtB);
@@ -2923,6 +2930,7 @@ void knh_loadScriptSystemKonohaCode(CTX ctx)
 		((knh_share_t*)ctx->share)->PC_FUNCCALL = opline_findOPCODE(ctx, pc, OPCODE_FUNCCALL);
 		((knh_share_t*)ctx->share)->PC_VEXEC = opline_findOPCODE(ctx, pc, OPCODE_VEXEC);
 	}
+	knh_Array_clear(ctx, DP(ctx->gma)->insts, 0);
 	END_LOCAL_NONGC(ctx, lsfp);
 }
 

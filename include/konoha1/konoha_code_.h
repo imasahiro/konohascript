@@ -194,38 +194,38 @@ typedef struct klr_XNMOVx_t {
 	knh_sfx_t b;
 } klr_XNMOVx_t;
 
-#define OPCODE_bNUL ((knh_opcode_t)27)
+#define OPCODE_iINC ((knh_opcode_t)27)
+typedef struct klr_iINC_t {
+	KCODE_HEAD;
+	knh_rn_t a;
+} klr_iINC_t;
+
+#define OPCODE_iDEC ((knh_opcode_t)28)
+typedef struct klr_iDEC_t {
+	KCODE_HEAD;
+	knh_rn_t a;
+} klr_iDEC_t;
+
+#define OPCODE_bNUL ((knh_opcode_t)29)
 typedef struct klr_bNUL_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_ro_t a;
 } klr_bNUL_t;
 
-#define OPCODE_bNN ((knh_opcode_t)28)
+#define OPCODE_bNN ((knh_opcode_t)30)
 typedef struct klr_bNN_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_ro_t a;
 } klr_bNN_t;
 
-#define OPCODE_bNOT ((knh_opcode_t)29)
+#define OPCODE_bNOT ((knh_opcode_t)31)
 typedef struct klr_bNOT_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
 } klr_bNOT_t;
-
-#define OPCODE_iINC ((knh_opcode_t)30)
-typedef struct klr_iINC_t {
-	KCODE_HEAD;
-	knh_rn_t a;
-} klr_iINC_t;
-
-#define OPCODE_iDEC ((knh_opcode_t)31)
-typedef struct klr_iDEC_t {
-	KCODE_HEAD;
-	knh_rn_t a;
-} klr_iDEC_t;
 
 #define OPCODE_iNEG ((knh_opcode_t)32)
 typedef struct klr_iNEG_t {

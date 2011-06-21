@@ -540,7 +540,7 @@ static knh_status_t SCRIPT_eval(CTX ctx, knh_Stmt_t *stmt, int isCompileOnly, kn
 		Stmt_setImplicit(stmt, 1);
 	}
 	KNH_SETv(ctx, lsfp[0].o, stmt);
-	knh_Method_asm(ctx, mtd, NULL, cid, stmt, knh_Method_typing);
+	knh_Method_asm(ctx, mtd, NULL, stmt, typingMethod);
 	if(Method_isAbstract(mtd) || STT_(stmt) == STT_ERR) {
 		status = K_BREAK; goto L_RETURN;
 	}

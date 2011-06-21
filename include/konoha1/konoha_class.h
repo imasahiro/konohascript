@@ -1208,7 +1208,7 @@ typedef struct knh_Gamma_t {
 	knh_Script_t *scr;
 } knh_Gamma_t;
 
-typedef knh_bool_t (*knh_Ftyping)(CTX, knh_Method_t *, knh_Stmt_t *, knh_type_t, knh_Stmt_t *);
+typedef knh_bool_t (*knh_Ftyping)(CTX, knh_Method_t *, knh_Stmt_t *, knh_Stmt_t *);
 
 ///* ------------------------------------------------------------------------ */
 

@@ -81,11 +81,11 @@ static const knh_OPDATA_t OPDATA[] = {
 	{"XNSET", 0, 2+1+VMTSIZE_int, { VMT_SFX, VMT_VOID, VMT_INT VMTX_INT, VMT_VOID}}, 
 	{"XNMOV", 0, 2+1, { VMT_SFX, VMT_VOID, VMT_RN, VMT_VOID}}, 
 	{"XNMOVx", 0, 2+1+1, { VMT_SFX, VMT_VOID, VMT_SFX, VMT_VOID, VMT_VOID}}, 
+	{"iINC", _DEF|_JIT, 1, { VMT_RN, VMT_VOID}}, 
+	{"iDEC", _DEF|_JIT, 1, { VMT_RN, VMT_VOID}}, 
 	{"bNUL", _DEF|_JIT, 2, { VMT_RN, VMT_RO, VMT_VOID}}, 
 	{"bNN", _DEF|_JIT, 2, { VMT_RN, VMT_RO, VMT_VOID}}, 
 	{"bNOT", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iINC", _DEF|_JIT, 1, { VMT_RN, VMT_VOID}}, 
-	{"iDEC", _DEF|_JIT, 1, { VMT_RN, VMT_VOID}}, 
 	{"iNEG", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}}, 
 	{"fNEG", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}}, 
 	{"iTR", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_F, VMT_VOID}}, 
@@ -248,11 +248,11 @@ void knh_opcode_check(void)
 	KNH_ASSERT(sizeof(klr_XNSET_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_XNMOV_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_XNMOVx_t) <= sizeof(knh_opline_t));
+	KNH_ASSERT(sizeof(klr_iINC_t) <= sizeof(knh_opline_t));
+	KNH_ASSERT(sizeof(klr_iDEC_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_bNUL_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_bNN_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_bNOT_t) <= sizeof(knh_opline_t));
-	KNH_ASSERT(sizeof(klr_iINC_t) <= sizeof(knh_opline_t));
-	KNH_ASSERT(sizeof(klr_iDEC_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_iNEG_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_fNEG_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_iTR_t) <= sizeof(knh_opline_t));
@@ -623,8 +623,8 @@ knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc)
 		&&L_CHKOUT, &&L_ERROR, &&L_P, &&L_PROBE, 
 		&&L_EXIT, &&L_NSET, &&L_NMOV, &&L_NNMOV, 
 		&&L_NSET2, &&L_NSET3, &&L_NSET4, &&L_NMOVx, 
-		&&L_XNSET, &&L_XNMOV, &&L_XNMOVx, &&L_bNUL, 
-		&&L_bNN, &&L_bNOT, &&L_iINC, &&L_iDEC, 
+		&&L_XNSET, &&L_XNMOV, &&L_XNMOVx, &&L_iINC, 
+		&&L_iDEC, &&L_bNUL, &&L_bNN, &&L_bNOT, 
 		&&L_iNEG, &&L_fNEG, &&L_iTR, &&L_fTR, 
 		&&L_iADD, &&L_iSUB, &&L_iMUL, &&L_iDIV, 
 		&&L_iMOD, &&L_iEQ, &&L_iNEQ, &&L_iLT, 
@@ -829,6 +829,18 @@ knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc)
 		pc++;
 		GOTO_NEXT();
 	} 
+	CASE(iINC) {
+		klr_iINC_t *op = (klr_iINC_t*)pc; (void)op; VMCOUNT(pc); 
+		KLR_iINC(ctx, op->a);
+		pc++;
+		GOTO_NEXT();
+	} 
+	CASE(iDEC) {
+		klr_iDEC_t *op = (klr_iDEC_t*)pc; (void)op; VMCOUNT(pc); 
+		KLR_iDEC(ctx, op->a);
+		pc++;
+		GOTO_NEXT();
+	} 
 	CASE(bNUL) {
 		klr_bNUL_t *op = (klr_bNUL_t*)pc; (void)op; VMCOUNT(pc); 
 		KLR_bNUL(ctx, op->c, op->a);
@@ -844,18 +856,6 @@ knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc)
 	CASE(bNOT) {
 		klr_bNOT_t *op = (klr_bNOT_t*)pc; (void)op; VMCOUNT(pc); 
 		KLR_bNOT(ctx, op->c, op->a);
-		pc++;
-		GOTO_NEXT();
-	} 
-	CASE(iINC) {
-		klr_iINC_t *op = (klr_iINC_t*)pc; (void)op; VMCOUNT(pc); 
-		KLR_iINC(ctx, op->a);
-		pc++;
-		GOTO_NEXT();
-	} 
-	CASE(iDEC) {
-		klr_iDEC_t *op = (klr_iDEC_t*)pc; (void)op; VMCOUNT(pc); 
-		KLR_iDEC(ctx, op->a);
 		pc++;
 		GOTO_NEXT();
 	} 
