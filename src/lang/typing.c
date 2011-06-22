@@ -3222,13 +3222,18 @@ static knh_Token_t* TRI_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 
 static knh_Token_t* FUNCTION_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
-	knh_Stmt_t *stmtP = stmtNN(stmt, 0);
+	knh_Stmt_t *stmtP = stmtNN(stmt, 1);
+	knh_Stmt_t *stmtB = stmtNN(stmt, 3);
 	if(DP(ctx->gma)->funcbase0 > 0) {
 		return ERROR_Unsupported(ctx, "nested function", CLASS_unknown, NULL);
 	}
 	knh_Method_t *mtd = new_Method(ctx, 0, DP(ctx->gma)->this_cid, MN_, NULL);
 	knh_ParamArray_t *mp = new_ParamArray(ctx);
 	KNH_SETv(ctx, DP(mtd)->mp, mp);
+	DBG_ASSERT(TT_(tkNN(stmt, 2)) == TT_DOC);
+	KNH_SETv(ctx, DP(mtd)->tsource, stmtNN(stmt, 2));
+	DBG_ASSERT(TT_(tkNN(stmt, 0)) == TT_ASIS);
+	Token_setCONST(ctx, tkNN(stmt, 0), mtd);
 	DBG_ASSERT(STT_(stmtP) == STT_DECL);
 	if(IS_Tfunc(reqt)) {
 		knh_ParamArray_t *cpm = ClassTBL(reqt)->cparam;
@@ -3261,8 +3266,6 @@ static knh_Token_t* FUNCTION_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		}
 	}
 	else {
-		knh_ParamArray_t *mp = new_ParamArray(ctx);
-		KNH_SETv(ctx, DP(mtd)->mp, mp);
 		size_t i;
 		for(i = 0; i < DP(stmtP)->size; i += 3) {
 			knh_Token_t *tkT = DECL3_typing(ctx, stmtP, i+0, TYPE_var, _VFINDTHIS | _VFINDSCRIPT, 0);
@@ -3277,31 +3280,44 @@ static knh_Token_t* FUNCTION_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		}
 		ParamArray_setRVAR(mp, 1);
 	}
-//	{
-//		BEGIN_BLOCK(stmt, espidx);
-//		knh_flag_t gma_flag = DP(ctx->gma)->flag;
-//		int gma_funcbase0 = DP(ctx->gma)->funcbase0;
-//		int gma_psize = DP(ctx->gma)->psize
-//		knh_Method_t gma_mtd = DP(ctx->gma)->mtd;
-//		KNH_SETv(ctx, DP(ctx->gma)->mtd, mtd);
-//
-//		typingMethod(ctx, mtd, stmtP, stmtNN(stmt, 2));
-//		reqt = knh_class_Generics(ctx, CLASS_Func, DP(mtd)->mp);
-//		if(Gamma_hasLexicalScope(ctx->gma)) {
-//			KNH_TODO();
-////			knh_Token_t *tkIDX = Gamma_addFVAR(ctx, _FCHKOUT, reqt, FN_, 1);
-////			KNH_SETv(ctx, tkNN(stmt, 1), tkIDX);
-//		}
-//		END_BLOCK(stmt, espidx);
-//		if(Gamma_hasLexicalScope(ctx->gma)) {
-//		//	new_Func(ctx, sfp, n);
-//		}
-//		else {
-//			return new_TokenCONST(ctx, new_StaticFunc(ctx, reqt, mtd));
-//		}
-//		return Stmt_typed(ctx, stmt, reqt);
-//	}
-	return Stmt_typed(ctx, stmt, reqt);
+	knh_Token_t *tkRES = TM(stmt);
+	{
+		knh_flag_t gma_flag = DP(ctx->gma)->flag;
+		int gma_funcbase0 = DP(ctx->gma)->funcbase0;
+		int gma_psize = DP(ctx->gma)->psize;
+		int gma_fvarsize = DP(ctx->gma)->fvarsize;
+		DP(ctx->gma)->funcbase0 = DP(ctx->gma)->gsize;
+
+		knh_Method_t* gma_mtd = DP(ctx->gma)->mtd;
+		KNH_SETv(ctx, DP(ctx->gma)->mtd, mtd);
+		if(typingMethod2(ctx, mtd, stmtB)) {
+			reqt = knh_class_Generics(ctx, CLASS_Func, DP(mtd)->mp);
+			KNH_SETv(ctx, DP(mtd)->stmtB, stmtB);
+			DP(mtd)->delta = DP(ctx->gma)->fvarsize - DP(ctx->gma)->funcbase0;
+			mtd->fcall_1 = knh_Fmethod_asm;
+			if(Gamma_hasLexicalScope(ctx->gma)) {
+				knh_Token_t *tkIDX = Gamma_addFVAR(ctx, _FCHKOUT, reqt, FN_, 1);
+				KNH_SETv(ctx, stmtNN(stmt, 1), tkIDX);
+				if(DP(stmt)->espidx == 0) {
+					Stmt_setESPIDX(ctx, stmt);
+				}
+				tkRES = Stmt_typed(ctx, stmt, reqt);
+			}
+			else {
+				tkRES = new_TokenCONST(ctx, new_StaticFunc(ctx, reqt, mtd));
+			}
+		}
+		else {
+			knh_Method_toAbstract(ctx, mtd);
+		}
+		DP(ctx->gma)->flag = gma_flag;
+		DP(ctx->gma)->gsize = DP(ctx->gma)->funcbase0;
+		DP(ctx->gma)->funcbase0 = gma_funcbase0;
+		DP(ctx->gma)->psize = gma_psize;
+		DP(ctx->gma)->fvarsize = gma_fvarsize;
+		KNH_SETv(ctx, DP(ctx->gma)->mtd, gma_mtd);
+	}
+	return tkRES;
 }
 
 #define CASE_EXPR(XX, ...) case STT_##XX : { \
@@ -4096,9 +4112,12 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 	});
 	if(isDynamic == 1) {
 		DBG_P("************************* dynamic ******************************");
-		Method_setDynamic(mtd, 1);
 		if(!Stmt_isAbstractMethod(stmtM)) {
+			Method_setDynamic(mtd, 1);
 			KNH_SETv(ctx, DP(mtd)->gmascr, ctx->gma->scr);
+		}
+		else {
+			return ERROR_Unsupported(ctx, "abstract dynamic method", CLASS_unknown, NULL);
 		}
 	}
 	if(StmtMETHOD_isFFI(stmtM)) {
@@ -4655,7 +4674,6 @@ knh_bool_t typingMethod2(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB)
 	Gamma_initThis(ctx, (mtd)->cid, TYPE_void);
 	for(i = 0; i < psize; i++) {
 		knh_param_t *p = knh_ParamArray_get(mp, i);
-		DBG_P("i=%d", i);
 		Gamma_addFVAR(ctx, 0/*_FREADONLY*/, p->type, p->fn, 0);
 	}
 	DP(ctx->gma)->psize = psize;

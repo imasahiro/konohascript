@@ -2871,6 +2871,17 @@ void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB, knh_Ftyping t
 #endif /* K_USING_LLVM */
 }
 
+METHOD knh_Fmethod_asm(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
+	DP(ctx->gma)->flag  = 0;
+	KNH_SETv(ctx, DP(ctx->gma)->mtd, mtd);
+	knh_Method_toAbstract(ctx, mtd);
+	DP(ctx->gma)->fvarsize = DP(mtd)->delta;
+	Method_compile(ctx, mtd, DP(mtd)->stmtB);
+	(mtd)->fcall_1(ctx, sfp, K_RIX);
+}
+
 /* ------------------------------------------------------------------------ */
 /* [loadSystem] */
 

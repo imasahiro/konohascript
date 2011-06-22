@@ -476,6 +476,7 @@ typedef struct {
 		knh_Object_t            *objdata;
 		struct knh_KonohaCode_t *kcode;
 		struct knh_Script_t     *gmascr;       // Dynamic
+		struct knh_Stmt_t       *stmtB;        // stmt block
 	};
 	struct knh_Array_t *paramsNULL;
 	struct knh_Token_t *tsource;

@@ -2249,15 +2249,6 @@ static void _EXPR1(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 				break;
 			case TT_PARENTHESIS: /* @CODE: () */ {
 				tkitr_t pbuf, *pitr = ITR_new(tkCUR, &pbuf);
-//				int c = ITR_indexTT(pitr, TT_DARROW, -1);
-//				if(c != -1) {
-//					STT_(stmt) = STT_FUNCTION;
-//					_PARAMs(ctx, stmt, pitr);
-//					_CODEDOC(ctx, stmt, pitr);
-//					pitr->c = c + 1;
-//					_RETURNEXPR(ctx, stmt, pitr);
-//					break;
-//				}
 				int c = ITR_count(pitr, TT_COMMA);
 				if(c == 0) {
 					if(ITR_hasNext(pitr)) {   /* @CODE: (expr) => expr */
@@ -2295,6 +2286,7 @@ static void _EXPR1(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 				}
 				else {
 					stmt = new_StmtREUSE(ctx, stmt, STT_FUNCTION);
+					_ASIS(ctx, stmt, itr);
 					knh_Stmt_add(ctx, stmt, new_Stmt2(ctx, STT_DECL, NULL));
 					knh_Token_t *tkDOC = new_Token(ctx, TT_DOC);
 					KNH_SETv(ctx, (tkDOC)->data, (tkCUR)->text);
@@ -2424,6 +2416,7 @@ static void _EXPRCALL(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			if(ITR_is(itr, TT_PARENTHESIS) && ITR_isN(itr, +1, TT_CODE)) {
 				tkCUR = new_Token(ctx, TT_DOC);
 				KNH_SETv(ctx, (tkCUR)->data, (ITR_tk(itr))->text);
+				_ASIS(ctx, stmt, itr);
 				_PARAM(ctx, stmt, itr);
 				knh_Stmt_add(ctx, stmt, tkCUR);
 				_STMT1(ctx, stmt, itr);
