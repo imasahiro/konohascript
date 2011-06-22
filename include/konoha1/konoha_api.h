@@ -387,7 +387,6 @@ void knh_class_addField(CTX ctx, knh_class_t bcid, knh_flag_t flag, knh_type_t t
 void knh_ObjectField_expand(CTX ctx, knh_ObjectField_t *of, size_t oldsize, size_t newsize);
 void SCRIPT_typing(CTX ctx, knh_Stmt_t *stmt);
 knh_bool_t typingMethod2(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB);
-knh_bool_t typingFormat(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_Stmt_t *stmtB);
 void SCRIPT_asm(CTX ctx, knh_Stmt_t *stmt);
 void knh_opcode_check(void);
 const char *OPCODE__(knh_opcode_t opcode);

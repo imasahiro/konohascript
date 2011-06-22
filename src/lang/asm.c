@@ -2540,9 +2540,9 @@ static void _PRINTh(CTX ctx, knh_sfp_t *sfp, knh_OutputStream_t *w, struct klr_P
 	knh_write_ascii(ctx, w, TERM_BNOTE(ctx, LOG_NOTICE));
 	if(FLAG_is(flag, K_FLAG_PF_BOL)) {
 		if(FLAG_is(flag, K_FLAG_PF_LINE)) {
+			knh_uline_t uline = op->line;
 #ifndef K_USING_LLVM
 			knh_Method_t *mtd = sfp[-1].mtdNC;
-			knh_uline_t uline = op->line;
 			DBG_ASSERT(IS_Method(mtd));
 			ULINE_setURI(uline, DP(mtd)->uri);
 #endif
@@ -2864,8 +2864,8 @@ void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB, knh_Ftyping t
 	Gamma_shiftLocalScope(ctx);
 	knh_Array_clear(ctx, DP(ctx->gma)->lstacks, 0);
 #ifdef K_USING_LLVM
-	void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t ittype, knh_Stmt_t *stmtB);
-	knh_LLVMMethod_asm(ctx, mtd, stmtP, ittype, stmtB);
+	void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP);
+	knh_LLVMMethod_asm(ctx, mtd, stmtB);
 #else
 	Method_compile(ctx, mtd, stmtB);
 #endif /* K_USING_LLVM */

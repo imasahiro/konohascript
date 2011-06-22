@@ -3047,7 +3047,7 @@ void knh_llvm_exit(void)
 	llvm::llvm_shutdown();
 }
 
-void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t ittype, knh_Stmt_t *stmtB)
+void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB)
 {
 	knh_Array_t *lstack_org, *lstack;
 	knh_Array_t *insts_org, *insts;
