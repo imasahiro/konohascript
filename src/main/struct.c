@@ -1371,6 +1371,8 @@ static void Method_init(CTX ctx, knh_RawPtr_t *o)
 	knh_MethodEX_t *b = knh_bodymalloc(ctx, Method);
 	KNH_INITv(b->mp, KNH_NULVAL(CLASS_ParamArray));
 	KNH_INITv(b->kcode, KNH_NULL);
+	KNH_INITv(b->tsource, KNH_NULL);
+	b->paramsNULL = NULL;
 //	b->flag   = 0;
 //	b->delta  = 0;
 //	b->uri  = 0;  b->domain = 0;
@@ -1383,6 +1385,8 @@ static void Method_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 	knh_MethodEX_t *b = DP(mtd);
 	KNH_ADDREF(ctx, b->mp);
 	KNH_ADDREF(ctx, b->kcode);
+	KNH_ADDREF(ctx, b->tsource);
+	KNH_ADDNNREF(ctx, b->paramsNULL);
 	KNH_SIZEREF(ctx);
 }
 
@@ -1431,7 +1435,7 @@ static void Method_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	}
 	if(IS_FMTdump(level)) {
 		knh_write_EOL(ctx, w);
-		if(Method_isObjectCode(mtd)) {
+		if(!IS_NULL(DP(mtd)->objdata)) {
 			knh_write_InObject(ctx, w, DP(mtd)->objdata, level);
 		}
 	}
@@ -2761,7 +2765,6 @@ static void Gamma_init(CTX ctx, knh_RawPtr_t *o)
 	KNH_INITv(b->errmsgs, new_Array0(ctx, 0));
 	KNH_INITv(b->finallyStmt, KNH_NULL);
 	o->rawptr = b;
-	b->funcbase = -1;
 	KNH_INITv(((knh_Gamma_t*)o)->scr, ctx->script);
 }
 

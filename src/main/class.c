@@ -1373,7 +1373,7 @@ static knh_TypeMap_t *knh_findTypeMap1NULL(CTX ctx, const knh_ClassTBL_t *sct, k
 					return Cache_setTypeMap(ctx, scid, tcid, tmr);
 				}
 			}
-			if(sct->supcid == CLASS_Object) break;
+			if(sct->supTBL == sct) return NULL;
 			sct = sct->supTBL;
 		}
 		tmr = NULL;
@@ -1437,7 +1437,7 @@ knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0
 		while(1) {
 			tmr = knh_findTypeMap1NULL(ctx, sct, tct->cid, isT);
 			if(tmr != NULL) goto L_SETCACHE;
-			if(tct->supcid == CLASS_Object) break;
+			if(tct == tct->supTBL) break;
 			tct = tct->supTBL;
 		}
 		tct = ClassTBL(tcid0);

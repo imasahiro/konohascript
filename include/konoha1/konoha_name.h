@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      359
+#define K_REVISION                      364
 #endif
-#define K_BUILDID                       1132
+#define K_BUILDID                       1133
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -576,9 +576,9 @@
 #define Method_isConst(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Const))
 #define FLAG_Method_Static ((knh_flag_t)(1<<4))
 #define Method_isStatic(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Static))
-#define FLAG_Method_ObjectCode ((knh_flag_t)(1<<5))
-#define Method_isObjectCode(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_ObjectCode))
-#define Method_setObjectCode(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_ObjectCode,b)
+#define FLAG_Method_ObjectCode0 ((knh_flag_t)(1<<5))
+#define Method_isObjectCode0(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_ObjectCode0))
+#define Method_setObjectCode0(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_ObjectCode0,b)
 #define FLAG_Method_Hidden ((knh_flag_t)(1<<6))
 #define Method_isHidden(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Hidden))
 #define Method_setHidden(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Hidden,b)
@@ -699,9 +699,9 @@
 #define FLAG_Gamma_FIELD ((knh_flag_t)(1<<6))
 #define Gamma_hasFIELD(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Gamma_FIELD))
 #define Gamma_foundFIELD(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Gamma_FIELD,b)
-#define FLAG_Gamma_XLOCAL ((knh_flag_t)(1<<7))
-#define Gamma_hasXLOCAL(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Gamma_XLOCAL))
-#define Gamma_foundXLOCAL(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Gamma_XLOCAL,b)
+#define FLAG_Gamma_LexicalScope ((knh_flag_t)(1<<7))
+#define Gamma_hasLexicalScope(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Gamma_LexicalScope))
+#define Gamma_foundLexicalScope(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Gamma_LexicalScope,b)
 #define FLAG_Gamma_SCRIPT ((knh_flag_t)(1<<8))
 #define Gamma_hasSCRIPT(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Gamma_SCRIPT))
 #define Gamma_foundSCRIPT(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Gamma_SCRIPT,b)

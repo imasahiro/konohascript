@@ -511,13 +511,22 @@ static knh_status_t USING_eval(CTX ctx, knh_Stmt_t *stmt)
 
 /* ------------------------------------------------------------------------ */
 
-static knh_Method_t *Script_getEvalMethod(CTX ctx, knh_Script_t *scr)
+static knh_Method_t *Script_getEvalMethod(CTX ctx, knh_Script_t *scr, knh_type_t it_type)
 {
-	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, O_cid(scr), MN_LAMBDA);
+	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, O_cid(scr), MN_);
 	if(mtd == NULL) {
+		knh_ParamArray_t *pa = new_(ParamArray);
+		knh_param_t p = {it_type, FN_it};
+		knh_ParamArray_add(ctx, pa, p);
+		knh_param_t r = {TYPE_dyn, FN_return};
+		knh_ParamArray_radd(ctx, pa, r);
 		mtd = new_Method(ctx, FLAG_Method_Hidden, O_cid(scr), MN_LAMBDA, NULL);
-		KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayR0(ctx, TYPE_dyn/*TYPE_void*/));
+		KNH_SETv(ctx, DP(mtd)->mp, pa);
 		knh_NameSpace_addMethod(ctx, O_cid(scr), mtd);
+	}
+	else {
+		knh_param_t *p = knh_ParamArray_get(DP(mtd)->mp, 0);
+		p->type = it_type;
 	}
 	return mtd;
 }
@@ -529,14 +538,14 @@ static knh_status_t SCRIPT_eval(CTX ctx, knh_Stmt_t *stmt, int isCompileOnly, kn
 	knh_status_t status = K_CONTINUE;
 	BEGIN_LOCAL(ctx, lsfp, 5);
 	knh_Script_t *scr = K_GMASCR;
-	knh_Method_t *mtd = Script_getEvalMethod(ctx, scr);
 	knh_class_t cid =  O_cid(ctx->evaled);
+	knh_Method_t *mtd = Script_getEvalMethod(ctx, scr, cid);
 	if(stmt_isExpr(STT_(stmt)) && STT_(stmt) != STT_LET) {
 		stmt = new_Stmt2(ctx, STT_RETURN, stmt, NULL);
 		Stmt_setImplicit(stmt, 1);
 	}
 	KNH_SETv(ctx, lsfp[0].o, stmt);
-	knh_Method_asm(ctx, mtd, NULL, stmt, typingMethod);
+	knh_Method_asm(ctx, mtd, stmt, typingMethod2);
 	if(Method_isAbstract(mtd) || STT_(stmt) == STT_ERR) {
 		status = K_BREAK; goto L_RETURN;
 	}

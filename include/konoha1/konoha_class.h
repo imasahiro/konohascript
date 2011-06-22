@@ -459,7 +459,7 @@ typedef struct {
 //## flag Method Debug           2 DP(%s)->flag is set * *;
 //## flag Method Const           3 DP(%s)->flag is * * *;
 //## flag Method Static          4 DP(%s)->flag is * * *;
-//## flag Method ObjectCode      5 DP(%s)->flag is set * *;
+//## flag Method ObjectCode0      5 DP(%s)->flag is set * *;
 //## flag Method Hidden          6 DP(%s)->flag is set * *;
 //## flag Method Dynamic         7 DP(%s)->flag is set * *;
 //## flag Method Immutable       8 DP(%s)->flag is set * *;
@@ -474,10 +474,11 @@ typedef struct {
 	void*                       cfunc;
 	union {
 		knh_Object_t            *objdata;
-		struct knh_String_t     *source;
 		struct knh_KonohaCode_t *kcode;
-		struct knh_Gamma_t      *gma;       // Dynamic
+		struct knh_Script_t     *gmascr;       // Dynamic
 	};
+	struct knh_Array_t *paramsNULL;
+	struct knh_Token_t *tsource;
 	knh_uri_t      uri;   knh_uri_t      domain;
 	knh_uintptr_t  count;
 } knh_MethodEX_t;
@@ -507,13 +508,6 @@ typedef struct knh_Method_t {
 //#define knh_getDefaultFmt(ctx, mn)   knh_ClassTBL_getFmt(ctx, CLASS_Tvoid, mn)
 
 #define knh_stack_argc(ctx, sfp)      (ctx->esp - (sfp))
-
-//#define KNH_NOTRACE         0
-//#define KNH_SECURITYTRACE   1
-//#define KNH_AUDITTRACE      2
-//#define KNH_PROFILER        3
-//#define KNH_STACKTRACE      4
-//#define KNH_FUNCTIONTRACE   5
 
 /* ------------------------------------------------------------------------ */
 //## class TypeMap Object;
@@ -1144,7 +1138,7 @@ typedef struct knh_Stmt_t {
 //## flag Gamma REGISTER   4 DP(%s)->flag has found * *;
 //## flag Gamma YEILD      5 DP(%s)->flag has found * *;
 //## flag Gamma FIELD      6 DP(%s)->flag has found * *;
-//## flag Gamma XLOCAL     7 DP(%s)->flag has found * *;
+//## flag Gamma LexicalScope     7 DP(%s)->flag has found * *;
 //## flag Gamma SCRIPT     8 DP(%s)->flag has found * *;
 
 //## flag Gamma InlineFunction  0 DP(%s)->cflag is set * *;
@@ -1177,6 +1171,7 @@ typedef struct {
 	struct knh_Stmt_t*         stmt;
 	struct knh_Method_t*       mtd;
 	knh_class_t                this_cid;
+	knh_gint_t                 funcbase0;
 
 	/*gamma*/
 	knh_gamma2_t*             gf;
@@ -1184,22 +1179,16 @@ typedef struct {
 	knh_gint_t                gcapacity;
 	knh_gint_t                psize; /* param size */
 	knh_gint_t                fvarsize;
-	knh_gint_t                funcbase;
-	knh_gint_t                funcfvarsize;
 
 	knh_Token_t              *tkScriptNC;
 	knh_Token_t              *tkFuncThisNC;
-	knh_Token_t              *tkFuncScriptNC;
-
-//	knh_short_t                ebpidx;
-//	knh_short_t                espidx;
 
 	struct knh_BasicBlock_t    *bbNC;
 	struct knh_Array_t         *insts;  // bbNC->listNC
 	struct knh_Array_t         *lstacks;
 	struct knh_Stmt_t          *finallyStmt;
 	struct knh_Array_t         *errmsgs;
-	void  *asm_data;
+	void  *asm_data;           // what is this?
 } knh_GammaEX_t;
 
 typedef struct knh_Gamma_t {
@@ -1209,7 +1198,7 @@ typedef struct knh_Gamma_t {
 	knh_Script_t *scr;
 } knh_Gamma_t;
 
-typedef knh_bool_t (*knh_Ftyping)(CTX, knh_Method_t *, knh_Stmt_t *, knh_Stmt_t *);
+typedef knh_bool_t (*knh_Ftyping)(CTX, knh_Method_t *, knh_Stmt_t *);
 
 ///* ------------------------------------------------------------------------ */
 

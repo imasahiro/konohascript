@@ -659,12 +659,7 @@ METHOD knh_Fmethod_runVM(CTX ctx, knh_sfp_t *sfp _RIX)
 static void Method_threadCode(CTX ctx, knh_Method_t *mtd, knh_KonohaCode_t *kcode)
 {
 	knh_Method_setFunc(ctx, mtd, knh_Fmethod_runVM);
-	if(Method_isObjectCode(mtd)) {
-		KNH_SETv(ctx, DP(mtd)->kcode, kcode);
-	}else {
-		Method_setObjectCode(mtd, 1);
-		KNH_INITv(DP(mtd)->kcode, kcode);
-	}
+	KNH_SETv(ctx, DP(mtd)->kcode, kcode);
 	//if(O_isTenure(mtd)) O_toTenure(kcode);
 	(mtd)->pc_start = knh_VirtualMachine_run(ctx, ctx->esp + 1, SP(kcode)->code);
 	if(knh_isVerboseLang()) {
@@ -2803,22 +2798,8 @@ void Gamma_shiftLocalScope(CTX ctx)
 	knh_Array_clear(ctx, a, 0);
 }
 
-void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_Stmt_t *stmtB, knh_Ftyping typing)
+static void Method_compile(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB)
 {
-	DBG_ASSERT(knh_Array_size(DP(ctx->gma)->insts) == 0);
-	DP(ctx->gma)->flag  = 0;
-	DP(ctx->gma)->tkScriptNC = NULL;
-	DP(ctx->gma)->funcbase = -1;
-	KNH_SETv(ctx, DP(ctx->gma)->mtd, mtd);
-	knh_Method_toAbstract(ctx, mtd);
-	typing(ctx, mtd, stmtP, stmtB);
-	Gamma_shiftLocalScope(ctx);
-	knh_Array_clear(ctx, DP(ctx->gma)->lstacks, 0);
-
-#ifdef K_USING_LLVM
-	void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t ittype, knh_Stmt_t *stmtB);
-	knh_LLVMMethod_asm(ctx, mtd, stmtP, ittype, stmtB);
-#else
 	DBG_ASSERT(knh_Array_size(DP(ctx->gma)->insts) == 0);
 	knh_BasicBlock_t* lbINIT = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t* lbBEGIN = new_BasicBlockLABEL(ctx);
@@ -2836,11 +2817,11 @@ void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_Stmt_t *s
 		knh_gamma2_t *gf = DP(ctx->gma)->gf;
 		for(i = 1; i < (long)DP(ctx->gma)->psize + 1; i++) {
 			if(IS_NOTNULL(gf[i].tk)) {
-//					knh_BasicBlock_t*  lb = new_BasicBlockLABEL(ctx);
-//					KNH_ASM(JMPNN, TADDRx lb, i);
-//					KNH_ASM(OSET, (i), value);
-//					KNH_ASM_UNBOX(ctx, O_cid(value), i);
-//					KNH_ASM_LABEL(ctx, lb);
+	//					knh_BasicBlock_t*  lb = new_BasicBlockLABEL(ctx);
+	//					KNH_ASM(JMPNN, TADDRx lb, i);
+	//					KNH_ASM(OSET, (i), value);
+	//					KNH_ASM_UNBOX(ctx, O_cid(value), i);
+	//					KNH_ASM_LABEL(ctx, lb);
 			}
 		}
 		for(; i < DP(ctx->gma)->fvarsize; i++) {
@@ -2873,6 +2854,22 @@ void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_Stmt_t *s
 	Gamma_popLABEL(ctx);
 	DBG_ASSERT(knh_Array_size(DP(ctx->gma)->lstacks) == 0);
 	Gamma_compile(ctx, lbINIT, lbEND);
+}
+
+void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB, knh_Ftyping typing)
+{
+	DBG_ASSERT(knh_Array_size(DP(ctx->gma)->insts) == 0);
+	DP(ctx->gma)->flag  = 0;
+	KNH_SETv(ctx, DP(ctx->gma)->mtd, mtd);
+	knh_Method_toAbstract(ctx, mtd);
+	typing(ctx, mtd, stmtB);
+	Gamma_shiftLocalScope(ctx);
+	knh_Array_clear(ctx, DP(ctx->gma)->lstacks, 0);
+#ifdef K_USING_LLVM
+	void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP, knh_type_t ittype, knh_Stmt_t *stmtB);
+	knh_LLVMMethod_asm(ctx, mtd, stmtP, ittype, stmtB);
+#else
+	Method_compile(ctx, mtd, stmtB);
 #endif /* K_USING_LLVM */
 }
 
