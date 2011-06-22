@@ -518,7 +518,7 @@ static knh_Method_t *Script_getEvalMethod(CTX ctx, knh_Script_t *scr, knh_type_t
 		knh_ParamArray_t *pa = new_(ParamArray);
 		knh_param_t p = {it_type, FN_it};
 		knh_ParamArray_add(ctx, pa, p);
-		knh_param_t r = {TYPE_dyn, FN_return};
+		knh_param_t r = {TYPE_void, FN_return};
 		knh_ParamArray_radd(ctx, pa, r);
 		mtd = new_Method(ctx, FLAG_Method_Hidden, O_cid(scr), MN_LAMBDA, NULL);
 		KNH_SETv(ctx, DP(mtd)->mp, pa);
@@ -527,6 +527,8 @@ static knh_Method_t *Script_getEvalMethod(CTX ctx, knh_Script_t *scr, knh_type_t
 	else {
 		knh_param_t *p = knh_ParamArray_get(DP(mtd)->mp, 0);
 		p->type = it_type;
+		p = knh_ParamArray_rget(DP(mtd)->mp, 0);
+		/*p->type = TYPE_void;*/
 	}
 	return mtd;
 }
@@ -542,6 +544,8 @@ static knh_status_t SCRIPT_eval(CTX ctx, knh_Stmt_t *stmt, int isCompileOnly, kn
 	knh_Method_t *mtd = Script_getEvalMethod(ctx, scr, cid);
 	if(stmt_isExpr(STT_(stmt)) && STT_(stmt) != STT_LET) {
 		stmt = new_Stmt2(ctx, STT_RETURN, stmt, NULL);
+	}
+	if(STT_(stmt) == STT_RETURN) {
 		Stmt_setImplicit(stmt, 1);
 	}
 	KNH_SETv(ctx, lsfp[0].o, stmt);

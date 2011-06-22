@@ -3363,45 +3363,49 @@ static knh_Token_t* RETURN_typing(CTX ctx, knh_Stmt_t *stmt)
 	knh_ParamArray_t *pa = DP(mtd)->mp;
 	knh_class_t this_cid = DP(ctx->gma)->this_cid;
 	knh_type_t rtype = Gamma_type(ctx, knh_ParamArray_rtype(pa));
-	if(size == 0 && MN_isNEW((mtd)->mn)) {
-		knh_Token_t *tk = new_TokenTYPED(ctx, TT_FVAR, this_cid, 0);
-		knh_Stmt_add(ctx, stmt, tk); size = 1;
-	}
+	Stmt_setSTOPITR(stmt, 1);
 	if(size > 1) {
 		WARN_Unsupported(ctx, "returning multiple values");
 		size = (rtype == TYPE_void) ? 0: 1;
 		knh_Stmt_trimToSize(ctx, stmt, size);
 	}
+	if(size == 0 && MN_isNEW((mtd)->mn)) {
+		knh_Token_t *tk = new_TokenTYPED(ctx, TT_FVAR, this_cid, 0);
+		knh_Stmt_add(ctx, stmt, tk);
+		return Stmt_typed(ctx, stmt, rtype);
+	}
 	if(ParamArray_isRVAR(pa)) {
 		DBG_ASSERT(pa->rsize == 0);
 		rtype = TYPE_void;
 		if(size > 0) {
-			TYPING_TypedExpr(ctx, stmt, 0, TYPE_var);
+			TYPING_UntypedExpr(ctx, stmt, 0);
 			rtype = Tn_type(stmt, 0);
 		}
 		Gamma_inferReturnType(ctx, rtype);
+		return Stmt_typed(ctx, stmt, rtype);
 	}
-	else if(size == 0) {
+	if(Stmt_isImplicit(stmt)) { /*size > 0 */
+		DBG_P("stmt=%p, Implicit=%d", stmt, Stmt_isImplicit(stmt));
+		TYPING_UntypedObject(ctx, stmt, 0);
+		if(Tn_type(stmt, 0) != TYPE_void) {
+			Stmt_setImplicit(stmt, 0);
+		}
+		return Stmt_typed(ctx, stmt, Tn_type(stmt, 0));
+	}
+	if(size == 0) {
 		if(rtype != TYPE_void) {
 			knh_Token_t *tk = new_TokenTYPED(ctx, TT_NULL/*DEFVAL*/, rtype, CLASS_t(rtype));
 			knh_Stmt_add(ctx, stmt, tk);
 			WARN_UseDefaultValue(ctx, "return", rtype);
 		}
 	}
-	else if(Stmt_isImplicit(stmt)) { /*size > 0 */
-		DBG_ASSERT(rtype == TYPE_dyn || rtype == TYPE_var);
-		TYPING(ctx, stmt, 0, rtype, 0); /* NOWARN is invisible*/
-		if(Tn_type(stmt, 0) != TYPE_void) {
-			Stmt_setImplicit(stmt, 0);
-		}
-	}
 	else { /* size > 0 */
+		TYPING_TypedExpr(ctx, stmt, 0, rtype);
 		if(rtype == TYPE_void) {
 			WARN_Ignored(ctx, "return value", CLASS_unknown, NULL);
-			knh_Stmt_trimToSize(ctx, stmt, pa->rsize);
+			//knh_Stmt_trimToSize(ctx, stmt, 0);
 		}
 		else {
-			TYPING_TypedExpr(ctx, stmt, 0, rtype);
 			if(STT_(stmtNN(stmt, 0)) == STT_CALL) {
 				knh_Token_t *tkF = tkNN(stmtNN(stmt, 0), 0);
 				if(DP(ctx->gma)->mtd == (tkF)->mtd) {
@@ -3410,7 +3414,6 @@ static knh_Token_t* RETURN_typing(CTX ctx, knh_Stmt_t *stmt)
 			}
 		}
 	}
-	Stmt_setSTOPITR(stmt, 1);
 	return Stmt_typed(ctx, stmt, rtype);
 }
 
