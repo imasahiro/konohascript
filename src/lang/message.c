@@ -387,10 +387,6 @@ void WARN_UseDefaultValue(CTX ctx, const char *whatis, knh_type_t type)
 {
 	Gamma_perror(ctx, KC_DWARN, _("%s default value of %T"), whatis, type);
 }
-//knh_Token_t* ErrorUndefinedMethod(CTX ctx, knh_Token_t *tkMN)
-//{
-//	return Gamma_perror(ctx, KC_ERR, _("undefined method: %L"), tkMN);
-//}
 void WarningNoFmt(CTX ctx, const char *fmt)
 {
 	Gamma_perror(ctx, KC_DWARN, "no such formatter: '%s'", fmt);
@@ -406,6 +402,15 @@ knh_Token_t* ERROR_MethodIsNot(CTX ctx, knh_Method_t *mtd, const char *how)
 	}
 	else {
 		return Gamma_perror(ctx, KC_ERR, _("method is not %s"), how);
+	}
+}
+void WARN_MethodIs(CTX ctx, knh_Method_t *mtd, const char *how)
+{
+	if(IS_Method(mtd)) {
+		Gamma_perror(ctx, KC_DWARN, _("%C.%M is %s"), (mtd)->cid, (mtd)->mn, how);
+	}
+	else {
+		Gamma_perror(ctx, KC_DWARN, _("method is %s"), how);
 	}
 }
 knh_Token_t *ERROR_Unsupported(CTX ctx, const char *whatis, knh_class_t cid, const char *symbol)

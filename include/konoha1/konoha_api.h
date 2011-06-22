@@ -320,6 +320,7 @@ void WARN_UseDefaultValue(CTX ctx, const char *whatis, knh_type_t type);
 void WarningNoFmt(CTX ctx, const char *fmt);
 void WarningIllegalFormatting(CTX ctx, const char *fmt);
 knh_Token_t* ERROR_MethodIsNot(CTX ctx, knh_Method_t *mtd, const char *how);
+void WARN_MethodIs(CTX ctx, knh_Method_t *mtd, const char *how);
 knh_Token_t *ERROR_Unsupported(CTX ctx, const char *whatis, knh_class_t cid, const char *symbol);
 void WARN_Unsupported(CTX ctx, const char *msg);
 void WARN_Ignored(CTX ctx, const char *whatis, knh_class_t cid, const char *symbol);

@@ -2100,6 +2100,9 @@ static knh_Token_t* CALL_toCONST(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *mtd)
 			Stmt_boxAll(ctx, stmt, 1, 2, mtd_cid);
 		}
 	}
+	if(Method_isAbstract(mtd)) {
+		WARN_MethodIs(ctx, mtd, "abstract");
+	}
 	return TM(stmt);
 }
 
@@ -2126,7 +2129,7 @@ static knh_Token_t *new_TokenCODE(CTX ctx, knh_Token_t *tkD)
 	TT_(tk) = TT_CODE;
 	KNH_SETv(ctx, tk->data, tkD->data);
 	tk->uline = tkD->uline;
-	DBG_P("compiling '''%'''", S_tochar(tkD->text));
+	DBG_P("compiling '''%s'''", S_tochar(tkD->text));
 	return tk;
 }
 
