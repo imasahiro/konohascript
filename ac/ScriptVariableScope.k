@@ -28,7 +28,7 @@ class C {
 	}
 	void testScriptVariable3() {
 		age = 16;
-		assert __age == 16;
+		assert __age == 17;
 	}
 }
 
