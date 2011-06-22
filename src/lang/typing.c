@@ -1628,29 +1628,35 @@ static knh_type_t Gamma_lookupVariableType(CTX ctx, knh_Token_t *tkN, knh_flag_t
 	return itype;
 }
 
-static knh_Token_t *DECL3_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh_flag_t opflag, int allowDynamic/*TODO*/)
+static knh_Token_t *DECL3_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh_flag_t opflag, int allowDynamic)
 {
 	knh_Token_t *tkT = TTYPE_typing(ctx, tkNN(stmt, n), reqt);
 	knh_Token_t *tkN = tkNN(stmt, n+1);
 	knh_Token_t *tkV = tkNN(stmt, n+2);
 	if((tkT)->cid == TYPE_var) {
 		knh_type_t itype = TYPE_var;
-		if(TT_(tkV) == TT_ASIS) {
-			itype = Gamma_lookupVariableType(ctx, tkN, opflag);
-		}
-		if(itype == TYPE_var) {
+		if(itype == TYPE_var && TT_(tkV) != TT_ASIS) {
 			TYPING(ctx, stmt, n+2, TYPE_var, _TINFER | _NOVOID | _NOBOX);
 			itype = Tn_type(stmt, n+2);
 		}
-		knh_Token_toCID(ctx, tkT, itype);
-		INFO_Typing(ctx, "", TK_tobytes(tkN), itype);
+		if(itype == TYPE_var && TT_(tkV) == TT_ASIS) {
+			itype = Gamma_lookupVariableType(ctx, tkN, opflag);
+		}
+		if(itype == TYPE_var) {
+			if(!allowDynamic) {
+				return ERROR_MustBe(ctx, "typed", S_tochar(tkN->text));
+			}
+		}
+		else {
+			knh_Token_toCID(ctx, tkT, itype);
+			INFO_Typing(ctx, "", TK_tobytes(tkN), itype);
+		}
 	}
 	else {
-		if(TT_(tkNN(stmt, n+2)) == TT_ASIS) {
+		if(TT_(tkV) == TT_ASIS) {
 			knh_Token_toTYPED(ctx, tkNN(stmt, 2), TT_NULL, tkT->cid, tkT->cid);
 		}
 		else {
-			DBG_P("@@@@@@@@@ tkT->cid=%s", CLASS__(tkT->cid));
 			TYPING_TypedExpr(ctx, stmt, n+2, (tkT)->cid);
 		}
 	}
@@ -2112,30 +2118,49 @@ static knh_Token_t *new_TokenDEFAULT(CTX ctx, knh_class_t cid, knh_type_t reqt)
 	}
 }
 
+static knh_Token_t *new_TokenCODE(CTX ctx, knh_Token_t *tkD)
+{
+	DBG_ASSERT(IS_Token(tkD));
+	DBG_ASSERT(TT_(tkD) == TT_DOC);
+	knh_Token_t *tk = new_(Token);
+	TT_(tk) = TT_CODE;
+	KNH_SETv(ctx, tk->data, tkD->data);
+	tk->uline = tkD->uline;
+	DBG_P("compiling '''%'''", S_tochar(tkD->text));
+	return tk;
+}
+
 static void StmtCALL_lazyasm(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *mtd)
 {
-	BEGIN_LOCAL(ctx, lsfp, 2);
-	DBG_P("dynamic compiled method");
-	LOCAL_NEW(ctx, lsfp, 0, knh_Gamma_t*, gma, ctx->gma);
-	LOCAL_NEW(ctx, lsfp, 1, knh_Stmt_t*, stmtB, knh_Token_parseStmt(ctx, DP(mtd)->tsource));
-	size_t i;
-	knh_ParamArray_t *pa = DP(mtd)->mp;
-	for(i = 0; i < pa->psize; i++) {
-		knh_param_t *p = knh_ParamArray_get(pa, i);
-		if(p->type == TYPE_var) {
-			p->type = tmNN(stmt, i+2)->type;
-			INFO_Typing(ctx, FN__(p->fn), STEXT(""), p->type);
-		}
-	}
 	Method_setDynamic(mtd, 0);
-	KNH_SETv(ctx, ((knh_context_t*)ctx)->gma, new_(Gamma));
-	DBG_ASSERT(IS_bScript(DP(mtd)->gmascr));
-	KNH_SETv(ctx, ctx->gma->scr, DP(mtd)->gmascr);
-	knh_Method_asm(ctx, mtd, stmtB, typingMethod2);
-	DBG_ASSERT(!IS_bScript(DP(mtd)->gmascr));
-	Stmt_typed(ctx, stmt, knh_ParamArray_rtype(pa));
-	KNH_SETv(ctx, ((knh_context_t*)ctx)->gma, gma);
-	END_LOCAL_(ctx, lsfp); // NEED TO CHECK
+	if(IS_Token(DP(mtd)->tsource)) {
+		BEGIN_LOCAL(ctx, lsfp, 3);
+		DBG_P("dynamic compiled method");
+		LOCAL_NEW(ctx, lsfp, 0, knh_Gamma_t*, gma, ctx->gma);
+		LOCAL_NEW(ctx, lsfp, 1, knh_Token_t*, tkC, new_TokenCODE(ctx, DP(mtd)->tsource));
+		LOCAL_NEW(ctx, lsfp, 2, knh_Stmt_t*, stmtB, knh_Token_parseStmt(ctx, tkC));
+		size_t i;
+		knh_ParamArray_t *pa = DP(mtd)->mp;
+		for(i = 0; i < pa->psize; i++) {
+			knh_param_t *p = knh_ParamArray_get(pa, i);
+			if(p->type == TYPE_var) {
+				p->type = tmNN(stmt, i+2)->type;
+				INFO_Typing(ctx, FN__(p->fn), STEXT(""), p->type);
+			}
+		}
+		KNH_SETv(ctx, ((knh_context_t*)ctx)->gma, new_(Gamma));
+		knh_Gamma_init(ctx);
+		DBG_ASSERT(IS_bScript(DP(mtd)->gmascr));
+		KNH_SETv(ctx, ctx->gma->scr, DP(mtd)->gmascr);
+		knh_Method_asm(ctx, mtd, stmtB, typingMethod2);
+		DBG_ASSERT(!IS_bScript(DP(mtd)->gmascr));
+		Stmt_typed(ctx, stmt, knh_ParamArray_rtype(pa));
+		KNH_SETv(ctx, ((knh_context_t*)ctx)->gma, gma);
+		END_LOCAL_(ctx, lsfp); // NEED TO CHECK
+	}
+	else {
+		knh_Method_toAbstract(ctx, mtd);
+	}
 }
 
 static knh_Token_t* CALLPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, knh_class_t new_cid, knh_Method_t *mtd)
@@ -2279,34 +2304,6 @@ static knh_Token_t* CALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 /* ------------------------------------------------------------------------ */
 /* [built-in function] */
 
-//static knh_Token_t* FLIKELY_typing(CTX ctx, knh_Stmt_t *stmt)
-//{
-//	if(Tn_typing(ctx, stmt, 2, TYPE_Boolean, _NOTYPEMAP)) {
-//		return tkNN(stmt, 2);
-//	}
-//	return NULL;
-//}
-
-//static knh_Term_t* knh_StmtDOMAIN_typing(CTX ctx, knh_Stmt_t *stmt)
-//{
-//	if(Tn_typing(ctx, stmt, 2, CLASS_Tdynamic, TCHECK_)) {
-//		knh_class_t cid;
-//		if(Tn_isCID(stmt, 2)) {
-//			cid = (tkNN(stmt, 2))->cid;
-//		}
-//		else {
-//			cid = Tn_cid(stmt, 2);
-//		}
-//		DBG_ASSERT_cid(cid);
-//		Token_setCONST(ctx, tkNN(stmt, 1), UPCAST(new_Type(ctx, cid)));
-//		DP(stmt)->size = 2;
-//		knh_Token_toMTD(ctx, tkNN(stmt, 0), MN_domain, knh_NameSpace_getMethodNULL(ctx, CLASS_Class, MN_domain));
-//		return knh_Stmt_typed(ctx, stmt, TYPE_cid(knh_class_Generics(ctx, CLASS_Array, cid, CLASS_Tdynamic)));
-//	}
-//	TODO();
-//	return NULL;
-//}
-
 static knh_Token_t* defined_typing(CTX ctx, knh_Stmt_t *stmt)
 {
 	knh_Token_t *tk = tkNN(stmt, 0);
@@ -2346,15 +2343,6 @@ static knh_Token_t* this_typing(CTX ctx, knh_Stmt_t *stmt, knh_methodn_t mn)
 	knh_class_t mtd_cid = DP(ctx->gma)->this_cid;
 	knh_Token_t *tkMTD = tkNN(stmt, 0); /* change */
 	knh_Method_t *mtd;
-//	if(mn == MN_super) {
-//		DBG_ASSERT_cid(mtd_cid);
-//		if(ClassTBL(mtd_cid)->supcid == CLASS_Object) {
-//			//knh_Gamma_perror(ctx, KC_ERR, _("not extended: %C"), mtd_cid);
-//			KNH_TODO("not extend?");
-//			return NULL;
-//		}
-//		mtd_cid = ClassTBL(mtd_cid)->supcid;
-//	}
 	mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, MN_new);
 	if(mtd == NULL || (mtd)->cid != mtd_cid) {
 		return ErrorUnsupportedConstructor(ctx, mtd_cid);
@@ -4018,7 +4006,37 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 			mtd = NULL;
 		}
 	}
-	if(mtd != NULL) {  // overriding method
+	if(mtd == NULL) {  // newly defined method
+		size_t i;
+		mtd = new_Method(ctx, flag, mtd_cid, mn, NULL);
+		knh_NameSpace_addMethod(ctx, mtd_cid, mtd);
+		mp = new_ParamArray(ctx);
+		KNH_SETv(ctx, DP(mtd)->mp, mp);
+		for(i = 0; i < DP(stmtP)->size; i += 3) {
+			knh_Token_t *tkT = DECL3_typing(ctx, stmtP, i, TYPE_var, _VFINDTHIS | _VFINDSCRIPT, allowDynamic);
+			if(TT_(tkT) != TT_ERR) {
+				knh_param_t p = {tkT->cid, Token_fn(ctx, tkNN(stmtP, i+1))};
+				knh_ParamArray_add(ctx, mp, p);
+				if(tkT->cid == TYPE_var) isDynamic = 1;
+			}
+			else{
+				knh_Stmt_toERR(ctx, stmtM, tkT);
+				return tkT;
+			}
+		}
+		{
+			knh_Token_t *tkR = TTYPE_typing(ctx, tkNN(stmtM, 0), TYPE_var);
+			knh_type_t rtype = (tkR)->cid;
+			if(rtype == TYPE_var) {
+				ParamArray_setRVAR(mp, 1);
+			}
+			else if(rtype != TYPE_void) {
+				knh_param_t p = {rtype, 0};
+				knh_ParamArray_radd(ctx, mp, p);
+			}
+		}
+	}
+	else {  // overriding method
 		size_t i;
 		mp = DP(mtd)->mp;
 		if((mtd)->cid != mtd_cid) { /* Overriding */
@@ -4066,38 +4084,6 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 			KNH_SETv(ctx, DP(mtd)->mp, mp);
 		}
 	}
-	else {  // newly defined method
-		size_t i;
-		mtd = new_Method(ctx, flag, mtd_cid, mn, NULL);
-		knh_NameSpace_addMethod(ctx, mtd_cid, mtd);
-		mp = new_ParamArray(ctx);
-		KNH_SETv(ctx, DP(mtd)->mp, mp);
-		for(i = 0; i < DP(stmtP)->size; i += 3) {
-			knh_Token_t *tkT = DECL3_typing(ctx, stmtP, i, TYPE_var, _VFINDTHIS | _VFINDSCRIPT, allowDynamic);
-			if(TT_(tkT) != TT_ERR) {
-				knh_param_t p = {tkT->cid, Token_fn(ctx, tkNN(stmtP, i+1))};
-				knh_ParamArray_add(ctx, mp, p);
-				if(tkT->cid == TYPE_var) {
-					isDynamic = 1;
-				}
-			}
-			else{
-				knh_Stmt_toERR(ctx, stmtM, tkT);
-				return tkT;
-			}
-		}
-		{
-			knh_Token_t *tkR = TTYPE_typing(ctx, tkNN(stmtM, 0), TYPE_var);
-			knh_type_t rtype = (tkR)->cid;
-			if(rtype == TYPE_var) {
-				ParamArray_setRVAR(mp, 1);
-			}
-			else if(rtype != TYPE_void) {
-				knh_param_t p = {rtype, 0};
-				knh_ParamArray_radd(ctx, mp, p);
-			}
-		}
-	}
 	DBG_({
 		size_t i;
 		DBG_P("mp->psize=%d, rsize=%d", mp->psize, mp->rsize);
@@ -4112,13 +4098,15 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 	});
 	if(isDynamic == 1) {
 		DBG_P("************************* dynamic ******************************");
-		if(!Stmt_isAbstractMethod(stmtM)) {
-			Method_setDynamic(mtd, 1);
-			KNH_SETv(ctx, DP(mtd)->gmascr, ctx->gma->scr);
+		Method_setDynamic(mtd, 1);
+		KNH_SETv(ctx, DP(mtd)->gmascr, ctx->gma->scr);
+		if(DP(stmtM)->size > 4) {
+			KNH_SETv(ctx, DP(mtd)->tsource, tkNN(stmtM, 4/*source*/));
 		}
 		else {
-			return ERROR_Unsupported(ctx, "abstract dynamic method", CLASS_unknown, NULL);
+			KNH_SETv(ctx, DP(mtd)->tsource, KNH_NULL);
 		}
+		return knh_Stmt_done(ctx, stmtM);
 	}
 	if(StmtMETHOD_isFFI(stmtM)) {
 		knh_Stmt_t *stmtD = stmtNN(stmtM, 4/*using DSL*/);
@@ -4132,7 +4120,6 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 	}
 	return knh_StmtMTD_typing(ctx, stmtM, mtd, mtd_cid);
 }
-
 
 /* ------------------------------------------------------------------------ */
 
@@ -4688,7 +4675,6 @@ knh_bool_t typingMethod2(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB)
 		needsReturn = 0;
 	}
 	if(!hasReturn && needsReturn) {
-		DBG_P("default return value");
 		knh_Stmt_t *stmtRETURN = new_Stmt2(ctx, STT_RETURN, NULL);
 		knh_Stmt_t *stmtLAST = stmtB;
 		while(DP(stmtLAST)->nextNULL != NULL) stmtLAST = DP(stmtLAST)->nextNULL;
