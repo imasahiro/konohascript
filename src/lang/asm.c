@@ -767,12 +767,7 @@ static void _PROP(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t 
 static void _NPROP(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
 	Object *v = (Object*)knh_getPropertyNULL(ctx, S_tobytes(sfp[0].s));
-	if(v == NULL) {
-		sfp[c].ivalue = 0;
-	}
-	else {
-		sfp[c].ndata = O_data(v);
-	}
+	sfp[c].ndata = (v == NULL) ? 0 : O_data(v);
 }
 static void _VARGS(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
@@ -789,6 +784,7 @@ static void _BOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *
 {
 	Object *v = new_Boxing(ctx, sfp, ct);
 	KNH_SETv(ctx, sfp[c].o, v);
+	KNH_GC(ctx);
 }
 static void _CWB(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
@@ -802,6 +798,7 @@ static void _TOSTR(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t
 	knh_cwb_t cwbbuf = {ctx->bufa, ctx->bufw, (size_t)(sfp[0].ivalue)};
 	knh_String_t *s = knh_cwb_newString(ctx, &cwbbuf);
 	KNH_SETv(ctx, sfp[c].o, s);
+	KNH_GC(ctx);
 }
 static void _ERR(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
@@ -899,6 +896,7 @@ static void _PBOX(CTX ctx, knh_sfp_t *sfp, struct klr_PROBE_t *op)
 	knh_type_t rtype = knh_ParamArray_rtype(DP(opP->mtdNC)->mp);
 	rtype = knh_type_tocid(ctx, rtype, O_cid(sfp[rtnidx+K_CALLDELTA].o));
 	if(IS_Tunbox(rtype)) {
+		KNH_GC(ctx);
 		KNH_SETv(ctx, sfp[rtnidx].o, new_Boxing(ctx, sfp+rtnidx, ClassTBL(rtype)));
 	}
 }

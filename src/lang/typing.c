@@ -205,7 +205,7 @@ knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh
 	}
 	if(TT_(tkRES) == TT_ERR) goto L_PERROR;
 	vart = Tn_type(stmt, n);
-	DBG_P("@@ stt=%s n=%d, reqt=%s, vart=%s", TT__(SP(stmt)->stt), (int)n, TYPE__(reqt), TYPE__(vart));
+	//DBG_P("@@ stt=%s n=%d, reqt=%s, vart=%s", TT__(SP(stmt)->stt), (int)n, TYPE__(reqt), TYPE__(vart));
 	if(vart == TYPE_void && FLAG_is(opflag, _NOVOID)) {
 		goto L_PERROR;
 	}
