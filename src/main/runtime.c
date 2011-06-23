@@ -681,7 +681,6 @@ static void knh_shell(CTX ctx)
 	BEGIN_LOCAL(ctx, lsfp, 2);
 	LOCAL_NEW(ctx, lsfp, 0, knh_Array_t *, results, new_Array0(ctx, 0));
 	LOCAL_NEW(ctx, lsfp, 1, knh_InputStream_t *, bin, new_BytesInputStream(ctx, new_Bytes(ctx, "shell", K_PAGESIZE)));
-	knh_linkDynamicReadline(ctx);
 	{
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_showWelcome(ctx, cwb->w);
@@ -813,6 +812,7 @@ struct konoha_module_driver konoha_modules[] = {
 void konoha_main(konoha_t konoha, int argc, const char **argv)
 {
 	int n = konoha_parseopt(konoha, argc, argv);
+	knh_linkDynamicReadline(konoha.ctx);
 	if(argc - n == 0) {
 		konoha_shell(konoha, NULL);
 	}

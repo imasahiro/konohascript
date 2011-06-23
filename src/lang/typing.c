@@ -1819,14 +1819,16 @@ static knh_Token_t *LET_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 			(tkM)->mn = (tkS)->mn;
 			Token_setGetter(tkM, 0);
 			Token_setSetter(tkM, 1);
-			Stmt_toSTT(stmt, STT_CALL);
-			KNH_SETv(ctx, tkNN(stmt, 0), tkM);
-			KNH_SETv(ctx, tkNN(stmt, 1), tkNN(stmtGET, 1));
-			size_t i;
-			for(i = 2; i < DP(stmtGET)->size; i++) {
-				Stmt_insert(ctx, stmt, 2, tmNN(stmtGET, i));
+			{
+				size_t i;
+				Stmt_toSTT(stmt, STT_CALL);
+				KNH_SETv(ctx, tkNN(stmt, 0), tkM);
+				KNH_SETv(ctx, tkNN(stmt, 1), tkNN(stmtGET, 1));
+				for(i = 2; i < DP(stmtGET)->size; i++) {
+					Stmt_insert(ctx, stmt, i, tmNN(stmtGET, i));
+				}
+				return CALL_typing(ctx, stmt, reqt);
 			}
-			return CALL_typing(ctx, stmt, reqt);
 		}
 	}
 	if(TT_(tkN) == TT_PROPN) {
@@ -2100,9 +2102,6 @@ static knh_Token_t* CALL_toCONST(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *mtd)
 			Stmt_boxAll(ctx, stmt, 1, 2, mtd_cid);
 		}
 	}
-	if(Method_isAbstract(mtd)) {
-		WARN_MethodIs(ctx, mtd, "abstract");
-	}
 	return TM(stmt);
 }
 
@@ -2213,6 +2212,9 @@ static knh_Token_t* CALLPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt
 	}
 	if(Method_isDynamic(mtd)) {
 		StmtCALL_lazyasm(ctx, stmt, mtd);
+		if(Method_isAbstract(mtd)) {
+			WARN_MethodIs(ctx, mtd, "abstract");
+		}
 	}
 	return CALL_toCONST(ctx, stmt, mtd);
 }

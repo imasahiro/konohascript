@@ -470,52 +470,16 @@ static METHOD System_getTime(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(knh_getTimeMilliSecond());
 }
 
-///* ------------------------------------------------------------------------ */
-////## @Static @Unsafe method void System.exit(Int status);
-//
-//static METHOD System_exit(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//#if defined(K_USING_STDC_)
-//	int status = IS_NULL(sfp[1].o) ? 0 : Int_to(size_t, sfp[1]);
-//	KNH_SECURE(ctx, sfp);
-//	KNH_SYSLOG(ctx, LOG_NOTICE, "EXIT", "exiting by a user");
-//	exit(status);
-//#endif
-//	RETURNvoid_();
-//}
+/* ------------------------------------------------------------------------ */
+//## method void System.exit(Int status);
 
-///* ------------------------------------------------------------------------ */
-////## method String[] System.listDir(String path);
-//
-//static METHOD System_listDir(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-//	knh_Array_t *a = new_Array(ctx, CLASS_String, 0);
-//	knh_bytes_t t = (IS_NULL(sfp[1].s)) ? STEXT(".") : S_tobytes(sfp[1].s);
-//	knh_cwb_write(ctx, cwb, t);
-//	knh_cwb_ospath(ctx, cwb);
-//	KNH_SETv(ctx, sfp[2].o, a);
-//#if defined(K_USING_POSIX_)
-//	{
-//		char *dirname = knh_cwb_tochar(ctx, cwb);
-//		DIR *dirptr = opendir(dirname);
-//		KNH_PERROR_IF(ctx, sfp, (dirptr == NULL), "opendir");
-//		if (dirptr != NULL) {
-//			struct dirent *direntp;
-//			while ((direntp = readdir(dirptr)) != NULL) {
-//				char *p = direntp->d_name;
-//				if(p[0] == '.' && (p[1] == 0 || p[1] == '.')) continue;
-//				knh_Array_add(ctx, a, new_S(ctx, B(p)));
-//			}
-//			closedir(dirptr);
-//		}
-//	}
-//#else
-//	KNH_TODO("opendir for this platform");
-//#endif
-//	knh_cwb_close(cwb);
-//	RETURN_(a);
-//}
+static METHOD System_exit(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	int status = IS_NULL(sfp[1].o) ? 0 : Int_to(size_t, sfp[1]);
+	LOGDATA = {iDATA("status", status)};
+	NOTE_OK("exit")
+	exit(status);
+}
 
 /* ------------------------------------------------------------------------ */
 //## @Static method InputStream Context.setIn(InputStream? in);
@@ -639,6 +603,17 @@ static METHOD System_eval(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	sfp[K_RIX].ndata = 0;
 	RETURN_(KNH_NULVAL(tcid));
+}
+
+/* ------------------------------------------------------------------------ */
+//## method String System.readLine(String cmd)
+
+static METHOD System_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	const char *line = ctx->spi->readline(S_tochar(sfp[1].s));
+	knh_String_t *s = new_String(ctx, line);
+	free((void*)line);
+	RETURN_(s);
 }
 
 /* ------------------------------------------------------------------------ */
