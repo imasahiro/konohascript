@@ -250,6 +250,7 @@ static METHOD Array_newARRAY(CTX ctx, knh_sfp_t *sfp _RIX)
 		case 1: x = sfp[1].ivalue;
 	}
 	init = x * y * z * w;
+	DBG_P("x=%d,y=%d,z=%d,w=%d,dim=%d,init=%d",x,y,z,w,dim, init);
 	if(0 <= init && init < LONG_MAX) {
 		knh_Array_grow(ctx, a, (size_t)init, 0);
 		a->size = (size_t)init;

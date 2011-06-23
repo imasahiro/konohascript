@@ -26,8 +26,8 @@
 
 /* ************************************************************************ */
 
-#define USE_STEXT 1
-#define USE_bytes_equals
+#define USE_STEXT             1
+#define USE_bytes_equals      1
 #define USE_bytes_endsWith    1
 #define USE_bytes_index       1
 #define USE_bytes_first       1

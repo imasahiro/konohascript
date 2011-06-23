@@ -314,6 +314,7 @@ static METHOD Array_get2(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = a->dim;
 	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x);
+	DBG_P("x=%d,y=%d,dim->x=%d,n=%d", sfp[1].ivalue, sfp[2].ivalue, dim->x, n);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
 	a->api->get(ctx, sfp, n2, K_RIX);
 }
@@ -326,6 +327,7 @@ static METHOD Array_get3(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = a->dim;
 	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x) + (sfp[3].ivalue * dim->xy);
+	DBG_P("x=%d,y=%d,dim->x=%d,n=%d,z=%d", sfp[1].ivalue, sfp[2].ivalue, dim->x, n, sfp[3].ivalue);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
 	a->api->get(ctx, sfp, n2, K_RIX);
 }
@@ -362,6 +364,7 @@ static METHOD Array_set2(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = (sfp[0].a)->dim;
 	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x);
+	DBG_P("x=%d,y=%d,dim->x=%d,n=%d,v=%d", sfp[1].ivalue, sfp[2].ivalue, dim->x, n, sfp[3].ivalue);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
 	a->api->set(ctx, a, n2, sfp+3);
 	a->api->get(ctx, sfp, n2, K_RIX);
@@ -375,6 +378,7 @@ static METHOD Array_set3(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = (sfp[0].a)->dim;
 	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x) + (sfp[3].ivalue * dim->xy);
+	DBG_P("x=%d,y=%d,dim->x=%d,n=%d,z=%d", sfp[1].ivalue, sfp[2].ivalue, dim->x, n, sfp[3].ivalue);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
 	a->api->set(ctx, a, n2, sfp+4);
 	a->api->get(ctx, sfp, n2, K_RIX);

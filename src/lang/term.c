@@ -1786,21 +1786,8 @@ static int ITR_indexKEY(tkitr_t *itr, int shift)
 	return itr->e;
 }
 
-//static int ITR_isImmutable(tkitr_t *titr)
-//{
-//	if(titr->e > 0) {
-//		if(TT_(titr->ts[titr->e - 1]) == TT_DOTS) {
-//			titr->e -= 1;
-//			return 1;
-//		}
-//		return 0;
-//	}
-//	return 1;
-//}
-
 static void _ARRAY(CTX ctx, knh_Stmt_t *stmt, knh_methodn_t mn, knh_class_t cid, tkitr_t *itr)
 {
-	//knh_Token_t *tkC = new_TokenCID(ctx, ITR_isImmutable(itr) ? knh_class_P1(ctx, CLASS_Immutable, cid));
 	knh_Token_t *tkC = new_TokenCID(ctx, cid);
 	DBG_ASSERT(STT_(stmt) == STT_NEW);
 	knh_Stmt_add(ctx, stmt, new_TokenMN(ctx, mn));
@@ -1912,13 +1899,27 @@ static void _EXPRLET(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, knh_index_t idx)
 {
 	knh_Token_t *tkCUR = itr->ts[idx];
 	tkitr_t lbuf, *litr = ITR_first(itr, idx, &lbuf, +1);
-	if(TT_(tkCUR) != TT_LET) { /* i += 1 ==> i = i + 1 */
-		itr->c = litr->c;
-	}
 	stmt = new_StmtREUSE(ctx, stmt, STT_LET);
-	_VAR(ctx, stmt, litr);
-	_EXPR(ctx, stmt, litr);
-	_EXPR(ctx, stmt, itr); return;
+	_VAR(ctx, stmt, litr); // var is the first element
+	if(TT_(tkCUR) != TT_LET) { /* i += 1 ==> i = i + 1 */
+		int c = litr->c, e = litr->e;
+		itr->c = litr->c;
+		_EXPR(ctx, stmt, litr);
+		while(c < e) {
+			knh_Token_t *otk = itr->ts[c];
+			knh_Token_t *ntk = new_Token(ctx, TT_(otk));
+			KNH_SETv(ctx, ntk->data, otk->data);
+			ntk->uline = otk->uline;
+			ntk->flag0 = otk->flag0;
+			ntk->index = otk->index;
+			KNH_SETv(ctx, itr->ts[c], ntk);
+			c++;
+		}
+	}
+	else {
+		_EXPR(ctx, stmt, litr);
+	}
+	_EXPR(ctx, stmt, itr);
 }
 
 static int ITR_isDOTNAME(tkitr_t *itr, int shift)
