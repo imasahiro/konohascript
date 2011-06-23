@@ -3211,6 +3211,157 @@ static knh_Token_t* TRI_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	return Stmt_typed(ctx, stmt, reqt);
 }
 
+static knh_type_t Gamma_getReturnType(CTX ctx)
+{
+	knh_Method_t *mtd = DP(ctx->gma)->mtd;
+	return Gamma_type(ctx, knh_ParamArray_rtype(DP(mtd)->mp));
+}
+
+static void Gamma_inferReturnType(CTX ctx, knh_type_t rtype)
+{
+	knh_Method_t *mtd = DP(ctx->gma)->mtd;
+	knh_ParamArray_t *pa = DP(mtd)->mp;
+	if(ParamArray_isRVAR(pa)) {
+		DBG_ASSERT(pa->rsize == 0);
+		if(rtype != TYPE_void) {
+			knh_param_t p = {rtype, FN_};
+			knh_ParamArray_radd(ctx, pa, p);
+		}
+		INFO_Typing(ctx, "return value", STEXT(""), rtype);
+		ParamArray_setRVAR(pa, 0);
+	}
+}
+
+static knh_Token_t* RETURN_typing(CTX ctx, knh_Stmt_t *stmt)
+{
+	size_t size = DP(stmt)->size;
+	knh_Method_t *mtd = DP(ctx->gma)->mtd;
+	knh_ParamArray_t *pa = DP(mtd)->mp;
+	knh_class_t this_cid = DP(ctx->gma)->this_cid;
+	knh_type_t rtype = Gamma_type(ctx, knh_ParamArray_rtype(pa));
+	Stmt_setSTOPITR(stmt, 1);
+	if(size > 1) {
+		WARN_Unsupported(ctx, "returning multiple values");
+		size = (rtype == TYPE_void) ? 0: 1;
+		knh_Stmt_trimToSize(ctx, stmt, size);
+	}
+	if(size == 0 && MN_isNEW((mtd)->mn)) {
+		knh_Token_t *tk = new_TokenTYPED(ctx, TT_FVAR, this_cid, 0);
+		knh_Stmt_add(ctx, stmt, tk);
+		return Stmt_typed(ctx, stmt, rtype);
+	}
+	if(ParamArray_isRVAR(pa)) {
+		DBG_ASSERT(pa->rsize == 0);
+		rtype = TYPE_void;
+		if(size > 0) {
+			TYPING_UntypedExpr(ctx, stmt, 0);
+			rtype = Tn_type(stmt, 0);
+		}
+		Gamma_inferReturnType(ctx, rtype);
+		return Stmt_typed(ctx, stmt, rtype);
+	}
+	if(Stmt_isImplicit(stmt)) { /*size > 0 */
+		TYPING_UntypedObject(ctx, stmt, 0);
+		if(Tn_type(stmt, 0) != TYPE_void) {
+			Stmt_setImplicit(stmt, 0);
+		}
+		return Stmt_typed(ctx, stmt, Tn_type(stmt, 0));
+	}
+	if(size == 0) {
+		if(rtype != TYPE_void) {
+			knh_Token_t *tk = new_TokenTYPED(ctx, TT_NULL/*DEFVAL*/, rtype, CLASS_t(rtype));
+			knh_Stmt_add(ctx, stmt, tk);
+			WARN_UseDefaultValue(ctx, "return", rtype);
+		}
+	}
+	else { /* size > 0 */
+		TYPING_TypedExpr(ctx, stmt, 0, rtype);
+		if(rtype == TYPE_void) {
+			WARN_Ignored(ctx, "return value", CLASS_unknown, NULL);
+			//knh_Stmt_trimToSize(ctx, stmt, 0);
+		}
+		else {
+			if(STT_(stmtNN(stmt, 0)) == STT_CALL) {
+				knh_Token_t *tkF = tkNN(stmtNN(stmt, 0), 0);
+				if(DP(ctx->gma)->mtd == (tkF)->mtd) {
+					Stmt_setTAILRECURSION(stmtNN(stmt, 0), 1);
+				}
+			}
+		}
+	}
+	return Stmt_typed(ctx, stmt, rtype);
+}
+
+#define TYPING_Block(ctx, stmt, n) StmtITR_typing(ctx, stmtNN(stmt, n), 0)
+
+static int/*hasRETURN*/ StmtITR_typing(CTX ctx, knh_Stmt_t *stmt, int needsRETURN)
+{
+	knh_Stmt_t *stmtITR = stmt;
+	int needs = (DP(stmtITR)->nextNULL != NULL) ? 0 : needsRETURN;
+	int hasRETURN = 0;
+	BEGIN_BLOCK(stmt, espidx);
+	DBG_ASSERT(IS_Stmt(stmtITR));
+	while(stmtITR != NULL) {
+		knh_Token_t *tkRES;
+		ctx->gma->uline = stmtITR->uline;
+		Stmt_setESPIDX(ctx, stmtITR);
+		tkRES = Stmt_typing(ctx, stmtITR, needs);
+		if(TT_(tkRES) == TT_ERR) {
+			stmt->uline = stmtITR->uline;
+			knh_Stmt_toERR(ctx, stmt, tkRES);
+			if(DP(stmt)->nextNULL != NULL) {
+				KNH_FINALv(ctx, DP(stmt)->nextNULL);
+			}
+			hasRETURN = 1;
+			break; // return
+		}
+		if(IS_Token(tkRES)) {
+			WarningNoEffect(ctx);
+			knh_Stmt_done(ctx, stmtITR);
+		}
+		if(Stmt_isSTOPITR(stmtITR)) {
+			if(DP(stmtITR)->nextNULL != NULL) {
+				KNH_FINALv(ctx, DP(stmtITR)->nextNULL);
+			}
+			hasRETURN = 1;
+			break;
+		}
+		needs = (DP(stmtITR)->nextNULL != NULL) ? 0 : needsRETURN;
+		stmtITR = DP(stmtITR)->nextNULL;
+	}
+	END_BLOCK(stmt, espidx);
+	return hasRETURN;
+}
+
+knh_bool_t typingFunction(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB)
+{
+	knh_ParamArray_t *mp = DP(mtd)->mp;
+	size_t i, psize = mp->psize;
+	Gamma_addFVAR(ctx, 0/*_FREADONLY*/, TYPE_Object, FN_, 0);
+	for(i = 0; i < psize; i++) {
+		knh_param_t *p = knh_ParamArray_get(mp, i);
+		Gamma_addFVAR(ctx, 0/*_FREADONLY*/, p->type, p->fn, 0);
+	}
+	DP(ctx->gma)->psize = DP(ctx->gma)->funcbase0 + psize;
+	DBG_ASSERT(DP(ctx->gma)->psize + 1 == DP(ctx->gma)->fvarsize);
+	DP(ctx->gma)->tkFuncThisNC = Gamma_addFVAR(ctx, 0/*_FREADONLY*/, DP(ctx->gma)->this_cid, FN_this, 0);
+
+	int needsReturn = (Gamma_getReturnType(ctx) != TYPE_void) && (Gamma_getReturnType(ctx) != TYPE_var);
+	int hasReturn = StmtITR_typing(ctx, stmtB, needsReturn);
+	if(Gamma_getReturnType(ctx) == TYPE_var) {
+		Gamma_inferReturnType(ctx, TYPE_void);
+		needsReturn = 0;
+	}
+	if(!hasReturn && needsReturn) {
+		knh_Stmt_t *stmtRETURN = new_Stmt2(ctx, STT_RETURN, NULL);
+		knh_Stmt_t *stmtLAST = stmtB;
+		while(DP(stmtLAST)->nextNULL != NULL) stmtLAST = DP(stmtLAST)->nextNULL;
+		KNH_INITv(DP(stmtLAST)->nextNULL, stmtRETURN);
+		RETURN_typing(ctx, stmtRETURN);
+	}
+	return (STT_(stmtB) != STT_ERR);
+}
+
 static knh_Token_t* FUNCTION_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
 	knh_Stmt_t *stmtP = stmtNN(stmt, 1);
@@ -3278,10 +3429,9 @@ static knh_Token_t* FUNCTION_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		int gma_psize = DP(ctx->gma)->psize;
 		int gma_fvarsize = DP(ctx->gma)->fvarsize;
 		DP(ctx->gma)->funcbase0 = DP(ctx->gma)->gsize;
-
 		knh_Method_t* gma_mtd = DP(ctx->gma)->mtd;
 		KNH_SETv(ctx, DP(ctx->gma)->mtd, mtd);
-		if(typingMethod2(ctx, mtd, stmtB)) {
+		if(typingFunction(ctx, mtd, stmtB)) {
 			reqt = knh_class_Generics(ctx, CLASS_Func, DP(mtd)->mp);
 			KNH_SETv(ctx, DP(mtd)->stmtB, stmtB);
 			DP(mtd)->delta = DP(ctx->gma)->fvarsize - DP(ctx->gma)->funcbase0;
@@ -3289,6 +3439,7 @@ static knh_Token_t* FUNCTION_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 			if(Gamma_hasLexicalScope(ctx->gma)) {
 				knh_Token_t *tkIDX = Gamma_addFVAR(ctx, _FCHKOUT, reqt, FN_, 1);
 				KNH_SETv(ctx, stmtNN(stmt, 1), tkIDX);
+				DBG_P("lexical scope: idx=%d", tkIDX->index);
 				if(DP(stmt)->espidx == 0) {
 					Stmt_setESPIDX(ctx, stmt);
 				}
@@ -3299,8 +3450,11 @@ static knh_Token_t* FUNCTION_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 			}
 		}
 		else {
+			reqt = knh_class_Generics(ctx, CLASS_Func, DP(mtd)->mp);
 			knh_Method_toAbstract(ctx, mtd);
+			tkRES = Stmt_typed(ctx, stmt, reqt);
 		}
+		Gamma_clear(ctx, DP(ctx->gma)->funcbase0, 0);
 		DP(ctx->gma)->flag = gma_flag;
 		DP(ctx->gma)->gsize = DP(ctx->gma)->funcbase0;
 		DP(ctx->gma)->funcbase0 = gma_funcbase0;
@@ -3342,134 +3496,10 @@ static knh_Token_t* EXPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 
 /* ------------------------------------------------------------------------ */
 
-static knh_type_t Gamma_getReturnType(CTX ctx)
-{
-	knh_Method_t *mtd = DP(ctx->gma)->mtd;
-	return Gamma_type(ctx, knh_ParamArray_rtype(DP(mtd)->mp));
-}
-
-static void Gamma_inferReturnType(CTX ctx, knh_type_t rtype)
-{
-	knh_Method_t *mtd = DP(ctx->gma)->mtd;
-	knh_ParamArray_t *pa = DP(mtd)->mp;
-	if(ParamArray_isRVAR(pa)) {
-		DBG_ASSERT(pa->rsize == 0);
-		if(rtype != TYPE_void) {
-			knh_param_t p = {rtype, FN_};
-			knh_ParamArray_radd(ctx, pa, p);
-		}
-		INFO_Typing(ctx, "return value", STEXT(""), rtype);
-		ParamArray_setRVAR(pa, 0);
-	}
-}
-
-static knh_Token_t* RETURN_typing(CTX ctx, knh_Stmt_t *stmt)
-{
-	size_t size = DP(stmt)->size;
-	knh_Method_t *mtd = DP(ctx->gma)->mtd;
-	knh_ParamArray_t *pa = DP(mtd)->mp;
-	knh_class_t this_cid = DP(ctx->gma)->this_cid;
-	knh_type_t rtype = Gamma_type(ctx, knh_ParamArray_rtype(pa));
-	Stmt_setSTOPITR(stmt, 1);
-	if(size > 1) {
-		WARN_Unsupported(ctx, "returning multiple values");
-		size = (rtype == TYPE_void) ? 0: 1;
-		knh_Stmt_trimToSize(ctx, stmt, size);
-	}
-	if(size == 0 && MN_isNEW((mtd)->mn)) {
-		knh_Token_t *tk = new_TokenTYPED(ctx, TT_FVAR, this_cid, 0);
-		knh_Stmt_add(ctx, stmt, tk);
-		return Stmt_typed(ctx, stmt, rtype);
-	}
-	if(ParamArray_isRVAR(pa)) {
-		DBG_ASSERT(pa->rsize == 0);
-		rtype = TYPE_void;
-		if(size > 0) {
-			TYPING_UntypedExpr(ctx, stmt, 0);
-			rtype = Tn_type(stmt, 0);
-		}
-		Gamma_inferReturnType(ctx, rtype);
-		return Stmt_typed(ctx, stmt, rtype);
-	}
-	if(Stmt_isImplicit(stmt)) { /*size > 0 */
-		DBG_P("stmt=%p, Implicit=%d", stmt, Stmt_isImplicit(stmt));
-		TYPING_UntypedObject(ctx, stmt, 0);
-		if(Tn_type(stmt, 0) != TYPE_void) {
-			Stmt_setImplicit(stmt, 0);
-		}
-		return Stmt_typed(ctx, stmt, Tn_type(stmt, 0));
-	}
-	if(size == 0) {
-		if(rtype != TYPE_void) {
-			knh_Token_t *tk = new_TokenTYPED(ctx, TT_NULL/*DEFVAL*/, rtype, CLASS_t(rtype));
-			knh_Stmt_add(ctx, stmt, tk);
-			WARN_UseDefaultValue(ctx, "return", rtype);
-		}
-	}
-	else { /* size > 0 */
-		TYPING_TypedExpr(ctx, stmt, 0, rtype);
-		if(rtype == TYPE_void) {
-			WARN_Ignored(ctx, "return value", CLASS_unknown, NULL);
-			//knh_Stmt_trimToSize(ctx, stmt, 0);
-		}
-		else {
-			if(STT_(stmtNN(stmt, 0)) == STT_CALL) {
-				knh_Token_t *tkF = tkNN(stmtNN(stmt, 0), 0);
-				if(DP(ctx->gma)->mtd == (tkF)->mtd) {
-					Stmt_setTAILRECURSION(stmtNN(stmt, 0), 1);
-				}
-			}
-		}
-	}
-	return Stmt_typed(ctx, stmt, rtype);
-}
 
 static knh_Token_t* YIELD_typing(CTX ctx, knh_Stmt_t *stmt)
 {
 	return ERROR_Unsupported(ctx, "statement", CLASS_unknown, "yield");
-}
-
-#define TYPING_Block(ctx, stmt, n) StmtITR_typing(ctx, stmtNN(stmt, n), 0)
-
-static int/*hasRETURN*/ StmtITR_typing(CTX ctx, knh_Stmt_t *stmt, int needsRETURN)
-{
-	knh_Stmt_t *stmtITR = stmt;
-	int needs = (DP(stmtITR)->nextNULL != NULL) ? 0 : needsRETURN;
-	int hasRETURN = 0;
-	BEGIN_BLOCK(stmt, espidx);
-	DBG_ASSERT(IS_Stmt(stmtITR));
-	while(stmtITR != NULL) {
-		knh_Token_t *tkRES;
-		ctx->gma->uline = stmtITR->uline;
-		Stmt_setESPIDX(ctx, stmtITR);
-		tkRES = Stmt_typing(ctx, stmtITR, needs);
-		if(TT_(tkRES) == TT_ERR) {
-			stmt->uline = stmtITR->uline;
-			knh_Stmt_toERR(ctx, stmt, tkRES);
-			if(DP(stmt)->nextNULL != NULL) {
-				KNH_FINALv(ctx, DP(stmt)->nextNULL);
-			}
-			hasRETURN = 1;
-			break; // return
-		}
-		if(IS_Token(tkRES)) {
-			WarningNoEffect(ctx);
-			knh_Stmt_done(ctx, stmtITR);
-		}
-		if(Stmt_isSTOPITR(stmtITR)) {
-			if(DP(stmtITR)->nextNULL != NULL) {
-				KNH_FINALv(ctx, DP(stmtITR)->nextNULL);
-			}
-			hasRETURN = 1;
-			break;
-		}
-//		if(reqt == TYPE_Object && DP(stmtITR)->nextNULL == NULL) {
-//		}
-		needs = (DP(stmtITR)->nextNULL != NULL) ? 0 : needsRETURN;
-		stmtITR = DP(stmtITR)->nextNULL;
-	}
-	END_BLOCK(stmt, espidx);
-	return hasRETURN;
 }
 
 static knh_Token_t* Stmt_toBLOCK(CTX ctx, knh_Stmt_t *stmt, size_t n)

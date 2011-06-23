@@ -2799,6 +2799,7 @@ void Gamma_shiftLocalScope(CTX ctx)
 static void Method_compile(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB)
 {
 	DBG_ASSERT(knh_Array_size(DP(ctx->gma)->insts) == 0);
+	DBG_ASSERT(knh_Array_size(DP(ctx->gma)->lstacks) == 0);
 	knh_BasicBlock_t* lbINIT = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t* lbBEGIN = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t* lbEND = new_BasicBlockLABEL(ctx);
@@ -2873,12 +2874,17 @@ void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB, knh_Ftyping t
 
 METHOD knh_Fmethod_asm(CTX ctx, knh_sfp_t *sfp _RIX)
 {
+	BEGIN_LOCAL(ctx, lsfp, 1);
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
+	DBG_ASSERT(IS_Method(mtd));
+	KNH_SETv(ctx, lsfp[0].o, DP(mtd)->stmtB);
 	DP(ctx->gma)->flag  = 0;
 	KNH_SETv(ctx, DP(ctx->gma)->mtd, mtd);
 	knh_Method_toAbstract(ctx, mtd);
 	DP(ctx->gma)->fvarsize = DP(mtd)->delta;
-	Method_compile(ctx, mtd, DP(mtd)->stmtB);
+	DBG_ASSERT(IS_Stmt(lsfp[0].o));
+	Method_compile(ctx, mtd, (knh_Stmt_t*)lsfp[0].o);
+	END_LOCAL_(ctx, lsfp);
 	(mtd)->fcall_1(ctx, sfp, K_RIX);
 }
 
