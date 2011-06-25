@@ -618,9 +618,9 @@ static void *knh_generateCallbackFunc64(CTX ctx, void *tmpl, void *dest, knh_Fun
 		switch (lastInst) {
 		case leave_jmp:
 			/* leave */
-			function[seekidx++] = 0xc9;
+			//function[seekidx++] = 0xc9;
 			/* fall through */
-		case jmp_only:
+		case jmp_only: /*case leave_jmp:*/
 			/* jmp *%rax */
 			function[seekidx++] = 0xff;
 			function[seekidx++] = 0xe0;

@@ -576,7 +576,7 @@ static int qsort_ocmp(const void *ap, const void* bp)
 }
 
 // added by @shinpei_NKT
-int knh_compare(knh_Func_t *fo, const void *v1, const void *v2)
+int knh_compare_i(knh_Func_t *fo, const void *v1, const void *v2)
 {
 	knh_int_t a = *((knh_int_t*)v1);
 	knh_int_t b = *((knh_int_t*)v2);
@@ -588,9 +588,26 @@ int knh_compare(knh_Func_t *fo, const void *v1, const void *v2)
 	CLOSURE_end(return ret);
 }
 
-int dummyCallbackCompare(const void *v1, const void *v2)
+int dummyCallbackCompareInt(const void *v1, const void *v2)
 {
-	return knh_compare((knh_Func_t*)(0xfffffff0fffffff0), v1, v2);
+  return knh_compare_i((knh_Func_t*)CALLBACK_MARKER, v1, v2);
+}
+
+int knh_compare_f(knh_Func_t *fo, const void *v1, const void *v2)
+{
+	knh_float_t a = *((knh_float_t*)v1);
+	knh_float_t b = *((knh_float_t*)v2);
+	CLOSURE_start(2);
+	CLOSURE_putArg(1, Float, a);
+	CLOSURE_putArg(2, Float, b);
+	CLOSURE_call(fo);
+	int ret = CLOSURE_getReturn(Int);
+	CLOSURE_end(return ret);
+}
+
+int dummyCallbackCompareFloat(const void *v1, const void *v2)
+{
+	return knh_compare_f((knh_Func_t*)CALLBACK_MARKER, v1, v2);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -614,9 +631,21 @@ static METHOD Array_sort(CTX ctx, knh_sfp_t *sfp _RIX)
 		}
 	}
 	else {
-		// added by @shinpei_NKT
-	  int(*cfunc)(const void*, const void*) = (int(*)(const void*, const void*))(knh_copyCallbackFunc(ctx, (void*)dummyCallbackCompare, (void*)knh_compare, sfp[1].fo));
-	  knh_qsort(a->ilist, a->size, sizeof(knh_int_t), cfunc);
+	  // added by @shinpei_NKT
+	  knh_class_t p1 = O_p1(a);
+	  if(Array_isNDATA(a)) {
+		if(p1 == TYPE_Boolean || IS_Tint(p1)) {
+		  int(*ifunc)(const void*, const void*) = (int(*)(const void*, const void*))(knh_copyCallbackFunc(ctx, (void*)dummyCallbackCompareInt, (void*)knh_compare_i, sfp[1].fo));
+		  knh_qsort(a->ilist, a->size, sizeof(knh_int_t), ifunc);
+		}
+		else {
+		  int(*ffunc)(const void*, const void*) = (int(*)(const void*, const void*))(knh_copyCallbackFunc(ctx, (void*)dummyCallbackCompareFloat, (void*)knh_compare_f, sfp[1].fo));
+		  knh_qsort(a->flist, a->size, sizeof(knh_float_t), ffunc);
+		}
+	  }
+	  else {
+		//TODO
+	  }
 	}
 }
 

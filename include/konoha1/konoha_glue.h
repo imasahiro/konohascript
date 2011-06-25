@@ -284,6 +284,11 @@ typedef const knh_LinkDPI_t* (*knh_Flinkdef)(CTX);
   END_LOCAL_(lctx, lsfp); \
   exp
 
+#ifndef __x86_64__
+#define CALLBACK_MARKER (-1)
+#else
+#define CALLBACK_MARKER (0xfffffff0fffffff0)
+#endif
 /* ------------------------------------------------------------------------ */
 
 #ifdef K_EXPORTS

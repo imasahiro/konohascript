@@ -334,6 +334,7 @@ static void Token_setMethod(CTX ctx, knh_Token_t *tk, knh_methodn_t mn, knh_Meth
 knh_Token_t* knh_Token_toCID(CTX ctx, knh_Token_t *tk, knh_class_t cid)
 {
 	TK_typing(tk, TT_CID, CLASS_Class, cid);
+	KNH_SETv(ctx, tk->data, new_hObject(ctx, cid))
 	return tk;
 }
 
