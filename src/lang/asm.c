@@ -705,7 +705,9 @@ static void ASM_JMP(CTX ctx, knh_BasicBlock_t *label)
 		bb->nextNC = NULL;
 		bb->jumpNC = label;  DP(label)->incoming += 1;
 	}
-	DP(ctx->gma)->bbNC = NULL; /*KNH_TNULL(BasicBlock);*/
+	if (bb != DP(ctx->gma)->bbNC) {
+		DP(ctx->gma)->bbNC = NULL; /*KNH_TNULL(BasicBlock);*/
+	}
 }
 
 static knh_BasicBlock_t* ASM_JMPF(CTX ctx, int flocal, knh_BasicBlock_t *lbJUMP)
