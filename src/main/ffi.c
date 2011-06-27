@@ -74,6 +74,8 @@ static void initXmemAllocator(CTX ctx)
 	void *ptr = (void *)KNH_VALLOC(ctx, XMEM_TOTAL_SIZE);
 #ifndef K_USING_MINGW_
 	int mret = mprotect(ptr, XMEM_TOTAL_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC);
+#else
+	int mret = -1;
 #endif
 	if (mret != -1) {
 		xalc->root = ptr;

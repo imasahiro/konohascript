@@ -546,13 +546,13 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		int bufsiz = K_PATHMAX;
 		HMODULE h = LoadLibrary(NULL);
 		GetModuleFileNameA(h, buf, bufsiz);
-		knh_cwb_clear(cwb, 0);
+		knh_cwb_clear2(cwb, 0);
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, B(buf));
 		SETPROP("konoha.bin.path", knh_buff_newRealPath(ctx, cwb->ba, cwb->pos));
 		if(home.text == NULL) {
 			knh_String_t *s;
-			knh_cwb_clear(cwb, 0);
-			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, new_bytes2(buf, size));
+			knh_cwb_clear2(cwb, 0);
+			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, new_bytes2(buf, bufsiz));
 			knh_buff_trim(ctx, cwb->ba, cwb->pos, '\\');
 			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1/*isSep*/, STEXT("konoha"));
 			s = knh_cwb_newString(ctx, cwb);
@@ -711,7 +711,7 @@ int knh_dlclose(CTX ctx, void* handler)
 
 #if defined(K_USING_WINDOWS_)
 #define HAVE_LOCALCHARSET_H 1
-static char *locale_charset(void)
+static char *knh_locale_charset(void)
 {
 	static char codepage[64];
 	knh_snprintf(codepage, sizeof(codepage), "CP%d", (int)GetACP());
@@ -730,7 +730,7 @@ const char *knh_getSystemEncoding(void)
 #if defined(K_OSENCODING)
 	return K_OSENCODING;
 #elif defined(HAVE_LOCALCHARSET_H)
-	return (char*)locale_charset();
+	return (char*)knh_locale_charset();
 #else
 //	char *enc = knh_getenv("LC_CTYPE");
 //	if(enc != NULL) {
