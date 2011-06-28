@@ -77,6 +77,7 @@ set(KONOHA_SRC
 	src/main/thread.c
 	src/ext/mt19937ar.c
 )
+set(KONOHA_BIN src/konoha.c)
 
 check_include_files(malloc.h HAVE_MALLOC_H)
 check_include_files(inttypes.h HAVE_INTTYPES_H)
@@ -127,6 +128,14 @@ endif(CYGWIN)
 
 if(MSVC)
 endif(MSVC)
+
+if(MINGW)
+	set(CMAKE_RC_COMPILER_INIT windres)
+	ENABLE_LANGUAGE(RC)
+	SET(CMAKE_RC_COMPILE_OBJECT
+		"<CMAKE_RC_COMPILER> <FLAGS> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
+	set(KONOHA_BIN ${KONOHA_BIN} ${CMAKE_CURRENT_SOURCE_DIR}/resources/konoha.rc)
+endif(MINGW)
 
 check_symbol_exists(malloc         "${_HEADERS}" HAVE_MALLOC)
 check_symbol_exists(isascii        "${_HEADERS}" HAVE_ISASCII)
@@ -292,7 +301,7 @@ add_library(konoha SHARED ${KONOHA_SRC})
 target_link_libraries(konoha ${ExtraLibs})
 set_target_properties(konoha PROPERTIES VERSION ${PACKAGE_VERSION} SOVERSION ${SO_VERSION})
 
-add_executable(konoha1 src/konoha.c)
+add_executable(konoha1 ${KONOHA_BIN})
 target_link_libraries(konoha1 konoha)
 set_target_properties(konoha1 PROPERTIES OUTPUT_NAME konoha)
 
