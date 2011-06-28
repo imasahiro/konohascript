@@ -705,9 +705,7 @@ static void ASM_JMP(CTX ctx, knh_BasicBlock_t *label)
 		bb->nextNC = NULL;
 		bb->jumpNC = label;  DP(label)->incoming += 1;
 	}
-	if (bb != DP(ctx->gma)->bbNC) {
-		DP(ctx->gma)->bbNC = NULL; /*KNH_TNULL(BasicBlock);*/
-	}
+	DP(ctx->gma)->bbNC = NULL; /*KNH_TNULL(BasicBlock);*/
 }
 
 static knh_BasicBlock_t* ASM_JMPF(CTX ctx, int flocal, knh_BasicBlock_t *lbJUMP)
@@ -1274,20 +1272,21 @@ static int CALLPARAMs_asm(CTX ctx, knh_Stmt_t *stmt, size_t s, int local, knh_cl
 	for(i = s; i < DP(stmt)->size; i++) {
 		Tn_asm(ctx, stmt, i, local + i + (K_CALLDELTA-1));
 	}
-	if(Stmt_isTAILRECURSION(stmt) && Gamma_isTailRecursion(ctx->gma)) {
-		knh_BasicBlock_t *lbBEGIN = GammaLabel(ctx, 1);
-		for(i = s; i < DP(stmt)->size; i++) {
-			knh_type_t reqt = Tn_ptype(ctx, stmt, i, cid, mtd);
-			if(IS_Tunbox(reqt)) {
-				ASM(NMOV, NC_(i-1), NC_(local + i + (K_CALLDELTA-1)));
-			}
-			else {
-				ASM(OMOV, OC_(i-1), OC_(local + i + (K_CALLDELTA-1)));
-			}
-		}
-		ASM_JMP(ctx, lbBEGIN);
-		return 0;
-	}
+	// TODO(@imasahiro)
+	//if(Stmt_isTAILRECURSION(stmt) && Gamma_isTailRecursion(ctx->gma)) {
+	//	knh_BasicBlock_t *lbBEGIN = GammaLabel(ctx, 1);
+	//	for(i = s; i < DP(stmt)->size; i++) {
+	//		knh_type_t reqt = Tn_ptype(ctx, stmt, i, cid, mtd);
+	//		if(IS_Tunbox(reqt)) {
+	//			ASM(NMOV, NC_(i-1), NC_(local + i + (K_CALLDELTA-1)));
+	//		}
+	//		else {
+	//			ASM(OMOV, OC_(i-1), OC_(local + i + (K_CALLDELTA-1)));
+	//		}
+	//	}
+	//	ASM_JMP(ctx, lbBEGIN);
+	//	return 0;
+	//}
 	return 1;
 }
 
