@@ -3280,16 +3280,16 @@ static knh_Token_t* RETURN_typing(CTX ctx, knh_Stmt_t *stmt)
 		TYPING_TypedExpr(ctx, stmt, 0, rtype);
 		if(rtype == TYPE_void) {
 			WARN_Ignored(ctx, "return value", CLASS_unknown, NULL);
-			//knh_Stmt_trimToSize(ctx, stmt, 0);
+			knh_Stmt_trimToSize(ctx, stmt, 0);
 		}
-		else {
-			if(STT_(stmtNN(stmt, 0)) == STT_CALL) {
-				knh_Token_t *tkF = tkNN(stmtNN(stmt, 0), 0);
-				if(DP(ctx->gma)->mtd == (tkF)->mtd) {
-					Stmt_setTAILRECURSION(stmtNN(stmt, 0), 1);
-				}
-			}
-		}
+//		else {
+//			if(STT_(stmtNN(stmt, 0)) == STT_CALL) {
+//				knh_Token_t *tkF = tkNN(stmtNN(stmt, 0), 0);
+//				if(DP(ctx->gma)->mtd == (tkF)->mtd) {
+//					Stmt_setTAILRECURSION(stmtNN(stmt, 0), 1);
+//				}
+//			}
+//		}
 	}
 	return Stmt_typed(ctx, stmt, rtype);
 }

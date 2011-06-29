@@ -1206,7 +1206,7 @@ static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputS
 //		}
 		break;
 	}
-	if(block_indent <= c) {
+	if(ch != EOF && block_indent <= c) {
 		goto L_STARTLINE;
 	}
 	knh_cwb_clear2(cwb, 0);

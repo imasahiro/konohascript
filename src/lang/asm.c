@@ -1240,27 +1240,27 @@ static inline knh_float_t Tn_float(knh_Stmt_t *stmt, size_t n)
 	return ((tk)->num)->n.fvalue;
 }
 
-static knh_type_t Tn_ptype(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_class_t cid, knh_Method_t *mtd)
-{
-	if(!IS_Method(mtd)) {
-		return TYPE_dyn;  // boxing
-	}
-	if(n == 1) { // base
-		if(IS_Tunbox(cid) && cid != (mtd)->cid) {
-			/* Object, Number, dynamic */
-			cid = (mtd)->cid;
-		}
-		DBG_(
-		if(cid != (mtd)->cid) {
-			DBG_P("** WATCH OUT ** mtd_cid=%s, (mtd)->cid=%s", CLASS__(cid), CLASS__((mtd)->cid));
-		});
-		return cid;
-	}
-	else {
-		knh_type_t ptype = knh_ParamArray_getptype(DP(mtd)->mp, n - 2);
-		return knh_type_tocid(ctx, ptype, cid);
-	}
-}
+//static knh_type_t Tn_ptype(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_class_t cid, knh_Method_t *mtd)
+//{
+//	if(!IS_Method(mtd)) {
+//		return TYPE_dyn;  // boxing
+//	}
+//	if(n == 1) { // base
+//		if(IS_Tunbox(cid) && cid != (mtd)->cid) {
+//			/* Object, Number, dynamic */
+//			cid = (mtd)->cid;
+//		}
+//		DBG_(
+//		if(cid != (mtd)->cid) {
+//			DBG_P("** WATCH OUT ** mtd_cid=%s, (mtd)->cid=%s", CLASS__(cid), CLASS__((mtd)->cid));
+//		});
+//		return cid;
+//	}
+//	else {
+//		knh_type_t ptype = knh_ParamArray_getptype(DP(mtd)->mp, n - 2);
+//		return knh_type_tocid(ctx, ptype, cid);
+//	}
+//}
 
 static int CALLPARAMs_asm(CTX ctx, knh_Stmt_t *stmt, size_t s, int local, knh_class_t cid, knh_Method_t *mtd)
 {
@@ -1272,21 +1272,21 @@ static int CALLPARAMs_asm(CTX ctx, knh_Stmt_t *stmt, size_t s, int local, knh_cl
 	for(i = s; i < DP(stmt)->size; i++) {
 		Tn_asm(ctx, stmt, i, local + i + (K_CALLDELTA-1));
 	}
-	// TODO(@imasahiro)
-	//if(Stmt_isTAILRECURSION(stmt) && Gamma_isTailRecursion(ctx->gma)) {
-	//	knh_BasicBlock_t *lbBEGIN = GammaLabel(ctx, 1);
-	//	for(i = s; i < DP(stmt)->size; i++) {
-	//		knh_type_t reqt = Tn_ptype(ctx, stmt, i, cid, mtd);
-	//		if(IS_Tunbox(reqt)) {
-	//			ASM(NMOV, NC_(i-1), NC_(local + i + (K_CALLDELTA-1)));
-	//		}
-	//		else {
-	//			ASM(OMOV, OC_(i-1), OC_(local + i + (K_CALLDELTA-1)));
-	//		}
-	//	}
-	//	ASM_JMP(ctx, lbBEGIN);
-	//	return 0;
-	//}
+//	// TODO(@imasahiro)
+//	if(Stmt_isTAILRECURSION(stmt) && Gamma_isTailRecursion(ctx->gma)) {
+//		knh_BasicBlock_t *lbBEGIN = GammaLabel(ctx, 1);
+//		for(i = s; i < DP(stmt)->size; i++) {
+//			knh_type_t reqt = Tn_type(stmt, i); //Tn_ptype(ctx, stmt, i, cid, mtd);
+//			if(IS_Tunbox(reqt)) {
+//				ASM(NMOV, NC_(i-1), NC_(local + i + (K_CALLDELTA-1)));
+//			}
+//			else {
+//				ASM(OMOV, OC_(i-1), OC_(local + i + (K_CALLDELTA-1)));
+//			}
+//		}
+//		ASM_JMP(ctx, lbBEGIN);
+//		return 0;
+//	}
 	return 1;
 }
 
