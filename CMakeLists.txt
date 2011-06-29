@@ -225,10 +225,10 @@ endif()
 
 
 FIND_FILE(HAS_DOTSVN .svn PATHS "${CMAKE_CURRENT_SOURCE_DIR}/include")
-if(${HAS_DOTSVN})
+if("${HAS_DOTSVN}" MATCHES ".svn")
 	find_package(Subversion)
 	if(Subversion_FOUND)
-		Subversion_WC_INFO(${CMAKE_CURRENT_SOURCE_DIR}/include ER)
+		Subversion_WC_INFO(${CMAKE_CURRENT_SOURCE_DIR} ER)
 		set(SUBVERSION_REVISION ${ER_WC_REVISION})
 		add_definitions(-DK_REVISION=${SUBVERSION_REVISION})
 	endif(Subversion_FOUND)
