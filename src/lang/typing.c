@@ -2526,8 +2526,10 @@ static knh_Token_t* func_typingNULL(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 			return FUNCCALLPARAMs_typing(ctx, stmt, reqt);
 		}
 	}
+
 	knh_class_t mtd_cid = knh_NameSpace_getFuncClass(ctx, K_GMANS, mn);
 	knh_Method_t *mtd = NULL;
+
 	/* 3. static function in namespace */
 	if(mtd_cid != CLASS_unknown) {
 		mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, mn);
@@ -2536,7 +2538,6 @@ static knh_Token_t* func_typingNULL(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 			goto L_CALLPARAMs;
 		}
 	}
-
 	mtd_cid = DP(ctx->gma)->this_cid;
 	mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, mn);
 	if(mtd != NULL) {
@@ -2544,6 +2545,7 @@ static knh_Token_t* func_typingNULL(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		knh_Token_toTYPED(ctx, tkNN(stmt, 1), TT_FVAR, mtd_cid, 0);
 		goto L_CALLPARAMs;
 	}
+
 	if(mtd_cid != O_cid(K_GMASCR)) {
 		mtd_cid = O_cid(K_GMASCR);
 		mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, mn);
@@ -2552,6 +2554,7 @@ static knh_Token_t* func_typingNULL(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 			goto L_CALLPARAMs;
 		}
 	}
+
 	mtd_cid = CLASS_System;
 	mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, mn);
 	DBG_P("********* mtd=%p", mtd);
@@ -2582,7 +2585,6 @@ static knh_Token_t* FUNCCALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		}
 		tkF = tkNN(stmt, 0);
 		TT_(tkF) = TT_NAME;
-		DBG_P("STT_(stmt)=%s, TT_(tkF)=%s", TT__(stmt->stt), TT__(tkF->tt));
 	}
 	TYPING_UntypedExpr(ctx, stmt, 0);
 	knh_type_t type = Tn_type(stmt, 0);

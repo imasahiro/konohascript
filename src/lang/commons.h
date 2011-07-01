@@ -32,14 +32,6 @@ extern "C" {
 #define K_SYSVAL_SCRIPT 8
 #define K_SYSVAL_MAX    9
 
-#define K_FLAG_PF_STDERR      1
-#define K_FLAG_PF_EOL         (1<<1)
-#define K_FLAG_PF_TIME        (1<<2)
-#define K_FLAG_PF_FUNC        (1<<3)
-#define K_FLAG_PF_LINE        (1<<4)
-#define K_FLAG_PF_NAME        (1<<5)
-#define K_FLAG_PF_BOL         (1<<6)
-
 #define stmt_isExpr(stt)   ((STT_LET <= stt && stt <= STT_CALL1) || stt == STT_FUNCTION)
 const char* TT__(knh_term_t tt);
 #define TK__(tk)   TT__((tk)->tt)

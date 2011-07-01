@@ -1732,6 +1732,10 @@ static void _EXPRs(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		tkitr_t ebuf, *eitr = ITR_first(itr, idx, &ebuf, +1);
 		if(ITR_size(eitr) != 0) {
 			if(STT_(stmt) == STT_PRINT) { /* @TEST print a */
+				if(TT_(ITR_tk(eitr)) == TT_DOTS) {
+					Stmt_setBreakPoint(stmt, 1);
+					break;
+				}
 				_PNAME(ctx, stmt, eitr);
 			}
 			_EXPR(ctx, stmt, eitr);

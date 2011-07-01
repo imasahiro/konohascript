@@ -314,26 +314,29 @@ void knh_write_uline(CTX ctx, knh_OutputStream_t *w, knh_uline_t uline)
 {
 	knh_uri_t uri = ULINE_uri(uline);
 	knh_uintptr_t line = ULINE_line(uline);
-	if(uline == 0 || uri == URI_unknown || line == 0) {
-		//knh_write_ascii(ctx, w, "");
-	}
-	else {
+	if(uline != 0 && uri != URI_unknown && line != 0) {
 		knh_write_cline(ctx, w, FILENAME__(uri), line);
 	}
 }
 
-//static const char* knh_format_uline(CTX ctx, char *buf, size_t bufsiz, knh_uline_t uline)
-//{
-//	knh_uri_t uri = ULINE_uri(uline);
-//	knh_uintptr_t line = ULINE_line(uline);
-//	if(uline == 0 || uri == URI_unknown || line == 0) {
-//		buf[0] = 0;
-//	}
-//	else {
-//		snprintf(buf, bufsiz, "(%s:%d) ", knh_sfile(FILENAME__(uri)), (int)line);
-//	}
-//	return (const char*)buf;
-//}
+void knh_write_mline(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn, knh_uline_t uline)
+{
+	knh_uri_t uri = ULINE_uri(uline);
+	knh_uintptr_t line = ULINE_line(uline);
+	if(uline != 0 && uri != URI_unknown && line != 0) {
+		if(mn == MN_) {
+			knh_write_cline(ctx, w, FILENAME__(uri), line);
+		}
+		else {
+			knh_putc(ctx, w, '(');
+			knh_write_mn(ctx, w, mn);
+			knh_putc(ctx, w, ':');
+			knh_write_dfmt(ctx, w, K_INTPTR_FMT, line);
+			knh_putc(ctx, w, ')');
+			knh_putc(ctx, w, ' ');
+		}
+	}
+}
 
 static void readuline(FILE *fp, char *buf, size_t bufsiz)
 {

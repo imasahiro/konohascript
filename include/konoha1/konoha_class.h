@@ -1101,6 +1101,10 @@ typedef struct knh_Token_t {
 #define Stmt_isDYNCALL(s)       Stmt_isMemo1(s)
 #define Stmt_setDYNCALL(s,b)    Stmt_setMemo1(s,b)
 
+/* STT_PRINT */
+#define Stmt_isBreakPoint(s)       Stmt_isMemo1(s)
+#define Stmt_setBreakPoint(s,b)    Stmt_setMemo1(s,b)
+
 /* STT_RETURN */
 #define Stmt_isImplicit(s)       Stmt_isMemo1(s)
 #define Stmt_setImplicit(s,b)    Stmt_setMemo1(s,b)
