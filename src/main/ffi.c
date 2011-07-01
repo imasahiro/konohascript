@@ -624,8 +624,8 @@ static void *knh_generateCallbackFunc64(CTX ctx, void *tmpl, void *dest, knh_Fun
 			/* fall through */
 		case jmp_only: /*case leave_jmp:*/
 			/* jmp *%rax */
-			function[seekidx++] = 0xff;
-			function[seekidx++] = 0xe0;
+			function[seekidx+0] = 0xff;
+			function[seekidx+1] = 0xe0;
 			break;
 		case call_leave_ret:
 			/* callq *%rax */

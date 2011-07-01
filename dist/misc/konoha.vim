@@ -30,8 +30,8 @@ syn keyword kType int Int Integer char short long byte float double Float
 syn keyword kType Bytes String Array Map Set Object Tuple
 syn keyword kType boolean Boolean void dyn var Func
 
-syn keyword kStructure class namespace
-syn keyword kStorage class extends interface this final protected private public
+syn keyword kStructure class namespace function
+syn keyword kStorage extends interface this final protected private public
 
 syn keyword kConstant false null true
 

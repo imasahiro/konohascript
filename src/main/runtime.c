@@ -813,14 +813,14 @@ void konoha_main(konoha_t konoha, int argc, const char **argv)
 {
 	int n = konoha_parseopt(konoha, argc, argv);
 	knh_linkDynamicReadline(konoha.ctx);
+	int i;
+	for (i = 0; konoha_modules[i].init != NULL; ++i) {
+		konoha_modules[i].init(argc, n, argv);
+	}
 	if(argc - n == 0) {
 		konoha_shell(konoha, NULL);
 	}
 	else {
-		int i;
-		for (i = 0; konoha_modules[i].init != NULL; ++i) {
-			konoha_modules[i].init(argc, n, argv);
-		}
 		if(konoha_initload(konoha, argv[n]) == K_CONTINUE && !knh_isCompileOnly(konoha.ctx)) {
 			konoha_runMain(konoha, argc - n, argv + n);
 			if(isInteractiveMode) {

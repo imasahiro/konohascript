@@ -576,7 +576,7 @@ void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap)
 				continue;
 			}
 			index = bindex++;
-			c = knh_vprintf_parseindex(c++, &index);
+			c = knh_vprintf_parseindex(c, &index);
 			//DBG_P("bindex=%d, index=%d", bindex, index);
 			switch(ch) {
 				case 'd': case 'u':

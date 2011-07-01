@@ -268,10 +268,12 @@ static void ASM_UNBOX(CTX ctx, knh_type_t atype, int a)
 
 static void ASM_MOVL(CTX ctx, knh_type_t reqt, int sfpidx, knh_type_t ltype, int local)
 {
-	if(sfpidx < local/*DP(stmt)->espidx*/) {
-		Value *v = ValueStack_get(ctx, local);
-		ValueStack_set(ctx, sfpidx, v);
-	}
+	Value *v = ValueStack_get(ctx, local);
+	if (v) ValueStack_set(ctx, sfpidx, v);
+	//if(sfpidx < local/*DP(stmt)->espidx*/) {
+	//	Value *v = ValueStack_get(ctx, local);
+	//	ValueStack_set(ctx, sfpidx, v);
+	//}
 }
 static int Tn_put(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, int sfpidx)
 {
@@ -816,7 +818,7 @@ static int ASMfop(CTX ctx, knh_methodn_t mn, Value *va, Value *vb, int local)
 }
 static int _OPR_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
-	int local = DP(stmt)->espidx;
+	int local = sfpidx;
 	knh_Method_t *mtd = (tkNN(stmt, 0))->mtd;
 	if (IS_NULL(mtd)) return 0;
 	knh_methodn_t mn = (mtd)->mn;
@@ -1247,8 +1249,8 @@ static int _CALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 		int isStatic = Method_isStatic(mtd);
 		knh_type_t rtype = knh_type_tocid(ctx, knh_ParamArray_rtype(DP(mtd)->mp), cid);
 		if(Method_isFinal(mtd) || isStatic) {
-			if(_FASTCALL(ctx, stmt, reqt, local, SP(stmt)->type, mtd, cid)){
-				ASM_MOVL(ctx, reqt, sfpidx, SP(stmt)->type, local);
+			if(_FASTCALL(ctx, stmt, reqt, local+3, SP(stmt)->type, mtd, cid)){
+				ASM_MOVL(ctx, reqt, sfpidx, SP(stmt)->type, local+3);
 				return 0;
 			}
 		}
@@ -1518,7 +1520,7 @@ static int _LET_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	if(TT_(tkL) == TT_LVAR || TT_(tkL) == TT_FVAR) {
 		int index = Token_index(tkL);
 		Tn_asm(ctx, stmt, 2, SP(tkL)->type, index);
-		if (index == DP(stmt)->espidx)
+		if (index >= DP(stmt)->espidx)
 			FLAG_FOR_LET = true;
 	}
 	else if(IS_Token(tkNN(stmt, 2))) {
@@ -2495,17 +2497,17 @@ static int _PRINT_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt _UNUSED_, int s
 			knh_class_t cid = CLASS_String;
 			int n = Tn_put(ctx, stmt, i, cid, espidx+i);
 			Value *v = ValueStack_get(ctx, n);
-			const char *fname = "llvm_PRINT";
+			const char *fname = "knh_PRINT";
 			ASM_P(ctx, fname, flag | mask, tkNN(stmt, i)->uline, msg, cid, v);
 		}
 		else {
 			knh_class_t cid = Tn_cid(stmt, i);
 			Value *v = ValueStack_get(ctx, espidx+i);
 			const char *fname;
-			if(IS_Tint(cid))        fname = "llvm_PRINTi";
-			else if(IS_Tfloat(cid)) fname = "llvm_PRINTf";
-			else if(IS_Tbool(cid))  fname = "llvm_PRINTb";
-			else                    fname = "llvm_PRINT";
+			if(IS_Tint(cid))        fname = "knh_PRINTi";
+			else if(IS_Tfloat(cid)) fname = "knh_PRINf";
+			else if(IS_Tbool(cid))  fname = "knh_PRINTb";
+			else                    fname = "knh_PRINT";
 			ASM_P(ctx, fname, flag | mask, tkNN(stmt, i)->uline, msg, cid, v);
 			flag=0;
 		}
@@ -3019,7 +3021,7 @@ void knh_llvm_init(int argc, int n, const char **argv)
 void knh_llvm_exit(void)
 {
 	delete llvmasm::ee_global;
-	delete llvmasm::mod_global;
+	//delete llvmasm::mod_global;
 	llvm::llvm_shutdown();
 }
 
