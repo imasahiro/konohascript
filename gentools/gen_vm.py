@@ -603,10 +603,6 @@ def write_exec(f):
 
 #include"../../include/konoha1/konoha_vm.h"
 
-#ifndef LIBNAME
-#define LIBNAME "konoha"
-#endif
-
 #ifdef K_USING_VMCOUNT_
 #define VMCOUNT(op)    ((op)->count)++;
 #else

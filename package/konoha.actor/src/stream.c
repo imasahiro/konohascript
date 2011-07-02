@@ -1,6 +1,5 @@
 #include <konoha1.h>
 
-#define LIBNAME "libc"
 //============================  MSGPACK  =============================//
 #include <msgpack.h>
 

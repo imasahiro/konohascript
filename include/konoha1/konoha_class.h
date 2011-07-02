@@ -973,7 +973,6 @@ typedef struct knh_Context_t {
 
 ///* ------------------------------------------------------------------------ */
 ////## class Monitor Object;
-////## flag Monitor  Throwable        1 - is set * *;
 //
 //typedef struct knh_Monitor_t {
 //	knh_hObject_t h;
@@ -983,6 +982,7 @@ typedef struct knh_Context_t {
 
 /* ------------------------------------------------------------------------ */
 //## class Assurance Object;
+//## flag Assurance  CheckedIn        1 - is set * *;
 
 typedef struct knh_Assurance_t {
 	knh_hObject_t h;

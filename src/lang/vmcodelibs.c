@@ -546,10 +546,6 @@ void knh_opcode_shift(knh_opline_t *c, int shift)
 
 #include"../../include/konoha1/konoha_vm.h"
 
-#ifndef LIBNAME
-#define LIBNAME "konoha"
-#endif
-
 #ifdef K_USING_VMCOUNT_
 #define VMCOUNT(op)    ((op)->count)++;
 #else

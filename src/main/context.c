@@ -476,7 +476,7 @@ static void knh_share_free(CTX ctx, knh_share_t *share)
 	share->Memory256ArenaTBL = NULL;
 #endif
 	if(ctx->stat->usedMemorySize != 0) {
-		knh_logprintf("memory leaking size=%ldbytes", (long)ctx->stat->usedMemorySize);
+		MEM_LOG("memory leaking size=%ldbytes", (long)ctx->stat->usedMemorySize);
 	}
 	knh_bzero(share, sizeof(knh_share_t) + sizeof(knh_stat_t) + sizeof(knh_ServiceSPI_t));
 	free(share);

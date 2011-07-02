@@ -27,14 +27,8 @@
 
 /* ************************************************************************ */
 
-#define LIBNAME   "stdc"
-
 #include"commons.h"
 #include"../../include/konoha1/konoha_code_.h"
-
-#ifndef LIBNAME
-#define LIBNAME "konoha"
-#endif
 
 #ifndef TYPE_BytesIm
 #define CLASS_BytesIm CLASS_Bytes
@@ -2481,6 +2475,7 @@ static void Assurance_checkin(CTX ctx, knh_sfp_t *sfp, knh_RawPtr_t *o)
 	g->stime = (knh_getTimeMilliSecond() / 1000);
 	LOGDATA = {iDATA("id", g->aid), sDATA("case", S_tochar(g->msg))};
 	NOTE_OK("checkin_assurance");
+	Assurance_setCheckedIn(g, 1);
 }
 
 static void Assurance_checkout(CTX ctx, knh_RawPtr_t *o, int isFailed)
@@ -2491,14 +2486,13 @@ static void Assurance_checkout(CTX ctx, knh_RawPtr_t *o, int isFailed)
 	LOGDATA = {iDATA("id", g->aid), sDATA("case", S_tochar(g->msg)), iDATA("elapsed_time(s)", t)};
 	if(isFailed) {
 		NOTE_Failed("assure");
+		knh_logprintf("ac", "FAILED @%s", S_tochar(g->msg));
 	}
 	else {
 		NOTE_OK("assure");
+		knh_logprintf("ac", "PASSED @%s", S_tochar(g->msg));
 	}
-	if(knh_getUFILE() != NULL) {
-		const char *results = (isFailed) ? "FAILED" : "PASSED";
-		fprintf(knh_getUFILE(), "\t%s @%s\n", results, S_tochar(g->msg));
-	}
+	Assurance_setCheckedIn(g, 0);
 }
 
 static knh_ClassDef_t AssuranceDef = {

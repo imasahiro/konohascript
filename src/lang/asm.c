@@ -2558,6 +2558,10 @@ static void _PRINTh(CTX ctx, knh_sfp_t *sfp, knh_OutputStream_t *w, struct klr_P
 			knh_write_mline(ctx, w, mtd->mn, uline);
 #endif
 		}
+		if(FLAG_is(flag, K_FLAG_PF_TIME)) {
+			knh_write_now(ctx, w);
+			knh_putc(ctx, w, ' ');
+		}
 	}
 	else if(FLAG_is(flag, K_FLAG_PF_NAME)) {
 		klr_P_t *opP = (klr_P_t*)(((knh_opline_t*)op) - 1);

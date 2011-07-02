@@ -25,61 +25,11 @@
 	}\
 
 #define KNH_LOG(fmt, ...) \
-		knh_logprintf("[%s:%d] " fmt K_OSLINEFEED, __FUNCTION__, __LINE__, ## __VA_ARGS__);
+		knh_logprintf("DEBUG", "[%s:%d] " fmt K_OSLINEFEED, __FUNCTION__, __LINE__, ## __VA_ARGS__);
 
-#define MEM_LOG(fmt, ...) { \
-		knh_logprintf("MEMORY: " fmt K_OSLINEFEED,  ## __VA_ARGS__);\
+#define MEM_LOG(fmt, ...) if(knh_isVerboseGC()){ \
+		knh_logprintf("MEMORY", fmt K_OSLINEFEED,  ## __VA_ARGS__);\
 	} \
-
-#ifdef OLD
-#define LOG_NULL(isNullable)  ((isNullable) ? LOG_NOTICE : LOG_ERR)
-#define LOG_NONE     (LOG_DEBUG+1)
-#define LOG_MSG      "Message"
-
-#define KNH_SYSLOG(ctx, sfp, p, e, fmt, ...) \
-	ctx->api->trace(ctx, sfp, p, LIBNAME, e, 0, fmt, ## __VA_ARGS__)
-
-#define KNH_SYSLOG_(ctx, sfp, p, ns, e, fmt, ...) \
-	ctx->api->trace(ctx, sfp, p, ns, e, 0, fmt, ## __VA_ARGS__)
-
-#define KNH_THROW(ctx, sfp, p, e, fmt, ...) \
-	ctx->api->trace(ctx, sfp, p, LIBNAME, e, 1, fmt, ## __VA_ARGS__)
-
-#define KNH_TRACE(ctx, sfp, mon, e, fmt, ...) \
-	mon->trace(ctx, sfp, mon, LIBNAME, e, fmt, ## __VA_ARGS__)
-
-#define KNH_PTRACE(ctx, sfp, mon, e, fmt, ...) \
-	mon->trace(ctx, sfp, mon, LIBNAME, e, "!" fmt, ## __VA_ARGS__)
-
-
-#define KNH_PANIC(ctx, fmt, ...) \
-	ctx->api->trace(ctx, NULL, LOG_EMERG, "PANIC", __FUNCTION__, 0, "!(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
-
-#define KNH_WARN(ctx, fmt, ...) \
-	ctx->api->trace(ctx, NULL, LOG_WARNING, "WARN", __FUNCTION__, 0, "!(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
-
-#define KNH_INFO(ctx, fmt, ...) \
-	ctx->api->trace(ctx, NULL, LOG_INFO, "INFO", __FUNCTION__, 0, "*(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
-
-#define KNH_SECINFO(ctx, fmt, ...) \
-	ctx->api->trace(ctx, NULL, LOG_INFO,   "AUDIT", __FUNCTION__, 0, "*(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
-
-#define KNH_MEMINFO(ctx, fmt, ...) \
-	ctx->api->trace(ctx, NULL, LOG_NOTICE, "MEM", __FUNCTION__, 0, "*(%s:%d) " fmt, __FILE__, __LINE__, ## __VA_ARGS__)
-#else
-#define KNH_SYSLOG()
-#define KNH_SYSLOG_()
-#define KNH_TRACE()
-#define KNH_PTRACE()
-
-#define KNH_PANIC()
-//#define KNH_WARN(ctx, fmt, ...)
-#define KNH_WARN()
-#define KNH_INFO()
-#define KNH_SECINFO()
-#define KNH_MEMINFO()
-
-#endif
 
 /* ------------------------------------------------------------------------ */
 /* [DBGMODE] */

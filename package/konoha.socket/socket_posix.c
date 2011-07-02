@@ -45,8 +45,6 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-#define LIBNAME "libc"
-
 typedef struct {
 	knh_hObject_t h;
 	knh_io_t sd;

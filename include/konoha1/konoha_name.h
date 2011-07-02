@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      387
+#define K_REVISION                      390
 #endif
-#define K_BUILDID                       1134
+#define K_BUILDID                       1135
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -642,6 +642,9 @@
 #define FLAG_Context_Interactive ((knh_flag_t)(1<<3))
 #define CTX_isInteractive(o)  (TFLAG_is(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_Interactive))
 #define CTX_setInteractive(o,b) TFLAG_set(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_Interactive,b)
+#define FLAG_Assurance_CheckedIn FLAG_Object_Local1
+#define Assurance_isCheckedIn(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Assurance_CheckedIn))
+#define Assurance_setCheckedIn(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Assurance_CheckedIn,b)
 #define FLAG_Token_BOL ((knh_flag_t)(1<<0))
 #define Token_isBOL(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Token_BOL))
 #define Token_setBOL(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Token_BOL,b)

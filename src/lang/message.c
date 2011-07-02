@@ -110,7 +110,6 @@ static knh_String_t *Gamma_vperror(CTX ctx, int pe, const char *fmt, va_list ap)
 	if(Gamma_isQuiet(ctx->gma) || ctx->gma->uline == 0) {
 		isPRINT = 0;
 	}
-	//DBG_P("/*isPRINT=%d*/ uline=%d", isPRINT, ctx->gma->uline);
 	if(isPRINT == 1) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_write_uline(ctx, cwb->w, ctx->gma->uline);
@@ -119,7 +118,7 @@ static knh_String_t *Gamma_vperror(CTX ctx, int pe, const char *fmt, va_list ap)
 		msg = knh_cwb_newString(ctx, cwb);
 		knh_Array_add(ctx, DP(ctx->gma)->errmsgs, msg);
 		fprintf(stderr, "%s - %s%s\n", TERM_BNOTE(ctx, pe), S_tochar(msg), TERM_ENOTE(ctx, pe));
-		knh_log(S_tochar(msg));
+		knh_logprintf("konoha", S_tochar(msg));
 	}
 	return msg;
 }

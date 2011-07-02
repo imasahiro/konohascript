@@ -1100,28 +1100,34 @@ static void knh_buff_addStartPath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_byte
 	knh_buff_addospath(ctx, ba, pos, 0, path);
 }
 
-knh_status_t konoha_initload(konoha_t konoha, const char *path)
+knh_status_t knh_startScript(CTX ctx, const char *path)
 {
 	knh_status_t status = K_BREAK;
-	KONOHA_CHECK(konoha, K_BREAK);
-	CTX ctx = (CTX)konoha.ctx;
 	KONOHA_BEGIN(ctx);
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	knh_buff_addStartPath(ctx, cwb->ba, cwb->pos, B(path));
-	FILE *fp = fopen(knh_cwb_tochar(ctx, cwb), "r");
-	if(fp != NULL) {
-		knh_NameSpace_t *ns = K_GMANS;
-		knh_InputStream_t *in = new_InputStreamDPI(ctx, (knh_io_t)fp, NULL);
-		knh_uri_t uri = knh_getURI(ctx, knh_cwb_tobytes(cwb));
-		KNH_SETv(ctx, ns->rpath, knh_buff_newRealPath(ctx, cwb->ba, cwb->pos));
+	knh_NameSpace_t *ns = K_GMANS;
+	if(path[0] == '-' && path[1] == 0) {
+		knh_InputStream_t *in = KNH_STDIN;
+		knh_uri_t uri = knh_getURI(ctx, STEXT("stdin"));
 		ULINE_setURI(in->uline, uri);
-		KNH_SETv(ctx, DP(in)->urn, ns->rpath);
 		status = knh_InputStream_load(ctx, in, NULL);
 	}
 	else {
-		fprintf(stderr, "konoha: script not found: %s\n", path);
+		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+		knh_buff_addStartPath(ctx, cwb->ba, cwb->pos, B(path));
+		FILE *fp = fopen(knh_cwb_tochar(ctx, cwb), "r");
+		if(fp != NULL) {
+			knh_InputStream_t *in = new_InputStreamDPI(ctx, (knh_io_t)fp, NULL);
+			knh_uri_t uri = knh_getURI(ctx, knh_cwb_tobytes(cwb));
+			KNH_SETv(ctx, ns->rpath, knh_buff_newRealPath(ctx, cwb->ba, cwb->pos));
+			ULINE_setURI(in->uline, uri);
+			KNH_SETv(ctx, DP(in)->urn, ns->rpath);
+			status = knh_InputStream_load(ctx, in, NULL);
+		}
+		else {
+			fprintf(stderr, "konoha: script not found: %s\n", path);
+		}
+		knh_cwb_close(cwb);
 	}
-	knh_cwb_close(cwb);
 	knh_stack_clear(ctx, ctx->stack);
 	KONOHA_END(ctx);
 	return status;

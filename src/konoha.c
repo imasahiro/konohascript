@@ -34,6 +34,7 @@ extern "C" {
 
 int main(int argc, const char **argv)
 {
+	konoha_ginit(argc, argv);
 	konoha_t konoha = konoha_open(4096);
 	konoha_main(konoha, argc, argv);
 	konoha_close(konoha);

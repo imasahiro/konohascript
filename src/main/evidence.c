@@ -71,7 +71,45 @@ static const char* LOG__(int p)
 	case LOG_INFO:    return "INFO ";
 	case LOG_DEBUG:   return "DEBUG ";
 	}
-	return "DEBUG2 ";
+	return "";
+}
+
+//struct knh_data_t {
+//	knh_short_t year; knh_short_t mon;
+//	knh_short_t day;  knh_short_t hour;
+//	knh_short_t min;  knh_short_t sec;
+//	knh_intptr_t gmtoff;
+//} knh_date_t ;
+
+static const char* knh_format_w3cdtf(char *buf, size_t bufsiz, struct tm *tmp)
+{
+	// 2001-08-02T10:45:23+09:00
+	knh_snprintf(buf, sizeof(buf), "%04d-%02d-%02dT%02d:%02d:%02d%+02d:%02d",
+		(int)(tmp->tm_year + 1900), (int)(tmp->tm_mon + 1), tmp->tm_mday,
+		tmp->tm_hour, tmp->tm_min, tmp->tm_sec, (int)(tmp->tm_gmtoff / (60 * 60)), 0);
+	return (const char*)buf;
+}
+
+void knh_write_now(CTX ctx, knh_OutputStream_t *w)
+{
+	time_t t;
+	char buf[80];
+	struct tm tm;
+	time(&t);
+	localtime_r(&t, &tm);
+	knh_write_ascii(ctx, w, knh_format_w3cdtf(buf, sizeof(buf), &tm));
+}
+
+void knh_fsyslog(FILE *fp, const char *group, const char *msg)
+{
+	if(group != NULL) {
+		fputc('[', fp);
+		fputs(group, fp);
+		fputs("] ", fp);
+	}
+	fputs(msg, fp);
+	fputs(K_OSLINEFEED, fp);
+	fflush(fp);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -92,72 +130,43 @@ static int isVerbosePref   = 0;
 static int isVerboseVM     = 0;
 #endif
 
+const char *logfile        = NULL;
 static FILE *stdlog        = NULL;
 #define K_LOGMSGSIZE       1024
 
-knh_bool_t knh_openlog(CTX ctx)
-{
-	if(stdlog == NULL) {
-		char fbuf[80];
-		knh_bytes_t t = {{"script.name"}, sizeof("script.name")};
-		knh_String_t *sname = knh_getPropertyNULL(ctx, t);
-		const char *fname = (sname == NULL) ? "konoha" : S_tochar(sname);
-		knh_snprintf(fbuf, sizeof(fbuf), "%s-%d.log", fname, getpid());
-		stdlog = fopen(fbuf, "w");
-		if(stdlog != NULL) return 1;
-	}
-	return 0;
-}
+//void knh_log(const char *msg)
+//{
+//	fputs(msg, stdlog);
+//	fputs(K_OSLINEFEED, stdlog);
+//	fflush(stdlog);
+//	if(isVerbose && stdlog != stderr) {
+//		fputs(msg, stdout);
+//		fputs(K_OSLINEFEED, stdout);
+//		fflush(stdout);
+//	}
+//}
+//
+//void knh_synclog(const char *msg)
+//{
+//	fputs(msg, stdlog);
+//	fputs(K_OSLINEFEED, stdlog);
+//	fflush(stdlog);
+//	if(isVerbose && stdlog != stderr) {
+//		fputs(msg, stdout);
+//		fputs(K_OSLINEFEED, stdout);
+//		fflush(stdout);
+//	}
+//}
 
-void knh_log(const char *msg)
+void knh_logprintf(const char *group, const char *fmt, ...)
 {
-	if(stdlog != NULL) {
-		fputs(msg, stdlog);
-		fputs(K_OSLINEFEED, stdlog);
-	}
-	if(isVerbose) {
-		fputs(msg, stdout);
-		fputs(K_OSLINEFEED, stdout);
-		fflush(stdout);
-	}
-}
-
-void knh_synclog(const char *msg)
-{
-	if(stdlog != NULL) {
-		fputs(msg, stdlog);
-		fputs(K_OSLINEFEED, stdlog);
-		fflush(stdlog);
-	}
-	if(isVerbose) {
-		fputs(msg, stdout);
-		fputs(K_OSLINEFEED, stdout);
-		fflush(stdout);
-	}
-}
-
-void knh_logprintf(const char *fmt, ...)
-{
-	va_list ap;
-	va_start(ap , fmt);
-	char buf[K_LOGMSGSIZE];
-	vsnprintf(buf, sizeof(buf), fmt, ap);
-	knh_synclog(buf);
-	va_end(ap);
-}
-
-void knh_vlogprintf(const char *fmt, va_list ap)
-{
-	char buf[K_LOGMSGSIZE];
-	vsnprintf(buf, sizeof(buf), fmt, ap);
-	knh_synclog(buf);
-}
-
-void knh_closelog(void)
-{
-	if(stdlog != NULL) {
-		fclose(stdlog);
-		stdlog = NULL;
+	if(stdlog != stderr) {
+		char buf[K_LOGMSGSIZE];
+		va_list ap;
+		va_start(ap , fmt);
+		vsnprintf(buf, sizeof(buf), fmt, ap);
+		knh_fsyslog(stdlog, group, buf);
+		va_end(ap);
 	}
 }
 
@@ -165,17 +174,11 @@ void pseudo_vsyslog(int p, const char *fmt, va_list ap)
 {
 	char buf[K_LOGMSGSIZE];
 	vsnprintf(buf, sizeof(buf), fmt, ap);
-	if(stdlog != NULL && p < LOG_ERR) {
-		fputs(LOG__(p), stdlog);
-		fputs(buf, stdlog);
-		fputs(K_OSLINEFEED, stdlog);
-		fflush(stdlog);
+	if(isVerbose && p <= LOG_ERR) {
+		knh_fsyslog(stdlog, LOG__(p), buf);
 	}
-	if(isVerbose) {
-		fputs(LOG__(p), stdout);
-		fputs(buf, stdout);
-		fputs(K_OSLINEFEED, stdout);
-		fflush(stdout);
+	if(isVerbose && stdlog != stderr) {
+		knh_fsyslog(stderr, LOG__(p), buf);
 	}
 }
 
@@ -187,9 +190,31 @@ void pseudo_syslog(int p, const char *fmt, ...)
 	va_end(ap);
 }
 
-void opt_l(CTX ctx, int mode, const char *optstr)
+static void opt_l(int m, const char *filename)
 {
-	knh_openlog(ctx);
+	const char *mode = "w";
+	if(filename == NULL) {
+		filename = "konoha.log";
+		mode = "a";
+	}
+	if(filename[0] == '+') {
+		mode = "a";
+		filename++;
+	}
+	stdlog = fopen(filename, mode);
+	if(stdlog == NULL) {
+		fprintf(stderr, "cannot open logfile: %s\n", filename);
+		exit(1);
+	}
+}
+
+void knh_closelog(void)
+{
+	if(stdlog != stderr) {
+		fflush(stdlog);
+		fclose(stdlog);
+		stdlog = stderr;
+	}
 }
 
 /* ------------------------------------------------------------------------ */
@@ -224,10 +249,10 @@ void opt_a(CTX ctx, int mode, const char *optstr)
 
 KNHAPI2(int) knh_isVerbose(void)
 {
-	return isVerboseLang;
+	return isVerbose;
 }
 
-void opt_v(CTX ctx, int mode, const char *optstr)
+static void opt_v(int mode, const char *optstr)
 {
 	if(mode == 0) {
 		isVerboseLang   = 1;
@@ -251,7 +276,7 @@ int knh_isVerboseLang(void)
 	return isVerboseLang;
 }
 
-void opt_verbose_lang(CTX ctx, int mode, const char *optstr)
+void opt_verbose_lang(int mode, const char *optstr)
 {
 	isVerboseLang = 1;
 }
@@ -261,9 +286,86 @@ int knh_isVerboseGC(void)
 	return isVerboseGC;
 }
 
-void opt_verbose_gc(CTX ctx, int mode, const char *optstr)
+static void opt_verbose_gc(int mode, const char *optstr)
 {
 	isVerboseGC = 1;
+}
+
+#define OPT_EMPTY    0
+#define OPT_NUMBER   1
+#define OPT_STRING   2
+#define OPT_(O)      O, (sizeof(O)-1)
+
+typedef struct {
+	const char *name;
+	size_t len;
+	int type;
+	void (*setopt)(int, const char *);
+} knh_optdata_t ;
+
+static knh_optdata_t optdata[] = {
+	{OPT_("-v"), OPT_NUMBER, opt_v},
+	{OPT_("-l"), OPT_STRING, opt_l},
+	{OPT_("--verbose:gc"), OPT_EMPTY, opt_verbose_gc},
+	{OPT_("--verbose:lang"), OPT_EMPTY, opt_verbose_lang},
+	{NULL, 0, OPT_EMPTY, NULL}, // END
+};
+
+static knh_optdata_t *knh_getoptdata(const char *name)
+{
+	knh_optdata_t *d = optdata;
+	while(d->name != NULL) {
+		if(knh_strncmp(d->name, name, d->len) == 0) {
+			return d;
+		}
+		d++;
+	}
+	return NULL;
+}
+
+void konoha_ginit(int argc, const char **argv)
+{
+	int n;
+	stdlog = stderr;
+	for(n = 1; n < argc; n++) {
+		const char *t = argv[n];
+		if(t[0] == '-' && isalnum(t[1])) {
+			knh_optdata_t *d = knh_getoptdata(t);
+			int optnum = 1;              // default
+			const char* optstr = NULL;   // default
+			if(d == NULL) continue;
+			if(d->type == OPT_NUMBER) {
+				t += d->len;
+				if(t[0] == '=') t++;
+				if(isalnum(t[0])) {
+					knh_int_t v = 0;
+					knh_bytes_parseint(B((char*)t), &v);
+					optnum = (int)v;
+				}
+			}
+			else if(d->type == OPT_STRING) {
+				t += d->len;
+				if(t[0] == '=') {
+					optstr = t + 1;
+				}
+				else if(t[0] != 0) {
+					optstr = t;
+				}
+				else if(n + 1 < argc) {
+					n++;
+					optstr = argv[n];
+					if(optstr[0] == '-') {
+						n--; optstr = NULL;
+					}
+					if(knh_bytes_endsWith(B(optstr), STEXT(".k"))) {
+						break;
+					}
+				}
+			}
+			d->setopt(optnum, optstr);
+			continue;
+		}
+	}
 }
 
 /* ------------------------------------------------------------------------ */
@@ -749,10 +851,6 @@ void knh_record(CTX ctx, knh_sfp_t *sfp, int op, int pe, const char *action, con
 }
 
 /* ------------------------------------------------------------------------ */
-
-#ifndef LIBNAME
-#define LIBNAME "konoha"
-#endif
 
 void THROW_Halt(CTX ctx, knh_sfp_t *sfp, const char *msg)
 {
