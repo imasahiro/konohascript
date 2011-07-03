@@ -11,8 +11,8 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-#define TT_UNTYPED TT_EOT
-#define TT_DYN     TT_DYNAMIC
+#define TT_UNTYPED   TT_EOT
+#define TT_DYN       TT_DYNAMIC
 
 #define MN_newLIST   MN_new__LIST
 #define MN_newARRAY  MN_new__ARRAY
@@ -32,9 +32,10 @@ extern "C" {
 #define K_SYSVAL_SCRIPT 8
 #define K_SYSVAL_MAX    9
 
-#define stmt_isExpr(stt)   ((STT_LET <= stt && stt <= STT_CALL1) || stt == STT_FUNCTION)
+#define STT_isExpr(stt)   ((STT_LET <= stt && stt <= STT_CALL1) || stt == STT_FUNCTION)
 const char* TT__(knh_term_t tt);
-#define TK__(tk)   TT__((tk)->tt)
+#define Token__(tk)          TT__((tk)->tt)
+#define Stmt__(stmt)      TT__((stmt)->stt)
 
 #define TK_tobytes(tk)           S_tobytes((tk)->text)
 
@@ -77,10 +78,6 @@ const char* TT__(knh_term_t tt);
 /* ------------------------------------------------------------------------ */
 
 #define TM(o)             ((knh_Token_t*)o)
-#define cSTT_(o)          TT__(STT_(o))
-
-#define token_isNested(tt)  \
-	(tt == TT_BRACE || tt == TT_PARENTHESIS || tt == TT_BRANCET)
 
 #define TT_(tk)        SP(tk)->tt
 #define TT_isSTR(tt)   (tt == TT_STR || tt == TT_TSTR || tt == TT_ESTR)
@@ -104,11 +101,6 @@ const char* TT__(knh_term_t tt);
 #define TEST_IT         2
 
 /* ------------------------------------------------------------------------ */
-
-#define METHOD_getSize  MN_toGETTER(FN_size)
-
-/* ------------------------------------------------------------------------ */
-
 
 #ifdef __cplusplus
 }

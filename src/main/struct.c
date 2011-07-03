@@ -58,9 +58,6 @@ extern "C" {
 #define K_INCLUDE_BUILTINAPI
 #include "dspi.c"
 
-//static TYPEMAP Array_Iterator(CTX ctx, knh_sfp_t *sfp _RIX);
-//static TYPEMAP Iterator_Array(CTX ctx, knh_sfp_t *sfp _RIX);
-
 #define knh_bodymalloc(ctx, C)   (knh_##C##EX_t*)KNH_MALLOC(ctx, sizeof(knh_##C##EX_t))
 #define knh_bodyfree(ctx, p, C)  KNH_FREE(ctx, p, sizeof(knh_##C##EX_t))
 
@@ -667,6 +664,78 @@ static knh_ClassDef_t FloatDef = {
 	"Float", CFLAG_Float, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
+
+/* --------------- */
+/* Date */
+
+static void Date_init(CTX ctx, knh_RawPtr_t *o)
+{
+	knh_Date_t *dt = (knh_Date_t*)o;
+	time_t t;
+	struct tm tm;
+	time(&t);
+	localtime_r(&t, &tm);
+	dt->dt.year  = (knh_short_t)(tm.tm_year + 1900);
+	dt->dt.month = (knh_short_t)(tm.tm_mon + 1);
+	dt->dt.day   = (knh_short_t)(tm.tm_mday);
+	dt->dt.hour  = (knh_short_t)(tm.tm_hour);
+	dt->dt.min   = (knh_short_t)(tm.tm_min);
+	dt->dt.sec   = (knh_short_t)(tm.tm_sec);
+	dt->dt.gmtoff = (knh_short_t)(tm.tm_gmtoff / 60);
+	dt->dt.isdst = (knh_short_t)(tm.tm_isdst);
+}
+
+static int Date_compareTo(knh_RawPtr_t *o, knh_RawPtr_t *o2)
+{
+	knh_Date_t *dt1 = (knh_Date_t*)o;
+	knh_Date_t *dt2 = (knh_Date_t*)o2;
+	knh_intptr_t res = dt1->dt.year - dt2->dt.year;
+	if(res != 0) return res;
+	res = dt1->dt.month - dt2->dt.month;
+	if(res == 0) { // TODO: adjustment of summer time
+		knh_intptr_t n1 = ((((knh_intptr_t)dt1->dt.day * 24) + dt1->dt.hour) * 60) * dt1->dt.min;
+		knh_intptr_t n2 = ((((knh_intptr_t)dt2->dt.day * 24) + dt2->dt.hour) * 60) * dt2->dt.min;
+		n1 = (n1 + dt1->dt.gmtoff) * 60 + dt1->dt.sec;
+		n2 = (n2 + dt2->dt.gmtoff) * 60 + dt2->dt.sec;
+		return (n1 - n2);
+	}
+	return res;
+}
+
+static void Date_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
+{
+	knh_Date_t *dt = (knh_Date_t*)o;
+	char buf[80];
+	knh_snprintf(buf, sizeof(buf), "%04d-%02d-%02dT%02d:%02d:%02d%+02d:%02d",
+		(int)(dt->dt.year), (int)(dt->dt.month), (int)dt->dt.day,
+		(int)(dt->dt.hour), (int)(dt->dt.min), (int)dt->dt.sec, (int)(dt->dt.gmtoff / 60), (int)(dt->dt.gmtoff % 60));
+	knh_write_ascii(ctx, w, buf);
+}
+
+static knh_hashcode_t Date_hashCode(CTX ctx, knh_sfp_t *sfp)
+{
+	knh_Date_t *dt = sfp[0].dt;
+	knh_hashcode_t n1 = ((((knh_hashcode_t)dt->dt.day * 24) + dt->dt.hour) * 60) * dt->dt.min;
+	n1 = (n1 + dt->dt.gmtoff) * 60 + dt->dt.sec;
+	n1 = n1 + ((dt->dt.year) * 365) + dt->dt.month;
+	return n1;
+}
+
+static void Date_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t *packspi)
+{
+//	knh_Date_t *s = (knh_Date_t *)o;
+//	packspi->pack_string(ctx, pkr, S_tochar(s), S_size(s));
+}
+
+static knh_ClassDef_t DateDef = {
+	Date_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, Date_compareTo, Date_p,
+	DEFAULT_getkey, Date_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, Date_wdata, DEFAULT_2, DEFAULT_3,
+	"Date", CFLAG_Date, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
 
 /* --------------- */
 /* String */
@@ -2923,31 +2992,9 @@ typedef struct {
 	knh_fieldn_t fn;
 } knh_FieldNameData0_t ;
 
-/* --------------- */
-
-#ifdef __cplusplus
-}
-#endif
-
-#define K_INCLUDE_BUILTINAPI
 
 #include"operator.c"
-#include"class.c"
-#include"number.c"
-#include"string.c"
-#include"bytes.c"
-#include"array.c"
-#include"map.c"
-
-#include"system.c"
-#include"stream.c"
-#include"query.c"
-
 #include"structdata.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /* ------------------------------------------------------------------------ */
 

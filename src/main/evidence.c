@@ -92,8 +92,8 @@ static const char* knh_format_w3cdtf(char *buf, size_t bufsiz, struct tm *tmp)
 
 void knh_write_now(CTX ctx, knh_OutputStream_t *w)
 {
-	time_t t;
 	char buf[80];
+	time_t t;
 	struct tm tm;
 	time(&t);
 	localtime_r(&t, &tm);
@@ -178,7 +178,7 @@ void pseudo_vsyslog(int p, const char *fmt, va_list ap)
 		knh_fsyslog(stdlog, LOG__(p), buf);
 	}
 	if(isVerbose && stdlog != stderr) {
-		knh_fsyslog(stderr, LOG__(p), buf);
+		knh_fsyslog(stdlog, LOG__(p), buf);
 	}
 }
 

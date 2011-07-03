@@ -2280,7 +2280,7 @@ static void ASM_JUMPLABEL(CTX ctx, knh_Stmt_t *stmt, int delta)
 {
 	size_t s = knh_Array_size(DP(ctx->gma)->lstacks);
 	if(s < 4) {
-		knh_Stmt_toERR(ctx, stmt, ERROR_OnlyTopLevel(ctx, cSTT_(stmt)));
+		knh_Stmt_toERR(ctx, stmt, ERROR_OnlyTopLevel(ctx, Stmt__(stmt)));
 	}
 	else {
 		knh_Token_t *tkL = NULL;

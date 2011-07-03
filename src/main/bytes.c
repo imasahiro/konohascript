@@ -31,8 +31,6 @@
 extern "C" {
 #endif
 
-#ifndef K_INCLUDE_BUILTINAPI
-
 #include"commons.h"
 #include<string.h>
 
@@ -234,41 +232,6 @@ knh_String_t *knh_cwb_newString(CTX ctx, knh_cwb_t *cwb)
 	knh_cwb_close(cwb);
 	return s;
 }
-
-#else/*K_INCLUDE_BUILTINAPI*/
-/* ------------------------------------------------------------------------ */
-/* [Bytes, byte[]] */
-
-/* ------------------------------------------------------------------------ */
-//## method void Bytes.putc(Int char);
-
-static METHOD Bytes_putc(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Bytes_t *o = (knh_Bytes_t*)sfp[0].o;
-	knh_Bytes_putc(ctx, o, Int_to(size_t, sfp[1]));
-	RETURNvoid_();
-}
-
-/* ------------------------------------------------------------------------ */
-//## method void Bytes.write(BytesIm buf, Int offset, Int length);
-//## method void Bytes.add(BytesIm buf, Int offset, Int length);
-
-static METHOD Bytes_write(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Bytes_t *ba = sfp[0].ba;
-	knh_bytes_t t = BA_tobytes(sfp[1].ba);
-	if(sfp[2].ivalue != 0) {
-		size_t n = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), t.len);
-		t = knh_bytes_last(t, n);
-	}
-	if(sfp[3].ivalue != 0) {
-		size_t l = Int_to(size_t, sfp[3]);
-		if(l < t.len) t.len = l;
-	}
-	knh_Bytes_write(ctx, ba, t);
-	RETURNvoid_();
-}
-#endif/*K_INCLUDE_BUILTINAPI*/
 
 /* ------------------------------------------------------------------------ */
 

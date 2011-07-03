@@ -542,7 +542,7 @@ static knh_status_t SCRIPT_eval(CTX ctx, knh_Stmt_t *stmt, int isCompileOnly, kn
 	knh_Script_t *scr = K_GMASCR;
 	knh_class_t cid =  O_cid(ctx->evaled);
 	knh_Method_t *mtd = Script_getEvalMethod(ctx, scr, cid);
-	if(stmt_isExpr(STT_(stmt)) && STT_(stmt) != STT_LET) {
+	if(STT_isExpr(STT_(stmt)) && STT_(stmt) != STT_LET) {
 		stmt = new_Stmt2(ctx, STT_RETURN, stmt, NULL);
 	}
 	if(STT_(stmt) == STT_RETURN) {

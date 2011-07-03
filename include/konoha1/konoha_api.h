@@ -25,7 +25,6 @@ KNHAPI2(knh_bool_t) Method_isAbstract(knh_Method_t *mtd);
 KNHAPI2(void) knh_addTypeMap(CTX ctx, knh_TypeMap_t *trl);
 KNHAPI2(void) knh_TypeMap_exec(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp _RIX);
 KNHAPI2(knh_TypeMap_t*) new_TypeMap(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func);
-KNHAPI2(void) knh_invoke(CTX ctx, knh_Func_t *fo, knh_sfp_t *sfp /*rtnidx*/, int argc);
 KNHAPI2(int) knh_isVerbose(void);
 KNHAPI2(knh_InputStream_t*) new_InputStreamDPI(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dspi);
 KNHAPI2(knh_OutputStream_t*) new_OutputStreamDPI(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dspi);
@@ -114,7 +113,6 @@ typedef struct knh_api2_t {
 	void  (*ResultSet_initColumn)(CTX ctx, knh_ResultSet_t *o, size_t column_size);
 	void  (*TypeMap_exec)(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp _RIX);
 	void  (*addTypeMap)(CTX ctx, knh_TypeMap_t *trl);
-	void  (*invoke)(CTX ctx, knh_Func_t *fo, knh_sfp_t *sfp /*rtnidx*/, int argc);
 	void  (*printf)(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...);
 	void  (*setPropertyText)(CTX ctx, char *key, char *value);
 	void  (*write_BOL)(CTX ctx, knh_OutputStream_t *w);
@@ -127,7 +125,7 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)574766482)
+#define K_API2_CRC32 ((size_t)31221313)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -178,7 +176,6 @@ static const knh_api2_t* getapi2(void) {
 		knh_ResultSet_initColumn,
 		knh_TypeMap_exec,
 		knh_addTypeMap,
-		knh_invoke,
 		knh_printf,
 		knh_setPropertyText,
 		knh_write_BOL,
@@ -241,7 +238,6 @@ static const knh_api2_t* getapi2(void) {
 #define knh_ResultSet_initColumn   ctx->api2->ResultSet_initColumn
 #define knh_TypeMap_exec   ctx->api2->TypeMap_exec
 #define knh_addTypeMap   ctx->api2->addTypeMap
-#define knh_invoke   ctx->api2->invoke
 #define knh_printf   ctx->api2->printf
 #define knh_setPropertyText   ctx->api2->setPropertyText
 #define knh_write_BOL   ctx->api2->write_BOL
@@ -408,10 +404,6 @@ void knh_Iterator_close(CTX ctx, knh_Iterator_t *it);
 knh_Iterator_t* new_ArrayIterator(CTX ctx, knh_Array_t *a);
 knh_bool_t knh_isArrayIterator(knh_Iterator_t *itr);
 knh_Array_t* knh_Iterator_toArray(CTX ctx, knh_Iterator_t *itr);
-int knh_compare_i(knh_Func_t *fo, const void *v1, const void *v2);
-int dummyCallbackCompareInt(const void *v1, const void *v2);
-int knh_compare_f(knh_Func_t *fo, const void *v1, const void *v2);
-int dummyCallbackCompareFloat(const void *v1, const void *v2);
 size_t k_goodsize(size_t ss);
 size_t k_goodsize2(size_t ss, size_t wsize);
 const knh_dim_t *new_dim(CTX ctx, size_t capacity, size_t wsize);
@@ -486,13 +478,6 @@ void knh_Context_free(CTX ctx, knh_context_t* ctxo);
 konoha_t konoha_open(size_t stacksize);
 void knh_reftraceAll(CTX ctx FTRARG);
 void konoha_close(konoha_t konoha);
-knh_bool_t knh_Bytes_addPackagePath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_bytes_t path);
-void knh_Bytes_addScriptPath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_NameSpace_t *ns, knh_bytes_t path);
-const knh_StreamDPI_t *knh_getDefaultStreamDPI(void);
-const knh_StreamDPI_t *knh_getByteStreamDPI(void);
-const knh_StreamDPI_t *knh_getStreamDPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path);
-const knh_QueryDSPI_t *knh_getQueryDSPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path);
-void knh_loadSystemDriver(CTX ctx, knh_NameSpace_t *ns);
 const char* knh_sfile(const char *file);
 void knh_write_now(CTX ctx, knh_OutputStream_t *w);
 void knh_fsyslog(FILE *fp, const char *group, const char *msg);
@@ -578,6 +563,10 @@ knh_uint_t knh_rand(void);
 knh_float_t knh_float_rand(void);
 knh_Int_t* new_Int_(CTX ctx, knh_class_t cid, knh_int_t value);
 knh_Float_t* new_Float_(CTX ctx, knh_class_t cid, knh_float_t value);
+int knh_compare_i(knh_Func_t *fo, const void *v1, const void *v2);
+int dummyCallbackCompareInt(const void *v1, const void *v2);
+int knh_compare_f(knh_Func_t *fo, const void *v1, const void *v2);
+int dummyCallbackCompareFloat(const void *v1, const void *v2);
 METHOD Bytes_getSize(CTX ctx, knh_sfp_t *sfp _RIX);
 METHOD Tuple_getSize(CTX ctx, knh_sfp_t *sfp _RIX);
 METHOD Map_getSize(CTX ctx, knh_sfp_t *sfp _RIX);

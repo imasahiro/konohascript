@@ -26,14 +26,6 @@
 
 /* ************************************************************************ */
 
-#define USE_STEXT             1
-#define USE_bytes_equals      1
-#define USE_bytes_endsWith    1
-#define USE_bytes_index       1
-#define USE_bytes_first       1
-#define USE_bytes_last        1
-#define USE_bytes_parseint    1
-#define USE_bytes_parsefloat  1
 #define USE_cwb_open          1
 #define USE_cwb_size          1
 
@@ -3494,7 +3486,7 @@ static knh_Token_t* EXPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		CASE_EXPR(TRI, stmt, reqt);
 		CASE_EXPR(FUNCTION, stmt, reqt);
 	default:
-		return ERROR_Unsupported(ctx, "expression", CLASS_unknown, cSTT_((stmt)));
+		return ERROR_Unsupported(ctx, "expression", CLASS_unknown, Stmt__((stmt)));
 	}
 }
 
@@ -4584,7 +4576,7 @@ static knh_Token_t *Stmt_typing(CTX ctx, knh_Stmt_t *stmt, int needsReturn)
 {
 	knh_Token_t *tkRES = NULL;
 	if(Stmt_isTyped(stmt)) return TM(stmt);
-	if(stmt_isExpr(STT_(stmt))) {
+	if(STT_isExpr(STT_(stmt))) {
 		tkRES = EXPR_typing(ctx, stmt, TYPE_void);
 		if(Gamma_hasREGISTER(ctx->gma) && IS_Stmt(tkRES)) {
 			tkRES = Gamma_findRegExpr(ctx, (knh_Stmt_t*)tkRES);

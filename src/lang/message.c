@@ -244,7 +244,7 @@ knh_Token_t* ERROR_text(CTX ctx, const char *keyword K_TRACEARGV)
 knh_Token_t* ERROR_Token(CTX ctx, knh_Token_t *tk K_TRACEARGV)
 {
 	if(TT_(tk) != TT_ERR) {
-		tk = ERROR_text(ctx, IS_String((tk)->text) ? S_tochar((tk)->text) : TK__(tk) K_TRACEDATA);
+		tk = ERROR_text(ctx, IS_String((tk)->text) ? S_tochar((tk)->text) : Token__(tk) K_TRACEDATA);
 	}
 	return tk;
 }

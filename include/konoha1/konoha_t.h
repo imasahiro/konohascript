@@ -512,6 +512,7 @@ typedef void *(*knh_Fthread)(void *);
 		struct knh_Float_t  *f; \
 		struct knh_Class_t  *c; \
 		struct knh_String_t *s; \
+		struct knh_Date_t *dt;\
 		struct knh_Bytes_t  *ba; \
 		struct knh_Regex_t  *re; \
 		struct knh_Range_t  *range; \

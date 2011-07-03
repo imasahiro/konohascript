@@ -135,6 +135,21 @@ typedef struct knh_Float_t {
 } knh_Float_t;
 
 /* ------------------------------------------------------------------------ */
+//## @Immutable class Date Object;
+
+typedef struct knh_date_t {
+	knh_short_t year; knh_short_t month;
+	knh_short_t day;  knh_short_t hour;
+	knh_short_t min;  knh_short_t sec;
+	knh_short_t gmtoff; knh_short_t isdst; /* summer time */
+} knh_date_t ;
+
+typedef struct knh_Date_t {
+	knh_hObject_t h;
+	knh_date_t dt;
+} knh_Date_t;
+
+/* ------------------------------------------------------------------------ */
 //## @Immutable class String Object;
 //## flag String TextSgm 1 - is set  *   *;
 //## flag String ASCII   2 - is set  is  *;
