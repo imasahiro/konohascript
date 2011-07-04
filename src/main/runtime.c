@@ -293,6 +293,7 @@ static knh_optdata_t optdata[] = {
 	{OPT_("--verbose:lang"), OPT_EMPTY, opt_dummy},
 //	{"--utest", OPT_EMPTY, opt_utest},
 	{OPT_("--help"), OPT_EMPTY, opt_help},
+	{OPT_("--enforce-security"), OPT_STRING, opt_dummy},
 	{OPT_("-V"), OPT_NUMBER, opt_version},
 	{OPT_("--version"), OPT_NUMBER, opt_version},
 	{NULL, 0, OPT_EMPTY, NULL}, // END
@@ -336,7 +337,7 @@ static int knh_parseopt(CTX ctx, int argc, const char **argv)
 	int n;
 	for(n = 1; n < argc; n++) {
 		const char *t = argv[n];
-		if(t[0] == '-' && isalnum(t[1])) {
+		if(t[0] == '-' && (isalnum(t[1]) || t[1] == '-')) {
 			knh_optdata_t *d = knh_getoptdata(t);
 			int optnum = 1;              // default
 			const char* optstr = NULL;   // default

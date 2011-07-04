@@ -132,31 +132,7 @@ static int isVerboseVM     = 0;
 
 const char *logfile        = NULL;
 static FILE *stdlog        = NULL;
-#define K_LOGMSGSIZE       1024
-
-//void knh_log(const char *msg)
-//{
-//	fputs(msg, stdlog);
-//	fputs(K_OSLINEFEED, stdlog);
-//	fflush(stdlog);
-//	if(isVerbose && stdlog != stderr) {
-//		fputs(msg, stdout);
-//		fputs(K_OSLINEFEED, stdout);
-//		fflush(stdout);
-//	}
-//}
-//
-//void knh_synclog(const char *msg)
-//{
-//	fputs(msg, stdlog);
-//	fputs(K_OSLINEFEED, stdlog);
-//	fflush(stdlog);
-//	if(isVerbose && stdlog != stderr) {
-//		fputs(msg, stdout);
-//		fputs(K_OSLINEFEED, stdout);
-//		fflush(stdout);
-//	}
-//}
+#define K_LOGMSGSIZE         4096
 
 void knh_logprintf(const char *group, const char *fmt, ...)
 {
@@ -291,6 +267,22 @@ static void opt_verbose_gc(int mode, const char *optstr)
 	isVerboseGC = 1;
 }
 
+static int enforce_security = 0;
+
+void knh_enforceSecurity(CTX ctx, knh_Method_t *mtd)
+{
+	Method_setRestricted(mtd, enforce_security);
+}
+
+static void opt_enforce_security(int mode, const char *optstr)
+{
+	if(optstr != NULL) {
+		fprintf(stdout, "security policy is unsupported\n");
+		exit(0);
+	}
+	enforce_security = 1;
+}
+
 #define OPT_EMPTY    0
 #define OPT_NUMBER   1
 #define OPT_STRING   2
@@ -306,6 +298,7 @@ typedef struct {
 static knh_optdata_t optdata[] = {
 	{OPT_("-v"), OPT_NUMBER, opt_v},
 	{OPT_("-l"), OPT_STRING, opt_l},
+	{OPT_("--enforce-security"), OPT_STRING, opt_enforce_security},
 	{OPT_("--verbose:gc"), OPT_EMPTY, opt_verbose_gc},
 	{OPT_("--verbose:lang"), OPT_EMPTY, opt_verbose_lang},
 	{NULL, 0, OPT_EMPTY, NULL}, // END
@@ -329,7 +322,7 @@ void konoha_ginit(int argc, const char **argv)
 	stdlog = stderr;
 	for(n = 1; n < argc; n++) {
 		const char *t = argv[n];
-		if(t[0] == '-' && isalnum(t[1])) {
+		if(t[0] == '-' && (isalnum(t[1]) || t[1] == '-')) {
 			knh_optdata_t *d = knh_getoptdata(t);
 			int optnum = 1;              // default
 			const char* optstr = NULL;   // default

@@ -1049,6 +1049,7 @@ void knh_ClassTBL_addMethod(CTX ctx, const knh_ClassTBL_t *t, knh_Method_t *mtd,
 	if(FLAG_is(t->cflag, FLAG_Class_Immutable)) {
 		DP(mtd)->flag = DP(mtd)->flag | FLAG_Method_Immutable;
 	}
+	knh_enforceSecurity(ctx, mtd);
 	knh_Array_add(ctx, a, mtd);
 	Cache_setMethod(ctx->mtdcache, mtd->cid, mtd->mn, mtd);
 }

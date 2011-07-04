@@ -489,6 +489,7 @@ void opt_a(CTX ctx, int mode, const char *optstr);
 int knh_isVerboseLang(void);
 void opt_verbose_lang(int mode, const char *optstr);
 int knh_isVerboseGC(void);
+void knh_enforceSecurity(CTX ctx, knh_Method_t *mtd);
 void konoha_ginit(int argc, const char **argv);
 void dbg_p(const char *file, const char *func, int line, const char *fmt, ...);
 void todo_p(const char *file, const char *func, int line, const char *fmt, ...);
