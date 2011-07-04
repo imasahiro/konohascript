@@ -914,6 +914,9 @@ static knh_Token_t *TNAME_typing(CTX ctx, knh_Token_t *tkN, knh_type_t reqt, knh
 			}
 		}
 		if(mtd != NULL) {
+			if(Method_isRestricted(mtd)) {
+				return ERROR_MethodIsNot(ctx, mtd, "allowed");
+			}
 			this_cid = class_FuncType(ctx, this_cid, mtd);
 			return Token_setCONST(ctx, tkN, new_StaticFunc(ctx, this_cid, mtd));
 		}
@@ -2237,6 +2240,9 @@ static knh_Token_t* CALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 	mtd_cid = Tn_cid(stmt, 1);
 	mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, mn);
 	if(mtd != NULL) {
+		if(Method_isRestricted(mtd)) {
+			return ERROR_MethodIsNot(ctx, mtd, "allowed");
+		}
 		if(IS_Tunbox(mtd_cid) && !IS_Tunbox(mtd->cid)) {
 			Stmt_boxAll(ctx, stmt, 1, 2, mtd->cid);
 		}
@@ -2253,21 +2259,6 @@ static knh_Token_t* CALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 			TT_(tkM) = TT_UNAME; tkM->flag0 = 0;
 			return ERROR_Undefined(ctx, "const", mtd_cid, tkM);
 		}
-//		if(Stmt_isCLASSCONSTDEF(stmt)) {
-//			knh_Object_t *v = knh_getClassConstNULL(ctx, mtd_cid, S_tobytes((tkM)->text));
-//			if(v != NULL) {
-//				WARN_Ignored(ctx, "redefinition", mtd_cid, S_tochar((tkM)->text));
-//				return knh_Stmt_done(ctx, stmt);
-//			}
-//			Token_setCONST(ctx, tkO, new_Type(ctx, mtd_cid));
-//			Token_setCONST(ctx, tkM, tkM->data);
-//			Stmt_insert(ctx, stmt, 0, new_TokenMN(ctx, MN_setConst));
-//			knh_Stmt_swap(ctx, stmt, 1, 2);
-//			mtd = knh_NameSpace_getMethodNULL(ctx, CLASS_Class, MN_setConst);
-//			Token_setMethod(ctx, tkNN(stmt, 0), MN_setConst, mtd);
-//			Stmt_typed(ctx, stmt, TYPE_void);
-//			return CALL_toCONST(ctx, stmt, mtd);
-//		}
 		Token_setMethod(ctx, tkM, mn, mtd);
 		if(C_bcid(mtd_cid) == CLASS_Tuple && (mn == MN_get || mn == MN_set)) { // t[0] = 1;
 			knh_ParamArray_t *pa = ClassTBL(mtd_cid)->cparam;
@@ -2551,6 +2542,9 @@ static knh_Token_t* func_typingNULL(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 	mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, mn);
 	DBG_P("********* mtd=%p", mtd);
 	if(mtd != NULL) {
+		if(Method_isRestricted(mtd)) {
+			return ERROR_MethodIsNot(ctx, mtd, "allowed");
+		}
 		knh_Token_toTYPED(ctx, tkNN(stmt, 1), TT_NULL/*DEFVAL*/, mtd_cid, mtd_cid);
 		goto L_CALLPARAMs;
 	}
@@ -2622,6 +2616,9 @@ static knh_Token_t* NEWPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t new_
 	knh_Token_t *tkRES = (knh_Token_t*)stmt;
 	if(mtd == NULL || ClassTBL((mtd)->cid)->bcid != ClassTBL(new_cid)->bcid) {
 		return ERROR_Undefined(ctx, _("constructor"), new_cid, tkMTD);
+	}
+	if(Method_isRestricted(mtd)) {
+		return ERROR_MethodIsNot(ctx, mtd, "allowed");
 	}
 	Token_setMethod(ctx, tkMTD, mn, mtd);
 	knh_Token_toCID(ctx, tkC, new_cid);
@@ -3003,6 +3000,9 @@ static knh_Token_t* OPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 			Token_setMethod(ctx, tkOP, mn, mtd);
 			return Stmt_typed(ctx, stmt, TYPE_dyn);
 		}
+		if(Method_isRestricted(mtd)) {
+			return ERROR_MethodIsNot(ctx, mtd, "allowed");
+		}
 		Token_setMethod(ctx, tkOP, mn, mtd);
 		TYPING_TypedExpr(ctx, stmt, 1, mtd_cid);
 		return CALLPARAMs_typing(ctx, stmt, reqt, mtd_cid, mtd);
@@ -3052,6 +3052,9 @@ static void Token_setTypeMap(CTX ctx, knh_Token_t *tk, knh_class_t tcid, knh_Typ
 static knh_Token_t *new_TermDYNCAST(CTX ctx, knh_class_t reqt, knh_methodn_t mn, knh_Token_t *tkO)
 {
 	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, CLASS_Object, mn);
+	if(Method_isRestricted(mtd)) {
+		return ERROR_MethodIsNot(ctx, mtd, "allowed");
+	}
 	DBG_ASSERT(mtd != NULL);
 	knh_Token_t *tkMN = new_TokenTYPED(ctx, TT_MN,  TYPE_var, mn);
 	knh_Token_t *tkC = new_TokenTYPED(ctx, TT_CID, TYPE_Class, CLASS_t(reqt));
@@ -3835,6 +3838,7 @@ static knh_flag_t METHOD_flag(CTX ctx, knh_Stmt_t *o, knh_class_t cid)
 		ADD_FLAG(flag, "Immutable", FLAG_Method_Static);
 		ADD_FLAG(flag, "Throwable", FLAG_Method_Throwable);
 		ADD_FLAG(flag, "Iterative", FLAG_Method_Iterative);
+		ADD_FLAG(flag, "Restricted", FLAG_Method_Restricted);
 		if(class_isSingleton(cid)) flag |= FLAG_Method_Static;
 		if(class_isImmutable(cid)) flag |= FLAG_Method_Immutable;
 //		if(class_isDebug(cid)) flag |= FLAG_Method_Debug;

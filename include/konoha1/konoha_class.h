@@ -474,14 +474,13 @@ typedef struct {
 //## flag Method Debug           2 DP(%s)->flag is set * *;
 //## flag Method Const           3 DP(%s)->flag is * * *;
 //## flag Method Static          4 DP(%s)->flag is * * *;
-//## flag Method ObjectCode0      5 DP(%s)->flag is set * *;
-//## flag Method Hidden          6 DP(%s)->flag is set * *;
-//## flag Method Dynamic         7 DP(%s)->flag is set * *;
-//## flag Method Immutable       8 DP(%s)->flag is set * *;
-//## flag Method Iterative       9 DP(%s)->flag is set * *;
-//## flag Method Throwable      10 DP(%s)->flag is set * *;
-//## flag Method Message        11 DP(%s)->flag is set * *;
-//## flag Method Controlled     12 DP(%s)->flag is set * *;
+//## flag Method Hidden          5 DP(%s)->flag is set * *;
+//## flag Method Dynamic         6 DP(%s)->flag is set * *;
+//## flag Method Immutable       7 DP(%s)->flag is set * *;
+//## flag Method Iterative       8 DP(%s)->flag is set * *;
+//## flag Method Throwable       9 DP(%s)->flag is set * *;
+//## flag Method Message        10 DP(%s)->flag is set * *;
+//## flag Method Restricted     11 DP(%s)->flag is set * *;
 
 typedef struct {
 	knh_flag_t     flag;  knh_ushort_t   delta;

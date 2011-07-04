@@ -3797,7 +3797,7 @@ static METHOD System_getTime(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## method void System.exit(Int status);
+//## @Restricted method void System.exit(Int status);
 
 static METHOD System_exit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -3807,32 +3807,32 @@ static METHOD System_exit(CTX ctx, knh_sfp_t *sfp _RIX)
 	exit(status);
 }
 
-/* ------------------------------------------------------------------------ */
-//## @Static method InputStream Context.setIn(InputStream? in);
-
-static METHOD CTX_setIn(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	KNH_SETv(ctx, ((knh_context_t*)ctx)->in, sfp[1].o);
-	RETURN_(sfp[1].o);
-}
-
-/* ------------------------------------------------------------------------ */
-//## @Static method OutputStream Context.setOut(OutputStream? out);
-
-static METHOD CTX_setOut(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	KNH_SETv(ctx, ((knh_context_t*)ctx)->out, sfp[1].o);
-	RETURN_(sfp[1].o);
-}
-
-/* ------------------------------------------------------------------------ */
-//## @Static method OutputStream Context.setErr(OutputStream? out);
-
-static METHOD CTX_setErr(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	KNH_SETv(ctx, ((knh_context_t*)ctx)->err, sfp[1].o);
-	RETURN_(sfp[1].o);
-}
+///* ------------------------------------------------------------------------ */
+////## @Static method InputStream Context.setIn(InputStream? in);
+//
+//static METHOD CTX_setIn(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	KNH_SETv(ctx, ((knh_context_t*)ctx)->in, sfp[1].o);
+//	RETURN_(sfp[1].o);
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## @Static method OutputStream Context.setOut(OutputStream? out);
+//
+//static METHOD CTX_setOut(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	KNH_SETv(ctx, ((knh_context_t*)ctx)->out, sfp[1].o);
+//	RETURN_(sfp[1].o);
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## @Static method OutputStream Context.setErr(OutputStream? out);
+//
+//static METHOD CTX_setErr(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	KNH_SETv(ctx, ((knh_context_t*)ctx)->err, sfp[1].o);
+//	RETURN_(sfp[1].o);
+//}
 
 /* ------------------------------------------------------------------------ */
 //## method Boolean Exception.opOF(String event);
@@ -3846,7 +3846,7 @@ static METHOD Exception_opOF(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Static @Audit method String System.exec(String cmd);
+//## @Static @Restricted method String System.exec(String cmd);
 
 static METHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -3883,7 +3883,7 @@ static METHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## method Tvar System.eval(String cmd, Script scr, NameSpace _, Class _, Exception _);
+//## @Restricted method Tvar System.eval(String cmd, Script _, NameSpace _, Class _);
 
 static METHOD System_eval(CTX ctx, knh_sfp_t *sfp _RIX)
 {
