@@ -1,0 +1,16 @@
+2010-02-03 Yutaro Hiraoka <utrhira@users.sourceforge.jp>
+    * libxml2.k src/xml.{c,k}     add Xml.dumpEnc
+
+2009-10-17 Masahiro Ide <imasahiro@users.sourceforge.jp>
+    * src/*.{c,k}       fix glue API for konoha-0.7b
+
+2009-06-26 Masahiro Ide <imasahiro@users.sourceforge.jp>
+    * src/*.{c,k}       rename *.{c,k} to src/*.{c,k}
+
+2009-06-14 Masahiro Ide <imasahiro@users.sourceforge.jp>
+    * libxml2.{c,k}     update libxml2.
+    * sample/xmlreader_2.k     make sample. xmlreader_2.k
+
+2009-06-02 Masahiro Ide <imasahiro@users.sourceforge.jp>
+    * libxml2.{c,k}     make libxml2 package.
+
