@@ -128,20 +128,15 @@ knh_index_t knh_bytes_indexOf(knh_bytes_t base, knh_bytes_t sub)
 
 int knh_bytes_strcmp(knh_bytes_t v1, knh_bytes_t v2)
 {
-	int res1;
-	if(v1.len < v2.len) {
-		int res = knh_strncmp(v1.text, v2.text, v1.len);
-		res1 = (res == 0) ? -1 : res;
-	}
-	else if(v1.len > v2.len) {
-		int res = knh_strncmp(v1.text, v2.text, v2.len);
-		res1 = (res == 0) ? 1 : res;
-	}
-	else {
-		res1 = knh_strncmp(v1.text, v2.text, v1.len);
-	}
+	int len, res1, res;
+	if (v1.len == v2.len)     { len = v1.len; res1 =  0;}
+	else if (v1.len < v2.len) { len = v1.len; res1 = -1;}
+	else                      { len = v2.len; res1 =  1;}
+	res = knh_strncmp(v1.text, v2.text, len);
+	res1 = (res == 0) ? res1 : res;
 	return res1;
 }
+
 
 /* ------------------------------------------------------------------------ */
 /* These utf8 functions were originally written by Shinpei Nakata */

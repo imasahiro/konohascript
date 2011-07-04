@@ -816,9 +816,9 @@ void konoha_main(konoha_t konoha, int argc, const char **argv)
 				konoha_shell(ctx, NULL);
 			}
 		}
-		for (i = 0; konoha_modules[i].exit != NULL; ++i) {
-			konoha_modules[i].exit();
-		}
+	}
+	for (i = 0; konoha_modules[i].exit != NULL; ++i) {
+		konoha_modules[i].exit();
 	}
 }
 

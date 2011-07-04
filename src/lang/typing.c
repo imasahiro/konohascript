@@ -182,7 +182,7 @@ knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh
 {
 	knh_flag_t flagorig = DP(ctx->gma)->flag;
 	knh_Token_t *tk = tkNN(stmt, n), *tkRES = NULL;
-	knh_type_t vart;
+	knh_type_t vart = TYPE_void;
 	DBG_ASSERT(STT_(stmt) != STT_ERR);
 	if(FLAG_is(opflag, _NOWARN)) {
 		DBG_P("@@ NOWARN stt=%s n=%d, reqt=%s, vart=%s", TT__(SP(stmt)->stt), (int)n, TYPE__(reqt), TYPE__(vart));

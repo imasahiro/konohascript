@@ -8,7 +8,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [RCinc] */
 
-static inline void RCinc(CTX ctx, Object *o)
+static inline void RCinc(CTX ctx CC_UNUSED, Object *o)
 {
 	knh_Object_RCinc(o);
 }

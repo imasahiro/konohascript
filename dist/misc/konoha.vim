@@ -27,7 +27,7 @@ syn match  kOperatorError display +::+
 syn match  kLabel         display +^\s*\I\i*\s*:\([^:]\)\@=+
 
 syn keyword kType int Int Integer char short long byte float double Float
-syn keyword kType Bytes String Array Map Set Object Tuple
+syn keyword kType Bytes String Array Map Set Object Tuple Regex
 syn keyword kType boolean Boolean void dyn var Func
 
 syn keyword kStructure class namespace function
