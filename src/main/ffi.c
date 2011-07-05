@@ -767,6 +767,8 @@ static knh_Fmethod knh_makeFmethod(CTX ctx, void *func, int argc, knh_ffiparam_t
 }
 
 const char* TT__(knh_term_t tt);
+/* ------------------------------------------------------------------------ */
+
 void Method_linkFFI(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmt)
 {
 	int argc = 0;

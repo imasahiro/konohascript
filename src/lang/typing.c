@@ -1099,7 +1099,7 @@ static knh_class_t knh_Token_tagcNUM(CTX ctx, knh_Token_t *tk, knh_class_t reqc,
 static knh_class_t bytes_guessNUMcid(CTX ctx, knh_bytes_t t)
 {
 	size_t i;
-	if(t.utext[0] == 0 && (t.utext[1] == 'x' || t.utext[1]=='b')) {
+	if(t.utext[0] == '0' && (t.utext[1] == 'x' || t.utext[1]=='b')) {
 		return CLASS_Int;
 	}
 	for(i = 1; i < t.len; i++) {
