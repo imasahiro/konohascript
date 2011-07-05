@@ -29,6 +29,7 @@
 
 #include"commons.h"
 #include"../../include/konoha1/konoha_code_.h"
+#include"../../include/konoha1/konohalang.h"
 
 #if defined(K_USING_POSIX_)
 #include<time.h>

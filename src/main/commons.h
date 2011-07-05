@@ -29,4 +29,5 @@
 #define COMMONS_H_
 #define K_INTERNAL  1
 #include"../../include/konoha1.h"
+#include"../../include/konoha1/inlinelibs.h"
 #endif /*COMMONS_H_*/

@@ -28,6 +28,15 @@
 /* ************************************************************************ */
 
 #include"commons.h"
+#include"../../include/konoha1/konohalang.h"
+/* copied from "../lang/commons.h" */
+#define TT_(tk)          SP(tk)->tt
+#define STT_(stmt)       SP(stmt)->stt
+#define tkNN(stmt, n)    (stmt)->tokens[(n)]
+#define stmtNN(stmt, n)  (stmt)->stmts[(n)]
+
+/* copied from "../lang/typing.c" */
+#define Token_fn(ctx, tk) FN_UNMASK(Token_fnq(ctx, tk))
 
 /* ************************************************************************ */
 
@@ -45,6 +54,12 @@ extern "C" {
  * Contributors
  *  Shinpei Nakata <shinpei.nakata(at)gmail.com>
  */
+
+typedef struct {
+	knh_type_t type;
+	knh_short_t sfpidx;
+	void *conv_func;
+} knh_ffiparam_t;
 
 /*
 static void dumpBinary(unsigned char* ptr, size_t size);
@@ -668,8 +683,76 @@ static void dumpBinary(unsigned char *ptr, size_t size)
 }
 */
 
+static void* knh_lookupLibraryFunc(CTX ctx, knh_bytes_t libfunc)
+{
+	void *cfunc = NULL;
+//	knh_index_t loc = knh_bytes_index(libfunc, ':');
+//	if(loc != -1) {
+//		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//		knh_bytes_t libname = knh_bytes_first(libfunc, loc);
+//		knh_bytes_t funcname = knh_bytes_last(libfunc, loc+1);
+//		knh_Bytes_write(ctx, cwb->ba, libname);
+//		void *p = knh_path_dlopen(ctx, LOG_DEBUG, cwb);
+//		if(p != NULL) {
+//			cfunc = knh_dlsym(ctx, LOG_DEBUG, p, funcname.text);
+//		}
+//		knh_cwb_close(cwb);
+//	}
+	fprintf(stderr, "Hey!, Shinpei, If you want to use this, email me!\n");
+	return cfunc;
+}
 
-knh_Fmethod knh_makeFmethod(CTX ctx, void *func, int argc, knh_ffiparam_t *argv)
+static void* knh_fficonv(CTX ctx, knh_type_t type, knh_bytes_t t)
+{
+	return NULL;
+}
+
+static void set_ffireturn(CTX ctx, knh_ffiparam_t *p, knh_Method_t *mtd, knh_Token_t *tkF)
+{
+	p->type = 	knh_ParamArray_rtype(DP(mtd)->mp);
+	p->sfpidx = -1;
+	if(tkF != NULL) {
+		p->conv_func = knh_fficonv(ctx, p->type, S_tobytes(tkF->text));
+	}
+}
+
+static knh_bool_t set_ffiparam(CTX ctx, knh_ffiparam_t *p, knh_Method_t *mtd, knh_Token_t *tkN)
+{
+	knh_Token_t *tkF = NULL;
+	if(TT_(tkN) == STT_FUNCCALL) {
+		knh_Stmt_t *stmtF = (knh_Stmt_t*)tkN;
+		tkN = tkNN(stmtF, 2);
+		tkF = tkNN(stmtF, 0);
+	}
+	if(TT_(tkN) == TT_NAME) {
+		knh_fieldn_t fn = Token_fn(ctx, tkN);
+		if(fn == FN_this) {
+			p->sfpidx = 0;
+			p->type = mtd->cid;
+			if(tkF != NULL) {
+				p->conv_func = knh_fficonv(ctx, p->type, S_tobytes(tkF->text));
+			}
+		}
+		else {
+			size_t i;
+			knh_ParamArray_t *pa = DP(mtd)->mp;
+			for(i = 0; i < pa->psize; i++) {
+				knh_param_t *mp = knh_ParamArray_get(pa, i);
+				if(mp->fn == fn) {
+					p->sfpidx = 1 + i;
+					p->type = mp->type;
+					if(tkF != NULL) {
+						p->conv_func = knh_fficonv(ctx, p->type, S_tobytes(tkF->text));
+					}
+					return 1;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+static knh_Fmethod knh_makeFmethod(CTX ctx, void *func, int argc, knh_ffiparam_t *argv)
 {
 #ifdef K_USING_FFIDSL
 //	void *f = knh_generateWrapper(ctx, (void*)func, argc, argv);
@@ -681,6 +764,54 @@ knh_Fmethod knh_makeFmethod(CTX ctx, void *func, int argc, knh_ffiparam_t *argv)
 	}
 #endif
 	return NULL; /* if FAILED */
+}
+
+const char* TT__(knh_term_t tt);
+void Method_linkFFI(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmt)
+{
+	int argc = 0;
+	knh_ffiparam_t params[16] = {};
+	knh_Token_t *tkF = NULL;
+	if(STT_(stmt) != STT_FUNCCALL) goto L_ERROR;
+	tkF = tkNN(stmt, 0);
+	DBG_P("TT=%s, '%s'", TT__(tkF->tt), S_tochar(tkF->text));
+	if(TT_(tkF) != TT_URN) {
+		set_ffireturn(ctx, params, mtd, tkF);
+		if(DP(stmt)->size != 3) {
+			goto L_ERROR;
+		}
+		argc = 1;
+		stmt = stmtNN(stmt, 2);
+		tkF = tkNN(stmt, 0);
+	}
+	if(TT_(tkF) == TT_URN) {
+		size_t i;
+		void *cfunc = knh_lookupLibraryFunc(ctx, S_tobytes(tkF->text));
+		if(cfunc == NULL) {
+			goto L_ERROR;
+		}
+		if(argc == 0) {
+			set_ffireturn(ctx, params + argc, mtd, NULL);
+			argc = 1;
+		}
+		for(i = 2; (i < DP(stmt)->size && argc < 16); i++) {
+			if(set_ffiparam(ctx, params + argc, mtd, tkNN(stmt, i))) {
+				argc++;
+			}
+			else {
+				goto L_ERROR;
+			}
+		}
+		{
+			knh_Fmethod fmethod = knh_makeFmethod(ctx, cfunc, argc, params);
+			if(fmethod != NULL) {
+				knh_Method_setFunc(ctx, mtd, fmethod);
+				return;
+			}
+		}
+	}
+	L_ERROR:;
+	DBG_P("ERROR");
 }
 
 /* ------------------------------------------------------------------------ */

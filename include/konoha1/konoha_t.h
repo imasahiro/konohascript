@@ -846,33 +846,7 @@ typedef struct {
 #define K_SHIFTPTR(p, size)   ((char*)p + size)
 #define K_MEMSIZE(p, p2)      (((char*)p) - ((char*)p2))
 
-typedef struct {
-	knh_hObject_t h;
-	knh_uintptr_t *bitmap;
-	knh_uintptr_t *tenure;
-	void *unused [sizeof(knh_hObject_t)/sizeof(void*)-2];
-} knh_hOArena_t;
-
 #define K_PAGEOBJECTSIZE ((K_PAGESIZE / sizeof(knh_Object_t)) - 1)
-
-/* TODO @imasahiro */
-#ifdef K_INTERNAL
-#define slots_ slots
-#endif
-
-typedef struct {
-	knh_hOArena_t h;
-	knh_Object_t  slots_[K_PAGEOBJECTSIZE];
-} knh_ObjectPage_t;
-
-typedef struct {
-	knh_ObjectPage_t *head;
-	knh_ObjectPage_t *bottom;
-	size_t            arenasize;
-	knh_uintptr_t    *bitmap;
-	knh_uintptr_t     bitmapsize;
-	knh_uintptr_t    *tenure;
-} knh_ObjectArenaTBL_t ;
 
 #define K_ARENATBL_INITSIZE     32
 #define K_NBITMAP 2
@@ -883,41 +857,13 @@ typedef struct {
 #define K_ARENASIZE             ((sizeof(knh_Object_t) * K_PAGESIZE) * 16) /*4MB*/
 #endif
 
-typedef struct knh_memslot_t {
-	union {
-		struct knh_memslot_t *ref;
-		char body[K_FASTMALLOC_SIZE];
-	};
-} knh_fastmem_t;
-
-typedef struct knh_memslotX2_t {
-	union {
-		struct knh_memslotX2_t *ref;
-		char body[K_FASTMALLOC_SIZE*2];
-	};
-}knh_memslotX2_t ;
-
-typedef struct knh_memslot256_t {
-	union {
-		struct knh_memslot256_t *ref;
-		char body[256];
-	};
-}knh_memslot256_t ;
-
-typedef struct {
-	knh_fastmem_t *head;
-	knh_fastmem_t *bottom;
-} knh_MemoryArenaTBL_t ;
-
-typedef struct {
-	knh_memslotX2_t *head;
-	knh_memslotX2_t *bottom;
-} knh_MemoryX2ArenaTBL_t ;
-
-typedef struct {
-	knh_memslot256_t *head;
-	knh_memslot256_t *bottom;
-} knh_Memory256ArenaTBL_t ;
+typedef struct knh_ObjectArenaTBL_t knh_ObjectArenaTBL_t;
+typedef struct knh_memslot_t knh_memslot_t;
+typedef struct knh_memslotX2_t knh_memslotX2_t;
+typedef struct knh_memslot256_t knh_memslot256_t;
+typedef struct knh_MemoryArenaTBL_t knh_MemoryArenaTBL_t;
+typedef struct knh_MemoryX2ArenaTBL_t knh_MemoryX2ArenaTBL_t;
+typedef struct knh_Memory256ArenaTBL_t knh_Memory256ArenaTBL_t;
 
 typedef struct {
 	size_t                    gcBoundary;
@@ -1086,8 +1032,8 @@ typedef struct knh_context_t {
 	knh_Object_t                *freeObjectTail;
 	size_t                       freeObjectListSize;
 	knh_uintptr_t                mscheck;
-	knh_fastmem_t               *freeMemoryList;
-	knh_fastmem_t               *freeMemoryTail;
+	knh_memslot_t               *freeMemoryList;
+	knh_memslot_t               *freeMemoryTail;
 
 	/* cache */
 	knh_mtdcache_t              *mtdcache;

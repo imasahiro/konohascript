@@ -221,28 +221,7 @@ static knh_context_t* new_RootContext(void)
 	ctx->spi = (const knh_ServiceSPI_t*)(ctx->stat + 1);
 	initServiceSPI((knh_ServiceSPI_t*)ctx->spi);
 
-	share->ObjectArenaTBL = (knh_ObjectArenaTBL_t*)KNH_MALLOC(ctx, K_ARENATBL_INITSIZE * sizeof(knh_ObjectArenaTBL_t));
-	knh_bzero(share->ObjectArenaTBL, K_ARENATBL_INITSIZE * sizeof(knh_ObjectArenaTBL_t));
-	share->sizeObjectArenaTBL = 0;
-	share->capacityObjectArenaTBL = K_ARENATBL_INITSIZE;
-
-	share->MemoryArenaTBL = (knh_MemoryArenaTBL_t*)KNH_MALLOC(ctx, K_ARENATBL_INITSIZE * sizeof(knh_MemoryArenaTBL_t));
-	knh_bzero(share->MemoryArenaTBL, K_ARENATBL_INITSIZE * sizeof(knh_MemoryArenaTBL_t));
-	share->sizeMemoryArenaTBL = 0;
-	share->capacityMemoryArenaTBL = K_ARENATBL_INITSIZE;
-
-#if defined(K_USING_FASTMALLOC2)
-	share->MemoryX2ArenaTBL = (knh_MemoryX2ArenaTBL_t*)KNH_MALLOC(ctx, K_ARENATBL_INITSIZE * sizeof(knh_MemoryX2ArenaTBL_t));
-	knh_bzero(share->MemoryX2ArenaTBL, K_ARENATBL_INITSIZE * sizeof(knh_MemoryX2ArenaTBL_t));
-	share->MemoryX2ArenaTBLSize = 0;
-	share->capacityMemoryX2ArenaTBL = K_ARENATBL_INITSIZE;
-#endif
-#if defined(K_USING_FASTMALLOC256)
-	share->Memory256ArenaTBL = (knh_Memory256ArenaTBL_t*)KNH_MALLOC(ctx, K_ARENATBL_INITSIZE * sizeof(knh_Memory256ArenaTBL_t));
-	knh_bzero(share->Memory256ArenaTBL, K_ARENATBL_INITSIZE * sizeof(knh_Memory256ArenaTBL_t));
-	share->Memory256ArenaTBLSize = 0;
-	share->capacityMemory256ArenaTBL = K_ARENATBL_INITSIZE;
-#endif
+	knh_share_initArena(ctx, share);
 
 	share->ClassTBL = (const knh_ClassTBL_t**)KNH_MALLOC((CTX)ctx, sizeof(knh_ClassTBL_t*)*(K_CLASSTABLE_INIT));
 	knh_bzero(share->ClassTBL, sizeof(knh_ClassTBL_t*)*(K_CLASSTABLE_INIT));
@@ -425,11 +404,7 @@ static void knh_share_free(CTX ctx, knh_share_t *share)
 	share->EventTBL = NULL;
 	KNH_FREE(ctx, share->tString, SIZEOF_TSTRING);
 	share->tString = NULL;
-	DBG_ASSERT(share->ObjectArenaTBL != NULL);
-	for(i = 0; i < share->sizeObjectArenaTBL; i++) {
-		knh_ObjectArenaTBL_t *t = share->ObjectArenaTBL + i;
-		knh_ObjectObjectArenaTBL_free(ctx, t);
-	}
+	knh_ObjectArena_finalfree(ctx, share->ObjectArenaTBL, share->sizeObjectArenaTBL);
 	for(i = 0; i < share->sizeClassTBL; i++) {
 		knh_ClassTBL_t *ct = varClassTBL(i);
 		if(ct->cdef->asize > 0) {
@@ -444,37 +419,8 @@ static void knh_share_free(CTX ctx, knh_share_t *share)
 	}
 	KNH_FREE(ctx, (void*)share->ClassTBL, sizeof(knh_ClassTBL_t*)*(share->capacityClassTBL));
 	share->ClassTBL = NULL;
-	DBG_ASSERT(share->ObjectArenaTBL != NULL);
-	for(i = 0; i < share->sizeObjectArenaTBL; i++) {
-		knh_ObjectArenaTBL_t *oat = share->ObjectArenaTBL + i;
-		DBG_ASSERT(K_MEMSIZE(oat->bottom, oat->head) == oat->arenasize);
-		KNH_FREE(ctx, oat->bitmap, oat->bitmapsize * K_NBITMAP);
-		KNH_VFREE(ctx, oat->head, oat->arenasize);
-	}
-	KNH_FREE(ctx, share->ObjectArenaTBL, share->capacityObjectArenaTBL * sizeof(knh_ObjectArenaTBL_t));
-	share->ObjectArenaTBL = NULL;
-	for(i = 0; i < share->sizeMemoryArenaTBL; i++) {
-		knh_MemoryArenaTBL_t *at = share->MemoryArenaTBL + i;
-		KNH_FREE(ctx, at->head, K_MEMSIZE(at->bottom, at->head));
-	}
-	KNH_FREE(ctx, share->MemoryArenaTBL, share->capacityMemoryArenaTBL * sizeof(knh_MemoryArenaTBL_t));
-	share->MemoryArenaTBL = NULL;
-#if defined(K_USING_FASTMALLOC2)
-	for(i = 0; i < share->MemoryX2ArenaTBLSize; i++) {
-		knh_MemoryX2ArenaTBL_t *at = share->MemoryX2ArenaTBL + i;
-		KNH_FREE(ctx, at->head, K_MEMSIZE(at->bottom, at->head));
-	}
-	KNH_FREE(ctx, share->MemoryX2ArenaTBL, share->capacityMemoryX2ArenaTBL * sizeof(knh_MemoryX2ArenaTBL_t));
-	share->MemoryX2ArenaTBL = NULL;
-#endif
-#if defined(K_USING_FASTMALLOC256)
-	for(i = 0; i < share->Memory256ArenaTBLSize; i++) {
-		knh_Memory256ArenaTBL_t *at = share->Memory256ArenaTBL + i;
-		KNH_FREE(ctx, at->head, K_MEMSIZE(at->bottom, at->head));
-	}
-	KNH_FREE(ctx, share->Memory256ArenaTBL, share->capacityMemory256ArenaTBL * sizeof(knh_Memory256ArenaTBL_t));
-	share->Memory256ArenaTBL = NULL;
-#endif
+
+	knh_share_freeArena(ctx, share);
 	if(ctx->stat->usedMemorySize != 0) {
 		MEM_LOG("memory leaking size=%ldbytes", (long)ctx->stat->usedMemorySize);
 	}

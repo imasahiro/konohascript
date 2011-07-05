@@ -30,6 +30,7 @@
 /* ************************************************************************ */
 
 #include"commons.h"
+#include"../../include/konoha1/konohalang.h"
 #ifdef K_USING_POSIX_
 #include <unistd.h>
 #endif

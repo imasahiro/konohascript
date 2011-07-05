@@ -31,6 +31,7 @@
 // **************************************************************************
 
 #include <konoha1.h>
+#include <konoha1/konohalang.h>
 
 #ifdef __cplusplus 
 extern "C" {

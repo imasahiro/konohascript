@@ -32,3 +32,18 @@ assure "SupportNativeCallback Float" {
 	assert fa[2] == 3.0;
 }
 
+sa = ["1.0", "3.0", "2.0"];
+
+int cmp_s (String a, String b) {
+	if (a < b) return -1;
+	if (a > b) return 1;
+	return 0;
+}
+
+assure "SupportNativeCallback String" {
+	sa.sort(cmp_s);
+	assert sa[0] == "1.0";
+	assert sa[1] == "2.0";
+	assert sa[2] == "3.0";
+}
+

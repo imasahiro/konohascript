@@ -29,6 +29,7 @@
 
 #include"commons.h"
 #include"../../include/konoha1/konoha_code_.h"
+#include"../../include/konoha1/konohalang.h"
 
 #ifndef TYPE_BytesIm
 #define CLASS_BytesIm CLASS_Bytes

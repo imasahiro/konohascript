@@ -61,7 +61,6 @@
 /* konohaapi, prototypes */
 
 #include"konoha1/konoha_api.h"
-#include"konoha1/inlinelibs.h"
 
 #ifndef K_INTERNAL
 konoha_t konoha_open(size_t stacksize);
