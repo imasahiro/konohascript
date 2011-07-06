@@ -129,7 +129,7 @@ int knh_addClassConst(CTX ctx, knh_class_t cid, knh_String_t* name, Object *valu
 knh_fieldn_t knh_addname(CTX ctx, knh_String_t *s, knh_Fdictset f)
 {
 	knh_SystemEX_t *b = DP(ctx->sys);
-	size_t n = knh_DictSet_size(b->nameDictCaseSet);
+	size_t n = knh_Map_size(b->nameDictCaseSet);
 	if(n == b->namecapacity) {
 		b->namecapacity = k_grow(n);
 		b->nameinfo = (knh_nameinfo_t*)KNH_REALLOC(ctx, "nameinfo", b->nameinfo, n, b->namecapacity, sizeof(knh_nameinfo_t));
@@ -166,7 +166,7 @@ knh_nameinfo_t *knh_getnameinfo(CTX ctx, knh_fieldn_t fn)
 {
 	size_t n = (FN_UNMASK(fn) - MN_OPSIZE);
 	DBG_(
-		size_t size = knh_DictSet_size(DP(ctx->sys)->nameDictCaseSet);
+		size_t size = knh_Map_size(DP(ctx->sys)->nameDictCaseSet);
 		DBG_ASSERT(n < size);
 	);
 	return DP(ctx->sys)->nameinfo + n;

@@ -81,6 +81,27 @@ KNHAPI2(void) knh_Object_toNULL_(CTX ctx, Object *o)
 }
 
 /* ------------------------------------------------------------------------ */
+
+KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, knh_RawPtr_t *po, void *rawptr)
+{
+	knh_RawPtr_t *npo = (knh_RawPtr_t*)new_hObject_(ctx, O_cTBL(po));
+	npo->rawptr = rawptr;
+	if(rawptr == NULL) {
+		knh_Object_toNULL(ctx, npo);
+	}
+	return npo;
+}
+
+knh_RawPtr_t *new_QuickPtr(CTX ctx, const char *name, void *rawptr, void *free)
+{
+	knh_RawPtr_t *npo = (knh_RawPtr_t*)new_hObject_(ctx, ClassTBL(CLASS_Tdynamic));
+	npo->DBG_NAME = name;
+	npo->rawptr = rawptr;
+	npo->rawfree = (void (*)(void *))free;
+	return npo;
+}
+
+/* ------------------------------------------------------------------------ */
 /* [ClassTBL] */
 
 const char *SAFESTRUCT__(CTX ctx, knh_class_t bcid)

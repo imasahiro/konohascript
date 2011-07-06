@@ -38,50 +38,135 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [HashMap] */
 
-#define knh_map_hmap(m)      ((knh_hmap_t*)m)
-#define knh_map_hentry(m)    (((knh_hmap_t*)m)->hentry)
+#define K_HASH_INITSIZE 83
 
-static knh_map_t *hmap_init(CTX ctx, size_t init, const char *path, void *option)
+typedef struct knh_hentry2_t {
+	knh_hashcode_t hcode;
+	union {
+		Object       *key;
+		knh_String_t *skey;
+		knh_ndata_t   nkey;
+	};
+	union {
+		Object       *value;
+		knh_ndata_t   nvalue;
+	};
+	struct knh_hentry2_t *next;
+//	struct knh_hentry2_t *lprev;
+//	struct knh_hentry2_t *lnext;
+} knh_hentry2_t;
+
+typedef struct knh_hmap2_t {
+	knh_hentry2_t *arena;
+	knh_hentry2_t *unused;
+	knh_hentry2_t **hentry;
+	size_t arenasize;
+	size_t size;
+	size_t hmax;
+//	knh_hentry2_t *lfirst;
+//	knh_hentry2_t *llast;
+} knh_hmap2_t;
+
+static void hmap2_setfreelist(knh_hmap2_t *hmap2, size_t s, size_t e)
 {
-	knh_hmap_t *hmap = (knh_hmap_t*)KNH_MALLOC(ctx, sizeof(knh_hmap_t));
-	knh_bzero(hmap, sizeof(knh_hmap_t));
-	if(init < K_HASH_INITSIZE) init = K_HASH_INITSIZE;
-	hmap->hentry = (knh_hentry_t**)KNH_REALLOC(ctx, hmap->DBGNAME, NULL, 0, init, sizeof(knh_hentry_t*));
-	hmap->hmax = init;
-	hmap->size = 0;
-	hmap->factor = KNH_HASH_FACTOR(hmap->hmax);
-	return (knh_map_t*)hmap;
+	DBG_ASSERT(hmap2->unused == NULL);
+	knh_bzero(hmap2->arena + s, (e - s) * sizeof(knh_hentry2_t));
+	hmap2->unused = hmap2->arena + s;
+	size_t i;
+	for(i = s; i < e - 1; i++) {
+		hmap2->arena[i].hcode = ((knh_hashcode_t)-1);
+		hmap2->arena[i].nvalue = 0;
+		hmap2->arena[i].next = hmap2->arena + i + 1;
+	}
+	hmap2->arena[e].hcode = ((knh_hashcode_t)-1);
+	hmap2->arena[e].nvalue = 0;
+	DBG_ASSERT(hmap2->arena[e].next == NULL);
 }
 
-static knh_hmap_t *hmap_rehash(CTX ctx, knh_hmap_t *hmap)
+static void hmap2_rehash(CTX ctx, knh_hmap2_t *hmap2)
 {
-	size_t i, newhmax = hmap->hmax * 2 + 1;
-	knh_hentry_t **hentry = knh_map_hentry(hmap);
-	knh_hentry_t **newhentry = (knh_hentry_t**)KNH_REALLOC(ctx, hmap->DBGNAME, NULL, 0, newhmax, sizeof(knh_hentry_t*));
-	for(i = 0; i < hmap->hmax; i++) {
-		knh_hentry_t *e = hentry[i];
+	size_t i, newhmax = hmap2->hmax * 2 + 1;
+	knh_hentry2_t **hentry2 = hmap2->hentry;
+	knh_hentry2_t **newhentry2 = (knh_hentry2_t**)KNH_MALLOC(ctx, newhmax * sizeof(knh_hentry2_t*));
+	knh_bzero(hmap2->hentry, newhmax * sizeof(knh_hentry2_t*));
+	for(i = 0; i < hmap2->hmax; i++) {
+		knh_hentry2_t *e = hentry2[i];
 		while(e != NULL) {
-			knh_hentry_t *p = e;
+			knh_hentry2_t *p = e;
 			knh_hashcode_t ni = p->hcode % newhmax;
 			e = e->next;
-			p->next = newhentry[ni];
-			newhentry[ni] = p;
+			p->next = newhentry2[ni];
+			newhentry2[ni] = p;
 		}
 	}
-	KNH_FREE(ctx, hentry, hmap->hmax * sizeof(knh_hentry_t*));
-	hmap->hentry = newhentry;
-	hmap->hmax = newhmax;
-	hmap->factor = KNH_HASH_FACTOR(newhmax);
-	return hmap;
+	KNH_FREE(ctx, hentry2, hmap2->hmax * sizeof(knh_hentry2_t*));
+	hmap2->hentry = newhentry2;
+	hmap2->hmax = newhmax;
 }
 
-static void hmap_reftrace(CTX ctx, knh_map_t *m FTRARG)
+static void hmap2_shiftptr(knh_hmap2_t *hmap2, knh_intptr_t shift)
 {
-	knh_hmap_t *hmap = knh_map_hmap(m);
+	size_t i, size = hmap2->arenasize / 2;
+	for(i = 0; i < size; i++) {
+		knh_hentry2_t *e = hmap2->arena + i;
+		if(e->next != NULL) {
+			e->next = (knh_hentry2_t*)(((void*)e->next) + shift);
+		}
+	}
+}
+
+static knh_hentry2_t *new_hentry2(CTX ctx, knh_hmap2_t *hmap2, knh_hashcode_t hcode)
+{
+	knh_hentry2_t *e;
+	if(hmap2->unused == NULL) {
+		size_t oarenasize = hmap2->arenasize;
+		void *oarena = hmap2->arena;
+		hmap2->arenasize *= 2;
+		hmap2->arena = (knh_hentry2_t*)KNH_REALLOC(ctx, path, hmap2->arena, oarenasize, hmap2->arenasize, sizeof(knh_hentry2_t));
+		if((void*)hmap2->arena != oarena) {
+			hmap2_shiftptr(hmap2, (void*)hmap2->arena - oarena);
+		}
+		hmap2_rehash(ctx, hmap2);
+	}
+	e = hmap2->unused;
+	hmap2->unused = e->next;
+	e->hcode = hcode;
+	e->next = NULL;
+	hmap2->size++;
+	return e;
+}
+
+static void hmap2_unuse(knh_hmap2_t *hmap2, knh_hentry2_t *e)
+{
+	e->next = hmap2->unused;
+	hmap2->unused = e;
+	e->hcode = ((knh_hashcode_t)-1);
+	e->nvalue  = 0;
+	hmap2->size--;
+}
+
+static knh_mapptr_t *hmap2_init(CTX ctx, size_t init, const char *path, void *option)
+{
+	knh_hmap2_t *hmap2 = (knh_hmap2_t*)KNH_MALLOC(ctx, sizeof(knh_hmap2_t));
+	knh_bzero(hmap2, sizeof(knh_hmap2_t));
+	if(init < K_HASH_INITSIZE) init = K_HASH_INITSIZE;
+	hmap2->arenasize = (init * 3) / 4;
+	hmap2->arena = (knh_hentry2_t*)KNH_MALLOC(ctx, hmap2->arenasize * sizeof(knh_hentry2_t));
+	hmap2_setfreelist(hmap2, 0, hmap2->arenasize);
+	hmap2->hentry = (knh_hentry2_t**)KNH_MALLOC(ctx, init * sizeof(knh_hentry2_t*));
+	knh_bzero(hmap2->hentry, init * sizeof(knh_hentry2_t*));
+	hmap2->hmax = init;
+	hmap2->size = 0;
+	return (knh_mapptr_t*)hmap2;
+}
+
+static void hmap2_reftraceOO(CTX ctx, knh_mapptr_t *m FTRARG)
+{
+	knh_hmap2_t *hmap2 = (knh_hmap2_t*)m;
 	size_t i;
-	KNH_ENSUREREF(ctx, hmap->size * 2);
-	for(i = 0; i < hmap->hmax; i++) {
-		knh_hentry_t *e = hmap->hentry[i];
+	KNH_ENSUREREF(ctx, hmap2->size * 2);
+	for(i = 0; i < hmap2->hmax; i++) {
+		knh_hentry2_t *e = hmap2->hentry[i];
 		while(e != NULL) {
 			KNH_ADDREF(ctx, e->key);
 			KNH_ADDREF(ctx, e->value);
@@ -91,138 +176,28 @@ static void hmap_reftrace(CTX ctx, knh_map_t *m FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void hmap_free(CTX ctx, knh_map_t *m)
+static void hmap2_reftraceNO(CTX ctx, knh_mapptr_t *m FTRARG)
 {
-	knh_hmap_t *hmap = knh_map_hmap(m);
+	knh_hmap2_t *hmap2 = (knh_hmap2_t*)m;
 	size_t i;
-	for(i = 0; i < hmap->hmax; i++) {
-		knh_hentry_t *e = hmap->hentry[i];
+	KNH_ENSUREREF(ctx, hmap2->size);
+	for(i = 0; i < hmap2->hmax; i++) {
+		knh_hentry2_t *e = hmap2->hentry[i];
 		while(e != NULL) {
-			knh_hentry_t *p = e;
+			KNH_ADDREF(ctx, e->value);
 			e = e->next;
-			KNH_FREE(ctx, p, sizeof(knh_hentry_t));
 		}
 	}
-	KNH_FREE(ctx, hmap->hentry, sizeof(knh_hentry_t*)*(hmap->hmax));
-	KNH_FREE(ctx, hmap, sizeof(knh_hmap_t));
+	KNH_SIZEREF(ctx);
 }
 
-static knh_bool_t hmap_get(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+static void hmap2_reftraceON(CTX ctx, knh_mapptr_t *m FTRARG)
 {
-	knh_hmap_t *hmap = knh_map_hmap(m);
-	knh_hentry_t **hentry = knh_map_hentry(m);
-	knh_bytes_t k = S_tobytes(ksfp[0].s);
-	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
-	size_t idx = hcode % hmap->hmax;
-	knh_hentry_t *e = hentry[idx];
-	while(e != NULL) {
-		knh_bytes_t k2 = S_tobytes(e->skey);
-		if(e->hcode == hcode && knh_bytes_equals(k, k2)) {
-			KNH_SETv(ctx, rsfp[0].o, e->value);
-			return 1;
-		}
-		e = e->next;
-	}
-	return 0;
-}
-
-static void hmap_set(CTX ctx, knh_map_t* m, knh_sfp_t *kvsfp)
-{
-	knh_hmap_t *hmap = knh_map_hmap(m);
-	knh_hentry_t **hentry = knh_map_hentry(m);
-	knh_bytes_t k = S_tobytes(kvsfp[0].s);
-	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
-	size_t idx = hcode % hmap->hmax;
-	knh_hentry_t *e = hentry[idx];
-	while(e != NULL) {
-		knh_bytes_t k2 = S_tobytes(e->skey);
-		if(e->hcode == hcode && knh_bytes_equals(k, k2)) {
-			KNH_SETv(ctx, e->value, kvsfp[1].o);
-			return;
-		}
-		e = e->next;
-	}
-	if(hmap->size > hmap->factor) {
-		hmap = hmap_rehash(ctx, hmap);
-		hentry = knh_map_hentry(hmap);
-		idx = hcode % hmap->hmax;
-	}
-	e = (knh_hentry_t*)KNH_MALLOC(ctx, sizeof(knh_hentry_t));
-	e->hcode = hcode;
-	KNH_INITv(e->key, kvsfp[0].o);
-	KNH_INITv(e->value, kvsfp[1].o);
-	e->next = hentry[idx];
-	hentry[idx] = e;
-	hmap->size += 1;
-}
-
-static void hmap_remove(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp)
-{
-	KNH_TODO("HashMap.remove");
-//	 static void hmap_remove(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp)
-//	 {
-//	-       KNH_TODO("HashMap.remove");
-//	+       knh_hmap_t *hmap = knh_map_hmap(m);
-//	+       knh_hentry_t **hentry = knh_map_hentry(m);
-//	+       knh_bytes_t k = S_tobytes(ksfp[0].s);
-//	+       knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
-//	+       size_t idx = hcode % hmap->hmax;
-//	+       knh_hentry_t *e = hentry[idx];
-//	+       while(e != NULL) {
-//	+               knh_bytes_t k2 = S_tobytes(e->skey);
-//	+               if(e->hcode == hcode && knh_bytes_equals(k, k2)) {
-//	+                       KNH_SETv(ctx, e->value, KNH_NULVAL(O_cid(e->value)));
-//	+                       hmap->size -= 1;
-//	+                       return;
-//	+               }
-//	+               e = e->next;
-//	+       }
-//	 }
-}
-
-static size_t hmap_size(CTX ctx, knh_map_t* m)
-{
-	knh_hmap_t *hmap = knh_map_hmap(m);
-	return hmap->size;
-}
-
-static knh_bool_t hmap_next(CTX ctx, knh_map_t *m, knh_mapitr_t *mitr, knh_sfp_t *rsfp)
-{
-	knh_hmap_t *hmap = knh_map_hmap(m);
-	knh_hentry_t *e = (knh_hentry_t*)mitr->ptr;
-	if(e == NULL) {
-		while(mitr->index < hmap->hmax) {
-			e = hmap->hentry[mitr->index];
-			mitr->index += 1;
-			if(e != NULL) goto L_ENTRY;
-		}
-		return 0;
-	}
-	L_ENTRY:;
-	KNH_SETv(ctx, rsfp[0].o, e->key);
-	KNH_SETv(ctx, rsfp[1].o, e->value);
-	mitr->ptr = e->next;
-	return 1;
-}
-
-static const knh_MapDSPI_t* hmap_config(CTX ctx, knh_class_t p1, knh_class_t p2);
-
-static const knh_MapDSPI_t HMAP_StringObject = {
-	K_DSPI_MAP, "hash",
-	hmap_config, hmap_init, hmap_reftrace, hmap_free,
-	hmap_get, hmap_set, hmap_remove, hmap_size,
-	hmap_next,
-};
-
-/* ---- */
-
-static void hmap_reftracedata(CTX ctx, knh_map_t *m FTRARG)
-{
-	knh_hmap_t *hmap = knh_map_hmap(m);
+	knh_hmap2_t *hmap2 = (knh_hmap2_t*)m;
 	size_t i;
-	KNH_ENSUREREF(ctx, hmap->size);
-	for(i = 0; i < hmap->hmax; i++) {
-		knh_hentry_t *e = hmap->hentry[i];
+	KNH_ENSUREREF(ctx, hmap2->size);
+	for(i = 0; i < hmap2->hmax; i++) {
+		knh_hentry2_t *e = hmap2->hentry[i];
 		while(e != NULL) {
 			KNH_ADDREF(ctx, e->key);
 			e = e->next;
@@ -231,93 +206,585 @@ static void hmap_reftracedata(CTX ctx, knh_map_t *m FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static knh_bool_t hmap_getdata(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+static void hmap2_reftraceNN(CTX ctx, knh_mapptr_t *m FTRARG)
 {
-	knh_hmap_t *hmap = knh_map_hmap(m);
-	knh_hentry_t **hentry = knh_map_hentry(m);
-	knh_bytes_t k = S_tobytes(ksfp[0].s);
-	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
-	size_t idx = hcode % hmap->hmax;
-	knh_hentry_t *e = hentry[idx];
+	KNH_SIZEREF(ctx);
+}
+
+static void hmap2_free(CTX ctx, knh_mapptr_t *m)
+{
+	knh_hmap2_t *hmap2 = (knh_hmap2_t*)m;
+	KNH_FREE(ctx, hmap2->arena, sizeof(knh_hentry2_t)*(hmap2->arenasize));
+	KNH_FREE(ctx, hmap2->hentry, sizeof(knh_hentry2_t*)*(hmap2->hmax));
+	KNH_FREE(ctx, hmap2, sizeof(knh_hmap2_t));
+}
+
+static knh_hentry2_t *hmap2_getentry(knh_hmap2_t* hmap2, knh_hashcode_t hcode)
+{
+	knh_hentry2_t **hlist = hmap2->hentry;
+	size_t idx = hcode % hmap2->hmax;
+	knh_hentry2_t *e = hlist[idx];
 	while(e != NULL) {
-		knh_bytes_t k2 = S_tobytes(e->skey);
-		if(e->hcode == hcode && knh_bytes_equals(k, k2)) {
+		if(e->hcode == hcode) return e;
+		e = e->next;
+	}
+	return NULL;
+}
+
+static void hmap2_add(knh_hmap2_t* hmap2, knh_hentry2_t *ne)
+{
+	DBG_ASSERT(ne->next == NULL);
+	knh_hentry2_t **hlist = hmap2->hentry;
+	size_t idx = ne->hcode % hmap2->hmax;
+	ne->next = hlist[idx];
+	hlist[idx] = ne;
+}
+
+static void hmap2_remove(knh_hmap2_t* hmap2, knh_hentry2_t *oe)
+{
+	DBG_ASSERT(oe->next == NULL);
+	knh_hentry2_t **hlist = hmap2->hentry;
+	size_t idx = oe->hcode % hmap2->hmax;
+	knh_hentry2_t *e = hlist[idx];
+	while(e != NULL) {
+		if(e->next == oe) {
+			e->next = oe->next;
+			return;
+		}
+		e = e->next;
+	}
+	hlist[idx] = oe->next;
+}
+
+static void hmap2_top(knh_hmap2_t* hmap2, knh_hentry2_t *oe)
+{
+	DBG_ASSERT(oe->next == NULL);
+	knh_hentry2_t **hlist = hmap2->hentry;
+	size_t idx = oe->hcode % hmap2->hmax;
+	if(hlist[idx] != oe) {
+		hmap2_remove(hmap2, oe);
+		oe->next = hlist[idx];
+		hlist[idx] = oe;
+	}
+}
+
+static knh_bool_t hmap2_getOO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_Object_t *key = ksfp[0].o;
+	knh_hashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, ksfp[0].p);
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode && knh_Object_compareTo(key, e->key) == 0) {
+			KNH_SETv(ctx, rsfp[0].o, e->value);
+			return 1;
+		}
+		e = e->next;
+	}
+	return 0;
+}
+
+static knh_bool_t hmap2_getON(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_Object_t *key = ksfp[0].o;
+	knh_hashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, ksfp[0].p);
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode && knh_Object_compareTo(key, e->key) == 0) {
 			rsfp[0].ndata = e->nvalue;
 			return 1;
 		}
 		e = e->next;
 	}
-	rsfp[0].ndata = 0;
 	return 0;
 }
 
-static void hmap_setdata(CTX ctx, knh_map_t* m, knh_sfp_t *kvsfp)
+#define knh_String_equals(STR, t)   (knh_bytes_equals(S_tobytes(STR), t))
+
+static knh_bool_t hmap2_getSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
 {
-	knh_hmap_t *hmap = knh_map_hmap(m);
-	knh_hentry_t **hentry = knh_map_hentry(m);
-	knh_bytes_t k = S_tobytes(kvsfp[0].s);
+	DBG_ASSERT(IS_bString(ksfp[0].s));
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_bytes_t k = S_tobytes(ksfp[0].s);
 	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
-	size_t idx = hcode % hmap->hmax;
-	knh_hentry_t *e = hentry[idx];
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
 	while(e != NULL) {
-		knh_bytes_t k2 = S_tobytes(e->skey);
-		if(e->hcode == hcode && knh_bytes_equals(k, k2)) {
-			e->nvalue = kvsfp[1].ndata;
-			return ;
+		if(e->hcode == hcode && knh_String_equals(e->skey, k)) {
+			KNH_SETv(ctx, rsfp[0].o, e->value);
+			return 1;
 		}
 		e = e->next;
 	}
-	if(hmap->size > hmap->factor) {
-		hmap = hmap_rehash(ctx, hmap);
-		hentry = knh_map_hentry(hmap);
+	return 0;
+}
+
+static knh_bool_t hmap2_getSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+{
+	DBG_ASSERT(IS_bString(ksfp[0].s));
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_bytes_t k = S_tobytes(ksfp[0].s);
+	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode && knh_String_equals(e->skey, k)) {
+			rsfp[0].ndata = e->nvalue;
+			return 1;
+		}
+		e = e->next;
 	}
-	e = (knh_hentry_t*)KNH_MALLOC(ctx, sizeof(knh_hentry_t));
-	e->hcode = hcode;
+	return 0;
+}
+
+static knh_bool_t hmap2_getNO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_hashcode_t hcode = (knh_hashcode_t)ksfp[0].ndata;
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode) {
+			KNH_SETv(ctx, rsfp[0].o, e->value);
+			return 1;
+		}
+		e = e->next;
+	}
+	return 0;
+}
+
+static knh_bool_t hmap2_getNN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_hashcode_t hcode = (knh_hashcode_t)ksfp[0].ndata;
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode) {
+			rsfp[0].ndata = e->nvalue;
+			return 1;
+		}
+		e = e->next;
+	}
+	return 0;
+}
+
+static void hmap2_setOO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_Object_t *key = kvsfp[0].o;
+	knh_hashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, kvsfp[0].p);
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode && knh_Object_compareTo(key, e->key) == 0) {
+			KNH_SETv(ctx, e->value, kvsfp[1].o);
+			return;
+		}
+		e = e->next;
+	}
+	e = new_hentry2(ctx, hmap, hcode);
+	KNH_INITv(e->key, kvsfp[0].o);
+	KNH_INITv(e->value, kvsfp[1].o);
+	hmap2_add(hmap, e);
+}
+
+static void hmap2_setON(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_Object_t *key = kvsfp[0].o;
+	knh_hashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, kvsfp[0].p);
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode && knh_Object_compareTo(key, e->key) == 0) {
+			e->nvalue = kvsfp[0].ndata;
+			return;
+		}
+		e = e->next;
+	}
+	e = new_hentry2(ctx, hmap, hcode);
 	KNH_INITv(e->key, kvsfp[0].o);
 	e->nvalue = kvsfp[1].ndata;
-	e->next = hentry[idx];
-	hentry[idx] = e;
-	hmap->size += 1;
+	hmap2_add(hmap, e);
 }
 
-static knh_bool_t hmap_nextdata(CTX ctx, knh_map_t *m, knh_mapitr_t* mitr, knh_sfp_t *rsfp)
+static void hmap2_setSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
 {
-	knh_hmap_t *hmap = knh_map_hmap(m);
-	knh_hentry_t *e = (knh_hentry_t*)mitr->ptr;
-	if(e == NULL) {
-		while(mitr->index < hmap->hmax) {
-			e = hmap->hentry[mitr->index];
-			mitr->index += 1;
-			if(e != NULL) goto L_ENTRY;
+	DBG_ASSERT(IS_bString(kvsfp[0].s));
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_bytes_t k = S_tobytes(kvsfp[0].s);
+	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode && knh_String_equals(e->skey, k)) {
+			KNH_SETv(ctx, e->value, kvsfp[1].o);
+			return;
 		}
-		return 0;
+		e = e->next;
 	}
-	L_ENTRY:;
-	KNH_SETv(ctx, rsfp[0].o, e->key);
-	rsfp[1].ndata = e->nvalue;
-	mitr->ptr = e->next;
-	return 1;
+	e = new_hentry2(ctx, hmap, hcode);
+	KNH_INITv(e->key, kvsfp[0].o);
+	KNH_INITv(e->value, kvsfp[1].o);
+	hmap2_add(hmap, e);
 }
 
-static const knh_MapDSPI_t HMAP_StringNDATA = {
+static void hmap2_setSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
+{
+	DBG_ASSERT(IS_bString(kvsfp[0].s));
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_bytes_t k = S_tobytes(kvsfp[0].s);
+	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode && knh_String_equals(e->skey, k)) {
+			e->nvalue = kvsfp[0].ndata;
+			return;
+		}
+		e = e->next;
+	}
+	e = new_hentry2(ctx, hmap, hcode);
+	KNH_INITv(e->key, kvsfp[0].o);
+	e->nvalue = kvsfp[1].ndata;
+	hmap2_add(hmap, e);
+}
+
+static void hmap2_setNO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_hashcode_t hcode = (knh_hashcode_t)kvsfp[0].ndata;
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode) {
+			KNH_SETv(ctx, e->value, kvsfp[1].o);
+			return;
+		}
+		e = e->next;
+	}
+	e = new_hentry2(ctx, hmap, hcode);
+	KNH_INITv(e->key, kvsfp[0].o);
+	KNH_INITv(e->value, kvsfp[1].o);
+	hmap2_add(hmap, e);
+}
+
+static void hmap2_setNN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_hashcode_t hcode = (knh_hashcode_t)kvsfp[0].ndata;
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode) {
+			e->nvalue = kvsfp[0].ndata;
+			return;
+		}
+		e = e->next;
+	}
+	e = new_hentry2(ctx, hmap, hcode);
+	KNH_INITv(e->key, kvsfp[0].o);
+	e->nvalue = kvsfp[1].ndata;
+	hmap2_add(hmap, e);
+}
+
+static void hmap2_removeOO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_Object_t *key = ksfp[0].o;
+	knh_hashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, ksfp[0].p);
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode && knh_Object_compareTo(key, e->key) == 0) {
+			KNH_FINALv(ctx, e->key);
+			KNH_FINALv(ctx, e->value);
+			hmap2_remove(hmap, e);
+			hmap2_unuse(hmap, e);
+			return;
+		}
+		e = e->next;
+	}
+}
+
+static void hmap2_removeON(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_Object_t *key = ksfp[0].o;
+	knh_hashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, ksfp[0].p);
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode && knh_Object_compareTo(key, e->key) == 0) {
+			KNH_FINALv(ctx, e->key);
+			hmap2_remove(hmap, e);
+			hmap2_unuse(hmap, e);
+			return;
+		}
+		e = e->next;
+	}
+}
+
+#define knh_String_equals(STR, t)   (knh_bytes_equals(S_tobytes(STR), t))
+
+static void hmap2_removeSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
+{
+	DBG_ASSERT(IS_bString(ksfp[0].s));
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_bytes_t k = S_tobytes(ksfp[0].s);
+	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode && knh_String_equals(e->skey, k)) {
+			KNH_FINALv(ctx, e->key);
+			KNH_FINALv(ctx, e->value);
+			hmap2_remove(hmap, e);
+			hmap2_unuse(hmap, e);
+			return;
+		}
+		e = e->next;
+	}
+}
+
+static void hmap2_removeSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
+{
+	DBG_ASSERT(IS_bString(ksfp[0].s));
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_bytes_t k = S_tobytes(ksfp[0].s);
+	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode && knh_String_equals(e->skey, k)) {
+			KNH_FINALv(ctx, e->key);
+			hmap2_remove(hmap, e);
+			hmap2_unuse(hmap, e);
+			return;
+		}
+		e = e->next;
+	}
+}
+
+static void hmap2_removeNO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_hashcode_t hcode = (knh_hashcode_t)ksfp[0].ndata;
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode) {
+			KNH_FINALv(ctx, e->value);
+			hmap2_remove(hmap, e);
+			hmap2_unuse(hmap, e);
+			return;
+		}
+		e = e->next;
+	}
+}
+
+static void hmap2_removeNN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	knh_hashcode_t hcode = (knh_hashcode_t)ksfp[0].ndata;
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	while(e != NULL) {
+		if(e->hcode == hcode) {
+			hmap2_remove(hmap, e);
+			hmap2_unuse(hmap, e);
+			return;
+		}
+		e = e->next;
+	}
+}
+
+static size_t hmap2_size(CTX ctx, knh_mapptr_t* m)
+{
+	knh_hmap2_t *hmap2 = (knh_hmap2_t*)m;
+	return hmap2->size;
+}
+
+static knh_bool_t hmap2_nextOO(CTX ctx, knh_mapptr_t *m, knh_mapitr_t *mitr, knh_sfp_t *rsfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	size_t i;
+	for(i = mitr->index; i < hmap->arenasize; i++) {
+		knh_hentry2_t *e = hmap->arena + i;
+		if(e->hcode == ((knh_hashcode_t)-1) && e->nvalue == 0) continue;
+		KNH_SETv(ctx, rsfp[0].o, e->key);
+		KNH_SETv(ctx, rsfp[1].o, e->value);
+		mitr->index = i + 1;
+		return 1;
+	}
+	mitr->index = hmap->arenasize;
+	return 0;
+}
+
+static knh_bool_t hmap2_nextON(CTX ctx, knh_mapptr_t *m, knh_mapitr_t *mitr, knh_sfp_t *rsfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	size_t i;
+	for(i = mitr->index; i < hmap->arenasize; i++) {
+		knh_hentry2_t *e = hmap->arena + i;
+		if(e->hcode == ((knh_hashcode_t)-1) && e->nvalue == 0) continue;
+		KNH_SETv(ctx, rsfp[0].o, e->key);
+		rsfp[1].ndata = e->nvalue;
+		mitr->index = i + 1;
+		return 1;
+	}
+	mitr->index = hmap->arenasize;
+	return 0;
+}
+
+static knh_bool_t hmap2_nextNO(CTX ctx, knh_mapptr_t *m, knh_mapitr_t *mitr, knh_sfp_t *rsfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	size_t i;
+	for(i = mitr->index; i < hmap->arenasize; i++) {
+		knh_hentry2_t *e = hmap->arena + i;
+		if(e->hcode == ((knh_hashcode_t)-1) && e->nvalue == 0) continue;
+		rsfp[0].ndata = e->nkey;
+		KNH_SETv(ctx, rsfp[1].o, e->value);
+		mitr->index = i + 1;
+		return 1;
+	}
+	mitr->index = hmap->arenasize;
+	return 0;
+}
+
+static knh_bool_t hmap2_nextNN(CTX ctx, knh_mapptr_t *m, knh_mapitr_t *mitr, knh_sfp_t *rsfp)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)m;
+	size_t i;
+	for(i = mitr->index; i < hmap->arenasize; i++) {
+		knh_hentry2_t *e = hmap->arena + i;
+		if(e->hcode == ((knh_hashcode_t)-1) && e->nvalue == 0) continue;
+		rsfp[0].ndata = e->nkey;
+		rsfp[1].ndata = e->nvalue;
+		mitr->index = i + 1;
+		return 1;
+	}
+	mitr->index = hmap->arenasize;
+	return 0;
+}
+
+static const knh_MapDSPI_t* hmap2_config(CTX ctx, knh_class_t p1, knh_class_t p2);
+
+static const knh_MapDSPI_t HMAP_OO = {
 	K_DSPI_MAP, "hash",
-	hmap_config, hmap_init, hmap_reftracedata, hmap_free,
-	hmap_getdata, hmap_setdata, hmap_remove, hmap_size, hmap_nextdata,
+	hmap2_config, hmap2_init, hmap2_reftraceOO, hmap2_free,
+	hmap2_getOO, hmap2_setOO, hmap2_removeOO, hmap2_size, hmap2_nextOO,
+};
+static const knh_MapDSPI_t HMAP_ON = {
+	K_DSPI_MAP, "hash",
+	hmap2_config, hmap2_init, hmap2_reftraceON, hmap2_free,
+	hmap2_getON, hmap2_setON, hmap2_removeON, hmap2_size, hmap2_nextON,
+};
+static const knh_MapDSPI_t HMAP_SO = {
+	K_DSPI_MAP, "hash",
+	hmap2_config, hmap2_init, hmap2_reftraceOO, hmap2_free,
+	hmap2_getSO, hmap2_setSO, hmap2_removeSO, hmap2_size, hmap2_nextOO,
+};
+static const knh_MapDSPI_t HMAP_SN = {
+	K_DSPI_MAP, "hash",
+	hmap2_config, hmap2_init, hmap2_reftraceON, hmap2_free,
+	hmap2_getSN, hmap2_setSN, hmap2_removeSN, hmap2_size, hmap2_nextON,
+};
+static const knh_MapDSPI_t HMAP_NO = {
+	K_DSPI_MAP, "hash",
+	hmap2_config, hmap2_init, hmap2_reftraceNO, hmap2_free,
+	hmap2_getNO, hmap2_setNO, hmap2_removeNO, hmap2_size, hmap2_nextNO,
+};
+static const knh_MapDSPI_t HMAP_NN = {
+	K_DSPI_MAP, "hash",
+	hmap2_config, hmap2_init, hmap2_reftraceNN, hmap2_free,
+	hmap2_getNN, hmap2_setNN, hmap2_removeNN, hmap2_size, hmap2_nextNN,
 };
 
-static const knh_MapDSPI_t* hmap_config(CTX ctx, knh_class_t p1, knh_class_t p2)
+static const knh_MapDSPI_t* hmap2_config(CTX ctx, knh_class_t p1, knh_class_t p2)
 {
-	if(IS_Tstr(p1)) {
-		if(IS_Tunbox(p2)) {
-			return &HMAP_StringNDATA;
+	if(IS_Tunbox(p2)) {
+		if(IS_Tstr(p1)) {
+			return &HMAP_SN;
 		}
-		return &HMAP_StringObject;
+		else if(IS_Tunbox(p1)) {
+			return &HMAP_NN;
+		}
+		return &HMAP_ON;
+	}
+	else {
+		if(IS_Tstr(p1)) {
+			return &HMAP_SO;
+		}
+		else if(IS_Tunbox(p1)) {
+			return &HMAP_NO;
+		}
+		return &HMAP_OO;
+	}
+}
+
+knh_PtrMap_t* new_PtrMap(CTX ctx, size_t max)
+{
+	knh_Map_t *m = new_H(Map);
+	m->spi = &HMAP_NN;
+	m->mapptr = m->spi->init(ctx, 0, NULL, NULL);
+	return (knh_PtrMap_t*)m;
+}
+
+void* knh_PtrMap_get(CTX ctx, knh_PtrMap_t *pm, void *keyptr)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)pm->mapptr;
+	knh_hashcode_t hcode = (knh_hashcode_t)keyptr;
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	if(e != NULL) {
+		hmap2_top(hmap, e);
+		return (void*)e->nvalue;
 	}
 	return NULL;
 }
 
+void knh_PtrMap_set(CTX ctx, knh_PtrMap_t *pm, void *keyptr, void *valueptr)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)pm->mapptr;
+	knh_hashcode_t hcode = (knh_hashcode_t)keyptr;
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	if(e != NULL) {
+		e->nvalue = (knh_ndata_t)valueptr;
+	}
+	else {
+		e = new_hentry2(ctx, hmap, hcode);
+		e->nvalue = (knh_ndata_t)valueptr;
+		hmap2_add(hmap, e);
+	}
+}
+
+void knh_PtrMap_remove(CTX ctx, knh_PtrMap_t *pm, void *keyptr)
+{
+	knh_hmap2_t *hmap = (knh_hmap2_t*)pm->mapptr;
+	knh_hashcode_t hcode = (knh_hashcode_t)keyptr;
+	knh_hentry2_t *e = hmap2_getentry(hmap, hcode);
+	if(e != NULL) {
+		hmap2_remove(hmap, e);
+		hmap2_unuse(hmap, e);
+	}
+}
+
 /* ------------------------------------------------------------------------ */
-/* dmap */
+/* DictMap */
+
+#define K_USE_FASTDMAP(STMT)  STMT
+
+typedef struct knh_dentry_t {
+K_USE_FASTDMAP(knh_uint64_t ukey;)
+	union {
+		knh_String_t  *key;
+		knh_intptr_t   ikey;
+		knh_floatptr_t fkey;
+		knh_ndata_t    nkey;
+	};
+	union {
+		Object           *value;
+		knh_ndata_t    nvalue;
+	};
+} knh_dentry_t;
+
+typedef struct knh_dmap_t {
+	knh_dentry_t *dentry;
+	size_t size;
+	size_t capacity;
+K_USE_FASTDMAP(knh_uint64_t (*strkeyuint)(knh_bytes_t);)
+	int (*dentrycmpr)(const void *, const void *);
+	int (*strcmpr)(knh_bytes_t, knh_bytes_t);
+	size_t sorted;
+	const char *DBGNAME;
+} knh_dmap_t ;
 
 #define UNSORTED 8
 #define knh_map_dmap(m)        ((knh_dmap_t*)m)
@@ -351,7 +818,7 @@ static int dentry_strcmp(const void *p, const void *p2)
 	K_USE_FASTDMAP(return (e->ukey < e2->ukey) ? -1 : 1;)
 }
 
-static knh_map_t *dmap_init(CTX ctx, size_t init, const char *path, void *option)
+static knh_mapptr_t *dmap_init(CTX ctx, size_t init, const char *path, void *option)
 {
 	knh_dmap_t *dmap = (knh_dmap_t*)KNH_MALLOC(ctx, sizeof(knh_dmap_t));
 	if(init < K_HASH_INITSIZE) init = 4;
@@ -365,7 +832,7 @@ static knh_map_t *dmap_init(CTX ctx, size_t init, const char *path, void *option
 	return dmap;
 }
 
-static void dmap_reftrace(CTX ctx, knh_map_t *m FTRARG)
+static void dmap_reftraceOO(CTX ctx, knh_mapptr_t *m FTRARG)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	knh_dentry_t *dentry = knh_map_dentry(m);
@@ -378,7 +845,7 @@ static void dmap_reftrace(CTX ctx, knh_map_t *m FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void dmap_free(CTX ctx, knh_map_t *m)
+static void dmap_free(CTX ctx, knh_mapptr_t *m)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	//DBG_P("DBGNAME=%s", dmap->DBGNAME);
@@ -386,13 +853,13 @@ static void dmap_free(CTX ctx, knh_map_t *m)
 	KNH_FREE(ctx, dmap, sizeof(knh_dmap_t));
 }
 
-static size_t dmap_size(CTX ctx, knh_map_t* m)
+static size_t dmap_size(CTX ctx, knh_mapptr_t* m)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	return dmap->size;
 }
 
-static knh_bool_t dmap_next(CTX ctx, knh_map_t *m, knh_mapitr_t* mitr, knh_sfp_t *rsfp)
+static knh_bool_t dmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_mapitr_t* mitr, knh_sfp_t *rsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	if(mitr->index < dmap->size) {
@@ -446,7 +913,7 @@ static knh_index_t dmap_index(knh_dmap_t *dmap, size_t sp, size_t ep, knh_bytes_
 	}
 }
 
-static knh_bool_t dmap_get(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+static knh_bool_t dmap_getSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	knh_bytes_t key = S_tobytes(ksfp[0].s);
@@ -474,16 +941,17 @@ static knh_bool_t dmap_get(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp, knh_sfp_t *rs
 		dmap->sorted = dmap->size;\
 	}\
 
-void dmap_sort_(knh_dmap_t *dmap, int isforced)
-{
-	if(isforced || dmap->size != dmap->sorted) {
-		//DBG_P("SORTED* %s, sorted=%d, size=%d", dmap->DBGNAME, dmap->sorted, dmap->size);
-		knh_qsort(dmap->dentry, dmap->size, sizeof(knh_dentry_t), dmap->dentrycmpr);
-		dmap->sorted = dmap->size;
-	}
-}
 
-static void dmap_add(CTX ctx, knh_dmap_t *dmap, knh_sfp_t *kvsfp)
+//static void dmap_sort_(knh_dmap_t *dmap, int isforced)
+//{
+//	if(isforced || dmap->size != dmap->sorted) {
+//		//DBG_P("SORTED* %s, sorted=%d, size=%d", dmap->DBGNAME, dmap->sorted, dmap->size);
+//		knh_qsort(dmap->dentry, dmap->size, sizeof(knh_dentry_t), dmap->dentrycmpr);
+//		dmap->sorted = dmap->size;
+//	}
+//}
+
+static void dmap_addSO(CTX ctx, knh_dmap_t *dmap, knh_sfp_t *kvsfp)
 {
 	size_t loc = dmap->size;
 	dmap_grow(ctx, dmap);
@@ -493,7 +961,7 @@ static void dmap_add(CTX ctx, knh_dmap_t *dmap, knh_sfp_t *kvsfp)
 	dmap->size++;
 }
 
-static void dmap_set(CTX ctx, knh_map_t* m, knh_sfp_t* kvsfp)
+static void dmap_setSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t* kvsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	knh_bytes_t key = S_tobytes(kvsfp[0].s);
@@ -501,7 +969,7 @@ static void dmap_set(CTX ctx, knh_map_t* m, knh_sfp_t* kvsfp)
 	if(loc == -1) {
 		loc = dmap_index(dmap, dmap->sorted, dmap->size, key);
 		if(loc == -1) {
-			dmap_add(ctx, dmap, kvsfp);
+			dmap_addSO(ctx, dmap, kvsfp);
 			dmap_sort(dmap);
 			return;
 		}
@@ -509,7 +977,7 @@ static void dmap_set(CTX ctx, knh_map_t* m, knh_sfp_t* kvsfp)
 	KNH_SETv(ctx, dmap->dentry[loc].value, kvsfp[1].o);
 }
 
-static void dmap_remove(CTX ctx, knh_map_t* m, knh_sfp_t *kvsfp)
+static void dmap_removeSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	knh_bytes_t key = S_tobytes(kvsfp[0].s);
@@ -531,13 +999,13 @@ static void dmap_remove(CTX ctx, knh_map_t* m, knh_sfp_t *kvsfp)
 
 static const knh_MapDSPI_t* dmap_config(CTX ctx, knh_class_t p1, knh_class_t p2);
 
-static const knh_MapDSPI_t DMAP_StringObject = {
+static const knh_MapDSPI_t DMAP_SO = {
 	K_DSPI_MAP, "dict",
-	dmap_config, dmap_init, dmap_reftrace, dmap_free,
-	dmap_get, dmap_set, dmap_remove, dmap_size, dmap_next,
+	dmap_config, dmap_init, dmap_reftraceOO, dmap_free,
+	dmap_getSO, dmap_setSO, dmap_removeSO, dmap_size, dmap_nextOO,
 };
 
-static void dmap_reftracedata(CTX ctx, knh_map_t *m FTRARG)
+static void dmap_reftraceON(CTX ctx, knh_mapptr_t *m FTRARG)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	knh_dentry_t *dentry = knh_map_dentry(m);
@@ -549,7 +1017,7 @@ static void dmap_reftracedata(CTX ctx, knh_map_t *m FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static knh_bool_t dmap_nextdata(CTX ctx, knh_map_t *m, knh_mapitr_t* mitr, knh_sfp_t *rsfp)
+static knh_bool_t dmap_nextON(CTX ctx, knh_mapptr_t *m, knh_mapitr_t* mitr, knh_sfp_t *rsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	if(mitr->index < dmap->size) {
@@ -562,7 +1030,7 @@ static knh_bool_t dmap_nextdata(CTX ctx, knh_map_t *m, knh_mapitr_t* mitr, knh_s
 	return 0;
 }
 
-static knh_bool_t dmap_getdata(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+static knh_bool_t dmap_getSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	knh_bytes_t key = S_tobytes(ksfp[0].s);
@@ -575,7 +1043,7 @@ static knh_bool_t dmap_getdata(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp, knh_sfp_t
 	return 1;
 }
 
-static void dmap_adddata(CTX ctx, knh_dmap_t *dmap, knh_sfp_t *kvsfp)
+static void dmap_addSN(CTX ctx, knh_dmap_t *dmap, knh_sfp_t *kvsfp)
 {
 	size_t loc = dmap->size;
 	dmap_grow(ctx, dmap);
@@ -585,7 +1053,7 @@ static void dmap_adddata(CTX ctx, knh_dmap_t *dmap, knh_sfp_t *kvsfp)
 	dmap->size++;
 }
 
-static void dmap_setdata(CTX ctx, knh_map_t* m, knh_sfp_t* kvsfp)
+static void dmap_setSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t* kvsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	knh_bytes_t key = S_tobytes(kvsfp[0].s);
@@ -593,7 +1061,7 @@ static void dmap_setdata(CTX ctx, knh_map_t* m, knh_sfp_t* kvsfp)
 	if(loc == -1) {
 		loc = dmap_index(dmap, dmap->sorted, dmap->size, key);
 		if(loc == -1) {
-			dmap_adddata(ctx, dmap, kvsfp);
+			dmap_addSN(ctx, dmap, kvsfp);
 			dmap_sort(dmap);
 			return;
 		}
@@ -601,7 +1069,7 @@ static void dmap_setdata(CTX ctx, knh_map_t* m, knh_sfp_t* kvsfp)
 	dmap->dentry[loc].nvalue = kvsfp[1].ndata;
 }
 
-static void dmap_removedata(CTX ctx, knh_map_t* m, knh_sfp_t *kvsfp)
+static void dmap_removeSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	knh_bytes_t key = S_tobytes(kvsfp[0].s);
@@ -620,19 +1088,19 @@ static void dmap_removedata(CTX ctx, knh_map_t* m, knh_sfp_t *kvsfp)
 	dmap->size--;
 }
 
-static const knh_MapDSPI_t DMAP_StringNDATA = {
+static const knh_MapDSPI_t DMAP_SN = {
 	K_DSPI_MAP, "dict",
-	dmap_config, dmap_init, dmap_reftracedata, dmap_free,
-	dmap_getdata, dmap_setdata, dmap_removedata, dmap_size, dmap_nextdata,
+	dmap_config, dmap_init, dmap_reftraceON, dmap_free,
+	dmap_getSN, dmap_setSN, dmap_removeSN, dmap_size, dmap_nextON,
 };
 
 static const knh_MapDSPI_t* dmap_config(CTX ctx, knh_class_t p1, knh_class_t p2)
 {
 	if(IS_Tstr(p1)) {
 		if(IS_Tunbox(p2)) {
-			return &DMAP_StringNDATA;
+			return &DMAP_SN;
 		}
-		return &DMAP_StringObject;
+		return &DMAP_SO;
 	}
 	return NULL;
 }
@@ -706,22 +1174,24 @@ static void dmap_case(knh_dmap_t *dmap)
 knh_DictMap_t* new_DictMap0_(CTX ctx, size_t capacity, int isCaseMap, const char *DBGNAME)
 {
 	knh_Map_t *m = new_H(Map);
-	m->dspi = &DMAP_StringObject;
-	m->map = m->dspi->init(ctx, capacity, NULL, NULL);
-	DBG_ASSERT(m->map != NULL);
-	if(isCaseMap) dmap_case(m->dmap);
-	m->dmap->DBGNAME = DBGNAME;
+	m->spi = &DMAP_SO;
+	m->mapptr = m->spi->init(ctx, capacity, NULL, NULL);
+	DBG_ASSERT(m->mapptr != NULL);
+	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
+	if(isCaseMap) dmap_case(dmap);
+	dmap->DBGNAME = DBGNAME;
 	return (knh_DictMap_t*)m;
 }
 
 knh_DictSet_t* new_DictSet0_(CTX ctx, size_t capacity, int isCaseMap, const char *DBGNAME)
 {
 	knh_Map_t *m = new_H(Map);
-	m->dspi = &DMAP_StringNDATA;
-	m->map = m->dspi->init(ctx, capacity, NULL, NULL);
-	DBG_ASSERT(m->map != NULL);
-	if(isCaseMap) dmap_case(m->dmap);
-	m->dmap->DBGNAME = DBGNAME;
+	m->spi = &DMAP_SN;
+	m->mapptr = m->spi->init(ctx, capacity, NULL, NULL);
+	DBG_ASSERT(m->mapptr != NULL);
+	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
+	if(isCaseMap) dmap_case(dmap);
+	dmap->DBGNAME = DBGNAME;
 	return (knh_DictSet_t*)m;
 }
 
@@ -729,25 +1199,28 @@ knh_DictSet_t* new_DictSet0_(CTX ctx, size_t capacity, int isCaseMap, const char
 
 KNHAPI2(knh_String_t*) knh_DictMap_keyAt(knh_DictMap_t *m, size_t n)
 {
-	DBG_ASSERT(n < knh_DictMap_size(m));
-	return m->dmap->dentry[n].key;
+	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
+	DBG_ASSERT(n < knh_Map_size(m));
+	return dmap->dentry[n].key;
 }
 
 KNHAPI2(Object*) knh_DictMap_valueAt(knh_DictMap_t *m, size_t n)
 {
-	DBG_ASSERT(n < knh_DictMap_size(m));
-	return m->dmap->dentry[n].value;
+	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
+	DBG_ASSERT(n < knh_Map_size(m));
+	return dmap->dentry[n].value;
 }
 
 knh_uintptr_t knh_DictSet_valueAt(knh_DictSet_t *m, size_t n)
 {
-	DBG_ASSERT(n < knh_DictSet_size(m));
-	return (knh_uintptr_t)m->dmap->dentry[n].nvalue;
+	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
+	DBG_ASSERT(n < knh_Map_size(m));
+	return (knh_uintptr_t)dmap->dentry[n].nvalue;
 }
 
 knh_index_t knh_DictMap_index(knh_DictMap_t *m, knh_bytes_t key)
 {
-	knh_dmap_t *dmap = knh_map_dmap(m->dmap);
+	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
 	knh_index_t loc = dmap_index(dmap, 0, dmap->sorted, key);
 	if(loc == -1) {
 		loc = dmap_index(dmap, dmap->sorted, dmap->size, key);
@@ -757,7 +1230,7 @@ knh_index_t knh_DictMap_index(knh_DictMap_t *m, knh_bytes_t key)
 
 Object *knh_DictMap_getNULL(CTX ctx, knh_DictMap_t *m, knh_bytes_t key)
 {
-	knh_dmap_t *dmap = knh_map_dmap(m->dmap);
+	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
 	knh_index_t loc = dmap_index(dmap, 0, dmap->sorted, key);
 	if(loc == -1) {
 		loc = dmap_index(dmap, dmap->sorted, dmap->size, key);
@@ -767,7 +1240,7 @@ Object *knh_DictMap_getNULL(CTX ctx, knh_DictMap_t *m, knh_bytes_t key)
 
 knh_uintptr_t knh_DictSet_get(CTX ctx, knh_DictSet_t *m, knh_bytes_t key)
 {
-	knh_dmap_t *dmap = knh_map_dmap(m->dmap);
+	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
 	knh_index_t loc = dmap_index(dmap, 0, dmap->sorted, key);
 	if(loc == -1) {
 		loc = dmap_index(dmap, dmap->sorted, dmap->size, key);
@@ -780,7 +1253,7 @@ void knh_DictMap_set_(CTX ctx, knh_DictMap_t *m, knh_String_t *key, dynamic *v)
 	knh_sfp_t* kvsfp = ctx->esp;
 	KNH_SETv(ctx, kvsfp[0].o, key);
 	KNH_SETv(ctx, kvsfp[1].o, v);
-	m->dspi->set(ctx, m->map, kvsfp);
+	m->spi->set(ctx, m->mapptr, kvsfp);
 }
 
 void knh_DictSet_set(CTX ctx, knh_DictSet_t *m, knh_String_t *key, knh_uintptr_t n)
@@ -788,28 +1261,31 @@ void knh_DictSet_set(CTX ctx, knh_DictSet_t *m, knh_String_t *key, knh_uintptr_t
 	knh_sfp_t* kvsfp = ctx->esp;
 	KNH_SETv(ctx, kvsfp[0].o, key);
 	kvsfp[1].ivalue = n;
-	m->dspi->set(ctx, m->map, kvsfp);
+	m->spi->set(ctx, m->mapptr, kvsfp);
 }
 
 void knh_DictMap_append(CTX ctx, knh_DictMap_t *m, knh_String_t *key, knh_Object_t *v)
 {
 	knh_sfp_t* kvsfp = ctx->esp;
+	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
 	KNH_SETv(ctx, kvsfp[0].o, key);
 	KNH_SETv(ctx, kvsfp[1].o, v);
-	dmap_add(ctx, m->dmap, kvsfp);
+	dmap_addSO(ctx, dmap, kvsfp);
 }
 
 void knh_DictSet_append(CTX ctx, knh_DictSet_t *m, knh_String_t *key, knh_uintptr_t n)
 {
 	knh_sfp_t* kvsfp = ctx->esp;
+	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
 	KNH_SETv(ctx, kvsfp[0].o, key);
 	kvsfp[1].ivalue = n;
-	dmap_adddata(ctx, m->dmap, kvsfp);
+	dmap_addSN(ctx, dmap, kvsfp);
 }
 
 void knh_DictSet_sort(CTX ctx, knh_DictSet_t *m)
 {
-	dmap_sort(m->dmap);
+	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
+	dmap_sort(dmap);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -818,9 +1294,9 @@ void knh_DictSet_sort(CTX ctx, knh_DictSet_t *m)
 KNHAPI2(knh_Map_t*) new_Map(CTX ctx)
 {
 	knh_Map_t *m = new_H(Map);
-	m->dspi = &DMAP_StringObject;
-	m->map = m->dspi->init(ctx, 4, NULL, NULL);
-	DBG_ASSERT(m->map != NULL);
+	m->spi = &DMAP_SO;
+	m->mapptr = m->spi->init(ctx, 4, NULL, NULL);
+	DBG_ASSERT(m->mapptr != NULL);
 	return m;
 }
 
@@ -829,7 +1305,7 @@ KNHAPI2(void) knh_Map_set(CTX ctx, knh_Map_t *m, knh_String_t *key, knh_Object_t
 	knh_sfp_t* kvsfp = ctx->esp;
 	KNH_SETv(ctx, kvsfp[0].o, key);
 	KNH_SETv(ctx, kvsfp[1].o, value);
-	m->dspi->set(ctx, m->map, kvsfp);
+	m->spi->set(ctx, m->mapptr, kvsfp);
 }
 
 KNHAPI2(void) knh_Map_setString(CTX ctx, knh_Map_t *m, const char *key, const char *value)
@@ -837,7 +1313,7 @@ KNHAPI2(void) knh_Map_setString(CTX ctx, knh_Map_t *m, const char *key, const ch
 	knh_sfp_t* kvsfp = ctx->esp;
 	KNH_SETv(ctx, kvsfp[0].o, new_T(key));
 	KNH_SETv(ctx, kvsfp[1].o, new_String(ctx, value));
-	m->dspi->set(ctx, m->map, kvsfp);
+	m->spi->set(ctx, m->mapptr, kvsfp);
 }
 
 KNHAPI2(void) knh_Map_setInt(CTX ctx, knh_Map_t *m, const char *key, knh_int_t value)
@@ -845,16 +1321,16 @@ KNHAPI2(void) knh_Map_setInt(CTX ctx, knh_Map_t *m, const char *key, knh_int_t v
 	knh_sfp_t* kvsfp = ctx->esp;
 	KNH_SETv(ctx, kvsfp[0].o, new_T(key));
 	KNH_SETv(ctx, kvsfp[1].o, new_Int_(ctx, CLASS_Int, value));
-	m->dspi->set(ctx, m->map, kvsfp);
+	m->spi->set(ctx, m->mapptr, kvsfp);
 }
 
 /* ------------------------------------------------------------------------ */
 
 void knh_loadScriptDefaultMapDSPI(CTX ctx, knh_NameSpace_t *ns)
 {
-	knh_NameSpace_addDSPI(ctx, ns, "hash", (knh_DSPI_t*)&HMAP_StringObject);
+	knh_NameSpace_addDSPI(ctx, ns, "hash", (knh_DSPI_t*)&HMAP_SO);
 	knh_hash(0, "", 0); // dummy
-	knh_NameSpace_addDSPI(ctx, ns, "dict", (knh_DSPI_t*)&DMAP_StringObject);
+	knh_NameSpace_addDSPI(ctx, ns, "dict", (knh_DSPI_t*)&DMAP_SO);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -862,13 +1338,13 @@ void knh_loadScriptDefaultMapDSPI(CTX ctx, knh_NameSpace_t *ns)
 const knh_MapDSPI_t *knh_NameSpace_getMapDSPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	if(path.len == 0) {
-		return &DMAP_StringObject;
+		return &DMAP_SO;
 	}
 	else {
 		const knh_MapDSPI_t *p = (const knh_MapDSPI_t*)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_MAP, path);
 		if(p == NULL) {
 			//SYSLOG_UnknownPathType(ctx, path);
-			p = &DMAP_StringObject;
+			p = &DMAP_SO;
 		}
 		return p;
 	}
@@ -876,13 +1352,14 @@ const knh_MapDSPI_t *knh_NameSpace_getMapDSPI(CTX ctx, knh_NameSpace_t *ns, knh_
 
 const knh_MapDSPI_t *knh_getDefaultMapDSPI(CTX ctx, knh_class_t p1, knh_class_t p2)
 {
-	if(IS_Tstr(p1)) {
-		if(IS_Tunbox(p2)) {
-			return &DMAP_StringNDATA;
-		}
-		return &DMAP_StringObject;
-	}
-	return NULL;
+//	if(IS_Tstr(p1)) {
+//		if(IS_Tunbox(p2)) {
+//			return &DMAP_StringNDATA;
+//		}
+//		return &DMAP_StringObject;
+//	}
+//	return NULL;
+	return hmap2_config(ctx, p1, p2);
 }
 
 #ifdef __cplusplus

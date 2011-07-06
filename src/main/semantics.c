@@ -578,10 +578,10 @@ knh_bytes_t knh_getURNAlias(CTX ctx, knh_bytes_t aurn)
 
 void knh_loadScriptURNAliasData(CTX ctx, knh_StringData_t *data)
 {
-	knh_DictMap_t *map = DP(ctx->sys)->URNAliasDictMap;
+	knh_DictMap_t *mapptr = DP(ctx->sys)->URNAliasDictMap;
 	knh_StringData_t *d = data;
 	while(d->name != NULL) {
-		knh_String_t *s =(knh_String_t*)knh_DictMap_get(ctx,  map, B(d->name));
+		knh_String_t *s =(knh_String_t*)knh_DictMap_get(ctx,  mapptr, B(d->name));
 		if(IS_NOTNULL(s) && !S_equals(s, B(d->value))) {
 			KNH_SYSLOG(ctx, LOG_WARNING, _("overriding alias %s %s as %s"), d->name, S_tochar(s), d->value);
 		}
@@ -590,7 +590,7 @@ void knh_loadScriptURNAliasData(CTX ctx, knh_StringData_t *data)
 	d = data;
 	while(d->name != NULL) {
 		knh_String_t *n = new_T(d->name);
-		knh_DictMap_append(ctx, map, n, UPCAST(new_T(d->value)));
+		knh_DictMap_append(ctx, mapptr, n, UPCAST(new_T(d->value)));
 		d++;
 	}
 }

@@ -145,9 +145,9 @@ static knh_String_t* DEFAULT_getkey(CTX ctx, knh_sfp_t *sfp)
 	return knh_cwb_newString(ctx, cwb);
 }
 
-static knh_hashcode_t DEFAULT_hashCode(CTX ctx, knh_sfp_t *sfp)
+static knh_hashcode_t DEFAULT_hashCode(CTX ctx, knh_RawPtr_t *o)
 {
-	return ((knh_hashcode_t)sfp[0].o) / sizeof(knh_Object_t);
+	return ((knh_hashcode_t)o) / sizeof(knh_Object_t);
 }
 
 static knh_int_t DEFAULT_toint(CTX ctx, knh_sfp_t *sfp)
@@ -173,8 +173,18 @@ knh_TypeMap_t* DEFAULT_findTypeMapNULL(CTX ctx, knh_class_t scid, knh_class_t tc
 #define DEFAULT_5 NULL
 #define DEFAULT_6 NULL
 
+static void RawPtr_free(CTX ctx, knh_RawPtr_t *o)
+{
+	if(o->rawfree != NULL) {
+		DBG_P("freeing %s %p", o->DBG_NAME, o->rawptr);
+		o->rawfree(o->rawptr);
+		o->rawptr = NULL;
+		o->rawfree = NULL;
+	}
+}
+
 static knh_ClassDef_t TdynamicDef = {
-	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
+	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, RawPtr_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
@@ -571,9 +581,9 @@ static knh_float_t Float_tofloat(CTX ctx, knh_sfp_t *sfp)
 	return sfp[0].fvalue;
 }
 
-static knh_hashcode_t NDATA_hashCode(CTX ctx, knh_sfp_t *sfp)
+static knh_hashcode_t NDATA_hashCode(CTX ctx, knh_RawPtr_t *o)
 {
-	return (knh_hashcode_t)sfp[0].ndata;
+	return (knh_hashcode_t)((knh_Int_t*)o)->n.data;
 }
 
 static int Int_compareTo(knh_RawPtr_t *o, knh_RawPtr_t *o2)
@@ -713,9 +723,9 @@ static void Date_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	knh_write_ascii(ctx, w, buf);
 }
 
-static knh_hashcode_t Date_hashCode(CTX ctx, knh_sfp_t *sfp)
+static knh_hashcode_t Date_hashCode(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_Date_t *dt = sfp[0].dt;
+	knh_Date_t *dt = (knh_Date_t*)o;
 	knh_hashcode_t n1 = ((((knh_hashcode_t)dt->dt.day * 24) + dt->dt.hour) * 60) * dt->dt.min;
 	n1 = (n1 + dt->dt.gmtoff) * 60 + dt->dt.sec;
 	n1 = n1 + ((dt->dt.year) * 365) + dt->dt.month;
@@ -788,9 +798,9 @@ static knh_String_t* String_getkey(CTX ctx, knh_sfp_t *sfp)
 	return sfp[0].s;
 }
 
-static knh_hashcode_t String_hashCode(CTX ctx, knh_sfp_t *sfp)
+static knh_hashcode_t String_hashCode(CTX ctx, knh_RawPtr_t *o)
 {
-	return (sfp[0].s)->hashCode;
+	return ((knh_String_t*)o)->hashCode;
 }
 
 static void String_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t *packspi)
@@ -909,9 +919,9 @@ static void Bytes_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	}
 }
 
-static knh_hashcode_t Bytes_hashCode(CTX ctx, knh_sfp_t *sfp)
+static knh_hashcode_t Bytes_hashCode(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_Bytes_t *ba = sfp[0].ba;
+	knh_Bytes_t *ba = (knh_Bytes_t*)o;
 	return knh_hash(0, ba->bu.text, ba->bu.len);
 }
 
@@ -1256,14 +1266,14 @@ static knh_ClassDef_t IteratorDef = {
 /* Map */
 
 static const knh_MapDSPI_t* NULLMAP_config(CTX ctx, knh_class_t p1, knh_class_t p2);
-static knh_map_t *NULLMAP_init(CTX ctx, size_t init, const char *path, void *option) { return NULL; }
-static void NULLMAP_reftrace(CTX ctx, knh_map_t *m FTRARG){}
-static void NULLMAP_free(CTX ctx, knh_map_t *m){}
-static knh_bool_t NULLMAP_get(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp) { return 0; }
-static void NULLMAP_set(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp) {}
-static void NULLMAP_remove(CTX ctx, knh_map_t* m, knh_sfp_t *ksfp) {}
-static size_t NULLMAP_size(CTX ctx, knh_map_t* m) { return 0; }
-static knh_bool_t NULLMAP_next(CTX ctx, knh_map_t* m, knh_mapitr_t *mitr, knh_sfp_t *rsfp) { return 0; }
+static knh_mapptr_t *NULLMAP_init(CTX ctx, size_t init, const char *path, void *option) { return NULL; }
+static void NULLMAP_reftrace(CTX ctx, knh_mapptr_t *m FTRARG){}
+static void NULLMAP_free(CTX ctx, knh_mapptr_t *m){}
+static knh_bool_t NULLMAP_get(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp) { return 0; }
+static void NULLMAP_set(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp) {}
+static void NULLMAP_remove(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp) {}
+static size_t NULLMAP_size(CTX ctx, knh_mapptr_t* m) { return 0; }
+static knh_bool_t NULLMAP_next(CTX ctx, knh_mapptr_t* m, knh_mapitr_t *mitr, knh_sfp_t *rsfp) { return 0; }
 
 static const knh_MapDSPI_t NULLMAP = {
 	K_DSPI_MAP, "NULL",
@@ -1279,8 +1289,8 @@ static const knh_MapDSPI_t* NULLMAP_config(CTX ctx, knh_class_t p1, knh_class_t 
 static void Map_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Map_t *m = (knh_Map_t*)o;
-	m->dspi = &NULLMAP;
-	m->map = NULL;
+	m->spi = &NULLMAP;
+	m->mapptr = NULL;
 }
 
 static void TODO_initcopy(CTX ctx, knh_RawPtr_t *d, knh_RawPtr_t *s)
@@ -1291,30 +1301,30 @@ static void TODO_initcopy(CTX ctx, knh_RawPtr_t *d, knh_RawPtr_t *s)
 static void Map_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Map_t *m = (knh_Map_t*)o;
-	m->dspi->reftrace(ctx, m->map FTRDATA);
+	m->spi->reftrace(ctx, m->mapptr FTRDATA);
 }
 
 static void Map_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Map_t *m = (knh_Map_t*)o;
-	m->dspi->freemap(ctx, m->map);
+	m->spi->freemap(ctx, m->mapptr);
 }
 
 static void Map_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_Map_t *m = (knh_Map_t*)o;
-	size_t n = m->dspi->size(ctx, m->map);
+	size_t n = m->spi->size(ctx, m->mapptr);
 	knh_putc(ctx, w, '{');
 	if(n > 0) {
 		BEGIN_LOCAL(ctx, lsfp, 2);
 		knh_class_t p1 = O_cTBL(o)->p1, p2 = O_cTBL(o)->p2;
 		knh_mapitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
-		if(m->dspi->next(ctx, m->map, mitr, lsfp)) {
+		if(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
 			knh_write_sfp(ctx, w, p1, lsfp, FMT_line);
 			knh_write(ctx, w, STEXT(": "));
 			knh_write_sfp(ctx, w, p2, lsfp+1, FMT_line);
 			if(!IS_FMTline(level)) {
-				while(m->dspi->next(ctx, m->map, mitr, lsfp)) {
+				while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
 					knh_write(ctx, w, STEXT(", "));
 					knh_write_sfp(ctx, w, p1, lsfp, FMT_line);
 					knh_write(ctx, w, STEXT(": "));
@@ -1355,9 +1365,9 @@ static knh_String_t *Class_getkey(CTX ctx,knh_sfp_t *sfp)
 	return ClassTBL(c->cid)->lname;
 }
 
-static knh_hashcode_t Class_hashCode(CTX ctx,knh_sfp_t *sfp)
+static knh_hashcode_t Class_hashCode(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_Class_t *c = (knh_Class_t*)sfp[0].o;
+	knh_Class_t *c = (knh_Class_t*)o;
 	return (knh_hashcode_t)c->cid;
 }
 
@@ -2445,7 +2455,7 @@ static void System_init(CTX ctx, knh_RawPtr_t *o)
 static void System_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_SystemEX_t *sys = DP((knh_System_t*)o);
-	size_t i, size = knh_DictSet_size(sys->nameDictCaseSet);
+	size_t i, size = knh_Map_size(sys->nameDictCaseSet);
 	KNH_ADDREF(ctx, (sys->enc));
 	KNH_ADDREF(ctx, (sys->in));
 	KNH_ADDREF(ctx, (sys->out));
@@ -2770,7 +2780,7 @@ static void Stmt_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	knh_putc(ctx, w, '(');
 	if(!IS_FMTs(level)) {
 		if(IS_Map(DP(stmt)->metaDictCaseMap)) {
-			size = knh_DictMap_size(DP(stmt)->metaDictCaseMap);
+			size = knh_Map_size(DP(stmt)->metaDictCaseMap);
 			for(i = 0; i < size; i++) {
 				knh_String_t *k = knh_DictMap_keyAt(DP(stmt)->metaDictCaseMap, i);
 				knh_String_t *v = (knh_String_t*)knh_DictMap_valueAt(DP(stmt)->metaDictCaseMap, i);

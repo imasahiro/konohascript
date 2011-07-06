@@ -700,7 +700,7 @@ typedef struct knh_ClassDef_t {
 	void (*p)(CTX, struct knh_OutputStream_t*, struct knh_RawPtr_t*, int);
 
 	struct knh_String_t* (*getkey)(CTX, knh_sfp_t*);
-	knh_hashcode_t       (*hashCode)(CTX, knh_sfp_t*);
+	knh_hashcode_t       (*hashCode)(CTX, struct knh_RawPtr_t*);
 	knh_int_t   (*toint)(CTX ctx, knh_sfp_t*);
 	knh_float_t (*tofloat)(CTX ctx, knh_sfp_t*);
 	struct knh_TypeMap_t* (*findTypeMapNULL)(CTX, knh_class_t, knh_class_t, int);

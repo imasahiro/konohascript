@@ -333,98 +333,36 @@ struct knh_Array_t {
 ///* ------------------------------------------------------------------------ */
 //## class Map Object;
 
-#define K_USE_FASTDMAP(STMT)  STMT
-
-typedef struct knh_dentry_t {
-K_USE_FASTDMAP(knh_uint64_t ukey;)
-	union {
-		knh_String_t  *key;
-		knh_intptr_t   ikey;
-		knh_floatptr_t fkey;
-		knh_ndata_t    nkey;
-	};
-	union {
-		Object           *value;
-		knh_ndata_t    nvalue;
-	};
-} knh_dentry_t;
-
-typedef struct knh_dmap_t {
-	knh_dentry_t *dentry;
-	size_t size;
-	size_t capacity;
-K_USE_FASTDMAP(knh_uint64_t (*strkeyuint)(knh_bytes_t);)
-	int (*dentrycmpr)(const void *, const void *);
-	int (*strcmpr)(knh_bytes_t, knh_bytes_t);
-	size_t sorted;
-	const char *DBGNAME;
-} knh_dmap_t ;
-
-typedef struct knh_hentry_t {
-	knh_hashcode_t hcode;
-	union {
-		Object       *key;
-		knh_String_t *skey;
-		knh_ndata_t   nkey;
-	};
-	union {
-		Object       *value;
-		knh_ndata_t   nvalue;
-	};
-	struct knh_hentry_t *next;
-} knh_hentry_t;
-
-typedef struct knh_hmap_t {
-	knh_hentry_t **hentry;
-	size_t size;
-	size_t hmax;
-	size_t factor;
-	const char *DBGNAME;
-} knh_hmap_t;
-
-typedef void  knh_map_t;
+typedef void  knh_mapptr_t;
 
 typedef struct knh_Map_t {
 	knh_hObject_t h;
-	union {
-		knh_map_t     *map;
-		knh_dmap_t    *dmap;
-		knh_hmap_t    *hmap;
-	};
-	const struct knh_MapDSPI_t *dspi;
+	knh_mapptr_t  *mapptr;
+	const struct knh_MapDSPI_t *spi;
 } knh_Map_t;
 
-#define K_HASH_INITSIZE 83
-#define KNH_HASH_FACTOR(i)     ((i * 4) / 3)
-#define knh_Map_get(ctx, m, k)     m->dspi->getkey(ctx, m, k)
+typedef knh_Map_t knh_PtrMap_t;
+#define knh_Map_size(m)  (m)->spi->size(NULL, (m)->mapptr)
 
 // DictMap, DictSet are old names of Map;
 
 typedef struct knh_DictMap_t {
 	knh_hObject_t h;
-	union {
-		knh_map_t     *map;
-		knh_dmap_t    *dmap;
-	};
-	const struct knh_MapDSPI_t *dspi;
+	knh_mapptr_t     *mapptr;
+	const struct knh_MapDSPI_t *spi;
 } knh_DictMap_t;
 
 #define new_DictMap0(ctx, N, F, NAME)   new_DictMap0_(ctx, N, F, NAME)
-#define knh_DictMap_size(m)    ((m)->dmap)->size
 #define knh_DictMap_set(ctx, m, k, v)      knh_DictMap_set_(ctx, m, k, UPCAST(v))
 
 typedef struct knh_DictSet_t {
 	knh_hObject_t h;
-	union {
-		knh_map_t     *map;
-		knh_dmap_t    *dmap;
-	};
-	const struct knh_MapDSPI_t *dspi;
+	knh_mapptr_t     *mapptr;
+	const struct knh_MapDSPI_t *spi;
 } knh_DictSet_t;
 
 typedef void (*knh_Fdictset)(CTX, knh_DictSet_t*, knh_String_t *k, knh_uintptr_t);
 #define new_DictSet0(ctx, N, F, NAME)   new_DictSet0_(ctx, N, F, NAME)
-#define knh_DictSet_size(m)      ((m)->dmap)->size
 #define knh_DictSet_keyAt(ds, n)    knh_DictMap_keyAt((knh_DictMap_t*)ds, n)
 #define knh_DictSet_index(ds, key)  knh_DictMap_index((knh_DictMap_t*)ds, key)
 

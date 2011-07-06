@@ -819,16 +819,6 @@ knh_Object_t *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
 	return o;
 }
 
-KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, knh_RawPtr_t *po, void *rawptr)
-{
-	knh_RawPtr_t *npo = (knh_RawPtr_t*)new_hObject_(ctx, O_cTBL(po));
-	npo->rawptr = rawptr;
-	if(rawptr == NULL) {
-		knh_Object_toNULL(ctx, npo);
-	}
-	return npo;
-}
-
 knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 {
 	knh_Object_t *o = NULL;

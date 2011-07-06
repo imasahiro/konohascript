@@ -114,18 +114,16 @@ typedef struct knh_MapDSPI_t {
 	int   type;
 	const char *name;
 	const struct knh_MapDSPI_t* (*config)(CTX, knh_class_t, knh_class_t);
-	knh_map_t* (*init)(CTX, size_t, const char*, void *);
-	void (*reftrace)(CTX, knh_map_t* FTRARG);
-	void (*freemap)(CTX, knh_map_t*);
+	knh_mapptr_t* (*init)(CTX, size_t, const char*, void *);
+	void (*reftrace)(CTX, knh_mapptr_t* FTRARG);
+	void (*freemap)(CTX, knh_mapptr_t*);
 	// main
-	knh_bool_t (*get)(CTX, knh_map_t*, knh_sfp_t*, knh_sfp_t *);
-	void (*set)(CTX, knh_map_t*, knh_sfp_t *);
-	void (*remove)(CTX, knh_map_t*, knh_sfp_t *);
-	size_t (*size)(CTX, knh_map_t*);
-	knh_bool_t (*next)(CTX, knh_map_t*, knh_mapitr_t *, knh_sfp_t *);
+	knh_bool_t (*get)(CTX, knh_mapptr_t*, knh_sfp_t*, knh_sfp_t *);
+	void (*set)(CTX, knh_mapptr_t*, knh_sfp_t *);
+	void (*remove)(CTX, knh_mapptr_t*, knh_sfp_t *);
+	size_t (*size)(CTX, knh_mapptr_t*);
+	knh_bool_t (*next)(CTX, knh_mapptr_t*, knh_mapitr_t *, knh_sfp_t *);
 } knh_MapDSPI_t;
-
-
 
 /* ------------------------------------------------------------------------ */
 /* REGEX_SPI */

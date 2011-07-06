@@ -69,7 +69,7 @@ static void ClassNAME_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *
 static void ClassCONST_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *ct, knh_NameSpace_t *ns)
 {
 	knh_DictMap_t *tcmap = ct->constDictCaseMapNULL;
-	size_t i, size = knh_DictMap_size(tcmap);
+	size_t i, size = knh_Map_size(tcmap);
 	int hasCaption = 0;
 	for(i = 0; i < size; i++) {
 		if(!hasCaption) {

@@ -121,7 +121,7 @@ static METHOD Object_getClass(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static METHOD Object_hashCode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_hashcode_t h = ClassTBL(O_bcid(sfp[0].o))->cdef->hashCode(ctx, sfp);
+	knh_hashcode_t h = ClassTBL(O_bcid(sfp[0].o))->cdef->hashCode(ctx, sfp[0].p);
 	RETURNi_(h);
 }
 
@@ -1050,7 +1050,7 @@ static void knh_regex_map_set(CTX ctx, knh_Map_t *m, const char *str, size_t nma
 			s_value = new_S(ctx, new_bytes2(&str[rp->rm_so], (rp->rm_eo - rp->rm_so)));
 			KNH_SETv(ctx, lsfp[0].s, s_name);
 			KNH_SETv(ctx, lsfp[1].s, s_value);
-			m->dspi->set(ctx, m->map, lsfp);
+			m->spi->set(ctx, m->mapptr, lsfp);
 		}
 	}
 	END_LOCAL(ctx, lsfp, m);
@@ -1063,8 +1063,8 @@ static METHOD String_extract(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_NameSpace_t *ns = sfp[2].ns;
 	knh_Map_t *m = new_H(Map);
 	const knh_MapDSPI_t *dspi = knh_NameSpace_getMapDSPI(ctx, ns, B("hash"));
-	m->dspi = dspi->config(ctx, CLASS_String, CLASS_String);
-	m->map = dspi->init(ctx, 0, dspi->name, NULL);
+	m->spi = dspi->config(ctx, CLASS_String, CLASS_String);
+	m->mapptr = dspi->init(ctx, 0, dspi->name, NULL);
 	if (IS_NOTNULL(re) && S_size(re->pattern) > 0) {
 		size_t nmatch = pcre_regex_nmatchsize(re->reg);
 		const char *str = s->str.text;
@@ -1949,17 +1949,14 @@ static TYPEMAP RangeInt_ArrayInt(CTX ctx, knh_sfp_t *sfp _RIX)
 
 
 /* ------------------------------------------------------------------------ */
-//## method This Map.new(Int init, String path, NameSpace ns);
+//## method This Map.new(Int init);
 
 static METHOD Map_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = (knh_Map_t *)sfp[0].o;
 	size_t init = sfp[1].ivalue <= 0 ? 0: Int_to(size_t, sfp[1]);
-	knh_bytes_t path = S_tobytes(sfp[2].s);
-	knh_class_t cid = O_cid(m);
-	const knh_MapDSPI_t *dspi = knh_NameSpace_getMapDSPI(ctx, sfp[3].ns, path);
-	m->dspi = dspi->config(ctx, C_p1(cid), C_p2(cid));
-	m->map = m->dspi->init(ctx, init, path.text, NULL);
+	m->spi = knh_getDefaultMapDSPI(ctx, O_p1(m), O_p2(m));
+	m->mapptr = m->spi->init(ctx, init, NULL, NULL);
 	RETURN_(m);
 }
 
@@ -1971,11 +1968,11 @@ static METHOD Map_newMAP(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Map_t *m = sfp[0].m;
 	knh_sfp_t *v = sfp + 1;
 	size_t i, ac = knh_stack_argc(ctx, v);
-	m->dspi = knh_getDefaultMapDSPI(ctx, O_p1(m), O_p2(m));
-	KNH_ASSERT(m->dspi != NULL); // if NULL, it is unsupported
-	m->map  = m->dspi->init(ctx, 0, NULL, NULL);
+	m->spi = knh_getDefaultMapDSPI(ctx, O_p1(m), O_p2(m));
+	KNH_ASSERT(m->spi != NULL); // if NULL, it is unsupported
+	m->mapptr  = m->spi->init(ctx, 0, NULL, NULL);
 	for(i = 0; i < ac; i+=2) {
-		m->dspi->set(ctx, m->map, v + i);
+		m->spi->set(ctx, m->mapptr, v + i);
 	}
 	RETURN_(m);
 }
@@ -2320,7 +2317,7 @@ static METHOD Object_opIS(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD Map_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
-	RETURNb_(m->dspi->get(ctx, m->dmap, sfp + 1, sfp + K_RIX));
+	RETURNb_(m->spi->get(ctx, m->mapptr, sfp + 1, sfp + K_RIX));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -2329,7 +2326,7 @@ static METHOD Map_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD Map_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
-	if(!m->dspi->get(ctx, m->dmap, sfp + 1, sfp + K_RIX)) {
+	if(!m->spi->get(ctx, m->mapptr, sfp + 1, sfp + K_RIX)) {
 		RETURNa_(KNH_NULVAL(C_p2(O_cid(m))));
 	}
 }
@@ -2337,20 +2334,20 @@ static METHOD Map_get(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method void Map.set(T1 key, T2 value);
 
-static METHOD DictMap_set(CTX ctx, knh_sfp_t *sfp _RIX)
+static METHOD Map_set(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
-	m->dspi->set(ctx, m->dmap, sfp + 1);
+	m->spi->set(ctx, m->mapptr, sfp + 1);
 	RETURNvoid_();
 }
 
 /* ------------------------------------------------------------------------ */
 //## method void Map.remove(T1 key);
 
-static METHOD DictMap_remove(CTX ctx, knh_sfp_t *sfp _RIX)
+static METHOD Map_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
-	m->dspi->remove(ctx, m->dmap, sfp + 1);
+	m->spi->remove(ctx, m->mapptr, sfp + 1);
 	RETURNvoid_();
 }
 
@@ -2360,12 +2357,12 @@ static METHOD DictMap_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 static METHOD Map_keys(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
-	size_t size = m->dspi->size(ctx, m->map);
+	size_t size = m->spi->size(ctx, m->mapptr);
 	knh_class_t p1 = O_cTBL(m)->p1;
 	knh_Array_t *a = new_Array(ctx, p1, size);
 	knh_sfp_t *lsfp = ctx->esp;
 	knh_mapitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
-	while(m->dspi->next(ctx, m->map, mitr, lsfp)) {
+	while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
 		a->api->add(ctx, a, lsfp);
 	}
 	RETURN_(a);
@@ -2378,7 +2375,7 @@ static ITRNEXT Fnext_mapkey(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Iterator_t *itr = ITR(sfp);
 	knh_Map_t *m = (knh_Map_t*)DP(itr)->source;
 	knh_sfp_t *lsfp = ctx->esp;
-	if(m->dspi->next(ctx, m->map, &(DP(itr)->mitr), lsfp)) {
+	if(m->spi->next(ctx, m->mapptr, &(DP(itr)->mitr), lsfp)) {
 		ITRNEXT_(lsfp[0].o);
 	}
 	else {
@@ -2391,7 +2388,7 @@ static ITRNEXT Fnext_mapkeydata(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Iterator_t *itr = ITR(sfp);
 	knh_Map_t *m = (knh_Map_t*)DP(itr)->source;
 	knh_sfp_t *lsfp = ctx->esp;
-	if(m->dspi->next(ctx, m->map, &(DP(itr)->mitr), lsfp)) {
+	if(m->spi->next(ctx, m->mapptr, &(DP(itr)->mitr), lsfp)) {
 		ITRNEXTd_(lsfp[0].ndata);
 	}
 	else {
@@ -2643,10 +2640,11 @@ static METHOD String_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 //## method Int Map.getSize();
+
 METHOD Map_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
-	RETURNi_(m->dspi->size(ctx, m->map));
+	RETURNi_(m->spi->size(ctx, m->mapptr));
 }
 
 ///* ------------------------------------------------------------------------ */
@@ -3771,7 +3769,7 @@ static METHOD System_listProperties(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_bytes_t prefix = IS_NULL(sfp[1].s) ? STEXT("") : S_tobytes(sfp[1].s);
 	knh_DictMap_t *map = DP(ctx->sys)->props;
 	size_t i;
-	for(i = 0; i < knh_DictMap_size(map); i++) {
+	for(i = 0; i < knh_Map_size(map); i++) {
 		knh_String_t *key = knh_DictMap_keyAt(map, i);
 		if(knh_bytes_matchWildCard(S_tobytes(key), prefix)) {
 			knh_Array_add(ctx, a, key);
