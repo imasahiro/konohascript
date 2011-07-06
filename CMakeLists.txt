@@ -68,7 +68,7 @@ set(KONOHA_SRC
 	src/main/runtime.c
 	src/main/security.c
 	src/main/semantics.c
-	src/main/ffi.c
+	src/lang/ffi.c
 	src/main/stack.c
 	src/main/stream.c
 	src/main/string.c
