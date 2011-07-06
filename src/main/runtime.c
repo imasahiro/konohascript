@@ -410,8 +410,9 @@ static int knh_runMain(CTX ctx, int argc, const char **argv)
 		KNH_SETv(ctx, lsfp[thisidx].o, ctx->script);
 		KNH_SETv(ctx, lsfp[thisidx+1].o, knh_getPropertyNULL(ctx, STEXT("script.argv")));
 		klr_setesp(ctx, lsfp + thisidx+2);
-		knh_VirtualMachine_run(ctx, lsfp + thisidx, CODE_LAUNCH);
-		res = (int)lsfp[1].ivalue;
+		if(knh_VirtualMachine_launch(ctx, lsfp + thisidx)) {
+			res = (int)lsfp[1].ivalue;
+		}
 		END_LOCAL_(ctx, lsfp);
 	}
 	KONOHA_END(ctx);

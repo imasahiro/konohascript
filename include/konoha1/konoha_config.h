@@ -51,6 +51,8 @@
 //#define K_USING_RCGC          1
 //#define K_USING_SQLITE3       1
 
+#define K_USING_SIGNAL          1
+
 //#ifdef K_USING_DEBUG  /* for debug*/
 //#define K_USING_RCGC   1
 //#endif

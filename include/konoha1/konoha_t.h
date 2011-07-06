@@ -48,6 +48,12 @@
 	#include<pthread.h>
 #endif
 
+#if defined(K_USING_SIGNAL)
+#ifdef K_USING_POSIX_
+#include<signal.h>
+#endif
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -1011,6 +1017,8 @@ typedef struct knh_ServiceSPI_t {
 	void  (*pSPI)(const char*, const char*, int, const char*, ...);
 } knh_ServiceSPI_t;
 
+#define WCTX(ctx)     ((knh_context_t*)ctx)
+
 typedef struct knh_context_t {
 	/* shared table */
 	union {
@@ -1072,6 +1080,9 @@ typedef struct knh_context_t {
 	// add here for new entry
 	struct knh_ExceptionHandler_t  *ehdrNC;
 	struct knh_Object_t            *evaled;
+	int                             signal;
+	void                           *siginfo;
+	void                           *sighandlers;
 } knh_context_t ;
 
 /* ------------------------------------------------------------------------ */

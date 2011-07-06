@@ -49,6 +49,10 @@
 
 #include"konoha1/konoha_config.h"
 
+#if defined(K_USING_SIGNAL)
+#include<signal.h>
+#endif
+
 /* types, symbols */
 #include"konoha1/konoha_t.h"
 #include"konoha1/konoha_class.h"

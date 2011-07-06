@@ -563,7 +563,7 @@ static knh_status_t SCRIPT_eval(CTX ctx, knh_Stmt_t *stmt, int isCompileOnly, kn
 		KNH_SETv(ctx, lsfp[thisidx+1].o, ctx->evaled);
 		lsfp[thisidx+1].ndata = O_data(ctx->evaled);
 		klr_setesp(ctx, lsfp + thisidx+2);
-		if(knh_VirtualMachine_run(ctx, lsfp + thisidx, CODE_LAUNCH) == NULL) {
+		if(knh_VirtualMachine_launch(ctx, lsfp + thisidx)) {
 			//DBG_P("returning sfpidx=%d, rtnidx=%d, %s %lld %ld %f", sfpidx_, sfpidx_ + rtnidx, O__(lsfp[rtnidx].o), lsfp[rtnidx].ivalue, lsfp[rtnidx].bvalue, lsfp[rtnidx].fvalue);
 			if(STT_(stmt) == STT_RETURN && !Stmt_isImplicit(stmt)) {
 				cid = O_cid(lsfp[rtnidx].o);

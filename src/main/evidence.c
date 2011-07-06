@@ -287,6 +287,133 @@ static void opt_enforce_security(int mode, const char *optstr)
 	enforce_security = 1;
 }
 
+/* ------------------------------------------------------------------------ */
+/* [signal] */
+
+// http://www.ibm.com/developerworks/jp/linux/library/l-sigdebug/index.html
+
+static void record_signal(CTX ctx, int sn , siginfo_t* si, void *sigdata)
+{
+	fprintf(stderr, "signal number = %d, signal errno = %d, signal code = %d", si->si_signo,si->si_errno, si->si_code);
+	fprintf(stderr, "senders' pid = %x, sender's uid = %d\n", si->si_pid, si->si_uid);
+}
+
+static void trapSIGINT(int sig, siginfo_t* si, void *sc)
+{
+	CTX ctx = knh_getCurrentContext();
+//	record_signal(ctx, sig, si, sc);
+	if(ctx != NULL) {
+		LOGSFPDATA = {iDATA("sender_pid", si->si_pid), iDATA("sender_uid", si->si_uid)};
+		CRIT_Failed("konoha", "Interrupted!!");
+	}
+	_Exit(0);
+}
+
+static void trapSIGFPE(int sig, siginfo_t* si, void *sc)
+{
+	CTX ctx = knh_getCurrentContext();
+	static const char *emsg[] = {
+			/* FPE_NOOP	  0*/ "SIGFPE",
+			/* FPE_FLTDIV 1*/ "floating point divide by zero",
+			/* FPE_FLTOVF 2*/ "floating point overflow",
+			/* FPE_FLTUND 3*/ "floating point underflow",
+			/* FPE_FLTRES 4*/ "floating point inexact result",
+			/* FPE_FLTINV	5	*/ "invalid floating point operation",
+			/* FPE_FLTSUB	6	*/ "subscript out of range -NOTIMP",
+			/* FPE_INTDIV	7	*/ "integer divide by zero",
+			/* FPE_INTOVF	8	*/ "integer overflow"};
+	record_signal(ctx, sig, si, sc);
+	if(ctx != NULL) {
+		int si_code = (si->si_code < 8) ? si->si_code : 0;
+		THROW_Arithmetic(ctx, NULL, emsg[si_code]);
+	}
+}
+
+#ifndef K_USING_DEBUG
+static void trapSEGV(int sig, siginfo_t* si, void* sc)
+{
+	CTX ctx = knh_getCurrentContext();
+	record_signal(ctx, sig, si, sc);
+	if (si->si_code == SEGV_ACCERR) {
+		void* address = (void*)si->si_addr;
+		fprintf(stderr, "address=%p\n", address);
+	}
+	if(ctx != NULL) {
+		THROW_Halt(ctx, NULL, "segmentation fault");
+	}
+	_Exit(70);
+}
+#endif
+
+#define KNH_SIGACTION(T, sa, sa_orig, n)                       \
+	if(T < n  && sigaction(T, sa, sa_orig + T) != 0 ) {        \
+		LOGSFPDATA = {iDATA("signal", T), __ERRNO__};          \
+		NOTE_Failed("sigaction");                              \
+	}                                                          \
+	knh_bzero(sa, sizeof(struct sigaction));                   \
+
+static void knh_setsignal(CTX ctx, void *block, size_t n)
+{
+	struct sigaction sa = {};
+	struct sigaction *sa_orig = (struct sigaction*)block;
+	WCTX(ctx)->signal = 0;
+	WCTX(ctx)->siginfo = NULL;
+
+#ifndef K_USING_DEBUG
+	sa.sa_sigaction = trapSEGV;
+	sa.sa_flags     = SA_SIGINFO;
+	KNH_SIGACTION(SIGSEGV, &sa, sa_orig, n);
+#endif
+
+	sa.sa_sigaction = trapSIGFPE;
+	sa.sa_flags     = SA_SIGINFO|SA_NODEFER;
+	KNH_SIGACTION(SIGFPE, &sa, sa_orig, n);
+	if(CTX_isInteractive(ctx)) {
+		DBG_P("set SIGINT This is not so good");
+		sa.sa_sigaction = trapSIGINT;
+		sa.sa_flags     = SA_SIGINFO|SA_NODEFER;
+		KNH_SIGACTION(SIGINT, &sa, sa_orig, n);
+	}
+}
+
+#define KNH_SIGACTION2(T, sa_orig, n)                          \
+	if(T < n  && sigaction(T, sa_orig + T, NULL) != 0 ) {      \
+		LOGSFPDATA = {iDATA("signal", T), __ERRNO__};          \
+		NOTE_Failed("sigaction");                              \
+	}                                                          \
+
+static void knh_unsetsignal(CTX ctx, void *block, size_t n)
+{
+	struct sigaction *sa_orig = (struct sigaction*)block;
+	if(sa_orig != NULL) {
+#ifndef K_USING_DEBUG
+		KNH_SIGACTION2(SIGSEGV, sa_orig, n);
+#endif
+		KNH_SIGACTION2(SIGFPE, sa_orig, n);
+		if(CTX_isInteractive(ctx)) {
+			KNH_SIGACTION2(SIGINT, sa_orig, n);
+		}
+	}
+	WCTX(ctx)->signal = 0;
+	WCTX(ctx)->siginfo = NULL;
+}
+
+knh_bool_t knh_VirtualMachine_launch(CTX ctx, knh_sfp_t *sfp)
+{
+#ifdef K_USING_SIGNAL
+	struct sigaction sa_orig[32];
+	knh_bzero(sa_orig, sizeof(struct sigaction) * 32);
+	knh_setsignal(ctx, sa_orig, 32);
+	knh_bool_t b = (knh_VirtualMachine_run(ctx, sfp, CODE_LAUNCH) == NULL);
+	knh_unsetsignal(ctx, sa_orig, 32);
+	return b;
+#else
+	return (knh_VirtualMachine_run(ctx, lsfp + thisidx, CODE_LAUNCH) == NULL);
+#endif
+}
+
+/* ------------------------------------------------------------------------ */
+
 #define OPT_EMPTY    0
 #define OPT_NUMBER   1
 #define OPT_STRING   2
