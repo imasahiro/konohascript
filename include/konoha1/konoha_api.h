@@ -265,7 +265,6 @@ void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB, knh_Ftyping t
 METHOD knh_Fmethod_asm(CTX ctx, knh_sfp_t *sfp _RIX);
 void knh_loadScriptSystemKonohaCode(CTX ctx);
 void knh_write_vmfunc(CTX ctx, knh_OutputStream_t *w, void *f);
-void *knh_xmalloc(CTX ctx, size_t size);
 void *knh_copyCallbackFunc(CTX ctx, void *tmpl, void *dest, knh_Func_t *fo);
 const char* TERM_BBOLD(CTX ctx);
 const char* TERM_EBOLD(CTX ctx);
@@ -552,6 +551,8 @@ void knh_vfree(CTX ctx, void *block, size_t size);
 void *TRACE_malloc(CTX ctx, size_t size K_TRACEARGV);
 void TRACE_free(CTX ctx, void *p, size_t size K_TRACEARGV);
 void *TRACE_realloc(CTX ctx, void *p, size_t os, size_t ns, size_t wsize K_TRACEARGV);
+void *knh_xmalloc(CTX ctx, size_t size);
+void xmem_freeall(CTX ctx);
 void *knh_fastmalloc(CTX ctx, size_t size);
 void knh_fastfree(CTX ctx, void *block, size_t size);
 void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize);

@@ -420,7 +420,6 @@ static void knh_share_free(CTX ctx, knh_share_t *share)
 	}
 	KNH_FREE(ctx, (void*)share->ClassTBL, sizeof(knh_ClassTBL_t*)*(share->capacityClassTBL));
 	share->ClassTBL = NULL;
-
 	knh_share_freeArena(ctx, share);
 	if(ctx->stat->usedMemorySize != 0) {
 		MEM_LOG("memory leaking size=%ldbytes", (long)ctx->stat->usedMemorySize);

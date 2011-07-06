@@ -2566,11 +2566,11 @@ static void Assurance_checkout(CTX ctx, knh_RawPtr_t *o, int isFailed)
 	LOGDATA = {iDATA("id", g->aid), sDATA("case", S_tochar(g->msg)), iDATA("elapsed_time(s)", t)};
 	if(isFailed) {
 		NOTE_Failed("assure");
-		knh_logprintf("ac", "FAILED @%s", S_tochar(g->msg));
+		knh_logprintf("ac", 0, "FAILED @%s", S_tochar(g->msg));
 	}
 	else {
 		NOTE_OK("assure");
-		knh_logprintf("ac", "PASSED @%s", S_tochar(g->msg));
+		knh_logprintf("ac", 0, "PASSED @%s", S_tochar(g->msg));
 	}
 	Assurance_setCheckedIn(g, 0);
 }
