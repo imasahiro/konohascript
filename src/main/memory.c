@@ -28,7 +28,8 @@
 /* ************************************************************************ */
 
 #include"commons.h"
-#ifdef HAVE_MMAP
+
+#ifdef K_USING_POSIX_
 #include <sys/mman.h>
 #define knh_mlock(p, size)   mlock(p, size)
 #define knh_unmlock(p)       unmlock(p)
@@ -224,6 +225,66 @@ void *TRACE_realloc(CTX ctx, void *p, size_t os, size_t ns, size_t wsize K_TRACE
 }
 
 #endif/*TRACE_MALLOC*/
+
+/* ------------------------------------------------------------------------ */
+
+typedef struct xmeminfo_t {
+	size_t size;
+	struct xmeminfo_t *next;
+} xmeminfo_t;
+
+#define XMEM_PAGESIZE (1024 * 64)
+
+static char* new_xmemarena(CTX ctx, size_t size)
+{
+	if(size < XMEM_PAGESIZE) size = XMEM_PAGESIZE;
+	xmeminfo_t *ptr = (xmeminfo_t*)KNH_VALLOC(ctx, size);
+#ifdef K_USING_POSIX_
+	int mret = mprotect(ptr, size, PROT_READ | PROT_WRITE | PROT_EXEC);
+#else
+	int mret = -1;
+#endif
+	if(mret == -1) {
+		KNH_DIE("mprotect is not working.");
+	}
+	ptr->size = size;
+	ptr->next = NULL;
+	return (char*)ptr;
+}
+
+#define XMEM_BSIZE   sizeof(void*)
+
+void *knh_xmalloc(CTX ctx, size_t size)
+{
+	size_t freesize = ctx->share->xmem_freelist - ctx->share->xmem_top;
+	size_t asize = (size % XMEM_BSIZE == 0) ? size : ((size / XMEM_BSIZE) + 1) * XMEM_BSIZE;
+	if(!(freesize > asize + sizeof(xmeminfo_t))) {
+		char *p = new_xmemarena(ctx, asize);
+		if(ctx->wshare->xmem_root == NULL) {
+			ctx->wshare->xmem_root = p;
+		}
+		else {
+			xmeminfo_t *xmeminfo = (xmeminfo_t*)ctx->wshare->xmem_top;
+			xmeminfo->next = (xmeminfo_t*)p;
+		}
+		ctx->wshare->xmem_top = p;
+		ctx->wshare->xmem_freelist = p + sizeof(xmeminfo_t);
+	}
+	void *p = (void*)ctx->wshare->xmem_freelist;
+	ctx->wshare->xmem_freelist += asize;
+	return p;
+}
+
+void xmem_freeall(CTX ctx)
+{
+	xmeminfo_t *xmeminfo = (xmeminfo_t*)ctx->wshare->xmem_root;
+	while(xmeminfo != NULL) {
+		void *p = xmeminfo;
+		size_t size;
+		xmeminfo = xmeminfo->next;
+		KNH_VFREE(ctx, p, size);
+	}
+}
 
 /* ------------------------------------------------------------------------ */
 

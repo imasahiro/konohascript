@@ -44,12 +44,6 @@
 extern "C" {
 #endif
 
-#include <unistd.h>
-#ifndef K_USING_MINGW_
-#include <sys/mman.h>
-#endif
-
-
 /* 
  * Contributors
  *  Shinpei Nakata <shinpei.nakata(at)gmail.com>
@@ -65,74 +59,72 @@ typedef struct {
 static void dumpBinary(unsigned char* ptr, size_t size);
 */
 
-/* ------------------------------------------------------------------------ */
-// Memory allocation
-// xmalloc freelist. each size is 
-#define XBLOCK_SIZE (128)
-#define XBLOCK_PAGESIZE (sysconf(_SC_PAGESIZE))
-#define XBLOCK_NUMBER (XBLOCK_PAGESIZE / XBLOCK_SIZE)
-
-#define XMEM_TOTAL_SIZE (1024 * 64)
-	
-typedef struct knh_xmem_allocator {
-	void *root;
-	size_t totalSize;
-	size_t usedSize;
-	void *freelist;
-} knh_xmem_allocator;
-
-static knh_xmem_allocator g_xmem_allocator = {0};
-
-static void initXmemAllocator(CTX ctx)
-{
-	knh_xmem_allocator *xalc = &g_xmem_allocator;
-	void *ptr = (void *)KNH_VALLOC(ctx, XMEM_TOTAL_SIZE);
-#ifndef K_USING_MINGW_
-	int mret = mprotect(ptr, XMEM_TOTAL_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC);
-#else
-	int mret = -1;
-#endif
-	if (mret != -1) {
-		xalc->root = ptr;
-		xalc->totalSize = XMEM_TOTAL_SIZE;
-		xalc->usedSize = 0;
-		xalc->freelist = ptr;
-	}
-}
-
-#define XMEM_IS_PROPSIZE(size) (size <= XMEM_TOTAL_SIZE)
-#define XMEM_DOES_FIT(xalc, size) 	(size <= (xalc->totalSize - xalc->usedSize))
-	
-void *knh_xmalloc(CTX ctx, size_t size)
-{
-	KNH_ASSERT(size >= 0);
-	knh_xmem_allocator *xalc = &g_xmem_allocator;
-	if (unlikely(xalc->totalSize == 0)) {
-		initXmemAllocator(ctx);
-	}
-	if (XMEM_IS_PROPSIZE(size)) {
-		if (XMEM_DOES_FIT(xalc, size)) {
-			// It fits.
-			xalc->usedSize += size;
-			void *ptr = xalc->freelist;
-			xalc->freelist = (knh_uchar_t*)((intptr_t)xalc->freelist + (intptr_t)size);
-			bzero(ptr, size);
-			return ptr;
-		}
-	}
-	fprintf(stderr,
-			"Reach the limit allocation for executable memory!!\n"
-			"You're using:%dbytes, and allocating additional %dbytes\n", (int)xalc->usedSize, (int)size); 
-	return NULL;
-}
-
-
-static inline void knh_xfree(CTX ctx, void* block, size_t size)
-{
-	knh_vfree(ctx, block, size);
-}
-
-
+///* ------------------------------------------------------------------------ */
+//// Memory allocation
+//// xmalloc freelist. each size is
+//#define XBLOCK_SIZE (128)
+//#define XBLOCK_PAGESIZE (sysconf(_SC_PAGESIZE))
+//#define XBLOCK_NUMBER (XBLOCK_PAGESIZE / XBLOCK_SIZE)
+//
+//#define XMEM_TOTAL_SIZE (1024 * 64)
+//
+//typedef struct knh_xmem_allocator {
+//	void *root;
+//	size_t totalSize;
+//	size_t usedSize;
+//	void *freelist;
+//} knh_xmem_allocator;
+//
+//static knh_xmem_allocator g_xmem_allocator = {0};
+//
+//static void initXmemAllocator(CTX ctx)
+//{
+//	knh_xmem_allocator *xalc = &g_xmem_allocator;
+//	void *ptr = (void *)KNH_VALLOC(ctx, XMEM_TOTAL_SIZE);
+//#ifndef K_USING_MINGW_
+//	int mret = mprotect(ptr, XMEM_TOTAL_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC);
+//#else
+//	int mret = -1;
+//#endif
+//	if (mret != -1) {
+//		xalc->root = ptr;
+//		xalc->totalSize = XMEM_TOTAL_SIZE;
+//		xalc->usedSize = 0;
+//		xalc->freelist = ptr;
+//	}
+//}
+//
+//#define XMEM_IS_PROPSIZE(size) (size <= XMEM_TOTAL_SIZE)
+//#define XMEM_DOES_FIT(xalc, size) 	(size <= (xalc->totalSize - xalc->usedSize))
+//
+//void *knh_xmalloc(CTX ctx, size_t size)
+//{
+//	KNH_ASSERT(size >= 0);
+//	knh_xmem_allocator *xalc = &g_xmem_allocator;
+//	if (unlikely(xalc->totalSize == 0)) {
+//		initXmemAllocator(ctx);
+//	}
+//	if (XMEM_IS_PROPSIZE(size)) {
+//		if (XMEM_DOES_FIT(xalc, size)) {
+//			// It fits.
+//			xalc->usedSize += size;
+//			void *ptr = xalc->freelist;
+//			xalc->freelist = (knh_uchar_t*)((intptr_t)xalc->freelist + (intptr_t)size);
+//			bzero(ptr, size);
+//			return ptr;
+//		}
+//	}
+//	fprintf(stderr,
+//			"Reach the limit allocation for executable memory!!\n"
+//			"You're using:%dbytes, and allocating additional %dbytes\n", (int)xalc->usedSize, (int)size);
+//	return NULL;
+//}
+//
+//
+//static inline void knh_xfree(CTX ctx, void* block, size_t size)
+//{
+//	knh_vfree(ctx, block, size);
+//}
 
 
 /*

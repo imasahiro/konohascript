@@ -20,15 +20,19 @@
 #endif
 
 #define KNH_DIE(fmt, ...) {\
-		fprintf(stderr, "%s(%s:%d): " fmt, __FUNCTION__, __FILE__, __LINE__, ## __VA_ARGS__);\
+		knh_logprintf("DIE", 1 /*verbose*/, "[%s:%d] " fmt K_OSLINEFEED, __FUNCTION__, __LINE__, ## __VA_ARGS__);\
 		exit(70);  /* EX_SOFTWARE */ \
 	}\
 
+#define KNH_NOTE(fmt, ...) {\
+		knh_logprintf("konoha", 1 /*verbose*/, "[%s:%d] " fmt K_OSLINEFEED, __FUNCTION__, __LINE__, ## __VA_ARGS__);\
+	}\
+
 #define KNH_LOG(fmt, ...) \
-		knh_logprintf("DEBUG", "[%s:%d] " fmt K_OSLINEFEED, __FUNCTION__, __LINE__, ## __VA_ARGS__);
+		knh_logprintf("DEBUG", 0, "[%s:%d] " fmt K_OSLINEFEED, __FUNCTION__, __LINE__, ## __VA_ARGS__);
 
 #define MEM_LOG(fmt, ...) if(knh_isVerboseGC()){ \
-		knh_logprintf("MEMORY", fmt K_OSLINEFEED,  ## __VA_ARGS__);\
+		knh_logprintf("MEMORY", 0, fmt K_OSLINEFEED,  ## __VA_ARGS__);\
 	} \
 
 /* ------------------------------------------------------------------------ */

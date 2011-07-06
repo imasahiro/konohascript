@@ -907,6 +907,10 @@ typedef struct {
 	size_t                    Memory256ArenaTBLSize;
 	size_t                    capacityMemory256ArenaTBL;
 
+	char                     *xmem_root;
+	char                     *xmem_top;
+	char                     *xmem_freelist;
+
 	/* system shared const */
 	knh_Object_t             *constNull;
 	knh_Object_t             *constTrue;

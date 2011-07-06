@@ -487,7 +487,7 @@ void konoha_close(konoha_t konoha);
 const char* knh_sfile(const char *file);
 void knh_write_now(CTX ctx, knh_OutputStream_t *w);
 void knh_fsyslog(FILE *fp, const char *group, const char *msg);
-void knh_logprintf(const char *group, const char *fmt, ...);
+void knh_logprintf(const char *group, int verbose, const char *fmt, ...);
 void pseudo_vsyslog(int p, const char *fmt, va_list ap);
 void pseudo_syslog(int p, const char *fmt, ...);
 void knh_closelog(void);

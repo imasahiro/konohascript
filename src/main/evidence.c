@@ -135,14 +135,17 @@ const char *logfile        = NULL;
 static FILE *stdlog        = NULL;
 #define K_LOGMSGSIZE         4096
 
-void knh_logprintf(const char *group, const char *fmt, ...)
+void knh_logprintf(const char *group, int verbose, const char *fmt, ...)
 {
-	if(stdlog != stderr) {
+	if(stdlog != stderr || verbose) {
 		char buf[K_LOGMSGSIZE];
 		va_list ap;
 		va_start(ap , fmt);
 		vsnprintf(buf, sizeof(buf), fmt, ap);
 		knh_fsyslog(stdlog, group, buf);
+		if(stdlog != stderr && verbose) {
+			knh_fsyslog(stderr, group, buf);
+		}
 		va_end(ap);
 	}
 }

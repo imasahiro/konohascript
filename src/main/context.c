@@ -404,6 +404,7 @@ static void knh_share_free(CTX ctx, knh_share_t *share)
 	share->EventTBL = NULL;
 	KNH_FREE(ctx, share->tString, SIZEOF_TSTRING);
 	share->tString = NULL;
+	xmem_freeall(ctx);
 	knh_ObjectArena_finalfree(ctx, share->ObjectArenaTBL, share->sizeObjectArenaTBL);
 	for(i = 0; i < share->sizeClassTBL; i++) {
 		knh_ClassTBL_t *ct = varClassTBL(i);
