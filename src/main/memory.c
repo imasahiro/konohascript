@@ -239,10 +239,17 @@ static char* new_xmemarena(CTX ctx, size_t size)
 {
 	if(size < XMEM_PAGESIZE) size = XMEM_PAGESIZE;
 	xmeminfo_t *ptr = (xmeminfo_t*)KNH_VALLOC(ctx, size);
+	int mret;
 #ifdef K_USING_POSIX_
-	int mret = mprotect(ptr, size, PROT_READ | PROT_WRITE | PROT_EXEC);
+	mret = mprotect(ptr, size, PROT_READ | PROT_WRITE | PROT_EXEC);
+#elif K_USING_WINDOWS_
+	/* TODO(@imasahiro) need debug 
+	 * http://msdn.microsoft.com/ja-jp/library/cc430214.aspx
+	 */
+	DWORD old_protect;
+	VirtualProtect(ptr, size, PAGE_EXECUTE_READWRITE, &old_protect);
 #else
-	int mret = -1;
+	mret = -1;
 #endif
 	if(mret == -1) {
 		KNH_DIE("mprotect is not working.");
@@ -279,9 +286,9 @@ void xmem_freeall(CTX ctx)
 {
 	xmeminfo_t *xmeminfo = (xmeminfo_t*)ctx->wshare->xmem_root;
 	while(xmeminfo != NULL) {
-		void *p = xmeminfo;
-		size_t size;
-		xmeminfo = xmeminfo->next;
+		void *p     = xmeminfo;
+		size_t size = xmeminfo->size;
+		xmeminfo    = xmeminfo->next;
 		KNH_VFREE(ctx, p, size);
 	}
 }

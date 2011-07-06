@@ -1,0 +1,4 @@
+PROJECT_NAME           = @CMAKE_PROJECT_NAME@
+PROJECT_NUMBER         = @KONOHA_VERSION@
+OUTPUT_DIRECTORY       = api-doc
+INPUT                  = @KONOHA_INCLUDE_DIRS@/konoha1/konoha_class.h @KONOHA_INCLUDE_DIRS@/konoha1/konoha_t.h @KONOHA_INCLUDE_DIRS@/konoha1/konoha_config.h
