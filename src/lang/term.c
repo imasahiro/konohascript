@@ -3141,6 +3141,7 @@ static void _CODE(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			StmtMETHOD_setFFI(stmt, 1);
 			stmtitr->c += 1;
 			_EXPR(ctx, stmt, stmtitr);
+			DBG_P("DP(stmt)->size=%d", DP(stmt)->size);
 		}
 	}
 	else {

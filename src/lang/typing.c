@@ -1489,7 +1489,7 @@ static knh_Token_t* PATH_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 		return Token_toCONST(ctx, tk);
 	}
 	if(reqt == TYPE_dyn || reqt == TYPE_var || reqt == TYPE_void) reqt = TYPE_Boolean;
-	if(reqt == TYPE_Boolean) {
+	if(reqt == TYPE_Boolean || reqt == TYPE_Object) {
 		knh_Object_t *tf = knh_Link_exists(ctx, lnk, ns, fi) ? KNH_TRUE : KNH_FALSE;
 		return Token_setCONST(ctx, tk, tf);
 	}
@@ -3889,16 +3889,46 @@ static knh_Token_t* knh_StmtMTD_typing(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *
 	return TM(stmt);
 }
 
-//static knh_Stmt_t *knh_Stmt_clone(CTX ctx, knh_Stmt_t *stmt)
+//#include <ffi/ffi.h>
+//
+//void* ffi_value(CTX ctx, knh_rbp_t *rbp)
 //{
-//	knh_Stmt_t *newstmt = new_Stmt2(ctx, STT_(stmt), NULL);
-//	size_t i;
-//	for(i = 0; i < DP(stmt)->size; i++) {
-//		knh_Stmt_add(ctx, newstmt, tmNN(stmt, i), NULL);
-//	}
-//	KNH_SETv(ctx, DP(newstmt)->metaDictCaseMap, DP(stmt)->metaDictCaseMap);
-//	return newstmt;
+//	return (void*)rbp->pc;
 //}
+//
+//typedef void* (*knh_Ffficonv)(CTX, knh_rbp_t *rbp);
+//
+//#define Method_infoFFI(mtd)        DP(mtd)->paramsNULL;
+//#define FFI_psize(a)               ((knh_Array_size(a) - 1) / 3)
+//#define FFI_cif(a)                 (ffi_cif*)((a)->ptrs[knh_Array_size(a)-1]->rawptr)
+//#define FFI_ptype(a, n)            (ffi_type*)((a)->ptrs[((n)*2)]->rawptr)
+//#define FFI_rbpidx(a, n)           (int)(N_toint((a)->ints[((n)*2)+1]))
+//#define FFI_values(rbp, a, n)      &(rbp[FFI_rbpidx(a,n)].pc)
+//#define FFI_trvalues(rbp, a, n)    ((knh_Ffficonv)a->ptrs[((n)*2)+2]->rawptr)(ctx, rbp + FFI_rbpidx(a, n))
+//
+//METHOD FmethodFFI(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_rbp_t *rbp = (knh_rbp_t*)sfp;
+//	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
+//	knh_Array_t *ffi_info = Method_infoFFI(mtd)
+//	size_t i , psize = FFI_psize(ffi_info);
+//	ffi_cif* cif = FFI_cif(ffi_info);
+//	ffi_type *arg_types[psize];
+//	void *arg_values[psize];
+//    ffi_arg result;
+//	for(i = 0; i < psize; i++) {
+//		arg_types[i] = FFI_ptype(ffi_info, i);
+//		arg_values[i] = FFI_trvalues(rbp, ffi_info, i);
+//	}
+//    ffi_call(cif, FFI_FN(DP(mtd)->cfunc), &result, arg_values);
+//}
+
+knh_bool_t Method_linkFFI(CTX ctx, knh_Method_t *mtd, knh_String_t *token)
+{
+	knh_bytes_t ffidata = S_tobytes(token);
+	DBG_P("ffidata='%s'", ffidata.text); // "func:double:double:1"
+	return 1;
+}
 
 static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 {
@@ -4013,6 +4043,11 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 			DBG_P("return type=%s, idx=%d", TYPE__(p->type), p->fn);
 		}
 	});
+	if(knh_StmtMETA_is(ctx, stmtM, "Iterative")) {
+		if(DP(mtd)->mp->psize != 0) {
+			return ERROR_Unsupported(ctx, "parameterized iterative method", CLASS_unknown, NULL);
+		}
+	}
 	if(isDynamic == 1) {
 		DBG_P("************************* dynamic ******************************");
 		Method_setDynamic(mtd, 1);
@@ -4026,14 +4061,16 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 		return knh_Stmt_done(ctx, stmtM);
 	}
 	if(StmtMETHOD_isFFI(stmtM)) {
-		knh_Stmt_t *stmtD = stmtNN(stmtM, 4/*using DSL*/);
-		Method_linkFFI(ctx, mtd, stmtD);
-		return knh_Stmt_done(ctx, stmtM);
-	}
-	if(knh_StmtMETA_is(ctx, stmtM, "Iterative")) {
-		if(DP(mtd)->mp->psize != 0) {
-			return ERROR_Unsupported(ctx, "parameterized iterative method", CLASS_unknown, NULL);
+		if(TT_(tkNN(stmtM, 4)) != TT_URN) {
+			TYPING(ctx, stmtM, 4, TYPE_String, _CONSTONLY|_NOVOID);
 		}
+		if(!Method_linkFFI(ctx, mtd, tkNN(stmtM, 4)->text)) {
+			return ERROR_WrongFFILink(ctx, S_tochar(tkNN(stmtM, 4)->text));
+		}
+		else {
+			KNH_SETv(ctx, DP(mtd)->tsource, tkNN(stmtM, 4));
+		}
+		return knh_Stmt_done(ctx, stmtM);
 	}
 	return knh_StmtMTD_typing(ctx, stmtM, mtd, mtd_cid);
 }

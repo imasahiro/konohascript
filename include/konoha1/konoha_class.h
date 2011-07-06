@@ -311,7 +311,9 @@ struct knh_Array_t {
 		knh_int_t               *ilist;
 		knh_float_t             *flist;
 		struct knh_Object_t    **list;
+		struct knh_RawPtr_t    **ptrs;
 		struct knh_String_t    **strings;
+		struct knh_Int_t       **ints;
 		struct knh_Method_t    **methods;
 		struct knh_TypeMap_t   **trans;
 		struct knh_Token_t     **tokens;
@@ -1449,11 +1451,15 @@ typedef struct knh_KindOf_t {
 typedef struct knh_RawPtr_t {
 	knh_hObject_t h;
 	void *rawptr;
+	size_t rawsize;
+	const char *DBG_NAME;
+	void (*rawfree)(void *);
 } knh_RawPtr_t ;
 
 #define CLASS_dynamic   CLASS_Tdynamic
 #define TYPE_dyn        TYPE_Tdynamic
 #define TYPE_dynamic    TYPE_Tdynamic
+#define RAW_FREE(f)      ((void (*)(void*))f)
 
 /* ------------------------------------------------------------------------ */
 

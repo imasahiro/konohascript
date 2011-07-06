@@ -234,6 +234,10 @@ knh_Token_t* ERROR_Block(CTX ctx, const char* block)
 {
 	return Gamma_perror(ctx, KC_ERR, _("syntax error: wrong %s"), block);
 }
+knh_Token_t* ERROR_WrongFFILink(CTX ctx, const char* link)
+{
+	return Gamma_perror(ctx, KC_ERR, _("syntax error: ffi link: %s"), link);
+}
 knh_Token_t* ERROR_text(CTX ctx, const char *keyword K_TRACEARGV)
 {
 	knh_Token_t *tk = Gamma_perror(ctx, KC_ERR, ("syntax error: %s"), keyword);
