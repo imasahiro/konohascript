@@ -234,8 +234,9 @@ static knh_context_t* new_RootContext(void)
 	knh_loadScriptSystemStructData(ctx, kapi);
 
 	KNH_INITv(share->constPtrMap, new_PtrMap(ctx, 0));
+#ifdef K_USING_STRINGPOOL
 	knh_ClassTBL_setConstPool(ctx, ClassTBL(CLASS_String));
-
+#endif
 	{
 		knh_Object_t *p = (knh_Object_t*)new_hObject_(ctx, ClassTBL(CLASS_Object));
 		Object_setNullObject(p, 1);
@@ -397,7 +398,7 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 		if(ct->bcid == CLASS_Object && ct->cid > ct->bcid) {
 			KNH_ADDREF(ctx, ct->protoNULL);
 		}
-		KNH_ADDREF(ctx, ct->constPoolMapNULL);
+		KNH_ADDNNREF(ctx, ct->constPoolMapNULL);
 	}
 	return tail_;
 }

@@ -206,6 +206,7 @@ static void hmap_reftraceON(CTX ctx, knh_mapptr_t *m FTRARG)
 
 static void hmap_reftraceNN(CTX ctx, knh_mapptr_t *m FTRARG)
 {
+	DBG_P("@@@@ hmap->size=%d", ((knh_hmap_t*)m)->size);
 	KNH_SIZEREF(ctx);
 }
 
@@ -712,7 +713,7 @@ knh_PtrMap_t* new_PtrMap(CTX ctx, size_t max)
 {
 	knh_Map_t *m = new_H(Map);
 	m->spi = &HMAP_NN;
-	m->mapptr = m->spi->init(ctx, 111, NULL, NULL);
+	m->mapptr = m->spi->init(ctx, 0, NULL, NULL);
 	return (knh_PtrMap_t*)m;
 }
 
@@ -767,7 +768,7 @@ knh_String_t* knh_PtrMap_getS(CTX ctx, knh_PtrMap_t *pm, const char *k, size_t l
 	while(e != NULL) {
 		const char *es = (const char*)e->pkey;
 		if(e->hcode == hcode && es[len] == 0 && strncmp(k, es, len) == 0) {
-			DBG_P("found %x %s", hcode, es);
+//			DBG_P("found %x '%s''%s' %p", hcode, k, es, e->pvalue);
 			hmap->stat_hit++;
 			return (knh_String_t*)e->pvalue;
 		}
@@ -783,28 +784,31 @@ void knh_PtrMap_addS(CTX ctx, knh_PtrMap_t *pm, knh_String_t *v)
 	size_t len = knh_strlen(k);
 	knh_hashcode_t hcode = knh_hash(0, k, len);
 	knh_hentry_t *e = new_hentry(ctx, hmap, hcode);
+	DBG_ASSERT(IS_bString(v));
 	e->pkey = (void*)k;
 	e->pvalue = (void*)v;
+	DBG_P("added %x '%s' %p", hcode, k, v);
 	hmap_add(hmap, e);
 }
 
-void knh_PtrMap_rmS(CTX ctx, knh_PtrMap_t *pm, const char *k)
+void knh_PtrMap_rmS(CTX ctx, knh_PtrMap_t *pm, knh_String_t *s)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
-	size_t len = knh_strlen(k);
-	knh_hashcode_t hcode = knh_hash(0, k, len);
+	knh_bytes_t t = S_tobytes(s);
+	knh_hashcode_t hcode = knh_hash(0, t.text, t.len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
+	DBG_ASSERT(IS_bString(s));
 	while(e != NULL) {
-		const char *es = (const char*)e->pkey;
-		if(e->hcode == hcode && es[len] == 0 && strncmp(k, es, len) == 0) {
+		if(e->hcode == hcode && e->pvalue == (void*)s) {
+			DBG_P("removed %x '%s' %p", hcode, t.text, e->pvalue);
 			hmap_remove(hmap, e);
 			hmap_unuse(hmap, e);
 			return;
 		}
 		e = e->next;
 	}
-	DBG_P("not found %s", k);
-	DBG_ASSERT(ctx == NULL);
+	DBG_P("not found removed %x '%s' %p", hcode, t.text, s);
+	//KNH_ASSERT(ctx == NULL);
 }
 
 
