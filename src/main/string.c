@@ -374,14 +374,16 @@ static void knh_String_checkASCII(knh_String_t *o)
 #ifdef K_USING_STRINGPOOL
 
 #define CHECK_CONST(ctx, V, S, L) \
-	if(cid == CLASS_String) {     \
-		V = knh_PtrMap_getS(ctx, ctx->share->constStringMap, S, L); \
-		if(V != NULL) return V;   \
+	if(ct->constPoolMapNULL != NULL) {     \
+		V = knh_PtrMap_getS(ctx, ct->constPoolMapNULL, S, L); \
+		if(V != NULL) {           \
+			return V;             \
+		}                         \
 	}                             \
 
 #define SET_CONST(ctx, V) \
-	if(cid == CLASS_String) {     \
-		knh_PtrMap_addS(ctx, ctx->share->constStringMap, V); \
+	if(ct->constPoolMapNULL != NULL) {     \
+		knh_PtrMap_addS(ctx, ct->constPoolMapNULL, V); \
 	}                             \
 
 #else
@@ -394,8 +396,9 @@ static void knh_String_checkASCII(knh_String_t *o)
 KNHAPI2(knh_String_t*) new_String_(CTX ctx, knh_class_t cid, knh_bytes_t t, knh_String_t *memoNULL)
 {
 	knh_String_t *s;
+	const knh_ClassTBL_t *ct = ClassTBL(cid);
 	CHECK_CONST(ctx, s, t.text, t.len);
-	s = (knh_String_t*)new_hObject(ctx, cid);
+	s = (knh_String_t*)new_hObject_(ctx, ct);
 	if(t.len + 1 < sizeof(void*) * 2) {
 		s->str.ubuf = (knh_uchar_t*)(&(s->hashCode));
 		s->str.len = t.len;
@@ -438,7 +441,9 @@ knh_String_t *new_TEXT(CTX ctx, knh_class_t cid, knh_TEXT_t text, int isASCII)
 {
 	size_t len = knh_strlen(text);
 	knh_String_t *s;
+	const knh_ClassTBL_t *ct = ClassTBL(cid);
 	CHECK_CONST(ctx, s, text, len);
+	s = (knh_String_t*)new_hObject_(ctx, ct);
 	s = (knh_String_t*)new_hObject(ctx, cid);
 	s->str.text = text;
 	s->str.len = knh_strlen(text);

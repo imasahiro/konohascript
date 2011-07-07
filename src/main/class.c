@@ -333,7 +333,7 @@ KNHAPI2(Object*) knh_getClassDefaultValue(CTX ctx, knh_class_t cid)
 	return ClassTBL(cid)->fdefnull(ctx, cid);
 }
 
-void knh_setClassDef(knh_ClassTBL_t *ct, const knh_ClassDef_t *cdef)
+void knh_setClassDef(CTX ctx, knh_ClassTBL_t *ct, const knh_ClassDef_t *cdef)
 {
 	//DBG_P("setClassDef(%s)", cdef->name);
 	ct->cdef = cdef;
@@ -539,7 +539,7 @@ static void ClassTBL_addTuple(CTX ctx, knh_ClassTBL_t *ct, const knh_ClassTBL_t 
 	size_t i, fi = 0;
 	ct->magicflag  = bct->magicflag;
 	ct->cflag  = bct->cflag;
-	knh_setClassDef(ct, bct->cdef);
+	knh_setClassDef(ctx, ct, bct->cdef);
 	ct->bcid   = bct->cid;
 	ct->baseTBL = bct;
 	ct->supcid = bct->supcid;
@@ -599,7 +599,7 @@ knh_class_t knh_addGenericsClass(CTX ctx, knh_class_t cid, knh_class_t bcid, knh
 		const knh_ClassTBL_t *bct = ClassTBL(bcid);
 		ct->magicflag  = bct->magicflag;
 		ct->cflag  = bct->cflag;
-		knh_setClassDef(ct, bct->cdef);
+		knh_setClassDef(ctx, ct, bct->cdef);
 		ct->bcid   = bcid;
 		ct->baseTBL = bct;
 		ct->supcid = bct->supcid;

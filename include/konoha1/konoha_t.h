@@ -760,6 +760,7 @@ typedef struct knh_ClassTBL_t {
 //		struct knh_Semantics_t    *cspec;
 	};
 	struct knh_DictMap_t          *constDictCaseMapNULL;
+	struct knh_PtrMap_t           *constPoolMapNULL;
 	size_t subclass;
 	size_t count;
 	size_t total;
@@ -937,9 +938,9 @@ typedef struct {
 	struct knh_DictMap_t     *sysAliasDictMapNULL;
 
 	struct knh_PtrMap_t      *constPtrMap;
-	struct knh_PtrMap_t      *constIntMap;
-	struct knh_PtrMap_t      *constFloatMap;
-	struct knh_PtrMap_t      *constStringMap;
+//	struct knh_PtrMap_t      *constIntMap;
+//	struct knh_PtrMap_t      *constFloatMap;
+//	struct knh_PtrMap_t      *constStringMap;
 
 	/* thread */
 	size_t              contextCounter;
@@ -1177,6 +1178,10 @@ typedef struct knh_logdata_t {
 
 #define NOTE_Failed(action)   {   \
 		KNH_RECORD(ctx, sfp, K_RECFAILED|K_RECNOTE, LOG_WARNING, action, NULL, _logdata, LOGDATASIZE);  \
+	}  \
+
+#define LIB_STAT(action) {  \
+		KNH_RECORD(ctx, sfp, K_RECNOTE, LOG_INFO, action, NULL, _logdata, LOGDATASIZE);  \
 	}  \
 
 

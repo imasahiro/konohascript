@@ -191,7 +191,7 @@ static void knh_loadSystemData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 			knh_ClassTBL_t *t = varClassTBL(cid);
 			KNH_ASSERT(cid == cid0);
 			t->bcid = cid;
-			knh_setClassDef(t, cspi);
+			knh_setClassDef(ctx, t, cspi);
 			t->cflag = cflag;
 			t->magicflag = KNH_MAGICFLAG(cflag);
 			break;
@@ -211,7 +211,7 @@ static void knh_loadSystemData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 			ct->bcid = _CID(data[3]);
 			ct->baseTBL = ClassTBL(ct->bcid);
 			if(cid0 != ct->bcid) {
-				knh_setClassDef(ct, ClassTBL(ct->bcid)->cdef);
+				knh_setClassDef(ctx, ct, ClassTBL(ct->bcid)->cdef);
 			}
 			DBG_ASSERT(ct->cdef != NULL);
 			ct->supcid = _CID(data[4]);

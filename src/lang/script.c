@@ -759,8 +759,8 @@ static void knh_loadNativeClass(CTX ctx, const char *cname, knh_ClassTBL_t *ct)
 	}
 	ct->bcid = ct->cid;
 	ct->baseTBL = ct;
-	knh_setClassDef(ct, cdef);
 	ct->cflag = ct->cflag | cdef->cflag;
+	knh_setClassDef(ctx, ct, cdef);
 	ct->magicflag = KNH_MAGICFLAG(ct->cflag);
 	if(ns->dlhdr != NULL) {
 		knh_snprintf(fname, sizeof(fname), "const%s", cname);
@@ -834,7 +834,7 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 				Object_setNullObject(obj, 1);
 				ct->bcid = CLASS_Object;
 				ct->baseTBL = ClassTBL(CLASS_Object);
-				knh_setClassDef(ct, ct->baseTBL->cdef);
+				knh_setClassDef(ctx, ct, ct->baseTBL->cdef);
 				obj->ref = NULL; tmp->ref = NULL;
 				knh_setClassDefaultValue(ctx, cid, obj, NULL);
 				KNH_INITv(ct->protoNULL, tmp);

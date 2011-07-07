@@ -215,6 +215,13 @@ static knh_ClassDef_t TvarDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
+void knh_ClassTBL_setConstPool(CTX ctx, const knh_ClassTBL_t *ct)
+{
+	if(ct->constPoolMapNULL == NULL) {
+		KNH_INITv(((knh_ClassTBL_t*)ct)->constPoolMapNULL, new_PtrMap(ctx, 0));
+	}
+}
+
 /* --------------- */
 /* Object */
 
@@ -520,7 +527,7 @@ static knh_ClassDef_t ObjectNDef[] = {
 	}
 };
 
-void knh_ClassTBL_setObjectCSPI(knh_ClassTBL_t *ct)
+void knh_ClassTBL_setObjectCSPI(CTX ctx, knh_ClassTBL_t *ct)
 {
 	size_t c, i;
 	for(c = 0; c < ct->fsize; c++) {
@@ -528,16 +535,16 @@ void knh_ClassTBL_setObjectCSPI(knh_ClassTBL_t *ct)
 	}
 	for(i = c + 1; i < ct->fsize; i++) {
 		if(ct->fields[i].israw == 0) {
-			knh_setClassDef(ct, &ObjectDef);
+			knh_setClassDef(ctx, ct, &ObjectDef);
 			return;
 		}
 	}
 	if(c <= 4) {
 		DBG_P("%s: SIZE OF OBJECT FIELD: %d", S_tochar(ct->lname), c);
-		knh_setClassDef(ct, ObjectNDef + c);
+		knh_setClassDef(ctx, ct, ObjectNDef + c);
 	}
 	else {
-		knh_setClassDef(ct, &ObjectDef);
+		knh_setClassDef(ctx, ct, &ObjectDef);
 	}
 }
 
@@ -763,9 +770,9 @@ static void String_init(CTX ctx, knh_RawPtr_t *o)
 static void String_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_String_t *s = (knh_String_t*)o;
-#ifdef K_USING_STRINGPOOL
-	knh_PtrMap_rmS(ctx, ctx->share->constStringMap, S_tochar(s));
-#endif
+	if(O_cTBL(o)->constPoolMapNULL != NULL) {
+		knh_PtrMap_rmS(ctx, O_cTBL(o)->constPoolMapNULL, S_tochar(s));
+	}
 	if(!String_isTextSgm(s)) {
 		KNH_FREE(ctx, s->str.ubuf, KNH_SIZE(S_size(s) + 1));
 	}
@@ -2307,7 +2314,7 @@ static void Script_init(CTX ctx, knh_RawPtr_t *o)
 	ct->baseTBL = ClassTBL(CLASS_Script);
 	ct->supcid = CLASS_Script;
 	ct->supTBL = ClassTBL(CLASS_Script);
-	knh_setClassDef(ct, ClassTBL(CLASS_Script)->cdef);
+	knh_setClassDef(ctx, ct, ClassTBL(CLASS_Script)->cdef);
 	KNH_INITv(ct->methods, K_EMPTYARRAY);
 	KNH_INITv(ct->typemaps, K_EMPTYARRAY);
 	knh_setClassName(ctx, cid, ClassTBL(CLASS_Script)->sname, ClassTBL(CLASS_Script)->sname);

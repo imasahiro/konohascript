@@ -178,7 +178,6 @@ static void knh_expandClassTBL(CTX ctx)
 knh_class_t new_ClassId(CTX ctx)
 {
 	knh_class_t newid = ctx->share->sizeClassTBL;
-	KNH_ASSERT_CTX0(ctx);
 	if(ctx->share->sizeClassTBL == ctx->share->capacityClassTBL) {
 		knh_expandClassTBL(ctx);
 	}
@@ -235,9 +234,7 @@ static knh_context_t* new_RootContext(void)
 	knh_loadScriptSystemStructData(ctx, kapi);
 
 	KNH_INITv(share->constPtrMap, new_PtrMap(ctx, 0));
-	KNH_INITv(share->constIntMap, new_PtrMap(ctx, 0));
-	KNH_INITv(share->constFloatMap, new_PtrMap(ctx, 0));
-	KNH_INITv(share->constStringMap, new_PtrMap(ctx, 0));
+	knh_ClassTBL_setConstPool(ctx, ClassTBL(CLASS_String));
 
 	{
 		knh_Object_t *p = (knh_Object_t*)new_hObject_(ctx, ClassTBL(CLASS_Object));
@@ -372,11 +369,7 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	KNH_ADDREF(ctx, (ctx->sys));
 	KNH_ADDREF(ctx, (share->rootns));
 	KNH_ADDNNREF(ctx, (share->sysAliasDictMapNULL));
-
 	KNH_ADDREF(ctx, (share->constPtrMap));
-	KNH_ADDREF(ctx, (share->constIntMap));
-	KNH_ADDREF(ctx, (share->constFloatMap));
-	KNH_ADDREF(ctx, (share->constStringMap));
 
 	KNH_ENSUREREF(ctx, K_TSTRING_SIZE);
 	for(i = 0; i < K_TSTRING_SIZE; i++) {
@@ -389,7 +382,7 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 		}
 	}
 	/* tclass */
-	KNH_ENSUREREF(ctx, share->sizeClassTBL * 10);
+	KNH_ENSUREREF(ctx, share->sizeClassTBL * 11);
 	for(i = 0; i < share->sizeClassTBL; i++) {
 		const knh_ClassTBL_t *ct = ClassTBL(i);
 		DBG_ASSERT(ct->lname != NULL);
@@ -404,6 +397,7 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 		if(ct->bcid == CLASS_Object && ct->cid > ct->bcid) {
 			KNH_ADDREF(ctx, ct->protoNULL);
 		}
+		KNH_ADDREF(ctx, ct->constPoolMapNULL);
 	}
 	return tail_;
 }
@@ -416,6 +410,13 @@ static void knh_share_free(CTX ctx, knh_share_t *share)
 	KNH_FREE(ctx, share->tString, SIZEOF_TSTRING);
 	share->tString = NULL;
 	xmem_freeall(ctx);
+	for(i = 0; i < share->sizeClassTBL; i++) {
+		knh_ClassTBL_t *ct = varClassTBL(i);
+		if(ct->constPoolMapNULL) {
+			knh_PtrMap_stat(ctx, ct->constPoolMapNULL, S_tochar(ct->sname));
+			ct->constPoolMapNULL = NULL;
+		}
+	}
 	knh_ObjectArena_finalfree(ctx, share->ObjectArenaTBL, share->sizeObjectArenaTBL);
 	for(i = 0; i < share->sizeClassTBL; i++) {
 		knh_ClassTBL_t *ct = varClassTBL(i);

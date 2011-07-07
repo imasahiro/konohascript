@@ -4287,7 +4287,7 @@ static void Gamma_declareClassField(CTX ctx, knh_class_t cid, size_t s)
 			}
 		}
 	}
-	knh_ClassTBL_setObjectCSPI(ct);
+	knh_ClassTBL_setObjectCSPI(ctx, ct);
 	Gamma_clear(ctx, 0, NULL);
 }
 
