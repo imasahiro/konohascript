@@ -40,9 +40,9 @@
 #define knh_unmlock(p)
 #endif
 
-#ifdef K_USING_DEBUG
-#define K_USING_CTRACE 1
-#endif
+//#ifdef K_USING_DEBUG
+//#define K_USING_CTRACE 1
+//#endif
 
 #ifdef K_USING_CTRACE
 #define _GNU_SOURCE

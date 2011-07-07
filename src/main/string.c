@@ -444,9 +444,8 @@ knh_String_t *new_TEXT(CTX ctx, knh_class_t cid, knh_TEXT_t text, int isASCII)
 	const knh_ClassTBL_t *ct = ClassTBL(cid);
 	CHECK_CONST(ctx, s, text, len);
 	s = (knh_String_t*)new_hObject_(ctx, ct);
-	s = (knh_String_t*)new_hObject(ctx, cid);
 	s->str.text = text;
-	s->str.len = knh_strlen(text);
+	s->str.len = len;
 	s->hashCode = 0;
 	String_setASCII(s, isASCII);
 	String_setTextSgm(s, 1);
