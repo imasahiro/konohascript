@@ -89,7 +89,7 @@ static void hmap2_rehash(CTX ctx, knh_hmap2_t *hmap2)
 {
 	size_t i, newhmax = hmap2->hmax * 2 + 1;
 	knh_hentry2_t **newhentry2 = (knh_hentry2_t**)KNH_MALLOC(ctx, newhmax * sizeof(knh_hentry2_t*));
-	knh_bzero(hmap2->hentry, newhmax * sizeof(knh_hentry2_t*));
+	knh_bzero(newhentry2, newhmax * sizeof(knh_hentry2_t*));
 	for(i = 0; i < hmap2->arenasize / 2; i++) {
 		knh_hentry2_t *e = hmap2->arena + i;
 		knh_hashcode_t ni = e->hcode % newhmax;
