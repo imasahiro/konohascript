@@ -35,7 +35,6 @@ KNHAPI2(knh_Map_t*) new_Map(CTX ctx);
 KNHAPI2(void) knh_Map_set(CTX ctx, knh_Map_t *m, knh_String_t *key, knh_Object_t *value);
 KNHAPI2(void) knh_Map_setString(CTX ctx, knh_Map_t *m, const char *key, const char *value);
 KNHAPI2(void) knh_Map_setInt(CTX ctx, knh_Map_t *m, const char *key, knh_int_t value);
-KNHAPI2(Object*) new_Boxing(CTX ctx, knh_sfp_t *sfp, const knh_ClassTBL_t *ct);
 KNHAPI2(knh_Int_t*) new_Int(CTX ctx, knh_int_t value);
 KNHAPI2(knh_Float_t*) new_Float(CTX ctx, knh_float_t value);
 KNHAPI2(knh_bool_t) knh_String_ospath(CTX ctx, knh_String_t *s, knh_NameSpace_t *ns, char *buf, size_t bufsiz);
@@ -69,7 +68,6 @@ typedef struct knh_api2_t {
 	size_t crc32;
 	Object*  (*DictMap_valueAt)(knh_DictMap_t *m, size_t n);
 	Object*  (*getClassDefaultValue)(CTX ctx, knh_class_t cid);
-	Object* (*new_Boxing)(CTX ctx, knh_sfp_t *sfp, const knh_ClassTBL_t *ct);
 	int  (*isVerbose)(void);
 	knh_Array_t* (*new_Array)(CTX ctx, knh_class_t p1, size_t capacity);
 	knh_ClassDef_t*  (*getDefaultClassDef)(void);
@@ -125,14 +123,13 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)31221313)
+#define K_API2_CRC32 ((size_t)1858113444)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
 		K_API2_CRC32,
 		knh_DictMap_valueAt,
 		knh_getClassDefaultValue,
-		new_Boxing,
 		knh_isVerbose,
 		new_Array,
 		knh_getDefaultClassDef,
@@ -194,7 +191,6 @@ static const knh_api2_t* getapi2(void) {
 #ifndef K_INTERNAL
 #define knh_DictMap_valueAt   ctx->api2->DictMap_valueAt
 #define knh_getClassDefaultValue   ctx->api2->getClassDefaultValue
-#define new_Boxing   ctx->api2->new_Boxing
 #define knh_isVerbose   ctx->api2->isVerbose
 #define new_Array   ctx->api2->new_Array
 #define knh_getDefaultClassDef   ctx->api2->getDefaultClassDef
@@ -534,6 +530,9 @@ void knh_PtrMap_stat(CTX ctx, knh_PtrMap_t *pm, const char *name);
 knh_String_t* knh_PtrMap_getS(CTX ctx, knh_PtrMap_t *pm, const char *k, size_t len);
 void knh_PtrMap_addS(CTX ctx, knh_PtrMap_t *pm, knh_String_t *v);
 void knh_PtrMap_rmS(CTX ctx, knh_PtrMap_t *pm, knh_String_t *s);
+knh_Int_t* knh_PtrMap_getI(CTX ctx, knh_PtrMap_t *pm, knh_ndata_t k);
+void knh_PtrMap_addI(CTX ctx, knh_PtrMap_t *pm, knh_Int_t *v);
+void knh_PtrMap_rmI(CTX ctx, knh_PtrMap_t *pm, knh_Int_t *v);
 int knh_bytes_strcasecmp2(knh_bytes_t t1, knh_bytes_t t2);
 knh_DictMap_t* new_DictMap0_(CTX ctx, size_t capacity, int isCaseMap, const char *DBGNAME);
 knh_DictSet_t* new_DictSet0_(CTX ctx, size_t capacity, int isCaseMap, const char *DBGNAME);
@@ -578,6 +577,7 @@ knh_uint_t knh_rand(void);
 knh_float_t knh_float_rand(void);
 knh_Int_t* new_Int_(CTX ctx, knh_class_t cid, knh_int_t value);
 knh_Float_t* new_Float_(CTX ctx, knh_class_t cid, knh_float_t value);
+Object* new_Boxing(CTX ctx, knh_sfp_t *sfp, const knh_ClassTBL_t *ct);
 METHOD Bytes_getSize(CTX ctx, knh_sfp_t *sfp _RIX);
 METHOD Tuple_getSize(CTX ctx, knh_sfp_t *sfp _RIX);
 METHOD Map_getSize(CTX ctx, knh_sfp_t *sfp _RIX);

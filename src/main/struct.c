@@ -566,6 +566,9 @@ static void NDATA_initcopy(CTX ctx, knh_RawPtr_t *o, knh_RawPtr_t *src)
 
 static void NDATA_free(CTX ctx, knh_RawPtr_t *o)
 {
+	if(O_cTBL(o)->constPoolMapNULL != NULL) {
+		knh_PtrMap_rmI(ctx, O_cTBL(o)->constPoolMapNULL, (knh_Int_t*)o);
+	}
 }
 
 static knh_int_t Int_toint(CTX ctx, knh_sfp_t *sfp)
@@ -3029,13 +3032,31 @@ static Object *knh_Context_fdefault(CTX ctx, knh_class_t cid)
 
 static void knh_setDefaultValues(CTX ctx)
 {
-//	knh_ClassTBL_t *ct = (knh_ClassTBL_t *)ClassTBL(CLASS_Tuple);
-//	DBG_P("Tuple's super=%s", CLASS__(ct->supcid));
-//	ct->supcid = CLASS_Object;
-//	ct->supTBL = ClassTBL(CLASS_Object);
 	knh_setClassDefaultValue(ctx, CLASS_Object, KNH_NULL, NULL);
 	knh_setClassDefaultValue(ctx, CLASS_Tdynamic, KNH_NULL, NULL);
 	knh_setClassDefaultValue(ctx, CLASS_Boolean, KNH_FALSE, NULL);
+	{
+		knh_Int_t *io = new_H(Int);
+		(io)->n.ivalue = 0;
+		Object_setNullObject(io, 1);
+		knh_setClassDefaultValue(ctx, CLASS_Int, io, NULL);
+	}
+	{
+		knh_Float_t *fo = new_H(Float);
+		(fo)->n.fvalue = K_FLOAT_ZERO;
+		Object_setNullObject(fo, 1);
+		knh_setClassDefaultValue(ctx, CLASS_Float, fo, NULL);
+	}
+	{
+		knh_String_t *so = new_H(String);
+		so->str.text = "";
+		so->str.len = 0;
+		so->hashCode = 0;
+		String_setASCII(so, 1);
+		String_setTextSgm(so, 1);
+		Object_setNullObject(so, 1);
+		knh_setClassDefaultValue(ctx, CLASS_String, so, NULL);
+	}
 #if defined(K_USING_SEMANTICS)
 	{
 		knh_Semantics_t *u = new_(Semantics);

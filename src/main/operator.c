@@ -3640,11 +3640,10 @@ static METHOD ResultSet_get(CTX ctx, knh_sfp_t *sfp _RIX)
 		const char *p = BA_tochar(DP(o)->databuf) + DP(o)->column[n].start;
 		switch(DP(o)->column[n].ctype) {
 		case knh_ResultSet_CTYPE__integer :
-			KNH_SETv(ctx, sfp[K_RIX].o, KNH_INT0);
-			RETURNi_((*((knh_int_t*)p)));
+			v = UPCAST(new_Int_(ctx, CLASS_Int, ((*((knh_int_t*)p)))));
+			break;
 		case knh_ResultSet_CTYPE__float :
-			KNH_SETv(ctx, sfp[K_RIX].o, KNH_FLOAT0);
-			RETURNf_((*((knh_float_t*)p)));
+			v = UPCAST(new_Float_(ctx, CLASS_Float, ((*((knh_float_t*)p)))));
 		case knh_ResultSet_CTYPE__text : {
 			knh_bytes_t t = {{BA_tochar(DP(o)->databuf) + DP(o)->column[n].start}, DP(o)->column[n].len};
 			v = UPCAST(new_S(ctx, t));

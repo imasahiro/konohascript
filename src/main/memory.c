@@ -902,21 +902,6 @@ knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 	return o;
 }
 
-KNHAPI2(Object*) new_Boxing(CTX ctx, knh_sfp_t *sfp, const knh_ClassTBL_t *ct)
-{
-	knh_Object_t *o = NULL;
-	CHECK_UNUSED_OBJECT(ctx);
-	FREELIST_POP(o);
-	knh_useObject(ctx, 1);
-	o->h.magicflag = ct->magicflag;
-	knh_Object_RCset(o, K_RCGC_INIT);
-	o->h.cTBL = ct;
-	createClassObject(ct);
-	((knh_Int_t*)o)->n.data = sfp[0].ndata;
-	O_unset_tenure(o); // collectable
-	return o;
-}
-
 void TR_NEW(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
 	knh_Object_t *o = NULL;

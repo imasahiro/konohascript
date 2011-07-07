@@ -93,30 +93,70 @@ knh_float_t knh_float_rand(void)
 
 knh_Int_t* new_Int_(CTX ctx, knh_class_t cid, knh_int_t value)
 {
-	knh_Int_t *b = (knh_Int_t*)new_hObject_(ctx, ClassTBL(cid));
-	b->n.ivalue = value;
-	return b;
+	const knh_ClassTBL_t *ct = ClassTBL(cid);
+	if(ct->constPoolMapNULL != NULL) {
+		knh_Int_t *n = knh_PtrMap_getI(ctx, ct->constPoolMapNULL, (knh_ndata_t)value);
+		if(n == NULL) {
+			n = (knh_Int_t*)new_hObject_(ctx, ct);
+			n->n.ivalue = value;
+			knh_PtrMap_addI(ctx, ct->constPoolMapNULL, n);
+		}
+		return n;
+	}
+	else {
+		knh_Int_t *b = (knh_Int_t*)new_hObject_(ctx, ct);
+		b->n.ivalue = value;
+		return b;
+	}
 }
 
 knh_Float_t* new_Float_(CTX ctx, knh_class_t cid, knh_float_t value)
 {
-	knh_Float_t *b = (knh_Float_t*)new_hObject_(ctx, ClassTBL(cid));
-	b->n.fvalue = value;
-	return b;
+	const knh_ClassTBL_t *ct = ClassTBL(cid);
+	if(ct->constPoolMapNULL != NULL) {
+		knh_sfp_t lsfp;
+		lsfp.fvalue = value;
+		knh_Int_t *n = knh_PtrMap_getI(ctx, ct->constPoolMapNULL, lsfp.ndata);
+		if(n == NULL) {
+			n = (knh_Int_t*)new_hObject_(ctx, ct);
+			n->n.fvalue = value;
+			knh_PtrMap_addI(ctx, ct->constPoolMapNULL, n);
+		}
+		return (knh_Float_t*)n;
+	}
+	else {
+		knh_Float_t *b = (knh_Float_t*)new_hObject_(ctx, ct);
+		b->n.fvalue = value;
+		return b;
+	}
 }
 
 KNHAPI2(knh_Int_t*) new_Int(CTX ctx, knh_int_t value)
 {
-	knh_Int_t *b = (knh_Int_t*)new_hObject_(ctx, ClassTBL(CLASS_Int));
-	b->n.ivalue = value;
-	return b;
+	return new_Int_(ctx, CLASS_Int, value);
 }
 
 KNHAPI2(knh_Float_t*) new_Float(CTX ctx, knh_float_t value)
 {
-	knh_Float_t *b = (knh_Float_t*)new_hObject_(ctx, ClassTBL(CLASS_Float));
-	b->n.fvalue = value;
-	return b;
+	return new_Float_(ctx, CLASS_Float, value);
+}
+
+Object* new_Boxing(CTX ctx, knh_sfp_t *sfp, const knh_ClassTBL_t *ct)
+{
+	knh_Object_t *o = NULL;
+	if(ct->constPoolMapNULL != NULL) {
+		o = (knh_Object_t*)knh_PtrMap_getI(ctx, ct->constPoolMapNULL, sfp[0].ndata);
+		if(o == NULL) {
+			o = new_hObject_(ctx, ct);
+			((knh_Int_t*)o)->n.data = sfp[0].ndata;
+			knh_PtrMap_addI(ctx, ct->constPoolMapNULL, (knh_Int_t*)o);
+		}
+	}
+	else {
+		o = new_hObject_(ctx, ct);
+		((knh_Int_t*)o)->n.data = sfp[0].ndata;
+	}
+	return o;
 }
 
 /* ------------------------------------------------------------------------ */

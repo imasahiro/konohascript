@@ -252,16 +252,16 @@ static knh_context_t* new_RootContext(void)
 		o->n.bvalue = 0;
 		KNH_INITv(share->constFalse, o);
 	}
-	{
-		knh_Int_t *io = new_H(Int);
-		(io)->n.ivalue = 0;
-		KNH_INITv(share->constInt0, io);
-	}
-	{
-		knh_Float_t *fo = new_H(Float);
-		(fo)->n.fvalue = K_FLOAT_ZERO;
-		KNH_INITv(share->constFloat0, fo);
-	}
+//	{
+//		knh_Int_t *io = new_H(Int);
+//		(io)->n.ivalue = 0;
+//		KNH_INITv(share->constInt0, io);
+//	}
+//	{
+//		knh_Float_t *fo = new_H(Float);
+//		(fo)->n.fvalue = K_FLOAT_ZERO;
+//		KNH_INITv(share->constFloat0, fo);
+//	}
 	{
 		static const knh_dim_t dimINIT = {0};
 		knh_Array_t *a = new_H(Array);
@@ -364,8 +364,8 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	KNH_ADDREF(ctx, share->constNull);
 	KNH_ADDREF(ctx, share->constTrue);
 	KNH_ADDREF(ctx, share->constFalse);
-	KNH_ADDREF(ctx, (share->constInt0));
-	KNH_ADDREF(ctx, (share->constFloat0));
+//	KNH_ADDREF(ctx, (share->constInt0));
+//	KNH_ADDREF(ctx, (share->constFloat0));
 	KNH_ADDREF(ctx, (share->emptyArray));
 	KNH_ADDREF(ctx, (ctx->sys));
 	KNH_ADDREF(ctx, (share->rootns));

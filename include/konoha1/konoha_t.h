@@ -839,8 +839,8 @@ typedef struct {
 #define KNH_NULL            (ctx->share->constNull)
 #define KNH_TRUE            (ctx->share->constTrue)
 #define KNH_FALSE           (ctx->share->constFalse)
-#define KNH_INT0            (ctx->share->constInt0)
-#define KNH_FLOAT0          (ctx->share->constFloat0)
+//#define KNH_INT0            (ctx->share->constInt0)
+//#define KNH_FLOAT0          (ctx->share->constFloat0)
 #define K_EMPTYARRAY       (ctx->share->emptyArray)
 #define KNH_SYSTEM          (ctx->sys)
 #define knh_Object_sweep    knh_Object_RCsweep
@@ -922,8 +922,8 @@ typedef struct {
 	knh_Object_t             *constNull;
 	knh_Object_t             *constTrue;
 	knh_Object_t             *constFalse;
-	struct knh_Int_t         *constInt0;
-	struct knh_Float_t       *constFloat0;
+//	struct knh_Int_t         *constInt0;
+//	struct knh_Float_t       *constFloat0;
 	struct knh_String_t     **tString;
 	struct knh_Array_t       *emptyArray;
 	struct knh_NameSpace_t   *rootns;
@@ -938,9 +938,6 @@ typedef struct {
 	struct knh_DictMap_t     *sysAliasDictMapNULL;
 
 	struct knh_PtrMap_t      *constPtrMap;
-//	struct knh_PtrMap_t      *constIntMap;
-//	struct knh_PtrMap_t      *constFloatMap;
-//	struct knh_PtrMap_t      *constStringMap;
 
 	/* thread */
 	size_t              contextCounter;

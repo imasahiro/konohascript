@@ -811,6 +811,50 @@ void knh_PtrMap_rmS(CTX ctx, knh_PtrMap_t *pm, knh_String_t *s)
 	//KNH_ASSERT(ctx == NULL);
 }
 
+knh_Int_t* knh_PtrMap_getI(CTX ctx, knh_PtrMap_t *pm, knh_ndata_t k)
+{
+	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
+	knh_hashcode_t hcode = (knh_hashcode_t)k;
+	knh_hentry_t *e = hmap_getentry(hmap, hcode);
+	hmap->stat_total++;
+	while(e != NULL) {
+		if(e->hcode == hcode DBLNDATA_(&& e->nkey == k)) {
+			hmap->stat_hit++;
+			return (knh_Int_t*)e->pvalue;
+		}
+		e = e->next;
+	}
+	return NULL;
+}
+
+void knh_PtrMap_addI(CTX ctx, knh_PtrMap_t *pm, knh_Int_t *v)
+{
+	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
+	knh_ndata_t k = v->n.data;
+	knh_hashcode_t hcode = (knh_hashcode_t)k;
+	knh_hentry_t *e = new_hentry(ctx, hmap, hcode);
+	DBG_ASSERT(IS_bString(v));
+	e->nkey = k;
+	e->pvalue = (void*)v;
+	hmap_add(hmap, e);
+}
+
+void knh_PtrMap_rmI(CTX ctx, knh_PtrMap_t *pm, knh_Int_t *v)
+{
+	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
+	knh_hentry_t *e = hmap_getentry(hmap, (knh_hashcode_t)v->n.data);
+	while(e != NULL) {
+		if(e->pvalue == (void*)v) {
+			hmap_remove(hmap, e);
+			hmap_unuse(hmap, e);
+			return;
+		}
+		e = e->next;
+	}
+	DBG_P("not found removed %d %p", (knh_hashcode_t)v->n.data, v);
+	//KNH_ASSERT(ctx == NULL);
+}
+
 
 /* ------------------------------------------------------------------------ */
 /* DictMap */
