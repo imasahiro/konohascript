@@ -760,6 +760,7 @@ knh_String_t* knh_PtrMap_getS(CTX ctx, knh_PtrMap_t *pm, const char *k, size_t l
 			DBG_P("found %x %s", hcode, es);
 			return (knh_String_t*)e->pvalue;
 		}
+		e = e->next;
 	}
 	return NULL;
 }
@@ -789,6 +790,7 @@ void knh_PtrMap_rmS(CTX ctx, knh_PtrMap_t *pm, const char *k)
 			hmap2_unuse(hmap, e);
 			return;
 		}
+		e = e->next;
 	}
 	DBG_P("not found %s", k);
 	DBG_ASSERT(ctx == NULL);
