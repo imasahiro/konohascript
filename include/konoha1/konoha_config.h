@@ -72,7 +72,7 @@
 
 #define K_USING_INTEGERPOOL     1
 #define K_USING_FLOATPOOL       1
-//#define K_USING_STRINGPOOL      1
+#define K_USING_STRINGPOOL      1
 
 #define K_DEOS_TRACE           "DEOS_TRACE"
 
