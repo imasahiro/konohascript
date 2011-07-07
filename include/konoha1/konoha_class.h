@@ -341,7 +341,12 @@ typedef struct knh_Map_t {
 	const struct knh_MapDSPI_t *spi;
 } knh_Map_t;
 
-typedef knh_Map_t knh_PtrMap_t;
+typedef struct knh_PtrMap_t {
+	knh_hObject_t h;
+	knh_mapptr_t  *mapptr;
+	const struct knh_MapDSPI_t *spi;
+} knh_PtrMap_t;
+
 #define knh_Map_size(m)  (m)->spi->size(NULL, (m)->mapptr)
 
 // DictMap, DictSet are old names of Map;

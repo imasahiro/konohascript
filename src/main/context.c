@@ -234,6 +234,11 @@ static knh_context_t* new_RootContext(void)
 	share->capacityEventTBL  = K_EVENTTBL_INIT;
 	knh_loadScriptSystemStructData(ctx, kapi);
 
+	KNH_INITv(share->constPtrMap, new_PtrMap(ctx, 0));
+	KNH_INITv(share->constIntMap, new_PtrMap(ctx, 0));
+	KNH_INITv(share->constFloatMap, new_PtrMap(ctx, 0));
+	KNH_INITv(share->constStringMap, new_PtrMap(ctx, 0));
+
 	{
 		knh_Object_t *p = (knh_Object_t*)new_hObject_(ctx, ClassTBL(CLASS_Object));
 		Object_setNullObject(p, 1);
@@ -266,6 +271,7 @@ static knh_context_t* new_RootContext(void)
 		(a)->dim = &dimINIT;
 		KNH_INITv(share->emptyArray, a);
 	}
+
 	share->tString = (knh_String_t**)KNH_MALLOC(ctx, SIZEOF_TSTRING);
 	knh_bzero(share->tString, SIZEOF_TSTRING);
 	knh_loadScriptSystemString(ctx);
@@ -366,6 +372,11 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	KNH_ADDREF(ctx, (ctx->sys));
 	KNH_ADDREF(ctx, (share->rootns));
 	KNH_ADDNNREF(ctx, (share->sysAliasDictMapNULL));
+
+	KNH_ADDREF(ctx, (share->constPtrMap));
+	KNH_ADDREF(ctx, (share->constIntMap));
+	KNH_ADDREF(ctx, (share->constFloatMap));
+	KNH_ADDREF(ctx, (share->constStringMap));
 
 	KNH_ENSUREREF(ctx, K_TSTRING_SIZE);
 	for(i = 0; i < K_TSTRING_SIZE; i++) {

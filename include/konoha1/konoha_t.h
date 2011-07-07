@@ -936,6 +936,11 @@ typedef struct {
 	/* system */
 	struct knh_DictMap_t     *sysAliasDictMapNULL;
 
+	struct knh_PtrMap_t      *constPtrMap;
+	struct knh_PtrMap_t      *constIntMap;
+	struct knh_PtrMap_t      *constFloatMap;
+	struct knh_PtrMap_t      *constStringMap;
+
 	/* thread */
 	size_t              contextCounter;
 	size_t              threadCounter;

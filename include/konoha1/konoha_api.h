@@ -528,8 +528,11 @@ const knh_QueryDSPI_t *knh_getQueryDSPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_
 void knh_loadSystemDriver(CTX ctx, knh_NameSpace_t *ns);
 knh_PtrMap_t* new_PtrMap(CTX ctx, size_t max);
 void* knh_PtrMap_get(CTX ctx, knh_PtrMap_t *pm, void *keyptr);
-void knh_PtrMap_set(CTX ctx, knh_PtrMap_t *pm, void *keyptr, void *valueptr);
-void knh_PtrMap_remove(CTX ctx, knh_PtrMap_t *pm, void *keyptr);
+void knh_PtrMap_add(CTX ctx, knh_PtrMap_t *pm, void *keyptr, void *valueptr);
+void knh_PtrMap_rm(CTX ctx, knh_PtrMap_t *pm, void *keyptr);
+knh_String_t* knh_PtrMap_getS(CTX ctx, knh_PtrMap_t *pm, const char *k, size_t len);
+void knh_PtrMap_addS(CTX ctx, knh_PtrMap_t *pm, knh_String_t *v);
+void knh_PtrMap_rmS(CTX ctx, knh_PtrMap_t *pm, const char *k);
 int knh_bytes_strcasecmp2(knh_bytes_t t1, knh_bytes_t t2);
 knh_DictMap_t* new_DictMap0_(CTX ctx, size_t capacity, int isCaseMap, const char *DBGNAME);
 knh_DictSet_t* new_DictSet0_(CTX ctx, size_t capacity, int isCaseMap, const char *DBGNAME);

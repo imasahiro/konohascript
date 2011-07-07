@@ -763,6 +763,9 @@ static void String_init(CTX ctx, knh_RawPtr_t *o)
 static void String_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_String_t *s = (knh_String_t*)o;
+#ifdef K_USING_STRINGPOOL
+	knh_PtrMap_rmS(ctx, ctx->share->constStringMap, S_tochar(s));
+#endif
 	if(!String_isTextSgm(s)) {
 		KNH_FREE(ctx, s->str.ubuf, KNH_SIZE(S_size(s) + 1));
 	}

@@ -371,9 +371,31 @@ static void knh_String_checkASCII(knh_String_t *o)
 
 /* ------------------------------------------------------------------------ */
 
+#ifdef K_USING_STRINGPOOL
+
+#define CHECK_CONST(ctx, V, S, L) \
+	if(cid == CLASS_String) {     \
+		V = knh_PtrMap_getS(ctx, ctx->share->constStringMap, S, L); \
+		if(V != NULL) return V;   \
+	}                             \
+
+#define SET_CONST(ctx, V) \
+	if(cid == CLASS_String) {     \
+		knh_PtrMap_addS(ctx, ctx->share->constStringMap, V); \
+	}                             \
+
+#else
+
+#define CHECK_CONST(ctx, V, S, L)
+#define SET_CONST(ctx, V)
+
+#endif
+
 KNHAPI2(knh_String_t*) new_String_(CTX ctx, knh_class_t cid, knh_bytes_t t, knh_String_t *memoNULL)
 {
-	knh_String_t *s = (knh_String_t*)new_hObject(ctx, cid);
+	knh_String_t *s;
+	CHECK_CONST(ctx, s, t.text, t.len);
+	s = (knh_String_t*)new_hObject(ctx, cid);
 	if(t.len + 1 < sizeof(void*) * 2) {
 		s->str.ubuf = (knh_uchar_t*)(&(s->hashCode));
 		s->str.len = t.len;
@@ -394,6 +416,7 @@ KNHAPI2(knh_String_t*) new_String_(CTX ctx, knh_class_t cid, knh_bytes_t t, knh_
 	else {
 		knh_String_checkASCII(s);
 	}
+	SET_CONST(ctx, s);
 	return s;
 }
 
@@ -413,12 +436,16 @@ KNHAPI2(knh_String_t*) new_String(CTX ctx, const char *str)
 
 knh_String_t *new_TEXT(CTX ctx, knh_class_t cid, knh_TEXT_t text, int isASCII)
 {
-	knh_String_t *s = (knh_String_t*)new_hObject(ctx, cid);
+	size_t len = knh_strlen(text);
+	knh_String_t *s;
+	CHECK_CONST(ctx, s, text, len);
+	s = (knh_String_t*)new_hObject(ctx, cid);
 	s->str.text = text;
 	s->str.len = knh_strlen(text);
 	s->hashCode = 0;
 	String_setASCII(s, isASCII);
 	String_setTextSgm(s, 1);
+	SET_CONST(ctx, s);
 	return s;
 }
 
