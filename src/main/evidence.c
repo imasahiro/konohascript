@@ -271,6 +271,16 @@ static void opt_verbose_gc(int mode, const char *optstr)
 	isVerboseGC = 1;
 }
 
+int knh_isVerbosePref(void)
+{
+	return isVerbosePref;
+}
+
+static void opt_verbose_pref(int mode, const char *optstr)
+{
+	isVerbosePref = 1;
+}
+
 static int enforce_security = 0;
 
 void knh_enforceSecurity(CTX ctx, knh_Method_t *mtd)
@@ -487,6 +497,7 @@ static knh_optdata_t optdata[] = {
 	{OPT_("--enforce-security"), OPT_STRING, opt_enforce_security},
 	{OPT_("--verbose:gc"), OPT_EMPTY, opt_verbose_gc},
 	{OPT_("--verbose:lang"), OPT_EMPTY, opt_verbose_lang},
+	{OPT_("--verbose:pref"), OPT_EMPTY, opt_verbose_pref},
 	{NULL, 0, OPT_EMPTY, NULL}, // END
 };
 

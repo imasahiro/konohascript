@@ -292,6 +292,7 @@ static knh_optdata_t optdata[] = {
 	{OPT_("-h"), OPT_EMPTY, opt_help},
 	{OPT_("--verbose:gc"), OPT_EMPTY, opt_dummy},
 	{OPT_("--verbose:lang"), OPT_EMPTY, opt_dummy},
+	{OPT_("--verbose:pref"), OPT_EMPTY, opt_dummy},
 //	{"--utest", OPT_EMPTY, opt_utest},
 	{OPT_("--help"), OPT_EMPTY, opt_help},
 	{OPT_("--enforce-security"), OPT_STRING, opt_dummy},
