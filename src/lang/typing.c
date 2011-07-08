@@ -275,7 +275,7 @@ knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh
 
 /* ----------------------------------------------------------------------- */
 
-#define CONSTPOOL(v)   knh_getConstPools(ctx, v)
+//#define CONSTPOOL(v)   knh_getConstPools(ctx, v)
 
 #define _FREADONLY   FLAG_Field_ReadOnly
 #define _FGETTER     FLAG_Field_Getter
@@ -1155,7 +1155,7 @@ static knh_Token_t* NUM_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 			return Token_setCONST(ctx, tk, UPCAST(new_Float_X(ctx, tagc, n)));
 		}
 #else
-		return Token_setCONST(ctx, tk, CONSTPOOL(new_Float_(ctx, CLASS_Float, n)));
+		return Token_setCONST(ctx, tk, new_Float_(ctx, CLASS_Float, n));
 #endif/*K_USING_SEMANTICS*/
 	}
 	else { /* if(req_bcid == CLASS_Int) */
@@ -1174,7 +1174,7 @@ static knh_Token_t* NUM_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 			return Token_setCONST(ctx, tk, UPCAST(new_Int_X(ctx, tagc, n)));
 		}
 #else
-		return Token_setCONST(ctx, tk, CONSTPOOL(new_Int_(ctx, CLASS_Int, n)));
+		return Token_setCONST(ctx, tk, new_Int_(ctx, CLASS_Int, n));
 #endif/*K_USING_SEMANTICS*/
 	}
 }

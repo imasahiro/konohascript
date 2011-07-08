@@ -502,6 +502,9 @@ static int Token_startsWithExpr(CTX ctx, knh_Token_t *tkB)
 
 static knh_String_t *new_StringSYMBOL(CTX ctx, knh_bytes_t t)
 {
+#ifdef K_USING_STRINGPOOL
+	return new_S(ctx, t);
+#else
 	knh_DictMap_t *symbolDictMap = ctx->symbolDictMap;
 	knh_index_t idx = knh_DictMap_index(symbolDictMap, t);
 	if(idx == -1) {
@@ -512,6 +515,7 @@ static knh_String_t *new_StringSYMBOL(CTX ctx, knh_bytes_t t)
 	else {
 		return knh_DictMap_keyAt(symbolDictMap, idx);
 	}
+#endif
 }
 
 static knh_String_t* NameSpace_getAliasNULL(CTX ctx, knh_NameSpace_t* ns, knh_bytes_t t)
@@ -579,42 +583,42 @@ static void Token_setNAME(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 /* ------------------------------------------------------------------------ */
 /* [tokenizer] */
 
-#define K_POOLSIZE 64
-#define K_POOLHALFSIZE (K_POOLSIZE/2)
+//#define K_POOLSIZE 64
+//#define K_POOLHALFSIZE (K_POOLSIZE/2)
+//
+//static size_t phit = 0;
+//static size_t pmiss = 0;
+//static size_t presize = 0;
 
-static size_t phit = 0;
-static size_t pmiss = 0;
-static size_t presize = 0;
-
-Object* knh_getConstPools(CTX ctx, void *p)
-{
-	knh_Object_t *v = UPCAST(p), *result = NULL;
-	knh_Array_t *a = ctx->constPools;
-	long i;
-	for(i = knh_Array_size(a) - 1; i >= 0; i--) {
-		knh_Object_t *o = a->list[i];
-		if(O_cid(o) == O_cid(v) && knh_Object_compareTo(o, v) == 0) {
-			knh_Array_add(ctx, a, o); result = o;
-			KNH_SETv(ctx, a->list[i], v); // TO AVOID RCGC
-			phit++;
-			goto L_POOLMGM;
-		}
-	}
-	knh_Array_add(ctx, a, v); result = v;
-	pmiss++;
-	L_POOLMGM:;
-	if(a->size  == K_POOLSIZE) {
-		for(i = 0; i < K_POOLHALFSIZE; i++) {
-			KNH_FINALv(ctx, a->list[i]);
-		}
-		knh_memcpy(&(a->list[0]), &(a->list[K_POOLHALFSIZE]), sizeof(Object*) * K_POOLHALFSIZE);
-		knh_bzero(&(a->list[K_POOLHALFSIZE]), sizeof(Object*) * K_POOLHALFSIZE);
-		a->size -= K_POOLHALFSIZE;
-		presize++;
-	}
-	//DBG_P("ConstPool hit=%ld, miss=%ld resize=%ld", phit, pmiss, presize);
-	return result;
-}
+//Object* knh_getConstPools(CTX ctx, void *p)
+//{
+//	knh_Object_t *v = UPCAST(p), *result = NULL;
+//	knh_Array_t *a = ctx->constPools;
+//	long i;
+//	for(i = knh_Array_size(a) - 1; i >= 0; i--) {
+//		knh_Object_t *o = a->list[i];
+//		if(O_cid(o) == O_cid(v) && knh_Object_compareTo(o, v) == 0) {
+//			knh_Array_add(ctx, a, o); result = o;
+//			KNH_SETv(ctx, a->list[i], v); // TO AVOID RCGC
+//			phit++;
+//			goto L_POOLMGM;
+//		}
+//	}
+//	knh_Array_add(ctx, a, v); result = v;
+//	pmiss++;
+//	L_POOLMGM:;
+//	if(a->size  == K_POOLSIZE) {
+//		for(i = 0; i < K_POOLHALFSIZE; i++) {
+//			KNH_FINALv(ctx, a->list[i]);
+//		}
+//		knh_memcpy(&(a->list[0]), &(a->list[K_POOLHALFSIZE]), sizeof(Object*) * K_POOLHALFSIZE);
+//		knh_bzero(&(a->list[K_POOLHALFSIZE]), sizeof(Object*) * K_POOLHALFSIZE);
+//		a->size -= K_POOLHALFSIZE;
+//		presize++;
+//	}
+//	//DBG_P("ConstPool hit=%ld, miss=%ld resize=%ld", phit, pmiss, presize);
+//	return result;
+//}
 
 static void Token_setTEXT(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 {
@@ -644,28 +648,8 @@ static void Token_setTEXT(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 		KNH_SETv(ctx, (tk)->data, new_StringSYMBOL(ctx, t));
 	}
 	else {
-		knh_Array_t *a = ctx->constPools;
-		knh_String_t *s = NULL;
-		if(a != NULL) {
-			long i;
-			for(i = knh_Array_size(a) - 1; i >= 0; i--) {
-				knh_Object_t *o = a->list[i];
-				if(O_cid(o) == CLASS_String) {
-					if(S_equals((knh_String_t*)o, t)) {
-						knh_cwb_clear2(cwb, 0);
-						if(isdigit(t.utext[0]) && TT_(tk) == TT_NUM) {
-							KNH_SETv(ctx, (tk)->data, o);
-						}
-						s = (knh_String_t*)o;
-						break;
-					}
-				}
-			}
-		}
-		if(s == NULL) {
-			s = knh_cwb_newString(ctx, cwb);
-		}
-		KNH_SETv(ctx, (tk)->data, knh_getConstPools(ctx, s));
+		knh_String_t *s = knh_cwb_newString(ctx, cwb);
+		KNH_SETv(ctx, (tk)->data, s);
 	}
 }
 

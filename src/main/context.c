@@ -98,16 +98,20 @@ static void knh_CommonContext_init(CTX ctx, knh_context_t *o)
 	KNH_INITv(o->err, DP(ctx->sys)->err);
 	KNH_INITv(o->e, KNH_NULL);
 	KNH_INITv(o->evaled, KNH_NULL);
+#ifndef K_USING_STRINGPOOL
 	KNH_INITv(o->symbolDictMap, new_DictMap0(ctx, 256, 0/*isCaseMap*/, "Context.symbolDictMap"));
-	KNH_INITv(o->constPools, new_Array0(ctx, 0));
+#endif
+//	KNH_INITv(o->constPools, new_Array0(ctx, 0));
 	o->ctxlock = knh_mutex_malloc(ctx);
 }
 
 static knh_Object_t** knh_CommonContext_reftrace(CTX ctx, knh_context_t *ctxo FTRARG)
 {
 	size_t i;
+#ifndef K_USING_STRINGPOOL
 	KNH_ADDREF(ctx, ctxo->symbolDictMap);
-	KNH_ADDREF(ctx, ctxo->constPools);
+#endif
+//	KNH_ADDREF(ctx, ctxo->constPools);
 	KNH_ADDREF(ctx, ctxo->e);
 	KNH_ADDREF(ctx, ctxo->evaled);
 	KNH_ADDREF(ctx, (ctxo->script));
@@ -234,6 +238,8 @@ static knh_context_t* new_RootContext(void)
 	knh_loadScriptSystemStructData(ctx, kapi);
 
 	KNH_INITv(share->constPtrMap, new_PtrMap(ctx, 0));
+	knh_ClassTBL_setConstPool(ctx, ClassTBL(CLASS_Int));
+	knh_ClassTBL_setConstPool(ctx, ClassTBL(CLASS_Float));
 #ifdef K_USING_STRINGPOOL
 	knh_ClassTBL_setConstPool(ctx, ClassTBL(CLASS_String));
 #endif
@@ -246,22 +252,10 @@ static knh_context_t* new_RootContext(void)
 		knh_Boolean_t *o = new_H(Boolean);
 		o->n.bvalue = 1;
 		KNH_INITv(share->constTrue, o);
-	}
-	{
-		knh_Boolean_t *o = new_H(Boolean);
+		o = new_H(Boolean);
 		o->n.bvalue = 0;
 		KNH_INITv(share->constFalse, o);
 	}
-//	{
-//		knh_Int_t *io = new_H(Int);
-//		(io)->n.ivalue = 0;
-//		KNH_INITv(share->constInt0, io);
-//	}
-//	{
-//		knh_Float_t *fo = new_H(Float);
-//		(fo)->n.fvalue = K_FLOAT_ZERO;
-//		KNH_INITv(share->constFloat0, fo);
-//	}
 	{
 		static const knh_dim_t dimINIT = {0};
 		knh_Array_t *a = new_H(Array);

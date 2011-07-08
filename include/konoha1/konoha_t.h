@@ -1068,8 +1068,12 @@ typedef struct knh_context_t {
 	struct knh_Bytes_t*          bufa;
 	struct knh_OutputStream_t*   bufw;
 	struct knh_Gamma_t*          gma;
+#ifdef K_USING_STRINGPOOL
+	void * _UNUSED_symbolDictMap;
+#else
 	struct knh_DictMap_t*        symbolDictMap;
-	struct knh_Array_t*          constPools;
+#endif
+	void * _UNUSED_constPools;
 
 	knh_flag_t                   flag;
 	knh_ushort_t                 ctxid;

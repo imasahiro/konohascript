@@ -751,7 +751,7 @@ void knh_PtrMap_rm(CTX ctx, knh_PtrMap_t *pm, void *keyptr)
 void knh_PtrMap_stat(CTX ctx, knh_PtrMap_t *pm, const char *name)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
-	if(hmap->stat_total > 0) {
+	if(hmap->stat_total > 9) {
 		DBG_P("STAT: name=%s count=%d %f%%", name, hmap->stat_total, 100.0 * hmap->stat_hit / hmap->stat_total);
 		knh_logprintf("STAT", 0, "name=%s count=%d %f%%", name, hmap->stat_total, 100.0 * hmap->stat_hit / hmap->stat_total);
 //		LOGSFPDATA = {sDATA("name", name), /*fDATA("rate", hmap->stat_hit / hmap->stat_total),*/ iDATA("count", hmap->stat_total)};
@@ -833,7 +833,6 @@ void knh_PtrMap_addI(CTX ctx, knh_PtrMap_t *pm, knh_Int_t *v)
 	knh_ndata_t k = v->n.data;
 	knh_hashcode_t hcode = (knh_hashcode_t)k;
 	knh_hentry_t *e = new_hentry(ctx, hmap, hcode);
-	DBG_ASSERT(IS_bString(v));
 	e->nkey = k;
 	e->pvalue = (void*)v;
 	hmap_add(hmap, e);
