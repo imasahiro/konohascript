@@ -311,7 +311,6 @@ static void trapSIGINT(int sig, siginfo_t* si, void *sc)
 
 static void trapSIGFPE(int sig, siginfo_t* si, void *sc)
 {
-	CTX ctx = knh_getCurrentContext();
 	static const char *emsg[] = {
 			/* FPE_NOOP	  0*/ "SIGFPE",
 			/* FPE_FLTDIV 1*/ "floating point divide by zero",
@@ -319,12 +318,13 @@ static void trapSIGFPE(int sig, siginfo_t* si, void *sc)
 			/* FPE_FLTUND 3*/ "floating point underflow",
 			/* FPE_FLTRES 4*/ "floating point inexact result",
 			/* FPE_FLTINV	5	*/ "invalid floating point operation",
-			/* FPE_FLTSUB	6	*/ "subscript out of range -NOTIMP",
+			/* FPE_FLTSUB	6	*/ "subscript out of range",
 			/* FPE_INTDIV	7	*/ "integer divide by zero",
 			/* FPE_INTOVF	8	*/ "integer overflow"};
+	CTX ctx = knh_getCurrentContext();
 	record_signal(ctx, sig, si, sc);
 	if(ctx != NULL) {
-		int si_code = (si->si_code < 8) ? si->si_code : 0;
+		int si_code = (si->si_code < 9) ? si->si_code : 0;
 		THROW_Arithmetic(ctx, NULL, emsg[si_code]);
 	}
 }
@@ -339,10 +339,51 @@ static void trapSEGV(int sig, siginfo_t* si, void* sc)
 		fprintf(stderr, "address=%p\n", address);
 	}
 	if(ctx != NULL) {
+		WCTX(ctx)->signal = sig;
 		THROW_Halt(ctx, NULL, "segmentation fault");
 	}
-	_Exit(70);
+	_Exit(EX_SOFTWARE);
 }
+
+static void trapILL(int sig, siginfo_t* si, void* sc)
+{
+	static const char *emsg[] = {
+			/* FPE_NOOP	  0*/ "SIGILL",
+			/* ILL_ILLOPC 1*/ "illegal opcode",
+			/* ILL_ILLTRP 2*/ "illegal trap",
+			/* ILL_PRVOPC 3*/ "privileged opcode",
+			/* ILL_ILLOPN 4*/ "illegal operand",
+			/* 	5	*/ "illegal addressing mode",
+			/* 	6	*/ "privileged register",
+			/* 	7	*/ "coprocessor error",
+			/* 	8	*/ "internal stack error"};
+	CTX ctx = knh_getCurrentContext();
+	record_signal(ctx, sig, si, sc);
+	if(ctx != NULL) {
+		int si_code = (si->si_code < 9) ? si->si_code : 0;
+		WCTX(ctx)->signal = sig;
+		THROW_Halt(ctx, NULL, emsg[si_code]);
+	}
+	_Exit(EX_SOFTWARE);
+}
+
+static void trapBUS(int sig, siginfo_t* si, void* sc)
+{
+	static const char *emsg[] = {
+			/* BUS_NOOP	  0*/ "BUS_NOOP",
+			/* BUS_ADRALN 1*/ "invalid address alignment",
+			/* BUS_ADRERR 2*/ "nonexistent physical address",
+			/* BUS_OBJERR 3*/ "object-specific HW error"};
+	CTX ctx = knh_getCurrentContext();
+	record_signal(ctx, sig, si, sc);
+	if(ctx != NULL) {
+		int si_code = (si->si_code < 4) ? si->si_code : 1;
+		WCTX(ctx)->signal = sig;
+		THROW_Halt(ctx, NULL, emsg[si_code]);
+	}
+	_Exit(EX_SOFTWARE);
+}
+
 #endif
 
 #define KNH_SIGACTION(T, sa, sa_orig, n)                       \
@@ -363,6 +404,13 @@ static void knh_setsignal(CTX ctx, void *block, size_t n)
 	sa.sa_sigaction = trapSEGV;
 	sa.sa_flags     = SA_SIGINFO;
 	KNH_SIGACTION(SIGSEGV, &sa, sa_orig, n);
+	sa.sa_sigaction = trapILL;
+	sa.sa_flags     = SA_SIGINFO;
+	KNH_SIGACTION(SIGILL, &sa, sa_orig, n);
+	sa.sa_sigaction = trapBUS;
+	sa.sa_flags     = SA_SIGINFO;
+	KNH_SIGACTION(SIGBUS, &sa, sa_orig, n);
+
 #endif
 
 	sa.sa_sigaction = trapSIGFPE;
@@ -387,6 +435,8 @@ static void knh_unsetsignal(CTX ctx, void *block, size_t n)
 	struct sigaction *sa_orig = (struct sigaction*)block;
 	if(sa_orig != NULL) {
 #ifndef K_USING_DEBUG
+		KNH_SIGACTION2(SIGILL,  sa_orig, n);
+		KNH_SIGACTION2(SIGBUS,  sa_orig, n);
 		KNH_SIGACTION2(SIGSEGV, sa_orig, n);
 #endif
 		KNH_SIGACTION2(SIGFPE, sa_orig, n);
@@ -405,6 +455,11 @@ knh_bool_t knh_VirtualMachine_launch(CTX ctx, knh_sfp_t *sfp)
 	knh_bzero(sa_orig, sizeof(struct sigaction) * 32);
 	knh_setsignal(ctx, sa_orig, 32);
 	knh_bool_t b = (knh_VirtualMachine_run(ctx, sfp, CODE_LAUNCH) == NULL);
+	if(ctx->signal != 0) {
+		if(ctx->signal == SIGSEGV || ctx->signal == SIGBUS || ctx->signal == SIGILL) {
+			_Exit(EX_SOFTWARE);
+		}
+	}
 	knh_unsetsignal(ctx, sa_orig, 32);
 	return b;
 #else

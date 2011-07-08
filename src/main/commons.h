@@ -30,4 +30,9 @@
 #define K_INTERNAL  1
 #include"../../include/konoha1.h"
 #include"../../include/konoha1/inlinelibs.h"
+
+#ifndef EX_SOFTWARE
+#define EX_SOFTWARE  70
+#endif
+
 #endif /*COMMONS_H_*/
