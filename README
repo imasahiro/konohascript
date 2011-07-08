@@ -11,31 +11,32 @@ Konoha is a newly designed statically-typed scripting language.
  * highly portable language runtime
  * Java-like grammar and libraries
 
-Konoha is open source software and may be freely copied on the terms 
-contained in the GNU Lesser General Public License 3.0. If you are 
-interested in other form of license, we are preparing "Konoha 
-Software Foundation License 1.0".
+Konoha is open source software and may be freely copied on the terms
+contained in the GNU Lesser General Public License 3.0.
+If you are interested in other form of license, we are preparing 
+"Konoha Software Foundation License 1.0".
 
 OVERVIEW OF KONOHA
 ------------------
 
-The language design of Konoha is characterlized by:
+The language design of Konoha is characterized by:
 
 1 Konoha looks like Java
 2 Konoha runs like Python
-3 You'll enjoy fantasitc experience
+3 You'll enjoy fantastic experience
 
 INSTALL AND TRY
 ---------------
 
 You'll have to make only three steps. Try:
 
-	cmake ./
+	cd build
+	cmake ../
 	make
 	sudo make install
 
-If Konoha is installed succeedly, you can try Konoha as an 
-interactive mode.
+If Konoha is installed successfully, you can try Konoha as 
+an interactive mode.
 
 	$ konoha
 	konoha 1.0(beta1) svn (rev:234, May 27 2011 13:16:36)
@@ -60,6 +61,5 @@ and questions are welcome!!
 	konoha-users@list.sourceforge.jp (in Japanese)
 	
 Thank you for downloading and trying Konoha!!
-
 
 
