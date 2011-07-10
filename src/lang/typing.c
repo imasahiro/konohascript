@@ -550,8 +550,8 @@ static knh_Token_t *TTYPE_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 static void *Gamma_loadFunc(CTX ctx, char *funcname, int isREQUIRED)
 {
 	knh_NameSpace_t *ns = K_GMANS;
-	if(ns->dlhdr != NULL) {
-		void *f = knh_dlsym(ctx, ns->dlhdr, (const char*)funcname, 0/*isTest*/);
+	if(ns->gluehdr != NULL) {
+		void *f = knh_dlsym(ctx, ns->gluehdr, (const char*)funcname, 0/*isTest*/);
 		if(f != NULL) return f;
 		if (isREQUIRED) {
 			WARN_NotFound(ctx, _("foreign function"), funcname);
@@ -2367,8 +2367,8 @@ static knh_Func_t * new_StaticFunc(CTX ctx, knh_class_t bcid, knh_Method_t *mtd)
 	O_cTBL(fo) = ClassTBL(bcid);
 	KNH_INITv(fo->mtd, mtd);
 	fo->baseNULL = NULL;
-	fo->xsfp = NULL;
-	fo->xsize = 0;
+//	fo->xsfp = NULL;
+//	fo->xsize = 0;
 	return fo;
 }
 
@@ -3889,39 +3889,6 @@ static knh_Token_t* knh_StmtMTD_typing(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *
 	return TM(stmt);
 }
 
-//#include <ffi/ffi.h>
-//
-//void* ffi_value(CTX ctx, knh_rbp_t *rbp)
-//{
-//	return (void*)rbp->pc;
-//}
-//
-//typedef void* (*knh_Ffficonv)(CTX, knh_rbp_t *rbp);
-//
-//#define Method_infoFFI(mtd)        DP(mtd)->paramsNULL;
-//#define FFI_psize(a)               ((knh_Array_size(a) - 1) / 3)
-//#define FFI_cif(a)                 (ffi_cif*)((a)->ptrs[knh_Array_size(a)-1]->rawptr)
-//#define FFI_ptype(a, n)            (ffi_type*)((a)->ptrs[((n)*2)]->rawptr)
-//#define FFI_rbpidx(a, n)           (int)(N_toint((a)->ints[((n)*2)+1]))
-//#define FFI_values(rbp, a, n)      &(rbp[FFI_rbpidx(a,n)].pc)
-//#define FFI_trvalues(rbp, a, n)    ((knh_Ffficonv)a->ptrs[((n)*2)+2]->rawptr)(ctx, rbp + FFI_rbpidx(a, n))
-//
-//METHOD FmethodFFI(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_rbp_t *rbp = (knh_rbp_t*)sfp;
-//	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
-//	knh_Array_t *ffi_info = Method_infoFFI(mtd)
-//	size_t i , psize = FFI_psize(ffi_info);
-//	ffi_cif* cif = FFI_cif(ffi_info);
-//	ffi_type *arg_types[psize];
-//	void *arg_values[psize];
-//    ffi_arg result;
-//	for(i = 0; i < psize; i++) {
-//		arg_types[i] = FFI_ptype(ffi_info, i);
-//		arg_values[i] = FFI_trvalues(rbp, ffi_info, i);
-//	}
-//    ffi_call(cif, FFI_FN(DP(mtd)->cfunc), &result, arg_values);
-//}
 
 knh_bool_t Method_linkFFI(CTX ctx, knh_Method_t *mtd, knh_String_t *token)
 {

@@ -25,7 +25,7 @@
  *
  ****************************************************************************/
 
-include nativelink;
+include lib:gluelink;
 
 @Native class Socket;
 @Native class ServerSocket;

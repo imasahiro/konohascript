@@ -1,4 +1,4 @@
-include nativelink;
+include lib:gluelink;
 
 dynamic InputStream.readObject(Class type, NameSpace ns);
 void OutputStream.writeObject(dynamic obj, NameSpace ns);

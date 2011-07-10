@@ -461,6 +461,7 @@ typedef struct {
 		struct knh_KonohaCode_t *kcode;
 		struct knh_Script_t     *gmascr;       // Dynamic
 		struct knh_Stmt_t       *stmtB;        // stmt block
+		struct knh_RawPtr_t     *rfunc;        // ffi
 	};
 	struct knh_Array_t *paramsNULL;
 	struct knh_Token_t *tsource;
@@ -554,8 +555,8 @@ struct knh_Func_t {
 	knh_hObject_t h;
 	struct knh_Method_t* mtd;
 	Object* baseNULL;
-	knh_sfp_t *xsfp;
-	size_t     xsize;
+	struct knh_String_t* name;
+	void *cfunc;
 };
 #endif
 
@@ -925,7 +926,7 @@ typedef struct knh_NameSpaceEX_t {
 	knh_String_t *nsname;
 	struct knh_DictMap_t*   linkDictMapNULL;
 	struct knh_DictMap_t*   constDictCaseMapNULL;
-	struct knh_DictMap_t*   macroDictMapNULL;
+	struct knh_Array_t *    ffilinksNULL;
 
 	struct knh_DictSet_t*   name2cidDictSetNULL;
 	struct knh_DictSet_t*   func2cidDictSetNULL;
@@ -938,7 +939,7 @@ struct knh_NameSpace_t {
 	knh_NameSpaceEX_t *b;
 	struct knh_NameSpace_t   *parentNULL;
 	knh_String_t             *rpath;
-	void                     *dlhdr;
+	void                     *gluehdr;
 };
 #endif
 

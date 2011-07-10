@@ -1990,7 +1990,7 @@ static METHOD Map_newMAP(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Map_t *m = sfp[0].m;
 	knh_sfp_t *v = sfp + 1;
 	size_t i, ac = knh_stack_argc(ctx, v);
-	m->spi = knh_getDefaultMapDSPI(ctx, O_p1(m), O_p2(m));
+	m->spi = knh_getDictMapDSPI(ctx, O_p1(m), O_p2(m));
 	KNH_ASSERT(m->spi != NULL); // if NULL, it is unsupported
 	m->mapptr  = m->spi->init(ctx, 0, NULL, NULL);
 	for(i = 0; i < ac; i+=2) {

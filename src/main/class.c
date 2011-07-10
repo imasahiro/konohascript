@@ -92,11 +92,22 @@ KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, knh_RawPtr_t *po, void *rawptr)
 	return npo;
 }
 
-knh_RawPtr_t *new_QuickPtr(CTX ctx, const char *name, void *rawptr, void *free)
+KNHAPI2(knh_RawPtr_t*) knh_Method_newRawPtr(CTX ctx, knh_Method_t *mtd, void *rawptr)
+{
+	knh_type_t rtype = knh_ParamArray_rtype(DP(mtd)->mp);
+	knh_RawPtr_t *npo = (knh_RawPtr_t*)new_hObject_(ctx, ClassTBL(rtype));
+	npo->rawptr = rawptr;
+	if(rawptr == NULL) {
+		knh_Object_toNULL(ctx, npo);
+	}
+	return npo;
+}
+
+knh_RawPtr_t *new_Pointer(CTX ctx, const char *name, void *rawptr, void *free)
 {
 	knh_RawPtr_t *npo = (knh_RawPtr_t*)new_hObject_(ctx, ClassTBL(CLASS_Tdynamic));
-	npo->DBG_NAME = name;
 	npo->rawptr = rawptr;
+	npo->DBG_NAME = name;
 	npo->rawfree = (void (*)(void *))free;
 	return npo;
 }
@@ -932,6 +943,7 @@ void knh_Method_setFunc(CTX ctx, knh_Method_t *mtd, knh_Fmethod func)
 void knh_Method_toAbstract(CTX ctx, knh_Method_t *mtd)
 {
 	KNH_SETv(ctx, DP(mtd)->kcode, KNH_NULL);
+	DP(mtd)->cfunc = NULL;
 	knh_Method_setFunc(ctx, mtd, Fmethod_abstract);
 }
 

@@ -362,47 +362,6 @@ static const knh_LinkDPI_t LINK_FROMLINK = {
 	TOLINK_hasType, FROMLINK_exists, FROMLINK_newObjectNULL,
 };
 
-static knh_bool_t LIB_hasType(CTX ctx, knh_class_t cid)
-{
-	return 0;
-}
-
-static knh_bool_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	knh_bytes_t libname = knh_bytes_next(path, ':');
-	knh_bytes_t funcname = knh_bytes_rnext(path, '.');
-	libname = knh_cwb_ensure(ctx, cwb, libname, K_PATHMAX);
-	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, libname);
-	knh_buff_trim(ctx, cwb->ba, cwb->pos, '.');
-	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT(K_OSDLLEXT));
-	void *p = knh_dlopen(ctx, knh_cwb_tochar(ctx, cwb));
-	if(p == NULL && !knh_bytes_startsWith(libname, STEXT("lib"))) {
-		knh_cwb_clear2(cwb, 0);
-		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT("lib"));
-		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, libname);
-		knh_buff_trim(ctx, cwb->ba, cwb->pos, '.');
-		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT(K_OSDLLEXT));
-		p = knh_dlopen(ctx, knh_cwb_tochar(ctx, cwb));
-	}
-	knh_cwb_close(cwb);
-
-	knh_bool_t res = 0;
-	if(p != NULL) {
-		res = 1;
-		DBG_P("funcname.len=%d,%d, func='%s'", funcname.len, libname.len, funcname.text);
-		if(funcname.len < libname.len) {
-			void *f = knh_dlsym(ctx, p, funcname.text, 1/*isTest*/);
-			res = (f != NULL);
-		}
-		knh_dlclose(ctx, p);
-	}
-	return res;
-}
-
-static const knh_LinkDPI_t LINK_LIB = {
-	"lib", NULL, LIB_hasType, LIB_exists, NOLINK_newObjectNULL,
-};
 
 /* ------------------------------------------------------------------------ */
 /* file:/usr/local */
@@ -1141,7 +1100,7 @@ void knh_loadSystemDriver(CTX ctx, knh_NameSpace_t *ns)
 	api->addLinkDPI(ctx, ns, "to", &LINK_TOLINK);
 	api->addLinkDPI(ctx, ns, "from", &LINK_FROMLINK);
 	api->addLinkDPI(ctx, ns, "file", &LINK_FILE);
-	api->addLinkDPI(ctx, ns, "lib", &LINK_LIB);
+//	api->addLinkDPI(ctx, ns, "lib", &LINK_LIB);
 	api->addLinkDPI(ctx, ns, "pkg", &LINK_PKG);
 	api->addLinkDPI(ctx, ns, "script", &LINK_SCRIPT);
 	api->addLinkDPI(ctx, ns, "class", &LINK_CLASS);
@@ -1161,6 +1120,7 @@ void knh_loadSystemDriver(CTX ctx, knh_NameSpace_t *ns)
 	api->addLinkDPI(ctx, ns, "http", &LINK_CURL);
 	api->addStreamDPI(ctx, ns, "http", &STREAM_CURL);
 #endif
+	knh_loadFFIDriver(ctx, ns);
 }
 
 /* ------------------------------------------------------------------------ */

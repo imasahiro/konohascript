@@ -25,7 +25,7 @@
  *
  ****************************************************************************/
 
-include nativelink;
+include lib:gluelink;
 
 @Native String System.getHostName();
 

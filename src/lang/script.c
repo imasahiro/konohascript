@@ -37,6 +37,8 @@ extern "C" {
 
 #define _RETURN(s)    status = s; goto L_RETURN;
 
+static knh_status_t SCRIPT_eval(CTX ctx, knh_Stmt_t *stmt, int isCompileOnly, knh_Array_t *resultsNULL);
+
 /* ------------------------------------------------------------------------ */
 /* [namespace] */
 
@@ -67,15 +69,6 @@ knh_class_t knh_NameSpace_getcid(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t sname
 		goto L_TAIL;
 	}
 	return knh_getcid(ctx, sname);
-}
-
-KNHAPI2(knh_Object_t*) new_ObjectNS(CTX ctx, knh_NameSpace_t *ns, const char *sname)
-{
-	knh_class_t cid = knh_NameSpace_getcid(ctx, ns, B(sname));
-	if(cid == CLASS_unknown) {
-		KNH_DIE("unknown class name: %s\n", sname);
-	}
-	return new_Object_init2(ctx, ClassTBL(cid));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -153,88 +146,114 @@ knh_type_t knh_NameSpace_tagcid(CTX ctx, knh_NameSpace_t *o, knh_class_t cid, kn
 static void NameSpace_beginINCLUDE(CTX ctx, knh_NameSpace_t *newns, knh_NameSpace_t *oldns)
 {
 	knh_NameSpaceEX_t *tb = newns->b;
-	void *tdlhdr = newns->dlhdr;
+	void *tdlhdr = newns->gluehdr;
 	newns->b = oldns->b;
-	newns->dlhdr = oldns->dlhdr;
+	newns->gluehdr = oldns->gluehdr;
 	oldns->b = tb;
-	oldns->dlhdr = tdlhdr;
+	oldns->gluehdr = tdlhdr;
 }
 
 static void NameSpace_endINCLUDE(CTX ctx, knh_NameSpace_t *newns, knh_NameSpace_t *oldns)
 {
 	knh_NameSpaceEX_t *tb = newns->b;
-	void *tdlhdr = newns->dlhdr;
+	void *tdlhdr = newns->gluehdr;
 	newns->b = oldns->b;
-	newns->dlhdr = oldns->dlhdr;
+	newns->gluehdr = oldns->gluehdr;
 	oldns->b = tb;
-	oldns->dlhdr = tdlhdr;
+	oldns->gluehdr = tdlhdr;
+}
+
+knh_bool_t knh_NameSpace_include(CTX ctx, knh_NameSpace_t *ns, knh_String_t *path)
+{
+	knh_bytes_t inc_path = S_tobytes(path);
+	if(knh_bytes_startsWith(inc_path, STEXT("lib:"))) {
+		return knh_NameSpace_addFFIlink(ctx, ns, inc_path);
+	}
+//	else if(knh_bytes_startsWith(inc_path, STEXT("func:"))) {
+//		if(ns->gluehdr != NULL) {
+//			const char *funcname = knh_bytes_next(inc_path, ':').text;
+//			knh_Fpkgload pkgload = (knh_Fpkgload)knh_dlsym(ctx, ns->gluehdr, funcname, 1/*isTest*/);
+//			if(pkgload != NULL) {
+//				pkgload(ctx, knh_getPackageLoaderAPI(), ns);
+//				_RETURN(K_CONTINUE);
+//			}
+//		}
+//		knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "loader function", inc_path.text));
+//		_RETURN(K_BREAK);
+//	}
+//	else if(knh_bytes_strcasecmp(inc_path, STEXT("lib:gluelink")) == 0) {
+//		if(ns->gluehdr == NULL) {
+//			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//			knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(ns->rpath));
+//			knh_buff_trim(ctx, cwb->ba, cwb->pos, '.');
+//			knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT(K_OSDLLEXT));
+//			ns->gluehdr = knh_dlopen(ctx, knh_cwb_tochar(ctx, cwb));
+//			if(ns->gluehdr == NULL) {
+//				knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "lib:gluelink", knh_cwb_tochar(ctx, cwb)));
+//				status = K_BREAK;
+//			}
+//			knh_cwb_close(cwb);
+//			if(ns->gluehdr != NULL) {
+//				knh_Fpkginit pkginit = (knh_Fpkginit)knh_dlsym(ctx, ns->gluehdr, "init", 1/*isTest*/);
+//				if(pkginit != NULL) {
+//					const knh_PackageDef_t *pkgdef = pkginit(ctx, knh_getPackageLoaderAPI());
+//					LOGSFPDATA = {sDATA("package_name", pkgdef->name),
+//						iRANGE("buildid", K_BUILDID, pkgdef->buildid), iRANGE("crc32", K_API2_CRC32, pkgdef->crc32)};
+//					if((long)pkgdef->crc32 != (long)K_API2_CRC32) {
+//						LIB_Failed("load_lib:gluelink", NULL);
+//						knh_Stmt_toERR(ctx, stmt, ERROR_Incompatible(ctx, "package", pkgdef->name));
+//						status = K_BREAK;
+//					}
+//					else {
+//						LIB_OK("load_lib:gluelink");
+//						goto L_RETURN;
+//					}
+//				}
+//				else {
+//					knh_Stmt_toERR(ctx, stmt, ERROR_Undefined(ctx, "init function", CLASS_unknown, tkNN(stmt, 0)));
+//				}
+//				knh_dlclose(ctx, ns->gluehdr);
+//				ns->gluehdr = NULL;
+//				status = K_BREAK;
+//			}
+//		}
+//	}
+	else {
+		knh_NameSpace_t *newns = new_NameSpace(ctx, ns);
+		KNH_SETv(ctx, ctx->gma->scr->ns, newns);
+		NameSpace_beginINCLUDE(ctx, newns, ns);
+		knh_status_t res = knh_load(ctx, newns, path, NULL);
+		NameSpace_endINCLUDE(ctx, newns, ns);
+		KNH_SETv(ctx, ctx->gma->scr->ns, ns);
+		return (res == K_CONTINUE);
+	}
 }
 
 static knh_status_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *resultsNULL)
 {
-	knh_status_t status = K_CONTINUE;
-	knh_bytes_t include_name = S_tobytes(tkNN(stmt, 0)->text);
-	knh_NameSpace_t *ns = K_GMANS;
-	if(knh_bytes_startsWith(include_name, STEXT("func:"))) {
-		if(ns->dlhdr != NULL) {
-			const char *funcname = knh_bytes_next(include_name, ':').text;
-			knh_Fpkgload pkgload = (knh_Fpkgload)knh_dlsym(ctx, ns->dlhdr, funcname, 1/*isTest*/);
-			if(pkgload != NULL) {
-				pkgload(ctx, knh_getPackageLoaderAPI(), ns);
-				_RETURN(K_CONTINUE);
-			}
+	knh_status_t status = K_BREAK;
+	knh_Token_t *tkRES = Tn_typing(ctx, stmt, 0, TYPE_String, 0);
+	if(TT_(tkRES) != TT_ERR) {
+		if(!Tn_isCONST(stmt, 0)) {
+			knh_Stmt_t *stmt2 = new_Stmt2(ctx, STT_RETURN, stmtNN(stmt, 0), NULL);
+			status = SCRIPT_eval(ctx, stmt2, 0/*isCompileOnly*/, NULL);
+			if(status != K_CONTINUE) return status;
+			knh_Token_t *tk = new_(Token);
+			TT_(tk) = TT_CONST;
+			KNH_SETv(ctx, tk->data, ctx->evaled);
+			KNH_SETv(ctx, tkNN(stmt, 0), tk);
 		}
-		knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "loader function", include_name.text));
-		_RETURN(K_BREAK);
-	}
-	else if(knh_bytes_strcasecmp(include_name, STEXT("nativelink")) == 0) {
-		if(ns->dlhdr == NULL) {
-			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-			knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(ns->rpath));
-			knh_buff_trim(ctx, cwb->ba, cwb->pos, '.');
-			knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT(K_OSDLLEXT));
-			ns->dlhdr = knh_dlopen(ctx, knh_cwb_tochar(ctx, cwb));
-			if(ns->dlhdr == NULL) {
-				knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "nativelink", knh_cwb_tochar(ctx, cwb)));
-				status = K_BREAK;
-			}
-			knh_cwb_close(cwb);
-			if(ns->dlhdr != NULL) {
-				knh_Fpkginit pkginit = (knh_Fpkginit)knh_dlsym(ctx, ns->dlhdr, "init", 1/*isTest*/);
-				if(pkginit != NULL) {
-					const knh_PackageDef_t *pkgdef = pkginit(ctx, knh_getPackageLoaderAPI());
-					LOGSFPDATA = {sDATA("package_name", pkgdef->name),
-						iRANGE("buildid", K_BUILDID, pkgdef->buildid), iRANGE("crc32", K_API2_CRC32, pkgdef->crc32)};
-					if((long)pkgdef->crc32 != (long)K_API2_CRC32) {
-						LIB_Failed("load_nativelink", NULL);
-						knh_Stmt_toERR(ctx, stmt, ERROR_Incompatible(ctx, "package", pkgdef->name));
-						status = K_BREAK;
-					}
-					else {
-						LIB_OK("load_nativelink");
-						goto L_RETURN;
-					}
-				}
-				else {
-					knh_Stmt_toERR(ctx, stmt, ERROR_Undefined(ctx, "init function", CLASS_unknown, tkNN(stmt, 0)));
-				}
-				knh_dlclose(ctx, ns->dlhdr);
-				ns->dlhdr = NULL;
-				status = K_BREAK;
-			}
+		if(!knh_NameSpace_include(ctx, K_GMANS, tkNN(stmt, 0)->text)) {
+			knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "include path:", S_tochar(tkNN(stmt, 0)->text)));
+			return K_BREAK;
 		}
 	}
 	else {
-		knh_NameSpace_t *ns = new_NameSpace(ctx, K_GMANS);
-		KNH_SETv(ctx, ctx->gma->scr->ns, ns);
-		NameSpace_beginINCLUDE(ctx, ns, ns->parentNULL);
-		status = knh_load(ctx, K_GMANS, tkNN(stmt, 0)->text, resultsNULL);
-		NameSpace_endINCLUDE(ctx, ns, ns->parentNULL);
-		KNH_SETv(ctx, ctx->gma->scr->ns, ns->parentNULL);
+		knh_Stmt_toERR(ctx, stmt, tkRES);
+		return K_BREAK;
 	}
-	L_RETURN:;
 	knh_Stmt_done(ctx, stmt);
-	return status;
+	return K_CONTINUE;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -587,7 +606,8 @@ static knh_status_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *results
 static knh_status_t IF_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *resultsNULL)
 {
 	knh_status_t status = K_BREAK;
-	if(Tn_typing(ctx, stmt, 0, TYPE_Boolean, 0)) {
+	knh_Token_t *tkRES = Tn_typing(ctx, stmt, 0, TYPE_Boolean, 0);
+	if(TT_(tkRES) != TT_ERR) {
 		int isTrue = 1;
 		if(!Tn_isCONST(stmt, 0)) {
 			knh_Stmt_t *stmt2 = new_Stmt2(ctx, STT_RETURN, stmtNN(stmt, 0), NULL);
@@ -605,6 +625,9 @@ static knh_status_t IF_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *resultsNULL)
 		else {
 			status = Stmt_eval(ctx, stmtNN(stmt, 2), resultsNULL);
 		}
+	}
+	else {
+		knh_Stmt_toERR(ctx, stmt, tkRES);
 	}
 	L_RETURN: ;
 	knh_Stmt_done(ctx, stmt);
@@ -700,9 +723,9 @@ static knh_status_t LINK_decl(CTX ctx, knh_Stmt_t *stmt)
 	}
 	const knh_LinkDPI_t *dpi = NULL;
 	if(knh_StmtMETA_is(ctx, stmt, "Native")) {
-		if(ns->dlhdr != NULL) {
+		if(ns->gluehdr != NULL) {
 			const char *funcname = S_tochar((tkN)->text);
-			knh_Flinkdef loadlink = (knh_Flinkdef)knh_dlsym(ctx, ns->dlhdr, funcname, 0/*isTest*/);
+			knh_Flinkdef loadlink = (knh_Flinkdef)knh_dlsym(ctx, ns->gluehdr, funcname, 0/*isTest*/);
 			if(loadlink == NULL) {
 				knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, _("linkdef function"), funcname));
 				return K_BREAK;
@@ -742,9 +765,9 @@ static void knh_loadNativeClass(CTX ctx, const char *cname, knh_ClassTBL_t *ct)
 	char fname[256];
 	knh_NameSpace_t *ns = K_GMANS;
 	const knh_ClassDef_t *cdef = NULL;
-	if(ns->dlhdr != NULL) {
+	if(ns->gluehdr != NULL) {
 		knh_snprintf(fname, sizeof(fname), "def%s", cname);
-		knh_Fclassdef classdef = (knh_Fclassdef)knh_dlsym(ctx, ns->dlhdr, fname, 0/*isTest*/);
+		knh_Fclassdef classdef = (knh_Fclassdef)knh_dlsym(ctx, ns->gluehdr, fname, 0/*isTest*/);
 		if(classdef != NULL) {
 			knh_ClassDef_t *cdefbuf = (knh_ClassDef_t*)KNH_MALLOC(ctx, sizeof(knh_ClassDef_t));
 			knh_memcpy(cdefbuf, knh_getDefaultClassDef(), sizeof(knh_ClassDef_t));
@@ -762,9 +785,9 @@ static void knh_loadNativeClass(CTX ctx, const char *cname, knh_ClassTBL_t *ct)
 	ct->cflag = ct->cflag | cdef->cflag;
 	knh_setClassDef(ctx, ct, cdef);
 	ct->magicflag = KNH_MAGICFLAG(ct->cflag);
-	if(ns->dlhdr != NULL) {
+	if(ns->gluehdr != NULL) {
 		knh_snprintf(fname, sizeof(fname), "const%s", cname);
-		knh_Fconstdef constdef = (knh_Fconstdef)knh_dlsym(ctx, ns->dlhdr, fname, 0/*isTest*/);
+		knh_Fconstdef constdef = (knh_Fconstdef)knh_dlsym(ctx, ns->gluehdr, fname, 0/*isTest*/);
 		if(constdef != NULL) {
 			constdef(ctx, ct->cid, knh_getPackageLoaderAPI());
 		}

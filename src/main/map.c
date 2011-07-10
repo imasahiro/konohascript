@@ -206,7 +206,6 @@ static void hmap_reftraceON(CTX ctx, knh_mapptr_t *m FTRARG)
 
 static void hmap_reftraceNN(CTX ctx, knh_mapptr_t *m FTRARG)
 {
-	DBG_P("@@@@ hmap->size=%d", ((knh_hmap_t*)m)->size);
 	KNH_SIZEREF(ctx);
 }
 
@@ -770,7 +769,6 @@ knh_String_t* knh_PtrMap_getS(CTX ctx, knh_PtrMap_t *pm, const char *k, size_t l
 	while(e != NULL) {
 		const char *es = (const char*)e->pkey;
 		if(e->hcode == hcode && es[len] == 0 && strncmp(k, es, len) == 0) {
-//			DBG_P("found %x '%s''%s' %p", hcode, k, es, e->pvalue);
 			hmap->stat_hit++;
 			return (knh_String_t*)e->pvalue;
 		}
@@ -789,7 +787,6 @@ void knh_PtrMap_addS(CTX ctx, knh_PtrMap_t *pm, knh_String_t *v)
 	DBG_ASSERT(IS_bString(v));
 	e->pkey = (void*)k;
 	e->pvalue = (void*)v;
-	DBG_P("added %x '%s' %p", hcode, k, v);
 	hmap_add(hmap, e);
 }
 
@@ -802,7 +799,6 @@ void knh_PtrMap_rmS(CTX ctx, knh_PtrMap_t *pm, knh_String_t *s)
 	DBG_ASSERT(IS_bString(s));
 	while(e != NULL) {
 		if(e->hcode == hcode && e->pvalue == (void*)s) {
-			DBG_P("removed %x '%s' %p", hcode, t.text, e->pvalue);
 			hmap_remove(hmap, e);
 			hmap_unuse(hmap, e);
 			return;
@@ -1462,6 +1458,18 @@ const knh_MapDSPI_t *knh_getDefaultMapDSPI(CTX ctx, knh_class_t p1, knh_class_t 
 //	return NULL;
 	return hmap_config(ctx, p1, p2);
 }
+
+const knh_MapDSPI_t *knh_getDictMapDSPI(CTX ctx, knh_class_t p1, knh_class_t p2)
+{
+	if(IS_Tstr(p1)) {
+		if(IS_Tunbox(p2)) {
+			return &DMAP_SN;
+		}
+		return &DMAP_SO;
+	}
+	return NULL;
+}
+
 
 #ifdef __cplusplus
 }

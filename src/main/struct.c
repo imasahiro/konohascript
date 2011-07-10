@@ -2377,7 +2377,7 @@ static void NameSpace_init(CTX ctx, knh_RawPtr_t *o)
 	KNH_INITv(b->nsname, TS_main);
 	KNH_INITv(ns->rpath, TS_EMPTY);
 	ns->parentNULL          = NULL;
-	b->macroDictMapNULL     = NULL;
+	b->ffilinksNULL     = NULL;
 	b->linkDictMapNULL      = NULL;
 	b->name2cidDictSetNULL  = NULL;
 	b->func2cidDictSetNULL  = NULL;
@@ -2385,7 +2385,7 @@ static void NameSpace_init(CTX ctx, knh_RawPtr_t *o)
 	b->formattersNULL       = NULL;
 	b->methodsNULL          = NULL;
 	ns->b = b;
-	ns->dlhdr = NULL;
+	ns->gluehdr = NULL;
 }
 
 static void NameSpace_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
@@ -2395,7 +2395,7 @@ static void NameSpace_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 	KNH_ADDREF(ctx, b->nsname);
 	KNH_ADDREF(ctx, ns->rpath);
 	KNH_ADDNNREF(ctx, ns->parentNULL);
-	KNH_ADDNNREF(ctx, b->macroDictMapNULL);
+	KNH_ADDNNREF(ctx, b->ffilinksNULL);
 	KNH_ADDNNREF(ctx, b->linkDictMapNULL);
 	KNH_ADDNNREF(ctx, b->name2cidDictSetNULL);
 	KNH_ADDNNREF(ctx, b->func2cidDictSetNULL);
@@ -2408,10 +2408,6 @@ static void NameSpace_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 static void NameSpace_free(CTX ctx, knh_RawPtr_t *o)
 {
 	BODY_free(ctx, o);
-	if(((knh_NameSpace_t*)o)->dlhdr != NULL) {
-		// TODO This must be fixed (by chen_ji and utr.hira) in the future
-		// knh_dlclose(ctx, ((knh_NameSpace_t*)o)->dlhdr);
-	}
 }
 
 static void NameSpace_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)

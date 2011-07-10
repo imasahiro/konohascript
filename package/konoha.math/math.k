@@ -25,11 +25,9 @@
  *
  ****************************************************************************/
 
-include nativelink;
+include lib:gluelink;
 
 @Singleton @Native class Math;
-
-//include func:MathCONST;
 
 @Native int Math.abs(int x);
 @Native float Math.fabs(float x);

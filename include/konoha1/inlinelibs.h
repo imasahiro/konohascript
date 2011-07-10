@@ -45,7 +45,6 @@ static inline knh_bool_t knh_bytes_equalsIgnoreCase(knh_bytes_t v1, knh_bytes_t 
 	return (v1.len == v2.len && knh_strncasecmp(v1.text, v2.text, v1.len) == 0);
 }
 
-
 static inline int knh_bytes_startsWith(knh_bytes_t v1, knh_bytes_t v2)
 {
 	if(v1.len < v2.len) return 0;

@@ -25,6 +25,6 @@
  *
  ****************************************************************************/
 
-include nativelink;
+include lib:gluelink;
 
 @Native void System.man(Object c, NameSpace ns);

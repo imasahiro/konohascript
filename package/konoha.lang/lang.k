@@ -1,4 +1,4 @@
-include nativelink;
+include lib:gluelink;
 
 @Native class Symbol;
 @Native class Instruction;
