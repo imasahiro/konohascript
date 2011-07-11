@@ -95,9 +95,9 @@ static knh_StreamDPI_t SOCKET_DSPI = {
 
 static knh_io_t open_socket(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int port)
 {
-	knh_io_t sd = IO_NULL;
+	int sd = IO_NULL;
 	struct in_addr addr = {0};
-	struct sockaddr_in	server = {0};
+	struct sockaddr_in server = {0};
 	const char *errfunc = NULL;
 
 	if ((addr.s_addr = inet_addr(ip_or_host)) == -1) {
@@ -120,7 +120,7 @@ static knh_io_t open_socket(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int
 
 	if (connect(sd, (struct sockaddr *)&server, sizeof(server)) == -1) {
 		errfunc = "connect";
-		close((int)sd);
+		close(sd);
 		goto L_PERROR;
 	}
 
@@ -134,7 +134,7 @@ static knh_io_t open_socket(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int
 		LOGDATA = {sDATA("host", ip_or_host), iDATA("port", port), __ERRNO__};
 		NOTE_OK("socket");
 	}
-	return sd;
+	return (knh_io_t) sd;
 }
 
 //## @Throwable Socket Socket.new(String host, int port);

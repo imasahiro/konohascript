@@ -566,7 +566,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 	{
 		char buf[K_PATHMAX];
 		int bufsiz = K_PATHMAX;
-		size_t size = readlink("/proc/self/exe", buf, bufsiz);
+		ssize_t size = readlink("/proc/self/exe", buf, bufsiz);
 		knh_cwb_clear2(cwb, 0);
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, new_bytes2(buf, size));
 		SETPROP("konoha.bin.path", knh_buff_newRealPath(ctx, cwb->ba, cwb->pos));

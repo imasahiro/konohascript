@@ -32,7 +32,7 @@
 extern "C" {
 #endif
 
-int main(int argc, const char **argv)
+int main(int argc, const char *argv[])
 {
 	konoha_ginit(argc, argv);
 	konoha_t konoha = konoha_open(4096);

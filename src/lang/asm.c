@@ -131,7 +131,7 @@ void knh_BasicBlock_add_(CTX ctx, knh_BasicBlock_t *bb, knh_ushort_t line, knh_o
 static void _bBOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct);
 static void _BOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct);
 
-static void Gamma_asm(CTX ctx, knh_opline_t *op, size_t size)
+static void Gamma_asm(CTX ctx, knh_opline_t *op, size_t opsize)
 {
 	knh_BasicBlock_t *bb = DP(ctx->gma)->bbNC;
 	DBG_ASSERT(op->opcode != OPCODE_JMPF);
@@ -155,7 +155,7 @@ static void Gamma_asm(CTX ctx, knh_opline_t *op, size_t size)
 			}
 		}
 	}
-	knh_BasicBlock_add_(ctx, bb, ULINE_line(ctx->gma->uline), op, size);
+	knh_BasicBlock_add_(ctx, bb, ULINE_line(ctx->gma->uline), op, opsize);
 }
 
 static int Gamma_asmJMPF(CTX ctx, klr_JMPF_t *op)

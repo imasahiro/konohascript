@@ -37,7 +37,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* driver */
 
-typedef const struct {
+typedef struct {
 	int   type;
 	const char *name;
 } knh_DSPI_t ;
@@ -155,22 +155,22 @@ typedef struct knh_RegexSPI_t {
 /* ConstData  */
 /* ------------------------------------------------------------------------ */
 
-typedef const struct {
+typedef struct {
 	const char *name;
 	knh_int_t ivalue;
 } knh_IntData_t;
 
-typedef const struct {
+typedef struct {
 	const char *name;
 	knh_float_t fvalue;
 } knh_FloatData_t;
 
-typedef const struct {
+typedef struct {
 	const char *name;
 	const char *value;
 } knh_StringData_t;
 
-typedef const struct {
+typedef struct {
 	const char *name;
 	void *ptr;
 } knh_NamedPointerData_t;

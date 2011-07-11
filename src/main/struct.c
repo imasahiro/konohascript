@@ -384,8 +384,8 @@ static void Object_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_
 		if (IS_Tunbox(type)) {
 			pack_unbox(ctx, pkr, type, v + i, packspi);
 		} else {
-			knh_Object_t *o = v[i];
-			O_cTBL(o)->cdef->wdata(ctx, pkr, RAWPTR(o), packspi);
+			knh_Object_t *obj = v[i];
+			O_cTBL(obj)->cdef->wdata(ctx, pkr, RAWPTR(obj), packspi);
 		}
 	}
 	packspi->pack_endmap(ctx, pkr);

@@ -1427,7 +1427,6 @@ static knh_Token_t *FMTOP_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	else {
 		return Token_toCONST(ctx, tkFMT);
 	}
-	return Stmt_typed(ctx, stmt, TYPE_String);
 }
 
 static knh_Token_t* ESTR_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)

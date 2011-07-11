@@ -349,7 +349,7 @@ void knh_setClassDef(CTX ctx, knh_ClassTBL_t *ct, const knh_ClassDef_t *cdef)
 	//DBG_P("setClassDef(%s)", cdef->name);
 	ct->cdef = cdef;
 	if(cdef->fields != NULL) {
-		KNH_ASSERT(ct->fields = NULL);
+		KNH_ASSERT(ct->fields == NULL);
 		ct->fields = cdef->fields;
 		ct->fsize = cdef->struct_size / sizeof(void*);
 		ct->fcapacity = 0;

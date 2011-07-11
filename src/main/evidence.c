@@ -85,7 +85,7 @@ static const char* LOG__(int p)
 static const char* knh_format_w3cdtf(char *buf, size_t bufsiz, struct tm *tmp)
 {
 	// 2001-08-02T10:45:23+09:00
-	knh_snprintf(buf, sizeof(buf), "%04d-%02d-%02dT%02d:%02d:%02d%+02d:%02d",
+	knh_snprintf(buf, bufsiz, "%04d-%02d-%02dT%02d:%02d:%02d%+02d:%02d",
 		(int)(tmp->tm_year + 1900), (int)(tmp->tm_mon + 1), tmp->tm_mday,
 		tmp->tm_hour, tmp->tm_min, tmp->tm_sec, (int)(tmp->tm_gmtoff / (60 * 60)), 0);
 	return (const char*)buf;
