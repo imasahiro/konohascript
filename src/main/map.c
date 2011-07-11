@@ -893,14 +893,14 @@ static knh_uint64_t knh_struint64(knh_bytes_t t)
 	knh_uint64_t n = 0;
 	if(t.len > 0) {
 		switch(t.len) {
-		default: n |= ((knh_uint64_t)p[7]);
-		case 7: n |= (((knh_uint64_t)p[6]) << (64-56));
-		case 6: n |= (((knh_uint64_t)p[5]) << (64-48));
-		case 5: n |= (((knh_uint64_t)p[4]) << (64-40));
-		case 4: n |= (((knh_uint64_t)p[3]) << (64-32));
-		case 3: n |= (((knh_uint64_t)p[2]) << (64-24));
-		case 2: n |= (((knh_uint64_t)p[1]) << (64-16));
-		case 1: n |= (((knh_uint64_t)p[0]) << (64-8));
+		default: n |= (((knh_uint64_t)p[7]) << (64-64)); /* FALLTHROUGH */
+		case 7 : n |= (((knh_uint64_t)p[6]) << (64-56)); /* FALLTHROUGH */
+		case 6 : n |= (((knh_uint64_t)p[5]) << (64-48)); /* FALLTHROUGH */
+		case 5 : n |= (((knh_uint64_t)p[4]) << (64-40)); /* FALLTHROUGH */
+		case 4 : n |= (((knh_uint64_t)p[3]) << (64-32)); /* FALLTHROUGH */
+		case 3 : n |= (((knh_uint64_t)p[2]) << (64-24)); /* FALLTHROUGH */
+		case 2 : n |= (((knh_uint64_t)p[1]) << (64-16)); /* FALLTHROUGH */
+		case 1 : n |= (((knh_uint64_t)p[0]) << (64- 8));
 		}
 	}
 	return n;

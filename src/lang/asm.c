@@ -1116,6 +1116,7 @@ static void ASM_XMOV(CTX ctx, int alocal, size_t an, knh_Token_t *tkb, int espid
 		}
 		case TT_CID:
 			KNH_SETv(ctx, (tkb)->data, new_Type(ctx, (tkb)->cid));
+			/* FALLTHROUGH */
 		case TT_CONST: L_CONST:; {
 			Object *v = (tkb)->data;
 			if(IS_Tunbox(btype)) {

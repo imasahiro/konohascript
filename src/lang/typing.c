@@ -2980,7 +2980,7 @@ static knh_Token_t* OPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		if(STT_(stmtNN(stmt, 1)) == STT_CALL) {
 			return StmtCALL_toIterator(ctx, stmtNN(stmt, 1));
 		}
-	}
+	} /* FALLTHROUGH */
 
 	default:
 		mtd_cid = Tn_cid(stmt, 1);
@@ -4199,7 +4199,7 @@ static void ObjectField_add(CTX ctx, knh_ObjectField_t *of, size_t i, knh_type_t
 		}
 		case CLASS_Tvoid: {
 			if(cid == CLASS_Tvoid) return ;
-		}
+		} /* FALLTHROUGH */
 		default: {
 			if(IS_Token(tk) && IS_NOTNULL(tk->data)) {
 				DBG_ASSERT(cid == O_cid(tk->data));

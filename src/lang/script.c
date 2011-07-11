@@ -552,7 +552,7 @@ static knh_Method_t *Script_getEvalMethod(CTX ctx, knh_Script_t *scr, knh_type_t
 	else {
 		knh_param_t *p = knh_ParamArray_get(DP(mtd)->mp, 0);
 		p->type = it_type;
-		p = knh_ParamArray_rget(DP(mtd)->mp, 0);
+		//p = knh_ParamArray_rget(DP(mtd)->mp, 0);
 		/*p->type = TYPE_void;*/
 	}
 	return mtd;

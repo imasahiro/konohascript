@@ -463,7 +463,7 @@ static void* knh_loadCFUNC(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t cfunc)
 	const char *funcname = knh_bytes_next(cfunc, ':').text;
 	void *func = NULL;
 	if(ns->gluehdr != NULL) {
-		Fgetfunc f = knh_dlsym(ctx, ns->gluehdr, "localfunc", 0);
+		Fgetfunc f = (Fgetfunc) knh_dlsym(ctx, ns->gluehdr, "localfunc", 0);
 		if(f != NULL) {
 			func = f(funcname);
 			if(func != NULL) return func;

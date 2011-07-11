@@ -2663,7 +2663,7 @@ static void Token_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 			if(Token_isGetter(tk)) knh_write(ctx, w, STEXT("get_"));
 			else if(Token_isSetter(tk)) knh_write(ctx, w, STEXT("set_"));
 			else if(Token_isISBOOL(tk)) knh_write(ctx, w, STEXT("is_"));
-			knh_write(ctx, w, t); break;
+			knh_write(ctx, w, t); //break;
 			if(Token_isExceptionType(tk)) {
 				knh_write(ctx, w, STEXT("!!"));
 			}

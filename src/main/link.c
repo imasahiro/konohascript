@@ -922,7 +922,7 @@ static void knh_sqlite3_perror(CTX ctx, sqlite3 *db, int r)
 	if(r == SQLITE_PERM || r == SQLITE_AUTH) {
 		msg = "Security";
 	}
-	KNH_LOG("sqlite3_error='%s'", sqlite3_errmsg(db));
+	KNH_LOG("sqlite3_error='%s', '%s'", msg, sqlite3_errmsg(db));
 }
 
 static knh_qconn_t *SQLITE3_qopen(CTX ctx, knh_bytes_t url)
