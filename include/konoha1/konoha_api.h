@@ -261,6 +261,7 @@ void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB, knh_Ftyping t
 METHOD knh_Fmethod_asm(CTX ctx, knh_sfp_t *sfp _RIX);
 void knh_loadScriptSystemKonohaCode(CTX ctx);
 void knh_write_vmfunc(CTX ctx, knh_OutputStream_t *w, void *f);
+knh_Fmethod knh_gluefunc(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_DictMap_t *mdata);
 knh_bool_t knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_DictMap_t *mdata);
 knh_bool_t knh_NameSpace_addFFIlink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path);
 void knh_loadFFIDriver(CTX ctx, knh_NameSpace_t *ns);
