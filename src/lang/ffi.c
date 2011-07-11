@@ -312,7 +312,7 @@ static knh_bool_t Array_addCIF(CTX ctx, knh_Array_t *a, ffi_type *return_type)
 	ffi_cif   cif, *kcif;
 	ffi_status status;
 	for(i = 0; i < psize; i++) {
-		ctypes[i] = (ffi_type*)a->ptrs[i * 3]->rawptr;
+		ctypes[i] = (ffi_type*)a->ptrs[(i * 3) + 2]->rawptr;
 	}
 	if ((status = ffi_prep_cif(&cif, FFI_DEFAULT_ABI, psize, return_type, ctypes)) == FFI_OK) {
 		kcif = (ffi_cif*)malloc(sizeof(ffi_cif));
@@ -483,22 +483,48 @@ static void* knh_loadCFUNC(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t cfunc)
 	return NULL;
 }
 
-void knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_DictMap_t *mdata)
+knh_Fmethod knh_gluefunc(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_DictMap_t *mdata)
 {
+	knh_Fmethod gluefunc = NULL;
+	knh_Object_t *gluedata = knh_DictMap_getNULL(ctx, mdata, STEXT("gluefunc"));
+	if(gluedata != NULL && IS_bString(gluedata)) {
+		if(ns->gluehdr == NULL) {
+			DBG_P("gluehdr is not open");
+		}
+		else {
+			gluefunc = (knh_Fmethod)knh_dlsym(ctx, ns->gluehdr, S_tochar((knh_String_t*)gluedata), 0);
+			if(gluefunc == NULL) {
+				DBG_P("gluefunc is not found: %s", S_tochar((knh_String_t*)gluedata));
+			}
+		}
+	}
+	if(gluefunc == NULL) {
+		gluefunc = Fmethod_FFI;
+	}
+	return gluefunc;
+}
+
+knh_bool_t knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_DictMap_t *mdata)
+{
+	DBG_P("class %s", CLASS__(O_cid(mdata)));
+	knh_write_Object(ctx, KNH_STDOUT, UPCAST(mdata), FMT_dump);
 	knh_Object_t *fdata = knh_DictMap_getNULL(ctx, mdata, STEXT("cfunc"));
 	if(fdata == NULL) {
 		fdata = knh_DictMap_getNULL(ctx, mdata, STEXT("func"));
 	}
-	knh_Object_t *pdata = knh_DictMap_getNULL(ctx, mdata, STEXT("param"));
-	if(pdata == NULL) {
-		knh_DictMap_getNULL(ctx, mdata, STEXT("params"));
-	}
-	knh_Object_t *rdata = knh_DictMap_getNULL(ctx, mdata, STEXT("return"));
 	void *cfunc = NULL;
 	if(fdata != NULL && IS_bString(fdata)) {
 		cfunc = knh_loadCFUNC(ctx, ns, S_tobytes((knh_String_t*)fdata));
+		if(cfunc == NULL) {
+			DBG_P("cfunc: %s is not found", S_tochar((knh_String_t*)fdata));
+		}
 	}
 	if(cfunc != NULL) {
+		knh_Object_t *pdata = knh_DictMap_getNULL(ctx, mdata, STEXT("param"));
+		if(pdata == NULL) {
+			knh_DictMap_getNULL(ctx, mdata, STEXT("params"));
+		}
+		knh_Object_t *rdata = knh_DictMap_getNULL(ctx, mdata, STEXT("return"));
 		if(DP(mtd)->paramsNULL == NULL) {
 			KNH_INITv(DP(mtd)->paramsNULL, new_Array0(ctx, 0));
 		}
@@ -506,12 +532,13 @@ void knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_DictMap
 			KNH_SETv(ctx, DP(mtd)->paramsNULL, new_Array0(ctx, 0));
 		}
 		if(Method_addParam(ctx, mtd, DP(mtd)->paramsNULL, pdata) && Method_setReturn(ctx, mtd, DP(mtd)->paramsNULL, rdata)) {
-			mtd->fcall_1 = Fmethod_FFI;
+			mtd->fcall_1 = knh_gluefunc(ctx, mtd, ns, mdata);
 			DP(mtd)->cfunc = cfunc;
-			return;
+			return 1;
 		}
 	}
 	knh_Method_toAbstract(ctx, mtd);
+	return 0;
 }
 
 

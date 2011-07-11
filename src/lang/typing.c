@@ -3888,14 +3888,6 @@ static knh_Token_t* knh_StmtMTD_typing(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *
 	return TM(stmt);
 }
 
-
-knh_bool_t Method_linkFFI(CTX ctx, knh_Method_t *mtd, knh_String_t *token)
-{
-	knh_bytes_t ffidata = S_tobytes(token);
-	DBG_P("ffidata='%s'", ffidata.text); // "func:double:double:1"
-	return 1;
-}
-
 static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 {
 	knh_class_t mtd_cid = METHOD_cid(ctx, stmtM);
@@ -4027,15 +4019,13 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 		return knh_Stmt_done(ctx, stmtM);
 	}
 	if(StmtMETHOD_isFFI(stmtM)) {
-		if(TT_(tkNN(stmtM, 4)) != TT_URN) {
-			TYPING(ctx, stmtM, 4, TYPE_String, _CONSTONLY|_NOVOID);
-		}
-		if(!Method_linkFFI(ctx, mtd, tkNN(stmtM, 4)->text)) {
+		knh_DictMap_t *mdata = (knh_DictMap_t*)tkNN(stmtM, 4)->data;
+		if(!knh_Method_ffi(ctx, mtd, K_GMANS, mdata)) {
 			return ERROR_WrongFFILink(ctx, S_tochar(tkNN(stmtM, 4)->text));
 		}
-		else {
-			KNH_SETv(ctx, DP(mtd)->tsource, tkNN(stmtM, 4));
-		}
+//		else {
+//			KNH_SETv(ctx, DP(mtd)->tsource, tkNN(stmtM, 4));
+//		}
 		return knh_Stmt_done(ctx, stmtM);
 	}
 	return knh_StmtMTD_typing(ctx, stmtM, mtd, mtd_cid);

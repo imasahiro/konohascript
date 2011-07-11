@@ -1377,6 +1377,7 @@ static void ASM_CALL(CTX ctx, int espidx, knh_type_t rtype, knh_Method_t *mtd, i
 static inline knh_bool_t Method_isFASTCALL0(CTX ctx, knh_Method_t *mtd)
 {
 	if(Method_isAbstract(mtd) || Method_isKonohaCode(mtd) || isNativeCompiled(DP(mtd)->kcode) || ParamArray_isVARGs(DP(mtd)->mp)) return 0;
+	if(IS_NOTNULL(DP(mtd)->rfunc)) return 0;
 	return 1;
 }
 #endif

@@ -3116,16 +3116,16 @@ static void _CODE(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			_RETURNEXPR(ctx, stmt, stmtitr);
 		}
 	}
-	else if(ITR_is(itr, TT_USING)) {
+	else if(ITR_is(itr, TT_WITH)) {
 		tkitr_t stmtbuf, *stmtitr = ITR_stmt(ctx, itr, +1, &stmtbuf, 1);
 		if(hasCODE) {
-			WARN_Ignored(ctx, "using", CLASS_unknown, NULL);
+			WARN_Ignored(ctx, "with", CLASS_unknown, NULL);
 		}
 		else {
 			StmtMETHOD_setFFI(stmt, 1);
 			stmtitr->c += 1;
 			_EXPR(ctx, stmt, stmtitr);
-			DBG_P("DP(stmt)->size=%d", DP(stmt)->size);
+			DBG_P("WITH DP(stmt)->size=%d", DP(stmt)->size);
 		}
 	}
 	else {

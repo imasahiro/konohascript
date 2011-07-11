@@ -229,6 +229,15 @@ knh_bool_t knh_NameSpace_include(CTX ctx, knh_NameSpace_t *ns, knh_String_t *pat
 	}
 }
 
+static knh_Token_t * new_TokenEVALED(CTX ctx)
+{
+	knh_Token_t *tk = new_(Token);
+	TT_(tk) = TT_CONST;
+	KNH_SETv(ctx, tk->data, ctx->evaled);
+	tk->type = O_cid(ctx->evaled);
+	return tk;
+}
+
 static knh_status_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *resultsNULL)
 {
 	knh_status_t status = K_BREAK;
@@ -238,10 +247,7 @@ static knh_status_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *results
 			knh_Stmt_t *stmt2 = new_Stmt2(ctx, STT_RETURN, stmtNN(stmt, 0), NULL);
 			status = SCRIPT_eval(ctx, stmt2, 0/*isCompileOnly*/, NULL);
 			if(status != K_CONTINUE) return status;
-			knh_Token_t *tk = new_(Token);
-			TT_(tk) = TT_CONST;
-			KNH_SETv(ctx, tk->data, ctx->evaled);
-			KNH_SETv(ctx, tkNN(stmt, 0), tk);
+			KNH_SETv(ctx, tkNN(stmt, 0), new_TokenEVALED(ctx));
 		}
 		if(!knh_NameSpace_include(ctx, K_GMANS, tkNN(stmt, 0)->text)) {
 			knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "include path:", S_tochar(tkNN(stmt, 0)->text)));
@@ -743,6 +749,27 @@ static knh_status_t LINK_decl(CTX ctx, knh_Stmt_t *stmt)
 	return K_CONTINUE;
 }
 
+static knh_status_t METHODWITH_eval(CTX ctx, knh_Stmt_t *stmt)
+{
+	knh_status_t status = K_CONTINUE;
+	if(StmtMETHOD_isFFI(stmt)) {
+		knh_Token_t *tkRES = Tn_typing(ctx, stmt, 4, TYPE_Map, 0);
+		if(TT_(tkRES) != TT_ERR) {
+			if(!Tn_isCONST(stmt, 4)) {
+				knh_Stmt_t *stmt2 = new_Stmt2(ctx, STT_RETURN, stmtNN(stmt, 4), NULL);
+				status = SCRIPT_eval(ctx, stmt2, 0/*isCompileOnly*/, NULL);
+				if(status != K_CONTINUE) return status;
+				KNH_SETv(ctx, tkNN(stmt, 4), new_TokenEVALED(ctx));
+			}
+		}
+		else {
+			knh_Stmt_toERR(ctx, stmt, tkRES);
+			return K_BREAK;
+		}
+	}
+	return status;
+}
+
 /* ------------------------------------------------------------------------ */
 /* [CLASS] */
 
@@ -940,6 +967,9 @@ static knh_status_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *results
 			break;
 		case STT_CLASS:
 			status = CLASS_decl(ctx, stmt);
+			break;
+		case STT_METHOD:  /* with clause */
+			status = METHODWITH_eval(ctx, stmt);
 			break;
 		case STT_LINK:
 			status = LINK_decl(ctx, stmt);
