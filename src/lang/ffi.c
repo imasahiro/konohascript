@@ -250,7 +250,7 @@ static void Array_addCtype(CTX ctx, knh_Array_t *a, knh_bytes_t t, knh_type_t pt
 			tr = bytes_fficonv(ctx, knh_bytes_last(t, loc+1));
 		}
 		else {
-			ctype = bytes_ffitype(ctx, knh_bytes_first(t, loc), ctype);
+			ctype = bytes_ffitype(ctx, t, ctype);
 		}
 	}
 	L_ADD:;
@@ -302,7 +302,9 @@ static knh_bool_t Method_addParam(CTX ctx, knh_Method_t *mtd, knh_Array_t *a, Ob
 
 static void freecif(void *p)
 {
-	free(p);
+	ffi_cif *cif = (ffi_cif*)p;
+	free(cif->arg_types);
+	free(cif);
 }
 
 static knh_bool_t Array_addCIF(CTX ctx, knh_Array_t *a, ffi_type *return_type)
@@ -318,6 +320,10 @@ static knh_bool_t Array_addCIF(CTX ctx, knh_Array_t *a, ffi_type *return_type)
 		kcif = (ffi_cif*)malloc(sizeof(ffi_cif));
 		if(kcif != NULL) {
 			knh_memcpy(kcif, &cif, sizeof(ffi_cif));
+			kcif->arg_types = (ffi_type**)malloc(sizeof(ffi_type*) * cif.nargs);
+			for(i = 0; i < psize; i++) {
+				kcif->arg_types[i] = ctypes[i];
+			}
 			knh_Array_add(ctx, a, new_Pointer(ctx, "ffi_cif", kcif, freecif));
 			return 1;
 		}
@@ -422,8 +428,9 @@ static knh_bool_t Method_setReturn(CTX ctx, knh_Method_t *mtd, knh_Array_t *a, O
 				DBG_P("nofunction: %s", t.text);
 				return 0;
 			}
+			t = knh_bytes_first(t, loc);
 		}
-		return_type = bytes_ffitype(ctx, knh_bytes_first(t, loc), return_type);
+		return_type = bytes_ffitype(ctx, t, return_type);
 	}
 	KNH_SETv(ctx, DP(mtd)->rfunc, new_Pointer(ctx, "ffi_rfunc", tr, NULL));
 	return Array_addCIF(ctx, a, return_type);

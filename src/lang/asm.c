@@ -138,8 +138,8 @@ static void Gamma_asm(CTX ctx, knh_opline_t *op, size_t opsize)
 	if(DP(bb)->size > 0) {
 		knh_opline_t *opP = DP(bb)->opbuf + (DP(bb)->size - 1);
 		if(op->opcode == opP->opcode && op->opcode <= OPCODE_TR) {
-			size_t i, size = knh_opcode_size(op->opcode);
-			for(i = 0; i < size; i++) {
+			size_t i, opsize = knh_opcode_size(op->opcode);
+			for(i = 0; i < opsize; i++) {
 				if(op->data[i] != opP->data[i]) goto L_REMOVE;
 			}
 			KNH_P("PEEPHOLE: removed same one");
