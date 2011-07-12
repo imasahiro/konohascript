@@ -681,8 +681,8 @@ const knh_RegexSPI_t* knh_getRegexSPI(void)
 
 static knh_conv_t* strconv_open(CTX ctx, const char* to, const char *from)
 {
-	iconv_t rc = ctx->spi->iconv_open(to, from);
-	if(rc == (iconv_t)-1){
+	knh_iconv_t rc = ctx->spi->iconv_openSPI(to, from);
+	if(rc == (knh_iconv_t)-1){
 		LOGSFPDATA = {LOGMSG("unknown codec"), sDATA("spi", ctx->spi->iconvspi),
 			sDATA("from", from), sDATA("to", to)};
 		LIB_Failed("iconv", "IO!!");
@@ -695,12 +695,12 @@ static knh_bool_t strconv(Ctx *ctx, knh_conv_t *iconvp, knh_bytes_t from, knh_By
 {
 	char buffer[4096], *ibuf = (char*)from.ubuf;
 	size_t ilen = from.len, rsize = 0;//, ilen_prev = ilen;
-	iconv_t cd = (iconv_t)iconvp;
+	knh_iconv_t cd = (knh_iconv_t)iconvp;
 	knh_bytes_t bbuf = {{(const char*)buffer}, 0};
 	while(ilen > 0) {
 		char *obuf = buffer;
 		size_t olen = sizeof(buffer);
-		size_t rc = ctx->spi->iconv(cd, &ibuf, &ilen, &obuf, &olen);
+		size_t rc = ctx->spi->iconvSPI(cd, &ibuf, &ilen, &obuf, &olen);
 		olen = sizeof(buffer) - olen; rsize += olen;
 		if(rc == (size_t)-1 && errno == EILSEQ) {
 			LOGSFPDATA = {LOGMSG("invalid sequence"), sDATA("spi", ctx->spi->iconvspi)};
@@ -714,7 +714,7 @@ static knh_bool_t strconv(Ctx *ctx, knh_conv_t *iconvp, knh_bytes_t from, knh_By
 }
 static void strconv_close(CTX ctx, knh_conv_t *conv)
 {
-	ctx->spi->iconv_close((iconv_t)conv);
+	ctx->spi->iconv_closeSPI((knh_iconv_t)conv);
 }
 
 static knh_ConvDSPI_t SCONV = {
@@ -734,8 +734,8 @@ knh_StringDecoder_t* new_StringDecoderNULL(CTX ctx, knh_bytes_t t)
 		return KNH_TNULL(StringDecoder);
 	}
 	else {
-		iconv_t id = ctx->spi->iconv_open(K_ENCODING, t.text);
-		if(id != (iconv_t)(-1)) {
+		knh_iconv_t id = ctx->spi->iconv_openSPI(K_ENCODING, t.text);
+		if(id != (knh_iconv_t)(-1)) {
 			knh_StringDecoder_t *c = new_(StringDecoder);
 			c->conv = (knh_conv_t*)id;
 			c->dspi = &SCONV;
@@ -751,8 +751,8 @@ knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, knh_bytes_t t)
 		return KNH_TNULL(StringEncoder);
 	}
 	else {
-		iconv_t id = ctx->spi->iconv_open(K_ENCODING, t.text);
-		if(id != (iconv_t)(-1)) {
+		knh_iconv_t id = ctx->spi->iconv_openSPI(K_ENCODING, t.text);
+		if(id != (knh_iconv_t)(-1)) {
 			knh_StringEncoder_t *c = new_(StringEncoder);
 			c->conv = (knh_conv_t*)id;
 			c->dspi = &SCONV;

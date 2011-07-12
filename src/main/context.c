@@ -334,9 +334,9 @@ static void initServiceSPI(knh_ServiceSPI_t *spi)
 	spi->syslogspi = "fprintf(stderr)";
 	spi->syslog = pseudo_syslog;
 	spi->vsyslog = pseudo_vsyslog;
-	spi->iconv_open = iconv_open;
-	spi->iconv = (size_t (*)(iconv_t, char**, size_t*, char**, size_t*))iconv;
-	spi->iconv_close = iconv_close;
+	spi->iconv_openSPI = iconv_open;
+	spi->iconvSPI = (size_t (*)(knh_iconv_t, char**, size_t*, char**, size_t*))iconv;
+	spi->iconv_closeSPI = iconv_close;
 #ifdef K_USING_ICONV
 	spi->iconvspi = "iconv";
 #else

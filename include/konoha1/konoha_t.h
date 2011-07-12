@@ -978,8 +978,9 @@ typedef struct knh_tmrcache_t {
 
 #ifdef K_USING_ICONV
 #include<iconv.h>
+typedef iconv_t knh_iconv_t;
 #else
-typedef long iconv_t;
+typedef long knh_iconv_t;
 #endif
 
 struct knh_logdata_t;
@@ -1001,9 +1002,9 @@ typedef struct knh_ServiceSPI_t {
 	char* (*readline)(const char*);
 	int (*add_history)(const char*);
 	/* iconv spi*/
-	iconv_t (*iconv_open)(const char*, const char*);
-	size_t (*iconv)(iconv_t, char**, size_t*, char**, size_t*);
-	int (*iconv_close)(iconv_t);
+	knh_iconv_t (*iconv_openSPI)(const char*, const char*);
+	size_t (*iconvSPI)(knh_iconv_t, char**, size_t*, char**, size_t*);
+	int (*iconv_closeSPI)(knh_iconv_t);
 	/* shell spi */
 	const char *syncspi;     // debug
 	const char *syslogspi;   // debug

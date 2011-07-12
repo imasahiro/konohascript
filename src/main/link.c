@@ -259,9 +259,9 @@ static knh_bool_t CHARSET_hasType(CTX ctx, knh_class_t cid)
 static knh_bool_t CHARSET_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	knh_bytes_t t = knh_bytes_next(path, ':');
-	iconv_t ic = ctx->spi->iconv_open(t.text, K_ENCODING);
-	if(ic != (iconv_t)(-1)) {
-		ctx->spi->iconv_close(ic);
+	knh_iconv_t ic = ctx->spi->iconv_openSPI(t.text, K_ENCODING);
+	if(ic != (knh_iconv_t)(-1)) {
+		ctx->spi->iconv_closeSPI(ic);
 		return 1;
 	}
 	else if(knh_bytes_strcasecmp(t, STEXT(K_ENCODING)) == 0) {
