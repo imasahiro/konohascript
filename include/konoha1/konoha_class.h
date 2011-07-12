@@ -206,14 +206,12 @@ typedef struct {
 } knh_dim_t ;
 
 typedef struct knh_Bytes_t knh_Bytes_t;
-#ifdef K_INTERNAL
 struct knh_Bytes_t {
 	knh_hObject_t h;
 	knh_bytes_t   bu;
 	const knh_dim_t    *dim;
 	const char *DBG_name;
 };
-#endif
 
 #define KNH_SIZE(v)     v
 #define k_grow(N)       ((N)*2)

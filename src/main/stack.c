@@ -335,6 +335,9 @@ knh_Object_t *Context_pop(CTX ctx)
 
 knh_ExceptionHandler_t* ExceptionHandler_setjmp(CTX ctx, knh_ExceptionHandler_t *hdr)
 {
+#if !defined(__i386__) && !defined(__x86_64__)
+#warning ExceptionHandler dose not work in your environment. Please define K_USING_SETJMP_=1
+#else
 #if defined(__GNUC__)
 	knh_uintptr_t rsp;
 	asm volatile ("mov " reg("sp") ", %0;" : "=r" (rsp));
@@ -344,6 +347,7 @@ knh_ExceptionHandler_t* ExceptionHandler_setjmp(CTX ctx, knh_ExceptionHandler_t 
 	DP(hdr)->stack_pointer = rsp + 0x08;
 #elif defined(__x86_64__)
 	DP(hdr)->stack_pointer = rsp + 0x10;
+#endif
 #endif
 #endif
 	return NULL;

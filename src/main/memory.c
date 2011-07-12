@@ -527,7 +527,7 @@ void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize)
 
 #define UINTPTR8 (sizeof(knh_uintptr_t) * 8)
 #define INDEX2OFFSET(index_) ((index_) / UINTPTR8)
-#ifdef __i386__
+#if defined(__i386__) || defined(__power__)
 #define INDEX2MASK(n) (((knh_uintptr_t)1) << (n % UINTPTR8))
 #else
 #define INDEX2MASK(n) (((knh_uintptr_t)1) << (n /*% UINTPTR8*/))
@@ -1257,7 +1257,7 @@ static inline void Object_MSfree(CTX ctx, knh_Object_t *o)
 	O_set_tenure(o); // uncollectable
 }
 
-#ifndef __GNUC__
+#if !defined(__GNUC__) || !defined(HAVE_BUILTIN_CTZLL)
 static void gc_sweep(CTX ctx)
 {
 	knh_ObjectArenaTBL_t *oat = ctx->share->ObjectArenaTBL;

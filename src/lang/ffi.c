@@ -33,7 +33,13 @@
 
 /* ************************************************************************ */
 
+#if defined(HAVE_FFI_H)
+#include <ffi.h>
+#elif defined(HAVE_FFI_FFI_H)
 #include <ffi/ffi.h>
+#elif !defined(HAVE_CONFIG_H)
+#include <ffi/ffi.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {

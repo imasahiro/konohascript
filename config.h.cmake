@@ -61,6 +61,9 @@
 /* Define to 1 if you have the `realpath' function. */
 #cmakedefine HAVE_REALPATH 1
 
+/* Define to 1 if you have the `__builtin_ctzll' function. */
+#cmakedefine HAVE_BUILTIN_CTZLL 1
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #cmakedefine HAVE_STDINT_H 1
 
@@ -93,6 +96,12 @@
 
 /* Define to 1 if you have the <pcre.h> header file. */
 #cmakedefine HAVE_PCRE_H 1
+
+/* Define to 1 if you have the <ffi.h> header file. */
+#cmakedefine HAVE_FFI_H 1
+
+/* Define to 1 if you have the <ffi/ffi.h> header file. */
+#cmakedefine HAVE_FFI_FFI_H 1
 
 /* Define to 1 if you have the `libiconv_open' function. */
 #cmakedefine HAVE_ICONV_LIBICONV_OPEN 1

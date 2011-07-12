@@ -148,7 +148,6 @@ check_symbol_exists(sysctlbyname   "${_HEADERS}" HAVE_SYSCTLBYNAME)
 check_symbol_exists(mlock          "${_HEADERS}" HAVE_MLOCK)
 check_symbol_exists(snprintf       "${_HEADERS}" HAVE_SNPRINTF)
 
-#set(CMAKE_REQUIRED_LIBRARIES HAVE_LIBDL ${HAVE_LIBDL})
 macro(CHECK_PROTOTYPE _SYMBOL _HEADER _RESULT)
 	set(_INCLUDE_FILE)
 	foreach(it ${_HEADER})
@@ -172,6 +171,18 @@ int main()
 	check_c_source_compiles("${_CHECK_SOURCE_CODE}" ${_RESULT})
 endmacro(CHECK_PROTOTYPE)
 
+macro(CHECK_BUILTINS _FUNC _RESULT)
+	SET(_CHECK_SOURCE_CODE "
+${_INCLUDE_FILE}
+int main() {
+	${_FUNC};
+	return 0;
+}
+")
+	check_c_source_compiles("${_CHECK_SOURCE_CODE}" ${_RESULT})
+endmacro(CHECK_BUILTINS)
+
+check_builtins("__builtin_ctzll(0)" HAVE_BUILTIN_CTZLL)
 
 set(ExtraLibs)
 set(MessageLibs)
@@ -210,9 +221,49 @@ if(HAVE_PTHREAD)
 	set(MessageLibs ${MessageLibs} pthread)
 endif(HAVE_PTHREAD)
 
-find_library(HAVE_LIBFFI   NAMES ffi)
-if("${HAVE_LIBFFI}" STREQUAL "")
-	message(FATAL_ERROR "libffi not found. please install libffi-dev")
+check_prototype(libiconv_open iconv.h HAVE_ICONV_LIBICONV_OPEN)
+
+set(FFI_INCLUDE_DIR "" "Directory that contains ffi.h or ffi/ffi.h")
+set(FFI_LIBRARY_DIR "" "Directory that contains libffi library")
+
+macro(CHECK_FFI_H _HEADER _RESULT)
+	if(FFI_INCLUDE_DIR)
+		find_path(${_RESULT} ${_HEADER} PATHS ${FFI_INCLUDE_DIR})
+	else()
+		find_path(${_RESULT} ${_HEADER})
+	endif(FFI_INCLUDE_DIR)
+endmacro(CHECK_FFI_H)
+
+if(FFI_INCLUDE_DIR)
+	include_directories(${FFI_INCLUDE_DIR})
+endif(FFI_INCLUDE_DIR)
+check_ffi_h(ffi.h FFI_INCLUDE_PATH)
+if(FFI_INCLUDE_PATH)
+	set(FFI_HEADER ffi.h)
+	set(HAVE_FFI_H 1)
+else()
+	check_ffi_h(ffi/ffi.h FFI_INCLUDE_PATH)
+	if(FFI_INCLUDE_PATH)
+		set(FFI_HEADER ffi/ffi.h)
+		set(HAVE_FFI_FFI_H 1)
+	endif()
+endif()
+
+if(NOT FFI_HEADER)
+	message(FATAL_ERROR "ffi.h is not found. You may run cmake with -DFFI_INCLUDE_DIR=/path/to/ffi/include")
+endif()
+
+macro(CHECK_LIBFFI _RESULT)
+	if(FFI_LIBRARY_DIR)
+		find_library(${_RESULT} ffi PATHS ${FFI_LIBRARY_DIR})
+	else()
+		find_library(${_RESULT} ffi)
+	endif(FFI_LIBRARY_DIR)
+endmacro(CHECK_LIBFFI)
+
+check_libffi(HAVE_LIBFFI)
+if(NOT HAVE_LIBFFI)
+	message(FATAL_ERROR "libffi not found. You may run cmake again with -DFFI_LIBRARY_DIR=/path/to/lib/libffi or install libffi-dev")
 endif()
 set(ExtraLibs ${ExtraLibs} ${v} ${HAVE_LIBFFI})
 set(MessageLibs ${MessageLibs} ffi)
@@ -230,12 +281,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(K_USING_DEBUG 1)
 endif()
 
-
 FIND_FILE(HAS_DOTSVN .svn PATHS "${CMAKE_CURRENT_SOURCE_DIR}/include")
 if("${HAS_DOTSVN}" MATCHES ".svn")
 	find_package(Subversion)
 	if(Subversion_FOUND)
-		Subversion_WC_INFO(${CMAKE_CURRENT_SOURCE_DIR} ER)
+		Subversion_WC_INFO(${CMAKE_CURRENT_SOURCE_DIR}/include ER)
 		set(SUBVERSION_REVISION ${ER_WC_REVISION})
 		add_definitions(-DK_REVISION=${SUBVERSION_REVISION})
 	endif(Subversion_FOUND)

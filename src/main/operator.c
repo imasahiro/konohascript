@@ -1520,7 +1520,7 @@ static METHOD Array_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 		knh_Array_grow(ctx, a, k_grow(dim->capacity), a->size + 1);
 	}
 	if(Array_isNDATA(a)) {
-		knh_memmove(a->nlist+(n+1), a->nlist+n, sizeof(knh_ndata_t*) * (a->size - n));
+		knh_memmove(a->nlist+(n+1), a->nlist+n, sizeof(knh_ndata_t) * (a->size - n));
 	}else {
 		knh_memmove(a->list+(n+1), a->list+n, sizeof(knh_Object_t*) * (a->size - n));
 		KNH_INITv(a->list[n], KNH_NULL); // for RCGC
