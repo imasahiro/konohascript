@@ -139,7 +139,7 @@ $(dir)/security.o : src/main/security.c
 $(dir)/semantics.o: src/main/semantics.c
 	$(MYCC) $(CFLAGS) -c $^ -o $@
 
-$(dir)/ffi.o : src/main/ffi.c
+$(dir)/ffi.o : src/link/ffi.c
 	$(MYCC) $(CFLAGS) -c $^ -o $@
 
 $(dir)/link.o : src/main/link.c

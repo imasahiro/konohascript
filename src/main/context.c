@@ -300,15 +300,15 @@ static int _unlock(knh_mutex_t *m DBG_TRACE)
 };
 
 #ifndef K_USING_ICONV
-iconv_t iconv_open(const char *t, const char *f)
+static iconv_t iconv_open(const char *t, const char *f)
 {
 	return (iconv_t)(-1);
 }
-size_t iconv(iconv_t i, char **t, size_t *ts, char **f, size_t *fs)
+static size_t iconv(iconv_t i, char **t, size_t *ts, char **f, size_t *fs)
 {
 	return 0;
 }
-int iconv_close(iconv_t i)
+static int iconv_close(iconv_t i)
 {
 	return 0;
 }

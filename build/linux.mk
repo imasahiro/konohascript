@@ -2,10 +2,10 @@
 #
 
 CC ?= gcc
-CFLAGS ?= -g -O2 -Wall -fPIC -I./include
+CFLAGS ?= -g -O2 -Wall -fPIC -I./include `pkg-config libffi --cflags`
 #CFLAGS ?= -g3 -O0 -Wall -fPIC -I./include -DK_USING_DEBUG
 
-LDLIBS ?= -lpcre -ldl -lsqlite3 -lpthread
+LDLIBS ?= -lpcre -ldl -lsqlite3 -lpthread `pkg-config libffi --libs`
 STRIP = strip
 
 konoha = konoha1
@@ -141,7 +141,7 @@ $(dir)/security.o : src/main/security.c
 $(dir)/semantics.o: src/main/semantics.c
 	$(MYCC) $(CFLAGS) -c $^ -o $@
 
-$(dir)/ffi.o : src/main/ffi.c
+$(dir)/ffi.o : src/lang/ffi.c
 	$(MYCC) $(CFLAGS) -c $^ -o $@
 
 $(dir)/stack.o: src/main/stack.c

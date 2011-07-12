@@ -362,7 +362,6 @@ knh_status_t knh_eval(CTX ctx, knh_InputStream_t *in, knh_Array_t *resultsNULL);
 knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in, knh_Array_t *resultsNULL);
 knh_status_t knh_load(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn, knh_Array_t *resultsNULL);
 knh_status_t knh_startScript(CTX ctx, const char *path);
-void knh_BasicBlock_optimize(CTX ctx, knh_BasicBlock_t *bb);
 knh_Token_t* new_Token(CTX ctx, knh_term_t tt);
 knh_Stmt_t* new_Stmt2(CTX ctx, knh_term_t stt, ...);
 void knh_Stmt_swap(CTX ctx, knh_Stmt_t *stmt, size_t n, size_t m);
@@ -473,9 +472,6 @@ knh_Link_t *knh_NameSpace_getLinkNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t 
 void knh_NameSpace_setLink(CTX ctx, knh_NameSpace_t *ns, knh_Link_t *lnk);
 knh_class_t new_ClassId(CTX ctx);
 void knh_expandEventTBL(CTX ctx);
-iconv_t iconv_open(const char *t, const char *f);
-size_t iconv(iconv_t i, char **t, size_t *ts, char **f, size_t *fs);
-int iconv_close(iconv_t i);
 knh_Context_t* toContext(CTX ctx);
 void knh_context_reftrace(CTX ctx, knh_context_t *o FTRARG);
 void knh_Context_free(CTX ctx, knh_context_t* ctxo);
