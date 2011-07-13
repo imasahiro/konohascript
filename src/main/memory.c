@@ -540,10 +540,6 @@ void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize)
 #define prefetch_bitmap(o)   prefetch(K_OPAGE(o)->h.bitmap)
 #define prefetch_tenure(o)   prefetch(K_OPAGE(o)->h.tenure)
 
-//#ifdef K_USING_RCGC
-//#define O_set_tenure(o)
-//#define O_unset_tenure(o)
-//#else
 #define O_set_tenure(o) {\
 		knh_ObjectPage_t *opage = K_OPAGE(o);\
 		knh_uintptr_t *tenure = opage->h.tenure;\
@@ -557,9 +553,7 @@ void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize)
 		size_t offset = K_OPAGEOFFSET(o, opage);\
 		bit_unset(tenure, offset);\
 	}\
-//
-//#endif
-//
+
 typedef struct {
 	knh_hObject_t h;
 	knh_uintptr_t *bitmap;
@@ -1014,10 +1008,6 @@ static void deref_ostack(CTX ctx, knh_Object_t *ref, knh_ostack_t *ostack)
 	if (knh_Object_RCdec(ref) == 1) {
 		ostack_push(ctx, ostack, ref);
 	}
-	//knh_Object_RCdec(ref2);
-	//if(Object_isRC0(ref2)) {
-	//	ostack_push(ctx, ostack, ref2);
-	//}
 }
 #endif
 
@@ -1151,45 +1141,6 @@ static inline int bit_test_and_set(knh_uintptr_t *b, size_t offset)
 	}
 	return 1;
 }
-
-//void knh_Object_toTenure(CTX ctx, Object *o)
-//{
-//	DBG_ASSERT(o->h.magic == K_OBJECT_MAGIC);
-//	knh_ObjectPage_t *opage = K_OPAGE(o);
-//	knh_uintptr_t *b = opage->h.tenure;
-//	size_t n = K_OPAGEOFFSET(o, opage);
-//	if(!(bit_test_and_set(b, n))) {
-//		O_cTBL(o)->ospi->traverse(ctx, o, knh_Object_toTenure);
-//	}
-//}
-
-//static void Object_mark1(CTX ctx, Object *o)
-//{
-//	DBG_ASSERT(o->h.magic == K_OBJECT_MAGIC);
-//	knh_ObjectPage_t *opage = K_OPAGE(o);
-//	knh_uintptr_t *b = opage->h.bitmap;
-//	size_t n = K_OPAGEOFFSET(o, opage);
-//	DBG_ASSERT(n < (K_PAGESIZE / sizeof(knh_Object_t)));
-//	DBG_ASSERT(&(opage->slots[n-1]) == o);
-//	static void *LPTR[2] = {&&L_1, &&L_0};
-//	goto *LPTR[bit_test_and_set(b, n)];
-//	L_1:; {
-//		STAT_(ctx->stat->markedObject++;)
-//		O_cTBL(o)->cspi->traverse(ctx, o, Object_mark1);
-//	}
-//	L_0:;
-//}
-
-//void Object_toTenure(CTX ctx, Object *o)
-//{
-//	DBG_ASSERT(o->h.magic == K_OBJECT_MAGIC);
-//	knh_ObjectPage_t *opage = K_OPAGE(o);
-//	knh_uintptr_t *b = opage->h.tenure;
-//	size_t n = K_OPAGEOFFSET(o, opage);
-//	if(!(bit_test_and_set(b, n))) {
-//		O_cTBL(o)->ospi->traverse(ctx, o, Object_toTenure);
-//	}
-//}
 
 static void gc_init(CTX ctx)
 {
