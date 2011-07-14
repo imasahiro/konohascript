@@ -330,7 +330,7 @@ if(USE_LLVM)
 	set(KONOHA_SRC ${KONOHA_SRC} src/lang/llvm.cpp)
 	string(REPLACE " " ";" v ${LLVM_JIT_LIBS})
 	link_directories(${LINK_DIRECTORIES} ${LLVM_LIBDIR})
-
+	set(ExtraLibs ${ExtraLibs} ${v})
 endif()
 
 option(USE_MPI "Using MPI" OFF)

@@ -2396,6 +2396,17 @@ static int _ERR_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt _UNUSED_, int sfp
 	return 0;
 }
 
+/* copied from asm.c */
+#define K_FLAG_PF_STDERR      1
+#define K_FLAG_PF_EOL         (1<<1)
+#define K_FLAG_PF_TIME        (1<<2)
+#define K_FLAG_PF_FUNC        (1<<3)
+#define K_FLAG_PF_LINE        (1<<4)
+#define K_FLAG_PF_NAME        (1<<5)
+#define K_FLAG_PF_BOL         (1<<6)
+#define K_FLAG_PF_BREAK       (1<<7)
+
+
 static knh_flag_t PRINT_flag(CTX ctx, knh_Stmt_t *o)
 {
 	knh_flag_t flag = 0;
