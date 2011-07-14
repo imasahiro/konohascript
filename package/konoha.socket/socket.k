@@ -30,7 +30,7 @@ include lib:gluelink;
 @Native class Socket;
 @Native class ServerSocket;
 
-@Native Socket Socket.new(String host, int port=80, Monitor mon);
+@Native Socket Socket.new(String host, int port=80);
 @Native InputStream Socket.getInputStream();
 @Native OutputStream Socket.getOutputStream();
 @Native void Socket.close();

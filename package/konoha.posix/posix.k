@@ -54,4 +54,4 @@ include lib:gluelink;
 @Native void Dir.close();
 @Native @Iterative Map Dir.read();
 
-include func:SystemCONST;
+//include func:SystemCONST;
