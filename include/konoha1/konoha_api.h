@@ -472,6 +472,7 @@ knh_Link_t *knh_NameSpace_getLinkNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t 
 void knh_NameSpace_setLink(CTX ctx, knh_NameSpace_t *ns, knh_Link_t *lnk);
 knh_class_t new_ClassId(CTX ctx);
 void knh_expandEventTBL(CTX ctx);
+void context_init_multithread(CTX ctx);
 knh_Context_t* toContext(CTX ctx);
 void knh_context_reftrace(CTX ctx, knh_context_t *o FTRARG);
 void knh_Context_free(CTX ctx, knh_context_t* ctxo);

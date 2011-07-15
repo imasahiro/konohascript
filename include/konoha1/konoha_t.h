@@ -989,11 +989,11 @@ struct knh_Iterator_t;
 typedef struct knh_ServiceSPI_t {
 	/* sync spi */
 #ifdef K_USING_DEBUG
-	int (*lock)(knh_mutex_t *m, const char *_file, const char* _func, int _line);
-	int (*unlock)(knh_mutex_t *m, const char *_file, const char* _func, int _line);
+	int (*lockSPI)(knh_mutex_t *m, const char *_file, const char* _func, int _line);
+	int (*unlockSPI)(knh_mutex_t *m, const char *_file, const char* _func, int _line);
 #else
-	int (*lock)(knh_mutex_t *m);
-	int (*unlock)(knh_mutex_t *m);
+	int (*lockSPI)(knh_mutex_t *m);
+	int (*unlockSPI)(knh_mutex_t *m);
 #endif
 	/* syslog spi */
 	void (*syslog)(int, const char *, ...);

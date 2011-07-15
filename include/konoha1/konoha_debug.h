@@ -105,8 +105,8 @@
 #define DBG_P(fmt, ...)   dbg_p(__FILE__, __FUNCTION__, __LINE__, fmt, ## __VA_ARGS__)
 #define TRACE_P(fmt, ...) dbg_p(_file, _func, _line, fmt, ## __VA_ARGS__)
 
-#define KNH_LOCK(ctx, m)    ctx->share->syncSPI->lock(m, __FILE__, __FUNCTION__, __LINE__)
-#define KNH_UNLOCK(ctx, m)  ctx->share->syncSPI->unlock(m, __FILE__, __FUNCTION__, __LINE__)
+#define KNH_LOCK(ctx, m)    ctx->spi->lockSPI(m, __FILE__, __FUNCTION__, __LINE__)
+#define KNH_UNLOCK(ctx, m)  ctx->spi->unlockSPI(m, __FILE__, __FUNCTION__, __LINE__)
 
 #else
 #define DBG_TRACE
@@ -114,8 +114,8 @@
 #define TRACE_P(fmt, ...)
 #define TODO_P(fmt, ...)
 
-#define KNH_LOCK(ctx, m)    ctx->share->syncSPI->lock(m)
-#define KNH_UNLOCK(ctx, m)  ctx->share->syncSPI->unlock(m)
+#define KNH_LOCK(ctx, m)    ctx->spi->lockSPI(m)
+#define KNH_UNLOCK(ctx, m)  ctx->spi->unlockSPI(m)
 
 #endif
 #endif/*K_EXPORTS*/

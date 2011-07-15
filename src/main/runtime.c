@@ -77,7 +77,7 @@ void knh_beginContext(CTX ctx, void **bottom)
 {
 	((knh_context_t*)ctx)->cstack_bottom = bottom;
 #ifdef K_USING_THREAD
-	knh_mutex_lock(ctx->ctxlock);  // by yoan
+	knh_mutex_lock(ctx->ctxlock);
 #if !defined(CC_TYPE_TLS)
 	thread_setspecific(ctxkey, ctx);
 #endif
@@ -93,7 +93,7 @@ void knh_endContext(CTX ctx)
 #if !defined(CC_TYPE_TLS)
 	thread_setspecific(ctxkey, NULL);
 #endif
-	knh_mutex_unlock(ctx->ctxlock);  // by yoan
+	knh_mutex_unlock(ctx->ctxlock);
 	curctx = NULL;
 #else
 	curctx = NULL;

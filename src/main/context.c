@@ -226,6 +226,7 @@ static knh_context_t* new_RootContext(void)
 
 	knh_share_initArena(ctx, share);
 
+	share->memlock = knh_mutex_malloc(ctx);
 	share->ClassTBL = (const knh_ClassTBL_t**)KNH_MALLOC((CTX)ctx, sizeof(knh_ClassTBL_t*)*(K_CLASSTABLE_INIT));
 	knh_bzero(share->ClassTBL, sizeof(knh_ClassTBL_t*)*(K_CLASSTABLE_INIT));
 	share->sizeClassTBL = 0;
@@ -288,16 +289,27 @@ static knh_context_t* new_RootContext(void)
 
 static int _lock(knh_mutex_t *m DBG_TRACE)
 {
-	TRACE_P("UNLOCK mutex=%p", m);
+	TRACE_P("LOCK mutex=%p", m);
 	return 0;
-};
-
+}
 
 static int _unlock(knh_mutex_t *m DBG_TRACE)
 {
 	TRACE_P("UNLOCK mutex=%p", m);
 	return 0;
-};
+}
+
+static int thread_lock(knh_mutex_t *m DBG_TRACE)
+{
+	TRACE_P("LOCK mutex=%p", m);
+	return knh_mutex_lock(m);
+}
+
+static int thread_unlock(knh_mutex_t *m DBG_TRACE)
+{
+	TRACE_P("UNLOCK mutex=%p", m);
+	return knh_mutex_unlock(m);
+}
 
 #ifndef K_USING_ICONV
 static iconv_t iconv_open(const char *t, const char *f)
@@ -329,8 +341,8 @@ static void _setsfp(CTX ctx, knh_sfp_t *sfp, void *v)
 static void initServiceSPI(knh_ServiceSPI_t *spi)
 {
 	spi->syncspi = "nothread";
-	spi->lock = _lock;
-	spi->unlock = _unlock;
+	spi->lockSPI = _lock;
+	spi->unlockSPI = _unlock;
 	spi->syslogspi = "fprintf(stderr)";
 	spi->syslog = pseudo_syslog;
 	spi->vsyslog = pseudo_vsyslog;
@@ -350,6 +362,14 @@ static void initServiceSPI(knh_ServiceSPI_t *spi)
 	spi->pSPI = dbg_p;
 }
 
+/* ------------------------------------------------------------------------ */
+void context_init_multithread(CTX ctx)
+{
+	knh_ServiceSPI_t *spi = __CONST_CAST__(knh_ServiceSPI_t*, ctx->spi);
+	spi->syncspi   = "thread";
+	spi->lockSPI   = thread_lock;
+	spi->unlockSPI = thread_unlock;
+}
 /* ------------------------------------------------------------------------ */
 
 static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
@@ -477,6 +497,7 @@ void knh_Context_free(CTX ctx, knh_context_t* ctxo)
 				knh_Method_toAbstract(ctx, a->methods[j]);
 			}
 		}
+		knh_mutex_free(ctx, ctxo->share->memlock);
 		knh_share_free(ctx, (knh_share_t*)ctxo->share);
 		knh_bzero((void*)ctxo, sizeof(knh_context_t));
 		free((void*)ctxo);

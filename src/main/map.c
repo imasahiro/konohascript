@@ -240,7 +240,6 @@ static void hmap_add(knh_hmap_t* hmap, knh_hentry_t *ne)
 
 static void hmap_remove(knh_hmap_t* hmap, knh_hentry_t *oe)
 {
-	DBG_ASSERT(oe->next == NULL);
 	knh_hentry_t **hlist = hmap->hentry;
 	size_t idx = oe->hcode % hmap->hmax;
 	knh_hentry_t *e = hlist[idx];
