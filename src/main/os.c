@@ -583,18 +583,22 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		}
 	}
 #elif defined(K_USING_MACOSX_)
-	knh_cwb_clear2(cwb, 0);
-	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, B(_dyld_get_image_name(0)));
-	SETPROP("konoha.bin.path", knh_buff_newRealPath(ctx, cwb->ba, cwb->pos));
-	if(home.text == NULL) {
+	{
+		knh_String_t *binpath;
 		knh_cwb_clear2(cwb, 0);
-		knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, B(_dyld_get_image_name(0)));
-		knh_buff_trim(ctx, cwb->ba, cwb->pos, '/');
-		knh_buff_trim(ctx, cwb->ba, cwb->pos, '/');
-		knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1/*isSep*/, STEXT("konoha"));
-		knh_String_t *s = knh_cwb_newString(ctx, cwb);
-		SETPROP("konoha.home.path", s);
-		home = S_tobytes(s);
+		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, B(_dyld_get_image_name(0)));
+		binpath = knh_buff_newRealPath(ctx, cwb->ba, cwb->pos);
+		SETPROP("konoha.bin.path", binpath);
+		if(home.text == NULL) {
+			knh_cwb_clear2(cwb, 0);
+			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(binpath));
+			knh_buff_trim(ctx, cwb->ba, cwb->pos, '/');
+			knh_buff_trim(ctx, cwb->ba, cwb->pos, '/');
+			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1/*isSep*/, STEXT("konoha"));
+			knh_String_t *s = knh_cwb_newString(ctx, cwb);
+			SETPROP("konoha.home.path", s);
+			home = S_tobytes(s);
+		}
 	}
 #else
 	home = STEXT("/opt/konoha");
