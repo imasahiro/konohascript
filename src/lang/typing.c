@@ -1130,19 +1130,14 @@ static knh_Token_t* NUM_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 			return Token_setCONST(ctx, tk, KNH_TRUE);
 		}
 	}
-	if(breqc == CLASS_Int || breqc == CLASS_Float) {
-	}
-	else if(IS_Tvany(reqt) || breqc == CLASS_Object || breqc == CLASS_Number) {
-		breqc = bytes_guessNUMcid(ctx, t);
-		reqt = breqc;
-	}
-	else {
-		return ErrorNumericType(ctx, reqt);
+	if(breqc != CLASS_Int && breqc != CLASS_Float) {
+		reqt = bytes_guessNUMcid(ctx, t);
+		reqt = C_bcid(reqt);
 	}
 	if(breqc == CLASS_Float) {
 		knh_float_t n = K_FLOAT_ZERO;
 		if(!knh_bytes_parsefloat(t, &n)) {
-			WarningOverflow(ctx, "float", t);
+			WARN_Overflow(ctx, "float", t);
 		}
 #if defined(K_USING_SEMANTICS)
 		knh_class_t tagc = knh_Token_tagcNUM(ctx, tk, reqc, ns);
@@ -1161,7 +1156,7 @@ static knh_Token_t* NUM_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 	else { /* if(req_bcid == CLASS_Int) */
 		knh_int_t n = 0;
 		if(!knh_bytes_parseint(t, &n)) {
-			WarningOverflow(ctx, "integer", t);
+			WARN_Overflow(ctx, "integer", t);
 		}
 #if defined(K_USING_SEMANTICS)
 		knh_class_t tagc = knh_Token_tagcNUM(ctx, tk, reqc, ns);

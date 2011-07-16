@@ -355,11 +355,11 @@ void INFO_Typing(CTX ctx, const char *prefix, knh_bytes_t name, knh_type_t type)
 {
 	Gamma_perror(ctx, KC_TINFO, "suppose %s%B has type %T", prefix, name, type);
 }
-knh_Token_t* ErrorNumericType(CTX ctx, knh_type_t reqt)
-{
-	return Gamma_perror(ctx, KC_TERROR, _("not numeric: %C"), reqt);
-}
-void WarningOverflow(CTX ctx, const char *floatorint, knh_bytes_t t)
+//knh_Token_t* ErrorNumericType(CTX ctx, knh_type_t reqt)
+//{
+//	return Gamma_perror(ctx, KC_TERROR, _("not numeric: %C"), reqt);
+//}
+void WARN_Overflow(CTX ctx, const char *floatorint, knh_bytes_t t)
 {
 	Gamma_perror(ctx, KC_EWARN, _("%s overflow: %B"), floatorint, t);
 }
