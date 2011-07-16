@@ -167,6 +167,7 @@ static const knh_OPDATA_t OPDATA[] = {
 	{"RET", _JIT, 0, { VMT_VOID}}, 
 	{"TR", _DEF|_JIT, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_CID, VMT_F, VMT_VOID}}, 
 	{"SCAST", _DEF, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_SFPIDX, VMT_TMR, VMT_VOID}}, 
+	{"NCAST", _DEF, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_SFPIDX, VMT_TMR, VMT_VOID}}, 
 	{"TCAST", _DEF, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_SFPIDX, VMT_TMR, VMT_VOID}}, 
 	{"ACAST", _DEF, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_SFPIDX, VMT_TMR, VMT_VOID}}, 
 	{"iCAST", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}}, 
@@ -334,6 +335,7 @@ void knh_opcode_check(void)
 	KNH_ASSERT(sizeof(klr_RET_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_TR_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_SCAST_t) <= sizeof(knh_opline_t));
+	KNH_ASSERT(sizeof(klr_NCAST_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_TCAST_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_ACAST_t) <= sizeof(knh_opline_t));
 	KNH_ASSERT(sizeof(klr_iCAST_t) <= sizeof(knh_opline_t));
@@ -616,19 +618,19 @@ knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc)
 		&&L_XMOV, &&L_XOSET, &&L_XMOVx, &&L_CHKSTACK, 
 		&&L_LDMTD, &&L_CALL, &&L_SCALL, &&L_VCALL, 
 		&&L_VCALL_, &&L_FASTCALL0, &&L_RET, &&L_TR, 
-		&&L_SCAST, &&L_TCAST, &&L_ACAST, &&L_iCAST, 
-		&&L_fCAST, &&L_JMP, &&L_JMP_, &&L_JMPF, 
-		&&L_NEXT, &&L_BGETIDX, &&L_BSETIDX, &&L_BGETIDXC, 
-		&&L_BSETIDXC, &&L_NGETIDX, &&L_NSETIDX, &&L_NGETIDXC, 
-		&&L_NSETIDXC, &&L_OGETIDX, &&L_OSETIDX, &&L_OGETIDXC, 
-		&&L_OSETIDXC, &&L_bJNUL, &&L_bJNN, &&L_bJNOT, 
-		&&L_iJEQ, &&L_iJNEQ, &&L_iJLT, &&L_iJLTE, 
-		&&L_iJGT, &&L_iJGTE, &&L_iJEQC, &&L_iJNEQC, 
-		&&L_iJLTC, &&L_iJLTEC, &&L_iJGTC, &&L_iJGTEC, 
-		&&L_fJEQ, &&L_fJNEQ, &&L_fJLT, &&L_fJLTE, 
-		&&L_fJGT, &&L_fJGTE, &&L_fJEQC, &&L_fJNEQC, 
-		&&L_fJLTC, &&L_fJLTEC, &&L_fJGTC, &&L_fJGTEC, 
-		&&L_CHKIDX, &&L_CHKIDXC, &&L_NOP, 
+		&&L_SCAST, &&L_NCAST, &&L_TCAST, &&L_ACAST, 
+		&&L_iCAST, &&L_fCAST, &&L_JMP, &&L_JMP_, 
+		&&L_JMPF, &&L_NEXT, &&L_BGETIDX, &&L_BSETIDX, 
+		&&L_BGETIDXC, &&L_BSETIDXC, &&L_NGETIDX, &&L_NSETIDX, 
+		&&L_NGETIDXC, &&L_NSETIDXC, &&L_OGETIDX, &&L_OSETIDX, 
+		&&L_OGETIDXC, &&L_OSETIDXC, &&L_bJNUL, &&L_bJNN, 
+		&&L_bJNOT, &&L_iJEQ, &&L_iJNEQ, &&L_iJLT, 
+		&&L_iJLTE, &&L_iJGT, &&L_iJGTE, &&L_iJEQC, 
+		&&L_iJNEQC, &&L_iJLTC, &&L_iJLTEC, &&L_iJGTC, 
+		&&L_iJGTEC, &&L_fJEQ, &&L_fJNEQ, &&L_fJLT, 
+		&&L_fJLTE, &&L_fJGT, &&L_fJGTE, &&L_fJEQC, 
+		&&L_fJNEQC, &&L_fJLTC, &&L_fJLTEC, &&L_fJGTC, 
+		&&L_fJGTEC, &&L_CHKIDX, &&L_CHKIDXC, &&L_NOP, 
 	};
 #endif
 	knh_rbp_t *rbp = (knh_rbp_t*)sfp0;
@@ -1313,6 +1315,12 @@ knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc)
 	CASE(SCAST) {
 		klr_SCAST_t *op = (klr_SCAST_t*)pc; (void)op;
 		KLR_SCAST(ctx, op->a, op->b, op->rix, op->espshift, op->cast);
+		pc++;
+		GOTO_NEXT();
+	} 
+	CASE(NCAST) {
+		klr_NCAST_t *op = (klr_NCAST_t*)pc; (void)op;
+		KLR_NCAST(ctx, op->a, op->b, op->rix, op->espshift, op->cast);
 		pc++;
 		GOTO_NEXT();
 	} 

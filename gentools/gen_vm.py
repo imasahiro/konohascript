@@ -136,6 +136,7 @@ RET        _JIT
 TR         _DEF|_JIT         a:r  b:sfpidx rix:i cid:cid tr:f
 
 SCAST      _DEF              a:r b:sfpidx rix:i espshift:sfpidx cast:tmr
+NCAST      _DEF              a:r b:sfpidx rix:i espshift:sfpidx cast:tmr
 TCAST      _DEF              a:r b:sfpidx rix:i espshift:sfpidx cast:tmr
 ACAST      _DEF              a:r b:sfpidx rix:i espshift:sfpidx cast:tmr
 iCAST      _DEF|_JIT         a:rn b:rn
@@ -143,9 +144,7 @@ fCAST      _DEF|_JIT         a:rn b:rn
 
 JMP        _JIT              addr:addr
 JMP_       _JIT              addr:addr
-#ONCE                        addr:addr
 JMPF       0                 addr:addr a:rn
-#DYJMP      0                addr:addr a:sfpidx chk:f
 NEXT       _DEF              addr:addr a:r b:sfpidx rix:i espshift:sfpidx
 
 BGETIDX    _DEF|_JIT         c:rn a:ro n:rn 

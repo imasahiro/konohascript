@@ -465,7 +465,7 @@ static TYPEMAP Boolean_String(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static TYPEMAP Int_String(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	char buf[256];
+	char buf[80];
 	knh_snprintf(buf, sizeof(buf), K_INT_FMT, sfp[0].ivalue);
 	RETURN_(new_S(ctx, B(buf)));
 }

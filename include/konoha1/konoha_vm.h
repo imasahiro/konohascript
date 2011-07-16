@@ -349,6 +349,11 @@ extern "C" {
 		knh_TypeMap_exec(ctx, tmr, SFP(rshift(rbp,thisidx)), rix); \
 	} \
 
+#define KLR_NCAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  { \
+		klr_setesp(ctx, SFP(rshift(rbp, espidx)));\
+		(tmr)->ftypemap_1(ctx, SFP(rshift(rbp,thisidx)), rix);\
+	} \
+
 #define KLR_TCAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  { \
 		knh_TypeMap_t *tmr_ = tmr; \
 		knh_sfp_t *sfp_ = SFP(rshift(rbp,thisidx));\
