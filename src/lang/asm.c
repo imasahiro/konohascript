@@ -758,13 +758,13 @@ static void _NULVAL(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_
 {
 	KNH_SETv(ctx, sfp[c].o, ct->fdefnull(ctx, ct->cid));
 }
-static void _PROP(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
+void knh_PROP(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
 	Object *v = (Object*)knh_getPropertyNULL(ctx, S_tobytes(sfp[0].s));
 	if(v == NULL) v = ct->fdefnull(ctx, ct->cid);
 	KNH_SETv(ctx, sfp[c].o, v);
 }
-static void _NPROP(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
+void knh_NPROP(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
 	Object *v = (Object*)knh_getPropertyNULL(ctx, S_tobytes(sfp[0].s));
 	sfp[c].ndata = (v == NULL) ? 0 : O_data(v);
@@ -1072,12 +1072,13 @@ static void ASM_SMOV(CTX ctx, int alocal, knh_Token_t *tk)
 			break;
 		}
 		case TT_PROPN: {
+			const knh_ClassTBL_t *ct = ClassTBL(CLASS_t(type));
 			ASM(OSET, OC_(alocal), (tk)->data);
 			if(IS_Tunbox(type)) {
-				ASM(TR, NC_(alocal), SFP_(alocal), RIX_(alocal-alocal), ClassTBL(CLASS_t(type)), _NPROP);
+				ASM(TR, NC_(alocal), SFP_(alocal), RIX_(alocal-alocal), ct, knh_NPROP);
 			}
 			else {
-				ASM(TR, OC_(alocal), SFP_(alocal), RIX_(alocal-alocal), ClassTBL(CLASS_t(type)), _PROP);
+				ASM(TR, OC_(alocal), SFP_(alocal), RIX_(alocal-alocal), ct, knh_PROP);
 			}
 			break;
 		}
@@ -1152,12 +1153,13 @@ static void ASM_XMOV(CTX ctx, int alocal, size_t an, knh_Token_t *tkb, int espid
 		}
 		case TT_PROPN: {
 			used_espidx = espidx;
+			const knh_ClassTBL_t *ct = ClassTBL(CLASS_t(btype));
 			ASM(OSET, OC_(espidx), (tkb)->data);
 			if(IS_Tunbox(btype)) {
-				ASM(TR, NC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ClassTBL(CLASS_t(btype)), _NPROP);
+				ASM(TR, NC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ct, knh_NPROP);
 			}
 			else {
-				ASM(TR, OC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ClassTBL(CLASS_t(btype)), _PROP);
+				ASM(TR, OC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ct, knh_PROP);
 			}
 			break;
 		}
@@ -2994,7 +2996,7 @@ static struct knh_funcname_t _FuncData[] = {
 	_FUNC(_PRINT, "PRINT"), _FUNC(_BOX, "BOX"), _FUNC(TR_NEW, "NEW"),
 	_FUNC(_NULVAL, "NULL"), _FUNC(_CWB, "CWB"), _FUNC(_TOSTR, "TOSTR"),
 	_FUNC(_LOOKUPMTD, "LOOKUPMTD"),
-	_FUNC(_PROP, "PROP"), _FUNC(_bBOX, "bBOX"), _FUNC(_VARGS, "VARGS"),
+	_FUNC(knh_PROP, "PROP"), _FUNC(_bBOX, "bBOX"), _FUNC(_VARGS, "VARGS"),
 	_FUNC(_ERR, "ERR"), _FUNC(_TCHECK, "CHKTYPE"),
 	_FUNC(_DYNMTD, "DYNMTD"), _FUNC(_PBOX, "PBOX"),
 	_FUNC(NULL, NULL),

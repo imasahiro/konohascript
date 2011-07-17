@@ -333,6 +333,10 @@ if(USE_LLVM)
 			OUTPUT_VARIABLE LLVM_LIBDIR
 			OUTPUT_STRIP_TRAILING_WHITESPACE
 			)
+#	find_program(_KONOHA_ NAMES konoha)
+#	execute_process(
+#			COMMAND ${_KONOHA_} ${CMAKE_CURRENT_SOURCE_DIR}/gentools/fieldparser.k
+#	)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LLVM_CFLAGS}")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LLVM_CXXFLAGS}")
 	set(KONOHA_SRC ${KONOHA_SRC} src/lang/llvm.cpp)
