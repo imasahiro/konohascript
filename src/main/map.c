@@ -711,7 +711,7 @@ knh_PtrMap_t* new_PtrMap(CTX ctx, size_t max)
 {
 	knh_Map_t *m = new_H(Map);
 	m->spi = &HMAP_NN;
-	m->mapptr = m->spi->init(ctx, 0, NULL, NULL);
+	m->mapptr = m->spi->init(ctx, max, NULL, NULL);
 	return (knh_PtrMap_t*)m;
 }
 
@@ -850,6 +850,49 @@ void knh_PtrMap_rmI(CTX ctx, knh_PtrMap_t *pm, knh_Int_t *v)
 	DBG_P("not found removed %d %p", (knh_hashcode_t)v->n.data, v);
 	//KNH_ASSERT(ctx == NULL);
 }
+
+knh_Method_t* knh_PtrMap_getM(CTX ctx, knh_PtrMap_t *pm, knh_hashcode_t hcode)
+{
+	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
+	knh_hentry_t *e = hmap_getentry(hmap, hcode);
+	hmap->stat_total++;
+	while(e != NULL) {
+		if(e->hcode == hcode) {
+			hmap->stat_hit++;
+			return (knh_Method_t*)e->pvalue;
+		}
+		e = e->next;
+	}
+	return NULL;
+}
+
+void knh_PtrMap_addM(CTX ctx, knh_PtrMap_t *pm, knh_hashcode_t hcode, knh_Method_t *v)
+{
+	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
+	knh_hentry_t *e = new_hentry(ctx, hmap, hcode);
+	DBG_ASSERT(IS_bMethod(v));
+	e->pvalue = (void*)v;
+	hmap_add(hmap, e);
+}
+
+void knh_PtrMap_rmM(CTX ctx, knh_PtrMap_t *pm, knh_Method_t *mtd)
+{
+	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
+	knh_hashcode_t hcode = hashcode_mtd(mtd->cid, mtd->mn, K_MTDCACHE_SIZE);
+	knh_hentry_t *e = hmap_getentry(hmap, hcode);
+	DBG_ASSERT(IS_bMethod(mtd));
+	while(e != NULL) {
+		if(e->hcode == hcode && e->pvalue == (void*)mtd) {
+			hmap_remove(hmap, e);
+			hmap_unuse(hmap, e);
+			return;
+		}
+		e = e->next;
+	}
+	DBG_P("not found removed %x %d.%d", hcode, mtd->cid, mtd->mn);
+	//KNH_ASSERT(ctx == NULL);
+}
+
 
 
 /* ------------------------------------------------------------------------ */

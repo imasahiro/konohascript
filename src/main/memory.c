@@ -1307,7 +1307,7 @@ static void gc_extendObjectArena(CTX ctx)
 
 void knh_System_gc(CTX ctx)
 {
-	KNH_LOCK(ctx, ctx->share->memlock);
+	//KNH_LOCK(ctx, ctx->share->memlock);
 	knh_stat_t *ctxstat = ctx->stat;
 	size_t used = ctxstat->usedObjectSize;
 	knh_uint64_t stime = knh_getTimeMilliSecond(), mtime = 0, ctime = 0;
@@ -1343,7 +1343,7 @@ void knh_System_gc(CTX ctx)
 	ctxstat->markingTime += (mtime-stime);
 	ctxstat->sweepingTime += (ctime-mtime);
 	ctxstat->gcTime += (knh_getTimeMilliSecond() - stime);
-	KNH_UNLOCK(ctx, ctx->share->memlock);
+	//KNH_UNLOCK(ctx, ctx->share->memlock);
 }
 
 /* ------------------------------------------------------------------------ */
