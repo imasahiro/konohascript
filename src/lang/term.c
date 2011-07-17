@@ -3251,9 +3251,9 @@ static int ITR_findSTMTOPR(tkitr_t *itr, int *op)
 		if(tt == TT_LET) {
 			op[0] = 0; return i;
 		}
-//		if(tt == TT_LSFT) {
-//			op[0] = 1; return i;
-//		}
+		if(tt == TT_LSFT) {
+			op[0] = 1; return i;
+		}
 		if(tt == TT_LSEND) {
 			op[0] = 2; return i;
 		}

@@ -3012,8 +3012,7 @@ static knh_Token_t* SEND_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	knh_class_t mtd_cid = Tn_cid(stmt, 1);
 	if(mtd_cid == CLASS_OutputStream) {
 		return Stmt_typed(ctx, stmt, TYPE_void);
-	}
-	else {
+	} else {
 		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, mtd_cid, MN_send);
 		if(mtd == NULL) {
 			return ERROR_Unsupported(ctx, "operator", mtd_cid, "<<<");

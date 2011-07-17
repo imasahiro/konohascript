@@ -2613,6 +2613,7 @@ static METHOD Int_opLNOT(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opLSFT(Int n);
+//## @Const @Hidden method Int Int.send(Int n);
 
 static METHOD Int_opLSFT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -2626,9 +2627,6 @@ static METHOD Int_opRSFT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(sfp[0].ivalue >> sfp[1].ivalue);
 }
-
-/* ------------------------------------------------------------------------ */
-/* [getSize] */
 
 /* ------------------------------------------------------------------------ */
 //## method Int Bytes.getSize();
