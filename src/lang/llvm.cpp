@@ -178,6 +178,8 @@ static const Type *LLVMTYPE_ObjectField = NULL;
 static const Type *LLVMTYPE_hObject = NULL;
 static const Type *LLVMTYPE_Object = NULL;
 static const Type *LLVMTYPE_Array = NULL;
+static const Type *LLVMTYPE_OutputStream = NULL;
+static const Type *LLVMTYPE_InputStream = NULL;
 static const Type *LLVMTYPE_Method = NULL;
 static const Type *LLVMTYPE_context = NULL;
 static const Type *LLVMTYPE_fcall = NULL;
@@ -2589,6 +2591,7 @@ enum asmcode_type {
 	ASMCODE_TYPE_INT64,
 	ASMCODE_TYPE_VOIDPTR,
 	ASMCODE_TYPE_VEC16,
+	ASMCODE_TYPE_CONTEXT,
 	ASMCODE_TYPE_SFPPTR,
 	ASMCODE_TYPE_SYSPTR,
 	ASMCODE_TYPE_SYSB,
@@ -2596,6 +2599,8 @@ enum asmcode_type {
 	ASMCODE_TYPE_OBJECTPTRPTR,
 	ASMCODE_TYPE_HOBJECT,
 	ASMCODE_TYPE_ARRAYPTR,
+	ASMCODE_TYPE_OUSPTR,
+	ASMCODE_TYPE_INSPTR,
 	ASMCODE_TYPE_FUNCTION,
 	ASMCODE_TYPE_MAX
 };
@@ -2603,7 +2608,29 @@ struct codeasm_field {
 	const char *name;
 	enum asmcode_type type;
 };
+struct cstruct {
+	const char *name;
+	size_t size;
+	const struct codeasm_field *fields;
+};
+
 #include "./llvm_struct.h"
+static const struct codeasm_field F_KNH_FMETHOD[] = {
+	{"ctx", ASMCODE_TYPE_CONTEXT},
+	{"sfp", ASMCODE_TYPE_SFPPTR},
+	{"rix", ASMCODE_TYPE_LONG},
+};
+#define F_KNH_FITR F_KNH_FMETHOD
+static const struct codeasm_field F_KNH_FCHECKIN[] = {
+	{"ctx", ASMCODE_TYPE_CONTEXT},
+	{"sfp", ASMCODE_TYPE_SFPPTR},
+	{"obj", ASMCODE_TYPE_OBJECTPTR},
+};
+static const struct codeasm_field F_KNH_FCHECKOUT[] = {
+	{"ctx", ASMCODE_TYPE_CONTEXT},
+	{"obj", ASMCODE_TYPE_OBJECTPTR},
+	{"idx", ASMCODE_TYPE_LONG},
+};
 
 static const Type *ToType(Module *m, enum asmcode_type type)
 {
@@ -2615,6 +2642,7 @@ static const Type *ToType(Module *m, enum asmcode_type type)
 		case ASMCODE_TYPE_INT64:     return LLVMTYPE_Int;
 		case ASMCODE_TYPE_VOIDPTR:   return voidPtr;
 		case ASMCODE_TYPE_VEC16:     return voidPtr;/* TODO */
+		case ASMCODE_TYPE_CONTEXT:   return LLVMTYPE_context;
 		case ASMCODE_TYPE_SFPPTR:    return LLVMTYPE_sfp;
 		case ASMCODE_TYPE_SYSPTR:    return LLVMTYPE_System;
 		case ASMCODE_TYPE_SYSB:      return LLVMTYPE_SystemEX;
@@ -2626,154 +2654,90 @@ static const Type *ToType(Module *m, enum asmcode_type type)
 		case ASMCODE_TYPE_OBJECTPTRPTR: return PointerType::get(LLVMTYPE_Object, 0);
 		case ASMCODE_TYPE_HOBJECT:      return LLVMTYPE_hObject;
 		case ASMCODE_TYPE_ARRAYPTR:     return LLVMTYPE_Array;
+		case ASMCODE_TYPE_OUSPTR:       return LLVMTYPE_OutputStream;
+		case ASMCODE_TYPE_INSPTR:       return LLVMTYPE_InputStream;
 		case ASMCODE_TYPE_FUNCTION:     return LLVMTYPE_fcall;
 		default: return getLongTy(m);
 	}
 }
 
+enum gen_type { LLVM_ObjectRef, LLVM_Struct, LLVM_Function };
+
+static const Type *GenType(Module *m, const char *name, const struct cstruct &cs, enum gen_type type = LLVM_ObjectRef)
+{
+	std::vector<const Type*>fields;
+	StructType* structTy  = NULL;
+	const Type *ptrTy;
+
+	for (size_t i = 0; i < cs.size; ++i) {
+		fields.push_back(ToType(m, cs.fields[i].type));
+	}
+	if (type == LLVM_Function) {
+		const Type *voidTy = Type::getVoidTy(m->getContext());
+		FunctionType *Ty = FunctionType::get(voidTy, fields, false);
+		m->addTypeName(name, Ty);
+		return PointerType::get(Ty, 0);
+	}
+	else if (type == LLVM_Struct) {
+		structTy = StructType::get(m->getContext(), fields, false);
+		m->addTypeName(name, structTy);
+		return structTy;
+	}
+	else {
+		structTy = StructType::get(m->getContext(), fields, false);
+		ptrTy = PointerType::get(structTy, 0);
+		m->addTypeName(name, ptrTy);
+		return ptrTy;
+	}
+}
+
 static void ConstructObjectStruct(Module *m)
 {
-	// Type Definitions
-	const Type *longTy    = getLongTy(m);
-	const Type *voidTy    = Type::getVoidTy(m->getContext());
-	const Type *objectPtr = NULL;
-	StructType* structTy  = NULL;
-
 	/* hObject */
-	std::vector<const Type*>fields;
-	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_HOBJECT_T; ++i) {
-		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_HOBJECT_T[i].type));
-	}
-
-	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
-	m->addTypeName("struct.hObject", structTy);
-	LLVMTYPE_hObject = structTy;
-	fields.clear();
-
-	/* Object */
-	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_OBJECT_T; ++i) {
-		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_OBJECT_T[i].type));
-	}
-	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
-	objectPtr = PointerType::get(structTy, 0);
-	m->addTypeName("Object", objectPtr);
-	LLVMTYPE_Object = objectPtr;
-	fields.clear();
-
-	/* ObjectField */
-	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_OBJECTFIELD_T; ++i) {
-		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_OBJECTFIELD_T[i].type));
-	}
-	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
-	LLVMTYPE_ObjectField = PointerType::get(structTy, 0);
-	m->addTypeName("ObjectField", LLVMTYPE_ObjectField);
-	fields.clear();
+	LLVMTYPE_hObject = GenType(m, "hObject", STRUCT_KNH_HOBJECT_T, LLVM_Struct);
+	LLVMTYPE_Object = GenType(m, "Object", STRUCT_KNH_OBJECT_T);
+	LLVMTYPE_ObjectField = GenType(m, "ObjectField", STRUCT_KNH_OBJECTFIELD_T);
+	LLVMTYPE_Array = GenType(m, "Array", STRUCT_KNH_ARRAY_T);
+	LLVMTYPE_OutputStream = GenType(m, "OutputStream", STRUCT_KNH_OUTPUTSTREAM_T);
+	LLVMTYPE_InputStream  = GenType(m, "InputStream",  STRUCT_KNH_INPUTSTREAM_T);
+	LLVMTYPE_SystemEX = GenType(m, "SystemEX", STRUCT_KNH_SYSTEMEX_T);
+	LLVMTYPE_System = GenType(m, "System", STRUCT_KNH_SYSTEM_T);
 
 	/* sfp */
+	/* TODO */
+	std::vector<const Type*>fields;
 	fields.push_back(LLVMTYPE_Object);
 	//fields.push_back(LLVMTYPE_Int);
 	fields.push_back(LLVMTYPE_Float);
-	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
-	const Type *sfpPtr = PointerType::get(structTy, 0);
-	m->addTypeName("struct.knh_sfp_t", structTy);
+	const Type *sfpTy  = StructType::get(m->getContext(), fields, /*isPacked=*/false);
+	const Type *sfpPtr = PointerType::get(sfpTy, 0);
+	m->addTypeName("struct.knh_sfp_t", sfpTy);
 	m->addTypeName("knh_sfp_t_ptr", sfpPtr);
 	LLVMTYPE_sfp = sfpPtr;
 	fields.clear();
 
-	/* Array */
-	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_ARRAY_T; ++i) {
-		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_ARRAY_T[i].type));
-	}
-	structTy = StructType::get(LLVM_CONTEXT(), fields, false);
-	LLVMTYPE_Array = PointerType::get(structTy, 0);
-	m->addTypeName("Array", LLVMTYPE_Array);
-	fields.clear();
-
-	/* SystemEX */
-	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_SYSTEMEX_T; ++i) {
-		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_SYSTEMEX_T[i].type));
-	}
-	LLVMTYPE_SystemEX = StructType::get(m->getContext(), fields, /*isPacked=*/false);
-	fields.clear();
-
-	/* System */
-	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_SYSTEM_T; ++i) {
-		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_SYSTEM_T[i].type));
-	}
-	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
-	LLVMTYPE_System = PointerType::get(structTy, 0);
-	m->addTypeName("System", LLVMTYPE_System);
-	fields.clear();
-
 	/* ctx */
-	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_CONTEXT_T; ++i) {
-		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_CONTEXT_T[i].type));
-	}
-
-	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
-	const Type *ctxPtr = PointerType::get(structTy, 0);
-	m->addTypeName("struct.context", structTy);
+	const Type *ctxTy = GenType(m, "struct context", STRUCT_KNH_CONTEXT_T, LLVM_Struct);
+	const Type *ctxPtr = PointerType::get(ctxTy, 0);
 	m->addTypeName("ctx", ctxPtr);
 	LLVMTYPE_context = ctxPtr;
-	fields.clear();
 
 	// Function Type Definitions
-	FunctionType* callTy;
-	std::vector<const Type*>args;
-	args.push_back(ctxPtr);
-	args.push_back(sfpPtr);
-	args.push_back(longTy);
-	callTy = FunctionType::get(/*Result=*/voidTy,/*Params=*/args,/*isVarArg=*/false);
-	LLVMTYPE_fcall = PointerType::get(callTy, 0);
-	m->addTypeName("fcall", callTy);
-	args.clear();
-
+	struct cstruct fcs = {};
+	fcs.name = "fcall";fcs.size = 3;fcs.fields = F_KNH_FMETHOD;
+	LLVMTYPE_fcall = GenType(m, "fcall", fcs, LLVM_Function);
 	/* checkin */
-	args.push_back(ctxPtr);
-	args.push_back(sfpPtr);
-	args.push_back(objectPtr);
-	callTy = FunctionType::get(/*Result=*/voidTy,/*Params=*/args,/*isVarArg=*/false);
-	LLVMTYPE_checkin = PointerType::get(callTy, 0);
-	m->addTypeName("checkin", callTy);
-	args.clear();
-
+	fcs.name = "fcheckin";fcs.size = 3;fcs.fields = F_KNH_FCHECKIN;
+	LLVMTYPE_checkin = GenType(m, "fcheckin", fcs, LLVM_Function);
 	/* checkout */
-	args.push_back(ctxPtr);
-	args.push_back(objectPtr);
-	args.push_back(longTy);
-	FunctionType* callTy2 = FunctionType::get(/*Result=*/voidTy,/*Params=*/args,/*isVarArg=*/false);
-	LLVMTYPE_checkout = PointerType::get(callTy2, 0);
-	m->addTypeName("checkout", callTy2);
-
-	/* Method */
-	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_METHOD_T; ++i) {
-		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_METHOD_T[i].type));
-	}
-	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
-	LLVMTYPE_Method = PointerType::get(structTy, 0);
-	m->addTypeName("Method", LLVMTYPE_Method);
-	fields.clear();
-
+	fcs.name = "fcheckout";fcs.size = 3;fcs.fields = F_KNH_FCHECKOUT;
+	LLVMTYPE_checkout = GenType(m, "fcheckout", fcs, LLVM_Function);
 	/* fitr */
-	{
-		args.clear();
-		args.push_back(ctxPtr);
-		args.push_back(sfpPtr);
-		args.push_back(longTy);
-		FunctionType* callTy = FunctionType::get(longTy, args, false);
-		LLVMTYPE_itr = PointerType::get(callTy, 0);
-		m->addTypeName("fitr", callTy);
-	}
+	fcs.name = "fitr";fcs.size = 3;fcs.fields = F_KNH_FITR;
+	LLVMTYPE_itr = GenType(m, "fitr", fcs, LLVM_Function);
 
-	/* Iterator */
-	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_ITERATOR_T; ++i) {
-		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_ITERATOR_T[i].type));
-	}
-	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
-	LLVMTYPE_Iterator = PointerType::get(structTy, 0);
-	m->addTypeName("Iterator", LLVMTYPE_Iterator);
-	fields.clear();
-
+	LLVMTYPE_Method = GenType(m, "Method", STRUCT_KNH_METHOD_T);
+	LLVMTYPE_Iterator = GenType(m, "Iterator", STRUCT_KNH_ITERATOR_T);
 }
 
 static std::string build_function_name(CTX ctx, knh_Method_t *mtd, std::string suffix)

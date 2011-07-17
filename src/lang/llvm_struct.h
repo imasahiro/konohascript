@@ -1,46 +1,100 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
 // THIS FILE WAS AUTOMATICALLY GENERATED
 
-static const struct codeasm_field CODEASM_GENSTRUCT_KNH_HOBJECT_T[] = {
+static const struct codeasm_field F_KNH_HOBJECT_T[] = {
 	{"magicflag", ASMCODE_TYPE_LONG},
 	{"cTBL", ASMCODE_TYPE_VOIDPTR},
 	{"refcknh_uintptr_t", ASMCODE_TYPE_LONG},
 	{"meta", ASMCODE_TYPE_VOIDPTR}
 };
-#define SIZEOF_CODEASM_GENSTRUCT_KNH_HOBJECT_T 4
-static const struct codeasm_field CODEASM_GENSTRUCT_KNH_OBJECT_T[] = {
+#define SIZE_F_KNH_HOBJECT_T 4
+static const struct cstruct STRUCT_KNH_HOBJECT_T = {
+	"knh_hObject_t",
+	SIZE_F_KNH_HOBJECT_T,
+	F_KNH_HOBJECT_T
+};
+static const struct codeasm_field F_KNH_OBJECT_T[] = {
 	{"h", ASMCODE_TYPE_HOBJECT},
 	{"ref", ASMCODE_TYPE_VOIDPTR},
 	{"ref2_unused", ASMCODE_TYPE_VOIDPTR},
 	{"ref3_unused", ASMCODE_TYPE_VOIDPTR},
 	{"ref4_tail", ASMCODE_TYPE_OBJECTPTR}
 };
-#define SIZEOF_CODEASM_GENSTRUCT_KNH_OBJECT_T 5
-static const struct codeasm_field CODEASM_GENSTRUCT_KNH_ARRAY_T[] = {
+#define SIZE_F_KNH_OBJECT_T 5
+static const struct cstruct STRUCT_KNH_OBJECT_T = {
+	"knh_Object_t",
+	SIZE_F_KNH_OBJECT_T,
+	F_KNH_OBJECT_T
+};
+static const struct codeasm_field F_KNH_ARRAY_T[] = {
 	{"h", ASMCODE_TYPE_HOBJECT},
 	{"nlistknh_int_t*", ASMCODE_TYPE_VOIDPTR},
 	{"size", ASMCODE_TYPE_LONG},
 	{"dim", ASMCODE_TYPE_VOIDPTR},
 	{"api", ASMCODE_TYPE_VOIDPTR}
 };
-#define SIZEOF_CODEASM_GENSTRUCT_KNH_ARRAY_T 5
-static const struct codeasm_field CODEASM_GENSTRUCT_KNH_OBJECTFIELD_T[] = {
+#define SIZE_F_KNH_ARRAY_T 5
+static const struct cstruct STRUCT_KNH_ARRAY_T = {
+	"knh_Array_t",
+	SIZE_F_KNH_ARRAY_T,
+	F_KNH_ARRAY_T
+};
+static const struct codeasm_field F_KNH_OBJECTFIELD_T[] = {
 	{"h", ASMCODE_TYPE_HOBJECT},
 	{"fields", ASMCODE_TYPE_OBJECTPTRPTR},
 	{"smallobject", ASMCODE_TYPE_OBJECTPTR}
 };
-#define SIZEOF_CODEASM_GENSTRUCT_KNH_OBJECTFIELD_T 3
-static const struct codeasm_field CODEASM_GENSTRUCT_KNH_SFP_T[] = {
+#define SIZE_F_KNH_OBJECTFIELD_T 3
+static const struct cstruct STRUCT_KNH_OBJECTFIELD_T = {
+	"knh_ObjectField_t",
+	SIZE_F_KNH_OBJECTFIELD_T,
+	F_KNH_OBJECTFIELD_T
+};
+static const struct codeasm_field F_KNH_OUTPUTSTREAM_T[] = {
+	{"h", ASMCODE_TYPE_HOBJECT},
+	{"b", ASMCODE_TYPE_VOIDPTR},
+	{"uline", ASMCODE_TYPE_LONG},
+	{"dspi", ASMCODE_TYPE_VOIDPTR},
+	{"encNULL", ASMCODE_TYPE_VOIDPTR}
+};
+#define SIZE_F_KNH_OUTPUTSTREAM_T 5
+static const struct cstruct STRUCT_KNH_OUTPUTSTREAM_T = {
+	"knh_OutputStream_t",
+	SIZE_F_KNH_OUTPUTSTREAM_T,
+	F_KNH_OUTPUTSTREAM_T
+};
+static const struct codeasm_field F_KNH_INPUTSTREAM_T[] = {
+	{"h", ASMCODE_TYPE_HOBJECT},
+	{"b", ASMCODE_TYPE_VOIDPTR},
+	{"uline", ASMCODE_TYPE_LONG},
+	{"dspi", ASMCODE_TYPE_VOIDPTR},
+	{"decNULL", ASMCODE_TYPE_VOIDPTR}
+};
+#define SIZE_F_KNH_INPUTSTREAM_T 5
+static const struct cstruct STRUCT_KNH_INPUTSTREAM_T = {
+	"knh_InputStream_t",
+	SIZE_F_KNH_INPUTSTREAM_T,
+	F_KNH_INPUTSTREAM_T
+};
+static const struct codeasm_field F_KNH_SFP_T[] = {
 	{"onh_Int_t*", ASMCODE_TYPE_OBJECTPTR},
 	{"ndatanh_bool_t", ASMCODE_TYPE_INT64}
 };
-#define SIZEOF_CODEASM_GENSTRUCT_KNH_SFP_T 2
-static const struct codeasm_field CODEASM_GENSTRUCT_KNH_SYSTEMEX_T[] = {
+#define SIZE_F_KNH_SFP_T 2
+static const struct cstruct STRUCT_KNH_SFP_T = {
+	"knh_sfp_t",
+	SIZE_F_KNH_SFP_T,
+	F_KNH_SFP_T
+};
+static const struct codeasm_field F_KNH_SYSTEMEX_T[] = {
 	{"sysid", ASMCODE_TYPE_LONG},
 	{"ctxcount", ASMCODE_TYPE_LONG},
 	{"props", ASMCODE_TYPE_VOIDPTR},
-	{"in", ASMCODE_TYPE_VOIDPTR},
-	{"out", ASMCODE_TYPE_VOIDPTR},
-	{"err", ASMCODE_TYPE_VOIDPTR},
+	{"in", ASMCODE_TYPE_INSPTR},
+	{"out", ASMCODE_TYPE_OUSPTR},
+	{"err", ASMCODE_TYPE_OUSPTR},
 	{"enc", ASMCODE_TYPE_VOIDPTR},
 	{"tokenDictSet", ASMCODE_TYPE_VOIDPTR},
 	{"nameDictCaseSet", ASMCODE_TYPE_VOIDPTR},
@@ -54,13 +108,23 @@ static const struct codeasm_field CODEASM_GENSTRUCT_KNH_SYSTEMEX_T[] = {
 	{"URNAliasDictMap", ASMCODE_TYPE_VOIDPTR},
 	{"dspiDictSet", ASMCODE_TYPE_VOIDPTR}
 };
-#define SIZEOF_CODEASM_GENSTRUCT_KNH_SYSTEMEX_T 18
-static const struct codeasm_field CODEASM_GENSTRUCT_KNH_SYSTEM_T[] = {
+#define SIZE_F_KNH_SYSTEMEX_T 18
+static const struct cstruct STRUCT_KNH_SYSTEMEX_T = {
+	"knh_SystemEX_t",
+	SIZE_F_KNH_SYSTEMEX_T,
+	F_KNH_SYSTEMEX_T
+};
+static const struct codeasm_field F_KNH_SYSTEM_T[] = {
 	{"h", ASMCODE_TYPE_HOBJECT},
 	{"b", ASMCODE_TYPE_SYSB}
 };
-#define SIZEOF_CODEASM_GENSTRUCT_KNH_SYSTEM_T 2
-static const struct codeasm_field CODEASM_GENSTRUCT_KNH_METHOD_T[] = {
+#define SIZE_F_KNH_SYSTEM_T 2
+static const struct cstruct STRUCT_KNH_SYSTEM_T = {
+	"knh_System_t",
+	SIZE_F_KNH_SYSTEM_T,
+	F_KNH_SYSTEM_T
+};
+static const struct codeasm_field F_KNH_METHOD_T[] = {
 	{"h", ASMCODE_TYPE_HOBJECT},
 	{"b", ASMCODE_TYPE_VOIDPTR},
 	{"cid", ASMCODE_TYPE_SHORT},
@@ -68,14 +132,24 @@ static const struct codeasm_field CODEASM_GENSTRUCT_KNH_METHOD_T[] = {
 	{"fcall_1", ASMCODE_TYPE_FUNCTION},
 	{"pc_start", ASMCODE_TYPE_VOIDPTR}
 };
-#define SIZEOF_CODEASM_GENSTRUCT_KNH_METHOD_T 6
-static const struct codeasm_field CODEASM_GENSTRUCT_KNH_ITERATOR_T[] = {
+#define SIZE_F_KNH_METHOD_T 6
+static const struct cstruct STRUCT_KNH_METHOD_T = {
+	"knh_Method_t",
+	SIZE_F_KNH_METHOD_T,
+	F_KNH_METHOD_T
+};
+static const struct codeasm_field F_KNH_ITERATOR_T[] = {
 	{"h", ASMCODE_TYPE_HOBJECT},
 	{"b", ASMCODE_TYPE_VOIDPTR},
 	{"fnext_1", ASMCODE_TYPE_FUNCTION}
 };
-#define SIZEOF_CODEASM_GENSTRUCT_KNH_ITERATOR_T 3
-static const struct codeasm_field CODEASM_GENSTRUCT_KNH_CONTEXT_T[] = {
+#define SIZE_F_KNH_ITERATOR_T 3
+static const struct cstruct STRUCT_KNH_ITERATOR_T = {
+	"knh_Iterator_t",
+	SIZE_F_KNH_ITERATOR_T,
+	F_KNH_ITERATOR_T
+};
+static const struct codeasm_field F_KNH_CONTEXT_T[] = {
 	{"shareknh_share_t*", ASMCODE_TYPE_VOIDPTR},
 	{"stat", ASMCODE_TYPE_VOIDPTR},
 	{"spi", ASMCODE_TYPE_VOIDPTR},
@@ -104,11 +178,11 @@ static const struct codeasm_field CODEASM_GENSTRUCT_KNH_CONTEXT_T[] = {
 	{"queue_capacity", ASMCODE_TYPE_LONG},
 	{"queue_log2", ASMCODE_TYPE_LONG},
 	{"enc", ASMCODE_TYPE_VOIDPTR},
-	{"in", ASMCODE_TYPE_VOIDPTR},
-	{"out", ASMCODE_TYPE_VOIDPTR},
-	{"err", ASMCODE_TYPE_VOIDPTR},
+	{"in", ASMCODE_TYPE_INSPTR},
+	{"out", ASMCODE_TYPE_OUSPTR},
+	{"err", ASMCODE_TYPE_OUSPTR},
 	{"bufa", ASMCODE_TYPE_VOIDPTR},
-	{"bufw", ASMCODE_TYPE_VOIDPTR},
+	{"bufw", ASMCODE_TYPE_OUSPTR},
 	{"gma", ASMCODE_TYPE_VOIDPTR},
 	{"_UNUSED_symbolDictMap", ASMCODE_TYPE_VOIDPTR},
 	{"_UNUSED_constPools", ASMCODE_TYPE_VOIDPTR},
@@ -125,6 +199,15 @@ static const struct codeasm_field CODEASM_GENSTRUCT_KNH_CONTEXT_T[] = {
 	{"siginfo", ASMCODE_TYPE_VOIDPTR},
 	{"sighandlers", ASMCODE_TYPE_VOIDPTR}
 };
-#define SIZEOF_CODEASM_GENSTRUCT_KNH_CONTEXT_T 48
+#define SIZE_F_KNH_CONTEXT_T 48
+static const struct cstruct STRUCT_KNH_CONTEXT_T = {
+	"knh_context_t",
+	SIZE_F_KNH_CONTEXT_T,
+	F_KNH_CONTEXT_T
+};
+#ifdef __cplusplus
+}
+#endif
+
 // THIS FILE WAS AUTOMATICALLY GENERATED. DON'T EDIT.
 

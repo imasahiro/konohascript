@@ -2,30 +2,32 @@
 /* Generate ./src/lang/llvm_struct.h */
 
 String[][] typemap = [];
-typemap.add(["knh_uintptr_t",   "ASMCODE_TYPE_LONG"]);
-typemap.add(["void*",           "ASMCODE_TYPE_VOIDPTR"]);
-typemap.add(["void**",          "ASMCODE_TYPE_VOIDPTR"]);
-typemap.add(["knh_int_t",       "ASMCODE_TYPE_INT64"]);
-typemap.add(["knh_uint_t",      "ASMCODE_TYPE_INT64"]);
-typemap.add(["knh_ndata_t",     "ASMCODE_TYPE_INT64"]);
-typemap.add(["size_t",          "ASMCODE_TYPE_LONG"]);
-typemap.add(["size_t",          "ASMCODE_TYPE_LONG"]);
-typemap.add(["size_t",          "ASMCODE_TYPE_LONG"]);
-typemap.add(["char[16]",        "ASMCODE_TYPE_VEC16"]);
-typemap.add(["knh_flag_t",      "ASMCODE_TYPE_SHORT"]);
-typemap.add(["knh_ushort_t",    "ASMCODE_TYPE_SHORT"]);
-typemap.add(["knh_class_t",     "ASMCODE_TYPE_SHORT"]);
-typemap.add(["knh_methodn_t",   "ASMCODE_TYPE_SHORT"]);
-typemap.add(["knh_sfp_t*",      "ASMCODE_TYPE_SFPPTR"]);
-typemap.add(["knh_share_t",     "ASMCODE_TYPE_VOIDPTR"]);
-typemap.add(["knh_System_t*",   "ASMCODE_TYPE_SYSPTR"]);
-typemap.add(["knh_SystemEX_t*", "ASMCODE_TYPE_SYSB"]);
-typemap.add(["knh_Object_t*",   "ASMCODE_TYPE_OBJECTPTR"]);
-typemap.add(["knh_Object_t**",  "ASMCODE_TYPE_OBJECTPTRPTR"]);
-typemap.add(["knh_hObject_t",   "ASMCODE_TYPE_HOBJECT"]);
-typemap.add(["knh_Array_t*",    "ASMCODE_TYPE_ARRAYPTR"]);
-typemap.add(["knh_Fmethod",     "ASMCODE_TYPE_FUNCTION"]);
-typemap.add(["knh_Fitrnext",    "ASMCODE_TYPE_FUNCTION"]);
+typemap.add(["knh_uintptr_t",       "ASMCODE_TYPE_LONG"]);
+typemap.add(["void*",               "ASMCODE_TYPE_VOIDPTR"]);
+typemap.add(["void**",              "ASMCODE_TYPE_VOIDPTR"]);
+typemap.add(["knh_int_t",           "ASMCODE_TYPE_INT64"]);
+typemap.add(["knh_uint_t",          "ASMCODE_TYPE_INT64"]);
+typemap.add(["knh_ndata_t",         "ASMCODE_TYPE_INT64"]);
+typemap.add(["size_t",              "ASMCODE_TYPE_LONG"]);
+typemap.add(["knh_uline_t",         "ASMCODE_TYPE_LONG"]);
+typemap.add(["char[16]",            "ASMCODE_TYPE_VEC16"]);
+typemap.add(["knh_flag_t",          "ASMCODE_TYPE_SHORT"]);
+typemap.add(["knh_ushort_t",        "ASMCODE_TYPE_SHORT"]);
+typemap.add(["knh_class_t",         "ASMCODE_TYPE_SHORT"]);
+typemap.add(["knh_methodn_t",       "ASMCODE_TYPE_SHORT"]);
+typemap.add(["knh_uri_t",           "ASMCODE_TYPE_SHORT"]);
+typemap.add(["knh_sfp_t*",          "ASMCODE_TYPE_SFPPTR"]);
+typemap.add(["knh_share_t",         "ASMCODE_TYPE_VOIDPTR"]);
+typemap.add(["knh_System_t*",       "ASMCODE_TYPE_SYSPTR"]);
+typemap.add(["knh_SystemEX_t*",     "ASMCODE_TYPE_SYSB"]);
+typemap.add(["knh_Object_t*",       "ASMCODE_TYPE_OBJECTPTR"]);
+typemap.add(["knh_Object_t**",      "ASMCODE_TYPE_OBJECTPTRPTR"]);
+typemap.add(["knh_hObject_t",       "ASMCODE_TYPE_HOBJECT"]);
+typemap.add(["knh_Array_t*",        "ASMCODE_TYPE_ARRAYPTR"]);
+typemap.add(["knh_Fmethod",         "ASMCODE_TYPE_FUNCTION"]);
+typemap.add(["knh_Fitrnext",        "ASMCODE_TYPE_FUNCTION"]);
+typemap.add(["knh_OutputStream_t*", "ASMCODE_TYPE_OUSPTR"]);
+typemap.add(["knh_InputStream_t*",  "ASMCODE_TYPE_INSPTR"]);
 String toLLVMTYPE(String type) {
 	boolean matched = false;
 	foreach (String[] types in typemap) {
@@ -102,7 +104,7 @@ Field[] genstruct(String name, OutputStream ous)
 			if(line.startsWith("}")) {
 				break;
 			}
-			t += line[1 to] + "\n";
+			t += line[1 to |line|-1] + "\n";
 		}
 	}
 	t = t.replace(" * ", "* ");
@@ -139,6 +141,14 @@ Field[] genstruct(String name, OutputStream ous)
 			fa.add(new Field(s));
 		}
 	}
+	return fa;
+}
+
+void genstruct_start(String name, OutputStream ous) {
+	String sname = "F_" + name.convert(to:upper);
+	ous.println("static const struct codeasm_field " + sname + "[] = {");
+}
+void genstruct_end(String name, Field[] fa, OutputStream ous) {
 	for (int i=0; i < |fa|; i++) {
 		Field f = fa[i];
 		/* FIXME "\t" + f.toCStruct() does not work */
@@ -150,17 +160,16 @@ Field[] genstruct(String name, OutputStream ous)
 			ous.println("")
 		}
 	}
-	return fa;
-}
-
-void genstruct_start(String name, OutputStream ous) {
-	name = "CODEASM_GENSTRUCT_" + name.convert(to:upper);
-	ous.println("static const struct codeasm_field " + name + "[] = {");
-}
-void genstruct_end(String name, Field[] fa, OutputStream ous) {
-	name = "SIZEOF_CODEASM_GENSTRUCT_" + name.convert(to:upper);
 	ous.println("};");
-	ous.println("#define " + name + " " + |fa|);
+	size  = "SIZE_F_" + name.convert(to:upper);
+	sname = "STRUCT_" + name.convert(to:upper);
+	fname = "F_" + name.convert(to:upper);
+	ous.println("#define " + size + " " + |fa|);
+	ous.println("static const struct cstruct " + sname + " = {");
+	ous.println("\t\"" + name + "\",");
+	ous.println("\t" + size + ",");
+	ous.println("\t" + fname + "");
+	ous.println("};");
 }
 
 
@@ -168,11 +177,13 @@ void main (String[] args)
 {
 	targets = [
 		"knh_hObject_t", "knh_Object_t", "knh_Array_t", "knh_ObjectField_t",
+		"knh_OutputStream_t", "knh_InputStream_t", 
 		"knh_sfp_t", "knh_SystemEX_t", "knh_System_t", "knh_Method_t", "knh_Iterator_t",
 		"knh_context_t"/*knh_context_t must be last */
 	]
 
-	OutputStream ous = file:./src/lang/llvm_struct.h;
+	OutputStream ous = new OutputStream(file:./src/lang/llvm_struct.h);
+	//OutputStream ous = OUT;//new OutputStream(file:./src/lang/llvm_struct.h);
 	ous.println("""
 #ifdef __cplusplus
 extern "C" {
