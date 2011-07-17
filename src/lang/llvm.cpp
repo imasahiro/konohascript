@@ -79,14 +79,6 @@ using namespace llvm;
 static void Tn_asm(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, int local);
 static int _BLOCK_asm(CTX ctx, knh_Stmt_t *stmtH, knh_type_t reqt, int sfpidx);
 
-struct llvm_context {
-	Module *m;
-	Function *curFunc;
-	BasicBlock *curBB;
-	IRBuilder<> *builder;
-	struct label_stack *lstack;
-};
-
 struct label_stack {
 	BasicBlock *bbCon;
 	BasicBlock *bbBreak;
@@ -94,44 +86,44 @@ struct label_stack {
 	knh_Array_t *phiBreak;
 };
 
-#define LLVM_IDX_MODULE    (0)
-#define LLVM_IDX_FUNCTION  (1)
-#define LLVM_IDX_BB        (2)
-#define LLVM_IDX_BUILDER   (3)
-#define LLVM_IDX_LABELSTACK (4)
 static ExecutionEngine *ee_global;
 static Module *mod_global;
-static inline ExecutionEngine *LLVM_EE(CTX ctx){
+static inline ExecutionEngine *LLVM_EE(CTX ctx) {
 	return ee_global;
 }
+class AsmContext {
+public:
+	llvm::Module      *m_;
+	CTX ctx_;
+	knh_Method_t *mtd_;
+	llvm::Function    *F_;
+	llvm::IRBuilder<> *B_;
+	std::vector<struct label_stack*> *lstacks;
+	AsmContext(Module *m, CTX ctx, knh_Method_t *mtd);
+	void Finish(CTX ctx, knh_Method_t *mtd);
+	~AsmContext();
+};
+
 static inline Module *LLVM_MODULE(CTX ctx)
 {
-	Module *m = (Module*) DP(ctx->gma)->bbNC;
+	AsmContext *lctx = (AsmContext*) DP(ctx->gma)->asm_data;
+	Module *m = lctx->m_;
 	return m;
-}
-static inline void LLVM_MODULE_SET(CTX ctx, Module *m)
-{
-	DP(ctx->gma)->bbNC = (knh_BasicBlock_t*) m;
 }
 static inline Function *LLVM_FUNCTION(CTX ctx)
 {
-	knh_Array_t *a = DP(ctx->gma)->insts;
-	return (Function*)a->ilist[LLVM_IDX_FUNCTION];
-}
-static inline BasicBlock *LLVM_BB(CTX ctx)
-{
-	knh_Array_t *a = DP(ctx->gma)->insts;
-	return (BasicBlock*)a->ilist[LLVM_IDX_BB];
+	AsmContext *lctx = (AsmContext*) DP(ctx->gma)->asm_data;
+	return lctx->F_;
 }
 static inline IRBuilder<> *LLVM_BUILDER(CTX ctx)
 {
-	knh_Array_t *a = DP(ctx->gma)->insts;
-	return (IRBuilder<>*)a->ilist[LLVM_IDX_BUILDER];
+	AsmContext *lctx = (AsmContext*) DP(ctx->gma)->asm_data;
+	return lctx->B_;
 }
 static inline std::vector<label_stack*> *LLVM_BBSTACK(CTX ctx)
 {
-	knh_Array_t *a = DP(ctx->gma)->insts;
-	return (std::vector<label_stack*> *)a->ilist[LLVM_IDX_LABELSTACK];
+	AsmContext *lctx = (AsmContext*) DP(ctx->gma)->asm_data;
+	return lctx->lstacks;
 }
 
 static void PUSH_LABEL(CTX ctx, struct label_stack *l)
@@ -183,6 +175,7 @@ static Value *create_loadsfp(CTX ctx, IRBuilder<> *builder, Value *v, knh_type_t
 #define LLVMTYPE_Bool  (Type::getInt64Ty(LLVM_CONTEXT()))
 #define LLVMTYPE_Float (Type::getDoubleTy(LLVM_CONTEXT()))
 static const Type *LLVMTYPE_ObjectField = NULL;
+static const Type *LLVMTYPE_hObject = NULL;
 static const Type *LLVMTYPE_Object = NULL;
 static const Type *LLVMTYPE_Array = NULL;
 static const Type *LLVMTYPE_Method = NULL;
@@ -193,6 +186,8 @@ static const Type *LLVMTYPE_checkout = NULL;
 static const Type *LLVMTYPE_sfp   = NULL;
 static const Type *LLVMTYPE_itr   = NULL;
 static const Type *LLVMTYPE_Iterator = NULL;
+static const Type *LLVMTYPE_SystemEX = NULL;
+static const Type *LLVMTYPE_System   = NULL;
 
 static void ValueStack_set(CTX ctx, int index, Value *v);
 static Value *ValueStack_get(CTX ctx, int index)
@@ -261,10 +256,10 @@ static int Token_index_(CTX ctx, knh_Token_t *tk)
 	return (int)(tk)->index/* + ((TT_(tk) == TT_LVAR) ? DP(ctx->gma)->ebpidx : 0)*/;
 }
 
-static void ASM_UNBOX(CTX ctx, knh_type_t atype, int a)
-{
-	LLVM_TODO("ASM_UNBOX");
-}
+//static void ASM_UNBOX(CTX ctx, knh_type_t atype, int a)
+//{
+//	LLVM_TODO("ASM_UNBOX");
+//}
 
 static void ASM_MOVL(CTX ctx, knh_type_t reqt, int sfpidx, knh_type_t ltype, int local)
 {
@@ -1518,7 +1513,7 @@ static int _LET_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 {
 	knh_Token_t *tkL = tkNN(stmt, 1);
 	if(TT_(tkL) == TT_LVAR || TT_(tkL) == TT_FVAR) {
-		int index = Token_index(tkL);
+		size_t index = Token_index(tkL);
 		Tn_asm(ctx, stmt, 2, SP(tkL)->type, index);
 		if (index >= DP(stmt)->espidx)
 			FLAG_FOR_LET = true;
@@ -1767,8 +1762,8 @@ static int Tn_CondAsm(CTX ctx, knh_Stmt_t *stmt, size_t n, int isTRUE, int floca
 {
 	knh_Token_t *tk = tkNN(stmt, n);
 	if(TT_(tk) == TT_CONST) {
-		int isTRUE2 = IS_TRUE((tk)->data);
 		/* TODO isTRUE2 */
+		//int isTRUE2 = IS_TRUE((tk)->data);
 		ASM_SMOV(ctx, TYPE_Boolean, flocal, tk);
 		return flocal;
 	}
@@ -2364,10 +2359,6 @@ static int _RETURN_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx _U
 	if(size == 1) {
 		rtype = Tn_type(stmt, 0);
 		Tn_asm(ctx, stmt, 0, rtype, K_RTNIDX);
-		if(IS_Tunbox(rtype)) {
-			knh_ParamArray_t *pa = DP(DP(ctx->gma)->mtd)->mp;
-			knh_param_t *p = knh_ParamArray_rget(pa, 0);
-		}
 	}
 	if(IS_Stmt(DP(stmt)->stmtPOST)) {
 		_EXPR_asm(ctx, DP(stmt)->stmtPOST, Tn_type(stmt, 0), DP(DP(stmt)->stmtPOST)->espidx+1);
@@ -2577,52 +2568,95 @@ static int _BLOCK_asm(CTX ctx, knh_Stmt_t *stmtH, knh_type_t reqt, int sfpidx _U
 	return 0;
 }
 
+enum asmcode_type {
+	ASMCODE_TYPE_VOID,
+	ASMCODE_TYPE_SHORT,
+	ASMCODE_TYPE_LONG,
+	ASMCODE_TYPE_INT64,
+	ASMCODE_TYPE_VOIDPTR,
+	ASMCODE_TYPE_VEC16,
+	ASMCODE_TYPE_SFPPTR,
+	ASMCODE_TYPE_SYSPTR,
+	ASMCODE_TYPE_SYSB,
+	ASMCODE_TYPE_OBJECTPTR,
+	ASMCODE_TYPE_OBJECTPTRPTR,
+	ASMCODE_TYPE_HOBJECT,
+	ASMCODE_TYPE_ARRAYPTR,
+	ASMCODE_TYPE_FUNCTION,
+	ASMCODE_TYPE_MAX
+};
+struct codeasm_field {
+	const char *name;
+	enum asmcode_type type;
+};
+#include "./llvm_struct.h"
+
+static const Type *ToType(Module *m, enum asmcode_type type)
+{
+	const Type *voidPtr = PointerType::get(longTy, 0);
+	switch (type) {
+		case ASMCODE_TYPE_VOID:      return Type::getVoidTy(m->getContext());
+		case ASMCODE_TYPE_SHORT:     return getShortTy(m);
+		case ASMCODE_TYPE_LONG:      return getLongTy(m);
+		case ASMCODE_TYPE_INT64:     return LLVMTYPE_Int;
+		case ASMCODE_TYPE_VOIDPTR:   return voidPtr;
+		case ASMCODE_TYPE_VEC16:     return voidPtr;/* TODO */
+		case ASMCODE_TYPE_SFPPTR:    return LLVMTYPE_sfp;
+		case ASMCODE_TYPE_SYSPTR:    return LLVMTYPE_System;
+		case ASMCODE_TYPE_SYSB:      return LLVMTYPE_SystemEX;
+		case ASMCODE_TYPE_OBJECTPTR: 
+			if (LLVMTYPE_Object)
+				return LLVMTYPE_Object;
+			else
+				return voidPtr;
+		case ASMCODE_TYPE_OBJECTPTRPTR: return PointerType::get(LLVMTYPE_Object, 0);
+		case ASMCODE_TYPE_HOBJECT:      return LLVMTYPE_hObject;
+		case ASMCODE_TYPE_ARRAYPTR:     return LLVMTYPE_Array;
+		case ASMCODE_TYPE_FUNCTION:     return LLVMTYPE_fcall;
+		default: return longTy;
+	}
+}
+
 static void ConstructObjectStruct(Module *m)
 {
 	// Type Definitions
-	const Type *longTy , *shortTy;
-	const Type *voidTy  = Type::getVoidTy(m->getContext());
-	const Type *hObjectTy, *objectPtr;
-	StructType* structTy;
-	longTy  = getLongTy(m);
-	shortTy = getShortTy(m);
-	const Type *voidPtr = PointerType::get(longTy, 0);
+	const Type *longTy    = getLongTy(m);
+	const Type *voidTy    = Type::getVoidTy(m->getContext());
+	const Type *objectPtr = NULL;
+	StructType* structTy  = NULL;
 
 	/* hObject */
 	std::vector<const Type*>fields;
-	fields.push_back(longTy);  /* magicflag */
-	fields.push_back(voidPtr); /* cTBL */
-	fields.push_back(longTy);  /* refc */
-	fields.push_back(voidPtr); /* meta */
+	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_HOBJECT_T; ++i) {
+		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_HOBJECT_T[i].type));
+	}
 
 	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
 	m->addTypeName("struct.hObject", structTy);
-	hObjectTy = structTy;
+	LLVMTYPE_hObject = structTy;
 	fields.clear();
 
 	/* Object */
-	fields.push_back(structTy);
-	fields.push_back(voidPtr);
-	fields.push_back(voidPtr);
-	fields.push_back(voidPtr);
-	fields.push_back(voidPtr);
+	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_OBJECT_T; ++i) {
+		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_OBJECT_T[i].type));
+	}
 	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
 	objectPtr = PointerType::get(structTy, 0);
-	LLVMTYPE_Object = objectPtr;
 	m->addTypeName("Object", objectPtr);
+	LLVMTYPE_Object = objectPtr;
 	fields.clear();
 
 	/* ObjectField */
-	fields.push_back(hObjectTy);
-	fields.push_back(objectPtr);
-	fields.push_back(PointerType::get(objectPtr, 0));
+	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_OBJECTFIELD_T; ++i) {
+		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_OBJECTFIELD_T[i].type));
+	}
 	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
 	LLVMTYPE_ObjectField = PointerType::get(structTy, 0);
 	m->addTypeName("ObjectField", LLVMTYPE_ObjectField);
 	fields.clear();
 
 	/* sfp */
-	fields.push_back(objectPtr);
+	fields.push_back(LLVMTYPE_Object);
 	//fields.push_back(LLVMTYPE_Int);
 	fields.push_back(LLVMTYPE_Float);
 	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
@@ -2632,94 +2666,35 @@ static void ConstructObjectStruct(Module *m)
 	LLVMTYPE_sfp = sfpPtr;
 	fields.clear();
 
-	/* InputStream */
-	/* System */
-	/* SystemEX */
-	fields.push_back(longTy);  // knh_uintptr_t sysid;
-	fields.push_back(longTy);  // size_t     ctxcount;
-	fields.push_back(voidPtr); // struct knh_DictMap_t*      props;
-	fields.push_back(objectPtr/*TODO*/);  // struct knh_InputStream_t*  in;
-	fields.push_back(objectPtr/*TODO*/);  // struct knh_OutputStream_t* out;
-	fields.push_back(objectPtr/*TODO*/);  // struct knh_OutputStream_t* err;
-	fields.push_back(objectPtr/*TODO*/);  // struct knh_String_t*       enc;
-	fields.push_back(voidPtr); // struct knh_DictSet_t       *tokenDictSet;
-	fields.push_back(voidPtr); // struct knh_DictSet_t   *nameDictCaseSet;
-	fields.push_back(longTy);  // size_t                      namecapacity;
-	fields.push_back(voidPtr); // knh_nameinfo_t             *nameinfo;
-	fields.push_back(voidPtr); // struct knh_DictSet_t      *urnDictSet;
-	fields.push_back(voidPtr); // struct knh_Array_t        *urns;
-	fields.push_back(voidPtr); // struct knh_DictSet_t      *ClassNameDictSet;
-	fields.push_back(voidPtr); // struct knh_DictSet_t  *EventDictCaseSet;
-	fields.push_back(voidPtr); // struct knh_DictMap_t      *PackageDictMap;
-	fields.push_back(voidPtr); // struct knh_DictMap_t      *URNAliasDictMap;
-	fields.push_back(voidPtr); // struct knh_DictSet_t      *dspiDictSet;
-
-	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
+	/* Array */
+	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_ARRAY_T; ++i) {
+		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_ARRAY_T[i].type));
+	}
+	structTy = StructType::get(LLVM_CONTEXT(), fields, false);
+	LLVMTYPE_Array = PointerType::get(structTy, 0);
+	m->addTypeName("Array", LLVMTYPE_Array);
 	fields.clear();
-	fields.push_back(hObjectTy);
-	fields.push_back(structTy);
+
+	/* SystemEX */
+	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_SYSTEMEX_T; ++i) {
+		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_SYSTEMEX_T[i].type));
+	}
+	LLVMTYPE_SystemEX = StructType::get(m->getContext(), fields, /*isPacked=*/false);
+	fields.clear();
+
+	/* System */
+	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_SYSTEM_T; ++i) {
+		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_SYSTEM_T[i].type));
+	}
 	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
-	const Type *sysPtr = PointerType::get(structTy, 0);
-	m->addTypeName("System", sysPtr);
+	LLVMTYPE_System = PointerType::get(structTy, 0);
+	m->addTypeName("System", LLVMTYPE_System);
 	fields.clear();
 
 	/* ctx */
-	/* 00 */fields.push_back(voidPtr);   /* share */
-	/* 01 */fields.push_back(voidPtr);   /* stat */
-	/* 02 */fields.push_back(voidPtr);   /* spi */
-	/* 03 */fields.push_back(voidPtr);   //const struct knh_api2_t        *api2;
-	/* 04 */fields.push_back(sysPtr);    /* sys */
-	/* 05 */fields.push_back(voidPtr); /* script */
-	/* stack */
-	/* 06 */fields.push_back(sfpPtr); //knh_sfp_t*                   stack;
-	/* 07 */fields.push_back(sfpPtr); //knh_sfp_t*                   esp;
-	/* 08 */fields.push_back(longTy); //size_t                       stacksize;
-	/* 09 */fields.push_back(sfpPtr); //knh_sfp_t*                   stacktop;
-	/* 10 */fields.push_back(voidPtr); //void*                        cstack_bottom;
-	/* 11 */fields.push_back(objectPtr); //struct knh_Exception_t      *e;
-	/* 12 */fields.push_back(objectPtr); //struct knh_Monitor_t        *mon;
-	/* memory */
-	/* 13 */fields.push_back(objectPtr); //knh_Object_t                *freeObjectList;
-	/* 14 */fields.push_back(objectPtr); //knh_Object_t                *freeObjectTail;
-	/* 15 */fields.push_back(longTy); //size_t                       freeObjectListSize;
-	/* 16 */fields.push_back(longTy); //knh_uintptr_t                mscheck;
-	/* 17 */fields.push_back(voidPtr); //knh_fastmem_t               *freeMemoryList;
-	/* 18 */fields.push_back(voidPtr); //knh_fastmem_t               *freeMemoryTail;
-
-	/* cache */
-	/* 19 */fields.push_back(voidPtr); //knh_mtdcache_t              *mtdcache;
-	/* 20 */fields.push_back(voidPtr); //knh_tmrcache_t             *tmrcache;
-	/* 21 */fields.push_back(voidPtr); //struct knh_Object_t        **refs;
-	/* 22 */fields.push_back(longTy); //size_t                       ref_size;
-	/* 23 */fields.push_back(voidPtr); //struct knh_Object_t        **ref_buf;
-	/* 24 */fields.push_back(longTy); //size_t                       ref_capacity;
-	/* 25 */fields.push_back(voidPtr); //struct knh_Object_t        **queue;
-	/* 26 */fields.push_back(longTy); //size_t                       queue_capacity;
-	/* 27 */fields.push_back(longTy); //size_t                       queue_log2;
-
-	/* 28 */fields.push_back(objectPtr); //struct knh_String_t*         enc;
-	/* 29 */fields.push_back(objectPtr); //struct knh_InputStream_t*    in;
-	/* 20 */fields.push_back(objectPtr); //struct knh_OutputStream_t*   out;
-	/* 31 */fields.push_back(objectPtr); //struct knh_OutputStream_t*   err;
-	/* 32 */fields.push_back(objectPtr); //struct knh_Bytes_t*          bufa;
-	/* 33 */fields.push_back(objectPtr); //struct knh_OutputStream_t*   bufw;
-	/* 34 */fields.push_back(objectPtr); //struct knh_Gamma_t*          gma;
-	/* 35 */fields.push_back(objectPtr); //struct knh_DictMap_t*        symbolDictMap;
-	/* 36 */fields.push_back(objectPtr); //struct knh_Array_t*          constPools;
-
-	fields.push_back(shortTy);   //knh_flag_t                   flag;
-	fields.push_back(shortTy);   //knh_ushort_t                 ctxid;
-	fields.push_back(voidPtr);   //struct knh_Context_t        *ctxobjNC;
-	fields.push_back(voidPtr);   //struct knh_context_t        *parent;
-	fields.push_back(voidPtr);   //knh_mutex_t                 *ctxlock;
-
-	fields.push_back(voidPtr);   //const struct _knh_ExportsAPI_t *api;
-	fields.push_back(voidPtr);   //char                            trace[16];
-	fields.push_back(voidPtr);   //knh_uint_t                      seq;
-	// add here for new entry
-	fields.push_back(voidPtr);   //struct knh_ExceptionHandler_t  *ehdrNC;
-	fields.push_back(voidPtr);   //struct knh_Object_t            *evaled;
-
+	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_CONTEXT_T; ++i) {
+		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_CONTEXT_T[i].type));
+	}
 
 	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
 	const Type *ctxPtr = PointerType::get(structTy, 0);
@@ -2757,25 +2732,12 @@ static void ConstructObjectStruct(Module *m)
 	m->addTypeName("checkout", callTy2);
 
 	/* Method */
-	fields.push_back(hObjectTy);
-	fields.push_back(voidPtr);
-	fields.push_back(shortTy);
-	fields.push_back(shortTy);
-	fields.push_back(LLVMTYPE_fcall);
+	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_METHOD_T; ++i) {
+		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_METHOD_T[i].type));
+	}
 	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
 	LLVMTYPE_Method = PointerType::get(structTy, 0);
 	m->addTypeName("Method", LLVMTYPE_Method);
-	fields.clear();
-
-	/* Array */
-	fields.push_back(hObjectTy);
-	fields.push_back(voidPtr);
-	fields.push_back(longTy); /* size */
-	fields.push_back(voidPtr);/* dim */
-	fields.push_back(voidPtr);/* api */
-	structTy = StructType::get(LLVM_CONTEXT(), fields, false);
-	LLVMTYPE_Array = PointerType::get(structTy, 0);
-	m->addTypeName("Array", LLVMTYPE_Array);
 	fields.clear();
 
 	/* fitr */
@@ -2790,9 +2752,9 @@ static void ConstructObjectStruct(Module *m)
 	}
 
 	/* Iterator */
-	fields.push_back(hObjectTy);
-	fields.push_back(voidPtr);
-	fields.push_back(LLVMTYPE_itr);
+	for (int i = 0; i < SIZEOF_CODEASM_GENSTRUCT_KNH_ITERATOR_T; ++i) {
+		fields.push_back(ToType(m, CODEASM_GENSTRUCT_KNH_ITERATOR_T[i].type));
+	}
 	structTy = StructType::get(m->getContext(), fields, /*isPacked=*/false);
 	LLVMTYPE_Iterator = PointerType::get(structTy, 0);
 	m->addTypeName("Iterator", LLVMTYPE_Iterator);
@@ -2890,25 +2852,13 @@ static Function *build_wrapper_func(CTX ctx, Module *m, knh_Method_t *mtd, Funct
 	return f;
 }
 
-static void Init(CTX ctx, knh_Method_t *mtd, knh_Array_t *a)
+AsmContext::AsmContext (Module *m, CTX ctx, knh_Method_t *mtd) :
+	m_(m), ctx_(ctx), mtd_(mtd),
+	F_(build_function(ctx_, m_, mtd_)),
+	B_(new IRBuilder<>(BasicBlock::Create(LLVM_CONTEXT(), "EntryBlock", F_))),
+	lstacks(new std::vector<label_stack *>())
 {
-
-	LLVM_MODULE_SET(ctx, mod_global);
-	Module *m = LLVM_MODULE(ctx);
-	BasicBlock *bb;
-	IRBuilder<> *builder;
-
-	Function *func = build_function(ctx, m, mtd);
-	bb = BasicBlock::Create(LLVM_CONTEXT(), "EntryBlock", func);
-	builder = new IRBuilder<>(bb);
-
-	a->ilist[LLVM_IDX_MODULE] = (knh_int_t) m;
-	a->ilist[LLVM_IDX_FUNCTION] = (knh_int_t) func;
-	a->ilist[LLVM_IDX_BB] = (knh_int_t) bb;
-	a->ilist[LLVM_IDX_BUILDER] = (knh_int_t) builder;
-	a->ilist[LLVM_IDX_LABELSTACK] = (knh_int_t) new std::vector<label_stack *>();
-
-	Function::arg_iterator args = func->arg_begin();
+	Function::arg_iterator args = F_->arg_begin();
 	args++;/*ctx*/
 	args++;/*sfp*/
 	for (size_t i = 0; i < DP(mtd)->mp->psize; i++) {
@@ -2916,14 +2866,22 @@ static void Init(CTX ctx, knh_Method_t *mtd, knh_Array_t *a)
 		Value *arg = VNAME_(args++, FN__(p->fn));
 		ValueStack_set(ctx, i+1, arg);
 	}
+	knh_Gamma_t *gma = ctx_->gma;
+	DP(gma)->asm_data = (void*) this;
 }
 
-static void Finish(CTX ctx, knh_Method_t *mtd, knh_Array_t *a, knh_Stmt_t *stmt)
-{
-	knh_Fmethod f;
+AsmContext::~AsmContext () {
+		Finish(ctx_, mtd_);
+		knh_Gamma_t *gma = ctx_->gma;
+		DP(gma)->asm_data = NULL;
+		delete B_;
+		delete lstacks;
+	}
+
+void AsmContext::Finish(CTX ctx, knh_Method_t *mtd) {
+	knh_Fmethod f = NULL;
 	Module *m = LLVM_MODULE(ctx);
 	Function *func = LLVM_FUNCTION(ctx);
-	ASM_LastRET(ctx, stmt);
 	/* asm for script function is done. */
 
 	/* build wrapper function and compile to native code. */
@@ -2962,9 +2920,8 @@ static void Finish(CTX ctx, knh_Method_t *mtd, knh_Array_t *a, knh_Stmt_t *stmt)
 
 	f = (knh_Fmethod) ee->getPointerToFunction(func1);
 	knh_Method_setFunc(ctx, mtd, f);
-	delete LLVM_BUILDER(ctx);
-	delete LLVM_BBSTACK(ctx);
 }
+
 
 #define _ALLOW_asm _EXPR_asm
 #define _DENY_asm _EXPR_asm
@@ -3011,7 +2968,6 @@ struct CodeAsm CODEASM_ = {{
 	_ASM_(ASM_PREFIX, FMTCALL_asm),
 	_ASM_(ASM_PREFIX, CALL1_asm),
 }};
-
 } /* namespace llvmasm */
 
 #ifdef __cplusplus
@@ -3065,14 +3021,14 @@ void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB)
 	}
 
 	{
+		llvmasm::AsmContext asmctx(llvmasm::mod_global, ctx, mtd);
 		DBG_ASSERT(knh_Array_size(DP(ctx->gma)->insts) == 0);
 		SP(ctx->gma)->uline = SP(stmtB)->uline;
-		llvmasm::Init(ctx, mtd, insts);
 		if(Method_isStatic(mtd) && Gamma_hasFIELD(ctx->gma)) {
 			llvmasm::asm_nulval(ctx, 0, DP(ctx->gma)->this_cid);
 		}
 		llvmasm::_BLOCK_asm(ctx, stmtB, knh_ParamArray_rtype(DP(mtd)->mp), 0);
-		llvmasm::Finish(ctx, mtd, insts, stmtB);
+		llvmasm::ASM_LastRET(ctx, stmtB);
 	}
 
 	KNH_SETv(ctx, DP(ctx->gma)->insts, insts_org);

@@ -874,7 +874,7 @@ typedef struct knh_MemoryArenaTBL_t knh_MemoryArenaTBL_t;
 typedef struct knh_MemoryX2ArenaTBL_t knh_MemoryX2ArenaTBL_t;
 typedef struct knh_Memory256ArenaTBL_t knh_Memory256ArenaTBL_t;
 
-typedef struct {
+typedef struct knh_share_t {
 	size_t                    gcBoundary;
 	knh_mutex_t              *memlock;
 
