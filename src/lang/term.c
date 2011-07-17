@@ -3243,10 +3243,33 @@ static knh_Stmt_t *new_StmtMETA(CTX ctx, knh_term_t stt, tkitr_t *itr, int shift
 		break;\
 	}\
 
+static int ITR_findSTMTOPR(tkitr_t *itr, int *op)
+{
+	int i;
+	for(i = itr->c; i < itr->e; i++) {
+		knh_term_t tt = TT_(itr->ts[i]);
+		if(tt == TT_LET) {
+			op[0] = 0; return i;
+		}
+//		if(tt == TT_LSFT) {
+//			op[0] = 1; return i;
+//		}
+		if(tt == TT_LSEND) {
+			op[0] = 2; return i;
+		}
+		if(tt == TT_RSEND) {
+			op[0] = 3; return i;
+		}
+	}
+	return -1;
+}
+
 static void _STMTEXPR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 {
-	knh_index_t idx = ITR_indexTT(itr, TT_LET, -1);
-	if(idx != -1) {
+	int op = -1;
+	int idx = ITR_findSTMTOPR(itr, &op);
+	switch(op) {
+	case 0: {
 		int comma = ITR_count(itr, TT_COMMA);
 		if(comma > 0) {  //  check multiple assingment
 			tkitr_t lbuf, *litr = ITR_first(itr, idx, &lbuf, +1);
@@ -3264,27 +3287,29 @@ static void _STMTEXPR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			else {
 				knh_Stmt_toERR(ctx, stmt, ERROR_text(ctx,  "mismatched assignment" K_TRACEPOINT));
 			}
-			return;
 		}
 		else if(ITR_is(itr, TT_UNAME) && itr->c+1 == idx) {
 			STT_(stmt) = STT_CONST;
 			ITR_replace(itr, TT_LET, TT_COMMA);
 			_EXPRs(ctx, stmt, itr);
-			return;
 		}
-		_EXPR(ctx, stmt, itr);
-		return;
+		else {
+			_EXPR(ctx, stmt, itr);
+		}
+		break;
 	}
-	idx = ITR_indexTT(itr, TT_LSEND, -1);
-	if(idx != -1) {
+	case 1: {  /* TT_LSHT */
+		Stmt_setLSHIFT(stmt, 1);
+		ITR_replace(itr, TT_LSFT, TT_COMMA);
+	}
+	case 2: {
 		STT_(stmt) = STT_SEND;
 		knh_Stmt_add(ctx, stmt, new_TokenMN(ctx, MN_send));
 		ITR_replace(itr, TT_LSEND, TT_COMMA);
 		_EXPRs(ctx, stmt, itr);
-		return;
+		break;
 	}
-	idx = ITR_indexTT(itr, TT_RSEND, -1);
-	if(idx != -1) {
+	case 3: {
 		int e = itr->e;
 		itr->e = idx;
 		_EXPR(ctx, stmt, itr);
@@ -3297,9 +3322,12 @@ static void _STMTEXPR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 				knh_Stmt_toERR(ctx, stmt, ERROR_text(ctx,  "message should be sent" K_TRACEPOINT));
 			}
 		}
-		return;
+		break;
 	}
-	_EXPR(ctx, stmt, itr);
+	default: {
+		_EXPR(ctx, stmt, itr);
+	}
+	}/*switch*/
 }
 
 static int Token_isMAP(CTX ctx, knh_Token_t *tk)

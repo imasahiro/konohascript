@@ -205,6 +205,7 @@ typedef float                   knh_float_t;
 #define K_FLOAT_MAX             FLT_MAX
 #define K_FLOAT_MIN             (-(FLT_MAX))
 #define K_FLOAT_STEP            FLT_MIN
+#define K_FLOAT_EPSILON         FLT_EPSILON
 #define K_FLOAT_FMT             "%.6f"
 #define K_FLOAT_FMT1            "%.1f"
 #define K_FLOAT_FMT2            "%.2f"
@@ -218,6 +219,7 @@ typedef double                  knh_float_t;
 #define K_FLOAT_MAX             DBL_MAX
 #define K_FLOAT_MIN             (-(DBL_MAX))
 #define K_FLOAT_STEP            DBL_MIN
+#define K_FLOAT_EPSILON         DBL_EPSILON
 #define K_FLOAT_FMT             "%.6f"
 #define K_FLOAT_FMT1            "%.1f"
 #define K_FLOAT_FMT2            "%.2f"

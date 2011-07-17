@@ -3100,6 +3100,7 @@ static const knh_IntData_t IntConstData0[] = {
 static const knh_FloatData_t FloatConstData0[] = {
 	{"Float.MAX", K_FLOAT_MAX},
 	{"Float.MIN", K_FLOAT_MIN},
+	{"Float.EPSLON", K_FLOAT_EPSILON},
 	{NULL, K_FLOAT_ZERO}
 };
 

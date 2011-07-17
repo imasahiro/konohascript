@@ -3,6 +3,7 @@
  *  written by Shinpei Nakata twitter: @shinpei_NKT 
  ***************************************************************************/
 
+/**
 ia = [1,3,2];
 int cmp_i(int a, int b) {
 	if (a < b) return -1;
@@ -46,4 +47,5 @@ assure "SupportNativeCallback String" {
 	assert sa[1] == "2.0";
 	assert sa[2] == "3.0";
 }
+**/
 

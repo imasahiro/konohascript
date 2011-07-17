@@ -1132,7 +1132,7 @@ static knh_Token_t* NUM_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 	}
 	if(breqc != CLASS_Int && breqc != CLASS_Float) {
 		reqt = bytes_guessNUMcid(ctx, t);
-		reqt = C_bcid(reqt);
+		breqc = C_bcid(reqt);
 	}
 	if(breqc == CLASS_Float) {
 		knh_float_t n = K_FLOAT_ZERO;

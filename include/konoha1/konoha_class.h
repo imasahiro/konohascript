@@ -1161,6 +1161,10 @@ struct knh_Token_t {
 #define Stmt_isImplicit(s)       Stmt_isMemo1(s)
 #define Stmt_setImplicit(s,b)    Stmt_setMemo1(s,b)
 
+/* STT_LSEND */
+#define Stmt_isLSHIFT(s)          Stmt_isMemo1(s)
+#define Stmt_setLSHIFT(s,b)       Stmt_setMemo1(s,b)
+
 typedef struct knh_Stmt_t knh_Stmt_t;
 #ifdef K_INTERNAL
 typedef struct {

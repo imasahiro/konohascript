@@ -309,8 +309,7 @@ knh_Token_t* ERROR_CompilerControlledParameter(CTX ctx, knh_class_t mtd_cid, knh
 knh_Token_t* ERROR_RequiredParameter(CTX ctx);
 void WARN_WrongTypeParam(CTX ctx, knh_class_t cid);
 void INFO_Typing(CTX ctx, const char *prefix, knh_bytes_t name, knh_type_t type);
-knh_Token_t* ErrorNumericType(CTX ctx, knh_type_t reqt);
-void WarningOverflow(CTX ctx, const char *floatorint, knh_bytes_t t);
+void WARN_Overflow(CTX ctx, const char *floatorint, knh_bytes_t t);
 void WARN_Unused(CTX ctx, knh_Token_t *tk, knh_fieldn_t fn);
 knh_Token_t* ErrorDifferentlyDeclaredType(CTX ctx, knh_fieldn_t fn, knh_type_t type);
 knh_Token_t* ErrorTooManyVariables(CTX ctx);

@@ -311,14 +311,6 @@ knh_Token_t* ERROR_Denied(CTX ctx, const char *why, knh_Token_t *tk)
 {
 	return knh_Token_toERR(ctx, tk, _("%s: %O"), why, tk);
 }
-//void WarningUndefined(CTX ctx, const char *whatis, const char *prefix, const char *msg)
-//{
-//	Gamma_perror(ctx, KC_DWARN, _("undefined %s: %s%s"), whatis, prefix, msg);
-//}
-//void WarningUndefinedOfClass(CTX ctx, const char *whatis, knh_class_t cid, const char *prefix, const char *msg)
-//{
-//	Gamma_perror(ctx, KC_DWARN, _("undefined %s of %C: %s%s"), whatis, cid, prefix, msg);
-//}
 void WarningUnknownClass(CTX ctx, knh_Token_t *tk, knh_class_t defc)
 {
 	Gamma_perror(ctx, KC_DWARN, _("unknown class: %L ==> %T"), tk, defc);
@@ -355,18 +347,10 @@ void INFO_Typing(CTX ctx, const char *prefix, knh_bytes_t name, knh_type_t type)
 {
 	Gamma_perror(ctx, KC_TINFO, "suppose %s%B has type %T", prefix, name, type);
 }
-//knh_Token_t* ErrorNumericType(CTX ctx, knh_type_t reqt)
-//{
-//	return Gamma_perror(ctx, KC_TERROR, _("not numeric: %C"), reqt);
-//}
 void WARN_Overflow(CTX ctx, const char *floatorint, knh_bytes_t t)
 {
 	Gamma_perror(ctx, KC_EWARN, _("%s overflow: %B"), floatorint, t);
 }
-//knh_Token_t* ErrorUnknownResourceName(CTX ctx, knh_bytes_t path)
-//{
-//	return Gamma_perror(ctx, KC_ERR, "unknown path: %B", path);
-//}
 void WARN_Unused(CTX ctx, knh_Token_t *tk, knh_fieldn_t fn)
 {
 	knh_uline_t uline = ctx->gma->uline;

@@ -10,5 +10,6 @@ assure "IntegerCast" {
 	print a, f;
 	String s = (String)a;
 	assert s == "123";
+	assert (String)1 == "1";
 }
 
