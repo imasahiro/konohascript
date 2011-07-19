@@ -1066,7 +1066,7 @@ void THROW_Arithmetic(CTX ctx, knh_sfp_t *sfp, const char *msg)
 	LOGDATA = {sDATA("msg", msg)};
 	CRIT_Failed("arithmetics", "Script!!");
 }
-void THROW_OutOfRange(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t max)
+KNHAPI2(void) THROW_OutOfRange(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t max)
 {
 	LOGDATA = {sDATA("msg", "out of index range"), iDATA("idx", n), iDATA("max", max)};
 	CRIT_Failed("range", "Script!!");

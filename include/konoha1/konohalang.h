@@ -8,43 +8,44 @@ extern "C" {
 #ifndef MN_OPSIZE
 #define STT_MAX  (58)
 #define TT_MAX   (141)
-#define MN_OPSIZE  (36)
+#define MN_OPSIZE  (37)
 #define MN_opNOT                        ((knh_methodn_t)0)
 #define MN_opEXISTS                     ((knh_methodn_t)1)
-#define MN_opUNTIL                      ((knh_methodn_t)2)
-#define MN_opIS                         ((knh_methodn_t)3)
-#define MN_opOF                         ((knh_methodn_t)4)
-#define MN_opHAS                        ((knh_methodn_t)5)
-#define MN_opTO                         ((knh_methodn_t)6)
-#define MN_opEQ                         ((knh_methodn_t)7)
-#define MN_opNOTEQ                      ((knh_methodn_t)8)
-#define MN_opLT                         ((knh_methodn_t)9)
-#define MN_opLTE                        ((knh_methodn_t)10)
-#define MN_opGT                         ((knh_methodn_t)11)
-#define MN_opGTE                        ((knh_methodn_t)12)
-#define MN_opWITH                       ((knh_methodn_t)13)
-#define MN_opAS                         ((knh_methodn_t)14)
-#define MN_opWHERE                      ((knh_methodn_t)15)
-#define MN_opEACH                       ((knh_methodn_t)16)
-#define MN_opLOR                        ((knh_methodn_t)17)
-#define MN_opLXOR                       ((knh_methodn_t)18)
-#define MN_opLAND                       ((knh_methodn_t)19)
-#define MN_opADD                        ((knh_methodn_t)20)
-#define MN_opSUB                        ((knh_methodn_t)21)
-#define MN_opDIV                        ((knh_methodn_t)22)
-#define MN_opMOD                        ((knh_methodn_t)23)
-#define MN_opMUL                        ((knh_methodn_t)24)
-#define MN_opLSFT                       ((knh_methodn_t)25)
-#define MN_opRSFT                       ((knh_methodn_t)26)
-#define MN_opLNOT                       ((knh_methodn_t)27)
-#define MN_opNEXT                       ((knh_methodn_t)28)
-#define MN_opPREV                       ((knh_methodn_t)29)
-#define MN_opITR                        ((knh_methodn_t)30)
-#define MN_opEXPT                       ((knh_methodn_t)31)
-#define MN_opADDR                       ((knh_methodn_t)32)
-#define MN_opCAST                       ((knh_methodn_t)33)
-#define MN_opPLUS                       ((knh_methodn_t)34)
-#define MN_opNEG                        ((knh_methodn_t)35)
+#define MN_opLINK                       ((knh_methodn_t)2)
+#define MN_opUNTIL                      ((knh_methodn_t)3)
+#define MN_opIS                         ((knh_methodn_t)4)
+#define MN_opOF                         ((knh_methodn_t)5)
+#define MN_opHAS                        ((knh_methodn_t)6)
+#define MN_opTO                         ((knh_methodn_t)7)
+#define MN_opEQ                         ((knh_methodn_t)8)
+#define MN_opNOTEQ                      ((knh_methodn_t)9)
+#define MN_opLT                         ((knh_methodn_t)10)
+#define MN_opLTE                        ((knh_methodn_t)11)
+#define MN_opGT                         ((knh_methodn_t)12)
+#define MN_opGTE                        ((knh_methodn_t)13)
+#define MN_opWITH                       ((knh_methodn_t)14)
+#define MN_opAS                         ((knh_methodn_t)15)
+#define MN_opWHERE                      ((knh_methodn_t)16)
+#define MN_opEACH                       ((knh_methodn_t)17)
+#define MN_opLOR                        ((knh_methodn_t)18)
+#define MN_opLXOR                       ((knh_methodn_t)19)
+#define MN_opLAND                       ((knh_methodn_t)20)
+#define MN_opADD                        ((knh_methodn_t)21)
+#define MN_opSUB                        ((knh_methodn_t)22)
+#define MN_opDIV                        ((knh_methodn_t)23)
+#define MN_opMOD                        ((knh_methodn_t)24)
+#define MN_opMUL                        ((knh_methodn_t)25)
+#define MN_opLSFT                       ((knh_methodn_t)26)
+#define MN_opRSFT                       ((knh_methodn_t)27)
+#define MN_opLNOT                       ((knh_methodn_t)28)
+#define MN_opNEXT                       ((knh_methodn_t)29)
+#define MN_opPREV                       ((knh_methodn_t)30)
+#define MN_opITR                        ((knh_methodn_t)31)
+#define MN_opEXPT                       ((knh_methodn_t)32)
+#define MN_opADDR                       ((knh_methodn_t)33)
+#define MN_opCAST                       ((knh_methodn_t)34)
+#define MN_opPLUS                       ((knh_methodn_t)35)
+#define MN_opNEG                        ((knh_methodn_t)36)
 
 /* ------------------------------------------------------------------------ */
 
@@ -397,7 +398,7 @@ static TERMDATA_t TERMDATA[] = {
 	{"and", 0, MN_NONAME}, 
 	{"not", 0, MN_opNOT}, 
 	{"exists", 0, MN_opEXISTS}, 
-	{"from", 0, MN_NONAME}, 
+	{"from", 0, MN_opLINK}, 
 	{"until", 0, MN_opUNTIL}, 
 	{"is?", _BIN, MN_opIS}, 
 	{"<:", _BIN, MN_opOF}, 
@@ -573,7 +574,7 @@ static OPDATA_t OPDATA[] = {
 	{6, MN_NONAME}, /* and */
 	{7, MN_opNOT}, /* not */
 	{8, MN_opEXISTS}, /* exists */
-	{9, MN_NONAME}, /* from */
+	{9, MN_opLINK}, /* from */
 	{9, MN_opUNTIL}, /* until */
 	{10, MN_opIS}, /* is? */
 	{10, MN_opOF}, /* <: */
@@ -613,6 +614,7 @@ static OPDATA_t OPDATA[] = {
 static const char *OPNAME[] = {
 	"not",
 	"exists",
+	"from",
 	"until",
 	"is?",
 	"<:",

@@ -516,8 +516,37 @@ static void Date_setsfp(knh_date_t *dt, knh_sfp_t *sfp)
 	dt->month = (knh_short_t)sfp[2].ivalue;
 	dt->day   = (knh_short_t)sfp[3].ivalue;
 	dt->hour  = (knh_short_t)(sfp[4].ivalue % 60);
-	dt->min = (knh_short_t)(sfp[5].ivalue % 60);
+	dt->min   = (knh_short_t)(sfp[5].ivalue % 60);
 	dt->sec   = (knh_short_t)(sfp[6].ivalue % 60);
+}
+
+static knh_bool_t bytes_parsedt(knh_bytes_t *t, knh_short_t *value, int delim, knh_short_t def)
+{
+//	DBG_P("t->text='%s', t->len=%d", t->text, t->len);
+	if(t->len == 0) {
+		value[0] = def;
+		return 1;
+	}
+	int p = 0, ch = t->text[0], num = 0;
+	while(p < t->len) {
+		if(!isdigit(ch)) return 0;
+		num += (ch - '0'); p++; ch = t->text[p];
+		if(ch == delim) {
+			p++;
+			t->text += (p);
+			t->len  -= (p);
+			value[0] = (knh_short_t)num;
+			return 1;
+		}
+		if(ch == 0) {
+			t->text = "";
+			t->len  = 0;
+			value[0] = (knh_short_t)num;
+			return 1;
+		}
+		num *= 10;
+	}
+	return 0;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -534,6 +563,61 @@ static METHOD Date_new(CTX ctx, knh_sfp_t *sfp _RIX)
 		}
 	}
 	RETURN_(dt);
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Hidden @Static @Const method Date Date.opLINK(String path, NameSpace _);
+
+static METHOD Date_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_bytes_t t = knh_bytes_next(S_tobytes(sfp[1].s), ':');
+	knh_Date_t *dt = (knh_Date_t*)new_Object_init2(ctx, ClassTBL(CLASS_Date));
+	KNH_SETv(ctx, sfp[2].o, dt); // TO AVOIDGC
+	if(bytes_parsedt(&t, &dt->dt.year, '-', 0)   &&
+		bytes_parsedt(&t, &dt->dt.month, '-', 1) &&
+		bytes_parsedt(&t, &dt->dt.day, 'T', 1) &&
+		bytes_parsedt(&t, &dt->dt.hour, ':', 0) &&
+		bytes_parsedt(&t, &dt->dt.min, ':', 0) &&
+		bytes_parsedt(&t, &dt->dt.sec, '+', 0)) {
+		RETURN_(dt);
+	}
+	else {
+		RETURN_(KNH_TNULL(Date));
+	}
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Hidden @Static @Const method Path Path.opLINK(String path, NameSpace _);
+
+static METHOD Path_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURN_(new_ScriptPath(ctx, sfp[1].s, sfp[2].ns));
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Const @Semantic mapper String Path;
+
+static TYPEMAP String_Path(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURN_(new_Path(ctx, sfp[K_TMRIDX].s));
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Const @Semantic mapper Path String;
+
+static TYPEMAP Path_String(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Path_t *pth = (knh_Path_t*)sfp[K_TMRIDX].o;
+	RETURN_(pth->urn);
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Const @Semantic mapper Path Boolean;
+
+static TYPEMAP Path_Boolean(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Path_t *pth = (knh_Path_t*)sfp[K_TMRIDX].o;
+	RETURNb_(knh_exists(ctx, pth->ospath));
 }
 
 /* ------------------------------------------------------------------------ */

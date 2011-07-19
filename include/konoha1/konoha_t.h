@@ -528,6 +528,7 @@ typedef void *(*knh_Fthread)(void *);
 		struct knh_Iterator_t *it; \
 		struct knh_Map_t           *m;    \
 		struct knh_Func_t         *fo; \
+		struct knh_Path_t         *pth; \
 		struct knh_InputStream_t  *in; \
 		struct knh_OutputStream_t *w;  \
 		struct knh_Method_t            *mtd;\

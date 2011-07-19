@@ -160,11 +160,11 @@ static knh_Token_t *knh_Token_toERR(CTX ctx, knh_Token_t *tk, const char *fmt, .
 
 knh_Token_t* ERROR_NotFound(CTX ctx, const char *whatis, const char *t)
 {
-	return Gamma_perror(ctx, KC_ERR, _("%s not found %s"), whatis, t);
+	return Gamma_perror(ctx, KC_ERR, _("%s not found: %s"), whatis, t);
 }
 void WARN_NotFound(CTX ctx, const char *whatis, const char *t)
 {
-	Gamma_perror(ctx, KC_DWARN, _("%s not found %s"), whatis, t);
+	Gamma_perror(ctx, KC_DWARN, _("%s not found: %s"), whatis, t);
 }
 knh_Token_t* ERROR_Incompatible(CTX ctx, const char *whatis, const char *name)
 {

@@ -32,6 +32,7 @@
 
 /* ************************************************************************ */
 
+#define USE_STRUCT_Path
 #include<konoha1.h>
 
 #include <unistd.h>
@@ -183,6 +184,7 @@ METHOD System_raise(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 
 //## @Native String System.getCwd();
+
 METHOD System_getCwd(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	char tmpbuf[K_PATHMAX];
@@ -190,34 +192,84 @@ METHOD System_getCwd(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(new_String(ctx, (const char*)tmpbuf));
 }
 
-//## @Native boolean System.chDir(String path, NameSpace _);
-
-METHOD System_chDir(CTX ctx, knh_sfp_t *sfp _RIX)
+static int fileop(CTX ctx, knh_sfp_t *sfp, const char *name, int (*func)(const char*), knh_Path_t *pth)
 {
-	int tf = 1;
-	char path[K_PATHMAX];
-	knh_String_ospath(ctx, sfp[1].s, sfp[2].ns, path, sizeof(path));
-	if(chdir(path) == -1) {
-		LOGDATA = {sDATA("path", S_tochar(sfp[1].s)), sDATA("ospath", (const char*)path), __ERRNO__};
-		NOTE_Failed("chdir");
-		tf = 0;
+	if(func(pth->ospath) == -1) {
+		LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), __ERRNO__};
+		NOTE_Failed(name);
+		return 0;
 	}
-	RETURNb_(tf);
+	return 1;
 }
 
-//## @Native @Root @Controlled boolean System.chroot(String path, NameSpace _);
-
-METHOD System_chRoot(CTX ctx, knh_sfp_t *sfp _RIX)
+static int fileop2(CTX ctx, knh_sfp_t *sfp, const char *name, int (*func)(const char*, const char*), knh_Path_t *pth, knh_Path_t *pth2)
 {
-	int tf = 1;
-	char path[K_PATHMAX];
-	knh_String_ospath(ctx, sfp[1].s, sfp[2].ns, path, sizeof(path));
-	if(chroot(path) == -1) {
-		LOGDATA = {sDATA("path", S_tochar(sfp[1].s)), sDATA("ospath", (const char*)path), __ERRNO__};
-		NOTE_Failed("chroot");
-		tf = 0;
+	if(func(pth->ospath, pth2->ospath) == -1) {
+		LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath),
+				sDATA("path2", S_tochar(pth2->urn)), sDATA("ospath2", pth2->ospath), __ERRNO__};
+		NOTE_Failed(name);
+		return 0;
 	}
-	RETURNb_(tf);
+	return 1;
+}
+
+//## @Native @Restricted boolean System.link(Path path, Path path2);
+METHOD System_link(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNb_(fileop2(ctx, sfp, "link", link, sfp[1].pth, sfp[2].pth));
+}
+
+//## @Native @Restricted boolean System.symlink(Path path, Path path2);
+METHOD System_symlink(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNb_(fileop2(ctx, sfp, "symlink", symlink, sfp[1].pth, sfp[2].pth));
+}
+
+//## @Native @Restricted boolean System.rename(Path path, Path path2);
+METHOD System_rename(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNb_(fileop2(ctx, sfp, "rename", rename, sfp[1].pth, sfp[2].pth));
+}
+
+//## @Native @Restricted boolean System.unlink(Path path);
+METHOD System_unlink(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNb_(fileop(ctx, sfp, "unlink", unlink, sfp[1].pth));
+}
+
+//## @Native boolean System.chdir(Path path);
+METHOD System_chdir(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNb_(fileop(ctx, sfp, "chdir", chdir, sfp[1].pth));
+}
+
+//## @Native boolean System.chroot(Path path);
+METHOD System_chroot(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNb_(fileop(ctx, sfp, "chroot", chroot, sfp[1].pth));
+}
+
+//## @Native @Restricted boolean System.mkdir(Path path, int mode);
+METHOD System_mkdir(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Path_t *pth = sfp[1].pth;
+	mode_t mode =  (mode_t)sfp[2].ivalue;
+	if(mkdir(pth->ospath, mode) == -1) {
+		LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), iDATA("mode", mode), __ERRNO__};
+		NOTE_Failed("mkdir");
+		RETURNb_(0);
+	}
+	else {
+		LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), iDATA("mode", mode)};
+		NOTE_OK("mkdir");
+		RETURNb_(1);
+	}
+}
+
+//## @Native @Restricted boolean System.rmdir(Path path);
+METHOD System_rmdir(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNb_(fileop(ctx, sfp, "rmdir", rmdir, sfp[1].pth));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -236,11 +288,20 @@ static void Dir_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
+static void Dir_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
+{
+	if (po->rawptr != NULL) {
+		closedir((DIR*)po->rawptr);
+		po->rawptr = NULL;
+	}
+}
+
 DEFAPI(void) defDir(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	cdef->name = "Dir";
 	cdef->init = Dir_init;
 	cdef->free = Dir_free;
+	cdef->checkout = Dir_checkout;
 }
 
 static knh_IntData_t DirConstInt[] = {
@@ -263,15 +324,13 @@ DEFAPI(void) constDir(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *ka
 
 /* ------------------------------------------------------------------------ */
 
-//## @Native @Throwable Dir System.openDir(String path, NameSpace _, Dir _);
+//## @Native @Throwable Dir System.openDir(Path path);
 METHOD System_openDir(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	char path[K_PATHMAX];
-	knh_String_ospath(ctx, sfp[1].s, sfp[2].ns, path, sizeof(path));
-	KNH_RESET_ERRNO();
-	DIR *dirptr = opendir(path);
-	knh_RawPtr_t *po = new_RawPtr(ctx, sfp[3].p, dirptr);
-	LOGDATA = {sDATA("path", S_tochar(sfp[1].s)), sDATA("ospath", (const char*)path), __ERRNO__};
+	knh_Path_t *pth = sfp[1].pth;
+	DIR *dirptr = opendir(pth->ospath);
+	knh_RawPtr_t *po = 	new_RawPtrByReturnType(ctx, sfp, dirptr);
+	LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), __ERRNO__};
 	LIB_log("opendir", (dirptr != NULL), "IO!!");
 	RETURN_(po);
 }
@@ -285,6 +344,13 @@ METHOD Dir_close(CTX ctx, knh_sfp_t *sfp _RIX)
 		closedir(dirptr);
 	}
 	RETURNvoid_();
+}
+
+//## @Const @Static @Hidden Dir Dir.opLink(String urn, NameSpace _);
+METHOD Dir_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	KNH_SETv(ctx, sfp[1].o, new_Path(ctx, sfp[1].s));
+	System_openDir(ctx, sfp, K_RIX);
 }
 
 //## @Native @Iterative Map Dir.read();
@@ -317,146 +383,120 @@ METHOD Dir_readName(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(new_String(ctx, dname));
 }
 
-///* ------------------------------------------------------------------------ */
-//
-//knh_bool_t knh_unlink(CTX ctx, knh_bytes_t path)
-//{
-//	knh_cwb_t cwbbuf, *cwb = knh_cwb_openinit(ctx, &cwbbuf, path);
-//	char *phname = knh_cwb_ospath(ctx, cwb);
-//#if defined(K_USING_POSIX)
-//	PERROR_returnb_(unlink, phname);
-//#elif defined(K_USING_WINDOWS)
-//	PERROR_returnb_(DeleteFileA, phname);
-//#else
-//	(void)phname;
-//	PERROR_returnb_(UnsupportedAPI, ctx, __FUNCTION__);
-//#endif
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//knh_bool_t knh_rename(CTX ctx, knh_bytes_t on, knh_bytes_t nn)
-//{
-//	knh_cwb_t cwbbuf, *cwb = knh_cwb_openinit(ctx, &cwbbuf, on);
-//	char *phname = knh_cwb_ospath(ctx, cwb);
-//	knh_cwb_t cwbbuf2, *cwb2 = knh_cwb_openinit(ctx, &cwbbuf2, nn);
-//	char *phname2 = knh_cwb_ospath(ctx, cwb2);
-//#if defined(K_USING_POSIX)
-//	PERROR_returnb_(rename, phname, phname2);
-//#elif defined(K_USING_WINDOWS)
-//	PERROR_returnb_(MoveFileA, phname, pathnema2);
-//#else
-//	(void)phname; (void)phname2;
-//	PERROR_returnb_(UnsupportedAPI, ctx, __FUNCTION__);
-//#endif
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## @Native @Unsafe Boolean System.unlink(String path);
-//
-//static METHOD System_unlink(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	KNH_SECURE(ctx, sfp);
-//	RETURNb_(knh_unlink(ctx, S_tobytes(sfp[1].s), knh_Context_isStrict(ctx)));
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## @Native @Unsafe Boolean System.rename(String path, String newpath);
-//
-//static METHOD System_rename(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	KNH_SECURE(ctx, sfp);
-//	RETURNb_(knh_rename(ctx, S_tobytes(sfp[1].s), S_tobytes(sfp[2].s), knh_Context_isStrict(ctx)));
-//}
-//
-//
-///* ======================================================================== */
-///* [PIPE] */
-//
-//static
-//knh_io_t knh_iodrv_open__PIPE(CTX ctx, knh_bytes_t file, char *mode, int isThrowable)
-//{
-//	char *cmd = (char*)knh_bytes_skipscheme(file).buf;
-//	FILE *fp = NULL;
-//
-//	KNH_WARNING(ctx, "opening pipe '%s'", cmd);
-//	//KNH_SECURE(ctx, sfp);
-//	if(mode != NULL && mode[0] == 'r') {
-//		fp = popen(cmd, "r");
-//	}
-//	else {
-//		fp = popen(cmd, "w");
-//	}
-//	if(fp == NULL) {
-//		KNH_PERRNO(ctx, NULL,"IO!!", "popen", isThrowable);
-//		return (knh_io_t)-1;
-//	}
-//	return (knh_io_t)fp;
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//static
-//void knh_iodrv_init__NOP(CTX ctx, Object *stream, char *mode)
-//{
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//static
-//knh_intptr_t knh_iodrv_read__PIPE(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
-//{
-//	FILE *fp = (FILE*)fd;
-//	size_t ssize = fread(buf, 1, bufsiz, fp);
-//	return ssize;
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//static
-//knh_intptr_t knh_iodrv_write__PIPE(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
-//{
-//	FILE *fp = (FILE*)fd;
-//	size_t ssize = fwrite(buf, 1, bufsiz, fp);
-//	fflush(fp);
-//	return ssize;
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//static
-//void knh_iodrv_close__PIPE(CTX ctx, knh_io_t fd)
-//{
-//	FILE *fp = (FILE*)fd;
-//	pclose(fp);
-//}
-//
-///* ------------------------------------------------------------------------ */
-///* @data */
-//
-//static knh_StreamDPI_t IO__PIPE = {
-//	KNH_STREAM_DSPI, "pipe",
-//	0,
-//	knh_iodrv_open__PIPE,
-//	knh_iodrv_init__NOP,
-//	knh_iodrv_read__PIPE,
-//	knh_iodrv_write__PIPE,
-//	knh_iodrv_close__PIPE
-//};
+/* ======================================================================== */
+/* FILE */
 
-//KNHAPI(int) init(CTX ctx)
-//{
-//	KNH_NOTICE(ctx, "loading posix package ..");
-//	knh_loadIntConstData(ctx, IntConstData);
-//	knh_loadFloatConstData(ctx, FloatConstData);
-//	knh_loadStringConstData(ctx, StringConstData);
-//
-//	// pipe dirver
-//	knh_addIODriver(ctx, NULL, &IO__PIPE);
-//	knh_addIODriver(ctx, "sh", &IO__PIPE);
-//	knh_addIODriver(ctx, "cmd", &IO__PIPE);
-//	return 1;
-//}
+static void File_init(CTX ctx, knh_RawPtr_t *po)
+{
+	po->rawptr = NULL;
+}
+
+static void File_free(CTX ctx, knh_RawPtr_t *po)
+{
+	if (po->rawptr != NULL) {
+		fclose((FILE*)po->rawptr);
+		po->rawptr = NULL;
+	}
+}
+
+static void File_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
+{
+	if (po->rawptr != NULL) {
+		fclose((FILE*)po->rawptr);
+		po->rawptr = NULL;
+	}
+}
+
+DEFAPI(void) defFile(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	cdef->name = "File";
+	cdef->init = File_init;
+	cdef->free = File_free;
+	cdef->checkout = File_checkout;
+}
+
+//## @Native @Throwable File System.fopen(Path path, String mode);
+METHOD System_fopen(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Path_t *pth = sfp[1].pth;
+	const char *mode = IS_NULL(sfp[2].s) ? "r" : S_tochar(sfp[2].s);
+	FILE *fp = fopen(pth->ospath, mode);
+	knh_RawPtr_t *po = 	new_RawPtrByReturnType(ctx, sfp, fp);
+	LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), sDATA("mode", mode), __ERRNO__};
+	LIB_log("fopen", (fp != NULL), "IO!!");
+	RETURN_(po);
+}
+
+//## @Native int File.getc();
+METHOD File_getc(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	FILE *fp = (FILE*)sfp[0].p->rawptr;
+	int ch = EOF;
+	if(fp != NULL) {
+		ch = fgetc(fp);
+	}
+	RETURNi_(ch);
+}
+
+//## @Native int File.read(Bytes buf, int offset, int len);
+METHOD File_read(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	FILE *fp = (FILE*)sfp[0].p->rawptr;
+	size_t size = 0;
+	if(fp != NULL) {
+		knh_Bytes_t *ba = sfp[1].ba;
+		size_t offset = (size_t)sfp[2].ivalue;
+		size_t len = (size_t)sfp[3].ivalue;
+		size = BA_size(ba);
+		if(!(offset < size)) {
+			THROW_OutOfRange(ctx, sfp, offset, size);
+		}
+		if(len == 0) len = size - offset;
+		size = fread(ba->bu.buf + offset, 1, len, fp);
+	}
+	RETURNi_(size);
+}
+
+//## @Native boolean File.putc(int ch);
+METHOD File_putc(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	FILE *fp = (FILE*)sfp[0].p->rawptr;
+	if(fp != NULL) {
+		int ch = fputc((int)sfp[1].ivalue, fp);
+		RETURNb_((ch != EOF));
+	}
+	RETURNb_(0);
+}
+
+//## @Native int File.write(Bytes buf, int offset, int len);
+METHOD File_write(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	FILE *fp = (FILE*)sfp[0].p->rawptr;
+	size_t size = 0;
+	if(fp != NULL) {
+		knh_Bytes_t *ba = sfp[1].ba;
+		size_t offset = (size_t)sfp[2].ivalue;
+		size_t len = (size_t)sfp[3].ivalue;
+		size = BA_size(ba);
+		if(!(offset < size)) {
+			THROW_OutOfRange(ctx, sfp, offset, size);
+		}
+		if(len == 0) len = size - offset;
+		size = fwrite(ba->bu.buf + offset, 1, len, fp);
+	}
+	RETURNi_(size);
+}
+
+//## @Native void File.close();
+METHOD File_close(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	FILE *fp = (FILE*)sfp[0].p->rawptr;
+	if(fp != NULL) {
+		sfp[0].p->rawptr = NULL;
+		fclose(fp);
+	}
+	RETURNvoid_();
+}
 
 /* ======================================================================== */
 

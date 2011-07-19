@@ -25,7 +25,7 @@
  *
  ****************************************************************************/
 
-include lib:gluelink;
+include "lib:gluelink";
 
 @Singleton @Native class Math;
 

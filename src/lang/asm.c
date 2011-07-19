@@ -2041,7 +2041,7 @@ static void SEND_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 			knh_class_t cid = Tn_cid(stmt, i);
 			Tn_asm(ctx, stmt, i, thisidx + 1);
 			if(cid == CLASS_String) {
-				mtd = knh_NameSpace_getMethodNULL(ctx, CLASS_OutputStream, MN_send);
+				mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, CLASS_OutputStream, MN_send);
 				DBG_ASSERT(mtd != NULL);
 			}
 			else {

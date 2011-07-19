@@ -185,8 +185,8 @@ false      -       0
 OPTOKEN = '''
 #                       FLAG   PRI
 =       TT_LET          0      2       MN_NONAME
-#<<<     TT_SEND         0      2       MN_send
-#>>>     TT_RECV         0      2       MN_NONAME
+#<<<     TT_SEND         0      2      MN_send
+#>>>     TT_RECV         0      2      MN_NONAME
 #a = a >>> function(it) {
 #}
 
@@ -198,7 +198,7 @@ or      TT_OR           0      5       MN_NONAME
 and     TT_AND          0      6       MN_NONAME
 not     TT_NOT          0      7       MN_opNOT
 exists  TT_EXISTS       0      8       MN_opEXISTS
-from    TT_FROM         0      9       MN_NONAME
+from    TT_FROM         0      9       MN_opLINK
 until   TT_UNTIL        0      9       MN_opUNTIL
 
 # f() as Class == 1

@@ -1,4 +1,4 @@
-include lib:gluelink;
+include "lib:gluelink";
 
 @Native class Visual;
 @Native class Point;

@@ -2,7 +2,7 @@
  * DFFI
  *  C library wrapper generater using libffi
  */
-include lib:gluelink;
+include "lib:gluelink";
 
 @Native class Clib;
 @Native Clib Clib.new(String libname);

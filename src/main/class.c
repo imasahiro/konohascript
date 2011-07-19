@@ -92,8 +92,9 @@ KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, knh_RawPtr_t *po, void *rawptr)
 	return npo;
 }
 
-KNHAPI2(knh_RawPtr_t*) knh_Method_newRawPtr(CTX ctx, knh_Method_t *mtd, void *rawptr)
+KNHAPI2(knh_RawPtr_t*) new_RawPtrByReturnType(CTX ctx, knh_sfp_t *sfp, void *rawptr)
 {
+	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
 	knh_type_t rtype = knh_ParamArray_rtype(DP(mtd)->mp);
 	knh_RawPtr_t *npo = (knh_RawPtr_t*)new_hObject_(ctx, ClassTBL(rtype));
 	npo->rawptr = rawptr;
@@ -653,8 +654,6 @@ knh_class_t knh_class_Generics(CTX ctx, knh_class_t bcid, knh_ParamArray_t *pa)
 	return knh_addGenericsClass(ctx, CLASS_newid, bcid, pa);
 }
 
-/* ------------------------------------------------------------------------ */
-
 knh_class_t knh_class_P1(CTX ctx, knh_class_t bcid, knh_type_t p1)
 {
 	const knh_ClassTBL_t *ct = ClassTBL(bcid);
@@ -1205,7 +1204,7 @@ void knh_NameSpace_addMethod(CTX ctx, knh_class_t mtd_cid, knh_Method_t *mtd)
 	}
 }
 
-knh_Method_t* knh_NameSpace_getMethodNULL(CTX ctx, knh_class_t cid, knh_methodn_t mn)
+knh_Method_t* knh_NameSpace_getMethodNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_methodn_t mn)
 {
 	knh_Method_t *mtd = ClassTBL_getMethodNULL(ctx, ClassTBL(cid), mn);
 	return mtd;
@@ -1560,8 +1559,26 @@ void knh_NameSpace_setLink(CTX ctx, knh_NameSpace_t *ns, knh_Link_t *lnk)
 	knh_DictMap_set(ctx, DP(ns)->linkDictMapNULL, lnk->scheme, lnk);
 }
 
-/* ------------------------------------------------------------------------ */
+knh_Method_t *knh_NameSpace_getLinkMethod(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t fi)
+{
+	knh_class_t cid = CLASS_unknown;
+	fi = knh_bytes_head(fi, ':');
+//	while(ns != NULL) {
+//		if(DP(ns)->linkDictMapNULL != NULL) {
+//			knh_DictMap_t *dm = DP(ns)->linkDictMapNULL;
+//			knh_Link_t *lnk = (knh_Link_t*)knh_DictMap_getNULL(ctx, dm, fi);
+//			if(lnk != NULL) return lnk;
+//		}
+//		ns = ns->parentNULL;
+//	}
+	cid = knh_NameSpace_getcid(ctx, ns, fi);
+	if(cid != CLASS_unknown) {
+		return knh_NameSpace_getMethodNULL(ctx, ns, cid, MN_opLINK);
+	}
+	return NULL;
+}
 
+/* ------------------------------------------------------------------------ */
 
 #ifdef __cplusplus
 }

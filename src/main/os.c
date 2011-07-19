@@ -285,53 +285,6 @@ void dump_sysinfo(CTX ctx, knh_OutputStream_t *w, int isALL)
 
 /* ------------------------------------------------------------------------ */
 
-void knh_buff_addpath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, knh_bytes_t t)
-{
-	size_t i;
-	if(needsSEP) {
-		knh_bytes_t b = {{ba->bu.text}, pos};
-		if(!(b.len > 0 && b.buf[b.len-1] == '/')) {
-			knh_Bytes_putc(ctx, ba, '/');
-		}
-	}
-	for(i = 0; i < t.len; i++) {
-		int ch = t.ubuf[i];
-		knh_Bytes_putc(ctx, ba, ch);
-	}
-}
-
-void knh_buff_addospath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, knh_bytes_t t)
-{
-	size_t i;
-	if(needsSEP) {
-		knh_bytes_t b = {{ba->bu.text}, pos};
-		if(!(b.len > 0 && b.buf[b.len-1] == K_SEP)) {
-			knh_Bytes_putc(ctx, ba, K_SEP);
-		}
-	}
-	for(i = 0; i < t.len; i++) {
-		int ch = t.ubuf[i];
-		if(ch == '\\' || ch == '/') ch = K_SEP;
-		if(ch < 127) {
-			knh_Bytes_putc(ctx, ba, ch);
-			continue;
-		}
-		knh_Bytes_putc(ctx, ba, ch);
-	}
-}
-
-void knh_buff_trim(CTX ctx, knh_Bytes_t *ba, size_t pos, int ch)
-{
-	knh_uchar_t *ubuf = ba->bu.ubuf + pos;
-	long i, len = BA_size(ba) - pos;
-	if(ch == '/' && ch != K_SEP) ch = K_SEP;
-	for(i = len - 1; i >= 0 ; i--) {
-		if(ubuf[i] == ch) {
-			knh_Bytes_clear(ba, pos + i);
-			return;
-		}
-	}
-}
 
 knh_String_t *knh_buff_newRealPath(CTX ctx, knh_Bytes_t *ba, size_t pos)
 {
@@ -351,42 +304,6 @@ knh_String_t *knh_buff_newRealPath(CTX ctx, knh_Bytes_t *ba, size_t pos)
 	return s;
 }
 
-KNHAPI2(knh_bool_t) knh_String_ospath(CTX ctx, knh_String_t *s, knh_NameSpace_t *ns, char *buf, size_t bufsiz)
-{
-	knh_bool_t res = 0;
-	knh_index_t loc = knh_bytes_index(S_tobytes(s), ':');
-	if(loc == -1) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-//		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(ns->rpath));
-		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(s));
-		const char *p = knh_cwb_tochar(ctx, cwb);
-		size_t len = knh_strlen(p) + 1;
-		if(len < bufsiz) {
-			knh_memcpy(buf, p, len); res = 1;
-		}
-		knh_cwb_close(cwb);
-	}
-	else {
-		knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, ns, S_tobytes(s));
-		if(lnk != NULL && knh_Link_hasType(ctx, lnk, CLASS_Bytes)) {
-			knh_Bytes_t *ba = (knh_Bytes_t*)knh_Link_newObjectNULL(ctx, lnk, ns, s, CLASS_Bytes);
-			if(ba != NULL) {
-				KNH_SETv(ctx, ctx->esp[0].o, ba);  //TOGC
-				knh_Bytes_ensureZero(ctx, ba);
-				if(BA_size(ba) + 1 < bufsiz) {
-					knh_memcpy(buf, ba->bu.buf, BA_size(ba) + 1); res = 1;
-				}
-			}
-		}
-	}
-	if(res == 1) {
-		DBG_P("ospath='%s'", buf);
-	}
-	else {
-		buf[0] = 0;
-	}
-	return res;
-}
 
 knh_bool_t knh_exists(CTX ctx, const char *fname)
 {
@@ -428,35 +345,10 @@ knh_bool_t knh_isfile(CTX ctx, const char *phname)
 	return res;
 }
 
-knh_bool_t knh_Bytes_isfile(CTX ctx, knh_Bytes_t *ba, size_t pos)
+knh_bool_t knh_buff_isfile(CTX ctx, knh_Bytes_t *ba, size_t pos)
 {
 	return knh_isfile(ctx, knh_Bytes_ensureZero(ctx, ba) + pos);
 }
-
-/* ------------------------------------------------------------------------ */
-
-//knh_bool_t knh_path_isfile(CTX ctx, knh_path_t *ph)
-//{
-//	knh_bool_t res = 1;
-//	const char *phname = P_text(ph) + ph->pbody;
-//	if(phname[0] == 0) return 0;
-//#if defined(K_USING_WINDOWS_)
-//	DWORD attr = GetFileAttributesA(phname);
-//	if(attr == -1 || (attr & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY) res = 0;
-//#elif defined(K_USING_POSIX_)
-//	struct stat buf;
-//	if(stat(phname, &buf) == -1) res = 0;
-//	else res = S_ISREG(buf.st_mode);
-//#else
-//	FILE* in = fopen(phname,"r");
-//	if(in == NULL)  res = 0;
-//	else fclose(in);
-//#endif
-//	if(res == 0) {
-//		DBG_P("isfile='%s' NOTFOUND", P_text(ph));
-//	}
-//	return res;
-//}
 
 knh_bool_t knh_isdir(CTX ctx, const char *pname)
 {

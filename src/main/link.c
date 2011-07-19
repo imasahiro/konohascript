@@ -376,7 +376,7 @@ static knh_bool_t FILE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 	knh_bytes_t bpath = knh_bytes_next(path, ':');
 	bpath = knh_cwb_ensure(ctx, cwb, bpath, K_PATHMAX);
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, bpath);
-	knh_bool_t res = knh_Bytes_isfile(ctx, cwb->ba, cwb->pos);
+	knh_bool_t res = knh_buff_isfile(ctx, cwb->ba, cwb->pos);
 	knh_cwb_close(cwb);
 	return res;
 }
@@ -459,120 +459,92 @@ static const knh_LinkDPI_t LINK_DIR = {
 
 #endif
 
-static knh_bool_t isFoundPackage(CTX ctx, knh_Bytes_t* ba, size_t pos, knh_bytes_t tpath, knh_bytes_t bpath)
-{
-	knh_Bytes_clear(ba, pos);
-	knh_buff_addospath(ctx, ba, pos, 0, tpath);
-	knh_buff_addospath(ctx, ba, pos, 1, bpath); // konoha.math
-	knh_buff_addospath(ctx, ba, pos, 1, knh_bytes_rnext(bpath, '.')); // math
-	knh_buff_addospath(ctx, ba, pos, 0, STEXT(".k"));
-	return knh_Bytes_isfile(ctx, ba, pos);
-}
-
-knh_bool_t knh_Bytes_addPackagePath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_bytes_t path)
-{
-	char *epath = knh_getenv("KONOHA_PACKAGE");
-	knh_bytes_t bpath = knh_bytes_next(path, ':');
-	if(epath != NULL && isFoundPackage(ctx, ba, pos, B(epath), bpath)) {
-		return 1;
-	}
-	knh_String_t *tpath = knh_getPropertyNULL(ctx, STEXT("konoha.package.path"));
-	if(tpath != NULL && isFoundPackage(ctx, ba, pos, S_tobytes(tpath), bpath)) {
-		return 1;
-	}
-	tpath = knh_getPropertyNULL(ctx, STEXT("user.package.path"));
-	if(tpath != NULL && isFoundPackage(ctx, ba, pos, S_tobytes(tpath), bpath)) {
-		return 1;
-	}
-	return 0;
-}
-
-static knh_bool_t PACKAGE_hasType(CTX ctx, knh_class_t cid)
-{
-	return (cid == CLASS_Bytes || cid == CLASS_InputStream);
-}
-
-static knh_bool_t PACKAGE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	knh_bytes_t bpath = knh_bytes_next(path, ':');
-	bpath = knh_cwb_ensure(ctx, cwb, bpath, K_PATHMAX);
-	knh_bool_t res = knh_Bytes_addPackagePath(ctx, cwb->ba, cwb->pos, bpath);
-	knh_cwb_close(cwb);
-	return res;
-}
-
-static knh_Object_t* PACKAGE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
-{
-	knh_Object_t *res = NULL;
-	if(cid == CLASS_Bytes) {
-		knh_Bytes_t* ba = new_Bytes(ctx, NULL, 256);
-		if(!knh_Bytes_addPackagePath(ctx, ba, 0, S_tobytes(s))) {
-			knh_Object_toNULL(ctx, ba);
-		}
-		return UPCAST(ba);
-	}
-	if(cid == CLASS_InputStream) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-		knh_bytes_t bpath = knh_bytes_next(S_tobytes(s), ':');
-		knh_Bytes_addPackagePath(ctx, cwb->ba, cwb->pos, bpath);
-		res = (knh_Object_t*)knh_Bytes_openInputStream(ctx, cwb->ba, cwb->pos, s);
-		knh_cwb_close(cwb);
-	}
-	return res;
-}
-
-static const knh_LinkDPI_t LINK_PKG = {
-	"pkg", "byte[]|InputStream", PACKAGE_hasType, PACKAGE_exists, PACKAGE_newObjectNULL,
-};
-
-void knh_Bytes_addScriptPath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	knh_bytes_t bpath = knh_bytes_next(path, ':');
-	knh_buff_addospath(ctx, ba, pos, 0, S_tobytes(ns->rpath));
-	if(!knh_isdir(ctx, S_tochar(ns->rpath))) {
-		knh_buff_trim(ctx, ba, pos, '/');
-	}
-	knh_buff_addospath(ctx, ba, pos, 1, bpath);
-}
-
-static knh_bool_t SCRIPT_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	knh_bytes_t bpath = knh_bytes_next(path, ':');
-	bpath = knh_cwb_ensure(ctx, cwb, bpath, K_PATHMAX);
-	knh_Bytes_addScriptPath(ctx, cwb->ba, cwb->pos, ns, bpath);
-	knh_bool_t res = knh_exists(ctx, knh_cwb_tochar(ctx, cwb));
-	knh_cwb_close(cwb);
-	return res;
-}
-
-static knh_Object_t* SCRIPT_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
-{
-	knh_Object_t *res = NULL;
-	if(cid == CLASS_Bytes) {
-		knh_Bytes_t* ba = new_Bytes(ctx, NULL, 256);
-		knh_Bytes_addScriptPath(ctx, ba, 0, ns, S_tobytes(s));
-		return UPCAST(ba);
-	}
-	if(cid == CLASS_InputStream || cid == CLASS_OutputStream) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-		knh_bytes_t bpath = knh_bytes_next(S_tobytes(s), ':');
-		knh_Bytes_addScriptPath(ctx, cwb->ba, cwb->pos, ns, bpath);
-		if(cid == CLASS_InputStream) {
-			res = (knh_Object_t*)knh_Bytes_openInputStream(ctx, cwb->ba, cwb->pos, s);
-		}
-		else {
-			res = (knh_Object_t*)knh_Bytes_openOutputStream(ctx, cwb->ba, cwb->pos, s);
-		}
-		knh_cwb_close(cwb);
-	}
-	return res;
-}
-
-static const knh_LinkDPI_t LINK_SCRIPT = {
-	"script", "byte[]|InputStream|OutputStream", FILE_hasType, SCRIPT_exists, SCRIPT_newObjectNULL,
-};
+//static knh_bool_t PACKAGE_hasType(CTX ctx, knh_class_t cid)
+//{
+//	return (cid == CLASS_Bytes || cid == CLASS_InputStream);
+//}
+//
+//static knh_bool_t PACKAGE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+//{
+//	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//	knh_bytes_t bpath = knh_bytes_next(path, ':');
+//	bpath = knh_cwb_ensure(ctx, cwb, bpath, K_PATHMAX);
+//	knh_bool_t res = knh_buff_addPackagePath(ctx, cwb->ba, cwb->pos, bpath);
+//	knh_cwb_close(cwb);
+//	return res;
+//}
+//
+//static knh_Object_t* PACKAGE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+//{
+//	knh_Object_t *res = NULL;
+//	if(cid == CLASS_Bytes) {
+//		knh_Bytes_t* ba = new_Bytes(ctx, NULL, 256);
+//		if(!knh_buff_addPackagePath(ctx, ba, 0, S_tobytes(s))) {
+//			knh_Object_toNULL(ctx, ba);
+//		}
+//		return UPCAST(ba);
+//	}
+//	if(cid == CLASS_InputStream) {
+//		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//		knh_bytes_t bpath = knh_bytes_next(S_tobytes(s), ':');
+//		knh_buff_addPackagePath(ctx, cwb->ba, cwb->pos, bpath);
+//		res = (knh_Object_t*)knh_Bytes_openInputStream(ctx, cwb->ba, cwb->pos, s);
+//		knh_cwb_close(cwb);
+//	}
+//	return res;
+//}
+//
+//static const knh_LinkDPI_t LINK_PKG = {
+//	"pkg", "byte[]|InputStream", PACKAGE_hasType, PACKAGE_exists, PACKAGE_newObjectNULL,
+//};
+//
+//void knh_buff_addScriptPath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_NameSpace_t *ns, knh_bytes_t path)
+//{
+//	knh_bytes_t bpath = knh_bytes_next(path, ':');
+//	knh_buff_addospath(ctx, ba, pos, 0, S_tobytes(ns->rpath));
+//	if(!knh_isdir(ctx, S_tochar(ns->rpath))) {
+//		knh_buff_trim(ctx, ba, pos, '/');
+//	}
+//	knh_buff_addospath(ctx, ba, pos, 1, bpath);
+//}
+//
+//static knh_bool_t SCRIPT_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+//{
+//	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//	knh_bytes_t bpath = knh_bytes_next(path, ':');
+//	bpath = knh_cwb_ensure(ctx, cwb, bpath, K_PATHMAX);
+//	knh_buff_addScriptPath(ctx, cwb->ba, cwb->pos, ns, bpath);
+//	knh_bool_t res = knh_exists(ctx, knh_cwb_tochar(ctx, cwb));
+//	knh_cwb_close(cwb);
+//	return res;
+//}
+//
+//static knh_Object_t* SCRIPT_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+//{
+//	knh_Object_t *res = NULL;
+//	if(cid == CLASS_Bytes) {
+//		knh_Bytes_t* ba = new_Bytes(ctx, NULL, 256);
+//		knh_buff_addScriptPath(ctx, ba, 0, ns, S_tobytes(s));
+//		return UPCAST(ba);
+//	}
+//	if(cid == CLASS_InputStream || cid == CLASS_OutputStream) {
+//		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//		knh_bytes_t bpath = knh_bytes_next(S_tobytes(s), ':');
+//		knh_buff_addScriptPath(ctx, cwb->ba, cwb->pos, ns, bpath);
+//		if(cid == CLASS_InputStream) {
+//			res = (knh_Object_t*)knh_Bytes_openInputStream(ctx, cwb->ba, cwb->pos, s);
+//		}
+//		else {
+//			res = (knh_Object_t*)knh_Bytes_openOutputStream(ctx, cwb->ba, cwb->pos, s);
+//		}
+//		knh_cwb_close(cwb);
+//	}
+//	return res;
+//}
+//
+//static const knh_LinkDPI_t LINK_SCRIPT = {
+//	"script", "byte[]|InputStream|OutputStream", FILE_hasType, SCRIPT_exists, SCRIPT_newObjectNULL,
+//};
 
 static knh_bool_t CLASS_hasType(CTX ctx, knh_class_t cid)
 {
@@ -1095,16 +1067,17 @@ static const knh_ConvDSPI_t TO_upper = {
 void knh_loadSystemDriver(CTX ctx, knh_NameSpace_t *ns)
 {
 	const knh_PackageLoaderAPI_t *api = knh_getPackageLoaderAPI();
-	api->addLinkDPI(ctx, ns, "link", &LINK_LINK);
+//	api->addLinkDPI(ctx, ns, "link", &LINK_LINK);
 	api->addLinkDPI(ctx, ns, "charset", &LINK_CHARSET);
 	api->addLinkDPI(ctx, ns, "to", &LINK_TOLINK);
 	api->addLinkDPI(ctx, ns, "from", &LINK_FROMLINK);
-	api->addLinkDPI(ctx, ns, "file", &LINK_FILE);
 //	api->addLinkDPI(ctx, ns, "lib", &LINK_LIB);
-	api->addLinkDPI(ctx, ns, "pkg", &LINK_PKG);
-	api->addLinkDPI(ctx, ns, "script", &LINK_SCRIPT);
+//	api->addLinkDPI(ctx, ns, "pkg", &LINK_PKG);
+//	api->addLinkDPI(ctx, ns, "script", &LINK_SCRIPT);
 	api->addLinkDPI(ctx, ns, "class", &LINK_CLASS);
+
 #ifdef K_USING_POSIX_
+	api->addLinkDPI(ctx, ns, "file", &LINK_FILE);
 	api->addLinkDPI(ctx, ns, "dir", &LINK_DIR);
 #endif
 

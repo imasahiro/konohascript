@@ -2101,6 +2101,48 @@ static knh_ClassDef_t SemanticsDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
+/* Path */
+
+static void Path_init(CTX ctx, knh_RawPtr_t *o)
+{
+	knh_Path_t *pth = (knh_Path_t*)o;
+	KNH_INITv(pth->urn, TS_EMPTY);
+	pth->ospath = S_tochar(pth->urn);
+	pth->asize = 0;
+}
+
+static void Path_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
+{
+	knh_Path_t *pth = (knh_Path_t*)o;
+	KNH_ADDREF(ctx, pth->urn);
+	KNH_SIZEREF(ctx);
+}
+
+static void Path_free(CTX ctx, knh_RawPtr_t *o)
+{
+	knh_Path_t *pth = (knh_Path_t*)o;
+	if(pth->asize > 0) {
+		KNH_FREE(ctx, (void*)pth->ospath, pth->asize);
+		pth->ospath = NULL;
+		pth->asize = 0;
+	}
+}
+
+static void Path_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
+{
+	knh_Path_t *pth = (knh_Path_t*)o;
+	knh_write(ctx, w, S_tobytes(pth->urn));
+}
+
+static knh_ClassDef_t PathDef = {
+	Path_init, TODO_initcopy, Path_reftrace, Path_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Path_p,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"Path", CFLAG_Path, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
 /* --------------- */
 /* InputStream */
 
@@ -2117,7 +2159,6 @@ static void InputStream_init(CTX ctx, knh_RawPtr_t *o)
 	b->pos = 0; b->posend = 0;
 	b->stat_size = 0;
 	in->b = b;
-//	DBG_P("@@@@@@@@@@@@@@@@ INIT InputStream !! %p @@@@@@@@@@@@@@@@@@@", o);
 }
 
 static void InputStream_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)

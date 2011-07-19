@@ -751,6 +751,15 @@ def write_name_h(f, data):
         write_class_h(f, c, cid)
         cid += 1    
 
+    f.write('''
+#ifdef K_INTERNAL ''')
+    for c in data.STRUCT_LIST :
+        f.write('''
+#define USE_STRUCT_%s''' % c.cname)
+    f.write('''
+#endif/*K_INTERNAL*/
+''')
+
     write_chapter(f, 'CLASS')
     for c in data.CLASS_LIST :
         if c.struct != None: continue

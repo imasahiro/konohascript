@@ -794,6 +794,21 @@ struct knh_Semantics_t {
 #define KNH_STDERR         (ctx->err)
 
 /* ------------------------------------------------------------------------ */
+//## class Path Object;
+//## flag Path Trusted        1 - is set * *;
+//## flag Path Temporary      2 - is set * *;
+
+typedef struct knh_Path_t knh_Path_t;
+#ifdef USE_STRUCT_Path
+struct knh_Path_t {
+	knh_hObject_t h;
+	const char         *ospath;
+	size_t               asize;
+	struct knh_String_t  *urn;
+};
+#endif
+
+/* ------------------------------------------------------------------------ */
 //## class InputStream Object;
 
 typedef knh_uintptr_t knh_io_t;
@@ -979,17 +994,17 @@ typedef struct knh_SystemEX_t {
 	struct knh_String_t*       enc;
 
 	struct knh_DictSet_t       *tokenDictSet;
-	struct knh_DictSet_t   *nameDictCaseSet;
+	struct knh_DictSet_t       *nameDictCaseSet;
 	size_t                      namecapacity;
 	knh_nameinfo_t             *nameinfo;
-	struct knh_DictSet_t      *urnDictSet;
-	struct knh_Array_t        *urns;
+	struct knh_DictSet_t       *urnDictSet;
+	struct knh_Array_t         *urns;
 
-	struct knh_DictSet_t      *ClassNameDictSet;
-	struct knh_DictSet_t  *EventDictCaseSet;
-	struct knh_DictMap_t      *PackageDictMap;
-	struct knh_DictMap_t      *URNAliasDictMap;
-	struct knh_DictSet_t      *dspiDictSet;
+	struct knh_DictSet_t       *ClassNameDictSet;
+	struct knh_DictSet_t       *EventDictCaseSet;
+	struct knh_DictMap_t       *PackageDictMap;
+	struct knh_DictMap_t       *URNAliasDictMap;
+	struct knh_DictSet_t       *dspiDictSet;
 //	struct knh_DictSet_t *SpecFuncDictSet;
 //	struct knh_Array_t   *UsingResources;
 //	struct knh_DictMap_t *listenerDictMap;

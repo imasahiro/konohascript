@@ -35,6 +35,141 @@ extern "C" {
 
 /* ************************************************************************ */
 
+void knh_buff_addpath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, knh_bytes_t t)
+{
+	size_t i;
+	if(needsSEP) {
+		knh_bytes_t b = {{ba->bu.text}, pos};
+		if(!(b.len > 0 && b.buf[b.len-1] == '/')) {
+			knh_Bytes_putc(ctx, ba, '/');
+		}
+	}
+	for(i = 0; i < t.len; i++) {
+		int ch = t.ubuf[i];
+		knh_Bytes_putc(ctx, ba, ch);
+	}
+}
+
+void knh_buff_addospath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, knh_bytes_t t)
+{
+	size_t i;
+	if(needsSEP) {
+		knh_bytes_t b = {{ba->bu.text}, pos};
+		if(!(b.len > 0 && b.buf[b.len-1] == K_SEP)) {
+			knh_Bytes_putc(ctx, ba, K_SEP);
+		}
+	}
+	for(i = 0; i < t.len; i++) {
+		int ch = t.ubuf[i];
+		if(ch == '\\' || ch == '/') ch = K_SEP;
+		if(ch < 128) {
+			knh_Bytes_putc(ctx, ba, ch);
+			continue;
+		}
+		knh_Bytes_putc(ctx, ba, ch);
+	}
+}
+
+void knh_buff_trim(CTX ctx, knh_Bytes_t *ba, size_t pos, int ch)
+{
+	knh_uchar_t *ubuf = ba->bu.ubuf + pos;
+	long i, len = BA_size(ba) - pos;
+	if(ch == '/' && ch != K_SEP) ch = K_SEP;
+	for(i = len - 1; i >= 0 ; i--) {
+		if(ubuf[i] == ch) {
+			knh_Bytes_clear(ba, pos + i);
+			return;
+		}
+	}
+}
+
+KNHAPI2(knh_bool_t) knh_String_ospath(CTX ctx, knh_String_t *s, knh_NameSpace_t *ns, char *buf, size_t bufsiz)
+{
+	knh_bool_t res = 0;
+	knh_index_t loc = knh_bytes_index(S_tobytes(s), ':');
+	if(loc == -1) {
+		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(ns->rpath));
+		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(s));
+		const char *p = knh_cwb_tochar(ctx, cwb);
+		size_t len = knh_strlen(p) + 1;
+		if(len < bufsiz) {
+			knh_memcpy(buf, p, len); res = 1;
+		}
+		knh_cwb_close(cwb);
+	}
+	else {
+		knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, ns, S_tobytes(s));
+		if(lnk != NULL && knh_Link_hasType(ctx, lnk, CLASS_Bytes)) {
+			knh_Bytes_t *ba = (knh_Bytes_t*)knh_Link_newObjectNULL(ctx, lnk, ns, s, CLASS_Bytes);
+			if(ba != NULL) {
+				KNH_SETv(ctx, ctx->esp[0].o, ba);  //TOGC
+				knh_Bytes_ensureZero(ctx, ba);
+				if(BA_size(ba) + 1 < bufsiz) {
+					knh_memcpy(buf, ba->bu.buf, BA_size(ba) + 1); res = 1;
+				}
+			}
+		}
+	}
+	if(res == 1) {
+		DBG_P("ospath='%s'", buf);
+	}
+	else {
+		buf[0] = 0;
+	}
+	return res;
+}
+
+static const char *new_cwbtext(CTX ctx, knh_cwb_t *cwb, size_t *lenref)
+{
+	const char *p = knh_cwb_tochar(ctx, cwb);
+	size_t len = knh_strlen(p) + 1;
+	char *newtext = KNH_MALLOC(ctx, len);
+	knh_memcpy(newtext, p, len);
+	lenref[0] = len;
+	return (const char*)newtext;
+}
+
+KNHAPI2(knh_Path_t*) new_Path(CTX ctx, knh_String_t *path)
+{
+	knh_Path_t *pth = new_(Path);
+	KNH_SETv(ctx, pth->urn, path);
+	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(path));
+	if(knh_strcmp(S_tochar(path), knh_cwb_tochar(ctx, cwb)) == 0) {
+		pth->ospath = S_tochar(path);
+		pth->asize = 0;
+	}
+	else {
+		pth->ospath = new_cwbtext(ctx, cwb, &(pth->asize));
+	}
+	knh_cwb_close(cwb);
+	return pth;
+}
+
+static void knh_buff_addScriptPath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_NameSpace_t *ns, knh_bytes_t path)
+{
+	knh_bytes_t bpath = knh_bytes_next(path, ':');
+	knh_buff_addospath(ctx, ba, pos, 0, S_tobytes(ns->rpath));
+	if(!knh_isdir(ctx, S_tochar(ns->rpath))) {
+		knh_buff_trim(ctx, ba, pos, '/');
+	}
+	knh_buff_addospath(ctx, ba, pos, 1, bpath);
+}
+
+knh_Path_t *new_ScriptPath(CTX ctx, knh_String_t *urn, knh_NameSpace_t *ns)
+{
+	knh_Path_t *pth = new_(Path);
+	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	KNH_SETv(ctx, pth->urn, urn);
+	knh_bytes_t bpath = knh_bytes_next(S_tobytes(urn), ':');
+	knh_buff_addScriptPath(ctx, cwb->ba, cwb->pos, ns, bpath);
+	pth->ospath = new_cwbtext(ctx, cwb, &(pth->asize));
+	knh_cwb_close(cwb);
+	return pth;
+}
+
+/* ------------------------------------------------------------------------ */
 
 KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn, const char *mode)
 {
@@ -781,9 +916,6 @@ KNHAPI2(void) knh_printf(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...)
 	knh_vprintf(ctx, w, fmt, ap);
 	va_end(ap);
 }
-
-/* ------------------------------------------------------------------------ */
-
 
 /* ------------------------------------------------------------------------ */
 

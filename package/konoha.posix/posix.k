@@ -25,7 +25,7 @@
  *
  ****************************************************************************/
 
-include lib:gluelink;
+include "lib:gluelink";
 
 @Native String System.getHostName();
 
@@ -40,18 +40,33 @@ include lib:gluelink;
 @Native int System.getPid();
 @Native int System.getPPid();
 @Native boolean System.kill(int pid, int signal);
-@Native int System.sleep(Int sec);
+@Native int System.sleep(int sec);
 @Native boolean System.usleep(int sec);
 
 // file system
-@Native String System.getCwd();
-//@Native Boolean System.chDir(String dirname);
+@Native boolean System.link(Path path, Path path2);
+@Native boolean System.symlink(Path path, Path path2);
+@Native boolean System.rename(Path path, Path path2);
+@Native boolean System.unlink(Path path);
 
-// dir
+@Native String System.getCwd();
+@Native boolean System.chdir(Path path);
+@Native boolean System.chroot(Path path);
+
+// DIR
 @Native class Dir;
-@Native @Throwable Dir System.openDir(String path, NameSpace _, Dir _);
+@Native @Throwable Dir System.openDir(Path path);
 @Native @Iterative String Dir.readName();
 @Native void Dir.close();
 @Native @Iterative Map Dir.read();
+
+// FILE
+@Native class File;
+@Native @Throwable File System.fopen(Path path, String mode);
+@Native int File.getc();
+@Native int File.read(Bytes buf, int offset, int len);
+@Native boolean File.putc(int ch);
+@Native int File.write(Bytes buf, int offset, int len);
+@Native void File.close();
 
 //include func:SystemCONST;

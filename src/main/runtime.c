@@ -182,15 +182,14 @@ void knh_loadScriptPackageList(CTX ctx, const char *pkglist)
 		L_NEXT:;
 		isExists = 0;
 		while(i < t.len + 1) {
-			char *c = buf + 4;
-			buf[0] = 'p'; buf[1] = 'k'; buf[2] = 'g'; buf[3] = ':';
+			char *c = buf;
 			while(i < t.len + 1) {
 				int ch = t.ubuf[i];
 				i++;
 				if(ch ==':' || ch == ';' || ch == ',' || ch == 0) {
 					*c = 0;
 					DBG_P("loading '%s'", buf);
-					if(!knh_loadScriptPackage(ctx, B(buf)) && isExists == 0) {
+					if(!knh_loadPackage(ctx, B(buf)) && isExists == 0) {
 						KNH_LOG("package not found: package=%s", buf+8);
 					}
 					goto L_NEXT;

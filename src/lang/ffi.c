@@ -388,8 +388,7 @@ static void rconv_String(CTX ctx, knh_sfp_t *sfp, void *rvalue _RIX)
 static void rconv_RawPtr(CTX ctx, knh_sfp_t *sfp, void *rvalue _RIX)
 {
 	void** v = (void**)rvalue;
-	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
-	RETURN_(knh_Method_newRawPtr(ctx, mtd, v[0]));
+	RETURN_(new_RawPtrByReturnType(ctx, sfp, v[0]));
 }
 
 static ffi_rfunc bcid_rfunc(knh_class_t bcid)
@@ -569,6 +568,7 @@ static void *knh_open_gluelink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t libname
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(ns->rpath));
 	knh_buff_trim(ctx, cwb->ba, cwb->pos, '.');
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT(K_OSDLLEXT));
+	DBG_P("@@@@@@ '%s'", knh_cwb_tochar(ctx, cwb));
 	p = knh_dlopen(ctx, knh_cwb_tochar(ctx, cwb));
 	knh_cwb_close(cwb);
 	if(p != NULL) {
@@ -614,6 +614,7 @@ static void *knh_open_ffilink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t libname)
 knh_bool_t knh_NameSpace_addFFIlink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	knh_bytes_t libname = knh_bytes_next(path, ':');
+	DBG_P("ffi=%s", path.text);
 	if(libname.text[0] == '*' || knh_bytes_equals(libname, STEXT("gluelink"))) {
 		ns->gluehdr = knh_open_gluelink(ctx, ns, libname);
 		return (ns->gluehdr != NULL);

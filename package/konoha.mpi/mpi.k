@@ -1,4 +1,4 @@
-include lib:gluelink;
+include "lib:gluelink";
 
 @Native class MPIContext;
 @Native class MPIRequest;
