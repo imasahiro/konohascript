@@ -2162,7 +2162,8 @@ static void ASM_PMOV(CTX ctx, int isUNBOX, int a, int b)
 				DBG_P("r0=%d, r1=%d, def=%d", r0, r1, defidx);
 				if((OPCODE_bNOT <= opcode && opcode <= OPCODE_fGTEC)
 				  || (OPCODE_iCAST <= opcode && opcode <= OPCODE_fCAST)
-				  || (OPCODE_BGETIDX <= opcode && opcode <= OPCODE_NSETIDXC)) {
+				  || (OPCODE_BGETIDX <= opcode && opcode <= OPCODE_NSETIDXC)
+				  || (OPCODE_NSET == opcode)) {
 					opTR->a = r0;
 					return ;
 				}

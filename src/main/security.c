@@ -29,7 +29,7 @@
 
 #include"commons.h"
 
-#if K_USING_WIN32_
+#ifdef K_USING_WIN32_
 #include <winsock2.h>
 #define _WIN32_DCOM
 

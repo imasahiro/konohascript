@@ -102,7 +102,7 @@ METHOD Math_ceil(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNf_(ceil(Float_to(double, sfp[1])));
 }
 
-#if K_USING_WIN32_
+#ifdef K_USING_WIN32_
 METHOD Math_round(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(round(Float_to(double, sfp[1])));

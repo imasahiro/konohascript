@@ -83,7 +83,7 @@ static void ClassCONST_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t 
 	}
 }
 
-static char *MNOP__(knh_methodn_t mn)
+static const char *MNOP__(knh_methodn_t mn)
 {
 	switch(mn) {
 	case MN_opNOT: return "!x";
@@ -138,7 +138,7 @@ static void ClassOP_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *ct
 	char buf[40];
 	for(i = 0; i < knh_Array_size(a); i++) {
 		knh_Method_t *mtd = a->methods[i];
-		char *op = MNOP__(SP(mtd)->mn);
+		const char *op = MNOP__(SP(mtd)->mn);
 		if(op == NULL) continue;
 		if(hasCaption == 0) {
 			knh_write_ctext(ctx, w, _("OPERATOR"));

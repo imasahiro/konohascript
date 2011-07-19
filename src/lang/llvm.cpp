@@ -34,12 +34,16 @@
 #include <llvm/Function.h>
 #include <llvm/BasicBlock.h>
 #include <llvm/Instructions.h>
+#include <llvm/ADT/OwningPtr.h>
+#include <llvm/Support/system_error.h>
 #include <llvm/Support/ManagedStatic.h>
+#include <llvm/Support/MemoryBuffer.h>
+#include <llvm/Support/IRBuilder.h>
 #include <llvm/Pass.h>
 #include <llvm/PassManager.h>
 #include <llvm/Analysis/Verifier.h>
 #include <llvm/Analysis/Passes.h>
-#include <llvm/Support/IRBuilder.h>
+#include <llvm/Bitcode/ReaderWriter.h>
 #include <llvm/ExecutionEngine/JIT.h>
 #include <llvm/ExecutionEngine/Interpreter.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
@@ -51,8 +55,15 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <memory>
 
 #undef HAVE_SYS_TYPES_H
+#undef HAVE_SYS_STAT_H
+#undef HAVE_UNISTD_H
+#undef HAVE_SYS_TIME_H
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_VERSION
 #include "commons.h"
 #define ASM_PREFIX llvmasm::
 #define LLVM_TODO(str) {\
@@ -2900,6 +2911,13 @@ void AsmContext::Finish(CTX ctx, knh_Method_t *mtd) {
 	knh_Method_setFunc(ctx, mtd, f);
 }
 
+//static void parseFile(const char *fname)
+//{
+//	std::string parse_error;
+//	OwningPtr<MemoryBuffer> buffer;
+//	error_code error = MemoryBuffer::getFile(fname, buffer);
+//	std::auto_ptr<Module> m(ParseBitcodeFile(buffer.get(), LLVM_CONTEXT(), &parse_error));
+//}
 
 #define _ALLOW_asm _EXPR_asm
 #define _DENY_asm _EXPR_asm
@@ -2957,6 +2975,8 @@ void knh_llvm_init(int argc, int n, const char **argv)
 	using namespace llvm;
 	using namespace llvmasm;
 	InitializeNativeTarget();
+	//TODO multithread mode
+	//llvm_start_multithreaded();
 	mod_global = new Module("test", LLVM_CONTEXT());
 	ee_global = EngineBuilder(mod_global).setEngineKind(EngineKind::JIT).create();
 	ConstructObjectStruct(mod_global);

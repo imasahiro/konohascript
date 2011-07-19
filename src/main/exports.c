@@ -203,7 +203,7 @@ static void knh_loadSystemData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 			knh_ClassTBL_t *ct = varClassTBL(cid0);
 			if(ct == NULL) {
 				knh_class_t cid = new_ClassId(ctx);
-				ct = varClassTBL(cid0);
+				ct = varClassTBL(cid);
 				KNH_ASSERT(cid == cid0);
 			}
 			ct->cflag = (knh_flag_t)data[2];
