@@ -10,7 +10,7 @@ DEFINES = -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -DK_USING_BOX2D -DK_USING_OPENC
 CFLAGS = -O0 -g3 -pipe -g -gdwarf-2 -Wall -W -arch x86_64 -Xarch_x86_64 -mmacosx-version-min=10.5 $(DEFINES) -I/usr/local/include/ -I./include/ -I$(QTDIR)/include -Wall -W -fPIC $(INCPATH) $(OPENCV_FLAGS) -DNDEBUG
 LDLIBS = $(LFLAGS) $(LIBS) -lkonoha1 -lBox2D -ldel
 
-pkgname = Xt
+pkgname = gwt
 library = "$(pkgname).dylib"
 objs = build/visual.o\
 	build/moc_visual.o\
