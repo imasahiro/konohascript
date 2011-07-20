@@ -824,6 +824,8 @@ static void DBG_checkOnArena(CTX ctx, void *used K_TRACEARGV)
 		o = ctx->freeObjectList;\
 		((knh_context_t*)ctx)->freeObjectList = (Object*)(o)->ref;\
 		prefetch(o->ref);\
+		/*TODO(imasahiro) measure GC performance */\
+		o->ref = NULL;\
 		/*DBG_UNOBJdec(ctx ,1);*/\
 	}\
 
