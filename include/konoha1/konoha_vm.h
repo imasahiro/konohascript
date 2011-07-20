@@ -359,7 +359,7 @@ extern "C" {
 		knh_sfp_t *sfp_ = SFP(rshift(rbp,thisidx));\
 		knh_class_t scid = SP(tmr_)->scid, this_cid = O_cid(sfp_[0].o);\
 		if(this_cid != scid) {\
-			tmr_ = knh_findTypeMapNULL(ctx, scid, SP(tmr)->tcid, 1);\
+			tmr_ = knh_findTypeMapNULL(ctx, scid, SP(tmr)->tcid);\
 			KNH_SETv(ctx, ((klr_TCAST_t*)op)->cast, tmr_);\
 		}\
 		klr_setesp(ctx, SFP(rshift(rbp, espidx)));\
@@ -372,7 +372,7 @@ extern "C" {
 		if(!class_isa(this_cid, tcid)) {\
 			knh_class_t scid = SP(tmr_)->scid;\
 			if(this_cid != scid) {\
-				tmr_ = knh_findTypeMapNULL(ctx, scid, tcid, 0);\
+				tmr_ = knh_findTypeMapNULL(ctx, scid, tcid);\
 				KNH_SETv(ctx, ((klr_ACAST_t*)op)->cast, tmr_);\
 			}\
 			/*klr_setesp(ctx, SFP(rshift(rbp, espidx)));*/\

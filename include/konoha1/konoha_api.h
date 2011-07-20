@@ -26,6 +26,7 @@ KNHAPI2(knh_bool_t) Method_isAbstract(knh_Method_t *mtd);
 KNHAPI2(void) knh_addTypeMap(CTX ctx, knh_TypeMap_t *tmr, int initCache);
 KNHAPI2(void) knh_TypeMap_exec(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp _RIX);
 KNHAPI2(knh_TypeMap_t*) new_TypeMap(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func);
+KNHAPI2(knh_TypeMap_t*) new_TypeMapData(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func, Object *mapdata);
 KNHAPI2(int) knh_isVerbose(void);
 KNHAPI2(void) THROW_OutOfRange(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t max);
 KNHAPI2(knh_InputStream_t*) new_InputStreamDPI(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dspi);
@@ -90,6 +91,7 @@ typedef struct knh_api2_t {
 	knh_String_t* (*new_String)(CTX ctx, const char *str);
 	knh_String_t* (*new_String_)(CTX ctx, knh_class_t cid, knh_bytes_t t, knh_String_t *memoNULL);
 	knh_TypeMap_t* (*new_TypeMap)(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func);
+	knh_TypeMap_t* (*new_TypeMapData)(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func, Object *mapdata);
 	knh_bool_t (*Method_isAbstract)(knh_Method_t *mtd);
 	knh_bool_t  (*String_ospath)(CTX ctx, knh_String_t *s, knh_NameSpace_t *ns, char *buf, size_t bufsiz);
 	knh_class_t  (*type_tocid)(CTX ctx, knh_type_t ptype, knh_class_t this_cid);
@@ -127,7 +129,7 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)35774261)
+#define K_API2_CRC32 ((size_t)843591150)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -154,6 +156,7 @@ static const knh_api2_t* getapi2(void) {
 		new_String,
 		new_String_,
 		new_TypeMap,
+		new_TypeMapData,
 		Method_isAbstract,
 		knh_String_ospath,
 		knh_type_tocid,
@@ -217,6 +220,7 @@ static const knh_api2_t* getapi2(void) {
 #define new_String   ctx->api2->new_String
 #define new_String_   ctx->api2->new_String_
 #define new_TypeMap   ctx->api2->new_TypeMap
+#define new_TypeMapData   ctx->api2->new_TypeMapData
 #define Method_isAbstract   ctx->api2->Method_isAbstract
 #define knh_String_ospath   ctx->api2->String_ospath
 #define knh_type_tocid   ctx->api2->type_tocid
@@ -475,7 +479,9 @@ void knh_NameSpace_addFmt(CTX ctx, knh_NameSpace_t *ns, knh_Method_t *mtd);
 void knh_addTypeMapFunc(CTX ctx, knh_flag_t flag, knh_type_t stype, knh_type_t ttype, knh_Ftypemap fTYPEMAP, Object *mapdata);
 knh_TypeMap_t *new_TypeMapMethod(CTX ctx, knh_flag_t flag, knh_Method_t *mtd);
 knh_bool_t TypeMap_isNoSuchMapping(knh_TypeMap_t *tmr);
-knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0, int isT);
+void knh_addTypeMapRule(CTX ctx, knh_class_t scid, knh_class_t tcid, knh_Ftypemaprule func);
+knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0);
+void knh_loadSystemTypeMapRule(CTX ctx);
 knh_bool_t knh_Link_hasType(CTX ctx, knh_Link_t *flnk, knh_class_t tcid);
 knh_bool_t knh_Link_exists(CTX ctx, knh_Link_t *flnk, knh_NameSpace_t *ns, knh_bytes_t fn);
 knh_Object_t *knh_Link_newObjectNULL(CTX ctx, knh_Link_t *flnk, knh_NameSpace_t *ns, knh_String_t *fi, knh_class_t tcid);

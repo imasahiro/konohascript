@@ -772,7 +772,7 @@ void knh_NPROP(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct
 static void _VARGS(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
 	knh_Array_t *a = new_Array(ctx, ct->cid, ctx->esp - (sfp - 1));
-	a->api->add(ctx, a, sfp - 1);
+	a->api->multiadd(ctx, a, sfp - 1);
 	KNH_SETv(ctx, sfp[c].o, a);
 }
 static void _bBOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)

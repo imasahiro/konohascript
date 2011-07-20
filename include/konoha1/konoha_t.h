@@ -939,7 +939,7 @@ typedef struct knh_share_t {
 
 	/* system */
 	struct knh_DictMap_t     *sysAliasDictMapNULL;
-
+	struct knh_PtrMap_t      *inferPtrMap;
 	struct knh_PtrMap_t      *constPtrMap;
 
 	/* thread */

@@ -296,9 +296,11 @@ struct knh_Range_t {
 
 typedef struct {
 	size_t   (*index)(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t size);
-	void     (*get)(CTX ctx, knh_sfp_t *sfp, size_t n _RIX);
+	void     (*fastget)(CTX ctx, knh_sfp_t *sfp, size_t n _RIX);
+	void     (*get)(CTX ctx, struct knh_Array_t *, size_t n, knh_sfp_t *sfp);
 	void     (*set)(CTX ctx, struct knh_Array_t *, size_t n, knh_sfp_t *sfp);
 	void     (*add)(CTX ctx, struct knh_Array_t *, knh_sfp_t *sfp);
+	void     (*multiadd)(CTX ctx, struct knh_Array_t *, knh_sfp_t *sfp);
 } knh_ArrayAPI_t;
 
 typedef struct knh_Array_t knh_Array_t;
@@ -513,6 +515,8 @@ struct knh_TypeMap_t {
 	};
 	struct knh_TypeMap_t *tmr2;
 };
+
+typedef knh_TypeMap_t* (*knh_Ftypemaprule)(CTX ctx, const knh_ClassTBL_t *, const knh_ClassTBL_t *);
 
 /* ------------------------------------------------------------------------ */
 //## class Link Object;

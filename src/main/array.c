@@ -108,16 +108,26 @@ void knh_Array_clear(CTX ctx, knh_Array_t *a, size_t n)
 /* ------------------------------------------------------------------------ */
 /* [api] */
 
-static void Farray_getO(CTX ctx, knh_sfp_t *sfp, size_t n2 _RIX)
+static void Farray_fastgetO(CTX ctx, knh_sfp_t *sfp, size_t n2 _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	RETURN_(a->list[n2]);
 }
 
-static void Farray_getN(CTX ctx, knh_sfp_t *sfp, size_t n2 _RIX)
+static void Farray_fastgetN(CTX ctx, knh_sfp_t *sfp, size_t n2 _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	RETURNd_(a->nlist[n2]);
+}
+
+static void Farray_getO(CTX ctx, knh_Array_t *a, size_t n2, knh_sfp_t *vsfp)
+{
+	KNH_SETv(ctx, vsfp[0].o, a->list[n2]);
+}
+
+static void Farray_getN(CTX ctx, knh_Array_t *a, size_t n2, knh_sfp_t *vsfp)
+{
+	vsfp[0].ndata = a->nlist[n2];
 }
 
 static void Farray_setO(CTX ctx, knh_Array_t *a, size_t n2, knh_sfp_t *vsfp)
@@ -130,7 +140,28 @@ static void Farray_setN(CTX ctx, knh_Array_t *a, size_t n2, knh_sfp_t *vsfp)
 	a->nlist[n2] = vsfp[0].ndata;
 }
 
+
 static void Farray_addO(CTX ctx, knh_Array_t *a, knh_sfp_t *v)
+{
+	size_t capacity = a->dim->capacity;
+	if(!(a->size + 1 < capacity)) {
+		knh_Array_grow(ctx, a, k_grow(a->size), a->size + 1);
+	}
+	KNH_INITv(a->list[a->size], v[0].o);
+	a->size += 1;
+}
+
+static void Farray_addN(CTX ctx, knh_Array_t *a, knh_sfp_t *v)
+{
+	size_t capacity = a->dim->capacity;
+	if(!(a->size + 1 < capacity)) {
+		knh_Array_grow(ctx, a, k_grow(a->size), a->size + 1);
+	}
+	a->nlist[a->size] = v[0].ndata;
+	a->size += 1;
+}
+
+static void Farray_multiaddO(CTX ctx, knh_Array_t *a, knh_sfp_t *v)
 {
 	size_t i, n = knh_stack_argc(ctx, v);
 	size_t capacity = a->dim->capacity;
@@ -143,7 +174,7 @@ static void Farray_addO(CTX ctx, knh_Array_t *a, knh_sfp_t *v)
 	a->size += n;
 }
 
-static void Farray_addN(CTX ctx, knh_Array_t *a, knh_sfp_t *v)
+static void Farray_multiaddN(CTX ctx, knh_Array_t *a, knh_sfp_t *v)
 {
 	size_t i, n = knh_stack_argc(ctx, v);
 	size_t capacity = a->dim->capacity;
@@ -158,9 +189,11 @@ static void Farray_addN(CTX ctx, knh_Array_t *a, knh_sfp_t *v)
 
 static knh_ArrayAPI_t ArrayOAPI = {
 	knh_array_index,
+	Farray_fastgetO,
 	Farray_getO,
 	Farray_setO,
 	Farray_addO,
+	Farray_multiaddO,
 };
 
 knh_Array_t* new_Array0(CTX ctx, size_t capacity)
@@ -178,9 +211,11 @@ knh_Array_t* new_Array0(CTX ctx, size_t capacity)
 
 static knh_ArrayAPI_t ArrayNAPI = {
 	knh_array_index,
+	Farray_fastgetN,
 	Farray_getN,
 	Farray_setN,
 	Farray_addN,
+	Farray_multiaddN,
 };
 
 void knh_Array_initAPI(CTX ctx, knh_Array_t *a)

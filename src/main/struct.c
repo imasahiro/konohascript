@@ -1108,6 +1108,41 @@ static void Array_free(CTX ctx, knh_RawPtr_t *o)
 	knh_dimfree(ctx, a->list, a->dim);
 }
 
+static int Array_compareTo(knh_RawPtr_t *o, knh_RawPtr_t *o2)
+{
+	if(O_cTBL(o) == O_cTBL(o2)) {
+		knh_Array_t *a = (knh_Array_t*)o;
+		knh_Array_t *a2 = (knh_Array_t*)o2;
+		size_t i, asize = knh_Array_size(a), asize2 = knh_Array_size(a2);
+		if(Array_isNDATA(a)) {
+			for(i = 0; i < asize; i++) {
+				if(!(i < asize2)) return -1;
+				if(a->nlist[i] == a2->nlist[i]) continue;
+				if(O_cTBL(a)->p1 == CLASS_Float) {
+					knh_float_t dim = a->flist[i] - a2->flist[i];
+					if(dim < 0) return -1;
+					return (dim > 0) ? 1: 0;
+				}
+				else {
+					knh_int_t dim = a->ilist[i] - a2->ilist[i];
+					if(dim < 0) return -1;
+					return (dim > 0) ? 1: 0;
+				}
+			}
+		}
+		else {
+			for(i = 0; i < asize; i++) {
+				if(!(i < asize2)) return -1;
+				if(a->list[i] == a2->list[i]) continue;
+				int res = knh_Object_compareTo(a->list[i], a2->list[i]);
+				if(res != 0) return res;
+			}
+		}
+		return (asize == asize2) ? 0 : 1;
+	}
+	return (int)(o - o2);
+}
+
 static void Array_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_putc(ctx, w, '[');
@@ -1190,7 +1225,7 @@ static void Array_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t
 
 static knh_ClassDef_t ArrayDef = {
 	Array_init, Array_initcopy, Array_reftrace, Array_free,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Array_p,
+	DEFAULT_checkin, DEFAULT_checkout, Array_compareTo, Array_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
 	DEFAULT_findTypeMapNULL, Array_wdata, DEFAULT_2, DEFAULT_3,
 	"Array", CFLAG_Array, 0, NULL,

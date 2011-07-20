@@ -234,7 +234,7 @@ knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh
 			goto L_RETURN;
 		}
 		else {
-			knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, vart, reqt, 0);
+			knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, vart, reqt);
 			if(tmr != NULL) {
 				int isCOERCION = (!!(FLAG_is(opflag, _COERCION))) || (!!(TypeMap_isSemantic(tmr)));
 				DBG_P("reqt=%s, vart=%s isSemantic=%d, isConst=%d", TYPE__(reqt), TYPE__(vart), isCOERCION, TypeMap_isConst(tmr));
@@ -3148,7 +3148,7 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		return Stmt_typed(ctx, stmt, tcid);
 	}
 
-	tmr = knh_findTypeMapNULL(ctx, scid, tcid, Stmt_isTRANS(stmt));
+	tmr = knh_findTypeMapNULL(ctx, scid, tcid/*, Stmt_isTRANS(stmt)*/);
 	if(tmr == NULL) {
 		WARN_Cast(ctx, "undefined cast", tcid, scid);
 		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, CLASS_Object, MN_to);
@@ -4090,7 +4090,7 @@ static knh_Token_t* TYPEMAP_typing(CTX ctx, knh_Stmt_t *stmt)
 	if(TT_(tkS) == TT_ERR) return tkS;
 	knh_class_t scid = tkS->cid, tcid = tkT->cid;
 	DBG_P("%s ==> %s", CLASS__(scid), CLASS__(tcid));
-	knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, scid, tcid, 1);
+	knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, scid, tcid);
 	if(tmr != NULL && tmr->scid == scid && !knh_StmtMETA_is(ctx, stmt, "Override")) {
 		return ERROR_AlreadyDefined(ctx, "typemap", UPCAST(tmr)); // FIXME
 	}

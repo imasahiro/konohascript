@@ -1345,9 +1345,20 @@ KNHAPI2(knh_TypeMap_t*) new_TypeMap(CTX ctx, knh_flag_t flag, knh_class_t scid, 
 {
 	knh_TypeMap_t* tmr = new_(TypeMap);
 	tmr->h.magicflag |= (knh_uintptr_t)flag;
-	SP(tmr)->scid = scid;
-	SP(tmr)->tcid = tcid;
+	tmr->scid = scid;
+	tmr->tcid = tcid;
 	tmr->ftypemap_1 = (func == NULL) ? Ftypemap_null : func;
+	return tmr;
+}
+
+KNHAPI2(knh_TypeMap_t*) new_TypeMapData(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func, Object *mapdata)
+{
+	knh_TypeMap_t* tmr = new_(TypeMap);
+	tmr->h.magicflag |= (knh_uintptr_t)flag;
+	tmr->scid = scid;
+	tmr->tcid = tcid;
+	tmr->ftypemap_1 = (func == NULL) ? Ftypemap_null : func;
+	KNH_SETv(ctx, tmr->mapdata, mapdata);
 	return tmr;
 }
 
@@ -1427,12 +1438,113 @@ knh_TypeMap_t *new_TypeMapMethod(CTX ctx, knh_flag_t flag, knh_Method_t *mtd)
 //	return new_TypeMap(ctx, 0, scid, tcid, NULL);
 //}
 
+///* ------------------------------------------------------------------------ */
+////## mapper Iterator Iterator;
+//
+//static TYPEMAP Iterator_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	KNH_TODO(__FUNCTION__);
+//
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## mapper Array Array;
+//
+//
+///* ------------------------------------------------------------------------ */
+////## mapper Iterator Array;
+//
+//static TYPEMAP Iterator_Array(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	RETURN_(knh_Iterator_toArray(ctx, sfp[0].it));
+//}
+//
+///* ------------------------------------------------------------------------ */
+///* [Array] */
+////## mapper Array Iterator;
+////## method T1.. Array.opITR();
+//
+//static TYPEMAP Array_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	RETURN_(new_ArrayIterator(ctx, sfp[0].a));
+//}
+//
+///* ------------------------------------------------------------------------ */
+///* [RangeInt] */
+//
+////## @Semantic @Const mapper RangeInt ArrayInt;
+//
+//static TYPEMAP RangeInt_ArrayInt(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_Range_t *rng = (knh_Range_t*)sfp[0].o;
+//	knh_Array_t *a = new_Array(ctx, CLASS_Int, (rng->nend - rng->nstart) + 1);
+//	knh_intptr_t i = 0, n;
+//	for(n = (knh_intptr_t)rng->nstart; n <= (knh_intptr_t)rng->nend; n++) {
+//		a->nlist[i] = n;
+//		i++;
+//	}
+//	RETURN_(a);
+//}
+
+
 knh_bool_t TypeMap_isNoSuchMapping(knh_TypeMap_t *tmr)
 {
 	return ((tmr)->ftypemap_1 == Ftypemap_null);
 }
 
-static knh_TypeMap_t *knh_findTypeMap1NULL(CTX ctx, const knh_ClassTBL_t *sct, knh_class_t tcid, int isT)
+//static knh_TypeMap_t *new_TypeMapNested(CTX ctx, knh_TypeMap_t *tmr, knh_TypeMap_t *tmr2)
+//{
+//	KNH_TODO(__FUNCTION__);
+//	return NULL;
+//}
+
+//static knh_TypeMap_t *knh_findParam1TypeMapNULL(CTX ctx, const knh_ClassTBL_t *sct, const knh_ClassTBL_t *tct, int isT)
+//{
+//	if(sct->p1 == tct->p1) { // Iterator<T> => Array<T> //fixed by shinpei_NKT
+//		return knh_findTypeMap1NULL(ctx, sct->baseTBL, tct->bcid, isT);
+//	}
+//	else if(sct->bcid == tct->bcid) { // Array<S> => Array<T>
+//		knh_TypeMap_t *tmr = knh_findTypeMap1NULL(ctx, sct->baseTBL, tct->bcid, isT);
+//		if(tmr != NULL) {
+//			knh_TypeMap_t *tmr2 = knh_findTypeMapNULL(ctx, sct->p1, tct->p2, isT);
+//			if(tmr2 != NULL) {
+//				tmr = new_TypeMapNested(ctx, tmr, tmr2);
+//				return tmr;
+//			}
+//		}
+//	}
+//	else {  // Array<S> => Iterator<T>
+//		knh_TypeMap_t *tmr = knh_findTypeMap1NULL(ctx, sct->baseTBL, tct->bcid, isT);
+//		if(tmr != NULL) {
+//			knh_TypeMap_t *tmr2 = knh_findTypeMapNULL(ctx, sct->p1, tct->p1, isT);
+//			if(tmr2 != NULL) {
+//				tmr = new_TypeMapNested(ctx, tmr, tmr2);
+//				return tmr;
+//			}
+//		}
+//	}
+//	return NULL;
+//}
+
+void knh_addTypeMapRule(CTX ctx, knh_class_t scid, knh_class_t tcid, knh_Ftypemaprule func)
+{
+	knh_hashcode_t hkey = (knh_hashcode_t)scid;
+	hkey = (hkey << (sizeof(knh_class_t) * 8)) + tcid;
+	void *f = knh_PtrMap_get(ctx, ctx->share->inferPtrMap, (void*)hkey);
+	if(f != NULL) {
+
+	}
+	knh_PtrMap_add(ctx, ctx->share->inferPtrMap, (void*)hkey, (void*)func);
+}
+
+static knh_Ftypemaprule knh_getTypeMapRule(CTX ctx, knh_class_t scid, knh_class_t tcid)
+{
+	knh_hashcode_t hkey = (knh_hashcode_t)scid;
+	hkey = (hkey << (sizeof(knh_class_t) * 8)) + tcid;
+	return (knh_Ftypemaprule)knh_PtrMap_get(ctx, ctx->share->inferPtrMap, (void*)hkey);
+}
+
+static knh_TypeMap_t *knh_findTypeMap1NULL(CTX ctx, const knh_ClassTBL_t *sct, knh_class_t tcid)
 {
 	knh_class_t scid = sct->cid;
 	knh_TypeMap_t *tmr = Cache_getTypeMap(ctx, scid, tcid);
@@ -1442,7 +1554,7 @@ static knh_TypeMap_t *knh_findTypeMap1NULL(CTX ctx, const knh_ClassTBL_t *sct, k
 			knh_Array_t *a = sct->typemaps;
 			for(i = 0; i < (a)->size; i++) {
 				tmr = (a)->trans[i];
-				DBG_P("?(%s,%s) looking %s=>%s..", TYPE__(scid), TYPE__(tcid), TYPE__(sct->cid), TYPE__(tmr->tcid));
+				//DBG_P("?(%s,%s) looking %s=>%s..", TYPE__(scid), TYPE__(tcid), TYPE__(sct->cid), TYPE__(tmr->tcid));
 				if(SP(tmr)->tcid == tcid) {
 					return Cache_setTypeMap(ctx, scid, tcid, tmr);
 				}
@@ -1455,41 +1567,7 @@ static knh_TypeMap_t *knh_findTypeMap1NULL(CTX ctx, const knh_ClassTBL_t *sct, k
 	return tmr;
 }
 
-static knh_TypeMap_t *new_TypeMapNested(CTX ctx, knh_TypeMap_t *tmr, knh_TypeMap_t *tmr2)
-{
-	KNH_TODO(__FUNCTION__);
-	return NULL;
-}
-
-static knh_TypeMap_t *knh_findParam1TypeMapNULL(CTX ctx, const knh_ClassTBL_t *sct, const knh_ClassTBL_t *tct, int isT)
-{
-	if(sct->p1 == tct->p1) { // Iterator<T> => Array<T> //fixed by shinpei_NKT
-		return knh_findTypeMap1NULL(ctx, sct->baseTBL, tct->bcid, isT);
-	}
-	else if(sct->bcid == tct->bcid) { // Array<S> => Array<T>
-		knh_TypeMap_t *tmr = knh_findTypeMap1NULL(ctx, sct->baseTBL, tct->bcid, isT);
-		if(tmr != NULL) {
-			knh_TypeMap_t *tmr2 = knh_findTypeMapNULL(ctx, sct->p1, tct->p2, isT);
-			if(tmr2 != NULL) {
-				tmr = new_TypeMapNested(ctx, tmr, tmr2);
-				return tmr;
-			}
-		}
-	}
-	else {  // Array<S> => Iterator<T>
-		knh_TypeMap_t *tmr = knh_findTypeMap1NULL(ctx, sct->baseTBL, tct->bcid, isT);
-		if(tmr != NULL) {
-			knh_TypeMap_t *tmr2 = knh_findTypeMapNULL(ctx, sct->p1, tct->p1, isT);
-			if(tmr2 != NULL) {
-				tmr = new_TypeMapNested(ctx, tmr, tmr2);
-				return tmr;
-			}
-		}
-	}
-	return NULL;
-}
-
-knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0, int isT)
+knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0)
 {
 	knh_TypeMap_t *tmr = NULL;
 	DBG_P("finding.. %s ==> %s",CLASS__(scid0), CLASS__(tcid0));
@@ -1503,21 +1581,29 @@ knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0
 			return cache->tmr;
 		}
 	}
-	DBG_P("finding2.. %s ==> %s",CLASS__(scid0), CLASS__(tcid0));
 	DBG_ASSERT_cid(scid0); DBG_ASSERT_cid(tcid0);
 	const knh_ClassTBL_t *sct = ClassTBL(scid0), *tct = ClassTBL(tcid0);
-	if(sct->p1 != TYPE_void && tct->p1 != TYPE_void && sct->p2 == TYPE_void && tct->p2 == TYPE_void) {
-		return knh_findParam1TypeMapNULL(ctx, sct, tct, isT);
+	while(1) {
+		//DBG_P("finding3.. %s ==> %s",CLASS__(sct->cid), CLASS__(tct->cid));
+		tmr = knh_findTypeMap1NULL(ctx, sct, tct->cid);
+		if(tmr != NULL) return tmr;
+		if(tct == tct->supTBL) break;
+		tct = tct->supTBL;
 	}
-	else {
-		while(1) {
-			DBG_P("finding3.. %s ==> %s",CLASS__(sct->cid), CLASS__(tct->cid));
-			tmr = knh_findTypeMap1NULL(ctx, sct, tct->cid, isT);
-			if(tmr != NULL) goto L_SETCACHE;
-			if(tct == tct->supTBL) break;
-			tct = tct->supTBL;
+	tct = ClassTBL(tcid0);
+	knh_Ftypemaprule frule = knh_getTypeMapRule(ctx, sct->bcid, tct->bcid);
+	if(frule != NULL) {
+		tmr = frule(ctx, sct, tct);
+		if(tmr != NULL) {
+			knh_addTypeMap(ctx, tmr, 0/*initCache*/);
+			return Cache_setTypeMap(ctx, sct->cid, tct->cid, tmr);
 		}
-		tct = ClassTBL(tcid0);
+	}
+	frule = knh_getTypeMapRule(ctx, CLASS_Tdynamic, tct->bcid);
+	if(frule != NULL) {
+		tmr = frule(ctx, sct, tct);
+		knh_addTypeMap(ctx, tmr, 0/*initCache*/);
+		if(tmr != NULL) return Cache_setTypeMap(ctx, sct->cid, tct->cid, tmr);
 	}
 //	size_t i;
 //	knh_Array_t *a = sct->typemaps;
@@ -1532,12 +1618,159 @@ knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0
 //		}
 //	}
 	return NULL;
-
-	L_SETCACHE:
-	return Cache_setTypeMap(ctx, scid0, tcid0, tmr);
 }
 
 /* ------------------------------------------------------------------------ */
+/* [TypeMapRule] */
+
+static knh_TypeMap_t *knh_inferIteratorIterator(CTX ctx, const knh_ClassTBL_t *sct, const knh_ClassTBL_t *tct)
+{
+//	knh_class_t sp1 = sct->p1, tp1 = tct->p1;
+	DBG_P("Rule(%s=>%s)", TYPE__(sct->cid), TYPE__(tct->cid));
+	return NULL;
+}
+
+
+static knh_TypeMap_t *knh_inferDynamicIterator(CTX ctx, const knh_ClassTBL_t *sct, const knh_ClassTBL_t *tct)
+{
+	DBG_P("Rule(%s=>%s)", TYPE__(sct->cid), TYPE__(tct->cid));
+	return NULL;
+}
+
+
+
+static TYPEMAP Array_Array(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_TypeMap_t *tmr = sfp[K_TMRIDX].tmrNC;
+	knh_Array_t *sa = sfp[0].a;
+	knh_Array_t *ta = (knh_Array_t*)new_Object_init2(ctx, ClassTBL(tmr->tcid));
+	size_t i, tsize = knh_Array_size(sa);
+	if(tsize > 0) {
+		knh_Array_grow(ctx, ta, tsize, 8);
+	}
+	knh_sfp_t *lsfp = ctx->esp + 1;
+	if(IS_TypeMap(tmr->tmr1)) {
+		DBG_P("@@ COPY and TMAP");
+		tmr = tmr->tmr1;
+		KNH_SETv(ctx, lsfp[0].o, TS_EMPTY);  // set nonnull for unbox map
+		for(i = 0; i < tsize; i++) {
+			sa->api->get(ctx, sa, i, lsfp);
+			klr_setesp(ctx, lsfp+1); //added
+			knh_TypeMap_exec(ctx, tmr, lsfp, +1);
+			ta->api->add(ctx, ta, lsfp+1);
+		}
+	}
+	else if(Array_isNDATA(sa)) {
+		const knh_ClassTBL_t *ct = ClassTBL(O_cTBL(sa)->p1);
+		DBG_P("@@ COPY tsize=%d and BOXING(%s)", tsize, CLASS__(ct->cid));
+		for(i = 0; i < tsize; i++) {
+			sa->api->get(ctx, sa, i, lsfp);
+			KNH_SETv(ctx, lsfp[0].o, new_Boxing(ctx, lsfp, ct));
+			ta->api->add(ctx, ta, lsfp);
+		}
+	}
+	else {
+		DBG_P("@@ COPY ");
+		for(i = 0; i < tsize; i++) {
+			sa->api->get(ctx, sa, i, lsfp);
+			ta->api->add(ctx, ta, lsfp);
+		}
+	}
+	RETURN_(ta);
+}
+
+static TYPEMAP DArray_Array(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_TypeMap_t *tmr = sfp[K_TMRIDX].tmrNC;
+	knh_Array_t *sa = sfp[0].a;
+	knh_Array_t *ta = (knh_Array_t*)new_Object_init2(ctx, ClassTBL(tmr->tcid));
+	size_t i, tsize = knh_Array_size(sa);
+	if(tsize > 0) {
+		knh_Array_grow(ctx, ta, tsize, 8);
+	}
+	const knh_ClassTBL_t *tct = ClassTBL(O_cTBL(ta)->p1);
+	knh_sfp_t *lsfp = ctx->esp + 1;
+	if(Array_isNDATA(ta)) {
+		for(i = 0; i < tsize; i++) {
+			sa->api->get(ctx, sa, i, lsfp);
+			const knh_ClassTBL_t *sct = O_cTBL(lsfp[0].o);
+			if(tct->cid == sct->cid || ClassTBL_isa_(ctx, sct, tct)) {
+				lsfp[1].ndata = O_ndata(lsfp[0].o);
+			}
+			else {
+				knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, sct->cid, tct->cid);
+				if(tmr != NULL) {
+					klr_setesp(ctx, lsfp+1); //added
+					lsfp[0].ndata = O_ndata(lsfp[0].o); // unbox
+					knh_TypeMap_exec(ctx, tmr, lsfp, +1);
+				}
+				else {
+					lsfp[1].ivalue = 0;  // null
+				}
+			}
+			ta->api->add(ctx, ta, lsfp+1);
+		}
+	}
+	else {
+		for(i = 0; i < tsize; i++) {
+			sa->api->get(ctx, sa, i, lsfp);
+			const knh_ClassTBL_t *sct = O_cTBL(lsfp[0].o);
+			if(tct->cid == sct->cid || ClassTBL_isa_(ctx, sct, tct)) {
+				ta->api->add(ctx, ta, lsfp);
+				continue;
+			}
+			knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, sct->cid, tct->cid);
+			if(tmr != NULL) {
+				klr_setesp(ctx, lsfp+1); //added
+				lsfp[0].ndata = O_ndata(lsfp[0].o); // unbox
+				knh_TypeMap_exec(ctx, tmr, lsfp, +1);
+			}
+			else {
+				KNH_SETv(ctx, lsfp[1].o, KNH_NULVAL(tct->cid));
+			}
+			ta->api->add(ctx, ta, lsfp+1);
+		}
+	}
+	RETURN_(ta);
+}
+
+
+static knh_TypeMap_t *knh_inferArrayArray(CTX ctx, const knh_ClassTBL_t *sct, const knh_ClassTBL_t *tct)
+{
+	knh_class_t sp1 = sct->p1, tp1 = tct->p1;
+	DBG_P("Rule(%s=>%s)", TYPE__(sct->cid), TYPE__(tct->cid));
+	if(ClassTBL_isa_(ctx, ClassTBL(sp1), ClassTBL(tp1)) || tp1 == CLASS_Tdynamic) {
+		return new_TypeMap(ctx, 0, sct->cid, tct->cid, Array_Array);
+	}
+	else {
+		knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, sp1, tp1);
+		if(tmr != NULL) {
+			return new_TypeMapData(ctx, 0, sct->cid, tct->cid, Array_Array, UPCAST(tmr));
+		}
+		if(sp1 == CLASS_Tdynamic) {
+			return new_TypeMap(ctx, 0, sct->cid, tct->cid, DArray_Array);
+		}
+	}
+	return NULL;
+}
+
+static knh_TypeMap_t *knh_inferArrayIterator(CTX ctx, const knh_ClassTBL_t *sct, const knh_ClassTBL_t *tct)
+{
+//	knh_class_t sp1 = sct->p1, tp1 = tct->p1;
+	DBG_P("Rule(%s=>%s)", TYPE__(sct->cid), TYPE__(tct->cid));
+	return NULL;
+}
+
+void knh_loadSystemTypeMapRule(CTX ctx)
+{
+	knh_addTypeMapRule(ctx, CLASS_Iterator, CLASS_Iterator, knh_inferIteratorIterator);
+	knh_addTypeMapRule(ctx, CLASS_Tdynamic, CLASS_Iterator, knh_inferDynamicIterator);
+	knh_addTypeMapRule(ctx, CLASS_Array,    CLASS_Iterator, knh_inferArrayIterator);
+	knh_addTypeMapRule(ctx, CLASS_Array,    CLASS_Array,    knh_inferArrayArray);
+}
+
+/* ------------------------------------------------------------------------ */
+
 
 knh_bool_t knh_Link_hasType(CTX ctx, knh_Link_t *flnk, knh_class_t tcid)
 {

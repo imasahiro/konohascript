@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      447
+#define K_REVISION                      448
 #endif
-#define K_BUILDID                       1141
+#define K_BUILDID                       1142
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -546,16 +546,16 @@
 #define TYPE_StringITR          CLASS_StringITR
 
 /* ------------------------------------------------------------------------ */
-/* T1ITR */
-#define CLASS_T1ITR             ((knh_class_t)56)
-#define IS_T1ITR(o)             (O_cid(o) == CLASS_T1ITR)
-#define TYPE_T1ITR              CLASS_T1ITR
-
-/* ------------------------------------------------------------------------ */
 /* T1ARRAY */
-#define CLASS_T1ARRAY           ((knh_class_t)57)
+#define CLASS_T1ARRAY           ((knh_class_t)56)
 #define IS_T1ARRAY(o)           (O_cid(o) == CLASS_T1ARRAY)
 #define TYPE_T1ARRAY            CLASS_T1ARRAY
+
+/* ------------------------------------------------------------------------ */
+/* T1ITR */
+#define CLASS_T1ITR             ((knh_class_t)57)
+#define IS_T1ITR(o)             (O_cid(o) == CLASS_T1ITR)
+#define TYPE_T1ITR              CLASS_T1ITR
 #define K_CLASS_INITSIZE                59
 
 /* ------------------------------------------------------------------------ */
