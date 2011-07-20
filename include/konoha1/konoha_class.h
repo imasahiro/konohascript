@@ -499,10 +499,7 @@ struct knh_Method_t {
 //## flag TypeMap Semantic   2 - is set * *;
 //## flag TypeMap Const      3 - is set * *;
 //## flag TypeMap FastCall   4 - is set * *;
-
-// Int : (Int n) {
-//	mapper ();
-// }
+//## flag TypeMap Derived    5 - is set * *;
 
 typedef struct knh_TypeMap_t knh_TypeMap_t;
 struct knh_TypeMap_t {
@@ -516,9 +513,6 @@ struct knh_TypeMap_t {
 	};
 	struct knh_TypeMap_t *tmr2;
 };
-
-//#define knh_findTypeMap(ctx, scid, tcid)     knh_findTypeMapNULL(ctx, scid, tcid, 1)
-//#define knh_getTypeMapNULL(ctx, scid, tcid)  knh_findTypeMapNULL(ctx, scid, tcid, 0)
 
 /* ------------------------------------------------------------------------ */
 //## class Link Object;

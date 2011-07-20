@@ -32,7 +32,18 @@
 
 include "lib:gluelink";
 
-@Native class Lib;
+class Charset extends String;
+
+@Native Charset Charset.opLINK(String path, NameSpace _);
+
+@Native @Const @Semantic StringEncoder : (Charset c) {
+  return new StringEncoder(c);
+}
+
+@Native @Const @Semantic StringDecoder : (Charset c) {
+  return new StringDecoder(c);
+}
+
 
 
 /* *****************

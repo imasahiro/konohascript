@@ -295,13 +295,13 @@ void WARN_Undefined(CTX ctx, const char *whatis, knh_class_t cid, knh_Token_t *t
 		Gamma_perror(ctx, KC_EWARN, _("undefined %s: %O"), whatis, tk);
 	}
 }
-knh_Token_t* ERROR_AlreadyDefined(CTX ctx, const char *whatis, knh_Token_t *tk)
+knh_Token_t* ERROR_AlreadyDefined(CTX ctx, const char *whatis, Object *o)
 {
-	return Gamma_perror(ctx, KC_ERR, _("already defined %s: %O"), whatis, tk);
+	return Gamma_perror(ctx, KC_ERR, _("already defined %s: %O"), whatis, o);
 }
-void WARN_AlreadyDefined(CTX ctx, const char *whatis, knh_Token_t *tk)
+void WARN_AlreadyDefined(CTX ctx, const char *whatis, Object *o)
 {
-	Gamma_perror(ctx, KC_DWARN, _("already defined %s: %O"), whatis, tk);
+	Gamma_perror(ctx, KC_DWARN, _("already defined %s: %O"), whatis, o);
 }
 void WARN_AlreadyDefinedClass(CTX ctx, knh_class_t cid, knh_class_t oldcid)
 {

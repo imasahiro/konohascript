@@ -307,8 +307,8 @@ knh_Token_t* ERROR_RegexCompilation(CTX ctx, knh_Token_t *tk, const char *regnam
 knh_Token_t* ERROR_Undefined(CTX ctx, const char *whatis, knh_class_t cid, knh_Token_t *tk);
 knh_Token_t* ERROR_UndefinedName(CTX ctx, knh_Token_t *tk);
 void WARN_Undefined(CTX ctx, const char *whatis, knh_class_t cid, knh_Token_t *tk);
-knh_Token_t* ERROR_AlreadyDefined(CTX ctx, const char *whatis, knh_Token_t *tk);
-void WARN_AlreadyDefined(CTX ctx, const char *whatis, knh_Token_t *tk);
+knh_Token_t* ERROR_AlreadyDefined(CTX ctx, const char *whatis, Object *o);
+void WARN_AlreadyDefined(CTX ctx, const char *whatis, Object *o);
 void WARN_AlreadyDefinedClass(CTX ctx, knh_class_t cid, knh_class_t oldcid);
 knh_Token_t* ERROR_Denied(CTX ctx, const char *why, knh_Token_t *tk);
 void WarningUnknownClass(CTX ctx, knh_Token_t *tk, knh_class_t defc);
@@ -455,7 +455,9 @@ void knh_ParamArray_tocid(CTX ctx, knh_ParamArray_t *pa, knh_class_t this_cid, k
 knh_ParamArray_t *new_ParamArrayR0(CTX ctx, knh_type_t t);
 knh_ParamArray_t *new_ParamArrayP1(CTX ctx, knh_type_t rtype, knh_type_t p1, knh_fieldn_t fn1);
 void knh_ParamArray_add(CTX ctx, knh_ParamArray_t *pa, knh_param_t p);
-void knh_ParamArray_radd(CTX ctx, knh_ParamArray_t *pa, knh_param_t p);
+void knh_ParamArray_radd(CTX ctx, knh_ParamArray_t *pa, knh_param_t p, int old);
+void knh_ParamArray_addParam(CTX ctx, knh_ParamArray_t *pa, knh_type_t type, knh_fieldn_t fn);
+void knh_ParamArray_addReturnType(CTX ctx, knh_ParamArray_t *pa, knh_type_t type);
 knh_type_t knh_ParamArray_getptype(knh_ParamArray_t *pa, size_t n);
 knh_bool_t knh_ParamArray_equalsType(knh_ParamArray_t *pa, knh_ParamArray_t *pa2);
 void knh_Method_setFunc(CTX ctx, knh_Method_t *mtd, knh_Fmethod func);
@@ -472,6 +474,7 @@ knh_Method_t* knh_NameSpace_getMethodNULL(CTX ctx, knh_NameSpace_t *ns, knh_clas
 knh_Method_t* knh_NameSpace_getFmtNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_methodn_t mn);
 void knh_NameSpace_addFmt(CTX ctx, knh_NameSpace_t *ns, knh_Method_t *mtd);
 void knh_addTypeMapFunc(CTX ctx, knh_flag_t flag, knh_type_t stype, knh_type_t ttype, knh_Ftypemap fTYPEMAP, Object *mapdata);
+knh_TypeMap_t *new_TypeMapMethod(CTX ctx, knh_flag_t flag, knh_Method_t *mtd);
 knh_bool_t TypeMap_isNoSuchMapping(knh_TypeMap_t *tmr);
 knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0, int isT);
 knh_bool_t knh_Link_hasType(CTX ctx, knh_Link_t *flnk, knh_class_t tcid);

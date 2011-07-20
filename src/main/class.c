@@ -758,10 +758,7 @@ KNHAPI2(knh_class_t) knh_type_tocid(CTX ctx, knh_type_t ptype, knh_class_t this_
 knh_ParamArray_t *new_ParamArrayR0(CTX ctx, knh_type_t t)
 {
 	knh_ParamArray_t *pa = new_ParamArray(ctx);
-	if(t != TYPE_void) {
-		knh_param_t p = {t, FN_return};
-		knh_ParamArray_radd(ctx, pa, p);
-	}
+	knh_ParamArray_addReturnType(ctx, pa, t);
 	return pa;
 }
 
@@ -769,11 +766,10 @@ knh_ParamArray_t *new_ParamArrayR0(CTX ctx, knh_type_t t)
 
 knh_ParamArray_t *new_ParamArrayP1(CTX ctx, knh_type_t rtype, knh_type_t p1, knh_fieldn_t fn1)
 {
-	knh_ParamArray_t *mp = new_ParamArray(ctx);
-	knh_param_t p = {p1, fn1}, 	r = {rtype, FN_return};
-	knh_ParamArray_add(ctx, mp, p);
-	knh_ParamArray_radd(ctx, mp, r);
-	return mp;
+	knh_ParamArray_t *pa = new_ParamArray(ctx);
+	knh_ParamArray_addParam(ctx, pa, p1, fn1);
+	knh_ParamArray_addReturnType(ctx, pa, rtype);
+	return pa;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -811,13 +807,31 @@ void knh_ParamArray_add(CTX ctx, knh_ParamArray_t *pa, knh_param_t p)
 	pa->psize += 1;
 }
 
-/* ------------------------------------------------------------------------ */
-
-void knh_ParamArray_radd(CTX ctx, knh_ParamArray_t *pa, knh_param_t p)
+void knh_ParamArray_radd(CTX ctx, knh_ParamArray_t *pa, knh_param_t p, int old)
 {
 	knh_ParamArray_add(ctx, pa, p);
 	pa->psize -= 1;
 	pa->rsize += 1;
+}
+
+void knh_ParamArray_addParam(CTX ctx, knh_ParamArray_t *pa, knh_type_t type, knh_fieldn_t fn)
+{
+	knh_param_t p = {type, fn};
+	knh_ParamArray_add(ctx, pa, p);
+}
+
+void knh_ParamArray_addReturnType(CTX ctx, knh_ParamArray_t *pa, knh_type_t type)
+{
+	if(type != TYPE_void) {
+		knh_param_t p = {type, FN_return};
+		knh_ParamArray_add(ctx, pa, p);
+		pa->psize -= 1;
+		pa->rsize += 1;
+	}
+//	else {
+//		knh_param_t *p = knh_ParamArray_rget(pa, 0);
+//		p->type = type;
+//	}
 }
 
 /* ------------------------------------------------------------------------ */
@@ -1309,6 +1323,28 @@ KNHAPI2(knh_TypeMap_t*) new_TypeMap(CTX ctx, knh_flag_t flag, knh_class_t scid, 
 	SP(tmr)->scid = scid;
 	SP(tmr)->tcid = tcid;
 	tmr->ftypemap_1 = (func == NULL) ? Ftypemap_null : func;
+	return tmr;
+}
+
+static TYPEMAP Ftypemap_method(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_TypeMap_t *tmr = sfp[K_TMRIDX].tmrNC;
+	knh_Method_t *mtd = tmr->mtd;
+	knh_sfp_t *lsfp = ctx->esp;
+	DBG_ASSERT(IS_Method(mtd));
+	DBG_ASSERT(sfp < lsfp);
+	KNH_SETv(ctx, lsfp[0+K_CALLDELTA+1].o, sfp[0].o);
+	lsfp[0+K_CALLDELTA+1].ndata = sfp[0].ndata;
+	KNH_SCALL(ctx, lsfp, 0, mtd, 1);
+	KNH_SETv(ctx, sfp[K_RIX].o, lsfp[0].o);
+	sfp[K_RIX].ndata = lsfp[0].ndata;
+}
+
+knh_TypeMap_t *new_TypeMapMethod(CTX ctx, knh_flag_t flag, knh_Method_t *mtd)
+{
+	knh_class_t scid = knh_ParamArray_get(DP(mtd)->mp, 0)->type, tcid = knh_ParamArray_rtype(DP(mtd)->mp);
+	knh_TypeMap_t *tmr = new_TypeMap(ctx, flag, scid, tcid, Ftypemap_method);
+	KNH_SETv(ctx, tmr->mtd, mtd);
 	return tmr;
 }
 

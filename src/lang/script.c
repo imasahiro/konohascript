@@ -391,10 +391,8 @@ static knh_Method_t *Script_getEvalMethod(CTX ctx, knh_Script_t *scr, knh_type_t
 	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, O_cid(scr), MN_);
 	if(mtd == NULL) {
 		knh_ParamArray_t *pa = new_(ParamArray);
-		knh_param_t p = {it_type, FN_it};
-		knh_ParamArray_add(ctx, pa, p);
-		knh_param_t r = {TYPE_void, FN_return};
-		knh_ParamArray_radd(ctx, pa, r);
+		knh_ParamArray_addParam(ctx, pa, it_type, FN_it);
+		knh_ParamArray_addReturnType(ctx, pa, TYPE_void);
 		mtd = new_Method(ctx, FLAG_Method_Hidden, O_cid(scr), MN_LAMBDA, NULL);
 		KNH_SETv(ctx, DP(mtd)->mp, pa);
 		knh_NameSpace_addMethod(ctx, O_cid(scr), mtd);
@@ -513,7 +511,7 @@ static knh_status_t CONST_decl(CTX ctx, knh_Stmt_t *stmt)
 	knh_NameSpace_t *ns = K_GMANS;
 	Object *value = knh_NameSpace_getConstNULL(ctx, ns, TK_tobytes(tkN));
 	if(cid != CLASS_unknown || value != NULL) {
-		WARN_AlreadyDefined(ctx, "const", tkN);
+		WARN_AlreadyDefined(ctx, "const", UPCAST(tkN));
 		_RETURN(K_CONTINUE);
 	}
 	if(Tn_typing(ctx, stmt, 1, TYPE_dyn, 0)) {
@@ -557,7 +555,7 @@ static knh_status_t LINK_decl(CTX ctx, knh_Stmt_t *stmt)
 	}
 	knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, ns, S_tobytes(tkN->text));
 	if(lnk != NULL && !knh_StmtMETA_is(ctx, stmt, "Override")) {
-		knh_Stmt_toERR(ctx, stmt, ERROR_AlreadyDefined(ctx, "link", tkN));
+		knh_Stmt_toERR(ctx, stmt, ERROR_AlreadyDefined(ctx, "link", UPCAST(tkN)));
 		return K_CONTINUE;
 	}
 	if(STT_(stmtIN) == TT_CODE) {
