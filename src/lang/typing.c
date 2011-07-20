@@ -3174,7 +3174,7 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		return TM(tk1);
 	}
 	else {
-		DBG_P("tmr=%p, tcid=%s", tmr, TYPE__(tcid));
+		DBG_P("tmr=%p, scid=%s, tcid=%s", tmr, TYPE__(tmr->scid), TYPE__(tcid));
 		Token_setTypeMap(ctx, tkC, tcid, tmr);
 		return Stmt_typed(ctx, stmt, tcid);
 	}
@@ -4086,10 +4086,10 @@ static knh_Token_t* TYPEMAP_typing(CTX ctx, knh_Stmt_t *stmt)
 {
 	knh_Token_t *tkT = TTYPE_typing(ctx, tkNN(stmt, 1), CLASS_unknown);
 	knh_Token_t *tkS = DECLFIRST_typing(ctx, stmtNN(stmt, 2));
-	DBG_P("%s ==> %s", CLASS__(tkS->cid), CLASS__(tkT->cid));
 	if(TT_(tkT) == TT_ERR) return tkT;
 	if(TT_(tkS) == TT_ERR) return tkS;
 	knh_class_t scid = tkS->cid, tcid = tkT->cid;
+	DBG_P("%s ==> %s", CLASS__(scid), CLASS__(tcid));
 	knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, scid, tcid, 1);
 	if(tmr != NULL && tmr->scid == scid && !knh_StmtMETA_is(ctx, stmt, "Override")) {
 		return ERROR_AlreadyDefined(ctx, "typemap", UPCAST(tmr)); // FIXME
@@ -4101,7 +4101,7 @@ static knh_Token_t* TYPEMAP_typing(CTX ctx, knh_Stmt_t *stmt)
 	knh_ParamArray_addReturnType(ctx, pa, tcid);
 	DP(mtd)->uri = ULINE_uri(stmt->uline);
 	tmr = new_TypeMapMethod(ctx, TYPEMAP_flag(ctx, stmt), mtd);
-	knh_addTypeMap(ctx, tmr);
+	knh_addTypeMap(ctx, tmr, 1/*initCache*/);
 	DBG_ASSERT(TT_(tkNN(stmt, 3)) == TT_ASIS);
 	if(knh_StmtMETA_is(ctx, stmt, "Native")) {
 		knh_Fmethod func = loadTypeMapFunc(ctx, tkS->cid, tkT->cid);

@@ -23,7 +23,7 @@ KNHAPI2(knh_param_t*) knh_ParamArray_get(knh_ParamArray_t *pa, size_t n);
 KNHAPI2(knh_type_t) knh_ParamArray_rtype(knh_ParamArray_t *pa);
 KNHAPI2(void) knh_write_mn(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn);
 KNHAPI2(knh_bool_t) Method_isAbstract(knh_Method_t *mtd);
-KNHAPI2(void) knh_addTypeMap(CTX ctx, knh_TypeMap_t *trl);
+KNHAPI2(void) knh_addTypeMap(CTX ctx, knh_TypeMap_t *tmr, int initCache);
 KNHAPI2(void) knh_TypeMap_exec(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp _RIX);
 KNHAPI2(knh_TypeMap_t*) new_TypeMap(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func);
 KNHAPI2(int) knh_isVerbose(void);
@@ -114,7 +114,7 @@ typedef struct knh_api2_t {
 	void  (*OutputStream_write)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t buf);
 	void  (*ResultSet_initColumn)(CTX ctx, knh_ResultSet_t *o, size_t column_size);
 	void  (*TypeMap_exec)(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp _RIX);
-	void  (*addTypeMap)(CTX ctx, knh_TypeMap_t *trl);
+	void  (*addTypeMap)(CTX ctx, knh_TypeMap_t *tmr, int initCache);
 	void  (*printf)(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...);
 	void  (*setPropertyText)(CTX ctx, char *key, char *value);
 	void  (*write_BOL)(CTX ctx, knh_OutputStream_t *w);
@@ -127,7 +127,7 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)2135276344)
+#define K_API2_CRC32 ((size_t)35774261)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -455,7 +455,6 @@ void knh_ParamArray_tocid(CTX ctx, knh_ParamArray_t *pa, knh_class_t this_cid, k
 knh_ParamArray_t *new_ParamArrayR0(CTX ctx, knh_type_t t);
 knh_ParamArray_t *new_ParamArrayP1(CTX ctx, knh_type_t rtype, knh_type_t p1, knh_fieldn_t fn1);
 void knh_ParamArray_add(CTX ctx, knh_ParamArray_t *pa, knh_param_t p);
-void knh_ParamArray_radd(CTX ctx, knh_ParamArray_t *pa, knh_param_t p, int old);
 void knh_ParamArray_addParam(CTX ctx, knh_ParamArray_t *pa, knh_type_t type, knh_fieldn_t fn);
 void knh_ParamArray_addReturnType(CTX ctx, knh_ParamArray_t *pa, knh_type_t type);
 knh_type_t knh_ParamArray_getptype(knh_ParamArray_t *pa, size_t n);

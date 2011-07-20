@@ -807,12 +807,12 @@ void knh_ParamArray_add(CTX ctx, knh_ParamArray_t *pa, knh_param_t p)
 	pa->psize += 1;
 }
 
-void knh_ParamArray_radd(CTX ctx, knh_ParamArray_t *pa, knh_param_t p, int old)
-{
-	knh_ParamArray_add(ctx, pa, p);
-	pa->psize -= 1;
-	pa->rsize += 1;
-}
+//void knh_ParamArray_radd(CTX ctx, knh_ParamArray_t *pa, knh_param_t p, int old)
+//{
+//	knh_ParamArray_add(ctx, pa, p);
+//	pa->psize -= 1;
+//	pa->rsize += 1;
+//}
 
 void knh_ParamArray_addParam(CTX ctx, knh_ParamArray_t *pa, knh_type_t type, knh_fieldn_t fn)
 {
@@ -1255,21 +1255,46 @@ void knh_NameSpace_addFmt(CTX ctx, knh_NameSpace_t *ns, knh_Method_t *mtd)
 /* ------------------------------------------------------------------------ */
 /* [MapType] */
 
+static inline knh_TypeMap_t *Cache_getTypeMap(CTX ctx, knh_class_t scid, knh_class_t tcid)
+{
+	knh_hashcode_t h = hashcode_tmr(scid, tcid, K_TMAPCACHE_SIZE);
+	knh_tmrcache_t *cache = ctx->tmrcache + h;
+	if(cache->scid  == scid && cache->tcid == tcid) {
+		return cache->tmr;
+	}
+	return NULL;
+}
+
+static inline knh_TypeMap_t *Cache_setTypeMap(CTX ctx, knh_class_t scid, knh_class_t tcid, knh_TypeMap_t *tmr)
+{
+	knh_hashcode_t h = hashcode_tmr(scid, tcid, K_TMAPCACHE_SIZE);
+	knh_tmrcache_t *cache = ctx->tmrcache + h;
+	cache->scid = scid;
+	cache->tcid = tcid;
+	cache->tmr = tmr;
+	DBG_P("SETCACHE (%s=>%s) TMR %s=>%s",CLASS__(scid), CLASS__(tcid), TYPE__(tmr->scid), TYPE__(tmr->tcid));
+	return tmr;
+}
+
 static void knh_readyTransMapList(CTX ctx, knh_class_t cid)
 {
 	DBG_ASSERT_cid(cid);
 	knh_ClassTBL_t *t = varClassTBL(cid);
 	if(t->typemaps == K_EMPTYARRAY) {
 		KNH_ASSERT(knh_Array_size(t->typemaps) == 0);
-		KNH_SETv(ctx, t->typemaps, new_Array0(ctx, 1));
+		KNH_SETv(ctx, t->typemaps, new_Array0(ctx, 0));
 	}
 }
 
-KNHAPI2(void) knh_addTypeMap(CTX ctx, knh_TypeMap_t *trl)
+KNHAPI2(void) knh_addTypeMap(CTX ctx, knh_TypeMap_t *tmr, int initCache)
 {
-	knh_class_t cid = SP(trl)->scid;
+	knh_class_t cid = tmr->scid;
 	knh_readyTransMapList(ctx, cid);
-	knh_Array_add(ctx, ClassTBL(cid)->typemaps, trl);
+	//DBG_P("%s=>%s", CLASS__(tmr->scid), CLASS__(tmr->tcid));
+	knh_Array_add(ctx, ClassTBL(cid)->typemaps, tmr);
+	if(initCache) {
+		Cache_setTypeMap(ctx, tmr->scid, tmr->tcid, tmr);
+	}
 }
 
 KNHAPI2(void) knh_TypeMap_exec(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp _RIX)
@@ -1338,6 +1363,7 @@ static TYPEMAP Ftypemap_method(CTX ctx, knh_sfp_t *sfp _RIX)
 	KNH_SCALL(ctx, lsfp, 0, mtd, 1);
 	KNH_SETv(ctx, sfp[K_RIX].o, lsfp[0].o);
 	sfp[K_RIX].ndata = lsfp[0].ndata;
+	DBG_P("maped cid=%s ivalue=%d", CLASS__(O_cid(sfp[K_RIX].o)), sfp[K_RIX].ivalue);
 }
 
 knh_TypeMap_t *new_TypeMapMethod(CTX ctx, knh_flag_t flag, knh_Method_t *mtd)
@@ -1406,26 +1432,6 @@ knh_bool_t TypeMap_isNoSuchMapping(knh_TypeMap_t *tmr)
 	return ((tmr)->ftypemap_1 == Ftypemap_null);
 }
 
-static inline knh_TypeMap_t *Cache_getTypeMap(CTX ctx, knh_class_t scid, knh_class_t tcid)
-{
-	knh_hashcode_t h = hashcode_tmr(scid, tcid, K_TMAPCACHE_SIZE);
-	knh_tmrcache_t *cache = ctx->tmrcache + h;
-	if(cache->scid  == scid && cache->tcid == tcid) {
-		return cache->tmr;
-	}
-	return NULL;
-}
-
-static inline knh_TypeMap_t *Cache_setTypeMap(CTX ctx, knh_class_t scid, knh_class_t tcid, knh_TypeMap_t *tmr)
-{
-	knh_hashcode_t h = hashcode_tmr(scid, tcid, K_TMAPCACHE_SIZE);
-	knh_tmrcache_t *cache = ctx->tmrcache + h;
-	cache->scid = scid;
-	cache->tcid = tcid;
-	cache->tmr = tmr;
-	return tmr;
-}
-
 static knh_TypeMap_t *knh_findTypeMap1NULL(CTX ctx, const knh_ClassTBL_t *sct, knh_class_t tcid, int isT)
 {
 	knh_class_t scid = sct->cid;
@@ -1436,6 +1442,7 @@ static knh_TypeMap_t *knh_findTypeMap1NULL(CTX ctx, const knh_ClassTBL_t *sct, k
 			knh_Array_t *a = sct->typemaps;
 			for(i = 0; i < (a)->size; i++) {
 				tmr = (a)->trans[i];
+				DBG_P("?(%s,%s) looking %s=>%s..", TYPE__(scid), TYPE__(tcid), TYPE__(sct->cid), TYPE__(tmr->tcid));
 				if(SP(tmr)->tcid == tcid) {
 					return Cache_setTypeMap(ctx, scid, tcid, tmr);
 				}
@@ -1492,9 +1499,11 @@ knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0
 		knh_hashcode_t h = hashcode_tmr(scid0, tcid0, K_TMAPCACHE_SIZE);
 		knh_tmrcache_t *cache = ctx->tmrcache + h;
 		if(cache->scid  == scid0 && cache->tcid == tcid0) {
+			DBG_P("?(%s=>%s) HIT %s=>%s",CLASS__(scid0), CLASS__(tcid0), TYPE__(cache->tmr->scid), TYPE__(cache->tmr->tcid));
 			return cache->tmr;
 		}
 	}
+	DBG_P("finding2.. %s ==> %s",CLASS__(scid0), CLASS__(tcid0));
 	DBG_ASSERT_cid(scid0); DBG_ASSERT_cid(tcid0);
 	const knh_ClassTBL_t *sct = ClassTBL(scid0), *tct = ClassTBL(tcid0);
 	if(sct->p1 != TYPE_void && tct->p1 != TYPE_void && sct->p2 == TYPE_void && tct->p2 == TYPE_void) {
@@ -1502,6 +1511,7 @@ knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0
 	}
 	else {
 		while(1) {
+			DBG_P("finding3.. %s ==> %s",CLASS__(sct->cid), CLASS__(tct->cid));
 			tmr = knh_findTypeMap1NULL(ctx, sct, tct->cid, isT);
 			if(tmr != NULL) goto L_SETCACHE;
 			if(tct == tct->supTBL) break;

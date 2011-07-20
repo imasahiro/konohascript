@@ -1837,14 +1837,14 @@ static void TCAST_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 				ASM(iCAST, NC_(espidx), NC_(espidx));
 			}
 			else if(IS_Tunbox(scid)) {
-				ASM(NCAST, RTNIDX_(ctx, espidx, stmt->type), SFP_(espidx), RIX_(espidx-espidx), SFP_(_ESPIDX), tmr);
+				ASM(NCAST, RTNIDX_(ctx, espidx, stmt->type), SFP_(espidx), RIX_(espidx-espidx), SFP_(espidx+1), tmr);
 			}
 			else {
-				ASM(SCAST, RTNIDX_(ctx, espidx, stmt->type), SFP_(espidx), RIX_(espidx-espidx), SFP_(_ESPIDX), tmr);
+				ASM(SCAST, RTNIDX_(ctx, espidx, stmt->type), SFP_(espidx), RIX_(espidx-espidx), SFP_(espidx+1), tmr);
 			}
 		}
 		else {
-			ASM(TCAST, RTNIDX_(ctx, espidx, stmt->type), SFP_(espidx), RIX_(espidx-espidx), SFP_(_ESPIDX), tmr);
+			ASM(TCAST, RTNIDX_(ctx, espidx, stmt->type), SFP_(espidx), RIX_(espidx-espidx), SFP_(espidx+1), tmr);
 		}
 	}
 	else { // downcast
