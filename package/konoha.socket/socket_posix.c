@@ -72,8 +72,11 @@ DEFAPI(void) defSocket(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->init = Socket_init;
 	cdef->free = Socket_free;
 }
-
-static knh_io_t SOCKET_open(CTX ctx, const char *ph, const char *mode)
+static knh_bool_t SOCKET_exists(CTX ctx, knh_Path_t *pth)
+{
+	return 0; // dummy
+}
+static knh_io_t SOCKET_open(CTX ctx, knh_Path_t *pth, const char *mode)
 {
 	return IO_NULL; // Always opened by external
 }
@@ -91,6 +94,7 @@ static void SOCKET_close(CTX ctx, knh_io_t fd)
 }
 static knh_StreamDPI_t SOCKET_DSPI = {
 	K_DSPI_STREAM, "socket",  K_OUTBUF_MAXSIZ,
+	SOCKET_exists,
 	SOCKET_open, SOCKET_open, SOCKET_read, SOCKET_write, SOCKET_close,
 };
 
@@ -156,14 +160,14 @@ METHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 METHOD Socket_getInputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
-	RETURN_(new_InputStreamDPI(ctx, so->sd, &SOCKET_DSPI));
+	RETURN_(new_InputStreamDPI(ctx, so->sd, &SOCKET_DSPI, KNH_TNULL(Path)));
 }
 
 //## OutputStream Socket.getOutputStream();
 METHOD Socket_getOutputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
-	RETURN_(new_OutputStreamDPI(ctx, so->sd, &SOCKET_DSPI));
+	RETURN_(new_OutputStreamDPI(ctx, so->sd, &SOCKET_DSPI, KNH_TNULL(Path)));
 }
 
 //## void Socket.close();

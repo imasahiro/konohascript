@@ -925,10 +925,9 @@ typedef struct knh_share_t {
 	knh_Object_t             *constNull;
 	knh_Object_t             *constTrue;
 	knh_Object_t             *constFalse;
-//	struct knh_Int_t         *constInt0;
-//	struct knh_Float_t       *constFloat0;
 	struct knh_String_t     **tString;
 	struct knh_Array_t       *emptyArray;
+	struct knh_Path_t        *cwdPath;
 	struct knh_NameSpace_t   *rootns;
 	struct knh_context_t     *ctx0;
 	struct knh_Script_t      *script;

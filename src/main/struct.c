@@ -1977,16 +1977,16 @@ static void Converter_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Converter_t *bc = (knh_Converter_t*)o;
 	bc->conv = NULL;
-	bc->dspi = &NOCONV_DSPI;
+	bc->dpi = &NOCONV_DSPI;
 }
 
 static void Converter_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Converter_t *bc = (knh_Converter_t*)o;
 	if(bc->conv != NULL) {
-		bc->dspi->close(ctx, bc->conv);
+		bc->dpi->close(ctx, bc->conv);
 		bc->conv = NULL;
-		bc->dspi = &NOCONV_DSPI;
+		bc->dpi = &NOCONV_DSPI;
 	}
 }
 
@@ -2144,6 +2144,7 @@ static void Path_init(CTX ctx, knh_RawPtr_t *o)
 	KNH_INITv(pth->urn, TS_EMPTY);
 	pth->ospath = S_tochar(pth->urn);
 	pth->asize = 0;
+	pth->dpi = knh_getDefaultStreamDPI();
 }
 
 static void Path_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
@@ -2187,10 +2188,10 @@ static void InputStream_init(CTX ctx, knh_RawPtr_t *o)
 	in->uline = 1;
 	in->decNULL = NULL;
 	knh_InputStreamEX_t *b = knh_bodymalloc(ctx, InputStream);
-	in->dspi = knh_getDefaultStreamDPI();
+	in->dpi = knh_getDefaultStreamDPI();
 	b->fio = IO_BUF;
 	KNH_INITv(b->ba, new_Bytes(ctx, "stream", 0));
-	KNH_INITv(b->urn, TS_DEVNULL);
+	KNH_INITv(b->path, ctx->share->cwdPath);
 	b->pos = 0; b->posend = 0;
 	b->stat_size = 0;
 	in->b = b;
@@ -2201,7 +2202,7 @@ static void InputStream_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
 	knh_InputStreamEX_t *b = DP(in);
 	KNH_ADDREF(ctx, b->ba);
-	KNH_ADDREF(ctx, b->urn);
+	KNH_ADDREF(ctx, b->path);
 	KNH_ADDREF(b->mon, KNH_NULL);
 	KNH_ADDNNREF(ctx, in->decNULL);
 	KNH_SIZEREF(ctx);
@@ -2212,7 +2213,7 @@ static void InputStream_free(CTX ctx, knh_RawPtr_t *o)
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
 	knh_InputStreamEX_t *b = DP(in);
 	if(b->fio != IO_NULL) {
-		in->dspi->fcloseSPI(ctx, b->fio);
+		in->dpi->fcloseSPI(ctx, b->fio);
 		b->fio = IO_NULL;
 	}
 	knh_bodyfree(ctx, b, InputStream);
@@ -2221,7 +2222,7 @@ static void InputStream_free(CTX ctx, knh_RawPtr_t *o)
 static void InputStream_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_InputStream_t *ins = (knh_InputStream_t*)o;
-	knh_write_quote(ctx, w, '\'', S_tobytes(DP(ins)->urn), !String_isASCII(DP(ins)->urn));
+	knh_write_quote(ctx, w, '\'', S_tobytes(DP(ins)->path->urn), !String_isASCII(DP(ins)->path->urn));
 }
 
 static knh_ClassDef_t InputStreamDef = {
@@ -2240,10 +2241,10 @@ static void OutputStream_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_OutputStream_t *w = (knh_OutputStream_t*)o;
 	knh_OutputStreamEX_t *b = knh_bodymalloc(ctx, OutputStream);
-	w->dspi = knh_getDefaultStreamDPI();
+	w->dpi = knh_getDefaultStreamDPI();
 	b->fio = IO_NULL;
 	KNH_INITv(b->ba, new_Bytes(ctx, "stream", 0));
-	KNH_INITv(b->urn, TS_DEVNULL);
+	KNH_INITv(b->path, ctx->share->cwdPath);
 	b->stat_size = 0;
 	KNH_INITv(b->NEWLINE, TS_EOL);
 	KNH_INITv(b->TAB, TS_TAB);
@@ -2260,7 +2261,7 @@ static void OutputStream_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 	knh_OutputStreamEX_t *b = DP(w);
 	KNH_ADDREF(ctx, (b->ba));
 	KNH_ADDNNREF(ctx, (w->encNULL));
-	KNH_ADDREF(ctx, (b->urn));
+	KNH_ADDREF(ctx, (b->path));
 	KNH_ADDREF(ctx, (b->NEWLINE));
 	KNH_ADDREF(ctx, (b->TAB));
 	KNH_SIZEREF(ctx);
@@ -2271,7 +2272,7 @@ static void OutputStream_free(CTX ctx, knh_RawPtr_t *o)
 	knh_OutputStream_t *w = (knh_OutputStream_t*)o;
 	knh_OutputStreamEX_t *b = DP(w);
 	if(b->fio != IO_NULL) {
-		w->dspi->fcloseSPI(ctx, b->fio);
+		w->dpi->fcloseSPI(ctx, b->fio);
 		b->fio = IO_NULL;
 	}
 	knh_bodyfree(ctx, b, OutputStream);
@@ -2280,7 +2281,7 @@ static void OutputStream_free(CTX ctx, knh_RawPtr_t *o)
 static void OutputStream_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_OutputStream_t *ous = (knh_OutputStream_t*)o;
-	knh_write_quote(ctx, w, '\'', S_tobytes(DP(ous)->urn) , !String_isASCII(DP(ous)->urn));
+	knh_write_quote(ctx, w, '\'', S_tobytes(DP(ous)->path->urn) , !String_isASCII(DP(ous)->path->urn));
 }
 
 static knh_ClassDef_t OutputStreamDef = {
@@ -2299,7 +2300,7 @@ static void Connection_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Connection_t *c = (knh_Connection_t*)o;
 	c->conn = NULL;
-	c->dspi = knh_getQueryDSPI(ctx, NULL, K_DEFAULT_DSPI);
+	c->dpi = knh_getQueryDSPI(ctx, NULL, K_DEFAULT_DSPI);
 	KNH_INITv(c->urn, TS_EMPTY);
 }
 
@@ -2314,7 +2315,7 @@ static void Connection_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Connection_t *c = (knh_Connection_t*)o;
 	if(c->conn != NULL) {
-		c->dspi->qclose(ctx, c->conn);
+		c->dpi->qclose(ctx, c->conn);
 	}
 }
 
@@ -2451,7 +2452,7 @@ static void NameSpace_init(CTX ctx, knh_RawPtr_t *o)
 	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
 	knh_NameSpaceEX_t *b = knh_bodymalloc(ctx, NameSpace);
 	KNH_INITv(b->nsname, TS_main);
-	KNH_INITv(ns->rpath, TS_EMPTY);
+	KNH_INITv(ns->path, ctx->share->cwdPath);
 	ns->parentNULL          = NULL;
 	b->ffilinksNULL     = NULL;
 	b->linkDictMapNULL      = NULL;
@@ -2469,7 +2470,7 @@ static void NameSpace_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
 	knh_NameSpaceEX_t *b = DP(ns);
 	KNH_ADDREF(ctx, b->nsname);
-	KNH_ADDREF(ctx, ns->rpath);
+	KNH_ADDREF(ctx, ns->path);
 	KNH_ADDNNREF(ctx, ns->parentNULL);
 	KNH_ADDNNREF(ctx, b->ffilinksNULL);
 	KNH_ADDNNREF(ctx, b->linkDictMapNULL);
@@ -2490,7 +2491,7 @@ static void NameSpace_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int lev
 {
 	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
 	knh_write_ascii(ctx, w, "ns:");
-	knh_write_ascii(ctx, w, S_tochar(ns->rpath));
+	knh_write(ctx, w, S_tobytes(ns->path->urn));
 }
 
 static knh_ClassDef_t NameSpaceDef = {
@@ -3129,6 +3130,7 @@ static void knh_setDefaultValues(CTX ctx)
 		Object_setNullObject(so, 1);
 		knh_setClassDefaultValue(ctx, CLASS_String, so, NULL);
 	}
+	knh_setClassDefaultValue(ctx, CLASS_Path, ctx->share->cwdPath, NULL);
 #if defined(K_USING_SEMANTICS)
 	{
 		knh_Semantics_t *u = new_(Semantics);

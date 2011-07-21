@@ -679,7 +679,7 @@ typedef struct knh_Converter_t knh_Converter_t;
 struct knh_Converter_t {
 	knh_hObject_t h;
 	knh_conv_t *conv;
-	const struct knh_ConvDSPI_t *dspi;
+	const struct knh_ConvDSPI_t *dpi;
 };
 #endif
 
@@ -691,7 +691,7 @@ typedef struct knh_StringEncoder_t knh_StringEncoder_t;
 struct knh_StringEncoder_t {
 	knh_hObject_t h;
 	knh_conv_t *conv;
-	const struct knh_ConvDSPI_t *dspi;
+	const struct knh_ConvDSPI_t *dpi;
 };
 #endif
 
@@ -703,7 +703,7 @@ typedef struct knh_StringDecoder_t knh_StringDecoder_t;
 struct knh_StringDecoder_t {
 	knh_hObject_t h;
 	knh_conv_t *conv;
-	const struct knh_ConvDSPI_t *dspi;
+	const struct knh_ConvDSPI_t *dpi;
 };
 #endif
 
@@ -715,7 +715,7 @@ typedef struct knh_StringConveter_t knh_StringConverter_t;
 struct knh_StringConveter_t {
 	knh_hObject_t h;
 	knh_conv_t *conv;
-	const struct knh_ConvDSPI_t *dspi;
+	const struct knh_ConvDSPI_t *dpi;
 };
 #endif
 
@@ -785,42 +785,58 @@ struct knh_Semantics_t {
 #endif
 
 /* ------------------------------------------------------------------------ */
-/* InputStream, OutputStream */
-
-#define KNH_STDIN          (ctx->in)
-#define KNH_STDOUT         (ctx->out)
-#define KNH_STDERR         (ctx->err)
-
-/* ------------------------------------------------------------------------ */
 //## class Path Object;
 //## flag Path Trusted        1 - is set * *;
 //## flag Path Temporary      2 - is set * *;
 
+typedef knh_uintptr_t knh_io_t;
+#define IO_NULL   ((knh_io_t)(NULL))
+#define IO_BUF    ((knh_io_t)1)
+#define K_STREAM_BUFSIZ  K_PAGESIZE
+#define K_OUTBUF_MAXSIZ      (512L * 1024 * 1024)  // 512Mb
+
+#ifdef PATH_MAX
+#define K_PATHMAX PATH_MAX
+#else
+#define K_PATHMAX 256
+#endif
+
 typedef struct knh_Path_t knh_Path_t;
+
+typedef struct knh_StreamDPI_t {
+	int type;
+	const char *name;
+	size_t      wbufsiz;  // write bufsize
+	knh_bool_t (*existsSPI)(CTX, struct knh_Path_t *);
+	knh_io_t (*fopenSPI)(CTX, struct knh_Path_t*, const char *);
+	knh_io_t (*wopenSPI)(CTX, struct knh_Path_t*, const char *);
+	knh_intptr_t (*freadSPI)(CTX, knh_io_t, char *, size_t);
+	knh_intptr_t (*fwriteSPI)(CTX, knh_io_t, const char *, size_t);
+	void (*fcloseSPI)(CTX, knh_io_t);
+} knh_StreamDPI_t;
+
 #ifdef USE_STRUCT_Path
 struct knh_Path_t {
 	knh_hObject_t h;
-	const char         *ospath;
-	size_t               asize;
-	struct knh_String_t  *urn;
+	const char               *ospath;
+	size_t                    asize;
+	struct knh_String_t      *urn;
+	const struct knh_StreamDPI_t   *dpi;
 };
 #endif
 
 /* ------------------------------------------------------------------------ */
 //## class InputStream Object;
 
-typedef knh_uintptr_t knh_io_t;
-#define IO_NULL   ((knh_io_t)(NULL))
-#define IO_BUF    ((knh_io_t)1)
-#define K_STREAM_BUFSIZ  K_PAGESIZE
+#define KNH_STDIN          (ctx->in)
+#define KNH_STDOUT         (ctx->out)
+#define KNH_STDERR         (ctx->err)
 
 typedef struct knh_InputStream_t knh_InputStream_t;
-#ifdef K_INTERNAL
+#ifdef USE_STRUCT_InputStream
 typedef struct {
-	knh_String_t*  urn;
-	union {
-		knh_io_t fio;
-	};
+	knh_Path_t *path;
+	knh_io_t fio;
 	union {
 		struct knh_Bytes_t  *ba;
 		struct knh_String_t *str;
@@ -833,7 +849,7 @@ struct knh_InputStream_t {
 	knh_hObject_t h;
 	knh_InputStreamEX_t *b;
 	knh_uline_t  uline;
-	const struct knh_StreamDPI_t *dspi;
+	const struct knh_StreamDPI_t  *dpi;
 	struct knh_StringDecoder_t*    decNULL;
 };
 #endif
@@ -845,9 +861,9 @@ struct knh_InputStream_t {
 //## flag OutputStream UTF8           3 - has set * *;
 
 typedef struct knh_OutputStream_t knh_OutputStream_t;
-#ifdef K_INTERNAL
+#ifdef USE_STRUCT_OutputStream
 typedef struct {
-	knh_String_t*  urn;
+	knh_Path_t* path;
 	knh_io_t fio;
 	struct knh_Bytes_t *ba;
 	size_t stat_size;
@@ -860,7 +876,7 @@ struct knh_OutputStream_t {
 	knh_hObject_t h;
 	knh_OutputStreamEX_t *b;
 	knh_uline_t  uline;
-	const struct knh_StreamDPI_t *dspi;
+	const struct knh_StreamDPI_t *dpi;
 	struct knh_StringEncoder_t* encNULL;
 };
 #endif
@@ -885,7 +901,7 @@ typedef struct knh_Connection_t knh_Connection_t;
 struct knh_Connection_t {
 	knh_hObject_t h;
 	knh_qconn_t                  *conn;
-	const struct knh_QueryDPI_t  *dspi;
+	const struct knh_QueryDPI_t  *dpi;
 	knh_String_t                 *urn;
 };
 #endif
@@ -949,7 +965,7 @@ struct knh_NameSpace_t {
 	knh_hObject_t h;
 	knh_NameSpaceEX_t *b;
 	struct knh_NameSpace_t   *parentNULL;
-	knh_String_t             *rpath;
+	knh_Path_t               *path;
 	void                     *gluehdr;
 };
 #endif

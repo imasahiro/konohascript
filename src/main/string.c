@@ -738,7 +738,7 @@ knh_StringDecoder_t* new_StringDecoderNULL(CTX ctx, knh_bytes_t t)
 		if(id != (knh_iconv_t)(-1)) {
 			knh_StringDecoder_t *c = new_(StringDecoder);
 			c->conv = (knh_conv_t*)id;
-			c->dspi = &SCONV;
+			c->dpi = &SCONV;
 			return c;
 		}
 	}
@@ -755,7 +755,7 @@ knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, knh_bytes_t t)
 		if(id != (knh_iconv_t)(-1)) {
 			knh_StringEncoder_t *c = new_(StringEncoder);
 			c->conv = (knh_conv_t*)id;
-			c->dspi = &SCONV;
+			c->dpi = &SCONV;
 			return c;
 		}
 	}
@@ -769,7 +769,7 @@ knh_String_t *knh_cwb_newStringDECODE(CTX ctx, knh_cwb_t *cwb, knh_StringDecoder
 	BEGIN_LOCAL(ctx, lsfp, 1);
 	LOCAL_NEW(ctx, lsfp, 0, knh_String_t*, s, knh_cwb_newString(ctx, cwb));
 	if(!String_isASCII(s)) {
-		c->dspi->dec(ctx, c->conv, S_tobytes(s), cwb->ba);
+		c->dpi->dec(ctx, c->conv, S_tobytes(s), cwb->ba);
 		s = knh_cwb_newString(ctx, cwb);
 		KNH_SETv(ctx, lsfp[0].o, KNH_NULL); //
 	}

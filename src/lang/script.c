@@ -48,8 +48,8 @@ knh_NameSpace_t* new_NameSpace(CTX ctx, knh_NameSpace_t *parent)
 	DBG_ASSERT(IS_NameSpace(parent));
 	KNH_INITv(ns->parentNULL, parent);
 	KNH_SETv(ctx, DP(ns)->nsname, DP(parent)->nsname);
-	KNH_SETv(ctx, ns->rpath, parent->rpath);
-	DBG_P("ns=%p, rpath='%s'", ns, S_tochar(ns->rpath));
+	KNH_SETv(ctx, ns->path, parent->path);
+	DBG_P("ns=%p, rpath='%s'", ns, S_tochar(ns->path->urn));
 	return ns;
 }
 
@@ -172,42 +172,43 @@ static void NameSpace_endINCLUDE(CTX ctx, knh_NameSpace_t *newns, knh_NameSpace_
 	oldns->gluehdr = tdlhdr;
 }
 
-knh_bool_t knh_NameSpace_include(CTX ctx, knh_NameSpace_t *ns, knh_String_t *path)
+knh_bool_t knh_NameSpace_include(CTX ctx, knh_NameSpace_t *ns, knh_Path_t *pth)
 {
-	knh_bytes_t inc_path = S_tobytes(path);
-	if(knh_bytes_startsWith(inc_path, STEXT("lib:"))) {
-		return knh_NameSpace_addFFIlink(ctx, ns, inc_path);
-	}
-	else {
-		knh_NameSpace_t *newns = new_NameSpace(ctx, ns);
-		KNH_SETv(ctx, ctx->gma->scr->ns, newns);
-		NameSpace_beginINCLUDE(ctx, newns, ns);
-		knh_status_t res = knh_load(ctx, newns, path, NULL);
-		NameSpace_endINCLUDE(ctx, newns, ns);
-		KNH_SETv(ctx, ctx->gma->scr->ns, ns);
-		return (res == K_CONTINUE);
-	}
+	knh_NameSpace_t *newns = new_NameSpace(ctx, ns);
+	KNH_SETv(ctx, ctx->gma->scr->ns, newns);
+	NameSpace_beginINCLUDE(ctx, newns, ns);
+	knh_status_t res = knh_load(ctx, pth, NULL);
+	NameSpace_endINCLUDE(ctx, newns, ns);
+	KNH_SETv(ctx, ctx->gma->scr->ns, ns);
+	return (res == K_CONTINUE);
 }
 
 static knh_status_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *n)
 {
 	knh_status_t status = K_BREAK;
-	knh_Token_t *tkRES = Tn_typing(ctx, stmt, 0, TYPE_String, 0);
-	if(TT_(tkRES) != TT_ERR) {
-		if(!Tn_isCONST(stmt, 0)) {
-			knh_Stmt_t *stmt2 = new_Stmt2(ctx, STT_RETURN, stmtNN(stmt, 0), NULL);
-			status = SCRIPT_eval(ctx, stmt2, 0/*isCompileOnly*/, NULL);
-			if(status != K_CONTINUE) return status;
-			KNH_SETv(ctx, tkNN(stmt, 0), new_TokenEVALED(ctx));
-		}
-		if(!knh_NameSpace_include(ctx, K_GMANS, tkNN(stmt, 0)->text)) {
-			knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "include path:", S_tochar(tkNN(stmt, 0)->text)));
-			return K_BREAK;
-		}
+	knh_Token_t *tkPATH = tkNN(stmt, 0);
+	if(IS_bString(tkPATH->text) && knh_bytes_startsWith(S_tobytes(tkPATH->text), STEXT("lib:"))) {
+		return knh_NameSpace_addFFIlink(ctx, K_GMANS, S_tobytes(tkPATH->text));
 	}
 	else {
-		knh_Stmt_toERR(ctx, stmt, tkRES);
-		return K_BREAK;
+		knh_Token_t *tkRES = Tn_typing(ctx, stmt, 0, CLASS_Path, 0);
+		if(TT_(tkRES) != TT_ERR) {
+			if(!Tn_isCONST(stmt, 0)) {
+				knh_Stmt_t *stmt2 = new_Stmt2(ctx, STT_RETURN, stmtNN(stmt, 0), NULL);
+				status = SCRIPT_eval(ctx, stmt2, 0/*isCompileOnly*/, NULL);
+				if(status != K_CONTINUE) return status;
+				KNH_SETv(ctx, tkNN(stmt, 0), new_TokenEVALED(ctx));
+			}
+			knh_Path_t *pth = (knh_Path_t*)tkNN(stmt,0)->data;
+			if(!knh_NameSpace_include(ctx, K_GMANS, pth)) {
+				knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, "include path:", S_tochar(pth->urn)));
+				return K_BREAK;
+			}
+		}
+		else {
+			knh_Stmt_toERR(ctx, stmt, tkRES);
+			return K_BREAK;
+		}
 	}
 	knh_Stmt_done(ctx, stmt);
 	return K_CONTINUE;
@@ -257,18 +258,16 @@ knh_status_t knh_loadPackage(CTX ctx, knh_bytes_t pkgname)
 				knh_Script_t *newscr = new_(Script);
 				KNH_SETv(ctx, DP(newscr->ns)->nsname, pname);
 				knh_DictMap_set(ctx, dmap, pname, newscr);
-				{
-					knh_InputStream_t *in = new_InputStreamDPI(ctx, (knh_io_t)fp, NULL);
-					knh_uri_t uri = knh_getURI(ctx, knh_cwb_tobytes(cwb));
-					KNH_SETv(ctx, newscr->ns->rpath, knh_buff_newRealPath(ctx, cwb->ba, cwb->pos));
-					ULINE_setURI(in->uline, uri);
-					KNH_SETv(ctx, DP(in)->urn, newscr->ns->rpath);
-					DBG_P("rpath='%s'", S_tochar(newscr->ns->rpath));
-					scr = ctx->gma->scr;
-					KNH_SETv(ctx, ctx->gma->scr, newscr);
-					status = knh_InputStream_load(ctx, in, NULL);
-					KNH_SETv(ctx, ctx->gma->scr, scr);
-				}
+				knh_uri_t uri = knh_getURI(ctx, knh_cwb_tobytes(cwb));
+				KNH_SETv(ctx, newscr->ns->path, new_Path(ctx, knh_buff_newRealPathString(ctx, cwb->ba, cwb->pos)));
+				/* */
+				knh_InputStream_t *in = new_InputStreamDPI(ctx, (knh_io_t)fp, NULL, newscr->ns->path);
+				ULINE_setURI(in->uline, uri);
+				DBG_P("rpath='%s'", newscr->ns->path->ospath);
+				scr = ctx->gma->scr;
+				KNH_SETv(ctx, ctx->gma->scr, newscr);
+				status = knh_InputStream_load(ctx, in, NULL);
+				KNH_SETv(ctx, ctx->gma->scr, scr);
 			}
 		}
 		else {
@@ -938,7 +937,7 @@ knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in, knh_Array_t *r
 	LOCAL_NEW(ctx, lsfp, 1, knh_InputStream_t*, bin, new_BytesInputStream(ctx, ba));
 	KNH_SETv(ctx, lsfp[0].o, in);
 	if(!knh_isCompileOnly(ctx)) {
-		LOGSFPDATA = {sDATA("path", S_tochar(DP(in)->urn))};
+		LOGSFPDATA = {sDATA("urn", S_tochar(DP(in)->path->urn))};
 		NOTE_OK("script_start");
 	}
 	do {
@@ -964,21 +963,15 @@ knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in, knh_Array_t *r
 	return status;
 }
 
-knh_status_t knh_load(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn, knh_Array_t *resultsNULL)
+knh_status_t knh_load(CTX ctx, knh_Path_t *pth, knh_Array_t *resultsNULL)
 {
-	const knh_StreamDPI_t *dspi = knh_getStreamDPI(ctx, ns, S_tobytes(urn));
-	if(knh_isFILEStreamDPI(dspi)) {
-		char buf[K_PATHMAX];
-		knh_String_ospath(ctx, urn, ns, buf, sizeof(buf));
-		knh_io_t fd = dspi->fopenSPI(ctx, buf, "r");
-		if(fd != IO_NULL) {
-			knh_InputStream_t *in = new_InputStreamDPI(ctx, fd, dspi);
-			knh_uri_t uri = knh_getURI(ctx, B(buf));
-			ULINE_setURI(in->uline, uri);
-			KNH_SETv(ctx, DP(in)->urn, urn);
-			KNH_SETv(ctx, ns->rpath, new_String(ctx, buf));
-			return knh_InputStream_load(ctx, in, resultsNULL);
-		}
+	knh_io_t fd = pth->dpi->fopenSPI(ctx, pth, "r");
+	if(fd != IO_NULL) {
+		knh_InputStream_t *in = new_InputStreamDPI(ctx, fd, pth->dpi, pth);
+		knh_uri_t uri = knh_getURI(ctx, S_tobytes(pth->urn));
+		ULINE_setURI(in->uline, uri);
+		KNH_SETv(ctx, (K_GMANS)->path, pth);
+		return knh_InputStream_load(ctx, in, resultsNULL);
 	}
 	return K_BREAK;
 }
@@ -1017,11 +1010,10 @@ knh_status_t knh_startScript(CTX ctx, const char *path)
 		knh_buff_addStartPath(ctx, cwb->ba, cwb->pos, B(path));
 		FILE *fp = fopen(knh_cwb_tochar(ctx, cwb), "r");
 		if(fp != NULL) {
-			knh_InputStream_t *in = new_InputStreamDPI(ctx, (knh_io_t)fp, NULL);
 			knh_uri_t uri = knh_getURI(ctx, knh_cwb_tobytes(cwb));
-			KNH_SETv(ctx, ns->rpath, knh_buff_newRealPath(ctx, cwb->ba, cwb->pos));
+			KNH_SETv(ctx, ns->path, new_Path(ctx, knh_buff_newRealPathString(ctx, cwb->ba, cwb->pos)));
+			knh_InputStream_t *in = new_InputStreamDPI(ctx, (knh_io_t)fp, NULL, ns->path);
 			ULINE_setURI(in->uline, uri);
-			KNH_SETv(ctx, DP(in)->urn, ns->rpath);
 			status = knh_InputStream_load(ctx, in, NULL);
 		}
 		else {

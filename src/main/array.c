@@ -140,7 +140,6 @@ static void Farray_setN(CTX ctx, knh_Array_t *a, size_t n2, knh_sfp_t *vsfp)
 	a->nlist[n2] = vsfp[0].ndata;
 }
 
-
 static void Farray_addO(CTX ctx, knh_Array_t *a, knh_sfp_t *v)
 {
 	size_t capacity = a->dim->capacity;

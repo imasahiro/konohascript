@@ -677,7 +677,7 @@ static METHOD String_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	else {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_StringDecoder_t *c = (knh_StringDecoder_t*)sfp[2].o;
-		c->dspi->dec(ctx, c->conv, BA_tobytes(sfp[1].ba), cwb->ba);
+		c->dpi->dec(ctx, c->conv, BA_tobytes(sfp[1].ba), cwb->ba);
 		s = knh_cwb_newString(ctx, cwb);
 	}
 	RETURN_(s);
@@ -1161,7 +1161,7 @@ static METHOD Bytes_convert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
-	c->dspi->conv(ctx, c->conv, BA_tobytes(sfp[0].ba), cwb->ba);
+	c->dpi->conv(ctx, c->conv, BA_tobytes(sfp[0].ba), cwb->ba);
 	knh_Bytes_t *ba = new_Bytes(ctx, NULL, knh_cwb_size(cwb));
 	knh_Bytes_write(ctx, ba, knh_cwb_tobytes(cwb));
 	knh_cwb_close(cwb);
@@ -1175,8 +1175,8 @@ static METHOD String_encode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
-	//fprintf(stderr, "%s, c=%p, c->dspi=%p, c->dspi->enc=****\n", CLASS__(c->h.cid), c, c->dspi);
-	c->dspi->enc(ctx, c->conv, S_tobytes(sfp[0].s), cwb->ba);
+	//fprintf(stderr, "%s, c=%p, c->dpi=%p, c->dpi->enc=****\n", CLASS__(c->h.cid), c, c->dpi);
+	c->dpi->enc(ctx, c->conv, S_tobytes(sfp[0].s), cwb->ba);
 	knh_Bytes_t *ba = new_Bytes(ctx, NULL, knh_cwb_size(cwb));
 	knh_Bytes_write(ctx, ba, knh_cwb_tobytes(cwb));
 	knh_cwb_close(cwb);
@@ -1190,7 +1190,7 @@ static METHOD Bytes_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
-	c->dspi->dec(ctx, c->conv, BA_tobytes(sfp[0].ba), cwb->ba);
+	c->dpi->dec(ctx, c->conv, BA_tobytes(sfp[0].ba), cwb->ba);
 	RETURN_(knh_cwb_newString(ctx, cwb));
 }
 
@@ -1203,7 +1203,7 @@ static METHOD String_convert(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
 	if (!IS_NULL(c)) {
-		c->dspi->sconv(ctx, c->conv, S_tobytes(sfp[0].s), cwb->ba);
+		c->dpi->sconv(ctx, c->conv, S_tobytes(sfp[0].s), cwb->ba);
 	}
 	RETURN_(knh_cwb_newString(ctx, cwb));
 }
@@ -3033,32 +3033,23 @@ static METHOD Thunk_value(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Throwable method InputStream InputStream.new(String urn, String mode, NameSpace _);
+//## @Throwable method InputStream InputStream.new(Path urn, String mode);
 
 static METHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_InputStream_t *in = sfp[0].in;
-	knh_String_t *urn = sfp[1].s;
-	knh_bytes_t path = S_tobytes(sfp[1].s);
+	knh_Path_t *pth = sfp[1].pth;
 	const char *mode = IS_NULL(sfp[2].s) ? "r" : S_tochar(sfp[2].s);
-	knh_NameSpace_t *ns = sfp[3].ns;
-	in->dspi = knh_getStreamDPI(ctx, ns, path);
-	if(knh_isFILEStreamDPI(in->dspi)) {
-		char buf[K_PATHMAX];
-		knh_String_ospath(ctx, urn, ns, buf, sizeof(buf));
-		DP(in)->fio = in->dspi->fopenSPI(ctx, (const char*)buf, mode);
-	}
-	else {
-		DP(in)->fio = in->dspi->fopenSPI(ctx, S_tochar(urn), mode);
-	}
-	KNH_SETv(ctx, DP(in)->urn, sfp[1].s);
+	in->dpi = pth->dpi;
+	DP(in)->fio = in->dpi->fopenSPI(ctx, pth, mode);
 	if(DP(in)->fio != IO_NULL) {
 		knh_Bytes_ensureSize(ctx, DP(in)->ba, K_PAGESIZE);
 	}
 	else {
 		knh_Object_toNULL(ctx, in);
-		in->dspi = knh_getDefaultStreamDPI();
+		in->dpi = knh_getDefaultStreamDPI();
 	}
+	KNH_SETv(ctx, DP(in)->path, pth);
 	RETURN_(in);
 }
 
@@ -3096,7 +3087,7 @@ static METHOD InputStream_getChar(CTX ctx, knh_sfp_t *sfp _RIX)
 //size_t knh_InputStream_read(CTX ctx, knh_InputStream_t *in, char *buf, size_t bufsiz)
 //{
 //	if(InputStream_isFILE(in)) {
-//		return in->dspi->freadSPI(ctx, DP(in)->fd, buf, bufsiz);
+//		return in->dpi->freadSPI(ctx, DP(in)->fd, buf, bufsiz);
 //	}
 //	else {
 //		size_t inbufsiz = (DP(in)->bufend - DP(in)->bufpos);
@@ -3114,7 +3105,7 @@ static METHOD InputStream_getChar(CTX ctx, knh_sfp_t *sfp _RIX)
 //		DP(in)->bufpos += inbufsiz;
 //		DP(in)->size += bufsiz;
 //		buf += inbufsiz;
-//		size_t s = in->dspi->freadSPI(ctx, DP(in)->fd, buf+inbufsiz, bufsiz-inbufsiz);
+//		size_t s = in->dpi->freadSPI(ctx, DP(in)->fd, buf+inbufsiz, bufsiz-inbufsiz);
 //		DP(in)->size += s;
 //		return s + inbufsiz;
 //	}
@@ -3197,28 +3188,19 @@ static TYPEMAP knh_InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 /* [OutputStream] */
 
-//## @Throwable method OutputStream OutputStream.new(String urn, String mode, NameSpace _);
+//## @Throwable method OutputStream OutputStream.new(Path path, String mode);
 
 static METHOD OutputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
-	knh_String_t *urn = sfp[1].s;
-	knh_bytes_t path = S_tobytes(sfp[1].s);
+	knh_Path_t *pth = sfp[1].pth;
 	const char *mode = IS_NULL(sfp[2].s) ? "w" : S_tochar(sfp[2].s);
-	knh_NameSpace_t *ns = sfp[3].ns;
-	w->dspi = knh_getStreamDPI(ctx, ns, path);
-	if(knh_isFILEStreamDPI(w->dspi)) {
-		char buf[K_PATHMAX];
-		knh_String_ospath(ctx, urn, ns, buf, sizeof(buf));
-		DP(w)->fio = w->dspi->fopenSPI(ctx, (const char*)buf, mode);
-	}
-	else {
-		DP(w)->fio = w->dspi->fopenSPI(ctx, S_tochar(urn), mode);
-	}
-	KNH_SETv(ctx, DP(w)->urn, sfp[1].s);
+	w->dpi = pth->dpi;
+	DP(w)->fio = w->dpi->fopenSPI(ctx, pth, mode);
+	KNH_SETv(ctx, DP(w)->path, pth);
 	if(DP(w)->fio == IO_NULL) {
 		knh_Object_toNULL(ctx, w);
-		w->dspi = knh_getDefaultStreamDPI();
+		w->dpi = knh_getDefaultStreamDPI();
 	}
 	RETURN_(w);
 }
@@ -3230,7 +3212,7 @@ static METHOD OutputStream_writeASCII(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	knh_putc(ctx, w, (int)(sfp[1].ivalue));
-	if(DP(w)->ba->bu.len > w->dspi->wbufsiz) {
+	if(DP(w)->ba->bu.len > w->dpi->wbufsiz) {
 		knh_OutputStream_flush(ctx, w, 0);
 	}
 	RETURNvoid_();
@@ -3475,10 +3457,10 @@ static METHOD Connection_query(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_String_t *query = (knh_String_t*)sfp[1].o;
 	knh_ResultSet_t *rs = new_(ResultSet);
 	KNH_RCSETv(ctx, sfp[2].o, rs);
-	knh_qcur_t *qcur = (c)->dspi->qexec(ctx, (c)->conn, S_tobytes(query), rs);
+	knh_qcur_t *qcur = (c)->dpi->qexec(ctx, (c)->conn, S_tobytes(query), rs);
 	if(qcur != NULL) {
 		DP(rs)->qcur = qcur;
-		DP(rs)->qcurfree = (c)->dspi->qcurfree;
+		DP(rs)->qcurfree = (c)->dpi->qcurfree;
 	}
 	else {
 		DP(rs)->qcur = NULL;
@@ -3495,7 +3477,7 @@ static METHOD Connection_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Connection_t *c = (knh_Connection_t*)sfp[0].o;
 	knh_String_t *query = sfp[1].s;
-	(c)->dspi->qexec(ctx, (c)->conn, S_tobytes(query), NULL);
+	(c)->dpi->qexec(ctx, (c)->conn, S_tobytes(query), NULL);
 	RETURNvoid_();
 }
 

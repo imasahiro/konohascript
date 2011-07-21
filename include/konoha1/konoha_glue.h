@@ -75,25 +75,6 @@ typedef struct knh_ConvDSPI_t {
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_STREAM */
 
-#ifdef PATH_MAX
-#define K_PATHMAX PATH_MAX
-#else
-#define K_PATHMAX 256
-#endif
-
-#define K_OUTBUF_MAXSIZ      (512L * 1024 * 1024)  // 512Mb
-
-typedef struct knh_StreamDPI_t {
-	int type;
-	const char *name;
-	size_t wbufsiz;  // write bufsize
-	knh_io_t (*fopenSPI)(CTX, const char*, const char *);
-	knh_io_t (*wopenSPI)(CTX, const char*, const char *);
-	knh_intptr_t (*freadSPI)(CTX, knh_io_t, char *, size_t);
-	knh_intptr_t (*fwriteSPI)(CTX, knh_io_t, const char *, size_t);
-	void (*fcloseSPI)(CTX, knh_io_t);
-} knh_StreamDPI_t;
-
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_QUERY */
 

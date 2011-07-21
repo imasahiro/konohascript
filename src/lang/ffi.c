@@ -565,10 +565,9 @@ static void *knh_open_gluelink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t libname
 {
 	void *p = NULL;
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(ns->rpath));
+	knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, B(ns->path->ospath));
 	knh_buff_trim(ctx, cwb->ba, cwb->pos, '.');
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT(K_OSDLLEXT));
-	DBG_P("@@@@@@ '%s'", knh_cwb_tochar(ctx, cwb));
 	p = knh_dlopen(ctx, knh_cwb_tochar(ctx, cwb));
 	knh_cwb_close(cwb);
 	if(p != NULL) {

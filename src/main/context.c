@@ -225,7 +225,6 @@ static knh_context_t* new_RootContext(void)
 	initServiceSPI((knh_ServiceSPI_t*)ctx->spi);
 
 	knh_share_initArena(ctx, share);
-
 	share->memlock = knh_mutex_malloc(ctx);
 	share->ClassTBL = (const knh_ClassTBL_t**)KNH_MALLOC((CTX)ctx, sizeof(knh_ClassTBL_t*)*(K_CLASSTABLE_INIT));
 	knh_bzero(share->ClassTBL, sizeof(knh_ClassTBL_t*)*(K_CLASSTABLE_INIT));
@@ -266,10 +265,10 @@ static knh_context_t* new_RootContext(void)
 		(a)->dim = &dimINIT;
 		KNH_INITv(share->emptyArray, a);
 	}
-
 	share->tString = (knh_String_t**)KNH_MALLOC(ctx, SIZEOF_TSTRING);
 	knh_bzero(share->tString, SIZEOF_TSTRING);
 	knh_loadScriptSystemString(ctx);
+	KNH_INITv(share->cwdPath, new_CurrentPath(ctx));
 
 	/* These are not shared, but needed to initialize System*/
 	knh_stack_initexpand(ctx, NULL, K_STACKSIZE);
@@ -377,26 +376,24 @@ void context_init_multithread(CTX ctx)
 static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 {
 	size_t i;
-	KNH_ADDREF(ctx, share->constNull);
-	KNH_ADDREF(ctx, share->constTrue);
-	KNH_ADDREF(ctx, share->constFalse);
-//	KNH_ADDREF(ctx, (share->constInt0));
-//	KNH_ADDREF(ctx, (share->constFloat0));
-	KNH_ADDREF(ctx, (share->emptyArray));
-	KNH_ADDREF(ctx, (ctx->sys));
-	KNH_ADDREF(ctx, (share->rootns));
-	KNH_ADDNNREF(ctx, (share->sysAliasDictMapNULL));
-	KNH_ADDREF(ctx, (share->constPtrMap));
-	KNH_ADDREF(ctx, (share->inferPtrMap));
-
+	KNH_ADDREF(ctx,   share->constNull);
+	KNH_ADDREF(ctx,   share->constTrue);
+	KNH_ADDREF(ctx,   share->constFalse);
+	KNH_ADDREF(ctx,   share->emptyArray);
+	KNH_ADDREF(ctx,   share->cwdPath);
+	KNH_ADDREF(ctx,   ctx->sys);
+	KNH_ADDREF(ctx,   share->rootns);
+	KNH_ADDNNREF(ctx, share->sysAliasDictMapNULL);
+	KNH_ADDREF(ctx,   share->constPtrMap);
+	KNH_ADDREF(ctx,   share->inferPtrMap);
 	KNH_ENSUREREF(ctx, K_TSTRING_SIZE);
 	for(i = 0; i < K_TSTRING_SIZE; i++) {
-		KNH_ADDREF(ctx, (share->tString[i]));
+		KNH_ADDREF(ctx, share->tString[i]);
 	}
 	KNH_ENSUREREF(ctx, share->sizeEventTBL);
 	for(i = 0; i < share->sizeEventTBL; i++) {
 		if(EventTBL(i).name != NULL) {
-			KNH_ADDREF(ctx, (EventTBL(i).name));
+			KNH_ADDREF(ctx, EventTBL(i).name);
 		}
 	}
 	/* tclass */
@@ -404,14 +401,14 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	for(i = 0; i < share->sizeClassTBL; i++) {
 		const knh_ClassTBL_t *ct = ClassTBL(i);
 		DBG_ASSERT(ct->lname != NULL);
-		KNH_ADDNNREF(ctx,  (ct->typeNULL));
-		KNH_ADDREF(ctx, (ct->methods));
-		KNH_ADDREF(ctx, ct->typemaps);
-		KNH_ADDNNREF(ctx,  ct->cparam);
-		KNH_ADDNNREF(ctx,  ct->defnull);
-		KNH_ADDNNREF(ctx,  ct->constDictCaseMapNULL);
-		KNH_ADDREF(ctx, ct->sname);
-		KNH_ADDREF(ctx, ct->lname);
+		KNH_ADDNNREF(ctx,   ct->typeNULL);
+		KNH_ADDREF(ctx,     ct->methods);
+		KNH_ADDREF(ctx,     ct->typemaps);
+		KNH_ADDNNREF(ctx,   ct->cparam);
+		KNH_ADDNNREF(ctx,   ct->defnull);
+		KNH_ADDNNREF(ctx,   ct->constDictCaseMapNULL);
+		KNH_ADDREF(ctx,     ct->sname);
+		KNH_ADDREF(ctx,     ct->lname);
 		if(ct->bcid == CLASS_Object && ct->cid > ct->bcid) {
 			KNH_ADDREF(ctx, ct->protoNULL);
 		}

@@ -7,7 +7,7 @@ class Person(String name);
 
 namespace {
 	class Dog(String name);
-	assure "UnitTest:ScriptNameSpace" {
+	assure "ScriptNameSpace" {
 		assert defined(Person);
 		assert defined(Dog);	
 	}

@@ -150,8 +150,8 @@ KNHAPI2(knh_Path_t*) new_Path(CTX ctx, knh_String_t *path)
 static void knh_buff_addScriptPath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	knh_bytes_t bpath = knh_bytes_next(path, ':');
-	knh_buff_addospath(ctx, ba, pos, 0, S_tobytes(ns->rpath));
-	if(!knh_isdir(ctx, S_tochar(ns->rpath))) {
+	knh_buff_addpath(ctx, ba, pos, 0, B(ns->path->ospath));
+	if(!knh_buff_isdir(ctx, ba, pos)) {
 		knh_buff_trim(ctx, ba, pos, '/');
 	}
 	knh_buff_addospath(ctx, ba, pos, 1, bpath);
@@ -170,24 +170,160 @@ knh_Path_t *new_ScriptPath(CTX ctx, knh_String_t *urn, knh_NameSpace_t *ns)
 }
 
 /* ------------------------------------------------------------------------ */
+/* K_DPI_STREAM */
 
-KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn, const char *mode)
+static knh_bool_t NOFILE_exists(CTX ctx, knh_Path_t *path)
 {
-	knh_bytes_t path = S_tobytes(urn);
-	const knh_StreamDPI_t *dspi = knh_getStreamDPI(ctx, ns, path);
-	knh_io_t fd = IO_NULL;
-	if(knh_isFILEStreamDPI(dspi)) {
-		char buf[K_PATHMAX];
-		knh_String_ospath(ctx, urn, ns, buf, sizeof(buf));
-		fd = dspi->fopenSPI(ctx, buf, mode);
+	return 0;
+}
+static knh_io_t NOFILE_open(CTX ctx, knh_Path_t *path, const char *mode)
+{
+	return IO_NULL;
+}
+static knh_intptr_t NOFILE_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
+{
+	return 0;  // read nothing. this means that we reach the end of the stream.
+}
+static knh_intptr_t NOFILE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
+{
+	DBG_ASSERT(fd != IO_BUF);
+	return bufsiz;
+}
+static knh_intptr_t BYTE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
+{
+	DBG_ASSERT(fd == IO_BUF);
+	return 0; // write nothing. this means that we are unable to clear buffer
+}
+static void NOFILE_close(CTX ctx, knh_io_t fd)
+{
+}
+
+static const knh_StreamDPI_t STREAM_NOFILE = {
+	K_DSPI_STREAM, "NOFILE", K_PAGESIZE,
+	NOFILE_exists,
+	NOFILE_open, NOFILE_open, NOFILE_read, NOFILE_write, NOFILE_close
+};
+
+static const knh_StreamDPI_t STREAM_BYTE = {
+	K_DSPI_STREAM, "BYTE", K_OUTBUF_MAXSIZ,
+	NOFILE_exists,
+	NOFILE_open, NOFILE_open, NOFILE_read, BYTE_write, NOFILE_close
+};
+static knh_bool_t FILE_exists(CTX ctx, knh_Path_t *path)
+{
+	return knh_exists(ctx, path->ospath);
+}
+static knh_io_t FILE_open(CTX ctx, knh_Path_t *path, const char *mode)
+{
+	return (knh_io_t)fopen(path->ospath, mode);
+}
+static knh_intptr_t FILE_read(CTX ctx, knh_io_t fio, char *buf, size_t bufsiz)
+{
+	return fread(buf, 1, bufsiz, (FILE*)fio);
+}
+static knh_intptr_t FILE_write(CTX ctx, knh_io_t fio, const char *buf, size_t bufsiz)
+{
+	knh_intptr_t ssize = fwrite(buf, 1, bufsiz, (FILE*)fio);
+	fflush((FILE*)fio);
+	return ssize;
+}
+static void FILE_close(CTX ctx, knh_io_t fd)
+{
+	fclose((FILE*)fd);
+}
+
+static const knh_StreamDPI_t STREAM_FILE = {
+	K_DSPI_STREAM, "file", K_OUTBUF_MAXSIZ,
+	FILE_exists,
+	FILE_open, FILE_open, FILE_read, FILE_write, FILE_close,
+};
+static knh_bool_t STDIO_exists(CTX ctx, knh_Path_t *path)
+{
+	return 1;
+}
+static const knh_StreamDPI_t STREAM_STDIO = {
+	K_DSPI_STREAM, "stdio", K_OUTBUF_MAXSIZ,
+	STDIO_exists,
+	NOFILE_open, NOFILE_open, FILE_read, FILE_write, NOFILE_close,
+};
+
+KNHAPI2(knh_InputStream_t*) new_InputStreamDPI(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dpi, knh_Path_t *path)
+{
+	knh_InputStream_t* in = new_(InputStream);
+	DP(in)->fio  = fio;
+	if(fio == IO_NULL) {
+		dpi = NULL;
+		knh_Object_toNULL(ctx, in);
 	}
 	else {
-		fd = dspi->fopenSPI(ctx, S_tochar(urn), mode);
+		KNH_ASSERT(DP(in)->ba->bu.len == 0);
+		knh_Bytes_expands(ctx, DP(in)->ba, K_STREAM_BUFSIZ);
 	}
+	in->dpi = (dpi == NULL) ? &STREAM_FILE : dpi;
+	KNH_SETv(ctx, DP(in)->path, path);
+	DP(in)->path->dpi = dpi;
+	return in;
+}
+
+KNHAPI2(knh_OutputStream_t*) new_OutputStreamDPI(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dpi, knh_Path_t *path)
+{
+	knh_OutputStream_t* w = new_(OutputStream);
+	DP(w)->fio = fio;
+	if(fio == IO_NULL) {
+		dpi = NULL;
+		knh_Object_toNULL(ctx, w);
+	}
+	w->dpi = (dpi == NULL) ? &STREAM_FILE : dpi;
+	KNH_SETv(ctx, DP(w)->path, path);
+	DP(w)->path->dpi = dpi;
+	return w;
+}
+
+knh_InputStream_t *new_InputStreamSTDIO(CTX ctx, FILE *fp, knh_String_t *enc)
+{
+	return new_InputStreamDPI(ctx, (knh_io_t)stdin, &STREAM_STDIO, new_Path(ctx, TS_DEVSTDIN));
+}
+
+knh_OutputStream_t *new_OutputStreamSTDIO(CTX ctx, FILE *fp, knh_String_t *enc)
+{
+	KNH_ASSERT(fp == stdout || fp == stderr);
+	knh_OutputStream_t* o = new_OutputStreamDPI(ctx, (knh_io_t)fp, &STREAM_STDIO, new_Path(ctx, (fp == stdout) ? TS_DEVSTDOUT : TS_DEVSTDERR));
+	OutputStream_setAutoFlush(o, 1);
+	return o;
+}
+
+//knh_InputStream_t* knh_Bytes_openInputStream(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_String_t *path)
+//{
+//	FILE *fp = fopen(knh_Bytes_ensureZero(ctx, ba)+pos, "r");
+//	knh_InputStream_t *in = new_InputStreamDPI(ctx, (knh_io_t)fp, &STREAM_FILE);
+//	KNH_SETv(ctx, DP(in)->urn, path);
+//	return in;
+//}
+//
+//knh_OutputStream_t* knh_Bytes_openOutputStream(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_String_t *path)
+//{
+//	FILE *fp = fopen(knh_Bytes_ensureZero(ctx, ba)+pos, "a");
+//	knh_OutputStream_t *out = new_OutputStreamDPI(ctx, (knh_io_t)fp, &STREAM_FILE);
+//	KNH_SETv(ctx, DP(out)->urn, path);
+//	return out;
+//}
+
+
+const knh_StreamDPI_t *knh_getDefaultStreamDPI(void)
+{
+	return &STREAM_NOFILE;
+}
+
+const knh_StreamDPI_t *knh_getByteStreamDPI(void)
+{
+	return &STREAM_BYTE;
+}
+
+KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_Path_t *pth, const char *mode)
+{
+	knh_io_t fd = pth->dpi->fopenSPI(ctx, pth, mode);
 	if(fd != IO_NULL) {
-		knh_InputStream_t *in = new_InputStreamDPI(ctx, fd, dspi);
-		KNH_SETv(ctx, DP(in)->urn, urn);
-		return in;
+		return new_InputStreamDPI(ctx, fd, pth->dpi, pth);
 	}
 	return NULL;
 }
@@ -220,14 +356,15 @@ void knh_InputStream_setpos(CTX ctx, knh_InputStream_t *in, size_t s, size_t e)
 	DP(in)->pos   = s;
 	DP(in)->posend = e;
 	DP(in)->fio = IO_BUF;
-	in->dspi = knh_getByteStreamDPI();
+	in->dpi = knh_getByteStreamDPI();
 }
 
 /* ------------------------------------------------------------------------ */
+
 static int readbuf(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
 {
 	if(IS_Bytes(ba)) {
-		long ssize = in->dspi->freadSPI(ctx, DP(in)->fio, ba->bu.buf, ba->dim->capacity);
+		long ssize = in->dpi->freadSPI(ctx, DP(in)->fio, ba->bu.buf, ba->dim->capacity);
 		if(ssize > 0) {
 			DP(in)->stat_size += ssize;
 			DP(in)->pos = 0;
@@ -297,13 +434,13 @@ knh_String_t* knh_InputStream_readLine(CTX ctx, knh_InputStream_t *in)
 void knh_InputStream_close(CTX ctx, knh_InputStream_t *in)
 {
 	if(DP(in)->fio != IO_NULL) {
-		in->dspi->fcloseSPI(ctx, DP(in)->fio);
+		in->dpi->fcloseSPI(ctx, DP(in)->fio);
 		if(DP(in)->fio != IO_BUF) {
 //			DBG_P("stream in=%s", S_tochar(DP(in)->urn));
 			knh_Bytes_dispose(ctx, DP(in)->ba);
 		}
 		DP(in)->fio = IO_NULL;
-		in->dspi = knh_getDefaultStreamDPI();
+		in->dpi = knh_getDefaultStreamDPI();
 	}
 }
 
@@ -333,23 +470,11 @@ void InputStream_setCharset(CTX ctx, knh_InputStream_t *in, knh_StringDecoder_t 
 /* ------------------------------------------------------------------------ */
 /* [OutputStream] */
 
-KNHAPI2(knh_OutputStream_t*) new_OutputStreamNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn, const char *mode)
+KNHAPI2(knh_OutputStream_t*) new_OutputStreamNULL(CTX ctx, knh_Path_t *pth, const char *mode)
 {
-	knh_bytes_t path = S_tobytes(urn);
-	const knh_StreamDPI_t *dspi = knh_getStreamDPI(ctx, ns, path);
-	knh_io_t fd = IO_NULL;
-	if(knh_isFILEStreamDPI(dspi)) {
-		char buf[K_PATHMAX];
-		knh_String_ospath(ctx, urn, ns, buf, sizeof(buf));
-		fd = dspi->wopenSPI(ctx, buf, mode);
-	}
-	else {
-		fd = dspi->wopenSPI(ctx, S_tochar(urn), mode);
-	}
+	knh_io_t fd = pth->dpi->wopenSPI(ctx, pth, mode);
 	if(fd != IO_NULL) {
-		knh_OutputStream_t *out = new_OutputStreamDPI(ctx, fd, dspi);
-		KNH_SETv(ctx, DP(out)->urn, urn);
-		return out;
+		return new_OutputStreamDPI(ctx, fd, pth->dpi, pth);
 	}
 	return NULL;
 }
@@ -358,7 +483,7 @@ KNHAPI2(knh_OutputStream_t*) new_BytesOutputStream(CTX ctx, knh_Bytes_t *ba)
 {
 	knh_OutputStream_t* w = new_(OutputStream);
 	DP(w)->fio = IO_BUF;
-	w->dspi = knh_getByteStreamDPI();
+	w->dpi = knh_getByteStreamDPI();
 	KNH_SETv(ctx, DP(w)->ba, ba);
 	return w;
 }
@@ -374,15 +499,15 @@ KNHAPI2(void) knh_OutputStream_flush(CTX ctx, knh_OutputStream_t *w, int isNEWLI
 			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 			knh_StringEncoder_t *c = w->encNULL;
 			KNH_ASSERT(ba != cwb->ba);
-			c->dspi->enc(ctx, c->conv, BA_tobytes(ba), cwb->ba);
+			c->dpi->enc(ctx, c->conv, BA_tobytes(ba), cwb->ba);
 			ba = cwb->ba;
-			if(w->dspi->fwriteSPI(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len) > 0) {
+			if(w->dpi->fwriteSPI(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len) > 0) {
 				knh_Bytes_clear(DP(w)->ba, 0);
 			}
 			knh_cwb_close(cwb);
 			OutputStream_setUTF8(w, 0);
 		}
-		else if(w->dspi->fwriteSPI(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len) > 0) {
+		else if(w->dpi->fwriteSPI(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len) > 0) {
 			knh_Bytes_clear(ba, 0);
 		}
 	}
@@ -401,7 +526,7 @@ KNHAPI2(void) knh_OutputStream_write(CTX ctx, knh_OutputStream_t *w, knh_bytes_t
 {
 	knh_Bytes_t *ba = DP(w)->ba;
 	knh_Bytes_write(ctx, ba, buf);
-	if(ba->bu.len > w->dspi->wbufsiz) {
+	if(ba->bu.len > w->dpi->wbufsiz) {
 		knh_OutputStream_flush(ctx, w, 0);
 	}
 }
@@ -415,13 +540,12 @@ void knh_OutputStream_close(CTX ctx, knh_OutputStream_t *w)
 {
 	if(DP(w)->fio != IO_NULL) {
 		knh_OutputStream_flush(ctx, w, 1);
-		w->dspi->fcloseSPI(ctx, DP(w)->fio);
+		w->dpi->fcloseSPI(ctx, DP(w)->fio);
 		if(DP(w)->fio != IO_BUF) {
-			DBG_P("stream out=%s", S_tochar(DP(w)->urn));
 			knh_Bytes_dispose(ctx, DP(w)->ba);
 		}
 		DP(w)->fio = IO_NULL;
-		w->dspi = knh_getDefaultStreamDPI();
+		w->dpi = knh_getDefaultStreamDPI();
 	}
 }
 

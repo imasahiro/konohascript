@@ -42,8 +42,8 @@ void knh_Connection_open(CTX ctx, knh_Connection_t *c, knh_NameSpace_t *ns, knh_
 {
 	knh_bytes_t u = S_tobytes(urn);
 	KNH_SETv(ctx, (c)->urn, urn);
-	(c)->dspi = knh_getQueryDSPI(ctx, ns, S_tobytes(urn));
-	(c)->conn = (c)->dspi->qopen(ctx, u);
+	(c)->dpi = knh_getQueryDSPI(ctx, ns, S_tobytes(urn));
+	(c)->conn = (c)->dpi->qopen(ctx, u);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -59,9 +59,9 @@ knh_Connection_t* new_Connection(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn
 
 void knh_Connection_close(CTX ctx, knh_Connection_t *c)
 {
-	(c)->dspi->qclose(ctx, (c)->conn);
+	(c)->dpi->qclose(ctx, (c)->conn);
 	(c)->conn = NULL;
-	(c)->dspi = NULL;
+	(c)->dpi = NULL;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -70,7 +70,7 @@ void knh_Connection_close(CTX ctx, knh_Connection_t *c)
 knh_bool_t knh_ResultSet_next(CTX ctx, knh_ResultSet_t *o)
 {
 	if(DP(o)->qcur != NULL) {
-		if(DP(o)->conn->dspi->qcurnext(ctx, DP(o)->qcur, o)) {
+		if(DP(o)->conn->dpi->qcurnext(ctx, DP(o)->qcur, o)) {
 			DP(o)->count += 1;
 			return 1;
 		}
