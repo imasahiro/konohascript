@@ -209,7 +209,7 @@ static Value *ValueStack_get(CTX ctx, int index)
 	knh_sfp_t lsfp = {};
 	index = index + (-1 * K_RTNIDX);
 	lsfp.a = lstacks;
-	lstacks->api->get(ctx, &lsfp, index, 0);
+	lstacks->api->fastget(ctx, &lsfp, index, 0);
 	return (Value*) lsfp.ndata;
 }
 
@@ -1657,7 +1657,8 @@ static int _SEND_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	else {
 		int j = Tn_put(ctx, stmt, 1, TYPE_OutputStream, thisidx+1);
 		Value *v = ValueStack_get(ctx, j);
-		sfp_store(ctx, thisidx, CLASS_OutputStream, v);
+		v = LLVM_BUILDER(ctx)->CreateBitCast(v, LLVMTYPE_Object, "cast");
+		sfp_store(ctx, thisidx, TYPE_OutputStream, v);
 	}
 	for (size_t i = 2; i < DP(stmt)->size; i++) {
 		if(STT_(stmtNN(stmt, i)) == STT_W1) {
@@ -1673,7 +1674,7 @@ static int _SEND_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 			Value *v = ValueStack_get_or_load(ctx, j, cid);
 			sfp_store(ctx, thisidx+1, cid, v);
 			if(cid == CLASS_String) {
-				mtd = knh_NameSpace_getMethodNULL(ctx, CLASS_OutputStream, MN_send);
+				mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, TYPE_OutputStream, MN_send);
 				DBG_ASSERT(mtd != NULL);
 			}
 			else {
