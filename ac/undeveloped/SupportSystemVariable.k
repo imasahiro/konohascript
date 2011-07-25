@@ -11,7 +11,7 @@ int getline() {
 	return n;
 }
 
-assure "UnitTest:SystemVariable" {
+assure "SystemVariable" {
 	n = __line__;
 	print __file__, __line__;
 	assert n == 10;
