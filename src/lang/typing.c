@@ -4346,8 +4346,8 @@ static void ObjectField_init(CTX ctx, knh_ObjectField_t *o)
 #endif
 	}
 	for(i = supct->fsize; i < ct->fsize; i++) {
-		DBG_ASSERT(IS_Token(gf[i].tk));
-		ObjectField_add(ctx, ct->cid, v, i, gf[i].type, (gf[i].tk)->data);
+		Object *val = (IS_Token(gf[i].tk)) ? gf[i].tk->data : KNH_NULL;
+		ObjectField_add(ctx, ct->cid, v, i, gf[i].type, val);
 	}
 }
 

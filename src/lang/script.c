@@ -690,7 +690,6 @@ static knh_ClassTBL_t *CLASSNAME_decl(CTX ctx, knh_Stmt_t *stmt, knh_Token_t *tk
 	knh_Bytes_putc(ctx, cwb->ba, '.');
 	knh_Bytes_write(ctx, cwb->ba, TK_tobytes(tkC));
 	knh_class_t cid = knh_getcid(ctx, knh_cwb_tobytes(cwb));
-	(tkC)->cid = cid;
 	knh_ClassTBL_t *ct = NULL;
 	if(cid == CLASS_unknown) {  // new class //
 		cid = new_ClassId(ctx);
@@ -731,6 +730,7 @@ static knh_ClassTBL_t *CLASSNAME_decl(CTX ctx, knh_Stmt_t *stmt, knh_Token_t *tk
 		knh_Stmt_toERR(ctx, stmt, ERROR_AlreadyDefined(ctx, "class", (tkC)->data));
 	}
 	L_RETURN:;
+	(tkC)->cid = cid;
 	knh_cwb_close(cwb);
 	return ct;
 }
