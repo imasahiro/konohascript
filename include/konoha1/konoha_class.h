@@ -1421,19 +1421,20 @@ typedef struct knh_KindOf_t {
 } knh_KindOf_t;
 
 /* ------------------------------------------------------------------------ */
-//## @Cyclic class Tdynamic Object knh_dynamic_t;
+//## class CppObject Object;
 
 typedef struct knh_RawPtr_t {
 	knh_hObject_t h;
 	void *rawptr;
-	size_t rawsize;
+	struct knh_Object_t **kfields;
 	const char *DBG_NAME;
 	void (*rawfree)(void *);
 } knh_RawPtr_t ;
 
-#define CLASS_dynamic   CLASS_Tdynamic
-#define TYPE_dyn        TYPE_Tdynamic
-#define TYPE_dynamic    TYPE_Tdynamic
+#define CLASS_Tdynamic  CLASS_CppObject
+#define CLASS_dynamic   CLASS_CppObject
+#define TYPE_dyn        CLASS_CppObject
+#define TYPE_dynamic    CLASS_CppObject
 #define RAW_FREE(f)      ((void (*)(void*))f)
 
 /* ------------------------------------------------------------------------ */

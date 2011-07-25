@@ -173,30 +173,6 @@ knh_TypeMap_t* DEFAULT_findTypeMapNULL(CTX ctx, knh_class_t scid, knh_class_t tc
 #define DEFAULT_5 NULL
 #define DEFAULT_6 NULL
 
-static void RawPtr_free(CTX ctx, knh_RawPtr_t *o)
-{
-	if(o->rawfree != NULL) {
-		DBG_P("freeing %s %p", o->DBG_NAME, o->rawptr);
-		o->rawfree(o->rawptr);
-		o->rawptr = NULL;
-		o->rawfree = NULL;
-	}
-}
-
-static knh_ClassDef_t TdynamicDef = {
-	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, RawPtr_free,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
-	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"dynamic", 0, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
-};
-
-KNHAPI2(knh_ClassDef_t*) knh_getDefaultClassDef(void)
-{
-	return &TdynamicDef;
-}
-
 static knh_ClassDef_t TvoidDef = {
 	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
@@ -228,18 +204,18 @@ void knh_ClassTBL_setConstPool(CTX ctx, const knh_ClassTBL_t *ct)
 static void ObjectField_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_ObjectField_t *of = (knh_ObjectField_t*)o;
-	const knh_ClassTBL_t *t = O_cTBL(o);
-	if(t->fsize > 0) {
+	const knh_ClassTBL_t *ct = O_cTBL(o);
+	if(ct->fsize > 0) {
 		Object **v = &(of->smallobject);
-		if(t->fsize > K_SMALLOBJECT_FIELDSIZE) {
-			v = (Object**)KNH_MALLOC(ctx, t->fsize * sizeof(knh_Object_t*));
+		if(ct->fsize > K_SMALLOBJECT_FIELDSIZE) {
+			v = (Object**)KNH_MALLOC(ctx, ct->fsize * sizeof(knh_Object_t*));
 		}
 		of->fields = v;
-		knh_memcpy(v, t->protoNULL->fields, t->fsize * sizeof(knh_Object_t*));
+		knh_memcpy(v, ct->protoNULL->fields, ct->fsize * sizeof(knh_Object_t*));
 #ifdef K_USING_RCGC
 		size_t i;
-		for(i = 0; i < t->fsize; i++) {
-			if(!t->fields[i].israw) {
+		for(i = 0; i < ct->fsize; i++) {
+			if(!ct->fields[i].israw) {
 				knh_Object_RCinc(v[i]);
 			}
 		}
@@ -247,6 +223,27 @@ static void ObjectField_init(CTX ctx, knh_RawPtr_t *o)
 	}
 	else {
 		of->fields = NULL;
+	}
+}
+
+static void CppObject_init(CTX ctx, knh_RawPtr_t *o)
+{
+	const knh_ClassTBL_t *ct = O_cTBL(o);
+	o->rawptr = NULL;
+	if(ct->fsize > 0) {
+		o->kfields = (Object**)KNH_MALLOC(ctx, ct->fsize * sizeof(knh_Object_t*));
+		knh_memcpy(o->kfields, ct->protoNULL->fields, ct->fsize * sizeof(knh_Object_t*));
+#ifdef K_USING_RCGC
+		size_t i;
+		for(i = 0; i < ct->fsize; i++) {
+			if(!ct->fields[i].israw) {
+				knh_Object_RCinc(o->kfields[i]);
+			}
+		}
+#endif
+	}
+	else {
+		o->kfields = NULL;
 	}
 }
 
@@ -288,14 +285,51 @@ static void ObjectField_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
+static void CppObject_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
+{
+	const knh_ClassTBL_t *ct = O_cTBL(o);
+	size_t i;
+	for(i = 0; i < ct->fsize; i++) {
+		if(ct->fields[i].israw == 0) {
+			KNH_ADDREF(ctx, o->kfields[i]);
+		}
+	}
+	KNH_SIZEREF(ctx);
+}
+
 static void ObjectField_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_ObjectField_t *of = (knh_ObjectField_t*)o;
-	const knh_ClassTBL_t *t = O_cTBL(o);
-	if(t->fsize > K_SMALLOBJECT_FIELDSIZE) {
-		KNH_FREE(ctx, of->fields, t->fsize * sizeof(knh_Object_t*));
+	const knh_ClassTBL_t *ct = O_cTBL(o);
+	if(ct->fsize > K_SMALLOBJECT_FIELDSIZE) {
+		KNH_FREE(ctx, of->fields, ct->fsize * sizeof(knh_Object_t*));
 	}
 	DBG_(of->fields = NULL);
+}
+
+static void CppObject_free(CTX ctx, knh_RawPtr_t *o)
+{
+	const knh_ClassTBL_t *ct = O_cTBL(o);
+	if(ct->fsize > 0) {
+		KNH_FREE(ctx, o->kfields, ct->fsize * sizeof(knh_Object_t*));
+		o->kfields = NULL;
+	}
+	if(o->rawfree != NULL) {
+		DBG_P("freeing %s %p", o->DBG_NAME, o->rawptr);
+		o->rawfree(o->rawptr);
+		o->rawptr = NULL;
+		o->rawfree = NULL;
+	}
+}
+
+static void CppObject_checkout(CTX ctx, knh_RawPtr_t *o, int isFailed)
+{
+	if(o->rawfree != NULL) {
+		DBG_P("freeing %s %p", o->DBG_NAME, o->rawptr);
+		o->rawfree(o->rawptr);
+		o->rawptr = NULL;
+		o->rawfree = NULL;
+	}
 }
 
 static int ObjectField_compareTo(knh_RawPtr_t *o, knh_RawPtr_t *o2)
@@ -546,6 +580,20 @@ void knh_ClassTBL_setObjectCSPI(CTX ctx, knh_ClassTBL_t *ct)
 	else {
 		knh_setClassDef(ctx, ct, &ObjectDef);
 	}
+}
+
+static knh_ClassDef_t CppObjectDef = {
+	CppObject_init, DEFAULT_initcopy, CppObject_reftrace, CppObject_free,
+	DEFAULT_checkin, CppObject_checkout, DEFAULT_compareTo, DEFAULT_p,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
+	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
+	"dynamic", 0, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
+KNHAPI2(knh_ClassDef_t*) knh_getDefaultClassDef(void)
+{
+	return &CppObjectDef;
 }
 
 /* --------------- */

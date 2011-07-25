@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      449
+#define K_REVISION                      452
 #endif
-#define K_BUILDID                       1142
+#define K_BUILDID                       1144
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -433,12 +433,13 @@
 #define FLAG_KindOf             KNH_MAGICFLAG(CFLAG_KindOf)
 
 /* ------------------------------------------------------------------------ */
-/* Tdynamic */
-#define CLASS_Tdynamic          ((knh_class_t)47)
-#define IS_Tdynamic(o)          (O_cid(o) == CLASS_Tdynamic)
-#define TYPE_Tdynamic           CLASS_Tdynamic
-#define CFLAG_Tdynamic          ((knh_flag_t)0)
-#define FLAG_Tdynamic           KNH_MAGICFLAG(CFLAG_Tdynamic)
+/* CppObject */
+#define CLASS_CppObject         ((knh_class_t)47)
+#define IS_CppObject(o)         (O_cid(o) == CLASS_CppObject)
+#define IS_bCppObject(o)        (O_bcid(o) == CLASS_CppObject)
+#define TYPE_CppObject          CLASS_CppObject
+#define CFLAG_CppObject         ((knh_flag_t)0)
+#define FLAG_CppObject          KNH_MAGICFLAG(CFLAG_CppObject)
 
 #ifdef K_INTERNAL 
 #define USE_STRUCT_Tvoid
@@ -488,7 +489,7 @@
 #define USE_STRUCT_KonohaCode
 #define USE_STRUCT_Immutable
 #define USE_STRUCT_KindOf
-#define USE_STRUCT_Tdynamic
+#define USE_STRUCT_CppObject
 #endif/*K_INTERNAL*/
 
 /* ------------------------------------------------------------------------ */

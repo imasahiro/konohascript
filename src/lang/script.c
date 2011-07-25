@@ -188,7 +188,9 @@ static knh_status_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *n)
 	knh_status_t status = K_BREAK;
 	knh_Token_t *tkPATH = tkNN(stmt, 0);
 	if(IS_bString(tkPATH->text) && knh_bytes_startsWith(S_tobytes(tkPATH->text), STEXT("lib:"))) {
-		return knh_NameSpace_addFFIlink(ctx, K_GMANS, S_tobytes(tkPATH->text));
+		if(knh_NameSpace_addFFIlink(ctx, K_GMANS, S_tobytes(tkPATH->text))) {
+			status = K_CONTINUE;
+		}
 	}
 	else {
 		knh_Token_t *tkRES = Tn_typing(ctx, stmt, 0, CLASS_Path, 0);
@@ -211,7 +213,7 @@ static knh_status_t INCLUDE_eval(CTX ctx, knh_Stmt_t *stmt, knh_Array_t *n)
 		}
 	}
 	knh_Stmt_done(ctx, stmt);
-	return K_CONTINUE;
+	return status;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -681,95 +683,91 @@ void knh_RefTraverse(CTX ctx, knh_Ftraverse ftr)
 #endif
 }
 
+static knh_ClassTBL_t *CLASSNAME_decl(CTX ctx, knh_Stmt_t *stmt, knh_Token_t *tkC, knh_Token_t *tkE)
+{
+	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	knh_Bytes_write(ctx, cwb->ba, S_tobytes(DP(K_GMANS)->nsname));
+	knh_Bytes_putc(ctx, cwb->ba, '.');
+	knh_Bytes_write(ctx, cwb->ba, TK_tobytes(tkC));
+	knh_class_t cid = knh_getcid(ctx, knh_cwb_tobytes(cwb));
+	(tkC)->cid = cid;
+	knh_ClassTBL_t *ct = NULL;
+	if(cid == CLASS_unknown) {  // new class //
+		cid = new_ClassId(ctx);
+		ct = varClassTBL(cid);
+		knh_setClassName(ctx, cid, knh_cwb_newString(ctx, cwb), (tkC)->text);
+		ct->cflag  = knh_StmtCLASS_flag(ctx, stmt);
+		ct->magicflag  = KNH_MAGICFLAG(ct->cflag);
+		NameSpace_setcid(ctx, K_GMANS, (tkC)->text, cid);
+		KNH_INITv(ct->methods, K_EMPTYARRAY);
+		KNH_INITv(ct->typemaps, K_EMPTYARRAY);
+
+		// class C extends E ..
+		ct->supcid = knh_Token_cid(ctx, tkE, CLASS_unknown);
+		if(ct->supcid == CLASS_unknown) {
+			knh_Stmt_toERR(ctx, stmt, ERROR_Undefined(ctx, "class", ct->supcid, tkE));
+			return ct;
+		}
+		if(class_isFinal(ct->supcid)) {
+			knh_Stmt_toERR(ctx, stmt, ERROR_TokenIs(ctx, tkE, "final"));
+			return ct;
+		}
+		{
+			const knh_ClassTBL_t *supct = ClassTBL(ct->supcid);
+			ct->supTBL = ClassTBL(ct->supcid);
+			ct->keyidx = supct->keyidx;
+			ct->metaidx = supct->metaidx;
+			((knh_ClassTBL_t*)supct)->subclass += 1;
+			ct->bcid = supct->bcid;
+			ct->baseTBL = ClassTBL(supct->bcid);
+			knh_setClassDef(ctx, ct, ct->baseTBL->cdef);
+		}
+	}
+	else {
+		ct = varClassTBL(cid);
+		if(ct->bcid == CLASS_Object || ct->bcid == CLASS_CppObject) {
+			if(ct->supTBL->fsize == ct->fsize) goto L_RETURN;  // class C;
+		}
+		knh_Stmt_toERR(ctx, stmt, ERROR_AlreadyDefined(ctx, "class", (tkC)->data));
+	}
+	L_RETURN:;
+	knh_cwb_close(cwb);
+	return ct;
+}
+
 static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 {
-	knh_class_t cid;
 	knh_Token_t *tkC = tkNN(stmt, 0); // CNAME
 	knh_Token_t *tkE = tkNN(stmt, 2); // extends
-	knh_ClassTBL_t *ct = NULL;
-	knh_NameSpace_t *ns = K_GMANS;
-	{
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-		knh_Bytes_write(ctx, cwb->ba, S_tobytes(DP(ns)->nsname));
-		knh_Bytes_putc(ctx, cwb->ba, '.');
-		knh_Bytes_write(ctx, cwb->ba, TK_tobytes(tkC));
-		cid = knh_getcid(ctx, knh_cwb_tobytes(cwb));
-		if(cid == CLASS_unknown) {  // new class //
-			cid = new_ClassId(ctx);
-			ct = varClassTBL(cid);
-			knh_setClassName(ctx, cid, knh_cwb_newString(ctx, cwb), (tkC)->text);
-			ct->cflag  = knh_StmtCLASS_flag(ctx, stmt);
-			ct->magicflag  = KNH_MAGICFLAG(ct->cflag);
-			NameSpace_setcid(ctx, ns, (tkC)->text, cid);
-			KNH_INITv(ct->methods, K_EMPTYARRAY);
-			KNH_INITv(ct->typemaps, K_EMPTYARRAY);
+	knh_ClassTBL_t *ct = CLASSNAME_decl(ctx, stmt, tkC, tkE);
+	if(STT_(stmt) == STT_ERR) return K_BREAK;
 
-			// class C extends E ..
-			ct->supcid = knh_Token_cid(ctx, tkE, CLASS_unknown);
-			if(ct->supcid == CLASS_unknown) {
-				knh_Stmt_toERR(ctx, stmt, ERROR_Undefined(ctx, "class", ct->supcid, tkE));
-				return K_BREAK;
-			}
-			if(class_isFinal(ct->supcid)) {
-				knh_Stmt_toERR(ctx, stmt, ErrorExtendingFinalClass(ctx, ct->supcid));
-				return K_BREAK;
-			}
-			ct->supTBL = ClassTBL(ct->supcid);
-			ct->keyidx = ct->supTBL->keyidx;
-			ct->metaidx = ct->supTBL->keyidx;
-			((knh_ClassTBL_t*)ct->supTBL)->subclass += 1;
-			{
-				LOGSFPDATA = {cDATA("name", cid), iDATA("cid", cid)};
-				LIB_OK("konoha:new_class");
-			}
-			if(knh_StmtMETA_is(ctx, stmt, "Native")) {
-				knh_loadNativeClass(ctx, S_tochar((tkC)->text), ct);
-			}
-			else {
-				knh_Object_t *obj = new_hObject_(ctx, ct);
-				knh_Object_t *tmp = new_hObject_(ctx, ct);
-				Object_setNullObject(obj, 1);
-				ct->bcid = CLASS_Object;
-				ct->baseTBL = ClassTBL(CLASS_Object);
-				knh_setClassDef(ctx, ct, ct->baseTBL->cdef);
-				obj->ref = NULL; tmp->ref = NULL;
-				knh_setClassDefaultValue(ctx, cid, obj, NULL);
-				KNH_INITv(ct->protoNULL, tmp);
-			}
-		}
-		else {
-			knh_cwb_close(cwb);
-			ct = varClassTBL(cid);
-			if(!(ct->bcid == CLASS_Object && ct->fields == NULL)) {
-				knh_Stmt_toERR(ctx, stmt, ErrorRedefinedClass(ctx, S_tobytes((tkC)->text), cid));
-				return K_CONTINUE;
-			}
-		}
+	if(knh_StmtMETA_is(ctx, stmt, "Native")) {
+		knh_loadNativeClass(ctx, S_tochar((tkC)->text), ct);
 	}
-	(tkC)->cid = cid;
-	if(IS_Tfield(cid)) {
-		DBG_P("superclass=%s, fsize=%d, fcapacity=%d", CLASS__(ct->supcid), ct->supTBL->fsize, ct->supTBL->fcapacity);
-		if(ct->supTBL->fcapacity > 0 && ct->fcapacity == 0) {
-			ct->fields = (knh_fields_t*)KNH_MALLOC(ctx, ct->supTBL->fcapacity * sizeof(knh_fields_t));
-			knh_memcpy(ct->fields, ct->supTBL->fields, ct->supTBL->fcapacity * sizeof(knh_fields_t));
-			ct->fsize = ct->supTBL->fsize;
-			ct->fcapacity = ct->supTBL->fcapacity;
-			if(ct->fsize > 0) {
-				knh_Object_t *suptmp = (knh_Object_t*)ct->supTBL->protoNULL, *supobj = ct->supTBL->defnull;
-				knh_ObjectField_expand(ctx, ct->protoNULL, 0, ct->fsize);
-				knh_ObjectField_expand(ctx, ct->defobj, 0, ct->fsize);
-				knh_memcpy(ct->protoNULL->fields, suptmp->ref, ct->fsize*sizeof(knh_Object_t*));
-				knh_memcpy(ct->defnull->ref, supobj->ref, ct->fsize*sizeof(knh_Object_t*));
-#ifdef K_USING_RCGC
-				ct->supTBL->cdef->reftrace(ctx, suptmp, ctx->refs);
-				knh_RefTraverse(ctx, RCinc);
-				ct->supTBL->cdef->reftrace(ctx, supobj, ctx->refs);
-				knh_RefTraverse(ctx, RCinc);
-#endif
-			}
-		}
+	if(ct->protoNULL == NULL && (ct->bcid == CLASS_Object || ct->bcid == CLASS_CppObject)) {
+		knh_Object_t *nulval = new_hObject_(ctx, ct);
+		knh_Object_t *defval = new_hObject_(ctx, ct);
+		KNH_ASSERT(nulval->ref == NULL);
+		KNH_ASSERT(defval->ref == NULL);
+		Object_setNullObject(nulval, 1);
+		knh_setClassDefaultValue(ctx, ct->cid, nulval, NULL);
+		KNH_INITv(ct->protoNULL, defval);
+//		if(ct->fsize > 0) {
+//			knh_Object_t *supnulval = ct->supTBL->defnull;
+//			knh_Object_t *supdefval = (knh_Object_t*)ct->supTBL->protoNULL;
+//			knh_ObjectField_expand(ctx, nulval, 0, ct->fsize);
+//			knh_ObjectField_expand(ctx, defval, 0, ct->fsize);
+//			knh_memcpy(ct->protoNULL->fields, supdefval->ref, ct->fsize*sizeof(knh_Object_t*));
+//			knh_memcpy(ct->defnull->ref, supnulval->ref, ct->fsize*sizeof(knh_Object_t*));
+//#ifdef K_USING_RCGC
+//			ct->supTBL->cdef->reftrace(ctx, supdefval, ctx->refs);
+//			knh_RefTraverse(ctx, RCinc);
+//			ct->supTBL->cdef->reftrace(ctx, supnulval, ctx->refs);
+//			knh_RefTraverse(ctx, RCinc);
+//#endif
+//		}
 	}
-	DBG_P("DP(stmt)->size=%d", DP(stmt)->size);
 	if(DP(stmt)->size == 4 && TT_(tkNN(stmt, 1)) == TT_ASIS) {
 		knh_Stmt_done(ctx, stmt);
 	}

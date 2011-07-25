@@ -174,15 +174,10 @@ knh_Token_t* ERROR_SingleParam(CTX ctx)
 {
 	return Gamma_perror(ctx, KC_ERR, _("syntax error: always takes only one parameter"));
 }
-
-knh_Token_t* ErrorRedefinedClass(CTX ctx, knh_bytes_t cname, knh_class_t cid)
-{
-	return Gamma_perror(ctx, KC_ERR, _("re-definition of %B(%d)"), cname, cid);
-}
-knh_Token_t* ErrorExtendingFinalClass(CTX ctx, knh_class_t cid)
-{
-	return Gamma_perror(ctx, KC_ERR, _("cannot extends final class %C"), cid);
-}
+//knh_Token_t* ErrorExtendingFinalClass(CTX ctx, knh_class_t cid)
+//{
+//	return Gamma_perror(ctx, KC_ERR, _("cannot extends final class %C"), cid);
+//}
 void WARN_MuchBetter(CTX ctx, const char *token)
 {
 	Gamma_perror(ctx, KC_DWARN, _("%s is better"), token);
@@ -226,9 +221,9 @@ knh_Token_t* ErrorMisplaced(CTX ctx)
 //	DBG_ABORT("stop why?");
 //	return tkERR;
 //}
-knh_Token_t* ErrorFieldAddition(CTX ctx, knh_class_t cid)
+knh_Token_t* ERROR_UnableToAdd(CTX ctx, knh_class_t cid, const char *whatis)
 {
-	return Gamma_perror(ctx, KC_ERR, _("%C is unable to add new fields"), cid);
+	return Gamma_perror(ctx, KC_ERR, _("%T is unable to add new %s"), cid, whatis);
 }
 knh_Token_t* ERROR_Block(CTX ctx, const char* block)
 {
@@ -258,6 +253,10 @@ knh_Token_t* ERROR_Stmt(CTX ctx, knh_Stmt_t *stmt K_TRACEARGV)
 	return ERROR_text(ctx, TT__(stmt->stt) K_TRACEDATA);
 }
 knh_Token_t* ERROR_TokenIsNot(CTX ctx, knh_Token_t *tk, const char* whatis)
+{
+	return Gamma_perror(ctx, KC_ERR, ("%O is not %s"), tk, whatis);
+}
+knh_Token_t* ERROR_TokenIs(CTX ctx, knh_Token_t *tk, const char* whatis)
 {
 	return Gamma_perror(ctx, KC_ERR, ("%O is not %s"), tk, whatis);
 }
@@ -358,9 +357,9 @@ void WARN_Unused(CTX ctx, knh_Token_t *tk, knh_fieldn_t fn)
 	Gamma_perror(ctx, KC_DWARN, _("unused %N"), fn);
 	ctx->gma->uline = uline;
 }
-knh_Token_t* ErrorDifferentlyDeclaredType(CTX ctx, knh_fieldn_t fn, knh_type_t type)
+knh_Token_t* ERROR_AlreadyDefinedType(CTX ctx, knh_fieldn_t fn, knh_type_t type)
 {
-	return Gamma_perror(ctx, KC_TERROR, _("differently declared: previous type %T %N"), type, fn);
+	return Gamma_perror(ctx, KC_TERROR, _("already defined: previous type %T %N"), type, fn);
 }
 knh_Token_t* ErrorTooManyVariables(CTX ctx)
 {

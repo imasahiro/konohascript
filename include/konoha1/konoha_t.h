@@ -121,7 +121,7 @@ typedef knh_intptr_t      knh_bool_t;
 typedef knh_intptr_t      knh_boolean_t;
 
 typedef enum {
-	K_CONTINUE, K_BREAK, K_REDO
+	K_BREAK, K_CONTINUE, K_REDO
 } knh_status_t;
 
 /* ------------------------------------------------------------------------ */
@@ -314,7 +314,7 @@ typedef knh_ushort_t       knh_event_t;    /* knh_event_t */
 #define CLASS_t(t)          (((t) >= TYPE_This) ? CLASS_Object : (t))
 #define TYPE_cid(t)         (t)
 
-#define IS_Tfield(t)      (ClassTBL(CLASS_t(t))->bcid == CLASS_Object)
+//#define IS_Tfield(t)      (ClassTBL(CLASS_t(t))->bcid == CLASS_Object)
 #define IS_Tint(t)        (t == CLASS_Int || ClassTBL(CLASS_t(t))->bcid == CLASS_Int)
 #define IS_Tfloat(t)      (t == CLASS_Float || ClassTBL(CLASS_t(t))->bcid == CLASS_Float)
 #define IS_Tbool(t)       (TYPE_Boolean == t)

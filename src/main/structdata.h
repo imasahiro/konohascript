@@ -109,7 +109,7 @@ static knh_data_t StructData0[] = {
 	DATA_STRUCT0, CLASS_KonohaCode, _DATA(&KonohaCodeDef), CFLAG_KonohaCode,
 	DATA_STRUCT0, CLASS_Immutable, _DATA(&ImmutableDef), CFLAG_Immutable,
 	DATA_STRUCT0, CLASS_KindOf, _DATA(&KindOfDef), CFLAG_KindOf,
-	DATA_STRUCT0, CLASS_Tdynamic, _DATA(&TdynamicDef), CFLAG_Tdynamic,
+	DATA_STRUCT0, CLASS_CppObject, _DATA(&CppObjectDef), CFLAG_CppObject,
 	0
 };
 
@@ -161,7 +161,7 @@ static knh_data_t ClassData0[] = {
 	DATA_CLASS0, CLASS_KonohaCode, _DATA("konoha.KonohaCode"), CFLAG_KonohaCode, CLASS_KonohaCode, CLASS_Object, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Immutable, _DATA("konoha.Immutable"), CFLAG_Immutable, CLASS_Immutable, CLASS_Object, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_KindOf, _DATA("konoha.KindOf"), CFLAG_KindOf, CLASS_KindOf, CLASS_Object, 0 + 0 /*0*/,
-	DATA_CLASS0, CLASS_Tdynamic, _DATA("konoha.Tdynamic"), CFLAG_Tdynamic, CLASS_dynamic, CLASS_Object, 0 + 0 /*0*/,
+	DATA_CLASS0, CLASS_CppObject, _DATA("konoha.CppObject"), CFLAG_CppObject, CLASS_CppObject, CLASS_Object, 0 + 0 /*0*/,
 	DATA_GENERICS/*IteratorVar*/, CLASS_Iterator, 1, 0, TYPE_Tvar, FN_,
 	DATA_GENERICS/*FuncEach*/, CLASS_Func, 1, 1, TYPE_T1, FN_, TYPE_T1, FN_,
 	DATA_GENERICS/*FuncWhere*/, CLASS_Func, 1, 1, TYPE_T1, FN_, TYPE_Boolean, FN_,

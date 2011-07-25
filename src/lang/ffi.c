@@ -613,7 +613,6 @@ static void *knh_open_ffilink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t libname)
 knh_bool_t knh_NameSpace_addFFIlink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	knh_bytes_t libname = knh_bytes_next(path, ':');
-	DBG_P("ffi=%s", path.text);
 	if(libname.text[0] == '*' || knh_bytes_equals(libname, STEXT("gluelink"))) {
 		ns->gluehdr = knh_open_gluelink(ctx, ns, libname);
 		return (ns->gluehdr != NULL);

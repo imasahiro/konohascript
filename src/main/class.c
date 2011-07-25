@@ -181,7 +181,7 @@ KNHAPI2(void) knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
 {
 	const char *tname = NULL;
 	switch(cid) {
-	case TYPE_Tdynamic:  tname = "dynamic";    break;
+	case TYPE_dynamic:  tname = "dynamic";    break;
 	case TYPE_void: tname = "void";       break;
 	case TYPE_var:  tname = "var";        break;
 	case TYPE_This: tname = "This";       break;
@@ -203,7 +203,7 @@ void knh_write_cname(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
 {
 	const char *tname = NULL;
 	switch(cid) {
-	case TYPE_Tdynamic:  tname = "dynamic";    break;
+	case TYPE_dynamic:  tname = "dynamic";    break;
 	case TYPE_void: tname = "void";       break;
 	case TYPE_var:  tname = "var";        break;
 	case TYPE_This: tname = "This";       break;
@@ -999,10 +999,44 @@ static METHOD Fmethod_nsetter(CTX ctx, knh_sfp_t *sfp _RIX)
 	ndata[0] = sfp[1].ndata;
 	RETURNd_(ndata[0]);
 }
+static METHOD Fmethod_kgetter(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
+	RETURN_((sfp[0].p)->kfields[delta]);
+}
+static METHOD Fmethod_kngetter(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
+	knh_ndata_t *data = (knh_ndata_t*)(&(sfp[0].p->kfields[delta]));
+	RETURNd_(data[0]);
+}
+static METHOD Fmethod_ksetter(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
+	KNH_SETv(ctx, (sfp[0].p)->kfields[delta], sfp[1].o);
+	RETURN_(sfp[1].o);
+}
+static METHOD Fmethod_knsetter(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
+	knh_ndata_t *ndata = (knh_ndata_t*)(&((sfp[0].p)->kfields[delta]));
+	ndata[0] = sfp[1].ndata;
+	RETURNd_(ndata[0]);
+}
+
+static knh_Fmethod accessors[8] = {
+	Fmethod_getter, Fmethod_setter, Fmethod_ngetter, Fmethod_nsetter,
+	Fmethod_kgetter, Fmethod_ksetter, Fmethod_kngetter, Fmethod_knsetter,
+};
+
+#define _SETTER  1
+#define _NDATA   2
+#define _CPPOBJ  4
 
 static knh_Method_t *new_GetterMethod(CTX ctx, knh_class_t cid, knh_methodn_t mn, knh_type_t type, int idx)
 {
-	knh_Fmethod f = (IS_Tunbox(type)) ? Fmethod_ngetter : Fmethod_getter;
+	//knh_Fmethod f = (IS_Tunbox(type)) ? Fmethod_ngetter : Fmethod_getter;
+	knh_Fmethod f = accessors[(IS_Tunbox(type)?_NDATA:0)|((ClassTBL(cid)->bcid==CLASS_CppObject)?_CPPOBJ:0)];
 	knh_Method_t *mtd = new_Method(ctx, 0, cid, mn, f);
 	DP(mtd)->delta = idx;
 	KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayR0(ctx, type));
@@ -1011,7 +1045,8 @@ static knh_Method_t *new_GetterMethod(CTX ctx, knh_class_t cid, knh_methodn_t mn
 
 static knh_Method_t *new_SetterMethod(CTX ctx, knh_class_t cid, knh_methodn_t mn, knh_type_t type, int idx)
 {
-	knh_Fmethod f = (IS_Tunbox(type)) ? Fmethod_nsetter : Fmethod_setter;
+	//knh_Fmethod f = (IS_Tunbox(type)) ? Fmethod_nsetter : Fmethod_setter;
+	knh_Fmethod f = accessors[_SETTER|(IS_Tunbox(type)?_NDATA:0)|((ClassTBL(cid)->bcid==CLASS_CppObject)?_CPPOBJ:0)];
 	knh_Method_t *mtd = new_Method(ctx, 0, cid, mn, f);
 	DP(mtd)->delta = idx;
 	KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayP1(ctx, type, type, FN_v));
