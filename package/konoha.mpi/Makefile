@@ -1,9 +1,13 @@
 CC=gcc
-CFLAGS=-O2 -g -Wall -fmessage-length=0 -fPIC
-LDFLAGS=-Wl,-flat_namespace
-LDLIBS=-lkonoha1 -lpmpich -lmpich -lopa -lmpl -lpthread
+CFLAGS=-O2 -g -Wall -fPIC
+#CFLAGS=-O0 -g3 -Wall -fPIC
+LDFLAGS=-fmessage-length=0 -fPIC -Wl,-flat_namespace
+LDLIBS=-lkonoha1 -lmpich -lopa -lmpl -lpmpich
+
+KNH=mpikonoha
 PKG=mpi
 RM=rm
+
 LINK=
 LIB=
 
@@ -23,24 +27,35 @@ ifeq ($(UNAME),Darwin)
 endif
 #endif
 
-OBJS=$(PKG).o src/const.o src/ctx.o src/req.o src/pt2pt.o src/coll.o
+PKGOBJS=$(PKG).o
+MPIOBJS=src/comm.o src/req.o src/op.o src/pt2pt.o src/coll.o
+
+FLAGS=$(LDFLAGS)
+LIBS=$(LDLIBS)
+OBJS=$(PKGOBJS) $(MPIOBJS)
 
 .PHONY: all
-all: $(LIB)
+all: $(KNH) $(LIB)
 
+#mpikonoha
+$(KNH): src/mpikonoha.c
+	$(CC) $(CFLAGS) -o $@ $^ $(FLAGS) -DK_USING_MPI $(LIBS)
+
+#package
 $(LIB): $(OBJS)
-	$(LINK) $@ $^ $(LDFLAGS) $(LDLIBS)
+	$(LINK) $@ $^ $(FLAGS) $(LIBS)
 
 $(PKG).o: $(PKG).c
 	$(CC) $(CFLAGS) -D_SETUP -o $@ -c $^
 
-src/const.o: src/const.c
-	$(CC) $(CFLAGS) -D_SETUP -o $@ -c $^
-
-src/ctx.o: src/ctx.c
+#mpobjs
+src/comm.o: src/comm.c
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 src/req.o: src/req.c
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+src/op.o: src/op.c
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 src/pt2pt.o: src/pt2pt.c
@@ -51,4 +66,4 @@ src/coll.o: src/coll.c
 
 .PHONY: clean
 clean:
-	$(RM) -rf $(OBJS) $(LIB)
+	$(RM) -rf $(OBJS) $(LIB) $(KNH) *.dSYM *.dSYM

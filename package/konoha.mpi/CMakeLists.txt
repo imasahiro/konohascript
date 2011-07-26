@@ -13,8 +13,8 @@ project(mpi)
 set(PACKAGE_SOURCE_CODE 
 		mpi.c
 		src/coll.c
-		src/const.c
-		src/ctx.c
+		src/comm.c
+		src/op.c
 		src/pt2pt.c
 		src/req.c
 )

@@ -6,59 +6,89 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-#ifdef _SETUP
-
-static void knh_MPIContext_init(CTX ctx, knh_RawPtr_t *o)
+//## method void System.disableLog();
+METHOD System_disableLog(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_MPIContext_t *mctx = (knh_MPIContext_t*)o;
-	KNH_NOT_ON_MPI(mctx);
-	mctx->mpi_size = -1;
-	mctx->proc_name = NULL;
+	knh_closelog();
+	RETURNvoid_();
 }
 
-DEFAPI(void) defMPIContext(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+/* ------------------------------------------------------------------------ */
+
+#ifdef _SETUP
+
+static void knh_MPICommunicator_init(CTX ctx, knh_RawPtr_t *o)
 {
-	cdef->name = "MPIContext";
-	cdef->init = knh_MPIContext_init;
+	knh_MPIComm_t *comm = (knh_MPIComm_t*)o;
+	KNH_NOT_ON_MPI(comm);
+	KNH_MPI_SIZE(comm) = -1;
+	comm->proc_name = NULL;
 }
 
 static void knh_MPIRequest_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_MPIRequest_t *mreq = (knh_MPIRequest_t*)o;
-	mreq->mpi_req = (MPI_Request*)KNH_MALLOC(ctx, sizeof(MPI_Request));
+	KNH_MPI_REQUEST(mreq) = (MPI_Request*)KNH_MALLOC(ctx, sizeof(MPI_Request));
 }
 
 static void knh_MPIRequest_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_MPIRequest_t *mreq = (knh_MPIRequest_t*)o;
 	if (!KNH_MPI_REQUEST_IS_NULL(mreq)) {
-		MPI_Request_free(mreq->mpi_req);
-		KNH_FREE(ctx, mreq->mpi_req, sizeof(MPI_Request));
+		MPI_Request_free(KNH_MPI_REQUEST(mreq));
+		KNH_FREE(ctx, KNH_MPI_REQUEST(mreq), sizeof(MPI_Request));
 	}
 }
 
-/*
-static void knh_MPIContext_errhandler(MPI_Comm *comm, int *errcode, ...)
+static void knh_MPIOp_init(CTX ctx, knh_RawPtr_t *o)
 {
-	//va_list args;
-	//va_start(args, errcode);
-	//int ival;
-	//ival = va_arg(args, int);
-	static char errmsg[MPI_MAX_ERROR_STRING] = {0};
-	int msglen, class, code = *errcode;
-	MPI_Error_string(code, errmsg, &msglen);
-	MPI_Error_class(code, &class);
-	switch (class) {
-	case MPI_ERR_TRUNCATE:
-		UHD("hogehoge%d", class);
-		*errcode = MPI_SUCCESS;
-		break;
-	default:
-		break;
-	}
-	//va_end(args);
+	knh_MPIOp_t *op = (knh_MPIOp_t*)o;
+	KNH_MPI_OP(op) = 0;
 }
-*/
+
+static void knh_MPI_initWorld(CTX ctx, knh_class_t cid)
+{
+	int len;
+	knh_MPIComm_t *world = new_O(MPIComm, cid);
+	static char proc_name[MPI_MAX_PROCESSOR_NAME] = {0};
+	world->comm = MPI_COMM_WORLD;
+	world->proc_name = (char*)&proc_name;
+	MPI_Comm_rank(world->comm, &KNH_MPI_RANK(world));
+	MPI_Comm_size(world->comm, &KNH_MPI_SIZE(world));
+	MPI_Get_processor_name(world->proc_name, &len);
+	knh_addClassConst(ctx, cid, new_String(ctx, "WORLD"), (Object*)world);
+}
+
+static knh_IntData_t MPIConstOp[] = {
+	{"OP_MAX",  MPI_MAX},
+	{"OP_MIN",  MPI_MIN},
+	{"OP_SUM",  MPI_SUM},
+	{"OP_PROD", MPI_PROD},
+	{"OP_LAND", MPI_LAND},
+	{"OP_BAND", MPI_BAND},
+	{"OP_LOD",  MPI_LOR},
+	{"OP_BOR",  MPI_BOR},
+	{"OP_LXOR", MPI_LXOR},
+	{"OP_BXOR", MPI_BXOR},
+	{NULL, 0},
+};
+
+static void knh_MPI_initOp(CTX ctx, knh_class_t cid)
+{
+	knh_IntData_t *d;
+	for (d = &MPIConstOp[0]; d->ivalue > 0; d++) {
+		knh_MPIOp_t *op = new_O(MPIOp, cid);
+		op->op = (MPI_Op)d->ivalue;
+		op->func = NULL;
+		knh_addClassConst(ctx, cid, new_String(ctx, d->name), (Object*)op);
+	}
+}
+
+DEFAPI(void) defMPICommunicator(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	cdef->name = "MPICommunicator";
+	cdef->init = knh_MPICommunicator_init;
+}
 
 DEFAPI(void) defMPIRequest(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
@@ -67,18 +97,35 @@ DEFAPI(void) defMPIRequest(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->free = knh_MPIRequest_free;
 }
 
-DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) defMPIOp(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
-	int flag = 0;
-	MPI_Initialized(&flag);
-	if (flag) {
+	cdef->name = "MPIOp";
+	cdef->init = knh_MPIOp_init;
+}
+
+DEFAPI(void) constMPICommunicator(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+{
+	knh_MPI_initWorld(ctx, cid);
+}
+
+DEFAPI(void) constMPIOp(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+{
+	knh_MPI_initOp(ctx, cid);
+}
+
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_PackageLoaderAPI_t *kapi)
+{
+	int init = 0;
+	MPI_Initialized(&init);
+	if (init) {
 		/* init err_handler */
 		//static MPI_Errhandler err_hdr;
-		//MPI_Errhandler_create(knh_MPIContext_errhandler, &err_hdr);
-		//MPI_Errhandler_set(MPI_COMM_WORLD, err_hdr);
+		//MPI_Errhandler_create(knh_MPICommunicator_errhandler, &err_hdr);
 		MPI_Errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
 	}
-	RETURN_PKGINFO("konoha.mpi");
+	kapi->setPackageProperty(ctx, "name", "mpi");
+	kapi->setPackageProperty(ctx, "version", "1.0");
+	RETURN_PKGINFO("konoha,mpi");
 }
 
 #endif /* _SETUP */
@@ -88,4 +135,3 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi
 #ifdef __cplusplus
 }
 #endif
-

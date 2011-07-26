@@ -1,72 +1,119 @@
 include "lib:gluelink";
 
-@Native class MPIContext;
-@Native class MPIRequest;
-
-include func:MPICONST;
-
 /* Class Name Replacement */
 IArray = Array<Int>;
 FArray = Array<Float>;
+void System.disableLog(); // for ac
 
-/* Basic API */
-MPIContext MPIContext.new();
-Int MPIContext.getRank();
-Int MPIContext.getSize();
-String MPIContext.getProcessorName();
-Int MPIContext.getWtime();
+/* ======================================================================== */
+/* Basic Class API */
 
-/* Point-to-Point Communication API */
-Int MPIContext.send(Bytes sdata, Int dest_rank);
-Int MPIContext.sendInt(IArray sdata, Int dest_rank);
-Int MPIContext.sendFloat(FArray sdata, Int dest_rank);
+/* --- Communicator ------------------------------------------------------- */
+@Native class MPICommunicator;
+Int MPICommunicator.getRank();
+Int MPICommunicator.getSize();
+String MPICommunicator.getProcessorName();
+Int MPICommunicator.getWtime();
+Int MPICommunicator.barrier();
 
-Int MPIContext.recv(Bytes rdata, Int src_rank);
-Int MPIContext.recvInt(IArray rdata, Int src_rank);
-Int MPIContext.recvFloat(FArray rdata, Int src_rank);
-
-MPIRequest MPIContext.iSend(Bytes sdata, Int dest_rank, NameSpace ns);
-MPIRequest MPIContext.iSendInt(IArray sdata, Int dest_rank, NameSpace ns);
-MPIRequest MPIContext.iSendFloat(FArray sdata, Int dest_rank, NameSpace ns);
-
-MPIRequest MPIContext.iRecv(Bytes rdata, Int count, Int src_rank, NameSpace ns);
-MPIRequest MPIContext.iRecvInt(IArray rdata, Int count, Int src_rank, NameSpace ns);
-MPIRequest MPIContext.iRecvFloat(FArray rdata, Int count, Int src_rank, NameSpace ns);
-
-/* MPIRequest & barrier */
+/* --- Request ------------------------------------------------------------ */
+@Native class MPIRequest;
 Int MPIRequest.wait();
-Int MPIContext.barrier();
+Int MPIRequest.cancel();
 
+/* --- Operator ----------------------------------------------------------- */
+@Native class MPIOp;
+MPIOp MPIOp.new(Func<dynamic,dynamic> func, Boolean commutable);
+
+
+/* ======================================================================== */
+/* Point-to-Point Communication API */
+
+/* -- send ---------------------------------------------------------------- */
+Int MPICommunicator.send(dynamic sdata, Int dest_rank);
+
+Int MPICommunicator.sendBytes(Bytes sdata, Int dest_rank);
+Int MPICommunicator.sendInt(IArray sdata, Int dest_rank);
+Int MPICommunicator.sendFloat(FArray sdata, Int dest_rank);
+
+/* --- recv --------------------------------------------------------------- */
+Int MPICommunicator.recv(dynamic rdata, Int src_rank);
+
+Int MPICommunicator.recvBytes(Bytes rdata, Int src_rank);
+Int MPICommunicator.recvInt(IArray rdata, Int src_rank);
+Int MPICommunicator.recvFloat(FArray rdata, Int src_rank);
+
+/* --- sendrecv ----------------------------------------------------------- */
+Int MPICommunicator.sendrecv(dynamic sdata, Int dest_rank, dynamic rdata, Int src_rank);
+
+Int MPICommunicator.sendrecvBytes(Bytes sdata, Int dest_rank, Bytes rdata, Int count, Int src_rank);
+Int MPICommunicator.sendrecvInt(IArray sdata, Int dest_rank, IArray rdata, Int count, Int src_rank);
+Int MPICommunicator.sendrecvFloat(FArray sdata, Int dest_rank, FArray rdata, Int count, Int src_rank);
+
+/* --- isend -------------------------------------------------------------- */
+MPIRequest MPICommunicator.iSend(dynamic sdata, Int dest_rank, NameSpace ns);
+
+MPIRequest MPICommunicator.iSendBytes(Bytes sdata, Int dest_rank, NameSpace ns);
+MPIRequest MPICommunicator.iSendInt(IArray sdata, Int dest_rank, NameSpace ns);
+MPIRequest MPICommunicator.iSendFloat(FArray sdata, Int dest_rank, NameSpace ns);
+
+/* --- irecv -------------------------------------------------------------- */
+MPIRequest MPICommunicator.iRecv(dynamic rdata, Int src_rank, NameSpace ns);
+
+MPIRequest MPICommunicator.iRecvBytes(Bytes rdata, Int count, Int src_rank, NameSpace ns);
+MPIRequest MPICommunicator.iRecvInt(IArray rdata, Int count, Int src_rank, NameSpace ns);
+MPIRequest MPICommunicator.iRecvFloat(FArray rdata, Int count, Int src_rank, NameSpace ns);
+
+
+/* ======================================================================== */
 /* Collective Communication API */
-Int MPIContext.bcast(Bytes sdata, Int count, Int root_rank);
-Int MPIContext.bcastInt(IArray sdata, Int count, Int root_rank);
-Int MPIContext.bcastFloat(FArray sdata, Int count, Int root_rank);
 
-Int MPIContext.gather(Bytes sdata, Int count, Bytes rdata, Int root_rank);
-Int MPIContext.gatherInt(IArray sdata, Int count, IArray rdata, Int root_rank);
-Int MPIContext.gatherFloat(FArray sdata, Int count, FArray rdata, Int root_rank);
+/* --- bcast -------------------------------------------------------------- */
+Int MPICommunicator.bcast(dynamic sdata, Int root_rank);
 
-Int MPIContext.scatter(Bytes sdata, Int count, Bytes rdata, Int root_rank);
-Int MPIContext.scatterInt(IArray sdata, Int count, IArray rdata, Int root_rank);
-Int MPIContext.scatterFloat(FArray sdata, Int count, FArray rdata, Int root_rank);
+Int MPICommunicator.bcastBytes(Bytes sdata, Int count, Int root_rank);
+Int MPICommunicator.bcastInt(IArray sdata, Int count, Int root_rank);
+Int MPICommunicator.bcastFloat(FArray sdata, Int count, Int root_rank);
 
-Int MPIContext.allGather(Bytes sdata, Int count, Bytes rdata);
-Int MPIContext.allGatherInt(IArray sdata, Int count, IArray rdata);
-Int MPIContext.allGatherFloat(FArray sdata, Int count, FArray rdata);
+/* --- scatter ------------------------------------------------------------ */
+Int MPICommunicator.scatter(dynamic sdata, dynamic rdata, Int root_rank);
 
-Int MPIContext.allToAll(Bytes sdata, Int count, Bytes rdata);
-Int MPIContext.allToAllInt(IArray sdata, Int count, IArray rdata);
-Int MPIContext.allToAllFloat(FArray sdata, Int count, FArray rdata);
+Int MPICommunicator.scatterBytes(Bytes sdata, Int count, Bytes rdata, Int root_rank);
+Int MPICommunicator.scatterInt(IArray sdata, Int count, IArray rdata, Int root_rank);
+Int MPICommunicator.scatterFloat(FArray sdata, Int count, FArray rdata, Int root_rank);
 
-Int MPIContext.reduce(Bytes sdata, Bytes rdata, Int count, Int op, Int root_rank);
-Int MPIContext.reduceInt(IArray sdata, IArray rdata, Int count, Int op, Int root_rank);
-Int MPIContext.reduceFloat(FArray sdata, FArray rdata, Int count, Int op, Int root_rank);
+/* --- gather ------------------------------------------------------------- */
+Int MPICommunicator.gather(dynamic sdata, dynamic rdata, Int root_rank);
 
-Int MPIContext.allReduce(Bytes sdata, Bytes rdata, Int count, Int op);
-Int MPIContext.allReduceInt(IArray sdata, IArray rdata, Int count, Int op);
-Int MPIContext.allReduceFloat(FArray sdata, FArray rdata, Int count, Int op);
+Int MPICommunicator.gatherBytes(Bytes sdata, Int count, Bytes rdata, Int root_rank);
+Int MPICommunicator.gatherInt(IArray sdata, Int count, IArray rdata, Int root_rank);
+Int MPICommunicator.gatherFloat(FArray sdata, Int count, FArray rdata, Int root_rank);
 
+/* --- allgather ---------------------------------------------------------- */
+Int MPICommunicator.allGather(dynamic sdata, dynamic rdata);
 
-Int MPIContext.bcastEx(Bytes sdata, Int root_rank);                /* extra */
-Int MPIContext.gatherEx(Bytes sdata, Bytes rdata, Int root_rank);  /* extra */
-Int MPIContext.allGatherEx(Bytes sdata, Bytes rdata);              /* extra */
+Int MPICommunicator.allGatherBytes(Bytes sdata, Int count, Bytes rdata);
+Int MPICommunicator.allGatherInt(IArray sdata, Int count, IArray rdata);
+Int MPICommunicator.allGatherFloat(FArray sdata, Int count, FArray rdata);
+
+/* --- all2all ------------------------------------------------------------ */
+Int MPICommunicator.allToAll(dynamic sdata, dynamic rdata);
+
+Int MPICommunicator.allToAllBytes(Bytes sdata, Int count, Bytes rdata);
+Int MPICommunicator.allToAllInt(IArray sdata, Int count, IArray rdata);
+Int MPICommunicator.allToAllFloat(FArray sdata, Int count, FArray rdata);
+
+/* --- reduce ------------------------------------------------------------- */
+Int MPICommunicator.reduce(dynamic sdata, dynamic rdata, MPIOp op, Int root_rank);
+
+Int MPICommunicator.reduceBytes(Bytes sdata, Bytes rdata, Int count, MPIOp op, Int root_rank);
+Int MPICommunicator.reduceInt(IArray sdata, IArray rdata, Int count, MPIOp op, Int root_rank);
+Int MPICommunicator.reduceFloat(FArray sdata, FArray rdata, Int count, MPIOp op, Int root_rank);
+
+/* --- allreduce ---------------------------------------------------------- */
+Int MPICommunicator.allReduce(dynamic sdata, dynamic rdata, MPIOp op);
+
+Int MPICommunicator.allReduceBytes(Bytes sdata, Bytes rdata, Int count, MPIOp op);
+Int MPICommunicator.allReduceInt(IArray sdata, IArray rdata, Int count, MPIOp op);
+Int MPICommunicator.allReduceFloat(FArray sdata, FArray rdata, Int count, MPIOp op);
+

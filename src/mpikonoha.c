@@ -33,11 +33,12 @@
 extern "C" {
 #endif
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
-	MPI_Init(&argc, &argv);
+	MPI_Init(&argc, (char***)&argv);
+	konoha_ginit(argc, argv);
 	konoha_t konoha = konoha_open(4096);
-	konoha_main(konoha, argc, (const char**)argv);
+	konoha_main(konoha, argc, argv);
 	konoha_close(konoha);
 	MPI_Finalize();
 	return 0;

@@ -774,7 +774,7 @@ static void ac_exit(void)
 #ifdef K_USING_MPI
 static void mpi_init(int argc, int n, const char **argv)
 {
-	MPI_Init(&argc, &argv);
+	MPI_Init(&argc, (char***)&argv);
 }
 static void mpi_exit(void)
 {
@@ -792,7 +792,7 @@ struct konoha_module_driver konoha_modules[] = {
 	{"llvm", knh_llvm_init, knh_llvm_exit},
 #endif
 #ifdef K_USING_MPI
-	{"mpi", mpi_init, mpi_exit}
+	{"mpi", mpi_init, mpi_exit},
 #endif
 	{"null", NULL, NULL}
 };

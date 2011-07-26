@@ -11,3 +11,14 @@ METHOD MPIRequest_wait(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	RETURNi_(ret);
 }
+
+//## method Int MPIRequest.cancel();
+METHOD MPIRequest_cancel(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_MPIRequest_t *mreq = (knh_MPIRequest_t*)sfp[0].o;
+	int ret = -1;
+	if (!KNH_MPI_REQUEST_IS_NULL(mreq)) {
+		ret = MPI_Cancel(mreq->mpi_req);
+	}
+	RETURNi_(ret);
+}
