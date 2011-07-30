@@ -518,27 +518,26 @@ struct knh_TypeMap_t {
 
 typedef knh_TypeMap_t* (*knh_Ftypemaprule)(CTX ctx, const knh_ClassTBL_t *, const knh_ClassTBL_t *);
 
-/* ------------------------------------------------------------------------ */
-//## class Link Object;
-
-typedef struct knh_LinkDPI_t {
-	const char *name;
-	const char *utype;
-	knh_bool_t    (*hasType)(CTX, knh_class_t);
-	knh_bool_t    (*exists)(CTX, struct knh_NameSpace_t *, knh_bytes_t);
-	Object*       (*newObjectNULL)(CTX, struct knh_NameSpace_t *, knh_class_t, knh_String_t *);
-} knh_LinkDPI_t;
-
-typedef struct knh_Link_t knh_Link_t;
-#ifdef K_INTERNAL
-struct knh_Link_t {
-	knh_hObject_t h;
-	knh_String_t *scheme;
-	const knh_LinkDPI_t *dpi;
-	knh_Array_t *list;
-};
-#endif
-
+///* ------------------------------------------------------------------------ */
+////## class Link Object;
+//
+//typedef struct knh_LinkDPI_t {
+//	const char *name;
+//	const char *utype;
+//	knh_bool_t    (*hasType)(CTX, knh_class_t);
+//	knh_bool_t    (*exists)(CTX, struct knh_NameSpace_t *, knh_bytes_t);
+//	Object*       (*newObjectNULL)(CTX, struct knh_NameSpace_t *, knh_class_t, knh_String_t *);
+//} knh_LinkDPI_t;
+//
+//typedef struct knh_Link_t knh_Link_t;
+//#ifdef K_INTERNAL
+//struct knh_Link_t {
+//	knh_hObject_t h;
+//	knh_String_t *scheme;
+//	const knh_LinkDPI_t *dpi;
+//	knh_Array_t *list;
+//};
+//#endif
 
 /* ------------------------------------------------------------------------ */
 //## @Immutable class Func Object;
@@ -951,12 +950,12 @@ typedef struct knh_NameSpace_t knh_NameSpace_t;
 #ifdef K_INTERNAL
 typedef struct knh_NameSpaceEX_t {
 	knh_String_t *nsname;
-	struct knh_DictMap_t*   linkDictMapNULL;
+//	struct knh_DictMap_t*   linkDictMapNULL;
 	struct knh_DictMap_t*   constDictCaseMapNULL;
 	struct knh_Array_t *    ffilinksNULL;
 
-	struct knh_DictSet_t*   name2cidDictSetNULL;
-	struct knh_DictSet_t*   func2cidDictSetNULL;
+	struct knh_DictSet_t*   name2ctDictSetNULL;
+//	struct knh_DictSet_t*   func2cidDictSetNULL;
 	struct knh_Array_t*     methodsNULL;
 	struct knh_Array_t*     formattersNULL;
 } knh_NameSpaceEX_t;

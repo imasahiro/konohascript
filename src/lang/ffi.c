@@ -556,10 +556,10 @@ knh_bool_t knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_D
 
 /* ------------------------------------------------------------------------ */
 
-static knh_bool_t LIB_hasType(CTX ctx, knh_class_t cid)
-{
-	return 0;
-}
+//static knh_bool_t LIB_hasType(CTX ctx, knh_class_t cid)
+//{
+//	return 0;
+//}
 
 static void *knh_open_gluelink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t libname)
 {
@@ -630,77 +630,77 @@ knh_bool_t knh_NameSpace_addFFIlink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t pa
 	return 0;
 }
 
-static knh_bool_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	knh_bytes_t libname = knh_bytes_next(path, ':');
-	knh_bytes_t funcname = knh_bytes_rnext(path, '.');
-	void *p = knh_open_ffilink(ctx, ns, path);
-	knh_bool_t res = 0;
-	if(p != NULL) {
-		res = 1;
-		if(funcname.len < libname.len) {
-			void *f = knh_dlsym(ctx, p, funcname.text, 1/*isTest*/);
-			res = (f != NULL);
-		}
-		knh_dlclose(ctx, p);
-	}
-	return res;
-}
-
-static knh_Object_t* LIB_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
-{
-	return NULL/*(knh_Object_t*)s*/;
-}
-
-static const knh_LinkDPI_t LINK_LIB = {
-	"lib", NULL, LIB_hasType, LIB_exists, LIB_newObjectNULL,
-};
-
-static knh_bool_t CFUNC_hasType(CTX ctx, knh_class_t cid)
-{
-	return 0;
-}
-
-static knh_bool_t CFUNC_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	return (knh_loadCFUNC(ctx, ns, path) != NULL);
-}
-
-static knh_Object_t* CFUNC_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
-{
-	return NULL/*(knh_Object_t*)s*/;
-}
-
-static const knh_LinkDPI_t LINK_CFUNC = {
-	"cfunc", NULL, CFUNC_hasType, CFUNC_exists, CFUNC_newObjectNULL,
-};
-
-static knh_bool_t CTYPE_hasType(CTX ctx, knh_class_t cid)
-{
-	return 0;
-}
-
-static knh_bool_t CTYPE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	void *ctype = bytes_find(knh_bytes_next(path, ':'), tdata, sizeof(tdata) / sizeof(knh_keyvalue_t));
-	return (ctype != NULL);
-}
-
-static knh_Object_t* CTYPE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
-{
-	return NULL/*(knh_Object_t*)s*/;
-}
-
-static const knh_LinkDPI_t LINK_CTYPE = {
-	"ctype", NULL, CTYPE_hasType, CTYPE_exists, CTYPE_newObjectNULL,
-};
+//static knh_bool_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+//{
+//	knh_bytes_t libname = knh_bytes_next(path, ':');
+//	knh_bytes_t funcname = knh_bytes_rnext(path, '.');
+//	void *p = knh_open_ffilink(ctx, ns, path);
+//	knh_bool_t res = 0;
+//	if(p != NULL) {
+//		res = 1;
+//		if(funcname.len < libname.len) {
+//			void *f = knh_dlsym(ctx, p, funcname.text, 1/*isTest*/);
+//			res = (f != NULL);
+//		}
+//		knh_dlclose(ctx, p);
+//	}
+//	return res;
+//}
+//
+//static knh_Object_t* LIB_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+//{
+//	return NULL/*(knh_Object_t*)s*/;
+//}
+//
+//static const knh_LinkDPI_t LINK_LIB = {
+//	"lib", NULL, LIB_hasType, LIB_exists, LIB_newObjectNULL,
+//};
+//
+//static knh_bool_t CFUNC_hasType(CTX ctx, knh_class_t cid)
+//{
+//	return 0;
+//}
+//
+//static knh_bool_t CFUNC_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+//{
+//	return (knh_loadCFUNC(ctx, ns, path) != NULL);
+//}
+//
+//static knh_Object_t* CFUNC_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+//{
+//	return NULL/*(knh_Object_t*)s*/;
+//}
+//
+//static const knh_LinkDPI_t LINK_CFUNC = {
+//	"cfunc", NULL, CFUNC_hasType, CFUNC_exists, CFUNC_newObjectNULL,
+//};
+//
+//static knh_bool_t CTYPE_hasType(CTX ctx, knh_class_t cid)
+//{
+//	return 0;
+//}
+//
+//static knh_bool_t CTYPE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+//{
+//	void *ctype = bytes_find(knh_bytes_next(path, ':'), tdata, sizeof(tdata) / sizeof(knh_keyvalue_t));
+//	return (ctype != NULL);
+//}
+//
+//static knh_Object_t* CTYPE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+//{
+//	return NULL/*(knh_Object_t*)s*/;
+//}
+//
+//static const knh_LinkDPI_t LINK_CTYPE = {
+//	"ctype", NULL, CTYPE_hasType, CTYPE_exists, CTYPE_newObjectNULL,
+//};
 
 void knh_loadFFIDriver(CTX ctx, knh_NameSpace_t *ns)
 {
-	const knh_PackageLoaderAPI_t *api = knh_getPackageLoaderAPI();
-	api->addLinkDPI(ctx, ns, "lib", &LINK_LIB);
-	api->addLinkDPI(ctx, ns, "cfunc", &LINK_CFUNC);
-	api->addLinkDPI(ctx, ns, "ctype", &LINK_CTYPE);
+//	const knh_PackageLoaderAPI_t *api = knh_getPackageLoaderAPI();
+//	api->addLinkDPI(ctx, ns, "lib", &LINK_LIB);
+//	api->addLinkDPI(ctx, ns, "cfunc", &LINK_CFUNC);
+//	api->addLinkDPI(ctx, ns, "ctype", &LINK_CTYPE);
 }
 
 

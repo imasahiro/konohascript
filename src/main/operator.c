@@ -700,8 +700,6 @@ static METHOD Regex_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(sfp[0].o);
 }
 
-/* ------------------------------------------------------------------------ */
-
 static knh_bool_t bytes_startsWithLink(knh_bytes_t t, knh_bytes_t scheme)
 {
 	if(knh_bytes_startsWith(t, scheme)) {
@@ -711,49 +709,32 @@ static knh_bool_t bytes_startsWithLink(knh_bytes_t t, knh_bytes_t scheme)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Hidden @Private method dynamic Link.newObject(String fi, NameSpace ns, Class c);
+//## @Hidden @Private method dynamic String.opLINK(String path, NameSpace _, Class _);
 
-static METHOD Link_newObject(CTX ctx, knh_sfp_t *sfp _RIX)
+static METHOD String_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Link_t *lnk = (knh_Link_t*)sfp[0].o;
 	knh_class_t cid = (sfp[3].c)->cid;
-	knh_String_t* fi = sfp[1].s;
-	DBG_ASSERT(IS_String(fi));
-	knh_Object_t *v = NULL;
-	if(!bytes_startsWithLink(S_tobytes(fi), S_tobytes(lnk->scheme))) {
+	DBG_ASSERT(IS_NameSpace(sfp[2].ns));
+	DBG_ASSERT(IS_String(sfp[1].s));
+	if(!bytes_startsWithLink(S_tobytes(sfp[1].s), S_tobytes(sfp[0].s))) {
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-		knh_Bytes_write(ctx, cwb->ba, S_tobytes(lnk->scheme));
+		knh_Bytes_write(ctx, cwb->ba, S_tobytes(sfp[0].s));
 		knh_Bytes_putc(ctx, cwb->ba, ':');
-		knh_Bytes_write(ctx, cwb->ba, S_tobytes(fi));
-		fi = knh_cwb_newString(ctx, cwb);
-		KNH_SETv(ctx, sfp[K_RIX].s, fi);
+		knh_Bytes_write(ctx, cwb->ba, S_tobytes(sfp[1].s));
+		KNH_SETv(ctx, sfp[1].s, knh_cwb_newString(ctx, cwb));
 	}
-	if(cid == CLASS_Boolean) {
-		sfp[K_RIX].bvalue = knh_Link_exists(ctx, lnk, sfp[2].ns, S_tobytes(fi));
-		v = sfp[K_RIX].bvalue ? KNH_TRUE : KNH_FALSE;
-	}
-	else {
-		v = knh_Link_newObjectNULL(ctx, lnk, sfp[2].ns, fi, cid);
-		if(v == NULL) {
-			LOGDATA = {sDATA("fid", S_tochar(fi)), tDATA("requested_type", cid)};
-			LIB_Failed("link", "Link!!");
-			v = KNH_NULVAL(cid);
-		}
-	}
+	knh_Object_t* v = knh_NameSpace_newObject(ctx, sfp[2].ns, sfp[1].s, cid);
 	RETURN_(v);
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Hidden method Boolean String.opEXISTS(NameSpace ns);
+//## @Hidden method Boolean String.opEXISTS(NameSpace _);
 
 static METHOD String_opEXISTS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_bool_t tf = 0;
-	knh_bytes_t path = S_tobytes(sfp[0].s);
 	DBG_ASSERT(IS_NameSpace(sfp[1].ns));
-	knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, sfp[1].ns, path);
-	if(lnk != NULL) tf = knh_Link_exists(ctx, lnk, sfp[1].ns, path);
-	RETURNb_(tf);
+	knh_Object_t* btf = knh_NameSpace_newObject(ctx, sfp[1].ns, sfp[0].s, CLASS_Boolean);
+	RETURNb_(btf == KNH_TRUE);
 }
 
 /* ------------------------------------------------------------------------ */

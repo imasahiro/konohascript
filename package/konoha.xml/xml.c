@@ -27,6 +27,7 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 #include <libxml/xmlreader.h>
+#define USE_STRUCT_Path  1
 #include <konoha1.h>
 
 #ifdef __cplusplus
@@ -346,16 +347,15 @@ DEFAPI(void) constXmlReader(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI
 	kapi->loadIntClassConst(ctx, cid, XmlReaderConstint);
 }
 
-//## @Native @Throwable XmlReader XmlReader.new(String path, NameSpace _, XmlReader _);
+//## @Native @Throwable XmlReader XmlReader.new(Path _);
 METHOD XmlReader_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	char path[K_PATHMAX];
-	knh_String_ospath(ctx, sfp[1].s, sfp[2].ns, path, sizeof(path));
 	KNH_RESET_ERRNO();
-	xmlTextReaderPtr reader = xmlNewTextReaderFilename(path);
-	knh_RawPtr_t *po = new_RawPtr(ctx, sfp[3].p, reader);
+	knh_Path_t *pth = sfp[1].pth;
+	xmlTextReaderPtr reader = xmlNewTextReaderFilename(pth->ospath);
+	knh_RawPtr_t *po = new_RawPtrByReturnType(ctx, sfp, reader);
 	if(reader == NULL) {
-		LOGDATA = {sDATA("uri", S_tochar(sfp[1].s)), sDATA("ospath", (const char*)path), __ERRNO__};
+		LOGDATA = {sDATA("urn", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), __ERRNO__};
 		LIB_Failed("xmlNewTextReader", "IO!!");
 	}
 	RETURN_(po);

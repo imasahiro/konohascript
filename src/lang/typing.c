@@ -1441,114 +1441,40 @@ static knh_Token_t* ESTR_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 	}
 }
 
-knh_class_t Link_type(CTX ctx, knh_Link_t *lnk, knh_class_t reqt)
+static knh_Token_t* TURN_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 {
-	if(knh_Link_hasType(ctx, lnk, reqt)) {
-		return reqt;
-	}
-	DBG_P("reqt=%s", TYPE__(reqt));
-	knh_class_t bcid = C_bcid(reqt);
-	if(bcid == CLASS_Iterator) {
-		knh_class_t p1 = C_p1(reqt);
-		if(p1 != CLASS_Tvar) {
-			knh_class_t cid = knh_class_P1(ctx, CLASS_Array, C_p1(reqt));
-			if(knh_Link_hasType(ctx, lnk, cid)) {
-				return cid;
-			}
-		}
-		else {
-			DBG_P("CHECK type=%s", TYPE__(reqt));
-			if(knh_Link_hasType(ctx, lnk, CLASS_StringARRAY)) {
-				return CLASS_StringARRAY;
-			}
-		}
-		if(knh_Link_hasType(ctx, lnk, CLASS_InputStream)) {
-			return CLASS_InputStream;
-		}
-		return reqt;
-	}
-	if(bcid == CLASS_Object) {
-		if(knh_Link_hasType(ctx, lnk, CLASS_Map)) {
-			return CLASS_Map;
-		}
-		return reqt;
-	}
-	return CLASS_t(reqt);
-}
-
-static knh_Token_t* PATH_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
-{
-	knh_NameSpace_t *ns = K_GMANS;
-	knh_bytes_t fi = S_tobytes((tk)->text);
-	Object *value = NULL;
-	knh_Method_t *mtd = knh_NameSpace_getLinkMethod(ctx, ns, fi);
-	if(mtd == NULL) {
-		return ERROR_Undefined(ctx, "link", CLASS_unknown, tk);
-	}
-	if(TT_(tk) != TT_URN) {  // this is necessary for exists URN;
-		return Token_toCONST(ctx, tk);
-	}
 	if(reqt == TYPE_String) {
 		return Token_toCONST(ctx, tk);
 	}
-	{
-		BEGIN_LOCAL(ctx, lsfp, 3 + K_CALLDELTA);
-		long rtnidx = 0, thisidx = rtnidx + K_CALLDELTA;
-		KNH_SETv(ctx, lsfp[thisidx+1].o, (tk)->text);
-		KNH_SETv(ctx, lsfp[thisidx+2].o, ns);
-		KNH_SCALL(ctx, lsfp, rtnidx, mtd, (3));
-		value = lsfp[rtnidx].o;
-		Token_setCONST(ctx, tk, value);
-		END_LOCAL_(ctx, lsfp);
+	else {
+		knh_NameSpace_t *ns = K_GMANS;
+		knh_String_t *path = (tk)->text;
+		const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, path);
+		if(ct == NULL) {
+			return ERROR_Undefined(ctx, "link", CLASS_unknown, tk);
+		}
+		if(TT_(tk) != TT_URN) {  // this is necessary for exists URN;
+			return Token_toCONST(ctx, tk);
+		}
+		if(reqt == CLASS_Tdynamic || reqt == CLASS_Tvar || reqt == CLASS_Tvar) {
+			reqt = ct->cid;
+		}
+		Object *value = knh_NameSpace_newObject(ctx, ns, path, reqt);
+		if(IS_NULL(value)) {
+			WARN_Undefined(ctx, "literal", reqt, tk);
+		}
+		return Token_setCONST(ctx, tk, value);
 	}
-	if(reqt == TYPE_Boolean) {
-		knh_Object_t *tf = IS_NULL(value) ? KNH_FALSE : KNH_TRUE;
-		return Token_setCONST(ctx, tk, tf);
-	}
-	return TM(tk);
 }
-
-//static knh_Token_t* PATH_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
-//{
-//	knh_NameSpace_t *ns = K_GMANS;
-//	knh_bytes_t fi = S_tobytes((tk)->text);
-//
-//	knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, ns, fi);
-//	if(lnk == NULL) {
-//		return ERROR_Undefined(ctx, "link", CLASS_unknown, tk);
-//	}
-//	if(TT_(tk) != TT_URN) {  // this is necessary for exists URN;
-//		return Token_toCONST(ctx, tk);
-//	}
-//	if(reqt == TYPE_dyn || reqt == TYPE_var || reqt == TYPE_void) reqt = TYPE_Boolean;
-//	if(reqt == TYPE_Boolean || reqt == TYPE_Object) {
-//		knh_Object_t *tf = knh_Link_exists(ctx, lnk, ns, fi) ? KNH_TRUE : KNH_FALSE;
-//		return Token_setCONST(ctx, tk, tf);
-//	}
-//	else if(reqt == TYPE_String) {
-//		return Token_toCONST(ctx, tk);
-//	}
-//	knh_class_t cid = Link_type(ctx, lnk, reqt);
-//	if(!knh_Link_hasType(ctx, lnk, cid)) {
-//		return TERROR_Token(ctx, tk, TYPE_Boolean, reqt);
-//	}
-//	else {
-//		knh_Object_t *o = knh_Link_newObjectNULL(ctx, lnk, ns, (tk)->text, cid);
-//		if(o == NULL) {
-//			o = KNH_NULVAL(cid);
-//			WARN_Undefined(ctx, "linked resource", CLASS_unknown, tk);
-//		}
-//		return Token_setCONST(ctx, tk, o);
-//	}
-//}
 
 /* @see _EXPRCAST */
 static knh_Token_t* TLINK_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
 	knh_Token_t *tkLNK = tkNN(stmt, 1);
 	knh_NameSpace_t *ns = K_GMANS;
-	knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, ns, S_tobytes((tkLNK)->text));
-	if(lnk == NULL) {
+	knh_String_t *path = (tkLNK)->text;
+	const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, path);
+	if(ct == NULL) {
 		return ERROR_Undefined(ctx, "link", CLASS_unknown, tkLNK);
 	}
 	if(TT_(tkNN(stmt, 2)) == TT_ASIS) {
@@ -1557,20 +1483,22 @@ static knh_Token_t* TLINK_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	else {
 		TYPING_TypedExpr(ctx, stmt, 2, TYPE_String);
 	}
-	if(reqt == TYPE_dyn || reqt == TYPE_var || reqt == TYPE_void) reqt = TYPE_Boolean;
-	knh_class_t cid = Link_type(ctx, lnk, reqt);
-	if(knh_Link_hasType(ctx, lnk, cid)) {
+	if(reqt == CLASS_Tdynamic || reqt == CLASS_Tvar || reqt == CLASS_Tvar) {
+		reqt = ct->cid;
+	}
+	knh_class_t cid = knh_ClassTBL_linkType(ctx, ct, reqt);
+	if(cid != CLASS_unknown) {
 		DBG_ASSERT(DP(stmt)->size == 3);
 		STT_(stmt) = STT_CALL;
-		Token_setMethod(ctx, tkNN(stmt, 0), MN_newObject, knh_NameSpace_getMethodNULL(ctx, ns, CLASS_Link, MN_newObject));
-		Token_setCONST(ctx, tkLNK, lnk);
+		Token_setMethod(ctx, tkNN(stmt, 0), MN_opLINK, knh_NameSpace_getMethodNULL(ctx, ns, CLASS_String, MN_opLINK));
+		Token_setCONST(ctx, tkLNK, path);
 		// expr
 		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, K_GMANS));
-		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, new_Type(ctx, reqt)));
+		knh_Stmt_add(ctx, stmt, new_TokenCONST(ctx, new_Type(ctx, cid)));
 		return Stmt_typed(ctx, stmt, cid);
 	}
 	else {
-		return TERROR_Token(ctx, tkLNK, TYPE_Boolean, reqt);
+		return TERROR_Token(ctx, tkLNK, ct->cid, reqt);
 	}
 }
 
@@ -1598,7 +1526,7 @@ static knh_Token_t *Token_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 	case TT_TSTR: return TSTR_typing(ctx, tk, reqt);
 	case TT_ESTR: return ESTR_typing(ctx, tk, reqt);
 	case TT_NUM: return NUM_typing(ctx, tk, reqt);
-	case TT_URN: case TT_TLINK: return PATH_typing(ctx, tk, reqt);
+	case TT_URN: case TT_TLINK: return TURN_typing(ctx, tk, reqt);
 	case TT_ERR: return tk;
 	case TT_MN:
 	default:
@@ -3077,7 +3005,7 @@ static knh_Token_t* OPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	{
 		if(TT_(tkNN(stmt,1)) == TT_URN) {
 			TT_(tkNN(stmt,1)) = TT_CONST;
-			PATH_typing(ctx, tkNN(stmt, 1), TYPE_Boolean);
+			TURN_typing(ctx, tkNN(stmt, 1), TYPE_Boolean);
 		}
 		else if(STT_(stmtNN(stmt,1)) == STT_TLINK) {
 			return TLINK_typing(ctx, stmtNN(stmt, 1), TYPE_Boolean);

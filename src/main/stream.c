@@ -83,43 +83,6 @@ void knh_buff_trim(CTX ctx, knh_Bytes_t *ba, size_t pos, int ch)
 	}
 }
 
-KNHAPI2(knh_bool_t) knh_String_ospath(CTX ctx, knh_String_t *s, knh_NameSpace_t *ns, char *buf, size_t bufsiz)
-{
-	knh_bool_t res = 0;
-	knh_index_t loc = knh_bytes_index(S_tobytes(s), ':');
-	if(loc == -1) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-//		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(ns->rpath));
-		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(s));
-		const char *p = knh_cwb_tochar(ctx, cwb);
-		size_t len = knh_strlen(p) + 1;
-		if(len < bufsiz) {
-			knh_memcpy(buf, p, len); res = 1;
-		}
-		knh_cwb_close(cwb);
-	}
-	else {
-		knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, ns, S_tobytes(s));
-		if(lnk != NULL && knh_Link_hasType(ctx, lnk, CLASS_Bytes)) {
-			knh_Bytes_t *ba = (knh_Bytes_t*)knh_Link_newObjectNULL(ctx, lnk, ns, s, CLASS_Bytes);
-			if(ba != NULL) {
-				KNH_SETv(ctx, ctx->esp[0].o, ba);  //TOGC
-				knh_Bytes_ensureZero(ctx, ba);
-				if(BA_size(ba) + 1 < bufsiz) {
-					knh_memcpy(buf, ba->bu.buf, BA_size(ba) + 1); res = 1;
-				}
-			}
-		}
-	}
-	if(res == 1) {
-		DBG_P("ospath='%s'", buf);
-	}
-	else {
-		buf[0] = 0;
-	}
-	return res;
-}
-
 static const char *new_cwbtext(CTX ctx, knh_cwb_t *cwb, size_t *lenref)
 {
 	const char *p = knh_cwb_tochar(ctx, cwb);

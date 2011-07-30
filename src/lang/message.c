@@ -344,7 +344,7 @@ void WARN_WrongTypeParam(CTX ctx, knh_class_t cid)
 }
 void INFO_Typing(CTX ctx, const char *prefix, knh_bytes_t name, knh_type_t type)
 {
-	Gamma_perror(ctx, KC_TINFO, "suppose %s%B has type %T", prefix, name, type);
+	Gamma_perror(ctx, KC_TINFO, "suppose %s%B has %T type", prefix, name, type);
 }
 void WARN_Overflow(CTX ctx, const char *floatorint, knh_bytes_t t)
 {

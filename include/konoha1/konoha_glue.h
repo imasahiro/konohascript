@@ -187,7 +187,7 @@ typedef struct knh_PackageLoaderAPI_t {
 	void (*setPackageFloatProperty)(CTX, const char*, knh_float_t);
 	/* namespace */
 //	void (*setRegexSPI)(CTX, knh_NameSpace_t *ns, const knh_RegexSPI_t *);
-	void (*addLinkDPI)(CTX, knh_NameSpace_t *ns, const char*, const knh_LinkDPI_t *);
+	void (*addLinkClass)(CTX, knh_NameSpace_t *ns, const char*, knh_class_t cid);
 	void (*addStreamDPI)(CTX, knh_NameSpace_t *ns, const char*, const knh_StreamDPI_t *);
 	void (*addQueryDSPI)(CTX, knh_NameSpace_t *ns, const char *, const knh_QueryDSPI_t *);
 	void (*addConvDSPI)(CTX, knh_NameSpace_t *ns, const char *, const knh_ConvDSPI_t*);
@@ -208,8 +208,6 @@ typedef const knh_PackageDef_t* (*knh_Fpkginit)(CTX, const knh_PackageLoaderAPI_
 typedef void (*knh_Fpkgload)(CTX, const knh_PackageLoaderAPI_t *, knh_NameSpace_t *ns);
 typedef void (*knh_Fclassdef)(CTX, knh_class_t, knh_ClassDef_t*);
 typedef void (*knh_Fconstdef)(CTX, knh_class_t, const knh_PackageLoaderAPI_t*);
-
-typedef const knh_LinkDPI_t* (*knh_Flinkdef)(CTX);
 
 /* ------------------------------------------------------------------------ */
 /* new version */

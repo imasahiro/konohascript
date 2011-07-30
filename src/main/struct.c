@@ -1660,80 +1660,6 @@ static knh_ClassDef_t TypeMapDef = {
 };
 
 /* --------------- */
-/* Link */
-
-static knh_bool_t NOLINK_hasType(CTX ctx, knh_class_t cid)
-{
-	return 0;
-}
-static knh_bool_t NOLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	return 0;
-}
-static knh_Object_t* NOLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
-{
-	return NULL/*(knh_Object_t*)s*/;
-}
-
-static const knh_LinkDPI_t PATH_NOLINK = {
-	"NOLINK", NULL, NOLINK_hasType, NOLINK_exists, NOLINK_newObjectNULL,
-};
-
-static void Link_init(CTX ctx, knh_RawPtr_t *o)
-{
-	knh_Link_t *flnk = (knh_Link_t*)o;
-	flnk->dpi = &PATH_NOLINK;
-	KNH_INITv(flnk->scheme, TS_EMPTY);
-	KNH_INITv(flnk->list, K_EMPTYARRAY);
-}
-
-knh_Link_t *new_Link(CTX ctx, knh_String_t *scheme, const knh_LinkDPI_t *dpi)
-{
-	knh_Link_t *flnk = (knh_Link_t*)new_hObject_(ctx, ClassTBL(CLASS_Link));
-	flnk->dpi = (dpi == NULL) ? &PATH_NOLINK : dpi;
-	KNH_INITv(flnk->scheme, scheme);
-	KNH_INITv(flnk->list, K_EMPTYARRAY);
-	return flnk;
-}
-
-static void Link_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
-{
-	knh_Link_t *flnk = (knh_Link_t*)o;
-	KNH_ADDREF(ctx, flnk->scheme);
-	KNH_ADDREF(ctx, flnk->list);
-	KNH_SIZEREF(ctx);
-}
-
-static void Link_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
-{
-	knh_Link_t *lnk = (knh_Link_t*)o;
-	knh_write(ctx, w, S_tobytes(lnk->scheme));
-	knh_write(ctx, w, STEXT("::"));
-	if(IS_FMTdump(level)) {
-		size_t i;
-		knh_write(ctx, w, STEXT("=boolean|String"));
-		if(lnk->dpi->utype != NULL) {
-			knh_putc(ctx, w, '|');
-			knh_write_ascii(ctx, w, lnk->dpi->utype);
-		}
-		for(i = 0; i < knh_Array_size(lnk->list); i++) {
-			knh_Method_t *mtd = lnk->list->methods[i];
-			knh_putc(ctx, w, '|');
-			knh_write_cname(ctx, w, mtd->cid);
-		}
-	}
-}
-
-static knh_ClassDef_t LinkDef = {
-	Link_init, TODO_initcopy, Link_reftrace, DEFAULT_free,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Link_p,
-	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_toint, DEFAULT_tofloat,
-	DEFAULT_findTypeMapNULL, DEFAULT_1, DEFAULT_2, DEFAULT_3,
-	"Link", CFLAG_Link, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
-};
-
-/* --------------- */
 /* Func */
 
 static METHOD Fmethod_funcRTYPE(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -2502,10 +2428,10 @@ static void NameSpace_init(CTX ctx, knh_RawPtr_t *o)
 	KNH_INITv(b->nsname, TS_main);
 	KNH_INITv(ns->path, ctx->share->cwdPath);
 	ns->parentNULL          = NULL;
-	b->ffilinksNULL     = NULL;
-	b->linkDictMapNULL      = NULL;
-	b->name2cidDictSetNULL  = NULL;
-	b->func2cidDictSetNULL  = NULL;
+	b->ffilinksNULL         = NULL;
+//	b->linkDictMapNULL      = NULL;
+	b->name2ctDictSetNULL  = NULL;
+//	b->func2cidDictSetNULL  = NULL;
 	b->constDictCaseMapNULL = NULL;
 	b->formattersNULL       = NULL;
 	b->methodsNULL          = NULL;
@@ -2521,9 +2447,9 @@ static void NameSpace_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 	KNH_ADDREF(ctx, ns->path);
 	KNH_ADDNNREF(ctx, ns->parentNULL);
 	KNH_ADDNNREF(ctx, b->ffilinksNULL);
-	KNH_ADDNNREF(ctx, b->linkDictMapNULL);
-	KNH_ADDNNREF(ctx, b->name2cidDictSetNULL);
-	KNH_ADDNNREF(ctx, b->func2cidDictSetNULL);
+//	KNH_ADDNNREF(ctx, b->linkDictMapNULL);
+	KNH_ADDNNREF(ctx, b->name2ctDictSetNULL);
+//	KNH_ADDNNREF(ctx, b->func2cidDictSetNULL);
 	KNH_ADDNNREF(ctx, b->constDictCaseMapNULL);
 	KNH_ADDNNREF(ctx, b->formattersNULL);
 	KNH_ADDNNREF(ctx, b->methodsNULL);

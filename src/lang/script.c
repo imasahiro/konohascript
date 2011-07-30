@@ -60,9 +60,9 @@ knh_class_t knh_NameSpace_getcid(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t sname
 		return O_cid(K_GMASCR);
 	}
 	L_TAIL:
-	if(DP(ns)->name2cidDictSetNULL != NULL) {
-		knh_uintptr_t cid = knh_DictSet_get(ctx, DP(ns)->name2cidDictSetNULL, sname);
-		if(cid > 0) return (knh_class_t)(cid-1);
+	if(DP(ns)->name2ctDictSetNULL != NULL) {
+		const knh_ClassTBL_t *ct = (knh_ClassTBL_t*)knh_DictSet_get(ctx, DP(ns)->name2ctDictSetNULL, sname);
+		if(ct != NULL) return ct->cid;
 	}
 	if(ns->parentNULL != NULL) {
 		ns = ns->parentNULL;
@@ -101,20 +101,18 @@ knh_flag_t knh_Stmt_flag_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, knh_flag_
 
 knh_class_t knh_NameSpace_getFuncClass(CTX ctx, knh_NameSpace_t *ns, knh_methodn_t mn)
 {
-	if(!MN_isGETTER(mn) && !MN_isSETTER(mn)) {
-		knh_bytes_t name = S_tobytes(knh_getFieldName(ctx, MN_toFN(mn)));
-		L_TAIL:
-		if(DP(ns)->func2cidDictSetNULL != NULL) {
-			knh_uintptr_t cid = knh_DictSet_get(ctx, DP(ns)->func2cidDictSetNULL, name);
-			if(cid != 0) {
-				return (knh_class_t)(cid-1);
-			}
-		}
-		if(ns->parentNULL != NULL) {
-			ns = ns->parentNULL;
-			goto L_TAIL;
-		}
-	}
+//	if(!MN_isGETTER(mn) && !MN_isSETTER(mn)) {
+//		knh_bytes_t name = S_tobytes(knh_getFieldName(ctx, MN_toFN(mn)));
+//		L_TAIL:
+//		if(DP(ns)->name2ctDictSetNULL != NULL) {
+//			const knh_ClassTBL_t *ct = (const knh_ClassTBL_t*)knh_DictSet_get(ctx, DP(ns)->name2ctDictSetNULL, sname);
+//			if(ct != NULL) return ct->cid;
+//		}
+//		if(ns->parentNULL != NULL) {
+//			ns = ns->parentNULL;
+//			goto L_TAIL;
+//		}
+//	}
 	return CLASS_unknown; /* if not found */
 }
 
@@ -285,17 +283,17 @@ knh_status_t knh_loadPackage(CTX ctx, knh_bytes_t pkgname)
 
 static void NameSpace_setcid(CTX ctx, knh_NameSpace_t *ns, knh_String_t *name, knh_class_t cid)
 {
-	if(DP(ns)->name2cidDictSetNULL == NULL) {
-		KNH_INITv(DP(ns)->name2cidDictSetNULL, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "NameSpace.name2cid"));
+	if(DP(ns)->name2ctDictSetNULL == NULL) {
+		KNH_INITv(DP(ns)->name2ctDictSetNULL, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "NameSpace.name2cid"));
 	}
-	else {
-		knh_uintptr_t oldcid = knh_DictSet_get(ctx, DP(ns)->name2cidDictSetNULL, S_tobytes(name));
-		if(oldcid != 0 && cid != oldcid - 1) {
-			WARN_AlreadyDefinedClass(ctx, cid, (knh_class_t)(oldcid - 1));
-			return;
-		}
-	}
-	knh_DictSet_set(ctx, DP(ns)->name2cidDictSetNULL, name, (knh_uintptr_t)(cid+1));
+//	else {
+//		const knh_ClassTBL_t *ct = (const knh_ClassTBL_t*)knh_DictSet_get(ctx, DP(ns)->name2ctDictSetNULL, S_tobytes(name));
+//		if(oldcid != 0 && cid != oldcid - 1) {
+//			WARN_AlreadyDefinedClass(ctx, cid, (knh_class_t)(oldcid - 1));
+//			return;
+//		}
+//	}
+	knh_DictSet_set(ctx, DP(ns)->name2ctDictSetNULL, name, (knh_uintptr_t)ClassTBL(cid));
 }
 
 static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
@@ -544,59 +542,6 @@ static knh_status_t CONST_decl(CTX ctx, knh_Stmt_t *stmt)
 	return status;
 }
 
-static knh_status_t LINK_decl(CTX ctx, knh_Stmt_t *stmt)
-{
-	knh_Token_t *tkN = tkNN(stmt, 0);
-	knh_Stmt_t *stmtIN = stmtNN(stmt, 1);
-	int count = 0;
-	knh_NameSpace_t *ns = K_GMANS;
-	if(TT_(tkN) != TT_TLINK && TT_(tkN) != TT_NAME) {
-		knh_Stmt_toERR(ctx, stmt, ERROR_TokenIsNot(ctx, tkN, "link name"));
-		return K_BREAK;
-	}
-	knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, ns, S_tobytes(tkN->text));
-	if(lnk != NULL && !knh_StmtMETA_is(ctx, stmt, "Override")) {
-		knh_Stmt_toERR(ctx, stmt, ERROR_AlreadyDefined(ctx, "link", UPCAST(tkN)));
-		return K_CONTINUE;
-	}
-	if(STT_(stmtIN) == TT_CODE) {
-		stmtIN = knh_Token_parseStmt(ctx, tkNN(stmt, 1));
-		KNH_SETv(ctx, stmtNN(stmt, 1), stmtIN);
-	}
-	while(stmtIN != NULL) {
-		if(STT_(stmtIN) == STT_TYPEMAP) {
-			KNH_SETv(ctx, tkNN(stmtIN, 0), tkN);
-			count++;
-		}
-		else if(STT_(stmtIN) == STT_DONE) {
-		}
-		else {
-			WARN_Ignored(ctx, "statement", CLASS_unknown, TT__(STT_(stmtIN)));
-			knh_Stmt_done(ctx, stmtIN);
-		}
-		stmtIN = DP(stmtIN)->nextNULL;
-	}
-	const knh_LinkDPI_t *dpi = NULL;
-	if(knh_StmtMETA_is(ctx, stmt, "Native")) {
-		if(ns->gluehdr != NULL) {
-			const char *funcname = S_tochar((tkN)->text);
-			knh_Flinkdef loadlink = (knh_Flinkdef)knh_dlsym(ctx, ns->gluehdr, funcname, 0/*isTest*/);
-			if(loadlink == NULL) {
-				knh_Stmt_toERR(ctx, stmt, ERROR_NotFound(ctx, _("linkdef function"), funcname));
-				return K_BREAK;
-			}
-			dpi = loadlink(ctx);
-		}
-	}
-	if(count > 0) {
-		DBG_P("define new link %s", S_tochar(tkN->text));
-		knh_NameSpace_setLink(ctx, ns, new_Link(ctx, tkN->text, dpi));
-	}
-	else {
-		knh_Stmt_done(ctx, stmt);
-	}
-	return K_CONTINUE;
-}
 
 static knh_status_t METHODWITH_eval(CTX ctx, knh_Stmt_t *stmt)
 {
@@ -815,9 +760,6 @@ static knh_status_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *results
 			break;
 		case STT_METHOD:  /* with clause */
 			status = METHODWITH_eval(ctx, stmt);
-			break;
-		case STT_LINK:
-			status = LINK_decl(ctx, stmt);
 			break;
 		case STT_CONST:
 			status = CONST_decl(ctx, stmt);

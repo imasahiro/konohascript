@@ -1806,90 +1806,90 @@ void knh_loadSystemTypeMapRule(CTX ctx)
 
 /* ------------------------------------------------------------------------ */
 
-
-knh_bool_t knh_Link_hasType(CTX ctx, knh_Link_t *flnk, knh_class_t tcid)
+void knh_NameSpace_setLinkClass(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t linkname, const knh_ClassTBL_t *ct)
 {
-	size_t i;
-	if(tcid == CLASS_Boolean || tcid == CLASS_String) return 1;
-	for(i = 0; i < knh_Array_size(flnk->list); i++) {
-		knh_Method_t *mtd = flnk->list->methods[i];
-		if(mtd->cid == tcid) return 1;
+	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	knh_Bytes_write(ctx, cwb->ba, knh_bytes_head(linkname, ':'));
+	knh_Bytes_putc(ctx, cwb->ba, ':');
+	if(DP(ns)->name2ctDictSetNULL == NULL) {
+		KNH_INITv(DP(ns)->name2ctDictSetNULL, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "NameSpace.name2cid"));
 	}
-	return flnk->dpi->hasType(ctx, tcid);
+	knh_DictSet_set(ctx, DP(ns)->name2ctDictSetNULL, knh_cwb_newString(ctx, cwb), (knh_uintptr_t)ct);
 }
 
-//link file:: {
-//	boolean : (String path) {
-//  }
-//}
-
-knh_bool_t knh_Link_exists(CTX ctx, knh_Link_t *flnk, knh_NameSpace_t *ns, knh_bytes_t fn)
+const knh_ClassTBL_t *knh_NameSpace_getLinkClassTBLNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *path)
 {
-	size_t i;
-	for(i = 0; i < knh_Array_size(flnk->list); i++) {
-		knh_Method_t *mtd = flnk->list->methods[i];
-		if(mtd->cid == CLASS_Boolean) {
-
+	knh_bytes_t scheme = knh_bytes_head(S_tobytes(path), ':'); scheme.len += 1; //include 'class:'
+	knh_class_t cid = knh_NameSpace_getcid(ctx, ns, scheme);
+	if(cid == CLASS_unknown) {
+		scheme.len -= 1;
+		cid = knh_NameSpace_getcid(ctx, ns, scheme);
+		if(cid != CLASS_unknown) {
+			knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, ns, cid, MN_opLINK);
+			if(mtd != NULL) return ClassTBL(cid);
 		}
+		return NULL;
 	}
-	return flnk->dpi->exists(ctx, ns, fn);
+	return ClassTBL(cid);
 }
 
-knh_Object_t *knh_Link_newObjectNULL(CTX ctx, knh_Link_t *flnk, knh_NameSpace_t *ns, knh_String_t *fi, knh_class_t tcid)
+knh_class_t knh_ClassTBL_linkType(CTX ctx, const knh_ClassTBL_t *ct, knh_class_t tcid)
 {
-	size_t i;
-	if(tcid == CLASS_String) return UPCAST(fi);
-	for(i = 0; i < knh_Array_size(flnk->list); i++) {
-		knh_Method_t *mtd = flnk->list->methods[i];
-		if(mtd->cid == tcid) {
+	if(tcid == CLASS_String || tcid == CLASS_Boolean) return tcid;
+	if(ct->cid == tcid || ClassTBL_isa_(ctx, ct, ClassTBL(tcid))) {
+		return ct->cid;
+	}
+	knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, ct->cid, tcid);
+	return (tmr != NULL) ? tmr->tcid : CLASS_unknown;
+}
 
+knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t *path, knh_class_t tcid)
+{
+	if(tcid == CLASS_String) return UPCAST(path);
+	const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, path);
+	Object *value = NULL;
+	if(ct == NULL) {
+		DBG_P("not found: %s as %s", S_tochar(path), CLASS__(tcid));
+		if(tcid == CLASS_Boolean) return KNH_FALSE;
+		return KNH_NULVAL(tcid);
+	}
+	else {
+		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, ns, ct->cid, MN_opLINK);
+		DBG_ASSERT(mtd != NULL);
+		BEGIN_LOCAL(ctx, lsfp, 3 + K_CALLDELTA);
+		long rtnidx = 0, thisidx = rtnidx + K_CALLDELTA;
+		KNH_SETv(ctx, lsfp[thisidx+1].o, path);
+		KNH_SETv(ctx, lsfp[thisidx+2].o, ns);
+		KNH_SCALL(ctx, lsfp, rtnidx, mtd, (3));
+		if(IS_Tunbox(ct->cid)) {
+			KNH_SETv(ctx, lsfp[0].o, new_Boxing(ctx, lsfp, ct));
 		}
+		value = lsfp[rtnidx].o;
+		END_LOCAL_(ctx, lsfp);
 	}
-	if(tcid == CLASS_Boolean) {
-		return flnk->dpi->exists(ctx, ns, S_tobytes(fi)) ? KNH_TRUE : KNH_FALSE;
+	if(O_cid(value) == tcid || ClassTBL_isa_(ctx, O_cTBL(value), ClassTBL(tcid))) {
+		return value;
 	}
-	return flnk->dpi->newObjectNULL(ctx, ns, tcid, fi);
-}
-
-knh_Link_t *knh_NameSpace_getLinkNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t fi)
-{
-	fi = knh_bytes_head(fi, ':');
-	while(ns != NULL) {
-		if(DP(ns)->linkDictMapNULL != NULL) {
-			knh_DictMap_t *dm = DP(ns)->linkDictMapNULL;
-			knh_Link_t *lnk = (knh_Link_t*)knh_DictMap_getNULL(ctx, dm, fi);
-			if(lnk != NULL) return lnk;
+	knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, O_cid(value), tcid);
+	if(tmr == NULL) {
+		if(tcid == CLASS_Boolean) {
+			value = (IS_NULL(value)) ? KNH_FALSE : KNH_TRUE;
 		}
-		ns = ns->parentNULL;
+		return KNH_NULVAL(tcid);
 	}
-	return NULL;
-}
-
-void knh_NameSpace_setLink(CTX ctx, knh_NameSpace_t *ns, knh_Link_t *lnk)
-{
-	if(DP(ns)->linkDictMapNULL == NULL) {
-		KNH_INITv(DP(ns)->linkDictMapNULL, new_DictMap0(ctx, 4, 1/*isCaseMap*/, "linkDictMap"));
+	else {
+		BEGIN_LOCAL(ctx, lsfp, 1);
+		KNH_SETv(ctx, lsfp[0].o, value);
+		lsfp[0].ndata = O_ndata(value);
+		klr_setesp(ctx, lsfp+1);
+		knh_TypeMap_exec(ctx, tmr, lsfp, 0);
+		if(IS_Tunbox(tmr->tcid)) {
+			KNH_SETv(ctx, lsfp[0].o, new_Boxing(ctx, lsfp, ClassTBL(tmr->tcid)));
+		}
+		value = lsfp[0].o;
+		END_LOCAL_(ctx, lsfp);
 	}
-	knh_DictMap_set(ctx, DP(ns)->linkDictMapNULL, lnk->scheme, lnk);
-}
-
-knh_Method_t *knh_NameSpace_getLinkMethod(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t fi)
-{
-	knh_class_t cid = CLASS_unknown;
-	fi = knh_bytes_head(fi, ':');
-//	while(ns != NULL) {
-//		if(DP(ns)->linkDictMapNULL != NULL) {
-//			knh_DictMap_t *dm = DP(ns)->linkDictMapNULL;
-//			knh_Link_t *lnk = (knh_Link_t*)knh_DictMap_getNULL(ctx, dm, fi);
-//			if(lnk != NULL) return lnk;
-//		}
-//		ns = ns->parentNULL;
-//	}
-	cid = knh_NameSpace_getcid(ctx, ns, fi);
-	if(cid != CLASS_unknown) {
-		return knh_NameSpace_getMethodNULL(ctx, ns, cid, MN_opLINK);
-	}
-	return NULL;
+	return value;
 }
 
 /* ------------------------------------------------------------------------ */

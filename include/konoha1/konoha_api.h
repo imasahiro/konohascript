@@ -44,7 +44,6 @@ KNHAPI2(void) ResultSet_setFloat(CTX ctx, knh_ResultSet_t *rs, size_t n, knh_flo
 KNHAPI2(void) ResultSet_setText(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t);
 KNHAPI2(void) ResultSet_setBlob(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t);
 KNHAPI2(void) ResultSet_setNULL(CTX ctx, knh_ResultSet_t *o, size_t n);
-KNHAPI2(knh_bool_t) knh_String_ospath(CTX ctx, knh_String_t *s, knh_NameSpace_t *ns, char *buf, size_t bufsiz);
 KNHAPI2(knh_Path_t*) new_Path(CTX ctx, knh_String_t *path);
 KNHAPI2(knh_InputStream_t*) new_InputStreamDPI(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dpi, knh_Path_t *path);
 KNHAPI2(knh_OutputStream_t*) new_OutputStreamDPI(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dpi, knh_Path_t *path);
@@ -93,7 +92,6 @@ typedef struct knh_api2_t {
 	knh_TypeMap_t* (*new_TypeMap)(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func);
 	knh_TypeMap_t* (*new_TypeMapData)(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func, Object *mapdata);
 	knh_bool_t (*Method_isAbstract)(knh_Method_t *mtd);
-	knh_bool_t  (*String_ospath)(CTX ctx, knh_String_t *s, knh_NameSpace_t *ns, char *buf, size_t bufsiz);
 	knh_class_t  (*type_tocid)(CTX ctx, knh_type_t ptype, knh_class_t this_cid);
 	knh_param_t*  (*ParamArray_get)(knh_ParamArray_t *pa, size_t n);
 	knh_text_t*  (*cwb_tochar)(CTX ctx, knh_cwb_t *cwb);
@@ -129,7 +127,7 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)-392572632)
+#define K_API2_CRC32 ((size_t)196845640)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -158,7 +156,6 @@ static const knh_api2_t* getapi2(void) {
 		new_TypeMap,
 		new_TypeMapData,
 		Method_isAbstract,
-		knh_String_ospath,
 		knh_type_tocid,
 		knh_ParamArray_get,
 		knh_cwb_tochar,
@@ -222,7 +219,6 @@ static const knh_api2_t* getapi2(void) {
 #define new_TypeMap   ctx->api2->new_TypeMap
 #define new_TypeMapData   ctx->api2->new_TypeMapData
 #define Method_isAbstract   ctx->api2->Method_isAbstract
-#define knh_String_ospath   ctx->api2->String_ospath
 #define knh_type_tocid   ctx->api2->type_tocid
 #define knh_ParamArray_get   ctx->api2->ParamArray_get
 #define knh_cwb_tochar   ctx->api2->cwb_tochar
@@ -394,9 +390,7 @@ knh_bool_t StmtMETA_is_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name);
 knh_fieldn_t Token_fnq(CTX ctx, knh_Token_t *tk);
 knh_class_t knh_Token_cid(CTX ctx, knh_Token_t *tk, knh_type_t reqt);
 void knh_Gamma_init(CTX ctx);
-knh_class_t Link_type(CTX ctx, knh_Link_t *lnk, knh_class_t reqt);
 knh_bool_t typingFunction(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB);
-void knh_ObjectField_expand(CTX ctx, knh_ObjectField_t *of, size_t oldsize, size_t newsize);
 void SCRIPT_typing(CTX ctx, knh_Stmt_t *stmt);
 knh_bool_t typingMethod2(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB);
 void SCRIPT_asm(CTX ctx, knh_Stmt_t *stmt);
@@ -480,11 +474,10 @@ knh_bool_t TypeMap_isNoSuchMapping(knh_TypeMap_t *tmr);
 void knh_addTypeMapRule(CTX ctx, knh_class_t scid, knh_class_t tcid, knh_Ftypemaprule func);
 knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0);
 void knh_loadSystemTypeMapRule(CTX ctx);
-knh_bool_t knh_Link_hasType(CTX ctx, knh_Link_t *flnk, knh_class_t tcid);
-knh_bool_t knh_Link_exists(CTX ctx, knh_Link_t *flnk, knh_NameSpace_t *ns, knh_bytes_t fn);
-knh_Object_t *knh_Link_newObjectNULL(CTX ctx, knh_Link_t *flnk, knh_NameSpace_t *ns, knh_String_t *fi, knh_class_t tcid);
-knh_Link_t *knh_NameSpace_getLinkNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t fi);
-void knh_NameSpace_setLink(CTX ctx, knh_NameSpace_t *ns, knh_Link_t *lnk);
+void knh_NameSpace_setLinkClass(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t linkname, const knh_ClassTBL_t *ct);
+const knh_ClassTBL_t *knh_NameSpace_getLinkClassTBLNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *path);
+knh_class_t knh_ClassTBL_linkType(CTX ctx, const knh_ClassTBL_t *ct, knh_class_t tcid);
+knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t *path, knh_class_t tcid);
 knh_Method_t *knh_NameSpace_getLinkMethod(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t fi);
 knh_class_t new_ClassId(CTX ctx);
 void knh_expandEventTBL(CTX ctx);
@@ -712,7 +705,6 @@ knh_bool_t knh_class_canObjectCopy(CTX ctx, knh_class_t cid);
 knh_TypeMap_t* DEFAULT_findTypeMapNULL(CTX ctx, knh_class_t scid, knh_class_t tcid, int mode);
 void knh_ClassTBL_setConstPool(CTX ctx, const knh_ClassTBL_t *ct);
 void knh_ClassTBL_setObjectCSPI(CTX ctx, knh_ClassTBL_t *ct);
-knh_Link_t *new_Link(CTX ctx, knh_String_t *scheme, const knh_LinkDPI_t *dpi);
 knh_Thunk_t* new_Thunk(CTX ctx, knh_class_t p1, size_t envsize);
 void knh_loadScriptSystemStructData(CTX ctx, const knh_PackageLoaderAPI_t *kapi);
 void knh_loadScriptSystemString(CTX ctx);

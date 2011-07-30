@@ -57,159 +57,117 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [LINK] */
 
-static knh_bool_t NOLINK_hasType(CTX ctx, knh_class_t cid)
-{
-	return 0;
-}
-static knh_bool_t NOLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	return 0;
-}
-static knh_Object_t* NOLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
-{
-	return NULL/*(knh_Object_t*)s*/;
-}
+///* charset:UTF-8 */
+//static knh_bool_t CHARSET_hasType(CTX ctx, knh_class_t cid)
+//{
+//	return (cid == CLASS_StringEncoder || cid == CLASS_StringDecoder);
+//}
+//
+//static knh_bool_t CHARSET_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+//{
+//	knh_bytes_t t = knh_bytes_next(path, ':');
+//	knh_iconv_t ic = ctx->spi->iconv_openSPI(t.text, K_ENCODING);
+//	if(ic != (knh_iconv_t)(-1)) {
+//		ctx->spi->iconv_closeSPI(ic);
+//		return 1;
+//	}
+//	else if(knh_bytes_strcasecmp(t, STEXT(K_ENCODING)) == 0) {
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//static knh_Object_t* CHARSET_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+//{
+//	knh_bytes_t t = knh_bytes_next(S_tobytes(s), ':');
+//	if(cid == CLASS_StringEncoder) {
+//		return (knh_Object_t*)new_StringEncoderNULL(ctx, t);
+//	}
+//	if(cid == CLASS_StringDecoder) {
+//		return (knh_Object_t*)new_StringDecoderNULL(ctx, t);
+//	}
+//	return NULL;
+//}
 
-static const knh_LinkDPI_t LINK_NOLINK = {
-	"NOLINK", NULL, NOLINK_hasType, NOLINK_exists, NOLINK_newObjectNULL,
-};
+//static const knh_LinkDPI_t LINK_CHARSET = {
+//	"charset", "StringConverter|StringDecoder", CHARSET_hasType, CHARSET_exists, CHARSET_newObjectNULL,
+//};
 
-/* link:link*/
-static knh_bool_t LINK_hasType(CTX ctx, knh_class_t cid)
-{
-	return (cid == CLASS_Link);
-}
-static knh_bool_t LINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	knh_bytes_t bpath = knh_bytes_next(path, ':');
-	knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, ns, bpath);
-	return (lnk != NULL);
-}
-static knh_Object_t* LINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
-{
-	if(cid == CLASS_Link) {
-		knh_bytes_t bpath = knh_bytes_next(S_tobytes(s), ':');
-		knh_Link_t *lnk = knh_NameSpace_getLinkNULL(ctx, ns, bpath);
-		return UPCAST(lnk);
-	}
-	return NULL/*(knh_Object_t*)s*/;
-}
+//#define IS_CONV(cid) (CLASS_Converter <= cid && cid <= CLASS_StringConverter)
+//
+//static Object* new_ConverterNULL(CTX ctx, knh_class_t cid, knh_bytes_t path, const knh_ConvDSPI_t *dpi)
+//{
+//	knh_conv_t *conv = NULL;
+//	DBG_ASSERT(IS_CONV(cid));
+//	if((cid == CLASS_StringConverter && dpi->sconv == NULL) ||
+//		(cid == CLASS_StringEncoder && dpi->enc == NULL) ||
+//		(cid == CLASS_StringDecoder && dpi->dec == NULL) ||
+//		(cid == CLASS_Converter && dpi->conv == NULL)) {
+//		return NULL;
+//	}
+//	if(dpi->open != NULL) {
+//		conv = dpi->open(ctx, path.text, NULL);
+//		if(conv == NULL) {
+//			KNH_LOG("unknown path='%s'", path.text);
+//			return NULL;
+//		}
+//	}
+//	{
+//		knh_Converter_t *c = new_O(Converter, cid);
+//		c->dpi = dpi;
+//		c->conv = conv;
+//		return (knh_Object_t*)c;
+//	}
+//}
+//
+///* to:md5 */
+//static knh_bool_t TOLINK_hasType(CTX ctx, knh_class_t cid)
+//{
+//	return IS_CONV(cid);
+//}
+//static knh_bool_t TOLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+//{
+//	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvTODSPINULL(ctx, ns, knh_bytes_next(path, ':'));
+//	return (dspi != NULL);
+//}
+//static knh_Object_t* TOLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+//{
+//	knh_bytes_t path = knh_bytes_next(S_tobytes(s), ':');
+//	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvTODSPINULL(ctx, ns, path);
+//	KNH_ASSERT(dspi != NULL); // checked before
+//	if(IS_CONV(cid)) {
+//		return new_ConverterNULL(ctx, cid, path, dspi);
+//	}
+//	return NULL;
+//}
 
-static const knh_LinkDPI_t LINK_LINK = {
-	"NOLINK", "Link", LINK_hasType, LINK_exists, LINK_newObjectNULL,
-};
-
-/* charset:UTF-8 */
-static knh_bool_t CHARSET_hasType(CTX ctx, knh_class_t cid)
-{
-	return (cid == CLASS_StringEncoder || cid == CLASS_StringDecoder);
-}
-
-static knh_bool_t CHARSET_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	knh_bytes_t t = knh_bytes_next(path, ':');
-	knh_iconv_t ic = ctx->spi->iconv_openSPI(t.text, K_ENCODING);
-	if(ic != (knh_iconv_t)(-1)) {
-		ctx->spi->iconv_closeSPI(ic);
-		return 1;
-	}
-	else if(knh_bytes_strcasecmp(t, STEXT(K_ENCODING)) == 0) {
-		return 1;
-	}
-	return 0;
-}
-
-static knh_Object_t* CHARSET_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
-{
-	knh_bytes_t t = knh_bytes_next(S_tobytes(s), ':');
-	if(cid == CLASS_StringEncoder) {
-		return (knh_Object_t*)new_StringEncoderNULL(ctx, t);
-	}
-	if(cid == CLASS_StringDecoder) {
-		return (knh_Object_t*)new_StringDecoderNULL(ctx, t);
-	}
-	return NULL;
-}
-
-static const knh_LinkDPI_t LINK_CHARSET = {
-	"charset", "StringConverter|StringDecoder", CHARSET_hasType, CHARSET_exists, CHARSET_newObjectNULL,
-};
-
-#define IS_CONV(cid) (CLASS_Converter <= cid && cid <= CLASS_StringConverter)
-
-static Object* new_ConverterNULL(CTX ctx, knh_class_t cid, knh_bytes_t path, const knh_ConvDSPI_t *dpi)
-{
-	knh_conv_t *conv = NULL;
-	DBG_ASSERT(IS_CONV(cid));
-	if((cid == CLASS_StringConverter && dpi->sconv == NULL) ||
-		(cid == CLASS_StringEncoder && dpi->enc == NULL) ||
-		(cid == CLASS_StringDecoder && dpi->dec == NULL) ||
-		(cid == CLASS_Converter && dpi->conv == NULL)) {
-		return NULL;
-	}
-	if(dpi->open != NULL) {
-		conv = dpi->open(ctx, path.text, NULL);
-		if(conv == NULL) {
-			KNH_LOG("unknown path='%s'", path.text);
-			return NULL;
-		}
-	}
-	{
-		knh_Converter_t *c = new_O(Converter, cid);
-		c->dpi = dpi;
-		c->conv = conv;
-		return (knh_Object_t*)c;
-	}
-}
-
-/* to:md5 */
-static knh_bool_t TOLINK_hasType(CTX ctx, knh_class_t cid)
-{
-	return IS_CONV(cid);
-}
-static knh_bool_t TOLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvTODSPINULL(ctx, ns, knh_bytes_next(path, ':'));
-	return (dspi != NULL);
-}
-static knh_Object_t* TOLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
-{
-	knh_bytes_t path = knh_bytes_next(S_tobytes(s), ':');
-	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvTODSPINULL(ctx, ns, path);
-	KNH_ASSERT(dspi != NULL); // checked before
-	if(IS_CONV(cid)) {
-		return new_ConverterNULL(ctx, cid, path, dspi);
-	}
-	return NULL;
-}
-
-/* from:toLower */
-static knh_bool_t FROMLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvFROMDSPINULL(ctx, ns, knh_bytes_next(path, ':'));
-	return (dspi != NULL);
-}
-
-static knh_Object_t* FROMLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
-{
-	knh_bytes_t path = knh_bytes_next(S_tobytes(s), ':');
-	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvFROMDSPINULL(ctx, ns, path);
-	KNH_ASSERT(dspi != NULL); // checked before
-	if(IS_CONV(cid)) {
-		return new_ConverterNULL(ctx, cid, path, dspi);
-	}
-	return NULL;
-}
-
-static const knh_LinkDPI_t LINK_TOLINK = {
-	"to", "Converter|StringConverter|StringDecoder|StringEncoder",
-	TOLINK_hasType, TOLINK_exists, TOLINK_newObjectNULL,
-};
-
-static const knh_LinkDPI_t LINK_FROMLINK = {
-	"from", "Converter|StringConverter|StringDecoder|StringEncoder",
-	TOLINK_hasType, FROMLINK_exists, FROMLINK_newObjectNULL,
-};
+///* from:toLower */
+//static knh_bool_t FROMLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+//{
+//	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvFROMDSPINULL(ctx, ns, knh_bytes_next(path, ':'));
+//	return (dspi != NULL);
+//}
+//
+//static knh_Object_t* FROMLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+//{
+//	knh_bytes_t path = knh_bytes_next(S_tobytes(s), ':');
+//	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvFROMDSPINULL(ctx, ns, path);
+//	KNH_ASSERT(dspi != NULL); // checked before
+//	if(IS_CONV(cid)) {
+//		return new_ConverterNULL(ctx, cid, path, dspi);
+//	}
+//	return NULL;
+//}
+//
+//static const knh_LinkDPI_t LINK_TOLINK = {
+//	"to", "Converter|StringConverter|StringDecoder|StringEncoder",
+//	TOLINK_hasType, TOLINK_exists, TOLINK_newObjectNULL,
+//};
+//
+//static const knh_LinkDPI_t LINK_FROMLINK = {
+//	"from", "Converter|StringConverter|StringDecoder|StringEncoder",
+//	TOLINK_hasType, FROMLINK_exists, FROMLINK_newObjectNULL,
+//};
 
 
 ///* ------------------------------------------------------------------------ */
@@ -256,57 +214,57 @@ static const knh_LinkDPI_t LINK_FROMLINK = {
 //static const knh_LinkDPI_t LINK_FILE = {
 //	"file", "byte[]|InputStream|OutputStream", FILE_hasType, FILE_exists, FILE_newObjectNULL,
 //};
-
-#if K_USING_POSIX_
-#include <unistd.h>
-#include <dirent.h>
-
-static knh_bool_t DIRLINK_hasType(CTX ctx, knh_class_t cid)
-{
-	return (cid == CLASS_Bytes || cid == CLASS_StringARRAY);
-}
-static knh_bool_t DIRLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	knh_bytes_t bpath = knh_bytes_next(path, ':');
-	bpath = knh_cwb_ensure(ctx, cwb, bpath, K_PATHMAX);
-	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, bpath);
-	knh_bool_t res = knh_isdir(ctx, knh_Bytes_ensureZero(ctx, cwb->ba) + cwb->pos);
-	knh_cwb_close(cwb);
-	return res;
-}
-static knh_Object_t* DIRLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
-{
-	if(cid == CLASS_Bytes) {
-		knh_Bytes_t* ba = new_Bytes(ctx, NULL, S_size(s));
-		knh_buff_addospath(ctx, ba, 0, 0, knh_bytes_next(S_tobytes(s), ':'));
-		return UPCAST(ba);
-	}
-	if(cid == CLASS_StringARRAY) {
-		knh_Array_t *a = new_Array(ctx, CLASS_String, 0);
-		char path[K_PATHMAX];
-		knh_String_ospath(ctx, s, ns, path, sizeof(path));
-		DIR *dirptr = opendir(path);
-		if(dirptr != NULL) {
-			struct dirent *dp;
-			while((dp = readdir(dirptr)) != NULL) {
-				knh_Array_add(ctx, a, new_String(ctx, dp->d_name));
-			}
-			closedir(dirptr);
-		}
-		else {
-			knh_Object_toNULL(ctx, a);
-		}
-		return UPCAST(a);
-	}
-	return NULL/*(knh_Object_t*)s*/;
-}
-
-static const knh_LinkDPI_t LINK_DIR = {
-	"dir", "byte[]|String[]", DIRLINK_hasType, DIRLINK_exists, DIRLINK_newObjectNULL,
-};
-
-#endif
+//
+//#if K_USING_POSIX_
+//#include <unistd.h>
+//#include <dirent.h>
+//
+//static knh_bool_t DIRLINK_hasType(CTX ctx, knh_class_t cid)
+//{
+//	return (cid == CLASS_Bytes || cid == CLASS_StringARRAY);
+//}
+//static knh_bool_t DIRLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+//{
+//	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//	knh_bytes_t bpath = knh_bytes_next(path, ':');
+//	bpath = knh_cwb_ensure(ctx, cwb, bpath, K_PATHMAX);
+//	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, bpath);
+//	knh_bool_t res = knh_isdir(ctx, knh_Bytes_ensureZero(ctx, cwb->ba) + cwb->pos);
+//	knh_cwb_close(cwb);
+//	return res;
+//}
+//static knh_Object_t* DIRLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+//{
+//	if(cid == CLASS_Bytes) {
+//		knh_Bytes_t* ba = new_Bytes(ctx, NULL, S_size(s));
+//		knh_buff_addospath(ctx, ba, 0, 0, knh_bytes_next(S_tobytes(s), ':'));
+//		return UPCAST(ba);
+//	}
+//	if(cid == CLASS_StringARRAY) {
+//		knh_Array_t *a = new_Array(ctx, CLASS_String, 0);
+//		char path[K_PATHMAX];
+//		knh_String_ospath(ctx, s, ns, path, sizeof(path));
+//		DIR *dirptr = opendir(path);
+//		if(dirptr != NULL) {
+//			struct dirent *dp;
+//			while((dp = readdir(dirptr)) != NULL) {
+//				knh_Array_add(ctx, a, new_String(ctx, dp->d_name));
+//			}
+//			closedir(dirptr);
+//		}
+//		else {
+//			knh_Object_toNULL(ctx, a);
+//		}
+//		return UPCAST(a);
+//	}
+//	return NULL/*(knh_Object_t*)s*/;
+//}
+//
+//static const knh_LinkDPI_t LINK_DIR = {
+//	"dir", "byte[]|String[]", DIRLINK_hasType, DIRLINK_exists, DIRLINK_newObjectNULL,
+//};
+//
+//#endif
 
 //static knh_bool_t PACKAGE_hasType(CTX ctx, knh_class_t cid)
 //{
@@ -394,33 +352,32 @@ static const knh_LinkDPI_t LINK_DIR = {
 //static const knh_LinkDPI_t LINK_SCRIPT = {
 //	"script", "byte[]|InputStream|OutputStream", FILE_hasType, SCRIPT_exists, SCRIPT_newObjectNULL,
 //};
-
-static knh_bool_t CLASS_hasType(CTX ctx, knh_class_t cid)
-{
-	return (cid == CLASS_Int || cid == CLASS_Class);
-}
-static knh_bool_t CLASS_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	knh_bytes_t bpath = knh_bytes_next(path, ':');
-	return (knh_getcid(ctx, bpath) != CLASS_unknown);
-}
-
-static knh_Object_t* CLASS_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
-{
-	knh_bytes_t bpath = knh_bytes_next(S_tobytes(s), ':');
-	knh_class_t reqt = knh_getcid(ctx, bpath);
-	if (cid == CLASS_Int) {
-		return UPCAST(new_Int_(ctx, reqt, reqt));
-	}
-	else if (cid == CLASS_Class) {
-		return UPCAST(new_Type(ctx, reqt));
-	}
-	return NULL;
-}
-
-static const knh_LinkDPI_t LINK_CLASS = {
-	"class", "int|Class", CLASS_hasType, CLASS_exists, CLASS_newObjectNULL,
-};
+//static knh_bool_t CLASS_hasType(CTX ctx, knh_class_t cid)
+//{
+//	return (cid == CLASS_Int || cid == CLASS_Class);
+//}
+//static knh_bool_t CLASS_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+//{
+//	knh_bytes_t bpath = knh_bytes_next(path, ':');
+//	return (knh_getcid(ctx, bpath) != CLASS_unknown);
+//}
+//
+//static knh_Object_t* CLASS_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+//{
+//	knh_bytes_t bpath = knh_bytes_next(S_tobytes(s), ':');
+//	knh_class_t reqt = knh_getcid(ctx, bpath);
+//	if (cid == CLASS_Int) {
+//		return UPCAST(new_Int_(ctx, reqt, reqt));
+//	}
+//	else if (cid == CLASS_Class) {
+//		return UPCAST(new_Type(ctx, reqt));
+//	}
+//	return NULL;
+//}
+//
+//static const knh_LinkDPI_t LINK_CLASS = {
+//	"class", "int|Class", CLASS_hasType, CLASS_exists, CLASS_newObjectNULL,
+//};
 
 /* ------------------------------------------------------------------------ */
 
@@ -922,13 +879,13 @@ void knh_loadSystemDriver(CTX ctx, knh_NameSpace_t *ns)
 {
 	const knh_PackageLoaderAPI_t *api = knh_getPackageLoaderAPI();
 //	api->addLinkDPI(ctx, ns, "link", &LINK_LINK);
-	api->addLinkDPI(ctx, ns, "charset", &LINK_CHARSET);
-	api->addLinkDPI(ctx, ns, "to", &LINK_TOLINK);
-	api->addLinkDPI(ctx, ns, "from", &LINK_FROMLINK);
+//	api->addLinkDPI(ctx, ns, "charset", &LINK_CHARSET);
+//	api->addLinkDPI(ctx, ns, "to", &LINK_TOLINK);
+//	api->addLinkDPI(ctx, ns, "from", &LINK_FROMLINK);
 //	api->addLinkDPI(ctx, ns, "lib", &LINK_LIB);
 //	api->addLinkDPI(ctx, ns, "pkg", &LINK_PKG);
 //	api->addLinkDPI(ctx, ns, "script", &LINK_SCRIPT);
-	api->addLinkDPI(ctx, ns, "class", &LINK_CLASS);
+//	api->addLinkDPI(ctx, ns, "class", &LINK_CLASS);
 
 #ifdef K_USING_POSIX_
 //	api->addLinkDPI(ctx, ns, "file", &LINK_FILE);
