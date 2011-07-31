@@ -87,7 +87,7 @@ static const char *new_cwbtext(CTX ctx, knh_cwb_t *cwb, size_t *lenref)
 {
 	const char *p = knh_cwb_tochar(ctx, cwb);
 	size_t len = knh_strlen(p) + 1;
-	char *newtext = KNH_MALLOC(ctx, len);
+	char *newtext = (char*) KNH_MALLOC(ctx, len);
 	knh_memcpy(newtext, p, len);
 	lenref[0] = len;
 	return (const char*)newtext;

@@ -1764,13 +1764,13 @@ static int dummyCallbackCompareObject(const void *v1, const void *v2)
 	return knh_compare_o((knh_Func_t*)CALLBACK_MARKER, v1, v2);
 }
 
-typedef int (*fcmp)(const void *, const void *);
-typedef int (*fcmp2)(knh_Func_t *, const void *, const void *);
+typedef int (*fcompare)(const void *, const void *);
+typedef int (*fcompare2)(knh_Func_t *, const void *, const void *);
 struct asortf {
 	size_t size; /* sizeof(T) */
-	fcmp  fcmp;
-	fcmp  fdummy;
-	fcmp2 fcmp2;
+	fcompare  fcmp1;
+	fcompare  fdummy;
+	fcompare2 fcmp2;
 	knh_Map_t *map; /* TODO Map<Func, fcmp2(generated)> */
 };
 struct asortf asorts[] = {
@@ -1798,12 +1798,12 @@ static METHOD Array_sort(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *a  = sfp[0].a;
 	knh_Func_t  *fo = sfp[1].fo;
 	struct asortf *sortf = getasortf(ctx, O_p1(a));
-	fcmp cmp;
+	fcompare cmp;
 	if(IS_NULL(fo)) {
-		cmp = sortf->fcmp;
+		cmp = sortf->fcmp1;
 	}
 	else {
-		cmp = (fcmp) knh_copyCallbackFunc(ctx, sortf->fdummy, sortf->fcmp2, fo);
+		cmp = (fcompare) knh_copyCallbackFunc(ctx, (void*)sortf->fdummy, (void*)sortf->fcmp2, fo);
 	}
 	knh_qsort(a->list, a->size, sortf->size, cmp);
 }

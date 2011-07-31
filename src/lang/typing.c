@@ -4108,7 +4108,7 @@ static knh_Fmethod loadTypeMapFunc(CTX ctx, knh_class_t scid, knh_class_t tcid)
 		p++;
 	}
 	DBG_P("funcname='%s'", knh_cwb_tochar(ctx, cwb));
-	knh_Fmethod f = knh_loadGlueFunc(ctx, knh_cwb_tochar(ctx, cwb), 1/*isVerbose*/);
+	knh_Fmethod f = (knh_Fmethod)knh_loadGlueFunc(ctx, knh_cwb_tochar(ctx, cwb), 1/*isVerbose*/);
 	knh_cwb_close(cwb);
 	return f;
 }
