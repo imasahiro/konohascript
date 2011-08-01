@@ -4042,6 +4042,12 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 			DBG_P("return type=%s, idx=%d", TYPE__(p->type), p->fn);
 		}
 	});
+	Method_setFastCall(mtd, 0);
+	if(knh_StmtMETA_is(ctx, stmtM, "FastCall")) {
+		if(DP(mtd)->mp->psize == 0 || (DP(mtd)->mp->psize == 1 && Method_isStatic(mtd))) {
+			Method_setFastCall(mtd, 1);
+		}
+	}
 	if(knh_StmtMETA_is(ctx, stmtM, "Iterative")) {
 		if(DP(mtd)->mp->psize != 0) {
 			return ERROR_Unsupported(ctx, "parameterized iterative method", CLASS_unknown, NULL);

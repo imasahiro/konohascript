@@ -449,6 +449,7 @@ struct knh_ParamArray_t {
 //## flag Method Throwable       9 DP(%s)->flag is set * *;
 //## flag Method Message        10 DP(%s)->flag is set * *;
 //## flag Method Restricted     11 DP(%s)->flag is set * *;
+//## flag Method FastCall       12 DP(%s)->flag is set * *;
 
 typedef struct knh_Method_t knh_Method_t;
 
@@ -658,6 +659,33 @@ struct knh_ExceptionHandler_t {
 //## flag Regex GlobalOption  1 - is set * *;
 
 typedef void knh_regex_t;
+
+/* REGEX_SPI */
+
+#ifndef K_REGEX_MATCHSIZE
+#define K_REGEX_MATCHSIZE    16
+#endif
+
+typedef struct {
+	int rm_so;   /* start of match */
+	int rm_eo;   /* end of match */
+	knh_bytes_t rm_name;  /* {NULL, 0}, if not NAMED */
+} knh_regmatch_t;
+
+typedef struct knh_RegexSPI_t {
+	const char *name;
+	knh_regex_t* (*regmalloc)(CTX, knh_String_t *);
+	int (*parse_cflags)(CTX, const char *opt);
+	int (*parse_eflags)(CTX, const char *opt);
+	int (*regcomp)(CTX, knh_regex_t *, const char *, int);
+	int (*regnmatchsize)(CTX, knh_regex_t *);
+	int (*regexec)(CTX, knh_regex_t *, const char *, size_t, knh_regmatch_t*, int);
+	size_t (*regerror)(int, knh_regex_t *, char *, size_t);
+	void (*regfree)(CTX, knh_regex_t *);
+	// this must be defined by uh for named grouping
+	int (*regexec2)(CTX, knh_regex_t *, const char *, ...);
+} knh_RegexSPI_t;
+
 
 typedef struct knh_Regex_t knh_Regex_t;
 struct knh_Regex_t {

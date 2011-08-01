@@ -107,30 +107,6 @@ typedef struct knh_MapDSPI_t {
 } knh_MapDSPI_t;
 
 /* ------------------------------------------------------------------------ */
-/* REGEX_SPI */
-
-#ifndef K_REGEX_MATCHSIZE
-#define K_REGEX_MATCHSIZE    16
-#endif
-
-typedef struct {
-	int rm_so;   /* start of match */
-	int rm_eo;   /* end of match */
-	knh_bytes_t rm_name;  /* {NULL, 0}, if not NAMED */
-} knh_regmatch_t;
-
-typedef struct knh_RegexSPI_t {
-	const char *name;
-	knh_regex_t* (*regmalloc)(CTX, knh_String_t *);
-	int (*parse_cflags)(CTX, const char *opt);
-	int (*parse_eflags)(CTX, const char *opt);
-	int (*regcomp)(CTX, knh_regex_t *, const char *, int);
-	int (*regexec)(CTX, knh_regex_t *, const char *, size_t, knh_regmatch_t*, int);
-	size_t (*regerror)(int, knh_regex_t *, char *, size_t);
-	void (*regfree)(CTX, knh_regex_t *);
-	// this must be defined by uh for named grouping
-	int (*regexec2)(CTX, knh_regex_t *, const char *, ...);
-} knh_RegexSPI_t;
 
 /* ------------------------------------------------------------------------ */
 /* ConstData  */

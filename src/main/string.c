@@ -485,6 +485,10 @@ static int strregex_parseeflags(CTX ctx, const char *opt)
 {
 	return 0;
 }
+static int strregex_nmatchsize(CTX ctx, knh_regex_t *reg)
+{
+	return 1;
+}
 static int strregex_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, int cflags)
 {
 	return 0;
@@ -519,7 +523,7 @@ static void strregex_regfree(CTX ctx, knh_regex_t *reg) { }
 static const knh_RegexSPI_t REGEX_STR = {
 	"strregex",
 	strregex_malloc, strregex_parsecflags, strregex_parseeflags,
-	strregex_regcomp, strregex_regexec, strregex_regerror,
+	strregex_regcomp, strregex_nmatchsize, strregex_regexec, strregex_regerror,
 	strregex_regfree
 };
 
@@ -546,23 +550,30 @@ typedef struct {
 	int erroffset;
 } PCRE_regex_t;
 
-static knh_regex_t* pcre_regex_malloc(CTX ctx, knh_String_t* s)
+static knh_regex_t* pcre_regmalloc(CTX ctx, knh_String_t* s)
 {
 	PCRE_regex_t *preg = (PCRE_regex_t*) KNH_MALLOC(ctx,sizeof(PCRE_regex_t));
 	return (knh_regex_t *) preg;
 }
 
-size_t pcre_regex_nmatchsize(knh_regex_t *reg)
+static void pcre_regfree(CTX ctx, knh_regex_t *reg)
 {
 	PCRE_regex_t *preg = (PCRE_regex_t*)reg;
-	size_t capsize = 0;
+	pcre_free(preg->re);
+	KNH_FREE(ctx, preg, sizeof(PCRE_regex_t));
+}
+
+static int pcre_nmatchsize(CTX ctx, knh_regex_t *reg)
+{
+	PCRE_regex_t *preg = (PCRE_regex_t*)reg;
+	int capsize = 0;
 	if (pcre_fullinfo(preg->re, NULL, PCRE_INFO_CAPTURECOUNT, &capsize) != 0) {
 		return K_REGEX_MATCHSIZE;
 	}
 	return capsize + 1;
 }
 
-static int pcre_regex_parsecflags(CTX ctx, const char *option)
+static int pcre_parsecflags(CTX ctx, const char *option)
 {
 	int i, cflags = PCRE_UTF8;
 	int optlen = strlen(option);
@@ -586,7 +597,7 @@ static int pcre_regex_parsecflags(CTX ctx, const char *option)
 	return cflags;
 }
 
-static int pcre_regex_parseeflags(CTX ctx, const char *option)
+static int pcre_parseeflags(CTX ctx, const char *option)
 {
 	int i, eflags = 0;
 	int optlen = strlen(option);
@@ -598,21 +609,21 @@ static int pcre_regex_parseeflags(CTX ctx, const char *option)
 	return eflags;
 }
 
-static size_t pcre_regex_regerror(int res, knh_regex_t *reg, char *ebuf, size_t ebufsize)
+static size_t pcre_regerror(int res, knh_regex_t *reg, char *ebuf, size_t ebufsize)
 {
 	PCRE_regex_t *pcre = (PCRE_regex_t*)reg;
 	snprintf(ebuf, ebufsize, "[%d]: %s", pcre->erroffset, pcre->err);
 	return 0;
 }
 
-static int pcre_regex_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, int cflags)
+static int pcre_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, int cflags)
 {
 	PCRE_regex_t* preg = (PCRE_regex_t*)reg;
 	preg->re = pcre_compile(pattern, cflags, &preg->err, &preg->erroffset, NULL);
 	return (preg->re != NULL) ? 0 : -1;
 }
 
-static int pcre_regex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t nmatch, knh_regmatch_t p[], int eflags)
+static int pcre_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t nmatch, knh_regmatch_t p[], int eflags)
 {
 	PCRE_regex_t *preg = (PCRE_regex_t*)reg;
 	int res, nm_count, nvector[nmatch*3];
@@ -648,22 +659,16 @@ static int pcre_regex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t
 	return res;
 }
 
-static void pcre_regex_regfree(CTX ctx, knh_regex_t *reg)
-{
-	PCRE_regex_t *preg = (PCRE_regex_t*)reg;
-	pcre_free(preg->re);
-	KNH_FREE(ctx, preg, sizeof(PCRE_regex_t));
-}
-
 static const knh_RegexSPI_t REGEX_PCRE = {
 	"pcre",
-	pcre_regex_malloc,
-	pcre_regex_parsecflags,
-	pcre_regex_parseeflags,
-	pcre_regex_regcomp,
-	pcre_regex_regexec,
-	pcre_regex_regerror,
-	pcre_regex_regfree
+	pcre_regmalloc,
+	pcre_parsecflags,
+	pcre_parseeflags,
+	pcre_regcomp,
+	pcre_nmatchsize,
+	pcre_regexec,
+	pcre_regerror,
+	pcre_regfree
 };
 
 #endif/*K_USING_PCRE*/

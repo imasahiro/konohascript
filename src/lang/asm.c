@@ -1375,16 +1375,6 @@ static void ASM_CALL(CTX ctx, int espidx, knh_type_t rtype, knh_Method_t *mtd, i
 	}
 }
 
-#ifdef OPCODE_FASTCALL0
-#define isNativeCompiled(kcode) (IS_KonohaCode(kcode) && KonohaCode_isNativeCompiled(kcode))
-static inline knh_bool_t Method_isFASTCALL0(CTX ctx, knh_Method_t *mtd)
-{
-	if(Method_isAbstract(mtd) || Method_isKonohaCode(mtd) || isNativeCompiled(DP(mtd)->kcode) || ParamArray_isVARGs(DP(mtd)->mp)) return 0;
-	if(IS_NOTNULL(DP(mtd)->rfunc)) return 0;
-	return 1;
-}
-#endif
-
 static void ASM_CHKIDX(CTX ctx, int aidx, int nidx)
 {
 #ifdef OPCODE_CHKIDX
@@ -1609,20 +1599,16 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	{
 #ifdef OPCODE_FASTCALL0
 		knh_type_t rtype = knh_type_tocid(ctx, knh_ParamArray_rtype(DP(mtd)->mp), cid);
-		if(DP(stmt)->size == 2 && Method_isFASTCALL0(ctx, mtd)) {
+		if(DP(stmt)->size == 2 && Method_isFastCall(mtd)) {
 			int a = espidx;
 			if(!Method_isStatic(mtd)) {
 				a = Tn_put(ctx, stmt, 1, espidx + 1);
 			}
-			//KNH_P("FASTCALL %s.%s", CLASS__((mtd)->cid), MN__((mtd)->mn));
 			ASM(FASTCALL0, RTNIDX_(ctx, espidx, rtype), SFP_(a), RIX_(espidx - a), SFP_(espidx + 2), SP(mtd)->fcall_1);
 			return;
 		}
-		if(DP(stmt)->size == 3 && Method_isStatic(mtd) && Method_isFASTCALL0(ctx, mtd)) {
-//			knh_param_t *p = knh_ParamArray_get(DP(mtd)->mp, 0);
-//			knh_type_t ptype = knh_type_tocid(ctx, p->type, mtd_cid);
+		if(DP(stmt)->size == 3 && Method_isStatic(mtd) && Method_isFastCall(mtd)) {
 			int a = Tn_put(ctx, stmt, 2, espidx + 2);
-			//KNH_P("STATIC FASTCALL %s.%s", CLASS__((mtd)->cid), MN__((mtd)->mn));
 			ASM(FASTCALL0, RTNIDX_(ctx, espidx, rtype), SFP_(a - 1), RIX_(espidx - (a - 1)), SFP_(espidx + 2), SP(mtd)->fcall_1);
 			return;
 		}

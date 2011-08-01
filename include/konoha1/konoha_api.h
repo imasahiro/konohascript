@@ -478,7 +478,6 @@ void knh_NameSpace_setLinkClass(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t linkna
 const knh_ClassTBL_t *knh_NameSpace_getLinkClassTBLNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *path);
 knh_class_t knh_ClassTBL_linkType(CTX ctx, const knh_ClassTBL_t *ct, knh_class_t tcid);
 knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t *path, knh_class_t tcid);
-knh_Method_t *knh_NameSpace_getLinkMethod(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t fi);
 knh_class_t new_ClassId(CTX ctx);
 void knh_expandEventTBL(CTX ctx);
 void context_init_multithread(CTX ctx);
@@ -696,7 +695,6 @@ knh_String_t *new_TEXT(CTX ctx, knh_class_t cid, knh_TEXT_t text, int isASCII);
 int knh_bytes_strcasecmp(knh_bytes_t v1, knh_bytes_t v2);
 const knh_RegexSPI_t* knh_getStrRegexSPI(void);
 knh_bool_t Regex_isSTRREGEX(knh_Regex_t *re);
-size_t pcre_regex_nmatchsize(knh_regex_t *reg);
 const knh_RegexSPI_t* knh_getRegexSPI(void);
 knh_StringDecoder_t* new_StringDecoderNULL(CTX ctx, knh_bytes_t t);
 knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, knh_bytes_t t);

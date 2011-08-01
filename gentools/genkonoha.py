@@ -406,7 +406,7 @@ class Method:
         flag = addflag(flag, self.meta, 'Method', '@Hidden')
         flag = addflag(flag, self.meta, 'Method', '@Iterative')
         flag = addflag(flag, self.meta, 'Method', '@Throwable')
-        flag = addflag(flag, self.meta, 'Method', '@Private')
+        flag = addflag(flag, self.meta, 'Method', '@FastCall')
         flag = addflag(flag, self.meta, 'Method', '@Immutable')
         flag = addflag(flag, self.meta, 'Method', '@Restricted')
         fmt = '''
