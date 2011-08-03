@@ -941,6 +941,7 @@ typedef struct knh_share_t {
 	struct knh_DictMap_t     *sysAliasDictMapNULL;
 	struct knh_PtrMap_t      *inferPtrMap;
 	struct knh_PtrMap_t      *constPtrMap;
+	struct knh_Array_t       *constPools;
 
 	/* thread */
 	size_t              contextCounter;

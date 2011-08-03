@@ -4,7 +4,6 @@
 extern "C" {
 #endif
 
-Connector::Connector() {}
 void Connector::signalConnect(QTimeLine *t, int signal, knh_Func_t *fo_, knh_context_t *ctx_, knh_sfp_t *sfp_)
 {
 	ctx = ctx_;

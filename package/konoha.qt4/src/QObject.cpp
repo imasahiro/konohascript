@@ -31,42 +31,68 @@
 // **************************************************************************
 
 #include <QObject>
-#include <konoha1.h>
+#include "qt4commons.hpp"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static void qfree(void *p)
-{
-	QObject *q = (QObject *)p;
-	fprintf(stderr, "freeing QObject..%p \n", p);
-	delete q;
+Connector::Connector(knh_Func_t *fo) {
+	this->fo = fo;
 }
-//
-////## QApplication QApplication.new()
-//KMETHOD QApplication_new(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	int dummy = 0;
-//	QApplication *app = new QApplication(dummy, NULL);
-//	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, app, qfree);
-//	RETURN_(p);
-//}
-//
-////## void QApplication.exec();
-//KMETHOD QApplication_exec(CTX, knh_sfp_t *sfp _RIX)
-//{
-//	QApplication *app = RawPtr_to(QApplication *, sfp[0]);
-//	if(app != NULL) {
-//		app->exec();
-//	}
-//	RETURNvoid_();
-//}
-//
-//DEFAPI(const knh_PackageDef_t*) init(CTX, const knh_PackageLoaderAPI_t *)
-//{
-//	RETURN_PKGINFO("qt");
-//}
+
+static void RETURNb(CTX ctx, knh_sfp_t *sfp, Connector *c, bool isConnected _RIX)
+{
+	if(isConnected) {
+		knh_addConstPool(ctx, UPCAST(c->fo));
+	}
+	else {
+		delete c;
+	}
+	RETURNb_(isConnected);
+}
+
+bool Connector::connectValueChanged(CTX, QObject *so)
+{
+	return connect(so, SIGNAL(valueChanged(qreal)), this, SLOT(slotValueChanged(qreal)));
+}
+
+void Connector::slotValueChanged(qreal val)
+{
+	CTX ctx = knh_getCurrentContext();
+	knh_sfp_t *lsfp = ctx->esp;
+	lsfp[K_CALLDELTA+1].fvalue = (knh_float_t)val;
+	knh_Func_invoke(ctx, this->fo, lsfp, 1/*argc*/);
+}
+
+//## void QObject.connectValueChanged(Func<float> f)
+KMETHOD QObject_connectValueChanged(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	QObject *so = RawPtr_to(QObject*, sfp[0]);
+	Connector *c = new Connector(sfp[1].fo); // FIXME?: leaked
+	RETURNb(ctx, sfp, c, c->connectValueChanged(ctx, so), K_RIX);
+}
+
+bool Connector::connectClicked(CTX, QObject *so)
+{
+	return connect(so, SIGNAL(clicked(bool)), this, SLOT(slotClicked(bool)));
+}
+
+void Connector::slotClicked(bool val)
+{
+	CTX ctx = knh_getCurrentContext();
+	knh_sfp_t *lsfp = ctx->esp;
+	lsfp[K_CALLDELTA+1].bvalue = (knh_bool_t)val;
+	knh_Func_invoke(ctx, this->fo, lsfp, 1/*argc*/);
+}
+
+//## void QObject.connectClicked(Func<bool> f)
+KMETHOD QObject_connectClicked(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	QObject *so = RawPtr_to(QObject*, sfp[0]);
+	Connector *c = new Connector(sfp[1].fo); // FIXME?: leaked
+	RETURNb(ctx, sfp, c, c->connectClicked(ctx, so), K_RIX);
+}
 
 #ifdef __cplusplus
 }

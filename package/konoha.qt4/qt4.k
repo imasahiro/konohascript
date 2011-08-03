@@ -33,13 +33,22 @@
 include "lib:gluelink";
 
 class QObject extends C++;
+class QWidget extends QObject;
 class QApplication extends QObject;
-class QWebView extends C++;
+class QPushButton extends QWidget;
+class QWebView extends QWidget;
+
+@Native boolean QObject.connectValueChanged(Func<float> f);
+@Native boolean QObject.connectClicked(Func<boolean> f);
 
 @Native QApplication QApplication.new();
 @Native void QApplication.exec();
 
-@Native QWebView QWebView.new();
+@Native QWidget QWidget.new(QWidget parent);
+@Native void QWidget.show();
+
+@Native QWebView QWebView.new(QWidget parent);
 @Native void QWebView.load(String url);
-@Native void QWebView.show();
+
+@Native QPushButton QPushButton.new(String text, QWidget parent);
 

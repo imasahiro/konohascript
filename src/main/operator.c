@@ -2902,16 +2902,6 @@ static KMETHOD Method_getName(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(knh_cwb_newString(ctx, cwb));
 }
 
-///* ------------------------------------------------------------------------ */
-////## @Const method void Method.setTrace(Int trace);
-//
-//static KMETHOD Method_setTrace(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//
-//	knh_Method_trace(ctx, sfp[0].mtd, (int)sfp[1].ivalue);
-//	RETURNvoid_();
-//}
-
 /* ------------------------------------------------------------------------ */
 //## @Hidden method void Func.();
 

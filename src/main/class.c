@@ -121,6 +121,12 @@ knh_RawPtr_t *new_Pointer(CTX ctx, const char *name, void *rawptr, knh_Frawfree 
 	return npo;
 }
 
+KNHAPI2(void) knh_addConstPool(CTX ctx, knh_Object_t *o)
+{
+	knh_Array_add(ctx, ctx->share->constPools, o);
+}
+
+
 /* ------------------------------------------------------------------------ */
 /* [ClassTBL] */
 
@@ -1293,6 +1299,18 @@ void knh_NameSpace_addFmt(CTX ctx, knh_NameSpace_t *ns, knh_Method_t *mtd)
 		KNH_INITv(DP(ns)->formattersNULL, new_Array0(ctx, 0));
 	}
 	knh_Array_add(ctx, DP(ns)->formattersNULL, mtd);
+}
+
+KNHAPI2(void) knh_Func_invoke(CTX ctx, knh_Func_t *fo, knh_sfp_t *rtnsfp, int argc)
+{
+	knh_sfp_t *sfp = rtnsfp + K_CALLDELTA;
+	if(fo->baseNULL != NULL) {
+		KNH_SETv(ctx, sfp[0].o, fo->baseNULL);
+	}
+	klr_setmtdNC(ctx, sfp[K_MTDIDX], fo->mtd);
+	((knh_context_t*)ctx)->esp = sfp + (argc + 1);
+	(fo->mtd)->fcall_1(ctx, sfp, -K_CALLDELTA);
+	((knh_context_t*)ctx)->esp = rtnsfp;
 }
 
 /* ------------------------------------------------------------------------ */

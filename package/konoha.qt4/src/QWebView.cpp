@@ -30,8 +30,9 @@
 //  goccy54
 // **************************************************************************
 
+#include <QWidget>
 #include <QtWebKit>
-#include <konoha1.h>
+#include "qt4commons.hpp"
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,15 +40,15 @@ extern "C" {
 
 static void qfree(void *p)
 {
-	QWebView *q = (QWebView*)p;
-	//fprintf(stderr, "freeing QWebView.. %p \n", p);
+	QWebView *q = QCAST(QWebView*, p);
 	delete q;
 }
 
-//## QWebView QWebView.new()
+//## QWebView QWebView.new(QWidget w)
 KMETHOD QWebView_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QWebView *q = new QWebView(0);
+	QWidget *w = IS_NULL(sfp[1].o) ? NULL : QPtr_to(QWidget*, sfp[1]);
+	QWebView *q = new QWebView(w);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, q, qfree);
 	RETURN_(p);
 }
@@ -55,20 +56,10 @@ KMETHOD QWebView_new(CTX ctx, knh_sfp_t *sfp _RIX)
 //## void QWebView.load(String path);
 KMETHOD QWebView_load(CTX, knh_sfp_t *sfp _RIX)
 {
-	QWebView *q = RawPtr_to(QWebView*, sfp[0]);
+	QWebView *q = QPtr_to(QWebView*, sfp[0]);
 	if(q != NULL) {
 		QUrl url = QUrl(S_tochar(sfp[1].s));
 		q->load(url);
-	}
-	RETURNvoid_();
-}
-
-//## void QWebView.show();
-KMETHOD QWebView_show(CTX, knh_sfp_t *sfp _RIX)
-{
-	QWebView *q = RawPtr_to(QWebView*, sfp[0]);
-	if(q != NULL) {
-		q->show();
 	}
 	RETURNvoid_();
 }

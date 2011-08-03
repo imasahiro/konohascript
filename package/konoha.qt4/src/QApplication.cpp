@@ -31,6 +31,7 @@
 // **************************************************************************
 
 #include <QApplication>
+#include <QTextCodec>
 #include <konoha1.h>
 
 #ifdef __cplusplus
@@ -49,6 +50,7 @@ KMETHOD QApplication_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int dummy = 0;
 	QApplication *app = new QApplication(dummy, NULL);
+    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, app, qfree);
 	RETURN_(p);
 }

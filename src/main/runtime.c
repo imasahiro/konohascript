@@ -103,7 +103,7 @@ void knh_endContext(CTX ctx)
 
 /* ------------------------------------------------------------------------ */
 
-knh_context_t* knh_getCurrentContext(void)
+KNHAPI2(knh_context_t*) knh_getCurrentContext(void)
 {
 #if defined(K_USING_THREAD) && !defined(CC_TYPE_TLS)
 	knh_context_t* ctx = (knh_context_t*)knh_thread_getspecific(ctxkey);

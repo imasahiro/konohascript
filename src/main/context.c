@@ -239,6 +239,7 @@ static knh_context_t* new_RootContext(void)
 
 	KNH_INITv(share->constPtrMap, new_PtrMap(ctx, 0));
 	KNH_INITv(share->inferPtrMap, new_PtrMap(ctx, 0));
+	KNH_INITv(share->constPools, new_Array0(ctx, 0));
 	knh_loadSystemTypeMapRule(ctx);
 	knh_ClassTBL_setConstPool(ctx, ClassTBL(CLASS_Int));
 	knh_ClassTBL_setConstPool(ctx, ClassTBL(CLASS_Float));
@@ -386,6 +387,7 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	KNH_ADDNNREF(ctx, share->sysAliasDictMapNULL);
 	KNH_ADDREF(ctx,   share->constPtrMap);
 	KNH_ADDREF(ctx,   share->inferPtrMap);
+	KNH_ADDREF(ctx,   share->constPools);
 	KNH_ENSUREREF(ctx, K_TSTRING_SIZE);
 	for(i = 0; i < K_TSTRING_SIZE; i++) {
 		KNH_ADDREF(ctx, share->tString[i]);

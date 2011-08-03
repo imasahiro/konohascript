@@ -15,6 +15,7 @@ KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb);
 KNHAPI2(void) knh_Object_toNULL_(CTX ctx, Object *o);
 KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, knh_RawPtr_t *po, void *rawptr);
 KNHAPI2(knh_RawPtr_t*) new_ReturnCppObject(CTX ctx, knh_sfp_t *sfp, void *rawptr, knh_Frawfree pfree);
+KNHAPI2(void) knh_addConstPool(CTX ctx, knh_Object_t *o);
 KNHAPI2(void) knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid);
 KNHAPI2(void) knh_write_type(CTX ctx, knh_OutputStream_t *w, knh_type_t type);
 KNHAPI2(Object*) knh_getClassDefaultValue(CTX ctx, knh_class_t cid);
@@ -23,6 +24,7 @@ KNHAPI2(knh_param_t*) knh_ParamArray_get(knh_ParamArray_t *pa, size_t n);
 KNHAPI2(knh_type_t) knh_ParamArray_rtype(knh_ParamArray_t *pa);
 KNHAPI2(void) knh_write_mn(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn);
 KNHAPI2(knh_bool_t) Method_isAbstract(knh_Method_t *mtd);
+KNHAPI2(void) knh_Func_invoke(CTX ctx, knh_Func_t *fo, knh_sfp_t *rtnsfp, int argc);
 KNHAPI2(void) knh_addTypeMap(CTX ctx, knh_TypeMap_t *tmr, int initCache);
 KNHAPI2(void) knh_TypeMap_exec(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp _RIX);
 KNHAPI2(knh_TypeMap_t*) new_TypeMap(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func);
@@ -44,6 +46,7 @@ KNHAPI2(void) ResultSet_setFloat(CTX ctx, knh_ResultSet_t *rs, size_t n, knh_flo
 KNHAPI2(void) ResultSet_setText(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t);
 KNHAPI2(void) ResultSet_setBlob(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t);
 KNHAPI2(void) ResultSet_setNULL(CTX ctx, knh_ResultSet_t *o, size_t n);
+KNHAPI2(knh_context_t*) knh_getCurrentContext(void);
 KNHAPI2(knh_Path_t*) new_Path(CTX ctx, knh_String_t *path);
 KNHAPI2(knh_InputStream_t*) new_InputStreamDPI(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dpi, knh_Path_t *path);
 KNHAPI2(knh_OutputStream_t*) new_OutputStreamDPI(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dpi, knh_Path_t *path);
@@ -91,6 +94,7 @@ typedef struct knh_api2_t {
 	knh_TypeMap_t* (*new_TypeMapData)(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func, Object *mapdata);
 	knh_bool_t (*Method_isAbstract)(knh_Method_t *mtd);
 	knh_class_t  (*type_tocid)(CTX ctx, knh_type_t ptype, knh_class_t this_cid);
+	knh_context_t*  (*getCurrentContext)(void);
 	knh_param_t*  (*ParamArray_get)(knh_ParamArray_t *pa, size_t n);
 	knh_text_t*  (*cwb_tochar)(CTX ctx, knh_cwb_t *cwb);
 	knh_type_t  (*ParamArray_rtype)(knh_ParamArray_t *pa);
@@ -103,6 +107,7 @@ typedef struct knh_api2_t {
 	void (*THROW_OutOfRange)(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t max);
 	void  (*Array_add_)(CTX ctx, knh_Array_t *a, knh_Object_t *value);
 	void  (*Array_swap)(CTX ctx, knh_Array_t *a, size_t n, size_t m);
+	void  (*Func_invoke)(CTX ctx, knh_Func_t *fo, knh_sfp_t *rtnsfp, int argc);
 	void  (*Map_set)(CTX ctx, knh_Map_t *m, knh_String_t *key, knh_Object_t *value);
 	void  (*Map_setInt)(CTX ctx, knh_Map_t *m, const char *key, knh_int_t value);
 	void  (*Map_setString)(CTX ctx, knh_Map_t *m, const char *key, const char *value);
@@ -112,6 +117,7 @@ typedef struct knh_api2_t {
 	void  (*OutputStream_write)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t buf);
 	void  (*ResultSet_initColumn)(CTX ctx, knh_ResultSet_t *o, size_t column_size);
 	void  (*TypeMap_exec)(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp _RIX);
+	void  (*addConstPool)(CTX ctx, knh_Object_t *o);
 	void  (*addTypeMap)(CTX ctx, knh_TypeMap_t *tmr, int initCache);
 	void  (*printf)(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...);
 	void  (*setPropertyText)(CTX ctx, char *key, char *value);
@@ -125,7 +131,7 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)-1046334231)
+#define K_API2_CRC32 ((size_t)-1002125255)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -154,6 +160,7 @@ static const knh_api2_t* getapi2(void) {
 		new_TypeMapData,
 		Method_isAbstract,
 		knh_type_tocid,
+		knh_getCurrentContext,
 		knh_ParamArray_get,
 		knh_cwb_tochar,
 		knh_ParamArray_rtype,
@@ -166,6 +173,7 @@ static const knh_api2_t* getapi2(void) {
 		THROW_OutOfRange,
 		knh_Array_add_,
 		knh_Array_swap,
+		knh_Func_invoke,
 		knh_Map_set,
 		knh_Map_setInt,
 		knh_Map_setString,
@@ -175,6 +183,7 @@ static const knh_api2_t* getapi2(void) {
 		knh_OutputStream_write,
 		knh_ResultSet_initColumn,
 		knh_TypeMap_exec,
+		knh_addConstPool,
 		knh_addTypeMap,
 		knh_printf,
 		knh_setPropertyText,
@@ -216,6 +225,7 @@ static const knh_api2_t* getapi2(void) {
 #define new_TypeMapData   ctx->api2->new_TypeMapData
 #define Method_isAbstract   ctx->api2->Method_isAbstract
 #define knh_type_tocid   ctx->api2->type_tocid
+#define knh_getCurrentContext   ctx->api2->getCurrentContext
 #define knh_ParamArray_get   ctx->api2->ParamArray_get
 #define knh_cwb_tochar   ctx->api2->cwb_tochar
 #define knh_ParamArray_rtype   ctx->api2->ParamArray_rtype
@@ -228,6 +238,7 @@ static const knh_api2_t* getapi2(void) {
 #define THROW_OutOfRange   ctx->api2->THROW_OutOfRange
 #define knh_Array_add_   ctx->api2->Array_add_
 #define knh_Array_swap   ctx->api2->Array_swap
+#define knh_Func_invoke   ctx->api2->Func_invoke
 #define knh_Map_set   ctx->api2->Map_set
 #define knh_Map_setInt   ctx->api2->Map_setInt
 #define knh_Map_setString   ctx->api2->Map_setString
@@ -237,6 +248,7 @@ static const knh_api2_t* getapi2(void) {
 #define knh_OutputStream_write   ctx->api2->OutputStream_write
 #define knh_ResultSet_initColumn   ctx->api2->ResultSet_initColumn
 #define knh_TypeMap_exec   ctx->api2->TypeMap_exec
+#define knh_addConstPool   ctx->api2->addConstPool
 #define knh_addTypeMap   ctx->api2->addTypeMap
 #define knh_printf   ctx->api2->printf
 #define knh_setPropertyText   ctx->api2->setPropertyText
@@ -611,7 +623,6 @@ knh_String_t* knh_ResultSet_getString(CTX ctx, knh_ResultSet_t *o, size_t n);
 void konoha_init(void);
 void knh_beginContext(CTX ctx, void **bottom);
 void knh_endContext(CTX ctx);
-knh_context_t* knh_getCurrentContext(void);
 knh_bool_t knh_isCompileOnly(CTX ctx);
 void knh_loadScriptPackageList(CTX ctx, const char *pkglist);
 void knh_setSecurityAlertMessage(const char *msg, int isNeedFree);

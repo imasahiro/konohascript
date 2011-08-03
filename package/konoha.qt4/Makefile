@@ -19,7 +19,10 @@ library = "$(pkgname).dylib"
 objs = \
 	build/QApplication.o\
 	build/QObject.o\
+	build/QPushButton.o\
 	build/QWebView.o\
+	build/QWidget.o\
+	build/qt4commons_moc.o\
 
 .PHONY: all
 all: $(library)
@@ -30,14 +33,24 @@ build/QApplication.o: src/QApplication.cpp
 build/QObject.o : src/QObject.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
+build/QPushButton.o : src/QPushButton.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
 build/QWebView.o: src/QWebView.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QWidget.o: src/QWidget.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/qt4commons_moc.o: src/qt4commons_moc.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+src/qt4commons_moc.cpp: src/qt4commons.hpp
+	$(QTDIR)/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $^ -o $@
 
 $(library): $(objs)
 	$(CC) -dynamiclib -o $@ $^ $(LDLIBS)
 
-src/moc_visual.cpp: include/visual.hpp
-	$(QTDIR)/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $^ -o $@
 
 .PHONY: clean
 clean:
