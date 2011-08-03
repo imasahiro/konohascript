@@ -32,8 +32,9 @@
 
 include "lib:gluelink";
 
-class QApplication extends CppObject;
-class QWebView extends CppObject;
+class QObject extends C++;
+class QApplication extends QObject;
+class QWebView extends C++;
 
 @Native QApplication QApplication.new();
 @Native void QApplication.exec();

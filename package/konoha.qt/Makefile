@@ -12,16 +12,22 @@ DEFINES       = -DQT_NO_DEBUG -DQT_WEBKIT_LIB -DQT_XML_LIB -DQT_GUI_LIB -DQT_NET
 CFLAGS = -O0 -g3 -pipe -g -gdwarf-2 -Wall -W -arch x86_64 -Xarch_x86_64 -mmacosx-version-min=10.5 $(DEFINES) -I/usr/local/include/ -I./include/ -I$(QTDIR)/include -Wall -W -fPIC $(INCPATH) -DNDEBUG
 LDLIBS = $(LFLAGS) $(LIBS)
 
-pkgname = qt
+pkgname = qt4
 library = "$(pkgname).dylib"
+
+# please add in an alphabetical order
 objs = \
 	build/QApplication.o\
+	build/QObject.o\
 	build/QWebView.o\
 
 .PHONY: all
 all: $(library)
 
 build/QApplication.o: src/QApplication.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QObject.o : src/QObject.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/QWebView.o: src/QWebView.cpp

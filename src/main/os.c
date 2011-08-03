@@ -624,6 +624,15 @@ int knh_dlclose(CTX ctx, void* handler)
 #endif
 }
 
+const char *knh_dlerror()
+{
+#if defined(K_USING_POSIX_)
+	return dlerror();
+#else
+	return "unknown dlerror";
+#endif
+}
+
 /* ------------------------------------------------------------------------ */
 /* [charset] */
 

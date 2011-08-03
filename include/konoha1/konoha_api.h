@@ -14,7 +14,7 @@ KNHAPI2(knh_Iterator_t*) new_Iterator(CTX ctx, knh_class_t p1, knh_Object_t *sou
 KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb);
 KNHAPI2(void) knh_Object_toNULL_(CTX ctx, Object *o);
 KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, knh_RawPtr_t *po, void *rawptr);
-KNHAPI2(knh_RawPtr_t*) new_ReturnRawPtr(CTX ctx, knh_sfp_t *sfp, void *rawptr, knh_Frawfree pfree);
+KNHAPI2(knh_RawPtr_t*) new_ReturnCppObject(CTX ctx, knh_sfp_t *sfp, void *rawptr, knh_Frawfree pfree);
 KNHAPI2(void) knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid);
 KNHAPI2(void) knh_write_type(CTX ctx, knh_OutputStream_t *w, knh_type_t type);
 KNHAPI2(Object*) knh_getClassDefaultValue(CTX ctx, knh_class_t cid);
@@ -61,7 +61,6 @@ KNHAPI2(void) knh_write_utf8(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int 
 KNHAPI2(void) knh_printf(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...);
 KNHAPI2(knh_String_t*) new_String_(CTX ctx, knh_class_t cid, knh_bytes_t t, knh_String_t *memoNULL);
 KNHAPI2(knh_String_t*) new_String(CTX ctx, const char *str);
-KNHAPI2(knh_ClassDef_t*) knh_getDefaultClassDef(void);
 KNHAPI2(void) knh_setPropertyText(CTX ctx, char *key, char *value);
 KNHAPI2(knh_String_t*) knh_getFieldName(CTX ctx, knh_fieldn_t fn);
 #endif
@@ -72,7 +71,6 @@ typedef struct knh_api2_t {
 	Object*  (*getClassDefaultValue)(CTX ctx, knh_class_t cid);
 	int  (*isVerbose)(void);
 	knh_Array_t* (*new_Array)(CTX ctx, knh_class_t p1, size_t capacity);
-	knh_ClassDef_t*  (*getDefaultClassDef)(void);
 	knh_Float_t* (*new_Float)(CTX ctx, knh_float_t value);
 	knh_InputStream_t* (*new_InputStreamDPI)(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dpi, knh_Path_t *path);
 	knh_InputStream_t* (*new_InputStreamNULL)(CTX ctx, knh_Path_t *pth, const char *mode);
@@ -84,7 +82,7 @@ typedef struct knh_api2_t {
 	knh_OutputStream_t* (*new_OutputStreamNULL)(CTX ctx, knh_Path_t *pth, const char *mode);
 	knh_Path_t* (*new_Path)(CTX ctx, knh_String_t *path);
 	knh_RawPtr_t* (*new_RawPtr)(CTX ctx, knh_RawPtr_t *po, void *rawptr);
-	knh_RawPtr_t* (*new_ReturnRawPtr)(CTX ctx, knh_sfp_t *sfp, void *rawptr, knh_Frawfree pfree);
+	knh_RawPtr_t* (*new_ReturnCppObject)(CTX ctx, knh_sfp_t *sfp, void *rawptr, knh_Frawfree pfree);
 	knh_String_t*  (*DictMap_keyAt)(knh_DictMap_t *m, size_t n);
 	knh_String_t*  (*getFieldName)(CTX ctx, knh_fieldn_t fn);
 	knh_String_t* (*new_String)(CTX ctx, const char *str);
@@ -127,7 +125,7 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)-203880860)
+#define K_API2_CRC32 ((size_t)-1046334231)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -136,7 +134,6 @@ static const knh_api2_t* getapi2(void) {
 		knh_getClassDefaultValue,
 		knh_isVerbose,
 		new_Array,
-		knh_getDefaultClassDef,
 		new_Float,
 		new_InputStreamDPI,
 		new_InputStreamNULL,
@@ -148,7 +145,7 @@ static const knh_api2_t* getapi2(void) {
 		new_OutputStreamNULL,
 		new_Path,
 		new_RawPtr,
-		new_ReturnRawPtr,
+		new_ReturnCppObject,
 		knh_DictMap_keyAt,
 		knh_getFieldName,
 		new_String,
@@ -199,7 +196,6 @@ static const knh_api2_t* getapi2(void) {
 #define knh_getClassDefaultValue   ctx->api2->getClassDefaultValue
 #define knh_isVerbose   ctx->api2->isVerbose
 #define new_Array   ctx->api2->new_Array
-#define knh_getDefaultClassDef   ctx->api2->getDefaultClassDef
 #define new_Float   ctx->api2->new_Float
 #define new_InputStreamDPI   ctx->api2->new_InputStreamDPI
 #define new_InputStreamNULL   ctx->api2->new_InputStreamNULL
@@ -211,7 +207,7 @@ static const knh_api2_t* getapi2(void) {
 #define new_OutputStreamNULL   ctx->api2->new_OutputStreamNULL
 #define new_Path   ctx->api2->new_Path
 #define new_RawPtr   ctx->api2->new_RawPtr
-#define new_ReturnRawPtr   ctx->api2->new_ReturnRawPtr
+#define new_ReturnCppObject   ctx->api2->new_ReturnCppObject
 #define knh_DictMap_keyAt   ctx->api2->DictMap_keyAt
 #define knh_getFieldName   ctx->api2->getFieldName
 #define new_String   ctx->api2->new_String
@@ -597,6 +593,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o);
 void *knh_dlopen(CTX ctx, const char* path);
 void *knh_dlsym(CTX ctx, void* handler, const char* symbol, int isTest);
 int knh_dlclose(CTX ctx, void* handler);
+const char *knh_dlerror();
 const char *knh_getSystemEncoding(void);
 void knh_Connection_open(CTX ctx, knh_Connection_t *c, knh_NameSpace_t *ns, knh_String_t *urn);
 knh_Connection_t* new_Connection(CTX ctx, knh_NameSpace_t *ns, knh_String_t *urn);
@@ -701,8 +698,10 @@ knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, knh_bytes_t t);
 knh_String_t *knh_cwb_newStringDECODE(CTX ctx, knh_cwb_t *cwb, knh_StringDecoder_t *c);
 knh_bool_t knh_class_canObjectCopy(CTX ctx, knh_class_t cid);
 knh_TypeMap_t* DEFAULT_findTypeMapNULL(CTX ctx, knh_class_t scid, knh_class_t tcid, int mode);
+const knh_ClassDef_t* knh_getDefaultClassDef(void);
 void knh_ClassTBL_setConstPool(CTX ctx, const knh_ClassTBL_t *ct);
 void knh_ClassTBL_setObjectCSPI(CTX ctx, knh_ClassTBL_t *ct);
+const knh_ClassDef_t* knh_getCppClassDef(void);
 knh_Thunk_t* new_Thunk(CTX ctx, knh_class_t p1, size_t envsize);
 void knh_loadScriptSystemStructData(CTX ctx, const knh_PackageLoaderAPI_t *kapi);
 void knh_loadScriptSystemString(CTX ctx);

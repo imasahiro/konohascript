@@ -3062,7 +3062,13 @@ static void _CLASS(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	}
 	if(ITR_is(itr, TT_EXTENDS) || ITR_is(itr, TT_OF) || ITR_is(itr, TT_COLON)) {
 		ITR_next(itr);
-		Stmt_tadd(ctx, stmt, itr, isCLASSAME, _("class name")); /*2*/
+		if(ITR_isN(itr, +1, TT_NEXT)) {  // extends c++
+			ITR_next(itr);
+			knh_Stmt_add(ctx, stmt, ITR_nextTK(itr));
+		}
+		else {
+			Stmt_tadd(ctx, stmt, itr, isCLASSAME, _("class name")); /*2*/
+		}
 	}
 	else { /* Object */
 		knh_Stmt_add(ctx, stmt, new_TokenCID(ctx, CLASS_Object));

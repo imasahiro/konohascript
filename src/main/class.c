@@ -97,7 +97,7 @@ KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, knh_RawPtr_t *po, void *rawptr)
 	return npo;
 }
 
-KNHAPI2(knh_RawPtr_t*) new_ReturnRawPtr(CTX ctx, knh_sfp_t *sfp, void *rawptr, knh_Frawfree pfree)
+KNHAPI2(knh_RawPtr_t*) new_ReturnCppObject(CTX ctx, knh_sfp_t *sfp, void *rawptr, knh_Frawfree pfree)
 {
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
 	knh_type_t rtype = knh_ParamArray_rtype(DP(mtd)->mp);

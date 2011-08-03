@@ -389,7 +389,7 @@ static void rconv_RawPtr(CTX ctx, knh_sfp_t *sfp, void *rvalue _RIX)
 {
 	void** v = (void**)rvalue;
 	KNH_TODO(__FUNCTION__);
-	RETURN_(new_ReturnRawPtr(ctx, sfp, v[0], NULL)); // leak
+	RETURN_(new_ReturnCppObject(ctx, sfp, v[0], NULL)); // leak
 }
 
 static ffi_rfunc bcid_rfunc(knh_class_t bcid)
@@ -570,7 +570,9 @@ static void *knh_open_gluelink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t libname
 	knh_buff_trim(ctx, cwb->ba, cwb->pos, '.');
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT(K_OSDLLEXT));
 	p = knh_dlopen(ctx, knh_cwb_tochar(ctx, cwb));
-	knh_cwb_close(cwb);
+	if(p == NULL) {
+		KNH_NOTE("cannot open gluelink: %s, %s", knh_cwb_tochar(ctx, cwb), knh_dlerror());
+	}
 	if(p != NULL) {
 		knh_Fpkginit pkginit = (knh_Fpkginit)knh_dlsym(ctx, p, "init", 1/*isTest*/);
 		if(pkginit != NULL) {
@@ -579,14 +581,20 @@ static void *knh_open_gluelink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t libname
 					iRANGE("buildid", K_BUILDID, pkgdef->buildid), iRANGE("crc32", K_API2_CRC32, pkgdef->crc32)};
 			if((long)pkgdef->crc32 == (long)K_API2_CRC32) {
 				LIB_OK("gluelink");
-				return p;
 			}
 			else {
 				LIB_Failed("gluelink", NULL);
+				p = NULL;
 			}
 		}
-		p = NULL;
+		else {
+			p = NULL;
+		}
+		if(p == NULL) {
+			KNH_NOTE("gluelink is older: %s", knh_cwb_tochar(ctx, cwb));
+		}
 	}
+	knh_cwb_close(cwb);
 	return p;
 }
 
@@ -598,7 +606,6 @@ static void *knh_open_ffilink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t libname)
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, libname);
 	knh_buff_trim(ctx, cwb->ba, cwb->pos, '.');
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT(K_OSDLLEXT));
-	p = knh_dlopen(ctx, knh_cwb_tochar(ctx, cwb));
 	if(p == NULL && !knh_bytes_startsWith(libname, STEXT("lib"))) {
 		knh_cwb_clear2(cwb, 0);
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT("lib"));
@@ -703,92 +710,6 @@ void knh_loadFFIDriver(CTX ctx, knh_NameSpace_t *ns)
 //	api->addLinkDPI(ctx, ns, "cfunc", &LINK_CFUNC);
 //	api->addLinkDPI(ctx, ns, "ctype", &LINK_CTYPE);
 }
-
-
-
-
-
-
-
-
-/* 
- * Contributors
- *  Shinpei Nakata <shinpei.nakata(at)gmail.com>
- */
-
-/*
-// for FFI DSL
-typedef struct knh_xblock_t {
-	unsigned char *block;
-	struct knh_xblock_t *next;
-} knh_xblock_t;
-
-
-static knh_xblock_t* xfreelist = NULL;
-
-static void* get_unused_xblock(CTX ctx)
-{
-	if (unlikely(xfreelist == NULL)) {
-		unsigned char *xmem = (unsigned char*)knh_xmalloc(ctx, 1);
-		assert(xmem != NULL);
-		knh_xblock_t *p = (knh_xblock_t*)knh_malloc(ctx, XBLOCK_NUMBER * sizeof(knh_xblock_t));
-		size_t idx = 0;
-		for (idx = 0; idx < XBLOCK_NUMBER - 1; idx++) {
-			p[idx].block = &(xmem[idx * XBLOCK_SIZE]);
-			p[idx].next = &(p[idx + 1]);
-			//			fprintf(stderr, "idx:%d, p:%p, block:%p, next:%p\n", idx, &(p[idx]), p[idx].block, p[idx].next);
-		}
-		p[idx].block = &(xmem[idx * XBLOCK_SIZE]);
-		p[idx].next = NULL;
-		xfreelist = p;
-	}
-	if (xfreelist->next == NULL) {
-		unsigned char *xmem = (unsigned char*)knh_xmalloc(ctx, 1);
-		knh_xblock_t *p = (knh_xblock_t*)knh_malloc(ctx, XBLOCK_NUMBER * sizeof(knh_xblock_t));
-		size_t idx = 0;
-		for (idx = 0; idx < XBLOCK_NUMBER - 1; idx++) {
-			p[idx].block = &(xmem[idx * XBLOCK_SIZE]);
-			p[idx].next = &(p[idx + 1]);
-		}
-		p[idx].block = &(xmem[idx * XBLOCK_SIZE]);
-		p[idx].next = NULL;
-		xfreelist->next = p;
-	}
-	assert(xfreelist->next != NULL);
-	knh_xblock_t *ret = xfreelist;
-	xfreelist = ret->next;
-	return ret;
-}
-*/
-
-/*
-	// this supposed to be a libffi version
-static knh_xblock_t *knh_generateWrapper(CTX ctx, void *callee, int argc, knh_ffiparam_t *argv)
-{
-  knh_xblock_t *blk = get_unused_xblock(ctx);
-  void *function = blk->block;
-
-  size_t fidx = 0;
-  int i = 0;
-  knh_ffiparam_t *t;
-
-  for (i = 0; i < argc; i++) {
-	t = &argv[i];
-	if (t->sfpidx = -1) {
-	  // it means arguments	
-	  switch(t->type) {
-	    case CLASS_Tvoid:
-		  // do nothing
-		  break;
-	    case CLASS_Int:
-		  break;
-	  }
-	}
-  }
-}
-  */
-
-
 
 /* ------------------------------------------------------------------------ */
 // FFI DSL generator

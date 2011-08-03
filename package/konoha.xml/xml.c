@@ -353,7 +353,7 @@ KMETHOD XmlReader_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	KNH_RESET_ERRNO();
 	knh_Path_t *pth = sfp[1].pth;
 	xmlTextReaderPtr reader = xmlNewTextReaderFilename(pth->ospath);
-	knh_RawPtr_t *po = new_ReturnRawPtr(ctx, sfp, reader, NULL);
+	knh_RawPtr_t *po = new_ReturnCppObject(ctx, sfp, reader, NULL);
 	if(reader == NULL) {
 		LOGDATA = {sDATA("urn", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), __ERRNO__};
 		LIB_Failed("xmlNewTextReader", "IO!!");

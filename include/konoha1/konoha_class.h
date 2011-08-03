@@ -1448,22 +1448,24 @@ typedef struct knh_KindOf_t {
 } knh_KindOf_t;
 
 /* ------------------------------------------------------------------------ */
-//## class CppObject Object;
+//## class Tdynamic Object;
 
 typedef void (*knh_Frawfree)(void *);
 
 typedef struct knh_RawPtr_t {
 	knh_hObject_t h;
 	void *rawptr;
-	struct knh_Object_t **kfields;
+	struct knh_Object_t **kfields;  // c++
 	const char *DBG_NAME;
 	knh_Frawfree rawfree;
 } knh_RawPtr_t ;
 
-#define CLASS_Tdynamic  CLASS_CppObject
-#define CLASS_dynamic   CLASS_CppObject
-#define TYPE_dyn        CLASS_CppObject
-#define TYPE_dynamic    CLASS_CppObject
+#define CLASS_Tdyn      CLASS_Tdynamic
+#define CLASS_dynamic   CLASS_Tdynamic
+#define TYPE_dyn        CLASS_Tdynamic
+#define TYPE_dynamic    CLASS_Tdynamic
+#define CLASS_CppObject CLASS_Tdynamic
+#define new_ReturnRawPtr(ctx, sfp, p)  new_ReturnCppObject(ctx, sfp, p, NULL)
 
 /* ------------------------------------------------------------------------ */
 

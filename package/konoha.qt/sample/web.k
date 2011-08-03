@@ -1,5 +1,5 @@
 
-using konoha.qt;
+using konoha.qt4.*;
 
 qapp = new QApplication();
 

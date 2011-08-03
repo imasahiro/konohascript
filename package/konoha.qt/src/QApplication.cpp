@@ -40,7 +40,8 @@ extern "C" {
 static void qfree(void *p)
 {
 	QApplication *q = (QApplication *)p;
-	delete q;
+	//fprintf(stderr, "freeing QApplication..%p \n", p);
+	//delete q;  if delete qapplication, go wrong everything for other QObjects.
 }
 
 //## QApplication QApplication.new()
@@ -48,18 +49,23 @@ KMETHOD QApplication_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int dummy = 0;
 	QApplication *app = new QApplication(dummy, NULL);
-	knh_RawPtr_t *p = new_ReturnRawPtr(ctx, sfp, app, qfree);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, app, qfree);
 	RETURN_(p);
 }
 
 //## void QApplication.exec();
-KMETHOD Application_exec(CTX, knh_sfp_t *sfp _RIX)
+KMETHOD QApplication_exec(CTX, knh_sfp_t *sfp _RIX)
 {
 	QApplication *app = RawPtr_to(QApplication *, sfp[0]);
 	if(app != NULL) {
 		app->exec();
 	}
 	RETURNvoid_();
+}
+
+DEFAPI(const knh_PackageDef_t*) init(CTX, const knh_PackageLoaderAPI_t *)
+{
+	RETURN_PKGINFO("qt");
 }
 
 #ifdef __cplusplus

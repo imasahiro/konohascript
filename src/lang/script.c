@@ -572,9 +572,9 @@ static knh_flag_t knh_StmtCLASS_flag(CTX ctx, knh_Stmt_t *stmt)
 	knh_flag_t flag = 0;
 	if(IS_Map(DP(stmt)->metaDictCaseMap)) {
 		flag |= knh_Stmt_flag(ctx, stmt, "Final",     FLAG_Class_Final);
-		flag |= knh_Stmt_flag(ctx, stmt, "Private",   FLAG_Class_Private);
 		flag |= knh_Stmt_flag(ctx, stmt, "Interface", FLAG_Class_Interface);
 		flag |= knh_Stmt_flag(ctx, stmt, "Singleton", FLAG_Class_Singleton);
+		flag |= knh_Stmt_flag(ctx, stmt, "Immutable", FLAG_Class_Immutable);
 //		flag |= knh_Stmt_flag(ctx, stmt, "Release",   FLAG_Class_Release);
 	}
 	return flag;
@@ -598,7 +598,7 @@ static void knh_loadNativeClass(CTX ctx, const char *cname, knh_ClassTBL_t *ct)
 		}
 	}
 	if(cdef == NULL) {
-		cdef = knh_getDefaultClassDef();
+		cdef = knh_getCppClassDef(); // this might be C++ Object
 		WARN_NotFound(ctx, _("ClassDef function"), fname);
 	}
 	ct->bcid = ct->cid;
@@ -628,6 +628,16 @@ void knh_RefTraverse(CTX ctx, knh_Ftraverse ftr)
 #endif
 }
 
+static void ClassTBL_inherit(CTX ctx, knh_ClassTBL_t *ct, const knh_ClassTBL_t *supct) {
+	ct->supTBL = ClassTBL(ct->supcid);
+	ct->keyidx = supct->keyidx;
+	ct->metaidx = supct->metaidx;
+	((knh_ClassTBL_t*)supct)->subclass += 1;
+	ct->bcid = supct->bcid;
+	ct->baseTBL = ClassTBL(supct->bcid);
+
+}
+
 static knh_ClassTBL_t *CLASSNAME_decl(CTX ctx, knh_Stmt_t *stmt, knh_Token_t *tkC, knh_Token_t *tkE)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
@@ -647,23 +657,22 @@ static knh_ClassTBL_t *CLASSNAME_decl(CTX ctx, knh_Stmt_t *stmt, knh_Token_t *tk
 		KNH_INITv(ct->typemaps, K_EMPTYARRAY);
 
 		// class C extends E ..
-		ct->supcid = knh_Token_cid(ctx, tkE, CLASS_unknown);
-		if(ct->supcid == CLASS_unknown) {
-			knh_Stmt_toERR(ctx, stmt, ERROR_Undefined(ctx, "class", ct->supcid, tkE));
-			return ct;
+		if(TT_(tkE) == TT_NEXT) { // class C extends C++
+			ct->supcid = CLASS_Tdynamic;
+			ClassTBL_inherit(ctx, ct, ClassTBL(ct->supcid));
+			knh_setClassDef(ctx, ct, knh_getCppClassDef());
 		}
-		if(class_isFinal(ct->supcid)) {
-			knh_Stmt_toERR(ctx, stmt, ERROR_TokenIs(ctx, tkE, "final"));
-			return ct;
-		}
-		{
-			const knh_ClassTBL_t *supct = ClassTBL(ct->supcid);
-			ct->supTBL = ClassTBL(ct->supcid);
-			ct->keyidx = supct->keyidx;
-			ct->metaidx = supct->metaidx;
-			((knh_ClassTBL_t*)supct)->subclass += 1;
-			ct->bcid = supct->bcid;
-			ct->baseTBL = ClassTBL(supct->bcid);
+		else {
+			ct->supcid = knh_Token_cid(ctx, tkE, CLASS_unknown);
+			if(ct->supcid == CLASS_unknown) {
+				knh_Stmt_toERR(ctx, stmt, ERROR_Undefined(ctx, "class", ct->supcid, tkE));
+				return ct;
+			}
+			if(class_isFinal(ct->supcid)) {
+				knh_Stmt_toERR(ctx, stmt, ERROR_TokenIs(ctx, tkE, "final"));
+				return ct;
+			}
+			ClassTBL_inherit(ctx, ct, ClassTBL(ct->supcid));
 			knh_setClassDef(ctx, ct, ct->baseTBL->cdef);
 		}
 	}
@@ -686,7 +695,6 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 	knh_Token_t *tkE = tkNN(stmt, 2); // extends
 	knh_ClassTBL_t *ct = CLASSNAME_decl(ctx, stmt, tkC, tkE);
 	if(STT_(stmt) == STT_ERR) return K_BREAK;
-
 	if(knh_StmtMETA_is(ctx, stmt, "Native")) {
 		knh_loadNativeClass(ctx, S_tochar((tkC)->text), ct);
 	}
@@ -698,20 +706,6 @@ static knh_status_t CLASS_decl(CTX ctx, knh_Stmt_t *stmt)
 		Object_setNullObject(nulval, 1);
 		knh_setClassDefaultValue(ctx, ct->cid, nulval, NULL);
 		KNH_INITv(ct->protoNULL, defval);
-//		if(ct->fsize > 0) {
-//			knh_Object_t *supnulval = ct->supTBL->defnull;
-//			knh_Object_t *supdefval = (knh_Object_t*)ct->supTBL->protoNULL;
-//			knh_ObjectField_expand(ctx, nulval, 0, ct->fsize);
-//			knh_ObjectField_expand(ctx, defval, 0, ct->fsize);
-//			knh_memcpy(ct->protoNULL->fields, supdefval->ref, ct->fsize*sizeof(knh_Object_t*));
-//			knh_memcpy(ct->defnull->ref, supnulval->ref, ct->fsize*sizeof(knh_Object_t*));
-//#ifdef K_USING_RCGC
-//			ct->supTBL->cdef->reftrace(ctx, supdefval, ctx->refs);
-//			knh_RefTraverse(ctx, RCinc);
-//			ct->supTBL->cdef->reftrace(ctx, supnulval, ctx->refs);
-//			knh_RefTraverse(ctx, RCinc);
-//#endif
-//		}
 	}
 	if(DP(stmt)->size == 4 && TT_(tkNN(stmt, 1)) == TT_ASIS) {
 		knh_Stmt_done(ctx, stmt);

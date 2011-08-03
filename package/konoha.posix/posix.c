@@ -329,7 +329,7 @@ KMETHOD System_openDir(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Path_t *pth = sfp[1].pth;
 	DIR *dirptr = opendir(pth->ospath);
-	knh_RawPtr_t *po = 	new_ReturnRawPtr(ctx, sfp, dirptr, NULL/*ignored*/);
+	knh_RawPtr_t *po = 	new_ReturnCppObject(ctx, sfp, dirptr, NULL/*ignored*/);
 	LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), __ERRNO__};
 	LIB_log("opendir", (dirptr != NULL), "IO!!");
 	RETURN_(po);
@@ -421,7 +421,7 @@ KMETHOD System_fopen(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Path_t *pth = sfp[1].pth;
 	const char *mode = IS_NULL(sfp[2].s) ? "r" : S_tochar(sfp[2].s);
 	FILE *fp = fopen(pth->ospath, mode);
-	knh_RawPtr_t *po = 	new_ReturnRawPtr(ctx, sfp, fp, NULL/*ignored*/);
+	knh_RawPtr_t *po = 	new_ReturnCppObject(ctx, sfp, fp, NULL/*ignored*/);
 	LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), sDATA("mode", mode), __ERRNO__};
 	LIB_log("fopen", (fp != NULL), "IO!!");
 	RETURN_(po);
