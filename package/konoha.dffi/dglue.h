@@ -69,7 +69,7 @@ DEFAPI(void) defGlue(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 /* ------------------------------------------------------------------------ */
 
 // @Native var Glue.getFunc(String symbol, Class_, Func _);
-METHOD Glue_getFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Glue_getFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 {
   knh_Glue_t *glue = (knh_Glue_t*)((sfp[0].p)->rawptr);
   knh_GlueSPI_t *gapi = glue->gapi;

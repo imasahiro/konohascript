@@ -264,7 +264,7 @@ static const char *knh_Actor_getActorPathFromMemcached(const char *actor_name)
 	return memcached_getValue(memc, actor_name);
 }
 
-METHOD CActor_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CActor_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Actor_t *actor = (knh_Actor_t *)sfp[0].o;
 	knh_Actor_init(ctx, actor);
@@ -273,32 +273,32 @@ METHOD CActor_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(actor);
 }
 
-METHOD CActor_getPathByActorName(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CActor_getPathByActorName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	const char *actor_name = String_to(const char *, sfp[1]);
 	const char *path = knh_Actor_getActorPathFromMemcached(actor_name);
 	RETURN_(new_String(ctx, path));
 }
 
-METHOD CActor_getPort(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CActor_getPort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Actor_t *a = (knh_Actor_t *)sfp[0].o;
 	RETURNi_(DP(a)->port);
 }
 
-METHOD CActor_getPath(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CActor_getPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Actor_t *a = (knh_Actor_t *)sfp[0].o;
 	RETURN_(new_String(ctx, DP(a)->path));
 }
 
-METHOD CActor_getName(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CActor_getName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Actor_t *a = (knh_Actor_t *)sfp[0].o;
 	RETURN_(new_String(ctx, DP(a)->actor_name));
 }
 
-METHOD CActor_setMethodInfo(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CActor_setMethodInfo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Actor_t *actor = (knh_Actor_t *)sfp[0].o;
 	knh_MethodInfo_t **info = actor->mtd_info;
@@ -346,7 +346,7 @@ static void delivery_thread_func(void *arg)
 	KONOHA_END(info->ctx);
 }
 
-METHOD CActor_startDeliver(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CActor_startDeliver(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Actor_t *a = (knh_Actor_t *)sfp[0].o;
 	knh_Func_t *func = sfp[1].fo;
@@ -363,7 +363,7 @@ METHOD CActor_startDeliver(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-METHOD CActor_startScheduler(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CActor_startScheduler(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Actor_t *a = (knh_Actor_t *)sfp[0].o;
 	while (true) {
@@ -373,7 +373,7 @@ METHOD CActor_startScheduler(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-METHOD CActor_addMessageToMailBox(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CActor_addMessageToMailBox(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Actor_t *a = (knh_Actor_t *)sfp[0].o;
 	//const char *actor_name = String_to(const char *, sfp[1]);

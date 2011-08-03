@@ -295,6 +295,7 @@ typedef void (*knh_Fconstdef)(CTX, knh_class_t, const knh_PackageLoaderAPI_t*);
 	}\
 
 #define RETURNvoid_() {\
+		(void)_rix;\
 		return; \
 	}\
 

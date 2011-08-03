@@ -82,6 +82,10 @@ KNHAPI2(void) knh_Object_toNULL_(CTX ctx, Object *o)
 
 /* ------------------------------------------------------------------------ */
 
+static void nofree(void *p)
+{
+}
+
 KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, knh_RawPtr_t *po, void *rawptr)
 {
 	knh_RawPtr_t *npo = (knh_RawPtr_t*)new_hObject_(ctx, O_cTBL(po));
@@ -89,10 +93,11 @@ KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, knh_RawPtr_t *po, void *rawptr)
 	if(rawptr == NULL) {
 		knh_Object_toNULL(ctx, npo);
 	}
+	npo->rawfree = nofree;
 	return npo;
 }
 
-KNHAPI2(knh_RawPtr_t*) new_RawPtrByReturnType(CTX ctx, knh_sfp_t *sfp, void *rawptr)
+KNHAPI2(knh_RawPtr_t*) new_ReturnRawPtr(CTX ctx, knh_sfp_t *sfp, void *rawptr, knh_Frawfree pfree)
 {
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
 	knh_type_t rtype = knh_ParamArray_rtype(DP(mtd)->mp);
@@ -101,15 +106,18 @@ KNHAPI2(knh_RawPtr_t*) new_RawPtrByReturnType(CTX ctx, knh_sfp_t *sfp, void *raw
 	if(rawptr == NULL) {
 		knh_Object_toNULL(ctx, npo);
 	}
+	else {
+		npo->rawfree = (pfree != NULL) ? pfree : nofree;
+	}
 	return npo;
 }
 
-knh_RawPtr_t *new_Pointer(CTX ctx, const char *name, void *rawptr, void *free)
+knh_RawPtr_t *new_Pointer(CTX ctx, const char *name, void *rawptr, knh_Frawfree pfree)
 {
 	knh_RawPtr_t *npo = (knh_RawPtr_t*)new_hObject_(ctx, ClassTBL(CLASS_Tdynamic));
 	npo->rawptr = rawptr;
 	npo->DBG_NAME = name;
-	npo->rawfree = (void (*)(void *))free;
+	npo->rawfree = (pfree != NULL) ? pfree : nofree;
 	return npo;
 }
 
@@ -923,7 +931,7 @@ KNHAPI2(void) knh_write_mn(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn)
 /* ------------------------------------------------------------------------ */
 /* [Method] */
 
-static METHOD Fmethod_abstract(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_abstract(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
 	knh_type_t rtype = knh_type_tocid(ctx, knh_ParamArray_rtype(DP(mtd)->mp), O_cid(sfp[0].o));
@@ -975,48 +983,48 @@ knh_Method_t* new_Method(CTX ctx, knh_flag_t flag, knh_class_t cid, knh_methodn_
 /* ------------------------------------------------------------------------ */
 /* [VirtualField] */
 
-static METHOD Fmethod_getter(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_getter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	RETURN_((sfp[0].ox)->fields[delta]);
 }
-static METHOD Fmethod_ngetter(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_ngetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	knh_ndata_t *data = (knh_ndata_t*)(&(sfp[0].ox->fields[delta]));
 	RETURNd_(data[0]);
 }
-static METHOD Fmethod_setter(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_setter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	KNH_SETv(ctx, (sfp[0].ox)->fields[delta], sfp[1].o);
 	RETURN_(sfp[1].o);
 }
-static METHOD Fmethod_nsetter(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_nsetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	knh_ndata_t *ndata = (knh_ndata_t*)(&((sfp[0].ox)->fields[delta]));
 	ndata[0] = sfp[1].ndata;
 	RETURNd_(ndata[0]);
 }
-static METHOD Fmethod_kgetter(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_kgetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	RETURN_((sfp[0].p)->kfields[delta]);
 }
-static METHOD Fmethod_kngetter(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_kngetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	knh_ndata_t *data = (knh_ndata_t*)(&(sfp[0].p->kfields[delta]));
 	RETURNd_(data[0]);
 }
-static METHOD Fmethod_ksetter(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_ksetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	KNH_SETv(ctx, (sfp[0].p)->kfields[delta], sfp[1].o);
 	RETURN_(sfp[1].o);
 }
-static METHOD Fmethod_knsetter(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_knsetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	knh_ndata_t *ndata = (knh_ndata_t*)(&((sfp[0].p)->kfields[delta]));
@@ -1073,7 +1081,7 @@ knh_index_t knh_Method_indexOfSetterField(knh_Method_t *o)
 
 /* ------------------------------------------------------------------------ */
 
-static METHOD Fmethod_NoSuchMethod(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_NoSuchMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
 	KNH_ASSERT(IS_Method(mtd));

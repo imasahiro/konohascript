@@ -348,7 +348,7 @@ static knh_PackSPI_t *knh_getPackSPI()
 /* ------------------------------------------------------------------------ */
 //## method void OutputStream.writeObject(Object data, NameSpace ns);
 
-METHOD OutputStream_writeObject(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD OutputStream_writeObject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	Object *o = sfp[1].o;
@@ -368,7 +368,7 @@ METHOD OutputStream_writeObject(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method dyn InputStream.readObject(Class c, NameSpace ns);
 
-METHOD InputStream_readObject(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD InputStream_readObject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	BEGIN_LOCAL(ctx, lsfp, 1);
 	knh_InputStream_t *in = sfp[0].in;

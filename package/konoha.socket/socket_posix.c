@@ -143,7 +143,7 @@ static knh_io_t open_socket(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int
 }
 
 //## @Throwable Socket Socket.new(String host, int port);
-METHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
+KMETHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	const char* host = String_to(const char*, sfp[1]);
@@ -157,21 +157,21 @@ METHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 }
 
 //## InputStream Socket.getInputStream();
-METHOD Socket_getInputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
+KMETHOD Socket_getInputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	RETURN_(new_InputStreamDPI(ctx, so->sd, &SOCKET_DSPI, KNH_TNULL(Path)));
 }
 
 //## OutputStream Socket.getOutputStream();
-METHOD Socket_getOutputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
+KMETHOD Socket_getOutputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	RETURN_(new_OutputStreamDPI(ctx, so->sd, &SOCKET_DSPI, KNH_TNULL(Path)));
 }
 
 //## void Socket.close();
-METHOD Socket_close(CTX ctx, knh_sfp_t* sfp _RIX)
+KMETHOD Socket_close(CTX ctx, knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	if (so->sd != IO_NULL) {
@@ -188,7 +188,7 @@ DEFAPI(void) defServerSocket(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 }
 
 ////## @Throwable ServerSocket ServerSocket.new(Int port, Int maxConnection);
-METHOD ServerSocket_new(Ctx* ctx,knh_sfp_t* sfp _RIX)
+KMETHOD ServerSocket_new(Ctx* ctx,knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *ss = (knh_Socket_t*)sfp[0].o;
 	int port = Int_to(int ,sfp[1]);
@@ -236,7 +236,7 @@ METHOD ServerSocket_new(Ctx* ctx,knh_sfp_t* sfp _RIX)
 }
 
 ////## Socket ServerSocket.accept(Socket _);
-METHOD ServerSocket_accept(Ctx* ctx,knh_sfp_t* sfp _RIX)
+KMETHOD ServerSocket_accept(Ctx* ctx,knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *ss = (knh_Socket_t *)sfp[0].o;
 	knh_RawPtr_t *so = (knh_RawPtr_t*)sfp[1].o;
@@ -255,7 +255,7 @@ METHOD ServerSocket_accept(Ctx* ctx,knh_sfp_t* sfp _RIX)
 	RETURN_(so);
 }
 
-METHOD ServerSocket_close(Ctx* ctx,knh_sfp_t* sfp _RIX)
+KMETHOD ServerSocket_close(Ctx* ctx,knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *ss = (knh_Socket_t*)sfp[0].o;
 	if(ss->sd != IO_NULL) {

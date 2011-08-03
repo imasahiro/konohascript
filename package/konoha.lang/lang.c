@@ -111,14 +111,14 @@
 //}
 //
 ////## Symbol Symbol.new(String name);
-//METHOD Symbol_new(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Symbol_new(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Symbol_t *sym = (knh_Symbol_t*)sfp[0].o;
 //	RETURN_(sym);
 //}
 //
 ////## String Symbol.getOrigName();
-//METHOD Symbol_getOrigName(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Symbol_getOrigName(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Symbol_t *sym = (knh_Symbol_t*)sfp[0].o;
 //	RETURN_(sym);
@@ -127,7 +127,7 @@
 ///* ------------------------------------------------------------------------ */
 ///* [Instruction] */
 ////## Symbol Instruction.getDefineSymbol();
-//METHOD Instruction_getDefineSymbol(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_getDefineSymbol(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Instruction_t *inst = (knh_Instruction_t*)sfp[0].o;
 //	knh_Symbol_t *sym = inst->sym;
@@ -135,7 +135,7 @@
 //}
 //
 ////## Array<Symbol> Instruction.getUseSymbolList();
-//METHOD Instruction_getUseSymbolList(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_getUseSymbolList(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Instruction_t *inst = (knh_Instruction_t*)sfp[0].o;
 //	(void)inst;
@@ -144,13 +144,13 @@
 //}
 //
 ////## Boolean Instruction.isMerging();
-//METHOD Instruction_isMErging(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_isMErging(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	RETURNb_(0);
 //}
 //
 ////## Boolean Instruction.approve(Int opcode);
-//METHOD Instruction_approve(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_approve(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	RETURNb_(0);
 //}
@@ -273,7 +273,7 @@
 ////}
 //
 //////## Controlflow Method.getControlflow();
-////METHOD Method_getControlflow(CTX ctx, knh_sfp_t *sfp _RIX)
+////KMETHOD Method_getControlflow(CTX ctx, knh_sfp_t *sfp _RIX)
 ////{
 ////	knh_Method_t *mtd = sfp[0].mtd;
 ////	knh_KonohaCode_t *kcode = DP(mtd)->kcode;
@@ -284,7 +284,7 @@
 ////}
 //
 ////## Array<Symbol> Controlflow.getAllSymbolList();
-//METHOD Controlflow_getAllSymbolList(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Controlflow_getAllSymbolList(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Controlflow_t *cf = (knh_Controlflow_t*)sfp[0].o;
 //	(void)cf;
@@ -293,7 +293,7 @@
 //}
 //
 ////## Array<Instruction> Controlflow.getUseInstList(Symbol sym);
-//METHOD Controlflow_getUseInstList(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Controlflow_getUseInstList(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Controlflow_t *cf = (knh_Controlflow_t*)sfp[0].o;
 //	(void)cf;
@@ -302,7 +302,7 @@
 //}
 //
 ////## Array<Basicblock> Controlflow.getBasicblockList(Symbol sym);
-//METHOD Controlflow_getBasicblockList(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Controlflow_getBasicblockList(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Controlflow_t *cf = (knh_Controlflow_t*)sfp[0].o;
 //	(void)cf;
@@ -311,14 +311,14 @@
 //}
 //
 ////## Basicblock ByteCode.getEntryBlock();
-//METHOD ByteCode_getEntryBlock(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD ByteCode_getEntryBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Controlflow_t *cf = (knh_Controlflow_t*)sfp[0].p->rawptr;
 //	RETURN_(cf->root);
 //}
 //
 ////## Basicblock Controlflow.getDefineBB(Symbol sym);
-//METHOD Controlflow_getDefineBB(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Controlflow_getDefineBB(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Controlflow_t *cf = (knh_Controlflow_t*)sfp[0].o;
 //	(void)cf;
@@ -402,7 +402,7 @@
 //#define BB(sfp) ((knh_Basicblock_t*)((sfp.p)->rawptr))
 //
 ////## Basicblock Basicblock.new(Basicblock _);
-//METHOD Basicblock_new(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_new(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = (knh_Basicblock_t*) malloc(sizeof(*bb));
 //	knh_RawPtr_t *o = new_RawPtr(ctx, sfp[1].p, bb);
@@ -410,7 +410,7 @@
 //}
 //
 ////## Instruction Basicblock.getInst(int i);
-//METHOD Basicblock_getInst(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_getInst(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	(void)bb;
@@ -420,7 +420,7 @@
 //}
 //
 ////## Instruction Basicblock.getDefineInst(Symbol sym);
-//METHOD Basicblock_getDefineInst(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_getDefineInst(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	(void)bb;
@@ -430,7 +430,7 @@
 //}
 //
 ////## Boolean Basicblock.removeInst(Instruction inst);
-//METHOD Basicblock_removeInst(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_removeInst(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	(void)bb;
@@ -438,7 +438,7 @@
 //}
 //
 ////## Boolean Basicblock.insertBefore(Instruction inst1, Instruction inst2);
-//METHOD Basicblock_insertBefore(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_insertBefore(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	(void)bb;
@@ -447,7 +447,7 @@
 //}
 //
 ////## Boolean Basicblock.insertAfter(Instruction inst1, Instruction inst2);
-//METHOD Basicblock_insertAfter(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_insertAfter(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	knh_RawPtr_t *insto1 = sfp[1].p;
@@ -471,7 +471,7 @@
 //}
 //
 ////## Array<Basicblock> Basicblock.getSuccessors();
-//METHOD Basicblock_getSuccessors(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_getSuccessors(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	(void)bb;
@@ -480,7 +480,7 @@
 //}
 //
 ////## Array<Basicblock> Basicblock.getPredecessors();
-//METHOD Basicblock_getPredecessors(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_getPredecessors(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	(void)bb;
@@ -490,7 +490,7 @@
 //}
 //
 ////## Instruction Basicblock.getFirstInstruction()
-//METHOD Basicblock_getFirstInstruction(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_getFirstInstruction(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	RETURN_(knh_Array_n(bb->kcode, 0));
@@ -543,7 +543,7 @@
 //
 //#define isNativeCompiled(kcode) (IS_KonohaCode(kcode) && KonohaCode_isNativeCompiled(kcode))
 ////## method Array<Instruction> Func.getInstList(Instruction _, Basicblock _);
-//METHOD Func_getInstList(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Func_getInstList(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Func_t *fo = sfp[0].fo;
 //	knh_RawPtr_t *oinst  = sfp[1].p;
@@ -560,7 +560,7 @@
 //}
 //
 ////## method ByteCode Func.getBytecodes(Instruction _, Basicblock _, Bytecode _);
-//METHOD Func_getBytecodes(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Func_getBytecodes(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Func_t *fo = sfp[0].fo;
 //	knh_RawPtr_t *oinst  = sfp[1].p;
@@ -653,7 +653,7 @@
 //void BasicBlock_traverse(CTX ctx, knh_RawPtr_t *root, void *refbuf, bbtrace_t fbb);
 //
 ////##Instruction[] ByteCode.searchBBContains(int opcode);
-//METHOD ByteCode_searchBBContains(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD ByteCode_searchBBContains(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	struct HasInst hinst;
 //	knh_Controlflow_t *cfg = (knh_Controlflow_t*) sfp[0].p->rawptr;
@@ -712,7 +712,7 @@
 //}
 //
 ////## Instruction Instruction.new(Int opcode, dynamic d1, dynamic d2, dynamic d3, dynamic d4, Instruction _);
-//METHOD Instruction_new(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_new(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Instruction_t *inst = (knh_Instruction_t*) malloc(sizeof(knh_Instruction_t));
 //	knh_RawPtr_t *o = new_RawPtr(ctx, sfp[6].p, inst);
@@ -755,7 +755,7 @@
 //}
 //
 ////## Instruction Instruction.getNext();
-//METHOD Instruction_getNext(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_getNext(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Instruction_t *inst = INST(sfp[0].p);
 //	knh_RawPtr_t *po = RAWPTR(KNH_NULL);
@@ -766,7 +766,7 @@
 //}
 //
 ////## Instruction Instruction.getPrev();
-//METHOD Instruction_getPrev(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_getPrev(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Instruction_t *inst = INST(sfp[0].p);
 //	knh_RawPtr_t *po = RAWPTR(KNH_NULL);
@@ -777,7 +777,7 @@
 //}
 //
 ////## Method ByteCode.save();
-//METHOD ByteCode_save(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD ByteCode_save(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Controlflow_t *cf = (knh_Controlflow_t*) sfp[0].p->rawptr;
 //	knh_Method_t *org = cf->mtd;
@@ -1011,7 +1011,7 @@
 /////* [Func Method] */
 ////
 ////## method Array<KInst> Func.getKCode();
-////METHOD Func_getKCode(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD Func_getKCode(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	knh_Func_t *fo = sfp[0].fo;
 ////	knh_Method_t *mtd = fo->mtd;
@@ -1047,7 +1047,7 @@
 ////}
 ////
 //////## method Array<KInst> Func.setKCode(Array<KInst> kcode);
-////METHOD Func_setKCode(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD Func_setKCode(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	knh_Func_t *fo = sfp[0].fo;
 ////	knh_Method_t *mtd = fo->mtd;
@@ -1089,14 +1089,14 @@
 /////* ------------------------------------------------------------------------ */
 /////* [KInst Method] */
 ////
-////METHOD Instruction_new(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD Instruction_new(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	knh_Instruction_t *inst = (knh_Instruction_t*)sfp[0].o;
 ////	RETURN_(inst);
 ////}
 ////
 //////## method dynamic KInst.get(Int n);
-////METHOD KInst_get(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_get(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	size_t n = knh_array_index(ctx, sfp, Int_to(size_t, sfp[1]), OPDATA[OP(inst)->opcode].size);
@@ -1128,7 +1128,7 @@
 ////}
 ////
 //////## method dynamic KInst.set(Int n, dynamic n);
-////METHOD KInst_set(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_set(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	size_t n = knh_array_index(ctx, sfp, Int_to(size_t, sfp[1]), OPDATA[OP(inst)->opcode].size);
@@ -1165,7 +1165,7 @@
 ////}
 ////
 ////## method String Instruction.getOpname();
-//METHOD Instruction_getOpname(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_getOpname(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Instruction_t *inst = INST(sfp[0].p);
 //	knh_String_t *s = new_String(ctx, OPDATA[inst->op->opcode].name);
@@ -1173,14 +1173,14 @@
 //}
 //
 ////## method Int Instruction.getOpcode();
-//METHOD Instruction_getOpcode(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_getOpcode(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
 //	knh_Instruction_t *inst = INST(sfp[0].p);
 //	RETURNi_((inst)->op->opcode);
 //}
 //
 //////## method Int KInst.setOpcode(Int opcode);
-////METHOD KInst_setOpcode(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_setOpcode(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	int opcode = Int_to(int, sfp[1]);
@@ -1193,7 +1193,7 @@
 ////}
 ////
 //////## method Int KInst.getJump();
-////METHOD KInst_getJump(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_getJump(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	if (!knh_opcode_hasjump(OP(inst)->opcode)) {
@@ -1205,7 +1205,7 @@
 ////}
 ////
 //////## method Int KInst.setJump(Int label);
-////METHOD KInst_setJump(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_setJump(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	if (!knh_opcode_hasjump(OP(inst)->opcode)) {
@@ -1223,14 +1223,14 @@
 ////}
 ////
 //////## method Int KInst.getSize();
-////METHOD KInst_getSize(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_getSize(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	RETURNi_(OPDATA[OP(inst)->opcode].size);
 ////}
 ////
 //////## method Array<Int> KInst.getDefList();
-////METHOD KInst_getDefList(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_getDefList(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	knh_Array_t *a = new_Array(ctx, CLASS_Int, 0);
@@ -1273,7 +1273,7 @@
 ////}
 ////
 //////## method Array<Int> KInst.getUseList();
-////METHOD KInst_getUseList(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_getUseList(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	knh_Array_t *a = new_Array(ctx, CLASS_Int, 0);
@@ -1321,7 +1321,7 @@
 /////* ------------------------------------------------------------------------ */
 /////* [KCode Method] */
 //////## method Array<KInst> KCode.join(Array<KInst> kcode1, Array<KInst> kcode2);
-////METHOD KCode_join(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KCode_join(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	knh_Array_t *klrcode1 = sfp[1].a;
 ////	knh_Array_t *klrcode2 = sfp[2].a;
@@ -1347,7 +1347,7 @@
 ////}
 ////
 //////## method KBlock KCode.constructCfg(Array<KInst> kcode);
-////METHOD KCode_constructCfg(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KCode_constructCfg(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	knh_Array_t *klrcode = sfp[1].a;
 //////	knh_class_t cid = knh_getcid(ctx, B(NAME(KBlock)));
@@ -1357,7 +1357,7 @@
 ////}
 ////
 ////////## method Func KCode.generateFunc(Array<KInst> kcode);
-//////METHOD KCode_generateFunc(CTX ctx, knh_sfp_t *sfp, long rix)
+//////KMETHOD KCode_generateFunc(CTX ctx, knh_sfp_t *sfp, long rix)
 //////{
 //////	knh_Array_t *klrcode = sfp[1].a;
 //////	if (klrcode == NULL) {
@@ -1430,7 +1430,7 @@
 /////* [KBlock Method] */
 ////
 //////## method KBlock KBlock.new(Int id);
-////METHOD KBlock_new(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_new(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = knh_KBlock_malloc(ctx);
 ////	knh_KBlock_init(ctx, sfp, bb, Int_to(size_t, sfp[1]));
@@ -1444,21 +1444,21 @@
 ////}
 ////
 //////## method Array<KBlock> KBlock.getPred();
-////METHOD KBlock_getPred(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_getPred(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
 ////	RETURN_(bb->pred);
 ////}
 ////
 //////## method Array<KBlock> KBlock.getSucc();
-////METHOD KBlock_getSucc(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_getSucc(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
 ////	RETURN_(bb->succ);
 ////}
 ////
 //////## method Array<KBlock> KBlock.setSucc(Array<KBlock> succ);
-////METHOD KBlock_setSucc(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_setSucc(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
 ////	KNH_SETv(ctx, bb->succ, sfp[1].a);
@@ -1466,14 +1466,14 @@
 ////}
 ////
 //////## method Int KBlock.getId();
-////METHOD KBlock_getId(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_getId(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
 ////	RETURNi_(bb->id);
 ////}
 ////
 //////## method Int KBlock.setId(Int id);
-////METHOD KBlock_setId(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_setId(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
 ////	bb->id = Int_to(size_t, sfp[1]);
@@ -1521,14 +1521,14 @@
 //}
 //
 //////## method Array<KInst> KBlock.getKCode();
-////METHOD KBlock_getKCode(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_getKCode(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
 ////	RETURN_(bb->kcode);
 ////}
 ////
 //////## method Array<KInst> KBlock.setKCode(Array<KInst> kcode);
-////METHOD KBlock_setKCode(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_setKCode(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
 ////	knh_Array_t *klrcode = sfp[1].a;
@@ -1537,7 +1537,7 @@
 ////}
 ////
 //////## method Array<KInst> KBlock.deconstructCfg();
-////METHOD KBlock_deconstructCfg(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_deconstructCfg(CTX ctx, knh_sfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
 ////	knh_class_t cid = knh_getcid(ctx, B(NAME(KInst)));

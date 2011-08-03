@@ -279,7 +279,7 @@ static void _System_man(CTX ctx, const knh_ClassTBL_t *ct, knh_NameSpace_t *ns)
 }
 
 //## @Static method void System.man(Object c, NameSpace ns);
-METHOD System_man(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_man(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(sfp[1].o);
 	knh_NameSpace_t *ns = sfp[2].ns;

@@ -649,7 +649,7 @@ static knh_KonohaCode_t* BasicBlock_link(CTX ctx, knh_BasicBlock_t *bb, knh_Basi
 
 /* ------------------------------------------------------------------------ */
 
-METHOD knh_Fmethod_runVM(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD knh_Fmethod_runVM(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	DBG_ASSERT(K_RIX == K_RTNIDX);
 	DBG_ASSERT(IS_Method(sfp[K_MTDIDX].mtdNC));
@@ -902,39 +902,39 @@ static void _PBOX(CTX ctx, knh_sfp_t *sfp, struct klr_PROBE_t *op)
 }
 
 /* SYSVAL */
-static METHOD Fmethod_CTX(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_CTX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_((Object*)toContext(ctx));
 }
-static METHOD Fmethod_CTXIN(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_CTXIN(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(ctx->in);
 }
-static METHOD Fmethod_CTXOUT(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_CTXOUT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(ctx->out);
 }
-static METHOD Fmethod_CTXERR(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_CTXERR(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(ctx->err);
 }
-static METHOD Fmethod_STDIN(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_STDIN(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(DP(ctx->sys)->in);
 }
-static METHOD Fmethod_STDOUT(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_STDOUT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(DP(ctx->sys)->out);
 }
-static METHOD Fmethod_STDERR(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_STDERR(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(DP(ctx->sys)->err);
 }
-static METHOD Fmethod_SYS(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_SYS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(ctx->sys);
 }
-static METHOD Fmethod_SCRIPT(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_SCRIPT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(ctx->script);
 }
@@ -1925,7 +1925,7 @@ static void LETEXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	}
 }
 
-static METHOD Fmethod_empty(CTX ctx, knh_sfp_t *sfp _RIX) {}
+static KMETHOD Fmethod_empty(CTX ctx, knh_sfp_t *sfp _RIX) {}
 
 static knh_Method_t* Gamma_getFmt(CTX ctx, knh_class_t cid, knh_methodn_t mn0)
 {
@@ -2892,7 +2892,7 @@ void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB, knh_Ftyping t
 #endif /* K_USING_LLVM */
 }
 
-METHOD knh_Fmethod_asm(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD knh_Fmethod_asm(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	BEGIN_LOCAL(ctx, lsfp, 1);
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;

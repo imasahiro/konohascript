@@ -7,7 +7,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 
 //## method void System.disableLog();
-METHOD System_disableLog(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_disableLog(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_closelog();
 	RETURNvoid_();

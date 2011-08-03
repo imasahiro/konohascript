@@ -78,7 +78,7 @@ static knh_IntData_t IntConstData[] = {
 /* [API] */
 
 //## @Native String System.getHostName();
-METHOD System_getHostName(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_getHostName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	const char *s = NULL;
 	char buf[256];
@@ -94,43 +94,43 @@ METHOD System_getHostName(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native String System.getLogin();
-METHOD System_getLogin(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_getLogin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(new_String(ctx, getlogin()));
 }
 
 //## @Native int System.getUid();
-METHOD System_getUid(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_getUid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(getuid());
 }
 
 //## @Native int System.getEuid();
-METHOD System_getEuid(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_getEuid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(geteuid());
 }
 
 //## @Native int System.getGid();
-METHOD System_getGid(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_getGid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(getgid());
 }
 
 //## @Native int System.getEgid();
-METHOD System_getEgid(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_getEgid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(getegid());
 }
 
 //## @Native int System.getPid();
-METHOD System_getPid(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_getPid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(getpid());
 }
 
 //## @Native int System.getPPid();
-METHOD System_getPPid(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_getPPid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(getppid());
 }
@@ -139,7 +139,7 @@ METHOD System_getPPid(CTX ctx, knh_sfp_t *sfp _RIX)
 /* [signal] */
 
 //## @Native boolean System.kill(int pid, int signal);
-METHOD System_kill(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_kill(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int tf = 1;
 	KNH_RESET_ERRNO();
@@ -152,13 +152,13 @@ METHOD System_kill(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int System.sleep(int sec);
-METHOD System_sleep(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_sleep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(sleep(Int_to(int, sfp[1])));
 }
 
 //## @Native boolean System.usleep(int usec);
-METHOD System_usleep(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_usleep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int tf = (usleep(Int_to(useconds_t, sfp[1])) != -1);
 	if(!tf) {
@@ -169,7 +169,7 @@ METHOD System_usleep(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean System.raise(int signal);
-METHOD System_raise(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_raise(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int tf = 1;
 	KNH_RESET_ERRNO();
@@ -185,7 +185,7 @@ METHOD System_raise(CTX ctx, knh_sfp_t *sfp _RIX)
 
 //## @Native String System.getCwd();
 
-METHOD System_getCwd(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_getCwd(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	char tmpbuf[K_PATHMAX];
 	getcwd(tmpbuf, sizeof(tmpbuf));
@@ -214,43 +214,43 @@ static int fileop2(CTX ctx, knh_sfp_t *sfp, const char *name, int (*func)(const 
 }
 
 //## @Native @Restricted boolean System.link(Path path, Path path2);
-METHOD System_link(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_link(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(fileop2(ctx, sfp, "link", link, sfp[1].pth, sfp[2].pth));
 }
 
 //## @Native @Restricted boolean System.symlink(Path path, Path path2);
-METHOD System_symlink(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_symlink(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(fileop2(ctx, sfp, "symlink", symlink, sfp[1].pth, sfp[2].pth));
 }
 
 //## @Native @Restricted boolean System.rename(Path path, Path path2);
-METHOD System_rename(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_rename(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(fileop2(ctx, sfp, "rename", rename, sfp[1].pth, sfp[2].pth));
 }
 
 //## @Native @Restricted boolean System.unlink(Path path);
-METHOD System_unlink(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_unlink(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(fileop(ctx, sfp, "unlink", unlink, sfp[1].pth));
 }
 
 //## @Native boolean System.chdir(Path path);
-METHOD System_chdir(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_chdir(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(fileop(ctx, sfp, "chdir", chdir, sfp[1].pth));
 }
 
 //## @Native boolean System.chroot(Path path);
-METHOD System_chroot(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_chroot(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(fileop(ctx, sfp, "chroot", chroot, sfp[1].pth));
 }
 
 //## @Native @Restricted boolean System.mkdir(Path path, int mode);
-METHOD System_mkdir(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_mkdir(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Path_t *pth = sfp[1].pth;
 	mode_t mode =  (mode_t)sfp[2].ivalue;
@@ -267,7 +267,7 @@ METHOD System_mkdir(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native @Restricted boolean System.rmdir(Path path);
-METHOD System_rmdir(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_rmdir(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(fileop(ctx, sfp, "rmdir", rmdir, sfp[1].pth));
 }
@@ -325,18 +325,18 @@ DEFAPI(void) constDir(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *ka
 /* ------------------------------------------------------------------------ */
 
 //## @Native @Throwable Dir System.openDir(Path path);
-METHOD System_openDir(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_openDir(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Path_t *pth = sfp[1].pth;
 	DIR *dirptr = opendir(pth->ospath);
-	knh_RawPtr_t *po = 	new_RawPtrByReturnType(ctx, sfp, dirptr);
+	knh_RawPtr_t *po = 	new_ReturnRawPtr(ctx, sfp, dirptr, NULL/*ignored*/);
 	LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), __ERRNO__};
 	LIB_log("opendir", (dirptr != NULL), "IO!!");
 	RETURN_(po);
 }
 
 //## @Native void Dir.close();
-METHOD Dir_close(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Dir_close(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	DIR *dirptr = (DIR*)sfp[0].p->rawptr;
 	if(dirptr != NULL) {
@@ -347,14 +347,14 @@ METHOD Dir_close(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Const @Static @Hidden Dir Dir.opLink(String urn, NameSpace _);
-METHOD Dir_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Dir_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	KNH_SETv(ctx, sfp[1].o, new_Path(ctx, sfp[1].s));
 	System_openDir(ctx, sfp, K_RIX);
 }
 
 //## @Native @Iterative Map Dir.read();
-METHOD Dir_read(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Dir_read(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *mdata = KNH_TNULL(Map);
 	DIR *dirptr = (DIR*)sfp[0].p->rawptr;
@@ -370,7 +370,7 @@ METHOD Dir_read(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native @Iterative String Dir.readName();
-METHOD Dir_readName(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Dir_readName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	const char *dname = NULL;
 	DIR *dirptr = (DIR*) sfp[0].p->rawptr;
@@ -416,19 +416,19 @@ DEFAPI(void) defFile(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 }
 
 //## @Native @Throwable File System.fopen(Path path, String mode);
-METHOD System_fopen(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_fopen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Path_t *pth = sfp[1].pth;
 	const char *mode = IS_NULL(sfp[2].s) ? "r" : S_tochar(sfp[2].s);
 	FILE *fp = fopen(pth->ospath, mode);
-	knh_RawPtr_t *po = 	new_RawPtrByReturnType(ctx, sfp, fp);
+	knh_RawPtr_t *po = 	new_ReturnRawPtr(ctx, sfp, fp, NULL/*ignored*/);
 	LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), sDATA("mode", mode), __ERRNO__};
 	LIB_log("fopen", (fp != NULL), "IO!!");
 	RETURN_(po);
 }
 
 //## @Native int File.getc();
-METHOD File_getc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_getc(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	int ch = EOF;
@@ -439,7 +439,7 @@ METHOD File_getc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int File.read(Bytes buf, int offset, int len);
-METHOD File_read(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_read(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	size_t size = 0;
@@ -458,7 +458,7 @@ METHOD File_read(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean File.putc(int ch);
-METHOD File_putc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_putc(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	if(fp != NULL) {
@@ -469,7 +469,7 @@ METHOD File_putc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int File.write(Bytes buf, int offset, int len);
-METHOD File_write(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_write(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	size_t size = 0;
@@ -488,7 +488,7 @@ METHOD File_write(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void File.close();
-METHOD File_close(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_close(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	if(fp != NULL) {

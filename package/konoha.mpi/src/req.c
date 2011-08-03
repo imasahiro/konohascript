@@ -1,7 +1,7 @@
 #include "../konoha_mpi.h"
 
 //## method Int MPIRequest.wait();
-METHOD MPIRequest_wait(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIRequest_wait(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_MPIRequest_t *mreq = (knh_MPIRequest_t*)sfp[0].o;
 	MPI_Status stat;
@@ -13,7 +13,7 @@ METHOD MPIRequest_wait(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## method Int MPIRequest.cancel();
-METHOD MPIRequest_cancel(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIRequest_cancel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_MPIRequest_t *mreq = (knh_MPIRequest_t*)sfp[0].o;
 	int ret = -1;

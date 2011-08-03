@@ -682,8 +682,8 @@ typedef struct knh_RegexSPI_t {
 	int (*regexec)(CTX, knh_regex_t *, const char *, size_t, knh_regmatch_t*, int);
 	size_t (*regerror)(int, knh_regex_t *, char *, size_t);
 	void (*regfree)(CTX, knh_regex_t *);
-	// this must be defined by uh for named grouping
-	int (*regexec2)(CTX, knh_regex_t *, const char *, ...);
+//	// this must be defined by uh for named grouping
+//	int (*regexec2)(CTX, knh_regex_t *, const char *, ...);
 } knh_RegexSPI_t;
 
 
@@ -1450,19 +1450,20 @@ typedef struct knh_KindOf_t {
 /* ------------------------------------------------------------------------ */
 //## class CppObject Object;
 
+typedef void (*knh_Frawfree)(void *);
+
 typedef struct knh_RawPtr_t {
 	knh_hObject_t h;
 	void *rawptr;
 	struct knh_Object_t **kfields;
 	const char *DBG_NAME;
-	void (*rawfree)(void *);
+	knh_Frawfree rawfree;
 } knh_RawPtr_t ;
 
 #define CLASS_Tdynamic  CLASS_CppObject
 #define CLASS_dynamic   CLASS_CppObject
 #define TYPE_dyn        CLASS_CppObject
 #define TYPE_dynamic    CLASS_CppObject
-#define RAW_FREE(f)      ((void (*)(void*))f)
 
 /* ------------------------------------------------------------------------ */
 

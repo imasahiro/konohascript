@@ -164,7 +164,7 @@ static void ProcessGlue_free(CTX ctx, void *ptr)
 
 /* ------------------------------------------------------------------------ */
 //@Native Clib Clib.new(String libname, Clib _);
-METHOD Clib_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Clib_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
   const char *libname = String_to(const char *, sfp[1]);
   knh_CLib_t *clib = (knh_CLib_t*)KNH_MALLOC(ctx, sizeof(knh_CLib_t));
@@ -173,7 +173,7 @@ METHOD Clib_new(CTX ctx, knh_sfp_t *sfp _RIX)
   RETURN_(po);
 }
 
-static METHOD Fmethod_wrapCLib(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_wrapCLib(CTX ctx, knh_sfp_t *sfp _RIX)
 {
   knh_type_t rtype = knh_ParamArray_rtype(DP(sfp[K_MTDIDX].mtdNC)->mp);
   knh_Func_t *fo = sfp[0].fo;
@@ -326,7 +326,7 @@ static knh_GlueSPI_t CLibGlueSPI = {
 };
 
 // @Native Glue Clib_genGlue (Glue _)
-METHOD Clib_genGlue(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Clib_genGlue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
   knh_CLib_t *clib = (knh_CLib_t *)((sfp[0].p)->rawptr);
   if (clib != NULL) {
@@ -348,7 +348,7 @@ METHOD Clib_genGlue(CTX ctx, knh_sfp_t *sfp _RIX)
 #define PROCESS_PATH_MAX 256
 
 //@Native Process Process.new(String path, Process _);
-METHOD Process_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Process_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
   knh_Process_t *proc = (knh_Process_t*)KNH_MALLOC(ctx, sizeof(knh_Process_t));
   char *pname = String_to(char *, sfp[1]);
@@ -363,7 +363,7 @@ METHOD Process_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 
 //#include <crt_externs.h>
-static METHOD Fmethod_wrapProcess(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_wrapProcess(CTX ctx, knh_sfp_t *sfp _RIX)
 {
   knh_type_t rtype = knh_ParamArray_rtype(DP(sfp[K_MTDIDX].mtdNC)->mp);
   knh_Func_t *fo = sfp[0].fo;
@@ -478,7 +478,7 @@ static knh_GlueSPI_t ProcessGlueSPI = {
 };
 
 // @Native Glue Clib_genGlue (Glue _)
-METHOD Process_genGlue(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Process_genGlue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
   knh_Process_t *proc = (knh_Process_t*)((sfp[0].p)->rawptr);
   if (proc != NULL) {

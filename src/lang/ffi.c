@@ -388,7 +388,8 @@ static void rconv_String(CTX ctx, knh_sfp_t *sfp, void *rvalue _RIX)
 static void rconv_RawPtr(CTX ctx, knh_sfp_t *sfp, void *rvalue _RIX)
 {
 	void** v = (void**)rvalue;
-	RETURN_(new_RawPtrByReturnType(ctx, sfp, v[0]));
+	KNH_TODO(__FUNCTION__);
+	RETURN_(new_ReturnRawPtr(ctx, sfp, v[0], NULL)); // leak
 }
 
 static ffi_rfunc bcid_rfunc(knh_class_t bcid)
@@ -448,7 +449,7 @@ static knh_bool_t Method_setReturn(CTX ctx, knh_Method_t *mtd, knh_Array_t *a, O
 #define FFI_values(rbp, a, n)      &(rbp[FFI_rbpidx(a,n)].pc)
 #define FFI_tr(a, n)               (ffi_pconv)(a->ptrs[((n)*3)+1]->rawptr)
 
-static METHOD Fmethod_FFI(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_FFI(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_rbp_t *rp = (knh_rbp_t*)sfp;
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;

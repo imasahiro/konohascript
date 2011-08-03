@@ -54,6 +54,7 @@
 #endif
 #endif
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -1238,17 +1239,17 @@ typedef struct {
 #define K_RIX  _rix
 
 #ifdef K_USING_WIN32_
-#define METHOD  void CC_EXPORT
-#define TYPEMAP   METHOD
+#define KMETHOD  void CC_EXPORT
+#define TYPEMAP  KMETHOD
 #define ITRNEXT int   CC_EXPORT
 typedef void (CC_EXPORT *knh_Fmethod)(CTX, knh_sfp_t* _RIX);
 typedef void (CC_EXPORT *knh_Ftypemap)(CTX, knh_sfp_t * _RIX);
 typedef int  (CC_EXPORT *knh_Fitrnext)(CTX, knh_sfp_t * _RIX);
 #else
-#define METHOD  void  CC_FASTCALL_
-#define TYPEMAP   METHOD
+#define KMETHOD  void  CC_FASTCALL_
+#define TYPEMAP  KMETHOD
 #define ITRNEXT int   CC_FASTCALL_
-typedef METHOD (*knh_Fmethod)(CTX, knh_sfp_t* _RIX);
+typedef KMETHOD (*knh_Fmethod)(CTX, knh_sfp_t* _RIX);
 typedef TYPEMAP (*knh_Ftypemap)(CTX, knh_sfp_t * _RIX);
 typedef ITRNEXT (*knh_Fitrnext)(CTX, knh_sfp_t * _RIX);
 #endif
@@ -1257,6 +1258,17 @@ typedef ITRNEXT (*knh_Fitrnext)(CTX, knh_sfp_t * _RIX);
 
 #ifdef __cplusplus
 }
+
+/*  this is defintion of KSObject */
+
+class KSObject {
+	struct knh_RawPtr_t *kself;
+	int isGCSync;
+public:
+	KSObject();
+	~KSObject();
+};
+
 #endif
 
 #endif /*KONOHA_T_H_*/

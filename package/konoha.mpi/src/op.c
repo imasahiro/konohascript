@@ -20,7 +20,7 @@ void dummyMPIOpFunc(void *invec, void *inoutvec, int *len, MPI_Datatype *dtype)
 }
 
 //## method MPIOp MPIOp.new(Func<dynamic,dynamic> opfunc, Boolean commutable);
-METHOD MPIOp_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIOp_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_MPIOp_t *op = (knh_MPIOp_t*)sfp[0].o;
 	knh_Func_t *fo = (knh_Func_t*)sfp[1].fo;

@@ -60,147 +60,147 @@ DEFAPI(void) constMath(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *k
 	kapi->loadFloatClassConst(ctx, cid, MathConstFloat);
 }
 
-METHOD Math_abs(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_abs(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(abs(Int_to(int, sfp[1])));
 }
 
-METHOD Math_fabs(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_fabs(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(fabs(Float_to(double, sfp[1])));
 }
 
-METHOD Math_pow(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_pow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(pow(Float_to(double, sfp[1]),Float_to(double, sfp[2])));
 }
 
-METHOD Math_ldexp(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_ldexp(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(ldexp(Float_to(double, sfp[1]), Int_to(int, sfp[2])));
 }
 
-METHOD Math_modf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_modf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	double iprt = Float_to(double, sfp[2]);
 	RETURNf_(modf(Float_to(double, sfp[1]), &iprt));
 }
 
-METHOD Math_frexp(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_frexp(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int exp = Int_to(int, sfp[2]);
 	RETURNf_(frexp(Float_to(double, sfp[1]), &exp));
 }
 
-METHOD Math_fmod(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_fmod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(fmod(Float_to(double, sfp[1]),Float_to(double, sfp[2])));
 }
 
-METHOD Math_ceil(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_ceil(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(ceil(Float_to(double, sfp[1])));
 }
 
 #ifdef K_USING_WIN32_
-METHOD Math_round(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_round(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(round(Float_to(double, sfp[1])));
 }
 
-METHOD Math_nearbyint(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_nearbyint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(nearbyint(Float_to(double, sfp[1])));
 }
 #endif
 
-METHOD Math_floor(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_floor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(floor(Float_to(double, sfp[1])));
 }
 
-METHOD Math_sqrt(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_sqrt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(sqrt(Float_to(double, sfp[1])));
 }
 
-METHOD Math_exp(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_exp(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(exp(Float_to(double, sfp[1])));
 }
 
-METHOD Math_log10(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_log10(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(log10(Float_to(double, sfp[1])));
 }
 
-METHOD Math_log(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_log(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(log(Float_to(double, sfp[1])));
 }
 
-METHOD Math_sin(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_sin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(sin(Float_to(double, sfp[1])));
 }
 
-METHOD Math_cos(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_cos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(cos(Float_to(double, sfp[1])));
 }
 
-METHOD Math_tan(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_tan(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(tan(Float_to(double, sfp[1])));
 }
 
-METHOD Math_asin(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_asin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(asin(Float_to(double, sfp[1])));
 }
 
-METHOD Math_acos(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_acos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(acos(Float_to(double, sfp[1])));
 }
 
-METHOD Math_atan(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_atan(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(atan(Float_to(double, sfp[1])));
 }
 
-METHOD Math_atan2(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_atan2(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(atan2(Float_to(double, sfp[1]),Float_to(double, sfp[2])));
 }
 
-METHOD Math_sinh(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_sinh(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(sinh(Float_to(double, sfp[1])));
 }
 
-METHOD Math_cosh(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_cosh(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(cosh(Float_to(double, sfp[1])));
 }
 
-METHOD Math_tanh(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_tanh(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(tanh(Float_to(double, sfp[1])));
 }
 
 #if defined(K_USING_WIN32_)
-METHOD Math_asinh(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_asinh(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(asinh(Float_to(double, sfp[1])));
 }
 
-METHOD Math_acosh(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_acosh(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(acosh(Float_to(double, sfp[1])));
 }
 
-METHOD Math_atanh(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Math_atanh(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNf_(atanh(Float_to(double, sfp[1])));
 }

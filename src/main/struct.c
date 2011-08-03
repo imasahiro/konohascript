@@ -1662,7 +1662,7 @@ static knh_ClassDef_t TypeMapDef = {
 /* --------------- */
 /* Func */
 
-static METHOD Fmethod_funcRTYPE(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_funcRTYPE(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_type_t rtype = knh_ParamArray_rtype(DP(sfp[K_MTDIDX].mtdNC)->mp);
 	if(rtype != TYPE_void) {

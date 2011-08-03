@@ -299,22 +299,22 @@ def write_flag_c(f, fg, data):
     ff = fg.attrs[2]
     if ff != '*':
         ffn = ff + fg.poname
-        functype = 'METHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)' % (methodbase, ffn)
+        functype = 'KMETHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)' % (methodbase, ffn)
         parse_Method({'@Func' : '%s_%s' % (methodbase, ffn)}, 
                      ['Boolean', '%s.%s' % (fg.cname, ffn)], data)
         f.write('''
-static METHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 \tRETURNb_(%s_%s(%s));
 }
 ''' % (methodbase, ffn, funcbase, ffn, a1))
         if fg.ngname != None:
             ffn = ff + fg.ngname
-            functype = 'METHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)' % (methodbase, ffn)
+            functype = 'KMETHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)' % (methodbase, ffn)
             parse_Method({'@Func' : '%s_%s' % (methodbase, ffn)}, 
                      ['Boolean', '%s.%s' % (fg.cname, ffn)], data)
             f.write('''
-static METHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 \tRETURNb_(!(%s_%s(%s)));
 }
@@ -323,11 +323,11 @@ static METHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)
     ff = fg.attrs[3]
     if ff != '*':
         ffn = ff + fg.poname
-        functype = 'METHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)' % (methodbase, ffn)
+        functype = 'KMETHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)' % (methodbase, ffn)
         parse_Method({'@Func' : '%s_%s' % (methodbase, ffn)}, 
                      ['Boolean', '%s.%s' % (fg.cname, ffn), 'Boolean', 'flag'], data)
         f.write('''
-static METHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 \t%s_%s(%s, sfp[1].bvalue);
 \tRETURNb_(sfp[1].bvalue);
@@ -335,11 +335,11 @@ static METHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)
 ''' % (methodbase, ffn, funcbase, ffn, a1))
         if fg.ngname != None:
             ffn = ff + fg.ngname
-            functype = 'METHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)' % (methodbase, ffn)
+            functype = 'KMETHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)' % (methodbase, ffn)
             parse_Method({'@Func' : '%s_%s' % (methodbase, ffn)}, 
                      ['Boolean', '%s.%s' % (fg.cname, ffn), 'Boolean', 'flag'], data)
             f.write('''
-static METHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD %s_%s(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 \t%s_%s(%s, sfp[1].bvalue);
 \tRETURNb_(sfp[1].bvalue);
