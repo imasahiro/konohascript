@@ -32,7 +32,7 @@
 
 #include <QApplication>
 #include <QTextCodec>
-#include <konoha1.h>
+#include "qt4commons.hpp"
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,16 +58,26 @@ KMETHOD QApplication_new(CTX ctx, knh_sfp_t *sfp _RIX)
 //## void QApplication.exec();
 KMETHOD QApplication_exec(CTX, knh_sfp_t *sfp _RIX)
 {
-	QApplication *app = RawPtr_to(QApplication *, sfp[0]);
-	if(app != NULL) {
-		app->exec();
+	QApplication *q = QPtr_to(QApplication *, sfp[0]);
+	if(q != NULL) {
+		q->exec();
+	}
+	RETURNvoid_();
+}
+
+//## void QApplication.quit();
+KMETHOD QApplication_quit(CTX, knh_sfp_t *sfp _RIX)
+{
+	QApplication *q = QPtr_to(QApplication *, sfp[0]);
+	if(q != NULL) {
+		q->quit();
 	}
 	RETURNvoid_();
 }
 
 DEFAPI(const knh_PackageDef_t*) init(CTX, const knh_PackageLoaderAPI_t *)
 {
-	RETURN_PKGINFO("qt");
+	RETURN_PKGINFO("Qt-4.7");
 }
 
 #ifdef __cplusplus

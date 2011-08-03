@@ -43,6 +43,7 @@ class QWebView extends QWidget;
 
 @Native QApplication QApplication.new();
 @Native void QApplication.exec();
+@Native void QApplication.quit();
 
 @Native QWidget QWidget.new(QWidget parent);
 @Native void QWidget.show();

@@ -37,7 +37,8 @@
 extern "C" {
 #endif
 
-Connector::Connector(knh_Func_t *fo) {
+Connector::Connector(CTX ctx, knh_Func_t *fo) {
+	this->ctx = (knh_context_t*)ctx;
 	this->fo = fo;
 }
 
@@ -59,17 +60,17 @@ bool Connector::connectValueChanged(CTX, QObject *so)
 
 void Connector::slotValueChanged(qreal val)
 {
-	CTX ctx = knh_getCurrentContext();
-	knh_sfp_t *lsfp = ctx->esp;
+	CTX lctx = knh_getCurrentContext();
+	knh_sfp_t *lsfp = lctx->esp;
 	lsfp[K_CALLDELTA+1].fvalue = (knh_float_t)val;
-	knh_Func_invoke(ctx, this->fo, lsfp, 1/*argc*/);
+	knh_Func_invoke(lctx, this->fo, lsfp, 1/*argc*/);
 }
 
 //## void QObject.connectValueChanged(Func<float> f)
 KMETHOD QObject_connectValueChanged(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QObject *so = RawPtr_to(QObject*, sfp[0]);
-	Connector *c = new Connector(sfp[1].fo); // FIXME?: leaked
+	Connector *c = new Connector(ctx, sfp[1].fo); // FIXME?: leaked
 	RETURNb(ctx, sfp, c, c->connectValueChanged(ctx, so), K_RIX);
 }
 
@@ -80,17 +81,17 @@ bool Connector::connectClicked(CTX, QObject *so)
 
 void Connector::slotClicked(bool val)
 {
-	CTX ctx = knh_getCurrentContext();
-	knh_sfp_t *lsfp = ctx->esp;
+	CTX lctx = knh_getCurrentContext();
+	knh_sfp_t *lsfp = lctx->esp;
 	lsfp[K_CALLDELTA+1].bvalue = (knh_bool_t)val;
-	knh_Func_invoke(ctx, this->fo, lsfp, 1/*argc*/);
+	knh_Func_invoke(lctx, this->fo, lsfp, 1/*argc*/);
 }
 
 //## void QObject.connectClicked(Func<bool> f)
 KMETHOD QObject_connectClicked(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QObject *so = RawPtr_to(QObject*, sfp[0]);
-	Connector *c = new Connector(sfp[1].fo); // FIXME?: leaked
+	Connector *c = new Connector(ctx, sfp[1].fo); // FIXME?: leaked
 	RETURNb(ctx, sfp, c, c->connectClicked(ctx, so), K_RIX);
 }
 

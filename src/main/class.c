@@ -380,7 +380,7 @@ void knh_setClassDef(CTX ctx, knh_ClassTBL_t *ct, const knh_ClassDef_t *cdef)
 knh_bool_t ClassTBL_isa_(CTX ctx, const knh_ClassTBL_t *ct, const knh_ClassTBL_t *ct2)
 {
 	knh_class_t reqt = ct2->cid;
-	if(reqt == CLASS_Object || reqt == CLASS_Tdynamic) return 1;
+	if(reqt == CLASS_Object || reqt == CLASS_Tdynamic || ct->cid == reqt) return 1;
 	DBG_ASSERT(ct->cid != CLASS_Tvoid); DBG_ASSERT(ct->cid != CLASS_Tvar);
 	//if(cid == CLASS_Tvoid) return 0;
 //  if(ClassTBL(scid)->bcid == tcid) return 1; /* Int:km Int */
@@ -397,17 +397,14 @@ knh_bool_t ClassTBL_isa_(CTX ctx, const knh_ClassTBL_t *ct, const knh_ClassTBL_t
 		return 0;
 	}
 	if(ct->bcid == CLASS_Func && ct2->bcid == CLASS_Func) {
-		if(ct2->cparam->psize == ct->cparam->psize) {
+		if(ct->cparam->psize <= ct2->cparam->psize) {
 			size_t i;
-			for(i = 0; i < ct2->cparam->psize; i++) {
+			for(i = 0; i < ct->cparam->psize; i++) {
 				knh_param_t *p = knh_ParamArray_get(ct->cparam, i);
 				knh_param_t *p2 = knh_ParamArray_get(ct2->cparam, i);
-				if(!class_isa(p->type, p2->type)) {
-					return 0;
-				}
+				if(p->type != p2->type) return 0;
 			}
-			if(ct->cparam->rsize == 0) return 1;  // Func<int=>int> of Func<int>
-			if(ct2->cparam->rsize == ct->cparam->rsize) {
+			if(ct->cparam->rsize == ct2->cparam->rsize) {
 				if(ct->cparam->rsize == 1) {
 					knh_param_t *r = knh_ParamArray_rget(ct->cparam, 0);
 					knh_param_t *r2 = knh_ParamArray_rget(ct2->cparam, 0);
