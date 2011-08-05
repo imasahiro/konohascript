@@ -44,7 +44,7 @@ class QPushButton extends QAbstractButton;
 @Native boolean QObject.connectClicked(Func<boolean> f);
 
 @Native QApplication QApplication.new();
-@Native void QApplication.exec();
+@Native void QApplication.exec(boolean hasShell);
 @Native void QApplication.quit();
 
 @Native QWidget QWidget.new(QWidget parent);

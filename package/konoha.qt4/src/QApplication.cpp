@@ -34,16 +34,76 @@
 #include <QTextCodec>
 #include "qt4commons.hpp"
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static void qfree(void *p)
+static void qfree(void *)
 {
-	QApplication *q = (QApplication *)p;
+	//QApplication *q = (QApplication *)p;
 	//fprintf(stderr, "freeing QApplication..%p \n", p);
 	//delete q;  if delete qapplication, go wrong everything for other QObjects.
 }
+
+KonohaEval::KonohaEval(CTX ctx) {
+	this->ctx = (knh_context_t*)ctx;
+}
+
+bool KonohaEval::event(QEvent *e) {
+	KonohaEvalEvent *ke = (KonohaEvalEvent*)e;
+	fprintf(stderr, "thread id=%ld, eval='%s'\n", pthread_self(), ke->script);
+	const knh_context_t *lctx = knh_getCurrentContext();
+	knh_eval(lctx, ke->script);   // use lctx
+	return true;
+}
+
+KonohaEvalEvent::KonohaEvalEvent(char *script) : QEvent(QEvent::User) {
+	this->script = script;
+}
+
+KonohaEvalEvent::~KonohaEvalEvent() {
+	fprintf(stderr, "disposing KonohaEvalEvent: %s\n", this->script);
+	if(this->script != NULL) {
+		free(this->script);
+	}
+}
+
+struct threadparam_t {
+	knh_context_t* ctx;
+	QApplication *qapp;
+};
+
+void *shellthread(void *arg)
+{
+	struct threadparam_t *p = (struct threadparam_t*)arg;
+	knh_context_t* ctx = p->ctx;
+	QApplication *qapp = p->qapp;
+	KonohaEval* qeval = new KonohaEval(ctx);
+	fprintf(stdout, "threadid=%ld, readline=%s\n", pthread_self(), ctx->spi->readlinespi);
+	while(1) {
+		char *ln = ctx->spi->readline(">>> ");
+		if(ln == NULL) break;
+		ctx->spi->add_history(ln);
+		//QApplication::sendEvent(qeval, new KonohaEvalEvent(ln));
+		QApplication::postEvent(qeval, new KonohaEvalEvent(ln));
+		QApplication::sendPostedEvents();
+	}
+	delete qeval;
+	fprintf(stdout, "\nbyebye..\n");
+	qapp->quit();
+	return NULL;
+}
+
+static void qshell(CTX ctx, QApplication *qapp)
+{
+	pthread_t threadid;
+	static struct threadparam_t p = {(knh_context_t*)ctx, qapp};
+	pthread_create(&threadid, NULL, shellthread, (void*)&p); // FIXME ?
+	fprintf(stdout, "main threadid=%ld, created=%ld\n", pthread_self(), threadid);
+}
+
+/* ----------------------------------------------------------------------- */
 
 //## QApplication QApplication.new()
 KMETHOD QApplication_new(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -55,11 +115,14 @@ KMETHOD QApplication_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-//## void QApplication.exec();
-KMETHOD QApplication_exec(CTX, knh_sfp_t *sfp _RIX)
+//## void QApplication.exec(boolean isShell);
+KMETHOD QApplication_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QApplication *q = QPtr_to(QApplication *, sfp[0]);
 	if(q != NULL) {
+		if(sfp[1].bvalue == 1 || CTX_isInteractive(ctx)) {
+			qshell(ctx, q);
+		}
 		q->exec();
 	}
 	RETURNvoid_();
