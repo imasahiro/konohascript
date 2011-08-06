@@ -709,7 +709,7 @@ static void knh_shell(CTX ctx)
 		}
 		knh_InputStream_setpos(ctx, bin, 0, BA_size(DP(bin)->ba));
 		SP(bin)->uline = 1; // always line1
-		knh_eval(ctx, bin, results);
+		knh_beval(ctx, bin, results);
 		knh_OutputStream_flush(ctx, ctx->out, 1);
 
 //		if(ctx->out != DP(ctx->sys)->out) {

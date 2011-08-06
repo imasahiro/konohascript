@@ -784,7 +784,7 @@ static knh_status_t Stmt_eval(CTX ctx, knh_Stmt_t *stmtITR, knh_Array_t *results
 	return status;
 }
 
-knh_status_t knh_eval(CTX ctx, knh_InputStream_t *in, knh_Array_t *resultsNULL)
+knh_status_t knh_beval(CTX ctx, knh_InputStream_t *in, knh_Array_t *resultsNULL)
 {
 	knh_status_t status = K_CONTINUE;
 	BEGIN_LOCAL(ctx, lsfp, 3);
@@ -796,6 +796,25 @@ knh_status_t knh_eval(CTX ctx, knh_InputStream_t *in, knh_Array_t *resultsNULL)
 	status = Stmt_eval(ctx, stmt, resultsNULL);
 	END_LOCAL_(ctx, lsfp);
 	return status;
+}
+
+KNHAPI2(void) knh_eval(CTX ctx, const char *script)
+{
+//	KNH_NOTE("gma->src=%p, nsname=%s", ctx->gma->scr, S_tochar(DP(ctx->gma->scr->ns)->nsname));
+//	KNH_NOTE("gma->src=%p, nsname=%s", ctx->share->script, S_tochar(DP(ctx->share->script->ns)->nsname));
+//	KNH_ASSERT(ctx->gma->scr == ctx->share->script);
+	fprintf(stderr, "gma=%p, share=%p\n", ctx->gma->scr, ctx->share->script);
+	// KNH_SETv(ctx, ((knh_context_t*)ctx)->evaled, KNH_NULL);
+	KNH_SETv(ctx, ((knh_context_t*)ctx)->e, KNH_NULL);
+	knh_InputStream_t *bin = new_StringInputStream(ctx, new_String(ctx, script));
+	knh_Array_t *results = new_Array0(ctx, 0);
+	SP(bin)->uline = 1; // always line1
+	knh_beval(ctx, bin, results);
+	size_t i;
+	for(i = 0; i < knh_Array_size(results); i++) {
+		knh_Object_t *o = results->list[i];
+		knh_write_Object(ctx, KNH_STDOUT, o, FMT_dump);
+	}
 }
 
 /* ------------------------------------------------------------------------ */
@@ -890,7 +909,7 @@ knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in, knh_Array_t *r
 				fprintf(stderr, "\n>>>--------------------------------\n");
 				fprintf(stderr, "%s<<<--------------------------------\n", knh_Bytes_ensureZero(ctx, ba));
 			});
-			status  = knh_eval(ctx, bin, resultsNULL);
+			status  = knh_beval(ctx, bin, resultsNULL);
 		}
 	} while(BA_size(ba) > 0 && status == K_CONTINUE);
 	END_LOCAL_(ctx, lsfp);

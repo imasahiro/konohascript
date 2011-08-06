@@ -1005,7 +1005,6 @@ typedef struct knh_Script_t knh_Script_t;
 struct knh_Script_t {
 	knh_hObject_t h;
 	Object **fields;
-	size_t dummy;
 	struct knh_NameSpace_t *ns;
 };
 #endif

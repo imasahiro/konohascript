@@ -3837,7 +3837,7 @@ static KMETHOD System_eval(CTX ctx, knh_sfp_t *sfp _RIX)
 	KNH_SETv(ctx, ((knh_context_t*)ctx)->e, KNH_NULL);
 	knh_InputStream_t *bin = new_StringInputStream(ctx, sfp[1].s);
 	knh_class_t tcid = sfp[4].c->cid;
-	knh_status_t status = knh_eval(ctx, bin, NULL);
+	knh_status_t status = knh_beval(ctx, bin, NULL);
 	scr = ctx->gma->scr;
 	ns = K_GMANS;
 	if(scr != sfp[2].scr) {
