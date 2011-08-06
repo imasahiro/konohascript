@@ -223,11 +223,11 @@ endif(HAVE_PTHREAD)
 
 check_prototype(libiconv_open iconv.h HAVE_ICONV_LIBICONV_OPEN)
 
-set(FFI_INCLUDE_DIR "")
-set(FFI_LIBRARY_DIR "")
+#set(FFI_INCLUDE_DIR "")
+#set(FFI_LIBRARY_DIR "")
 
 macro(CHECK_HEADER _HEADER _PATH _RESULT)
-	if(${${_PATH}})
+	if(${_PATH})
 		find_path(${_RESULT} ${_HEADER} PATHS ${${_PATH}})
 	else()
 		find_path(${_RESULT} ${_HEADER})
@@ -359,6 +359,12 @@ endif(USE_MPI)
 
 option(USE_ACTOR "Compiling Actor package" OFF)
 
+option(USE_GWT "Using gwt package" OFF)
+
+option(USE_QT "Using qt package" OFF)
+
+option(USE_QT4 "Using qt4 package" OFF)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake 
 		${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
@@ -429,6 +435,7 @@ include(CPack)
 MESSAGE(STATUS)
 MESSAGE(STATUS "---------------------------------------------------------------------------" )
 MESSAGE(STATUS "CMAKE_C_COMPILER = ${CMAKE_C_COMPILER}")
+MESSAGE(STATUS "CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}")
 MESSAGE(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
 MESSAGE(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 MESSAGE(STATUS "Change a value with: cmake -D<Variable>=<Value>" )
