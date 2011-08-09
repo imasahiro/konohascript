@@ -268,9 +268,10 @@ static void Array_addCtype(CTX ctx, knh_Array_t *a, knh_bytes_t t, knh_type_t pt
 
 static knh_type_t ptype_getsfpidx(CTX ctx, knh_Method_t *mtd, int sfpidx)
 {
-	if(sfpidx == 0) return mtd->cid;
+	if(sfpidx == 0)
+		return mtd->cid;
 	knh_ParamArray_t *pa = DP(mtd)->mp;
-	if(sfpidx - 1 < pa->psize) {
+	if((size_t)(sfpidx - 1) < pa->psize) {
 		return knh_ParamArray_get(pa, sfpidx-1)->type;
 	}
 	return TYPE_void;
@@ -330,7 +331,7 @@ static knh_bool_t Array_addCIF(CTX ctx, knh_Array_t *a, ffi_type *return_type)
 			for(i = 0; i < psize; i++) {
 				kcif->arg_types[i] = ctypes[i];
 			}
-			knh_Array_add(ctx, a, new_Pointer(ctx, "ffi_cif", kcif, (void*)freecif));
+			knh_Array_add(ctx, a, new_Pointer(ctx, "ffi_cif", kcif, freecif));
 			return 1;
 		}
 	}

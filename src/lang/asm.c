@@ -1382,7 +1382,7 @@ static void ASM_CHKIDX(CTX ctx, int aidx, int nidx)
 	knh_BasicBlock_t *bb = DP(ctx->gma)->bbNC;
 	for(i = (long)DP(bb)->size - 1; i >= 0; i--) {
 		klr_CHKIDX_t *op = (klr_CHKIDX_t*)(DP(bb)->opbuf + i);
-		int opcode = op->opcode;
+		knh_opcode_t opcode = op->opcode;
 		if(opcode == OPCODE_CHKIDXC && op->a == aidx && op->n == nidx) {
 			return;
 		}
@@ -1399,9 +1399,9 @@ static void ASM_CHKIDXC(CTX ctx, int aidx, int n)
 	long i;
 	for(i = (long)DP(bb)->size - 1; i >= 0; i--) {
 		klr_CHKIDXC_t *op = (klr_CHKIDXC_t*)(DP(bb)->opbuf + i);
-		int opcode = op->opcode;
+		knh_opcode_t opcode = op->opcode;
 		if(opcode == OPCODE_CHKIDXC && op->a == aidx) {
-			if(op->n < n) op->n = n;
+			if(op->n < (knh_uint_t) n) op->n = n;
 			return;
 		}
 		if(OPCODE_SCALL <= opcode && opcode <= OPCODE_VCALL_) break;
@@ -2144,7 +2144,7 @@ static void ASM_PMOV(CTX ctx, int isUNBOX, int a, int b)
 		if(isUNBOX) {
 			int r0 = NC_(a), r1 = NC_(b);
 			if(r1 == defidx) {
-				int opcode = opP->opcode;
+				knh_opcode_t opcode = opP->opcode;
 				DBG_P("r0=%d, r1=%d, def=%d", r0, r1, defidx);
 				if((OPCODE_bNOT <= opcode && opcode <= OPCODE_fGTEC)
 				  || (OPCODE_iCAST <= opcode && opcode <= OPCODE_fCAST)
@@ -2159,7 +2159,7 @@ static void ASM_PMOV(CTX ctx, int isUNBOX, int a, int b)
 		else {
 			int r0 = OC_(a), r1 = OC_(b);
 			if(r1 == defidx) {
-				int opcode = opP->opcode;
+				knh_opcode_t opcode = opP->opcode;
 				DBG_P("r0=%d, r1=%d, def=%d", r0, r1, defidx);
 				if(opcode == OPCODE_TR) {
 					opTR->a = r0;

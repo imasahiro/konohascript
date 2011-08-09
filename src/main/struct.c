@@ -399,10 +399,9 @@ static void pack_unbox(CTX ctx, void *pkr, knh_class_t cid, knh_Object_t **v, co
 static void Object_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t *packspi)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
-	int i = 0;
 	knh_ObjectField_t *of = (knh_ObjectField_t*) o;
 	Object **v = of->fields;
-	size_t field_count = ct->fsize;
+	size_t i = 0, field_count = ct->fsize;
 	DBLNDATA_(
 			for (i = 0; i < ct->fsize; i++) {
 			knh_fields_t *field = ct->fields + i;
@@ -1271,7 +1270,7 @@ static void Array_wdata(CTX ctx, void *pkr, knh_RawPtr_t *o, const knh_PackSPI_t
 {
 	knh_Array_t *a = (knh_Array_t *)o;
 	packspi->pack_beginarray(ctx, pkr, a->size);
-	int i = 0;
+	size_t i = 0;
 	knh_class_t p1 = O_p1(a);
 	if (Array_isNDATA(a)) {
 		for (i = 0; i < a->size; i++) {

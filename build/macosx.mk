@@ -157,8 +157,8 @@ $(dir)/stream.o : src/main/stream.c
 $(dir)/string.o : src/main/string.c
 	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
 
-$(dir)/struct.o : src/main/struct.c
-	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
+$(dir)/struct.o : src/main/struct.c src/main/operator.c
+	$(MYCC) $(CFLAGS) $(ARCH) -c $< -o $@
 
 $(dir)/system.o : src/main/system.c
 	$(MYCC) $(CFLAGS) $(ARCH) -c $^ -o $@
