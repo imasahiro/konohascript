@@ -42,7 +42,7 @@ extern "C" {
 KMETHOD QLineEdit_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QString text = QString(String_to(const char *, sfp[1]));
-	QLineEdit *l = new QLineEdit(text, Qwidget_parent(sfp[2]);
+	QLineEdit *l = new QLineEdit(text, QWidget_parent(sfp[2]));
 	RETURN_(new_ReturnQObject(ctx, sfp, l));
 }
 

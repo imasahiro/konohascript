@@ -18,6 +18,10 @@ library = "$(pkgname).dylib"
 # please add in an alphabetical order
 objs = \
 	build/QApplication.o\
+	build/QBoxLayout.o\
+	build/QHBoxLayout.o\
+	build/QLabel.o\
+	build/QLineEdit.o\
 	build/QObject.o\
 	build/QPushButton.o\
 	build/QWebView.o\
@@ -28,6 +32,18 @@ objs = \
 all: $(library)
 
 build/QApplication.o: src/QApplication.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QBoxLayout.o: src/QBoxLayout.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QHBoxLayout.o: src/QHBoxLayout.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QLabel.o: src/QLabel.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QLineEdit.o: src/QLineEdit.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/QObject.o : src/QObject.cpp

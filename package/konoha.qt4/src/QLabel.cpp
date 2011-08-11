@@ -42,7 +42,7 @@ extern "C" {
 KMETHOD QLabel_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QString text = QString(String_to(const char *, sfp[1]));
-	QLabel *l = QLabel(text, QWidget_parent(sfp[2]));
+	QLabel *l = new QLabel(text, QWidget_parent(sfp[2]));
 	RETURN_(new_ReturnQObject(ctx, sfp, l));
 }
 
