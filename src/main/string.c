@@ -668,7 +668,7 @@ static knh_bool_t knh_linkDynamicPCRE(CTX ctx)
 	void *h = knh_dlopen(ctx, "libpcre" K_OSDLLEXT);
 	if(h == NULL) return 0;
 	pcre_version = (const char* (*)(void))knh_dlsym(ctx, h, "pcre_version", 0/*isTest*/);
-	pcre_free = (void (*)(void*))knh_dlsym(ctx, h, "pcre_free", 0/*isTest*/);
+	pcre_free = (void (*)(void*))knh_dlsym(ctx, h, "free", 0/*isTest*/);
 	pcre_fullinfo = (int (*)(const pcre*, const pcre_extra*, int, void*))knh_dlsym(ctx, h, "pcre_fullinfo", 0/*isTest*/);
 	pcre_compile = (pcre* (*)(const char *, int, const char **, int *, const unsigned char *))knh_dlsym(ctx, h, "pcre_compile", 0/*isTest*/);
 	pcre_exec = (int  (*)(const pcre *, const pcre_extra *, const char*, int, int, int, int *, int))knh_dlsym(ctx, h, "pcre_exec", 0/*isTest*/);
@@ -874,13 +874,200 @@ static knh_bool_t knh_linkDynamicRe2(CTX ctx)
 /* ------------------------------------------------------------------------ */
 /* [onig] */
 
+// from oniguruma.h
+typedef unsigned char  OnigUChar;
+typedef struct OnigEncodingTypeST*  OnigEncoding;
+typedef unsigned int        OnigOptionType;
+typedef struct OnigSyntaxType OnigSyntaxType;
+typedef struct re_registers {
+	int  allocated;
+	int  num_regs;
+	int* beg;
+	int* end;
+	/* extended */
+	struct OnigCaptureTreeNodeStruct* history_root;  /* capture history tree root */
+} OnigRegion;
+typedef struct OnigErrorInfo OnigErrorInfo;
+typedef struct re_pattern_buffer*  OnigRegex;
+
+/* options */
+#define ONIG_OPTION_DEFAULT            ONIG_OPTION_NONE
+#define ONIG_OPTION_NONE                 0U
+#define ONIG_OPTION_IGNORECASE           1U
+#define ONIG_OPTION_EXTEND               (ONIG_OPTION_IGNORECASE         << 1)
+#define ONIG_OPTION_MULTILINE            (ONIG_OPTION_EXTEND             << 1)
+#define ONIG_OPTION_SINGLELINE           (ONIG_OPTION_MULTILINE          << 1)
+#define ONIG_OPTION_FIND_LONGEST         (ONIG_OPTION_SINGLELINE         << 1)
+#define ONIG_OPTION_FIND_NOT_EMPTY       (ONIG_OPTION_FIND_LONGEST       << 1)
+#define ONIG_OPTION_NEGATE_SINGLELINE    (ONIG_OPTION_FIND_NOT_EMPTY     << 1)
+#define ONIG_OPTION_DONT_CAPTURE_GROUP   (ONIG_OPTION_NEGATE_SINGLELINE  << 1)
+#define ONIG_OPTION_CAPTURE_GROUP        (ONIG_OPTION_DONT_CAPTURE_GROUP << 1)
+/* options (search time) */
+#define ONIG_OPTION_NOTBOL               (ONIG_OPTION_CAPTURE_GROUP << 1)
+#define ONIG_OPTION_NOTEOL               (ONIG_OPTION_NOTBOL << 1)
+#define ONIG_OPTION_POSIX_REGION         (ONIG_OPTION_NOTEOL << 1)
+#define ONIG_OPTION_MAXBIT               ONIG_OPTION_POSIX_REGION  /* limit */
+
+#define ONIG_OPTION_ON(options,regopt)      ((options) |= (regopt))
+#define ONIG_OPTION_OFF(options,regopt)     ((options) &= ~(regopt))
+#define ONIG_IS_OPTION_ON(options,option)   ((options) & (option))
+
+/* normal return */
+#define ONIG_NORMAL                                            0
+#define ONIG_MISMATCH                                         -1
+#define ONIG_NO_SUPPORT_CONFIG                                -2
+
+
+static int (*onig_error_code_to_str)(OnigUChar*, int, ...);
+static int (*onig_new)(OnigRegex*, OnigUChar*, OnigUChar*, OnigOptionType, OnigEncoding, OnigSyntaxType*, OnigErrorInfo*);
+static int (*onig_number_of_captures)(OnigRegex);
+static OnigRegion* (*onig_region_new)(void);
+static int (*onig_search)(OnigRegex, OnigUChar*, OnigUChar*, OnigUChar*, OnigUChar*, OnigRegion*, OnigOptionType);
+static int (*onig_foreach_name)(OnigRegex, int (*)(const OnigUChar*, const OnigUChar*, int, int*, OnigRegex, void*), void*);
+static void (*onig_region_free)(OnigRegion*, int);
+static void (*onig_free)(OnigRegex);
+static OnigEncoding encutf8;
+static OnigSyntaxType** defaultsyntax;
+
 static knh_bool_t knh_linkDynamicOnig(CTX ctx)
 {
 	void *h = knh_dlopen(ctx, "libonig" K_OSDLLEXT);
 	if(h == NULL) return 0;
-	// TODO
-	return 0; // turn to 1 if made
+	onig_error_code_to_str = (int (*)(OnigUChar*, int, ...))knh_dlsym(ctx, h, "onig_error_code_to_str", 0/*isTest*/);
+	onig_new = (int (*)(OnigRegex*, OnigUChar*, OnigUChar*, OnigOptionType, OnigEncoding, OnigSyntaxType*, OnigErrorInfo*))knh_dlsym(ctx, h, "onig_new", 0/*isTest*/);
+	onig_number_of_captures = (int (*)(OnigRegex))knh_dlsym(ctx, h, "onig_number_of_captures", 0/*isTest*/);
+	onig_region_new = (OnigRegion* (*)(void))knh_dlsym(ctx, h, "onig_region_new", 0/*isTest*/);
+	onig_search = (int (*)(OnigRegex, OnigUChar*, OnigUChar*, OnigUChar*, OnigUChar*, OnigRegion*, OnigOptionType))knh_dlsym(ctx, h, "onig_search", 0/*isTest*/);
+	onig_foreach_name = (int (*)(OnigRegex, int (*)(const OnigUChar*, const OnigUChar*, int, int*, OnigRegex, void*), void*))knh_dlsym(ctx, h, "onig_foreach_name", 0/*isTest*/);
+	onig_region_free = (void (*)(OnigRegion*, int))knh_dlsym(ctx, h, "onig_region_free", 0/*isTest*/);
+	onig_free = (void (*)(OnigRegex))knh_dlsym(ctx, h, "onig_free", 0/*isTest*/);
+
+	encutf8 = (OnigEncoding)knh_dlsym(ctx, h, "OnigEncodingUTF8", 0/*isTest*/);
+	defaultsyntax = (OnigSyntaxType**)knh_dlsym(ctx, h, "OnigDefaultSyntax", 0/*isTest*/);
+	if(onig_error_code_to_str == NULL || onig_new == NULL || onig_number_of_captures == NULL || onig_region_new == NULL || onig_search == NULL || onig_foreach_name == NULL || onig_region_free == NULL || onig_free == NULL || encutf8 == NULL || defaultsyntax == NULL) return 0;
+	return 1;
 }
+
+typedef struct {
+	OnigRegex reg;
+	OnigErrorInfo *einfo;
+} ONIG_regex_t;
+
+static knh_regex_t* onig_regex_malloc(CTX ctx, knh_String_t *s)
+{
+	ONIG_regex_t *r = (ONIG_regex_t*)KNH_MALLOC(ctx, sizeof(ONIG_regex_t));
+	r->einfo = NULL;
+	r->reg = NULL;
+	return (knh_regex_t*) r;
+}
+
+static int onig_regex_parse_cflags(CTX ctx, const char *option)
+{
+	OnigOptionType cflags = ONIG_OPTION_DEFAULT;
+	int i, optlen = strlen(option);
+	for (i = 0; i < optlen; i++) {
+		switch(option[i]) {
+		case 'i':
+			ONIG_OPTION_ON(cflags, ONIG_OPTION_IGNORECASE);
+			break;
+		case 'm':
+			ONIG_OPTION_ON(cflags, ONIG_OPTION_MULTILINE);
+			break;
+		case 'x':
+			ONIG_OPTION_ON(cflags, ONIG_OPTION_EXTEND);
+			break;
+		default: break;
+		}
+	}
+	return (int)cflags;
+}
+
+static int onig_regex_parse_eflags(CTX ctx, const char *option)
+{
+	OnigOptionType eflags = ONIG_OPTION_NONE;
+	int i, optlen = strlen(option);
+	for (i = 0; i < optlen; i++) {
+		switch(option[i]) {
+		default: break;
+		}
+	}
+	return eflags;
+}
+
+static size_t onig_regex_regerror(int res, knh_regex_t *reg, char* ebuf, size_t ebuf_size)
+{
+	ONIG_regex_t *oreg = (ONIG_regex_t*)reg;
+	return onig_error_code_to_str((OnigUChar*)ebuf, res, oreg->einfo);
+}
+
+static int onig_regex_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, int cflag)
+{
+	ONIG_regex_t *oreg = (ONIG_regex_t*)reg;
+	OnigUChar* upatt = (OnigUChar*) pattern;
+	OnigUChar* end = upatt + strlen(pattern);
+	int cmp = onig_new(&(oreg->reg), upatt, end, cflag, encutf8, *defaultsyntax, oreg->einfo);
+	return (cmp == ONIG_NORMAL) ? 0 : 1;
+}
+
+static int onig_regex_nmatchsize(CTX ctx, knh_regex_t *reg)
+{
+	ONIG_regex_t *oreg = (ONIG_regex_t*)reg;
+	int cap = onig_number_of_captures(oreg->reg);
+	return 1 + cap; // pattern & groups
+}
+
+static int knh_regex_onig_setNames(const OnigUChar* name, const OnigUChar* name_end, int num_of_group, int* num_of_group_list, OnigRegex reg, void *arg)
+{
+	knh_regmatch_t *p = (knh_regmatch_t*)arg;
+	int i, len = name_end - name;
+	for (i = 0; i < num_of_group; i++) {
+		int j = num_of_group_list[i];
+		p[j].rm_name.buf = (char*)name;
+		p[j].rm_name.len = len;
+	}
+	return 0;
+}
+
+static int onig_regex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t nmatch, knh_regmatch_t p[], int eflag)
+{
+	ONIG_regex_t *oreg = (ONIG_regex_t*)reg;
+	OnigUChar *head = (OnigUChar*)str;
+	OnigUChar *end = head + strlen(str);
+	OnigRegion* region = onig_region_new();
+	int res = 0;
+	p[0].rm_so = -1;
+	if ((res = onig_search(oreg->reg, head, end, head, end, region, eflag)) >= 0) {
+		size_t i, matched = region->num_regs;
+		for (i = 0; i < nmatch && i < matched; i++) {
+			p[i].rm_so = region->beg[i];
+			p[i].rm_eo = region->end[i];
+		}
+		if (i < nmatch) p[i].rm_so = -1;
+		onig_foreach_name(oreg->reg, knh_regex_onig_setNames, p);
+	}
+	onig_region_free(region, 1); /* 1:free self, 0:free contents only */
+	return (res >= 0) ? 0 : res; /* >=0: not error(matched bytes), <0:error */
+}
+
+static void onig_regex_regfree(CTX ctx, knh_regex_t *reg)
+{
+	ONIG_regex_t *oreg = (ONIG_regex_t*)reg;
+	OnigRegex r = oreg->reg;
+	onig_free(r);
+	KNH_FREE(ctx, oreg, sizeof(ONIG_regex_t));
+}
+
+static const knh_RegexSPI_t REGEX_ONIG = {
+	"oniguruma",
+	onig_regex_malloc,
+	onig_regex_parse_cflags,
+	onig_regex_parse_eflags,
+	onig_regex_regcomp,
+	onig_regex_nmatchsize,
+	onig_regex_regexec,
+	onig_regex_regerror,
+	onig_regex_regfree
+};
 
 /* ------------------------------------------------------------------------ */
 /* [regex] */
@@ -897,8 +1084,8 @@ void knh_linkDynamicRegex(CTX ctx)
 			return;
 		}
 		if(knh_linkDynamicOnig(ctx)) {
-			//REGEX_DEFAULT = &REGEX_PCRE;
-			//return;
+			REGEX_DEFAULT = &REGEX_ONIG;
+			return;
 		}
 	}
 }
