@@ -1236,7 +1236,6 @@ static void gc_sweep(CTX ctx)
 			}
 		}
 	}
-	//knh_unuseObject(ctx, collected);
 	STAT_(
 		ctx->stat->collectedObject = collected;
 		ctx->stat->movedObject = moved;
@@ -1273,7 +1272,6 @@ static void gc_sweep(CTX ctx) // ide' ultra faster sweep
 			}
 		}
 	}
-	knh_unuseObject(ctx, collected);
 	STAT_(
 		ctx->stat->collectedObject = collected;
 		ctx->stat->movedObject = moved;
