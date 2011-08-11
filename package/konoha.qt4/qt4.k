@@ -39,6 +39,14 @@ class QApplication extends QObject;
 class QWebView extends QWidget;
 class QAbstractButton extends QWidget;
 class QPushButton extends QAbstractButton;
+class QFrame extends QWidget;
+
+class QLabel extends QFrame;
+class QLineEdit extends QWidget;
+
+class QLayout extends QObject; // and QLayoutItem
+class QBoxLayout extends QLayout;
+class QHBoxLayout extends QBoxLayout;
 
 @Native boolean QObject.connectValueChanged(Func<float> f);
 @Native boolean QObject.connectClicked(Func<boolean> f);
@@ -48,10 +56,23 @@ class QPushButton extends QAbstractButton;
 @Native void QApplication.quit();
 
 @Native QWidget QWidget.new(QWidget parent);
+@Native void QWidget.setLayout(QLayout layout);
+@Native void QWidget.move(int x, int y);
+@Native void QWidget.resize(int w, int h);
+@Native void QWidget.setWindowTitle(string title);
 @Native void QWidget.show();
 
 @Native QWebView QWebView.new(QWidget parent);
 @Native void QWebView.load(String url);
+
+@Native QLabel QLabel.new(String text, QWidget parent);
+
+@Native QLineEdit QLineEdit.new(String text, QWidget parent);
+
+@Native QHBoxLayout QHBoxLayout.new(QWidget parent);
+
+@Native QBoxLayout QBoxLayout.new(int dir, QWidget parent);
+@Native void QBoxLayout.addWidget(QWidget widget, int stretch, int allignment);
 
 // AbstractButton
 

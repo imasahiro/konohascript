@@ -54,8 +54,7 @@ bool KonohaEval::event(QEvent *e) {
 	KonohaEvalEvent *ke = (KonohaEvalEvent*)e;
 	fprintf(stderr, "thread id=%ld, eval='%s'\n", pthread_self(), ke->script);
 	const knh_context_t *lctx = knh_getCurrentContext();
-	knh_InputStream_t *bin = new_StringInputStream(lctx, new_String(lctx, ke->script));
-	knh_eval(lctx, bin, NULL);   // use lctx
+	knh_eval(lctx, ke->script);   // use lctx
 	return true;
 }
 

@@ -31,6 +31,7 @@
 // **************************************************************************
 
 #include <QWidget>
+#include <QString>
 #include "qt4commons.hpp"
 
 #ifdef __cplusplus
@@ -42,6 +43,38 @@ static void qfree(void *p)
 	QWidget *q = QCAST(QWidget*, p);
 	//fprintf(stderr, "freeing QWidget.. %p \n", p);
 	delete q;
+}
+
+//## void QWidget.setLayout(QLayout layout);
+KMETHOD QWidget_setLayout(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	QWidget *w = QPtr_to(QWidget *, sfp[0]);
+	w->setLayout(QPtr_to(QLayout *, sfp[1]));
+	RETURNvoid_();
+}
+
+//## void QWidget.move(int x, int y);
+KMETHOD QWidget_move(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	QWidget *w = QPtr_to(QWidget*, sfp[0]);
+	w->move(Int_to(int, sfp[1]), Int_to(int, sfp[2]));
+	RETURNvoid_();
+}
+
+//## void QWidget.setWindowTitle(string title);
+KMETHOD QWidget_setWindowTitle(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	QWidget *w = QPtr_to(QWidget*, sfp[0]);
+	w->setWindowTitle(QString::QString(String_to(const char *, sfp[1])));
+	RETURNvoid_();
+}
+
+//## void QWidget.resize(int w, int h);
+KMETHOD QWidget_resize(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	QWidget *w = QPtr_to(QWidget*, sfp[0]);
+	w->resize(Int_to(int, sfp[1]), Int_to(int, sfp[2]));
+	RETURNvoid_();
 }
 
 //## QWidget QWidget.new(QWidget w)

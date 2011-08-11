@@ -32,6 +32,7 @@
 
 #include <QPushButton>
 #include <konoha1.h>
+#include "qt4commons.hpp"
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,11 +44,17 @@ static void qfree(void *p)
 	delete q;
 }
 
-//## QPushButton QPushButton.new(String text)
+//## QPushButton QPushButton.new(String text, QWidget parent)
 KMETHOD QPushButton_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QString text = QString(S_tochar(sfp[1].s));
-	QPushButton *q = new QPushButton(text, 0);
+	QPushButton *q;
+	if (IS_NULL(sfp[2].o)) {
+		q = new QPushButton(text, 0);
+	} else {
+		QWidget *parent = QPtr_to(QWidget *, sfp[2]);
+		q = new QPushButton(text, parent);
+	}
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, q, qfree);
 	RETURN_(p);
 }
