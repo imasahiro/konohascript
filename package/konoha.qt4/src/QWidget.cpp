@@ -38,51 +38,52 @@
 extern "C" {
 #endif
 
-static void qfree(void *p)
-{
-	QWidget *q = QCAST(QWidget*, p);
-	//fprintf(stderr, "freeing QWidget.. %p \n", p);
-	delete q;
-}
-
-//## void QWidget.setLayout(QLayout layout);
-KMETHOD QWidget_setLayout(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	QWidget *w = QPtr_to(QWidget *, sfp[0]);
-	w->setLayout(QPtr_to(QLayout *, sfp[1]));
-	RETURNvoid_();
-}
-
-//## void QWidget.move(int x, int y);
-KMETHOD QWidget_move(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	QWidget *w = QPtr_to(QWidget*, sfp[0]);
-	w->move(Int_to(int, sfp[1]), Int_to(int, sfp[2]));
-	RETURNvoid_();
-}
-
-//## void QWidget.setWindowTitle(string title);
-KMETHOD QWidget_setWindowTitle(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	QWidget *w = QPtr_to(QWidget*, sfp[0]);
-	w->setWindowTitle(QString::QString(String_to(const char *, sfp[1])));
-	RETURNvoid_();
-}
-
-//## void QWidget.resize(int w, int h);
-KMETHOD QWidget_resize(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	QWidget *w = QPtr_to(QWidget*, sfp[0]);
-	w->resize(Int_to(int, sfp[1]), Int_to(int, sfp[2]));
-	RETURNvoid_();
-}
 
 //## QWidget QWidget.new(QWidget w)
 KMETHOD QWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QWidget *w = IS_NULL(sfp[1].o) ? NULL : QPtr_to(QWidget*, sfp[1]);
-	QWidget *q = new QWidget(w);
-	RETURN_(new_ReturnCppObject(ctx, sfp, q, qfree));
+	QWidget *q = new QWidget(QWidget_parent(sfp[1]));
+	RETURN_(new_ReturnQObject(ctx, sfp, q));
+}
+
+//## void QWidget.setLayout(QLayout layout);
+KMETHOD QWidget_setLayout(CTX, knh_sfp_t *sfp _RIX)
+{
+	QWidget *w = QPtr_to(QWidget *, sfp[0]);
+	if(w != NULL) {
+		w->setLayout(QPtr_to(QLayout *, sfp[1]));
+	}
+	RETURNvoid_();
+}
+
+//## void QWidget.move(int x, int y);
+KMETHOD QWidget_move(CTX, knh_sfp_t *sfp _RIX)
+{
+	QWidget *w = QPtr_to(QWidget*, sfp[0]);
+	if(w != NULL) {
+		w->move(Int_to(int, sfp[1]), Int_to(int, sfp[2]));
+	}
+	RETURNvoid_();
+}
+
+//## void QWidget.setWindowTitle(string title);
+KMETHOD QWidget_setWindowTitle(CTX, knh_sfp_t *sfp _RIX)
+{
+	QWidget *w = QPtr_to(QWidget*, sfp[0]);
+	if(w != NULL) {
+		w->setWindowTitle(QString::QString(String_to(const char *, sfp[1])));
+	}
+	RETURNvoid_();
+}
+
+//## void QWidget.resize(int w, int h);
+KMETHOD QWidget_resize(CTX, knh_sfp_t *sfp _RIX)
+{
+	QWidget *w = QPtr_to(QWidget*, sfp[0]);
+	if(w != NULL) {
+		w->resize(Int_to(int, sfp[1]), Int_to(int, sfp[2]));
+	}
+	RETURNvoid_();
 }
 
 //## void QWidget.show();

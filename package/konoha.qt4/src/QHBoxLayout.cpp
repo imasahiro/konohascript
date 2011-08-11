@@ -38,24 +38,11 @@
 extern "C" {
 #endif
 
-static void qfree(void *p)
-{
-	QHBoxLayout *h = (QHBoxLayout*)p;
-	delete h;
-}
-
 //## QHBoxLayout QHBoxLayout.new(QWidget parent);
 KMETHOD QHBoxLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QHBoxLayout *h;
-	if (IS_NULL(sfp[1].o)) {
-		h = new QHBoxLayout();
-	} else {
-		QWidget *parent = QPtr_to(QWidget *, sfp[1]);
-		h = new QHBoxLayout(parent);
-	}
-	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, h, qfree);
-	RETURN_(p);
+	QHBoxLayout *h = new QHBoxLayout(QWidget_parent(sfp[1]));
+	RETURN_(new_ReturnQObject(ctx, sfp, h));
 }
 
 #ifdef __cplusplus

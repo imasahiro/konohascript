@@ -38,37 +38,28 @@
 extern "C" {
 #endif
 
-static void qfree(void *p)
+//## QBoxLayout QBoxLayout.new(int dir, QWidget parent);
+KMETHOD QBoxLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QBoxLayout *b = (QBoxLayout*)p;
-	delete b;
+	QBoxLayout *b = new QBoxLayout(Int_to(QBoxLayout::Direction, sfp[1]), QWidget_parent(sfp[2]));
+	knh_RawPtr_t *p = new_ReturnQObject(ctx, sfp, b);
+	RETURN_(p);
 }
 
-//## void QBoxLayout.addWidget(QWidget widget, int stretch, int allignment);
+//## void QBoxLayout.addWidget(QWidget widget, int stretch, int alignment);
 KMETHOD QBoxLayout_addWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QBoxLayout *b = QPtr_to(QBoxLayout *, sfp[0]);
-	if (IS_NULL(sfp[2].o) && IS_NULL(sfp[3].o)) {
-		b->addWidget(QPtr_to(QWidget *, sfp[1]));
-	} else {
+	if(b != NULL) {
+//		if (IS_NULL(sfp[2].o) && IS_NULL(sfp[3].o)) {
+//			b->addWidget(QPtr_to(QWidget *, sfp[1]));
+//		} else {
 		b->addWidget(QPtr_to(QWidget *, sfp[1]), Int_to(int, sfp[2]), Int_to(Qt::Alignment, sfp[3]));
+//		}
 	}
 	RETURNvoid_();
 }
 
-//## QBoxLayout QBoxLayout.new(int dir, QWidget parent);
-KMETHOD QBoxLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	QBoxLayout *b;
-	if (IS_NULL(sfp[2].o)) {
-		b = new QBoxLayout(Int_to(QBoxLayout::Direction, sfp[1]), 0);
-	} else {
-		QWidget *parent = QPtr_to(QWidget *, sfp[2]);
-		b = new QBoxLayout(Int_to(QBoxLayout::Direction, sfp[1]), parent);
-	}
-	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, b, qfree);
-	RETURN_(p);
-}
 
 /* ------------------------------------------------------------------------ */
 

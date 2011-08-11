@@ -38,18 +38,11 @@
 extern "C" {
 #endif
 
-static void qfree(void *p)
-{
-	QWebView *q = QCAST(QWebView*, p);
-	delete q;
-}
-
 //## QWebView QWebView.new(QWidget w)
 KMETHOD QWebView_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QWidget *w = IS_NULL(sfp[1].o) ? NULL : QPtr_to(QWidget*, sfp[1]);
-	QWebView *q = new QWebView(w);
-	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, q, qfree);
+	QWebView *q = new QWebView(QWidget_parent(sfp[1]));
+	knh_RawPtr_t *p = new_ReturnQObject(ctx, sfp, q);
 	RETURN_(p);
 }
 

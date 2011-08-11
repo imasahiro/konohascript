@@ -38,24 +38,12 @@
 extern "C" {
 #endif
 
-static void qfree(void *p)
-{
-	QPushButton *q = (QPushButton*)p;
-	delete q;
-}
-
 //## QPushButton QPushButton.new(String text, QWidget parent)
 KMETHOD QPushButton_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QString text = QString(S_tochar(sfp[1].s));
-	QPushButton *q;
-	if (IS_NULL(sfp[2].o)) {
-		q = new QPushButton(text, 0);
-	} else {
-		QWidget *parent = QPtr_to(QWidget *, sfp[2]);
-		q = new QPushButton(text, parent);
-	}
-	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, q, qfree);
+	QPushButton *q = new QPushButton(text, QWidget_parent(sfp[2]));
+	knh_RawPtr_t *p = new_ReturnQObject(ctx, sfp, q);
 	RETURN_(p);
 }
 

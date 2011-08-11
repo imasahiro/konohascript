@@ -37,6 +37,14 @@
 extern "C" {
 #endif
 
+void qfree(void *p)
+{
+	QObject *q = QCAST(QObject*, p);
+	delete q;
+}
+
+/* ------------------------------------------------------------------------ */
+
 Connector::Connector(CTX ctx, knh_Func_t *fo) {
 	this->ctx = (knh_context_t*)ctx;
 	this->fo = fo;

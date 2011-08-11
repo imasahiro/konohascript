@@ -39,7 +39,7 @@
 extern "C" {
 #endif
 
-static void qfree(void *)
+static void qfree_(void *)
 {
 	//QApplication *q = (QApplication *)p;
 	//fprintf(stderr, "freeing QApplication..%p \n", p);
@@ -111,7 +111,7 @@ KMETHOD QApplication_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int dummy = 0;
 	QApplication *app = new QApplication(dummy, NULL);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, app, qfree);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, app, qfree_);
 	RETURN_(p);
 }
 

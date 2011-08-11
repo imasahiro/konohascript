@@ -42,6 +42,13 @@
 #define QCAST(T, p)     (T)p
 #define QPtr_to(T, a)   (T)((a).p->rawptr)
 
+#define QWidget_parent(FP)  IS_NULL(FP.o) ? NULL : QPtr_to(QWidget*, FP)
+#define new_ReturnQObject(ctx, sfp, q)   new_ReturnCppObject(ctx, sfp, q, qfree)
+
+extern "C" {
+	void qfree(void *p);
+}
+
 using namespace std;
 
 class Connector : public QObject {
@@ -80,6 +87,5 @@ public:
 	bool event(QEvent *e);
 
 };
-
 
 #endif /* QT4COMMONS_HPP_ */

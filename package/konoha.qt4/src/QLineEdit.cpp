@@ -27,7 +27,7 @@
 // **************************************************************************
 // LIST OF CONTRIBUTERS
 //  kimio - Kimio Kuramitsu, Yokohama National University, Japan
-//  goccy54
+//  wakamori
 // **************************************************************************
 
 #include <QLineEdit>
@@ -38,25 +38,12 @@
 extern "C" {
 #endif
 
-static void qfree(void *p)
-{
-	QLineEdit *l = (QLineEdit*)p;
-	delete l;
-}
-
 //## QLineEdit QLineEdit.new(String text, QWidget parent);
 KMETHOD QLineEdit_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QString text = QString(String_to(const char *, sfp[1]));
-	QLineEdit *l;
-	if (IS_NULL(sfp[2].o)) {
-		l = new QLineEdit(text, 0);
-	} else {
-		QWidget *parent = QPtr_to(QWidget *, sfp[2]);
-		l = new QLineEdit(text, parent);
-	}
-	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, l, qfree);
-	RETURN_(p);
+	QLineEdit *l = new QLineEdit(text, Qwidget_parent(sfp[2]);
+	RETURN_(new_ReturnQObject(ctx, sfp, l));
 }
 
 #ifdef __cplusplus

@@ -38,25 +38,12 @@
 extern "C" {
 #endif
 
-static void qfree(void *p)
-{
-	QLabel *l = (QLabel*)p;
-	delete l;
-}
-
 //## QLabel QLabel.new(String text, QWidget parent);
 KMETHOD QLabel_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QString text = QString(String_to(const char *, sfp[1]));
-	QLabel *l;
-	if (IS_NULL(sfp[2].o)) {
-		l = new QLabel(text, 0);
-	} else {
-		QWidget *parent = QPtr_to(QWidget *, sfp[2]);
-		l = new QLabel(text, parent);
-	}
-	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, l, qfree);
-	RETURN_(p);
+	QLabel *l = QLabel(text, QWidget_parent(sfp[2]));
+	RETURN_(new_ReturnQObject(ctx, sfp, l));
 }
 
 #ifdef __cplusplus
