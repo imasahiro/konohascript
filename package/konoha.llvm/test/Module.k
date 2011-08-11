@@ -1,0 +1,11 @@
+using konoha.llvm.*;
+print Module;
+m = new Module("hello");
+Type arg0Ty = Type.getInt64Ty();
+Type arg1Ty = Type.getInt64Ty();
+Type retTy  = Type.getInt64Ty();
+FunctionType fnTy = FunctionType.get(retTy, [arg0Ty, arg1Ty], false);
+Function func = m.getOrInsertFunction("test", fnTy);
+//BasicBlock bb = BasicBlock.create(func);
+//IRBuilder builder = new IRBuilder(bb);
+m.dump();
