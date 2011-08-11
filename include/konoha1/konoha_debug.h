@@ -31,7 +31,7 @@
 #define KNH_LOG(fmt, ...) \
 		knh_logprintf("DEBUG", 0, "[%s:%d] " fmt K_OSLINEFEED, __FUNCTION__, __LINE__, ## __VA_ARGS__);
 
-#define MEM_LOG(fmt, ...) if(knh_isVerboseGC()){ \
+#define GC_LOG(fmt, ...) if(knh_isVerboseGC()){ \
 		knh_logprintf("MEMORY", 0, fmt K_OSLINEFEED,  ## __VA_ARGS__);\
 	} \
 

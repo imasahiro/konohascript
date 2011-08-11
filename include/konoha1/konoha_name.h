@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      467
+#define K_REVISION                      477
 #endif
-#define K_BUILDID                       1153
+#define K_BUILDID                       1155
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -558,8 +558,9 @@
 #define FLAG_Object_NullObject ((knh_uintptr_t)(1<<1))
 #define Object_isNullObject(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_NullObject))
 #define Object_setNullObject(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_NullObject,b)
-#define FLAG_Object_Classified ((knh_uintptr_t)(1<<2))
-#define Object_isClassified(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_Classified))
+#define FLAG_Object_XData ((knh_uintptr_t)(1<<2))
+#define Object_isXData(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_XData))
+#define Object_setXData(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_XData,b)
 #define FLAG_Object_Modified ((knh_uintptr_t)(1<<3))
 #define Object_isModified(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_Modified))
 #define Object_setModified(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_Modified,b)

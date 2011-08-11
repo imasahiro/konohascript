@@ -61,67 +61,97 @@ extern "C" {
 #define MB_   (KB_*1024)
 #define GB_   (MB_*1024)
 
-/* ------------------------------------------------------------------------ */
-/* [malloc] */
+#define K_USING_MEMSTAT  1
+//#define K_USING_MEMLOG   1
+
+#ifdef K_USING_MEMLOG
+#define MEMLOG(action, fmt, ...) { \
+		knh_logprintf(action, 0, "T%llu, " fmt , knh_getTimeMilliSecond(),  ## __VA_ARGS__);\
+	} \
+
+#else
+#define MEMLOG(action, fmt, ...)
+
+#endif
 
 /* ------------------------------------------------------------------------ */
 
-#define STAT_useMemory(ctx, SIZE) { \
+#ifdef K_USING_MEMSTAT
+#define STAT_mem(ctx, SIZE) { \
 		knh_stat_t *stat = ctx->stat;\
 		stat->usedMemorySize += (SIZE);\
 		if(stat->usedMemorySize > stat->maxMemoryUsage) stat->maxMemoryUsage = stat->usedMemorySize;\
 	}\
 
-#define STAT_unuseMemory(ctx, SIZE)   (ctx->stat)->usedMemorySize -= (SIZE)
+#define STAT_dmem(ctx, SIZE)   (ctx->stat)->usedMemorySize -= (SIZE)
+
+#define STAT_Object(ctx, ct) { \
+		knh_stat_t *stat = ctx->stat;\
+		stat->usedObjectSize += 1;\
+		if(stat->usedObjectSize > stat->maxObjectUsage) stat->maxObjectUsage = stat->usedObjectSize;\
+		((knh_ClassTBL_t*)ct)->count += 1; \
+		((knh_ClassTBL_t*)ct)->total += 1; \
+	}\
+
+#define STAT_dObject(ctx, ct) \
+	(ctx->stat)->usedObjectSize -= 1; \
+	((knh_ClassTBL_t*)ct)->count -= 1; \
+
+
+#else
+#define STAT_mem(ctx, SIZE)
+#define STAT_dmem(ctx, SIZE)
+#define STAT_Object(ctx, ct)
+#define STAT_dObject(ctx, ct)
+
+#endif
 
 void *knh_malloc(CTX ctx, size_t size)
 {
-	DBG_ASSERT(size > 0);
-	prefetch(ctx->stat);
 	void *block = malloc(size);
+	MEMLOG("malloc", "ptr=%p, size=%lu", block, size);
 	if (unlikely(block == NULL)) {
 		THROW_OutOfMemory(ctx, size);
 	}
-	STAT_useMemory(ctx, size);
+	STAT_mem(ctx, size);
 	return block;
 }
 
 void knh_free(CTX ctx, void *block, size_t size)
 {
-	prefetch(ctx->stat);
-//	SECURE_bzero(block, size);
-//	if(unlikely(size > K_PAGESIZE)) {
-//		SYSLOG_FreeLargeMemory(ctx, block, size);
-//	}
+	MEMLOG("free", "ptr=%p, size=%lu", block, size);
 	free(block);
-	STAT_unuseMemory(ctx, size);
+	STAT_dmem(ctx, size);
 }
 
 void *knh_valloc(CTX ctx, size_t size)
 {
-	DBG_ASSERT(size > 0);
 #if defined(HAVE_POSIX_MEMALIGN)
 	void *block = NULL;
 	int ret = posix_memalign(&block, K_PAGESIZE, size);
+	MEMLOG("valloc", "ptr=%p, size=%lu", block, size);
 	if(ret != 0) {
 		THROW_OutOfMemory(ctx, size);
 	}
-	STAT_useMemory(ctx, size);
+	STAT_mem(ctx, size);
 	return block;
 #elif defined(HAVE_MEMALIGN)
 	void *block = memalign(K_PAGESIZE, size);
+	MEMLOG("valloc", "ptr=%p, size=%lu", block, size);
 	if (unlikely(block == NULL)) {
 		THROW_OutOfMemory(ctx, size);
 	}
 	return block;
 #elif defined(K_USING_WINDOWS_)
 	void *block = VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+	MEMLOG("valloc", "ptr=%p, size=%lu", block, size);
 	if (unlikely(block == NULL)) {
 		THROW_OutOfMemory(ctx, size);
 	}
 	return block;
 #else
 	void *block = malloc(size + K_PAGESIZE);
+	MEMLOG("valloc", "ptr=%p, size=%lu", block, size);
 	if (unlikely(block == NULL)) {
 		THROW_OutOfMemory(ctx, size);
 	}
@@ -137,31 +167,25 @@ void *knh_valloc(CTX ctx, size_t size)
 		void **p = (void**)((char*)block + size);
 		p[0] = block;
 	}
-	STAT_useMemory(ctx, size + K_PAGESIZE);
+	STAT_mem(ctx, size + K_PAGESIZE);
 	return block;
 #endif
 }
 
 void knh_vfree(CTX ctx, void *block, size_t size)
 {
-	//SECURE_(knh_bzero(block, size));
-//	if(unlikely(size > K_PAGESIZE)) {
-//		SYSLOG_FreeLargeMemory(ctx, block, size);
-//	}
-#if defined(HAVE_POSIX_MEMALIGN)
+	MEMLOG("vfree", "ptr=%p, size=%lu", block, size);
+#if defined(HAVE_POSIX_MEMALIGN) || defined(HAVE_MEMALIGN)
 	free(block);
-	STAT_unuseMemory(ctx, size);
-#elif defined(HAVE_MEMALIGN)
-	free(block);
-	STAT_unuseMemory(ctx, size);
+	STAT_dmem(ctx, size);
 #elif defined(K_USING_WINDOWS_)
 	VirtualFree(block, 0, MEM_RELEASE);
-	STAT_unuseMemory(ctx, size);
+	STAT_dmem(ctx, size);
 #else
 	void **p = (void**)((char*)block + size);
 	block = p[0];
 	free(block);
-	STAT_unuseMemory(ctx, size + K_PAGESIZE);
+	STAT_dmem(ctx, size + K_PAGESIZE);
 #endif
 }
 
@@ -173,7 +197,7 @@ void *TRACE_malloc(CTX ctx, size_t size K_TRACEARGV)
 	if (unlikely(block == NULL)) {
 		THROW_OutOfMemory(ctx, size);
 	}
-	STAT_useMemory(ctx, size);
+	STAT_mem(ctx, size);
 	block[0] = size;
 	return (void*)(block + 1);
 }
@@ -189,7 +213,7 @@ void TRACE_free(CTX ctx, void *p, size_t size K_TRACEARGV)
 	}
 	knh_bzero(block, size + sizeof(size_t));
 	free(block);
-	STAT_unuseMemory(ctx, size);
+	STAT_dmem(ctx, size);
 }
 
 void *TRACE_realloc(CTX ctx, void *p, size_t os, size_t ns, size_t wsize K_TRACEARGV)
@@ -200,7 +224,7 @@ void *TRACE_realloc(CTX ctx, void *p, size_t os, size_t ns, size_t wsize K_TRACE
 	if (unlikely(block == NULL)) {
 		THROW_OutOfMemory(ctx, newsize);
 	}
-	STAT_useMemory(ctx, newsize);
+	STAT_mem(ctx, newsize);
 	block[0] = newsize;
 	if(p != NULL) {
 		DBG_ASSERT(os > 0);
@@ -219,7 +243,7 @@ void *TRACE_realloc(CTX ctx, void *p, size_t os, size_t ns, size_t wsize K_TRACE
 		}
 		knh_bzero(block, oldsize + sizeof(size_t));
 		free(block);
-		STAT_unuseMemory(ctx, oldsize);
+		STAT_dmem(ctx, oldsize);
 	}
 	return newp;
 }
@@ -295,28 +319,11 @@ void xmem_freeall(CTX ctx)
 
 /* ------------------------------------------------------------------------ */
 
-//#ifndef PREFETCH_STRIDE
-//#define PREFETCH_STRIDE (4*L1_CACHE_BYTES)
-//#endif
-//
-//static inline void prefetch_range(void *addr, size_t len)
-//{
-//#ifdef ARCH_HAS_PREFETCH
-//	const char *p = (const char*)addr;
-//	const char *ep = p + len;
-//	for (; p < ep; p += PREFETCH_STRIDE)
-//		__buildin_prefetch(p, 1/*rw*/, 2);
-//#endif
-//}
-
-/* ------------------------------------------------------------------------ */
-
 static void knh_fastmemset(void *p, size_t n, knh_intptr_t M)
 {
 	size_t i, size = n / sizeof(knh_intptr_t);
 	knh_intptr_t *np = (knh_intptr_t*)p;
 	for(i = 0; i < size; i+=8) {
-		//prefetch(np + 8, 1/*w*/, 3/*locality*/);
 		np[0] = M; np[1] = M; np[2] = M; np[3] = M;
 		np[4] = M; np[5] = M; np[6] = M; np[7] = M;
 		np += 8;
@@ -325,6 +332,7 @@ static void knh_fastmemset(void *p, size_t n, knh_intptr_t M)
 
 /* ------------------------------------------------------------------------ */
 /* [fastmalloc] */
+
 struct knh_memslot_t {
 	union {
 		struct knh_memslot_t *ref;
@@ -360,7 +368,7 @@ static knh_memslot_t *new_FastMemoryList(CTX ctx)
 			mslot->ref = (mslot + 1);
 		}
 		(mslot-1)->ref = NULL;
-		MEM_LOG("Allocated MemoryArena id=%d region=(%p-%p)", pageindex, at->head, at->bottom);
+		GC_LOG("Allocated MemoryArena id=%d region=(%p-%p)", pageindex, at->head, at->bottom);
 	}
 	return ctx->freeMemoryList;
 }
@@ -463,20 +471,23 @@ void *knh_fastmalloc(CTX ctx, size_t size)
 		m = ctx->freeMemoryList;
 		((knh_context_t*)ctx)->freeMemoryList = m->ref;
 		m->ref = NULL;
+		MEMLOG("fastmalloc", "ptr=%p, size=%lu", m, size);
 		return (void*)m;
 	}
 	else {
 		void *block = malloc(size);
+		MEMLOG("fastmalloc", "ptr=%p, size=%lu", block, size);
 		if (unlikely(block == NULL)) {
 			THROW_OutOfMemory(ctx, size);
 		}
-		STAT_useMemory(ctx, size);
+		STAT_mem(ctx, size);
 		return block;
 	}
 }
 
 void knh_fastfree(CTX ctx, void *block, size_t size)
 {
+	MEMLOG("fastfree", "ptr=%p, size=%lu", block, size);
 	if(size <= K_FASTMALLOC_SIZE) {
 		knh_memslot_t *m = (knh_memslot_t*)block;
 		KNH_FREEZERO(m, K_FASTMALLOC_SIZE);
@@ -484,10 +495,9 @@ void knh_fastfree(CTX ctx, void *block, size_t size)
 		((knh_context_t*)ctx)->freeMemoryList = m;
 	}
 	else {
-		prefetch(ctx->stat);
 		KNH_FREEZERO(block, size);
 		free(block);
-		STAT_unuseMemory(ctx, size);
+		STAT_dmem(ctx, size);
 	}
 }
 
@@ -505,6 +515,7 @@ void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize)
 			DBG_ASSERT(block == NULL);
 			knh_bzero(newblock, newsize);
 		}
+		MEMLOG("fastrealloc", "ptr=%p, size=%lu, newptr=%p, newsize=%lu", block, oldsize, newblock, newsize);
 		return newblock;
 	}
 	else {
@@ -513,8 +524,9 @@ void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize)
 		if (unlikely(newblock == NULL)) {
 			THROW_OutOfMemory(ctx, newsize);
 		}
-		STAT_useMemory(ctx, (newsize - oldsize));
+		STAT_mem(ctx, (newsize - oldsize));
 		knh_bzero((char*)newblock + oldsize, (newsize - oldsize));
+		MEMLOG("fastrealloc", "ptr=%p, size=%lu, newptr=%p, newsize=%lu", block, oldsize, newblock, newsize);
 		return newblock;
 	}
 }
@@ -716,7 +728,7 @@ static knh_Object_t *new_ObjectArena(CTX ctx, size_t arenasize)
 	DBG_ASSERT(sizeof(knh_ObjectPage_t) == K_PAGESIZE);
 	oat = &ctxshare->ObjectArenaTBL[pageindex];
 	ObjectArenaTBL_init(ctx, oat, arenasize);
-	MEM_LOG("Allocated object arena id=%d region=(%p-%p), %d objects", pageindex, oat->head, oat->bottom, ((oat->bottom - oat->head) * K_PAGEOBJECTSIZE));
+	GC_LOG("Allocated object arena id=%d region=(%p-%p), %d objects", pageindex, oat->head, oat->bottom, ((oat->bottom - oat->head) * K_PAGEOBJECTSIZE));
 	{
 		knh_Object_t *p = oat->head->slots;
 		p->ref4_tail = &(((knh_Object_t*)(oat->bottom))[-1]);
@@ -739,6 +751,7 @@ knh_bool_t knh_isObject(CTX ctx, void *p)
 
 /* ------------------------------------------------------------------------ */
 /* [cstack trace] */
+
 #ifdef K_USING_CTRACE
 #define K_TRACE_LENGTH 128
 static const char* addr_to_name(void* p)
@@ -853,21 +866,6 @@ static void DBG_checkOnArena(CTX ctx, void *used K_TRACEARGV)
 /* ------------------------------------------------------------------------ */
 /* [hObject] */
 
-#define knh_useObject(ctx, n) { \
-		knh_stat_t *stat = ctx->stat;\
-		stat->usedObjectSize += (n);\
-		if(stat->usedObjectSize > stat->maxObjectUsage) stat->maxObjectUsage = stat->usedObjectSize;\
-	}\
-
-#define knh_unuseObject(ctx, n)   (ctx->stat)->usedObjectSize -= (n)
-
-#define createClassObject(t) \
-	((knh_ClassTBL_t*)t)->count += 1; \
-	((knh_ClassTBL_t*)t)->total += 1; \
-
-#define disposeClassObject(t) \
-	((knh_ClassTBL_t*)t)->count -= 1; \
-
 knh_Object_t *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
 {
 	knh_Object_t *o = NULL;
@@ -877,9 +875,9 @@ knh_Object_t *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
 	o->h.magicflag = ct->magicflag;
 	knh_Object_RCset(o, K_RCGC_INIT);
 	o->h.cTBL = ct;
-	createClassObject(ct);
-	knh_useObject(ctx, 1);
 	O_unset_tenure(o); // collectable
+	STAT_Object(ctx, ct);
+	MEMLOG("new_Object", "ptr=%p, class=%s", o, ct->cdef->name);
 	return o;
 }
 
@@ -892,9 +890,9 @@ knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 	knh_Object_RCset(o, K_RCGC_INIT);
 	o->h.cTBL = ct;
 	ct->cdef->init(ctx, RAWPTR(o));
-	createClassObject(ct);
-	knh_useObject(ctx, 1);
 	O_unset_tenure(o); // collectable
+	STAT_Object(ctx, ct);
+	MEMLOG("new_Object", "ptr=%p, class=%s", o, ct->cdef->name);
 	return o;
 }
 
@@ -908,9 +906,9 @@ void TR_NEW(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 	knh_Object_RCset(o, K_RCGC_INIT);
 	o->h.cTBL = ct;
 	ct->cdef->init(ctx, RAWPTR(o));
-	createClassObject(ct);
-	knh_useObject(ctx, 1);
 	O_unset_tenure(o); // collectable
+	STAT_Object(ctx, ct);
+	MEMLOG("new_Object", "ptr=%p, class=%s", o, ct->cdef->name);
 	KNH_SETv(ctx, sfp[c].o, o);
 }
 
@@ -920,11 +918,14 @@ static void knh_Object_finalfree(CTX ctx, knh_Object_t *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
 	RCGC_(DBG_ASSERT(Object_isRC0(o)));
+	MEMLOG("~Object", "ptr=%p, class=%s", o, ct->cdef->name);
+	if(Object_isXData(o)) {
+		knh_PtrMap_rm(ctx, ctx->share->xdataPtrMap, o);
+		Object_setXData(o, 0);
+	}
 	ct->cdef->free(ctx, RAWPTR(o));
-	//o->h.magicflag = 0;
 	OBJECT_REUSE(o);
-	knh_unuseObject(ctx, 1);
-	disposeClassObject(ct);
+	STAT_dObject(ctx, ct);
 	O_set_tenure(o); // uncollectable
 }
 
@@ -1204,10 +1205,14 @@ static void gc_mark(CTX ctx)
 static inline void Object_MSfree(CTX ctx, knh_Object_t *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
-	DBG_P("sweep cid=%d,%s %p %s", ct->cid, ct->cdef->name, o, CLASS__(ct->cid));
+	MEMLOG("~Object", "ptr=%p, class=%s", o, ct->cdef->name);
+	if(unlikely(Object_isXData(o))) {
+		knh_PtrMap_rm(ctx, ctx->share->xdataPtrMap, o);
+		Object_setXData(o, 0);
+	}
 	ct->cdef->free(ctx, RAWPTR(o));
 	OBJECT_REUSE(o);
-	disposeClassObject(ct);
+	STAT_dObject(ctx, ct);
 	O_set_tenure(o); // uncollectable
 }
 
@@ -1231,7 +1236,7 @@ static void gc_sweep(CTX ctx)
 			}
 		}
 	}
-	knh_unuseObject(ctx, collected);
+	//knh_unuseObject(ctx, collected);
 	STAT_(
 		ctx->stat->collectedObject = collected;
 		ctx->stat->movedObject = moved;
@@ -1297,7 +1302,7 @@ static void gc_extendObjectArena(CTX ctx)
 			p->ref = newobj;
 			((knh_context_t*)ctx)->freeObjectTail = newobj->ref4_tail;
 		}
-		MEM_LOG("EXTEND_ARENA: %d times newarena=%dMb, used_memory=%dMb",
+		GC_LOG("EXTEND_ARENA: %d times newarena=%dMb, used_memory=%dMb",
 				(int)(ctx->share->sizeObjectArenaTBL - 1),
 				(int)(arenasize) / MB_, (int)(ctx->stat->usedMemorySize / MB_));
 	}
@@ -1332,7 +1337,7 @@ void knh_System_gc(CTX ctx)
 	ctime = knh_getTimeMilliSecond();
 	if(knh_isVerboseGC()) {
 		STAT_(
-		MEM_LOG("GC(%dMb): marked=%d, collected=%d, used=%d=>%d, marking_time=%dms, sweeping_time=%dms",
+		GC_LOG("GC(%dMb): marked=%d, collected=%d, used=%d=>%d, marking_time=%dms, sweeping_time=%dms",
 				(int)(ctxstat->usedMemorySize/ MB_),
 				(int)ctxstat->markedObject, (int)ctxstat->collectedObject,
 				(int)used, (int)ctxstat->usedObjectSize, (int)(mtime-stime), (int)(ctime-mtime));)
@@ -1347,6 +1352,11 @@ void knh_System_gc(CTX ctx)
 	ctxstat->gcTime += (knh_getTimeMilliSecond() - stime);
 	//KNH_UNLOCK(ctx, ctx->share->memlock);
 }
+
+/* ------------------------------------------------------------------------ */
+
+
+
 
 /* ------------------------------------------------------------------------ */
 

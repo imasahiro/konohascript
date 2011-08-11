@@ -236,9 +236,10 @@ static knh_context_t* new_RootContext(void)
 	share->sizeEventTBL = 0;
 	share->capacityEventTBL  = K_EVENTTBL_INIT;
 	knh_loadScriptSystemStructData(ctx, kapi);
-
+	KNH_INITv(share->funcDictSet, new_DictSet0(ctx, 0, 0, "funcDictSet"));
 	KNH_INITv(share->constPtrMap, new_PtrMap(ctx, 0));
 	KNH_INITv(share->inferPtrMap, new_PtrMap(ctx, 0));
+	KNH_INITv(share->xdataPtrMap, new_PtrMap(ctx, 0));
 	KNH_INITv(share->constPools, new_Array0(ctx, 0));
 	knh_loadSystemTypeMapRule(ctx);
 	knh_ClassTBL_setConstPool(ctx, ClassTBL(CLASS_Int));
@@ -286,6 +287,7 @@ static knh_context_t* new_RootContext(void)
 	knh_loadScriptAliasTokenData(ctx);
 	share->ctx0 = ctx;
 	knh_Gamma_init(ctx);  // initalize gamma->gf, reported by uh
+	knh_initBuiltInPackage(ctx, knh_getPackageLoaderAPI());
 	return ctx;
 }
 
@@ -384,9 +386,11 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	KNH_ADDREF(ctx,   share->cwdPath);
 	KNH_ADDREF(ctx,   ctx->sys);
 	KNH_ADDREF(ctx,   share->rootns);
+	KNH_ADDREF(ctx,   share->funcDictSet);
 	KNH_ADDNNREF(ctx, share->sysAliasDictMapNULL);
 	KNH_ADDREF(ctx,   share->constPtrMap);
 	KNH_ADDREF(ctx,   share->inferPtrMap);
+	KNH_ADDREF(ctx,   share->xdataPtrMap);
 	KNH_ADDREF(ctx,   share->constPools);
 	KNH_ENSUREREF(ctx, K_TSTRING_SIZE);
 	for(i = 0; i < K_TSTRING_SIZE; i++) {
@@ -451,7 +455,7 @@ static void knh_share_free(CTX ctx, knh_share_t *share)
 	share->ClassTBL = NULL;
 	knh_share_freeArena(ctx, share);
 	if(ctx->stat->usedMemorySize != 0) {
-		MEM_LOG("memory leaking size=%ldbytes", (long)ctx->stat->usedMemorySize);
+		GC_LOG("memory leaking size=%ldbytes", (long)ctx->stat->usedMemorySize);
 	}
 	knh_bzero(share, sizeof(knh_share_t) + sizeof(knh_stat_t) + sizeof(knh_ServiceSPI_t));
 	free(share);

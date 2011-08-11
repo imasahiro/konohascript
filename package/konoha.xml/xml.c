@@ -89,7 +89,7 @@ extern "C" {
 ////
 ////DEFAPI(void) constXmlDoc(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
 ////{
-////	kapi->loadIntClassConst(ctx, cid, XmlDocConstint);
+////	kapi->loadClassIntConst(ctx, cid, XmlDocConstint);
 ////}
 //
 ////## @Native @Throwable XmlDoc XmlDoc.new(String version, XmlDoc _);
@@ -344,7 +344,7 @@ static knh_IntData_t XmlReaderConstint[] = {
 
 DEFAPI(void) constXmlReader(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
 {
-	kapi->loadIntClassConst(ctx, cid, XmlReaderConstint);
+	kapi->loadClassIntConst(ctx, cid, XmlReaderConstint);
 }
 
 //## @Native @Throwable XmlReader XmlReader.new(Path _);

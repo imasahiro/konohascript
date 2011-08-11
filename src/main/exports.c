@@ -87,7 +87,7 @@ static void loadStringData(CTX ctx, knh_NameSpace_t *ns, const knh_StringData_t 
 	}
 }
 
-static void loadIntClassConst(CTX ctx, knh_class_t cid, const knh_IntData_t *data)
+static void loadClassIntConst(CTX ctx, knh_class_t cid, const knh_IntData_t *data)
 {
 	while(data->name != NULL) {
 		Object *value = UPCAST(new_Int(ctx, data->ivalue));
@@ -96,7 +96,7 @@ static void loadIntClassConst(CTX ctx, knh_class_t cid, const knh_IntData_t *dat
 	}
 }
 
-static void loadFloatClassConst(CTX ctx, knh_class_t cid, const knh_FloatData_t *data)
+static void loadClassFloatConst(CTX ctx, knh_class_t cid, const knh_FloatData_t *data)
 {
 	while(data->name != NULL) {
 		Object *value = UPCAST(new_Float(ctx, data->fvalue));
@@ -305,6 +305,16 @@ static void knh_loadSystemData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 	}
 }
 
+static void knh_loadFuncData(CTX ctx, const knh_FuncData_t *d)
+{
+	knh_DictSet_t *ds = ctx->share->funcDictSet;
+	while(d->name != NULL) {
+		knh_DictSet_append(ctx, ds, new_T(d->name), (knh_uintptr_t)d->ptr);
+		d++;
+	}
+	knh_DictSet_sort(ctx, ds);
+}
+
 /* ------------------------------------------------------------------------ */
 
 static void addLink(CTX ctx, knh_NameSpace_t *ns, const char *scheme, knh_class_t cid)
@@ -330,13 +340,19 @@ static void knh_addConvDSPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, co
 const knh_PackageLoaderAPI_t* knh_getPackageLoaderAPI(void)
 {
 	static knh_PackageLoaderAPI_t pkgapi = {
-		knh_loadSystemData,
+		knh_loadSystemData, knh_loadFuncData,
 		loadIntData, loadFloatData, loadStringData,
-		loadIntClassConst, loadFloatClassConst, loadStringClassConst,
+		loadClassIntConst, loadClassFloatConst, loadStringClassConst,
 		setProperty, setIntProperty, setFloatProperty,
 		addLink, knh_addStreamDPI, knh_addQueryDSPI, knh_addConvDSPI,
 	};
 	return &pkgapi;
+}
+
+void knh_initBuiltInPackage(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+{
+	knh_initClass(ctx, kapi);
+
 }
 
 /* ------------------------------------------------------------------------ */

@@ -49,7 +49,7 @@ extern "C" {
 //## class Object Object knh_ObjectField_t;
 //## flag Object Ref           0 (%s)->h.magicflag has set * *;
 //## flag Object NullObject    1 (%s)->h.magicflag is set  * *;
-//## flag Object Classified    2 (%s)->h.magicflag is *    * *;
+//## flag Object XData         2 (%s)->h.magicflag is set  * *;
 //## flag Object Modified      3 (%s)->h.magicflag is set  * *;
 //## flag Object Local1       12 (%s)->h.magicflag is set  * *;
 //## flag Object Local2       13 (%s)->h.magicflag is set  * *;
@@ -357,7 +357,7 @@ typedef struct knh_DictMap_t {
 	const struct knh_MapDSPI_t *spi;
 } knh_DictMap_t;
 
-#define new_DictMap0(ctx, N, F, NAME)   new_DictMap0_(ctx, N, F, NAME)
+#define new_DictMap0(ctx, N, F, NAME)      new_DictMap0_(ctx, N, F, NAME)
 #define knh_DictMap_set(ctx, m, k, v)      knh_DictMap_set_(ctx, m, k, UPCAST(v))
 
 typedef struct knh_DictSet_t {

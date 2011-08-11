@@ -597,7 +597,7 @@ void knh_loadScriptURNAliasData(CTX ctx, knh_StringData_t *data)
 
 /* ------------------------------------------------------------------------ */
 
-void knh_loadScriptSemanticsFuncData(CTX ctx, knh_NamedPointerData_t *data)
+void knh_loadScriptSemanticsFuncData(CTX ctx, knh_FuncData_t *data)
 {
 	knh_DictSet_t *ds = DP(ctx->sys)->SpecFuncDictSet;
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);

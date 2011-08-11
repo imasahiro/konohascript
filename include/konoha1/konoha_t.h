@@ -843,8 +843,6 @@ typedef struct {
 #define KNH_NULL            (ctx->share->constNull)
 #define KNH_TRUE            (ctx->share->constTrue)
 #define KNH_FALSE           (ctx->share->constFalse)
-//#define KNH_INT0            (ctx->share->constInt0)
-//#define KNH_FLOAT0          (ctx->share->constFloat0)
 #define K_EMPTYARRAY       (ctx->share->emptyArray)
 #define KNH_SYSTEM          (ctx->sys)
 #define knh_Object_sweep    knh_Object_RCsweep
@@ -932,6 +930,7 @@ typedef struct knh_share_t {
 	struct knh_NameSpace_t   *rootns;
 	struct knh_context_t     *ctx0;
 	struct knh_Script_t      *script;
+	struct knh_DictSet_t     *funcDictSet;   //
 	struct knh_opline_t      *PC_LAUNCH;
 	struct knh_opline_t      *PC_FUNCCALL;
 	struct knh_opline_t      *PC_VEXEC;
@@ -939,8 +938,9 @@ typedef struct knh_share_t {
 
 	/* system */
 	struct knh_DictMap_t     *sysAliasDictMapNULL;
-	struct knh_PtrMap_t      *inferPtrMap;
+	struct knh_PtrMap_t      *inferPtrMap;  // mapinfer
 	struct knh_PtrMap_t      *constPtrMap;
+	struct knh_PtrMap_t      *xdataPtrMap;
 	struct knh_Array_t       *constPools;
 
 	/* thread */

@@ -57,7 +57,7 @@ static knh_FloatData_t MathConstFloat[] = {
 
 DEFAPI(void) constMath(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
 {
-	kapi->loadFloatClassConst(ctx, cid, MathConstFloat);
+	kapi->loadClassFloatConst(ctx, cid, MathConstFloat);
 }
 
 KMETHOD Math_abs(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -221,6 +221,10 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi
 //{
 //	kapi->loadFloatData(ctx, ns, FloatConstData);
 //}
+
+#endif
+
+#ifdef K_USING_KONOHA_MATH
 
 #endif
 

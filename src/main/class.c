@@ -36,25 +36,9 @@
 extern "C" {
 #endif
 
-
 /* ------------------------------------------------------------------------ */
 /* [object] */
 
-//knh_String_t *knh_Object_getkey(CTX ctx, Object *o)
-//{
-//	knh_sfp_t lsfp;
-//	lsfp.o = o;
-//	lsfp.data = ((knh_Int_t*)o)->n.data;
-//	return (knh_String_t*)ClassTBL(O_bcid(o))->cspi->hashkey(ctx, &lsfp, KNH_FOBJECT_KEY);
-//}
-
-//knh_hashcode_t knh_Object_hashCode(CTX ctx, Object *o)
-//{
-//	knh_sfp_t lsfp;
-//	lsfp.o = o;
-//	lsfp.data = ((knh_Int_t*)o)->n.data;
-//	return (knh_hashcode_t)ClassTBL(O_bcid(o))->cspi->hashkey(ctx, &lsfp, KNH_FOBJECT_HASH);
-//}
 
 /* ------------------------------------------------------------------------ */
 
@@ -1084,6 +1068,108 @@ knh_index_t knh_Method_indexOfSetterField(knh_Method_t *o)
 
 /* ------------------------------------------------------------------------ */
 
+knh_DictMap_t* knh_Object_getXData(CTX ctx, knh_Object_t *o)
+{
+	knh_DictMap_t *m;
+	if(!Object_isXData(o)) {
+		m = new_DictMap0(ctx, 0, 1/*isCaseMap*/, "xdata");
+		Object_setXData(o, 1);
+		knh_PtrMap_add(ctx, ctx->share->xdataPtrMap, o, m);
+	}
+	else {
+		m = (knh_DictMap_t*)knh_PtrMap_get(ctx, ctx->share->xdataPtrMap, o);
+		DBG_ASSERT(m != NULL);
+	}
+	return m;
+}
+
+static KMETHOD Fmethod_xgetter(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
+	if(Object_isXData(sfp[0].o)) {
+		knh_fieldn_t fn = DP(mtd)->delta;
+		knh_String_t *n = knh_getFieldName(ctx, fn);
+		knh_DictMap_t *m = knh_Object_getXData(ctx, sfp[0].o);
+		Object *v = knh_DictMap_getNULL(ctx, m, S_tobytes(n));
+		if(v != NULL) {
+			RETURN_(v);
+		}
+	}
+	knh_type_t rtype = knh_ParamArray_rtype(DP(mtd)->mp);
+	RETURN_(KNH_NULVAL(rtype));
+}
+
+static KMETHOD Fmethod_xngetter(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
+	if(Object_isXData(sfp[0].o)) {
+		knh_fieldn_t fn = DP(mtd)->delta;
+		knh_String_t *n = knh_getFieldName(ctx, fn);
+		knh_DictMap_t *m = knh_Object_getXData(ctx, sfp[0].o);
+		Object *v = knh_DictMap_getNULL(ctx, m, S_tobytes(n));
+		if(v != NULL) {
+			RETURNd_(O_ndata(v));
+		}
+	}
+	RETURNd_(0);
+}
+
+static KMETHOD Fmethod_xsetter(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
+	knh_fieldn_t fn = DP(mtd)->delta;
+	knh_String_t *n = knh_getFieldName(ctx, fn);
+	knh_DictMap_t *m = knh_Object_getXData(ctx, sfp[0].o);
+	knh_DictMap_set(ctx, m, n, sfp[1].o);
+	RETURN_(sfp[1].o);
+}
+
+static KMETHOD Fmethod_xnsetter(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
+	knh_fieldn_t  fn = DP(mtd)->delta;
+	knh_String_t  *n = knh_getFieldName(ctx, fn);
+	knh_DictMap_t *m = knh_Object_getXData(ctx, sfp[0].o);
+	knh_type_t p1 = knh_ParamArray_get(DP(mtd)->mp, 0)->type;
+	knh_DictMap_set(ctx, m, n, new_Boxing(ctx, sfp+1, ClassTBL(p1)));
+	RETURNd_(sfp[1].ndata);
+}
+
+void knh_ClassTBL_addXField(CTX ctx, const knh_ClassTBL_t *ct, knh_type_t type, knh_fieldn_t fn)
+{
+	knh_Fmethod f = (IS_Tunbox(type)) ? Fmethod_xngetter : Fmethod_xgetter;
+	knh_Method_t *mtd = new_Method(ctx, 0, ct->cid, (type == CLASS_Boolean) ? MN_toISBOOL(fn) : MN_isGETTER(fn), f);
+	DP(mtd)->delta = fn;
+	KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayR0(ctx, type));
+	knh_ClassTBL_addMethod(ctx, ct, mtd, 0/*isCheck*/);
+
+	f = (IS_Tunbox(type)) ? Fmethod_xnsetter : Fmethod_xsetter;
+	mtd = new_Method(ctx, 0, ct->cid, MN_toSETTER(fn), f);
+	DP(mtd)->delta = fn;
+	KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayP1(ctx, type, type, FN_v));
+	knh_ClassTBL_addMethod(ctx, ct, mtd, 0/*isCheck*/);
+}
+
+// boolean Class.addXField(Class type, String name)
+static KMETHOD Class_addXField(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	const knh_ClassTBL_t *ct = (sfp[0].c)->cTBL;
+	knh_type_t type = (sfp[1].c)->type;
+	knh_fieldn_t fn = knh_getmn(ctx, S_tobytes(sfp[2].s), FN_NEWID);  // FIXME: NOIZE
+	knh_Method_t *mtd = knh_ClassTBL_findMethodNULL(ctx, ct, MN_toSETTER(fn), 1);
+	if(mtd != NULL) {
+		RETURNb_(0);
+	}
+	mtd = knh_ClassTBL_findMethodNULL(ctx, ct, (type == CLASS_Boolean) ? MN_toISBOOL(fn) : MN_isGETTER(fn), 1);
+	if(mtd != NULL) {
+		RETURNb_(0);
+	}
+	knh_ClassTBL_addXField(ctx, ct, type, fn);
+	RETURNb_(1);
+}
+
+/* ------------------------------------------------------------------------ */
+
 static KMETHOD Fmethod_NoSuchMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
@@ -1147,27 +1233,27 @@ void knh_ClassTBL_addMethod(CTX ctx, const knh_ClassTBL_t *t, knh_Method_t *mtd,
 	Cache_setMethod(ctx->mtdcache, mtd->cid, mtd->mn, mtd);
 }
 
-knh_Method_t* knh_ClassTBL_findMethodNULL(CTX ctx, const knh_ClassTBL_t *t, knh_methodn_t mn, int isGEN)
+knh_Method_t* knh_ClassTBL_findMethodNULL(CTX ctx, const knh_ClassTBL_t *ct, knh_methodn_t mn, int isGEN)
 {
 	{
-		knh_class_t cid = t->cid;
+		knh_class_t cid = ct->cid;
 		knh_hashcode_t h = hashcode_mtd(cid, mn, K_MTDCACHE_SIZE);
 		knh_mtdcache_t *mcache = ctx->mtdcache + h;
-		if(mcache->cid == t->cid && mcache->mn == mn) {
+		if(mcache->cid == ct->cid && mcache->mn == mn) {
 			//DBG_P("HIT h=%d mcache=%d.%d %d.%d", h, mcache->cid, mcache->mn, t->cid, mn);
 			KNH_ASSERT(IS_Method(mcache->mtd));
 			return mcache->mtd;
 		}
 	}
 	{
-		const knh_ClassTBL_t *p, *t0 = t;
+		const knh_ClassTBL_t *p, *t0 = ct;
 		do {
 			size_t i;
 			knh_Array_t *a = t0->methods;
 			for(i = 0; i < knh_Array_size(a); i++) {
 				knh_Method_t *mtd = a->methods[i];
 				if((mtd)->mn == mn) {
-					return Cache_setMethod(ctx->mtdcache, t->cid, mn, mtd);
+					return Cache_setMethod(ctx->mtdcache, ct->cid, mn, mtd);
 				}
 			}
 			p = t0;
@@ -1175,12 +1261,12 @@ knh_Method_t* knh_ClassTBL_findMethodNULL(CTX ctx, const knh_ClassTBL_t *t, knh_
 		}
 		while(p != t0);
 	}
-	if(t->fsize > 0) {
+	if(ct->fsize > 0) {
 		if(MN_isGETTER(mn) || MN_isISBOOL(mn)) {
 			knh_index_t idx;
 			knh_fieldn_t fn = MN_toFN(mn);
-			for(idx = (knh_index_t)t->fsize - 1; idx >= 0 ; idx--) {
-				knh_fields_t *cf = t->fields + idx;
+			for(idx = (knh_index_t)ct->fsize - 1; idx >= 0 ; idx--) {
+				knh_fields_t *cf = ct->fields + idx;
 				if(cf->fn == fn) {
 					if(MN_isISBOOL(mn) && !IS_Tbool(cf->type)) {
 						continue;
@@ -1188,9 +1274,9 @@ knh_Method_t* knh_ClassTBL_findMethodNULL(CTX ctx, const knh_ClassTBL_t *t, knh_
 					if(!FLAG_is(cf->flag, FLAG_Field_Getter)) {
 						continue;
 					}
-					knh_Method_t *mtd = new_GetterMethod(ctx, t->cid, mn, cf->type, idx);
-					knh_ClassTBL_addMethod(ctx, t, mtd, 0);
-					return Cache_setMethod(ctx->mtdcache, t->cid, mn, mtd);
+					knh_Method_t *mtd = new_GetterMethod(ctx, ct->cid, mn, cf->type, idx);
+					knh_ClassTBL_addMethod(ctx, ct, mtd, 0);
+					return Cache_setMethod(ctx->mtdcache, ct->cid, mn, mtd);
 				}
 			}
 			goto L_NoSuchMethod;
@@ -1198,15 +1284,15 @@ knh_Method_t* knh_ClassTBL_findMethodNULL(CTX ctx, const knh_ClassTBL_t *t, knh_
 		if(MN_isSETTER(mn)) {
 			knh_index_t idx;
 			knh_fieldn_t fn = MN_toFN(mn);
-			for(idx = (knh_index_t)t->fsize - 1; idx >= 0 ; idx--) {
-				knh_fields_t *cf = t->fields + idx;
+			for(idx = (knh_index_t)ct->fsize - 1; idx >= 0 ; idx--) {
+				knh_fields_t *cf = ct->fields + idx;
 				if(cf->fn == fn) {
 					if(!FLAG_is(cf->flag, FLAG_Field_Setter)) {
 						continue;
 					}else {
-						knh_Method_t *mtd = new_SetterMethod(ctx, t->cid, mn, cf->type, idx);
-						knh_ClassTBL_addMethod(ctx, t, mtd, 0);
-						return Cache_setMethod(ctx->mtdcache, t->cid, mn, mtd);
+						knh_Method_t *mtd = new_SetterMethod(ctx, ct->cid, mn, cf->type, idx);
+						knh_ClassTBL_addMethod(ctx, ct, mtd, 0);
+						return Cache_setMethod(ctx->mtdcache, ct->cid, mn, mtd);
 					}
 				}
 			}
@@ -1215,13 +1301,13 @@ knh_Method_t* knh_ClassTBL_findMethodNULL(CTX ctx, const knh_ClassTBL_t *t, knh_
 	L_NoSuchMethod:;
 	if(isGEN) {
 		if(MN_isFMT(mn)) {
-			DBG_P("Generating %%empty: cid=%s mn=%%%s", CLASS__(t->cid), MN__(mn));
-			return ClassTBL_getMethodNULL(ctx, t, MN__empty);
+			DBG_P("Generating %%empty: cid=%s mn=%%%s", CLASS__(ct->cid), MN__(mn));
+			return ClassTBL_getMethodNULL(ctx, ct, MN__empty);
 		}
 		else {
-			knh_Method_t *mtd = new_NoSuchMethod(ctx, t->cid, mn);
-			knh_ClassTBL_addMethod(ctx, t, mtd, 0);
-			return Cache_setMethod(ctx->mtdcache, t->cid, mn, mtd);
+			knh_Method_t *mtd = new_NoSuchMethod(ctx, ct->cid, mn);
+			knh_ClassTBL_addMethod(ctx, ct, mtd, 0);
+			return Cache_setMethod(ctx->mtdcache, ct->cid, mn, mtd);
 		}
 	}
 	else {
@@ -1914,6 +2000,19 @@ knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t
 	}
 	return value;
 }
+
+/* ------------------------------------------------------------------------ */
+
+static knh_FuncData_t FuncData[] = {
+	{"Class_addXField", Class_addXField},
+	{NULL, NULL},
+};
+
+void knh_initClass(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+{
+	kapi->loadFuncData(ctx, FuncData);
+}
+
 
 /* ------------------------------------------------------------------------ */
 

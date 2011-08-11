@@ -130,7 +130,7 @@ typedef struct {
 typedef struct {
 	const char *name;
 	void *ptr;
-} knh_NamedPointerData_t;
+} knh_FuncData_t;
 
 #define _DATA(s)    (knh_intptr_t)(s)
 #define DATA_END      0
@@ -151,12 +151,13 @@ typedef knh_intptr_t knh_data_t;
 typedef struct knh_PackageLoaderAPI_t {
 	/* global */
 	void (*loadData)(CTX, const knh_data_t *, knh_ParamArray_t **);
+	void (*loadFuncData)(CTX, const knh_FuncData_t *);
 	/* constant */
 	void (*loadIntData)(CTX, knh_NameSpace_t *ns, const knh_IntData_t *);
 	void (*loadFloatData)(CTX, knh_NameSpace_t *ns, const knh_FloatData_t *);
 	void (*loadStringData)(CTX, knh_NameSpace_t *ns, const knh_StringData_t *);
-	void (*loadIntClassConst)(CTX, knh_class_t cid, const knh_IntData_t *);
-	void (*loadFloatClassConst)(CTX, knh_class_t cid, const knh_FloatData_t *);
+	void (*loadClassIntConst)(CTX, knh_class_t cid, const knh_IntData_t *);
+	void (*loadClassFloatConst)(CTX, knh_class_t cid, const knh_FloatData_t *);
 	void (*loadStringClassConst)(CTX, knh_class_t cid, const knh_StringData_t *);
 	void (*setPackageProperty)(CTX, const char*, const char*);
 	void (*setPackageIntProperty)(CTX, const char*, knh_int_t);

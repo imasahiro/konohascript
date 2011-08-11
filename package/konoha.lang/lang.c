@@ -872,7 +872,7 @@
 //
 //DEFAPI(void) constInstruction(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
 //{
-//	kapi->loadIntClassConst(ctx, cid, IntConstData);
+//	kapi->loadClassIntConst(ctx, cid, IntConstData);
 //}
 //
 //#endif

@@ -60,7 +60,6 @@ KMETHOD QBoxLayout_addWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-
 /* ------------------------------------------------------------------------ */
 
 static knh_IntData_t QBoxLayoutConstInt[] = {

@@ -319,7 +319,7 @@ static knh_IntData_t DirConstInt[] = {
 
 DEFAPI(void) constDir(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
 {
-	kapi->loadIntClassConst(ctx, cid, DirConstInt);
+	kapi->loadClassIntConst(ctx, cid, DirConstInt);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -504,7 +504,7 @@ KMETHOD File_close(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
 {
-	kapi->loadIntClassConst(ctx, CLASS_System, IntConstData);
+	kapi->loadClassIntConst(ctx, CLASS_System, IntConstData);
 	RETURN_PKGINFO("konoha.posix");
 }
 

@@ -545,15 +545,17 @@ static knh_Token_t *TTYPE_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 
 static void *knh_loadGlueFunc(CTX ctx, const char *funcname, int isVerbose)
 {
+	void *f = NULL;
 	knh_NameSpace_t *ns = K_GMANS;
 	if(ns->gluehdr != NULL) {
-		void *f = knh_dlsym(ctx, ns->gluehdr, (const char*)funcname, 0/*isTest*/);
+		f = knh_dlsym(ctx, ns->gluehdr, funcname, 0/*isTest*/);
 		if(f != NULL) return f;
-		if(isVerbose) {
-			WARN_NotFound(ctx, _("glue function"), funcname);
-		}
 	}
-	return NULL;
+	f = (void*)knh_DictSet_get(ctx, ctx->share->funcDictSet, B(funcname));
+	if(isVerbose && f == NULL) {
+		WARN_NotFound(ctx, _("glue function"), funcname);
+	}
+	return f;
 }
 
 static knh_Fmethod Gamma_loadMethodFunc(CTX ctx, knh_class_t cid, knh_methodn_t mn, int isNATIVE)
