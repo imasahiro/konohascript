@@ -199,8 +199,13 @@ include "lib:gluelink";
 @Native void Module.addTypeName(String name, Type type);
 @Native void Module.dump();
 @Native Function Module.getOrInsertFunction(String name, FunctionType fnTy);
+@Native ExecutionEngine Module.createExecutionEngine();
 @Native @Static BasicBlock BasicBlock.create(Function parent);
 @Native @Static FunctionType FunctionType.get(Type retTy, Array<Type> args, boolean b);
 @Native @Static StructType StructType.get(Array<Type> args, boolean isPacked);
-@Native Method ExecutionEngine.getPointerToFunction(Function func);
+@Native var ExecutionEngine.getPointerToFunction(Function func);
+
+
+@Native Value Value.setName(String name);
+@Native Array<Value> Function.getArguments();
 

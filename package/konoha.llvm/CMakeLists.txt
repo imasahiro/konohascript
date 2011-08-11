@@ -15,6 +15,7 @@ set(PACKAGE_SOURCE_CODE llvm.cpp)
 set(PACKAGE_SCRIPT_CODE llvm.k)
 add_definitions(-DK_USING_LLVM)
 find_program(LLVM_CONFIG NAMES llvm-config DOC "llvm-config")
+if(LLVM_CONFIG)
 execute_process(
 		COMMAND ${LLVM_CONFIG} --cppflags
 		OUTPUT_VARIABLE LLVM_CFLAGS
@@ -67,3 +68,4 @@ install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
 
 
+endif()

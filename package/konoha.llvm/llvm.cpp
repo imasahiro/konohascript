@@ -1864,6 +1864,20 @@ KMETHOD Module_getOrInsertFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
+static void ExecutionEngine_obj_free(void *p)
+{
+	ExecutionEngine *ee = static_cast<ExecutionEngine*>(ee);
+	delete ee;
+}
+
+//## ExecutionEngine Module.createExecutionEngine();
+KMETHOD Module_createExecutionEngine(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	Module *self = konoha::object_cast<Module *>(sfp[0].p);
+	ExecutionEngine *ptr = EngineBuilder(self).setEngineKind(EngineKind::JIT).create();
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), ExecutionEngine_obj_free);
+	RETURN_(p);
+}
 //## @Static BasicBlock BasicBlock.create(Function parent);
 KMETHOD BasicBlock_create(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -1897,15 +1911,44 @@ KMETHOD StructType_get(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
 }
-//## Method ExecutionEngine.getPointerToFunction(Function func);
+//## var ExecutionEngine.getPointerToFunction(Function func);
 KMETHOD ExecutionEngine_getPointerToFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	//ExecutionEngine *self = konoha::object_cast<ExecutionEngine *>(sfp[0].p);
-	//Function * func = konoha::object_cast<Function *>(sfp[0].p);
-	//void *ptr = self->getPointerToFunction(func);
+	ExecutionEngine *self = konoha::object_cast<ExecutionEngine *>(sfp[0].p);
+	Function * func = konoha::object_cast<Function *>(sfp[0].p);
+	void *ptr = self->getPointerToFunction(func);
+	std::string name = func->getName();
+	fprintf(stderr, "%s\n", name.c_str());
 	LLVM_TODO("ptr => Method");
 	RETURN_(KNH_NULL);
 }
+
+//## @Native Array<Value> Function.getArguments();
+KMETHOD Function_getArguments(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_type_t rtype = knh_ParamArray_rtype(DP(sfp[K_MTDIDX].mtdNC)->mp);
+	knh_class_t cid = C_p1(rtype);
+	Function *func = konoha::object_cast<Function *>(sfp[0].p);
+	knh_Array_t *a = new_Array(ctx, cid, 0);
+	for (Function::arg_iterator I = func->arg_begin(), E = func->arg_end();
+			I != E; ++I) {
+		Value *v = I;
+		knh_RawPtr_t *po = new_Pointer(ctx, "Value", WRAP(v), NULL);
+		knh_Array_add(ctx, a, po);
+	}
+	RETURN_(a);
+}
+
+//## Value Value.setName(String name);
+KMETHOD Value_setName(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	Value *self = konoha::object_cast<Value *>(sfp[0].p);
+	knh_String_t *name = sfp[1].s;
+	self->setName(S_tochar(name));
+	RETURNvoid_();
+}
+
+
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
 {
 	//kapi->loadIntClassConst(ctx, CLASS_System, IntConstData);
