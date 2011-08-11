@@ -453,6 +453,107 @@ knh_String_t *new_TEXT(CTX ctx, knh_class_t cid, knh_TEXT_t text, int isASCII)
 	return s;
 }
 
+
+/* ------------------------------------------------------------------------ */
+
+static knh_conv_t* strconv_open(CTX ctx, const char* to, const char *from)
+{
+	knh_iconv_t rc = ctx->spi->iconv_openSPI(to, from);
+	if(rc == (knh_iconv_t)-1){
+		LOGSFPDATA = {LOGMSG("unknown codec"), sDATA("spi", ctx->spi->iconvspi),
+			sDATA("from", from), sDATA("to", to)};
+		LIB_Failed("iconv", "IO!!");
+		return NULL;
+	}
+	return (knh_conv_t*)rc;
+}
+
+static knh_bool_t strconv(Ctx *ctx, knh_conv_t *iconvp, knh_bytes_t from, knh_Bytes_t *to)
+{
+	char buffer[4096], *ibuf = (char*)from.ubuf;
+	size_t ilen = from.len, rsize = 0;//, ilen_prev = ilen;
+	knh_iconv_t cd = (knh_iconv_t)iconvp;
+	knh_bytes_t bbuf = {{(const char*)buffer}, 0};
+	while(ilen > 0) {
+		char *obuf = buffer;
+		size_t olen = sizeof(buffer);
+		size_t rc = ctx->spi->iconvSPI(cd, &ibuf, &ilen, &obuf, &olen);
+		olen = sizeof(buffer) - olen; rsize += olen;
+		if(rc == (size_t)-1 && errno == EILSEQ) {
+			LOGSFPDATA = {LOGMSG("invalid sequence"), sDATA("spi", ctx->spi->iconvspi)};
+			NOTE_Failed("iconv");
+			return 0;
+		}
+		bbuf.len = olen;
+		knh_Bytes_write(ctx, to, bbuf);
+	}
+	return 1;
+}
+static void strconv_close(CTX ctx, knh_conv_t *conv)
+{
+	ctx->spi->iconv_closeSPI((knh_iconv_t)conv);
+}
+
+static knh_ConvDSPI_t SCONV = {
+	K_DSPI_CONVTO, "md5",
+	strconv_open, // open,
+	strconv,  // byte->byte     :conv
+	strconv,  // String->byte   :enc
+	strconv,   // byte->String   :dec
+	NULL,  // String->String :sconv
+	strconv_close,
+	NULL
+};
+
+knh_StringDecoder_t* new_StringDecoderNULL(CTX ctx, knh_bytes_t t)
+{
+	if(knh_bytes_strcasecmp(t, STEXT(K_ENCODING)) == 0) {
+		return KNH_TNULL(StringDecoder);
+	}
+	else {
+		knh_iconv_t id = ctx->spi->iconv_openSPI(K_ENCODING, t.text);
+		if(id != (knh_iconv_t)(-1)) {
+			knh_StringDecoder_t *c = new_(StringDecoder);
+			c->conv = (knh_conv_t*)id;
+			c->dpi = &SCONV;
+			return c;
+		}
+	}
+	return NULL;
+}
+
+knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, knh_bytes_t t)
+{
+	if(knh_bytes_strcasecmp(t, STEXT(K_ENCODING)) == 0) {
+		return KNH_TNULL(StringEncoder);
+	}
+	else {
+		knh_iconv_t id = ctx->spi->iconv_openSPI(K_ENCODING, t.text);
+		if(id != (knh_iconv_t)(-1)) {
+			knh_StringEncoder_t *c = new_(StringEncoder);
+			c->conv = (knh_conv_t*)id;
+			c->dpi = &SCONV;
+			return c;
+		}
+	}
+	return NULL;
+}
+
+/* ------------------------------------------------------------------------ */
+
+knh_String_t *knh_cwb_newStringDECODE(CTX ctx, knh_cwb_t *cwb, knh_StringDecoder_t *c)
+{
+	BEGIN_LOCAL(ctx, lsfp, 1);
+	LOCAL_NEW(ctx, lsfp, 0, knh_String_t*, s, knh_cwb_newString(ctx, cwb));
+	if(!String_isASCII(s)) {
+		c->dpi->dec(ctx, c->conv, S_tobytes(s), cwb->ba);
+		s = knh_cwb_newString(ctx, cwb);
+		KNH_SETv(ctx, lsfp[0].o, KNH_NULL); //
+	}
+	END_LOCAL(ctx, lsfp, s);
+	return s;
+}
+
 /* ------------------------------------------------------------------------ */
 
 int knh_bytes_strcasecmp(knh_bytes_t v1, knh_bytes_t v2)
@@ -470,6 +571,7 @@ int knh_bytes_strcasecmp(knh_bytes_t v1, knh_bytes_t v2)
 	}
 }
 
+/* ------------------------------------------------------------------------ */
 /* ------------------------------------------------------------------------ */
 /* regex */
 
@@ -527,6 +629,8 @@ static const knh_RegexSPI_t REGEX_STR = {
 	strregex_regfree
 };
 
+static const knh_RegexSPI_t* REGEX_DEFAULT = &REGEX_STR;
+
 const knh_RegexSPI_t* knh_getStrRegexSPI(void)
 {
 	return &REGEX_STR;
@@ -537,18 +641,102 @@ knh_bool_t Regex_isSTRREGEX(knh_Regex_t *re)
 	return (re->spi == &REGEX_STR);
 }
 
-#ifdef K_USING_PCRE
+const knh_RegexSPI_t* knh_getRegexSPI(void)
+{
+	return REGEX_DEFAULT;
+}
+
+/* ------------------------------------------------------------------------ */
+/* [pcre] */
+
+//#include <pcre.h>
+//#define PCRE_MAX_ERROR_MESSAGE_LEN 512
+
+// from pcre.h
+struct real_pcre;
+typedef struct real_pcre pcre;
+typedef void pcre_extra;
+
+static const char* (*pcre_version)(void);
+static void  (*pcre_free)(void *);
+static int  (*pcre_fullinfo)(const pcre *, const pcre_extra *, int, void *);
+static pcre* (*pcre_compile)(const char *, int, const char **, int *, const unsigned char *);
+static int  (*pcre_exec)(const pcre *, const pcre_extra *, const char*, int, int, int, int *, int);
+
+static knh_bool_t knh_linkDynamicPCRE(CTX ctx)
+{
+	void *h = knh_dlopen(ctx, "libpcre" K_OSDLLEXT);
+	if(h == NULL) return 0;
+	pcre_version = (const char* (*)(void))knh_dlsym(ctx, h, "pcre_version", 0/*isTest*/);
+	pcre_free = (void (*)(void*))knh_dlsym(ctx, h, "pcre_free", 0/*isTest*/);
+	pcre_fullinfo = (int (*)(const pcre*, const pcre_extra*, int, void*))knh_dlsym(ctx, h, "pcre_fullinfo", 0/*isTest*/);
+	pcre_compile = (pcre* (*)(const char *, int, const char **, int *, const unsigned char *))knh_dlsym(ctx, h, "pcre_compile", 0/*isTest*/);
+	pcre_exec = (int  (*)(const pcre *, const pcre_extra *, const char*, int, int, int, int *, int))knh_dlsym(ctx, h, "pcre_exec", 0/*isTest*/);
+	if(pcre_free == NULL || pcre_fullinfo == NULL || pcre_compile == NULL || pcre_exec == NULL) return 0;
+	return 1;
+}
+
+#define PCRE_CASELESS           0x00000001  /* Compile */
+#define PCRE_MULTILINE          0x00000002  /* Compile */
+#define PCRE_DOTALL             0x00000004  /* Compile */
+#define PCRE_EXTENDED           0x00000008  /* Compile */
+#define PCRE_ANCHORED           0x00000010  /* Compile, exec, DFA exec */
+#define PCRE_DOLLAR_ENDONLY     0x00000020  /* Compile */
+#define PCRE_EXTRA              0x00000040  /* Compile */
+#define PCRE_NOTBOL             0x00000080  /* Exec, DFA exec */
+#define PCRE_NOTEOL             0x00000100  /* Exec, DFA exec */
+#define PCRE_UNGREEDY           0x00000200  /* Compile */
+#define PCRE_NOTEMPTY           0x00000400  /* Exec, DFA exec */
+#define PCRE_UTF8               0x00000800  /* Compile */
+#define PCRE_NO_AUTO_CAPTURE    0x00001000  /* Compile */
+#define PCRE_NO_UTF8_CHECK      0x00002000  /* Compile, exec, DFA exec */
+#define PCRE_AUTO_CALLOUT       0x00004000  /* Compile */
+#define PCRE_PARTIAL_SOFT       0x00008000  /* Exec, DFA exec */
+#define PCRE_PARTIAL            0x00008000  /* Backwards compatible synonym */
+#define PCRE_DFA_SHORTEST       0x00010000  /* DFA exec */
+#define PCRE_DFA_RESTART        0x00020000  /* DFA exec */
+#define PCRE_FIRSTLINE          0x00040000  /* Compile */
+#define PCRE_DUPNAMES           0x00080000  /* Compile */
+#define PCRE_NEWLINE_CR         0x00100000  /* Compile, exec, DFA exec */
+#define PCRE_NEWLINE_LF         0x00200000  /* Compile, exec, DFA exec */
+#define PCRE_NEWLINE_CRLF       0x00300000  /* Compile, exec, DFA exec */
+#define PCRE_NEWLINE_ANY        0x00400000  /* Compile, exec, DFA exec */
+#define PCRE_NEWLINE_ANYCRLF    0x00500000  /* Compile, exec, DFA exec */
+#define PCRE_BSR_ANYCRLF        0x00800000  /* Compile, exec, DFA exec */
+#define PCRE_BSR_UNICODE        0x01000000  /* Compile, exec, DFA exec */
+#define PCRE_JAVASCRIPT_COMPAT  0x02000000  /* Compile */
+#define PCRE_NO_START_OPTIMIZE  0x04000000  /* Compile, exec, DFA exec */
+#define PCRE_NO_START_OPTIMISE  0x04000000  /* Synonym */
+#define PCRE_PARTIAL_HARD       0x08000000  /* Exec, DFA exec */
+#define PCRE_NOTEMPTY_ATSTART   0x10000000  /* Exec, DFA exec */
+#define PCRE_UCP                0x20000000  /* Compile */
+
+#define PCRE_INFO_OPTIONS            0
+#define PCRE_INFO_SIZE               1
+#define PCRE_INFO_CAPTURECOUNT       2
+#define PCRE_INFO_BACKREFMAX         3
+#define PCRE_INFO_FIRSTBYTE          4
+#define PCRE_INFO_FIRSTCHAR          4  /* For backwards compatibility */
+#define PCRE_INFO_FIRSTTABLE         5
+#define PCRE_INFO_LASTLITERAL        6
+#define PCRE_INFO_NAMEENTRYSIZE      7
+#define PCRE_INFO_NAMECOUNT          8
+#define PCRE_INFO_NAMETABLE          9
+#define PCRE_INFO_STUDYSIZE         10
+#define PCRE_INFO_DEFAULT_TABLES    11
+#define PCRE_INFO_OKPARTIAL         12
+#define PCRE_INFO_JCHANGED          13
+#define PCRE_INFO_HASCRORLF         14
+#define PCRE_INFO_MINLENGTH         15
+
 /* This part was implemented by Yutaro Hiraoka */
-
-#include <pcre.h>
-
-#define PCRE_MAX_ERROR_MESSAGE_LEN 512
 
 typedef struct {
 	pcre *re;
 	const char *err;
 	int erroffset;
 } PCRE_regex_t;
+
 
 static knh_regex_t* pcre_regmalloc(CTX ctx, knh_String_t* s)
 {
@@ -671,115 +859,48 @@ static const knh_RegexSPI_t REGEX_PCRE = {
 	pcre_regfree
 };
 
-#endif/*K_USING_PCRE*/
+/* ------------------------------------------------------------------------ */
+/* [re2] */
 
-const knh_RegexSPI_t* knh_getRegexSPI(void)
+static knh_bool_t knh_linkDynamicRe2(CTX ctx)
 {
-#ifdef K_USING_PCRE
-	return &REGEX_PCRE;
-#else
-	return &REGEX_STR;
-#endif
+	void *h = knh_dlopen(ctx, "libre2" K_OSDLLEXT);
+	if(h == NULL) return 0;
+	// TODO
+	return 0; // turn to 1 if made
+}
+
+
+/* ------------------------------------------------------------------------ */
+/* [onig] */
+
+static knh_bool_t knh_linkDynamicOnig(CTX ctx)
+{
+	void *h = knh_dlopen(ctx, "libonig" K_OSDLLEXT);
+	if(h == NULL) return 0;
+	// TODO
+	return 0; // turn to 1 if made
 }
 
 /* ------------------------------------------------------------------------ */
+/* [regex] */
 
-static knh_conv_t* strconv_open(CTX ctx, const char* to, const char *from)
+void knh_linkDynamicRegex(CTX ctx)
 {
-	knh_iconv_t rc = ctx->spi->iconv_openSPI(to, from);
-	if(rc == (knh_iconv_t)-1){
-		LOGSFPDATA = {LOGMSG("unknown codec"), sDATA("spi", ctx->spi->iconvspi),
-			sDATA("from", from), sDATA("to", to)};
-		LIB_Failed("iconv", "IO!!");
-		return NULL;
-	}
-	return (knh_conv_t*)rc;
-}
-
-static knh_bool_t strconv(Ctx *ctx, knh_conv_t *iconvp, knh_bytes_t from, knh_Bytes_t *to)
-{
-	char buffer[4096], *ibuf = (char*)from.ubuf;
-	size_t ilen = from.len, rsize = 0;//, ilen_prev = ilen;
-	knh_iconv_t cd = (knh_iconv_t)iconvp;
-	knh_bytes_t bbuf = {{(const char*)buffer}, 0};
-	while(ilen > 0) {
-		char *obuf = buffer;
-		size_t olen = sizeof(buffer);
-		size_t rc = ctx->spi->iconvSPI(cd, &ibuf, &ilen, &obuf, &olen);
-		olen = sizeof(buffer) - olen; rsize += olen;
-		if(rc == (size_t)-1 && errno == EILSEQ) {
-			LOGSFPDATA = {LOGMSG("invalid sequence"), sDATA("spi", ctx->spi->iconvspi)};
-			NOTE_Failed("iconv");
-			return 0;
+	if(REGEX_DEFAULT == &REGEX_STR) {
+		if(knh_linkDynamicRe2(ctx)) {
+			//REGEX_DEFAULT = &REGEX_PCRE;
+			//return;
 		}
-		bbuf.len = olen;
-		knh_Bytes_write(ctx, to, bbuf);
-	}
-	return 1;
-}
-static void strconv_close(CTX ctx, knh_conv_t *conv)
-{
-	ctx->spi->iconv_closeSPI((knh_iconv_t)conv);
-}
-
-static knh_ConvDSPI_t SCONV = {
-	K_DSPI_CONVTO, "md5",
-	strconv_open, // open,
-	strconv,  // byte->byte     :conv
-	strconv,  // String->byte   :enc
-	strconv,   // byte->String   :dec
-	NULL,  // String->String :sconv
-	strconv_close,
-	NULL
-};
-
-knh_StringDecoder_t* new_StringDecoderNULL(CTX ctx, knh_bytes_t t)
-{
-	if(knh_bytes_strcasecmp(t, STEXT(K_ENCODING)) == 0) {
-		return KNH_TNULL(StringDecoder);
-	}
-	else {
-		knh_iconv_t id = ctx->spi->iconv_openSPI(K_ENCODING, t.text);
-		if(id != (knh_iconv_t)(-1)) {
-			knh_StringDecoder_t *c = new_(StringDecoder);
-			c->conv = (knh_conv_t*)id;
-			c->dpi = &SCONV;
-			return c;
+		if(knh_linkDynamicPCRE(ctx)) {
+			REGEX_DEFAULT = &REGEX_PCRE;
+			return;
+		}
+		if(knh_linkDynamicOnig(ctx)) {
+			//REGEX_DEFAULT = &REGEX_PCRE;
+			//return;
 		}
 	}
-	return NULL;
-}
-
-knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, knh_bytes_t t)
-{
-	if(knh_bytes_strcasecmp(t, STEXT(K_ENCODING)) == 0) {
-		return KNH_TNULL(StringEncoder);
-	}
-	else {
-		knh_iconv_t id = ctx->spi->iconv_openSPI(K_ENCODING, t.text);
-		if(id != (knh_iconv_t)(-1)) {
-			knh_StringEncoder_t *c = new_(StringEncoder);
-			c->conv = (knh_conv_t*)id;
-			c->dpi = &SCONV;
-			return c;
-		}
-	}
-	return NULL;
-}
-
-/* ------------------------------------------------------------------------ */
-
-knh_String_t *knh_cwb_newStringDECODE(CTX ctx, knh_cwb_t *cwb, knh_StringDecoder_t *c)
-{
-	BEGIN_LOCAL(ctx, lsfp, 1);
-	LOCAL_NEW(ctx, lsfp, 0, knh_String_t*, s, knh_cwb_newString(ctx, cwb));
-	if(!String_isASCII(s)) {
-		c->dpi->dec(ctx, c->conv, S_tobytes(s), cwb->ba);
-		s = knh_cwb_newString(ctx, cwb);
-		KNH_SETv(ctx, lsfp[0].o, KNH_NULL); //
-	}
-	END_LOCAL(ctx, lsfp, s);
-	return s;
 }
 
 /* ------------------------------------------------------------------------ */

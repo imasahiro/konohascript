@@ -806,6 +806,7 @@ void konoha_main(konoha_t konoha, int argc, const char **argv)
 	CTX ctx = (CTX)konoha.ctx;
 	int i, n = knh_parseopt(ctx, argc, argv);
 	knh_linkDynamicReadline(ctx);
+	knh_linkDynamicRegex(ctx);
 	for (i = 0; konoha_modules[i].init != NULL; ++i) {
 		konoha_modules[i].init(argc, n, argv);
 	}
