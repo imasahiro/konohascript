@@ -30,10 +30,6 @@
 #define K_DEFINE_API2
 #include"commons.h"
 
-#ifdef K_USING_ICONV
-#include<iconv.h>
-#endif
-
 #define K_USING_LOADDATA
 #include"../../include/konoha1/konohalang.h"
 
@@ -315,20 +311,59 @@ static int thread_unlock(knh_mutex_t *m DBG_TRACE)
 	return knh_mutex_unlock(m);
 }
 
-#ifndef K_USING_ICONV
-static iconv_t iconv_open(const char *t, const char *f)
+static knh_iconv_t knh_iconv_open(const char *t, const char *f)
 {
-	return (iconv_t)(-1);
+	return (knh_iconv_t)(-1);
 }
-static size_t iconv(iconv_t i, char **t, size_t *ts, char **f, size_t *fs)
-{
-	return 0;
-}
-static int iconv_close(iconv_t i)
+static size_t knh_iconv(knh_iconv_t i, char **t, size_t *ts, char **f, size_t *fs)
 {
 	return 0;
 }
-#endif
+static int knh_iconv_close(knh_iconv_t i)
+{
+	return 0;
+}
+
+typedef knh_iconv_t (*ficonv_open)(const char *, const char *);
+typedef size_t (*ficonv)(knh_iconv_t , char **, size_t *, char **, size_t *);
+typedef int    (*ficonv_close)(knh_iconv_t);
+void knh_linkDynamicIconv(CTX ctx)
+{
+	knh_ServiceSPI_t *spi = ((knh_ServiceSPI_t*)ctx->spi);
+	if(spi->iconvSPI == knh_iconv || spi->iconvSPI == NULL) {
+		void *handler = knh_dlopen(ctx, "libiconv" K_OSDLLEXT);
+		int hasPrefix = 0;
+		void *f;
+		if(handler != NULL) {
+			f = knh_dlsym(ctx, handler, "iconv_open", 0/*isTest*/);
+			if(f != NULL) {
+				f = knh_dlsym(ctx, handler, "libiconv_open", 0);
+				if (f == NULL) {
+					goto L_NOICONV;
+				}
+				else
+					hasPrefix = 1;
+			}
+			else {
+				goto L_NOICONV;
+			}
+		}
+		spi->iconvspi       = "iconv";
+		spi->iconv_openSPI  = (ficonv_open)f;
+		f = knh_dlsym(ctx, handler, (hasPrefix)?"libiconv":"iconv", 0);
+		spi->iconvSPI = (ficonv)f;
+		f = knh_dlsym(ctx, handler, (hasPrefix)?"libiconv_close":"iconv_close", 0);
+		spi->iconv_closeSPI = (ficonv_close)f;
+		if (spi->iconvSPI && spi->iconv_closeSPI)
+			return;
+		L_NOICONV:;
+		spi->iconvspi       = "noiconv";
+		spi->iconv_openSPI  = knh_iconv_open;
+		spi->iconvSPI       = knh_iconv;
+		spi->iconv_closeSPI = knh_iconv_close;
+	}
+}
+
 
 static void _setsfp(CTX ctx, knh_sfp_t *sfp, void *v)
 {
@@ -350,14 +385,10 @@ static void initServiceSPI(knh_ServiceSPI_t *spi)
 	spi->syslogspi = "fprintf(stderr)";
 	spi->syslog = pseudo_syslog;
 	spi->vsyslog = pseudo_vsyslog;
-	spi->iconv_openSPI = iconv_open;
-	spi->iconvSPI = (size_t (*)(knh_iconv_t, char**, size_t*, char**, size_t*))iconv;
-	spi->iconv_closeSPI = iconv_close;
-#ifdef K_USING_ICONV
-	spi->iconvspi = "iconv";
-#else
+	spi->iconv_openSPI = knh_iconv_open;
+	spi->iconvSPI = knh_iconv;
+	spi->iconv_closeSPI = knh_iconv_close;
 	spi->iconvspi = "noiconv";
-#endif
 	spi->mallocSPI = knh_fastmalloc;
 	spi->freeSPI = knh_fastfree;
 	spi->setsfpSPI = _setsfp;
