@@ -333,7 +333,7 @@ void knh_linkDynamicIconv(CTX ctx)
 	if(spi->iconvSPI == knh_iconv || spi->iconvSPI == NULL) {
 		void *handler = knh_dlopen(ctx, "libiconv" K_OSDLLEXT);
 		int hasPrefix = 0;
-		void *f;
+		void *f = NULL;
 		if(handler != NULL) {
 			f = knh_dlsym(ctx, handler, "iconv_open", 0/*isTest*/);
 			if(f != NULL) {

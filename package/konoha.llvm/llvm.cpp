@@ -63,16 +63,17 @@ inline T object_cast(knh_RawPtr_t *po)
 {
 	return static_cast<T>(po->rawptr);
 }
-}
 
 template <class T>
-static void convert_array(std::vector<T> &vec, knh_Array_t *a)
+inline void convert_array(std::vector<T> &vec, knh_Array_t *a)
 {
 	size_t size = a->size;
 	for (size_t i=0; i < size; i++) {
 		T v = konoha::object_cast<T>(a->ptrs[i]);
 		vec.push_back(v);
 	}
+}
+
 }
 
 #ifdef __cplusplus
@@ -370,13 +371,6 @@ KMETHOD Type_getInt64PtrTy(CTX ctx, knh_sfp_t *sfp _RIX)
 //	{NULL}  // end of const data
 //};
 
-//static void convert_array_int(std::vector<int> &vec, knh_Array_t *a)
-//{
-//	size_t size = a->size;
-//	for (size_t i=0; i < size; i++) {
-//		vec.push_back(a->ilist[i]);
-//	}
-//}
 static void obj_free(void *p)
 {
 	/* do nothing */
@@ -519,7 +513,7 @@ KMETHOD IRBuilder_createInvoke(CTX ctx, knh_sfp_t *sfp _RIX)
 	BasicBlock *UnwindDest = konoha::object_cast<BasicBlock *>(sfp[3].p);
 	knh_Array_t *Args = (sfp[4].a);
 	std::vector<Value*> List;
-	convert_array(List, Args);
+	konoha::convert_array(List, Args);
 	InvokeInst *ptr = self->CreateInvoke(Callee, NormalDest, UnwindDest, List.begin(), List.end());
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
@@ -946,7 +940,7 @@ KMETHOD IRBuilder_createGEP(CTX ctx, knh_sfp_t *sfp _RIX)
 	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
 	knh_Array_t *IdxList = sfp[2].a;
 	std::vector<Value*> List;
-	convert_array(List, IdxList);
+	konoha::convert_array(List, IdxList);
 	Value *ptr = self->CreateGEP(Ptr, List.begin(), List.end());
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
@@ -959,7 +953,7 @@ KMETHOD IRBuilder_createInBoundsGEP(CTX ctx, knh_sfp_t *sfp _RIX)
 	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
 	knh_Array_t *IdxList = sfp[2].a;
 	std::vector<Value*> List;
-	convert_array(List, IdxList);
+	konoha::convert_array(List, IdxList);
 	Value *ptr = self->CreateInBoundsGEP(Ptr, List.begin(), List.end());
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
@@ -1645,7 +1639,7 @@ KMETHOD IRBuilder_createCall(CTX ctx, knh_sfp_t *sfp _RIX)
 	Value *Callee = konoha::object_cast<Value *>(sfp[1].p);
 	knh_Array_t *Args = sfp[2].a;
 	std::vector<Value*> List;
-	convert_array(List, Args);
+	konoha::convert_array(List, Args);
 
 	CallInst *ptr = self->CreateCall(Callee, List.begin(), List.end());
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
@@ -1717,7 +1711,7 @@ KMETHOD IRBuilder_createShuffleVector(CTX ctx, knh_sfp_t *sfp _RIX)
 //	Value *Agg = konoha::object_cast<Value *>(sfp[1].p);
 //	knh_Array_t *Idxs = sfp[2].a;
 //	std::vector<int> List;
-//	convert_array_int(List, Idxs);
+//	konoha::convert_array_int(List, Idxs);
 //	Value *ptr = self->CreateExtractValue(Agg, List.begin(), List.end());
 //	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 //	RETURN_(p);
@@ -1731,7 +1725,7 @@ KMETHOD IRBuilder_createShuffleVector(CTX ctx, knh_sfp_t *sfp _RIX)
 //	Value *Val = konoha::object_cast<Value *>(sfp[2].p);
 //	knh_Array_t *Idxs = sfp[2].a;
 //	std::vector<int> List;
-//	convert_array_int(List, Idxs);
+//	konoha::convert_array_int(List, Idxs);
 //	Value *ptr = self->CreateInsertValue(Agg, Val, List.begin(), List.end());
 //	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 //	RETURN_(p);
@@ -1894,7 +1888,7 @@ KMETHOD FunctionType_get(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t * args = sfp[2].a;
 	knh_bool_t b = sfp[3].bvalue;
 	std::vector<const Type*> List;
-	convert_array(List, args);
+	konoha::convert_array(List, args);
 	FunctionType *ptr = FunctionType::get(retTy, List, b);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
@@ -1906,7 +1900,7 @@ KMETHOD StructType_get(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *args = sfp[1].a;
 	knh_bool_t isPacked = sfp[2].bvalue;
 	std::vector<const Type*> List;
-	convert_array(List, args);
+	konoha::convert_array(List, args);
 	StructType *ptr = StructType::get(getGlobalContext(), List, isPacked);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
