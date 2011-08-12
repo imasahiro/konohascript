@@ -49,7 +49,41 @@ void RETURN_KQObject_(CTX ctx, knh_sfp_t *sfp, KObject *ko _RIX)
 {
 	knh_RawPtr_t *o = new_ReturnCppObject(ctx, sfp, ko, qfree);
 	ko->kself = o;
+	//fprintf(stderr, "ko(qo)=%p, o=%p\n", ko, o);
 	RETURN_(o);
+}
+
+void RETURN_QObject_(CTX ctx, knh_sfp_t *sfp, QObject *qo _RIX)
+{
+	KObject *ko = dynamic_cast<KObject*>(qo);
+	//fprintf(stderr, "ko=%p, qo=%p\n", ko, qo);
+	if(ko == NULL) {
+		knh_RawPtr_t *o = new_ReturnCppObject(ctx, sfp, qo, NULL/*qfree*/);
+		RETURN_(o);
+	}
+	else if(ko->kself == NULL) {
+		knh_RawPtr_t *o = new_ReturnCppObject(ctx, sfp, qo, qfree);
+		ko->kself = o;
+		//fprintf(stderr, "ko(qo)=%p, o=%p\n", ko, o);
+		RETURN_(o);
+	}
+	else {
+		RETURN_(ko->kself);
+	}
+}
+
+/* ------------------------------------------------------------------------ */
+
+class KQObject : public QObject, public KObject {
+public:
+	KQObject(QObject * p) : QObject(p), KObject() {
+	}
+};
+
+//## QObject QObject.new(QObject parent);
+KMETHOD QObject_new(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURN_newKQObject(new KQObject(IS_NULL(sfp[1].o) ? NULL : QCAST(QObject*, sfp[1].p->rawptr)));
 }
 
 /* ------------------------------------------------------------------------ */

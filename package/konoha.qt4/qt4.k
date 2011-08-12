@@ -48,6 +48,7 @@ class QLayout extends QObject; // and QLayoutItem
 class QBoxLayout extends QLayout;
 class QHBoxLayout extends QBoxLayout;
 
+@Native QObject QObject.new(QObject parent);
 @Native boolean QObject.connectValueChanged(Func<float> f);
 @Native boolean QObject.connectClicked(Func<boolean> f);
 

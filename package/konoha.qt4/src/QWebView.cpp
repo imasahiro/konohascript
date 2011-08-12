@@ -31,7 +31,6 @@
 // **************************************************************************
 
 #include <QWidget>
-#include <QtWebKit>
 #include "qt4commons.hpp"
 
 #ifdef __cplusplus
@@ -41,22 +40,22 @@ extern "C" {
 //## QWebView QWebView.new(QWidget w)
 KMETHOD QWebView_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QWebView *q = new QWebView(QWidget_parent(sfp[1]));
-	knh_RawPtr_t *p = new_ReturnQObject(ctx, sfp, q);
-	RETURN_(p);
+	//RETURN_newKQObject(new KQWebView(QWidget_parent(sfp[1])));
+	RETURN_QObject(new KQWebView(QWidget_parent(sfp[1])));
 }
 
 //## void QWebView.load(String path);
 KMETHOD QWebView_load(CTX, knh_sfp_t *sfp _RIX)
 {
 	QWebView *q = QPtr_to(QWebView*, sfp[0]);
+	fprintf(stderr, "q=%p\n", q);
 	if(q != NULL) {
 		QUrl url = QUrl(S_tochar(sfp[1].s));
 		q->load(url);
 	}
 	RETURNvoid_();
 }
-	
+
 #ifdef __cplusplus
 }
 #endif

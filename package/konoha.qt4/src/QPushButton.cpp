@@ -38,13 +38,18 @@
 extern "C" {
 #endif
 
+class KQPushButton : public QPushButton, public KObject {
+public:
+	KQPushButton(QString & text, QWidget * w) : QPushButton(text, w), KObject() {
+	}
+};
+
 //## QPushButton QPushButton.new(String text, QWidget parent)
 KMETHOD QPushButton_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QString text = QString(S_tochar(sfp[1].s));
-	QPushButton *q = new QPushButton(text, QWidget_parent(sfp[2]));
-	knh_RawPtr_t *p = new_ReturnQObject(ctx, sfp, q);
-	RETURN_(p);
+	//RETURN_newKQObject(new KQPushButton(text, QWidget_parent(sfp[2])));
+	RETURN_QObject(new KQPushButton(text, QWidget_parent(sfp[2])));
 }
 
 #ifdef __cplusplus

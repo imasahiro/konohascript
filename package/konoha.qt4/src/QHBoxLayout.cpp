@@ -38,11 +38,16 @@
 extern "C" {
 #endif
 
+class KQHBoxLayout : public QHBoxLayout, public KObject {
+public:
+	KQHBoxLayout(QWidget * w) : QHBoxLayout(w), KObject() {
+	}
+};
+
 //## QHBoxLayout QHBoxLayout.new(QWidget parent);
 KMETHOD QHBoxLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QHBoxLayout *h = new QHBoxLayout(QWidget_parent(sfp[1]));
-	RETURN_(new_ReturnQObject(ctx, sfp, h));
+	RETURN_newKQObject(new KQHBoxLayout(QWidget_parent(sfp[1])));
 }
 
 #ifdef __cplusplus

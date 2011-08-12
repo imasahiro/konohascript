@@ -38,12 +38,17 @@
 extern "C" {
 #endif
 
+class KQLineEdit : public QLineEdit, public KObject {
+public:
+	KQLineEdit(QString & text, QWidget * w) : QLineEdit(text, w), KObject() {
+	}
+};
+
 //## QLineEdit QLineEdit.new(String text, QWidget parent);
 KMETHOD QLineEdit_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QString text = QString(String_to(const char *, sfp[1]));
-	QLineEdit *l = new QLineEdit(text, QWidget_parent(sfp[2]));
-	RETURN_(new_ReturnQObject(ctx, sfp, l));
+	RETURN_newKQObject(new KQLineEdit(text, QWidget_parent(sfp[2])));
 }
 
 #ifdef __cplusplus

@@ -38,24 +38,24 @@
 extern "C" {
 #endif
 
+class KQBoxLayout : public QBoxLayout, public KObject {
+public:
+	KQBoxLayout(QBoxLayout::Direction dir, QWidget * w) : QBoxLayout(dir, w), KObject() {
+	}
+};
+
 //## QBoxLayout QBoxLayout.new(int dir, QWidget parent);
 KMETHOD QBoxLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QBoxLayout *b = new QBoxLayout(Int_to(QBoxLayout::Direction, sfp[1]), QWidget_parent(sfp[2]));
-	knh_RawPtr_t *p = new_ReturnQObject(ctx, sfp, b);
-	RETURN_(p);
+	RETURN_newKQObject(new KQBoxLayout(Int_to(QBoxLayout::Direction, sfp[1]), QWidget_parent(sfp[2])));
 }
 
 //## void QBoxLayout.addWidget(QWidget widget, int stretch, int alignment);
-KMETHOD QBoxLayout_addWidget(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QBoxLayout_addWidget(CTX, knh_sfp_t *sfp _RIX)
 {
 	QBoxLayout *b = QPtr_to(QBoxLayout *, sfp[0]);
 	if(b != NULL) {
-//		if (IS_NULL(sfp[2].o) && IS_NULL(sfp[3].o)) {
-//			b->addWidget(QPtr_to(QWidget *, sfp[1]));
-//		} else {
 		b->addWidget(QPtr_to(QWidget *, sfp[1]), Int_to(int, sfp[2]), Int_to(Qt::Alignment, sfp[3]));
-//		}
 	}
 	RETURNvoid_();
 }
@@ -72,7 +72,7 @@ static knh_IntData_t QBoxLayoutConstInt[] = {
 
 DEFAPI(void) constQBoxLayout(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
 {
-	kapi->loadIntClassConst(ctx, cid, QBoxLayoutConstInt);
+	kapi->loadClassIntConst(ctx, cid, QBoxLayoutConstInt);
 }
 
 #ifdef __cplusplus

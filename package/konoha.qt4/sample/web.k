@@ -7,5 +7,5 @@ wview = new QWebView();
 wview.load("http://www.konohascript.org/");
 wview.show();
 
-qapp.exec(true);
+qapp.exec();
 

@@ -36,10 +36,13 @@
 #define QT4COMMONS_HPP_
 
 #include <QtGui>
-#include <iostream>
+#include <QtWebKit>
+//#include <iostream>
 #include <konoha1.h>
 
-#define QCAST(T, p)     (T)p
+//#define QCAST(T, p)     dynamic_cast<T>(p)
+//#define QPtr_to(T, a)   dynamic_cast<T>((a).p->rawptr)
+#define QCAST(T, p)     (T)(p)
 #define QPtr_to(T, a)   (T)((a).p->rawptr)
 
 #define QWidget_parent(FP)  IS_NULL(FP.o) ? NULL : QPtr_to(QWidget*, FP)
@@ -54,18 +57,32 @@ class KObject {
 		kself = NULL;
 	}
 	~KObject() {
+		fprintf(stderr, "disposing KObject this=%p, kself=%p", this, kself);
 		if(kself != NULL) {
 			kself->rawptr = NULL;
 		}
 	}
 };
 
-#define RETURN_KQObject(ko)  RETURN_KQObject_(ctx, sfp, ko, K_RIX)
+#define RETURN_newKQObject(ko)  RETURN_KQObject_(ctx, sfp, ko, K_RIX)
+#define RETURN_QObject(qo)      RETURN_QObject_(ctx, sfp, qo, K_RIX)
 
 extern "C" {
 //	void qfree(void *p);
 	void RETURN_KQObject_(CTX ctx, knh_sfp_t *sfp, KObject *ko _RIX);
+	void RETURN_QObject_(CTX ctx, knh_sfp_t *sfp, QObject *qo _RIX);
 }
+
+/* ----------------------------------------------------------------------- */
+
+class KQWebView : public QWebView, public KObject {
+	Q_OBJECT;
+public:
+	KQWebView(QWidget * w) : QWebView(w), KObject() {
+	}
+};
+
+/* ----------------------------------------------------------------------- */
 
 class Connector : public QObject {
 	Q_OBJECT;

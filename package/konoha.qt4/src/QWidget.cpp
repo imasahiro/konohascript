@@ -38,12 +38,16 @@
 extern "C" {
 #endif
 
+class KQWidget : public QWidget, public KObject {
+public:
+	KQWidget(QWidget * w) : QWidget(w), KObject() {
+	}
+};
 
 //## QWidget QWidget.new(QWidget w)
 KMETHOD QWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QWidget *q = new QWidget(QWidget_parent(sfp[1]));
-	RETURN_(new_ReturnQObject(ctx, sfp, q));
+	RETURN_newKQObject(new KQWidget(QWidget_parent(sfp[1])));
 }
 
 //## void QWidget.setLayout(QLayout layout);
