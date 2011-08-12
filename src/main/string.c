@@ -821,17 +821,18 @@ static int pcre_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t nmatc
 	if ((res = pcre_exec(preg->re, NULL, str, strlen(str), 0, eflags, nvector, nmatch*3)) >= 0) {
 		if (res > 0 && res < nmatch) {
 			matched = res;
+			res = 0;
 		}
-		res = 0;
 		for (idx = 0; idx < matched; idx++) {
 			p[idx].rm_so = nvector[2*idx];
 			p[idx].rm_eo = nvector[2*idx+1];
 		}
 		p[idx].rm_so = -1;
+		nm_count = 0;
 		pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMECOUNT, &nm_count);
 		if (nm_count > 0) {
 			unsigned char *nm_table;
-			int nm_entry_size;
+			int nm_entry_size = 0;
 			pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMETABLE, &nm_table);
 			pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMEENTRYSIZE, &nm_entry_size);
 			unsigned char *tbl_ptr = nm_table;
@@ -864,12 +865,162 @@ static const knh_RegexSPI_t REGEX_PCRE = {
 
 static knh_bool_t knh_linkDynamicRe2(CTX ctx)
 {
+#ifdef __cplusplus
 	void *h = knh_dlopen(ctx, "libre2" K_OSDLLEXT);
-	if(h == NULL) return 0;
-	// TODO
-	return 0; // turn to 1 if made
+	if(h != NULL) return 1;
+#endif
+	return 0;
 }
 
+#ifdef __cplusplus
+} /* cancel extern "C" */
+
+#include <re2/re2.h>
+#include <vector>
+
+extern "C" {
+
+#define RE2_CASELESS           0x00000001
+#define RE2_MULTILINE          0x00000002
+#define RE2_DOTALL             0x00000004
+
+typedef struct {
+	re2::RE2 *r;
+} RE2_regex_t;
+
+static knh_regex_t* re2_regex_malloc(CTX ctx, knh_String_t* s)
+{
+	RE2_regex_t *reg = (RE2_regex_t*)KNH_MALLOC(ctx, sizeof(RE2_regex_t));
+	reg->r = NULL;
+	return (knh_regex_t*)reg;
+}
+
+static void re2_regex_regfree(CTX ctx, knh_regex_t *reg)
+{
+	RE2_regex_t *re = (RE2_regex_t*)reg;
+	if (re->r != NULL) {
+		re2::RE2 *r = static_cast<re2::RE2*>(re->r);
+		delete r;
+	}
+	KNH_FREE(ctx, reg, sizeof(RE2_regex_t));
+}
+
+static size_t re2_regex_regerror(int res, knh_regex_t *reg, char *ebuf, size_t ebufsize)
+{
+	re2::RE2 *r = static_cast<re2::RE2*>(((RE2_regex_t*)reg)->r);
+	snprintf(ebuf, ebufsize, "%s", (*r).error().c_str());
+	return 0;
+}
+
+static int re2_regex_parsecflags(CTX ctx, const char *option)
+{
+	int i, cflags = 0;
+	int optlen = strlen(option);
+	for (i = 0; i < optlen; i++) {
+		switch(option[i]) {
+		case 'i': // caseless
+				cflags |= RE2_CASELESS;
+				break;
+		case 'm': // multiline
+			cflags |= RE2_MULTILINE;
+			break;
+		case 's': // dotall
+			cflags |= RE2_DOTALL;
+			break;
+		default: break;
+		}
+	}
+	return cflags;
+}
+
+static int re2_regex_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, int cflags)
+{
+	RE2_regex_t* re = (RE2_regex_t*)reg;
+	re2::RE2::Options opt;
+	opt.Copy(re2::RE2::Quiet);
+	opt.set_perl_classes(true);
+	if (cflags != 0) {
+		if (cflags & RE2_CASELESS) {
+			opt.set_case_sensitive(false);
+		}
+		if (cflags & RE2_MULTILINE) {
+			opt.set_never_nl(true);
+		}
+		if (cflags & RE2_DOTALL) {
+			opt.set_one_line(true);
+		}
+	}
+	re->r = new re2::RE2(pattern, opt);
+	return ((*(re->r)).ok()) ? 0 : 1;
+}
+
+static int re2_regex_nmatchsize(CTX ctx, knh_regex_t *reg)
+{
+	re2::RE2 *r = static_cast<re2::RE2*>(((RE2_regex_t*)reg)->r);
+	return 1 + (*r).NumberOfCapturingGroups(); // patern + groups
+}
+
+static int re2_regex_parseeflags(CTX ctx, const char *option)
+{
+	int i, eflags = 0;
+	int optlen = strlen(option);
+	for (i = 0; i < optlen; i++) {
+		switch(option[i]){
+		default: break;
+		}
+	}
+	return eflags;
+}
+
+static int re2_regex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t nmatch, knh_regmatch_t p[], int eflags)
+{
+	re2::RE2 *r = static_cast<re2::RE2*>(((RE2_regex_t*)reg)->r);
+	re2::StringPiece base(str);
+	re2::StringPiece s[nmatch], *sp = s;
+	size_t remain = nmatch;
+	p[0].rm_so = -1;
+	if ((*r).Match(base, 0, re2::RE2::UNANCHORED, sp, nmatch)) {
+		size_t grpcount = (*r).NumberOfCapturingGroups();
+		std::vector<std::string> names(grpcount+1);
+		if (grpcount > 0) {
+			std::map<std::string, int> m = (*r).NamedCapturingGroups();
+			std::map<std::string, int>::iterator it, m_end = m.end();
+			for (it = m.begin(); it != m_end; it++) {
+				names[(*it).second] = (*it).first;
+			}
+		}
+		size_t i, spoffset = sp->data() - base.data();
+		p[0].rm_so = spoffset;
+		p[0].rm_eo = spoffset + sp->length();
+		p[0].rm_name.len = 0; // clear name
+		for (i = 1, remain--, sp++; (!sp->empty() && remain > 0); i++, remain--, sp++) {
+			spoffset = sp->data() - base.data();
+			p[i].rm_so = spoffset;
+			p[i].rm_eo = spoffset + sp->length();
+			p[i].rm_name.len = 0; // clear name
+			std::string *name = &names[i];
+			if (name != NULL && !name->empty()) {
+				p[i].rm_name = B(name->c_str());
+			}
+		}
+		if (i < nmatch) p[i].rm_so = -1;
+	}
+	return (remain < nmatch && r->ok()) ? 0 : 1;
+}
+
+#endif /* __cplusplus */
+
+static knh_RegexSPI_t REGEX_RE2 = {
+	"re2",
+#ifdef __cplusplus
+	re2_regex_malloc, re2_regex_parsecflags, re2_regex_parseeflags, re2_regex_regcomp,
+	re2_regex_nmatchsize, re2_regex_regexec, re2_regex_regerror, re2_regex_regfree
+#else
+	// dummy (never used)
+	strregex_malloc, strregex_parsecflags, strregex_parseeflags, strregex_regcomp,
+	strregex_nmatchsize, strregex_regexec, strregex_regerror, strregex_regfree
+#endif
+};
 
 /* ------------------------------------------------------------------------ */
 /* [onig] */
@@ -891,7 +1042,6 @@ typedef struct OnigErrorInfo OnigErrorInfo;
 typedef struct re_pattern_buffer*  OnigRegex;
 
 /* options */
-#define ONIG_OPTION_DEFAULT            ONIG_OPTION_NONE
 #define ONIG_OPTION_NONE                 0U
 #define ONIG_OPTION_IGNORECASE           1U
 #define ONIG_OPTION_EXTEND               (ONIG_OPTION_IGNORECASE         << 1)
@@ -907,6 +1057,8 @@ typedef struct re_pattern_buffer*  OnigRegex;
 #define ONIG_OPTION_NOTEOL               (ONIG_OPTION_NOTBOL << 1)
 #define ONIG_OPTION_POSIX_REGION         (ONIG_OPTION_NOTEOL << 1)
 #define ONIG_OPTION_MAXBIT               ONIG_OPTION_POSIX_REGION  /* limit */
+
+#define ONIG_OPTION_DEFAULT            ONIG_OPTION_NONE
 
 #define ONIG_OPTION_ON(options,regopt)      ((options) |= (regopt))
 #define ONIG_OPTION_OFF(options,regopt)     ((options) &= ~(regopt))
@@ -1076,8 +1228,8 @@ void knh_linkDynamicRegex(CTX ctx)
 {
 	if(REGEX_DEFAULT == &REGEX_STR) {
 		if(knh_linkDynamicRe2(ctx)) {
-			//REGEX_DEFAULT = &REGEX_PCRE;
-			//return;
+			REGEX_DEFAULT = &REGEX_RE2;
+			return;
 		}
 		if(knh_linkDynamicPCRE(ctx)) {
 			REGEX_DEFAULT = &REGEX_PCRE;
