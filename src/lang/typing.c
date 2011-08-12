@@ -3895,7 +3895,6 @@ static knh_class_t METHOD_cid(CTX ctx, knh_Stmt_t *stmt)
 {
 	knh_Token_t *tkC = tkNN(stmt, 1); DBG_ASSERT(IS_Token(tkC));
 	knh_class_t this_cid = DP(ctx->gma)->this_cid;
-	DBG_P("this_cid=%s", CLASS__(this_cid));
 	if(TT_(tkC) == TT_ASIS) {
 		return this_cid;
 	}
@@ -3933,6 +3932,7 @@ static knh_Token_t* knh_StmtMTD_typing(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *
 	return TM(stmt);
 }
 
+
 static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 {
 	knh_class_t mtd_cid = METHOD_cid(ctx, stmtM);
@@ -3942,7 +3942,7 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 	knh_ParamArray_t *mp = NULL;
 	knh_Stmt_t *stmtP = stmtNN(stmtM, 3/*PARAMs*/);
 	int isDynamic = 0, allowDynamic = 1;
-	if(StmtMETHOD_isFFI(stmtM) || knh_StmtMETA_is(ctx, stmtM, "Native")) {
+	if(StmtMETHOD_isFFI(stmtM) || knh_StmtMETA_is(ctx, stmtM, "Native") || knh_StmtMETA_is(ctx, stmtM, "Glue")) {
 		allowDynamic = 0;
 	}
 	if(mtd != NULL && (mtd)->mn < MN_OPSIZE) { /* op */
@@ -3954,6 +3954,11 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 		DBG_P("OVERRIDING %s.%s", CLASS__(mtd->cid), MN__(mtd->mn));
 		if(mtd->cid != mtd_cid && (Method_isPrivate(mtd) || mn == MN_new)) {
 			mtd = NULL;
+		}
+	}
+	if(!knh_NameSpace_isInsideScope(ctx, K_GMANS, mtd_cid)) {
+		if(!knh_StmtMETA_is(ctx, stmtM, "Public")) {
+			flag |= FLAG_Method_Private;
 		}
 	}
 	if(mtd == NULL) {  // newly defined method
@@ -4032,18 +4037,6 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 			KNH_SETv(ctx, DP(mtd)->mp, mp);
 		}
 	}
-	DBG_({
-		size_t i;
-		DBG_P("mp->psize=%d, rsize=%d", mp->psize, mp->rsize);
-		for(i = 0; i < mp->psize; i++) {
-			knh_param_t *p = knh_ParamArray_get(mp, i);
-			DBG_P("param type=%s fn=%s", TYPE__(p->type), FN__(p->fn));
-		}
-		for(i = 0; i < mp->rsize; i++) {
-			knh_param_t *p = knh_ParamArray_rget(mp, i);
-			DBG_P("return type=%s, idx=%d", TYPE__(p->type), p->fn);
-		}
-	});
 	Method_setFastCall(mtd, 0);
 	if(knh_StmtMETA_is(ctx, stmtM, "FastCall")) {
 		if(DP(mtd)->mp->psize == 0 || (DP(mtd)->mp->psize == 1 && Method_isStatic(mtd))) {

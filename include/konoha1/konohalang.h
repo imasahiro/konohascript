@@ -651,6 +651,46 @@ static const char *OPNAME[] = {
 	"---",
 };
 
+static const char *MN_opNAME[] = {
+	"opNOT",
+	"opEXISTS",
+	"opLINK",
+	"opUNTIL",
+	"opIS",
+	"opOF",
+	"opHAS",
+	"opTO",
+	"opEQ",
+	"opNOTEQ",
+	"opLT",
+	"opLTE",
+	"opGT",
+	"opGTE",
+	"opWITH",
+	"opAS",
+	"opWHERE",
+	"opEACH",
+	"opLOR",
+	"opLXOR",
+	"opLAND",
+	"opADD",
+	"opSUB",
+	"opDIV",
+	"opMOD",
+	"opMUL",
+	"opLSFT",
+	"opRSFT",
+	"opLNOT",
+	"opNEXT",
+	"opPREV",
+	"opITR",
+	"opEXPT",
+	"opADDR",
+	"opCAST",
+	"opPLUS",
+	"opNEG",
+};
+
 int TT_priority(knh_term_t tt)
 {
 	if(TT_LET <= tt && tt <= TT_TSUB) {
@@ -674,6 +714,12 @@ const char* knh_getopname(knh_methodn_t mn)
 {
 	DBG_ASSERT(mn + TT_NOT <= TT_TSUB);
 	return OPNAME[mn];
+}
+
+const char* knh_getopMethodName(knh_methodn_t mn)
+{
+	DBG_ASSERT(mn + TT_NOT <= TT_TSUB);
+	return MN_opNAME[mn];
 }
 
 #endif/*K_USING_LOADDATA*/

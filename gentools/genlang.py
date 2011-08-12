@@ -549,6 +549,13 @@ static const char *OPNAME[] = {''')
 	f.write('''
 };
 
+static const char *MN_opNAME[] = {''')
+	for tk in MN_LIST:
+		f.write('''
+	"%s",''' % tk.TR.replace("MN_", ""));
+	f.write('''
+};
+
 int TT_priority(knh_term_t tt)
 {
 	if(TT_LET <= tt && tt <= TT_TSUB) {
@@ -572,6 +579,12 @@ const char* knh_getopname(knh_methodn_t mn)
 {
 	DBG_ASSERT(mn + TT_NOT <= TT_TSUB);
 	return OPNAME[mn];
+}
+
+const char* knh_getopMethodName(knh_methodn_t mn)
+{
+	DBG_ASSERT(mn + TT_NOT <= TT_TSUB);
+	return MN_opNAME[mn];
 }
 
 #endif/*K_USING_LOADDATA*/

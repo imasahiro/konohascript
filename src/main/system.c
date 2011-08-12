@@ -162,7 +162,7 @@ static knh_fieldn_t knh_getname(CTX ctx, knh_bytes_t n, knh_fieldn_t def)
 	return (knh_fieldn_t)idx + MN_OPSIZE;
 }
 
-knh_nameinfo_t *knh_getnameinfo(CTX ctx, knh_fieldn_t fn)
+static knh_nameinfo_t *knh_getnameinfo(CTX ctx, knh_fieldn_t fn)
 {
 	size_t n = (FN_UNMASK(fn) - MN_OPSIZE);
 	DBG_(
@@ -175,9 +175,17 @@ knh_nameinfo_t *knh_getnameinfo(CTX ctx, knh_fieldn_t fn)
 /* ------------------------------------------------------------------------ */
 /* [fn] */
 
+const char* knh_getopMethodName(knh_methodn_t mn);
+
 KNHAPI2(knh_String_t*) knh_getFieldName(CTX ctx, knh_fieldn_t fn)
 {
-	return knh_getnameinfo(ctx, fn)->name;
+	fn = FN_UNMASK(fn);
+	if(fn < MN_OPSIZE) {
+		return new_T(knh_getopMethodName(fn));
+	}
+	else {
+		return knh_getnameinfo(ctx, fn)->name;
+	}
 }
 
 /* ------------------------------------------------------------------------ */
@@ -226,6 +234,15 @@ static knh_bytes_t knh_bytes_skipFMTOPT(knh_bytes_t t)
 knh_methodn_t knh_getmn(CTX ctx, knh_bytes_t tname, knh_methodn_t def)
 {
 	knh_fieldn_t mask = 0;
+	if(tname.utext[0] == 'o' && tname.utext[1] == 'p') {
+		knh_methodn_t mn = MN_opNOT;
+		for(; mn <= MN_opNEG; mn++) {
+			const char *op = knh_getopMethodName(mn);
+			if(knh_bytes_equals(tname, B(op))) {
+				return mn;
+			}
+		}
+	}
 	if(tname.utext[0] == '%') {
 		tname = knh_bytes_skipFMTOPT(tname);
 		if(def != MN_NONAME) mask |= K_FLAG_MN_FMT;

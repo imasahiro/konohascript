@@ -239,16 +239,17 @@ KMETHOD ServerSocket_new(Ctx* ctx,knh_sfp_t* sfp _RIX)
 KMETHOD ServerSocket_accept(Ctx* ctx,knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *ss = (knh_Socket_t *)sfp[0].o;
-	knh_RawPtr_t *so = (knh_RawPtr_t*)sfp[1].o;
     struct sockaddr_in client_address;
     socklen_t client_len = sizeof(struct sockaddr_in);
 	knh_intptr_t fd = accept(ss->sd, (struct sockaddr*)&client_address, &client_len);
+	knh_RawPtr_t *so;
 	if (fd == -1) {
+		so = new_ReturnRawPtr(ctx, sfp, NULL);
 		LOGDATA = {__ERRNO__};
 		LIB_Failed("accept", "Socket!!");
 	}
 	else {
-		so = new_RawPtr(ctx, sfp[1].p, (void*)fd);
+		so = new_ReturnRawPtr(ctx, sfp, (void*)fd);
 		LOGDATA = {__ERRNO__};
 		NOTE_OK("accept");
 	}

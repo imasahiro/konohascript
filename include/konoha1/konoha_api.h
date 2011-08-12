@@ -14,7 +14,7 @@ KNHAPI2(void) knh_Array_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m);
 KNHAPI2(knh_Iterator_t*) new_Iterator(CTX ctx, knh_class_t p1, knh_Object_t *source, knh_Fitrnext fnext);
 KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb);
 KNHAPI2(void) knh_Object_toNULL_(CTX ctx, Object *o);
-KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, knh_RawPtr_t *po, void *rawptr);
+KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, const knh_ClassTBL_t *ct, void *rawptr);
 KNHAPI2(knh_RawPtr_t*) new_ReturnCppObject(CTX ctx, knh_sfp_t *sfp, void *rawptr, knh_Frawfree pfree);
 KNHAPI2(void) knh_addConstPool(CTX ctx, knh_Object_t *o);
 KNHAPI2(void) knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid);
@@ -85,7 +85,7 @@ typedef struct knh_api2_t {
 	knh_OutputStream_t* (*new_OutputStreamDPI)(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dpi, knh_Path_t *path);
 	knh_OutputStream_t* (*new_OutputStreamNULL)(CTX ctx, knh_Path_t *pth, const char *mode);
 	knh_Path_t* (*new_Path)(CTX ctx, knh_String_t *path);
-	knh_RawPtr_t* (*new_RawPtr)(CTX ctx, knh_RawPtr_t *po, void *rawptr);
+	knh_RawPtr_t* (*new_RawPtr)(CTX ctx, const knh_ClassTBL_t *ct, void *rawptr);
 	knh_RawPtr_t* (*new_ReturnCppObject)(CTX ctx, knh_sfp_t *sfp, void *rawptr, knh_Frawfree pfree);
 	knh_String_t*  (*DictMap_keyAt)(knh_DictMap_t *m, size_t n);
 	knh_String_t*  (*getFieldName)(CTX ctx, knh_fieldn_t fn);
@@ -133,7 +133,7 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)-204427016)
+#define K_API2_CRC32 ((size_t)2000695551)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -370,6 +370,7 @@ void WarningUndefinedFmt(CTX ctx, knh_class_t cid, knh_methodn_t mn);
 void NoticeInliningMethod(CTX ctx, knh_Method_t *mtd);
 knh_NameSpace_t* new_NameSpace(CTX ctx, knh_NameSpace_t *parent);
 knh_class_t knh_NameSpace_getcid(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t sname);
+knh_bool_t knh_NameSpace_isInsideScope(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid);
 knh_flag_t knh_Stmt_flag_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, knh_flag_t flag);
 knh_class_t knh_NameSpace_getFuncClass(CTX ctx, knh_NameSpace_t *ns, knh_methodn_t mn);
 knh_type_t knh_NameSpace_gettype(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t name);
@@ -732,7 +733,6 @@ void knh_setProperty(CTX ctx, knh_String_t *key, dynamic *value);
 Object *knh_getClassConstNULL(CTX ctx, knh_class_t cid, knh_bytes_t name);
 int knh_addClassConst(CTX ctx, knh_class_t cid, knh_String_t* name, Object *value);
 knh_fieldn_t knh_addname(CTX ctx, knh_String_t *s, knh_Fdictset f);
-knh_nameinfo_t *knh_getnameinfo(CTX ctx, knh_fieldn_t fn);
 knh_fieldn_t knh_getfnq(CTX ctx, knh_bytes_t tname, knh_fieldn_t def);
 knh_methodn_t knh_getmn(CTX ctx, knh_bytes_t tname, knh_methodn_t def);
 const char* knh_getmnname(CTX ctx, knh_methodn_t mn);

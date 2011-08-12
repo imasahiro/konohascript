@@ -39,9 +39,6 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [object] */
 
-
-/* ------------------------------------------------------------------------ */
-
 int knh_Object_compareTo(Object *o1, Object *o2)
 {
 	knh_class_t cid1 = O_cid(o1);
@@ -70,9 +67,9 @@ static void nofree(void *p)
 {
 }
 
-KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, knh_RawPtr_t *po, void *rawptr)
+KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, const knh_ClassTBL_t *ct, void *rawptr)
 {
-	knh_RawPtr_t *npo = (knh_RawPtr_t*)new_hObject_(ctx, O_cTBL(po));
+	knh_RawPtr_t *npo = (knh_RawPtr_t*)new_hObject_(ctx, ct);
 	npo->rawptr = rawptr;
 	if(rawptr == NULL) {
 		knh_Object_toNULL(ctx, npo);
@@ -109,7 +106,6 @@ KNHAPI2(void) knh_addConstPool(CTX ctx, knh_Object_t *o)
 {
 	knh_Array_add(ctx, ctx->share->constPools, o);
 }
-
 
 /* ------------------------------------------------------------------------ */
 /* [ClassTBL] */
@@ -164,15 +160,18 @@ const knh_ClassTBL_t* DBG_ClassTBL(CTX ctx, knh_class_t cid)
 knh_Class_t *new_Type(CTX ctx, knh_type_t type)
 {
 	knh_class_t cid = CLASS_t(type);
-	const knh_ClassTBL_t *t = ClassTBL(cid);
-	if(t->typeNULL == NULL) {
+	const knh_ClassTBL_t *ct = ClassTBL(cid);
+	if(ct->typeNULL == NULL) {
 		knh_Class_t *o = new_(Class);
 		o->cid = cid;
 		o->type = cid;
-		o->cTBL = t;
-		KNH_INITv(((knh_ClassTBL_t*)t)->typeNULL, o);
+		o->cTBL = ct;
+		KNH_INITv(((knh_ClassTBL_t*)ct)->typeNULL, o);
+		if(cid == CLASS_Tvoid) {
+			Object_setNullObject(o, 1);
+		}
 	}
-	return t->typeNULL;
+	return ct->typeNULL;
 }
 
 KNHAPI2(void) knh_write_cid(CTX ctx, knh_OutputStream_t *w, knh_class_t cid)
@@ -933,8 +932,6 @@ static KMETHOD Fmethod_abstract(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-/* ------------------------------------------------------------------------ */
-
 KNHAPI2(knh_bool_t) Method_isAbstract(knh_Method_t *mtd)
 {
 	return (mtd->fcall_1 == Fmethod_abstract);
@@ -966,6 +963,7 @@ knh_Method_t* new_Method(CTX ctx, knh_flag_t flag, knh_class_t cid, knh_methodn_
 	knh_Method_setFunc(ctx, mtd, func);
 	return mtd;
 }
+
 
 /* ------------------------------------------------------------------------ */
 /* [VirtualField] */
@@ -1150,24 +1148,6 @@ void knh_ClassTBL_addXField(CTX ctx, const knh_ClassTBL_t *ct, knh_type_t type, 
 	knh_ClassTBL_addMethod(ctx, ct, mtd, 0/*isCheck*/);
 }
 
-// boolean Class.addXField(Class type, String name)
-static KMETHOD Class_addXField(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	const knh_ClassTBL_t *ct = (sfp[0].c)->cTBL;
-	knh_type_t type = (sfp[1].c)->type;
-	knh_fieldn_t fn = knh_getmn(ctx, S_tobytes(sfp[2].s), FN_NEWID);  // FIXME: NOIZE
-	knh_Method_t *mtd = knh_ClassTBL_findMethodNULL(ctx, ct, MN_toSETTER(fn), 1);
-	if(mtd != NULL) {
-		RETURNb_(0);
-	}
-	mtd = knh_ClassTBL_findMethodNULL(ctx, ct, (type == CLASS_Boolean) ? MN_toISBOOL(fn) : MN_isGETTER(fn), 1);
-	if(mtd != NULL) {
-		RETURNb_(0);
-	}
-	knh_ClassTBL_addXField(ctx, ct, type, fn);
-	RETURNb_(1);
-}
-
 /* ------------------------------------------------------------------------ */
 
 static KMETHOD Fmethod_NoSuchMethod(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1342,6 +1322,7 @@ void knh_NameSpace_addMethod(CTX ctx, knh_class_t mtd_cid, knh_Method_t *mtd)
 {
 	DBG_ASSERT(mtd_cid == mtd->cid);
 	if(Method_isPrivate(mtd)) {
+
 		KNH_TODO("Private Method");
 	}
 	else {
@@ -1352,8 +1333,20 @@ void knh_NameSpace_addMethod(CTX ctx, knh_class_t mtd_cid, knh_Method_t *mtd)
 
 knh_Method_t* knh_NameSpace_getMethodNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_methodn_t mn)
 {
-	knh_Method_t *mtd = ClassTBL_getMethodNULL(ctx, ClassTBL(cid), mn);
-	return mtd;
+	while(ns != NULL) {
+		if(DP(ns)->methodsNULL != NULL) {
+			size_t i;
+			knh_Array_t *methods = DP(ns)->methodsNULL;
+			for(i = 0; i < knh_Array_size(methods); i++) {
+				knh_Method_t *mtd = methods->methods[i];
+				if(mtd->cid == cid && mtd->mn == mn) {
+					return mtd;
+				}
+			}
+		}
+		ns = ns->parentNULL;
+	}
+	return ClassTBL_getMethodNULL(ctx, ClassTBL(cid), mn);
 }
 
 knh_Method_t* knh_NameSpace_getFmtNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_methodn_t mn)
@@ -1933,13 +1926,12 @@ const knh_ClassTBL_t *knh_NameSpace_getLinkClassTBLNULL(CTX ctx, knh_NameSpace_t
 	if(cid == CLASS_unknown) {
 		scheme.len -= 1;
 		cid = knh_NameSpace_getcid(ctx, ns, scheme);
-		if(cid != CLASS_unknown) {
-			knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, ns, cid, MN_opLINK);
-			if(mtd != NULL) return ClassTBL(cid);
-		}
-		return NULL;
 	}
-	return ClassTBL(cid);
+	if(cid != CLASS_unknown) {
+		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, ns, cid, MN_opLINK);
+		if(mtd != NULL) return ClassTBL(cid);
+	}
+	return NULL;
 }
 
 knh_class_t knh_ClassTBL_linkType(CTX ctx, const knh_ClassTBL_t *ct, knh_class_t tcid)
@@ -2003,8 +1995,212 @@ knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t
 
 /* ------------------------------------------------------------------------ */
 
+// boolean Object.hasXData();
+static KMETHOD Object_hasXData(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNb_(Object_isXData(sfp[0].o));
+}
+
+// Map Object.getXData();
+static KMETHOD Object_getXData(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURN_(knh_Object_getXData(ctx, sfp[0].o));
+}
+
+static knh_bool_t ClassTBL_addXField(CTX ctx, const knh_ClassTBL_t *ct, knh_type_t type, knh_String_t *name)
+{
+	knh_fieldn_t fn = knh_getmn(ctx, S_tobytes(name), FN_NEWID);  // FIXME: NOIZE
+	knh_Method_t *mtd = knh_ClassTBL_findMethodNULL(ctx, ct, MN_toSETTER(fn), 1);
+	if(mtd != NULL) {
+		LANG_LOG("already defined setter: %s.%s", S_tochar(ct->lname), S_tochar(name));
+		return 0;
+	}
+	mtd = knh_ClassTBL_findMethodNULL(ctx, ct, (type == CLASS_Boolean) ? MN_toISBOOL(fn) : MN_isGETTER(fn), 1);
+	if(mtd != NULL) {
+		LANG_LOG("already defined getter: %s.%s", S_tochar(ct->lname), S_tochar(name));
+		return 0;
+	}
+	knh_ClassTBL_addXField(ctx, ct, type, fn);
+	return 1;
+}
+
+// boolean Object.addXField(Class type, String name)
+static KMETHOD Object_addXField(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNb_(ClassTBL_addXField(ctx, O_cTBL(sfp[0].o), (sfp[1].c)->type, sfp[2].s));
+}
+
+// boolean Class.addXField(Class type, String name)
+static KMETHOD Class_addXField(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNb_(ClassTBL_addXField(ctx, (sfp[0].c)->cTBL, (sfp[1].c)->type, sfp[2].s));
+}
+
+static knh_Array_t *new_MethodList(CTX ctx, const knh_ClassTBL_t *ct, knh_NameSpace_t *ns)
+{
+	knh_Array_t *ma = new_Array(ctx, CLASS_Method, knh_Array_size(ct->methods));
+	size_t i;
+	for(i = 0; i < knh_Array_size(ct->methods); i++) {
+		knh_Method_t *mtd = ct->methods->methods[i];
+		if(MN_isFMT(mtd->mn) || Method_isHidden(mtd)) continue;
+		knh_Array_add(ctx, ma, mtd);
+	}
+	while(ns != NULL) {
+		if(DP(ns)->methodsNULL != NULL) {
+			knh_Array_t *methods = DP(ns)->methodsNULL;
+			for(i = 0; i < knh_Array_size(methods); i++) {
+				knh_Method_t *mtd = methods->methods[i];
+				if(mtd->cid != ct->cid) continue;
+				if(MN_isFMT(mtd->mn) || Method_isHidden(mtd)) continue;
+				knh_Array_add(ctx, ma, mtd);
+			}
+		}
+		ns = ns->parentNULL;
+	}
+	return ma;
+}
+
+// Method[] Object.getMethods(NameSpace _)
+static KMETHOD Object_getMethods(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURN_(new_MethodList(ctx, O_cTBL(sfp[0].o), sfp[1].ns));
+}
+
+// Method[] Object.getMethods(NameSpace _)
+static KMETHOD Class_getMethods(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURN_(new_MethodList(ctx, (sfp[0].c)->cTBL, sfp[1].ns));
+}
+
+// Class Class.opLINK(String path, NameSpace _)
+static KMETHOD Class_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+//	knh_NameSpace_t *ns = sfp[2].ns;
+	knh_bytes_t bpath = knh_bytes_next(S_tobytes(sfp[1].s), ':');
+	knh_class_t cid = knh_getcid(ctx, bpath);
+	if(cid == CLASS_unknown) {
+		bpath = knh_bytes_head(bpath, '<');
+		cid = knh_getcid(ctx, bpath);
+		if(cid == CLASS_unknown) {
+			cid = CLASS_Tvoid;
+		}
+	}
+	RETURN_(new_Type(ctx, cid));
+}
+
+// @Static Class[] Class.query(String query)
+static KMETHOD Class_query(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	size_t i, csize = ctx->share->sizeClassTBL;
+	knh_Array_t *ca = new_Array(ctx, CLASS_Class, csize);
+	knh_bytes_t q = S_tobytes(sfp[1].s);
+	for(i = 0; i < csize; i++) {
+		knh_class_t cid = (knh_class_t)i;
+		const knh_ClassTBL_t *ct = ClassTBL(cid);
+		DBG_P("lname=%s", S_tochar(ct->lname));
+		if(!knh_bytes_startsWith(S_tobytes(ct->lname), q)) continue;
+		knh_Array_add(ctx, ca, new_Type(ctx, cid));
+	}
+	RETURN_(ca);
+}
+
+// Method Method.opLINK(String path, NameSpace _)
+static KMETHOD Method_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_NameSpace_t *ns = sfp[2].ns;
+	knh_bytes_t bpath = knh_bytes_next(S_tobytes(sfp[1].s), ':');
+	knh_index_t loc = knh_bytes_rindex(bpath, '.');
+	knh_Method_t *mtd = NULL;
+	if(loc != -1) {
+		knh_bytes_t cpath = knh_bytes_first(bpath, loc);
+		knh_bytes_t mpath = knh_bytes_last(bpath, loc+1);
+		knh_class_t cid = knh_NameSpace_getcid(ctx, ns, cpath);
+		knh_methodn_t mn = knh_getmn(ctx, mpath, MN_NONAME);
+		if(cid != CLASS_unknown && mn != MN_NONAME) {
+			mtd = knh_NameSpace_getMethodNULL(ctx, ns, cid, mn);
+		}
+	}
+	if(mtd == NULL) {
+		mtd = KNH_TNULL(Method);
+	}
+	RETURN_(mtd);
+}
+
+// @Const Boolean Method.isAbstract();
+static KMETHOD Method_isAbstract_(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNb_(Method_isAbstract(sfp[0].mtd));
+}
+
+// @Const Boolean Method.isPrivate();
+static KMETHOD Method_isPrivate_(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNb_(Method_isPrivate(sfp[0].mtd));
+}
+
+// @Const String Method.getName();
+static KMETHOD Method_getName(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	knh_write_mn(ctx, cwb->w, (sfp[0].mtd)->mn);
+	RETURN_(knh_cwb_newString(ctx, cwb));
+}
+
+// @Const Class Method.getReturnType();
+static KMETHOD Method_getReturnType(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_type_t rtype = knh_ParamArray_rtype(DP(sfp[0].mtd)->mp);
+	if(rtype >= TYPE_This) {
+		rtype = knh_type_tocid(ctx, rtype, (sfp[0].mtd)->cid);
+	}
+	RETURN_(new_Type(ctx, rtype));
+}
+
+// @Const Class[] Method.getParamTypes();
+static KMETHOD Method_getParamTypes(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_ParamArray_t *pa = DP(sfp[0].mtd)->mp;
+	knh_Array_t *ma = new_Array(ctx, CLASS_Method, pa->psize);
+	size_t i;
+	for(i = 0; i < pa->psize; i++) {
+		knh_type_t ptype = knh_ParamArray_get(pa, i)->type;
+		if(ptype >= TYPE_This) {
+			ptype = knh_type_tocid(ctx, ptype, (sfp[0].mtd)->cid);
+		}
+		knh_Array_add(ctx, ma, new_Type(ctx, ptype));
+	}
+	RETURN_(ma);
+}
+
+// @Const String[] Method.getParamNames();
+static KMETHOD Method_getParamNames(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_ParamArray_t *pa = DP(sfp[0].mtd)->mp;
+	knh_Array_t *ma = new_Array(ctx, CLASS_String, pa->psize);
+	size_t i;
+	for(i = 0; i < pa->psize; i++) {
+		knh_fieldn_t fn = knh_ParamArray_get(pa, i)->fn;
+		knh_Array_add(ctx, ma, knh_getFieldName(ctx, fn));
+	}
+	RETURN_(ma);
+}
+
 static knh_FuncData_t FuncData[] = {
-	{"Class_addXField", Class_addXField},
+		{"Object_hasXData", Object_hasXData},
+		{"Object_getXData", Object_getXData},
+		{"Object_addXField", Object_addXField},
+		{"Class_addXField", Class_addXField},
+		{"Object_getMethods", Object_getMethods},
+		{"Class_getMethods", Class_getMethods},
+		{"Class_opLINK", Class_opLINK},
+		{"Class_query", Class_query},
+		{"Method_opLINK", Method_opLINK},
+		{"Method_isAbstract", Method_isAbstract_},
+		{"Method_isPrivate", Method_isPrivate_},
+		{"Method_getName", Method_getName},
+		{"Method_getReturnType", Method_getReturnType},
+		{"Method_getParamTypes", Method_getParamTypes},
+		{"Method_getParamNames", Method_getParamNames},
 	{NULL, NULL},
 };
 

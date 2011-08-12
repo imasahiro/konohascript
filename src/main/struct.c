@@ -1586,17 +1586,18 @@ static void Method_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	knh_Method_t *mtd = (knh_Method_t*)o;
 	if(!(IS_FMTline(level))) {
 		if(Method_isAbstract(mtd)) {
-			knh_write(ctx, w, STEXT("@Abstract"));
-			knh_putc(ctx, w, ' ');
+			knh_write(ctx, w, STEXT("@Abstract")); knh_putc(ctx, w, ' ');
+		}
+		if(Method_isPrivate(mtd)) {
+			knh_write(ctx, w, STEXT("@Private"));  knh_putc(ctx, w, ' ');
 		}
 		if(Method_isStatic(mtd)) {
-			knh_write(ctx, w, STEXT("@Static"));
-			knh_putc(ctx, w, ' ');
+			knh_write(ctx, w, STEXT("@Static"));   knh_putc(ctx, w, ' ');
 		}
 		knh_write_type(ctx, w, knh_ParamArray_rtype(DP(mtd)->mp));
 		knh_putc(ctx, w, ' ');
 	}
-	knh_write_type(ctx, w, (mtd)->cid);
+	knh_write_cname(ctx, w, (mtd)->cid);
 	knh_putc(ctx, w, '.');
 	knh_write_mn(ctx, w, (mtd)->mn);
 	if(!(IS_FMTline(level))) {
@@ -1618,8 +1619,8 @@ static void Method_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 		knh_putc(ctx, w, ')');
 	}
 	if(IS_FMTdump(level)) {
-		knh_write_EOL(ctx, w);
 		if(!IS_NULL(DP(mtd)->objdata)) {
+			knh_write_EOL(ctx, w);
 			knh_write_InObject(ctx, w, DP(mtd)->objdata, level);
 		}
 	}
@@ -3117,6 +3118,8 @@ static void knh_setDefaultValues(CTX ctx)
 		knh_setClassDefaultValue(ctx, CLASS_String, so, NULL);
 	}
 	knh_setClassDefaultValue(ctx, CLASS_Path, ctx->share->cwdPath, NULL);
+	knh_setClassDefaultValue(ctx, CLASS_Class, new_Type(ctx, CLASS_Tvoid), NULL);
+
 #if defined(K_USING_SEMANTICS)
 	{
 		knh_Semantics_t *u = new_(Semantics);

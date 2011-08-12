@@ -35,9 +35,8 @@
 		knh_logprintf("MEMORY", 0, fmt K_OSLINEFEED,  ## __VA_ARGS__);\
 	} \
 
-#define LANG_LOG(fmt, ...) if(knh_isVerboseLang()){ \
-		knh_logprintf("KONOHA", 0, fmt K_OSLINEFEED,  ## __VA_ARGS__);\
-	} \
+#define LANG_LOG(fmt, ...) \
+		knh_logprintf("KONOHA", knh_isVerboseLang(), fmt K_OSLINEFEED,  ## __VA_ARGS__)
 
 /* ------------------------------------------------------------------------ */
 /* [DBGMODE] */

@@ -88,6 +88,18 @@ static inline knh_bytes_t knh_bytes_head(knh_bytes_t t, int ch)
 	return t;
 }
 
+static inline knh_bytes_t knh_bytes_rhead(knh_bytes_t t, int ch)
+{
+	long i;
+	for(i = t.len - 1; i >= 0; i--) {
+		if(t.utext[i] == ch) {
+			t.len = i;
+			break;
+		}
+	}
+	return t;
+}
+
 static inline knh_bytes_t knh_bytes_next(knh_bytes_t v, int ch)
 {
 	size_t i;
@@ -125,24 +137,6 @@ static inline knh_bytes_t knh_bytes_last(knh_bytes_t t, knh_intptr_t loc)
 	knh_bytes_t t2 = {{t.text + loc}, t.len - loc};
 	return t2;
 }
-
-//static inline knh_bytes_t knh_bytes_slice(knh_bytes_t t, size_t s, size_t e)
-//{
-//	knh_bytes_t t2;
-//	t2.utext = t.utext + s;
-//	t2.len = e - s;
-//	DBG_ASSERT(s + t2.len <= t.len);
-//	return t2;
-//}
-
-//static inline knh_bytes_t knh_bytes_subbytes(knh_bytes_t t, size_t off, size_t len)
-//{
-//	knh_bytes_t t2;
-//	t2.utext = t.utext + off;
-//	t2.len = len;
-//	DBG_ASSERT(off + len <= t.len);
-//	return t2;
-//}
 
 static inline knh_hashcode_t knh_hash(knh_hashcode_t h, const char *p, size_t len)
 {

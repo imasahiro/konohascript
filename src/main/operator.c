@@ -2881,28 +2881,6 @@ static KMETHOD Array_opTO(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-/* [Method] */
-
-/* ------------------------------------------------------------------------ */
-//## @Const method Boolean Method.isAbstract();
-
-static KMETHOD Method_isAbstract_(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	RETURNb_(Method_isAbstract(sfp[0].mtd));
-}
-
-/* ------------------------------------------------------------------------ */
-//## @Const method String Method.getName();
-
-static KMETHOD Method_getName(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	knh_write_mn(ctx, cwb->w, (sfp[0].mtd)->mn);
-	RETURN_(knh_cwb_newString(ctx, cwb));
-}
-
-/* ------------------------------------------------------------------------ */
 //## @Hidden method void Func.();
 
 static KMETHOD Func_invoke(CTX ctx, knh_sfp_t *sfp _RIX)

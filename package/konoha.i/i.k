@@ -27,4 +27,4 @@
 
 include "lib:gluelink";
 
-@Native void System.man(Object c, NameSpace ns);
+@Public @Native void System.man(Object c, NameSpace _);

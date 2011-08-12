@@ -46,16 +46,20 @@ class Charset extends String;
 }
 **/
 
-@Native Map Object.getXData();
-@Native boolean Class.addField(Class type, String name);
+@Public @Native boolean Object.hasXData();
+@Public @Native Map Object.getXData();
+@Public @Native boolean Class.addXField(Class type, String name);
+@Public @Native boolean Object.addXField(Class type, String name);
 
-/**
-@Native @Static Class[] Class.query(String path);
-@Native Method[] Class.methods();
-@Native Class Method.getReturnType();
-@Native Class[]  Method.paramTypes();
-@Native String[] Method.paramNames();
-**/
+@Public @Native Class Class.opLINK(String path, NameSpace _);
+@Public @Native @Static Class[] Class.query(String path);
+
+@Public @Native Method Method.opLINK(String path, NameSpace _);
+@Public @Native Method[] Class.getMethods(NameSpace _);
+@Public @Native Method[] Object.getMethods(NameSpace _);
+@Public @Native @Const Class Method.getReturnType();
+@Public @Native @Const Class[]  Method.getParamTypes();
+@Public @Native @Const String[] Method.getParamNames();
 
 
 /* *****************
