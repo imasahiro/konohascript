@@ -819,10 +819,8 @@ static int pcre_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t nmatc
 	size_t idx, matched = nmatch;
 	if (strlen(str) == 0) return -1;
 	if ((res = pcre_exec(preg->re, NULL, str, strlen(str), 0, eflags, nvector, nmatch*3)) >= 0) {
-		if (res > 0 && res < nmatch) {
-			matched = res;
-			res = 0;
-		}
+		matched = (res > 0 && res < nmatch) ? res : nmatch;
+		res = 0;
 		for (idx = 0; idx < matched; idx++) {
 			p[idx].rm_so = nvector[2*idx];
 			p[idx].rm_eo = nvector[2*idx+1];
@@ -865,14 +863,14 @@ static const knh_RegexSPI_t REGEX_PCRE = {
 
 static knh_bool_t knh_linkDynamicRe2(CTX ctx)
 {
-#ifdef __cplusplus
+#if defined(__cplusplus) && defined(K_USING_RE2)
 	void *h = knh_dlopen(ctx, "libre2" K_OSDLLEXT);
 	if(h != NULL) return 1;
 #endif
 	return 0;
 }
 
-#ifdef __cplusplus
+#if defined(__cplusplus) && defined(K_USING_RE2)
 } /* cancel extern "C" */
 
 #include <re2/re2.h>
@@ -1012,7 +1010,7 @@ static int re2_regex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t 
 
 static knh_RegexSPI_t REGEX_RE2 = {
 	"re2",
-#ifdef __cplusplus
+#if defined(__cplusplus) && defined(K_USING_RE2)
 	re2_regex_malloc, re2_regex_parsecflags, re2_regex_parseeflags, re2_regex_regcomp,
 	re2_regex_nmatchsize, re2_regex_regexec, re2_regex_regerror, re2_regex_regfree
 #else
