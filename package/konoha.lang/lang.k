@@ -30,8 +30,9 @@
 //
 // **************************************************************************
 
-include "lib:gluelink";
+//include "lib:gluelink";
 
+/** 
 class Charset extends String;
 
 @Native Charset Charset.opLINK(String path, NameSpace _);
@@ -43,7 +44,18 @@ class Charset extends String;
 @Native @Const @Semantic StringDecoder : (Charset c) {
   return new StringDecoder(c);
 }
+**/
 
+@Native Map Object.getXData();
+@Native boolean Class.addField(Class type, String name);
+
+/**
+@Native @Static Class[] Class.query(String path);
+@Native Method[] Class.methods();
+@Native Class Method.getReturnType();
+@Native Class[]  Method.paramTypes();
+@Native String[] Method.paramNames();
+**/
 
 
 /* *****************

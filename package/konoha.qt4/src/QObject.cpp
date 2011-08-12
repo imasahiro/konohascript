@@ -40,7 +40,16 @@ extern "C" {
 void qfree(void *p)
 {
 	QObject *q = QCAST(QObject*, p);
-	delete q;
+	if(q->parent() == NULL) {
+		delete q;
+	}
+}
+
+void RETURN_KQObject_(CTX ctx, knh_sfp_t *sfp, KObject *ko _RIX)
+{
+	knh_RawPtr_t *o = new_ReturnCppObject(ctx, sfp, ko, qfree);
+	ko->kself = o;
+	RETURN_(o);
 }
 
 /* ------------------------------------------------------------------------ */

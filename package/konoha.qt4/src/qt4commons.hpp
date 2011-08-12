@@ -45,11 +45,27 @@
 #define QWidget_parent(FP)  IS_NULL(FP.o) ? NULL : QPtr_to(QWidget*, FP)
 #define new_ReturnQObject(ctx, sfp, q)   new_ReturnCppObject(ctx, sfp, q, qfree)
 
-extern "C" {
-	void qfree(void *p);
-}
+//using namespace std;
 
-using namespace std;
+class KObject {
+	public:
+	knh_RawPtr_t *kself;
+	KObject() {
+		kself = NULL;
+	}
+	~KObject() {
+		if(kself != NULL) {
+			kself->rawptr = NULL;
+		}
+	}
+};
+
+#define RETURN_KQObject(ko)  RETURN_KQObject_(ctx, sfp, ko, K_RIX)
+
+extern "C" {
+//	void qfree(void *p);
+	void RETURN_KQObject_(CTX ctx, knh_sfp_t *sfp, KObject *ko _RIX);
+}
 
 class Connector : public QObject {
 	Q_OBJECT;
@@ -66,7 +82,6 @@ public slots:
 	// QAbstractButton
 	void slotClicked(bool);
 };
-
 
 class KonohaEvalEvent : public QEvent {
 //	Q_OBJECT;

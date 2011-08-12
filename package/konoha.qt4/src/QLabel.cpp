@@ -38,12 +38,19 @@
 extern "C" {
 #endif
 
+class KQLabel : public QLabel, public KObject {
+public:
+	KQLabel(QString & text, QWidget * w) : QLabel(text, w), KObject() {
+	}
+	//~KQLabel() : ~QLabel(), KObject();
+};
+
 //## QLabel QLabel.new(String text, QWidget parent);
 KMETHOD QLabel_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QString text = QString(String_to(const char *, sfp[1]));
-	QLabel *l = new QLabel(text, QWidget_parent(sfp[2]));
-	RETURN_(new_ReturnQObject(ctx, sfp, l));
+	KQLabel *l = new KQLabel(text, QWidget_parent(sfp[2]));
+	RETURN_KQObject(l);
 }
 
 #ifdef __cplusplus
