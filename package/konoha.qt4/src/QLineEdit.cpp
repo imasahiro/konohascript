@@ -51,6 +51,19 @@ KMETHOD QLineEdit_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_newKQObject(new KQLineEdit(text, QWidget_parent(sfp[2])));
 }
 
+static knh_IntData_t QLineEditConstInt[] = {
+	{"Normal", QLineEdit::Normal},
+	{"NoEcho", QLineEdit::NoEcho},
+	{"Password", QLineEdit::Password},
+	{"PasswordEchoOnEdit", QLineEdit::PasswordEchoOnEdit},
+	{NULL, 0},
+};
+
+DEFAPI(void) constQLineEdit(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+{
+	kapi->loadClassIntConst(ctx, cid, QLineEditConstInt);
+}
+
 #ifdef __cplusplus
 }
 #endif

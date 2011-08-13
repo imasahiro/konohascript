@@ -32,6 +32,7 @@
 
 include "lib:gluelink";
 
+@Abstract class Qt extends C++;
 class QObject extends C++;
 class QApplication extends QObject;
 
@@ -52,6 +53,7 @@ class QStackedWidget extends QFrame;
 class QLabel extends QFrame;
 
 @Abstract class QLayoutItem;
+class QSizePolicy extends C++;
 class QLayout extends QObject; // and QLayoutItem
 class QBoxLayout extends QLayout;
 class QHBoxLayout extends QBoxLayout;
@@ -85,32 +87,68 @@ class QSslSocket extends QObject;
 @Native void QWidget.setFocus(int n);
 
 @Native void QStackedWidget.setCurrentIndex(int index);
+@Native int QStackedWidget.addWidget ( QWidget widget );
 
 @Native QLabel QLabel.new(String text, QWidget parent);
 @Native String QLabel.text();
 @Native void QLabel.setText(String text);
+@Native void QLabel.setAlignment(int a);
+@Native void QLabel.setWordWrap(boolean ft)
 
 @Native QLineEdit QLineEdit.new(String text, QWidget parent);
 @Native String QLineEdit.text();
 @Native void QLineEdit.setText(String text);
+@Native void QLineEdit.setEchoMode(int echo);
 
-@Native QHBoxLayout QHBoxLayout.new(QWidget parent);
+boolean QLineEdit.onTextChanged(Func<String> f) {
+	return false;
+}
+
+boolean QLineEdit.onReturnPressed(Func<void> f) {
+	return false;
+}
+
+@Native QProgressBar QProgressBar.new(QWidget parent);
+@Native void QProgressBar.setValue(int value);
+
+@Native void QLayout.setContentsMargins(int left, int top, int right, int bottom);
+@Native void QLayout.addItem(QLayoutItem item);
 
 @Native QBoxLayout QBoxLayout.new(int dir, QWidget parent);
 @Native void QBoxLayout.addWidget(QWidget widget, int stretch, int allignment);
+@Native void QBoxLayout.setSpacing(int n);
+
+@Native QHBoxLayout QHBoxLayout.new(QWidget parent);
+@Native QVBoxLayout QVBoxLayout.new(QWidget parent);
+
+@Native QSpacerItem QSpacerItem.new(int w, int h, int hpolicy, int vpolicy);
 
 @Native QWebView QWebView.new(QWidget parent);
 @Native void QWebView.load(String url);
 @Native String QWebView.url();
 @Native QWebPage QWebView.page();
 
+boolean QWebView.onLoadFinished(Func<boolean> f) {
+	return false;
+}
+
+boolean QWebView.onLoadProgress(Func<int> f) {
+	return false;
+}
+
 @Native QWebFrame QWebPage.mainFrame();
 @Native QWebElement	QWebFrame.documentElement();
 @Native QWebElement QWebElement.findFirst(String query);
 @Native void QWebElement.removeFromDocument();
+@Native void QWebElement.setAttribute(String name, String value);
+@Native void QWebElement.setAttribute(String name, String value);
+@Native dynamic QWebElement.evaluateJavaScript(String scriptSource);
+@Native String QWebElement.toPlainText();
 
 @Native QPushButton QPushButton.new(String text, QWidget parent);
 @Native void QPushButton.setText(String text);
+@Native void QPushButton.setEnabled(boolean tf);
+@Native void QPushButton.setDefault(boolean tf);
 
 // AbstractButton
 
@@ -118,6 +156,14 @@ boolean QAbstractButton.onClicked(Func<boolean> f) {
 	return connectClicked(f);
 }
 
+
 @Native @Static void QTimer.singleShot(int msec, Func<void> f);
 
 @Native @Static boolean QSslSocket.supportsSsl();
+
+
+// compatibility to QString
+
+@Public boolean String.isEmpty() {
+	return (|this| == 0);
+}

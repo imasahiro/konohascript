@@ -47,8 +47,24 @@ public:
 //## QHBoxLayout QHBoxLayout.new(QWidget parent);
 KMETHOD QHBoxLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_newKQObject(new KQHBoxLayout(QWidget_parent(sfp[1])));
+	RETURN_QObject(new KQHBoxLayout(QWidget_parent(sfp[1])));
 }
+
+// must move to KQVBoxLayout.cpp
+
+class KQVBoxLayout : public QVBoxLayout, public KObject {
+public:
+	KQVBoxLayout(QWidget * w) : QVBoxLayout(w), KObject() {
+	}
+};
+
+//## QVBoxLayout QVBoxLayout.new(QWidget parent);
+KMETHOD QVBoxLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURN_QObject(new KQVBoxLayout(QWidget_parent(sfp[1])));
+}
+
+
 
 #ifdef __cplusplus
 }

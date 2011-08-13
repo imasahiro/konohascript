@@ -75,6 +75,32 @@ DEFAPI(void) constQBoxLayout(CTX ctx, knh_class_t cid, const knh_PackageLoaderAP
 	kapi->loadClassIntConst(ctx, cid, QBoxLayoutConstInt);
 }
 
+static knh_IntData_t QSizePolicyConstInt[] = {
+	{"Fixed", QSizePolicy::Fixed},
+	{"Minimum", QSizePolicy::Minimum},
+	{"Maximum", QSizePolicy::Maximum},
+	{"Preferred", QSizePolicy::Preferred},
+	{"Expanding", QSizePolicy::Expanding},
+	{"MinimumExpanding", QSizePolicy::MinimumExpanding},
+	{"Ignored", QSizePolicy::Ignored},
+	{NULL, 0},
+};
+
+DEFAPI(void) constQSizePolicy(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+{
+	kapi->loadClassIntConst(ctx, cid, QSizePolicyConstInt);
+}
+
+static knh_IntData_t QtConstInt[] = {
+	{"AlignCenter", Qt::AlignCenter},
+	{NULL, 0},
+};
+
+DEFAPI(void) constQt(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+{
+	kapi->loadClassIntConst(ctx, cid, QtConstInt);
+}
+
 #ifdef __cplusplus
 }
 #endif
