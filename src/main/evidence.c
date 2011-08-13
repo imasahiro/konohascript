@@ -297,6 +297,20 @@ static void opt_enforce_security(int mode, const char *optstr)
 	enforce_security = 1;
 }
 
+void knh_PleaseLetUsKnowYourOS(CTX ctx, const char *msg, const char *file, int line)
+{
+	if(CTX_isInteractive(ctx)) {
+	fprintf(stderr,
+		"\n\t==================================================================="
+		"\n\t\t@%s:%d"
+		"\n\t\t%s"
+		"\n\t\tPlease let us know your platform (os, version, etc.)"
+		"\n\t\t\t email: %s"
+		"\n\t===================================================================\n",
+		file, line, msg, K_EMAIL_BUG_REPORT);
+	}
+}
+
 /* ------------------------------------------------------------------------ */
 /* [signal] */
 

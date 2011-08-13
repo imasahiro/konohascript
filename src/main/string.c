@@ -667,11 +667,11 @@ static knh_bool_t knh_linkDynamicPCRE(CTX ctx)
 {
 	void *h = knh_dlopen(ctx, "libpcre" K_OSDLLEXT);
 	if(h == NULL) return 0;
-	pcre_version = (const char* (*)(void))knh_dlsym(ctx, h, "pcre_version", 0/*isTest*/);
-	pcre_free = (void (*)(void*))knh_dlsym(ctx, h, "free", 0/*isTest*/);
-	pcre_fullinfo = (int (*)(const pcre*, const pcre_extra*, int, void*))knh_dlsym(ctx, h, "pcre_fullinfo", 0/*isTest*/);
-	pcre_compile = (pcre* (*)(const char *, int, const char **, int *, const unsigned char *))knh_dlsym(ctx, h, "pcre_compile", 0/*isTest*/);
-	pcre_exec = (int  (*)(const pcre *, const pcre_extra *, const char*, int, int, int, int *, int))knh_dlsym(ctx, h, "pcre_exec", 0/*isTest*/);
+	pcre_version = (const char* (*)(void))knh_dlsym(ctx, h, "pcre_version", NULL, 0/*isTest*/);
+	pcre_free = (void (*)(void*))knh_dlsym(ctx, h, "free", NULL, 0/*isTest*/);
+	pcre_fullinfo = (int (*)(const pcre*, const pcre_extra*, int, void*))knh_dlsym(ctx, h, "pcre_fullinfo", NULL, 0/*isTest*/);
+	pcre_compile = (pcre* (*)(const char *, int, const char **, int *, const unsigned char *))knh_dlsym(ctx, h, "pcre_compile", NULL, 0/*isTest*/);
+	pcre_exec = (int  (*)(const pcre *, const pcre_extra *, const char*, int, int, int, int *, int))knh_dlsym(ctx, h, "pcre_exec", NULL, 0/*isTest*/);
 	if(pcre_free == NULL || pcre_fullinfo == NULL || pcre_compile == NULL || pcre_exec == NULL) return 0;
 	return 1;
 }
@@ -1083,17 +1083,17 @@ static knh_bool_t knh_linkDynamicOnig(CTX ctx)
 {
 	void *h = knh_dlopen(ctx, "libonig" K_OSDLLEXT);
 	if(h == NULL) return 0;
-	onig_error_code_to_str = (int (*)(OnigUChar*, int, ...))knh_dlsym(ctx, h, "onig_error_code_to_str", 0/*isTest*/);
-	onig_new = (int (*)(OnigRegex*, OnigUChar*, OnigUChar*, OnigOptionType, OnigEncoding, OnigSyntaxType*, OnigErrorInfo*))knh_dlsym(ctx, h, "onig_new", 0/*isTest*/);
-	onig_number_of_captures = (int (*)(OnigRegex))knh_dlsym(ctx, h, "onig_number_of_captures", 0/*isTest*/);
-	onig_region_new = (OnigRegion* (*)(void))knh_dlsym(ctx, h, "onig_region_new", 0/*isTest*/);
-	onig_search = (int (*)(OnigRegex, OnigUChar*, OnigUChar*, OnigUChar*, OnigUChar*, OnigRegion*, OnigOptionType))knh_dlsym(ctx, h, "onig_search", 0/*isTest*/);
-	onig_foreach_name = (int (*)(OnigRegex, int (*)(const OnigUChar*, const OnigUChar*, int, int*, OnigRegex, void*), void*))knh_dlsym(ctx, h, "onig_foreach_name", 0/*isTest*/);
-	onig_region_free = (void (*)(OnigRegion*, int))knh_dlsym(ctx, h, "onig_region_free", 0/*isTest*/);
-	onig_free = (void (*)(OnigRegex))knh_dlsym(ctx, h, "onig_free", 0/*isTest*/);
+	onig_error_code_to_str = (int (*)(OnigUChar*, int, ...))knh_dlsym(ctx, h, "onig_error_code_to_str", NULL, 0/*isTest*/);
+	onig_new = (int (*)(OnigRegex*, OnigUChar*, OnigUChar*, OnigOptionType, OnigEncoding, OnigSyntaxType*, OnigErrorInfo*))knh_dlsym(ctx, h, "onig_new", NULL, 0/*isTest*/);
+	onig_number_of_captures = (int (*)(OnigRegex))knh_dlsym(ctx, h, "onig_number_of_captures", NULL, 0/*isTest*/);
+	onig_region_new = (OnigRegion* (*)(void))knh_dlsym(ctx, h, "onig_region_new", NULL, 0/*isTest*/);
+	onig_search = (int (*)(OnigRegex, OnigUChar*, OnigUChar*, OnigUChar*, OnigUChar*, OnigRegion*, OnigOptionType))knh_dlsym(ctx, h, "onig_search", NULL, 0/*isTest*/);
+	onig_foreach_name = (int (*)(OnigRegex, int (*)(const OnigUChar*, const OnigUChar*, int, int*, OnigRegex, void*), void*))knh_dlsym(ctx, h, "onig_foreach_name", NULL, 0/*isTest*/);
+	onig_region_free = (void (*)(OnigRegion*, int))knh_dlsym(ctx, h, "onig_region_free", NULL, 0/*isTest*/);
+	onig_free = (void (*)(OnigRegex))knh_dlsym(ctx, h, "onig_free", NULL, 0/*isTest*/);
 
-	encutf8 = (OnigEncoding)knh_dlsym(ctx, h, "OnigEncodingUTF8", 0/*isTest*/);
-	defaultsyntax = (OnigSyntaxType**)knh_dlsym(ctx, h, "OnigDefaultSyntax", 0/*isTest*/);
+	encutf8 = (OnigEncoding)knh_dlsym(ctx, h, "OnigEncodingUTF8", NULL, 0/*isTest*/);
+	defaultsyntax = (OnigSyntaxType**)knh_dlsym(ctx, h, "OnigDefaultSyntax", NULL, 0/*isTest*/);
 	if(onig_error_code_to_str == NULL || onig_new == NULL || onig_number_of_captures == NULL || onig_region_new == NULL || onig_search == NULL || onig_foreach_name == NULL || onig_region_free == NULL || onig_free == NULL || encutf8 == NULL || defaultsyntax == NULL) return 0;
 	return 1;
 }

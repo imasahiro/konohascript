@@ -388,7 +388,10 @@ static int knh_parseopt(CTX ctx, int argc, const char **argv)
 			knh_String_t *s = new_T(argv[0]);
 			knh_DictMap_set(ctx, DP(ctx->sys)->props, new_T("script.name"), s);
 			s = new_S(ctx, knh_bytes_nsname(S_tobytes(s)));
-			KNH_SETv(ctx, DP(ctx->share->rootns)->nsname, s);
+			knh_Script_setNSName(ctx, ctx->script, s);
+		}
+		else {
+			knh_Script_setNSName(ctx, ctx->script, TS_main);
 		}
 	}
 	return n;
@@ -644,7 +647,7 @@ static void knh_linkDynamicReadline(CTX ctx)
 	if(ctx->spi->readline == NULL) {
 		void *handler = knh_dlopen(ctx, "libreadline" K_OSDLLEXT);
 		if(handler != NULL) {
-			void *f = knh_dlsym(ctx, handler, "readline", 0/*isTest*/);
+			void *f = knh_dlsym(ctx, handler, "readline", NULL, 0/*isTest*/);
 			if(f != NULL) {
 				((knh_ServiceSPI_t*)ctx->spi)->readlinespi = "libreadline";
 				((knh_ServiceSPI_t*)ctx->spi)->readline = (char* (*)(const char*))f;
@@ -652,7 +655,7 @@ static void knh_linkDynamicReadline(CTX ctx)
 			else {
 				goto L_STDIN;
 			}
-			f = knh_dlsym(ctx, handler, "add_history", 0/*isTest*/);
+			f = knh_dlsym(ctx, handler, "add_history", NULL, 0/*isTest*/);
 			if(f != NULL) {
 				((knh_ServiceSPI_t*)ctx->spi)->add_history = (int (*)(const char*))f;
 			}
@@ -746,6 +749,31 @@ static void konoha_shell(CTX ctx, char *optstr)
 	CTX_setInteractive(ctx, 1);
 	knh_shell(ctx);
 	KONOHA_END(ctx);
+}
+
+/* ------------------------------------------------------------------------- */
+
+typedef knh_iconv_t (*ficonv_open)(const char *, const char *);
+typedef size_t (*ficonv)(knh_iconv_t , char **, size_t *, char **, size_t *);
+typedef int    (*ficonv_close)(knh_iconv_t);
+
+static void knh_linkDynamicIconv(CTX ctx)
+{
+	knh_ServiceSPI_t *spi = ((knh_ServiceSPI_t*)ctx->spi);
+	void *handler = knh_dlopen(ctx, "libiconv" K_OSDLLEXT);
+	void *f = NULL;
+	if(handler != NULL) {
+		f = knh_dlsym(ctx, handler, "iconv_open", "libiconv_open", 1/*isTest*/);
+		if (f != NULL) {
+			spi->iconvspi       = "libiconv";
+			spi->iconv_openSPI  = (ficonv_open)f;
+			spi->iconvSPI = (ficonv)knh_dlsym(ctx, handler, "iconv", "libiconv", 0/*isTest*/);
+			spi->iconv_closeSPI = knh_dlsym(ctx, handler, "libiconv_close", "iconv_close", 0);
+			KNH_ASSERT(spi->iconvSPI != NULL && spi->iconv_closeSPI != NULL);
+			return ; // OK
+		}
+	}
+	PleaseLetUsKnowYourOS("libiconv is not available");
 }
 
 /*************************************************************************** */

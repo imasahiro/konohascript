@@ -141,6 +141,12 @@
 #define TODO()
 #endif/*K_USING_DEBUG0*/
 
+
+#define K_EMAIL_BUG_REPORT "bugs@konohascript.org"
+
+#define PleaseLetUsKnowYourOS(msg) \
+	knh_PleaseLetUsKnowYourOS(ctx, msg, __FILE__, __LINE__)
+
 #define K_TODOMSG \
 	"\n" \
 	"* ------------------------------------------------------------ *\n" \

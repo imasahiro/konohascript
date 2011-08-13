@@ -477,7 +477,7 @@ static void* knh_loadCFUNC(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t cfunc)
 	const char *funcname = knh_bytes_next(cfunc, ':').text;
 	void *func = NULL;
 	if(ns->gluehdr != NULL) {
-		Fgetfunc f = (Fgetfunc) knh_dlsym(ctx, ns->gluehdr, "localfunc", 0);
+		Fgetfunc f = (Fgetfunc) knh_dlsym(ctx, ns->gluehdr, "localfunc", NULL, 0);
 		if(f != NULL) {
 			func = f(funcname);
 			if(func != NULL) return func;
@@ -488,7 +488,7 @@ static void* knh_loadCFUNC(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t cfunc)
 			long i;
 			knh_Array_t *a = DP(ns)->ffilinksNULL;
 			for(i = knh_Array_size(a) -1; i >= 0; i--) {
-				func = knh_dlsym(ctx, a->ptrs[i]->rawptr, funcname, 0);
+				func = knh_dlsym(ctx, a->ptrs[i]->rawptr, funcname, NULL, 0);
 				if(func != NULL) return func;
 			}
 		}
@@ -506,7 +506,7 @@ knh_Fmethod knh_gluefunc(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_Di
 			DBG_P("gluehdr is not open");
 		}
 		else {
-			gluefunc = (knh_Fmethod)knh_dlsym(ctx, ns->gluehdr, S_tochar((knh_String_t*)gluedata), 0);
+			gluefunc = (knh_Fmethod)knh_dlsym(ctx, ns->gluehdr, S_tochar((knh_String_t*)gluedata), NULL, 0);
 			if(gluefunc == NULL) {
 				DBG_P("gluefunc is not found: %s", S_tochar((knh_String_t*)gluedata));
 			}
@@ -575,7 +575,7 @@ static void *knh_open_gluelink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t libname
 		KNH_NOTE("cannot open gluelink: %s, %s", knh_cwb_tochar(ctx, cwb), knh_dlerror());
 	}
 	if(p != NULL) {
-		knh_Fpkginit pkginit = (knh_Fpkginit)knh_dlsym(ctx, p, "init", 1/*isTest*/);
+		knh_Fpkginit pkginit = (knh_Fpkginit)knh_dlsym(ctx, p, "init", libname.text, 1/*isTest*/);
 		if(pkginit != NULL) {
 			const knh_PackageDef_t *pkgdef = pkginit(ctx, knh_getPackageLoaderAPI());
 			LOGSFPDATA = {sDATA("package_name", pkgdef->name),

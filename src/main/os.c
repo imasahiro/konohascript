@@ -584,17 +584,25 @@ void *knh_dlopen(CTX ctx, const char* path)
 	return handler;
 }
 
-void *knh_dlsym(CTX ctx, void* handler, const char* symbol, int isTest)
+void *knh_dlsym(CTX ctx, void* handler, const char* symbol, const char *another, int isTest)
 {
 	const char *func = __FUNCTION__, *emsg = NULL;
 	void *p = NULL;
 #if defined(K_USING_WINDOWS_)
 	func = "GetProcAddress";
 	p = GetProcAddress((HMODULE)handler, (LPCSTR)symbol);
+	if(p == NULL && another != NULL) {
+		symbol = another;
+		p = GetProcAddress((HMODULE)handler, (LPCSTR)symbol);
+	}
 	return p;
 #elif defined(K_USING_POSIX_)
 	func = "dlsym";
 	p = dlsym(handler, symbol);
+	if(p == NULL && another != NULL) {
+		symbol = another;
+		p = dlsym(handler, symbol);
+	}
 	if(p == NULL) {
 		emsg = dlerror();
 	}

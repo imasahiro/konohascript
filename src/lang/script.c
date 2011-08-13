@@ -49,7 +49,7 @@ knh_NameSpace_t* new_NameSpace(CTX ctx, knh_NameSpace_t *parent)
 	KNH_INITv(ns->parentNULL, parent);
 	KNH_SETv(ctx, DP(ns)->nsname, DP(parent)->nsname);
 	KNH_SETv(ctx, ns->path, parent->path);
-	DBG_P("ns=%p, rpath='%s'", ns, S_tochar(ns->path->urn));
+	LANG_LOG("ns=%p, rpath='%s'", ns, S_tochar(ns->path->urn));
 	return ns;
 }
 
@@ -73,9 +73,7 @@ knh_class_t knh_NameSpace_getcid(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t sname
 
 knh_bool_t knh_NameSpace_isInsideScope(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid)
 {
-	//fprintf(stderr, "@@ class=%s, nsname=%s\n", S_tochar(ClassTBL(cid)->lname), S_tochar(DP(ns)->nsname));
-	//return (knh_bytes_startsWith(S_tobytes(ClassTBL(cid)->lname), S_tobytes(DP(ns)->nsname)));
-	return 1;
+	return (knh_bytes_startsWith(S_tobytes(ClassTBL(cid)->lname), S_tobytes(DP(ns)->nsname)));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -251,6 +249,15 @@ static knh_bool_t knh_buff_addPackagePath(CTX ctx, knh_Bytes_t *ba, size_t pos, 
 	return 0;
 }
 
+void knh_Script_setNSName(CTX ctx, knh_Script_t* scr, knh_String_t *nsname)
+{
+	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	KNH_SETv(ctx, DP(scr->ns)->nsname, nsname);
+	knh_Bytes_write(ctx, cwb->ba, S_tobytes(nsname));
+	knh_Bytes_write(ctx, cwb->ba, STEXT(".Script"));
+	KNH_SETv(ctx, ((knh_ClassTBL_t*)O_cTBL(scr))->lname, knh_cwb_newString(ctx, cwb));
+}
+
 knh_status_t knh_loadPackage(CTX ctx, knh_bytes_t pkgname)
 {
 	knh_status_t status = K_CONTINUE;
@@ -263,7 +270,7 @@ knh_status_t knh_loadPackage(CTX ctx, knh_bytes_t pkgname)
 			if(fp != NULL) {
 				knh_String_t *pname = new_S(ctx, pkgname);
 				knh_Script_t *newscr = new_(Script);
-				KNH_SETv(ctx, DP(newscr->ns)->nsname, pname);
+				knh_Script_setNSName(ctx, newscr, pname);
 				knh_DictMap_set(ctx, dmap, pname, newscr);
 				knh_uri_t uri = knh_getURI(ctx, knh_cwb_tobytes(cwb));
 				KNH_SETv(ctx, newscr->ns->path, new_Path(ctx, knh_buff_newRealPathString(ctx, cwb->ba, cwb->pos)));
@@ -595,10 +602,11 @@ static void knh_loadNativeClass(CTX ctx, const char *cname, knh_ClassTBL_t *ct)
 	const knh_ClassDef_t *cdef = NULL;
 	if(ns->gluehdr != NULL) {
 		knh_snprintf(fname, sizeof(fname), "def%s", cname);
-		knh_Fclassdef classdef = (knh_Fclassdef)knh_dlsym(ctx, ns->gluehdr, fname, 0/*isTest*/);
+		knh_Fclassdef classdef = (knh_Fclassdef)knh_dlsym(ctx, ns->gluehdr, fname, cname, 0/*isTest*/);
 		if(classdef != NULL) {
 			knh_ClassDef_t *cdefbuf = (knh_ClassDef_t*)KNH_MALLOC(ctx, sizeof(knh_ClassDef_t));
 			knh_memcpy(cdefbuf, knh_getDefaultClassDef(), sizeof(knh_ClassDef_t));
+			LANG_LOG("loading glue func: %s", fname);
 			classdef(ctx, ct->cid, cdefbuf);
 			cdefbuf->asize = sizeof(knh_ClassDef_t);
 			cdef = (const knh_ClassDef_t*)cdefbuf;
@@ -615,8 +623,9 @@ static void knh_loadNativeClass(CTX ctx, const char *cname, knh_ClassTBL_t *ct)
 	ct->magicflag = KNH_MAGICFLAG(ct->cflag);
 	if(ns->gluehdr != NULL) {
 		knh_snprintf(fname, sizeof(fname), "const%s", cname);
-		knh_Fconstdef constdef = (knh_Fconstdef)knh_dlsym(ctx, ns->gluehdr, fname, 0/*isTest*/);
+		knh_Fconstdef constdef = (knh_Fconstdef)knh_dlsym(ctx, ns->gluehdr, fname, NULL, 0/*isTest*/);
 		if(constdef != NULL) {
+			LANG_LOG("loading glue func: %s", fname);
 			constdef(ctx, ct->cid, knh_getPackageLoaderAPI());
 		}
 	}
@@ -810,7 +819,7 @@ KNHAPI2(void) knh_eval(CTX ctx, const char *script)
 //	KNH_NOTE("gma->src=%p, nsname=%s", ctx->gma->scr, S_tochar(DP(ctx->gma->scr->ns)->nsname));
 //	KNH_NOTE("gma->src=%p, nsname=%s", ctx->share->script, S_tochar(DP(ctx->share->script->ns)->nsname));
 //	KNH_ASSERT(ctx->gma->scr == ctx->share->script);
-	fprintf(stderr, "gma=%p, share=%p\n", ctx->gma->scr, ctx->share->script);
+	//fprintf(stderr, "gma=%p, share=%p\n", ctx->gma->scr, ctx->share->script);
 	// KNH_SETv(ctx, ((knh_context_t*)ctx)->evaled, KNH_NULL);
 	KNH_SETv(ctx, ((knh_context_t*)ctx)->e, KNH_NULL);
 	knh_InputStream_t *bin = new_StringInputStream(ctx, new_String(ctx, script));
