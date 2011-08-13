@@ -1,13 +1,13 @@
 #!/usr/local/bin/konoha
-using libxml2.*;
-// parse xml file and get title.
+
+using konoha.xml.*;
 
 class Parser{
     XmlReader reader;
-    DictMap obj;
+    Map obj;
     Parser(String filename){
         this.reader = new XmlReader(filename);
-        this.obj = new DictMap();
+        this.obj = {};
     }
 
     void parseXml(){
@@ -21,24 +21,24 @@ class Parser{
         return false;
     }
 
-    DictMap getAttribute(){
-        DictMap tmp = new DictMap();
+    Map getAttribute(){
+        Map tmp = {};
         if(this.hasAttribute() == false) return tmp;
-        tem = new DictMap();
+        tem = {};
         while(reader.moveToNextAttribute()){
             tmp[reader.constName()] = reader.constValue();
         }
         return tmp;
     }
 
-    void parse(DictMap cur){
+    void parse(Map cur){
         while(reader.read()){
             type = reader.nodeType();
             if(type == XmlReader.TYPE_ELEMENT){
                 name = reader.constName();
-                cur[name] = new DictMap();
+                cur[name] = {};
                 if(this.hasAttribute() == true){
-                    DictMap tmp = cur[name];
+                    Map tmp = cur[name];
                     tmp["#attr"] = this.getAttribute();
                 }
                 if(reader.isEmptyElement() == 0){
@@ -55,5 +55,3 @@ class Parser{
 
 Parser p = new Parser("./rss.xhtml");
 p.parseXml();
-print p.obj;
-

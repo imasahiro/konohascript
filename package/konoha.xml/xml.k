@@ -50,39 +50,39 @@ String  XmlNode.getAttr(String name);
 String  XmlNode.getContent();
 void    XmlNode.dump();
 
-
 XPath   XPath.new(Xml xml);
 XmlNode XPath.find(String xpath);
-
 ***/
 
-class XmlReader{};
-XmlReader! XmlReader.new(String filename);
-void XmlReader.close();
-String XmlReader.getQuoteChar();
-Boolean XmlReader.read();
-Int XmlReader.readState();
-Int XmlReader.nodeType();
-Int XmlReader.isNamespaceDecl();
-Int XmlReader.isEmptyElement();
-Int XmlReader.getAttributeCount();
-Boolean XmlReader.hasAttributes();
-Boolean XmlReader.hasValue();
-Boolean XmlReader.getDepth();
-Boolean XmlReader.moveToFirstAttribute();
-Boolean XmlReader.moveToNextAttribute();
-Boolean XmlReader.moveToElement();
-String  XmlReader.constBaseUri();
-String  XmlReader.constEncoding();
-String  XmlReader.constValue();
-String  XmlReader.constNamespaceUri();
-String  XmlReader.constLocalName();
-String  XmlReader.constName();
-String  XmlReader.constXmlLang();
-String  XmlReader.constPrefix();
-String  XmlReader.getAttribute();
-String  XmlReader.getAttributeNo(Int numer);
-String  XmlReader.getAttributeNs(String ns, String name);
-String  XmlReader.lookupNameSpace(String ns);
-Int XmlReader.normalization();
+include "lib:gluelink";
+
+@Native class XmlReader;
+@Native XmlReader XmlReader.new(String filename, XmlReader _);
+@Native void XmlReader.close();
+@Native String XmlReader.getQuoteChar();
+@Native Boolean XmlReader.read();
+@Native Int XmlReader.readState();
+@Native Int XmlReader.nodeType();
+@Native Int XmlReader.isNamespaceDecl();
+@Native Int XmlReader.isEmptyElement();
+@Native Int XmlReader.getAttributeCount();
+@Native Boolean XmlReader.hasAttributes();
+@Native Boolean XmlReader.hasValue();
+@Native Boolean XmlReader.getDepth();
+@Native Boolean XmlReader.moveToFirstAttribute();
+@Native Boolean XmlReader.moveToNextAttribute();
+@Native Boolean XmlReader.moveToElement();
+@Native String  XmlReader.constBaseUri();
+@Native String  XmlReader.constEncoding();
+@Native String  XmlReader.constValue();
+@Native String  XmlReader.constNamespaceUri();
+@Native String  XmlReader.constLocalName();
+@Native String  XmlReader.constName();
+@Native String  XmlReader.constXmlLang();
+@Native String  XmlReader.constPrefix();
+@Native String  XmlReader.getAttribute();
+@Native String  XmlReader.getAttributeNo(Int numer);
+@Native String  XmlReader.getAttributeNs(String ns, String name);
+@Native String  XmlReader.lookupNameSpace(String ns);
+@Native Int XmlReader.normalization();
 

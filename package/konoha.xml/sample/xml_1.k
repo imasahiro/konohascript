@@ -1,4 +1,4 @@
-using libxml2.*;
+using konoha.xml.*;
 
 doc = new Xml("1.0");
 root = doc.createNode("EXAMPLE");

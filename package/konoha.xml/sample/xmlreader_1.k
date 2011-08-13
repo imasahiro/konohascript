@@ -1,8 +1,10 @@
 #!/usr/local/bin/konoha
-using libxml2.*;
-// parse xml file and get title.
+
+using konoha.xml.*;
 
 XmlReader reader = new XmlReader("rss.xhtml");
+
+
 while(reader.read()){
     type = reader.nodeType();
     //OUT << type + " ";
