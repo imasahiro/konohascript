@@ -293,12 +293,11 @@ static void TokenBlock_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
 		KNH_SETv(ctx, (tkB)->data, tk);
 		return;
 	}
-
 	if(IS_Token((tkB)->data)) {
 		tkPREV = (tkB)->token;
 		a = new_Array0(ctx, 0);
+		knh_Array_add(ctx, a, tkPREV);  // thank you nakata
 		KNH_SETv(ctx, (tkB)->data, a);
-		knh_Array_add(ctx, a, tkPREV);
 	}
 	else {
 		DBG_ASSERT(IS_Array((tkB)->data));
