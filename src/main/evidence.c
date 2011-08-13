@@ -465,12 +465,12 @@ knh_bool_t knh_VirtualMachine_launch(CTX ctx, knh_sfp_t *sfp)
 	knh_bzero(sa_orig, sizeof(struct sigaction) * 32);
 	knh_setsignal(ctx, sa_orig, 32);
 	knh_bool_t b = (knh_VirtualMachine_run(ctx, sfp, CODE_LAUNCH) == NULL);
-	knh_unsetsignal(ctx, sa_orig, 32);
 	if(ctx->signal != 0) {
 		if(ctx->signal == SIGSEGV || ctx->signal == SIGBUS || ctx->signal == SIGILL) {
 			_Exit(EX_SOFTWARE);
 		}
 	}
+	knh_unsetsignal(ctx, sa_orig, 32);
 	return b;
 #else
 	knh_bool_t b = (knh_VirtualMachine_run(ctx, sfp, CODE_LAUNCH) == NULL);

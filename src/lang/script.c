@@ -73,7 +73,9 @@ knh_class_t knh_NameSpace_getcid(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t sname
 
 knh_bool_t knh_NameSpace_isInsideScope(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid)
 {
-	return (knh_bytes_startsWith(S_tobytes(ClassTBL(cid)->lname), S_tobytes(DP(ns)->nsname)));
+	//fprintf(stderr, "@@ class=%s, nsname=%s\n", S_tochar(ClassTBL(cid)->lname), S_tochar(DP(ns)->nsname));
+	//return (knh_bytes_startsWith(S_tobytes(ClassTBL(cid)->lname), S_tobytes(DP(ns)->nsname)));
+	return 1;
 }
 
 /* ------------------------------------------------------------------------ */
