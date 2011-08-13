@@ -37,6 +37,12 @@
 extern "C" {
 #endif
 
+class KQWebView : public QWebView, public KObject {
+public:
+	KQWebView(QWidget * w) : QWebView(w), KObject() {
+	}
+};
+
 //## QWebView QWebView.new(QWidget w)
 KMETHOD QWebView_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -48,7 +54,6 @@ KMETHOD QWebView_new(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebView_load(CTX, knh_sfp_t *sfp _RIX)
 {
 	QWebView *q = QPtr_to(QWebView*, sfp[0]);
-	fprintf(stderr, "q=%p\n", q);
 	if(q != NULL) {
 		QUrl url = QUrl(S_tochar(sfp[1].s));
 		q->load(url);

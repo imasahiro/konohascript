@@ -156,10 +156,9 @@ boolean QAbstractButton.onClicked(Func<boolean> f) {
 	return connectClicked(f);
 }
 
-
 @Native @Static void QTimer.singleShot(int msec, Func<void> f);
 
-@Native @Static boolean QSslSocket.supportsSsl();
+//@Native @Static boolean QSslSocket.supportsSsl();
 
 
 // compatibility to QString

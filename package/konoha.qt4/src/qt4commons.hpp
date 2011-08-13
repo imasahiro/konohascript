@@ -37,7 +37,6 @@
 
 #include <QtGui>
 #include <QtWebKit>
-//#include <iostream>
 #include <konoha1.h>
 
 //#define QCAST(T, p)     dynamic_cast<T>(p)
@@ -74,13 +73,6 @@ extern "C" {
 }
 
 /* ----------------------------------------------------------------------- */
-
-class KQWebView : public QWebView, public KObject {
-	Q_OBJECT;
-public:
-	KQWebView(QWidget * w) : QWebView(w), KObject() {
-	}
-};
 
 /* ----------------------------------------------------------------------- */
 
