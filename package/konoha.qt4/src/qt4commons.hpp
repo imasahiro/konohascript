@@ -35,14 +35,20 @@
 #ifndef QT4COMMONS_HPP_
 #define QT4COMMONS_HPP_
 
-#include <QtGui>
-#include <QtWebKit>
+#include <QtCore/QObject>
+#include <QtCore/QEvent>
 #include <konoha1.h>
 
 //#define QCAST(T, p)     dynamic_cast<T>(p)
 //#define QPtr_to(T, a)   dynamic_cast<T>((a).p->rawptr)
-#define QCAST(T, p)     (T)(p)
-#define QPtr_to(T, a)   (T)((a).p->rawptr)
+#define QCAST(T, p)     (static_cast<T>(p))
+#define QPtr_to(T, a)   konoha::object_cast<T>((a).p)
+namespace konoha {
+template <class T>
+inline T object_cast(knh_RawPtr_t *po) {
+	return static_cast<T>(po->rawptr);
+}
+}
 
 #define QWidget_parent(FP)  IS_NULL(FP.o) ? NULL : QPtr_to(QWidget*, FP)
 #define new_ReturnQObject(ctx, sfp, q)   new_ReturnCppObject(ctx, sfp, q, qfree)
@@ -52,8 +58,7 @@
 class KObject {
 	public:
 	knh_RawPtr_t *kself;
-	KObject() {
-		kself = NULL;
+	KObject() : kself(NULL) {
 	}
 	~KObject() {
 		fprintf(stderr, "disposing KObject this=%p, kself=%p", this, kself);
@@ -61,6 +66,9 @@ class KObject {
 			kself->rawptr = NULL;
 		}
 	}
+	private:
+	KObject(const KObject &);
+	KObject operator=(const KObject &);
 };
 
 #define RETURN_newKQObject(ko)  RETURN_KQObject_(ctx, sfp, ko, K_RIX)

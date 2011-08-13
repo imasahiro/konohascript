@@ -30,7 +30,7 @@
 //  goccy54
 // **************************************************************************
 
-#include <QWidget>
+#include <QtWebKit>
 #include "qt4commons.hpp"
 
 #ifdef __cplusplus
