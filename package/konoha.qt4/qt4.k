@@ -33,24 +33,42 @@
 include "lib:gluelink";
 
 class QObject extends C++;
-class QWidget extends QObject;
 class QApplication extends QObject;
 
+class QWidget extends QObject;
+
+class QLineEdit extends QWidget;
+class QProgressBar extends QWidget;
+
 class QWebView extends QWidget;
+class QWebPage extends QObject;
+class QWebFrame extends QObject;
+class QWebElement extends C++;
+
 class QAbstractButton extends QWidget;
 class QPushButton extends QAbstractButton;
 class QFrame extends QWidget;
-
+class QStackedWidget extends QFrame;
 class QLabel extends QFrame;
-class QLineEdit extends QWidget;
 
+@Abstract class QLayoutItem;
 class QLayout extends QObject; // and QLayoutItem
 class QBoxLayout extends QLayout;
 class QHBoxLayout extends QBoxLayout;
+class QVBoxLayout extends QBoxLayout;
+
+class QSpacerItem extends QLayoutItem;
+
+class QTimer extends QObject;
+
+class QSslSocket extends QObject;
 
 @Native QObject QObject.new(QObject parent);
 @Native boolean QObject.connectValueChanged(Func<float> f);
 @Native boolean QObject.connectClicked(Func<boolean> f);
+@Native void QObject.disconnect();
+@Native String QObject.objectName();
+@Native void QObject.setObjectName(String text);
 
 @Native QApplication QApplication.new();
 @Native void QApplication.exec(boolean hasShell);
@@ -59,21 +77,40 @@ class QHBoxLayout extends QBoxLayout;
 @Native QWidget QWidget.new(QWidget parent);
 @Native void QWidget.setLayout(QLayout layout);
 @Native void QWidget.move(int x, int y);
+@Native void QWidget.setFixedSize(int x, int y);
 @Native void QWidget.resize(int w, int h);
 @Native void QWidget.setWindowTitle(string title);
 @Native void QWidget.show();
+@Native void QWidget.hide();
+@Native void QWidget.setFocus(int n);
 
-@Native QWebView QWebView.new(QWidget parent);
-@Native void QWebView.load(String url);
+@Native void QStackedWidget.setCurrentIndex(int index);
 
 @Native QLabel QLabel.new(String text, QWidget parent);
+@Native String QLabel.text();
+@Native void QLabel.setText(String text);
 
 @Native QLineEdit QLineEdit.new(String text, QWidget parent);
+@Native String QLineEdit.text();
+@Native void QLineEdit.setText(String text);
 
 @Native QHBoxLayout QHBoxLayout.new(QWidget parent);
 
 @Native QBoxLayout QBoxLayout.new(int dir, QWidget parent);
 @Native void QBoxLayout.addWidget(QWidget widget, int stretch, int allignment);
+
+@Native QWebView QWebView.new(QWidget parent);
+@Native void QWebView.load(String url);
+@Native String QWebView.url();
+@Native QWebPage QWebView.page();
+
+@Native QWebFrame QWebPage.mainFrame();
+@Native QWebElement	QWebFrame.documentElement();
+@Native QWebElement QWebElement.findFirst(String query);
+@Native void QWebElement.removeFromDocument();
+
+@Native QPushButton QPushButton.new(String text, QWidget parent);
+@Native void QPushButton.setText(String text);
 
 // AbstractButton
 
@@ -81,5 +118,6 @@ boolean QAbstractButton.onClicked(Func<boolean> f) {
 	return connectClicked(f);
 }
 
-@Native QPushButton QPushButton.new(String text, QWidget parent);
+@Native @Static void QTimer.singleShot(int msec, Func<void> f);
 
+@Native @Static boolean QSslSocket.supportsSsl();
