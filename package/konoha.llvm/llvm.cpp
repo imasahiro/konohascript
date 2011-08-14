@@ -1888,6 +1888,26 @@ KMETHOD FunctionType_get(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
+//## @Native Value ConstantInt.get(Type type, int v);
+KMETHOD ConstantInt_get(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	Type *type  = konoha::object_cast<Type *>(sfp[1].p);
+	knh_int_t v = sfp[2].ivalue;
+	Value *ptr = ConstantInt::get(type, v);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## @Native Value ConstantFP.get(Type type, float v);
+KMETHOD ConstantFP_get(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	Type *type  = konoha::object_cast<Type *>(sfp[1].p);
+	knh_float_t v = sfp[2].fvalue;
+	Value *ptr = ConstantFP::get(type, v);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
 //## @Static StructType.get(Array<Type> args, boolean isPacked);
 KMETHOD StructType_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -1928,7 +1948,6 @@ KMETHOD Method_setFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = (knh_Method_t*) sfp[0].o;
 	knh_RawPtr_t *po = sfp[1].p;
-	fprintf(stderr, "%p\n", mtd);
 	knh_Method_setFunc(ctx, mtd, (knh_Fmethod)po->rawptr);
 	RETURNvoid_();
 }

@@ -214,3 +214,8 @@ include "lib:gluelink";
 
 @Native @Public void Method.setFunction(NativeFunction nf);
 @Native @Public void Func.setFunction(NativeFunction nf);
+
+class ConstantInt;
+class ConstantFP;
+@Native Value ConstantInt.get(Type type, int v);
+@Native Value ConstantFP.get(Type type, float v);
