@@ -383,7 +383,7 @@ static void knh_parsearg(CTX ctx, int argc, const char **argv)
 	int i;
 	knh_Array_t *a = new_Array(ctx, CLASS_String, argc);
 	for(i = 1; i < argc; i++) {
-		knh_Array_add(ctx, a, new_String2(ctx, CLASS_String, argv[i], 0, K_SPOLICY_TEXT|K_SPOLICY_POOLALWAYS));
+		knh_Array_add(ctx, a, new_String2(ctx, CLASS_String, argv[i], knh_strlen(argv[i]), K_SPOLICY_TEXT|K_SPOLICY_POOLALWAYS));
 	}
 	knh_DictMap_set(ctx, DP(ctx->sys)->props, new_T("script.argv"), a);
 	if(argc > 0) {
