@@ -168,8 +168,8 @@ typedef struct knh_sysinfo_t {
 #define		CC_TYPE "LLVM-GCC " __VERSION__
 #else /* gnu gcc */
 #define		CC_TYPE "GCC " __VERSION__
-#define		CC_LABEL_AS_VALUE   1
 #endif
+#define		CC_LABEL_AS_VALUE   1
 //In most case, it makes slower a little
 //#define		likely(x)       __builtin_expect(!!(x), 1)
 //#define		unlikely(x)     __builtin_expect(!!(x), 0)

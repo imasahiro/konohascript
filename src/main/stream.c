@@ -384,12 +384,12 @@ knh_String_t* knh_InputStream_readLine(CTX ctx, knh_InputStream_t *in)
 				goto L_TOSTRING;
 			}
 		}
-	}
-	{
-		/* TODO(imasahiro) TEST (FileSize >= 4096) */
-		knh_bytes_t buf = {{ba->bu.text + pos}, posend - pos};
-		DP(in)->pos = posend;
-		knh_Bytes_write(ctx, cwb->ba, buf);
+		{
+			/* TODO(imasahiro) TEST (FileSize >= 4096) */
+			knh_bytes_t buf = {{ba->bu.text + pos}, posend - pos};
+			DP(in)->pos = posend;
+			knh_Bytes_write(ctx, cwb->ba, buf);
+		}
 	}
 	L_TOSTRING:;
 	if(in->decNULL == NULL) {
