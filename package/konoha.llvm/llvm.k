@@ -38,6 +38,7 @@ include "lib:gluelink";
 @RawPtr class Module;
 @RawPtr class Function;
 @RawPtr class ExecutionEngine;
+@RawPtr class NativeFunction;
 
 @Native @Static Type Type.getVoidTy();
 @Native @Static Type Type.getLabelTy();
@@ -53,6 +54,7 @@ include "lib:gluelink";
 @Native @Static IntegerType Type.getInt16Ty();
 @Native @Static IntegerType Type.getInt32Ty();
 @Native @Static IntegerType Type.getInt64Ty();
+@Native @Static PointerType PointerType.get(Type type);
 @Native @Static PointerType Type.getFloatPtrTy();
 @Native @Static PointerType Type.getDoublePtrTy();
 @Native @Static PointerType Type.getX86_FP80PtrTy();
@@ -203,9 +205,9 @@ include "lib:gluelink";
 @Native @Static BasicBlock BasicBlock.create(Function parent);
 @Native @Static FunctionType FunctionType.get(Type retTy, Array<Type> args, boolean b);
 @Native @Static StructType StructType.get(Array<Type> args, boolean isPacked);
-@Native var ExecutionEngine.getPointerToFunction(Function func);
-
+@Native NativeFunction ExecutionEngine.getPointerToFunction(Module m, Function func);
 
 @Native Value Value.setName(String name);
 @Native Array<Value> Function.getArguments();
 
+@Native @Public void Method.setFunction(NativeFunction nf);

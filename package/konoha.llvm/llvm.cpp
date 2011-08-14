@@ -55,6 +55,7 @@
 #undef PACKAGE_NAME
 #undef PACKAGE_STRING
 #undef PACKAGE_VERSION
+#define K_INTERNAL 1
 #include <konoha1.h>
 
 namespace konoha {
@@ -354,22 +355,15 @@ KMETHOD Type_getInt64PtrTy(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), type_ptr_free);
 	RETURN_(p);
 }
-//static knh_IntData_t IntConstData[] = {
-//	{"System.SIGHUP", SIGHUP},   // hang up (1)
-//	{"System.SIGINT", SIGINT},   // interrupt (2)
-//	{"System.SIGQUIT", SIGQUIT}, // quit (3)
-//	{"System.SIGABRT", SIGABRT}, // abort (9)
-//	{"System.SIGKILL", SIGKILL}, // kill 9
-//	{"System.SIGALRM", SIGALRM}, // alarm clock (14)
-//	{"System.SIGTERM", SIGTERM}, // software termination signal 15
-//	{"System.SIGBUS",  SIGBUS},
-//	{"System.SIGSEGV", SIGSEGV},
-//	{"System.SIGPIPE", SIGPIPE},
-////	{"System.WNOHANG", WNOHANG},  // What is THIS?
-////	{"System.WUNTRACED", WUNTRACED},
-////	{"System.WCONTINUED", WCONTINUED},
-//	{NULL}  // end of const data
-//};
+
+//## @Static PointerType PointerType.get(Type type);
+KMETHOD PointerType_get(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	const Type *type = konoha::object_cast<const Type *>(sfp[1].p);
+	const Type *ptr  = PointerType::get(type, 0);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), type_ptr_free);
+	RETURN_(p);
+}
 
 static void obj_free(void *p)
 {
@@ -982,7 +976,7 @@ KMETHOD IRBuilder_createInBoundsGEP1(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## Value IRBuilder.CreateConstGEP1_32(Value Ptr, int Idx0);
-KMETHOD IRBuilder_createConstGEP1_32(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD IRBuilder_createConstGEP132(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
 	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
@@ -993,7 +987,7 @@ KMETHOD IRBuilder_createConstGEP1_32(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## Value IRBuilder.CreateConstInBoundsGEP1_32(Value Ptr, int Idx0);
-KMETHOD IRBuilder_createConstInBoundsGEP1_32(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD IRBuilder_createConstInBoundsGEP132(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
 	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
@@ -1004,7 +998,7 @@ KMETHOD IRBuilder_createConstInBoundsGEP1_32(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## Value IRBuilder.CreateConstGEP2_32(Value Ptr, int Idx0, int Idx1);
-KMETHOD IRBuilder_createConstGEP2_32(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD IRBuilder_createConstGEP232(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
 	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
@@ -1016,7 +1010,7 @@ KMETHOD IRBuilder_createConstGEP2_32(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## Value IRBuilder.CreateConstInBoundsGEP2_32(Value Ptr, int Idx0, int Idx1);
-KMETHOD IRBuilder_createConstInBoundsGEP2_32(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD IRBuilder_createConstInBoundsGEP232(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
 	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
@@ -1028,7 +1022,7 @@ KMETHOD IRBuilder_createConstInBoundsGEP2_32(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## Value IRBuilder.CreateConstGEP1_64(Value Ptr, uint64_t Idx0);
-KMETHOD IRBuilder_createConstGEP1_64(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD IRBuilder_createConstGEP164(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
 	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
@@ -1039,7 +1033,7 @@ KMETHOD IRBuilder_createConstGEP1_64(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## Value IRBuilder.CreateConstInBoundsGEP1_64(Value Ptr, uint64_t Idx0);
-KMETHOD IRBuilder_createConstInBoundsGEP1_64(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD IRBuilder_createConstInBoundsGEP164(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
 	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
@@ -1050,7 +1044,7 @@ KMETHOD IRBuilder_createConstInBoundsGEP1_64(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## Value IRBuilder.CreateConstGEP2_64(Value Ptr, uint64_t Idx0, uint64_t Idx1);
-KMETHOD IRBuilder_createConstGEP2_64(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD IRBuilder_createConstGEP264(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
 	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
@@ -1062,7 +1056,7 @@ KMETHOD IRBuilder_createConstGEP2_64(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## Value IRBuilder.CreateConstInBoundsGEP2_64(Value Ptr, uint64_t Idx0, uint64_t Idx1);
-KMETHOD IRBuilder_createConstInBoundsGEP2_64(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD IRBuilder_createConstInBoundsGEP264(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
 	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
@@ -1860,7 +1854,7 @@ KMETHOD Module_getOrInsertFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static void ExecutionEngine_obj_free(void *p)
 {
-	ExecutionEngine *ee = static_cast<ExecutionEngine*>(ee);
+	ExecutionEngine *ee = static_cast<ExecutionEngine*>(p);
 	delete ee;
 }
 
@@ -1905,17 +1899,49 @@ KMETHOD StructType_get(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
 }
-//## var ExecutionEngine.getPointerToFunction(Function func);
+
+//## NativeFunction ExecutionEngine.getPointerToFunction(Module m, Function func);
 KMETHOD ExecutionEngine_getPointerToFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	ExecutionEngine *self = konoha::object_cast<ExecutionEngine *>(sfp[0].p);
-	Function * func = konoha::object_cast<Function *>(sfp[0].p);
-	void *ptr = self->getPointerToFunction(func);
-	std::string name = func->getName();
-	fprintf(stderr, "%s\n", name.c_str());
-	LLVM_TODO("ptr => Method");
-	RETURN_(KNH_NULL);
+	ExecutionEngine *ee = konoha::object_cast<ExecutionEngine *>(sfp[0].p);
+	Module *m = konoha::object_cast<Module *>(sfp[1].p);
+	Function *func = konoha::object_cast<Function *>(sfp[2].p);
+
+	FunctionPassManager pm(m);
+	pm.add(new TargetData(*(ee->getTargetData())));
+	pm.add(createVerifierPass());
+	pm.add(createInstructionCombiningPass()); // Cleanup for scalarrepl.
+	pm.add(createLICMPass());                 // Hoist loop invariants
+	pm.add(createIndVarSimplifyPass());       // Canonicalize indvars
+	pm.add(createLoopDeletionPass());         // Delete dead loops
+
+	pm.doInitialization();
+	pm.run(*func);
+
+	void *ptr = ee->getPointerToFunction(func);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
 }
+
+//## void Func.setFunction(NativeFunction func);
+KMETHOD Method_setFunction(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Method_t *mtd = (knh_Method_t*) sfp[0].fo;
+	knh_RawPtr_t *po = sfp[1].p;
+	knh_Method_setFunc(ctx, mtd, (knh_Fmethod)po->rawptr);
+	RETURNvoid_();
+}
+
+//## void Func.setFunction(NativeFunction func);
+KMETHOD Func_setFunction(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Func_t *fo = (knh_Func_t*) sfp[0].fo;
+	knh_RawPtr_t *po = sfp[1].p;
+	knh_Method_t *mtd = fo->mtd;
+	knh_Method_setFunc(ctx, mtd, (knh_Fmethod)po->rawptr);
+	RETURNvoid_();
+}
+
 
 //## @Native Array<Value> Function.getArguments();
 KMETHOD Function_getArguments(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1942,9 +1968,9 @@ KMETHOD Value_setName(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
 {
+	InitializeNativeTarget();
 	//kapi->loadIntClassConst(ctx, CLASS_System, IntConstData);
 	RETURN_PKGINFO("llvm-2.9");
 }
