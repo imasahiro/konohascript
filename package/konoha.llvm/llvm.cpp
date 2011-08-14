@@ -1083,7 +1083,7 @@ KMETHOD IRBuilder_createGlobalStringPtr(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
 	knh_String_t *Str = sfp[1].s;
-	Value *ptr = self->CreateGlobalStringPtr(S_tochar(Str));
+	Value *ptr = self->CreateGlobalStringPtr(S_totext(Str));
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
 }
@@ -1818,7 +1818,7 @@ static void Module_obj_free(void *p)
 KMETHOD Module_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_String_t *name = sfp[1].s;
-	Module *ptr = new Module(S_tochar(name), getGlobalContext());
+	Module *ptr = new Module(S_totext(name), getGlobalContext());
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), Module_obj_free);
 	RETURN_(p);
 }
@@ -1829,7 +1829,7 @@ KMETHOD Module_addTypeName(CTX ctx, knh_sfp_t *sfp _RIX)
 	Module *self = konoha::object_cast<Module *>(sfp[0].p);
 	knh_String_t * name = sfp[1].s;
 	Type *type = konoha::object_cast<Type *>(sfp[2].p);
-	self->addTypeName(S_tochar(name), type);
+	self->addTypeName(S_totext(name), type);
 	RETURNvoid_();
 }
 
@@ -1847,7 +1847,7 @@ KMETHOD Module_getOrInsertFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 	Module *self = konoha::object_cast<Module *>(sfp[0].p);
 	knh_String_t *name = sfp[1].s;
 	FunctionType *fnTy = konoha::object_cast<FunctionType *>(sfp[2].p);
-	Function *ptr = cast<Function>(self->getOrInsertFunction(S_tochar(name), fnTy));
+	Function *ptr = cast<Function>(self->getOrInsertFunction(S_totext(name), fnTy));
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
 }
@@ -1926,8 +1926,9 @@ KMETHOD ExecutionEngine_getPointerToFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 //## void Func.setFunction(NativeFunction func);
 KMETHOD Method_setFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Method_t *mtd = (knh_Method_t*) sfp[0].fo;
+	knh_Method_t *mtd = (knh_Method_t*) sfp[0].o;
 	knh_RawPtr_t *po = sfp[1].p;
+	fprintf(stderr, "%p\n", mtd);
 	knh_Method_setFunc(ctx, mtd, (knh_Fmethod)po->rawptr);
 	RETURNvoid_();
 }
@@ -1935,13 +1936,12 @@ KMETHOD Method_setFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 //## void Func.setFunction(NativeFunction func);
 KMETHOD Func_setFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Func_t *fo = (knh_Func_t*) sfp[0].fo;
+	knh_Func_t *fo   = sfp[0].fo;
 	knh_RawPtr_t *po = sfp[1].p;
 	knh_Method_t *mtd = fo->mtd;
 	knh_Method_setFunc(ctx, mtd, (knh_Fmethod)po->rawptr);
 	RETURNvoid_();
 }
-
 
 //## @Native Array<Value> Function.getArguments();
 KMETHOD Function_getArguments(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1964,7 +1964,7 @@ KMETHOD Value_setName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	Value *self = konoha::object_cast<Value *>(sfp[0].p);
 	knh_String_t *name = sfp[1].s;
-	self->setName(S_tochar(name));
+	self->setName(S_totext(name));
 	RETURNvoid_();
 }
 

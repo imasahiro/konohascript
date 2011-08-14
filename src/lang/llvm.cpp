@@ -936,7 +936,8 @@ static knh_type_t Tn_ptype(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_class_t cid,
 		return cid;
 	}
 	else {
-		knh_type_t ptype = knh_ParamArray_getptype(DP(mtd)->mp, n - 2);
+		asm volatile("int3");
+		knh_type_t ptype = knh_Method_ptype(ctx, mtd, n - 2, cid);
 		return knh_type_tocid(ctx, ptype, cid);
 	}
 }
@@ -1569,7 +1570,7 @@ static int _LET_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	return 0;
 }
 
-static METHOD Fmethod_empty(CTX ctx, knh_sfp_t *sfp _RIX) {}
+static KMETHOD Fmethod_empty(CTX ctx, knh_sfp_t *sfp _RIX) {}
 
 static knh_Method_t* Gamma_getFmt(CTX ctx, knh_class_t cid, knh_methodn_t mn0)
 {
@@ -2777,7 +2778,7 @@ static Function *build_function(CTX ctx, Module *m, knh_Method_t *mtd)
 	argsTy.push_back(LLVMTYPE_context);
 	argsTy.push_back(LLVMTYPE_sfp);
 	for (i = 0; i < pa->psize; i++) {
-		knh_type_t type = knh_ParamArray_getptype(pa, i);
+		knh_type_t type = knh_Method_ptype(ctx, mtd, i, mtd->cid);
 		argsTy.push_back(convert_type(type));
 	}
 	FunctionType *fnTy = FunctionType::get(convert_type(retTy), argsTy, false);

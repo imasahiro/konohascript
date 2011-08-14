@@ -880,7 +880,7 @@ void knh_ParamArray_addReturnType(CTX ctx, knh_ParamArray_t *pa, knh_type_t type
 KNHAPI2(knh_param_t*) knh_ParamArray_get(knh_ParamArray_t *pa, size_t n)
 {
 	size_t size = pa->psize + pa->rsize;
-	DBG_ASSERT(n < size);
+	DBG_ASSERT(n <= size);
 	if(size <= 3) {
 		switch(n) {
 			case 0: return &pa->p0;

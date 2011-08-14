@@ -33,7 +33,9 @@ include "lib:gluelink";
 @RawPtr class Value;
 @RawPtr class IRBuilder;
 @RawPtr class ReturnInst;
-@RawPtr class BranchInst;
+@RawPtr class LoadInst extends Value;
+@RawPtr class StoreInst extends Value;
+@RawPtr class BranchInst extends Value;
 @Rawptr class BasicBlock;
 @RawPtr class Module;
 @RawPtr class Function;
@@ -211,3 +213,4 @@ include "lib:gluelink";
 @Native Array<Value> Function.getArguments();
 
 @Native @Public void Method.setFunction(NativeFunction nf);
+@Native @Public void Func.setFunction(NativeFunction nf);

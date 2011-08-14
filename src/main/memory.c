@@ -672,7 +672,7 @@ static void ObjectArenaTBL_checkSize(knh_ObjectArenaTBL_t *oat, size_t arenasize
 		knh_ObjectPage_t *opage = K_OPAGE(p);
 		DBG_ASSERT(oat->bitmap <= opage->h.bitmap && opage->h.bitmap < oat->bitmap + ((arenasize/sizeof(knh_Object_t))/sizeof(knh_uintptr_t)));
 		cnt2++;
-		p = p->ref;
+		p = (knh_Object_t*) p->ref;
 	}
 	DBG_ASSERT(cnt2 + 1 == object_count * K_PAGEOBJECTSIZE);
 }

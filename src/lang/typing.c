@@ -2364,6 +2364,8 @@ static knh_Token_t* copy_typing(CTX ctx, knh_Stmt_t *stmt)
 			KNH_SETv(ctx, tmNN(stmt, 1), tmNN(stmt, 2));
 			Token_setMethod(ctx, tkNN(stmt, 0), MN_copy, mtd);
 			knh_Stmt_trimToSize(ctx, stmt, 2);
+			/* XXX(imasahiro) rewrite FUNCCALL => CALL */
+			STT_(stmt) = STT_CALL;
 			return Stmt_typed(ctx, stmt, cid);
 		}
 		else {
