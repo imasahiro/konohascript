@@ -175,10 +175,7 @@ static inline knh_String_t *knh_cwb_newString0(CTX ctx, knh_cwb_t *cwb)
 {
 	knh_String_t *s = TS_EMPTY;
 	if(cwb->pos < (cwb->ba)->bu.len) {
-		knh_bytes_t t;
-		t.text = (cwb->ba)->bu.text + cwb->pos;
-		t.len =  (cwb->ba)->bu.len - cwb->pos;
-		s = new_S(ctx, t);
+		s = new_String2(ctx, CLASS_String, (cwb->ba)->bu.text + cwb->pos, (cwb->ba)->bu.len - cwb->pos, 0);
 	}
 	knh_cwb_close0(cwb);
 	return s;

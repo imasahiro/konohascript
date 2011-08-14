@@ -772,7 +772,7 @@ static void dumpObject(CTX ctx, knh_uintptr_t* p)
 			knh_write_Object(ctx, KNH_STDERR, o, FMT_s);
 		}
 		else {
-			knh_printf(ctx, KNH_STDERR, "\t%p %p %s\n", p, o, S_tochar(O_cTBL(o)->sname));
+			knh_printf(ctx, KNH_STDERR, "\t%p %p %s\n", p, o, S_totext(O_cTBL(o)->sname));
 		}
 	}
 }
@@ -1073,7 +1073,7 @@ static void knh_ObjectObjectArenaTBL_free(CTX ctx, const knh_ObjectArenaTBL_t *o
 //					fprintf(stderr, "o->cid=%d\n", (int)((knh_Class_t*)o)->cid);
 //				break;
 //				case CLASS_String:
-//					fprintf(stderr, "str='%s'\n", S_tochar((knh_String_t*)o));
+//					fprintf(stderr, "str='%s'\n", S_totext((knh_String_t*)o));
 //				break;
 //				case CLASS_Token:
 //					fprintf(stderr, "tt='%s'\n", TT__(((knh_Token_t*)o)->tt));
@@ -1118,7 +1118,7 @@ void knh_showMemoryStat(CTX ctx)
 //		if(t->total > 2) {
 //			KNH_SYSLOG(ctx, LOG_INFO,
 //				"ClassCounter", "*name=%s cid=%d count=%ld total=%ld",
-//				S_tochar(t->sname), i, t->count, t->total);
+//				S_totext(t->sname), i, t->count, t->total);
 //		}
 //	}
 //#endif

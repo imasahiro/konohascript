@@ -8,6 +8,11 @@ static KMETHOD _String_isASCII(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNb_(String_isASCII((knh_String_t*)sfp[0].o));
 }
 
+static KMETHOD _String_isPooled(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNb_(String_isPooled((knh_String_t*)sfp[0].o));
+}
+
 static KMETHOD _OutputStream_isAutoFlush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(OutputStream_isAutoFlush((knh_OutputStream_t*)sfp[0].o));
@@ -121,7 +126,7 @@ static knh_data_t ClassData0[] = {
 	DATA_CLASS0, CLASS_Int, _DATA("konoha.Int"), CFLAG_Int, CLASS_Int, CLASS_Number, 21 + 10 /*2*/,
 	DATA_CLASS0, CLASS_Float, _DATA("konoha.Float"), CFLAG_Float, CLASS_Float, CLASS_Number, 13 + 7 /*2*/,
 	DATA_CLASS0, CLASS_Date, _DATA("konoha.Date"), CFLAG_Date, CLASS_Date, CLASS_Object, 2 + 0 /*0*/,
-	DATA_CLASS0, CLASS_String, _DATA("konoha.String"), CFLAG_String, CLASS_String, CLASS_Object, 29 + 0 /*6*/,
+	DATA_CLASS0, CLASS_String, _DATA("konoha.String"), CFLAG_String, CLASS_String, CLASS_Object, 30 + 0 /*6*/,
 	DATA_CLASS0, CLASS_Bytes, _DATA("konoha.Bytes"), CFLAG_Bytes, CLASS_Bytes, CLASS_Object, 13 + 0 /*1*/,
 	DATA_CLASS0, CLASS_Iterator, _DATA("konoha.Iterator"), CFLAG_Iterator, CLASS_Iterator, CLASS_Object, 3 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Tuple, _DATA("konoha.Tuple"), CFLAG_Tuple, CLASS_Tuple, CLASS_Object, 2 + 0 /*0*/,
@@ -273,6 +278,7 @@ static knh_FieldNameData0_t FieldNameData0[] = {
 	{"out", FN_out},
 	{"path", FN_path},
 	{"pattern", FN_pattern},
+	{"pooled", FN_pooled},
 	{"pop", FN_pop},
 	{"print", FN_print},
 	{"println", FN_println},
@@ -665,6 +671,7 @@ static knh_data_t APIData0[] = {
 	DATA_METHOD0, CLASS_System, MN_eval, FLAG_Method_Restricted, _DATA(System_eval), /*P=*/111,
 	DATA_METHOD0, CLASS_System, MN_readLine, 0, _DATA(System_readLine), /*P=*/110,
 	DATA_METHOD0, CLASS_String, MN_isASCII, 0, _DATA(_String_isASCII), /*P=*/5,
+	DATA_METHOD0, CLASS_String, MN_isPooled, 0, _DATA(_String_isPooled), /*P=*/5,
 	DATA_METHOD0, CLASS_OutputStream, MN_isAutoFlush, 0, _DATA(_OutputStream_isAutoFlush), /*P=*/5,
 	DATA_METHOD0, CLASS_OutputStream, MN_setAutoFlush, 0, _DATA(_OutputStream_setAutoFlush), /*P=*/112,
 	DATA_METHOD0, CLASS_Context, MN_isDebug, 0, _DATA(_Context_isDebug), /*P=*/5,

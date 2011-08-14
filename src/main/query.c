@@ -250,7 +250,7 @@ KNHAPI2(void) ResultSet_setNULL(CTX ctx, knh_ResultSet_t *o, size_t n)
 knh_int_t knh_ResultSet_getInt(CTX ctx, knh_ResultSet_t *o, size_t n)
 {
 	KNH_ASSERT(n < DP(o)->column_size);
-	const char *p = BA_tochar(DP(o)->databuf) + DP(o)->column[n].start;
+	const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
 	switch(DP(o)->column[n].ctype) {
 	case knh_ResultSet_CTYPE__null :
 		return 0;
@@ -270,7 +270,7 @@ knh_int_t knh_ResultSet_getInt(CTX ctx, knh_ResultSet_t *o, size_t n)
 knh_float_t knh_ResultSet_getFloat(CTX ctx, knh_ResultSet_t *o, size_t n)
 {
 	KNH_ASSERT(n < DP(o)->column_size);
-	const char *p = BA_tochar(DP(o)->databuf) + DP(o)->column[n].start;
+	const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
 	switch(DP(o)->column[n].ctype) {
 	case knh_ResultSet_CTYPE__null :
 		return K_FLOAT_ZERO;
@@ -301,21 +301,17 @@ static knh_String_t *new_String__float(CTX ctx, knh_float_t n)
 	return knh_cwb_newString(ctx, cwb);
 }
 
-/* ------------------------------------------------------------------------ */
-
 knh_String_t* knh_ResultSet_getString(CTX ctx, knh_ResultSet_t *o, size_t n)
 {
 	KNH_ASSERT(n < DP(o)->column_size);
-	const char *p = BA_tochar(DP(o)->databuf) + DP(o)->column[n].start;
+	const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
 	switch(DP(o)->column[n].ctype) {
 	case knh_ResultSet_CTYPE__integer :
 		return new_String__int(ctx, (knh_int_t)(*((knh_int_t*)p)));
 	case knh_ResultSet_CTYPE__float :
 		return new_String__float(ctx, (knh_float_t)(*((knh_float_t*)p)));
-	case knh_ResultSet_CTYPE__text : {
-		knh_bytes_t t = {{p}, DP(o)->column[n].len};
-		return new_S(ctx, t);
-		}
+	case knh_ResultSet_CTYPE__text :
+		return new_String2(ctx, CLASS_String, p, DP(o)->column[n].len, 0);
 	case knh_ResultSet_CTYPE__null :
 		break;
 	}

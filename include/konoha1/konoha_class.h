@@ -169,8 +169,13 @@ typedef struct knh_Date_t {
 //## @Immutable class String Object;
 //## flag String TextSgm 1 - is set  *   *;
 //## flag String ASCII   2 - is set  is  *;
+//## flag String Pooled  3 - is set  is  *;
 
-typedef const char*   knh_TEXT_t;
+#define K_SPOLICY_TEXT          (1<<0)
+#define K_SPOLICY_ASCII         (1<<1)
+#define K_SPOLICY_UTF8          (1<<2)
+#define K_SPOLICY_POOLNEVER     (1<<3)
+#define K_SPOLICY_POOLALWAYS    (1<<4)
 
 typedef struct knh_String_t knh_String_t;
 struct knh_String_t {
@@ -179,18 +184,17 @@ struct knh_String_t {
 	knh_hashcode_t hashCode;
 };
 
-#define new_T(msg)            new_TEXT(ctx, CLASS_String, msg, 1)
-#define new_S(ctx, msg)       new_String_(ctx, CLASS_String, msg, NULL)
+#define new_T(t)            new_String2(ctx, CLASS_String, t, 0, K_SPOLICY_TEXT|K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS)
+#define new_S(T, L)         new_String2(ctx, CLASS_String, T, L, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS)
+#define new_String_()
 
+#define S_tobytep(s)          (&(s)->str)
 #define S_tobytes(s)          ((s)->str)
-#define S_tochar(s)           ((s)->str.text)
+#define S_totext(s)           ((s)->str.text)
 #define S_size(s)             ((s)->str.len)
 #define S_equals(s, b)        knh_bytes_equals(S_tobytes(s), b)
 #define S_startsWith(s, b)    knh_bytes_startsWith(S_tobytes(s), b)
 #define S_endsWith(s, b)      knh_bytes_endsWith(S_tobytes(s), b)
-
-#define CLASS_TEXT            (TYPE_This-1)
-#define TYPE_TEXT             (TYPE_This-1)
 
 /* ------------------------------------------------------------------------ */
 //## class Bytes Object;
@@ -218,7 +222,7 @@ struct knh_Bytes_t {
 
 #define BA_tobytes(o)   (o)->bu
 #define BA_size(o)      (o)->bu.len
-#define BA_tochar(o)    (o)->bu.text
+#define BA_totext(o)    (o)->bu.text
 
 #define B_equals(b, t)        (knh_bytes_strcmp(b, STEXT(t)) == 0)
 #define B_startsWith(b, t)    knh_bytes_startsWith(b, STEXT(t))
@@ -374,8 +378,8 @@ typedef void (*knh_Fdictset)(CTX, knh_DictSet_t*, knh_String_t *k, knh_uintptr_t
 /* ------------------------------------------------------------------------ */
 //## @Immutable class Class Object;
 //## flag Class Ref            0 (ClassTBL(%s))->cflag is * * *;
+//## flag Class Expando        1 (ClassTBL(%s))->cflag is * * *;
 //## flag Class Immutable      2 (ClassTBL(%s))->cflag is * * *;
-//## flag Class Expando        3 (ClassTBL(%s))->cflag is * * *;
 //## flag Class Private!Public 4 (ClassTBL(%s))->cflag is * * *;
 //## flag Class Final          5 (ClassTBL(%s))->cflag  is * * *;
 //## flag Class Singleton      6 (ClassTBL(%s))->cflag  is * * *;
@@ -478,16 +482,11 @@ struct knh_Method_t {
 	struct knh_opline_t *pc_start;
 };
 
-#define knh_Method_mn(mtd)    (mtd)->mn
 #define knh_Method_mf(mtd)    DP(mtd)->mp
 #define knh_ParamArray_psize(mf)    ((mf)->psize)
-#define knh_Method_rsize(mtd)       ((DP(mtd)->mp)->rsize)
-#define knh_Method_psize(mtd)       ((DP(mtd)->mp)->psize)
+//#define knh_Method_psize(mtd)       ((DP(mtd)->mp)->psize)
 
 //#define knh_Method_pztype(mtd, n) (knh_ParamArray_get(DP(mtd)->mp, n))->type
-
-#define knh_Method_ptype(ctx, mtd, cid, n) \
-	knh_type_tocid(ctx, (knh_ParamArray_get(DP(mtd)->mp, n))->type, cid)
 
 #define ClassTBL_getMethodNULL(ctx, c, mn)    knh_ClassTBL_findMethodNULL(ctx, c, mn, 0)
 #define ClassTBL_getMethod(ctx, c, mn)        knh_ClassTBL_findMethodNULL(ctx, c, mn, 1)
@@ -518,27 +517,6 @@ struct knh_TypeMap_t {
 };
 
 typedef knh_TypeMap_t* (*knh_Ftypemaprule)(CTX ctx, const knh_ClassTBL_t *, const knh_ClassTBL_t *);
-
-///* ------------------------------------------------------------------------ */
-////## class Link Object;
-//
-//typedef struct knh_LinkDPI_t {
-//	const char *name;
-//	const char *utype;
-//	knh_bool_t    (*hasType)(CTX, knh_class_t);
-//	knh_bool_t    (*exists)(CTX, struct knh_NameSpace_t *, knh_bytes_t);
-//	Object*       (*newObjectNULL)(CTX, struct knh_NameSpace_t *, knh_class_t, knh_String_t *);
-//} knh_LinkDPI_t;
-//
-//typedef struct knh_Link_t knh_Link_t;
-//#ifdef K_INTERNAL
-//struct knh_Link_t {
-//	knh_hObject_t h;
-//	knh_String_t *scheme;
-//	const knh_LinkDPI_t *dpi;
-//	knh_Array_t *list;
-//};
-//#endif
 
 /* ------------------------------------------------------------------------ */
 //## @Immutable class Func Object;

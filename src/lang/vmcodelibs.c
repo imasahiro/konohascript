@@ -493,17 +493,17 @@ void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline
 		case VMT_F:
 			knh_write_vmfunc(ctx, w, c->p[i]); break;
 		case VMT_CID:
-			knh_write_cid(ctx, w, ((knh_ClassTBL_t*)c->data[i])->cid); break;
+			knh_write_cname(ctx, w, ((knh_ClassTBL_t*)c->data[i])->cid); break;
 		case VMT_HCACHE: {
 			knh_hcache_t *hc = (knh_hcache_t*)&(c->p[i]);
-			knh_write_cid(ctx, w, hc->cid); 
+			knh_write_cname(ctx, w, hc->cid); 
 			knh_putc(ctx, w, '/');
 			knh_write_mn(ctx, w, hc->mn); 
 		}
 		break;
 		case VMT_MTD: if(c->p[i] != NULL) {
 			knh_Method_t *mtd = (knh_Method_t*)c->p[i];
-			knh_write_cid(ctx, w, (mtd)->cid); knh_putc(ctx, w, '.');
+			knh_write_cname(ctx, w, (mtd)->cid); knh_putc(ctx, w, '.');
 			knh_write_mn(ctx, w, (mtd)->mn); 
 		}
 		else {

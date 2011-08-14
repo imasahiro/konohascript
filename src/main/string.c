@@ -338,7 +338,7 @@ static void knh_String_checkASCII(knh_String_t *o)
 {
 	unsigned char ch = 0;
 	long len = S_size(o);
-	const knh_uchar_t *p = (const knh_uchar_t *) S_tochar(o);
+	const knh_uchar_t *p = (const knh_uchar_t *) S_totext(o);
 #ifdef K_USING_FASTESTFASTMODE /* written by ide */
 	int len = S_size(o), n = (len + 3) / 4;
 	/* Duff's device */
@@ -393,35 +393,122 @@ static void knh_String_checkASCII(knh_String_t *o)
 
 #endif
 
-KNHAPI2(knh_String_t*) new_String_(CTX ctx, knh_class_t cid, knh_bytes_t t, knh_String_t *memoNULL)
+#ifndef K_USING_STRINGPOOL_MAXSIZ
+#define K_USING_STRINGPOOL_MAXSIZ 100000
+#endif
+
+static knh_bool_t checkStringPooling(const char *text, size_t len)
 {
-	knh_String_t *s;
+	size_t i;
+	for(i = 0; i < len; i++) {
+		if(text[i] == ' ' || text[i] == '\n' || text[i] == '\t') return 0;
+		if(len > 40) return 0;
+	}
+	return 1;
+}
+
+
+knh_String_t* new_String2(CTX ctx, knh_class_t cid, const char *text, size_t len, int policy)
+{
 	const knh_ClassTBL_t *ct = ClassTBL(cid);
-	CHECK_CONST(ctx, s, t.text, t.len);
-	s = (knh_String_t*)new_hObject_(ctx, ct);
-	if(t.len + 1 < sizeof(void*) * 2) {
+	int isPooling = 0;
+	if(len == 0) len = knh_strlen(text);
+#ifdef K_USING_STRINGPOOL
+	if(ct->constPoolMapNULL != NULL) {
+		knh_String_t *s = knh_PtrMap_getS(ctx, ct->constPoolMapNULL, text, len);
+		if(s != NULL) return s;
+		isPooling = !TFLAG_is(int, policy, K_SPOLICY_POOLNEVER);
+	}
+#endif
+	knh_String_t *s = (knh_String_t*)new_hObject_(ctx, ct);
+	if(TFLAG_is(int, policy, K_SPOLICY_TEXT)) {
+		s->str.text = text;
+		s->str.len = len;
+		s->hashCode = 0;
+		String_setTextSgm(s, 1);
+	}
+	else if(len + 1 < sizeof(void*) * 2) {
 		s->str.ubuf = (knh_uchar_t*)(&(s->hashCode));
-		s->str.len = t.len;
-		knh_memcpy(s->str.ubuf, t.utext, t.len);
-		s->str.ubuf[s->str.len] = '\0';
+		s->str.len = len;
+		knh_memcpy(s->str.ubuf, text, len);
+		s->str.ubuf[len] = '\0';
 		String_setTextSgm(s, 1);
 	}
 	else {
-		s->str.len = t.len;
-		s->str.ubuf = (knh_uchar_t*)KNH_MALLOC(ctx, KNH_SIZE(s->str.len+1));
-		knh_memcpy(s->str.ubuf, t.utext, t.len);
-		s->str.ubuf[s->str.len] = '\0';
+		s->str.len = len;
+		s->str.ubuf = (knh_uchar_t*)KNH_MALLOC(ctx, KNH_SIZE(len+1));
+		knh_memcpy(s->str.ubuf, text, len);
+		s->str.ubuf[len] = '\0';
 		s->hashCode = 0;
 	}
-	if(memoNULL != NULL && String_isASCII(memoNULL)) {
+	if(TFLAG_is(int, policy, K_SPOLICY_ASCII)) {
 		String_setASCII(s, 1);
+	}
+	else if(TFLAG_is(int, policy, K_SPOLICY_UTF8)) {
+		String_setASCII(s, 0);
 	}
 	else {
 		knh_String_checkASCII(s);
 	}
-	SET_CONST(ctx, s);
+	if(isPooling) {
+		if(!TFLAG_is(int, policy, K_SPOLICY_POOLALWAYS)) {
+			if(!checkStringPooling(s->str.text, s->str.len)) {
+				return s; // not pooling
+			}
+		}
+		if(knh_PtrMap_size(ct->constPoolMapNULL) < K_USING_STRINGPOOL_MAXSIZ) {
+			knh_PtrMap_addS(ctx, ct->constPoolMapNULL, s);
+			String_setPooled(s, 1);
+		}
+	}
 	return s;
 }
+
+//knh_String_t* new_String_(CTX ctx, knh_class_t cid, knh_bytes_t t, int policy)
+//{
+//	knh_String_t *s;
+//	const knh_ClassTBL_t *ct = ClassTBL(cid);
+//	CHECK_CONST(ctx, s, t.text, t.len);
+//	s = (knh_String_t*)new_hObject_(ctx, ct);
+//	if(t.len + 1 < sizeof(void*) * 2) {
+//		s->str.ubuf = (knh_uchar_t*)(&(s->hashCode));
+//		s->str.len = t.len;
+//		knh_memcpy(s->str.ubuf, t.utext, t.len);
+//		s->str.ubuf[s->str.len] = '\0';
+//		String_setTextSgm(s, 1);
+//	}
+//	else {
+//		s->str.len = t.len;
+//		s->str.ubuf = (knh_uchar_t*)KNH_MALLOC(ctx, KNH_SIZE(s->str.len+1));
+//		knh_memcpy(s->str.ubuf, t.utext, t.len);
+//		s->str.ubuf[s->str.len] = '\0';
+//		s->hashCode = 0;
+//	}
+//	if(TFLAG_is(int, policy, K_SPOLICY_ASCII)) {
+//		String_setASCII(s, 1);
+//	}
+//	else {
+//		knh_String_checkASCII(s);
+//	}
+//	SET_CONST(ctx, s);
+//	return s;
+//}
+//
+//knh_String_t *new_TEXT(CTX ctx, knh_class_t cid, const char* text, int policy)
+//{
+//	size_t len = knh_strlen(text);
+//	knh_String_t *s;
+//	const knh_ClassTBL_t *ct = ClassTBL(cid);
+//	CHECK_CONST(ctx, s, text, len);
+//	s = (knh_String_t*)new_hObject_(ctx, ct);
+//	s->str.text = text;
+//	s->str.len = len;
+//	s->hashCode = 0;
+//	String_setTextSgm(s, 1);
+//	String_setASCII(s, isASCII);
+//	SET_CONST(ctx, s);
+//	return s;
+//}
 
 KNHAPI2(knh_String_t*) new_String(CTX ctx, const char *str)
 {
@@ -432,27 +519,9 @@ KNHAPI2(knh_String_t*) new_String(CTX ctx, const char *str)
 		return TS_EMPTY;
 	}
 	else {
-		knh_bytes_t t = {{str}, knh_strlen(str)};
-		return new_String_(ctx, CLASS_String, t, NULL);
+		return new_String2(ctx, CLASS_String, str, 0, 0);
 	}
 }
-
-knh_String_t *new_TEXT(CTX ctx, knh_class_t cid, knh_TEXT_t text, int isASCII)
-{
-	size_t len = knh_strlen(text);
-	knh_String_t *s;
-	const knh_ClassTBL_t *ct = ClassTBL(cid);
-	CHECK_CONST(ctx, s, text, len);
-	s = (knh_String_t*)new_hObject_(ctx, ct);
-	s->str.text = text;
-	s->str.len = len;
-	s->hashCode = 0;
-	String_setASCII(s, isASCII);
-	String_setTextSgm(s, 1);
-	SET_CONST(ctx, s);
-	return s;
-}
-
 
 /* ------------------------------------------------------------------------ */
 
@@ -604,7 +673,7 @@ static int strregex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t n
 {
 	size_t e = 0;
 	knh_String_t *ptn = (knh_String_t*)reg;
-	const char *po = strstr(str, S_tochar(ptn));
+	const char *po = strstr(str, S_totext(ptn));
 	if(po != NULL) {
 		p[e].rm_so = po - str;
 		p[e].rm_eo = p[e].rm_so + S_size(ptn);

@@ -99,8 +99,8 @@ KNHAPI2(knh_Path_t*) new_Path(CTX ctx, knh_String_t *path)
 	KNH_SETv(ctx, pth->urn, path);
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(path));
-	if(knh_strcmp(S_tochar(path), knh_cwb_tochar(ctx, cwb)) == 0) {
-		pth->ospath = S_tochar(path);
+	if(knh_strcmp(S_totext(path), knh_cwb_tochar(ctx, cwb)) == 0) {
+		pth->ospath = S_totext(path);
 		pth->asize = 0;
 	}
 	else {
@@ -399,7 +399,7 @@ void knh_InputStream_close(CTX ctx, knh_InputStream_t *in)
 	if(DP(in)->fio != IO_NULL) {
 		in->dpi->fcloseSPI(ctx, DP(in)->fio);
 		if(DP(in)->fio != IO_BUF) {
-//			DBG_P("stream in=%s", S_tochar(DP(in)->urn));
+//			DBG_P("stream in=%s", S_totext(DP(in)->urn));
 			knh_Bytes_dispose(ctx, DP(in)->ba);
 		}
 		DP(in)->fio = IO_NULL;

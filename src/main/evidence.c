@@ -831,16 +831,13 @@ static knh_Exception_t* new_Assertion(CTX ctx, knh_uline_t uline)
 	knh_Exception_t* e = new_(Exception);
 	char buf[256] = {'A', 's', 's', 'e', 'r', 't', 'i', 'o', 'n', '!', '!', ':', ' '};
 	char *mbuf = buf + 13;
-	knh_bytes_t t;
 	knh_readuline(ctx, uline, mbuf, sizeof(buf)-13);
 	if(mbuf[0] == 0) {
 		knh_uri_t uri = ULINE_uri(uline);
 		size_t line = ULINE_line(uline);
 		knh_snprintf(buf, sizeof(buf), "Assertion!!: %s at line %ld", FILENAME__(uri), line);
 	}
-	t.buf = buf;
-	t.len = knh_strlen(buf);
-	KNH_SETv(ctx, e->emsg, new_S(ctx, t));
+	KNH_SETv(ctx, e->emsg, new_String2(ctx, CLASS_String, (const char*)buf, 0, K_SPOLICY_ASCII));
 	e->uline = uline;
 	return e;
 }

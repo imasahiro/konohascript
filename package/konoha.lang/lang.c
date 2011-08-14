@@ -731,7 +731,7 @@
 //		case CLASS_String:
 //			//DBG_P("string \"%s\"", String_to(char *, sfp[i + 2]));
 //			/* TODO */
-//			if (strcmp(S_tochar((knh_String_t*)o), "x") == 0) {
+//			if (strcmp(S_totext((knh_String_t*)o), "x") == 0) {
 //				op->data[i] = 5;
 //			} else {
 //				op->p[i] = sfp[i+2].o;

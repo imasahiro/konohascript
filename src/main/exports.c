@@ -81,7 +81,7 @@ static void loadFloatData(CTX ctx, knh_NameSpace_t *ns, const knh_FloatData_t *d
 static void loadStringData(CTX ctx, knh_NameSpace_t *ns, const knh_StringData_t *data)
 {
 	while(data->name != NULL) {
-		Object *value = UPCAST(new_T(data->value));
+		Object *value = UPCAST(new_String2(ctx, CLASS_String, data->value, 0, K_SPOLICY_TEXT|K_SPOLICY_ASCII));
 		loadData(ctx, ns, data->name, value);
 		data++;
 	}
@@ -109,7 +109,7 @@ static void loadStringClassConst(CTX ctx, knh_class_t cid, const knh_StringData_
 {
 	while(data->name != NULL) {
 		Object *value = UPCAST(new_T(data->value));
-		knh_addClassConst(ctx, cid, new_T(data->name), value);
+		knh_addClassConst(ctx, cid, new_String2(ctx, CLASS_String, data->name, 0, K_SPOLICY_TEXT), value);
 		data++;
 	}
 }
@@ -117,7 +117,7 @@ static void loadStringClassConst(CTX ctx, knh_class_t cid, const knh_StringData_
 static void setProperty(CTX ctx, const char *name, const char *data)
 {
 	char pname[256];
-	const char *nsn = S_tochar(DP(ctx->gma->scr->ns)->nsname);
+	const char *nsn = S_totext(DP(ctx->gma->scr->ns)->nsname);
 	knh_snprintf(pname, sizeof(pname), "%s.%s", nsn, name);
 	knh_DictMap_set(ctx, DP(ctx->sys)->props, new_String(ctx, pname), new_T(data));
 }
@@ -125,7 +125,7 @@ static void setProperty(CTX ctx, const char *name, const char *data)
 static void setIntProperty(CTX ctx, const char *name, knh_int_t data)
 {
 	char pname[256];
-	const char *nsn = S_tochar(DP(ctx->gma->scr->ns)->nsname);
+	const char *nsn = S_totext(DP(ctx->gma->scr->ns)->nsname);
 	knh_snprintf(pname, sizeof(pname), "%s.%s", nsn, name);
 	knh_DictMap_set(ctx, DP(ctx->sys)->props, new_String(ctx, pname), new_Int(ctx, data));
 }
@@ -133,7 +133,7 @@ static void setIntProperty(CTX ctx, const char *name, knh_int_t data)
 static void setFloatProperty(CTX ctx, const char *name, knh_float_t data)
 {
 	char pname[256];
-	const char *nsn = S_tochar(DP(ctx->gma->scr->ns)->nsname);
+	const char *nsn = S_totext(DP(ctx->gma->scr->ns)->nsname);
 	knh_snprintf(pname, sizeof(pname), "%s.%s", nsn, name);
 	knh_DictMap_set(ctx, DP(ctx->sys)->props, new_String(ctx, pname), new_Float(ctx, data));
 }
@@ -309,7 +309,7 @@ static void knh_loadFuncData(CTX ctx, const knh_FuncData_t *d)
 {
 	knh_DictSet_t *ds = ctx->share->funcDictSet;
 	while(d->name != NULL) {
-		knh_DictSet_append(ctx, ds, new_T(d->name), (knh_uintptr_t)d->ptr);
+		knh_DictSet_append(ctx, ds, new_String2(ctx, CLASS_String, d->name, 0, K_SPOLICY_TEXT|K_SPOLICY_POOLNEVER), (knh_uintptr_t)d->ptr);
 		d++;
 	}
 	knh_DictSet_sort(ctx, ds);

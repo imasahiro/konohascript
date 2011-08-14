@@ -46,6 +46,9 @@ class Charset extends String;
 }
 **/
 
+@Public @Native boolean Object.hasMethod(String name);
+@Public @Native dynamic Object.invokeMethod(String name, dynamic a, ...);
+
 @Public @Native boolean Object.hasXData();
 @Public @Native Map Object.getXData();
 @Public @Native boolean Class.addXField(Class type, String name);

@@ -86,6 +86,52 @@ KMETHOD QObject_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_newKQObject(new KQObject(IS_NULL(sfp[1].o) ? NULL : QCAST(QObject*, sfp[1].p->rawptr)));
 }
 
+/****
+QGenericArgument K_ARG(knh_type_t ptype, knh_sfp_t *sfp, int n)
+{
+	switch(ptype) {
+		case CLASS_Boolean: return Q_ARG(bool, (bool)sfp[n].bvalue);
+		case CLASS_Int:     return Q_ARG(int, (int)sfp[n].ivalue);
+		case CLASS_Float:   return Q_ARG(double, (double)sfp[n].fvalue);
+		case CLASS_String:  return Q_ARG(QString, S_tochar(sfp[n].s));
+		default:  return Q_ARG(QObject, (QObject*)(sfp[n].p->rawptr));
+	}
+}
+
+//## void QObject.missing();
+KMETHOD missing(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	QObject *qo = QPtr_to(QObject*, sfp[0]);
+	bool ok = false;
+	if (qo != NULL) {
+		knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
+		knh_ParamArray_t *pa = DP(mtd)->mp;
+		char mbuf[80];
+		const char *message = knh_format_mn(ctx, mtd->mn, mbuf, sizeof(mbuf));
+		knh_class_t this_cid = O_cid(sfp[0].o);
+		//	QVariant returnValue;
+		int retval;
+		QGenericReturnArgument ret = Q_RETURN_ARG(int, retval);
+		switch(pa->psize) {
+		case 0:
+			ok = QMetaObject::invokeMethod(qo, message, ret);
+			break;
+		case 1:
+			ok = QMetaObject::invokeMethod(qo, message, ret,
+					K_ARG(knh_ParamArray_ptype(ctx, pa, 0, this_cid), sfp, 1));
+			break;
+		}//switch
+	}
+	if(ok) {
+
+	}
+	else {
+
+	}
+	RETURNvoid_();
+}
+*************/
+
 /* ------------------------------------------------------------------------ */
 
 Connector::Connector(CTX ctx, knh_Func_t *fo) {

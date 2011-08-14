@@ -329,14 +329,14 @@ typedef knh_ushort_t       knh_event_t;    /* knh_event_t */
 
 #define CLASS__(cid)               SAFECLASS__(ctx, cid)
 #define STRUCT__(bcid)             SAFESTRUCT__(ctx, bcid)
-#define O__(o)                     S_tochar(O_cTBL(o)->sname)
+#define O__(o)                     S_totext(O_cTBL(o)->sname)
 #define TYPE__(type)               SAFETYPE__(ctx,type)
 
 /* knh_event_t */
 #define EVENT_unknown            ((knh_event_t)-1)
 #define EVENT_newid              ((knh_event_t)0)
 #define ASSERT_ebi(eid)        DBG_ASSERT(eid < ctx->share->sizeEventTBL + 1)
-#define EVENT__(eid)             S_tochar(knh_getEventName(ctx, eid))
+#define EVENT__(eid)             S_totext(knh_getEventName(ctx, eid))
 
 /* ------------------------------------------------------------------------ */
 
@@ -384,7 +384,7 @@ typedef knh_ushort_t          knh_methodn_t;
 #define MN_LAMBDA          FN_
 
 const char *knh_getopname(knh_methodn_t mn);
-#define FN__(fn)          S_tochar(knh_getFieldName(ctx, fn))
+#define FN__(fn)          S_totext(knh_getFieldName(ctx, fn))
 #define MN__(mn)          knh_getmnname(ctx, mn)
 
 /* ------------------------------------------------------------------------ */
@@ -457,7 +457,7 @@ typedef knh_ushort_t              knh_uri_t;
 #define URI_EVAL                  ((knh_uri_t)0)
 #define URI_UNMASK(uri)           (uri)
 
-#define URI__(uri) S_tochar(knh_getURN(ctx, uri))
+#define URI__(uri) S_totext(knh_getURN(ctx, uri))
 #define FILENAME__(uri) knh_sfile(URI__(uri))
 
 typedef knh_uintptr_t             knh_uline_t;

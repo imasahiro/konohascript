@@ -195,7 +195,7 @@ KMETHOD System_getCwd(CTX ctx, knh_sfp_t *sfp _RIX)
 static int fileop(CTX ctx, knh_sfp_t *sfp, const char *name, int (*func)(const char*), knh_Path_t *pth)
 {
 	if(func(pth->ospath) == -1) {
-		LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), __ERRNO__};
+		LOGDATA = {sDATA("path", S_totext(pth->urn)), sDATA("ospath", pth->ospath), __ERRNO__};
 		NOTE_Failed(name);
 		return 0;
 	}
@@ -205,8 +205,8 @@ static int fileop(CTX ctx, knh_sfp_t *sfp, const char *name, int (*func)(const c
 static int fileop2(CTX ctx, knh_sfp_t *sfp, const char *name, int (*func)(const char*, const char*), knh_Path_t *pth, knh_Path_t *pth2)
 {
 	if(func(pth->ospath, pth2->ospath) == -1) {
-		LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath),
-				sDATA("path2", S_tochar(pth2->urn)), sDATA("ospath2", pth2->ospath), __ERRNO__};
+		LOGDATA = {sDATA("path", S_totext(pth->urn)), sDATA("ospath", pth->ospath),
+				sDATA("path2", S_totext(pth2->urn)), sDATA("ospath2", pth2->ospath), __ERRNO__};
 		NOTE_Failed(name);
 		return 0;
 	}
@@ -255,12 +255,12 @@ KMETHOD System_mkdir(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Path_t *pth = sfp[1].pth;
 	mode_t mode =  (mode_t)sfp[2].ivalue;
 	if(mkdir(pth->ospath, mode) == -1) {
-		LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), iDATA("mode", mode), __ERRNO__};
+		LOGDATA = {sDATA("path", S_totext(pth->urn)), sDATA("ospath", pth->ospath), iDATA("mode", mode), __ERRNO__};
 		NOTE_Failed("mkdir");
 		RETURNb_(0);
 	}
 	else {
-		LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), iDATA("mode", mode)};
+		LOGDATA = {sDATA("path", S_totext(pth->urn)), sDATA("ospath", pth->ospath), iDATA("mode", mode)};
 		NOTE_OK("mkdir");
 		RETURNb_(1);
 	}
@@ -330,7 +330,7 @@ KMETHOD System_openDir(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Path_t *pth = sfp[1].pth;
 	DIR *dirptr = opendir(pth->ospath);
 	knh_RawPtr_t *po = 	new_ReturnCppObject(ctx, sfp, dirptr, NULL/*ignored*/);
-	LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), __ERRNO__};
+	LOGDATA = {sDATA("path", S_totext(pth->urn)), sDATA("ospath", pth->ospath), __ERRNO__};
 	LIB_log("opendir", (dirptr != NULL), "IO!!");
 	RETURN_(po);
 }
@@ -419,10 +419,10 @@ DEFAPI(void) defFile(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 KMETHOD System_fopen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Path_t *pth = sfp[1].pth;
-	const char *mode = IS_NULL(sfp[2].s) ? "r" : S_tochar(sfp[2].s);
+	const char *mode = IS_NULL(sfp[2].s) ? "r" : S_totext(sfp[2].s);
 	FILE *fp = fopen(pth->ospath, mode);
 	knh_RawPtr_t *po = 	new_ReturnCppObject(ctx, sfp, fp, NULL/*ignored*/);
-	LOGDATA = {sDATA("path", S_tochar(pth->urn)), sDATA("ospath", pth->ospath), sDATA("mode", mode), __ERRNO__};
+	LOGDATA = {sDATA("path", S_totext(pth->urn)), sDATA("ospath", pth->ospath), sDATA("mode", mode), __ERRNO__};
 	LIB_log("fopen", (fp != NULL), "IO!!");
 	RETURN_(po);
 }

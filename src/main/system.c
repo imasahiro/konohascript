@@ -57,7 +57,7 @@ knh_String_t* knh_getPropertyNULL(CTX ctx, knh_bytes_t key)
 		char *v = knh_getenv(knh_cwb_tochar(ctx, cwb));
 		knh_cwb_close(cwb);
 		if(v == NULL) return NULL;
-		return new_S(ctx, B(v));
+		return new_String2(ctx, CLASS_String, v, 0, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS);
 	}
 	return (knh_String_t*)knh_DictMap_getNULL(ctx,  DP(ctx->sys)->props, key);
 }
@@ -74,7 +74,7 @@ void knh_setProperty(CTX ctx, knh_String_t *key, dynamic *value)
 KNHAPI2(void) knh_setPropertyText(CTX ctx, char *key, char *value)
 {
 	knh_String_t *k = new_T(key);
-	knh_String_t *v = new_T(value);
+	knh_String_t *v = new_String2(ctx, CLASS_String, value, 0, K_SPOLICY_TEXT);
 	knh_DictMap_set_(ctx, DP(ctx->sys)->props, k, UPCAST(v));
 }
 
@@ -149,7 +149,7 @@ static knh_fieldn_t knh_getname(CTX ctx, knh_bytes_t n, knh_fieldn_t def)
 	knh_index_t idx = knh_DictSet_index(DP(ctx->sys)->nameDictCaseSet, n);
 	if(idx == -1) {
 		if(def == FN_NEWID) {
-			idx = knh_addname(ctx, new_S(ctx, n), knh_DictSet_set);
+			idx = knh_addname(ctx, new_String2(ctx, CLASS_String, n.text, n.len, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS), knh_DictSet_set);
 		}
 		else {
 			idx = def - MN_OPSIZE;
@@ -270,7 +270,7 @@ const char* knh_getmnname(CTX ctx, knh_methodn_t mn)
 	if(mn < MN_OPSIZE) {
 		return knh_getopname(mn);
 	}
-	return S_tochar(knh_getFieldName(ctx, mn));
+	return S_totext(knh_getFieldName(ctx, mn));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -281,12 +281,12 @@ knh_uri_t knh_getURI(CTX ctx, knh_bytes_t t)
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 	knh_index_t idx = knh_DictSet_index(DP(ctx->sys)->urnDictSet, t);
 	if(idx == -1) {
-		knh_String_t *s = new_S(ctx, t);
+		knh_String_t *s = new_String2(ctx, CLASS_String, t.text, t.len, K_SPOLICY_POOLALWAYS);
 		idx = knh_Array_size(DP(ctx->sys)->urns);
 		knh_DictSet_set(ctx, DP(ctx->sys)->urnDictSet, s, idx);
 		knh_Array_add(ctx, DP(ctx->sys)->urns, s);
 		{
-			LOGSFPDATA = {sDATA("URN", S_tochar(s)), iDATA("uri", idx)};
+			LOGSFPDATA = {sDATA("URN", S_totext(s)), iDATA("uri", idx)};
 			LIB_OK("konoha:new_uri");
 		}
 	}

@@ -117,8 +117,8 @@ static knh_String_t *Gamma_vperror(CTX ctx, int pe, const char *fmt, va_list ap)
 		knh_vprintf(ctx, cwb->w, fmt, ap);
 		msg = knh_cwb_newString(ctx, cwb);
 		knh_Array_add(ctx, DP(ctx->gma)->errmsgs, msg);
-		fprintf(stderr, "%s - %s%s\n", TERM_BNOTE(ctx, pe), S_tochar(msg), TERM_ENOTE(ctx, pe));
-		knh_logprintf("konoha", 0, S_tochar(msg));
+		fprintf(stderr, "%s - %s%s\n", TERM_BNOTE(ctx, pe), S_totext(msg), TERM_ENOTE(ctx, pe));
+		knh_logprintf("konoha", 0, S_totext(msg));
 	}
 	return msg;
 }
@@ -243,7 +243,7 @@ knh_Token_t* ERROR_text(CTX ctx, const char *keyword K_TRACEARGV)
 knh_Token_t* ERROR_Token(CTX ctx, knh_Token_t *tk K_TRACEARGV)
 {
 	if(TT_(tk) != TT_ERR) {
-		tk = ERROR_text(ctx, IS_String((tk)->text) ? S_tochar((tk)->text) : Token__(tk) K_TRACEDATA);
+		tk = ERROR_text(ctx, IS_String((tk)->text) ? S_totext((tk)->text) : Token__(tk) K_TRACEDATA);
 	}
 	return tk;
 }
@@ -480,7 +480,7 @@ knh_Token_t* TypeErrorCallParam(CTX ctx, int n, knh_Method_t *mtd, knh_class_t r
 	}
 	else {
 		KNH_ASSERT(IS_String(mtd));
-		const char *fname = S_tochar((knh_String_t*)mtd);
+		const char *fname = S_totext((knh_String_t*)mtd);
 		return Gamma_perror(ctx, KC_TERROR, _("%s(#d) has type %T, not %T"), fname, n - 1, reqt, type);
 	}
 }

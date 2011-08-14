@@ -2506,7 +2506,7 @@ static void ERR_asm(CTX ctx, knh_Stmt_t *stmt)
 	if(Gamma_inTry(ctx)) start = espidx;
 	DBG_ASSERT(IS_String((tkERR)->text));
 	knh_write_ascii(ctx, cwb->w, "Script!!: ");
-	knh_write_ascii(ctx, cwb->w, S_tochar(tkERR->text));
+	knh_write_ascii(ctx, cwb->w, S_totext(tkERR->text));
 	ASM(ERROR, SFP_(start), knh_cwb_newString(ctx, cwb));
 	if(DP(stmt)->nextNULL != NULL) {
 		KNH_FINALv(ctx, DP(stmt)->nextNULL);

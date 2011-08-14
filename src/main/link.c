@@ -309,7 +309,7 @@ extern "C" {
 //{
 //	knh_bytes_t bpath = knh_bytes_next(path, ':');
 //	knh_buff_addospath(ctx, ba, pos, 0, S_tobytes(ns->rpath));
-//	if(!knh_isdir(ctx, S_tochar(ns->rpath))) {
+//	if(!knh_isdir(ctx, S_totext(ns->rpath))) {
 //		knh_buff_trim(ctx, ba, pos, '/');
 //	}
 //	knh_buff_addospath(ctx, ba, pos, 1, bpath);
@@ -768,26 +768,14 @@ static knh_qcur_t *SQLITE3_query(CTX ctx, knh_qconn_t *hdr, knh_bytes_t sql, knh
 	else {
 		sqlite3_stmt *stmt = NULL;
 		sqlite3_prepare((sqlite3*)hdr, sql.text, sql.len, &stmt, NULL);
-//	if (r != SQLITE_OK) {
-//		sqlite3_finalize(stmt);
-//		DBG_P("msg='%s', sqlite3_errmsg((sqlite3)hdr));
-//		return NULL;
-//	}
-//		r = sqlite3_reset(stmt);
-//	if(r != SQLITE_OK) {
-//		sqlite3_finalize(stmt);
-//		return NULL;
-//	}
 		size_t column_size = (size_t)sqlite3_column_count(stmt);
-		//DBG_P("column_size=%d", column_size);
 		knh_ResultSet_initColumn(ctx, rs, column_size);
 		if(column_size > 0) {
 			size_t i;
 			for(i = 0; i < DP(rs)->column_size; i++) {
-				char *n = (char*)sqlite3_column_name(stmt, i);
-				//DBG_P("(%d) name = '%s'", i, n);
+				const char *n = (const char*)sqlite3_column_name(stmt, i);
 				if(n != NULL) {
-					ResultSet_setName(ctx, rs, i, new_S(ctx, B(n)));
+					ResultSet_setName(ctx, rs, i, new_S(n, 0));
 				}
 			}
 		}

@@ -253,7 +253,7 @@ static const char *HELPMSG =
 static void opt_help(CTX ctx, int mode, const char *optstr)
 {
 	knh_String_t* home = knh_getPropertyNULL(ctx, STEXT("konoha.home.path"));
-	fprintf(stdout, HELPMSG, S_tochar(home), knh_getSystemEncoding());
+	fprintf(stdout, HELPMSG, S_totext(home), knh_getSystemEncoding());
 	exit(0);
 }
 
@@ -312,27 +312,6 @@ static knh_optdata_t *knh_getoptdata(const char *name)
 	return NULL;
 }
 
-static knh_bytes_t knh_bytes_nsname(knh_bytes_t t)
-{
-	size_t i, s = 0;
-	for(i = t.len - 1; i > 0; i--) {
-		if(t.utext[i] == '/' || t.utext[i] == '\\') {
-			s = i + 1;
-			break;
-		}
-	}
-	for(i = s; i < t.len; i++) {
-		if(t.utext[i] == '.') {
-			t.utext = t.utext + s;
-			t.len = i - s;
-			return t;
-		}
-	}
-	t.utext = t.utext + s;
-	t.len = t.len - s;
-	return t;
-}
-
 static int knh_parseopt(CTX ctx, int argc, const char **argv)
 {
 	int n;
@@ -375,26 +354,47 @@ static int knh_parseopt(CTX ctx, int argc, const char **argv)
 		}
 		break;
 	}
-	argc = argc - n;
-	argv = argv + n;
-	{
-		int i;
-		knh_Array_t *a = new_Array(ctx, CLASS_String, argc);
-		for(i = 1; i < argc; i++) {
-			knh_Array_add(ctx, a, new_T(argv[i]));
-		}
-		knh_DictMap_set(ctx, DP(ctx->sys)->props, new_T("script.argv"), a);
-		if(argc > 0) {
-			knh_String_t *s = new_T(argv[0]);
-			knh_DictMap_set(ctx, DP(ctx->sys)->props, new_T("script.name"), s);
-			s = new_S(ctx, knh_bytes_nsname(S_tobytes(s)));
-			knh_Script_setNSName(ctx, ctx->script, s);
-		}
-		else {
-			knh_Script_setNSName(ctx, ctx->script, TS_main);
+	return n;
+}
+
+static knh_bytes_t knh_bytes_nsname(knh_bytes_t t)
+{
+	size_t i, s = 0;
+	for(i = t.len - 1; i > 0; i--) {
+		if(t.utext[i] == '/' || t.utext[i] == '\\') {
+			s = i + 1;
+			break;
 		}
 	}
-	return n;
+	for(i = s; i < t.len; i++) {
+		if(t.utext[i] == '.') {
+			t.utext = t.utext + s;
+			t.len = i - s;
+			return t;
+		}
+	}
+	t.utext = t.utext + s;
+	t.len = t.len - s;
+	return t;
+}
+
+static void knh_parsearg(CTX ctx, int argc, const char **argv)
+{
+	int i;
+	knh_Array_t *a = new_Array(ctx, CLASS_String, argc);
+	for(i = 1; i < argc; i++) {
+		knh_Array_add(ctx, a, new_String2(ctx, CLASS_String, argv[i], 0, K_SPOLICY_TEXT|K_SPOLICY_POOLALWAYS));
+	}
+	knh_DictMap_set(ctx, DP(ctx->sys)->props, new_T("script.argv"), a);
+	if(argc > 0) {
+		knh_String_t *s = new_T(argv[0]);
+		knh_DictMap_set(ctx, DP(ctx->sys)->props, new_T("script.name"), s);
+		knh_bytes_t t = knh_bytes_nsname(S_tobytes(s));
+		knh_Script_setNSName(ctx, ctx->script, new_String2(ctx, CLASS_String, t.text, t.len, K_SPOLICY_TEXT|K_SPOLICY_POOLALWAYS));
+	}
+	else {
+		knh_Script_setNSName(ctx, ctx->script, TS_main);
+	}
 }
 
 /* ------------------------------------------------------------------------ */
@@ -839,12 +839,15 @@ void konoha_main(konoha_t konoha, int argc, const char **argv)
 	for (i = 0; konoha_modules[i].init != NULL; ++i) {
 		konoha_modules[i].init(argc, n, argv);
 	}
-	if(argc - n == 0) {
+	argc = argc - n;
+	argv = argv + n;
+	knh_parsearg(ctx, argc, argv);
+	if(argc == 0) {
 		konoha_shell(ctx, NULL);
 	}
 	else {
-		if(knh_startScript(ctx, argv[n]) == K_CONTINUE && !knh_isCompileOnly(ctx)) {
-			knh_runMain(ctx, argc - n, argv + n);
+		if(knh_startScript(ctx, argv[0]) == K_CONTINUE && !knh_isCompileOnly(ctx)) {
+			knh_runMain(ctx, argc, argv);
 			if(isInteractiveMode) {
 				konoha_shell(ctx, NULL);
 			}

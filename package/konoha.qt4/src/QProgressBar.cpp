@@ -52,21 +52,21 @@ KMETHOD QProgressBar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 KMETHOD QProgressBar_invertedAppearance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-  QProgressBar *pb = QPtr_to(QProgressBar *, sfp[0]);
-  bool ret = false;
-  if (pb != NULL) {
-	ret = pb->invertedAppearance();
-  }
-  RETURNb_(ret);
+	QProgressBar *pb = QPtr_to(QProgressBar *, sfp[0]);
+	bool ret = false;
+	if (pb != NULL) {
+		ret = pb->invertedAppearance();
+	}
+	RETURNb_(ret);
 }
 
 KMETHOD QProgressBar_setValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-  QProgressBar *pb = QPtr_to(QProgressBar *, sfp[0]);
-  if (pb != NULL) {
-	pb->setValue(Int_to(int, sfp[1]));
-  }
-  RETURNvoid_();
+	QProgressBar *pb = QPtr_to(QProgressBar *, sfp[0]);
+	if (pb != NULL) {
+		pb->setValue(Int_to(int, sfp[1]));
+	}
+	RETURNvoid_();
 }
 
 #ifdef __cplusplus

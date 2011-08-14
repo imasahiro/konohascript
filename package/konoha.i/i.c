@@ -76,7 +76,7 @@ static void ClassCONST_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t 
 			knh_write_ctext(ctx, w, _("CONST"));
 			hasCaption = 1;
 		}
-		knh_printf(ctx, w, "\t%s.%s: %O\n", S_tochar(ct->sname), S_tochar(knh_DictMap_keyAt(tcmap, i)), knh_DictMap_valueAt(tcmap, i));
+		knh_printf(ctx, w, "\t%s.%s: %O\n", S_totext(ct->sname), S_totext(knh_DictMap_keyAt(tcmap, i)), knh_DictMap_valueAt(tcmap, i));
 	}
 	if(hasCaption == 1) {
 		knh_write_EOL(ctx, w);
@@ -173,7 +173,7 @@ static void knh_write_Method(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_
 	knh_write_type(ctx, w, knh_type_tocid(ctx, knh_ParamArray_rtype(DP(o)->mp), ct->cid));
 	knh_putc(ctx, w, ' ');
 	if(Method_isStatic(o)) {
-		knh_write_ascii(ctx, w, S_tochar(ct->sname));
+		knh_write_ascii(ctx, w, S_totext(ct->sname));
 		knh_putc(ctx, w, '.');
 	}
 	knh_write_mn(ctx, w, SP(o)->mn);

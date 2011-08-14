@@ -506,9 +506,9 @@ knh_Fmethod knh_gluefunc(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_Di
 			DBG_P("gluehdr is not open");
 		}
 		else {
-			gluefunc = (knh_Fmethod)knh_dlsym(ctx, ns->gluehdr, S_tochar((knh_String_t*)gluedata), NULL, 0);
+			gluefunc = (knh_Fmethod)knh_dlsym(ctx, ns->gluehdr, S_totext((knh_String_t*)gluedata), NULL, 0);
 			if(gluefunc == NULL) {
-				DBG_P("gluefunc is not found: %s", S_tochar((knh_String_t*)gluedata));
+				DBG_P("gluefunc is not found: %s", S_totext((knh_String_t*)gluedata));
 			}
 		}
 	}
@@ -530,7 +530,7 @@ knh_bool_t knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_D
 	if(fdata != NULL && IS_bString(fdata)) {
 		cfunc = knh_loadCFUNC(ctx, ns, S_tobytes((knh_String_t*)fdata));
 		if(cfunc == NULL) {
-			DBG_P("cfunc: %s is not found", S_tochar((knh_String_t*)fdata));
+			DBG_P("cfunc: %s is not found", S_totext((knh_String_t*)fdata));
 		}
 	}
 	if(cfunc != NULL) {
@@ -1210,7 +1210,7 @@ static void dumpBinary(unsigned char *ptr, size_t size)
 //	knh_Token_t *tkF = NULL;
 //	if(STT_(stmt) != STT_FUNCCALL) goto L_ERROR;
 //	tkF = tkNN(stmt, 0);
-//	DBG_P("TT=%s, '%s'", TT__(tkF->tt), S_tochar(tkF->text));
+//	DBG_P("TT=%s, '%s'", TT__(tkF->tt), S_totext(tkF->text));
 //	if(TT_(tkF) != TT_URN) {
 //		set_ffireturn(ctx, params, mtd, tkF);
 //		if(DP(stmt)->size != 3) {

@@ -746,14 +746,17 @@ void knh_PtrMap_rm(CTX ctx, knh_PtrMap_t *pm, void *keyptr)
 	hmap_unuse(hmap, e);
 }
 
+size_t knh_PtrMap_size(knh_PtrMap_t *pm)
+{
+	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
+	return hmap->size;
+}
+
 void knh_PtrMap_stat(CTX ctx, knh_PtrMap_t *pm, const char *name)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
 	if(hmap->stat_total > 9) {
-		DBG_P("STAT: name=%s count=%d %f%%", name, hmap->stat_total, 100.0 * hmap->stat_hit / hmap->stat_total);
-		if(knh_isVerbosePref()) {
-			knh_logprintf("STAT", 0, "name=%s count=%d %f%%", name, hmap->stat_total, 100.0 * hmap->stat_hit / hmap->stat_total);
-		}
+		knh_logprintf("STAT", knh_isVerbosePref(), "size=%lu, name=%s count=%d %f%%", hmap->size, name, hmap->stat_total, 100.0 * hmap->stat_hit / hmap->stat_total);
 //		LOGSFPDATA = {sDATA("name", name), /*fDATA("rate", hmap->stat_hit / hmap->stat_total),*/ iDATA("count", hmap->stat_total)};
 //		LIB_STAT("konoha.PtrMap");
 	}
@@ -779,7 +782,7 @@ knh_String_t* knh_PtrMap_getS(CTX ctx, knh_PtrMap_t *pm, const char *k, size_t l
 void knh_PtrMap_addS(CTX ctx, knh_PtrMap_t *pm, knh_String_t *v)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
-	const char *k = S_tochar(v);
+	const char *k = S_totext(v);
 	size_t len = knh_strlen(k);
 	knh_hashcode_t hcode = knh_hash(0, k, len);
 	knh_hentry_t *e = new_hentry(ctx, hmap, hcode);
@@ -892,8 +895,6 @@ void knh_PtrMap_rmM(CTX ctx, knh_PtrMap_t *pm, knh_Method_t *mtd)
 	DBG_P("not found removed %x %d.%d", hcode, mtd->cid, mtd->mn);
 	//KNH_ASSERT(ctx == NULL);
 }
-
-
 
 /* ------------------------------------------------------------------------ */
 /* DictMap */

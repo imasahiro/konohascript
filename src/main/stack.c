@@ -230,7 +230,7 @@ knh_event_t knh_addEvent(CTX ctx, knh_flag_t flag, knh_String_t *name, knh_class
 		et->flag = flag;
 		et->parent = peid;
 		KNH_INITv(et->name, name);
-		DBG_P("eid=%d, name='%s'", eid, S_tochar(name));
+		DBG_P("eid=%d, name='%s'", eid, S_totext(name));
 		OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 		knh_DictSet_set(ctx, DP(ctx->sys)->EventDictCaseSet, name, eid+1);
 		OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
@@ -260,10 +260,9 @@ knh_event_t knh_geteid(CTX ctx, knh_bytes_t t)
 	}
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 	eid = (knh_event_t)knh_DictSet_get(ctx, DP(ctx->sys)->EventDictCaseSet, t);
-	//DBG_P("@@@@ '%s' is %d", t.text, eid);
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
 	if(eid == 0) {
-		return knh_addEvent(ctx, 0, new_S(ctx, t), EVENT_Exception);
+		return knh_addEvent(ctx, 0, new_String2(ctx, CLASS_String, t.text, t.len, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS), EVENT_Exception);
 	}
 	else {
 		return eid - 1;

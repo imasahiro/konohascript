@@ -227,7 +227,8 @@ knh_String_t *knh_cwb_newString(CTX ctx, knh_cwb_t *cwb)
 {
 	knh_String_t *s = TS_EMPTY;
 	if(cwb->pos < (cwb->ba)->bu.len) {
-		s = new_S(ctx, knh_cwb_tobytes(cwb));
+		knh_bytes_t t = knh_cwb_tobytes(cwb);
+		s = new_String2(ctx, CLASS_String, t.text, t.len, 0);
 	}
 	knh_cwb_close(cwb);
 	return s;

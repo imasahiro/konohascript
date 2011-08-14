@@ -502,7 +502,7 @@ static int Token_startsWithExpr(CTX ctx, knh_Token_t *tkB)
 static knh_String_t *new_StringSYMBOL(CTX ctx, knh_bytes_t t)
 {
 #ifdef K_USING_STRINGPOOL
-	return new_S(ctx, t);
+	return new_S(t.text, t.len);
 #else
 	knh_DictMap_t *symbolDictMap = ctx->symbolDictMap;
 	knh_index_t idx = knh_DictMap_index(symbolDictMap, t);
@@ -560,7 +560,7 @@ static void Token_setNAME(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 		knh_cwb_t cwbbuf2, *cwb2 = knh_cwb_open(ctx, &cwbbuf2);
 		TT_(tk) = TT_NAME;
 		for(i = cwb->pos; i < cwb->pos + t.len; i++) {
-			const char *p = BA_tochar(cwb->ba);
+			const char *p = BA_totext(cwb->ba);
 			int ch = p[i];
 			if(ch == '.') continue;
 			if(ch == '_') {
@@ -1399,7 +1399,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 static void Token_toBRACE(CTX ctx, knh_Token_t *tk, int isEXPANDING)
 {
 	if(S_size(tk->text) > 0) {
-		//fprintf(stderr, "'''%s'''\n", S_tochar(tk->text));
+		//fprintf(stderr, "'''%s'''\n", S_totext(tk->text));
 		BEGIN_LOCAL(ctx, lsfp, 1);
 		LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t*, in, new_StringInputStream(ctx, (tk)->text));
 		KNH_SETv(ctx, (tk)->data, KNH_NULL);
@@ -2164,12 +2164,12 @@ static void _REGEX(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr, knh_Token_t *tk)
 	}
 	re->reg = re->spi->regmalloc(ctx, (tk)->text);
 	if(ITR_is(itr, TT_NAME)) {
-		opt = S_tochar((ITR_nextTK(itr))->text);
+		opt = S_totext((ITR_nextTK(itr))->text);
 		knh_Regex_setGlobalOption(ctx, re, opt);
 	}
 	cflags = re->spi->parse_cflags(ctx, opt);
-	if(re->spi->regcomp(ctx, re->reg, S_tochar(re->pattern), cflags) != 0) {
-		knh_Stmt_toERR(ctx, stmt, ERROR_RegexCompilation(ctx, tk, re->spi->name, S_tochar((tk)->text)));
+	if(re->spi->regcomp(ctx, re->reg, S_totext(re->pattern), cflags) != 0) {
+		knh_Stmt_toERR(ctx, stmt, ERROR_RegexCompilation(ctx, tk, re->spi->name, S_totext((tk)->text)));
 	}
 	else {
 		re->eflags = re->spi->parse_eflags(ctx, opt);
@@ -2399,7 +2399,7 @@ static void _EXPRCALL(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			STT_(stmt) = STT_FUNCTION;
 			if(ITR_is(itr, TT_FUNCNAME) || ITR_is(itr, TT_UFUNCNAME)) {
 				knh_Token_t *tkN = ITR_nextTK(itr);
-				WARN_Ignored(ctx, _("function name"), CLASS_unknown, S_tochar(tkN->text));
+				WARN_Ignored(ctx, _("function name"), CLASS_unknown, S_totext(tkN->text));
 			}
 			if(ITR_is(itr, TT_PARENTHESIS) && ITR_isN(itr, +1, TT_CODE)) {
 				tkCUR = new_Token(ctx, TT_DOC);
@@ -2624,6 +2624,12 @@ static void _PARAMs(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	knh_Stmt_t *stmtP = new_Stmt2(ctx, STT_DECL, NULL);
 	int e = itr->e, ridx = ITR_indexTT(itr, TT_DARROW, -1);  /* int n, int b */
 	if(ridx != -1) itr->e = ridx;
+	int varidx = ITR_indexTT(itr, TT_DOTS, -1);
+	if(varidx != -1) {
+		DBG_P("******** @Vargs **********");
+		StmtMETHOD_setVARGs(stmt,  1);
+		itr->e = varidx;
+	}
 	knh_Stmt_add(ctx, stmt, stmtP);
 
 	while(ITR_hasNext(itr)) {
@@ -2632,10 +2638,6 @@ static void _PARAMs(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		while(ITR_is(aitr, TT_METAN)) {
 			DBG_P("TODO: parameter annotation");
 			ITR_next(aitr);
-		}
-		if(ITR_is(aitr, TT_DOTS)) {
-			StmtMETHOD_setVARGs(stmtP, 1);
-			break;
 		}
 		if(ITR_is(aitr, TT_VOID)) {
 			break;
@@ -3103,7 +3105,7 @@ static void _CODE(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	}
 	if(ITR_is(itr, TT_CODE)) {
 		if(hasCODE) {
-			WARN_Ignored(ctx, "block", CLASS_unknown, S_tochar(ITR_nextTK(itr)->text));
+			WARN_Ignored(ctx, "block", CLASS_unknown, S_totext(ITR_nextTK(itr)->text));
 		}
 		else {
 			_CODEDOC(ctx, stmt, itr);
@@ -3432,7 +3434,7 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 				ITR_next(mitr);
 				if(ITR_is(mitr, TT_UFUNCNAME)) {
 					knh_Token_t *tkUF = ITR_tk(mitr); TT_(tkUF) = TT_FUNCNAME;
-					WarningMethodName(ctx, S_tochar(tkUF->text));
+					WarningMethodName(ctx, S_totext(tkUF->text));
 				}
 				if(ITR_is(mitr, TT_FUNCNAME)) {
 					stmt = new_StmtMETA(ctx, STT_METHOD, itr, 0, _METHOD, NULL);
@@ -3445,7 +3447,7 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 			}
 			if(ITR_is(mitr, TT_UFUNCNAME) && !Token_isDOT(ITR_tk(mitr))) {
 				knh_Token_t *tkUF = ITR_tk(mitr); TT_(tkUF) = TT_FUNCNAME;
-				WarningMethodName(ctx, S_tochar(tkUF->text));
+				WarningMethodName(ctx, S_totext(tkUF->text));
 				stmt = new_StmtMETA(ctx, STT_METHOD, itr, 0, _METHOD, NULL);
 				break;
 			}
@@ -3563,7 +3565,7 @@ knh_Stmt_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, knh_uline_t uline)
 	BEGIN_LOCAL(ctx, lsfp, 2);
 	LOCAL_NEW(ctx, lsfp, 0, knh_Stmt_t*, rVALUE, new_Stmt2(ctx, STT_BLOCK, NULL));
 	LOCAL_NEW(ctx, lsfp, 1, knh_Token_t*, tk, new_Token(ctx, TT_CODE));
-	KNH_SETv(ctx, (tk)->data, new_S(ctx, expr));
+	KNH_SETv(ctx, (tk)->data, new_String2(ctx, CLASS_String, expr.text, expr.len, 0));
 	Token_toBRACE(ctx, tk, 1/*isEXPANDING*/);
 	if(TT_(tk) != TT_ERR) {
 		tkitr_t tbuf, *titr = ITR_new(tk, &tbuf);
