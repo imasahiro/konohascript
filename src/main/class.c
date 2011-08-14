@@ -2305,24 +2305,25 @@ static KMETHOD Method_getParamNames(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(ma);
 }
 
+#define FuncData(X) {#X , X}
 static knh_FuncData_t FuncData[] = {
-		{"Object_hasMethod", Object_hasMethod},
-		{"Object_invokeMethod", Object_invokeMethod},
-		{"Object_hasXData", Object_hasXData},
-		{"Object_getXData", Object_getXData},
-		{"Object_addXField", Object_addXField},
-		{"Class_addXField", Class_addXField},
-		{"Object_getMethods", Object_getMethods},
-		{"Class_getMethods", Class_getMethods},
-		{"Class_opLINK", Class_opLINK},
-		{"Class_query", Class_query},
-		{"Method_opLINK", Method_opLINK},
-		{"Method_isAbstract", Method_isAbstract_},
-		{"Method_isPrivate", Method_isPrivate_},
-		{"Method_getName", Method_getName},
-		{"Method_getReturnType", Method_getReturnType},
-		{"Method_getParamTypes", Method_getParamTypes},
-		{"Method_getParamNames", Method_getParamNames},
+	FuncData(Object_hasMethod),
+	FuncData(Object_invokeMethod),
+	FuncData(Object_hasXData),
+	FuncData(Object_getXData),
+	FuncData(Object_addXField),
+	FuncData(Class_addXField),
+	FuncData(Object_getMethods),
+	FuncData(Class_getMethods),
+	FuncData(Class_opLINK),
+	FuncData(Class_query),
+	FuncData(Method_opLINK),
+	{"Method_isAbstract", Method_isAbstract_},
+	{"Method_isPrivate", Method_isPrivate_},
+	FuncData(Method_getName),
+	FuncData(Method_getReturnType),
+	FuncData(Method_getParamTypes),
+	FuncData(Method_getParamNames),
 	{NULL, NULL},
 };
 

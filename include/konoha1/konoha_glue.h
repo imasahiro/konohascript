@@ -129,7 +129,7 @@ typedef struct {
 
 typedef struct {
 	const char *name;
-	void *ptr;
+	knh_Fmethod ptr;
 } knh_FuncData_t;
 
 #define _DATA(s)    (knh_intptr_t)(s)
