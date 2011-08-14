@@ -412,7 +412,7 @@ knh_String_t* new_String2(CTX ctx, knh_class_t cid, const char *text, size_t len
 {
 	const knh_ClassTBL_t *ct = ClassTBL(cid);
 	int isPooling = 0;
-	if(len == 0) len = knh_strlen(text);
+	//if(len == 0) len = knh_strlen(text);
 #ifdef K_USING_STRINGPOOL
 	if(ct->constPoolMapNULL != NULL) {
 		knh_String_t *s = knh_PtrMap_getS(ctx, ct->constPoolMapNULL, text, len);
@@ -519,7 +519,7 @@ KNHAPI2(knh_String_t*) new_String(CTX ctx, const char *str)
 		return TS_EMPTY;
 	}
 	else {
-		return new_String2(ctx, CLASS_String, str, 0, 0);
+		return new_String2(ctx, CLASS_String, str, knh_strlen(str), 0);
 	}
 }
 

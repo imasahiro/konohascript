@@ -184,7 +184,7 @@ struct knh_String_t {
 	knh_hashcode_t hashCode;
 };
 
-#define new_T(t)            new_String2(ctx, CLASS_String, t, 0, K_SPOLICY_TEXT|K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS)
+#define new_T(t)            new_String2(ctx, CLASS_String, t, knh_strlen(t), K_SPOLICY_TEXT|K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS)
 #define new_S(T, L)         new_String2(ctx, CLASS_String, T, L, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS)
 #define new_String_()
 

@@ -315,7 +315,7 @@ knh_Path_t* new_CurrentPath(CTX ctx)
 	buf[0] = '.'; buf[1] = 0;
 #endif
 	knh_Path_t *pth = new_(Path);
-	KNH_SETv(ctx, pth->urn, new_String2(ctx, CLASS_String, buf, 0, K_SPOLICY_POOLALWAYS));
+	KNH_SETv(ctx, pth->urn, new_String2(ctx, CLASS_String, buf, knh_strlen(buf), K_SPOLICY_POOLALWAYS));
 	pth->ospath = S_totext(pth->urn);
 	if(ptr != buf && ptr != NULL) {
 		free(ptr);

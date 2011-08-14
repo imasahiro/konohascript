@@ -81,7 +81,7 @@ static void loadFloatData(CTX ctx, knh_NameSpace_t *ns, const knh_FloatData_t *d
 static void loadStringData(CTX ctx, knh_NameSpace_t *ns, const knh_StringData_t *data)
 {
 	while(data->name != NULL) {
-		Object *value = UPCAST(new_String2(ctx, CLASS_String, data->value, 0, K_SPOLICY_TEXT|K_SPOLICY_ASCII));
+		Object *value = UPCAST(new_String2(ctx, CLASS_String, data->value, knh_strlen(data->value), K_SPOLICY_TEXT|K_SPOLICY_ASCII));
 		loadData(ctx, ns, data->name, value);
 		data++;
 	}
@@ -309,7 +309,7 @@ static void knh_loadFuncData(CTX ctx, const knh_FuncData_t *d)
 {
 	knh_DictSet_t *ds = ctx->share->funcDictSet;
 	while(d->name != NULL) {
-		knh_DictSet_append(ctx, ds, new_String2(ctx, CLASS_String, d->name, 0, K_SPOLICY_TEXT|K_SPOLICY_POOLNEVER), (knh_uintptr_t)d->ptr);
+		knh_DictSet_append(ctx, ds, new_String2(ctx, CLASS_String, d->name, knh_strlen(d->name), K_SPOLICY_TEXT|K_SPOLICY_POOLNEVER), (knh_uintptr_t)d->ptr);
 		d++;
 	}
 	knh_DictSet_sort(ctx, ds);
