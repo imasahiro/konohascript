@@ -3,7 +3,7 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      504
+#define K_REVISION                      510
 #endif
 #define K_BUILDID                       1157
 

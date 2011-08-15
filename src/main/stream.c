@@ -255,23 +255,6 @@ knh_OutputStream_t *new_OutputStreamSTDIO(CTX ctx, FILE *fp, knh_String_t *enc)
 	return o;
 }
 
-//knh_InputStream_t* knh_Bytes_openInputStream(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_String_t *path)
-//{
-//	FILE *fp = fopen(knh_Bytes_ensureZero(ctx, ba)+pos, "r");
-//	knh_InputStream_t *in = new_InputStreamDPI(ctx, (knh_io_t)fp, &STREAM_FILE);
-//	KNH_SETv(ctx, DP(in)->urn, path);
-//	return in;
-//}
-//
-//knh_OutputStream_t* knh_Bytes_openOutputStream(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_String_t *path)
-//{
-//	FILE *fp = fopen(knh_Bytes_ensureZero(ctx, ba)+pos, "a");
-//	knh_OutputStream_t *out = new_OutputStreamDPI(ctx, (knh_io_t)fp, &STREAM_FILE);
-//	KNH_SETv(ctx, DP(out)->urn, path);
-//	return out;
-//}
-
-
 const knh_StreamDPI_t *knh_getDefaultStreamDPI(void)
 {
 	return &STREAM_NOFILE;
@@ -280,6 +263,11 @@ const knh_StreamDPI_t *knh_getDefaultStreamDPI(void)
 const knh_StreamDPI_t *knh_getByteStreamDPI(void)
 {
 	return &STREAM_BYTE;
+}
+
+const knh_StreamDPI_t *knh_getDefaultPathStreamDPI(void)
+{
+	return &STREAM_FILE;
 }
 
 KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_Path_t *pth, const char *mode)

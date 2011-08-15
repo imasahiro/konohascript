@@ -2131,7 +2131,7 @@ static void Path_init(CTX ctx, knh_RawPtr_t *o)
 	KNH_INITv(pth->urn, TS_EMPTY);
 	pth->ospath = S_totext(pth->urn);
 	pth->asize = 0;
-	pth->dpi = knh_getDefaultStreamDPI();
+	pth->dpi = knh_getDefaultPathStreamDPI();
 }
 
 static void Path_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)

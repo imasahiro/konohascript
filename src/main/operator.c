@@ -3829,7 +3829,7 @@ static KMETHOD System_eval(CTX ctx, knh_sfp_t *sfp _RIX)
 	KNH_SETv(ctx, ((knh_context_t*)ctx)->e, KNH_NULL);
 	knh_InputStream_t *bin = new_StringInputStream(ctx, sfp[1].s);
 	knh_class_t tcid = sfp[4].c->cid;
-	knh_status_t status = knh_beval(ctx, bin);
+	knh_beval(ctx, bin);
 	scr = ctx->gma->scr;
 	ns = K_GMANS;
 	if(scr != sfp[2].scr) {
@@ -3840,7 +3840,6 @@ static KMETHOD System_eval(CTX ctx, knh_sfp_t *sfp _RIX)
 		KNH_SETv(ctx, K_GMANS, sfp[3].ns);
 		sfp[3].ns = ns;
 	}
-	DBG_P("status=%d, ctx->e=%s", status, CLASS__(O_cid(ctx->e)));
 	if(ctx->isEvaled == 1) {
 		knh_Object_t *v = ctx->evaled;
 		if(tcid == CLASS_Tvoid) return;
