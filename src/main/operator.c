@@ -3307,7 +3307,7 @@ static KMETHOD Int_format(CTX ctx, knh_sfp_t *sfp _RIX)
 		char fmtbuf[40], buf[80];
 		const char *ifmt = (ch == 'd') ? K_INT_FMT : ((ch == 'x') ? K_INT_XFMT : K_UINT_FMT);
 		knh_snprintf(buf, sizeof(buf), newfmt(fmtbuf, sizeof(fmtbuf), fmt, ifmt + 1), sfp[0].ivalue);
-		RETURN_(new_String2(ctx, CLASS_String, buf, 0, _ALWAYS|_ASCII));
+		RETURN_(new_String2(ctx, CLASS_String, buf, knh_strlen(buf), _ALWAYS|_ASCII));
 	}
 	if(fmt.len != 0) {
 		LOGDATA = {LOGMSG("invalid format"), sDATA("format", fmt.text)};
@@ -3331,7 +3331,7 @@ static KMETHOD Float_format(CTX ctx, knh_sfp_t *sfp _RIX)
 		char fmtbuf[40], buf[80];
 		const char *ifmt = (ch == 'f') ? K_FLOAT_FMT : K_FLOAT_FMTE;
 		knh_snprintf(buf, sizeof(buf), newfmt(fmtbuf, sizeof(fmtbuf), fmt, ifmt + strlen(ifmt)-1), sfp[0].fvalue);
-		RETURN_(new_String2(ctx, CLASS_String, buf, 0, _ALWAYS|_ASCII));
+		RETURN_(new_String2(ctx, CLASS_String, buf, knh_strlen(buf), _ALWAYS|_ASCII));
 	}
 	if(fmt.len != 0) {
 		LOGDATA = {LOGMSG("invalid format"), sDATA("format", fmt.text)};
@@ -3352,7 +3352,7 @@ static KMETHOD String_format(CTX ctx, knh_sfp_t *sfp _RIX)
 	if(fmt.utext[0] == '%' && fmt.utext[fmt.len-1] == 's') {
 		char buf[256];
 		knh_snprintf(buf, sizeof(buf), fmt.text, S_totext(sfp[0].s));
-		RETURN_(new_String2(ctx, CLASS_String, buf, 0, _ALWAYS|_ASCII));
+		RETURN_(new_String2(ctx, CLASS_String, buf, knh_strlen(buf), _ALWAYS|_ASCII));
 	}
 	if(fmt.len != 0) {
 		LOGDATA = {LOGMSG("invalid format"), sDATA("format", fmt.text)};
