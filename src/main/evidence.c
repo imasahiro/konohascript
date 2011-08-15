@@ -837,7 +837,7 @@ static knh_Exception_t* new_Assertion(CTX ctx, knh_uline_t uline)
 		size_t line = ULINE_line(uline);
 		knh_snprintf(buf, sizeof(buf), "Assertion!!: %s at line %ld", FILENAME__(uri), line);
 	}
-	KNH_SETv(ctx, e->emsg, new_String2(ctx, CLASS_String, (const char*)buf, 0, K_SPOLICY_ASCII));
+	KNH_SETv(ctx, e->emsg, new_String2(ctx, CLASS_String, (const char*)buf, knh_strlen(buf), K_SPOLICY_ASCII));
 	e->uline = uline;
 	return e;
 }

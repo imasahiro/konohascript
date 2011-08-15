@@ -1822,9 +1822,9 @@ static void TCAST_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 			else if(scid == CLASS_Float && tcid == CLASS_Int) {
 				ASM(iCAST, NC_(espidx), NC_(espidx));
 			}
-			else if(IS_Tunbox(scid)) {
-				ASM(NCAST, RTNIDX_(ctx, espidx, stmt->type), SFP_(espidx), RIX_(espidx-espidx), SFP_(espidx+1), tmr);
-			}
+//			else if(IS_Tunbox(scid)) {
+//				ASM(NCAST, RTNIDX_(ctx, espidx, stmt->type), SFP_(espidx), RIX_(espidx-espidx), SFP_(espidx+1), tmr);
+//			}
 			else {
 				ASM(SCAST, RTNIDX_(ctx, espidx, stmt->type), SFP_(espidx), RIX_(espidx-espidx), SFP_(espidx+1), tmr);
 			}

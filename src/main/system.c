@@ -57,7 +57,7 @@ knh_String_t* knh_getPropertyNULL(CTX ctx, knh_bytes_t key)
 		char *v = knh_getenv(knh_cwb_tochar(ctx, cwb));
 		knh_cwb_close(cwb);
 		if(v == NULL) return NULL;
-		return new_String2(ctx, CLASS_String, v, 0, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS);
+		return new_String2(ctx, CLASS_String, v, knh_strlen(v), K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS);
 	}
 	return (knh_String_t*)knh_DictMap_getNULL(ctx,  DP(ctx->sys)->props, key);
 }
@@ -74,7 +74,7 @@ void knh_setProperty(CTX ctx, knh_String_t *key, dynamic *value)
 KNHAPI2(void) knh_setPropertyText(CTX ctx, char *key, char *value)
 {
 	knh_String_t *k = new_T(key);
-	knh_String_t *v = new_String2(ctx, CLASS_String, value, 0, K_SPOLICY_TEXT);
+	knh_String_t *v = new_String2(ctx, CLASS_String, value, knh_strlen(value), K_SPOLICY_TEXT);
 	knh_DictMap_set_(ctx, DP(ctx->sys)->props, k, UPCAST(v));
 }
 

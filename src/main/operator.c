@@ -477,7 +477,7 @@ static TYPEMAP Int_String(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	char buf[80];
 	knh_snprintf(buf, sizeof(buf), K_INT_FMT, sfp[0].ivalue);
-	RETURN_(new_String2(ctx, CLASS_String, buf, 0, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS));
+	RETURN_(new_String2(ctx, CLASS_String, buf, knh_strlen(buf), K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -487,7 +487,7 @@ static TYPEMAP Float_String(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	char buf[256];
 	knh_snprintf(buf, sizeof(buf), K_FLOAT_FMT, sfp[0].fvalue);
-	RETURN_(new_String2(ctx, CLASS_String, buf, 0, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS));
+	RETURN_(new_String2(ctx, CLASS_String, buf, knh_strlen(buf), K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS));
 }
 
 /* ------------------------------------------------------------------------ */

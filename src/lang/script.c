@@ -543,7 +543,7 @@ static void SCRIPT_eval(CTX ctx, knh_Stmt_t *stmtORIG, int isCompileOnly)
 			if(STT_(stmt) == STT_RETURN && !Stmt_isImplicit(stmt)) {
 				cid = O_cid(lsfp[rtnidx].o);
 				KNH_SETv(ctx, WCTX(ctx)->evaled, lsfp[rtnidx].o);
-				WCTX(ctx)->isEvaled = 0;
+				WCTX(ctx)->isEvaled = 1;
 			}
 		}
 		else {

@@ -109,7 +109,7 @@ static void loadStringClassConst(CTX ctx, knh_class_t cid, const knh_StringData_
 {
 	while(data->name != NULL) {
 		Object *value = UPCAST(new_T(data->value));
-		knh_addClassConst(ctx, cid, new_String2(ctx, CLASS_String, data->name, 0, K_SPOLICY_TEXT), value);
+		knh_addClassConst(ctx, cid, new_String2(ctx, CLASS_String, data->name, knh_strlen(data->name), K_SPOLICY_TEXT), value);
 		data++;
 	}
 }
