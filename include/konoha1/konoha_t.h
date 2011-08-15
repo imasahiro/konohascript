@@ -1262,14 +1262,18 @@ typedef ITRNEXT (*knh_Fitrnext)(CTX, knh_sfp_t * _RIX);
 }
 
 /*  this is defintion of KSObject */
-
+namespace konoha {
 class KSObject {
-	struct knh_RawPtr_t *kself;
-	int isGCSync;
 public:
 	KSObject();
 	~KSObject();
+private:
+	struct knh_RawPtr_t *kself;
+	int isGCSync;
+	KSObject(const KSObject &);
+	KSObject operator=(const KSObject &);
 };
+}
 
 #endif
 
