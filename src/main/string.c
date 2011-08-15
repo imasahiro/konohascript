@@ -98,32 +98,32 @@ int knh_bytes_parsefloat(knh_bytes_t t, knh_float_t *value)
 	return 1;
 }
 
-knh_index_t knh_bytes_indexOf(knh_bytes_t base, knh_bytes_t sub)
-{
-	const char *const str0 = base.text;  /* ide version */
-	const char *const str1 = sub.text;
-	knh_index_t len  = sub.len;
-	knh_index_t loop = base.len - len;
-	knh_index_t index = -1;
-	if (loop >= 0) {
-		knh_index_t i;
-		const char *s0 = str0, *s1 = str1;
-		const char *const s0end = s0 + loop;
-		while(s0 <= s0end) {
-			for (i = 0; i < len; i++) {
-				if (s0[i] != s1[i]) {
-					goto L_END;
-				}
-			}
-			if (i == len) {
-				return s0 - str0;
-			}
-			L_END:
-			s0++;
-		}
-	}
-	return index;
-}
+//knh_index_t knh_bytes_indexOf(knh_bytes_t base, knh_bytes_t sub)
+//{
+//	const char *const str0 = base.text;  /* ide version */
+//	const char *const str1 = sub.text;
+//	knh_index_t len  = sub.len;
+//	knh_index_t loop = base.len - len;
+//	knh_index_t index = -1;
+//	if (loop >= 0) {
+//		knh_index_t i;
+//		const char *s0 = str0, *s1 = str1;
+//		const char *const s0end = s0 + loop;
+//		while(s0 <= s0end) {
+//			for (i = 0; i < len; i++) {
+//				if (s0[i] != s1[i]) {
+//					goto L_END;
+//				}
+//			}
+//			if (i == len) {
+//				return s0 - str0;
+//			}
+//			L_END:
+//			s0++;
+//		}
+//	}
+//	return index;
+//}
 
 int knh_bytes_strcmp(knh_bytes_t v1, knh_bytes_t v2)
 {

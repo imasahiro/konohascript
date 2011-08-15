@@ -2185,7 +2185,7 @@ static KMETHOD Float_opGTE(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD String_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURNb_(knh_bytes_indexOf(S_tobytes(sfp[0].s), S_tobytes(sfp[1].s)) != -1);
+	RETURNb_(strstr(S_totext(sfp[0].s), S_totext(sfp[1].s)) != NULL);
 }
 
 ///* ------------------------------------------------------------------------ */
