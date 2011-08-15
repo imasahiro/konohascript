@@ -810,7 +810,7 @@ static KMETHOD String_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 //	RETURNi_(loc);
 	long loc = -1;
 	knh_bytes_t base = S_tobytes(sfp[0].s);
-	char *p = strnstr(base.text, S_totext(sfp[1].s), base.len);
+	char *p = strstr(base.text, S_totext(sfp[1].s));
 	if (p != NULL) {
 		loc = p - base.text;
 		if(!String_isASCII(sfp[0].s)) {
