@@ -675,8 +675,7 @@ static void knh_shell(CTX ctx)
 {
 	void *shell_status = NULL;
 	BEGIN_LOCAL(ctx, lsfp, 2);
-	LOCAL_NEW(ctx, lsfp, 0, knh_Array_t *, results, new_Array0(ctx, 0));
-	LOCAL_NEW(ctx, lsfp, 1, knh_InputStream_t *, bin, new_BytesInputStream(ctx, new_Bytes(ctx, "shell", K_PAGESIZE)));
+	LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t *, bin, new_BytesInputStream(ctx, new_Bytes(ctx, "shell", K_PAGESIZE)));
 	{
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_showWelcome(ctx, cwb->w);
@@ -685,7 +684,6 @@ static void knh_shell(CTX ctx)
 		knh_cwb_close(cwb);
 	}
 	while(1) {
-		size_t i;
 		{
 			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 			knh_status_t status = readstmt(ctx, cwb);
@@ -712,26 +710,15 @@ static void knh_shell(CTX ctx)
 		}
 		knh_InputStream_setpos(ctx, bin, 0, BA_size(DP(bin)->ba));
 		SP(bin)->uline = 1; // always line1
-		knh_beval(ctx, bin, results);
+		knh_beval(ctx, bin);
 		knh_OutputStream_flush(ctx, ctx->out, 1);
-
-//		if(ctx->out != DP(ctx->sys)->out) {
-//			knh_Bytes_t *outbuf = DP(ctx->out)->ba;
-//			knh_write(ctx, cwb->w, outbuf->bu);
-//			knh_Bytes_clear(outbuf, 0);
-//		}
-//		knh_cwb_clear2(cwb, 0); // necessary (because of some bugs)
-		{
+		if(ctx->isEvaled) {
 			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-			for(i = 0; i < knh_Array_size(results); i++) {
-				knh_Object_t *o = results->list[i];
-				knh_write_Object(ctx, cwb->w, o, FMT_dump);
-			}
+			knh_write_Object(ctx, cwb->w, ctx->evaled, FMT_dump);
 			knh_showSecurityAlert(ctx, cwb->w);
 			if(knh_cwb_size(cwb) !=0) {
 				shell_display(ctx, shell_status, knh_cwb_tochar(ctx, cwb));
 			}
-			knh_Array_clear(ctx, results, 0);
 			knh_cwb_close(cwb);
 		}
 	}

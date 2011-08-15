@@ -20,12 +20,12 @@
 #endif
 
 #define KNH_DIE(fmt, ...) {\
-		knh_logprintf("DIE", 1 /*verbose*/, "[%s:%d] " fmt K_OSLINEFEED, __FUNCTION__, __LINE__, ## __VA_ARGS__);\
+		knh_logprintf("KONOHA", 1 /*verbose*/, "[%s:%d] " fmt K_OSLINEFEED, __FUNCTION__, __LINE__, ## __VA_ARGS__);\
 		exit(70);  /* EX_SOFTWARE */ \
 	}\
 
 #define KNH_NOTE(fmt, ...) {\
-		knh_logprintf("konoha", 1 /*verbose*/, "[%s:%d] " fmt K_OSLINEFEED, __FUNCTION__, __LINE__, ## __VA_ARGS__);\
+		knh_logprintf("konoha", 1 /*verbose*/, fmt, ## __VA_ARGS__);\
 	}\
 
 #define KNH_LOG(fmt, ...) \

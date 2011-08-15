@@ -1092,6 +1092,7 @@ typedef struct knh_context_t {
 	// add here for new entry
 	struct knh_ExceptionHandler_t  *ehdrNC;
 	struct knh_Object_t            *evaled;
+	knh_bool_t                      isEvaled;
 	int                             signal;
 	void                           *siginfo;
 	void                           *sighandlers;

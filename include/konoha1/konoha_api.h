@@ -7,7 +7,7 @@ extern "C" {
 
 
 #ifdef K_INTERNAL
-KNHAPI2(void) knh_eval(CTX ctx, const char *script);
+KNHAPI2(knh_bool_t) knh_eval(CTX ctx, const char *script, knh_OutputStream_t *w);
 KNHAPI2(knh_Array_t*) new_Array(CTX ctx, knh_class_t p1, size_t capacity);
 KNHAPI2(void) knh_Array_add_(CTX ctx, knh_Array_t *a, knh_Object_t *value);
 KNHAPI2(void) knh_Array_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m);
@@ -95,6 +95,7 @@ typedef struct knh_api2_t {
 	knh_TypeMap_t* (*new_TypeMap)(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func);
 	knh_TypeMap_t* (*new_TypeMapData)(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func, Object *mapdata);
 	knh_bool_t (*Method_isAbstract)(knh_Method_t *mtd);
+	knh_bool_t  (*eval)(CTX ctx, const char *script, knh_OutputStream_t *w);
 	knh_class_t  (*type_tocid)(CTX ctx, knh_type_t ptype, knh_class_t this_cid);
 	knh_context_t*  (*getCurrentContext)(void);
 	knh_param_t*  (*ParamArray_get)(knh_ParamArray_t *pa, size_t n);
@@ -124,7 +125,6 @@ typedef struct knh_api2_t {
 	void  (*TypeMap_exec)(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp _RIX);
 	void  (*addConstPool)(CTX ctx, knh_Object_t *o);
 	void  (*addTypeMap)(CTX ctx, knh_TypeMap_t *tmr, int initCache);
-	void  (*eval)(CTX ctx, const char *script);
 	void  (*printf)(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...);
 	void  (*setPropertyText)(CTX ctx, char *key, char *value);
 	void  (*write_BOL)(CTX ctx, knh_OutputStream_t *w);
@@ -137,7 +137,7 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)-1273998853)
+#define K_API2_CRC32 ((size_t)-1293974033)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -164,6 +164,7 @@ static const knh_api2_t* getapi2(void) {
 		new_TypeMap,
 		new_TypeMapData,
 		Method_isAbstract,
+		knh_eval,
 		knh_type_tocid,
 		knh_getCurrentContext,
 		knh_ParamArray_get,
@@ -193,7 +194,6 @@ static const knh_api2_t* getapi2(void) {
 		knh_TypeMap_exec,
 		knh_addConstPool,
 		knh_addTypeMap,
-		knh_eval,
 		knh_printf,
 		knh_setPropertyText,
 		knh_write_BOL,
@@ -232,6 +232,7 @@ static const knh_api2_t* getapi2(void) {
 #define new_TypeMap   ctx->api2->new_TypeMap
 #define new_TypeMapData   ctx->api2->new_TypeMapData
 #define Method_isAbstract   ctx->api2->Method_isAbstract
+#define knh_eval   ctx->api2->eval
 #define knh_type_tocid   ctx->api2->type_tocid
 #define knh_getCurrentContext   ctx->api2->getCurrentContext
 #define knh_ParamArray_get   ctx->api2->ParamArray_get
@@ -261,7 +262,6 @@ static const knh_api2_t* getapi2(void) {
 #define knh_TypeMap_exec   ctx->api2->TypeMap_exec
 #define knh_addConstPool   ctx->api2->addConstPool
 #define knh_addTypeMap   ctx->api2->addTypeMap
-#define knh_eval   ctx->api2->eval
 #define knh_printf   ctx->api2->printf
 #define knh_setPropertyText   ctx->api2->setPropertyText
 #define knh_write_BOL   ctx->api2->write_BOL
@@ -293,7 +293,6 @@ void knh_loadScriptSystemKonohaCode(CTX ctx);
 void knh_write_vmfunc(CTX ctx, knh_OutputStream_t *w, void *f);
 knh_Fmethod knh_gluefunc(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_DictMap_t *mdata);
 knh_bool_t knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_DictMap_t *mdata);
-knh_bool_t knh_NameSpace_addFFIlink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path);
 void knh_loadFFIDriver(CTX ctx, knh_NameSpace_t *ns);
 void *knh_copyCallbackFunc(CTX ctx, void *tmpl, void *dest, knh_Func_t *fo);
 const char* TERM_BBOLD(CTX ctx);
@@ -388,9 +387,9 @@ void knh_Script_setNSName(CTX ctx, knh_Script_t* scr, knh_String_t *nsname);
 knh_status_t knh_loadPackage(CTX ctx, knh_bytes_t pkgname);
 Object *knh_NameSpace_getConstNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t name);
 void knh_RefTraverse(CTX ctx, knh_Ftraverse ftr);
-knh_status_t knh_beval(CTX ctx, knh_InputStream_t *in, knh_Array_t *resultsNULL);
-knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in, knh_Array_t *resultsNULL);
-knh_status_t knh_load(CTX ctx, knh_Path_t *pth, knh_Array_t *resultsNULL);
+knh_bool_t knh_beval(CTX ctx, knh_InputStream_t *in);
+knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in);
+knh_status_t knh_load(CTX ctx, knh_Path_t *pth);
 knh_status_t knh_startScript(CTX ctx, const char *path);
 knh_Token_t* new_Token(CTX ctx, knh_term_t tt);
 knh_Stmt_t* new_Stmt2(CTX ctx, knh_term_t stt, ...);
