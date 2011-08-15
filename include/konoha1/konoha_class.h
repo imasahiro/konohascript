@@ -251,8 +251,9 @@ typedef struct knh_Iterator_t knh_Iterator_t;
 typedef struct {
 	Object    *source;
 	union {
-		struct knh_Method_t *mtdNULL;
-		struct knh_Func_t *funcNULL;
+		struct knh_Method_t  *mtdNULL;
+		struct knh_Func_t    *funcNULL;
+		struct knh_TypeMap_t *tmrNULL;
 	};
 	void      *nptr;
 	struct knh_mapitr_t mitr;
@@ -500,8 +501,7 @@ struct knh_Method_t {
 //## flag TypeMap Interface  1 - is set * *;
 //## flag TypeMap Semantic   2 - is set * *;
 //## flag TypeMap Const      3 - is set * *;
-//## flag TypeMap FastCall   4 - is set * *;
-//## flag TypeMap Derived    5 - is set * *;
+//## flag TypeMap NDATA      4 - is set * *;
 
 typedef struct knh_TypeMap_t knh_TypeMap_t;
 struct knh_TypeMap_t {

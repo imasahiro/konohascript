@@ -454,7 +454,6 @@ class TypeMap:
         flag = '0'
         flag = addflag(flag, self.meta, 'TypeMap', '@Const')
         flag = addflag(flag, self.meta, 'TypeMap', '@Semantic')
-        flag = addflag(flag, self.meta, 'TypeMap', '@FastCall')
         fmt = '''
 \tDATA_TYPEMAP, %s, %s, %s, _DATA(%s),''' % (CLASS_(self.fcname), CLASS_(self.tcname), flag, func)
         return fmt

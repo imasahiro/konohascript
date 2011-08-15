@@ -3,7 +3,7 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      510
+#define K_REVISION                      511
 #endif
 #define K_BUILDID                       1157
 
@@ -673,12 +673,9 @@
 #define FLAG_TypeMap_Const FLAG_Object_Local3
 #define TypeMap_isConst(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Const))
 #define TypeMap_setConst(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Const,b)
-#define FLAG_TypeMap_FastCall FLAG_Object_Local4
-#define TypeMap_isFastCall(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_FastCall))
-#define TypeMap_setFastCall(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_FastCall,b)
-#define FLAG_TypeMap_Derived FLAG_Object_Local5
-#define TypeMap_isDerived(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Derived))
-#define TypeMap_setDerived(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Derived,b)
+#define FLAG_TypeMap_NDATA FLAG_Object_Local4
+#define TypeMap_isNDATA(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_NDATA))
+#define TypeMap_setNDATA(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_NDATA,b)
 #define FLAG_Func_StoredEnv FLAG_Object_Local1
 #define Func_isStoredEnv(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Func_StoredEnv))
 #define Func_setStoredEnv(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Func_StoredEnv,b)

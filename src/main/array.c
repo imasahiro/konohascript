@@ -268,59 +268,6 @@ KNHAPI2(knh_Iterator_t*) new_Iterator(CTX ctx, knh_class_t p1, knh_Object_t *sou
 }
 
 /* ------------------------------------------------------------------------ */
-/* [ArrayIterator] */
-
-static ITRNEXT Array_nextO(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	DBG_ASSERT(IS_bIterator(sfp[0].it));
-	knh_Iterator_t *itr = ITR(sfp);
-	knh_Array_t *a = (knh_Array_t*)DP(itr)->source;
-	size_t pos = (size_t)DP(itr)->mitr.index;
-	if(pos < a->size) {
-		DP(itr)->mitr.index = pos + 1;
-		ITRNEXT_(a->list[pos]);
-	}
-	ITREND_();
-}
-
-static ITRNEXT Array_nextN(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	DBG_ASSERT(IS_bIterator(sfp[0].it));
-	knh_Iterator_t *itr = ITR(sfp);
-	knh_Array_t *a = (knh_Array_t*)DP(itr)->source;
-	size_t pos = (size_t)DP(itr)->mitr.index;
-	if(pos < a->size) {
-		DP(itr)->mitr.index = pos+1;
-		ITRNEXTd_(a->nlist[pos]);
-	}
-	ITREND_();
-}
-
-knh_Iterator_t* new_ArrayIterator(CTX ctx, knh_Array_t *a)
-{
-	knh_class_t cid = O_p1(a);
-	knh_Fitrnext fnext = Array_isNDATA(a) ? Array_nextN : Array_nextO;
-	return new_Iterator(ctx, cid, UPCAST(a), fnext);
-}
-
-knh_bool_t knh_isArrayIterator(knh_Iterator_t *itr)
-{
-	return (itr->fnext_1 == Array_nextO || itr->fnext_1 == Array_nextN);
-}
-
-knh_Array_t* knh_Iterator_toArray(CTX ctx, knh_Iterator_t *itr)
-{
-	knh_Array_t *a = new_Array(ctx, O_cTBL(itr)->p1, 0);
-	BEGIN_LOCAL(ctx, lsfp, 2);
-	KNH_SETv(ctx, lsfp[1].o, itr);
-	while(itr->fnext_1(ctx, lsfp + 1, -1)) {
-		a->api->add(ctx, a, lsfp);
-	}
-	END_LOCAL_(ctx, lsfp);
-	return a;
-}
-
-/* ------------------------------------------------------------------------ */
 
 #ifdef __cplusplus
 }
