@@ -98,7 +98,6 @@ int knh_bytes_parsefloat(knh_bytes_t t, knh_float_t *value)
 	return 1;
 }
 
-
 knh_index_t knh_bytes_indexOf(knh_bytes_t base, knh_bytes_t sub)
 {
 	const char *const str0 = base.text;  /* ide version */

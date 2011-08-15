@@ -798,14 +798,25 @@ static KMETHOD String_concat(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD String_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
+//	knh_bytes_t base = S_tobytes(sfp[0].s);
+//	//if (IS_NULL(sfp[1].o)) RETURNi_(-1);     // is it necesarry?
+//	knh_bytes_t delim = S_tobytes(sfp[1].s);
+//	knh_index_t loc = knh_bytes_indexOf(base, delim);
+//	if(delim.len == 0) loc--;
+//	if (loc >= 0 && !String_isASCII(sfp[0].s)) {
+//		base.len = (size_t)loc;
+//		loc = knh_bytes_mlen(base);
+//	}
+//	RETURNi_(loc);
+	long loc = -1;
 	knh_bytes_t base = S_tobytes(sfp[0].s);
-	if (IS_NULL(sfp[1].o)) RETURNi_(-1);
-	knh_bytes_t delim = S_tobytes(sfp[1].s);
-	knh_index_t loc = knh_bytes_indexOf(base, delim);
-	if(delim.len == 0) loc--;
-	if (loc >= 0 && !String_isASCII(sfp[0].s)) {
-		base.len = (size_t)loc;
-		loc = knh_bytes_mlen(base);
+	char *p = strnstr(base.text, S_totext(sfp[1].s), base.len);
+	if (p != NULL) {
+		loc = p - base.text;
+		if(!String_isASCII(sfp[0].s)) {
+			base.len = (size_t)loc;
+			loc = knh_bytes_mlen(base);
+		}
 	}
 	RETURNi_(loc);
 }
