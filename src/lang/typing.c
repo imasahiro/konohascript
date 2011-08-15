@@ -942,9 +942,6 @@ static knh_Token_t* Token_toSYSVAL(CTX ctx, knh_Token_t *tk)
 	if(IS_SYSVAL(t, "CTX")) {
 		TK_typing(tk, TT_SYSVAL, TYPE_Context, K_SYSVAL_CTX);
 	}
-	else if(IS_SYSVAL(t, "IN")) {
-		TK_typing(tk, TT_SYSVAL, TYPE_InputStream, K_SYSVAL_CTXIN);
-	}
 	else if(IS_SYSVAL(t, "OUT")) {
 		if(Gamma_isCompilingFmt(ctx)) {
 			TK_typing(tk, TT_LVAR, TYPE_OutputStream, 0);
@@ -953,36 +950,36 @@ static knh_Token_t* Token_toSYSVAL(CTX ctx, knh_Token_t *tk)
 			TK_typing(tk, TT_SYSVAL, TYPE_OutputStream, K_SYSVAL_CTXOUT);
 		}
 	}
+	else if(IS_SYSVAL(t, "EOL")) {
+		Token_setCONST(ctx, tk, TS_EOL);
+	}
+	else if(IS_SYSVAL(t, "IN")) {
+		TK_typing(tk, TT_SYSVAL, TYPE_InputStream, K_SYSVAL_CTXIN);
+	}
 	else if(IS_SYSVAL(t, "ERR")) {
 		TK_typing(tk, TT_SYSVAL, TYPE_OutputStream, K_SYSVAL_CTXERR);
 	}
 	else if(IS_SYSVAL(t, "STDIN")) {
-		TK_typing(tk, TT_SYSVAL, TYPE_InputStream, K_SYSVAL_STDIN);
+		Token_setCONST(ctx, tk, KNH_STDIN);
 	}
 	else if(IS_SYSVAL(t, "STDOUT")) {
-		TK_typing(tk, TT_SYSVAL, TYPE_OutputStream, K_SYSVAL_STDOUT);
+		Token_setCONST(ctx, tk, KNH_STDOUT);
 	}
 	else if(IS_SYSVAL(t, "STDERR")) {
-		TK_typing(tk, TT_SYSVAL, TYPE_OutputStream, K_SYSVAL_STDERR);
+		Token_setCONST(ctx, tk, KNH_STDERR);
 	}
-	else if(IS_SYSVAL(t, "OS")) {
-		TK_typing(tk, TT_SYSVAL, TYPE_System, K_SYSVAL_OS);
+	else if(IS_SYSVAL(t, "LINE")) {
+		Token_setCONST(ctx, tk, new_Int(ctx, ULINE_line(tk->uline)));
 	}
-//	else if(IS_SYSVAL(t, "__line__")) {
-//		Token_setCONST(ctx, tk, new_Int_(ctx, CLASS_Int, ULINE_line(tk->uline)));
-//	}
-//	else if(IS_SYSVAL(t, "__file__")) {
-//		Token_setCONST(ctx, tk, knh_getURN(ctx, ULINE_uri(tk->uline)));
-//	}
-//	else if(IS_SYSVAL(t, "__method__") || IS_SYSVAL(t, "__function__")) {
-//		Token_setCONST(ctx, tk, knh_Object_getkey(ctx, UPCAST(DP(ctx->gma)->mtd)));
-//	}
-//	else if(IS_SYSVAL(t, "__namespace__") || IS_SYSVAL(t, "__ns__")) {
-//		knh_NameSpace_t *ns = K_GMANS;
-//		Token_setCONST(ctx, tk, ns);
-//	}
-	else if(IS_SYSVAL(t, "EOL")) {
-		Token_setCONST(ctx, tk, TS_EOL);
+	else if(IS_SYSVAL(t, "FILENAME")) {
+		Token_setCONST(ctx, tk, K_GMANS->path->urn);
+	}
+	else if(IS_SYSVAL(t, "MTD")) {
+		Token_setCONST(ctx, tk, DP(ctx->gma)->mtd);
+	}
+	else if(IS_SYSVAL(t, "NS")) {
+		knh_NameSpace_t *ns = K_GMANS;
+		Token_setCONST(ctx, tk, ns);
 	}
 	else if(IS_SYSVAL(t, "BEGIN")) {
 		Token_setCONST(ctx, tk, TS_BEGIN);

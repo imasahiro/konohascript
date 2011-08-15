@@ -1624,7 +1624,7 @@ static TYPEMAP Ftypemap_dcast(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_TypeMap_t *tmr0= sfp[K_TMRIDX].tmrNC;
 	knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, O_cid(sfp[0].o), tmr0->tcid);
-	if(tmr != NULL && TypeMap_isSemantic(tmr)) {
+	if(tmr != NULL /*&& TypeMap_isSemantic(tmr)*/) {
 		sfp[0].ndata = O_ndata(sfp[0].o);
 		knh_TypeMap_exec(ctx, tmr, sfp, K_RIX);
 	}

@@ -519,6 +519,7 @@ static void SCRIPT_eval(CTX ctx, knh_Stmt_t *stmtORIG, int isCompileOnly)
 		Stmt_setImplicit(stmt, 1);
 	}
 	KNH_SETv(ctx, lsfp[0].o, stmt);
+	WCTX(ctx)->isEvaled = 0;
 	knh_Method_asm(ctx, mtd, stmt, typingMethod2);
 	if(STT_(stmt) == STT_ERR) {
 		if(stmt != stmtORIG) {
@@ -537,7 +538,6 @@ static void SCRIPT_eval(CTX ctx, knh_Stmt_t *stmtORIG, int isCompileOnly)
 		KNH_SETv(ctx, lsfp[thisidx+1].o, ctx->evaled);
 		lsfp[thisidx+1].ndata = O_data(ctx->evaled);
 		klr_setesp(ctx, lsfp + thisidx+2);
-		WCTX(ctx)->isEvaled = 0;
 		if(knh_VirtualMachine_launch(ctx, lsfp + thisidx)) {
 			//DBG_P("returning sfpidx=%d, rtnidx=%d, %s %lld %ld %f", sfpidx_, sfpidx_ + rtnidx, O__(lsfp[rtnidx].o), lsfp[rtnidx].ivalue, lsfp[rtnidx].bvalue, lsfp[rtnidx].fvalue);
 			if(STT_(stmt) == STT_RETURN && !Stmt_isImplicit(stmt)) {

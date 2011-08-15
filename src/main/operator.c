@@ -3164,23 +3164,6 @@ static KMETHOD OutputStream_isClosed_(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNb_(OutputStream_isClosed(sfp[0].w));
 }
 
-///* ------------------------------------------------------------------------ */
-//static void _OutputStream_writeLine(CTX ctx, knh_OutputStream_t *w, knh_String_t *s)
-//{
-//	if(s == TS_EOL) {
-//		knh_write_EOL(ctx, w);
-//	}
-//	else if(s == TS_BEGIN) {
-//		DP(w)->indent++;
-//	}
-//	else if(s == TS_END) {
-//		DP(w)->indent--;
-//	}
-//	else {
-//		knh_OutputStream_writeLine(ctx, w, S_tobytes(s), 0);
-//	}
-//}
-
 /* ------------------------------------------------------------------------ */
 //## method void OutputStream.print(Object value, ...);
 
