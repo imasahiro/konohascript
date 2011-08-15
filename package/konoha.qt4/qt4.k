@@ -36,7 +36,8 @@ include "lib:gluelink";
 class QObject extends C++;
 class QApplication extends QObject;
 
-class QWidget extends QObject;
+class QPaintDevice extends QObject;
+class QWidget extends QPaintDevice;
 
 class QLineEdit extends QWidget;
 class QProgressBar extends QWidget;
@@ -65,6 +66,18 @@ class QTimer extends QObject;
 
 class QSslSocket extends QObject;
 
+class QAbstractScrollArea extends QFrame;
+class QTextEdit extends QAbstractScrollArea;
+
+class QTextCursor;
+class QTimer extends QObject;
+class QTimerEvent;
+
+class QRect;
+class QPainter;
+class QPaintEvent;
+class QColor;
+
 @Native QObject QObject.new(QObject parent);
 @Native boolean QObject.connectValueChanged(Func<float> f);
 @Native boolean QObject.connectClicked(Func<boolean> f);
@@ -85,6 +98,8 @@ class QSslSocket extends QObject;
 @Native void QWidget.show();
 @Native void QWidget.hide();
 @Native void QWidget.setFocus(int n);
+@Native void QWidget.setStyleSheet(String style);
+@Native void QWidget.setWindowOpacity(float opacity);
 
 @Native void QStackedWidget.setCurrentIndex(int index);
 @Native int QStackedWidget.addWidget ( QWidget widget );
@@ -107,6 +122,7 @@ boolean QLineEdit.onTextChanged(Func<String> f) {
 boolean QLineEdit.onReturnPressed(Func<void> f) {
 	return false;
 }
+
 
 @Native QProgressBar QProgressBar.new(QWidget parent);
 @Native void QProgressBar.setValue(int value);
@@ -166,3 +182,32 @@ boolean QAbstractButton.onClicked(Func<boolean> f) {
 @Public boolean String.isEmpty() {
 	return (|this| == 0);
 }
+
+//QAbstractScrollArea
+@Native QWidget QAbstractScrollArea.viewport();
+
+//TextEdit
+@Native QTextEdit QTextEdit.new(QWidget parent);
+@Native void QTextEdit.setLineWrapMode(int mode);
+@Native void QTextEdit.setCursorWidth(int width);
+@Native void QTextEdit.setTabStopWidth(int width);
+@Native QTextCursor QTextEdit.textCursor();
+@Native void QTextEdit.setTextCursor(QTextCursor cursor);
+@Native QRect QTextEdit.cursorRect();
+@Native void QTextEdit.setPaintEvent(Func<QPaintEvent> f);
+
+//QTimer
+@Native QTimer QTimer.new(Func<QTimerEvent> f, QObject parent);
+@Native void QTimer.setInterval(int interval);
+@Native void QTimer.start(int interval);
+
+//QRect
+@Native void QRect.setWidth(int width);
+
+//QPainter
+@Native QPainter QPainter.new(QPaintDevice device);
+@Native void QPainter.setOpacity(float opacity);
+@Native void QPainter.fillRect(QRect r, QColor c);
+
+//QColor
+@Native QColor QColor.new(String color);

@@ -55,7 +55,7 @@ KMETHOD QWebView_load(CTX, knh_sfp_t *sfp _RIX)
 {
 	QWebView *q = QPtr_to(QWebView*, sfp[0]);
 	if(q != NULL) {
-		QUrl url = QUrl(S_tochar(sfp[1].s));
+		QUrl url = QUrl(String_to(QString, sfp[1]));
 		q->load(url);
 	}
 	RETURNvoid_();

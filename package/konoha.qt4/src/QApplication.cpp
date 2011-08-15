@@ -54,7 +54,7 @@ bool KonohaEval::event(QEvent *e) {
 	KonohaEvalEvent *ke = (KonohaEvalEvent*)e;
 	fprintf(stderr, "thread id=%ld, eval='%s'\n", pthread_self(), ke->script);
 	const knh_context_t *lctx = knh_getCurrentContext();
-	knh_eval(lctx, ke->script);   // use lctx
+	//knh_eval(lctx, ke->script);   // use lctx
 	return true;
 }
 
@@ -121,7 +121,7 @@ KMETHOD QApplication_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 	QApplication *q = QPtr_to(QApplication *, sfp[0]);
 	if(q != NULL) {
 		if(sfp[1].bvalue == 1 || CTX_isInteractive(ctx)) {
-			qshell(ctx, q);
+			//qshell(ctx, q);
 		}
 		q->exec();
 	}

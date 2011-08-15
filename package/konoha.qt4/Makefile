@@ -7,7 +7,7 @@ LFLAGS        = -headerpad_max_install_names -arch x86_64 -Xarch_x86_64 -mmacosx
 #OPENCV_FLAGS = #`pkg-config opencv --cflags`
 #LIBS = -F$(QTDIR)/lib -L$(QTDIR)/lib -framework QtGui -L$(QTDIR)/lib -F$(QTDIR)/lib -framework QtCore $(OPENCV_LIBS) -L./lib/triangle++/lib/
 #LIBS = -F$(QTDIR)/lib -L$(QTDIR)/lib -framework QtGui -L$(QTDIR)/lib -F$(QTDIR)/lib -framework QtCore -L./lib/triangle++/lib/
-LIBS          = $(SUBLIBS) -F/usr/local/Trolltech/Qt-4.7.3/lib -L/usr/local/Trolltech/Qt-4.7.3/lib -framework QtWebKit -framework QtXml -L/usr/local/Trolltech/Qt-4.7.3/lib -F/usr/local/Trolltech/Qt-4.7.3/lib -framework QtCore -framework QtGui -framework QtNetwork 
+LIBS          = $(SUBLIBS) -F/usr/local/Trolltech/Qt-4.7.3/lib -L/usr/local/Trolltech/Qt-4.7.3/lib -framework QtWebKit -framework QtXml -L/usr/local/Trolltech/Qt-4.7.3/lib -F/usr/local/Trolltech/Qt-4.7.3/lib -framework QtCore -framework QtGui -framework QtNetwork  -lkonoha1
 DEFINES       = -DQT_NO_DEBUG -DQT_WEBKIT_LIB -DQT_XML_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_SHARED
 CFLAGS = -O0 -g3 -pipe -g -gdwarf-2 -Wall -W -arch x86_64 -Xarch_x86_64 -mmacosx-version-min=10.5 $(DEFINES) -I/usr/local/include/ -I./include/ -I$(QTDIR)/include -Wall -W -fPIC $(INCPATH) -DNDEBUG
 LDLIBS = $(LFLAGS) $(LIBS)
@@ -26,6 +26,12 @@ objs = \
 	build/QPushButton.o\
 	build/QWebView.o\
 	build/QWidget.o\
+	build/QTextEdit.o\
+	build/QTimer.o\
+	build/QAbstractScrollArea.o\
+	build/QPainter.o\
+	build/QRect.o\
+	build/QColor.o\
 	build/qt4commons_moc.o\
 
 .PHONY: all
@@ -56,6 +62,24 @@ build/QWebView.o: src/QWebView.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/QWidget.o: src/QWidget.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QTextEdit.o: src/QTextEdit.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QTimer.o: src/QTimer.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QAbstractScrollArea.o: src/QAbstractScrollArea.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QPainter.o: src/QPainter.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QRect.o: src/QRect.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QColor.o: src/QColor.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/qt4commons_moc.o: src/qt4commons_moc.cpp

@@ -27,29 +27,23 @@
 // **************************************************************************
 // LIST OF CONTRIBUTERS
 //  kimio - Kimio Kuramitsu, Yokohama National University, Japan
-//  goccy54
+//  goccy54 - Masaaki Goshima Yokohama National University, Japan
 // **************************************************************************
 
-#include <QPushButton>
-#include <konoha1.h>
+//#include <QTextEdit>
 #include "qt4commons.hpp"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-class KQPushButton : public QPushButton, public KObject {
-public:
-	KQPushButton(QString & text, QWidget * w) : QPushButton(text, w), KObject() {
-	}
-};
-
-//## QPushButton QPushButton.new(String text, QWidget parent)
-KMETHOD QPushButton_new(CTX ctx, knh_sfp_t *sfp _RIX)
+	
+//## QRect QRect.setWidth(int width)
+KMETHOD QRect_setWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QString text = String_to(QString, sfp[1]);
-	//RETURN_newKQObject(new KQPushButton(text, QWidget_parent(sfp[2])));
-	RETURN_QObject(new KQPushButton(text, QWidget_parent(sfp[2])));
+	KQRect *r = RawPtr_to(KQRect *, sfp[0]);
+	if (r != NULL) {
+		r->setWidth(Int_to(int, sfp[1]));
+	}
+	RETURNvoid_();
 }
 
 #ifdef __cplusplus

@@ -27,29 +27,28 @@
 // **************************************************************************
 // LIST OF CONTRIBUTERS
 //  kimio - Kimio Kuramitsu, Yokohama National University, Japan
-//  goccy54
+//  goccy54 - Masaaki Goshima Yokohama National University, Japan
 // **************************************************************************
 
-#include <QPushButton>
-#include <konoha1.h>
 #include "qt4commons.hpp"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-class KQPushButton : public QPushButton, public KObject {
+class KQColor : public QColor, public KObject {
 public:
-	KQPushButton(QString & text, QWidget * w) : QPushButton(text, w), KObject() {
+	KQColor(QString s) : QColor(s) {
 	}
 };
 
-//## QPushButton QPushButton.new(String text, QWidget parent)
-KMETHOD QPushButton_new(CTX ctx, knh_sfp_t *sfp _RIX)
+//## QColor QColor.new(String color)
+KMETHOD QColor_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QString text = String_to(QString, sfp[1]);
-	//RETURN_newKQObject(new KQPushButton(text, QWidget_parent(sfp[2])));
-	RETURN_QObject(new KQPushButton(text, QWidget_parent(sfp[2])));
+	KQColor *c = new KQColor(String_to(QString, sfp[1]));
+	knh_RawPtr_t *o = new_ReturnCppObject(ctx, sfp, c, NULL);
+	KObject *ko = dynamic_cast<KObject*>(c);
+	ko->kself = o;
+	RETURN_(o);
 }
 
 #ifdef __cplusplus

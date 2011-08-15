@@ -27,29 +27,55 @@
 // **************************************************************************
 // LIST OF CONTRIBUTERS
 //  kimio - Kimio Kuramitsu, Yokohama National University, Japan
-//  goccy54
+//  goccy54 - Masaaki Goshima Yokohama National University, Japan
 // **************************************************************************
 
-#include <QPushButton>
-#include <konoha1.h>
+//#include <QTextEdit>
 #include "qt4commons.hpp"
-
+#include <QPainter>
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-class KQPushButton : public QPushButton, public KObject {
+	
+class KQPainter : public QPainter, public KObject {
 public:
-	KQPushButton(QString & text, QWidget * w) : QPushButton(text, w), KObject() {
+	KQPainter(QPaintDevice *d) : QPainter(d) {
 	}
 };
 
-//## QPushButton QPushButton.new(String text, QWidget parent)
-KMETHOD QPushButton_new(CTX ctx, knh_sfp_t *sfp _RIX)
+//## QPainter QPainter.new()
+KMETHOD QPainter_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QString text = String_to(QString, sfp[1]);
-	//RETURN_newKQObject(new KQPushButton(text, QWidget_parent(sfp[2])));
-	RETURN_QObject(new KQPushButton(text, QWidget_parent(sfp[2])));
+	QPaintDevice *device = RawPtr_to(QPaintDevice *, sfp[1]);
+	KQPainter *p = new KQPainter(device);
+	knh_RawPtr_t *o = new_ReturnCppObject(ctx, sfp, p, NULL);
+	KObject *ko = dynamic_cast<KObject*>(p);
+	ko->kself = o;
+	RETURN_(o);
+	//RETURN_newKQObject(new KQTimer(fo, parent));
+	//RETURN_QObject(new KQPainter(device));
+}
+
+//## void QPainter.setOpacity(float opacity)
+KMETHOD QPainter_setOpacity(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	KQPainter *p = RawPtr_to(KQPainter *, sfp[0]);
+	if (p != NULL) {
+		p->setOpacity(Float_to(float, sfp[1]));
+	}
+	RETURNvoid_();
+}
+
+//## void QPainter.fillRect(QRect r, QColor c)
+KMETHOD QPainter_fillRect(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	KQPainter *p = RawPtr_to(KQPainter *, sfp[0]);
+	if (p != NULL) {
+		KQRect *r = RawPtr_to(KQRect *, sfp[1]);
+		QColor *c = RawPtr_to(QColor *, sfp[2]);
+		p->fillRect(*r, *c);
+	}
+	RETURNvoid_();
 }
 
 #ifdef __cplusplus

@@ -163,6 +163,36 @@ void Connector::slotValueChanged(qreal val)
 	knh_Func_invoke(lctx, this->fo, lsfp, 1/*argc*/);
 }
 
+void Connector::timerEvent(KQTimer *t, knh_Func_t *fo)
+{
+	timer_event_func = fo;
+	connect(t, SIGNAL(emitTimerEvent(QTimerEvent *)), this, SLOT(timerEventSlot(QTimerEvent *)));
+}
+
+void Connector::timerEventSlot(QTimerEvent *event)
+{
+	CTX lctx = knh_getCurrentContext();
+	knh_sfp_t *lsfp = lctx->esp;
+	//lsfp[K_CALLDELTA+1].fvalue = (knh_float_t)val;
+	//KNH_SETv(lctx, lsfp[K_CALLDELTA+1], event);
+	knh_Func_invoke(lctx, this->timer_event_func, lsfp, 1/*argc*/);
+}
+
+void Connector::paintEvent(KQTextEdit *t, knh_Func_t *fo)
+{
+	paint_event_func = fo;
+	connect(t, SIGNAL(emitPaintEvent(QPaintEvent *)), this, SLOT(paintEventSlot(QPaintEvent *)));
+}
+
+void Connector::paintEventSlot(QPaintEvent *event)
+{
+	CTX lctx = knh_getCurrentContext();
+	knh_sfp_t *lsfp = lctx->esp;
+	//lsfp[K_CALLDELTA+1].fvalue = (knh_float_t)val;
+	//KNH_SETv(lctx, lsfp[K_CALLDELTA+1], event);
+	knh_Func_invoke(lctx, this->paint_event_func, lsfp, 1/*argc*/);
+}
+
 //## void QObject.connectValueChanged(Func<float> f)
 KMETHOD QObject_connectValueChanged(CTX ctx, knh_sfp_t *sfp _RIX)
 {

@@ -37,6 +37,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QEvent>
+#define K_INTERNAL
 #include <konoha1.h>
 
 //#define QCAST(T, p)     dynamic_cast<T>(p)
@@ -50,6 +51,7 @@ inline T object_cast(knh_RawPtr_t *po) {
 }
 }
 
+#define QObject_parent(FP)  IS_NULL(FP.o) ? NULL : QPtr_to(QObject*, FP)
 #define QWidget_parent(FP)  IS_NULL(FP.o) ? NULL : QPtr_to(QWidget*, FP)
 #define new_ReturnQObject(ctx, sfp, q)   new_ReturnCppObject(ctx, sfp, q, qfree)
 
@@ -83,23 +85,7 @@ extern "C" {
 /* ----------------------------------------------------------------------- */
 
 /* ----------------------------------------------------------------------- */
-
-class Connector : public QObject {
-	Q_OBJECT;
-
-public:
-	knh_context_t *ctx;
-	knh_Func_t *fo;
-	Connector(CTX, knh_Func_t *fo);
-	bool connectValueChanged(CTX, QObject *);
-	bool connectClicked(CTX, QObject *);
-
-public slots:
-	void slotValueChanged(qreal);
-	// QAbstractButton
-	void slotClicked(bool);
-};
-
+class Connector;
 class KonohaEvalEvent : public QEvent {
 //	Q_OBJECT;
 
@@ -118,6 +104,79 @@ public:
 	KonohaEval(CTX);
 	bool event(QEvent *e);
 
+};
+
+#include <QTextEdit>
+//============ Common Wrapper Class =================
+class KQTextCursor : public QTextCursor, public KObject {
+public:
+	KQTextCursor(QTextCursor cursor) : QTextCursor(cursor) {
+		
+	}
+
+};
+
+class KQRect : public QRect, public KObject {
+public:
+	KQRect(QRect r) : QRect(r) {
+		
+	}
+
+};
+
+#include <QTimer>
+class KQTimer : public QTimer, public KObject {
+	Q_OBJECT;
+private:
+	Connector *c;
+	knh_Func_t *timer_event_func;
+public:
+	KQTimer(knh_Func_t *fo, QObject *parent);
+	void timerEvent(QTimerEvent *event);
+signals:
+	void emitTimerEvent(QTimerEvent *event);
+};
+
+class KQTextEdit : public QTextEdit, public KObject {
+	Q_OBJECT;
+private:
+	Connector *c;
+	knh_Func_t *paint_event_func;
+public:
+	KQTextEdit(QWidget *parent);
+	void paintEvent(QPaintEvent *event);
+	void setPaintEvent(knh_Func_t *fo);
+signals:
+	void emitPaintEvent(QPaintEvent *event);
+};
+
+class KQWidget : public QWidget, public KObject {
+public:
+	KQWidget(QWidget * w) : QWidget(w), KObject() {
+	}
+};
+
+class Connector : public QObject {
+	Q_OBJECT;
+
+public:
+	knh_context_t *ctx;
+	knh_Func_t *fo;
+	knh_Func_t *timer_event_func;
+	knh_Func_t *paint_event_func;
+
+	Connector(CTX, knh_Func_t *fo);
+	Connector(void){}
+	bool connectValueChanged(CTX, QObject *);
+	bool connectClicked(CTX, QObject *);
+	void timerEvent(KQTimer *t, knh_Func_t *fo);
+	void paintEvent(KQTextEdit *t, knh_Func_t *fo);
+public slots:
+	void slotValueChanged(qreal);
+	// QAbstractButton
+	void slotClicked(bool);
+	void timerEventSlot(QTimerEvent *event);
+	void paintEventSlot(QPaintEvent *event);
 };
 
 #endif /* QT4COMMONS_HPP_ */

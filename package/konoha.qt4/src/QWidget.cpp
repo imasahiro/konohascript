@@ -38,12 +38,6 @@
 extern "C" {
 #endif
 
-class KQWidget : public QWidget, public KObject {
-public:
-	KQWidget(QWidget * w) : QWidget(w), KObject() {
-	}
-};
-
 //## QWidget QWidget.new(QWidget w)
 KMETHOD QWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -96,6 +90,26 @@ KMETHOD QWidget_show(CTX, knh_sfp_t *sfp _RIX)
 	QWidget *q = QPtr_to(QWidget*, sfp[0]);
 	if(q != NULL) {
 		q->show();
+	}
+	RETURNvoid_();
+}
+
+//## void QWidget.setStyleSheet(String style);
+KMETHOD QWidget_setStyleSheet(CTX, knh_sfp_t *sfp _RIX)
+{
+	QWidget *w = QPtr_to(QWidget *, sfp[0]);
+	if(w != NULL) {
+		w->setStyleSheet(String_to(QString , sfp[1]));
+	}
+	RETURNvoid_();
+}
+
+//## void QWidget.setOpacity(float opacity);
+KMETHOD QWidget_setWindowOpacity(CTX, knh_sfp_t *sfp _RIX)
+{
+	QWidget *w = QPtr_to(QWidget *, sfp[0]);
+	if(w != NULL) {
+		w->setWindowOpacity(Float_to(float, sfp[1]));
 	}
 	RETURNvoid_();
 }
