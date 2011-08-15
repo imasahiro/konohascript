@@ -1008,7 +1008,7 @@ knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in)
 				fprintf(stderr, "\n>>>--------------------------------\n");
 				fprintf(stderr, "%s<<<--------------------------------\n", knh_Bytes_ensureZero(ctx, ba));
 			});
-			status  = knh_beval(ctx, bin);
+			status  = (knh_status_t)knh_beval(ctx, bin);
 		}
 	} while(BA_size(ba) > 0 && status == K_CONTINUE);
 	END_LOCAL_(ctx, lsfp);

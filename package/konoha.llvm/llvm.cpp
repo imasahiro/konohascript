@@ -1852,6 +1852,17 @@ KMETHOD Module_getOrInsertFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
+//## @Static @Native Function Function.create(String name, FunctionType fnTy, Module m);
+KMETHOD Function_create(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_String_t *name = sfp[1].s;
+	FunctionType *fnTy = konoha::object_cast<FunctionType *>(sfp[2].p);
+	Module *m = konoha::object_cast<Module *>(sfp[3].p);
+	Function *ptr = Function::Create(fnTy, GlobalValue::ExternalLinkage, S_totext(name), m);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
 static void ExecutionEngine_obj_free(void *p)
 {
 	ExecutionEngine *ee = static_cast<ExecutionEngine*>(p);
@@ -1986,6 +1997,16 @@ KMETHOD Value_setName(CTX ctx, knh_sfp_t *sfp _RIX)
 	self->setName(S_totext(name));
 	RETURNvoid_();
 }
+
+//## Type Value.getType();
+KMETHOD Value_getType(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	Value *self = konoha::object_cast<Value *>(sfp[0].p);
+	const Type *ptr = self->getType();
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), type_ptr_free);
+	RETURN_(p);
+}
+
 
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
 {

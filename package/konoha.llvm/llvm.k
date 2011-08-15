@@ -195,6 +195,7 @@ include "lib:gluelink";
 
 @Native void IRBuilder.setInsertPoint(BasicBlock bb);
 @Native Function BasicBlock.getParent();
+@Native @Static Function Function.create(String name, FunctionType fnTy, Module m);
 //@Native iterator BasicBlock.begin();
 //@Native iterator BasicBlock.end();
 @Native int BasicBlock.size();
@@ -210,6 +211,7 @@ include "lib:gluelink";
 @Native NativeFunction ExecutionEngine.getPointerToFunction(Module m, Function func);
 
 @Native Value Value.setName(String name);
+@Native Type Value.getType();
 @Native Array<Value> Function.getArguments();
 
 @Native @Public void Method.setFunction(NativeFunction nf);

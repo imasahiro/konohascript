@@ -3,8 +3,63 @@ using konoha.lang.*;
 
 Map<String, Type> ktype = {};
 
-void constructObjectStruct(Module m) {
+int f(int x, int y);
+void constructKonohaTypes(Module m);
+
+@Public Value IRBuilder.getValueFromSfp(Value sfp, Type rTy, int sfpidx) {
+	int idx;
+	if (rTy == ktype["objectPtrTy"])
+		idx = 0;
+	else
+		idx = 1;
+	v = this.createConstGEP2_32(sfp, sfpidx, idx);
+	return this.createBitCast(v, PointerType.get(rTy));
+}
+
+@Public Value IRBuilder.createLoadValueFromSfp(Value sfp, Type rTy, int sfpidx) {
+	Value v = this.getValueFromSfp(sfp, rTy, sfpidx);
+	return this.createLoad(v);
+}
+@Public void IRBuilder.createStoreValueToSfp(Value sfp, Type rTy, int sfpidx, Value v) {
+	r  = this.getValueFromSfp(sfp, Type.getInt64Ty(), sfpidx);
+	this.createStore(v, r);
+}
+
+void main (String[] args) {
+	Module m = new Module("hello");
+	constructKonohaTypes(m);
+	Function func = m.getOrInsertFunction("test", (FunctionType)ktype["fmethodTy"]);
+	BasicBlock bb = BasicBlock.create(func);
+	IRBuilder builder = new IRBuilder(bb);
+	Array<Value> vargs = func.getArguments();
+	sfp = vargs[1];
+	a1 = builder.createLoadValueFromSfp(sfp, Type.getInt64Ty(), 1);
+	a2 = builder.createLoadValueFromSfp(sfp, Type.getInt64Ty(), 2);
+	v  = builder.createAdd(a1, a2);
+	builder.createStoreValueToSfp(sfp, Type.getInt64Ty(), -4, v);
+	builder.CreateRetVoid();
+	m.dump();
+	ee = m.createExecutionEngine();
+	Method mtd = method:Script.f;
+	mtd.setFunction(ee.getPointerToFunction(m, func));
+	print f(10, 20);
+}
+
+
+void constructKonohaTypes(Module m) {
 	Type[] fields = [];
+	fields.add(Type.getInt32Ty());
+	fields.add(Type.getInt32Ty());
+	hcacheTy = StructType.get(fields, false);
+	m.addTypeName("knh_hcache_t", hcacheTy);
+
+	fields = [];
+	fields.add(Type.getInt64Ty());
+	fields.add(Type.getInt64Ty());
+	sfxTy = StructType.get(fields, false);
+	m.addTypeName("knh_sfx_t", sfxTy);
+
+	fields = [];
 	fields.add(Type.getInt64Ty());
 	fields.add(Type.getInt8PtrTy());
 	fields.add(Type.getInt64Ty());
@@ -34,6 +89,16 @@ void constructObjectStruct(Module m) {
 	arrayTy = StructType.get(fields, false);
 	arrayPtrTy = PointerType.get(arrayTy);
 	m.addTypeName("Array", arrayTy);
+
+	fields = [];
+	fields.add(hObjectTy);
+	fields.add(Type.getInt1PtrTy()); /* text */
+	fields.add(Type.getInt64Ty());   /* len */
+	stringTy = StructType.get(fields, false);
+	stringPtrTy = PointerType.get(stringTy);
+	m.addTypeName("String", stringTy);
+	ktype["stringPtrTy"] = stringPtrTy;
+
 
 	fields = [];
 	fields.add(hObjectTy);
@@ -165,66 +230,48 @@ void constructObjectStruct(Module m) {
 	Type[] argsTy = [];
 	argsTy.add(ctxPtrTy);
 	argsTy.add(sfpPtrTy);
-	argsTy.add(Type.getInt64PtrTy());
-	FunctionType fnTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
-	fmethodTy = PointerType.get(fnTy);
-	ktype["fmethodTy"] = fmethodTy;
+	argsTy.add(Type.getInt64Ty());
+	FunctionType fmethodTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
+	fmethodPtrTy = PointerType.get(fmethodTy);
+	ktype["fmethodTy"]    = fmethodTy;
+	ktype["fmethodPtrTy"] = fmethodTy;
+
+	fields = [];
+	fields.add(Type.getInt8PtrTy()); /* codeaddr */
+	fields.add(Type.getInt64Ty());   /* count */
+	fields.add(Type.getInt32PtrTy());   /* opcode */
+	fields.add(Type.getInt32Ty());   /* line */
+	fields.add(Type.getInt64Ty());   /* data[0] */
+	fields.add(Type.getInt64Ty());   /* data[1] */
+	fields.add(Type.getInt64Ty());   /* data[2] */
+	fields.add(Type.getInt64Ty());   /* data[3] */
+	fields.add(Type.getInt64Ty());   /* data[4] */
+	oplineTy = StructType.get(fields, false);
+	oplinePtrTy = PointerType.get(oplineTy);
+	m.addTypeName("opline_t", oplineTy);
 
 	fields = [];
 	fields.add(hObjectTy);
 	fields.add(Type.getInt8PtrTy());
 	fields.add(Type.getInt32Ty);
 	fields.add(Type.getInt32Ty);
-	fields.add(fmethodTy);
-	fields.add(Type.getInt8PtrTy());
+	fields.add(fmethodPtrTy);
+	fields.add(oplinePtrTy);
 	methodTy = StructType.get(fields, false);
 	m.addTypeName("Method", methodTy);
-	ktype["MethodPtrTy"] = PointerType.get(methodTy);
+	methodPtrTy = PointerType.get(methodTy);
+	ktype["MethodPtrTy"] = methodPtrTy;
 
 	fields = [];
 	fields.add(hObjectTy);
 	fields.add(Type.getInt8PtrTy());
-	fields.add(fmethodTy);
+	fields.add(fmethodPtrTy);
 	iteratorTy = StructType.get(fields, false);
 	m.addTypeName("Iterator", iteratorTy);
 	ktype["IteratorPtrTy"] = PointerType.get(iteratorTy);
-}
 
-@Static int f(int x, int y) {
-}
-void main (String[] args)
-{
-	Module m = new Module("hello");
-	constructObjectStruct(m);
-	Type arg0Ty = ktype["ctxTy"];
-	Type arg1Ty = ktype["sfpPtrTy"];
-	Type arg2Ty = Type.getInt64Ty();
-	Type retTy  = Type.getVoidTy();
-	FunctionType fnTy = FunctionType.get(retTy, [arg0Ty, arg1Ty, arg2Ty], false);
-	Function func = m.getOrInsertFunction("test", fnTy);
-	BasicBlock bb = BasicBlock.create(func);
-	IRBuilder builder = new IRBuilder(bb);
-	Array<Value> vargs = func.getArguments();
-	vargs[0].setName("ctx");
-	vargs[1].setName("sfp");
-	vargs[2].setName("rix");
-	sfp = vargs[1];
-	a1 = builder.createConstGEP2_32(sfp, 1, 1);
-	a1 = builder.createBitCast(a1, PointerType.get(Type.getInt64Ty()));
-	a1 = builder.createLoad(a1);
-	a2 = builder.createConstGEP2_32(sfp, 2, 1);
-	a2 = builder.createBitCast(a2, PointerType.get(Type.getInt64Ty()));
-	a2 = builder.createLoad(a2);
-	v  = builder.createAdd(a1, a2);
-	r  = builder.createConstGEP2_32(sfp, -4, 1);
-	r  = builder.createBitCast(r, PointerType.get(Type.getInt64Ty()));
-	builder.createStore(v, r);
-	builder.CreateRetVoid();
-	m.dump();
-	ee = m.createExecutionEngine();
-	// FIXME we cannot rewrite mtd->fcall1 at runtime.
-	Method mtd = (Method)f;
-	mtd.setFunction(ee.getPointerToFunction(m, func));
-	print f(10, 20);
-}
+	/* TODO */
+	classTBLPtrTy = Type.getInt8PtrTy();
+	typeMapPtrTy  = Type.getInt8PtrTy();
 
+}

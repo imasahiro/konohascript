@@ -755,7 +755,7 @@ static void knh_linkDynamicIconv(CTX ctx)
 			spi->iconvspi       = "libiconv";
 			spi->iconv_openSPI  = (ficonv_open)f;
 			spi->iconvSPI = (ficonv)knh_dlsym(ctx, handler, "iconv", "libiconv", 0/*isTest*/);
-			spi->iconv_closeSPI = knh_dlsym(ctx, handler, "libiconv_close", "iconv_close", 0);
+			spi->iconv_closeSPI = (ficonv_close)knh_dlsym(ctx, handler, "libiconv_close", "iconv_close", 0);
 			KNH_ASSERT(spi->iconvSPI != NULL && spi->iconv_closeSPI != NULL);
 			return ; // OK
 		}
