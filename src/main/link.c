@@ -775,7 +775,7 @@ static knh_qcur_t *SQLITE3_query(CTX ctx, knh_qconn_t *hdr, knh_bytes_t sql, knh
 			for(i = 0; i < DP(rs)->column_size; i++) {
 				const char *n = (const char*)sqlite3_column_name(stmt, i);
 				if(n != NULL) {
-					ResultSet_setName(ctx, rs, i, new_T(n));
+					ResultSet_setName(ctx, rs, i, new_S(n, knh_strlen(n)));
 				}
 			}
 		}
