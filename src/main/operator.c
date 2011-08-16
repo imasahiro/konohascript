@@ -1542,7 +1542,7 @@ static KMETHOD Array_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *a = sfp[0].a;
 	size_t n = a->api->index(ctx, sfp, Int_to(knh_int_t, sfp[1]), a->size);
 	const knh_dim_t *dim = a->dim;
-	BEGIN_LOCAL(ctx, lsfp, 1);
+//	BEGIN_LOCAL(ctx, lsfp, 1);
 	if(a->size == dim->capacity) {
 		knh_Array_grow(ctx, a, k_grow(dim->capacity), a->size + 1);
 	}
@@ -1554,7 +1554,7 @@ static KMETHOD Array_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	a->size++;
 	a->api->set(ctx, a, n, sfp+2);
-	END_LOCAL_(ctx, lsfp);
+//	END_LOCAL(ctx, lsfp);
 	RETURNvoid_();
 }
 
@@ -2311,7 +2311,9 @@ static KMETHOD Map_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
 	if(!m->spi->get(ctx, m->mapptr, sfp + 1, sfp + K_RIX)) {
-		RETURNa_(KNH_NULVAL(C_p2(O_cid(m))));
+		knh_class_t cid = O_cTBL(m)->p2;
+		sfp[K_RIX].ndata = 0;
+		RETURN_(KNH_NULVAL(cid));
 	}
 }
 
@@ -3595,7 +3597,8 @@ static KMETHOD System_getProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 		v = KNH_NULVAL(CLASS_String);
 		knh_setProperty(ctx, sfp[1].s, v);
 	}
-	RETURNa_(v);
+	sfp[K_RIX].ndata = O_ndata(v);
+	RETURN_(v);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -3604,7 +3607,8 @@ static KMETHOD System_getProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD System_setProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_setProperty(ctx, sfp[1].s, sfp[2].o);
-	RETURNa_(sfp[2].o);
+	sfp[K_RIX].ndata = O_ndata(sfp[2].o);
+	RETURN_(sfp[2].o);
 }
 
 /* ------------------------------------------------------------------------ */

@@ -1399,7 +1399,6 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 static void Token_toBRACE(CTX ctx, knh_Token_t *tk, int isEXPANDING)
 {
 	if(S_size(tk->text) > 0) {
-		//fprintf(stderr, "'''%s'''\n", S_totext(tk->text));
 		BEGIN_LOCAL(ctx, lsfp, 1);
 		LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t*, in, new_StringInputStream(ctx, (tk)->text));
 		KNH_SETv(ctx, (tk)->data, KNH_NULL);
@@ -1410,7 +1409,7 @@ static void Token_toBRACE(CTX ctx, knh_Token_t *tk, int isEXPANDING)
 		if(knh_isVerboseLang() && ULINE_uri(in->uline) == URI_EVAL) {
 			knh_write_Object(ctx, KNH_STDOUT, UPCAST(tk), FMT_dump);
 		});
-		END_LOCAL_(ctx, lsfp);
+		END_LOCAL(ctx, lsfp);
 	}
 	else {
 		KNH_SETv(ctx, (tk)->data, KNH_NULL);
@@ -3505,11 +3504,11 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 
 knh_Stmt_t *knh_InputStream_parseStmt(CTX ctx, knh_InputStream_t *in)
 {
+	BEGIN_LOCAL(ctx, lsfp, 2);
 	DBG_ASSERT(in->uline != 0);
 	ctx->gma->uline = in->uline;
 	knh_Stmt_t *rVALUE = new_Stmt2(ctx, STT_BLOCK, NULL);
 	knh_Token_t *tk = new_Token(ctx, TT_BRACE);
-	BEGIN_LOCAL(ctx, lsfp, 2);
 	KNH_SETv(ctx, lsfp[0].o, rVALUE);
 	KNH_SETv(ctx, lsfp[1].o, tk);
 	InputStream_parseToken(ctx, in, tk);
@@ -3530,7 +3529,7 @@ knh_Stmt_t *knh_InputStream_parseStmt(CTX ctx, knh_InputStream_t *in)
 	}
 	knh_Stmt_toERR(ctx, rVALUE, tk);
 	L_RETURN:;
-	END_LOCAL(ctx, lsfp, rVALUE);
+	END_LOCAL(ctx, lsfp);
 	return rVALUE;
 }
 
@@ -3538,8 +3537,8 @@ knh_Stmt_t *knh_InputStream_parseStmt(CTX ctx, knh_InputStream_t *in)
 
 knh_Stmt_t *knh_Token_parseStmt(CTX ctx, knh_Token_t *tk)
 {
-	ctx->gma->uline = tk->uline;
 	BEGIN_LOCAL(ctx, lsfp, 1);
+	ctx->gma->uline = tk->uline;
 	knh_Stmt_t *rVALUE = new_Stmt2(ctx, STT_BLOCK, NULL);
 	KNH_SETv(ctx, lsfp[0].o, rVALUE);
 	Token_toBRACE(ctx, tk, 1/*isEXPANDING*/);
@@ -3555,14 +3554,14 @@ knh_Stmt_t *knh_Token_parseStmt(CTX ctx, knh_Token_t *tk)
 	else {
 		knh_Stmt_toERR(ctx, rVALUE, tk);
 	}
-	END_LOCAL(ctx, lsfp, rVALUE);
+	END_LOCAL(ctx, lsfp);
 	return rVALUE;
 }
 
 knh_Stmt_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, knh_uline_t uline)
 {
-	ctx->gma->uline = uline;
 	BEGIN_LOCAL(ctx, lsfp, 2);
+	ctx->gma->uline = uline;
 	LOCAL_NEW(ctx, lsfp, 0, knh_Stmt_t*, rVALUE, new_Stmt2(ctx, STT_BLOCK, NULL));
 	LOCAL_NEW(ctx, lsfp, 1, knh_Token_t*, tk, new_Token(ctx, TT_CODE));
 	KNH_SETv(ctx, (tk)->data, new_String2(ctx, CLASS_String, expr.text, expr.len, 0));
@@ -3576,7 +3575,7 @@ knh_Stmt_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, knh_uline_t uline)
 	else {
 		knh_Stmt_toERR(ctx, rVALUE, tk);
 	}
-	END_LOCAL(ctx, lsfp, rVALUE);
+	END_LOCAL(ctx, lsfp);
 	return rVALUE;
 }
 
@@ -3605,7 +3604,7 @@ knh_Stmt_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, knh_uline_t uline)
 //		tk->uline = uline;
 //		stmt = knh_Token_parseStmt(ctx, tk);
 //		knh_Array_add(ctx, a, stmt);
-//		END_LOCAL_(ctx, lsfp);
+//		END_LOCAL(ctx, lsfp);
 //		return (STT_(stmt) != STT_ERR);
 //	}
 //}

@@ -160,7 +160,7 @@ static void knh_Actor_invokeMethod(CTX ctx, knh_Actor_t *a)
 			KNH_SETv(ctx, lsfp[5].o, o);
 			klr_setesp(ctx, lsfp + 6);
 			KNH_SCALL(ctx, lsfp, 0, info[i]->mtd, 2);
-			END_LOCAL_(ctx, lsfp);
+			END_LOCAL(ctx, lsfp);
 			break;
 		}
 	}
@@ -342,7 +342,7 @@ static void delivery_thread_func(void *arg)
 	//klr_setesp(ctx, lsfp + 6);
 	KNH_SCALL(ctx, sfp, 0, f->mtd, 1);
 	//KNH_SCALL(ctx, lsfp, 0, f->mtd, 2);
-	//END_LOCAL_(ctx, lsfp);
+	//END_LOCAL(ctx, lsfp);
 	KONOHA_END(info->ctx);
 }
 

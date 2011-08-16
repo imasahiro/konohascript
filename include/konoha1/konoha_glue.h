@@ -235,7 +235,7 @@ typedef void (*knh_Fconstdef)(CTX, knh_class_t, const knh_PackageLoaderAPI_t*);
 
 
 #define CLOSURE_end(exp) \
-  END_LOCAL_(lctx, lsfp); \
+  END_LOCAL(lctx, lsfp); \
   exp
 
 #ifndef __x86_64__
@@ -252,24 +252,11 @@ typedef void (*knh_Fconstdef)(CTX, knh_class_t, const knh_PackageLoaderAPI_t*);
 		return; \
 	}\
 
-#define RETURNa_(v) {\
-		Object *vv_ = (Object*)v;\
-		ctx->spi->setsfpSPI(ctx, sfp+_rix, vv_);\
-		sfp[_rix].ndata = O_data(vv_);\
-		return; \
-	}\
-
 #else
 
 #define RETURN_(vv) {\
 		KNH_SETv(ctx, sfp[_rix].o, vv);\
-		return; \
-	}\
-
-#define RETURNa_(v) {\
-		Object *vv_ = (Object*)v;\
-		KNH_SETv(ctx, sfp[_rix].o, vv_);\
-		sfp[_rix].ndata = O_data(vv_);\
+		KNH_SAFEPOINT(ctx, sfp);\
 		return; \
 	}\
 

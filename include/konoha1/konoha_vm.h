@@ -404,10 +404,17 @@ extern "C" {
 		KLR_JMP(ctx, PC, JUMP); \
 	} \
 
-#define KLR_DYJMP(ctx, PC, JUMP, n, fcheck) \
-	if(fcheck(ctx, SFP(rbp), SFPIDX(n))) { \
-		KLR_JMP(ctx, PC, JUMP); \
+#define KLR_GCPOINT(ctx) knh_checkGcPoint(ctx, SFP(rbp));
+
+#ifdef K_USING_SAFEPOINT
+#define KLR_SAFEPOINT(ctx) \
+	if(ctx->safepoint != 0) { \
+		knh_checkSafePoint(ctx, (knh_sfp_t*)rbp); \
 	} \
+
+#else
+#define KLR_SAFEPOINT(ctx)
+#endif
 
 /* ------------------------------------------------------------------------- */
 

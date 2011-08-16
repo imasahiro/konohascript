@@ -645,7 +645,7 @@ knh_String_t *knh_cwb_newStringDECODE(CTX ctx, knh_cwb_t *cwb, knh_StringDecoder
 		s = knh_cwb_newString(ctx, cwb);
 		KNH_SETv(ctx, lsfp[0].o, KNH_NULL); //
 	}
-	END_LOCAL(ctx, lsfp, s);
+	END_LOCAL(ctx, lsfp);
 	return s;
 }
 

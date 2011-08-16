@@ -129,32 +129,58 @@ knh_sfp_t* knh_stack_local(CTX ctx, size_t n)
 		knh_stack_initexpand(ctx, ctx->esp, ctx->stacksize + n + 64);
 	}
 	knh_sfp_t *esp = ctx->esp;
+	KNH_GCPOINT(ctx, esp);
 	((knh_context_t*)ctx)->esp = esp + n;
 	return esp;
 }
 
-void knh_stack_gc(CTX ctx, int isALL)
+//void knh_stack_gc(CTX ctx, int isALL)
+//{
+//	knh_sfp_t *sp = ctx->esp + 1;  // for safety
+//	knh_Object_t *nullobj = KNH_NULL;
+//	if(isALL) {
+//		knh_sfp_t *stacktop = ctx->stack + ctx->stacksize;
+//		while(sp < stacktop) {
+//			KNH_SETv(ctx, sp[0].o, nullobj);
+//			sp++;
+//		}
+//	}
+//	else {
+//		while(sp < ctx->stacktop) {
+//			//DBG_P("stack[%d] o=%s", sp - ctx->stack, CLASS__(O_cid(sp[0].o)));
+//			if(sp[0].o == nullobj) break;
+//			KNH_SETv(ctx, sp[0].o, nullobj);
+//			sp++;
+//		}
+//	}
+//	// USE END_LOCAL in the middle of the context initialization
+//	KNH_ASSERT(ctx->e != NULL);
+//	//KNH_GC(ctx);
+//}
+
+void knh_checkSafePoint(CTX ctx, knh_sfp_t *sfp)
 {
-	knh_sfp_t *sp = ctx->esp + 1;  // for safety
-	knh_Object_t *nullobj = KNH_NULL;
-	if(isALL) {
-		knh_sfp_t *stacktop = ctx->stack + ctx->stacksize;
-		while(sp < stacktop) {
-			KNH_SETv(ctx, sp[0].o, nullobj);
-			sp++;
-		}
+	int safepoint = ctx->safepoint;
+	WCTX(ctx)->safepoint = 0;
+	if(TFLAG_is(int, safepoint, SAFEPOINT_GC)) {
+		knh_System_gc(ctx);
 	}
-	else {
-		while(sp < ctx->stacktop) {
-			//DBG_P("stack[%d] o=%s", sp - ctx->stack, CLASS__(O_cid(sp[0].o)));
-			if(sp[0].o == nullobj) break;
-			KNH_SETv(ctx, sp[0].o, nullobj);
-			sp++;
-		}
+	if(TFLAG_is(int, safepoint, SAFEPOINT_SIGNAL)) {
+		//
 	}
-	// USE END_LOCAL_NONGC in the middle of the context initialization
-	KNH_ASSERT(ctx->e != NULL);
-	KNH_GC(ctx);
+	if(TFLAG_is(int, safepoint, SAFEPOINT_MONITOR)) {
+		//
+	}
+}
+
+void knh_checkGcPoint(CTX ctx, knh_sfp_t *sfp)
+{
+	knh_stat_t *ctxstat = ctx->stat;
+	size_t used = ctxstat->usedObjectSize;
+	if(!(used < ctx->share->gcBoundary)) {
+		SAFEPOINT_SETGC(ctx);           // it might be slow
+		knh_checkSafePoint(ctx, sfp);
+	}
 }
 
 

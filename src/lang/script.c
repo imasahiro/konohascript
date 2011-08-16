@@ -525,7 +525,7 @@ static void SCRIPT_eval(CTX ctx, knh_Stmt_t *stmtORIG, int isCompileOnly)
 		if(stmt != stmtORIG) {
 			knh_Stmt_toERR(ctx, stmtORIG, tkNN(stmt, 0));
 		}
-		END_LOCAL_(ctx, lsfp);
+		END_LOCAL(ctx, lsfp);
 		return;
 	}
 	if(!isCompileOnly) {
@@ -551,7 +551,7 @@ static void SCRIPT_eval(CTX ctx, knh_Stmt_t *stmtORIG, int isCompileOnly)
 		}
 	}
 	knh_Stmt_done(ctx, stmtORIG);
-	END_LOCAL_(ctx, lsfp);
+	END_LOCAL(ctx, lsfp);
 }
 
 static void StmtITR_eval(CTX ctx, knh_Stmt_t *stmtITR);
@@ -882,19 +882,19 @@ static void StmtITR_eval(CTX ctx, knh_Stmt_t *stmtITR)
 	}
 
 	L_RETURN:;
-	END_LOCAL_(ctx, lsfp);
+	END_LOCAL(ctx, lsfp);
 	ctx->gma->uline = 0;
 }
 
 knh_bool_t knh_beval(CTX ctx, knh_InputStream_t *in)
 {
-	knh_bool_t tf;
 	BEGIN_LOCAL(ctx, lsfp, 2);
+	knh_bool_t tf;
 	KNH_SETv(ctx, lsfp[0].o, in);
 	LOCAL_NEW(ctx, lsfp, 1, knh_Stmt_t *, stmt, knh_InputStream_parseStmt(ctx, in));
 	StmtITR_eval(ctx, stmt);
 	tf = (STT_(stmt) != STT_ERR);
-	END_LOCAL_(ctx, lsfp);
+	END_LOCAL(ctx, lsfp);
 	return tf;
 }
 
@@ -983,9 +983,9 @@ static int readchunk(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
 
 knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in)
 {
+	BEGIN_LOCAL(ctx, lsfp, 3);
 	knh_status_t status = K_BREAK;
 	knh_Bytes_t *ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
-	BEGIN_LOCAL(ctx, lsfp, 3);
 	LOCAL_NEW(ctx, lsfp, 1, knh_InputStream_t*, bin, new_BytesInputStream(ctx, ba));
 	KNH_SETv(ctx, lsfp[0].o, in);
 	if(!knh_isCompileOnly(ctx)) {
@@ -1011,7 +1011,7 @@ knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in)
 			status  = (knh_status_t)knh_beval(ctx, bin);
 		}
 	} while(BA_size(ba) > 0 && status == K_CONTINUE);
-	END_LOCAL_(ctx, lsfp);
+	END_LOCAL(ctx, lsfp);
 	return status;
 }
 

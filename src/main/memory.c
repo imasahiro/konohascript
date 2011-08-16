@@ -892,6 +892,7 @@ knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 	ct->cdef->init(ctx, RAWPTR(o));
 	O_unset_tenure(o); // collectable
 	STAT_Object(ctx, ct);
+	//KNH_CHECKMEM(ctx);
 	MEMLOG("new_Object", "ptr=%p, class=%s", o, ct->cdef->name);
 	return o;
 }
@@ -899,7 +900,6 @@ knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 void TR_NEW(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
 	knh_Object_t *o = NULL;
-	KNH_GC(ctx);
 	CHECK_UNUSED_OBJECT(ctx);
 	FREELIST_POP(o);
 	o->h.magicflag = ct->magicflag;

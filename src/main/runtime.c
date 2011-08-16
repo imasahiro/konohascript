@@ -416,7 +416,7 @@ static int knh_runMain(CTX ctx, int argc, const char **argv)
 		if(knh_VirtualMachine_launch(ctx, lsfp + thisidx)) {
 			res = (int)lsfp[1].ivalue;
 		}
-		END_LOCAL_(ctx, lsfp);
+		END_LOCAL(ctx, lsfp);
 	}
 	KONOHA_END(ctx);
 	return res;
@@ -723,7 +723,7 @@ static void knh_shell(CTX ctx)
 		}
 	}
 	shell_cleanup(ctx, shell_status);
-	END_LOCAL_(ctx, lsfp);
+	END_LOCAL(ctx, lsfp);
 }
 
 static void konoha_shell(CTX ctx, char *optstr)

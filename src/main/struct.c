@@ -1445,7 +1445,7 @@ static void Map_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 				knh_write_dots(ctx, w);
 			}
 		}
-		END_LOCAL_NONGC(ctx, lsfp);
+		END_LOCAL(ctx, lsfp);
 	}
 	knh_putc(ctx, w, '}');
 }

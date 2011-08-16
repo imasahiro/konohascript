@@ -405,8 +405,8 @@ static knh_methodn_t Token_mn(CTX ctx, knh_Token_t *tk)
 
 static knh_class_t TokenPTYPE_cid(CTX ctx, knh_Token_t *tk, knh_class_t bcid)
 {
-	knh_class_t cid = bcid;
 	BEGIN_LOCAL(ctx, lsfp, 1);
+	knh_class_t cid = bcid;
 	LOCAL_NEW(ctx, lsfp, 0, knh_ParamArray_t*, pa, new_ParamArray(ctx));
 	knh_ParamArray_t *bpa = ClassTBL(bcid)->cparam;
 	size_t i;
@@ -453,7 +453,7 @@ static knh_class_t TokenPTYPE_cid(CTX ctx, knh_Token_t *tk, knh_class_t bcid)
 	}
 	cid = knh_class_Generics(ctx, bcid, pa);
 	L_END:;
-	END_LOCAL_(ctx, lsfp);
+	END_LOCAL(ctx, lsfp);
 	return cid;
 }
 
@@ -2132,7 +2132,7 @@ static knh_Token_t* CALL_toCONST(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *mtd)
 		KNH_SCALL(ctx, lsfp, rtnidx, mtd, (size - 2));
 		boxSFP(ctx, &lsfp[rtnidx], stmt->type);
 		rvalue = ((DP(mtd)->mp)->rsize == 0) ? knh_Stmt_done(ctx, stmt) : Token_setCONST(ctx, tkNN(stmt, 0), lsfp[0].o);
-		END_LOCAL(ctx, lsfp, rvalue);
+		END_LOCAL(ctx, lsfp);
 		return rvalue;
 	}
 	else {
@@ -2197,7 +2197,7 @@ static void StmtCALL_lazyasm(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *mtd)
 		DBG_ASSERT(!IS_bScript(DP(mtd)->gmascr));
 		Stmt_typed(ctx, stmt, knh_ParamArray_rtype(pa));
 		KNH_SETv(ctx, ((knh_context_t*)ctx)->gma, gma);
-		END_LOCAL_(ctx, lsfp); // NEED TO CHECK
+		END_LOCAL(ctx, lsfp); // NEED TO CHECK
 	}
 	else {
 		knh_Method_toAbstract(ctx, mtd);
@@ -2397,7 +2397,7 @@ static knh_class_t class_FuncType(CTX ctx, knh_class_t this_cid, knh_Method_t *m
 		KNH_SETv(ctx, lsfp[0].o, npa);
 		knh_ParamArray_tocid(ctx, pa, this_cid, npa);
 		cid = knh_class_Generics(ctx, CLASS_Func, npa);
-		END_LOCAL_(ctx, lsfp);
+		END_LOCAL(ctx, lsfp);
 	}
 	else {
 		cid = knh_class_Generics(ctx, CLASS_Func, pa);
@@ -2493,9 +2493,9 @@ static knh_Token_t* FUNCCALLPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t 
 
 static knh_Token_t* FUNCDYNCALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
+	BEGIN_LOCAL(ctx, lsfp, 1);
 	size_t i;
 	knh_class_t cid = CLASS_Func;
-	BEGIN_LOCAL(ctx, lsfp, 1);
 	LOCAL_NEW(ctx, lsfp, 0, knh_ParamArray_t*, pa, new_ParamArray(ctx));
 	for(i = 2; i < DP(stmt)->size; i++) {
 		TYPING_UntypedObject(ctx, stmt, i);
@@ -2519,7 +2519,7 @@ static knh_Token_t* FUNCDYNCALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t req
 		DBG_ASSERT(TT_(tkNN(stmt, 0)) == TT_ASIS);
 		Token_setMethod(ctx, tkNN(stmt, 0), MN_, mtd);
 	}
-	END_LOCAL_(ctx, lsfp);
+	END_LOCAL(ctx, lsfp);
 	STT_(stmt) = STT_FUNCCALL;
 	reqt = Gamma_type(ctx, knh_ParamArray_rtype(pa));
 	return Stmt_typed(ctx, stmt, reqt);
@@ -2776,8 +2776,8 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 	}
 
 	if(mn == MN_newTUPLE) {  /* (1, 2) */
-		size_t i;
 		BEGIN_LOCAL(ctx, lsfp, 1);
+		size_t i;
 		LOCAL_NEW(ctx, lsfp, 0, knh_ParamArray_t*, pa, new_ParamArray(ctx));
 		for(i = 2; i < DP(stmt)->size; i++) {
 			TYPING_UntypedExpr(ctx, stmt, i);
@@ -2786,7 +2786,7 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		}
 		new_cid = knh_class_Generics(ctx, CLASS_Tuple, pa);
 //		knh_Token_toCID(ctx, tkC, mtd_cid);
-		END_LOCAL_(ctx, lsfp);
+		END_LOCAL(ctx, lsfp);
 		return NEWPARAMs_typing(ctx, stmt, new_cid, mn, 0/*needsTypingPARAMs*/);
 	}
 
@@ -3121,7 +3121,7 @@ static knh_Token_t *new_TermTCAST(CTX ctx, knh_class_t tcid, knh_TypeMap_t *tmr,
 		knh_TypeMap_exec(ctx, tmr, lsfp, 0);
 		boxSFP(ctx, lsfp, SP(tmr)->tcid);
 		Token_setCONST(ctx, tkO, lsfp[0].o);
-		END_LOCAL(ctx, lsfp, tkO);
+		END_LOCAL(ctx, lsfp);
 		return tkO;
 	}
 	else {
@@ -3199,7 +3199,7 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		boxSFP(ctx, &lsfp[0], SP(tmr)->tcid);
 		Token_setCONST(ctx, tk1, lsfp[0].o);
 		DBG_P("const TCAST %s ==> %s, %s", CLASS__(SP(tmr)->scid), CLASS__(SP(tmr)->tcid), O__(lsfp[0].o));
-		END_LOCAL_(ctx, lsfp);  // NEED TO CHECK
+		END_LOCAL(ctx, lsfp);  // NEED TO CHECK
 		return TM(tk1);
 	}
 	else {

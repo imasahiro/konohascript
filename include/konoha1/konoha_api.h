@@ -664,6 +664,8 @@ knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n);
 void knh_stack_clear(CTX ctx, knh_sfp_t *sfp);
 knh_sfp_t* knh_stack_local(CTX ctx, size_t n);
 void knh_stack_gc(CTX ctx, int isALL);
+void knh_checkSafePoint(CTX ctx, knh_sfp_t *sfp);
+void knh_checkGcPoint(CTX ctx, knh_sfp_t *sfp);
 int event_isa(CTX ctx, knh_event_t eid, knh_event_t parent);
 knh_String_t *knh_getEventName(CTX ctx, knh_event_t eid);
 knh_event_t knh_addEvent(CTX ctx, knh_flag_t flag, knh_String_t *name, knh_class_t peid);

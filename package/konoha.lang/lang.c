@@ -251,7 +251,7 @@
 //	}
 //	int depth = 0;
 //	depthFirstSearch(ctx, root, &depth, !(root->flag));
-//	END_LOCAL_(ctx, lsfp);
+//	END_LOCAL(ctx, lsfp);
 //	return new_RawPtr(ctx, oblock, root);
 //}
 //
@@ -843,7 +843,7 @@
 //	(org)->pc_start = knh_VirtualMachine_run(ctx, ctx->esp + 1, newcode);
 //	asm volatile("int3");
 //	//knh_VirtualMachine_run(ctx, lsfp+0, CODE_VEXEC);
-//	END_LOCAL_(ctx, lsfp);
+//	END_LOCAL(ctx, lsfp);
 //
 //	kcode->code = newcode;
 //	RETURN_(org);
@@ -1004,7 +1004,7 @@
 ////		}
 ////		knh_opcode_dump(ctx, OP(inst), ctx->err, OP(inst) - i);
 ////	}
-////	END_LOCAL_(ctx, lsfp);
+////	END_LOCAL(ctx, lsfp);
 ////}
 ////
 /////* ------------------------------------------------------------------------ */
@@ -1517,7 +1517,7 @@
 //			}
 //		}
 //	}
-//	END_LOCAL_(ctx, lsfp);
+//	END_LOCAL(ctx, lsfp);
 //}
 //
 //////## method Array<KInst> KBlock.getKCode();

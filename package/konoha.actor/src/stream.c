@@ -129,7 +129,7 @@ static knh_Array_t *knh_msgpack_getArray(CTX ctx, knh_ClassTBL_t *c, msgpack_obj
 		}
 		i++;
 	}
-	END_LOCAL_(ctx, lsfp);
+	END_LOCAL(ctx, lsfp);
 	return o;
 }
 

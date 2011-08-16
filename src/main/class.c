@@ -125,7 +125,7 @@ knh_bool_t knh_invokeMethod0(CTX ctx, Object *o, knh_NameSpace_t *ns, unsigned l
 				default: retval[0] = (void*)lsfp[rtnidx].o;
 			}
 		}
-		END_LOCAL_(ctx, lsfp);
+		END_LOCAL(ctx, lsfp);
 		return 1;
 	}
 	return 0;
@@ -800,7 +800,7 @@ KNHAPI2(knh_class_t) knh_type_tocid(CTX ctx, knh_type_t ptype, knh_class_t this_
 			KNH_SETv(ctx, lsfp[0].o, npa);
 			knh_ParamArray_tocid(ctx, ClassTBL(pcid)->cparam, this_cid, npa);
 			pcid = knh_class_Generics(ctx, C_bcid(pcid), npa);
-			END_LOCAL_(ctx, lsfp);
+			END_LOCAL(ctx, lsfp);
 		}
 		return pcid;
 	}
@@ -1512,6 +1512,7 @@ KNHAPI2(void) knh_TypeMap_exec(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp _RIX)
 		tmr->ftypemap_1(ctx, sfp, K_RIX);
 	}
 	else {
+		KNH_GCPOINT(ctx, sfp);
 		if(IS_NULL(sfp[0].o)) {
 			KNH_SETv(ctx, sfp[K_RIX].o, KNH_NULVAL(tmr->tcid))
 			sfp[K_RIX].ivalue = 0;
@@ -1905,7 +1906,6 @@ static TYPEMAP Array_Array(CTX ctx, knh_sfp_t *sfp _RIX)
 		klr_setesp(ctx, lsfp+1); //added
 		knh_TypeMap_exec(ctx, tmr, lsfp, +1);
 		ta->api->add(ctx, ta, lsfp+1);
-		KNH_GC(ctx);
 	}
 	RETURN_(ta);
 }
@@ -2002,8 +2002,8 @@ static knh_TypeMap_t *knh_inferArrayIterator(CTX ctx, const knh_ClassTBL_t *sct,
 
 static knh_Array_t* Iterator_toArray(CTX ctx, knh_class_t tcid, knh_Iterator_t *itr)
 {
-	knh_Array_t *a = new_ArrayClass(ctx, tcid, 0);
 	BEGIN_LOCAL(ctx, lsfp, 2);
+	knh_Array_t *a = new_ArrayClass(ctx, tcid, 0);
 	KNH_SETv(ctx, lsfp[0].o, a);
 	KNH_SETv(ctx, lsfp[1].o, itr);
 	klr_setesp(ctx, lsfp+2);
@@ -2011,14 +2011,14 @@ static knh_Array_t* Iterator_toArray(CTX ctx, knh_class_t tcid, knh_Iterator_t *
 		a->api->add(ctx, a, lsfp + 2);
 		klr_setesp(ctx, lsfp+2);
 	}
-	END_LOCAL_NONGC(ctx, lsfp);
+	END_LOCAL(ctx, lsfp);
 	return a;
 }
 
 static knh_Array_t* Iterator_toMArray(CTX ctx, knh_class_t tcid, knh_Iterator_t *itr, knh_TypeMap_t *tmr)
 {
-	knh_Array_t *a = new_ArrayClass(ctx, tcid, 0);
 	BEGIN_LOCAL(ctx, lsfp, 2);
+	knh_Array_t *a = new_ArrayClass(ctx, tcid, 0);
 	KNH_SETv(ctx, lsfp[0].o, a);
 	KNH_SETv(ctx, lsfp[1].o, itr);
 	klr_setesp(ctx, lsfp+2);
@@ -2027,9 +2027,8 @@ static knh_Array_t* Iterator_toMArray(CTX ctx, knh_class_t tcid, knh_Iterator_t 
 		knh_TypeMap_exec(ctx, tmr, lsfp+2, +1);
 		a->api->add(ctx, a, lsfp+3);
 		klr_setesp(ctx, lsfp+2);
-		KNH_GC(ctx);
 	}
-	END_LOCAL_NONGC(ctx, lsfp);
+	END_LOCAL(ctx, lsfp);
 	return a;
 }
 
@@ -2237,9 +2236,9 @@ knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t
 		return KNH_NULVAL(tcid);
 	}
 	else {
+		BEGIN_LOCAL(ctx, lsfp, 3 + K_CALLDELTA);
 		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, ns, ct->cid, MN_opLINK);
 		DBG_ASSERT(mtd != NULL);
-		BEGIN_LOCAL(ctx, lsfp, 3 + K_CALLDELTA);
 		long rtnidx = 0, thisidx = rtnidx + K_CALLDELTA;
 		KNH_SETv(ctx, lsfp[thisidx+1].o, path);
 		KNH_SETv(ctx, lsfp[thisidx+2].o, ns);
@@ -2248,7 +2247,7 @@ knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t
 			KNH_SETv(ctx, lsfp[0].o, new_Boxing(ctx, lsfp, ct));
 		}
 		value = lsfp[rtnidx].o;
-		END_LOCAL_(ctx, lsfp);
+		END_LOCAL(ctx, lsfp);
 	}
 	if(O_cid(value) == tcid || ClassTBL_isa_(ctx, O_cTBL(value), ClassTBL(tcid))) {
 		return value;
@@ -2270,7 +2269,7 @@ knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t
 			KNH_SETv(ctx, lsfp[0].o, new_Boxing(ctx, lsfp, ClassTBL(tmr->tcid)));
 		}
 		value = lsfp[0].o;
-		END_LOCAL_(ctx, lsfp);
+		END_LOCAL(ctx, lsfp);
 	}
 	return value;
 }

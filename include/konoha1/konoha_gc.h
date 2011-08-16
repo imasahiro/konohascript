@@ -62,7 +62,7 @@ extern "C" {
 		sfp[n2] = sfpN;\
 	}\
 
-#define KNH_GC(ctx)  DBG_(knh_System_gc(ctx))
+//#define KNH_GC(ctx)  DBG_(knh_System_gc(ctx))
 #define O_toTenure(o)
 
 #else/* K_USING_RCGC*/
@@ -88,21 +88,19 @@ extern "C" {
 		sfp[n] = sfp[n2];\
 	}\
 
-static inline int knh_System_checkGC(CTX ctx)
-{
-	knh_stat_t *ctxstat = ctx->stat;
-	size_t used = ctxstat->usedObjectSize;
-	if(!(used < ctx->share->gcBoundary)) {
-		return 1;
-	}
-	return 0;
-}
+//static inline int knh_System_checkGC(CTX ctx)
+//{
+//	knh_stat_t *ctxstat = ctx->stat;
+//	size_t used = ctxstat->usedObjectSize;
+//	if(!(used < ctx->share->gcBoundary)) {
+//		return 1;
+//	}
+//	return 0;
+//}
 
-#define KNH_GC(ctx)   {\
-		if (knh_System_checkGC(ctx)) {\
-			knh_System_gc(ctx);\
-		}\
-	}
+#define KNH_GC()
+#define KNH_SAFEPOINT(ctx, sfp) knh_checkSafePoint(ctx, sfp)
+#define KNH_GCPOINT(ctx, sfp)   knh_checkGcPoint(ctx, sfp)
 
 #define O_toTenure(o)  knh_Object_toTenure(ctx, o)
 

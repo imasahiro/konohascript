@@ -695,7 +695,7 @@ knh_Object_t *knh_InputStream_readObject(CTX ctx, knh_InputStream_t *in, knh_typ
 	if(type != TYPE_void) {
 		// convert type to reqc;
 	}
-	END_LOCAL_(ctx, lsfp);
+	END_LOCAL(ctx, lsfp);
 }
 ***/
 
@@ -1096,7 +1096,18 @@ typedef struct knh_context_t {
 	int                             signal;
 	void                           *siginfo;
 	void                           *sighandlers;
+	int								safepoint; // set to 1
 } knh_context_t ;
+
+#define SAFEPOINT_GC                  1
+#define SAFEPOINT_SETGC(ctx)          WCTX(ctx)->safepoint |= SAFEPOINT_GC
+
+#define SAFEPOINT_SIGNAL     (1<<1)
+#define SAFEPOINT_SETSIGNAL(ctx)      WCTX(ctx)->safepoint |= SAFEPOINT_SIGNAL
+
+#define SAFEPOINT_MONITOR    (1<<2)
+#define SAFEPOINT_SETMONITOR(ctx)     WCTX(ctx)->safepoint |= SAFEPOINT_MONITOR
+
 
 /* ------------------------------------------------------------------------ */
 /* logdata */
