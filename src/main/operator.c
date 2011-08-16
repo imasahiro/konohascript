@@ -2945,55 +2945,55 @@ static KMETHOD InputStream_getChar(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(knh_InputStream_getc(ctx, sfp[0].in));
 }
 
-///* ------------------------------------------------------------------------ */
-////## method Int InputStream.read(Bytes buf, Int offset, Int length);
-//
-//static KMETHOD InputStream_read(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_Bytes_t *ba = sfp[1].ba;
-//	knh_bytes_t buf = BA_tobytes(ba);
-//	size_t offset = Int_to(size_t,sfp[2]);
-//	size_t len    = Int_to(size_t,sfp[3]);
-//	if(unlikely(offset > buf.len)) {
-//		THROW_OutOfRange(ctx, sfp, offset, buf.len);
-//	}
-//	buf = knh_bytes_last(buf, offset);
-//	if(len != 0) {
-//		knh_Bytes_ensureSize(ctx, ba, offset + len);  // DONT USE ensureSize
-//		buf.len = len;
-//		buf.ubuf = ba->bu.ubuf;
-//	}
-//	RETURNi_(knh_InputStream_read(ctx, sfp[0].in, (char*)buf.ubuf, buf.len));
-//}
+/* ------------------------------------------------------------------------ */
+//## method Int InputStream.read(Bytes buf, Int offset, Int length);
 
-///* ------------------------------------------------------------------------ */
-//
-//size_t knh_InputStream_read(CTX ctx, knh_InputStream_t *in, char *buf, size_t bufsiz)
-//{
-//	if(InputStream_isFILE(in)) {
-//		return in->dpi->freadSPI(ctx, DP(in)->fd, buf, bufsiz);
-//	}
-//	else {
-//		size_t inbufsiz = (DP(in)->bufend - DP(in)->bufpos);
-//		if(bufsiz <= inbufsiz) {
-//			knh_memcpy(buf, DP(in)->buf, bufsiz);
-//			DP(in)->bufpos += bufsiz;
-//			{
-//				DP(in)->size += bufsiz;
-//			}
-//			return bufsiz;
-//		}
-//		// XXX when both InputStream.read and InputStream.readLine method call,
-//		// it seams strange. so, move DP(o)->buf's pointer to bufpos.
-//		knh_memcpy(buf, DP(in)->buf + DP(in)->bufpos, inbufsiz);
-//		DP(in)->bufpos += inbufsiz;
-//		DP(in)->size += bufsiz;
-//		buf += inbufsiz;
-//		size_t s = in->dpi->freadSPI(ctx, DP(in)->fd, buf+inbufsiz, bufsiz-inbufsiz);
-//		DP(in)->size += s;
-//		return s + inbufsiz;
-//	}
-//}
+static KMETHOD InputStream_read(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Bytes_t *ba = sfp[1].ba;
+	knh_bytes_t buf = BA_tobytes(ba);
+	size_t offset = Int_to(size_t,sfp[2]);
+	size_t len    = Int_to(size_t,sfp[3]);
+	if(unlikely(offset > buf.len)) {
+		THROW_OutOfRange(ctx, sfp, offset, buf.len);
+	}
+	buf = knh_bytes_last(buf, offset);
+	if(len != 0) {
+		knh_Bytes_ensureSize(ctx, ba, offset + len);  // DONT USE ensureSize
+		buf.len = len;
+		buf.ubuf = ba->bu.ubuf;
+	}
+	RETURNi_(knh_InputStream_read(ctx, sfp[0].in, (char*)buf.ubuf, buf.len));
+}
+
+/* ------------------------------------------------------------------------ */
+
+size_t knh_InputStream_read(CTX ctx, knh_InputStream_t *in, char *buf, size_t bufsiz)
+{
+	if(knh_isFILEStreamDPI(in->dpi)) {
+		return in->dpi->freadSPI(ctx, DP(in)->fio, buf, bufsiz);
+	}
+	else {
+		size_t inbufsiz = (DP(in)->posend - DP(in)->pos);
+		if(bufsiz <= inbufsiz) {
+			knh_memcpy(buf, DP(in)->ba->bu.ubuf + DP(in)->pos, bufsiz);
+			DP(in)->pos += bufsiz;
+			{
+				DP(in)->stat_size += bufsiz;
+			}
+			return bufsiz;
+		}
+		// XXX when both InputStream.read and InputStream.readLine method call,
+		// it seams strange. so, move DP(o)->buf's pointer to bufpos.
+		knh_memcpy(buf, DP(in)->ba->bu.ubuf + DP(in)->pos, bufsiz);
+		DP(in)->pos += inbufsiz;
+		DP(in)->stat_size += bufsiz;
+		buf += inbufsiz;
+		size_t s = in->dpi->freadSPI(ctx, DP(in)->fio, buf+inbufsiz, bufsiz-inbufsiz);
+		DP(in)->stat_size += s;
+		return s + inbufsiz;
+	}
+}
 
 /* ------------------------------------------------------------------------ */
 //## method Boolean InputStream.isClosed();

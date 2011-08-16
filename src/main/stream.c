@@ -270,6 +270,11 @@ const knh_StreamDPI_t *knh_getDefaultPathStreamDPI(void)
 	return &STREAM_FILE;
 }
 
+knh_bool_t knh_isFILEStreamDPI(const knh_StreamDPI_t *dpi)
+{
+	return (dpi == &STREAM_FILE);
+}
+
 KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_Path_t *pth, const char *mode)
 {
 	knh_io_t fd = pth->dpi->fopenSPI(ctx, pth, mode);
