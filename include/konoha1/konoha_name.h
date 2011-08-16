@@ -3,7 +3,7 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      520
+#define K_REVISION                      522
 #endif
 #define K_BUILDID                       1157
 
@@ -541,13 +541,7 @@
 #define CLASS_T1ARRAY           ((knh_class_t)55)
 #define IS_T1ARRAY(o)           (O_cid(o) == CLASS_T1ARRAY)
 #define TYPE_T1ARRAY            CLASS_T1ARRAY
-
-/* ------------------------------------------------------------------------ */
-/* T1ITR */
-#define CLASS_T1ITR             ((knh_class_t)56)
-#define IS_T1ITR(o)             (O_cid(o) == CLASS_T1ITR)
-#define TYPE_T1ITR              CLASS_T1ITR
-#define K_CLASS_INITSIZE                58
+#define K_CLASS_INITSIZE                57
 
 /* ------------------------------------------------------------------------ */
 /* FLAG */

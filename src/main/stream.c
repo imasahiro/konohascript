@@ -393,7 +393,6 @@ void knh_InputStream_close(CTX ctx, knh_InputStream_t *in)
 	if(DP(in)->fio != IO_NULL) {
 		in->dpi->fcloseSPI(ctx, DP(in)->fio);
 		if(DP(in)->fio != IO_BUF) {
-//			DBG_P("stream in=%s", S_totext(DP(in)->urn));
 			knh_Bytes_dispose(ctx, DP(in)->ba);
 		}
 		DP(in)->fio = IO_NULL;

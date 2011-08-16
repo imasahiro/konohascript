@@ -11,7 +11,7 @@ KNHAPI2(knh_bool_t) knh_eval(CTX ctx, const char *script, knh_OutputStream_t *w)
 KNHAPI2(knh_Array_t*) new_Array(CTX ctx, knh_class_t p1, size_t capacity);
 KNHAPI2(void) knh_Array_add_(CTX ctx, knh_Array_t *a, knh_Object_t *value);
 KNHAPI2(void) knh_Array_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m);
-KNHAPI2(knh_Iterator_t*) new_Iterator(CTX ctx, knh_class_t p1, knh_Object_t *source, knh_Fitrnext fnext);
+KNHAPI2(knh_Iterator_t*) new_IteratorG(CTX ctx, knh_class_t cid, knh_Object_t *source, knh_Fitrnext fnext);
 KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb);
 KNHAPI2(void) knh_Object_toNULL_(CTX ctx, Object *o);
 KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, const knh_ClassTBL_t *ct, void *rawptr);
@@ -81,7 +81,7 @@ typedef struct knh_api2_t {
 	knh_InputStream_t* (*new_InputStreamDPI)(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dpi, knh_Path_t *path);
 	knh_InputStream_t* (*new_InputStreamNULL)(CTX ctx, knh_Path_t *pth, const char *mode);
 	knh_Int_t* (*new_Int)(CTX ctx, knh_int_t value);
-	knh_Iterator_t* (*new_Iterator)(CTX ctx, knh_class_t p1, knh_Object_t *source, knh_Fitrnext fnext);
+	knh_Iterator_t* (*new_IteratorG)(CTX ctx, knh_class_t cid, knh_Object_t *source, knh_Fitrnext fnext);
 	knh_Map_t* (*new_Map)(CTX ctx);
 	knh_OutputStream_t* (*new_BytesOutputStream)(CTX ctx, knh_Bytes_t *ba);
 	knh_OutputStream_t* (*new_OutputStreamDPI)(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dpi, knh_Path_t *path);
@@ -137,7 +137,7 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)-1293974033)
+#define K_API2_CRC32 ((size_t)-2038927550)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -150,7 +150,7 @@ static const knh_api2_t* getapi2(void) {
 		new_InputStreamDPI,
 		new_InputStreamNULL,
 		new_Int,
-		new_Iterator,
+		new_IteratorG,
 		new_Map,
 		new_BytesOutputStream,
 		new_OutputStreamDPI,
@@ -218,7 +218,7 @@ static const knh_api2_t* getapi2(void) {
 #define new_InputStreamDPI   ctx->api2->new_InputStreamDPI
 #define new_InputStreamNULL   ctx->api2->new_InputStreamNULL
 #define new_Int   ctx->api2->new_Int
-#define new_Iterator   ctx->api2->new_Iterator
+#define new_IteratorG   ctx->api2->new_IteratorG
 #define new_Map   ctx->api2->new_Map
 #define new_BytesOutputStream   ctx->api2->new_BytesOutputStream
 #define new_OutputStreamDPI   ctx->api2->new_OutputStreamDPI
@@ -493,7 +493,6 @@ knh_TypeMap_t *new_TypeMapMethod(CTX ctx, knh_flag_t flag, knh_Method_t *mtd);
 knh_bool_t TypeMap_isNoSuchMapping(knh_TypeMap_t *tmr);
 void knh_addTypeMapRule(CTX ctx, knh_class_t scid, knh_class_t tcid, knh_Ftypemaprule func);
 knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0);
-knh_Iterator_t* new_ArrayIterator(CTX ctx, knh_Array_t *a);
 knh_bool_t knh_isArrayIterator(knh_Iterator_t *itr);
 void knh_loadSystemTypeMapRule(CTX ctx);
 void knh_NameSpace_setLinkClass(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t linkname, const knh_ClassTBL_t *ct);

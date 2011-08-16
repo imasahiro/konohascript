@@ -237,8 +237,6 @@ static ITRNEXT Fitrnext_end(CTX ctx, knh_sfp_t *sfp _RIX)
 	ITREND_();
 }
 
-/* ------------------------------------------------------------------------ */
-
 void knh_Iterator_close(CTX ctx, knh_Iterator_t *it)
 {
 	DBG_ASSERT(IS_bIterator(it));
@@ -255,11 +253,10 @@ void knh_Iterator_close(CTX ctx, knh_Iterator_t *it)
 	}
 }
 
-/* ------------------------------------------------------------------------ */
-
-KNHAPI2(knh_Iterator_t*) new_Iterator(CTX ctx, knh_class_t p1, knh_Object_t *source, knh_Fitrnext fnext)
+KNHAPI2(knh_Iterator_t*) new_IteratorG(CTX ctx, knh_class_t cid, knh_Object_t *source, knh_Fitrnext fnext)
 {
-	knh_class_t cid = knh_class_P1(ctx, CLASS_Iterator, p1);
+	//knh_class_t cid = knh_class_P1(ctx, CLASS_Iterator, p1);
+	DBG_ASSERT(C_bcid(cid) == CLASS_Iterator);
 	knh_Iterator_t *it = new_O(Iterator, cid);
 	if(IS_NULL(source)) fnext = Fitrnext_end;
 	KNH_SETv(ctx, DP(it)->source, source);

@@ -1243,12 +1243,11 @@ static ITRNEXT String_nextChar(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const mapper String String..;
 //## method String.. String.opITR();
 
 static TYPEMAP String_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_(new_Iterator(ctx, CLASS_String, sfp[0].o, String_nextChar));
+	RETURN_(new_IteratorG(ctx, CLASS_StringITR, sfp[0].o, String_nextChar));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -2347,52 +2346,14 @@ static KMETHOD Map_keys(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *a = new_Array(ctx, p1, size);
 	knh_sfp_t *lsfp = ctx->esp;
 	knh_mapitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
+	klr_setesp(ctx, lsfp+1);
 	while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
 		a->api->add(ctx, a, lsfp);
+		klr_setesp(ctx, lsfp+1);
 	}
 	RETURN_(a);
 }
 
-/* ------------------------------------------------------------------------ */
-
-static ITRNEXT Fnext_mapkey(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Iterator_t *itr = ITR(sfp);
-	knh_Map_t *m = (knh_Map_t*)DP(itr)->source;
-	knh_sfp_t *lsfp = ctx->esp;
-	if(m->spi->next(ctx, m->mapptr, &(DP(itr)->mitr), lsfp)) {
-		ITRNEXT_(lsfp[0].o);
-	}
-	else {
-		ITREND_();
-	}
-}
-
-static ITRNEXT Fnext_mapkeydata(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Iterator_t *itr = ITR(sfp);
-	knh_Map_t *m = (knh_Map_t*)DP(itr)->source;
-	knh_sfp_t *lsfp = ctx->esp;
-	if(m->spi->next(ctx, m->mapptr, &(DP(itr)->mitr), lsfp)) {
-		ITRNEXTd_(lsfp[0].ndata);
-	}
-	else {
-		ITREND_();
-	}
-}
-
-/* ------------------------------------------------------------------------ */
-//## mapper Map Iterator!;
-//## mapper Map T1..!;
-//## method T1.. Map.opITR();
-
-static TYPEMAP Map_T1__(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Map_t *m = sfp[0].m;
-	knh_class_t p1 = O_cTBL(m)->p1;
-	knh_Iterator_t *itr = new_Iterator(ctx, p1, UPCAST(m), IS_Tunbox(p1) ? Fnext_mapkeydata : Fnext_mapkey);
-	RETURN_(itr);
-}
 
 /* ------------------------------------------------------------------------ */
 /* [Arithemetic] */
@@ -3105,7 +3066,7 @@ static ITRNEXT knh_InputStream_nextLine(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static TYPEMAP knh_InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_(new_Iterator(ctx, CLASS_String, sfp[0].o, knh_InputStream_nextLine));
+	RETURN_(new_IteratorG(ctx, CLASS_StringITR, sfp[0].o, knh_InputStream_nextLine));
 }
 
 /* ------------------------------------------------------------------------ */
