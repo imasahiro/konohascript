@@ -3220,7 +3220,9 @@ static knh_Stmt_t *new_StmtMETA(CTX ctx, knh_term_t stt, tkitr_t *itr, int shift
 {
 	knh_Fstmt func = NULL;
 	va_list ap;
+	BEGIN_LOCAL(ctx, lsfp, 1);
 	knh_Stmt_t *stmt = new_Stmt2(ctx, stt, NULL);
+	KNH_SETv(ctx, lsfp[0].o, stmt);
 	Stmt_addMETA(ctx, stmt, itr);
 	itr->c = itr->c + shift;
 	va_start(ap , shift);
@@ -3232,6 +3234,7 @@ static knh_Stmt_t *new_StmtMETA(CTX ctx, knh_term_t stt, tkitr_t *itr, int shift
 	}
 	L_end:;
 	va_end(ap);
+	END_LOCAL(ctx, lsfp);
 	return stmt;
 }
 
