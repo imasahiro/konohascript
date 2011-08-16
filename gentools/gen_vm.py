@@ -142,7 +142,6 @@ iCAST      _DEF|_JIT         a:rn b:rn
 fCAST      _DEF|_JIT         a:rn b:rn
 
 SAFEPOINT  _JIT              
-GCPOINT    _JIT                            
 JMP        _JIT              addr:addr
 JMP_       _JIT              addr:addr
 JMPF       0                 addr:addr a:rn

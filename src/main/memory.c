@@ -86,15 +86,11 @@ extern "C" {
 #define STAT_dmem(ctx, SIZE)   (ctx->stat)->usedMemorySize -= (SIZE)
 
 #define STAT_Object(ctx, ct) { \
-		knh_stat_t *stat = ctx->stat;\
-		stat->usedObjectSize += 1;\
-		if(stat->usedObjectSize > stat->maxObjectUsage) stat->maxObjectUsage = stat->usedObjectSize;\
 		((knh_ClassTBL_t*)ct)->count += 1; \
 		((knh_ClassTBL_t*)ct)->total += 1; \
 	}\
 
 #define STAT_dObject(ctx, ct) \
-	(ctx->stat)->usedObjectSize -= 1; \
 	((knh_ClassTBL_t*)ct)->count -= 1; \
 
 
@@ -599,19 +595,6 @@ void knh_share_initArena(CTX ctx, knh_share_t *share)
 	knh_bzero(share->MemoryArenaTBL, K_ARENATBL_INITSIZE * sizeof(knh_MemoryArenaTBL_t));
 	share->sizeMemoryArenaTBL = 0;
 	share->capacityMemoryArenaTBL = K_ARENATBL_INITSIZE;
-
-#if defined(K_USING_FASTMALLOC2)
-	share->MemoryX2ArenaTBL = (knh_MemoryX2ArenaTBL_t*)KNH_MALLOC(ctx, K_ARENATBL_INITSIZE * sizeof(knh_MemoryX2ArenaTBL_t));
-	knh_bzero(share->MemoryX2ArenaTBL, K_ARENATBL_INITSIZE * sizeof(knh_MemoryX2ArenaTBL_t));
-	share->MemoryX2ArenaTBLSize = 0;
-	share->capacityMemoryX2ArenaTBL = K_ARENATBL_INITSIZE;
-#endif
-#if defined(K_USING_FASTMALLOC256)
-	share->Memory256ArenaTBL = (knh_Memory256ArenaTBL_t*)KNH_MALLOC(ctx, K_ARENATBL_INITSIZE * sizeof(knh_Memory256ArenaTBL_t));
-	knh_bzero(share->Memory256ArenaTBL, K_ARENATBL_INITSIZE * sizeof(knh_Memory256ArenaTBL_t));
-	share->Memory256ArenaTBLSize = 0;
-	share->capacityMemory256ArenaTBL = K_ARENATBL_INITSIZE;
-#endif
 }
 
 void knh_share_freeArena(CTX ctx, knh_share_t *share)
@@ -632,22 +615,6 @@ void knh_share_freeArena(CTX ctx, knh_share_t *share)
 	}
 	KNH_FREE(ctx, share->MemoryArenaTBL, share->capacityMemoryArenaTBL * sizeof(knh_MemoryArenaTBL_t));
 	share->MemoryArenaTBL = NULL;
-#if defined(K_USING_FASTMALLOC2)
-	for(i = 0; i < share->MemoryX2ArenaTBLSize; i++) {
-		knh_MemoryX2ArenaTBL_t *at = share->MemoryX2ArenaTBL + i;
-		KNH_FREE(ctx, at->head, K_MEMSIZE(at->bottom, at->head));
-	}
-	KNH_FREE(ctx, share->MemoryX2ArenaTBL, share->capacityMemoryX2ArenaTBL * sizeof(knh_MemoryX2ArenaTBL_t));
-	share->MemoryX2ArenaTBL = NULL;
-#endif
-#if defined(K_USING_FASTMALLOC256)
-	for(i = 0; i < share->Memory256ArenaTBLSize; i++) {
-		knh_Memory256ArenaTBL_t *at = share->Memory256ArenaTBL + i;
-		KNH_FREE(ctx, at->head, K_MEMSIZE(at->bottom, at->head));
-	}
-	KNH_FREE(ctx, share->Memory256ArenaTBL, share->capacityMemory256ArenaTBL * sizeof(knh_Memory256ArenaTBL_t));
-	share->Memory256ArenaTBL = NULL;
-#endif
 }
 
 static void ObjectPage_init(knh_ObjectPage_t *opage)
@@ -702,13 +669,7 @@ static void ObjectArenaTBL_init(CTX ctx, knh_ObjectArenaTBL_t *oat, size_t arena
 	(opage-1)->slots[K_PAGEOBJECTSIZE - 1].ref = NULL;
 
 	DBG_ASSERT((bitmap - oat->bitmap) * sizeof(knh_uintptr_t) == arenasize/sizeof(knh_Object_t));
-
-	{
-		knh_share_t *ctxshare = (knh_share_t*) ctx->share;
-		size_t gcBoundary = ctxshare->gcBoundary;
-		ctxshare->gcBoundary += (object_count * K_PAGEOBJECTSIZE) - ((gcBoundary == 0)? 1024:0);
-		//	(ctxshare)->gcBoundary = (((object_count * K_PAGEOBJECTSIZE) / 10) * 9);
-	}
+	ctx->stat->gcObjectCount += (object_count * K_PAGEOBJECTSIZE);
 	DBG_(ObjectArenaTBL_checkSize(oat, arenasize, object_count););
 }
 
@@ -866,6 +827,16 @@ static void DBG_checkOnArena(CTX ctx, void *used K_TRACEARGV)
 /* ------------------------------------------------------------------------ */
 /* [hObject] */
 
+void knh_initFirstObjectArena(CTX ctx)
+{
+	DBG_ASSERT(ctx->freeObjectList == NULL);
+	knh_Object_t *p = new_ObjectArena(ctx, K_ARENASIZE);
+	((knh_context_t*)ctx)->freeObjectList = p;
+	((knh_context_t*)ctx)->freeObjectTail = p->ref4_tail;
+	ctx->stat->gcObjectCount -= K_GC_MARGIN; // important
+	ctx->stat->latestGcTime = knh_getTimeMilliSecond();
+}
+
 knh_Object_t *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
 {
 	knh_Object_t *o = NULL;
@@ -876,8 +847,12 @@ knh_Object_t *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
 	knh_Object_RCset(o, K_RCGC_INIT);
 	o->h.cTBL = ct;
 	O_unset_tenure(o); // collectable
+	ctx->stat->gcObjectCount -=1;  // ATOMIC
+	if(ctx->stat->gcObjectCount == 0) {
+		SAFEPOINT_SETGC(ctx);
+	}
 	STAT_Object(ctx, ct);
-	MEMLOG("new_Object", "ptr=%p, class=%s", o, ct->cdef->name);
+	MEMLOG("new", "ptr=%p, class=%s", o, ct->cdef->name);
 	return o;
 }
 
@@ -891,9 +866,12 @@ knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 	o->h.cTBL = ct;
 	ct->cdef->init(ctx, RAWPTR(o));
 	O_unset_tenure(o); // collectable
+	ctx->stat->gcObjectCount -=1;  // ATOMIC
+	if(ctx->stat->gcObjectCount == 0) {
+		SAFEPOINT_SETGC(ctx);
+	}
 	STAT_Object(ctx, ct);
-	//KNH_CHECKMEM(ctx);
-	MEMLOG("new_Object", "ptr=%p, class=%s", o, ct->cdef->name);
+	MEMLOG("new", "ptr=%p, class=%s", o, ct->cdef->name);
 	return o;
 }
 
@@ -908,7 +886,11 @@ void TR_NEW(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 	ct->cdef->init(ctx, RAWPTR(o));
 	O_unset_tenure(o); // collectable
 	STAT_Object(ctx, ct);
-	MEMLOG("new_Object", "ptr=%p, class=%s", o, ct->cdef->name);
+	ctx->stat->gcObjectCount -=1;  // ATOMIC
+	if(ctx->stat->gcObjectCount == 0) {
+		SAFEPOINT_SETGC(ctx);
+	}
+	MEMLOG("new", "ptr=%p, class=%s", o, ct->cdef->name);
 	KNH_SETv(ctx, sfp[c].o, o);
 }
 
@@ -925,6 +907,7 @@ static void knh_Object_finalfree(CTX ctx, knh_Object_t *o)
 	}
 	ct->cdef->free(ctx, RAWPTR(o));
 	OBJECT_REUSE(o);
+	ctx->stat->gcObjectCount += 1;
 	STAT_dObject(ctx, ct);
 	O_set_tenure(o); // uncollectable
 }
@@ -1212,6 +1195,7 @@ static inline void Object_MSfree(CTX ctx, knh_Object_t *o)
 	}
 	ct->cdef->free(ctx, RAWPTR(o));
 	OBJECT_REUSE(o);
+	ctx->stat->gcObjectCount += 1;
 	STAT_dObject(ctx, ct);
 	O_set_tenure(o); // uncollectable
 }
@@ -1285,25 +1269,25 @@ static void gc_extendObjectArena(CTX ctx)
 	knh_share_t *ctxshare = (knh_share_t*) ctx->share;
 	knh_ObjectArenaTBL_t *oat = ctxshare->ObjectArenaTBL + (ctxshare->sizeObjectArenaTBL - 1);
 	size_t arenasize = oat->arenasize;
-	const knh_sysinfo_t *sysinfo = knh_getsysinfo();
-	size_t max = (sysinfo->hw_usermem > 0) ? sysinfo->hw_usermem / 20 : 64 * (1024 * 1024);
-	if(arenasize <= max) arenasize *= 2;
-	{
-		knh_Object_t *newobj = new_ObjectArena(ctx, arenasize);
-		knh_Object_t *p = ctx->freeObjectList;
-		if(p == NULL) {
-			((knh_context_t*)ctx)->freeObjectList = newobj;
-			((knh_context_t*)ctx)->freeObjectTail = newobj->ref4_tail;
-		}
-		else {
-			p = ctx->freeObjectTail;
-			p->ref = newobj;
-			((knh_context_t*)ctx)->freeObjectTail = newobj->ref4_tail;
-		}
-		GC_LOG("EXTEND_ARENA: %d times newarena=%dMb, used_memory=%dMb",
-				(int)(ctx->share->sizeObjectArenaTBL - 1),
-				(int)(arenasize) / MB_, (int)(ctx->stat->usedMemorySize / MB_));
+	knh_uint64_t stime = knh_getTimeMilliSecond();
+//	const knh_sysinfo_t *sysinfo = knh_getsysinfo();
+//	size_t max = (sysinfo->hw_usermem > 0) ? sysinfo->hw_usermem / 20 : 64 * (1024 * 1024);
+//	if(arenasize <= max) arenasize *= 2;
+	knh_Object_t *newobj = new_ObjectArena(ctx, arenasize);
+	knh_Object_t *p = ctx->freeObjectList;
+	if(p == NULL) {
+		((knh_context_t*)ctx)->freeObjectList = newobj;
+		((knh_context_t*)ctx)->freeObjectTail = newobj->ref4_tail;
 	}
+	else {
+		p = ctx->freeObjectTail;
+		p->ref = newobj;
+		((knh_context_t*)ctx)->freeObjectTail = newobj->ref4_tail;
+	}
+	GC_LOG("extendObjectArena: id=%d newarena=%luMb, used_memory=%luMb extending_time=%dms",
+			(int)(ctx->share->sizeObjectArenaTBL - 1),
+			(arenasize / MB_), (ctx->stat->usedMemorySize / MB_),
+			(int)(knh_getTimeMilliSecond()-stime));
 }
 #endif
 
@@ -1314,8 +1298,8 @@ void knh_System_gc(CTX ctx)
 {
 	//KNH_LOCK(ctx, ctx->share->memlock);
 	knh_stat_t *ctxstat = ctx->stat;
-	size_t used = ctxstat->usedObjectSize;
-	knh_uint64_t stime = knh_getTimeMilliSecond(), mtime = 0, ctime = 0;
+	size_t avail = K_GC_MARGIN + ctxstat->gcObjectCount;
+	knh_uint64_t stime = knh_getTimeMilliSecond(), mtime = 0, ctime = 0, intval;
 
 #ifdef K_USING_CTRACE
 	knh_dump_cstack(ctx);
@@ -1333,21 +1317,26 @@ void knh_System_gc(CTX ctx)
 	mtime = knh_getTimeMilliSecond();
 	gc_sweep(ctx);
 	ctime = knh_getTimeMilliSecond();
-	if(knh_isVerboseGC()) {
-		STAT_(
-		GC_LOG("GC(%dMb): marked=%d, collected=%d, used=%d=>%d, marking_time=%dms, sweeping_time=%dms",
-				(int)(ctxstat->usedMemorySize/ MB_),
-				(int)ctxstat->markedObject, (int)ctxstat->collectedObject,
-				(int)used, (int)ctxstat->usedObjectSize, (int)(mtime-stime), (int)(ctime-mtime));)
-	}
-	STAT_(KNH_ASSERT(ctxstat->markedObject == ctxstat->usedObjectSize);)
-	MSGC_(if(!(ctxstat->usedObjectSize < ((ctx->share->gcBoundary * 3) / 4))) { /* 75%*/
+	intval = stime - ctxstat->latestGcTime;
+//	if(knh_isVerboseGC()) {
+//		STAT_(
+		GC_LOG("GC(%dMb): marked=%lu, collected=%lu, avail=%lu=>%lu, interval=%dms, marking_time=%dms, sweeping_time=%dms",
+				ctxstat->usedMemorySize/ MB_,
+				ctxstat->markedObject, ctxstat->collectedObject,
+				avail, (K_GC_MARGIN + ctxstat->gcObjectCount),
+				(int)(intval), (int)(mtime-stime), (int)(ctime-mtime));
+//		)
+//	}
+	//STAT_(KNH_ASSERT(ctxstat->markedObject == ctxstat->usedObjectSize);)
+	MSGC_(if(ctxstat->gcObjectCount < K_ARENASIZE/sizeof(knh_Object_t)) {
+//	MSGC_(if(!(ctxstat->usedObjectSize < ((ctxstat->gcBoundary * 3) / 4))) { /* 75%*/
 		gc_extendObjectArena(ctx);
 	})
 	ctxstat->gcCount++;
 	ctxstat->markingTime += (mtime-stime);
 	ctxstat->sweepingTime += (ctime-mtime);
-	ctxstat->gcTime += (knh_getTimeMilliSecond() - stime);
+	ctxstat->latestGcTime = knh_getTimeMilliSecond();
+	ctxstat->gcTime += (ctxstat->latestGcTime - stime);
 	//KNH_UNLOCK(ctx, ctx->share->memlock);
 }
 

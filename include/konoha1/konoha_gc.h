@@ -98,9 +98,8 @@ extern "C" {
 //	return 0;
 //}
 
-#define KNH_GC()
-#define KNH_SAFEPOINT(ctx, sfp) knh_checkSafePoint(ctx, sfp)
-#define KNH_GCPOINT(ctx, sfp)   knh_checkGcPoint(ctx, sfp)
+#define KNH_SAFEPOINT(ctx, sfp) \
+	if(ctx->safepoint != 0) knh_checkSafePoint(ctx, sfp);
 
 #define O_toTenure(o)  knh_Object_toTenure(ctx, o)
 

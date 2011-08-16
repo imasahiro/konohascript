@@ -129,7 +129,7 @@ knh_sfp_t* knh_stack_local(CTX ctx, size_t n)
 		knh_stack_initexpand(ctx, ctx->esp, ctx->stacksize + n + 64);
 	}
 	knh_sfp_t *esp = ctx->esp;
-	KNH_GCPOINT(ctx, esp);
+	KNH_SAFEPOINT(ctx, esp);
 	((knh_context_t*)ctx)->esp = esp + n;
 	return esp;
 }
@@ -172,17 +172,6 @@ void knh_checkSafePoint(CTX ctx, knh_sfp_t *sfp)
 		//
 	}
 }
-
-void knh_checkGcPoint(CTX ctx, knh_sfp_t *sfp)
-{
-	knh_stat_t *ctxstat = ctx->stat;
-	size_t used = ctxstat->usedObjectSize;
-	if(!(used < ctx->share->gcBoundary)) {
-		SAFEPOINT_SETGC(ctx);           // it might be slow
-		knh_checkSafePoint(ctx, sfp);
-	}
-}
-
 
 ///* ------------------------------------------------------------------------ */
 ///* [call] */

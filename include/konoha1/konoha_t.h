@@ -807,31 +807,25 @@ typedef struct {
 #define STAT_(STMT)
 #endif
 
+#define K_GC_MARGIN   1024
+
 typedef struct {
-	size_t usedMemorySize;
-	size_t maxMemoryUsage;
-	size_t usedObjectSize;
-	size_t maxObjectUsage;
+	size_t                      usedMemorySize;
+	size_t                      maxMemoryUsage;
+//	size_t                      usedObjectSize;
+//	size_t                      gcBoundary;
+//	size_t                      maxObjectUsage;
+	long                        gcObjectCount;
 	knh_uint64_t markingTime;   // marking time [ms]
 	knh_uint64_t sweepingTime;  // sweeping time [ms]
 	knh_uint64_t gcTime;        // total gc time [ms]
-	size_t gcCount;  // How many times GC occured.
+	size_t gcCount;             // How many times GC occured.
+	knh_uint64_t latestGcTime;  // lastest time
 	size_t markedObject;
 	size_t movedObject;
 	size_t collectedObject;
-	size_t countMemorySize1;
-	size_t countMemorySize2;
-	size_t countMemorySize4;
-	size_t countMemorySize8;
-	size_t countMemorySizeN;
-	size_t countObjectGeneration;
-	size_t utestPassed;
-	size_t utestFailed;
 } knh_stat_t;
 
-#define knh_statUnitTest(ctx, passed, failed) \
-	(ctx->stat)->utestPassed += passed;\
-	(ctx->stat)->utestFailed += failed;\
 
 /* ------------------------------------------------------------------------ */
 /* [SystemShare] */
@@ -850,7 +844,6 @@ typedef struct {
 /* ------------------------------------------------------------------------ */
 /* Arena */
 
-//#define K_PAGETOP(o)  ((((knh_uintptr_t)(o)) / K_PAGESIZE) * K_PAGESIZE)
 #define K_OPAGE(o)    ((knh_ObjectPage_t*)((((knh_uintptr_t)(o)) / K_PAGESIZE) * K_PAGESIZE))
 #define K_SHIFTPTR(p, size)   ((char*)p + size)
 #define K_MEMSIZE(p, p2)      (((char*)p) - ((char*)p2))
@@ -875,9 +868,6 @@ typedef struct knh_MemoryX2ArenaTBL_t knh_MemoryX2ArenaTBL_t;
 typedef struct knh_Memory256ArenaTBL_t knh_Memory256ArenaTBL_t;
 
 typedef struct knh_share_t {
-	size_t                    gcBoundary;
-	knh_mutex_t              *memlock;
-
 	/* system table */
 	const knh_ClassTBL_t    **ClassTBL;
 	size_t                    sizeClassTBL;
@@ -919,6 +909,8 @@ typedef struct knh_share_t {
 	char                     *xmem_root;
 	char                     *xmem_top;
 	char                     *xmem_freelist;
+
+	knh_mutex_t              *memlock;
 
 	/* system shared const */
 	knh_Object_t             *constNull;

@@ -232,6 +232,8 @@ static knh_context_t* new_RootContext(void)
 	share->sizeEventTBL = 0;
 	share->capacityEventTBL  = K_EVENTTBL_INIT;
 	knh_loadScriptSystemStructData(ctx, kapi);
+	knh_initFirstObjectArena(ctx);
+
 	KNH_INITv(share->funcDictSet, new_DictSet0(ctx, 0, 0, "funcDictSet"));
 	KNH_INITv(share->constPtrMap, new_PtrMap(ctx, 0));
 	KNH_INITv(share->inferPtrMap, new_PtrMap(ctx, 0));

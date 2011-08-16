@@ -1512,7 +1512,7 @@ KNHAPI2(void) knh_TypeMap_exec(CTX ctx, knh_TypeMap_t *tmr, knh_sfp_t *sfp _RIX)
 		tmr->ftypemap_1(ctx, sfp, K_RIX);
 	}
 	else {
-		KNH_GCPOINT(ctx, sfp);
+		KNH_SAFEPOINT(ctx, sfp);
 		if(IS_NULL(sfp[0].o)) {
 			KNH_SETv(ctx, sfp[K_RIX].o, KNH_NULVAL(tmr->tcid))
 			sfp[K_RIX].ivalue = 0;

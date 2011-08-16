@@ -1222,15 +1222,17 @@ static knh_BasicBlock_t* Tn_JMPIF(CTX ctx, knh_Stmt_t *stmt, size_t n, int isTRU
 /* ------------------------------------------------------------------------ */
 /* [EXPR] */
 
-static void ASM_GCPOINT(CTX ctx)
+static void ASM_SAFEPOINT(CTX ctx)
 {
+#ifdef K_USING_SAFEPOINT
 	knh_BasicBlock_t *bb = DP(ctx->gma)->bbNC;
 	size_t i;
 	for(i = 0; i < DP(bb)->size; i++) {
 		knh_opline_t *op = DP(bb)->opbuf + i;
-		if(op->opcode == OPCODE_GCPOINT) return;
+		if(op->opcode == OPCODE_SAFEPOINT) return;
 	}
-	ASM(GCPOINT);
+	ASM(SAFEPOINT);
+#endif
 }
 
 /* ------------------------------------------------------------------------ */
@@ -1468,7 +1470,7 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 		ASM(LDMTD, SFP_(espidx+K_CALLDELTA), _DYNMTD, {TYPE_void, tkMTD->mn}, NULL);
 		ASM(CALL, SFP_(espidx), SFP_(espidx+K_CALLDELTA), ESP_(espidx, DP(stmt)->size - 2));
 		ASM(PROBE, SFP2_(espidx), _PBOX, 0, 0);
-		ASM_GCPOINT(ctx);
+		ASM_SAFEPOINT(ctx);
 		return;
 	}
 	knh_class_t mtd_cid = (mtd)->cid;
@@ -1797,7 +1799,7 @@ static void BOX_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 		ASM(TR, OC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ClassTBL(cid), _bBOX);
 	}
 	else {
-		ASM_GCPOINT(ctx);
+		ASM_SAFEPOINT(ctx);
 		ASM(TR, OC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ClassTBL(cid), _BOX);
 	}
 }
@@ -1807,7 +1809,7 @@ static void NEW_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	int thisidx = espidx + K_CALLDELTA;
 	knh_Method_t *mtd = (tkNN(stmt, 0))->mtd;
 	knh_class_t cid = (tkNN(stmt, 1))->cid;
-	ASM_GCPOINT(ctx);
+	ASM_SAFEPOINT(ctx);
 	if(DP(stmt)->size == 2 && (mtd)->cid == CLASS_Object && (mtd)->mn == MN_new) {
 		ASM(TR, OC_(espidx), SFP_(thisidx), RIX_(espidx-thisidx), ClassTBL(cid), TR_NEW);
 	}
@@ -1972,7 +1974,7 @@ static void W1_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 		ASM(SCALL, -1, SFP_(thisidx), ESP_((thisidx-K_CALLDELTA), 1), mtdf);
 	}
 	if(isCWB) {
-		ASM_GCPOINT(ctx);
+		ASM_SAFEPOINT(ctx);
 		ASM(TR, OC_(espidx), SFP_(thisidx), RIX_(espidx-thisidx), ClassTBL(CLASS_String), _TOSTR);
 	}
 }
@@ -2321,13 +2323,6 @@ static void CONTINUE_asm(CTX ctx, knh_Stmt_t *stmt)
 static void BREAK_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 	ASM_JUMPLABEL(ctx, stmt, 2);
-}
-
-static void ASM_SAFEPOINT(CTX ctx)
-{
-#ifdef K_USING_SAFEPOINT
-	ASM(SAFEPOINT);
-#endif
 }
 
 static void WHILE_asm(CTX ctx, knh_Stmt_t *stmt)
