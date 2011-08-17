@@ -171,7 +171,7 @@ static const knh_OPDATA_t OPDATA[] = {
 	{"ACAST", _DEF, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_SFPIDX, VMT_TMR, VMT_VOID}}, 
 	{"iCAST", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}}, 
 	{"fCAST", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"SAFEPOINT", _JIT, 0, { VMT_VOID}}, 
+	{"SAFEPOINT", _JIT, 1, { VMT_SFPIDX, VMT_VOID}}, 
 	{"JMP", _JIT, 1, { VMT_ADDR, VMT_VOID}}, 
 	{"JMP", _JIT, 1, { VMT_ADDR, VMT_VOID}}, 
 	{"JMPF", 0, 2, { VMT_ADDR, VMT_RN, VMT_VOID}}, 
@@ -1344,7 +1344,7 @@ knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc)
 	} 
 	CASE(SAFEPOINT) {
 		klr_SAFEPOINT_t *op = (klr_SAFEPOINT_t*)pc; (void)op;
-		KLR_SAFEPOINT(ctx);
+		KLR_SAFEPOINT(ctx, op->espshift);
 		pc++;
 		GOTO_NEXT();
 	} 

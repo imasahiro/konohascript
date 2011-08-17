@@ -864,10 +864,11 @@ static void _DYNMTD(CTX ctx, knh_sfp_t *sfp, struct klr_LDMTD_t *op)
 		sfp[thisidx].ndata = O_ndata(sfp[thisidx].o);
 	}
 	size_t i, argc = ParamArray_isVARGs(DP(mtd)->mp) ? (ctx->esp - sfp) : knh_Method_psize(mtd);
+	//DBG_P("argc=%d, psize=%d, esp-sfp=%d, isVARGs=%d", argc, knh_Method_psize(mtd), (ctx->esp - sfp), ParamArray_isVARGs(DP(mtd)->mp));
 	for(i = 0; i < argc; i++) {
 		size_t idx = thisidx+1+i;
 		knh_Object_t *o = sfp[idx].o;
-		knh_type_t reqt = knh_Method_ptype(ctx, mtd, this_cid, i);
+		knh_type_t reqt = knh_Method_ptype(ctx, mtd, i, this_cid);
 		ct = O_cTBL(o);
 		DBG_P("i=%d, reqt=%s, O_cid=%s", i, TYPE__(reqt), CLASS__(ct->cid));
 		if(reqt == ct->cid && ClassTBL_isa(ct, reqt)) {
@@ -1222,7 +1223,7 @@ static knh_BasicBlock_t* Tn_JMPIF(CTX ctx, knh_Stmt_t *stmt, size_t n, int isTRU
 /* ------------------------------------------------------------------------ */
 /* [EXPR] */
 
-static void ASM_SAFEPOINT(CTX ctx)
+static void ASM_SAFEPOINT(CTX ctx, int espidx)
 {
 #ifdef K_USING_SAFEPOINT
 	knh_BasicBlock_t *bb = DP(ctx->gma)->bbNC;
@@ -1231,7 +1232,7 @@ static void ASM_SAFEPOINT(CTX ctx)
 		knh_opline_t *op = DP(bb)->opbuf + i;
 		if(op->opcode == OPCODE_SAFEPOINT) return;
 	}
-	ASM(SAFEPOINT);
+	ASM(SAFEPOINT, SFP_(espidx));
 #endif
 }
 
@@ -1470,7 +1471,7 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 		ASM(LDMTD, SFP_(espidx+K_CALLDELTA), _DYNMTD, {TYPE_void, tkMTD->mn}, NULL);
 		ASM(CALL, SFP_(espidx), SFP_(espidx+K_CALLDELTA), ESP_(espidx, DP(stmt)->size - 2));
 		ASM(PROBE, SFP2_(espidx), _PBOX, 0, 0);
-		ASM_SAFEPOINT(ctx);
+		ASM_SAFEPOINT(ctx, espidx+1);
 		return;
 	}
 	knh_class_t mtd_cid = (mtd)->cid;
@@ -1799,7 +1800,7 @@ static void BOX_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 		ASM(TR, OC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ClassTBL(cid), _bBOX);
 	}
 	else {
-		ASM_SAFEPOINT(ctx);
+		ASM_SAFEPOINT(ctx, espidx+1);
 		ASM(TR, OC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ClassTBL(cid), _BOX);
 	}
 }
@@ -1809,7 +1810,7 @@ static void NEW_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	int thisidx = espidx + K_CALLDELTA;
 	knh_Method_t *mtd = (tkNN(stmt, 0))->mtd;
 	knh_class_t cid = (tkNN(stmt, 1))->cid;
-	ASM_SAFEPOINT(ctx);
+	ASM_SAFEPOINT(ctx, espidx);
 	if(DP(stmt)->size == 2 && (mtd)->cid == CLASS_Object && (mtd)->mn == MN_new) {
 		ASM(TR, OC_(espidx), SFP_(thisidx), RIX_(espidx-thisidx), ClassTBL(cid), TR_NEW);
 	}
@@ -1974,8 +1975,8 @@ static void W1_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 		ASM(SCALL, -1, SFP_(thisidx), ESP_((thisidx-K_CALLDELTA), 1), mtdf);
 	}
 	if(isCWB) {
-		ASM_SAFEPOINT(ctx);
 		ASM(TR, OC_(espidx), SFP_(thisidx), RIX_(espidx-thisidx), ClassTBL(CLASS_String), _TOSTR);
+		ASM_SAFEPOINT(ctx, espidx+1);
 	}
 }
 
@@ -2331,7 +2332,7 @@ static void WHILE_asm(CTX ctx, knh_Stmt_t *stmt)
 	knh_BasicBlock_t* lbBREAK = new_BasicBlockLABEL(ctx);
 	Gamma_pushLABEL(ctx, stmt, lbCONTINUE, lbBREAK);
 	ASM_LABEL(ctx, lbCONTINUE);
-	ASM_SAFEPOINT(ctx);
+	ASM_SAFEPOINT(ctx, DP(stmt)->espidx);
 	if(!Tn_isTRUE(stmt, 0)) {
 		Tn_JMPIF(ctx, stmt, 0, 0/*FALSE*/, lbBREAK, DP(stmt)->espidx);
 		//ASM_CHECK_INFINITE_LOOP(ctx, stmt);
@@ -2348,7 +2349,7 @@ static void DO_asm(CTX ctx, knh_Stmt_t *stmt)
 	knh_BasicBlock_t* lbBREAK = new_BasicBlockLABEL(ctx);
 	Gamma_pushLABEL(ctx, stmt, lbCONTINUE, lbBREAK);
 	ASM_LABEL(ctx, lbCONTINUE);
-	ASM_SAFEPOINT(ctx);
+	ASM_SAFEPOINT(ctx, DP(stmt)->espidx);
 	Tn_asmBLOCK(ctx, stmt, 0);
 	Tn_JMPIF(ctx, stmt, 1, 0/*FALSE*/, lbBREAK, DP(stmt)->espidx);
 	ASM_JMP(ctx, lbCONTINUE);
@@ -2367,7 +2368,7 @@ static void FOR_asm(CTX ctx, knh_Stmt_t *stmt)
 	ASM_JMP(ctx, lbREDO);
 	/* i++ part */
 	ASM_LABEL(ctx, lbCONTINUE); /* CONTINUE */
-	ASM_SAFEPOINT(ctx);
+	ASM_SAFEPOINT(ctx, DP(stmt)->espidx);
 	Tn_asmBLOCK(ctx, stmt, 2);
 	/* i < 10 part */
 	ASM_LABEL(ctx, lbREDO);
@@ -2393,7 +2394,7 @@ static void FOREACH_asm(CTX ctx, knh_Stmt_t *stmt)
 		int itridx = Token_index(tkNN(stmt, 3));
 		Tn_asm(ctx, stmt, 1, itridx);
 		ASM_LABEL(ctx, lbC);
-		ASM_SAFEPOINT(ctx);
+		ASM_SAFEPOINT(ctx, DP(stmt)->espidx);
 		ASMbranch(NEXT, lbB, RTNIDX_(ctx, varidx, (tkN)->type), SFP_(itridx), RIX_(varidx - itridx), SFP_(_ESPIDX));
 	}
 	Tn_asmBLOCK(ctx, stmt, 2);

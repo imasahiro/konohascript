@@ -2104,66 +2104,108 @@ static knh_TypeMap_t *knh_inferMapIterator(CTX ctx, const knh_ClassTBL_t *sct, c
 	return NULL;
 }
 
-/* ------------------------------------------------------------------------ */
+/* ------------------------------------------------------------------------- */
 
-//void knh_Object_set(CTX ctx, knh_Object_t *o, knh_String_t *s, knh_Object_t *v)
-//{
-//	knh_methodn_t mn = knh_getmn(ctx, S_tobytes(s), MN_NONAME);
-//	if(mn != MN_NONAME) {
-//		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, NULL, O_cid(o), MN_toSETTER(mn));
-//		if(mtd != NULL) {
-//
-//			knh_index_t idx = knh_Method_indexOfSetterField(mtd);
-//			if(idx != -1) {
-//
-//			}
-//		}
-//	}
-//}
-//
-//
-//void knh_Object_setData(CTX ctx, knh_Object_t *o, knh_Map_t *m)
-//{
-//	size_t size = m->spi->size(ctx, m->mapptr);
-//	knh_class_t p1 = O_cTBL(m)->p1;
-//	knh_sfp_t *lsfp = ctx->esp;
-//	knh_mapitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
-//	klr_setesp(ctx, lsfp+1);
-//	while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
-//		klr_setesp(ctx, lsfp+2);
-//		knh_Object_set(ctx, o, lsfp[0].s, lsfp[1].o);
-//		klr_setesp(ctx, lsfp+1);
-//	}
-//
-//}
-//
-//static TYPEMAP Map_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_TypeMap_t *tmr0 = sfp[K_TMRIDX].tmrNC;
-//	knh_Map_t *m = sfp[0].m;
-//	knh_Object_t *o = new_Object_init2((ctx, ClassTBL(tmr0->tcid));
-//	size_t size = m->spi->size(ctx, m->mapptr);
-//	knh_class_t p1 = O_cTBL(m)->p1;
-//	knh_sfp_t *lsfp = ctx->esp;
-//	knh_mapitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
-//	klr_setesp(ctx, lsfp+1);
-//	while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
-//
-//		a->api->add(ctx, a, lsfp);
-//		klr_setesp(ctx, lsfp+1);
-//	}
-//	RETURN_(a);
-//}
-//
-//
-//static knh_TypeMap_t *knh_inferMapObject(CTX ctx, const knh_ClassTBL_t *sct, const knh_ClassTBL_t *tct)
-//{
-//	if(sct->p1 == CLASS_String && (sct->p2 == TYPE_dyn || sct->p2 == CLASS_Object)) {
-//
-//	}
-//	return NULL;
-//}
-//
+static knh_bool_t knh_NameSpace_dataCheck(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_sfp_t *sfp)
+{
+	knh_String_t *key = sfp[0].s;
+	knh_Object_t *value = sfp[1].o;
+	knh_methodn_t mn = knh_getmn(ctx, S_tobytes(key), MN_NEWID);
+	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, ns, cid, MN_toSETTER(mn));
+	if(mtd == NULL) return 0;
+	KNH_SETv(ctx, sfp[0].o, mtd); //
+	if(knh_Method_psize(mtd) == 1) {
+		knh_type_t ptype = knh_Method_ptype(ctx, mtd, 0, cid);
+		if(ptype == O_cid(value) || ClassTBL_isa_(ctx, O_cTBL(value), ClassTBL(ptype))) {
+			return 1; // ok
+		}
+		knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, O_cid(value), ptype);
+		if(tmr != NULL) {
+			klr_setesp(ctx, sfp+2);
+			sfp[1].ndata = O_ndata(value); // unbox
+			knh_TypeMap_exec(ctx, tmr, sfp+1, 0);
+			if(IS_Tunbox(ptype)) {
+				KNH_SETv(ctx, sfp[1].o, new_Boxing(ctx, sfp+1, ClassTBL(ptype)));
+			}
+			return 1;
+		}
+	}
+	else {
+		KNH_TODO("multi arguments");
+	}
+	return 0;
+}
+
+void knh_Object_fastset(CTX ctx, knh_Object_t *o, knh_Method_t *mtd, knh_Object_t *v)
+{
+	KNH_ASSERT(IS_Method(mtd));
+	knh_index_t idx = knh_Method_indexOfSetterField(mtd);
+	if(idx != -1) {
+		knh_ObjectField_t *of = (knh_ObjectField_t*)o;
+		if(IS_Tunbox(O_cid(v))) {
+			knh_ndata_t *df = (knh_ndata_t*)(of->fields + idx);
+			df[0] = O_ndata(v);
+		}
+		else {
+			KNH_SETv(ctx, of->fields[idx], v);
+		}
+		return;
+	}
+	if(knh_Method_psize(mtd) == 1) {
+		BEGIN_LOCAL(ctx, lsfp, 0);
+		size_t rtnidx = 0, thisidx = rtnidx + K_CALLDELTA;
+		KNH_SETv(ctx, lsfp[thisidx].o, o);
+		KNH_SETv(ctx, lsfp[thisidx+1].o, v);
+		lsfp[thisidx+1].ndata = O_ndata(v);
+		KNH_SCALL(ctx, lsfp, rtnidx, mtd, 1);
+		END_LOCAL(ctx, lsfp)
+	}
+}
+
+void knh_Object_setData(CTX ctx, knh_Object_t *o, knh_Map_t *m, knh_NameSpace_t *ns, int Checked)
+{
+	knh_sfp_t *lsfp = ctx->esp;
+	knh_mapitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
+	klr_setesp(ctx, lsfp+1);
+	if(Checked) {
+		while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
+			klr_setesp(ctx, lsfp+2);
+			knh_Object_fastset(ctx, o, lsfp[0].mtd, lsfp[1].o);
+			klr_setesp(ctx, lsfp+1);
+		}
+	}
+	else {
+		knh_class_t cid = O_cid(o);
+		while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
+			if(knh_NameSpace_dataCheck(ctx, ns, cid, lsfp)) {
+				klr_setesp(ctx, lsfp+2);
+				knh_Object_fastset(ctx, o, lsfp[0].mtd, lsfp[1].o);
+			}
+			klr_setesp(ctx, lsfp+1);
+		}
+	}
+	klr_setesp(ctx, lsfp);
+}
+
+static TYPEMAP Map_Object(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_TypeMap_t *tmr0 = sfp[K_TMRIDX].tmrNC;
+	BEGIN_LOCAL(ctx, lsfp, 1);
+	KNH_SETv(ctx, lsfp[0].o, new_Object_init2(ctx, ClassTBL(tmr0->tcid)));
+	klr_setesp(ctx, lsfp+1);
+	knh_Object_setData(ctx, lsfp[0].o, sfp[0].m, NULL, 0/*Checked*/);
+	END_LOCAL(ctx, lsfp);
+	RETURN_(sfp[1].o);
+}
+
+static knh_TypeMap_t *knh_inferMapObject(CTX ctx, const knh_ClassTBL_t *sct, const knh_ClassTBL_t *tct)
+{
+	if(sct->p1 == CLASS_String) {
+		return new_TypeMap(ctx, 0, sct->cid, tct->cid, Map_Object);
+	}
+	return NULL;
+}
+
 //static knh_TypeMap_t *knh_inferObjectMap(CTX ctx, const knh_ClassTBL_t *sct, const knh_ClassTBL_t *tct)
 //{
 //	knh_class_t sp1 = sct->p1, tp1 = tct->p1;
@@ -2184,6 +2226,7 @@ void knh_loadSystemTypeMapRule(CTX ctx)
 	knh_addTypeMapRule(ctx, CLASS_Array,    CLASS_Iterator, knh_inferArrayIterator);
 	knh_addTypeMapRule(ctx, CLASS_Array,    CLASS_Array,    knh_inferArrayArray);
 	knh_addTypeMapRule(ctx, CLASS_Map,      CLASS_Iterator,    knh_inferMapIterator);
+	knh_addTypeMapRule(ctx, CLASS_Map,      CLASS_Object,   knh_inferMapObject);
 
 }
 
@@ -2200,9 +2243,9 @@ void knh_NameSpace_setLinkClass(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t linkna
 	knh_DictSet_set(ctx, DP(ns)->name2ctDictSetNULL, knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII), (knh_uintptr_t)ct);
 }
 
-const knh_ClassTBL_t *knh_NameSpace_getLinkClassTBLNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *path)
+const knh_ClassTBL_t *knh_NameSpace_getLinkClassTBLNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
-	knh_bytes_t scheme = knh_bytes_head(S_tobytes(path), ':'); scheme.len += 1; //include 'class:'
+	knh_bytes_t scheme = knh_bytes_head(path, ':'); scheme.len += 1; //include 'class:'
 	knh_class_t cid = knh_NameSpace_getcid(ctx, ns, scheme);
 	if(cid == CLASS_unknown) {
 		scheme.len -= 1;
@@ -2228,10 +2271,10 @@ knh_class_t knh_ClassTBL_linkType(CTX ctx, const knh_ClassTBL_t *ct, knh_class_t
 knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t *path, knh_class_t tcid)
 {
 	if(tcid == CLASS_String) return UPCAST(path);
-	const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, path);
+	const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, S_tobytes(path));
 	Object *value = NULL;
 	if(ct == NULL) {
-		DBG_P("not found: %s as %s", S_totext(path), CLASS__(tcid));
+		LANG_LOG("link not found: %s as %s", S_totext(path), CLASS__(tcid));
 		if(tcid == CLASS_Boolean) return KNH_FALSE;
 		return KNH_NULVAL(tcid);
 	}
@@ -2256,6 +2299,7 @@ knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t
 	if(tmr == NULL) {
 		if(tcid == CLASS_Boolean) {
 			value = (IS_NULL(value)) ? KNH_FALSE : KNH_TRUE;
+			return value;
 		}
 		return KNH_NULVAL(tcid);
 	}

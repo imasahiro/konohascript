@@ -866,24 +866,10 @@ static const knh_ConvDSPI_t TO_upper = {
 void knh_loadSystemDriver(CTX ctx, knh_NameSpace_t *ns)
 {
 	const knh_PackageLoaderAPI_t *api = knh_getPackageLoaderAPI();
-//	api->addLinkDPI(ctx, ns, "link", &LINK_LINK);
-//	api->addLinkDPI(ctx, ns, "charset", &LINK_CHARSET);
-//	api->addLinkDPI(ctx, ns, "to", &LINK_TOLINK);
-//	api->addLinkDPI(ctx, ns, "from", &LINK_FROMLINK);
-//	api->addLinkDPI(ctx, ns, "lib", &LINK_LIB);
-//	api->addLinkDPI(ctx, ns, "pkg", &LINK_PKG);
-//	api->addLinkDPI(ctx, ns, "script", &LINK_SCRIPT);
-//	api->addLinkDPI(ctx, ns, "class", &LINK_CLASS);
-
-#ifdef K_USING_POSIX_
-//	api->addLinkDPI(ctx, ns, "file", &LINK_FILE);
-//	api->addLinkDPI(ctx, ns, "dir", &LINK_DIR);
-#endif
+	knh_NameSpace_setLinkClass(ctx, ns, STEXT("link"), ClassTBL(CLASS_Tdynamic));
 
 	api->addConvDSPI(ctx, ns, "lower", &TO_lower);
 	api->addConvDSPI(ctx, ns, "upper", &TO_upper);
-//	api->addStreamDPI(ctx, ns, NULL, &STREAM_NOFILE);
-//	api->addStreamDPI(ctx, ns, "file", &STREAM_FILE);
 	api->addQueryDSPI(ctx, ns, NULL, &QUERY_NOP);
 #ifdef K_USING_SQLITE3
 	api->addQueryDSPI(ctx, ns, "sqlite3", &QUERY_SQLITE3);

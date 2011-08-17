@@ -906,6 +906,7 @@ typedef struct klr_fCAST_t {
 #define OPCODE_SAFEPOINT ((knh_opcode_t)117)
 typedef struct klr_SAFEPOINT_t {
 	KCODE_HEAD;
+	knh_sfpidx_t espshift;
 } klr_SAFEPOINT_t;
 
 #define OPCODE_JMP ((knh_opcode_t)118)

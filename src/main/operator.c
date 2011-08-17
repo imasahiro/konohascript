@@ -164,33 +164,33 @@ static KMETHOD Object_isNotNull(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNb_(IS_NOTNULL(sfp[0].o));
 }
 
-/* ------------------------------------------------------------------------ */
-//## @Const @Hidden @FastCall method String Object.getKey();
-
-static KMETHOD Object_getKey(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_String_t *s = ClassTBL(O_bcid(sfp[0].o))->cdef->getkey(ctx, sfp);
-	KNH_ASSERT(IS_String(s));
-	RETURN_(s);
-}
-
-/* ------------------------------------------------------------------------ */
-//## @Const @Hidden method This Object.copy();
-
-static KMETHOD Object_copy(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Object_t *src = sfp[0].o;
-	knh_class_t cid = O_cid(src);
-	if(knh_class_canObjectCopy(ctx, cid) && IS_NOTNULL(src)) {
-		const knh_ClassTBL_t *ct = O_cTBL(src);
-		knh_Object_t *o = new_hObject_(ctx, ct);
-		o->h.magicflag = src->h.magicflag;
-		ct->cdef->initcopy(ctx, RAWPTR(o), RAWPTR(src));
-		src = o;
-	}
-	sfp[K_RIX].ndata = sfp[0].ndata;
-	RETURN_(src);
-}
+///* ------------------------------------------------------------------------ */
+////## @Const @Hidden @FastCall method String Object.getKey();
+//
+//static KMETHOD Object_getKey(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_String_t *s = ClassTBL(O_bcid(sfp[0].o))->cdef->getkey(ctx, sfp);
+//	KNH_ASSERT(IS_String(s));
+//	RETURN_(s);
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## @Const @Hidden method This Object.copy();
+//
+//static KMETHOD Object_copy(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_Object_t *src = sfp[0].o;
+//	knh_class_t cid = O_cid(src);
+//	if(knh_class_canObjectCopy(ctx, cid) && IS_NOTNULL(src)) {
+//		const knh_ClassTBL_t *ct = O_cTBL(src);
+//		knh_Object_t *o = new_hObject_(ctx, ct);
+//		o->h.magicflag = src->h.magicflag;
+//		ct->cdef->initcopy(ctx, RAWPTR(o), RAWPTR(src));
+//		src = o;
+//	}
+//	sfp[K_RIX].ndata = sfp[0].ndata;
+//	RETURN_(src);
+//}
 
 /* ------------------------------------------------------------------------ */
 //## @Const @Hidden @Private method dyn Object.cast(TypeMap tmr);
@@ -247,6 +247,15 @@ static KMETHOD Object_typeCheck(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
+//## @Hidden method dynamic Object.opWITH(Map data, NameSpace _, Boolean _);
+
+static KMETHOD Object_opWITH(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Object_setData(ctx, sfp[0].o, sfp[1].m, sfp[2].ns, sfp[3].bvalue);
+	RETURN_(sfp[0].o);
+}
+
+/* ------------------------------------------------------------------------ */
 /* %empty */
 
 //## method void Object.%empty();
@@ -292,6 +301,22 @@ static KMETHOD Object__dump(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_write_Object(ctx, sfp[0].w, sfp[1].o, FMT_dump);
 }
+
+/* ------------------------------------------------------------------------ */
+//## @Hidden @Static @Const method Tdynamic Tdynamic.opLINK(String path, NameSpace _);
+
+static KMETHOD Tdynamic_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_bytes_t t = knh_bytes_next(S_tobytes(sfp[1].s), ':');
+	char buf[80];
+	knh_snprintf(buf, sizeof(buf), "%s:", t.text);
+	const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, sfp[2].ns, B(buf));
+	if(ct != NULL) {
+		RETURN_(new_Type(ctx, ct->cid));
+	}
+	RETURN_(KNH_NULL);
+}
+
 
 /* ------------------------------------------------------------------------ */
 //## method void Boolean.%s();

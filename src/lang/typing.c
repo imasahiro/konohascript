@@ -1448,7 +1448,7 @@ static knh_Token_t* TURN_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 	else {
 		knh_NameSpace_t *ns = K_GMANS;
 		knh_String_t *path = (tk)->text;
-		const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, path);
+		const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, S_tobytes(path));
 		if(ct == NULL) {
 			return ERROR_Undefined(ctx, "link", CLASS_unknown, tk);
 		}
@@ -1472,7 +1472,7 @@ static knh_Token_t* TLINK_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	knh_Token_t *tkLNK = tkNN(stmt, 1);
 	knh_NameSpace_t *ns = K_GMANS;
 	knh_String_t *path = (tkLNK)->text;
-	const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, path);
+	const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, S_tobytes(path));
 	if(ct == NULL) {
 		return ERROR_Undefined(ctx, "link", CLASS_unknown, tkLNK);
 	}
@@ -2348,29 +2348,29 @@ static knh_Token_t* defined_typing(CTX ctx, knh_Stmt_t *stmt)
 	}
 }
 
-static knh_Token_t* copy_typing(CTX ctx, knh_Stmt_t *stmt)
-{
-	knh_Token_t *tkRES = Tn_typing(ctx, stmt, 2, TYPE_dyn, 0);
-	if(TT_(tkRES) == TT_ERR) {
-		return tkRES;
-	}
-	else {
-		knh_class_t cid = Tn_cid(stmt, 2);
-		if(knh_class_canObjectCopy(ctx, cid)) {
-			knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, CLASS_Object, MN_copy);
-			KNH_SETv(ctx, tmNN(stmt, 1), tmNN(stmt, 2));
-			Token_setMethod(ctx, tkNN(stmt, 0), MN_copy, mtd);
-			knh_Stmt_trimToSize(ctx, stmt, 2);
-			/* XXX(imasahiro) rewrite FUNCCALL => CALL */
-			STT_(stmt) = STT_CALL;
-			return Stmt_typed(ctx, stmt, cid);
-		}
-		else {
-			WarningUnnecessaryOperation(ctx, "copy");
-			return tkNN(stmt, 2);
-		}
-	}
-}
+//static knh_Token_t* copy_typing(CTX ctx, knh_Stmt_t *stmt)
+//{
+//	knh_Token_t *tkRES = Tn_typing(ctx, stmt, 2, TYPE_dyn, 0);
+//	if(TT_(tkRES) == TT_ERR) {
+//		return tkRES;
+//	}
+//	else {
+//		knh_class_t cid = Tn_cid(stmt, 2);
+//		if(knh_class_canObjectCopy(ctx, cid)) {
+//			knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, CLASS_Object, MN_copy);
+//			KNH_SETv(ctx, tmNN(stmt, 1), tmNN(stmt, 2));
+//			Token_setMethod(ctx, tkNN(stmt, 0), MN_copy, mtd);
+//			knh_Stmt_trimToSize(ctx, stmt, 2);
+//			/* XXX(imasahiro) rewrite FUNCCALL => CALL */
+//			STT_(stmt) = STT_CALL;
+//			return Stmt_typed(ctx, stmt, cid);
+//		}
+//		else {
+//			WarningUnnecessaryOperation(ctx, "copy");
+//			return tkNN(stmt, 2);
+//		}
+//	}
+//}
 
 static knh_Token_t* this_typing(CTX ctx, knh_Stmt_t *stmt, knh_methodn_t mn)
 {
@@ -2536,7 +2536,7 @@ static knh_Token_t* func_typingNULL(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 //				case MN_unlikely: return FLIKELY_typing(ctx, stmt);
 //				case MN_format:  return knh_StmtFFORMAT_typing(ctx, stmt);
 //				case MN_domain:  return knh_StmtDOMAIN_typing(ctx, stmt);
-			case MN_copy: return copy_typing(ctx, stmt);
+//			case MN_copy: return copy_typing(ctx, stmt);
 			case MN_defined: return defined_typing(ctx, stmt);
 			case MN_this: return this_typing(ctx, stmt, mn);
 			case MN_delegate: return delegate_typing(ctx, stmt);
