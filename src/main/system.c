@@ -323,7 +323,7 @@ void knh_NameSpace_addDSPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, con
 	knh_putc(ctx, cwb->w, ':');
 	knh_write_ifmt(ctx, cwb->w, K_INT_FMT, p->type);
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
-	knh_DictSet_set(ctx, DP(ctx->sys)->dspiDictSet, knh_cwb_newString(ctx, cwb), (knh_uintptr_t)p);
+	knh_DictSet_set(ctx, DP(ctx->sys)->dspiDictSet, knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII), (knh_uintptr_t)p);
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
 }
 

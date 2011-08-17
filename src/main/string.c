@@ -639,10 +639,10 @@ knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, knh_bytes_t t)
 knh_String_t *knh_cwb_newStringDECODE(CTX ctx, knh_cwb_t *cwb, knh_StringDecoder_t *c)
 {
 	BEGIN_LOCAL(ctx, lsfp, 1);
-	LOCAL_NEW(ctx, lsfp, 0, knh_String_t*, s, knh_cwb_newString(ctx, cwb));
+	LOCAL_NEW(ctx, lsfp, 0, knh_String_t*, s, knh_cwb_newString(ctx, cwb, 0));
 	if(!String_isASCII(s)) {
 		c->dpi->dec(ctx, c->conv, S_tobytes(s), cwb->ba);
-		s = knh_cwb_newString(ctx, cwb);
+		s = knh_cwb_newString(ctx, cwb, K_SPOLICY_UTF8);
 		KNH_SETv(ctx, lsfp[0].o, KNH_NULL); //
 	}
 	END_LOCAL(ctx, lsfp);

@@ -1300,7 +1300,6 @@ void knh_System_gc(CTX ctx)
 	knh_stat_t *ctxstat = ctx->stat;
 	size_t avail = K_GC_MARGIN + ctxstat->gcObjectCount;
 	knh_uint64_t stime = knh_getTimeMilliSecond(), mtime = 0, ctime = 0, intval;
-
 #ifdef K_USING_CTRACE
 	knh_dump_cstack(ctx);
 #endif
@@ -1339,11 +1338,6 @@ void knh_System_gc(CTX ctx)
 	ctxstat->gcTime += (ctxstat->latestGcTime - stime);
 	//KNH_UNLOCK(ctx, ctx->share->memlock);
 }
-
-/* ------------------------------------------------------------------------ */
-
-
-
 
 /* ------------------------------------------------------------------------ */
 

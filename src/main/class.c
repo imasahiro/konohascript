@@ -682,9 +682,9 @@ knh_class_t knh_addGenericsClass(CTX ctx, knh_class_t cid, knh_class_t bcid, knh
 		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 		knh_String_t *lname, *sname;
 		knh_make_cname(ctx, cwb->w, cid);
-		lname = knh_cwb_newString(ctx, cwb);
+		lname = knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII);
 		knh_make_tname(ctx, cwb->w, cid);
-		sname = knh_cwb_newString(ctx, cwb);
+		sname = knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII);
 		knh_setClassName(ctx, cid, lname, sname);
 	}
 	return cid;
@@ -2197,7 +2197,7 @@ void knh_NameSpace_setLinkClass(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t linkna
 	if(DP(ns)->name2ctDictSetNULL == NULL) {
 		KNH_INITv(DP(ns)->name2ctDictSetNULL, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "NameSpace.name2cid"));
 	}
-	knh_DictSet_set(ctx, DP(ns)->name2ctDictSetNULL, knh_cwb_newString(ctx, cwb), (knh_uintptr_t)ct);
+	knh_DictSet_set(ctx, DP(ns)->name2ctDictSetNULL, knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII), (knh_uintptr_t)ct);
 }
 
 const knh_ClassTBL_t *knh_NameSpace_getLinkClassTBLNULL(CTX ctx, knh_NameSpace_t *ns, knh_String_t *path)
@@ -2474,7 +2474,7 @@ static KMETHOD Method_getName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_write_mn(ctx, cwb->w, (sfp[0].mtd)->mn);
-	RETURN_(knh_cwb_newString(ctx, cwb));
+	RETURN_(knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII));
 }
 
 // @Const Class Method.getReturnType();

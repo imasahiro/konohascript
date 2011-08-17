@@ -469,7 +469,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, new_bytes2(buf, bufsiz));
 			knh_buff_trim(ctx, cwb->ba, cwb->pos, '\\');
 			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1/*isSep*/, STEXT("konoha"));
-			s = knh_cwb_newString(ctx, cwb);
+			s = knh_cwb_newString(ctx, cwb, 0);
 			SETPROP("konoha.home.path", s);
 			home = S_tobytes(s);
 		}
@@ -491,7 +491,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 			knh_buff_trim(ctx, cwb->ba, cwb->pos, '/');
 			knh_buff_trim(ctx, cwb->ba, cwb->pos, '/');
 			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1/*isSep*/, STEXT("konoha"));
-			s = knh_cwb_newString(ctx, cwb);
+			s = knh_cwb_newString(ctx, cwb, 0);
 			SETPROP("konoha.home.path", s);
 			home = S_tobytes(s);
 		}
@@ -509,7 +509,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 			knh_buff_trim(ctx, cwb->ba, cwb->pos, '/');
 			knh_buff_trim(ctx, cwb->ba, cwb->pos, '/');
 			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1/*isSep*/, STEXT("konoha"));
-			knh_String_t *s = knh_cwb_newString(ctx, cwb);
+			knh_String_t *s = knh_cwb_newString(ctx, cwb, 0);
 			SETPROP("konoha.home.path", s);
 			home = S_tobytes(s);
 		}
@@ -525,13 +525,13 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 	knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, home);
 	knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1/*sep*/, STEXT("package"));
 	knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1/*sep*/, STEXT(LIBK_VERSION));
-	SETPROP("konoha.package.path", knh_cwb_newString(ctx, cwb));
+	SETPROP("konoha.package.path", knh_cwb_newString(ctx, cwb, 0));
 
 	/* $konoha.script.path {$konoha.home.path}/script */
 	knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, home);
 	knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1/*sep*/, STEXT("script"));
 	knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1/*sep*/, STEXT(LIBK_VERSION));
-	SETPROP("konoha.script.path", knh_cwb_newString(ctx, cwb));
+	SETPROP("konoha.script.path", knh_cwb_newString(ctx, cwb, 0));
 
 #if defined(K_USING_WINDOWS_)
 	user.text = knh_getenv("USERPROFILE");
@@ -543,7 +543,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		user.len = knh_strlen(user.text);
 		knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, user);
 		knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1, STEXT(K_KONOHAFOLDER));
-		SETPROP("user.path", knh_cwb_newString(ctx, cwb));
+		SETPROP("user.path", knh_cwb_newString(ctx, cwb, 0));
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, user);
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 1, STEXT(K_KONOHAFOLDER));
 		knh_buff_mkdir(ctx, cwb->ba, cwb->pos);
@@ -552,7 +552,7 @@ void knh_System_initPath(CTX ctx, knh_System_t *o)
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 1/*sep*/, STEXT(K_KONOHAFOLDER));
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 1/*sep*/, STEXT("package"));
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 1/*sep*/, STEXT(LIBK_VERSION));
-		SETPROP("user.package.path", knh_cwb_newString(ctx, cwb));
+		SETPROP("user.package.path", knh_cwb_newString(ctx, cwb, 0));
 	}
 	knh_cwb_close(cwb);
 }

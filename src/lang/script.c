@@ -340,7 +340,7 @@ void knh_Script_setNSName(CTX ctx, knh_Script_t* scr, knh_String_t *nsname)
 	KNH_SETv(ctx, DP(scr->ns)->nsname, nsname);
 	knh_Bytes_write(ctx, cwb->ba, S_tobytes(nsname));
 	knh_Bytes_write(ctx, cwb->ba, STEXT(".Script"));
-	KNH_SETv(ctx, ((knh_ClassTBL_t*)O_cTBL(scr))->lname, knh_cwb_newString(ctx, cwb));
+	KNH_SETv(ctx, ((knh_ClassTBL_t*)O_cTBL(scr))->lname, knh_cwb_newString(ctx, cwb, K_SPOLICY_ASCII));
 }
 
 knh_status_t knh_loadPackage(CTX ctx, knh_bytes_t pkgname)
@@ -412,7 +412,7 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 			}
 			break;
 		}
-		KNH_SETv(ctx, (tkPKG)->data, knh_cwb_newString(ctx, cwb));
+		KNH_SETv(ctx, (tkPKG)->data, knh_cwb_newString(ctx, cwb, K_SPOLICY_ASCII));
 	}
 	if(knh_loadPackage(ctx, S_tobytes((tkPKG)->text)) == K_CONTINUE) {
 		knh_NameSpace_t *ns = K_GMANS;
@@ -438,7 +438,7 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 			knh_Bytes_write(ctx, cwb->ba, S_tobytes(cname));
 			newcid = knh_getcid(ctx, knh_cwb_tobytes(cwb));
 			if(newcid == CLASS_unknown) {
-				KNH_SETv(ctx, (tkPKG)->data, knh_cwb_newString(ctx, cwb));
+				KNH_SETv(ctx, (tkPKG)->data, knh_cwb_newString(ctx, cwb, K_SPOLICY_ASCII));
 				knh_cwb_close(cwb);
 				goto L_ERROR;
 			}
@@ -749,7 +749,7 @@ static knh_ClassTBL_t *CLASSNAME_decl(CTX ctx, knh_Stmt_t *stmt, knh_Token_t *tk
 	if(cid == CLASS_unknown) {  // new class //
 		cid = new_ClassId(ctx);
 		ct = varClassTBL(cid);
-		knh_setClassName(ctx, cid, knh_cwb_newString(ctx, cwb), (tkC)->text);
+		knh_setClassName(ctx, cid, knh_cwb_newString(ctx, cwb, K_SPOLICY_ASCII), (tkC)->text);
 		ct->cflag  = knh_StmtCLASS_flag(ctx, stmt);
 		ct->magicflag  = KNH_MAGICFLAG(ct->cflag);
 		NameSpace_setcid(ctx, K_GMANS, (tkC)->text, cid);

@@ -142,7 +142,7 @@ static knh_String_t* DEFAULT_getkey(CTX ctx, knh_sfp_t *sfp)
 	knh_write_type(ctx, cwb->w, O_cid(sfp[0].o));
 	knh_putc(ctx, cwb->w, ':');
 	knh_write_ptr(ctx, cwb->w, sfp[0].o);
-	return knh_cwb_newString(ctx, cwb);
+	return knh_cwb_newString(ctx, cwb, 0);
 }
 
 static knh_hashcode_t DEFAULT_hashCode(CTX ctx, knh_RawPtr_t *o)

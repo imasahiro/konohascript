@@ -223,12 +223,12 @@ KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb)
 	return knh_Bytes_ensureZero(ctx, cwb->ba) + cwb->pos;
 }
 
-knh_String_t *knh_cwb_newString(CTX ctx, knh_cwb_t *cwb)
+knh_String_t *knh_cwb_newString(CTX ctx, knh_cwb_t *cwb, int pol)
 {
 	knh_String_t *s = TS_EMPTY;
 	if(cwb->pos < (cwb->ba)->bu.len) {
 		knh_bytes_t t = knh_cwb_tobytes(cwb);
-		s = new_String2(ctx, CLASS_String, t.text, t.len, 0);
+		s = new_String2(ctx, CLASS_String, t.text, t.len, pol);
 	}
 	knh_cwb_close(cwb);
 	return s;

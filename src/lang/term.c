@@ -382,7 +382,7 @@ static void TokenBlock_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
 				knh_Bytes_putc(ctx, cwb->ba, '\n');
 			}
 			knh_Bytes_write(ctx, cwb->ba, S_tobytes((tk)->text));
-			KNH_SETv(ctx, (tkPREV)->data, knh_cwb_newString(ctx, cwb));
+			KNH_SETv(ctx, (tkPREV)->data, knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
 			//if(TT_(tk) == TT_ESTR) TT_(tkPREV) = TT_ESTR;
 			goto L_JOIN1;
 		}
@@ -647,7 +647,7 @@ static void Token_setTEXT(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 		KNH_SETv(ctx, (tk)->data, new_StringSYMBOL(ctx, t));
 	}
 	else {
-		knh_String_t *s = knh_cwb_newString(ctx, cwb);
+		knh_String_t *s = knh_cwb_newString(ctx, cwb, 0);
 		KNH_SETv(ctx, (tk)->data, s);
 	}
 }

@@ -386,7 +386,7 @@ knh_String_t* knh_InputStream_readLine(CTX ctx, knh_InputStream_t *in)
 	}
 	L_TOSTRING:;
 	if(in->decNULL == NULL) {
-		return knh_cwb_newString(ctx, cwb);
+		return knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER);
 	}
 	else {
 		return knh_cwb_newStringDECODE(ctx, cwb, in->decNULL);

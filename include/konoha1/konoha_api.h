@@ -443,7 +443,7 @@ void knh_Bytes_putc(CTX ctx, knh_Bytes_t *ba, int ch);
 void knh_Bytes_reduce(knh_Bytes_t *ba, size_t size);
 void knh_Bytes_write(CTX ctx, knh_Bytes_t *ba, knh_bytes_t t);
 knh_bytes_t knh_cwb_ensure(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t, size_t reqsize);
-knh_String_t *knh_cwb_newString(CTX ctx, knh_cwb_t *cwb);
+knh_String_t *knh_cwb_newString(CTX ctx, knh_cwb_t *cwb, int pol);
 int knh_Object_compareTo(Object *o1, Object *o2);
 knh_bool_t knh_invokeMethod0(CTX ctx, Object *o, knh_NameSpace_t *ns, unsigned long mnd, void **retval, ...);
 knh_RawPtr_t *new_Pointer(CTX ctx, const char *name, void *rawptr, knh_Frawfree pfree);

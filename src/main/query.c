@@ -291,14 +291,14 @@ static knh_String_t *new_String__int(CTX ctx, knh_int_t n)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_write_ifmt(ctx, cwb->w, K_INT_FMT, n);
-	return knh_cwb_newString(ctx, cwb);
+	return knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLALWAYS|K_SPOLICY_ASCII);
 }
 
 static knh_String_t *new_String__float(CTX ctx, knh_float_t n)
 {
 	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 	knh_write_ffmt(ctx, cwb->w, K_FLOAT_FMT, n);
-	return knh_cwb_newString(ctx, cwb);
+	return knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLALWAYS|K_SPOLICY_ASCII);
 }
 
 knh_String_t* knh_ResultSet_getString(CTX ctx, knh_ResultSet_t *o, size_t n)

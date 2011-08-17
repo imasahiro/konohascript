@@ -115,7 +115,7 @@ static knh_String_t *Gamma_vperror(CTX ctx, int pe, const char *fmt, va_list ap)
 		knh_write_uline(ctx, cwb->w, ctx->gma->uline);
 		knh_write_ascii(ctx, cwb->w, KC__(pe));
 		knh_vprintf(ctx, cwb->w, fmt, ap);
-		msg = knh_cwb_newString(ctx, cwb);
+		msg = knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER);
 		knh_Array_add(ctx, DP(ctx->gma)->errmsgs, msg);
 		fprintf(stderr, "%s - %s%s\n", TERM_BNOTE(ctx, pe), S_totext(msg), TERM_ENOTE(ctx, pe));
 		knh_logprintf("konoha", 0, S_totext(msg));

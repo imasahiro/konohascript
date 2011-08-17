@@ -1337,7 +1337,7 @@ static knh_Token_t *FMTCALL_typing(CTX ctx, knh_Stmt_t *stmt)
 			knh_Bytes_putc(ctx, cwb->ba, ch);
 		}
 		if(knh_cwb_size(cwb) > 0) {
-			stmtW = new_StmtW1(ctx, NULL, tkNN(stmt,1), new_TokenCONST(ctx, knh_cwb_newString(ctx, cwb)));
+			stmtW = new_StmtW1(ctx, NULL, tkNN(stmt,1), new_TokenCONST(ctx, knh_cwb_newString(ctx, cwb, 0)));
 			APPEND_TAIL(stmtHEAD, stmtTAIL, stmtW);
 		}
 		if(!(i < t.len)) break;
