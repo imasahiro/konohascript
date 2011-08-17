@@ -2274,8 +2274,12 @@ void knh_NameSpace_setLinkClass(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t linkna
 	knh_DictSet_set(ctx, DP(ns)->name2ctDictSetNULL, knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII), (knh_uintptr_t)ct);
 }
 
-const knh_ClassTBL_t *knh_NameSpace_getLinkClassTBLNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+const knh_ClassTBL_t *knh_NameSpace_getLinkClassTBLNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, knh_class_t tcid)
 {
+	if(path.text[0] == 't' && path.text[1] == 'o' && path.text[2] == ':') {
+		if(CLASS_Converter <= tcid && tcid <= CLASS_StringConverter) return ClassTBL(tcid);
+		return ClassTBL(CLASS_Converter);
+	}
 	knh_bytes_t scheme = knh_bytes_head(path, ':'); scheme.len += 1; //include 'class:'
 	knh_class_t cid = knh_NameSpace_getcid(ctx, ns, scheme);
 	if(cid == CLASS_unknown) {
@@ -2302,7 +2306,7 @@ knh_class_t knh_ClassTBL_linkType(CTX ctx, const knh_ClassTBL_t *ct, knh_class_t
 knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t *path, knh_class_t tcid)
 {
 	if(tcid == CLASS_String) return UPCAST(path);
-	const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, S_tobytes(path));
+	const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, S_tobytes(path), tcid);
 	Object *value = NULL;
 	if(ct == NULL) {
 		LANG_LOG("link not found: %s as %s", S_totext(path), CLASS__(tcid));

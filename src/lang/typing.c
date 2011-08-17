@@ -1448,7 +1448,7 @@ static knh_Token_t* TURN_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 	else {
 		knh_NameSpace_t *ns = K_GMANS;
 		knh_String_t *path = (tk)->text;
-		const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, S_tobytes(path));
+		const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, S_tobytes(path), reqt);
 		if(ct == NULL) {
 			return ERROR_Undefined(ctx, "link", CLASS_unknown, tk);
 		}
@@ -1472,7 +1472,7 @@ static knh_Token_t* TLINK_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	knh_Token_t *tkLNK = tkNN(stmt, 1);
 	knh_NameSpace_t *ns = K_GMANS;
 	knh_String_t *path = (tkLNK)->text;
-	const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, S_tobytes(path));
+	const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, S_tobytes(path), reqt);
 	if(ct == NULL) {
 		return ERROR_Undefined(ctx, "link", CLASS_unknown, tkLNK);
 	}

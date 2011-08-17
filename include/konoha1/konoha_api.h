@@ -498,7 +498,7 @@ void knh_Object_fastset(CTX ctx, knh_Object_t *o, knh_Method_t *mtd, knh_Object_
 void knh_Object_setData(CTX ctx, knh_Object_t *o, knh_Map_t *m, knh_NameSpace_t *ns, int Checked);
 void knh_loadSystemTypeMapRule(CTX ctx);
 void knh_NameSpace_setLinkClass(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t linkname, const knh_ClassTBL_t *ct);
-const knh_ClassTBL_t *knh_NameSpace_getLinkClassTBLNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path);
+const knh_ClassTBL_t *knh_NameSpace_getLinkClassTBLNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, knh_class_t tcid);
 knh_class_t knh_ClassTBL_linkType(CTX ctx, const knh_ClassTBL_t *ct, knh_class_t tcid);
 knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t *path, knh_class_t tcid);
 void knh_initClass(CTX ctx, const knh_PackageLoaderAPI_t *kapi);
@@ -753,8 +753,7 @@ knh_uri_t knh_getURI(CTX ctx, knh_bytes_t t);
 knh_String_t *knh_getURN(CTX ctx, knh_uri_t uri);
 void knh_NameSpace_addDSPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, const knh_DSPI_t* p);
 const knh_DSPI_t *knh_NameSpace_getDSPINULL(CTX ctx, knh_NameSpace_t *ns, int type, knh_bytes_t path);
-const knh_ConvDSPI_t *knh_NameSpace_getConvTODSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path);
-const knh_ConvDSPI_t *knh_NameSpace_getConvFROMDSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path);
+const knh_ConvDSPI_t *knh_NameSpace_getConvDSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path);
 void knh_exit(CTX ctx, int status);
 knh_thread_t knh_thread_self(void);
 int knh_thread_create(CTX ctx, knh_thread_t *thread, void *attr, knh_Fthread fgo, void * arg);

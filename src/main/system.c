@@ -348,18 +348,29 @@ const knh_DSPI_t *knh_NameSpace_getDSPINULL(CTX ctx, knh_NameSpace_t *ns, int ty
 	return p;
 }
 
-/* ------------------------------------------------------------------------ */
+///* ------------------------------------------------------------------------ */
+//
+//const knh_ConvDSPI_t *knh_NameSpace_getConvTODSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+//{
+//	return (const knh_ConvDSPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_CONVTO, path);
+//}
+//
+///* ------------------------------------------------------------------------ */
+//
+//const knh_ConvDSPI_t *knh_NameSpace_getConvFROMDSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+//{
+//	return (const knh_ConvDSPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_CONVFROM, path);
+//}
 
-const knh_ConvDSPI_t *knh_NameSpace_getConvTODSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+const knh_ConvDSPI_t *knh_NameSpace_getConvDSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
-	return (const knh_ConvDSPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_CONVTO, path);
-}
-
-/* ------------------------------------------------------------------------ */
-
-const knh_ConvDSPI_t *knh_NameSpace_getConvFROMDSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	return (const knh_ConvDSPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_CONVFROM, path);
+	knh_bytes_t bpath = knh_bytes_next(path, ':');
+	if(path.text[0] == 'f') {
+		return (const knh_ConvDSPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_CONVFROM, bpath);
+	}
+	else {
+		return (const knh_ConvDSPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_CONVTO, bpath);
+	}
 }
 
 /* ------------------------------------------------------------------------ */

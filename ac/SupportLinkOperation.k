@@ -3,8 +3,9 @@
  *  written by Masahiro Ide
  ***************************************************************************/
 
+using konoha.lang.*;
 
-assure "LinkClassOperation" {
+assure "LinkOperation" {
 	String name1 = "Int";
 	String name2 = "konoha.Int";
 	Class c1 = class:Int;
@@ -16,13 +17,12 @@ assure "LinkClassOperation" {
 	assert c3 == Int;
 	assert c4 == Int;
 
-	int cid = class:Int;
-	assert cid == 5/* CLASS_Int */;
+	//int cid = class:Int;
+	//assert cid == 5/* CLASS_Int */;
 
 }
 
 assure "LinkLinkOperation" {
-	Link l1 = link:link;
-	assert l1.class == Link;
+	assert link:link;
 }
 
