@@ -43,7 +43,12 @@ class KQGraphicsRectItem : public QGraphicsRectItem, public KObject {
 public:
 	KQGraphicsRectItem(qreal x, qreal y, qreal w, qreal h) : QGraphicsRectItem(x, y, w, h), KObject() {
 	}
+	void mousePressEvent(QGraphicsSceneMouseEvent *event);
 };
+
+void KQGraphicsRectItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+}
 
 //## konohascript:  QGraphicsRectItem.QGraphicsRectItem (float x, float y, float width, float height)
 KMETHOD QGraphicsRectItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -63,7 +68,7 @@ KMETHOD QGraphicsRectItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 //## konohascript: void QGraphicsRectItem.setRect (int x, int y, int w, int h)
 KMETHOD QGraphicsRectItem_setRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsRectItem *obj = QPtr_to(QGraphicsRectItem* ,sfp[0]);
+	QGraphicsRectItem *obj = QGraphicsItemChild_to(QGraphicsRectItem*, sfp[0]);
 	if (obj != NULL) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
@@ -79,7 +84,7 @@ KMETHOD QGraphicsRectItem_setRect(CTX ctx, knh_sfp_t *sfp _RIX)
 //## konohascript: Boolean QGraphicsRectItem.contains (int point_x, int point_y)
 KMETHOD QGraphicsRectItem_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsRectItem *obj = QPtr_to(QGraphicsRectItem* ,sfp[0]);
+	QGraphicsRectItem *obj = QGraphicsItemChild_to(QGraphicsRectItem*, sfp[0]);
 	bool ret = false;
 	if (obj != NULL) {
 		int point_x = Int_to(int, sfp[1]);
@@ -94,7 +99,7 @@ KMETHOD QGraphicsRectItem_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 //## konohascript: Boolean QGraphicsRectItem.isObscuredBy (const QGraphicsItem  item)
 KMETHOD QGraphicsRectItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsRectItem *obj = QPtr_to(QGraphicsRectItem* ,sfp[0]);
+	QGraphicsRectItem *obj = QGraphicsItemChild_to(QGraphicsRectItem*, sfp[0]);
 	bool ret = false;
 	if (obj != NULL) {
 		const QGraphicsItem * item = QPtr_to(const QGraphicsItem *, sfp[1]);
@@ -107,7 +112,7 @@ KMETHOD QGraphicsRectItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 //## konohascript: virtual int QGraphicsRectItem.type ()
 KMETHOD QGraphicsRectItem_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsRectItem *obj = QPtr_to(QGraphicsRectItem* ,sfp[0]);
+	QGraphicsRectItem *obj = QGraphicsItemChild_to(QGraphicsRectItem*, sfp[0]);
 	int ret = -1;
 	if (obj != NULL) {
 		ret = obj->type();

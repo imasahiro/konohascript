@@ -34,6 +34,7 @@
 #include <QGraphicsTextItem>
 #include <QString>
 #include <QFont>
+#include <QDebug>
 #include "qt4commons.hpp"
 
 #ifdef __cplusplus
@@ -50,18 +51,16 @@ public:
 KMETHOD QGraphicsTextItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	KQGraphicsTextItem *p = new KQGraphicsTextItem();
-	//qDebug() << p->font();
-	RETURN_QObject(new KQGraphicsTextItem());
-	//knh_RawPtr_t *o = new_ReturnCppObject(ctx, sfp, p, NULL);
-	//KObject *ko = dynamic_cast<KObject*>(p);
-	//ko->kself = o;
-	//RETURN_(o);
+	knh_RawPtr_t *o = new_ReturnCppObject(ctx, sfp, dynamic_cast<QGraphicsItem*>(p), NULL);
+	KObject *ko = dynamic_cast<KObject*>(p);
+	ko->kself = o;
+	RETURN_(o);
 }
 
 //## void QGraphicsTextItem.setPos (String t)
 KMETHOD QGraphicsTextItem_setPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsTextItem *obj = QPtr_to(QGraphicsTextItem* ,sfp[0]);
+	QGraphicsTextItem *obj = QGraphicsItemChild_to(QGraphicsTextItem*, sfp[0]);
 	if (obj != NULL) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
@@ -73,7 +72,7 @@ KMETHOD QGraphicsTextItem_setPos(CTX ctx, knh_sfp_t *sfp _RIX)
 //## void QGraphicsTextItem.adjustSize ()
 KMETHOD QGraphicsTextItem_adjustSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsTextItem *obj = QPtr_to(QGraphicsTextItem* ,sfp[0]);
+	QGraphicsTextItem *obj = QGraphicsItemChild_to(QGraphicsTextItem*, sfp[0]);
 	if (obj != NULL) {
 		obj->adjustSize();
 	}
@@ -83,7 +82,7 @@ KMETHOD QGraphicsTextItem_adjustSize(CTX ctx, knh_sfp_t *sfp _RIX)
 //## QColor QGraphicsTextItem.defaultTextColor ()
 KMETHOD QGraphicsTextItem_defaultTextColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsTextItem *obj = QPtr_to(QGraphicsTextItem* ,sfp[0]);
+	QGraphicsTextItem *obj = QGraphicsItemChild_to(QGraphicsTextItem*, sfp[0]);
 	if (obj != NULL) {
 		QColor ret = obj->defaultTextColor();
 		RETURN_(&ret);
@@ -96,7 +95,7 @@ KMETHOD QGraphicsTextItem_defaultTextColor(CTX ctx, knh_sfp_t *sfp _RIX)
 //## void QGraphicsTextItem.setDefaultTextColor (QColor col)
 KMETHOD QGraphicsTextItem_setDefaultTextColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsTextItem *obj = QPtr_to(QGraphicsTextItem* ,sfp[0]);
+	QGraphicsTextItem *obj = QGraphicsItemChild_to(QGraphicsTextItem*, sfp[0]);
 	if (obj != NULL) {
 		const QColor *col = QPtr_to(const QColor *, sfp[1]);
 		obj->setDefaultTextColor(*col);
@@ -107,7 +106,7 @@ KMETHOD QGraphicsTextItem_setDefaultTextColor(CTX ctx, knh_sfp_t *sfp _RIX)
 //## void QGraphicsTextItem.setHtml (String text)
 KMETHOD QGraphicsTextItem_setHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsTextItem *obj = QPtr_to(QGraphicsTextItem* ,sfp[0]);
+	QGraphicsTextItem *obj = QGraphicsItemChild_to(QGraphicsTextItem*, sfp[0]);
 	if (obj != NULL) {
 		QString text = String_to(QString, sfp[1]);
 		obj->setHtml(text);
@@ -118,10 +117,10 @@ KMETHOD QGraphicsTextItem_setHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 //## void QGraphicsTextItem.setPlainText (String text)
 KMETHOD QGraphicsTextItem_setPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsTextItem *obj = QPtr_to(QGraphicsTextItem* ,sfp[0]);
+	QGraphicsTextItem *obj = QGraphicsItemChild_to(QGraphicsTextItem*, sfp[0]);
 	if (obj != NULL) {
 		QString text = String_to(QString, sfp[1]);
-		//qDebug() << "text: " << text;
+		qDebug() << "text: " << text;
 		obj->setPlainText(text);
 	}
 	RETURNvoid_();
@@ -130,7 +129,7 @@ KMETHOD QGraphicsTextItem_setPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 //## void QGraphicsTextItem.setTabChangesFocus (Boolean bool)
 KMETHOD QGraphicsTextItem_setTabChangesFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsTextItem *obj = QPtr_to(QGraphicsTextItem* ,sfp[0]);
+	QGraphicsTextItem *obj = QGraphicsItemChild_to(QGraphicsTextItem*, sfp[0]);
 	if (obj != NULL) {
 		bool b = Boolean_to(bool, sfp[1]);
 		obj->setTabChangesFocus(b);
@@ -141,7 +140,7 @@ KMETHOD QGraphicsTextItem_setTabChangesFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 //## void QGraphicsTextItem.setTextCursor (QTextCursor cursor)
 KMETHOD QGraphicsTextItem_setTextCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsTextItem *obj = QPtr_to(QGraphicsTextItem* ,sfp[0]);
+	QGraphicsTextItem *obj = QGraphicsItemChild_to(QGraphicsTextItem*, sfp[0]);
 	if (obj != NULL) {
 		const QTextCursor *cursor = QPtr_to(const QTextCursor *, sfp[1]);
 		obj->setTextCursor(*cursor);
@@ -152,7 +151,7 @@ KMETHOD QGraphicsTextItem_setTextCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 //## void QGraphicsTextItem.setTextWidth (qreal width)
 KMETHOD QGraphicsTextItem_setTextWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsTextItem *obj = QPtr_to(QGraphicsTextItem* ,sfp[0]);
+	QGraphicsTextItem *obj = QGraphicsItemChild_to(QGraphicsTextItem*, sfp[0]);
 	if (obj != NULL) {
 		qreal width = Float_to(qreal, sfp[1]);
 		obj->setTextWidth(width);
@@ -163,7 +162,7 @@ KMETHOD QGraphicsTextItem_setTextWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 //## qreal QGraphicsTextItem.textWidth ()
 KMETHOD QGraphicsTextItem_textWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsTextItem *obj = QPtr_to(QGraphicsTextItem* ,sfp[0]);
+	QGraphicsTextItem *obj = QGraphicsItemChild_to(QGraphicsTextItem*, sfp[0]);
 	qreal ret = -1;
 	if (obj != NULL) {
 		ret = obj->textWidth();
@@ -174,7 +173,7 @@ KMETHOD QGraphicsTextItem_textWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 //## String QGraphicsTextItem.toHtml ()
 KMETHOD QGraphicsTextItem_toHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsTextItem *obj = QPtr_to(QGraphicsTextItem* ,sfp[0]);
+	QGraphicsTextItem *obj = QGraphicsItemChild_to(QGraphicsTextItem*, sfp[0]);
 	if (obj != NULL) {
 		QString ret = obj->toHtml();
 		RETURN_(&ret);
@@ -187,7 +186,7 @@ KMETHOD QGraphicsTextItem_toHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 //## String QGraphicsTextItem.toPlainText ()
 KMETHOD QGraphicsTextItem_toPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsTextItem *obj = QPtr_to(QGraphicsTextItem* ,sfp[0]);
+	QGraphicsTextItem *obj = QGraphicsItemChild_to(QGraphicsTextItem*, sfp[0]);
 	if (obj != NULL) {
 		QString ret = obj->toPlainText();
 		//qDebug() << ret;
@@ -201,7 +200,7 @@ KMETHOD QGraphicsTextItem_toPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 //## Boolean QGraphicsTextItem.contains (int point_x, int point_y)
 KMETHOD QGraphicsTextItem_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsTextItem *obj = QPtr_to(QGraphicsTextItem* ,sfp[0]);
+	QGraphicsTextItem *obj = QGraphicsItemChild_to(QGraphicsTextItem*, sfp[0]);
 	bool ret = false;
 	if (obj != NULL) {
 		int point_x = Int_to(int, sfp[1]);
@@ -215,7 +214,7 @@ KMETHOD QGraphicsTextItem_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 //## Boolean QGraphicsTextItem.isObscuredBy (QGraphicsItem item)
 KMETHOD QGraphicsTextItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsTextItem *obj = QPtr_to(QGraphicsTextItem* ,sfp[0]);
+	QGraphicsTextItem *obj = QGraphicsItemChild_to(QGraphicsTextItem*, sfp[0]);
 	bool ret = false;
 	if (obj != NULL) {
 		const QGraphicsItem * item = QPtr_to(const QGraphicsItem *, sfp[1]);
@@ -227,7 +226,7 @@ KMETHOD QGraphicsTextItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 //## virtual int QGraphicsTextItem.type ()
 KMETHOD QGraphicsTextItem_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsTextItem *obj = QPtr_to(QGraphicsTextItem* ,sfp[0]);
+	QGraphicsTextItem *obj = QGraphicsItemChild_to(QGraphicsTextItem*, sfp[0]);
 	int ret = -1;
 	if (obj != NULL) {
 		ret = obj->type();

@@ -62,7 +62,7 @@ KMETHOD QGraphicsEllipseItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 //## konohascript: void QGraphicsEllipseItem.setRect (qreal x, qreal y, qreal width, qreal height)
 KMETHOD QGraphicsEllipseItem_setRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsEllipseItem *obj = QPtr_to(QGraphicsEllipseItem* ,sfp[0]);
+	QGraphicsEllipseItem *obj = QGraphicsItemChild_to(QGraphicsEllipseItem*, sfp[0]);
 	if (obj != NULL) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
@@ -77,7 +77,7 @@ KMETHOD QGraphicsEllipseItem_setRect(CTX ctx, knh_sfp_t *sfp _RIX)
 //## konohascript: void QGraphicsEllipseItem.setSpanAngle (int angle)
 KMETHOD QGraphicsEllipseItem_setSpanAngle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsEllipseItem *obj = QPtr_to(QGraphicsEllipseItem* ,sfp[0]);
+	QGraphicsEllipseItem *obj = QGraphicsItemChild_to(QGraphicsEllipseItem*, sfp[0]);
 	if (obj != NULL) {
 		int angle = Int_to(int, sfp[1]);
 		obj->setSpanAngle(angle);
@@ -89,7 +89,7 @@ KMETHOD QGraphicsEllipseItem_setSpanAngle(CTX ctx, knh_sfp_t *sfp _RIX)
 //## konohascript: void QGraphicsEllipseItem.setStartAngle (int angle)
 KMETHOD QGraphicsEllipseItem_setStartAngle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsEllipseItem *obj = QPtr_to(QGraphicsEllipseItem* ,sfp[0]);
+	QGraphicsEllipseItem *obj = QGraphicsItemChild_to(QGraphicsEllipseItem*, sfp[0]);
 	if (obj != NULL) {
 		int angle = Int_to(int, sfp[1]);
 		obj->setStartAngle(angle);
@@ -101,7 +101,7 @@ KMETHOD QGraphicsEllipseItem_setStartAngle(CTX ctx, knh_sfp_t *sfp _RIX)
 //## konohascript: int QGraphicsEllipseItem.spanAngle ()
 KMETHOD QGraphicsEllipseItem_spanAngle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsEllipseItem *obj = QPtr_to(QGraphicsEllipseItem* ,sfp[0]);
+	QGraphicsEllipseItem *obj = QGraphicsItemChild_to(QGraphicsEllipseItem*, sfp[0]);
 	int ret = -1;
 	if (obj != NULL) {
 		ret = obj->spanAngle();
@@ -113,7 +113,7 @@ KMETHOD QGraphicsEllipseItem_spanAngle(CTX ctx, knh_sfp_t *sfp _RIX)
 //## konohascript: int QGraphicsEllipseItem.startAngle ()
 KMETHOD QGraphicsEllipseItem_startAngle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsEllipseItem *obj = QPtr_to(QGraphicsEllipseItem* ,sfp[0]);
+	QGraphicsEllipseItem *obj = QGraphicsItemChild_to(QGraphicsEllipseItem*, sfp[0]);
 	int ret = -1;
 	if (obj != NULL) {
 		int ret = obj->startAngle();
@@ -125,7 +125,7 @@ KMETHOD QGraphicsEllipseItem_startAngle(CTX ctx, knh_sfp_t *sfp _RIX)
 //## konohascript: Boolean QGraphicsEllipseItem.contains (int point_x, int point_y)
 KMETHOD QGraphicsEllipseItem_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsEllipseItem *obj = QPtr_to(QGraphicsEllipseItem* ,sfp[0]);
+	QGraphicsEllipseItem *obj = QGraphicsItemChild_to(QGraphicsEllipseItem*, sfp[0]);
 	bool ret = false;
 	if (obj != NULL) {
 		int point_x = Int_to(int, sfp[1]);
@@ -140,7 +140,7 @@ KMETHOD QGraphicsEllipseItem_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 //## konohascript: Boolean QGraphicsEllipseItem.isObscuredBy (const QGraphicsItem  item)
 KMETHOD QGraphicsEllipseItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsEllipseItem *obj = QPtr_to(QGraphicsEllipseItem* ,sfp[0]);
+	QGraphicsEllipseItem *obj = QGraphicsItemChild_to(QGraphicsEllipseItem*, sfp[0]);
 	bool ret = false;
 	if (obj != NULL) {
 		const QGraphicsItem * item = QPtr_to(const QGraphicsItem *, sfp[1]);
@@ -153,7 +153,7 @@ KMETHOD QGraphicsEllipseItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 //## konohascript: virtual int QGraphicsEllipseItem.type ()
 KMETHOD QGraphicsEllipseItem_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsEllipseItem *obj = QPtr_to(QGraphicsEllipseItem* ,sfp[0]);
+	QGraphicsEllipseItem *obj = QGraphicsItemChild_to(QGraphicsEllipseItem*, sfp[0]);
 	int ret = -1;
 	if (obj != NULL) {
 		int ret = obj->type();

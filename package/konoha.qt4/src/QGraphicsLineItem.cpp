@@ -53,6 +53,7 @@ KMETHOD QGraphicsLineItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	qreal y2 = Float_to(qreal, sfp[4]);
 	KQGraphicsLineItem *p = new KQGraphicsLineItem(x1, y1, x2, y2);
 	knh_RawPtr_t *o = new_ReturnCppObject(ctx, sfp, p, NULL);
+	//knh_RawPtr_t *o = new_ReturnCppObject(ctx, sfp, dynamic_cast<QGraphicsItem*>(p), NULL);
 	KObject *ko = dynamic_cast<KObject*>(p);
 	ko->kself = o;
 	RETURN_(o);
@@ -61,7 +62,7 @@ KMETHOD QGraphicsLineItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 //## QPen QGraphicsLineItem.pen ()
 KMETHOD QGraphicsLineItem_pen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsLineItem *obj = QPtr_to(QGraphicsLineItem* ,sfp[0]);
+	QGraphicsLineItem *obj = QGraphicsItemChild_to(QGraphicsLineItem*, sfp[0]);
 	if (obj != NULL) {
 		QPen ret = obj->pen();
 	}
@@ -73,7 +74,7 @@ KMETHOD QGraphicsLineItem_pen(CTX ctx, knh_sfp_t *sfp _RIX)
 //## void QGraphicsLineItem.setLine (qreal x1, qreal y1, qreal x2, qreal y2)
 KMETHOD QGraphicsLineItem_setLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsLineItem *obj = QPtr_to(QGraphicsLineItem* ,sfp[0]);
+	QGraphicsLineItem *obj = QGraphicsItemChild_to(QGraphicsLineItem*, sfp[0]);
 	if (obj != NULL) {
 		qreal x1 = Float_to(qreal, sfp[1]);
 		qreal y1 = Float_to(qreal, sfp[2]);
@@ -87,7 +88,7 @@ KMETHOD QGraphicsLineItem_setLine(CTX ctx, knh_sfp_t *sfp _RIX)
 //## void QGraphicsLineItem.setPen (QPen pen)
 KMETHOD QGraphicsLineItem_setPen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsLineItem *obj = QPtr_to(QGraphicsLineItem* ,sfp[0]);
+	QGraphicsLineItem *obj = QGraphicsItemChild_to(QGraphicsLineItem*, sfp[0]);
 	if (obj != NULL) {
 		QPen *pen = QPtr_to(QPen *, sfp[1]);
 		obj->setPen(*pen);
@@ -98,7 +99,7 @@ KMETHOD QGraphicsLineItem_setPen(CTX ctx, knh_sfp_t *sfp _RIX)
 //## Boolean QGraphicsLineItem.contains (int point_x, int point_y)
 KMETHOD QGraphicsLineItem_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsLineItem *obj = QPtr_to(QGraphicsLineItem* ,sfp[0]);
+	QGraphicsLineItem *obj = QGraphicsItemChild_to(QGraphicsLineItem*, sfp[0]);
 	bool ret = false;
 	if (obj != NULL) {
 		int point_x = Int_to(int, sfp[1]);
@@ -112,7 +113,7 @@ KMETHOD QGraphicsLineItem_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 //## Boolean QGraphicsLineItem.isObscuredBy (QGraphicsItem item)
 KMETHOD QGraphicsLineItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsLineItem *obj = QPtr_to(QGraphicsLineItem* ,sfp[0]);
+	QGraphicsLineItem *obj = QGraphicsItemChild_to(QGraphicsLineItem*, sfp[0]);
 	bool ret = false;
 	if (obj != NULL) {
 		const QGraphicsItem * item = QPtr_to(const QGraphicsItem *, sfp[1]);
@@ -124,7 +125,7 @@ KMETHOD QGraphicsLineItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 //## virtual int QGraphicsLineItem.type ()
 KMETHOD QGraphicsLineItem_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsLineItem *obj = QPtr_to(QGraphicsLineItem* ,sfp[0]);
+	QGraphicsLineItem *obj = QGraphicsItemChild_to(QGraphicsLineItem*, sfp[0]);
 	int ret = -1;
 	if (obj != NULL) {
 		ret = obj->type();

@@ -83,6 +83,19 @@ class QColor;
 class QInputEvent extends QEvent;
 class QKeyEvent extends QInputEvent;
 
+class QPixmap;
+class QGraphicsItem extends QObject;
+class QGraphicsEllipseItem extends QGraphicsItem;
+class QGraphicsLineItem extends QGraphicsItem;
+class QGraphicsPixmapItem extends QGraphicsItem;
+class QGraphicsRectItem extends QGraphicsItem;
+class QGraphicsTextItem extends QGraphicsItem;
+class QGraphicsView;
+class QGraphicsScene;
+
+class QPen;
+class QBrush;
+
 @Native QObject QObject.new(QObject parent);
 @Native boolean QObject.connectValueChanged(Func<float> f);
 @Native boolean QObject.connectClicked(Func<boolean> f);
@@ -232,3 +245,62 @@ boolean QAbstractButton.onClicked(Func<boolean> f) {
 
 //QKeyEvent
 @Native int QKeyEvent.key();
+
+//QPen
+@Native QPen QPen.new(QColor color);
+@Native int QPen.capStyle();
+@Native QColor QPen.color();
+@Native float QPen.dashOffset();
+@Native Boolean QPen.isSolid();
+@Native int QPen.joinStyle();
+@Native void QPen.setCapStyle(int style);
+@Native void QPen.setColor(QColor color);
+@Native void QPen.setWidth(int width);
+
+//QPixmap
+@Native QPixmap QPixmap.new(String filepath);
+
+//QGraphicsView
+@Native QGraphicsView QGraphicsView.new(QGraphicsScene scene);
+@Native void QGraphicsView.setRenderHints(int hint);
+@Native void QGraphicsView.show();
+
+//QGraphicsScene
+@Native QGraphicsScene QGraphicsScene.new();
+@Native void QGraphicsScene.setSceneRect(float x, float y, float w, float h);
+@Native void QGraphicsScene.addItem(QGraphicsItem item);
+@Native void QGraphicsScene.addEllipse(int x, int y, int w, int h, QPen pen, QBrush b);
+@Native void QGraphicsScene.addLine(int x1, int y1, int x2, int y2, QPen pen);
+@Native void QGraphicsScene.addRect(int x, int y, int w, int h, QPen pen, QBrush b);
+@Native void QGraphicsScene.addText(String text);
+
+//QGraphicsPixmapItem
+@Native QGraphicsPixmapItem QGraphicsPixmapItem.new();
+@Native void QGraphicsPixmapItem.setPixmap(QPixmap pm);
+
+//QGraphicsTextItem
+@Native QGraphicsTextItem QGraphicsTextItem.new(String t);
+@Native void QGraphicsTextItem.setPos(float x, float y);
+@Native void QGraphicsTextItem.setPlainText(String t);
+@Native String QGraphicsTextItem.toPlainText();
+@Native void QGraphicsTextItem.setWidth(float w);
+//QGraphicsRectItem
+@Native QGraphicsRectItem QGraphicsRectItem.new(float x, float y, float w, float h);
+//@Native QRectF QGraphicsRectItem.rect ();
+void QGraphicsRectItem.setRect (float x, float y, float w, float h);
+@Native QRectF QGraphicsRectItem.boundingRect ();
+@Native Boolean QGraphicsRectItem.contains (int point_x, int point_y);
+
+//QGraphicsEllipseItem
+@Native QGraphicsEllipseItem QGraphicsEllipseItem.new(float x, float y, float w, float h);
+void QGraphicsEllipseItem.setRect (int x, int y, int w, int h);
+@Native void QGraphicsEllipseItem.setSpanAngle(int angle);
+@Native void QGraphicsEllipseItem.setStartAngle(int angle);
+@Native Boolean QGraphicsEllipseItem.contains (int point_x, int point_y);
+
+//QGraphicsLineItem
+@Native QGraphicsLineItem QGraphicsLineItem.new(float x1, float y2, float x2, float y2);
+@Native QPen QGraphicsLineItem.pen();
+@Native void QGraphicsLineItem.setLine(float x1, float y1, float x1, float y2);
+@Native void QGraphicsLineItem.setPen(QPen pen);
+

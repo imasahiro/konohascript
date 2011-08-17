@@ -57,7 +57,7 @@ KMETHOD QGraphicsPixmapItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 //## QPixmap QGraphicsPixmapItem.pixmap ()
 KMETHOD QGraphicsPixmapItem_pixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsPixmapItem *obj = QPtr_to(QGraphicsPixmapItem* ,sfp[0]);
+	QGraphicsPixmapItem *obj = QGraphicsItemChild_to(QGraphicsPixmapItem*, sfp[0]);
 	if (obj != NULL) {
 		QPixmap ret = obj->pixmap();
 		RETURN_(&ret);
@@ -70,7 +70,7 @@ KMETHOD QGraphicsPixmapItem_pixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 //## void QGraphicsPixmapItem.setOffset (qreal x, qreal y)
 KMETHOD QGraphicsPixmapItem_setOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsPixmapItem *obj = QPtr_to(QGraphicsPixmapItem* ,sfp[0]);
+	QGraphicsPixmapItem *obj = QGraphicsItemChild_to(QGraphicsPixmapItem*, sfp[0]);
 	if (obj != NULL) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
@@ -82,7 +82,7 @@ KMETHOD QGraphicsPixmapItem_setOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 //## void QGraphicsPixmapItem.setPixmap (QPixmap pixmap)
 KMETHOD QGraphicsPixmapItem_setPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsPixmapItem *obj = QPtr_to(QGraphicsPixmapItem* ,sfp[0]);
+	QGraphicsPixmapItem *obj = QGraphicsItemChild_to(QGraphicsPixmapItem*, sfp[0]);
 	if (obj != NULL) {
 		const QPixmap *pixmap = QPtr_to(const QPixmap *, sfp[1]);
 		obj->setPixmap(*pixmap);
@@ -93,7 +93,7 @@ KMETHOD QGraphicsPixmapItem_setPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 //## Boolean QGraphicsPixmapItem.contains (int point_x, int point_y)
 KMETHOD QGraphicsPixmapItem_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsPixmapItem *obj = QPtr_to(QGraphicsPixmapItem* ,sfp[0]);
+	QGraphicsPixmapItem *obj = QGraphicsItemChild_to(QGraphicsPixmapItem*, sfp[0]);
 	bool ret = false;
 	if (obj != NULL) {
 		int point_x = Int_to(int, sfp[1]);
@@ -107,7 +107,7 @@ KMETHOD QGraphicsPixmapItem_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 //## Boolean QGraphicsPixmapItem.isObscuredBy (QGraphicsItem item)
 KMETHOD QGraphicsPixmapItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsPixmapItem *obj = QPtr_to(QGraphicsPixmapItem* ,sfp[0]);
+	QGraphicsPixmapItem *obj = QGraphicsItemChild_to(QGraphicsPixmapItem*, sfp[0]);
 	bool ret = false;
 	if (obj != NULL) {
 		const QGraphicsItem * item = QPtr_to(const QGraphicsItem *, sfp[1]);
@@ -119,7 +119,7 @@ KMETHOD QGraphicsPixmapItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 //## virtual int QGraphicsPixmapItem.type ()
 KMETHOD QGraphicsPixmapItem_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	QGraphicsPixmapItem *obj = QPtr_to(QGraphicsPixmapItem* ,sfp[0]);
+	QGraphicsPixmapItem *obj = QGraphicsItemChild_to(QGraphicsPixmapItem*, sfp[0]);
 	int ret = -1;
 	if (obj != NULL) {
 		ret = obj->type();
