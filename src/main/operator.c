@@ -763,7 +763,8 @@ static KMETHOD String_equals(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD String_startsWith(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURNb_(knh_bytes_startsWith(S_tobytes(sfp[0].s), S_tobytes(sfp[1].s)));
+	RETURNb_(knh_strncmp(S_totext(sfp[0].s), S_totext(sfp[1].s), S_size(sfp[1].s)) == 0);
+	//RETURNb_(knh_bytes_startsWith(S_tobytes(sfp[0].s), S_tobytes(sfp[1].s))); older
 }
 
 /* ------------------------------------------------------------------------ */
