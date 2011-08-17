@@ -438,12 +438,11 @@ knh_String_t* new_String2(CTX ctx, knh_class_t cid, const char *text, size_t len
 {
 	const knh_ClassTBL_t *ct = ClassTBL(cid);
 	int isPooling = 0;
-	//if(len == 0) len = knh_strlen(text);
 #ifdef K_USING_STRINGPOOL
-	if(ct->constPoolMapNULL != NULL) {
+	if(!TFLAG_is(int, policy, K_SPOLICY_POOLNEVER) && ct->constPoolMapNULL != NULL) {
 		knh_String_t *s = knh_PtrMap_getS(ctx, ct->constPoolMapNULL, text, len);
 		if(s != NULL) return s;
-		isPooling = !TFLAG_is(int, policy, K_SPOLICY_POOLNEVER);
+		isPooling = 1;
 	}
 #endif
 	knh_String_t *s = (knh_String_t*)new_hObject_(ctx, ct);
@@ -489,52 +488,6 @@ knh_String_t* new_String2(CTX ctx, knh_class_t cid, const char *text, size_t len
 	}
 	return s;
 }
-
-//knh_String_t* new_String_(CTX ctx, knh_class_t cid, knh_bytes_t t, int policy)
-//{
-//	knh_String_t *s;
-//	const knh_ClassTBL_t *ct = ClassTBL(cid);
-//	CHECK_CONST(ctx, s, t.text, t.len);
-//	s = (knh_String_t*)new_hObject_(ctx, ct);
-//	if(t.len + 1 < sizeof(void*) * 2) {
-//		s->str.ubuf = (knh_uchar_t*)(&(s->hashCode));
-//		s->str.len = t.len;
-//		knh_memcpy(s->str.ubuf, t.utext, t.len);
-//		s->str.ubuf[s->str.len] = '\0';
-//		String_setTextSgm(s, 1);
-//	}
-//	else {
-//		s->str.len = t.len;
-//		s->str.ubuf = (knh_uchar_t*)KNH_MALLOC(ctx, KNH_SIZE(s->str.len+1));
-//		knh_memcpy(s->str.ubuf, t.utext, t.len);
-//		s->str.ubuf[s->str.len] = '\0';
-//		s->hashCode = 0;
-//	}
-//	if(TFLAG_is(int, policy, K_SPOLICY_ASCII)) {
-//		String_setASCII(s, 1);
-//	}
-//	else {
-//		knh_String_checkASCII(s);
-//	}
-//	SET_CONST(ctx, s);
-//	return s;
-//}
-//
-//knh_String_t *new_TEXT(CTX ctx, knh_class_t cid, const char* text, int policy)
-//{
-//	size_t len = knh_strlen(text);
-//	knh_String_t *s;
-//	const knh_ClassTBL_t *ct = ClassTBL(cid);
-//	CHECK_CONST(ctx, s, text, len);
-//	s = (knh_String_t*)new_hObject_(ctx, ct);
-//	s->str.text = text;
-//	s->str.len = len;
-//	s->hashCode = 0;
-//	String_setTextSgm(s, 1);
-//	String_setASCII(s, isASCII);
-//	SET_CONST(ctx, s);
-//	return s;
-//}
 
 KNHAPI2(knh_String_t*) new_String(CTX ctx, const char *str)
 {
