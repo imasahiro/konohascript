@@ -32,6 +32,9 @@ objs = \
 	build/QPainter.o\
 	build/QRect.o\
 	build/QColor.o\
+	build/QEvent.o\
+	build/QTextCursor.o\
+	build/QTextDocument.o\
 	build/qt4commons_moc.o\
 
 .PHONY: all
@@ -80,6 +83,15 @@ build/QRect.o: src/QRect.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/QColor.o: src/QColor.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QEvent.o: src/QEvent.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QTextCursor.o: src/QTextCursor.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QTextDocument.o: src/QTextDocument.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/qt4commons_moc.o: src/qt4commons_moc.cpp

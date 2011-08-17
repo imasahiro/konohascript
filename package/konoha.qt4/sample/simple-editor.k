@@ -28,6 +28,7 @@ class SimpleTextEditor {
 		timer.setInterval(500);
 		editor.setPaintEvent(delegate(this, paintEvent));
 		white = new QColor("white");
+		editor.setKeyPressEvent(delegate(this, keyPressEvent));
 	}
 	
 	void blinkCursor(QTimerEvent event) {
@@ -55,6 +56,49 @@ class SimpleTextEditor {
 		r.setWidth(10);
 		painter.setOpacity(0.6);
 		painter.fillRect(r);
+	}
+
+	void keyPressEvent(QKeyEvent event) {
+		if (event.modifiers() == QEvent.META) {
+			//PressedCtrl
+			switch (event.key()) {
+			case QEvent.Key_A:
+				cursor.movePosition(QTextCursor.StartOfLine, QTextCursor.MoveAnchor);
+				break;
+			case QEvent.Key_B:
+				cursor.movePosition(QTextCursor.Left, QTextCursor.MoveAnchor);
+				break;
+			case QEvent.Key_D:
+				cursor.deleteChar();
+				break;
+			case QEvent.Key_E:
+				cursor.movePosition(QTextCursor.EndOfLine, QTextCursor.MoveAnchor);
+				break;
+			case QEvent.Key_F:
+				cursor.movePosition(QTextCursor.Right, QTextCursor.MoveAnchor);
+				break;
+			case QEvent.Key_H:
+				break;
+			case QEvent.Key_K:
+				break;
+			case QEvent.Key_N:
+				cursor.movePosition(QTextCursor.Down, QTextCursor.MoveAnchor);
+				break;
+			case QEvent.Key_P:
+				cursor.movePosition(QTextCursor.Up, QTextCursor.MoveAnchor);
+				break;
+			case QEvent.Key_Y:
+				break;
+			case QEvent.Key_Return:
+				//String script = cursor.document().toPlainText();
+				String script = editor.toPlainText();
+				eval(script);
+				break;
+			default:
+				break;
+			}
+		}
+		editor.setTextCursor(cursor);
 	}
 
 	void show() {

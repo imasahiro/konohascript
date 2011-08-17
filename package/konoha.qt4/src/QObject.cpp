@@ -32,6 +32,7 @@
 
 #include <QObject>
 #include "qt4commons.hpp"
+#include <konoha1/inlinelibs.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -191,6 +192,24 @@ void Connector::paintEventSlot(QPaintEvent *event)
 	//lsfp[K_CALLDELTA+1].fvalue = (knh_float_t)val;
 	//KNH_SETv(lctx, lsfp[K_CALLDELTA+1], event);
 	knh_Func_invoke(lctx, this->paint_event_func, lsfp, 1/*argc*/);
+}
+
+void Connector::keyPressEvent(KQTextEdit *t, knh_Func_t *fo)
+{
+	key_press_event_func = fo;
+	connect(t, SIGNAL(emitKeyPressEvent(QKeyEvent *)), this, SLOT(keyPressEventSlot(QKeyEvent *)));
+}
+
+void Connector::keyPressEventSlot(QKeyEvent *event)
+{
+	CTX lctx = knh_getCurrentContext();
+	knh_sfp_t *lsfp = lctx->esp;
+	knh_class_t cid = knh_getcid(lctx, STEXT("QKeyEvent"));
+	const knh_ClassTBL_t *ct = lctx->share->ClassTBL[cid];
+	knh_RawPtr_t *p = (knh_RawPtr_t*)new_Object_init2(lctx, ct);
+    p->rawptr = event;
+    KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p));
+	knh_Func_invoke(lctx, this->key_press_event_func, lsfp, 1/*argc*/);
 }
 
 //## void QObject.connectValueChanged(Func<float> f)

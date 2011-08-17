@@ -49,10 +49,23 @@ void KQTextEdit::setPaintEvent(knh_Func_t *fo)
 	c->paintEvent(this, fo);
 }
 
+void KQTextEdit::setKeyPressEvent(knh_Func_t *fo)
+{
+	key_press_event_func = fo;
+	c = new Connector();
+	c->keyPressEvent(this, fo);
+}
+
 void KQTextEdit::paintEvent(QPaintEvent *event)
 {
 	emit emitPaintEvent(event);
 	QTextEdit::paintEvent(event);
+}
+
+void KQTextEdit::keyPressEvent(QKeyEvent *event)
+{
+	emit emitKeyPressEvent(event);
+	QTextEdit::keyPressEvent(event);
 }
 
 //## QTextEdit QTextEdit.new(QObject parent)
@@ -68,6 +81,15 @@ KMETHOD QTextEdit_setPaintEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 	KQTextEdit *te = RawPtr_to(KQTextEdit *, sfp[0]);
 	if (te != NULL) {
 		te->setPaintEvent(sfp[1].fo);
+	}
+	RETURNvoid_();
+}
+
+KMETHOD QTextEdit_setKeyPressEvent(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	KQTextEdit *te = RawPtr_to(KQTextEdit *, sfp[0]);
+	if (te != NULL) {
+		te->setKeyPressEvent(sfp[1].fo);
 	}
 	RETURNvoid_();
 }
@@ -129,6 +151,19 @@ KMETHOD QTextEdit_setTextCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 		te->setTextCursor(*cursor);
 	}
 	RETURNvoid_();
+}
+
+//## String QTextEdit.toPlainText()
+KMETHOD QTextEdit_toPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	KQTextEdit *te = RawPtr_to(KQTextEdit *, sfp[0]);
+	if (te != NULL) {
+		QString text = te->toPlainText();
+		const char *t = text.toLocal8Bit().data();
+		RETURN_(new_String(ctx, t));
+	} else {
+		RETURN_(KNH_NULL);
+	}
 }
 
 //## QRect QTextEdit.cursorRect()

@@ -111,7 +111,13 @@ public:
 class KQTextCursor : public QTextCursor, public KObject {
 public:
 	KQTextCursor(QTextCursor cursor) : QTextCursor(cursor) {
-		
+	}
+
+};
+
+class KQTextDocument : public QTextDocument, public KObject {
+public:
+	KQTextDocument(QTextDocument *d) : QTextDocument(d) {
 	}
 
 };
@@ -142,12 +148,16 @@ class KQTextEdit : public QTextEdit, public KObject {
 private:
 	Connector *c;
 	knh_Func_t *paint_event_func;
+	knh_Func_t *key_press_event_func;
 public:
 	KQTextEdit(QWidget *parent);
 	void paintEvent(QPaintEvent *event);
+	void keyPressEvent(QKeyEvent *event);
 	void setPaintEvent(knh_Func_t *fo);
+	void setKeyPressEvent(knh_Func_t *fo);
 signals:
 	void emitPaintEvent(QPaintEvent *event);
+	void emitKeyPressEvent(QKeyEvent *event);
 };
 
 class KQWidget : public QWidget, public KObject {
@@ -164,6 +174,7 @@ public:
 	knh_Func_t *fo;
 	knh_Func_t *timer_event_func;
 	knh_Func_t *paint_event_func;
+	knh_Func_t *key_press_event_func;
 
 	Connector(CTX, knh_Func_t *fo);
 	Connector(void){}
@@ -171,12 +182,14 @@ public:
 	bool connectClicked(CTX, QObject *);
 	void timerEvent(KQTimer *t, knh_Func_t *fo);
 	void paintEvent(KQTextEdit *t, knh_Func_t *fo);
+	void keyPressEvent(KQTextEdit *t, knh_Func_t *fo);
 public slots:
 	void slotValueChanged(qreal);
 	// QAbstractButton
 	void slotClicked(bool);
 	void timerEventSlot(QTimerEvent *event);
 	void paintEventSlot(QPaintEvent *event);
+	void keyPressEventSlot(QKeyEvent *event);
 };
 
 #endif /* QT4COMMONS_HPP_ */

@@ -27,7 +27,7 @@
 // **************************************************************************
 // LIST OF CONTRIBUTERS
 //  kimio - Kimio Kuramitsu, Yokohama National University, Japan
-//  goccy54
+//  goccy54 - Masaaki Goshima, Yokohama National University, Japan
 // **************************************************************************
 
 include "lib:gluelink";
@@ -67,9 +67,11 @@ class QTimer extends QObject;
 class QSslSocket extends QObject;
 
 class QAbstractScrollArea extends QFrame;
-class QTextEdit extends QAbstractScrollArea;
+@Native class QTextEdit extends QAbstractScrollArea;
 
-class QTextCursor;
+@Native class QTextCursor;
+class QTextDocument extends QObject;
+
 class QTimer extends QObject;
 class QTimerEvent;
 
@@ -77,6 +79,9 @@ class QRect;
 class QPainter;
 class QPaintEvent;
 class QColor;
+@Native class QEvent;
+class QInputEvent extends QEvent;
+class QKeyEvent extends QInputEvent;
 
 @Native QObject QObject.new(QObject parent);
 @Native boolean QObject.connectValueChanged(Func<float> f);
@@ -195,6 +200,8 @@ boolean QAbstractButton.onClicked(Func<boolean> f) {
 @Native void QTextEdit.setTextCursor(QTextCursor cursor);
 @Native QRect QTextEdit.cursorRect();
 @Native void QTextEdit.setPaintEvent(Func<QPaintEvent> f);
+@Native void QTextEdit.setKeyPressEvent(Func<QKeyEvent> f);
+@Native String QTextEdit.toPlainText();
 
 //QTimer
 @Native QTimer QTimer.new(Func<QTimerEvent> f, QObject parent);
@@ -211,3 +218,17 @@ boolean QAbstractButton.onClicked(Func<boolean> f) {
 
 //QColor
 @Native QColor QColor.new(String color);
+
+//QTextCursor
+@Native void QTextCursor.movePosition(int pos, int mode);
+@Native void QTextCursor.deleteChar();
+@Native QTextDocument QTextCursor.document();
+
+//QTextDocument
+@Native String QTextDocument.toPlainText();
+
+//QInputEvent
+@Native int QInputEvent.modifiers();
+
+//QKeyEvent
+@Native int QKeyEvent.key();
