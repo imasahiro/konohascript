@@ -3068,25 +3068,36 @@ static KMETHOD InputStream_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 /* [iterators] */
 
+//static ITRNEXT knh_InputStream_nextLine(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	int ch;
+//	knh_Iterator_t *it = sfp[0].it;
+//	knh_InputStream_t *in = (knh_InputStream_t*)DP(it)->source;
+//	knh_cwb_t cwbbuf;
+//	knh_cwb_t *cwb = knh_cwb_open(ctx, &cwbbuf);
+//	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
+//		if(ch == 13) continue;
+//		if(ch == 10) {
+//			//ITRNEXT_(new_String2_cwbconv(ctx, cwb, DP(in)->bconv));
+//			ITRNEXT_(knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
+//		}
+//		knh_Bytes_putc(ctx, cwb->ba, ch);
+//	}
+//	if(knh_cwb_size(cwb) != 0) {
+//		ITRNEXT_(knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
+//	}
+//	ITREND_();
+//}
+
 static ITRNEXT knh_InputStream_nextLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	int ch;
 	knh_Iterator_t *it = sfp[0].it;
 	knh_InputStream_t *in = (knh_InputStream_t*)DP(it)->source;
-	knh_cwb_t cwbbuf;
-	knh_cwb_t *cwb = knh_cwb_open(ctx, &cwbbuf);
-	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
-		if(ch == 13) continue;
-		if(ch == 10) {
-			//ITRNEXT_(new_String2_cwbconv(ctx, cwb, DP(in)->bconv));
-			ITRNEXT_(knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
-		}
-		knh_Bytes_putc(ctx, cwb->ba, ch);
+	knh_String_t *line = knh_InputStream_readLine(ctx, in);
+	if(IS_NULL(line)) {
+		ITREND_();
 	}
-	if(knh_cwb_size(cwb) != 0) {
-		ITRNEXT_(knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
-	}
-	ITREND_();
+	ITRNEXT_(line);
 }
 
 /* ------------------------------------------------------------------------ */
