@@ -65,11 +65,16 @@ extern "C" {
 //#define K_USING_MEMLOG   1
 
 #ifdef K_USING_MEMLOG
+static knh_uint64_t memlog_start = 0;
+
+#define MEMLOG_INIT()  memlog_start = knh_getTimeMilliSecond()
+
 #define MEMLOG(action, fmt, ...) { \
-		knh_logprintf(action, 0, "T%llu, " fmt , knh_getTimeMilliSecond(),  ## __VA_ARGS__);\
+		knh_logprintf(action, 0, "T%llu, " fmt , (knh_getTimeMilliSecond()-memlog_start),  ## __VA_ARGS__);\
 	} \
 
 #else
+#define MEMLOG_INIT()
 #define MEMLOG(action, fmt, ...)
 
 #endif
@@ -852,7 +857,7 @@ knh_Object_t *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
 		SAFEPOINT_SETGC(ctx);
 	}
 	STAT_Object(ctx, ct);
-	MEMLOG("new", "ptr=%p, class=%s", o, ct->cdef->name);
+	MEMLOG("new", "ptr=%p, class=%s", o, S_totext(ct->cdef->sname));
 	return o;
 }
 
@@ -871,7 +876,7 @@ knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 		SAFEPOINT_SETGC(ctx);
 	}
 	STAT_Object(ctx, ct);
-	MEMLOG("new", "ptr=%p, class=%s", o, ct->cdef->name);
+	MEMLOG("new", "ptr=%p, class=%s", o, S_totext(ct->cdef->sname));
 	return o;
 }
 
@@ -890,7 +895,7 @@ void TR_NEW(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 	if(ctx->stat->gcObjectCount == 0) {
 		SAFEPOINT_SETGC(ctx);
 	}
-	MEMLOG("new", "ptr=%p, class=%s", o, ct->cdef->name);
+	MEMLOG("new", "ptr=%p, class=%s", o, S_totext(ct->cdef->sname));
 	KNH_SETv(ctx, sfp[c].o, o);
 }
 
@@ -900,7 +905,7 @@ static void knh_Object_finalfree(CTX ctx, knh_Object_t *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
 	RCGC_(DBG_ASSERT(Object_isRC0(o)));
-	MEMLOG("~Object", "ptr=%p, class=%s", o, ct->cdef->name);
+	MEMLOG("~Object", "ptr=%p, class=%s", o, S_totext(ct->cdef->sname));
 	if(Object_isXData(o)) {
 		knh_PtrMap_rm(ctx, ctx->share->xdataPtrMap, o);
 		Object_setXData(o, 0);
@@ -1188,7 +1193,7 @@ static void gc_mark(CTX ctx)
 static inline void Object_MSfree(CTX ctx, knh_Object_t *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
-	MEMLOG("~Object", "ptr=%p, class=%s", o, ct->cdef->name);
+	MEMLOG("~Object", "ptr=%p, class=%s", o, S_totext(ct->cdef->sname));
 	if(unlikely(Object_isXData(o))) {
 		knh_PtrMap_rm(ctx, ctx->share->xdataPtrMap, o);
 		Object_setXData(o, 0);
