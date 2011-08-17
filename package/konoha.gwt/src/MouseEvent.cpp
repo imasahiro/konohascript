@@ -1,4 +1,4 @@
-#include <visual.hpp>
+#include <gwt.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -9,7 +9,7 @@ KMETHOD MouseEvent_lastScreenPos(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsSceneMouseEvent *event = RawPtr_to(QGraphicsSceneMouseEvent *, sfp[0]);
 	QPointF spos = event->lastScreenPos();
 	KPoint *p = new KPoint(spos.x(), spos.y());
-	RETURN_(new_RawPtr(ctx, sfp[1].p, p));
+	RETURN_(new_ReturnCppObject(ctx, sfp, p, NULL));
 }
 
 KMETHOD MouseEvent_scenePos(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -18,7 +18,7 @@ KMETHOD MouseEvent_scenePos(CTX ctx, knh_sfp_t *sfp _RIX)
 	QPointF spos = event->scenePos();
 	KPoint *p = new KPoint(spos.x(), spos.y());
 	//printf("x: %lf, y: %lf\n", spos.x(), spos.y());
-	RETURN_(new_RawPtr(ctx, sfp[1].p, p));
+	RETURN_(new_ReturnCppObject(ctx, sfp, p, NULL));
 }
 
 static void MouseEvent_free(CTX ctx, knh_RawPtr_t *p)

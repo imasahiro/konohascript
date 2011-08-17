@@ -1,4 +1,4 @@
-#include <visual.hpp>
+#include <gwt.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,7 +10,7 @@ KMETHOD Point_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int x = Int_to(int, sfp[1]);
 	int y = Int_to(int, sfp[2]);
 	KPoint *point = new KPoint(x, y);
-	knh_RawPtr_t *p = new_RawPtr(ctx, sfp[3].p, point);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, point, NULL);
 	RETURN_(p);
 }
 

@@ -1,6 +1,6 @@
 include "lib:gluelink";
 
-@Native class Visual;
+@Native class Gwt;
 @Native class Point;
 @Native class Item;
 @Native class Group extends Item;
@@ -9,7 +9,7 @@ include "lib:gluelink";
 @Native class Texture extends Item;
 @Native class Text extends Item;
 @Native class ComplexItem extends Item;
-class Line extends Item;
+@Native class Line extends Item;
 @Native class TimeLine;
 @Native class Transform;
 @Native class Connector;
@@ -117,7 +117,6 @@ void Scene.setBackgroundColor(Color color);
 void Scene.setSceneRect(int x, int y, int width, int height);
 void Scene.addItem(Item i);
 void Scene.removeItem(Item i);
-void Scene.addComplexItem(ComplexItem c);
 void Scene.removeComplexItem(ComplexItem c);
 void Scene.setMousePressEvent(Func<Scene,MouseEvent=>void> func);
 void Scene.setMouseMoveEvent(Func<Scene,MouseEvent=>void> func);

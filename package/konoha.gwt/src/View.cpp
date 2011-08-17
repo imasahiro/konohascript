@@ -1,4 +1,4 @@
-#include <visual.hpp>
+#include <gwt.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -8,8 +8,8 @@ KMETHOD View_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
 	KScene *s = RawPtr_to(KScene *, sfp[1]);
-	QGraphicsView *v = new QGraphicsView(s->gs);
-	knh_RawPtr_t *p = new_RawPtr(ctx, sfp[2].p, v);
+	QGraphicsView *v = new QGraphicsView(s);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, v, NULL);
 	RETURN_(p);
 }
 
@@ -92,7 +92,7 @@ static knh_IntData_t ViewConstInt[] = {
 
 DEFAPI(void) constView(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
 {
-	kapi->loadIntClassConst(ctx, cid, ViewConstInt);
+	kapi->loadClassIntConst(ctx, cid, ViewConstInt);
 }
 
 #ifdef __cplusplus

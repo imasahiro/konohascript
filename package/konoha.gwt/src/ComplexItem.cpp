@@ -1,4 +1,4 @@
-#include <visual.hpp>
+#include <gwt.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,13 +29,14 @@ KComplexItem::KComplexItem(knh_Array_t *a)
 		gp->setPen(Qt::NoPen);
 		//gp->setBrush(QColor((int)triIt->a.x, (int)triIt->b.x, (int)triIt->c.x));
 		gp_list->append(gp);
+		addToGroup(gp);
 		//fprintf(stderr, "(%f, %f), (%f, %f), (%f, %f)\n", triIt->a.x, triIt->a.y, triIt->b.x, triIt->b.y, triIt->c.x, triIt->c.y);
 	}
 	isDrag = false;
+	setTag(GComplexItem);
 	setObjectName("KComplexItem");
 #ifdef K_USING_BOX2D
 	isStatic = true;
-	shapeDef = new b2FixtureDef();
 #endif
 #ifdef K_USING_OPENCV
 	//setTrackData(filepath_);
@@ -63,6 +64,11 @@ void KComplexItem::addToWorld(KWorld *w)
 	body = world->CreateBody(&bodyDef);
 	int gp_length = gp_list->size();
 	//fprintf(stderr, "length ==%d\n", gp_length);
+	b2FixtureDef shapeDef;
+	shapeDef.density = density;
+	shapeDef.friction = friction;
+	shapeDef.restitution = restitution;
+
 	for (int i = 0; i < gp_length; i++) {
 		QPolygonF poly = gp_list->at(i)->polygon();
 		b2Vec2 vers[3];
@@ -74,30 +80,17 @@ void KComplexItem::addToWorld(KWorld *w)
 		vers[0].Set(p2.x(), -p2.y());
 		b2PolygonShape shape;
 		shape.Set(vers, 3);
-		shapeDef->shape = &shape;
-		body->CreateFixture(shapeDef);
-		//fprintf(stderr, "mass == %f\n", body->GetMass());
+		shapeDef.shape = &shape;
+		body->CreateFixture(&shapeDef);
 	}
+
+	QGraphicsItem *i = dynamic_cast<QGraphicsItem *>(this);
 	knh_GraphicsUserData_t *data = (knh_GraphicsUserData_t *)malloc(sizeof(knh_GraphicsUserData_t));
 	memset(data, 0, sizeof(knh_GraphicsUserData_t));
-	data->cid = cid;
-	data->o = (QObject *)this;
-	body->SetUserData((void *)data);
-}
-
-void KComplexItem::setClassID(CTX ctx)
-{
-	knh_ClassTBL_t *ct = NULL;
-	const knh_ClassTBL_t **cts = ctx->share->ClassTBL;
-	size_t size = ctx->share->sizeClassTBL;
-	for (size_t i = 0; i < size; i++) {
-		if (!strncmp("ComplexItem", S_tochar(cts[i]->sname), sizeof("ComplexItem"))) {
-			ct = (knh_ClassTBL_t *)cts[i];
-			break;
-		}
-	}
-	if (ct == NULL) fprintf(stderr, "ERROR: UNKNOWN CLASS: ComplexItem\n");
-	cid = ct->cid;
+	CTX lctx = knh_getCurrentContext();
+	data->ct = getClassTBL(Texture);
+	data->o = i;
+	body->SetUserData(data);
 }
 
 void KComplexItem::setColor(QColor *c)
@@ -110,42 +103,18 @@ void KComplexItem::setColor(QColor *c)
 	}
 }
 
-void KComplexItem::setDensity(qreal density_)
-{
-	shapeDef->density = density_;
-	if (density_ > 0) {
-		isStatic = false;
-	} else {
-		isStatic = true;
-	}
-}
-
 void KComplexItem::setPosition(int x_, int y_)
 {
 	x = x_;
 	y = y_;
 }
 
-void KComplexItem::adjust(void)
-{
-	b2Vec2 position = body->GetPosition();
-	float32 angle = body->GetAngle();
-	int gp_length = gp_list->length();
-	for (int i = 0; i < gp_length; i++) {
-		//fprintf(stderr, "px[%f], py[%f]\n", position.x, position.y);
-		QGraphicsPolygonItem *gp = gp_list->at(i);
-		gp->setPos(position.x, -position.y);
-		gp->setRotation(-(angle * 360.0) / (2 * M_PI));
-	}
-}
-
-
 KMETHOD ComplexItem_new(Ctx *ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
 	knh_Array_t *a = sfp[1].a;
 	KComplexItem *c = new KComplexItem(a);
-	knh_RawPtr_t *p = new_RawPtr(ctx, sfp[2].p, c);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, c, NULL);
 	RETURN_(p);
 }
 
@@ -169,7 +138,6 @@ KMETHOD ComplexItem_setColor(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 #ifdef K_USING_BOX2D
-
 KMETHOD ComplexItem_setDensity(Ctx *ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
@@ -178,7 +146,6 @@ KMETHOD ComplexItem_setDensity(Ctx *ctx, knh_sfp_t *sfp _RIX)
 	c->setDensity(density);
 	RETURNvoid_();
 }
-
 #endif
 
 static void ComplexItem_free(CTX ctx, knh_RawPtr_t *p)

@@ -1,4 +1,4 @@
-#include <visual.hpp>
+#include <gwt.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -8,7 +8,7 @@ KMETHOD Transform_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
 	QTransform *t = new QTransform();
-	knh_RawPtr_t *p = new_RawPtr(ctx, sfp[1].p, t);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, t, NULL);
 	RETURN_(p);
 }
 

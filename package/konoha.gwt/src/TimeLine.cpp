@@ -1,4 +1,4 @@
-#include <visual.hpp>
+#include <gwt.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -8,7 +8,7 @@ KMETHOD TimeLine_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
 	QTimeLine *t = new QTimeLine();
-	knh_RawPtr_t *p = new_RawPtr(ctx, sfp[1].p, t);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, t, NULL);
 	RETURN_(p);
 }
 
@@ -76,7 +76,7 @@ static knh_IntData_t TimeLineConstInt[] = {
 
 DEFAPI(void) constTimeLine(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
 {
-	kapi->loadIntClassConst(ctx, cid, TimeLineConstInt);
+	kapi->loadClassIntConst(ctx, cid, TimeLineConstInt);
 }
 
 #ifdef __cplusplus

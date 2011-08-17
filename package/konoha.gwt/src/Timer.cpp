@@ -1,18 +1,36 @@
-#include <visual.hpp>
+#include <gwt.hpp>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+KTimer::KTimer(int interval_, knh_Func_t *fo_)
+{
+	interval = interval_;
+	fo = fo_;
+}
+
+int KTimer::start(void)
+{
+	timer_id = startTimer(interval);
+	return timer_id;
+}
+
+void KTimer::timerEvent(QTimerEvent *event)
+{
+	CTX lctx = knh_getCurrentContext();
+	knh_sfp_t *lsfp = lctx->esp;
+	knh_RawPtr_t *p = new_RawPtrFromClass(TimerEvent, event);
+	KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p));
+	knh_Func_invoke(lctx, fo, lsfp, 1/*argc*/);
+}
+
 KMETHOD Timer_new(Ctx *ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
 	int interval = Int_to(int, sfp[1]);
-	//knh_Func_t *fo = (knh_Func_t *)sfp[2].fo;
-	knh_Func_t *fo = (knh_Func_t *)malloc(sizeof(knh_Func_t));
-	memcpy(fo, sfp[2].fo, sizeof(knh_Func_t));
-	KTimer *t = new KTimer(interval, fo);
-	knh_RawPtr_t *p = new_RawPtr(ctx, sfp[3].p, t);
+	KTimer *t = new KTimer(interval, sfp[2].fo);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, t, NULL);
 	RETURN_(p);
 }
 
@@ -20,7 +38,7 @@ KMETHOD Timer_start(Ctx *ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
 	KTimer *t = RawPtr_to(KTimer *, sfp[0]);
-	int timer_id = t->start(ctx, sfp);
+	int timer_id = t->start();
 	RETURNi_(timer_id);
 }
 

@@ -1,4 +1,4 @@
-#include <visual.hpp>
+#include <gwt.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -144,7 +144,7 @@ KMETHOD Camera_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	NO_WARNING();
 	int n = Int_to(int, sfp[1]);
 	CvCapture *c = cvCaptureFromCAM(n);
-	knh_RawPtr_t *p = new_RawPtr(ctx, sfp[2].p, c);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, c, NULL);
 	//cvNamedWindow("hoge", CV_WINDOW_AUTOSIZE);
 	RETURN_(p);
 }
@@ -155,9 +155,8 @@ KMETHOD Camera_queryFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 	IplImage *frame = cvQueryFrame(c);
 	QImage *image = IplImage_convertToQImage(frame, 0.0, 0.0);
 	KTexture *t = new KTexture(image);
-	t->setClassID(ctx);
 	t->ipl = cvCloneImage(frame);
-	knh_RawPtr_t *p = new_RawPtr(ctx, sfp[1].p, t);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, t, NULL);
 	RETURN_(p);
 }
 

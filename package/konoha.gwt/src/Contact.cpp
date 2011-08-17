@@ -1,4 +1,4 @@
-#include <visual.hpp>
+#include <gwt.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,24 +20,14 @@ void KContact::BeginContact(b2Contact *contact)
 	b2Body *bbody = b->GetBody();
 	knh_GraphicsUserData_t *data1 = (knh_GraphicsUserData_t *)abody->GetUserData();
 	knh_GraphicsUserData_t *data2 = (knh_GraphicsUserData_t *)bbody->GetUserData();
-	knh_class_t cid1 = data1->cid;
-	knh_class_t cid2 = data2->cid;
-	QObject *o1 = data1->o;
-	QObject *o2 = data2->o;
-	if (o1 != NULL && o2 != NULL && begin != NULL) {
-		const knh_ClassTBL_t *ct1 = ClassTBL(cid1);
-		const knh_ClassTBL_t *ct2 = ClassTBL(cid2);
-		if (ct1 == NULL || ct2 == NULL) return;
-		knh_RawPtr_t *p1 = (knh_RawPtr_t*)new_hObject_(ctx, ct1);
-		p1->rawptr = o1;
-		KNH_SETv(ctx, sfp[5].o, UPCAST(p1));
-		knh_RawPtr_t *p2 = (knh_RawPtr_t*)new_hObject_(ctx, ct2);
-		p2->rawptr = o2;
-		KNH_SETv(ctx, sfp[6].o, UPCAST(p2));
-		if (begin->baseNULL != NULL) {
-			KNH_SETv(ctx, sfp[K_CALLDELTA].o, begin->baseNULL);
-		}
-		KNH_SCALL(ctx, sfp, 0, begin->mtd, 3);
+	if (data1 != NULL && data2 != NULL && begin != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		knh_RawPtr_t *p1 = new_RawPtr(lctx, data1->ct, data1->o);
+		knh_RawPtr_t *p2 = new_RawPtr(lctx, data2->ct, data2->o);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p1));
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p2));
+		knh_Func_invoke(lctx, begin, lsfp, 2/*argc*/);
 	}
 }
 
@@ -50,24 +40,14 @@ void KContact::EndContact(b2Contact *contact)
 	b2Body *bbody = b->GetBody();
 	knh_GraphicsUserData_t *data1 = (knh_GraphicsUserData_t *)abody->GetUserData();
 	knh_GraphicsUserData_t *data2 = (knh_GraphicsUserData_t *)bbody->GetUserData();
-	knh_class_t cid1 = data1->cid;
-	knh_class_t cid2 = data2->cid;
-	QObject *o1 = data1->o;
-	QObject *o2 = data2->o;
-	if (o1 != NULL && o2 != NULL && end != NULL) {
-		const knh_ClassTBL_t *ct1 = ClassTBL(cid1);
-		const knh_ClassTBL_t *ct2 = ClassTBL(cid2);
-		if (ct1 == NULL || ct2 == NULL) return;
-		knh_RawPtr_t *p1 = (knh_RawPtr_t*)new_hObject_(ctx, ct1);
-		p1->rawptr = o1;
-		KNH_SETv(ctx, sfp[5].o, UPCAST(p1));
-		knh_RawPtr_t *p2 = (knh_RawPtr_t*)new_hObject_(ctx, ct2);
-		p2->rawptr = o2;
-		KNH_SETv(ctx, sfp[6].o, UPCAST(p2));
-		if (begin->baseNULL != NULL) {
-			KNH_SETv(ctx, sfp[K_CALLDELTA].o, end->baseNULL);
-		}
-		KNH_SCALL(ctx, sfp, 0, end->mtd, 3);
+	if (data1 != NULL && data2 != NULL && end != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		knh_RawPtr_t *p1 = new_RawPtr(lctx, data1->ct, data1->o);
+		knh_RawPtr_t *p2 = new_RawPtr(lctx, data2->ct, data2->o);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p1));
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p2));
+		knh_Func_invoke(lctx, end, lsfp, 2/*argc*/);
 	}
 }
 

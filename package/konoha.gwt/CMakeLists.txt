@@ -45,8 +45,8 @@ set(PACKAGE_SOURCE_CODE
 	src/Video.cpp
 	src/View.cpp
 	src/World.cpp
-	src/moc_visual.cpp
-	src/visual.cpp)
+	src/moc_gwt.cpp
+	src/gwt.cpp)
 set(PACKAGE_SCRIPT_CODE ./gwt.k)
 
 set(PACKAGE_NAME    ${PROJECT_NAME})

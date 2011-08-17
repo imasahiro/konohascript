@@ -1,4 +1,4 @@
-#include <visual.hpp>
+#include <gwt.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,7 +11,7 @@ KMETHOD Brush_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QColor *c = new QColor(s);
 	QBrush *b = new QBrush();
 	b->setColor(*c);
-	knh_RawPtr_t *p = new_RawPtr(ctx, sfp[2].p, b);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, b, NULL);
 	RETURN_(p);
 }
 

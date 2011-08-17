@@ -1,97 +1,51 @@
-#include <visual.hpp>
+#include <gwt.hpp>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void KGraphicsPixmapItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-	emit emitMousePressEvent(event);
-}
-
-void KGraphicsPixmapItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-	emit emitMouseReleaseEvent(event);
-}
-
-void KGraphicsPixmapItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-	emit emitMouseMoveEvent(event);
-}
-
-void KGraphicsPixmapItem::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
-{
-	emit emitDragEnterEvent(event);
-}
-
 void KTexture::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	//fprintf(stderr, "KTexture::mousePressEvent\n");
-	isDrag = true;
-	if (ctx != NULL && sfp != NULL && mouse_press_func != NULL) {
-		const knh_ClassTBL_t *ct1 = ClassTBL(cid);
-		const knh_ClassTBL_t *ct2 = ClassTBL(mouse_event_cid);
-		if (ct1 == NULL || ct2 == NULL) return;
-		knh_RawPtr_t *p1 = (knh_RawPtr_t*)new_hObject_(ctx, ct1);
-		p1->rawptr = this;
-		KNH_SETv(ctx, sfp[5].o, UPCAST(p1));
-		knh_RawPtr_t *p2 = (knh_RawPtr_t*)new_hObject_(ctx, ct2);
-		p2->rawptr = event;
-		KNH_SETv(ctx, sfp[6].o, UPCAST(p2));
-		if (mouse_press_func->baseNULL != NULL) {
-			KNH_SETv(ctx, sfp[K_CALLDELTA].o, mouse_press_func->baseNULL);
-		}
-		KNH_SCALL(ctx, sfp, 0, mouse_press_func->mtd, 3);
+	if (mouse_press_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		knh_RawPtr_t *p1 = new_RawPtrFromClass(Texture, this);
+		knh_RawPtr_t *p2 = new_RawPtrFromClass(MouseEvent, event);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p1));
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p2));
+		knh_Func_invoke(lctx, mouse_press_func, lsfp, 2/*argc*/);
 	}
 }
 
 void KTexture::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-	//fprintf(stderr, "KTexture::mouseMoveEvent\n");
-	isDrag = true;
-	if (ctx != NULL && sfp != NULL && mouse_move_func != NULL) {
-		const knh_ClassTBL_t *ct1 = ClassTBL(cid);
-		const knh_ClassTBL_t *ct2 = ClassTBL(mouse_event_cid);
-		if (ct1 == NULL || ct2 == NULL) return;
-		knh_RawPtr_t *p1 = (knh_RawPtr_t*)new_hObject_(ctx, ct1);
-		p1->rawptr = this;
-		KNH_SETv(ctx, sfp[5].o, UPCAST(p1));
-		knh_RawPtr_t *p2 = (knh_RawPtr_t*)new_hObject_(ctx, ct2);
-		p2->rawptr = event;
-		KNH_SETv(ctx, sfp[6].o, UPCAST(p2));
-		if (mouse_move_func->baseNULL != NULL) {
-			KNH_SETv(ctx, sfp[K_CALLDELTA].o, mouse_move_func->baseNULL);
-		}
-		KNH_SCALL(ctx, sfp, 0, mouse_move_func->mtd, 3);
+	if (mouse_move_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		knh_RawPtr_t *p1 = new_RawPtrFromClass(Texture, this);
+		knh_RawPtr_t *p2 = new_RawPtrFromClass(MouseEvent, event);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p1));
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p2));
+		knh_Func_invoke(lctx, mouse_move_func, lsfp, 2/*argc*/);
 	}
 }
 
 void KTexture::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-	//fprintf(stderr, "KTexture::mouseReleaseEvent\n");
-	isDrag = false;
-	if (ctx != NULL && sfp != NULL && mouse_release_func != NULL) {
-		const knh_ClassTBL_t *ct1 = ClassTBL(cid);
-		const knh_ClassTBL_t *ct2 = ClassTBL(mouse_event_cid);
-		if (ct1 == NULL || ct2 == NULL) return;
-		knh_RawPtr_t *p1 = (knh_RawPtr_t*)new_hObject_(ctx, ct1);
-		p1->rawptr = this;
-		KNH_SETv(ctx, sfp[5].o, UPCAST(p1));
-		knh_RawPtr_t *p2 = (knh_RawPtr_t*)new_hObject_(ctx, ct2);
-		p2->rawptr = event;
-		KNH_SETv(ctx, sfp[6].o, UPCAST(p2));
-		if (mouse_release_func->baseNULL != NULL) {
-			KNH_SETv(ctx, sfp[K_CALLDELTA].o, mouse_release_func->baseNULL);
-		}
-		KNH_SCALL(ctx, sfp, 0, mouse_release_func->mtd, 3);
+	if (mouse_release_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		knh_RawPtr_t *p1 = new_RawPtrFromClass(Texture, this);
+		knh_RawPtr_t *p2 = new_RawPtrFromClass(MouseEvent, event);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p1));
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p2));
+		knh_Func_invoke(lctx, mouse_release_func, lsfp, 2/*argc*/);
 	}
 }
 
 void KTexture::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
 {
-	fprintf(stderr, "KTexture::dragEnterEvent\n");
 	(void)event;
-	//event->setAccepted(event->mimeData()->hasFormat("text/plain"));
 }
 
 #ifdef K_USING_OPENCV
@@ -144,19 +98,16 @@ KTexture::KTexture(const char *filepath_)
 {
 	QString filepath(filepath_);
 	p = new QPixmap(filepath);
-	gp = new KGraphicsPixmapItem();
-	gp->setPixmap(*p);
+	setPixmap(*p);
 	isDrag = false;
 	setObjectName("KTexture");
 	ce = new QGraphicsColorizeEffect();
 	setConnect();
-	mouse_event_cid = 0;
 	mouse_press_func = NULL;
 	mouse_release_func = NULL;
 	mouse_move_func = NULL;
 #ifdef K_USING_BOX2D
 	isStatic = true;
-	shapeDef = new b2FixtureDef();
 #endif
 #ifdef K_USING_OPENCV
 	//setTrackData(filepath_);
@@ -165,34 +116,23 @@ KTexture::KTexture(const char *filepath_)
 
 void KTexture::setConnect(void)
 {
-	connect(gp, SIGNAL(emitMousePressEvent(QGraphicsSceneMouseEvent*)),
-			this, SLOT(mousePressEvent(QGraphicsSceneMouseEvent*)));
-	connect(gp, SIGNAL(emitMouseMoveEvent(QGraphicsSceneMouseEvent*)),
-			this, SLOT(mouseMoveEvent(QGraphicsSceneMouseEvent*)));
-	connect(gp, SIGNAL(emitMouseReleaseEvent(QGraphicsSceneMouseEvent*)),
-			this, SLOT(mouseReleaseEvent(QGraphicsSceneMouseEvent*)));
-	connect(gp, SIGNAL(emitDragEnterEvent(QGraphicsSceneDragDropEvent*)),
-			this, SLOT(dragEnterEvent(QGraphicsSceneDragDropEvent*)));
+
 }
 
 KTexture::KTexture(QImage *image)
 {
 	p = new QPixmap();
 	QPixmap pixmap = p->fromImage(*image);
-	gp = new KGraphicsPixmapItem();
-	gp->setPixmap(pixmap);
-	//delete p;
+	setPixmap(pixmap);
 	isDrag = false;
 	setObjectName("KTexture");
 	ce = new QGraphicsColorizeEffect();
 	setConnect();
-	mouse_event_cid = 0;
 	mouse_press_func = NULL;
 	mouse_release_func = NULL;
 	mouse_move_func = NULL;
 #ifdef K_USING_BOX2D
 	isStatic = true;
-	shapeDef = new b2FixtureDef();
 #endif
 #ifdef K_USING_OPENCV
 	//setTrackData();
@@ -202,19 +142,16 @@ KTexture::KTexture(QImage *image)
 KTexture::KTexture(QPixmap *image)
 {
 	p = NULL;
-	gp = new KGraphicsPixmapItem();
-	gp->setPixmap(*image);
+	setPixmap(*image);
 	isDrag = false;
 	setObjectName("KTexture");
 	ce = new QGraphicsColorizeEffect();
 	setConnect();
-	mouse_event_cid = 0;
 	mouse_press_func = NULL;
 	mouse_release_func = NULL;
 	mouse_move_func = NULL;
 #ifdef K_USING_BOX2D
 	isStatic = true;
-	shapeDef = new b2FixtureDef();
 #endif
 #ifdef K_USING_OPENCV
 	//setTrackData();
@@ -226,32 +163,25 @@ KTexture::~KTexture(void)
 	//delete p;
 	//delete gp;
 	//delete ce;
-#ifdef K_USING_BOX2D
-	//delete shapeDef;
-	if (bodyDef) {
-		//delete bodyDef;
-	}
-#endif
 }
 
 QList<KTexture*> *KTexture::split(CTX ctx, int row, int col)
 {
 	QList<KTexture*> *list = new QList<KTexture*>();
-	QPixmap p = gp->pixmap();
+	QPixmap p = pixmap();
 	int width = p.width();
 	int height = p.height();
 	for (int i = 0; i < row; i++){
 		for (int j = 0; j < col; j++){
 			QPixmap pixmap = p.copy(width / row * i, height / col * j, width / row, height / col);
 			KTexture *t = new KTexture(&pixmap);
-			t->setClassID(ctx);
 			list->append(t);
 		}
 	}
 	return list;
 }
 
-void KTexture::setRect(KRect *r)
+void KTexture::setRectShape(KRect *r)
 {
 	x = r->x;
 	y = r->y;
@@ -259,41 +189,16 @@ void KTexture::setRect(KRect *r)
 	height = r->height;
 	QPixmap p_;
 	if (p == NULL) {
-		QPixmap p = gp->pixmap();
+		QPixmap p = pixmap();
 		p_ = p.scaled(width, height);
 	} else {
 		p_ = p->scaled(width, height);
 	}
-	gp->setPixmap(p_);
-	gp->setPos(x, y);
+	setPixmap(p_);
+	setPos(x, y);
 }
 
 #ifdef K_USING_BOX2D
-void KTexture::setRotation(qreal rotation_)
-{
-	rotation = rotation_;
-}
-
-void KTexture::setDensity(qreal density_)
-{
-	shapeDef->density = density_;
-	if (density_ > 0) {
-		isStatic = false;
-	} else {
-		isStatic = true;
-	}
-}
-
-void KTexture::setFriction(qreal friction_)
-{
-	shapeDef->friction = friction_;
-}
-
-void KTexture::setRestitution(qreal restitution_)
-{
-	shapeDef->restitution = restitution_;
-}
-
 void KTexture::addToWorld(KWorld *w)
 {
 	b2World *world = w->world;
@@ -302,61 +207,32 @@ void KTexture::addToWorld(KWorld *w)
 		bodyDef.type = b2_dynamicBody;
 	}
 	bodyDef.position.Set(x, -y);
-	bodyDef.angle = -(gp->rotation() * (2 * M_PI)) / 360.0;
+	bodyDef.angle = -(rotation() * (2 * M_PI)) / 360.0;
 	body = world->CreateBody(&bodyDef);
-	b2PolygonShape *shape = new b2PolygonShape();
-	shape->SetAsBox(width / 2, height / 2,
-					*(new b2Vec2(width / 2, -height / 2)), 0.0);
-	shapeDef->shape = shape;
-	//fprintf(stderr, "density = [%f]\n", shapeDef->density);
-	body->CreateFixture(shapeDef);
+
+	b2FixtureDef shapeDef;
+	b2PolygonShape shape;
+	shape.SetAsBox(width / 2, height / 2, b2Vec2(width / 2, -height / 2), 0.0);
+	shapeDef.shape = &shape;
+	shapeDef.density = density;
+	shapeDef.friction = friction;
+	shapeDef.restitution = restitution;
+	body->CreateFixture(&shapeDef);
+
+	QGraphicsItem *i = dynamic_cast<QGraphicsItem *>(this);
 	knh_GraphicsUserData_t *data = (knh_GraphicsUserData_t *)malloc(sizeof(knh_GraphicsUserData_t));
 	memset(data, 0, sizeof(knh_GraphicsUserData_t));
-	data->cid = cid;
-	data->o = (QObject *)this;
-	body->SetUserData((void *)data);
-	//fprintf(stderr, "this = [%p]\n", this);
-	//fprintf(stderr, "body = [%p]\n", body);
-}
-
-void KTexture::adjust(void)
-{
-	b2Vec2 position = body->GetPosition();
-	qreal angle = body->GetAngle();
-	if (isDrag) {
-	} else {
-		x = position.x;
-		y = -position.y;
-		//fprintf(stderr, "x = [%d], y = [%d]\n", x, y);
-		gp->setPos(x, y);
-		gp->setRotation(-(angle * 360.0) / (2 * M_PI));
-	}
+	CTX lctx = knh_getCurrentContext();
+	data->ct = getClassTBL(Texture);
+	data->o = i;
+	body->SetUserData(data);
 }
 #endif
-
-void KTexture::setClassID(CTX ctx)
-{
-	knh_ClassTBL_t *ct = NULL;
-	knh_ClassTBL_t *mouse_event_ct = NULL;
-	const knh_ClassTBL_t **cts = ctx->share->ClassTBL;
-	size_t size = ctx->share->sizeClassTBL;
-	for (size_t i = 0; i < size; i++) {
-		if (!strncmp("Texture", S_tochar(cts[i]->sname), sizeof("Texture"))) {
-			ct = (knh_ClassTBL_t *)cts[i];
-		} else if (!strncmp("MouseEvent", S_tochar(cts[i]->sname), sizeof("MouseEvent"))) {
-			mouse_event_ct = (knh_ClassTBL_t *)cts[i];
-		}
-	}
-	if (ct == NULL) fprintf(stderr, "ERROR: UNKNOWN CLASS: Texture\n");
-	if (mouse_event_ct == NULL) fprintf(stderr, "ERROR: UNKNOWN CLASS: MouseEvent\n");
-	cid = ct->cid;
-	mouse_event_cid = mouse_event_ct->cid;
-}
 
 void KTexture::setColor(QColor *c)
 {
 	ce->setColor(*c);
-	gp->setGraphicsEffect(ce);
+	setGraphicsEffect(ce);
 }
 
 KMETHOD Texture_new(Ctx *ctx, knh_sfp_t *sfp _RIX)
@@ -364,8 +240,8 @@ KMETHOD Texture_new(Ctx *ctx, knh_sfp_t *sfp _RIX)
 	NO_WARNING();
 	const char *filepath = String_to(const char *, sfp[1]);
 	KTexture *t = new KTexture(filepath);
-	t->setClassID(ctx);
-	knh_RawPtr_t *p = new_RawPtr(ctx, sfp[2].p, t);
+	t->setTag(GTexture);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, t, NULL);
 	RETURN_(p);
 }
 
@@ -374,7 +250,7 @@ KMETHOD Texture_setRect(Ctx *ctx, knh_sfp_t *sfp _RIX)
 	NO_WARNING();
 	KTexture *t = RawPtr_to(KTexture *, sfp[0]);
 	KRect *r = RawPtr_to(KRect *, sfp[1]);
-	t->setRect(r);
+	t->setRectShape(r);
 	RETURNvoid_();
 }
 
@@ -397,7 +273,7 @@ KMETHOD Texture_split(CTX ctx, knh_sfp_t *sfp _RIX)
 	int size = row * col;
 	knh_Array_t *a = new_Array0(ctx, size);
 	for (int i = 0; i < size; i++) {
-		knh_Array_add(ctx, a, (Object *)new_RawPtr(ctx, sfp[0].p, panels->at(i)));
+		knh_Array_add(ctx, a, (Object *)new_ReturnCppObject(ctx, sfp, panels->at(i), NULL));
 	}
 	RETURN_(a);
 }
@@ -546,7 +422,7 @@ KMETHOD Texture_detectHuman(CTX ctx, knh_sfp_t *sfp _RIX)
 		for (int j = 0; j < obj_size; j++) {
 			KPoint *p = obj->at(j);
 			//fprintf(stderr, "detectHuman: (x, y) = (%d, %d)\n", p->x, p->y);
-			knh_Array_add(ctx, elem, (Object *)new_RawPtr(ctx, sfp[2].p, new KPoint(p->x, p->y)));
+			knh_Array_add(ctx, elem, (Object *)new_ReturnCppObject(ctx, sfp, new KPoint(p->x, p->y), NULL));
 			delete p;
 		}
 		knh_Array_add(ctx, a, (Object *)elem);
@@ -562,8 +438,6 @@ KMETHOD Texture_setMousePressEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 	KTexture *t = RawPtr_to(KTexture *, sfp[0]);
 	knh_Func_t *fo = sfp[1].fo;
 	t->mouse_press_func = fo;
-	t->ctx = (knh_context_t *)ctx;
-	t->sfp = sfp;
 	RETURNvoid_();
 }
 
@@ -573,8 +447,6 @@ KMETHOD Texture_setMouseReleaseEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 	KTexture *t = RawPtr_to(KTexture *, sfp[0]);
 	knh_Func_t *fo = sfp[1].fo;
 	t->mouse_release_func = fo;
-	t->ctx = (knh_context_t *)ctx;
-	t->sfp = sfp;
 	RETURNvoid_();
 }
 
@@ -584,8 +456,6 @@ KMETHOD Texture_setMouseMoveEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 	KTexture *t = RawPtr_to(KTexture *, sfp[0]);
 	knh_Func_t *fo = sfp[1].fo;
 	t->mouse_move_func = fo;
-	t->ctx = (knh_context_t *)ctx;
-	t->sfp = sfp;
 	RETURNvoid_();
 }
 

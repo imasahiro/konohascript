@@ -1,4 +1,4 @@
-#include <visual.hpp>
+#include <gwt.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -8,7 +8,7 @@ KMETHOD Pen_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
 	QPen *pen = new QPen();
-	knh_RawPtr_t *p = new_RawPtr(ctx, sfp[1].p, pen);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, pen, NULL);
 	RETURN_(p);
 }
 
@@ -105,7 +105,7 @@ static knh_IntData_t PenConstInt[] = {
 
 DEFAPI(void) constPen(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
 {
-	kapi->loadIntClassConst(ctx, cid, PenConstInt);
+	kapi->loadClassIntConst(ctx, cid, PenConstInt);
 }
 #ifdef __cplusplus
 }

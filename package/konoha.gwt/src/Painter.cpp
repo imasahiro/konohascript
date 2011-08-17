@@ -1,4 +1,4 @@
-#include <visual.hpp>
+#include <gwt.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -8,7 +8,7 @@ KMETHOD Painter_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
 	QPainter *painter = new QPainter();
-	knh_RawPtr_t *p = new_RawPtr(ctx, sfp[1].p, painter);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, painter, NULL);
 	RETURN_(p);
 }
 
@@ -44,7 +44,7 @@ static knh_IntData_t PainterConstInt[] = {
 
 DEFAPI(void) constPainter(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
 {
-	kapi->loadIntClassConst(ctx, cid, PainterConstInt);
+	kapi->loadClassIntConst(ctx, cid, PainterConstInt);
 }
 
 #ifdef __cplusplus

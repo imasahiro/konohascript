@@ -1,14 +1,19 @@
-#include <visual.hpp>
+#include <gwt.hpp>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+KGroup::KGroup(void)
+{
+	setObjectName("KGroup");
+}
+
 KMETHOD Group_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
 	KGroup *g = new KGroup();
-	knh_RawPtr_t *p = new_RawPtr(ctx, sfp[1].p, g);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, g, NULL);
 	RETURN_(p);
 }
 
@@ -16,7 +21,7 @@ KMETHOD Group_addToGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
 	KGroup *g = RawPtr_to(KGroup *, sfp[0]);
-	QGraphicsItem *i = KITEM_to(sfp[1].p);
+	QGraphicsItem *i = QGraphicsItem_to(sfp[1]);
 	g->addToGroup(i);
 	RETURNvoid_();
 }
@@ -24,9 +29,11 @@ KMETHOD Group_addToGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 static void Group_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+#ifdef DEBUG_MODE
 	fprintf(stderr, "Group:free\n");
-	KGroup *g = (KGroup *)p->rawptr;
-	delete g;
+#endif
+	//KGroup *g = (KGroup *)p->rawptr;
+	//delete g;
 }
 
 static void Group_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
@@ -34,7 +41,9 @@ static void Group_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 	(void)ctx;
 	(void)p;
 	(void)tail_;
+#ifdef DEBUG_MODE
 	fprintf(stderr, "Group:reftrace\n");
+#endif
 	//QApplication *app = (QApplication *)p->rawptr;
 }
 

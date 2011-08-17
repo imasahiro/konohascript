@@ -1,4 +1,4 @@
-#include <visual.hpp>
+#include <gwt.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -6,16 +6,15 @@ extern "C" {
 
 KText::KText(QString text)
 {
-	gt = new QGraphicsTextItem();
-	gt->setPlainText(text);
+	setPlainText(text);
 	setObjectName("KText");
 	isDrag = false;
 	//TODO
-	width = text.size() * 70;
+	width = text.size() * 7;
 	height = 10;
+	setTag(GText);
 #ifdef K_USING_BOX2D
 	isStatic = true;
-	shapeDef = new b2FixtureDef();
 #endif
 }
 
@@ -26,30 +25,6 @@ void KText::setPosition(int x_, int y_)
 }
 
 #ifdef K_USING_BOX2D
-void KText::setRotation(qreal rotation_)
-{
-	rotation = rotation_;
-}
-
-void KText::setDensity(qreal density_)
-{
-	shapeDef->density = density_;
-	if (density_ > 0) {
-		isStatic = false;
-	} else {
-		isStatic = true;
-	}
-}
-void KText::setFriction(qreal friction_)
-{
-	shapeDef->friction = friction_;
-}
-
-void KText::setRestitution(qreal restitution_)
-{
-	shapeDef->restitution = restitution_;
-}
-
 void KText::addToWorld(KWorld *w)
 {
 	b2World *world = w->world;
@@ -58,60 +33,35 @@ void KText::addToWorld(KWorld *w)
 		bodyDef.type = b2_dynamicBody;
 	}
 	bodyDef.position.Set(x, -y);
-	bodyDef.angle = -(gt->rotation() * (2 * M_PI)) / 360.0;
+	bodyDef.angle = -(rotation() * (2 * M_PI)) / 360.0;
 	body = world->CreateBody(&bodyDef);
-	b2PolygonShape *shape = new b2PolygonShape();
-	shape->SetAsBox(width / 2, height / 2,
-					*(new b2Vec2(3 + width / 2, -height / 2 - 5)), 0.0);
-	shapeDef->shape = shape;
-	//fprintf(stderr, "density = [%f]\n", shapeDef->density);
-	body->CreateFixture(shapeDef);
+
+	b2FixtureDef shapeDef;
+	b2PolygonShape shape;
+	shape.SetAsBox(width / 2, height / 2, b2Vec2(3 + width / 2, -height / 2 - 5), 0.0);
+	shapeDef.shape = &shape;
+	shapeDef.density = density;
+	shapeDef.friction = friction;
+	shapeDef.restitution = restitution;
+	body->CreateFixture(&shapeDef);
+
+	QGraphicsItem *i = dynamic_cast<QGraphicsItem *>(this);
 	knh_GraphicsUserData_t *data = (knh_GraphicsUserData_t *)malloc(sizeof(knh_GraphicsUserData_t));
 	memset(data, 0, sizeof(knh_GraphicsUserData_t));
-	data->cid = cid;
-	data->o = (QObject *)this;
-	body->SetUserData((void *)data);
-	//fprintf(stderr, "this = [%p]\n", this);
-	//fprintf(stderr, "body = [%p]\n", body);
+	CTX lctx = knh_getCurrentContext();
+	data->ct = getClassTBL(Text);
+	data->o = i;
+	body->SetUserData(data);
 }
 
-void KText::adjust(void)
-{
-	b2Vec2 position = body->GetPosition();
-	qreal angle = body->GetAngle();
-	if (isDrag) {
-	} else {
-		x = position.x;
-		y = -position.y;
-		//fprintf(stderr, "x = [%d], y = [%d]\n", x, y);
-		gt->setPos(x, y);
-		gt->setRotation(-(angle * 360.0) / (2 * M_PI));
-	}
-}
 #endif
-
-void KText::setClassID(CTX ctx)
-{
-	knh_ClassTBL_t *ct = NULL;
-	const knh_ClassTBL_t **cts = ctx->share->ClassTBL;
-	size_t size = ctx->share->sizeClassTBL;
-	for (size_t i = 0; i < size; i++) {
-		if (!strncmp("Text", S_tochar(cts[i]->sname), sizeof("Text"))) {
-			ct = (knh_ClassTBL_t *)cts[i];
-			break;
-		}
-	}
-	if (ct == NULL) fprintf(stderr, "ERROR: UNKNOWN CLASS: Text\n");
-	cid = ct->cid;
-}
 
 KMETHOD Text_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
 	QString text = String_to(QString, sfp[1]);
 	KText *t = new KText(text);
-	t->setClassID(ctx);
-	knh_RawPtr_t *p = new_RawPtr(ctx, sfp[2].p, t);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, t, NULL);
 	RETURN_(p);
 }
 
@@ -128,7 +78,7 @@ KMETHOD Text_setPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Text_setColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	QGraphicsTextItem *t = (QGraphicsTextItem *)KITEM_to(sfp[0].p);
+	KText *t = RawPtr_to(KText *, sfp[0]);
 	QColor *c = RawPtr_to(QColor *, sfp[1]);
 	(void)t;
 	(void)c;

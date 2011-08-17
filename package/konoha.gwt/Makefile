@@ -12,8 +12,8 @@ LDLIBS = $(LFLAGS) $(LIBS) -lkonoha1 -lBox2D -ldel
 
 pkgname = gwt
 library = "$(pkgname).dylib"
-objs = build/visual.o\
-	build/moc_visual.o\
+objs = build/moc_gwt.o\
+	build/gwt.o\
 	build/Application.o\
 	build/Ellipse.o\
 	build/Item.o\
@@ -46,10 +46,10 @@ objs = build/visual.o\
 all: $(library)
 #	cat interface/hierarchy.k interface/main.k interface/widget.k interface/gesture.k interface/physics.k interface/rect.k interface/ellipse.k interface/text.k interface/pixmap.k interface/joint.k interface/view.k interface/color.k > qt.k
 
-build/visual.o: src/visual.cpp
+build/gwt.o : src/gwt.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
-build/moc_visual.o: src/moc_visual.cpp
+build/moc_gwt.o: src/moc_gwt.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/Application.o: src/Application.cpp
@@ -136,7 +136,10 @@ build/Video.o: src/Video.cpp
 $(library): $(objs)
 	$(CC) -dynamiclib -o $@ $^ $(LDLIBS)
 
-src/moc_visual.cpp: include/visual.hpp
+#src/moc_gwt.cpp: include/gwt.hpp
+#	$(QTDIR)/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $^ -o $@
+
+src/moc_gwt.cpp: include/gwt.hpp
 	$(QTDIR)/bin/moc $(DEFINES) $(INCPATH) -D__APPLE__ -D__GNUC__ $^ -o $@
 
 .PHONY: clean
