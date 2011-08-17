@@ -114,8 +114,7 @@ KNHAPI2(knh_context_t*) knh_getCurrentContext(void)
 	knh_context_t* ctx = curctx;
 #endif
 	if(ctx == NULL) {
-		fprintf(stderr, "NOT IN THE CONTEXT OF KONOHA\n");
-		exit(1);
+		KNH_DIE("NOT IN KONOHA CTX");
 	}
 	return ctx;
 }

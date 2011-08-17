@@ -2803,8 +2803,10 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 	return NEWPARAMs_typing(ctx, stmt, new_cid, mn, 1/*needsTypingPARAMs*/);
 }
 
+
+
 /* ------------------------------------------------------------------------ */
-/* [OP] */
+/* [OPR] */
 
 static knh_class_t OPADD_bcid(CTX ctx, knh_Stmt_t *stmt)
 {
@@ -2886,6 +2888,9 @@ static knh_Token_t* OPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t tcid)
 		if(TT_isBINARY(TT_(tkOP)) && opsize != 2) {
 			return ERROR_MustBe(ctx, _("binary operator"), knh_getopname(mn));
 		}
+//		if(mn == MN_opWITH) {
+//			return WITH_typing(ctx, stmt, tcid);
+//		}
 		if(mn != MN_opEXISTS) {
 			for(i = 1; i < opsize + 1; i++) {
 				TYPING_UntypedExpr(ctx, stmt, i);
@@ -3024,6 +3029,7 @@ static knh_Token_t* OPR_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t tcid)
 		}
 		goto L_LOOKUPMETHOD;
 	}
+
 	case MN_opITR:
 	{
 		if(STT_(stmtNN(stmt, 1)) == STT_CALL) {
