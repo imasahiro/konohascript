@@ -1922,7 +1922,7 @@ static int _IF_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx _UNUSE
 	PHI_asm(ctx, local, prev, st1, st2, bbThen, bbElse, bbMerge);
 	KNH_SETv(ctx, DP(ctx->gma)->lstacks, prev);
 
-	END_LOCAL_NONGC(ctx, lsfp);
+	END_LOCAL(ctx, lsfp);
 
 	return 0;
 }
@@ -3017,7 +3017,7 @@ void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB)
 			lsfp2[0].ivalue = 0;
 			lstack->api->add(ctx, lstack, lsfp2);
 		}
-		END_LOCAL_NONGC(ctx, lsfp2);
+		END_LOCAL(ctx, lsfp2);
 	}
 
 	{
@@ -3033,7 +3033,7 @@ void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB)
 
 	KNH_SETv(ctx, DP(ctx->gma)->insts, insts_org);
 	KNH_SETv(ctx, DP(ctx->gma)->lstacks, lstack_org);
-	END_LOCAL_NONGC(ctx, lsfp);
+	END_LOCAL(ctx, lsfp);
 }
 
 void CWB_llvm(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c)
@@ -3047,7 +3047,7 @@ void TOSTR_llvm(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c)
 {
 	DBG_ASSERT(IS_OutputStream(sfp[0].w));
 	knh_cwb_t cwbbuf = {ctx->bufa, ctx->bufw, (size_t)(sfp[0].ivalue)};
-	knh_String_t *s = knh_cwb_newString(ctx, &cwbbuf);
+	knh_String_t *s = knh_cwb_newString(ctx, &cwbbuf, 0);
 	KNH_SETv(ctx, sfp[c].o, s);
 }
 

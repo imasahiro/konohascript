@@ -697,33 +697,14 @@ const knh_RegexSPI_t* knh_getRegexSPI(void)
 /* ------------------------------------------------------------------------ */
 /* [pcre] */
 
-//#include <pcre.h>
-//#define PCRE_MAX_ERROR_MESSAGE_LEN 512
-
-// from pcre.h
+#ifdef HAVE_PCRE_H
+#include <pcre.h>
+#else
+//#include "../ext/pcre.h"
 struct real_pcre;
 typedef struct real_pcre pcre;
 typedef void pcre_extra;
-
-static const char* (*pcre_version)(void);
-static void  (*pcre_free)(void *);
-static int  (*pcre_fullinfo)(const pcre *, const pcre_extra *, int, void *);
-static pcre* (*pcre_compile)(const char *, int, const char **, int *, const unsigned char *);
-static int  (*pcre_exec)(const pcre *, const pcre_extra *, const char*, int, int, int, int *, int);
-
-static knh_bool_t knh_linkDynamicPCRE(CTX ctx)
-{
-	void *h = knh_dlopen(ctx, "libpcre" K_OSDLLEXT);
-	if(h == NULL) return 0;
-	pcre_version = (const char* (*)(void))knh_dlsym(ctx, h, "pcre_version", NULL, 0/*isTest*/);
-	pcre_free = (void (*)(void*))knh_dlsym(ctx, h, "free", NULL, 0/*isTest*/);
-	pcre_fullinfo = (int (*)(const pcre*, const pcre_extra*, int, void*))knh_dlsym(ctx, h, "pcre_fullinfo", NULL, 0/*isTest*/);
-	pcre_compile = (pcre* (*)(const char *, int, const char **, int *, const unsigned char *))knh_dlsym(ctx, h, "pcre_compile", NULL, 0/*isTest*/);
-	pcre_exec = (int  (*)(const pcre *, const pcre_extra *, const char*, int, int, int, int *, int))knh_dlsym(ctx, h, "pcre_exec", NULL, 0/*isTest*/);
-	if(pcre_free == NULL || pcre_fullinfo == NULL || pcre_compile == NULL || pcre_exec == NULL) return 0;
-	return 1;
-}
-
+/* Request types for pcre_fullinfo() */
 #define PCRE_CASELESS           0x00000001  /* Compile */
 #define PCRE_MULTILINE          0x00000002  /* Compile */
 #define PCRE_DOTALL             0x00000004  /* Compile */
@@ -759,6 +740,7 @@ static knh_bool_t knh_linkDynamicPCRE(CTX ctx)
 #define PCRE_NOTEMPTY_ATSTART   0x10000000  /* Exec, DFA exec */
 #define PCRE_UCP                0x20000000  /* Compile */
 
+
 #define PCRE_INFO_OPTIONS            0
 #define PCRE_INFO_SIZE               1
 #define PCRE_INFO_CAPTURECOUNT       2
@@ -776,6 +758,41 @@ static knh_bool_t knh_linkDynamicPCRE(CTX ctx)
 #define PCRE_INFO_JCHANGED          13
 #define PCRE_INFO_HASCRORLF         14
 #define PCRE_INFO_MINLENGTH         15
+
+/* Request types for pcre_config(). Do not re-arrange, in order to remain
+compatible. */
+
+#define PCRE_CONFIG_UTF8                    0
+#define PCRE_CONFIG_NEWLINE                 1
+#define PCRE_CONFIG_LINK_SIZE               2
+#define PCRE_CONFIG_POSIX_MALLOC_THRESHOLD  3
+#define PCRE_CONFIG_MATCH_LIMIT             4
+#define PCRE_CONFIG_STACKRECURSE            5
+#define PCRE_CONFIG_UNICODE_PROPERTIES      6
+#define PCRE_CONFIG_MATCH_LIMIT_RECURSION   7
+#define PCRE_CONFIG_BSR                     8
+
+
+#endif
+
+static const char* (*_pcre_version)(void);
+static void  (*_pcre_free)(void *);
+static int  (*_pcre_fullinfo)(const pcre *, const pcre_extra *, int, void *);
+static pcre* (*_pcre_compile)(const char *, int, const char **, int *, const unsigned char *);
+static int  (*_pcre_exec)(const pcre *, const pcre_extra *, const char*, int, int, int, int *, int);
+
+static knh_bool_t knh_linkDynamicPCRE(CTX ctx)
+{
+	void *h = knh_dlopen(ctx, "libpcre" K_OSDLLEXT);
+	if(h == NULL) return 0;
+	_pcre_version = (const char* (*)(void))knh_dlsym(ctx, h, "pcre_version", NULL, 0/*isTest*/);
+	_pcre_free = (void (*)(void*))knh_dlsym(ctx, h, "free", NULL, 0/*isTest*/);
+	_pcre_fullinfo = (int (*)(const pcre*, const pcre_extra*, int, void*))knh_dlsym(ctx, h, "pcre_fullinfo", NULL, 0/*isTest*/);
+	_pcre_compile = (pcre* (*)(const char *, int, const char **, int *, const unsigned char *))knh_dlsym(ctx, h, "pcre_compile", NULL, 0/*isTest*/);
+	_pcre_exec = (int  (*)(const pcre *, const pcre_extra *, const char*, int, int, int, int *, int))knh_dlsym(ctx, h, "pcre_exec", NULL, 0/*isTest*/);
+	if(_pcre_free == NULL || _pcre_fullinfo == NULL || _pcre_compile == NULL || _pcre_exec == NULL) return 0;
+	return 1;
+}
 
 /* This part was implemented by Yutaro Hiraoka */
 
@@ -795,7 +812,7 @@ static knh_regex_t* pcre_regmalloc(CTX ctx, knh_String_t* s)
 static void pcre_regfree(CTX ctx, knh_regex_t *reg)
 {
 	PCRE_regex_t *preg = (PCRE_regex_t*)reg;
-	pcre_free(preg->re);
+	_pcre_free(preg->re);
 	KNH_FREE(ctx, preg, sizeof(PCRE_regex_t));
 }
 
@@ -803,7 +820,7 @@ static int pcre_nmatchsize(CTX ctx, knh_regex_t *reg)
 {
 	PCRE_regex_t *preg = (PCRE_regex_t*)reg;
 	int capsize = 0;
-	if (pcre_fullinfo(preg->re, NULL, PCRE_INFO_CAPTURECOUNT, &capsize) != 0) {
+	if (_pcre_fullinfo(preg->re, NULL, PCRE_INFO_CAPTURECOUNT, &capsize) != 0) {
 		return K_REGEX_MATCHSIZE;
 	}
 	return capsize + 1;
@@ -855,7 +872,7 @@ static size_t pcre_regerror(int res, knh_regex_t *reg, char *ebuf, size_t ebufsi
 static int pcre_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, int cflags)
 {
 	PCRE_regex_t* preg = (PCRE_regex_t*)reg;
-	preg->re = pcre_compile(pattern, cflags, &preg->err, &preg->erroffset, NULL);
+	preg->re = _pcre_compile(pattern, cflags, &preg->err, &preg->erroffset, NULL);
 	return (preg->re != NULL) ? 0 : -1;
 }
 
@@ -866,7 +883,7 @@ static int pcre_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t nmatc
 	nvector[0] = 0;
 	size_t idx, matched = nmatch;
 	if (strlen(str) == 0) return -1;
-	if ((res = pcre_exec(preg->re, NULL, str, strlen(str), 0, eflags, nvector, nmatch*3)) >= 0) {
+	if ((res = _pcre_exec(preg->re, NULL, str, strlen(str), 0, eflags, nvector, nmatch*3)) >= 0) {
 		matched = (res > 0 && res < nmatch) ? res : nmatch;
 		res = 0;
 		for (idx = 0; idx < matched; idx++) {
@@ -875,12 +892,12 @@ static int pcre_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t nmatc
 		}
 		p[idx].rm_so = -1;
 		nm_count = 0;
-		pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMECOUNT, &nm_count);
+		_pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMECOUNT, &nm_count);
 		if (nm_count > 0) {
 			unsigned char *nm_table;
 			int nm_entry_size = 0;
-			pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMETABLE, &nm_table);
-			pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMEENTRYSIZE, &nm_entry_size);
+			_pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMETABLE, &nm_table);
+			_pcre_fullinfo(preg->re, NULL, PCRE_INFO_NAMEENTRYSIZE, &nm_entry_size);
 			unsigned char *tbl_ptr = nm_table;
 			for (idx = 0; idx < nm_count; idx++) {
 				int n_idx = (tbl_ptr[0] << 8) | tbl_ptr[1];
@@ -1072,58 +1089,20 @@ static knh_RegexSPI_t REGEX_RE2 = {
 /* [onig] */
 
 // from oniguruma.h
-typedef unsigned char  OnigUChar;
-typedef struct OnigEncodingTypeST*  OnigEncoding;
-typedef unsigned int        OnigOptionType;
-typedef struct OnigSyntaxType OnigSyntaxType;
-typedef struct re_registers {
-	int  allocated;
-	int  num_regs;
-	int* beg;
-	int* end;
-	/* extended */
-	struct OnigCaptureTreeNodeStruct* history_root;  /* capture history tree root */
-} OnigRegion;
-typedef struct OnigErrorInfo OnigErrorInfo;
-typedef struct re_pattern_buffer*  OnigRegex;
+#ifdef HAVE_ONIG_H
+#include "oniguruma.h"
+#else
+#include "../ext/oniguruma.h"
+#endif
 
-/* options */
-#define ONIG_OPTION_NONE                 0U
-#define ONIG_OPTION_IGNORECASE           1U
-#define ONIG_OPTION_EXTEND               (ONIG_OPTION_IGNORECASE         << 1)
-#define ONIG_OPTION_MULTILINE            (ONIG_OPTION_EXTEND             << 1)
-#define ONIG_OPTION_SINGLELINE           (ONIG_OPTION_MULTILINE          << 1)
-#define ONIG_OPTION_FIND_LONGEST         (ONIG_OPTION_SINGLELINE         << 1)
-#define ONIG_OPTION_FIND_NOT_EMPTY       (ONIG_OPTION_FIND_LONGEST       << 1)
-#define ONIG_OPTION_NEGATE_SINGLELINE    (ONIG_OPTION_FIND_NOT_EMPTY     << 1)
-#define ONIG_OPTION_DONT_CAPTURE_GROUP   (ONIG_OPTION_NEGATE_SINGLELINE  << 1)
-#define ONIG_OPTION_CAPTURE_GROUP        (ONIG_OPTION_DONT_CAPTURE_GROUP << 1)
-/* options (search time) */
-#define ONIG_OPTION_NOTBOL               (ONIG_OPTION_CAPTURE_GROUP << 1)
-#define ONIG_OPTION_NOTEOL               (ONIG_OPTION_NOTBOL << 1)
-#define ONIG_OPTION_POSIX_REGION         (ONIG_OPTION_NOTEOL << 1)
-#define ONIG_OPTION_MAXBIT               ONIG_OPTION_POSIX_REGION  /* limit */
-
-#define ONIG_OPTION_DEFAULT            ONIG_OPTION_NONE
-
-#define ONIG_OPTION_ON(options,regopt)      ((options) |= (regopt))
-#define ONIG_OPTION_OFF(options,regopt)     ((options) &= ~(regopt))
-#define ONIG_IS_OPTION_ON(options,option)   ((options) & (option))
-
-/* normal return */
-#define ONIG_NORMAL                                            0
-#define ONIG_MISMATCH                                         -1
-#define ONIG_NO_SUPPORT_CONFIG                                -2
-
-
-static int (*onig_error_code_to_str)(OnigUChar*, int, ...);
-static int (*onig_new)(OnigRegex*, OnigUChar*, OnigUChar*, OnigOptionType, OnigEncoding, OnigSyntaxType*, OnigErrorInfo*);
-static int (*onig_number_of_captures)(OnigRegex);
-static OnigRegion* (*onig_region_new)(void);
-static int (*onig_search)(OnigRegex, OnigUChar*, OnigUChar*, OnigUChar*, OnigUChar*, OnigRegion*, OnigOptionType);
-static int (*onig_foreach_name)(OnigRegex, int (*)(const OnigUChar*, const OnigUChar*, int, int*, OnigRegex, void*), void*);
-static void (*onig_region_free)(OnigRegion*, int);
-static void (*onig_free)(OnigRegex);
+static int (*_onig_error_code_to_str)(OnigUChar*, int, ...);
+static int (*_onig_new)(OnigRegex*, OnigUChar*, OnigUChar*, OnigOptionType, OnigEncoding, OnigSyntaxType*, OnigErrorInfo*);
+static int (*_onig_number_of_captures)(OnigRegex);
+static OnigRegion* (*_onig_region_new)(void);
+static int (*_onig_search)(OnigRegex, OnigUChar*, OnigUChar*, OnigUChar*, OnigUChar*, OnigRegion*, OnigOptionType);
+static int (*_onig_foreach_name)(OnigRegex, int (*)(const OnigUChar*, const OnigUChar*, int, int*, OnigRegex, void*), void*);
+static void (*_onig_region_free)(OnigRegion*, int);
+static void (*_onig_free)(OnigRegex);
 static OnigEncoding encutf8;
 static OnigSyntaxType** defaultsyntax;
 
@@ -1131,18 +1110,23 @@ static knh_bool_t knh_linkDynamicOnig(CTX ctx)
 {
 	void *h = knh_dlopen(ctx, "libonig" K_OSDLLEXT);
 	if(h == NULL) return 0;
-	onig_error_code_to_str = (int (*)(OnigUChar*, int, ...))knh_dlsym(ctx, h, "onig_error_code_to_str", NULL, 0/*isTest*/);
-	onig_new = (int (*)(OnigRegex*, OnigUChar*, OnigUChar*, OnigOptionType, OnigEncoding, OnigSyntaxType*, OnigErrorInfo*))knh_dlsym(ctx, h, "onig_new", NULL, 0/*isTest*/);
-	onig_number_of_captures = (int (*)(OnigRegex))knh_dlsym(ctx, h, "onig_number_of_captures", NULL, 0/*isTest*/);
-	onig_region_new = (OnigRegion* (*)(void))knh_dlsym(ctx, h, "onig_region_new", NULL, 0/*isTest*/);
-	onig_search = (int (*)(OnigRegex, OnigUChar*, OnigUChar*, OnigUChar*, OnigUChar*, OnigRegion*, OnigOptionType))knh_dlsym(ctx, h, "onig_search", NULL, 0/*isTest*/);
-	onig_foreach_name = (int (*)(OnigRegex, int (*)(const OnigUChar*, const OnigUChar*, int, int*, OnigRegex, void*), void*))knh_dlsym(ctx, h, "onig_foreach_name", NULL, 0/*isTest*/);
-	onig_region_free = (void (*)(OnigRegion*, int))knh_dlsym(ctx, h, "onig_region_free", NULL, 0/*isTest*/);
-	onig_free = (void (*)(OnigRegex))knh_dlsym(ctx, h, "onig_free", NULL, 0/*isTest*/);
+	_onig_error_code_to_str = (int (*)(OnigUChar*, int, ...))knh_dlsym(ctx, h, "onig_error_code_to_str", NULL, 0/*isTest*/);
+	_onig_new = (int (*)(OnigRegex*, OnigUChar*, OnigUChar*, OnigOptionType, OnigEncoding, OnigSyntaxType*, OnigErrorInfo*))knh_dlsym(ctx, h, "onig_new", NULL, 0/*isTest*/);
+	_onig_number_of_captures = (int (*)(OnigRegex))knh_dlsym(ctx, h, "onig_number_of_captures", NULL, 0/*isTest*/);
+	_onig_region_new = (OnigRegion* (*)(void))knh_dlsym(ctx, h, "onig_region_new", NULL, 0/*isTest*/);
+	_onig_search = (int (*)(OnigRegex, OnigUChar*, OnigUChar*, OnigUChar*, OnigUChar*, OnigRegion*, OnigOptionType))knh_dlsym(ctx, h, "onig_search", NULL, 0/*isTest*/);
+	_onig_foreach_name = (int (*)(OnigRegex, int (*)(const OnigUChar*, const OnigUChar*, int, int*, OnigRegex, void*), void*))knh_dlsym(ctx, h, "onig_foreach_name", NULL, 0/*isTest*/);
+	_onig_region_free = (void (*)(OnigRegion*, int))knh_dlsym(ctx, h, "onig_region_free", NULL, 0/*isTest*/);
+	_onig_free = (void (*)(OnigRegex))knh_dlsym(ctx, h, "onig_free", NULL, 0/*isTest*/);
 
 	encutf8 = (OnigEncoding)knh_dlsym(ctx, h, "OnigEncodingUTF8", NULL, 0/*isTest*/);
 	defaultsyntax = (OnigSyntaxType**)knh_dlsym(ctx, h, "OnigDefaultSyntax", NULL, 0/*isTest*/);
-	if(onig_error_code_to_str == NULL || onig_new == NULL || onig_number_of_captures == NULL || onig_region_new == NULL || onig_search == NULL || onig_foreach_name == NULL || onig_region_free == NULL || onig_free == NULL || encutf8 == NULL || defaultsyntax == NULL) return 0;
+	if(_onig_error_code_to_str == NULL || _onig_new == NULL || 
+			_onig_number_of_captures == NULL || _onig_region_new == NULL || 
+			_onig_search == NULL || _onig_foreach_name == NULL || 
+			_onig_region_free == NULL || _onig_free == NULL || encutf8 == NULL ||
+			defaultsyntax == NULL)
+		return 0;
 	return 1;
 }
 
@@ -1195,7 +1179,7 @@ static int onig_regex_parse_eflags(CTX ctx, const char *option)
 static size_t onig_regex_regerror(int res, knh_regex_t *reg, char* ebuf, size_t ebuf_size)
 {
 	ONIG_regex_t *oreg = (ONIG_regex_t*)reg;
-	return onig_error_code_to_str((OnigUChar*)ebuf, res, oreg->einfo);
+	return _onig_error_code_to_str((OnigUChar*)ebuf, res, oreg->einfo);
 }
 
 static int onig_regex_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, int cflag)
@@ -1203,14 +1187,14 @@ static int onig_regex_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, in
 	ONIG_regex_t *oreg = (ONIG_regex_t*)reg;
 	OnigUChar* upatt = (OnigUChar*) pattern;
 	OnigUChar* end = upatt + strlen(pattern);
-	int cmp = onig_new(&(oreg->reg), upatt, end, cflag, encutf8, *defaultsyntax, oreg->einfo);
+	int cmp = _onig_new(&(oreg->reg), upatt, end, cflag, encutf8, *defaultsyntax, oreg->einfo);
 	return (cmp == ONIG_NORMAL) ? 0 : 1;
 }
 
 static int onig_regex_nmatchsize(CTX ctx, knh_regex_t *reg)
 {
 	ONIG_regex_t *oreg = (ONIG_regex_t*)reg;
-	int cap = onig_number_of_captures(oreg->reg);
+	int cap = _onig_number_of_captures(oreg->reg);
 	return 1 + cap; // pattern & groups
 }
 
@@ -1231,19 +1215,19 @@ static int onig_regex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t
 	ONIG_regex_t *oreg = (ONIG_regex_t*)reg;
 	OnigUChar *head = (OnigUChar*)str;
 	OnigUChar *end = head + strlen(str);
-	OnigRegion* region = onig_region_new();
+	OnigRegion* region = _onig_region_new();
 	int res = 0;
 	p[0].rm_so = -1;
-	if ((res = onig_search(oreg->reg, head, end, head, end, region, eflag)) >= 0) {
+	if ((res = _onig_search(oreg->reg, head, end, head, end, region, eflag)) >= 0) {
 		size_t i, matched = region->num_regs;
 		for (i = 0; i < nmatch && i < matched; i++) {
 			p[i].rm_so = region->beg[i];
 			p[i].rm_eo = region->end[i];
 		}
 		if (i < nmatch) p[i].rm_so = -1;
-		onig_foreach_name(oreg->reg, knh_regex_onig_setNames, p);
+		_onig_foreach_name(oreg->reg, knh_regex_onig_setNames, p);
 	}
-	onig_region_free(region, 1); /* 1:free self, 0:free contents only */
+	_onig_region_free(region, 1); /* 1:free self, 0:free contents only */
 	return (res >= 0) ? 0 : res; /* >=0: not error(matched bytes), <0:error */
 }
 
@@ -1251,7 +1235,7 @@ static void onig_regex_regfree(CTX ctx, knh_regex_t *reg)
 {
 	ONIG_regex_t *oreg = (ONIG_regex_t*)reg;
 	OnigRegex r = oreg->reg;
-	onig_free(r);
+	_onig_free(r);
 	KNH_FREE(ctx, oreg, sizeof(ONIG_regex_t));
 }
 

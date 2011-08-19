@@ -857,7 +857,7 @@ knh_Object_t *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
 		SAFEPOINT_SETGC(ctx);
 	}
 	STAT_Object(ctx, ct);
-	MEMLOG("new", "ptr=%p, class=%s", o, ct->cdef->name);
+	MEMLOG("new", "ptr=%p, cid=%d", o, ct->cid);
 	return o;
 }
 
@@ -876,7 +876,7 @@ knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 		SAFEPOINT_SETGC(ctx);
 	}
 	STAT_Object(ctx, ct);
-	MEMLOG("new", "ptr=%p, class=%s", o, ct->cdef->name);
+	MEMLOG("new", "ptr=%p, cid=%d", o, ct->cid);
 	return o;
 }
 
@@ -890,12 +890,12 @@ void TR_NEW(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 	o->h.cTBL = ct;
 	ct->cdef->init(ctx, RAWPTR(o));
 	O_unset_tenure(o); // collectable
-	STAT_Object(ctx, ct);
 	ctx->stat->gcObjectCount -=1;  // ATOMIC
 	if(ctx->stat->gcObjectCount == 0) {
 		SAFEPOINT_SETGC(ctx);
 	}
-	MEMLOG("new", "ptr=%p, class=%s", o, ct->cdef->name);
+	STAT_Object(ctx, ct);
+	MEMLOG("new", "ptr=%p, cid=%d", o, ct->cid);
 	KNH_SETv(ctx, sfp[c].o, o);
 }
 
@@ -905,7 +905,7 @@ static void knh_Object_finalfree(CTX ctx, knh_Object_t *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
 	RCGC_(DBG_ASSERT(Object_isRC0(o)));
-	MEMLOG("~Object", "ptr=%p, class=%s", o, ct->cdef->name);
+	MEMLOG("~Object", "ptr=%p, cid=%d", o, ct->cid);
 	if(Object_isXData(o)) {
 		knh_PtrMap_rm(ctx, ctx->share->xdataPtrMap, o);
 		Object_setXData(o, 0);
@@ -1193,7 +1193,7 @@ static void gc_mark(CTX ctx)
 static inline void Object_MSfree(CTX ctx, knh_Object_t *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
-	MEMLOG("~Object", "ptr=%p, class=%s", o, ct->cdef->name);
+	MEMLOG("~Object", "ptr=%p, cid=%d", o, ct->cid);
 	if(unlikely(Object_isXData(o))) {
 		knh_PtrMap_rm(ctx, ctx->share->xdataPtrMap, o);
 		Object_setXData(o, 0);
