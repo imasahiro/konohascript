@@ -1138,36 +1138,6 @@ static KMETHOD String_extract(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Static @Const method Converter Converter.opLINK(String path, NameSpace _);
-//## @Hidden @Static @Const method StringConverter StringConverter.opLINK(String path, NameSpace _);
-//## @Hidden @Static @Const method StringDecoder StringDecoder.opLINK(String path, NameSpace _);
-//## @Hidden @Static @Const method StringEncoder StringEncoder.opLINK(String path, NameSpace _);
-
-//#define IS_CONV(cid) (CLASS_Converter <= cid && cid <= CLASS_StringConverter)
-//
-//static Object* new_ConverterNULL(CTX ctx, knh_class_t cid, knh_bytes_t path, const knh_ConvDSPI_t *dpi)
-//{
-//	knh_conv_t *conv = NULL;
-//	DBG_ASSERT(IS_CONV(cid));
-//	if((cid == CLASS_StringConverter && dpi->sconv == NULL) ||
-//		(cid == CLASS_StringEncoder && dpi->enc == NULL) ||
-//		(cid == CLASS_StringDecoder && dpi->dec == NULL) ||
-//		(cid == CLASS_Converter && dpi->conv == NULL)) {
-//		return NULL;
-//	}
-//	if(dpi->open != NULL) {
-//		conv = dpi->open(ctx, path.text, NULL);
-//		if(conv == NULL) {
-//			KNH_LOG("unknown path='%s'", path.text);
-//			return NULL;
-//		}
-//	}
-//	{
-//		knh_Converter_t *c = new_O(Converter, cid);
-//		c->dpi = dpi;
-//		c->conv = conv;
-//		return (knh_Object_t*)c;
-//	}
-//}
 
 static KMETHOD Converter_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -1180,6 +1150,54 @@ static KMETHOD Converter_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 		RETURN_(c);
 	}
 	RETURN_(KNH_TNULL(Converter));
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Hidden @Static @Const method StringEncoder StringEncoder.opLINK(String path, NameSpace _);
+
+static KMETHOD StringEncoder_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_bytes_t t = S_tobytes(sfp[1].s);
+	const knh_ConvDSPI_t *dpi = knh_NameSpace_getConvDSPINULL(ctx, sfp[2].ns, t);
+	if(dpi != NULL && dpi->enc != NULL) {
+		knh_StringEncoder_t *c = new_(StringEncoder);
+		c->dpi  = dpi;
+		c->conv = NULL;
+		RETURN_(c);
+	}
+	RETURN_(KNH_TNULL(StringEncoder));
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Hidden @Static @Const method StringDecoder StringDecoder.opLINK(String path, NameSpace _);
+
+static KMETHOD StringDecoder_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_bytes_t t = S_tobytes(sfp[1].s);
+	const knh_ConvDSPI_t *dpi = knh_NameSpace_getConvDSPINULL(ctx, sfp[2].ns, t);
+	if(dpi != NULL && dpi->dec != NULL) {
+		knh_StringDecoder_t *c = new_(StringDecoder);
+		c->dpi  = dpi;
+		c->conv = NULL;
+		RETURN_(c);
+	}
+	RETURN_(KNH_TNULL(StringDecoder));
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Hidden @Static @Const method StringConverter StringConverter.opLINK(String path, NameSpace _);
+
+static KMETHOD StringConverter_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_bytes_t t = S_tobytes(sfp[1].s);
+	const knh_ConvDSPI_t *dpi = knh_NameSpace_getConvDSPINULL(ctx, sfp[2].ns, t);
+	if(dpi != NULL && dpi->sconv != NULL) {
+		knh_StringConverter_t *c = new_(StringConverter);
+		c->dpi  = dpi;
+		c->conv = NULL;
+		RETURN_(c);
+	}
+	RETURN_(KNH_TNULL(StringConverter));
 }
 
 /* ------------------------------------------------------------------------ */

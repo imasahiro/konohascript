@@ -401,7 +401,7 @@ knh_Term_t *knh_Stmt_add_(CTX ctx, knh_Stmt_t *stmt, ...);
 knh_Token_t *new_TokenMN(CTX ctx, knh_methodn_t mn);
 void knh_Regex_setGlobalOption(CTX ctx, knh_Regex_t *re, const char *opt);
 knh_Stmt_t *knh_InputStream_parseStmt(CTX ctx, knh_InputStream_t *in);
-knh_Stmt_t *knh_Token_parseStmt(CTX ctx, knh_Token_t *tk);
+knh_Stmt_t *knh_Token_parseStmt(CTX ctx, knh_uline_t uline, knh_Token_t *tk);
 knh_Stmt_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, knh_uline_t uline);
 knh_Token_t* Tn_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t reqt, knh_flag_t opflag);
 knh_Token_t* knh_Token_toCID(CTX ctx, knh_Token_t *tk, knh_class_t cid);

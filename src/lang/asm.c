@@ -2533,13 +2533,14 @@ static void ERR_asm(CTX ctx, knh_Stmt_t *stmt)
 /* [PRINT] */
 
 #define K_FLAG_PF_STDERR      1
-#define K_FLAG_PF_EOL         (1<<1)
+#define K_FLAG_PF_BOL         (1<<1)
 #define K_FLAG_PF_TIME        (1<<2)
-#define K_FLAG_PF_FUNC        (1<<3)
-#define K_FLAG_PF_LINE        (1<<4)
-#define K_FLAG_PF_NAME        (1<<5)
-#define K_FLAG_PF_BOL         (1<<6)
+#define K_FLAG_PF_NAME        (1<<3)
+#define K_FLAG_PF_EOL         (1<<4)
+#define K_FLAG_PF_NCOMMA      (1<<5)
+#define K_FLAG_PF_LINE        (1<<6)
 #define K_FLAG_PF_BREAK       (1<<7)
+
 
 static knh_flag_t PRINT_flag(CTX ctx, knh_Stmt_t *o)
 {
@@ -2559,24 +2560,19 @@ static void _PRINTh(CTX ctx, knh_sfp_t *sfp, knh_OutputStream_t *w, struct klr_P
 	knh_write_ascii(ctx, w, TERM_BNOTE(ctx, LOG_NOTICE));
 	if(FLAG_is(flag, K_FLAG_PF_BOL)) {
 		if(FLAG_is(flag, K_FLAG_PF_LINE)) {
-#ifndef K_USING_LLVM
 			knh_uline_t uline = op->line;
 			knh_Method_t *mtd = sfp[-1].mtdNC;
 			DBG_ASSERT(IS_Method(mtd));
 			ULINE_setURI(uline, DP(mtd)->uri);
 			knh_write_mline(ctx, w, mtd->mn, uline);
-#endif
 		}
 		if(FLAG_is(flag, K_FLAG_PF_TIME)) {
 			knh_write_now(ctx, w);
 			knh_putc(ctx, w, ' ');
 		}
 	}
-	else if(FLAG_is(flag, K_FLAG_PF_NAME)) {
-		klr_P_t *opP = (klr_P_t*)(((knh_opline_t*)op) - 1);
-		if(opP->opcode == OPCODE_P && FLAG_is(opP->flag, K_FLAG_PF_NAME)) {
-			knh_putc(ctx, w, ',');
-		}
+	else if(!FLAG_is(flag, K_FLAG_PF_NCOMMA)) {
+		knh_putc(ctx, w, ',');
 		knh_putc(ctx, w, ' ');
 	}
 	if(IS_bString(op->msg)) {
@@ -2710,7 +2706,8 @@ static void PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
 				goto L_REDO;
 			}
 			DBG_ASSERT(stmt->uline == ctx->gma->uline);
-			ASM(P, _PRINTm, flag | mask, (tkn)->text, 0); flag = 0;
+			ASM(P, _PRINTm, flag | mask, (tkn)->text, 0);
+			flag = K_FLAG_PF_NCOMMA;
 		}
 		else {
 			knh_class_t cid = Tn_cid(stmt, i);

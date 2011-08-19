@@ -565,13 +565,13 @@ static knh_status_t readstmt(CTX ctx, knh_cwb_t *cwb)
 {
 	int line = 1;
 	knh_status_t status = K_CONTINUE;
-	knh_cwb_clear2(cwb, 0);
+	knh_cwb_clear(cwb, 0);
 	fputs(TERM_BBOLD(ctx), stdout);
 	while(1) {
 		int check;
 		char *ln = ctx->spi->readline(line == 1 ? ">>> " : "    ");
 		if(ln == NULL) {
-			knh_cwb_clear2(cwb, 0);
+			knh_cwb_clear(cwb, 0);
 			status = K_BREAK;
 			break;
 		}
@@ -584,7 +584,7 @@ static knh_status_t readstmt(CTX ctx, knh_cwb_t *cwb)
 		}
 		if(check < 0) {
 			fputs("(Cancelled)...\n", stdout);
-			knh_cwb_clear2(cwb, 0);
+			knh_cwb_clear(cwb, 0);
 		}
 		break;
 	}

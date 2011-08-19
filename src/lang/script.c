@@ -202,7 +202,7 @@ static void *knh_open_ffilink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t libname)
 	knh_buff_trim(ctx, cwb->ba, cwb->pos, '.');
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT(K_OSDLLEXT));
 	if(p == NULL && !knh_bytes_startsWith(libname, STEXT("lib"))) {
-		knh_cwb_clear2(cwb, 0);
+		knh_cwb_clear(cwb, 0);
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT("lib"));
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, libname);
 		knh_buff_trim(ctx, cwb->ba, cwb->pos, '.');
@@ -512,6 +512,7 @@ static void SCRIPT_eval(CTX ctx, knh_Stmt_t *stmtORIG, int isCompileOnly)
 	knh_class_t cid =  O_cid(ctx->evaled);
 	knh_Method_t *mtd = Script_getEvalMethod(ctx, scr, cid);
 	knh_Stmt_t *stmt = stmtORIG;
+	WCTX(ctx)->isEvaled = 0;
 	if(STT_isExpr(STT_(stmt)) && STT_(stmt) != STT_LET) {
 		stmt = new_Stmt2(ctx, STT_RETURN, stmt, NULL);
 	}
@@ -519,7 +520,6 @@ static void SCRIPT_eval(CTX ctx, knh_Stmt_t *stmtORIG, int isCompileOnly)
 		Stmt_setImplicit(stmt, 1);
 	}
 	KNH_SETv(ctx, lsfp[0].o, stmt);
-	WCTX(ctx)->isEvaled = 0;
 	knh_Method_asm(ctx, mtd, stmt, typingMethod2);
 	if(STT_(stmt) == STT_ERR) {
 		if(stmt != stmtORIG) {

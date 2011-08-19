@@ -343,7 +343,6 @@ void knh_setClassName(CTX ctx, knh_class_t cid, knh_String_t *lname, knh_String_
 	{
 		knh_bytes_t t = S_tobytes(lname);
 		if(t.buf[t.len-1] != '>') {
-			DBG_P("cid=%d, cname='%s', typename=%s", cid, S_totext(ct->lname), S_totext(ct->sname));
 			knh_DictSet_set(ctx, DP(ctx->sys)->ClassNameDictSet, lname, cid+1);
 		}
 		if(!class_isPrivate(cid) && S_startsWith(lname, STEXT("konoha."))) {
@@ -2309,8 +2308,8 @@ knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t
 	const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, ns, S_tobytes(path), tcid);
 	Object *value = NULL;
 	if(ct == NULL) {
-		LANG_LOG("link not found: %s as %s", S_totext(path), CLASS__(tcid));
 		if(tcid == CLASS_Boolean) return KNH_FALSE;
+		LANG_LOG("link not found: %s as %s", S_totext(path), CLASS__(tcid));
 		return KNH_NULVAL(tcid);
 	}
 	else {
@@ -2595,6 +2594,15 @@ static KMETHOD Method_getParamNames(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(ma);
 }
 
+// @Const String Method.getSourceCode();
+static KMETHOD Method_getSourceCode(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Method_t *mtd = sfp[0].mtd;
+	knh_Token_t *tk = DP(mtd)->tsource;
+	RETURN_(IS_Token(tk) ? tk->text : KNH_TNULL(String));
+}
+
+
 #define FuncData(X) {#X , X}
 static knh_FuncData_t FuncData[] = {
 	FuncData(Object_hasMethod),
@@ -2614,6 +2622,7 @@ static knh_FuncData_t FuncData[] = {
 	FuncData(Method_getReturnType),
 	FuncData(Method_getParamTypes),
 	FuncData(Method_getParamNames),
+	FuncData(Method_getSourceCode),
 	{NULL, NULL},
 };
 

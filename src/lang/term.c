@@ -312,13 +312,8 @@ static void TokenBlock_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
 		Token_setBOL(tk, 1);
 		return;
 	}
-
+	// DBG_P("tkPREV->uline=%d,%s: tk->uline=%d,%s", (knh_short_t)tkPREV->uline, TT__(tkPREV->tt), (knh_short_t)tk->uline, TT__(tk->tt));
 	if((tk->uline > tkPREV->uline) && TT_(tkPREV) != TT_SEMICOLON) {
-//		if(TT_(tk) == TT_ELSE || TT_(tk) == TT_CATCH || TT_(tk) == TT_FINALLY) {
-//			knh_Array_add(ctx, a, tk);
-//			return;
-//		}
-		DBG_P("isSAMELINE(tkB)=%d, prev=%s,%d cur=%s,%d", Token_isSAMELINE(tkB), TT__(tkPREV->tt), (short)tkPREV->uline, TT__(tk->tt), (short)tk->uline);
 		if(TT_(tkPREV) == TT_CODE) {
 			knh_bytes_t t = S_tobytes(tkPREV->text);
 			size_t i;
@@ -326,7 +321,7 @@ static void TokenBlock_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
 			for(i = 0; i < t.len; i++) {
 				if(t.buf[i] == '\n') uline++;
 			}
-			DBG_P("BLOCK uline %d => %d cur=%d", (short)tkPREV->uline, (short)uline, (short)tk->uline);
+			DBG_P("@@@@ BLOCK uline %d => %d cur=%d", (short)tkPREV->uline, (short)uline, (short)tk->uline);
 			if(uline == tk->uline) {
 				Token_setSAMELINE(tkB, 1);
 			}
@@ -627,7 +622,7 @@ static void Token_setTEXT(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 		if(text != NULL) {
 			t = S_tobytes(text);
 			KNH_SETv(ctx, (tk)->data, text);
-			knh_cwb_clear2(cwb, 0);
+			knh_cwb_clear(cwb, 0);
 			knh_Bytes_write(ctx, cwb->ba, t);  // alias
 		}
 		knh_DictSet_t *tokenDictSet = DP(ctx->sys)->tokenDictSet;
@@ -667,7 +662,7 @@ static void Token_addBuf(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_term_t t
 		knh_Token_t *tk = addNewToken(ctx, tkB, tt, ch);
 		Token_setTEXT(ctx, tk, cwb);
 		TokenBlock_add(ctx, tkB, tk);  // must add after setting data
-		knh_cwb_clear2(cwb, 0);
+		knh_cwb_clear(cwb, 0);
 	}
 	else if(tt == TT_CODE || TT_isSTR(tt) || tt == TT_REGEX) {
 		knh_Token_t *tk = addNewToken(ctx, tkB, tt, ch);
@@ -1133,8 +1128,9 @@ static void Bytes_addRAW(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, int en
 
 static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStream_t *in, int block_indent)
 {
-	int c, ch, prev = '{', level = 1;
+	int c, this_indent = 0, ch, prev = '{', level = 1;
 	Token_addBuf(ctx, tkB, cwb, TT_UNTYPED, '{');
+	DBG_P("block_indent=%d", block_indent);
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
 		if(ch != '\t' && ch != ' ') goto L_STARTLINE;
 	}
@@ -1182,18 +1178,18 @@ static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputS
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
 		if(ch == '\t') { c += 3; continue; }
 		if(ch == ' ') { c += 1; continue; }
-		if(ch == '\n') {c = 0; continue; }
-//		if(c > 0 && block_indent == c && ch == '}') {
-//			Token_addBuf(ctx, tkB, cwb, TT_CODE, ch);
-//			return;
-//		}
 		break;
 	}
-	if(ch != EOF && block_indent <= c) {
+	if(ch != EOF /* && block_indent <= c*/) {
+		int i;
+		if(this_indent == 0 && c > 0) this_indent = c;
+		for(i = this_indent; i < c; i++) {
+			knh_Bytes_putc(ctx, cwb->ba, ' ');
+		}
 		goto L_STARTLINE;
 	}
-	knh_cwb_clear2(cwb, 0);
-	DBG_P("block_indent=%d, c=%d, last=%d", block_indent, c, ch);
+	knh_cwb_clear(cwb, 0);
+//	DBG_P("block_indent=%d, c=%d, last=%d", block_indent, c, ch);
 	Token_addBLOCKERR(ctx, tkB, in, 0);
 }
 
@@ -1252,7 +1248,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 		}
 	}
 	L_NEWTOKEN:;
-	knh_cwb_clear2(cwb, 0);
+	knh_cwb_clear(cwb, 0);
 	ctx->gma->uline = in->uline;
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
 		L_AGAIN:;
@@ -3220,9 +3216,7 @@ static knh_Stmt_t *new_StmtMETA(CTX ctx, knh_term_t stt, tkitr_t *itr, int shift
 {
 	knh_Fstmt func = NULL;
 	va_list ap;
-	BEGIN_LOCAL(ctx, lsfp, 1);
 	knh_Stmt_t *stmt = new_Stmt2(ctx, stt, NULL);
-	KNH_SETv(ctx, lsfp[0].o, stmt);
 	Stmt_addMETA(ctx, stmt, itr);
 	itr->c = itr->c + shift;
 	va_start(ap , shift);
@@ -3234,7 +3228,6 @@ static knh_Stmt_t *new_StmtMETA(CTX ctx, knh_term_t stt, tkitr_t *itr, int shift
 	}
 	L_end:;
 	va_end(ap);
-	END_LOCAL(ctx, lsfp);
 	return stmt;
 }
 
@@ -3538,9 +3531,10 @@ knh_Stmt_t *knh_InputStream_parseStmt(CTX ctx, knh_InputStream_t *in)
 
 /* ------------------------------------------------------------------------ */
 
-knh_Stmt_t *knh_Token_parseStmt(CTX ctx, knh_Token_t *tk)
+knh_Stmt_t *knh_Token_parseStmt(CTX ctx, knh_uline_t uline, knh_Token_t *tk)
 {
 	BEGIN_LOCAL(ctx, lsfp, 1);
+	//DBG_P("uline=%d, tk->uline=%d src='''%s'''", (knh_short_t)uline, (knh_short_t)tk->uline, S_totext(tk->text));
 	ctx->gma->uline = tk->uline;
 	knh_Stmt_t *rVALUE = new_Stmt2(ctx, STT_BLOCK, NULL);
 	KNH_SETv(ctx, lsfp[0].o, rVALUE);

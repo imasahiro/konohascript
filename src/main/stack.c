@@ -245,7 +245,6 @@ knh_event_t knh_addEvent(CTX ctx, knh_flag_t flag, knh_String_t *name, knh_class
 		et->flag = flag;
 		et->parent = peid;
 		KNH_INITv(et->name, name);
-		DBG_P("eid=%d, name='%s'", eid, S_totext(name));
 		OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 		knh_DictSet_set(ctx, DP(ctx->sys)->EventDictCaseSet, name, eid+1);
 		OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);

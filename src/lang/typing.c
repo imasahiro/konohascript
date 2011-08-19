@@ -2175,12 +2175,12 @@ static void StmtCALL_lazyasm(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *mtd)
 {
 	Method_setDynamic(mtd, 0);
 	if(IS_Token(DP(mtd)->tsource)) {
+		size_t i;
 		BEGIN_LOCAL(ctx, lsfp, 3);
 		DBG_P("dynamic compiled method");
 		LOCAL_NEW(ctx, lsfp, 0, knh_Gamma_t*, gma, ctx->gma);
 		LOCAL_NEW(ctx, lsfp, 1, knh_Token_t*, tkC, new_TokenCODE(ctx, DP(mtd)->tsource));
-		LOCAL_NEW(ctx, lsfp, 2, knh_Stmt_t*, stmtB, knh_Token_parseStmt(ctx, tkC));
-		size_t i;
+		LOCAL_NEW(ctx, lsfp, 2, knh_Stmt_t*, stmtB, knh_Token_parseStmt(ctx, 0, tkC));
 		knh_ParamArray_t *pa = DP(mtd)->mp;
 		for(i = 0; i < pa->psize; i++) {
 			knh_param_t *p = knh_ParamArray_get(pa, i);
@@ -2219,9 +2219,9 @@ static knh_Token_t* CALLPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t tcid
 		knh_param_t* p = knh_ParamArray_get(pa, i);
 		knh_type_t param_reqt = knh_type_tocid(ctx, p->type, new_cid);
 		if(n < size) {
-			if(p->fn == FN_) {
-				return ERROR_CompilerControlledParameter(ctx, mtd->cid, mtd->mn, i+1);
-			}
+//			if(p->fn == FN_) {
+//				return ERROR_CompilerControlledParameter(ctx, mtd->cid, mtd->mn, i+1);
+//			}
 			TYPING_TypedExpr(ctx, stmt, n, param_reqt);
 		}
 		else {
@@ -4302,7 +4302,7 @@ static knh_Token_t* CLASS_typing(CTX ctx, knh_Stmt_t *stmt)
 	DBG_P("isAllowedNewField=%d", isAllowedNewField);
 
 	if(DP(stmt)->size == 5) {
-		knh_Stmt_t *stmtFIELD = knh_Token_parseStmt(ctx, tkNN(stmt, 4));
+		knh_Stmt_t *stmtFIELD = knh_Token_parseStmt(ctx, stmt->uline, tkNN(stmt, 4));
 		KNH_SETv(ctx, stmtNN(stmt, 4), stmtFIELD);
 	}
 
@@ -4643,10 +4643,14 @@ static void METHOD_asm(CTX ctx, knh_Stmt_t *stmt)
 	DBG_ASSERT(DP(stmt)->size == 6);
 	if(TT_(tkNN(stmt, 4)) == TT_DOC) {
 		KNH_SETv(ctx, DP(mtd)->tsource, tkNN(stmt, 4/*source*/));
+//		DBG_P("@@ stmt_line =%d, stmt_code=%d", (knh_short_t)stmt->uline, (knh_short_t)tkNN(stmt, 4)->uline);
+//		DBG_P("source='''%s'''", S_totext(tkNN(stmt, 4/*source*/)->text));
 	}
 	if(TT_(tkNN(stmt, 5)) == TT_CODE) {  // source code should be parsed just before asm
-		KNH_SETv(ctx, stmtNN(stmt, 5), knh_Token_parseStmt(ctx, tkNN(stmt, 5)));
+//		DBG_P("@@ stmt_line =%d, stmt_code=%d", (knh_short_t)stmt->uline, (knh_short_t)tkNN(stmt, 5)->uline);
+		KNH_SETv(ctx, stmtNN(stmt, 5), knh_Token_parseStmt(ctx, stmt->uline, tkNN(stmt, 5)));
 	}
+	//DBG_ASSERT(tkNN(stmt, 5)->uline == stmt->uline);  // bugs fixed
 	knh_Method_asm(ctx, mtd, stmtNN(stmt, 5), typingMethod2);
 }
 
@@ -4658,7 +4662,7 @@ static void TYPEMAP_asm(CTX ctx, knh_Stmt_t *stmt)
 		KNH_SETv(ctx, DP(mtd)->tsource, tkNN(stmt, 4/*source*/));
 	}
 	if(TT_(tkNN(stmt, 5)) == TT_CODE) {
-		KNH_SETv(ctx, stmtNN(stmt, 5), knh_Token_parseStmt(ctx, tkNN(stmt, 5)));
+		KNH_SETv(ctx, stmtNN(stmt, 5), knh_Token_parseStmt(ctx, stmt->uline, tkNN(stmt, 5)));
 	}
 	knh_Method_asm(ctx, mtd, stmtNN(stmt, 5), typingMethod2);
 }
@@ -4681,7 +4685,7 @@ static void FORMAT_asm(CTX ctx, knh_Stmt_t *stmt)
 	else {
 		DBG_ASSERT(DP(stmt)->size == 6);
 		DBG_ASSERT(TT_(tkNN(stmt, 5)) == TT_CODE);
-		KNH_SETv(ctx, stmtNN(stmt, 5), knh_Token_parseStmt(ctx, tkNN(stmt, 5)));
+		KNH_SETv(ctx, stmtNN(stmt, 5), knh_Token_parseStmt(ctx, stmt->uline, tkNN(stmt, 5)));
 	}
 	KNH_SETv(ctx, DP(mtd)->tsource, tkNN(stmt, 4/*source*/));
 	knh_Method_asm(ctx, mtd, stmtNN(stmt,5), typingFormat2);
