@@ -54,6 +54,7 @@ public:
 
 #ifdef K_USING_BOX2D
 typedef struct _knh_GraphicsUserData_t {
+	void *self;
 	void *o;
 	const knh_ClassTBL_t *ct;
 } knh_GraphicsUserData_t;

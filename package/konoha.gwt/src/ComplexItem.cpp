@@ -90,6 +90,7 @@ void KComplexItem::addToWorld(KWorld *w)
 	CTX lctx = knh_getCurrentContext();
 	data->ct = getClassTBL(Texture);
 	data->o = i;
+	data->self = this;
 	body->SetUserData(data);
 }
 

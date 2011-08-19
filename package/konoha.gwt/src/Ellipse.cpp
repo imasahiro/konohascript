@@ -42,6 +42,7 @@ void KEllipse::addToWorld(KWorld *w)
 	CTX lctx = knh_getCurrentContext();
 	data->ct = getClassTBL(Ellipse);
 	data->o = i;
+	data->self = this;
 	body->SetUserData(data);
 }
 

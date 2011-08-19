@@ -1,4 +1,4 @@
-using konoha.visual.*;
+using konoha.gwt.*;
 
 class PhysicsWorld {
 	World world;

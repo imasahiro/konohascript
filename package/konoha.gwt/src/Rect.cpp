@@ -147,12 +147,14 @@ void KRect::addToWorld(KWorld *w)
 	shapeDef.restitution = restitution;
 	body->CreateFixture(&shapeDef);
 
-	QGraphicsItem *i = dynamic_cast<QGraphicsItem *>(this);
+	//QGraphicsItem *i = dynamic_cast<QGraphicsItem *>(this);
+	QGraphicsItem *i = (QGraphicsItem *)this;
 	knh_GraphicsUserData_t *data = (knh_GraphicsUserData_t *)malloc(sizeof(knh_GraphicsUserData_t));
 	memset(data, 0, sizeof(knh_GraphicsUserData_t));
 	CTX lctx = knh_getCurrentContext();
 	data->ct = getClassTBL(Rect);
 	data->o = i;
+	data->self = this;
 	body->SetUserData(data);
 }
 #endif

@@ -23,8 +23,8 @@ void KContact::BeginContact(b2Contact *contact)
 	if (data1 != NULL && data2 != NULL && begin != NULL) {
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
-		knh_RawPtr_t *p1 = new_RawPtr(lctx, data1->ct, data1->o);
-		knh_RawPtr_t *p2 = new_RawPtr(lctx, data2->ct, data2->o);
+		knh_RawPtr_t *p1 = new_RawPtr(lctx, data1->ct, data1->self);
+		knh_RawPtr_t *p2 = new_RawPtr(lctx, data2->ct, data2->self);
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p1));
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p2));
 		knh_Func_invoke(lctx, begin, lsfp, 2/*argc*/);
