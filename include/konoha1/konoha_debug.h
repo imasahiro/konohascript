@@ -31,10 +31,12 @@
 #define KNH_LOG(fmt, ...) \
 		knh_logprintf("DEBUG", 0, "[%s:%d] " fmt K_OSLINEFEED, __FUNCTION__, __LINE__, ## __VA_ARGS__);
 
-#define GC_LOG(fmt, ...) knh_logprintf("GC", knh_isVerboseGC(), fmt ,  ## __VA_ARGS__);
-
 #define LANG_LOG(fmt, ...) \
 		knh_logprintf("KONOHA", knh_isVerboseLang(), fmt K_OSLINEFEED,  ## __VA_ARGS__)
+
+#define GC_LOG(fmt, ...) if(knh_isVerboseGC()) { \
+		knh_logprintf("GC", knh_isVerboseGC(), fmt ,  ## __VA_ARGS__);\
+	}\
 
 /* ------------------------------------------------------------------------ */
 /* [DBGMODE] */

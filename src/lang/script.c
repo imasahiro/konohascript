@@ -892,6 +892,7 @@ knh_bool_t knh_beval(CTX ctx, knh_InputStream_t *in)
 	knh_bool_t tf;
 	KNH_SETv(ctx, lsfp[0].o, in);
 	LOCAL_NEW(ctx, lsfp, 1, knh_Stmt_t *, stmt, knh_InputStream_parseStmt(ctx, in));
+	WCTX(ctx)->isEvaled = 0;
 	StmtITR_eval(ctx, stmt);
 	tf = (STT_(stmt) != STT_ERR);
 	END_LOCAL(ctx, lsfp);

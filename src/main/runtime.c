@@ -711,7 +711,7 @@ static void knh_shell(CTX ctx)
 		SP(bin)->uline = 1; // always line1
 		knh_beval(ctx, bin);
 		knh_OutputStream_flush(ctx, ctx->out, 1);
-		if(ctx->isEvaled) {
+		if(ctx->isEvaled == 1) {
 			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
 			knh_write_Object(ctx, cwb->w, ctx->evaled, FMT_dump);
 			knh_showSecurityAlert(ctx, cwb->w);
@@ -719,6 +719,7 @@ static void knh_shell(CTX ctx)
 				shell_display(ctx, shell_status, knh_cwb_tochar(ctx, cwb));
 			}
 			knh_cwb_close(cwb);
+			WCTX(ctx)->isEvaled = 0;
 		}
 	}
 	shell_cleanup(ctx, shell_status);

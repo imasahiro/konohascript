@@ -649,7 +649,6 @@ static void Gamma_clear(CTX ctx, knh_gint_t offset, knh_Stmt_t *stmt)
 static knh_Token_t *Gamma_tokenIDX(CTX ctx, knh_Token_t *tk)
 {
 	if(TT_(tk) == TT_LVAR || TT_(tk) == TT_LFIELD) {
-		DBG_P("tk=%p", tk);
 		knh_Array_add(ctx, DP(ctx->gma)->insts, tk);
 	}
 	return tk;
@@ -4298,14 +4297,10 @@ static knh_Token_t* CLASS_typing(CTX ctx, knh_Stmt_t *stmt)
 	size_t i;
 	knh_Token_t *tkRES = NULL;
 	int isAllowedNewField = Gamma_initClassTBLField(ctx, this_cid);
-
-	DBG_P("isAllowedNewField=%d", isAllowedNewField);
-
 	if(DP(stmt)->size == 5) {
 		knh_Stmt_t *stmtFIELD = knh_Token_parseStmt(ctx, stmt->uline, tkNN(stmt, 4));
 		KNH_SETv(ctx, stmtNN(stmt, 4), stmtFIELD);
 	}
-
 	size_t s = DP(ctx->gma)->gsize;
 	if(IS_DeclareScalaClass(stmt)) {  /* @ac(DeclareScalaClass) */
 		if(!isAllowedNewField) {
@@ -4315,6 +4310,32 @@ static knh_Token_t* CLASS_typing(CTX ctx, knh_Stmt_t *stmt)
 		for(i = 0; i < DP(stmtP)->size; i += 3) {
 			tkRES = DECLFIELD_typing(ctx, stmtP, i);
 			if(TT_(tkRES) == TT_ERR) return tkRES;
+		}
+		{
+			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+			knh_Bytes_write(ctx, cwb->ba, S_tobytes(tkC->text));
+			knh_Bytes_write(ctx, cwb->ba, STEXT("("));
+			for(i = 0; i < DP(stmtP)->size; i += 3) {
+				if(i > 0) knh_Bytes_write(ctx, cwb->ba, STEXT(", "));
+				knh_Bytes_write(ctx, cwb->ba, S_tobytes(tkNN(stmtP, i+1)->text));
+			}
+			knh_Bytes_write(ctx, cwb->ba, STEXT(") {"));
+			for(i = 0; i < DP(stmtP)->size; i += 3) {
+				const char *t = S_totext(tkNN(stmtP, i+1)->text);
+				knh_printf(ctx, cwb->w, "this.%s=%s; ", t, t);
+			}
+			knh_Bytes_write(ctx, cwb->ba, STEXT("}"));
+			knh_Stmt_t *stmtNEW = knh_bytes_parseStmt(ctx, knh_cwb_tobytes(cwb), stmt->uline);
+			DBG_ASSERT(DP(stmtNEW)->nextNULL == NULL);
+			if(DP(stmt)->size == 5) {
+				KNH_INITv(DP(stmtNEW)->nextNULL, stmtNN(stmt, 4));
+				KNH_SETv(ctx, stmtNN(stmt, 4), stmtNEW);
+			}
+			else {
+				DBG_ASSERT(DP(stmt)->size == 4);
+				knh_Stmt_add(ctx, stmt, stmtNEW);
+			}
+			knh_cwb_close(cwb);
 		}
 	}
 	if(DP(stmt)->size == 5) {
@@ -4334,47 +4355,7 @@ static knh_Token_t* CLASS_typing(CTX ctx, knh_Stmt_t *stmt)
 			stmtFIELD = DP(stmtFIELD)->nextNULL;
 		}
 	}
-
 	Gamma_declareClassField(ctx, this_cid, s);
-
-	if(IS_DeclareScalaClass(stmt)) {
-		size_t i;
-		knh_Stmt_t *stmtP = stmtNN(stmt, 1);
-		knh_index_t idx = -1;
-		knh_Stmt_t *stmtHEAD = NULL, *stmtTAIL = NULL;
-		knh_Method_t *mtd = new_Method(ctx, 0, this_cid, MN_new, NULL);
-		knh_ParamArray_t *pa = new_ParamArray(ctx);
-		KNH_SETv(ctx, DP(mtd)->mp, pa);
-		knh_ClassTBL_addMethod(ctx, ClassTBL(this_cid), mtd, 0/*isCHECK*/);
-		for(i = 0; i < DP(stmtP)->size; i += 3) {
-			size_t n = (i/3) + 1;
-			knh_type_t type = (tkNN(stmtP, i))->cid;
-			knh_Token_t *tkN = tkNN(stmtP, i+1);
-			knh_fieldn_t fn = Token_fn(ctx, tkN);
-			knh_ParamArray_addParam(ctx, pa, type, fn);
-			idx = -1;
-			class_rindexFNQ(ctx, this_cid, fn, &idx);
-			DBG_ASSERT(idx != -1);
-			knh_Token_toTYPED(ctx, tkN, TT_FVAR, type, n);
-			{
-				knh_Token_t *tkFLD = new_TokenTYPED(ctx, TT_FIELD, type, idx);
-				knh_Stmt_t *stmtLET = new_Stmt2(ctx, STT_LET, tkNN(stmtP, i), tkFLD, tkN, NULL);
-				if(stmtTAIL == NULL) {
-					stmtHEAD = stmtTAIL = stmtLET;
-				}
-				else {
-					KNH_INITv(DP(stmtTAIL)->nextNULL, stmtLET);
-					stmtTAIL = stmtLET;
-				}
-				stmtLET->type = TYPE_void;
-			}
-		}
-		knh_ParamArray_addReturnType(ctx, pa, TYPE_This);
-		KNH_INITv(DP(stmtTAIL)->nextNULL,
-			new_Stmt2(ctx, STT_RETURN, new_TokenTYPED(ctx, TT_FVAR, this_cid, 0), NULL));
-		KNH_SETv(ctx, stmtNN(stmt, 1), stmtHEAD);
-		knh_Method_asm(ctx, mtd, stmtHEAD, typingMethod2);
-	}
 
 	if(DP(stmt)->size == 5) {
 		knh_Stmt_t *stmtFIELD = stmtNN(stmt, 4/*instmt*/);

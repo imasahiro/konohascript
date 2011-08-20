@@ -3889,6 +3889,7 @@ static KMETHOD System_eval(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	if(ctx->isEvaled == 1) {
 		knh_Object_t *v = ctx->evaled;
+		WCTX(ctx)->isEvaled = 0;
 		if(tcid == CLASS_Tvoid) return;
 		if(v != KNH_NULL && ClassTBL_isa(O_cTBL(v), tcid)) {
 			if(IS_Tunbox(tcid)) {

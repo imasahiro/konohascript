@@ -3557,8 +3557,8 @@ knh_Stmt_t *knh_Token_parseStmt(CTX ctx, knh_uline_t uline, knh_Token_t *tk)
 
 knh_Stmt_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, knh_uline_t uline)
 {
-	BEGIN_LOCAL(ctx, lsfp, 2);
 	ctx->gma->uline = uline;
+	BEGIN_LOCAL(ctx, lsfp, 2);
 	LOCAL_NEW(ctx, lsfp, 0, knh_Stmt_t*, rVALUE, new_Stmt2(ctx, STT_BLOCK, NULL));
 	LOCAL_NEW(ctx, lsfp, 1, knh_Token_t*, tk, new_Token(ctx, TT_CODE));
 	KNH_SETv(ctx, (tk)->data, new_String2(ctx, CLASS_String, expr.text, expr.len, 0));

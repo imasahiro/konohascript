@@ -467,7 +467,7 @@ knh_Token_t* ErrorComparedDiffrentType(CTX ctx, knh_type_t t1, knh_type_t t2)
 /* type error */
 knh_Token_t *TERROR_Token(CTX ctx, knh_Token_t *tk, knh_class_t type, knh_class_t reqt)
 {
-	return knh_Token_toERR(ctx, tk, ("%O has type %T, not %T"), tk, type, reqt);
+	return knh_Token_toERR(ctx, tk, ("%O has type %T, not %T"), tk, reqt, type);
 }
 knh_Token_t *TypeErrorStmtNN(CTX ctx, knh_Stmt_t *stmt, int n, knh_type_t reqt, knh_type_t type)
 {
