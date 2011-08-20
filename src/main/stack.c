@@ -141,7 +141,7 @@ void knh_checkSafePoint(CTX ctx, knh_sfp_t *sfp, const char *file, int line)
 		if(line != 0) {
 			GC_LOG("%s:%d safepoint=%d", file, line, safepoint);
 		}
-		knh_System_gc(ctx, line);
+		knh_System_gc(ctx, 1);
 	}
 	if(TFLAG_is(int, safepoint, SAFEPOINT_SIGNAL)) {
 		//

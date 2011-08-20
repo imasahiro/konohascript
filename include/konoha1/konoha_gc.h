@@ -122,7 +122,7 @@ extern "C" {
 	}\
 
 #define KNH_SETv(ctx,v,o) {\
-		knh_Object_t *h_ = (knh_Object_t*)o; \
+		knh_Object_t *h_ = (knh_Object_t*)(o); \
 		DBG_ASSERT_ISOBJECT(v);  \
 		DBG_ASSERT_ISOBJECT(h_); \
 		knh_Object_RCinc(h_); \

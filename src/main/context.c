@@ -474,13 +474,14 @@ static knh_context_t* knh_getRootContext(CTX ctx)
 	return ctx0;
 }
 
-void knh_context_reftrace(CTX ctx, knh_context_t *o FTRARG)
+static knh_Object_t **knh_context_reftrace(CTX ctx, knh_context_t *o FTRARG)
 {
 	tail_ = knh_CommonContext_reftrace(ctx, (knh_context_t*)o FTRDATA);
 	if(knh_getRootContext(ctx) == (CTX)o) {
 		tail_ = knh_share_reftrace(ctx, (knh_share_t*)o->share FTRDATA);
 	}
 	KNH_SIZEREF(ctx);
+	return tail_;
 }
 
 void knh_Context_free(CTX ctx, knh_context_t* ctxo)
@@ -520,10 +521,10 @@ konoha_t konoha_open(size_t stacksize)
 	return k;
 }
 
-void knh_reftraceAll(CTX ctx FTRARG)
+knh_Object_t **knh_reftraceAll(CTX ctx FTRARG)
 {
 	CTX ctx0 = knh_getRootContext(ctx);
-	knh_context_reftrace(ctx0, (knh_context_t*)ctx0 FTRDATA);
+	return knh_context_reftrace(ctx0, (knh_context_t*)ctx0 FTRDATA);
 }
 
 void konoha_close(konoha_t konoha)

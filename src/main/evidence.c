@@ -702,7 +702,7 @@ static const char* knh_readuline(CTX ctx, knh_uline_t uline, char *buf, size_t b
 static knh_bool_t isCalledMethod(CTX ctx, knh_sfp_t *sfp)
 {
 	knh_Method_t *mtd = sfp[0].mtdNC;
-	if(knh_isObject(ctx, mtd) && IS_Method(mtd)) {
+	if(knh_isObject(ctx, UPCAST(mtd)) && IS_Method(mtd)) {
 		//DBG_P("FOUND mtdNC: shift=%d, pc=%d", sfp[-2].shift, sfp[-1].pc);
 		return 1;
 	}

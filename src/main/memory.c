@@ -702,14 +702,15 @@ static knh_Object_t *new_ObjectArena(CTX ctx, size_t arenasize)
 	}
 }
 
-knh_bool_t knh_isObject(CTX ctx, void *p)
+knh_bool_t knh_isObject(CTX ctx, knh_Object_t *o)
 {
-	knh_uintptr_t n = (knh_uintptr_t)p;
-	if(p != NULL && n % sizeof(knh_Object_t) == 0) {
+	void *ptr = (void*) o;
+	knh_uintptr_t n = (knh_uintptr_t)ptr;
+	if(ptr != NULL && n % sizeof(knh_Object_t) == 0) {
 		size_t i, size = ctx->share->sizeObjectArenaTBL;
 		knh_ObjectArenaTBL_t *oat = ctx->share->ObjectArenaTBL;
 		for(i = 0; i < size; i++) {
-			if((void*)oat[i].head < p && p < (void*)oat[i].bottom) return 1;
+			if((void*)oat[i].head < ptr && ptr < (void*)oat[i].bottom) return 1;
 		}
 	}
 	return 0;
@@ -763,6 +764,20 @@ static void knh_dump_cstack(CTX ctx)
 	knh_flush(ctx, KNH_STDERR);
 }
 #endif /* K_USING_CTRACE */
+
+static void cstack_mark(CTX ctx FTRARG)
+{
+	void** stack  = (void**) __builtin_frame_address(0);
+	void** bottom = (void**) ctx->cstack_bottom;
+	for (; stack < bottom; ++stack) {
+		knh_Object_t *o = (knh_Object_t*)(*stack);
+		if (knh_isObject(ctx, o)) {
+			KNH_ADDREF(ctx, o);
+		}
+	}
+	KNH_SIZEREF(ctx);
+}
+
 /* ------------------------------------------------------------------------ */
 
 
@@ -1168,10 +1183,14 @@ static void gc_mark(CTX ctx, int needsCStackTrace)
 	long i;
 	const knh_ClassTBL_t *cTBL;
 	knh_ostack_t ostackbuf, *ostack = ostack_init(ctx, &ostackbuf);
-	knh_Object_t *ref = NULL;
+	knh_Object_t *ref = NULL, **reftail = NULL;
+
 	knh_ensurerefs(ctx, ctx->ref_buf, K_PAGESIZE);
 	CONTEXT_REFINIT(ctx);
-	knh_reftraceAll(ctx, ctx->refs);
+	reftail = knh_reftraceAll(ctx, ctx->refs);
+	if (unlikely(needsCStackTrace)) {
+		cstack_mark(ctx, reftail);
+	}
 	//fprintf(stderr, "%s first refs %ld\n", __FUNCTION__, ctx->ref_size);
 	goto L_INLOOP;
 	while((ref = ostack_next(ostack)) != NULL) {
