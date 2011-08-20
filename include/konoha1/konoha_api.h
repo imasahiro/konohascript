@@ -590,7 +590,7 @@ void knh_fastfree(CTX ctx, void *block, size_t size);
 void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize);
 void knh_share_initArena(CTX ctx, knh_share_t *share);
 void knh_share_freeArena(CTX ctx, knh_share_t *share);
-knh_bool_t knh_isObject(CTX ctx, knh_Object_t *p);
+knh_bool_t knh_isObject(CTX ctx, knh_Object_t *o);
 void knh_initFirstObjectArena(CTX ctx);
 knh_Object_t *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct);
 knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct);

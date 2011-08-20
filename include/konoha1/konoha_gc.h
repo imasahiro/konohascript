@@ -62,6 +62,7 @@ extern "C" {
 		sfp[n2] = sfpN;\
 	}\
 
+#define KNH_SAFEPOINT(ctx, sfp)
 //#define KNH_GC(ctx)  DBG_(knh_System_gc(ctx))
 #define O_toTenure(o)
 

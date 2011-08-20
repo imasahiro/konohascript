@@ -147,17 +147,6 @@ static void knh_CommonContext_free(CTX ctx, knh_context_t *ctxo)
 	KNH_FREE(ctx, ctxo->tmrcache, K_TMAPCACHE_SIZE * sizeof(knh_tmrcache_t));
 	ctxo->mtdcache  = NULL;
 	ctxo->tmrcache = NULL;
-	if(ctxo->queue_capacity > 0) {
-		/* XXX(@imasahiro) */
-		/* to remove memory leaks, queue_capacity must increment */
-		/* see src/main/memory.c ostack_init() */
-		KNH_FREE(ctx, ctxo->queue,  (ctxo->queue_capacity + 1) * sizeof(knh_Object_t*));
-		ctxo->queue_capacity = 0;
-	}
-	if(ctx->ref_capacity > 0) {
-		KNH_FREE(ctx, ctxo->ref_buf, ctxo->ref_capacity * sizeof(knh_Object_t*));
-		ctxo->ref_capacity = 0;
-	}
 	knh_mutex_free(ctxo, ctxo->ctxlock);
 	ctxo->ctxlock = NULL;
 	ctxo->bufa = NULL;
@@ -484,6 +473,24 @@ static knh_Object_t **knh_context_reftrace(CTX ctx, knh_context_t *o FTRARG)
 	return tail_;
 }
 
+static void knh_Context_freeGCBuf(CTX ctx, knh_context_t* ctxo)
+{
+	if(ctxo->queue_capacity > 0) {
+		/* XXX(@imasahiro) */
+		/* to remove memory leaks, queue_capacity must increment */
+		/* see src/main/memory.c ostack_init() */
+		KNH_FREE(ctx, ctxo->queue,  (ctxo->queue_capacity + 1) * sizeof(knh_Object_t*));
+		ctxo->queue = NULL;
+		ctxo->queue_capacity = 0;
+	}
+	if(ctx->ref_capacity > 0) {
+		KNH_FREE(ctx, ctxo->ref_buf, ctxo->ref_capacity * sizeof(knh_Object_t*));
+		ctxo->ref_buf = NULL;
+		ctxo->refs = NULL;
+		ctxo->ref_capacity = 0;
+	}
+}
+
 void knh_Context_free(CTX ctx, knh_context_t* ctxo)
 {
 	knh_CommonContext_free(ctx, ctxo);
@@ -496,12 +503,14 @@ void knh_Context_free(CTX ctx, knh_context_t* ctxo)
 				knh_Method_toAbstract(ctx, a->methods[j]);
 			}
 		}
+		knh_Context_freeGCBuf(ctx, ctxo);
 		knh_mutex_free(ctx, ctxo->share->memlock);
 		knh_share_free(ctx, (knh_share_t*)ctxo->share);
 		knh_bzero((void*)ctxo, sizeof(knh_context_t));
 		free((void*)ctxo);
 	}
 	else {
+		knh_Context_freeGCBuf(ctx, ctxo);
 		knh_bzero((void*)ctxo, sizeof(knh_context_t));
 		knh_free(ctx, (void*)ctxo, sizeof(knh_context_t));
 	}

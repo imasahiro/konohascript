@@ -767,7 +767,11 @@ static void knh_dump_cstack(CTX ctx)
 
 static void cstack_mark(CTX ctx FTRARG)
 {
+#ifdef __GNUC__
 	void** stack  = (void**) __builtin_frame_address(0);
+#else
+	void** stack  = (void**) &ctx;
+#endif
 	void** bottom = (void**) ctx->cstack_bottom;
 	for (; stack < bottom; ++stack) {
 		knh_Object_t *o = (knh_Object_t*)(*stack);
@@ -1032,7 +1036,7 @@ void knh_Object_RCfree(CTX ctx, Object *o)
 	ostack_push(ctx, ostack, o);
 	while((ref = ostack_next(ostack)) != NULL) {
 		ctx_update_refs(ctx, ctx->ref_buf, 0);
-		O_cTBL(ref)->cdef->reftrace(ctx, ref, ctx->refs);
+		O_cTBL(ref)->cdef->reftrace(ctx, RAWPTR(ref), ctx->refs);
 		if (ctx->ref_size > 0) {
 			for(i = ctx->ref_size - 1; prefetch(ctx->refs[i-1]), i >= 0; i--)
 			//for (i = 0; prefetch(ctx->refs[i+1]), i < ctx->ref_size; i++) /* slow */
