@@ -1605,7 +1605,7 @@ static knh_Token_t *DECL3_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t
 	}
 	else {
 		if(TT_(tkV) == TT_ASIS) {
-			knh_Token_toTYPED(ctx, tkNN(stmt, 2), TT_NULL, tkT->cid, tkT->cid);
+			knh_Token_toTYPED(ctx, tkNN(stmt, n+2), TT_NULL, tkT->cid, tkT->cid);
 		}
 		else {
 			TYPING_TypedExpr(ctx, stmt, n+2, (tkT)->cid);

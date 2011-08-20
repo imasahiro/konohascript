@@ -129,41 +129,19 @@ knh_sfp_t* knh_stack_local(CTX ctx, size_t n)
 		knh_stack_initexpand(ctx, ctx->esp, ctx->stacksize + n + 64);
 	}
 	knh_sfp_t *esp = ctx->esp;
-	KNH_SAFEPOINT(ctx, esp);
 	((knh_context_t*)ctx)->esp = esp + n;
 	return esp;
 }
 
-//void knh_stack_gc(CTX ctx, int isALL)
-//{
-//	knh_sfp_t *sp = ctx->esp + 1;  // for safety
-//	knh_Object_t *nullobj = KNH_NULL;
-//	if(isALL) {
-//		knh_sfp_t *stacktop = ctx->stack + ctx->stacksize;
-//		while(sp < stacktop) {
-//			KNH_SETv(ctx, sp[0].o, nullobj);
-//			sp++;
-//		}
-//	}
-//	else {
-//		while(sp < ctx->stacktop) {
-//			//DBG_P("stack[%d] o=%s", sp - ctx->stack, CLASS__(O_cid(sp[0].o)));
-//			if(sp[0].o == nullobj) break;
-//			KNH_SETv(ctx, sp[0].o, nullobj);
-//			sp++;
-//		}
-//	}
-//	// USE END_LOCAL in the middle of the context initialization
-//	KNH_ASSERT(ctx->e != NULL);
-//	//KNH_GC(ctx);
-//}
-
-void knh_checkSafePoint(CTX ctx, knh_sfp_t *sfp)
+void knh_checkSafePoint(CTX ctx, knh_sfp_t *sfp, const char *file, int line)
 {
 	int safepoint = ctx->safepoint;
 	WCTX(ctx)->safepoint = 0;
 	if(TFLAG_is(int, safepoint, SAFEPOINT_GC)) {
-		knh_System_gc(ctx);
+		if(line != 0) {
+			GC_LOG("%s:%d safepoint=%d", file, line, safepoint);
+		}
+		knh_System_gc(ctx, line);
 	}
 	if(TFLAG_is(int, safepoint, SAFEPOINT_SIGNAL)) {
 		//

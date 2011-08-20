@@ -308,9 +308,7 @@ static KMETHOD Object__dump(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD Tdynamic_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t t = knh_bytes_next(S_tobytes(sfp[1].s), ':');
-	char buf[80];
-	knh_snprintf(buf, sizeof(buf), "%s:", t.text);
-	const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, sfp[2].ns, B(buf), CLASS_Tdynamic);
+	const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, sfp[2].ns, t, CLASS_Tdynamic);
 	if(ct != NULL) {
 		RETURN_(new_Type(ctx, ct->cid));
 	}
@@ -770,6 +768,7 @@ static KMETHOD String_opEXISTS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	DBG_ASSERT(IS_NameSpace(sfp[1].ns));
 	knh_Object_t* btf = knh_NameSpace_newObject(ctx, sfp[1].ns, sfp[0].s, CLASS_Boolean);
+	DBG_P("btf=%p, true=%p, false=%p", btf, KNH_TRUE, KNH_FALSE);
 	RETURNb_(btf == KNH_TRUE);
 }
 
@@ -3759,7 +3758,7 @@ static KMETHOD System_listProperties(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD System_gc(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_System_gc(ctx);
+	knh_System_gc(ctx, 0/*needsStackTrace*/);
 }
 
 /* ------------------------------------------------------------------------ */

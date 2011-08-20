@@ -407,8 +407,8 @@ struct knh_Class_t {
 
 /* class */
 
-#define KNH_NULVAL(cid)  knh_getClassDefaultValue(ctx, cid)
-#define KNH_TNULL(T)      (knh_##T##_t*)knh_getClassDefaultValue(ctx, CLASS_##T)
+#define KNH_NULVAL(cid)      knh_getClassDefaultValue(ctx, cid)
+#define KNH_TNULL(T)         (knh_##T##_t*)knh_getClassDefaultValue(ctx, CLASS_##T)
 #define knh_Class_cid(c)     (knh_class_t)(c)->cid
 typedef void (*knh_Fwritecid)(CTX ctx, struct knh_OutputStream_t *w, knh_class_t cid);
 
@@ -1514,9 +1514,12 @@ typedef struct knh_RawPtr_t {
 
 #define BEGIN_LOCAL(ctx, lsfp, n) \
 		knh_sfp_t *lsfp = knh_stack_local(ctx, n);\
+		KNH_SAFEPOINT(ctx, lsfp); \
 		int sfpidx_ = lsfp - ctx->stack;\
 
-#define UPDATE_LOCAL(ctx, lsfp)   lsfp = ctx->stack + sfpidx_;
+#define BEGIN_UNSAFELOCAL(ctx, lsfp, n) \
+		knh_sfp_t *lsfp = knh_stack_local(ctx, n); \
+		int sfpidx_ = lsfp - ctx->stack;\
 
 #ifdef __cplusplus
 #define __CONST_CAST__(T, expr) (const_cast<T>(expr))

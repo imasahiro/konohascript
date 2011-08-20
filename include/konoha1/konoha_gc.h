@@ -99,7 +99,7 @@ extern "C" {
 //}
 
 #define KNH_SAFEPOINT(ctx, sfp) \
-	if(ctx->safepoint != 0) knh_checkSafePoint(ctx, sfp);
+	if(ctx->safepoint != 0) knh_checkSafePoint(ctx, sfp, __FILE__, __LINE__);
 
 #define O_toTenure(o)  knh_Object_toTenure(ctx, o)
 

@@ -405,7 +405,7 @@ extern "C" {
 #define KLR_SAFEPOINT(ctx, espidx) \
 	if(ctx->safepoint != 0) { \
 		klr_setesp(ctx, SFP(rshift(rbp, espidx)));\
-		knh_checkSafePoint(ctx, (knh_sfp_t*)rbp); \
+		knh_checkSafePoint(ctx, (knh_sfp_t*)rbp, __FILE__, __LINE__); \
 	} \
 
 #else

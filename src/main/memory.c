@@ -1163,7 +1163,7 @@ static void mark_ostack(CTX ctx, knh_Object_t *ref, knh_ostack_t *ostack)
 	((knh_context_t*)ctx)->refs = ctx->ref_buf;\
 	((knh_context_t*)ctx)->ref_size = 0;
 
-static void gc_mark(CTX ctx)
+static void gc_mark(CTX ctx, int needsCStackTrace)
 {
 	long i;
 	const knh_ClassTBL_t *cTBL;
@@ -1299,7 +1299,7 @@ static void gc_extendObjectArena(CTX ctx)
 #define START_THE_WORLD(ctx)
 #define STOP_THE_WORLD(ctx)
 
-void knh_System_gc(CTX ctx)
+void knh_System_gc(CTX ctx, int needsCStackTrace)
 {
 	//KNH_LOCK(ctx, ctx->share->memlock);
 	knh_stat_t *ctxstat = ctx->stat;
@@ -1311,7 +1311,7 @@ void knh_System_gc(CTX ctx)
 
 	gc_init(ctx);
 	MTGC_(((knh_context_t*)ctx)->mscheck = 1);
-	gc_mark(ctx);
+	gc_mark(ctx, needsCStackTrace);
 	MTGC_(
 		STOP_THE_WORLD(ctx);
 		((knh_context_t*)ctx)->mscheck = 0;
