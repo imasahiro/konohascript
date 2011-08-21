@@ -903,6 +903,7 @@ struct knh_OutputStream_t {
 #define knh_flush(ctx, w)          knh_OutputStream_flush(ctx, w, 0)
 #define knh_write_delim(ctx, w)    knh_write_ascii(ctx, w, ", ")
 #define knh_write_dots(ctx, w)     knh_write_ascii(ctx, w, "...")
+#define knh_write_delimdots(ctx, w)     knh_write_ascii(ctx, w, ", ...")
 #define knh_write_fn(ctx, w, fn)   knh_write_ascii(ctx, w, FN__(fn))
 #define knh_write__O(ctx, w, o)    knh_write_Object(ctx, w, MN__k, o)
 
@@ -1224,15 +1225,15 @@ struct knh_Stmt_t {
 
 /* ------------------------------------------------------------------------ */
 //## @Struct @Private class Gamma Object;
-//## flag00 Gamma   0 DP(%s)->flag is  set   * *;
-//## flag Gamma Quiet      1 DP(%s)->flag is  set   * *;
-//## flag Gamma Throwable  2 DP(%s)->flag is  set   * *;
-//## flag Gamma PROCEED    3 DP(%s)->flag has found * *;
-//## flag Gamma REGISTER   4 DP(%s)->flag has found * *;
-//## flag Gamma YEILD      5 DP(%s)->flag has found * *;
-//## flag Gamma FIELD      6 DP(%s)->flag has found * *;
-//## flag Gamma LexicalScope     7 DP(%s)->flag has found * *;
-//## flag Gamma SCRIPT     8 DP(%s)->flag has found * *;
+//## flag Gamma EnforceConst  0 DP(%s)->flag is  set   * *;
+//## flag Gamma Quiet         1 DP(%s)->flag is  set   * *;
+//## flag Gamma Throwable     2 DP(%s)->flag is  set   * *;
+//## flag Gamma PROCEED       3 DP(%s)->flag has found * *;
+//## flag Gamma REGISTER      4 DP(%s)->flag has found * *;
+//## flag Gamma YEILD         5 DP(%s)->flag has found * *;
+//## flag Gamma FIELD         6 DP(%s)->flag has found * *;
+//## flag Gamma LexicalScope  7 DP(%s)->flag has found * *;
+//## flag Gamma SCRIPT        8 DP(%s)->flag has found * *;
 
 //## flag Gamma InlineFunction  0 DP(%s)->cflag is set * *;
 //## flag Gamma TailRecursion   1 DP(%s)->cflag is set * *;

@@ -1413,6 +1413,12 @@ void knh_DictMap_append(CTX ctx, knh_DictMap_t *m, knh_String_t *key, knh_Object
 	dmap_addSO(ctx, dmap, kvsfp);
 }
 
+//void knh_DictMap_sort(CTX ctx, knh_DictMap_t *m)
+//{
+//	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
+//	dmap_sort(dmap);
+//}
+
 void knh_DictSet_append(CTX ctx, knh_DictSet_t *m, knh_String_t *key, knh_uintptr_t n)
 {
 	knh_sfp_t* kvsfp = ctx->esp;

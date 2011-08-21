@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      548
+#define K_REVISION                      551
 #endif
-#define K_BUILDID                       1159
+#define K_BUILDID                       1160
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -748,6 +748,9 @@
 #define FLAG_Stmt_Memo2 ((knh_flag_t)(1<<5))
 #define Stmt_isMemo2(o)  (TFLAG_is(knh_flag_t,DP(o)->flag0,FLAG_Stmt_Memo2))
 #define Stmt_setMemo2(o,b) TFLAG_set(knh_flag_t,DP(o)->flag0,FLAG_Stmt_Memo2,b)
+#define FLAG_Gamma_EnforceConst ((knh_flag_t)(1<<0))
+#define Gamma_isEnforceConst(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Gamma_EnforceConst))
+#define Gamma_setEnforceConst(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Gamma_EnforceConst,b)
 #define FLAG_Gamma_Quiet ((knh_flag_t)(1<<1))
 #define Gamma_isQuiet(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Gamma_Quiet))
 #define Gamma_setQuiet(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Gamma_Quiet,b)

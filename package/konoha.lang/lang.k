@@ -49,10 +49,7 @@ class Charset extends String;
 @Public @Native boolean Object.hasMethod(String name);
 @Public @Native dynamic Object.invokeMethod(String name, dynamic a, ...);
 
-@Public @Native boolean Object.hasXData();
-@Public @Native Map Object.getXData();
-@Public @Native boolean Class.addXField(Class type, String name);
-@Public @Native boolean Object.addXField(Class type, String name);
+@Public @Native boolean System.addClassField(Class c, Class type, String name);
 
 @Public @Native Class Class.opLINK(String path, NameSpace _);
 @Public @Native @Static Class[] Class.query(String path);
@@ -63,6 +60,7 @@ class Charset extends String;
 @Public @Native @Const Class Method.getReturnType();
 @Public @Native @Const Class[]  Method.getParamTypes();
 @Public @Native @Const String[] Method.getParamNames();
+@Public @Native @Const String Method.getSourceCode();
 
 
 /* *****************

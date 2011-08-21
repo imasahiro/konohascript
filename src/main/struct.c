@@ -1215,7 +1215,7 @@ static void Array_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 				if(IS_Tint(p1)) {
 					knh_write_ifmt(ctx, w, K_INT_FMT, a->ilist[0]);
 					if(IS_FMTline(level)) {
-						knh_write_dots(ctx, w);
+						knh_write_delimdots(ctx, w);
 					}
 					else {
 						for(c = 1; c < size; c++) {
@@ -1227,7 +1227,7 @@ static void Array_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 				else if(p1 == TYPE_Boolean) {
 					knh_write_bool(ctx, w, (int)a->ilist[0]);
 					if(IS_FMTline(level)) {
-						knh_write_dots(ctx, w);
+						knh_write_delimdots(ctx, w);
 					}
 					else {
 						for(c = 1; c < knh_Array_size(a); c++) {
@@ -1239,7 +1239,7 @@ static void Array_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 				else { /* IS_Tfloat(p1) */
 					knh_write_ffmt(ctx, w, K_FLOAT_FMT, a->flist[0]);
 					if(IS_FMTline(level)) {
-						knh_write_dots(ctx, w);
+						knh_write_delimdots(ctx, w);
 					}
 					else {
 						for(c = 1; c < knh_Array_size(a); c++) {
@@ -1252,7 +1252,7 @@ static void Array_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 			else {
 				knh_write_InObject(ctx, w, a->list[0], level);
 				if(IS_FMTline(level)) {
-					knh_write_dots(ctx, w);
+					knh_write_delimdots(ctx, w);
 				}
 				else {
 					for(c = 1; c < size; c++) {
@@ -1432,17 +1432,17 @@ static void Map_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 		if(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
 			knh_write_sfp(ctx, w, p1, lsfp, FMT_line);
 			knh_write(ctx, w, STEXT(": "));
-			knh_write_sfp(ctx, w, p2, lsfp+1, FMT_line);
+			knh_write_sfp(ctx, w, p2, lsfp+1, FMT_data);
 			if(!IS_FMTline(level)) {
 				while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
 					knh_write(ctx, w, STEXT(", "));
 					knh_write_sfp(ctx, w, p1, lsfp, FMT_line);
 					knh_write(ctx, w, STEXT(": "));
-					knh_write_sfp(ctx, w, p2, lsfp+1, FMT_line);
+					knh_write_sfp(ctx, w, p2, lsfp+1, FMT_data);
 				}
 			}
 			else {
-				knh_write_dots(ctx, w);
+				knh_write_delimdots(ctx, w);
 			}
 		}
 		END_LOCAL(ctx, lsfp);
@@ -1613,8 +1613,7 @@ static void Method_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 			knh_write(ctx, w, B(FN__(p->fn)));
 		}
 		if(ParamArray_isVARGs(DP(mtd)->mp)) {
-			knh_write_delim(ctx, w);
-			knh_write_dots(ctx, w);
+			knh_write_delimdots(ctx, w);
 		}
 		knh_putc(ctx, w, ')');
 	}

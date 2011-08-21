@@ -490,7 +490,7 @@ class Data:
                       ("DEVNULL", "/dev/null"), ("DEVSTDIN", "/dev/stdin"),
                       ("DEVSTDERR", "/dev/stderr"), ("DEVSTDOUT", "/dev/stdout"),
                       ("ATlabel", "@label"), # ("AssertionException", "Assertion!!"), 
-                      #                      ("LP", "("), ("RP", ")"),  ("LB", "{"), ("RB", "}"),  ("LS", "["), ("RS", "]"), 
+                      # ("LP", "("), ("RP", ")"),  ("LB", "{"), ("RB", "}"),  ("LS", "["), ("RS", "]"), 
                       ]
         self.add_mn('main')
         self.add_mn('this')
