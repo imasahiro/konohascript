@@ -488,7 +488,7 @@ static KMETHOD Float__bits(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static TYPEMAP Boolean_String(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_String_t *s = (Boolean_to(int, (sfp[0]))) ? TS_true : TS_false;
+	knh_String_t *s = (Boolean_to(int, (sfp[0]))) ? new_T("true") : new_T("false");
 	RETURN_(s);
 }
 

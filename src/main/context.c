@@ -176,7 +176,7 @@ knh_class_t new_ClassId(CTX ctx)
 		knh_bzero(ct, sizeof(knh_ClassTBL_t));
 		ct->cid    = newid;
 		ct->keyidx = -1;
-		ct->metaidx = -1;
+		ct->xdataidx = -1;
 		ctx->share->ClassTBL[newid] = ct;
 	}
 	((knh_share_t*)ctx->share)->sizeClassTBL = newid + 1;

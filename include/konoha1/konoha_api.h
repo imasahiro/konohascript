@@ -481,6 +481,7 @@ knh_index_t knh_Method_indexOfGetterField(knh_Method_t *o);
 knh_index_t knh_Method_indexOfSetterField(knh_Method_t *o);
 knh_DictMap_t* knh_Object_getXData(CTX ctx, knh_Object_t *o);
 void knh_ClassTBL_addXField(CTX ctx, const knh_ClassTBL_t *ct, knh_type_t type, knh_fieldn_t fn);
+knh_Method_t *knh_NameSpace_addXSetter(CTX ctx, knh_NameSpace_t *ns, const knh_ClassTBL_t *ct, knh_type_t type, knh_methodn_t mn_setter);
 void knh_ClassTBL_addMethod(CTX ctx, const knh_ClassTBL_t *t, knh_Method_t *mtd, int isCHECK);
 knh_Method_t* knh_ClassTBL_findMethodNULL(CTX ctx, const knh_ClassTBL_t *ct, knh_methodn_t mn, int isGEN);
 knh_Method_t *knh_ClassTBL_getFmtNULL(CTX ctx, const knh_ClassTBL_t *t, knh_methodn_t mn0);

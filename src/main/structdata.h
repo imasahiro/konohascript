@@ -45,10 +45,6 @@ static const char * StringData0[] = {
 	""K_OSLINEFEED"", /* TS_EOL */
 	"BEGIN", /* TS_BEGIN */
 	"END", /* TS_END */
-	"true", /* TS_true */
-	"false", /* TS_false */
-	"null", /* TS_null */
-	"void", /* TS_void */
 	"main", /* TS_main */
 	""K_ENCODING"", /* TS_ENCODING */
 	"/dev/null", /* TS_DEVNULL */
@@ -56,13 +52,6 @@ static const char * StringData0[] = {
 	"/dev/stderr", /* TS_DEVSTDERR */
 	"/dev/stdout", /* TS_DEVSTDOUT */
 	"@label", /* TS_ATlabel */
-	"Assertion!!", /* TS_AssertionException */
-	"(", /* TS_LP */
-	")", /* TS_RP */
-	"{", /* TS_LB */
-	"}", /* TS_RB */
-	"[", /* TS_LS */
-	"]", /* TS_RS */
 	NULL
 };
 
@@ -323,6 +312,7 @@ static knh_FieldNameData0_t FieldNameData0[] = {
 	{"writeASCII", FN_writeASCII},
 	{"writeData", FN_writeData},
 	{"x", FN_x},
+	{"xdata", FN_xdata},
 	{"y", FN_y},
 	{"year", FN_year},
 	{"z", FN_z},

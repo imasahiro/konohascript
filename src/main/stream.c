@@ -579,8 +579,8 @@ KNHAPI2(void) knh_write_TAB(CTX ctx, knh_OutputStream_t *w)
 
 void knh_write_bool(CTX ctx, knh_OutputStream_t *w, int b)
 {
-	knh_String_t *s = (b) ? TS_true : TS_false;
-	knh_Bytes_write(ctx, DP(w)->ba, S_tobytes(s));
+	knh_bytes_t t = (b) ? STEXT("true") : STEXT("false");
+	knh_Bytes_write(ctx, DP(w)->ba, t);
 }
 
 void knh_write_ptr(CTX ctx, knh_OutputStream_t *w, void *ptr)

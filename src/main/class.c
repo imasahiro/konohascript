@@ -1140,14 +1140,25 @@ knh_index_t knh_Method_indexOfSetterField(knh_Method_t *o)
 knh_DictMap_t* knh_Object_getXData(CTX ctx, knh_Object_t *o)
 {
 	knh_DictMap_t *m;
-	if(!Object_isXData(o)) {
-		m = new_DictMap0(ctx, 0, 1/*isCaseMap*/, "xdata");
-		Object_setXData(o, 1);
-		knh_PtrMap_add(ctx, ctx->share->xdataPtrMap, o, m);
+	const knh_ClassTBL_t *ct = O_cTBL(o);
+	if(ct->xdataidx != -1) {
+		knh_Object_t **v = (ct->bcid == CLASS_Object) ? ((knh_ObjectField_t*)o)->fields : ((knh_RawPtr_t*)o)->kfields;
+		m = (knh_DictMap_t*)v[ct->xdataidx];
+		if(IS_NULL(m)) {
+			m = new_DictMap0(ctx, 0, 1/*isCaseMap*/, "xdata");
+			KNH_SETv(ctx, v[ct->xdataidx], m);
+		}
 	}
 	else {
-		m = (knh_DictMap_t*)knh_PtrMap_get(ctx, ctx->share->xdataPtrMap, o);
-		DBG_ASSERT(m != NULL);
+		if(!Object_isXData(o)) {
+			m = new_DictMap0(ctx, 0, 1/*isCaseMap*/, "xdata");
+			Object_setXData(o, 1);
+			knh_PtrMap_add(ctx, ctx->share->xdataPtrMap, o, m);
+		}
+		else {
+			m = (knh_DictMap_t*)knh_PtrMap_get(ctx, ctx->share->xdataPtrMap, o);
+			DBG_ASSERT(m != NULL);
+		}
 	}
 	return m;
 }
@@ -1155,7 +1166,7 @@ knh_DictMap_t* knh_Object_getXData(CTX ctx, knh_Object_t *o)
 static KMETHOD Fmethod_xgetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
-	if(Object_isXData(sfp[0].o)) {
+	if(Object_isXData(sfp[0].o) || O_cTBL(sfp[0].o)->xdataidx != -1) {
 		knh_fieldn_t fn = DP(mtd)->delta;
 		knh_String_t *n = knh_getFieldName(ctx, fn);
 		knh_DictMap_t *m = knh_Object_getXData(ctx, sfp[0].o);
@@ -1171,7 +1182,7 @@ static KMETHOD Fmethod_xgetter(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD Fmethod_xngetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
-	if(Object_isXData(sfp[0].o)) {
+	if(Object_isXData(sfp[0].o) || O_cTBL(sfp[0].o)->xdataidx != -1) {
 		knh_fieldn_t fn = DP(mtd)->delta;
 		knh_String_t *n = knh_getFieldName(ctx, fn);
 		knh_DictMap_t *m = knh_Object_getXData(ctx, sfp[0].o);
@@ -1219,7 +1230,7 @@ void knh_ClassTBL_addXField(CTX ctx, const knh_ClassTBL_t *ct, knh_type_t type, 
 	knh_ClassTBL_addMethod(ctx, ct, mtd, 0/*isCheck*/);
 }
 
-static knh_Method_t *knh_NameSpace_addXSetter(CTX ctx, knh_NameSpace_t *ns, const knh_ClassTBL_t *ct, knh_type_t type, knh_methodn_t mn_setter)
+knh_Method_t *knh_NameSpace_addXSetter(CTX ctx, knh_NameSpace_t *ns, const knh_ClassTBL_t *ct, knh_type_t type, knh_methodn_t mn_setter)
 {
 	if(FLAG_is(ct->cflag, FLAG_Class_Expando)) {
 		knh_fieldn_t fn = FN_UNMASK(mn_setter);
@@ -1421,7 +1432,6 @@ void knh_NameSpace_addMethod(CTX ctx, knh_class_t mtd_cid, knh_Method_t *mtd)
 {
 	DBG_ASSERT(mtd_cid == mtd->cid);
 	if(Method_isPrivate(mtd)) {
-
 		KNH_TODO("Private Method");
 	}
 	else {

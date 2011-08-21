@@ -670,10 +670,9 @@ static knh_flag_t knh_StmtCLASS_flag(CTX ctx, knh_Stmt_t *stmt)
 	knh_flag_t flag = 0;
 	if(IS_Map(DP(stmt)->metaDictCaseMap)) {
 		flag |= knh_Stmt_flag(ctx, stmt, "Final",     FLAG_Class_Final);
-		flag |= knh_Stmt_flag(ctx, stmt, "Interface", FLAG_Class_Interface);
 		flag |= knh_Stmt_flag(ctx, stmt, "Singleton", FLAG_Class_Singleton);
 		flag |= knh_Stmt_flag(ctx, stmt, "Immutable", FLAG_Class_Immutable);
-//		flag |= knh_Stmt_flag(ctx, stmt, "Release",   FLAG_Class_Release);
+		flag |= knh_Stmt_flag(ctx, stmt, "Expando",   FLAG_Class_Expando);
 	}
 	return flag;
 }
@@ -731,7 +730,7 @@ void knh_RefTraverse(CTX ctx, knh_Ftraverse ftr)
 static void ClassTBL_inherit(CTX ctx, knh_ClassTBL_t *ct, const knh_ClassTBL_t *supct) {
 	ct->supTBL = ClassTBL(ct->supcid);
 	ct->keyidx = supct->keyidx;
-	ct->metaidx = supct->metaidx;
+	ct->xdataidx = supct->xdataidx;
 	((knh_ClassTBL_t*)supct)->subclass += 1;
 	ct->bcid = supct->bcid;
 	ct->baseTBL = ClassTBL(supct->bcid);

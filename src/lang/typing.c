@@ -2282,6 +2282,13 @@ static knh_Token_t* CALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t tcid)
 	}
 	mtd_cid = Tn_cid(stmt, 1);
 	mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, mtd_cid, mn);
+	if(mtd == NULL) {
+		if(DP(stmt)->size == 3 && MN_isSETTER(mn)) {
+			TYPING_UntypedExpr(ctx, stmt, 2);
+			DBG_P("ptype=%s", TYPE__(Tn_type(stmt, 2)));
+			mtd = knh_NameSpace_addXSetter(ctx, K_GMANS, ClassTBL(mtd_cid), Tn_type(stmt, 2), mn);
+		}
+	}
 	if(mtd != NULL) {
 		if(Method_isRestricted(mtd)) {
 			return ERROR_MethodIsNot(ctx, mtd, "allowed");
@@ -4182,7 +4189,6 @@ static knh_Token_t *DECLFIELD_typing(CTX ctx, knh_Stmt_t *stmt, size_t i)
 static int Gamma_initClassTBLField(CTX ctx, knh_class_t cid)
 {
 	const knh_ClassTBL_t *ct = ClassTBL(cid);
-	DBG_P("bcid=%s, cid=%s", CLASS__(ct->bcid), CLASS__(cid));
 	if(ct->fsize == 0 && (ct->bcid == CLASS_Object || ct->bcid == CLASS_CppObject)) {
 		knh_gamma2_t *gf = DP(ctx->gma)->gf;
 		size_t i;
@@ -4200,6 +4206,16 @@ static int Gamma_initClassTBLField(CTX ctx, knh_class_t cid)
 			gf[i].ucnt = 1;
 		}
 		DP(ctx->gma)->gsize = supct->fsize;
+		if(class_isExpando(cid) && ct->xdataidx == -1) {
+			i = DP(ctx->gma)->gsize;
+			gf[i].flag = 0;
+			gf[i].type = TYPE_Map;
+			gf[i].fn   = FN_xdata;
+			gf[i].ucnt = 1;
+			KNH_SETv(ctx, gf[i].tk, KNH_NULL);
+			((knh_ClassTBL_t*)ct)->xdataidx = (knh_short_t)i;
+			DP(ctx->gma)->gsize += 1;
+		}
 		return 1;
 	}
 	return 0;
@@ -4356,7 +4372,6 @@ static knh_Token_t* CLASS_typing(CTX ctx, knh_Stmt_t *stmt)
 		}
 	}
 	Gamma_declareClassField(ctx, this_cid, s);
-
 	if(DP(stmt)->size == 5) {
 		knh_Stmt_t *stmtFIELD = stmtNN(stmt, 4/*instmt*/);
 		while(stmtFIELD != NULL) {

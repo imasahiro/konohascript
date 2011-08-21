@@ -485,19 +485,19 @@ class Data:
         self.STEXT = [
                       ("EMPTY", ""), ("TAB", "\\t"), ("ONE", "1"),
                       ("EOL", '"K_OSLINEFEED"'), ("BEGIN", "BEGIN"), ("END", "END"),
-                      ("true", "true"), ("false","false"), ("null", "null"), ("void", "void"),
+                      #("true", "true"), ("false","false"), ("null", "null"), ("void", "void"),
                       ("main", "main"), ("ENCODING", '"K_ENCODING"'),
                       ("DEVNULL", "/dev/null"), ("DEVSTDIN", "/dev/stdin"),
                       ("DEVSTDERR", "/dev/stderr"), ("DEVSTDOUT", "/dev/stdout"),
-                      ("ATlabel", "@label"), ("AssertionException", "Assertion!!"), 
-                      ("LP", "("), ("RP", ")"),  ("LB", "{"), ("RB", "}"),  ("LS", "["), ("RS", "]"), 
+                      ("ATlabel", "@label"), # ("AssertionException", "Assertion!!"), 
+                      #                      ("LP", "("), ("RP", ")"),  ("LB", "{"), ("RB", "}"),  ("LS", "["), ("RS", "]"), 
                       ]
         self.add_mn('main')
         self.add_mn('this')
 #        self.add_mn('super')
         self.add_name('it')
         self.add_name('vargs')
-#        #self.add_mn('invoke')
+        self.add_name('xdata')
         self.add_mn('defined')
         self.add_mn('delegate')
         #self.add_mn('likely')

@@ -751,7 +751,7 @@ typedef struct knh_ClassTBL_t {
 	struct knh_Array_t          *typemaps;
 	knh_fields_t                *fields;
 	knh_ushort_t  fsize;         knh_ushort_t  fcapacity;
-	knh_short_t   keyidx;       knh_short_t   metaidx;
+	knh_short_t   keyidx;        knh_short_t   xdataidx;
 	union {
 		struct knh_ObjectField_t  *protoNULL;
 		const struct knh_ClassTBL_t     *simTBL;
