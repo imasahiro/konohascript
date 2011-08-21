@@ -11,7 +11,7 @@ void f() {
 
 }
 
-assure "BuiltinFunctionDefined" {
+assure "defined()" {
 	int n;
 	assert defined(DEBUG);
 	assert not defined(NDEBUG);	
@@ -27,7 +27,7 @@ class C {
 	String name;
 }
 
-assure "BuiltinFunctionDefined:ClassField" {
+assure "defined(): ClassField" {
 	C c = new C();
 	assert defined(c.name);
 	assert not defined(c.nname);

@@ -3,7 +3,7 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-assure "BuiltinFunctionTypeof" {
+assure "typeof" {
 	int[] a;
 	float f;
 	assert typeof(a) == int[];

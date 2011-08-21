@@ -3,7 +3,6 @@
  *  written by Shinpei Nakata twitter: @shinpei_NKT 
  ***************************************************************************/
 
-/**
 ia = [1,3,2];
 int cmp_i(int a, int b) {
 	if (a < b) return -1;
@@ -11,7 +10,7 @@ int cmp_i(int a, int b) {
 	return 0;
 }
 
-assure "SupportNativeCallback Int" {
+assure "NativeCallback: int" {
 	ia.sort(cmp_i);
 	assert ia[0] == 1;
 	assert ia[1] == 2;
@@ -26,7 +25,7 @@ int cmp_f (float a, float b) {
 	return 0.0;
 }
 
-assure "SupportNativeCallback Float" {
+assure "NativeCallback: float" {
 	fa.sort(cmp_f);
 	assert fa[0] == 1.0;
 	assert fa[1] == 2.0;
@@ -41,11 +40,10 @@ int cmp_s (String a, String b) {
 	return 0;
 }
 
-assure "SupportNativeCallback String" {
+assure "NativeCallback: String" {
 	sa.sort(cmp_s);
 	assert sa[0] == "1.0";
 	assert sa[1] == "2.0";
 	assert sa[2] == "3.0";
 }
-**/
 

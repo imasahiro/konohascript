@@ -4,12 +4,13 @@
  ***************************************************************************/
 
 // This is very useful  
+
 IArray = int[];
 Dict = Map<String,String>;
 aa = [1, 2];
 A = typeof(aa);
 
-assure "DeclareAliasType" {
+assure "AliasType" {
 	IArray a;
 	Dict m;
 	A a2;

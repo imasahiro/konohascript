@@ -10,13 +10,13 @@ assure "downcast" {
 	assert n == 1;
 }
 
-assure "downcast:Number" {
+assure "downcast: Number" {
 	Number o = 1;
 	int n = (int)o;
 	assert n == 1;
 }
 
-assure "downcast:dynamic" {
+assure "downcast: dynamic" {
 	dynamic d = 1;
 	int n = (int)d;
 	assert n == 1;

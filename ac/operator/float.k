@@ -40,6 +40,5 @@ assure "FloatOperation" {
 	assert ((f1 >= f2) == false);
 	assert ((f1 < 3.15) == true);
 	assert nearly_equal(-f1, -1 * f1);
-
 }
 

@@ -3,7 +3,7 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-assure "ArrayListOperation" {
+assure "ArrayOperation" {
 	a = [];
 	a.add(2);
 	assert a[0] == 2;
@@ -21,7 +21,7 @@ assure "ArrayListOperation" {
 	assert |a| == 0;
 }
 
-assure "ArrayListOperation:int[]" {
+assure "ArrayOperation: int[]" {
 	int[] a = [];
 	a.add(2);
 	assert a[0] == 2;

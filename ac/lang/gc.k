@@ -55,7 +55,7 @@ void binarytrees(int n) {
 	OUT <<< "long lived tree of depth " + maxDepth + "\t check: "+ longLivedTree.itemCheck() <<< EOL;
 }
 
-assure "SupportGarbageCollection" {
+assure "GarbageCollection" {
 	binarytrees(14);
 }
 

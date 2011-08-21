@@ -3,14 +3,14 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-assure "map literal" {
+assure "MapLiteral" {
 	a = {}
 	b = {name: "naruto", age: 17};
 	assert typeof(a) == Map;
 	assert typeof(b) == Map;
 }
 
-assure "map literal: Map<int>" {
+assure "MapLiteral: Map<int>" {
 	d = {
 		x: 1;
 		y: 2
@@ -21,7 +21,7 @@ assure "map literal: Map<int>" {
 	assert typeof(d["x"]) == int;
 }
 
-assure "map literal: array" {
+assure "MapLiteral: array" {
 	d = {
 		x: 1;
 		y: 2

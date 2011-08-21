@@ -15,11 +15,11 @@ int readnum(int seq) {
 	return seq;
 }
 
-assure "CompilerPartialExecution" {
+assure "PartialExecution" {
 	assert readnum(1) == 2;
 }
 
-assure "CompilerPartialExecution" {
+assure "PartialExecution" {
 	try {
 		n = readnum(0);
 	}

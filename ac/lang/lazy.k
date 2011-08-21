@@ -8,7 +8,7 @@ function fact(n) {
 	return fact(n-1) * n;
 }
 
-assure "SupportLazyCompilation" {
+assure "LazyCompilation" {
 	int n = fact(3);
 	assert n == 6;
 }

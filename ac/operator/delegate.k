@@ -3,14 +3,14 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-assure "BuiltinFunctionDelegate" {
+assure "delegate" {
 	String s = "naruto";
 	f = delegate(s, startsWith);
 	assert f("naru");
 	assert not f("saku");	
 }
 
-assure "BuiltinFunctionDelegate:StaticMethod" {
+assure "delegate: StaticMethod" {
 	f = delegate(Int, random);
 	print f();
 	assert f(1) == 0;

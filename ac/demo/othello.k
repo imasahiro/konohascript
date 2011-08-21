@@ -1,3 +1,7 @@
+/****************************************************************************
+ * KONOHA ASSURANCE CASE
+ *  written by Kimio Kuramitsu  twitter: @konohakun 
+ ***************************************************************************/
  
 N = 8;
 
@@ -218,11 +222,9 @@ void start_game(String pn1, Player f1, String pn2, Player f2) {
 	}
 	OUT <<< "** Results **" <<< EOL;
 	board_print(b, pn1, pn2);
-	assure "AlgorithmOthello" {
+	assure "OthelloAlgorithm" {
 		assert board_testcount(b) == 39;
 	}
 }
 
-//start_game("Black", random, "White", random);
 start_game("eager", eager, "minimum", minimum);
-//start_game("computer", eager, "you", human);

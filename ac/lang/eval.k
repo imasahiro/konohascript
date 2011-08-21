@@ -6,7 +6,7 @@
 a = 1;
 a = eval("a+1");
 
-assure "SupportEval" {
+assure "Eval" {
 	assert a == 2;
 }
 

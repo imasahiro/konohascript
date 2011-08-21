@@ -10,13 +10,13 @@ boolean query(String s, NameSpace ns) {
 	return true;
 }
 
-assure "query call" {
+assure "QueryCall" {
 	assert query ## select name, age
 	             ##   from database
 	             ##   where age < 17;
 }
 
-assure "static call" {
+assure "StaticCall" {
 	assert Int.class == Int;
 }
 

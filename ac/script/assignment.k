@@ -6,7 +6,6 @@
 n = 1;
 n += 1;
 
-assure "ScriptAssignmentOperator" {
+assure "x=y" {
 	assure n == 2;
 }
-

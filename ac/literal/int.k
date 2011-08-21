@@ -4,7 +4,7 @@
  *  added   by @konohakun  
  ***************************************************************************/
 
-assure "IntegerLiteral" {
+assure "IntLiteral" {
 	int i;
 	i = 0x0;
 	assert i == 0;

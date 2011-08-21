@@ -8,7 +8,7 @@ class Person {
 	int age;
 }
 
-assure "with operator" {
+assure "with" {
 	p = new Person();
 	p with {
 		name: "naruto";
@@ -25,7 +25,7 @@ data = {
 	age: 17;
 }
 
-assure "with operator: data" {
+assure "with: data" {
 	p = new Person();
 	p with data;
 	print p.name, p.age;

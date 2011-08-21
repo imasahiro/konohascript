@@ -15,7 +15,7 @@ assure "ArrayLiteral" {
 }
 
 
-assure "ArrayLiteral:boolean[]" {
+assure "ArrayLiteral: boolean[]" {
 	a = [true, false];
 	boolean[] b = [];
 	assert typeof(a) == boolean[];
@@ -24,7 +24,7 @@ assure "ArrayLiteral:boolean[]" {
 	assert not a[1];
 }
 
-assure "ArrayLiteral:String[]" {
+assure "ArrayLiteral: String[]" {
 	a = ["true", "false"];
 	String[] b = [];
 	assert typeof(a) == Array<String>;

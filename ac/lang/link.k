@@ -5,7 +5,7 @@
 
 using konoha.lang.*;
 
-assure "LinkOperation" {
+assure "link" {
 	String name1 = "Int";
 	String name2 = "konoha.Int";
 	Class c1 = class:Int;
@@ -16,13 +16,6 @@ assure "LinkOperation" {
 	assert c2 == Int;
 	assert c3 == Int;
 	assert c4 == Int;
-
-	//int cid = class:Int;
-	//assert cid == 5/* CLASS_Int */;
-
 }
 
-assure "LinkLinkOperation" {
-	assert link:link;
-}
 

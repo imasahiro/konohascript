@@ -8,7 +8,7 @@
 a = 1;
 a = "string"; // type error 
 
-assure "SupportTypeCheck" {
+assure "TypeCheck" {
 	assert a == 1;
 }
 

@@ -3,7 +3,7 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-assure "TupleIndexing" {
+assure "x[n]: tuple" {
 	t2 = ("naruto", 17);
 	t3 = ("naruto", 17, "rasengan");
 	assert |t2| == 2;

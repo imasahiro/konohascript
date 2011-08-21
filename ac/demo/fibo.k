@@ -8,7 +8,7 @@ int fibo(int n) {
   return fibo(n-1)+fibo(n-2);
 }
 
-assure "AlgorithmFibonacci" {
+assure "FibonacciAlgorithm" {
   n = fibo(36);
   print n;
   assert n == 14930352;

@@ -7,7 +7,7 @@ void f(int n) {
 	f(n+1);
 }
 
-assure "SupportStackOverflow" {
+assure "StackOverflow" {
 	boolean isCaught = false;
 	try {
 		f(0);
