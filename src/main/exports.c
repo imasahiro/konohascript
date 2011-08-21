@@ -332,7 +332,7 @@ static void knh_addQueryDSPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, c
 	knh_NameSpace_addDSPI(ctx, ns, scheme, (knh_DSPI_t*)d);
 }
 
-static void knh_addConvDSPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, const knh_ConvDSPI_t *d)
+static void knh_addConvDSPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, const knh_ConverterDPI_t *d)
 {
 	knh_NameSpace_addDSPI(ctx, ns, scheme, (knh_DSPI_t*)d);
 }

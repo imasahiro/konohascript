@@ -200,6 +200,20 @@ void knh_Bytes_write(CTX ctx, knh_Bytes_t *ba, knh_bytes_t t)
 	BA_size(ba) += t.len;
 }
 
+void knh_Bytes_write2(CTX ctx, knh_Bytes_t *ba, const char *text, size_t len)
+{
+	size_t capacity = ba->dim->capacity;
+	if(len == 0) return ;
+	if(BA_size(ba) + len >= capacity) {
+		size_t newsize = k_grow(capacity);
+		if(newsize < BA_size(ba) + len) newsize = k_goodsize(BA_size(ba) + len);
+		knh_Bytes_expands(ctx, ba, newsize);
+	}
+	knh_memcpy(ba->bu.ubuf + BA_size(ba), text, len);
+	BA_size(ba) += len;
+}
+
+
 /* ------------------------------------------------------------------------ */
 
 knh_bytes_t knh_cwb_ensure(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t, size_t reqsize)

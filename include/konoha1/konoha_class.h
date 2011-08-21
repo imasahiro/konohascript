@@ -235,12 +235,13 @@ struct knh_Bytes_t {
 //## type FuncEach        Func  1 T1 T1;
 //## type FuncWhere       Func  1 T1 Boolean;
 
-typedef struct knh_mapitr_t {
-	size_t index;
-	void *ptr;
-} knh_mapitr_t;
+typedef struct knh_itrindex_t {
+	void   *nptr;
+	size_t  index;
+	size_t  max;
+} knh_itrindex_t;
 
-#define K_MAPITR_INIT   {0, NULL}
+#define K_MAPITR_INIT   {NULL, 0, 0}
 #define ITR(sfp)   sfp[0].it
 
 typedef void (*knh_Ffree)(void *nptr);
@@ -255,9 +256,8 @@ typedef struct {
 		struct knh_Func_t    *funcNULL;
 		struct knh_TypeMap_t *tmrNULL;
 	};
-	void      *nptr;
-	struct knh_mapitr_t mitr;
-	knh_Ffree freffree;
+	struct     knh_itrindex_t m;
+	void       (*nfree)(void *nptr);
 } knh_IteratorEX_t;
 
 struct knh_Iterator_t {
@@ -679,12 +679,24 @@ struct knh_Regex_t {
 
 typedef void knh_conv_t;
 
+typedef struct knh_ConverterDPI_t {
+	int  type;
+	const char *name;
+	knh_conv_t* (*open)(CTX, const char*, const char*);
+	knh_bool_t  (*conv)(CTX,  knh_conv_t *,  knh_bytes_t t, knh_Bytes_t *);
+	knh_bool_t  (*enc)(CTX,   knh_conv_t *,  knh_bytes_t t, knh_Bytes_t *);
+	knh_bool_t  (*dec)(CTX,   knh_conv_t *,  knh_bytes_t t, knh_Bytes_t *);
+	knh_bool_t  (*sconv)(CTX, knh_conv_t *,  knh_bytes_t t, knh_Bytes_t *);
+	void (*close)(CTX ctx, knh_conv_t*);
+	void (*setparam)(CTX ctx, knh_conv_t *, void *, void *);
+} knh_ConverterDPI_t;
+
 typedef struct knh_Converter_t knh_Converter_t;
 #ifdef K_INTERNAL
 struct knh_Converter_t {
 	knh_hObject_t h;
 	knh_conv_t *conv;
-	const struct knh_ConvDSPI_t *dpi;
+	const struct knh_ConverterDPI_t *dpi;
 };
 #endif
 
@@ -696,7 +708,7 @@ typedef struct knh_StringEncoder_t knh_StringEncoder_t;
 struct knh_StringEncoder_t {
 	knh_hObject_t h;
 	knh_conv_t *conv;
-	const struct knh_ConvDSPI_t *dpi;
+	const struct knh_ConverterDPI_t *dpi;
 };
 #endif
 
@@ -708,7 +720,7 @@ typedef struct knh_StringDecoder_t knh_StringDecoder_t;
 struct knh_StringDecoder_t {
 	knh_hObject_t h;
 	knh_conv_t *conv;
-	const struct knh_ConvDSPI_t *dpi;
+	const struct knh_ConverterDPI_t *dpi;
 };
 #endif
 
@@ -720,7 +732,7 @@ typedef struct knh_StringConveter_t knh_StringConverter_t;
 struct knh_StringConveter_t {
 	knh_hObject_t h;
 	knh_conv_t *conv;
-	const struct knh_ConvDSPI_t *dpi;
+	const struct knh_ConverterDPI_t *dpi;
 };
 #endif
 
@@ -810,14 +822,14 @@ typedef struct knh_Path_t knh_Path_t;
 
 typedef struct knh_StreamDPI_t {
 	int type;
-	const char *name;
-	size_t      wbufsiz;  // write bufsize
-	knh_bool_t (*existsSPI)(CTX, struct knh_Path_t *);
-	knh_io_t (*fopenSPI)(CTX, struct knh_Path_t*, const char *);
-	knh_io_t (*wopenSPI)(CTX, struct knh_Path_t*, const char *);
+	const char   *name;
+	size_t       wbufsiz;  // write bufsize
+	knh_bool_t   (*existsSPI)(CTX, struct knh_Path_t *);
+	knh_io_t     (*fopenSPI)(CTX, struct knh_Path_t*, const char *);
+	knh_io_t     (*wopenSPI)(CTX, struct knh_Path_t*, const char *);
 	knh_intptr_t (*freadSPI)(CTX, knh_io_t, char *, size_t);
 	knh_intptr_t (*fwriteSPI)(CTX, knh_io_t, const char *, size_t);
-	void (*fcloseSPI)(CTX, knh_io_t);
+	void         (*fcloseSPI)(CTX, knh_io_t);
 } knh_StreamDPI_t;
 
 #ifdef USE_STRUCT_Path
@@ -956,12 +968,10 @@ typedef struct knh_NameSpace_t knh_NameSpace_t;
 #ifdef K_INTERNAL
 typedef struct knh_NameSpaceEX_t {
 	knh_String_t *nsname;
-//	struct knh_DictMap_t*   linkDictMapNULL;
 	struct knh_DictMap_t*   constDictCaseMapNULL;
 	struct knh_Array_t *    ffilinksNULL;
 
 	struct knh_DictSet_t*   name2ctDictSetNULL;
-//	struct knh_DictSet_t*   func2cidDictSetNULL;
 	struct knh_Array_t*     methodsNULL;
 	struct knh_Array_t*     formattersNULL;
 } knh_NameSpaceEX_t;
@@ -1023,10 +1033,6 @@ typedef struct knh_SystemEX_t {
 	struct knh_DictMap_t       *PackageDictMap;
 	struct knh_DictMap_t       *URNAliasDictMap;
 	struct knh_DictSet_t       *dspiDictSet;
-//	struct knh_DictSet_t *SpecFuncDictSet;
-//	struct knh_Array_t   *UsingResources;
-//	struct knh_DictMap_t *listenerDictMap;
-//	struct knh_DictMap_t *trustedPathDictSet;
 } knh_SystemEX_t;
 
 struct knh_System_t {
@@ -1048,16 +1054,6 @@ struct knh_Context_t {
 	const knh_context_t *ctx;
 };
 #endif
-
-
-///* ------------------------------------------------------------------------ */
-////## class Monitor Object;
-//
-//typedef struct knh_Monitor_t {
-//	knh_hObject_t h;
-//	int loglevel;
-//	void (*trace)(CTX, knh_sfp_t*, struct knh_Monitor_t*, const char *ns, const char *event, const char *fmt, ...);
-//} knh_Monitor_t;
 
 /* ------------------------------------------------------------------------ */
 //## class Assurance Object;

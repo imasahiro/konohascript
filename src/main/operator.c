@@ -484,7 +484,7 @@ static KMETHOD Float__bits(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const @FastCall mapper Boolean String;
+//## @Const mapper Boolean String;
 
 static TYPEMAP Boolean_String(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -493,7 +493,7 @@ static TYPEMAP Boolean_String(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const @FastCall mapper Int String;
+//## @Const mapper Int String;
 
 static TYPEMAP Int_String(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -503,7 +503,7 @@ static TYPEMAP Int_String(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const @FastCall mapper Float String;
+//## @Const  mapper Float String;
 
 static TYPEMAP Float_String(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -554,7 +554,6 @@ static void Date_setsfp(knh_date_t *dt, knh_sfp_t *sfp)
 
 static knh_bool_t bytes_parsedt(knh_bytes_t *t, knh_short_t *value, int delim, knh_short_t def)
 {
-//	DBG_P("t->text='%s', t->len=%d", t->text, t->len);
 	if(t->len == 0) {
 		value[0] = def;
 		return 1;
@@ -758,6 +757,7 @@ static KMETHOD String_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 		KNH_SETv(ctx, sfp[1].s, knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLALWAYS));
 	}
 	knh_Object_t* v = knh_NameSpace_newObject(ctx, sfp[2].ns, sfp[1].s, cid);
+	DBG_P("v=%p, true=%p, false=%p", v, KNH_TRUE, KNH_FALSE);
 	RETURN_(v);
 }
 
@@ -822,16 +822,6 @@ static KMETHOD String_concat(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD String_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-//	knh_bytes_t base = S_tobytes(sfp[0].s);
-//	//if (IS_NULL(sfp[1].o)) RETURNi_(-1);     // is it necesarry?
-//	knh_bytes_t delim = S_tobytes(sfp[1].s);
-//	knh_index_t loc = knh_bytes_indexOf(base, delim);
-//	if(delim.len == 0) loc--;
-//	if (loc >= 0 && !String_isASCII(sfp[0].s)) {
-//		base.len = (size_t)loc;
-//		loc = knh_bytes_mlen(base);
-//	}
-//	RETURNi_(loc);
 	long loc = -1;
 	knh_bytes_t base = S_tobytes(sfp[0].s);
 	char *p = strstr(base.text, S_totext(sfp[1].s));
@@ -1141,7 +1131,7 @@ static KMETHOD String_extract(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD Converter_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t t = S_tobytes(sfp[1].s);
-	const knh_ConvDSPI_t *dpi = knh_NameSpace_getConvDSPINULL(ctx, sfp[2].ns, t);
+	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConvDSPINULL(ctx, sfp[2].ns, t);
 	if(dpi != NULL && dpi->conv != NULL) {
 		knh_Converter_t *c = new_(Converter);
 		c->dpi  = dpi;
@@ -1157,7 +1147,7 @@ static KMETHOD Converter_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD StringEncoder_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t t = S_tobytes(sfp[1].s);
-	const knh_ConvDSPI_t *dpi = knh_NameSpace_getConvDSPINULL(ctx, sfp[2].ns, t);
+	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConvDSPINULL(ctx, sfp[2].ns, t);
 	if(dpi != NULL && dpi->enc != NULL) {
 		knh_StringEncoder_t *c = new_(StringEncoder);
 		c->dpi  = dpi;
@@ -1173,7 +1163,7 @@ static KMETHOD StringEncoder_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD StringDecoder_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t t = S_tobytes(sfp[1].s);
-	const knh_ConvDSPI_t *dpi = knh_NameSpace_getConvDSPINULL(ctx, sfp[2].ns, t);
+	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConvDSPINULL(ctx, sfp[2].ns, t);
 	if(dpi != NULL && dpi->dec != NULL) {
 		knh_StringDecoder_t *c = new_(StringDecoder);
 		c->dpi  = dpi;
@@ -1189,7 +1179,7 @@ static KMETHOD StringDecoder_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD StringConverter_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t t = S_tobytes(sfp[1].s);
-	const knh_ConvDSPI_t *dpi = knh_NameSpace_getConvDSPINULL(ctx, sfp[2].ns, t);
+	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConvDSPINULL(ctx, sfp[2].ns, t);
 	if(dpi != NULL && dpi->sconv != NULL) {
 		knh_StringConverter_t *c = new_(StringConverter);
 		c->dpi  = dpi;
@@ -1320,11 +1310,11 @@ static ITRNEXT String_nextChar(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Iterator_t *itr = ITR(sfp);
 	knh_String_t *s = (knh_String_t*)DP(itr)->source;
 	knh_bytes_t base = S_tobytes(s);
-	size_t pos = (size_t)DP(itr)->mitr.index;
+	size_t pos = (size_t)DP(itr)->m.index;
 	if(pos < knh_bytes_mlen(base)) {
 		knh_bytes_t sub = knh_bytes_mofflen(base, pos, 1);
 		s = new_String2(ctx, CLASS_String, sub.text, sub.len, _SUB(s));
-		DP(itr)->mitr.index = pos + 1;
+		DP(itr)->m.index = pos + 1;
 		ITRNEXT_(s);
 	}
 	ITREND_();
@@ -2435,7 +2425,7 @@ static KMETHOD Map_keys(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_class_t p1 = O_cTBL(m)->p1;
 	knh_Array_t *a = new_Array(ctx, p1, size);
 	knh_sfp_t *lsfp = ctx->esp;
-	knh_mapitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
+	knh_itrindex_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
 	klr_setesp(ctx, lsfp+1);
 	while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
 		a->api->add(ctx, a, lsfp);
@@ -3151,15 +3141,58 @@ static KMETHOD InputStream_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 //	ITREND_();
 //}
 
+static int readbuf(CTX ctx, knh_InputStream_t *in, char *buf, knh_itrindex_t *m)
+{
+	long ssize = in->dpi->freadSPI(ctx, DP(in)->fio, buf, K_PAGESIZE);
+	if(ssize > 0) {
+		m->index = 0;
+		m->max   = ssize;
+		return 1;
+	}
+	knh_InputStream_close(ctx, in);
+	return 0;
+}
+
 static ITRNEXT knh_InputStream_nextLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Iterator_t *it = sfp[0].it;
-	knh_InputStream_t *in = (knh_InputStream_t*)DP(it)->source;
-	knh_String_t *line = knh_InputStream_readLine(ctx, in);
-	if(IS_NULL(line)) {
+	knh_Iterator_t *itr = sfp[0].it;
+	knh_InputStream_t *in = (knh_InputStream_t*)DP(itr)->source;
+	const char *buf = (const char*)DP(itr)->m.nptr;
+	knh_itrindex_t *m = &(DP(itr)->m);
+	if(!(m->index < m->max) && readbuf(ctx, in, (char*)buf, m) == 0) {
 		ITREND_();
 	}
-	ITRNEXT_(line);
+	int prev = 0, policy = K_SPOLICY_ASCII;
+	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	while(1) {
+		size_t i, pos = m->index, posend = m->max;
+		for(i = pos; i < posend; i++) {
+			int ch = buf[i];
+			if(ch == '\n') {
+				knh_Bytes_write2(ctx, cwb->ba, buf + pos, i - pos);
+				m->index = i + 1;
+				goto L_TOSTRING;
+			}
+			if(ch < 0) policy = K_SPOLICY_UTF8;
+			prev = ch;
+		}
+		knh_Bytes_write2(ctx, cwb->ba, buf + pos, posend - pos);
+		if(readbuf(ctx, in, (char*)buf, m) == 0) {
+			goto L_TOSTRING;
+		}
+	}
+	L_TOSTRING:;
+	knh_String_t *s;
+	if(prev == '\r') {
+		knh_Bytes_reduce(cwb->ba, 1);
+	}
+	if(in->decNULL == NULL || policy == K_SPOLICY_ASCII) {
+		s = knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|policy);
+	}
+	else {
+		s = knh_cwb_newStringDECODE(ctx, cwb, in->decNULL);
+	}
+	ITRNEXT_(s);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -3167,7 +3200,10 @@ static ITRNEXT knh_InputStream_nextLine(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static TYPEMAP knh_InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_(new_IteratorG(ctx, CLASS_StringITR, sfp[0].o, knh_InputStream_nextLine));
+	knh_Iterator_t *itr = new_IteratorG(ctx, CLASS_StringITR, sfp[0].o, knh_InputStream_nextLine);
+	DP(itr)->m.nptr = malloc(K_PAGESIZE);
+	DP(itr)->nfree = free;
+	RETURN_(itr);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -3661,7 +3697,6 @@ static KMETHOD ResultSet_close(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-
 /* ------------------------------------------------------------------------ */
 //## @Static method InputStream System.getIn();
 
@@ -3712,7 +3747,7 @@ static KMETHOD System_setProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-static knh_bool_t knh_bytes_matchWildCard(knh_bytes_t t, knh_bytes_t p)
+static knh_bool_t bytes_matchWildCard(knh_bytes_t t, knh_bytes_t p)
 {
 	if(p.utext[0] == '*') {
 		p.utext = p.utext + 1;
@@ -3746,7 +3781,7 @@ static KMETHOD System_listProperties(CTX ctx, knh_sfp_t *sfp _RIX)
 	size_t i;
 	for(i = 0; i < knh_Map_size(map); i++) {
 		knh_String_t *key = knh_DictMap_keyAt(map, i);
-		if(knh_bytes_matchWildCard(S_tobytes(key), prefix)) {
+		if(bytes_matchWildCard(S_tobytes(key), prefix)) {
 			knh_Array_add(ctx, a, key);
 		}
 	}
@@ -3914,8 +3949,6 @@ static KMETHOD System_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 	free((void*)line);
 	RETURN_(s);
 }
-
-/* ------------------------------------------------------------------------ */
 
 #endif/*K_INCLUDE_BUILTINAPI*/
 

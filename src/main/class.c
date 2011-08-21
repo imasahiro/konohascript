@@ -1963,9 +1963,9 @@ static ITRNEXT Array_nextO(CTX ctx, knh_sfp_t *sfp _RIX)
 	DBG_ASSERT(IS_bIterator(sfp[0].it));
 	knh_Iterator_t *itr = ITR(sfp);
 	knh_Array_t *a = (knh_Array_t*)DP(itr)->source;
-	size_t pos = (size_t)DP(itr)->mitr.index;
+	size_t pos = (size_t)DP(itr)->m.index;
 	if(pos < a->size) {
-		DP(itr)->mitr.index = pos + 1;
+		DP(itr)->m.index = pos + 1;
 		ITRNEXT_(a->list[pos]);
 	}
 	ITREND_();
@@ -1976,9 +1976,9 @@ static ITRNEXT Array_nextN(CTX ctx, knh_sfp_t *sfp _RIX)
 	DBG_ASSERT(IS_bIterator(sfp[0].it));
 	knh_Iterator_t *itr = ITR(sfp);
 	knh_Array_t *a = (knh_Array_t*)DP(itr)->source;
-	size_t pos = (size_t)DP(itr)->mitr.index;
+	size_t pos = (size_t)DP(itr)->m.index;
 	if(pos < a->size) {
-		DP(itr)->mitr.index = pos+1;
+		DP(itr)->m.index = pos+1;
 		ITRNEXTd_(a->nlist[pos]);
 	}
 	ITREND_();
@@ -2092,7 +2092,7 @@ static ITRNEXT Map_nextO(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Map_t *m = (knh_Map_t*)DP(itr)->source;
 	knh_sfp_t *lsfp = ctx->esp;
 	klr_setesp(ctx, lsfp+1);
-	if(m->spi->next(ctx, m->mapptr, &(DP(itr)->mitr), lsfp)) {
+	if(m->spi->next(ctx, m->mapptr, &(DP(itr)->m), lsfp)) {
 		ITRNEXT_(lsfp[0].o);
 	}
 	else {
@@ -2106,7 +2106,7 @@ static ITRNEXT Map_nextN(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Map_t *m = (knh_Map_t*)DP(itr)->source;
 	knh_sfp_t *lsfp = ctx->esp;
 	klr_setesp(ctx, lsfp+1);
-	if(m->spi->next(ctx, m->mapptr, &(DP(itr)->mitr), lsfp)) {
+	if(m->spi->next(ctx, m->mapptr, &(DP(itr)->m), lsfp)) {
 		ITRNEXTd_(lsfp[0].ndata);
 	}
 	else {
@@ -2195,7 +2195,7 @@ void knh_Object_fastset(CTX ctx, knh_Object_t *o, knh_Method_t *mtd, knh_Object_
 void knh_Object_setData(CTX ctx, knh_Object_t *o, knh_Map_t *m, knh_NameSpace_t *ns, int Checked)
 {
 	knh_sfp_t *lsfp = ctx->esp;
-	knh_mapitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
+	knh_itrindex_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
 	klr_setesp(ctx, lsfp+1);
 	if(Checked) {
 		while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {

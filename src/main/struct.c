@@ -1298,8 +1298,8 @@ static const knh_ClassDef_t ArrayDef = {
 static ITRNEXT Fitrnext_single(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Iterator_t *itr = ITR(sfp);
-	if(DP(itr)->mitr.index == 0) {
-		DP(itr)->mitr.index = 1;
+	if(DP(itr)->m.index == 0) {
+		DP(itr)->m.index = 1;
 		ITRNEXT_(DP(itr)->source);
 	}
 	ITREND_();
@@ -1312,10 +1312,10 @@ static void Iterator_init(CTX ctx, knh_RawPtr_t *o)
 	itr->fnext_1  =  Fitrnext_single;
 	KNH_INITv(b->source, KNH_NULL);
 	b->mtdNULL  =  NULL;
-	b->nptr     =  NULL;
-	b->mitr.index = 0;
-	b->mitr.ptr = NULL;
-	b->freffree = NULL;
+	b->m.nptr   =  NULL;
+	b->m.index  = 0;
+	b->m.max    = 0;
+	b->nfree = NULL;
 	itr->b = b;
 }
 
@@ -1383,7 +1383,7 @@ static knh_bool_t NULLMAP_get(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp
 static void NULLMAP_set(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp) {}
 static void NULLMAP_remove(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp) {}
 static size_t NULLMAP_size(CTX ctx, knh_mapptr_t* m) { return 0; }
-static knh_bool_t NULLMAP_next(CTX ctx, knh_mapptr_t* m, knh_mapitr_t *mitr, knh_sfp_t *rsfp) { return 0; }
+static knh_bool_t NULLMAP_next(CTX ctx, knh_mapptr_t* m, knh_itrindex_t *mitr, knh_sfp_t *rsfp) { return 0; }
 
 static const knh_MapDSPI_t NULLMAP = {
 	K_DSPI_MAP, "NULL",
@@ -1428,7 +1428,7 @@ static void Map_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	if(n > 0) {
 		BEGIN_LOCAL(ctx, lsfp, 2);
 		knh_class_t p1 = O_cTBL(o)->p1, p2 = O_cTBL(o)->p2;
-		knh_mapitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
+		knh_itrindex_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
 		if(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
 			knh_write_sfp(ctx, w, p1, lsfp, FMT_line);
 			knh_write(ctx, w, STEXT(": "));
@@ -1949,7 +1949,7 @@ static knh_bool_t conv_NOCONV(CTX ctx, knh_conv_t *c, knh_bytes_t t, knh_Bytes_t
 	return 1;
 }
 
-static knh_ConvDSPI_t NOCONV_DSPI = {
+static knh_ConverterDPI_t NOCONV_DSPI = {
 	K_DSPI_CONVTO, "NOP",
 	NULL,
 	conv_NOCONV,

@@ -542,7 +542,7 @@ static void strconv_close(CTX ctx, knh_conv_t *conv)
 	ctx->spi->iconv_closeSPI((knh_iconv_t)conv);
 }
 
-static knh_ConvDSPI_t SCONV = {
+static knh_ConverterDPI_t SCONV = {
 	K_DSPI_CONVTO, "md5",
 	strconv_open, // open,
 	strconv,  // byte->byte     :conv

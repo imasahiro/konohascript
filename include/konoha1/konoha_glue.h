@@ -60,17 +60,6 @@ typedef struct {
 /* ------------------------------------------------------------------------ */
 /* K_BCONV_DSPI */
 
-typedef struct knh_ConvDSPI_t {
-	int  type;
-	const char *name;
-	knh_conv_t* (*open)(CTX, const char*, const char*);
-	knh_bool_t (*conv)(CTX, knh_conv_t *, knh_bytes_t t, knh_Bytes_t *);
-	knh_bool_t (*enc)(CTX, knh_conv_t *, knh_bytes_t t, knh_Bytes_t *);
-	knh_bool_t (*dec)(CTX, knh_conv_t *, knh_bytes_t t, knh_Bytes_t *);
-	knh_bool_t (*sconv)(CTX, knh_conv_t *, knh_bytes_t t, knh_Bytes_t *);
-	void (*close)(CTX ctx, knh_conv_t*);
-	void (*setparam)(CTX ctx, knh_conv_t *, void *, void *);
-} knh_ConvDSPI_t;
 
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_STREAM */
@@ -103,7 +92,7 @@ typedef struct knh_MapDSPI_t {
 	void (*set)(CTX, knh_mapptr_t*, knh_sfp_t *);
 	void (*remove)(CTX, knh_mapptr_t*, knh_sfp_t *);
 	size_t (*size)(CTX, knh_mapptr_t*);
-	knh_bool_t (*next)(CTX, knh_mapptr_t*, knh_mapitr_t *, knh_sfp_t *);
+	knh_bool_t (*next)(CTX, knh_mapptr_t*, knh_itrindex_t *, knh_sfp_t *);
 } knh_MapDSPI_t;
 
 /* ------------------------------------------------------------------------ */
@@ -167,7 +156,7 @@ typedef struct knh_PackageLoaderAPI_t {
 	void (*addLinkClass)(CTX, knh_NameSpace_t *ns, const char*, knh_class_t cid);
 	void (*addStreamDPI)(CTX, knh_NameSpace_t *ns, const char*, const knh_StreamDPI_t *);
 	void (*addQueryDSPI)(CTX, knh_NameSpace_t *ns, const char *, const knh_QueryDSPI_t *);
-	void (*addConvDSPI)(CTX, knh_NameSpace_t *ns, const char *, const knh_ConvDSPI_t*);
+	void (*addConvDSPI)(CTX, knh_NameSpace_t *ns, const char *, const knh_ConverterDPI_t*);
 } knh_PackageLoaderAPI_t;
 
 #define RETURN_PKGINFO(NAME) {\

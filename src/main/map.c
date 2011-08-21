@@ -588,7 +588,7 @@ static size_t hmap_size(CTX ctx, knh_mapptr_t* m)
 	return hmap->size;
 }
 
-static knh_bool_t hmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_mapitr_t *mitr, knh_sfp_t *rsfp)
+static knh_bool_t hmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_itrindex_t *mitr, knh_sfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	size_t i;
@@ -604,7 +604,7 @@ static knh_bool_t hmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_mapitr_t *mitr, knh_
 	return 0;
 }
 
-static knh_bool_t hmap_nextON(CTX ctx, knh_mapptr_t *m, knh_mapitr_t *mitr, knh_sfp_t *rsfp)
+static knh_bool_t hmap_nextON(CTX ctx, knh_mapptr_t *m, knh_itrindex_t *mitr, knh_sfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	size_t i;
@@ -620,7 +620,7 @@ static knh_bool_t hmap_nextON(CTX ctx, knh_mapptr_t *m, knh_mapitr_t *mitr, knh_
 	return 0;
 }
 
-static knh_bool_t hmap_nextNO(CTX ctx, knh_mapptr_t *m, knh_mapitr_t *mitr, knh_sfp_t *rsfp)
+static knh_bool_t hmap_nextNO(CTX ctx, knh_mapptr_t *m, knh_itrindex_t *mitr, knh_sfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	size_t i;
@@ -636,7 +636,7 @@ static knh_bool_t hmap_nextNO(CTX ctx, knh_mapptr_t *m, knh_mapitr_t *mitr, knh_
 	return 0;
 }
 
-static knh_bool_t hmap_nextNN(CTX ctx, knh_mapptr_t *m, knh_mapitr_t *mitr, knh_sfp_t *rsfp)
+static knh_bool_t hmap_nextNN(CTX ctx, knh_mapptr_t *m, knh_itrindex_t *mitr, knh_sfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	size_t i;
@@ -999,7 +999,7 @@ static size_t dmap_size(CTX ctx, knh_mapptr_t* m)
 	return dmap->size;
 }
 
-static knh_bool_t dmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_mapitr_t* mitr, knh_sfp_t *rsfp)
+static knh_bool_t dmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_itrindex_t* mitr, knh_sfp_t *rsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	if(mitr->index < dmap->size) {
@@ -1157,7 +1157,7 @@ static void dmap_reftraceON(CTX ctx, knh_mapptr_t *m FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static knh_bool_t dmap_nextON(CTX ctx, knh_mapptr_t *m, knh_mapitr_t* mitr, knh_sfp_t *rsfp)
+static knh_bool_t dmap_nextON(CTX ctx, knh_mapptr_t *m, knh_itrindex_t* mitr, knh_sfp_t *rsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	if(mitr->index < dmap->size) {

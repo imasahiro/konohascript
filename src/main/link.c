@@ -100,13 +100,13 @@ extern "C" {
 //}
 //static knh_bool_t TOLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 //{
-//	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvTODSPINULL(ctx, ns, knh_bytes_next(path, ':'));
+//	const knh_ConverterDPI_t *dspi = knh_NameSpace_getConvTODSPINULL(ctx, ns, knh_bytes_next(path, ':'));
 //	return (dspi != NULL);
 //}
 //static knh_Object_t* TOLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
 //{
 //	knh_bytes_t path = knh_bytes_next(S_tobytes(s), ':');
-//	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvTODSPINULL(ctx, ns, path);
+//	const knh_ConverterDPI_t *dspi = knh_NameSpace_getConvTODSPINULL(ctx, ns, path);
 //	KNH_ASSERT(dspi != NULL); // checked before
 //	if(IS_CONV(cid)) {
 //		return new_ConverterNULL(ctx, cid, path, dspi);
@@ -117,14 +117,14 @@ extern "C" {
 ///* from:toLower */
 //static knh_bool_t FROMLINK_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 //{
-//	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvFROMDSPINULL(ctx, ns, knh_bytes_next(path, ':'));
+//	const knh_ConverterDPI_t *dspi = knh_NameSpace_getConvFROMDSPINULL(ctx, ns, knh_bytes_next(path, ':'));
 //	return (dspi != NULL);
 //}
 //
 //static knh_Object_t* FROMLINK_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
 //{
 //	knh_bytes_t path = knh_bytes_next(S_tobytes(s), ':');
-//	const knh_ConvDSPI_t *dspi = knh_NameSpace_getConvFROMDSPINULL(ctx, ns, path);
+//	const knh_ConverterDPI_t *dspi = knh_NameSpace_getConvFROMDSPINULL(ctx, ns, path);
 //	KNH_ASSERT(dspi != NULL); // checked before
 //	if(IS_CONV(cid)) {
 //		return new_ConverterNULL(ctx, cid, path, dspi);
@@ -698,12 +698,12 @@ static knh_bool_t touppercase(CTX ctx, knh_conv_t *cv, knh_bytes_t t, knh_Bytes_
 	return 1;
 }
 
-static const knh_ConvDSPI_t TO_lower = {
+static const knh_ConverterDPI_t TO_lower = {
 	K_DSPI_CONVTO, "lower",
 	NULL, tolowercase, tolowercase, tolowercase, tolowercase, NULL, NULL,
 };
 
-static const knh_ConvDSPI_t TO_upper = {
+static const knh_ConverterDPI_t TO_upper = {
 	K_DSPI_CONVTO, "upper",
 	NULL, touppercase, touppercase, touppercase, touppercase, NULL, NULL,
 };
