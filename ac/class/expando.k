@@ -3,12 +3,15 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
+@Expando class Person {
 
-assure "OperatorTrinary" {
-	int a = 1;
-	n = (a == 2) ? 10 : 100;
-	assert n == 100;
-	n = (a == 1) ? 10 : 100;
-	assert n == 10;
+}
+
+assure "ExpandoClass" {
+	Person p = new Person();
+	p.name = "naruto";
+	p.age  = 17;
+	assert p.name == "naruto";
+	assert p.age == 17;
 }
 

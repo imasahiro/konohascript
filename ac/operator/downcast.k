@@ -4,19 +4,19 @@
  ***************************************************************************/
 
 
-assure "OperatorDownCast" {
+assure "downcast" {
 	Object o = 1;
 	int n = (int)o;
 	assert n == 1;
 }
 
-assure "OperatorDownCast:Number" {
+assure "downcast:Number" {
 	Number o = 1;
 	int n = (int)o;
 	assert n == 1;
 }
 
-assure "OperatorDownCast:Dynamic" {
+assure "downcast:dynamic" {
 	dynamic d = 1;
 	int n = (int)d;
 	assert n == 1;
