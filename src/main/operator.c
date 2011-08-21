@@ -3140,59 +3140,82 @@ static KMETHOD InputStream_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 //	}
 //	ITREND_();
 //}
+////
+////static int readbuf(CTX ctx, knh_InputStream_t *in, char *buf, knh_itrindex_t *m)
+////{
+////	long ssize = in->dpi->freadSPI(ctx, DP(in)->fio, buf, K_PAGESIZE);
+////	if(ssize > 0) {
+////		m->index = 0;
+////		m->max   = ssize;
+////		return 1;
+////	}
+////	knh_InputStream_close(ctx, in);
+////	return 0;
+////}
+////
+////static ITRNEXT knh_InputStream_nextLine(CTX ctx, knh_sfp_t *sfp _RIX)
+////{
+////	knh_Iterator_t *itr = sfp[0].it;
+////	knh_InputStream_t *in = (knh_InputStream_t*)DP(itr)->source;
+////	const char *buf = (const char*)DP(itr)->m.nptr;
+////	knh_itrindex_t *m = &(DP(itr)->m);
+////	if(!(m->index < m->max) && readbuf(ctx, in, (char*)buf, m) == 0) {
+////		ITREND_();
+////	}
+////	int prev = 0, policy = K_SPOLICY_ASCII;
+////	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+////	while(1) {
+////		size_t i, pos = m->index, posend = m->max;
+////		for(i = pos; i < posend; i++) {
+////			int ch = buf[i];
+////			if(ch == '\n') {
+////				knh_Bytes_write2(ctx, cwb->ba, buf + pos, i - pos);
+////				m->index = i + 1;
+////				goto L_TOSTRING;
+////			}
+////			if(ch < 0) policy = K_SPOLICY_UTF8;
+////			prev = ch;
+////		}
+////		knh_Bytes_write2(ctx, cwb->ba, buf + pos, posend - pos);
+////		if(readbuf(ctx, in, (char*)buf, m) == 0) {
+////			goto L_TOSTRING;
+////		}
+////	}
+////	L_TOSTRING:;
+////	knh_String_t *s;
+////	if(prev == '\r') {
+////		knh_Bytes_reduce(cwb->ba, 1);
+////	}
+////	if(in->decNULL == NULL || policy == K_SPOLICY_ASCII) {
+////		s = knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|policy);
+////	}
+////	else {
+////		s = knh_cwb_newStringDECODE(ctx, cwb, in->decNULL);
+////	}
+////	ITRNEXT_(s);
+////}
+//
+///* ------------------------------------------------------------------------ */
+////## @Final mapper InputStream String..;
+//
+//static TYPEMAP knh_InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_Iterator_t *itr = new_IteratorG(ctx, CLASS_StringITR, sfp[0].o, knh_InputStream_nextLine);
+//	DP(itr)->m.nptr = malloc(K_PAGESIZE);
+//	DP(itr)->nfree = free;
+//	RETURN_(itr);
+//}
 
-static int readbuf(CTX ctx, knh_InputStream_t *in, char *buf, knh_itrindex_t *m)
-{
-	long ssize = in->dpi->freadSPI(ctx, DP(in)->fio, buf, K_PAGESIZE);
-	if(ssize > 0) {
-		m->index = 0;
-		m->max   = ssize;
-		return 1;
-	}
-	knh_InputStream_close(ctx, in);
-	return 0;
-}
 
 static ITRNEXT knh_InputStream_nextLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Iterator_t *itr = sfp[0].it;
 	knh_InputStream_t *in = (knh_InputStream_t*)DP(itr)->source;
-	const char *buf = (const char*)DP(itr)->m.nptr;
-	knh_itrindex_t *m = &(DP(itr)->m);
-	if(!(m->index < m->max) && readbuf(ctx, in, (char*)buf, m) == 0) {
+	knh_String_t *line = knh_InputStream_readLine(ctx, in);
+	if(IS_NULL(line)) {
 		ITREND_();
 	}
-	int prev = 0, policy = K_SPOLICY_ASCII;
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	while(1) {
-		size_t i, pos = m->index, posend = m->max;
-		for(i = pos; i < posend; i++) {
-			int ch = buf[i];
-			if(ch == '\n') {
-				knh_Bytes_write2(ctx, cwb->ba, buf + pos, i - pos);
-				m->index = i + 1;
-				goto L_TOSTRING;
-			}
-			if(ch < 0) policy = K_SPOLICY_UTF8;
-			prev = ch;
-		}
-		knh_Bytes_write2(ctx, cwb->ba, buf + pos, posend - pos);
-		if(readbuf(ctx, in, (char*)buf, m) == 0) {
-			goto L_TOSTRING;
-		}
-	}
-	L_TOSTRING:;
-	knh_String_t *s;
-	if(prev == '\r') {
-		knh_Bytes_reduce(cwb->ba, 1);
-	}
-	if(in->decNULL == NULL || policy == K_SPOLICY_ASCII) {
-		s = knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|policy);
-	}
-	else {
-		s = knh_cwb_newStringDECODE(ctx, cwb, in->decNULL);
-	}
-	ITRNEXT_(s);
+	ITRNEXT_(line);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -3201,8 +3224,6 @@ static ITRNEXT knh_InputStream_nextLine(CTX ctx, knh_sfp_t *sfp _RIX)
 static TYPEMAP knh_InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Iterator_t *itr = new_IteratorG(ctx, CLASS_StringITR, sfp[0].o, knh_InputStream_nextLine);
-	DP(itr)->m.nptr = malloc(K_PAGESIZE);
-	DP(itr)->nfree = free;
 	RETURN_(itr);
 }
 
