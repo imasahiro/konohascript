@@ -5,7 +5,7 @@
 
 int f() { // comment
 	/* comment */
-	assert LINE == 8;
+	print LINE, "must be in ", 8;
 	return 1;
 }
 

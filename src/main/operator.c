@@ -3332,20 +3332,20 @@ static KMETHOD OutputStream_send(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-/* ------------------------------------------------------------------------ */
-//## method void OutputStream.writeData(Object data, ...);
-
-static KMETHOD OutputStream_writeData(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_OutputStream_t *w = sfp[0].w;
-	knh_sfp_t *v = sfp + 1;
-	int i, ac = knh_stack_argc(ctx, v);
-	for(i = 0; i < ac; i++) {
-		knh_write_Object(ctx, w, v[i].o, FMT_data);
-		knh_write_EOL(ctx, w);
-	}
-	RETURNvoid_();
-}
+///* ------------------------------------------------------------------------ */
+////## method void OutputStream.writeData(Object data, ...);
+//
+//static KMETHOD OutputStream_writeData(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_OutputStream_t *w = sfp[0].w;
+//	knh_sfp_t *v = sfp + 1;
+//	int i, ac = knh_stack_argc(ctx, v);
+//	for(i = 0; i < ac; i++) {
+//		knh_write_Object(ctx, w, v[i].o, FMT_data);
+//		knh_write_EOL(ctx, w);
+//	}
+//	RETURNvoid_();
+//}
 
 /* ------------------------------------------------------------------------ */
 //## method void OutputStream.flush();

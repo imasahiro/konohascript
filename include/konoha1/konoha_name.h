@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      551
+#define K_REVISION                      557
 #endif
-#define K_BUILDID                       1160
+#define K_BUILDID                       1161
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -956,14 +956,12 @@
 #define FN_write        (MN_OPSIZE+136)
 #define FN_writeASCII   (MN_OPSIZE+137)
 #define FN_writeascii   (MN_OPSIZE+137)
-#define FN_writeData    (MN_OPSIZE+138)
-#define FN_writedata    (MN_OPSIZE+138)
-#define FN_x            (MN_OPSIZE+139)
-#define FN_xdata        (MN_OPSIZE+140)
-#define FN_y            (MN_OPSIZE+141)
-#define FN_year         (MN_OPSIZE+142)
-#define FN_z            (MN_OPSIZE+143)
-#define K_TFIELD_SIZE   144
+#define FN_x            (MN_OPSIZE+138)
+#define FN_xdata        (MN_OPSIZE+139)
+#define FN_y            (MN_OPSIZE+140)
+#define FN_year         (MN_OPSIZE+141)
+#define FN_z            (MN_OPSIZE+142)
+#define K_TFIELD_SIZE   143
 
 /* ------------------------------------------------------------------------ */
 /* METHODN */
@@ -980,7 +978,6 @@
 #define MN_add          FN_add
 #define MN_isNotNull    MN_toISBOOL(FN_notnull)
 #define MN_read         FN_read
-#define MN_writeData    FN_writedata
 #define MN__empty       MN_toFMT(FN_empty)
 #define MN_split        FN_split
 #define MN__bits        MN_toFMT(FN_bits)

@@ -815,6 +815,8 @@ knh_ParamArray_t *new_ParamArrayR0(CTX ctx, knh_type_t t)
 	return pa;
 }
 
+#define RTYPE_set(t)    TYPE_void
+
 knh_ParamArray_t *new_ParamArrayP1(CTX ctx, knh_type_t rtype, knh_type_t p1, knh_fieldn_t fn1)
 {
 	knh_ParamArray_t *pa = new_ParamArray(ctx);
@@ -1113,7 +1115,7 @@ static knh_Method_t *new_SetterMethod(CTX ctx, knh_class_t cid, knh_methodn_t mn
 	knh_Fmethod f = accessors[_SETTER|(IS_Tunbox(type)?_NDATA:0)|((ClassTBL(cid)->bcid==CLASS_CppObject)?_CPPOBJ:0)];
 	knh_Method_t *mtd = new_Method(ctx, 0, cid, mn, f);
 	DP(mtd)->delta = idx;
-	KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayP1(ctx, type, type, FN_v));
+	KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayP1(ctx, RTYPE_set(type), type, FN_UNMASK(mn)));
 	return mtd;
 }
 
@@ -1226,7 +1228,7 @@ void knh_ClassTBL_addXField(CTX ctx, const knh_ClassTBL_t *ct, knh_type_t type, 
 	f = (IS_Tunbox(type)) ? Fmethod_xnsetter : Fmethod_xsetter;
 	mtd = new_Method(ctx, 0, ct->cid, MN_toSETTER(fn), f);
 	DP(mtd)->delta = fn;
-	KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayP1(ctx, type, type, FN_v));
+	KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayP1(ctx, RTYPE_set(type), type, fn));
 	knh_ClassTBL_addMethod(ctx, ct, mtd, 0/*isCheck*/);
 }
 
@@ -1246,7 +1248,7 @@ knh_Method_t *knh_NameSpace_addXSetter(CTX ctx, knh_NameSpace_t *ns, const knh_C
 			f = (IS_Tunbox(type)) ? Fmethod_xnsetter : Fmethod_xsetter;
 			mtd = new_Method(ctx, 0, ct->cid, mn_setter, f);
 			DP(mtd)->delta = fn;
-			KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayP1(ctx, type, type, FN_v));
+			KNH_SETv(ctx, DP(mtd)->mp, new_ParamArrayP1(ctx, RTYPE_set(type), type, fn));
 			knh_ClassTBL_addMethod(ctx, ct, mtd, 0/*isCheck*/);
 			return mtd;
 		}
@@ -2465,12 +2467,12 @@ static KMETHOD Object_invokeMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 static knh_bool_t ClassTBL_addXField(CTX ctx, const knh_ClassTBL_t *ct, knh_type_t type, knh_String_t *name)
 {
 	knh_fieldn_t fn = knh_getmn(ctx, S_tobytes(name), FN_NEWID);  // FIXME: NOIZE
-	knh_Method_t *mtd = knh_ClassTBL_findMethodNULL(ctx, ct, MN_toSETTER(fn), 1);
+	knh_Method_t *mtd = knh_ClassTBL_findMethodNULL(ctx, ct, MN_toSETTER(fn), 0);
 	if(mtd != NULL) {
 		LANG_LOG("already defined setter: %s.%s", S_totext(ct->lname), S_totext(name));
 		return 0;
 	}
-	mtd = knh_ClassTBL_findMethodNULL(ctx, ct, (type == CLASS_Boolean) ? MN_toISBOOL(fn) : MN_isGETTER(fn), 1);
+	mtd = knh_ClassTBL_findMethodNULL(ctx, ct, (type == CLASS_Boolean) ? MN_toISBOOL(fn) : MN_isGETTER(fn), 0);
 	if(mtd != NULL) {
 		LANG_LOG("already defined getter: %s.%s", S_totext(ct->lname), S_totext(name));
 		return 0;
@@ -2642,7 +2644,6 @@ static KMETHOD Method_getSourceCode(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(IS_Token(tk)
 			? tk->text : KNH_TNULL(String));
 }
-
 
 #define FuncData(X) {#X , X}
 static knh_FuncData_t FuncData[] = {

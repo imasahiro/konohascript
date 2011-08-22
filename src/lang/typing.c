@@ -2673,6 +2673,7 @@ static knh_Token_t* FIELD_typing(CTX ctx, knh_class_t cid, knh_Stmt_t *stmt, siz
 	else if(knh_Method_psize(mtd) == 1) {
 		knh_type_t ptype = knh_Method_ptype(ctx, mtd, 0, cid);
 		TYPING_TypedExpr(ctx, stmt, n+1, ptype);
+		Stmt_boxAll(ctx, stmt, n+1, n+2, CLASS_Tdynamic);
 	}
 	else {
 		TYPING_UntypedExpr(ctx, stmt, n+1);
@@ -4013,6 +4014,8 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 		size_t i;
 		mtd = new_Method(ctx, flag, mtd_cid, mn, NULL);
 		knh_NameSpace_addMethod(ctx, mtd_cid, mtd);
+//		DP(mtd)->uri = ULINE_uri(stmtM->uline);
+//		Token_setCONST(ctx, tkNN(stmtM, 2/*method*/), mtd);
 		mp = new_ParamArray(ctx);
 		KNH_SETv(ctx, DP(mtd)->mp, mp);
 		for(i = 0; i < DP(stmtP)->size; i += 3) {
@@ -4083,6 +4086,8 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 			knh_NameSpace_addMethod(ctx, mtd_cid, mtd);
 			KNH_SETv(ctx, DP(mtd)->mp, mp);
 		}
+//		DP(mtd)->uri = ULINE_uri(stmtM->uline);
+//		Token_setCONST(ctx, tkNN(stmtM, 2/*method*/), mtd);
 	}
 
 	Method_setFastCall(mtd, 0);
@@ -4113,9 +4118,6 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 		if(!knh_Method_ffi(ctx, mtd, K_GMANS, mdata)) {
 			return ERROR_WrongFFILink(ctx, S_totext(tkNN(stmtM, 4)->text));
 		}
-//		else {
-//			KNH_SETv(ctx, DP(mtd)->tsource, tkNN(stmtM, 4));
-//		}
 		return knh_Stmt_done(ctx, stmtM);
 	}
 	return knh_StmtMTD_typing(ctx, stmtM, mtd, mtd_cid);
@@ -4422,12 +4424,16 @@ static knh_Token_t* CLASS_typing(CTX ctx, knh_Stmt_t *stmt)
 			tkRES = NULL;
 			ctx->gma->uline = stmtFIELD->uline;
 			switch(STT_(stmtFIELD)) {
-			CASE_STMT(METHOD, stmtFIELD);
-			CASE_STMT(FORMAT, stmtFIELD);
-			case STT_DONE: case STT_DECL: case STT_LET: case STT_ERR: break;
-			default: {
-				WARN_Ignored(ctx, "statement", CLASS_unknown, TT__(STT_(stmtFIELD)));
+				CASE_STMT(METHOD, stmtFIELD);
+				CASE_STMT(FORMAT, stmtFIELD);
+				case STT_DONE: case STT_DECL: case STT_LET: case STT_ERR: break;
+				default: {
+					WARN_Ignored(ctx, "statement", CLASS_unknown, TT__(STT_(stmtFIELD)));
+					knh_Stmt_done(ctx, stmtFIELD);
+				}
 			}
+			if(tkRES != NULL && TT_(tkRES) == TT_ERR) {
+				knh_Stmt_toERR(ctx, stmtFIELD, tkRES);
 			}
 			stmtFIELD = DP(stmtFIELD)->nextNULL;
 		}
