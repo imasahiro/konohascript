@@ -88,6 +88,7 @@ KRect::KRect(int x_, int y_, int width_, int height_)
 	setObjectName("KRect");
 	setTag(GRect);
 	se = NULL;
+	body = NULL;
 #ifdef K_USING_BOX2D
 	isStatic = true;
 #endif
