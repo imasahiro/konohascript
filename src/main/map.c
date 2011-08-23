@@ -143,7 +143,7 @@ static void hmap_unuse(knh_hmap_t *hmap, knh_hentry_t *e)
 	hmap->size--;
 }
 
-static knh_mapptr_t *hmap_init(CTX ctx, size_t init, const char *path, void *option)
+static knh_mapptr_t *hmap_init(CTX ctx, size_t init, const char *path, struct knh_DictMap_t *opt)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)KNH_MALLOC(ctx, sizeof(knh_hmap_t));
 	knh_bzero(hmap, sizeof(knh_hmap_t));
@@ -588,7 +588,7 @@ static size_t hmap_size(CTX ctx, knh_mapptr_t* m)
 	return hmap->size;
 }
 
-static knh_bool_t hmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_itrindex_t *mitr, knh_sfp_t *rsfp)
+static knh_bool_t hmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	size_t i;
@@ -604,7 +604,7 @@ static knh_bool_t hmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_itrindex_t *mitr, kn
 	return 0;
 }
 
-static knh_bool_t hmap_nextON(CTX ctx, knh_mapptr_t *m, knh_itrindex_t *mitr, knh_sfp_t *rsfp)
+static knh_bool_t hmap_nextON(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	size_t i;
@@ -620,7 +620,7 @@ static knh_bool_t hmap_nextON(CTX ctx, knh_mapptr_t *m, knh_itrindex_t *mitr, kn
 	return 0;
 }
 
-static knh_bool_t hmap_nextNO(CTX ctx, knh_mapptr_t *m, knh_itrindex_t *mitr, knh_sfp_t *rsfp)
+static knh_bool_t hmap_nextNO(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	size_t i;
@@ -636,7 +636,7 @@ static knh_bool_t hmap_nextNO(CTX ctx, knh_mapptr_t *m, knh_itrindex_t *mitr, kn
 	return 0;
 }
 
-static knh_bool_t hmap_nextNN(CTX ctx, knh_mapptr_t *m, knh_itrindex_t *mitr, knh_sfp_t *rsfp)
+static knh_bool_t hmap_nextNN(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	size_t i;
@@ -958,7 +958,7 @@ static int dentry_strcmp(const void *p, const void *p2)
 	K_USE_FASTDMAP(return (e->ukey < e2->ukey) ? -1 : 1;)
 }
 
-static knh_mapptr_t *dmap_init(CTX ctx, size_t init, const char *path, void *option)
+static knh_mapptr_t *dmap_init(CTX ctx, size_t init, const char *path, struct knh_DictMap_t *opt)
 {
 	knh_dmap_t *dmap = (knh_dmap_t*)KNH_MALLOC(ctx, sizeof(knh_dmap_t));
 	if(init < K_HASH_INITSIZE) init = 4;
@@ -999,7 +999,7 @@ static size_t dmap_size(CTX ctx, knh_mapptr_t* m)
 	return dmap->size;
 }
 
-static knh_bool_t dmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_itrindex_t* mitr, knh_sfp_t *rsfp)
+static knh_bool_t dmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_nitr_t* mitr, knh_sfp_t *rsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	if(mitr->index < dmap->size) {
@@ -1140,7 +1140,7 @@ static void dmap_removeSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
 static const knh_MapDSPI_t* dmap_config(CTX ctx, knh_class_t p1, knh_class_t p2);
 
 static const knh_MapDSPI_t DMAP_SO = {
-	K_DSPI_MAP, "dict",
+	K_DSPI_MAP, "dictionary",
 	dmap_config, dmap_init, dmap_reftraceOO, dmap_free,
 	dmap_getSO, dmap_setSO, dmap_removeSO, dmap_size, dmap_nextOO,
 };
@@ -1157,7 +1157,7 @@ static void dmap_reftraceON(CTX ctx, knh_mapptr_t *m FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static knh_bool_t dmap_nextON(CTX ctx, knh_mapptr_t *m, knh_itrindex_t* mitr, knh_sfp_t *rsfp)
+static knh_bool_t dmap_nextON(CTX ctx, knh_mapptr_t *m, knh_nitr_t* mitr, knh_sfp_t *rsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	if(mitr->index < dmap->size) {
@@ -1229,7 +1229,7 @@ static void dmap_removeSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
 }
 
 static const knh_MapDSPI_t DMAP_SN = {
-	K_DSPI_MAP, "dict",
+	K_DSPI_MAP, "dictionary",
 	dmap_config, dmap_init, dmap_reftraceON, dmap_free,
 	dmap_getSN, dmap_setSN, dmap_removeSN, dmap_size, dmap_nextON,
 };
@@ -1320,6 +1320,14 @@ knh_DictMap_t* new_DictMap0_(CTX ctx, size_t capacity, int isCaseMap, const char
 	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
 	if(isCaseMap) dmap_case(dmap);
 	dmap->DBGNAME = DBGNAME;
+	return (knh_DictMap_t*)m;
+}
+
+knh_DictMap_t* knh_toDictMap(CTX ctx, knh_Map_t *m)
+{
+	if(m->spi != &DMAP_SO) {
+		return new_DictMap0(ctx, 0, 1/*isCaseMap*/, __FUNCTION__);
+	}
 	return (knh_DictMap_t*)m;
 }
 
@@ -1437,7 +1445,7 @@ void knh_DictSet_sort(CTX ctx, knh_DictSet_t *m)
 /* ------------------------------------------------------------------------ */
 /* API2 */
 
-KNHAPI2(knh_Map_t*) new_Map(CTX ctx)
+KNHAPI2(knh_Map_t*) new_DataMap(CTX ctx)
 {
 	knh_Map_t *m = new_H(Map);
 	m->spi = &DMAP_SO;
@@ -1446,7 +1454,7 @@ KNHAPI2(knh_Map_t*) new_Map(CTX ctx)
 	return m;
 }
 
-KNHAPI2(void) knh_Map_set(CTX ctx, knh_Map_t *m, knh_String_t *key, knh_Object_t *value)
+KNHAPI2(void) knh_DataMap_set(CTX ctx, knh_Map_t *m, knh_String_t *key, knh_Object_t *value)
 {
 	knh_sfp_t* kvsfp = ctx->esp;
 	KNH_SETv(ctx, kvsfp[0].o, key);
@@ -1454,18 +1462,18 @@ KNHAPI2(void) knh_Map_set(CTX ctx, knh_Map_t *m, knh_String_t *key, knh_Object_t
 	m->spi->set(ctx, m->mapptr, kvsfp);
 }
 
-KNHAPI2(void) knh_Map_setString(CTX ctx, knh_Map_t *m, const char *key, const char *value)
+KNHAPI2(void) knh_DataMap_setString(CTX ctx, knh_Map_t *m, const char *key, const char *value)
 {
 	knh_sfp_t* kvsfp = ctx->esp;
-	KNH_SETv(ctx, kvsfp[0].o, new_T(key));
-	KNH_SETv(ctx, kvsfp[1].o, new_String(ctx, value));
+	KNH_SETv(ctx, kvsfp[0].o, new_String2(ctx, CLASS_String, key, strlen(key), K_SPOLICY_POOLALWAYS));
+	KNH_SETv(ctx, kvsfp[1].o, new_String2(ctx, CLASS_String, value, strlen(value), 0));
 	m->spi->set(ctx, m->mapptr, kvsfp);
 }
 
-KNHAPI2(void) knh_Map_setInt(CTX ctx, knh_Map_t *m, const char *key, knh_int_t value)
+KNHAPI2(void) knh_DataMap_setInt(CTX ctx, knh_Map_t *m, const char *key, knh_int_t value)
 {
 	knh_sfp_t* kvsfp = ctx->esp;
-	KNH_SETv(ctx, kvsfp[0].o, new_T(key));
+	KNH_SETv(ctx, kvsfp[0].o, new_String2(ctx, CLASS_String, key, strlen(key), K_SPOLICY_POOLALWAYS));
 	KNH_SETv(ctx, kvsfp[1].o, new_Int_(ctx, CLASS_Int, value));
 	m->spi->set(ctx, m->mapptr, kvsfp);
 }
@@ -1483,17 +1491,7 @@ void knh_loadScriptDefaultMapDSPI(CTX ctx, knh_NameSpace_t *ns)
 
 const knh_MapDSPI_t *knh_NameSpace_getMapDSPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
-	if(path.len == 0) {
-		return &DMAP_SO;
-	}
-	else {
-		const knh_MapDSPI_t *p = (const knh_MapDSPI_t*)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_MAP, path);
-		if(p == NULL) {
-			//SYSLOG_UnknownPathType(ctx, path);
-			p = &DMAP_SO;
-		}
-		return p;
-	}
+	return (const knh_MapDSPI_t*)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_MAP, path);
 }
 
 const knh_MapDSPI_t *knh_getDefaultMapDSPI(CTX ctx, knh_class_t p1, knh_class_t p2)

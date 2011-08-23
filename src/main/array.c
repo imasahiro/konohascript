@@ -242,11 +242,11 @@ void knh_Iterator_close(CTX ctx, knh_Iterator_t *it)
 	DBG_ASSERT(IS_bIterator(it));
 	if(it->fnext_1 != Fitrnext_end) {
 		KNH_SETv(ctx, DP(it)->source, KNH_NULL);
-		if(DP(it)->nfree != NULL) {
+		if(DP(it)->m.nfree != NULL) {
 			if(DP(it)->m.nptr != NULL) {
-				DP(it)->nfree(DP(it)->m.nptr);
+				DP(it)->m.nfree(DP(it)->m.nptr);
 			}
-			DP(it)->nfree = NULL;
+			DP(it)->m.nfree = NULL;
 		}
 		DP(it)->m.nptr = NULL;
 		it->fnext_1   = Fitrnext_end;

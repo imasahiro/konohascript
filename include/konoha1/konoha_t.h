@@ -674,7 +674,8 @@ typedef struct knh_PackSPI_t {
 	void  (*pack_endarray)(CTX, void*);   // unnecessary for msgpack
 	void  (*pack_beginmap)(CTX, void*, size_t n);
 	void  (*pack_endmap)(CTX, void*);     // unnecessary for msgpack
-	knh_type_t (*unpack)(CTX, struct knh_ClassTBL_t *, struct knh_InputStream_t *, knh_sfp_t*);   // put sfp[0]
+	knh_type_t (*unpack)(CTX, const char *, size_t, knh_sfp_t*);   // put sfp[0]
+//	knh_type_t (*unpackS)(CTX, struct knh_InputStream_t *, knh_sfp_t*);   // put sfp[0]
 } knh_PackSPI_t;
 
 /***

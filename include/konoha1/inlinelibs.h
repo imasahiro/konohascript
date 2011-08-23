@@ -189,8 +189,7 @@ static inline knh_cwb_t *knh_cwb_open(CTX ctx, knh_cwb_t *cwb)
 	return cwb;
 }
 
-static inline void knh_cwb_close(knh_cwb_t *cwb) CC_UNUSED ;
-static void knh_cwb_close(knh_cwb_t *cwb)
+static inline void knh_cwb_close(knh_cwb_t *cwb)
 {
 	knh_Bytes_clear(cwb->ba, cwb->pos);
 }

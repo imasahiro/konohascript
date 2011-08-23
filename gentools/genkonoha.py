@@ -404,6 +404,7 @@ class Method:
         flag = addflag(flag, self.meta, 'Method', '@Static')
         flag = addflag(flag, self.meta, 'Method', '@Virtual')
         flag = addflag(flag, self.meta, 'Method', '@Hidden')
+        flag = addflag(flag, self.meta, 'Method', '@Smart')
         flag = addflag(flag, self.meta, 'Method', '@Iterative')
         flag = addflag(flag, self.meta, 'Method', '@Throwable')
         flag = addflag(flag, self.meta, 'Method', '@FastCall')
@@ -516,7 +517,7 @@ class Data:
         return n
             
     def add_mn(self, mn):
-    	if mn.startswith("op"):
+    	if mn.startswith("op") and mn[3].isupper():
     		return
         if mn.startswith("get"):
             t = mn[3:]

@@ -235,11 +235,12 @@ struct knh_Bytes_t {
 //## type FuncEach        Func  1 T1 T1;
 //## type FuncWhere       Func  1 T1 Boolean;
 
-typedef struct knh_itrindex_t {
+typedef struct knh_nitr_t {
 	void   *nptr;
+	void   (*nfree)(void *nptr);
 	size_t  index;
 	size_t  max;
-} knh_itrindex_t;
+} knh_nitr_t;
 
 #define K_MAPITR_INIT   {NULL, 0, 0}
 #define ITR(sfp)   sfp[0].it
@@ -256,8 +257,7 @@ typedef struct {
 		struct knh_Func_t    *funcNULL;
 		struct knh_TypeMap_t *tmrNULL;
 	};
-	struct     knh_itrindex_t m;
-	void       (*nfree)(void *nptr);
+	struct     knh_nitr_t m;
 } knh_IteratorEX_t;
 
 struct knh_Iterator_t {
@@ -339,6 +339,21 @@ struct knh_Array_t {
 //## class Map Object;
 
 typedef void  knh_mapptr_t;
+
+typedef struct knh_MapDSPI_t {
+	int   type;
+	const char *name;
+	const struct knh_MapDSPI_t* (*config)(CTX, knh_class_t, knh_class_t);
+	knh_mapptr_t* (*init)(CTX, size_t, const char*, struct knh_DictMap_t *);
+	void (*reftrace)(CTX, knh_mapptr_t* FTRARG);
+	void (*freemap)(CTX, knh_mapptr_t*);
+	// main
+	knh_bool_t (*get)(CTX, knh_mapptr_t*, knh_sfp_t*, knh_sfp_t *);
+	void (*set)(CTX, knh_mapptr_t*, knh_sfp_t *);
+	void (*remove)(CTX, knh_mapptr_t*, knh_sfp_t *);
+	size_t (*size)(CTX, knh_mapptr_t*);
+	knh_bool_t (*next)(CTX, knh_mapptr_t*, knh_nitr_t *, knh_sfp_t *);
+} knh_MapDSPI_t;
 
 typedef struct knh_Map_t {
 	knh_hObject_t h;
@@ -444,10 +459,10 @@ struct knh_ParamArray_t {
 //## class Method Object;
 //## flag Method Private!Public  0 DP(%s)->flag is set * *;
 //## flag Method Virtual!Final   1 DP(%s)->flag is set * *;
-//## flag Method Debug           2 DP(%s)->flag is set * *;
+//## flag Method Hidden          2 DP(%s)->flag is set * *;
 //## flag Method Const           3 DP(%s)->flag is * * *;
 //## flag Method Static          4 DP(%s)->flag is * * *;
-//## flag Method Hidden          5 DP(%s)->flag is set * *;
+//## flag Method Smart           5 DP(%s)->flag is set * *;
 //## flag Method Dynamic         6 DP(%s)->flag is set * *;
 //## flag Method Immutable       7 DP(%s)->flag is set * *;
 //## flag Method Iterative       8 DP(%s)->flag is set * *;
@@ -1157,7 +1172,7 @@ struct knh_Token_t {
 /* ------------------------------------------------------------------------ */
 //## @Struct class Stmt Object;
 //## flag Stmt STOPITR    0 DP(%s)->flag0 is set * *;
-//## flag Stmt CONST      2 DP(%s)->flag0 is set * *;
+//## flag Stmt CONSTOLD      2 DP(%s)->flag0 is set * *;
 //## flag Stmt Memo1      4 DP(%s)->flag0 is set * *;
 //## flag Stmt Memo2      5 DP(%s)->flag0 is set * *;
 

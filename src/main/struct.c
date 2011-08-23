@@ -1315,7 +1315,7 @@ static void Iterator_init(CTX ctx, knh_RawPtr_t *o)
 	b->m.nptr   =  NULL;
 	b->m.index  = 0;
 	b->m.max    = 0;
-	b->nfree = NULL;
+	b->m.nfree = NULL;
 	itr->b = b;
 }
 
@@ -1376,14 +1376,14 @@ static const knh_ClassDef_t IteratorDef = {
 /* Map */
 
 static const knh_MapDSPI_t* NULLMAP_config(CTX ctx, knh_class_t p1, knh_class_t p2);
-static knh_mapptr_t *NULLMAP_init(CTX ctx, size_t init, const char *path, void *option) { return NULL; }
+static knh_mapptr_t *NULLMAP_init(CTX ctx, size_t init, const char *path, struct knh_DictMap_t *opt) { return NULL; }
 static void NULLMAP_reftrace(CTX ctx, knh_mapptr_t *m FTRARG){}
 static void NULLMAP_free(CTX ctx, knh_mapptr_t *m){}
 static knh_bool_t NULLMAP_get(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp) { return 0; }
 static void NULLMAP_set(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp) {}
 static void NULLMAP_remove(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp) {}
 static size_t NULLMAP_size(CTX ctx, knh_mapptr_t* m) { return 0; }
-static knh_bool_t NULLMAP_next(CTX ctx, knh_mapptr_t* m, knh_itrindex_t *mitr, knh_sfp_t *rsfp) { return 0; }
+static knh_bool_t NULLMAP_next(CTX ctx, knh_mapptr_t* m, knh_nitr_t *mitr, knh_sfp_t *rsfp) { return 0; }
 
 static const knh_MapDSPI_t NULLMAP = {
 	K_DSPI_MAP, "NULL",
@@ -1428,7 +1428,7 @@ static void Map_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	if(n > 0) {
 		BEGIN_LOCAL(ctx, lsfp, 2);
 		knh_class_t p1 = O_cTBL(o)->p1, p2 = O_cTBL(o)->p2;
-		knh_itrindex_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
+		knh_nitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
 		if(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
 			knh_write_sfp(ctx, w, p1, lsfp, FMT_line);
 			knh_write(ctx, w, STEXT(": "));

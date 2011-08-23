@@ -361,9 +361,9 @@ KMETHOD Dir_read(CTX ctx, knh_sfp_t *sfp _RIX)
 	if(dirptr != NULL) {
 		struct dirent *dp = readdir(dirptr);
 		if(dp != NULL) {
-			mdata = new_Map(ctx);
-			knh_Map_setString(ctx, mdata, "d_name", dp->d_name);
-			knh_Map_setInt(ctx, mdata, "d_type", dp->d_type);
+			mdata = new_DataMap(ctx);
+			knh_DataMap_setString(ctx, mdata, "d_name", dp->d_name);
+			knh_DataMap_setInt(ctx, mdata, "d_type", dp->d_type);
 		}
 	}
 	RETURN_(mdata);

@@ -200,7 +200,7 @@ void knh_Bytes_write(CTX ctx, knh_Bytes_t *ba, knh_bytes_t t)
 	BA_size(ba) += t.len;
 }
 
-void knh_Bytes_write2(CTX ctx, knh_Bytes_t *ba, const char *text, size_t len)
+KNHAPI2(void) knh_Bytes_write2(CTX ctx, knh_Bytes_t *ba, const char *text, size_t len)
 {
 	size_t capacity = ba->dim->capacity;
 	if(len == 0) return ;

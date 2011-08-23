@@ -2096,19 +2096,21 @@ static inline void unboxSFP(CTX ctx, knh_sfp_t *sfp)
 static knh_Token_t* CALL_toCONST(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *mtd)
 {
 	int isCONST = 0;
-	size_t i = 1, size = DP(stmt)->size;
+	size_t size = DP(stmt)->size;
 #ifdef K_USING_DEBUG
-	if(Method_isConst(mtd) || Stmt_isCONST(stmt)) {
+	if(Method_isConst(mtd) || Gamma_isEnforceConst(ctx->gma)) {
 #else
-	if(Method_isConst(mtd) || Stmt_isCONST(stmt) || IS_SCRIPTLEVEL(ctx)) {
+	if(Method_isConst(mtd) || Gamma_isEnforceConst(ctx->gma) || IS_SCRIPTLEVEL(ctx)) {
 #endif
-		for(i = 1; i < size; i++) {
+		size_t i = STT_(stmt) == TT_NEW ? 2: 1;
+		for(; i < size; i++) {
 			knh_Token_t *tk = tkNN(stmt, i);
-			if(TT_(tk) != TT_CONST && TT_(tk) != TT_NULL) goto L_NEXT;
+			if(TT_(tk) != TT_CONST && TT_(tk) != TT_NULL && TT_(tk) != TT_CID) goto L_NEXT;
 		}
 		isCONST = 1;
 	}
 	L_NEXT: ;
+	DBG_P("isCONST=%d, %d", isCONST,  Gamma_isEnforceConst(ctx->gma));
 	if(isCONST) {
 		BEGIN_LOCAL(ctx, lsfp, DP(stmt)->size + K_CALLDELTA);
 		long rtnidx = 0, thisidx = rtnidx + K_CALLDELTA;
@@ -2116,6 +2118,7 @@ static knh_Token_t* CALL_toCONST(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *mtd)
 		size_t i = 1;
 		if(MN_isNEW((mtd)->mn)) {
 			knh_class_t cid = CLASS_t(stmt->type);
+			DBG_P("CONST NEW", CLASS__(cid));
 			KNH_SETv(ctx, lsfp[thisidx].o, new_Object_init2(ctx, ClassTBL(cid)));
 			i = 2;
 		}
@@ -2208,7 +2211,6 @@ static knh_Token_t* CALLPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t tcid
 	size_t i, size = DP(stmt)->size;
 	knh_ParamArray_t *pa = DP(mtd)->mp;
 	knh_type_t rtype = knh_type_tocid(ctx, knh_ParamArray_rtype(pa), new_cid);
-	//DBG_P("mtd_cid=%s rtype=%s", CLASS__(mtd_cid), TYPE__(rtype));
 	if(rtype == TYPE_var && DP(ctx->gma)->mtd == mtd) {
 		return ERROR_Unsupported(ctx, "type inference of recursive calls", CLASS_unknown, NULL);
 	}
@@ -2218,9 +2220,6 @@ static knh_Token_t* CALLPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t tcid
 		knh_param_t* p = knh_ParamArray_get(pa, i);
 		knh_type_t param_reqt = knh_type_tocid(ctx, p->type, new_cid);
 		if(n < size) {
-//			if(p->fn == FN_) {
-//				return ERROR_CompilerControlledParameter(ctx, mtd->cid, mtd->mn, i+1);
-//			}
 			TYPING_TypedExpr(ctx, stmt, n, param_reqt);
 		}
 		else {
@@ -2233,8 +2232,10 @@ static knh_Token_t* CALLPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t tcid
 				}
 			}
 		}
-		if(param_reqt == CLASS_Class && p->fn == FN_) {
-			Stmt_typed(ctx, stmt, CLASS_t(tcid));
+		if(param_reqt == CLASS_Class) { // Method_isSmart
+			if(rtype == CLASS_Tvar || (Method_isSmart(mtd) && C_bcid(tcid) == C_bcid(rtype))) {
+				Stmt_typed(ctx, stmt, CLASS_t(tcid));
+			}
 		}
 	}
 	if(ParamArray_isVARGs(pa)) {
@@ -2649,10 +2650,13 @@ static knh_Token_t* NEWPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t new_
 	}
 	Token_setMethod(ctx, tkNN(stmt, 0), mn, mtd);
 	knh_Token_toCID(ctx, tkNN(stmt, 1), new_cid);
+	tkRES->type = new_cid;
 	if(needsTypingPARAMs) {
 		tkRES = CALLPARAMs_typing(ctx, stmt, new_cid, new_cid, mtd);
 	}
-	tkRES->type = new_cid;
+	else {
+		return CALL_toCONST(ctx, stmt, mtd);
+	}
 	return tkRES;
 }
 
@@ -2846,7 +2850,26 @@ static knh_Token_t* OPRWITH_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		KNH_TODO("new C {}");
 	}
 	else {
+		DBG_P("BEGIN_%d", Gamma_isEnforceConst(ctx->gma));
 		TYPING_TypedExpr(ctx, stmt, 1, reqt);
+		DBG_P("END_%d", Gamma_isEnforceConst(ctx->gma));
+	}
+	knh_Stmt_t *stmtCALL = stmtNN(stmt, 1);
+	if(STT_(stmtCALL) == STT_CALL || STT_(stmtCALL) == STT_NEW) {
+		size_t i;
+		for(i = 2; DP(stmtCALL)->size; i++) { /* f.call() with .. */
+			knh_Token_t *tkM = tkNN(stmtCALL, i);
+			if(tkM->type == TYPE_Map && TT_(tkM) == TT_NULL && IS_NULL(tkM->data)) {
+				Gamma_setEnforceConst(ctx->gma, 1);
+				DBG_P("BEGIN_%d", Gamma_isEnforceConst(ctx->gma));
+				knh_Token_t *tkRES = Tn_typing(ctx, stmt, 2, TYPE_Map, _NOVOID);
+				DBG_P("END_%d", Gamma_isEnforceConst(ctx->gma));
+				Gamma_setEnforceConst(ctx->gma, 0);
+				if(TT_(tkRES) == TT_ERR) return tkRES;
+				KNH_SETv(ctx, stmtNN(stmtCALL, i), stmtNN(stmt, 2));
+				return TM(stmtCALL);
+			}
+		}
 	}
 	Gamma_setEnforceConst(ctx->gma, 1);
 	knh_Token_t *tkRES = Tn_typing(ctx, stmt, 2, Tn_cid(stmt, 1), _NOCHECK);
@@ -3932,10 +3955,10 @@ static knh_flag_t METHOD_flag(CTX ctx, knh_Stmt_t *o, knh_class_t cid)
 		ADD_FLAG(flag, "Throwable", FLAG_Method_Throwable);
 		ADD_FLAG(flag, "Iterative", FLAG_Method_Iterative);
 		ADD_FLAG(flag, "Restricted", FLAG_Method_Restricted);
+		ADD_FLAG(flag, "Smart", FLAG_Method_Restricted);
 		if(class_isSingleton(cid)) flag |= FLAG_Method_Static;
 		if(class_isImmutable(cid)) flag |= FLAG_Method_Immutable;
 //		if(class_isDebug(cid)) flag |= FLAG_Method_Debug;
-		ADD_FLAG(flag, "Debug", FLAG_Method_Debug);
 	}
 	return flag;
 }

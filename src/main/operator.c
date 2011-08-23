@@ -2040,6 +2040,41 @@ static KMETHOD Map_newMAP(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
+//## @Static @Throwable @Smart method Map Map.open(String path, Map _, NameSpace _, Class _);
+
+static KMETHOD Map_open(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	const knh_ClassTBL_t *ct = (sfp[4].c)->cTBL;
+	const knh_MapDSPI_t *spi = knh_NameSpace_getMapDSPI(ctx, sfp[3].ns, S_tobytes(sfp[1].s));
+	knh_Map_t *m = NULL;
+	DBG_P("reqt = %s", CLASS__(ct->cid));
+	if(ct->bcid != CLASS_Map) ct = ClassTBL(CLASS_Map);
+	if(spi == NULL) {
+		LANG_LOG("unknown Map driver: %s", S_totext(sfp[1].s));
+		goto L_RETURN;
+	}
+	spi = spi->config(ctx, ct->p1, ct->p2);
+	if(spi == NULL) {
+		LANG_LOG("Map driver %s does not support for %s", S_tobytes(sfp[1].s), TYPE__(ct->cid));
+		goto L_RETURN;
+	}
+	knh_DictMap_t *opt = knh_toDictMap(ctx, sfp[2].m);
+	KNH_SETv(ctx, sfp[2].o, opt);
+	knh_mapptr_t *mapptr = spi->init(ctx, 0, S_totext(sfp[1].s), opt);
+	if(mapptr != NULL) {
+		m = (knh_Map_t*)new_Object_init2(ctx, ct);
+		m->mapptr = mapptr;
+		m->spi = spi;
+	}
+	L_RETURN: ;
+	if(m == NULL) {
+		m = (knh_Map_t*)KNH_NULVAL(ct->cid);
+	}
+	RETURN_(m);
+}
+
+
+/* ------------------------------------------------------------------------ */
 //## method Exception! Exception.new(String event, String msg);
 
 static KMETHOD Exception_new(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -2425,7 +2460,7 @@ static KMETHOD Map_keys(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_class_t p1 = O_cTBL(m)->p1;
 	knh_Array_t *a = new_Array(ctx, p1, size);
 	knh_sfp_t *lsfp = ctx->esp;
-	knh_itrindex_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
+	knh_nitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
 	klr_setesp(ctx, lsfp+1);
 	while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
 		a->api->add(ctx, a, lsfp);
@@ -3141,7 +3176,7 @@ static KMETHOD InputStream_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 //	ITREND_();
 //}
 ////
-////static int readbuf(CTX ctx, knh_InputStream_t *in, char *buf, knh_itrindex_t *m)
+////static int readbuf(CTX ctx, knh_InputStream_t *in, char *buf, knh_nitr_t *m)
 ////{
 ////	long ssize = in->dpi->freadSPI(ctx, DP(in)->fio, buf, K_PAGESIZE);
 ////	if(ssize > 0) {
@@ -3158,7 +3193,7 @@ static KMETHOD InputStream_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 ////	knh_Iterator_t *itr = sfp[0].it;
 ////	knh_InputStream_t *in = (knh_InputStream_t*)DP(itr)->source;
 ////	const char *buf = (const char*)DP(itr)->m.nptr;
-////	knh_itrindex_t *m = &(DP(itr)->m);
+////	knh_nitr_t *m = &(DP(itr)->m);
 ////	if(!(m->index < m->max) && readbuf(ctx, in, (char*)buf, m) == 0) {
 ////		ITREND_();
 ////	}

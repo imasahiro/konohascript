@@ -2208,7 +2208,7 @@ void knh_Object_fastset(CTX ctx, knh_Object_t *o, knh_Method_t *mtd, knh_Object_
 void knh_Object_setData(CTX ctx, knh_Object_t *o, knh_Map_t *m, knh_NameSpace_t *ns, int Checked)
 {
 	knh_sfp_t *lsfp = ctx->esp;
-	knh_itrindex_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
+	knh_nitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
 	klr_setesp(ctx, lsfp+1);
 	if(Checked) {
 		while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
