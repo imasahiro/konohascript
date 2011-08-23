@@ -31,7 +31,7 @@ KMETHOD Point_getY(CTX ctx, knh_sfp_t *sfp _RIX)
 static void Point_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
-	if (p->rawptr != NULL && O_cTBL(p)->total < 4) {
+	if (p->rawptr != NULL) {
 #ifdef DEBUG_MODE
 		fprintf(stderr, "Point:free\n");
 #endif

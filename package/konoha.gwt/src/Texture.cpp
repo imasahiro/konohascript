@@ -483,10 +483,10 @@ static void Texture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 #ifdef DEBUG_MODE
 		fprintf(stderr, "Texture:reftrace\n");
 #endif
-		//KTexture *t = (KTexture *)p->rawptr;
-		//KNH_ADDREF(ctx, t->mouse_press_func);
-		//KNH_ADDREF(ctx, t->mouse_move_func);
-		//KNH_ADDREF(ctx, t->mouse_release_func);
+		KTexture *t = (KTexture *)p->rawptr;
+		KNH_ADDREF(ctx, t->mouse_press_func);
+		KNH_ADDREF(ctx, t->mouse_move_func);
+		KNH_ADDREF(ctx, t->mouse_release_func);
 	}
 }
 

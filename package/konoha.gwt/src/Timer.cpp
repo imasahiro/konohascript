@@ -50,8 +50,7 @@ static void Timer_free(CTX ctx, knh_RawPtr_t *p)
 		fprintf(stderr, "Timer:free\n");
 #endif
 		KTimer *t = (KTimer *)p->rawptr;
-		//fprintf(stderr, "fo->mtd->fcall_1 = [%p]\n", t->fo->mtd->fcall_1);
-		(void)t;
+		fprintf(stderr, "fo->mtd->fcall_1 = [%p]\n", t->fo->mtd->fcall_1);
 		//delete t;
 	}
 }
@@ -102,8 +101,9 @@ static void TimerEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 	(void)ctx;
 	(void)p;
 	(void)tail_;
-	fprintf(stderr, "TimerEvent:reftrace\n");
-	//QApplication *app = (QApplication *)p->rawptr;
+	if (p->rawptr != NULL) {
+		fprintf(stderr, "TimerEvent:reftrace\n");
+	}
 }
 
 DEFAPI(void) defTimerEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

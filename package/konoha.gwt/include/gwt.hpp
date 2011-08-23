@@ -144,6 +144,7 @@ public:
 	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 	void dragEnterEvent(QGraphicsSceneDragDropEvent *event);
 	void wheelEvent(QGraphicsSceneWheelEvent *event);
+	~KRect(void);
 };
 
 class KEllipse : public QObject, public GObject, public QGraphicsEllipseItem, public KRigidBody {

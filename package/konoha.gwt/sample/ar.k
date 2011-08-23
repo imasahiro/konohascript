@@ -1,4 +1,4 @@
-using konoha.visual.*;
+using konoha.gwt.*;
 
 class AR {
 	Scene window;
@@ -52,8 +52,9 @@ class AR {
 		Texture t = c.queryFrame();
 		Array<Array<Point>> objs = t.detectHuman(background);
 		int objs_size = |objs|;
+		print objs_size;
 		for (int i = 0; i < |prev_list|; i++) {
-			//window.removeComplexItem(prev_list[i]);
+			window.removeItem(prev_list[i]);
 			world.remove(prev_list[i]);
 		}
 		prev_list = [];
@@ -62,7 +63,8 @@ class AR {
 			Array<Point> obj = objs[i];
 			int obj_size = |obj|;
 			ComplexItem item = new ComplexItem(obj);
-			//window.addComplexItem(item);
+			item.setColor(new Color("#00ff00"));
+			window.addItem(item);
 			world.add(item);
 			prev_list.add(item);
 		}

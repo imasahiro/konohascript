@@ -87,10 +87,19 @@ KRect::KRect(int x_, int y_, int width_, int height_)
 	mouse_move_func = NULL;
 	setObjectName("KRect");
 	setTag(GRect);
-	
+	se = NULL;
 #ifdef K_USING_BOX2D
 	isStatic = true;
 #endif
+}
+
+KRect::~KRect(void)
+{
+	delete r;
+	if (se != NULL)	delete se;
+	if (body != NULL) {
+		body->GetWorld()->DestroyBody(body);
+	}
 }
 
 #ifdef K_USING_BOX2D
@@ -285,7 +294,7 @@ KMETHOD Rect_setMouseMoveEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 static void Rect_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
-	if (p->rawptr != NULL && O_cTBL(p)->total < 4) {
+	if (p->rawptr != NULL) {
 #ifdef DEBUG_MODE
 		fprintf(stderr, "Rect:free\n");
 #endif
@@ -303,6 +312,10 @@ static void Rect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 #ifdef DEBUG_MODE
 		fprintf(stderr, "Rect:reftrace\n");
 #endif
+		KRect *r = (KRect *)p->rawptr;
+		KNH_ADDREF(ctx, r->mouse_press_func);
+		KNH_ADDREF(ctx, r->mouse_move_func);
+		KNH_ADDREF(ctx, r->mouse_release_func);
 	}
 }
 

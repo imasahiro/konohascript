@@ -117,7 +117,6 @@ void Scene.setBackgroundColor(Color color);
 void Scene.setSceneRect(int x, int y, int width, int height);
 void Scene.addItem(Item i);
 void Scene.removeItem(Item i);
-void Scene.removeComplexItem(ComplexItem c);
 void Scene.setMousePressEvent(Func<Scene,MouseEvent=>void> func);
 void Scene.setMouseMoveEvent(Func<Scene,MouseEvent=>void> func);
 void Scene.setMouseReleaseEvent(Func<Scene,MouseEvent=>void> func);

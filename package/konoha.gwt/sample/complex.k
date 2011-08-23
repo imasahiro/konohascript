@@ -1,4 +1,4 @@
-using konoha.visual.*;
+using konoha.gwt.*;
 
 Application app = new ();
 World world = new (500, 500);
@@ -15,7 +15,7 @@ ComplexItem c = new ComplexItem(a);
 c.setColor(new Color("blue"));
 c.setDensity(1);
 world.add(c);
-scene.addComplexItem(c);
+scene.addItem(c);
 
 Rect g = new Rect(0, 300, 500, 50);
 g.setColor(new Color("lightblue"));
