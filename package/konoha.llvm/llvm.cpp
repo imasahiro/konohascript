@@ -30,16 +30,12 @@
 #include <llvm/Function.h>
 #include <llvm/BasicBlock.h>
 #include <llvm/Instructions.h>
-#include <llvm/ADT/OwningPtr.h>
-#include <llvm/Support/system_error.h>
-#include <llvm/Support/ManagedStatic.h>
-#include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/IRBuilder.h>
+#include <llvm/Support/DynamicLibrary.h>
 #include <llvm/Pass.h>
 #include <llvm/PassManager.h>
 #include <llvm/Analysis/Verifier.h>
 #include <llvm/Analysis/Passes.h>
-#include <llvm/Bitcode/ReaderWriter.h>
 #include <llvm/ExecutionEngine/JIT.h>
 #include <llvm/ExecutionEngine/Interpreter.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
@@ -1863,6 +1859,14 @@ KMETHOD Function_create(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
+//## @Native void Function.dump();
+KMETHOD Function_dump(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	Function *func = konoha::object_cast<Function *>(sfp[0].p);
+	func->dump();
+	RETURNvoid_();
+}
+
 static void ExecutionEngine_obj_free(void *p)
 {
 	ExecutionEngine *ee = static_cast<ExecutionEngine*>(p);
@@ -1941,10 +1945,10 @@ KMETHOD ExecutionEngine_getPointerToFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 	FunctionPassManager pm(m);
 	pm.add(new TargetData(*(ee->getTargetData())));
 	pm.add(createVerifierPass());
-	pm.add(createInstructionCombiningPass()); // Cleanup for scalarrepl.
-	pm.add(createLICMPass());                 // Hoist loop invariants
-	pm.add(createIndVarSimplifyPass());       // Canonicalize indvars
-	pm.add(createLoopDeletionPass());         // Delete dead loops
+	pm.add(createInstructionCombiningPass());
+	pm.add(createLICMPass());
+	pm.add(createIndVarSimplifyPass());
+	pm.add(createLoopDeletionPass());
 
 	pm.doInitialization();
 	pm.run(*func);
@@ -2007,8 +2011,40 @@ KMETHOD Value_getType(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
+//## void Value.dump();
+KMETHOD Value_dump(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	Value *self = konoha::object_cast<Value *>(sfp[0].p);
+	self->dump();
+	RETURNvoid_();
+}
 
-DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+//## @Static boolean DynamicLibrary.loadLibraryPermanently(String libname);
+KMETHOD DynamicLibrary_loadLibraryPermanently(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	const char *libname = S_totext(sfp[1].s);
+	std::string ErrMsg;
+	knh_bool_t ret = sys::DynamicLibrary::LoadLibraryPermanently(libname, &ErrMsg);
+	if (ret == 0) {
+		LOGDATA = {sDATA("lib", ErrMsg.c_str())};
+		LIB_Failed("LoadLibraryPermanently", "DynamicLibrary!!");
+	}
+	RETURNb_(ret);
+}
+
+//## @Static Int DynamicLibrary.searchForAddressOfSymbol(String fname);
+KMETHOD DynamicLibrary_searchForAddressOfSymbol(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	const char *fname = S_totext(sfp[1].s);
+	knh_int_t ret = 0;
+	void *symAddr = NULL;
+	if (!(symAddr = sys::DynamicLibrary::SearchForAddressOfSymbol(fname))) {
+		ret = reinterpret_cast<knh_int_t>(symAddr);
+	}
+	RETURNi_(ret);
+}
+
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
 	InitializeNativeTarget();
 	//kapi->loadIntClassConst(ctx, CLASS_System, IntConstData);

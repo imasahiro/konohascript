@@ -38,7 +38,7 @@ include "lib:gluelink";
 @RawPtr class BranchInst extends Value;
 @Rawptr class BasicBlock;
 @RawPtr class Module;
-@RawPtr class Function;
+@RawPtr class Function extends Value;
 @RawPtr class ExecutionEngine;
 @RawPtr class NativeFunction;
 
@@ -195,6 +195,8 @@ include "lib:gluelink";
 
 @Native void IRBuilder.setInsertPoint(BasicBlock bb);
 @Native Function BasicBlock.getParent();
+@Native void Function.dump();
+@Native void Value.dump();
 @Native @Static Function Function.create(String name, FunctionType fnTy, Module m);
 //@Native iterator BasicBlock.begin();
 //@Native iterator BasicBlock.end();
@@ -221,3 +223,8 @@ class ConstantInt;
 class ConstantFP;
 @Native Value ConstantInt.get(Type type, int v);
 @Native Value ConstantFP.get(Type type, float v);
+
+@RawPtr class DynamicLibrary;
+@Native @Static boolean DynamicLibrary.loadLibraryPermanently(String libname);
+@Native @Static Int DynamicLibrary.searchForAddressOfSymbol(String fname);
+
