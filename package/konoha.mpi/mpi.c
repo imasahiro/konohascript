@@ -17,7 +17,7 @@ KMETHOD System_disableLog(CTX ctx, knh_sfp_t *sfp _RIX)
 
 #ifdef _SETUP
 
-static void knh_MPICommunicator_init(CTX ctx, knh_RawPtr_t *o)
+static void knh_MPIComm_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_MPIComm_t *comm = (knh_MPIComm_t*)o;
 	KNH_NOT_ON_MPI(comm);
@@ -84,10 +84,10 @@ static void knh_MPI_initOp(CTX ctx, knh_class_t cid)
 	}
 }
 
-DEFAPI(void) defMPICommunicator(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defMPIComm(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
-	cdef->name = "MPICommunicator";
-	cdef->init = knh_MPICommunicator_init;
+	cdef->name = "MPIComm";
+	cdef->init = knh_MPIComm_init;
 }
 
 DEFAPI(void) defMPIRequest(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
@@ -103,7 +103,7 @@ DEFAPI(void) defMPIOp(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->init = knh_MPIOp_init;
 }
 
-DEFAPI(void) constMPICommunicator(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+DEFAPI(void) constMPIComm(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	knh_MPI_initWorld(ctx, cid);
 }
@@ -118,9 +118,6 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 	int init = 0;
 	MPI_Initialized(&init);
 	if (init) {
-		/* init err_handler */
-		//static MPI_Errhandler err_hdr;
-		//MPI_Errhandler_create(knh_MPICommunicator_errhandler, &err_hdr);
 		MPI_Errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
 	}
 	kapi->setPackageProperty(ctx, "name", "mpi");

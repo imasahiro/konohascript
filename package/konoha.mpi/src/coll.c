@@ -599,8 +599,8 @@ static int knh_MPI_AllreduceFloat(CTX ctx, knh_Object_t *c, knh_Object_t *sdata,
 
 /* ------------------------------------------------------------------------ */
 
-//## method Int MPICommunicator.bcast(dynamic data, Int root_rank);
-KMETHOD MPICommunicator_bcast(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.bcast(dynamic data, Int root_rank);
+KMETHOD MPIComm_bcast(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Object_t *odata = sfp[1].o;
 	int ret = -1;
@@ -614,26 +614,26 @@ KMETHOD MPICommunicator_bcast(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(ret);
 }
 
-//## method Int MPICommunicator.bcastBytes(Bytes sdata, Int count, Int root_rank);
-KMETHOD MPICommunicator_bcastBytes(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.bcastBytes(Bytes sdata, Int count, Int root_rank);
+KMETHOD MPIComm_bcastBytes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_BcastBytes(ctx, sfp[0].o, sfp[1].o, Int_to(int, sfp[2]), Int_to(int, sfp[3])));
 }
 
-//## method Int MPICommunicator.bcastInt(IArray sdata, Int count, Int root_rank);
-KMETHOD MPICommunicator_bcastInt(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.bcastInt(IArray sdata, Int count, Int root_rank);
+KMETHOD MPIComm_bcastInt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_BcastInt(ctx, sfp[0].o, sfp[1].o, Int_to(int, sfp[2]), Int_to(int, sfp[3])));
 }
 
-//## method Int MPICommunicator.bcastFloat(FArray sdata, Int count, Int root_rank);
-KMETHOD MPICommunicator_bcastFloat(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.bcastFloat(FArray sdata, Int count, Int root_rank);
+KMETHOD MPIComm_bcastFloat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_BcastFloat(ctx, sfp[0].o, sfp[1].o, Int_to(int, sfp[2]), Int_to(int, sfp[3])));
 }
 
-//## method Int MPICommunicator.scatter(dynamic sdata, dynamic rdata, Int root_rank);
-KMETHOD MPICommunicator_scatter(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.scatter(dynamic sdata, dynamic rdata, Int root_rank);
+KMETHOD MPIComm_scatter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Object_t *sdata = sfp[1].o;
 	knh_Object_t *rdata = sfp[2].o;
@@ -648,26 +648,26 @@ KMETHOD MPICommunicator_scatter(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(0);
 }
 
-//## method Int MPICommunicator.scatterBytes(Bytes sdata, Int count, Bytes rdata, Int root_rank);
-KMETHOD MPICommunicator_scatterBytes(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.scatterBytes(Bytes sdata, Int count, Bytes rdata, Int root_rank);
+KMETHOD MPIComm_scatterBytes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_ScatterBytes(ctx, sfp[0].o, sfp[1].o, Int_to(int, sfp[2]), sfp[3].o, Int_to(int, sfp[4])));
 }
 
-//## method Int MPICommunicator.scatterInt(IArray sdata, Int count, IArray rdata, Int root_rank);
-KMETHOD MPICommunicator_scatterInt(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.scatterInt(IArray sdata, Int count, IArray rdata, Int root_rank);
+KMETHOD MPIComm_scatterInt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_ScatterInt(ctx, sfp[0].o, sfp[1].o, Int_to(int, sfp[2]), sfp[3].o, Int_to(int, sfp[4])));
 }
 
-//## method Int MPICommunicator.scatterFloat(FArray sdata, Int count, FArray rdata, Int root_rank);
-KMETHOD MPICommunicator_scatterFloat(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.scatterFloat(FArray sdata, Int count, FArray rdata, Int root_rank);
+KMETHOD MPIComm_scatterFloat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_ScatterFloat(ctx, sfp[0].o, sfp[1].o, Int_to(int, sfp[2]), sfp[3].o, Int_to(int, sfp[4])));
 }
 
-//## method Int MPICommunicator.gather(dynamic sdata, dynamic rdata, Int root_rank);
-KMETHOD MPICommunicator_gather(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.gather(dynamic sdata, dynamic rdata, Int root_rank);
+KMETHOD MPIComm_gather(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Object_t *sdata = sfp[1].o;
 	knh_Object_t *rdata = sfp[2].o;
@@ -682,26 +682,26 @@ KMETHOD MPICommunicator_gather(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(ret);
 }
 
-//## method Int MPICommunicator.gatherBytes(Bytes sdata, Int count, Bytes rdata, Int root_rank);
-KMETHOD MPICommunicator_gatherBytes(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.gatherBytes(Bytes sdata, Int count, Bytes rdata, Int root_rank);
+KMETHOD MPIComm_gatherBytes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_GatherBytes(ctx, sfp[0].o, sfp[1].o, Int_to(int, sfp[2]), sfp[3].o, Int_to(int, sfp[4])));
 }
 
-//## method Int MPICommunicator.gatherInt(IArray sdata, Int count, IArray rdata, Int root_rank);
-KMETHOD MPICommunicator_gatherInt(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.gatherInt(IArray sdata, Int count, IArray rdata, Int root_rank);
+KMETHOD MPIComm_gatherInt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_GatherInt(ctx, sfp[0].o, sfp[1].o, Int_to(int, sfp[2]), sfp[3].o, Int_to(int, sfp[4])));
 }
 
-//## method Int MPICommunicator.gatherFloat(FArray sdata, Int count, FArray rdata, Int root_rank);
-KMETHOD MPICommunicator_gatherFloat(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.gatherFloat(FArray sdata, Int count, FArray rdata, Int root_rank);
+KMETHOD MPIComm_gatherFloat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_GatherFloat(ctx, sfp[0].o, sfp[1].o, Int_to(int, sfp[2]), sfp[3].o, Int_to(int, sfp[4])));
 }
 
-//## method Int MPICommunicator.allGather(dynamic sdata, dynamic rdata);
-KMETHOD MPICommunicator_allGather(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.allGather(dynamic sdata, dynamic rdata);
+KMETHOD MPIComm_allGather(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Object_t *sdata = sfp[1].o;
 	knh_Object_t *rdata = sfp[2].o;
@@ -716,26 +716,26 @@ KMETHOD MPICommunicator_allGather(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(ret);
 }
 
-//## method Int MPICommunicator.allGatherBytes(Bytes sdata, Int count, Bytes rdata);
-KMETHOD MPICommunicator_allGatherBytes(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.allGatherBytes(Bytes sdata, Int count, Bytes rdata);
+KMETHOD MPIComm_allGatherBytes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_AllgatherBytes(ctx, sfp[0].o, sfp[1].o, Int_to(int, sfp[2]), sfp[3].o));
 }
 
-//## method Int MPICommunicator.allGatherInt(IArray sdata, Int count, IArray rdata);
-KMETHOD MPICommunicator_allGatherInt(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.allGatherInt(IArray sdata, Int count, IArray rdata);
+KMETHOD MPIComm_allGatherInt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_AllgatherInt(ctx, sfp[0].o, sfp[1].o, Int_to(int, sfp[2]), sfp[3].o));
 }
 
-//## method Int MPICommunicator.allGatherFloat(FArray sdata, Int count, FArray rdata);
-KMETHOD MPICommunicator_allGatherFloat(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.allGatherFloat(FArray sdata, Int count, FArray rdata);
+KMETHOD MPIComm_allGatherFloat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_AllgatherFloat(ctx, sfp[0].o, sfp[1].o, Int_to(int, sfp[2]), sfp[3].o));
 }
 
-//## method Int MPICommunicator.allToAll(dynamic sdata, dynamic rdata);
-KMETHOD MPICommunicator_allToAll(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.allToAll(dynamic sdata, dynamic rdata);
+KMETHOD MPIComm_allToAll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Object_t *sdata = sfp[1].o;
 	knh_Object_t *rdata = sfp[2].o;
@@ -750,26 +750,26 @@ KMETHOD MPICommunicator_allToAll(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(ret);
 }
 
-//## method Int MPICommunicator.allToAllBytes(Bytes sdata, Int count, Bytes rdata);
-KMETHOD MPICommunicator_allToAllBytes(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.allToAllBytes(Bytes sdata, Int count, Bytes rdata);
+KMETHOD MPIComm_allToAllBytes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_AlltoallBytes(ctx, sfp[0].o, sfp[1].o, Int_to(int, sfp[2]), sfp[3].o));
 }
 
-//## method Int MPICommunicator.allToAllInt(IArray sdata, Int count, IArray rdata);
-KMETHOD MPICommunicator_allToAllInt(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.allToAllInt(IArray sdata, Int count, IArray rdata);
+KMETHOD MPIComm_allToAllInt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_AlltoallInt(ctx, sfp[0].o, sfp[1].o, Int_to(int, sfp[2]), sfp[3].o));
 }
 
-//## method Int MPICommunicator.allToAllFloat(FArray sdata, Int count, FArray rdata);
-KMETHOD MPICommunicator_allToAllFloat(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.allToAllFloat(FArray sdata, Int count, FArray rdata);
+KMETHOD MPIComm_allToAllFloat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_AlltoallFloat(ctx, sfp[0].o, sfp[1].o, Int_to(int, sfp[2]), sfp[3].o));
 }
 
-//## method Int MPICommunicator.reduce(dynamic sdata, dynamic rdata, MPIOp op, Int root_rank);
-KMETHOD MPICommunicator_reduce(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.reduce(dynamic sdata, dynamic rdata, MPIOp op, Int root_rank);
+KMETHOD MPIComm_reduce(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Object_t *sdata = sfp[1].o;
 	knh_Object_t *rdata = sfp[2].o;
@@ -784,26 +784,26 @@ KMETHOD MPICommunicator_reduce(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(ret);
 }
 
-//## method Int MPICommunicator.reduceBytes(Bytes sdata, Bytes rdata, Int count, MPIOp op, Int root_rank);
-KMETHOD MPICommunicator_reduceBytes(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.reduceBytes(Bytes sdata, Bytes rdata, Int count, MPIOp op, Int root_rank);
+KMETHOD MPIComm_reduceBytes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_ReduceBytes(ctx, sfp[0].o, sfp[1].o, sfp[2].o, Int_to(int, sfp[3]), sfp[4].o, Int_to(int, sfp[5])));
 }
 
-//## method Int MPICommunicator.reduceInt(IArray sdata, IArray rdata, Int count, MPIOp op, Int root_rank);
-KMETHOD MPICommunicator_reduceInt(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.reduceInt(IArray sdata, IArray rdata, Int count, MPIOp op, Int root_rank);
+KMETHOD MPIComm_reduceInt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_ReduceInt(ctx, sfp[0].o, sfp[1].o, sfp[2].o, Int_to(int, sfp[3]), sfp[4].o, Int_to(int, sfp[5])));
 }
 
-//## method Int MPICommunicator.reduceFloat(FArray sdata, FArray rdata, Int count, MPIOp op, Int root_rank);
-KMETHOD MPICommunicator_reduceFloat(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.reduceFloat(FArray sdata, FArray rdata, Int count, MPIOp op, Int root_rank);
+KMETHOD MPIComm_reduceFloat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_ReduceFloat(ctx, sfp[0].o, sfp[1].o, sfp[2].o, Int_to(int, sfp[3]), sfp[4].o, Int_to(int, sfp[5])));
 }
 
-//## method Int MPICommunicator.allReduce(dynamic sdata, dynamic rdata, MPIOp op);
-KMETHOD MPICommunicator_allReduce(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.allReduce(dynamic sdata, dynamic rdata, MPIOp op);
+KMETHOD MPIComm_allReduce(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Object_t *sdata = sfp[1].o;
 	knh_Object_t *rdata = sfp[2].o;
@@ -818,20 +818,20 @@ KMETHOD MPICommunicator_allReduce(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(ret);
 }
 
-//## method Int MPICommunicator.allReduceBytes(Bytes sdata, Bytes rdata, Int count, MPIOp op);
-KMETHOD MPICommunicator_allReduceBytes(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.allReduceBytes(Bytes sdata, Bytes rdata, Int count, MPIOp op);
+KMETHOD MPIComm_allReduceBytes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_AllreduceBytes(ctx, sfp[0].o, sfp[1].o, sfp[2].o, Int_to(int, sfp[3]), sfp[4].o));
 }
 
-//## method Int MPICommunicator.allReduceInt(IArray sdata, IArray rdata, Int count, MPIOp op);
-KMETHOD MPICommunicator_allReduceInt(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.allReduceInt(IArray sdata, IArray rdata, Int count, MPIOp op);
+KMETHOD MPIComm_allReduceInt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_AllreduceInt(ctx, sfp[0].o, sfp[1].o, sfp[2].o, Int_to(int, sfp[3]), sfp[4].o));
 }
 
-//## method Int MPICommunicator.allReduceFloat(FArray sdata, FArray rdata, Int count, MPIOp op);
-KMETHOD MPICommunicator_allReduceFloat(CTX ctx, knh_sfp_t *sfp _RIX)
+//## method Int MPIComm.allReduceFloat(FArray sdata, FArray rdata, Int count, MPIOp op);
+KMETHOD MPIComm_allReduceFloat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(knh_MPI_AllreduceFloat(ctx, sfp[0].o, sfp[1].o, sfp[2].o, Int_to(int, sfp[3]), sfp[4].o));
 }

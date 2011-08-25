@@ -1,6 +1,6 @@
 using konoha.mpi.*;
 
-world = MPICommunicator.WORLD;
+world = MPIComm.WORLD;
 rank = world.rank;
 IArray = Array<Int>;
 FArray = Array<Float>;

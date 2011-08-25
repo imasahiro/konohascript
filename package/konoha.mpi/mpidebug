@@ -1,0 +1,16 @@
+#!/bin/sh
+
+bin=./mpikonoha
+if [ ! -e $bin ]; then
+    echo "!!!  MPI binary file doesn't exist. Please run make command."
+    exit 0
+fi
+
+if [ $# -eq 0 ]; then
+    exit 0
+fi
+
+pc=$1
+shift 1
+mpirun -np $pc -machinefile machines xterm -e gdb --args $bin $*
+#screen mpirun -np $pc screen gdb --args $bin $*
