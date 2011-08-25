@@ -863,14 +863,14 @@
 //	{NULL, K_INT0}
 //};
 //
-//DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+//DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 //{
 //	kapi->setPackageProperty(ctx, "name", "lang");
 //	kapi->setPackageProperty(ctx, "version", "0.0");
 //	RETURN_PKGINFO("konoha.lang");
 //}
 //
-//DEFAPI(void) constInstruction(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+//DEFAPI(void) constInstruction(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 //{
 //	kapi->loadClassIntConst(ctx, cid, IntConstData);
 //}

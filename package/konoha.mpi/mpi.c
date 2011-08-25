@@ -103,17 +103,17 @@ DEFAPI(void) defMPIOp(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->init = knh_MPIOp_init;
 }
 
-DEFAPI(void) constMPICommunicator(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constMPICommunicator(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	knh_MPI_initWorld(ctx, cid);
 }
 
-DEFAPI(void) constMPIOp(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constMPIOp(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	knh_MPI_initOp(ctx, cid);
 }
 
-DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_PackageLoaderAPI_t *kapi)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 {
 	int init = 0;
 	MPI_Initialized(&init);

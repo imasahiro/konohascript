@@ -159,6 +159,27 @@ Object* new_Boxing(CTX ctx, knh_sfp_t *sfp, const knh_ClassTBL_t *ct)
 	return o;
 }
 
+KNHAPI2(void) knh_boxing(CTX ctx, knh_sfp_t *sfp, int type)
+{
+	if(IS_Tunbox(type)) {
+		const knh_ClassTBL_t *ct = ClassTBL(type);
+		knh_Object_t *o;
+		if(ct->constPoolMapNULL != NULL) {
+			o = (knh_Object_t*)knh_PtrMap_getI(ctx, ct->constPoolMapNULL, sfp[0].ndata);
+			if(o == NULL) {
+				o = new_hObject_(ctx, ct);
+				((knh_Int_t*)o)->n.data = sfp[0].ndata;
+				knh_PtrMap_addI(ctx, ct->constPoolMapNULL, (knh_Int_t*)o);
+			}
+		}
+		else {
+			o = new_hObject_(ctx, ct);
+			((knh_Int_t*)o)->n.data = sfp[0].ndata;
+		}
+		KNH_SETv(ctx, sfp[0].o, o);
+	}
+}
+
 /* ------------------------------------------------------------------------ */
 
 #ifdef __cplusplus

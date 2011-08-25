@@ -83,9 +83,9 @@ void knh_buff_trim(CTX ctx, knh_Bytes_t *ba, size_t pos, int ch)
 	}
 }
 
-static const char *new_cwbtext(CTX ctx, knh_cwb_t *cwb, size_t *lenref)
+static const char *new_cwbtext(CTX ctx, CWB_t *cwb, size_t *lenref)
 {
-	const char *p = knh_cwb_tochar(ctx, cwb);
+	const char *p = CWB_totext(ctx, cwb);
 	size_t len = knh_strlen(p) + 1;
 	char *newtext = (char*) KNH_MALLOC(ctx, len);
 	knh_memcpy(newtext, p, len);
@@ -97,16 +97,16 @@ KNHAPI2(knh_Path_t*) new_Path(CTX ctx, knh_String_t *path)
 {
 	knh_Path_t *pth = new_(Path);
 	KNH_SETv(ctx, pth->urn, path);
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(path));
-	if(knh_strcmp(S_totext(path), knh_cwb_tochar(ctx, cwb)) == 0) {
+	if(knh_strcmp(S_totext(path), CWB_totext(ctx, cwb)) == 0) {
 		pth->ospath = S_totext(path);
 		pth->asize = 0;
 	}
 	else {
 		pth->ospath = new_cwbtext(ctx, cwb, &(pth->asize));
 	}
-	knh_cwb_close(cwb);
+	CWB_close(cwb);
 	return pth;
 }
 
@@ -123,12 +123,12 @@ static void knh_buff_addScriptPath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_Nam
 knh_Path_t *new_ScriptPath(CTX ctx, knh_String_t *urn, knh_NameSpace_t *ns)
 {
 	knh_Path_t *pth = new_(Path);
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	KNH_SETv(ctx, pth->urn, urn);
 	knh_bytes_t bpath = knh_bytes_next(S_tobytes(urn), ':');
 	knh_buff_addScriptPath(ctx, cwb->ba, cwb->pos, ns, bpath);
 	pth->ospath = new_cwbtext(ctx, cwb, &(pth->asize));
-	knh_cwb_close(cwb);
+	CWB_close(cwb);
 	return pth;
 }
 
@@ -355,12 +355,12 @@ knh_String_t* knh_InputStream_readLine(CTX ctx, knh_InputStream_t *in)
 			return KNH_TNULL(String);
 		}
 	}
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	while(1) {
 		if(!(DP(in)->pos < DP(in)->posend)) {
 			if(DP(in)->fio == IO_NULL || readbuf(ctx, in, ba) == 0) {
 				knh_InputStream_close(ctx, in);
-				if(knh_cwb_size(cwb) == 0) {
+				if(CWB_size(cwb) == 0) {
 					return KNH_TNULL(String);
 				}
 				goto L_TOSTRING;
@@ -386,10 +386,10 @@ knh_String_t* knh_InputStream_readLine(CTX ctx, knh_InputStream_t *in)
 	}
 	L_TOSTRING:;
 	if(in->decNULL == NULL) {
-		return knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER);
+		return CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER);
 	}
 	else {
-		return knh_cwb_newStringDECODE(ctx, cwb, in->decNULL);
+		return CWB_newStringDECODE(ctx, cwb, in->decNULL);
 	}
 }
 
@@ -410,7 +410,7 @@ int InputStream_isClosed(CTX ctx, knh_InputStream_t *in)
 	return (DP(in)->fio == IO_NULL);
 }
 
-void InputStream_setCharset(CTX ctx, knh_InputStream_t *in, knh_StringDecoder_t *c)
+void knh_InputStream_setCharset(CTX ctx, knh_InputStream_t *in, knh_StringDecoder_t *c)
 {
 	if(in->decNULL == NULL) {
 		if(c != NULL) {
@@ -457,15 +457,16 @@ KNHAPI2(void) knh_OutputStream_flush(CTX ctx, knh_OutputStream_t *w, int isNEWLI
 	knh_Bytes_t *ba = DP(w)->ba;
 	if(ba->bu.len > 0) {
 		if(w->encNULL != NULL && OutputStream_hasUTF8(w)) {
-			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+			CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 			knh_StringEncoder_t *c = w->encNULL;
+			knh_bytes_t t = BA_tobytes(ba);
 			KNH_ASSERT(ba != cwb->ba);
-			c->dpi->enc(ctx, c->conv, BA_tobytes(ba), cwb->ba);
+			c->dpi->enc(ctx, c->conv, t.text, t.len, cwb->ba);
 			ba = cwb->ba;
 			if(w->dpi->fwriteSPI(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len) > 0) {
 				knh_Bytes_clear(DP(w)->ba, 0);
 			}
-			knh_cwb_close(cwb);
+			CWB_close(cwb);
 			OutputStream_setUTF8(w, 0);
 		}
 		else if(w->dpi->fwriteSPI(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len) > 0) {
@@ -515,9 +516,7 @@ int OutputStream_isClosed(knh_OutputStream_t *w)
 	return (DP(w)->fio == IO_NULL);
 }
 
-/* ------------------------------------------------------------------------ */
-
-void OutputStream_setCharset(CTX ctx, knh_OutputStream_t *w, knh_StringEncoder_t *c)
+void knh_OutputStream_setCharset(CTX ctx, knh_OutputStream_t *w, knh_StringEncoder_t *c)
 {
 	if(w->encNULL == NULL) {
 		KNH_INITv(w->encNULL, c);
@@ -1000,6 +999,89 @@ KNHAPI2(void) knh_printf(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...)
 	va_start(ap , fmt);
 	knh_vprintf(ctx, w, fmt, ap);
 	va_end(ap);
+}
+
+/* ------------------------------------------------------------------------ */
+
+static KMETHOD InputStream_getByte(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNi_(knh_InputStream_getc(ctx, sfp[0].in));
+}
+
+static KMETHOD InputStream_read(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Bytes_t *ba = sfp[1].ba;
+	knh_bytes_t buf = BA_tobytes(ba);
+	size_t offset = Int_to(size_t,sfp[2]);
+	size_t len    = Int_to(size_t,sfp[3]);
+	if(unlikely(offset > buf.len)) {
+		THROW_OutOfRange(ctx, sfp, offset, buf.len);
+	}
+	buf = knh_bytes_last(buf, offset);
+	if(len != 0) {
+		knh_Bytes_ensureSize(ctx, ba, offset + len);  // DONT USE ensureSize
+		buf.len = len;
+		buf.ubuf = ba->bu.ubuf;
+	}
+	RETURNi_(knh_InputStream_read(ctx, sfp[0].in, (char*)buf.ubuf, buf.len));
+}
+
+static KMETHOD _InputStream_isClosed(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNb_(InputStream_isClosed(ctx, sfp[0].in));
+}
+
+static KMETHOD InputStream_setCharset(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_InputStream_setCharset(ctx, sfp[0].in, (knh_StringDecoder_t*)sfp[1].o);
+	RETURN_(sfp[1].o);
+}
+
+static KMETHOD OutputStream_putByte(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_OutputStream_t *w = sfp[0].w;
+	knh_putc(ctx, w, (int)(sfp[1].ivalue));
+	if(DP(w)->ba->bu.len > w->dpi->wbufsiz) {
+		knh_OutputStream_flush(ctx, w, 0);
+	}
+	RETURNvoid_();
+}
+
+static KMETHOD _OutputStream_isClosed(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNb_(OutputStream_isClosed(sfp[0].w));
+}
+
+static KMETHOD OutputStream_clearBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Bytes_clear(DP(sfp[0].w)->ba, 0);
+	RETURNvoid_();
+}
+
+static KMETHOD OutputStream_setCharset(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_OutputStream_setCharset(ctx, sfp[0].w, (knh_StringEncoder_t*)sfp[1].s);
+	RETURN_(sfp[1].o);
+}
+
+#define FuncData(X) {#X , X}
+
+static knh_FuncData_t FuncData[] = {
+//	FuncData(Object_hasMethod),
+	FuncData(InputStream_getByte),
+	FuncData(InputStream_read),
+	FuncData(_InputStream_isClosed),
+	FuncData(InputStream_setCharset),
+	FuncData(OutputStream_putByte),
+	FuncData(_OutputStream_isClosed),
+	FuncData(OutputStream_clearBuffer),
+	FuncData(OutputStream_setCharset),
+	{NULL, NULL},
+};
+
+void knh_initStreamFuncData(CTX ctx, const knh_LoaderAPI_t *kapi)
+{
+	kapi->loadFuncData(ctx, FuncData);
 }
 
 /* ------------------------------------------------------------------------ */

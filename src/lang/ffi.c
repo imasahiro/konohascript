@@ -625,7 +625,7 @@ knh_bool_t knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_D
 
 void knh_loadFFIDriver(CTX ctx, knh_NameSpace_t *ns)
 {
-//	const knh_PackageLoaderAPI_t *api = knh_getPackageLoaderAPI();
+//	const knh_LoaderAPI_t *api = knh_getLoaderAPI();
 //	api->addLinkDPI(ctx, ns, "lib", &LINK_LIB);
 //	api->addLinkDPI(ctx, ns, "cfunc", &LINK_CFUNC);
 //	api->addLinkDPI(ctx, ns, "ctype", &LINK_CTYPE);

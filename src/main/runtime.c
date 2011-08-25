@@ -561,35 +561,35 @@ static void knh_showSecurityAlert(CTX ctx, knh_OutputStream_t *w)
 	}
 }
 
-static knh_status_t readstmt(CTX ctx, knh_cwb_t *cwb)
+static knh_status_t readstmt(CTX ctx, CWB_t *cwb)
 {
 	int line = 1;
 	knh_status_t status = K_CONTINUE;
-	knh_cwb_clear(cwb, 0);
+	CWB_clear(cwb, 0);
 	fputs(TERM_BBOLD(ctx), stdout);
 	while(1) {
 		int check;
 		char *ln = ctx->spi->readline(line == 1 ? ">>> " : "    ");
 		if(ln == NULL) {
-			knh_cwb_clear(cwb, 0);
+			CWB_clear(cwb, 0);
 			status = K_BREAK;
 			break;
 		}
 		if(line > 1) knh_Bytes_putc(ctx, cwb->ba, '\n');
 		knh_Bytes_write(ctx, cwb->ba, B(ln));
 		free(ln);
-		if((check = shell_checkstmt(knh_cwb_tobytes(cwb))) > 0) {
+		if((check = shell_checkstmt(CWB_tobytes(cwb))) > 0) {
 			line++;
 			continue;
 		}
 		if(check < 0) {
 			fputs("(Cancelled)...\n", stdout);
-			knh_cwb_clear(cwb, 0);
+			CWB_clear(cwb, 0);
 		}
 		break;
 	}
-	if(knh_cwb_size(cwb) > 0) {
-		const char *p = knh_cwb_tochar(ctx, cwb);
+	if(CWB_size(cwb) > 0) {
+		const char *p = CWB_totext(ctx, cwb);
 		ctx->spi->add_history(p);
 	}
 	fputs(TERM_EBOLD(ctx), stdout);
@@ -676,49 +676,49 @@ static void knh_shell(CTX ctx)
 	BEGIN_LOCAL(ctx, lsfp, 2);
 	LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t *, bin, new_BytesInputStream(ctx, new_Bytes(ctx, "shell", K_PAGESIZE)));
 	{
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 		knh_showWelcome(ctx, cwb->w);
 		knh_showSecurityAlert(ctx, cwb->w);
-		shell_status = shell_init(ctx, knh_cwb_tochar(ctx, cwb), NULL);
-		knh_cwb_close(cwb);
+		shell_status = shell_init(ctx, CWB_totext(ctx, cwb), NULL);
+		CWB_close(cwb);
 	}
 	while(1) {
 		{
-			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+			CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 			knh_status_t status = readstmt(ctx, cwb);
 			if(status == K_BREAK) {
-				knh_cwb_close(cwb);
+				CWB_close(cwb);
 				break;
 			}
-			if(knh_cwb_size(cwb) == 0) {
-				knh_cwb_close(cwb);
+			if(CWB_size(cwb) == 0) {
+				CWB_close(cwb);
 				continue;
 			}
-			status = shell_command(ctx, knh_cwb_tochar(ctx, cwb));
+			status = shell_command(ctx, CWB_totext(ctx, cwb));
 			if(status == K_BREAK) {
-				knh_cwb_close(cwb);
+				CWB_close(cwb);
 				break;
 			}
 			if(status == K_REDO) {
-				knh_cwb_close(cwb);
+				CWB_close(cwb);
 				continue;
 			}
 			knh_Bytes_clear(DP(bin)->ba, 0);
-			knh_Bytes_write(ctx, DP(bin)->ba, knh_cwb_tobytes(cwb));
-			knh_cwb_close(cwb);
+			knh_Bytes_write(ctx, DP(bin)->ba, CWB_tobytes(cwb));
+			CWB_close(cwb);
 		}
 		knh_InputStream_setpos(ctx, bin, 0, BA_size(DP(bin)->ba));
 		SP(bin)->uline = 1; // always line1
 		knh_beval(ctx, bin);
 		knh_OutputStream_flush(ctx, ctx->out, 1);
 		if(ctx->isEvaled == 1) {
-			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+			CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 			knh_write_Object(ctx, cwb->w, ctx->evaled, FMT_dump);
 			knh_showSecurityAlert(ctx, cwb->w);
-			if(knh_cwb_size(cwb) !=0) {
-				shell_display(ctx, shell_status, knh_cwb_tochar(ctx, cwb));
+			if(CWB_size(cwb) !=0) {
+				shell_display(ctx, shell_status, CWB_totext(ctx, cwb));
 			}
-			knh_cwb_close(cwb);
+			CWB_close(cwb);
 			WCTX(ctx)->isEvaled = 0;
 		}
 	}

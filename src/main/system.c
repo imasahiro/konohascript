@@ -39,7 +39,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [properties] */
 
-static void knh_cwb_nzenvkey(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t)
+static void CWB_nzenvkey(CTX ctx, CWB_t *cwb, knh_bytes_t t)
 {
 	size_t i;
 	for(i = 0; i < t.len; i++) {
@@ -52,10 +52,10 @@ static void knh_cwb_nzenvkey(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t)
 knh_String_t* knh_getPropertyNULL(CTX ctx, knh_bytes_t key)
 {
 	if(knh_bytes_startsWith(key, STEXT("env."))) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-		knh_cwb_nzenvkey(ctx, cwb, knh_bytes_last(key, 4));
-		char *v = knh_getenv(knh_cwb_tochar(ctx, cwb));
-		knh_cwb_close(cwb);
+		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+		CWB_nzenvkey(ctx, cwb, knh_bytes_last(key, 4));
+		char *v = knh_getenv(CWB_totext(ctx, cwb));
+		CWB_close(cwb);
 		if(v == NULL) return NULL;
 		return new_String2(ctx, CLASS_String, v, knh_strlen(v), K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS);
 	}
@@ -315,62 +315,40 @@ knh_String_t *knh_getURN(CTX ctx, knh_uri_t uri)
 /* ------------------------------------------------------------------------ */
 /* [Driver] */
 
-void knh_NameSpace_addDSPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, const knh_DSPI_t* p)
+static knh_bytes_t knh_NameSpace_getDpiPath(CTX ctx , knh_NameSpace_t *ns, knh_bytes_t path)
 {
-	const char *name = (scheme == NULL) ? p->name : scheme;
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	knh_write(ctx, cwb->w, B(name));
-	knh_putc(ctx, cwb->w, ':');
-	knh_write_ifmt(ctx, cwb->w, K_INT_FMT, p->type);
-	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
-	knh_DictSet_set(ctx, DP(ctx->sys)->dspiDictSet, knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII), (knh_uintptr_t)p);
-	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
+	return path;
 }
 
-/* ------------------------------------------------------------------------ */
-
-const knh_DSPI_t *knh_NameSpace_getDSPINULL(CTX ctx, knh_NameSpace_t *ns, int type, knh_bytes_t path)
+const knh_StreamDPI_t *knh_NameSpace_getStreamDPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
-	knh_index_t idx = knh_bytes_index(path, ':');
-	if(idx == -1) {
-		knh_write(ctx, cwb->w, path);
-	}
-	else {
-		knh_write(ctx, cwb->w, knh_bytes_first(path, idx));
-	}
-	knh_putc(ctx, cwb->w, ':');
-	knh_write_ifmt(ctx, cwb->w, K_INT_FMT, type);
-	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
-	const knh_DSPI_t *p = (const knh_DSPI_t*)knh_DictSet_get(ctx, DP(ctx->sys)->dspiDictSet, knh_cwb_tobytes(cwb));
-	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
-	knh_cwb_close(cwb);
-	return p;
+	knh_bytes_t hpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_head(path, ':'));
+	return (const knh_StreamDPI_t *)knh_DictSet_get(ctx, ctx->share->streamDpiDictSet, hpath);
 }
 
-///* ------------------------------------------------------------------------ */
-//
-//const knh_ConverterDPI_t *knh_NameSpace_getConvTODSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-//{
-//	return (const knh_ConverterDPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_CONVTO, path);
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//const knh_ConverterDPI_t *knh_NameSpace_getConvFROMDSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-//{
-//	return (const knh_ConverterDPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_CONVFROM, path);
-//}
-
-const knh_ConverterDPI_t *knh_NameSpace_getConvDSPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+const knh_QueryDPI_t *knh_NameSpace_getQueryDPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
-	knh_bytes_t bpath = knh_bytes_next(path, ':');
+	knh_bytes_t hpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_head(path, ':'));
+	return (const knh_QueryDPI_t *)knh_DictSet_get(ctx, ctx->share->queryDpiDictSet, hpath);
+}
+
+const knh_MapDPI_t *knh_NameSpace_getMapDPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+{
+	knh_bytes_t hpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_head(path, ':'));
+	return (const knh_MapDPI_t*)knh_DictSet_get(ctx, ctx->share->mapDpiDictSet, hpath);
+}
+
+const knh_ConverterDPI_t *knh_NameSpace_getConverterDPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+{
+	knh_bytes_t bpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_next(path, ':'));
+	void *d;
 	if(path.text[0] == 'f') {
-		return (const knh_ConverterDPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_CONVFROM, bpath);
+		d = (void*)knh_DictSet_get(ctx, ctx->share->rconvDpiDictSet, bpath);
 	}
 	else {
-		return (const knh_ConverterDPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_CONVTO, bpath);
+		d = (void*)knh_DictSet_get(ctx, ctx->share->convDpiDictSet, bpath);
 	}
+	return (const knh_ConverterDPI_t*)d;
 }
 
 /* ------------------------------------------------------------------------ */

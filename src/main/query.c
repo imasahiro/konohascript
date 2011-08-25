@@ -42,7 +42,7 @@ void knh_Connection_open(CTX ctx, knh_Connection_t *c, knh_NameSpace_t *ns, knh_
 {
 	knh_bytes_t u = S_tobytes(urn);
 	KNH_SETv(ctx, (c)->urn, urn);
-	(c)->dpi = knh_getQueryDSPI(ctx, ns, S_tobytes(urn));
+	(c)->dpi = knh_NameSpace_getQueryDPINULL(ctx, ns, S_tobytes(urn));
 	(c)->conn = (c)->dpi->qopen(ctx, u);
 }
 
@@ -78,7 +78,7 @@ knh_bool_t knh_ResultSet_next(CTX ctx, knh_ResultSet_t *o)
 			knh_bytes_t t = {{""}, 0};
 			DP(o)->qcurfree(DP(o)->qcur);
 			DP(o)->qcur = NULL;
-			DP(o)->qcurfree = knh_getQueryDSPI(ctx, NULL, t)->qcurfree;
+			DP(o)->qcurfree = knh_NameSpace_getQueryDPINULL(ctx, NULL, t)->qcurfree;
 		}
 	}
 	return 0;
@@ -92,7 +92,7 @@ void knh_ResultSet_close(CTX ctx, knh_ResultSet_t *o)
 		knh_bytes_t t = {{""}, 0};
 		DP(o)->qcurfree(DP(o)->qcur);
 		DP(o)->qcur = NULL;
-		DP(o)->qcurfree = knh_getQueryDSPI(ctx, NULL, t)->qcurfree;
+		DP(o)->qcurfree = knh_NameSpace_getQueryDPINULL(ctx, NULL, t)->qcurfree;
 	}
 	KNH_SETv(ctx, DP(o)->conn, KNH_NULL);
 }
@@ -289,16 +289,16 @@ knh_float_t knh_ResultSet_getFloat(CTX ctx, knh_ResultSet_t *o, size_t n)
 
 static knh_String_t *new_String__int(CTX ctx, knh_int_t n)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_write_ifmt(ctx, cwb->w, K_INT_FMT, n);
-	return knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLALWAYS|K_SPOLICY_ASCII);
+	return CWB_newString(ctx, cwb, K_SPOLICY_POOLALWAYS|K_SPOLICY_ASCII);
 }
 
 static knh_String_t *new_String__float(CTX ctx, knh_float_t n)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_write_ffmt(ctx, cwb->w, K_FLOAT_FMT, n);
-	return knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLALWAYS|K_SPOLICY_ASCII);
+	return CWB_newString(ctx, cwb, K_SPOLICY_POOLALWAYS|K_SPOLICY_ASCII);
 }
 
 knh_String_t* knh_ResultSet_getString(CTX ctx, knh_ResultSet_t *o, size_t n)

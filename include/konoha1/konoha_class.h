@@ -340,10 +340,10 @@ struct knh_Array_t {
 
 typedef void  knh_mapptr_t;
 
-typedef struct knh_MapDSPI_t {
+typedef struct knh_MapDPI_t {
 	int   type;
 	const char *name;
-	const struct knh_MapDSPI_t* (*config)(CTX, knh_class_t, knh_class_t);
+	const struct knh_MapDPI_t* (*config)(CTX, knh_class_t, knh_class_t);
 	knh_mapptr_t* (*init)(CTX, size_t, const char*, struct knh_DictMap_t *);
 	void (*reftrace)(CTX, knh_mapptr_t* FTRARG);
 	void (*freemap)(CTX, knh_mapptr_t*);
@@ -353,18 +353,18 @@ typedef struct knh_MapDSPI_t {
 	void (*remove)(CTX, knh_mapptr_t*, knh_sfp_t *);
 	size_t (*size)(CTX, knh_mapptr_t*);
 	knh_bool_t (*next)(CTX, knh_mapptr_t*, knh_nitr_t *, knh_sfp_t *);
-} knh_MapDSPI_t;
+} knh_MapDPI_t;
 
 typedef struct knh_Map_t {
 	knh_hObject_t h;
 	knh_mapptr_t  *mapptr;
-	const struct knh_MapDSPI_t *spi;
+	const struct knh_MapDPI_t *spi;
 } knh_Map_t;
 
 typedef struct knh_PtrMap_t {
 	knh_hObject_t h;
 	knh_mapptr_t  *mapptr;
-	const struct knh_MapDSPI_t *spi;
+	const struct knh_MapDPI_t *spi;
 } knh_PtrMap_t;
 
 #define knh_Map_size(m)  (m)->spi->size(NULL, (m)->mapptr)
@@ -374,7 +374,7 @@ typedef struct knh_PtrMap_t {
 typedef struct knh_DictMap_t {
 	knh_hObject_t h;
 	knh_mapptr_t     *mapptr;
-	const struct knh_MapDSPI_t *spi;
+	const struct knh_MapDPI_t *spi;
 } knh_DictMap_t;
 
 #define new_DictMap0(ctx, N, F, NAME)      new_DictMap0_(ctx, N, F, NAME)
@@ -383,7 +383,7 @@ typedef struct knh_DictMap_t {
 typedef struct knh_DictSet_t {
 	knh_hObject_t h;
 	knh_mapptr_t     *mapptr;
-	const struct knh_MapDSPI_t *spi;
+	const struct knh_MapDPI_t *spi;
 } knh_DictSet_t;
 
 typedef void (*knh_Fdictset)(CTX, knh_DictSet_t*, knh_String_t *k, knh_uintptr_t);
@@ -698,10 +698,10 @@ typedef struct knh_ConverterDPI_t {
 	int  type;
 	const char *name;
 	knh_conv_t* (*open)(CTX, const char*, const char*);
-	knh_bool_t  (*conv)(CTX,  knh_conv_t *,  knh_bytes_t t, knh_Bytes_t *);
-	knh_bool_t  (*enc)(CTX,   knh_conv_t *,  knh_bytes_t t, knh_Bytes_t *);
-	knh_bool_t  (*dec)(CTX,   knh_conv_t *,  knh_bytes_t t, knh_Bytes_t *);
-	knh_bool_t  (*sconv)(CTX, knh_conv_t *,  knh_bytes_t t, knh_Bytes_t *);
+	knh_bool_t  (*conv)(CTX,  knh_conv_t *, const char*, size_t, knh_Bytes_t *);
+	knh_bool_t  (*enc)(CTX,   knh_conv_t *, const char*, size_t, knh_Bytes_t *);
+	knh_bool_t  (*dec)(CTX,   knh_conv_t *, const char*, size_t, knh_Bytes_t *);
+	knh_bool_t  (*sconv)(CTX, knh_conv_t *, const char*, size_t, knh_Bytes_t *);
 	void (*close)(CTX ctx, knh_conv_t*);
 	void (*setparam)(CTX ctx, knh_conv_t *, void *, void *);
 } knh_ConverterDPI_t;
@@ -716,7 +716,7 @@ struct knh_Converter_t {
 #endif
 
 /* ------------------------------------------------------------------------ */
-//## @Immutable class StringEncoder Object;
+//## @Immutable class StringEncoder Converter;
 
 typedef struct knh_StringEncoder_t knh_StringEncoder_t;
 #ifdef K_INTERNAL
@@ -728,7 +728,7 @@ struct knh_StringEncoder_t {
 #endif
 
 /* ------------------------------------------------------------------------ */
-//## @Immutable class StringDecoder Object;
+//## @Immutable class StringDecoder Converter;
 
 typedef struct knh_StringDecoder_t knh_StringDecoder_t;
 #ifdef K_INTERNAL
@@ -740,7 +740,7 @@ struct knh_StringDecoder_t {
 #endif
 
 /* ------------------------------------------------------------------------ */
-//## @Immutable class StringConverter Object;
+//## @Immutable class StringConverter Converter;
 
 typedef struct knh_StringConveter_t knh_StringConverter_t;
 #ifdef K_INTERNAL
@@ -1043,12 +1043,7 @@ typedef struct knh_SystemEX_t {
 	knh_nameinfo_t             *nameinfo;
 	struct knh_DictSet_t       *urnDictSet;
 	struct knh_Array_t         *urns;
-
-	struct knh_DictSet_t       *ClassNameDictSet;
-	struct knh_DictSet_t       *EventDictCaseSet;
-	struct knh_DictMap_t       *PackageDictMap;
 	struct knh_DictMap_t       *URNAliasDictMap;
-	struct knh_DictSet_t       *dspiDictSet;
 } knh_SystemEX_t;
 
 struct knh_System_t {

@@ -371,13 +371,13 @@ static void TokenBlock_add(CTX ctx, knh_Token_t *tkB, knh_Token_t *tk)
 	L_JOIN:;
 	if(TT_isSTR(TT_(tk))) {
 		if(TT_isSTR(TT_(tkPREV)) || TT_(tkPREV) == TT_URN) {
-			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+			CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 			knh_Bytes_write(ctx, cwb->ba, S_tobytes((tkPREV)->text));
 			if(tk->uline > tkPREV->uline && TT_(tkPREV) != TT_URN) {
 				knh_Bytes_putc(ctx, cwb->ba, '\n');
 			}
 			knh_Bytes_write(ctx, cwb->ba, S_tobytes((tk)->text));
-			KNH_SETv(ctx, (tkPREV)->data, knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
+			KNH_SETv(ctx, (tkPREV)->data, CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
 			//if(TT_(tk) == TT_ESTR) TT_(tkPREV) = TT_ESTR;
 			goto L_JOIN1;
 		}
@@ -532,9 +532,9 @@ static knh_String_t* NameSpace_getAliasNULL(CTX ctx, knh_NameSpace_t* ns, knh_by
 	return s;
 }
 
-static void Token_setNAME(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
+static void Token_setNAME(CTX ctx, knh_Token_t *tk, CWB_t *cwb)
 {
-	knh_bytes_t t = knh_cwb_tobytes(cwb);
+	knh_bytes_t t = CWB_tobytes(cwb);
 	if(t.utext[0] == '.') {
 		Token_setDOT(tk, 1);
 	}
@@ -552,14 +552,14 @@ static void Token_setNAME(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 	}
 	else {
 		size_t i, u = 0;
-		knh_cwb_t cwbbuf2, *cwb2 = knh_cwb_open(ctx, &cwbbuf2);
+		CWB_t cwbbuf2, *cwb2 = CWB_open(ctx, &cwbbuf2);
 		TT_(tk) = TT_NAME;
 		for(i = cwb->pos; i < cwb->pos + t.len; i++) {
 			const char *p = BA_totext(cwb->ba);
 			int ch = p[i];
 			if(ch == '.') continue;
 			if(ch == '_') {
-				if(!(knh_cwb_size(cwb2) < 2)) { /* _name, __name */
+				if(!(CWB_size(cwb2) < 2)) { /* _name, __name */
 					u = 1;
 					continue;
 				}
@@ -570,7 +570,7 @@ static void Token_setNAME(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 			}
 			knh_Bytes_putc(ctx, cwb2->ba, ch);
 		}
-		KNH_SETv(ctx, (tk)->data, new_StringSYMBOL(ctx, knh_cwb_tobytes(cwb2)));
+		KNH_SETv(ctx, (tk)->data, new_StringSYMBOL(ctx, CWB_tobytes(cwb2)));
 	}
 }
 
@@ -614,15 +614,15 @@ static void Token_setNAME(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 //	return result;
 //}
 
-static void Token_setTEXT(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
+static void Token_setTEXT(CTX ctx, knh_Token_t *tk, CWB_t *cwb)
 {
-	knh_bytes_t t = knh_cwb_tobytes(cwb);
+	knh_bytes_t t = CWB_tobytes(cwb);
 	if(TT_(tk) == TT_UNTYPED) {
 		knh_String_t *text = NameSpace_getAliasNULL(ctx, K_GMANS, t);
 		if(text != NULL) {
 			t = S_tobytes(text);
 			KNH_SETv(ctx, (tk)->data, text);
-			knh_cwb_clear(cwb, 0);
+			CWB_clear(cwb, 0);
 			knh_Bytes_write(ctx, cwb->ba, t);  // alias
 		}
 		knh_DictSet_t *tokenDictSet = DP(ctx->sys)->tokenDictSet;
@@ -642,7 +642,7 @@ static void Token_setTEXT(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb)
 		KNH_SETv(ctx, (tk)->data, new_StringSYMBOL(ctx, t));
 	}
 	else {
-		knh_String_t *s = knh_cwb_newString(ctx, cwb, 0);
+		knh_String_t *s = CWB_newString(ctx, cwb, 0);
 		KNH_SETv(ctx, (tk)->data, s);
 	}
 }
@@ -656,13 +656,13 @@ static knh_Token_t *addNewToken(CTX ctx, knh_Token_t *tkB, knh_term_t tt, int ch
 	return tk;
 }
 
-static void Token_addBuf(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_term_t tt, int ch)
+static void Token_addBuf(CTX ctx, knh_Token_t *tkB, CWB_t *cwb, knh_term_t tt, int ch)
 {
-	if(knh_cwb_size(cwb) != 0) {
+	if(CWB_size(cwb) != 0) {
 		knh_Token_t *tk = addNewToken(ctx, tkB, tt, ch);
 		Token_setTEXT(ctx, tk, cwb);
 		TokenBlock_add(ctx, tkB, tk);  // must add after setting data
-		knh_cwb_clear(cwb, 0);
+		CWB_clear(cwb, 0);
 	}
 	else if(tt == TT_CODE || TT_isSTR(tt) || tt == TT_REGEX) {
 		knh_Token_t *tk = addNewToken(ctx, tkB, tt, ch);
@@ -775,7 +775,7 @@ static void Bytes_addQUOTE(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, int 
 	}
 }
 
-static int Token_addQUOTE(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStream_t *in, int quote, int isRAW)
+static int Token_addQUOTE(CTX ctx, knh_Token_t *tkB, CWB_t *cwb, knh_InputStream_t *in, int quote, int isRAW)
 {
 	int ch;
 	ch = knh_InputStream_getc(ctx, in);
@@ -818,7 +818,7 @@ static int Token_addQUOTE(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputSt
 	return ch;
 }
 
-static int Token_addREGEX(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStream_t *in, int ch0)
+static int Token_addREGEX(CTX ctx, knh_Token_t *tkB, CWB_t *cwb, knh_InputStream_t *in, int ch0)
 {
 	int prev = 0;
 	int ch = (ch0 == 0) ? knh_InputStream_getc(ctx, in) : ch0;
@@ -941,7 +941,7 @@ static int bytes_isOPR(knh_bytes_t t, int ch)
 	return 0;
 }
 
-static int Token_addOPR(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStream_t *in, int ch)
+static int Token_addOPR(CTX ctx, knh_Token_t *tkB, CWB_t *cwb, knh_InputStream_t *in, int ch)
 {
 	if(ch == '/') {
 		ch = knh_InputStream_getc(ctx, in);
@@ -963,7 +963,7 @@ static int Token_addOPR(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStre
 	knh_Bytes_putc(ctx, cwb->ba, ch);
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
 		L_INLOOP:;
-		knh_bytes_t top = knh_cwb_tobytes(cwb);
+		knh_bytes_t top = CWB_tobytes(cwb);
 		if(bytes_isOPR(top, ch)) {
 			knh_Bytes_putc(ctx, cwb->ba, ch);
 		}
@@ -983,7 +983,7 @@ static int Token_addOPR(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStre
 	return ch;
 }
 
-static int Token_addMETAN(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStream_t *in)
+static int Token_addMETAN(CTX ctx, knh_Token_t *tk, CWB_t *cwb, knh_InputStream_t *in)
 {
 	int ch;
 	Token_addBuf(ctx, tk, cwb, TT_UNTYPED, '@');
@@ -1002,7 +1002,7 @@ static int Token_addMETAN(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStr
 	return ch;
 }
 
-static int Token_addPROPN(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStream_t *in)
+static int Token_addPROPN(CTX ctx, knh_Token_t *tkB, CWB_t *cwb, knh_InputStream_t *in)
 {
 	int ch;
 	Token_addBuf(ctx, tkB, cwb, TT_UNTYPED, '$');
@@ -1021,7 +1021,7 @@ static int Token_addPROPN(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputSt
 	return ch;
 }
 
-static int Token_addURN(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStream_t *in)
+static int Token_addURN(CTX ctx, knh_Token_t *tk, CWB_t *cwb, knh_InputStream_t *in)
 {
 	int ch = knh_InputStream_getc(ctx, in);
 	if(ch == ':') {  /* hoge:: */
@@ -1056,7 +1056,7 @@ static int Token_addURN(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStrea
 		knh_Bytes_putc(ctx, cwb->ba, ch);
 	}
 	L_NEWURN: {
-		knh_bytes_t t = knh_cwb_tobytes(cwb);
+		knh_bytes_t t = CWB_tobytes(cwb);
 		knh_term_t tt = TT_URN;
 #ifdef K_USING_SEMANTICS
 		if(knh_bytes_startsWith(t, STEXT("int:")) || knh_bytes_startsWith(t, STEXT("float:"))) {
@@ -1071,7 +1071,7 @@ static int Token_addURN(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStrea
 	return ch;
 }
 
-static int Token_addNUM(CTX ctx, knh_Token_t *tk, knh_cwb_t *cwb, knh_InputStream_t *in, int ch)
+static int Token_addNUM(CTX ctx, knh_Token_t *tk, CWB_t *cwb, knh_InputStream_t *in, int ch)
 {
 	int prev = 0, dot = 0;
 	L_ADD:;
@@ -1126,7 +1126,7 @@ static void Bytes_addRAW(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, int en
 	}
 }
 
-static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputStream_t *in, int block_indent)
+static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, CWB_t *cwb, knh_InputStream_t *in, int block_indent)
 {
 	int c, this_indent = 0, ch, prev = '{', level = 1;
 	Token_addBuf(ctx, tkB, cwb, TT_UNTYPED, '{');
@@ -1188,7 +1188,7 @@ static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, knh_cwb_t *cwb, knh_InputS
 		}
 		goto L_STARTLINE;
 	}
-	knh_cwb_clear(cwb, 0);
+	CWB_clear(cwb, 0);
 //	DBG_P("block_indent=%d, c=%d, last=%d", block_indent, c, ch);
 	Token_addBLOCKERR(ctx, tkB, in, 0);
 }
@@ -1216,7 +1216,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 {
 	int ch;
 	int block_indent = 0, block_line = 0;
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	DBG_ASSERT(in->uline != 0);
 	Token_setSAMELINE(tkB, 0);
 	L_NEWLINE:;
@@ -1238,7 +1238,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 					}
 					else if(c < block_indent) {
 						Token_addBLOCKERR(ctx, tkB, in, 0);
-						knh_cwb_close(cwb);
+						CWB_close(cwb);
 						return;
 					}
 				}
@@ -1248,7 +1248,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 		}
 	}
 	L_NEWTOKEN:;
-	knh_cwb_clear(cwb, 0);
+	CWB_clear(cwb, 0);
 	ctx->gma->uline = in->uline;
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
 		L_AGAIN:;
@@ -1333,7 +1333,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 				goto L_NEWTOKEN;
 			}
 		case '?': {
-			knh_bytes_t t = knh_cwb_tobytes(cwb);
+			knh_bytes_t t = CWB_tobytes(cwb);
 			if(ISB(t, "in") || ISB(t, "isa") || ISB(t, "is")) {
 				knh_Bytes_putc(ctx, cwb->ba, ch);
 				Token_addBuf(ctx, tkB, cwb, TT_UNTYPED, ' ');
@@ -1373,7 +1373,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 
 		case '0': case '1': case '2': case '3': case '4':
 		case '5': case '6': case '7': case '8': case '9':
-			if(knh_cwb_size(cwb) == 0) {
+			if(CWB_size(cwb) == 0) {
 				ch = Token_addNUM(ctx, tkB, cwb, in, ch);
 				goto L_AGAIN;
 			}
@@ -1387,7 +1387,7 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 		} /* switch */
 	}/*while*/
 	Token_addBuf(ctx, tkB, cwb, TT_UNTYPED, EOF);
-	knh_cwb_close(cwb);
+	CWB_close(cwb);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -3578,11 +3578,11 @@ knh_Stmt_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, knh_uline_t uline)
 
 ///* ------------------------------------------------------------------------ */
 //
-//static void Array_addTEXT(CTX ctx, knh_Array_t *a, knh_cwb_t *cwb)
+//static void Array_addTEXT(CTX ctx, knh_Array_t *a, CWB_t *cwb)
 //{
-//	if(knh_cwb_size(cwb) != 0) {
+//	if(CWB_size(cwb) != 0) {
 //		knh_Array_add(ctx, a, KNH_NULL);
-//		knh_Array_add(ctx, a, knh_cwb_newString(ctx, cwb));
+//		knh_Array_add(ctx, a, CWB_newString(ctx, cwb));
 //	}
 //}
 //
@@ -3608,7 +3608,7 @@ knh_Stmt_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, knh_uline_t uline)
 //
 //knh_bool_t knh_String_parseFMT(CTX ctx, knh_String_t *fmt, knh_Array_t *a, knh_uline_t uline)
 //{
-//	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 //	knh_bytes_t t = S_tobytes(fmt);
 //	size_t i = 0, s = 0;
 //	L_TEXT:;
@@ -3639,7 +3639,7 @@ knh_Stmt_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, knh_uline_t uline)
 //				if(!Array_addEXPR(ctx, a, mt, knh_bytes_first(t2, loc), uline)) {
 //					return 0;
 //				}
-//				knh_cwb_close(cwb);
+//				CWB_close(cwb);
 //				i = i + 1 + loc + 1; s = i;
 //				//DBG_P("START='%c'", t.utext[s]);
 //				if(s < t.len) goto L_TEXT;
@@ -3649,7 +3649,7 @@ knh_Stmt_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, knh_uline_t uline)
 //		}
 //	}
 //	KNH_SYSLOG(ctx, LOG_WARNING, "BrokenFmt", "'%B'", t);
-//	knh_cwb_close(cwb);
+//	CWB_close(cwb);
 //	return 0;
 //}
 

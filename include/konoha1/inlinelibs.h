@@ -151,16 +151,16 @@ static inline knh_hashcode_t knh_hash(knh_hashcode_t h, const char *p, size_t le
 /* ------------------------------------------------------------------------ */
 /* [cwb] */
 
-static inline knh_cwb_t *knh_cwb_open0(CTX ctx, knh_cwb_t *cwb)
+static inline CWB_t *CWB_open0(CTX ctx, CWB_t *cwb)
 {
-	knh_Bytes_putc(ctx, ctx->bufa, 0);  // FIXME knh_cwb_close()
+	knh_Bytes_putc(ctx, ctx->bufa, 0);  // FIXME CWB_close()
 	cwb->ba = ctx->bufa;
 	cwb->w  = ctx->bufw;
 	cwb->pos = BA_size(cwb->ba);
 	return cwb;
 }
 
-static inline void knh_cwb_close0(knh_cwb_t *cwb)
+static inline void CWB_close0(CWB_t *cwb)
 {
 	size_t pos = cwb->pos - 1;
 	DBG_ASSERT(cwb->pos > 0);
@@ -171,17 +171,17 @@ static inline void knh_cwb_close0(knh_cwb_t *cwb)
 	cwb->pos = 0;
 }
 
-static inline knh_String_t *knh_cwb_newString0(CTX ctx, knh_cwb_t *cwb)
+static inline knh_String_t *CWB_newString0(CTX ctx, CWB_t *cwb)
 {
 	knh_String_t *s = TS_EMPTY;
 	if(cwb->pos < (cwb->ba)->bu.len) {
 		s = new_String2(ctx, CLASS_String, (cwb->ba)->bu.text + cwb->pos, (cwb->ba)->bu.len - cwb->pos, 0);
 	}
-	knh_cwb_close0(cwb);
+	CWB_close0(cwb);
 	return s;
 }
 
-static inline knh_cwb_t *knh_cwb_open(CTX ctx, knh_cwb_t *cwb)
+static inline CWB_t *CWB_open(CTX ctx, CWB_t *cwb)
 {
 	cwb->ba = ctx->bufa;
 	cwb->w  = ctx->bufw;
@@ -189,27 +189,27 @@ static inline knh_cwb_t *knh_cwb_open(CTX ctx, knh_cwb_t *cwb)
 	return cwb;
 }
 
-static inline void knh_cwb_close(knh_cwb_t *cwb)
+static inline void CWB_close(CWB_t *cwb)
 {
 	knh_Bytes_clear(cwb->ba, cwb->pos);
 }
 
-static inline void knh_cwb_putc(CTX ctx, knh_cwb_t *cwb, int ch)
+static inline void CWB_putc(CTX ctx, CWB_t *cwb, int ch)
 {
 	knh_Bytes_putc(ctx, (cwb->ba), ch);
 }
 
-static inline void knh_cwb_write(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t)
+static inline void CWB_write(CTX ctx, CWB_t *cwb, knh_bytes_t t)
 {
 	knh_Bytes_write(ctx, (cwb->ba), t);
 }
 
-static inline size_t knh_cwb_size(knh_cwb_t *cwb)
+static inline size_t CWB_size(CWB_t *cwb)
 {
 	return (cwb->ba)->bu.len - cwb->pos;
 }
 
-static inline knh_bytes_t knh_cwb_tobytes(knh_cwb_t *cwb)
+static inline knh_bytes_t CWB_tobytes(CWB_t *cwb)
 {
 	knh_bytes_t t;
 	t.text = (cwb->ba)->bu.text + cwb->pos;

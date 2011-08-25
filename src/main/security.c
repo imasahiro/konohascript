@@ -342,7 +342,7 @@ extern "C" {
 
 void knh_askSecurityAlert(CTX ctx)
 {
-//	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 //	knh_Bytes_write(ctx, cwb->ba, S_tobytes(knh_getPropertyNULL(ctx, STEXT("user.path"))));
 //	knh_Bytes_putc(ctx, cwb->ba, '/');
 //	knh_Bytes_write(ctx, cwb->ba, STEXT("ALLOWED_SECURITY_ALERT"));
@@ -357,7 +357,7 @@ void knh_askSecurityAlert(CTX ctx)
 //		K_VERSION, K_DISTTYPE, (int)K_REVISION, CC_PLATFORM, (int)(sizeof(void*) * 8), knh_getenv("LANG"));
 //		if(fgets(buf, sizeof(80), stdin) != NULL) {
 //			if((buf[0] == 'y' || buf[0] == 'Y') && (buf[1] == 0 || buf[1] == '\n' || buf[1] == '\r')) {
-//				FILE *fp = fopen(knh_cwb_tochar(ctx, cwb), "a");
+//				FILE *fp = fopen(CWB_totext(ctx, cwb), "a");
 //				if(fp != NULL) {
 //					fclose(fp);
 //				}
@@ -365,11 +365,11 @@ void knh_askSecurityAlert(CTX ctx)
 //				goto L_CHECK;
 //			}
 //		}
-//		knh_cwb_close(cwb);
+//		CWB_close(cwb);
 //		return;
 //	}
 //	L_CHECK:;
-//	knh_cwb_close(cwb);
+//	CWB_close(cwb);
 //	{
 //		knh_thread_t th;
 //		knh_thread_create(ctx, &th, NULL, knh_checkSecurityAlert, (void*)ctx);

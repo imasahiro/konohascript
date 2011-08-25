@@ -1314,7 +1314,7 @@ static knh_Token_t *FMTCALL_typing(CTX ctx, knh_Stmt_t *stmt)
 	knh_Token_t *tkFMT = tkNN(stmt, 0);
 	knh_bytes_t t = S_tobytes((tkFMT)->text);
 	knh_Stmt_t *stmtHEAD = NULL, *stmtTAIL = NULL, *stmtW;
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_uline_t uline = tkFMT->uline;
 	size_t i = 0, s = 0;
 	while(i < t.len) {
@@ -1335,8 +1335,8 @@ static knh_Token_t *FMTCALL_typing(CTX ctx, knh_Stmt_t *stmt)
 			}
 			knh_Bytes_putc(ctx, cwb->ba, ch);
 		}
-		if(knh_cwb_size(cwb) > 0) {
-			stmtW = new_StmtW1(ctx, NULL, tkNN(stmt,1), new_TokenCONST(ctx, knh_cwb_newString(ctx, cwb, 0)));
+		if(CWB_size(cwb) > 0) {
+			stmtW = new_StmtW1(ctx, NULL, tkNN(stmt,1), new_TokenCONST(ctx, CWB_newString(ctx, cwb, 0)));
 			APPEND_TAIL(stmtHEAD, stmtTAIL, stmtW);
 		}
 		if(!(i < t.len)) break;
@@ -1404,11 +1404,11 @@ static knh_Token_t *FMTCALL_typing(CTX ctx, knh_Stmt_t *stmt)
 	}
 	DBG_ASSERT(stmtHEAD != NULL);
 	KNH_SETv(ctx, stmtNN(stmt, 0), stmtHEAD);
-	knh_cwb_close(cwb);
+	CWB_close(cwb);
 	return Stmt_typed(ctx, stmt, TYPE_String);
 
 	L_ERROR:
-	knh_cwb_close(cwb);
+	CWB_close(cwb);
 	return new_TokenCONST(ctx, TS_EMPTY);
 }
 
@@ -2080,14 +2080,6 @@ static knh_Token_t* CALL1_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 
 /* ------------------------------------------------------------------------ */
 
-static inline void boxSFP(CTX ctx, knh_sfp_t *sfp, knh_type_t type)
-{
-	knh_class_t cid = CLASS_t(type);
-	if(IS_Tunbox(cid)) {
-		KNH_SETv(ctx, sfp[0].o, new_Boxing(ctx, sfp, ClassTBL(cid)));
-	}
-}
-
 static inline void unboxSFP(CTX ctx, knh_sfp_t *sfp)
 {
 	sfp[0].ndata = (sfp[0].i)->n.data;
@@ -2132,7 +2124,7 @@ static knh_Token_t* CALL_toCONST(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *mtd)
 			unboxSFP(ctx, &lsfp[thisidx+(i-1)]);
 		}
 		KNH_SCALL(ctx, lsfp, rtnidx, mtd, (size - 2));
-		boxSFP(ctx, &lsfp[rtnidx], stmt->type);
+		knh_boxing(ctx, &lsfp[rtnidx], stmt->type);
 		rvalue = ((DP(mtd)->mp)->rsize == 0) ? knh_Stmt_done(ctx, stmt) : Token_setCONST(ctx, tkNN(stmt, 0), lsfp[0].o);
 		END_LOCAL(ctx, lsfp);
 		return rvalue;
@@ -3199,7 +3191,7 @@ static knh_Token_t *new_TermTCAST(CTX ctx, knh_class_t tcid, knh_TypeMap_t *tmr,
 		lsfp[0].ndata = O_ndata((tkO)->data);
 		klr_setesp(ctx, lsfp+1);
 		knh_TypeMap_exec(ctx, tmr, lsfp, 0);
-		boxSFP(ctx, lsfp, SP(tmr)->tcid);
+		knh_boxing(ctx, lsfp, SP(tmr)->tcid);
 		Token_setCONST(ctx, tkO, lsfp[0].o);
 		END_LOCAL(ctx, lsfp);
 		return tkO;
@@ -3276,7 +3268,7 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		lsfp[0].ndata = (lsfp[0].i)->n.data;
 		klr_setesp(ctx, lsfp+1);
 		knh_TypeMap_exec(ctx, tmr, lsfp, 0);
-		boxSFP(ctx, &lsfp[0], SP(tmr)->tcid);
+		knh_boxing(ctx, &lsfp[0], SP(tmr)->tcid);
 		Token_setCONST(ctx, tk1, lsfp[0].o);
 		DBG_P("const TCAST %s ==> %s, %s", CLASS__(SP(tmr)->scid), CLASS__(SP(tmr)->tcid), O__(lsfp[0].o));
 		END_LOCAL(ctx, lsfp);  // NEED TO CHECK
@@ -4172,18 +4164,18 @@ static knh_flag_t TYPEMAP_flag(CTX ctx, knh_Stmt_t *stmt)
 
 static knh_Fmethod loadTypeMapFunc(CTX ctx, knh_class_t scid, knh_class_t tcid)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_write_cname(ctx, cwb->w, scid);
 	knh_putc(ctx, cwb->w, '_');
 	knh_write_cname(ctx, cwb->w, tcid);
-	char *p = (char*)knh_cwb_tochar(ctx, cwb);
+	char *p = (char*)CWB_totext(ctx, cwb);
 	while(*p != 0) {
 		if(!isalnum(*p)) *p = '_';
 		p++;
 	}
-	DBG_P("funcname='%s'", knh_cwb_tochar(ctx, cwb));
-	knh_Fmethod f = (knh_Fmethod)knh_loadGlueFunc(ctx, knh_cwb_tochar(ctx, cwb), 1/*isVerbose*/);
-	knh_cwb_close(cwb);
+	DBG_P("funcname='%s'", CWB_totext(ctx, cwb));
+	knh_Fmethod f = (knh_Fmethod)knh_loadGlueFunc(ctx, CWB_totext(ctx, cwb), 1/*isVerbose*/);
+	CWB_close(cwb);
 	return f;
 }
 
@@ -4397,7 +4389,7 @@ static knh_Token_t* CLASS_typing(CTX ctx, knh_Stmt_t *stmt)
 			if(TT_(tkRES) == TT_ERR) return tkRES;
 		}
 		{
-			knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+			CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 			knh_Bytes_write(ctx, cwb->ba, S_tobytes(tkC->text));
 			knh_Bytes_write(ctx, cwb->ba, STEXT("("));
 			for(i = 0; i < DP(stmtP)->size; i += 3) {
@@ -4410,7 +4402,7 @@ static knh_Token_t* CLASS_typing(CTX ctx, knh_Stmt_t *stmt)
 				knh_printf(ctx, cwb->w, "this.%s=%s; ", t, t);
 			}
 			knh_Bytes_write(ctx, cwb->ba, STEXT("}"));
-			knh_Stmt_t *stmtNEW = knh_bytes_parseStmt(ctx, knh_cwb_tobytes(cwb), stmt->uline);
+			knh_Stmt_t *stmtNEW = knh_bytes_parseStmt(ctx, CWB_tobytes(cwb), stmt->uline);
 			DBG_ASSERT(DP(stmtNEW)->nextNULL == NULL);
 			if(DP(stmt)->size == 5) {
 				KNH_INITv(DP(stmtNEW)->nextNULL, stmtNN(stmt, 4));
@@ -4420,7 +4412,7 @@ static knh_Token_t* CLASS_typing(CTX ctx, knh_Stmt_t *stmt)
 				DBG_ASSERT(DP(stmt)->size == 4);
 				knh_Stmt_add(ctx, stmt, stmtNEW);
 			}
-			knh_cwb_close(cwb);
+			CWB_close(cwb);
 		}
 	}
 	if(DP(stmt)->size == 5) {

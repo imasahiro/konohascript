@@ -201,7 +201,7 @@ void knh_loadScriptAliasTokenData(CTX ctx);
 static knh_context_t* new_RootContext(void)
 {
 	knh_context_t *ctx = (knh_context_t*)new_hcontext(NULL);
-	const knh_PackageLoaderAPI_t *kapi = knh_getPackageLoaderAPI();
+	const knh_LoaderAPI_t *kapi = knh_getLoaderAPI();
 	knh_share_t *share = (knh_share_t*)malloc(sizeof(knh_share_t) + sizeof(knh_stat_t) + sizeof(knh_ServiceSPI_t));
 	ctx->share = share;
 	knh_bzero(share, sizeof(knh_share_t) + sizeof(knh_stat_t) + sizeof(knh_ServiceSPI_t));
@@ -261,6 +261,14 @@ static knh_context_t* new_RootContext(void)
 
 	/* These are not shared, but needed to initialize System*/
 	knh_stack_initexpand(ctx, NULL, K_STACKSIZE);
+	KNH_INITv(share->packageDictMap, new_DictMap0(ctx, 0, 1/*isCaseMap*/, "packageDictMap"));
+	KNH_INITv(share->classNameDictSet, new_DictSet0(ctx, 128, 1/*isCaseMap*/, "classNameDictSet"));
+	KNH_INITv(share->eventDictSet, new_DictSet0(ctx, 32, 1/*isCaseMap*/, "eventDictSet"));
+	KNH_INITv(share->streamDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "streamDpiDictSet"));
+	KNH_INITv(share->queryDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "queryDpiDictSet"));
+	KNH_INITv(share->mapDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "mapDpiDictSet"));
+	KNH_INITv(share->convDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "convDpiDictSet"));
+
 	KNH_INITv(ctx->sys, new_(System));
 	KNH_INITv(share->rootns, new_(NameSpace));
 	knh_loadScriptSystemData(ctx, share->rootns, kapi);
@@ -274,7 +282,7 @@ static knh_context_t* new_RootContext(void)
 	knh_loadScriptAliasTokenData(ctx);
 	share->ctx0 = ctx;
 	knh_Gamma_init(ctx);  // initalize gamma->gf, reported by uh
-	knh_initBuiltInPackage(ctx, knh_getPackageLoaderAPI());
+	knh_initBuiltInPackage(ctx, knh_getLoaderAPI());
 	return ctx;
 }
 
@@ -373,6 +381,14 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	KNH_ADDREF(ctx,   share->inferPtrMap);
 	KNH_ADDREF(ctx,   share->xdataPtrMap);
 	KNH_ADDREF(ctx,   share->constPools);
+	KNH_ADDREF(ctx,   share->packageDictMap);
+	KNH_ADDREF(ctx,   share->classNameDictSet);
+	KNH_ADDREF(ctx,   share->eventDictSet);
+	KNH_ADDREF(ctx,   share->streamDpiDictSet);
+	KNH_ADDREF(ctx,   share->queryDpiDictSet);
+	KNH_ADDREF(ctx,   share->mapDpiDictSet);
+	KNH_ADDREF(ctx,   share->convDpiDictSet);
+
 	KNH_ENSUREREF(ctx, K_TSTRING_SIZE);
 	for(i = 0; i < K_TSTRING_SIZE; i++) {
 		KNH_ADDREF(ctx, share->tString[i]);

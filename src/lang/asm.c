@@ -787,15 +787,15 @@ static void _BOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *
 }
 static void _CWB(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	KNH_SETv(ctx, sfp[c].o, cwb->w);
 	sfp[c].ivalue = cwb->pos;
 }
 static void _TOSTR(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
 	DBG_ASSERT(IS_OutputStream(sfp[0].w));
-	knh_cwb_t cwbbuf = {ctx->bufa, ctx->bufw, (size_t)(sfp[0].ivalue)};
-	knh_String_t *s = knh_cwb_newString(ctx, &cwbbuf, 0);
+	CWB_t cwbbuf = {ctx->bufa, ctx->bufw, (size_t)(sfp[0].ivalue)};
+	knh_String_t *s = CWB_newString(ctx, &cwbbuf, 0);
 	KNH_SETv(ctx, sfp[c].o, s);
 }
 static void _ERR(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
@@ -812,9 +812,9 @@ static void _TCHECK(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_
 {
 	const knh_ClassTBL_t *ct0 = O_cTBL(sfp[0].o);
 	if(ct0->cid != ct->cid && !ClassTBL_isa_(ctx, ct0, ct)) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 		knh_printf(ctx, cwb->w, "ClassCast!!: %C is not %C", O_cid(sfp[0].o), ct->cid);
-		CTX_setThrowingException(ctx, new_Error(ctx, 0, knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII)));
+		CTX_setThrowingException(ctx, new_Error(ctx, 0, CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII)));
 		knh_throw(ctx, NULL, 0);
 	}
 }
@@ -822,9 +822,9 @@ static void _TUNBOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_
 {
 	const knh_ClassTBL_t *ct0 = O_cTBL(sfp[0].o);
 	if(ct0->cid != ct->cid && !ClassTBL_isa_(ctx, ct0, ct)) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 		knh_printf(ctx, cwb->w, "ClassCast!!: %C is not %C", O_cid(sfp[0].o), ct->cid);
-		CTX_setThrowingException(ctx, new_Error(ctx, 0, knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII)));
+		CTX_setThrowingException(ctx, new_Error(ctx, 0, CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII)));
 		knh_throw(ctx, NULL, 0);
 	}
 	else{
@@ -2515,14 +2515,14 @@ static void ERR_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 	int start = 0, espidx = DP(stmt)->espidx;
 	knh_Token_t *tkERR = tkNN(stmt, 0);
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	DBG_ASSERT(DP(stmt)->size > 0);
 	DBG_ASSERT(TT_(tkERR) == TT_ERR);
 	if(Gamma_inTry(ctx)) start = espidx;
 	DBG_ASSERT(IS_String((tkERR)->text));
 	knh_write_ascii(ctx, cwb->w, "Script!!: ");
 	knh_write(ctx, cwb->w, S_tobytes(tkERR->text));
-	ASM(ERROR, SFP_(start), knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
+	ASM(ERROR, SFP_(start), CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
 	if(DP(stmt)->nextNULL != NULL) {
 		KNH_FINALv(ctx, DP(stmt)->nextNULL);
 		DP(stmt)->nextNULL = NULL;

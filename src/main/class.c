@@ -343,10 +343,10 @@ void knh_setClassName(CTX ctx, knh_class_t cid, knh_String_t *lname, knh_String_
 	{
 		knh_bytes_t t = S_tobytes(lname);
 		if(t.buf[t.len-1] != '>') {
-			knh_DictSet_set(ctx, DP(ctx->sys)->ClassNameDictSet, lname, cid+1);
+			knh_DictSet_set(ctx, ctx->share->classNameDictSet, lname, (knh_uintptr_t)ct);
 		}
 		if(!class_isPrivate(cid) && S_startsWith(lname, STEXT("konoha."))) {
-			knh_DictSet_append(ctx, DP(ctx->sys)->ClassNameDictSet, ct->sname, cid+1);
+			knh_DictSet_append(ctx, ctx->share->classNameDictSet, ct->sname, (knh_uintptr_t)ct);
 		}
 	}
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
@@ -360,8 +360,8 @@ void knh_setClassName(CTX ctx, knh_class_t cid, knh_String_t *lname, knh_String_
 
 knh_class_t knh_getcid(CTX ctx, knh_bytes_t lname)
 {
-	knh_uintptr_t cid = knh_DictSet_get(ctx, DP(ctx->sys)->ClassNameDictSet, lname);
-	if(cid > 0) return (knh_class_t)(cid-1);
+	const knh_ClassTBL_t *ct = (const knh_ClassTBL_t *)knh_DictSet_get(ctx, ctx->share->classNameDictSet, lname);
+	if(ct != NULL) return ct->cid;
 #if defined(K_USING_SEMANTICS)
 	if(lname.buf[lname.len-1] == '}') {
 		return knh_findcidx(ctx, lname);
@@ -678,12 +678,12 @@ knh_class_t knh_addGenericsClass(CTX ctx, knh_class_t cid, knh_class_t bcid, knh
 		KNH_INITv(ct->typemaps, K_EMPTYARRAY);
 	}
 	{
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 		knh_String_t *lname, *sname;
 		knh_make_cname(ctx, cwb->w, cid);
-		lname = knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII);
+		lname = CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII);
 		knh_make_tname(ctx, cwb->w, cid);
-		sname = knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII);
+		sname = CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII);
 		knh_setClassName(ctx, cid, lname, sname);
 	}
 	return cid;
@@ -1799,7 +1799,7 @@ static knh_TypeMap_t *knh_findTypeMap1NULL(CTX ctx, const knh_ClassTBL_t *sct, k
 	return tmr;
 }
 
-knh_TypeMap_t *knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0)
+KNHAPI2(knh_TypeMap_t*) knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_class_t tcid0)
 {
 	knh_TypeMap_t *tmr = NULL;
 	DBG_P("finding.. %s ==> %s",CLASS__(scid0), CLASS__(tcid0));
@@ -2167,9 +2167,7 @@ static knh_bool_t knh_NameSpace_dataCheck(CTX ctx, knh_NameSpace_t *ns, knh_clas
 			klr_setesp(ctx, sfp+2);
 			sfp[1].ndata = O_ndata(value); // unbox
 			knh_TypeMap_exec(ctx, tmr, sfp+1, 0);
-			if(IS_Tunbox(ptype)) {
-				KNH_SETv(ctx, sfp[1].o, new_Boxing(ctx, sfp+1, ClassTBL(ptype)));
-			}
+			knh_boxing(ctx, sfp+1, ptype);
 			return 1;
 		}
 	}
@@ -2267,9 +2265,7 @@ static TYPEMAP Object_Map(CTX ctx, knh_sfp_t *sfp _RIX)
 				KNH_SETv(ctx, lsfp[thisidx].o, sfp[0].o);
 				KNH_SCALL(ctx, lsfp, rtnidx, mtd, 0);
 				knh_type_t rtype = knh_Method_rtype(ctx, mtd, this_cid);
-				if(IS_Tunbox(rtype)) {
-					KNH_SETv(ctx, lsfp[rtnidx].o, new_Boxing(ctx, lsfp+rtnidx, ClassTBL(rtype)));
-				}
+				knh_boxing(ctx, lsfp+rtnidx, rtype);
 				knh_DictMap_append(ctx, dm, key, lsfp[rtnidx].o);
 			}
 		}
@@ -2321,13 +2317,13 @@ void knh_loadSystemTypeMapRule(CTX ctx)
 
 void knh_NameSpace_setLinkClass(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t linkname, const knh_ClassTBL_t *ct)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_Bytes_write(ctx, cwb->ba, knh_bytes_head(linkname, ':'));
 	knh_Bytes_putc(ctx, cwb->ba, ':');
 	if(DP(ns)->name2ctDictSetNULL == NULL) {
 		KNH_INITv(DP(ns)->name2ctDictSetNULL, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "NameSpace.name2cid"));
 	}
-	knh_DictSet_set(ctx, DP(ns)->name2ctDictSetNULL, knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII), (knh_uintptr_t)ct);
+	knh_DictSet_set(ctx, DP(ns)->name2ctDictSetNULL, CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII), (knh_uintptr_t)ct);
 }
 
 const knh_ClassTBL_t *knh_NameSpace_getLinkClassTBLNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, knh_class_t tcid)
@@ -2379,9 +2375,7 @@ knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t
 		KNH_SETv(ctx, lsfp[thisidx+1].o, path);
 		KNH_SETv(ctx, lsfp[thisidx+2].o, ns);
 		KNH_SCALL(ctx, lsfp, rtnidx, mtd, (3));
-		if(IS_Tunbox(ct->cid)) {
-			KNH_SETv(ctx, lsfp[0].o, new_Boxing(ctx, lsfp, ct));
-		}
+		knh_boxing(ctx, lsfp + rtnidx, ct->cid);
 		value = lsfp[rtnidx].o;
 		END_LOCAL(ctx, lsfp);
 	}
@@ -2403,9 +2397,7 @@ knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t
 		lsfp[0].ndata = O_ndata(value);
 		klr_setesp(ctx, lsfp+1);
 		knh_TypeMap_exec(ctx, tmr, lsfp, 0);
-		if(IS_Tunbox(tmr->tcid)) {
-			KNH_SETv(ctx, lsfp[0].o, new_Boxing(ctx, lsfp, ClassTBL(tmr->tcid)));
-		}
+		knh_boxing(ctx, lsfp, tmr->tcid);
 		value = lsfp[0].o;
 		END_LOCAL(ctx, lsfp);
 	}
@@ -2592,9 +2584,9 @@ static KMETHOD Method_isPrivate_(CTX ctx, knh_sfp_t *sfp _RIX)
 // @Const String Method.getName();
 static KMETHOD Method_getName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_write_mn(ctx, cwb->w, (sfp[0].mtd)->mn);
-	RETURN_(knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII));
+	RETURN_(CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII));
 }
 
 // @Const Class Method.getReturnType();
@@ -2665,7 +2657,7 @@ static knh_FuncData_t FuncData[] = {
 	{NULL, NULL},
 };
 
-void knh_initClass(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+void knh_initClassFuncData(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadFuncData(ctx, FuncData);
 }

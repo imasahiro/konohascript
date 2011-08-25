@@ -761,7 +761,7 @@ void knh_write_sfp(CTX ctx, knh_OutputStream_t *w, knh_type_t type, knh_sfp_t *s
 
 static void knh_Exception_addStackTrace(CTX ctx, knh_Exception_t *e, knh_sfp_t *sfp)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open0(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open0(ctx, &cwbbuf);
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
 	if((mtd)->mn != MN_LAMBDA) {
 		int i = 0, psize = knh_Method_psize(mtd);
@@ -785,7 +785,7 @@ static void knh_Exception_addStackTrace(CTX ctx, knh_Exception_t *e, knh_sfp_t *
 		if(e->tracesNULL == NULL) {
 			KNH_INITv(e->tracesNULL, new_Array(ctx, CLASS_String, 0));
 		}
-		knh_Array_add(ctx, e->tracesNULL, knh_cwb_newString0(ctx, cwb));
+		knh_Array_add(ctx, e->tracesNULL, CWB_newString0(ctx, cwb));
 	}
 }
 
@@ -1008,7 +1008,7 @@ void knh_record(CTX ctx, knh_sfp_t *sfp, int op, int pe, const char *action, con
 	knh_uline_t uline = 0;
 	KNH_ASSERT(ctx->bufa != NULL);
 	if(op > 0 || isVerbose) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open0(ctx, &cwbbuf);
+		CWB_t cwbbuf, *cwb = CWB_open0(ctx, &cwbbuf);
 		if(ctx->gma != NULL && SP(ctx->gma)->uline != 0) {
 			uline = SP(ctx->gma)->uline;
 		}
@@ -1029,12 +1029,12 @@ void knh_record(CTX ctx, knh_sfp_t *sfp, int op, int pe, const char *action, con
 			knh_putc(ctx, cwb->w, ' ');
 		}
 		knh_write_logdata(ctx, cwb->w, data, datasize);
-		ctx->spi->syslog(pe, knh_cwb_tochar(ctx, cwb));
+		ctx->spi->syslog(pe, CWB_totext(ctx, cwb));
 		((knh_context_t*)ctx)->seq += 1;
-		knh_cwb_close0(cwb);
+		CWB_close0(cwb);
 	}
 	if(FLAG_is(op, K_RECFAILED) && ctx->ehdrNC != NULL) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open0(ctx, &cwbbuf);
+		CWB_t cwbbuf, *cwb = CWB_open0(ctx, &cwbbuf);
 		if(FLAG_is(op, K_RECCRIT) || ctx->e == (knh_Exception_t*)TS_EMPTY) {
 			knh_write_ascii(ctx, cwb->w, emsg);
 			knh_putc(ctx, cwb->w, ':'); knh_putc(ctx, cwb->w, ' ');
@@ -1046,12 +1046,12 @@ void knh_record(CTX ctx, knh_sfp_t *sfp, int op, int pe, const char *action, con
 			knh_putc(ctx, cwb->w, ':'); knh_putc(ctx, cwb->w, ' ');
 			knh_write_logdata(ctx, cwb->w, data, datasize);
 		}
-		if(knh_cwb_size(cwb) > 0) {
-			knh_Exception_t *e = new_Error(ctx, uline, knh_cwb_newString0(ctx, cwb));
+		if(CWB_size(cwb) > 0) {
+			knh_Exception_t *e = new_Error(ctx, uline, CWB_newString0(ctx, cwb));
 			CTX_setThrowingException(ctx, e);
 			knh_throw(ctx, sfp, 0);
 		}
-		knh_cwb_close0(cwb);
+		CWB_close0(cwb);
 	}
 }
 

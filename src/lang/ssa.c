@@ -648,13 +648,13 @@
 //	if (size > 0) {
 //		knh_opline_t *buf;
 //		size_t bsize = size * sizeof(knh_opline_t);
-//		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 //		knh_BasicBlock_add_(ctx, n, 0, (knh_opline_t*)(&phi));
 //		buf = DP(n)->opbuf;
 //		knh_Bytes_write(ctx, cwb->ba, new_bytes2((char *)&phi, sizeof(knh_opline_t)));
 //		knh_Bytes_write(ctx, cwb->ba, new_bytes2((char *)buf, bsize));
-//		knh_memcpy(buf, knh_cwb_tochar(ctx, cwb), knh_cwb_size(cwb));
-//		knh_cwb_close(cwb);
+//		knh_memcpy(buf, CWB_totext(ctx, cwb), CWB_size(cwb));
+//		CWB_close(cwb);
 //	}
 //	else {
 //		knh_BasicBlock_add_(ctx, n, 0, (knh_opline_t*)(&phi));

@@ -716,10 +716,10 @@ static KMETHOD String_new(CTX ctx, knh_sfp_t *sfp _RIX)
 		s = new_String2(ctx, CLASS_String, BA_totext(sfp[1].ba), BA_size(sfp[1].ba), 0);
 	}
 	else {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 		knh_StringDecoder_t *c = (knh_StringDecoder_t*)sfp[2].o;
-		c->dpi->dec(ctx, c->conv, BA_tobytes(sfp[1].ba), cwb->ba);
-		s = knh_cwb_newString(ctx, cwb, 0);
+		c->dpi->dec(ctx, c->conv, BA_totext(sfp[1].ba), BA_size(sfp[1].ba), cwb->ba);
+		s = CWB_newString(ctx, cwb, 0);
 	}
 	RETURN_(s);
 }
@@ -750,11 +750,11 @@ static KMETHOD String_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 	DBG_ASSERT(IS_NameSpace(sfp[2].ns));
 	DBG_ASSERT(IS_String(sfp[1].s));
 	if(!bytes_startsWithLink(S_tobytes(sfp[1].s), S_tobytes(sfp[0].s))) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 		knh_Bytes_write(ctx, cwb->ba, S_tobytes(sfp[0].s));
 		knh_Bytes_putc(ctx, cwb->ba, ':');
 		knh_Bytes_write(ctx, cwb->ba, S_tobytes(sfp[1].s));
-		KNH_SETv(ctx, sfp[1].s, knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLALWAYS));
+		KNH_SETv(ctx, sfp[1].s, CWB_newString(ctx, cwb, K_SPOLICY_POOLALWAYS));
 	}
 	knh_Object_t* v = knh_NameSpace_newObject(ctx, sfp[2].ns, sfp[1].s, cid);
 	DBG_P("v=%p, true=%p, false=%p", v, KNH_TRUE, KNH_FALSE);
@@ -805,7 +805,7 @@ static KMETHOD String_endsWith(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD String_concat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int i, ac = knh_stack_argc(ctx, sfp);
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	for(i = 0; i < ac; i++) {
 		if(IS_bString(sfp[i].o)) {
 			knh_Bytes_write(ctx, cwb->ba, S_tobytes(sfp[i].s));
@@ -814,7 +814,7 @@ static KMETHOD String_concat(CTX ctx, knh_sfp_t *sfp _RIX)
 			knh_write_Object(ctx, cwb->w, sfp[i].o, FMT_s);
 		}
 	}
-	RETURN_(knh_cwb_newString(ctx, cwb, 0));
+	RETURN_(CWB_newString(ctx, cwb, 0));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -878,7 +878,7 @@ static void LOG_regex(CTX ctx, knh_sfp_t *sfp, int res, knh_Regex_t *re, const c
 	NOTE_Failed("regex");
 }
 
-static void knh_cwb_write_regexfmt(CTX ctx, knh_cwb_t *cwb, knh_bytes_t *fmt, const char *base, knh_regmatch_t *r, size_t matched)
+static void CWB_write_regexfmt(CTX ctx, CWB_t *cwb, knh_bytes_t *fmt, const char *base, knh_regmatch_t *r, size_t matched)
 {
 	const char *ch = fmt->text;
 	const char *eof = ch + fmt->len; // end of fmt
@@ -1023,7 +1023,7 @@ static KMETHOD String_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_bytes_t fmt = S_tobytes(sfp[2].s);
 	knh_String_t *s = s0;
 	if(IS_NOTNULL(re) && S_size(re->pattern) > 0) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 		const char *str = S_totext(s0);  // necessary
 		const char *base = str;
 		const char *eos = str + S_size(s0); // end of str
@@ -1040,17 +1040,17 @@ static KMETHOD String_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 			}
 			size_t matched = knh_regex_matched(pmatch, K_REGEX_MATCHSIZE);
 			if (len > 0) {
-				knh_cwb_write_regexfmt(ctx, cwb, &fmt, base, pmatch, matched);
+				CWB_write_regexfmt(ctx, cwb, &fmt, base, pmatch, matched);
 				str += len;
 			} else {
 				if (str == base) { // 0-length match at head of string
-					knh_cwb_write_regexfmt(ctx, cwb, &fmt, base, pmatch, matched);
+					CWB_write_regexfmt(ctx, cwb, &fmt, base, pmatch, matched);
 				}
 				break;
 			}
 		}
 		knh_Bytes_write(ctx, cwb->ba, new_bytes((char*)str)); // write out remaining string
-		s = knh_cwb_newString(ctx, cwb, 0); // close cwb
+		s = CWB_newString(ctx, cwb, 0); // close cwb
 	}
 	RETURN_(s);
 }
@@ -1131,7 +1131,7 @@ static KMETHOD String_extract(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD Converter_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t t = S_tobytes(sfp[1].s);
-	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConvDSPINULL(ctx, sfp[2].ns, t);
+	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConverterDPINULL(ctx, sfp[2].ns, t);
 	if(dpi != NULL && dpi->conv != NULL) {
 		knh_Converter_t *c = new_(Converter);
 		c->dpi  = dpi;
@@ -1147,7 +1147,7 @@ static KMETHOD Converter_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD StringEncoder_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t t = S_tobytes(sfp[1].s);
-	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConvDSPINULL(ctx, sfp[2].ns, t);
+	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConverterDPINULL(ctx, sfp[2].ns, t);
 	if(dpi != NULL && dpi->enc != NULL) {
 		knh_StringEncoder_t *c = new_(StringEncoder);
 		c->dpi  = dpi;
@@ -1163,7 +1163,7 @@ static KMETHOD StringEncoder_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD StringDecoder_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t t = S_tobytes(sfp[1].s);
-	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConvDSPINULL(ctx, sfp[2].ns, t);
+	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConverterDPINULL(ctx, sfp[2].ns, t);
 	if(dpi != NULL && dpi->dec != NULL) {
 		knh_StringDecoder_t *c = new_(StringDecoder);
 		c->dpi  = dpi;
@@ -1179,7 +1179,7 @@ static KMETHOD StringDecoder_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD StringConverter_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t t = S_tobytes(sfp[1].s);
-	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConvDSPINULL(ctx, sfp[2].ns, t);
+	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConverterDPINULL(ctx, sfp[2].ns, t);
 	if(dpi != NULL && dpi->sconv != NULL) {
 		knh_StringConverter_t *c = new_(StringConverter);
 		c->dpi  = dpi;
@@ -1194,12 +1194,13 @@ static KMETHOD StringConverter_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD Bytes_convert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
-	c->dpi->conv(ctx, c->conv, BA_tobytes(sfp[0].ba), cwb->ba);
-	knh_Bytes_t *ba = new_Bytes(ctx, NULL, knh_cwb_size(cwb));
-	knh_Bytes_write(ctx, ba, knh_cwb_tobytes(cwb));
-	knh_cwb_close(cwb);
+	knh_bytes_t t = BA_tobytes(sfp[0].ba);
+	c->dpi->conv(ctx, c->conv, t.text, t.len, cwb->ba);
+	knh_Bytes_t *ba = new_Bytes(ctx, NULL, CWB_size(cwb));
+	knh_Bytes_write(ctx, ba, CWB_tobytes(cwb));
+	CWB_close(cwb);
 	RETURN_(ba);
 }
 
@@ -1208,13 +1209,13 @@ static KMETHOD Bytes_convert(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD String_encode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
 	//fprintf(stderr, "%s, c=%p, c->dpi=%p, c->dpi->enc=****\n", CLASS__(c->h.cid), c, c->dpi);
-	c->dpi->enc(ctx, c->conv, S_tobytes(sfp[0].s), cwb->ba);
-	knh_Bytes_t *ba = new_Bytes(ctx, NULL, knh_cwb_size(cwb));
-	knh_Bytes_write(ctx, ba, knh_cwb_tobytes(cwb));
-	knh_cwb_close(cwb);
+	c->dpi->enc(ctx, c->conv, S_totext(sfp[0].s), S_size(sfp[0].s), cwb->ba);
+	knh_Bytes_t *ba = new_Bytes(ctx, NULL, CWB_size(cwb));
+	knh_Bytes_write(ctx, ba, CWB_tobytes(cwb));
+	CWB_close(cwb);
 	RETURN_(ba);
 }
 
@@ -1223,10 +1224,10 @@ static KMETHOD String_encode(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD Bytes_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
-	c->dpi->dec(ctx, c->conv, BA_tobytes(sfp[0].ba), cwb->ba);
-	RETURN_(knh_cwb_newString(ctx, cwb, 0));
+	c->dpi->dec(ctx, c->conv, BA_totext(sfp[0].ba), BA_size(sfp[0].ba), cwb->ba);
+	RETURN_(CWB_newString(ctx, cwb, 0));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -1235,12 +1236,12 @@ static KMETHOD Bytes_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD String_convert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
 	if (!IS_NULL(c)) {
-		c->dpi->sconv(ctx, c->conv, S_tobytes(sfp[0].s), cwb->ba);
+		c->dpi->sconv(ctx, c->conv, S_totext(sfp[0].s), S_size(sfp[0].s), cwb->ba);
 	}
-	RETURN_(knh_cwb_newString(ctx, cwb, 0));
+	RETURN_(CWB_newString(ctx, cwb, 0));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -2045,7 +2046,7 @@ static KMETHOD Map_newMAP(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD Map_open(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	const knh_ClassTBL_t *ct = (sfp[4].c)->cTBL;
-	const knh_MapDSPI_t *spi = knh_NameSpace_getMapDSPI(ctx, sfp[3].ns, S_tobytes(sfp[1].s));
+	const knh_MapDPI_t *spi = knh_NameSpace_getMapDPINULL(ctx, sfp[3].ns, S_tobytes(sfp[1].s));
 	knh_Map_t *m = NULL;
 	DBG_P("reqt = %s", CLASS__(ct->cid));
 	if(ct->bcid != CLASS_Map) ct = ClassTBL(CLASS_Map);
@@ -2079,7 +2080,7 @@ static KMETHOD Map_open(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD Exception_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_write(ctx, cwb->w, S_tobytes(sfp[1].s));
 	if(IS_NULL(sfp[2].s)) {
 		knh_write_ascii(ctx, cwb->w, "!!");
@@ -2088,7 +2089,7 @@ static KMETHOD Exception_new(CTX ctx, knh_sfp_t *sfp _RIX)
 		knh_write_ascii(ctx, cwb->w, "!!: ");
 		knh_write(ctx, cwb->w, S_tobytes(sfp[2].s));
 	}
-	KNH_SETv(ctx, (sfp[0].e)->emsg, knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
+	KNH_SETv(ctx, (sfp[0].e)->emsg, CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
 	RETURN_(sfp[0].e);
 }
 
@@ -2575,7 +2576,7 @@ static KMETHOD String_opSUB(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_bytes_t base = S_tobytes(sfp[0].s);
 	knh_bytes_t t = S_tobytes(sfp[1].s);
 	knh_uchar_t c = t.utext[0];
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	size_t i;
 	for(i = 0; i < base.len; i++) {
 		if(base.utext[i] == c) {
@@ -2590,12 +2591,12 @@ static KMETHOD String_opSUB(CTX ctx, knh_sfp_t *sfp _RIX)
 		}
 		knh_Bytes_putc(ctx, cwb->ba, base.utext[i]);
 	}
-	if(base.len == knh_cwb_size(cwb)) {
-		knh_cwb_close(cwb);
+	if(base.len == CWB_size(cwb)) {
+		CWB_close(cwb);
 		RETURN_(sfp[0].o);
 	}
 	else {
-		RETURN_(knh_cwb_newString(ctx, cwb, 0));
+		RETURN_(CWB_newString(ctx, cwb, 0));
 	}
 }
 
@@ -3052,34 +3053,6 @@ static KMETHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(in);
 }
 
-/* ------------------------------------------------------------------------ */
-//## method Int InputStream.getChar();
-
-static KMETHOD InputStream_getChar(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	RETURNi_(knh_InputStream_getc(ctx, sfp[0].in));
-}
-
-/* ------------------------------------------------------------------------ */
-//## method Int InputStream.read(Bytes buf, Int offset, Int length);
-
-static KMETHOD InputStream_read(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Bytes_t *ba = sfp[1].ba;
-	knh_bytes_t buf = BA_tobytes(ba);
-	size_t offset = Int_to(size_t,sfp[2]);
-	size_t len    = Int_to(size_t,sfp[3]);
-	if(unlikely(offset > buf.len)) {
-		THROW_OutOfRange(ctx, sfp, offset, buf.len);
-	}
-	buf = knh_bytes_last(buf, offset);
-	if(len != 0) {
-		knh_Bytes_ensureSize(ctx, ba, offset + len);  // DONT USE ensureSize
-		buf.len = len;
-		buf.ubuf = ba->bu.ubuf;
-	}
-	RETURNi_(knh_InputStream_read(ctx, sfp[0].in, (char*)buf.ubuf, buf.len));
-}
 
 /* ------------------------------------------------------------------------ */
 
@@ -3111,28 +3084,11 @@ size_t knh_InputStream_read(CTX ctx, knh_InputStream_t *in, char *buf, size_t bu
 }
 
 /* ------------------------------------------------------------------------ */
-//## method Boolean InputStream.isClosed();
-
-static KMETHOD InputStream_isClosed_(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	RETURNb_(InputStream_isClosed(ctx, sfp[0].in));
-}
-
-/* ------------------------------------------------------------------------ */
 //## method void InputStream.close();
 
 static KMETHOD InputStream_close(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_InputStream_close(ctx, sfp[0].in);
-}
-
-/* ------------------------------------------------------------------------ */
-//## method StringDecoder InputStream.setCharset(StringDecoder c);
-
-static KMETHOD InputStream_setCharset_(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	InputStream_setCharset(ctx, sfp[0].in, (knh_StringDecoder_t*)sfp[1].o);
-	RETURN_(sfp[1].o);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -3143,15 +3099,6 @@ static KMETHOD InputStream_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(knh_InputStream_readLine(ctx, sfp[0].in));
 }
 
-///* ------------------------------------------------------------------------ */
-////## method dynamic InputStream.readData();
-//
-//static KMETHOD InputStream_readData(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	Object *v = knh_InputStream_readData(ctx, sfp[0].in);
-//	RETURN_(v);
-//}
-
 /* ------------------------------------------------------------------------ */
 /* [iterators] */
 
@@ -3160,18 +3107,18 @@ static KMETHOD InputStream_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 //	int ch;
 //	knh_Iterator_t *it = sfp[0].it;
 //	knh_InputStream_t *in = (knh_InputStream_t*)DP(it)->source;
-//	knh_cwb_t cwbbuf;
-//	knh_cwb_t *cwb = knh_cwb_open(ctx, &cwbbuf);
+//	CWB_t cwbbuf;
+//	CWB_t *cwb = CWB_open(ctx, &cwbbuf);
 //	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
 //		if(ch == 13) continue;
 //		if(ch == 10) {
 //			//ITRNEXT_(new_String2_cwbconv(ctx, cwb, DP(in)->bconv));
-//			ITRNEXT_(knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
+//			ITRNEXT_(CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
 //		}
 //		knh_Bytes_putc(ctx, cwb->ba, ch);
 //	}
-//	if(knh_cwb_size(cwb) != 0) {
-//		ITRNEXT_(knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
+//	if(CWB_size(cwb) != 0) {
+//		ITRNEXT_(CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
 //	}
 //	ITREND_();
 //}
@@ -3198,7 +3145,7 @@ static KMETHOD InputStream_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 ////		ITREND_();
 ////	}
 ////	int prev = 0, policy = K_SPOLICY_ASCII;
-////	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+////	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 ////	while(1) {
 ////		size_t i, pos = m->index, posend = m->max;
 ////		for(i = pos; i < posend; i++) {
@@ -3222,10 +3169,10 @@ static KMETHOD InputStream_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 ////		knh_Bytes_reduce(cwb->ba, 1);
 ////	}
 ////	if(in->decNULL == NULL || policy == K_SPOLICY_ASCII) {
-////		s = knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER|policy);
+////		s = CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER|policy);
 ////	}
 ////	else {
-////		s = knh_cwb_newStringDECODE(ctx, cwb, in->decNULL);
+////		s = CWB_newStringDECODE(ctx, cwb, in->decNULL);
 ////	}
 ////	ITRNEXT_(s);
 ////}
@@ -3240,7 +3187,6 @@ static KMETHOD InputStream_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 //	DP(itr)->nfree = free;
 //	RETURN_(itr);
 //}
-
 
 static ITRNEXT knh_InputStream_nextLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -3283,19 +3229,6 @@ static KMETHOD OutputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## method void OutputStream.writeASCII(Int ch);
-
-static KMETHOD OutputStream_writeASCII(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_OutputStream_t *w = sfp[0].w;
-	knh_putc(ctx, w, (int)(sfp[1].ivalue));
-	if(DP(w)->ba->bu.len > w->dpi->wbufsiz) {
-		knh_OutputStream_flush(ctx, w, 0);
-	}
-	RETURNvoid_();
-}
-
-/* ------------------------------------------------------------------------ */
 //## method void OutputStream.write(Bytes buf, Int offset, Int length);
 
 static KMETHOD OutputStream_write(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -3308,14 +3241,6 @@ static KMETHOD OutputStream_write(CTX ctx, knh_sfp_t *sfp _RIX)
 	t.len = len;
 	knh_OutputStream_write(ctx, sfp[0].w, t);
 	RETURNvoid_();
-}
-
-/* ------------------------------------------------------------------------ */
-//## method Boolean OutputStream.isClosed();
-
-static KMETHOD OutputStream_isClosed_(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	RETURNb_(OutputStream_isClosed(sfp[0].w));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -3348,7 +3273,7 @@ static KMETHOD OutputStream_println(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## method void OutputStream.send(String s, ...);
+//## @Hidden method void OutputStream.send(String s, ...);
 
 static KMETHOD OutputStream_send(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -3367,21 +3292,6 @@ static KMETHOD OutputStream_send(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-///* ------------------------------------------------------------------------ */
-////## method void OutputStream.writeData(Object data, ...);
-//
-//static KMETHOD OutputStream_writeData(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_OutputStream_t *w = sfp[0].w;
-//	knh_sfp_t *v = sfp + 1;
-//	int i, ac = knh_stack_argc(ctx, v);
-//	for(i = 0; i < ac; i++) {
-//		knh_write_Object(ctx, w, v[i].o, FMT_data);
-//		knh_write_EOL(ctx, w);
-//	}
-//	RETURNvoid_();
-//}
-
 /* ------------------------------------------------------------------------ */
 //## method void OutputStream.flush();
 
@@ -3392,30 +3302,12 @@ static KMETHOD OutputStream_flush(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## method void OutputStream.reset();
-
-static KMETHOD OutputStream_reset(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Bytes_clear(DP(sfp[0].w)->ba, 0);
-	RETURNvoid_();
-}
-
-/* ------------------------------------------------------------------------ */
 //## method void OutputStream.close();
 
 static KMETHOD OutputStream_close(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_close(ctx, sfp[0].w);
 	RETURNvoid_();
-}
-
-/* ------------------------------------------------------------------------ */
-//## method StringEncoder OutputStream.setCharset(StringEncoder c);
-
-static KMETHOD OutputStream_setCharaset(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	OutputStream_setCharset(ctx, sfp[0].w, (knh_StringEncoder_t*)sfp[1].s);
-	RETURN_(sfp[1].o);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -3524,7 +3416,7 @@ static KMETHOD Connection_query(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	else {
 		DP(rs)->qcur = NULL;
-		DP(rs)->qcurfree = knh_getQueryDSPI(ctx, NULL, K_DEFAULT_DSPI)->qcurfree;
+		DP(rs)->qcurfree = knh_NameSpace_getQueryDPINULL(ctx, NULL, K_DEFAULT_DSPI)->qcurfree;
 	}
 	KNH_SETv(ctx, DP(rs)->conn, c);
 	RETURN_(rs);
@@ -3924,7 +3816,7 @@ static KMETHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 #ifdef K_USING_POSIX_
 	FILE *fp = popen((const char*)cmd, "r+");
 	if(fp != NULL) {
-		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 		char buf[K_PAGESIZE];
 		while(1) {
 			size_t size = fread(buf, 1, sizeof(buf), fp);
@@ -3937,7 +3829,7 @@ static KMETHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 			}
 		};
 		pclose(fp);
-		RETURN_(knh_cwb_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
+		RETURN_(CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
 	}
 	else {
 		KNH_LOG("command failed: %s", cmd);

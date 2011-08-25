@@ -409,7 +409,7 @@ static KMETHOD Fmethod_wrapProcess(CTX ctx, knh_sfp_t *sfp _RIX)
 	int status;
 	close(pipe_p2c[0]);
 	close(pipe_c2p[1]);
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	char buf[K_PAGESIZE];
 	while(1) {
 	  size_t size = read(pipe_c2p[0], buf, K_PAGESIZE);
@@ -431,7 +431,7 @@ static KMETHOD Fmethod_wrapProcess(CTX ctx, knh_sfp_t *sfp _RIX)
 	  LOGSFPDATA = {sDATA("path", pglue->path), iDATA("pid", pid)};
 	  LIB_Failed("process", "Stopped!!");
 	}
-	RETURN_(knh_cwb_newString(ctx, cwb));
+	RETURN_(CWB_newString(ctx, cwb));
   }
 #endif
   if(rtype != TYPE_void) {
@@ -503,14 +503,14 @@ KMETHOD Process_genGlue(CTX ctx, knh_sfp_t *sfp _RIX)
 
 #ifdef _SETUP
 
-/*DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+/*DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
 	kapi->setPackageProperty(ctx, "name", "clib");
 	kapi->setPackageProperty(ctx, "version", "0.1");
 	RETURN_PKGINFO("konoha.clib");
 	}*/
 
-DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
 	kapi->setPackageProperty(ctx, "name", "dffi");
 	kapi->setPackageProperty(ctx, "version", "0.1");

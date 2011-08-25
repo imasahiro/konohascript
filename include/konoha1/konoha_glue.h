@@ -75,7 +75,7 @@ typedef struct knh_QueryDPI_t {
 	void   (*qclose)(CTX ctx, knh_qconn_t *);
 	int    (*qcurnext)(CTX, knh_qcur_t *, knh_ResultSet_t*);
 	void   (*qcurfree)(knh_qcur_t *);
-} knh_QueryDSPI_t;
+} knh_QueryDPI_t;
 
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_MAP */
@@ -122,7 +122,7 @@ typedef knh_intptr_t knh_data_t;
 
 /* ------------------------------------------------------------------------ */
 
-typedef struct knh_PackageLoaderAPI_t {
+typedef struct knh_LoaderAPI_t {
 	/* global */
 	void (*loadData)(CTX, const knh_data_t *, knh_ParamArray_t **);
 	void (*loadFuncData)(CTX, const knh_FuncData_t *);
@@ -138,11 +138,12 @@ typedef struct knh_PackageLoaderAPI_t {
 	void (*setPackageFloatProperty)(CTX, const char*, knh_float_t);
 	/* namespace */
 //	void (*setRegexSPI)(CTX, knh_NameSpace_t *ns, const knh_RegexSPI_t *);
-	void (*addLinkClass)(CTX, knh_NameSpace_t *ns, const char*, knh_class_t cid);
-	void (*addStreamDPI)(CTX, knh_NameSpace_t *ns, const char*, const knh_StreamDPI_t *);
-	void (*addQueryDSPI)(CTX, knh_NameSpace_t *ns, const char *, const knh_QueryDSPI_t *);
-	void (*addConvDSPI)(CTX, knh_NameSpace_t *ns, const char *, const knh_ConverterDPI_t*);
-} knh_PackageLoaderAPI_t;
+//	void (*addLinkClass)(CTX, knh_NameSpace_t *ns, const char*, knh_class_t cid);
+	void (*addStreamDPI)(CTX, const char*, const knh_StreamDPI_t *);
+	void (*addQueryDPI)(CTX, const char *, const knh_QueryDPI_t *);
+	void (*addMapDPI)(CTX,   const char *, const knh_MapDPI_t*);
+	void (*addConverterDPI)(CTX, const char *, const knh_ConverterDPI_t*, const knh_ConverterDPI_t*);
+} knh_LoaderAPI_t;
 
 #define RETURN_PKGINFO(NAME) {\
 		static const knh_PackageDef_t pkginfo_ = {K_BUILDID, K_API2_CRC32, NAME};\
@@ -155,10 +156,10 @@ typedef struct {
 	const char *name;     /* pacakge name */
 } knh_PackageDef_t;
 
-typedef const knh_PackageDef_t* (*knh_Fpkginit)(CTX, const knh_PackageLoaderAPI_t *);
-typedef void (*knh_Fpkgload)(CTX, const knh_PackageLoaderAPI_t *, knh_NameSpace_t *ns);
+typedef const knh_PackageDef_t* (*knh_Fpkginit)(CTX, const knh_LoaderAPI_t *);
+typedef void (*knh_Fpkgload)(CTX, const knh_LoaderAPI_t *, knh_NameSpace_t *ns);
 typedef void (*knh_Fclassdef)(CTX, knh_class_t, knh_ClassDef_t*);
-typedef void (*knh_Fconstdef)(CTX, knh_class_t, const knh_PackageLoaderAPI_t*);
+typedef void (*knh_Fconstdef)(CTX, knh_class_t, const knh_LoaderAPI_t*);
 
 /* ------------------------------------------------------------------------ */
 /* new version */

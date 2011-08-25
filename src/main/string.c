@@ -516,10 +516,10 @@ static knh_conv_t* strconv_open(CTX ctx, const char* to, const char *from)
 	return (knh_conv_t*)rc;
 }
 
-static knh_bool_t strconv(Ctx *ctx, knh_conv_t *iconvp, knh_bytes_t from, knh_Bytes_t *to)
+static knh_bool_t strconv(Ctx *ctx, knh_conv_t *iconvp, const char *text, size_t len, knh_Bytes_t *to)
 {
-	char buffer[4096], *ibuf = (char*)from.ubuf;
-	size_t ilen = from.len, rsize = 0;//, ilen_prev = ilen;
+	char buffer[4096], *ibuf = (char*)text;
+	size_t ilen = len, rsize = 0;//, ilen_prev = ilen;
 	knh_iconv_t cd = (knh_iconv_t)iconvp;
 	knh_bytes_t bbuf = {{(const char*)buffer}, 0};
 	while(ilen > 0) {
@@ -589,13 +589,14 @@ knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, knh_bytes_t t)
 
 /* ------------------------------------------------------------------------ */
 
-knh_String_t *knh_cwb_newStringDECODE(CTX ctx, knh_cwb_t *cwb, knh_StringDecoder_t *c)
+knh_String_t *CWB_newStringDECODE(CTX ctx, CWB_t *cwb, knh_StringDecoder_t *c)
 {
 	BEGIN_LOCAL(ctx, lsfp, 1);
-	LOCAL_NEW(ctx, lsfp, 0, knh_String_t*, s, knh_cwb_newString(ctx, cwb, 0));
+	LOCAL_NEW(ctx, lsfp, 0, knh_String_t*, s, CWB_newString(ctx, cwb, 0));
 	if(!String_isASCII(s)) {
-		c->dpi->dec(ctx, c->conv, S_tobytes(s), cwb->ba);
-		s = knh_cwb_newString(ctx, cwb, K_SPOLICY_UTF8);
+		knh_bytes_t t = S_tobytes(s);
+		c->dpi->dec(ctx, c->conv, t.text, t.len, cwb->ba);
+		s = CWB_newString(ctx, cwb, K_SPOLICY_UTF8);
 		KNH_SETv(ctx, lsfp[0].o, KNH_NULL); //
 	}
 	END_LOCAL(ctx, lsfp);

@@ -936,6 +936,16 @@ typedef struct knh_share_t {
 	struct knh_PtrMap_t      *xdataPtrMap;
 	struct knh_Array_t       *constPools;
 
+	/* symbol, names */
+	struct knh_DictMap_t       *packageDictMap;
+	struct knh_DictSet_t       *classNameDictSet;
+	struct knh_DictSet_t       *eventDictSet;
+	struct knh_DictSet_t       *streamDpiDictSet;
+	struct knh_DictSet_t       *queryDpiDictSet;
+	struct knh_DictSet_t       *convDpiDictSet;
+	struct knh_DictSet_t       *rconvDpiDictSet;
+	struct knh_DictSet_t       *mapDpiDictSet;
+
 	/* thread */
 	size_t              contextCounter;
 	size_t              threadCounter;
@@ -1231,9 +1241,9 @@ typedef struct {
 	struct knh_Bytes_t          *ba;
 	struct knh_OutputStream_t   *w;
 	size_t pos;
-} knh_cwb_t;
+} CWB_t;
 
-#define knh_cwb_clear(cwb, len)        knh_Bytes_clear(cwb->ba, (cwb->pos)+len)
+#define CWB_clear(cwb, len)        knh_Bytes_clear(cwb->ba, (cwb->pos)+len)
 
 /* ------------------------------------------------------------------------ */
 /* Functions */

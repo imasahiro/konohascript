@@ -85,7 +85,7 @@ extern "C" {
 ////		{NULL} // end of const
 ////};
 ////
-////DEFAPI(void) constXmlDoc(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+////DEFAPI(void) constXmlDoc(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 ////{
 ////	kapi->loadClassIntConst(ctx, cid, XmlDocConstint);
 ////}
@@ -338,7 +338,7 @@ static knh_IntData_t XmlReaderConstint[] = {
 		{NULL} // end of const
 };
 
-DEFAPI(void) constXmlReader(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constXmlReader(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, cid, XmlReaderConstint);
 }
@@ -592,7 +592,7 @@ KMETHOD XmlReader_normalization(CTX ctx, knh_sfp_t *sfp _RIX)
 
 #ifdef _SETUP
 
-DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
 	RETURN_PKGINFO("konoha.xml");
 }

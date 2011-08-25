@@ -138,11 +138,11 @@ static void knh_write_TObject(CTX ctx, knh_OutputStream_t *w, knh_type_t type, O
 
 static knh_String_t* DEFAULT_getkey(CTX ctx, knh_sfp_t *sfp)
 {
-	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_write_type(ctx, cwb->w, O_cid(sfp[0].o));
 	knh_putc(ctx, cwb->w, ':');
 	knh_write_ptr(ctx, cwb->w, sfp[0].o);
-	return knh_cwb_newString(ctx, cwb, 0);
+	return CWB_newString(ctx, cwb, 0);
 }
 
 static knh_hashcode_t DEFAULT_hashCode(CTX ctx, knh_RawPtr_t *o)
@@ -1375,7 +1375,7 @@ static const knh_ClassDef_t IteratorDef = {
 /* --------------- */
 /* Map */
 
-static const knh_MapDSPI_t* NULLMAP_config(CTX ctx, knh_class_t p1, knh_class_t p2);
+static const knh_MapDPI_t* NULLMAP_config(CTX ctx, knh_class_t p1, knh_class_t p2);
 static knh_mapptr_t *NULLMAP_init(CTX ctx, size_t init, const char *path, struct knh_DictMap_t *opt) { return NULL; }
 static void NULLMAP_reftrace(CTX ctx, knh_mapptr_t *m FTRARG){}
 static void NULLMAP_free(CTX ctx, knh_mapptr_t *m){}
@@ -1385,13 +1385,13 @@ static void NULLMAP_remove(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp) {}
 static size_t NULLMAP_size(CTX ctx, knh_mapptr_t* m) { return 0; }
 static knh_bool_t NULLMAP_next(CTX ctx, knh_mapptr_t* m, knh_nitr_t *mitr, knh_sfp_t *rsfp) { return 0; }
 
-static const knh_MapDSPI_t NULLMAP = {
+static const knh_MapDPI_t NULLMAP = {
 	K_DSPI_MAP, "NULL",
 	NULLMAP_config, NULLMAP_init, NULLMAP_reftrace, NULLMAP_free,
 	NULLMAP_get, NULLMAP_set, NULLMAP_remove, NULLMAP_size, NULLMAP_next,
 };
 
-static const knh_MapDSPI_t* NULLMAP_config(CTX ctx, knh_class_t p1, knh_class_t p2)
+static const knh_MapDPI_t* NULLMAP_config(CTX ctx, knh_class_t p1, knh_class_t p2)
 {
 	return &NULLMAP;
 }
@@ -1942,9 +1942,9 @@ static const knh_ClassDef_t RegexDef = {
 /* --------------- */
 /* StringEncoder */
 
-static knh_bool_t conv_NOCONV(CTX ctx, knh_conv_t *c, knh_bytes_t t, knh_Bytes_t *tobuf)
+static knh_bool_t conv_NOCONV(CTX ctx, knh_conv_t *c, const char *t, size_t s, knh_Bytes_t *tobuf)
 {
-	knh_Bytes_write(ctx, tobuf, t);  // this is necessary for default StringEncoder
+	knh_Bytes_write2(ctx, tobuf, t, s);  // this is necessary for default StringEncoder
 	return 1;
 }
 
@@ -2286,7 +2286,7 @@ static void Connection_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Connection_t *c = (knh_Connection_t*)o;
 	c->conn = NULL;
-	c->dpi = knh_getQueryDSPI(ctx, NULL, K_DEFAULT_DSPI);
+	c->dpi = knh_NameSpace_getQueryDPINULL(ctx, NULL, K_DEFAULT_DSPI);
 	KNH_INITv(c->urn, TS_EMPTY);
 }
 
@@ -2326,7 +2326,7 @@ static void ResultSet_init(CTX ctx, knh_RawPtr_t *o)
 	b->column = NULL;
 	KNH_INITv(b->databuf, new_Bytes(ctx, "resultset", 0));
 	KNH_INITv(b->conn, KNH_NULL);
-	b->qcurfree = knh_getQueryDSPI(ctx, NULL, K_DEFAULT_DSPI)->qcurfree;
+	b->qcurfree = knh_NameSpace_getQueryDPINULL(ctx, NULL, K_DEFAULT_DSPI)->qcurfree;
 	b->count = 0;
 	o->rawptr = b;
 }
@@ -2506,8 +2506,6 @@ static void System_init(CTX ctx, knh_RawPtr_t *o)
 	sys->sysid = knh_autoSystemId++;
 	sys->ctxcount = 0;
 
-	KNH_INITv(sys->ClassNameDictSet, new_DictSet0(ctx, 128, 1/*isCaseMap*/, "System.ClassNameDictSet"));
-	KNH_INITv(sys->EventDictCaseSet, new_DictSet0(ctx, 32, 1/*isCaseMap*/, "System.EventDictSet"));
 	KNH_INITv(sys->enc,   new_T(knh_getSystemEncoding()));
 	KNH_INITv(sys->in,    new_InputStreamSTDIO(ctx, stdin, sys->enc));
 	KNH_INITv(sys->out,   new_OutputStreamSTDIO(ctx, stdout, sys->enc));
@@ -2520,8 +2518,6 @@ static void System_init(CTX ctx, knh_RawPtr_t *o)
 	KNH_INITv(sys->urnDictSet, new_DictSet0(ctx, 0, 0/*isCaseMap*/, "System.urnDictSet"));
 	KNH_INITv(sys->urns, new_Array0(ctx, 1));
 	KNH_INITv(sys->tokenDictSet, new_DictSet0(ctx, (TT_MAX - STT_MAX), 0/*isCaseMap*/, "System.tokenDictSet"));
-	KNH_INITv(sys->dspiDictSet, new_DictSet0(ctx, 32, 0/*isCaseMap*/, "System.dspiDictSet"));
-	KNH_INITv(sys->PackageDictMap, new_DictMap0(ctx, 0, 0/*isCaseMap*/, "System.PackageDictMap"));
 	KNH_INITv(sys->URNAliasDictMap, new_DictMap0(ctx, 0, 0/*isCaseMap*/, "System.URNAliasDictMap"));
 	o->rawptr = sys;
 }
@@ -2535,15 +2531,11 @@ static void System_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 	KNH_ADDREF(ctx, (sys->out));
 	KNH_ADDREF(ctx, (sys->err));
 	KNH_ADDREF(ctx, (sys->props));
-	KNH_ADDREF(ctx, (sys->EventDictCaseSet));
-	KNH_ADDREF(ctx, (sys->ClassNameDictSet));
 	KNH_ADDREF(ctx, (sys->nameDictCaseSet));
 	KNH_ADDREF(ctx, (sys->urnDictSet));
 	KNH_ADDREF(ctx, (sys->urns));
 	KNH_ADDREF(ctx, (sys->tokenDictSet));
-	KNH_ADDREF(ctx, (sys->PackageDictMap));
 	KNH_ADDREF(ctx, (sys->URNAliasDictMap));
-	KNH_ADDREF(ctx, (sys->dspiDictSet));
 	KNH_ENSUREREF(ctx, size);
 	for(i = 0; i < size; i++) {
 		KNH_ADDREF(ctx, sys->nameinfo[i].name);
@@ -3196,7 +3188,7 @@ static const knh_data_t CParamData0[] = {
 	0,
 };
 
-void knh_loadScriptSystemStructData(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+void knh_loadScriptSystemStructData(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadData(ctx, StructData0, NULL);
 	{
@@ -3221,7 +3213,7 @@ void knh_loadScriptSystemString(CTX ctx)
 	}
 }
 
-void knh_loadScriptSystemData(CTX ctx, knh_NameSpace_t *ns, const knh_PackageLoaderAPI_t *kapi)
+void knh_loadScriptSystemData(CTX ctx, knh_NameSpace_t *ns, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadData(ctx, ClassData0, NULL);
 	kapi->loadData(ctx, CParamData0, NULL);
@@ -3233,7 +3225,7 @@ void knh_loadScriptSystemData(CTX ctx, knh_NameSpace_t *ns, const knh_PackageLoa
 	knh_loadScriptDefaultMapDSPI(ctx, ns);
 }
 
-void knh_loadScriptSystemMethod(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+void knh_loadScriptSystemMethod(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
 	knh_ParamArray_t *pools[K_PARAM0_SIZE];
 	knh_loadScriptFieldNameData0(ctx, FieldNameData0);

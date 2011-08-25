@@ -149,11 +149,11 @@ extern "C" {
 //
 //static knh_bool_t PACKAGE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 //{
-//	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 //	knh_bytes_t bpath = knh_bytes_next(path, ':');
-//	bpath = knh_cwb_ensure(ctx, cwb, bpath, K_PATHMAX);
+//	bpath = CWB_ensure(ctx, cwb, bpath, K_PATHMAX);
 //	knh_bool_t res = knh_buff_addPackagePath(ctx, cwb->ba, cwb->pos, bpath);
-//	knh_cwb_close(cwb);
+//	CWB_close(cwb);
 //	return res;
 //}
 //
@@ -168,11 +168,11 @@ extern "C" {
 //		return UPCAST(ba);
 //	}
 //	if(cid == CLASS_InputStream) {
-//		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 //		knh_bytes_t bpath = knh_bytes_next(S_tobytes(s), ':');
 //		knh_buff_addPackagePath(ctx, cwb->ba, cwb->pos, bpath);
 //		res = (knh_Object_t*)knh_Bytes_openInputStream(ctx, cwb->ba, cwb->pos, s);
-//		knh_cwb_close(cwb);
+//		CWB_close(cwb);
 //	}
 //	return res;
 //}
@@ -193,12 +193,12 @@ extern "C" {
 //
 //static knh_bool_t SCRIPT_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 //{
-//	knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 //	knh_bytes_t bpath = knh_bytes_next(path, ':');
-//	bpath = knh_cwb_ensure(ctx, cwb, bpath, K_PATHMAX);
+//	bpath = CWB_ensure(ctx, cwb, bpath, K_PATHMAX);
 //	knh_buff_addScriptPath(ctx, cwb->ba, cwb->pos, ns, bpath);
-//	knh_bool_t res = knh_exists(ctx, knh_cwb_tochar(ctx, cwb));
-//	knh_cwb_close(cwb);
+//	knh_bool_t res = knh_exists(ctx, CWB_totext(ctx, cwb));
+//	CWB_close(cwb);
 //	return res;
 //}
 //
@@ -211,7 +211,7 @@ extern "C" {
 //		return UPCAST(ba);
 //	}
 //	if(cid == CLASS_InputStream || cid == CLASS_OutputStream) {
-//		knh_cwb_t cwbbuf, *cwb = knh_cwb_open(ctx, &cwbbuf);
+//		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 //		knh_bytes_t bpath = knh_bytes_next(S_tobytes(s), ':');
 //		knh_buff_addScriptPath(ctx, cwb->ba, cwb->pos, ns, bpath);
 //		if(cid == CLASS_InputStream) {
@@ -220,7 +220,7 @@ extern "C" {
 //		else {
 //			res = (knh_Object_t*)knh_Bytes_openOutputStream(ctx, cwb->ba, cwb->pos, s);
 //		}
-//		knh_cwb_close(cwb);
+//		CWB_close(cwb);
 //	}
 //	return res;
 //}
@@ -530,7 +530,7 @@ static int NOP_qnext(CTX ctx, knh_qcur_t *qcur, struct knh_ResultSet_t *rs)
 	return 0;  /* NOMORE */
 }
 
-static const knh_QueryDSPI_t QUERY_NOP = {
+static const knh_QueryDPI_t QUERY_NOP = {
 	K_DSPI_QUERY, "NOP",
 	NOP_qopen, NOP_query, NOP_qclose, NOP_qnext, NOP_qfree
 };
@@ -639,7 +639,7 @@ static void SQLITE3_qfree(knh_qcur_t *qcur)
 	sqlite3_finalize(stmt);
 }
 
-static const knh_QueryDSPI_t QUERY_SQLITE3 = {
+static const knh_QueryDPI_t QUERY_SQLITE3 = {
 	K_DSPI_QUERY, "sqlite3",
 	SQLITE3_qopen, SQLITE3_query, SQLITE3_qclose, SQLITE3_qnext, SQLITE3_qfree
 };
@@ -648,32 +648,10 @@ static const knh_QueryDSPI_t QUERY_SQLITE3 = {
 
 /* ------------------------------------------------------------------------ */
 
-static void SYSLOG_UnknownPathType(CTX ctx, knh_bytes_t path)
-{
-	KNH_LOG("undefined path='%s'", path.text);
-}
-
-const knh_QueryDSPI_t *knh_getQueryDSPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	if(path.len == 0) {
-		return &QUERY_NOP;
-	}
-	else {
-		const knh_QueryDSPI_t *p = (const knh_QueryDSPI_t *)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_QUERY, path);
-		if(p == NULL) {
-			SYSLOG_UnknownPathType(ctx, path);
-			p = &QUERY_NOP;
-		}
-		return p;
-	}
-}
-
-/* ------------------------------------------------------------------------ */
-
-static knh_bool_t tolowercase(CTX ctx, knh_conv_t *cv, knh_bytes_t t, knh_Bytes_t *tobuf)
+static knh_bool_t tolowercase(CTX ctx, knh_conv_t *cv, const char *text, size_t len, knh_Bytes_t *tobuf)
 {
 	size_t i, s = BA_size(tobuf);
-	knh_Bytes_write(ctx, tobuf, t);
+	knh_Bytes_write2(ctx, tobuf, text, len);
 	knh_bytes_t tt = {{tobuf->bu.text + s}, BA_size(tobuf) - s};
 	for(i = 0; i < tt.len; i++) {
 		int ch = tt.utext[i];
@@ -684,10 +662,10 @@ static knh_bool_t tolowercase(CTX ctx, knh_conv_t *cv, knh_bytes_t t, knh_Bytes_
 	return 1;
 }
 
-static knh_bool_t touppercase(CTX ctx, knh_conv_t *cv, knh_bytes_t t, knh_Bytes_t *tobuf)
+static knh_bool_t touppercase(CTX ctx, knh_conv_t *cv, const char *text, size_t len, knh_Bytes_t *tobuf)
 {
 	size_t i, s = BA_size(tobuf);
-	knh_Bytes_write(ctx, tobuf, t);
+	knh_Bytes_write2(ctx, tobuf, text, len);
 	knh_bytes_t tt = {{tobuf->bu.text + s}, BA_size(tobuf) - s};
 	for(i = 0; i < tt.len; i++) {
 		int ch = tt.utext[i];
@@ -710,14 +688,13 @@ static const knh_ConverterDPI_t TO_upper = {
 
 void knh_loadSystemDriver(CTX ctx, knh_NameSpace_t *ns)
 {
-	const knh_PackageLoaderAPI_t *api = knh_getPackageLoaderAPI();
+	const knh_LoaderAPI_t *api = knh_getLoaderAPI();
 	knh_NameSpace_setLinkClass(ctx, ns, STEXT("link"), ClassTBL(CLASS_Tdynamic));
-
-	api->addConvDSPI(ctx, ns, "lower", &TO_lower);
-	api->addConvDSPI(ctx, ns, "upper", &TO_upper);
-	api->addQueryDSPI(ctx, ns, NULL, &QUERY_NOP);
+	api->addConverterDPI(ctx, "lower", &TO_lower, NULL);
+	api->addConverterDPI(ctx, "upper", &TO_upper, NULL);
+	api->addQueryDPI(ctx, "nop", &QUERY_NOP);
 #ifdef K_USING_SQLITE3
-	api->addQueryDSPI(ctx, ns, "sqlite3", &QUERY_SQLITE3);
+	api->addQueryDPI(ctx, "konoha.sqlite3", &QUERY_SQLITE3);
 #endif
 #ifdef K_USING_CURL
 	api->addLinkDPI(ctx, ns, "http", &LINK_CURL);

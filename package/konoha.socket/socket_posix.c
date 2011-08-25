@@ -267,7 +267,7 @@ KMETHOD ServerSocket_close(Ctx* ctx,knh_sfp_t* sfp _RIX)
 
 #ifdef _SETUP
 
-DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
 //	kapi->loadClassIntConst(ctx, CLASS_System, IntConstData);
 	RETURN_PKGINFO("konoha.socket");

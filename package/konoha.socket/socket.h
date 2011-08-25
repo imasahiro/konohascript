@@ -162,7 +162,7 @@ extern "C" {
 //		{NULL, -1} // end of const
 //};
 //
-//KNHAPI(void) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+//KNHAPI(void) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 //{
 //    kapi->loadIntData(ctx, IntConstData);
 //}

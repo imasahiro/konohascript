@@ -652,40 +652,40 @@ static knh_bool_t hmap_nextNN(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sf
 	return 0;
 }
 
-static const knh_MapDSPI_t* hmap_config(CTX ctx, knh_class_t p1, knh_class_t p2);
+static const knh_MapDPI_t* hmap_config(CTX ctx, knh_class_t p1, knh_class_t p2);
 
-static const knh_MapDSPI_t HMAP_OO = {
+static const knh_MapDPI_t HMAP_OO = {
 	K_DSPI_MAP, "hash",
 	hmap_config, hmap_init, hmap_reftraceOO, hmap_free,
 	hmap_getOO, hmap_setOO, hmap_removeOO, hmap_size, hmap_nextOO,
 };
-static const knh_MapDSPI_t HMAP_ON = {
+static const knh_MapDPI_t HMAP_ON = {
 	K_DSPI_MAP, "hash",
 	hmap_config, hmap_init, hmap_reftraceON, hmap_free,
 	hmap_getON, hmap_setON, hmap_removeON, hmap_size, hmap_nextON,
 };
-static const knh_MapDSPI_t HMAP_SO = {
+static const knh_MapDPI_t HMAP_SO = {
 	K_DSPI_MAP, "hash",
 	hmap_config, hmap_init, hmap_reftraceOO, hmap_free,
 	hmap_getSO, hmap_setSO, hmap_removeSO, hmap_size, hmap_nextOO,
 };
-static const knh_MapDSPI_t HMAP_SN = {
+static const knh_MapDPI_t HMAP_SN = {
 	K_DSPI_MAP, "hash",
 	hmap_config, hmap_init, hmap_reftraceON, hmap_free,
 	hmap_getSN, hmap_setSN, hmap_removeSN, hmap_size, hmap_nextON,
 };
-static const knh_MapDSPI_t HMAP_NO = {
+static const knh_MapDPI_t HMAP_NO = {
 	K_DSPI_MAP, "hash",
 	hmap_config, hmap_init, hmap_reftraceNO, hmap_free,
 	hmap_getNO, hmap_setNO, hmap_removeNO, hmap_size, hmap_nextNO,
 };
-static const knh_MapDSPI_t HMAP_NN = {
+static const knh_MapDPI_t HMAP_NN = {
 	K_DSPI_MAP, "hash",
 	hmap_config, hmap_init, hmap_reftraceNN, hmap_free,
 	hmap_getNN, hmap_setNN, hmap_removeNN, hmap_size, hmap_nextNN,
 };
 
-static const knh_MapDSPI_t* hmap_config(CTX ctx, knh_class_t p1, knh_class_t p2)
+static const knh_MapDPI_t* hmap_config(CTX ctx, knh_class_t p1, knh_class_t p2)
 {
 	if(IS_Tunbox(p2)) {
 		if(IS_Tstr(p1)) {
@@ -1137,9 +1137,9 @@ static void dmap_removeSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
 	dmap->size--;
 }
 
-static const knh_MapDSPI_t* dmap_config(CTX ctx, knh_class_t p1, knh_class_t p2);
+static const knh_MapDPI_t* dmap_config(CTX ctx, knh_class_t p1, knh_class_t p2);
 
-static const knh_MapDSPI_t DMAP_SO = {
+static const knh_MapDPI_t DMAP_SO = {
 	K_DSPI_MAP, "dictionary",
 	dmap_config, dmap_init, dmap_reftraceOO, dmap_free,
 	dmap_getSO, dmap_setSO, dmap_removeSO, dmap_size, dmap_nextOO,
@@ -1228,13 +1228,13 @@ static void dmap_removeSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
 	dmap->size--;
 }
 
-static const knh_MapDSPI_t DMAP_SN = {
+static const knh_MapDPI_t DMAP_SN = {
 	K_DSPI_MAP, "dictionary",
 	dmap_config, dmap_init, dmap_reftraceON, dmap_free,
 	dmap_getSN, dmap_setSN, dmap_removeSN, dmap_size, dmap_nextON,
 };
 
-static const knh_MapDSPI_t* dmap_config(CTX ctx, knh_class_t p1, knh_class_t p2)
+static const knh_MapDPI_t* dmap_config(CTX ctx, knh_class_t p1, knh_class_t p2)
 {
 	if(IS_Tstr(p1)) {
 		if(IS_Tunbox(p2)) {
@@ -1482,31 +1482,19 @@ KNHAPI2(void) knh_DataMap_setInt(CTX ctx, knh_Map_t *m, const char *key, knh_int
 
 void knh_loadScriptDefaultMapDSPI(CTX ctx, knh_NameSpace_t *ns)
 {
-	knh_NameSpace_addDSPI(ctx, ns, "hash", (knh_DSPI_t*)&HMAP_SO);
-	knh_hash(0, "", 0); // dummy
-	knh_NameSpace_addDSPI(ctx, ns, "dict", (knh_DSPI_t*)&DMAP_SO);
+	const knh_LoaderAPI_t* ploader = knh_getLoaderAPI();
+	ploader->addMapDPI(ctx, "hash", &HMAP_SO);
+	ploader->addMapDPI(ctx, "dict", &DMAP_SO);
 }
 
 /* ------------------------------------------------------------------------ */
 
-const knh_MapDSPI_t *knh_NameSpace_getMapDSPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+const knh_MapDPI_t *knh_getDefaultMapDSPI(CTX ctx, knh_class_t p1, knh_class_t p2)
 {
-	return (const knh_MapDSPI_t*)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_MAP, path);
-}
-
-const knh_MapDSPI_t *knh_getDefaultMapDSPI(CTX ctx, knh_class_t p1, knh_class_t p2)
-{
-//	if(IS_Tstr(p1)) {
-//		if(IS_Tunbox(p2)) {
-//			return &DMAP_StringNDATA;
-//		}
-//		return &DMAP_StringObject;
-//	}
-//	return NULL;
 	return hmap_config(ctx, p1, p2);
 }
 
-const knh_MapDSPI_t *knh_getDictMapDSPI(CTX ctx, knh_class_t p1, knh_class_t p2)
+const knh_MapDPI_t *knh_getDictMapDSPI(CTX ctx, knh_class_t p1, knh_class_t p2)
 {
 	if(IS_Tstr(p1)) {
 		if(IS_Tunbox(p2)) {
@@ -1516,7 +1504,6 @@ const knh_MapDSPI_t *knh_getDictMapDSPI(CTX ctx, knh_class_t p1, knh_class_t p2)
 	}
 	return NULL;
 }
-
 
 #ifdef __cplusplus
 }

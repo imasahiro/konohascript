@@ -309,7 +309,9 @@ static void knh_loadFuncData(CTX ctx, const knh_FuncData_t *d)
 {
 	knh_DictSet_t *ds = ctx->share->funcDictSet;
 	while(d->name != NULL) {
-		knh_DictSet_append(ctx, ds, new_String2(ctx, CLASS_String, d->name, knh_strlen(d->name), K_SPOLICY_TEXT|K_SPOLICY_POOLNEVER), (knh_uintptr_t)d->ptr);
+		const char *name = d->name;
+		if(name[0] == '_') name = name + 1;
+		knh_DictSet_append(ctx, ds, new_String2(ctx, CLASS_String, name, knh_strlen(name), K_SPOLICY_TEXT|K_SPOLICY_POOLNEVER), (knh_uintptr_t)d->ptr);
 		d++;
 	}
 	knh_DictSet_sort(ctx, ds);
@@ -317,41 +319,54 @@ static void knh_loadFuncData(CTX ctx, const knh_FuncData_t *d)
 
 /* ------------------------------------------------------------------------ */
 
-static void addLink(CTX ctx, knh_NameSpace_t *ns, const char *scheme, knh_class_t cid)
+//static void addLink(CTX ctx, knh_NameSpace_t *ns, const char *scheme, knh_class_t cid)
+//{
+//	knh_NameSpace_setLinkClass(ctx, ns, B(scheme), ClassTBL(cid));
+//}
+
+static void knh_addStreamDPI(CTX ctx, const char *scheme, const knh_StreamDPI_t *d)
 {
-	knh_NameSpace_setLinkClass(ctx, ns, B(scheme), ClassTBL(cid));
+	knh_DictSet_set(ctx, ctx->share->streamDpiDictSet, new_T(scheme), (knh_uintptr_t)d);
 }
 
-static void knh_addStreamDPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, const knh_StreamDPI_t *d)
+static void knh_addQueryDPI(CTX ctx, const char *scheme, const knh_QueryDPI_t *d)
 {
-	knh_NameSpace_addDSPI(ctx, ns, scheme, (knh_DSPI_t*)d);
+	knh_DictSet_set(ctx, ctx->share->queryDpiDictSet, new_T(scheme), (knh_uintptr_t)d);
 }
 
-static void knh_addQueryDSPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, const knh_QueryDSPI_t *d)
+static void knh_addMapDPI(CTX ctx, const char *scheme, const knh_MapDPI_t *d)
 {
-	knh_NameSpace_addDSPI(ctx, ns, scheme, (knh_DSPI_t*)d);
+	knh_DictSet_set(ctx, ctx->share->mapDpiDictSet, new_T(scheme), (knh_uintptr_t)d);
 }
 
-static void knh_addConvDSPI(CTX ctx, knh_NameSpace_t *ns, const char *scheme, const knh_ConverterDPI_t *d)
+static void knh_addConvDPI(CTX ctx, const char *scheme, const knh_ConverterDPI_t *conv, const knh_ConverterDPI_t *rconv)
 {
-	knh_NameSpace_addDSPI(ctx, ns, scheme, (knh_DSPI_t*)d);
+	knh_DictSet_set(ctx, ctx->share->convDpiDictSet, new_T(scheme), (knh_uintptr_t)conv);
+	if(rconv != NULL) {
+		knh_DictSet_set(ctx, ctx->share->convDpiDictSet, new_T(scheme), (knh_uintptr_t)rconv);
+	}
 }
 
-const knh_PackageLoaderAPI_t* knh_getPackageLoaderAPI(void)
+const knh_LoaderAPI_t* knh_getLoaderAPI(void)
 {
-	static knh_PackageLoaderAPI_t pkgapi = {
+	static knh_LoaderAPI_t pkgapi = {
 		knh_loadSystemData, knh_loadFuncData,
 		loadIntData, loadFloatData, loadStringData,
 		loadClassIntConst, loadClassFloatConst, loadStringClassConst,
 		setProperty, setIntProperty, setFloatProperty,
-		addLink, knh_addStreamDPI, knh_addQueryDSPI, knh_addConvDSPI,
+//		addLink,
+		knh_addStreamDPI,
+		knh_addQueryDPI,
+		knh_addMapDPI,
+		knh_addConvDPI,
 	};
 	return &pkgapi;
 }
 
-void knh_initBuiltInPackage(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+void knh_initBuiltInPackage(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
-	knh_initClass(ctx, kapi);
+	knh_initClassFuncData(ctx, kapi);
+	knh_initStreamFuncData(ctx, kapi);
 
 }
 

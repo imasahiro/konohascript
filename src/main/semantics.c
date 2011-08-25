@@ -568,7 +568,7 @@ knh_bytes_t knh_getURNAlias(CTX ctx, knh_bytes_t aurn)
 //	if(CTX_isVerbose(ctx)) {
 //		String *s =(String*)knh_DictMap_get__b(ctx,  DP(ctx->sys)->URNAliasDictMap, S_tobytes(urn));
 //		if(IS_NOTNULL(s)) {
-//			KNH_SYSLOG(ctx, LOG_WARNING, "Overriding %s %s", __tochar(alias), __tochar(s));
+//			KNH_SYSLOG(ctx, LOG_WARNING, "Overriding %s %s", __totext(alias), __totext(s));
 //		}
 //	}
 //	knh_DictMap_set(ctx, DP(ctx->sys)->URNAliasDictMap, alias, UPCAST(urn));

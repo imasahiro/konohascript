@@ -37,7 +37,7 @@ extern "C" {
 /* ************************************************************************ */
 
 /* ------------------------------------------------------------------------ */
-/* [memory] */
+/* [dim] */
 
 size_t k_goodsize(size_t ss)
 {
@@ -110,7 +110,6 @@ void knh_Bytes_expands(CTX ctx, knh_Bytes_t *ba, size_t newsize)
 		ba->bu.ubuf = (knh_uchar_t*)KNH_REALLOC(ctx, ba->DBG_name, ba->bu.ubuf, ba->dim->capacity, newsize, 1);
 		((knh_dim_t*)ba->dim)->capacity = newsize;
 		if(unlikely(ctx->bufa == ba)) {
-//			KNH_INFO(ctx, "newsize=%ld, pointer=(%p => %p)", newsize, ubuf, ba->bu.ubuf);
 			Bytes_checkstack(ctx, ubuf, ubuf + ba->bu.len, ba->bu.ubuf);
 		}
 	}
@@ -127,9 +126,6 @@ void knh_Bytes_dispose(CTX ctx, knh_Bytes_t *ba)
 	}
 }
 
-/* ------------------------------------------------------------------------ */
-/* [Bytes] */
-
 knh_Bytes_t* new_Bytes(CTX ctx, const char *name, size_t capacity)
 {
 	knh_Bytes_t *ba = new_(Bytes);
@@ -140,7 +136,7 @@ knh_Bytes_t* new_Bytes(CTX ctx, const char *name, size_t capacity)
 	return ba;
 }
 
-void knh_Bytes_clear(knh_Bytes_t *ba, size_t pos)
+KNHAPI2(void) knh_Bytes_clear(knh_Bytes_t *ba, size_t pos)
 {
 	if(pos < BA_size(ba)) {
 		knh_bzero(ba->bu.ubuf + pos, BA_size(ba) - pos);
@@ -213,10 +209,9 @@ KNHAPI2(void) knh_Bytes_write2(CTX ctx, knh_Bytes_t *ba, const char *text, size_
 	BA_size(ba) += len;
 }
 
-
 /* ------------------------------------------------------------------------ */
 
-knh_bytes_t knh_cwb_ensure(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t, size_t reqsize)
+knh_bytes_t CWB_ensure(CTX ctx, CWB_t *cwb, knh_bytes_t t, size_t reqsize)
 {
 	if(!(cwb->ba->bu.len + reqsize < cwb->ba->dim->capacity)) {
 		const char *p = cwb->ba->bu.text;
@@ -232,19 +227,19 @@ knh_bytes_t knh_cwb_ensure(CTX ctx, knh_cwb_t *cwb, knh_bytes_t t, size_t reqsiz
 	return t;
 }
 
-KNHAPI2(knh_text_t*) knh_cwb_tochar(CTX ctx, knh_cwb_t *cwb)
+KNHAPI2(knh_text_t*) CWB_totext(CTX ctx, CWB_t *cwb)
 {
 	return knh_Bytes_ensureZero(ctx, cwb->ba) + cwb->pos;
 }
 
-knh_String_t *knh_cwb_newString(CTX ctx, knh_cwb_t *cwb, int pol)
+KNHAPI2(knh_String_t*) CWB_newString(CTX ctx, CWB_t *cwb, int pol)
 {
 	knh_String_t *s = TS_EMPTY;
 	if(cwb->pos < (cwb->ba)->bu.len) {
-		knh_bytes_t t = knh_cwb_tobytes(cwb);
+		knh_bytes_t t = CWB_tobytes(cwb);
 		s = new_String2(ctx, CLASS_String, t.text, t.len, pol);
 	}
-	knh_cwb_close(cwb);
+	CWB_close(cwb);
 	return s;
 }
 

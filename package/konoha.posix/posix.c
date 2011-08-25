@@ -49,30 +49,6 @@ extern "C" {
 /* ======================================================================== */
 /* ConstData */
 
-static knh_IntData_t IntConstData[] = {
-	{"System.SIGHUP", SIGHUP},   // hang up (1)
-	{"System.SIGINT", SIGINT},   // interrupt (2)
-	{"System.SIGQUIT", SIGQUIT}, // quit (3)
-	{"System.SIGABRT", SIGABRT}, // abort (9)
-	{"System.SIGKILL", SIGKILL}, // kill 9
-	{"System.SIGALRM", SIGALRM}, // alarm clock (14)
-	{"System.SIGTERM", SIGTERM}, // software termination signal 15
-	{"System.SIGBUS",  SIGBUS},
-	{"System.SIGSEGV", SIGSEGV},
-	{"System.SIGPIPE", SIGPIPE},
-//	{"System.WNOHANG", WNOHANG},  // What is THIS?
-//	{"System.WUNTRACED", WUNTRACED},
-//	{"System.WCONTINUED", WCONTINUED},
-	{NULL}  // end of const data
-};
-
-//static knh_FloatData_t FloatConstData[] = {
-//	{NULL}  // end of const data
-//};
-//
-//static knh_StringData_t StringConstData[] = {
-//	{NULL}  // end of const data
-//};
 
 /* ------------------------------------------------------------------------ */
 /* [API] */
@@ -317,7 +293,7 @@ static knh_IntData_t DirConstInt[] = {
 	{NULL}
 };
 
-DEFAPI(void) constDir(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constDir(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, cid, DirConstInt);
 }
@@ -502,13 +478,39 @@ KMETHOD File_close(CTX ctx, knh_sfp_t *sfp _RIX)
 
 #ifdef _SETUP
 
-DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_PackageLoaderAPI_t *kapi)
+static knh_IntData_t IntConstData[] = {
+	{"SIGHUP", SIGHUP},   // hang up (1)
+	{"SIGINT", SIGINT},   // interrupt (2)
+	{"SIGQUIT", SIGQUIT}, // quit (3)
+	{"SIGABRT", SIGABRT}, // abort (9)
+	{"SIGKILL", SIGKILL}, // kill 9
+	{"SIGALRM", SIGALRM}, // alarm clock (14)
+	{"SIGTERM", SIGTERM}, // software termination signal 15
+	{"SIGBUS",  SIGBUS},
+	{"SIGSEGV", SIGSEGV},
+	{"SIGPIPE", SIGPIPE},
+//	{"System.WNOHANG", WNOHANG},  // What is THIS?
+//	{"System.WUNTRACED", WUNTRACED},
+//	{"System.WCONTINUED", WCONTINUED},
+	{NULL}  // end of const data
+};
+
+//static knh_FloatData_t FloatConstData[] = {
+//	{NULL}  // end of const data
+//};
+//
+//static knh_StringData_t StringConstData[] = {
+//	{NULL}  // end of const data
+//};
+
+
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, CLASS_System, IntConstData);
 	RETURN_PKGINFO("konoha.posix");
 }
 
-//DEFAPI(void) SystemCONST(CTX ctx, const knh_PackageLoaderAPI_t *kapi, knh_NameSpace_t *ns)
+//DEFAPI(void) SystemCONST(CTX ctx, const knh_LoaderAPI_t *kapi, knh_NameSpace_t *ns)
 //{
 //	kapi->loadIntData(ctx, ns, IntConstData);
 //}
