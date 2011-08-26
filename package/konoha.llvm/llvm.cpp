@@ -1074,12 +1074,12 @@ KMETHOD IRBuilder_createStructGEP(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-//## Value IRBuilder.CreateGlobalStringPtr(StringRef Str);
-KMETHOD IRBuilder_createGlobalStringPtr(CTX ctx, knh_sfp_t *sfp _RIX)
+//## Value IRBuilder.CreateGlobalString(StringRef Str);
+KMETHOD IRBuilder_createGlobalString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
 	knh_String_t *Str = sfp[1].s;
-	Value *ptr = self->CreateGlobalStringPtr(S_totext(Str));
+	Value *ptr = self->CreateGlobalString(S_totext(Str));
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
 }
@@ -1962,7 +1962,17 @@ KMETHOD ExecutionEngine_getPointerToFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 	pm.add(createLICMPass());
 	pm.add(createIndVarSimplifyPass());
 	pm.add(createLoopDeletionPass());
-
+	for(int repeat=0; repeat < 3; repeat++) {
+		pm.add(createGVNPass());
+		pm.add(createSCCPPass());
+		pm.add(createCFGSimplificationPass());
+		pm.add(createInstructionCombiningPass());
+		pm.add(createConstantPropagationPass());
+		pm.add(createAggressiveDCEPass());
+		pm.add(createCFGSimplificationPass());
+		pm.add(createDeadStoreEliminationPass());
+		pm.add(createDemoteRegisterToMemoryPass());
+	}
 	pm.doInitialization();
 	pm.run(*func);
 

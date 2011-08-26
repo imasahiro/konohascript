@@ -451,7 +451,7 @@ void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline
 				knh_printf(ctx, w, "%p", c->p[i]); break;
 			}
 			else {
-				knh_printf(ctx, w, "L%d", (knh_opline_t*)c->p[i] - pc_start, c->p[i]); break;
+				knh_printf(ctx, w, "L%d", (knh_opline_t*)c->p[i] - pc_start); break;
 			}
 		case VMT_SFPIDX2:
 			knh_printf(ctx, w, "sfp[%d]", c->data[i]); 
