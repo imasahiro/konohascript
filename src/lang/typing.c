@@ -2097,7 +2097,10 @@ static knh_Token_t* CALL_toCONST(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *mtd)
 		size_t i = STT_(stmt) == TT_NEW ? 2: 1;
 		for(; i < size; i++) {
 			knh_Token_t *tk = tkNN(stmt, i);
-			if(TT_(tk) != TT_CONST && TT_(tk) != TT_NULL && TT_(tk) != TT_CID) goto L_NEXT;
+			if(TT_(tk) == TT_CID) {
+				Token_setCONST(ctx, tk, new_Type(ctx, tk->cid));
+			}
+			if(TT_(tk) != TT_CONST && TT_(tk) != TT_NULL) goto L_NEXT;
 		}
 		isCONST = 1;
 	}
