@@ -988,6 +988,7 @@ typedef struct knh_NameSpaceEX_t {
 	struct knh_Array_t *    ffilinksNULL;
 
 	struct knh_DictSet_t*   name2ctDictSetNULL;
+	struct knh_DictMap_t*   name2dpiNameDictMapNULL;
 	struct knh_Array_t*     methodsNULL;
 	struct knh_Array_t*     formattersNULL;
 } knh_NameSpaceEX_t;

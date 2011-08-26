@@ -385,35 +385,53 @@ static void NameSpace_setcid(CTX ctx, knh_NameSpace_t *ns, knh_String_t *name, k
 	if(DP(ns)->name2ctDictSetNULL == NULL) {
 		KNH_INITv(DP(ns)->name2ctDictSetNULL, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "NameSpace.name2cid"));
 	}
-//	else {
-//		const knh_ClassTBL_t *ct = (const knh_ClassTBL_t*)knh_DictSet_get(ctx, DP(ns)->name2ctDictSetNULL, S_tobytes(name));
-//		if(oldcid != 0 && cid != oldcid - 1) {
-//			WARN_AlreadyDefinedClass(ctx, cid, (knh_class_t)(oldcid - 1));
-//			return;
-//		}
-//	}
 	knh_DictSet_set(ctx, DP(ns)->name2ctDictSetNULL, name, (knh_uintptr_t)ClassTBL(cid));
+}
+
+static void NameSpace_setdpi(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t pkgname, knh_DictSet_t *ds)
+{
+	size_t i, size = knh_Map_size(ds);
+	for(i = 0; i < size; i++) {
+		knh_String_t *name = knh_DictSet_keyAt(ds, i);
+		knh_bytes_t key = S_tobytes(name);
+		if(key.text[pkgname.len] == '.' && knh_bytes_startsWith(key, pkgname)) {
+			knh_bytes_t t = knh_bytes_last(key, pkgname.len+1);
+			if(knh_bytes_index(t, '.') == -1) {
+				knh_DictMap_set(ctx, DP(ns)->name2dpiNameDictMapNULL, new_String2(ctx, CLASS_String, t.text, t.len, K_SPOLICY_POOLALWAYS), name);
+			}
+		}
+	}
+}
+
+static void NameSpace_addDpi(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t pkgname)
+{
+	if(DP(ns)->name2dpiNameDictMapNULL == NULL) {
+		KNH_INITv(DP(ns)->name2dpiNameDictMapNULL, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "NameSpace.name2dpiName"));
+	}
+	NameSpace_setdpi(ctx, ns, pkgname, ctx->share->streamDpiDictSet);
+	NameSpace_setdpi(ctx, ns, pkgname, ctx->share->queryDpiDictSet);
+	NameSpace_setdpi(ctx, ns, pkgname, ctx->share->mapDpiDictSet);
+	NameSpace_setdpi(ctx, ns, pkgname, ctx->share->convDpiDictSet);
+	//NameSpace_setdpi(ctx, ns, pkgname, ctx->share->rconvDpiDictSet);
 }
 
 static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 {
 	knh_Token_t *tkPKG = tkNN(stmt, n), *tkN;
-	{
-		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-		knh_Bytes_write(ctx, cwb->ba, S_tobytes((tkPKG)->text));
-		while(1) {
-			tkN = tkNN(stmt, ++n);
-			if(TT_(tkN) == TT_ASIS) break;
-			if(TT_(tkN) == TT_DOT) continue;
-			if(TT_(tkN) == TT_NAME) {
-				knh_Bytes_putc(ctx, cwb->ba, '.');
-				knh_Bytes_write(ctx, cwb->ba, S_tobytes((tkN)->text));
-				continue;
-			}
-			break;
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+	knh_Bytes_write(ctx, cwb->ba, S_tobytes((tkPKG)->text));
+	while(1) {
+		tkN = tkNN(stmt, ++n);
+		if(TT_(tkN) == TT_ASIS) break;
+		if(TT_(tkN) == TT_DOT) continue;
+		if(TT_(tkN) == TT_NAME) {
+			knh_Bytes_putc(ctx, cwb->ba, '.');
+			knh_Bytes_write(ctx, cwb->ba, S_tobytes((tkN)->text));
+			continue;
 		}
-		KNH_SETv(ctx, (tkPKG)->data, CWB_newString(ctx, cwb, K_SPOLICY_ASCII));
+		break;
 	}
+	KNH_SETv(ctx, (tkPKG)->data, CWB_newString(ctx, cwb, K_SPOLICY_ASCII));
 	if(knh_loadPackage(ctx, S_tobytes((tkPKG)->text)) == K_CONTINUE) {
 		knh_NameSpace_t *ns = K_GMANS;
 		if(TT_(tkN) == TT_MUL) {
@@ -423,11 +441,11 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 				if(ClassTBL(cid)->lname == NULL) continue;
 				if(class_isPrivate(cid) && C_isGenerics(cid)) continue;
 				knh_bytes_t cname = S_tobytes(ClassTBL(cid)->lname);
-				if(knh_bytes_startsWith(cname, pkgname)
-						&& cname.utext[pkgname.len] == '.' && isupper(cname.utext[pkgname.len+1])) {
+				if(cname.utext[pkgname.len] == '.' && isupper(cname.utext[pkgname.len+1]) && knh_bytes_startsWith(cname, pkgname)) {
 					NameSpace_setcid(ctx, ns, ClassTBL(cid)->sname, (knh_class_t)cid);
 				}
 			}
+			NameSpace_addDpi(ctx, ns, pkgname);
 		}
 		else if(TT_(tkN) == TT_UNAME) {
 			knh_class_t newcid;

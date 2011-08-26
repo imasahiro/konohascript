@@ -2459,9 +2459,8 @@ static void NameSpace_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 	KNH_ADDREF(ctx, ns->path);
 	KNH_ADDNNREF(ctx, ns->parentNULL);
 	KNH_ADDNNREF(ctx, b->ffilinksNULL);
-//	KNH_ADDNNREF(ctx, b->linkDictMapNULL);
 	KNH_ADDNNREF(ctx, b->name2ctDictSetNULL);
-//	KNH_ADDNNREF(ctx, b->func2cidDictSetNULL);
+	KNH_ADDNNREF(ctx, b->name2dpiNameDictMapNULL);
 	KNH_ADDNNREF(ctx, b->constDictCaseMapNULL);
 	KNH_ADDNNREF(ctx, b->formattersNULL);
 	KNH_ADDNNREF(ctx, b->methodsNULL);

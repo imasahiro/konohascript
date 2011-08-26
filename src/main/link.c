@@ -39,21 +39,6 @@
 extern "C" {
 #endif
 
-
-//const knh_StreamDPI_t *knh_getStreamDPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-//{
-//	const knh_StreamDPI_t *p = (const knh_StreamDPI_t*)knh_NameSpace_getDSPINULL(ctx, ns, K_DSPI_STREAM, path);
-//	if(p == NULL) {
-//		p = &STREAM_FILE;
-//	}
-//	return p;
-//}
-//
-//knh_bool_t knh_isFILEStreamDPI(const knh_StreamDPI_t *dpi)
-//{
-//	return (dpi == &STREAM_FILE);
-//}
-
 /* ------------------------------------------------------------------------ */
 /* [LINK] */
 

@@ -2105,7 +2105,7 @@ static knh_Token_t* CALL_toCONST(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *mtd)
 		isCONST = 1;
 	}
 	L_NEXT: ;
-	DBG_P("isCONST=%d, %d", isCONST,  Gamma_isEnforceConst(ctx->gma));
+	//DBG_P("isCONST=%d, %d", isCONST,  Gamma_isEnforceConst(ctx->gma));
 	if(isCONST) {
 		BEGIN_LOCAL(ctx, lsfp, DP(stmt)->size + K_CALLDELTA);
 		long rtnidx = 0, thisidx = rtnidx + K_CALLDELTA;
@@ -2113,7 +2113,7 @@ static knh_Token_t* CALL_toCONST(CTX ctx, knh_Stmt_t *stmt, knh_Method_t *mtd)
 		size_t i = 1;
 		if(MN_isNEW((mtd)->mn)) {
 			knh_class_t cid = CLASS_t(stmt->type);
-			DBG_P("CONST NEW", CLASS__(cid));
+			//DBG_P("CONST NEW", CLASS__(cid));
 			KNH_SETv(ctx, lsfp[thisidx].o, new_Object_init2(ctx, ClassTBL(cid)));
 			i = 2;
 		}

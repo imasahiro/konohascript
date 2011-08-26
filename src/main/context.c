@@ -268,6 +268,7 @@ static knh_context_t* new_RootContext(void)
 	KNH_INITv(share->queryDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "queryDpiDictSet"));
 	KNH_INITv(share->mapDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "mapDpiDictSet"));
 	KNH_INITv(share->convDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "convDpiDictSet"));
+	KNH_INITv(share->rconvDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "convDpiDictSet"));
 
 	KNH_INITv(ctx->sys, new_(System));
 	KNH_INITv(share->rootns, new_(NameSpace));
@@ -388,6 +389,7 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	KNH_ADDREF(ctx,   share->queryDpiDictSet);
 	KNH_ADDREF(ctx,   share->mapDpiDictSet);
 	KNH_ADDREF(ctx,   share->convDpiDictSet);
+	KNH_ADDREF(ctx,   share->rconvDpiDictSet);
 
 	KNH_ENSUREREF(ctx, K_TSTRING_SIZE);
 	for(i = 0; i < K_TSTRING_SIZE; i++) {

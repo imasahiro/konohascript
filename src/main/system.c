@@ -317,6 +317,12 @@ knh_String_t *knh_getURN(CTX ctx, knh_uri_t uri)
 
 static knh_bytes_t knh_NameSpace_getDpiPath(CTX ctx , knh_NameSpace_t *ns, knh_bytes_t path)
 {
+	while(DP(ns)->name2dpiNameDictMapNULL != NULL) {
+		knh_String_t *s = (knh_String_t*)knh_DictMap_getNULL(ctx, DP(ns)->name2dpiNameDictMapNULL, path);
+		if(s != NULL) return S_tobytes(s);
+		if(ns->parentNULL == NULL) break;
+		ns = ns->parentNULL;
+	}
 	return path;
 }
 
