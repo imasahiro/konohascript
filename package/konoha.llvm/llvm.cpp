@@ -1630,7 +1630,6 @@ KMETHOD IRBuilder_createCall(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *Args = sfp[2].a;
 	std::vector<Value*> List;
 	konoha::convert_array(List, Args);
-
 	CallInst *ptr = self->CreateCall(Callee, List.begin(), List.end());
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
@@ -1769,6 +1768,20 @@ KMETHOD BasicBlock_getParent(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
 }
+
+//## Instruction BasicBlock.getTerminator();
+KMETHOD BasicBlock_getTerminator(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	BasicBlock *self = konoha::object_cast<BasicBlock *>(sfp[0].p);
+	TerminatorInst *ptr = self->getTerminator();
+	if (ptr) {
+		knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+		RETURN_(p);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
 
 ////## iterator BasicBlock.begin();
 //KMETHOD BasicBlock_begin(CTX ctx, knh_sfp_t *sfp _RIX)
