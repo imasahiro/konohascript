@@ -608,7 +608,11 @@ assure "stringto:lowerconverter"
 // escape 
 assure "stringbackslashbug(appearsonly'\'isatthebeginningofthestring)"
 {
-	assert s0 = "ab\n" == "ab\n";
-	assert s1 = "a\nb" == "a\nb";
-	assert s2 = "\nab" == "\nab";
+	String s0, s1, s2;
+	s0 = "ab\n";
+	s1 = "a\nb";
+	s2 = "\nab";
+	assert s0 == "ab\n";
+	assert s1 == "a\nb";
+	assert s2 == "\nab";
 }

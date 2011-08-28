@@ -200,6 +200,7 @@ include "lib:gluelink";
 @Native Instruction BasicBlock.getTerminator();
 @Native void Function.dump();
 @Native void Value.dump();
+@Native void Type.dump();
 @Native @Static Function Function.create(String name, FunctionType fnTy, Module m);
 //@Native iterator BasicBlock.begin();
 //@Native iterator BasicBlock.end();

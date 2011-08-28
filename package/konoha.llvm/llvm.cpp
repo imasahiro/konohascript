@@ -2042,6 +2042,15 @@ KMETHOD Value_dump(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+//## @Native void Type.dump();
+KMETHOD Type_dump(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	Type *type = konoha::object_cast<Type *>(sfp[0].p);
+	type->dump();
+	RETURNvoid_();
+}
+
+
 //## @Static boolean DynamicLibrary.loadLibraryPermanently(String libname);
 KMETHOD DynamicLibrary_loadLibraryPermanently(CTX ctx, knh_sfp_t *sfp _RIX)
 {
