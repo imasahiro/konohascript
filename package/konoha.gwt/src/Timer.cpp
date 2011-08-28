@@ -50,7 +50,6 @@ static void Timer_free(CTX ctx, knh_RawPtr_t *p)
 		fprintf(stderr, "Timer:free\n");
 #endif
 		KTimer *t = (KTimer *)p->rawptr;
-		fprintf(stderr, "fo->mtd->fcall_1 = [%p]\n", t->fo->mtd->fcall_1);
 		//delete t;
 	}
 }
@@ -77,7 +76,7 @@ DEFAPI(void) defTimer(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->reftrace = Timer_reftrace;
 }
 
-DEFAPI(void) constTimer(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constTimer(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	(void)ctx;
 	(void)cid;
@@ -88,8 +87,10 @@ DEFAPI(void) constTimer(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *
 static void TimerEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
-	if (p->rawptr != NULL && O_cTBL(p)->total < 4) {
+	if (p->rawptr != NULL) {
+#ifdef DEBUG_MODE
 		fprintf(stderr, "TimerEvent:free\n");
+#endif
 		QTimerEvent *t = (QTimerEvent *)p->rawptr;
 		(void)t;
 		//delete t;
@@ -102,7 +103,9 @@ static void TimerEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 	(void)p;
 	(void)tail_;
 	if (p->rawptr != NULL) {
+#ifdef DEBUG_MODE
 		fprintf(stderr, "TimerEvent:reftrace\n");
+#endif
 	}
 }
 
@@ -114,7 +117,7 @@ DEFAPI(void) defTimerEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->reftrace = TimerEvent_reftrace;
 }
 
-DEFAPI(void) constTimerEvent(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constTimerEvent(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	(void)ctx;
 	(void)cid;

@@ -90,7 +90,7 @@ DEFAPI(void) defContact(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->reftrace = Contact_reftrace;
 }
 
-DEFAPI(void) constContact(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constContact(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	(void)ctx;
 	(void)cid;

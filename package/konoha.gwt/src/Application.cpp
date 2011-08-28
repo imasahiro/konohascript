@@ -52,7 +52,7 @@ DEFAPI(void) defApplication(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->reftrace = Application_reftrace;
 }
 
-DEFAPI(void) constApplication(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constApplication(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	//kapi->loadIntClassConst(ctx, cid, TimeLineConstInt);
 }

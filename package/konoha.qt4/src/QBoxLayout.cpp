@@ -70,7 +70,7 @@ static knh_IntData_t QBoxLayoutConstInt[] = {
 	{NULL, 0}
 };
 
-DEFAPI(void) constQBoxLayout(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constQBoxLayout(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, cid, QBoxLayoutConstInt);
 }
@@ -86,7 +86,7 @@ static knh_IntData_t QSizePolicyConstInt[] = {
 	{NULL, 0},
 };
 
-DEFAPI(void) constQSizePolicy(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constQSizePolicy(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, cid, QSizePolicyConstInt);
 }
@@ -96,7 +96,7 @@ static knh_IntData_t QtConstInt[] = {
 	{NULL, 0},
 };
 
-DEFAPI(void) constQt(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constQt(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, cid, QtConstInt);
 }

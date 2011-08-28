@@ -1,4 +1,4 @@
-using konoha.visual.*;
+using konoha.gwt.*;
 
 class Puzzle {
 	Scene window;
@@ -18,8 +18,8 @@ class Puzzle {
 		window.setSceneRect(0, 0, 1200, 700);
 		//window.setBackgroundColor(new Color("black"));
 		Timer t = new Timer(100, delegate(this, capture));
-		//c = new Camera(0);
-		v = new Video("sample/sample.avi");
+		c = new Camera(0);
+		//v = new Video("sample/sample.avi");
 		for (int i = 0; i < 9; i++) {
 			Rect panel = new Rect(0, 0, 150, 150);
 			panel.setMousePressEvent(delegate(this, mousePressEvent));
@@ -54,8 +54,8 @@ class Puzzle {
 	}
 
 	void capture(TimerEvent event) {
-		Texture t = v.queryFrame();
-		//Texture t = c.queryFrame();
+		//Texture t = v.queryFrame();
+		Texture t = c.queryFrame();
 		Texture[] textures = t.split(3, 3);
 		for (int i = 0; i < |textures|; i++) {
 			textures[i].setRect(new Rect(0, 0, 150, 150));

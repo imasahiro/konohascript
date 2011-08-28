@@ -42,7 +42,7 @@ static knh_IntData_t PainterConstInt[] = {
 	{NULL, 0}
 };
 
-DEFAPI(void) constPainter(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constPainter(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, cid, PainterConstInt);
 }

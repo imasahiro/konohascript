@@ -57,7 +57,7 @@ DEFAPI(void) defTransform(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->reftrace = Transform_reftrace;
 }
 
-DEFAPI(void) constTransform(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constTransform(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	(void)ctx;
 	(void)cid;

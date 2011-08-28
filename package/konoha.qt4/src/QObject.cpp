@@ -206,7 +206,8 @@ void Connector::keyPressEventSlot(QKeyEvent *event)
 	knh_sfp_t *lsfp = lctx->esp;
 	knh_class_t cid = knh_getcid(lctx, STEXT("QKeyEvent"));
 	const knh_ClassTBL_t *ct = lctx->share->ClassTBL[cid];
-	knh_RawPtr_t *p = (knh_RawPtr_t*)new_Object_init2(lctx, ct);
+	knh_RawPtr_t *p = (knh_RawPtr_t*)new_hObject_(lctx, ct);
+	//knh_RawPtr_t *p = (knh_RawPtr_t*)new_Object_init2(lctx, ct);
     p->rawptr = event;
     KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p));
 	knh_Func_invoke(lctx, this->key_press_event_func, lsfp, 1/*argc*/);

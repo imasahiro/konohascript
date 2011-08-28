@@ -138,7 +138,7 @@ KMETHOD QApplication_quit(CTX, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-DEFAPI(const knh_PackageDef_t*) init(CTX, const knh_PackageLoaderAPI_t *)
+DEFAPI(const knh_PackageDef_t*) init(CTX, const knh_LoaderAPI_t *)
 {
 	RETURN_PKGINFO("Qt-4.7");
 }

@@ -328,7 +328,7 @@ DEFAPI(void) defRect(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->reftrace = Rect_reftrace;
 }
 
-DEFAPI(void) constRect(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constRect(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	(void)ctx;
 	(void)cid;

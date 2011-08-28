@@ -192,7 +192,7 @@ static knh_IntData_t QTextEditConstInt[] = {
 	{NULL, 0}
 };
 
-DEFAPI(void) constQTextEdit(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constQTextEdit(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, cid, QTextEditConstInt);
 }

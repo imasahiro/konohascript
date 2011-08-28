@@ -54,7 +54,7 @@ DEFAPI(void) defMouseEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->reftrace = MouseEvent_reftrace;
 }
 
-DEFAPI(void) constMouseEvent(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constMouseEvent(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	(void)ctx;
 	(void)cid;

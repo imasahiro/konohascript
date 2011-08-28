@@ -14,7 +14,7 @@ KComplexItem::KComplexItem(knh_Array_t *a)
 		knh_RawPtr_t *o = (knh_RawPtr_t *)a->list[i];
 		KPoint *p = (KPoint *)o->rawptr;
 		pts.push_back(Vec2f(p->x, p->y));
-		delete p;
+		//delete p;
 		//fprintf(stderr, "(x, y) = (%d, %d)\n", p->x, p->y);
 	}
 	std::vector<Triangle> tris = triangulate(pts, asize);
@@ -45,11 +45,11 @@ KComplexItem::KComplexItem(knh_Array_t *a)
 
 KComplexItem::~KComplexItem(void)
 {
-	int gp_length = gp_list->size();
-	for (int i = 0; i < gp_length; i++) {
-		QGraphicsPolygonItem *gp = gp_list->at(i);
-		delete gp;
-	}
+	//int gp_length = gp_list->size();
+	//for (int i = 0; i < gp_length; i++) {
+	//QGraphicsPolygonItem *gp = gp_list->at(i);
+	//delete gp;
+	//}
 }
 
 void KComplexItem::addToWorld(KWorld *w)
@@ -152,7 +152,7 @@ KMETHOD ComplexItem_setDensity(Ctx *ctx, knh_sfp_t *sfp _RIX)
 static void ComplexItem_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
-	if (p->rawptr != NULL && O_cTBL(p)->total < 4) {
+	if (p->rawptr != NULL) {
 #ifdef DEBUG_MODE
 		fprintf(stderr, "ComplexItem:free\n");
 #endif
@@ -181,7 +181,7 @@ DEFAPI(void) defComplexItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->reftrace = ComplexItem_reftrace;
 }
 
-DEFAPI(void) constComplexItem(CTX ctx, knh_class_t cid, const knh_PackageLoaderAPI_t *kapi)
+DEFAPI(void) constComplexItem(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	(void)ctx;
 	(void)cid;
