@@ -33,6 +33,8 @@
 #include <QObject>
 #include "qt4commons.hpp"
 #include <konoha1/inlinelibs.h>
+#define getClassTBL(CLASS) lctx->share->ClassTBL[knh_getcid(lctx, STEXT(#CLASS))]
+#define new_RawPtrFromClass(CLASS, o) new_RawPtr(lctx, getClassTBL(CLASS), o)
 
 #ifdef __cplusplus
 extern "C" {
@@ -174,8 +176,8 @@ void Connector::timerEventSlot(QTimerEvent *event)
 {
 	CTX lctx = knh_getCurrentContext();
 	knh_sfp_t *lsfp = lctx->esp;
-	//lsfp[K_CALLDELTA+1].fvalue = (knh_float_t)val;
-	//KNH_SETv(lctx, lsfp[K_CALLDELTA+1], event);
+	knh_RawPtr_t *p = new_RawPtrFromClass(QTimerEvent, event);
+    KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p));
 	knh_Func_invoke(lctx, this->timer_event_func, lsfp, 1/*argc*/);
 }
 
@@ -189,8 +191,8 @@ void Connector::paintEventSlot(QPaintEvent *event)
 {
 	CTX lctx = knh_getCurrentContext();
 	knh_sfp_t *lsfp = lctx->esp;
-	//lsfp[K_CALLDELTA+1].fvalue = (knh_float_t)val;
-	//KNH_SETv(lctx, lsfp[K_CALLDELTA+1], event);
+	knh_RawPtr_t *p = new_RawPtrFromClass(QPaintEvent, event);
+    KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p));
 	knh_Func_invoke(lctx, this->paint_event_func, lsfp, 1/*argc*/);
 }
 
@@ -204,11 +206,7 @@ void Connector::keyPressEventSlot(QKeyEvent *event)
 {
 	CTX lctx = knh_getCurrentContext();
 	knh_sfp_t *lsfp = lctx->esp;
-	knh_class_t cid = knh_getcid(lctx, STEXT("QKeyEvent"));
-	const knh_ClassTBL_t *ct = lctx->share->ClassTBL[cid];
-	knh_RawPtr_t *p = (knh_RawPtr_t*)new_hObject_(lctx, ct);
-	//knh_RawPtr_t *p = (knh_RawPtr_t*)new_Object_init2(lctx, ct);
-    p->rawptr = event;
+	knh_RawPtr_t *p = new_RawPtrFromClass(QKeyEvent, event);
     KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p));
 	knh_Func_invoke(lctx, this->key_press_event_func, lsfp, 1/*argc*/);
 }

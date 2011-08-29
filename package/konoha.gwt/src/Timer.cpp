@@ -92,8 +92,6 @@ static void TimerEvent_free(CTX ctx, knh_RawPtr_t *p)
 		fprintf(stderr, "TimerEvent:free\n");
 #endif
 		QTimerEvent *t = (QTimerEvent *)p->rawptr;
-		(void)t;
-		//delete t;
 	}
 }
 

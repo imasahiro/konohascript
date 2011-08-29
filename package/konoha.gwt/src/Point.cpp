@@ -33,7 +33,7 @@ static void Point_free(CTX ctx, knh_RawPtr_t *p)
 	(void)ctx;
 	if (p->rawptr != NULL) {
 #ifdef DEBUG_MODE
-		fprintf(stderr, "Point:free\n");
+		//fprintf(stderr, "Point:free\n");
 #endif
 		KPoint *point = (KPoint *)p->rawptr;
 		delete point;
@@ -47,7 +47,7 @@ static void Point_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 	(void)tail_;
 	if (p->rawptr != NULL) {
 #ifdef DEBUG_MODE
-		fprintf(stderr, "Point:reftrace\n");
+		//fprintf(stderr, "Point:reftrace\n");
 #endif
 	}
 }

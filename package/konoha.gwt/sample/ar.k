@@ -9,6 +9,7 @@ class AR {
 	ComplexItem[] prev_list;
 	World world;
 	Texture prev_texture;
+	Rect[] default_objs;//for GC BUG
 
 	AR() {
 		app = new Application();
@@ -17,6 +18,7 @@ class AR {
 		window.setItemIndexMethod(Scene.NoIndex);
 		window.setSceneRect(0, 0, 1200, 700);
 		window.setBackgroundColor(new Color("black"));
+		default_objs = [];
 		for (int i = 0; i < 100; i++) {
 			int rand = Int.random(100);
 			Rect rect = new Rect(350 - rand, 100 - rand, 50, 50);
@@ -25,10 +27,11 @@ class AR {
 			rect.setRestitution(0.7);
 			rect.setColor(new Color("#87ceeb"));//155 - r, 200 - r, 255 - r));
 			rect.setZValue(4);
+			default_objs.add(rect);
 			world.add(rect);
 			window.addItem(rect);
 		}
-		Timer t = new Timer(100, delegate(this, capture));
+		Timer t = new Timer(1000 / 40, delegate(this, capture));
 		c = new Camera(0);
 		background = c.queryFrame();
 		window.addItem(background);

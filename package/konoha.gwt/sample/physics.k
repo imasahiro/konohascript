@@ -55,15 +55,15 @@ class PhysicsWorld {
 		Text text = new Text("Hello World");
 		text.setPosition(300, 100);
 		text.setDensity(1.0);
-		Texture texture = new Texture("sample/qt.jpg");
-		texture.setRect(new Rect(200, 200, 50, 50));
-		texture.setDensity(1);
+		//Texture texture = new Texture("sample/qt.jpg");
+		//texture.setRect(new Rect(200, 200, 50, 50));
+		//texture.setDensity(1);
 		world.add(e);
 		scene.addItem(e);
 		world.add(text);
 		scene.addItem(text);
-		world.add(texture);
-		scene.addItem(texture);
+		//world.add(texture);
+		//scene.addItem(texture);
 	}
 
 	void show() {

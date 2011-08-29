@@ -1,4 +1,10 @@
 using konoha.gwt.*;
+using konoha.math.*;
+
+MAX_PANEL_NUM = 36;
+HALF_PANEL_SIZE = (int)Math.sqrt(MAX_PANEL_NUM);
+PANEL_SIZE = 50;
+PANEL_OFFSET = 100;
 
 class Puzzle {
 	Scene window;
@@ -17,11 +23,12 @@ class Puzzle {
 		window.setItemIndexMethod(Scene.NoIndex);
 		window.setSceneRect(0, 0, 1200, 700);
 		//window.setBackgroundColor(new Color("black"));
-		Timer t = new Timer(100, delegate(this, capture));
+		Timer t = new Timer(1000 / 40, delegate(this, capture));
 		c = new Camera(0);
+		panels = [];
 		//v = new Video("sample/sample.avi");
-		for (int i = 0; i < 9; i++) {
-			Rect panel = new Rect(0, 0, 150, 150);
+		for (int i = 0; i < MAX_PANEL_NUM; i++) {
+			Rect panel = new Rect(0, 0, PANEL_SIZE, PANEL_SIZE);
 			panel.setMousePressEvent(delegate(this, mousePressEvent));
 			panel.setMouseReleaseEvent(delegate(this, mouseReleaseEvent));
 			panel.setMouseMoveEvent(delegate(this, mouseMoveEvent));
@@ -34,10 +41,11 @@ class Puzzle {
 		//world.add(ground);
 		//window.addItem(ground);
 		int panel_num = 0;
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				if (panel_num > 9) break;
-				panels[panel_num].translate(160 * i + 50, 160 * j + 50);
+		for (int i = 0; i < HALF_PANEL_SIZE; i++) {
+			for (int j = 0; j < HALF_PANEL_SIZE; j++) {
+				if (panel_num > MAX_PANEL_NUM) break;
+				panels[panel_num].translate(PANEL_OFFSET * i + PANEL_SIZE,
+											PANEL_OFFSET * j + PANEL_SIZE);
 				panel_num++;
 			}
 		}
@@ -49,16 +57,15 @@ class Puzzle {
 		view.setViewportUpdateMode(View.FullViewportUpdate);
 		view.setRenderHint(Painter.Antialiasing);
 		view.show();
-		//world.start();
 		app.exec();
 	}
 
 	void capture(TimerEvent event) {
 		//Texture t = v.queryFrame();
 		Texture t = c.queryFrame();
-		Texture[] textures = t.split(3, 3);
+		Texture[] textures = t.split(HALF_PANEL_SIZE, HALF_PANEL_SIZE);
 		for (int i = 0; i < |textures|; i++) {
-			textures[i].setRect(new Rect(0, 0, 150, 150));
+			textures[i].setRect(new Rect(0, 0, PANEL_SIZE, PANEL_SIZE));
 			panels[i].setTexture(textures[i]);
 		}
 	}

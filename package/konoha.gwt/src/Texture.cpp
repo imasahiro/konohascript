@@ -273,8 +273,10 @@ KMETHOD Texture_split(CTX ctx, knh_sfp_t *sfp _RIX)
 	QList<KTexture*> *panels = t->split(ctx, row, col);
 	int size = row * col;
 	knh_Array_t *a = new_Array0(ctx, size);
+	knh_class_t cid = knh_getcid(ctx, STEXT("Texture"));
 	for (int i = 0; i < size; i++) {
-		knh_Array_add(ctx, a, (Object *)new_ReturnCppObject(ctx, sfp, panels->at(i), NULL));
+		knh_RawPtr_t *p = new_RawPtr(ctx, ClassTBL(cid), panels->at(i));
+		knh_Array_add(ctx, a, (knh_Object_t *)p);
 	}
 	RETURN_(a);
 }
@@ -413,8 +415,9 @@ KMETHOD Texture_detectHuman(CTX ctx, knh_sfp_t *sfp _RIX)
 	KTexture *background = RawPtr_to(KTexture *, sfp[1]);
 	ObjPointList *objs = getDetectObjectPointList(t->ipl, background->ipl);
 	int objs_size = objs->size();
-//fprintf(stderr, "objs_size = [%d]\n", objs_size);
+    //fprintf(stderr, "objs_size = [%d]\n", objs_size);
 	knh_Array_t *a = new_Array0(ctx, objs_size);
+	knh_class_t cid = knh_getcid(ctx, STEXT("Point"));
 	for (int i = 0; i < objs_size; i++) {
 		QList<KPoint *> *obj = objs->at(i);
 		int obj_size = obj->size();
@@ -423,7 +426,7 @@ KMETHOD Texture_detectHuman(CTX ctx, knh_sfp_t *sfp _RIX)
 		for (int j = 0; j < obj_size; j++) {
 			KPoint *p = obj->at(j);
 			//fprintf(stderr, "detectHuman: (x, y) = (%d, %d)\n", p->x, p->y);
-			knh_Array_add(ctx, elem, (Object *)new_ReturnCppObject(ctx, sfp, new KPoint(p->x, p->y), NULL));
+			knh_Array_add(ctx, elem, (knh_Object_t *)new_RawPtr(ctx, ClassTBL(cid), new KPoint(p->x, p->y)));
 			delete p;
 		}
 		knh_Array_add(ctx, a, (Object *)elem);
@@ -465,7 +468,7 @@ KMETHOD Texture_setMouseMoveEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 static void Texture_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
-	if (p->rawptr != NULL && O_cTBL(p)->total < 4) {
+	if (p->rawptr != NULL) {
 #ifdef DEBUG_MODE
 		fprintf(stderr, "Texture:free\n");
 #endif

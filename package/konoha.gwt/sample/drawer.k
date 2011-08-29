@@ -1,4 +1,4 @@
-using konoha.visual.*;
+using konoha.gwt.*;
 
 class DrawWindow {
 	Application app;
@@ -82,7 +82,7 @@ class DrawWindow {
 			c.setColor(getRandomColor());
 			c.setDensity(1);
 			world.add(c);
-			window.addComplexItem(c);
+			window.addItem(c);
 		}
 		obj = [];
 		foreach (Line line in lines) {
