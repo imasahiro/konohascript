@@ -156,7 +156,7 @@ static void Scene_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 		for (int i = 0; i < list_size; i++) {
 			knh_RawPtr_t *item = s->added_list->at(i);
 			KNH_ADDREF(ctx, item);
-			WCTX(ctx)->ref_size++;
+			KNH_SIZEREF(ctx);
 		}
 	}
 }

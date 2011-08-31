@@ -329,15 +329,15 @@ static void Rect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 		KRect *r = (KRect *)p->rawptr;
 		if (r->mouse_press_func != NULL) {
 			KNH_ADDREF(ctx, r->mouse_press_func);
-			WCTX(ctx)->ref_size++;
+			KNH_SIZEREF(ctx);
 		}
 		if (r->mouse_move_func != NULL) {
 			KNH_ADDREF(ctx, r->mouse_move_func);
-			WCTX(ctx)->ref_size++;
+			KNH_SIZEREF(ctx);
 		}
 		if (r->mouse_release_func != NULL) {
 			KNH_ADDREF(ctx, r->mouse_release_func);
-			WCTX(ctx)->ref_size++;
+			KNH_SIZEREF(ctx);
 		}
 	}
 }
