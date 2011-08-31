@@ -40,7 +40,7 @@ static void Application_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 #ifdef DEBUG_MODE
-	fprintf(stderr, "Application:reftrace\n");
+		fprintf(stderr, "Application:reftrace\n");
 #endif
 	}
 }

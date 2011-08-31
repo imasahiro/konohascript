@@ -110,6 +110,7 @@ KTexture::KTexture(const char *filepath_)
 	isStatic = true;
 #endif
 #ifdef K_USING_OPENCV
+	ipl = NULL;
 	//setTrackData(filepath_);
 #endif
 }
@@ -135,6 +136,7 @@ KTexture::KTexture(QImage *image)
 	isStatic = true;
 #endif
 #ifdef K_USING_OPENCV
+	ipl = NULL;
 	//setTrackData();
 #endif
 }
@@ -154,15 +156,22 @@ KTexture::KTexture(QPixmap *image)
 	isStatic = true;
 #endif
 #ifdef K_USING_OPENCV
+	ipl = NULL;
 	//setTrackData();
 #endif
 }
 
 KTexture::~KTexture(void)
 {
-	//delete p;
-	//delete gp;
-	//delete ce;
+	if (p != NULL) {
+		delete p;
+	}
+	if (ce != NULL) {
+		delete ce;
+	}
+	if (ipl != NULL) {
+		cvReleaseImage(&ipl);
+	}
 }
 
 QList<KTexture*> *KTexture::split(CTX ctx, int row, int col)
@@ -278,6 +287,7 @@ KMETHOD Texture_split(CTX ctx, knh_sfp_t *sfp _RIX)
 		knh_RawPtr_t *p = new_RawPtr(ctx, ClassTBL(cid), panels->at(i));
 		knh_Array_add(ctx, a, (knh_Object_t *)p);
 	}
+	delete panels;
 	RETURN_(a);
 }
 

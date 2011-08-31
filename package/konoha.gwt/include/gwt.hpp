@@ -89,17 +89,6 @@ public:
 
 #endif
 
-class KScene : public QGraphicsScene {
-	Q_OBJECT;
-public:
-	knh_Func_t *mouse_press_func;
-	knh_Func_t *mouse_move_func;
-	knh_Func_t *mouse_release_func;
-	//knh_Func_t *mouse_dragEnter_func;
-
-	KScene();
-};
-
 class KRigidBody {
 #ifdef K_USING_BOX2D
 public:
@@ -108,12 +97,14 @@ public:
 	qreal friction;
 	qreal density;
 	qreal restitution;
-	
+	bool bullet;
+
 	KRigidBody(void);
 	void setRot(qreal rotation_);
 	void setDensity(qreal density_);
 	void setFriction(qreal friction_);
 	void setRestitution(qreal restitution_);
+	void setBullet(bool bullet_);
 #endif
 };
 
@@ -130,6 +121,7 @@ public:
 	knh_Func_t *mouse_press_func;
 	knh_Func_t *mouse_move_func;
 	knh_Func_t *mouse_release_func;
+	knh_RawPtr_t *self;
 #ifdef K_USING_BOX2D
 	b2Body *body;
 #endif
@@ -278,6 +270,21 @@ public:
 #ifdef K_USING_BOX2D
 	void addToWorld(KWorld *w);
 #endif
+};
+
+class KScene : public QGraphicsScene {
+	Q_OBJECT;
+public:
+	knh_Func_t *mouse_press_func;
+	knh_Func_t *mouse_move_func;
+	knh_Func_t *mouse_release_func;
+	knh_RawPtr_t *self;
+	QList<knh_RawPtr_t *> *added_list;
+
+	KScene();
+	void mousePressEvent(QGraphicsSceneMouseEvent *event);
+	void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 static inline int match(const char *base, const char *target)

@@ -58,6 +58,7 @@ void Rect.setFriction(float friction);
 void Rect.setRestitution(float restitution);
 void Rect.setShadow(Shadow s);
 void Rect.setTexture(Texture t);
+void Rect.setBullet(boolean b);
 boolean Rect.isStatic();
 void Rect.setZValue(int val);
 void Rect.setMousePressEvent(Func<Rect,MouseEvent=>void> func);
@@ -159,6 +160,7 @@ ComplexItem ComplexItem.new(Array<Point> obj, ComplexItem _);
 void ComplexItem.setDensity(float f);
 void ComplexItem.setPosition(int x, int y);
 void ComplexItem.setColor(Color c);
+void ComplexItem.setBullet(boolean b);
 
 Point MouseEvent.lastScreenPos(Point _);
 Point MouseEvent.scenePos(Point _);

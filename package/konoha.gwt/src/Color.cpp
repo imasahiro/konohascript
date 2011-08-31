@@ -18,7 +18,7 @@ static void Color_free(CTX ctx, knh_RawPtr_t *p)
 	(void)ctx;
 	if (p->rawptr != NULL) {
 #ifdef DEBUG_MODE
-		fprintf(stderr, "Color:free\n");
+		//fprintf(stderr, "Color:free\n");
 #endif
 		QColor *c = (QColor *)p->rawptr;
 		delete c;

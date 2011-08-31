@@ -8,37 +8,26 @@ extern "C" {
 QImage* IplImage_convertToQImage(const IplImage * iplImage, double mini, double maxi)
 {
 	int width = iplImage->width;
-	// Note here that OpenCV image is stored so that each lined is
-	// 32-bits aligned thus * explaining the necessity to "skip"
-	// the few last bytes of each line of OpenCV image buffer.
 	int widthStep = iplImage->widthStep;
 	int height = iplImage->height;
 	uchar *qImageBuffer = NULL;
-	//memset(qImageBuffer, 0, width * height);
 	switch (iplImage->depth) {
 	case IPL_DEPTH_8U:
 		if (iplImage->nChannels == 1) {
-			// IplImage is stored with one byte grey pixel.
-			// We convert it to an 8 bit depth QImage.
 			qImageBuffer = (uchar *)malloc(width * height * sizeof(uchar));
 			uchar *QImagePtr = qImageBuffer;
 			const uchar *iplImagePtr = (const uchar *)iplImage->imageData;
 			for (int y = 0; y < height; y++) {
-				// Copy line by line
 				memcpy(QImagePtr, iplImagePtr, width);
 				QImagePtr += width;
 				iplImagePtr += widthStep;
 			}
 		} else if (iplImage->nChannels == 3) {
-			// IplImage is stored with 3 byte color pixels (3 channels).
-			// We convert it to a 32 bit depth QImage.
 			qImageBuffer = (uchar *)malloc(width * height * 4 * sizeof(uchar));
 			uchar *QImagePtr = qImageBuffer;
 			const uchar *iplImagePtr = (const uchar *)iplImage->imageData;
-
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {
-					// We cannot help but copy manually.
 					QImagePtr[0] = iplImagePtr[0];
 					QImagePtr[1] = iplImagePtr[1];
 					QImagePtr[2] = iplImagePtr[2];
@@ -55,15 +44,11 @@ QImage* IplImage_convertToQImage(const IplImage * iplImage, double mini, double 
 		break;
 	case IPL_DEPTH_16U:
 		if (iplImage->nChannels == 1) {
-			// IplImage is stored with 2 bytes grey pixel.
-			// We convert it to an 8 bit depth QImage.
 			qImageBuffer = (uchar *)malloc(width * height * sizeof(uchar));
 			uchar *QImagePtr = qImageBuffer;
 			const uint16_t *iplImagePtr = (const uint16_t *)iplImage->imageData;
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {
-					// We take only the highest part of the 16 bit value.
-					// It is similar to dividing by 256.
 					*QImagePtr++ = ((*iplImagePtr++) >> 8);
 				}
 				iplImagePtr += widthStep/sizeof(uint16_t)-width;
@@ -75,8 +60,6 @@ QImage* IplImage_convertToQImage(const IplImage * iplImage, double mini, double 
 		break;
 	case IPL_DEPTH_32F:
 		if (iplImage->nChannels == 1) {
-			// IplImage is stored with float (4 bytes) grey pixel.
-			// We convert it to an 8 bit depth QImage.
 			qImageBuffer = (uchar *)malloc(width * height * sizeof(uchar));
 			uchar *QImagePtr = qImageBuffer;
 			const float *iplImagePtr = (const float *)iplImage->imageData;
@@ -98,8 +81,6 @@ QImage* IplImage_convertToQImage(const IplImage * iplImage, double mini, double 
 		break;
 	case IPL_DEPTH_64F:
 		if (iplImage->nChannels == 1) {
-			// OpenCV image is stored with double (8 bytes) grey pixel.
-			// We convert it to an 8 bit depth QImage.
 			qImageBuffer = (uchar *)malloc(width * height * sizeof(uchar));
 			uchar *QImagePtr = qImageBuffer;
 			const double *iplImagePtr = (const double *)iplImage->imageData;
@@ -145,16 +126,16 @@ KMETHOD Camera_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int n = Int_to(int, sfp[1]);
 	CvCapture *c = cvCaptureFromCAM(n);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, c, NULL);
-	//cvNamedWindow("hoge", CV_WINDOW_AUTOSIZE);
 	RETURN_(p);
 }
 
 KMETHOD Camera_queryFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	CvCapture *c = RawPtr_to(CvCapture *, sfp[0]);
-	IplImage *frame = cvQueryFrame(c);
+	IplImage *frame = cvQueryFrame(c);//not allocated
 	QImage *image = IplImage_convertToQImage(frame, 0.0, 0.0);
 	KTexture *t = new KTexture(image);
+	delete image;
 	t->ipl = cvCloneImage(frame);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, t, NULL);
 	RETURN_(p);
@@ -168,7 +149,7 @@ static void Camera_free(CTX ctx, knh_RawPtr_t *p)
 		fprintf(stderr, "Camera:free\n");
 #endif
 		CvCapture *c = (CvCapture *)p->rawptr;
-		(void)c;
+		cvReleaseCapture(&c);
 	}
 }
 
@@ -179,7 +160,7 @@ static void Camera_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 	(void)tail_;
 	if (p->rawptr != NULL) {
 #ifdef DEBUG_MODE
-	fprintf(stderr, "Camera:reftrace\n");
+		fprintf(stderr, "Camera:reftrace\n");
 #endif
 	}
 }

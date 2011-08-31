@@ -2,7 +2,7 @@ using konoha.gwt.*;
 using konoha.math.*;
 
 MAX_PANEL_NUM = 36;
-HALF_PANEL_SIZE = (int)Math.sqrt(MAX_PANEL_NUM);
+HALF_PANEL_NUM = (int)Math.sqrt(MAX_PANEL_NUM);
 PANEL_SIZE = 50;
 PANEL_OFFSET = 100;
 
@@ -14,6 +14,7 @@ class Puzzle {
 	int timer_id;
 	Point prev_point;
 	Rect[] panels;
+	//Rect panels;
 	//World world;
 	
 	Puzzle() {
@@ -41,8 +42,8 @@ class Puzzle {
 		//world.add(ground);
 		//window.addItem(ground);
 		int panel_num = 0;
-		for (int i = 0; i < HALF_PANEL_SIZE; i++) {
-			for (int j = 0; j < HALF_PANEL_SIZE; j++) {
+		for (int i = 0; i < HALF_PANEL_NUM; i++) {
+			for (int j = 0; j < HALF_PANEL_NUM; j++) {
 				if (panel_num > MAX_PANEL_NUM) break;
 				panels[panel_num].translate(PANEL_OFFSET * i + PANEL_SIZE,
 											PANEL_OFFSET * j + PANEL_SIZE);
@@ -63,7 +64,7 @@ class Puzzle {
 	void capture(TimerEvent event) {
 		//Texture t = v.queryFrame();
 		Texture t = c.queryFrame();
-		Texture[] textures = t.split(HALF_PANEL_SIZE, HALF_PANEL_SIZE);
+		Texture[] textures = t.split(HALF_PANEL_NUM, HALF_PANEL_NUM);
 		for (int i = 0; i < |textures|; i++) {
 			textures[i].setRect(new Rect(0, 0, PANEL_SIZE, PANEL_SIZE));
 			panels[i].setTexture(textures[i]);

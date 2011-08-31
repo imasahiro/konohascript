@@ -83,7 +83,7 @@ void KComplexItem::addToWorld(KWorld *w)
 		shapeDef.shape = &shape;
 		body->CreateFixture(&shapeDef);
 	}
-
+	body->SetBullet(bullet);
 	QGraphicsItem *i = dynamic_cast<QGraphicsItem *>(this);
 	knh_GraphicsUserData_t *data = (knh_GraphicsUserData_t *)malloc(sizeof(knh_GraphicsUserData_t));
 	memset(data, 0, sizeof(knh_GraphicsUserData_t));
@@ -138,6 +138,15 @@ KMETHOD ComplexItem_setColor(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+KMETHOD ComplexItem_setBullet(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	KComplexItem *c = RawPtr_to(KComplexItem *, sfp[0]);
+	bool b = Boolean_to(bool, sfp[1]);
+	c->setBullet(b);
+	RETURNvoid_();
+}
+
 #ifdef K_USING_BOX2D
 KMETHOD ComplexItem_setDensity(Ctx *ctx, knh_sfp_t *sfp _RIX)
 {
@@ -154,7 +163,7 @@ static void ComplexItem_free(CTX ctx, knh_RawPtr_t *p)
 	(void)ctx;
 	if (p->rawptr != NULL) {
 #ifdef DEBUG_MODE
-		fprintf(stderr, "ComplexItem:free\n");
+		//fprintf(stderr, "ComplexItem:free\n");
 #endif
 		KComplexItem *t = (KComplexItem *)p->rawptr;
 		delete t;

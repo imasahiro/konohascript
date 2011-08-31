@@ -24,9 +24,8 @@ void KRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	if (mouse_press_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
-		knh_RawPtr_t *p1 = new_RawPtrFromClass(Rect, this);
 		knh_RawPtr_t *p2 = new_RawPtrFromClass(MouseEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p1));
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p2));
 		knh_Func_invoke(lctx, mouse_press_func, lsfp, 2/*argc*/);
 	}
@@ -37,9 +36,8 @@ void KRect::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	if (mouse_move_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
-		knh_RawPtr_t *p1 = new_RawPtrFromClass(Rect, this);
 		knh_RawPtr_t *p2 = new_RawPtrFromClass(MouseEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p1));
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p2));
 		knh_Func_invoke(lctx, mouse_move_func, lsfp, 2/*argc*/);
 	}
@@ -50,9 +48,8 @@ void KRect::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 	if (mouse_release_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
-		knh_RawPtr_t *p1 = new_RawPtrFromClass(Rect, this);
 		knh_RawPtr_t *p2 = new_RawPtrFromClass(MouseEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p1));
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p2));
 		knh_Func_invoke(lctx, mouse_release_func, lsfp, 2/*argc*/);
 	}
@@ -111,6 +108,7 @@ KRigidBody::KRigidBody()
 	density = 0.0f;
 	friction = 0.0f;
 	restitution = 0.0f;
+	bullet = false;
 }
 
 void KRigidBody::setRot(qreal rotation)
@@ -137,6 +135,11 @@ void KRigidBody::setRestitution(qreal restitution_)
 	restitution = restitution_;
 }
 
+void KRigidBody::setBullet(bool bullet_)
+{
+	bullet = bullet_;
+}
+
 void KRect::addToWorld(KWorld *w)
 {
 	b2World *world = w->world;
@@ -156,7 +159,7 @@ void KRect::addToWorld(KWorld *w)
 	shapeDef.friction = friction;
 	shapeDef.restitution = restitution;
 	body->CreateFixture(&shapeDef);
-
+	body->SetBullet(bullet);
 	//QGraphicsItem *i = dynamic_cast<QGraphicsItem *>(this);
 	QGraphicsItem *i = (QGraphicsItem *)this;
 	knh_GraphicsUserData_t *data = (knh_GraphicsUserData_t *)malloc(sizeof(knh_GraphicsUserData_t));
@@ -178,6 +181,7 @@ KMETHOD Rect_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int height = Int_to(int, sfp[4]);
 	KRect *r = new KRect(x, y, width, height);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, r, NULL);
+	r->self = p;
 	RETURN_(p);
 }
 
@@ -196,6 +200,15 @@ KMETHOD Rect_setZValue(CTX ctx, knh_sfp_t *sfp _RIX)
 	KRect *r = RawPtr_to(KRect *, sfp[0]);
 	int val = Int_to(int, sfp[1]);
 	r->setZValue(val);
+	RETURNvoid_();
+}
+
+KMETHOD Rect_setBullet(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	KRect *r = RawPtr_to(KRect *, sfp[0]);
+	bool b = Boolean_to(bool, sfp[1]);
+	r->setBullet(b);
 	RETURNvoid_();
 }
 
@@ -268,7 +281,7 @@ KMETHOD Rect_setMousePressEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 	NO_WARNING();
 	KRect *r = RawPtr_to(KRect *, sfp[0]);
 	knh_Func_t *fo = sfp[1].fo;
-	r->mouse_press_func = fo;
+	KNH_INITv(r->mouse_press_func, fo);
 	RETURNvoid_();
 }
 
@@ -277,7 +290,7 @@ KMETHOD Rect_setMouseReleaseEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 	NO_WARNING();
 	KRect *r = RawPtr_to(KRect *, sfp[0]);
 	knh_Func_t *fo = sfp[1].fo;
-	r->mouse_release_func = fo;
+	KNH_INITv(r->mouse_release_func, fo);
 	RETURNvoid_();
 }
 
@@ -286,7 +299,7 @@ KMETHOD Rect_setMouseMoveEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 	NO_WARNING();
 	KRect *r = RawPtr_to(KRect *, sfp[0]);
 	knh_Func_t *fo = sfp[1].fo;
-	r->mouse_move_func = fo;
+	KNH_INITv(r->mouse_move_func, fo);
 	RETURNvoid_();
 }
 
@@ -314,9 +327,18 @@ static void Rect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 		fprintf(stderr, "Rect:reftrace\n");
 #endif
 		KRect *r = (KRect *)p->rawptr;
-		KNH_ADDREF(ctx, r->mouse_press_func);
-		KNH_ADDREF(ctx, r->mouse_move_func);
-		KNH_ADDREF(ctx, r->mouse_release_func);
+		if (r->mouse_press_func != NULL) {
+			KNH_ADDREF(ctx, r->mouse_press_func);
+			WCTX(ctx)->ref_size++;
+		}
+		if (r->mouse_move_func != NULL) {
+			KNH_ADDREF(ctx, r->mouse_move_func);
+			WCTX(ctx)->ref_size++;
+		}
+		if (r->mouse_release_func != NULL) {
+			KNH_ADDREF(ctx, r->mouse_release_func);
+			WCTX(ctx)->ref_size++;
+		}
 	}
 }
 

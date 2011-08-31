@@ -9,7 +9,7 @@ class AR {
 	ComplexItem[] prev_list;
 	World world;
 	Texture prev_texture;
-	Rect[] default_objs;//for GC BUG
+	//Rect[] default_objs;//for GC BUG
 
 	AR() {
 		app = new Application();
@@ -18,16 +18,17 @@ class AR {
 		window.setItemIndexMethod(Scene.NoIndex);
 		window.setSceneRect(0, 0, 1200, 700);
 		window.setBackgroundColor(new Color("black"));
-		default_objs = [];
+		//default_objs = [];
 		for (int i = 0; i < 100; i++) {
 			int rand = Int.random(100);
 			Rect rect = new Rect(350 - rand, 100 - rand, 50, 50);
 			rect.setDensity(1);
+			rect.setBullet(true);
 			//rect.setFriction(0.3);
 			rect.setRestitution(0.7);
 			rect.setColor(new Color("#87ceeb"));//155 - r, 200 - r, 255 - r));
 			rect.setZValue(4);
-			default_objs.add(rect);
+			//default_objs.add(rect);
 			world.add(rect);
 			window.addItem(rect);
 		}
@@ -55,9 +56,9 @@ class AR {
 		Texture t = c.queryFrame();
 		Array<Array<Point>> objs = t.detectHuman(background);
 		int objs_size = |objs|;
-		print objs_size;
+		//print objs_size;
 		for (int i = 0; i < |prev_list|; i++) {
-			window.removeItem(prev_list[i]);
+			//window.removeItem(prev_list[i]);
 			world.remove(prev_list[i]);
 		}
 		prev_list = [];
@@ -67,7 +68,8 @@ class AR {
 			int obj_size = |obj|;
 			ComplexItem item = new ComplexItem(obj);
 			item.setColor(new Color("#00ff00"));
-			window.addItem(item);
+			item.setBullet(true);
+			//window.addItem(item);
 			world.add(item);
 			prev_list.add(item);
 		}
