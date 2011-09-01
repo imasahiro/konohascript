@@ -501,6 +501,7 @@ class Data:
         self.add_name('xdata')
         self.add_mn('defined')
         self.add_mn('delegate')
+        self.add_mn('proceed')
         #self.add_mn('likely')
         #self.add_mn('unlikely')
 #        self.add_mn('first')

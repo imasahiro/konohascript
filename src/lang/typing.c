@@ -624,15 +624,6 @@ static void Gamma_clear(CTX ctx, knh_gint_t offset, knh_Stmt_t *stmt)
 		}
 	}
 	for(i = offset; i < DP(ctx->gma)->gsize; i++) {
-//		if(FLAG_is(gf[i].flag, GF_Unused) && IS_Token(gf[i].tkIDX)) {
-//			WARN_Unused(ctx, gf[i].tkIDX, gf[i].fn);
-//		}
-//		if(stmt != NULL && FLAG_is(gf[i].flag, _FCHKOUT)) {
-//			knh_Stmt_t *stmt2 = new_Stmt2(ctx, STT_CHKOUT, gf[i].tkIDX, NULL);
-//			gf[i].tkIDX->type = gf[i].type;
-//			KNH_INITv(DP(stmt)->nextNULL, stmt2);
-//			stmt = stmt2;
-//		}
 		gf[i].flag  = 0;
 		gf[i].type  = TYPE_void;
 		gf[i].fn    = FN_NONAME;
@@ -643,6 +634,11 @@ static void Gamma_clear(CTX ctx, knh_gint_t offset, knh_Stmt_t *stmt)
 	DP(ctx->gma)->gsize = offset;
 	if(offset < DP(ctx->gma)->fvarsize) {
 		DP(ctx->gma)->fvarsize = offset;
+	}
+	if(offset == 0) {
+		DP(ctx->gma)->tkScriptNC = NULL;
+		DBG_P("******* proceedNC = %p *********", DP(ctx->gma)->proceedNC);
+		DP(ctx->gma)->proceedNC = NULL;
 	}
 }
 
@@ -2341,12 +2337,21 @@ static knh_Token_t* CALL_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t tcid)
 static knh_Token_t* defined_typing(CTX ctx, knh_Stmt_t *stmt)
 {
 	knh_Token_t *tk = tkNN(stmt, 0);
-	knh_Token_t *tkRES = Tn_typing(ctx, stmt, 2, TYPE_dyn, _NOWARN | _NOCHECK);
-	if(TT_(tkRES) != TT_ERR) {
-		return Token_setCONST(ctx, tk, KNH_TRUE);
+	if(TT_(tk) == TT_URN) {
+		knh_Token_t *tkRES = Tn_typing(ctx, stmt, 2, TYPE_Boolean, _NOWARN | _NOCHECK);
+		if(TT_(tkRES) == TT_ERR) {
+			Token_setCONST(ctx, tk, KNH_FALSE);
+		}
+		return tk;
 	}
 	else {
-		return Token_setCONST(ctx, tk, KNH_FALSE);
+		knh_Token_t *tkRES = Tn_typing(ctx, stmt, 2, TYPE_dyn, _NOWARN | _NOCHECK);
+		if(TT_(tkRES) != TT_ERR) {
+			return Token_setCONST(ctx, tk, KNH_TRUE);
+		}
+		else {
+			return Token_setCONST(ctx, tk, KNH_FALSE);
+		}
 	}
 }
 
@@ -2462,6 +2467,28 @@ static knh_Token_t* delegate_typing(CTX ctx, knh_Stmt_t *stmt)
 	}
 }
 
+static knh_Token_t* proceed_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
+{
+	if(DP(ctx->gma)->proceedNC != NULL) {
+		knh_Method_t *promtd = DP(ctx->gma)->proceedNC;
+		knh_class_t this_cid = DP(ctx->gma)->this_cid;
+		KNH_ASSERT(IS_Method(promtd));
+		Token_setMethod(ctx, tkNN(stmt, 0), promtd->mn, promtd);
+		KNH_SETv(ctx, tkNN(stmt, 1), new_TokenTYPED(ctx, TT_FVAR, this_cid, 0));
+		STT_(stmt) = STT_CALL;
+		if(DP(stmt)->size == 2) {
+			size_t i;
+			for(i=0; i < knh_Method_psize(promtd); i++) {
+				knh_Stmt_add(ctx, stmt, new_TokenTYPED(ctx, TT_FVAR, DP(ctx->gma)->gf[i+1].type, i+1));
+			}
+		}
+		return CALLPARAMs_typing(ctx, stmt, reqt, this_cid, promtd);
+	}
+	else {
+		return ERROR_text(ctx, "proceed(...) must be in @Around" K_TRACEPOINT);
+	}
+}
+
 static knh_Token_t* FUNCCALLPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 {
 	size_t i;
@@ -2542,6 +2569,7 @@ static knh_Token_t* func_typingNULL(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 			case MN_defined: return defined_typing(ctx, stmt);
 			case MN_this: return this_typing(ctx, stmt, mn);
 			case MN_delegate: return delegate_typing(ctx, stmt);
+			case MN_proceed: return proceed_typing(ctx, stmt, reqt);
 		}
 	}
 	{ /* 2. searching local variable of Func */
@@ -4056,6 +4084,9 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 		else  {
 			knh_ParamArray_addReturnType(ctx, mp, rtype);
 		}
+		if(knh_StmtMETA_is(ctx, stmtM, "Around")) {
+			WARN_Ignored(ctx, "annotation", CLASS_unknown, "@Around");
+		}
 	}
 	else {  // overriding method
 		size_t i;
@@ -4099,10 +4130,18 @@ static knh_Token_t* METHOD_typing(CTX ctx, knh_Stmt_t *stmtM)
 				return ErrorDifferentlyDefinedMethod(ctx, mtd_cid, mn);
 			}
 		}
-		if((mtd)->cid != mtd_cid) { /* Override */
+		if((mtd)->cid != mtd_cid) { /* @Override */
 			mtd = new_Method(ctx, flag, mtd_cid, mn, NULL);
 			knh_NameSpace_addMethod(ctx, mtd_cid, mtd);
 			KNH_SETv(ctx, DP(mtd)->mp, mp);
+		}
+		else if(knh_StmtMETA_is(ctx, stmtM, "Around")) {
+			knh_Method_t *promtd = new_Method(ctx, DP(mtd)->flag, mtd_cid, mn, NULL);
+			knh_MethodEX_t *temp = mtd->b; mtd->b = promtd->b; promtd->b = temp;
+			promtd->fcall_1 = mtd->fcall_1;
+			promtd->pc_start = mtd->pc_start; // copied from mtd => promtd
+			KNH_SETv(ctx, DP(mtd)->mp, mp);
+			KNH_SETv(ctx, DP(mtd)->proceed, promtd);
 		}
 //		DP(mtd)->uri = ULINE_uri(stmtM->uline);
 //		Token_setCONST(ctx, tkNN(stmtM, 2/*method*/), mtd);
@@ -4683,6 +4722,9 @@ knh_bool_t typingMethod2(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB)
 	DBG_ASSERT(DP(ctx->gma)->psize + 1 == DP(ctx->gma)->fvarsize);
 	if(ParamArray_isVARGs(mp)) {
 		Gamma_addFVAR(ctx, _FREADONLY, TYPE_void/*FIXME*/, FN_vargs, 0);
+	}
+	if(IS_Method(DP(mtd)->proceed)) {
+		DP(ctx->gma)->proceedNC = DP(mtd)->proceed;
 	}
 	int needsReturn = (Gamma_getReturnType(ctx) != TYPE_void) && (Gamma_getReturnType(ctx) != TYPE_var);
 	int hasReturn = StmtITR_typing(ctx, stmtB, needsReturn);

@@ -2893,8 +2893,8 @@ void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB, knh_Ftyping t
 	//DBG_ASSERT(knh_Array_size(DP(ctx->gma)->insts) == 0);
 	DP(ctx->gma)->flag  = 0;
 	KNH_SETv(ctx, DP(ctx->gma)->mtd, mtd);
-	knh_Method_toAbstract(ctx, mtd);
 	typing(ctx, mtd, stmtB);
+//	knh_Method_toAbstract(ctx, mtd);
 	Gamma_shiftLocalScope(ctx);
 	knh_Array_clear(ctx, DP(ctx->gma)->lstacks, 0);
 #ifdef K_USING_LLVM

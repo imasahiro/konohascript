@@ -267,6 +267,7 @@ static knh_FieldNameData0_t FieldNameData0[] = {
 	{"pop", FN_pop},
 	{"print", FN_print},
 	{"println", FN_println},
+	{"proceed", FN_proceed},
 	{"property", FN_property},
 	{"putc", FN_putc},
 	{"query", FN_query},

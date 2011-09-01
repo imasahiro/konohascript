@@ -483,6 +483,7 @@ typedef struct {
 		struct knh_Script_t     *gmascr;       // Dynamic
 		struct knh_Stmt_t       *stmtB;        // stmt block
 		struct knh_RawPtr_t     *rfunc;        // ffi
+		struct knh_Method_t     *proceed;      // during typing, asm
 	};
 	struct knh_Array_t *paramsNULL;
 	struct knh_Token_t *tsource;
@@ -1289,6 +1290,7 @@ typedef struct knh_GammaEX_t {
 
 	knh_Token_t              *tkScriptNC;
 	knh_Token_t              *tkFuncThisNC;
+	knh_Method_t             *proceedNC;  /*@Around*/
 
 	struct knh_BasicBlock_t    *bbNC;
 	struct knh_Array_t         *insts;  // bbNC->listNC
