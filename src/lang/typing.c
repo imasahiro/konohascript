@@ -567,17 +567,17 @@ static knh_Fmethod Gamma_loadMethodFunc(CTX ctx, knh_class_t cid, knh_methodn_t 
 		knh_snprintf(buf, sizeof(buf), "%s__%s", cname, FN__(MN_toFN(mn)));
 	}
 	else if(MN_isGETTER(mn)) {
-		int off = knh_strlen(cname)+4;
+		int off = knh_strlen(cname)+4/*sizeof("_get")*/;
 		knh_snprintf(buf, sizeof(buf), "%s_get%s", cname, FN__(MN_toFN(mn)));
 		if(islower(buf[off])) buf[off] = toupper(buf[off]);
 	}
 	else if(MN_isSETTER(mn)) {
-		int off = knh_strlen(cname)+4;
+		int off = knh_strlen(cname)+4/*sizeof("_set")*/;
 		knh_snprintf(buf, sizeof(buf), "%s_set%s", cname, FN__(MN_toFN(mn)));
 		if(islower(buf[off])) buf[off] = toupper(buf[off]);
 	}
 	else if(MN_isISBOOL(mn)) {
-		int off = knh_strlen(cname)+4;
+		int off = knh_strlen(cname)+3/*sizeof("_is")*/;
 		knh_snprintf(buf, sizeof(buf), "%s_is%s", cname, FN__(MN_toFN(mn)));
 		if(islower(buf[off])) buf[off] = toupper(buf[off]);
 	}
