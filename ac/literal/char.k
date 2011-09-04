@@ -13,3 +13,6 @@ assure "CharacterLiteral" {
 	assert o <: Int;
 };
 
+// TODO
+//assert typeof('"') == Int;
+//assert typeof('`') == Int;

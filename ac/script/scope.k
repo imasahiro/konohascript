@@ -21,14 +21,14 @@ class C {
 		assert name == "naruto";
 		assert age == 17;
 	}
-	void testScriptVariable2() {
+	void testScriptVariable2(int n) {
 		print __name, __age;
 		assert __name == "naruto";
 		assert __age == 17;
 	}
 	void testScriptVariable3() {
 		age = 16;
-		assert __age == 17;
+		assert __age == 16;
 	}
 }
 
@@ -36,7 +36,7 @@ assure "ScriptVariableScope" {
 	c = new C();
 	c.testLocalVariable()
 	c.testScriptVariable()
-	c.testScriptVariable2()
+	c.testScriptVariable2(0)
 	c.testScriptVariable3()
 }
 
