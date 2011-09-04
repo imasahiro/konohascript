@@ -12,7 +12,7 @@ class Person {
   }
 }
 
-assure "ClassDefinition" {
+assure "Class" {
 	Person p1 = new("naruto", 17);
 	p2 = new Person("sakura", 16);
 	Person p3 = new Person("sasuke", 17);
@@ -20,6 +20,27 @@ assure "ClassDefinition" {
 	print p1.age, p2.age, p3.age;
 	assert p1.age == p3.age;
 	assert p2.age == p3.age;
+}
+
+class C {
+	String s1 = "naruto";
+	String s0;
+	int n1 = 100;
+	int n0;
+	float f1 = 100.0;
+	float f0;
+}
+
+assure "ClassField" {
+	C c = new C();
+	print c.s1, c.n1, c.f1;
+	print c.s0, c.n0, c.f0;
+	assert c.s1 == "naruto";
+	assert c.s0 == null;
+	assert c.n1 == 100;
+	assert c.n0 == 0;
+	assert c.f1 == 100.0;
+	assert c.f0 == 0.0;
 }
 
 class Rectangle {
@@ -40,32 +61,12 @@ class Triangle extends Rectangle {
 	}
 }
 
-assure "SubClassDefinition" {
+assure "SubClass" {
 	Rectangle r = new Rectangle(80, 60);
 	Triangle t = new Triangle(80, 60);
 	print "Rectangle", r.area
 	print "Triangle", t.area
 }
 
-class C {
-	String s1 = "naruto";
-	String s0;
-	int n1 = 100;
-	int n0;
-	float f1 = 100.0;
-	float f0;
-}
-
-assure "ClassFieldDefinition" {
-	C c = new C();
-	print c.s1, c.n1, c.f1;
-	print c.s0, c.n0, c.f0;
-	assert c.s1 == "naruto";
-	assert c.s0 == null;
-	assert c.n1 == 100;
-	assert c.n0 == 0;
-	assert c.f1 == 100.0;
-	assert c.f0 == 0.0;
-}
 
 

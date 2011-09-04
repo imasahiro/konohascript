@@ -3,8 +3,6 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-// Scala-style class
-
 assure "Exception" {
 	e = new Exception();
 	e2 = new Security!!("Permission Denied");

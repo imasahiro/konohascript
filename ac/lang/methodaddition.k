@@ -18,7 +18,7 @@ boolean Person.isChild() {
 	return age < 13;
 }
 
-assure "DeclareMethodAddition" {
+assure "MethodAddition" {
 	assert not p1.isChild();
 }
 
@@ -26,6 +26,6 @@ boolean Person.isChild() {
 	return age < 20;
 }
 
-assure "DeclareMethodRewrite" {
+assure "MethodRewrite" {
 	assert p1.isChild();
 }

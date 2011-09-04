@@ -3,8 +3,6 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-// Konoha one liner 
-
 f = function(int n) {
 	return n+1;
 }

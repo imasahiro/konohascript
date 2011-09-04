@@ -3,7 +3,7 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-assure "x[n]: tuple" {
+assure "Tuple:x[n]" {
 	t2 = ("naruto", 17);
 	t3 = ("naruto", 17, "rasengan");
 	assert |t2| == 2;
@@ -14,3 +14,4 @@ assure "x[n]: tuple" {
 //	assert t3[-2] == 17;
 	assert t3[-3] == "naruto";
 }
+

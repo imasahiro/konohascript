@@ -3,7 +3,7 @@
  *  written by Kimio Kuramitsu  twitter: @konohakun 
  ***************************************************************************/
 
-assure "SupportDynamicType" {
+assure "DynamicType" {
 	dynamic d = 1;
 	int n = d;
 	assert n == 1;
@@ -25,13 +25,13 @@ dynamic fibo (dynamic n) {
         return fibo(n-1) + fibo(n-2);
 }
 
-assure "SupportDynamicType" {
+assure "DynamicType" {
 	n = fibo(10);
 	assert typeof(n) == dynamic;
 	assert n == 55;
 }
 
-assure "SupportDynamicTypeCall" {
+assure "DynamicTypeCall" {
 	dynamic d = "naruto";
 	assert d.startsWith("n");
 	assert not d.startsWith("A");

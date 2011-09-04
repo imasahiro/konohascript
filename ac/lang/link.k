@@ -5,7 +5,7 @@
 
 using konoha.lang.*;
 
-assure "link" {
+assure "Link" {
 	String name1 = "Int";
 	String name2 = "konoha.Int";
 	Class c1 = class:Int;

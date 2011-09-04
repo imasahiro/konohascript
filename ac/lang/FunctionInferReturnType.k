@@ -11,7 +11,7 @@ def g(int n) {
 	print n;
 }
 
-assure "FunctionInferReturnType" {
+assure "ReturnTypeInference" {
 	a = f(1);
 	g(10);
 	assert typeof(a) == Int;
