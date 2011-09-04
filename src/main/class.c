@@ -1020,7 +1020,6 @@ void knh_Method_setFunc(CTX ctx, knh_Method_t *mtd, knh_Fmethod func)
 
 void knh_Method_toAbstract(CTX ctx, knh_Method_t *mtd)
 {
-	DBG_P("cid=%s,mn=%s", CLASS__(mtd->cid), MN__(mtd->mn));
 	KNH_SETv(ctx, DP(mtd)->kcode, KNH_NULL);
 	DP(mtd)->cfunc = NULL;
 	knh_Method_setFunc(ctx, mtd, Fmethod_abstract);

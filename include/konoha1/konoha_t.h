@@ -1061,11 +1061,13 @@ typedef struct knh_context_t {
 
 	/* cache */
 	knh_mtdcache_t              *mtdcache;
-	knh_tmrcache_t             *tmrcache;
+	knh_tmrcache_t              *tmrcache;
+
 	struct knh_Object_t        **refs;
 	size_t                       ref_size;
 	struct knh_Object_t        **ref_buf;
 	size_t                       ref_capacity;
+
 	struct knh_Object_t        **queue;
 	size_t                       queue_capacity;
 	size_t                       queue_log2;

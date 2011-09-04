@@ -635,11 +635,6 @@ static void Gamma_clear(CTX ctx, knh_gint_t offset, knh_Stmt_t *stmt)
 	if(offset < DP(ctx->gma)->fvarsize) {
 		DP(ctx->gma)->fvarsize = offset;
 	}
-	if(offset == 0) {
-		DP(ctx->gma)->tkScriptNC = NULL;
-		DBG_P("******* proceedNC = %p *********", DP(ctx->gma)->proceedNC);
-		DP(ctx->gma)->proceedNC = NULL;
-	}
 }
 
 static knh_Token_t *Gamma_tokenIDX(CTX ctx, knh_Token_t *tk)
@@ -4655,8 +4650,8 @@ static void Gamma_initThis(CTX ctx, knh_class_t cid, knh_type_t it_type)
 	DBG_ASSERT(TT_(gf[0].tkIDX) == TT_FVAR);
 	DBG_ASSERT((gf[0].tkIDX)->index == 0);
 	if(it_type == TYPE_void) {
-		DP(ctx->gma)->psize = 0;
-		DP(ctx->gma)->gsize  = 1;
+		DP(ctx->gma)->psize    = 0;
+		DP(ctx->gma)->gsize    = 1;
 		DP(ctx->gma)->fvarsize = 1;
 	}
 	else {
@@ -4669,6 +4664,9 @@ static void Gamma_initThis(CTX ctx, knh_class_t cid, knh_type_t it_type)
 		DP(ctx->gma)->fvarsize = 2;
 		KNH_SETv(ctx, gf[1].tkIDX, new_TokenTYPED(ctx, TT_FVAR, it_type, 1));
 	}
+	DBG_P("******* proceedNC = %p *********", DP(ctx->gma)->proceedNC);
+	DP(ctx->gma)->tkScriptNC = NULL;
+	DP(ctx->gma)->proceedNC = NULL;
 }
 
 #define CASE_STMT2(XX, ...) case STT_##XX : {              \
