@@ -2666,6 +2666,7 @@ static knh_Token_t* NEWPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t new_
 	if(Method_isRestricted(mtd)) {
 		return ERROR_MethodIsNot(ctx, mtd, "allowed");
 	}
+	DBG_P("new_cid=%s", CLASS__(new_cid));
 	Token_setMethod(ctx, tkNN(stmt, 0), mn, mtd);
 	knh_Token_toCID(ctx, tkNN(stmt, 1), new_cid);
 	tkRES->type = new_cid;
@@ -2675,6 +2676,7 @@ static knh_Token_t* NEWPARAMs_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t new_
 	else {
 		return CALL_toCONST(ctx, stmt, mtd);
 	}
+	stmt->type = new_cid;
 	return tkRES;
 }
 
@@ -2754,6 +2756,7 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 	if(mn == MN_newMAP) {  /* {hoge: 1, hogo: 2} */
 		return NEWMAP_typing(ctx, stmt, reqt);
 	}
+
 	knh_class_t new_cid = CLASS_unknown;
 	if(TT_(tkC) == TT_ASIS) { /* new () */
 		if(reqt == TYPE_dyn) {
@@ -2765,9 +2768,13 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		new_cid = knh_Token_cid(ctx, tkC, CLASS_unknown);
 	}
 	if(new_cid == CLASS_unknown) { /* new UnknownClass(...) */
-		if(reqt == TYPE_dyn) return ERROR_UndefinedName(ctx, tkC);
+		if(reqt == TYPE_dyn) {
+			return ERROR_UndefinedName(ctx, tkC);
+		}
 		new_cid = CLASS_t(reqt);
 	}
+	DBG_P("new_cid=%s", CLASS__(new_cid));
+
 	if(mn == MN_newARRAY) {  /* new C [10, 10] */
 		size_t i;
 		for(i = 2; i < DP(stmt)->size; i++) {
@@ -2820,11 +2827,9 @@ static knh_Token_t* NEW_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 			knh_ParamArray_add(ctx, pa, p);
 		}
 		new_cid = knh_class_Generics(ctx, CLASS_Tuple, pa);
-//		knh_Token_toCID(ctx, tkC, mtd_cid);
 		END_LOCAL(ctx, lsfp);
 		return NEWPARAMs_typing(ctx, stmt, new_cid, mn, 0/*needsTypingPARAMs*/);
 	}
-
 	if(new_cid == CLASS_Exception) {
 		if(!knh_isDefinedEvent(ctx, S_tobytes((tkC)->text))) {
 			WARN_Undefined(ctx, "fault", CLASS_Exception, tkC);
