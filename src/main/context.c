@@ -262,6 +262,7 @@ static knh_context_t* new_RootContext(void)
 	/* These are not shared, but needed to initialize System*/
 	knh_stack_initexpand(ctx, NULL, K_STACKSIZE);
 	KNH_INITv(share->packageDictMap, new_DictMap0(ctx, 0, 1/*isCaseMap*/, "packageDictMap"));
+	KNH_INITv(share->securityDictMap, new_DictMap0(ctx, 0, 1/*isCaseMap*/, "securityDictMap")); // added by Wakamori
 	KNH_INITv(share->classNameDictSet, new_DictSet0(ctx, 128, 1/*isCaseMap*/, "classNameDictSet"));
 	KNH_INITv(share->eventDictSet, new_DictSet0(ctx, 32, 1/*isCaseMap*/, "eventDictSet"));
 	KNH_INITv(share->streamDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "streamDpiDictSet"));
@@ -277,6 +278,7 @@ static knh_context_t* new_RootContext(void)
 	KNH_INITv(ctx->script, new_(Script));     // require rootns
 	KNH_INITv(ctx->gma, new_(Gamma));         // require script
 	knh_loadScriptSystemKonohaCode(ctx);      // require gamma
+	loadPolicy(ctx); // added by Wakamori
 	knh_loadScriptSystemMethod(ctx, kapi);
 	knh_CommonContext_init(ctx, ctx);
 	knh_loadScriptTokenData(ctx);
@@ -383,6 +385,7 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	KNH_ADDREF(ctx,   share->xdataPtrMap);
 	KNH_ADDREF(ctx,   share->constPools);
 	KNH_ADDREF(ctx,   share->packageDictMap);
+	KNH_ADDREF(ctx,   share->securityDictMap); // added by Wakamori
 	KNH_ADDREF(ctx,   share->classNameDictSet);
 	KNH_ADDREF(ctx,   share->eventDictSet);
 	KNH_ADDREF(ctx,   share->streamDpiDictSet);

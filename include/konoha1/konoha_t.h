@@ -938,6 +938,7 @@ typedef struct knh_share_t {
 
 	/* symbol, names */
 	struct knh_DictMap_t       *packageDictMap;
+	struct knh_DictMap_t       *securityDictMap; // added by Wakamori
 	struct knh_DictSet_t       *classNameDictSet;
 	struct knh_DictSet_t       *eventDictSet;
 	struct knh_DictSet_t       *streamDpiDictSet;

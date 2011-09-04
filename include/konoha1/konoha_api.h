@@ -540,6 +540,7 @@ int knh_isVerboseLang(void);
 void opt_verbose_lang(int mode, const char *optstr);
 int knh_isVerboseGC(void);
 int knh_isVerbosePref(void);
+void loadPolicy(CTX ctx);
 void knh_enforceSecurity(CTX ctx, knh_Method_t *mtd);
 void knh_PleaseLetUsKnowYourOS(CTX ctx, const char *msg, const char *file, int line);
 knh_bool_t knh_VirtualMachine_launch(CTX ctx, knh_sfp_t *sfp);

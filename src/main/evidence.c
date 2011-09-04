@@ -282,17 +282,151 @@ static void opt_verbose_pref(int mode, const char *optstr)
 }
 
 static int enforce_security = 0;
+/* added by Wakamori */
+static char role[64] = {0};
 
-void knh_enforceSecurity(CTX ctx, knh_Method_t *mtd)
+/* added by Wakamori */
+static knh_bool_t method_isPermissionAllowed(CTX ctx, knh_Method_t *mtd)
 {
-	Method_setRestricted(mtd, enforce_security);
+	knh_DictMap_t *dmap = ctx->share->securityDictMap;
+	CWB_t cwbbuf, *cwb = CWB_open0(ctx, &cwbbuf);
+	CWB_write(ctx, cwb, S_tobytes(ClassTBL(mtd->cid)->sname));
+	CWB_putc(ctx, cwb, '.');
+	CWB_write(ctx, cwb, B(MN__(mtd->mn)));
+	DBG_P("[methodname] : %s", CWB_tobytes(cwb).text);
+	const char *idx, *p = role;
+	while (p[0] != '\0') {
+		idx = strchr((const char *)p, ',');
+		knh_Array_t *a = NULL;
+		if (idx != NULL) {
+			a = (knh_Array_t *)knh_DictMap_getNULL(ctx, dmap, new_bytes2(p, idx - p));
+			p = idx + 1;
+		} else {
+			a = (knh_Array_t *)knh_DictMap_getNULL(ctx, dmap, B(p));
+			p += knh_strlen(p);
+		}
+		if (a != NULL) {
+			int i;
+			for (i = 0; i < knh_Array_size(a); i++) {
+				const char *s = S_totext((knh_String_t*)knh_Array_n(a, i));
+				if (strstr(s, CWB_tobytes(cwb).text) != NULL
+					|| strstr(s, "all") != NULL) {
+					// this method is allowed to be executed by this role
+					CWB_close0(cwb);
+					return 1;
+				}
+			}
+		}
+	}
+	CWB_close0(cwb);
+	return 0;
 }
 
+/* added by Wakamori */
+void loadPolicy(CTX ctx)
+{
+	if (enforce_security == 0) return;
+	// load $konoha.home.path/policy
+	knh_setProperty(ctx, new_String(ctx, "role"), (dynamic *)new_String(ctx, role));
+	CWB_t cwbbuf, *cwb = CWB_open0(ctx, &cwbbuf);
+	knh_String_t *s = knh_getPropertyNULL(ctx, STEXT("konoha.home.path"));
+	CWB_write(ctx, cwb, S_tobytes(s));
+	CWB_write(ctx, cwb, STEXT("/policy"));
+	knh_InputStream_t *is = new_InputStreamNULL(ctx, new_Path(ctx, CWB_newString0(ctx, cwb)), "r");
+
+	if (is == NULL) {
+		DBG_P("policy file not found. All @Restricted annotated method is rescricted");
+	}
+	else {
+		/*
+		if (enforce_security == 0) {
+			enforce_security = 1;
+			knh_memcpy(role, "Default", 7);
+			role[7] = '\0';
+		}
+		*/
+		// parse policy file written in JSON
+		// it must be refactored in the future
+		knh_DictMap_t *dmap = ctx->share->securityDictMap;
+		knh_String_t *line = knh_InputStream_readLine(ctx, is);
+		while (IS_NOTNULL(line)) {
+			//fprintf(stderr, "line=%s\n", S_totext(line));
+			if (S_equals(line, STEXT("[")) || S_equals(line, STEXT("]"))) {
+				/* ignore */
+			} else {
+				knh_String_t *key = NULL;
+				knh_Array_t *a = new_Array(ctx, CLASS_String, 0);
+				const char *idx = NULL;
+				char *p = strstr(S_totext(line), "\"name\": \"");
+				if (p != NULL) {
+					p += 9; // == strlen("\"name\": \"")
+					idx = strchr((const char *)p, '"');
+					if (idx != NULL) {
+						p[idx - p] = '\0';
+						//fprintf(stderr, "name: %s\n", p);
+						//knh_DictMap_set(ctx, dmap, new_String(ctx, "name"), new_String(ctx, p));
+						key = new_String(ctx, p);
+						p = (char *)idx + 1;
+					}
+				}
+				p = strstr((const char *)p, "\"permission\": [");
+				if (p != NULL) {
+					p += 16; // == strlen("\"permission\": \[\"")
+					idx = strchr((const char *)p, '"');
+					while (idx != NULL) {
+						p[idx - p] = '\0';
+						if (strstr((const char *)p, ", ") == NULL) {
+							//fprintf(stderr, "permission: %s\n", p);
+							knh_Array_add(ctx, a, new_String(ctx, p));
+						}
+						p = (char *)idx + 1;
+						idx = strchr((const char *)p, '"');
+					}
+				}
+				if (key != NULL) {
+					knh_DictMap_set(ctx, dmap, key, a);
+				}
+			}
+			line = knh_InputStream_readLine(ctx, is);
+		}
+		knh_InputStream_close(ctx, is);
+	}
+}
+
+/* modified by Wakamori */
+void knh_enforceSecurity(CTX ctx, knh_Method_t *mtd)
+{
+	if (enforce_security == 0) {
+		Method_setRestricted(mtd, 0);
+	} else if (Method_isRestricted(mtd)) {
+		DBG_P("=== enforce security ===");
+		DBG_P("[      role] : %s", role);
+
+		if (method_isPermissionAllowed(ctx, mtd)) {
+			Method_setRestricted(mtd, 0);
+			DBG_P("[permission] : Allowed");
+		}
+		else {
+			Method_setRestricted(mtd, 1);
+			DBG_P("[permission] : Restricted");
+		}
+		DBG_P("========================");
+	}
+}
+
+/* modified by Wakamori */
 static void opt_enforce_security(int mode, const char *optstr)
 {
 	if(optstr != NULL) {
-		fprintf(stdout, "security policy is unsupported\n");
-		exit(0);
+		int len = knh_strlen(optstr);
+		if (len < 64) {
+			knh_memcpy(role, optstr, len);
+			role[len] = '\0';
+		}
+	}
+	else {
+		knh_memcpy(role, "Default", 7);
+		role[7] = '\0';
 	}
 	enforce_security = 1;
 }
