@@ -86,14 +86,7 @@ typedef struct {
 #define KNH_MPI_SUCCESS(res) ((res) == MPI_SUCCESS) /* defined in mpi.h */
 #define COMM(v, o) knh_MPIComm_t *v = ((knh_MPIComm_t*)o)
 
-/* Request */
-typedef struct {
-	knh_hObject_t h;
-	MPI_Request *mpi_req;
-} knh_MPIRequest_t;
-
-#define KNH_MPI_REQUEST(req) ((req)->mpi_req)
-#define KNH_MPI_REQUEST_IS_NULL(req) (*KNH_MPI_REQUEST(req) == MPI_REQUEST_NULL) /* defined in mpi.h */
+#define KNH_MPI_REQ_IS_NULL(req) ((req) == MPI_REQUEST_NULL)
 
 /* Op */
 typedef struct {

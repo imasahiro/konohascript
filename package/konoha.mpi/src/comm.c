@@ -23,16 +23,34 @@ KMETHOD MPIComm_getProcessorName(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(pname);
 }
 
-//## method Int MPIComm.getWtime();
-KMETHOD MPIComm_getWtime(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_MPIComm_t *comm = (knh_MPIComm_t*)sfp[0].o;
-	RETURNi_(KNH_ON_MPI(comm) ? MPI_Wtime() : 0);
-}
-
 //## method Int MPIComm.barrier();
 KMETHOD MPIComm_barrier(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_MPIComm_t *comm = (knh_MPIComm_t*)sfp[0].o;
 	RETURNi_(KNH_ON_MPI(comm) ? MPI_Barrier(KNH_MPI_COMM(comm)) : 0);
+}
+
+//## method Int MPIComm.wait(int req);
+KMETHOD MPIComm_wait(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_MPIComm_t *comm = (knh_MPIComm_t*)sfp[0].o;
+	MPI_Request req = Int_to(MPI_Request, sfp[1]);
+	MPI_Status stat;
+	int ret = -1;
+	if (KNH_ON_MPI(comm) && !KNH_MPI_REQ_IS_NULL(req)) {
+		ret = MPI_Wait(&req, &stat);
+	}
+	RETURNi_(ret);
+}
+
+//## method Int MPIComm.cancel(int req);
+KMETHOD MPIComm_cancel(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_MPIComm_t *comm = (knh_MPIComm_t*)sfp[0].o;
+	MPI_Request req = Int_to(MPI_Request, sfp[1]);
+	int ret = -1;
+	if (KNH_ON_MPI(comm) && !KNH_MPI_REQ_IS_NULL(req)) {
+		ret = MPI_Cancel(&req);
+	}
+	RETURNi_(ret);
 }

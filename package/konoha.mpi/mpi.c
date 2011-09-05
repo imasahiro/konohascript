@@ -13,6 +13,12 @@ KMETHOD System_disableLog(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+//## method Float System.getMPIWtime();
+KMETHOD System_getMPIWtime(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNf_(MPI_Wtime());
+}
+
 /* ------------------------------------------------------------------------ */
 
 #ifdef _SETUP
@@ -23,21 +29,6 @@ static void knh_MPIComm_init(CTX ctx, knh_RawPtr_t *o)
 	KNH_NOT_ON_MPI(comm);
 	KNH_MPI_SIZE(comm) = -1;
 	comm->proc_name = NULL;
-}
-
-static void knh_MPIRequest_init(CTX ctx, knh_RawPtr_t *o)
-{
-	knh_MPIRequest_t *mreq = (knh_MPIRequest_t*)o;
-	KNH_MPI_REQUEST(mreq) = (MPI_Request*)KNH_MALLOC(ctx, sizeof(MPI_Request));
-}
-
-static void knh_MPIRequest_free(CTX ctx, knh_RawPtr_t *o)
-{
-	knh_MPIRequest_t *mreq = (knh_MPIRequest_t*)o;
-	if (!KNH_MPI_REQUEST_IS_NULL(mreq)) {
-		MPI_Request_free(KNH_MPI_REQUEST(mreq));
-		KNH_FREE(ctx, KNH_MPI_REQUEST(mreq), sizeof(MPI_Request));
-	}
 }
 
 static void knh_MPIOp_init(CTX ctx, knh_RawPtr_t *o)
@@ -88,13 +79,6 @@ DEFAPI(void) defMPIComm(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	cdef->name = "MPIComm";
 	cdef->init = knh_MPIComm_init;
-}
-
-DEFAPI(void) defMPIRequest(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	cdef->name = "MPIRequest";
-	cdef->init = knh_MPIRequest_init;
-	cdef->free = knh_MPIRequest_free;
 }
 
 DEFAPI(void) defMPIOp(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -4,6 +4,7 @@ include "lib:gluelink";
 IArray = Array<Int>;
 FArray = Array<Float>;
 @Public void System.disableLog(); // for ac
+@Public Float System.getMPIWtime(); // for MPI_Wtime
 
 /* ======================================================================== */
 /* Basic Class API */
@@ -13,13 +14,9 @@ FArray = Array<Float>;
 Int MPIComm.getRank();
 Int MPIComm.getSize();
 String MPIComm.getProcessorName();
-Int MPIComm.getWtime();
 Int MPIComm.barrier();
-
-/* --- Request ------------------------------------------------------------ */
-@Native class MPIRequest;
-Int MPIRequest.wait();
-Int MPIRequest.cancel();
+Int MPIComm.wait(Int request);
+Int MPIComm.cancel(Int request);
 
 /* --- Operator ----------------------------------------------------------- */
 @Native class MPIOp;
@@ -30,18 +27,18 @@ MPIOp MPIOp.new(Func<dynamic,dynamic> func, Boolean commutable);
 /* Point-to-Point Communication API */
 
 /* -- send ---------------------------------------------------------------- */
-Int MPIComm.send(dynamic sdata, Int dest_rank);
+Int MPIComm.send(dynamic sdata, Int dest_rank, Int tag);
 
-Int MPIComm.sendBytes(Bytes sdata, Int dest_rank);
-Int MPIComm.sendInt(IArray sdata, Int dest_rank);
-Int MPIComm.sendFloat(FArray sdata, Int dest_rank);
+Int MPIComm.sendBytes(Bytes sdata, Int dest_rank, Int tag);
+Int MPIComm.sendInt(IArray sdata, Int dest_rank, Int tag);
+Int MPIComm.sendFloat(FArray sdata, Int dest_rank, Int tag);
 
 /* --- recv --------------------------------------------------------------- */
-Int MPIComm.recv(dynamic rdata, Int src_rank);
+Int MPIComm.recv(dynamic rdata, Int src_rank, Int tag);
 
-Int MPIComm.recvBytes(Bytes rdata, Int src_rank);
-Int MPIComm.recvInt(IArray rdata, Int src_rank);
-Int MPIComm.recvFloat(FArray rdata, Int src_rank);
+Int MPIComm.recvBytes(Bytes rdata, Int src_rank, Int tag);
+Int MPIComm.recvInt(IArray rdata, Int src_rank, Int tag);
+Int MPIComm.recvFloat(FArray rdata, Int src_rank, Int tag);
 
 /* --- sendrecv ----------------------------------------------------------- */
 Int MPIComm.sendrecv(dynamic sdata, Int dest_rank, dynamic rdata, Int src_rank);
@@ -51,18 +48,18 @@ Int MPIComm.sendrecvInt(IArray sdata, Int dest_rank, IArray rdata, Int count, In
 Int MPIComm.sendrecvFloat(FArray sdata, Int dest_rank, FArray rdata, Int count, Int src_rank);
 
 /* --- isend -------------------------------------------------------------- */
-MPIRequest MPIComm.iSend(dynamic sdata, Int dest_rank, NameSpace ns);
+Int MPIComm.iSend(dynamic sdata, Int dest_rank, Int tag);
 
-MPIRequest MPIComm.iSendBytes(Bytes sdata, Int dest_rank, NameSpace ns);
-MPIRequest MPIComm.iSendInt(IArray sdata, Int dest_rank, NameSpace ns);
-MPIRequest MPIComm.iSendFloat(FArray sdata, Int dest_rank, NameSpace ns);
+Int MPIComm.iSendBytes(Bytes sdata, Int dest_rank, Int tag);
+Int MPIComm.iSendInt(IArray sdata, Int dest_rank, Int tag);
+Int MPIComm.iSendFloat(FArray sdata, Int dest_rank, Int tag);
 
 /* --- irecv -------------------------------------------------------------- */
-MPIRequest MPIComm.iRecv(dynamic rdata, Int src_rank, NameSpace ns);
+Int MPIComm.iRecv(dynamic rdata, Int src_rank, Int tag);
 
-MPIRequest MPIComm.iRecvBytes(Bytes rdata, Int count, Int src_rank, NameSpace ns);
-MPIRequest MPIComm.iRecvInt(IArray rdata, Int count, Int src_rank, NameSpace ns);
-MPIRequest MPIComm.iRecvFloat(FArray rdata, Int count, Int src_rank, NameSpace ns);
+Int MPIComm.iRecvBytes(Bytes rdata, Int count, Int src_rank, Int tag);
+Int MPIComm.iRecvInt(IArray rdata, Int count, Int src_rank, Int tag);
+Int MPIComm.iRecvFloat(FArray rdata, Int count, Int src_rank, Int tag);
 
 
 /* ======================================================================== */
