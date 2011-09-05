@@ -17,6 +17,7 @@ set(PACKAGE_SOURCE_CODE
 		src/op.c
 		src/pt2pt.c
 )
+
 set(PACKAGE_SCRIPT_CODE mpi.k)
 
 set(PACKAGE_NAME    ${PROJECT_NAME})
@@ -33,6 +34,12 @@ add_definitions(-D_SETUP)
 
 add_library(${PACKAGE_NAME} SHARED ${PACKAGE_SOURCE_CODE})
 set_target_properties(${PACKAGE_NAME} PROPERTIES PREFIX "")
+
+find_library(MPI_LIB mpich)
+if (NOT EXISTS ${MPI_LIB})
+   message(FATAL_ERROR "libmpich not found.")
+endif()
+
 target_link_libraries(${PACKAGE_NAME} konoha pmpich mpich opa mpl pthread)
 
 install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})

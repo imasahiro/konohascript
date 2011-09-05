@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-O2 -g -Wall -fPIC
 #CFLAGS=-O0 -g3 -Wall -fPIC
 LDFLAGS=-fmessage-length=0 -fPIC -Wl,-flat_namespace
-LDLIBS=-lkonoha1 -lmpich -lopa -lmpl -lpmpich
+LDLIBS=-lkonoha -lmpich -lopa -lmpl -lpmpich
 
 KNH=mpikonoha
 PKG=mpi
