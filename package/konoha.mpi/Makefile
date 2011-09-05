@@ -28,7 +28,7 @@ endif
 #endif
 
 PKGOBJS=$(PKG).o
-MPIOBJS=src/comm.o src/req.o src/op.o src/pt2pt.o src/coll.o
+MPIOBJS=src/comm.o src/op.o src/pt2pt.o src/coll.o
 
 FLAGS=$(LDFLAGS)
 LIBS=$(LDLIBS)
@@ -50,9 +50,6 @@ $(PKG).o: $(PKG).c
 
 #mpobjs
 src/comm.o: src/comm.c
-	$(CC) $(CFLAGS) -o $@ -c $^
-
-src/req.o: src/req.c
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 src/op.o: src/op.c
