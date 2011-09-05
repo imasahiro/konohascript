@@ -44,8 +44,10 @@ SET(CMAKE_C_FLAGS_DEBUG   "-O0 -g3")
 # -Wpointer-arith -Wconversion
 # -Wwrite-strings -Wcast-align
 # -Wcast-qual -Wstrict-aliasing=2 -Wc++-compat
-SET(CMAKE_CXX_FLAGS_RELEASE "-Wall -Weffc++ -O2 -g")
-SET(CMAKE_CXX_FLAGS_DEBUG   "-Wall -Weffc++ -O0 -g3")
+#SET(CMAKE_CXX_FLAGS_RELEASE "-Wall -Weffc++ -O2 -g")
+SET(CMAKE_CXX_FLAGS_RELEASE "-Wall -O2 -g")
+#SET(CMAKE_CXX_FLAGS_DEBUG   "-Wall -Weffc++ -O0 -g3")
+SET(CMAKE_CXX_FLAGS_DEBUG   "-Wall -O0 -g3")
 # -Wold-style-cast 
 #if("${CMAKE_C_COMPILER}" STREQUAL "/usr/bin/gcc")
 #	set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
