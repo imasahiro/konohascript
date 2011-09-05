@@ -10,34 +10,34 @@ if (rank == 0) disableLog();
 
 
 if (rank == 0) {
-    world.iSendbytes((Bytes)"konoha", 1);
+    world.iSendbytes((Bytes)"konoha", 0, 1);
 } else {
     exec("sleep 0.3"); // take a bit time delay
     assure "Pt2PtNonBlockingBytes" {
         Bytes data = new Bytes();
-        world.iRecvBytes(data, 0);
+        world.iRecvBytes(data, 0, 0);
         assert (data.decode() == "konoha");
     }
 }
 
 if (rank == 0) {
-    world.iSendInt([1, 3, 5], 1);
+    world.iSendInt([1, 3, 5], 3, 1);
 } else {
     exec("sleep 0.3"); // take a bit time delay
     assure "Pt2PtNonBlockingInt" {
         IArray data = new IArray();
-        world.iRecvInt(data, 0);
+        world.iRecvInt(data, 0, 0);
         assert (data == [1, 3, 5]);
     }
 }
 
 if (rank == 0) {
-    world.iSendFloat([1.2, 3.4, 5.6], 1);
+    world.iSendFloat([1.2, 3.4, 5.6], 3, 1);
 } else {
     exec("sleep 0.3"); // take a bit time delay
     assure "Pt2PtNonBlockingFloat" {
         FArray data = new FArray();
-        world.iRecvFloat(data, 0);
+        world.iRecvFloat(data, 0, 0);
         assert (data == [1.2, 3.4, 5.6]);
     }
 }

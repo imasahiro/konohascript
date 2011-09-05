@@ -336,6 +336,7 @@ if(USE_MPI)
 		add_executable(mpikonoha src/mpikonoha.c)
 		# TODO
 		target_link_libraries(mpikonoha konoha mpi)
+		install(TARGETS mpikonoha RUNTIME DESTINATION bin)
 	else()
 		message(FATAL_ERROR "Header file 'mpi.h ' is not found")
 	endif()

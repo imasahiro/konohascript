@@ -51,16 +51,16 @@ static void knh_MPI_initWorld(CTX ctx, knh_class_t cid)
 }
 
 static knh_IntData_t MPIConstOp[] = {
-	{"OP_MAX",  MPI_MAX},
-	{"OP_MIN",  MPI_MIN},
-	{"OP_SUM",  MPI_SUM},
-	{"OP_PROD", MPI_PROD},
-	{"OP_LAND", MPI_LAND},
-	{"OP_BAND", MPI_BAND},
-	{"OP_LOD",  MPI_LOR},
-	{"OP_BOR",  MPI_BOR},
-	{"OP_LXOR", MPI_LXOR},
-	{"OP_BXOR", MPI_BXOR},
+	{"MAX",  MPI_MAX},
+	{"MIN",  MPI_MIN},
+	{"SUM",  MPI_SUM},
+	{"PROD", MPI_PROD},
+	{"LAND", MPI_LAND},
+	{"BAND", MPI_BAND},
+	{"LOD",  MPI_LOR},
+	{"BOR",  MPI_BOR},
+	{"LXOR", MPI_LXOR},
+	{"BXOR", MPI_BXOR},
 	{NULL, 0},
 };
 

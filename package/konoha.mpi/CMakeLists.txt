@@ -16,7 +16,6 @@ set(PACKAGE_SOURCE_CODE
 		src/comm.c
 		src/op.c
 		src/pt2pt.c
-		src/req.c
 )
 set(PACKAGE_SCRIPT_CODE mpi.k)
 

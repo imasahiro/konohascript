@@ -10,31 +10,31 @@ if (rank == 0) disableLog();
 
 
 if (rank == 0) {
-    world.sendBytes((Bytes)"konoha", 1);
+    world.sendBytes((Bytes)"konoha", 0, 1);
 } else {
     assure "Pt2PtBlockingBytes" {
         Bytes data = new Bytes();
-        world.recvBytes(data, 0);
+        world.recvBytes(data, 0, 0);
         assert (data.decode() == "konoha");
     }
 }
 
 if (rank == 0) {
-    world.sendInt([1, 3, 5], 1);
+    world.sendInt([1, 3, 5], 3, 1);
 } else {
     assure "Pt2PtBlockingInt" {
         IArray data = new IArray();
-        world.recvInt(data, 0);
+        world.recvInt(data, 3, 0);
         assert (data == [1, 3, 5]);
     }
 }
 
 if (rank == 0) {
-    world.sendFloat([1.2, 3.4, 5.6], 1);
+    world.sendFloat([1.2, 3.4, 5.6], 3, 1);
 } else {
     assure "Pt2PtBlockingFloat" {
         FArray data = new FArray();
-        world.recvFloat(data, 0);
+        world.recvFloat(data, 3, 0);
         assert (data == [1.2, 3.4, 5.6]);
     }
 }
