@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 2.6)
 # -DCMAKE_INSTALL_PREFIX=$HOME
 # -DCMAKE_VERBOSE_MAKEFILE=1
 
+if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
+	set(CMAKE_C_FLAGS "-fPIC")
+endif()
 set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g")
 set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
 set(CMAKE_BUILD_TYPE Release)
