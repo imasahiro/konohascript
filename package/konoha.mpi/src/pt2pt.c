@@ -6,17 +6,17 @@ static int knh_MPI_SendBytes(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, int 
 {
 	(void)ctx;
 	COMM(comm, c);
-	if (IS_String(sdata)) {
-		knh_String_t * s = (knh_String_t*)sdata;
-		if (count == 0) count = s->str.len;
-		return (KNH_ON_MPI(comm)) ?
-			MPI_Send(s->str.ubuf, count, BA_Type, dest_rank, tag, KNH_MPI_COMM(comm)) : -1;
-	}
-	else {
+	if (IS_Bytes(sdata)) {
 		BA(data, sdata);
 		if (count == 0) count = BA_size(data);
 		return (KNH_ON_MPI(comm)) ?
 			MPI_Send(BA_buf(data), count, BA_Type, dest_rank, tag, KNH_MPI_COMM(comm)) : -1;
+	}
+	else { /* IS_String(sdata) */
+		SV(data, sdata);
+		if (count == 0) count = SV_size(data);
+		return (KNH_ON_MPI(comm)) ?
+			MPI_Send(SV_buf(data), count, SV_Type, dest_rank, tag, KNH_MPI_COMM(comm)) : -1;
 	}
 }
 
@@ -32,7 +32,7 @@ static int knh_MPI_SendInt(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, int co
 	}
 	else { /* IS_Int(sdata) */
 		return (KNH_ON_MPI(comm)) ?
-			MPI_Send(&O_data(sdata), 1, IA_Type, dest_rank, tag, KNH_MPI_COMM(comm)) : -1;
+			MPI_Send(IV_buf(sdata), 1, IV_Type, dest_rank, tag, KNH_MPI_COMM(comm)) : -1;
 	}
 }
 
@@ -48,7 +48,7 @@ static int knh_MPI_SendFloat(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, int 
 	}
 	else { /* IS_Float(sdata) */
 		return (KNH_ON_MPI(comm)) ?
-			MPI_Send(&O_data(sdata), 1, FA_Type, dest_rank, tag, KNH_MPI_COMM(comm)) : -1;
+			MPI_Send(FV_buf(sdata), 1, FV_Type, dest_rank, tag, KNH_MPI_COMM(comm)) : -1;
 	}
 }
 
@@ -129,18 +129,42 @@ static int knh_MPI_Sendrecv_getRecvCount(knh_MPIComm_t *comm, int scount, int de
 static int knh_MPI_SendrecvBytes(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, int dest_rank, knh_Object_t *rdata, int count, int src_rank, int dest_tag, int src_tag)
 {
 	COMM(comm, c);
-	BA(asdata, sdata);
 	BA(ardata, rdata);
 	int ret = -1;
 	if (KNH_ON_MPI(comm)) {
 		MPI_Status stat;
-		if (count == 0) {
-			count = knh_MPI_Sendrecv_getRecvCount(comm, BA_size(asdata), dest_rank, src_rank, dest_tag, src_tag);
+		if (IS_Bytes(sdata)) {
+			BA(asdata, sdata);
+			if (count == 0) {
+				count = knh_MPI_Sendrecv_getRecvCount(comm, BA_size(asdata), dest_rank, src_rank, dest_tag, src_tag);
+			}
+			int incl = count - BA_size(ardata);
+			if (incl <= 0) {
+				ret = MPI_Sendrecv(BA_buf(asdata), BA_size(asdata), BA_Type, dest_rank, dest_tag,
+								   BA_buf(ardata), count, BA_Type, src_rank, src_tag, KNH_MPI_COMM(comm), &stat);
+			} else {
+				KNH_BA_EXPAND(ardata, incl);
+				ret = MPI_Sendrecv(BA_buf(asdata), BA_size(asdata), BA_Type, dest_rank, dest_tag,
+								   BA_buf(ardata), count, BA_Type, src_rank, src_tag, KNH_MPI_COMM(comm), &stat);
+				BA_size(ardata) += incl;
+			}
 		}
-		KNH_BA_EXPAND(ardata, count);
-		ret = MPI_Sendrecv(BA_buf(asdata), BA_size(asdata), BA_Type, dest_rank, dest_tag,
-						   BA_tail(ardata), count, BA_Type, src_rank, src_tag, KNH_MPI_COMM(comm), &stat);
-		BA_size(ardata) += count;
+		else { /* IS_String(sdata) */
+			SV(asdata, sdata);
+			if (count == 0) {
+				count = knh_MPI_Sendrecv_getRecvCount(comm, SV_size(asdata), dest_rank, src_rank, dest_tag, src_tag);
+			}
+			int incl = count - BA_size(ardata);
+			if (incl <= 0) {
+				ret = MPI_Sendrecv(SV_buf(asdata), SV_size(asdata), SV_Type, dest_rank, dest_tag,
+								   BA_buf(ardata), count, BA_Type, src_rank, src_tag, KNH_MPI_COMM(comm), &stat);
+			} else {
+				KNH_BA_EXPAND(ardata, incl);
+				ret = MPI_Sendrecv(SV_buf(asdata), SV_size(asdata), SV_Type, dest_rank, dest_tag,
+								   BA_buf(ardata), count, BA_Type, src_rank, src_tag, KNH_MPI_COMM(comm), &stat);
+				BA_size(ardata) += incl;
+			}
+		}
 	}
 	return ret;
 }
@@ -148,18 +172,42 @@ static int knh_MPI_SendrecvBytes(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, 
 static int knh_MPI_SendrecvInt(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, int dest_rank, knh_Object_t *rdata, int count, int src_rank, int dest_tag, int src_tag)
 {
 	COMM(comm, c);
-	IA(asdata, sdata);
 	IA(ardata, rdata);
 	int ret = -1;
 	if (KNH_ON_MPI(comm)) {
 		MPI_Status stat;
-		if (count == 0) {
-			count = knh_MPI_Sendrecv_getRecvCount(comm, IA_size(asdata), dest_rank, src_rank, dest_tag, src_tag);
+		if (IS_IArray(sdata)) {
+			IA(asdata, sdata);
+			if (count == 0) {
+				count = knh_MPI_Sendrecv_getRecvCount(comm, IA_size(asdata), dest_rank, src_rank, dest_tag, src_tag);
+			}
+			int incl = count - IA_size(ardata);
+			if (incl <= 0) {
+				ret = MPI_Sendrecv(IA_buf(asdata), IA_size(asdata), IA_Type, dest_rank, dest_tag,
+								   IA_buf(ardata), count, IA_Type, src_rank, src_tag, KNH_MPI_COMM(comm), &stat);
+			} else {
+				KNH_IA_EXPAND(ardata, incl);
+				ret = MPI_Sendrecv(IA_buf(asdata), IA_size(asdata), IA_Type, dest_rank, dest_tag,
+								   IA_buf(ardata), count, IA_Type, src_rank, src_tag, KNH_MPI_COMM(comm), &stat);
+				IA_size(ardata) += incl;
+			}
 		}
-		KNH_IA_EXPAND(ardata, count);
-		ret = MPI_Sendrecv(IA_buf(asdata), IA_size(asdata), IA_Type, dest_rank, dest_tag,
-						   IA_tail(ardata), count, IA_Type, src_rank, src_tag, KNH_MPI_COMM(comm), &stat);
-		IA_size(ardata) += count;
+		else { /* IS_Int(sdata) */
+			IV(asdata, sdata);
+			if (count == 0) {
+				count = knh_MPI_Sendrecv_getRecvCount(comm, 1, dest_rank, src_rank, dest_tag, src_tag);
+			}
+			int incl = count - IA_size(ardata);
+			if (incl <= 0) {
+				ret = MPI_Sendrecv(IV_buf(asdata), 1, IV_Type, dest_rank, dest_tag,
+								   IA_buf(ardata), count, IA_Type, src_rank, src_tag, KNH_MPI_COMM(comm), &stat);
+			} else {
+				KNH_IA_EXPAND(ardata, incl);
+				ret = MPI_Sendrecv(IV_buf(asdata), 1, IV_Type, dest_rank, dest_tag,
+								   IA_buf(ardata), count, IA_Type, src_rank, src_tag, KNH_MPI_COMM(comm), &stat);
+				IA_size(ardata) += incl;
+			}
+		}
 	}
 	return ret;
 }
@@ -167,18 +215,42 @@ static int knh_MPI_SendrecvInt(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, in
 static int knh_MPI_SendrecvFloat(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, int dest_rank, knh_Object_t *rdata, int count, int src_rank, int dest_tag, int src_tag)
 {
 	COMM(comm, c);
-	FA(asdata, sdata);
 	FA(ardata, rdata);
 	int ret = -1;
 	if (KNH_ON_MPI(comm)) {
 		MPI_Status stat;
-		if (count == 0) {
-			count = knh_MPI_Sendrecv_getRecvCount(comm, FA_size(asdata), dest_rank, src_rank, dest_tag, src_tag);
+		if (IS_FArray(sdata)) {
+			FA(asdata, sdata);
+			if (count == 0) {
+				count = knh_MPI_Sendrecv_getRecvCount(comm, FA_size(asdata), dest_rank, src_rank, dest_tag, src_tag);
+			}
+			int incl = count - FA_size(ardata);
+			if (incl <= 0) {
+				ret = MPI_Sendrecv(FA_buf(asdata), FA_size(asdata), FA_Type, dest_rank, dest_tag,
+								   FA_buf(ardata), count, FA_Type, src_rank, src_tag, KNH_MPI_COMM(comm), &stat);
+			} else {
+				KNH_FA_EXPAND(ardata, incl);
+				ret = MPI_Sendrecv(FA_buf(asdata), FA_size(asdata), FA_Type, dest_rank, dest_tag,
+								   FA_buf(ardata), count, FA_Type, src_rank, src_tag, KNH_MPI_COMM(comm), &stat);
+				FA_size(ardata) += incl;
+			}
 		}
-		KNH_FA_EXPAND(ardata, count);
-		ret = MPI_Sendrecv(FA_buf(asdata), FA_size(asdata), FA_Type, dest_rank, dest_tag,
-						   FA_tail(ardata), count, FA_Type, src_rank, src_tag, KNH_MPI_COMM(comm), &stat);
-		FA_size(ardata) += count;
+		else { /* IS_Float */
+			FV(asdata, sdata);
+			if (count == 0) {
+				count = knh_MPI_Sendrecv_getRecvCount(comm, 1, dest_rank, src_rank, dest_tag, src_tag);
+			}
+			int incl = count - FA_size(ardata);
+			if (incl <= 0) {
+				ret = MPI_Sendrecv(FV_buf(asdata), 1, FA_Type, dest_rank, dest_tag,
+								   FA_buf(ardata), count, FA_Type, src_rank, src_tag, KNH_MPI_COMM(comm), &stat);
+			} else {
+				KNH_FA_EXPAND(ardata, incl);
+				ret = MPI_Sendrecv(FV_buf(asdata), 1, FA_Type, dest_rank, dest_tag,
+								   FA_buf(ardata), count, FA_Type, src_rank, src_tag, KNH_MPI_COMM(comm), &stat);
+				FA_size(ardata) += incl;
+			}
+		}
 	}
 	return ret;
 }
@@ -195,9 +267,9 @@ static void knh_MPI_iSendBytes(CTX ctx, knh_Object_t *c, knh_Object_t *data, int
 	}
 	else { /* IS_String(data) */
 		if (KNH_ON_MPI(comm)) {
-			knh_String_t *s = (knh_String_t*)data;
-			if (count == 0) count = s->str.len;
-			MPI_Isend(s->str.ubuf, count, BA_Type, dest_rank, tag, KNH_MPI_COMM(comm), mreq);
+			SV(sdata, data);
+			if (count == 0) count = SV_size(sdata);
+			MPI_Isend(SV_buf(sdata), count, SV_Type, dest_rank, tag, KNH_MPI_COMM(comm), mreq);
 		}
 	}
 }
@@ -214,7 +286,7 @@ static void knh_MPI_iSendInt(CTX ctx, knh_Object_t *c, knh_Object_t *data, int c
 	}
 	else { /* IS_Int(data) */
 		if (KNH_ON_MPI(comm)) {
-			MPI_Isend(&O_data(data), 1, IA_Type, dest_rank, tag, KNH_MPI_COMM(comm), mreq);
+			MPI_Isend(IV_buf(data), 1, IV_Type, dest_rank, tag, KNH_MPI_COMM(comm), mreq);
 		}
 	}
 }
@@ -231,7 +303,7 @@ static void knh_MPI_iSendFloat(CTX ctx, knh_Object_t *c, knh_Object_t *data, int
 	}
 	else { /* IS_Float(data) */
 		if (KNH_ON_MPI(comm)) {
-			MPI_Isend(&O_data(data), 1, FA_Type, dest_rank, tag, KNH_MPI_COMM(comm), mreq);
+			MPI_Isend(FV_buf(data), 1, FV_Type, dest_rank, tag, KNH_MPI_COMM(comm), mreq);
 		}
 	}
 }

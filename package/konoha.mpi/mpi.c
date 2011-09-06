@@ -89,12 +89,20 @@ DEFAPI(void) defMPIOp(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 
 DEFAPI(void) constMPIComm(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
-	knh_MPI_initWorld(ctx, cid);
+	int init = 0;
+	MPI_Initialized(&init);
+	if (init) {
+		knh_MPI_initWorld(ctx, cid);
+	}
 }
 
 DEFAPI(void) constMPIOp(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
-	knh_MPI_initOp(ctx, cid);
+	int init = 0;
+	MPI_Initialized(&init);
+	if (init) {
+		knh_MPI_initOp(ctx, cid);
+	}
 }
 
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
@@ -106,7 +114,7 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 	}
 	kapi->setPackageProperty(ctx, "name", "mpi");
 	kapi->setPackageProperty(ctx, "version", "1.0");
-	RETURN_PKGINFO("konoha,mpi");
+	RETURN_PKGINFO("konoha.mpi");
 }
 
 #endif /* _SETUP */

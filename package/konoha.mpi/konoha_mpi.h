@@ -9,17 +9,6 @@
 /* ------------------------------------------------------------------------ */
 /* konoha */
 
-#if !defined(new_bytes)
-#define new_bytes(s) \
-	(knh_bytes_t){{s}, strlen(s)}
-#endif
-
-#if !defined(new_ObjectNS)
-#define new_ObjectNS(c, ns, cname) \
-	new_Object_init2((c), ClassTBL(knh_NameSpace_getcid((c), (ns), new_bytes(cname))))
-#endif
-
-
 #define KNH_BA_EXPAND(data, count) \
 	{\
 		size_t _capacity = (data)->dim->capacity;\
@@ -40,27 +29,45 @@
 #define BA_new(l) new_Bytes(ctx, NULL, (l))
 #define IA_new(l) new_Array(ctx, CLASS_Int, (l))
 #define FA_new(l) new_Array(ctx, CLASS_Float, (l))
+
 //##    IS_Bytes(o) /* defined @ konoha1.h */
 #define IS_IArray(o) (IS_bArray(o) && O_p1(o) == CLASS_Int)
+//##    IS_Int(o)
 #define IS_FArray(o) (IS_bArray(o) && O_p1(o) == CLASS_Float)
+//##    IS_Float(o)
 #define BA_buf(data) ((data)->bu.buf)
+
+#define SV_buf(data) ((data)->str.ubuf)
 #define IA_buf(data) ((data)->ilist)
+#define IV_buf(data) &O_data(data)
 #define FA_buf(data) ((data)->flist)
+#define FV_buf(data) &O_data(data)
+
 //##    BA_size(data) ((data)->bu.len) /* defined @ konoha1.h */
+#define SV_size(data) data->str.len
 #define IA_size(data) knh_Array_size(data)
 #define FA_size(data) knh_Array_size(data)
-#define BA_tail(data) (&BA_buf(data)[BA_size(data)])
-#define IA_tail(data) (&IA_buf(data)[IA_size(data)])
-#define FA_tail(data) (&FA_buf(data)[FA_size(data)])
+//
 #define BA_Class knh_Bytes_t
+#define SV_Class knh_String_t
 #define IA_Class knh_Array_t
+#define IV_Class knh_Int_t
 #define FA_Class knh_Array_t
+#define FV_Class knh_Float_t
+
 #define BA_Type MPI_CHAR
+#define SV_Type BA_Type
 #define IA_Type MPI_UNSIGNED_LONG
+#define IV_Type IA_Type
 #define FA_Type MPI_DOUBLE
+#define FV_Type FA_Type
+
 #define BA(v, o) BA_Class *v = ((BA_Class*)o)
+#define SV(v, o) SV_Class *v = ((SV_Class*)o)
 #define IA(v, o) IA_Class *v = ((IA_Class*)o)
+#define IV(v, o) IV_Class *v = ((IV_Class*)o)
 #define FA(v, o) FA_Class *v = ((FA_Class*)o)
+#define FV(v, o) FV_Class *v = ((FV_Class*)o)
 
 /* ------------------------------------------------------------------------ */
 /* MPI */

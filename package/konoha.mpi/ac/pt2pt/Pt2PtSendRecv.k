@@ -11,37 +11,37 @@ if (rank == 0) disableLog();
 
 Bytes bdata = new Bytes();
 if (rank == 0) {
-    world.sendRecvBytes((Bytes)"hello,", 1, bdata, 6, 1);
+    world.sendRecvBytes(new Bytes(), 1, bdata, 6, 1);
     world.sendRecvBytes(bdata, 1, new Bytes(), 1, 1);
 } else {
     assure "Pt2PtSendRecvBytes" {
         world.sendRecvBytes((Bytes)"konoha", 0, bdata, 6, 0);
         world.sendRecvBytes(new Bytes(), 0, bdata, 6, 0);
-        assert (bdata.decode() == "hello,konoha");
+        assert (bdata.decode() == "konoha");
     }
 }
 
 IArray idata = new IArray();
 if (rank == 0) {
-    world.sendRecvInt([1, 3, 5], 1, idata, 3, 1);
+    world.sendRecvInt(new IArray(), 1, idata, 3, 1);
     world.sendRecvInt(idata, 1, new IArray(), 1, 1);
 } else {
     assure "Pt2PtSendRecvInt" {
-        world.sendRecvInt([7, 9, 11], 0, idata, 3, 0);
+        world.sendRecvInt([1, 3, 5], 0, idata, 3, 0);
         world.sendRecvInt(new IArray(), 0, idata, 3, 0);
-        assert (idata == [1, 3, 5, 7, 9, 11]);
+        assert (idata == [1, 3, 5]);
     }
 }
 
 FArray fdata = new FArray();
 if (rank == 0) {
-    world.sendRecvFloat([1.2, 3.4, 5.6], 1, fdata, 3, 1);
+    world.sendRecvFloat(new FArray(), 1, fdata, 3, 1);
     world.sendRecvFloat(fdata, 1, new FArray(), 1, 1);
 } else {
     assure "Pt2PtSendRecvFloat" {
-        world.sendRecvFloat([7.8, 9.10, 11.12], 0, fdata, 3, 0);
+        world.sendRecvFloat([1.2, 3.4, 5.6], 0, fdata, 3, 0);
         world.sendRecvFloat(new FArray(), 0, fdata, 3, 0);
-        assert (fdata == [1.2, 3.4, 5.6, 7.8, 9.10, 11.12]);
+        assert (fdata == [1.2, 3.4, 5.6]);
     }
 }
 

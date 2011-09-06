@@ -16,9 +16,14 @@ static int knh_MPI_BcastBytes(CTX ctx, knh_Object_t *c, knh_Object_t *odata, int
 			if (count == 0) {
 				MPI_Bcast(&count, 1, MPI_INT, root_rank, KNH_MPI_COMM(comm)); /* bcast for buffer_length */
 			}
-			KNH_BA_EXPAND(data, count);
-			ret = MPI_Bcast(BA_tail(data), count, BA_Type, root_rank, KNH_MPI_COMM(comm));
-			BA_size(data) += count;
+			int incl = count - BA_size(data);
+			if (incl <= 0) {
+				ret = MPI_Bcast(BA_buf(data), count, BA_Type, root_rank, KNH_MPI_COMM(comm));
+			} else {
+				KNH_BA_EXPAND(data, incl);
+				ret = MPI_Bcast(BA_buf(data), count, BA_Type, root_rank, KNH_MPI_COMM(comm));
+				BA_size(data) += incl;
+			}
 		}
 	}
 	return ret;
@@ -40,9 +45,14 @@ static int knh_MPI_BcastInt(CTX ctx, knh_Object_t *c, knh_Object_t *odata, int c
 			if (count == 0) {
 				MPI_Bcast(&count, 1, MPI_INT, root_rank, KNH_MPI_COMM(comm)); /* bcast for buffer_length */
 			}
-			KNH_IA_EXPAND(data, count);
-			ret = MPI_Bcast(IA_tail(data), count, IA_Type, root_rank, KNH_MPI_COMM(comm));
-			IA_size(data) += count;
+			int incl = count - IA_size(data);
+			if (incl <= 0) {
+				ret = MPI_Bcast(IA_buf(data), count, IA_Type, root_rank, KNH_MPI_COMM(comm));
+			} else {
+				KNH_IA_EXPAND(data, incl);
+				ret = MPI_Bcast(IA_buf(data), count, IA_Type, root_rank, KNH_MPI_COMM(comm));
+				IA_size(data) += incl;
+			}
 		}
 	}
 	return ret;
@@ -64,9 +74,14 @@ static int knh_MPI_BcastFloat(CTX ctx, knh_Object_t *c, knh_Object_t *odata, int
 			if (count == 0) {
 				MPI_Bcast(&count, 1, MPI_INT, root_rank, KNH_MPI_COMM(comm)); /* bcast for buffer_length */
 			}
-			KNH_FA_EXPAND(data, count);
-			ret = MPI_Bcast(FA_tail(data), count, FA_Type, root_rank, KNH_MPI_COMM(comm));
-			FA_size(data) += count;
+			int incl = count - FA_size(data);
+			if (incl <= 0) {
+				ret = MPI_Bcast(FA_buf(data), count, FA_Type, root_rank, KNH_MPI_COMM(comm));
+			} else {
+				KNH_FA_EXPAND(data, incl);
+				ret = MPI_Bcast(FA_buf(data), count, FA_Type, root_rank, KNH_MPI_COMM(comm));
+				FA_size(data) += incl;
+			}
 		}
 	}
 	return ret;
@@ -86,9 +101,14 @@ static int knh_MPI_ScatterBytes(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, i
 			}
 			MPI_Bcast(&count, 1, MPI_INT, root_rank, KNH_MPI_COMM(comm));
 		}
-		KNH_BA_EXPAND(ardata, count);
-		ret = MPI_Scatter(BA_buf(asdata), count, BA_Type, BA_tail(ardata), count, BA_Type, root_rank, KNH_MPI_COMM(comm));
-		BA_size(ardata) += count;
+		int incl = count - BA_size(ardata);
+		if (incl <= 0) {
+			ret = MPI_Scatter(BA_buf(asdata), count, BA_Type, BA_buf(ardata), count, BA_Type, root_rank, KNH_MPI_COMM(comm));
+		} else {
+			KNH_BA_EXPAND(ardata, incl);
+			ret = MPI_Scatter(BA_buf(asdata), count, BA_Type, BA_buf(ardata), count, BA_Type, root_rank, KNH_MPI_COMM(comm));
+			BA_size(ardata) += incl;
+		}
 	}
 	return ret;
 }
@@ -107,9 +127,14 @@ static int knh_MPI_ScatterInt(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, int
 			}
 			MPI_Bcast(&count, 1, MPI_INT, root_rank, KNH_MPI_COMM(comm));
 		}
-		KNH_IA_EXPAND(ardata, count);
-		ret = MPI_Scatter(IA_buf(asdata), count, IA_Type, IA_tail(ardata), count, IA_Type, root_rank, KNH_MPI_COMM(comm));
-		IA_size(ardata) += count;
+		int incl = count - IA_size(ardata);
+		if (incl <= 0) {
+			ret = MPI_Scatter(IA_buf(asdata), count, IA_Type, IA_buf(ardata), count, IA_Type, root_rank, KNH_MPI_COMM(comm));
+		} else {
+			KNH_IA_EXPAND(ardata, incl);
+			ret = MPI_Scatter(IA_buf(asdata), count, IA_Type, IA_buf(ardata), count, IA_Type, root_rank, KNH_MPI_COMM(comm));
+			IA_size(ardata) += incl;
+		}
 	}
 	return ret;
 }
@@ -128,9 +153,14 @@ static int knh_MPI_ScatterFloat(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, i
 			}
 			MPI_Bcast(&count, 1, MPI_INT, root_rank, KNH_MPI_COMM(comm));
 		}
-		KNH_FA_EXPAND(ardata, count);
-		ret = MPI_Scatter(FA_buf(asdata), count, FA_Type, FA_tail(ardata), count, FA_Type, root_rank, KNH_MPI_COMM(comm));
-		FA_size(ardata) += count;
+		int incl = count - FA_size(ardata);
+		if (incl <= 0) {
+			ret = MPI_Scatter(FA_buf(asdata), count, FA_Type, FA_buf(ardata), count, FA_Type, root_rank, KNH_MPI_COMM(comm));
+		} else {
+			KNH_FA_EXPAND(ardata, incl);
+			ret = MPI_Scatter(FA_buf(asdata), count, FA_Type, FA_buf(ardata), count, FA_Type, root_rank, KNH_MPI_COMM(comm));
+			FA_size(ardata) += incl;
+		}
 	}
 	return ret;
 }
@@ -145,9 +175,14 @@ static int knh_MPI_GatherBytes(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, in
 		if (KNH_MPI_RANK(comm) == root_rank) {
 			if (count > 0) {
 				int rcount = count * KNH_MPI_SIZE(comm);
-				KNH_BA_EXPAND(ardata, rcount);
-				ret = MPI_Gather(BA_buf(asdata), count, BA_Type, BA_tail(ardata), count, BA_Type, root_rank, KNH_MPI_COMM(comm));
-				BA_size(ardata) += rcount;
+				int incl = rcount - BA_size(ardata);
+				if (incl <= 0) {
+					ret = MPI_Gather(BA_buf(asdata), count, BA_Type, BA_buf(ardata), count, BA_Type, root_rank, KNH_MPI_COMM(comm));
+				} else {
+					KNH_BA_EXPAND(ardata, incl);
+					ret = MPI_Gather(BA_buf(asdata), count, BA_Type, BA_buf(ardata), count, BA_Type, root_rank, KNH_MPI_COMM(comm));
+					BA_size(ardata) += incl;
+				}
 			} else {
 				int rcounts[KNH_MPI_SIZE(comm)];
 				int rdispls[KNH_MPI_SIZE(comm)];
@@ -158,10 +193,16 @@ static int knh_MPI_GatherBytes(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, in
 						rc = rcounts[i];
 						rdispls[i] = rcount;
 					}
-					KNH_BA_EXPAND(ardata, rcount);
-					ret = MPI_Gatherv(BA_buf(asdata), BA_size(asdata), BA_Type,
-									  BA_tail(ardata), rcounts, rdispls, BA_Type, root_rank, KNH_MPI_COMM(comm));
-					BA_size(ardata) += rcount;
+					int incl = rcount - BA_size(ardata);
+					if (incl <= 0) {
+						ret = MPI_Gatherv(BA_buf(asdata), BA_size(asdata), BA_Type,
+										  BA_buf(ardata), rcounts, rdispls, BA_Type, root_rank, KNH_MPI_COMM(comm));
+					} else {
+						KNH_BA_EXPAND(ardata, incl);
+						ret = MPI_Gatherv(BA_buf(asdata), BA_size(asdata), BA_Type,
+										  BA_buf(ardata), rcounts, rdispls, BA_Type, root_rank, KNH_MPI_COMM(comm));
+						BA_size(ardata) += incl;
+					}
 				}
 			}
 		} else {
@@ -188,9 +229,14 @@ static int knh_MPI_GatherInt(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, int 
 		if (KNH_MPI_RANK(comm) == root_rank) {
 			if (count > 0) {
 				int rcount = count * KNH_MPI_SIZE(comm);
-				KNH_IA_EXPAND(ardata, rcount);
-				ret = MPI_Gather(IA_buf(asdata), count, IA_Type, IA_tail(ardata), count, IA_Type, root_rank, KNH_MPI_COMM(comm));
-				IA_size(ardata) += rcount;
+				int incl = rcount - IA_size(ardata);
+				if (incl <= 0) {
+					ret = MPI_Gather(IA_buf(asdata), count, IA_Type, IA_buf(ardata), count, IA_Type, root_rank, KNH_MPI_COMM(comm));
+				} else {
+					KNH_IA_EXPAND(ardata, incl);
+					ret = MPI_Gather(IA_buf(asdata), count, IA_Type, IA_buf(ardata), count, IA_Type, root_rank, KNH_MPI_COMM(comm));
+					IA_size(ardata) += incl;
+				}
 			} else {
 				int rcounts[KNH_MPI_SIZE(comm)];
 				int rdispls[KNH_MPI_SIZE(comm)];
@@ -201,10 +247,16 @@ static int knh_MPI_GatherInt(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, int 
 						rc = rcounts[i];
 						rdispls[i] = rcount;
 					}
-					KNH_IA_EXPAND(ardata, rcount);
-					ret = MPI_Gatherv(IA_buf(asdata), IA_size(asdata), IA_Type,
-									  IA_tail(ardata), rcounts, rdispls, IA_Type, root_rank, KNH_MPI_COMM(comm));
-					IA_size(ardata) += rcount;
+					int incl = rcount - IA_size(ardata);
+					if (incl <= 0) {
+						ret = MPI_Gatherv(IA_buf(asdata), IA_size(asdata), IA_Type,
+										  IA_buf(ardata), rcounts, rdispls, IA_Type, root_rank, KNH_MPI_COMM(comm));
+					} else {
+						KNH_IA_EXPAND(ardata, incl);
+						ret = MPI_Gatherv(IA_buf(asdata), IA_size(asdata), IA_Type,
+										  IA_buf(ardata), rcounts, rdispls, IA_Type, root_rank, KNH_MPI_COMM(comm));
+						IA_size(ardata) += incl;
+					}
 				}
 			}
 		} else {
@@ -231,9 +283,14 @@ static int knh_MPI_GatherFloat(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, in
 		if (KNH_MPI_RANK(comm) == root_rank) {
 			if (count > 0) {
 				int rcount = count * KNH_MPI_SIZE(comm);
-				KNH_FA_EXPAND(ardata, rcount);
-				ret = MPI_Gather(FA_buf(asdata), count, FA_Type, FA_tail(ardata), count, FA_Type, root_rank, KNH_MPI_COMM(comm));
-				FA_size(ardata) += rcount;
+				int incl = rcount - FA_size(ardata);
+				if (incl <= 0) {
+					ret = MPI_Gather(FA_buf(asdata), count, FA_Type, FA_buf(ardata), count, FA_Type, root_rank, KNH_MPI_COMM(comm));
+				} else {
+					KNH_FA_EXPAND(ardata, incl);
+					ret = MPI_Gather(FA_buf(asdata), count, FA_Type, FA_buf(ardata), count, FA_Type, root_rank, KNH_MPI_COMM(comm));
+					FA_size(ardata) += incl;
+				}
 			} else {
 				int rcounts[KNH_MPI_SIZE(comm)];
 				int rdispls[KNH_MPI_SIZE(comm)];
@@ -244,10 +301,16 @@ static int knh_MPI_GatherFloat(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, in
 						rc = rcounts[i];
 						rdispls[i] = rcount;
 					}
-					KNH_FA_EXPAND(ardata, rcount);
-					ret = MPI_Gatherv(FA_buf(asdata), FA_size(asdata), FA_Type,
-									  FA_tail(ardata), rcounts, rdispls, FA_Type, root_rank, KNH_MPI_COMM(comm));
-					FA_size(ardata) += rcount;
+					int incl = rcount - FA_size(ardata);
+					if (incl <= 0) {
+						ret = MPI_Gatherv(FA_buf(asdata), FA_size(asdata), FA_Type,
+										  FA_buf(ardata), rcounts, rdispls, FA_Type, root_rank, KNH_MPI_COMM(comm));
+					} else {
+						KNH_FA_EXPAND(ardata, incl);
+						ret = MPI_Gatherv(FA_buf(asdata), FA_size(asdata), FA_Type,
+										  FA_buf(ardata), rcounts, rdispls, FA_Type, root_rank, KNH_MPI_COMM(comm));
+						FA_size(ardata) += incl;
+					}
 				}
 			}
 		} else {
@@ -273,9 +336,14 @@ static int knh_MPI_AllgatherBytes(CTX ctx, knh_Object_t *c, knh_Object_t *sdata,
 	if (KNH_ON_MPI(comm)) {
 		if (count > 0) {
 			int rcount = count * KNH_MPI_SIZE(comm);
-			KNH_BA_EXPAND(ardata, rcount);
-			ret = MPI_Allgather(BA_buf(asdata), count, BA_Type, BA_tail(ardata), count, BA_Type, KNH_MPI_COMM(comm));
-			BA_size(ardata) += rcount;
+			int incl = rcount - BA_size(ardata);
+			if (incl <= 0) {
+				ret = MPI_Allgather(BA_buf(asdata), count, BA_Type, BA_buf(ardata), count, BA_Type, KNH_MPI_COMM(comm));
+			} else {
+				KNH_BA_EXPAND(ardata, incl);
+				ret = MPI_Allgather(BA_buf(asdata), count, BA_Type, BA_buf(ardata), count, BA_Type, KNH_MPI_COMM(comm));
+				BA_size(ardata) += incl;
+			}
 		} else {
 			int rcounts[KNH_MPI_SIZE(comm)];
 			int rdispls[KNH_MPI_SIZE(comm)];
@@ -286,9 +354,14 @@ static int knh_MPI_AllgatherBytes(CTX ctx, knh_Object_t *c, knh_Object_t *sdata,
 					rc = rcounts[i];
 					rdispls[i] = rcount;
 				}
-				KNH_BA_EXPAND(ardata, rcount);
-				ret = MPI_Allgatherv(BA_buf(asdata), BA_size(asdata), BA_Type, BA_tail(ardata), rcounts, rdispls, BA_Type, KNH_MPI_COMM(comm));
-				BA_size(ardata) += rcount;
+				int incl = rcount - BA_size(ardata);
+				if (incl <= 0) {
+					ret = MPI_Allgatherv(BA_buf(asdata), BA_size(asdata), BA_Type, BA_buf(ardata), rcounts, rdispls, BA_Type, KNH_MPI_COMM(comm));
+				} else {
+					KNH_BA_EXPAND(ardata, incl);
+					ret = MPI_Allgatherv(BA_buf(asdata), BA_size(asdata), BA_Type, BA_buf(ardata), rcounts, rdispls, BA_Type, KNH_MPI_COMM(comm));
+					BA_size(ardata) += incl;
+				}
 			}
 		}
 	}
@@ -304,9 +377,14 @@ static int knh_MPI_AllgatherInt(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, i
 	if (KNH_ON_MPI(comm)) {
 		if (count > 0) {
 			int rcount = count * KNH_MPI_SIZE(comm);
-			KNH_IA_EXPAND(ardata, rcount);
-			ret = MPI_Allgather(IA_buf(asdata), count, IA_Type, IA_tail(ardata), count, IA_Type, KNH_MPI_COMM(comm));
-			IA_size(ardata) += rcount;
+			int incl = rcount - IA_size(ardata);
+			if (incl <= 0) {
+				ret = MPI_Allgather(IA_buf(asdata), count, IA_Type, IA_buf(ardata), count, IA_Type, KNH_MPI_COMM(comm));
+			} else {
+				KNH_IA_EXPAND(ardata, incl);
+				ret = MPI_Allgather(IA_buf(asdata), count, IA_Type, IA_buf(ardata), count, IA_Type, KNH_MPI_COMM(comm));
+				IA_size(ardata) += incl;
+			}
 		} else {
 			int rcounts[KNH_MPI_SIZE(comm)];
 			int rdispls[KNH_MPI_SIZE(comm)];
@@ -317,9 +395,14 @@ static int knh_MPI_AllgatherInt(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, i
 					rc = rcounts[i];
 					rdispls[i] = rcount;
 				}
-				KNH_IA_EXPAND(ardata, rcount);
-				ret = MPI_Allgatherv(IA_buf(asdata), IA_size(asdata), IA_Type, IA_tail(ardata), rcounts, rdispls, IA_Type, KNH_MPI_COMM(comm));
-				IA_size(ardata) += rcount;
+				int incl = rcount - IA_size(ardata);
+				if (incl <= 0) {
+					ret = MPI_Allgatherv(IA_buf(asdata), IA_size(asdata), IA_Type, IA_buf(ardata), rcounts, rdispls, IA_Type, KNH_MPI_COMM(comm));
+				} else {
+					KNH_IA_EXPAND(ardata, incl);
+					ret = MPI_Allgatherv(IA_buf(asdata), IA_size(asdata), IA_Type, IA_buf(ardata), rcounts, rdispls, IA_Type, KNH_MPI_COMM(comm));
+					IA_size(ardata) += incl;
+				}
 			}
 		}
 	}
@@ -335,9 +418,14 @@ static int knh_MPI_AllgatherFloat(CTX ctx, knh_Object_t *c, knh_Object_t *sdata,
 	if (KNH_ON_MPI(comm)) {
 		if (count > 0) {
 			int rcount = count * KNH_MPI_SIZE(comm);
-			KNH_FA_EXPAND(ardata, rcount);
-			ret = MPI_Allgather(FA_buf(asdata), count, FA_Type, FA_tail(ardata), count, FA_Type, KNH_MPI_COMM(comm));
-			FA_size(ardata) += rcount;
+			int incl = rcount - FA_size(ardata);
+			if (incl <= 0) {
+				ret = MPI_Allgather(FA_buf(asdata), count, FA_Type, FA_buf(ardata), count, FA_Type, KNH_MPI_COMM(comm));
+			} else {
+				KNH_FA_EXPAND(ardata, incl);
+				ret = MPI_Allgather(FA_buf(asdata), count, FA_Type, FA_buf(ardata), count, FA_Type, KNH_MPI_COMM(comm));
+				FA_size(ardata) += incl;
+			}
 		} else {
 			int rcounts[KNH_MPI_SIZE(comm)];
 			int rdispls[KNH_MPI_SIZE(comm)];
@@ -348,9 +436,14 @@ static int knh_MPI_AllgatherFloat(CTX ctx, knh_Object_t *c, knh_Object_t *sdata,
 					rc = rcounts[i];
 					rdispls[i] = rcount;
 				}
-				KNH_FA_EXPAND(ardata, rcount);
-				ret = MPI_Allgatherv(FA_buf(asdata), FA_size(asdata), FA_Type, FA_tail(ardata), rcounts, rdispls, FA_Type, KNH_MPI_COMM(comm));
-				FA_size(ardata) += rcount;
+				int incl = rcount - FA_size(ardata);
+				if (incl <= 0) {
+					ret = MPI_Allgatherv(FA_buf(asdata), FA_size(asdata), FA_Type, FA_buf(ardata), rcounts, rdispls, FA_Type, KNH_MPI_COMM(comm));
+				} else {
+					KNH_FA_EXPAND(ardata, incl);
+					ret = MPI_Allgatherv(FA_buf(asdata), FA_size(asdata), FA_Type, FA_buf(ardata), rcounts, rdispls, FA_Type, KNH_MPI_COMM(comm));
+					FA_size(ardata) += incl;
+				}
 			}
 		}
 	}
@@ -366,9 +459,14 @@ static int knh_MPI_AlltoallBytes(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, 
 	if (KNH_ON_MPI(comm)) {
 		if (count > 0) {
 			int rcount = count * KNH_MPI_SIZE(comm);
-			KNH_BA_EXPAND(ardata, rcount);
-			ret = MPI_Alltoall(BA_buf(asdata), count, BA_Type, BA_tail(ardata), count, BA_Type, KNH_MPI_COMM(comm));
-			BA_size(ardata) += rcount;
+			int incl = rcount - BA_size(ardata);
+			if (incl <= 0) {
+				ret = MPI_Alltoall(BA_buf(asdata), count, BA_Type, BA_buf(ardata), count, BA_Type, KNH_MPI_COMM(comm));
+			} else {
+				KNH_BA_EXPAND(ardata, incl);
+				ret = MPI_Alltoall(BA_buf(asdata), count, BA_Type, BA_buf(ardata), count, BA_Type, KNH_MPI_COMM(comm));
+				BA_size(ardata) += incl;
+			}
 		} else {
 			size_t size = KNH_MPI_SIZE(comm);
 			int scounts[size], sdispls[size], rcounts[size], rdispls[size];
@@ -386,9 +484,14 @@ static int knh_MPI_AlltoallBytes(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, 
 					wc = rcounts[r];
 					rdispls[r] = sum_count;
 				}
-				KNH_BA_EXPAND(ardata, sum_count);
-				ret = MPI_Alltoallv(BA_buf(asdata), scounts, sdispls, BA_Type, BA_tail(ardata), rcounts, rdispls, BA_Type, KNH_MPI_COMM(comm));
-				BA_size(ardata) += sum_count;
+				int incl = sum_count - BA_size(ardata);
+				if (incl <= 0) {
+					ret = MPI_Alltoallv(BA_buf(asdata), scounts, sdispls, BA_Type, BA_buf(ardata), rcounts, rdispls, BA_Type, KNH_MPI_COMM(comm));
+				} else {
+					KNH_BA_EXPAND(ardata, incl);
+					ret = MPI_Alltoallv(BA_buf(asdata), scounts, sdispls, BA_Type, BA_buf(ardata), rcounts, rdispls, BA_Type, KNH_MPI_COMM(comm));
+					BA_size(ardata) += incl;
+				}
 			}
 		}
 	}
@@ -404,9 +507,14 @@ static int knh_MPI_AlltoallInt(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, in
 	if (KNH_ON_MPI(comm)) {
 		if (count > 0) {
 			int rcount = count * KNH_MPI_SIZE(comm);
-			KNH_IA_EXPAND(ardata, rcount);
-			ret = MPI_Alltoall(IA_buf(asdata), count, IA_Type, IA_tail(ardata), count, IA_Type, KNH_MPI_COMM(comm));
-			IA_size(ardata) += rcount;
+			int incl = rcount - IA_size(ardata);
+			if (incl <= 0) {
+				ret = MPI_Alltoall(IA_buf(asdata), count, IA_Type, IA_buf(ardata), count, IA_Type, KNH_MPI_COMM(comm));
+			} else {
+				KNH_IA_EXPAND(ardata, incl);
+				ret = MPI_Alltoall(IA_buf(asdata), count, IA_Type, IA_buf(ardata), count, IA_Type, KNH_MPI_COMM(comm));
+				IA_size(ardata) += incl;
+			}
 		} else {
 			size_t size = KNH_MPI_SIZE(comm);
 			int scounts[size], sdispls[size], rcounts[size], rdispls[size];
@@ -424,9 +532,14 @@ static int knh_MPI_AlltoallInt(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, in
 					wc = rcounts[r];
 					rdispls[r] = sum_count;
 				}
-				KNH_IA_EXPAND(ardata, sum_count);
-				ret = MPI_Alltoallv(IA_buf(asdata), scounts, sdispls, IA_Type, IA_tail(ardata), rcounts, rdispls, IA_Type, KNH_MPI_COMM(comm));
-				IA_size(ardata) += sum_count;
+				int incl = sum_count - IA_size(ardata);
+				if (incl <= 0) {
+					ret = MPI_Alltoallv(IA_buf(asdata), scounts, sdispls, IA_Type, IA_buf(ardata), rcounts, rdispls, IA_Type, KNH_MPI_COMM(comm));
+				} else {
+					KNH_IA_EXPAND(ardata, incl);
+					ret = MPI_Alltoallv(IA_buf(asdata), scounts, sdispls, IA_Type, IA_buf(ardata), rcounts, rdispls, IA_Type, KNH_MPI_COMM(comm));
+					IA_size(ardata) += incl;
+				}
 			}
 		}
 	}
@@ -442,9 +555,14 @@ static int knh_MPI_AlltoallFloat(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, 
 	if (KNH_ON_MPI(comm)) {
 		if (count > 0) {
 			int rcount = count * KNH_MPI_SIZE(comm);
-			KNH_FA_EXPAND(ardata, rcount);
-			ret = MPI_Alltoall(FA_buf(asdata), count, FA_Type, FA_tail(ardata), count, FA_Type, KNH_MPI_COMM(comm));
-			FA_size(ardata) += rcount;
+			int incl = rcount - FA_size(ardata);
+			if (incl <= 0) {
+				ret = MPI_Alltoall(FA_buf(asdata), count, FA_Type, FA_buf(ardata), count, FA_Type, KNH_MPI_COMM(comm));
+			} else {
+				KNH_FA_EXPAND(ardata, incl);
+				ret = MPI_Alltoall(FA_buf(asdata), count, FA_Type, FA_buf(ardata), count, FA_Type, KNH_MPI_COMM(comm));
+				FA_size(ardata) += incl;
+			}
 		} else {
 			size_t size = KNH_MPI_SIZE(comm);
 			int scounts[size], sdispls[size], rcounts[size], rdispls[size];
@@ -462,9 +580,14 @@ static int knh_MPI_AlltoallFloat(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, 
 					wc = rcounts[r];
 					rdispls[r] = sum_count;
 				}
-				KNH_FA_EXPAND(ardata, sum_count);
-				ret = MPI_Alltoallv(FA_buf(asdata), scounts, sdispls, FA_Type, FA_tail(ardata), rcounts, rdispls, FA_Type, KNH_MPI_COMM(comm));
-				FA_size(ardata) += sum_count;
+				int incl = sum_count - FA_size(ardata);
+				if (incl <= 0) {
+					ret = MPI_Alltoallv(FA_buf(asdata), scounts, sdispls, FA_Type, FA_buf(ardata), rcounts, rdispls, FA_Type, KNH_MPI_COMM(comm));
+				} else {
+					KNH_FA_EXPAND(ardata, incl);
+					ret = MPI_Alltoallv(FA_buf(asdata), scounts, sdispls, FA_Type, FA_buf(ardata), rcounts, rdispls, FA_Type, KNH_MPI_COMM(comm));
+					FA_size(ardata) += incl;
+				}
 			}
 		}
 	}
@@ -484,9 +607,14 @@ static int knh_MPI_ReduceBytes(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, kn
 			if (!KNH_MPI_SUCCESS(ret)) return ret;
 		}
 		if (KNH_MPI_RANK(comm) == root_rank) {
-			KNH_BA_EXPAND(ardata, count);
-			ret = MPI_Reduce(BA_buf(asdata), BA_tail(ardata), count, BA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
-			BA_size(ardata) += count;
+			int incl = count - BA_size(ardata);
+			if (incl <= 0) {
+				ret = MPI_Reduce(BA_buf(asdata), BA_buf(ardata), count, BA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
+			} else {
+				KNH_BA_EXPAND(ardata, incl);
+				ret = MPI_Reduce(BA_buf(asdata), BA_buf(ardata), count, BA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
+				BA_size(ardata) += incl;
+			}
 		} else {
 			ret = MPI_Reduce(BA_buf(asdata), NULL, count, BA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
 		}
@@ -507,9 +635,14 @@ static int knh_MPI_ReduceInt(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, knh_
 			if (!KNH_MPI_SUCCESS(ret)) return ret;
 		}
 		if (KNH_MPI_RANK(comm) == root_rank) {
-			KNH_IA_EXPAND(ardata, count);
-			ret = MPI_Reduce(IA_buf(asdata), IA_tail(ardata), count, IA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
-			IA_size(ardata) += count;
+			int incl = count - IA_size(ardata);
+			if (incl <= 0) {
+				ret = MPI_Reduce(IA_buf(asdata), IA_buf(ardata), count, IA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
+			} else {
+				KNH_IA_EXPAND(ardata, incl);
+				ret = MPI_Reduce(IA_buf(asdata), IA_buf(ardata), count, IA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
+				IA_size(ardata) += incl;
+			}
 		} else {
 			ret = MPI_Reduce(IA_buf(asdata), NULL, count, IA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
 		}
@@ -520,21 +653,44 @@ static int knh_MPI_ReduceInt(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, knh_
 static int knh_MPI_ReduceFloat(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, knh_Object_t *rdata, int count, knh_Object_t *o, int root_rank)
 {
 	COMM(comm, c);
-	FA(asdata, sdata);
-	FA(ardata, rdata);
 	OP(op, o);
 	int ret = -1;
 	if (KNH_ON_MPI(comm) && !KNH_MPI_OP_IS_NULL(op)) {
-		if (count == 0) {
-			ret = MPI_Allreduce(&FA_size(asdata), &count, 1, MPI_INT, MPI_MIN, KNH_MPI_COMM(comm)); /* get mininum data cont */
-			if (!KNH_MPI_SUCCESS(ret)) return ret;
+		if (IS_FArray(sdata)) {
+			FA(asdata, sdata);
+			FA(ardata, rdata);
+			if (count == 0) {
+				ret = MPI_Allreduce(&FA_size(asdata), &count, 1, MPI_INT, MPI_MIN, KNH_MPI_COMM(comm)); /* get mininum data cont */
+				if (!KNH_MPI_SUCCESS(ret)) return ret;
+			}
+			if (KNH_MPI_RANK(comm) == root_rank) {
+				int incl = count - FA_size(ardata);
+				if (incl <= 0) {
+					ret = MPI_Reduce(FA_buf(asdata), FA_buf(ardata), count, FA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
+				} else {
+					KNH_FA_EXPAND(ardata, incl);
+					ret = MPI_Reduce(FA_buf(asdata), FA_buf(ardata), count, FA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
+					FA_size(ardata) += incl;
+				}
+			} else {
+				ret = MPI_Reduce(FA_buf(asdata), NULL, count, FA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
+			}
 		}
-		if (KNH_MPI_RANK(comm) == root_rank) {
-			KNH_FA_EXPAND(ardata, count);
-			ret = MPI_Reduce(FA_buf(asdata), FA_tail(ardata), count, FA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
-			FA_size(ardata) += count;
-		} else {
-			ret = MPI_Reduce(FA_buf(asdata), NULL, count, FA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
+		else { /* IS_Float(sdata)*/
+			FA(ardata, rdata);
+			count = 1; // single float(double) value
+			if (KNH_MPI_RANK(comm) == root_rank) {
+				int incl = count - FA_size(ardata);
+				if (incl <= 0) {
+					ret = MPI_Reduce(&O_data(sdata), FA_buf(ardata), count, FA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
+				} else {
+					KNH_FA_EXPAND(ardata, incl);
+					ret = MPI_Reduce(&O_data(sdata), FA_buf(ardata), count, FA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
+					FA_size(ardata) += incl;
+				}
+			} else {
+				ret = MPI_Reduce(&O_data(sdata), NULL, count, FA_Type, KNH_MPI_OP(op), root_rank, KNH_MPI_COMM(comm));
+			}
 		}
 	}
 	return ret;
@@ -552,9 +708,14 @@ static int knh_MPI_AllreduceBytes(CTX ctx, knh_Object_t *c, knh_Object_t *sdata,
 			ret = MPI_Allreduce(&BA_size(asdata), &count, 1, MPI_INT, MPI_MIN, KNH_MPI_COMM(comm)); /* get mininum data cont */
 			if (!KNH_MPI_SUCCESS(ret)) return ret;
 		}
-		KNH_BA_EXPAND(ardata, count);
-		ret = MPI_Allreduce(BA_buf(asdata), BA_tail(ardata), count, BA_Type, KNH_MPI_OP(op), KNH_MPI_COMM(comm));
-		BA_size(ardata) += count;
+		int incl = count - BA_size(ardata);
+		if (incl <= 0) {
+			ret = MPI_Allreduce(BA_buf(asdata), BA_buf(ardata), count, BA_Type, KNH_MPI_OP(op), KNH_MPI_COMM(comm));
+		} else {
+			KNH_BA_EXPAND(ardata, incl);
+			ret = MPI_Allreduce(BA_buf(asdata), BA_buf(ardata), count, BA_Type, KNH_MPI_OP(op), KNH_MPI_COMM(comm));
+			BA_size(ardata) += incl;
+		}
 	}
 	return ret;
 }
@@ -571,9 +732,14 @@ static int knh_MPI_AllreduceInt(CTX ctx, knh_Object_t *c, knh_Object_t *sdata, k
 			ret = MPI_Allreduce(&IA_size(asdata), &count, 1, MPI_INT, MPI_MIN, KNH_MPI_COMM(comm)); /* get mininum data cont */
 			if (!KNH_MPI_SUCCESS(ret)) return ret;
 		}
-		KNH_IA_EXPAND(ardata, count);
-		ret = MPI_Allreduce(IA_buf(asdata), IA_tail(ardata), count, IA_Type, KNH_MPI_OP(op), KNH_MPI_COMM(comm));
-		IA_size(ardata) += count;
+		int incl = count - IA_size(ardata);
+		if (incl <= 0) {
+			ret = MPI_Allreduce(IA_buf(asdata), IA_buf(ardata), count, IA_Type, KNH_MPI_OP(op), KNH_MPI_COMM(comm));
+		} else {
+			KNH_IA_EXPAND(ardata, incl);
+			ret = MPI_Allreduce(IA_buf(asdata), IA_buf(ardata), count, IA_Type, KNH_MPI_OP(op), KNH_MPI_COMM(comm));
+			IA_size(ardata) += incl;
+		}
 	}
 	return ret;
 }
@@ -590,9 +756,14 @@ static int knh_MPI_AllreduceFloat(CTX ctx, knh_Object_t *c, knh_Object_t *sdata,
 			ret = MPI_Allreduce(&FA_size(asdata), &count, 1, MPI_INT, MPI_MIN, KNH_MPI_COMM(comm)); /* get mininum data cont */
 			if (!KNH_MPI_SUCCESS(ret)) return ret;
 		}
-		KNH_FA_EXPAND(ardata, count);
-		ret = MPI_Allreduce(FA_buf(asdata), FA_tail(ardata), count, FA_Type, KNH_MPI_OP(op), KNH_MPI_COMM(comm));
-		FA_size(ardata) += count;
+		int incl = count - FA_size(ardata);
+		if (incl <= 0) {
+			ret = MPI_Allreduce(FA_buf(asdata), FA_buf(ardata), count, FA_Type, KNH_MPI_OP(op), KNH_MPI_COMM(comm));
+		} else {
+			KNH_FA_EXPAND(ardata, incl);
+			ret = MPI_Allreduce(FA_buf(asdata), FA_buf(ardata), count, FA_Type, KNH_MPI_OP(op), KNH_MPI_COMM(comm));
+			FA_size(ardata) += incl;
+		}
 	}
 	return ret;
 }
@@ -778,7 +949,7 @@ KMETHOD MPIComm_reduce(CTX ctx, knh_sfp_t *sfp _RIX)
 		ret = knh_MPI_ReduceBytes(ctx, sfp[0].o, sdata, rdata, 0, sfp[3].o, Int_to(int, sfp[4]));
 	} else if (IS_IArray(sdata) && IS_IArray(rdata)) {
 		ret = knh_MPI_ReduceInt(ctx, sfp[0].o, sdata, rdata, 0, sfp[3].o, Int_to(int, sfp[4]));
-	} else if (IS_FArray(sdata) && IS_FArray(rdata)) {
+	} else if ((IS_FArray(sdata) || IS_Float(sdata)) && IS_FArray(rdata)) {
 		ret = knh_MPI_ReduceFloat(ctx, sfp[0].o, sdata, rdata, 0, sfp[3].o, Int_to(int, sfp[4]));
 	}
 	RETURNi_(ret);
