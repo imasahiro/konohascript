@@ -6,46 +6,50 @@ extern "C" {
 
 
 #ifndef MN_OPSIZE
-#define STT_MAX  (58)
-#define TT_MAX   (141)
-#define MN_OPSIZE  (37)
+#define STT_MAX  (59)
+#define TT_MAX   (144)
+#define MN_OPSIZE  (41)
 #define MN_opNOT                        ((knh_methodn_t)0)
 #define MN_opEXISTS                     ((knh_methodn_t)1)
 #define MN_opLINK                       ((knh_methodn_t)2)
-#define MN_opUNTIL                      ((knh_methodn_t)3)
-#define MN_opIS                         ((knh_methodn_t)4)
-#define MN_opOF                         ((knh_methodn_t)5)
-#define MN_opHAS                        ((knh_methodn_t)6)
-#define MN_opTO                         ((knh_methodn_t)7)
-#define MN_opEQ                         ((knh_methodn_t)8)
-#define MN_opNOTEQ                      ((knh_methodn_t)9)
-#define MN_opLT                         ((knh_methodn_t)10)
-#define MN_opLTE                        ((knh_methodn_t)11)
-#define MN_opGT                         ((knh_methodn_t)12)
-#define MN_opGTE                        ((knh_methodn_t)13)
-#define MN_opWITH                       ((knh_methodn_t)14)
-#define MN_opAS                         ((knh_methodn_t)15)
-#define MN_opWHERE                      ((knh_methodn_t)16)
-#define MN_opEACH                       ((knh_methodn_t)17)
-#define MN_opLOR                        ((knh_methodn_t)18)
-#define MN_opLXOR                       ((knh_methodn_t)19)
-#define MN_opLAND                       ((knh_methodn_t)20)
-#define MN_opADD                        ((knh_methodn_t)21)
-#define MN_opSUB                        ((knh_methodn_t)22)
-#define MN_opDIV                        ((knh_methodn_t)23)
-#define MN_opMOD                        ((knh_methodn_t)24)
-#define MN_opMUL                        ((knh_methodn_t)25)
-#define MN_opLSFT                       ((knh_methodn_t)26)
-#define MN_opRSFT                       ((knh_methodn_t)27)
-#define MN_opLNOT                       ((knh_methodn_t)28)
-#define MN_opNEXT                       ((knh_methodn_t)29)
-#define MN_opPREV                       ((knh_methodn_t)30)
-#define MN_opITR                        ((knh_methodn_t)31)
-#define MN_opEXPT                       ((knh_methodn_t)32)
-#define MN_opADDR                       ((knh_methodn_t)33)
-#define MN_opCAST                       ((knh_methodn_t)34)
-#define MN_opPLUS                       ((knh_methodn_t)35)
-#define MN_opNEG                        ((knh_methodn_t)36)
+#define MN_opQUERY                      ((knh_methodn_t)3)
+#define MN_opFROM                       ((knh_methodn_t)4)
+#define MN_opUNTIL                      ((knh_methodn_t)5)
+#define MN_opIS                         ((knh_methodn_t)6)
+#define MN_opOF                         ((knh_methodn_t)7)
+#define MN_opHAS                        ((knh_methodn_t)8)
+#define MN_opTO                         ((knh_methodn_t)9)
+#define MN_opEQ                         ((knh_methodn_t)10)
+#define MN_opNOTEQ                      ((knh_methodn_t)11)
+#define MN_opLT                         ((knh_methodn_t)12)
+#define MN_opLTE                        ((knh_methodn_t)13)
+#define MN_opGT                         ((knh_methodn_t)14)
+#define MN_opGTE                        ((knh_methodn_t)15)
+#define MN_opWITH                       ((knh_methodn_t)16)
+#define MN_opMATCH                      ((knh_methodn_t)17)
+#define MN_opAS                         ((knh_methodn_t)18)
+#define MN_opWHERE                      ((knh_methodn_t)19)
+#define MN_opEACH                       ((knh_methodn_t)20)
+#define MN_opLOR                        ((knh_methodn_t)21)
+#define MN_opLXOR                       ((knh_methodn_t)22)
+#define MN_opLAND                       ((knh_methodn_t)23)
+#define MN_opADD                        ((knh_methodn_t)24)
+#define MN_opSUB                        ((knh_methodn_t)25)
+#define MN_opDIV                        ((knh_methodn_t)26)
+#define MN_opMOD                        ((knh_methodn_t)27)
+#define MN_opMUL                        ((knh_methodn_t)28)
+#define MN_opLSFT                       ((knh_methodn_t)29)
+#define MN_opRSFT                       ((knh_methodn_t)30)
+#define MN_opLNOT                       ((knh_methodn_t)31)
+#define MN_opNEXT                       ((knh_methodn_t)32)
+#define MN_opPREV                       ((knh_methodn_t)33)
+#define MN_opITR                        ((knh_methodn_t)34)
+#define MN_opSEQ                        ((knh_methodn_t)35)
+#define MN_opEXPT                       ((knh_methodn_t)36)
+#define MN_opADDR                       ((knh_methodn_t)37)
+#define MN_opCAST                       ((knh_methodn_t)38)
+#define MN_opPLUS                       ((knh_methodn_t)39)
+#define MN_opNEG                        ((knh_methodn_t)40)
 
 /* ------------------------------------------------------------------------ */
 
@@ -53,38 +57,38 @@ extern "C" {
 #define STT_BLOCK  ((knh_term_t)1)
 #define STT_PRAGMA  ((knh_term_t)2)
 #define STT_NAMESPACE  ((knh_term_t)3)
-#define STT_LINK  ((knh_term_t)4)
-#define STT_DEFMACRO  ((knh_term_t)5)
-#define STT_INCLUDE  ((knh_term_t)6)
-#define STT_ALLOW  ((knh_term_t)7)
-#define STT_DENY  ((knh_term_t)8)
-#define STT_USING  ((knh_term_t)9)
-#define STT_CLASS  ((knh_term_t)10)
-#define STT_FORMAT  ((knh_term_t)11)
-#define STT_RETURN  ((knh_term_t)12)
-#define STT_YIELD  ((knh_term_t)13)
-#define STT_IF  ((knh_term_t)14)
-#define STT_SWITCH  ((knh_term_t)15)
-#define STT_CASE  ((knh_term_t)16)
-#define STT_WHILE  ((knh_term_t)17)
-#define STT_DO  ((knh_term_t)18)
-#define STT_FOR  ((knh_term_t)19)
-#define STT_FOREACH  ((knh_term_t)20)
-#define STT_BREAK  ((knh_term_t)21)
-#define STT_CONTINUE  ((knh_term_t)22)
-#define STT_TRY  ((knh_term_t)23)
-#define STT_CATCH  ((knh_term_t)24)
-#define STT_THROW  ((knh_term_t)25)
-#define STT_PRINT  ((knh_term_t)26)
-#define STT_ASSURE  ((knh_term_t)27)
-#define STT_ASSERT  ((knh_term_t)28)
-#define STT_REGISTER  ((knh_term_t)29)
-#define STT_FUNCTION  ((knh_term_t)30)
-#define STT_METHOD  ((knh_term_t)31)
-#define STT_TYPEMAP  ((knh_term_t)32)
-#define STT_DECL  ((knh_term_t)33)
-#define STT_CHKOUT  ((knh_term_t)34)
-#define STT_LETM  ((knh_term_t)35)
+#define STT_DEFMACRO  ((knh_term_t)4)
+#define STT_INCLUDE  ((knh_term_t)5)
+#define STT_ALLOW  ((knh_term_t)6)
+#define STT_DENY  ((knh_term_t)7)
+#define STT_USING  ((knh_term_t)8)
+#define STT_CLASS  ((knh_term_t)9)
+#define STT_FORMAT  ((knh_term_t)10)
+#define STT_RETURN  ((knh_term_t)11)
+#define STT_YIELD  ((knh_term_t)12)
+#define STT_IF  ((knh_term_t)13)
+#define STT_SWITCH  ((knh_term_t)14)
+#define STT_CASE  ((knh_term_t)15)
+#define STT_WHILE  ((knh_term_t)16)
+#define STT_DO  ((knh_term_t)17)
+#define STT_FOR  ((knh_term_t)18)
+#define STT_FOREACH  ((knh_term_t)19)
+#define STT_BREAK  ((knh_term_t)20)
+#define STT_CONTINUE  ((knh_term_t)21)
+#define STT_TRY  ((knh_term_t)22)
+#define STT_CATCH  ((knh_term_t)23)
+#define STT_THROW  ((knh_term_t)24)
+#define STT_PRINT  ((knh_term_t)25)
+#define STT_ASSURE  ((knh_term_t)26)
+#define STT_ASSERT  ((knh_term_t)27)
+#define STT_REGISTER  ((knh_term_t)28)
+#define STT_FUNCTION  ((knh_term_t)29)
+#define STT_METHOD  ((knh_term_t)30)
+#define STT_TYPEMAP  ((knh_term_t)31)
+#define STT_DECL  ((knh_term_t)32)
+#define STT_CHKOUT  ((knh_term_t)33)
+#define STT_LETM  ((knh_term_t)34)
+#define STT_SELECT  ((knh_term_t)35)
 #define STT_SWAP  ((knh_term_t)36)
 #define STT_CONST  ((knh_term_t)37)
 #define STT_ERR  ((knh_term_t)38)
@@ -99,17 +103,17 @@ extern "C" {
 #define STT_THUNK  ((knh_term_t)47)
 #define STT_TLINK  ((knh_term_t)48)
 #define STT_ALT  ((knh_term_t)49)
-#define STT_TRI  ((knh_term_t)50)
-#define STT_AND  ((knh_term_t)51)
-#define STT_OR  ((knh_term_t)52)
-#define STT_W1  ((knh_term_t)53)
-#define STT_SEND  ((knh_term_t)54)
-#define STT_FMTCALL  ((knh_term_t)55)
-#define STT_CALL1  ((knh_term_t)56)
-#define STT_GO  ((knh_term_t)57)
-#define TT_PRAGMA   ((knh_term_t)58)
-#define TT_NAMESPACE   ((knh_term_t)59)
-#define TT_LINK   ((knh_term_t)60)
+#define STT_MATCH  ((knh_term_t)50)
+#define STT_TRI  ((knh_term_t)51)
+#define STT_AND  ((knh_term_t)52)
+#define STT_OR  ((knh_term_t)53)
+#define STT_W1  ((knh_term_t)54)
+#define STT_SEND  ((knh_term_t)55)
+#define STT_FMTCALL  ((knh_term_t)56)
+#define STT_CALL1  ((knh_term_t)57)
+#define STT_GO  ((knh_term_t)58)
+#define TT_PRAGMA   ((knh_term_t)59)
+#define TT_NAMESPACE   ((knh_term_t)60)
 #define TT_INCLUDE   ((knh_term_t)61)
 #define TT_IMPORT   ((knh_term_t)62)
 #define TT_USING   ((knh_term_t)63)
@@ -185,69 +189,73 @@ extern "C" {
 #define TT_AND   ((knh_term_t)133)
 #define TT_NOT   ((knh_term_t)134)
 #define TT_EXISTS   ((knh_term_t)135)
-#define TT_FROM   ((knh_term_t)136)
-#define TT_UNTIL   ((knh_term_t)137)
-#define TT_IS   ((knh_term_t)138)
-#define TT_OF   ((knh_term_t)139)
-#define TT_IN   ((knh_term_t)140)
-#define TT_TO   ((knh_term_t)141)
-#define TT_EQ   ((knh_term_t)142)
-#define TT_NEQ   ((knh_term_t)143)
-#define TT_LT   ((knh_term_t)144)
-#define TT_LTE   ((knh_term_t)145)
-#define TT_GT   ((knh_term_t)146)
-#define TT_GTE   ((knh_term_t)147)
-#define TT_WITH   ((knh_term_t)148)
-#define TT_AS   ((knh_term_t)149)
-#define TT_WHERE   ((knh_term_t)150)
-#define TT_EACH   ((knh_term_t)151)
-#define TT_LOR   ((knh_term_t)152)
-#define TT_XOR   ((knh_term_t)153)
-#define TT_LAND   ((knh_term_t)154)
-#define TT_ADD   ((knh_term_t)155)
-#define TT_SUB   ((knh_term_t)156)
-#define TT_DIV   ((knh_term_t)157)
-#define TT_MOD   ((knh_term_t)158)
-#define TT_MUL   ((knh_term_t)159)
-#define TT_LSFT   ((knh_term_t)160)
-#define TT_RSFT   ((knh_term_t)161)
-#define TT_LNOT   ((knh_term_t)162)
-#define TT_NEXT   ((knh_term_t)163)
-#define TT_PREV   ((knh_term_t)164)
-#define TT_ITR   ((knh_term_t)165)
-#define TT_EXPT   ((knh_term_t)166)
-#define TT_TAND   ((knh_term_t)167)
-#define TT_TMUL   ((knh_term_t)168)
-#define TT_TADD   ((knh_term_t)169)
-#define TT_TSUB   ((knh_term_t)170)
-#define TT_CODE   ((knh_term_t)171)
-#define TT_DOCU   ((knh_term_t)172)
-#define TT_NUM   ((knh_term_t)173)
-#define TT_STR   ((knh_term_t)174)
-#define TT_TSTR   ((knh_term_t)175)
-#define TT_ESTR   ((knh_term_t)176)
-#define TT_REGEX   ((knh_term_t)177)
-#define TT_DOC   ((knh_term_t)178)
-#define TT_METAN   ((knh_term_t)179)
-#define TT_PROPN   ((knh_term_t)180)
-#define TT_URN   ((knh_term_t)181)
-#define TT_TLINK   ((knh_term_t)182)
-#define TT_NAME   ((knh_term_t)183)
-#define TT_UNAME   ((knh_term_t)184)
-#define TT_FUNCNAME   ((knh_term_t)185)
-#define TT_UFUNCNAME   ((knh_term_t)186)
-#define TT_PTYPE   ((knh_term_t)187)
-#define TT_CID   ((knh_term_t)188)
-#define TT_MN   ((knh_term_t)189)
-#define TT_FMT   ((knh_term_t)190)
-#define TT_CONST   ((knh_term_t)191)
-#define TT_SYSVAL   ((knh_term_t)192)
-#define TT_FVAR   ((knh_term_t)193)
-#define TT_LVAR   ((knh_term_t)194)
-#define TT_FIELD   ((knh_term_t)195)
-#define TT_LFIELD   ((knh_term_t)196)
-#define TT_ERR   ((knh_term_t)197)
-#define TT_EOT   ((knh_term_t)198)
+#define TT_LINK   ((knh_term_t)136)
+#define TT_QUERY   ((knh_term_t)137)
+#define TT_FROM   ((knh_term_t)138)
+#define TT_UNTIL   ((knh_term_t)139)
+#define TT_IS   ((knh_term_t)140)
+#define TT_OF   ((knh_term_t)141)
+#define TT_IN   ((knh_term_t)142)
+#define TT_TO   ((knh_term_t)143)
+#define TT_EQ   ((knh_term_t)144)
+#define TT_NEQ   ((knh_term_t)145)
+#define TT_LT   ((knh_term_t)146)
+#define TT_LTE   ((knh_term_t)147)
+#define TT_GT   ((knh_term_t)148)
+#define TT_GTE   ((knh_term_t)149)
+#define TT_WITH   ((knh_term_t)150)
+#define TT_MATCH   ((knh_term_t)151)
+#define TT_AS   ((knh_term_t)152)
+#define TT_WHERE   ((knh_term_t)153)
+#define TT_EACH   ((knh_term_t)154)
+#define TT_LOR   ((knh_term_t)155)
+#define TT_XOR   ((knh_term_t)156)
+#define TT_LAND   ((knh_term_t)157)
+#define TT_ADD   ((knh_term_t)158)
+#define TT_SUB   ((knh_term_t)159)
+#define TT_DIV   ((knh_term_t)160)
+#define TT_MOD   ((knh_term_t)161)
+#define TT_MUL   ((knh_term_t)162)
+#define TT_LSFT   ((knh_term_t)163)
+#define TT_RSFT   ((knh_term_t)164)
+#define TT_LNOT   ((knh_term_t)165)
+#define TT_NEXT   ((knh_term_t)166)
+#define TT_PREV   ((knh_term_t)167)
+#define TT_ITR   ((knh_term_t)168)
+#define TT_SEQ   ((knh_term_t)169)
+#define TT_EXPT   ((knh_term_t)170)
+#define TT_TAND   ((knh_term_t)171)
+#define TT_TMUL   ((knh_term_t)172)
+#define TT_TADD   ((knh_term_t)173)
+#define TT_TSUB   ((knh_term_t)174)
+#define TT_CODE   ((knh_term_t)175)
+#define TT_DOCU   ((knh_term_t)176)
+#define TT_NUM   ((knh_term_t)177)
+#define TT_STR   ((knh_term_t)178)
+#define TT_TSTR   ((knh_term_t)179)
+#define TT_ESTR   ((knh_term_t)180)
+#define TT_REGEX   ((knh_term_t)181)
+#define TT_DOC   ((knh_term_t)182)
+#define TT_METAN   ((knh_term_t)183)
+#define TT_PROPN   ((knh_term_t)184)
+#define TT_URN   ((knh_term_t)185)
+#define TT_TLINK   ((knh_term_t)186)
+#define TT_NAME   ((knh_term_t)187)
+#define TT_UNAME   ((knh_term_t)188)
+#define TT_FUNCNAME   ((knh_term_t)189)
+#define TT_UFUNCNAME   ((knh_term_t)190)
+#define TT_PTYPE   ((knh_term_t)191)
+#define TT_CID   ((knh_term_t)192)
+#define TT_MN   ((knh_term_t)193)
+#define TT_FMT   ((knh_term_t)194)
+#define TT_CONST   ((knh_term_t)195)
+#define TT_SYSVAL   ((knh_term_t)196)
+#define TT_FVAR   ((knh_term_t)197)
+#define TT_LVAR   ((knh_term_t)198)
+#define TT_FIELD   ((knh_term_t)199)
+#define TT_LFIELD   ((knh_term_t)200)
+#define TT_ERR   ((knh_term_t)201)
+#define TT_EOT   ((knh_term_t)202)
 #endif/*MN_OPSIZE*/
 
 
@@ -266,7 +274,6 @@ static TERMDATA_t TERMDATA[] = {
 	{"BLOCK", 0, -1}, 
 	{"pragma", 0, -1}, 
 	{"namespace", 0, -1}, 
-	{"link", 0, -1}, 
 	{"defmacro", 0, -1}, 
 	{"include", 0, -1}, 
 	{"allow", 0, -1}, 
@@ -298,6 +305,7 @@ static TERMDATA_t TERMDATA[] = {
 	{"DECL", 0, -1}, 
 	{"CHKOUT", 0, -1}, 
 	{"LETM", 0, -1}, 
+	{"SELECT", 0, -1}, 
 	{"SWAP", 0, -1}, 
 	{"CONST", 0, -1}, 
 	{"ERR", 0, -1}, 
@@ -312,6 +320,7 @@ static TERMDATA_t TERMDATA[] = {
 	{"THUNK", 0, -1}, 
 	{"TLINK", 0, -1}, 
 	{"ALT", 0, -1}, 
+	{"MATCH", 0, -1}, 
 	{"TRI", 0, -1}, 
 	{"AND", 0, -1}, 
 	{"OR", 0, -1}, 
@@ -322,7 +331,6 @@ static TERMDATA_t TERMDATA[] = {
 	{"*go", 0, -1}, 
 	{"pragma", 0, STT_PRAGMA}, 
 	{"namespace", 0, STT_NAMESPACE}, 
-	{"link", 0, STT_LINK}, 
 	{"include", 0, STT_INCLUDE}, 
 	{"import", 0, -1}, 
 	{"using", 0, STT_USING}, 
@@ -398,7 +406,9 @@ static TERMDATA_t TERMDATA[] = {
 	{"and", 0, MN_NONAME}, 
 	{"not", 0, MN_opNOT}, 
 	{"exists", 0, MN_opEXISTS}, 
-	{"from", 0, MN_opLINK}, 
+	{"::", 0, MN_opLINK}, 
+	{":?", 0, MN_opQUERY}, 
+	{"from", 0, MN_opFROM}, 
 	{"until", 0, MN_opUNTIL}, 
 	{"is?", _BIN, MN_opIS}, 
 	{"<:", _BIN, MN_opOF}, 
@@ -411,6 +421,7 @@ static TERMDATA_t TERMDATA[] = {
 	{">", _BIN, MN_opGT}, 
 	{">=", _BIN, MN_opGTE}, 
 	{"with", _BIN, MN_opWITH}, 
+	{"match", _BIN, MN_opMATCH}, 
 	{"as", _BIN, MN_opAS}, 
 	{"where", _BIN, MN_opWHERE}, 
 	{"each", _BIN, MN_opEACH}, 
@@ -428,6 +439,7 @@ static TERMDATA_t TERMDATA[] = {
 	{"++", 0, MN_opNEXT}, 
 	{"--", 0, MN_opPREV}, 
 	{"..", 0, MN_opITR}, 
+	{"()", 0, MN_opSEQ}, 
 	{"!!", 0, MN_opEXPT}, 
 	{"&&&", 0, MN_opADDR}, 
 	{"***", 0, MN_opCAST}, 
@@ -574,7 +586,9 @@ static OPDATA_t OPDATA[] = {
 	{6, MN_NONAME}, /* and */
 	{7, MN_opNOT}, /* not */
 	{8, MN_opEXISTS}, /* exists */
-	{9, MN_opLINK}, /* from */
+	{9, MN_opLINK}, /* :: */
+	{9, MN_opQUERY}, /* :? */
+	{9, MN_opFROM}, /* from */
 	{9, MN_opUNTIL}, /* until */
 	{10, MN_opIS}, /* is? */
 	{10, MN_opOF}, /* <: */
@@ -587,6 +601,7 @@ static OPDATA_t OPDATA[] = {
 	{10, MN_opGT}, /* > */
 	{10, MN_opGTE}, /* >= */
 	{12, MN_opWITH}, /* with */
+	{12, MN_opMATCH}, /* match */
 	{12, MN_opAS}, /* as */
 	{12, MN_opWHERE}, /* where */
 	{12, MN_opEACH}, /* each */
@@ -604,6 +619,7 @@ static OPDATA_t OPDATA[] = {
 	{40, MN_opNEXT}, /* ++ */
 	{40, MN_opPREV}, /* -- */
 	{40, MN_opITR}, /* .. */
+	{40, MN_opSEQ}, /* () */
 	{40, MN_opEXPT}, /* !! */
 	{40, MN_opADDR}, /* &&& */
 	{40, MN_opCAST}, /* *** */
@@ -614,6 +630,8 @@ static OPDATA_t OPDATA[] = {
 static const char *OPNAME[] = {
 	"not",
 	"exists",
+	"::",
+	":?",
 	"from",
 	"until",
 	"is?",
@@ -627,6 +645,7 @@ static const char *OPNAME[] = {
 	">",
 	">=",
 	"with",
+	"match",
 	"as",
 	"where",
 	"each",
@@ -644,6 +663,7 @@ static const char *OPNAME[] = {
 	"++",
 	"--",
 	"..",
+	"()",
 	"!!",
 	"&&&",
 	"***",
@@ -655,6 +675,8 @@ static const char *MN_opNAME[] = {
 	"opNOT",
 	"opEXISTS",
 	"opLINK",
+	"opQUERY",
+	"opFROM",
 	"opUNTIL",
 	"opIS",
 	"opOF",
@@ -667,6 +689,7 @@ static const char *MN_opNAME[] = {
 	"opGT",
 	"opGTE",
 	"opWITH",
+	"opMATCH",
 	"opAS",
 	"opWHERE",
 	"opEACH",
@@ -684,6 +707,7 @@ static const char *MN_opNAME[] = {
 	"opNEXT",
 	"opPREV",
 	"opITR",
+	"opSEQ",
 	"opEXPT",
 	"opADDR",
 	"opCAST",

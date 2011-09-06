@@ -954,7 +954,7 @@ static int Token_addOPR(CTX ctx, knh_Token_t *tkB, CWB_t *cwb, knh_InputStream_t
 			return knh_InputStream_getc(ctx, in);
 		}
 		if(Token_startsWithExpr(ctx, tkB)) {
-			WARN_MuchBetter(ctx, "$/.../");
+			WARN_MuchBetter(ctx, "$/(regex)/", "/(regex)/");
 			return Token_addREGEX(ctx, tkB, cwb, in, ch);
 		}
 		knh_Bytes_putc(ctx, cwb->ba, '/');
@@ -1938,7 +1938,7 @@ static int ITR_isCAST(tkitr_t *itr)
 			return 1;
 		}
 	}
-	else if((ITR_is(itr, TT_FROM) || ITR_is(itr, TT_TLINK))) {
+	else if(ITR_is(itr, TT_TLINK)) {
 		ITR_CASTOP(itr);
 		return 1;
 	}
@@ -1955,10 +1955,6 @@ static void _EXPRCAST(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		_ASIS(ctx, stmtT, itr);
 		knh_Stmt_add(ctx, stmtT, tkTL);
 		_EXPR(ctx, stmtT, itr);
-		return;
-	}
-	if(ITR_is(itr, TT_FROM)) {
-		knh_Stmt_add(ctx, stmtT, new_TokenCID(ctx, CLASS_Tdynamic));
 	}
 	else {
 		tkitr_t cbuf, *citr = ITR_new(ITR_nextTK(itr), &cbuf);
@@ -1972,8 +1968,8 @@ static void _EXPRCAST(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		if(ITR_is(citr, TT_MUL)) {
 			knh_Stmt_add(ctx, stmtT, new_TokenCID(ctx, CLASS_Tdynamic));
 		}
+		_EXPR(ctx, stmtT, itr);
 	}
-	_EXPR(ctx, stmtT, itr);
 }
 
 int TT_priority(knh_term_t tt);
@@ -2595,7 +2591,7 @@ static void _DECL2(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		knh_Stmt_add(ctx, stmt, ITR_nextTK(aitr));
 
 		if(ITR_is(aitr, TT_BRANCET)) {  /* @ac(DeclareCStyleArray) */
-			WARN_MuchBetter(ctx, "Type[]");  // int a[] // C-sytle array
+			WARN_MuchBetter(ctx, "Type[]", NULL);  // int a[] // C-sytle array
 			KNH_SETv(ctx, tmNN(stmt, 0), new_TokenPTYPE(ctx, CLASS_Array, tkT));
 			ITR_next(aitr);
 		}
@@ -2874,7 +2870,7 @@ static int ITR_indexINFROM(tkitr_t *itr)
 		if(TT_(itr->ts[c]) == TT_UNAME) c++;  // skip InputSteam in
 		for(i = c; i < itr->e; i++) {
 			knh_term_t tt = TT_(itr->ts[i]);
-			if(tt == TT_FROM || tt == TT_COLON) {
+			if(tt == TT_LINK || tt == TT_COLON) {
 				return i;
 			}
 			if(tt == TT_NAME && ISB(S_tobytes((itr->ts[i])->text), "in")) {
@@ -3245,6 +3241,8 @@ static knh_Stmt_t *new_StmtMETA(CTX ctx, knh_term_t stt, tkitr_t *itr, int shift
 		break;\
 	}\
 
+
+
 static int ITR_findSTMTOPR(tkitr_t *itr, int *op)
 {
 	int i;
@@ -3253,14 +3251,17 @@ static int ITR_findSTMTOPR(tkitr_t *itr, int *op)
 		if(tt == TT_LET) {
 			op[0] = 0; return i;
 		}
-		if(tt == TT_LSFT) {
+		if(tt == TT_FROM) {
 			op[0] = 1; return i;
 		}
-		if(tt == TT_LSEND) {
+		if(tt == TT_LSFT) {
 			op[0] = 2; return i;
 		}
-		if(tt == TT_RSEND) {
+		if(tt == TT_LSEND) {
 			op[0] = 3; return i;
+		}
+		if(tt == TT_RSEND) {
+			op[0] = 4; return i;
 		}
 	}
 	return -1;
@@ -3300,18 +3301,25 @@ static void _STMTEXPR(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		}
 		break;
 	}
-	case 1: {  /* TT_LSHT */
+	case 1: { /* a, b from expr */
+		tkitr_t lbuf, *litr = ITR_first(itr, idx, &lbuf, +1);
+		STT_(stmt) = STT_SELECT;
+		_EXPRs(ctx, stmt, litr);
+		_EXPR(ctx, stmt, itr);
+		break;
+	}
+	case 2: {  /* TT_LSHT */
 		Stmt_setLSHIFT(stmt, 1);
 		ITR_replace(itr, TT_LSFT, TT_COMMA);
 	}
-	case 2: {
+	case 3: {
 		STT_(stmt) = STT_SEND;
 		knh_Stmt_add(ctx, stmt, new_TokenMN(ctx, MN_send));
 		ITR_replace(itr, TT_LSEND, TT_COMMA);
 		_EXPRs(ctx, stmt, itr);
 		break;
 	}
-	case 3: {
+	case 4: {
 		int e = itr->e;
 		itr->e = idx;
 		_EXPR(ctx, stmt, itr);
@@ -3382,7 +3390,6 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 		}
 		CASE_L(PRAGMA, +1, 1/*;*/, _PRAGMA)
 		CASE_(NAMESPACE, +1, _STMT1);
-		CASE_(LINK, +1, _ONEEXPR, _STMT1);
 		CASE_L(INCLUDE, +1, 1/*;*/, _EXPRs);
 		CASE_L(USING, +1, 1/*;*/, _USING);
 		CASE_(CLASS, +1, _CLASS);

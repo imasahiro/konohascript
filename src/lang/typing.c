@@ -472,7 +472,7 @@ knh_class_t knh_Token_cid(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 		case TT_VOID: cid = CLASS_Tvoid; break;
 		case TT_DYN: cid = CLASS_Tdynamic; break;
 		case TT_BYTE: {
-			WARN_MuchBetter(ctx, "int");
+			WARN_MuchBetter(ctx, "int", "byte");
 			cid = CLASS_Int;
 			break;
 		}
@@ -1116,11 +1116,11 @@ static knh_Token_t* NUM_typing(CTX ctx, knh_Token_t *tk, knh_class_t reqt)
 	knh_class_t breqc = C_bcid(reqt);
 	if(reqt == CLASS_Boolean) {
 		if(t.utext[0] == '0') {
-			WARN_MuchBetter(ctx, "false");
+			WARN_MuchBetter(ctx, "false", "0");
 			return Token_setCONST(ctx, tk, KNH_FALSE);
 		}
 		else {
-			WARN_MuchBetter(ctx, "true");
+			WARN_MuchBetter(ctx, "true", NULL);
 			return Token_setCONST(ctx, tk, KNH_TRUE);
 		}
 	}
@@ -1821,7 +1821,7 @@ static knh_Token_t *LET_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 	knh_Token_t *tkN = tkNN(stmt, 1);
 	Token_setReadOnly(tkN, 0);
 	if(reqt == TYPE_Boolean) {
-		WARN_MuchBetter(ctx, "==");
+		WARN_MuchBetter(ctx, "==", "=");
 		STT_(stmt) = STT_OPR;
 		KNH_SETv(ctx, tkNN(stmt, 0), new_TokenMN(ctx, MN_opEQ));
 		return OPR_typing(ctx, stmt, reqt);
@@ -1875,19 +1875,10 @@ static void Stmt_setESPIDX(CTX ctx, knh_Stmt_t *stmt)
 	DP(stmt)->espidx = Gamma_espidx(ctx);
 }
 
-static knh_type_t StmtTUPLE_typing(CTX ctx, knh_Stmt_t *stmt, size_t n, size_t i)
-{
-	knh_class_t cid = Tn_cid(stmt, n);
-	const knh_ClassTBL_t *t = ClassTBL(cid);
-	if(t->bcid == CLASS_Tuple && t->cparam != NULL && i < t->cparam->psize ) {
-		return knh_ParamArray_get(t->cparam, i)->type;
-	}
-	return TYPE_void;
-}
-
 static void LET_addVAR(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t type, knh_Token_t *tkN)
 {
 	knh_fieldn_t fn = Token_fn(ctx, tkN);
+	DBG_P("script level=%d", IS_SCRIPTLEVEL(ctx));
 	if(IS_SCRIPTLEVEL(ctx)) {
 		knh_index_t idx = Script_addField(ctx, K_GMASCR, 0, type, fn);
 		knh_Token_toTYPED(ctx, tkN, TT_FIELD, type, idx);
@@ -1898,42 +1889,48 @@ static void LET_addVAR(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_type_t type, knh
 	KNH_SETv(ctx, tmNN(stmt, n), tkN);
 }
 
+// a, b = hoge
+
 static knh_Token_t *LETM_typing(CTX ctx, knh_Stmt_t *stmt)
 {
-	knh_class_t tuplecid = CLASS_Tuple;
-	size_t i, msize = DP(stmt)->size - 1;
+//	knh_class_t tuplecid = CLASS_Tuple;
+	size_t i, msize = DP(stmt)->size - 1, tsize = msize;
 	int CheckReadOnly = 0;  // TODO
 	TYPING(ctx, stmt, msize, TYPE_Tuple, _BCHECK);
-	for(i = 0; i < msize; i++) {
+	knh_class_t tplcid = Tn_cid(stmt, msize);
+	const knh_ClassTBL_t *ct = ClassTBL(tplcid);
+	if(ct->cparam->psize < tsize) {
+		knh_Token_t *tkN = tkNN(stmt, ct->cparam->psize);
+		WARN_TooMany(ctx, "variables", S_totext(tkN->text));
+		for(i = ct->cparam->psize;i < msize; i++) {
+			TT_(tkNN(stmt, i)) = TT_ASIS;
+		}
+		tsize = ct->cparam->psize;
+	}
+	for(i = 0; i < tsize; i++) {
 		knh_Token_t *tkN = tkNN(stmt, i);
 		Token_setReadOnly(tkN, 0);
 		if(TT_(tkN) == TT_ASIS) continue;
 		if(TT_(tkN) != TT_NAME) {
-			return ERROR_text(ctx, "unsupported token for select" K_TRACEPOINT);
+			return ERROR_text(ctx, "unsupported token for tuple selection" K_TRACEPOINT);
 		}
 		knh_Token_t *tkRES = TNAME_typing(ctx, tkN, TYPE_dyn, _FINDLOCAL | _FINDFIELD | _FINDSCRIPT | CheckReadOnly);
-		if(tkRES != NULL) {
-			knh_type_t type = StmtTUPLE_typing(ctx, stmt, msize, i);
-			if(type == TYPE_void) {
-				WARN_TooMany(ctx, "variables", S_totext(tkN->text));
-				for(;i < msize; i++) {
-					TT_(tkNN(stmt, i)) = TT_ASIS;
-				}
-				break;
-			}
+		if(tkRES == NULL) {
+			knh_type_t type = knh_ParamArray_get(ct->cparam, i)->type;
 			LET_addVAR(ctx, stmt, i, type, tkN);
 		}
 	}
 	{
 		BEGIN_BLOCK(stmt, espidx);
 		knh_Token_t *tkASIS = new_(Token);
-		knh_Token_t *tkIDX = Gamma_addLVAR(ctx, 0, tuplecid, FN_, 1);
+		knh_Token_t *tkIDX = Gamma_addLVAR(ctx, 0, tplcid, FN_, 1);
+		//DBG_P("espidx=%d, tkIDX->index=%d, Gamma_espidx()=%d", espidx, tkIDX->index, Gamma_espidx(ctx));
 		knh_Stmt_t *stmtLET = new_Stmt2(ctx, STT_LET, tkASIS, tkIDX, tmNN(stmt, msize), NULL);
 		knh_Stmt_t *stmtTAIL = stmtLET;
 		size_t ti = 0;
 		Stmt_setESPIDX(ctx, stmtTAIL);
 		stmtTAIL->type = TYPE_void;
-		for(i = 0; i < msize; i++) {
+		for(i = 0; i < tsize; i++) {
 			knh_Token_t *tkN = tkNN(stmt, i);
 			if(TT_(tkN) != TT_ASIS) {
 				knh_Stmt_t *stmtLET2 = NULL;
@@ -1958,6 +1955,77 @@ static knh_Token_t *LETM_typing(CTX ctx, knh_Stmt_t *stmt)
 	}
 	return Stmt_typed(ctx, stmt, TYPE_void);
 }
+
+static knh_Token_t *SELECT_typing(CTX ctx, knh_Stmt_t *stmt)
+{
+	size_t i, msize = DP(stmt)->size - 1;
+	int CheckReadOnly = 0;  // TODO
+	TYPING_UntypedExpr(ctx, stmt, msize);
+	knh_class_t cid = Tn_cid(stmt, msize);
+	const knh_ClassTBL_t *ct = ClassTBL(cid);
+	if(ct->bcid == CLASS_Tuple) {
+		WARN_MuchBetter(ctx, "=", "from");
+		STT_(stmt) = STT_LETM;
+		return LETM_typing(ctx, stmt);
+	}
+	knh_Method_t *getters[msize];
+	for(i = 0; i < msize; i++) {
+		knh_Token_t *tkN = tkNN(stmt, i);
+		Token_setReadOnly(tkN, 0);
+		if(TT_(tkN) == TT_ASIS) continue;
+		if(TT_(tkN) != TT_NAME) {
+			return ERROR_text(ctx, "unsupported token for selector" K_TRACEPOINT);
+		}
+		knh_fieldn_t fn = Token_fn(ctx, tkN);
+		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, cid, MN_toGETTER(fn));
+		if(mtd == NULL) {
+			mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, cid, MN_toISBOOL(fn));
+			if(mtd == NULL) {
+				return ERROR_Undefined(ctx, "field", cid, tkN);
+			}
+		}
+		getters[i] = mtd;
+		knh_type_t rtype = knh_Method_rtype(ctx, mtd, cid);
+		knh_Token_t *tkRES = TNAME_typing(ctx, tkN, rtype, _FINDLOCAL | _FINDFIELD | _FINDSCRIPT | CheckReadOnly);
+		if(tkRES == NULL) {
+			LET_addVAR(ctx, stmt, i, rtype, tkN);
+		}
+		else if(rtype != tkRES->type) {
+
+		}
+		DBG_P("rtype=%s, tkN->type=%s", TYPE__(rtype), TYPE__(tkN->type));
+	}
+	{
+		BEGIN_BLOCK(stmt, espidx);
+		knh_Token_t *tkASIS = new_(Token);
+		knh_Token_t *tkOBJ = Gamma_addLVAR(ctx, 0, cid, FN_, 1);
+		//DBG_P("espidx=%d, tkIDX->index=%d, Gamma_espidx()=%d", espidx, tkIDX->index, Gamma_espidx(ctx));
+		knh_Stmt_t *stmtLET = new_Stmt2(ctx, STT_LET, tkASIS, tkOBJ, tmNN(stmt, msize), NULL);
+		knh_Stmt_t *stmtTAIL = stmtLET;
+		Stmt_setESPIDX(ctx, stmtTAIL);
+		stmtTAIL->type = TYPE_void;
+		for(i = 0; i < msize; i++) {
+			knh_Token_t *tkN = tkNN(stmt, i);
+			DBG_ASSERT(TT_(tkN) == TT_LVAR || TT_(tkN) == TT_FVAR || TT_(tkN) == TT_FIELD || TT_(tkN) == TT_LFIELD);
+			knh_Stmt_t *stmtLET2 = NULL;
+			knh_Token_t *tkMTD = new_TokenTYPED(ctx, TT_MN, TYPE_void, 0);
+			Token_setMethod(ctx, tkMTD, getters[i]->mn, getters[i]);
+			knh_Stmt_t *stmtGET = new_Stmt2(ctx, STT_CALL, tkMTD, Gamma_tokenIDX(ctx, new_TokenTYPED(ctx, TT_LVAR, tkOBJ->type, tkOBJ->index)), NULL);
+			stmtGET->type = tkN->type;
+			stmtLET2 = new_Stmt2(ctx, STT_LET, tkASIS, tkN, stmtGET, NULL);
+			KNH_INITv(DP(stmtTAIL)->nextNULL, stmtLET2);
+			stmtTAIL = stmtLET2;
+			Stmt_setESPIDX(ctx, stmt);
+			stmtTAIL->type = TYPE_void;
+		}
+		Stmt_toSTT(stmt, STT_BLOCK);
+		knh_Stmt_trimToSize(ctx, stmt, 1);
+		KNH_SETv(ctx, stmtNN(stmt, 0), stmtLET);
+		END_BLOCK(stmt, espidx);
+	}
+	return Stmt_typed(ctx, stmt, TYPE_void);
+}
+
 
 /* a[i], a[2] = a, j */
 
@@ -2721,28 +2789,22 @@ static knh_Token_t* NEWMAP_typing(CTX ctx, knh_Stmt_t *stmt, knh_class_t reqt)
 		}
 		return NEWPARAMs_typing(ctx, stmt, CLASS_Map, MN_newMAP, 0/*needsTypingPARAMs*/);
 	}
-	else if(reqt != CLASS_Map || DP(stmt)->size < 3) {  /* breqt == CLASS_Map */
+	else if(reqt != CLASS_Map) {
 		knh_class_t p2 = C_p2(reqt);
 		for(i = 2; i < DP(stmt)->size; i+=2) {
 			TYPING_TypedExpr(ctx, stmt, i+1, p2);       // value
-		}
-		return NEWPARAMs_typing(ctx, stmt, reqt, MN_newMAP, 0/*needsTypingPARAMs*/);
-	}
-	else {
-		knh_class_t newcid = CLASS_Map, p1, p2;
-		TYPING_UntypedExpr(ctx, stmt, 3); // value
-		p1 = Tn_cid(stmt, 2); p2 = Tn_cid(stmt, 3);
-		for(i = 4; i < DP(stmt)->size; i+=2) {
-			TYPING_UntypedExpr(ctx, stmt, i+1);  // value
-			if(p2 != TYPE_dyn && p2 != Tn_cid(stmt, i+1)) p2 = TYPE_dyn;
-		}
-		if(p2 != TYPE_dyn) {
-			newcid = knh_class_P2(ctx, CLASS_Map, CLASS_String, p2);
 		}
 		if(!IS_Tunbox(p2)) {
 			Stmt_boxAll(ctx, stmt, 2, DP(stmt)->size, p2);
 		}
 		return NEWPARAMs_typing(ctx, stmt, reqt, MN_newMAP, 0/*needsTypingPARAMs*/);
+	}
+	else {
+		for(i = 2; i < DP(stmt)->size; i+=2) {
+			TYPING_TypedExpr(ctx, stmt, i+1, TYPE_dyn); // value
+		}
+		Stmt_boxAll(ctx, stmt, 2, DP(stmt)->size, TYPE_dyn);
+		return NEWPARAMs_typing(ctx, stmt, TYPE_Map, MN_newMAP, 0/*needsTypingPARAMs*/);
 	}
 }
 
@@ -4613,6 +4675,7 @@ static knh_Token_t *Stmt_typing(CTX ctx, knh_Stmt_t *stmt, int needsReturn)
 			CASE_STMT(BLOCK, stmt, needsReturn);
 			CASE_STMT(DECL, stmt);
 			CASE_STMT(LETM, stmt);
+			CASE_STMT(SELECT, stmt);
 			CASE_STMT(SWAP, stmt);
 			CASE_STMT(IF, stmt, needsReturn);
 			CASE_STMT(SWITCH, stmt, needsReturn);
@@ -4700,6 +4763,7 @@ void SCRIPT_typing(CTX ctx, knh_Stmt_t *stmt)
 		CASE_STMT2(LET, stmt, TYPE_void);
 		CASE_STMT2(SWAP, stmt);
 		CASE_STMT2(LETM, stmt);
+		CASE_STMT2(SELECT, stmt);
 	}
 	if(TT_(tkRES) == TT_ERR) {
 		knh_Stmt_toERR(ctx, stmt, tkRES);

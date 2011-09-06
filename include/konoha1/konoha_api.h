@@ -323,7 +323,7 @@ knh_Token_t* ERROR_NotFound(CTX ctx, const char *whatis, const char *t);
 void WARN_NotFound(CTX ctx, const char *whatis, const char *t);
 knh_Token_t* ERROR_Incompatible(CTX ctx, const char *whatis, const char *name);
 knh_Token_t* ERROR_SingleParam(CTX ctx);
-void WARN_MuchBetter(CTX ctx, const char *token);
+void WARN_MuchBetter(CTX ctx, const char *token, const char *token2);
 void WarningMethodName(CTX ctx, const char *name);
 void WARN_MustCloseWith(CTX ctx, int ch);
 void WARN_Semicolon(CTX ctx);

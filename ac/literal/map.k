@@ -10,7 +10,7 @@ assure "MapLiteral" {
 	assert typeof(b) == Map;
 }
 
-assure "MapLiteral:Map<int>" {
+assure "MapLiteral" {
 	d = {
 		x: 1;
 		y: 2
@@ -18,8 +18,8 @@ assure "MapLiteral:Map<int>" {
 	}
 	print LINE, d["x"], d["y"], d["z"];
 	print typeof(d);
-	assert typeof(d) == Map<int>;
-	assert typeof(d["x"]) == int;
+	assert typeof(d) == Map;
+	assert typeof(d["x"]) == dynamic;
 }
 
 assure "MapLiteral:Array" {

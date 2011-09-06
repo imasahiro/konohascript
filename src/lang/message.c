@@ -178,9 +178,14 @@ knh_Token_t* ERROR_SingleParam(CTX ctx)
 //{
 //	return Gamma_perror(ctx, KC_ERR, _("cannot extends final class %C"), cid);
 //}
-void WARN_MuchBetter(CTX ctx, const char *token)
+void WARN_MuchBetter(CTX ctx, const char *token, const char *token2)
 {
-	Gamma_perror(ctx, KC_DWARN, _("%s is better"), token);
+	if(token2 != NULL) {
+		Gamma_perror(ctx, KC_DWARN, _("%s is better than %s"), token, token2);
+	}
+	else {
+		Gamma_perror(ctx, KC_DWARN, _("%s is better"), token);
+	}
 }
 void WarningMethodName(CTX ctx, const char *name)
 {

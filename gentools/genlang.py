@@ -7,7 +7,6 @@ DONE      _NOCHECK
 BLOCK     _BLOCK
 pragma    _NOCHECK
 namespace _BLOCK
-link      _EXPR _BLOCK
 defmacro  _NAME _PARAM _BLOCK
 include   _NOCHECK
 allow     _CNAME _MEXPR
@@ -40,6 +39,7 @@ TYPEMAP   _TYPE  _PARAM _BLOCK
 DECL      _TYPE  _NAME  _EXPR
 CHKOUT    _NOCHECK
 LETM      _NOCHECK
+SELECT    _NOCHECK
 SWAP      _NOCHECK
 CONST     _NOCHECK
 ERR       _ERR
@@ -56,6 +56,7 @@ ACALL       _NAME  _      _MEXPR
 THUNK       _NAME  _EXPR  _MEXPR
 TLINK       _
 ALT         _EXPR  _EXPR
+MATCH       _EXPR  _BLOCK
 TRI         _EXPR  _EXPR  _EXPR
 AND         _MEXPR
 OR          _MEXPR
@@ -70,7 +71,6 @@ PSTMT = '''
 #keyword  FLAG  _PARSE
 pragma    0     _FUTURE
 namespace 0     _STMT
-link      0     _EXPR  _STMT
 include   0     _FILE
 allow     0     _CNAME _MEXPR
 deny      0     _CNAME _MEXPR
@@ -103,7 +103,6 @@ TOKEN = '''
 # begin_stmt
 pragma    -          0
 namespace -          0
-link      -          0
 include   -          0
 import    -          0
 using     -          0
@@ -198,7 +197,9 @@ or      TT_OR           0      5       MN_NONAME
 and     TT_AND          0      6       MN_NONAME
 not     TT_NOT          0      7       MN_opNOT
 exists  TT_EXISTS       0      8       MN_opEXISTS
-from    TT_FROM         0      9       MN_opLINK
+::      TT_LINK         0      9       MN_opLINK
+:?      TT_QUERY        0      9       MN_opQUERY
+from    TT_FROM         0      9       MN_opFROM
 until   TT_UNTIL        0      9       MN_opUNTIL
 
 # f() as Class == 1
@@ -216,6 +217,7 @@ to         TT_TO        _BIN    10      MN_opTO
 >=         TT_GTE       _BIN    10      MN_opGTE
 
 with       TT_WITH      _BIN    12      MN_opWITH
+match      TT_MATCH     _BIN    12      MN_opMATCH
 as         TT_AS        _BIN    12      MN_opAS
 where      TT_WHERE     _BIN    12      MN_opWHERE
 each       TT_EACH      _BIN    12      MN_opEACH
@@ -235,6 +237,7 @@ each       TT_EACH      _BIN    12      MN_opEACH
 ++         TT_NEXT      0       40      MN_opNEXT
 --         TT_PREV      0       40      MN_opPREV
 ..         TT_ITR       0       40      MN_opITR
+()         TT_SEQ       0       40      MN_opSEQ
 !!         TT_EXPT      0       40      MN_opEXPT
 &&&        TT_TAND      0       40      MN_opADDR
 ***        TT_TMUL      0       40      MN_opCAST
@@ -249,7 +252,6 @@ NUM      -
 STR      - 
 TSTR     - 
 ESTR     - 
-#FMTSTR   - 
 REGEX    - 
 DOC      - 
 METAN    - 
