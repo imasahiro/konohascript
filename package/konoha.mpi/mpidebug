@@ -1,10 +1,13 @@
 #!/bin/sh
 
+# this script is used for debugging MPI Application
+# > USAGE: ./mpidebug N mpikonoha script.k
+# >> N : MPI procs
+
 if [ $# -eq 0 ]; then
     exit 0
 fi
 
 pc=$1
 shift 1
-mpirun -np $pc xterm -e gdb --args mpikonoha $*
-#screen mpirun -np $pc screen gdb --args $bin $*
+mpirun -np $pc xterm -e gdb --args $*

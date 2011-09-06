@@ -27,7 +27,8 @@
  ****************************************************************************/
 
 #include<konoha1.h>
-#include <mpi.h>
+#include<errno.h>
+#include<mpi.h>
 
 #ifdef __cplusplus
 extern "C" {
