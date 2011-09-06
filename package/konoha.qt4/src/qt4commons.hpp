@@ -44,6 +44,8 @@
 //#define QPtr_to(T, a)   dynamic_cast<T>((a).p->rawptr)
 #define QCAST(T, p)     (static_cast<T>(p))
 #define QPtr_to(T, a)   konoha::object_cast<T>((a).p)
+#define QGraphicsItemChild_to(T, o) dynamic_cast<T>((QGraphicsItem *)o.p->rawptr)
+
 namespace konoha {
 template <class T>
 inline T object_cast(knh_RawPtr_t *po) {

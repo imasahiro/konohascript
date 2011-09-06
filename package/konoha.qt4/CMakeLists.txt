@@ -14,13 +14,32 @@ set(QT_USE_QTWEBKIT TRUE)
 find_package(Qt4 REQUIRED)
 #find_package(Qt4 COMPONENTS QtCore QtGui QtWebKit REQUIRED)
 set(PACKAGE_SOURCE_CODE
+	src/QAbstractScrollArea.cpp
 	src/QApplication.cpp
 	src/QBoxLayout.cpp
+	src/QColor.cpp
+	src/QEvent.cpp
+	src/QGraphicsEllipseItem.cpp
+	src/QGraphicsLineItem.cpp
+	src/QGraphicsPixmapItem.cpp
+	src/QGraphicsRectItem.cpp
+	src/QGraphicsScene.cpp
+	src/QGraphicsTextItem.cpp
+	src/QGraphicsView.cpp
 	src/QHBoxLayout.cpp
 	src/QLabel.cpp
 	src/QLineEdit.cpp
 	src/QObject.cpp
+	src/QPainter.cpp
+	src/QPen.cpp
+	src/QPixmap.cpp
+	src/QProgressBar.cpp
 	src/QPushButton.cpp
+	src/QRect.cpp
+	src/QTextCursor.cpp
+	src/QTextDocument.cpp
+	src/QTextEdit.cpp
+	src/QTimer.cpp
 	src/QWebView.cpp
 	src/QWidget.cpp
 	)

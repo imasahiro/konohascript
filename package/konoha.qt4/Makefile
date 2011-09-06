@@ -17,33 +17,73 @@ library = "$(pkgname).dylib"
 
 # please add in an alphabetical order
 objs = \
+	build/QAbstractScrollArea.o\
 	build/QApplication.o\
 	build/QBoxLayout.o\
+	build/QColor.o\
+	build/QEvent.o\
+	build/QGraphicsEllipseItem.o\
+	build/QGraphicsLineItem.o\
+	build/QGraphicsPixmapItem.o\
+	build/QGraphicsRectItem.o\
+	build/QGraphicsScene.o\
+	build/QGraphicsTextItem.o\
+	build/QGraphicsView.o\
 	build/QHBoxLayout.o\
 	build/QLabel.o\
 	build/QLineEdit.o\
 	build/QObject.o\
-	build/QPushButton.o\
-	build/QWebView.o\
-	build/QWidget.o\
-	build/QTextEdit.o\
-	build/QTimer.o\
-	build/QAbstractScrollArea.o\
 	build/QPainter.o\
+	build/QPen.o\
+	build/QPixmap.o\
+	build/QProgressBar.o\
+	build/QPushButton.o\
 	build/QRect.o\
-	build/QColor.o\
-	build/QEvent.o\
 	build/QTextCursor.o\
 	build/QTextDocument.o\
+	build/QTextEdit.o\
+	build/QTimer.o\
+	build/QWebView.o\
+	build/QWidget.o\
 	build/qt4commons_moc.o\
 
 .PHONY: all
 all: $(library)
 
+build/QAbstractScrollArea.o: src/QAbstractScrollArea.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
 build/QApplication.o: src/QApplication.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/QBoxLayout.o: src/QBoxLayout.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QColor.o: src/QColor.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QEvent.o: src/QEvent.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QGraphicsEllipseItem.o: src/QGraphicsEllipseItem.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QGraphicsLineItem.o: src/QGraphicsLineItem.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QGraphicsPixmapItem.o: src/QGraphicsPixmapItem.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QGraphicsRectItem.o: src/QGraphicsRectItem.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QGraphicsScene.o: src/QGraphicsScene.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QGraphicsTextItem.o: src/QGraphicsTextItem.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QGraphicsView.o: src/QGraphicsView.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/QHBoxLayout.o: src/QHBoxLayout.cpp
@@ -58,13 +98,28 @@ build/QLineEdit.o: src/QLineEdit.cpp
 build/QObject.o : src/QObject.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
+build/QPainter.o: src/QPainter.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QPen.o: src/QPen.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QPixmap.o: src/QPixmap.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QProgressBar.o: src/QProgressBar.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
 build/QPushButton.o : src/QPushButton.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
-build/QWebView.o: src/QWebView.cpp
+build/QRect.o: src/QRect.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
-build/QWidget.o: src/QWidget.cpp
+build/QTextCursor.o: src/QTextCursor.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/QTextDocument.o: src/QTextDocument.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/QTextEdit.o: src/QTextEdit.cpp
@@ -73,25 +128,10 @@ build/QTextEdit.o: src/QTextEdit.cpp
 build/QTimer.o: src/QTimer.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
-build/QAbstractScrollArea.o: src/QAbstractScrollArea.cpp
+build/QWebView.o: src/QWebView.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
-build/QPainter.o: src/QPainter.cpp
-	$(CC) $(CFLAGS) -o $@ -c $^
-
-build/QRect.o: src/QRect.cpp
-	$(CC) $(CFLAGS) -o $@ -c $^
-
-build/QColor.o: src/QColor.cpp
-	$(CC) $(CFLAGS) -o $@ -c $^
-
-build/QEvent.o: src/QEvent.cpp
-	$(CC) $(CFLAGS) -o $@ -c $^
-
-build/QTextCursor.o: src/QTextCursor.cpp
-	$(CC) $(CFLAGS) -o $@ -c $^
-
-build/QTextDocument.o: src/QTextDocument.cpp
+build/QWidget.o: src/QWidget.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/qt4commons_moc.o: src/qt4commons_moc.cpp
@@ -102,7 +142,6 @@ src/qt4commons_moc.cpp: src/qt4commons.hpp
 
 $(library): $(objs)
 	$(CC) -dynamiclib -o $@ $^ $(LDLIBS)
-
 
 .PHONY: clean
 clean:
