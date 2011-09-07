@@ -44,17 +44,7 @@ $(LIB): $(OBJS)
 $(PKG).o: $(PKG).c
 	$(CC) $(CFLAGS) -D_SETUP -o $@ -c $^
 
-#mpobjs
-src/comm.o: src/comm.c
-	$(CC) $(CFLAGS) -o $@ -c $^
-
-src/op.o: src/op.c
-	$(CC) $(CFLAGS) -o $@ -c $^
-
-src/pt2pt.o: src/pt2pt.c
-	$(CC) $(CFLAGS) -o $@ -c $^
-
-src/coll.o: src/coll.c
+%.o: %.c
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 .PHONY: clean

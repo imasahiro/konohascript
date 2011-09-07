@@ -6,21 +6,27 @@ nprocs = world.getSize();
 
 dsendbuf = new float[1];
 dsendbuf[0] = (float)myid;
-OUT.println("myid:"+"%d"(myid)+" dsendbuf="+"%4.2f"(dsendbuf[0]));
+OUT.println("myid:"+"%d"(myid)+", dsendbuf="+"%4.2f"(dsendbuf[0]));
 drecvbuf = new float[1];
 
 world.barrier();
 t0 = getMPIWtime();
 
-/* communicate with neighbors */
+/* binary-tree communication: log_2(nprocs) */
 {
-    if (myid != 0) {
-        world.recvFloat(drecvbuf, 1, myid-1);
+    inlogp = 6;
+    k = 1;
+    for(i=0; i<=inlogp-1; i++) {
+        if ((myid&k)  == k) {
+            world.recv(drecvbuf, myid-k, i);
+            dsendbuf[0] = dsendbuf[0] + drecvbuf[0];
+            k *= 2;
+        } else {
+            world.send(dsendbuf, myid+k, i);
+            break;
+        }
     }
-    dsendbuf[0] = dsendbuf[0] + drecvbuf[0];
-    if (myid != nprocs-1) {
-        world.sendFloat(dsendbuf, 1, myid+1);
-    } else {
+    if (myid == nprocs-1) {
         OUT.println("Total = "+"%4.2f"(dsendbuf[0]));
     }
 }
