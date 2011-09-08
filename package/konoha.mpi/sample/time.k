@@ -7,10 +7,7 @@ numprocs = world.getSize();
 world.barrier();
 t1 = getMPIWtime();
 
-{
-    /* main operation */
-    print "hello world from@"+ myid;
-}
+print "hello world from "+ myid;
 
 world.barrier();
 t2 = getMPIWtime();

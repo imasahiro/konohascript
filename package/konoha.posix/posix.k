@@ -27,46 +27,46 @@
 
 include "lib:gluelink";
 
-@Native String System.getHostName();
+@Public @Native String System.getHostName();
 
 // user, group
-@Native String System.getLogin();
-@Native int System.getUid();
-@Native int System.getEuid();
-@Native int System.getGid();
-@Native int System.getEgid();
+@Public @Native String System.getLogin();
+@Public @Native int System.getUid();
+@Public @Native int System.getEuid();
+@Public @Native int System.getGid();
+@Public @Native int System.getEgid();
 
 // process 
-@Native int System.getPid();
-@Native int System.getPPid();
-@Native boolean System.kill(int pid, int signal);
-@Native int System.sleep(int sec);
-@Native boolean System.usleep(int sec);
+@Public @Native int System.getPid();
+@Public @Native int System.getPPid();
+@Public @Native boolean System.kill(int pid, int signal);
+@Public @Native int System.sleep(int sec);
+@Public @Native boolean System.usleep(int sec);
 
 // file system
-@Native boolean System.link(Path path, Path path2);
-@Native boolean System.symlink(Path path, Path path2);
-@Native boolean System.rename(Path path, Path path2);
-@Native boolean System.unlink(Path path);
+@Public @Native boolean System.link(Path path, Path path2);
+@Public @Native boolean System.symlink(Path path, Path path2);
+@Public @Native boolean System.rename(Path path, Path path2);
+@Public @Native boolean System.unlink(Path path);
 
-@Native String System.getCwd();
-@Native boolean System.chdir(Path path);
-@Native boolean System.chroot(Path path);
+@Public @Native String System.getCwd();
+@Public @Native boolean System.chdir(Path path);
+@Public @Native boolean System.chroot(Path path);
 
 // DIR
-@Native class Dir;
-@Native @Throwable Dir System.openDir(Path path);
-@Native @Iterative String Dir.readName();
-@Native void Dir.close();
-@Native @Iterative Map Dir.read();
+@Public @Native class Dir;
+@Public @Native @Throwable Dir System.openDir(Path path);
+@Public @Native @Iterative String Dir.readName();
+@Public @Native void Dir.close();
+@Public @Native @Iterative Map Dir.read();
 
 // FILE
-@Native class File;
-@Native @Throwable File System.fopen(Path path, String mode);
-@Native int File.getc();
-@Native int File.read(Bytes buf, int offset, int len);
-@Native boolean File.putc(int ch);
-@Native int File.write(Bytes buf, int offset, int len);
-@Native void File.close();
+@Public @Native class File;
+@Public @Native @Throwable File System.fopen(Path path, String mode);
+@Public @Native int File.getc();
+@Public @Native int File.read(Bytes buf, int offset, int len);
+@Public @Native boolean File.putc(int ch);
+@Public @Native int File.write(Bytes buf, int offset, int len);
+@Public @Native void File.close();
 
 //include func:SystemCONST;

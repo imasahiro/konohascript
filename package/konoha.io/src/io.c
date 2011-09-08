@@ -44,10 +44,13 @@ static knh_IntData_t SystemConstInt[] = {
 		{NULL, 0}
 };
 
+extern const knh_ConverterDPI_t* knh_getMD5Converter();
+
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, CLASS_System, SystemConstInt);
 	kapi->setPackageProperty(ctx, "msgpack.version", msgpack_version());
+	kapi->addConverterDPI(ctx, "md5", knh_getMD5Converter(), NULL);
 	RETURN_PKGINFO("konoha.io");
 }
 

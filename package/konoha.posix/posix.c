@@ -403,8 +403,8 @@ KMETHOD System_fopen(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(po);
 }
 
-//## @Native int File.getc();
-KMETHOD File_getc(CTX ctx, knh_sfp_t *sfp _RIX)
+//## @Native int File.getC();
+KMETHOD File_getC(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	int ch = EOF;

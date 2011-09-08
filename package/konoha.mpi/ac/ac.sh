@@ -9,7 +9,7 @@ if [ ! -e $PKGDIR/ac/${0##*/} ]; then
     exit 0
 fi
 
-if [ ! -e $PKGDIR/mpikonoha ]; then
+if [ ! -e `which mpikonoha` ]; then
     echo "!!!  MPI binary file doesn't exist"
     exit 0
 fi
@@ -22,11 +22,11 @@ fi
 
 for utest in `find $PKGDIR/ac/collective -name "*.k"`; do
     echo $utest
-    mpirun -np 3 $PKGDIR/mpikonoha -l "+$PKGDIR/$logfile" $utest
+    mpirun -np 3 mpikonoha -l "+$PKGDIR/$logfile" $utest
 done
 
 for utest in `find $PKGDIR/ac/pt2pt -name "*.k"`; do
     echo $utest
-    mpirun -np 2 $PKGDIR/mpikonoha -l "+$PKGDIR/$logfile" $utest
+    mpirun -np 2 mpikonoha -l "+$PKGDIR/$logfile" $utest
 done
 echo ... all tests were done ...
