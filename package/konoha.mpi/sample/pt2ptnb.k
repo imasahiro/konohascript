@@ -15,7 +15,7 @@ if (rank == 0) {
 else { /* rank == 1 */
     buf = new Bytes();
     req = world.iRecv(buf, 0 /* src_rank */);
-    world.wait(req);
+    req.wait();
     print "RECV: " + buf.decode();
 }
 

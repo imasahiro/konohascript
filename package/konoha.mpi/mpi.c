@@ -81,6 +81,11 @@ DEFAPI(void) defMPIComm(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->init = knh_MPIComm_init;
 }
 
+DEFAPI(void) defMPIRequest(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	cdef->name = "MPIRequest";
+}
+
 DEFAPI(void) defMPIOp(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	cdef->name = "MPIOp";

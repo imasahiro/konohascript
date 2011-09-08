@@ -15,9 +15,10 @@ Int    MPIComm.getRank();
 Int    MPIComm.getSize();
 String MPIComm.getProcessorName();
 Int    MPIComm.barrier();
-Int    MPIComm.wait(Int request);
-Int    MPIComm.cancel(Int request);
 
+@Native class MPIRequest;
+Int    MPIRequest.wait();
+Int    MPIRequest.cancel();
 /* --- Operator ----------------------------------------------------------- */
 @Native class MPIOp;
 MPIOp MPIOp.new(Func<dynamic,dynamic> func, Boolean commutable);
@@ -48,18 +49,18 @@ Int MPIComm.sendrecvInt(IArray sdata, Int dest_rank, IArray rdata, Int count, In
 Int MPIComm.sendrecvFloat(FArray sdata, Int dest_rank, FArray rdata, Int count, Int src_rank, Int dest_tag, Int src_tag);
 
 /* --- isend -------------------------------------------------------------- */
-Int MPIComm.iSend(dynamic sdata, Int dest_rank, Int tag);
+MPIRequest MPIComm.iSend(dynamic sdata, Int dest_rank, Int tag, MPIRequest _);
 
-Int MPIComm.iSendBytes(Bytes sdata, Int count, Int dest_rank, Int tag);
-Int MPIComm.iSendInt(IArray sdata, Int count, Int dest_rank, Int tag);
-Int MPIComm.iSendFloat(FArray sdata, Int count, Int dest_rank, Int tag);
+MPIRequest MPIComm.iSendBytes(Bytes sdata, Int count, Int dest_rank, Int tag, MPIRequest _);
+MPIRequest MPIComm.iSendInt(IArray sdata, Int count, Int dest_rank, Int tag, MPIRequest _);
+MPIRequest MPIComm.iSendFloat(FArray sdata, Int count, Int dest_rank, Int tag, MPIRequest _);
 
 /* --- irecv -------------------------------------------------------------- */
-Int MPIComm.iRecv(dynamic rdata, Int src_rank, Int tag);
+MPIRequest MPIComm.iRecv(dynamic rdata, Int src_rank, Int tag, MPIRequest _);
 
-Int MPIComm.iRecvBytes(Bytes rdata, Int count, Int src_rank, Int tag);
-Int MPIComm.iRecvInt(IArray rdata, Int count, Int src_rank, Int tag);
-Int MPIComm.iRecvFloat(FArray rdata, Int count, Int src_rank, Int tag);
+MPIRequest MPIComm.iRecvBytes(Bytes rdata, Int count, Int src_rank, Int tag, MPIRequest _);
+MPIRequest MPIComm.iRecvInt(IArray rdata, Int count, Int src_rank, Int tag, MPIRequest _);
+MPIRequest MPIComm.iRecvFloat(FArray rdata, Int count, Int src_rank, Int tag, MPIRequest _);
 
 
 /* ======================================================================== */
