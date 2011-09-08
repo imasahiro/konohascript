@@ -31,10 +31,6 @@
 
 /* ************************************************************************ */
 
-#ifdef K_USING_CURL
-#include<curl/curl.h>
-#endif/*K_USING_CURL*/
-
 #ifdef __cplusplus
 extern "C" {
 #endif

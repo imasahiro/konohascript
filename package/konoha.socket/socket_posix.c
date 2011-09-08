@@ -72,11 +72,12 @@ DEFAPI(void) defSocket(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->init = Socket_init;
 	cdef->free = Socket_free;
 }
+
 static knh_bool_t SOCKET_exists(CTX ctx, knh_Path_t *pth)
 {
 	return 0; // dummy
 }
-static knh_io_t SOCKET_open(CTX ctx, knh_Path_t *pth, const char *mode)
+static knh_io_t SOCKET_open(CTX ctx, knh_Path_t *pth, const char *mode, knh_DictMap_t *conf)
 {
 	return IO_NULL; // Always opened by external
 }
@@ -92,10 +93,40 @@ static void SOCKET_close(CTX ctx, knh_io_t fd)
 {
 	close((int)fd);
 }
+
+static knh_bool_t SOCKET_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
+{
+	return 0;
+}
+
+static void SOCKET_flush(Ctx *ctx, knh_io_t fd)
+{
+	//flush((int)fd);
+}
+
+static knh_bool_t SOCKET_readline(Ctx *ctx, knh_io_t fd, knh_Bytes_t *ba)
+{
+	KNH_TODO("SOCKET_readline");
+	return 0;
+}
+
+static int SOCKET_feof(Ctx *ctx, knh_io_t fd)
+{
+	KNH_TODO("SOCKET_feof");
+	return 1;
+}
+
+static int SOCKET_getc(Ctx *ctx, knh_io_t fd)
+{
+	KNH_TODO("SOCKET_getc");
+	return -1;
+}
+
 static knh_StreamDPI_t SOCKET_DSPI = {
-	K_DSPI_STREAM, "socket",  K_OUTBUF_MAXSIZ,
-	SOCKET_exists,
+	K_STREAM_NET, "socket",  K_OUTBUF_MAXSIZ,
+	SOCKET_exists, NULL,
 	SOCKET_open, SOCKET_open, SOCKET_read, SOCKET_write, SOCKET_close,
+	SOCKET_info, SOCKET_getc, SOCKET_readline, SOCKET_feof, SOCKET_flush,
 };
 
 static knh_io_t open_socket(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int port)

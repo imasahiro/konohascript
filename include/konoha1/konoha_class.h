@@ -836,16 +836,29 @@ typedef knh_uintptr_t knh_io_t;
 
 typedef struct knh_Path_t knh_Path_t;
 
+#define K_STREAM_NULL      0
+#define K_STREAM_INMEMORY  1
+#define K_STREAM_STDIO     2
+#define K_STREAM_FILE      3
+#define K_STREAM_FD        4
+#define K_STREAM_NET       5
+
 typedef struct knh_StreamDPI_t {
 	int type;
 	const char   *name;
 	size_t       wbufsiz;  // write bufsize
 	knh_bool_t   (*existsSPI)(CTX, struct knh_Path_t *);
-	knh_io_t     (*fopenSPI)(CTX, struct knh_Path_t*, const char *);
-	knh_io_t     (*wopenSPI)(CTX, struct knh_Path_t*, const char *);
+	void         (*ospath)(CTX, struct knh_Path_t *, struct knh_NameSpace_t *);
+	knh_io_t     (*fopenSPI)(CTX, struct knh_Path_t*, const char *, knh_DictMap_t *);
+	knh_io_t     (*wopenSPI)(CTX, struct knh_Path_t*, const char *, knh_DictMap_t *);
 	knh_intptr_t (*freadSPI)(CTX, knh_io_t, char *, size_t);
 	knh_intptr_t (*fwriteSPI)(CTX, knh_io_t, const char *, size_t);
 	void         (*fcloseSPI)(CTX, knh_io_t);
+	knh_bool_t   (*info)(CTX, knh_io_t, knh_Object_t *);
+	int          (*fgetcSPI)(CTX, knh_io_t);
+	knh_bool_t   (*fgetlineSPI)(CTX, knh_io_t, knh_Bytes_t *);
+	int          (*feofSPI)(CTX, knh_io_t);
+	void         (*fflushSPI)(CTX, knh_io_t);
 } knh_StreamDPI_t;
 
 #ifdef USE_STRUCT_Path

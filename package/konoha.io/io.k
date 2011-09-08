@@ -40,8 +40,8 @@ include "lib:gluelink";
 @Public @Native void OutputStream.setCharset(StringEncoder c);
 
 // message pack 
-@Native @Public void OutputStream.writeData(Object data);
-@Native @Public var InputStream.readData(Class _);
-@Native @Public void Bytes.writeData(Object data);
-@Native @Public var Bytes.readData(int offset, int len, Class _);
+@Native @Public void OutputStream.writeMsgPack(Object data);
+@Native @Public var InputStream.readMsgPack(Class _);
+@Native @Public void Bytes.writeMsgPack(Object data);
+@Native @Public var Bytes.readMsgPack(int offset, int len, Class _);
 

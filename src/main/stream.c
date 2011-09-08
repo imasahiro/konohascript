@@ -33,6 +33,10 @@ extern "C" {
 
 #include"commons.h"
 
+#ifdef HAVE_LIBCURL
+#define K_USING_CURL 1
+#endif
+
 /* ************************************************************************ */
 
 void knh_buff_addpath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, knh_bytes_t t)
@@ -139,7 +143,12 @@ static knh_bool_t NOFILE_exists(CTX ctx, knh_Path_t *path)
 {
 	return 0;
 }
-static knh_io_t NOFILE_open(CTX ctx, knh_Path_t *path, const char *mode)
+static void NOFILE_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
+{
+	path->ospath ="";
+	path->asize = 0;
+}
+static knh_io_t NOFILE_open(CTX ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
 {
 	return IO_NULL;
 }
@@ -160,23 +169,60 @@ static knh_intptr_t BYTE_write(CTX ctx, knh_io_t fd, const char *buf, size_t buf
 static void NOFILE_close(CTX ctx, knh_io_t fd)
 {
 }
+static knh_bool_t NOFILE_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
+{
+	return 0;
+}
+static void NOFILE_flush(Ctx *ctx, knh_io_t fd)
+{
+}
+static knh_bool_t NOFILE_readline(Ctx *ctx, knh_io_t fd, knh_Bytes_t *ba)
+{
+	return 0;
+}
+
+static int NOFILE_feof(Ctx *ctx, knh_io_t fd)
+{
+	return 1;
+}
+
+static int NOFILE_getc(Ctx *ctx, knh_io_t fd)
+{
+	return -1;
+}
 
 static const knh_StreamDPI_t STREAM_NOFILE = {
-	K_DSPI_STREAM, "NOFILE", K_PAGESIZE,
-	NOFILE_exists,
-	NOFILE_open, NOFILE_open, NOFILE_read, NOFILE_write, NOFILE_close
+	K_STREAM_NULL, "NOFILE", K_PAGESIZE,
+	NOFILE_exists, NOFILE_ospath,
+	NOFILE_open, NOFILE_open, NOFILE_read, NOFILE_write, NOFILE_close,
+	NOFILE_info, NOFILE_getc, NOFILE_readline, NOFILE_feof, NOFILE_flush,
 };
 
 static const knh_StreamDPI_t STREAM_BYTE = {
-	K_DSPI_STREAM, "BYTE", K_OUTBUF_MAXSIZ,
-	NOFILE_exists,
-	NOFILE_open, NOFILE_open, NOFILE_read, BYTE_write, NOFILE_close
+	K_STREAM_INMEMORY, "BYTE", K_OUTBUF_MAXSIZ,
+	NOFILE_exists, NOFILE_ospath,
+	NOFILE_open, NOFILE_open, NOFILE_read, BYTE_write, NOFILE_close, // FIXME
+	NOFILE_info, NOFILE_getc, NOFILE_readline, NOFILE_feof, NOFILE_flush,
 };
+
 static knh_bool_t FILE_exists(CTX ctx, knh_Path_t *path)
 {
 	return knh_exists(ctx, path->ospath);
 }
-static knh_io_t FILE_open(CTX ctx, knh_Path_t *path, const char *mode)
+static void FILE_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
+{
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(path->urn));
+	if(knh_strcmp(S_totext(path->urn), CWB_totext(ctx, cwb)) == 0) {
+		path->ospath = S_totext(path->urn);
+		path->asize = 0;
+	}
+	else {
+		path->ospath = new_cwbtext(ctx, cwb, &(path->asize));
+	}
+	CWB_close(cwb);
+}
+static knh_io_t FILE_open(CTX ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
 {
 	return (knh_io_t)fopen(path->ospath, mode);
 }
@@ -194,21 +240,316 @@ static void FILE_close(CTX ctx, knh_io_t fd)
 {
 	fclose((FILE*)fd);
 }
+static knh_bool_t FILE_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
+{
+	return 0;
+}
+
+static void FILE_flush(Ctx *ctx, knh_io_t fd)
+{
+	fflush((FILE*)fd);
+}
+
+static knh_bool_t FILE_readline(Ctx *ctx, knh_io_t fd, knh_Bytes_t *ba)
+{
+	KNH_TODO("FILE_readline");
+	return 0;
+}
+
+static int FILE_feof(Ctx *ctx, knh_io_t fd)
+{
+	return feof((FILE*)fd);
+}
+
+static int FILE_getc(Ctx *ctx, knh_io_t fd)
+{
+	return fgetc((FILE*)fd);
+}
 
 static const knh_StreamDPI_t STREAM_FILE = {
-	K_DSPI_STREAM, "file", K_OUTBUF_MAXSIZ,
-	FILE_exists,
+	K_STREAM_FILE, "file", K_OUTBUF_MAXSIZ,
+	FILE_exists, FILE_ospath,
 	FILE_open, FILE_open, FILE_read, FILE_write, FILE_close,
+	FILE_info, FILE_getc, FILE_readline, FILE_feof, FILE_flush,
 };
+
 static knh_bool_t STDIO_exists(CTX ctx, knh_Path_t *path)
 {
 	return 1;
 }
 static const knh_StreamDPI_t STREAM_STDIO = {
-	K_DSPI_STREAM, "stdio", K_OUTBUF_MAXSIZ,
-	STDIO_exists,
+	K_STREAM_STDIO, "stdio", K_OUTBUF_MAXSIZ,
+	STDIO_exists, NOFILE_ospath,
 	NOFILE_open, NOFILE_open, FILE_read, FILE_write, NOFILE_close,
+	FILE_info, FILE_getc, FILE_readline, FILE_feof, FILE_flush,
 };
+
+/* ------------------------------------------------------------------------ */
+
+#ifdef K_USING_CURL
+
+#include<curl/curl.h>
+
+static knh_bool_t CURL_exists(Ctx *ctx, knh_Path_t *path)
+{
+	knh_bool_t res = 0;
+	CURL *curl = curl_easy_init();
+	curl_easy_setopt(curl, CURLOPT_URL, S_totext(path->urn));
+	curl_easy_perform(curl);
+	KNH_TODO("CURL_exists");
+	curl_easy_cleanup(curl);
+	return res;
+}
+
+typedef struct {
+	CURL *curl;
+	char *buffer;               /* buffer to store cached data*/
+	long pos;
+	long buffer_len;             /* currently allocated buffers length */
+	long buffer_pos;             /* end of data in buffer*/
+	int still_running;          /* Is background url fetch still in progress */
+} curl_t;
+
+/* This global variable was originated in a sample code in libcurl */
+static CURLM *multi_handle = NULL;
+//static CURLM *emulti_handle = NULL;
+
+static size_t write_callback(char *buffer, size_t size, size_t nitems, void *userp)
+{
+	curl_t *cp = (curl_t*)userp;
+	char *newbuff;
+	size *= nitems;
+	long rembuff = cp->buffer_len - cp->buffer_pos; /* remaining space in buffer */
+	if(size > rembuff) {
+		newbuff = realloc(cp->buffer, cp->buffer_len + (size - rembuff));
+		if(newbuff == NULL) {
+			size = rembuff;
+		}
+		else {
+			cp->buffer_len += size - rembuff;
+			cp->buffer = newbuff;
+		}
+	}
+	memcpy(&cp->buffer[cp->buffer_pos], buffer, size);
+	cp->buffer_pos += size;
+	return size;
+}
+
+static knh_io_t CURL_open(Ctx *ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
+{
+	curl_t *cp = knh_malloc(ctx, sizeof(curl_t));
+	memset(cp, 0, sizeof(curl_t));
+	cp->curl = curl_easy_init();
+	curl_easy_setopt(cp->curl, CURLOPT_URL, S_totext(path->urn));
+	curl_easy_setopt(cp->curl, CURLOPT_WRITEDATA, cp);
+	curl_easy_setopt(cp->curl, CURLOPT_VERBOSE, 0L);
+	curl_easy_setopt(cp->curl, CURLOPT_WRITEFUNCTION, write_callback);
+	if(!multi_handle) multi_handle = curl_multi_init();
+	curl_multi_add_handle(multi_handle, cp->curl);
+
+	/* lets start the fetch */
+	while(curl_multi_perform(multi_handle, &cp->still_running) == CURLM_CALL_MULTI_PERFORM );
+
+	if((cp->buffer_pos == 0) && (!cp->still_running)) {
+		/* if still_running is 0 now, we should return NULL */
+		/* make sure the easy handle is not in the multi handle anymore */
+		curl_multi_remove_handle(multi_handle, cp->curl);
+		/* cleanup */
+		curl_easy_cleanup(cp->curl);
+		knh_free(ctx, cp, sizeof(curl_t));
+		cp = IO_NULL;
+	}
+	return (knh_io_t)cp;
+}
+
+static knh_bool_t CURL_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
+{
+	//	if(cp->contenttype == NULL){
+	//		char *type = NULL;
+	//		curl_easy_getinfo(cp->curl, CURLINFO_CONTENT_TYPE, &type);
+	//		if(type != NULL){
+	//			char *charset = NULL;
+	//			charset = strrchr(type, '=');
+	//			if(charset != NULL){
+	//				charset++;
+	//				type = strtok(type, ";");
+	//			}
+	//			cp->charset = (const char*)charset;
+	//			cp->contenttype = (const char*)type;
+	//		}
+	//	}
+	return 0;
+}
+
+/* only attempt to fill buffer if transactions still running and buffer
+ * doesnt exceed required size already
+ */
+
+static int fill_buffer(curl_t *cp, int want, int waittime2)
+{
+	if((!cp->still_running) || (cp->buffer_pos > want)) {
+		return 0;
+	}
+	/* attempt to fill buffer */
+	do {
+		int maxfd = -1;
+		fd_set fdread;
+		fd_set fdwrite;
+		fd_set fdexcep;
+		struct timeval timeout;
+		int rc;
+
+		FD_ZERO(&fdread);
+		FD_ZERO(&fdwrite);
+		FD_ZERO(&fdexcep);
+
+		/* set a suitable timeout to fail on */
+		timeout.tv_sec = 60; /* 1 minute */
+		timeout.tv_usec = 0;
+
+		/* get file descriptors from the transfers */
+		curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
+
+		/* In a real-world program you OF COURSE check the return code of the
+           function calls.  On success, the value of maxfd is guaranteed to be
+           greater or equal than -1.  We call select(maxfd + 1, ...), specially
+           in case of (maxfd == -1), we call select(0, ...), which is basically
+           equal to sleep. */
+
+		rc = select(maxfd+1, &fdread, &fdwrite, &fdexcep, &timeout);
+		switch(rc) {
+		case -1: /* select error */
+		case 0: break;
+		default:
+			/* timeout or readable/writable sockets */
+			/* note we *could* be more efficient and not wait for
+			 * CURLM_CALL_MULTI_PERFORM to clear here and check it on re-entry
+			 * but that gets messy */
+			while(curl_multi_perform(multi_handle, &cp->still_running) == CURLM_CALL_MULTI_PERFORM);
+			break;
+		}
+	} while(cp->still_running && (cp->buffer_pos < want));
+	return 1;
+}
+
+/* use to remove want bytes from the front of a files buffer */
+static int use_buffer(curl_t *cp, int want)
+{
+	/* sort out buffer */
+	if((cp->buffer_pos - want) <= 0) {
+		/* ditch buffer - write will recreate */
+		if(cp->buffer != NULL) free(cp->buffer);
+		cp->buffer = NULL;
+		cp->buffer_pos = 0;
+		cp->buffer_len = 0;
+	} else { /* move rest down make it available for later */
+		memmove(cp->buffer, &cp->buffer[want], (cp->buffer_pos - want));
+		cp->buffer_pos -= want;
+	}
+	return 0;
+}
+
+static knh_intptr_t CURL_read(Ctx *ctx, knh_io_t fd, char *buf, size_t bufsiz)
+{
+	curl_t *cp = (curl_t*)fd;
+	fill_buffer(cp, bufsiz, 1);
+	if(!cp->buffer_pos) return 0;
+	/* ensure only available data is considered */
+	if(cp->buffer_pos < bufsiz) bufsiz = cp->buffer_pos;
+	/* xfer data to caller */
+	memcpy(buf, cp->buffer, bufsiz);
+	use_buffer(cp, bufsiz);
+	return bufsiz;
+}
+
+static knh_bool_t CURL_readline(Ctx *ctx, knh_io_t fd, knh_Bytes_t *ba)
+{
+	curl_t *cp = (curl_t*)fd;
+	int ret = 0;
+	while(1) {
+		int i, prev = 0;
+		fill_buffer(cp, K_PAGESIZE, 1);
+		if(!cp->buffer_pos) return ret;
+		for(i = 0; i < cp->buffer_pos; i++) {
+			int ch = cp->buffer[i];
+			if(ch == '\n') {
+				if(prev == '\r') {
+					knh_Bytes_write2(ctx, ba, cp->buffer, i-1); /* Windows */
+				}
+				else {
+					knh_Bytes_write2(ctx, ba, cp->buffer, i);   /* UNIX */
+				}
+				use_buffer(cp, i);
+				return 1;
+			}
+			if(prev == '\r' /*&& ch != '\n'*/) { /* OLD MAC */
+				knh_Bytes_write2(ctx, ba, cp->buffer, i-1);
+				use_buffer(cp, i);
+				return 1;
+			}
+			prev = ch;
+		}
+		ret = 1;
+		knh_Bytes_write2(ctx, ba, cp->buffer, cp->buffer_pos);
+		use_buffer(cp, cp->buffer_pos);
+	}
+}
+
+static void CURL_close(Ctx *ctx, knh_io_t fd)
+{
+	curl_t *cp = (curl_t*)fd;
+	curl_multi_remove_handle(multi_handle, cp->curl);
+	curl_easy_cleanup(cp->curl);
+	if(cp->buffer) free(cp->buffer);
+	knh_free(ctx, cp, sizeof(curl_t));
+}
+
+static int CURL_feof(Ctx *ctx, knh_io_t fd)
+{
+	curl_t *cp = (curl_t*)fd;
+	int ret = 0;
+	if((cp->buffer_pos == 0) && (!cp->still_running)) {
+		ret = 1;
+	}
+	return ret;
+}
+
+static int CURL_getc(Ctx *ctx, knh_io_t fd)
+{
+	curl_t *file = (curl_t*)fd;
+	if(!file->buffer_pos || file->buffer_pos < file->buffer_len)
+		fill_buffer(file, K_PAGESIZE, 1);
+	return file->buffer[file->buffer_pos++];
+}
+
+static knh_intptr_t CURL_write(Ctx *ctx, knh_io_t fd, const char *buf, size_t bufsiz)
+{
+	return 0;
+}
+
+static void CURL_flush(Ctx *ctx, knh_io_t fd)
+{
+}
+
+const knh_StreamDPI_t STREAM_CURL = {
+	K_STREAM_NET, "curl", K_PAGESIZE,
+	CURL_exists,
+	NULL,
+	CURL_open,
+	NULL/*CURL_wopen*/,
+	CURL_read,
+	CURL_write,
+	CURL_close,
+	CURL_info,
+	CURL_getc,
+	CURL_readline,
+	CURL_feof,
+	CURL_flush,
+};
+
+#endif/*K_USING_CURL*/
+
+/* ------------------------------------------------------------------------ */
 
 KNHAPI2(knh_InputStream_t*) new_InputStreamDPI(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dpi, knh_Path_t *path)
 {
@@ -277,7 +618,7 @@ knh_bool_t knh_isFILEStreamDPI(const knh_StreamDPI_t *dpi)
 
 KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_Path_t *pth, const char *mode)
 {
-	knh_io_t fd = pth->dpi->fopenSPI(ctx, pth, mode);
+	knh_io_t fd = pth->dpi->fopenSPI(ctx, pth, mode, NULL);
 	if(fd != IO_NULL) {
 		return new_InputStreamDPI(ctx, fd, pth->dpi, pth);
 	}
@@ -433,7 +774,7 @@ void knh_InputStream_setCharset(CTX ctx, knh_InputStream_t *in, knh_StringDecode
 
 KNHAPI2(knh_OutputStream_t*) new_OutputStreamNULL(CTX ctx, knh_Path_t *pth, const char *mode)
 {
-	knh_io_t fd = pth->dpi->wopenSPI(ctx, pth, mode);
+	knh_io_t fd = pth->dpi->wopenSPI(ctx, pth, mode, NULL);
 	if(fd != IO_NULL) {
 		return new_OutputStreamDPI(ctx, fd, pth->dpi, pth);
 	}
@@ -554,24 +895,6 @@ KNHAPI2(void) knh_write_TAB(CTX ctx, knh_OutputStream_t *w)
 {
 	knh_Bytes_write(ctx, DP(w)->ba, S_tobytes(DP(w)->TAB));
 }
-
-//void knh_write_begin(CTX ctx, knh_OutputStream_t *w, int ch)
-//{
-//	if(ch != 0) {
-//		knh_putc(ctx, w, ch);
-//		knh_write_EOL(ctx, w);
-//	}
-//	DP(w)->indent++;
-//}
-//
-//void knh_write_end(CTX ctx, knh_OutputStream_t *w, int ch)
-//{
-//	DP(w)->indent--;
-//	if(ch != 0) {
-//		knh_write_BOL(ctx, w);
-//		knh_putc(ctx, w, ch);
-//	}
-//}
 
 /* ------------------------------------------------------------------------ */
 /* [datatype] */
@@ -1060,7 +1383,7 @@ static KMETHOD OutputStream_clearBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD OutputStream_setCharset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_OutputStream_setCharset(ctx, sfp[0].w, (knh_StringEncoder_t*)sfp[1].s);
+	knh_OutputStream_setCharset(ctx, sfp[0].w, (knh_StringEncoder_t*)sfp[1].o);
 	RETURN_(sfp[1].o);
 }
 
@@ -1081,6 +1404,14 @@ static knh_FuncData_t FuncData[] = {
 
 void knh_initStreamFuncData(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
+	kapi->addStreamDPI(ctx, "file", &STREAM_FILE);
+	knh_NameSpace_setLinkClass(ctx, ctx->share->rootns, STEXT("file"), ClassTBL(CLASS_Path));
+	kapi->addStreamDPI(ctx, "script", &STREAM_FILE);
+	knh_NameSpace_setLinkClass(ctx, ctx->share->rootns, STEXT("script"), ClassTBL(CLASS_Path));
+#ifdef K_USING_CURL
+	kapi->addStreamDPI(ctx, "http", &STREAM_CURL);
+	knh_NameSpace_setLinkClass(ctx, ctx->share->rootns, STEXT("http"), ClassTBL(CLASS_Path));
+#endif
 	kapi->loadFuncData(ctx, FuncData);
 }
 

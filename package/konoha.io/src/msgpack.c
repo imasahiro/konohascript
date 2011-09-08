@@ -48,6 +48,7 @@ static inline void CWB_close(CTX ctx, CWB_t *cwb)
 	knh_Bytes_clear(cwb->ba, cwb->pos);
 }
 
+
 static void *msgpack_init(CTX ctx, knh_packer_t *pk)
 {
 	pk->sbuffer = msgpack_sbuffer_new();
@@ -189,7 +190,7 @@ static knh_type_t msgpack_unpackTo(CTX ctx, const char *buf, size_t size, knh_sf
 	return msgpack_read(ctx, result.data, sfp);
 }
 
-static knh_PackSPI_t pack = {
+static const knh_PackSPI_t pack = {
 	"msgpack",
 	msgpack_init,
 	msgpack_flushfree,
@@ -207,7 +208,7 @@ static knh_PackSPI_t pack = {
 	msgpack_unpackTo,
 };
 
-static knh_PackSPI_t *knh_getPackSPI()
+static const knh_PackSPI_t *knh_getMsgPackSPI()
 {
 	return &pack;
 }
@@ -220,24 +221,21 @@ static inline knh_bytes_t CWB_tobytes(CWB_t *cwb)
 	return t;
 }
 
-//## method void OutputStream.writeData(Object data);
+//## method void OutputStream.writeMsgPack(Object data);
 
-KMETHOD OutputStream_writeData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD OutputStream_writeMsgPack(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	knh_RawPtr_t *o = sfp[1].p;
-	knh_PackSPI_t *packspi = knh_getPackSPI();
+	const knh_PackSPI_t *packspi = knh_getMsgPackSPI();
 	knh_packer_t packer = {w, NULL, NULL};
 	knh_packer_t *pkr = packspi->pack_init(ctx, &packer);
-	if (O_cTBL(o)->cdef->wdata != NULL) {
-		O_cTBL(o)->cdef->wdata(ctx, pkr, o, packspi);
-	}
+	O_cTBL(o)->cdef->wdata(ctx, o, pkr, packspi);
 	packspi->pack_flushfree(ctx, pkr);
 	RETURNvoid_();
 }
 
-
-void RETURN_T(CTX ctx, knh_sfp_t *sfp, knh_class_t scid, knh_class_t tcid, knh_sfp_t *vsfp _RIX)
+static void RETURN_T(CTX ctx, knh_sfp_t *sfp, knh_class_t scid, knh_class_t tcid, knh_sfp_t *vsfp _RIX)
 {
 	if(tcid != scid) {
 		knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, scid, tcid);
@@ -255,12 +253,12 @@ void RETURN_T(CTX ctx, knh_sfp_t *sfp, knh_class_t scid, knh_class_t tcid, knh_s
 	RETURN_(vsfp[0].o);
 }
 
-//## method Tvar InputStream.readData(Class _);
+//## method Tvar InputStream.readMsgPack(Class _);
 
-KMETHOD InputStream_readData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD InputStream_readMsgPack(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_InputStream_t *in = sfp[0].in;
-	knh_PackSPI_t *packspi = knh_getPackSPI();
+	const knh_PackSPI_t *packspi = knh_getMsgPackSPI();
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	char buf[K_PAGESIZE];
 	long ssize = 0;
@@ -273,25 +271,23 @@ KMETHOD InputStream_readData(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_T(ctx, sfp, type, (sfp[1].c)->cid, sfp+2, K_RIX);
 }
 
-//## method void Bytes.writeData(Object data);
+//## method void Bytes.writeMsgPack(Object data);
 
-KMETHOD Bytes_writeData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Bytes_writeMsgPack(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_RawPtr_t *o = sfp[1].p;
-	knh_PackSPI_t *packspi = knh_getPackSPI();
+	const knh_PackSPI_t *packspi = knh_getMsgPackSPI();
 	KNH_SETv(ctx, sfp[0].o, new_BytesOutputStream(ctx, sfp[0].ba));
 	knh_packer_t packer = {sfp[0].w, NULL, NULL};
 	knh_packer_t *pkr = packspi->pack_init(ctx, &packer);
-	if (O_cTBL(o)->cdef->wdata != NULL) {
-		O_cTBL(o)->cdef->wdata(ctx, pkr, o, packspi);
-	}
+	O_cTBL(o)->cdef->wdata(ctx, o, pkr, packspi);
 	packspi->pack_flushfree(ctx, pkr);
 	RETURNvoid_();
 }
 
-//## method Tvar Bytes.readData(int offset, int len, Class _);
+//## method Tvar Bytes.readMsgPack(int offset, int len, Class _);
 
-KMETHOD Bytes_readData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Bytes_readMsgPack(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_bytes_t b = BA_tobytes(sfp[0].ba);
 	if(sfp[1].ivalue > 0 && sfp[1].ivalue < b.len) {
@@ -301,7 +297,7 @@ KMETHOD Bytes_readData(CTX ctx, knh_sfp_t *sfp _RIX)
 	if(sfp[2].ivalue > 0 && sfp[2].ivalue < b.len) {
 		b.len = (size_t)sfp[2].ivalue;
 	}
-	knh_PackSPI_t *packspi = knh_getPackSPI();
+	const knh_PackSPI_t *packspi = knh_getMsgPackSPI();
 	knh_type_t type = packspi->unpack(ctx, b.text, b.len, sfp+4);
 	RETURN_T(ctx, sfp, type, (sfp[3].c)->cid, sfp+4, K_RIX);
 }

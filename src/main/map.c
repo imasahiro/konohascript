@@ -1323,10 +1323,10 @@ knh_DictMap_t* new_DictMap0_(CTX ctx, size_t capacity, int isCaseMap, const char
 	return (knh_DictMap_t*)m;
 }
 
-knh_DictMap_t* knh_toDictMap(CTX ctx, knh_Map_t *m)
+knh_DictMap_t* knh_toDictMap(CTX ctx, knh_Map_t *m, int isCreation)
 {
 	if(m->spi != &DMAP_SO) {
-		return new_DictMap0(ctx, 0, 1/*isCaseMap*/, __FUNCTION__);
+		return (isCreation) ? new_DictMap0(ctx, 0, 1/*isCaseMap*/, __FUNCTION__) : NULL;
 	}
 	return (knh_DictMap_t*)m;
 }

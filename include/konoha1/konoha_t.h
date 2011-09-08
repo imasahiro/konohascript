@@ -712,10 +712,13 @@ typedef struct knh_ClassDef_t {
 
 	struct knh_String_t* (*getkey)(CTX, knh_sfp_t*);
 	knh_hashcode_t       (*hashCode)(CTX, struct knh_RawPtr_t*);
-	knh_int_t   (*toint)(CTX ctx, knh_sfp_t*);
-	knh_float_t (*tofloat)(CTX ctx, knh_sfp_t*);
-	struct knh_TypeMap_t* (*findTypeMapNULL)(CTX, knh_class_t, knh_class_t, int);
-	void (*wdata)(CTX, void *, struct knh_RawPtr_t*, const knh_PackSPI_t *);
+//	knh_int_t   (*toint)(CTX ctx, knh_sfp_t*);
+//	knh_float_t (*tofloat)(CTX ctx, knh_sfp_t*);
+	void *RESERVED0;
+	void *RESERVED1;
+//	struct knh_TypeMap_t* (*findTypeMapNULL)(CTX, knh_class_t, knh_class_t, int);
+	void *RESERVED1_1;
+	void (*wdata)(CTX, struct knh_RawPtr_t*, void *, const knh_PackSPI_t *);
 	void *RESERVED2;
 	void *RESERVED3;
 

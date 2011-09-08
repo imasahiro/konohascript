@@ -562,6 +562,7 @@ void THROW_NoSuchMethod(CTX ctx, knh_sfp_t *sfp, knh_class_t cid, knh_methodn_t 
 void THROW_ParamTypeError(CTX ctx, knh_sfp_t *sfp, size_t n, knh_methodn_t mn, knh_class_t reqt, knh_class_t cid);
 const knh_LoaderAPI_t* knh_getLoaderAPI(void);
 void knh_initBuiltInPackage(CTX ctx, const knh_LoaderAPI_t *kapi);
+const knh_QueryDPI_t *knh_getDefaultQueryDPI(void);
 void knh_loadSystemDriver(CTX ctx, knh_NameSpace_t *ns);
 knh_PtrMap_t* new_PtrMap(CTX ctx, size_t max);
 void* knh_PtrMap_get(CTX ctx, knh_PtrMap_t *pm, void *keyptr);
@@ -580,7 +581,7 @@ void knh_PtrMap_addM(CTX ctx, knh_PtrMap_t *pm, knh_hashcode_t hcode, knh_Method
 void knh_PtrMap_rmM(CTX ctx, knh_PtrMap_t *pm, knh_Method_t *mtd);
 int knh_bytes_strcasecmp2(knh_bytes_t t1, knh_bytes_t t2);
 knh_DictMap_t* new_DictMap0_(CTX ctx, size_t capacity, int isCaseMap, const char *DBGNAME);
-knh_DictMap_t* knh_toDictMap(CTX ctx, knh_Map_t *m);
+knh_DictMap_t* knh_toDictMap(CTX ctx, knh_Map_t *m, int isCreation);
 knh_DictSet_t* new_DictSet0_(CTX ctx, size_t capacity, int isCaseMap, const char *DBGNAME);
 knh_uintptr_t knh_DictSet_valueAt(knh_DictSet_t *m, size_t n);
 knh_index_t knh_DictMap_index(knh_DictMap_t *m, knh_bytes_t key);
@@ -749,7 +750,6 @@ knh_bool_t Regex_isSTRREGEX(knh_Regex_t *re);
 const knh_RegexSPI_t* knh_getRegexSPI(void);
 void knh_linkDynamicRegex(CTX ctx);
 knh_bool_t knh_class_canObjectCopy(CTX ctx, knh_class_t cid);
-knh_TypeMap_t* DEFAULT_findTypeMapNULL(CTX ctx, knh_class_t scid, knh_class_t tcid, int mode);
 const knh_ClassDef_t* knh_getDefaultClassDef(void);
 void knh_ClassTBL_setConstPool(CTX ctx, const knh_ClassTBL_t *ct);
 void knh_ClassTBL_setObjectCSPI(CTX ctx, knh_ClassTBL_t *ct);

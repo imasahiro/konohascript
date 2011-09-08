@@ -622,7 +622,12 @@ static KMETHOD Date_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD Path_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_(new_ScriptPath(ctx, sfp[1].s, sfp[2].ns));
+	const knh_StreamDPI_t *dpi = knh_NameSpace_getStreamDPINULL(ctx, sfp[2].ns, S_tobytes(sfp[1].s));
+	knh_Path_t *pth = new_(Path);
+	KNH_SETv(ctx, pth->urn, sfp[1].s);
+	pth->dpi = dpi;
+	dpi->ospath(ctx, pth, sfp[2].ns);
+	RETURN_(pth);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -648,7 +653,7 @@ static TYPEMAP Path_String(CTX ctx, knh_sfp_t *sfp _RIX)
 static TYPEMAP Path_Boolean(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Path_t *pth = (knh_Path_t*)sfp[K_TMRIDX].o;
-	RETURNb_(knh_exists(ctx, pth->ospath));
+	RETURNb_(pth->dpi->existsSPI(ctx, pth));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -2059,7 +2064,7 @@ static KMETHOD Map_open(CTX ctx, knh_sfp_t *sfp _RIX)
 		LANG_LOG("Map driver %s does not support for %s", S_tobytes(sfp[1].s), TYPE__(ct->cid));
 		goto L_RETURN;
 	}
-	knh_DictMap_t *opt = knh_toDictMap(ctx, sfp[2].m);
+	knh_DictMap_t *opt = knh_toDictMap(ctx, sfp[2].m, 1/*isCreation*/);
 	KNH_SETv(ctx, sfp[2].o, opt);
 	knh_mapptr_t *mapptr = spi->init(ctx, 0, S_totext(sfp[1].s), opt);
 	if(mapptr != NULL) {
@@ -3033,7 +3038,7 @@ static KMETHOD Thunk_value(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Throwable method InputStream InputStream.new(Path urn, String mode);
+//## @Throwable method InputStream InputStream.new(Path urn, String mode, Map _);
 
 static KMETHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -3041,7 +3046,7 @@ static KMETHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Path_t *pth = sfp[1].pth;
 	const char *mode = IS_NULL(sfp[2].s) ? "r" : S_totext(sfp[2].s);
 	in->dpi = pth->dpi;
-	DP(in)->fio = in->dpi->fopenSPI(ctx, pth, mode);
+	DP(in)->fio = in->dpi->fopenSPI(ctx, pth, mode, knh_toDictMap(ctx, sfp[3].m, 0/*isCreation*/));
 	if(DP(in)->fio != IO_NULL) {
 		knh_Bytes_ensureSize(ctx, DP(in)->ba, K_PAGESIZE);
 	}
@@ -3211,7 +3216,7 @@ static TYPEMAP knh_InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 /* [OutputStream] */
 
-//## @Throwable method OutputStream OutputStream.new(Path path, String mode);
+//## @Throwable method OutputStream OutputStream.new(Path path, String mode, Map _);
 
 static KMETHOD OutputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -3219,7 +3224,7 @@ static KMETHOD OutputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Path_t *pth = sfp[1].pth;
 	const char *mode = IS_NULL(sfp[2].s) ? "w" : S_totext(sfp[2].s);
 	w->dpi = pth->dpi;
-	DP(w)->fio = w->dpi->fopenSPI(ctx, pth, mode);
+	DP(w)->fio = w->dpi->fopenSPI(ctx, pth, mode, knh_toDictMap(ctx, sfp[3].m, 0/*isCeation*/));
 	KNH_SETv(ctx, DP(w)->path, pth);
 	if(DP(w)->fio == IO_NULL) {
 		knh_Object_toNULL(ctx, w);
@@ -3416,7 +3421,7 @@ static KMETHOD Connection_query(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	else {
 		DP(rs)->qcur = NULL;
-		DP(rs)->qcurfree = knh_NameSpace_getQueryDPINULL(ctx, NULL, K_DEFAULT_DSPI)->qcurfree;
+		DP(rs)->qcurfree = knh_getDefaultQueryDPI()->qcurfree;
 	}
 	KNH_SETv(ctx, DP(rs)->conn, c);
 	RETURN_(rs);

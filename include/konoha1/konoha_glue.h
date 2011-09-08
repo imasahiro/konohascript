@@ -37,21 +37,21 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* driver */
 
-typedef struct {
-	int   type;
-	const char *name;
-} knh_DSPI_t ;
-
+//typedef struct {
+//	int   type;
+//	const char *name;
+//} knh_DSPI_t ;
+//
 #define K_DSPI_PATH             1
 #define K_DSPI_CONVTO           2
 #define K_DSPI_CONVFROM         3
-#define K_DSPI_STREAM           4
+//#define K_DSPI_STREAM           4
 #define K_DSPI_REGEX            5
 #define K_DSPI_QUERY            6
 #define K_DSPI_MAP              7
-
-#define IS_DSPI(c)   (0 < c && c < 8)
-#define K_DEFAULT_DSPI          STEXT("")
+//
+//#define IS_DSPI(c)   (0 < c && c < 8)
+//#define K_DEFAULT_DSPI          STEXT("")
 
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_PATH */
