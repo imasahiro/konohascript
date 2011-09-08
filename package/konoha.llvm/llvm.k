@@ -135,6 +135,7 @@ include "lib:gluelink";
 @Native Value IRBuilder.createConstInBoundsGEP2_64(Value ptr, int idx0, int idx1);
 @Native Value IRBuilder.createStructGEP(Value ptr, int idx);
 @Native Value IRBuilder.createGlobalString(String str);
+@Native Value IRBuilder.createGlobalStringPtr(String str);
 @Native Value IRBuilder.createTrunc(Value v, Type destTy);
 @Native Value IRBuilder.createZExt(Value v, Type destTy);
 @Native Value IRBuilder.createSExt(Value v, Type destTy);

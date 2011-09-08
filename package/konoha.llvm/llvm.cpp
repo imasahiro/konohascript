@@ -1084,6 +1084,16 @@ KMETHOD IRBuilder_createGlobalString(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
+//## Value IRBuilder.CreateGlobalStringPtr(StringRef Str);
+KMETHOD IRBuilder_createGlobalStringPtr(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
+	knh_String_t *Str = sfp[1].s;
+	Value *ptr = self->CreateGlobalStringPtr(S_totext(Str));
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
 //## Value IRBuilder.CreateTrunc(Value V, Type DestTy);
 KMETHOD IRBuilder_createTrunc(CTX ctx, knh_sfp_t *sfp _RIX)
 {

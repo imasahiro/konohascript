@@ -1,6 +1,7 @@
 #!/usr/local/bin/konoha
 
 using konoha.math.*;
+using konoha.io.*;
 
 WIDTH = 256
 HEIGHT = 256
@@ -272,7 +273,7 @@ void run() {
     out <<< EOL;
 
     for (i = 0; i < img.size; i++) {
-        out.writeASCII(img[i]);
+        out.putByte(img[i]);
     }
     out.close();
 }
