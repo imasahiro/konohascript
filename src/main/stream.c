@@ -1343,6 +1343,7 @@ static KMETHOD InputStream_read(CTX ctx, knh_sfp_t *sfp _RIX)
 	buf = knh_bytes_last(buf, offset);
 	if(len != 0) {
 		knh_Bytes_ensureSize(ctx, ba, offset + len);  // DONT USE ensureSize
+		BA_size(ba) += len;
 		buf.len = len;
 		buf.ubuf = ba->bu.ubuf;
 	}
