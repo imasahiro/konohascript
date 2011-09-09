@@ -1013,7 +1013,7 @@ knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in)
 	do {
 		int linenum = 0;
 		knh_Bytes_clear(ba, 0);
-		if(!InputStream_isClosed(ctx, in)) {
+		if(!knh_InputStream_isClosed(ctx, in)) {
 			status = K_CONTINUE;
 			linenum = readchunk(ctx, in, ba);
 		}

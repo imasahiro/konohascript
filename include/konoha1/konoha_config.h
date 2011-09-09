@@ -47,9 +47,9 @@
 
 //#define K_USING_FFIDSL          1
 //#define K_USING_INT32         1
+
 #define K_USING_FASTMALLOC      1
-//#define K_USING_RCGC          1
-//#define K_USING_SQLITE3       1
+#define K_USING_GENGC           1
 
 #define K_USING_SIGNAL          1
 #define K_USING_SAFEPOINT       1
@@ -268,6 +268,7 @@ typedef struct knh_sysinfo_t {
 #define		K_USING_STDC_    1
 #define 	K_USING_POSIX_   1
 #define 	K_USING_LINUX_   1
+#define     K_USING_SETJMP_  1
 #define     K_USING_SYSLOG   1
 #define     K_USING_ICONV    1
 #define     K_USING_SQLITE3  1
@@ -282,7 +283,7 @@ typedef struct knh_sysinfo_t {
 #define     K_USING_BSDSYSCTL_  1
 #define     K_USING_SYSLOG      1
 #define     K_USING_ICONV       1
-#define     K_USING_SQLITE3  1
+#define     K_USING_SQLITE3     1
 #endif
 
 #if defined(__MINGW32__)  /* mingw */

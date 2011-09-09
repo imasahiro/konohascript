@@ -212,7 +212,13 @@ static knh_bool_t FILE_exists(CTX ctx, knh_Path_t *path)
 static void FILE_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(path->urn));
+	knh_bytes_t urn = S_tobytes(path->urn);
+	if(isalpha(urn.text[0]) && urn.text[1] == ':') { // C:´Windows
+		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, urn);
+	}
+	else {
+		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, knh_bytes_next(urn, ':'));
+	}
 	if(knh_strcmp(S_totext(path->urn), CWB_totext(ctx, cwb)) == 0) {
 		path->ospath = S_totext(path->urn);
 		path->asize = 0;
@@ -269,6 +275,22 @@ static int FILE_getc(Ctx *ctx, knh_io_t fd)
 static const knh_StreamDPI_t STREAM_FILE = {
 	K_STREAM_FILE, "file", K_OUTBUF_MAXSIZ,
 	FILE_exists, FILE_ospath,
+	FILE_open, FILE_open, FILE_read, FILE_write, FILE_close,
+	FILE_info, FILE_getc, FILE_readline, FILE_feof, FILE_flush,
+};
+
+static void SCRIPT_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
+{
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+	knh_bytes_t bpath = knh_bytes_next(S_tobytes(path->urn), ':');
+	knh_buff_addScriptPath(ctx, cwb->ba, cwb->pos, ns, bpath);
+	path->ospath = new_cwbtext(ctx, cwb, &(path->asize));
+	CWB_close(cwb);
+}
+
+static const knh_StreamDPI_t STREAM_SCRIPT = {
+	K_STREAM_FILE, "script", K_OUTBUF_MAXSIZ,
+	FILE_exists, SCRIPT_ospath,
 	FILE_open, FILE_open, FILE_read, FILE_write, FILE_close,
 	FILE_info, FILE_getc, FILE_readline, FILE_feof, FILE_flush,
 };
@@ -746,7 +768,7 @@ void knh_InputStream_close(CTX ctx, knh_InputStream_t *in)
 	}
 }
 
-int InputStream_isClosed(CTX ctx, knh_InputStream_t *in)
+knh_bool_t knh_InputStream_isClosed(CTX ctx, knh_InputStream_t *in)
 {
 	return (DP(in)->fio == IO_NULL);
 }
@@ -852,7 +874,7 @@ void knh_OutputStream_close(CTX ctx, knh_OutputStream_t *w)
 	}
 }
 
-int OutputStream_isClosed(knh_OutputStream_t *w)
+knh_bool_t knh_OutputStream_isClosed(knh_OutputStream_t *w)
 {
 	return (DP(w)->fio == IO_NULL);
 }
@@ -1350,9 +1372,9 @@ static KMETHOD InputStream_read(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(knh_InputStream_read(ctx, sfp[0].in, (char*)buf.ubuf, buf.len));
 }
 
-static KMETHOD _InputStream_isClosed(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD InputStream_isClosed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURNb_(InputStream_isClosed(ctx, sfp[0].in));
+	RETURNb_(knh_InputStream_isClosed(ctx, sfp[0].in));
 }
 
 static KMETHOD InputStream_setCharset(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1371,9 +1393,9 @@ static KMETHOD OutputStream_putByte(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-static KMETHOD _OutputStream_isClosed(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD OutputStream_isClosed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURNb_(OutputStream_isClosed(sfp[0].w));
+	RETURNb_(knh_OutputStream_isClosed(sfp[0].w));
 }
 
 static KMETHOD OutputStream_clearBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1394,10 +1416,10 @@ static knh_FuncData_t FuncData[] = {
 //	FuncData(Object_hasMethod),
 	FuncData(InputStream_getByte),
 	FuncData(InputStream_read),
-	FuncData(_InputStream_isClosed),
+	FuncData(InputStream_isClosed),
 	FuncData(InputStream_setCharset),
 	FuncData(OutputStream_putByte),
-	FuncData(_OutputStream_isClosed),
+	FuncData(OutputStream_isClosed),
 	FuncData(OutputStream_clearBuffer),
 	FuncData(OutputStream_setCharset),
 	{NULL, NULL},
@@ -1407,7 +1429,7 @@ void knh_initStreamFuncData(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
 	kapi->addStreamDPI(ctx, "file", &STREAM_FILE);
 	knh_NameSpace_setLinkClass(ctx, ctx->share->rootns, STEXT("file"), ClassTBL(CLASS_Path));
-	kapi->addStreamDPI(ctx, "script", &STREAM_FILE);
+	kapi->addStreamDPI(ctx, "script", &STREAM_SCRIPT);
 	knh_NameSpace_setLinkClass(ctx, ctx->share->rootns, STEXT("script"), ClassTBL(CLASS_Path));
 #ifdef K_USING_CURL
 	kapi->addStreamDPI(ctx, "http", &STREAM_CURL);
