@@ -422,7 +422,7 @@ static void Object_wdata(CTX ctx, knh_RawPtr_t *o, void *pkr, const knh_PackSPI_
 			pack_unbox(ctx, pkr, type, v + i, packspi);
 		} else {
 			knh_Object_t *obj = v[i];
-			O_cTBL(obj)->cdef->wdata(ctx, pkr, RAWPTR(obj), packspi);
+			O_cTBL(obj)->cdef->wdata(ctx, RAWPTR(obj), pkr, packspi);
 		}
 	}
 	packspi->pack_endmap(ctx, pkr);
