@@ -526,7 +526,7 @@ void context_init_multithread(CTX ctx);
 knh_Context_t* toContext(CTX ctx);
 void knh_Context_free(CTX ctx, knh_context_t* ctxo);
 konoha_t konoha_open(size_t stacksize);
-knh_Object_t **knh_reftraceAll(CTX ctx FTRARG);
+knh_Object_t **knh_reftraceRoot(CTX ctx FTRARG);
 void konoha_close(konoha_t konoha);
 const char* knh_sfile(const char *file);
 void knh_write_now(CTX ctx, knh_OutputStream_t *w);

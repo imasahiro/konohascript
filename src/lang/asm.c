@@ -930,7 +930,7 @@ static KMETHOD Fmethod_STDERR(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 static KMETHOD Fmethod_SYS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_(ctx->sys);
+	RETURN_(KNH_TNULL(System));
 }
 static KMETHOD Fmethod_SCRIPT(CTX ctx, knh_sfp_t *sfp _RIX)
 {

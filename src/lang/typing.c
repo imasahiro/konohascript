@@ -1004,7 +1004,7 @@ static knh_Token_t* TPROPN_typing(CTX ctx, knh_Token_t *tk, knh_type_t reqt)
 	knh_bytes_t t = S_tobytes((tk)->text);
 	if(B_endsWith(t, "*")) { /* name.* */
 		knh_Stmt_t *stmt =
-			new_Stmt2(ctx, STT_CALL, new_TokenMN(ctx, MN_listProperties), new_TokenCONST(ctx, ctx->sys), tk, NULL);
+			new_Stmt2(ctx, STT_CALL, new_TokenMN(ctx, MN_listProperties), new_TokenCONST(ctx, KNH_NULL), tk, NULL);
 		Token_toCONST(ctx, tk);
 		return CALL_typing(ctx, stmt, reqt);
 	}

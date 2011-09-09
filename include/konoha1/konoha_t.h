@@ -490,12 +490,13 @@ typedef knh_intptr_t knh_mutex_t;
 
 typedef void *(*knh_Fthread)(void *);
 
-#define LOCK_NOP          ((knh_lock_t)0)
-#define LOCK_MEMORY       ((knh_lock_t)1)
-#define LOCK_SYSTBL       ((knh_lock_t)2)
-#define LOCK_UNUSED       3
 #define OLD_LOCK(ctx, lockid, o)
 #define OLD_UNLOCK(ctx, lockid, o)
+
+#define KNH_MEMLOCK(ctx)
+#define KNH_MEMUNLOCK(ctx)
+#define KNH_SYSLOCK(ctx)
+#define KNH_SYSUNLOCK(ctx)
 
 /* ------------------------------------------------------------------------ */
 /* Stack Frame Pointer */
@@ -875,11 +876,7 @@ struct knh_nameinfo_t { // FIXME
 
 typedef struct knh_ObjectArenaTBL_t knh_ObjectArenaTBL_t;
 typedef struct knh_memslot_t knh_memslot_t;
-typedef struct knh_memslotX2_t knh_memslotX2_t;
-typedef struct knh_memslot256_t knh_memslot256_t;
 typedef struct knh_MemoryArenaTBL_t knh_MemoryArenaTBL_t;
-typedef struct knh_MemoryX2ArenaTBL_t knh_MemoryX2ArenaTBL_t;
-typedef struct knh_Memory256ArenaTBL_t knh_Memory256ArenaTBL_t;
 
 typedef struct knh_share_t {
 	/* system table */
@@ -890,6 +887,7 @@ typedef struct knh_share_t {
 	const knh_EventTBL_t     *EventTBL;
 	size_t                    sizeEventTBL;
 	size_t                    capacityEventTBL;
+
 
 	knh_ObjectArenaTBL_t     *ObjectArenaTBL;
 	size_t                    sizeObjectArenaTBL;
@@ -915,6 +913,7 @@ typedef struct knh_share_t {
 	char                     *xmem_freelist;
 
 	knh_mutex_t              *memlock;
+	knh_mutex_t              *syslock;
 
 	/* system shared const */
 	knh_Object_t             *constNull;
@@ -924,7 +923,7 @@ typedef struct knh_share_t {
 	struct knh_Array_t       *emptyArray;
 	struct knh_Path_t        *cwdPath;
 	struct knh_NameSpace_t   *rootns;
-	struct knh_context_t     *ctx0;
+	struct knh_context_t     *ctx0;   // root context
 	struct knh_Script_t      *script;
 	struct knh_DictSet_t     *funcDictSet;   //
 
@@ -969,6 +968,7 @@ typedef struct knh_share_t {
 	/* thread */
 	size_t              contextCounter;
 	size_t              threadCounter;
+	struct knh_Array_t *contextListNULL;  // for matz
 } knh_share_t ;
 
 #define KNH_ASSERT_CTX0(ctx)   KNH_ASSERT((ctx)->ctxid == 0)
@@ -1060,7 +1060,6 @@ typedef struct knh_context_t {
 	knh_stat_t                     *stat;
 	const knh_ServiceSPI_t         *spi;
 	const struct knh_api2_t        *api2;
-	struct knh_System_t*            sys;
 	struct knh_Script_t*         script;  // sharable or not?
 
 	/* stack */

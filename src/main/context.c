@@ -85,7 +85,6 @@ static knh_context_t* new_hcontext(CTX ctx0)
 static void knh_CommonContext_init(CTX ctx, knh_context_t *o)
 {
 	KNH_ASSERT_CTX0(ctx);
-	DBG_ASSERT(o->sys != NULL);
 	DBG_ASSERT(o->script != NULL);
 	DBG_ASSERT(o->gma != NULL);
 	KNH_INITv(o->enc, ctx->share->enc);
@@ -580,7 +579,7 @@ konoha_t konoha_open(size_t stacksize)
 	return k;
 }
 
-knh_Object_t **knh_reftraceAll(CTX ctx FTRARG)
+knh_Object_t **knh_reftraceRoot(CTX ctx FTRARG)
 {
 	CTX ctx0 = knh_getRootContext(ctx);
 	return knh_context_reftrace(ctx0, (knh_context_t*)ctx0 FTRDATA);

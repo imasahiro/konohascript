@@ -1185,23 +1185,22 @@ static void mark_ostack(CTX ctx, knh_Object_t *ref, knh_ostack_t *ostack)
 static void gc_mark(CTX ctx, int needsCStackTrace)
 {
 	long i;
-	const knh_ClassTBL_t *cTBL;
 	knh_ostack_t ostackbuf, *ostack = ostack_init(ctx, &ostackbuf);
 	knh_Object_t *ref = NULL, **reftail = NULL;
 
 	knh_ensurerefs(ctx, ctx->ref_buf, K_PAGESIZE);
 	CONTEXT_REFINIT(ctx);
-	reftail = knh_reftraceAll(ctx, ctx->refs);
+	reftail = knh_reftraceRoot(ctx, ctx->refs);
 	if (unlikely(needsCStackTrace)) {
 		cstack_mark(ctx, reftail);
 	}
 	//fprintf(stderr, "%s first refs %ld\n", __FUNCTION__, ctx->ref_size);
 	goto L_INLOOP;
 	while((ref = ostack_next(ostack)) != NULL) {
-		cTBL = O_cTBL(ref);
+		const knh_ClassTBL_t *ct = O_cTBL(ref);
 		DBG_ASSERT(O_hasRef(ref));
 		CONTEXT_REFINIT(ctx);
-		cTBL->cdef->reftrace(ctx, RAWPTR(ref), ctx->refs);
+		ct->cdef->reftrace(ctx, RAWPTR(ref), ctx->refs);
 		if(ctx->ref_size > 0) {
 			L_INLOOP:;
 			prefetch(ctx->refs[0]);
@@ -1211,6 +1210,11 @@ static void gc_mark(CTX ctx, int needsCStackTrace)
 		}
 	}
 	ostack_free(ctx, ostack);
+}
+
+static void gc_move(CTX ctx, int needsCStackTrace)
+{
+	// yoan
 }
 
 static inline void Object_MSfree(CTX ctx, knh_Object_t *o)
@@ -1321,27 +1325,25 @@ static void gc_extendObjectArena(CTX ctx)
 
 #define START_THE_WORLD(ctx)
 #define STOP_THE_WORLD(ctx)
+#define GCLOCK(ctx)
+#define GCUNLOCK(ctx)
 
 void knh_System_gc(CTX ctx, int needsCStackTrace)
 {
-	//KNH_LOCK(ctx, ctx->share->memlock);
 	knh_stat_t *ctxstat = ctx->stat;
 	size_t avail = K_GC_MARGIN + ctxstat->gcObjectCount;
 	knh_uint64_t stime = knh_getTimeMilliSecond(), mtime = 0, ctime = 0, intval;
+
+	STOP_THE_WORLD(ctx);
 #ifdef K_USING_CTRACE
 	knh_dump_cstack(ctx);
 #endif
-
 	gc_init(ctx);
-	MTGC_(((knh_context_t*)ctx)->mscheck = 1);
 	gc_mark(ctx, needsCStackTrace);
-	MTGC_(
-		STOP_THE_WORLD(ctx);
-		((knh_context_t*)ctx)->mscheck = 0;
-		gc_markingMovedObject(ctx);
-		START_THE_WORLD(ctx);
-	)
+	gc_move(ctx, needsCStackTrace);
 	mtime = knh_getTimeMilliSecond();
+
+	START_THE_WORLD(ctx);
 	gc_sweep(ctx);
 	ctime = knh_getTimeMilliSecond();
 	intval = stime - ctxstat->latestGcTime;

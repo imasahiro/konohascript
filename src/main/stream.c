@@ -33,9 +33,9 @@ extern "C" {
 
 #include"commons.h"
 
-#ifdef HAVE_LIBCURL
+//#ifdef HAVE_LIBCURL
 #define K_USING_CURL 1
-#endif
+//#endif
 
 /* ************************************************************************ */
 
@@ -323,6 +323,12 @@ static knh_bool_t CURL_exists(Ctx *ctx, knh_Path_t *path)
 	return res;
 }
 
+static void CURL_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
+{
+	path->ospath = NULL;
+	path->asize = 0;
+}
+
 typedef struct {
 	CURL *curl;
 	char *buffer;               /* buffer to store cached data*/
@@ -551,12 +557,13 @@ static knh_intptr_t CURL_write(Ctx *ctx, knh_io_t fd, const char *buf, size_t bu
 
 static void CURL_flush(Ctx *ctx, knh_io_t fd)
 {
+
 }
 
 const knh_StreamDPI_t STREAM_CURL = {
 	K_STREAM_NET, "curl", K_PAGESIZE,
 	CURL_exists,
-	NULL,
+	CURL_ospath,
 	CURL_open,
 	NULL/*CURL_wopen*/,
 	CURL_read,

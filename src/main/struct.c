@@ -2482,8 +2482,6 @@ static const knh_ClassDef_t NameSpaceDef = {
 /* --------------- */
 /* System */
 
-static knh_uintptr_t knh_autoSystemId = 0;
-
 #ifdef K_USING_NOFILE
 #define stdin  NULL
 #define stdout NULL
@@ -3062,7 +3060,7 @@ static void knh_setDefaultValues(CTX ctx)
 	// load file/Channel/regex/db drivers
 	knh_setClassDefaultValue(ctx, CLASS_Context, KNH_NULL, knh_Context_fdefault);
 	knh_setClassDefaultValue(ctx, CLASS_NameSpace, UPCAST(ctx->share->rootns), NULL);
-	knh_setClassDefaultValue(ctx, CLASS_System, UPCAST(ctx->sys), NULL);
+//	knh_setClassDefaultValue(ctx, CLASS_System, UPCAST(ctx->sys), NULL);
 	knh_loadSystemDriver(ctx, ctx->share->rootns);
 	{
 		knh_Token_t *tk = KNH_TNULL(Token);

@@ -19,6 +19,9 @@
 /* Define to 1 if you have the `m' library (-lm). */
 #cmakedefine HAVE_LIBM 1
 
+/* Define to 1 if you have the `libcurl' library (-lcurl). */
+#cmakedefine HAVE_LIBCURL 1
+
 /* Define to 1 if you have the `sqlite3' library (-lsqlite3). */
 #cmakedefine HAVE_LIBSQLITE3 1
 
