@@ -377,11 +377,11 @@ static knh_String_t* ObjectField_getkey(CTX ctx, knh_sfp_t *sfp)
 
 static void pack_unbox(CTX ctx, void *pkr, knh_class_t cid, knh_Object_t **v, const knh_PackSPI_t *packspi)
 {
-	knh_num_t n = *((knh_num_t*)(v[0]));
+        knh_num_t n = ((knh_num_t*)(v))[0];
 	if (IS_Tint(cid)) {
 		packspi->pack_int(ctx, pkr, n.ivalue);
 	} else if (IS_Tfloat(cid)) {
-		packspi->pack_int(ctx, pkr, n.fvalue);
+		packspi->pack_float(ctx, pkr, n.fvalue);
 	} else {
 		packspi->pack_bool(ctx, pkr, n.bvalue);
 	}
@@ -1269,7 +1269,7 @@ static void Array_wdata(CTX ctx, knh_RawPtr_t *o, void *pkr, const knh_PackSPI_t
 		}
 	} else {
 		for (i = 0; i < a->size; i++) {
-			O_cTBL(a->list[i])->cdef->wdata(ctx, pkr, RAWPTR(a->list[i]), packspi);
+			O_cTBL(a->list[i])->cdef->wdata(ctx, RAWPTR(a->list[i]), pkr, packspi);
 		}
 	}
 }
