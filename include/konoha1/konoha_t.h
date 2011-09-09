@@ -1117,7 +1117,7 @@ typedef struct knh_context_t {
 	/* signal */
 	int                             signal;
 	void                           *siginfo;
-	void                           *sighandlers;
+	struct knh_Array_t             *sighandlers; // modified by Wakamori
 
 } knh_context_t ;
 

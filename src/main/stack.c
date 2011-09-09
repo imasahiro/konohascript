@@ -144,7 +144,16 @@ void knh_checkSafePoint(CTX ctx, knh_sfp_t *sfp, const char *file, int line)
 		knh_System_gc(ctx, 1);
 	}
 	if(TFLAG_is(int, safepoint, SAFEPOINT_SIGNAL)) {
-		//
+		// added by Wakamori
+		if (ctx->sighandlers != NULL) {
+			knh_Func_t *handler_func = (knh_Func_t *)knh_Array_n(ctx->sighandlers, ctx->signal);
+			if (handler_func != NULL) {
+				knh_sfp_t *lsfp = ctx->esp;
+				lsfp[K_CALLDELTA + 1].ivalue = ctx->signal;
+				knh_Func_invoke(ctx, handler_func, lsfp, 1/* argc */);
+			}
+		}
+		WCTX(ctx)->signal = 0;
 	}
 	if(TFLAG_is(int, safepoint, SAFEPOINT_MONITOR)) {
 		//
