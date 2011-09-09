@@ -199,7 +199,7 @@ extern "C" {
 /* [CALL] */
 
 #define KLR_CHKSTACK(ctx, n) \
-	if(unlikely(SFP(rshift(rbp, n)) > ctx->stacktop)) {\
+	if(unlikely(SFP(rshift(rbp, n)) > ctx->stack_uplimit)) {\
 		rbp = RBP(knh_stack_initexpand(ctx, SFP(rbp), 0));\
 	}\
 
@@ -227,7 +227,7 @@ extern "C" {
 		knh_Method_t *mtd_ = mtdO;\
 		prefetch((mtd_)->pc_start);\
 		klr_setesp(ctx, SFP(rshift(rbp, espshift)));\
-		if(unlikely(SFP(rbp) > ctx->stacktop)) {\
+		if(unlikely(SFP(rbp) > ctx->stack_uplimit)) {\
 			rbp = RBP(knh_stack_initexpand(ctx, SFP(rbp), 0));\
 		}\
 		rbp = rshift(rbp, thisidx);\

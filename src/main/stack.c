@@ -101,7 +101,7 @@ knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n)
 		KNH_INITv(ctxo->stack[i].o, KNH_NULL);
 		ctxo->stack[i].ndata = 0;
 	}
-	ctxo->stacktop = ctxo->stack + (ctxo->stacksize - K_GAMMAMAX);
+	ctxo->stack_uplimit = ctxo->stack + (ctxo->stacksize - K_GAMMAMAX);
 	return sfp;
 }
 
@@ -109,7 +109,7 @@ knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n)
 
 void knh_stack_clear(CTX ctx, knh_sfp_t *sfp)
 {
-	if(!(ctx->stack <= sfp && sfp < ctx->stacktop)) {
+	if(!(ctx->stack <= sfp && sfp < ctx->stack_uplimit)) {
 		sfp = ctx->stack; // sometimes, rewriting pointer is failed.
 	}
 	while(sfp < ctx->stack + ctx->stacksize) {

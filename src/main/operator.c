@@ -3655,7 +3655,7 @@ static KMETHOD ResultSet_close(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD System_getIn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_(DP(ctx->sys)->in);
+	RETURN_(ctx->share->in);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -3663,7 +3663,7 @@ static KMETHOD System_getIn(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD System_getOut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_(DP(ctx->sys)->out);
+	RETURN_(ctx->share->out);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -3671,7 +3671,7 @@ static KMETHOD System_getOut(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD System_getErr(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_(DP(ctx->sys)->err);
+	RETURN_(ctx->share->err);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -3730,7 +3730,7 @@ static KMETHOD System_listProperties(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = new_Array(ctx, CLASS_String, 0);
 	knh_bytes_t prefix = IS_NULL(sfp[1].s) ? STEXT("") : S_tobytes(sfp[1].s);
-	knh_DictMap_t *map = DP(ctx->sys)->props;
+	knh_DictMap_t *map = ctx->share->props;
 	size_t i;
 	for(i = 0; i < knh_Map_size(map); i++) {
 		knh_String_t *key = knh_DictMap_keyAt(map, i);

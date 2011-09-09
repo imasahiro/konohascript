@@ -554,7 +554,7 @@ knh_Semantics_t* new_Vocab(CTX ctx, char *tag, knh_bytes_t urn, int base, char *
 
 knh_bytes_t knh_getURNAlias(CTX ctx, knh_bytes_t aurn)
 {
-	knh_String_t *s = (knh_String_t*)knh_DictMap_get(ctx,  DP(ctx->sys)->URNAliasDictMap, aurn);
+	knh_String_t *s = (knh_String_t*)knh_DictMap_get(ctx,  ctx->share->URNAliasDictMap, aurn);
 	if(IS_NOTNULL(s)) {
 		return S_tobytes(s);
 	}
@@ -566,19 +566,19 @@ knh_bytes_t knh_getURNAlias(CTX ctx, knh_bytes_t aurn)
 //void knh_setAliasURN(CTX ctx, String *alias, String *urn)
 //{
 //	if(CTX_isVerbose(ctx)) {
-//		String *s =(String*)knh_DictMap_get__b(ctx,  DP(ctx->sys)->URNAliasDictMap, S_tobytes(urn));
+//		String *s =(String*)knh_DictMap_get__b(ctx,  ctx->share->URNAliasDictMap, S_tobytes(urn));
 //		if(IS_NOTNULL(s)) {
 //			KNH_SYSLOG(ctx, LOG_WARNING, "Overriding %s %s", __totext(alias), __totext(s));
 //		}
 //	}
-//	knh_DictMap_set(ctx, DP(ctx->sys)->URNAliasDictMap, alias, UPCAST(urn));
+//	knh_DictMap_set(ctx, ctx->share->URNAliasDictMap, alias, UPCAST(urn));
 //}
 
 /* ------------------------------------------------------------------------ */
 
 void knh_loadScriptURNAliasData(CTX ctx, knh_StringData_t *data)
 {
-	knh_DictMap_t *mapptr = DP(ctx->sys)->URNAliasDictMap;
+	knh_DictMap_t *mapptr = ctx->share->URNAliasDictMap;
 	knh_StringData_t *d = data;
 	while(d->name != NULL) {
 		knh_String_t *s =(knh_String_t*)knh_DictMap_get(ctx,  mapptr, B(d->name));
@@ -599,7 +599,7 @@ void knh_loadScriptURNAliasData(CTX ctx, knh_StringData_t *data)
 
 void knh_loadScriptSemanticsFuncData(CTX ctx, knh_FuncData_t *data)
 {
-	knh_DictSet_t *ds = DP(ctx->sys)->SpecFuncDictSet;
+	knh_DictSet_t *ds = ctx->share->SpecFuncDictSet;
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 	while(data->name != NULL) {
 		DBG_P("adding.. '%s'", data->name);
@@ -620,7 +620,7 @@ knh_Semantics_t *new_SemanticsNULL(CTX ctx, knh_bytes_t urn)
 	knh_index_t loc = 0;
 	knh_bytes_t p = urn;
 	while(loc != -1) {
-		knh_fspec func = (knh_fspec)knh_DictSet_get(DP(ctx->sys)->SpecFuncDictSet, p);
+		knh_fspec func = (knh_fspec)knh_DictSet_get(ctx->share->SpecFuncDictSet, p);
 		if(func != NULL) {
 			u = func(ctx, urn);
 			if(u != NULL) {

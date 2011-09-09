@@ -918,15 +918,15 @@ static KMETHOD Fmethod_CTXERR(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 static KMETHOD Fmethod_STDIN(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_(DP(ctx->sys)->in);
+	RETURN_(ctx->share->in);
 }
 static KMETHOD Fmethod_STDOUT(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_(DP(ctx->sys)->out);
+	RETURN_(ctx->share->out);
 }
 static KMETHOD Fmethod_STDERR(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_(DP(ctx->sys)->err);
+	RETURN_(ctx->share->err);
 }
 static KMETHOD Fmethod_SYS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -2975,9 +2975,9 @@ void knh_loadScriptSystemKonohaCode(CTX ctx)
 		knh_KonohaCode_t *kcode = BasicBlock_link(ctx, ia, id);
 		knh_opline_t *pc = knh_VirtualMachine_run(ctx, ctx->esp, SP(kcode)->code);
 		knh_setClassDefaultValue(ctx, CLASS_KonohaCode, kcode, NULL);
-		((knh_share_t*)ctx->share)->PC_LAUNCH = opline_findOPCODE(ctx, pc, OPCODE_TRY);
-		((knh_share_t*)ctx->share)->PC_FUNCCALL = opline_findOPCODE(ctx, pc, OPCODE_FUNCCALL);
-		((knh_share_t*)ctx->share)->PC_VEXEC = opline_findOPCODE(ctx, pc, OPCODE_VEXEC);
+		((knh_share_t*)ctx->share)->PRECOMPILED_LAUNCH = opline_findOPCODE(ctx, pc, OPCODE_TRY);
+		((knh_share_t*)ctx->share)->PRECOMPILED_FUNCCALL = opline_findOPCODE(ctx, pc, OPCODE_FUNCCALL);
+		((knh_share_t*)ctx->share)->PRECOMPILED_VEXEC = opline_findOPCODE(ctx, pc, OPCODE_VEXEC);
 	}
 	knh_Array_clear(ctx, DP(ctx->gma)->insts, 0);
 	END_LOCAL(ctx, lsfp);

@@ -640,7 +640,7 @@ knh_bool_t knh_buff_isfile(CTX ctx, knh_Bytes_t *ba, size_t pos);
 knh_bool_t knh_isdir(CTX ctx, const char *pname);
 knh_bool_t knh_buff_isdir(CTX ctx, knh_Bytes_t *ba, size_t pos);
 knh_bool_t knh_buff_mkdir(CTX ctx, knh_Bytes_t *ba, size_t pos);
-void knh_System_initPath(CTX ctx, knh_System_t *o);
+void knh_System_initPath(CTX ctx);
 void *knh_dlopen(CTX ctx, const char* path);
 void *knh_dlsym(CTX ctx, void* handler, const char* symbol, const char *another, int isTest);
 int knh_dlclose(CTX ctx, void* handler);

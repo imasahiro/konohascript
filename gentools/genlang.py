@@ -461,7 +461,7 @@ static TERMDATA_t TERMDATA[] = {''')
 
 static void knh_loadScriptTokenData(CTX ctx)
 {
-	knh_DictSet_t *ds = DP(ctx->sys)->tokenDictSet;
+	knh_DictSet_t *ds = ctx->share->tokenDictSet;
 	TERMDATA_t *data = TERMDATA + STT_MAX;
 	int tt = STT_MAX;
 	while(data->name != NULL) {
@@ -525,7 +525,7 @@ void knh_loadScriptAliasTokenData(CTX ctx)
 {
 	ALIASDATA_t *data = __AliasData;
 	knh_DictMap_t *dm = new_DictMap0(ctx, sizeof(__AliasData), 0/*isCaseMap*/, "AliasDictMap");
-	KNH_INITv(ctx->wshare->sysAliasDictMapNULL, dm);
+	KNH_INITv(ctx->wshare->sysAliasDictMap, dm);
 	while(data->name != NULL) {
 		knh_DictMap_append(ctx, dm, new_T(data->name), UPCAST(new_T(data->alias)));
 		data++;

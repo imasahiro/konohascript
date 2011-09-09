@@ -2490,63 +2490,12 @@ static knh_uintptr_t knh_autoSystemId = 0;
 #define stderr NULL
 #endif
 
-static void System_init(CTX ctx, knh_RawPtr_t *o)
-{
-	knh_SystemEX_t *sys = knh_bodymalloc(ctx, System);
-	sys->sysid = knh_autoSystemId++;
-	sys->ctxcount = 0;
-
-	KNH_INITv(sys->enc,   new_T(knh_getSystemEncoding()));
-	KNH_INITv(sys->in,    new_InputStreamSTDIO(ctx, stdin, sys->enc));
-	KNH_INITv(sys->out,   new_OutputStreamSTDIO(ctx, stdout, sys->enc));
-	KNH_INITv(sys->err,   new_OutputStreamSTDIO(ctx, stderr, sys->enc));
-
-	KNH_INITv(sys->props, new_DictMap0(ctx, 20, 1/*isCaseMap*/, "System.props"));
-	KNH_INITv(sys->nameDictCaseSet, new_DictSet0(ctx, K_TFIELD_SIZE + 10, 1/*isCaseMap*/, "System.nameDictSet"));
-	sys->namecapacity = k_goodsize2(K_TFIELD_SIZE + 10, sizeof(knh_nameinfo_t));
-	sys->nameinfo = (knh_nameinfo_t*)KNH_REALLOC(ctx, "nameinfo", NULL, 0, sys->namecapacity, sizeof(knh_nameinfo_t));
-	KNH_INITv(sys->urnDictSet, new_DictSet0(ctx, 0, 0/*isCaseMap*/, "System.urnDictSet"));
-	KNH_INITv(sys->urns, new_Array0(ctx, 1));
-	KNH_INITv(sys->tokenDictSet, new_DictSet0(ctx, (TT_MAX - STT_MAX), 0/*isCaseMap*/, "System.tokenDictSet"));
-	KNH_INITv(sys->URNAliasDictMap, new_DictMap0(ctx, 0, 0/*isCaseMap*/, "System.URNAliasDictMap"));
-	o->rawptr = sys;
-}
-
-static void System_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
-{
-	knh_SystemEX_t *sys = DP((knh_System_t*)o);
-	size_t i, size = knh_Map_size(sys->nameDictCaseSet);
-	KNH_ADDREF(ctx, (sys->enc));
-	KNH_ADDREF(ctx, (sys->in));
-	KNH_ADDREF(ctx, (sys->out));
-	KNH_ADDREF(ctx, (sys->err));
-	KNH_ADDREF(ctx, (sys->props));
-	KNH_ADDREF(ctx, (sys->nameDictCaseSet));
-	KNH_ADDREF(ctx, (sys->urnDictSet));
-	KNH_ADDREF(ctx, (sys->urns));
-	KNH_ADDREF(ctx, (sys->tokenDictSet));
-	KNH_ADDREF(ctx, (sys->URNAliasDictMap));
-	KNH_ENSUREREF(ctx, size);
-	for(i = 0; i < size; i++) {
-		KNH_ADDREF(ctx, sys->nameinfo[i].name);
-	}
-	KNH_SIZEREF(ctx);
-}
-
-static void System_free(CTX ctx, knh_RawPtr_t *o)
-{
-	knh_SystemEX_t *sys = DP((knh_System_t*)o);
-	KNH_FREE(ctx, sys->nameinfo, sizeof(knh_nameinfo_t) * sys->namecapacity);
-	sys->nameinfo = NULL;
-	knh_bodyfree(ctx, sys, System);
-}
-
 static const knh_ClassDef_t SystemDef = {
-	System_init, DEFAULT_initcopy, System_reftrace, System_free,
+	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
-	"System", CFLAG_System, sizeof(knh_SystemEX_t), NULL,
+	"System", CFLAG_System, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 

@@ -42,7 +42,7 @@ static void loadData(CTX ctx, knh_NameSpace_t *ns, const char *dname, Object *va
 {
 	if(dname[0] == '$') {
 		knh_String_t *n = new_T(dname + 1);
-		knh_DictMap_set_(ctx, DP(ctx->sys)->props, n, value);
+		knh_DictMap_set_(ctx, ctx->share->props, n, value);
 	}
 	else {
 		knh_bytes_t n = {{dname}, knh_strlen(dname)};
@@ -119,7 +119,7 @@ static void setProperty(CTX ctx, const char *name, const char *data)
 	char pname[256];
 	const char *nsn = S_totext(DP(ctx->gma->scr->ns)->nsname);
 	knh_snprintf(pname, sizeof(pname), "%s.%s", nsn, name);
-	knh_DictMap_set(ctx, DP(ctx->sys)->props, new_String(ctx, pname), new_T(data));
+	knh_DictMap_set(ctx, ctx->share->props, new_String(ctx, pname), new_T(data));
 }
 
 static void setIntProperty(CTX ctx, const char *name, knh_int_t data)
@@ -127,7 +127,7 @@ static void setIntProperty(CTX ctx, const char *name, knh_int_t data)
 	char pname[256];
 	const char *nsn = S_totext(DP(ctx->gma->scr->ns)->nsname);
 	knh_snprintf(pname, sizeof(pname), "%s.%s", nsn, name);
-	knh_DictMap_set(ctx, DP(ctx->sys)->props, new_String(ctx, pname), new_Int(ctx, data));
+	knh_DictMap_set(ctx, ctx->share->props, new_String(ctx, pname), new_Int(ctx, data));
 }
 
 static void setFloatProperty(CTX ctx, const char *name, knh_float_t data)
@@ -135,7 +135,7 @@ static void setFloatProperty(CTX ctx, const char *name, knh_float_t data)
 	char pname[256];
 	const char *nsn = S_totext(DP(ctx->gma->scr->ns)->nsname);
 	knh_snprintf(pname, sizeof(pname), "%s.%s", nsn, name);
-	knh_DictMap_set(ctx, DP(ctx->sys)->props, new_String(ctx, pname), new_Float(ctx, data));
+	knh_DictMap_set(ctx, ctx->share->props, new_String(ctx, pname), new_Float(ctx, data));
 }
 
 

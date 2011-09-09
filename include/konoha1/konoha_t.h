@@ -836,7 +836,7 @@ typedef struct {
 
 #define SIZEOF_TSTRING (sizeof(knh_Object_t*) * K_TSTRING_SIZE)
 
-#define KNH_ENC             DP(ctx->sys)->enc
+#define KNH_ENC             ctx->share->enc
 
 #define KNH_NULL            (ctx->share->constNull)
 #define KNH_TRUE            (ctx->share->constTrue)
@@ -844,6 +844,16 @@ typedef struct {
 #define K_EMPTYARRAY       (ctx->share->emptyArray)
 #define KNH_SYSTEM          (ctx->sys)
 #define knh_Object_sweep    knh_Object_RCsweep
+
+typedef struct knh_nameinfo_t knh_nameinfo_t;
+
+struct knh_nameinfo_t { // FIXME
+	struct knh_String_t *name;
+	knh_methodn_t parent_mn;
+	knh_methodn_t parentMF;
+	knh_class_t   principle_mtd;
+	knh_class_t   mtdfCID;
+};
 
 /* ------------------------------------------------------------------------ */
 /* Arena */
@@ -900,17 +910,7 @@ typedef struct knh_share_t {
 	struct knh_memslot_t     *freeMemoryList;
 	struct knh_memslot_t     *freeMemoryTail;
 
-	// reserved
-	knh_MemoryX2ArenaTBL_t   *MemoryX2ArenaTBL;
-	size_t                    MemoryX2ArenaTBLSize;
-	size_t                    capacityMemoryX2ArenaTBL;
-
-	// reserved
-	knh_Memory256ArenaTBL_t  *Memory256ArenaTBL;
-	size_t                    Memory256ArenaTBLSize;
-	size_t                    capacityMemory256ArenaTBL;
-
-	char                     *xmem_root;
+	char                     *xmem_root;    // xmalloc
 	char                     *xmem_top;
 	char                     *xmem_freelist;
 
@@ -927,13 +927,15 @@ typedef struct knh_share_t {
 	struct knh_context_t     *ctx0;
 	struct knh_Script_t      *script;
 	struct knh_DictSet_t     *funcDictSet;   //
-	struct knh_opline_t      *PC_LAUNCH;
-	struct knh_opline_t      *PC_FUNCCALL;
-	struct knh_opline_t      *PC_VEXEC;
-	struct knh_opline_t      *PC_ABSTRACT;
+
+
+	struct knh_opline_t      *PRECOMPILED_LAUNCH;
+	struct knh_opline_t      *PRECOMPILED_FUNCCALL;
+	struct knh_opline_t      *PRECOMPILED_VEXEC;  // TODO nakata
+//	struct knh_opline_t      *PC_ABSTRACT;
 
 	/* system */
-	struct knh_DictMap_t     *sysAliasDictMapNULL;
+	struct knh_DictMap_t     *sysAliasDictMap;
 	struct knh_PtrMap_t      *inferPtrMap;  // mapinfer
 	struct knh_PtrMap_t      *constPtrMap;
 	struct knh_PtrMap_t      *xdataPtrMap;
@@ -949,6 +951,20 @@ typedef struct knh_share_t {
 	struct knh_DictSet_t       *convDpiDictSet;
 	struct knh_DictSet_t       *rconvDpiDictSet;
 	struct knh_DictSet_t       *mapDpiDictSet;
+
+	struct knh_DictMap_t*      props;
+	struct knh_InputStream_t*  in;
+	struct knh_OutputStream_t* out;
+	struct knh_OutputStream_t* err;
+	struct knh_String_t*       enc;
+
+	struct knh_DictSet_t       *tokenDictSet;
+	struct knh_DictSet_t       *nameDictCaseSet;  // fn, mn
+	size_t                      namecapacity;
+	knh_nameinfo_t             *nameinfo;
+	struct knh_DictSet_t       *urnDictSet;
+	struct knh_Array_t         *urns;
+//	struct knh_DictMap_t       *URNAliasDictMap;
 
 	/* thread */
 	size_t              contextCounter;
@@ -1035,7 +1051,8 @@ typedef struct knh_ServiceSPI_t {
 #define WCTX(ctx)     ((knh_context_t*)ctx)
 
 typedef struct knh_context_t {
-	/* shared table */
+	int						      safepoint; // set to 1
+	/* @Sharable */
 	union {
 		const knh_share_t         *share;
 		knh_share_t *wshare;   // writable
@@ -1044,31 +1061,33 @@ typedef struct knh_context_t {
 	const knh_ServiceSPI_t         *spi;
 	const struct knh_api2_t        *api2;
 	struct knh_System_t*            sys;
-	struct knh_Script_t*         script;
+	struct knh_Script_t*         script;  // sharable or not?
 
 	/* stack */
-	knh_sfp_t*                   stack;
-	knh_sfp_t*                   esp;
-	size_t                       stacksize;
-	knh_sfp_t*                   stacktop;
-	void*                        cstack_bottom;
-	struct knh_Exception_t      *e;
-
-	/* memory */
-	knh_Object_t                *freeObjectList;
-	knh_Object_t                *freeObjectTail;
-	size_t                       freeObjectListSize;
-	knh_uintptr_t                mscheck;
-	knh_memslot_t               *freeMemoryList;
-	knh_memslot_t               *freeMemoryTail;
+	knh_sfp_t*                      stack;
+	knh_sfp_t*                      esp;
+	size_t                          stacksize;
+	knh_sfp_t*                      stack_uplimit;
+	void*                           cstack_bottom;  // for GC
+	struct knh_Exception_t         *e;
+	struct knh_ExceptionHandler_t  *ehdrNC;
+	struct knh_Object_t            *evaled;
+	knh_bool_t                      isEvaled;
 
 	/* cache */
 	knh_mtdcache_t              *mtdcache;
 	knh_tmrcache_t              *tmrcache;
 
+	/* memory (gc) */
+	knh_Object_t                *freeObjectList;
+	knh_Object_t                *freeObjectTail;
+	size_t                       freeObjectListSize;
+	knh_memslot_t               *freeMemoryList;
+	knh_memslot_t               *freeMemoryTail;
+
 	struct knh_Object_t        **refs;
 	size_t                       ref_size;
-	struct knh_Object_t        **ref_buf;
+	struct knh_Object_t        **ref_buf;        // allocated body
 	size_t                       ref_capacity;
 
 	struct knh_Object_t        **queue;
@@ -1082,12 +1101,10 @@ typedef struct knh_context_t {
 	struct knh_Bytes_t*          bufa;
 	struct knh_OutputStream_t*   bufw;
 	struct knh_Gamma_t*          gma;
-#ifdef K_USING_STRINGPOOL
-	void * _UNUSED_symbolDictMap;
-#else
+
+#ifndef K_USING_STRINGPOOL
 	struct knh_DictMap_t*        symbolDictMap;
 #endif
-	void * _UNUSED_constPools;
 
 	knh_flag_t                   flag;
 	knh_ushort_t                 ctxid;
@@ -1095,17 +1112,14 @@ typedef struct knh_context_t {
 	struct knh_context_t        *parent;
 	knh_mutex_t                 *ctxlock;
 
-	char                            trace[16];
-	knh_uint_t                      seq;
-
-	// add here for new entry
-	struct knh_ExceptionHandler_t  *ehdrNC;
-	struct knh_Object_t            *evaled;
-	knh_bool_t                      isEvaled;
+	/* logging */
+	char                            trace[16];  // random
+	knh_uint_t                      seq;        // for logging
+	/* signal */
 	int                             signal;
 	void                           *siginfo;
 	void                           *sighandlers;
-	int								safepoint; // set to 1
+
 } knh_context_t ;
 
 #define SAFEPOINT_GC                  1

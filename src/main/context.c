@@ -88,10 +88,10 @@ static void knh_CommonContext_init(CTX ctx, knh_context_t *o)
 	DBG_ASSERT(o->sys != NULL);
 	DBG_ASSERT(o->script != NULL);
 	DBG_ASSERT(o->gma != NULL);
-	KNH_INITv(o->enc, DP(ctx->sys)->enc);
-	KNH_INITv(o->in,  DP(ctx->sys)->in);
-	KNH_INITv(o->out, DP(ctx->sys)->out);
-	KNH_INITv(o->err, DP(ctx->sys)->err);
+	KNH_INITv(o->enc, ctx->share->enc);
+	KNH_INITv(o->in,  ctx->share->in);
+	KNH_INITv(o->out, ctx->share->out);
+	KNH_INITv(o->err, ctx->share->err);
 	KNH_INITv(o->e, KNH_NULL);
 	KNH_INITv(o->evaled, KNH_NULL);
 #ifndef K_USING_STRINGPOOL
@@ -141,7 +141,7 @@ static void knh_CommonContext_free(CTX ctx, knh_context_t *ctxo)
 	KNH_FREE(ctx, ctxo->stack, sizeof(knh_sfp_t) * ctxo->stacksize);
 	ctxo->stack = NULL;
 	ctxo->esp = NULL;
-	ctxo->stacktop = NULL;
+	ctxo->stack_uplimit = NULL;
 	ctxo->stacksize = 0;
 	KNH_FREE(ctx, ctxo->mtdcache,  K_MTDCACHE_SIZE * sizeof(knh_mtdcache_t));
 	KNH_FREE(ctx, ctxo->tmrcache, K_TMAPCACHE_SIZE * sizeof(knh_tmrcache_t));
@@ -271,10 +271,23 @@ static knh_context_t* new_RootContext(void)
 	KNH_INITv(share->convDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "convDpiDictSet"));
 	KNH_INITv(share->rconvDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "convDpiDictSet"));
 
-	KNH_INITv(ctx->sys, new_(System));
+	KNH_INITv(share->enc,   new_T(knh_getSystemEncoding()));
+	KNH_INITv(share->in,    new_InputStreamSTDIO(ctx, stdin, share->enc));
+	KNH_INITv(share->out,   new_OutputStreamSTDIO(ctx, stdout, share->enc));
+	KNH_INITv(share->err,   new_OutputStreamSTDIO(ctx, stderr, share->enc));
+
+	KNH_INITv(share->props, new_DictMap0(ctx, 20, 1/*isCaseMap*/, "System.props"));
+	KNH_INITv(share->nameDictCaseSet, new_DictSet0(ctx, K_TFIELD_SIZE + 10, 1/*isCaseMap*/, "System.nameDictSet"));
+	share->namecapacity = k_goodsize2(K_TFIELD_SIZE + 10, sizeof(knh_nameinfo_t));
+	share->nameinfo = (knh_nameinfo_t*)KNH_REALLOC(ctx, "nameinfo", NULL, 0, share->namecapacity, sizeof(knh_nameinfo_t));
+	KNH_INITv(share->urnDictSet, new_DictSet0(ctx, 0, 0/*isCaseMap*/, "System.urnDictSet"));
+	KNH_INITv(share->urns, new_Array0(ctx, 1));
+	KNH_INITv(share->tokenDictSet, new_DictSet0(ctx, (TT_MAX - STT_MAX), 0/*isCaseMap*/, "System.tokenDictSet"));
+//	KNH_INITv(share->URNAliasDictMap, new_DictMap0(ctx, 0, 0/*isCaseMap*/, "System.URNAliasDictMap"));
+
 	KNH_INITv(share->rootns, new_(NameSpace));
 	knh_loadScriptSystemData(ctx, share->rootns, kapi);
-	knh_System_initPath(ctx, ctx->sys);       // require rootns
+	knh_System_initPath(ctx);                 // require rootns
 	KNH_INITv(ctx->script, new_(Script));     // require rootns
 	KNH_INITv(ctx->gma, new_(Gamma));         // require script
 	knh_loadScriptSystemKonohaCode(ctx);      // require gamma
@@ -370,16 +383,32 @@ void context_init_multithread(CTX ctx)
 
 static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 {
-	size_t i;
+	size_t i, size;
 	KNH_ADDREF(ctx,   share->constNull);
 	KNH_ADDREF(ctx,   share->constTrue);
 	KNH_ADDREF(ctx,   share->constFalse);
 	KNH_ADDREF(ctx,   share->emptyArray);
 	KNH_ADDREF(ctx,   share->cwdPath);
-	KNH_ADDREF(ctx,   ctx->sys);
+
+	size = knh_Map_size(share->nameDictCaseSet);
+	KNH_ADDREF(ctx, (share->enc));
+	KNH_ADDREF(ctx, (share->in));
+	KNH_ADDREF(ctx, (share->out));
+	KNH_ADDREF(ctx, (share->err));
+	KNH_ADDREF(ctx, (share->props));
+	KNH_ADDREF(ctx, (share->nameDictCaseSet));
+	KNH_ADDREF(ctx, (share->urnDictSet));
+	KNH_ADDREF(ctx, (share->urns));
+	KNH_ADDREF(ctx, (share->tokenDictSet));
+//	KNH_ADDREF(ctx, (share->URNAliasDictMap));
+	KNH_ENSUREREF(ctx, size);
+	for(i = 0; i < size; i++) {
+		KNH_ADDREF(ctx, share->nameinfo[i].name);
+	}
+
 	KNH_ADDREF(ctx,   share->rootns);
 	KNH_ADDREF(ctx,   share->funcDictSet);
-	KNH_ADDNNREF(ctx, share->sysAliasDictMapNULL);
+	KNH_ADDREF(ctx, share->sysAliasDictMap);
 	KNH_ADDREF(ctx,   share->constPtrMap);
 	KNH_ADDREF(ctx,   share->inferPtrMap);
 	KNH_ADDREF(ctx,   share->xdataPtrMap);

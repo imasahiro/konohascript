@@ -59,14 +59,14 @@ knh_String_t* knh_getPropertyNULL(CTX ctx, knh_bytes_t key)
 		if(v == NULL) return NULL;
 		return new_String2(ctx, CLASS_String, v, knh_strlen(v), K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS);
 	}
-	return (knh_String_t*)knh_DictMap_getNULL(ctx,  DP(ctx->sys)->props, key);
+	return (knh_String_t*)knh_DictMap_getNULL(ctx,  ctx->share->props, key);
 }
 
 /* ------------------------------------------------------------------------ */
 
 void knh_setProperty(CTX ctx, knh_String_t *key, dynamic *value)
 {
-	knh_DictMap_set_(ctx, DP(ctx->sys)->props, key, value);
+	knh_DictMap_set_(ctx, ctx->share->props, key, value);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -75,7 +75,7 @@ KNHAPI2(void) knh_setPropertyText(CTX ctx, char *key, char *value)
 {
 	knh_String_t *k = new_T(key);
 	knh_String_t *v = new_String2(ctx, CLASS_String, value, knh_strlen(value), K_SPOLICY_TEXT);
-	knh_DictMap_set_(ctx, DP(ctx->sys)->props, k, UPCAST(v));
+	knh_DictMap_set_(ctx, ctx->share->props, k, UPCAST(v));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -128,25 +128,24 @@ int knh_addClassConst(CTX ctx, knh_class_t cid, knh_String_t* name, Object *valu
 
 knh_fieldn_t knh_addname(CTX ctx, knh_String_t *s, knh_Fdictset f)
 {
-	knh_SystemEX_t *b = DP(ctx->sys);
-	size_t n = knh_Map_size(b->nameDictCaseSet);
-	if(n == b->namecapacity) {
-		b->namecapacity = k_grow(n);
-		b->nameinfo = (knh_nameinfo_t*)KNH_REALLOC(ctx, "nameinfo", b->nameinfo, n, b->namecapacity, sizeof(knh_nameinfo_t));
+	size_t n = knh_Map_size(ctx->share->nameDictCaseSet);
+	if(n == ctx->share->namecapacity) {
+		ctx->wshare->namecapacity = k_grow(n);
+		ctx->wshare->nameinfo = (knh_nameinfo_t*)KNH_REALLOC(ctx, "nameinfo", ctx->share->nameinfo, n, ctx->share->namecapacity, sizeof(knh_nameinfo_t));
 	}
-	DBG_ASSERT(n < b->namecapacity);
-	KNH_INITv(b->nameinfo[n].name, s);
+	DBG_ASSERT(n < ctx->share->namecapacity);
+	KNH_INITv(ctx->share->nameinfo[n].name, s);
 	if(unlikely(!(n+1 < K_FLAG_MN_SETTER))) {  /* Integer overflowed */
 		KNH_DIE("too many names, last nameid(fn)=%d < %d", (int)(n+1), (int)K_FLAG_MN_SETTER);
 	}
-	f(ctx, b->nameDictCaseSet, s, n + 1);
+	f(ctx, ctx->share->nameDictCaseSet, s, n + 1);
 	return (knh_fieldn_t)(n);
 }
 
 static knh_fieldn_t knh_getname(CTX ctx, knh_bytes_t n, knh_fieldn_t def)
 {
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
-	knh_index_t idx = knh_DictSet_index(DP(ctx->sys)->nameDictCaseSet, n);
+	knh_index_t idx = knh_DictSet_index(ctx->share->nameDictCaseSet, n);
 	if(idx == -1) {
 		if(def == FN_NEWID) {
 			idx = knh_addname(ctx, new_String2(ctx, CLASS_String, n.text, n.len, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS), knh_DictSet_set);
@@ -156,7 +155,7 @@ static knh_fieldn_t knh_getname(CTX ctx, knh_bytes_t n, knh_fieldn_t def)
 		}
 	}
 	else {
-		idx = knh_DictSet_valueAt(DP(ctx->sys)->nameDictCaseSet, idx) - 1;
+		idx = knh_DictSet_valueAt(ctx->share->nameDictCaseSet, idx) - 1;
 	}
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
 	return (knh_fieldn_t)idx + MN_OPSIZE;
@@ -166,10 +165,10 @@ static knh_nameinfo_t *knh_getnameinfo(CTX ctx, knh_fieldn_t fn)
 {
 	size_t n = (FN_UNMASK(fn) - MN_OPSIZE);
 	DBG_(
-		size_t size = knh_Map_size(DP(ctx->sys)->nameDictCaseSet);
+		size_t size = knh_Map_size(ctx->share->nameDictCaseSet);
 		DBG_ASSERT(n < size);
 	);
-	return DP(ctx->sys)->nameinfo + n;
+	return ctx->share->nameinfo + n;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -279,19 +278,19 @@ const char* knh_getmnname(CTX ctx, knh_methodn_t mn)
 knh_uri_t knh_getURI(CTX ctx, knh_bytes_t t)
 {
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
-	knh_index_t idx = knh_DictSet_index(DP(ctx->sys)->urnDictSet, t);
+	knh_index_t idx = knh_DictSet_index(ctx->share->urnDictSet, t);
 	if(idx == -1) {
 		knh_String_t *s = new_String2(ctx, CLASS_String, t.text, t.len, K_SPOLICY_POOLALWAYS);
-		idx = knh_Array_size(DP(ctx->sys)->urns);
-		knh_DictSet_set(ctx, DP(ctx->sys)->urnDictSet, s, idx);
-		knh_Array_add(ctx, DP(ctx->sys)->urns, s);
+		idx = knh_Array_size(ctx->share->urns);
+		knh_DictSet_set(ctx, ctx->share->urnDictSet, s, idx);
+		knh_Array_add(ctx, ctx->share->urns, s);
 		{
 			LOGSFPDATA = {sDATA("URN", S_totext(s)), iDATA("uri", idx)};
 			LIB_OK("konoha:new_uri");
 		}
 	}
 	else {
-		idx = knh_DictSet_valueAt(DP(ctx->sys)->urnDictSet, idx);
+		idx = knh_DictSet_valueAt(ctx->share->urnDictSet, idx);
 	}
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
 	return (knh_uri_t)idx;
@@ -302,7 +301,7 @@ knh_uri_t knh_getURI(CTX ctx, knh_bytes_t t)
 knh_String_t *knh_getURN(CTX ctx, knh_uri_t uri)
 {
 	size_t n = URI_UNMASK(uri);
-	knh_Array_t *a = DP(ctx->sys)->urns;
+	knh_Array_t *a = ctx->share->urns;
 	if(n < knh_Array_size(a)) {
 		return (knh_String_t*)(a)->list[n];
 	}

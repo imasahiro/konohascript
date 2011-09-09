@@ -434,7 +434,7 @@ void knh_checkSecurityManager(CTX ctx, knh_sfp_t *sfp)
 //{
 //	TODO();
 //	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
-//	int res = knh_DictMap_index__b(DP(ctx->sys)->trustedHostDictMap, host);
+//	int res = knh_DictMap_index__b(ctx->share->trustedHostDictMap, host);
 //	if(res != -1) return 1;
 //	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
 //	return 0;

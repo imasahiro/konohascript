@@ -1032,40 +1032,10 @@ struct knh_Script_t {
 //## @Singleton @Struct class System Object;
 
 typedef struct knh_System_t knh_System_t;
-typedef struct knh_nameinfo_t knh_nameinfo_t;
-#ifdef K_INTERNAL
-struct knh_nameinfo_t {
-	knh_String_t *name;
-	knh_methodn_t parent_mn;
-	knh_methodn_t parentMF;
-	knh_class_t   principle_mtd;
-	knh_class_t   mtdfCID;
-};
-
-typedef struct knh_SystemEX_t {
-	knh_uintptr_t sysid;
-	size_t     ctxcount;
-
-	struct knh_DictMap_t*      props;
-	struct knh_InputStream_t*  in;
-	struct knh_OutputStream_t* out;
-	struct knh_OutputStream_t* err;
-	struct knh_String_t*       enc;
-
-	struct knh_DictSet_t       *tokenDictSet;
-	struct knh_DictSet_t       *nameDictCaseSet;
-	size_t                      namecapacity;
-	knh_nameinfo_t             *nameinfo;
-	struct knh_DictSet_t       *urnDictSet;
-	struct knh_Array_t         *urns;
-	struct knh_DictMap_t       *URNAliasDictMap;
-} knh_SystemEX_t;
 
 struct knh_System_t {
 	knh_hObject_t h;
-	knh_SystemEX_t *b;
 };
-#endif
 
 /* ------------------------------------------------------------------------ */
 //## class Context Object;
@@ -1501,9 +1471,9 @@ typedef struct knh_RawPtr_t {
 #define Method_isKonohaCode(mtd) ((mtd)->fcall_1 == knh_Fmethod_runVM)
 
 #define Gamma_hasJIT(ctx)     0
-#define CODE_VEXEC     (ctx->share->PC_VEXEC)
-#define CODE_LAUNCH    (ctx->share->PC_LAUNCH)
-#define CODE_FUNCCALL  (ctx->share->PC_FUNCCALL)
+#define CODE_VEXEC     (ctx->share->PRECOMPILED_VEXEC)
+#define CODE_LAUNCH    (ctx->share->PRECOMPILED_LAUNCH)
+#define CODE_FUNCCALL  (ctx->share->PRECOMPILED_FUNCCALL)
 //#define CODE_ABSTRACT  (ctx->share->PC_ABSTRACT)
 
 #define KNH_SCALL(ctx, lsfp, rtnidx, mtdO, argc) { \

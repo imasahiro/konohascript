@@ -159,7 +159,7 @@ static const struct codeasm_field F_KNH_CONTEXT_T[] = {
 	{"stack", ASMCODE_TYPE_SFPPTR},
 	{"esp", ASMCODE_TYPE_SFPPTR},
 	{"stacksize", ASMCODE_TYPE_LONG},
-	{"stacktop", ASMCODE_TYPE_SFPPTR},
+	{"stack_uplimt", ASMCODE_TYPE_SFPPTR},
 	{"cstack_bottom", ASMCODE_TYPE_VOIDPTR},
 	{"e", ASMCODE_TYPE_VOIDPTR},
 	{"freeObjectList", ASMCODE_TYPE_OBJECTPTR},

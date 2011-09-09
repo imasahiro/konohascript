@@ -434,10 +434,10 @@ knh_bool_t knh_buff_mkdir(CTX ctx, knh_Bytes_t *ba, size_t pos)
 
 #define SETPROP(K, V)  knh_DictMap_set_(ctx, sysprops, new_T(K), UPCAST(V))
 
-void knh_System_initPath(CTX ctx, knh_System_t *o)
+void knh_System_initPath(CTX ctx)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-	knh_DictMap_t *sysprops = DP(o)->props;
+	knh_DictMap_t *sysprops = ctx->share->props;
 	knh_bytes_t home = {{NULL}, 0}, user = {{NULL}, 0};
 
 	// current working directory

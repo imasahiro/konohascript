@@ -514,20 +514,19 @@ static knh_String_t *new_StringSYMBOL(CTX ctx, knh_bytes_t t)
 
 static knh_String_t* NameSpace_getAliasNULL(CTX ctx, knh_NameSpace_t* ns, knh_bytes_t t)
 {
-	knh_String_t *s = NULL;
-	L_TAIL:;
-	if(ctx->wshare->sysAliasDictMapNULL != NULL) {
-		s = (knh_String_t*)knh_DictMap_getNULL(ctx, ctx->wshare->sysAliasDictMapNULL, t);
-	}
-	if(s == NULL) {
-		if(ns->parentNULL != NULL) {
-			ns = ns->parentNULL;
-			goto L_TAIL;
+	knh_String_t *s = (knh_String_t*)knh_DictMap_getNULL(ctx, ctx->wshare->sysAliasDictMap, t);
+	while(1) {
+		if(s == NULL) {
+			if(ns->parentNULL != NULL) {
+				ns = ns->parentNULL;
+				continue;
+			}
+			if(ns != ctx->share->rootns) {
+				ns = ctx->share->rootns;
+				continue;
+			}
 		}
-		if(ns != ctx->share->rootns) {
-			ns = ctx->share->rootns;
-			goto L_TAIL;
-		}
+		break;
 	}
 	return s;
 }
@@ -625,7 +624,7 @@ static void Token_setTEXT(CTX ctx, knh_Token_t *tk, CWB_t *cwb)
 			CWB_clear(cwb, 0);
 			knh_Bytes_write(ctx, cwb->ba, t);  // alias
 		}
-		knh_DictSet_t *tokenDictSet = DP(ctx->sys)->tokenDictSet;
+		knh_DictSet_t *tokenDictSet = ctx->share->tokenDictSet;
 		knh_index_t idx = knh_DictSet_index(tokenDictSet, t);
 		if(idx != -1) {
 			knh_term_t tt = (knh_term_t)knh_DictSet_valueAt(tokenDictSet, idx);
