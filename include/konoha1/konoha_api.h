@@ -444,6 +444,7 @@ knh_Object_t** knh_opline_reftrace(CTX ctx, knh_opline_t *c FTRARG);
 void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline_t *pc_start);
 void knh_opcode_shift(knh_opline_t *c, int shift);
 knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc);
+knh_Array_t* new_ArrayG(CTX ctx, knh_class_t cid, size_t capacity);
 void knh_Array_grow(CTX ctx, knh_Array_t *a, size_t newsize, size_t reqsize);
 void knh_Array_clear(CTX ctx, knh_Array_t *a, size_t n);
 knh_Array_t* new_Array0(CTX ctx, size_t capacity);
@@ -511,6 +512,7 @@ void knh_addTypeMapFunc(CTX ctx, knh_flag_t flag, knh_type_t stype, knh_type_t t
 knh_TypeMap_t *new_TypeMapMethod(CTX ctx, knh_flag_t flag, knh_Method_t *mtd);
 knh_bool_t TypeMap_isNoSuchMapping(knh_TypeMap_t *tmr);
 void knh_addTypeMapRule(CTX ctx, knh_class_t scid, knh_class_t tcid, knh_Ftypemaprule func);
+knh_Iterator_t* new_ArrayIterator(CTX ctx, knh_Array_t *a);
 knh_bool_t knh_isArrayIterator(knh_Iterator_t *itr);
 void knh_Object_fastset(CTX ctx, knh_Object_t *o, knh_Method_t *mtd, knh_Object_t *v);
 void knh_Object_setData(CTX ctx, knh_Object_t *o, knh_Map_t *m, knh_NameSpace_t *ns, int Checked);
@@ -701,6 +703,7 @@ void knh_buff_addpath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, knh_by
 void knh_buff_addospath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, knh_bytes_t t);
 void knh_buff_trim(CTX ctx, knh_Bytes_t *ba, size_t pos, int ch);
 knh_Path_t *new_ScriptPath(CTX ctx, knh_String_t *urn, knh_NameSpace_t *ns);
+knh_Array_t *knh_PathDir_toArray(CTX ctx, knh_Path_t *path);
 knh_InputStream_t *new_InputStreamSTDIO(CTX ctx, FILE *fp, knh_String_t *enc);
 knh_OutputStream_t *new_OutputStreamSTDIO(CTX ctx, FILE *fp, knh_String_t *enc);
 const knh_StreamDPI_t *knh_getDefaultStreamDPI(void);

@@ -136,6 +136,29 @@ knh_Path_t *new_ScriptPath(CTX ctx, knh_String_t *urn, knh_NameSpace_t *ns)
 	return pth;
 }
 
+#ifdef K_USING_POSIX_
+#include <unistd.h>
+#include <dirent.h>
+#endif
+
+knh_Array_t *knh_PathDir_toArray(CTX ctx, knh_Path_t *path)
+{
+	knh_Array_t *a = new_ArrayG(ctx, CLASS_StringARRAY, 0);
+#ifdef K_USING_POSIX_
+	DIR *dirptr = opendir(path->ospath);
+	if(dirptr != NULL) {
+		struct dirent *dp;
+		while((dp = readdir(dirptr))!= NULL) {
+			const char *d = dp->d_name;
+			if(d[0] == '.' && (d[1] == 0 || (d[2] == 0 && d[1] == '.'))) continue;
+			knh_Array_add(ctx, a, new_String(ctx, d));
+		}
+		closedir(dirptr);
+	}
+#endif
+	return a;
+}
+
 /* ------------------------------------------------------------------------ */
 /* K_DPI_STREAM */
 
@@ -317,8 +340,10 @@ static knh_bool_t CURL_exists(Ctx *ctx, knh_Path_t *path)
 	knh_bool_t res = 0;
 	CURL *curl = curl_easy_init();
 	curl_easy_setopt(curl, CURLOPT_URL, S_totext(path->urn));
-	curl_easy_perform(curl);
-	KNH_TODO("CURL_exists");
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
+	curl_easy_setopt(curl, CURLOPT_NOBODY, 1);
+	CURLcode code = curl_easy_perform(curl);
+	res = (code == CURLE_OK);
 	curl_easy_cleanup(curl);
 	return res;
 }

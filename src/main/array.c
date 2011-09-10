@@ -52,6 +52,15 @@ KNHAPI2(knh_Array_t*) new_Array(CTX ctx, knh_class_t p1, size_t capacity)
 	return a;
 }
 
+knh_Array_t* new_ArrayG(CTX ctx, knh_class_t cid, size_t capacity)
+{
+	knh_Array_t *a = (knh_Array_t*)new_Object_init2(ctx, ClassTBL(cid));
+	if(capacity > 0) {
+		knh_Array_grow(ctx, a, capacity, 8);
+	}
+	return a;
+}
+
 void knh_Array_grow(CTX ctx, knh_Array_t *a, size_t newsize, size_t reqsize)
 {
 	size_t capacity = a->dim->capacity;
@@ -255,7 +264,6 @@ void knh_Iterator_close(CTX ctx, knh_Iterator_t *it)
 
 KNHAPI2(knh_Iterator_t*) new_IteratorG(CTX ctx, knh_class_t cid, knh_Object_t *source, knh_Fitrnext fnext)
 {
-	//knh_class_t cid = knh_class_P1(ctx, CLASS_Iterator, p1);
 	DBG_ASSERT(C_bcid(cid) == CLASS_Iterator);
 	knh_Iterator_t *it = new_O(Iterator, cid);
 	if(IS_NULL(source)) fnext = Fitrnext_end;

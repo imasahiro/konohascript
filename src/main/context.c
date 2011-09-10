@@ -456,6 +456,7 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 static void knh_share_free(CTX ctx, knh_share_t *share)
 {
 	size_t i;
+	KNH_FREE(ctx, share->nameinfo, sizeof(knh_nameinfo_t)*share->namecapacity);
 	KNH_FREE(ctx, (void*)share->EventTBL, SIZEOF_TEXPT(ctx->share->capacityEventTBL));
 	share->EventTBL = NULL;
 	KNH_FREE(ctx, share->tString, SIZEOF_TSTRING);

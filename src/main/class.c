@@ -1996,12 +1996,12 @@ static ITRNEXT Array_nextN(CTX ctx, knh_sfp_t *sfp _RIX)
 	ITREND_();
 }
 
-//knh_Iterator_t* new_ArrayIterator(CTX ctx, knh_Array_t *a)
-//{
-//	knh_class_t cid = O_p1(a);
-//	knh_Fitrnext fnext = Array_isNDATA(a) ? Array_nextN : Array_nextO;
-//	return new_Iterator(ctx, cid, UPCAST(a), fnext);
-//}
+knh_Iterator_t* new_ArrayIterator(CTX ctx, knh_Array_t *a)
+{
+	knh_class_t cid = O_p1(a);
+	knh_Fitrnext fnext = Array_isNDATA(a) ? Array_nextN : Array_nextO;
+	return new_IteratorG(ctx, knh_class_P1(ctx, CLASS_Iterator, cid), UPCAST(a), fnext);
+}
 
 knh_bool_t knh_isArrayIterator(knh_Iterator_t *itr)
 {
@@ -2396,9 +2396,9 @@ knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t
 		KNH_SETv(ctx, lsfp[0].o, value);
 		lsfp[0].ndata = O_ndata(value);
 		klr_setesp(ctx, lsfp+1);
-		knh_TypeMap_exec(ctx, tmr, lsfp, 0);
+		knh_TypeMap_exec(ctx, tmr, lsfp, 1);
 		knh_boxing(ctx, lsfp, tmr->tcid);
-		value = lsfp[0].o;
+		value = lsfp[1].o;
 		END_LOCAL(ctx, lsfp);
 	}
 	return value;

@@ -648,12 +648,23 @@ static TYPEMAP Path_String(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Const mapper Path Boolean;
+//## mapper Path Boolean;
 
 static TYPEMAP Path_Boolean(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Path_t *pth = (knh_Path_t*)sfp[K_TMRIDX].o;
 	RETURNb_(pth->dpi->existsSPI(ctx, pth));
+}
+
+/* ------------------------------------------------------------------------ */
+//## mapper Path InputStream;
+
+static TYPEMAP Path_InputStream(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Path_t *path = (knh_Path_t*)sfp[K_TMRIDX].o;
+	knh_InputStream_t *in = new_InputStreamNULL(ctx, path, "r");
+	if(in == NULL) in = KNH_TNULL(InputStream);
+	RETURN_(in);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -3182,18 +3193,8 @@ static KMETHOD InputStream_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 ////	ITRNEXT_(s);
 ////}
 //
-///* ------------------------------------------------------------------------ */
-////## @Final mapper InputStream String..;
-//
-//static TYPEMAP knh_InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_Iterator_t *itr = new_IteratorG(ctx, CLASS_StringITR, sfp[0].o, knh_InputStream_nextLine);
-//	DP(itr)->m.nptr = malloc(K_PAGESIZE);
-//	DP(itr)->nfree = free;
-//	RETURN_(itr);
-//}
 
-static ITRNEXT knh_InputStream_nextLine(CTX ctx, knh_sfp_t *sfp _RIX)
+static ITRNEXT InputStream_nextLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Iterator_t *itr = sfp[0].it;
 	knh_InputStream_t *in = (knh_InputStream_t*)DP(itr)->source;
@@ -3206,10 +3207,30 @@ static ITRNEXT knh_InputStream_nextLine(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 //## @Final mapper InputStream String..;
+//## method String.. InputStream.opITR();
 
-static TYPEMAP knh_InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Iterator_t *itr = new_IteratorG(ctx, CLASS_StringITR, sfp[0].o, knh_InputStream_nextLine);
+	knh_Iterator_t *itr = new_IteratorG(ctx, CLASS_StringITR, sfp[0].o, InputStream_nextLine);
+	RETURN_(itr);
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Final mapper Path String..;
+//## method String.. Path.opITR();
+
+static TYPEMAP Path_String__(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Path_t *path = (knh_Path_t*)sfp[K_TMRIDX].o;
+	knh_Iterator_t *itr;
+	if(path->ospath != NULL && knh_isdir(ctx, path->ospath)) {
+		itr = new_ArrayIterator(ctx, knh_PathDir_toArray(ctx, path));
+	}
+	else {
+		knh_InputStream_t *in = new_InputStreamNULL(ctx, path, "r");
+		if(in == NULL) in = KNH_TNULL(InputStream);
+		itr = new_IteratorG(ctx, CLASS_StringITR, (Object*)in, InputStream_nextLine);
+	}
 	RETURN_(itr);
 }
 
