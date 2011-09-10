@@ -30,7 +30,7 @@
 //  chen_ji - Takuma Wakamori, Yokohama National University, Japan
 // **************************************************************************
 
-#define K_INTERNAL
+#define USE_STRUCT_Func
 #include <konoha1.h>
 #include <signal.h>
 #include <unistd.h>
@@ -83,9 +83,11 @@ static knh_IntData_t SignalConstInt[] = {
 	{NULL, 0}, //necessary for checking rnd of definition
 };
 
+static knh_context_t* (*getCurrentContext)(void);
+
 void signal_handler(int signum)
 {
-	CTX lctx = knh_getCurrentContext();
+	CTX lctx = getCurrentContext();
 	WCTX(lctx)->signal = signum;
 	SAFEPOINT_SETSIGNAL(lctx);
 }
@@ -174,6 +176,7 @@ DEFAPI(void) constSignal(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 {
+	getCurrentContext = knh_getCurrentContext;
 	RETURN_PKGINFO("konoha.signal");
 }
 

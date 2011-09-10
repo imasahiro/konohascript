@@ -30,7 +30,9 @@
 //  chen_ji - Takuma Wakamori, Yokohama National University, Japan
 // **************************************************************************
 
-#define K_INTERNAL
+#define USE_STRUCT_InputStream
+#define USE_STRUCT_OutputStream
+
 #include <konoha1.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -186,7 +188,7 @@ static inline size_t CWB_size(CWB_t *cwb)
 	return (cwb->ba)->bu.len - cwb->pos;
 }
 
-static inline void CWB_close(CWB_t *cwb)
+static inline void CWB_close(CTX ctx, CWB_t *cwb)
 {
 	knh_Bytes_clear(cwb->ba, cwb->pos);
 }
@@ -225,7 +227,7 @@ static void child(CTX ctx, knh_sfp_t *sfp, knh_Array_t *args, knh_DictMap_t *env
 		LIB_Failed("child", "IO!!");
 		_Exit(EXIT_FAILURE);
 	}
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 }
 
 /* ======================================================================== */
