@@ -1117,7 +1117,8 @@ typedef struct knh_context_t {
 	/* signal */
 	int                             signal;
 	void                           *siginfo;
-	struct knh_Array_t             *sighandlers; // modified by Wakamori
+#define K_SIGNAL_MAX _POSIX_SIGQUEUE_MAX
+	struct knh_Func_t             **sighandlers; // modified by Wakamori
 
 } knh_context_t ;
 

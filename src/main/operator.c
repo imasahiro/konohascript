@@ -2486,7 +2486,6 @@ static KMETHOD Map_keys(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(a);
 }
 
-
 /* ------------------------------------------------------------------------ */
 /* [Arithemetic] */
 
@@ -2722,16 +2721,6 @@ KMETHOD Map_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(m->spi->size(ctx, m->mapptr));
 }
 
-///* ------------------------------------------------------------------------ */
-////## method Int Tuple.getSize();
-//
-//static KMETHOD Tuple_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	size_t size = (IS_NULL(sfp[0].o)) ? 0 : 2;
-//	if(!Tuple_isTriple(sfp[0].tuple)) size = (sfp[0].tuple)->size;
-//	RETURNi_(size);
-//}
-
 /* ------------------------------------------------------------------------ */
 /* [get,set] */
 
@@ -2787,26 +2776,6 @@ static KMETHOD String_get(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	RETURN_(s);
 }
-
-///* ------------------------------------------------------------------------ */
-////## method dynamic Tuple.get(Int n);
-//
-//static KMETHOD Tuple_get(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	if(Tuple_isTriple(sfp[0].tuple)) {
-//		Object *v = KNH_NULL;
-//		switch(Int_to(size_t, sfp[1])) {
-//		case 0: v = (sfp[0].tuple)->first; break;
-//		case 1: v = (sfp[1].tuple)->first; break;
-//		case 2: v = (sfp[2].tuple)->first; break;
-//		default: knh_array_index(ctx, Int_to(knh_int_t, sfp[1]), 3);
-//		}
-//		RETURN_(v);
-//	}
-//	else {
-//		Array_get(ctx, sfp, rix); /* reuse */
-//	}
-//}
 
 /* ------------------------------------------------------------------------ */
 /* [range] */
@@ -3349,7 +3318,7 @@ static const char *newfmt(char *buf, size_t bufsiz, knh_bytes_t fmt, const char 
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Hidden @Const @FastCall method String Int.format(String fmt);
+//## @Hidden @Const method String Int.format(String fmt);
 
 static KMETHOD Int_format(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -3373,7 +3342,7 @@ static KMETHOD Int_format(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Hidden @Const @FastCall method String Float.format(String fmt);
+//## @Hidden @Const method String Float.format(String fmt);
 
 static KMETHOD Float_format(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -3397,7 +3366,7 @@ static KMETHOD Float_format(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## @Hidden @Const @FastCall method String String.format(String fmt);
+//## @Hidden @Const method String String.format(String fmt);
 
 static KMETHOD String_format(CTX ctx, knh_sfp_t *sfp _RIX)
 {

@@ -1213,7 +1213,7 @@ void THROW_Arithmetic(CTX ctx, knh_sfp_t *sfp, const char *msg)
 }
 KNHAPI2(void) THROW_OutOfRange(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t max)
 {
-	LOGDATA = {sDATA("msg", "out of index range"), iDATA("idx", n), iDATA("max", max)};
+	LOGDATA = {sDATA("msg", "out of range"), iDATA("idx", n), iDATA("max", max)};
 	CRIT_Failed("range", "Script!!");
 }
 void THROW_TypeError(CTX ctx, knh_sfp_t *sfp, knh_type_t reqt, knh_type_t type)

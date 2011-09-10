@@ -33,6 +33,7 @@
 include "lib:gluelink";
 
 @Native @Singleton class Signal;
-
 @Native void Signal.signal(int signum, Func<int> sighandler);
 @Native int Signal.alarm(int seconds);
+@Native boolean Signal.kill(int pid, int signal);
+@Native boolean Signal.raise(int signal);

@@ -114,19 +114,6 @@ KMETHOD System_getPPid(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 /* [signal] */
 
-//## @Native boolean System.kill(int pid, int signal);
-KMETHOD System_kill(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	int tf = 1;
-	KNH_RESET_ERRNO();
-	if(kill(Int_to(int, sfp[1]), Int_to(int, sfp[2])) == -1) {
-		LOGDATA = {iDATA("pid", Int_to(int, sfp[1])), iDATA("signal", Int_to(int, sfp[2])), __ERRNO__};
-		NOTE_Failed("kill");
-		tf = 0;
-	}
-	RETURNb_(tf);
-}
-
 //## @Native int System.sleep(int sec);
 KMETHOD System_sleep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -140,19 +127,6 @@ KMETHOD System_usleep(CTX ctx, knh_sfp_t *sfp _RIX)
 	if(!tf) {
 		LOGDATA = {iDATA("usec", sfp[1].ivalue), __ERRNO__};
 		NOTE_Failed("usleep");
-	}
-	RETURNb_(tf);
-}
-
-//## @Native boolean System.raise(int signal);
-KMETHOD System_raise(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	int tf = 1;
-	KNH_RESET_ERRNO();
-	if(raise(Int_to(int, sfp[1])) == -1) {
-		LOGDATA = {iDATA("signal", Int_to(int, sfp[1])), __ERRNO__};
-		NOTE_Failed("raise");
-		tf = 0;
 	}
 	RETURNb_(tf);
 }

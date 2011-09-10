@@ -132,6 +132,12 @@ static knh_Object_t** knh_CommonContext_reftrace(CTX ctx, knh_context_t *ctxo FT
 		}
 	}
 #endif
+	if(ctxo->sighandlers != NULL) {
+		KNH_ENSUREREF(ctx, K_SIGNAL_MAX);
+		for (i = 0; i < K_SIGNAL_MAX; i++) {
+			KNH_ADDNNREF(ctx, ctxo->sighandlers[i]);
+		}
+	}
 	return tail_;
 }
 
@@ -149,6 +155,10 @@ static void knh_CommonContext_free(CTX ctx, knh_context_t *ctxo)
 	knh_mutex_free(ctxo, ctxo->ctxlock);
 	ctxo->ctxlock = NULL;
 	ctxo->bufa = NULL;
+	if(ctx->sighandlers != NULL) {
+		KNH_FREE(ctx, ctx->sighandlers, sizeof(knh_Func_t*) * K_SIGNAL_MAX);
+		ctxo->sighandlers = NULL;
+	}
 }
 
 /* ------------------------------------------------------------------------ */

@@ -294,7 +294,6 @@ KMETHOD Proc_new(CTX ctx, knh_sfp_t *sfp _RIX)
 		DBG_P("err=%lu", sp->err);
 		sp->pid = pid;
 	}
-
 	RETURN_(sp);
 }
 
@@ -392,7 +391,6 @@ KMETHOD Proc_isAlive(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ======================================================================== */
 // [DEFAPI]
 
-#ifdef _SETUP
 
 DEFAPI(void) defProc(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
@@ -401,11 +399,11 @@ DEFAPI(void) defProc(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->free = Proc_free;
 }
 
+#ifdef _SETUP
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 {
 	RETURN_PKGINFO("konoha.proc");
 }
-
 #endif /* _SETUP */
 
 #ifdef __cplusplus

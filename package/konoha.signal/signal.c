@@ -39,16 +39,8 @@
 extern "C" {
 #endif
 
-// _POSIX_SIGQUEUE_MAX == 32
-#define SIGNAL_MAX _POSIX_SIGQUEUE_MAX
-
 /* ======================================================================== */
 // [private functions]
-
-//static knh_FuncData_t SignalConstFunc[] = {
-//	{"SIG_DFL", SIG_DFL},
-//	{"SIG_IGN", SIG_IGN},
-//}
 
 static knh_IntData_t SignalConstInt[] = {
 	{"SIGHUP"   , SIGHUP   },
@@ -57,7 +49,9 @@ static knh_IntData_t SignalConstInt[] = {
 	{"SIGILL"   , SIGILL   },
 	{"SIGTRAP"  , SIGTRAP  },
 	{"SIGABRT"  , SIGABRT  },
-	//{"SIGEMT"   , SIGEMT   },
+#ifdef  SIGEMT
+	{"SIGEMT"   , SIGEMT   },
+#endif
 	{"SIGFPE"   , SIGFPE   },
 	{"SIGKILL"  , SIGKILL  },
 	{"SIGBUS"   , SIGBUS   },
@@ -68,7 +62,9 @@ static knh_IntData_t SignalConstInt[] = {
 	{"SIGTERM"  , SIGTERM  },
 	{"SIGURG"   , SIGURG   },
 	{"SIGSTOP"  , SIGSTOP  },
-	//{"SIGTSOP"  , SIGTSOP  },
+#ifdef  SIGTSOP
+	{"SIGTSOP"  , SIGTSOP  },
+#endif
 	{"SIGCONT"  , SIGCONT  },
 	{"SIGCHLD"  , SIGCHLD  },
 	{"SIGTTIN"  , SIGTTIN  },
@@ -79,53 +75,13 @@ static knh_IntData_t SignalConstInt[] = {
 	{"SIGVTALRM", SIGVTALRM},
 	{"SIGPROF"  , SIGPROF  },
 	{"SIGWINCH" , SIGWINCH },
-	//{"SIGINFO"  , SIGINFO  },
+#ifdef  SIGINFO
+	{"SIGINFO"  , SIGINFO  },
+#endif
 	{"SIGUSR1"  , SIGUSR1  },
 	{"SIGUSR2"  , SIGUSR2  },
+	{NULL, 0}, //necessary for checking rnd of definition
 };
-
-//typedef struct {
-//	knh_hObject_t h;
-//	Ctx *lctx;
-//	knh_Array_t *func_array;
-//	void *dummy1;
-//	void *dummy2;
-//} knh_Signal_t;
-
-static void Signal_init(CTX ctx)
-{
-	if (ctx->sighandlers == NULL) {
-		KNH_INITv(WCTX(ctx)->sighandlers, new_Array(ctx, CLASS_Func, SIGNAL_MAX));
-		knh_Array_grow(ctx, ctx->sighandlers, SIGNAL_MAX, SIGNAL_MAX);
-		knh_Array_size(ctx->sighandlers) = SIGNAL_MAX;
-	}
-}
-
-//static void Signal_free(CTX ctx, knh_RawPtr_t *po)
-//{
-//	knh_Signal_t *s = (knh_Signal_t *)po;
-//	size_t i;
-//	for (i = 0; i < knh_Array_size(s->func_array); i++) {
-//		KNH_FINALv(ctx, knh_Array_n(s->func_array), i);
-//	}
-//	KNH_FINALv(ctx, s->func_array);
-//}
-
-static void Signal_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
-{
-	if (ctx->sighandlers != NULL) {
-#ifdef K_USING_FASTREFS_
-		KNH_SETREF(ctx, ctx->sighandlers->list, SIGNAL_MAX);
-#else
-		size_t i;
-		for (i = 0; i < knh_Array_size(ctx->sighandlers); i++) {
-			if (a->list[i] != NULL)
-				KNH_ADDREF(ctx, a->list[i]);
-		}
-		KNH_SIZEREF(ctx);
-#endif
-	}
-}
 
 void signal_handler(int signum)
 {
@@ -140,17 +96,58 @@ void signal_handler(int signum)
 //## @Native void Signal.signal(int signum, Func<int> sighandler);
 KMETHOD Signal_signal(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	struct sigaction sa;
-	sa.sa_handler = signal_handler;
-	sa.sa_flags = SA_RESTART;
 	int signum = Int_to(int, sfp[1]);
-	if (knh_Array_n(ctx->sighandlers, signum) == NULL)
-		KNH_INITv(knh_Array_n(ctx->sighandlers, signum), KNH_NULL);
-	KNH_SETv(ctx, knh_Array_n(ctx->sighandlers, signum), sfp[2].fo);
-	if (sigaction(signum, &sa, NULL) < 0) {
-		LOGDATA = {iDATA("signum", signum)};
-		LIB_Failed("Signal.signal", "System!!");
+	if(ctx->sighandlers == NULL) {
+		WCTX(ctx)->sighandlers = KNH_MALLOC(ctx, sizeof(knh_Func_t*) * K_SIGNAL_MAX);
+		knh_bzero(ctx->sighandlers, sizeof(knh_Func_t*) * K_SIGNAL_MAX);
 	}
+	THROW_OutOfRange(ctx, sfp, signum, K_SIGNAL_MAX);
+	if(IS_NULL(sfp[2].fo)) {
+		if(ctx->sighandlers[signum] != NULL) {
+			KNH_FINALv(ctx, ctx->sighandlers[signum]);
+		}
+	}
+	else {
+		struct sigaction sa;
+		sa.sa_handler = signal_handler;
+		sa.sa_flags = SA_RESTART;
+		if (sigaction(signum, &sa, NULL) < 0) {
+			LOGDATA = {iDATA("signum", signum)};
+			LIB_Failed("signal", "System!!");
+		}
+		if(ctx->sighandlers[signum] != NULL) {
+			KNH_SETv(ctx, ctx->sighandlers[signum], sfp[2].fo);
+		}
+		else {
+			KNH_INITv(ctx->sighandlers[signum], sfp[2].fo);
+		}
+	}
+}
+
+//## @Native boolean Signal.kill(int pid, int signal);
+KMETHOD Signal_kill(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	int tf = 1;
+	KNH_RESET_ERRNO();
+	if(kill(Int_to(int, sfp[1]), Int_to(int, sfp[2])) == -1) {
+		LOGDATA = {iDATA("pid", Int_to(int, sfp[1])), iDATA("signal", Int_to(int, sfp[2])), __ERRNO__};
+		NOTE_Failed("kill");
+		tf = 0;
+	}
+	RETURNb_(tf);
+}
+
+//## @Native boolean Signal.raise(int signal);
+KMETHOD Signal_raise(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	int tf = 1;
+	KNH_RESET_ERRNO();
+	if(raise(Int_to(int, sfp[1])) == -1) {
+		LOGDATA = {iDATA("signal", Int_to(int, sfp[1])), __ERRNO__};
+		NOTE_Failed("raise");
+		tf = 0;
+	}
+	RETURNb_(tf);
 }
 
 //## @Native int Signal.alarm(int seconds);
@@ -162,12 +159,10 @@ KMETHOD Signal_alarm(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ======================================================================== */
 // [DEFAPI]
 
-#ifdef _SETUP
 
 DEFAPI(void) defSignal(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	cdef->name = "Signal";
-	cdef->reftrace = Signal_reftrace;
 }
 
 DEFAPI(void) constSignal(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
@@ -175,9 +170,10 @@ DEFAPI(void) constSignal(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 	kapi->loadClassIntConst(ctx, cid, SignalConstInt);
 }
 
+#ifdef _SETUP
+
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 {
-	Signal_init(ctx);
 	RETURN_PKGINFO("konoha.signal");
 }
 
