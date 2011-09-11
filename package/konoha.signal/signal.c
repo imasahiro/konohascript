@@ -30,7 +30,7 @@
 //  chen_ji - Takuma Wakamori, Yokohama National University, Japan
 // **************************************************************************
 
-#define K_INTERNAL
+#define USE_STRUCT_Func
 #include <konoha1.h>
 #include <signal.h>
 #include <unistd.h>
