@@ -3385,260 +3385,247 @@ static KMETHOD String_format(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(sfp[0].s);
 }
 
-/* ------------------------------------------------------------------------ */
-//## method This Connection.new(String urn, NameSpace ns);
-
-static KMETHOD Connection_new(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Connection_t *o = (knh_Connection_t*)sfp[0].o;
-	knh_Connection_open(ctx, o, sfp[2].ns, sfp[1].s);
-	RETURN_(sfp[0].o);
-}
-
-/* ------------------------------------------------------------------------ */
-//## method ResultSet! Connection.query(String query);
-
-static KMETHOD Connection_query(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Connection_t *c = (knh_Connection_t*)sfp[0].o;
-	knh_String_t *query = (knh_String_t*)sfp[1].o;
-	knh_ResultSet_t *rs = new_(ResultSet);
-	KNH_RCSETv(ctx, sfp[2].o, rs);
-	knh_qcur_t *qcur = (c)->dpi->qexec(ctx, (c)->conn, S_tobytes(query), rs);
-	if(qcur != NULL) {
-		DP(rs)->qcur = qcur;
-		DP(rs)->qcurfree = (c)->dpi->qcurfree;
-	}
-	else {
-		DP(rs)->qcur = NULL;
-		DP(rs)->qcurfree = knh_getDefaultQueryDPI()->qcurfree;
-	}
-	KNH_SETv(ctx, DP(rs)->conn, c);
-	RETURN_(rs);
-}
-
-/* ------------------------------------------------------------------------ */
-//## method void Connection.exec(String query);
-
-static KMETHOD Connection_exec(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Connection_t *c = (knh_Connection_t*)sfp[0].o;
-	knh_String_t *query = sfp[1].s;
-	(c)->dpi->qexec(ctx, (c)->conn, S_tobytes(query), NULL);
-	RETURNvoid_();
-}
-
-/* ------------------------------------------------------------------------ */
-//## method void Connection.close();
-
-static KMETHOD Connection_close(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Connection_close(ctx, (knh_Connection_t*)sfp[0].o);
-	RETURNvoid_();
-}
-
-/* ------------------------------------------------------------------------ */
-//## method Int ResultSet.getSize();
-
-static KMETHOD ResultSet_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
-	RETURNi_(DP(o)->column_size);
-}
-
-/* ------------------------------------------------------------------------ */
-//## method Boolean ResultSet.next();
-
-static KMETHOD ResultSet_next(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	RETURNb_(knh_ResultSet_next(ctx, (knh_ResultSet_t*)sfp[0].o));
-}
-
-/* ------------------------------------------------------------------------ */
-//## method String ResultSet.getName(Int n);
-
-static KMETHOD ResultSet_getName(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
-	size_t n = Int_to(size_t, sfp[1]);
-	knh_String_t *v = TS_EMPTY;
-	if(n < DP(o)->column_size) {
-		v = knh_ResultSet_getName(ctx, o, n);
-	}
-	else {
-		THROW_OutOfRange(ctx, sfp, sfp[1].ivalue, DP(o)->column_size);
-	}
-	RETURN_(v);
-}
-
-/* ------------------------------------------------------------------------ */
-
-static int knh_ResultSet_indexof_(CTX ctx, knh_sfp_t *sfp)
-{
-	knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
-	if(IS_bInt(sfp[1].o)) {
-		size_t n = O_ndata(sfp[1].i);
-		//size_t n = Int_to(size_t, sfp[1]);
-		if(!(n < DP(o)->column_size)) {
-			THROW_OutOfRange(ctx, sfp, sfp[1].ivalue, DP(o)->column_size);
-			return -1;
-		}
-		return n;
-	}
-	else if(IS_bString(sfp[1].o)) {
-		int loc = knh_ResultSet_findColumn(ctx, o, S_tobytes(sfp[1].s));
-		if(loc == -1) {
-			TODO();
-			//KNH_STUPID(ctx, o, STUPID_NOTFOUND);
-		}
-		return loc;
-	}
-	TODO();
-	//KNH_STUPID(ctx, o, STUPID_NOTFOUND);
-	return -1;
-}
-
-/* ------------------------------------------------------------------------ */
-//## method Int ResultSet.getInt(dynamic n);
-
-static KMETHOD ResultSet_getInt(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	int n = knh_ResultSet_indexof_(ctx, sfp);
-	knh_int_t res = 0;
-	if(n >= 0) {
-		knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
-		const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
-		switch(DP(o)->column[n].ctype) {
-		case knh_ResultSet_CTYPE__integer :
-			res = *((knh_int_t*)p); break;
-		case knh_ResultSet_CTYPE__float :
-			res = (knh_int_t)(*((knh_float_t*)p)); break;
-		case knh_ResultSet_CTYPE__null :
-		default:
-			KNH_SETv(ctx, sfp[K_RIX].o, KNH_NULVAL(CLASS_Int));
-		}
-	}
-	RETURNi_(res);
-}
-
-/* ------------------------------------------------------------------------ */
-//## method Float ResultSet.getFloat(dynamic n);
-
-static KMETHOD ResultSet_getFloat(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-
-	int n = knh_ResultSet_indexof_(ctx, sfp);
-	knh_float_t res = K_FLOAT_ZERO;
-	if(n >= 0) {
-		knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
-		const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
-		switch(DP(o)->column[n].ctype) {
-		case knh_ResultSet_CTYPE__integer :
-			res = (knh_float_t)(*((knh_int_t*)p)); break;
-		case knh_ResultSet_CTYPE__float :
-			res = (*((knh_float_t*)p)); break;
-		case knh_ResultSet_CTYPE__null :
-		default:
-			KNH_SETv(ctx, sfp[K_RIX].o, KNH_NULVAL(CLASS_Float));
-		}
-	}
-	RETURNf_(res);
-}
-
-/* ------------------------------------------------------------------------ */
-//## method String ResultSet.getString(dynamic n);
-
-static KMETHOD ResultSet_getString(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-
-	int n = knh_ResultSet_indexof_(ctx, sfp);
-	Object *v = KNH_NULL;
-	if(n >= 0) {
-		v = UPCAST(knh_ResultSet_getString(ctx, (knh_ResultSet_t*)sfp[0].o, n));
-	}
-	RETURN_(v);
-}
-
-/* ------------------------------------------------------------------------ */
-//## method dynamic ResultSet.get(dynamic n);
-
-static KMETHOD ResultSet_get(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-
-	int n = knh_ResultSet_indexof_(ctx, sfp);
-	Object *v = KNH_NULL;
-	if(n >= 0) {
-		knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
-		const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
-		switch(DP(o)->column[n].ctype) {
-		case knh_ResultSet_CTYPE__integer :
-			v = UPCAST(new_Int_(ctx, CLASS_Int, ((*((knh_int_t*)p)))));
-			break;
-		case knh_ResultSet_CTYPE__float :
-			v = UPCAST(new_Float_(ctx, CLASS_Float, ((*((knh_float_t*)p)))));
-			break;
-		case knh_ResultSet_CTYPE__text :
-			v = UPCAST(new_String2(ctx, CLASS_String, BA_totext(DP(o)->databuf) + DP(o)->column[n].start, DP(o)->column[n].len, 0));
-			break;
-		case knh_ResultSet_CTYPE__bytes :
-			{
-				knh_Bytes_t *ba = new_Bytes(ctx, "blob", DP(o)->column[n].len);
-				knh_bytes_t t = {{BA_totext(DP(o)->databuf) + DP(o)->column[n].start}, DP(o)->column[n].len};
-				knh_Bytes_write(ctx, ba, t);
-				v = UPCAST(ba);
-			}
-			break;
-		default:
-			v = KNH_NULL;
-		}
-	}
-	RETURN_(v);
-}
-
 ///* ------------------------------------------------------------------------ */
-////## method void ResultSet.%dump(OutputStream w, String m);
+////## method This Connection.new(String urn, NameSpace ns);
 //
-//static void knh_ResultSet__dump(CTX ctx, knh_ResultSet_t *o, knh_OutputStream_t *w, knh_String_t *m)
+//static KMETHOD Connection_new(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
-//	knh_putc(ctx, w, '{');
-//	size_t n;
-//	for(n = 0; n < DP(o)->column_size; n++) {
-//		if(n > 0) {
-//			knh_write_delim(ctx,w);
+//	knh_Connection_t *o = (knh_Connection_t*)sfp[0].o;
+//	knh_Connection_open(ctx, o, sfp[2].ns, sfp[1].s);
+//	RETURN_(sfp[0].o);
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## method ResultSet! Connection.query(String query);
+//
+//static KMETHOD Connection_query(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_Connection_t *c = (knh_Connection_t*)sfp[0].o;
+//	knh_String_t *query = (knh_String_t*)sfp[1].o;
+//	knh_ResultSet_t *rs = new_(ResultSet);
+//	KNH_RCSETv(ctx, sfp[2].o, rs);
+//	knh_qcur_t *qcur = (c)->dpi->qexec(ctx, (c)->conn, S_tobytes(query), rs);
+//	if(qcur != NULL) {
+//		DP(rs)->qcur = qcur;
+//		DP(rs)->qcurfree = (c)->dpi->qcurfree;
+//	}
+//	else {
+//		DP(rs)->qcur = NULL;
+//		DP(rs)->qcurfree = knh_getDefaultQueryDPI()->qcurfree;
+//	}
+//	KNH_SETv(ctx, DP(rs)->conn, c);
+//	RETURN_(rs);
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## method void Connection.exec(String query);
+//
+//static KMETHOD Connection_exec(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_Connection_t *c = (knh_Connection_t*)sfp[0].o;
+//	knh_String_t *query = sfp[1].s;
+//	(c)->dpi->qexec(ctx, (c)->conn, S_tobytes(query), NULL);
+//	RETURNvoid_();
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## method DataITR Connection.queryData(String query);
+//
+//static KMETHOD Connection_queryData(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_Connection_t *c = (knh_Connection_t*)sfp[0].o;
+//	knh_String_t *query = sfp[1].s;
+//	knh_qcur_t *qcur = (c)->dpi->qexec(ctx, (c)->conn, S_tobytes(query), NULL);
+//	knh_Iterator_t *itr;
+//	if(qcur != NULL) {
+//		itr = new_IteratorG(ctx, CLASS_DataITR, sfp[0].o, c->dpi->nextData);
+//		knh_nitr_t *nitr = &(DP(itr)->m);
+//		nitr->nptr = qcur;
+//		nitr->nfree = c->dpi->qcurfree;
+//	}
+//	else {
+//		itr = (knh_Iterator_t*)KNH_NULVAL(CLASS_DataITR);
+//	}
+//	RETURN_(itr);
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## method void Connection.close();
+//
+//static KMETHOD Connection_close(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_Connection_close(ctx, (knh_Connection_t*)sfp[0].o);
+//	RETURNvoid_();
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## method Int ResultSet.getSize();
+//
+//static KMETHOD ResultSet_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
+//	RETURNi_(DP(o)->column_size);
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## method Boolean ResultSet.next();
+//
+//static KMETHOD ResultSet_next(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	RETURNb_(knh_ResultSet_next(ctx, (knh_ResultSet_t*)sfp[0].o));
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## method String ResultSet.getName(Int n);
+//
+//static KMETHOD ResultSet_getName(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
+//	size_t n = Int_to(size_t, sfp[1]);
+//	knh_String_t *v = TS_EMPTY;
+//	if(n < DP(o)->column_size) {
+//		v = knh_ResultSet_getName(ctx, o, n);
+//	}
+//	else {
+//		THROW_OutOfRange(ctx, sfp, sfp[1].ivalue, DP(o)->column_size);
+//	}
+//	RETURN_(v);
+//}
+//
+///* ------------------------------------------------------------------------ */
+//
+//static int knh_ResultSet_indexof_(CTX ctx, knh_sfp_t *sfp)
+//{
+//	knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
+//	if(IS_bInt(sfp[1].o)) {
+//		size_t n = O_ndata(sfp[1].i);
+//		//size_t n = Int_to(size_t, sfp[1]);
+//		if(!(n < DP(o)->column_size)) {
+//			THROW_OutOfRange(ctx, sfp, sfp[1].ivalue, DP(o)->column_size);
+//			return -1;
 //		}
-//		knh_write(ctx, w, S_tobytes(DP(o)->column[n].name));
-//		knh_printf(ctx, w, "(%d): ", n);
-//		char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
+//		return n;
+//	}
+//	else if(IS_bString(sfp[1].o)) {
+//		int loc = knh_ResultSet_findColumn(ctx, o, S_tobytes(sfp[1].s));
+//		if(loc == -1) {
+//			TODO();
+//			//KNH_STUPID(ctx, o, STUPID_NOTFOUND);
+//		}
+//		return loc;
+//	}
+//	TODO();
+//	//KNH_STUPID(ctx, o, STUPID_NOTFOUND);
+//	return -1;
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## method Int ResultSet.getInt(dynamic n);
+//
+//static KMETHOD ResultSet_getInt(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	int n = knh_ResultSet_indexof_(ctx, sfp);
+//	knh_int_t res = 0;
+//	if(n >= 0) {
+//		knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
+//		const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
 //		switch(DP(o)->column[n].ctype) {
-//			case knh_ResultSet_CTYPE__null :
-//				knh_write(ctx, w, STEXT("null"));
-//				break;
-//			case knh_ResultSet_CTYPE__integer :
-//				knh_write_ifmt(ctx, w, K_INT_FMT, (*((knh_int_t*)p)));
-//				break;
-//			case knh_ResultSet_CTYPE__float :
-//				knh_write_ffmt(ctx, w, K_FLOAT_FMT, (*((knh_float_t*)p)));
-//				break;
-//			case knh_ResultSet_CTYPE__text :
-//				knh_write(ctx, w, B2(p, DP(o)->column[n].len));
-//				break;
-//			case knh_ResultSet_CTYPE__bytes :
-//				knh_printf(ctx, w, "BLOB(%dbytes)", DP(o)->column[n].len);
-//				break;
+//		case knh_ResultSet_CTYPE__integer :
+//			res = *((knh_int_t*)p); break;
+//		case knh_ResultSet_CTYPE__float :
+//			res = (knh_int_t)(*((knh_float_t*)p)); break;
+//		case knh_ResultSet_CTYPE__null :
+//		default:
+//			KNH_SETv(ctx, sfp[K_RIX].o, KNH_NULVAL(CLASS_Int));
 //		}
 //	}
-//	knh_putc(ctx, w, '}');
+//	RETURNi_(res);
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## method Float ResultSet.getFloat(dynamic n);
+//
+//static KMETHOD ResultSet_getFloat(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//
+//	int n = knh_ResultSet_indexof_(ctx, sfp);
+//	knh_float_t res = K_FLOAT_ZERO;
+//	if(n >= 0) {
+//		knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
+//		const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
+//		switch(DP(o)->column[n].ctype) {
+//		case knh_ResultSet_CTYPE__integer :
+//			res = (knh_float_t)(*((knh_int_t*)p)); break;
+//		case knh_ResultSet_CTYPE__float :
+//			res = (*((knh_float_t*)p)); break;
+//		case knh_ResultSet_CTYPE__null :
+//		default:
+//			KNH_SETv(ctx, sfp[K_RIX].o, KNH_NULVAL(CLASS_Float));
+//		}
+//	}
+//	RETURNf_(res);
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## method String ResultSet.getString(dynamic n);
+//
+//static KMETHOD ResultSet_getString(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//
+//	int n = knh_ResultSet_indexof_(ctx, sfp);
+//	Object *v = KNH_NULL;
+//	if(n >= 0) {
+//		v = UPCAST(knh_ResultSet_getString(ctx, (knh_ResultSet_t*)sfp[0].o, n));
+//	}
+//	RETURN_(v);
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## method dynamic ResultSet.get(dynamic n);
+//
+//static KMETHOD ResultSet_get(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//
+//	int n = knh_ResultSet_indexof_(ctx, sfp);
+//	Object *v = KNH_NULL;
+//	if(n >= 0) {
+//		knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
+//		const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
+//		switch(DP(o)->column[n].ctype) {
+//		case knh_ResultSet_CTYPE__integer :
+//			v = UPCAST(new_Int_(ctx, CLASS_Int, ((*((knh_int_t*)p)))));
+//			break;
+//		case knh_ResultSet_CTYPE__float :
+//			v = UPCAST(new_Float_(ctx, CLASS_Float, ((*((knh_float_t*)p)))));
+//			break;
+//		case knh_ResultSet_CTYPE__text :
+//			v = UPCAST(new_String2(ctx, CLASS_String, BA_totext(DP(o)->databuf) + DP(o)->column[n].start, DP(o)->column[n].len, 0));
+//			break;
+//		case knh_ResultSet_CTYPE__bytes :
+//			{
+//				knh_Bytes_t *ba = new_Bytes(ctx, "blob", DP(o)->column[n].len);
+//				knh_bytes_t t = {{BA_totext(DP(o)->databuf) + DP(o)->column[n].start}, DP(o)->column[n].len};
+//				knh_Bytes_write(ctx, ba, t);
+//				v = UPCAST(ba);
+//			}
+//			break;
+//		default:
+//			v = KNH_NULL;
+//		}
+//	}
+//	RETURN_(v);
 //}
 
-/* ------------------------------------------------------------------------ */
-//## method void ResultSet.close();
-
-static KMETHOD ResultSet_close(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-
-	knh_ResultSet_close(ctx, (knh_ResultSet_t*)sfp[0].o);
-	RETURNvoid_();
-}
+//
+///* ------------------------------------------------------------------------ */
+////## method void ResultSet.close();
+//
+//static KMETHOD ResultSet_close(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//
+//	knh_ResultSet_close(ctx, (knh_ResultSet_t*)sfp[0].o);
+//	RETURNvoid_();
+//}
 
 /* ------------------------------------------------------------------------ */
 //## @Static method InputStream System.getIn();

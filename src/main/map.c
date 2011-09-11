@@ -1478,6 +1478,24 @@ KNHAPI2(void) knh_DataMap_setInt(CTX ctx, knh_Map_t *m, const char *key, knh_int
 	m->spi->set(ctx, m->mapptr, kvsfp);
 }
 
+KNHAPI2(void) knh_DataMap_setFloat(CTX ctx, knh_Map_t *m, const char *key, knh_float_t value)
+{
+	knh_sfp_t* kvsfp = ctx->esp;
+	KNH_SETv(ctx, kvsfp[0].o, new_String2(ctx, CLASS_String, key, strlen(key), K_SPOLICY_POOLALWAYS));
+	KNH_SETv(ctx, kvsfp[1].o, new_Float_(ctx, CLASS_Float, value));
+	m->spi->set(ctx, m->mapptr, kvsfp);
+}
+
+KNHAPI2(void) knh_DataMap_setBlob(CTX ctx, knh_Map_t *m, const char *key, const char *value, size_t size)
+{
+	knh_sfp_t* kvsfp = ctx->esp;
+	knh_Bytes_t *ba = new_Bytes(ctx, NULL, size);
+	knh_Bytes_write2(ctx, ba, value, size);
+	KNH_SETv(ctx, kvsfp[0].o, new_String2(ctx, CLASS_String, key, strlen(key), K_SPOLICY_POOLALWAYS));
+	KNH_SETv(ctx, kvsfp[1].o, ba);
+	m->spi->set(ctx, m->mapptr, kvsfp);
+}
+
 /* ------------------------------------------------------------------------ */
 
 void knh_loadScriptDefaultMapDSPI(CTX ctx, knh_NameSpace_t *ns)

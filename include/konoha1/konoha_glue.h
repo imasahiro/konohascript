@@ -67,15 +67,6 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_QUERY */
 
-typedef struct knh_QueryDPI_t {
-	int   type;
-	const char *name;
-	knh_qconn_t* (*qopen)(CTX ctx, knh_bytes_t);
-	knh_qcur_t* (*qexec)(CTX ctx, knh_qconn_t *, knh_bytes_t, knh_ResultSet_t*);
-	void   (*qclose)(CTX ctx, knh_qconn_t *);
-	int    (*qcurnext)(CTX, knh_qcur_t *, knh_ResultSet_t*);
-	void   (*qcurfree)(knh_qcur_t *);
-} knh_QueryDPI_t;
 
 /* ------------------------------------------------------------------------ */
 /* K_DSPI_MAP */

@@ -2275,25 +2275,25 @@ static const knh_ClassDef_t OutputStreamDef = {
 
 static void Connection_init(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_Connection_t *c = (knh_Connection_t*)o;
-	c->conn = NULL;
-	c->dpi = knh_getDefaultQueryDPI();
-	KNH_INITv(c->urn, TS_EMPTY);
+//	knh_Connection_t *c = (knh_Connection_t*)o;
+//	c->conn = NULL;
+//	c->dpi = knh_getDefaultQueryDPI();
+//	KNH_INITv(c->urn, TS_EMPTY);
 }
 
 static void Connection_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
-	knh_Connection_t *c = (knh_Connection_t*)o;
-	KNH_ADDREF(ctx, (c->urn));
-	KNH_SIZEREF(ctx);
+//	knh_Connection_t *c = (knh_Connection_t*)o;
+//	KNH_ADDREF(ctx, (c->urn));
+//	KNH_SIZEREF(ctx);
 }
 
 static void Connection_free(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_Connection_t *c = (knh_Connection_t*)o;
-	if(c->conn != NULL) {
-		c->dpi->qclose(ctx, c->conn);
-	}
+//	knh_Connection_t *c = (knh_Connection_t*)o;
+//	if(c->conn != NULL) {
+//		c->dpi->qclose(ctx, c->conn);
+//	}
 }
 
 static const knh_ClassDef_t ConnectionDef = {
@@ -2310,42 +2310,42 @@ static const knh_ClassDef_t ConnectionDef = {
 
 static void ResultSet_init(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_ResultSetEX_t *b = knh_bodymalloc(ctx, ResultSet);
-	b->qcur = NULL;
-	b->tcid = CLASS_ResultSet;
-	b->column_size = 0;
-	b->column = NULL;
-	KNH_INITv(b->databuf, new_Bytes(ctx, "resultset", 0));
-	KNH_INITv(b->conn, KNH_NULL);
-	b->qcurfree = knh_getDefaultQueryDPI()->qcurfree;
-	b->count = 0;
-	o->rawptr = b;
+//	knh_ResultSetEX_t *b = knh_bodymalloc(ctx, ResultSet);
+//	b->qcur = NULL;
+//	b->tcid = CLASS_ResultSet;
+//	b->column_size = 0;
+//	b->column = NULL;
+//	KNH_INITv(b->databuf, new_Bytes(ctx, "resultset", 0));
+//	KNH_INITv(b->conn, KNH_NULL);
+//	b->qcurfree = knh_getDefaultQueryDPI()->qcurfree;
+//	b->count = 0;
+//	o->rawptr = b;
 }
 
 static void ResultSet_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
-	size_t i = 0;
-	knh_ResultSetEX_t *b = DP((knh_ResultSet_t*)o);
-	KNH_ADDREF(ctx, (b->databuf));
-	for(i = 0; i < b->column_size; i++) {
-		KNH_ADDREF(ctx, (b->column[i].name));
-	}
-	KNH_ADDREF(ctx, (b->conn));
-	KNH_SIZEREF(ctx);
+//	size_t i = 0;
+//	knh_ResultSetEX_t *b = DP((knh_ResultSet_t*)o);
+//	KNH_ADDREF(ctx, (b->databuf));
+//	for(i = 0; i < b->column_size; i++) {
+//		KNH_ADDREF(ctx, (b->column[i].name));
+//	}
+//	KNH_ADDREF(ctx, (b->conn));
+//	KNH_SIZEREF(ctx);
 }
 
 static void ResultSet_free(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_ResultSetEX_t *b = DP((knh_ResultSet_t*)o);
-	if(b->column != NULL) {
-		KNH_FREE(ctx, b->column, sizeof(knh_dbschema_t) * b->column_size);
-		b->column = NULL;
-	}
-	if(b->qcur != NULL) {
-		b->qcurfree(b->qcur);
-		b->qcur = NULL;
-	}
-	knh_bodyfree(ctx, b, ResultSet);
+//	knh_ResultSetEX_t *b = DP((knh_ResultSet_t*)o);
+//	if(b->column != NULL) {
+//		KNH_FREE(ctx, b->column, sizeof(knh_dbschema_t) * b->column_size);
+//		b->column = NULL;
+//	}
+//	if(b->qcur != NULL) {
+//		b->qcurfree(b->qcur);
+//		b->qcur = NULL;
+//	}
+//	knh_bodyfree(ctx, b, ResultSet);
 }
 
 static const knh_ClassDef_t ResultSetDef = {

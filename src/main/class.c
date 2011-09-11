@@ -148,6 +148,13 @@ KNHAPI2(knh_RawPtr_t*) new_RawPtr(CTX ctx, const knh_ClassTBL_t *ct, void *rawpt
 	return npo;
 }
 
+KNHAPI2(knh_Object_t*) new_ReturnObject(CTX ctx, knh_sfp_t *sfp)
+{
+	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
+	knh_type_t rtype = knh_ParamArray_rtype(DP(mtd)->mp);
+	return new_Object_init2(ctx, ClassTBL(rtype));
+}
+
 KNHAPI2(knh_RawPtr_t*) new_ReturnCppObject(CTX ctx, knh_sfp_t *sfp, void *rawptr, knh_Frawfree pfree)
 {
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;

@@ -63,10 +63,14 @@ extern "C" {
 #define	K_SMALLOBJECT_FIELDSIZE 3
 
 typedef struct knh_ObjectField_t knh_ObjectField_t;
-#ifdef K_INTERNAL
+#if defined(K_INTERNAL) || defined(USE_STRUCT_ObjectField) || defined(USE_STRUCT_Tuple)
 struct knh_ObjectField_t  {
 	knh_hObject_t h;
-	Object  **fields;
+	union {
+		Object  **fields;
+		knh_int_t *ifields;
+		knh_float_t *ffields;
+	};
 	Object  *smallobject;  // small object
 };
 #endif
@@ -232,6 +236,7 @@ struct knh_Bytes_t {
 //## class Iterator Object;
 //## flag Iterator NDATA     1 - is set * *;
 //## type IteratorVar     Iterator 0 Tvar;
+//## type DataITR         Iterator 0 Map;
 //## type FuncEach        Func  1 T1 T1;
 //## type FuncWhere       Func  1 T1 Boolean;
 
@@ -540,7 +545,7 @@ typedef knh_TypeMap_t* (*knh_Ftypemaprule)(CTX ctx, const knh_ClassTBL_t *, cons
 //## flag Func StoredEnv 1 - is set * *;
 
 typedef struct knh_Func_t knh_Func_t;
-#ifdef K_INTERNAL
+#ifdef USE_STRUCT_Func
 struct knh_Func_t {
 	knh_hObject_t h;
 	struct knh_Method_t* mtd;
@@ -943,7 +948,31 @@ struct knh_OutputStream_t {
 typedef void   knh_qconn_t;
 typedef void   knh_qcur_t;
 
+typedef struct knh_QueryDPI_t {
+	const char    *name;
+	knh_qconn_t* (*qopen)(CTX ctx, knh_Path_t *, knh_DictMap_t *);
+	void         (*qclose)(CTX ctx, knh_qconn_t *);
+	void*        (*qexec)(CTX ctx, knh_qconn_t *, const char *);
+	void         (*qcurfree)(void *);
+	knh_Fitrnext  *nextData;
+	knh_Fitrnext  *nextValue;
+	knh_Fitrnext  *nextObject;
+	knh_Fitrnext  *nextTuple;
+} knh_QueryDPI_t;
+
+typedef struct knh_Query_t knh_Query_t;
+
+#ifdef USE_STRUCT_Query
+struct knh_Query_t {
+	knh_hObject_t h;
+	knh_qconn_t                  *qconn;
+	knh_qcur_t                   *qcur;
+	const struct knh_QueryDPI_t  *dpi;
+};
+#endif
+
 typedef struct knh_Connection_t knh_Connection_t;
+
 #ifdef K_INTERNAL
 struct knh_Connection_t {
 	knh_hObject_t h;
