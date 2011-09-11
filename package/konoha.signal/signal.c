@@ -30,7 +30,7 @@
 //  chen_ji - Takuma Wakamori, Yokohama National University, Japan
 // **************************************************************************
 
-#define USE_STRUCT_Func
+#define K_INTERNAL
 #include <konoha1.h>
 #include <signal.h>
 #include <unistd.h>
@@ -103,8 +103,10 @@ KMETHOD Signal_signal(CTX ctx, knh_sfp_t *sfp _RIX)
 		WCTX(ctx)->sighandlers = KNH_MALLOC(ctx, sizeof(knh_Func_t*) * K_SIGNAL_MAX);
 		knh_bzero(ctx->sighandlers, sizeof(knh_Func_t*) * K_SIGNAL_MAX);
 	}
-	THROW_OutOfRange(ctx, sfp, signum, K_SIGNAL_MAX);
-	if(IS_NULL(sfp[2].fo)) {
+	if(unlikely(!(0 <= signum && signum < K_SIGNAL_MAX))) {
+		THROW_OutOfRange(ctx, sfp, signum, K_SIGNAL_MAX);
+	}
+	if(IS_NULL(sfp[2].o)) {
 		if(ctx->sighandlers[signum] != NULL) {
 			KNH_FINALv(ctx, ctx->sighandlers[signum]);
 		}
