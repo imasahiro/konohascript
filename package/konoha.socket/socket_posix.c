@@ -231,7 +231,11 @@ KMETHOD Socket_getSendBufferSize(CTX ctx, knh_sfp_t *sfp _RIX)
 	int ret = 0;
 	unsigned int len = sizeof(ret);
 	if(getsockopt(so->sd, SOL_SOCKET, SO_SNDBUF, &ret, &len) == -1) {
-		fprintf(stderr, "error at %s!!\n", __FUNCTION__); //FIXME
+		LOGDATA = {__ERRNO__};
+		LIB_Failed(__FUNCTION__, "Socket!!");
+	} else {
+		LOGDATA = {__ERRNO__};
+		NOTE_OK(__FUNCTION__);
 	}
 	RETURNi_(ret);
 }
@@ -242,7 +246,11 @@ KMETHOD Socket_getReuseAddress(CTX ctx, knh_sfp_t *sfp _RIX)
 	int ret = 0;
 	unsigned int len = sizeof(ret);
 	if(getsockopt(so->sd, SOL_SOCKET, SO_REUSEADDR, &ret, &len) == -1) {
-		fprintf(stderr, "error at %s!!\n", __FUNCTION__); //FIXME
+		LOGDATA = {__ERRNO__};
+		LIB_Failed(__FUNCTION__, "Socket!!");
+	} else {
+		LOGDATA = {__ERRNO__};
+		NOTE_OK(__FUNCTION__);
 	}
 	RETURNb_(ret);
 }
@@ -254,7 +262,11 @@ KMETHOD Socket_getSoTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
 	struct timeval ret = {0, 0};
 	unsigned int len = sizeof(ret);
 	if(getsockopt(s->sd, SOL_SOCKET, SO_SNDTIMEO, &ret, &len) == -1) {
-		fprintf(stderr, "error at %s!!\n", __FUNCTION__); //FIXME
+		LOGDATA = {__ERRNO__};
+		LIB_Failed(__FUNCTION__, "Socket!!");
+	} else {
+		LOGDATA = {__ERRNO__};
+		NOTE_OK(__FUNCTION__);
 	}
 	RETURNi_(ret.tv_sec * 1000 + ret.tv_sec / 1000);
 }
@@ -265,7 +277,11 @@ KMETHOD Socket_getKeepAlive(CTX ctx, knh_sfp_t *sfp _RIX)
 	int ret = 0;
 	unsigned int len = sizeof(ret);
 	if(getsockopt(so->sd, SOL_SOCKET, SO_KEEPALIVE, &ret, &len) == -1) {
-		fprintf(stderr, "error at %s!!\n", __FUNCTION__); //FIXME
+		LOGDATA = {__ERRNO__};
+		LIB_Failed(__FUNCTION__, "Socket!!");
+	} else {
+		LOGDATA = {__ERRNO__};
+		NOTE_OK(__FUNCTION__);
 	}
 	RETURNb_(ret);
 }
@@ -276,7 +292,11 @@ KMETHOD Socket_setSendBufferSize(CTX ctx, knh_sfp_t *sfp _RIX)
 	int ret = Int_to(int, sfp[1]);
 	unsigned int len = sizeof(ret);
 	if(setsockopt(so->sd, SOL_SOCKET, SO_SNDBUF, &ret, len) == -1) {
-		fprintf(stderr, "error at %s!!\n", __FUNCTION__); //FIXME
+		LOGDATA = {__ERRNO__};
+		LIB_Failed(__FUNCTION__, "Socket!!");
+	} else {
+		LOGDATA = {__ERRNO__};
+		NOTE_OK(__FUNCTION__);
 	}
 	RETURNi_(ret);
 }
@@ -287,7 +307,11 @@ KMETHOD Socket_setReuseAddress(CTX ctx, knh_sfp_t *sfp _RIX)
 	int ret = Int_to(int, sfp[1]); // sould be a boolean
 	unsigned int len = sizeof(ret);
 	if(setsockopt(so->sd, SOL_SOCKET, SO_REUSEADDR, &ret, len) == -1) {
-		fprintf(stderr, "error at %s!!\n", __FUNCTION__); //FIXME
+		LOGDATA = {__ERRNO__};
+		LIB_Failed(__FUNCTION__, "Socket!!");
+	} else {
+		LOGDATA = {__ERRNO__};
+		NOTE_OK(__FUNCTION__);
 	}
 	RETURNvoid_();
 }
@@ -303,8 +327,11 @@ KMETHOD Socket_setSoTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
 	struct timeval ret = {sec, usec};
 	unsigned int len = sizeof(ret);
 	if(setsockopt(so->sd, SOL_SOCKET, SO_SNDTIMEO, &ret, len) == -1) {
-		fprintf(stderr, "error at %s!!\n", __FUNCTION__); //FIXME
-		perror("");
+		LOGDATA = {__ERRNO__};
+		LIB_Failed(__FUNCTION__, "Socket!!");
+	} else {
+		LOGDATA = {__ERRNO__};
+		NOTE_OK(__FUNCTION__);
 	}
 	RETURNvoid_();
 }
@@ -315,7 +342,11 @@ KMETHOD Socket_setKeepAlive(CTX ctx, knh_sfp_t *sfp _RIX)
 	int ret = Int_to(int, sfp[1]); // sould be a boolean
 	unsigned int len = sizeof(ret);
 	if(setsockopt(so->sd, SOL_SOCKET, SO_KEEPALIVE, &ret, len) == -1) {
-		fprintf(stderr, "error at %s!!\n", __FUNCTION__); //FIXME
+		LOGDATA = {__ERRNO__};
+		LIB_Failed(__FUNCTION__, "Socket!!");
+	} else {
+		LOGDATA = {__ERRNO__};
+		NOTE_OK(__FUNCTION__);
 	}
 	RETURNvoid_();
 }
@@ -407,7 +438,7 @@ KMETHOD ServerSocket_accept(Ctx* ctx,knh_sfp_t* sfp _RIX)
 	if (fd == -1) {
 		so = new_ReturnRawPtr(ctx, sfp, NULL);
 		LOGDATA = {__ERRNO__};
-		LIB_Failed("accept", "Socket!!");
+		LIB_Failed("accept", "ServerSocket!!");
 	}
 	else {
 		so = new_ReturnRawPtr(ctx, sfp, (void*)fd);
@@ -437,7 +468,11 @@ KMETHOD ServerSocket_getReceiveBufferSize(CTX ctx, knh_sfp_t *sfp _RIX)
 	int ret = 0;
 	unsigned int len = sizeof(ret);
 	if(getsockopt(ss->sd, SOL_SOCKET, SO_RCVBUF, &ret, &len) == -1) {
-		fprintf(stderr, "error at %s!!\n", __FUNCTION__); //FIXME
+		LOGDATA = {__ERRNO__};
+		LIB_Failed(__FUNCTION__, "ServerSocket!!");
+	} else {
+		LOGDATA = {__ERRNO__};
+		NOTE_OK(__FUNCTION__);
 	}
 	RETURNi_(ret);
 }
@@ -448,7 +483,11 @@ KMETHOD ServerSocket_getReuseAddress(CTX ctx, knh_sfp_t *sfp _RIX)
 	int ret = 0;
 	unsigned int len = sizeof(ret);
 	if(getsockopt(ss->sd, SOL_SOCKET, SO_REUSEADDR, &ret, &len) == -1) {
-		fprintf(stderr, "error at %s!!\n", __FUNCTION__); //FIXME
+		LOGDATA = {__ERRNO__};
+		LIB_Failed(__FUNCTION__, "ServerSocket!!");
+	} else {
+		LOGDATA = {__ERRNO__};
+		NOTE_OK(__FUNCTION__);
 	}
 	RETURNb_(ret);
 }
@@ -459,7 +498,11 @@ KMETHOD ServerSocket_getSoTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
 	struct timeval ret = {0, 0};
 	unsigned int len = sizeof(ret);
 	if(getsockopt(ss->sd, SOL_SOCKET, SO_RCVTIMEO, &ret, &len) == -1) {
-		fprintf(stderr, "error at %s!!\n", __FUNCTION__); //FIXME
+		LOGDATA = {__ERRNO__};
+		LIB_Failed(__FUNCTION__, "ServerSocket!!");
+	} else {
+		LOGDATA = {__ERRNO__};
+		NOTE_OK(__FUNCTION__);
 	}
 	RETURNi_(ret.tv_sec * 1000 + ret.tv_sec / 1000);
 }
@@ -470,8 +513,13 @@ KMETHOD ServerSocket_setReceiveBufferSize(CTX ctx, knh_sfp_t *sfp _RIX)
 	int ret = Int_to(int, sfp[1]);
 	unsigned int len = sizeof(ret);
 	if(setsockopt(ss->sd, SOL_SOCKET, SO_RCVBUF, &ret, len) == -1) {
-		fprintf(stderr, "error at %s!!\n", __FUNCTION__); //FIXME
+		LOGDATA = {__ERRNO__};
+		LIB_Failed(__FUNCTION__, "ServerSocket!!");
+	} else {
+		LOGDATA = {__ERRNO__};
+		NOTE_OK(__FUNCTION__);
 	}
+
 	RETURNi_(ret);
 }
 
@@ -481,8 +529,11 @@ KMETHOD ServerSocket_setReuseAddress(CTX ctx, knh_sfp_t *sfp _RIX)
 	int ret = Int_to(int, sfp[1]); // sould be a boolean
 	unsigned int len = sizeof(ret);
 	if(setsockopt(ss->sd, SOL_SOCKET, SO_REUSEADDR, &ret, len) == -1) {
-		//FIXME
-		fprintf(stderr, "error at %s!!\n", __FUNCTION__); //FIXME
+		LOGDATA = {__ERRNO__};
+		LIB_Failed(__FUNCTION__, "ServerSocket!!");
+	} else {
+		LOGDATA = {__ERRNO__};
+		NOTE_OK(__FUNCTION__);
 	}
 	RETURNvoid_();
 }
@@ -497,8 +548,11 @@ KMETHOD ServerSocket_setSoTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
 	struct timeval ret = {sec, usec};
 	unsigned int len = sizeof(ret);
 	if(setsockopt(ss->sd, SOL_SOCKET, SO_RCVTIMEO, &ret, len) == -1) {
-		fprintf(stderr, "error at %s!!\n", __FUNCTION__); //FIXME
-		perror("");
+		LOGDATA = {__ERRNO__};
+		LIB_Failed(__FUNCTION__, "ServerSocket!!");
+	} else {
+		LOGDATA = {__ERRNO__};
+		NOTE_OK(__FUNCTION__);
 	}
 	RETURNvoid_();
 }
