@@ -8,9 +8,11 @@ set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
 set(CMAKE_BUILD_TYPE Release)
 #set(CMAKE_BUILD_TYPE Debug)
 
-if(USE_MPI)
 project(mpi)
-set(PACKAGE_SOURCE_CODE 
+find_library(HAVE_LIB_MPI NAMES mpich)
+if(HAVE_LIB_MPI)
+
+set(PACKAGE_SOURCE_CODE
 		mpi.c
 		src/coll.c
 		src/comm.c
@@ -47,8 +49,12 @@ if (APPLE)
    set(MPI_Libs ${MPI_Libs} pmpich)
 endif()
 
+add_executable(mpikonoha src/mpikonoha.c)
+target_link_libraries(mpikonoha ${MPI_Libs})
+
 target_link_libraries(${PACKAGE_NAME} ${MPI_Libs})
 
+install(TARGETS mpikonoha RUNTIME DESTINATION bin)
 install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
-endif(USE_MPI)
+endif(HAVE_LIB_MPI)

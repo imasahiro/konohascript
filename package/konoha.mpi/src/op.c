@@ -1,4 +1,4 @@
-#include "../konoha_mpi.h";
+#include "../konoha_mpi.h"
 
 void knh_reduce(knh_Func_t *fo, void *ivec, void *iovec, int *len, MPI_Datatype *dtype)
 {
