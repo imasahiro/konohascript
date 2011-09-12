@@ -133,6 +133,8 @@
 /* Enable debug mode */
 #cmakedefine K_USING_DEBUG ${K_USING_DEBUG}
 
+#cmakedefine K_USING_GSL ${K_USING_GSL}
+
 /* Enable int32 */
 #undef K_USING_INT32
 
