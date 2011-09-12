@@ -360,10 +360,6 @@ option(USE_QT "Using qt package" OFF)
 
 option(USE_QT4 "Using qt4 package" OFF)
 
-if(USE_GSL)
-	set(K_USING_GSL 1)
-endif(USE_GSL)
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake 
 		${CMAKE_CURRENT_BINARY_DIR}/config.h)
 

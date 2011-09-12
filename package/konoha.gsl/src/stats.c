@@ -44,14 +44,12 @@ DEFAPI(void) defGslStats(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->name = "GslStats";
 }
 
-#ifdef K_USING_GSL
 //## @Native float GslStats.mean(float[] data);
 KMETHOD GslStats_mean(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_float_t v = gsl_stats_mean((const double *)sfp[1].a->flist, 1, knh_Array_size(sfp[1].a));
 	RETURNf_(v);
 }
-#endif
 
 #ifdef __cplusplus
 }

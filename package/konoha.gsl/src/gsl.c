@@ -29,7 +29,6 @@
 //  kimio - Kimio Kuramitsu, Yokohama National University, Japan
 // **************************************************************************
 
-#include <gsl/gsl_poly.h>
 #include <konoha1.h>
 
 #ifdef __cplusplus

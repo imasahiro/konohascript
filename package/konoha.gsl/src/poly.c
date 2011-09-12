@@ -45,8 +45,6 @@ DEFAPI(void) defGslPoly(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->name = "GslPoly";
 }
 
-#ifdef K_USING_GSL
-
 //## @Native Tuple<float,float> GslPoly.solveQuadratic(float a, float b, float c);
 KMETHOD GslPoly_solveQuadratic(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -60,8 +58,6 @@ KMETHOD GslPoly_solveQuadratic(CTX ctx, knh_sfp_t *sfp _RIX)
 	t->ffields[1] = (knh_float_t)x1;
 	RETURN_(t);
 }
-
-#endif
 
 #ifdef __cplusplus
 }
