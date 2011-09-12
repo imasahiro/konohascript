@@ -31,10 +31,19 @@ include_directories(${INCLUDE_DIRS})
 
 add_definitions(-D_SETUP)
 
+find_library(LIB_GSL gsl)
+if(NOT EXISTS ${LIB_GSL})
+	message(FATAL_ERROR "libgsl not found.")
+endif()
+
+find_library(LIB_GSLCBLAS gslcblas)
+if(NOT EXISTS ${LIB_GSLCBLAS})
+	message(FATAL_ERROR "libgslcblas not found.")
+endif()
 
 add_library(${PACKAGE_NAME} SHARED ${PACKAGE_SOURCE_CODE})
 set_target_properties(${PACKAGE_NAME} PROPERTIES PREFIX "")
-target_link_libraries(${PACKAGE_NAME} konoha gsl gslcblas m)
+target_link_libraries(${PACKAGE_NAME} konoha ${LIB_GSL} ${LIB_GSLCUBLAS} m)
 
 
 install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
