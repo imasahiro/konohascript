@@ -30,11 +30,43 @@ include "lib:gluelink";
 @Native class Socket;
 @Native class ServerSocket;
 
+/* Socket */
 @Native Socket Socket.new(String host, int port=80);
 @Native InputStream Socket.getInputStream();
 @Native OutputStream Socket.getOutputStream();
 @Native void Socket.close();
 
+@Native boolean Socket.getKeepAlive();
+@Native int Socket.getLocalPort();
+//@Native int Socket.getPort();
+@Native boolean Socket.getReuseAddress();
+@Native int Socket.getSendBufferSize();
+@Native int Socket.getSoTimeout();
+
+@Native void Socket.setKeepAlive(boolean on);
+@Native void Socket.setReuseAddress(boolean on);
+@Native void Socket.setSendBufferSize(int size);
+@Native void Socket.setSoTimeout(int msec);
+
+@Native boolean Socket.isClosed();
+
+/* ServerSocket */
 @Native ServerSocket ServerSocket.new(int port, int maxConnection);
 @Native Socket ServerSocket.accept(NameSpace ns);
 @Native void ServerSocket.close();
+
+@Native int ServerSocket.getLocalPort();
+@Native int ServerSocket.getReceiveBufferSize();
+@Native boolean ServerSocket.getReuseAddress();
+@Native int ServerSocket.getSoTimeout();
+
+@Native void ServerSocket.setReceiveBufferSize(int size);
+@Native void ServerSocket.setReuseAddress(boolean on);
+@Native void ServerSocket.setSoTimeout(int msec);
+
+//@Native boolean ServerSocket.isBound();
+@Native boolean ServerSocket.isClosed();
+
+//@Native void ServerSocket.setPerformancePreerences(int connectionTime, int latency, int bandwidth);
+@Native void ServerSocket.setReceiveBufferSize (int size);
+@Native void ServerSocket.setReuseAddress(boolean on);
