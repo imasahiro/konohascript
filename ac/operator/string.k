@@ -89,7 +89,7 @@ assure "String:x[n to m]" {
 	String sn = "string";
 	assert "string"[1 to 3] == "tri";
 	assert sn[1 to 3] == "tri";
-	assert sn[to 3] == "stri";
+	// assert sn[to 3] == "stri"; // port to BUGS
 	assert sn[1 to] == "tring";
 	assert sn[3 to 3] == "i";
 	assert sn[1 to -2] == "trin";
@@ -101,7 +101,7 @@ assure "String:x[n until m]" {
 	String sn = "string";
 	assert "string"[1 until 3] == "tr";
 	assert sn[1 until 3] == "tr";
-	assert sn[until 3] == "str";
+	// assert sn[until 3] == "str"; // port to BUGS
 	assert sn[1 until] == "tring";
 	assert sn[1 until -2] == "tri";
 	// assert sn[3 until 3]
