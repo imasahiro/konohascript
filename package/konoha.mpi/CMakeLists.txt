@@ -20,7 +20,6 @@ set(PACKAGE_STRING  ${CMAKE_PROJECT_NAME}-${PACKAGE_VERSION})
 set(PACKAGE_SCRIPT_CODE mpi.k)
 set(PACKAGE_SOURCE_CODE
 		mpi.c
-		src/array.c
 		src/coll.c
 		src/comm.c
 		src/op.c
