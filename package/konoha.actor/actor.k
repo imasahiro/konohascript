@@ -1,124 +1,108 @@
+/****************************************************************************
+ * KONOHA COPYRIGHT, LICENSE NOTICE, AND DISCRIMER
+ *
+ * Copyright (c)  2010-      Konoha Team konohaken@googlegroups.com
+ * All rights reserved.
+ *
+ * You may choose one of the following two licenses when you use konoha.
+ * See www.konohaware.org/license.html for further information.
+ *
+ * (1) GNU Lesser General Public License 3.0 (with KONOHA_UNDER_LGPL3)
+ * (2) Konoha Software Foundation License 1.0
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ****************************************************************************/
+
+// **************************************************************************
+// LIST OF CONTRIBUTERS
+//  kimio - Kimio Kuramitsu, Yokohama National University, Japan
+//  shinpei_NKT - Shinpei Nakata, Yokohama National University, Japan
+//  goccy - Masaaki Goshima, Yokohama National University, Japan
+//  chen_ji - Takuma Wakamori, Yokohama National University, Japan
+// **************************************************************************
+using konoha.socket.*;
+using konoha.io.*;
+using konoha.proc.*;
+
 include "lib:gluelink";
 
-dynamic InputStream.readObject(Class type, NameSpace ns);
-void OutputStream.writeObject(dynamic obj, NameSpace ns);
+@Native class Actor;
+@Native class StoreActor extends Actor;
 
-using konoha.socket.*;
+@Native @Hidden Actor Actor.opLINK(String path, NameSpace _);
+@Native boolean Actor.setStore(StoreActor store);
+//@Native boolean Actor.sendMethod(Func<dynamic=>dynamic> method);
 
-class ConnectionObject {
-	//String actor_name; // for "sender" keyword
-	String mtd_name;
-	dynamic msg;
-}
+@Native String Actor.getName();
+@Native String Actor.getHost();
+@Native int Actor.getPort();
 
-class CActor;
-CActor CActor.new(String actor_name);
-CActor CActor.setMethodInfo();
-void CActor.startDeliver(Func<CActor=>void> f);
-void CActor.startScheduler();
-void CActor.addMessageToMailBox(String mtd_name, dyn msg);
-//void CActor.addMessageToMailBox(String actor_name, String mtd_name, dyn msg);
-String CActor.getPathByActorName(String actor_name);
-String CActor.getName();
-String CActor.getPath();
-int CActor.getPort();
-
-class Message {
-	ConnectionObject c;
-	String target;
-}
-
-Message[] msgs;
-
-class Actor {
-	String actor_name;
-	CActor a;
-
-	Actor(String actor_name) {
-		_actor_name = actor_name;
-		_a = new CActor(actor_name);
-		_a.setMethodInfo();
-	}
-
-	void act(String actor_name) {
-		//CActor a = new CActor(actor_name);
-		//print |msgs|;
-		//a.setMethodInfo();
-		//delayedSend();
-		a.startDeliver(delegate(this, deliveryThread));
-		a.startScheduler();
-	}
-
-	void deliveryThread(CActor a) {
-		//print "start Delivery Thread";
-		String name = a.name;
-		int port = a.port;
-		String path = a.path;
-		OUT <<< "======== <<< Actor Information >>> ========" <<< EOL;
-		OUT <<< "name : " + name <<< EOL;
-		OUT <<< "path : " + path <<< EOL;
-		OUT <<< "port : " + port <<< EOL;
-		OUT <<< "===========================================" <<< EOL;
-		ServerSocket ss = new ServerSocket(port, 3);
-		while (true) {
-			Socket s = ss.accept();
-			ins = s.getInputStream();
-			ConnectObject c = ins.readObject(ConnectionObject);
-			print c.msg;
-			a.addMessageToMailBox(c.mtd_name, c.msg);
-			//a.addMessageToMailBox(c.actor_name, c.mtd_name, c.msg);
-			ins.close();
-			s.close();
-		}
-	}
-	
-	/*
-	void send(String target, String mtd_name, dyn msg) {
-		ConnectObject c = new ConnectObject();
-		c.mtd_name = mtd_name;
-		c.msg = msg;
-		Message m = new Message();
-		m.c = c;
-		m.target = target;
-		msgs.add(m);
-	}
-
-	void delayedSend() {
-		for (int i = 0; i < |msgs|; i++) {
-			String target = msgs[i].target;
-			ConnectObject c = msgs[i].c;
-			String actor_path = CActor.getPathByActorName(target);
-			String[] param = actor_path.split(":");
-			String path =  param[0];
-			int port = (int)param[1];
-			OUT <<< "SEND : msg >>> [ name : ";
-			OUT <<< target + ", path : ";
-			OUT <<< path + ", port : " + port + " ]" <<< EOL;
-			Socket s = new Socket("127.0.0.1", port);
-			OutputStream o = s.getOutputStream();
-			o.writeObject(c);
-			o.close();
-			s.close();
-		}
-	}
-	*/
-	
-	void sendToActor(String target, String mtd_name, dynamic msg) {
-		String actor_path = CActor.getPathByActorName(target);
-		String[] param = actor_path.split(":");
-		String path =  param[0];
-		int port = (int)param[1];
-		OUT <<< "SEND : msg >>> [ name : ";
-		OUT <<< target + ", path : ";
-		OUT <<< path + ", port : " + port + " ]" <<< EOL;
-		Socket s = new Socket("127.0.0.1", port);
-		OutputStream o = s.getOutputStream();
-		ConnectionObject c = new ConnectObject();
-		//c.actor_name = _actor_name;//for "sender" keyword
-		c.mtd_name = mtd_name;
-		c.msg = msg;
-		o.writeObject(c);
-		o.close();
+boolean Actor.eval(String script) {
+	Socket s;
+	try {
+		s = new Socket(this.host, this.port);
+		OutputStream ous = s.getOutputStream();
+		//TODO: we need \n as a termination term
+		ous.writeMsgPack(script + "\n");
+		ous.flush();
+		ous.close();
 		s.close();
+	} catch (Exception!! e) {
+		print e;
+	}
+	return true;
+}
+
+void Actor.startActorMyself (int port) {
+	p = new Proc(["/usr/local/bin/konoha", "mailbox.k", (String)port]);
+	print p;
+	InputStream ins = p.getInputStream();
+	while (p.isAlive()) {
+		String msg = ins.readLine();
+		System.eval(msg);
 	}
 }
+
+@Native StoreActor StoreActor.new(String name, String host, int port);
+
+//class ConnectionObject {
+//	String mtd_name;
+//	dynamic msg;
+//};
+
+//void Actor.act(String actor_name);
+//void Actor.send(String target_name, String mtd_name, dynamic msg);
+//void Actor.spawn(String actor_name, Array<Func<dynamic>> func_list);
+
+//class Person {
+//	String name;
+//	int age;
+//	Person(String name, int age) {
+//		_name = name;
+//		_age = age;
+//	}
+//}
+
+//class RingMessage {
+//	String name;
+//	int actor_num;
+//	int actor_count;
+//	int loop_count;
+//	RingMessage(String name, int num1, int num2, int num3) {
+//		_name = name;
+//		_actor_num = num1;
+//		_actor_count = num2;
+//		_loop_count = num3;
+//	}
+//}
