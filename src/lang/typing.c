@@ -2015,7 +2015,7 @@ static knh_Token_t *SELECT_typing(CTX ctx, knh_Stmt_t *stmt)
 			stmtLET2 = new_Stmt2(ctx, STT_LET, tkASIS, tkN, stmtGET, NULL);
 			KNH_INITv(DP(stmtTAIL)->nextNULL, stmtLET2);
 			stmtTAIL = stmtLET2;
-			Stmt_setESPIDX(ctx, stmt);
+			Stmt_setESPIDX(ctx, stmtTAIL);
 			stmtTAIL->type = TYPE_void;
 		}
 		Stmt_toSTT(stmt, STT_BLOCK);

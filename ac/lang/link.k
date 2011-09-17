@@ -19,3 +19,22 @@ assure "Link" {
 }
 
 
+boolean test_urn () {
+	boolean test_urn = false;
+	foreach(String s in http://www.google.com/) {
+		test_urn = true;
+		print s;
+	}
+	return test_urn;
+}
+boolean test_urn_global = false;
+foreach(String s in http://www.google.com/) {
+	test_urn_global = true;
+	print s;
+}
+
+
+assure "Parse HTTP Link" {
+	assert test_urn_global;
+	assert test_urn();
+}

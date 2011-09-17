@@ -1161,10 +1161,16 @@ static void Token_addBLOCK(CTX ctx, knh_Token_t *tkB, CWB_t *cwb, knh_InputStrea
 				Bytes_addRAW(ctx, cwb->ba, in, ch);
 			}
 			else if(prev == '/') {
-				knh_Bytes_reduce(cwb->ba, 2);
-				InputStream_skipLINE(ctx, in);
-				knh_Bytes_putc(ctx, cwb->ba, '\n');
-				break;
+				knh_bytes_t t = CWB_tobytes(cwb);
+				if(knh_bytes_rindex(t, ':') == t.len - 3/* '://' */) {
+					/* case 'URN://' */
+				} else {
+					/* case LINE_COMMENT '//' */
+					knh_Bytes_reduce(cwb->ba, 2);
+					InputStream_skipLINE(ctx, in);
+					knh_Bytes_putc(ctx, cwb->ba, '\n');
+					break;
+				}
 			}
 		}
 		else if(prev == '/' && ch == '*') {

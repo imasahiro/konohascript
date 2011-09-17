@@ -29,3 +29,14 @@ assure "StatementAssignment:Field" {
 	p.x += 1;
 	assert p.x == 2;
 }
+
+class Person(String name, int age);
+
+assure "StatementAsignment:Select" {
+	p = new Person("naruto", 17);
+	name, age from p;
+	assert "naruto" == name && age == 17;
+	age, name from p;
+	assert "naruto" == name && age == 17;
+}
+
