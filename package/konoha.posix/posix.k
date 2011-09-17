@@ -39,7 +39,6 @@ include "lib:gluelink";
 // process 
 @Public @Native int System.getPid();
 @Public @Native int System.getPPid();
-@Public @Native boolean System.kill(int pid, int signal);
 @Public @Native int System.sleep(int sec);
 @Public @Native boolean System.usleep(int sec);
 
