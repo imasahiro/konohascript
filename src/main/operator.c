@@ -2477,7 +2477,7 @@ static KMETHOD Map_keys(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_class_t p1 = O_cTBL(m)->p1;
 	knh_Array_t *a = new_Array(ctx, p1, size);
 	knh_sfp_t *lsfp = ctx->esp;
-	knh_nitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
+	knh_nitr_t mitrbuf = K_NITR_INIT, *mitr = &mitrbuf;
 	klr_setesp(ctx, lsfp+1);
 	while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
 		a->api->add(ctx, a, lsfp);
@@ -3385,247 +3385,164 @@ static KMETHOD String_format(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(sfp[0].s);
 }
 
-///* ------------------------------------------------------------------------ */
-////## method This Connection.new(String urn, NameSpace ns);
-//
-//static KMETHOD Connection_new(CTX ctx, knh_sfp_t *sfp _RIX)
+/* ------------------------------------------------------------------------ */
+
+static knh_bool_t knh_NameSpace_addLinkObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t *name, knh_Object_t *o, int typeCheck)
+{
+	if(DP(ns)->linkDictMapNULL == NULL) {
+		KNH_INITv(DP(ns)->linkDictMapNULL, new_DictMap0(ctx, 0, 1/*isCaseMap*/, "linkDictMap"));
+	}
+	if(typeCheck) {
+
+	}
+	knh_DictMap_set(ctx, DP(ns)->linkDictMapNULL, name, o);
+	return 1;
+}
+
+static Object *knh_NameSpace_getLinkObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+{
+	while(ns != NULL) {
+		if(DP(ns)->linkDictMapNULL != NULL) {
+			knh_Object_t *o = knh_DictMap_getNULL(ctx, DP(ns)->linkDictMapNULL, path);
+			if(o != NULL) return o;
+		}
+		ns = ns->parentNULL;
+	}
+	return NULL;
+}
+
+void knh_DataMap_log(CTX ctx, knh_DictMap_t *conf, knh_type_t type, const char *key)
+{
+	if(conf->uline != 0) {
+		knh_uri_t uri = ULINE_uri(conf->uline);
+		knh_uintptr_t line = ULINE_line(conf->uline);
+		knh_logprintf("CONFIG", 1, "(%s:%ld) key='%s' must have type %s", FILENAME__(uri), line, key, TYPE__(type));
+	}
+	else {
+		knh_logprintf("CONFIG", 1, "key='%s' must have type %s", key, TYPE__(type));
+	}
+}
+
+knh_bool_t knh_DataMap_check(CTX ctx, knh_DictMap_t *conf, knh_type_t type, const char *key, const char *key2)
+{
+	knh_bytes_t t = {{key}, knh_strlen(key)};
+	knh_Object_t *v = knh_DictMap_getNULL(ctx, conf, t);
+	if(v == NULL) {
+		if(key2 != NULL) {
+			t.text = key2;
+			t.len = knh_strlen(key2);
+			v = knh_DictMap_getNULL(ctx, conf, t);
+			if(v == NULL) {
+				knh_DataMap_log(ctx, conf, type, key);
+				return 0;
+			}
+			key = key2;
+		}
+	}
+	if(O_cid(v) == type) return 1;
+	knh_DataMap_log(ctx, conf, type, key);
+	return 0;
+}
+
+knh_String_t *knh_DataMap_getString(CTX ctx, knh_DictMap_t *conf, const char *key, const char *key2, knh_String_t *def)
+{
+	knh_bytes_t t = {{key}, knh_strlen(key)};
+	knh_String_t *v = (knh_String_t*)knh_DictMap_getNULL(ctx, conf, t);
+	if(v == NULL) {
+		if(key2 != NULL) {
+			t.text = key2;
+			t.len = knh_strlen(key2);
+			v = (knh_String_t*)knh_DictMap_getNULL(ctx, conf, t);
+		}
+		if(v == NULL) {
+			v = def;
+		}
+	}
+	if(!IS_bString(v)) {
+		v = def;
+	}
+	return def;
+}
+
+knh_String_t *knh_View_getQuery(CTX ctx, knh_View_t *view)
+{
+	return knh_DataMap_getString(ctx, view->conf, "query", NULL, TS_EMPTY);
+}
+
+static void THROW_Undefined(CTX ctx, knh_sfp_t *sfp, const char *whatis, const char *what)
+{
+	LOGDATA = {sDATA("driver", what)};
+	CRIT_Failed("Undefined", "Script!!");
+}
+
+//static void THROW_NotFound(CTX ctx, knh_sfp_t *sfp, const char *whatis, const char *what)
 //{
-//	knh_Connection_t *o = (knh_Connection_t*)sfp[0].o;
-//	knh_Connection_open(ctx, o, sfp[2].ns, sfp[1].s);
-//	RETURN_(sfp[0].o);
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## method ResultSet! Connection.query(String query);
-//
-//static KMETHOD Connection_query(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_Connection_t *c = (knh_Connection_t*)sfp[0].o;
-//	knh_String_t *query = (knh_String_t*)sfp[1].o;
-//	knh_ResultSet_t *rs = new_(ResultSet);
-//	KNH_RCSETv(ctx, sfp[2].o, rs);
-//	knh_qcur_t *qcur = (c)->dpi->qexec(ctx, (c)->conn, S_tobytes(query), rs);
-//	if(qcur != NULL) {
-//		DP(rs)->qcur = qcur;
-//		DP(rs)->qcurfree = (c)->dpi->qcurfree;
-//	}
-//	else {
-//		DP(rs)->qcur = NULL;
-//		DP(rs)->qcurfree = knh_getDefaultQueryDPI()->qcurfree;
-//	}
-//	KNH_SETv(ctx, DP(rs)->conn, c);
-//	RETURN_(rs);
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## method void Connection.exec(String query);
-//
-//static KMETHOD Connection_exec(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_Connection_t *c = (knh_Connection_t*)sfp[0].o;
-//	knh_String_t *query = sfp[1].s;
-//	(c)->dpi->qexec(ctx, (c)->conn, S_tobytes(query), NULL);
-//	RETURNvoid_();
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## method DataITR Connection.queryData(String query);
-//
-//static KMETHOD Connection_queryData(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_Connection_t *c = (knh_Connection_t*)sfp[0].o;
-//	knh_String_t *query = sfp[1].s;
-//	knh_qcur_t *qcur = (c)->dpi->qexec(ctx, (c)->conn, S_tobytes(query), NULL);
-//	knh_Iterator_t *itr;
-//	if(qcur != NULL) {
-//		itr = new_IteratorG(ctx, CLASS_DataITR, sfp[0].o, c->dpi->nextData);
-//		knh_nitr_t *nitr = &(DP(itr)->m);
-//		nitr->nptr = qcur;
-//		nitr->nfree = c->dpi->qcurfree;
-//	}
-//	else {
-//		itr = (knh_Iterator_t*)KNH_NULVAL(CLASS_DataITR);
-//	}
-//	RETURN_(itr);
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## method void Connection.close();
-//
-//static KMETHOD Connection_close(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_Connection_close(ctx, (knh_Connection_t*)sfp[0].o);
-//	RETURNvoid_();
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## method Int ResultSet.getSize();
-//
-//static KMETHOD ResultSet_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
-//	RETURNi_(DP(o)->column_size);
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## method Boolean ResultSet.next();
-//
-//static KMETHOD ResultSet_next(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	RETURNb_(knh_ResultSet_next(ctx, (knh_ResultSet_t*)sfp[0].o));
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## method String ResultSet.getName(Int n);
-//
-//static KMETHOD ResultSet_getName(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
-//	size_t n = Int_to(size_t, sfp[1]);
-//	knh_String_t *v = TS_EMPTY;
-//	if(n < DP(o)->column_size) {
-//		v = knh_ResultSet_getName(ctx, o, n);
-//	}
-//	else {
-//		THROW_OutOfRange(ctx, sfp, sfp[1].ivalue, DP(o)->column_size);
-//	}
-//	RETURN_(v);
-//}
-//
-///* ------------------------------------------------------------------------ */
-//
-//static int knh_ResultSet_indexof_(CTX ctx, knh_sfp_t *sfp)
-//{
-//	knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
-//	if(IS_bInt(sfp[1].o)) {
-//		size_t n = O_ndata(sfp[1].i);
-//		//size_t n = Int_to(size_t, sfp[1]);
-//		if(!(n < DP(o)->column_size)) {
-//			THROW_OutOfRange(ctx, sfp, sfp[1].ivalue, DP(o)->column_size);
-//			return -1;
-//		}
-//		return n;
-//	}
-//	else if(IS_bString(sfp[1].o)) {
-//		int loc = knh_ResultSet_findColumn(ctx, o, S_tobytes(sfp[1].s));
-//		if(loc == -1) {
-//			TODO();
-//			//KNH_STUPID(ctx, o, STUPID_NOTFOUND);
-//		}
-//		return loc;
-//	}
-//	TODO();
-//	//KNH_STUPID(ctx, o, STUPID_NOTFOUND);
-//	return -1;
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## method Int ResultSet.getInt(dynamic n);
-//
-//static KMETHOD ResultSet_getInt(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	int n = knh_ResultSet_indexof_(ctx, sfp);
-//	knh_int_t res = 0;
-//	if(n >= 0) {
-//		knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
-//		const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
-//		switch(DP(o)->column[n].ctype) {
-//		case knh_ResultSet_CTYPE__integer :
-//			res = *((knh_int_t*)p); break;
-//		case knh_ResultSet_CTYPE__float :
-//			res = (knh_int_t)(*((knh_float_t*)p)); break;
-//		case knh_ResultSet_CTYPE__null :
-//		default:
-//			KNH_SETv(ctx, sfp[K_RIX].o, KNH_NULVAL(CLASS_Int));
-//		}
-//	}
-//	RETURNi_(res);
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## method Float ResultSet.getFloat(dynamic n);
-//
-//static KMETHOD ResultSet_getFloat(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//
-//	int n = knh_ResultSet_indexof_(ctx, sfp);
-//	knh_float_t res = K_FLOAT_ZERO;
-//	if(n >= 0) {
-//		knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
-//		const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
-//		switch(DP(o)->column[n].ctype) {
-//		case knh_ResultSet_CTYPE__integer :
-//			res = (knh_float_t)(*((knh_int_t*)p)); break;
-//		case knh_ResultSet_CTYPE__float :
-//			res = (*((knh_float_t*)p)); break;
-//		case knh_ResultSet_CTYPE__null :
-//		default:
-//			KNH_SETv(ctx, sfp[K_RIX].o, KNH_NULVAL(CLASS_Float));
-//		}
-//	}
-//	RETURNf_(res);
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## method String ResultSet.getString(dynamic n);
-//
-//static KMETHOD ResultSet_getString(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//
-//	int n = knh_ResultSet_indexof_(ctx, sfp);
-//	Object *v = KNH_NULL;
-//	if(n >= 0) {
-//		v = UPCAST(knh_ResultSet_getString(ctx, (knh_ResultSet_t*)sfp[0].o, n));
-//	}
-//	RETURN_(v);
-//}
-//
-///* ------------------------------------------------------------------------ */
-////## method dynamic ResultSet.get(dynamic n);
-//
-//static KMETHOD ResultSet_get(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//
-//	int n = knh_ResultSet_indexof_(ctx, sfp);
-//	Object *v = KNH_NULL;
-//	if(n >= 0) {
-//		knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
-//		const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
-//		switch(DP(o)->column[n].ctype) {
-//		case knh_ResultSet_CTYPE__integer :
-//			v = UPCAST(new_Int_(ctx, CLASS_Int, ((*((knh_int_t*)p)))));
-//			break;
-//		case knh_ResultSet_CTYPE__float :
-//			v = UPCAST(new_Float_(ctx, CLASS_Float, ((*((knh_float_t*)p)))));
-//			break;
-//		case knh_ResultSet_CTYPE__text :
-//			v = UPCAST(new_String2(ctx, CLASS_String, BA_totext(DP(o)->databuf) + DP(o)->column[n].start, DP(o)->column[n].len, 0));
-//			break;
-//		case knh_ResultSet_CTYPE__bytes :
-//			{
-//				knh_Bytes_t *ba = new_Bytes(ctx, "blob", DP(o)->column[n].len);
-//				knh_bytes_t t = {{BA_totext(DP(o)->databuf) + DP(o)->column[n].start}, DP(o)->column[n].len};
-//				knh_Bytes_write(ctx, ba, t);
-//				v = UPCAST(ba);
-//			}
-//			break;
-//		default:
-//			v = KNH_NULL;
-//		}
-//	}
-//	RETURN_(v);
+//	LOGDATA = {sDATA("driver", what)};
+//	CRIT_Failed("NotFound", "Script!!");
 //}
 
-//
-///* ------------------------------------------------------------------------ */
-////## method void ResultSet.close();
-//
-//static KMETHOD ResultSet_close(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//
-//	knh_ResultSet_close(ctx, (knh_ResultSet_t*)sfp[0].o);
-//	RETURNvoid_();
-//}
+/* ------------------------------------------------------------------------ */
+//## @Static method void View.addView(String name, NameSpace _, Map _);
+
+static KMETHOD View_addView(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_bool_t tf = 0;
+	knh_DictMap_t *conf = knh_toDictMap(ctx, sfp[3].m, 1/*isCreation*/);
+	KNH_SETv(ctx, sfp[3].o, conf);
+	tf = knh_DataMap_check(ctx, conf, TYPE_Path, "path", NULL);
+	tf &= knh_DataMap_check(ctx, conf, TYPE_String, "query", NULL);
+	if(tf == 1) {
+		knh_Path_t *path = (knh_Path_t*)knh_DictMap_getNULL(ctx, conf, STEXT("path"));
+		knh_String_t *dtype = knh_DataMap_getString(ctx, conf, "type", "driver", NULL);
+		if(dtype != NULL) {
+			const knh_StreamDPI_t *dpi = knh_NameSpace_getStreamDPINULL(ctx, sfp[2].ns, S_tobytes(dtype));
+			if(dpi != NULL) {
+				path->dpi = dpi;
+			}
+			else {
+				THROW_Undefined(ctx, sfp, "driver", S_totext(dtype));
+			}
+		}
+//		if(!dpi->existsSPI(ctx, path)) {
+//			THROW_NotFound(ctx, sfp, "path", S_totext(path->urn));
+//		}
+		knh_View_t *view = new_(View);
+		KNH_SETv(ctx, view->conf, conf);
+		KNH_SETv(ctx, view->path, path);
+		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+		knh_Bytes_write(ctx, cwb->ba, STEXT("view:"));
+		knh_Bytes_write(ctx, cwb->ba, S_tobytes(sfp[1].s));
+		tf = knh_NameSpace_addLinkObject(ctx, sfp[2].ns, CWB_newString(ctx, cwb, K_SPOLICY_POOLALWAYS), UPCAST(view), 0);
+		CWB_close(cwb);
+	}
+	RETURNb_(tf);
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Hidden @Static @Const method View View.opLINK(String path, NameSpace _);
+
+static KMETHOD View_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	Object *o = knh_NameSpace_getLinkObjectNULL(ctx, sfp[2].ns, S_tobytes(sfp[1].s));
+	if(o != NULL) {
+		RETURN_(o);
+	}
+	RETURN_(KNH_TNULL(View));
+}
+
+/* ------------------------------------------------------------------------ */
+//## @Hidden method DataITR View.opITR();
+
+static KMETHOD View_opITR(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_View_t *view = sfp[0].rel;
+	knh_Path_t *path = view->path;
+	knh_Fitrnext fnext = NULL;
+	if(!IS_NULL(path)) {
+		fnext = path->dpi->qnextData;
+	}
+	RETURN_(new_IteratorG(ctx, CLASS_DataITR, UPCAST(view), fnext));
+}
 
 /* ------------------------------------------------------------------------ */
 //## @Static method InputStream System.getIn();

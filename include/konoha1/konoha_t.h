@@ -533,6 +533,7 @@ typedef void *(*knh_Fthread)(void *);
 		struct knh_Path_t         *pth; \
 		struct knh_InputStream_t  *in; \
 		struct knh_OutputStream_t *w;  \
+		struct knh_View_t *rel;\
 		struct knh_Method_t            *mtd;\
 		struct knh_TypeMap_t           *tmr;\
 		struct knh_Exception_t         *e;\
@@ -946,7 +947,6 @@ typedef struct knh_share_t {
 	struct knh_DictSet_t       *classNameDictSet;
 	struct knh_DictSet_t       *eventDictSet;
 	struct knh_DictSet_t       *streamDpiDictSet;
-	struct knh_DictSet_t       *queryDpiDictSet;
 	struct knh_DictSet_t       *convDpiDictSet;
 	struct knh_DictSet_t       *rconvDpiDictSet;
 	struct knh_DictSet_t       *mapDpiDictSet;

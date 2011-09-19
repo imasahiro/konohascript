@@ -275,7 +275,6 @@ static knh_context_t* new_RootContext(void)
 	KNH_INITv(share->classNameDictSet, new_DictSet0(ctx, 128, 1/*isCaseMap*/, "classNameDictSet"));
 	KNH_INITv(share->eventDictSet, new_DictSet0(ctx, 32, 1/*isCaseMap*/, "eventDictSet"));
 	KNH_INITv(share->streamDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "streamDpiDictSet"));
-	KNH_INITv(share->queryDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "queryDpiDictSet"));
 	KNH_INITv(share->mapDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "mapDpiDictSet"));
 	KNH_INITv(share->convDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "convDpiDictSet"));
 	KNH_INITv(share->rconvDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "convDpiDictSet"));
@@ -427,7 +426,6 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	KNH_ADDREF(ctx,   share->classNameDictSet);
 	KNH_ADDREF(ctx,   share->eventDictSet);
 	KNH_ADDREF(ctx,   share->streamDpiDictSet);
-	KNH_ADDREF(ctx,   share->queryDpiDictSet);
 	KNH_ADDREF(ctx,   share->mapDpiDictSet);
 	KNH_ADDREF(ctx,   share->convDpiDictSet);
 	KNH_ADDREF(ctx,   share->rconvDpiDictSet);

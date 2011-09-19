@@ -162,24 +162,24 @@ knh_Array_t *knh_PathDir_toArray(CTX ctx, knh_Path_t *path)
 /* ------------------------------------------------------------------------ */
 /* K_DPI_STREAM */
 
-static knh_bool_t NOFILE_exists(CTX ctx, knh_Path_t *path)
+knh_bool_t NOFILE_exists(CTX ctx, knh_Path_t *path)
 {
 	return 0;
 }
-static void NOFILE_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
+void NOFILE_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
 {
 	path->ospath ="";
 	path->asize = 0;
 }
-static knh_io_t NOFILE_open(CTX ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
+knh_io_t NOFILE_open(CTX ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
 {
 	return IO_NULL;
 }
-static knh_intptr_t NOFILE_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
+knh_intptr_t NOFILE_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
 {
 	return 0;  // read nothing. this means that we reach the end of the stream.
 }
-static knh_intptr_t NOFILE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
+knh_intptr_t NOFILE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
 {
 	DBG_ASSERT(fd != IO_BUF);
 	return bufsiz;
@@ -189,27 +189,25 @@ static knh_intptr_t BYTE_write(CTX ctx, knh_io_t fd, const char *buf, size_t buf
 	DBG_ASSERT(fd == IO_BUF);
 	return 0; // write nothing. this means that we are unable to clear buffer
 }
-static void NOFILE_close(CTX ctx, knh_io_t fd)
+void NOFILE_close(CTX ctx, knh_io_t fd)
 {
 }
-static knh_bool_t NOFILE_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
-{
-	return 0;
-}
-static void NOFILE_flush(Ctx *ctx, knh_io_t fd)
-{
-}
-static knh_bool_t NOFILE_readline(Ctx *ctx, knh_io_t fd, knh_Bytes_t *ba)
+knh_bool_t NOFILE_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
 {
 	return 0;
 }
-
-static int NOFILE_feof(Ctx *ctx, knh_io_t fd)
+void NOFILE_flush(Ctx *ctx, knh_io_t fd)
+{
+}
+knh_bool_t NOFILE_readline(Ctx *ctx, knh_io_t fd, knh_Bytes_t *ba)
+{
+	return 0;
+}
+int NOFILE_feof(Ctx *ctx, knh_io_t fd)
 {
 	return 1;
 }
-
-static int NOFILE_getc(Ctx *ctx, knh_io_t fd)
+int NOFILE_getc(Ctx *ctx, knh_io_t fd)
 {
 	return -1;
 }
@@ -227,6 +225,7 @@ static const knh_StreamDPI_t STREAM_BYTE = {
 	NOFILE_open, NOFILE_open, NOFILE_read, BYTE_write, NOFILE_close, // FIXME
 	NOFILE_info, NOFILE_getc, NOFILE_readline, NOFILE_feof, NOFILE_flush,
 };
+
 
 static knh_bool_t FILE_exists(CTX ctx, knh_Path_t *path)
 {

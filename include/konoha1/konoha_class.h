@@ -243,11 +243,17 @@ struct knh_Bytes_t {
 typedef struct knh_nitr_t {
 	void   *nptr;
 	void   (*nfree)(void *nptr);
-	size_t  index;
-	size_t  max;
+	union {
+		size_t  index;
+		void *qconn;
+	};
+	union {
+		size_t  max;
+		void *qstmt;
+	};
 } knh_nitr_t;
 
-#define K_MAPITR_INIT   {NULL, 0, 0}
+#define K_NITR_INIT   {NULL, NULL, {0L}, {0L}}
 #define ITR(sfp)   sfp[0].it
 
 typedef void (*knh_Ffree)(void *nptr);
@@ -380,6 +386,7 @@ typedef struct knh_DictMap_t {
 	knh_hObject_t h;
 	knh_mapptr_t     *mapptr;
 	const struct knh_MapDPI_t *spi;
+	knh_uline_t uline;
 } knh_DictMap_t;
 
 #define new_DictMap0(ctx, N, F, NAME)      new_DictMap0_(ctx, N, F, NAME)
@@ -525,6 +532,7 @@ struct knh_Method_t {
 //## flag TypeMap NDATA      4 - is set * *;
 
 typedef struct knh_TypeMap_t knh_TypeMap_t;
+
 struct knh_TypeMap_t {
 	knh_hObject_t h;
 	knh_class_t  scid; knh_class_t  tcid;
@@ -827,12 +835,6 @@ struct knh_Semantics_t {
 //## flag Path Trusted        1 - is set * *;
 //## flag Path Temporary      2 - is set * *;
 
-typedef knh_uintptr_t knh_io_t;
-#define IO_NULL   ((knh_io_t)(NULL))
-#define IO_BUF    ((knh_io_t)1)
-#define K_STREAM_BUFSIZ  K_PAGESIZE
-#define K_OUTBUF_MAXSIZ      (512L * 1024 * 1024)  // 512Mb
-
 #ifdef PATH_MAX
 #define K_PATHMAX PATH_MAX
 #else
@@ -840,6 +842,12 @@ typedef knh_uintptr_t knh_io_t;
 #endif
 
 typedef struct knh_Path_t knh_Path_t;
+typedef void   knh_qconn_t;
+typedef knh_uintptr_t knh_io_t;
+#define IO_NULL   ((knh_io_t)(NULL))
+#define IO_BUF    ((knh_io_t)1)
+#define K_STREAM_BUFSIZ  K_PAGESIZE
+#define K_OUTBUF_MAXSIZ      (512L * 1024 * 1024)  // 512Mb
 
 #define K_STREAM_NULL      0
 #define K_STREAM_INMEMORY  1
@@ -854,6 +862,7 @@ typedef struct knh_StreamDPI_t {
 	size_t       wbufsiz;  // write bufsize
 	knh_bool_t   (*existsSPI)(CTX, struct knh_Path_t *);
 	void         (*ospath)(CTX, struct knh_Path_t *, struct knh_NameSpace_t *);
+	// stream
 	knh_io_t     (*fopenSPI)(CTX, struct knh_Path_t*, const char *, knh_DictMap_t *);
 	knh_io_t     (*wopenSPI)(CTX, struct knh_Path_t*, const char *, knh_DictMap_t *);
 	knh_intptr_t (*freadSPI)(CTX, knh_io_t, char *, size_t);
@@ -864,6 +873,11 @@ typedef struct knh_StreamDPI_t {
 	knh_bool_t   (*fgetlineSPI)(CTX, knh_io_t, knh_Bytes_t *);
 	int          (*feofSPI)(CTX, knh_io_t);
 	void         (*fflushSPI)(CTX, knh_io_t);
+
+	// query
+//	knh_qconn_t*  (*qopen)(CTX, struct knh_Path_t*, knh_DictMap_t *);
+//	void          (*qclose)(CTX, struct knh_Path_t*, knh_qconn_t *);
+	knh_Fitrnext  qnextData;
 } knh_StreamDPI_t;
 
 #ifdef USE_STRUCT_Path
@@ -942,81 +956,15 @@ struct knh_OutputStream_t {
 #define knh_write__O(ctx, w, o)    knh_write_Object(ctx, w, MN__k, o)
 
 /* ------------------------------------------------------------------------ */
-//## class Connection Object;
-//## class ResultSet Object;
+//## class View Object;
 
-typedef void   knh_qconn_t;
-typedef void   knh_qcur_t;
+typedef struct knh_View_t knh_View_t;
 
-typedef struct knh_QueryDPI_t {
-	const char    *name;
-	knh_qconn_t* (*qopen)(CTX ctx, knh_Path_t *, knh_DictMap_t *);
-	void         (*qclose)(CTX ctx, knh_qconn_t *);
-	void*        (*qexec)(CTX ctx, knh_qconn_t *, const char *);
-	void         (*qcurfree)(void *);
-	knh_Fitrnext  *nextData;
-	knh_Fitrnext  *nextValue;
-	knh_Fitrnext  *nextObject;
-	knh_Fitrnext  *nextTuple;
-} knh_QueryDPI_t;
-
-typedef struct knh_Query_t knh_Query_t;
-
-#ifdef USE_STRUCT_Query
-struct knh_Query_t {
+#ifdef USE_STRUCT_View
+struct knh_View_t {
 	knh_hObject_t h;
-	knh_qconn_t                  *qconn;
-	knh_qcur_t                   *qcur;
-	const struct knh_QueryDPI_t  *dpi;
-};
-#endif
-
-typedef struct knh_Connection_t knh_Connection_t;
-
-#ifdef K_INTERNAL
-struct knh_Connection_t {
-	knh_hObject_t h;
-	knh_qconn_t                  *conn;
-	const struct knh_QueryDPI_t  *dpi;
-	knh_String_t                 *urn;
-};
-#endif
-
-/* ------------------------------------------------------------------------ */
-
-#define knh_ResultSet_CTYPE__null    0
-#define knh_ResultSet_CTYPE__integer 1
-#define knh_ResultSet_CTYPE__float   2
-#define knh_ResultSet_CTYPE__text    3  /* UTF-8*/
-#define knh_ResultSet_CTYPE__bytes   4
-#define knh_ResultSet_CTYPE__Object  5
-
-typedef struct knh_ResultSet_t knh_ResultSet_t;
-#ifdef K_INTERNAL
-typedef struct knh_dbschema_t {
-	knh_type_t type;
-	knh_ushort_t ctype;
-	knh_String_t *name;
-	size_t start;
-	size_t len;
-	int dbtype;
-} knh_dbschema_t;
-
-typedef struct {
-	struct knh_Connection_t *conn;
-	knh_qcur_t              *qcur;
-	void   (*qcurfree)(knh_qcur_t *); /* necessary if conn is closed before */
-	knh_String_t            *tableName;
-	knh_class_t              tcid;
-	knh_ushort_t             column_size;
-	knh_dbschema_t          *column;
-	knh_Bytes_t             *databuf;
-	size_t                   count;
-} knh_ResultSetEX_t;
-
-struct knh_ResultSet_t {
-	knh_hObject_t h;
-	knh_ResultSetEX_t *b;
+	knh_Path_t                   *path;
+	knh_DictMap_t                *conf;
 };
 #endif
 
@@ -1029,6 +977,7 @@ typedef struct knh_NameSpaceEX_t {
 	knh_String_t *nsname;
 	struct knh_DictMap_t*   constDictCaseMapNULL;
 	struct knh_Array_t *    ffilinksNULL;
+	struct knh_DictMap_t   *linkDictMapNULL;
 
 	struct knh_DictSet_t*   name2ctDictSetNULL;
 	struct knh_DictMap_t*   name2dpiNameDictMapNULL;

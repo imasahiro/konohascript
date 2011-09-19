@@ -131,7 +131,7 @@ typedef struct knh_LoaderAPI_t {
 //	void (*setRegexSPI)(CTX, knh_NameSpace_t *ns, const knh_RegexSPI_t *);
 //	void (*addLinkClass)(CTX, knh_NameSpace_t *ns, const char*, knh_class_t cid);
 	void (*addStreamDPI)(CTX, const char*, const knh_StreamDPI_t *);
-	void (*addQueryDPI)(CTX, const char *, const knh_QueryDPI_t *);
+//	void (*addQueryDPI)(CTX, const char *, const knh_QueryDPI_t *);
 	void (*addMapDPI)(CTX,   const char *, const knh_MapDPI_t*);
 	void (*addConverterDPI)(CTX, const char *, const knh_ConverterDPI_t*, const knh_ConverterDPI_t*);
 } knh_LoaderAPI_t;

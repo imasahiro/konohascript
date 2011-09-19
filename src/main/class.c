@@ -1810,6 +1810,7 @@ KNHAPI2(knh_TypeMap_t*) knh_findTypeMapNULL(CTX ctx, knh_class_t scid0, knh_clas
 {
 	knh_TypeMap_t *tmr = NULL;
 	DBG_P("finding.. %s ==> %s",CLASS__(scid0), CLASS__(tcid0));
+	DBG_ASSERT(scid0 != tcid0);
 	//if(scid0 == CLASS_Tvoid) return NULL;
 	DBG_ASSERT(scid0 != CLASS_Tvar);
 	{
@@ -1881,6 +1882,7 @@ static ITRNEXT Iterator_Onext(CTX ctx, knh_sfp_t *sfp _RIX)
 			sfp[K_RIX].ndata = O_ndata(sfp[3].o);
 			ITRNEXT_(sfp[3].o);
 		}
+		break;
 	}
 	ITREND_();
 }
@@ -2213,7 +2215,7 @@ void knh_Object_fastset(CTX ctx, knh_Object_t *o, knh_Method_t *mtd, knh_Object_
 void knh_Object_setData(CTX ctx, knh_Object_t *o, knh_Map_t *m, knh_NameSpace_t *ns, int Checked)
 {
 	knh_sfp_t *lsfp = ctx->esp;
-	knh_nitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
+	knh_nitr_t mitrbuf = K_NITR_INIT, *mitr = &mitrbuf;
 	klr_setesp(ctx, lsfp+1);
 	if(Checked) {
 		while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {

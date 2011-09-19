@@ -163,10 +163,7 @@ void knh_loadSystemDriver(CTX ctx, knh_NameSpace_t *ns)
 	knh_NameSpace_setLinkClass(ctx, ns, STEXT("link"), ClassTBL(CLASS_Tdynamic));
 	api->addConverterDPI(ctx, "lower", &TO_lower, NULL);
 	api->addConverterDPI(ctx, "upper", &TO_upper, NULL);
-//	api->addQueryDPI(ctx, "nop", &QUERY_NOP);
-//#ifdef K_USING_SQLITE3
-//	api->addQueryDPI(ctx, "konoha.sqlite3", &QUERY_SQLITE3);
-//#endif
+	knh_loadSystemQueryDriver(ctx, ns);
 	knh_loadFFIDriver(ctx, ns);
 }
 

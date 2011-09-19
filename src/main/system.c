@@ -331,12 +331,6 @@ const knh_StreamDPI_t *knh_NameSpace_getStreamDPINULL(CTX ctx, knh_NameSpace_t *
 	return (const knh_StreamDPI_t *)knh_DictSet_get(ctx, ctx->share->streamDpiDictSet, hpath);
 }
 
-const knh_QueryDPI_t *knh_NameSpace_getQueryDPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
-{
-	knh_bytes_t hpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_head(path, ':'));
-	return (const knh_QueryDPI_t *)knh_DictSet_get(ctx, ctx->share->queryDpiDictSet, hpath);
-}
-
 const knh_MapDPI_t *knh_NameSpace_getMapDPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	knh_bytes_t hpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_head(path, ':'));

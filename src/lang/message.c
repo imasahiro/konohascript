@@ -491,7 +491,7 @@ knh_Token_t* TypeErrorCallParam(CTX ctx, int n, knh_Method_t *mtd, knh_class_t r
 }
 void WARN_Cast(CTX ctx, const char *whatis, knh_class_t tcid, knh_class_t scid)
 {
-	Gamma_perror(ctx, KC_EWARN, _("%s (%C)expr of %C"), whatis, tcid, scid);
+	Gamma_perror(ctx, KC_EWARN, _("%s (%T)%T"), whatis, tcid, scid);
 }
 knh_Token_t* ERROR_ForeachNotIterative(CTX ctx, knh_class_t p1, knh_class_t type)
 {

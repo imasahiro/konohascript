@@ -388,7 +388,7 @@ static void NameSpace_setcid(CTX ctx, knh_NameSpace_t *ns, knh_String_t *name, k
 	knh_DictSet_set(ctx, DP(ns)->name2ctDictSetNULL, name, (knh_uintptr_t)ClassTBL(cid));
 }
 
-static void NameSpace_setdpi(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t pkgname, knh_DictSet_t *ds)
+static void NameSpace_setDPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t pkgname, knh_DictSet_t *ds)
 {
 	size_t i, size = knh_Map_size(ds);
 	for(i = 0; i < size; i++) {
@@ -403,16 +403,14 @@ static void NameSpace_setdpi(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t pkgname, 
 	}
 }
 
-static void NameSpace_addDpi(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t pkgname)
+static void NameSpace_addDPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t pkgname)
 {
 	if(DP(ns)->name2dpiNameDictMapNULL == NULL) {
 		KNH_INITv(DP(ns)->name2dpiNameDictMapNULL, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "NameSpace.name2dpiName"));
 	}
-	NameSpace_setdpi(ctx, ns, pkgname, ctx->share->streamDpiDictSet);
-	NameSpace_setdpi(ctx, ns, pkgname, ctx->share->queryDpiDictSet);
-	NameSpace_setdpi(ctx, ns, pkgname, ctx->share->mapDpiDictSet);
-	NameSpace_setdpi(ctx, ns, pkgname, ctx->share->convDpiDictSet);
-	//NameSpace_setdpi(ctx, ns, pkgname, ctx->share->rconvDpiDictSet);
+	NameSpace_setDPI(ctx, ns, pkgname, ctx->share->streamDpiDictSet);
+	NameSpace_setDPI(ctx, ns, pkgname, ctx->share->mapDpiDictSet);
+	NameSpace_setDPI(ctx, ns, pkgname, ctx->share->convDpiDictSet);
 }
 
 static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
@@ -445,7 +443,7 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_Stmt_t *stmt, size_t n)
 					NameSpace_setcid(ctx, ns, ClassTBL(cid)->sname, (knh_class_t)cid);
 				}
 			}
-			NameSpace_addDpi(ctx, ns, pkgname);
+			NameSpace_addDPI(ctx, ns, pkgname);
 		}
 		else if(TT_(tkN) == TT_UNAME) {
 			knh_class_t newcid;

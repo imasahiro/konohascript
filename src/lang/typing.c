@@ -3328,12 +3328,8 @@ static knh_Token_t* TCAST_typing(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt)
 		Stmt_toSTT(stmt, STT_CALL);
 		return Stmt_typed(ctx, stmt, tcid);
 	}
-
 	DBG_P("TRANS=%d", Stmt_isTRANS(stmt));
-	if(class_isa(scid, tcid) && !(Stmt_isTRANS(stmt))) {
-//		if(!Tn_isCONST(stmt, 1) && tcid == scid) { sometimes, really annoying
-//			WARN_Cast(ctx, "upcast", tcid, scid);
-//		}
+	if(scid == tcid || (class_isa(scid, tcid) && !(Stmt_isTRANS(stmt)))) {
 		return tkNN(stmt, 1);
 	}
 	if(class_isa(tcid, scid) && !(Stmt_isTRANS(stmt))) {  /* downcast */

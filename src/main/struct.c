@@ -1419,7 +1419,7 @@ static void Map_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	if(n > 0) {
 		BEGIN_LOCAL(ctx, lsfp, 2);
 		knh_class_t p1 = O_cTBL(o)->p1, p2 = O_cTBL(o)->p2;
-		knh_nitr_t mitrbuf = K_MAPITR_INIT, *mitr = &mitrbuf;
+		knh_nitr_t mitrbuf = K_NITR_INIT, *mitr = &mitrbuf;
 		if(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
 			knh_write_sfp(ctx, w, p1, lsfp, FMT_line);
 			knh_write(ctx, w, STEXT(": "));
@@ -2273,87 +2273,27 @@ static const knh_ClassDef_t OutputStreamDef = {
 /* --------------- */
 /* Connection */
 
-static void Connection_init(CTX ctx, knh_RawPtr_t *o)
+static void View_init(CTX ctx, knh_RawPtr_t *o)
 {
-//	knh_Connection_t *c = (knh_Connection_t*)o;
-//	c->conn = NULL;
-//	c->dpi = knh_getDefaultQueryDPI();
-//	KNH_INITv(c->urn, TS_EMPTY);
+	knh_View_t *rel = (knh_View_t*)rel;
+	KNH_INITv(rel->path,  KNH_NULL);
+	KNH_INITv(rel->conf, KNH_NULL);
 }
 
-static void Connection_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
+static void View_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
-//	knh_Connection_t *c = (knh_Connection_t*)o;
-//	KNH_ADDREF(ctx, (c->urn));
-//	KNH_SIZEREF(ctx);
+	knh_View_t *rel = (knh_View_t*)rel;
+	KNH_ADDREF(ctx, rel->path);
+	KNH_ADDREF(ctx, rel->conf);
+	KNH_SIZEREF(ctx);
 }
 
-static void Connection_free(CTX ctx, knh_RawPtr_t *o)
-{
-//	knh_Connection_t *c = (knh_Connection_t*)o;
-//	if(c->conn != NULL) {
-//		c->dpi->qclose(ctx, c->conn);
-//	}
-}
-
-static const knh_ClassDef_t ConnectionDef = {
-	Connection_init, DEFAULT_initcopy, Connection_reftrace, Connection_free,
+static const knh_ClassDef_t ViewDef = {
+	View_init, DEFAULT_initcopy, View_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
-	"Connection", CFLAG_Connection, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
-};
-
-/* --------------- */
-/* ResultSet */
-
-static void ResultSet_init(CTX ctx, knh_RawPtr_t *o)
-{
-//	knh_ResultSetEX_t *b = knh_bodymalloc(ctx, ResultSet);
-//	b->qcur = NULL;
-//	b->tcid = CLASS_ResultSet;
-//	b->column_size = 0;
-//	b->column = NULL;
-//	KNH_INITv(b->databuf, new_Bytes(ctx, "resultset", 0));
-//	KNH_INITv(b->conn, KNH_NULL);
-//	b->qcurfree = knh_getDefaultQueryDPI()->qcurfree;
-//	b->count = 0;
-//	o->rawptr = b;
-}
-
-static void ResultSet_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
-{
-//	size_t i = 0;
-//	knh_ResultSetEX_t *b = DP((knh_ResultSet_t*)o);
-//	KNH_ADDREF(ctx, (b->databuf));
-//	for(i = 0; i < b->column_size; i++) {
-//		KNH_ADDREF(ctx, (b->column[i].name));
-//	}
-//	KNH_ADDREF(ctx, (b->conn));
-//	KNH_SIZEREF(ctx);
-}
-
-static void ResultSet_free(CTX ctx, knh_RawPtr_t *o)
-{
-//	knh_ResultSetEX_t *b = DP((knh_ResultSet_t*)o);
-//	if(b->column != NULL) {
-//		KNH_FREE(ctx, b->column, sizeof(knh_dbschema_t) * b->column_size);
-//		b->column = NULL;
-//	}
-//	if(b->qcur != NULL) {
-//		b->qcurfree(b->qcur);
-//		b->qcur = NULL;
-//	}
-//	knh_bodyfree(ctx, b, ResultSet);
-}
-
-static const knh_ClassDef_t ResultSetDef = {
-	ResultSet_init, DEFAULT_initcopy, ResultSet_reftrace, ResultSet_free,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
-	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
-	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
-	"ResultSet", CFLAG_ResultSet, sizeof(knh_ResultSetEX_t), NULL,
+	"View", CFLAG_View, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
@@ -2432,7 +2372,7 @@ static void NameSpace_init(CTX ctx, knh_RawPtr_t *o)
 	KNH_INITv(ns->path, ctx->share->cwdPath);
 	ns->parentNULL          = NULL;
 	b->ffilinksNULL         = NULL;
-//	b->linkDictMapNULL      = NULL;
+	b->linkDictMapNULL      = NULL;
 	b->name2ctDictSetNULL  = NULL;
 //	b->func2cidDictSetNULL  = NULL;
 	b->constDictCaseMapNULL = NULL;
@@ -2450,6 +2390,7 @@ static void NameSpace_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 	KNH_ADDREF(ctx, ns->path);
 	KNH_ADDNNREF(ctx, ns->parentNULL);
 	KNH_ADDNNREF(ctx, b->ffilinksNULL);
+	KNH_ADDNNREF(ctx, b->linkDictMapNULL);
 	KNH_ADDNNREF(ctx, b->name2ctDictSetNULL);
 	KNH_ADDNNREF(ctx, b->name2dpiNameDictMapNULL);
 	KNH_ADDNNREF(ctx, b->constDictCaseMapNULL);

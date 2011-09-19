@@ -329,10 +329,10 @@ static void knh_addStreamDPI(CTX ctx, const char *scheme, const knh_StreamDPI_t 
 	knh_DictSet_set(ctx, ctx->share->streamDpiDictSet, new_T(scheme), (knh_uintptr_t)d);
 }
 
-static void knh_addQueryDPI(CTX ctx, const char *scheme, const knh_QueryDPI_t *d)
-{
-	knh_DictSet_set(ctx, ctx->share->queryDpiDictSet, new_T(scheme), (knh_uintptr_t)d);
-}
+//static void knh_addQueryDPI(CTX ctx, const char *scheme, const knh_QueryDPI_t *d)
+//{
+//	knh_DictSet_set(ctx, ctx->share->queryDpiDictSet, new_T(scheme), (knh_uintptr_t)d);
+//}
 
 static void knh_addMapDPI(CTX ctx, const char *scheme, const knh_MapDPI_t *d)
 {
@@ -356,7 +356,7 @@ const knh_LoaderAPI_t* knh_getLoaderAPI(void)
 		setProperty, setIntProperty, setFloatProperty,
 //		addLink,
 		knh_addStreamDPI,
-		knh_addQueryDPI,
+//		knh_addQueryDPI,
 		knh_addMapDPI,
 		knh_addConvDPI,
 	};
