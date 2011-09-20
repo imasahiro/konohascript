@@ -10,9 +10,6 @@ set(CMAKE_BUILD_TYPE Release)
 
 project(mpi)
 
-find_library(HAVE_LIBMPICH mpich)
-if (HAVE_LIBMPICH)
-
 # - set package variables
 set(PACKAGE_NAME    ${PROJECT_NAME})
 set(PACKAGE_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
@@ -20,6 +17,7 @@ set(PACKAGE_STRING  ${CMAKE_PROJECT_NAME}-${PACKAGE_VERSION})
 set(PACKAGE_SCRIPT_CODE mpi.k)
 set(PACKAGE_SOURCE_CODE
 		mpi.c
+		src/array.c
 		src/coll.c
 		src/comm.c
 		src/op.c
@@ -28,6 +26,10 @@ set(PACKAGE_SOURCE_CODE
 set(KONOHA_PACKAGE_DIR konoha/package/${KONOHA_VERSION}/konoha.${PROJECT_NAME})
 set(INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${KONOHA_INCLUDE_DIRS})
 include_directories(${INCLUDE_DIRS})
+
+# - check MPI library
+find_library(HAVE_LIBMPICH mpich)
+if (HAVE_LIBMPICH)
 
 # --- LIBMPICH (already checked by HAVE_LIBMPICH)
 set(MPI_LIBS ${HAVE_LIBMPICH})

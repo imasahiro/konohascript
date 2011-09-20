@@ -1,8 +1,14 @@
+#CC=gcc
+#CFLAGS=-O2 -g -Wall -fPIC
+#CFLAGS=-O0 -g3 -Wall -fPIC
+#LDFLAGS=-fmessage-length=0 -fPIC -Wl,-flat_namespace
+#LDLIBS=-lkonoha -lmpich -lopa -lmpl -lpmpich
+
 CC=gcc
-CFLAGS=-O2 -g -Wall -fPIC
+CFLAGS=-O2 -g -Wall -fPIC -I/usr/ompi/include
 #CFLAGS=-O0 -g3 -Wall -fPIC
 LDFLAGS=-fmessage-length=0 -fPIC -Wl,-flat_namespace
-LDLIBS=-lkonoha -lmpich -lopa -lmpl
+LDLIBS=-lkonoha -L/usr/ompi/lib -lmpi
 
 PKG=mpi
 RM=rm
@@ -21,7 +27,6 @@ ifeq ($(UNAME),Linux)
 endif
 ifeq ($(UNAME),Darwin)
 	# for MacOSX
-	LDLIBS+=-lpmpich
 	LINK=$(CC) -dynamiclib -o
 	LIB=$(PKG).dylib
 endif

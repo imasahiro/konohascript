@@ -3,14 +3,12 @@
 void knh_reduce(knh_Func_t *fo, void *ivec, void *iovec, int *len, MPI_Datatype *dtype)
 {
 	int vlen = len[0];
-	switch(dtype[0]) {
-	case BA_Type:
+	if (dtype[0] == BA_Type) {
 		REDUCE_CLOSURE(BA, char, ivec, iovec, vlen);
-	case IA_Type:
+	} else if (dtype[0] == IA_Type) {
 		REDUCE_CLOSURE(IA, knh_int_t, ivec, iovec, vlen);
-	case FA_Type:
+	} else if (dtype[0] == FA_Type) {
 		REDUCE_CLOSURE(FA, knh_float_t, ivec, iovec, vlen);
-	default: break;
 	}
 }
 

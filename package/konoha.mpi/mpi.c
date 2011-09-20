@@ -21,8 +21,6 @@ KMETHOD System_getMPIWtime(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-#ifdef _SETUP
-
 static void knh_MPIComm_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_MPIComm_t *comm = (knh_MPIComm_t*)o;
@@ -96,19 +94,17 @@ DEFAPI(void) constMPIComm(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	int init = 0;
 	MPI_Initialized(&init);
-	if (init) {
-		knh_MPI_initWorld(ctx, cid);
-	}
+	if (init) knh_MPI_initWorld(ctx, cid);
 }
 
 DEFAPI(void) constMPIOp(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	int init = 0;
 	MPI_Initialized(&init);
-	if (init) {
-		knh_MPI_initOp(ctx, cid);
-	}
+	if (init) knh_MPI_initOp(ctx, cid);
 }
+
+#ifdef _SETUP
 
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 {
@@ -116,6 +112,8 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 	MPI_Initialized(&init);
 	if (init) {
 		MPI_Errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
+	} else {
+		KNH_NOTE("process not initialized with mpirun: MPI methods are unusable");
 	}
 	kapi->setPackageProperty(ctx, "name", "mpi");
 	kapi->setPackageProperty(ctx, "version", "1.0");

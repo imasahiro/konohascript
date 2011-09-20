@@ -6,6 +6,17 @@ FArray = Array<Float>;
 @Public void System.disableLog(); // for ac
 @Public Float System.getMPIWtime(); // for MPI_Wtime
 
+
+/* ======================================================================== */
+/* Array Extra API */
+@Public void Array.print();
+@Public IArray Array.getShape();
+@Public void Array.reshape(IArray shape);
+@Public IArray Array.cols(int start, int end);
+@Public IArray Array.rows(int start, int end);
+@Public IArray Array.cycle(int rank, int size);
+@Public IArray Array.trans();
+
 /* ======================================================================== */
 /* Basic Class API */
 
