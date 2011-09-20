@@ -235,7 +235,7 @@ static void FILE_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_bytes_t urn = S_tobytes(path->urn);
-	if(isalpha(urn.text[0]) && urn.text[1] == ':') { // C:´Windows
+	if(isalpha(urn.text[0]) && urn.text[1] == ':') { // C:\Windows
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, urn);
 	}
 	else {
@@ -355,16 +355,13 @@ static void CURL_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
 
 typedef struct {
 	CURL *curl;
+	CURLM *multi_handle;
 	char *buffer;               /* buffer to store cached data*/
 	long pos;
 	long buffer_len;             /* currently allocated buffers length */
 	long buffer_pos;             /* end of data in buffer*/
 	int still_running;          /* Is background url fetch still in progress */
 } curl_t;
-
-/* This global variable was originated in a sample code in libcurl */
-static CURLM *multi_handle = NULL;
-//static CURLM *emulti_handle = NULL;
 
 static size_t write_callback(char *buffer, size_t size, size_t nitems, void *userp)
 {
@@ -396,16 +393,16 @@ static knh_io_t CURL_open(Ctx *ctx, knh_Path_t *path, const char *mode, knh_Dict
 	curl_easy_setopt(cp->curl, CURLOPT_WRITEDATA, cp);
 	curl_easy_setopt(cp->curl, CURLOPT_VERBOSE, 0L);
 	curl_easy_setopt(cp->curl, CURLOPT_WRITEFUNCTION, write_callback);
-	if(!multi_handle) multi_handle = curl_multi_init();
-	curl_multi_add_handle(multi_handle, cp->curl);
+	cp->multi_handle = curl_multi_init();
+	curl_multi_add_handle(cp->multi_handle, cp->curl);
 
 	/* lets start the fetch */
-	while(curl_multi_perform(multi_handle, &cp->still_running) == CURLM_CALL_MULTI_PERFORM );
+	while(curl_multi_perform(cp->multi_handle, &cp->still_running) == CURLM_CALL_MULTI_PERFORM );
 
 	if((cp->buffer_pos == 0) && (!cp->still_running)) {
 		/* if still_running is 0 now, we should return NULL */
 		/* make sure the easy handle is not in the multi handle anymore */
-		curl_multi_remove_handle(multi_handle, cp->curl);
+		curl_multi_remove_handle(cp->multi_handle, cp->curl);
 		/* cleanup */
 		curl_easy_cleanup(cp->curl);
 		knh_free(ctx, cp, sizeof(curl_t));
@@ -460,14 +457,15 @@ static int fill_buffer(curl_t *cp, int want, int waittime2)
 		timeout.tv_usec = 0;
 
 		/* get file descriptors from the transfers */
-		curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
+		curl_multi_fdset(cp->multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
 
 		/* In a real-world program you OF COURSE check the return code of the
-           function calls.  On success, the value of maxfd is guaranteed to be
-           greater or equal than -1.  We call select(maxfd + 1, ...), specially
-           in case of (maxfd == -1), we call select(0, ...), which is basically
-           equal to sleep. */
+		 * function calls.  On success, the value of maxfd is guaranteed to be
+		 * greater or equal than -1.  We call select(maxfd + 1, ...), specially
+		 * in case of (maxfd == -1), we call select(0, ...), which is basically
+		 * equal to sleep. */
 
+		KNH_ASSERT(maxfd != -1);
 		rc = select(maxfd+1, &fdread, &fdwrite, &fdexcep, &timeout);
 		switch(rc) {
 		case -1: /* select error */
@@ -477,7 +475,7 @@ static int fill_buffer(curl_t *cp, int want, int waittime2)
 			/* note we *could* be more efficient and not wait for
 			 * CURLM_CALL_MULTI_PERFORM to clear here and check it on re-entry
 			 * but that gets messy */
-			while(curl_multi_perform(multi_handle, &cp->still_running) == CURLM_CALL_MULTI_PERFORM);
+			while(curl_multi_perform(cp->multi_handle, &cp->still_running) == CURLM_CALL_MULTI_PERFORM);
 			break;
 		}
 	} while(cp->still_running && (cp->buffer_pos < want));
@@ -550,7 +548,7 @@ static knh_bool_t CURL_readline(Ctx *ctx, knh_io_t fd, knh_Bytes_t *ba)
 static void CURL_close(Ctx *ctx, knh_io_t fd)
 {
 	curl_t *cp = (curl_t*)fd;
-	curl_multi_remove_handle(multi_handle, cp->curl);
+	curl_multi_remove_handle(cp->multi_handle, cp->curl);
 	curl_easy_cleanup(cp->curl);
 	if(cp->buffer) free(cp->buffer);
 	knh_free(ctx, cp, sizeof(curl_t));

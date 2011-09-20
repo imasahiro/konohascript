@@ -134,25 +134,22 @@
 #cmakedefine K_USING_DEBUG ${K_USING_DEBUG}
 
 /* Enable int32 */
-#undef K_USING_INT32
+#cmakedefine K_USING_INT32 1
 
 /* Enable mark & sweep mode */
-#undef K_USING_MSGC
+#cmakedefine K_USING_MSGC 1
 
 /* Using pthread detected */
-#undef K_USING_PTHREAD
-
-/* Enable referencing counting mode */
-#undef K_USING_RCGC
-
-/* Using sqlite3 */
-#undef K_USING_SQLITE3
+#cmakedefine K_USING_PTHREAD 1
 
 /* Using thread */
-#undef K_USING_THREAD
+#cmakedefine K_USING_THREAD 1
+
+/* Enable referencing counting mode */
+#cmakedefine K_USING_RCGC
 
 /* Define to the address where bug reports for this package should be sent. */
-#undef PACKAGE_BUGREPORT
+#cmakedefine PACKAGE_BUGREPORT ${PACKAGE_BUGREPORT}
 
 /* Define to the full name of this package. */
 #cmakedefine PACKAGE_NAME "${PACKAGE_NAME}"
@@ -161,7 +158,7 @@
 #cmakedefine PACKAGE_STRING "${PACKAGE_STRING}"
 
 /* Define to the home page for this package. */
-#undef PACKAGE_URL
+#cmakedefine PACKAGE_URL "${PACKAGE_URL}"
 
 /* Define to the version of this package. */
 #cmakedefine PACKAGE_VERSION "${PACKAGE_VERSION}"
@@ -176,7 +173,5 @@
 #cmakedefine SIZEOF_VOIDP ${SIZEOF_VOIDP}
 
 /* Define to 1 if you have the ANSI C header files. */
-#undef STDC_HEADERS
+#cmakedefine STDC_HEADERS ${STDC_HEADERS}
 
-/* Define to empty if `const' does not conform to ANSI C. */
-#undef const

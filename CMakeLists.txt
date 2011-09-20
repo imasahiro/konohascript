@@ -215,6 +215,7 @@ endif()
 if(HAVE_PTHREAD)
 	set(ExtraLibs ${ExtraLibs} ${HAVE_PTHREAD})
 	set(MessageLibs ${MessageLibs} pthread)
+	set(K_USING_THREAD 1)
 endif(HAVE_PTHREAD)
 
 #set(FFI_INCLUDE_DIR "")
