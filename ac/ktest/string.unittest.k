@@ -79,6 +79,16 @@ assure "String.startsWith"
     // assert "".startsWith() == false;
 }
 
+assure "String.startsWith null"
+{
+	String s = "string";
+	String n = null;
+	assert s.startsWith(null) == true;
+	assert s.startsWith("")   == true;
+	assert n.startsWith(null) == true;
+	assert n.startsWith("")   == true;
+}
+
 assure "String.startsWith:multi"
 {
 String mbsn = "ｓｔｒｉｎｇ";

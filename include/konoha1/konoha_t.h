@@ -493,11 +493,13 @@ typedef void *(*knh_Fthread)(void *);
 #define OLD_LOCK(ctx, lockid, o)
 #define OLD_UNLOCK(ctx, lockid, o)
 
-#define KNH_MEMLOCK(ctx)
-#define KNH_MEMUNLOCK(ctx)
-#define KNH_SYSLOCK(ctx)
-#define KNH_SYSUNLOCK(ctx)
-
+#define KNH_MEMLOCK(ctx)   knh_mutex_lock(ctx->share->memlock)
+#define KNH_MEMUNLOCK(ctx) knh_mutex_unlock(ctx->share->memlock)
+#define KNH_SYSLOCK(ctx)   knh_mutex_lock(ctx->share->syslock)
+#define KNH_SYSUNLOCK(ctx) knh_mutex_unlock(ctx->share->syslock)
+#define KNH_CTXLOCK(ctx)   knh_mutex_lock(ctx->ctxlock)
+#define KNH_CTXUNLOCK(ctx) knh_mutex_unlock(ctx->ctxlock)
+ 
 /* ------------------------------------------------------------------------ */
 /* Stack Frame Pointer */
 /* ------------------------------------------------------------------------ */

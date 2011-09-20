@@ -61,7 +61,7 @@ static knh_context_t* new_hcontext(CTX ctx0)
 	ctxid_counter++;
 	ctx->freeObjectList = NULL;
 	ctx->freeMemoryList = NULL;
-	ctx->parent = (knh_context_t*)ctx;
+	ctx->parent = ctx;
 	ctx->api2 = getapi2();
 	{
 		knh_uintptr_t i = 0, ch;
@@ -125,7 +125,7 @@ static knh_Object_t** knh_CommonContext_reftrace(CTX ctx, knh_context_t *ctxo FT
 	}
 #else
 	{
-		size_t stacksize = (ctxo->esp - ctx->stack) + 8;
+		size_t stacksize = (ctxo->esp - ctxo->stack) + 8;
 		KNH_ENSUREREF(ctx, stacksize);
 		for(i = 0; i < stacksize; i++) {
 			KNH_ADDREF(ctx, ctxo->stack[i].o);
@@ -220,6 +220,7 @@ static knh_context_t* new_RootContext(void)
 
 	knh_share_initArena(ctx, share);
 	share->memlock = knh_mutex_malloc(ctx);
+	share->syslock = knh_mutex_malloc(ctx);
 	share->ClassTBL = (const knh_ClassTBL_t**)KNH_MALLOC((CTX)ctx, sizeof(knh_ClassTBL_t*)*(K_CLASSTABLE_INIT));
 	knh_bzero(share->ClassTBL, sizeof(knh_ClassTBL_t*)*(K_CLASSTABLE_INIT));
 	share->sizeClassTBL = 0;
@@ -541,7 +542,7 @@ static void knh_Context_freeGCBuf(CTX ctx, knh_context_t* ctxo)
 		ctxo->queue = NULL;
 		ctxo->queue_capacity = 0;
 	}
-	if(ctx->ref_capacity > 0) {
+	if(ctxo->ref_capacity > 0) {
 		KNH_FREE(ctx, ctxo->ref_buf, ctxo->ref_capacity * sizeof(knh_Object_t*));
 		ctxo->ref_buf = NULL;
 		ctxo->refs = NULL;
@@ -563,6 +564,7 @@ void knh_Context_free(CTX ctx, knh_context_t* ctxo)
 		}
 		knh_Context_freeGCBuf(ctx, ctxo);
 		knh_mutex_free(ctx, ctxo->share->memlock);
+		knh_mutex_free(ctx, ctxo->share->syslock);
 		knh_share_free(ctx, (knh_share_t*)ctxo->share);
 		knh_bzero((void*)ctxo, sizeof(knh_context_t));
 		free((void*)ctxo);
