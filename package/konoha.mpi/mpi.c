@@ -48,6 +48,33 @@ static void knh_MPI_initWorld(CTX ctx, knh_class_t cid)
 	knh_addClassConst(ctx, cid, new_String(ctx, "WORLD"), (Object*)world);
 }
 
+static void knh_MPI_initSelf(CTX ctx, knh_class_t cid)
+{
+	int len;
+	knh_MPIComm_t *self = new_O(MPIComm, cid);
+	static char proc_name[MPI_MAX_PROCESSOR_NAME] = {0};
+	self->comm = MPI_COMM_SELF;
+	self->proc_name = (char*)&proc_name;
+	MPI_Comm_rank(self->comm, &KNH_MPI_RANK(self));
+	MPI_Comm_size(self->comm, &KNH_MPI_SIZE(self));
+	MPI_Get_processor_name(self->proc_name, &len);
+	knh_addClassConst(ctx, cid, new_String(ctx, "SELF"), (Object*)self);
+}
+
+static void knh_MPI_initParent(CTX ctx, knh_class_t cid)
+{
+	int len;
+	knh_MPIComm_t *parent = new_O(MPIComm, cid);
+	static char proc_name[MPI_MAX_PROCESSOR_NAME] = {0};
+	if (MPI_Comm_get_parent(&(parent->comm)) == 0) {
+		parent->proc_name = (char*)&proc_name;
+		MPI_Comm_rank(parent->comm, &KNH_MPI_RANK(parent));
+		MPI_Comm_size(parent->comm, &KNH_MPI_SIZE(parent));
+		MPI_Get_processor_name(parent->proc_name, &len);
+		knh_addClassConst(ctx, cid, new_String(ctx, "PARENT"), (Object*)parent);
+	}
+}
+
 static knh_IntData_t MPIConstOp[] = {
 	{"MAX",  MPI_MAX},
 	{"MIN",  MPI_MIN},
@@ -94,7 +121,11 @@ DEFAPI(void) constMPIComm(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	int init = 0;
 	MPI_Initialized(&init);
-	if (init) knh_MPI_initWorld(ctx, cid);
+	if (init) {
+		knh_MPI_initWorld(ctx, cid);
+		knh_MPI_initSelf(ctx, cid);
+		knh_MPI_initParent(ctx, cid);
+	}
 }
 
 DEFAPI(void) constMPIOp(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)

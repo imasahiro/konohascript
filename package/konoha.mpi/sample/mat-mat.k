@@ -2,7 +2,7 @@
 using konoha.mpi.*;
 using konoha.math.*;
 
-N =     256;//64;
+N = (|$script.argv| > 0) ? (int)$script.argv[0] : 256;
 DEBUG = 1;
 EPS =   1.0e-18
 
@@ -95,14 +95,11 @@ void main(String[] args) {
 void myMatMat(double[] c, double[] a, double[] b, int n)
 {
     int  i, j, k;
-    int adimx = a.shape[0];
-    int bdimx = b.shape[0];
-    int cdimx = c.shape[0];
     for(i=0; i<N; i++) {
         for(j=0; j<n; j++) {
-            cidx = i * cdimx + j;
+            cidx = i * n + j;
             for(k=0; k<n; k++) {
-                c[cidx] += a[i*adimx+k] * b[k*bdimx+j];
+                c[cidx] += a[i * n + k] * b[k * n + j];
                 //c[i,j] += a[i,k] * b[k,j];
             }
         }

@@ -1,5 +1,6 @@
 
 using konoha.mpi.*;
+using lib.blas.*;
 using konoha.math.*;
 
 N = (|$script.argv| > 0) ? (int)$script.argv[0] : 256;
@@ -23,7 +24,6 @@ void main(String[] args) {
     int     ierr;
     int     i, j;
     int     iflag;
-    int     j_start, j_end;
 
     world = MPIComm.WORLD;
     myid = world.getRank();
@@ -74,9 +74,7 @@ void main(String[] args) {
     if (DEBUG == 1) {
         /* Verification routine ----------------- */
         iflag = 0;
-        j_start = N/numprocs * myid;
-        j_end = j_start + N/numprocs;
-        for(j=j_start; j<j_end; j++) {
+        for(j=0; j<N; j++) {
             for(i=0; i<N; i++) {
                 if (Math.fabs(c[j,i] - (double)N) > EPS) {
                     OUT.println(" Error! in ( "+"%d"(j)+" , "+"%d"(i)+" ) th argument.");
@@ -87,10 +85,8 @@ void main(String[] args) {
         }
         /* ------------------------------------- */
 
-        iflag_t = new int[1];
-        world.reduce(iflag, iflag_t, MPIOp.SUM, 0);
         if (myid == 0) {
-            if (iflag_t[0] == 0) OUT.println(" OK! ");
+            if (iflag == 0) OUT.println(" OK! ");
         }
 
     }
@@ -99,17 +95,13 @@ void main(String[] args) {
 
 void myMatMat(double[] c, double[] a, double[] b, int n)
 {
-    int  i, j, k;
-    int  i_start, i_end;
-    i_start = n/numprocs * myid;
-    i_end = i_start + n/numprocs;
-    for(i=i_start; i<i_end; i++) {
-        for(j=0; j<n; j++) {
-            cidx = i * n + j;
-            for(k=0; k<n; k++) {
-                c[cidx] += a[i * n + k] * b[k * n + j];
-                //c[i,j] += a[i,k] * b[k,j];
-            }
-        }
-    }
+    /*
+      Blas.dgemm: Matrix-Matrix-Mul
+        C = beta * C + alpha * (A * B)
+            a, b, c: Matrix (2-dim array vector)
+            alpha, beta: Scalar
+     */
+    Blas.dgemm(Blas.ORDER_COLMAJOR, Blas.TRANSPOSE_NOTRANS, Blas.TRANSPOSE_NOTRANS,
+               n /* a.rows */, n /* b.rows */, n /* c.rows */,
+               1.0 /* alpha */, a, n /* a.cols */, b, n /* b.cols */, 0.0 /* beta */, c, n /* c.cols*/);
 }

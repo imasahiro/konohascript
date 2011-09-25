@@ -2,7 +2,7 @@
 using konoha.mpi.*;
 using konoha.math.*;
 
-N =     256; //64;
+N = (|$script.argv| > 0) ? (int)$script.argv[0] : 256;
 DEBUG = 1
 EPS =    1.0e-18
 
