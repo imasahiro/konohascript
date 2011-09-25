@@ -7,7 +7,6 @@ set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g")
 set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
 set(CMAKE_BUILD_TYPE Release)
 #set(CMAKE_BUILD_TYPE Debug)
-
 project(mpi)
 
 # - set package variables
@@ -24,47 +23,75 @@ set(PACKAGE_SOURCE_CODE
 		src/pt2pt.c
 )
 set(KONOHA_PACKAGE_DIR konoha/package/${KONOHA_VERSION}/konoha.${PROJECT_NAME})
-set(INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${KONOHA_INCLUDE_DIRS})
-include_directories(${INCLUDE_DIRS})
 
 # - check MPI library
-find_library(HAVE_LIBMPICH mpich)
+if (NOT MPI_ROOT_DIR)
+   # -- use default dirs
+   set(MPI_ROOT_DIR /usr/local)
+endif()
+
+set(MPI_INCDIR ${MPI_ROOT_DIR}/include)
+set(MPI_LIBDIR ${MPI_ROOT_DIR}/lib)
+
+find_library(HAVE_LIBMPICH mpich ${MPI_LIBDIR})
+find_library(HAVE_LIBMPI mpi ${MPI_LIBDIR})
+
 if (HAVE_LIBMPICH)
+   # -- MPICH
+   set(MessageLibs ${MessageLibs} mpich PARENT_SCOPE)
 
-# --- LIBMPICH (already checked by HAVE_LIBMPICH)
-set(MPI_LIBS ${HAVE_LIBMPICH})
+   set(INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${KONOHA_INCLUDE_DIRS} ${MPI_INCDIR})
+   include_directories(${INCLUDE_DIRS})
 
-# --- LIBOPA
-find_library(LIB_OPENPA opa)
-if (NOT EXISTS ${LIB_OPENPA})
-   message(FATAL_ERROR "opa library not found.")
-endif(NOT EXISTS ${LIB_OPENPA})
-set(MPI_LIBS ${MPI_LIBS} ${LIB_OPENPA})
+   # --- LIBMPICH (already checked by HAVE_LIBMPICH)
+   set(MPI_LIBS ${HAVE_LIBMPICH})
 
-# --- LIBMPL
-find_library(LIB_MPL mpl)
-if (NOT EXISTS ${LIB_MPL})
-   message(FATAL_ERROR "mpl library not found.")
-endif(NOT EXISTS ${LIB_MPL})
-set(MPI_LIBS ${MPI_LIBS} ${LIB_MPL})
+   # --- LIBOPA
+   find_library(LIB_OPENPA opa  ${MPI_LIBDIR})
+   if (NOT EXISTS ${LIB_OPENPA})
+      message(FATAL_ERROR "opa library not found.")
+   endif(NOT EXISTS ${LIB_OPENPA})
+   set(MPI_LIBS ${MPI_LIBS} ${LIB_OPENPA})
 
-# --- LIBPMPICH (optional)
-find_library(LIB_PMPICH pmpich)
-if (LIB_PMPICH)
-   set(MPI_LIBS ${MPI_LIBS} ${LIB_PMPICH})
-endif(LIB_PMPICH)
+   # --- LIBMPL
+   find_library(LIB_MPL mpl  ${MPI_LIBDIR})
+   if (NOT EXISTS ${LIB_MPL})
+      message(FATAL_ERROR "mpl library not found.")
+   endif(NOT EXISTS ${LIB_MPL})
+   set(MPI_LIBS ${MPI_LIBS} ${LIB_MPL})
 
-# - install mpikonoha binary
-add_executable(mpikonoha src/mpikonoha.c)
-target_link_libraries(mpikonoha konoha ${MPI_LIBS})
-install(TARGETS mpikonoha RUNTIME DESTINATION bin)
+   # --- LIBPMPICH (optional)
+   find_library(LIB_PMPICH pmpich  ${MPI_LIBDIR})
+   if (LIB_PMPICH)
+      set(MPI_LIBS ${MPI_LIBS} ${LIB_PMPICH})
+   endif(LIB_PMPICH)
 
-# - install konoha.mpi package
-add_definitions(-D_SETUP)
-add_library(${PACKAGE_NAME} SHARED ${PACKAGE_SOURCE_CODE})
-set_target_properties(${PACKAGE_NAME} PROPERTIES PREFIX "")
-target_link_libraries(${PACKAGE_NAME} konoha ${MPI_LIBS})
-install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
+# endif(HAVE_LIBMPICH)
+elseif (HAVE_LIBMPI)
+   # -- OpenMPI
+   set(MessageLibs ${MessageLibs} ompi PARENT_SCOPE)
 
+   set(INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${KONOHA_INCLUDE_DIRS} ${MPI_INCDIR})
+   include_directories(${INCLUDE_DIRS})
+
+   # --- LIBMPI (already checked by HAVE_LIBMPI)
+   set(MPI_LIBS ${HAVE_LIBMPI})
+
+# endif HAVE_LIBMPI
 endif(HAVE_LIBMPICH)
+
+if (MPI_LIBS)
+   # -- install mpikonoha binary
+   add_executable(mpikonoha src/mpikonoha.c)
+   target_link_libraries(mpikonoha konoha ${MPI_LIBS})
+   install(TARGETS mpikonoha RUNTIME DESTINATION bin)
+
+   # -- install konoha.mpi package
+   add_definitions(-D_SETUP)
+   add_library(${PACKAGE_NAME} SHARED ${PACKAGE_SOURCE_CODE})
+   set_target_properties(${PACKAGE_NAME} PROPERTIES PREFIX "")
+   target_link_libraries(${PACKAGE_NAME} konoha ${MPI_LIBS})
+   install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
+   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
+
+endif(MPI_LIBS)
