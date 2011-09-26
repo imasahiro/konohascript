@@ -98,8 +98,9 @@ typedef struct {
 	MPI_Request reqt;
 } knh_MPIRequest_t;
 
-#define KNH_MPI_REQ(req) ((req)->reqt)
-#define KNH_MPI_REQ_IS_NULL(req) (KNH_MPI_REQ(req) == MPI_REQUEST_NULL)
+#define KNH_MPI_REQ(req) (&((req)->reqt))
+#define KNH_MPI_REQ_IS_NULL(req) (*KNH_MPI_REQ(req) == MPI_REQUEST_NULL)
+#define Request_new(ctx, req) (req) = new_O(MPIRequest, O_cid(req))
 
 /* Op */
 typedef struct {
