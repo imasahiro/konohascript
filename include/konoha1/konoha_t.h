@@ -54,6 +54,9 @@
 #endif
 #endif
 
+#if defined(K_USING_WINDOWS_)
+#include <winsock2.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -1119,7 +1122,11 @@ typedef struct knh_context_t {
 	/* signal */
 	int                             signal;
 	void                           *siginfo;
+#if defined(K_USING_MINGW_)
+#define K_SIGNAL_MAX NSIG
+#else
 #define K_SIGNAL_MAX _POSIX_SIGQUEUE_MAX
+#endif
 	struct knh_Func_t             **sighandlers; // modified by Wakamori
 
 } knh_context_t ;

@@ -219,7 +219,11 @@ static void knh_setStartUpPackage(CTX ctx, int mode, const char *optstr)
 static void opt_version(CTX ctx, int mode, const char *optstr)
 {
 	if(mode == 0) {
+#if defined(K_USING_MINGW_)
+		fprintf(stdout, "konoha%d-%d\n", (int)sizeof(void*) * 8, (int)K_REVISION);
+#else
 		fprintf(stdout, "konoha%d-%d-%d\n", (int)sizeof(void*) * 8, (int)K_REVISION, (int)getppid());
+#endif /* defined(K_USING_MINGW_) */
 	}
 	else {
 		dump_sysinfo(NULL, NULL, 1/*ALL*/);

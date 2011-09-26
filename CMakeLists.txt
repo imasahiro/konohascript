@@ -344,6 +344,17 @@ option(USE_QT "Using qt package" OFF)
 
 option(USE_QT4 "Using qt4 package" OFF)
 
+if(MINGW)
+	find_library(HAVE_LIBCURLDLL NAMES curldll)
+	if(HAVE_LIBCURLDLL)
+		set(ExtraLibs ${ExtraLibs} ${HAVE_LIBCURLDLL})
+	endif(HAVE_LIBCURLDLL)
+	find_library(HAVE_LIBWS2_32 NAMES ws2_32)
+	if(HAVE_LIBWS2_32)
+		set(ExtraLibs ${ExtraLibs} ${HAVE_LIBWS2_32})
+	endif(HAVE_LIBWS2_32)
+endif(MINGW)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake 
 		${CMAKE_CURRENT_BINARY_DIR}/config.h)
 

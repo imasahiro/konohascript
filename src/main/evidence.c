@@ -85,9 +85,15 @@ static const char* LOG__(int p)
 static const char* knh_format_w3cdtf(char *buf, size_t bufsiz, struct tm *tmp)
 {
 	// 2001-08-02T10:45:23+09:00
+#if defined(K_USING_WINDOWS_)
+	_tzset();
+	int gmtoff = (int)(_timezone / (60 * 60));
+#else
+	int gmtoff = (int)(tmp->tm_gmtoff / (60 * 60));
+#endif /* defined(K_USING_WINDOWS_) */
 	knh_snprintf(buf, bufsiz, "%04d-%02d-%02dT%02d:%02d:%02d%+02d:%02d",
 		(int)(tmp->tm_year + 1900), (int)(tmp->tm_mon + 1), tmp->tm_mday,
-		tmp->tm_hour, tmp->tm_min, tmp->tm_sec, (int)(tmp->tm_gmtoff / (60 * 60)), 0);
+		tmp->tm_hour, tmp->tm_min, tmp->tm_sec, gmtoff, 0);
 	return (const char*)buf;
 }
 
@@ -97,7 +103,15 @@ void knh_write_now(CTX ctx, knh_OutputStream_t *w)
 	time_t t;
 	struct tm tm;
 	time(&t);
+#if defined(K_USING_WINDOWS_)
+#if defined(K_USING_MINGW_)
+	tm = *localtime(&t);
+#else
+	localtime_s(&tm, &t);
+#endif /* defined(K_USING_MINGW_) */
+#else
 	localtime_r(&t, &tm);
+#endif /* defined(K_USING_WINDOWS_) */
 	knh_write_ascii(ctx, w, knh_format_w3cdtf(buf, sizeof(buf), &tm));
 }
 
@@ -209,13 +223,13 @@ void opt_a(CTX ctx, int mode, const char *optstr)
 	openlog("konoha", LOG_PID, LOG_LOCAL7);
 	//KNH_SYSLOG(ctx, NULL, LOG_NOTICE, "init", "version='%s', rev=%d, auditlevel=%d", K_VERSION, K_REVISION, auditLevel);
 #else
-	if(knh_openlog(ctx)) {
-		((knh_ServiceSPI_t*)ctx->spi)->syslogspi = "konohalog";
-	}
-	else {
+	//if(knh_openlog(ctx)) {
+	//	((knh_ServiceSPI_t*)ctx->spi)->syslogspi = "konohalog";
+	//}
+	//else {
 		fprintf(stdout, "konoha: no available logging system.\n");
 		exit(0);
-	}
+	//}
 #endif
 
 #ifdef K_DEOS_TRACE
@@ -450,24 +464,44 @@ void knh_PleaseLetUsKnowYourOS(CTX ctx, const char *msg, const char *file, int l
 
 // http://www.ibm.com/developerworks/jp/linux/library/l-sigdebug/index.html
 
+#if defined(K_USING_MINGW_)
+static void record_signal(CTX ctx, int sn)
+#else
 static void record_signal(CTX ctx, int sn , siginfo_t* si, void *sigdata)
+#endif /* defined(K_USING_MINGW_) */
 {
+#if defined(K_USING_MINGW_)
+	fprintf(stderr, "signal number = %d", sn);
+#else
 	fprintf(stderr, "signal number = %d, signal errno = %d, signal code = %d", si->si_signo,si->si_errno, si->si_code);
 	fprintf(stderr, "senders' pid = %x, sender's uid = %d\n", si->si_pid, si->si_uid);
+#endif /* defined(K_USING_MINGW_) */
 }
 
+#if defined(K_USING_MINGW_)
+static void trapSIGINT(int sig)
+#else
 static void trapSIGINT(int sig, siginfo_t* si, void *sc)
+#endif /* defined(K_USING_MINGW_) */
 {
 	CTX ctx = knh_getCurrentContext();
 //	record_signal(ctx, sig, si, sc);
 	if(ctx != NULL) {
+#if defined(K_USING_MINGW_)
+		LOGSFPDATA = {};
+#else
 		LOGSFPDATA = {iDATA("sender_pid", si->si_pid), iDATA("sender_uid", si->si_uid)};
+#endif /* defined(K_USING_MINGW_) */
 		CRIT_Failed("konoha", "Interrupted!!");
 	}
 	_Exit(0);
 }
 
+#if defined(K_USING_MINGW_)
+static void trapSIGFPE(int sig)
+#else
 static void trapSIGFPE(int sig, siginfo_t* si, void *sc)
+#endif /* defined(K_USING_MINGW_) */
 {
 	static const char *emsg[] = {
 			/* FPE_NOOP	  0*/ "SIGFPE",
@@ -480,22 +514,38 @@ static void trapSIGFPE(int sig, siginfo_t* si, void *sc)
 			/* FPE_INTDIV	7	*/ "integer divide by zero",
 			/* FPE_INTOVF	8	*/ "integer overflow"};
 	CTX ctx = knh_getCurrentContext();
+#if defined(K_USING_MINGW_)
+	record_signal(ctx, sig);
+#else
 	record_signal(ctx, sig, si, sc);
+#endif /* defined(K_USING_MINGW_) */
 	if(ctx != NULL) {
+#if defined(K_USING_MINGW_)
+		int si_code = 0;
+#else
 		int si_code = (si->si_code < 9) ? si->si_code : 0;
+#endif /* defined(K_USING_MINGW_) */
 		THROW_Arithmetic(ctx, NULL, emsg[si_code]);
 	}
 }
 
 #ifndef K_USING_DEBUG
+#if defined(K_USING_MINGW_)
+static void trapSEGV(int sig)
+#else
 static void trapSEGV(int sig, siginfo_t* si, void* sc)
+#endif /* defined(K_USING_MINGW_) */
 {
 	CTX ctx = knh_getCurrentContext();
+#if defined(K_USING_MINGW_)
+	record_signal(ctx, sig);
+#else
 	record_signal(ctx, sig, si, sc);
 	if (si->si_code == SEGV_ACCERR) {
 		void* address = (void*)si->si_addr;
 		fprintf(stderr, "address=%p\n", address);
 	}
+#endif /* defined(K_USING_MINGW_) */
 	if(ctx != NULL) {
 		WCTX(ctx)->signal = sig;
 		THROW_Halt(ctx, NULL, "segmentation fault");
@@ -503,7 +553,11 @@ static void trapSEGV(int sig, siginfo_t* si, void* sc)
 	_Exit(EX_SOFTWARE);
 }
 
+#if defined(K_USING_MINGW_)
+static void trapILL(int sig)
+#else
 static void trapILL(int sig, siginfo_t* si, void* sc)
+#endif /* defined(K_USING_MINGW_) */
 {
 	static const char *emsg[] = {
 			/* FPE_NOOP	  0*/ "SIGILL",
@@ -516,15 +570,24 @@ static void trapILL(int sig, siginfo_t* si, void* sc)
 			/* 	7	*/ "coprocessor error",
 			/* 	8	*/ "internal stack error"};
 	CTX ctx = knh_getCurrentContext();
+#if defined(K_USING_MINGW_)
+	record_signal(ctx, sig);
+#else
 	record_signal(ctx, sig, si, sc);
+#endif /* defined(K_USING_MINGW_) */
 	if(ctx != NULL) {
+#if defined(K_USING_MINGW_)
+		int si_code = 0;
+#else
 		int si_code = (si->si_code < 9) ? si->si_code : 0;
+#endif /* defined(K_USING_MINGW_) */
 		WCTX(ctx)->signal = sig;
 		THROW_Halt(ctx, NULL, emsg[si_code]);
 	}
 	_Exit(EX_SOFTWARE);
 }
 
+#if !defined(K_USING_MINGW_)
 static void trapBUS(int sig, siginfo_t* si, void* sc)
 {
 	static const char *emsg[] = {
@@ -541,9 +604,18 @@ static void trapBUS(int sig, siginfo_t* si, void* sc)
 	}
 	_Exit(EX_SOFTWARE);
 }
+#endif /* !defined(K_USING_MINGW_) */
 
 #endif
 
+#if defined(K_USING_MINGW_)
+#define KNH_SIGNAL(T, handler) \
+	if(SIG_ERR == signal(T, handler)) { \
+		LOGSFPDATA = {iDATA("signal", T), __ERRNO__}; \
+		NOTE_Failed("signal"); \
+	} \
+
+#else
 #define KNH_SIGACTION(T, sa, sa_orig, n)                       \
 	if(T < n  && sigaction(T, sa, sa_orig + T) != 0 ) {        \
 		LOGSFPDATA = {iDATA("signal", T), __ERRNO__};          \
@@ -551,14 +623,26 @@ static void trapBUS(int sig, siginfo_t* si, void* sc)
 	}                                                          \
 	knh_bzero(sa, sizeof(struct sigaction));                   \
 
+#endif /* defined(K_USING_MINGW_) */
+
+#if defined(K_USING_MINGW_)
+static void knh_setsignal(CTX ctx)
+#else
 static void knh_setsignal(CTX ctx, void *block, size_t n)
+#endif /* defined(K_USING_MINGW_) */
 {
+#if !defined(K_USING_MINGW_)
 	struct sigaction sa = {};
 	struct sigaction *sa_orig = (struct sigaction*)block;
+#endif /* !defined(K_USING_MINGW_) */
 	WCTX(ctx)->signal = 0;
 	WCTX(ctx)->siginfo = NULL;
 
 #ifndef K_USING_DEBUG
+#if defined(K_USING_MINGW_)
+	KNH_SIGNAL(SIGSEGV, trapSEGV);
+	KNH_SIGNAL(SIGILL, trapILL);
+#else
 	sa.sa_sigaction = trapSEGV;
 	sa.sa_flags     = SA_SIGINFO;
 	KNH_SIGACTION(SIGSEGV, &sa, sa_orig, n);
@@ -568,40 +652,63 @@ static void knh_setsignal(CTX ctx, void *block, size_t n)
 	sa.sa_sigaction = trapBUS;
 	sa.sa_flags     = SA_SIGINFO;
 	KNH_SIGACTION(SIGBUS, &sa, sa_orig, n);
-
+#endif /* defined(K_USING_MINGW_) */
 #endif
 
+#if defined(K_USING_MINGW_)
+	KNH_SIGNAL(SIGFPE, trapSIGFPE);
+#else
 	sa.sa_sigaction = trapSIGFPE;
 	sa.sa_flags     = SA_SIGINFO|SA_NODEFER;
 	KNH_SIGACTION(SIGFPE, &sa, sa_orig, n);
+#endif /* defined(K_USING_MINGW_) */
 	if(CTX_isInteractive(ctx)) {
 		DBG_P("set SIGINT This is not so good");
+#if defined(K_USING_MINGW_)
+		KNH_SIGNAL(SIGINT, trapSIGINT);
+#else
 		sa.sa_sigaction = trapSIGINT;
 		sa.sa_flags     = SA_SIGINFO|SA_NODEFER;
 		KNH_SIGACTION(SIGINT, &sa, sa_orig, n);
+#endif /* defined(K_USING_MINGW_) */
 	}
 }
 
+#if defined(K_USING_MINGW_)
+#define KNH_SIGACTION2(T, sa_orig, n) KNH_SIGNAL(T, SIG_DFL)
+#else
 #define KNH_SIGACTION2(T, sa_orig, n)                          \
 	if(T < n  && sigaction(T, sa_orig + T, NULL) != 0 ) {      \
 		LOGSFPDATA = {iDATA("signal", T), __ERRNO__};          \
 		NOTE_Failed("sigaction");                              \
 	}                                                          \
 
+#endif /* defined(K_USING_MINGW_) */
+
+#if defined(K_USING_MINGW_)
+static void knh_unsetsignal(CTX ctx)
+#else
 static void knh_unsetsignal(CTX ctx, void *block, size_t n)
+#endif /* defined(K_USING_MINGW_) */
 {
+#if !defined(K_USING_MINGW_)
 	struct sigaction *sa_orig = (struct sigaction*)block;
 	if(sa_orig != NULL) {
+#endif /* !defined(K_USING_MINGW_) */
 #ifndef K_USING_DEBUG
 		KNH_SIGACTION2(SIGILL,  sa_orig, n);
+#if !defined(K_USING_MINGW_)
 		KNH_SIGACTION2(SIGBUS,  sa_orig, n);
+#endif /* !defined(K_USING_MINGW_) */
 		KNH_SIGACTION2(SIGSEGV, sa_orig, n);
 #endif
 		KNH_SIGACTION2(SIGFPE, sa_orig, n);
 		if(CTX_isInteractive(ctx)) {
 			KNH_SIGACTION2(SIGINT, sa_orig, n);
 		}
+#if !defined(K_USING_MINGW_)
 	}
+#endif /* !defined(K_USING_MINGW_) */
 	WCTX(ctx)->signal = 0;
 	WCTX(ctx)->siginfo = NULL;
 }
@@ -609,23 +716,37 @@ static void knh_unsetsignal(CTX ctx, void *block, size_t n)
 knh_bool_t knh_VirtualMachine_launch(CTX ctx, knh_sfp_t *sfp)
 {
 #ifdef K_USING_SIGNAL
+#if defined(K_USING_MINGW_)
+	knh_setsignal(ctx);
+#else
 	struct sigaction sa_orig[32];
 	knh_bzero(sa_orig, sizeof(struct sigaction) * 32);
 	knh_setsignal(ctx, sa_orig, 32);
+#endif /* defined(K_USING_MINGW_) */
 	knh_bool_t b = (knh_VirtualMachine_run(ctx, sfp, CODE_LAUNCH) == NULL);
 	if(ctx->signal != 0) {
+#if defined(K_USING_MINGW_)
+		if(ctx->signal == SIGSEGV || ctx->signal == SIGILL) {
+#else
 		if(ctx->signal == SIGSEGV || ctx->signal == SIGBUS || ctx->signal == SIGILL) {
+#endif /* defined(K_USING_MINGW_) */
 			_Exit(EX_SOFTWARE);
 		}
 	}
+#if defined(K_USING_MINGW_)
+	knh_unsetsignal(ctx);
+#else
 	knh_unsetsignal(ctx, sa_orig, 32);
+#endif /* defined(K_USING_MINGW_) */
 	return b;
 #else
 	knh_bool_t b = (knh_VirtualMachine_run(ctx, sfp, CODE_LAUNCH) == NULL);
 #endif
+#if !defined(K_USING_MINGW_)
 	if(ctx->signal == SIGKILL) {
 		_Exit(EX_SOFTWARE);
 	}
+#endif /* !defined(K_USING_MINGW_) */
 	return b;
 }
 

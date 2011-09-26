@@ -746,14 +746,27 @@ static void Date_init(CTX ctx, knh_RawPtr_t *o)
 	time_t t;
 	struct tm tm;
 	time(&t);
+#if defined(K_USING_WINDOWS_)
+#if defined(K_USING_MINGW_)
+	tm = *localtime(&t);
+#else
+	localtime_s(&tm, &t);
+#endif /* defined(K_USING_MINGW_) */
+#else
 	localtime_r(&t, &tm);
+#endif /* defined(K_USING_WINDOWS_) */
 	dt->dt.year  = (knh_short_t)(tm.tm_year + 1900);
 	dt->dt.month = (knh_short_t)(tm.tm_mon + 1);
 	dt->dt.day   = (knh_short_t)(tm.tm_mday);
 	dt->dt.hour  = (knh_short_t)(tm.tm_hour);
 	dt->dt.min   = (knh_short_t)(tm.tm_min);
 	dt->dt.sec   = (knh_short_t)(tm.tm_sec);
-	dt->dt.gmtoff = (knh_short_t)(tm.tm_gmtoff / 60);
+#if defined(K_USING_MINGW_)
+	_tzset();
+	dt->dt.gmtoff = (knh_short_t)(_timezone / (60 * 60));
+#else
+	dt->dt.gmtoff = (knh_short_t)(tm.tm_gmtoff / (60 * 60));
+#endif /* defined(K_USING_MINGW_) */
 	dt->dt.isdst = (knh_short_t)(tm.tm_isdst);
 }
 

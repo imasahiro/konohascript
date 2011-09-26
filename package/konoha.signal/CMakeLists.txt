@@ -9,6 +9,10 @@ set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g")
 set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
 set(CMAKE_BUILD_TYPE Debug)
 
+if(MINGW)
+	message(STATUS "Konoha MinGW is not supprot konoha.signal package")
+else(MINGW)
+
 project(signal)
 set(PACKAGE_SOURCE_CODE signal.c)
 set(PACKAGE_SCRIPT_CODE signal.k)
@@ -31,3 +35,5 @@ target_link_libraries(${PACKAGE_NAME} konoha)
 
 install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
+
+endif(MINGW)
