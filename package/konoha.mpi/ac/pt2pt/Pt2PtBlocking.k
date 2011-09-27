@@ -10,11 +10,11 @@ if (rank == 0) disableLog();
 
 
 if (rank == 0) {
-    world.sendBytes((Bytes)"konoha", 0, 1);
+    world.sendBytes((Bytes)"konoha", 6, 1);
 } else {
     assure "Pt2PtBlockingBytes" {
         Bytes data = new Bytes();
-        world.recvBytes(data, 0, 0);
+        world.recvBytes(data, 6, 0);
         assert (data.decode() == "konoha");
     }
 }

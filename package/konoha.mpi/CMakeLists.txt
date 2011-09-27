@@ -25,6 +25,20 @@ set(PACKAGE_SOURCE_CODE
 set(KONOHA_PACKAGE_DIR konoha/package/${KONOHA_VERSION}/konoha.${PROJECT_NAME})
 
 # - check MPI library
+
+set(MPI_TYPE_OMPI "on")
+set(MPI_TYPE_MPICH "on")
+
+if (MPI_TYPE)
+   if ("${MPI_TYPE}" STREQUAL "mpich")
+     # -- disable ompi
+     set(MPI_TYPE_OMPI)
+   elseif("${MPI_TYPE}" STREQUAL "ompi")
+     # -- disable mpich
+     set(MPI_TYPE_MPICH)
+   endif()
+endif()
+
 if (NOT MPI_ROOT_DIR)
    # -- use default dirs
    set(MPI_ROOT_DIR /usr/local)
@@ -36,7 +50,7 @@ set(MPI_LIBDIR ${MPI_ROOT_DIR}/lib)
 find_library(HAVE_LIBMPICH mpich ${MPI_LIBDIR})
 find_library(HAVE_LIBMPI mpi ${MPI_LIBDIR})
 
-if (HAVE_LIBMPICH)
+if (MPI_TYPE_MPICH AND HAVE_LIBMPICH)
    # -- MPICH
    set(MessageLibs ${MessageLibs} mpich PARENT_SCOPE)
 
@@ -66,8 +80,8 @@ if (HAVE_LIBMPICH)
       set(MPI_LIBS ${MPI_LIBS} ${LIB_PMPICH})
    endif(LIB_PMPICH)
 
-# endif(HAVE_LIBMPICH)
-elseif (HAVE_LIBMPI)
+# endif MPI_TYPE_MPICH AND HAVE_LIBMPICH
+elseif (MPI_TYPE_OMPI AND HAVE_LIBMPI)
    # -- OpenMPI
    set(MessageLibs ${MessageLibs} ompi PARENT_SCOPE)
 
@@ -77,8 +91,8 @@ elseif (HAVE_LIBMPI)
    # --- LIBMPI (already checked by HAVE_LIBMPI)
    set(MPI_LIBS ${HAVE_LIBMPI})
 
-# endif HAVE_LIBMPI
-endif(HAVE_LIBMPICH)
+# endif MPI_TYPE_OMPI AND HAVE_LIBMPI
+endif(MPI_TYPE_MPICH AND HAVE_LIBMPICH)
 
 if (MPI_LIBS)
    # -- install mpikonoha binary

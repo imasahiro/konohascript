@@ -57,7 +57,7 @@
 
 #define BA_Type MPI_CHAR
 #define SV_Type BA_Type
-#define IA_Type MPI_UNSIGNED_LONG
+#define IA_Type MPI_LONG
 #define IV_Type IA_Type
 #define FA_Type MPI_DOUBLE
 #define FV_Type FA_Type
