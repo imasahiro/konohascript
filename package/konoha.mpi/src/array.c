@@ -1,5 +1,8 @@
 #include "../konoha_mpi.h"
 
+/* ------------------------------------------------------------------------ */
+//## method void Array.print();
+
 static int idx1(int _x, int _y, int _z, int _w, int x, int xy, int xyz)
 {
 	return _x;
@@ -20,8 +23,6 @@ static int idx4(int _x, int _y, int _z, int _w, int x, int xy, int xyz)
 	return xyz * _w + xy * _z + x * _y + _x;
 }
 
-typedef int (*idx_func)(int _x, int _y, int _z, int _w, int x, int xy, int xyz);
-
 static void printIA(knh_Array_t *base, int nidx, int _x)
 {
 	static const char *ifmt[2] = {"%4d", ", %4d"};
@@ -34,9 +35,9 @@ static void printFA(knh_Array_t *base, int nidx, int _x)
 	printf(ffmt[(_x == 0)?0:1], base->nlist[nidx]);
 }
 
+typedef int (*idx_func)(int _x, int _y, int _z, int _w, int x, int xy, int xyz);
 typedef void (*print_func)(knh_Array_t *base, int nidx, int _x);
 
-//## method void Array.print();
 KMETHOD Array_print(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *base = sfp[0].a;
@@ -63,16 +64,18 @@ KMETHOD Array_print(CTX ctx, knh_sfp_t *sfp _RIX)
 				do {
 					do {
 						pfunc(base, idx(_x, _y, _z, _w, x, xy, xyz), _x);
-					} while (d > 0 && (                      ++_x < x));
-				} while     (d > 1 && (printf("\n"), _x = 0, ++_y < y));
-			} while         (d > 2 && (printf("\n"), _y = 0, ++_z < z));
-		} while             (d > 3 && (printf("\n"), _z = 0, ++_w < w));
+					} while (d > 0 && (++_x < x));
+				} while (d > 1 && (printf("\n"), _x = 0, ++_y < y));
+			} while (d > 2 && (printf("\n"), _y = 0, ++_z < z));
+		} while (d > 3 && (printf("\n"), _z = 0, ++_w < w));
 		if (d == 1) printf("\n");
 	}
 	RETURNvoid_();
 }
 
+/* ------------------------------------------------------------------------ */
 //## method IArray Array.getShape();
+
 KMETHOD Array_getShape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *base = sfp[0].a;
@@ -104,7 +107,9 @@ KMETHOD Array_getShape(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(ret);
 }
 
+/* ------------------------------------------------------------------------ */
 //## method void Array.reshape(IArray shape);
+
 KMETHOD Array_reshape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	IA(ia, sfp[0].a);
@@ -125,7 +130,9 @@ KMETHOD Array_reshape(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+/* ------------------------------------------------------------------------ */
 //## method var Array.rows(int start, int end);
+
 KMETHOD Array_rows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *base = sfp[0].a;
@@ -163,7 +170,9 @@ KMETHOD Array_rows(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(ret);
 }
 
+/* ------------------------------------------------------------------------ */
 //## method var Array.cols(int start, int end);
+
 KMETHOD Array_cols(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *base = sfp[0].a;
@@ -207,7 +216,9 @@ KMETHOD Array_cols(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(ret);
 }
 
+/* ------------------------------------------------------------------------ */
 //## method var Array.cycle(int rank, int size);
+
 KMETHOD Array_cycle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *base = sfp[0].a;
@@ -249,7 +260,9 @@ KMETHOD Array_cycle(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(ret);
 }
 
+/* ------------------------------------------------------------------------ */
 //## method var Array.trans();
+
 KMETHOD Array_trans(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *base = sfp[0].a;

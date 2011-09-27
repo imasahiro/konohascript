@@ -5,21 +5,7 @@ extern "C" {
 #endif
 
 /* ------------------------------------------------------------------------ */
-
-//## method void System.disableLog();
-KMETHOD System_disableLog(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_closelog();
-	RETURNvoid_();
-}
-
-//## method Float System.getMPIWtime();
-KMETHOD System_getMPIWtime(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	RETURNf_(MPI_Wtime());
-}
-
-/* ------------------------------------------------------------------------ */
+/* ClassDef */
 
 static void knh_MPIComm_init(CTX ctx, knh_RawPtr_t *o)
 {
@@ -34,6 +20,26 @@ static void knh_MPIOp_init(CTX ctx, knh_RawPtr_t *o)
 	knh_MPIOp_t *op = (knh_MPIOp_t*)o;
 	KNH_MPI_OP(op) = 0;
 }
+
+DEFAPI(void) defMPIComm(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	cdef->name = "MPIComm";
+	cdef->init = knh_MPIComm_init;
+}
+
+DEFAPI(void) defMPIRequest(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	cdef->name = "MPIRequest";
+}
+
+DEFAPI(void) defMPIOp(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	cdef->name = "MPIOp";
+	cdef->init = knh_MPIOp_init;
+}
+
+/* ------------------------------------------------------------------------ */
+/* Const */
 
 static void knh_MPI_initWorld(CTX ctx, knh_class_t cid)
 {
@@ -100,23 +106,6 @@ static void knh_MPI_initOp(CTX ctx, knh_class_t cid)
 	}
 }
 
-DEFAPI(void) defMPIComm(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	cdef->name = "MPIComm";
-	cdef->init = knh_MPIComm_init;
-}
-
-DEFAPI(void) defMPIRequest(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	cdef->name = "MPIRequest";
-}
-
-DEFAPI(void) defMPIOp(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	cdef->name = "MPIOp";
-	cdef->init = knh_MPIOp_init;
-}
-
 DEFAPI(void) constMPIComm(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
 	int init = 0;
@@ -134,6 +123,9 @@ DEFAPI(void) constMPIOp(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 	MPI_Initialized(&init);
 	if (init) knh_MPI_initOp(ctx, cid);
 }
+
+/* ------------------------------------------------------------------------ */
+/* Load */
 
 #ifdef _SETUP
 

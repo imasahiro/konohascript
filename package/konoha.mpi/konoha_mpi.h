@@ -7,7 +7,11 @@
 #include <mpi.h>
 
 /* ------------------------------------------------------------------------ */
-/* konoha */
+/* Konoha Type */
+
+//## type IArray Array 0 Int;
+
+//## type FArray Array 0 Float;
 
 #define KNH_BA_EXPAND(data, count) \
 	{\
@@ -30,24 +34,28 @@
 #define IA_new(l) new_Array(ctx, CLASS_Int, (l))
 #define FA_new(l) new_Array(ctx, CLASS_Float, (l))
 
-//##    IS_Bytes(o) /* defined @ konoha1.h */
+//      IS_Bytes(o) /* defined @ konoha1.h */
+//      IS_Int(o)
+//      IS_Float(o)
+#ifndef IS_IArray
 #define IS_IArray(o) (IS_bArray(o) && O_p1(o) == CLASS_Int)
-//##    IS_Int(o)
+#endif
+#ifndef IS_FArray
 #define IS_FArray(o) (IS_bArray(o) && O_p1(o) == CLASS_Float)
-//##    IS_Float(o)
-#define BA_buf(data) ((data)->bu.buf)
+#endif
 
+#define BA_buf(data) ((data)->bu.buf)
 #define SV_buf(data) ((data)->str.ubuf)
 #define IA_buf(data) ((data)->ilist)
 #define IV_buf(data) &O_data(data)
 #define FA_buf(data) ((data)->flist)
 #define FV_buf(data) &O_data(data)
 
-//##    BA_size(data) ((data)->bu.len) /* defined @ konoha1.h */
+//      BA_size(data) ((data)->bu.len) /* defined @ konoha1.h */
 #define SV_size(data) data->str.len
 #define IA_size(data) knh_Array_size(data)
 #define FA_size(data) knh_Array_size(data)
-//
+
 #define BA_Class knh_Bytes_t
 #define SV_Class knh_String_t
 #define IA_Class knh_Array_t
@@ -70,8 +78,10 @@
 #define FV(v, o) FV_Class *v = ((FV_Class*)o)
 
 /* ------------------------------------------------------------------------ */
-/* MPI */
-/* Communicator */
+/* MPI Communicator */
+
+//## class MPIComm Object;
+
 typedef struct {
 	knh_hObject_t h;
 	MPI_Comm comm;
@@ -79,6 +89,7 @@ typedef struct {
 	int mpi_size;
 	char *proc_name;
 } knh_MPIComm_t;
+
 
 #define KNH_MPI_SIZE(c) ((c)->mpi_size)
 #define KNH_MPI_RANK(c) ((c)->mpi_rank)
@@ -93,6 +104,11 @@ typedef struct {
 #define KNH_MPI_SUCCESS(res) ((res) == MPI_SUCCESS) /* defined in mpi.h */
 #define COMM(v, o) knh_MPIComm_t *v = ((knh_MPIComm_t*)o)
 
+/* ------------------------------------------------------------------------ */
+/* MPI Request */
+
+//## class MPIRequest Object;
+
 typedef struct {
 	knh_hObject_t h;
 	MPI_Request reqt;
@@ -102,12 +118,19 @@ typedef struct {
 #define KNH_MPI_REQ_IS_NULL(req) (*KNH_MPI_REQ(req) == MPI_REQUEST_NULL)
 #define Request_new(ctx, req) (req) = new_O(MPIRequest, O_cid(req))
 
-/* Op */
+/* ------------------------------------------------------------------------ */
+/* MPI Operator */
+
+//## class MPIOp Object;
+
 typedef struct {
 	knh_hObject_t h;
 	MPI_Op op;
 	MPI_User_function *func;
 } knh_MPIOp_t;
+
+//## type MPIOpFunc    Func  0 dynamic dynamic Int;
+
 
 #define KNH_MPI_OP(o) ((o)->op)
 #define KNH_MPI_OPFUNC(o) ((o)->func)
@@ -132,6 +155,5 @@ typedef struct {
 		CLOSURE_end(return);\
 	}
 
-/* ------------------------------------------------------------------------ */
 
 #endif /* KNH_INCLUDE_MPI */

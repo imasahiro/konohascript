@@ -1,5 +1,8 @@
 #include "../konoha_mpi.h"
 
+/* ------------------------------------------------------------------------ */
+//## method MPIOp MPIOp.new(MPIOpFunc opfunc, Boolean commutable);
+
 void knh_reduce(knh_Func_t *fo, void *ivec, void *iovec, int *len, MPI_Datatype *dtype)
 {
 	int vlen = len[0];
@@ -17,7 +20,6 @@ void dummyMPIOpFunc(void *invec, void *inoutvec, int *len, MPI_Datatype *dtype)
 	return knh_reduce((knh_Func_t*)CALLBACK_MARKER, invec, inoutvec, len, dtype);
 }
 
-//## method MPIOp MPIOp.new(Func<dynamic,dynamic> opfunc, Boolean commutable);
 KMETHOD MPIOp_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_MPIOp_t *op = (knh_MPIOp_t*)sfp[0].o;
@@ -36,3 +38,4 @@ KMETHOD MPIOp_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	L_RET:;
 	RETURN_(op);
 }
+

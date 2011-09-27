@@ -17,6 +17,7 @@ set(PACKAGE_SCRIPT_CODE mpi.k)
 set(PACKAGE_SOURCE_CODE
 		mpi.c
 		src/array.c
+		src/sys.c
 		src/coll.c
 		src/comm.c
 		src/op.c

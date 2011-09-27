@@ -33,7 +33,7 @@ endif
 #endif
 
 PKGOBJS=$(PKG).o
-MPIOBJS=src/comm.o src/op.o src/pt2pt.o src/coll.o
+MPIOBJS=src/array.o src/sys.o src/comm.o src/op.o src/pt2pt.o src/coll.o
 
 FLAGS=$(LDFLAGS)
 LIBS=$(LDLIBS)
