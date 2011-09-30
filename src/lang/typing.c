@@ -1942,7 +1942,7 @@ static knh_Token_t *LETM_typing(CTX ctx, knh_Stmt_t *stmt)
 				DBG_ASSERT(stmtLET2 != NULL);
 				KNH_INITv(DP(stmtTAIL)->nextNULL, stmtLET2);
 				stmtTAIL = stmtLET2;
-				Stmt_setESPIDX(ctx, stmt);
+				Stmt_setESPIDX(ctx, stmtTAIL);
 				stmtTAIL->type = TYPE_void;
 				ti++;
 				DBLNDATA_(if(IS_Tunbox(tkN->type)) ti++;)
@@ -3844,6 +3844,7 @@ static knh_Token_t* FOR_typing(CTX ctx, knh_Stmt_t *stmt)
 {
 	BEGIN_BLOCK(stmt, esp);
 	knh_Token_t *tkRES = Stmt_typing(ctx, stmtNN(stmt, 0), TYPE_void);
+	Stmt_setESPIDX(ctx, stmtNN(stmt, 0));
 	if(tkRES != NULL) {
 		TYPING_Condition(ctx, stmt, 1);
 		if(Tn_isFALSE(stmt, 1)) {
