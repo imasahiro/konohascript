@@ -32,7 +32,36 @@
 
 include "lib:gluelink";
 
-class RequestToken(String request_token, String request_token_secret, String verifier);
-class Consumer(String consumer_key, String consumer_secret);
-class Client(Consumer consumer, RequestToken request_token);
-@Native Map<String,String> Client.request(String url, String method);
+class RequestToken {
+	String token;
+	String token_secret;
+
+	RequestToken(String request_token, String request_token_secret) {
+		_token = request_token;
+		_token_secret = request_token_secret;
+	}
+}
+
+class Consumer {
+	String key;
+	String secret;
+
+	Consumer(String consumer_key, String consumer_secret)
+	{
+		_key = consumer_key;
+		_secret = consumer_secret;
+	}
+}
+
+class Client {
+	Consumer consumer;
+	RequestToken request_token;
+
+	Client(Consumer consumer, RequestToken request_token)
+	{
+		_consumer = consumer;
+		_request_token = request_token;
+	}
+
+	@Native Map<String,String> request(String url, String method, Map params);
+}

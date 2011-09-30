@@ -38,16 +38,39 @@
 extern "C" {
 #endif
 
-static knh_Map_t *parseReply(CTX ctx, char *reply)
+/* ======================================================================== */
+// [struct]
+
+typedef struct {
+	const char *key;
+	const char *secret;
+	const char *rtoken;
+	const char *rtoken_secret;
+} AccessToken_t;
+
+typedef struct {
+	int argc;
+	char **argv;
+} Args_t;
+
+/* ------------------------------------------------------------------------ */
+// [private functions]
+
+static void knh_freeArgs(Args_t *args)
+{
+	oauth_free_array(&args->argc, &args->argv);
+}
+
+static knh_Map_t *knh_parseReply(CTX ctx, char *reply)
 {
 	int rc;
 	char **rv = NULL;
-	knh_Map_t *ret = NULL;
-	DBG_P("HTTP-reply:%s", reply);
+	knh_Map_t *rmap = NULL;
+	DBG_P("HTTP-reply: %s", reply);
 	rc = oauth_split_url_parameters(reply, &rv);
 	knh_qsort(rv, rc, sizeof(char *), oauth_cmpstringp);
 	if (rv != NULL) {
-		ret = new_DataMap(ctx);
+		rmap = new_DataMap(ctx);
 		const char *key, *val;
 		int i;
 		for (i = 0; i < rc; i++) {
@@ -57,113 +80,155 @@ static knh_Map_t *parseReply(CTX ctx, char *reply)
 				val += 1;
 				key = rv[i];
 				rv[i][val - rv[i] - 1] = '\0';
-				knh_DataMap_setString(ctx, ret, key, val);
+				knh_DataMap_setString(ctx, rmap, key, val);
 			}
 			free(rv[i]);
 		}
 		free(rv);
 	}
-	return ret;
+	return rmap;
 }
 
-/* ------------------------------------------------------------------------ */
-
-//# @Native Map<String,String> Client_request(String url, String method);
-KMETHOD Client_request(CTX ctx, knh_sfp_t *sfp _RIX)
+static void knh_getToken(knh_sfp_t *sfp, AccessToken_t *token)
 {
 	knh_Object_t *consumer = sfp[0].ox->fields[0];
 	knh_Object_t *rtoken = sfp[0].ox->fields[1];
-	knh_Map_t *ret = NULL;
-	const char *url = String_to(const char *, sfp[1]);
-	char url2[256] = {0};
-	const char *method = IS_NULL(sfp[2].o) ? NULL : String_to(const char *, sfp[2]);
-	const char *consumer_key = NULL;
-	const char *consumer_secret = NULL;
-	const char *request_token = NULL;
-	const char *request_token_secret = NULL;
-
-	if (!IS_NULL(consumer)) {
+	if (IS_NOTNULL(consumer)) {
 		knh_ObjectField_t *of = (knh_ObjectField_t *)consumer;
-		consumer_key = S_totext((knh_String_t*)of->fields[0]);
-		consumer_secret = S_totext((knh_String_t*)of->fields[1]);
+		token->key = S_totext((knh_String_t*)of->fields[0]);
+		token->secret = S_totext((knh_String_t*)of->fields[1]);
 	}
-	if (!IS_NULL(rtoken)) {
+	if (IS_NOTNULL(rtoken)) {
 		knh_ObjectField_t *of = (knh_ObjectField_t *)rtoken;
-		request_token = S_totext((knh_String_t *)of->fields[0]);
-		request_token_secret = S_totext((knh_String_t *)of->fields[1]);
-		if (!IS_NULL(of->fields[2])) {
-			strncat(url2, url, knh_strlen(url));
-			strncat(url2, "?oauth_verifier=", 16);
-			knh_String_t *verifier = (knh_String_t *)of->fields[2];
-			if (knh_strlen(url2) + S_size(verifier) < 256) {
-				strncat(url2, S_totext(verifier), S_size(verifier));
-			}
-			url = url2;
-		}
+		token->rtoken = S_totext((knh_String_t *)of->fields[0]);
+		token->rtoken_secret = S_totext((knh_String_t *)of->fields[1]);
 	}
+	DBG_P("consumer_key: %s, consumer_secret: %s", token->key, token->secret);
+	DBG_P("request_token: %s, request_token_secret: %s", token->rtoken, token->rtoken_secret);
+}
 
-	DBG_P("consumer_key: %s, consumer_secret: %s", consumer_key, consumer_secret);
-	DBG_P("request_token: %s, request_token_secret: %s", request_token == NULL ? "NULL" : request_token , request_token_secret == NULL ? "NULL" : request_token_secret);
-	DBG_P("url: %s", url);
-
+static char *knh_request(Args_t *args, const char *method, AccessToken_t *token)
+{
 	char *reply = NULL;
-	if (method != NULL && knh_strncmp(method, "POST", 5)) {
+	if (knh_strncmp(method, "POST", 5) == 0) {
 		char *postargs = NULL;
-		char *req_url = oauth_sign_url2(
-				url, // url
+		char *req_url = oauth_sign_array2(
+				&args->argc, // argcp
+				&args->argv, // argvp
 				&postargs, // postargs
 				OA_HMAC, // method
 				NULL, // http_method
-				consumer_key, // c_key
-				consumer_secret, // c_secret
-				request_token, // t_key
-				request_token_secret // t_secret
+				token->key, // c_key
+				token->secret, // c_secret
+				token->rtoken, // t_key
+				token->rtoken_secret // t_secret
 				);
-		DBG_P("request URL:%s", req_url);
+		DBG_P("request URL(POST): %s?%s", req_url, postargs);
 		reply = oauth_http_post(req_url, postargs);
 		if (postargs) free(postargs);
 		if (req_url) free(req_url);
 	} else {
-		char *req_url = oauth_sign_url2(
-				url, // url
+		char *req_url = oauth_sign_array2(
+				&args->argc, // argcp
+				&args->argv, // argvp
 				NULL, // postargs
 				OA_HMAC, // method
 				NULL, // http_method
-				consumer_key, // c_key
-				consumer_secret, // c_secret
-				request_token, // t_key
-				request_token_secret // t_secret
+				token->key, // c_key
+				token->secret, // c_secret
+				token->rtoken, // t_key
+				token->rtoken_secret // t_secret
 				);
-		DBG_P("request URL:%s", req_url);
+		DBG_P("request URL(GET): %s", req_url);
 		reply = oauth_http_get(req_url, NULL);
 		if (req_url) free(req_url);
 	}
+	return reply;
+}
 
+static void knh_setArgs(CTX ctx, Args_t *args, knh_Map_t *m)
+{
+	knh_DictMap_t *dmap = knh_toDictMap(ctx, m, 0);
+	knh_sfp_t *lsfp = ctx->esp;
+	knh_nitr_t mitrbuf = K_NITR_INIT, *mitr = &mitrbuf;
+	klr_setesp(ctx, lsfp+1);
+	char buf[256] = {0};
+	while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
+		const char *key = S_totext(lsfp[0].s);
+		Object *o = knh_DictMap_getNULL(ctx, dmap, S_tobytes(lsfp[0].s));
+		switch (O_cid(o)) {
+		case CLASS_Int:
+			knh_snprintf(buf, sizeof(buf), "%s=" K_INT_FMT, key, N_toint(o));
+			break;
+		case CLASS_Float:
+			knh_snprintf(buf, sizeof(buf), "%s=" K_FLOAT_FMT, key, N_tofloat(o));
+			break;
+		case CLASS_Boolean:
+			knh_snprintf(buf, sizeof(buf), "%s=%s",
+					key, N_tobool(o) ? "true" : "false");
+			break;
+		case CLASS_String:
+			knh_snprintf(buf, sizeof(buf), "%s=%s", key, S_totext((knh_String_t *)o));
+			break;
+		default:
+			TODO();
+			break;
+		}
+		DBG_P("m[%s] = {class:%s, struct:%s, o:%s}", S_totext(lsfp[0].s),
+				CLASS__(O_cid(o)), STRUCT__(O_bcid(o)), O__(o));
+		if (knh_strlen(buf) > 0) {
+			DBG_P("param: \"%s\"", buf);
+			oauth_add_param_to_array(&args->argc, &args->argv, buf);
+		}
+		buf[0] = '\0';
+		klr_setesp(ctx, lsfp+1);
+	}
+}
+
+/* ======================================================================== */
+// [KMETHODS]
+
+//## @Native Map<String,String> Client_request(String url, String method, Map params);
+KMETHOD Client_request(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Map_t *rmap = NULL;
+	AccessToken_t token = {NULL, NULL, NULL, NULL};
+	Args_t args = {0, NULL};
+	args.argc = oauth_split_url_parameters(String_to(const char *, sfp[1]), &args.argv);
+	const char *method = String_to(const char *, sfp[2]);
+
+	if (IS_NOTNULL(sfp[3].o)) {
+		knh_setArgs(ctx, &args, sfp[3].m);
+	}
+
+	DBG_P("url: %s", args.argv[0]);
+	DBG_P("method: %s", method);
+	knh_getToken(sfp, &token);
+	char *reply = knh_request(&args, method, &token);
+	knh_freeArgs(&args);
 	if (!reply) {
 		// failed
 		DBG_P("HTTP request for an oauth request-token failed.");
 	} else {
 		// parse reply
-		ret = parseReply(ctx, reply);
+		rmap = knh_parseReply(ctx, reply);
 		free(reply);
 	}
-
-	if (ret) {
-		RETURN_(ret);
+	if (rmap) {
+		RETURN_(rmap);
 	} else {
 		RETURN_(new_DataMap(ctx));
 	}
 }
 
-/* ------------------------------------------------------------------------ */
+/* ======================================================================== */
+// [DEFAPI]
 
 #ifdef _SETUP
-
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 {
 	RETURN_PKGINFO("konoha.liboauth");
 }
-
 #endif /* _SETUP */
 
 #ifdef __cplusplus
