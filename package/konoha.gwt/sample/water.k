@@ -10,96 +10,55 @@ class PhysicsWorld {
 	Group group;
 
 	PhysicsWorld() {
+		//world.setBeginContactEvent(delegate(this, beginContact));
+		//world.setEndContactEvent(delegate(this, endContact));
 		scene = new Scene();
 		world = new World(scene);
-		world.setBeginContactEvent(delegate(this, beginContact));
-		world.setEndContactEvent(delegate(this, endContact));
 		scene.setSceneRect(0, 0, 600, 600);
 		//scene.setBackgroundColor(new Color("black"));
-		rotate_duration = 5.0f;
-		group = new Group();
 	}
 	
 	void addStaticObject() {
 		Color static_block_color = new Color("#90ee90");
-		ground = new Rect(200, 400, 200, 40);
+		ground = new Rect(150, 400, 300, 40);
 		ground.setColor(static_block_color);
 		ground.setShadow(new Shadow());
-		Rect left_block = new Rect(200, 350, 10, 50);
-		//group.addToGroup(ground);
+		Rect left_block = new Rect(150, 300, 10, 100);
 		left_block.setColor(static_block_color);
-		//left_block.setShadow(new Shadow());
-		Rect right_block = new Rect(400 - 10, 350, 10, 50);
+		Rect right_block = new Rect(450 - 10, 300, 10, 100);
 		right_block.setColor(static_block_color);
 		right_block.setShadow(new Shadow());
-		Ellipse e = new Ellipse();
-		e.setRect(new Rect(300, 300, 20, 20));
-		e.setColor(new Color("#999900"));
-		//e.setGlow();
-		Ellipse star = new Ellipe();
-		star.setRect(new Rect(400, 200, 40, 40));
-		star.setColor(new Color("#00ff00"));
-		star.setGlow();
-		scene.addItem(star);
 		ground.setRestitution(0);
 		scene.addItem(ground);
 		scene.addItem(left_block);
 		scene.addItem(right_block);
-		scene.addItem(e);
 		world.add(left_block);
 		world.add(right_block);
 		world.add(ground);
-		world.add(e);
 	}
 
 	void addDynamicObject() {
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 500; i++) {
 			int r = Int.random(100);
-			Rect rect = new Rect(350 - r, 300 - r, 10, 10);
-			rect.setDensity(1);
-			//rect.setFriction(0.3);
-			rect.setRestitution(0.1);
-			rect.setColor(new Color("#87ceeb"));//155 - r, 200 - r, 255 - r));
-			world.add(rect);
-			scene.addItem(rect);
+			Ellipse e = new Ellipse();
+			e.setRect(new Rect(350 - r, 300 - r, 5, 5));
+			e.setDensity(1);
+			e.setRestitution(0);
+			e.setColor(new Color("#87ceeb"));//155 - r, 200 - r, 255 - r));
+			world.add(e);
+			scene.addItem(e);
 		}
-		Ellipse e = new Ellipse();
-		e.setRect(new Rect(250, 300, 30, 30));
-		e.setColor(new Color("#eeee00"));
-		e.setDensity(1.0);
-		e.setGlow();
-		Text text = new Text("Hello World");
-		text.setPosition(300, 100);
-		text.setDensity(1.0);
-		//Texture texture = new Texture("sample/qt.jpg");
-		//texture.setRect(new Rect(200, 200, 50, 50));
-		//texture.setDensity(1);
-		world.add(e);
-		scene.addItem(e);
-		world.add(text);
-		scene.addItem(text);
-		//world.add(texture);
-		//scene.addItem(texture);
+	}
+
+	void fountain() {
+		
 	}
 
 	void show() {
 		view = new View(scene);
 		view.setRenderHint(Painter.Antialiasing);
-		t = new Timer(1000 / 40, delegate(this, rotate));
-		//t.start();
 		view.show();
 		world.start();
-	}
-
-	void rotate(TimerEvent event) {
-		//view.rotate(rotate_duration);
-		rotate_duration += 5.0;
-		trans = new Transform();
-		trans.translate(200 + 100, 400 + 20);
-		trans.rotate(rotate_duration, Gwt.YAxis);
-		//ground.setTransform(trans);
-		//group.setTransform(trans);
-		//view.setTransform(trans);
 	}
 
 	Color getRandomColor() {

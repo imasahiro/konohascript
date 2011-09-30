@@ -9,7 +9,7 @@ KMETHOD Point_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	NO_WARNING();
 	int x = Int_to(int, sfp[1]);
 	int y = Int_to(int, sfp[2]);
-	KPoint *point = new KPoint(x, y);
+	GamPoint *point = new GamPoint(x, y);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, point, NULL);
 	RETURN_(p);
 }
@@ -17,14 +17,14 @@ KMETHOD Point_new(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Point_getX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KPoint *p = RawPtr_to(KPoint *, sfp[0]);
+	GamPoint *p = RawPtr_to(GamPoint *, sfp[0]);
 	RETURNi_(p->x);
 }
 
 KMETHOD Point_getY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KPoint *p = RawPtr_to(KPoint *, sfp[0]);
+	GamPoint *p = RawPtr_to(GamPoint *, sfp[0]);
 	RETURNi_(p->y);
 }
 
@@ -35,7 +35,7 @@ static void Point_free(CTX ctx, knh_RawPtr_t *p)
 #ifdef DEBUG_MODE
 		//fprintf(stderr, "Point:free\n");
 #endif
-		KPoint *point = (KPoint *)p->rawptr;
+		GamPoint *point = (GamPoint *)p->rawptr;
 		delete point;
 	}
 }

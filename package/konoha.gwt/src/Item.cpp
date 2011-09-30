@@ -26,12 +26,45 @@ KMETHOD Item_setTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+KMETHOD Item_setOpacity(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	QGraphicsItem *i = QGraphicsItem_to(sfp[0]);
+	qreal opacity = Float_to(qreal, sfp[1]);
+	i->setOpacity(opacity);
+	RETURNvoid_();
+}
+
+KMETHOD Item_setTransformOriginPoint(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	QGraphicsItem *i = QGraphicsItem_to(sfp[0]);
+	qreal x = Float_to(qreal, sfp[1]);
+	qreal y = Float_to(qreal, sfp[2]);
+	i->setTransformOriginPoint(x, y);
+	RETURNvoid_();
+}
+
+KMETHOD Item_getX(Ctx *ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	QGraphicsItem *i = QGraphicsItem_to(sfp[0]);
+	RETURNi_(i->x());
+}
+
+KMETHOD Item_getY(Ctx *ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	QGraphicsItem *i = QGraphicsItem_to(sfp[0]);
+	RETURNi_(i->y());
+}
+
 static void Item_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
 	(void)p;
 	fprintf(stderr, "Item:free\n");
-	//KItem *i = (KItem *)p->rawptr;
+	//GamItem *i = (GamItem *)p->rawptr;
 }
 
 static void Item_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)

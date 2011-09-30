@@ -22,6 +22,7 @@ void KScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p2));
 		knh_Func_invoke(lctx, mouse_press_func, lsfp, 2/*argc*/);
 	}
+	QGraphicsScene::mousePressEvent(event);
 }
 
 void KScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -34,6 +35,7 @@ void KScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p2));
 		knh_Func_invoke(lctx, mouse_move_func, lsfp, 2/*argc*/);
 	}
+	QGraphicsScene::mouseMoveEvent(event);
 }
 
 void KScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
@@ -46,6 +48,20 @@ void KScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p2));
 		knh_Func_invoke(lctx, mouse_release_func, lsfp, 2/*argc*/);
 	}
+	QGraphicsScene::mouseReleaseEvent(event);
+}
+
+void KScene::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
+{
+	if (drag_move_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		knh_RawPtr_t *p2 = new_RawPtrFromClass(DragDropEvent, event);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p2));
+		knh_Func_invoke(lctx, drag_move_func, lsfp, 2/*argc*/);
+	}
+	QGraphicsScene::dragMoveEvent(event);
 }
 
 KMETHOD Scene_setMousePressEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -70,6 +86,14 @@ KMETHOD Scene_setMouseMoveEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 	KScene *s = RawPtr_to(KScene *, sfp[0]);
 	knh_Func_t *fo = sfp[1].fo;
 	KNH_INITv(s->mouse_move_func, fo);
+}
+
+KMETHOD Scene_setDragMoveEvent(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	KScene *s = RawPtr_to(KScene *, sfp[0]);
+	knh_Func_t *fo = sfp[1].fo;
+	KNH_INITv(s->drag_move_func, fo);
 }
 
 KMETHOD Scene_new(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -131,6 +155,26 @@ KMETHOD Scene_removeItem(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+KMETHOD Scene_clear(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	KScene *s = RawPtr_to(KScene *, sfp[0]);
+	s->clear();
+	RETURNvoid_();
+}
+
+KMETHOD Scene_update(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	KScene *s = RawPtr_to(KScene *, sfp[0]);
+	int x = Int_to(int, sfp[1]);
+	int y = Int_to(int, sfp[2]);
+	int width = Int_to(int, sfp[3]);
+	int height = Int_to(int, sfp[4]);
+	s->update(x, y, width, height);
+	RETURNvoid_();
+}
+
 static void Scene_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
@@ -153,9 +197,22 @@ static void Scene_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 #endif
 		KScene *s = (KScene *)p->rawptr;
 		int list_size = s->added_list->length();
+		KNH_ENSUREREF(ctx, list_size);
 		for (int i = 0; i < list_size; i++) {
 			knh_RawPtr_t *item = s->added_list->at(i);
 			KNH_ADDREF(ctx, item);
+			KNH_SIZEREF(ctx);
+		}
+		if (s->mouse_press_func != NULL) {
+			KNH_ADDREF(ctx, s->mouse_press_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (s->mouse_move_func != NULL) {
+			KNH_ADDREF(ctx, s->mouse_move_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (s->mouse_release_func != NULL) {
+			KNH_ADDREF(ctx, s->mouse_release_func);
 			KNH_SIZEREF(ctx);
 		}
 	}

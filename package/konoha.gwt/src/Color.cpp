@@ -21,7 +21,7 @@ static void Color_free(CTX ctx, knh_RawPtr_t *p)
 		//fprintf(stderr, "Color:free\n");
 #endif
 		QColor *c = (QColor *)p->rawptr;
-		delete c;
+		//delete c;
 	}
 }
 

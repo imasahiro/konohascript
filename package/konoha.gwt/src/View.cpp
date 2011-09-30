@@ -7,7 +7,7 @@ extern "C" {
 KMETHOD View_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KScene *s = RawPtr_to(KScene *, sfp[1]);
+	GamScene *s = RawPtr_to(GamScene *, sfp[1]);
 	QGraphicsView *v = new QGraphicsView(s);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, v, NULL);
 	RETURN_(p);
@@ -45,11 +45,49 @@ KMETHOD View_setRenderHint(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+KMETHOD View_rotate(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	QGraphicsView *v = RawPtr_to(QGraphicsView *, sfp[0]);
+	qreal angle = Float_to(qreal, sfp[1]);
+	v->rotate(angle);
+	RETURNvoid_();
+}
+
+KMETHOD View_setTransform(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	QGraphicsView *v = RawPtr_to(QGraphicsView *, sfp[0]);
+	//v->setTransformationAnchor(QGraphicsView::NoAnchor);
+	v->setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+	QTransform *trans = RawPtr_to(QTransform *, sfp[1]);
+	v->setTransform(*trans);
+	RETURNvoid_();
+}
+
 KMETHOD View_show(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
 	QGraphicsView *v = RawPtr_to(QGraphicsView *, sfp[0]);
 	v->show();
+	RETURNvoid_();
+}
+
+KMETHOD View_setShadow(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	QGraphicsView *v = RawPtr_to(QGraphicsView *, sfp[0]);
+	QGraphicsDropShadowEffect *e = RawPtr_to(QGraphicsDropShadowEffect *, sfp[1]);
+	v->setGraphicsEffect(e);
+	RETURNvoid_();
+}
+
+KMETHOD View_setMouseTracking(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	QGraphicsView *v = RawPtr_to(QGraphicsView *, sfp[0]);
+	bool b = Boolean_to(bool, sfp[1]);
+	v->setMouseTracking(b);
 	RETURNvoid_();
 }
 

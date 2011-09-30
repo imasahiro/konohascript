@@ -4,15 +4,15 @@
 extern "C" {
 #endif
 
-KGroup::KGroup(void)
+GamGroup::GamGroup(void)
 {
-	setObjectName("KGroup");
+	setObjectName("GamGroup");
 }
 
 KMETHOD Group_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KGroup *g = new KGroup();
+	GamGroup *g = new GamGroup();
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, g, NULL);
 	RETURN_(p);
 }
@@ -20,7 +20,7 @@ KMETHOD Group_new(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Group_addToGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KGroup *g = RawPtr_to(KGroup *, sfp[0]);
+	GamGroup *g = RawPtr_to(GamGroup *, sfp[0]);
 	QGraphicsItem *i = QGraphicsItem_to(sfp[1]);
 	g->addToGroup(i);
 	RETURNvoid_();
@@ -32,7 +32,7 @@ static void Group_free(CTX ctx, knh_RawPtr_t *p)
 #ifdef DEBUG_MODE
 	fprintf(stderr, "Group:free\n");
 #endif
-	//KGroup *g = (KGroup *)p->rawptr;
+	//GamGroup *g = (GamGroup *)p->rawptr;
 	//delete g;
 }
 

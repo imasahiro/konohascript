@@ -1,14 +1,14 @@
 CC = g++
 QTDIR ?= /usr/local/Trolltech/Qt-4.7.3
-INCPATH = -I$(QTDIR)/mkspecs/macx-g++ -I. -I$(QTDIR)/lib/QtCore.framework/Versions/4/Headers -I$(QTDIR)/include/QtCore -I$(QTDIR)/lib/QtGui.framework/Versions/4/Headers -I$(QTDIR)/include/QtGui -I$(QTDIR)/include -I. -I. -F$(QTDIR)/lib -I/usr/local/include/Box2D -I/usr/local/include/opencv2 -I/opt/local/include/opencv2 -I/usr/local/include/opencv -I./lib/triangle++/include/
+INCPATH = -I$(QTDIR)/mkspecs/macx-g++ -I. -I$(QTDIR)/lib/QtCore.framework/Versions/4/Headers -I$(QTDIR)/include/QtCore -I$(QTDIR)/lib/QtGui.framework/Versions/4/Headers -I$(QTDIR)/include/QtGui -I$(QTDIR)/include -I. -I. -F$(QTDIR)/lib -I/usr/local/include/Box2D -I/usr/local/include/opencv2 -I/opt/local/include/opencv2 -I/usr/local/include/opencv -I/usr/local/include
 LFLAGS = -headerpad_max_install_names -arch x86_64 -Xarch_x86_64 -mmacosx-version-min=10.5
 #OPENCV_LIBS = `pkg-config opencv --libs`
 OPENCV_LIBS = -lopencv_calib3d -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_ts -lopencv_video
 OPENCV_FLAGS = #`pkg-config opencv --cflags`
-LIBS = -F$(QTDIR)/lib -L$(QTDIR)/lib -framework QtGui -L$(QTDIR)/lib -F$(QTDIR)/lib -framework QtCore $(OPENCV_LIBS) -L./lib/triangle++/lib/
-DEFINES = -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -DK_USING_BOX2D -DK_USING_OPENCV #-DDEBUG_MODE
+LIBS = -F$(QTDIR)/lib -L$(QTDIR)/lib -framework QtGui -L$(QTDIR)/lib -F$(QTDIR)/lib -framework QtCore $(OPENCV_LIBS) -L/usr/local/lib
+DEFINES = -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -DK_USING_BOX2D -DK_USING_OPENCV -DGAM_USING_BOX2D #-DDEBUG_MODE
 CFLAGS = -O0 -g3 -pipe -g -gdwarf-2 -Wall -W -arch x86_64 -Xarch_x86_64 -mmacosx-version-min=10.5 $(DEFINES) -I/usr/local/include/ -I./include/ -I$(QTDIR)/include -Wall -W -fPIC $(INCPATH) $(OPENCV_FLAGS) -DNDEBUG
-LDLIBS = $(LFLAGS) $(LIBS) -lkonoha1 -lBox2D -ldel
+LDLIBS = $(LFLAGS) $(LIBS) -lkonoha1 -lgam
 
 pkgname = gwt
 library = "$(pkgname).dylib"
@@ -20,7 +20,6 @@ objs = build/moc_gwt.o\
 	build/Rect.o\
 	build/TimeLine.o\
 	build/Transform.o\
-	build/Connector.o\
 	build/Group.o\
 	build/Painter.o\
 	build/Scene.o\
@@ -36,11 +35,11 @@ objs = build/moc_gwt.o\
 	build/Camera.o\
 	build/Point.o\
 	build/MouseEvent.o\
-	build/Triangle.o\
 	build/ComplexItem.o\
 	build/Pen.o\
 	build/Line.o\
-	build/Video.o
+	build/Video.o\
+	build/Font.o
 
 .PHONY: all
 all: $(library)
@@ -59,9 +58,6 @@ build/Brush.o: src/Brush.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/Camera.o: src/Camera.cpp
-	$(CC) $(CFLAGS) -o $@ -c $^
-
-build/Connector.o: src/Connector.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/Contact.o: src/Contact.cpp
@@ -115,9 +111,6 @@ build/Point.o: src/Point.cpp
 build/Timer.o: src/Timer.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
-build/Triangle.o: src/Triangle.cpp
-	$(CC) $(CFLAGS) -o $@ -c $^
-
 build/Shadow.o: src/Shadow.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
@@ -131,6 +124,9 @@ build/World.o: src/World.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/Video.o: src/Video.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/Font.o: src/Font.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 $(library): $(objs)

@@ -4,6 +4,12 @@
 extern "C" {
 #endif
 
+void KTimeLine::finishedSlotFunc()
+{
+	if (finished_event_func != NULL) {
+	}
+}
+
 KMETHOD TimeLine_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();

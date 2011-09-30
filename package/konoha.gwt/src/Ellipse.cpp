@@ -4,72 +4,20 @@
 extern "C" {
 #endif
 
-KEllipse::KEllipse()
-{
-	setObjectName("KEllipse");
-	isDrag = false;
-	setTag(GEllipse);
-#ifdef K_USING_BOX2D
-	isStatic = true;
-#endif
-}
-
-#ifdef K_USING_BOX2D
-void KEllipse::addToWorld(KWorld *w)
-{
-	b2World *world = w->world;
-	b2BodyDef bodyDef;
-	if (!isStatic) {
-		bodyDef.type = b2_dynamicBody;
-	}
-	bodyDef.position.Set(0, 0);
-	bodyDef.angle = -(rotation() * (2 * M_PI)) / 360.0;
-	body = world->CreateBody(&bodyDef);
-
-	b2FixtureDef shapeDef;
-	b2CircleShape shape;
-	shape.m_p = b2Vec2(x + width / 2, -y - height / 2);
-	shape.m_radius = width / 2;
-	shapeDef.shape = &shape;
-	shapeDef.density = density;
-	shapeDef.friction = friction;
-	shapeDef.restitution = restitution;
-	body->CreateFixture(&shapeDef);
-
-	QGraphicsItem *i = dynamic_cast<QGraphicsItem *>(this);
-	knh_GraphicsUserData_t *data = (knh_GraphicsUserData_t *)malloc(sizeof(knh_GraphicsUserData_t));
-	memset(data, 0, sizeof(knh_GraphicsUserData_t));
-	CTX lctx = knh_getCurrentContext();
-	data->ct = getClassTBL(Ellipse);
-	data->o = i;
-	data->self = this;
-	body->SetUserData(data);
-}
-
-#endif
-
-void KEllipse::setRectShape(KRect *r)
-{
-	setRect(*r->r);
-	x = r->x;
-	y = r->y;
-	width = r->width;
-	height = r->height;
-}
-
 KMETHOD Ellipse_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KEllipse *e = new KEllipse();
+	GamEllipse *e = new GamEllipse();
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, e, NULL);
+	e->setBodyUserData(p);//for ContactEvent
 	RETURN_(p);
 }
 
 KMETHOD Ellipse_setRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KEllipse *e = RawPtr_to(KEllipse *, sfp[0]);
-	KRect *r = RawPtr_to(KRect *, sfp[1]);
+	GamEllipse *e = RawPtr_to(GamEllipse *, sfp[0]);
+	GamRect *r = RawPtr_to(GamRect *, sfp[1]);
 	e->setRectShape(r);
 	RETURNvoid_();
 }
@@ -77,7 +25,7 @@ KMETHOD Ellipse_setRect(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Ellipse_setColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KEllipse *e = RawPtr_to(KEllipse *, sfp[0]);
+	GamEllipse *e = RawPtr_to(GamEllipse *, sfp[0]);
 	QColor *c = RawPtr_to(QColor *, sfp[1]);
 	e->setBrush(*c);
 	RETURNvoid_();
@@ -86,7 +34,7 @@ KMETHOD Ellipse_setColor(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Ellipse_setZValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KEllipse *e = RawPtr_to(KEllipse *, sfp[0]);
+	GamEllipse *e = RawPtr_to(GamEllipse *, sfp[0]);
 	int val = Int_to(int, sfp[1]);
 	e->setZValue(val);
 	RETURNvoid_();
@@ -95,7 +43,7 @@ KMETHOD Ellipse_setZValue(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Ellipse_getZValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KEllipse *e = RawPtr_to(KEllipse *, sfp[0]);
+	GamEllipse *e = RawPtr_to(GamEllipse *, sfp[0]);
 	RETURNi_(e->zValue());
 }
 
@@ -103,7 +51,7 @@ KMETHOD Ellipse_getZValue(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Ellipse_setRotation(Ctx *ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KEllipse *e = RawPtr_to(KEllipse *, sfp[0]);
+	GamEllipse *e = RawPtr_to(GamEllipse *, sfp[0]);
 	qreal rotation = Float_to(qreal, sfp[1]);
 	e->setRotation(rotation);
 	RETURNvoid_();
@@ -112,7 +60,7 @@ KMETHOD Ellipse_setRotation(Ctx *ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Ellipse_setDensity(Ctx *ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KEllipse *e = RawPtr_to(KEllipse *, sfp[0]);
+	GamEllipse *e = RawPtr_to(GamEllipse *, sfp[0]);
 	qreal density = Float_to(qreal, sfp[1]);
 	e->setDensity(density);
 	RETURNvoid_();
@@ -121,7 +69,7 @@ KMETHOD Ellipse_setDensity(Ctx *ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Ellipse_setFriction(Ctx *ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KEllipse *e = RawPtr_to(KEllipse *, sfp[0]);
+	GamEllipse *e = RawPtr_to(GamEllipse *, sfp[0]);
 	qreal friction = Float_to(qreal, sfp[1]);
 	e->setFriction(friction);
 	RETURNvoid_();
@@ -130,12 +78,39 @@ KMETHOD Ellipse_setFriction(Ctx *ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Ellipse_setRestitution(Ctx *ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KEllipse *e = RawPtr_to(KEllipse *, sfp[0]);
+	GamEllipse *e = RawPtr_to(GamEllipse *, sfp[0]);
 	qreal restitution = Float_to(qreal, sfp[1]);
 	e->setRestitution(restitution);
 	RETURNvoid_();
 }
 #endif
+
+KMETHOD Ellipse_setPosition(Ctx *ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	GamEllipse *e = RawPtr_to(GamEllipse *, sfp[0]);
+	int x = Int_to(int, sfp[1]);
+	int y = Int_to(int, sfp[2]);
+	e->setPosition(x, y);
+	RETURNvoid_();
+}
+
+KMETHOD Ellipse_setGlowCenterColor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	GamEllipse *e = RawPtr_to(GamEllipse *, sfp[0]);
+	QColor *c = RawPtr_to(QColor *, sfp[1]);
+	e->setGlowCenterColor(c);
+	RETURNvoid_();
+}
+
+KMETHOD Ellipse_setGlow(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	GamEllipse *e = RawPtr_to(GamEllipse *, sfp[0]);
+	e->setGlow();
+	RETURNvoid_();
+}
 
 static void Ellipse_free(CTX ctx, knh_RawPtr_t *p)
 {
@@ -144,17 +119,14 @@ static void Ellipse_free(CTX ctx, knh_RawPtr_t *p)
 #ifdef DEBUG_MODE
 		fprintf(stderr, "Ellipse:free\n");
 #endif
-		KEllipse *e = (KEllipse *)p->rawptr;
-		(void)e;
-		//delete e;
+		GamEllipse *e = (GamEllipse *)p->rawptr;
+		delete e;
 	}
 }
 
 static void Ellipse_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx;
-	(void)p;
-	(void)tail_;
+	(void)ctx; (void)p; (void)tail_;
 	if (p->rawptr != NULL) {
 #ifdef DEBUG_MODE
 		fprintf(stderr, "Ellipse:reftrace\n");

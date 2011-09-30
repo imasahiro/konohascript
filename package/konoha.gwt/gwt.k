@@ -26,17 +26,21 @@ include "lib:gluelink";
 @Native class Shadow;
 @Native class Camera;
 @Native class MouseEvent;
+class DragDropEvent;
 @Native class Video;
+@Native class Font;
 
 TimeLine TimeLine.new(TimeLine _);
 void TimeLine.setDuration(int duration);
 void TimeLine.setCurveShape(int shape);
 void TimeLine.valueChanged();
 void TimeLine.start();
+void TimeLine.setFinishedFunc(Func<> func);
 
 Transform Transform.new(Transform _);
 void Transform.translate(int x, int y);
 void Transform.rotate(int angle, int axis);
+void Transform.scale(float sx, float sy);
 
 void Connector.connect(TimeLine from_func, int type, dynamic to_func);
 
@@ -49,6 +53,10 @@ void Ellipse.setRotation(float rotation);
 void Ellipse.setDensity(float density);
 void Ellipse.setFriction(float friction);
 void Ellipse.setRestitution(float restitution);
+void Ellipse.setPosition(int x, int y);
+void Ellipse.setGlow();
+//void Ellipse.setGlowWidth(float scale);
+void Ellipse.setGlowCenterColor(Color color);
 
 Rect Rect.new(int x, int y, int width, int height, Rect _);
 void Rect.setColor(Color c);
@@ -61,6 +69,9 @@ void Rect.setTexture(Texture t);
 void Rect.setBullet(boolean b);
 boolean Rect.isStatic();
 void Rect.setZValue(int val);
+Point Rect.getCenter();
+void Rect.setPosition(int x, int y);
+void Rect.setSize(float width, float height);
 void Rect.setMousePressEvent(Func<Rect,MouseEvent=>void> func);
 void Rect.setMouseMoveEvent(Func<Rect,MouseEvent=>void> func);
 void Rect.setMouseReleaseEvent(Func<Rect,MouseEvent=>void> func);
@@ -72,6 +83,11 @@ void Texture.setRotation(float rotation);
 void Texture.setDensity(float density);
 void Texture.setFriction(float friction);
 void Texture.setRestitution(float restitution);
+void Texture.setZValue(int val);
+void Texture.scale(float x, float y);
+Point Texture.getCenter();
+void Texture.setPosition(int x, int y);
+void Texture.setSize(float width, float height);
 Texture[] Texture.split(int row, int col);
 Array<Array<Point>> Texture.detectHuman(Texture background, Point _);
 void Texture.setMousePressEvent(Func<Texture,MouseEvent=>void> func);
@@ -85,6 +101,7 @@ void Text.setRotation(float rotation);
 void Text.setDensity(float density);
 void Text.setFriction(float friction);
 void Text.setRestitution(float restitution);
+void Text.setFont(Font f);
 
 Line Line.new(int x1, int y1, int x2, int y2, Line _);
 void Line.setColor(Color c);
@@ -108,9 +125,17 @@ void Pen.setJoinStyle(int style);
 
 void Item.translate(int x, int y);
 void Item.setTransform(Transform t, boolean b);
+void Item.setOpacity(float opacity);
+void Item.setTransformOriginPoint(float x, float y);
+int Item.getX();
+int Item.getY();
 
 Group Group.new(Group _);
 void Group.addToGroup(Item i);
+void Group.removeFromGroup(Item i);
+Point Group.getCenter();
+void Group.setSize(float width, float height);
+void Group.setPosition(int x, int y);
 
 Scene Scene.new(Scene _);
 void Scene.setItemIndexMethod(int idx);
@@ -121,11 +146,18 @@ void Scene.removeItem(Item i);
 void Scene.setMousePressEvent(Func<Scene,MouseEvent=>void> func);
 void Scene.setMouseMoveEvent(Func<Scene,MouseEvent=>void> func);
 void Scene.setMouseReleaseEvent(Func<Scene,MouseEvent=>void> func);
+void Scene.setDragMoveEvent(Func<Scene,DragDropEvent=>void> func);
+void Scene.clear(void);
+void Scene.update(int x, int y, int width, int height);
 
 View View.new(Scene scene, View _);
 void View.setViewportUpdateMode(int mode);
 void View.setRenderHint(int hint);
 void View.setBackgroundOpacity(int alpha);
+void View.rotate(float angle);
+void View.setTransform(Transform trans);
+void View.setShadow(Shadow shadow);
+void View.setMouseTracking(boolean b);
 void View.show();
 
 Painter Painter.new(Painter _);
@@ -135,8 +167,9 @@ void Application.exec();
 
 Timer Timer.new(int interval, Func<TimerEvent=>void> func, Timer _);
 int Timer.start();
+void Timer.stop(int id);
 
-World World.new(int width, int height, World _);
+World World.new(Scene scene);
 void World.add(Item i);
 void World.start();
 void World.setBeginContactEvent(Func<dynamic,dynamic=>void> contact);
@@ -164,3 +197,9 @@ void ComplexItem.setBullet(boolean b);
 
 Point MouseEvent.lastScreenPos(Point _);
 Point MouseEvent.scenePos(Point _);
+
+Font Font.new(String fontname);
+void Font.setPointSize(int size);
+void Font.setStyle(int style);
+void Font.setFixedPitch(boolean pitch);
+

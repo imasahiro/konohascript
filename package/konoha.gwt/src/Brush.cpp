@@ -18,9 +18,11 @@ KMETHOD Brush_new(CTX ctx, knh_sfp_t *sfp _RIX)
 static void Brush_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
-	fprintf(stderr, "Brush:free\n");
-	QBrush *b = (QBrush *)p->rawptr;
-	delete b;
+	if (p->rawptr != NULL) {
+		fprintf(stderr, "Brush:free\n");
+		QBrush *b = (QBrush *)p->rawptr;
+		//delete b;
+	}
 }
 
 static void Brush_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
@@ -28,8 +30,10 @@ static void Brush_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 	(void)ctx;
 	(void)p;
 	(void)tail_;
-	fprintf(stderr, "Brush:reftrace\n");
-	//QApplication *app = (QApplication *)p->rawptr;
+	if (p->rawptr != NULL) {
+		fprintf(stderr, "Brush:reftrace\n");
+		//QApplication *app = (QApplication *)p->rawptr;
+	}
 }
 
 DEFAPI(void) defBrush(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

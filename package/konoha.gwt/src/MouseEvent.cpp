@@ -8,7 +8,7 @@ KMETHOD MouseEvent_lastScreenPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QGraphicsSceneMouseEvent *event = RawPtr_to(QGraphicsSceneMouseEvent *, sfp[0]);
 	QPointF spos = event->lastScreenPos();
-	KPoint *p = new KPoint(spos.x(), spos.y());
+	GamPoint *p = new GamPoint(spos.x(), spos.y());
 	RETURN_(new_ReturnCppObject(ctx, sfp, p, NULL));
 }
 
@@ -16,7 +16,7 @@ KMETHOD MouseEvent_scenePos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QGraphicsSceneMouseEvent *event = RawPtr_to(QGraphicsSceneMouseEvent *, sfp[0]);
 	QPointF spos = event->scenePos();
-	KPoint *p = new KPoint(spos.x(), spos.y());
+	GamPoint *p = new GamPoint(spos.x(), spos.y());
 	//printf("x: %lf, y: %lf\n", spos.x(), spos.y());
 	RETURN_(new_ReturnCppObject(ctx, sfp, p, NULL));
 }

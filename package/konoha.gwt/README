@@ -1,0 +1,20 @@
+this library needs gam.(Gam is library for Game Creator & Deigital Signage Developer)
+### Dependencies : Qt(ver 4.7), Box2D, OpenCV ####
+$ git clone git@github.com:goccy/gam.git
+$ cd gam
+$ mkdir build
+$ cd build
+$ cmake ../
+$ make
+$ make install // ==> copied to /usr/local/lib/libgam.{dylib, so, dll} & /usr/local/include/gam.hpp
+
+$ cd this_directory
+$ mkdir build
+$ cd build
+$ cmake ../
+$ make
+$ make install //==> copied to /usr/local/konoha/package/$(VERSION)/konoha.gwt/gwt.{dylib, so, dll} & gwt.k
+
+$ konoha sample/physics.k
+
+

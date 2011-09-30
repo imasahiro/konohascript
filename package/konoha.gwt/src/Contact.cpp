@@ -18,15 +18,15 @@ void KContact::BeginContact(b2Contact *contact)
 	b2Fixture *b = contact->GetFixtureB();
 	b2Body *abody = a->GetBody();
 	b2Body *bbody = b->GetBody();
-	knh_GraphicsUserData_t *data1 = (knh_GraphicsUserData_t *)abody->GetUserData();
-	knh_GraphicsUserData_t *data2 = (knh_GraphicsUserData_t *)bbody->GetUserData();
+	GamObject *data1 = (GamObject *)abody->GetUserData();
+	GamObject *data2 = (GamObject *)bbody->GetUserData();
 	if (data1 != NULL && data2 != NULL && begin != NULL) {
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
-		knh_RawPtr_t *p1 = new_RawPtr(lctx, data1->ct, data1->self);
-		knh_RawPtr_t *p2 = new_RawPtr(lctx, data2->ct, data2->self);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p1));
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p2));
+		knh_RawPtr_t *o1 = (knh_RawPtr_t *)data1->userdata;
+		knh_RawPtr_t *o2 = (knh_RawPtr_t *)data1->userdata;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(o1));
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(o2));
 		knh_Func_invoke(lctx, begin, lsfp, 2/*argc*/);
 	}
 }
@@ -38,15 +38,15 @@ void KContact::EndContact(b2Contact *contact)
 	b2Fixture *b = contact->GetFixtureB();
 	b2Body *abody = a->GetBody();
 	b2Body *bbody = b->GetBody();
-	knh_GraphicsUserData_t *data1 = (knh_GraphicsUserData_t *)abody->GetUserData();
-	knh_GraphicsUserData_t *data2 = (knh_GraphicsUserData_t *)bbody->GetUserData();
+	GamObject *data1 = (GamObject *)abody->GetUserData();
+	GamObject *data2 = (GamObject *)bbody->GetUserData();
 	if (data1 != NULL && data2 != NULL && end != NULL) {
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
-		knh_RawPtr_t *p1 = new_RawPtr(lctx, data1->ct, data1->o);
-		knh_RawPtr_t *p2 = new_RawPtr(lctx, data2->ct, data2->o);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(p1));
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p2));
+		knh_RawPtr_t *o1 = (knh_RawPtr_t *)data1->userdata;
+		knh_RawPtr_t *o2 = (knh_RawPtr_t *)data1->userdata;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(o1));
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(o2));
 		knh_Func_invoke(lctx, end, lsfp, 2/*argc*/);
 	}
 }
@@ -68,18 +68,23 @@ void KContact::PostSolve(b2Contact *contact, const b2ContactImpulse *impulse)
 static void Contact_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
-	fprintf(stderr, "Contact:free\n");
-	KContact *c = (KContact *)p->rawptr;
-	delete c;
+	if (p->rawptr != NULL) {
+#ifdef DEBUG_MODE
+		fprintf(stderr, "Contact:free\n");
+#endif
+		KContact *c = (KContact *)p->rawptr;
+		delete c;
+	}
 }
 
 static void Contact_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx;
-	(void)p;
-	(void)tail_;
-	fprintf(stderr, "Contact:reftrace\n");
-	//QApplication *app = (QApplication *)p->rawptr;
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+#ifdef DEBUG_MODE
+		fprintf(stderr, "Contact:reftrace\n");
+#endif
+	}
 }
 
 DEFAPI(void) defContact(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

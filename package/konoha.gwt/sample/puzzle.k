@@ -75,7 +75,7 @@ class Puzzle {
 		Point p = event.lastScreenPos();
 		prev_point = p;
 	}
-
+	
 	void mouseMoveEvent(Rect o, MouseEvent event) {
 		Point p = event.lastScreenPos();
 		int dx = p.x - prev_point.x;

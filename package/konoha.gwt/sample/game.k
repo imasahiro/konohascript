@@ -1,4 +1,4 @@
-using konoha.visual.*;
+using konoha.gwt.*;
 
 MAX_STONE_SIZE = 64;
 MAX_STEP_SIZE = 64;
@@ -79,7 +79,7 @@ class Stone {
 		if (angle > 180) return;
 		Transform t = new Transform();
 		t.translate(x, y);
-		t.rotate(angle, Visual.YAxis);
+		t.rotate(angle, Gwt.YAxis);
 		stone.setTransform(t, false);
 		if (angle % 90 == 0 && (angle / 90) % 2 != 0) {
 			if (forground.zValue < background.zValue) {

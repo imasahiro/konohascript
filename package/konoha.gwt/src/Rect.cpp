@@ -4,21 +4,6 @@
 extern "C" {
 #endif
 
-GObject::GObject(void)
-{
-	_tag = 0;
-}
-
-void GObject::setTag(int tag)
-{
-	_tag = tag;
-}
-
-int GObject::tag(void)
-{
-	return _tag;
-}
-
 void KRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 	if (mouse_press_func != NULL) {
@@ -70,107 +55,12 @@ void KRect::wheelEvent(QGraphicsSceneWheelEvent *event)
 	(void)event;
 }
 
-KRect::KRect(int x_, int y_, int width_, int height_)
+KRect::KRect(int x_, int y_, int width_, int height_) : GamRect(x_, y_, width_, height_)
 {
-	r = new QRect(x_, y_, width_, height_);
-	x = x_;
-	y = y_;
-	width = width_;
-	height = height_;
-	isDrag = false;
-	this->setRect(*r);
 	mouse_press_func = NULL;
 	mouse_release_func = NULL;
 	mouse_move_func = NULL;
-	setObjectName("KRect");
-	setTag(GRect);
-	se = NULL;
-	body = NULL;
-#ifdef K_USING_BOX2D
-	isStatic = true;
-#endif
 }
-
-KRect::~KRect(void)
-{
-	delete r;
-	if (se != NULL)	delete se;
-	if (body != NULL) {
-		body->GetWorld()->DestroyBody(body);
-	}
-}
-
-#ifdef K_USING_BOX2D
-
-KRigidBody::KRigidBody()
-{
-	_rotation = 0.0f;
-	density = 0.0f;
-	friction = 0.0f;
-	restitution = 0.0f;
-	bullet = false;
-}
-
-void KRigidBody::setRot(qreal rotation)
-{
-	_rotation = rotation;
-}
-
-void KRigidBody::setDensity(qreal density_)
-{
-	density = density_;
-	if (density_ > 0) {
-		isStatic = false;
-	} else {
-		isStatic = true;
-	}
-}
-void KRigidBody::setFriction(qreal friction_)
-{
-	friction = friction_;
-}
-
-void KRigidBody::setRestitution(qreal restitution_)
-{
-	restitution = restitution_;
-}
-
-void KRigidBody::setBullet(bool bullet_)
-{
-	bullet = bullet_;
-}
-
-void KRect::addToWorld(KWorld *w)
-{
-	b2World *world = w->world;
-	b2BodyDef bodyDef;
-	if (!isStatic) {
-		bodyDef.type = b2_dynamicBody;
-	}
-	bodyDef.position.Set(0, 0);
-	bodyDef.angle = -(rotation() * (2 * M_PI)) / 360.0;
-	body = world->CreateBody(&bodyDef);
-
-	b2FixtureDef shapeDef;
-	b2PolygonShape shape;
-	shape.SetAsBox(width/2, height/2, b2Vec2(x + width/2, -y - height/2), 0.0);
-	shapeDef.shape = &shape;
-	shapeDef.density = density;
-	shapeDef.friction = friction;
-	shapeDef.restitution = restitution;
-	body->CreateFixture(&shapeDef);
-	body->SetBullet(bullet);
-	//QGraphicsItem *i = dynamic_cast<QGraphicsItem *>(this);
-	QGraphicsItem *i = (QGraphicsItem *)this;
-	knh_GraphicsUserData_t *data = (knh_GraphicsUserData_t *)malloc(sizeof(knh_GraphicsUserData_t));
-	memset(data, 0, sizeof(knh_GraphicsUserData_t));
-	CTX lctx = knh_getCurrentContext();
-	data->ct = getClassTBL(Rect);
-	data->o = i;
-	data->self = this;
-	body->SetUserData(data);
-}
-#endif
 
 KMETHOD Rect_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -182,6 +72,7 @@ KMETHOD Rect_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	KRect *r = new KRect(x, y, width, height);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, r, NULL);
 	r->self = p;
+	r->setBodyUserData(p);//for ContactEvent
 	RETURN_(p);
 }
 
@@ -249,7 +140,7 @@ KMETHOD Rect_setRestitution(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-KMETHOD Rect_isSTatic(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Rect_isStatic(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
 	KRect *r = RawPtr_to(KRect *, sfp[0]);
@@ -305,6 +196,35 @@ KMETHOD Rect_setMouseMoveEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 
 #endif
 
+KMETHOD Rect_setSize(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	KRect *r = RawPtr_to(KRect *, sfp[0]);
+	float width = Float_to(qreal, sfp[1]);
+	float height = Float_to(qreal, sfp[2]);
+	r->setSize(width, height);
+	RETURNvoid_();
+}
+
+KMETHOD Rect_setPosition(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	KRect *r = RawPtr_to(KRect *, sfp[0]);
+    int x = Int_to(qreal, sfp[1]);
+	int y = Int_to(qreal, sfp[2]);
+	r->setPos(x, y);
+	RETURNvoid_();
+}
+
+KMETHOD Rect_getCenter(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	NO_WARNING();
+	KRect *r = RawPtr_to(KRect *, sfp[0]);
+	GamPoint *point = r->getCenter();
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, point, NULL);
+	RETURN_(p);
+}
+
 static void Rect_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
@@ -319,9 +239,6 @@ static void Rect_free(CTX ctx, knh_RawPtr_t *p)
 
 static void Rect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx;
-	(void)p;
-	(void)tail_;
 	if (p->rawptr != NULL) {
 #ifdef DEBUG_MODE
 		fprintf(stderr, "Rect:reftrace\n");

@@ -11,32 +11,34 @@ class AR {
 	Texture prev_texture;
 	//Rect[] default_objs;//for GC BUG
 
-	AR() {
-		app = new Application();
-		window = new Scene();
-		world = new World();
-		window.setItemIndexMethod(Scene.NoIndex);
-		window.setSceneRect(0, 0, 1200, 700);
-		window.setBackgroundColor(new Color("black"));
+	AR(Scene win, World w) {
+		_window = win;
+		_world = w;
+		//window.setItemIndexMethod(Scene.NoIndex);
+		//window.setSceneRect(0, 0, 1200, 700);
+		//window.setBackgroundColor(new Color("black"));
 		//default_objs = [];
-		for (int i = 0; i < 100; i++) {
-			int rand = Int.random(100);
-			Rect rect = new Rect(350 - rand, 100 - rand, 50, 50);
-			rect.setDensity(1);
-			rect.setBullet(true);
-			//rect.setFriction(0.3);
-			rect.setRestitution(0.7);
-			rect.setColor(new Color("#87ceeb"));//155 - r, 200 - r, 255 - r));
-			rect.setZValue(4);
-			//default_objs.add(rect);
-			world.add(rect);
-			window.addItem(rect);
-		}
 		Timer t = new Timer(1000 / 40, delegate(this, capture));
 		c = new Camera(0);
 		background = c.queryFrame();
-		window.addItem(background);
 		timer_id = t.start();
+		window.addItem(background);
+		for (int i = 0; i < 100; i++) {
+			int rand_x = Int.random(1200);
+			int rand_y = Int.random(200);
+			Texture logo = new Texture("sample/konohascript.png");
+			logo.setRect(new Rect(rand_x, rand_y, 80, 50));
+			logo.setOpacity(0.9);
+			logo.setDensity(1);
+			//logo.setBullet(true);
+			//rect.setFriction(0.3);
+			logo.setRestitution(0.7);
+			//rect.setColor(new Color("#87ceeb"));//155 - r, 200 - r, 255 - r));
+			logo.setZValue(4);
+			//default_objs.add(rect);
+			world.add(logo);
+			window.addItem(logo);
+		}
 		prev_list = [];
 	}
 
@@ -46,7 +48,6 @@ class AR {
 		view.setRenderHint(Painter.Antialiasing);
 		view.show();
 		world.start();
-		app.exec();
 	}
 
 	void capture(TimerEvent event) {
@@ -79,6 +80,10 @@ class AR {
 
 void main(String[] args)
 {
-	AR ar = new AR();
+	//app = new Application();
+	window = new Scene();
+	world = new World();
+	AR ar = new AR(window, world);
 	ar.show();
+	//app.exec();
 }

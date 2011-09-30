@@ -53,61 +53,13 @@ void KLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 	(void)event;
 }
 
-KLine::KLine(int x1_, int y1_, int x2_, int y2_)
+
+KLine::KLine(int x1_, int y1_, int x2_, int y2_) : GamLine(x1_, y1_, x2_, y2_)
 {
-	x1 = x1_;
-	y1 = y1_;
-	x2 = x2_;
-	y2 = y2_;
-	width = ((x1_ - x2_) > 0) ? (x1_ - x2_) : (x2_ - x1_);
-	height = ((y1_ - y2_) > 0) ? (y1_ - y2_) : (y2_ - y1_);
-	isDrag = false;
-	l = new QLine(x1_, y1_, x2_, y2_);
-	setLine(*l);
-	setObjectName("KLine");
-	setTag(GLine);
 	mouse_press_func = NULL;
 	mouse_move_func = NULL;
 	mouse_release_func = NULL;
-
-#ifdef K_USING_BOX2D
-	isStatic = true;
-#endif
 }
-
-
-#ifdef K_USING_BOX2D
-void KLine::addToWorld(KWorld *w)
-{
-	b2World *world = w->world;
-	b2BodyDef bodyDef;
-	if (!isStatic) {
-		bodyDef.type = b2_dynamicBody;
-	}
-	bodyDef.position.Set(0, 0);
-	bodyDef.angle = -(rotation() * (2 * M_PI)) / 360.0;
-	body = world->CreateBody(&bodyDef);
-
-	b2FixtureDef shapeDef;
-	b2PolygonShape shape;
-	shape.SetAsBox(width / 2, 1, *(new b2Vec2(x1 + width/2, -y1)), 0.0);
-	shapeDef.shape = &shape;
-	shapeDef.density = density;
-	shapeDef.friction = friction;
-	shapeDef.restitution = restitution;
-	body->CreateFixture(&shapeDef);
-
-	QGraphicsItem *i = dynamic_cast<QGraphicsItem *>(this);
-	knh_GraphicsUserData_t *data = (knh_GraphicsUserData_t *)malloc(sizeof(knh_GraphicsUserData_t));
-	memset(data, 0, sizeof(knh_GraphicsUserData_t));
-	CTX lctx = knh_getCurrentContext();
-	data->ct = getClassTBL(Texture);
-	data->o = i;
-	data->self = this;
-	body->SetUserData(data);
-}
-
-#endif
 
 KMETHOD Line_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -116,15 +68,16 @@ KMETHOD Line_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int y1 = Int_to(int, sfp[2]);
 	int x2 = Int_to(int, sfp[3]);
 	int y2 = Int_to(int, sfp[4]);
-	KLine *l = new KLine(x1, y1, x2, y2);
+	GamLine *l = new GamLine(x1, y1, x2, y2);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, l, NULL);
+	l->setBodyUserData(p);//for ContactEvent
 	RETURN_(p);
 }
 
 KMETHOD Line_setPen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KLine *l = RawPtr_to(KLine *, sfp[0]);
+	GamLine *l = RawPtr_to(GamLine *, sfp[0]);
 	QPen* pen = RawPtr_to(QPen *, sfp[1]);
 	l->setPen(*pen);
 	RETURNvoid_();
@@ -133,7 +86,7 @@ KMETHOD Line_setPen(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Line_setColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KLine *l = RawPtr_to(KLine *, sfp[0]);
+	GamLine *l = RawPtr_to(GamLine *, sfp[0]);
 	QColor *c = RawPtr_to(QColor *, sfp[1]);
 	QPen p = l->pen();
 	p.setColor(*c);
@@ -145,7 +98,7 @@ KMETHOD Line_setColor(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Line_setRotation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KLine *r = RawPtr_to(KLine *, sfp[0]);
+	GamLine *r = RawPtr_to(GamLine *, sfp[0]);
 	qreal rotation = Float_to(qreal, sfp[1]);
 	r->setRotation(rotation);
 	RETURNvoid_();
@@ -154,7 +107,7 @@ KMETHOD Line_setRotation(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Line_setDensity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KLine *r = RawPtr_to(KLine *, sfp[0]);
+	GamLine *r = RawPtr_to(GamLine *, sfp[0]);
 	qreal density = Float_to(qreal, sfp[1]);
 	r->setDensity(density);
 	RETURNvoid_();
@@ -163,7 +116,7 @@ KMETHOD Line_setDensity(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Line_setFriction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KLine *r = RawPtr_to(KLine *, sfp[0]);
+	GamLine *r = RawPtr_to(GamLine *, sfp[0]);
 	qreal friction = Float_to(qreal, sfp[1]);
 	r->setFriction(friction);
 	RETURNvoid_();
@@ -172,7 +125,7 @@ KMETHOD Line_setFriction(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Line_setRestitution(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KLine *r = RawPtr_to(KLine *, sfp[0]);
+	GamLine *r = RawPtr_to(GamLine *, sfp[0]);
 	qreal restitution = Float_to(qreal, sfp[1]);
 	r->setRestitution(restitution);
 	RETURNvoid_();
@@ -181,14 +134,14 @@ KMETHOD Line_setRestitution(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Line_isSTatic(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KLine *r = RawPtr_to(KLine *, sfp[0]);
+	GamLine *r = RawPtr_to(GamLine *, sfp[0]);
 	RETURNb_(r->isStatic);
 }
 
 KMETHOD Line_setShadow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	NO_WARNING();
-	KLine *gl = RawPtr_to(KLine *, sfp[0]);
+	GamLine *gl = RawPtr_to(GamLine *, sfp[0]);
 	QGraphicsDropShadowEffect *se = RawPtr_to(QGraphicsDropShadowEffect *, sfp[1]);
 	gl->setGraphicsEffect(se);
 	RETURNvoid_();
