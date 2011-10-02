@@ -1742,13 +1742,14 @@ static knh_index_t ITR_indexTOUNTIL(tkitr_t *itr)
 	return -1;
 }
 
-static void _ASISEXPRs(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
+static void _NULLEXPRs(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 {
 	do {
 		int idx = ITR_indexTT(itr, TT_COMMA, itr->e);
 		tkitr_t ebuf, *eitr = ITR_first(itr, idx, &ebuf, +1);
 		if(ITR_size(eitr) == 0) {
-			_ASIS(ctx, stmt, eitr);
+			knh_Stmt_add(ctx, stmt, new_Token(ctx, TT_NULL));
+//			_ASIS(ctx, stmt, eitr);
 		}
 		else {
 			_EXPR(ctx, stmt, eitr);
@@ -1757,7 +1758,8 @@ static void _ASISEXPRs(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 	while(ITR_hasNext(itr));
 	(itr)->c = (itr)->e - 1;
 	if(ITR_is(itr, TT_COMMA)) {
-		_ASIS(ctx, stmt, itr);
+		  knh_Stmt_add(ctx, stmt, new_Token(ctx, TT_NULL));
+//		  _ASIS(ctx, stmt, itr);
 	}
 }
 
@@ -2352,7 +2354,7 @@ static void _CALLPARAM(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 				knh_methodn_t mn = (TT_(pitr->ts[idx]) == TT_TO) ? MN_opTO : MN_opUNTIL;
 				stmt = Stmt_addFUNCMN(ctx, stmt, mn);
 				TT_((pitr)->ts[idx]) = TT_COMMA;  // replace a, b
-				_ASISEXPRs(ctx, stmt, pitr);
+				_NULLEXPRs(ctx, stmt, pitr);
 			}
 			continue;
 		}
