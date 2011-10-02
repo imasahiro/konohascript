@@ -623,7 +623,9 @@ typedef jmp_buf knh_jmpbuf_t;
 #ifdef K_INTERNAL
 struct knh_ExceptionHandlerEX_t {
 	knh_jmpbuf_t jmpbuf;
-	knh_intptr_t espidx;
+	struct knh_opline_t *pc;
+	struct klr_TRY_t *op;
+	knh_intptr_t sfpidx;
 };
 #endif
 

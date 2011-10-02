@@ -437,11 +437,21 @@ extern "C" {
 	} \
 	int jump = knh_setjmp(DP(_hdr)->jmpbuf); \
 	if(jump == 0) {\
+		knh_ExceptionHandlerEX_t* _hdrEX = DP(Rh_(hn));\
+		_hdrEX->pc = PC_NEXT(pc); \
+		_hdrEX->op = op;\
+		_hdrEX->sfpidx = (SFP(rbp) - ctx->stack); \
+		_hdr = Rh_(hn);\
 		_hdr->espidx = (ctx->esp - ctx->stack); \
 		_hdr->parentNC = ctx->ehdrNC;\
 		((knh_context_t*)ctx)->ehdrNC = _hdr; \
 	} else { \
+		_hdr = ctx->ehdrNC;\
+		knh_ExceptionHandlerEX_t* _hdrEX = DP(_hdr);\
+		pc = _hdrEX->pc; \
+		rbp = RBP(ctx->stack + _hdrEX->sfpidx);\
 		klr_setesp(ctx, (ctx->stack + _hdr->espidx));\
+		op = _hdrEX->op;\
 		((knh_context_t*)ctx)->ehdrNC = _hdr->parentNC;\
 		KLR_JMP(ctx, PC, JUMP);\
 	}\
