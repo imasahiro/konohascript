@@ -3475,12 +3475,6 @@ static void THROW_Undefined(CTX ctx, knh_sfp_t *sfp, const char *whatis, const c
 	CRIT_Failed("Undefined", "Script!!");
 }
 
-//static void THROW_NotFound(CTX ctx, knh_sfp_t *sfp, const char *whatis, const char *what)
-//{
-//	LOGDATA = {sDATA("driver", what)};
-//	CRIT_Failed("NotFound", "Script!!");
-//}
-
 /* ------------------------------------------------------------------------ */
 //## @Static method void View.addView(String name, NameSpace _, Map _);
 

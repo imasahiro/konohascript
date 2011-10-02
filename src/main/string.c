@@ -50,6 +50,9 @@ int knh_bytes_parseint(knh_bytes_t t, knh_int_t *value)
 			else if(t.utext[1] == 'b') {
 				base = 2;  i = 2;
 			}
+			else {
+				base = 8;  i = 1;
+			}
 		}else if(t.utext[0] == '-') {
 			base = 10; i = 1;
 		}
