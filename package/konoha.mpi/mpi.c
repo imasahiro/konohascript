@@ -124,10 +124,10 @@ DEFAPI(void) constMPIOp(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 	if (init) knh_MPI_initOp(ctx, cid);
 }
 
-/* ------------------------------------------------------------------------ */
-/* Load */
-
 #ifdef _SETUP
+
+void knh_MPI_initArrayFuncData(CTX ctx);
+void knh_MPI_initArrayPrintFunc(CTX ctx);
 
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 {
@@ -136,8 +136,10 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 	if (init) {
 		MPI_Errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
 	} else {
-		KNH_NOTE("process not initialized with mpirun: MPI methods are unusable");
+		KNH_NOTE("Process is not initialized as MPI Proc. MPI functions are disable");
 	}
+	knh_MPI_initArrayFuncData(ctx);
+	knh_MPI_initArrayPrintFunc(ctx);
 	kapi->setPackageProperty(ctx, "name", "mpi");
 	kapi->setPackageProperty(ctx, "version", "1.0");
 	RETURN_PKGINFO("konoha.mpi");

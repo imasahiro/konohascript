@@ -85,14 +85,14 @@
 typedef struct {
 	knh_hObject_t h;
 	MPI_Comm comm;
-	int mpi_rank;
-	int mpi_size;
+	int myrank;
+	int numprocs;
 	char *proc_name;
 } knh_MPIComm_t;
 
 
-#define KNH_MPI_SIZE(c) ((c)->mpi_size)
-#define KNH_MPI_RANK(c) ((c)->mpi_rank)
+#define KNH_MPI_SIZE(c) ((c)->numprocs)
+#define KNH_MPI_RANK(c) ((c)->myrank)
 #define KNH_MPI_COMM(c) ((c)->comm)
 #define KNH_NOT_ON_MPI(c) \
 	{\

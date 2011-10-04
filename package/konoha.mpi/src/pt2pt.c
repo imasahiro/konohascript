@@ -198,6 +198,22 @@ KMETHOD MPIComm_recv(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(ret);
 }
 
+/*## method var MPIComm.recv(Int src_rank, Int tag);
+static int knh_MPI_RecvAny(CTX ctx, knh_Object_t *c, knh_Object_t** data, int src_rank, int tag)
+{
+	COMM(comm, c);
+}
+
+KMETHOD MPIComm_recv(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Object_t *data;
+	int ret = knh_MPI_RecvAny(ctx, sfp[0].o, data, Int_to(int, sfp[1]), Int_to(int, sfp[2]));
+	if (ret != 0) {
+		// NG
+	}
+	RETURNi_(data);
+}
+*/
 /* ------------------------------------------------------------------------ */
 /* function for sendrecv */
 
