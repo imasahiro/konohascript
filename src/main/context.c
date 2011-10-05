@@ -85,8 +85,10 @@ static knh_context_t* new_hcontext(CTX ctx0)
 		if(ptrace == NULL) {
 			ptrace = "$(setenv " K_DEOS_TRACE ")";
 		}
+#if !defined(K_USING_WINDOWS_)
 		knh_ldata_t ldata[] = {LOG_s("parent", ptrace), LOG_u("ppid", getppid()), LOG_END};
 		KNH_NTRACE(ctx, "konoha:newtrace", K_NOTICE, ldata);
+#endif /* !defined(K_USING_WINDOWS_) */
 	}
 	else {
 		knh_ldata_t ldata[] = {LOG_s("parent", ctx0->trace), LOG_u("seq", ctx0->seq), LOG_END};
