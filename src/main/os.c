@@ -573,13 +573,10 @@ void *knh_dlopen(CTX ctx, const char* path)
 #else
 
 #endif
-	if(handler == NULL) {
-		LOGDATA = {sDATA("path", path)};
-		NOTE_Failed(func);
-	}
-	else {
-		LOGDATA = {sDATA("path", path), pDATA("handler", handler)};
-		NOTE_OK(func);
+	int pe = (handler == NULL) ? K_PERROR : K_OK;
+	{
+		knh_ldata_t ldata[] = {LOG_s("path", path), LOG_p("handler", handler), LOG_END};
+		KNH_NTRACE(ctx, func, pe, ldata);
 	}
 	return handler;
 }
@@ -609,14 +606,9 @@ void *knh_dlsym(CTX ctx, void* handler, const char* symbol, const char *another,
 #else
 #endif
 	if(!isTest) {
-		if(p == NULL) {
-			LOGDATA = {pDATA("handler", handler), sDATA("symbol", symbol), LOGMSG(emsg)};
-			NOTE_Failed(func);
-		}
-		else {
-			LOGDATA = {pDATA("handler", handler), sDATA("symbol", symbol)};
-			NOTE_OK(func);
-		}
+		int pe = (p == NULL) ? K_PERROR : K_OK;
+		knh_ldata_t ldata[] = {LOG_p("handler", handler), LOG_s("symbol", symbol), LOG_END};
+		KNH_NTRACE(ctx, func, pe, ldata);
 	}
 	return p;
 }

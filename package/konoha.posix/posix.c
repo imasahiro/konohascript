@@ -49,19 +49,14 @@ extern "C" {
 /* ======================================================================== */
 /* ConstData */
 
-
-/* ------------------------------------------------------------------------ */
-/* [API] */
-
 //## @Native String System.getHostName();
 KMETHOD System_getHostName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	const char *s = NULL;
 	char buf[256];
-	KNH_RESET_ERRNO();
 	if(gethostname(buf, sizeof(buf)) == -1) {
-		LOGDATA = {__ERRNO__};
-		NOTE_Failed("gethostname");
+		knh_ldata_t ldata[] = {LOG_END};
+		KNH_NTRACE(ctx, "gethostname", K_FAILED, ldata);
 	}
 	else {
 		s = (const char*)buf;
@@ -125,8 +120,8 @@ KMETHOD System_usleep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int tf = (usleep(Int_to(useconds_t, sfp[1])) != -1);
 	if(!tf) {
-		LOGDATA = {iDATA("usec", sfp[1].ivalue), __ERRNO__};
-		NOTE_Failed("usleep");
+		knh_ldata_t ldata[] = {LOG_i("usec", sfp[1].ivalue), LOG_END};
+		KNH_NTRACE(ctx, "usleep", K_FAILED, ldata);
 	}
 	RETURNb_(tf);
 }
@@ -144,21 +139,27 @@ KMETHOD System_getCwd(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static int fileop(CTX ctx, knh_sfp_t *sfp, const char *name, int (*func)(const char*), knh_Path_t *pth)
 {
+	knh_ldata_t ldata[] = {LOG_s("path", S_totext(pth->urn)), LOG_s("ospath", pth->ospath), LOG_END};
 	if(func(pth->ospath) == -1) {
-		LOGDATA = {sDATA("path", S_totext(pth->urn)), sDATA("ospath", pth->ospath), __ERRNO__};
-		NOTE_Failed(name);
+		KNH_NTRACE(ctx, name, K_PERROR, ldata);
 		return 0;
+	}
+	else {
+		KNH_NTRACE(ctx, name, K_OK, ldata);
 	}
 	return 1;
 }
 
 static int fileop2(CTX ctx, knh_sfp_t *sfp, const char *name, int (*func)(const char*, const char*), knh_Path_t *pth, knh_Path_t *pth2)
 {
+	knh_ldata_t ldata[] = {LOG_s("path", S_totext(pth->urn)), LOG_s("ospath", pth->ospath),
+			LOG_s("path2", S_totext(pth2->urn)), LOG_s("ospath2", pth2->ospath), LOG_END};
 	if(func(pth->ospath, pth2->ospath) == -1) {
-		LOGDATA = {sDATA("path", S_totext(pth->urn)), sDATA("ospath", pth->ospath),
-				sDATA("path2", S_totext(pth2->urn)), sDATA("ospath2", pth2->ospath), __ERRNO__};
-		NOTE_Failed(name);
+		KNH_NTRACE(ctx, name, K_PERROR, ldata);
 		return 0;
+	}
+	else {
+		KNH_NTRACE(ctx, name, K_OK, ldata);
 	}
 	return 1;
 }
@@ -204,14 +205,13 @@ KMETHOD System_mkdir(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Path_t *pth = sfp[1].pth;
 	mode_t mode =  (mode_t)sfp[2].ivalue;
+	knh_ldata_t ldata[] = {LOG_s("path", S_totext(pth->urn)), LOG_s("ospath", pth->ospath), LOG_i("mode", mode), LOG_END};
 	if(mkdir(pth->ospath, mode) == -1) {
-		LOGDATA = {sDATA("path", S_totext(pth->urn)), sDATA("ospath", pth->ospath), iDATA("mode", mode), __ERRNO__};
-		NOTE_Failed("mkdir");
+		KNH_NTRACE(ctx, "mkdir", K_PERROR, ldata);
 		RETURNb_(0);
 	}
 	else {
-		LOGDATA = {sDATA("path", S_totext(pth->urn)), sDATA("ospath", pth->ospath), iDATA("mode", mode)};
-		NOTE_OK("mkdir");
+		KNH_NTRACE(ctx, "mkdir", K_PERROR, ldata);
 		RETURNb_(1);
 	}
 }
@@ -280,8 +280,8 @@ KMETHOD System_openDir(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Path_t *pth = sfp[1].pth;
 	DIR *dirptr = opendir(pth->ospath);
 	knh_RawPtr_t *po = 	new_ReturnCppObject(ctx, sfp, dirptr, NULL/*ignored*/);
-	LOGDATA = {sDATA("path", S_totext(pth->urn)), sDATA("ospath", pth->ospath), __ERRNO__};
-	LIB_log("opendir", (dirptr != NULL), "IO!!");
+	knh_ldata_t ldata[] = {LOG_s("path", S_totext(pth->urn)), LOG_s("ospath", pth->ospath), LOG_END};
+	KNH_NTRACE(ctx, "opendir", (dirptr != NULL) ? K_OK : K_PERROR, ldata);
 	RETURN_(po);
 }
 
@@ -372,8 +372,8 @@ KMETHOD System_fopen(CTX ctx, knh_sfp_t *sfp _RIX)
 	const char *mode = IS_NULL(sfp[2].s) ? "r" : S_totext(sfp[2].s);
 	FILE *fp = fopen(pth->ospath, mode);
 	knh_RawPtr_t *po = 	new_ReturnCppObject(ctx, sfp, fp, NULL/*ignored*/);
-	LOGDATA = {sDATA("path", S_totext(pth->urn)), sDATA("ospath", pth->ospath), sDATA("mode", mode), __ERRNO__};
-	LIB_log("fopen", (fp != NULL), "IO!!");
+	knh_ldata_t ldata[] = {LOG_s("path", S_totext(pth->urn)), LOG_s("ospath", pth->ospath), LOG_s("mode", mode), LOG_END};
+	KNH_NTRACE(ctx, "fopen", (fp != NULL) ? K_OK : K_PERROR, ldata);
 	RETURN_(po);
 }
 

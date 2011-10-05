@@ -336,8 +336,8 @@ knh_mutex_t *knh_mutex_malloc(CTX ctx)
 	knh_mutex_t *m = (knh_mutex_t*)KNH_MALLOC(ctx, sizeof(knh_mutex_t));
 	knh_bzero(m, sizeof(knh_mutex_t));
 	if(knh_mutex_init(m) != 0) {
-		LOGSFPDATA = {pDATA("mutex", m)};
-		CRIT_Failed("mutex_init", "Thread!!");
+		knh_ldata_t ldata[] = {LOG_p("mutex", m), LOG_END};
+		KNH_NTRACE(ctx, "mutex_init", K_PERROR, ldata);
 	}
 	return m;
 }
@@ -345,8 +345,8 @@ knh_mutex_t *knh_mutex_malloc(CTX ctx)
 void knh_mutex_free(CTX ctx, knh_mutex_t *m)
 {
 	if(knh_mutex_destroy(m) != 0) {
-		LOGSFPDATA = {pDATA("mutex", m)};
-		LIB_Failed("mutex_destroy", "Thread!!");
+		knh_ldata_t ldata[] = {LOG_p("mutex", m), LOG_END};
+		KNH_NTRACE(ctx, "mutex_destroy", K_PERROR, ldata);
 	}
 	KNH_FREE(ctx, m, sizeof(knh_mutex_t));
 }

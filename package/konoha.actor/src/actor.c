@@ -237,14 +237,14 @@ static knh_Actor_t *knh_Actor_new(CTX ctx, knh_bytes_t name, knh_bytes_t host, i
 //
 //	L_PERROR:;
 //	if (errfunc != NULL) {
-//		LOGDATA = {sDATA("host", ip_or_host), iDATA("port", port)};
-//		LIB_Failed(errfunc, "Socket!!");
+//		knh_ldata_t ldata[] = {LOG_s("host", ip_or_host), LOG_i("port", port)};
+//		KNH_NTRACE(ctx, errfunc, "Socket!!");
 //		//DBG_P( "Socket!! %s\n", perror());
 //		perror("socket!!");
 //		sd = IO_NULL;
 //	} else {
-//		LOGDATA = {sDATA("host", ip_or_host), iDATA("port", port), __ERRNO__};
-//		NOTE_OK("socket");
+//		knh_ldata_t ldata[] = {LOG_s("host", ip_or_host), LOG_i("port", port), __ERRNO__};
+//		KNH_NTRACE(ctx, "socket");
 //	}
 //	if (sd == IO_NULL) {
 //		DBG_P( "ERROR : cannot open socket\n");
@@ -296,11 +296,11 @@ static knh_Actor_t *knh_Actor_new(CTX ctx, knh_bytes_t name, knh_bytes_t host, i
 //	L_RETURN:
 //	if(errfunc == NULL) {
 //		//ss->sd = fd;
-//		LOGDATA = {sDATA("host", host), iDATA("port", port), iDATA("max_connection", backlog)};
-//		NOTE_OK("listen");
+//		knh_ldata_t ldata[] = {LOG_s("host", host), LOG_i("port", port), LOG_i("max_connection", backlog)};
+//		KNH_NTRACE(ctx, "listen");
 //	} else {
-//		LOGDATA = {sDATA("host", host), iDATA("port", port), iDATA("max_connection", backlog), __ERRNO__};
-//		LIB_Failed(errfunc, "Socket!!");
+//		knh_ldata_t ldata[] = {LOG_s("host", host), LOG_i("port", port), LOG_i("max_connection", backlog), __ERRNO__};
+//		KNH_NTRACE(ctx, errfunc, "Socket!!");
 //		//knh_Object_toNULL(ctx, ss);
 //	}
 //	return fd;
@@ -312,11 +312,11 @@ static knh_Actor_t *knh_Actor_new(CTX ctx, knh_bytes_t name, knh_bytes_t host, i
 //    socklen_t client_len = sizeof(struct sockaddr_in);
 //	knh_intptr_t fd = accept(sd, (struct sockaddr*)&client_address, &client_len);
 //	if (fd == -1) {
-//		LOGDATA = {__ERRNO__};
-//		LIB_Failed("accept", "Socket!!");
+//		knh_ldata_t ldata[] = {__ERRNO__};
+//		KNH_NTRACE(ctx, "accept", "Socket!!");
 //	} else {
-//		LOGDATA = {__ERRNO__};
-//		NOTE_OK("accept");
+//		knh_ldata_t ldata[] = {__ERRNO__};
+//		KNH_NTRACE(ctx, "accept");
 //	}
 //	return fd;
 //}
@@ -621,16 +621,16 @@ KMETHOD Actor_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_bytes_t host;
 	knh_index_t idx = knh_bytes_index(host_port, ':');
 	if (idx == -1) {
-		LOGDATA = {sDATA("path", host_port.text)};
-		LIB_Failed("Actor.opLINK", "Script!!");
+		knh_ldata_t ldata[] = {LOG_s("path", host_port.text), LOG_s("type", "Actor"), LOG_END};
+		KNH_NTRACE(ctx, "konoha:format", K_FAILED, ldata);
 		knh_Object_toNULL(ctx, sfp[0].o);
 		RETURN_(sfp[0].o);
 	}
 	host = new_bytes2(host_port.text, idx);
 	knh_int_t port;
 	if (!knh_bytes_parseint(knh_bytes_next(host_port, ':'), &port)) {
-		LOGDATA = {sDATA("path", host_port.text)};
-		LIB_Failed("Actor.opLINK", "Script!!");
+		knh_ldata_t ldata[] = {LOG_s("path", host_port.text), LOG_s("type", "Actor"), LOG_END};
+		KNH_NTRACE(ctx, "konoha:format", K_FAILED, ldata);
 		knh_Object_toNULL(ctx, sfp[0].o);
 		RETURN_(sfp[0].o);
 	}
@@ -640,8 +640,6 @@ KMETHOD Actor_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 	DBG_P( "[actor] port=%d", actor->port);
 	RETURN_(actor);
 }
-
-
 
 //## String Actor.getName();
 KMETHOD Actor_getName(CTX ctx, knh_sfp_t *sfp _RIX)

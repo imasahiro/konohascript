@@ -2510,8 +2510,8 @@ static void Assurance_checkin(CTX ctx, knh_sfp_t *sfp, knh_RawPtr_t *o)
 	g->aid = uid++;
 	g->sfp = sfp;
 	g->stime = (knh_getTimeMilliSecond() / 1000);
-	LOGDATA = {iDATA("id", g->aid), sDATA("case", S_totext(g->msg))};
-	NOTE_OK("checkin_assurance");
+	knh_ldata_t ldata[] = {LOG_i("id", g->aid), LOG_s("case", S_totext(g->msg)), LOG_END};
+	KNH_NTRACE(ctx, "konoha:checkin", K_OK, ldata);
 	Assurance_setCheckedIn(g, 1);
 }
 
@@ -2520,13 +2520,13 @@ static void Assurance_checkout(CTX ctx, knh_RawPtr_t *o, int isFailed)
 	knh_Assurance_t *g = (knh_Assurance_t*)o;
 	knh_sfp_t *sfp = g->sfp;
 	knh_intptr_t t = (knh_getTimeMilliSecond() / 1000) - g->stime;
-	LOGDATA = {iDATA("id", g->aid), sDATA("case", S_totext(g->msg)), iDATA("elapsed_time(s)", t)};
+	knh_ldata_t ldata[] = {LOG_i("id", g->aid), LOG_s("case", S_totext(g->msg)), LOG_i("elapsed_time:s", t), LOG_END};
 	if(isFailed) {
-		NOTE_Failed("assure");
+		KNH_NTRACE(ctx, "konoha:assure", K_FAILED, ldata);
 		knh_logprintf("ac", 0, "FAILED @%s", S_totext(g->msg));
 	}
 	else {
-		NOTE_OK("assure");
+		KNH_NTRACE(ctx, "konoha:assure", K_NOTICE, ldata);
 		knh_logprintf("ac", 0, "PASSED @%s", S_totext(g->msg));
 	}
 	Assurance_setCheckedIn(g, 0);

@@ -757,7 +757,7 @@ void knh_PtrMap_stat(CTX ctx, knh_PtrMap_t *pm, const char *name)
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
 	if(hmap->stat_total > 9) {
 		knh_logprintf("STAT", knh_isVerbosePref(), "size=%lu, name=%s count=%d %f%%", hmap->size, name, hmap->stat_total, 100.0 * hmap->stat_hit / hmap->stat_total);
-//		LOGSFPDATA = {sDATA("name", name), /*fDATA("rate", hmap->stat_hit / hmap->stat_total),*/ iDATA("count", hmap->stat_total)};
+//		knh_ldata_t ldata[] = {LOG_s("name", name), /*fDATA("rate", hmap->stat_hit / hmap->stat_total),*/ LOG_i("count", hmap->stat_total)};
 //		LIB_STAT("konoha.PtrMap");
 	}
 }

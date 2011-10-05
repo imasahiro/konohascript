@@ -169,13 +169,17 @@ static void *knh_open_gluelink(CTX ctx, knh_Stmt_t *stmt, knh_NameSpace_t *ns, k
 		knh_Fpkginit pkginit = (knh_Fpkginit)knh_dlsym(ctx, p, "init", libname.text, 1/*isTest*/);
 		if(pkginit != NULL) {
 			const knh_PackageDef_t *pkgdef = pkginit(ctx, knh_getLoaderAPI());
-			LOGSFPDATA = {sDATA("package_name", pkgdef->name),
-					iRANGE("buildid", K_BUILDID, pkgdef->buildid), iRANGE("crc32", K_API2_CRC32, pkgdef->crc32)};
+			knh_ldata_t ldata[] = {
+				LOG_s("package_name", pkgdef->name),
+				LOG_i("package_buildid", pkgdef->buildid),
+				LOG_u("package_crc32", pkgdef->crc32),
+				LOG_END
+			};
 			if((long)pkgdef->crc32 == (long)K_API2_CRC32) {
-				LIB_OK("gluelink");
+				KNH_NTRACE(ctx, "konoha:opengluelink", K_OK, ldata);
 			}
 			else {
-				LIB_Failed("gluelink", NULL);
+				KNH_NTRACE(ctx, "konoha:opengluelink", K_FAILED, ldata);
 				p = NULL;
 			}
 		}
@@ -1004,10 +1008,6 @@ knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in)
 	knh_Bytes_t *ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
 	LOCAL_NEW(ctx, lsfp, 1, knh_InputStream_t*, bin, new_BytesInputStream(ctx, ba));
 	KNH_SETv(ctx, lsfp[0].o, in);
-	if(!knh_isCompileOnly(ctx)) {
-		LOGSFPDATA = {sDATA("urn", S_totext(DP(in)->path->urn))};
-		NOTE_OK("script_start");
-	}
 	do {
 		int linenum = 0;
 		knh_Bytes_clear(ba, 0);
@@ -1027,6 +1027,10 @@ knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in)
 			status  = (knh_status_t)knh_beval(ctx, bin);
 		}
 	} while(BA_size(ba) > 0 && status == K_CONTINUE);
+	if(!knh_isCompileOnly(ctx)) {
+		knh_ldata_t ldata[] = {LOG_s("urn", S_totext(DP(in)->path->urn)), LOG_END};
+		KNH_NTRACE(ctx, "konoha:load", K_NOTICE, ldata);
+	}
 	END_LOCAL(ctx, lsfp);
 	return status;
 }

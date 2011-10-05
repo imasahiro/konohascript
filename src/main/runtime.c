@@ -281,7 +281,7 @@ static void opt_dummy(CTX ctx, int mode, const char *optstr)
 }
 
 static knh_optdata_t optdata[] = {
-	{OPT_("-a"), OPT_NUMBER, opt_a},
+	{OPT_("-a"), OPT_NUMBER, opt_dummy},
 	{OPT_("-c"), OPT_EMPTY, opt_c},
 	{OPT_("-i"), OPT_EMPTY, opt_i},
 	{OPT_("-g"), OPT_NUMBER, opt_g},
@@ -809,6 +809,11 @@ void konoha_main(konoha_t konoha, int argc, const char **argv)
 {
 	KONOHA_CHECK_(konoha);
 	CTX ctx = (CTX)konoha.ctx;
+//	knh_uint64_t stime = knh_getTimeMilliSecond();
+//	{
+//		knh_ldata_t ldata[] = {LOG_u("pid", getpid()), LOG_u("ppid", getppid()), LOG_END};
+//		KNH_NTRACE(ctx, "konoha:start", K_NOTICE, ldata);
+//	}
 	int i, n = knh_parseopt(ctx, argc, argv);
 	knh_linkDynamicReadline(ctx);
 	knh_linkDynamicRegex(ctx);
@@ -833,6 +838,11 @@ void konoha_main(konoha_t konoha, int argc, const char **argv)
 	for (i = 0; konoha_modules[i].exit != NULL; ++i) {
 		konoha_modules[i].exit();
 	}
+//	{
+//		knh_uint64_t etime = knh_getTimeMilliSecond();
+//		knh_ldata_t ldata[] = {LOG_u("elapsed_time:ms", etime-stime), LOG_END};
+//		KNH_NTRACE(ctx, "konoha:end", K_NOTICE, ldata);
+//	}
 }
 
 /*************************************************************************** */

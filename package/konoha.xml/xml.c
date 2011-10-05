@@ -346,13 +346,12 @@ DEFAPI(void) constXmlReader(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kap
 //## @Native @Throwable XmlReader XmlReader.new(Path _);
 KMETHOD XmlReader_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	KNH_RESET_ERRNO();
 	knh_Path_t *pth = sfp[1].pth;
 	xmlTextReaderPtr reader = xmlNewTextReaderFilename(pth->ospath);
 	knh_RawPtr_t *po = new_ReturnCppObject(ctx, sfp, reader, NULL);
 	if(reader == NULL) {
-		LOGDATA = {sDATA("urn", S_totext(pth->urn)), sDATA("ospath", pth->ospath), __ERRNO__};
-		LIB_Failed("xmlNewTextReader", "IO!!");
+		knh_ldata_t ldata[] = {LOG_s("urn", S_totext(pth->urn)), LOG_s("ospath", pth->ospath), LOG_END};
+		KNH_NTHROW(ctx, sfp, "IO!!", "xmlNewTextReader", K_FAILED, ldata);
 	}
 	RETURN_(po);
 }

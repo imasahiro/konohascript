@@ -376,14 +376,14 @@ static KMETHOD Fmethod_wrapProcess(CTX ctx, knh_sfp_t *sfp _RIX)
   int pipe_c2p[2], pipe_p2c[2];
   int pid;
   if (pipe(pipe_c2p) < 0) {
-	LOGSFPDATA = {__ERRNO__};
-	LIB_Failed("execvp", "ContentFail!!");
+	knh_ldata_t ldata[] = {__ERRNO__};
+	KNH_NTRACE(ctx, "execvp", "ContentFail!!");
   }
   if (pipe(pipe_p2c) < 0) {
 	close(pipe_c2p[0]/* R */);
 	close(pipe_c2p[1]/* W */);
-	LOGSFPDATA = {__ERRNO__};
-	LIB_Failed("execvp", "ContentFail!!");
+	knh_ldata_t ldata[] = {__ERRNO__};
+	KNH_NTRACE(ctx, "execvp", "ContentFail!!");
   }
   if ((pid = fork()) < 0) {
 	close(pipe_c2p[0]);
@@ -401,8 +401,8 @@ static KMETHOD Fmethod_wrapProcess(CTX ctx, knh_sfp_t *sfp _RIX)
 	close(pipe_c2p[1]); // same as above
 	if (execvp(pglue->path, args) < 0) {
 	  //	  perror("execvp");
-	  LOGSFPDATA = {__ERRNO__};
-	  LIB_Failed("execvp", "Process!!");
+	  knh_ldata_t ldata[] = {__ERRNO__};
+	  KNH_NTRACE(ctx, "execvp", "Process!!");
 	  exit(1);
 	}
   } else {
@@ -422,14 +422,14 @@ static KMETHOD Fmethod_wrapProcess(CTX ctx, knh_sfp_t *sfp _RIX)
 	};
 	wait(&status);
 	if (WIFEXITED(status)) {
-	  LOGSFPDATA = {sDATA("path", pglue->path), iDATA("pid", pid)};
-	  LIB_OK("Process executed");
+	  knh_ldata_t ldata[] = {LOG_s("path", pglue->path), LOG_i("pid", pid)};
+	  KNH_NTRACE(ctx, "Process executed");
 	} else if (WIFSIGNALED(status)) {
-	  LOGSFPDATA = {sDATA("path", pglue->path), iDATA("pid", pid)};
-	  LIB_Failed("process", "ContentFail!!");
+	  knh_ldata_t ldata[] = {LOG_s("path", pglue->path), LOG_i("pid", pid)};
+	  KNH_NTRACE(ctx, "process", "ContentFail!!");
 	} else {
-	  LOGSFPDATA = {sDATA("path", pglue->path), iDATA("pid", pid)};
-	  LIB_Failed("process", "Stopped!!");
+	  knh_ldata_t ldata[] = {LOG_s("path", pglue->path), LOG_i("pid", pid)};
+	  KNH_NTRACE(ctx, "process", "Stopped!!");
 	}
 	RETURN_(CWB_newString(ctx, cwb));
   }
@@ -451,8 +451,8 @@ static knh_RawPtr_t *ProcessGlue_getFunc(CTX ctx, knh_sfp_t *sfp _RIX)
   knh_Process_t *proc = (knh_Process_t*)(glue->componentInfo);
 
   if (proc == NULL) {
-	LOGSFPDATA = {__ERRNO__};
-	LIB_Failed("invaid proc", "ContentFail!!");
+	knh_ldata_t ldata[] = {__ERRNO__};
+	KNH_NTRACE(ctx, "invaid proc", "ContentFail!!");
 	return (knh_RawPtr_t*)(sfp[3].o);
   }
 

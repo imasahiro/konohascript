@@ -595,11 +595,12 @@ struct knh_Thunk_t {
 //## expt Security!! -;
 
 typedef struct knh_Exception_t knh_Exception_t;
-#ifdef K_INTERNAL
+#ifdef USE_STRUCT_Exception
 struct knh_Exception_t {
 	knh_hObject_t h;
 	knh_String_t   *emsg;
 	knh_uline_t     uline;
+
 	knh_Array_t*    tracesNULL;
 };
 #endif

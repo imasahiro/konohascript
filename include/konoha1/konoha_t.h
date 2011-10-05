@@ -1018,6 +1018,8 @@ typedef long knh_iconv_t;
 struct knh_logdata_t;
 struct knh_Iterator_t;
 
+typedef const char* knh_ldata_t;
+
 typedef struct knh_ServiceSPI_t {
 	/* sync spi */
 #ifdef K_USING_DEBUG
@@ -1049,7 +1051,7 @@ typedef struct knh_ServiceSPI_t {
 	void  (*setsfpSPI)(CTX, knh_sfp_t *, void *);
 	void  (*closeItrSPI)(CTX, struct knh_Iterator_t *);
 	// evidence
-	void (*recordSPI)(CTX, knh_sfp_t *, int, int, const char *, const char *, const struct knh_logdata_t *, size_t);
+	void (*ntraceSPI)(CTX, const char *, int, knh_ldata_t *);
 	void  (*pSPI)(const char*, const char*, int, const char*, ...);
 } knh_ServiceSPI_t;
 
@@ -1144,98 +1146,51 @@ typedef struct knh_context_t {
 /* ------------------------------------------------------------------------ */
 /* logdata */
 
-typedef struct knh_logdata_t {
-	union {
-		const char *key;
-		knh_intptr_t ivalue;
-		knh_uintptr_t uvalue;
-		knh_floatptr_t fvalue;
-		const char *svalue;
-		void *ptr;
-		Object *ovalue;
-		const struct knh_logdata_t* (*logger)(CTX);
-	};
-} knh_logdata_t;
 
-#define K_RECFAILED         1
-#define K_RECCRIT       (1<<1)
-#define K_RECNOTE       (1<<2)
-#define K_RECNOTESTART  ((1<<3)|(1<<2))
+#define LOG_END       ((const char*)0L)
+#define LOGT_s        1
+#define LOG_s(K,V)    ((const char*)LOGT_s), K, V
+#define LOG_msg(V)    ((const char*)LOGT_s), "msg", V
+#define LOG_t(K, V)   ((const char*)LOGT_s), K, (TYPE__(V))
+#define LOGT_i        2
+#define LOG_i(K,V)    ((const char*)LOGT_i), K, ((const char*)(knh_intptr_t)(V))
+#define LOGT_u        3
+#define LOG_u(K,V)    ((const char*)LOGT_u), K, ((const char*)(knh_uintptr_t)(V))
+#define LOGT_f        4
+#define LOG_f(K,V)    ((const char*)LOGT_f), K, ((const char*)(knh_intptr_t)((V)*1000))
+#define LOGT_p        5
+#define LOG_p(K,V)    ((const char*)LOGT_p), K, ((const char*)(V))
+#define LOGT_o        6
+#define LOG_o(K,V)    ((const char*)LOGT_o), K, ((const char*)(V))
+#define LOGT_sfp      7
+#define LOG_sfp       ((const char*)LOGT_sfp), ((const char*)(sfp))
 
-#define LOGSFPDATA      knh_sfp_t *sfp = NULL; const knh_logdata_t _logdata[]
-#define LOGDATA         const knh_logdata_t _logdata[]
-#define LOGDATASIZE     (sizeof(_logdata)/sizeof(knh_logdata_t))
-
-#define LOGMSG(V)          {{"smsg"}}, {{(V)}}
-#define sDATA(K, V)        {{"s" K}}, {{(V)}}
-#define iDATA(K, V)        {{"i" K}}, {{(const char*)((knh_intptr_t)V)}}
-#define dDATA(K, V)        {{"i" K}}, {{(const char*)((knh_intptr_t)V)}}
-#define uDATA(K, V)        {{"u" K}}, {{(const char*)((knh_intptr_t)V)}}
-#define fDATA(K, V)        {{"f" K}}, {{(const char*)((knh_floatptr_t)V)}}
-#define pDATA(K, V)        {{"p" K}}, {{(const char*)(V)}}
-#define oDATA(K, V)        {{"o" K}}, {{(const char*)(V)}}
-#define cDATA(K, V)        {{"c" K}}, {{(const char*)((knh_intptr_t)V)}}
-#define tDATA(K, V)        {{"t" K}}, {{(const char*)((knh_intptr_t)V)}}
-#define fnDATA(K, V)       {{"n" K}}, {{(const char*)((knh_intptr_t)V)}}
-#define mnDATA(K, V)       {{"m" K}}, {{(const char*)((knh_intptr_t)V)}}
-
-#define sRANGE(K, V, V2)   {{"S" K}}, {{(V)}}, {{(V2)}}
-#define iRANGE(K, V, V2)   {{"I" K}}, {{(const char*)((knh_intptr_t)V)}}, {{(const char*)((knh_intptr_t)V2)}}
-#define dRANGE(K, V, V2)   {{"I" K}}, {{(const char*)((knh_intptr_t)V)}}, {{(const char*)((knh_intptr_t)V2)}}
-#define uRANGE(K, V, V2)   {{"U" K}}, {{(const char*)((knh_intptr_t)V)}}, {{(const char*)((knh_intptr_t)V2)}}
-#define fRANGE(K, V, V2)   {{"F" K}}, {{(const char*)((knh_floatptr_t)V)}}, {{(const char*)((knh_floatptr_t)V2)}}
-#define pRANGE(K, V, V2)   {{"P" K}}, {{(const char*)(V)}}, {{(const char*)(V2)}}
-#define oRANGE(K, V, V2)   {{"O" K}}, {{(const char*)(V)}}, {{(const char*)(V2)}}
-#define MDATA(K, V, V2)    {{"M" K}}, {{(const char*)((knh_intptr_t)V)}}, {{(const char*)((knh_intptr_t)V2)}}
-
-#define __TRACE__          {{"ssource"}}, {{knh_sfile(__FILE__)}}, {{"sfunction"}}, {{__FUNCTION__}}, iDATA("line", __LINE__)
-#define __ERRNO__          {{"eerrno"}}, {{NULL}}
-
-#define KNH_RESET_ERRNO()
 #ifdef K_EXPORTS
-#define KNH_RECORD ctx->spi->recordSPI
+#define KNH_NTRACE ctx->spi->ntraceSPI
 #else
-#define KNH_RECORD knh_record
+#define KNH_NTRACE knh_ntrace
 #endif
 
-#define CRIT_OK(action)
-#define CRIT_Failed(action, event)  {  \
-		KNH_RECORD(ctx, sfp, K_RECFAILED|K_RECCRIT, LOG_CRIT, action, event, _logdata, LOGDATASIZE);  \
-	}  \
+#define KNH_NTHROW(ctx, sfp, fault, event, pe, ldata) \
+	KNH_NTRACE(ctx, event, pe, ldata);  \
+	knh_nthrow(ctx, sfp, fault, ldata); \
 
-#define LIB_OK(action) {  \
-		KNH_RECORD(ctx, sfp, K_RECNOTE, LOG_INFO, action, NULL, _logdata, LOGDATASIZE);  \
-	}  \
+#define FLAG_TRACE_FAILED 1
+#define FLAG_TRACE_ERRNO  (1<<1)
+#define FLAG_TRACE_ALWAYS (1<<2)
+#define FLAG_TRACE_DEBUG  (1<<3)
 
-#define LIB_Failed(action, event)   {   \
-		KNH_RECORD(ctx, sfp, K_RECFAILED|K_RECNOTE, LOG_ERR, action, event, _logdata, LOGDATASIZE);  \
-	}  \
+#define K_OK          0
+#define K_FAILED      1
+//#define K_okerror   2
+#define K_PERROR      3
+#define K_NOTICE      4
+//#define K_af        5
+//#define K_af        6
+//#define K_af        7
+#define K_DOK         8
+#define K_DFAILED     (9 & FLAG_TRACE_ERRNO)
 
-#define LIB_log(action, tf, event)   {   \
-		int op_ = (tf) ? K_RECNOTE : K_RECFAILED|K_RECNOTE; \
-		const char *ac_ = (tf) ? NULL : event;              \
-		int pe_ = (tf) ? LOG_INFO : LOG_ERR;                \
-		KNH_RECORD(ctx, sfp, op_, pe_, action, ac_, _logdata, LOGDATASIZE);  \
-	}  \
-
-#define NOTE_START(action) {  \
-		KNH_RECORD(ctx, sfp, K_RECNOTESTART, LOG_NOTICE, action, NULL, _logdata, LOGDATASIZE);  \
-	}  \
-
-#define NOTE_OK(action) {  \
-		KNH_RECORD(ctx, sfp, K_RECNOTE, LOG_NOTICE, action, NULL, _logdata, LOGDATASIZE);  \
-	}  \
-
-#define NOTE_Failed(action)   {   \
-		KNH_RECORD(ctx, sfp, K_RECFAILED|K_RECNOTE, LOG_WARNING, action, NULL, _logdata, LOGDATASIZE);  \
-	}  \
-
-#define LIB_STAT(action) {  \
-		KNH_RECORD(ctx, sfp, K_RECNOTE, LOG_INFO, action, NULL, _logdata, LOGDATASIZE);  \
-	}  \
-
-
-/* ------------------------------------------------------------------------ */
 /* ------------------------------------------------------------------------ */
 
 #define KONOHA_MAGIC        314159

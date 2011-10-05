@@ -1308,16 +1308,16 @@ void knh_ClassTBL_addMethod(CTX ctx, const knh_ClassTBL_t *t, knh_Method_t *mtd,
 		a = new_Array0(ctx, K_FASTMALLOC_SIZE/sizeof(knh_Method_t*));
 		KNH_SETv(ctx, ((knh_ClassTBL_t*)t)->methods, a);
 	}
-	if(isCHECK) {
-		size_t i;
-		for(i = 0; i < knh_Array_size(a); i++) {
-			knh_Method_t *mtd2 = a->methods[i];
-			if((mtd2)->mn == (mtd)->mn) {
-				LOGSFPDATA = {sDATA("msg", "redefined method"), MDATA("method", CLASS__((mtd)->cid), MN__((mtd)->mn)), __TRACE__};
-				NOTE_Failed("konoha");
-			}
-		}
-	}
+//	if(isCHECK) {
+//		size_t i;
+//		for(i = 0; i < knh_Array_size(a); i++) {
+//			knh_Method_t *mtd2 = a->methods[i];
+//			if((mtd2)->mn == (mtd)->mn) {
+//				knh_ldata_t ldata[] = {LOG_s("msg", "redefined method"), MDATA("method", CLASS__((mtd)->cid), MN__((mtd)->mn)), __TRACE__};
+//				KNH_NTRACE(ctx, ("konoha");
+//			}
+//		}
+//	}
 	if(FLAG_is(t->cflag, FLAG_Class_Singleton)) {
 		DP(mtd)->flag = DP(mtd)->flag | FLAG_Method_Static;
 	}

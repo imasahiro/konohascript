@@ -30,6 +30,10 @@
 #define K_DEFINE_API2
 #include"commons.h"
 
+#ifdef K_USING_POSIX_
+#include <unistd.h>
+#endif
+
 #define K_USING_LOADDATA
 #include"../../include/konoha1/konohalang.h"
 
@@ -76,6 +80,18 @@ static knh_context_t* new_hcontext(CTX ctx0)
 		}
 	}
 	ctx->seq = 0;
+	if(ctx0 == NULL) {
+		const char *ptrace = knh_getenv(K_DEOS_TRACE);
+		if(ptrace == NULL) {
+			ptrace = "$(setenv " K_DEOS_TRACE ")";
+		}
+		knh_ldata_t ldata[] = {LOG_s("parent", ptrace), LOG_u("ppid", getppid()), LOG_END};
+		KNH_NTRACE(ctx, "konoha:newtrace", K_NOTICE, ldata);
+	}
+	else {
+		knh_ldata_t ldata[] = {LOG_s("parent", ctx0->trace), LOG_u("seq", ctx0->seq), LOG_END};
+		KNH_NTRACE(ctx, "konoha:newtrace", K_NOTICE, ldata);
+	}
 	return ctx;
 }
 
@@ -360,14 +376,17 @@ static void _setsfp(CTX ctx, knh_sfp_t *sfp, void *v)
 	sfp[0].o = o;
 }
 
+extern void (*knh_syslog)(int priority, const char *message, ...);
+extern void (*knh_vsyslog)(int priority, const char *message, va_list args);
+
 static void initServiceSPI(knh_ServiceSPI_t *spi)
 {
 	spi->syncspi = "nothread";
 	spi->lockSPI = _lock;
 	spi->unlockSPI = _unlock;
 	spi->syslogspi = "fprintf(stderr)";
-	spi->syslog = pseudo_syslog;
-	spi->vsyslog = pseudo_vsyslog;
+	spi->syslog = knh_syslog;  // unnecessary
+	spi->vsyslog = knh_vsyslog;
 	spi->iconvspi       = "noiconv";
 	spi->iconv_openSPI  = knh_iconv_open;
 	spi->iconvSPI       = knh_iconv;
@@ -376,7 +395,7 @@ static void initServiceSPI(knh_ServiceSPI_t *spi)
 	spi->freeSPI = knh_fastfree;
 	spi->setsfpSPI = _setsfp;
 	spi->closeItrSPI = knh_Iterator_close;
-	spi->recordSPI = knh_record;
+	spi->ntraceSPI = knh_ntrace;
 	spi->pSPI = dbg_p;
 }
 
@@ -601,8 +620,8 @@ void konoha_close(konoha_t konoha)
 	CTX ctx = (knh_context_t*)konoha.ctx;
 	KONOHA_CHECK_(konoha);
 	if(ctx->share->threadCounter > 1) {
-		LOGSFPDATA = {LOGMSG("stil threads running"), iDATA("threads", ctx->share->threadCounter)};
-		LIB_Failed("konoha_close", NULL);
+		knh_ldata_t ldata[] = {LOG_msg("stil threads running"), LOG_i("threads", ctx->share->threadCounter), LOG_END};
+		KNH_NTRACE(ctx, "konoha:close", K_FAILED, ldata);
 		return;
 	}
 	knh_showMemoryStat(ctx);
@@ -611,11 +630,11 @@ void konoha_close(konoha_t konoha)
 	//knh_RefTraverse(ctx, knh_Object_RCsweep);
 #endif
 	{
-		LOGSFPDATA = {uDATA("gc_count", ctx->stat->gcCount),
-				uDATA("marking_time(ms)", ctx->stat->markingTime),
-				uDATA("sweeping_time(ms)", ctx->stat->sweepingTime),
-				uDATA("total_time(ms)", ctx->stat->gcTime)};
-		NOTE_OK("GC");
+		knh_ldata_t ldata[] = {LOG_u("gc_count", ctx->stat->gcCount),
+				LOG_u("marking_time:ms", ctx->stat->markingTime),
+				LOG_u("sweeping_time:ms", ctx->stat->sweepingTime),
+				LOG_u("gc_time:ms", ctx->stat->gcTime), LOG_END};
+		KNH_NTRACE(ctx, "stat:konoha_gc", K_NOTICE, ldata);
 	}
 	((knh_context_t*)ctx)->bufa = NULL; // necessary for KNH_SYSLOG
 	knh_Context_free(ctx, (knh_context_t*)ctx);

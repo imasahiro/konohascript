@@ -116,8 +116,8 @@ KMETHOD Signal_signal(CTX ctx, knh_sfp_t *sfp _RIX)
 		sa.sa_handler = signal_handler;
 		sa.sa_flags = SA_RESTART;
 		if (sigaction(signum, &sa, NULL) < 0) {
-			LOGDATA = {iDATA("signum", signum)};
-			LIB_Failed("signal", "System!!");
+			knh_ldata_t ldata[] = {LOG_i("signal", signum), LOG_END};
+			KNH_NTRACE(ctx, "sigaction", K_PERROR, ldata);
 		}
 		if(ctx->sighandlers[signum] != NULL) {
 			KNH_SETv(ctx, ctx->sighandlers[signum], sfp[2].fo);
@@ -131,30 +131,23 @@ KMETHOD Signal_signal(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Native boolean Signal.kill(int pid, int signal);
 KMETHOD Signal_kill(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	int tf = 1;
-	KNH_RESET_ERRNO();
-	if(kill(Int_to(int, sfp[1]), Int_to(int, sfp[2])) == -1) {
-		LOGDATA = {iDATA("pid", Int_to(int, sfp[1])), iDATA("signal", Int_to(int, sfp[2])), __ERRNO__};
-		NOTE_Failed("kill");
-		tf = 0;
-	}
-	RETURNb_(tf);
+	int pe = (kill(Int_to(int, sfp[1]), Int_to(int, sfp[2])) == -1) ? K_PERROR : K_OK;
+	knh_ldata_t ldata[] = {LOG_i("pid", Int_to(int, sfp[1])), LOG_i("signal", Int_to(int, sfp[2])), LOG_END};
+	KNH_NTRACE(ctx, "kill", pe, ldata);
+	RETURNb_(pe == K_OK);
 }
 
 //## @Native boolean Signal.raise(int signal);
 KMETHOD Signal_raise(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	int tf = 1;
-	KNH_RESET_ERRNO();
-	if(raise(Int_to(int, sfp[1])) == -1) {
-		LOGDATA = {iDATA("signal", Int_to(int, sfp[1])), __ERRNO__};
-		NOTE_Failed("raise");
-		tf = 0;
-	}
-	RETURNb_(tf);
+	int pe = (raise(Int_to(int, sfp[1])) == -1) ? K_PERROR : K_OK;
+	knh_ldata_t ldata[] = {LOG_i("signal", Int_to(int, sfp[1])), LOG_END};
+	KNH_NTRACE(ctx, "raise", pe, ldata);
+	RETURNb_(pe == K_OK);
 }
 
 //## @Native int Signal.alarm(int seconds);
+
 KMETHOD Signal_alarm(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNi_(alarm(Int_to(unsigned int, sfp[1])));
