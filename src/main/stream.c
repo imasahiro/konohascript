@@ -196,18 +196,18 @@ knh_bool_t NOFILE_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
 {
 	return 0;
 }
-void NOFILE_flush(Ctx *ctx, knh_io_t fd)
+void NOFILE_flush(CTX ctx, knh_io_t fd)
 {
 }
-knh_bool_t NOFILE_readline(Ctx *ctx, knh_io_t fd, knh_Bytes_t *ba)
+knh_bool_t NOFILE_readline(CTX ctx, knh_io_t fd, knh_Bytes_t *ba)
 {
 	return 0;
 }
-int NOFILE_feof(Ctx *ctx, knh_io_t fd)
+int NOFILE_feof(CTX ctx, knh_io_t fd)
 {
 	return 1;
 }
-int NOFILE_getc(Ctx *ctx, knh_io_t fd)
+int NOFILE_getc(CTX ctx, knh_io_t fd)
 {
 	return -1;
 }
@@ -273,23 +273,23 @@ static knh_bool_t FILE_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
 	return 0;
 }
 
-static void FILE_flush(Ctx *ctx, knh_io_t fd)
+static void FILE_flush(CTX ctx, knh_io_t fd)
 {
 	fflush((FILE*)fd);
 }
 
-static knh_bool_t FILE_readline(Ctx *ctx, knh_io_t fd, knh_Bytes_t *ba)
+static knh_bool_t FILE_readline(CTX ctx, knh_io_t fd, knh_Bytes_t *ba)
 {
 	KNH_TODO("FILE_readline");
 	return 0;
 }
 
-static int FILE_feof(Ctx *ctx, knh_io_t fd)
+static int FILE_feof(CTX ctx, knh_io_t fd)
 {
 	return feof((FILE*)fd);
 }
 
-static int FILE_getc(Ctx *ctx, knh_io_t fd)
+static int FILE_getc(CTX ctx, knh_io_t fd)
 {
 	return fgetc((FILE*)fd);
 }
@@ -334,7 +334,7 @@ static const knh_StreamDPI_t STREAM_STDIO = {
 
 #include<curl/curl.h>
 
-static knh_bool_t CURL_exists(Ctx *ctx, knh_Path_t *path)
+static knh_bool_t CURL_exists(CTX ctx, knh_Path_t *path)
 {
 	knh_bool_t res = 0;
 	CURL *curl = curl_easy_init();
@@ -384,7 +384,7 @@ static size_t write_callback(char *buffer, size_t size, size_t nitems, void *use
 	return size;
 }
 
-static knh_io_t CURL_open(Ctx *ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
+static knh_io_t CURL_open(CTX ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
 {
 	curl_t *cp = knh_malloc(ctx, sizeof(curl_t));
 	memset(cp, 0, sizeof(curl_t));
@@ -499,7 +499,7 @@ static int use_buffer(curl_t *cp, int want)
 	return 0;
 }
 
-static knh_intptr_t CURL_read(Ctx *ctx, knh_io_t fd, char *buf, size_t bufsiz)
+static knh_intptr_t CURL_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
 {
 	curl_t *cp = (curl_t*)fd;
 	fill_buffer(cp, bufsiz, 1);
@@ -512,7 +512,7 @@ static knh_intptr_t CURL_read(Ctx *ctx, knh_io_t fd, char *buf, size_t bufsiz)
 	return bufsiz;
 }
 
-static knh_bool_t CURL_readline(Ctx *ctx, knh_io_t fd, knh_Bytes_t *ba)
+static knh_bool_t CURL_readline(CTX ctx, knh_io_t fd, knh_Bytes_t *ba)
 {
 	curl_t *cp = (curl_t*)fd;
 	int ret = 0;
@@ -545,7 +545,7 @@ static knh_bool_t CURL_readline(Ctx *ctx, knh_io_t fd, knh_Bytes_t *ba)
 	}
 }
 
-static void CURL_close(Ctx *ctx, knh_io_t fd)
+static void CURL_close(CTX ctx, knh_io_t fd)
 {
 	curl_t *cp = (curl_t*)fd;
 	curl_multi_remove_handle(cp->multi_handle, cp->curl);
@@ -554,7 +554,7 @@ static void CURL_close(Ctx *ctx, knh_io_t fd)
 	knh_free(ctx, cp, sizeof(curl_t));
 }
 
-static int CURL_feof(Ctx *ctx, knh_io_t fd)
+static int CURL_feof(CTX ctx, knh_io_t fd)
 {
 	curl_t *cp = (curl_t*)fd;
 	int ret = 0;
@@ -564,7 +564,7 @@ static int CURL_feof(Ctx *ctx, knh_io_t fd)
 	return ret;
 }
 
-static int CURL_getc(Ctx *ctx, knh_io_t fd)
+static int CURL_getc(CTX ctx, knh_io_t fd)
 {
 	curl_t *file = (curl_t*)fd;
 	if(!file->buffer_pos || file->buffer_pos < file->buffer_len)
@@ -572,12 +572,12 @@ static int CURL_getc(Ctx *ctx, knh_io_t fd)
 	return file->buffer[file->buffer_pos++];
 }
 
-static knh_intptr_t CURL_write(Ctx *ctx, knh_io_t fd, const char *buf, size_t bufsiz)
+static knh_intptr_t CURL_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
 {
 	return 0;
 }
 
-static void CURL_flush(Ctx *ctx, knh_io_t fd)
+static void CURL_flush(CTX ctx, knh_io_t fd)
 {
 
 }

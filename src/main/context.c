@@ -53,7 +53,6 @@ static knh_context_t* new_hcontext(CTX ctx0)
 	if(ctx0 == NULL) {
 		ctx = (knh_context_t*)malloc(sizeof(knh_context_t));
 		knh_bzero(ctx, sizeof(knh_context_t));
-//		ctx0 = ctx;
 	}
 	else {
 		KNH_ASSERT_CTX0(ctx0);
@@ -104,7 +103,7 @@ static knh_context_t* new_hcontext(CTX ctx0)
 /* ------------------------------------------------------------------------ */
 /* [ContextCommon] */
 
-static void knh_CommonContext_init(CTX ctx, knh_context_t *o)
+static void CommonContext_init(CTX ctx, knh_context_t *o)
 {
 	KNH_ASSERT_CTX0(ctx);
 	DBG_ASSERT(o->script != NULL);
@@ -122,7 +121,7 @@ static void knh_CommonContext_init(CTX ctx, knh_context_t *o)
 	o->ctxlock = knh_mutex_malloc(ctx);
 }
 
-static knh_Object_t** knh_CommonContext_reftrace(CTX ctx, knh_context_t *ctxo FTRARG)
+static knh_Object_t** CommonContext_reftrace(CTX ctx, knh_context_t *ctxo FTRARG)
 {
 	size_t i;
 #ifndef K_USING_STRINGPOOL
@@ -163,7 +162,7 @@ static knh_Object_t** knh_CommonContext_reftrace(CTX ctx, knh_context_t *ctxo FT
 	return tail_;
 }
 
-static void knh_CommonContext_free(CTX ctx, knh_context_t *ctxo)
+static void CommonContext_free(CTX ctx, knh_context_t *ctxo)
 {
 	KNH_FREE(ctx, ctxo->stack, sizeof(knh_sfp_t) * ctxo->stacksize);
 	ctxo->stack = NULL;
@@ -186,7 +185,7 @@ static void knh_CommonContext_free(CTX ctx, knh_context_t *ctxo)
 /* ------------------------------------------------------------------------ */
 /* [RootContext] */
 
-static void knh_expandClassTBL(CTX ctx)
+static void ClassTBL_expand(CTX ctx)
 {
 	size_t max = ctx->share->capacityClassTBL * 2;
 	const knh_ClassTBL_t **newt = (const knh_ClassTBL_t**)
@@ -199,7 +198,7 @@ knh_class_t new_ClassId(CTX ctx)
 {
 	knh_class_t newid = ctx->share->sizeClassTBL;
 	if(ctx->share->sizeClassTBL == ctx->share->capacityClassTBL) {
-		knh_expandClassTBL(ctx);
+		ClassTBL_expand(ctx);
 	}
 	DBG_ASSERT(ctx->share->ClassTBL[newid] == NULL);
 	{
@@ -216,7 +215,7 @@ knh_class_t new_ClassId(CTX ctx)
 
 /* ------------------------------------------------------------------------ */
 
-void knh_expandEventTBL(CTX ctx)
+void knh_EventTBL_expand(CTX ctx)
 {
 	size_t s = ctx->share->sizeEventTBL, max = ctx->share->capacityEventTBL * 2;
 	knh_EventTBL_t *newt = (knh_EventTBL_t*)KNH_MALLOC(ctx, SIZEOF_TEXPT(max));
@@ -324,7 +323,7 @@ static knh_context_t* new_RootContext(void)
 	knh_loadScriptSystemKonohaCode(ctx);      // require gamma
 	loadPolicy(ctx); // added by Wakamori
 	knh_loadScriptSystemMethod(ctx, kapi);
-	knh_CommonContext_init(ctx, ctx);
+	CommonContext_init(ctx, ctx);
 	knh_loadScriptTokenData(ctx);
 	knh_loadScriptAliasTokenData(ctx);
 	share->ctx0 = ctx;
@@ -357,15 +356,15 @@ static int thread_unlock(knh_mutex_t *m DBG_TRACE)
 	return knh_mutex_unlock(m);
 }
 
-static knh_iconv_t knh_iconv_open(const char *t, const char *f)
+static knh_iconv_t _iconv_open(const char *t, const char *f)
 {
 	return (knh_iconv_t)(-1);
 }
-static size_t knh_iconv(knh_iconv_t i, char **t, size_t *ts, char **f, size_t *fs)
+static size_t _iconv(knh_iconv_t i, char **t, size_t *ts, char **f, size_t *fs)
 {
 	return 0;
 }
-static int knh_iconv_close(knh_iconv_t i)
+static int _iconv_close(knh_iconv_t i)
 {
 	return 0;
 }
@@ -394,9 +393,9 @@ static void initServiceSPI(knh_ServiceSPI_t *spi)
 	spi->syslog = knh_syslog;  // unnecessary
 	spi->vsyslog = knh_vsyslog;
 	spi->iconvspi       = "noiconv";
-	spi->iconv_openSPI  = knh_iconv_open;
-	spi->iconvSPI       = knh_iconv;
-	spi->iconv_closeSPI = knh_iconv_close;
+	spi->iconv_openSPI  = _iconv_open;
+	spi->iconvSPI       = _iconv;
+	spi->iconv_closeSPI = _iconv_close;
 	spi->mallocSPI = knh_fastmalloc;
 	spi->freeSPI = knh_fastfree;
 	spi->setsfpSPI = _setsfp;
@@ -406,7 +405,8 @@ static void initServiceSPI(knh_ServiceSPI_t *spi)
 }
 
 /* ------------------------------------------------------------------------ */
-void context_init_multithread(CTX ctx)
+
+void Context_initMultiThread(CTX ctx)
 {
 	knh_ServiceSPI_t *spi = __CONST_CAST__(knh_ServiceSPI_t*, ctx->spi);
 	spi->syncspi   = "thread";
@@ -415,7 +415,7 @@ void context_init_multithread(CTX ctx)
 }
 /* ------------------------------------------------------------------------ */
 
-static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
+static knh_Object_t **share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 {
 	size_t i, size;
 	KNH_ADDREF(ctx,   share->constNull);
@@ -487,7 +487,7 @@ static knh_Object_t **knh_share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	return tail_;
 }
 
-static void knh_share_free(CTX ctx, knh_share_t *share)
+static void share_free(CTX ctx, knh_share_t *share)
 {
 	size_t i;
 	KNH_FREE(ctx, share->nameinfo, sizeof(knh_nameinfo_t)*share->namecapacity);
@@ -526,7 +526,9 @@ static void knh_share_free(CTX ctx, knh_share_t *share)
 	free(share);
 }
 
-knh_Context_t* toContext(CTX ctx)
+/* ------------------------------------------------------------------------ */
+
+knh_Context_t* knh_toContext(CTX ctx)
 {
 	if(ctx->ctxobjNC == NULL) {
 		knh_Context_t *cx = new_H(Context);
@@ -535,8 +537,6 @@ knh_Context_t* toContext(CTX ctx)
 	}
 	return ctx->ctxobjNC;
 }
-
-/* ------------------------------------------------------------------------ */
 
 static knh_context_t* knh_getRootContext(CTX ctx)
 {
@@ -549,15 +549,15 @@ static knh_context_t* knh_getRootContext(CTX ctx)
 
 static knh_Object_t **knh_context_reftrace(CTX ctx, knh_context_t *o FTRARG)
 {
-	tail_ = knh_CommonContext_reftrace(ctx, (knh_context_t*)o FTRDATA);
+	tail_ = CommonContext_reftrace(ctx, o FTRDATA);
 	if(knh_getRootContext(ctx) == (CTX)o) {
-		tail_ = knh_share_reftrace(ctx, (knh_share_t*)o->share FTRDATA);
+		tail_ = share_reftrace(ctx, (knh_share_t*)o->share FTRDATA);
 	}
 	KNH_SIZEREF(ctx);
 	return tail_;
 }
 
-static void knh_Context_freeGCBuf(CTX ctx, knh_context_t* ctxo)
+static void Context_freeGCBuf(CTX ctx, knh_context_t* ctxo)
 {
 	if(ctxo->queue_capacity > 0) {
 		/* XXX(@imasahiro) */
@@ -577,7 +577,7 @@ static void knh_Context_freeGCBuf(CTX ctx, knh_context_t* ctxo)
 
 void knh_Context_free(CTX ctx, knh_context_t* ctxo)
 {
-	knh_CommonContext_free(ctx, ctxo);
+	CommonContext_free(ctx, ctxo);
 	if(knh_getRootContext(ctx) == (CTX)ctxo) {
 		size_t i, j;
 		for(i = 0; i < ctxo->share->sizeClassTBL; i++) {
@@ -587,32 +587,99 @@ void knh_Context_free(CTX ctx, knh_context_t* ctxo)
 				knh_Method_toAbstract(ctx, a->methods[j]);
 			}
 		}
-		knh_Context_freeGCBuf(ctx, ctxo);
+		Context_freeGCBuf(ctx, ctxo);
 		knh_mutex_free(ctx, ctxo->share->memlock);
 		knh_mutex_free(ctx, ctxo->share->syslock);
-		knh_share_free(ctx, (knh_share_t*)ctxo->share);
+		share_free(ctx, (knh_share_t*)ctxo->share);
 		knh_bzero((void*)ctxo, sizeof(knh_context_t));
 		free((void*)ctxo);
 	}
 	else {
-		knh_Context_freeGCBuf(ctx, ctxo);
+		Context_freeGCBuf(ctx, ctxo);
 		knh_bzero((void*)ctxo, sizeof(knh_context_t));
 		knh_free(ctx, (void*)ctxo, sizeof(knh_context_t));
 	}
 }
 
-/* ------------------------------------------------------------------------ */
-/* [konohaapi] */
 
-konoha_t konoha_open(size_t stacksize)
+/* ------------------------------------------------------------------------ */
+/* [konoha api] */
+
+/* ------------------------------------------------------------------------ */
+/* [ctxkey] */
+
+#ifdef K_USING_THREAD
+#ifdef CC_TYPE_TLS
+static CC_TYPE_TLS  knh_context_t *curctx = NULL;
+#else
+static knh_thread_key_t ctxkey;
+static knh_context_t *curctx = NULL;
+#endif
+#else
+static knh_context_t *curctx = NULL;
+#endif
+
+static void konoha_init(void)
 {
-	konoha_t k = {KONOHA_MAGIC};
-	konoha_init();
-	{
-		CTX ctx = new_RootContext();
-		k.ctx = (knh_context_t*)ctx;
+	static int isInit = 0;
+	if(isInit == 0) {
+		isInit = 1;
+		knh_opcode_check();
+#if defined(K_USING_THREAD) && !defined(CC_TYPE_TLS)
+		knh_thread_key_create((knh_thread_key_t*)&ctxkey);
+#endif
+		knh_srand(0);
 	}
-	return k;
+}
+
+void knh_beginContext(CTX ctx, void **bottom)
+{
+	((knh_context_t*)ctx)->cstack_bottom = bottom;
+#ifdef K_USING_THREAD
+	knh_mutex_lock(ctx->ctxlock);
+#if !defined(CC_TYPE_TLS)
+	thread_setspecific(ctxkey, ctx);
+#endif
+	curctx = (knh_context_t*)ctx;
+#else
+	curctx = (knh_context_t*)ctx;
+#endif
+}
+
+void knh_endContext(CTX ctx)
+{
+#ifdef K_USING_THREAD
+#if !defined(CC_TYPE_TLS)
+	thread_setspecific(ctxkey, NULL);
+#endif
+	knh_mutex_unlock(ctx->ctxlock);
+	curctx = NULL;
+#else
+	curctx = NULL;
+#endif
+	((knh_context_t*)ctx)->cstack_bottom = NULL;
+}
+
+KNHAPI2(knh_context_t*) knh_getCurrentContext(void)
+{
+#if defined(K_USING_THREAD) && !defined(CC_TYPE_TLS)
+	knh_context_t* ctx = (knh_context_t*)knh_thread_getspecific(ctxkey);
+	if(ctx == NULL) {
+		ctx = curctx;
+	}
+#else
+	knh_context_t* ctx = curctx;
+#endif
+	if(ctx == NULL) {
+		KNH_DIE("NOT IN KONOHA CTX");
+	}
+	return ctx;
+}
+
+konoha_t konoha_open(void)
+{
+	konoha_init();
+	return (konoha_t)new_RootContext();
 }
 
 knh_Object_t **knh_reftraceRoot(CTX ctx FTRARG)
@@ -623,24 +690,21 @@ knh_Object_t **knh_reftraceRoot(CTX ctx FTRARG)
 
 void konoha_close(konoha_t konoha)
 {
-	CTX ctx = (knh_context_t*)konoha.ctx;
-	KONOHA_CHECK_(konoha);
+	CTX ctx = (knh_context_t*)konoha;
 	if(ctx->share->threadCounter > 1) {
 		knh_ldata_t ldata[] = {LOG_msg("stil threads running"), LOG_i("threads", ctx->share->threadCounter), LOG_END};
 		KNH_NTRACE(ctx, "konoha:close", K_FAILED, ldata);
 		return;
 	}
-	knh_showMemoryStat(ctx);
 #ifdef K_USING_RCGC
 	knh_context_reftrace(ctx, (knh_context_t*)ctx, ctx->ref_buf);
-	//knh_RefTraverse(ctx, knh_Object_RCsweep);
 #endif
 	{
 		knh_ldata_t ldata[] = {LOG_u("gc_count", ctx->stat->gcCount),
 				LOG_u("marking_time:ms", ctx->stat->markingTime),
 				LOG_u("sweeping_time:ms", ctx->stat->sweepingTime),
 				LOG_u("gc_time:ms", ctx->stat->gcTime), LOG_END};
-		KNH_NTRACE(ctx, "stat:konoha_gc", K_NOTICE, ldata);
+		KNH_NTRACE(ctx, "stat:konoha:gc", K_NOTICE, ldata);
 	}
 	((knh_context_t*)ctx)->bufa = NULL; // necessary for KNH_SYSLOG
 	knh_Context_free(ctx, (knh_context_t*)ctx);

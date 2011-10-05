@@ -519,7 +519,7 @@ static knh_conv_t* strconv_open(CTX ctx, const char* to, const char *from)
 	return (knh_conv_t*)rc;
 }
 
-static knh_bool_t strconv(Ctx *ctx, knh_conv_t *iconvp, const char *text, size_t len, knh_Bytes_t *to)
+static knh_bool_t strconv(CTX ctx, knh_conv_t *iconvp, const char *text, size_t len, knh_Bytes_t *to)
 {
 	char buffer[4096], *ibuf = (char*)text;
 	size_t ilen = len, rsize = 0;//, ilen_prev = ilen;

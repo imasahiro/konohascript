@@ -902,7 +902,7 @@ static void _PBOX(CTX ctx, knh_sfp_t *sfp, struct klr_PROBE_t *op)
 /* SYSVAL */
 static KMETHOD Fmethod_CTX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURN_((Object*)toContext(ctx));
+	RETURN_((Object*)knh_toContext(ctx));
 }
 static KMETHOD Fmethod_CTXIN(CTX ctx, knh_sfp_t *sfp _RIX)
 {

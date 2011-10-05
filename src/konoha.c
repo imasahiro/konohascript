@@ -34,11 +34,12 @@ extern "C" {
 
 int main(int argc, const char *argv[])
 {
+	int ret;
 	konoha_ginit(argc, argv);
-	konoha_t konoha = konoha_open(4096);
-	konoha_main(konoha, argc, argv);
+	konoha_t konoha = konoha_open();
+	ret = konoha_main(konoha, argc, argv);
 	konoha_close(konoha);
-	return 0;
+	return ret;
 }
 
 #ifdef __cplusplus

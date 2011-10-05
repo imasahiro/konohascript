@@ -107,24 +107,24 @@ static knh_bool_t SOCKET_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
 	return 0;
 }
 
-static void SOCKET_flush(Ctx *ctx, knh_io_t fd)
+static void SOCKET_flush(CTX ctx, knh_io_t fd)
 {
 	//flush((int)fd);
 }
 
-static knh_bool_t SOCKET_readline(Ctx *ctx, knh_io_t fd, knh_Bytes_t *ba)
+static knh_bool_t SOCKET_readline(CTX ctx, knh_io_t fd, knh_Bytes_t *ba)
 {
 	KNH_TODO("SOCKET_readline");
 	return 0;
 }
 
-static int SOCKET_feof(Ctx *ctx, knh_io_t fd)
+static int SOCKET_feof(CTX ctx, knh_io_t fd)
 {
 	KNH_TODO("SOCKET_feof");
 	return 1;
 }
 
-static int SOCKET_getc(Ctx *ctx, knh_io_t fd)
+static int SOCKET_getc(CTX ctx, knh_io_t fd)
 {
 	KNH_TODO("SOCKET_getc");
 	return -1;
@@ -196,14 +196,14 @@ KMETHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 }
 
 //## InputStream Socket.getInputStream();
-KMETHOD Socket_getInputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
+KMETHOD Socket_getInputStream(CTX ctx, knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	RETURN_(new_InputStreamDPI(ctx, so->sd, &SOCKET_DSPI, KNH_TNULL(Path)));
 }
 
 //## OutputStream Socket.getOutputStream();
-KMETHOD Socket_getOutputStream(Ctx* ctx,knh_sfp_t* sfp _RIX)
+KMETHOD Socket_getOutputStream(CTX ctx, knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	RETURN_(new_OutputStreamDPI(ctx, so->sd, &SOCKET_DSPI, KNH_TNULL(Path)));
@@ -373,7 +373,7 @@ DEFAPI(void) defServerSocket(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 }
 
 ////## @Throwable ServerSocket ServerSocket.new(Int port, Int maxConnection);
-KMETHOD ServerSocket_new(Ctx* ctx,knh_sfp_t* sfp _RIX)
+KMETHOD ServerSocket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 {
 	knh_ServerSocket_t *ss = (knh_ServerSocket_t*)sfp[0].o;
 	int port = Int_to(int ,sfp[1]);
@@ -427,7 +427,7 @@ KMETHOD ServerSocket_new(Ctx* ctx,knh_sfp_t* sfp _RIX)
 }
 
 ////## Socket ServerSocket.accept(Socket _);
-KMETHOD ServerSocket_accept(Ctx* ctx,knh_sfp_t* sfp _RIX)
+KMETHOD ServerSocket_accept(CTX ctx, knh_sfp_t* sfp _RIX)
 {
 	knh_ServerSocket_t *ss = (knh_ServerSocket_t *)sfp[0].o;
 	struct sockaddr_in client_address;
@@ -446,7 +446,7 @@ KMETHOD ServerSocket_accept(Ctx* ctx,knh_sfp_t* sfp _RIX)
 	RETURN_(so);
 }
 
-KMETHOD ServerSocket_close(Ctx* ctx,knh_sfp_t* sfp _RIX)
+KMETHOD ServerSocket_close(CTX ctx, knh_sfp_t* sfp _RIX)
 {
 	knh_ServerSocket_t *ss = (knh_ServerSocket_t*)sfp[0].o;
 	if(ss->sd != IO_NULL) {

@@ -220,7 +220,7 @@ knh_event_t knh_addEvent(CTX ctx, knh_flag_t flag, knh_String_t *name, knh_class
 	knh_event_t eid = 0;
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 	if(ctx->share->sizeEventTBL == ctx->share->capacityEventTBL) {
-		knh_expandEventTBL(ctx);
+		knh_EventTBL_expand(ctx);
 	}
 	eid = ctx->share->sizeEventTBL;
 	((knh_share_t*)ctx->share)->sizeEventTBL += 1;

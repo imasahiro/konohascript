@@ -43,83 +43,6 @@ extern "C" {
 
 
 /* ------------------------------------------------------------------------ */
-/* [ctxkey] */
-
-#ifdef K_USING_THREAD
-#ifdef CC_TYPE_TLS
-static CC_TYPE_TLS  knh_context_t *curctx = NULL;
-#else
-static knh_thread_key_t ctxkey;
-static knh_context_t *curctx = NULL;
-#endif
-#else
-static knh_context_t *curctx = NULL;
-#endif
-
-
-void konoha_init(void)
-{
-	static int isInit = 0;
-	if(isInit == 0) {
-		knh_opcode_check();
-#if defined(K_USING_THREAD) && !defined(CC_TYPE_TLS)
-		knh_thread_key_create((knh_thread_key_t*)&ctxkey);
-#endif
-		knh_srand(0);
-	}
-	isInit = 1;
-}
-
-/* ------------------------------------------------------------------------ */
-/* [Context] */
-
-void knh_beginContext(CTX ctx, void **bottom)
-{
-	((knh_context_t*)ctx)->cstack_bottom = bottom;
-#ifdef K_USING_THREAD
-	knh_mutex_lock(ctx->ctxlock);
-#if !defined(CC_TYPE_TLS)
-	thread_setspecific(ctxkey, ctx);
-#endif
-	curctx = (knh_context_t*)ctx;
-#else
-	curctx = (knh_context_t*)ctx;
-#endif
-}
-
-void knh_endContext(CTX ctx)
-{
-#ifdef K_USING_THREAD
-#if !defined(CC_TYPE_TLS)
-	thread_setspecific(ctxkey, NULL);
-#endif
-	knh_mutex_unlock(ctx->ctxlock);
-	curctx = NULL;
-#else
-	curctx = NULL;
-#endif
-	((knh_context_t*)ctx)->cstack_bottom = NULL;
-}
-
-/* ------------------------------------------------------------------------ */
-
-KNHAPI2(knh_context_t*) knh_getCurrentContext(void)
-{
-#if defined(K_USING_THREAD) && !defined(CC_TYPE_TLS)
-	knh_context_t* ctx = (knh_context_t*)knh_thread_getspecific(ctxkey);
-	if(ctx == NULL) {
-		ctx = curctx;
-	}
-#else
-	knh_context_t* ctx = curctx;
-#endif
-	if(ctx == NULL) {
-		KNH_DIE("NOT IN KONOHA CTX");
-	}
-	return ctx;
-}
-
-/* ------------------------------------------------------------------------ */
 /* [opt] */
 
 static void opt_W(CTX ctx, int mode, const char *optstr)
@@ -730,7 +653,7 @@ static void knh_shell(CTX ctx)
 	END_LOCAL(ctx, lsfp);
 }
 
-static void konoha_shell(CTX ctx, char *optstr)
+static int konoha_shell(CTX ctx, char *optstr)
 {
 	KONOHA_BEGIN(ctx);
 	knh_loadScriptPackageList(ctx, "konoha.i?");
@@ -740,6 +663,7 @@ static void konoha_shell(CTX ctx, char *optstr)
 	CTX_setInteractive(ctx, 1);
 	knh_shell(ctx);
 	KONOHA_END(ctx);
+	return 0;
 }
 
 /* ------------------------------------------------------------------------- */
@@ -801,20 +725,15 @@ struct konoha_module_driver konoha_modules[] = {
 #endif
 	{"null", NULL, NULL}
 };
+
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #endif
 
-void konoha_main(konoha_t konoha, int argc, const char **argv)
+int konoha_main(konoha_t konoha, int argc, const char **argv)
 {
-	KONOHA_CHECK_(konoha);
-	CTX ctx = (CTX)konoha.ctx;
-//	knh_uint64_t stime = knh_getTimeMilliSecond();
-//	{
-//		knh_ldata_t ldata[] = {LOG_u("pid", getpid()), LOG_u("ppid", getppid()), LOG_END};
-//		KNH_NTRACE(ctx, "konoha:start", K_NOTICE, ldata);
-//	}
-	int i, n = knh_parseopt(ctx, argc, argv);
+	CTX ctx = (CTX)konoha;
+	int i, ret = 0, n = knh_parseopt(ctx, argc, argv);
 	knh_linkDynamicReadline(ctx);
 	knh_linkDynamicRegex(ctx);
 	knh_linkDynamicIconv(ctx);
@@ -825,11 +744,11 @@ void konoha_main(konoha_t konoha, int argc, const char **argv)
 	argv = argv + n;
 	knh_parsearg(ctx, argc, argv);
 	if(argc == 0) {
-		konoha_shell(ctx, NULL);
+		ret = konoha_shell(ctx, NULL);
 	}
 	else {
 		if(knh_startScript(ctx, argv[0]) == K_CONTINUE && !knh_isCompileOnly(ctx)) {
-			knh_runMain(ctx, argc, argv);
+			ret = knh_runMain(ctx, argc, argv);
 			if(isInteractiveMode) {
 				konoha_shell(ctx, NULL);
 			}
@@ -838,11 +757,7 @@ void konoha_main(konoha_t konoha, int argc, const char **argv)
 	for (i = 0; konoha_modules[i].exit != NULL; ++i) {
 		konoha_modules[i].exit();
 	}
-//	{
-//		knh_uint64_t etime = knh_getTimeMilliSecond();
-//		knh_ldata_t ldata[] = {LOG_u("elapsed_time:ms", etime-stime), LOG_END};
-//		KNH_NTRACE(ctx, "konoha:end", K_NOTICE, ldata);
-//	}
+	return ret;
 }
 
 /*************************************************************************** */

@@ -252,7 +252,7 @@ extern "C" {
 //*/
 //
 ///* XPath */
-//static void knh_xpath_gfree(Ctx *ctx, knh_Glue_t *g)
+//static void knh_xpath_gfree(CTX ctx, knh_Glue_t *g)
 //{
 //    xmlXPathContextPtr xctx = (xmlXPathContextPtr) g->ptr;
 //    xmlXPathFreeContext(xctx);

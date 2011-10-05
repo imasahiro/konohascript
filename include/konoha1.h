@@ -67,8 +67,8 @@
 #include"konoha1/konoha_api.h"
 
 #ifndef K_INTERNAL
-konoha_t konoha_open(size_t stacksize);
-void konoha_main(konoha_t, int, const char**);
+konoha_t konoha_open();
+int konoha_main(konoha_t, int, const char**);
 void konoha_close(konoha_t konoha);
 #endif
 

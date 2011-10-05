@@ -125,25 +125,25 @@ static knh_bool_t PROC_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
 	return 0;
 }
 
-static int PROC_getc(Ctx *ctx, knh_io_t fd)
+static int PROC_getc(CTX ctx, knh_io_t fd)
 {
 	KNH_TODO("PROC_getc");
 	return -1;
 }
 
-static knh_bool_t PROC_readline(Ctx *ctx, knh_io_t fd, knh_Bytes_t *ba)
+static knh_bool_t PROC_readline(CTX ctx, knh_io_t fd, knh_Bytes_t *ba)
 {
 	KNH_TODO("PROC_readline");
 	return 0;
 }
 
-static int PROC_feof(Ctx *ctx, knh_io_t fd)
+static int PROC_feof(CTX ctx, knh_io_t fd)
 {
 	KNH_TODO("PROC_feof");
 	return 1;
 }
 
-static void PROC_flush(Ctx *ctx, knh_io_t fd)
+static void PROC_flush(CTX ctx, knh_io_t fd)
 {
 }
 

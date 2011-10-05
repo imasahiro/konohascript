@@ -292,7 +292,6 @@ typedef knh_ushort_t              knh_flag_t;    /* flag field */
 /* ------------------------------------------------------------------------ */
 
 struct knh_context_t;
-typedef const struct knh_context_t    Ctx;
 #define CTX const struct knh_context_t *const
 
 typedef knh_ushort_t       knh_class_t;  /* class id */
@@ -1193,26 +1192,7 @@ typedef struct knh_context_t {
 
 /* ------------------------------------------------------------------------ */
 
-#define KONOHA_MAGIC        314159
-
-typedef struct konoha_t {
-	knh_uintptr_t  magic;
-	knh_context_t* ctx;
-} konoha_t ;
-
-/* ------------------------------------------------------------------------ */
-
-#define KONOHA_CHECK_(konoha) \
-	if(konoha.magic != KONOHA_MAGIC) { \
-		fprintf(stderr, "This is not a Konoha Scripting Engine\n"); \
-		return; \
-	}\
-
-#define KONOHA_CHECK(konoha, value) \
-	if(konoha.magic != KONOHA_MAGIC) { \
-		fprintf(stderr, "This is not a Konoha Scripting Engine\n"); \
-		return value; \
-	}\
+typedef const knh_context_t* konoha_t;
 
 #define KONOHA_BEGIN(v)   knh_beginContext(v, (void**)&v)
 #define KONOHA_END(v)     knh_endContext(v)

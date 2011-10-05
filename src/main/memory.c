@@ -1115,29 +1115,6 @@ void knh_ObjectArena_finalfree(CTX ctx, knh_ObjectArenaTBL_t *oat, size_t oatSiz
 	}
 }
 
-void knh_showMemoryStat(CTX ctx)
-{
-//	knh_stat_t *stat = ctx->stat;
-//#if defined(K_USING_STAT)
-//	size_t i;
-//	for(i = 0; i < ctx->share->sizeClassTBL; i++) {
-//		knh_ClassTBL_t *t = varClassTBL(i);
-//		if(t->total > 2) {
-//			KNH_SYSLOG(ctx, LOG_INFO,
-//				"ClassCounter", "*name=%s cid=%d count=%ld total=%ld",
-//				S_totext(t->sname), i, t->count, t->total);
-//		}
-//	}
-//#endif
-//	KNH_SYSLOG(ctx, LOG_DEBUG, "MemoryUsage", "*memory usage=%ld/%ld, object usage=%ld/%ld",
-//		stat->usedMemorySize, stat->maxMemoryUsage, stat->usedObjectSize, stat->maxObjectUsage);
-//	KNH_SYSLOG(ctx, LOG_DEBUG, "MemoryUsage", "*object generation=%ld", stat->countObjectGeneration);
-//	KNH_SYSLOG(ctx, LOG_DEBUG, "MemoryUsage",
-//			"*memory counter x1=%ld, x2=%ld, x4=%ld, x8=%ld, large=%ld",
-//			stat->countMemorySize1, stat->countMemorySize2, stat->countMemorySize4,
-//			stat->countMemorySize8, stat->countMemorySizeN);
-}
-
 /* ------------------------------------------------------------------------ */
 
 //#define BSHIFT ((K_PAGESIZE / sizeof(knh_Object_t)) / (sizeof(knh_uintptr_t) * 8))
