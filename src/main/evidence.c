@@ -1221,14 +1221,42 @@ static char *write_key(char *p, char *ebuf, const char *key)
 	return p;
 }
 
-static char *write_d(char *p, knh_uintptr_t uvalue)
+//static char *write_d(char *p, knh_uintptr_t uvalue)
+//{
+//	knh_uintptr_t d = uvalue / 10, r = uvalue % 10;
+//	if(d != 0) {
+//		p = write_d(p, d);
+//	}
+//	p[0] = ('0' + r);
+//	return p + 1;
+//}
+
+static void reverse(char *const start, char *const end, const int len)
 {
-	knh_uintptr_t d = uvalue / 10, r = uvalue % 10;
-	if(d != 0) {
-		p = write_d(p, d);
+	int i, l = len / 2;
+	register char *s = start;
+	register char *e = end - 1;
+	for (i = 0; i < l; i++) {
+		char tmp = *s;
+		tmp  = *s;
+		*s++ = *e;
+		*e-- = tmp;
 	}
-	p[0] = ('0' + r);
-	return p + 1;
+}
+
+static char *write_d(char *const p, const char *const end, knh_uintptr_t uvalue)
+{
+	int i = 0;
+	while (p + i < end) {
+		int tmp = uvalue % 10;
+		uvalue /= 10;
+		p[i] = '0' + tmp;
+		++i;
+		if (uvalue == 0)
+			break;
+	}
+	reverse(p, p + i, i);
+	return p + i;
 }
 
 static char *write_i(char *p, char *ebuf, const knh_ldata2_t *d)
@@ -1241,7 +1269,7 @@ static char *write_i(char *p, char *ebuf, const knh_ldata2_t *d)
 	}
 	knh_uintptr_t u = uvalue / 10, r = uvalue % 10;
 	if(u != 0) {
-		p = write_d(p, u);
+		p = write_d(p, ebuf, u);
 	}
 	p[0] = ('0' + r);
 	return p + 1;
@@ -1252,7 +1280,7 @@ static char *write_u(char *p, char *ebuf, const knh_ldata2_t *d)
 	if(ebuf - p < 32) return NULL;
 	knh_uintptr_t u = d->uvalue / 10, r = d->uvalue % 10;
 	if(u != 0) {
-		p = write_d(p, u);
+		p = write_d(p, ebuf, u);
 	}
 	p[0] = ('0' + r);
 	return p + 1;
@@ -1267,7 +1295,7 @@ static char *write_f(char *p, char *ebuf, const knh_ldata2_t *d)
 	}
 	knh_uintptr_t u = uvalue / 1000, r = uvalue % 1000;
 	if(u != 0) {
-		p = write_d(p, u);
+		p = write_d(p, ebuf, u);
 	}
 	else {
 		p[0] = '0'; p++;
@@ -1312,7 +1340,7 @@ static void ntrace(CTX ctx, const char *event, int pe, const knh_ldata2_t *d)
 	int logtype = LOG_NOTICE;
 	p = write_b(p, ebuf, ctx->trace, strlen(ctx->trace));
 	p[0] = '+'; p++;
-	p = write_d(p, ctx->seq);
+	p = write_d(p, ebuf, ctx->seq);
 	((knh_context_t*)ctx)->seq += 1;
 	p[0] = ' '; p++;
 	p = write_b(p, ebuf, event, strlen(event));
@@ -1328,7 +1356,7 @@ static void ntrace(CTX ctx, const char *event, int pe, const knh_ldata2_t *d)
 		int errno_ = errno;
 		if(errno_ > 0) {
 			p = write_key(p, ebuf, "errno");
-			p = write_d(p, errno_);
+			p = write_d(p, ebuf, errno_);
 			p[0] = ','; p++; p[0] = ' '; p++;
 			knh_ldata2_t d[1];
 			d[0].svalue = strerror(errno_);
