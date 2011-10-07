@@ -23,8 +23,7 @@ syn region kParen transparent start='(' end=')' contains=ALLBUT, kError,kTodo
 syn match  kError ")"
 "syn match  kError "}"
 syn match  kError "\<\%(catch\|finally\|else\|from\)\>"
-syn match  kOperatorError display +::+
-syn match  kLabel         display +^\s*\I\i*\s*:\([^:]\)\@=+
+syn match  kLabel  display +^\s*\I\i*\s*:\([^:]\)\@=+
 
 syn keyword kType int Int Integer char short long byte float double Float
 syn keyword kType Bytes String Array Map Set Object Tuple Regex
@@ -61,6 +60,7 @@ syn region  kString start=+"+  end=+"+ end=+$+ contains=kSpecialChar,kSpecialErr
 syn region  kString start=+'+ end=+'+ contains=kSpecialChar,@Spell
 syn region  kString start=+[uU]\="""+ end=+"""+ contains=kSpecialChar,@Spell
 syn region  kString start=+[uU]\='''+ end=+'''+ contains=kSpecialChar,@Spell
+syn region  kURN  start=+\w\+://+ end=+[a-zA-Z0-9\.]\+/*[a-zA-Z0-9/\\%_.]*?*[a-zA-Z0-9/\\%_.=&amp;]*+
 
 syn match   kCharacter "'[^']*'" contains=kSpecialChar,kSpecialCharError
 syn match   kCharacter "'\\''" contains=kSpecialChar
@@ -73,6 +73,7 @@ hi def link kStorage StorageClass
 hi def link kRepeat Repeat
 hi def link kVerbatimString String
 hi def link kString String
+hi def link kURN String
 hi def link kNumber Number
 hi def link kLabel Label
 hi def link kCond  Conditional
@@ -80,12 +81,10 @@ hi def link kComment Comment
 hi def link kType Type
 hi def link kTodo Todo
 hi def link kError Error
-hi def link kOperatorError Error
 hi def link kFunc Function
 hi def link kConstant Constant
 hi def link kException Exception
 hi def link kStructure Structure
-
 
 let b:current_syntax = "konoha"
 

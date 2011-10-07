@@ -1478,7 +1478,7 @@ void THROW_NoSuchMethod(CTX ctx, knh_sfp_t *sfp, knh_class_t cid, knh_methodn_t 
 }
 void THROW_ParamTypeError(CTX ctx, knh_sfp_t *sfp, size_t n, knh_methodn_t mn, knh_class_t reqt, knh_class_t cid)
 {
-	knh_ldata_t ldata[] = {/*MDATA("method", cid, mn),*/ LOG_i("argument", n), LOG_t("requested_type", reqt), LOG_t("given_type", cid)};
+	knh_ldata_t ldata[] = {/*MDATA("method", cid, mn),*/ LOG_i("argument", n), LOG_t("requested_type", reqt), LOG_t("given_type", cid), LOG_END};
 	KNH_NTHROW(ctx, sfp, "Script!!", "konoha:type", K_FAILED, ldata);
 }
 

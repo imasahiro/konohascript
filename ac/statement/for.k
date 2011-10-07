@@ -14,3 +14,15 @@ assure "StatementFor" {
 	assert sum == 45;
 }
 
+int f(int n, int m)
+{
+	int sum = 0;
+	for (int i = -n/2; i < n; i++) {
+		sum += m;
+	}
+	return sum;
+}
+
+assure "StatementFor: check espidx in for_init expr" {
+	assert 1500 == f(100, 10);
+}

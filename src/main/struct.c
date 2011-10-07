@@ -2518,7 +2518,7 @@ static void Assurance_checkin(CTX ctx, knh_sfp_t *sfp, knh_RawPtr_t *o)
 static void Assurance_checkout(CTX ctx, knh_RawPtr_t *o, int isFailed)
 {
 	knh_Assurance_t *g = (knh_Assurance_t*)o;
-	knh_sfp_t *sfp = g->sfp;
+	//knh_sfp_t *sfp = g->sfp;
 	knh_intptr_t t = (knh_getTimeMilliSecond() / 1000) - g->stime;
 	knh_ldata_t ldata[] = {LOG_i("id", g->aid), LOG_s("case", S_totext(g->msg)), LOG_i("elapsed_time:s", t), LOG_END};
 	if(isFailed) {

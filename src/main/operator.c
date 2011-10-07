@@ -890,7 +890,7 @@ static void LOG_regex(CTX ctx, knh_sfp_t *sfp, int res, knh_Regex_t *re, const c
 {
 	char ebuf[512];
 	re->spi->regerror(res, re->reg, ebuf, 512);
-	knh_ldata_t ldata[] = {LOG_s("driver", re->spi->name), LOG_s("pattern", S_totext(re->pattern)), LOG_s("text", str), LOG_msg(ebuf)};
+	knh_ldata_t ldata[] = {LOG_s("driver", re->spi->name), LOG_s("pattern", S_totext(re->pattern)), LOG_s("text", str), LOG_msg(ebuf), LOG_END};
 	KNH_NTRACE(ctx, "regex", K_FAILED, ldata);
 }
 
@@ -3651,7 +3651,7 @@ static KMETHOD System_getTime(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD System_exit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int status = IS_NULL(sfp[1].o) ? 0 : Int_to(size_t, sfp[1]);
-	knh_ldata_t ldata[] = {LOG_i("user_specified_status", status)};
+	knh_ldata_t ldata[] = {LOG_i("user_specified_status", status), LOG_END};
 	KNH_NTRACE(ctx, "exit", K_NOTICE, ldata);
 	exit(status);
 }
