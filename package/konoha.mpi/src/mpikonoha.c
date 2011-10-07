@@ -38,9 +38,7 @@ int main(int argc, const char *argv[])
 {
 	MPI_Init(&argc, (char***)&argv);
 	konoha_ginit(argc, argv);
-	konoha_t konoha = konoha_open(4096);
-	CTX ctx = (CTX)konoha.ctx;
-	knh_loadScriptPackageList(ctx, "konoha.mpi");
+	konoha_t konoha = konoha_open();
 	konoha_main(konoha, argc, argv);
 	konoha_close(konoha);
 	MPI_Finalize();
