@@ -344,6 +344,7 @@ struct knh_Array_t {
 #define knh_Array_size(a)     (a)->size
 #define knh_Array_trimSize(ctx, a, newsize)  knh_Array_clear(ctx, a, newsize)
 #define knh_Array_add(ctx, a, o)    knh_Array_add_(ctx, a, UPCAST(o))
+#define knh_Array_remove(ctx, a, n)    knh_Array_remove_(ctx, a, n)
 //#define knh_TOKENs_n(a, n)    ((knh_Token_t*)(a)->list[(n)])
 
 ///* ------------------------------------------------------------------------ */

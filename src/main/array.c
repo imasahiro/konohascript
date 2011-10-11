@@ -87,6 +87,18 @@ KNHAPI2(void) knh_Array_add_(CTX ctx, knh_Array_t *a, knh_Object_t *value)
 	a->size++;
 }
 
+KNHAPI2(void) knh_Array_remove_(CTX ctx, knh_Array_t *a, size_t n)
+{
+	DBG_ASSERT(n < a->size);
+	if (Array_isNDATA(a)) {
+		knh_memmove(a->nlist+n, a->nlist+(n+1), sizeof(knh_ndata_t) * (a->size - n - 1));
+	} else {
+		KNH_FINALv(ctx, a->list[n]);
+		knh_memmove(a->list+n, a->list+(n+1), sizeof(knh_Object_t*) * (a->size - n - 1));
+	}
+	a->size--;
+}
+
 KNHAPI2(void) knh_Array_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m)
 {
 	DBG_ASSERT(n < a->size);

@@ -480,6 +480,7 @@ typedef knh_uintptr_t             knh_uline_t;
 #define knh_thread_t pthread_t
 #define knh_thread_key_t pthread_key_t
 #define knh_mutex_t pthread_mutex_t
+#define knh_cond_t pthread_cond_t
 #elif defined(K_USING_BTRON)
 #define knh_thread_t W
 #define knh_thread_key_t W
@@ -488,6 +489,7 @@ typedef knh_uintptr_t             knh_uline_t;
 typedef knh_intptr_t knh_thread_t;
 typedef knh_intptr_t knh_thread_key_t;
 typedef knh_intptr_t knh_mutex_t;
+typedef knh_intptr_t knh_cond_t;
 #endif
 
 typedef void *(*knh_Fthread)(void *);
@@ -973,6 +975,11 @@ typedef struct knh_share_t {
 	size_t              contextCounter;
 	size_t              threadCounter;
 	struct knh_Array_t *contextListNULL;  // for matz
+	int									stopCounter;
+	int									gcStopCounter;
+	knh_cond_t				 *stop_cond;
+	knh_cond_t				 *start_cond;
+	knh_cond_t				 *close_cond;
 } knh_share_t ;
 
 #define KNH_ASSERT_CTX0(ctx)   KNH_ASSERT((ctx)->ctxid == 0)
@@ -1131,6 +1138,8 @@ typedef struct knh_context_t {
 	struct knh_Func_t             **sighandlers; // modified by Wakamori
 
 } knh_context_t ;
+
+#define IS_RUNNING(ctx) ((ctx)->ctxobjNC != NULL)
 
 #define SAFEPOINT_GC                  1
 #define SAFEPOINT_SETGC(ctx)          WCTX(ctx)->safepoint |= SAFEPOINT_GC

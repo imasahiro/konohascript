@@ -1400,7 +1400,8 @@ static void InputStream_parseToken(CTX ctx, knh_InputStream_t *in, knh_Token_t *
 static void Token_toBRACE(CTX ctx, knh_Token_t *tk, int isEXPANDING)
 {
 	if(S_size(tk->text) > 0) {
-		BEGIN_LOCAL(ctx, lsfp, 1);
+		knh_sfp_t *lsfp = knh_stack_local(ctx, 1);
+		int sfpidx_ = lsfp - ctx->stack;
 		LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t*, in, new_StringInputStream(ctx, (tk)->text));
 		KNH_SETv(ctx, (tk)->data, KNH_NULL);
 		TT_(tk) = TT_BRACE;

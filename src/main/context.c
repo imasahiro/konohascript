@@ -79,6 +79,8 @@ static knh_context_t* new_hcontext(CTX ctx0)
 		}
 	}
 	ctx->seq = 0;
+	ctx->ctxobjNC = NULL;
+
 	if(ctx0 == NULL) {
 		const char *ptrace = knh_getenv(K_DEOS_TRACE);
 		if(ptrace == NULL) {
@@ -235,13 +237,13 @@ static knh_context_t* new_RootContext(void)
 	knh_share_t *share = (knh_share_t*)malloc(sizeof(knh_share_t) + sizeof(knh_stat_t) + sizeof(knh_ServiceSPI_t));
 	ctx->share = share;
 	knh_bzero(share, sizeof(knh_share_t) + sizeof(knh_stat_t) + sizeof(knh_ServiceSPI_t));
+	share->memlock = knh_mutex_malloc(ctx);
+	share->syslock = knh_mutex_malloc(ctx);
 	ctx->stat = (knh_stat_t*)((share+1));
 	ctx->spi = (const knh_ServiceSPI_t*)(ctx->stat + 1);
 	initServiceSPI((knh_ServiceSPI_t*)ctx->spi);
 
 	knh_share_initArena(ctx, share);
-	share->memlock = knh_mutex_malloc(ctx);
-	share->syslock = knh_mutex_malloc(ctx);
 	share->ClassTBL = (const knh_ClassTBL_t**)KNH_MALLOC((CTX)ctx, sizeof(knh_ClassTBL_t*)*(K_CLASSTABLE_INIT));
 	knh_bzero(share->ClassTBL, sizeof(knh_ClassTBL_t*)*(K_CLASSTABLE_INIT));
 	share->sizeClassTBL = 0;
@@ -329,7 +331,40 @@ static knh_context_t* new_RootContext(void)
 	share->ctx0 = ctx;
 	knh_Gamma_init(ctx);  // initalize gamma->gf, reported by uh
 	knh_initBuiltInPackage(ctx, knh_getLoaderAPI());
+	share->contextCounter = 1;
+	share->threadCounter = 1;
+	share->stopCounter = 0;
+	share->gcStopCounter = 0;
+	KNH_INITv(share->contextListNULL, new_Array0(ctx, 4));
+	knh_Array_add(ctx, ctx->share->contextListNULL, knh_toContext(ctx));
+	share->stop_cond = knh_thread_cond_init(ctx);
+	share->start_cond = knh_thread_cond_init(ctx);
+	share->close_cond = knh_thread_cond_init(ctx);
 	return ctx;
+}
+
+knh_context_t *new_ThreadContext(CTX ctx)
+{
+	knh_context_t *newCtx = new_hcontext(ctx);
+	newCtx->share = ctx->share;
+	newCtx->stat = ctx->stat;
+	newCtx->spi = ctx->spi;
+	newCtx->script = ctx->script;
+	newCtx->parent = WCTX(ctx);
+	newCtx->freeObjectList = NULL;
+	newCtx->freeObjectTail = NULL;
+	KNH_INITv(newCtx->gma, new_(Gamma));
+	knh_Gamma_init(newCtx);
+	CommonContext_init(ctx, newCtx);
+	knh_stack_initexpand(newCtx, NULL, K_STACKSIZE);
+
+	ctx->wshare->contextCounter++;
+	if(newCtx->ctxobjNC == NULL) {
+		newCtx->ctxobjNC = knh_toContext(newCtx);
+	}
+	knh_Array_add(ctx, ctx->share->contextListNULL, newCtx->ctxobjNC);
+	newCtx->safepoint = ctx->share->ctx0->safepoint;
+	return newCtx;
 }
 
 static int _lock(knh_mutex_t *m DBG_TRACE)
@@ -455,6 +490,7 @@ static knh_Object_t **share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	KNH_ADDREF(ctx,   share->mapDpiDictSet);
 	KNH_ADDREF(ctx,   share->convDpiDictSet);
 	KNH_ADDREF(ctx,   share->rconvDpiDictSet);
+	KNH_ADDNNREF(ctx,   share->contextListNULL);
 
 	KNH_ENSUREREF(ctx, K_TSTRING_SIZE);
 	for(i = 0; i < K_TSTRING_SIZE; i++) {
@@ -522,6 +558,8 @@ static void share_free(CTX ctx, knh_share_t *share)
 	if(ctx->stat->usedMemorySize != 0) {
 		GC_LOG("memory leaking size=%ldbytes", (long)ctx->stat->usedMemorySize);
 	}
+	knh_mutex_free(ctx, share->memlock);
+	knh_mutex_free(ctx, share->syslock);
 	knh_bzero(share, sizeof(knh_share_t) + sizeof(knh_stat_t) + sizeof(knh_ServiceSPI_t));
 	free(share);
 }
@@ -588,8 +626,6 @@ void knh_Context_free(CTX ctx, knh_context_t* ctxo)
 			}
 		}
 		Context_freeGCBuf(ctx, ctxo);
-		knh_mutex_free(ctx, ctxo->share->memlock);
-		knh_mutex_free(ctx, ctxo->share->syslock);
 		share_free(ctx, (knh_share_t*)ctxo->share);
 		knh_bzero((void*)ctxo, sizeof(knh_context_t));
 		free((void*)ctxo);
@@ -684,13 +720,39 @@ konoha_t konoha_open(void)
 
 knh_Object_t **knh_reftraceRoot(CTX ctx FTRARG)
 {
-	CTX ctx0 = knh_getRootContext(ctx);
-	return knh_context_reftrace(ctx0, (knh_context_t*)ctx0 FTRDATA);
+	int i, size = knh_Array_size(ctx->share->contextListNULL);
+	for(i=0; i<size; i++) {
+		knh_Context_t *ctx0 = (knh_Context_t *)knh_Array_n(ctx->share->contextListNULL, i);
+		tail_ = knh_context_reftrace(ctx, (knh_context_t *)ctx0->ctx FTRDATA);
+	}
+	return tail_;
+}
+
+void check_allThreadExit(CTX ctx)
+{
+	int i;
+	KNH_SYSLOCK(ctx);
+	ctx->wshare->stopCounter++;
+	if(ctx->share->gcStopCounter != 0) {
+		knh_thread_cond_signal(ctx->share->start_cond);
+	}
+	if(ctx->share->threadCounter != 1) {
+		knh_thread_cond_wait(ctx->share->close_cond, ctx->share->syslock);
+	}
+	for(i = knh_Array_size(ctx->share->contextListNULL) - 1; i >= 0; i--) {
+		knh_Context_t *c = (knh_Context_t *)knh_Array_n(ctx->share->contextListNULL, i);
+		if(c->ctx != ctx) {
+			knh_Context_free(ctx, c->ctx);
+			knh_Array_remove(ctx, ctx->share->contextListNULL, i);
+		}
+	}
+	KNH_SYSUNLOCK(ctx);
 }
 
 void konoha_close(konoha_t konoha)
 {
 	CTX ctx = (knh_context_t*)konoha;
+	check_allThreadExit(ctx);
 	if(ctx->share->threadCounter > 1) {
 		knh_ldata_t ldata[] = {LOG_msg("stil threads running"), LOG_i("threads", ctx->share->threadCounter), LOG_END};
 		KNH_NTRACE(ctx, "konoha:close", K_FAILED, ldata);

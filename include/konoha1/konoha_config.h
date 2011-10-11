@@ -263,6 +263,7 @@ typedef struct knh_sysinfo_t {
 /* [API] */
 
 /* officially supported */
+#define K_USING_PTHREAD
 
 #if defined(__linux__)
 #define		K_USING_STDC_    1

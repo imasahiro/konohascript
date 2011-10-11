@@ -2461,12 +2461,12 @@ static void Context_init(CTX ctx, knh_RawPtr_t *o)
 
 static void Context_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
-	KNH_TODO(__FUNCTION__);
+	//KNH_TODO(__FUNCTION__);
 }
 
 static void Context_free(CTX ctx, knh_RawPtr_t *o)
 {
-	KNH_TODO(__FUNCTION__);
+	//KNH_TODO(__FUNCTION__);
 }
 
 static const knh_ClassDef_t ContextDef = {

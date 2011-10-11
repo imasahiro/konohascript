@@ -511,6 +511,7 @@ knh_class_t knh_ClassTBL_linkType(CTX ctx, const knh_ClassTBL_t *ct, knh_class_t
 knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t *path, knh_class_t tcid);
 void knh_initClassFuncData(CTX ctx, const knh_LoaderAPI_t *kapi);
 knh_class_t new_ClassId(CTX ctx);
+knh_context_t *new_ThreadContext(CTX ctx);
 void knh_EventTBL_expand(CTX ctx);
 void Context_initMultiThread(CTX ctx);
 knh_Context_t* knh_toContext(CTX ctx);
@@ -778,6 +779,10 @@ int knh_thread_key_create(knh_thread_key_t *key);
 int thread_setspecific(knh_thread_key_t key, const void *data);
 void* knh_thread_getspecific(knh_thread_key_t key);
 int knh_thread_key_delete(knh_thread_key_t key);
+knh_cond_t *knh_thread_cond_init(CTX ctx);
+int knh_thread_cond_wait(knh_cond_t *cond, knh_mutex_t *m);
+int knh_thread_cond_signal(knh_cond_t *cond);
+int knh_thread_cond_broadcast(knh_cond_t *cond);
 
 #ifdef __cplusplus
 }

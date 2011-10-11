@@ -333,7 +333,7 @@ int knh_mutex_destroy(knh_mutex_t *m)
 
 knh_mutex_t *knh_mutex_malloc(CTX ctx)
 {
-	knh_mutex_t *m = (knh_mutex_t*)KNH_MALLOC(ctx, sizeof(knh_mutex_t));
+	knh_mutex_t *m = (knh_mutex_t*)malloc(sizeof(knh_mutex_t));
 	knh_bzero(m, sizeof(knh_mutex_t));
 	if(knh_mutex_init(m) != 0) {
 		knh_ldata_t ldata[] = {LOG_p("mutex", m), LOG_END};
@@ -348,8 +348,33 @@ void knh_mutex_free(CTX ctx, knh_mutex_t *m)
 		knh_ldata_t ldata[] = {LOG_p("mutex", m), LOG_END};
 		KNH_NTRACE(ctx, "mutex_destroy", K_PERROR, ldata);
 	}
-	KNH_FREE(ctx, m, sizeof(knh_mutex_t));
+	free(m);
 }
+
+#ifdef K_USING_PTHREAD
+
+knh_cond_t *knh_thread_cond_init(CTX ctx)
+{
+	pthread_cond_t *c = (pthread_cond_t *)KNH_MALLOC(ctx, sizeof(pthread_cond_t));
+	pthread_cond_init(c, NULL);
+	return (knh_cond_t *)c;
+}
+
+int knh_thread_cond_wait(knh_cond_t *cond, knh_mutex_t *m)
+{
+	return pthread_cond_wait((pthread_cond_t *)cond, (pthread_mutex_t *)m);
+}
+
+int knh_thread_cond_signal(knh_cond_t *cond)
+{
+	return pthread_cond_signal((pthread_cond_t *)cond);
+}
+
+int knh_thread_cond_broadcast(knh_cond_t *cond)
+{
+	return pthread_cond_broadcast((pthread_cond_t *)cond);
+}
+#endif
 
 /* ------------------------------------------------------------------------ */
 /* [TLS] */
