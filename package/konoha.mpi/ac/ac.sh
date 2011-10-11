@@ -20,13 +20,19 @@ if [ -e $PKGDIR/$logfile ] ;then
     rm $PKGDIR/$logfile
 fi
 
-for utest in `find $PKGDIR/ac/collective -name "*.k"`; do
+for utest in `find $PKGDIR/ac -name "*.k" -maxdepth 1`; do
     echo $utest
-    mpirun -np 3 mpikonoha -l "+$PKGDIR/$logfile" $utest
+    mpirun -np 1 mpikonoha -l "+$PKGDIR/$logfile" $utest
 done
 
 for utest in `find $PKGDIR/ac/pt2pt -name "*.k"`; do
     echo $utest
     mpirun -np 2 mpikonoha -l "+$PKGDIR/$logfile" $utest
 done
+
+for utest in `find $PKGDIR/ac/collective -name "*.k"`; do
+    echo $utest
+    mpirun -np 3 mpikonoha -l "+$PKGDIR/$logfile" $utest
+done
+
 echo ... all tests were done ...

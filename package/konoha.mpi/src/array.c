@@ -282,7 +282,7 @@ KMETHOD Array_getShape(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *base = sfp[0].a;
 	knh_dim_t* dim = (knh_dim_t*)base->dim;
 	int d = dim->dim;
-	knh_Array_t *ret = IA_new(d);
+	knh_Array_t *ret = new_Array(ctx, CLASS_Int, d);
 	knh_dim_t *rdim = (knh_dim_t*)ret->dim;
 	rdim->x = d;
 	if (d > 0) {
@@ -294,15 +294,15 @@ KMETHOD Array_getShape(CTX ctx, knh_sfp_t *sfp _RIX)
 			xy = dim->xy;
 			y = xy / x;
 			lsfp[d-2].ivalue = y;
-			if (d > 2) { // dim == 3..
-				xyz = dim->xyz;
-				z = dim->xyz / xy;
-				lsfp[d-3].ivalue = z;
-				if (d > 3) { // dim == 4
-					w = knh_Array_size(base) / xyz;
-					lsfp[d-4].ivalue = w;
-				}
-			}
+		}
+		if (d > 2) { // dim == 3..
+			xyz = dim->xyz;
+			z = dim->xyz / xy;
+			lsfp[d-3].ivalue = z;
+		}
+		if (d > 3) { // dim == 4
+			w = knh_Array_size(base) / xyz;
+			lsfp[d-4].ivalue = w;
 		}
 		ret->api->multiadd(ctx, ret, lsfp);
 		END_LOCAL(ctx, lsfp);
@@ -316,7 +316,7 @@ KMETHOD Array_getShape(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Array_reshape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *base = sfp[0].a;
-	IA(dims, sfp[1].a);
+	knh_Array_t *dims = sfp[1].a;
 	int d = knh_Array_size(dims);
 	if (d > 0 && d < 5) {
 		knh_int_t i, t;

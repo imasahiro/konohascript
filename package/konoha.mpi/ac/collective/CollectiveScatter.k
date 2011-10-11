@@ -2,67 +2,96 @@ using konoha.mpi.*;
 
 world = MPIComm.WORLD;
 rank = world.rank;
-IArray = Array<Int>;
-FArray = Array<Float>;
 
 if (world.size != 3) exit();
 if (rank != 0) disableLog();
 
+/* ------------------------------------------------------------------------ */
 
-Bytes bdata = new Bytes();
+bdata = new byte[0];
 if (rank == 0) {
     assure "CollectiveScatterBytes" {
-        world.scatterBytes(new Bytes(), 2, bdata, 1);
+        world.scatter(null, 0, 2, (MPIData)bdata, 0, 2, 1);
+        print bdata.decode();
+        assert (|bdata| == 2);
         assert (bdata.decode() == "ko");
     }
 } else if (rank == 1) {
-    world.scatterBytes((Bytes)"konoha", 2, bdata, 1);
+    world.scatter((MPIData)(Bytes)"konoha", 0, 2, (MPIData)bdata, 0, 2, 1);
 } else {
-    world.scatterBytes(new Bytes(), 2, bdata, 1);
+    world.scatter(null, 0, 2, (MPIData)bdata, 0, 2, 1);
 }
 
-IArray idata = new IArray();
+bdata = new byte[0];
+if (rank == 0) {
+    assure "CollectiveScatterBytes: data counting" {
+        world.scatter(null, 0, 0, (MPIData)bdata, 0, 0, 1);
+        print bdata.decode();
+        assert (|bdata| == 2);
+        assert (bdata.decode() == "ko");
+    }
+} else if (rank == 1) {
+    world.scatter((MPIData)(Bytes)"konoha", 0, 0, (MPIData)bdata, 0, 0, 1);
+} else {
+    world.scatter(null, 0, 0, (MPIData)bdata, 0, 0, 1);
+}
+
+/* ------------------------------------------------------------------------ */
+
+idata = new int[0];
 if (rank == 0) {
     assure "CollectiveScatterInt" {
-        world.scatterInt(new IArray(), 2, idata, 1);
+        world.scatter(null, 0, 2, (MPIData)idata, 0, 2, 1);
+        print idata;
+        assert (|idata| == 2);
         assert (idata == [1, 2]);
     }
 } else if (rank == 1) {
-    world.scatterInt([1, 2, 3, 5, 7, 11], 2, idata,  1);
+    world.scatter((MPIData)[1, 2, 3, 5, 7, 11], 0, 2, (MPIData)idata, 0, 2, 1);
 } else {
-    world.scatterInt(new IArray(), 2, idata, 1);
+    world.scatter(null, 0, 2, (MPIData)idata, 0, 2, 1);
 }
 
-FArray fdata = new FArray();
+idata = new int[0];
+if (rank == 0) {
+    assure "CollectiveScatterInt: data counting" {
+        world.scatter(null, 0, 0, (MPIData)idata, 0, 0, 1);
+        print idata;
+        assert (|idata| == 2);
+        assert (idata == [1, 2]);
+    }
+} else if (rank == 1) {
+    world.scatter((MPIData)[1, 2, 3, 5, 7, 11], 0, 0, (MPIData)idata, 0, 0, 1);
+} else {
+    world.scatter(null, 0, 0, (MPIData)idata, 0, 0, 1);
+}
+
+/* ------------------------------------------------------------------------ */
+
+fdata = new float[0];
 if (rank == 0) {
     assure "CollectiveScatterFloat" {
-        world.scatterFloat(new FArray(), 2, fdata, 1);
+        world.scatter(null, 0, 2, (MPIData)fdata, 0, 2, 1);
+        print fdata;
+        assert (|fdata| == 2);
         assert (fdata == [1.1, 2.2]);
     }
 } else if (rank == 1) {
-    world.scatterFloat([1.1, 2.2, 3.3, 4.4, 5.5, 6.6], 2, fdata, 1);
+    world.scatter((MPIData)[1.1, 2.2, 3.3, 4.4, 5.5, 6.6], 0, 2, (MPIData)fdata, 0, 2, 1);
 } else {
-    world.scatterFloat(new FArray(), 2, fdata, 1);
+    world.scatter(null, 0, 2, (MPIData)fdata, 0, 2, 1);
 }
 
-Bytes bdata = new Bytes();
-IArray idata = new IArray();
-FArray fdata = new FArray();
+fdata = new float[0];
 if (rank == 0) {
-    assure "CollectiveScatter" {
-        world.scatter(new Bytes(), bdata, 1);
-        world.scatter(new IArray(), idata, 1);
-        world.scatter(new FArray(), fdata, 1);
-        assert (bdata.decode() == "This is ");
-        assert (idata == [1, 1, 2, 3]);
-        assert (fdata == [1.414214]);
+    assure "CollectiveScatterFloat: data counting" {
+        world.scatter(null, 0, 0, (MPIData)fdata, 0, 0, 1);
+        print fdata;
+        assert (|fdata| == 2);
+        assert (fdata == [1.1, 2.2]);
     }
 } else if (rank == 1) {
-    world.scatter((Bytes)"This is an apple I like.", bdata, 1);
-    world.scatter([1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144], idata, 1);
-    world.scatter([1.414214, 1.732051, 2.0], fdata, 1);
+    world.scatter((MPIData)[1.1, 2.2, 3.3, 4.4, 5.5, 6.6], 0, 0, (MPIData)fdata, 0, 0, 1);
 } else {
-    world.scatter(new Bytes(), bdata, 1);
-    world.scatter(new IArray(), idata, 1);
-    world.scatter(new FArray(), fdata, 1);
+    world.scatter(null, 0, 0, (MPIData)fdata, 0, 0, 1);
 }

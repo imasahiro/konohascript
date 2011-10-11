@@ -15,11 +15,11 @@ t0 = getMPIWtime();
 /* communicate with neighbors */
 {
     if (myid != 0) {
-        world.recvFloat(drecvbuf, 1, myid-1);
+        world.recv((MPIData)drecvbuf, 0, 1, myid-1);
     }
     dsendbuf[0] = dsendbuf[0] + drecvbuf[0];
     if (myid != nprocs-1) {
-        world.sendFloat(dsendbuf, 1, myid+1);
+        world.send((MPIData)dsendbuf, 0, 1, myid+1);
     } else {
         OUT.println("Total = "+"%4.2f"(dsendbuf[0]));
     }
@@ -30,7 +30,7 @@ t1 = getMPIWtime();
 t2 = t1 - t0;
 t_w = new float[1];
 
-world.reduce(t2, t_w, MPIOp.MAX, 0);
+world.reduce((MPIData)[t2], 0, (MPIData)t_w, 0, 1, MPIOp.MAX, 0);
 if (myid == 0) {
     OUT.println("Max Time = "+"%f"(t_w[0]));
 }

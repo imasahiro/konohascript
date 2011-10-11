@@ -2,67 +2,96 @@ using konoha.mpi.*;
 
 world = MPIComm.WORLD;
 rank = world.rank;
-IArray = Array<Int>;
-FArray = Array<Float>;
 
 if (world.size != 3) exit();
 if (rank != 0) disableLog();
 
+/* ------------------------------------------------------------------------ */
 
-Bytes bdata = new Bytes();
+bdata = new byte[0];
 if (rank == 0) {
     assure "CollectiveAllToAllBytes" {
-        world.allToAllBytes((Bytes)"koala", 2, bdata);
+        world.allToAll((MPIData)(Bytes)"koala", 0, 2, (MPIData)bdata, 0, 2);
+        print bdata.decode();
+        assert (|bdata| == 6);
         assert (bdata.decode() == "konoha");
     }
 } else if (rank == 1) {
-    world.allToAllBytes((Bytes)"nouns", 2, bdata);
+    world.allToAll((MPIData)(Bytes)"nouns", 0, 2, (MPIData)bdata, 0, 2);
 } else {
-    world.allToAllBytes((Bytes)"happy", 2, bdata);
+    world.allToAll((MPIData)(Bytes)"happy", 0, 2, (MPIData)bdata, 0, 2);
 }
 
-IArray idata = new IArray();
+bdata = new byte[0];
+if (rank == 0) {
+    assure "CollectiveAllToAllBytes: data counting" {
+        world.allToAll((MPIData)(Bytes)"koala", 0, 0, (MPIData)bdata, 0, 0);
+        print bdata.decode();
+        assert (|bdata| == 6);
+        assert (bdata.decode() == "konoha");
+    }
+} else if (rank == 1) {
+    world.allToAll((MPIData)(Bytes)"nouns", 0, 0, (MPIData)bdata, 0, 0);
+} else {
+    world.allToAll((MPIData)(Bytes)"happy", 0, 0, (MPIData)bdata, 0, 0);
+}
+
+/* ------------------------------------------------------------------------ */
+
+idata = new int[0];
 if (rank == 0) {
     assure "CollectiveAllToAllInt" {
-        world.allToAllInt([1, 2, 3], 1, idata);
+        world.allToAll((MPIData)[1, 2, 3], 0, 1, (MPIData)idata, 0, 1);
+        print idata;
+        assert (|idata| == 3);
         assert (idata == [1, 2, 3]);
     }
 } else if (rank == 1) {
-    world.allToAllInt([2, 4, 6], 1, idata);
+    world.allToAll((MPIData)[2, 4, 6], 0, 1, (MPIData)idata, 0, 1);
 } else {
-    world.allToAllInt([3, 6, 9], 1, idata);
+    world.allToAll((MPIData)[3, 6, 9], 0, 1, (MPIData)idata, 0, 1);
 }
 
-FArray fdata = new FArray();
+idata = new int[0];
+if (rank == 0) {
+    assure "CollectiveAllToAllInt: data counting" {
+        world.allToAll((MPIData)[1, 2, 3], 0, 0, (MPIData)idata, 0, 0);
+        print idata;
+        assert (|idata| == 3);
+        assert (idata == [1, 2, 3]);
+    }
+} else if (rank == 1) {
+    world.allToAll((MPIData)[2, 4, 6], 0, 0, (MPIData)idata, 0, 0);
+} else {
+    world.allToAll((MPIData)[3, 6, 9], 0, 0, (MPIData)idata, 0, 0);
+}
+
+/* ------------------------------------------------------------------------ */
+
+fdata = new float[0];
 if (rank == 0) {
     assure "CollectiveAllToAllFloat" {
-        world.allToAllFloat([1.0/1, 2.0/1, 3.0/1], 1, fdata);
+        world.allToAll((MPIData)[1.0/1, 2.0/1, 3.0/1], 0, 1, (MPIData)fdata, 0, 1);
+        print fdata;
+        assert (|fdata| == 3);
         assert (fdata == [1.0/1, 1.0/1, 1.0/1]);
     }
 } else if (rank == 1) {
-    world.allToAllFloat([1.0/1, 1.0/2, 1.0/3], 1, fdata);
+    world.allToAll((MPIData)[1.0/1, 1.0/2, 1.0/3], 0, 1, (MPIData)fdata, 0, 1);
 } else {
-    world.allToAllFloat([1.0/1, 1.0/10, 1.0/100], 1, fdata);
+    world.allToAll((MPIData)[1.0/1, 1.0/10, 1.0/100], 0, 1, (MPIData)fdata, 0, 1);
 }
 
-Bytes bdata = new Bytes();
-IArray idata = new IArray();
-FArray fdata = new FArray();
+fdata = new float[0];
 if (rank == 0) {
-    assure "CollectiveAllToAll" {
-        world.allToAll((Bytes)"abouts", bdata);
-        world.allToAll([1, 2, 4, 8, 16, 32], idata);
-        world.allToAll([0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001], fdata);
-        assert (bdata.decode() == "abcdef");
-        assert (idata == [1, 2, 3, 4, 5, 6]);
-        assert (fdata == [0.1, 0.01, 0.01, 0.1, 0.1, 0.11]);
+    assure "CollectiveAllToAllFloat: data counting" {
+        world.allToAll((MPIData)[1.0/1, 2.0/1, 3.0/1], 0, 0, (MPIData)fdata, 0, 0);
+        print fdata;
+        assert (|fdata| == 3);
+        assert (fdata == [1.0/1, 1.0/1, 1.0/1]);
     }
 } else if (rank == 1) {
-    world.allToAll((Bytes)"cd-rom", bdata);
-    world.allToAll([3, 4, 5, 9, 16, 25], idata);
-    world.allToAll([0.01, 0.1, 1.0, 10.0, 100.0, 1000.0], fdata);
+    world.allToAll((MPIData)[1.0/1, 1.0/2, 1.0/3], 0, 0, (MPIData)fdata, 0, 0);
 } else {
-    world.allToAll((Bytes)"effect", bdata);
-    world.allToAll([5, 6, 10, 12, 50, 60], idata);
-    world.allToAll([0.1, 0.11, 0.111, 0.1111, 0.11111, 0.111111], fdata);
+    world.allToAll((MPIData)[1.0/1, 1.0/10, 1.0/100], 0, 0, (MPIData)fdata, 0, 0);
 }

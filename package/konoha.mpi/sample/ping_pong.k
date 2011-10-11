@@ -52,17 +52,17 @@ void main (String[] args)
         t0 = getMPIWtime();
         if (myproc == 0) {
 
-            world.send(a, other_proc);
-            world.recv(b, other_proc);
+            world.send((MPIData)a, 0, size/8, other_proc);
+            world.recv((MPIData)b, 0, size/8, other_proc);
 
         } else {
 
-            world.recv(b, other_proc);
+            world.recv((MPIData)b, 0, size/8, other_proc);
             b[0] += 1.0;
             if (last != 0)
                 b[last] += 1.0;
 
-            world.send(b, other_proc);
+            world.send((MPIData)b, 0, size/8, other_proc);
 
         }
         t1 = getMPIWtime();
@@ -100,13 +100,13 @@ void main (String[] args)
         }
         last = size / 8 - 1;
 
-        request = world.iRecv(b, other_proc);
+        request = world.iRecv((MPIData)b, 0, size/8, other_proc);
         world.barrier();
         t0 = getMPIWtime();
 
         if (myproc == 0) {
 
-            world.send(a, other_proc);
+            world.send((MPIData)a, 0, size/8, other_proc);
             request.wait();
 
         } else {
@@ -117,7 +117,7 @@ void main (String[] args)
             if (last != 0)
                 b[last] += 1.0;
 
-            world.send(b, other_proc);
+            world.send((MPIData)b, 0, size/8, other_proc);
         }
 
         t1 = getMPIWtime();
@@ -155,21 +155,21 @@ void main (String[] args)
         }
         last = size / 8 - 1;
 
-        request_b = world.iRecv(b, other_proc);
-        request_a = world.iRecv(a, other_proc);
+        request_b = world.iRecv((MPIData)b, 0, size/8, other_proc);
+        request_a = world.iRecv((MPIData)a, 0, size/8, other_proc);
 
         world.barrier();
 
         t0 = getMPIWtime();
 
-        world.send(a, other_proc);
+        world.send((MPIData)a, 0, size/8, other_proc);
         request_b.wait();
 
         b[0] += 1.0;
         if (last != 0)
             b[last] += 1.0;
 
-        world.send(b, other_proc);
+        world.send((MPIData)b, 0, size/8, other_proc);
         request_a.wait();
 
         t1 = getMPIWtime();

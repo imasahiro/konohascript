@@ -1,4 +1,3 @@
-
 using konoha.mpi.*;
 using lib.blas.*;
 using konoha.math.*;
@@ -58,7 +57,7 @@ void main(String[] args) {
     t2 = getMPIWtime();
     t0 =  t2 - t1;
     t_w = new float[1];
-    world.reduce(t0, t_w, MPIOp.MAX, 0);
+    world.reduce((MPIData)[t0], 0, (MPIData)t_w, 0, 1, MPIOp.MAX, 0);
     /* End of mat-vec routine --------------------------- */
 
     if (myid == 0) {

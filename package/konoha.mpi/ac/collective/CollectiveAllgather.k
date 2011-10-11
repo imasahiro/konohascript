@@ -2,67 +2,96 @@ using konoha.mpi.*;
 
 world = MPIComm.WORLD;
 rank = world.rank;
-IArray = Array<Int>;
-FArray = Array<Float>;
 
 if (world.size != 3) exit();
 if (rank != 0) disableLog();
 
+/* ------------------------------------------------------------------------ */
 
-Bytes bdata = new Bytes();
+bdata = new byte[0];
 if (rank == 0) {
     assure "CollectiveAllGatherBytes" {
-        world.allGatherBytes((Bytes)"koala", 2, bdata);
+        world.allGather((MPIData)(Bytes)"koala", 0, 2, (MPIData)bdata, 0, 2);
+        print bdata.decode();
+        assert (|bdata| == 6);
         assert (bdata.decode() == "konoha");
     }
 } else if (rank == 1) {
-    world.allGatherBytes((Bytes)"nouns", 2, bdata);
+    world.allGather((MPIData)(Bytes)"nouns", 0, 2, (MPIData)bdata, 0, 2);
 } else {
-    world.allGatherBytes((Bytes)"happy", 2, bdata);
+    world.allGather((MPIData)(Bytes)"happy", 0, 2, (MPIData)bdata, 0, 2);
 }
 
-IArray idata = new IArray();
+bdata = new byte[0];
+if (rank == 0) {
+    assure "CollectiveAllGatherBytes: data counting" {
+        world.allGather((MPIData)(Bytes)"ko", 0, 0, (MPIData)bdata, 0, 0);
+        print bdata.decode();
+        assert (|bdata| == 6);
+        assert (bdata.decode() == "konoha");
+    }
+} else if (rank == 1) {
+    world.allGather((MPIData)(Bytes)"no", 0, 0, (MPIData)bdata, 0, 0);
+} else {
+    world.allGather((MPIData)(Bytes)"ha", 0, 0, (MPIData)bdata, 0, 0);
+}
+
+/* ------------------------------------------------------------------------ */
+
+idata = new int[0];
 if (rank == 0) {
     assure "CollectiveAllGatherInt" {
-        world.allGatherInt([1, 2, 3], 1, idata);
+        world.allGather((MPIData)[1, 2, 3], 0, 1, (MPIData)idata, 0, 1);
+        print idata;
+        assert (|idata| == 3);
         assert (idata == [1, 2, 3]);
     }
 } else if (rank == 1) {
-    world.allGatherInt([2, 4, 6], 1, idata);
+    world.allGather((MPIData)[2, 4, 6], 0, 1, (MPIData)idata, 0, 1);
 } else {
-    world.allGatherInt([3, 6, 9], 1, idata);
+    world.allGather((MPIData)[3, 6, 9], 0, 1, (MPIData)idata, 0, 1);
 }
 
-FArray fdata = new FArray();
+idata = new int[0];
+if (rank == 0) {
+    assure "CollectiveAllGatherInt: data counting" {
+        world.allGather((MPIData)[1, 2], 0, 0, (MPIData)idata, 0, 0);
+        print idata;
+        assert (|idata| == 6);
+        assert (idata == [1, 2, 3, 4, 5, 6]);
+    }
+} else if (rank == 1) {
+    world.allGather((MPIData)[3, 4], 0, 0, (MPIData)idata, 0, 0);
+} else {
+    world.allGather((MPIData)[5, 6], 0, 0, (MPIData)idata, 0, 0);
+}
+
+/* ------------------------------------------------------------------------ */
+
+fdata = new float[0];
 if (rank == 0) {
     assure "CollectiveAllGatherFloat" {
-        world.allGatherFloat([1.0/1, 2.0/1, 3.0/1], 1, fdata);
+        world.allGather((MPIData)[1.0/1, 2.0/1, 3.0/1], 0, 1, (MPIData)fdata, 0, 1);
+        print fdata;
+        assert (|fdata| == 3);
         assert (fdata == [1.0/1, 1.0/1, 1.0/1]);
     }
 } else if (rank == 1) {
-    world.allGatherFloat([1.0/1, 1.0/2, 1.0/3], 1, fdata);
+    world.allGather((MPIData)[1.0/1, 1.0/2, 1.0/3], 0, 1, (MPIData)fdata, 0, 1);
 } else {
-    world.allGatherFloat([1.0/1, 1.0/10, 1.0/100], 1, fdata);
+    world.allGather((MPIData)[1.0/1, 1.0/10, 1.0/100], 0, 1, (MPIData)fdata, 0, 1);
 }
 
-Bytes bdata = new Bytes();
-IArray idata = new IArray();
-FArray fdata = new FArray();
+fdata = new float[0];
 if (rank == 0) {
-    assure "CollectiveAllGather" {
-        world.allGather((Bytes)"ab", bdata);
-        world.allGather([1, 2], idata);
-        world.allGather([0.1, 0.01], fdata);
-        assert (bdata.decode() == "abcdef");
-        assert (idata == [1, 2, 3, 4, 5, 6]);
-        assert (fdata == [0.1, 0.01, 0.01, 0.1, 0.1, 0.11]);
+    assure "CollectiveAllGatherFloat: data counting" {
+        world.allGather((MPIData)[1.0/1, 2.0/1], 0, 0, (MPIData)fdata, 0, 0);
+        print fdata;
+        assert (|fdata| == 6);
+        assert (fdata == [1.0/1, 2.0/1, 1.0/1, 1.0/2, 1.0/1, 1.0/10]);
     }
 } else if (rank == 1) {
-    world.allGather((Bytes)"cd", bdata);
-    world.allGather([3, 4], idata);
-    world.allGather([0.01, 0.1], fdata);
+    world.allGather((MPIData)[1.0/1, 1.0/2], 0, 0, (MPIData)fdata, 0, 0);
 } else {
-    world.allGather((Bytes)"ef", bdata);
-    world.allGather([5, 6], idata);
-    world.allGather([0.1, 0.11], fdata);
+    world.allGather((MPIData)[1.0/1, 1.0/10], 0, 0, (MPIData)fdata, 0, 0);
 }

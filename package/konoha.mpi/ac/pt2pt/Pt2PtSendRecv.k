@@ -2,64 +2,49 @@ using konoha.mpi.*;
 
 world = MPIComm.WORLD;
 rank = world.rank;
-IArray = Array<Int>;
-FArray = Array<Float>;
 
 if (world.size != 2) exit();
 if (rank == 0) disableLog();
 
 
-Bytes bdata = new Bytes();
+bdata = new byte[0];
 if (rank == 0) {
-    world.sendRecvBytes(new Bytes(), 1, bdata, 6, 1);
-    world.sendRecvBytes(bdata, 1, new Bytes(), 1, 1);
+    world.sendRecv((MPIData)(Bytes)"hello,", 0, 6, 1, 0, (MPIData)bdata, 0, 6, 1, 0);
+    world.sendRecv((MPIData)bdata, 0, 6, 1, 0, (MPIData)new byte[0], 0, 0, 1, 0);
 } else {
     assure "Pt2PtSendRecvBytes" {
-        world.sendRecvBytes((Bytes)"konoha", 0, bdata, 6, 0);
-        world.sendRecvBytes(new Bytes(), 0, bdata, 6, 0);
-        assert (bdata.decode() == "konoha");
+        world.sendRecv((MPIData)(Bytes)"konoha", 0, 6, 0, 0, (MPIData)bdata, 0, 6, 0, 0);
+        world.sendRecv((MPIData)new byte[0], 0, 0, 0, 0, (MPIData)bdata, 6, 6, 0, 0);
+        print bdata.decode();
+        assert (|bdata| == 12);
+        assert (bdata.decode() == "hello,konoha");
     }
 }
 
-IArray idata = new IArray();
+idata = new int[0];
 if (rank == 0) {
-    world.sendRecvInt(new IArray(), 1, idata, 3, 1);
-    world.sendRecvInt(idata, 1, new IArray(), 1, 1);
+    world.sendRecv((MPIData)[1, 2, 3], 0, 3, 1, 0, (MPIData)idata, 0, 3, 1, 0);
+    world.sendRecv((MPIData)idata, 0, 3, 1, 0, (MPIData)new int[0], 0, 0, 1, 0);
 } else {
     assure "Pt2PtSendRecvInt" {
-        world.sendRecvInt([1, 3, 5], 0, idata, 3, 0);
-        world.sendRecvInt(new IArray(), 0, idata, 3, 0);
-        assert (idata == [1, 3, 5]);
+        world.sendRecv((MPIData)[4, 5, 6], 0, 3, 0, 0, (MPIData)idata, 0, 3, 0, 0);
+        world.sendRecv((MPIData)new int[0], 0, 0, 0, 0, (MPIData)idata, 3, 3, 0, 0);
+        print idata;
+        assert (|idata| == 6);
+        assert (idata == [1, 2, 3, 4, 5, 6]);
     }
 }
 
-FArray fdata = new FArray();
+fdata = new float[0];
 if (rank == 0) {
-    world.sendRecvFloat(new FArray(), 1, fdata, 3, 1);
-    world.sendRecvFloat(fdata, 1, new FArray(), 1, 1);
+    world.sendRecv((MPIData)[1.2, 3.4, 5.6], 0, 3, 1, 0, (MPIData)fdata, 0, 3, 1, 0);
+    world.sendRecv((MPIData)fdata, 0, 3, 1, 0, (MPIData)new float[0], 0, 0, 1, 0);
 } else {
     assure "Pt2PtSendRecvFloat" {
-        world.sendRecvFloat([1.2, 3.4, 5.6], 0, fdata, 3, 0);
-        world.sendRecvFloat(new FArray(), 0, fdata, 3, 0);
-        assert (fdata == [1.2, 3.4, 5.6]);
-    }
-}
-
-
-if (rank == 0) {
-    world.sendRecv((Bytes)"this is an apple I like", 1, new Bytes(), 1);
-    world.sendRecv([1, 1, 2, 3, 5, 8, 13, 21, 34, 55], 1, new IArray(), 1);
-    world.sendRecv([1.414214, 1.732051, 2.0], 1, new FArray(), 1);
-} else {
-    assure "Pt2PtSendRecv" {
-        Bytes bdata = new Bytes();
-        world.sendRecv(new Bytes(), 0, bdata, 0);
-        assert (bdata.decode() == "this is an apple I like");
-        IArray idata = new IArray();
-        world.sendRecv(new IArray(), 0, idata, 0);
-        assert (idata == [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]);
-        FArray fdata = new FArray();
-        world.sendRecv(new FArray(), 0, fdata, 0);
-        assert (fdata == [1.414214, 1.732051, 2.0]);
+        world.sendRecv((MPIData)[1.2, 3.4, 5.6], 0, 3, 0, 0, (MPIData)fdata, 0, 3, 0, 0);
+        world.sendRecv((MPIData)new float[0], 0, 0, 0, 0, (MPIData)fdata, 3, 3, 0, 0);
+        print fdata;
+        assert (|fdata| == 6);
+        assert (fdata == [1.2, 3.4, 5.6, 1.2, 3.4, 5.6]);
     }
 }

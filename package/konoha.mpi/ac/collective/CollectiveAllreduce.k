@@ -2,67 +2,96 @@ using konoha.mpi.*;
 
 world = MPIComm.WORLD;
 rank = world.rank;
-IArray = Array<Int>;
-FArray = Array<Float>;
 
 if (world.size != 3) exit();
 if (rank != 0) disableLog();
 
+/* ------------------------------------------------------------------------ */
 
-Bytes bdata = new Bytes();
+bdata = new byte[0];
 if (rank == 0) {
     assure "CollectiveAllReduceBytes" {
-        world.allReduceBytes((Bytes)"a", bdata, 1, MPIOp.MAX);
+        world.allReduce((MPIData)(Bytes)"a", 0, (MPIData)bdata, 0, 1, MPIOp.MAX);
+        print bdata.decode();
+        assert (|bdata| == 1);
         assert (bdata.decode() == "z");
     }
 } else if (rank == 1) {
-    world.allReduceBytes((Bytes)"D", bdata, 1, MPIOp.MAX);
+    world.allReduce((MPIData)(Bytes)"D", 0, (MPIData)bdata, 0, 1, MPIOp.MAX);
 } else {
-    world.allReduceBytes((Bytes)"z", bdata, 1, MPIOp.MAX);
+    world.allReduce((MPIData)(Bytes)"z", 0, (MPIData)bdata, 0, 1, MPIOp.MAX);
 }
 
-IArray idata = new IArray();
+bdata = new byte[0];
+if (rank == 0) {
+    assure "CollectiveAllReduceBytes: data counting" {
+        world.allReduce((MPIData)(Bytes)"a", 0, (MPIData)bdata, 0, 0, MPIOp.MAX);
+        print bdata.decode();
+        assert (|bdata| == 1);
+        assert (bdata.decode() == "z");
+    }
+} else if (rank == 1) {
+    world.allReduce((MPIData)(Bytes)"D", 0, (MPIData)bdata, 0, 0, MPIOp.MAX);
+} else {
+    world.allReduce((MPIData)(Bytes)"z", 0, (MPIData)bdata, 0, 0, MPIOp.MAX);
+}
+
+/* ------------------------------------------------------------------------ */
+
+idata = new int[0];
 if (rank == 0) {
     assure "CollectiveAllReduceInt" {
-        world.allReduceInt([1, 2, 3], idata, 3, MPIOp.SUM);
+        world.allReduce((MPIData)[1, 2, 3], 0, (MPIData)idata, 0, 3, MPIOp.SUM);
+        print idata;
+        assert (|idata| == 3);
         assert (idata == [6, 12, 18]);
     }
 } else if (rank == 1) {
-    world.allReduceInt([2, 4, 6], idata, 3, MPIOp.SUM);
+    world.allReduce((MPIData)[2, 4, 6], 0, (MPIData)idata, 0, 3, MPIOp.SUM);
 } else {
-    world.allReduceInt([3, 6, 9], idata, 3, MPIOp.SUM);
+    world.allReduce((MPIData)[3, 6, 9], 0, (MPIData)idata, 0, 3, MPIOp.SUM);
 }
 
-FArray fdata = new FArray();
+idata = new int[0];
+if (rank == 0) {
+    assure "CollectiveAllReduceInt: data counting" {
+        world.allReduce((MPIData)[1, 2, 3], 0, (MPIData)idata, 0, 0, MPIOp.SUM);
+        print idata;
+        assert (|idata| == 3);
+        assert (idata == [6, 12, 18]);
+    }
+} else if (rank == 1) {
+    world.allReduce((MPIData)[2, 4, 6], 0, (MPIData)idata, 0, 0, MPIOp.SUM);
+} else {
+    world.allReduce((MPIData)[3, 6, 9], 0, (MPIData)idata, 0, 0, MPIOp.SUM);
+}
+
+/* ------------------------------------------------------------------------ */
+
+fdata = new float[0];
 if (rank == 0) {
     assure "CollectiveAllReduceFloat" {
-        world.allReduceFloat([0.1/1, 2.0/1, 3.0/1], fdata, 3, MPIOp.MIN);
+        world.allReduce((MPIData)[0.1/1, 2.0/1, 3.0/1], 0, (MPIData)fdata, 0, 3, MPIOp.MIN);
+        print fdata;
+        assert (|fdata| == 3);
         assert (fdata == [0.1/1, 1.0/10, 1.0/3]);
     }
 } else if (rank == 1) {
-    world.allReduceFloat([1.0/1, 1.0/2, 1.0/3], fdata, 3, MPIOp.MIN);
+    world.allReduce((MPIData)[1.0/1, 1.0/2, 1.0/3], 0, (MPIData)fdata, 0, 3, MPIOp.MIN);
 } else {
-    world.allReduceFloat([1.0/1, 1.0/10, 1.0/1], fdata, 3, MPIOp.MIN);
+    world.allReduce((MPIData)[1.0/1, 1.0/10, 1.0/1], 0, (MPIData)fdata, 0, 3, MPIOp.MIN);
 }
 
-Bytes bdata = new Bytes();
-IArray idata = new IArray();
-FArray fdata = new FArray();
+fdata = new float[0];
 if (rank == 0) {
-    assure "CollectiveAllReduce" {
-        world.allReduce((Bytes)"AbC", bdata, MPIOp.MAX);
-        world.allReduce([1, 2], idata, MPIOp.SUM);
-        world.allReduce([0.1, 0.01], fdata, MPIOp.MIN);
-        assert (bdata.decode() == "abc");
-        assert (idata == [9, 12]);
-        assert (fdata == [0.01, 0.001]);
+    assure "CollectiveAllReduceFloat: data counting" {
+        world.allReduce((MPIData)[0.1/1, 2.0/1, 3.0/1], 0, (MPIData)fdata, 0, 0, MPIOp.MIN);
+        print fdata;
+        assert (|fdata| == 3);
+        assert (fdata == [0.1/1, 1.0/10, 1.0/3]);
     }
 } else if (rank == 1) {
-    world.allReduce((Bytes)"aBC", bdata, MPIOp.MAX);
-    world.allReduce([3, 4], idata, MPIOp.SUM);
-    world.allReduce([0.01, 0.1], fdata, MPIOp.MIN);
+    world.allReduce((MPIData)[1.0/1, 1.0/2, 1.0/3], 0, (MPIData)fdata, 0, 0, MPIOp.MIN);
 } else {
-    world.allReduce((Bytes)"ABc", bdata, MPIOp.MAX);
-    world.allReduce([5, 6], idata, MPIOp.SUM);
-    world.allReduce([0.1, 0.001], fdata, MPIOp.MIN);
+    world.allReduce((MPIData)[1.0/1, 1.0/10, 1.0/1], 0, (MPIData)fdata, 0, 0, MPIOp.MIN);
 }

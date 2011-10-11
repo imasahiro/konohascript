@@ -1,19 +1,92 @@
-
 using konoha.mpi.*;
 
 world = MPIComm.WORLD;
-rank = world.getRank();
-size = world.getSize();
+r = world.rank;
+s = world.size;
 
-if (size != 2) exit(0);
+if (s != 2) exit(1);
 
-if (rank == 0) {
-    buf = (Bytes)"this is konoha";
-    world.send(buf, 1 /* dest_rank */);
-    print "SEND: " + buf.decode();
+{
+    buf = new int[0];
+    if (r == 0) {
+        world.send((MPIData)[1,2,3], 0, 3, 1);
+        world.recv((MPIData)buf,     0, 3, 1);
+    }
+    else {
+        world.recv((MPIData)buf, 0, 3, 0);
+        buf.reverse();
+        world.send((MPIData)buf, 0, 3, 0);
+    }
+    OUT.println("@" + r + ": " + buf);
 }
-else { /* rank == 1 */
-    buf = new Bytes();
-    world.recv(buf, 0 /* src_rank */);
-    print "RECV: " + buf.decode();
+
+{
+    buf = new float[0];
+    if (r == 0) {
+        world.send((MPIData)[1.2,3.4,4.5], 0, 3, 1);
+        world.recv((MPIData)buf, 0, 3, 1);
+    }
+    else {
+        world.recv((MPIData)buf, 0, 3, 0);
+        buf.reverse();
+        world.send((MPIData)buf, 0, 3, 0);
+    }
+    OUT.println("@" + r + ": " + buf);
+}
+
+{
+    buf = new byte[0];
+    if (r == 0) {
+        world.send((MPIData)(Bytes)"konoha", 0, 6, 1);
+        world.recv((MPIData)buf, 0, 6, 1);
+    }
+    else {
+        world.recv((MPIData)buf, 0, 6, 0);
+        world.send((MPIData)buf, 0, 6, 0);
+    }
+    OUT.println("@" + r + ": " + buf.decode());
+}
+
+{
+    buf = new int[0];
+    rq = world.iRecv((MPIData)buf, 0, 3, 1-r);
+    if (r == 0) {
+        world.send((MPIData)[1,2,3], 0, 3, 1);
+        rq.wait();
+    }
+    else {
+        rq.wait();
+        buf.reverse();
+        world.send((MPIData)buf, 0, 3, 0);
+    }
+    OUT.println("#" + r + ": " + buf);
+}
+
+{
+    buf = new float[0];
+    rq = world.iRecv((MPIData)buf, 0, 3, 1-r);
+    if (r == 0) {
+        world.send((MPIData)[1.2,2.4,3.6], 0, 3, 1);
+        rq.wait();
+    }
+    else {
+        rq.wait();
+        buf.reverse();
+        world.send((MPIData)buf, 0, 3, 0);
+    }
+    OUT.println("#" + r + ": " + buf);
+}
+
+{
+    buf = new byte[0];
+    rq = world.iRecv((MPIData)buf, 0, 6, 1-r);
+    if (r == 0) {
+        world.send((MPIData)(Bytes)"konoha", 0, 6, 1);
+        rq.wait();
+    }
+    else {
+        rq.wait();
+        world.send((MPIData)buf, 0, 6, 0);
+    }
+    OUT.println("#" + r + ": " + buf.decode());
 }
