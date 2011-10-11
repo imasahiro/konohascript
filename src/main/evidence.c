@@ -1085,7 +1085,7 @@ static knh_Exception_t* new_Assertion(CTX ctx, knh_uline_t uline)
 	if(mbuf[0] == 0) {
 		knh_uri_t uri = ULINE_uri(uline);
 		size_t line = ULINE_line(uline);
-		knh_snprintf(buf, sizeof(buf), "Assertion!!: %s at line %ld", FILENAME__(uri), line);
+		knh_snprintf(buf, sizeof(buf), "Assertion!!: %s at line %lu", FILENAME__(uri), line);
 	}
 	KNH_SETv(ctx, e->emsg, new_String2(ctx, CLASS_String, (const char*)buf, knh_strlen(buf), K_SPOLICY_ASCII));
 	e->uline = uline;

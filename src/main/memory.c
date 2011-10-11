@@ -272,7 +272,9 @@ static char* new_xmemarena(CTX ctx, size_t size)
 	 * http://msdn.microsoft.com/ja-jp/library/cc430214.aspx
 	 */
 	DWORD old_protect;
-	VirtualProtect(ptr, size, PAGE_EXECUTE_READWRITE, &old_protect);
+	if (VirtualProtect(ptr, size, PAGE_EXECUTE_READWRITE, &old_protect) != 0) {
+		mret = -1;
+	}
 #else
 	mret = -1;
 #endif

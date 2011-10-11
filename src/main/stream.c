@@ -406,7 +406,7 @@ static knh_io_t CURL_open(CTX ctx, knh_Path_t *path, const char *mode, knh_DictM
 		/* cleanup */
 		curl_easy_cleanup(cp->curl);
 		knh_free(ctx, cp, sizeof(curl_t));
-		cp = IO_NULL;
+		cp = NULL;
 	}
 	return (knh_io_t)cp;
 }

@@ -654,10 +654,10 @@ const char *knh_getSystemEncoding(void)
 	if(enc != NULL) {
 		return enc;
 	}
-#if defined(K_OSENCODING)
-	return K_OSENCODING;
-#elif defined(HAVE_LOCALCHARSET_H)
+#if defined(HAVE_LOCALCHARSET_H)
 	return (char*)knh_locale_charset();
+#elif defined(K_OSENCODING)
+	return K_OSENCODING;
 #else
 //	char *enc = knh_getenv("LC_CTYPE");
 //	if(enc != NULL) {
