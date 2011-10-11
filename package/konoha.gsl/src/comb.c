@@ -30,8 +30,7 @@
 //  shinpei - Shinpei Nakata, Yokohama National University, Japan
 // **************************************************************************
 
-#define USE_STRUCT_Tuple
-#include <gsl/gsl_poly.h>
+#include <gsl/gsl_combination.h>
 #include <konoha1.h>
 
 #ifdef __cplusplus
@@ -40,23 +39,37 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-DEFAPI(void) defGslPoly(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+static void GslComb_init(CTX ctx, knh_RawPtr_t *po)
 {
-	cdef->name = "GslPoly";
+	po->rawptr = NULL;
 }
 
-//## @Native Tuple<float,float> GslPoly.solveQuadratic(float a, float b, float c);
-KMETHOD GslPoly_solveQuadratic(CTX ctx, knh_sfp_t *sfp _RIX)
+static void GslComb_free(CTX ctx, knh_RawPtr_t *po)
 {
-	double a = Float_to(double, sfp[1]);
-	double b = Float_to(double, sfp[2]);
-	double c = Float_to(double, sfp[3]);
-	double x0 = 0.0, x1 = 0.0;
-	gsl_poly_solve_quadratic(a, b, c, &x0, &x1);
-	knh_Tuple_t *t = (knh_Tuple_t*)new_ReturnObject(ctx, sfp);
-	t->ffields[0] = (knh_float_t)x0;
-	t->ffields[1] = (knh_float_t)x1;
-	RETURN_(t);
+	if (po->rawptr != NULL) {
+		gsl_combination_free((gsl_combination *)po->rawptr);
+		po->rawptr = NULL;
+	}
+}
+
+DEFAPI(void) defGslComb(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	cdef->name = "GslComb";
+	cdef->init = GslComb_init;
+	cdef->free = GslComb_free;
+}
+
+//## @Native GslComb GslComb.new(int n, int k);
+KMETHOD GslComb_new(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	size_t n = Int_to(size_t, sfp[1]);
+	size_t k = Int_to(size_t, sfp[2]);
+	knh_RawPtr_t *p = sfp[0].p;
+	p->rawptr = (void *)gsl_combination_alloc(n, k);
+	if (p->rawptr == NULL) {
+		/* add error handling here */
+	}
+	RETURN_(p);
 }
 
 #ifdef __cplusplus

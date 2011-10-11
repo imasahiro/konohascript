@@ -8,6 +8,10 @@ if(HAVE_LIB_GSL)
 
 set(PACKAGE_SOURCE_CODE 
 	src/gsl.c
+	src/comb.c
+	src/math.c
+	src/multi.c
+	src/perm.c
 	src/poly.c
 	src/stats.c
 )

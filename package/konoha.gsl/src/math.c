@@ -1,15 +1,14 @@
 /****************************************************************************
  * KONOHA COPYRIGHT, LICENSE NOTICE, AND DISCRIMER
  *
- * Copyright (c) 2006-2011, Kimio Kuramitsu <kimio at ynu.ac.jp>
- *           (c) 2008-      Konoha Team konohaken@googlegroups.com
+ * Copyright (c)  2011-      Konoha Team konohaken@googlegroups.com
  * All rights reserved.
  *
  * You may choose one of the following two licenses when you use konoha.
- * If you want to use the latter license, please contact us.
+ * See www.konohaware.org/license.html for further information.
  *
- * (1) GNU General Public License 3.0 (with KONOHA_UNDER_LGPL3)
- * (2) Konoha Non-Disclosure License 1.0
+ * (1) GNU Lesser General Public License 3.0 (with KONOHA_UNDER_LGPL3)
+ * (2) Konoha Software Foundation License 1.0
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -25,21 +24,37 @@
  *
  ****************************************************************************/
 
-include "lib:gluelink";
+// **************************************************************************
+// LIST OF CONTRIBUTERS
+//  kimio - Kimio Kuramitsu, Yokohama National University, Japan
+//  shinpei - Shinpei Nakata, Yokohama National University, Japan
+// **************************************************************************
 
-@Singleton @Native class GslPoly;
-@Native Tuple<float,float> GslPoly.solveQuadratic(float a, float b, float c);
+#include <gsl/gsl_math.h>
+#include <konoha1.h>
 
-@Singleton @Native class GslStats;
-@Native float GslStats.mean(float[] data);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-@Native class GslPerm;
-@Native GslPerm GslPerm.new(int n);
+/* ------------------------------------------------------------------------ */
 
-@Native class GslComb;
-@Native GslComb GslComb.new(int n);
+static knh_FloatData_t GslMathConstFloat[] = {
+	{"E", M_E},
+	/* add consts here */
+	{NULL, K_FLOAT_ZERO}
+};
 
-@Native class GslMulti;
-@Native GslMulti GslMulti.new(int n);
+DEFAPI(void) constGslMath(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+{
+	kapi->loadClassFloatConst(ctx, cid, GslMathConstFloat);
+}
 
-@Native class GslMath;
+DEFAPI(void) defGslMath(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	cdef->name = "GslMath";
+}
+
+#ifdef __cplusplus
+}
+#endif

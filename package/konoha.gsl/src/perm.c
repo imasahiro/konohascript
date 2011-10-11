@@ -30,8 +30,7 @@
 //  shinpei - Shinpei Nakata, Yokohama National University, Japan
 // **************************************************************************
 
-#define USE_STRUCT_Tuple
-#include <gsl/gsl_poly.h>
+#include <gsl/gsl_permutation.h>
 #include <konoha1.h>
 
 #ifdef __cplusplus
@@ -40,23 +39,36 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-DEFAPI(void) defGslPoly(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+static void GslPerm_init(CTX ctx, knh_RawPtr_t *po)
 {
-	cdef->name = "GslPoly";
+	po->rawptr = NULL;
 }
 
-//## @Native Tuple<float,float> GslPoly.solveQuadratic(float a, float b, float c);
-KMETHOD GslPoly_solveQuadratic(CTX ctx, knh_sfp_t *sfp _RIX)
+static void GslPerm_free(CTX ctx, knh_RawPtr_t *po)
 {
-	double a = Float_to(double, sfp[1]);
-	double b = Float_to(double, sfp[2]);
-	double c = Float_to(double, sfp[3]);
-	double x0 = 0.0, x1 = 0.0;
-	gsl_poly_solve_quadratic(a, b, c, &x0, &x1);
-	knh_Tuple_t *t = (knh_Tuple_t*)new_ReturnObject(ctx, sfp);
-	t->ffields[0] = (knh_float_t)x0;
-	t->ffields[1] = (knh_float_t)x1;
-	RETURN_(t);
+	if (po->rawptr != NULL) {
+		gsl_permutation_free((gsl_permutation *)po->rawptr);
+		po->rawptr = NULL;
+	}
+}
+
+DEFAPI(void) defGslPerm(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	cdef->name = "GslPerm";
+	cdef->init = GslPerm_init;
+	cdef->free = GslPerm_free;
+}
+
+//## @Native GslPerm GslPerm.new(int n);
+KMETHOD GslPerm_new(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	size_t n = Int_to(size_t, sfp[1]);
+	knh_RawPtr_t *p = sfp[0].p;
+	p->rawptr = (void *)gsl_permutation_alloc(n);
+	if (p->rawptr == NULL) {
+		/* add error handling here */
+	}
+	RETURN_(p);
 }
 
 #ifdef __cplusplus
