@@ -8,7 +8,7 @@ void knh_reduce(knh_Func_t *fo, void *ivec, void *iovec, int *len, MPI_Datatype 
 	CLOSURE_start(2);
 	CTX ctx = lctx;
 	int vlen = len[0];
-	if (dtype[0] == MPI_CHAR) {
+	if (dtype[0] == MPI_CHAR && dtype[1] == MPI_CHAR) {
 		knh_Bytes_t *o1 = new_Bytes(ctx, NULL, vlen);
 		knh_memcpy(o1->bu.buf, ivec, vlen);
 		BA_size(o1) = vlen;
@@ -19,7 +19,7 @@ void knh_reduce(knh_Func_t *fo, void *ivec, void *iovec, int *len, MPI_Datatype 
 		lsfp[2].o = (Object*)o2;
 		CLOSURE_call(fo);
 		knh_memcpy(iovec, o2->bu.buf, vlen);
-	} else if (dtype[0] == MPI_LONG) {
+	} else if (dtype[0] == MPI_LONG && dtype[1] == MPI_LONG) {
 		knh_Array_t *o1 = new_Array(ctx, CLASS_Int, vlen);
 		knh_memcpy(o1->ilist, ivec, sizeof(knh_int_t) * vlen);
 		knh_Array_size(o1) = vlen;
@@ -30,7 +30,7 @@ void knh_reduce(knh_Func_t *fo, void *ivec, void *iovec, int *len, MPI_Datatype 
 		lsfp[2].o = (Object*)o2;
 		CLOSURE_call(fo);
 		knh_memcpy(iovec, o2->ilist, sizeof(knh_int_t) * vlen);
-	} else if (dtype[0] == MPI_DOUBLE) {
+	} else if (dtype[0] == MPI_DOUBLE && dtype[1] == MPI_DOUBLE) {
 		knh_Array_t *o1 = new_Array(ctx, CLASS_Float, vlen);
 		knh_memcpy(o1->flist, ivec, sizeof(knh_float_t) * vlen);
 		knh_Array_size(o1) = vlen;

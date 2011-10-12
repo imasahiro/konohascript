@@ -28,8 +28,9 @@ static void knh_MPIComm_init(CTX ctx, knh_RawPtr_t *o)
 static void knh_MPIComm_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_MPIComm_t *comm = (knh_MPIComm_t*)o;
-	if (comm->proc_name != NULL)
+	if (comm->proc_name != NULL) {
 		free(comm->proc_name); // allocated by strdup
+	}
 }
 
 static void knh_MPIData_init(CTX ctx, knh_RawPtr_t *o)
@@ -37,6 +38,16 @@ static void knh_MPIData_init(CTX ctx, knh_RawPtr_t *o)
 	knh_MPIData_t *data = (knh_MPIData_t*)o;
 	data->v = NULL;
 	data->type = MPI_BYTE;
+}
+
+static void knh_MPIData_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	MPID(data, p);
+	if (data->v != NULL) {
+		KNH_ENSUREREF(ctx, 1);
+		KNH_ADDREF(ctx, data->v);
+		KNH_SIZEREF(ctx);
+	}
 }
 
 static void knh_MPIData_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
@@ -49,8 +60,19 @@ static void knh_MPIData_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int l
 
 static void knh_MPIOp_init(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_MPIOp_t *op = (knh_MPIOp_t*)o;
+	MPIO(op, o);
 	MPIO_OP(op) = 0;
+	MPIO_OPFUNC(op) = NULL;
+}
+
+static void knh_MPIOp_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	MPIO(op, p);
+	if (MPIO_OPFUNC(op) != NULL) {
+		KNH_ENSUREREF(ctx, 1);
+		KNH_ADDREF(ctx, MPIO_OPFUNC(op));
+		KNH_SIZEREF(ctx);
+	}
 }
 
 static void knh_MPIRequest_init(CTX ctx, knh_RawPtr_t *o)
@@ -70,6 +92,7 @@ DEFAPI(void) defMPIData(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	cdef->name = "MPIData";
 	cdef->init = knh_MPIData_init;
+	cdef->reftrace = knh_MPIData_reftrace;
 	cdef->p = knh_MPIData_p;
 }
 
@@ -83,6 +106,7 @@ DEFAPI(void) defMPIOp(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	cdef->name = "MPIOp";
 	cdef->init = knh_MPIOp_init;
+	cdef->reftrace = knh_MPIOp_reftrace;
 }
 
 /* ------------------------------------------------------------------------ */

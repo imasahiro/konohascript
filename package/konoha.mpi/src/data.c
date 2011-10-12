@@ -64,6 +64,43 @@ TYPEMAP String_MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(data);
 }
 
+TYPEMAP MPIData_int__(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	MPID(data, sfp[1].o);
+	if (data->cid == CLASS_Array && data->type == MPI_LONG) {
+		RETURN_(data->a);
+	}
+	RETURN_(KNH_NULVAL(O_cid(data)));
+}
+
+TYPEMAP MPIData_float__(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	MPID(data, sfp[1].o);
+	if (data->cid == CLASS_Array && data->type == MPI_DOUBLE) {
+		RETURN_(data->a);
+	}
+	RETURN_(KNH_NULVAL(O_cid(data)));
+}
+
+TYPEMAP MPIData_Bytes(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	MPID(data, sfp[1].o);
+	if (data->cid == CLASS_Bytes && data->type == MPI_CHAR) {
+		RETURN_(data->b);
+	}
+	RETURN_(KNH_NULVAL(O_cid(data)));
+}
+
+/* ------------------------------------------------------------------------ */
+
+//## method Class MPIData.getContentClass();
+KMETHOD MPIData_getContentClass(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	MPID(data, sfp[0].o);
+	knh_Class_t *cls = new_Type(ctx, data->o->h.cTBL->cid);
+	RETURN_(cls);
+}
+
 /* ------------------------------------------------------------------------ */
 
 void* knh_MPIData_getAddr(knh_MPIData_t *data, int offset)

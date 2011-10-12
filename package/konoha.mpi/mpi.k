@@ -32,6 +32,10 @@ include "lib:gluelink";
 @Native MPIData : (int[] ia);
 @Native MPIData : (float[] fa);
 @Native MPIData : (byte[] ba);
+@Native int[]   : (MPIData md);
+@Native float[] : (MPIData md);
+@Native byte[]  : (MPIData md);
+@Native Class MPIData.getContentClass();
 
 @Native class MPIRequest;
 @Native boolean MPIRequest.test();
