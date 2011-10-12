@@ -59,7 +59,11 @@ static void *msgpack_init(CTX ctx, knh_packer_t *pk)
 static void msgpack_flushfree(CTX ctx, knh_packer_t *pk)
 {
 	msgpack_sbuffer *sbuffer = pk->sbuffer;
-	pk->w->dpi->fwriteSPI(ctx, DP(pk->w)->fio, sbuffer->data, sbuffer->size);
+	knh_bytes_t t = {{sbuffer->data}, sbuffer->size};
+	knh_OutputStream_write(ctx, pk->w, t);
+	knh_OutputStream_flush(ctx, pk->w, 0); /* TODO need flush? */
+	msgpack_sbuffer_free(pk->sbuffer);
+	msgpack_packer_free(pk->pk);
 }
 
 static void msgpack_null(CTX ctx, void *pkp)
@@ -179,6 +183,7 @@ static knh_type_t msgpack_read(CTX ctx, msgpack_object obj, knh_sfp_t *sfp)
 
 static knh_type_t msgpack_unpackTo(CTX ctx, const char *buf, size_t size, knh_sfp_t *sfp)
 {
+	knh_type_t type;
 	msgpack_unpacker upk;
 	msgpack_unpacked result;
 	msgpack_unpacker_init(&upk, MSGPACK_UNPACKER_INIT_BUFFER_SIZE);
@@ -187,7 +192,10 @@ static knh_type_t msgpack_unpackTo(CTX ctx, const char *buf, size_t size, knh_sf
 	msgpack_unpacker_buffer_consumed(&upk, size);
 	msgpack_unpacked_init(&result);
 	msgpack_unpacker_next(&upk, &result);
-	return msgpack_read(ctx, result.data, sfp);
+	type = msgpack_read(ctx, result.data, sfp);
+	msgpack_unpacker_destroy(&upk);
+	msgpack_unpacked_destroy(&result);
+	return type;
 }
 
 static const knh_PackSPI_t pack = {
