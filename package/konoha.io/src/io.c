@@ -35,6 +35,36 @@
 extern "C" {
 #endif
 
+///* ------------------------------------------------------------------------ */
+////## void Bytes.putc(Int char);
+//
+//static KMETHOD Bytes_putc(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_Bytes_t *o = (knh_Bytes_t*)sfp[0].o;
+//	knh_Bytes_putc(ctx, o, Int_to(size_t, sfp[1]));
+//	RETURNvoid_();
+//}
+//
+///* ------------------------------------------------------------------------ */
+////## void Bytes.write(BytesIm buf, Int offset, Int length);
+////## void Bytes.add(BytesIm buf, Int offset, Int length);
+//
+//static KMETHOD Bytes_write(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_Bytes_t *ba = sfp[0].ba;
+//	knh_bytes_t t = BA_tobytes(sfp[1].ba);
+//	if(sfp[2].ivalue != 0) {
+//		size_t n = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), t.len);
+//		t = knh_bytes_last(t, n);
+//	}
+//	if(sfp[3].ivalue != 0) {
+//		size_t l = Int_to(size_t, sfp[3]);
+//		if(l < t.len) t.len = l;
+//	}
+//	knh_Bytes_write(ctx, ba, t);
+//	RETURNvoid_();
+//}
+
 /* ------------------------------------------------------------------------ */
 
 #ifdef _SETUP

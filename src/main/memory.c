@@ -1377,7 +1377,7 @@ static void gc_freeMemBlock(CTX ctx, knh_context_t *deadCtx)
 static void gc_freeCtx(CTX ctx)
 {
 	int i;
-	knh_share_t *share = ctx->share;
+	knh_share_t *share = ctx->wshare;
 	for(i = knh_Array_size(share->contextListNULL) - 1; i >= 0; i--) {
 		knh_context_t *c = ((knh_Context_t *)knh_Array_n(share->contextListNULL, i))->ctx;
 		if(!IS_RUNNING(c)) {

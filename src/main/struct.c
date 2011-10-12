@@ -1013,6 +1013,58 @@ static const knh_ClassDef_t BytesDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
+/* --------------- */
+/* Pointer */
+
+static void Pointer_init(CTX ctx, knh_RawPtr_t *o)
+{
+	knh_Pointer_t *p = (knh_Pointer_t*)o;
+	p->ptr = NULL;
+	p->size = 0;
+	p->wsize = 0;
+	KNH_INITv(p->gcref, KNH_NULL);
+}
+
+static void Pointer_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
+{
+	knh_Pointer_t *p = (knh_Pointer_t*)o;
+	KNH_ADDREF(ctx, p->gcref);
+	KNH_SIZEREF(ctx);
+}
+
+static int Pointer_compareTo(knh_RawPtr_t *o, knh_RawPtr_t *o2)
+{
+	knh_Pointer_t *p1 = (knh_Pointer_t*)o;
+	knh_Pointer_t *p2 = (knh_Pointer_t*)o2;
+	return (int)((knh_intptr_t)(p1)->ptr - (knh_intptr_t)p2->ptr);
+}
+
+static void Pointer_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
+{
+	knh_Pointer_t *p = (knh_Pointer_t*)o;
+	if(IS_FMTs(level)) {
+		knh_write_ptr(ctx, w, p->ptr);
+	}
+	else if(IS_FMTdump(level)) {
+		knh_write_ptr(ctx, w, p->ptr);
+	}
+}
+
+static knh_hashcode_t Pointer_hashCode(CTX ctx, knh_RawPtr_t *o)
+{
+	knh_Pointer_t *p = (knh_Pointer_t*)o;
+	return (knh_hashcode_t)(p->ptr) / sizeof(void*);
+}
+
+static const knh_ClassDef_t PointerDef = {
+	Pointer_init, DEFAULT_initcopy, Pointer_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, Pointer_compareTo, Pointer_p,
+	DEFAULT_getkey, Pointer_hashCode, DEFAULT_0, DEFAULT_1,
+	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
+	"Pointer", CFLAG_Pointer, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
 /* --------------------------------------------------------------------------*/
 /* Tuple */
 

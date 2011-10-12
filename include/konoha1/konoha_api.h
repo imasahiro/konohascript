@@ -10,6 +10,7 @@ extern "C" {
 KNHAPI2(knh_bool_t) knh_eval(CTX ctx, const char *script, knh_OutputStream_t *w);
 KNHAPI2(knh_Array_t*) new_Array(CTX ctx, knh_class_t p1, size_t capacity);
 KNHAPI2(void) knh_Array_add_(CTX ctx, knh_Array_t *a, knh_Object_t *value);
+KNHAPI2(void) knh_Array_remove_(CTX ctx, knh_Array_t *a, size_t n);
 KNHAPI2(void) knh_Array_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m);
 KNHAPI2(knh_Iterator_t*) new_IteratorG(CTX ctx, knh_class_t cid, knh_Object_t *source, knh_Fitrnext fnext);
 KNHAPI2(void) knh_Bytes_clear(knh_Bytes_t *ba, size_t pos);
@@ -111,6 +112,7 @@ typedef struct knh_api2_t {
 	size_t  (*Method_psize)(knh_Method_t *mtd);
 	void (*THROW_OutOfRange)(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t max);
 	void  (*Array_add_)(CTX ctx, knh_Array_t *a, knh_Object_t *value);
+	void  (*Array_remove_)(CTX ctx, knh_Array_t *a, size_t n);
 	void  (*Array_swap)(CTX ctx, knh_Array_t *a, size_t n, size_t m);
 	void  (*Bytes_clear)(knh_Bytes_t *ba, size_t pos);
 	void  (*Bytes_write2)(CTX ctx, knh_Bytes_t *ba, const char *text, size_t len);
@@ -141,7 +143,7 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)-1554683029)
+#define K_API2_CRC32 ((size_t)1336969244)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -182,6 +184,7 @@ static const knh_api2_t* getapi2(void) {
 		knh_Method_psize,
 		THROW_OutOfRange,
 		knh_Array_add_,
+		knh_Array_remove_,
 		knh_Array_swap,
 		knh_Bytes_clear,
 		knh_Bytes_write2,
@@ -252,6 +255,7 @@ static const knh_api2_t* getapi2(void) {
 #define knh_Method_psize   ctx->api2->Method_psize
 #define THROW_OutOfRange   ctx->api2->THROW_OutOfRange
 #define knh_Array_add_   ctx->api2->Array_add_
+#define knh_Array_remove_   ctx->api2->Array_remove_
 #define knh_Array_swap   ctx->api2->Array_swap
 #define knh_Bytes_clear   ctx->api2->Bytes_clear
 #define knh_Bytes_write2   ctx->api2->Bytes_write2
@@ -511,8 +515,8 @@ knh_class_t knh_ClassTBL_linkType(CTX ctx, const knh_ClassTBL_t *ct, knh_class_t
 knh_Object_t *knh_NameSpace_newObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t *path, knh_class_t tcid);
 void knh_initClassFuncData(CTX ctx, const knh_LoaderAPI_t *kapi);
 knh_class_t new_ClassId(CTX ctx);
-knh_context_t *new_ThreadContext(CTX ctx);
 void knh_EventTBL_expand(CTX ctx);
+knh_context_t *new_ThreadContext(CTX ctx);
 void Context_initMultiThread(CTX ctx);
 knh_Context_t* knh_toContext(CTX ctx);
 void knh_Context_free(CTX ctx, knh_context_t* ctxo);
@@ -520,6 +524,7 @@ void knh_beginContext(CTX ctx, void **bottom);
 void knh_endContext(CTX ctx);
 konoha_t konoha_open(void);
 knh_Object_t **knh_reftraceRoot(CTX ctx FTRARG);
+void check_allThreadExit(CTX ctx);
 void konoha_close(konoha_t konoha);
 const char* knh_sfile(const char *file);
 void knh_write_now(CTX ctx, knh_OutputStream_t *w);
@@ -644,7 +649,7 @@ void knh_loadSystemQueryDriver(CTX ctx, knh_NameSpace_t *ns);
 knh_bool_t knh_isCompileOnly(CTX ctx);
 void knh_loadScriptPackageList(CTX ctx, const char *pkglist);
 void knh_setSecurityAlertMessage(const char *msg, int isNeedFree);
-int  konoha_main(konoha_t konoha, int argc, const char **argv);
+int konoha_main(konoha_t konoha, int argc, const char **argv);
 void knh_askSecurityAlert(CTX ctx);
 void knh_checkSecurityManager(CTX ctx, knh_sfp_t *sfp);
 knh_Int_t* new_Int_X(CTX ctx, knh_class_t cid, knh_int_t value);
@@ -775,14 +780,14 @@ int knh_mutex_unlock(knh_mutex_t *m);
 int knh_mutex_destroy(knh_mutex_t *m);
 knh_mutex_t *knh_mutex_malloc(CTX ctx);
 void knh_mutex_free(CTX ctx, knh_mutex_t *m);
-int knh_thread_key_create(knh_thread_key_t *key);
-int thread_setspecific(knh_thread_key_t key, const void *data);
-void* knh_thread_getspecific(knh_thread_key_t key);
-int knh_thread_key_delete(knh_thread_key_t key);
 knh_cond_t *knh_thread_cond_init(CTX ctx);
 int knh_thread_cond_wait(knh_cond_t *cond, knh_mutex_t *m);
 int knh_thread_cond_signal(knh_cond_t *cond);
 int knh_thread_cond_broadcast(knh_cond_t *cond);
+int knh_thread_key_create(knh_thread_key_t *key);
+int thread_setspecific(knh_thread_key_t key, const void *data);
+void* knh_thread_getspecific(knh_thread_key_t key);
+int knh_thread_key_delete(knh_thread_key_t key);
 
 #ifdef __cplusplus
 }

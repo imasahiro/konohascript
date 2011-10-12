@@ -233,6 +233,22 @@ struct knh_Bytes_t {
 #define B_endsWith(b, t)      knh_bytes_endsWith(b, STEXT(t))
 
 /* ------------------------------------------------------------------------ */
+//## class Pointer Object;
+
+typedef struct knh_Pointer_t knh_Pointer_t;
+
+struct knh_Pointer_t {
+	knh_hObject_t h;
+	union {
+		void *ptr;
+		unsigned char *uptr;
+	};
+	size_t size;
+	size_t wsize;
+	struct knh_Object_t *gcref;
+};
+
+/* ------------------------------------------------------------------------ */
 //## class Iterator Object;
 //## flag Iterator NDATA     1 - is set * *;
 //## type IteratorVar     Iterator 0 Tvar;
