@@ -1,0 +1,58 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfontengineplugin.html
+
+output_urn
+QFontEnginePlugin
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QFontEnginePlugin ( const QString & foundry, QObject * parent = 0 )
+~QFontEnginePlugin ()
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QList<QFontEngineInfo> availableFontEngines () const = 0
+ virtual QAbstractFontEngine * create ( const QFontEngineInfo & info ) = 0
+ virtual QStringList keys () const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+true
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

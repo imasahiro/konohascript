@@ -1,0 +1,116 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtoolbox.html
+
+output_urn
+QToolBox
+
+inherits
+
+public_types
+
+properties
+count : const int
+currentIndex : int
+
+public_functions
+QToolBox ( QWidget * parent = 0, Qt::WindowFlags f = 0 )
+~QToolBox ()
+ int addItem ( QWidget * widget, const QIcon & iconSet, const QString & text )
+ int addItem ( QWidget * w, const QString & text )
+ int count () const
+ int currentIndex () const
+ QWidget * currentWidget () const
+ int indexOf ( QWidget * widget ) const
+ int insertItem ( int index, QWidget * widget, const QIcon & icon, const QString & text )
+ int insertItem ( int index, QWidget * widget, const QString & text )
+ bool isItemEnabled ( int index ) const
+ QIcon itemIcon ( int index ) const
+ QString itemText ( int index ) const
+ QString itemToolTip ( int index ) const
+ void removeItem ( int index )
+ void setItemEnabled ( int index, bool enabled )
+ void setItemIcon ( int index, const QIcon & icon )
+ void setItemText ( int index, const QString & text )
+ void setItemToolTip ( int index, const QString & toolTip )
+ QWidget * widget ( int index ) const
+
+public_slots
+ void setCurrentIndex ( int index )
+ void setCurrentWidget ( QWidget * widget )
+
+signals
+ void currentChanged ( int index )
+
+static_public_members
+
+protected_functions
+ virtual void itemInserted ( int index )
+ virtual void itemRemoved ( int index )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * ev )
+ virtual bool event ( QEvent * e )
+ virtual void showEvent ( QShowEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QFrame
+name
+Shadow
+key
+Plain
+Raised
+Sunken
+public_flag
+true
+class_name
+QFrame
+name
+Shape
+key
+NoFrame
+Box
+Panel
+StyledPanel
+HLine
+VLine
+WinPanel
+public_flag
+true
+class_name
+QFrame
+name
+StyleMask
+key
+Shadow_Mask
+Shape_Mask
+public_flag
+true
+
+parent_index
+432
+
+parent_name
+QFrame
+

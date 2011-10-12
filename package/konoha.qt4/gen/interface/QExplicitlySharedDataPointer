@@ -1,0 +1,75 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qexplicitlyshareddatapointer.html
+
+output_urn
+QExplicitlySharedDataPointer
+
+inherits
+
+public_types
+ typedef Type
+
+properties
+
+public_functions
+QExplicitlySharedDataPointer ()
+QExplicitlySharedDataPointer ( T * sharedData )
+QExplicitlySharedDataPointer ( const QExplicitlySharedDataPointer<T> & other )
+QExplicitlySharedDataPointer ( const QExplicitlySharedDataPointer<X> & other )
+~QExplicitlySharedDataPointer ()
+ const T * constData () const
+ T * data () const
+ void detach ()
+ void reset ()
+ void swap ( QExplicitlySharedDataPointer & other )
+operator bool () const
+ bool operator! () const
+ bool operator!= ( const QExplicitlySharedDataPointer<T> & other ) const
+ bool operator!= ( const T * ptr ) const
+ T & operator* () const
+ T * operator-> ()
+ T * operator-> () const
+ QExplicitlySharedDataPointer<T> & operator= ( const QExplicitlySharedDataPointer<T> & other )
+ QExplicitlySharedDataPointer & operator= ( T * sharedData )
+ bool operator== ( const QExplicitlySharedDataPointer<T> & other ) const
+ bool operator== ( const T * ptr ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ T * clone ()
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+Type
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,79 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstracttextdocumentlayout.html
+
+output_urn
+QAbstractTextDocumentLayout
+
+inherits
+
+public_types
+ class PaintContext
+ class Selection
+
+properties
+
+public_functions
+QAbstractTextDocumentLayout ( QTextDocument * document )
+ QString anchorAt ( const QPointF & position ) const
+ virtual QRectF blockBoundingRect ( const QTextBlock & block ) const = 0
+ QTextDocument * document () const
+ virtual QSizeF documentSize () const = 0
+ virtual void draw ( QPainter * painter, const PaintContext & context ) = 0
+ virtual QRectF frameBoundingRect ( QTextFrame * frame ) const = 0
+ QTextObjectInterface * handlerForObject ( int objectType ) const
+ virtual int hitTest ( const QPointF & point, Qt::HitTestAccuracy accuracy ) const = 0
+ virtual int pageCount () const = 0
+ QPaintDevice * paintDevice () const
+ void registerHandler ( int objectType, QObject * component )
+ void setPaintDevice ( QPaintDevice * device )
+
+public_slots
+
+signals
+ void documentSizeChanged ( const QSizeF & newSize )
+ void pageCountChanged ( int newPages )
+ void update ( const QRectF & rect = QRectF( 0., 0., 1000000000., 1000000000. ) )
+ void updateBlock ( const QTextBlock & block )
+
+static_public_members
+
+protected_functions
+ virtual void documentChanged ( int position, int charsRemoved, int charsAdded ) = 0
+ virtual void drawInlineObject ( QPainter * painter, const QRectF & rect, QTextInlineObject object, int posInDocument, const QTextFormat & format )
+ QTextCharFormat format ( int position )
+ virtual void positionInlineObject ( QTextInlineObject item, int posInDocument, const QTextFormat & format )
+ virtual void resizeInlineObject ( QTextInlineObject item, int posInDocument, const QTextFormat & format )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+PaintContext
+Selection
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

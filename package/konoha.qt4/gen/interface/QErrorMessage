@@ -1,0 +1,72 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qerrormessage.html
+
+output_urn
+QErrorMessage
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QErrorMessage ( QWidget * parent = 0 )
+~QErrorMessage ()
+
+public_slots
+ void showMessage ( const QString & message )
+ void showMessage ( const QString & message, const QString & type )
+
+signals
+5 public slots inherited from QDialog
+19 public slots inherited from QWidget
+1 public slot inherited from QObject
+
+static_public_members
+ QErrorMessage * qtHandler ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * e )
+ virtual void done ( int a )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QDialog
+name
+DialogCode
+key
+Accepted
+Rejected
+public_flag
+true
+
+parent_index
+719
+
+parent_name
+QDialog
+

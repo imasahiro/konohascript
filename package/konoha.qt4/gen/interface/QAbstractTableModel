@@ -1,0 +1,57 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstracttablemodel.html
+
+output_urn
+QAbstractTableModel
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QAbstractTableModel ( QObject * parent = 0 )
+~QAbstractTableModel ()
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual bool dropMimeData ( const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent )
+ virtual QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+34
+
+parent_name
+QAbstractItemModel
+

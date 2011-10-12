@@ -1,0 +1,66 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdeclarativepropertymap.html
+
+output_urn
+QDeclarativePropertyMap
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDeclarativePropertyMap ( QObject * parent = 0 )
+ virtual ~QDeclarativePropertyMap ()
+ void clear ( const QString & key )
+ bool contains ( const QString & key ) const
+ int count () const
+ void insert ( const QString & key, const QVariant & value )
+ bool isEmpty () const
+ QStringList keys () const
+ int size () const
+ QVariant value ( const QString & key ) const
+ QVariant & operator[] ( const QString & key )
+ QVariant operator[] ( const QString & key ) const
+
+public_slots
+
+signals
+ void valueChanged ( const QString & key, const QVariant & value )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

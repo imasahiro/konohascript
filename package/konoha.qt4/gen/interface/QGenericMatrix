@@ -1,0 +1,87 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgenericmatrix.html
+
+output_urn
+QGenericMatrix
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QGenericMatrix ()
+QGenericMatrix ( const QGenericMatrix<N, M, T> & other )
+QGenericMatrix ( const T * values )
+ const T * constData () const
+ void copyDataTo ( T * values ) const
+ T * data ()
+ const T * data () const
+ void fill ( T value )
+ bool isIdentity () const
+ void setToIdentity ()
+ QGenericMatrix<M, N, T> transposed () const
+ bool operator!= ( const QGenericMatrix<N, M, T> & other ) const
+ const T & operator() ( int row, int column ) const
+ T & operator() ( int row, int column )
+ QGenericMatrix<N, M, T> & operator*= ( T factor )
+ QGenericMatrix<N, M, T> & operator+= ( const QGenericMatrix<N, M, T> & other )
+ QGenericMatrix<N, M, T> & operator-= ( const QGenericMatrix<N, M, T> & other )
+ QGenericMatrix<N, M, T> & operator/= ( T divisor )
+ bool operator== ( const QGenericMatrix<N, M, T> & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ typedef QMatrix2x2
+ typedef QMatrix2x3
+ typedef QMatrix2x4
+ typedef QMatrix3x2
+ typedef QMatrix3x3
+ typedef QMatrix3x4
+ typedef QMatrix4x2
+ typedef QMatrix4x3
+ QGenericMatrix<M1, M2, T> operator* ( const QGenericMatrix<N, M2, T> & m1, const QGenericMatrix<M1, N, T> & m2 )
+ QGenericMatrix<N, M, T> operator* ( T factor, const QGenericMatrix<N, M, T> & matrix )
+ QGenericMatrix<N, M, T> operator* ( const QGenericMatrix<N, M, T> & matrix, T factor )
+ QGenericMatrix<N, M, T> operator+ ( const QGenericMatrix<N, M, T> & m1, const QGenericMatrix<N, M, T> & m2 )
+ QGenericMatrix<N, M, T> operator- ( const QGenericMatrix<N, M, T> & m1, const QGenericMatrix<N, M, T> & m2 )
+ QGenericMatrix<N, M, T> operator- ( const QGenericMatrix<N, M, T> & matrix )
+ QGenericMatrix<N, M, T> operator/ ( const QGenericMatrix<N, M, T> & matrix, T divisor )
+ QDataStream & operator<< ( QDataStream & stream, const QGenericMatrix<N, M, T> & matrix )
+ QDataStream & operator>> ( QDataStream & stream, QGenericMatrix<N, M, T> & matrix )
+
+templateClass
+true
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

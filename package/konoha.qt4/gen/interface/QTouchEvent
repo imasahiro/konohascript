@@ -1,0 +1,71 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtouchevent.html
+
+output_urn
+QTouchEvent
+
+inherits
+
+public_types
+ class TouchPoint
+ enum DeviceType { TouchScreen, TouchPad }
+
+properties
+
+public_functions
+QTouchEvent ( QEvent::Type eventType, QTouchEvent::DeviceType deviceType = TouchScreen, Qt::KeyboardModifiers modifiers = Qt::NoModifier, Qt::TouchPointStates touchPointStates = 0, const QList<QTouchEvent::TouchPoint> & touchPoints = QList<QTouchEvent::TouchPoint> () )
+~QTouchEvent ()
+ QTouchEvent::DeviceType deviceType () const
+ Qt::TouchPointStates touchPointStates () const
+ const QList<QTouchEvent::TouchPoint> & touchPoints () const
+ QWidget * widget () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+TouchPoint
+
+parent_typedefed_objects
+
+enums
+class_name
+QTouchEvent
+name
+DeviceType
+key
+TouchScreen
+TouchPad
+public_flag
+true
+
+parent_enums
+
+parent_index
+434
+
+parent_name
+QInputEvent
+

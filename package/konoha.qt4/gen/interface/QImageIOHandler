@@ -1,0 +1,94 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qimageiohandler.html
+
+output_urn
+QImageIOHandler
+
+inherits
+
+public_types
+ enum ImageOption { Size, ClipRect, ScaledSize, ScaledClipRect, ..., ImageFormat }
+
+properties
+
+public_functions
+QImageIOHandler ()
+ virtual ~QImageIOHandler ()
+ virtual bool canRead () const = 0
+ virtual int currentImageNumber () const
+ virtual QRect currentImageRect () const
+ QIODevice * device () const
+ QByteArray format () const
+ virtual int imageCount () const
+ virtual bool jumpToImage ( int imageNumber )
+ virtual bool jumpToNextImage ()
+ virtual int loopCount () const
+ virtual int nextImageDelay () const
+ virtual QVariant option ( ImageOption option ) const
+ virtual bool read ( QImage * image ) = 0
+ void setDevice ( QIODevice * device )
+ void setFormat ( const QByteArray & format )
+ void setFormat ( const QByteArray & format ) const
+ virtual void setOption ( ImageOption option, const QVariant & value )
+ virtual bool supportsOption ( ImageOption option ) const
+ virtual bool write ( const QImage & image )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QImageIOHandler
+name
+ImageOption
+key
+Size
+ClipRect
+ScaledSize
+ScaledClipRect
+Description
+CompressionRatio
+Gamma
+Quality
+Name
+SubType
+IncrementalReading
+Endianness
+Animation
+BackgroundColor
+ImageFormat
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

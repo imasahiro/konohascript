@@ -1,0 +1,90 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qpolygon.html
+
+output_urn
+QPolygon
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QPolygon ()
+QPolygon ( int size )
+QPolygon ( const QPolygon & polygon )
+QPolygon ( const QVector<QPoint> & points )
+QPolygon ( const QRect & rectangle, bool closed = false )
+~QPolygon ()
+ QRect boundingRect () const
+ bool containsPoint ( const QPoint & point, Qt::FillRule fillRule ) const
+ QPolygon intersected ( const QPolygon & r ) const
+ void point ( int index, int * x, int * y ) const
+ QPoint point ( int index ) const
+ void putPoints ( int index, int nPoints, int firstx, int firsty, ... )
+ void putPoints ( int index, int nPoints, const QPolygon & fromPolygon, int fromIndex = 0 )
+ void setPoint ( int index, int x, int y )
+ void setPoint ( int index, const QPoint & point )
+ void setPoints ( int nPoints, const int * points )
+ void setPoints ( int nPoints, int firstx, int firsty, ... )
+ QPolygon subtracted ( const QPolygon & r ) const
+ void translate ( int dx, int dy )
+ void translate ( const QPoint & offset )
+ QPolygon translated ( int dx, int dy ) const
+ QPolygon translated ( const QPoint & offset ) const
+ QPolygon united ( const QPolygon & r ) const
+operator QVariant () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & stream, const QPolygon & polygon )
+ QDataStream & operator>> ( QDataStream & stream, QPolygon & polygon )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+ConstIterator
+Iterator
+const_iterator
+const_pointer
+const_reference
+difference_type
+iterator
+pointer
+reference
+size_type
+value_type
+
+enums
+
+parent_enums
+
+parent_index
+73
+
+parent_name
+QVector
+

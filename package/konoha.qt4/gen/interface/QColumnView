@@ -1,0 +1,194 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qcolumnview.html
+
+output_urn
+QColumnView
+
+inherits
+
+public_types
+
+properties
+resizeGripsVisible : bool
+
+public_functions
+QColumnView ( QWidget * parent = 0 )
+~QColumnView ()
+ QList<int> columnWidths () const
+ QWidget * previewWidget () const
+ bool resizeGripsVisible () const
+ void setColumnWidths ( const QList<int> & list )
+ void setPreviewWidget ( QWidget * widget )
+ void setResizeGripsVisible ( bool visible )
+
+public_slots
+
+signals
+ void updatePreviewWidget ( const QModelIndex & index )
+
+static_public_members
+
+protected_functions
+ virtual QAbstractItemView * createColumn ( const QModelIndex & index )
+ void initializeColumn ( QAbstractItemView * column ) const
+
+reimplemented_public_functions
+ virtual QModelIndex indexAt ( const QPoint & point ) const
+ virtual void scrollTo ( const QModelIndex & index, ScrollHint hint = EnsureVisible )
+ virtual void selectAll ()
+ virtual void setModel ( QAbstractItemModel * model )
+ virtual void setRootIndex ( const QModelIndex & index )
+ virtual void setSelectionModel ( QItemSelectionModel * newSelectionModel )
+ virtual QSize sizeHint () const
+ virtual QRect visualRect ( const QModelIndex & index ) const
+
+reimplemented_protected_functions
+ virtual void currentChanged ( const QModelIndex & current, const QModelIndex & previous )
+ virtual int horizontalOffset () const
+ virtual bool isIndexHidden ( const QModelIndex & index ) const
+ virtual QModelIndex moveCursor ( CursorAction cursorAction, Qt::KeyboardModifiers modifiers )
+ virtual void resizeEvent ( QResizeEvent * event )
+ virtual void rowsInserted ( const QModelIndex & parent, int start, int end )
+ virtual void scrollContentsBy ( int dx, int dy )
+ virtual void setSelection ( const QRect & rect, QItemSelectionModel::SelectionFlags command )
+ virtual int verticalOffset () const
+ virtual QRegion visualRegionForSelection ( const QItemSelection & selection ) const
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+EditTriggers
+
+enums
+
+parent_enums
+class_name
+QAbstractItemView
+name
+CursorAction
+key
+MoveUp
+MoveDown
+MoveLeft
+MoveRight
+MoveHome
+MoveEnd
+MovePageUp
+MovePageDown
+MoveNext
+MovePrevious
+public_flag
+false
+class_name
+QAbstractItemView
+name
+DragDropMode
+key
+NoDragDrop
+DragOnly
+DropOnly
+DragDrop
+InternalMove
+public_flag
+true
+class_name
+QAbstractItemView
+name
+DropIndicatorPosition
+key
+OnItem
+AboveItem
+BelowItem
+OnViewport
+public_flag
+false
+class_name
+QAbstractItemView
+name
+EditTrigger
+key
+NoEditTriggers
+CurrentChanged
+DoubleClicked
+SelectedClicked
+EditKeyPressed
+AnyKeyPressed
+AllEditTriggers
+public_flag
+true
+class_name
+QAbstractItemView
+name
+ScrollHint
+key
+EnsureVisible
+PositionAtTop
+PositionAtBottom
+PositionAtCenter
+public_flag
+true
+class_name
+QAbstractItemView
+name
+ScrollMode
+key
+ScrollPerItem
+ScrollPerPixel
+public_flag
+true
+class_name
+QAbstractItemView
+name
+SelectionBehavior
+key
+SelectItems
+SelectRows
+SelectColumns
+public_flag
+true
+class_name
+QAbstractItemView
+name
+SelectionMode
+key
+SingleSelection
+ContiguousSelection
+ExtendedSelection
+MultiSelection
+NoSelection
+public_flag
+true
+class_name
+QAbstractItemView
+name
+State
+key
+NoState
+DraggingState
+DragSelectingState
+EditingState
+ExpandingState
+CollapsingState
+AnimatingState
+public_flag
+false
+
+parent_index
+808
+
+parent_name
+QAbstractItemView
+

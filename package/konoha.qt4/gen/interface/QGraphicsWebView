@@ -1,0 +1,119 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgraphicswebview.html
+
+output_urn
+QGraphicsWebView
+
+inherits
+
+public_types
+
+properties
+icon : const QIcon
+modified : const bool
+resizesToContents : bool
+tiledBackingStoreFrozen : bool
+
+public_functions
+QGraphicsWebView ( QGraphicsItem * parent = 0 )
+~QGraphicsWebView ()
+ bool findText ( const QString & subString, QWebPage::FindFlags options = 0 )
+ QWebHistory * history () const
+ QIcon icon () const
+ bool isModified () const
+ bool isTiledBackingStoreFrozen () const
+ void load ( const QUrl & url )
+ void load ( const QNetworkRequest & request, QNetworkAccessManager::Operation operation = QNetworkAccessManager::GetOperation, const QByteArray & body = QByteArray() )
+ QWebPage * page () const
+ QAction * pageAction ( QWebPage::WebAction action ) const
+ bool resizesToContents () const
+ void setContent ( const QByteArray & data, const QString & mimeType = QString(), const QUrl & baseUrl = QUrl() )
+ void setHtml ( const QString & html, const QUrl & baseUrl = QUrl() )
+ void setPage ( QWebPage * page )
+ void setResizesToContents ( bool enabled )
+ void setTiledBackingStoreFrozen ( bool frozen )
+ void setUrl ( const QUrl & )
+ void setZoomFactor ( qreal )
+ QWebSettings * settings () const
+ QString title () const
+ void triggerPageAction ( QWebPage::WebAction action, bool checked = false )
+ QUrl url () const
+ qreal zoomFactor () const
+
+public_slots
+ void back ()
+ void forward ()
+ void reload ()
+ void stop ()
+
+signals
+ void iconChanged ()
+ void linkClicked ( const QUrl & url )
+ void loadFinished ( bool ok )
+ void loadProgress ( int progress )
+ void loadStarted ()
+ void statusBarMessage ( const QString & text )
+ void titleChanged ( const QString & title )
+ void urlChanged ( const QUrl & url )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual bool event ( QEvent * event )
+ virtual QVariant inputMethodQuery ( Qt::InputMethodQuery query ) const
+ virtual QVariant itemChange ( GraphicsItemChange change, const QVariant & value )
+ virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 )
+ virtual void setGeometry ( const QRectF & rect )
+ virtual QSizeF sizeHint ( Qt::SizeHint which, const QSizeF & constraint ) const
+ virtual void updateGeometry ()
+
+reimplemented_protected_functions
+ virtual void contextMenuEvent ( QGraphicsSceneContextMenuEvent * ev )
+ virtual void dragEnterEvent ( QGraphicsSceneDragDropEvent * ev )
+ virtual void dragLeaveEvent ( QGraphicsSceneDragDropEvent * ev )
+ virtual void dragMoveEvent ( QGraphicsSceneDragDropEvent * ev )
+ virtual void dropEvent ( QGraphicsSceneDragDropEvent * ev )
+ virtual void focusInEvent ( QFocusEvent * ev )
+ virtual bool focusNextPrevChild ( bool next )
+ virtual void focusOutEvent ( QFocusEvent * ev )
+ virtual void hoverLeaveEvent ( QGraphicsSceneHoverEvent * ev )
+ virtual void hoverMoveEvent ( QGraphicsSceneHoverEvent * ev )
+ virtual void inputMethodEvent ( QInputMethodEvent * ev )
+ virtual void keyPressEvent ( QKeyEvent * ev )
+ virtual void keyReleaseEvent ( QKeyEvent * ev )
+ virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * ev )
+ virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent * ev )
+ virtual void mousePressEvent ( QGraphicsSceneMouseEvent * ev )
+ virtual void mouseReleaseEvent ( QGraphicsSceneMouseEvent * ev )
+ virtual bool sceneEvent ( QEvent * event )
+ virtual void wheelEvent ( QGraphicsSceneWheelEvent * ev )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+694
+
+parent_name
+QGraphicsWidget
+

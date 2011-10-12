@@ -1,0 +1,120 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfontdatabase.html
+
+output_urn
+QFontDatabase
+
+inherits
+
+public_types
+ enum WritingSystem { Any, Latin, Greek, Cyrillic, ..., Nko }
+
+properties
+
+public_functions
+QFontDatabase ()
+ bool bold ( const QString & family, const QString & style ) const
+ QStringList families ( WritingSystem writingSystem = Any ) const
+ QFont font ( const QString & family, const QString & style, int pointSize ) const
+ bool isBitmapScalable ( const QString & family, const QString & style = QString() ) const
+ bool isFixedPitch ( const QString & family, const QString & style = QString() ) const
+ bool isScalable ( const QString & family, const QString & style = QString() ) const
+ bool isSmoothlyScalable ( const QString & family, const QString & style = QString() ) const
+ bool italic ( const QString & family, const QString & style ) const
+ QList<int> pointSizes ( const QString & family, const QString & style = QString() )
+ QList<int> smoothSizes ( const QString & family, const QString & style )
+ QString styleString ( const QFont & font )
+ QString styleString ( const QFontInfo & fontInfo )
+ QStringList styles ( const QString & family ) const
+ int weight ( const QString & family, const QString & style ) const
+ QList<WritingSystem> writingSystems () const
+ QList<WritingSystem> writingSystems ( const QString & family ) const
+
+public_slots
+
+signals
+
+static_public_members
+ int addApplicationFont ( const QString & fileName )
+ int addApplicationFontFromData ( const QByteArray & fontData )
+ QStringList applicationFontFamilies ( int id )
+ bool removeAllApplicationFonts ()
+ bool removeApplicationFont ( int id )
+ QList<int> standardSizes ()
+ bool supportsThreadedFontRendering ()
+ QString writingSystemName ( WritingSystem writingSystem )
+ QString writingSystemSample ( WritingSystem writingSystem )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QFontDatabase
+name
+WritingSystem
+key
+Any
+Latin
+Greek
+Cyrillic
+Armenian
+Hebrew
+Arabic
+Syriac
+Thaana
+Devanagari
+Bengali
+Gurmukhi
+Gujarati
+Oriya
+Tamil
+Telugu
+Kannada
+Malayalam
+Sinhala
+Thai
+Lao
+Tibetan
+Myanmar
+Georgian
+Khmer
+SimplifiedChinese
+TraditionalChinese
+Japanese
+Korean
+Vietnamese
+Symbol
+Other
+Ogham
+Runic
+Nko
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

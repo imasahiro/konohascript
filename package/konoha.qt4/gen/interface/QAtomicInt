@@ -1,0 +1,81 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qatomicint.html
+
+output_urn
+QAtomicInt
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QAtomicInt ( int value = 0 )
+QAtomicInt ( const QAtomicInt & other )
+ bool deref ()
+ int fetchAndAddAcquire ( int valueToAdd )
+ int fetchAndAddOrdered ( int valueToAdd )
+ int fetchAndAddRelaxed ( int valueToAdd )
+ int fetchAndAddRelease ( int valueToAdd )
+ int fetchAndStoreAcquire ( int newValue )
+ int fetchAndStoreOrdered ( int newValue )
+ int fetchAndStoreRelaxed ( int newValue )
+ int fetchAndStoreRelease ( int newValue )
+ bool ref ()
+ bool testAndSetAcquire ( int expectedValue, int newValue )
+ bool testAndSetOrdered ( int expectedValue, int newValue )
+ bool testAndSetRelaxed ( int expectedValue, int newValue )
+ bool testAndSetRelease ( int expectedValue, int newValue )
+operator int () const
+ bool operator! () const
+ bool operator!= ( int value ) const
+ QAtomicInt & operator= ( int value )
+ QAtomicInt & operator= ( const QAtomicInt & other )
+ bool operator== ( int value ) const
+
+public_slots
+
+signals
+
+static_public_members
+ bool isFetchAndAddNative ()
+ bool isFetchAndAddWaitFree ()
+ bool isFetchAndStoreNative ()
+ bool isFetchAndStoreWaitFree ()
+ bool isReferenceCountingNative ()
+ bool isReferenceCountingWaitFree ()
+ bool isTestAndSetNative ()
+ bool isTestAndSetWaitFree ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

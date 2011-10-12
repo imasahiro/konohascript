@@ -1,0 +1,100 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qitemselectionmodel.html
+
+output_urn
+QItemSelectionModel
+
+inherits
+
+public_types
+ enum SelectionFlag { NoUpdate, Clear, Select, Deselect, ..., ClearAndSelect }
+ flags SelectionFlags
+
+properties
+
+public_functions
+QItemSelectionModel ( QAbstractItemModel * model )
+QItemSelectionModel ( QAbstractItemModel * model, QObject * parent )
+ virtual ~QItemSelectionModel ()
+ bool columnIntersectsSelection ( int column, const QModelIndex & parent ) const
+ QModelIndex currentIndex () const
+ bool hasSelection () const
+ bool isColumnSelected ( int column, const QModelIndex & parent ) const
+ bool isRowSelected ( int row, const QModelIndex & parent ) const
+ bool isSelected ( const QModelIndex & index ) const
+ const QAbstractItemModel * model () const
+ bool rowIntersectsSelection ( int row, const QModelIndex & parent ) const
+ QModelIndexList selectedColumns ( int row = 0 ) const
+ QModelIndexList selectedIndexes () const
+ QModelIndexList selectedRows ( int column = 0 ) const
+ const QItemSelection selection () const
+
+public_slots
+ virtual void clear ()
+ void clearSelection ()
+ virtual void reset ()
+ virtual void select ( const QModelIndex & index, QItemSelectionModel::SelectionFlags command )
+ virtual void select ( const QItemSelection & selection, QItemSelectionModel::SelectionFlags command )
+ void setCurrentIndex ( const QModelIndex & index, QItemSelectionModel::SelectionFlags command )
+
+signals
+ void currentChanged ( const QModelIndex & current, const QModelIndex & previous )
+ void currentColumnChanged ( const QModelIndex & current, const QModelIndex & previous )
+ void currentRowChanged ( const QModelIndex & current, const QModelIndex & previous )
+ void selectionChanged ( const QItemSelection & selected, const QItemSelection & deselected )
+
+static_public_members
+
+protected_functions
+ void emitSelectionChanged ( const QItemSelection & newSelection, const QItemSelection & oldSelection )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+SelectionFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QItemSelectionModel
+name
+SelectionFlag
+key
+NoUpdate
+Clear
+Select
+Deselect
+Toggle
+Current
+Rows
+Columns
+SelectCurrent
+ToggleCurrent
+ClearAndSelect
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

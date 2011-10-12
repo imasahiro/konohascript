@@ -1,0 +1,62 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmetaenum.html
+
+output_urn
+QMetaEnum
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+ bool isFlag () const
+ bool isValid () const
+ const char * key ( int index ) const
+ int keyCount () const
+ int keyToValue ( const char * key ) const
+ int keysToValue ( const char * keys ) const
+ const char * name () const
+ const char * scope () const
+ int value ( int index ) const
+ const char * valueToKey ( int value ) const
+ QByteArray valueToKeys ( int value ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

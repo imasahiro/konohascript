@@ -1,0 +1,81 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwsinputmethod.html
+
+output_urn
+QWSInputMethod
+
+inherits
+
+public_types
+ enum UpdateType { Update, FocusIn, FocusOut, Reset, Destroyed }
+
+properties
+
+public_functions
+QWSInputMethod ()
+ virtual ~QWSInputMethod ()
+ virtual bool filter ( int unicode, int keycode, int modifiers, bool isPress, bool autoRepeat )
+ virtual bool filter ( const QPoint & position, int state, int wheel )
+ virtual void mouseHandler ( int offset, int state )
+ virtual void queryResponse ( int property, const QVariant & result )
+ virtual void reset ()
+ virtual void updateHandler ( int type )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ uint inputResolutionShift () const
+ void sendCommitString ( const QString & commitString, int replaceFromPosition = 0, int replaceLength = 0 )
+ void sendEvent ( const QInputMethodEvent * event )
+ void sendMouseEvent ( const QPoint & position, int state, int wheel )
+ void sendPreeditString ( const QString & preeditString, int cursorPosition, int selectionLength = 0 )
+ void sendQuery ( int property )
+ uint setInputResolution ( bool isHigh )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+true
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QWSInputMethod
+name
+UpdateType
+key
+Update
+FocusIn
+FocusOut
+Reset
+Destroyed
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

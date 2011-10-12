@@ -1,0 +1,76 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qelapsedtimer.html
+
+output_urn
+QElapsedTimer
+
+inherits
+
+public_types
+ enum ClockType { SystemTime, MonotonicClock, TickCounter, MachAbsoluteTime }
+
+properties
+
+public_functions
+ qint64 elapsed () const
+ bool hasExpired ( qint64 timeout ) const
+ void invalidate ()
+ bool isValid () const
+ qint64 msecsSinceReference () const
+ qint64 msecsTo ( const QElapsedTimer & other ) const
+ qint64 restart ()
+ qint64 secsTo ( const QElapsedTimer & other ) const
+ void start ()
+ bool operator!= ( const QElapsedTimer & other ) const
+ bool operator== ( const QElapsedTimer & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+ ClockType clockType ()
+ bool isMonotonic ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QElapsedTimer
+name
+ClockType
+key
+SystemTime
+MonotonicClock
+TickCounter
+MachAbsoluteTime
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

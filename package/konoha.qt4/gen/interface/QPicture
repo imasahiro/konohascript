@@ -1,0 +1,87 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qpicture.html
+
+output_urn
+QPicture
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QPicture ( int formatVersion = -1 )
+QPicture ( const QPicture & pic )
+~QPicture ()
+ QRect boundingRect () const
+ const char * data () const
+ bool isNull () const
+ bool load ( const QString & fileName, const char * format = 0 )
+ bool load ( QIODevice * dev, const char * format = 0 )
+ bool play ( QPainter * painter )
+ bool save ( const QString & fileName, const char * format = 0 )
+ bool save ( QIODevice * dev, const char * format = 0 )
+ void setBoundingRect ( const QRect & r )
+ virtual void setData ( const char * data, uint size )
+ uint size () const
+ QPicture & operator= ( const QPicture & p )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & s, const QPicture & r )
+ QDataStream & operator>> ( QDataStream & s, QPicture & r )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QPaintDevice
+name
+PaintDeviceMetric
+key
+PdmWidth
+PdmHeight
+PdmWidthMM
+PdmHeightMM
+PdmNumColors
+PdmDepth
+PdmDpiX
+PdmDpiY
+PdmPhysicalDpiX
+PdmPhysicalDpiY
+public_flag
+true
+
+parent_index
+194
+
+parent_name
+QPaintDevice
+

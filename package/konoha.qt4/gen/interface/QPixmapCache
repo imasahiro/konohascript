@@ -1,0 +1,63 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qpixmapcache.html
+
+output_urn
+QPixmapCache
+
+inherits
+
+public_types
+ class Key
+
+properties
+
+public_functions
+
+public_slots
+
+signals
+
+static_public_members
+ int cacheLimit ()
+ void clear ()
+ bool find ( const QString & key, QPixmap * pixmap )
+ bool find ( const Key & key, QPixmap * pixmap )
+ bool insert ( const QString & key, const QPixmap & pixmap )
+ Key insert ( const QPixmap & pixmap )
+ void remove ( const QString & key )
+ void remove ( const Key & key )
+ bool replace ( const Key & key, const QPixmap & pixmap )
+ void setCacheLimit ( int n )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+Key
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

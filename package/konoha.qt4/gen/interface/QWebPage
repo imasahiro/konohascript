@@ -1,0 +1,293 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwebpage.html
+
+output_urn
+QWebPage
+
+inherits
+
+public_types
+ class ChooseMultipleFilesExtensionOption
+ class ChooseMultipleFilesExtensionReturn
+ class ErrorPageExtensionOption
+ class ErrorPageExtensionReturn
+ class ExtensionOption
+ class ExtensionReturn
+ enum ErrorDomain { QtNetwork, Http, WebKit }
+ enum Extension { ChooseMultipleFilesExtension, ErrorPageExtension }
+ enum FindFlag { FindBackward, FindCaseSensitively, FindWrapsAroundDocument, HighlightAllOccurrences }
+ flags FindFlags
+ enum LinkDelegationPolicy { DontDelegateLinks, DelegateExternalLinks, DelegateAllLinks }
+ enum NavigationType { NavigationTypeLinkClicked, NavigationTypeFormSubmitted, NavigationTypeBackOrForward, NavigationTypeReload, NavigationTypeFormResubmitted, NavigationTypeOther }
+ enum WebAction { NoWebAction, OpenLink, OpenLinkInNewWindow, OpenFrameInNewWindow, ..., AlignRight }
+ enum WebWindowType { WebBrowserWindow, WebModalDialog }
+
+properties
+contentEditable : bool
+forwardUnsupportedContent : bool
+linkDelegationPolicy : LinkDelegationPolicy
+modified : const bool
+
+public_functions
+QWebPage ( QObject * parent = 0 )
+~QWebPage ()
+ QAction * action ( WebAction action ) const
+ quint64 bytesReceived () const
+ QMenu * createStandardContextMenu ()
+ QWebFrame * currentFrame () const
+ virtual bool extension ( Extension extension, const ExtensionOption * option = 0, ExtensionReturn * output = 0 )
+ bool findText ( const QString & subString, FindFlags options = 0 )
+ bool focusNextPrevChild ( bool next )
+ bool forwardUnsupportedContent () const
+ QWebFrame * frameAt ( const QPoint & pos ) const
+ QWebHistory * history () const
+ QVariant inputMethodQuery ( Qt::InputMethodQuery property ) const
+ bool isContentEditable () const
+ bool isModified () const
+ LinkDelegationPolicy linkDelegationPolicy () const
+ QWebFrame * mainFrame () const
+ QNetworkAccessManager * networkAccessManager () const
+ QPalette palette () const
+ QWebPluginFactory * pluginFactory () const
+ QSize preferredContentsSize () const
+ QString selectedText () const
+ void setContentEditable ( bool editable )
+ void setForwardUnsupportedContent ( bool forward )
+ void setLinkDelegationPolicy ( LinkDelegationPolicy policy )
+ void setNetworkAccessManager ( QNetworkAccessManager * manager )
+ void setPalette ( const QPalette & palette )
+ void setPluginFactory ( QWebPluginFactory * factory )
+ void setPreferredContentsSize ( const QSize & size ) const
+ void setView ( QWidget * view )
+ void setViewportSize ( const QSize & size ) const
+ QWebSettings * settings () const
+ virtual bool supportsExtension ( Extension extension ) const
+ bool swallowContextMenuEvent ( QContextMenuEvent * event )
+ quint64 totalBytes () const
+ virtual void triggerAction ( WebAction action, bool checked = false )
+ QUndoStack * undoStack () const
+ void updatePositionDependentActions ( const QPoint & pos )
+ QWidget * view () const
+ QSize viewportSize () const
+
+public_slots
+ bool shouldInterruptJavaScript ()
+
+signals
+ void contentsChanged ()
+ void databaseQuotaExceeded ( QWebFrame * frame, QString databaseName )
+ void downloadRequested ( const QNetworkRequest & request )
+ void frameCreated ( QWebFrame * frame )
+ void geometryChangeRequested ( const QRect & geom )
+ void linkClicked ( const QUrl & url )
+ void linkHovered ( const QString & link, const QString & title, const QString & textContent )
+ void loadFinished ( bool ok )
+ void loadProgress ( int progress )
+ void loadStarted ()
+ void menuBarVisibilityChangeRequested ( bool visible )
+ void microFocusChanged ()
+ void printRequested ( QWebFrame * frame )
+ void repaintRequested ( const QRect & dirtyRect )
+ void restoreFrameStateRequested ( QWebFrame * frame )
+ void saveFrameStateRequested ( QWebFrame * frame, QWebHistoryItem * item )
+ void scrollRequested ( int dx, int dy, const QRect & rectToScroll )
+ void selectionChanged ()
+ void statusBarMessage ( const QString & text )
+ void statusBarVisibilityChangeRequested ( bool visible )
+ void toolBarVisibilityChangeRequested ( bool visible )
+ void unsupportedContent ( QNetworkReply * reply )
+ void windowCloseRequested ()
+
+static_public_members
+
+protected_functions
+ virtual bool acceptNavigationRequest ( QWebFrame * frame, const QNetworkRequest & request, NavigationType type )
+ virtual QString chooseFile ( QWebFrame * parentFrame, const QString & suggestedFile )
+ virtual QObject * createPlugin ( const QString & classid, const QUrl & url, const QStringList & paramNames, const QStringList & paramValues )
+ virtual QWebPage * createWindow ( WebWindowType type )
+ virtual void javaScriptAlert ( QWebFrame * frame, const QString & msg )
+ virtual bool javaScriptConfirm ( QWebFrame * frame, const QString & msg )
+ virtual void javaScriptConsoleMessage ( const QString & message, int lineNumber, const QString & sourceID )
+ virtual bool javaScriptPrompt ( QWebFrame * frame, const QString & msg, const QString & defaultValue, QString * result )
+ virtual QString userAgentForUrl ( const QUrl & url ) const
+
+reimplemented_public_functions
+ virtual bool event ( QEvent * ev )
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ int qWebKitMajorVersion ()
+ int qWebKitMinorVersion ()
+ QString qWebKitVersion ()
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+ChooseMultipleFilesExtensionOption
+ChooseMultipleFilesExtensionReturn
+ErrorPageExtensionOption
+ErrorPageExtensionReturn
+ExtensionOption
+ExtensionReturn
+FindFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QWebPage
+name
+ErrorDomain
+key
+QtNetwork
+Http
+WebKit
+public_flag
+true
+class_name
+QWebPage
+name
+Extension
+key
+ChooseMultipleFilesExtension
+ErrorPageExtension
+public_flag
+true
+class_name
+QWebPage
+name
+FindFlag
+key
+FindBackward
+FindCaseSensitively
+FindWrapsAroundDocument
+HighlightAllOccurrences
+public_flag
+true
+class_name
+QWebPage
+name
+LinkDelegationPolicy
+key
+DontDelegateLinks
+DelegateExternalLinks
+DelegateAllLinks
+public_flag
+true
+class_name
+QWebPage
+name
+NavigationType
+key
+NavigationTypeLinkClicked
+NavigationTypeFormSubmitted
+NavigationTypeBackOrForward
+NavigationTypeReload
+NavigationTypeFormResubmitted
+NavigationTypeOther
+public_flag
+true
+class_name
+QWebPage
+name
+WebAction
+key
+NoWebAction
+OpenLink
+OpenLinkInNewWindow
+OpenFrameInNewWindow
+DownloadLinkToDisk
+CopyLinkToClipboard
+OpenImageInNewWindow
+DownloadImageToDisk
+CopyImageToClipboard
+Back
+Forward
+Stop
+StopScheduledPageRefresh
+Reload
+ReloadAndBypassCache
+Cut
+Copy
+Paste
+Undo
+Redo
+MoveToNextChar
+MoveToPreviousChar
+MoveToNextWord
+MoveToPreviousWord
+MoveToNextLine
+MoveToPreviousLine
+MoveToStartOfLine
+MoveToEndOfLine
+MoveToStartOfBlock
+MoveToEndOfBlock
+MoveToStartOfDocument
+MoveToEndOfDocument
+SelectNextChar
+SelectPreviousChar
+SelectNextWord
+SelectPreviousWord
+SelectNextLine
+SelectPreviousLine
+SelectStartOfLine
+SelectEndOfLine
+SelectStartOfBlock
+SelectEndOfBlock
+SelectStartOfDocument
+SelectEndOfDocument
+DeleteStartOfWord
+DeleteEndOfWord
+SetTextDirectionDefault
+SetTextDirectionLeftToRight
+SetTextDirectionRightToLeft
+ToggleBold
+ToggleItalic
+ToggleUnderline
+InspectElement
+InsertParagraphSeparator
+InsertLineSeparator
+SelectAll
+PasteAndMatchStyle
+RemoveFormat
+ToggleStrikethrough
+ToggleSubscript
+ToggleSuperscript
+InsertUnorderedList
+InsertOrderedList
+Indent
+Outdent
+AlignCenter
+AlignJustified
+AlignLeft
+AlignRight
+public_flag
+true
+class_name
+QWebPage
+name
+WebWindowType
+key
+WebBrowserWindow
+WebModalDialog
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

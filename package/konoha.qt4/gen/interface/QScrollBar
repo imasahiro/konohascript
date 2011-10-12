@@ -1,0 +1,92 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qscrollbar.html
+
+output_urn
+QScrollBar
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QScrollBar ( QWidget * parent = 0 )
+QScrollBar ( Qt::Orientation orientation, QWidget * parent = 0 )
+~QScrollBar ()
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ void initStyleOption ( QStyleOptionSlider * option ) const
+
+reimplemented_public_functions
+ virtual bool event ( QEvent * event )
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void contextMenuEvent ( QContextMenuEvent * event )
+ virtual void hideEvent ( QHideEvent * )
+ virtual void mouseMoveEvent ( QMouseEvent * e )
+ virtual void mousePressEvent ( QMouseEvent * e )
+ virtual void mouseReleaseEvent ( QMouseEvent * e )
+ virtual void paintEvent ( QPaintEvent * )
+ virtual void sliderChange ( SliderChange change )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QAbstractSlider
+name
+SliderAction
+key
+SliderNoAction
+SliderSingleStepAdd
+SliderSingleStepSub
+SliderPageStepAdd
+SliderPageStepSub
+SliderToMinimum
+SliderToMaximum
+SliderMove
+public_flag
+true
+class_name
+QAbstractSlider
+name
+SliderChange
+key
+SliderRangeChange
+SliderOrientationChange
+SliderStepsChange
+SliderValueChange
+public_flag
+false
+
+parent_index
+466
+
+parent_name
+QAbstractSlider
+

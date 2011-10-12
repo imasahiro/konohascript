@@ -1,0 +1,64 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractnetworkcache.html
+
+output_urn
+QAbstractNetworkCache
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+ virtual ~QAbstractNetworkCache ()
+ virtual qint64 cacheSize () const = 0
+ virtual QIODevice * data ( const QUrl & url ) = 0
+ virtual void insert ( QIODevice * device ) = 0
+ virtual QNetworkCacheMetaData metaData ( const QUrl & url ) = 0
+ virtual QIODevice * prepare ( const QNetworkCacheMetaData & metaData ) = 0
+ virtual bool remove ( const QUrl & url ) = 0
+ virtual void updateMetaData ( const QNetworkCacheMetaData & metaData ) = 0
+
+public_slots
+ virtual void clear () = 0
+
+signals
+1 public slot inherited from QObject
+
+static_public_members
+
+protected_functions
+QAbstractNetworkCache ( QObject * parent = 0 )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

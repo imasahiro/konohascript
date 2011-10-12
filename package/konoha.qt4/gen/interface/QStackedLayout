@@ -1,0 +1,101 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qstackedlayout.html
+
+output_urn
+QStackedLayout
+
+inherits
+
+public_types
+ enum StackingMode { StackOne, StackAll }
+
+properties
+count : const int
+currentIndex : int
+stackingMode : StackingMode
+
+public_functions
+QStackedLayout ()
+QStackedLayout ( QWidget * parent )
+QStackedLayout ( QLayout * parentLayout )
+~QStackedLayout ()
+ int addWidget ( QWidget * widget )
+ int currentIndex () const
+ QWidget * currentWidget () const
+ int insertWidget ( int index, QWidget * widget )
+ void setStackingMode ( StackingMode stackingMode )
+ StackingMode stackingMode () const
+ QWidget * widget ( int index ) const
+
+public_slots
+ void setCurrentIndex ( int index )
+ void setCurrentWidget ( QWidget * widget )
+
+signals
+ void currentChanged ( int index )
+ void widgetRemoved ( int index )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void addItem ( QLayoutItem * item )
+ virtual int count () const
+ virtual QLayoutItem * itemAt ( int index ) const
+ virtual QSize minimumSize () const
+ virtual void setGeometry ( const QRect & rect )
+ virtual QSize sizeHint () const
+ virtual QLayoutItem * takeAt ( int index )
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QStackedLayout
+name
+StackingMode
+key
+StackOne
+StackAll
+public_flag
+true
+
+parent_enums
+class_name
+QLayout
+name
+SizeConstraint
+key
+SetDefaultConstraint
+SetFixedSize
+SetMinimumSize
+SetMaximumSize
+SetMinAndMaxSize
+SetNoConstraint
+public_flag
+true
+
+parent_index
+180
+
+parent_name
+QLayout
+

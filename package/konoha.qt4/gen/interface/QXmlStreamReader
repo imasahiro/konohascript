@@ -1,0 +1,156 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qxmlstreamreader.html
+
+output_urn
+QXmlStreamReader
+
+inherits
+
+public_types
+ enum Error { NoError, CustomError, NotWellFormedError, PrematureEndOfDocumentError, UnexpectedElementError }
+ enum ReadElementTextBehaviour { ErrorOnUnexpectedElement, IncludeChildElements, SkipChildElements }
+ enum TokenType { NoToken, Invalid, StartDocument, EndDocument, ..., ProcessingInstruction }
+
+properties
+namespaceProcessing : bool
+
+public_functions
+QXmlStreamReader ()
+QXmlStreamReader ( QIODevice * device )
+QXmlStreamReader ( const QByteArray & data )
+QXmlStreamReader ( const QString & data )
+QXmlStreamReader ( const char * data )
+~QXmlStreamReader ()
+ void addData ( const QByteArray & data )
+ void addData ( const QString & data )
+ void addData ( const char * data )
+ void addExtraNamespaceDeclaration ( const QXmlStreamNamespaceDeclaration & extraNamespaceDeclaration )
+ void addExtraNamespaceDeclarations ( const QXmlStreamNamespaceDeclarations & extraNamespaceDeclarations )
+ bool atEnd () const
+ QXmlStreamAttributes attributes () const
+ qint64 characterOffset () const
+ void clear ()
+ qint64 columnNumber () const
+ QIODevice * device () const
+ QStringRef documentEncoding () const
+ QStringRef documentVersion () const
+ QStringRef dtdName () const
+ QStringRef dtdPublicId () const
+ QStringRef dtdSystemId () const
+ QXmlStreamEntityDeclarations entityDeclarations () const
+ QXmlStreamEntityResolver * entityResolver () const
+ Error error () const
+ QString errorString () const
+ bool hasError () const
+ bool isCDATA () const
+ bool isCharacters () const
+ bool isComment () const
+ bool isDTD () const
+ bool isEndDocument () const
+ bool isEndElement () const
+ bool isEntityReference () const
+ bool isProcessingInstruction () const
+ bool isStandaloneDocument () const
+ bool isStartDocument () const
+ bool isStartElement () const
+ bool isWhitespace () const
+ qint64 lineNumber () const
+ QStringRef name () const
+ QXmlStreamNamespaceDeclarations namespaceDeclarations () const
+ bool namespaceProcessing () const
+ QStringRef namespaceUri () const
+ QXmlStreamNotationDeclarations notationDeclarations () const
+ QStringRef prefix () const
+ QStringRef processingInstructionData () const
+ QStringRef processingInstructionTarget () const
+ QStringRef qualifiedName () const
+ void raiseError ( const QString & message = QString() )
+ QString readElementText ( ReadElementTextBehaviour behaviour )
+ QString readElementText ()
+ TokenType readNext ()
+ bool readNextStartElement ()
+ void setDevice ( QIODevice * device )
+ void setEntityResolver ( QXmlStreamEntityResolver * resolver )
+ void setNamespaceProcessing ( bool )
+ void skipCurrentElement ()
+ QStringRef text () const
+ QString tokenString () const
+ TokenType tokenType () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QXmlStreamReader
+name
+Error
+key
+NoError
+CustomError
+NotWellFormedError
+PrematureEndOfDocumentError
+UnexpectedElementError
+public_flag
+true
+class_name
+QXmlStreamReader
+name
+ReadElementTextBehaviour
+key
+ErrorOnUnexpectedElement
+IncludeChildElements
+SkipChildElements
+public_flag
+true
+class_name
+QXmlStreamReader
+name
+TokenType
+key
+NoToken
+Invalid
+StartDocument
+EndDocument
+StartElement
+EndElement
+Characters
+Comment
+DTD
+EntityReference
+ProcessingInstruction
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

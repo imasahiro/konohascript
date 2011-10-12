@@ -1,0 +1,80 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsize.html
+
+output_urn
+QSize
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QSize ()
+QSize ( int width, int height )
+ QSize boundedTo ( const QSize & otherSize ) const
+ QSize expandedTo ( const QSize & otherSize ) const
+ int height () const
+ bool isEmpty () const
+ bool isNull () const
+ bool isValid () const
+ int & rheight ()
+ int & rwidth ()
+ void scale ( int width, int height, Qt::AspectRatioMode mode )
+ void scale ( const QSize & size, Qt::AspectRatioMode mode )
+ void setHeight ( int height )
+ void setWidth ( int width )
+ void transpose ()
+ int width () const
+ QSize & operator*= ( qreal factor )
+ QSize & operator+= ( const QSize & size )
+ QSize & operator-= ( const QSize & size )
+ QSize & operator/= ( qreal divisor )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ bool operator!= ( const QSize & s1, const QSize & s2 )
+ const QSize operator* ( qreal factor, const QSize & size )
+ const QSize operator* ( const QSize & size, qreal factor )
+ const QSize operator+ ( const QSize & s1, const QSize & s2 )
+ const QSize operator- ( const QSize & s1, const QSize & s2 )
+ const QSize operator/ ( const QSize & size, qreal divisor )
+ QDataStream & operator<< ( QDataStream & stream, const QSize & size )
+ bool operator== ( const QSize & s1, const QSize & s2 )
+ QDataStream & operator>> ( QDataStream & stream, QSize & size )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

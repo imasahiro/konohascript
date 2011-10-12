@@ -1,0 +1,77 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmimedata.html
+
+output_urn
+QMimeData
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QMimeData ()
+~QMimeData ()
+ void clear ()
+ QVariant colorData () const
+ QByteArray data ( const QString & mimeType ) const
+ virtual QStringList formats () const
+ bool hasColor () const
+ virtual bool hasFormat ( const QString & mimeType ) const
+ bool hasHtml () const
+ bool hasImage () const
+ bool hasText () const
+ bool hasUrls () const
+ QString html () const
+ QVariant imageData () const
+ void removeFormat ( const QString & mimeType )
+ void setColorData ( const QVariant & color )
+ void setData ( const QString & mimeType, const QByteArray & data )
+ void setHtml ( const QString & html )
+ void setImageData ( const QVariant & image )
+ void setText ( const QString & text )
+ void setUrls ( const QList<QUrl> & urls )
+ QString text () const
+ QList<QUrl> urls () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ virtual QVariant retrieveData ( const QString & mimeType, QVariant::Type type ) const
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

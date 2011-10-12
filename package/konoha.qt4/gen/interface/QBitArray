@@ -1,0 +1,86 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qbitarray.html
+
+output_urn
+QBitArray
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QBitArray ()
+QBitArray ( int size, bool value = false )
+QBitArray ( const QBitArray & other )
+ bool at ( int i ) const
+ void clear ()
+ void clearBit ( int i )
+ int count () const
+ int count ( bool on ) const
+ bool fill ( bool value, int size = -1 )
+ void fill ( bool value, int begin, int end )
+ bool isEmpty () const
+ bool isNull () const
+ void resize ( int size )
+ void setBit ( int i )
+ void setBit ( int i, bool value )
+ int size () const
+ bool testBit ( int i ) const
+ bool toggleBit ( int i )
+ void truncate ( int pos )
+ bool operator!= ( const QBitArray & other ) const
+ QBitArray & operator&= ( const QBitArray & other )
+ QBitArray & operator= ( const QBitArray & other )
+ bool operator== ( const QBitArray & other ) const
+ QBitRef operator[] ( int i )
+ bool operator[] ( int i ) const
+ QBitRef operator[] ( uint i )
+ bool operator[] ( uint i ) const
+ QBitArray & operator^= ( const QBitArray & other )
+ QBitArray & operator|= ( const QBitArray & other )
+ QBitArray operator~ () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QBitArray operator& ( const QBitArray & a1, const QBitArray & a2 )
+ QDataStream & operator<< ( QDataStream & out, const QBitArray & ba )
+ QDataStream & operator>> ( QDataStream & in, QBitArray & ba )
+ QBitArray operator^ ( const QBitArray & a1, const QBitArray & a2 )
+ QBitArray operator| ( const QBitArray & a1, const QBitArray & a2 )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

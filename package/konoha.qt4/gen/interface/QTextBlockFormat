@@ -1,0 +1,191 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextblockformat.html
+
+output_urn
+QTextBlockFormat
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QTextBlockFormat ()
+ Qt::Alignment alignment () const
+ qreal bottomMargin () const
+ int indent () const
+ bool isValid () const
+ qreal leftMargin () const
+ bool nonBreakableLines () const
+ PageBreakFlags pageBreakPolicy () const
+ qreal rightMargin () const
+ void setAlignment ( Qt::Alignment alignment )
+ void setBottomMargin ( qreal margin )
+ void setIndent ( int indentation )
+ void setLeftMargin ( qreal margin )
+ void setNonBreakableLines ( bool b )
+ void setPageBreakPolicy ( PageBreakFlags policy )
+ void setRightMargin ( qreal margin )
+ void setTabPositions ( const QList<QTextOption::Tab> & tabs )
+ void setTextIndent ( qreal indent )
+ void setTopMargin ( qreal margin )
+ QList<QTextOption::Tab> tabPositions () const
+ qreal textIndent () const
+ qreal topMargin () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+PageBreakFlags
+
+enums
+
+parent_enums
+class_name
+QTextFormat
+name
+FormatType
+key
+InvalidFormat
+BlockFormat
+CharFormat
+ListFormat
+TableFormat
+FrameFormat
+UserFormat
+public_flag
+true
+class_name
+QTextFormat
+name
+ObjectTypes
+key
+NoObject
+ImageObject
+TableObject
+TableCellObject
+UserObject
+public_flag
+true
+class_name
+QTextFormat
+name
+PageBreakFlag
+key
+PageBreak_Auto
+PageBreak_AlwaysBefore
+PageBreak_AlwaysAfter
+public_flag
+true
+class_name
+QTextFormat
+name
+Property
+key
+ObjectIndex
+CssFloat
+LayoutDirection
+OutlinePen
+ForegroundBrush
+BackgroundBrush
+BackgroundImageUrl
+BlockAlignment
+BlockTopMargin
+BlockBottomMargin
+BlockLeftMargin
+BlockRightMargin
+TextIndent
+TabPositions
+BlockIndent
+BlockNonBreakableLines
+BlockTrailingHorizontalRulerWidth
+FontFamily
+FontPointSize
+FontPixelSize
+FontSizeAdjustment
+FontFixedPitch
+FontWeight
+FontItalic
+FontUnderline
+FontOverline
+FontStrikeOut
+FontCapitalization
+FontLetterSpacing
+FontWordSpacing
+FontStyleHint
+FontStyleStrategy
+FontKerning
+TextUnderlineColor
+TextVerticalAlignment
+TextOutline
+TextUnderlineStyle
+TextToolTip
+IsAnchor
+AnchorHref
+AnchorName
+ObjectType
+ListStyle
+ListIndent
+FrameBorder
+FrameBorderBrush
+FrameBorderStyle
+FrameBottomMargin
+FrameHeight
+FrameLeftMargin
+FrameMargin
+FramePadding
+FrameRightMargin
+FrameTopMargin
+FrameWidth
+TableCellSpacing
+TableCellPadding
+TableColumns
+TableColumnWidthConstraints
+TableHeaderRowCount
+TableCellRowSpan
+TableCellColumnSpan
+TableCellLeftPadding
+TableCellRightPadding
+TableCellTopPadding
+TableCellBottomPadding
+ImageName
+ImageWidth
+ImageHeight
+FullWidthSelection
+PageBreakPolicy
+UserProperty
+public_flag
+true
+
+parent_index
+170
+
+parent_name
+QTextFormat
+

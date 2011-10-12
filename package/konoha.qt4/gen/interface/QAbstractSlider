@@ -1,0 +1,137 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractslider.html
+
+output_urn
+QAbstractSlider
+
+inherits
+
+public_types
+ enum SliderAction { SliderNoAction, SliderSingleStepAdd, SliderSingleStepSub, SliderPageStepAdd, ..., SliderMove }
+
+properties
+invertedAppearance : bool
+invertedControls : bool
+maximum : int
+minimum : int
+orientation : Qt::Orientation
+pageStep : int
+
+public_functions
+QAbstractSlider ( QWidget * parent = 0 )
+~QAbstractSlider ()
+ bool hasTracking () const
+ bool invertedAppearance () const
+ bool invertedControls () const
+ bool isSliderDown () const
+ int maximum () const
+ int minimum () const
+ Qt::Orientation orientation () const
+ int pageStep () const
+ void setInvertedAppearance ( bool )
+ void setInvertedControls ( bool )
+ void setMaximum ( int )
+ void setMinimum ( int )
+ void setPageStep ( int )
+ void setRange ( int min, int max )
+ void setSingleStep ( int )
+ void setSliderDown ( bool )
+ void setSliderPosition ( int )
+ void setTracking ( bool enable )
+ int singleStep () const
+ int sliderPosition () const
+ void triggerAction ( SliderAction action )
+ int value () const
+
+public_slots
+ void setOrientation ( Qt::Orientation )
+ void setValue ( int )
+
+signals
+ void actionTriggered ( int action )
+ void rangeChanged ( int min, int max )
+ void sliderMoved ( int value )
+ void sliderPressed ()
+ void sliderReleased ()
+ void valueChanged ( int value )
+
+static_public_members
+
+protected_functions
+ SliderAction repeatAction () const
+ void setRepeatAction ( SliderAction action, int thresholdTime = 500, int repeatTime = 50 )
+ virtual void sliderChange ( SliderChange change )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * ev )
+ virtual bool event ( QEvent * e )
+ virtual void keyPressEvent ( QKeyEvent * ev )
+ virtual void timerEvent ( QTimerEvent * e )
+ virtual void wheelEvent ( QWheelEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+class_name
+QAbstractSlider
+name
+SliderAction
+key
+SliderNoAction
+SliderSingleStepAdd
+SliderSingleStepSub
+SliderPageStepAdd
+SliderPageStepSub
+SliderToMinimum
+SliderToMaximum
+SliderMove
+public_flag
+true
+class_name
+QAbstractSlider
+name
+SliderChange
+key
+SliderRangeChange
+SliderOrientationChange
+SliderStepsChange
+SliderValueChange
+public_flag
+false
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

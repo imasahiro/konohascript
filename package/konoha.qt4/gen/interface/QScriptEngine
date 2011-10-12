@@ -1,0 +1,150 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qscriptengine.html
+
+output_urn
+QScriptEngine
+
+inherits
+
+public_types
+ typedef FunctionSignature
+ typedef FunctionWithArgSignature
+ enum QObjectWrapOption { ExcludeChildObjects, ExcludeSuperClassMethods, ExcludeSuperClassProperties, ExcludeSuperClassContents, ..., SkipMethodsInEnumeration }
+ flags QObjectWrapOptions
+ enum ValueOwnership { QtOwnership, ScriptOwnership, AutoOwnership }
+
+properties
+
+public_functions
+QScriptEngine ()
+QScriptEngine ( QObject * parent )
+ virtual ~QScriptEngine ()
+ void abortEvaluation ( const QScriptValue & result = QScriptValue() )
+ QScriptEngineAgent * agent () const
+ QStringList availableExtensions () const
+ void clearExceptions ()
+ void collectGarbage ()
+ QScriptContext * currentContext () const
+ QScriptValue defaultPrototype ( int metaTypeId ) const
+ QScriptValue evaluate ( const QString & program, const QString & fileName = QString(), int lineNumber = 1 )
+ QScriptValue evaluate ( const QScriptProgram & program )
+ T fromScriptValue ( const QScriptValue & value )
+ QScriptValue globalObject () const
+ bool hasUncaughtException () const
+ QScriptValue importExtension ( const QString & extension )
+ QStringList importedExtensions () const
+ void installTranslatorFunctions ( const QScriptValue & object = QScriptValue() )
+ bool isEvaluating () const
+ QScriptValue newArray ( uint length = 0 )
+ QScriptValue newDate ( qsreal value )
+ QScriptValue newDate ( const QDateTime & value )
+ QScriptValue newFunction ( FunctionSignature fun, int length = 0 )
+ QScriptValue newFunction ( FunctionSignature fun, const QScriptValue & prototype, int length = 0 )
+ QScriptValue newObject ()
+ QScriptValue newObject ( QScriptClass * scriptClass, const QScriptValue & data = QScriptValue() )
+ QScriptValue newQMetaObject ( const QMetaObject * metaObject, const QScriptValue & ctor = QScriptValue() )
+ QScriptValue newQObject ( QObject * object, ValueOwnership ownership = QtOwnership, const QObjectWrapOptions & options = 0 )
+ QScriptValue newQObject ( const QScriptValue & scriptObject, QObject * qtObject, ValueOwnership ownership = QtOwnership, const QObjectWrapOptions & options = 0 )
+ QScriptValue newRegExp ( const QRegExp & regexp )
+ QScriptValue newRegExp ( const QString & pattern, const QString & flags )
+ QScriptValue newVariant ( const QVariant & value )
+ QScriptValue newVariant ( const QScriptValue & object, const QVariant & value )
+ QScriptValue nullValue ()
+ void popContext ()
+ int processEventsInterval () const
+ QScriptContext * pushContext ()
+ void reportAdditionalMemoryCost ( int size )
+ QScriptValue scriptValueFromQMetaObject ()
+ void setAgent ( QScriptEngineAgent * agent )
+ void setDefaultPrototype ( int metaTypeId, const QScriptValue & prototype )
+ void setGlobalObject ( const QScriptValue & object )
+ void setProcessEventsInterval ( int interval )
+ QScriptValue toObject ( const QScriptValue & value )
+ QScriptValue toScriptValue ( const T & value )
+ QScriptString toStringHandle ( const QString & str )
+ QScriptValue uncaughtException () const
+ QStringList uncaughtExceptionBacktrace () const
+ int uncaughtExceptionLineNumber () const
+ QScriptValue undefinedValue ()
+
+public_slots
+
+signals
+ void signalHandlerException ( const QScriptValue & exception )
+
+static_public_members
+ QScriptSyntaxCheckResult checkSyntax ( const QString & program )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ typedef FunctionSignature
+ typedef FunctionWithArgSignature
+ bool qScriptConnect ( QObject * sender, const char * signal, const QScriptValue & receiver, const QScriptValue & function )
+ bool qScriptDisconnect ( QObject * sender, const char * signal, const QScriptValue & receiver, const QScriptValue & function )
+ int qScriptRegisterMetaType ( QScriptEngine * engine, QScriptValue(* ) ( QScriptEngine *, const T & t ) toScriptValue, void(* ) ( const QScriptValue &, T & t ) fromScriptValue, const QScriptValue & prototype = QScriptValue() )
+ int qScriptRegisterSequenceMetaType ( QScriptEngine * engine, const QScriptValue & prototype = QScriptValue() )
+ QScriptValue qScriptValueFromQMetaObject ( QScriptEngine * engine )
+ QScriptValue qScriptValueFromSequence ( QScriptEngine * engine, const Container & container )
+ QScriptValue qScriptValueFromValue ( QScriptEngine * engine, const T & value )
+ void qScriptValueToSequence ( const QScriptValue & value, Container & container )
+ T qScriptValueToValue ( const QScriptValue & value )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+FunctionSignature
+FunctionWithArgSignature
+QObjectWrapOptions
+
+parent_typedefed_objects
+
+enums
+class_name
+QScriptEngine
+name
+QObjectWrapOption
+key
+ExcludeChildObjects
+ExcludeSuperClassMethods
+ExcludeSuperClassProperties
+ExcludeSuperClassContents
+ExcludeDeleteLater
+ExcludeSlots
+AutoCreateDynamicProperties
+PreferExistingWrapperObject
+SkipMethodsInEnumeration
+public_flag
+true
+class_name
+QScriptEngine
+name
+ValueOwnership
+key
+QtOwnership
+ScriptOwnership
+AutoOwnership
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

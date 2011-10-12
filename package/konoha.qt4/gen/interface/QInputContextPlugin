@@ -1,0 +1,60 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qinputcontextplugin.html
+
+output_urn
+QInputContextPlugin
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QInputContextPlugin ( QObject * parent = 0 )
+~QInputContextPlugin ()
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QInputContext * create ( const QString & key ) = 0
+ virtual QString description ( const QString & key ) = 0
+ virtual QString displayName ( const QString & key ) = 0
+ virtual QStringList keys () const = 0
+ virtual QStringList languages ( const QString & key ) = 0
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

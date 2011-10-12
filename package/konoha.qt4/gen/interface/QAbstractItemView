@@ -1,0 +1,298 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractitemview.html
+
+output_urn
+QAbstractItemView
+
+inherits
+
+public_types
+ enum DragDropMode { NoDragDrop, DragOnly, DropOnly, DragDrop, InternalMove }
+ enum EditTrigger { NoEditTriggers, CurrentChanged, DoubleClicked, SelectedClicked, ..., AllEditTriggers }
+ flags EditTriggers
+ enum ScrollHint { EnsureVisible, PositionAtTop, PositionAtBottom, PositionAtCenter }
+ enum ScrollMode { ScrollPerItem, ScrollPerPixel }
+ enum SelectionBehavior { SelectItems, SelectRows, SelectColumns }
+ enum SelectionMode { SingleSelection, ContiguousSelection, ExtendedSelection, MultiSelection, NoSelection }
+
+properties
+alternatingRowColors : bool
+autoScroll : bool
+autoScrollMargin : int
+defaultDropAction : Qt::DropAction
+dragDropMode : DragDropMode
+dragDropOverwriteMode : bool
+dragEnabled : bool
+editTriggers : EditTriggers
+
+public_functions
+QAbstractItemView ( QWidget * parent = 0 )
+~QAbstractItemView ()
+ bool alternatingRowColors () const
+ int autoScrollMargin () const
+ void closePersistentEditor ( const QModelIndex & index )
+ QModelIndex currentIndex () const
+ Qt::DropAction defaultDropAction () const
+ DragDropMode dragDropMode () const
+ bool dragDropOverwriteMode () const
+ bool dragEnabled () const
+ EditTriggers editTriggers () const
+ bool hasAutoScroll () const
+ ScrollMode horizontalScrollMode () const
+ QSize iconSize () const
+ virtual QModelIndex indexAt ( const QPoint & point ) const = 0
+ QWidget * indexWidget ( const QModelIndex & index ) const
+ QAbstractItemDelegate * itemDelegate () const
+ QAbstractItemDelegate * itemDelegate ( const QModelIndex & index ) const
+ QAbstractItemDelegate * itemDelegateForColumn ( int column ) const
+ QAbstractItemDelegate * itemDelegateForRow ( int row ) const
+ virtual void keyboardSearch ( const QString & search )
+ QAbstractItemModel * model () const
+ void openPersistentEditor ( const QModelIndex & index )
+ QModelIndex rootIndex () const
+ virtual void scrollTo ( const QModelIndex & index, ScrollHint hint = EnsureVisible ) = 0
+ QAbstractItemView::SelectionBehavior selectionBehavior () const
+ QAbstractItemView::SelectionMode selectionMode () const
+ QItemSelectionModel * selectionModel () const
+ void setAlternatingRowColors ( bool enable )
+ void setAutoScroll ( bool enable )
+ void setAutoScrollMargin ( int margin )
+ void setDefaultDropAction ( Qt::DropAction dropAction )
+ void setDragDropMode ( DragDropMode behavior )
+ void setDragDropOverwriteMode ( bool overwrite )
+ void setDragEnabled ( bool enable )
+ void setDropIndicatorShown ( bool enable )
+ void setEditTriggers ( EditTriggers triggers )
+ void setHorizontalScrollMode ( ScrollMode mode )
+ void setIconSize ( const QSize & size )
+ void setIndexWidget ( const QModelIndex & index, QWidget * widget )
+ void setItemDelegate ( QAbstractItemDelegate * delegate )
+ void setItemDelegateForColumn ( int column, QAbstractItemDelegate * delegate )
+ void setItemDelegateForRow ( int row, QAbstractItemDelegate * delegate )
+ virtual void setModel ( QAbstractItemModel * model )
+ void setSelectionBehavior ( QAbstractItemView::SelectionBehavior behavior )
+ void setSelectionMode ( QAbstractItemView::SelectionMode mode )
+ virtual void setSelectionModel ( QItemSelectionModel * selectionModel )
+ void setTabKeyNavigation ( bool enable )
+ void setTextElideMode ( Qt::TextElideMode mode )
+ void setVerticalScrollMode ( ScrollMode mode )
+ bool showDropIndicator () const
+ virtual int sizeHintForColumn ( int column ) const
+ QSize sizeHintForIndex ( const QModelIndex & index ) const
+ virtual int sizeHintForRow ( int row ) const
+ bool tabKeyNavigation () const
+ Qt::TextElideMode textElideMode () const
+ ScrollMode verticalScrollMode () const
+ virtual QRect visualRect ( const QModelIndex & index ) const = 0
+
+public_slots
+ void clearSelection ()
+ void edit ( const QModelIndex & index )
+ virtual void reset ()
+ void scrollToBottom ()
+ void scrollToTop ()
+ virtual void selectAll ()
+ void setCurrentIndex ( const QModelIndex & index )
+ virtual void setRootIndex ( const QModelIndex & index )
+ void update ( const QModelIndex & index )
+
+signals
+ void activated ( const QModelIndex & index )
+ void clicked ( const QModelIndex & index )
+ void doubleClicked ( const QModelIndex & index )
+ void entered ( const QModelIndex & index )
+ void pressed ( const QModelIndex & index )
+ void viewportEntered ()
+
+static_public_members
+
+protected_functions
+ QPoint dirtyRegionOffset () const
+ DropIndicatorPosition dropIndicatorPosition () const
+ virtual bool edit ( const QModelIndex & index, EditTrigger trigger, QEvent * event )
+ void executeDelayedItemsLayout ()
+ virtual int horizontalOffset () const = 0
+ virtual bool isIndexHidden ( const QModelIndex & index ) const = 0
+ virtual QModelIndex moveCursor ( CursorAction cursorAction, Qt::KeyboardModifiers modifiers ) = 0
+ void scheduleDelayedItemsLayout ()
+ void scrollDirtyRegion ( int dx, int dy )
+ virtual QModelIndexList selectedIndexes () const
+ virtual QItemSelectionModel::SelectionFlags selectionCommand ( const QModelIndex & index, const QEvent * event = 0 ) const
+ void setDirtyRegion ( const QRegion & region )
+ virtual void setSelection ( const QRect & rect, QItemSelectionModel::SelectionFlags flags ) = 0
+ void setState ( State state )
+ virtual void startDrag ( Qt::DropActions supportedActions )
+ State state () const
+ virtual int verticalOffset () const = 0
+ virtual QStyleOptionViewItem viewOptions () const
+ virtual QRegion visualRegionForSelection ( const QItemSelection & selection ) const = 0
+
+reimplemented_public_functions
+ virtual QVariant inputMethodQuery ( Qt::InputMethodQuery query ) const
+
+reimplemented_protected_functions
+ virtual void dragEnterEvent ( QDragEnterEvent * event )
+ virtual void dragLeaveEvent ( QDragLeaveEvent * event )
+ virtual void dragMoveEvent ( QDragMoveEvent * event )
+ virtual void dropEvent ( QDropEvent * event )
+ virtual bool event ( QEvent * event )
+ virtual void focusInEvent ( QFocusEvent * event )
+ virtual bool focusNextPrevChild ( bool next )
+ virtual void focusOutEvent ( QFocusEvent * event )
+ virtual void inputMethodEvent ( QInputMethodEvent * event )
+ virtual void keyPressEvent ( QKeyEvent * event )
+ virtual void mouseDoubleClickEvent ( QMouseEvent * event )
+ virtual void mouseMoveEvent ( QMouseEvent * event )
+ virtual void mousePressEvent ( QMouseEvent * event )
+ virtual void mouseReleaseEvent ( QMouseEvent * event )
+ virtual void resizeEvent ( QResizeEvent * event )
+ virtual void timerEvent ( QTimerEvent * event )
+ virtual bool viewportEvent ( QEvent * event )
+
+protected_slots
+ virtual void closeEditor ( QWidget * editor, QAbstractItemDelegate::EndEditHint hint )
+ virtual void commitData ( QWidget * editor )
+ virtual void currentChanged ( const QModelIndex & current, const QModelIndex & previous )
+ virtual void dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight )
+ virtual void editorDestroyed ( QObject * editor )
+ virtual void rowsAboutToBeRemoved ( const QModelIndex & parent, int start, int end )
+ virtual void rowsInserted ( const QModelIndex & parent, int start, int end )
+ virtual void selectionChanged ( const QItemSelection & selected, const QItemSelection & deselected )
+ virtual void updateGeometries ()
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+EditTriggers
+
+parent_typedefed_objects
+
+enums
+class_name
+QAbstractItemView
+name
+CursorAction
+key
+MoveUp
+MoveDown
+MoveLeft
+MoveRight
+MoveHome
+MoveEnd
+MovePageUp
+MovePageDown
+MoveNext
+MovePrevious
+public_flag
+false
+class_name
+QAbstractItemView
+name
+DragDropMode
+key
+NoDragDrop
+DragOnly
+DropOnly
+DragDrop
+InternalMove
+public_flag
+true
+class_name
+QAbstractItemView
+name
+DropIndicatorPosition
+key
+OnItem
+AboveItem
+BelowItem
+OnViewport
+public_flag
+false
+class_name
+QAbstractItemView
+name
+EditTrigger
+key
+NoEditTriggers
+CurrentChanged
+DoubleClicked
+SelectedClicked
+EditKeyPressed
+AnyKeyPressed
+AllEditTriggers
+public_flag
+true
+class_name
+QAbstractItemView
+name
+ScrollHint
+key
+EnsureVisible
+PositionAtTop
+PositionAtBottom
+PositionAtCenter
+public_flag
+true
+class_name
+QAbstractItemView
+name
+ScrollMode
+key
+ScrollPerItem
+ScrollPerPixel
+public_flag
+true
+class_name
+QAbstractItemView
+name
+SelectionBehavior
+key
+SelectItems
+SelectRows
+SelectColumns
+public_flag
+true
+class_name
+QAbstractItemView
+name
+SelectionMode
+key
+SingleSelection
+ContiguousSelection
+ExtendedSelection
+MultiSelection
+NoSelection
+public_flag
+true
+class_name
+QAbstractItemView
+name
+State
+key
+NoState
+DraggingState
+DragSelectingState
+EditingState
+ExpandingState
+CollapsingState
+AnimatingState
+public_flag
+false
+
+parent_enums
+
+parent_index
+359
+
+parent_name
+QAbstractScrollArea
+

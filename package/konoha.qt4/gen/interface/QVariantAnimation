@@ -1,0 +1,110 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qvariantanimation.html
+
+output_urn
+QVariantAnimation
+
+inherits
+
+public_types
+ typedef KeyValue
+ typedef KeyValues
+
+properties
+currentValue : const QVariant
+duration : int
+easingCurve : QEasingCurve
+
+public_functions
+QVariantAnimation ( QObject * parent = 0 )
+~QVariantAnimation ()
+ QVariant currentValue () const
+ QEasingCurve easingCurve () const
+ QVariant endValue () const
+ QVariant keyValueAt ( qreal step ) const
+ KeyValues keyValues () const
+ void setDuration ( int msecs )
+ void setEasingCurve ( const QEasingCurve & easing )
+ void setEndValue ( const QVariant & value )
+ void setKeyValueAt ( qreal step, const QVariant & value )
+ void setKeyValues ( const KeyValues & keyValues )
+ void setStartValue ( const QVariant & value )
+ QVariant startValue () const
+
+public_slots
+
+signals
+ void valueChanged ( const QVariant & value )
+
+static_public_members
+
+protected_functions
+ virtual QVariant interpolated ( const QVariant & from, const QVariant & to, qreal progress ) const
+ virtual void updateCurrentValue ( const QVariant & value ) = 0
+
+reimplemented_public_functions
+ virtual int duration () const
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * event )
+ virtual void updateCurrentTime ( int )
+ virtual void updateState ( QAbstractAnimation::State newState, QAbstractAnimation::State oldState )
+
+protected_slots
+
+related_non_members
+ void qRegisterAnimationInterpolator ( QVariant(* ) ( const T & from, const T & to, qreal progress ) func )
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+KeyValue
+KeyValues
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QAbstractAnimation
+name
+DeletionPolicy
+key
+KeepWhenStopped
+DeleteWhenStopped
+public_flag
+true
+class_name
+QAbstractAnimation
+name
+Direction
+key
+Forward
+Backward
+public_flag
+true
+class_name
+QAbstractAnimation
+name
+State
+key
+Stopped
+Paused
+Running
+public_flag
+true
+
+parent_index
+490
+
+parent_name
+QAbstractAnimation
+

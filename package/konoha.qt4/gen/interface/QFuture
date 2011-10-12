@@ -1,0 +1,86 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfuture.html
+
+output_urn
+QFuture
+
+inherits
+
+public_types
+ class const_iterator
+ typedef ConstIterator
+
+properties
+
+public_functions
+QFuture ()
+QFuture ( const QFuture & other )
+~QFuture ()
+ const_iterator begin () const
+ void cancel ()
+ const_iterator constBegin () const
+ const_iterator constEnd () const
+ const_iterator end () const
+ bool isCanceled () const
+ bool isFinished () const
+ bool isPaused () const
+ bool isResultReadyAt ( int index ) const
+ bool isRunning () const
+ bool isStarted () const
+ void pause ()
+ int progressMaximum () const
+ int progressMinimum () const
+ QString progressText () const
+ int progressValue () const
+ T result () const
+ T resultAt ( int index ) const
+ int resultCount () const
+ QList<T> results () const
+ void resume ()
+ void setPaused ( bool paused )
+ void togglePaused ()
+ void waitForFinished ()
+operator T () const
+ bool operator!= ( const QFuture & other ) const
+ QFuture & operator= ( const QFuture & other )
+ bool operator== ( const QFuture & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+const_iterator
+ConstIterator
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

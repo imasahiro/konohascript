@@ -1,0 +1,75 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qline.html
+
+output_urn
+QLine
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QLine ()
+QLine ( const QPoint & p1, const QPoint & p2 )
+QLine ( int x1, int y1, int x2, int y2 )
+ QPoint p1 () const
+ QPoint p2 () const
+ int x1 () const
+ int x2 () const
+ int y1 () const
+ int y2 () const
+ int dx () const
+ int dy () const
+ bool isNull () const
+ void setP1 ( const QPoint & p1 )
+ void setP2 ( const QPoint & p2 )
+ void setLine ( int x1, int y1, int x2, int y2 )
+ void setPoints ( const QPoint & p1, const QPoint & p2 )
+ void translate ( const QPoint & offset )
+ void translate ( int dx, int dy )
+ QLine translated ( const QPoint & offset ) const
+ QLine translated ( int dx, int dy ) const
+ bool operator!= ( const QLine & line ) const
+ bool operator== ( const QLine & line ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & stream, const QLine & line )
+ QDataStream & operator>> ( QDataStream & stream, QLine & line )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,59 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qnetworkcookiejar.html
+
+output_urn
+QNetworkCookieJar
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QNetworkCookieJar ( QObject * parent = 0 )
+ virtual ~QNetworkCookieJar ()
+ virtual QList<QNetworkCookie> cookiesForUrl ( const QUrl & url ) const
+ virtual bool setCookiesFromUrl ( const QList<QNetworkCookie> & cookieList, const QUrl & url )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ QList<QNetworkCookie> allCookies () const
+ void setAllCookies ( const QList<QNetworkCookie> & cookieList )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

@@ -1,0 +1,131 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmatrix4x4.html
+
+output_urn
+QMatrix4x4
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QMatrix4x4 ()
+QMatrix4x4 ( const qreal * values )
+QMatrix4x4 ( qreal m11, qreal m12, qreal m13, qreal m14, qreal m21, qreal m22, qreal m23, qreal m24, qreal m31, qreal m32, qreal m33, qreal m34, qreal m41, qreal m42, qreal m43, qreal m44 )
+QMatrix4x4 ( const QGenericMatrix<N, M, qreal> & matrix )
+QMatrix4x4 ( const QTransform & transform )
+QMatrix4x4 ( const QMatrix & matrix )
+ QVector4D column ( int index ) const
+ const qreal * constData () const
+ void copyDataTo ( qreal * values ) const
+ qreal * data ()
+ const qreal * data () const
+ qreal determinant () const
+ void fill ( qreal value )
+ void flipCoordinates ()
+ void frustum ( qreal left, qreal right, qreal bottom, qreal top, qreal nearPlane, qreal farPlane )
+ QMatrix4x4 inverted ( bool * invertible = 0 ) const
+ bool isIdentity () const
+ void lookAt ( const QVector3D & eye, const QVector3D & center, const QVector3D & up )
+ QPoint map ( const QPoint & point ) const
+ QPointF map ( const QPointF & point ) const
+ QVector3D map ( const QVector3D & point ) const
+ QVector4D map ( const QVector4D & point ) const
+ QRect mapRect ( const QRect & rect ) const
+ QRectF mapRect ( const QRectF & rect ) const
+ QVector3D mapVector ( const QVector3D & vector ) const
+ QMatrix3x3 normalMatrix () const
+ void optimize ()
+ void ortho ( qreal left, qreal right, qreal bottom, qreal top, qreal nearPlane, qreal farPlane )
+ void ortho ( const QRect & rect )
+ void ortho ( const QRectF & rect )
+ void perspective ( qreal angle, qreal aspect, qreal nearPlane, qreal farPlane )
+ void rotate ( qreal angle, const QVector3D & vector )
+ void rotate ( const QQuaternion & quaternion )
+ void rotate ( qreal angle, qreal x, qreal y, qreal z = 0.0f )
+ QVector4D row ( int index ) const
+ void scale ( const QVector3D & vector )
+ void scale ( qreal x, qreal y )
+ void scale ( qreal x, qreal y, qreal z )
+ void scale ( qreal factor )
+ void setColumn ( int index, const QVector4D & value )
+ void setRow ( int index, const QVector4D & value )
+ void setToIdentity ()
+ QMatrix toAffine () const
+ QGenericMatrix<N, M, qreal> toGenericMatrix () const
+ QTransform toTransform () const
+ QTransform toTransform ( qreal distanceToPlane ) const
+ void translate ( const QVector3D & vector )
+ void translate ( qreal x, qreal y )
+ void translate ( qreal x, qreal y, qreal z )
+ QMatrix4x4 transposed () const
+operator QVariant () const
+ bool operator!= ( const QMatrix4x4 & other ) const
+ const qreal & operator() ( int row, int column ) const
+ qreal & operator() ( int row, int column )
+ QMatrix4x4 & operator*= ( const QMatrix4x4 & other )
+ QMatrix4x4 & operator*= ( qreal factor )
+ QMatrix4x4 & operator+= ( const QMatrix4x4 & other )
+ QMatrix4x4 & operator-= ( const QMatrix4x4 & other )
+ QMatrix4x4 & operator/= ( qreal divisor )
+ bool operator== ( const QMatrix4x4 & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ bool qFuzzyCompare ( const QMatrix4x4 & m1, const QMatrix4x4 & m2 )
+ QGenericMatrix<N, M, qreal> qGenericMatrixFromMatrix4x4 ( const QMatrix4x4 & matrix )
+ QMatrix4x4 qGenericMatrixToMatrix4x4 ( const QGenericMatrix<N, M, qreal> & matrix )
+ QMatrix4x4 operator* ( const QMatrix4x4 & m1, const QMatrix4x4 & m2 )
+ QVector3D operator* ( const QVector3D & vector, const QMatrix4x4 & matrix )
+ QVector3D operator* ( const QMatrix4x4 & matrix, const QVector3D & vector )
+ QVector4D operator* ( const QVector4D & vector, const QMatrix4x4 & matrix )
+ QVector4D operator* ( const QMatrix4x4 & matrix, const QVector4D & vector )
+ QPoint operator* ( const QPoint & point, const QMatrix4x4 & matrix )
+ QPointF operator* ( const QPointF & point, const QMatrix4x4 & matrix )
+ QPoint operator* ( const QMatrix4x4 & matrix, const QPoint & point )
+ QPointF operator* ( const QMatrix4x4 & matrix, const QPointF & point )
+ QMatrix4x4 operator* ( qreal factor, const QMatrix4x4 & matrix )
+ QMatrix4x4 operator* ( const QMatrix4x4 & matrix, qreal factor )
+ QMatrix4x4 operator+ ( const QMatrix4x4 & m1, const QMatrix4x4 & m2 )
+ QMatrix4x4 operator- ( const QMatrix4x4 & m1, const QMatrix4x4 & m2 )
+ QMatrix4x4 operator- ( const QMatrix4x4 & matrix )
+ QMatrix4x4 operator/ ( const QMatrix4x4 & matrix, qreal divisor )
+ QDataStream & operator<< ( QDataStream & stream, const QMatrix4x4 & matrix )
+ QDataStream & operator>> ( QDataStream & stream, QMatrix4x4 & matrix )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

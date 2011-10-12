@@ -1,0 +1,144 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgraphicswidget.html
+
+output_urn
+QGraphicsWidget
+
+inherits
+
+public_types
+
+properties
+autoFillBackground : bool
+focusPolicy : Qt::FocusPolicy
+font : QFont
+geometry : QRectF
+layout : QGraphicsLayout *
+layoutDirection : Qt::LayoutDirection
+maximumSize : const QSizeF
+
+public_functions
+QGraphicsWidget ( QGraphicsItem * parent = 0, Qt::WindowFlags wFlags = 0 )
+~QGraphicsWidget ()
+ QList<QAction *> actions () const
+ void addAction ( QAction * action )
+ void addActions ( QList<QAction *> actions )
+ void adjustSize ()
+ bool autoFillBackground () const
+ Qt::FocusPolicy focusPolicy () const
+ QGraphicsWidget * focusWidget () const
+ QFont font () const
+ void getWindowFrameMargins ( qreal * left, qreal * top, qreal * right, qreal * bottom ) const
+ int grabShortcut ( const QKeySequence & sequence, Qt::ShortcutContext context = Qt::WindowShortcut )
+ void insertAction ( QAction * before, QAction * action )
+ void insertActions ( QAction * before, QList<QAction *> actions )
+ bool isActiveWindow () const
+ QGraphicsLayout * layout () const
+ Qt::LayoutDirection layoutDirection () const
+ virtual void paintWindowFrame ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 )
+ QPalette palette () const
+ QRectF rect () const
+ void releaseShortcut ( int id )
+ void removeAction ( QAction * action )
+ void resize ( const QSizeF & size )
+ void resize ( qreal w, qreal h )
+ void setAttribute ( Qt::WidgetAttribute attribute, bool on = true )
+ void setAutoFillBackground ( bool enabled )
+ void setContentsMargins ( qreal left, qreal top, qreal right, qreal bottom )
+ void setFocusPolicy ( Qt::FocusPolicy policy )
+ void setFont ( const QFont & font )
+ void setGeometry ( qreal x, qreal y, qreal w, qreal h )
+ void setLayout ( QGraphicsLayout * layout )
+ void setLayoutDirection ( Qt::LayoutDirection direction )
+ void setPalette ( const QPalette & palette )
+ void setShortcutAutoRepeat ( int id, bool enabled = true )
+ void setShortcutEnabled ( int id, bool enabled = true )
+ void setStyle ( QStyle * style )
+ void setWindowFlags ( Qt::WindowFlags wFlags )
+ void setWindowFrameMargins ( qreal left, qreal top, qreal right, qreal bottom )
+ void setWindowTitle ( const QString & title )
+ QSizeF size () const
+ QStyle * style () const
+ bool testAttribute ( Qt::WidgetAttribute attribute ) const
+ void unsetLayoutDirection ()
+ void unsetWindowFrameMargins ()
+ Qt::WindowFlags windowFlags () const
+ QRectF windowFrameGeometry () const
+ QRectF windowFrameRect () const
+ QString windowTitle () const
+ Qt::WindowType windowType () const
+
+public_slots
+ bool close ()
+
+signals
+ void geometryChanged ()
+
+static_public_members
+ void setTabOrder ( QGraphicsWidget * first, QGraphicsWidget * second )
+
+protected_functions
+ virtual void changeEvent ( QEvent * event )
+ virtual void closeEvent ( QCloseEvent * event )
+ virtual bool focusNextPrevChild ( bool next )
+ virtual void grabKeyboardEvent ( QEvent * event )
+ virtual void grabMouseEvent ( QEvent * event )
+ virtual void hideEvent ( QHideEvent * event )
+ virtual void initStyleOption ( QStyleOption * option ) const
+ virtual void moveEvent ( QGraphicsSceneMoveEvent * event )
+ virtual void polishEvent ()
+ virtual void resizeEvent ( QGraphicsSceneResizeEvent * event )
+ virtual void showEvent ( QShowEvent * event )
+ virtual void ungrabKeyboardEvent ( QEvent * event )
+ virtual void ungrabMouseEvent ( QEvent * event )
+ virtual bool windowFrameEvent ( QEvent * event )
+ virtual Qt::WindowFrameSection windowFrameSectionAt ( const QPointF & pos ) const
+
+reimplemented_public_functions
+ virtual QRectF boundingRect () const
+ virtual void getContentsMargins ( qreal * left, qreal * top, qreal * right, qreal * bottom ) const
+ virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 )
+ virtual void setGeometry ( const QRectF & rect )
+ virtual QPainterPath shape () const
+ virtual int type () const
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * event )
+ virtual void focusInEvent ( QFocusEvent * event )
+ virtual void focusOutEvent ( QFocusEvent * event )
+ virtual void hoverLeaveEvent ( QGraphicsSceneHoverEvent * event )
+ virtual void hoverMoveEvent ( QGraphicsSceneHoverEvent * event )
+ virtual QVariant itemChange ( GraphicsItemChange change, const QVariant & value )
+ virtual bool sceneEvent ( QEvent * event )
+ virtual QSizeF sizeHint ( Qt::SizeHint which, const QSizeF & constraint = QSizeF() ) const
+ virtual void updateGeometry ()
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+737
+688
+
+parent_name
+QGraphicsObject
+QGraphicsLayoutItem
+

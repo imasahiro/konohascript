@@ -1,0 +1,58 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdbussignature.html
+
+output_urn
+QDBusSignature
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDBusSignature ()
+QDBusSignature ( const char * signature )
+QDBusSignature ( const QLatin1String & signature )
+QDBusSignature ( const QString & signature )
+ void setSignature ( const QString & signature )
+ QString signature () const
+ QDBusSignature & operator= ( const QDBusSignature & signature )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

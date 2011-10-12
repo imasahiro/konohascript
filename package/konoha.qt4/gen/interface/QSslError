@@ -1,0 +1,95 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsslerror.html
+
+output_urn
+QSslError
+
+inherits
+
+public_types
+ enum SslError { NoError, UnableToGetIssuerCertificate, UnableToDecryptCertificateSignature, UnableToDecodeIssuerPublicKey, ..., NoSslSupport }
+
+properties
+
+public_functions
+QSslError ()
+QSslError ( SslError error )
+QSslError ( SslError error, const QSslCertificate & certificate )
+QSslError ( const QSslError & other )
+~QSslError ()
+ QSslCertificate certificate () const
+ SslError error () const
+ QString errorString () const
+ bool operator!= ( const QSslError & other ) const
+ QSslError & operator= ( const QSslError & other )
+ bool operator== ( const QSslError & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QSslError
+name
+SslError
+key
+NoError
+UnableToGetIssuerCertificate
+UnableToDecryptCertificateSignature
+UnableToDecodeIssuerPublicKey
+CertificateSignatureFailed
+CertificateNotYetValid
+CertificateExpired
+InvalidNotBeforeField
+InvalidNotAfterField
+SelfSignedCertificate
+SelfSignedCertificateInChain
+UnableToGetLocalIssuerCertificate
+UnableToVerifyFirstCertificate
+CertificateRevoked
+InvalidCaCertificate
+PathLengthExceeded
+InvalidPurpose
+CertificateUntrusted
+CertificateRejected
+SubjectIssuerMismatch
+AuthorityIssuerSerialNumberMismatch
+NoPeerCertificate
+HostNameMismatch
+UnspecifiedError
+NoSslSupport
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,229 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfont.html
+
+output_urn
+QFont
+
+inherits
+
+public_types
+ enum Capitalization { MixedCase, AllUppercase, AllLowercase, SmallCaps, Capitalize }
+ enum SpacingType { PercentageSpacing, AbsoluteSpacing }
+ enum Stretch { UltraCondensed, ExtraCondensed, Condensed, SemiCondensed, ..., UltraExpanded }
+ enum Style { StyleNormal, StyleItalic, StyleOblique }
+ enum StyleHint { AnyStyle, SansSerif, Helvetica, Serif, ..., System }
+ enum StyleStrategy { PreferDefault, PreferBitmap, PreferDevice, PreferOutline, ..., ForceIntegerMetrics }
+ enum Weight { Light, Normal, DemiBold, Bold, Black }
+
+properties
+
+public_functions
+QFont ()
+QFont ( const QString & family, int pointSize = -1, int weight = -1, bool italic = false )
+QFont ( const QFont & font, QPaintDevice * pd )
+QFont ( const QFont & font )
+~QFont ()
+ bool bold () const
+ Capitalization capitalization () const
+ QString defaultFamily () const
+ bool exactMatch () const
+ QString family () const
+ bool fixedPitch () const
+ FT_Face freetypeFace () const
+ bool fromString ( const QString & descrip )
+ HFONT handle () const
+ bool isCopyOf ( const QFont & f ) const
+ bool italic () const
+ bool kerning () const
+ QString key () const
+ QString lastResortFamily () const
+ QString lastResortFont () const
+ qreal letterSpacing () const
+ SpacingType letterSpacingType () const
+ quint32 macFontID () const
+ bool overline () const
+ int pixelSize () const
+ int pointSize () const
+ qreal pointSizeF () const
+ bool rawMode () const
+ QString rawName () const
+ QFont resolve ( const QFont & other ) const
+ void setBold ( bool enable )
+ void setCapitalization ( Capitalization caps )
+ void setFamily ( const QString & family )
+ void setFixedPitch ( bool enable )
+ void setItalic ( bool enable )
+ void setKerning ( bool enable )
+ void setLetterSpacing ( SpacingType type, qreal spacing )
+ void setOverline ( bool enable )
+ void setPixelSize ( int pixelSize )
+ void setPointSize ( int pointSize )
+ void setPointSizeF ( qreal pointSize )
+ void setRawMode ( bool enable )
+ void setRawName ( const QString & name )
+ void setStretch ( int factor )
+ void setStrikeOut ( bool enable )
+ void setStyle ( Style style )
+ void setStyleHint ( StyleHint hint, StyleStrategy strategy = PreferDefault )
+ void setStyleStrategy ( StyleStrategy s )
+ void setUnderline ( bool enable )
+ void setWeight ( int weight )
+ void setWordSpacing ( qreal spacing )
+ int stretch () const
+ bool strikeOut () const
+ Style style () const
+ StyleHint styleHint () const
+ StyleStrategy styleStrategy () const
+ QString toString () const
+ bool underline () const
+ int weight () const
+ qreal wordSpacing () const
+operator QVariant () const
+ bool operator!= ( const QFont & f ) const
+ bool operator< ( const QFont & f ) const
+ QFont & operator= ( const QFont & font )
+ bool operator== ( const QFont & f ) const
+
+public_slots
+
+signals
+
+static_public_members
+ void insertSubstitution ( const QString & familyName, const QString & substituteName )
+ void insertSubstitutions ( const QString & familyName, const QStringList & substituteNames )
+ void removeSubstitution ( const QString & familyName )
+ QString substitute ( const QString & familyName )
+ QStringList substitutes ( const QString & familyName )
+ QStringList substitutions ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & s, const QFont & font )
+ QDataStream & operator>> ( QDataStream & s, QFont & font )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QFont
+name
+Capitalization
+key
+MixedCase
+AllUppercase
+AllLowercase
+SmallCaps
+Capitalize
+public_flag
+true
+class_name
+QFont
+name
+SpacingType
+key
+PercentageSpacing
+AbsoluteSpacing
+public_flag
+true
+class_name
+QFont
+name
+Stretch
+key
+UltraCondensed
+ExtraCondensed
+Condensed
+SemiCondensed
+Unstretched
+SemiExpanded
+Expanded
+ExtraExpanded
+UltraExpanded
+public_flag
+true
+class_name
+QFont
+name
+Style
+key
+StyleNormal
+StyleItalic
+StyleOblique
+public_flag
+true
+class_name
+QFont
+name
+StyleHint
+key
+AnyStyle
+SansSerif
+Helvetica
+Serif
+Times
+TypeWriter
+Courier
+OldEnglish
+Decorative
+Monospace
+Fantasy
+Cursive
+System
+public_flag
+true
+class_name
+QFont
+name
+StyleStrategy
+key
+PreferDefault
+PreferBitmap
+PreferDevice
+PreferOutline
+ForceOutline
+NoAntialias
+PreferAntialias
+OpenGLCompatible
+NoFontMerging
+PreferMatch
+PreferQuality
+ForceIntegerMetrics
+public_flag
+true
+class_name
+QFont
+name
+Weight
+key
+Light
+Normal
+DemiBold
+Bold
+Black
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,113 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qglbuffer.html
+
+output_urn
+QGLBuffer
+
+inherits
+
+public_types
+ enum Access { ReadOnly, WriteOnly, ReadWrite }
+ enum Type { VertexBuffer, IndexBuffer, PixelPackBuffer, PixelUnpackBuffer }
+ enum UsagePattern { StreamDraw, StreamRead, StreamCopy, StaticDraw, ..., DynamicCopy }
+
+properties
+
+public_functions
+QGLBuffer ()
+QGLBuffer ( QGLBuffer::Type type )
+QGLBuffer ( const QGLBuffer & other )
+~QGLBuffer ()
+ void allocate ( const void * data, int count )
+ void allocate ( int count )
+ bool bind ()
+ GLuint bufferId () const
+ bool create ()
+ void destroy ()
+ bool isCreated () const
+ void * map ( QGLBuffer::Access access )
+ bool read ( int offset, void * data, int count )
+ void release ()
+ void setUsagePattern ( QGLBuffer::UsagePattern value )
+ int size () const
+ QGLBuffer::Type type () const
+ bool unmap ()
+ QGLBuffer::UsagePattern usagePattern () const
+ void write ( int offset, const void * data, int count )
+ QGLBuffer & operator= ( const QGLBuffer & other )
+
+public_slots
+
+signals
+
+static_public_members
+ void release ( QGLBuffer::Type type )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QGLBuffer
+name
+Access
+key
+ReadOnly
+WriteOnly
+ReadWrite
+public_flag
+true
+class_name
+QGLBuffer
+name
+Type
+key
+VertexBuffer
+IndexBuffer
+PixelPackBuffer
+PixelUnpackBuffer
+public_flag
+true
+class_name
+QGLBuffer
+name
+UsagePattern
+key
+StreamDraw
+StreamRead
+StreamCopy
+StaticDraw
+StaticRead
+StaticCopy
+DynamicDraw
+DynamicRead
+DynamicCopy
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

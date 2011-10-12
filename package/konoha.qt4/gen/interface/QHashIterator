@@ -1,0 +1,65 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qhashiterator.html
+
+output_urn
+QHashIterator
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QHashIterator ( const QHash<Key, T> & hash )
+ bool findNext ( const T & value )
+ bool findPrevious ( const T & value )
+ bool hasNext () const
+ bool hasPrevious () const
+ const Key & key () const
+ Item next ()
+ Item peekNext () const
+ Item peekPrevious () const
+ Item previous ()
+ void toBack ()
+ void toFront ()
+ const T & value () const
+ QHashIterator & operator= ( const QHash<Key, T> & hash )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

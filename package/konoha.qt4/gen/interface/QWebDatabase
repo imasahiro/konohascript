@@ -1,0 +1,62 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwebdatabase.html
+
+output_urn
+QWebDatabase
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QWebDatabase ( const QWebDatabase & other )
+~QWebDatabase ()
+ QString displayName () const
+ qint64 expectedSize () const
+ QString fileName () const
+ QString name () const
+ QWebSecurityOrigin origin () const
+ qint64 size () const
+ QWebDatabase & operator= ( const QWebDatabase & other )
+
+public_slots
+
+signals
+
+static_public_members
+ void removeAllDatabases ()
+ void removeDatabase ( const QWebDatabase & db )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

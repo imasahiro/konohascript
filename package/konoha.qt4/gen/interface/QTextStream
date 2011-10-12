@@ -1,0 +1,204 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextstream.html
+
+output_urn
+QTextStream
+
+inherits
+
+public_types
+ enum FieldAlignment { AlignLeft, AlignRight, AlignCenter, AlignAccountingStyle }
+ enum NumberFlag { ShowBase, ForcePoint, ForceSign, UppercaseBase, UppercaseDigits }
+ flags NumberFlags
+ enum RealNumberNotation { ScientificNotation, FixedNotation, SmartNotation }
+ enum Status { Ok, ReadPastEnd, ReadCorruptData }
+
+properties
+
+public_functions
+QTextStream ()
+QTextStream ( QIODevice * device )
+QTextStream ( FILE * fileHandle, QIODevice::OpenMode openMode = QIODevice::ReadWrite )
+QTextStream ( QString * string, QIODevice::OpenMode openMode = QIODevice::ReadWrite )
+QTextStream ( QByteArray * array, QIODevice::OpenMode openMode = QIODevice::ReadWrite )
+QTextStream ( const QByteArray & array, QIODevice::OpenMode openMode = QIODevice::ReadOnly )
+ virtual ~QTextStream ()
+ bool atEnd () const
+ bool autoDetectUnicode () const
+ QTextCodec * codec () const
+ QIODevice * device () const
+ FieldAlignment fieldAlignment () const
+ int fieldWidth () const
+ void flush ()
+ bool generateByteOrderMark () const
+ int integerBase () const
+ QLocale locale () const
+ NumberFlags numberFlags () const
+ QChar padChar () const
+ qint64 pos () const
+ QString read ( qint64 maxlen )
+ QString readAll ()
+ QString readLine ( qint64 maxlen = 0 )
+ RealNumberNotation realNumberNotation () const
+ int realNumberPrecision () const
+ void reset ()
+ void resetStatus ()
+ bool seek ( qint64 pos )
+ void setAutoDetectUnicode ( bool enabled )
+ void setCodec ( QTextCodec * codec )
+ void setCodec ( const char * codecName )
+ void setDevice ( QIODevice * device )
+ void setFieldAlignment ( FieldAlignment mode )
+ void setFieldWidth ( int width )
+ void setGenerateByteOrderMark ( bool generate )
+ void setIntegerBase ( int base )
+ void setLocale ( const QLocale & locale )
+ void setNumberFlags ( NumberFlags flags )
+ void setPadChar ( QChar ch )
+ void setRealNumberNotation ( RealNumberNotation notation )
+ void setRealNumberPrecision ( int precision )
+ void setStatus ( Status status )
+ void setString ( QString * string, QIODevice::OpenMode openMode = QIODevice::ReadWrite )
+ void skipWhiteSpace ()
+ Status status () const
+ QString * string () const
+ QTextStream & operator<< ( QChar c )
+ QTextStream & operator<< ( signed short i )
+ QTextStream & operator<< ( float f )
+ QTextStream & operator<< ( const QString & string )
+ QTextStream & operator<< ( char c )
+ QTextStream & operator<< ( unsigned short i )
+ QTextStream & operator<< ( signed int i )
+ QTextStream & operator<< ( unsigned int i )
+ QTextStream & operator<< ( signed long i )
+ QTextStream & operator<< ( unsigned long i )
+ QTextStream & operator<< ( qlonglong i )
+ QTextStream & operator<< ( qulonglong i )
+ QTextStream & operator<< ( double f )
+ QTextStream & operator<< ( const QByteArray & array )
+ QTextStream & operator<< ( const char * string )
+ QTextStream & operator<< ( const void * ptr )
+ QTextStream & operator>> ( QChar & c )
+ QTextStream & operator>> ( signed short & i )
+ QTextStream & operator>> ( float & f )
+ QTextStream & operator>> ( QString & str )
+ QTextStream & operator>> ( char & c )
+ QTextStream & operator>> ( unsigned short & i )
+ QTextStream & operator>> ( signed int & i )
+ QTextStream & operator>> ( unsigned int & i )
+ QTextStream & operator>> ( signed long & i )
+ QTextStream & operator>> ( unsigned long & i )
+ QTextStream & operator>> ( qlonglong & i )
+ QTextStream & operator>> ( qulonglong & i )
+ QTextStream & operator>> ( double & f )
+ QTextStream & operator>> ( QByteArray & array )
+ QTextStream & operator>> ( char * c )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QTextStream & bin ( QTextStream & stream )
+ QTextStream & bom ( QTextStream & stream )
+ QTextStream & center ( QTextStream & stream )
+ QTextStream & dec ( QTextStream & stream )
+ QTextStream & endl ( QTextStream & stream )
+ QTextStream & fixed ( QTextStream & stream )
+ QTextStream & flush ( QTextStream & stream )
+ QTextStream & forcepoint ( QTextStream & stream )
+ QTextStream & forcesign ( QTextStream & stream )
+ QTextStream & hex ( QTextStream & stream )
+ QTextStream & left ( QTextStream & stream )
+ QTextStream & lowercasebase ( QTextStream & stream )
+ QTextStream & lowercasedigits ( QTextStream & stream )
+ QTextStream & noforcepoint ( QTextStream & stream )
+ QTextStream & noforcesign ( QTextStream & stream )
+ QTextStream & noshowbase ( QTextStream & stream )
+ QTextStream & oct ( QTextStream & stream )
+ QTextStreamManipulator qSetFieldWidth ( int width )
+ QTextStreamManipulator qSetPadChar ( QChar ch )
+ QTextStreamManipulator qSetRealNumberPrecision ( int precision )
+ QTextStream & reset ( QTextStream & stream )
+ QTextStream & right ( QTextStream & stream )
+ QTextStream & scientific ( QTextStream & stream )
+ QTextStream & showbase ( QTextStream & stream )
+ QTextStream & uppercasebase ( QTextStream & stream )
+ QTextStream & uppercasedigits ( QTextStream & stream )
+ QTextStream & ws ( QTextStream & stream )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+NumberFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QTextStream
+name
+FieldAlignment
+key
+AlignLeft
+AlignRight
+AlignCenter
+AlignAccountingStyle
+public_flag
+true
+class_name
+QTextStream
+name
+NumberFlag
+key
+ShowBase
+ForcePoint
+ForceSign
+UppercaseBase
+UppercaseDigits
+public_flag
+true
+class_name
+QTextStream
+name
+RealNumberNotation
+key
+ScientificNotation
+FixedNotation
+SmartNotation
+public_flag
+true
+class_name
+QTextStream
+name
+Status
+key
+Ok
+ReadPastEnd
+ReadCorruptData
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

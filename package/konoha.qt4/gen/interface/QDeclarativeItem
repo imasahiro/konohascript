@@ -1,0 +1,104 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdeclarativeitem.html
+
+output_urn
+QDeclarativeItem
+
+inherits
+
+public_types
+ enum TransformOrigin { TopLeft, Top, TopRight, Left, ..., BottomRight }
+
+properties
+baselineOffset : qreal
+childrenRect : const QRectF
+clip : bool
+
+public_functions
+QDeclarativeItem ( QDeclarativeItem * parent = 0 )
+ virtual ~QDeclarativeItem ()
+ qreal baselineOffset () const
+ QDeclarativeItem * childAt ( qreal x, qreal y ) const
+ QRectF childrenRect ()
+ bool clip () const
+ void forceActiveFocus ()
+ qreal implicitHeight () const
+ qreal implicitWidth () const
+ bool keepMouseGrab () const
+ QScriptValue mapFromItem ( const QScriptValue & item, qreal x, qreal y ) const
+ QScriptValue mapToItem ( const QScriptValue & item, qreal x, qreal y ) const
+ QDeclarativeItem * parentItem () const
+ void setBaselineOffset ( qreal )
+ void setClip ( bool )
+ void setKeepMouseGrab ( bool keep )
+ void setParentItem ( QDeclarativeItem * parent )
+ void setSmooth ( bool smooth )
+ void setTransformOrigin ( TransformOrigin origin )
+ bool smooth () const
+ TransformOrigin transformOrigin () const
+
+public_slots
+
+signals
+Q_REVISION ()
+Q_REVISION ()
+
+static_public_members
+
+protected_functions
+ virtual void geometryChanged ( const QRectF & newGeometry, const QRectF & oldGeometry )
+ bool heightValid () const
+ bool isComponentComplete () const
+ void setImplicitHeight ( qreal h )
+ void setImplicitWidth ( qreal w )
+ bool widthValid () const
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDeclarativeItem
+name
+TransformOrigin
+key
+TopLeft
+Top
+TopRight
+Left
+Center
+Right
+BottomLeft
+Bottom
+BottomRight
+public_flag
+true
+
+parent_enums
+
+parent_index
+684
+737
+
+parent_name
+QDeclarativeParserStatus
+QGraphicsObject
+

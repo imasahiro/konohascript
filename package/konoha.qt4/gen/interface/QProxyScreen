@@ -1,0 +1,113 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qproxyscreen.html
+
+output_urn
+QProxyScreen
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QProxyScreen ( int displayId, ClassId classId = ProxyClass )
+~QProxyScreen ()
+ QScreen * screen () const
+ void setScreen ( QScreen * screen )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void blank ( bool on )
+ virtual void blit ( const QImage & image, const QPoint & topLeft, const QRegion & region )
+ virtual bool connect ( const QString & displaySpec )
+ virtual QWSWindowSurface * createSurface ( QWidget * widget ) const
+ virtual QWSWindowSurface * createSurface ( const QString & key ) const
+ virtual void disconnect ()
+ virtual void exposeRegion ( QRegion r, int changing )
+ virtual bool initDevice ()
+ virtual bool isInterlaced () const
+ virtual bool isTransformed () const
+ virtual QSize mapFromDevice ( const QSize & s ) const
+ virtual QPoint mapFromDevice ( const QPoint & p, const QSize & s ) const
+ virtual QRect mapFromDevice ( const QRect & r, const QSize & s ) const
+ virtual QRegion mapFromDevice ( const QRegion & r, const QSize & s ) const
+ virtual QSize mapToDevice ( const QSize & s ) const
+ virtual QPoint mapToDevice ( const QPoint & p, const QSize & s ) const
+ virtual QRect mapToDevice ( const QRect & r, const QSize & s ) const
+ virtual QRegion mapToDevice ( const QRegion & r, const QSize & s ) const
+ virtual bool onCard ( const unsigned char * ptr ) const
+ virtual bool onCard ( const unsigned char * ptr, ulong & offset ) const
+ virtual QRegion region () const
+ virtual void restore ()
+ virtual void save ()
+ virtual void setDirty ( const QRect & rect )
+ virtual void setMode ( int w, int h, int d )
+ virtual void shutdownDevice ()
+ virtual void solidFill ( const QColor & color, const QRegion & region )
+ virtual QList<QScreen *> subScreens () const
+ virtual bool supportsDepth ( int depth ) const
+ virtual int transformOrientation () const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QScreen
+name
+ClassId
+key
+LinuxFBClass
+TransformedClass
+VNCClass
+MultiClass
+VFbClass
+DirectFBClass
+SvgalibClass
+ProxyClass
+GLClass
+CustomClass
+public_flag
+true
+class_name
+QScreen
+name
+PixelType
+key
+NormalPixel
+BGRPixel
+public_flag
+true
+
+parent_index
+644
+
+parent_name
+QScreen
+

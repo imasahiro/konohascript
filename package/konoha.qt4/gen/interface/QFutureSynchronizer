@@ -1,0 +1,61 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfuturesynchronizer.html
+
+output_urn
+QFutureSynchronizer
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QFutureSynchronizer ()
+QFutureSynchronizer ( const QFuture<T> & future )
+~QFutureSynchronizer ()
+ void addFuture ( const QFuture<T> & future )
+ bool cancelOnWait () const
+ void clearFutures ()
+ QList<QFuture<T> > futures () const
+ void setCancelOnWait ( bool enabled )
+ void setFuture ( const QFuture<T> & future )
+ void waitForFinished ()
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

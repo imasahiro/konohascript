@@ -1,0 +1,76 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qhttpheader.html
+
+output_urn
+QHttpHeader
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QHttpHeader ()
+QHttpHeader ( const QHttpHeader & header )
+QHttpHeader ( const QString & str )
+ virtual ~QHttpHeader ()
+ void addValue ( const QString & key, const QString & value )
+ QStringList allValues ( const QString & key ) const
+ uint contentLength () const
+ QString contentType () const
+ bool hasContentLength () const
+ bool hasContentType () const
+ bool hasKey ( const QString & key ) const
+ bool isValid () const
+ QStringList keys () const
+ virtual int majorVersion () const = 0
+ virtual int minorVersion () const = 0
+ void removeAllValues ( const QString & key )
+ void removeValue ( const QString & key )
+ void setContentLength ( int len )
+ void setContentType ( const QString & type )
+ void setValue ( const QString & key, const QString & value )
+ void setValues ( const QList<QPair<QString, QString> > & values )
+ virtual QString toString () const
+ QString value ( const QString & key ) const
+ QList<QPair<QString, QString> > values () const
+ QHttpHeader & operator= ( const QHttpHeader & h )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,62 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qprinterinfo.html
+
+output_urn
+QPrinterInfo
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QPrinterInfo ()
+QPrinterInfo ( const QPrinterInfo & src )
+QPrinterInfo ( const QPrinter & printer )
+~QPrinterInfo ()
+ bool isDefault () const
+ bool isNull () const
+ QString printerName () const
+ QList<QPrinter::PaperSize> supportedPaperSizes () const
+ QPrinterInfo & operator= ( const QPrinterInfo & src )
+
+public_slots
+
+signals
+
+static_public_members
+ QList<QPrinterInfo> availablePrinters ()
+ QPrinterInfo defaultPrinter ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

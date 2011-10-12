@@ -1,0 +1,62 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractstate.html
+
+output_urn
+QAbstractState
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+~QAbstractState ()
+ QStateMachine * machine () const
+ QState * parentState () const
+
+public_slots
+
+signals
+ void entered ()
+ void exited ()
+
+static_public_members
+
+protected_functions
+QAbstractState ( QState * parent = 0 )
+ virtual void onEntry ( QEvent * event ) = 0
+ virtual void onExit ( QEvent * event ) = 0
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

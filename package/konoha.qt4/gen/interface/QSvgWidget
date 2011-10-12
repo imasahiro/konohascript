@@ -1,0 +1,74 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsvgwidget.html
+
+output_urn
+QSvgWidget
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QSvgWidget ( QWidget * parent = 0 )
+QSvgWidget ( const QString & file, QWidget * parent = 0 )
+~QSvgWidget ()
+ QSvgRenderer * renderer () const
+
+public_slots
+ void load ( const QString & file )
+ void load ( const QByteArray & contents )
+
+signals
+19 public slots inherited from QWidget
+1 public slot inherited from QObject
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void paintEvent ( QPaintEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

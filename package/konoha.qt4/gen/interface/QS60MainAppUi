@@ -1,0 +1,61 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qs60mainappui.html
+
+output_urn
+QS60MainAppUi
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QS60MainAppUi ()
+ virtual ~QS60MainAppUi ()
+ virtual void ConstructL ()
+ virtual void DynInitMenuBarL ( TInt resourceId, CEikMenuBar * menuBar )
+ virtual void DynInitMenuPaneL ( TInt resourceId, CEikMenuPane * menuPane )
+ virtual void HandleCommandL ( TInt command )
+ virtual void HandleResourceChangeL ( TInt type )
+ virtual void HandleStatusPaneSizeChange ()
+ virtual void RestoreMenuL ( CCoeControl * menuWindow, TInt resourceId, TMenuType menuType )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ virtual void HandleWsEventL ( const TWsEvent & wsEvent, CCoeControl * destination )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

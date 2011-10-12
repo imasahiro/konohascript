@@ -1,0 +1,92 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qanimationgroup.html
+
+output_urn
+QAnimationGroup
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QAnimationGroup ( QObject * parent = 0 )
+~QAnimationGroup ()
+ void addAnimation ( QAbstractAnimation * animation )
+ QAbstractAnimation * animationAt ( int index ) const
+ int animationCount () const
+ void clear ()
+ int indexOfAnimation ( QAbstractAnimation * animation ) const
+ void insertAnimation ( int index, QAbstractAnimation * animation )
+ void removeAnimation ( QAbstractAnimation * animation )
+ QAbstractAnimation * takeAnimation ( int index )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QAbstractAnimation
+name
+DeletionPolicy
+key
+KeepWhenStopped
+DeleteWhenStopped
+public_flag
+true
+class_name
+QAbstractAnimation
+name
+Direction
+key
+Forward
+Backward
+public_flag
+true
+class_name
+QAbstractAnimation
+name
+State
+key
+Stopped
+Paused
+Running
+public_flag
+true
+
+parent_index
+490
+
+parent_name
+QAbstractAnimation
+

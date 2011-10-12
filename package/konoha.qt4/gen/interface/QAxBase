@@ -1,0 +1,83 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qaxbase.html
+
+output_urn
+QAxBase
+
+inherits
+
+public_types
+ typedef PropertyBag
+
+properties
+control : QString
+
+public_functions
+QAxBase ( IUnknown * iface = 0 )
+ virtual ~QAxBase ()
+ QVariant asVariant () const
+ virtual void clear ()
+ QString control () const
+ void disableClassInfo ()
+ void disableEventSink ()
+ void disableMetaObject ()
+ QVariant dynamicCall ( const char * function, const QVariant & var1 = QVariant(), const QVariant & var2 = QVariant(), const QVariant & var3 = QVariant(), const QVariant & var4 = QVariant(), const QVariant & var5 = QVariant(), const QVariant & var6 = QVariant(), const QVariant & var7 = QVariant(), const QVariant & var8 = QVariant() )
+ QVariant dynamicCall ( const char * function, QList<QVariant> & vars )
+ QString generateDocumentation ()
+ bool isNull () const
+ PropertyBag propertyBag () const
+ virtual bool propertyWritable ( const char * prop ) const
+ long queryInterface ( const QUuid & uuid, void ** iface ) const
+ QAxObject * querySubObject ( const char * name, const QVariant & var1 = QVariant(), const QVariant & var2 = QVariant(), const QVariant & var3 = QVariant(), const QVariant & var4 = QVariant(), const QVariant & var5 = QVariant(), const QVariant & var6 = QVariant(), const QVariant & var7 = QVariant(), const QVariant & var8 = QVariant() )
+ QAxObject * querySubObject ( const char * name, QList<QVariant> & vars )
+ bool setControl ( const QString & )
+ void setPropertyBag ( const PropertyBag & bag )
+ virtual void setPropertyWritable ( const char * prop, bool ok )
+ QStringList verbs () const
+
+public_slots
+
+signals
+ void exception ( int code, const QString & source, const QString & desc, const QString & help )
+ void propertyChanged ( const QString & name )
+ void signal ( const QString & name, int argc, void * argv )
+
+static_public_members
+
+protected_functions
+ virtual bool initialize ( IUnknown ** ptr )
+ bool initializeActive ( IUnknown ** ptr )
+ bool initializeFromFile ( IUnknown ** ptr )
+ bool initializeLicensed ( IUnknown ** ptr )
+ bool initializeRemote ( IUnknown ** ptr )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+PropertyBag
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

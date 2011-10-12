@@ -1,0 +1,94 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qprintdialog.html
+
+output_urn
+QPrintDialog
+
+inherits
+
+public_types
+
+properties
+options : PrintDialogOptions
+
+public_functions
+QPrintDialog ( QPrinter * printer, QWidget * parent = 0 )
+QPrintDialog ( QWidget * parent = 0 )
+~QPrintDialog ()
+ void open ( QObject * receiver, const char * member )
+ PrintDialogOptions options () const
+ QPrinter * printer ()
+ void setOption ( PrintDialogOption option, bool on = true )
+ void setOptions ( PrintDialogOptions options )
+ bool testOption ( PrintDialogOption option ) const
+
+public_slots
+
+signals
+ void accepted ( QPrinter * printer )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void done ( int result )
+ virtual int exec ()
+ virtual void setVisible ( bool visible )
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+PrintDialogOptions
+
+enums
+
+parent_enums
+class_name
+QAbstractPrintDialog
+name
+PrintDialogOption
+key
+None
+PrintToFile
+PrintSelection
+PrintPageRange
+PrintShowPageSize
+PrintCollateCopies
+PrintCurrentPage
+DontUseSheet
+public_flag
+true
+class_name
+QAbstractPrintDialog
+name
+PrintRange
+key
+AllPages
+Selection
+PageRange
+CurrentPage
+public_flag
+true
+
+parent_index
+609
+
+parent_name
+QAbstractPrintDialog
+

@@ -1,0 +1,90 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextblock.html
+
+output_urn
+QTextBlock
+
+inherits
+
+public_types
+ class iterator
+ typedef Iterator
+
+properties
+
+public_functions
+QTextBlock ( const QTextBlock & other )
+ iterator begin () const
+ QTextBlockFormat blockFormat () const
+ int blockFormatIndex () const
+ int blockNumber () const
+ QTextCharFormat charFormat () const
+ int charFormatIndex () const
+ void clearLayout ()
+ bool contains ( int position ) const
+ const QTextDocument * document () const
+ iterator end () const
+ int firstLineNumber () const
+ bool isValid () const
+ bool isVisible () const
+ QTextLayout * layout () const
+ int length () const
+ int lineCount () const
+ QTextBlock next () const
+ int position () const
+ QTextBlock previous () const
+ int revision () const
+ void setLineCount ( int count )
+ void setRevision ( int rev )
+ void setUserData ( QTextBlockUserData * data )
+ void setUserState ( int state )
+ void setVisible ( bool visible )
+ QString text () const
+ Qt::LayoutDirection textDirection () const
+ QTextList * textList () const
+ QTextBlockUserData * userData () const
+ int userState () const
+ bool operator!= ( const QTextBlock & other ) const
+ bool operator< ( const QTextBlock & other ) const
+ QTextBlock & operator= ( const QTextBlock & other )
+ bool operator== ( const QTextBlock & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+iterator
+Iterator
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

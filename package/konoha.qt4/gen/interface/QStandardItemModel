@@ -1,0 +1,112 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qstandarditemmodel.html
+
+output_urn
+QStandardItemModel
+
+inherits
+
+public_types
+
+properties
+sortRole : int
+
+public_functions
+QStandardItemModel ( QObject * parent = 0 )
+QStandardItemModel ( int rows, int columns, QObject * parent = 0 )
+~QStandardItemModel ()
+ void appendColumn ( const QList<QStandardItem *> & items )
+ void appendRow ( const QList<QStandardItem *> & items )
+ void appendRow ( QStandardItem * item )
+ void clear ()
+ QList<QStandardItem *> findItems ( const QString & text, Qt::MatchFlags flags = Qt::MatchExactly, int column = 0 ) const
+ QStandardItem * horizontalHeaderItem ( int column ) const
+ QModelIndex indexFromItem ( const QStandardItem * item ) const
+ void insertColumn ( int column, const QList<QStandardItem *> & items )
+ bool insertColumn ( int column, const QModelIndex & parent = QModelIndex() )
+ void insertRow ( int row, const QList<QStandardItem *> & items )
+ bool insertRow ( int row, const QModelIndex & parent = QModelIndex() )
+ void insertRow ( int row, QStandardItem * item )
+ QStandardItem * invisibleRootItem () const
+ QStandardItem * item ( int row, int column = 0 ) const
+ QStandardItem * itemFromIndex ( const QModelIndex & index ) const
+ const QStandardItem * itemPrototype () const
+ void setColumnCount ( int columns )
+ void setHorizontalHeaderItem ( int column, QStandardItem * item )
+ void setHorizontalHeaderLabels ( const QStringList & labels )
+ void setItem ( int row, int column, QStandardItem * item )
+ void setItem ( int row, QStandardItem * item )
+ void setItemPrototype ( const QStandardItem * item )
+ void setRowCount ( int rows )
+ void setSortRole ( int role )
+ void setVerticalHeaderItem ( int row, QStandardItem * item )
+ void setVerticalHeaderLabels ( const QStringList & labels )
+ int sortRole () const
+ QList<QStandardItem *> takeColumn ( int column )
+ QStandardItem * takeHorizontalHeaderItem ( int column )
+ QStandardItem * takeItem ( int row, int column = 0 )
+ QList<QStandardItem *> takeRow ( int row )
+ QStandardItem * takeVerticalHeaderItem ( int row )
+ QStandardItem * verticalHeaderItem ( int row ) const
+
+public_slots
+
+signals
+ void itemChanged ( QStandardItem * item )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual int columnCount ( const QModelIndex & parent = QModelIndex() ) const
+ virtual QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const
+ virtual bool dropMimeData ( const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent )
+ virtual Qt::ItemFlags flags ( const QModelIndex & index ) const
+ virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const
+ virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const
+ virtual QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const
+ virtual bool insertColumns ( int column, int count, const QModelIndex & parent = QModelIndex() )
+ virtual bool insertRows ( int row, int count, const QModelIndex & parent = QModelIndex() )
+ virtual QMap<int, QVariant> itemData ( const QModelIndex & index ) const
+ virtual QMimeData * mimeData ( const QModelIndexList & indexes ) const
+ virtual QStringList mimeTypes () const
+ virtual QModelIndex parent ( const QModelIndex & child ) const
+ virtual bool removeColumns ( int column, int count, const QModelIndex & parent = QModelIndex() )
+ virtual bool removeRows ( int row, int count, const QModelIndex & parent = QModelIndex() )
+ virtual int rowCount ( const QModelIndex & parent = QModelIndex() ) const
+ virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole )
+ virtual bool setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role = Qt::EditRole )
+ virtual bool setItemData ( const QModelIndex & index, const QMap<int, QVariant> & roles )
+ virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder )
+ virtual Qt::DropActions supportedDropActions () const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+34
+
+parent_name
+QAbstractItemModel
+

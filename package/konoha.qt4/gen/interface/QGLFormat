@@ -1,0 +1,151 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qglformat.html
+
+output_urn
+QGLFormat
+
+inherits
+
+public_types
+ enum OpenGLContextProfile { NoProfile, CoreProfile, CompatibilityProfile }
+ enum OpenGLVersionFlag { OpenGL_Version_None, OpenGL_Version_1_1, OpenGL_Version_1_2, OpenGL_Version_1_3, ..., OpenGL_ES_Version_2_0 }
+ flags OpenGLVersionFlags
+
+properties
+
+public_functions
+QGLFormat ()
+QGLFormat ( QGL::FormatOptions options, int plane = 0 )
+QGLFormat ( const QGLFormat & other )
+~QGLFormat ()
+ bool accum () const
+ int accumBufferSize () const
+ bool alpha () const
+ int alphaBufferSize () const
+ int blueBufferSize () const
+ bool depth () const
+ int depthBufferSize () const
+ bool directRendering () const
+ bool doubleBuffer () const
+ int greenBufferSize () const
+ bool hasOverlay () const
+ int majorVersion () const
+ int minorVersion () const
+ int plane () const
+ OpenGLContextProfile profile () const
+ int redBufferSize () const
+ bool rgba () const
+ bool sampleBuffers () const
+ int samples () const
+ void setAccum ( bool enable )
+ void setAccumBufferSize ( int size )
+ void setAlpha ( bool enable )
+ void setAlphaBufferSize ( int size )
+ void setBlueBufferSize ( int size )
+ void setDepth ( bool enable )
+ void setDepthBufferSize ( int size )
+ void setDirectRendering ( bool enable )
+ void setDoubleBuffer ( bool enable )
+ void setGreenBufferSize ( int size )
+ void setOption ( QGL::FormatOptions opt )
+ void setOverlay ( bool enable )
+ void setPlane ( int plane )
+ void setProfile ( OpenGLContextProfile profile )
+ void setRedBufferSize ( int size )
+ void setRgba ( bool enable )
+ void setSampleBuffers ( bool enable )
+ void setSamples ( int numSamples )
+ void setStencil ( bool enable )
+ void setStencilBufferSize ( int size )
+ void setStereo ( bool enable )
+ void setSwapInterval ( int interval )
+ void setVersion ( int major, int minor )
+ bool stencil () const
+ int stencilBufferSize () const
+ bool stereo () const
+ int swapInterval () const
+ bool testOption ( QGL::FormatOptions opt ) const
+ QGLFormat & operator= ( const QGLFormat & other )
+
+public_slots
+
+signals
+
+static_public_members
+ QGLFormat defaultFormat ()
+ QGLFormat defaultOverlayFormat ()
+ bool hasOpenGL ()
+ bool hasOpenGLOverlays ()
+ OpenGLVersionFlags openGLVersionFlags ()
+ void setDefaultFormat ( const QGLFormat & f )
+ void setDefaultOverlayFormat ( const QGLFormat & f )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ bool operator!= ( const QGLFormat & a, const QGLFormat & b )
+ bool operator== ( const QGLFormat & a, const QGLFormat & b )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+OpenGLVersionFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QGLFormat
+name
+OpenGLContextProfile
+key
+NoProfile
+CoreProfile
+CompatibilityProfile
+public_flag
+true
+class_name
+QGLFormat
+name
+OpenGLVersionFlag
+key
+OpenGL_Version_None
+OpenGL_Version_1_1
+OpenGL_Version_1_2
+OpenGL_Version_1_3
+OpenGL_Version_1_4
+OpenGL_Version_1_5
+OpenGL_Version_2_0
+OpenGL_Version_2_1
+OpenGL_Version_3_0
+OpenGL_Version_3_1
+OpenGL_Version_3_2
+OpenGL_Version_3_3
+OpenGL_Version_4_0
+OpenGL_ES_CommonLite_Version_1_0
+OpenGL_ES_Common_Version_1_0
+OpenGL_ES_CommonLite_Version_1_1
+OpenGL_ES_Common_Version_1_1
+OpenGL_ES_Version_2_0
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

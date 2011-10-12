@@ -1,0 +1,77 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsslconfiguration.html
+
+output_urn
+QSslConfiguration
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QSslConfiguration ()
+QSslConfiguration ( const QSslConfiguration & other )
+~QSslConfiguration ()
+ QList<QSslCertificate> caCertificates () const
+ QList<QSslCipher> ciphers () const
+ bool isNull () const
+ QSslCertificate localCertificate () const
+ QSslCertificate peerCertificate () const
+ QList<QSslCertificate> peerCertificateChain () const
+ int peerVerifyDepth () const
+ QSslSocket::PeerVerifyMode peerVerifyMode () const
+ QSslKey privateKey () const
+ QSsl::SslProtocol protocol () const
+ QSslCipher sessionCipher () const
+ void setCaCertificates ( const QList<QSslCertificate> & certificates )
+ void setCiphers ( const QList<QSslCipher> & ciphers )
+ void setLocalCertificate ( const QSslCertificate & certificate )
+ void setPeerVerifyDepth ( int depth )
+ void setPeerVerifyMode ( QSslSocket::PeerVerifyMode mode )
+ void setPrivateKey ( const QSslKey & key )
+ void setProtocol ( QSsl::SslProtocol protocol )
+ bool operator!= ( const QSslConfiguration & other ) const
+ QSslConfiguration & operator= ( const QSslConfiguration & other )
+ bool operator== ( const QSslConfiguration & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QSslConfiguration defaultConfiguration ()
+ void setDefaultConfiguration ( const QSslConfiguration & configuration )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

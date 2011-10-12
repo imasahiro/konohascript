@@ -1,0 +1,78 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsizegrip.html
+
+output_urn
+QSizeGrip
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QSizeGrip ( QWidget * parent )
+~QSizeGrip ()
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void setVisible ( bool visible )
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * event )
+ virtual bool eventFilter ( QObject * o, QEvent * e )
+ virtual void hideEvent ( QHideEvent * hideEvent )
+ virtual void mouseMoveEvent ( QMouseEvent * event )
+ virtual void mousePressEvent ( QMouseEvent * event )
+ virtual void mouseReleaseEvent ( QMouseEvent * mouseEvent )
+ virtual void moveEvent ( QMoveEvent * moveEvent )
+ virtual void paintEvent ( QPaintEvent * event )
+ virtual void showEvent ( QShowEvent * showEvent )
+ virtual bool winEvent ( MSG * m, long * result )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

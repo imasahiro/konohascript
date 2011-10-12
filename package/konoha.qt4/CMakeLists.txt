@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 2.6)
 
 set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g")
 set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
-set(CMAKE_CXX_FLAGS_RELEASE "-Wall -Weffc++ -O2 -g")
-set(CMAKE_CXX_FLAGS_DEBUG   "-Wall -Weffc++ -O0 -g3")
+set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O2 -g")
+set(CMAKE_CXX_FLAGS_DEBUG   "-Wall -O0 -g3")
 set(CMAKE_BUILD_TYPE Release)
 
 # it must be configured
@@ -14,34 +14,8 @@ set(QT_USE_QTWEBKIT TRUE)
 find_package(Qt4 REQUIRED)
 #find_package(Qt4 COMPONENTS QtCore QtGui QtWebKit REQUIRED)
 set(PACKAGE_SOURCE_CODE
-	src/QAbstractScrollArea.cpp
-	src/QApplication.cpp
-	src/QBoxLayout.cpp
-	src/QColor.cpp
-	src/QEvent.cpp
-	src/QGraphicsEllipseItem.cpp
-	src/QGraphicsLineItem.cpp
-	src/QGraphicsPixmapItem.cpp
-	src/QGraphicsRectItem.cpp
-	src/QGraphicsScene.cpp
-	src/QGraphicsTextItem.cpp
-	src/QGraphicsView.cpp
-	src/QHBoxLayout.cpp
-	src/QLabel.cpp
-	src/QLineEdit.cpp
-	src/QObject.cpp
-	src/QPainter.cpp
-	src/QPen.cpp
-	src/QPixmap.cpp
-	src/QProgressBar.cpp
-	src/QPushButton.cpp
-	src/QRect.cpp
-	src/QTextCursor.cpp
-	src/QTextDocument.cpp
-	src/QTextEdit.cpp
-	src/QTimer.cpp
-	src/QWebView.cpp
-	src/QWidget.cpp
+	qt4.cpp
+
 	)
 set(PACKAGE_SCRIPT_CODE qt4.k)
 set(PACKAGE_EXTRA_LIBRARY
@@ -50,7 +24,10 @@ set(PACKAGE_EXTRA_LIBRARY
 	${QT_QTGUI_LIBRARY}
 	)
 
-set(PACKAGE_HEADERS src/qt4commons.hpp)
+set(PACKAGE_HEADERS
+	qt4.hpp
+
+    )
 qt4_wrap_cpp(PACKAGE_HEADERS_MOC ${PACKAGE_HEADERS})
 
 include(${QT_USE_FILE})
@@ -77,3 +54,4 @@ install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
 
 endif(USE_QT4)
+

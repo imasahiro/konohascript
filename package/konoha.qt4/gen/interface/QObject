@@ -1,0 +1,102 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qobject.html
+
+output_urn
+QObject
+
+inherits
+
+public_types
+
+properties
+objectName : QString
+
+public_functions
+QObject ( QObject * parent = 0 )
+ virtual ~QObject ()
+ bool blockSignals ( bool block )
+ const QObjectList & children () const
+ bool connect ( const QObject * sender, const char * signal, const char * method, Qt::ConnectionType type = Qt::AutoConnection ) const
+ bool disconnect ( const char * signal = 0, const QObject * receiver = 0, const char * method = 0 )
+ bool disconnect ( const QObject * receiver, const char * method = 0 )
+ void dumpObjectInfo ()
+ void dumpObjectTree ()
+ QList<QByteArray> dynamicPropertyNames () const
+ virtual bool event ( QEvent * e )
+ virtual bool eventFilter ( QObject * watched, QEvent * event )
+ T findChild ( const QString & name = QString() ) const
+ QList<T> findChildren ( const QString & name = QString() ) const
+ QList<T> findChildren ( const QRegExp & regExp ) const
+ bool inherits ( const char * className ) const
+ void installEventFilter ( QObject * filterObj )
+ bool isWidgetType () const
+ void killTimer ( int id )
+ virtual const QMetaObject * metaObject () const
+ void moveToThread ( QThread * targetThread )
+ QString objectName () const
+ QObject * parent () const
+ QVariant property ( const char * name ) const
+ void removeEventFilter ( QObject * obj )
+ void setObjectName ( const QString & name )
+ void setParent ( QObject * parent )
+ bool setProperty ( const char * name, const QVariant & value )
+ bool signalsBlocked () const
+ int startTimer ( int interval )
+ QThread * thread () const
+
+public_slots
+ void deleteLater ()
+
+signals
+Signals void destroyed ( QObject * obj = 0 )
+
+static_public_members
+ bool connect ( const QObject * sender, const char * signal, const QObject * receiver, const char * method, Qt::ConnectionType type = Qt::AutoConnection )
+ bool disconnect ( const QObject * sender, const char * signal, const QObject * receiver, const char * method )
+ const QMetaObject staticMetaObject
+ QString tr ( const char * sourceText, const char * disambiguation = 0, int n = -1 )
+ QString trUtf8 ( const char * sourceText, const char * disambiguation = 0, int n = -1 )
+
+protected_functions
+ virtual void childEvent ( QChildEvent * event )
+ virtual void connectNotify ( const char * signal )
+ virtual void customEvent ( QEvent * event )
+ virtual void disconnectNotify ( const char * signal )
+ int receivers ( const char * signal ) const
+ QObject * sender () const
+ virtual void timerEvent ( QTimerEvent * event )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ typedef QObjectList
+ T qFindChild ( const QObject * obj, const QString & name )
+ QList<T> qFindChildren ( const QObject * obj, const QString & name )
+ QList<T> qFindChildren ( const QObject * obj, const QRegExp & regExp )
+ T qobject_cast ( QObject * object )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

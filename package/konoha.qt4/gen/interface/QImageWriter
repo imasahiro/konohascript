@@ -1,0 +1,85 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qimagewriter.html
+
+output_urn
+QImageWriter
+
+inherits
+
+public_types
+ enum ImageWriterError { DeviceError, UnsupportedFormatError, UnknownError }
+
+properties
+
+public_functions
+QImageWriter ()
+QImageWriter ( QIODevice * device, const QByteArray & format )
+QImageWriter ( const QString & fileName, const QByteArray & format = QByteArray() )
+~QImageWriter ()
+ bool canWrite () const
+ int compression () const
+ QIODevice * device () const
+ ImageWriterError error () const
+ QString errorString () const
+ QString fileName () const
+ QByteArray format () const
+ float gamma () const
+ int quality () const
+ void setCompression ( int compression )
+ void setDevice ( QIODevice * device )
+ void setFileName ( const QString & fileName )
+ void setFormat ( const QByteArray & format )
+ void setGamma ( float gamma )
+ void setQuality ( int quality )
+ void setText ( const QString & key, const QString & text )
+ bool supportsOption ( QImageIOHandler::ImageOption option ) const
+ bool write ( const QImage & image )
+
+public_slots
+
+signals
+
+static_public_members
+ QList<QByteArray> supportedImageFormats ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QImageWriter
+name
+ImageWriterError
+key
+DeviceError
+UnsupportedFormatError
+UnknownError
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,82 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsqlrecord.html
+
+output_urn
+QSqlRecord
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QSqlRecord ()
+QSqlRecord ( const QSqlRecord & other )
+~QSqlRecord ()
+ void append ( const QSqlField & field )
+ void clear ()
+ void clearValues ()
+ bool contains ( const QString & name ) const
+ int count () const
+ QSqlField field ( int index ) const
+ QSqlField field ( const QString & name ) const
+ QString fieldName ( int index ) const
+ int indexOf ( const QString & name ) const
+ void insert ( int pos, const QSqlField & field )
+ bool isEmpty () const
+ bool isGenerated ( const QString & name ) const
+ bool isGenerated ( int index ) const
+ bool isNull ( const QString & name ) const
+ bool isNull ( int index ) const
+ void remove ( int pos )
+ void replace ( int pos, const QSqlField & field )
+ void setGenerated ( const QString & name, bool generated )
+ void setGenerated ( int index, bool generated )
+ void setNull ( int index )
+ void setNull ( const QString & name )
+ void setValue ( int index, const QVariant & val )
+ void setValue ( const QString & name, const QVariant & val )
+ QVariant value ( int index ) const
+ QVariant value ( const QString & name ) const
+ bool operator!= ( const QSqlRecord & other ) const
+ QSqlRecord & operator= ( const QSqlRecord & other )
+ bool operator== ( const QSqlRecord & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

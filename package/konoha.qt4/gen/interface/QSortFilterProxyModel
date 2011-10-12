@@ -1,0 +1,116 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsortfilterproxymodel.html
+
+output_urn
+QSortFilterProxyModel
+
+inherits
+
+public_types
+
+properties
+dynamicSortFilter : bool
+filterCaseSensitivity : Qt::CaseSensitivity
+filterKeyColumn : int
+filterRegExp : QRegExp
+
+public_functions
+QSortFilterProxyModel ( QObject * parent = 0 )
+~QSortFilterProxyModel ()
+ bool dynamicSortFilter () const
+ Qt::CaseSensitivity filterCaseSensitivity () const
+ int filterKeyColumn () const
+ QRegExp filterRegExp () const
+ int filterRole () const
+ bool isSortLocaleAware () const
+ void setDynamicSortFilter ( bool enable )
+ void setFilterCaseSensitivity ( Qt::CaseSensitivity cs )
+ void setFilterKeyColumn ( int column )
+ void setFilterRegExp ( const QRegExp & regExp )
+ void setFilterRole ( int role )
+ void setSortCaseSensitivity ( Qt::CaseSensitivity cs )
+ void setSortLocaleAware ( bool on )
+ void setSortRole ( int role )
+ Qt::CaseSensitivity sortCaseSensitivity () const
+ int sortColumn () const
+ Qt::SortOrder sortOrder () const
+ int sortRole () const
+
+public_slots
+ void invalidate ()
+ void setFilterFixedString ( const QString & pattern )
+ void setFilterRegExp ( const QString & pattern )
+ void setFilterWildcard ( const QString & pattern )
+
+signals
+2 public slots inherited from QAbstractItemModel
+1 public slot inherited from QObject
+
+static_public_members
+
+protected_functions
+ virtual bool filterAcceptsColumn ( int source_column, const QModelIndex & source_parent ) const
+ virtual bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const
+ void invalidateFilter ()
+ virtual bool lessThan ( const QModelIndex & left, const QModelIndex & right ) const
+
+reimplemented_public_functions
+ virtual QModelIndex buddy ( const QModelIndex & index ) const
+ virtual bool canFetchMore ( const QModelIndex & parent ) const
+ virtual int columnCount ( const QModelIndex & parent = QModelIndex() ) const
+ virtual QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const
+ virtual bool dropMimeData ( const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent )
+ virtual void fetchMore ( const QModelIndex & parent )
+ virtual Qt::ItemFlags flags ( const QModelIndex & index ) const
+ virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const
+ virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const
+ virtual QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const
+ virtual bool insertColumns ( int column, int count, const QModelIndex & parent = QModelIndex() )
+ virtual bool insertRows ( int row, int count, const QModelIndex & parent = QModelIndex() )
+ virtual QModelIndex mapFromSource ( const QModelIndex & sourceIndex ) const
+ virtual QItemSelection mapSelectionFromSource ( const QItemSelection & sourceSelection ) const
+ virtual QItemSelection mapSelectionToSource ( const QItemSelection & proxySelection ) const
+ virtual QModelIndex mapToSource ( const QModelIndex & proxyIndex ) const
+ virtual QModelIndexList match ( const QModelIndex & start, int role, const QVariant & value, int hits = 1, Qt::MatchFlags flags = Qt::MatchFlags( Qt::MatchStartsWith | Qt::MatchWrap ) ) const
+ virtual QMimeData * mimeData ( const QModelIndexList & indexes ) const
+ virtual QStringList mimeTypes () const
+ virtual QModelIndex parent ( const QModelIndex & child ) const
+ virtual bool removeColumns ( int column, int count, const QModelIndex & parent = QModelIndex() )
+ virtual bool removeRows ( int row, int count, const QModelIndex & parent = QModelIndex() )
+ virtual int rowCount ( const QModelIndex & parent = QModelIndex() ) const
+ virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole )
+ virtual bool setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role = Qt::EditRole )
+ virtual void setSourceModel ( QAbstractItemModel * sourceModel )
+ virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder )
+ virtual QSize span ( const QModelIndex & index ) const
+ virtual Qt::DropActions supportedDropActions () const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+693
+
+parent_name
+QAbstractProxyModel
+

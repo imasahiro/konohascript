@@ -1,0 +1,634 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qlocale.html
+
+output_urn
+QLocale
+
+inherits
+
+public_types
+ class Data
+ enum Country { AnyCountry, Afghanistan, Albania, Algeria, ..., LatinAmericaAndTheCaribbean }
+ enum FormatType { LongFormat, ShortFormat, NarrowFormat }
+ enum Language { C, Abkhazian, Afan, Afar, ..., Shambala }
+ enum MeasurementSystem { MetricSystem, ImperialSystem }
+ enum NumberOption { OmitGroupSeparator, RejectGroupSeparator }
+ flags NumberOptions
+
+properties
+
+public_functions
+QLocale ()
+QLocale ( const QString & name )
+QLocale ( Language language, Country country = AnyCountry )
+QLocale ( const QLocale & other )
+ QString amText () const
+ Country country () const
+ QString dateFormat ( FormatType format = LongFormat ) const
+ QString dateTimeFormat ( FormatType format = LongFormat ) const
+ QString dayName ( int day, FormatType type = LongFormat ) const
+ QChar decimalPoint () const
+ QChar exponential () const
+ QChar groupSeparator () const
+ Language language () const
+ MeasurementSystem measurementSystem () const
+ QString monthName ( int month, FormatType type = LongFormat ) const
+ QString name () const
+ QChar negativeSign () const
+ NumberOptions numberOptions () const
+ QChar percent () const
+ QString pmText () const
+ QChar positiveSign () const
+ void setNumberOptions ( NumberOptions options )
+ QString standaloneDayName ( int day, FormatType type = LongFormat ) const
+ QString standaloneMonthName ( int month, FormatType type = LongFormat ) const
+ Qt::LayoutDirection textDirection () const
+ QString timeFormat ( FormatType format = LongFormat ) const
+ QDate toDate ( const QString & string, FormatType format = LongFormat ) const
+ QDate toDate ( const QString & string, const QString & format ) const
+ QDateTime toDateTime ( const QString & string, FormatType format = LongFormat ) const
+ QDateTime toDateTime ( const QString & string, const QString & format ) const
+ double toDouble ( const QString & s, bool * ok = 0 ) const
+ float toFloat ( const QString & s, bool * ok = 0 ) const
+ int toInt ( const QString & s, bool * ok = 0, int base = 0 ) const
+ qlonglong toLongLong ( const QString & s, bool * ok = 0, int base = 0 ) const
+ short toShort ( const QString & s, bool * ok = 0, int base = 0 ) const
+ QString toString ( qlonglong i ) const
+ QString toString ( const QDate & date, const QString & format ) const
+ QString toString ( const QDate & date, FormatType format = LongFormat ) const
+ QString toString ( const QTime & time, const QString & format ) const
+ QString toString ( const QTime & time, FormatType format = LongFormat ) const
+ QString toString ( const QDateTime & dateTime, FormatType format = LongFormat ) const
+ QString toString ( const QDateTime & dateTime, const QString & format ) const
+ QString toString ( qulonglong i ) const
+ QString toString ( double i, char f = 'g', int prec = 6 ) const
+ QString toString ( short i ) const
+ QString toString ( ushort i ) const
+ QString toString ( int i ) const
+ QString toString ( uint i ) const
+ QString toString ( float i, char f = 'g', int prec = 6 ) const
+ QTime toTime ( const QString & string, FormatType format = LongFormat ) const
+ QTime toTime ( const QString & string, const QString & format ) const
+ uint toUInt ( const QString & s, bool * ok = 0, int base = 0 ) const
+ qlonglong toULongLong ( const QString & s, bool * ok = 0, int base = 0 ) const
+ ushort toUShort ( const QString & s, bool * ok = 0, int base = 0 ) const
+ QChar zeroDigit () const
+ bool operator!= ( const QLocale & other ) const
+ QLocale & operator= ( const QLocale & other )
+ bool operator== ( const QLocale & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QLocale c ()
+ QList<Country> countriesForLanguage ( Language language )
+ QString countryToString ( Country country )
+ QString languageToString ( Language language )
+ void setDefault ( const QLocale & locale )
+ QLocale system ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+Data
+NumberOptions
+
+parent_typedefed_objects
+
+enums
+class_name
+QLocale
+name
+Country
+key
+AnyCountry
+Afghanistan
+Albania
+Algeria
+AmericanSamoa
+Andorra
+Angola
+Anguilla
+Antarctica
+AntiguaAndBarbuda
+Argentina
+Armenia
+Aruba
+Australia
+Austria
+Azerbaijan
+Bahamas
+Bahrain
+Bangladesh
+Barbados
+Belarus
+Belgium
+Belize
+Benin
+Bermuda
+Bhutan
+Bolivia
+BosniaAndHerzegowina
+Botswana
+BouvetIsland
+Brazil
+BritishIndianOceanTerritory
+BruneiDarussalam
+Bulgaria
+BurkinaFaso
+Burundi
+Cambodia
+Cameroon
+Canada
+CapeVerde
+CaymanIslands
+CentralAfricanRepublic
+Chad
+Chile
+China
+ChristmasIsland
+CocosIslands
+Colombia
+Comoros
+DemocraticRepublicOfCongo
+PeoplesRepublicOfCongo
+CookIslands
+CostaRica
+IvoryCoast
+Croatia
+Cuba
+Cyprus
+CzechRepublic
+Denmark
+Djibouti
+Dominica
+DominicanRepublic
+EastTimor
+Ecuador
+Egypt
+ElSalvador
+EquatorialGuinea
+Eritrea
+Estonia
+Ethiopia
+FalklandIslands
+FaroeIslands
+FijiCountry
+Finland
+France
+MetropolitanFrance
+FrenchGuiana
+FrenchPolynesia
+FrenchSouthernTerritories
+Gabon
+Gambia
+Georgia
+Germany
+Ghana
+Gibraltar
+Greece
+Greenland
+Grenada
+Guadeloupe
+Guam
+Guatemala
+Guinea
+GuineaBissau
+Guyana
+Haiti
+HeardAndMcDonaldIslands
+Honduras
+HongKong
+Hungary
+Iceland
+India
+Indonesia
+Iran
+Iraq
+Ireland
+Israel
+Italy
+Jamaica
+Japan
+Jordan
+Kazakhstan
+Kenya
+Kiribati
+DemocraticRepublicOfKorea
+RepublicOfKorea
+Kuwait
+Kyrgyzstan
+Lao
+Latvia
+Lebanon
+Lesotho
+Liberia
+LibyanArabJamahiriya
+Liechtenstein
+Lithuania
+Luxembourg
+Macau
+Macedonia
+Madagascar
+Malawi
+Malaysia
+Maldives
+Mali
+Malta
+MarshallIslands
+Martinique
+Mauritania
+Mauritius
+Mayotte
+Mexico
+Micronesia
+Moldova
+Monaco
+Mongolia
+Montserrat
+Morocco
+Mozambique
+Myanmar
+Namibia
+NauruCountry
+Nepal
+Netherlands
+NetherlandsAntilles
+NewCaledonia
+NewZealand
+Nicaragua
+Niger
+Nigeria
+Niue
+NorfolkIsland
+NorthernMarianaIslands
+Norway
+Oman
+Pakistan
+Palau
+PalestinianTerritory
+Panama
+PapuaNewGuinea
+Paraguay
+Peru
+Philippines
+Pitcairn
+Poland
+Portugal
+PuertoRico
+Qatar
+Reunion
+Romania
+RussianFederation
+Rwanda
+SaintKittsAndNevis
+StLucia
+StVincentAndTheGrenadines
+Samoa
+SanMarino
+SaoTomeAndPrincipe
+SaudiArabia
+Senegal
+SerbiaAndMontenegro
+Seychelles
+SierraLeone
+Singapore
+Slovakia
+Slovenia
+SolomonIslands
+Somalia
+SouthAfrica
+SouthGeorgiaAndTheSouthSandwichIslands
+Spain
+SriLanka
+StHelena
+StPierreAndMiquelon
+Sudan
+Suriname
+SvalbardAndJanMayenIslands
+Swaziland
+Sweden
+Switzerland
+SyrianArabRepublic
+Taiwan
+Tajikistan
+Tanzania
+Thailand
+Togo
+Tokelau
+TongaCountry
+TrinidadAndTobago
+Tunisia
+Turkey
+Turkmenistan
+TurksAndCaicosIslands
+Tuvalu
+Uganda
+Ukraine
+UnitedArabEmirates
+UnitedKingdom
+UnitedStates
+UnitedStatesMinorOutlyingIslands
+Uruguay
+Uzbekistan
+Vanuatu
+VaticanCityState
+Venezuela
+VietNam
+BritishVirginIslands
+USVirginIslands
+WallisAndFutunaIslands
+WesternSahara
+Yemen
+Yugoslavia
+Zambia
+Zimbabwe
+SerbiaAndMontenegro
+Montenegro
+Serbia
+SaintBarthelemy
+SaintMartin
+LatinAmericaAndTheCaribbean
+public_flag
+true
+class_name
+QLocale
+name
+FormatType
+key
+LongFormat
+ShortFormat
+NarrowFormat
+public_flag
+true
+class_name
+QLocale
+name
+Language
+key
+C
+Abkhazian
+Afan
+Afar
+Afrikaans
+Albanian
+Amharic
+Arabic
+Armenian
+Assamese
+Aymara
+Azerbaijani
+Bashkir
+Basque
+Bengali
+Bhutani
+Bihari
+Bislama
+Bosnian
+Breton
+Bulgarian
+Burmese
+Byelorussian
+Cambodian
+Catalan
+Chinese
+Cornish
+Corsican
+Croatian
+Czech
+Danish
+Divehi
+Dutch
+English
+Esperanto
+Estonian
+Faroese
+FijiLanguage
+Finnish
+French
+Frisian
+Gaelic
+Galician
+Georgian
+German
+Greek
+Greenlandic
+Guarani
+Gujarati
+Hausa
+Hebrew
+Hindi
+Hungarian
+Icelandic
+Indonesian
+Interlingua
+Interlingue
+Inuktitut
+Inupiak
+Irish
+Italian
+Japanese
+Javanese
+Kannada
+Kashmiri
+Kazakh
+Kinyarwanda
+Kirghiz
+Korean
+Kurdish
+Kurundi
+Laothian
+Latin
+Latvian
+Lingala
+Lithuanian
+Macedonian
+Malagasy
+Malay
+Malayalam
+Maltese
+Manx
+Maori
+Marathi
+Moldavian
+Mongolian
+NauruLanguage
+Nepali
+Norwegian
+NorwegianBokmal
+Nynorsk
+NorwegianNynorsk
+Occitan
+Oriya
+Pashto
+Persian
+Polish
+Portuguese
+Punjabi
+Quechua
+RhaetoRomance
+Romanian
+Russian
+Samoan
+Sangho
+Sanskrit
+Serbian
+SerboCroatian
+Sesotho
+Setswana
+Shona
+Sindhi
+Singhalese
+Siswati
+Slovak
+Slovenian
+Somali
+Spanish
+Sundanese
+Swahili
+Swedish
+Tagalog
+Tajik
+Tamil
+Tatar
+Telugu
+Thai
+Tibetan
+Tigrinya
+TongaLanguage
+Tsonga
+Turkish
+Turkmen
+Twi
+Uigur
+Ukrainian
+Urdu
+Uzbek
+Vietnamese
+Volapuk
+Welsh
+Wolof
+Xhosa
+Yiddish
+Yoruba
+Zhuang
+Zulu
+Bosnian
+Divehi
+Manx
+Cornish
+Akan
+Konkani
+Ga
+Igbo
+Kamba
+Syriac
+Blin
+Geez
+Koro
+Sidamo
+Atsam
+Tigre
+Jju
+Friulian
+Venda
+Ewe
+Walamo
+Hawaiian
+Tyap
+Chewa
+Filipino
+SwissGerman
+SichuanYi
+Kpelle
+LowGerman
+SouthNdebele
+NorthernSotho
+NorthernSami
+Taroko
+Gusii
+Taita
+Fulah
+Kikuyu
+Samburu
+Sena
+NorthNdebele
+Rombo
+Tachelhit
+Kabyle
+Nyankole
+Bena
+Vunjo
+Bambara
+Embu
+Cherokee
+Morisyen
+Makonde
+Langi
+Ganda
+Bemba
+Kabuverdianu
+Meru
+Kalenjin
+Nama
+Machame
+Colognian
+Masai
+Soga
+Luyia
+Asu
+Teso
+Saho
+KoyraChiini
+Rwa
+Luo
+Chiga
+CentralMoroccoTamazight
+KoyraboroSenni
+Shambala
+public_flag
+true
+class_name
+QLocale
+name
+MeasurementSystem
+key
+MetricSystem
+ImperialSystem
+public_flag
+true
+class_name
+QLocale
+name
+NumberOption
+key
+OmitGroupSeparator
+RejectGroupSeparator
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

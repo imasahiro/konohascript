@@ -1,0 +1,67 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgraphicspolygonitem.html
+
+output_urn
+QGraphicsPolygonItem
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QGraphicsPolygonItem ( QGraphicsItem * parent = 0 )
+QGraphicsPolygonItem ( const QPolygonF & polygon, QGraphicsItem * parent = 0 )
+~QGraphicsPolygonItem ()
+ Qt::FillRule fillRule () const
+ QPolygonF polygon () const
+ void setFillRule ( Qt::FillRule rule )
+ void setPolygon ( const QPolygonF & polygon )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QRectF boundingRect () const
+ virtual bool contains ( const QPointF & point ) const
+ virtual bool isObscuredBy ( const QGraphicsItem * item ) const
+ virtual QPainterPath opaqueArea () const
+ virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 )
+ virtual QPainterPath shape () const
+ virtual int type () const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+38
+
+parent_name
+QAbstractGraphicsShapeItem
+

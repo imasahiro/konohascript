@@ -1,0 +1,193 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfiledialog.html
+
+output_urn
+QFileDialog
+
+inherits
+
+public_types
+ enum AcceptMode { AcceptOpen, AcceptSave }
+ enum DialogLabel { LookIn, FileName, FileType, Accept, Reject }
+ enum FileMode { AnyFile, ExistingFile, Directory, ExistingFiles, DirectoryOnly }
+ typedef Mode
+ enum Option { ShowDirsOnly, DontResolveSymlinks, DontConfirmOverwrite, DontUseNativeDialog, ..., DontUseSheet }
+ flags Options
+ enum ViewMode { Detail, List }
+
+properties
+acceptMode : AcceptMode
+defaultSuffix : QString
+fileMode : FileMode
+
+public_functions
+QFileDialog ( QWidget * parent, Qt::WindowFlags flags )
+QFileDialog ( QWidget * parent = 0, const QString & caption = QString(), const QString & directory = QString(), const QString & filter = QString() )
+~QFileDialog ()
+ AcceptMode acceptMode () const
+ bool confirmOverwrite () const
+ QString defaultSuffix () const
+ QDir directory () const
+ FileMode fileMode () const
+ QDir::Filters filter () const
+ QStringList history () const
+ QFileIconProvider * iconProvider () const
+ bool isNameFilterDetailsVisible () const
+ bool isReadOnly () const
+ QAbstractItemDelegate * itemDelegate () const
+ QString labelText ( DialogLabel label ) const
+ QStringList nameFilters () const
+ void open ( QObject * receiver, const char * member )
+ Options options () const
+ QAbstractProxyModel * proxyModel () const
+ bool resolveSymlinks () const
+ bool restoreState ( const QByteArray & state )
+ QByteArray saveState () const
+ void selectFile ( const QString & filename )
+ void selectNameFilter ( const QString & filter )
+ QStringList selectedFiles () const
+ QString selectedNameFilter () const
+ void setAcceptMode ( AcceptMode mode )
+ void setConfirmOverwrite ( bool enabled )
+ void setDefaultSuffix ( const QString & suffix )
+ void setDirectory ( const QString & directory )
+ void setDirectory ( const QDir & directory )
+ void setFileMode ( FileMode mode )
+ void setFilter ( QDir::Filters filters )
+ void setHistory ( const QStringList & paths )
+ void setIconProvider ( QFileIconProvider * provider )
+ void setItemDelegate ( QAbstractItemDelegate * delegate )
+ void setLabelText ( DialogLabel label, const QString & text )
+ void setNameFilter ( const QString & filter )
+ void setNameFilterDetailsVisible ( bool enabled )
+ void setNameFilters ( const QStringList & filters )
+ void setOption ( Option option, bool on = true )
+ void setOptions ( Options options )
+ void setProxyModel ( QAbstractProxyModel * proxyModel )
+ void setReadOnly ( bool enabled )
+ void setResolveSymlinks ( bool enabled )
+ void setSidebarUrls ( const QList<QUrl> & urls )
+ void setViewMode ( ViewMode mode )
+ QList<QUrl> sidebarUrls () const
+ bool testOption ( Option option ) const
+ ViewMode viewMode () const
+
+public_slots
+
+signals
+ void currentChanged ( const QString & path )
+ void directoryEntered ( const QString & directory )
+ void fileSelected ( const QString & file )
+ void filesSelected ( const QStringList & selected )
+ void filterSelected ( const QString & filter )
+
+static_public_members
+ QString getExistingDirectory ( QWidget * parent = 0, const QString & caption = QString(), const QString & dir = QString(), Options options = ShowDirsOnly )
+ QString getOpenFileName ( QWidget * parent = 0, const QString & caption = QString(), const QString & dir = QString(), const QString & filter = QString(), QString * selectedFilter = 0, Options options = 0 )
+ QStringList getOpenFileNames ( QWidget * parent = 0, const QString & caption = QString(), const QString & dir = QString(), const QString & filter = QString(), QString * selectedFilter = 0, Options options = 0 )
+ QString getSaveFileName ( QWidget * parent = 0, const QString & caption = QString(), const QString & dir = QString(), const QString & filter = QString(), QString * selectedFilter = 0, Options options = 0 )
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void setVisible ( bool visible )
+
+reimplemented_protected_functions
+ virtual void accept ()
+ virtual void changeEvent ( QEvent * e )
+ virtual void done ( int result )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+Mode
+Options
+
+parent_typedefed_objects
+
+enums
+class_name
+QFileDialog
+name
+AcceptMode
+key
+AcceptOpen
+AcceptSave
+public_flag
+true
+class_name
+QFileDialog
+name
+DialogLabel
+key
+LookIn
+FileName
+FileType
+Accept
+Reject
+public_flag
+true
+class_name
+QFileDialog
+name
+FileMode
+key
+AnyFile
+ExistingFile
+Directory
+ExistingFiles
+DirectoryOnly
+public_flag
+true
+class_name
+QFileDialog
+name
+Option
+key
+ShowDirsOnly
+DontResolveSymlinks
+DontConfirmOverwrite
+DontUseNativeDialog
+ReadOnly
+HideNameFilterDetails
+DontUseSheet
+public_flag
+true
+class_name
+QFileDialog
+name
+ViewMode
+key
+Detail
+List
+public_flag
+true
+
+parent_enums
+class_name
+QDialog
+name
+DialogCode
+key
+Accepted
+Rejected
+public_flag
+true
+
+parent_index
+719
+
+parent_name
+QDialog
+

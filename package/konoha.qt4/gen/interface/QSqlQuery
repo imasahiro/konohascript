@@ -1,0 +1,104 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsqlquery.html
+
+output_urn
+QSqlQuery
+
+inherits
+
+public_types
+ enum BatchExecutionMode { ValuesAsRows, ValuesAsColumns }
+
+properties
+
+public_functions
+QSqlQuery ( QSqlResult * result )
+QSqlQuery ( const QString & query = QString(), QSqlDatabase db = QSqlDatabase() )
+QSqlQuery ( QSqlDatabase db )
+QSqlQuery ( const QSqlQuery & other )
+~QSqlQuery ()
+ void addBindValue ( const QVariant & val, QSql::ParamType paramType = QSql::In )
+ int at () const
+ void bindValue ( const QString & placeholder, const QVariant & val, QSql::ParamType paramType = QSql::In )
+ void bindValue ( int pos, const QVariant & val, QSql::ParamType paramType = QSql::In )
+ QVariant boundValue ( const QString & placeholder ) const
+ QVariant boundValue ( int pos ) const
+ QMap<QString, QVariant> boundValues () const
+ void clear ()
+ const QSqlDriver * driver () const
+ bool exec ( const QString & query )
+ bool exec ()
+ bool execBatch ( BatchExecutionMode mode = ValuesAsRows )
+ QString executedQuery () const
+ void finish ()
+ bool first ()
+ bool isActive () const
+ bool isForwardOnly () const
+ bool isNull ( int field ) const
+ bool isSelect () const
+ bool isValid () const
+ bool last ()
+ QSqlError lastError () const
+ QVariant lastInsertId () const
+ QString lastQuery () const
+ bool next ()
+ bool nextResult ()
+ int numRowsAffected () const
+ QSql::NumericalPrecisionPolicy numericalPrecisionPolicy () const
+ bool prepare ( const QString & query )
+ bool previous ()
+ QSqlRecord record () const
+ const QSqlResult * result () const
+ bool seek ( int index, bool relative = false )
+ void setForwardOnly ( bool forward )
+ void setNumericalPrecisionPolicy ( QSql::NumericalPrecisionPolicy precisionPolicy )
+ int size () const
+ QVariant value ( int index ) const
+ QSqlQuery & operator= ( const QSqlQuery & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QSqlQuery
+name
+BatchExecutionMode
+key
+ValuesAsRows
+ValuesAsColumns
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

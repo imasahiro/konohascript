@@ -1,0 +1,187 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwizard.html
+
+output_urn
+QWizard
+
+inherits
+
+public_types
+ enum WizardButton { BackButton, NextButton, CommitButton, FinishButton, ..., Stretch }
+ enum WizardOption { IndependentPages, IgnoreSubTitles, ExtendedWatermarkPixmap, NoDefaultButton, ..., HaveCustomButton3 }
+ flags WizardOptions
+ enum WizardPixmap { WatermarkPixmap, LogoPixmap, BannerPixmap, BackgroundPixmap }
+ enum WizardStyle { ClassicStyle, ModernStyle, MacStyle, AeroStyle }
+
+properties
+currentId : const int
+options : WizardOptions
+startId : int
+
+public_functions
+QWizard ( QWidget * parent = 0, Qt::WindowFlags flags = 0 )
+~QWizard ()
+ int addPage ( QWizardPage * page )
+ QAbstractButton * button ( WizardButton which ) const
+ QString buttonText ( WizardButton which ) const
+ int currentId () const
+ QWizardPage * currentPage () const
+ QVariant field ( const QString & name ) const
+ bool hasVisitedPage ( int id ) const
+ virtual int nextId () const
+ WizardOptions options () const
+ QWizardPage * page ( int id ) const
+ QList<int> pageIds () const
+ QPixmap pixmap ( WizardPixmap which ) const
+ void removePage ( int id )
+ void setButton ( WizardButton which, QAbstractButton * button )
+ void setButtonLayout ( const QList<WizardButton> & layout )
+ void setButtonText ( WizardButton which, const QString & text )
+ void setDefaultProperty ( const char * className, const char * property, const char * changedSignal )
+ void setField ( const QString & name, const QVariant & value )
+ void setOption ( WizardOption option, bool on = true )
+ void setOptions ( WizardOptions options )
+ void setPage ( int id, QWizardPage * page )
+ void setPixmap ( WizardPixmap which, const QPixmap & pixmap )
+ void setSideWidget ( QWidget * widget )
+ void setStartId ( int id )
+ void setSubTitleFormat ( Qt::TextFormat format )
+ void setTitleFormat ( Qt::TextFormat format )
+ void setWizardStyle ( WizardStyle style )
+ QWidget * sideWidget () const
+ int startId () const
+ Qt::TextFormat subTitleFormat () const
+ bool testOption ( WizardOption option ) const
+ Qt::TextFormat titleFormat () const
+ virtual bool validateCurrentPage ()
+ QList<int> visitedPages () const
+ WizardStyle wizardStyle () const
+
+public_slots
+ void back ()
+ void next ()
+ void restart ()
+
+signals
+ void currentIdChanged ( int id )
+ void customButtonClicked ( int which )
+ void helpRequested ()
+ void pageAdded ( int id )
+ void pageRemoved ( int id )
+
+static_public_members
+
+protected_functions
+ virtual void cleanupPage ( int id )
+ virtual void initializePage ( int id )
+
+reimplemented_public_functions
+ virtual void setVisible ( bool visible )
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void done ( int result )
+ virtual bool event ( QEvent * event )
+ virtual void paintEvent ( QPaintEvent * event )
+ virtual void resizeEvent ( QResizeEvent * event )
+ virtual bool winEvent ( MSG * message, long * result )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+WizardOptions
+
+parent_typedefed_objects
+
+enums
+class_name
+QWizard
+name
+WizardButton
+key
+BackButton
+NextButton
+CommitButton
+FinishButton
+CancelButton
+HelpButton
+CustomButton1
+CustomButton2
+CustomButton3
+Stretch
+public_flag
+true
+class_name
+QWizard
+name
+WizardOption
+key
+IndependentPages
+IgnoreSubTitles
+ExtendedWatermarkPixmap
+NoDefaultButton
+NoBackButtonOnStartPage
+NoBackButtonOnLastPage
+DisabledBackButtonOnLastPage
+HaveNextButtonOnLastPage
+HaveFinishButtonOnEarlyPages
+NoCancelButton
+CancelButtonOnLeft
+HaveHelpButton
+HelpButtonOnRight
+HaveCustomButton1
+HaveCustomButton2
+HaveCustomButton3
+public_flag
+true
+class_name
+QWizard
+name
+WizardPixmap
+key
+WatermarkPixmap
+LogoPixmap
+BannerPixmap
+BackgroundPixmap
+public_flag
+true
+class_name
+QWizard
+name
+WizardStyle
+key
+ClassicStyle
+ModernStyle
+MacStyle
+AeroStyle
+public_flag
+true
+
+parent_enums
+class_name
+QDialog
+name
+DialogCode
+key
+Accepted
+Rejected
+public_flag
+true
+
+parent_index
+719
+
+parent_name
+QDialog
+

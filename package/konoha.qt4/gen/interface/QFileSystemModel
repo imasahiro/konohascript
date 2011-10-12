@@ -1,0 +1,120 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfilesystemmodel.html
+
+output_urn
+QFileSystemModel
+
+inherits
+
+public_types
+ enum Roles { FileIconRole, FilePathRole, FileNameRole, FilePermissions }
+
+properties
+nameFilterDisables : bool
+readOnly : bool
+resolveSymlinks : bool
+
+public_functions
+QFileSystemModel ( QObject * parent = 0 )
+~QFileSystemModel ()
+ QIcon fileIcon ( const QModelIndex & index ) const
+ QFileInfo fileInfo ( const QModelIndex & index ) const
+ QString fileName ( const QModelIndex & index ) const
+ QString filePath ( const QModelIndex & index ) const
+ QDir::Filters filter () const
+ QFileIconProvider * iconProvider () const
+ QModelIndex index ( const QString & path, int column = 0 ) const
+ bool isDir ( const QModelIndex & index ) const
+ bool isReadOnly () const
+ QDateTime lastModified ( const QModelIndex & index ) const
+ QModelIndex mkdir ( const QModelIndex & parent, const QString & name )
+ QVariant myComputer ( int role = Qt::DisplayRole ) const
+ bool nameFilterDisables () const
+ QStringList nameFilters () const
+ QFile::Permissions permissions ( const QModelIndex & index ) const
+ bool remove ( const QModelIndex & index ) const
+ bool resolveSymlinks () const
+ bool rmdir ( const QModelIndex & index ) const
+ QDir rootDirectory () const
+ QString rootPath () const
+ void setFilter ( QDir::Filters filters )
+ void setIconProvider ( QFileIconProvider * provider )
+ void setNameFilterDisables ( bool enable )
+ void setNameFilters ( const QStringList & filters )
+ void setReadOnly ( bool enable )
+ void setResolveSymlinks ( bool enable )
+ QModelIndex setRootPath ( const QString & newPath )
+ qint64 size ( const QModelIndex & index ) const
+ QString type ( const QModelIndex & index ) const
+
+public_slots
+
+signals
+ void directoryLoaded ( const QString & path )
+ void fileRenamed ( const QString & path, const QString & oldName, const QString & newName )
+ void rootPathChanged ( const QString & newPath )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual bool canFetchMore ( const QModelIndex & parent ) const
+ virtual int columnCount ( const QModelIndex & parent = QModelIndex() ) const
+ virtual QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const
+ virtual bool dropMimeData ( const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent )
+ virtual void fetchMore ( const QModelIndex & parent )
+ virtual Qt::ItemFlags flags ( const QModelIndex & index ) const
+ virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const
+ virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const
+ virtual QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const
+ virtual QMimeData * mimeData ( const QModelIndexList & indexes ) const
+ virtual QStringList mimeTypes () const
+ virtual QModelIndex parent ( const QModelIndex & index ) const
+ virtual int rowCount ( const QModelIndex & parent = QModelIndex() ) const
+ virtual bool setData ( const QModelIndex & idx, const QVariant & value, int role = Qt::EditRole )
+ virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder )
+ virtual Qt::DropActions supportedDropActions () const
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * event )
+ virtual void timerEvent ( QTimerEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QFileSystemModel
+name
+Roles
+key
+FileIconRole
+FilePathRole
+FileNameRole
+FilePermissions
+public_flag
+true
+
+parent_enums
+
+parent_index
+34
+
+parent_name
+QAbstractItemModel
+

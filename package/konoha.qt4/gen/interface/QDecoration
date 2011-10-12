@@ -1,0 +1,103 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdecoration.html
+
+output_urn
+QDecoration
+
+inherits
+
+public_types
+ enum DecorationRegion { All, Top, Bottom, Left, ..., None }
+ enum DecorationState { Normal, Disabled, Hover, Pressed }
+
+properties
+
+public_functions
+QDecoration ()
+ virtual ~QDecoration ()
+ virtual void buildSysMenu ( QWidget * widget, QMenu * menu )
+ void menuTriggered ( QWidget * widget, QAction * action )
+ virtual bool paint ( QPainter * painter, const QWidget * widget, int decorationRegion = All, DecorationState state = Normal ) = 0
+ virtual QRegion region ( const QWidget * widget, const QRect & rectangle, int decorationRegion = All ) = 0
+ QRegion region ( const QWidget * widget, int decorationRegion = All )
+ virtual int regionAt ( const QWidget * widget, const QPoint & point )
+ virtual void regionClicked ( QWidget * widget, int region )
+ virtual void regionDoubleClicked ( QWidget * widget, int region )
+
+public_slots
+
+signals
+
+static_public_members
+ void startMove ( QWidget * widget )
+ void startResize ( QWidget * widget )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+true
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDecoration
+name
+DecorationRegion
+key
+All
+Top
+Bottom
+Left
+Right
+TopLeft
+TopRight
+BottomLeft
+BottomRight
+Borders
+Title
+Close
+Minimize
+Maximize
+Normalize
+Menu
+Help
+Resize
+Move
+None
+public_flag
+true
+class_name
+QDecoration
+name
+DecorationState
+key
+Normal
+Disabled
+Hover
+Pressed
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

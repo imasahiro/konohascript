@@ -1,0 +1,62 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qpointer.html
+
+output_urn
+QPointer
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QPointer ()
+QPointer ( T * p )
+QPointer ( const QPointer<T> & p )
+~QPointer ()
+ T * data () const
+ bool isNull () const
+operator T * () const
+ T & operator* () const
+ T * operator-> () const
+ QPointer<T> & operator= ( const QPointer<T> & p )
+ QPointer<T> & operator= ( T * p )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+true
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

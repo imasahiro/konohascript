@@ -1,0 +1,128 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qstatemachine.html
+
+output_urn
+QStateMachine
+
+inherits
+
+public_types
+ class SignalEvent
+ class WrappedEvent
+ enum Error { NoError, NoInitialStateError, NoDefaultStateInHistoryStateError, NoCommonAncestorForTransitionError }
+ enum EventPriority { NormalPriority, HighPriority }
+ enum RestorePolicy { DontRestoreProperties, RestoreProperties }
+
+properties
+animated : bool
+errorString : const QString
+globalRestorePolicy : RestorePolicy
+
+public_functions
+QStateMachine ( QObject * parent = 0 )
+~QStateMachine ()
+ void addDefaultAnimation ( QAbstractAnimation * animation )
+ void addState ( QAbstractState * state )
+ bool cancelDelayedEvent ( int id )
+ void clearError ()
+ QSet<QAbstractState *> configuration () const
+ QList<QAbstractAnimation *> defaultAnimations () const
+ Error error () const
+ QString errorString () const
+ QStateMachine::RestorePolicy globalRestorePolicy () const
+ bool isAnimated () const
+ bool isRunning () const
+ int postDelayedEvent ( QEvent * event, int delay )
+ void postEvent ( QEvent * event, EventPriority priority = NormalPriority )
+ void removeDefaultAnimation ( QAbstractAnimation * animation )
+ void removeState ( QAbstractState * state )
+ void setAnimated ( bool enabled )
+ void setGlobalRestorePolicy ( QStateMachine::RestorePolicy restorePolicy )
+
+public_slots
+ void start ()
+ void stop ()
+
+signals
+ void started ()
+ void stopped ()
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual bool eventFilter ( QObject * watched, QEvent * event )
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+ virtual void onEntry ( QEvent * event )
+ virtual void onExit ( QEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+SignalEvent
+WrappedEvent
+
+parent_typedefed_objects
+
+enums
+class_name
+QStateMachine
+name
+Error
+key
+NoError
+NoInitialStateError
+NoDefaultStateInHistoryStateError
+NoCommonAncestorForTransitionError
+public_flag
+true
+class_name
+QStateMachine
+name
+EventPriority
+key
+NormalPriority
+HighPriority
+public_flag
+true
+class_name
+QStateMachine
+name
+RestorePolicy
+key
+DontRestoreProperties
+RestoreProperties
+public_flag
+true
+
+parent_enums
+class_name
+QState
+name
+ChildMode
+key
+ExclusiveStates
+ParallelStates
+public_flag
+true
+
+parent_index
+103
+
+parent_name
+QState
+

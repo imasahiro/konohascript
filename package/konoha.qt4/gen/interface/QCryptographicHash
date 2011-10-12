@@ -1,0 +1,69 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qcryptographichash.html
+
+output_urn
+QCryptographicHash
+
+inherits
+
+public_types
+ enum Algorithm { Md4, Md5, Sha1 }
+
+properties
+
+public_functions
+QCryptographicHash ( Algorithm method )
+~QCryptographicHash ()
+ void addData ( const char * data, int length )
+ void addData ( const QByteArray & data )
+ void reset ()
+ QByteArray result () const
+
+public_slots
+
+signals
+
+static_public_members
+ QByteArray hash ( const QByteArray & data, Algorithm method )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QCryptographicHash
+name
+Algorithm
+key
+Md4
+Md5
+Sha1
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

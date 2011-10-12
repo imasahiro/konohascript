@@ -1,0 +1,155 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qlistwidget.html
+
+output_urn
+QListWidget
+
+inherits
+
+public_types
+
+properties
+count : const int
+currentRow : int
+sortingEnabled : bool
+
+public_functions
+QListWidget ( QWidget * parent = 0 )
+~QListWidget ()
+ void addItem ( const QString & label )
+ void addItem ( QListWidgetItem * item )
+ void addItems ( const QStringList & labels )
+ void closePersistentEditor ( QListWidgetItem * item )
+ int count () const
+ QListWidgetItem * currentItem () const
+ int currentRow () const
+ void editItem ( QListWidgetItem * item )
+ QList<QListWidgetItem *> findItems ( const QString & text, Qt::MatchFlags flags ) const
+ void insertItem ( int row, QListWidgetItem * item )
+ void insertItem ( int row, const QString & label )
+ void insertItems ( int row, const QStringList & labels )
+ bool isSortingEnabled () const
+ QListWidgetItem * item ( int row ) const
+ QListWidgetItem * itemAt ( const QPoint & p ) const
+ QListWidgetItem * itemAt ( int x, int y ) const
+ QWidget * itemWidget ( QListWidgetItem * item ) const
+ void openPersistentEditor ( QListWidgetItem * item )
+ void removeItemWidget ( QListWidgetItem * item )
+ int row ( const QListWidgetItem * item ) const
+ QList<QListWidgetItem *> selectedItems () const
+ void setCurrentItem ( QListWidgetItem * item )
+ void setCurrentItem ( QListWidgetItem * item, QItemSelectionModel::SelectionFlags command )
+ void setCurrentRow ( int row )
+ void setCurrentRow ( int row, QItemSelectionModel::SelectionFlags command )
+ void setItemWidget ( QListWidgetItem * item, QWidget * widget )
+ void setSortingEnabled ( bool enable )
+ void sortItems ( Qt::SortOrder order = Qt::AscendingOrder )
+ QListWidgetItem * takeItem ( int row )
+ QRect visualItemRect ( const QListWidgetItem * item ) const
+
+public_slots
+ void clear ()
+ void scrollToItem ( const QListWidgetItem * item, QAbstractItemView::ScrollHint hint = EnsureVisible )
+
+signals
+ void currentItemChanged ( QListWidgetItem * current, QListWidgetItem * previous )
+ void currentRowChanged ( int currentRow )
+ void currentTextChanged ( const QString & currentText )
+ void itemActivated ( QListWidgetItem * item )
+ void itemChanged ( QListWidgetItem * item )
+ void itemClicked ( QListWidgetItem * item )
+ void itemDoubleClicked ( QListWidgetItem * item )
+ void itemEntered ( QListWidgetItem * item )
+ void itemPressed ( QListWidgetItem * item )
+ void itemSelectionChanged ()
+
+static_public_members
+
+protected_functions
+ virtual bool dropMimeData ( int index, const QMimeData * data, Qt::DropAction action )
+ QModelIndex indexFromItem ( QListWidgetItem * item ) const
+ QListWidgetItem * itemFromIndex ( const QModelIndex & index ) const
+ QList<QListWidgetItem *> items ( const QMimeData * data ) const
+ virtual QMimeData * mimeData ( const QList<QListWidgetItem *> items ) const
+ virtual QStringList mimeTypes () const
+ virtual Qt::DropActions supportedDropActions () const
+
+reimplemented_public_functions
+ virtual void dropEvent ( QDropEvent * event )
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QListView
+name
+Flow
+key
+LeftToRight
+TopToBottom
+public_flag
+true
+class_name
+QListView
+name
+LayoutMode
+key
+SinglePass
+Batched
+public_flag
+true
+class_name
+QListView
+name
+Movement
+key
+Static
+Free
+Snap
+public_flag
+true
+class_name
+QListView
+name
+ResizeMode
+key
+Fixed
+Adjust
+public_flag
+true
+class_name
+QListView
+name
+ViewMode
+key
+ListMode
+IconMode
+public_flag
+true
+
+parent_index
+365
+
+parent_name
+QListView
+

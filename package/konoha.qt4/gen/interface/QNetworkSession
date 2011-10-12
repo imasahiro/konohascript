@@ -1,0 +1,108 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qnetworksession.html
+
+output_urn
+QNetworkSession
+
+inherits
+
+public_types
+ enum SessionError { UnknownSessionError, SessionAbortedError, RoamingError, OperationNotSupportedError, InvalidConfigurationError }
+ enum State { Invalid, NotAvailable, Connecting, Connected, ..., Roaming }
+
+properties
+
+public_functions
+QNetworkSession ( const QNetworkConfiguration & connectionConfig, QObject * parent = 0 )
+ virtual ~QNetworkSession ()
+ quint64 activeTime () const
+ quint64 bytesReceived () const
+ quint64 bytesWritten () const
+ QNetworkConfiguration configuration () const
+ SessionError error () const
+ QString errorString () const
+ QNetworkInterface interface () const
+ bool isOpen () const
+ QVariant sessionProperty ( const QString & key ) const
+ void setSessionProperty ( const QString & key, const QVariant & value )
+ State state () const
+ bool waitForOpened ( int msecs = 30000 )
+
+public_slots
+ void accept ()
+ void close ()
+ void ignore ()
+ void migrate ()
+ void open ()
+ void reject ()
+ void stop ()
+
+signals
+ void closed ()
+ void error ( QNetworkSession::SessionError error )
+ void newConfigurationActivated ()
+ void opened ()
+ void preferredConfigurationChanged ( const QNetworkConfiguration & config, bool isSeamless )
+ void stateChanged ( QNetworkSession::State state )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QNetworkSession
+name
+SessionError
+key
+UnknownSessionError
+SessionAbortedError
+RoamingError
+OperationNotSupportedError
+InvalidConfigurationError
+public_flag
+true
+class_name
+QNetworkSession
+name
+State
+key
+Invalid
+NotAvailable
+Connecting
+Connected
+Closing
+Disconnected
+Roaming
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

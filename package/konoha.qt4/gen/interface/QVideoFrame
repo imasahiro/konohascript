@@ -1,0 +1,134 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qvideoframe.html
+
+output_urn
+QVideoFrame
+
+inherits
+
+public_types
+ enum FieldType { ProgressiveFrame, TopField, BottomField, InterlacedFrame }
+ enum PixelFormat { Format_Invalid, Format_ARGB32, Format_ARGB32_Premultiplied, Format_RGB32, ..., Format_User }
+
+properties
+
+public_functions
+QVideoFrame ()
+QVideoFrame ( QAbstractVideoBuffer * buffer, const QSize & size, PixelFormat format )
+QVideoFrame ( int bytes, const QSize & size, int bytesPerLine, PixelFormat format )
+QVideoFrame ( const QImage & image )
+QVideoFrame ( const QVideoFrame & other )
+~QVideoFrame ()
+ uchar * bits ()
+ const uchar * bits () const
+ int bytesPerLine () const
+ qint64 endTime () const
+ FieldType fieldType () const
+ QVariant handle () const
+ QAbstractVideoBuffer::HandleType handleType () const
+ int height () const
+ bool isMapped () const
+ bool isReadable () const
+ bool isValid () const
+ bool isWritable () const
+ bool map ( QAbstractVideoBuffer::MapMode mode )
+ QAbstractVideoBuffer::MapMode mapMode () const
+ int mappedBytes () const
+ PixelFormat pixelFormat () const
+ void setEndTime ( qint64 time )
+ void setFieldType ( FieldType field )
+ void setStartTime ( qint64 time )
+ QSize size () const
+ qint64 startTime () const
+ void unmap ()
+ int width () const
+ QVideoFrame & operator= ( const QVideoFrame & other )
+
+public_slots
+
+signals
+
+static_public_members
+ QImage::Format imageFormatFromPixelFormat ( PixelFormat format )
+ PixelFormat pixelFormatFromImageFormat ( QImage::Format format )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QVideoFrame
+name
+FieldType
+key
+ProgressiveFrame
+TopField
+BottomField
+InterlacedFrame
+public_flag
+true
+class_name
+QVideoFrame
+name
+PixelFormat
+key
+Format_Invalid
+Format_ARGB32
+Format_ARGB32_Premultiplied
+Format_RGB32
+Format_RGB24
+Format_RGB565
+Format_RGB555
+Format_ARGB8565_Premultiplied
+Format_BGRA32
+Format_BGRA32_Premultiplied
+Format_BGR32
+Format_BGR24
+Format_BGR565
+Format_BGR555
+Format_BGRA5658_Premultiplied
+Format_AYUV444
+Format_AYUV444_Premultiplied
+Format_YUV444
+Format_YUV420P
+Format_YV12
+Format_UYVY
+Format_YUYV
+Format_NV12
+Format_NV21
+Format_IMC1
+Format_IMC2
+Format_IMC3
+Format_IMC4
+Format_Y8
+Format_Y16
+Format_User
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

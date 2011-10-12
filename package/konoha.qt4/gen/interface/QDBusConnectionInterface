@@ -1,0 +1,98 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdbusconnectioninterface.html
+
+output_urn
+QDBusConnectionInterface
+
+inherits
+
+public_types
+ enum RegisterServiceReply { ServiceNotRegistered, ServiceRegistered, ServiceQueued }
+ enum ServiceQueueOptions { DontQueueService, QueueService, ReplaceExistingService }
+ enum ServiceReplacementOptions { DontAllowReplacement, AllowReplacement }
+
+properties
+registeredServiceNames : const QDBusReply<QStringList>
+
+public_functions
+
+public_slots
+ QDBusReply<bool> isServiceRegistered ( const QString & serviceName ) const
+ QDBusReply<QDBusConnectionInterface::RegisterServiceReply> registerService ( const QString & serviceName, ServiceQueueOptions qoption = DontQueueService, ServiceReplacementOptions roption = DontAllowReplacement )
+ QDBusReply<QStringList> registeredServiceNames () const
+ QDBusReply<QString> serviceOwner ( const QString & name ) const
+ QDBusReply<uint> servicePid ( const QString & serviceName ) const
+ QDBusReply<uint> serviceUid ( const QString & serviceName ) const
+ QDBusReply<void> startService ( const QString & name )
+ QDBusReply<bool> unregisterService ( const QString & serviceName )
+
+signals
+ void callWithCallbackFailed ( const QDBusError & error, const QDBusMessage & call )
+ void serviceOwnerChanged ( const QString & name, const QString & oldOwner, const QString & newOwner )
+ void serviceRegistered ( const QString & serviceName )
+ void serviceUnregistered ( const QString & serviceName )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDBusConnectionInterface
+name
+RegisterServiceReply
+key
+ServiceNotRegistered
+ServiceRegistered
+ServiceQueued
+public_flag
+true
+class_name
+QDBusConnectionInterface
+name
+ServiceQueueOptions
+key
+DontQueueService
+QueueService
+ReplaceExistingService
+public_flag
+true
+class_name
+QDBusConnectionInterface
+name
+ServiceReplacementOptions
+key
+DontAllowReplacement
+AllowReplacement
+public_flag
+true
+
+parent_enums
+
+parent_index
+331
+
+parent_name
+QDBusAbstractInterface
+

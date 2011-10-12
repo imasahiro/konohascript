@@ -1,0 +1,67 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsourcelocation.html
+
+output_urn
+QSourceLocation
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QSourceLocation ()
+QSourceLocation ( const QSourceLocation & other )
+QSourceLocation ( const QUrl & u, int l = -1, int c = -1 )
+~QSourceLocation ()
+ qint64 column () const
+ bool isNull () const
+ qint64 line () const
+ void setColumn ( qint64 newColumn )
+ void setLine ( qint64 newLine )
+ void setUri ( const QUrl & newUri )
+ QUrl uri () const
+ bool operator!= ( const QSourceLocation & other ) const
+ QSourceLocation & operator= ( const QSourceLocation & other )
+ bool operator== ( const QSourceLocation & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ uint qHash ( const QSourceLocation & location )
+ QDebug operator<< ( QDebug debug, const QSourceLocation & sourceLocation )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,69 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/quiloader.html
+
+output_urn
+QUiLoader
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QUiLoader ( QObject * parent = 0 )
+ virtual ~QUiLoader ()
+ void addPluginPath ( const QString & path )
+ QStringList availableLayouts () const
+ QStringList availableWidgets () const
+ void clearPluginPaths ()
+ virtual QAction * createAction ( QObject * parent = 0, const QString & name = QString() )
+ virtual QActionGroup * createActionGroup ( QObject * parent = 0, const QString & name = QString() )
+ virtual QLayout * createLayout ( const QString & className, QObject * parent = 0, const QString & name = QString() )
+ virtual QWidget * createWidget ( const QString & className, QWidget * parent = 0, const QString & name = QString() )
+ bool isLanguageChangeEnabled () const
+ QWidget * load ( QIODevice * device, QWidget * parentWidget = 0 )
+ QStringList pluginPaths () const
+ void setLanguageChangeEnabled ( bool enabled )
+ void setWorkingDirectory ( const QDir & dir )
+ QDir workingDirectory () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

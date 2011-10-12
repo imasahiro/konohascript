@@ -1,0 +1,97 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdatetime.html
+
+output_urn
+QDateTime
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDateTime ()
+QDateTime ( const QDate & date )
+QDateTime ( const QDate & date, const QTime & time, Qt::TimeSpec spec = Qt::LocalTime )
+QDateTime ( const QDateTime & other )
+~QDateTime ()
+ QDateTime addDays ( int ndays ) const
+ QDateTime addMSecs ( qint64 msecs ) const
+ QDateTime addMonths ( int nmonths ) const
+ QDateTime addSecs ( int s ) const
+ QDateTime addYears ( int nyears ) const
+ QDate date () const
+ int daysTo ( const QDateTime & other ) const
+ bool isNull () const
+ bool isValid () const
+ qint64 msecsTo ( const QDateTime & other ) const
+ int secsTo ( const QDateTime & other ) const
+ void setDate ( const QDate & date )
+ void setMSecsSinceEpoch ( qint64 msecs )
+ void setTime ( const QTime & time )
+ void setTimeSpec ( Qt::TimeSpec spec )
+ void setTime_t ( uint seconds )
+ QTime time () const
+ Qt::TimeSpec timeSpec () const
+ QDateTime toLocalTime () const
+ qint64 toMSecsSinceEpoch () const
+ QString toString ( const QString & format ) const
+ QString toString ( Qt::DateFormat format = Qt::TextDate ) const
+ QDateTime toTimeSpec ( Qt::TimeSpec specification ) const
+ uint toTime_t () const
+ QDateTime toUTC () const
+ bool operator!= ( const QDateTime & other ) const
+ bool operator< ( const QDateTime & other ) const
+ bool operator<= ( const QDateTime & other ) const
+ QDateTime & operator= ( const QDateTime & other )
+ bool operator== ( const QDateTime & other ) const
+ bool operator> ( const QDateTime & other ) const
+ bool operator>= ( const QDateTime & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QDateTime currentDateTime ()
+ QDateTime currentDateTimeUtc ()
+ qint64 currentMSecsSinceEpoch ()
+ QDateTime fromMSecsSinceEpoch ( qint64 msecs )
+ QDateTime fromString ( const QString & string, Qt::DateFormat format = Qt::TextDate )
+ QDateTime fromString ( const QString & string, const QString & format )
+ QDateTime fromTime_t ( uint seconds )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & out, const QDateTime & dateTime )
+ QDataStream & operator>> ( QDataStream & in, QDateTime & dateTime )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

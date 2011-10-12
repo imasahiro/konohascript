@@ -1,0 +1,76 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qundogroup.html
+
+output_urn
+QUndoGroup
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QUndoGroup ( QObject * parent = 0 )
+~QUndoGroup ()
+ QUndoStack * activeStack () const
+ void addStack ( QUndoStack * stack )
+ bool canRedo () const
+ bool canUndo () const
+ QAction * createRedoAction ( QObject * parent, const QString & prefix = QString() ) const
+ QAction * createUndoAction ( QObject * parent, const QString & prefix = QString() ) const
+ bool isClean () const
+ QString redoText () const
+ void removeStack ( QUndoStack * stack )
+ QList<QUndoStack *> stacks () const
+ QString undoText () const
+
+public_slots
+ void redo ()
+ void setActiveStack ( QUndoStack * stack )
+ void undo ()
+
+signals
+ void activeStackChanged ( QUndoStack * stack )
+ void canRedoChanged ( bool canRedo )
+ void canUndoChanged ( bool canUndo )
+ void cleanChanged ( bool clean )
+ void indexChanged ( int idx )
+ void redoTextChanged ( const QString & redoText )
+ void undoTextChanged ( const QString & undoText )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

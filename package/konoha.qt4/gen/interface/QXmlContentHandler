@@ -1,0 +1,64 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qxmlcontenthandler.html
+
+output_urn
+QXmlContentHandler
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+ virtual ~QXmlContentHandler ()
+ virtual bool characters ( const QString & ch ) = 0
+ virtual bool endDocument () = 0
+ virtual bool endElement ( const QString & namespaceURI, const QString & localName, const QString & qName ) = 0
+ virtual bool endPrefixMapping ( const QString & prefix ) = 0
+ virtual QString errorString () const = 0
+ virtual bool ignorableWhitespace ( const QString & ch ) = 0
+ virtual bool processingInstruction ( const QString & target, const QString & data ) = 0
+ virtual void setDocumentLocator ( QXmlLocator * locator ) = 0
+ virtual bool skippedEntity ( const QString & name ) = 0
+ virtual bool startDocument () = 0
+ virtual bool startElement ( const QString & namespaceURI, const QString & localName, const QString & qName, const QXmlAttributes & atts ) = 0
+ virtual bool startPrefixMapping ( const QString & prefix, const QString & uri ) = 0
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

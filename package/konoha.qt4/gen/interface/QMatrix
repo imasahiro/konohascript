@@ -1,0 +1,100 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmatrix.html
+
+output_urn
+QMatrix
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QMatrix ()
+QMatrix ( qreal m11, qreal m12, qreal m21, qreal m22, qreal dx, qreal dy )
+QMatrix ( const QMatrix & matrix )
+ qreal m11 () const
+ qreal m12 () const
+ qreal m21 () const
+ qreal m22 () const
+ qreal determinant () const
+ qreal dx () const
+ qreal dy () const
+ QMatrix inverted ( bool * invertible = 0 ) const
+ bool isIdentity () const
+ bool isInvertible () const
+ void map ( qreal x, qreal y, qreal * tx, qreal * ty ) const
+ void map ( int x, int y, int * tx, int * ty ) const
+ QPointF map ( const QPointF & point ) const
+ QPoint map ( const QPoint & point ) const
+ QLineF map ( const QLineF & line ) const
+ QLine map ( const QLine & line ) const
+ QPolygonF map ( const QPolygonF & polygon ) const
+ QPolygon map ( const QPolygon & polygon ) const
+ QRegion map ( const QRegion & region ) const
+ QPainterPath map ( const QPainterPath & path ) const
+ QRectF mapRect ( const QRectF & rectangle ) const
+ QRect mapRect ( const QRect & rectangle ) const
+ QPolygon mapToPolygon ( const QRect & rectangle ) const
+ void reset ()
+ QMatrix & rotate ( qreal degrees )
+ QMatrix & scale ( qreal sx, qreal sy )
+ void setMatrix ( qreal m11, qreal m12, qreal m21, qreal m22, qreal dx, qreal dy )
+ QMatrix & shear ( qreal sh, qreal sv )
+ QMatrix & translate ( qreal dx, qreal dy )
+operator QVariant () const
+ bool operator!= ( const QMatrix & matrix ) const
+ QMatrix operator* ( const QMatrix & matrix ) const
+ QMatrix & operator*= ( const QMatrix & matrix )
+ QMatrix & operator= ( const QMatrix & matrix )
+ bool operator== ( const QMatrix & matrix ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ bool qFuzzyCompare ( const QMatrix & m1, const QMatrix & m2 )
+ QPoint operator* ( const QPoint & point, const QMatrix & matrix )
+ QPointF operator* ( const QPointF & point, const QMatrix & matrix )
+ QLineF operator* ( const QLineF & line, const QMatrix & matrix )
+ QLine operator* ( const QLine & line, const QMatrix & matrix )
+ QPolygon operator* ( const QPolygon & polygon, const QMatrix & matrix )
+ QPolygonF operator* ( const QPolygonF & polygon, const QMatrix & matrix )
+ QRegion operator* ( const QRegion & region, const QMatrix & matrix )
+ QPainterPath operator* ( const QPainterPath & path, const QMatrix & matrix )
+ QDataStream & operator<< ( QDataStream & stream, const QMatrix & matrix )
+ QDataStream & operator>> ( QDataStream & stream, QMatrix & matrix )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

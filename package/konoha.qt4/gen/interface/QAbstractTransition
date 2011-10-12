@@ -1,0 +1,71 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstracttransition.html
+
+output_urn
+QAbstractTransition
+
+inherits
+
+public_types
+
+properties
+sourceState : QState * const
+targetState : QAbstractState *
+targetStates : QList<QAbstractState *>
+
+public_functions
+QAbstractTransition ( QState * sourceState = 0 )
+ virtual ~QAbstractTransition ()
+ void addAnimation ( QAbstractAnimation * animation )
+ QList<QAbstractAnimation *> animations () const
+ QStateMachine * machine () const
+ void removeAnimation ( QAbstractAnimation * animation )
+ void setTargetState ( QAbstractState * target )
+ void setTargetStates ( const QList<QAbstractState *> & targets )
+ QState * sourceState () const
+ QAbstractState * targetState () const
+ QList<QAbstractState *> targetStates () const
+
+public_slots
+
+signals
+ void triggered ()
+
+static_public_members
+
+protected_functions
+ virtual bool eventTest ( QEvent * event ) = 0
+ virtual void onTransition ( QEvent * event ) = 0
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

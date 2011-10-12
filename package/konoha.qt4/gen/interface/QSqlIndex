@@ -1,0 +1,65 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsqlindex.html
+
+output_urn
+QSqlIndex
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QSqlIndex ( const QString & cursorname = QString(), const QString & name = QString() )
+QSqlIndex ( const QSqlIndex & other )
+~QSqlIndex ()
+ void append ( const QSqlField & field )
+ void append ( const QSqlField & field, bool desc )
+ QString cursorName () const
+ bool isDescending ( int i ) const
+ QString name () const
+ void setCursorName ( const QString & cursorName )
+ void setDescending ( int i, bool desc )
+ void setName ( const QString & name )
+ QSqlIndex & operator= ( const QSqlIndex & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+680
+
+parent_name
+QSqlRecord
+

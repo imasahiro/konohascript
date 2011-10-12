@@ -1,0 +1,76 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qlibraryinfo.html
+
+output_urn
+QLibraryInfo
+
+inherits
+
+public_types
+ enum LibraryLocation { PrefixPath, DocumentationPath, HeadersPath, LibrariesPath, ..., DemosPath }
+
+properties
+
+public_functions
+
+public_slots
+
+signals
+
+static_public_members
+ QDate buildDate ()
+ QString buildKey ()
+ QString licensedProducts ()
+ QString licensee ()
+ QString location ( LibraryLocation loc )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QLibraryInfo
+name
+LibraryLocation
+key
+PrefixPath
+DocumentationPath
+HeadersPath
+LibrariesPath
+BinariesPath
+PluginsPath
+ImportsPath
+DataPath
+TranslationsPath
+SettingsPath
+ExamplesPath
+DemosPath
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

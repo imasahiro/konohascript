@@ -1,0 +1,64 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qkeyeventtransition.html
+
+output_urn
+QKeyEventTransition
+
+inherits
+
+public_types
+
+properties
+key : int
+modifierMask : Qt::KeyboardModifiers
+
+public_functions
+QKeyEventTransition ( QState * sourceState = 0 )
+QKeyEventTransition ( QObject * object, QEvent::Type type, int key, QState * sourceState = 0 )
+~QKeyEventTransition ()
+ int key () const
+ Qt::KeyboardModifiers modifierMask () const
+ void setKey ( int key )
+ void setModifierMask ( Qt::KeyboardModifiers modifierMask )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool eventTest ( QEvent * event )
+ virtual void onTransition ( QEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+760
+
+parent_name
+QEventTransition
+

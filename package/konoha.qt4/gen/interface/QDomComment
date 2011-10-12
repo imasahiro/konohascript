@@ -1,0 +1,57 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdomcomment.html
+
+output_urn
+QDomComment
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDomComment ()
+QDomComment ( const QDomComment & x )
+ QDomNode::NodeType nodeType () const
+ QDomComment & operator= ( const QDomComment & x )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+634
+
+parent_name
+QDomCharacterData
+

@@ -1,0 +1,172 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qcolor.html
+
+output_urn
+QColor
+
+inherits
+
+public_types
+ enum Spec { Rgb, Hsv, Cmyk, Hsl, Invalid }
+
+properties
+
+public_functions
+QColor ()
+QColor ( int r, int g, int b, int a = 255 )
+QColor ( QRgb color )
+QColor ( const QString & name )
+QColor ( const char * name )
+QColor ( const QColor & color )
+QColor ( Qt::GlobalColor color )
+ int alpha () const
+ qreal alphaF () const
+ int black () const
+ qreal blackF () const
+ int blue () const
+ qreal blueF () const
+ QColor convertTo ( Spec colorSpec ) const
+ int cyan () const
+ qreal cyanF () const
+ QColor darker ( int factor = 200 ) const
+ void getCmyk ( int * c, int * m, int * y, int * k, int * a = 0 )
+ void getCmykF ( qreal * c, qreal * m, qreal * y, qreal * k, qreal * a = 0 )
+ void getHsl ( int * h, int * s, int * l, int * a = 0 ) const
+ void getHslF ( qreal * h, qreal * s, qreal * l, qreal * a = 0 ) const
+ void getHsv ( int * h, int * s, int * v, int * a = 0 ) const
+ void getHsvF ( qreal * h, qreal * s, qreal * v, qreal * a = 0 ) const
+ void getRgb ( int * r, int * g, int * b, int * a = 0 ) const
+ void getRgbF ( qreal * r, qreal * g, qreal * b, qreal * a = 0 ) const
+ int green () const
+ qreal greenF () const
+ int hslHue () const
+ qreal hslHueF () const
+ int hslSaturation () const
+ qreal hslSaturationF () const
+ int hsvHue () const
+ qreal hsvHueF () const
+ int hsvSaturation () const
+ qreal hsvSaturationF () const
+ int hue () const
+ qreal hueF () const
+ bool isValid () const
+ QColor lighter ( int factor = 150 ) const
+ int lightness () const
+ qreal lightnessF () const
+ int magenta () const
+ qreal magentaF () const
+ QString name () const
+ int red () const
+ qreal redF () const
+ QRgb rgb () const
+ QRgb rgba () const
+ int saturation () const
+ qreal saturationF () const
+ void setAlpha ( int alpha )
+ void setAlphaF ( qreal alpha )
+ void setBlue ( int blue )
+ void setBlueF ( qreal blue )
+ void setCmyk ( int c, int m, int y, int k, int a = 255 )
+ void setCmykF ( qreal c, qreal m, qreal y, qreal k, qreal a = 1.0 )
+ void setGreen ( int green )
+ void setGreenF ( qreal green )
+ void setHsl ( int h, int s, int l, int a = 255 )
+ void setHslF ( qreal h, qreal s, qreal l, qreal a = 1.0 )
+ void setHsv ( int h, int s, int v, int a = 255 )
+ void setHsvF ( qreal h, qreal s, qreal v, qreal a = 1.0 )
+ void setNamedColor ( const QString & name )
+ void setRed ( int red )
+ void setRedF ( qreal red )
+ void setRgb ( int r, int g, int b, int a = 255 )
+ void setRgb ( QRgb rgb )
+ void setRgbF ( qreal r, qreal g, qreal b, qreal a = 1.0 )
+ void setRgba ( QRgb rgba )
+ Spec spec () const
+ QColor toCmyk () const
+ QColor toHsl () const
+ QColor toHsv () const
+ QColor toRgb () const
+ int value () const
+ qreal valueF () const
+ int yellow () const
+ qreal yellowF () const
+operator QVariant () const
+ bool operator!= ( const QColor & color ) const
+ QColor & operator= ( const QColor & color )
+ QColor & operator= ( Qt::GlobalColor color )
+ bool operator== ( const QColor & color ) const
+
+public_slots
+
+signals
+
+static_public_members
+ bool allowX11ColorNames ()
+ QStringList colorNames ()
+ QColor fromCmyk ( int c, int m, int y, int k, int a = 255 )
+ QColor fromCmykF ( qreal c, qreal m, qreal y, qreal k, qreal a = 1.0 )
+ QColor fromHsl ( int h, int s, int l, int a = 255 )
+ QColor fromHslF ( qreal h, qreal s, qreal l, qreal a = 1.0 )
+ QColor fromHsv ( int h, int s, int v, int a = 255 )
+ QColor fromHsvF ( qreal h, qreal s, qreal v, qreal a = 1.0 )
+ QColor fromRgb ( QRgb rgb )
+ QColor fromRgb ( int r, int g, int b, int a = 255 )
+ QColor fromRgbF ( qreal r, qreal g, qreal b, qreal a = 1.0 )
+ QColor fromRgba ( QRgb rgba )
+ bool isValidColor ( const QString & name )
+ void setAllowX11ColorNames ( bool enabled )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ typedef QRgb
+ int qAlpha ( QRgb rgba )
+ int qBlue ( QRgb rgb )
+ int qGray ( int r, int g, int b )
+ int qGray ( QRgb rgb )
+ int qGreen ( QRgb rgb )
+ int qRed ( QRgb rgb )
+ QRgb qRgb ( int r, int g, int b )
+ QRgb qRgba ( int r, int g, int b, int a )
+ QDataStream & operator<< ( QDataStream & stream, const QColor & color )
+ QDataStream & operator>> ( QDataStream & stream, QColor & color )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QColor
+name
+Spec
+key
+Rgb
+Hsv
+Cmyk
+Hsl
+Invalid
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

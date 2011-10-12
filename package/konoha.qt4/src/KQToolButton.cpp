@@ -1,0 +1,330 @@
+//@Virtual @Override QSize QToolButton.minimumSizeHint();
+KMETHOD QToolButton_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QToolButton *  qp = RawPtr_to(QToolButton *, sfp[0]);
+	if (qp != NULL) {
+		QSize ret_v = qp->minimumSizeHint();
+		QSize *ret_v_ = new QSize(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//@Virtual @Override QSize QToolButton.sizeHint();
+KMETHOD QToolButton_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QToolButton *  qp = RawPtr_to(QToolButton *, sfp[0]);
+	if (qp != NULL) {
+		QSize ret_v = qp->sizeHint();
+		QSize *ret_v_ = new QSize(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//QToolButton QToolButton.new(QWidget parent);
+KMETHOD QToolButton_new(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
+	KQToolButton *ret_v = new KQToolButton(parent);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	ret_v->self = rptr;
+	ret_v->setSelf(rptr);
+	RETURN_(rptr);
+}
+
+//int QToolButton.getArrowType();
+KMETHOD QToolButton_getArrowType(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QToolButton *  qp = RawPtr_to(QToolButton *, sfp[0]);
+	if (qp != NULL) {
+		Qt::ArrowType ret_v = qp->arrowType();
+		RETURNi_(ret_v);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+//boolean QToolButton.getAutoRaise();
+KMETHOD QToolButton_getAutoRaise(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QToolButton *  qp = RawPtr_to(QToolButton *, sfp[0]);
+	if (qp != NULL) {
+		bool ret_v = qp->autoRaise();
+		RETURNb_(ret_v);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//QMenu QToolButton.getMenu();
+KMETHOD QToolButton_getMenu(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QToolButton *  qp = RawPtr_to(QToolButton *, sfp[0]);
+	if (qp != NULL) {
+		QMenu* ret_v = qp->menu();
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMenu*)ret_v, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//int QToolButton.getPopupMode();
+KMETHOD QToolButton_getPopupMode(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QToolButton *  qp = RawPtr_to(QToolButton *, sfp[0]);
+	if (qp != NULL) {
+		QToolButton::ToolButtonPopupMode ret_v = qp->popupMode();
+		RETURNi_(ret_v);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+//void QToolButton.setArrowType(int type);
+KMETHOD QToolButton_setArrowType(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QToolButton *  qp = RawPtr_to(QToolButton *, sfp[0]);
+	if (qp != NULL) {
+		Qt::ArrowType type = Int_to(Qt::ArrowType, sfp[1]);
+		qp->setArrowType(type);
+	}
+	RETURNvoid_();
+}
+
+//void QToolButton.setAutoRaise(boolean enable);
+KMETHOD QToolButton_setAutoRaise(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QToolButton *  qp = RawPtr_to(QToolButton *, sfp[0]);
+	if (qp != NULL) {
+		bool enable = Boolean_to(bool, sfp[1]);
+		qp->setAutoRaise(enable);
+	}
+	RETURNvoid_();
+}
+
+//void QToolButton.setMenu(QMenu menu);
+KMETHOD QToolButton_setMenu(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QToolButton *  qp = RawPtr_to(QToolButton *, sfp[0]);
+	if (qp != NULL) {
+		QMenu*  menu = RawPtr_to(QMenu*, sfp[1]);
+		qp->setMenu(menu);
+	}
+	RETURNvoid_();
+}
+
+//void QToolButton.setPopupMode(int mode);
+KMETHOD QToolButton_setPopupMode(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QToolButton *  qp = RawPtr_to(QToolButton *, sfp[0]);
+	if (qp != NULL) {
+		QToolButton::ToolButtonPopupMode mode = Int_to(QToolButton::ToolButtonPopupMode, sfp[1]);
+		qp->setPopupMode(mode);
+	}
+	RETURNvoid_();
+}
+
+//int QToolButton.getToolButtonStyle();
+KMETHOD QToolButton_getToolButtonStyle(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QToolButton *  qp = RawPtr_to(QToolButton *, sfp[0]);
+	if (qp != NULL) {
+		Qt::ToolButtonStyle ret_v = qp->toolButtonStyle();
+		RETURNi_(ret_v);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+//void QToolButton.setToolButtonStyle(int style);
+KMETHOD QToolButton_setToolButtonStyle(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QToolButton *  qp = RawPtr_to(QToolButton *, sfp[0]);
+	if (qp != NULL) {
+		Qt::ToolButtonStyle style = Int_to(Qt::ToolButtonStyle, sfp[1]);
+		qp->setToolButtonStyle(style);
+	}
+	RETURNvoid_();
+}
+
+//void QToolButton.showMenu();
+KMETHOD QToolButton_showMenu(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QToolButton *  qp = RawPtr_to(QToolButton *, sfp[0]);
+	if (qp != NULL) {
+		qp->showMenu();
+	}
+	RETURNvoid_();
+}
+
+
+DummyQToolButton::DummyQToolButton()
+{
+	self = NULL;
+	event_map = new map<string, knh_Func_t *>();
+	slot_map = new map<string, knh_Func_t *>();
+}
+
+void DummyQToolButton::setSelf(knh_RawPtr_t *ptr)
+{
+	DummyQToolButton::self = ptr;
+	DummyQAbstractButton::setSelf(ptr);
+}
+
+bool DummyQToolButton::eventDispatcher(QEvent *event)
+{
+	bool ret = true;
+	switch (event->type()) {
+	default:
+		ret = DummyQAbstractButton::eventDispatcher(event);
+		break;
+	}
+	return ret;
+}
+
+bool DummyQToolButton::addEvent(knh_Func_t *callback_func, string str)
+{
+	std::map<string, knh_Func_t*>::iterator itr;// = DummyQToolButton::event_map->bigin();
+	if ((itr = DummyQToolButton::event_map->find(str)) == DummyQToolButton::event_map->end()) {
+		bool ret;
+		ret = DummyQAbstractButton::addEvent(callback_func, str);
+		return ret;
+	} else {
+		KNH_INITv((*event_map)[str], callback_func);
+		return true;
+	}
+}
+
+bool DummyQToolButton::signalConnect(knh_Func_t *callback_func, string str)
+{
+	std::map<string, knh_Func_t*>::iterator itr;// = DummyQToolButton::slot_map->bigin();
+	if ((itr = DummyQToolButton::event_map->find(str)) == DummyQToolButton::slot_map->end()) {
+		bool ret;
+		ret = DummyQAbstractButton::signalConnect(callback_func, str);
+		return ret;
+	} else {
+		KNH_INITv((*slot_map)[str], callback_func);
+		return true;
+	}
+}
+
+
+KQToolButton::KQToolButton(QWidget* parent) : QToolButton(parent)
+{
+	self = NULL;
+}
+
+KMETHOD QToolButton_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	KQToolButton *qp = RawPtr_to(KQToolButton *, sfp[0]);
+	const char *event_name = String_to(const char *, sfp[1]);
+	knh_Func_t *callback_func = sfp[2].fo;
+	if (qp != NULL) {
+//		if (qp->event_map->find(event_name) == qp->event_map->end()) {
+//			fprintf(stderr, "WARNING:[QToolButton]unknown event name [%s]\n", event_name);
+//			return;
+//		}
+		string str = string(event_name);
+//		KNH_INITv((*(qp->event_map))[event_name], callback_func);
+		if (!qp->DummyQToolButton::addEvent(callback_func, str)) {
+			fprintf(stderr, "WARNING:[QToolButton]unknown event name [%s]\n", event_name);
+			return;
+		}
+	}
+	RETURNvoid_();
+}
+
+KMETHOD QToolButton_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	KQToolButton *qp = RawPtr_to(KQToolButton *, sfp[0]);
+	const char *signal_name = String_to(const char *, sfp[1]);
+	knh_Func_t *callback_func = sfp[2].fo;
+	if (qp != NULL) {
+//		if (qp->slot_map->find(signal_name) == qp->slot_map->end()) {
+//			fprintf(stderr, "WARNING:[QToolButton]unknown signal name [%s]\n", signal_name);
+//			return;
+//		}
+		string str = string(signal_name);
+//		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
+		if (!qp->DummyQToolButton::signalConnect(callback_func, str)) {
+			fprintf(stderr, "WARNING:[QToolButton]unknown signal name [%s]\n", signal_name);
+			return;
+		}
+	}
+	RETURNvoid_();
+}
+
+static void QToolButton_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		KQToolButton *qp = (KQToolButton *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+static void QToolButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		KQToolButton *qp = (KQToolButton *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QToolButton_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+bool KQToolButton::event(QEvent *event)
+{
+	if (!DummyQToolButton::eventDispatcher(event)) {
+		QToolButton::event(event);
+		return false;
+	}
+	return true;
+}
+
+DEFAPI(void) defQToolButton(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QToolButton";
+	cdef->free = QToolButton_free;
+	cdef->reftrace = QToolButton_reftrace;
+	cdef->compareTo = QToolButton_compareTo;
+}
+
+static knh_IntData_t QToolButtonConstInt[] = {
+	{"DelayedPopup", QToolButton::DelayedPopup},
+	{"MenuButtonPopup", QToolButton::MenuButtonPopup},
+	{"InstantPopup", QToolButton::InstantPopup},
+	{NULL, 0}
+};
+
+DEFAPI(void) constQToolButton(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
+	kapi->loadClassIntConst(ctx, cid, QToolButtonConstInt);
+}
+

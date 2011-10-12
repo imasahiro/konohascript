@@ -1,0 +1,74 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qscriptengineagent.html
+
+output_urn
+QScriptEngineAgent
+
+inherits
+
+public_types
+ enum Extension { DebuggerInvocationRequest }
+
+properties
+
+public_functions
+QScriptEngineAgent ( QScriptEngine * engine )
+ virtual ~QScriptEngineAgent ()
+ virtual void contextPop ()
+ virtual void contextPush ()
+ QScriptEngine * engine () const
+ virtual void exceptionCatch ( qint64 scriptId, const QScriptValue & exception )
+ virtual void exceptionThrow ( qint64 scriptId, const QScriptValue & exception, bool hasHandler )
+ virtual QVariant extension ( Extension extension, const QVariant & argument = QVariant() )
+ virtual void functionEntry ( qint64 scriptId )
+ virtual void functionExit ( qint64 scriptId, const QScriptValue & returnValue )
+ virtual void positionChange ( qint64 scriptId, int lineNumber, int columnNumber )
+ virtual void scriptLoad ( qint64 id, const QString & program, const QString & fileName, int baseLineNumber )
+ virtual void scriptUnload ( qint64 id )
+ virtual bool supportsExtension ( Extension extension ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QScriptEngineAgent
+name
+Extension
+key
+DebuggerInvocationRequest
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

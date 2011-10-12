@@ -1,0 +1,70 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwebhistory.html
+
+output_urn
+QWebHistory
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+ void back ()
+ QWebHistoryItem backItem () const
+ QList<QWebHistoryItem> backItems ( int maxItems ) const
+ bool canGoBack () const
+ bool canGoForward () const
+ void clear ()
+ int count () const
+ QWebHistoryItem currentItem () const
+ int currentItemIndex () const
+ void forward ()
+ QWebHistoryItem forwardItem () const
+ QList<QWebHistoryItem> forwardItems ( int maxItems ) const
+ void goToItem ( const QWebHistoryItem & item )
+ QWebHistoryItem itemAt ( int i ) const
+ QList<QWebHistoryItem> items () const
+ int maximumItemCount () const
+ void setMaximumItemCount ( int count )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & stream, const QWebHistory & history )
+ QDataStream & operator>> ( QDataStream & stream, QWebHistory & history )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,69 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qresource.html
+
+output_urn
+QResource
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QResource ( const QString & file = QString(), const QLocale & locale = QLocale() )
+~QResource ()
+ QString absoluteFilePath () const
+ const uchar * data () const
+ QString fileName () const
+ bool isCompressed () const
+ bool isValid () const
+ QLocale locale () const
+ void setFileName ( const QString & file )
+ void setLocale ( const QLocale & locale )
+ qint64 size () const
+
+public_slots
+
+signals
+
+static_public_members
+ bool registerResource ( const QString & rccFileName, const QString & mapRoot = QString() )
+ bool registerResource ( const uchar * rccData, const QString & mapRoot = QString() )
+ bool unregisterResource ( const QString & rccFileName, const QString & mapRoot = QString() )
+ bool unregisterResource ( const uchar * rccData, const QString & mapRoot = QString() )
+
+protected_functions
+ QStringList children () const
+ bool isDir () const
+ bool isFile () const
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,87 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfontmetricsf.html
+
+output_urn
+QFontMetricsF
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QFontMetricsF ( const QFont & font )
+QFontMetricsF ( const QFont & font, QPaintDevice * paintdevice )
+QFontMetricsF ( const QFontMetrics & fontMetrics )
+QFontMetricsF ( const QFontMetricsF & fm )
+~QFontMetricsF ()
+ qreal ascent () const
+ qreal averageCharWidth () const
+ QRectF boundingRect ( const QString & text ) const
+ QRectF boundingRect ( QChar ch ) const
+ QRectF boundingRect ( const QRectF & rect, int flags, const QString & text, int tabStops = 0, int * tabArray = 0 ) const
+ qreal descent () const
+ QString elidedText ( const QString & text, Qt::TextElideMode mode, qreal width, int flags = 0 ) const
+ qreal height () const
+ bool inFont ( QChar ch ) const
+ qreal leading () const
+ qreal leftBearing ( QChar ch ) const
+ qreal lineSpacing () const
+ qreal lineWidth () const
+ qreal maxWidth () const
+ qreal minLeftBearing () const
+ qreal minRightBearing () const
+ qreal overlinePos () const
+ qreal rightBearing ( QChar ch ) const
+ QSizeF size ( int flags, const QString & text, int tabStops = 0, int * tabArray = 0 ) const
+ qreal strikeOutPos () const
+ QRectF tightBoundingRect ( const QString & text ) const
+ qreal underlinePos () const
+ qreal width ( const QString & text ) const
+ qreal width ( QChar ch ) const
+ qreal xHeight () const
+ bool operator!= ( const QFontMetricsF & other )
+ bool operator!= ( const QFontMetricsF & other ) const
+ QFontMetricsF & operator= ( const QFontMetricsF & fm )
+ QFontMetricsF & operator= ( const QFontMetrics & other )
+ bool operator== ( const QFontMetricsF & other )
+ bool operator== ( const QFontMetricsF & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

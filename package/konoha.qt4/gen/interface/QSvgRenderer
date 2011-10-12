@@ -1,0 +1,79 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsvgrenderer.html
+
+output_urn
+QSvgRenderer
+
+inherits
+
+public_types
+
+properties
+framesPerSecond : int
+viewBox : QRectF
+
+public_functions
+QSvgRenderer ( QObject * parent = 0 )
+QSvgRenderer ( const QString & filename, QObject * parent = 0 )
+QSvgRenderer ( const QByteArray & contents, QObject * parent = 0 )
+QSvgRenderer ( QXmlStreamReader * contents, QObject * parent = 0 )
+~QSvgRenderer ()
+ bool animated () const
+ QRectF boundsOnElement ( const QString & id ) const
+ QSize defaultSize () const
+ bool elementExists ( const QString & id ) const
+ int framesPerSecond () const
+ bool isValid () const
+ QMatrix matrixForElement ( const QString & id ) const
+ void setFramesPerSecond ( int num )
+ void setViewBox ( const QRect & viewbox )
+ void setViewBox ( const QRectF & viewbox )
+ QRect viewBox () const
+ QRectF viewBoxF () const
+
+public_slots
+ bool load ( const QString & filename )
+ bool load ( const QByteArray & contents )
+ bool load ( QXmlStreamReader * contents )
+ void render ( QPainter * painter )
+ void render ( QPainter * painter, const QRectF & bounds )
+ void render ( QPainter * painter, const QString & elementId, const QRectF & bounds = QRectF() )
+
+signals
+ void repaintNeeded ()
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

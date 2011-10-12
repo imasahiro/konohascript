@@ -1,0 +1,65 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qnetworkaddressentry.html
+
+output_urn
+QNetworkAddressEntry
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QNetworkAddressEntry ()
+QNetworkAddressEntry ( const QNetworkAddressEntry & other )
+~QNetworkAddressEntry ()
+ QHostAddress broadcast () const
+ QHostAddress ip () const
+ QHostAddress netmask () const
+ int prefixLength () const
+ void setBroadcast ( const QHostAddress & newBroadcast )
+ void setIp ( const QHostAddress & newIp )
+ void setNetmask ( const QHostAddress & newNetmask )
+ void setPrefixLength ( int length )
+ bool operator!= ( const QNetworkAddressEntry & other ) const
+ QNetworkAddressEntry & operator= ( const QNetworkAddressEntry & other )
+ bool operator== ( const QNetworkAddressEntry & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

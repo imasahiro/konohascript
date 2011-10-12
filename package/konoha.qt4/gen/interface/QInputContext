@@ -1,0 +1,81 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qinputcontext.html
+
+output_urn
+QInputContext
+
+inherits
+
+public_types
+ enum StandardFormat { PreeditFormat, SelectionFormat }
+
+properties
+
+public_functions
+QInputContext ( QObject * parent = 0 )
+ virtual ~QInputContext ()
+ virtual QList<QAction *> actions ()
+ virtual bool filterEvent ( const QEvent * event )
+ QWidget * focusWidget () const
+ virtual QFont font () const
+ virtual QString identifierName () = 0
+ virtual bool isComposing () const = 0
+ virtual QString language () = 0
+ virtual void mouseHandler ( int x, QMouseEvent * event )
+ virtual void reset () = 0
+ void sendEvent ( const QInputMethodEvent & event )
+ virtual void setFocusWidget ( QWidget * widget )
+ QTextFormat standardFormat ( StandardFormat s ) const
+ virtual bool symbianFilterEvent ( QWidget * keywidget, const QSymbianEvent * event )
+ virtual void update ()
+ virtual void widgetDestroyed ( QWidget * widget )
+ virtual bool x11FilterEvent ( QWidget * keywidget, XEvent * event )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QInputContext
+name
+StandardFormat
+key
+PreeditFormat
+SelectionFormat
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

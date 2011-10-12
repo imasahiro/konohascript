@@ -1,0 +1,84 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractvideobuffer.html
+
+output_urn
+QAbstractVideoBuffer
+
+inherits
+
+public_types
+ enum HandleType { NoHandle, GLTextureHandle, XvShmImageHandle, CoreImageHandle, QPixmapHandle, UserHandle }
+ enum MapMode { NotMapped, ReadOnly, WriteOnly, ReadWrite }
+
+properties
+
+public_functions
+QAbstractVideoBuffer ( HandleType type )
+ virtual ~QAbstractVideoBuffer ()
+ virtual QVariant handle () const
+ HandleType handleType () const
+ virtual uchar * map ( MapMode mode, int * numBytes, int * bytesPerLine ) = 0
+ virtual MapMode mapMode () const = 0
+ virtual void unmap () = 0
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QAbstractVideoBuffer
+name
+HandleType
+key
+NoHandle
+GLTextureHandle
+XvShmImageHandle
+CoreImageHandle
+QPixmapHandle
+UserHandle
+public_flag
+true
+class_name
+QAbstractVideoBuffer
+name
+MapMode
+key
+NotMapped
+ReadOnly
+WriteOnly
+ReadWrite
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

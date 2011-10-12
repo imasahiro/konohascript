@@ -1,0 +1,77 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsplashscreen.html
+
+output_urn
+QSplashScreen
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QSplashScreen ( const QPixmap & pixmap = QPixmap(), Qt::WindowFlags f = 0 )
+QSplashScreen ( QWidget * parent, const QPixmap & pixmap = QPixmap(), Qt::WindowFlags f = 0 )
+ virtual ~QSplashScreen ()
+ void finish ( QWidget * mainWin )
+ const QPixmap pixmap () const
+ void repaint ()
+ void setPixmap ( const QPixmap & pixmap )
+
+public_slots
+ void clearMessage ()
+ void showMessage ( const QString & message, int alignment = Qt::AlignLeft, const QColor & color = Qt::black )
+
+signals
+ void messageChanged ( const QString & message )
+
+static_public_members
+
+protected_functions
+ virtual void drawContents ( QPainter * painter )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+ virtual void mousePressEvent ( QMouseEvent * )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

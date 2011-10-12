@@ -1,0 +1,166 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdir.html
+
+output_urn
+QDir
+
+inherits
+
+public_types
+ enum Filter { Dirs, AllDirs, Files, Drives, ..., CaseSensitive }
+ typedef FilterSpec
+ flags Filters
+ enum SortFlag { Name, Time, Size, Type, ..., LocaleAware }
+ flags SortFlags
+ typedef SortSpec
+
+properties
+
+public_functions
+QDir ( const QDir & dir )
+QDir ( const QString & path = QString() )
+QDir ( const QString & path, const QString & nameFilter, SortFlags sort = SortFlags( Name | IgnoreCase ), Filters filters = AllEntries )
+~QDir ()
+ QString absoluteFilePath ( const QString & fileName ) const
+ QString absolutePath () const
+ QString canonicalPath () const
+ bool cd ( const QString & dirName )
+ bool cdUp ()
+ uint count () const
+ QString dirName () const
+ QFileInfoList entryInfoList ( const QStringList & nameFilters, Filters filters = NoFilter, SortFlags sort = NoSort ) const
+ QFileInfoList entryInfoList ( Filters filters = NoFilter, SortFlags sort = NoSort ) const
+ QStringList entryList ( const QStringList & nameFilters, Filters filters = NoFilter, SortFlags sort = NoSort ) const
+ QStringList entryList ( Filters filters = NoFilter, SortFlags sort = NoSort ) const
+ bool exists ( const QString & name ) const
+ bool exists () const
+ QString filePath ( const QString & fileName ) const
+ Filters filter () const
+ bool isAbsolute () const
+ bool isReadable () const
+ bool isRelative () const
+ bool isRoot () const
+ bool makeAbsolute ()
+ bool mkdir ( const QString & dirName ) const
+ bool mkpath ( const QString & dirPath ) const
+ QStringList nameFilters () const
+ QString path () const
+ void refresh () const
+ QString relativeFilePath ( const QString & fileName ) const
+ bool remove ( const QString & fileName )
+ bool rename ( const QString & oldName, const QString & newName )
+ bool rmdir ( const QString & dirName ) const
+ bool rmpath ( const QString & dirPath ) const
+ void setFilter ( Filters filters )
+ void setNameFilters ( const QStringList & nameFilters )
+ void setPath ( const QString & path )
+ void setSorting ( SortFlags sort )
+ SortFlags sorting () const
+ bool operator!= ( const QDir & dir ) const
+ QDir & operator= ( const QDir & dir )
+ bool operator== ( const QDir & dir ) const
+ QString operator[] ( int pos ) const
+
+public_slots
+
+signals
+
+static_public_members
+ void addSearchPath ( const QString & prefix, const QString & path )
+ QString cleanPath ( const QString & path )
+ QDir current ()
+ QString currentPath ()
+ QFileInfoList drives ()
+ QString fromNativeSeparators ( const QString & pathName )
+ QDir home ()
+ QString homePath ()
+ bool isAbsolutePath ( const QString & path )
+ bool isRelativePath ( const QString & path )
+ bool match ( const QString & filter, const QString & fileName )
+ bool match ( const QStringList & filters, const QString & fileName )
+ QDir root ()
+ QString rootPath ()
+ QStringList searchPaths ( const QString & prefix )
+ QChar separator ()
+ bool setCurrent ( const QString & path )
+ void setSearchPaths ( const QString & prefix, const QStringList & searchPaths )
+ QDir temp ()
+ QString tempPath ()
+ QString toNativeSeparators ( const QString & pathName )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+FilterSpec
+Filters
+SortFlags
+SortSpec
+
+parent_typedefed_objects
+
+enums
+class_name
+QDir
+name
+Filter
+key
+Dirs
+AllDirs
+Files
+Drives
+NoSymLinks
+NoDotAndDotDot
+NoDot
+NoDotDot
+AllEntries
+Readable
+Writable
+Executable
+Modified
+Hidden
+System
+CaseSensitive
+public_flag
+true
+class_name
+QDir
+name
+SortFlag
+key
+Name
+Time
+Size
+Type
+Unsorted
+NoSort
+DirsFirst
+DirsLast
+Reversed
+IgnoreCase
+LocaleAware
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

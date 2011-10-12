@@ -1,0 +1,97 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qvector4d.html
+
+output_urn
+QVector4D
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QVector4D ()
+QVector4D ( qreal xpos, qreal ypos, qreal zpos, qreal wpos )
+QVector4D ( const QPoint & point )
+QVector4D ( const QPointF & point )
+QVector4D ( const QVector2D & vector )
+QVector4D ( const QVector2D & vector, qreal zpos, qreal wpos )
+QVector4D ( const QVector3D & vector )
+QVector4D ( const QVector3D & vector, qreal wpos )
+ bool isNull () const
+ qreal length () const
+ qreal lengthSquared () const
+ void normalize ()
+ QVector4D normalized () const
+ void setW ( qreal w )
+ void setX ( qreal x )
+ void setY ( qreal y )
+ void setZ ( qreal z )
+ QPoint toPoint () const
+ QPointF toPointF () const
+ QVector2D toVector2D () const
+ QVector2D toVector2DAffine () const
+ QVector3D toVector3D () const
+ QVector3D toVector3DAffine () const
+ qreal w () const
+ qreal x () const
+ qreal y () const
+ qreal z () const
+operator QVariant () const
+ QVector4D & operator*= ( qreal factor )
+ QVector4D & operator*= ( const QVector4D & vector )
+ QVector4D & operator+= ( const QVector4D & vector )
+ QVector4D & operator-= ( const QVector4D & vector )
+ QVector4D & operator/= ( qreal divisor )
+
+public_slots
+
+signals
+
+static_public_members
+ qreal dotProduct ( const QVector4D & v1, const QVector4D & v2 )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ bool qFuzzyCompare ( const QVector4D & v1, const QVector4D & v2 )
+ bool operator!= ( const QVector4D & v1, const QVector4D & v2 )
+ const QVector4D operator* ( qreal factor, const QVector4D & vector )
+ const QVector4D operator* ( const QVector4D & vector, qreal factor )
+ const QVector4D operator* ( const QVector4D & v1, const QVector4D & v2 )
+ const QVector4D operator+ ( const QVector4D & v1, const QVector4D & v2 )
+ const QVector4D operator- ( const QVector4D & v1, const QVector4D & v2 )
+ const QVector4D operator- ( const QVector4D & vector )
+ const QVector4D operator/ ( const QVector4D & vector, qreal divisor )
+ QDataStream & operator<< ( QDataStream & stream, const QVector4D & vector )
+ bool operator== ( const QVector4D & v1, const QVector4D & v2 )
+ QDataStream & operator>> ( QDataStream & stream, QVector4D & vector )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,78 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qaxscript.html
+
+output_urn
+QAxScript
+
+inherits
+
+public_types
+ enum FunctionFlags { FunctionNames, FunctionSignatures }
+
+properties
+
+public_functions
+QAxScript ( const QString & name, QAxScriptManager * manager )
+~QAxScript ()
+ QVariant call ( const QString & function, const QVariant & var1 = QVariant(), const QVariant & var2 = QVariant(), const QVariant & var3 = QVariant(), const QVariant & var4 = QVariant(), const QVariant & var5 = QVariant(), const QVariant & var6 = QVariant(), const QVariant & var7 = QVariant(), const QVariant & var8 = QVariant() )
+ QVariant call ( const QString & function, QList<QVariant> & arguments )
+ QStringList functions ( FunctionFlags flags = FunctionNames ) const
+ bool load ( const QString & code, const QString & language = QString() )
+ QString scriptCode () const
+ QAxScriptEngine * scriptEngine () const
+ QString scriptName () const
+
+public_slots
+
+signals
+ void entered ()
+ void error ( int code, const QString & description, int sourcePosition, const QString & sourceText )
+ void finished ()
+ void finished ( const QVariant & result )
+ void finished ( int code, const QString & source, const QString & description, const QString & help )
+ void stateChanged ( int state )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QAxScript
+name
+FunctionFlags
+key
+FunctionNames
+FunctionSignatures
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

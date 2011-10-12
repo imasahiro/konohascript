@@ -1,0 +1,82 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qnetworkinterface.html
+
+output_urn
+QNetworkInterface
+
+inherits
+
+public_types
+ enum InterfaceFlag { IsUp, IsRunning, CanBroadcast, IsLoopBack, IsPointToPoint, CanMulticast }
+ flags InterfaceFlags
+
+properties
+
+public_functions
+QNetworkInterface ()
+QNetworkInterface ( const QNetworkInterface & other )
+~QNetworkInterface ()
+ QList<QNetworkAddressEntry> addressEntries () const
+ InterfaceFlags flags () const
+ QString hardwareAddress () const
+ QString humanReadableName () const
+ int index () const
+ bool isValid () const
+ QString name () const
+ QNetworkInterface & operator= ( const QNetworkInterface & other )
+
+public_slots
+
+signals
+
+static_public_members
+ QList<QHostAddress> allAddresses ()
+ QList<QNetworkInterface> allInterfaces ()
+ QNetworkInterface interfaceFromIndex ( int index )
+ QNetworkInterface interfaceFromName ( const QString & name )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+InterfaceFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QNetworkInterface
+name
+InterfaceFlag
+key
+IsUp
+IsRunning
+CanBroadcast
+IsLoopBack
+IsPointToPoint
+CanMulticast
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

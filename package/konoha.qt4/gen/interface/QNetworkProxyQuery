@@ -1,0 +1,84 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qnetworkproxyquery.html
+
+output_urn
+QNetworkProxyQuery
+
+inherits
+
+public_types
+ enum QueryType { TcpSocket, UdpSocket, TcpServer, UrlRequest }
+
+properties
+
+public_functions
+QNetworkProxyQuery ()
+QNetworkProxyQuery ( const QUrl & requestUrl, QueryType queryType = UrlRequest )
+QNetworkProxyQuery ( const QString & hostname, int port, const QString & protocolTag = QString(), QueryType queryType = TcpSocket )
+QNetworkProxyQuery ( quint16 bindPort, const QString & protocolTag = QString(), QueryType queryType = TcpServer )
+QNetworkProxyQuery ( const QNetworkProxyQuery & other )
+~QNetworkProxyQuery ()
+ int localPort () const
+ QString peerHostName () const
+ int peerPort () const
+ QString protocolTag () const
+ QueryType queryType () const
+ void setLocalPort ( int port )
+ void setPeerHostName ( const QString & hostname )
+ void setPeerPort ( int port )
+ void setProtocolTag ( const QString & protocolTag )
+ void setQueryType ( QueryType type )
+ void setUrl ( const QUrl & url )
+ QUrl url () const
+ bool operator!= ( const QNetworkProxyQuery & other ) const
+ QNetworkProxyQuery & operator= ( const QNetworkProxyQuery & other )
+ bool operator== ( const QNetworkProxyQuery & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QNetworkProxyQuery
+name
+QueryType
+key
+TcpSocket
+UdpSocket
+TcpServer
+UrlRequest
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

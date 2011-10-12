@@ -1,0 +1,125 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsizepolicy.html
+
+output_urn
+QSizePolicy
+
+inherits
+
+public_types
+ enum ControlType { DefaultType, ButtonBox, CheckBox, ComboBox, ..., ToolButton }
+ flags ControlTypes
+ enum Policy { Fixed, Minimum, Maximum, Preferred, ..., Ignored }
+ enum PolicyFlag { GrowFlag, ExpandFlag, ShrinkFlag, IgnoreFlag }
+
+properties
+
+public_functions
+QSizePolicy ()
+QSizePolicy ( Policy horizontal, Policy vertical )
+QSizePolicy ( Policy horizontal, Policy vertical, ControlType type )
+ ControlType controlType () const
+ Qt::Orientations expandingDirections () const
+ bool hasHeightForWidth () const
+ Policy horizontalPolicy () const
+ int horizontalStretch () const
+ void setControlType ( ControlType type )
+ void setHeightForWidth ( bool dependent )
+ void setHorizontalPolicy ( Policy policy )
+ void setHorizontalStretch ( uchar stretchFactor )
+ void setVerticalPolicy ( Policy policy )
+ void setVerticalStretch ( uchar stretchFactor )
+ void transpose ()
+ Policy verticalPolicy () const
+ int verticalStretch () const
+operator QVariant () const
+ bool operator!= ( const QSizePolicy & other ) const
+ bool operator== ( const QSizePolicy & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & stream, const QSizePolicy & policy )
+ QDataStream & operator>> ( QDataStream & stream, QSizePolicy & policy )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+ControlTypes
+
+parent_typedefed_objects
+
+enums
+class_name
+QSizePolicy
+name
+ControlType
+key
+DefaultType
+ButtonBox
+CheckBox
+ComboBox
+Frame
+GroupBox
+Label
+Line
+LineEdit
+PushButton
+RadioButton
+Slider
+SpinBox
+TabWidget
+ToolButton
+public_flag
+true
+class_name
+QSizePolicy
+name
+Policy
+key
+Fixed
+Minimum
+Maximum
+Preferred
+Expanding
+MinimumExpanding
+Ignored
+public_flag
+true
+class_name
+QSizePolicy
+name
+PolicyFlag
+key
+GrowFlag
+ExpandFlag
+ShrinkFlag
+IgnoreFlag
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

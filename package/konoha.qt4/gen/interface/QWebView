@@ -1,0 +1,131 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwebview.html
+
+output_urn
+QWebView
+
+inherits
+
+public_types
+
+properties
+icon : const QIcon
+modified : const bool
+renderHints : QPainter::RenderHints
+selectedText : const QString
+
+public_functions
+QWebView ( QWidget * parent = 0 )
+ virtual ~QWebView ()
+ bool findText ( const QString & subString, QWebPage::FindFlags options = 0 )
+ QWebHistory * history () const
+ QIcon icon () const
+ bool isModified () const
+ void load ( const QUrl & url )
+ void load ( const QNetworkRequest & request, QNetworkAccessManager::Operation operation = QNetworkAccessManager::GetOperation, const QByteArray & body = QByteArray() )
+ QWebPage * page () const
+ QAction * pageAction ( QWebPage::WebAction action ) const
+ QPainter::RenderHints renderHints () const
+ QString selectedText () const
+ void setContent ( const QByteArray & data, const QString & mimeType = QString(), const QUrl & baseUrl = QUrl() )
+ void setHtml ( const QString & html, const QUrl & baseUrl = QUrl() )
+ void setPage ( QWebPage * page )
+ void setRenderHint ( QPainter::RenderHint hint, bool enabled = true )
+ void setRenderHints ( QPainter::RenderHints hints )
+ void setTextSizeMultiplier ( qreal factor )
+ void setUrl ( const QUrl & url )
+ void setZoomFactor ( qreal factor )
+ QWebSettings * settings () const
+ qreal textSizeMultiplier () const
+ QString title () const
+ void triggerPageAction ( QWebPage::WebAction action, bool checked = false )
+ QUrl url () const
+ qreal zoomFactor () const
+
+public_slots
+ void back ()
+ void forward ()
+ void print ( QPrinter * printer ) const
+ void reload ()
+ void stop ()
+
+signals
+ void iconChanged ()
+ void linkClicked ( const QUrl & url )
+ void loadFinished ( bool ok )
+ void loadProgress ( int progress )
+ void loadStarted ()
+ void selectionChanged ()
+ void statusBarMessage ( const QString & text )
+ void titleChanged ( const QString & title )
+ void urlChanged ( const QUrl & url )
+
+static_public_members
+
+protected_functions
+ virtual QWebView * createWindow ( QWebPage::WebWindowType type )
+
+reimplemented_public_functions
+ virtual bool event ( QEvent * e )
+ virtual QVariant inputMethodQuery ( Qt::InputMethodQuery property ) const
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * e )
+ virtual void contextMenuEvent ( QContextMenuEvent * ev )
+ virtual void dragEnterEvent ( QDragEnterEvent * ev )
+ virtual void dragLeaveEvent ( QDragLeaveEvent * ev )
+ virtual void dragMoveEvent ( QDragMoveEvent * ev )
+ virtual void dropEvent ( QDropEvent * ev )
+ virtual void focusInEvent ( QFocusEvent * ev )
+ virtual bool focusNextPrevChild ( bool next )
+ virtual void focusOutEvent ( QFocusEvent * ev )
+ virtual void inputMethodEvent ( QInputMethodEvent * e )
+ virtual void keyPressEvent ( QKeyEvent * ev )
+ virtual void keyReleaseEvent ( QKeyEvent * ev )
+ virtual void mouseDoubleClickEvent ( QMouseEvent * ev )
+ virtual void mouseMoveEvent ( QMouseEvent * ev )
+ virtual void mousePressEvent ( QMouseEvent * ev )
+ virtual void mouseReleaseEvent ( QMouseEvent * ev )
+ virtual void paintEvent ( QPaintEvent * ev )
+ virtual void resizeEvent ( QResizeEvent * e )
+ virtual void wheelEvent ( QWheelEvent * ev )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

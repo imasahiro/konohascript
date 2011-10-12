@@ -1,0 +1,91 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qxmlstreamwriter.html
+
+output_urn
+QXmlStreamWriter
+
+inherits
+
+public_types
+
+properties
+autoFormatting : bool
+autoFormattingIndent : int
+
+public_functions
+QXmlStreamWriter ()
+QXmlStreamWriter ( QIODevice * device )
+QXmlStreamWriter ( QByteArray * array )
+QXmlStreamWriter ( QString * string )
+~QXmlStreamWriter ()
+ bool autoFormatting () const
+ int autoFormattingIndent () const
+ QTextCodec * codec () const
+ QIODevice * device () const
+ void setAutoFormatting ( bool enable )
+ void setAutoFormattingIndent ( int spacesOrTabs )
+ void setCodec ( QTextCodec * codec )
+ void setCodec ( const char * codecName )
+ void setDevice ( QIODevice * device )
+ void writeAttribute ( const QString & namespaceUri, const QString & name, const QString & value )
+ void writeAttribute ( const QString & qualifiedName, const QString & value )
+ void writeAttribute ( const QXmlStreamAttribute & attribute )
+ void writeAttributes ( const QXmlStreamAttributes & attributes )
+ void writeCDATA ( const QString & text )
+ void writeCharacters ( const QString & text )
+ void writeComment ( const QString & text )
+ void writeCurrentToken ( const QXmlStreamReader & reader )
+ void writeDTD ( const QString & dtd )
+ void writeDefaultNamespace ( const QString & namespaceUri )
+ void writeEmptyElement ( const QString & namespaceUri, const QString & name )
+ void writeEmptyElement ( const QString & qualifiedName )
+ void writeEndDocument ()
+ void writeEndElement ()
+ void writeEntityReference ( const QString & name )
+ void writeNamespace ( const QString & namespaceUri, const QString & prefix = QString() )
+ void writeProcessingInstruction ( const QString & target, const QString & data = QString() )
+ void writeStartDocument ( const QString & version )
+ void writeStartDocument ( const QString & version, bool standalone )
+ void writeStartDocument ()
+ void writeStartElement ( const QString & namespaceUri, const QString & name )
+ void writeStartElement ( const QString & qualifiedName )
+ void writeTextElement ( const QString & namespaceUri, const QString & name, const QString & text )
+ void writeTextElement ( const QString & qualifiedName, const QString & text )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

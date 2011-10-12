@@ -1,0 +1,69 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextframe.html
+
+output_urn
+QTextFrame
+
+inherits
+
+public_types
+ class iterator
+ typedef Iterator
+
+properties
+
+public_functions
+QTextFrame ( QTextDocument * document )
+~QTextFrame ()
+ iterator begin () const
+ QList<QTextFrame *> childFrames () const
+ iterator end () const
+ QTextCursor firstCursorPosition () const
+ int firstPosition () const
+ QTextFrameFormat frameFormat () const
+ QTextCursor lastCursorPosition () const
+ int lastPosition () const
+ QTextFrame * parentFrame () const
+ void setFrameFormat ( const QTextFrameFormat & format )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+iterator
+Iterator
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+20
+
+parent_name
+QTextObject
+

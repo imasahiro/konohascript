@@ -1,0 +1,60 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextcodecplugin.html
+
+output_urn
+QTextCodecPlugin
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QTextCodecPlugin ( QObject * parent = 0 )
+~QTextCodecPlugin ()
+ virtual QList<QByteArray> aliases () const = 0
+ virtual QTextCodec * createForMib ( int mib ) = 0
+ virtual QTextCodec * createForName ( const QByteArray & name ) = 0
+ virtual QList<int> mibEnums () const = 0
+ virtual QList<QByteArray> names () const = 0
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

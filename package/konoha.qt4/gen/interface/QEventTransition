@@ -1,0 +1,65 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qeventtransition.html
+
+output_urn
+QEventTransition
+
+inherits
+
+public_types
+
+properties
+eventSource : QObject *
+eventType : QEvent::Type
+
+public_functions
+QEventTransition ( QState * sourceState = 0 )
+QEventTransition ( QObject * object, QEvent::Type type, QState * sourceState = 0 )
+~QEventTransition ()
+ QObject * eventSource () const
+ QEvent::Type eventType () const
+ void setEventSource ( QObject * object )
+ void setEventType ( QEvent::Type type )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+ virtual bool eventTest ( QEvent * event )
+ virtual void onTransition ( QEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+66
+
+parent_name
+QAbstractTransition
+

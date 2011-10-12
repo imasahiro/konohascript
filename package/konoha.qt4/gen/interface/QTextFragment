@@ -1,0 +1,64 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextfragment.html
+
+output_urn
+QTextFragment
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QTextFragment ()
+QTextFragment ( const QTextFragment & other )
+ QTextCharFormat charFormat () const
+ int charFormatIndex () const
+ bool contains ( int position ) const
+ bool isValid () const
+ int length () const
+ int position () const
+ QString text () const
+ bool operator!= ( const QTextFragment & other ) const
+ bool operator< ( const QTextFragment & other ) const
+ QTextFragment & operator= ( const QTextFragment & other )
+ bool operator== ( const QTextFragment & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

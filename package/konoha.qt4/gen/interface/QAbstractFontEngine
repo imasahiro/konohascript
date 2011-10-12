@@ -1,0 +1,115 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractfontengine.html
+
+output_urn
+QAbstractFontEngine
+
+inherits
+
+public_types
+ class FixedPoint (preliminary)
+ class GlyphMetrics (preliminary)
+ flags Capabilities
+ enum Capability { CanRenderGlyphs_Gray, CanRenderGlyphs_Mono, CanRenderGlyphs, CanOutlineGlyphs }
+ typedef Fixed
+ enum FontProperty { Ascent, Descent, Leading, XHeight, ..., OutlineGlyphsHint }
+ enum TextShapingFlag { RightToLeft, ReturnDesignMetrics }
+ flags TextShapingFlags
+
+properties
+
+public_functions
+QAbstractFontEngine ( QObject * parent = 0 )
+~QAbstractFontEngine ()
+ virtual void addGlyphOutlinesToPath ( uint * glyphs, int numGlyphs, FixedPoint * positions, QPainterPath * path )
+ virtual Capabilities capabilities () const = 0
+ virtual bool convertStringToGlyphIndices ( const QChar * string, int length, uint * glyphs, int * numGlyphs, TextShapingFlags flags ) const = 0
+ virtual QVariant fontProperty ( FontProperty property ) const = 0
+ virtual void getGlyphAdvances ( const uint * glyphs, int numGlyphs, Fixed * advances, TextShapingFlags flags ) const = 0
+ virtual GlyphMetrics glyphMetrics ( uint glyph ) const = 0
+ virtual bool renderGlyph ( uint glyph, int depth, int bytesPerLine, int height, uchar * buffer )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+true
+
+typedefed_objects
+FixedPoint
+GlyphMetrics
+Capabilities
+Fixed
+TextShapingFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QAbstractFontEngine
+name
+Capability
+key
+CanRenderGlyphs_Gray
+CanRenderGlyphs_Mono
+CanRenderGlyphs
+CanOutlineGlyphs
+public_flag
+true
+class_name
+QAbstractFontEngine
+name
+FontProperty
+key
+Ascent
+Descent
+Leading
+XHeight
+AverageCharWidth
+LineThickness
+UnderlinePosition
+MaxCharWidth
+MinLeftBearing
+MinRightBearing
+GlyphCount
+CacheGlyphsHint
+OutlineGlyphsHint
+public_flag
+true
+class_name
+QAbstractFontEngine
+name
+TextShapingFlag
+key
+RightToLeft
+ReturnDesignMetrics
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

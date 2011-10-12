@@ -1,0 +1,69 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfontengineinfo.html
+
+output_urn
+QFontEngineInfo
+
+inherits
+
+public_types
+
+properties
+family : QString
+pixelSize : qreal
+style : QFont::Style
+
+public_functions
+QFontEngineInfo ()
+QFontEngineInfo ( const QString & family )
+QFontEngineInfo ( const QFontEngineInfo & other )
+~QFontEngineInfo ()
+ QString family () const
+ qreal pixelSize () const
+ void setFamily ( const QString & name )
+ void setPixelSize ( qreal size )
+ void setStyle ( QFont::Style style )
+ void setWeight ( int weight )
+ void setWritingSystems ( const QList<QFontDatabase::WritingSystem> & writingSystems )
+ QFont::Style style () const
+ int weight () const
+ QList<QFontDatabase::WritingSystem> writingSystems () const
+ QFontEngineInfo & operator= ( const QFontEngineInfo & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

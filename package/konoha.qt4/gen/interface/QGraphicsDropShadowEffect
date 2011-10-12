@@ -1,0 +1,97 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgraphicsdropshadoweffect.html
+
+output_urn
+QGraphicsDropShadowEffect
+
+inherits
+
+public_types
+
+properties
+blurRadius : qreal
+color : QColor
+offset : QPointF
+
+public_functions
+QGraphicsDropShadowEffect ( QObject * parent = 0 )
+~QGraphicsDropShadowEffect ()
+ qreal blurRadius () const
+ QColor color () const
+ QPointF offset () const
+ qreal xOffset () const
+ qreal yOffset () const
+
+public_slots
+ void setBlurRadius ( qreal blurRadius )
+ void setColor ( const QColor & color )
+ void setOffset ( const QPointF & ofs )
+ void setOffset ( qreal dx, qreal dy )
+ void setOffset ( qreal d )
+ void setXOffset ( qreal dx )
+ void setYOffset ( qreal dy )
+
+signals
+ void blurRadiusChanged ( qreal blurRadius )
+ void colorChanged ( const QColor & color )
+ void offsetChanged ( const QPointF & offset )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QRectF boundingRectFor ( const QRectF & rect ) const
+
+reimplemented_protected_functions
+ virtual void draw ( QPainter * painter )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+ChangeFlags
+
+enums
+
+parent_enums
+class_name
+QGraphicsEffect
+name
+ChangeFlag
+key
+SourceAttached
+SourceDetached
+SourceBoundingRectChanged
+SourceInvalidated
+public_flag
+true
+class_name
+QGraphicsEffect
+name
+PixmapPadMode
+key
+NoPad
+PadToTransparentBorder
+PadToEffectiveBoundingRect
+public_flag
+true
+
+parent_index
+539
+
+parent_name
+QGraphicsEffect
+

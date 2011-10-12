@@ -1,0 +1,64 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwheelevent.html
+
+output_urn
+QWheelEvent
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QWheelEvent ( const QPoint & pos, int delta, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, Qt::Orientation orient = Qt::Vertical )
+QWheelEvent ( const QPoint & pos, const QPoint & globalPos, int delta, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, Qt::Orientation orient = Qt::Vertical )
+ Qt::MouseButtons buttons () const
+ int delta () const
+ const QPoint & globalPos () const
+ int globalX () const
+ int globalY () const
+ Qt::Orientation orientation () const
+ const QPoint & pos () const
+ int x () const
+ int y () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+434
+
+parent_name
+QInputEvent
+

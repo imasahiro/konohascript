@@ -1,0 +1,28 @@
+//At first
+Please set QT_HOME_DIR to qt install directory in gen/config.k
+For example,
+
+QT_HOME_DIR = "/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/"
+
+//generate
+To generate src/KQ*.cpp, include/KQ*.hpp, CMakeLists.txt, and qt4.k,
+
+   konoha gen/main.k;
+
+To concatenate src/KQ*.cpp into qt.cpp, and include/KQ*.hpp into qt.hpp,
+
+   konoha gen/genSrc.k;
+
+//build
+To build qt4.so from qt4.cpp and qt4.hpp,
+
+   mkdir build;
+   cd build;
+   cmake .. -DUSE_QT4=true;
+   make;
+
+
+
+
+if you already have gen/interface/*,
+in gen/script/config.k, please set GEN_INTERFACE_FILE false to speed up generating.

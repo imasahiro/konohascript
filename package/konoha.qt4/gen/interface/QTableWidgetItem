@@ -1,0 +1,105 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtablewidgetitem.html
+
+output_urn
+QTableWidgetItem
+
+inherits
+
+public_types
+ enum ItemType { Type, UserType }
+
+properties
+
+public_functions
+QTableWidgetItem ( int type = Type )
+QTableWidgetItem ( const QString & text, int type = Type )
+QTableWidgetItem ( const QIcon & icon, const QString & text, int type = Type )
+QTableWidgetItem ( const QTableWidgetItem & other )
+ virtual ~QTableWidgetItem ()
+ QBrush background () const
+ Qt::CheckState checkState () const
+ virtual QTableWidgetItem * clone () const
+ int column () const
+ virtual QVariant data ( int role ) const
+ Qt::ItemFlags flags () const
+ QFont font () const
+ QBrush foreground () const
+ QIcon icon () const
+ bool isSelected () const
+ virtual void read ( QDataStream & in )
+ int row () const
+ void setBackground ( const QBrush & brush )
+ void setCheckState ( Qt::CheckState state )
+ virtual void setData ( int role, const QVariant & value )
+ void setFlags ( Qt::ItemFlags flags )
+ void setFont ( const QFont & font )
+ void setForeground ( const QBrush & brush )
+ void setIcon ( const QIcon & icon )
+ void setSelected ( bool select )
+ void setSizeHint ( const QSize & size )
+ void setStatusTip ( const QString & statusTip )
+ void setText ( const QString & text )
+ void setTextAlignment ( int alignment )
+ void setToolTip ( const QString & toolTip )
+ void setWhatsThis ( const QString & whatsThis )
+ QSize sizeHint () const
+ QString statusTip () const
+ QTableWidget * tableWidget () const
+ QString text () const
+ int textAlignment () const
+ QString toolTip () const
+ int type () const
+ QString whatsThis () const
+ virtual void write ( QDataStream & out ) const
+ virtual bool operator< ( const QTableWidgetItem & other ) const
+ QTableWidgetItem & operator= ( const QTableWidgetItem & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & out, const QTableWidgetItem & item )
+ QDataStream & operator>> ( QDataStream & in, QTableWidgetItem & item )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QTableWidgetItem
+name
+ItemType
+key
+Type
+UserType
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

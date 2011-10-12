@@ -1,0 +1,61 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qproxyscreencursor.html
+
+output_urn
+QProxyScreenCursor
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QProxyScreenCursor ()
+~QProxyScreenCursor ()
+ QScreenCursor * screenCursor () const
+ void setScreenCursor ( QScreenCursor * cursor )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void hide ()
+ virtual void move ( int x, int y )
+ virtual void set ( const QImage & image, int hotx, int hoty )
+ virtual void show ()
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+715
+
+parent_name
+QScreenCursor
+

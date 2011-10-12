@@ -1,0 +1,127 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsplitter.html
+
+output_urn
+QSplitter
+
+inherits
+
+public_types
+
+properties
+childrenCollapsible : bool
+handleWidth : int
+opaqueResize : bool
+orientation : Qt::Orientation
+
+public_functions
+QSplitter ( QWidget * parent = 0 )
+QSplitter ( Qt::Orientation orientation, QWidget * parent = 0 )
+~QSplitter ()
+ void addWidget ( QWidget * widget )
+ bool childrenCollapsible () const
+ int count () const
+ void getRange ( int index, int * min, int * max ) const
+ QSplitterHandle * handle ( int index ) const
+ int handleWidth () const
+ int indexOf ( QWidget * widget ) const
+ void insertWidget ( int index, QWidget * widget )
+ bool isCollapsible ( int index ) const
+ bool opaqueResize () const
+ Qt::Orientation orientation () const
+ void refresh ()
+ bool restoreState ( const QByteArray & state )
+ QByteArray saveState () const
+ void setChildrenCollapsible ( bool )
+ void setCollapsible ( int index, bool collapse )
+ void setHandleWidth ( int )
+ void setOpaqueResize ( bool opaque = true )
+ void setOrientation ( Qt::Orientation )
+ void setSizes ( const QList<int> & list )
+ void setStretchFactor ( int index, int stretch )
+ QList<int> sizes () const
+ QWidget * widget ( int index ) const
+
+public_slots
+
+signals
+ void splitterMoved ( int pos, int index )
+
+static_public_members
+
+protected_functions
+ int closestLegalPosition ( int pos, int index )
+ virtual QSplitterHandle * createHandle ()
+ void moveSplitter ( int pos, int index )
+ void setRubberBand ( int pos )
+
+reimplemented_public_functions
+ virtual QSize minimumSizeHint () const
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * ev )
+ virtual void childEvent ( QChildEvent * c )
+ virtual bool event ( QEvent * e )
+ virtual void resizeEvent ( QResizeEvent * )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QFrame
+name
+Shadow
+key
+Plain
+Raised
+Sunken
+public_flag
+true
+class_name
+QFrame
+name
+Shape
+key
+NoFrame
+Box
+Panel
+StyledPanel
+HLine
+VLine
+WinPanel
+public_flag
+true
+class_name
+QFrame
+name
+StyleMask
+key
+Shadow_Mask
+Shape_Mask
+public_flag
+true
+
+parent_index
+432
+
+parent_name
+QFrame
+

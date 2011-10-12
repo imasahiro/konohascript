@@ -1,0 +1,154 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qscriptvalue.html
+
+output_urn
+QScriptValue
+
+inherits
+
+public_types
+ enum PropertyFlag { ReadOnly, Undeletable, SkipInEnumeration, PropertyGetter, ..., UserRange }
+ flags PropertyFlags
+ enum ResolveFlag { ResolveLocal, ResolvePrototype }
+ flags ResolveFlags
+ enum SpecialValue { UndefinedValue, NullValue }
+
+properties
+
+public_functions
+QScriptValue ()
+QScriptValue ( const QScriptValue & other )
+QScriptValue ( SpecialValue value )
+QScriptValue ( bool value )
+QScriptValue ( int value )
+QScriptValue ( uint value )
+QScriptValue ( qsreal value )
+QScriptValue ( const QString & value )
+QScriptValue ( const QLatin1String & value )
+QScriptValue ( const char * value )
+~QScriptValue ()
+ QScriptValue call ( const QScriptValue & thisObject = QScriptValue(), const QScriptValueList & args = QScriptValueList() )
+ QScriptValue call ( const QScriptValue & thisObject, const QScriptValue & arguments )
+ QScriptValue construct ( const QScriptValueList & args = QScriptValueList() )
+ QScriptValue construct ( const QScriptValue & arguments )
+ QScriptValue data () const
+ QScriptEngine * engine () const
+ bool equals ( const QScriptValue & other ) const
+ bool instanceOf ( const QScriptValue & other ) const
+ bool isArray () const
+ bool isBool () const
+ bool isDate () const
+ bool isError () const
+ bool isFunction () const
+ bool isNull () const
+ bool isNumber () const
+ bool isObject () const
+ bool isQMetaObject () const
+ bool isQObject () const
+ bool isRegExp () const
+ bool isString () const
+ bool isUndefined () const
+ bool isValid () const
+ bool isVariant () const
+ bool lessThan ( const QScriptValue & other ) const
+ QScriptValue property ( const QString & name, const ResolveFlags & mode = ResolvePrototype ) const
+ QScriptValue property ( const QScriptString & name, const ResolveFlags & mode = ResolvePrototype ) const
+ QScriptValue property ( quint32 arrayIndex, const ResolveFlags & mode = ResolvePrototype ) const
+ QScriptValue::PropertyFlags propertyFlags ( const QString & name, const ResolveFlags & mode = ResolvePrototype ) const
+ QScriptValue::PropertyFlags propertyFlags ( const QScriptString & name, const ResolveFlags & mode = ResolvePrototype ) const
+ QScriptValue prototype () const
+ QScriptClass * scriptClass () const
+ void setData ( const QScriptValue & data )
+ void setProperty ( const QString & name, const QScriptValue & value, const PropertyFlags & flags = KeepExistingFlags )
+ void setProperty ( const QScriptString & name, const QScriptValue & value, const PropertyFlags & flags = KeepExistingFlags )
+ void setProperty ( quint32 arrayIndex, const QScriptValue & value, const PropertyFlags & flags = KeepExistingFlags )
+ void setPrototype ( const QScriptValue & prototype )
+ void setScriptClass ( QScriptClass * scriptClass )
+ bool strictlyEquals ( const QScriptValue & other ) const
+ bool toBool () const
+ QDateTime toDateTime () const
+ qint32 toInt32 () const
+ qsreal toInteger () const
+ qsreal toNumber () const
+ const QMetaObject * toQMetaObject () const
+ QObject * toQObject () const
+ QRegExp toRegExp () const
+ QString toString () const
+ quint16 toUInt16 () const
+ quint32 toUInt32 () const
+ QVariant toVariant () const
+ QScriptValue & operator= ( const QScriptValue & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ T qscriptvalue_cast ( const QScriptValue & value )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+PropertyFlags
+ResolveFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QScriptValue
+name
+PropertyFlag
+key
+ReadOnly
+Undeletable
+SkipInEnumeration
+PropertyGetter
+PropertySetter
+QObjectMember
+KeepExistingFlags
+UserRange
+public_flag
+true
+class_name
+QScriptValue
+name
+ResolveFlag
+key
+ResolveLocal
+ResolvePrototype
+public_flag
+true
+class_name
+QScriptValue
+name
+SpecialValue
+key
+UndefinedValue
+NullValue
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

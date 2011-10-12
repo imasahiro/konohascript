@@ -1,0 +1,65 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qcommandlinkbutton.html
+
+output_urn
+QCommandLinkButton
+
+inherits
+
+public_types
+
+properties
+description : QString
+flat : bool
+
+public_functions
+QCommandLinkButton ( QWidget * parent = 0 )
+QCommandLinkButton ( const QString & text, QWidget * parent = 0 )
+QCommandLinkButton ( const QString & text, const QString & description, QWidget * parent = 0 )
+ QString description () const
+ void setDescription ( const QString & description )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+ virtual int heightForWidth ( int width ) const
+ virtual QSize minimumSizeHint () const
+ virtual void paintEvent ( QPaintEvent * )
+ virtual QSize sizeHint () const
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+124
+
+parent_name
+QPushButton
+

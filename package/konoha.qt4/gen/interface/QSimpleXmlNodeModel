@@ -1,0 +1,74 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsimplexmlnodemodel.html
+
+output_urn
+QSimpleXmlNodeModel
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QSimpleXmlNodeModel ( const QXmlNamePool & namePool )
+ virtual ~QSimpleXmlNodeModel ()
+ QXmlNamePool & namePool () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QUrl baseUri ( const QXmlNodeModelIndex & node ) const
+ virtual QXmlNodeModelIndex elementById ( const QXmlName & id ) const
+ virtual QVector<QXmlName> namespaceBindings ( const QXmlNodeModelIndex & node ) const
+ virtual QVector<QXmlNodeModelIndex> nodesByIdref ( const QXmlName & idref ) const
+ virtual QString stringValue ( const QXmlNodeModelIndex & node ) const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+List
+Ptr
+
+enums
+
+parent_enums
+class_name
+QAbstractXmlNodeModel
+name
+SimpleAxis
+key
+Parent
+FirstChild
+PreviousSibling
+NextSibling
+public_flag
+true
+
+parent_index
+141
+
+parent_name
+QAbstractXmlNodeModel
+

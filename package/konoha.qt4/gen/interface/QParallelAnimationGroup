@@ -1,0 +1,60 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qparallelanimationgroup.html
+
+output_urn
+QParallelAnimationGroup
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QParallelAnimationGroup ( QObject * parent = 0 )
+~QParallelAnimationGroup ()
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual int duration () const
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * event )
+ virtual void updateCurrentTime ( int currentTime )
+ virtual void updateDirection ( QAbstractAnimation::Direction direction )
+ virtual void updateState ( QAbstractAnimation::State newState, QAbstractAnimation::State oldState )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+567
+
+parent_name
+QAnimationGroup
+

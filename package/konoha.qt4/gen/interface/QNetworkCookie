@@ -1,0 +1,84 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qnetworkcookie.html
+
+output_urn
+QNetworkCookie
+
+inherits
+
+public_types
+ enum RawForm { NameAndValueOnly, Full }
+
+properties
+
+public_functions
+QNetworkCookie ( const QByteArray & name = QByteArray(), const QByteArray & value = QByteArray() )
+QNetworkCookie ( const QNetworkCookie & other )
+~QNetworkCookie ()
+ QString domain () const
+ QDateTime expirationDate () const
+ bool isHttpOnly () const
+ bool isSecure () const
+ bool isSessionCookie () const
+ QByteArray name () const
+ QString path () const
+ void setDomain ( const QString & domain )
+ void setExpirationDate ( const QDateTime & date )
+ void setHttpOnly ( bool enable )
+ void setName ( const QByteArray & cookieName )
+ void setPath ( const QString & path )
+ void setSecure ( bool enable )
+ void setValue ( const QByteArray & value )
+ QByteArray toRawForm ( RawForm form = Full ) const
+ QByteArray value () const
+ bool operator!= ( const QNetworkCookie & other ) const
+ QNetworkCookie & operator= ( const QNetworkCookie & other )
+ bool operator== ( const QNetworkCookie & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QList<QNetworkCookie> parseCookies ( const QByteArray & cookieString )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QNetworkCookie
+name
+RawForm
+key
+NameAndValueOnly
+Full
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

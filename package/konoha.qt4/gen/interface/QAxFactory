@@ -1,0 +1,87 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qaxfactory.html
+
+output_urn
+QAxFactory
+
+inherits
+
+public_types
+ enum ServerType { SingleInstance, MultipleInstances }
+
+properties
+
+public_functions
+QAxFactory ( const QUuid & libid, const QUuid & appid )
+ virtual ~QAxFactory ()
+ virtual QUuid appID () const
+ virtual QUuid classID ( const QString & key ) const
+ virtual QObject * createObject ( const QString & key ) = 0
+ virtual bool createObjectWrapper ( QObject * object, IDispatch ** wrapper )
+ virtual QUuid eventsID ( const QString & key ) const
+ virtual QString exposeToSuperClass ( const QString & key ) const
+ virtual QStringList featureList () const = 0
+ virtual bool hasStockEvents ( const QString & key ) const
+ virtual QUuid interfaceID ( const QString & key ) const
+ virtual bool isService () const
+ virtual const QMetaObject * metaObject ( const QString & key ) const = 0
+ virtual void registerClass ( const QString & key, QSettings * settings ) const
+ virtual bool stayTopLevel ( const QString & key ) const
+ virtual QUuid typeLibID () const
+ virtual void unregisterClass ( const QString & key, QSettings * settings ) const
+ virtual bool validateLicenseKey ( const QString & key, const QString & licenseKey ) const
+
+public_slots
+
+signals
+
+static_public_members
+ bool isServer ()
+ bool registerActiveObject ( QObject * object )
+ QString serverDirPath ()
+ QString serverFilePath ()
+ bool startServer ( ServerType type = MultipleInstances )
+ bool stopServer ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QAxFactory
+name
+ServerType
+key
+SingleInstance
+MultipleInstances
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

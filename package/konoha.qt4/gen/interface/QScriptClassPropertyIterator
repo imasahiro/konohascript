@@ -1,0 +1,63 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qscriptclasspropertyiterator.html
+
+output_urn
+QScriptClassPropertyIterator
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+ virtual ~QScriptClassPropertyIterator ()
+ virtual QScriptValue::PropertyFlags flags () const
+ virtual bool hasNext () const = 0
+ virtual bool hasPrevious () const = 0
+ virtual uint id () const
+ virtual QScriptString name () const = 0
+ virtual void next () = 0
+ QScriptValue object () const
+ virtual void previous () = 0
+ virtual void toBack () = 0
+ virtual void toFront () = 0
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+QScriptClassPropertyIterator ( const QScriptValue & object )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

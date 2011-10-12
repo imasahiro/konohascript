@@ -1,0 +1,62 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdeclarativelistproperty.html
+
+output_urn
+QDeclarativeListProperty
+
+inherits
+
+public_types
+ typedef AppendFunction
+ typedef AtFunction
+ typedef ClearFunction
+ typedef CountFunction
+
+properties
+
+public_functions
+QDeclarativeListProperty ( QObject * object, QList<T *> & list )
+QDeclarativeListProperty ( QObject * object, void * data, AppendFunction append, CountFunction count = 0, AtFunction at = 0, ClearFunction clear = 0 )
+ bool operator== ( const QDeclarativeListProperty & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+AppendFunction
+AtFunction
+ClearFunction
+CountFunction
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

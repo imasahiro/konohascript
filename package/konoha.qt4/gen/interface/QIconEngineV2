@@ -1,0 +1,72 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qiconenginev2.html
+
+output_urn
+QIconEngineV2
+
+inherits
+
+public_types
+ class AvailableSizesArgument
+ enum IconEngineHook { AvailableSizesHook, IconNameHook }
+
+properties
+
+public_functions
+ QList<QSize> availableSizes ( QIcon::Mode mode = QIcon::Normal, QIcon::State state = QIcon::Off )
+ virtual QIconEngineV2 * clone () const
+ QString iconName ()
+ virtual QString key () const
+ virtual bool read ( QDataStream & in )
+ virtual void virtual_hook ( int id, void * data )
+ virtual bool write ( QDataStream & out ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+AvailableSizesArgument
+
+parent_typedefed_objects
+
+enums
+class_name
+QIconEngineV2
+name
+IconEngineHook
+key
+AvailableSizesHook
+IconNameHook
+public_flag
+true
+
+parent_enums
+
+parent_index
+734
+
+parent_name
+QIconEngine
+

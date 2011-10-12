@@ -1,0 +1,82 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qswipegesture.html
+
+output_urn
+QSwipeGesture
+
+inherits
+
+public_types
+ enum SwipeDirection { NoDirection, Left, Right, Up, Down }
+
+properties
+horizontalDirection : const SwipeDirection
+swipeAngle : qreal
+verticalDirection : const SwipeDirection
+
+public_functions
+ SwipeDirection horizontalDirection () const
+ void setSwipeAngle ( qreal value )
+ qreal swipeAngle () const
+ SwipeDirection verticalDirection () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QSwipeGesture
+name
+SwipeDirection
+key
+NoDirection
+Left
+Right
+Up
+Down
+public_flag
+true
+
+parent_enums
+class_name
+QGesture
+name
+GestureCancelPolicy
+key
+CancelNone
+CancelAllInContext
+public_flag
+true
+
+parent_index
+41
+
+parent_name
+QGesture
+

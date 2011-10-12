@@ -1,0 +1,116 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qundoview.html
+
+output_urn
+QUndoView
+
+inherits
+
+public_types
+
+properties
+cleanIcon : QIcon
+emptyLabel : QString
+
+public_functions
+QUndoView ( QWidget * parent = 0 )
+QUndoView ( QUndoStack * stack, QWidget * parent = 0 )
+QUndoView ( QUndoGroup * group, QWidget * parent = 0 )
+~QUndoView ()
+ QIcon cleanIcon () const
+ QString emptyLabel () const
+ QUndoGroup * group () const
+ void setCleanIcon ( const QIcon & icon )
+ void setEmptyLabel ( const QString & label )
+ QUndoStack * stack () const
+
+public_slots
+ void setGroup ( QUndoGroup * group )
+ void setStack ( QUndoStack * stack )
+
+signals
+9 public slots inherited from QAbstractItemView
+19 public slots inherited from QWidget
+1 public slot inherited from QObject
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QListView
+name
+Flow
+key
+LeftToRight
+TopToBottom
+public_flag
+true
+class_name
+QListView
+name
+LayoutMode
+key
+SinglePass
+Batched
+public_flag
+true
+class_name
+QListView
+name
+Movement
+key
+Static
+Free
+Snap
+public_flag
+true
+class_name
+QListView
+name
+ResizeMode
+key
+Fixed
+Adjust
+public_flag
+true
+class_name
+QListView
+name
+ViewMode
+key
+ListMode
+IconMode
+public_flag
+true
+
+parent_index
+365
+
+parent_name
+QListView
+

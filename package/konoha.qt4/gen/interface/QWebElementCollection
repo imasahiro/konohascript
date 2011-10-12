@@ -1,0 +1,75 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwebelementcollection.html
+
+output_urn
+QWebElementCollection
+
+inherits
+
+public_types
+ class const_iterator
+ class iterator
+
+properties
+
+public_functions
+QWebElementCollection ()
+QWebElementCollection ( const QWebElement & contextElement, const QString & query )
+QWebElementCollection ( const QWebElementCollection & other )
+~QWebElementCollection ()
+ void append ( const QWebElementCollection & other )
+ QWebElement at ( int i ) const
+ const_iterator begin () const
+ iterator begin ()
+ const_iterator constBegin () const
+ const_iterator constEnd () const
+ int count () const
+ const_iterator end () const
+ iterator end ()
+ QWebElement first () const
+ QWebElement last () const
+ QList<QWebElement> toList () const
+ QWebElementCollection operator+ ( const QWebElementCollection & other ) const
+ QWebElementCollection & operator+= ( const QWebElementCollection & other )
+ QWebElementCollection & operator= ( const QWebElementCollection & other )
+ QWebElement operator[] ( int position ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+const_iterator
+iterator
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

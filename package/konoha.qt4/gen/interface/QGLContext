@@ -1,0 +1,103 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qglcontext.html
+
+output_urn
+QGLContext
+
+inherits
+
+public_types
+ enum BindOption { NoBindOption, InvertedYBindOption, MipmapBindOption, PremultipliedAlphaBindOption, LinearFilteringBindOption, DefaultBindOption }
+ flags BindOptions
+
+properties
+
+public_functions
+QGLContext ( const QGLFormat & format )
+ virtual ~QGLContext ()
+ GLuint bindTexture ( const QImage & image, GLenum target, GLint format, BindOptions options )
+ GLuint bindTexture ( const QString & fileName )
+ GLuint bindTexture ( const QImage & image, GLenum target = GL_TEXTURE_2D, GLint format = GL_RGBA )
+ GLuint bindTexture ( const QPixmap & pixmap, GLenum target = GL_TEXTURE_2D, GLint format = GL_RGBA )
+ GLuint bindTexture ( const QPixmap & pixmap, GLenum target, GLint format, BindOptions options )
+ virtual bool create ( const QGLContext * shareContext = 0 )
+ void deleteTexture ( GLuint id )
+ QPaintDevice * device () const
+ virtual void doneCurrent ()
+ void drawTexture ( const QRectF & target, GLuint textureId, GLenum textureTarget = GL_TEXTURE_2D )
+ void drawTexture ( const QPointF & point, GLuint textureId, GLenum textureTarget = GL_TEXTURE_2D )
+ QGLFormat format () const
+ void * getProcAddress ( const QString & proc ) const
+ bool isSharing () const
+ bool isValid () const
+ virtual void makeCurrent ()
+ QColor overlayTransparentColor () const
+ QGLFormat requestedFormat () const
+ void reset ()
+ void setFormat ( const QGLFormat & format )
+ virtual void swapBuffers () const
+
+public_slots
+
+signals
+
+static_public_members
+ bool areSharing ( const QGLContext * context1, const QGLContext * context2 )
+ const QGLContext * currentContext ()
+ void setTextureCacheLimit ( int size )
+ int textureCacheLimit ()
+
+protected_functions
+ virtual bool chooseContext ( const QGLContext * shareContext = 0 )
+ virtual void * chooseMacVisual ( GDHandle handle )
+ virtual int choosePixelFormat ( void * dummyPfd, HDC pdc )
+ virtual void * chooseVisual ()
+ bool deviceIsPixmap () const
+ bool initialized () const
+ void setInitialized ( bool on )
+ void setWindowCreated ( bool on )
+ bool windowCreated () const
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+BindOptions
+
+parent_typedefed_objects
+
+enums
+class_name
+QGLContext
+name
+BindOption
+key
+NoBindOption
+InvertedYBindOption
+MipmapBindOption
+PremultipliedAlphaBindOption
+LinearFilteringBindOption
+DefaultBindOption
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

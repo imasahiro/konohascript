@@ -1,0 +1,82 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdbusservicewatcher.html
+
+output_urn
+QDBusServiceWatcher
+
+inherits
+
+public_types
+ flags WatchMode
+ enum WatchModeFlag { WatchForRegistration, WatchForUnregistration, WatchForOwnerChange }
+
+properties
+watchMode : WatchMode
+watchedServices : QStringList
+
+public_functions
+QDBusServiceWatcher ( QObject * parent = 0 )
+QDBusServiceWatcher ( const QString & service, const QDBusConnection & connection, WatchMode watchMode = WatchForOwnerChange, QObject * parent = 0 )
+~QDBusServiceWatcher ()
+ void addWatchedService ( const QString & newService )
+ QDBusConnection connection () const
+ bool removeWatchedService ( const QString & service )
+ void setConnection ( const QDBusConnection & connection )
+ void setWatchMode ( WatchMode mode )
+ void setWatchedServices ( const QStringList & services )
+ WatchMode watchMode () const
+ QStringList watchedServices () const
+
+public_slots
+
+signals
+ void serviceOwnerChanged ( const QString & serviceName, const QString & oldOwner, const QString & newOwner )
+ void serviceRegistered ( const QString & serviceName )
+ void serviceUnregistered ( const QString & serviceName )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+WatchMode
+
+parent_typedefed_objects
+
+enums
+class_name
+QDBusServiceWatcher
+name
+WatchModeFlag
+key
+WatchForRegistration
+WatchForUnregistration
+WatchForOwnerChange
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

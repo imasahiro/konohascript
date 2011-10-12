@@ -1,0 +1,133 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsqldriver.html
+
+output_urn
+QSqlDriver
+
+inherits
+
+public_types
+ enum DriverFeature { Transactions, QuerySize, BLOB, Unicode, ..., MultipleResultSets }
+ enum IdentifierType { FieldName, TableName }
+ enum StatementType { WhereStatement, SelectStatement, UpdateStatement, InsertStatement, DeleteStatement }
+
+properties
+
+public_functions
+QSqlDriver ( QObject * parent = 0 )
+~QSqlDriver ()
+ virtual bool beginTransaction ()
+ virtual void close () = 0
+ virtual bool commitTransaction ()
+ virtual QSqlResult * createResult () const = 0
+ virtual QString escapeIdentifier ( const QString & identifier, IdentifierType type ) const
+ virtual QString formatValue ( const QSqlField & field, bool trimStrings = false ) const
+ virtual QVariant handle () const
+ virtual bool hasFeature ( DriverFeature feature ) const = 0
+ bool isIdentifierEscaped ( const QString & identifier, IdentifierType type ) const
+ virtual bool isOpen () const
+ bool isOpenError () const
+ QSqlError lastError () const
+ QSql::NumericalPrecisionPolicy numericalPrecisionPolicy () const
+ virtual bool open ( const QString & db, const QString & user = QString(), const QString & password = QString(), const QString & host = QString(), int port = -1, const QString & options = QString() ) = 0
+ virtual QSqlIndex primaryIndex ( const QString & tableName ) const
+ virtual QSqlRecord record ( const QString & tableName ) const
+ virtual bool rollbackTransaction ()
+ void setNumericalPrecisionPolicy ( QSql::NumericalPrecisionPolicy precisionPolicy )
+ virtual QString sqlStatement ( StatementType type, const QString & tableName, const QSqlRecord & rec, bool preparedStatement ) const
+ QString stripDelimiters ( const QString & identifier, IdentifierType type ) const
+ bool subscribeToNotification ( const QString & name )
+ QStringList subscribedToNotifications () const
+ virtual QStringList tables ( QSql::TableType tableType ) const
+ bool unsubscribeFromNotification ( const QString & name )
+
+public_slots
+
+signals
+ void notification ( const QString & name )
+
+static_public_members
+
+protected_functions
+ virtual void setLastError ( const QSqlError & error )
+ virtual void setOpen ( bool open )
+ virtual void setOpenError ( bool error )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+ bool isIdentifierEscapedImplementation ( const QString & identifier, IdentifierType type ) const
+ QString stripDelimitersImplementation ( const QString & identifier, IdentifierType type ) const
+ bool subscribeToNotificationImplementation ( const QString & name )
+ QStringList subscribedToNotificationsImplementation () const
+ bool unsubscribeFromNotificationImplementation ( const QString & name )
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QSqlDriver
+name
+DriverFeature
+key
+Transactions
+QuerySize
+BLOB
+Unicode
+PreparedQueries
+NamedPlaceholders
+PositionalPlaceholders
+LastInsertId
+BatchOperations
+SimpleLocking
+LowPrecisionNumbers
+EventNotifications
+FinishQuery
+MultipleResultSets
+public_flag
+true
+class_name
+QSqlDriver
+name
+IdentifierType
+key
+FieldName
+TableName
+public_flag
+true
+class_name
+QSqlDriver
+name
+StatementType
+key
+WhereStatement
+SelectStatement
+UpdateStatement
+InsertStatement
+DeleteStatement
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

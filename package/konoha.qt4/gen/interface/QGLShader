@@ -1,0 +1,79 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qglshader.html
+
+output_urn
+QGLShader
+
+inherits
+
+public_types
+ flags ShaderType
+ enum ShaderTypeBit { Vertex, Fragment, Geometry }
+
+properties
+
+public_functions
+QGLShader ( QGLShader::ShaderType type, QObject * parent = 0 )
+QGLShader ( QGLShader::ShaderType type, const QGLContext * context, QObject * parent = 0 )
+ virtual ~QGLShader ()
+ bool compileSourceCode ( const char * source )
+ bool compileSourceCode ( const QByteArray & source )
+ bool compileSourceCode ( const QString & source )
+ bool compileSourceFile ( const QString & fileName )
+ bool isCompiled () const
+ QString log () const
+ GLuint shaderId () const
+ QGLShader::ShaderType shaderType () const
+ QByteArray sourceCode () const
+
+public_slots
+
+signals
+
+static_public_members
+ bool hasOpenGLShaders ( ShaderType type, const QGLContext * context = 0 )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+ShaderType
+
+parent_typedefed_objects
+
+enums
+class_name
+QGLShader
+name
+ShaderTypeBit
+key
+Vertex
+Fragment
+Geometry
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

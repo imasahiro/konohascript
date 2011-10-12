@@ -1,0 +1,105 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qurlinfo.html
+
+output_urn
+QUrlInfo
+
+inherits
+
+public_types
+ enum PermissionSpec { ReadOwner, WriteOwner, ExeOwner, ReadGroup, ..., ExeOther }
+
+properties
+
+public_functions
+QUrlInfo ()
+QUrlInfo ( const QUrlInfo & ui )
+QUrlInfo ( const QString & name, int permissions, const QString & owner, const QString & group, qint64 size, const QDateTime & lastModified, const QDateTime & lastRead, bool isDir, bool isFile, bool isSymLink, bool isWritable, bool isReadable, bool isExecutable )
+QUrlInfo ( const QUrl & url, int permissions, const QString & owner, const QString & group, qint64 size, const QDateTime & lastModified, const QDateTime & lastRead, bool isDir, bool isFile, bool isSymLink, bool isWritable, bool isReadable, bool isExecutable )
+ virtual ~QUrlInfo ()
+ QString group () const
+ bool isDir () const
+ bool isExecutable () const
+ bool isFile () const
+ bool isReadable () const
+ bool isSymLink () const
+ bool isValid () const
+ bool isWritable () const
+ QDateTime lastModified () const
+ QDateTime lastRead () const
+ QString name () const
+ QString owner () const
+ int permissions () const
+ virtual void setDir ( bool b )
+ virtual void setFile ( bool b )
+ virtual void setGroup ( const QString & s )
+ virtual void setLastModified ( const QDateTime & dt )
+ void setLastRead ( const QDateTime & dt )
+ virtual void setName ( const QString & name )
+ virtual void setOwner ( const QString & s )
+ virtual void setPermissions ( int p )
+ virtual void setReadable ( bool b )
+ virtual void setSize ( qint64 size )
+ virtual void setSymLink ( bool b )
+ virtual void setWritable ( bool b )
+ qint64 size () const
+ bool operator!= ( const QUrlInfo & other ) const
+ QUrlInfo & operator= ( const QUrlInfo & ui )
+ bool operator== ( const QUrlInfo & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+ bool equal ( const QUrlInfo & i1, const QUrlInfo & i2, int sortBy )
+ bool greaterThan ( const QUrlInfo & i1, const QUrlInfo & i2, int sortBy )
+ bool lessThan ( const QUrlInfo & i1, const QUrlInfo & i2, int sortBy )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QUrlInfo
+name
+PermissionSpec
+key
+ReadOwner
+WriteOwner
+ExeOwner
+ReadGroup
+WriteGroup
+ExeGroup
+ReadOther
+WriteOther
+ExeOther
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

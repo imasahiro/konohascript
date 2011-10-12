@@ -1,0 +1,113 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qboxlayout.html
+
+output_urn
+QBoxLayout
+
+inherits
+
+public_types
+ enum Direction { LeftToRight, RightToLeft, TopToBottom, BottomToTop }
+
+properties
+
+public_functions
+QBoxLayout ( Direction dir, QWidget * parent = 0 )
+~QBoxLayout ()
+ void addLayout ( QLayout * layout, int stretch = 0 )
+ void addSpacerItem ( QSpacerItem * spacerItem )
+ void addSpacing ( int size )
+ void addStretch ( int stretch = 0 )
+ void addStrut ( int size )
+ void addWidget ( QWidget * widget, int stretch = 0, Qt::Alignment alignment = 0 )
+ Direction direction () const
+ void insertLayout ( int index, QLayout * layout, int stretch = 0 )
+ void insertSpacerItem ( int index, QSpacerItem * spacerItem )
+ void insertSpacing ( int index, int size )
+ void insertStretch ( int index, int stretch = 0 )
+ void insertWidget ( int index, QWidget * widget, int stretch = 0, Qt::Alignment alignment = 0 )
+ void setDirection ( Direction direction )
+ void setSpacing ( int spacing )
+ void setStretch ( int index, int stretch )
+ bool setStretchFactor ( QWidget * widget, int stretch )
+ bool setStretchFactor ( QLayout * layout, int stretch )
+ int spacing () const
+ int stretch ( int index ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ void insertItem ( int index, QLayoutItem * item )
+
+reimplemented_public_functions
+ virtual void addItem ( QLayoutItem * item )
+ virtual int count () const
+ virtual Qt::Orientations expandingDirections () const
+ virtual bool hasHeightForWidth () const
+ virtual int heightForWidth ( int w ) const
+ virtual void invalidate ()
+ virtual QLayoutItem * itemAt ( int index ) const
+ virtual QSize maximumSize () const
+ virtual int minimumHeightForWidth ( int w ) const
+ virtual QSize minimumSize () const
+ virtual void setGeometry ( const QRect & r )
+ virtual QSize sizeHint () const
+ virtual QLayoutItem * takeAt ( int index )
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QBoxLayout
+name
+Direction
+key
+LeftToRight
+RightToLeft
+TopToBottom
+BottomToTop
+public_flag
+true
+
+parent_enums
+class_name
+QLayout
+name
+SizeConstraint
+key
+SetDefaultConstraint
+SetFixedSize
+SetMinimumSize
+SetMaximumSize
+SetMinAndMaxSize
+SetNoConstraint
+public_flag
+true
+
+parent_index
+180
+
+parent_name
+QLayout
+

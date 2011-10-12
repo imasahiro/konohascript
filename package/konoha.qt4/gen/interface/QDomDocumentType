@@ -1,0 +1,93 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdomdocumenttype.html
+
+output_urn
+QDomDocumentType
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDomDocumentType ()
+QDomDocumentType ( const QDomDocumentType & n )
+ QDomNamedNodeMap entities () const
+ QString internalSubset () const
+ QString name () const
+ QDomNode::NodeType nodeType () const
+ QDomNamedNodeMap notations () const
+ QString publicId () const
+ QString systemId () const
+ QDomDocumentType & operator= ( const QDomDocumentType & n )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QDomNode
+name
+EncodingPolicy
+key
+EncodingFromDocument
+EncodingFromTextStream
+public_flag
+true
+class_name
+QDomNode
+name
+NodeType
+key
+ElementNode
+AttributeNode
+TextNode
+CDATASectionNode
+EntityReferenceNode
+EntityNode
+ProcessingInstructionNode
+CommentNode
+DocumentNode
+DocumentTypeNode
+DocumentFragmentNode
+NotationNode
+BaseNode
+CharacterDataNode
+public_flag
+true
+
+parent_index
+758
+
+parent_name
+QDomNode
+

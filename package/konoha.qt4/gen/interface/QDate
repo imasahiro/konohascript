@@ -1,0 +1,104 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdate.html
+
+output_urn
+QDate
+
+inherits
+
+public_types
+ enum MonthNameType { DateFormat, StandaloneFormat }
+
+properties
+
+public_functions
+QDate ()
+QDate ( int y, int m, int d )
+ QDate addDays ( int ndays ) const
+ QDate addMonths ( int nmonths ) const
+ QDate addYears ( int nyears ) const
+ int day () const
+ int dayOfWeek () const
+ int dayOfYear () const
+ int daysInMonth () const
+ int daysInYear () const
+ int daysTo ( const QDate & d ) const
+ void getDate ( int * year, int * month, int * day )
+ bool isNull () const
+ bool isValid () const
+ int month () const
+ bool setDate ( int year, int month, int day )
+ int toJulianDay () const
+ QString toString ( const QString & format ) const
+ QString toString ( Qt::DateFormat format = Qt::TextDate ) const
+ int weekNumber ( int * yearNumber = 0 ) const
+ int year () const
+ bool operator!= ( const QDate & d ) const
+ bool operator< ( const QDate & d ) const
+ bool operator<= ( const QDate & d ) const
+ bool operator== ( const QDate & d ) const
+ bool operator> ( const QDate & d ) const
+ bool operator>= ( const QDate & d ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QDate currentDate ()
+ QDate fromJulianDay ( int jd )
+ QDate fromString ( const QString & string, Qt::DateFormat format = Qt::TextDate )
+ QDate fromString ( const QString & string, const QString & format )
+ bool isLeapYear ( int year )
+ bool isValid ( int year, int month, int day )
+ QString longDayName ( int weekday )
+ QString longDayName ( int weekday, MonthNameType type )
+ QString longMonthName ( int month )
+ QString longMonthName ( int month, MonthNameType type )
+ QString shortDayName ( int weekday )
+ QString shortDayName ( int weekday, MonthNameType type )
+ QString shortMonthName ( int month )
+ QString shortMonthName ( int month, MonthNameType type )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & out, const QDate & date )
+ QDataStream & operator>> ( QDataStream & in, QDate & date )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDate
+name
+MonthNameType
+key
+DateFormat
+StandaloneFormat
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

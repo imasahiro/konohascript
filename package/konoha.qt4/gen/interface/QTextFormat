@@ -1,0 +1,225 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextformat.html
+
+output_urn
+QTextFormat
+
+inherits
+
+public_types
+ enum FormatType { InvalidFormat, BlockFormat, CharFormat, ListFormat, ..., UserFormat }
+ enum ObjectTypes { NoObject, ImageObject, TableObject, TableCellObject, UserObject }
+ enum PageBreakFlag { PageBreak_Auto, PageBreak_AlwaysBefore, PageBreak_AlwaysAfter }
+ flags PageBreakFlags
+ enum Property { ObjectIndex, CssFloat, LayoutDirection, OutlinePen, ..., UserProperty }
+
+properties
+
+public_functions
+QTextFormat ()
+QTextFormat ( int type )
+QTextFormat ( const QTextFormat & other )
+~QTextFormat ()
+ QBrush background () const
+ bool boolProperty ( int propertyId ) const
+ QBrush brushProperty ( int propertyId ) const
+ void clearBackground ()
+ void clearForeground ()
+ void clearProperty ( int propertyId )
+ QColor colorProperty ( int propertyId ) const
+ qreal doubleProperty ( int propertyId ) const
+ QBrush foreground () const
+ bool hasProperty ( int propertyId ) const
+ int intProperty ( int propertyId ) const
+ bool isBlockFormat () const
+ bool isCharFormat () const
+ bool isFrameFormat () const
+ bool isImageFormat () const
+ bool isListFormat () const
+ bool isTableCellFormat () const
+ bool isTableFormat () const
+ bool isValid () const
+ Qt::LayoutDirection layoutDirection () const
+ QTextLength lengthProperty ( int propertyId ) const
+ QVector<QTextLength> lengthVectorProperty ( int propertyId ) const
+ void merge ( const QTextFormat & other )
+ int objectIndex () const
+ int objectType () const
+ QPen penProperty ( int propertyId ) const
+ QMap<int, QVariant> properties () const
+ QVariant property ( int propertyId ) const
+ int propertyCount () const
+ void setBackground ( const QBrush & brush )
+ void setForeground ( const QBrush & brush )
+ void setLayoutDirection ( Qt::LayoutDirection direction )
+ void setObjectIndex ( int index )
+ void setObjectType ( int type )
+ void setProperty ( int propertyId, const QVariant & value )
+ void setProperty ( int propertyId, const QVector<QTextLength> & value )
+ QString stringProperty ( int propertyId ) const
+ QTextBlockFormat toBlockFormat () const
+ QTextCharFormat toCharFormat () const
+ QTextFrameFormat toFrameFormat () const
+ QTextImageFormat toImageFormat () const
+ QTextListFormat toListFormat () const
+ QTextTableCellFormat toTableCellFormat () const
+ QTextTableFormat toTableFormat () const
+ int type () const
+operator QVariant () const
+ bool operator!= ( const QTextFormat & other ) const
+ QTextFormat & operator= ( const QTextFormat & other )
+ bool operator== ( const QTextFormat & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+PageBreakFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QTextFormat
+name
+FormatType
+key
+InvalidFormat
+BlockFormat
+CharFormat
+ListFormat
+TableFormat
+FrameFormat
+UserFormat
+public_flag
+true
+class_name
+QTextFormat
+name
+ObjectTypes
+key
+NoObject
+ImageObject
+TableObject
+TableCellObject
+UserObject
+public_flag
+true
+class_name
+QTextFormat
+name
+PageBreakFlag
+key
+PageBreak_Auto
+PageBreak_AlwaysBefore
+PageBreak_AlwaysAfter
+public_flag
+true
+class_name
+QTextFormat
+name
+Property
+key
+ObjectIndex
+CssFloat
+LayoutDirection
+OutlinePen
+ForegroundBrush
+BackgroundBrush
+BackgroundImageUrl
+BlockAlignment
+BlockTopMargin
+BlockBottomMargin
+BlockLeftMargin
+BlockRightMargin
+TextIndent
+TabPositions
+BlockIndent
+BlockNonBreakableLines
+BlockTrailingHorizontalRulerWidth
+FontFamily
+FontPointSize
+FontPixelSize
+FontSizeAdjustment
+FontFixedPitch
+FontWeight
+FontItalic
+FontUnderline
+FontOverline
+FontStrikeOut
+FontCapitalization
+FontLetterSpacing
+FontWordSpacing
+FontStyleHint
+FontStyleStrategy
+FontKerning
+TextUnderlineColor
+TextVerticalAlignment
+TextOutline
+TextUnderlineStyle
+TextToolTip
+IsAnchor
+AnchorHref
+AnchorName
+ObjectType
+ListStyle
+ListIndent
+FrameBorder
+FrameBorderBrush
+FrameBorderStyle
+FrameBottomMargin
+FrameHeight
+FrameLeftMargin
+FrameMargin
+FramePadding
+FrameRightMargin
+FrameTopMargin
+FrameWidth
+TableCellSpacing
+TableCellPadding
+TableColumns
+TableColumnWidthConstraints
+TableHeaderRowCount
+TableCellRowSpan
+TableCellColumnSpan
+TableCellLeftPadding
+TableCellRightPadding
+TableCellTopPadding
+TableCellBottomPadding
+ImageName
+ImageWidth
+ImageHeight
+FullWidthSelection
+PageBreakPolicy
+UserProperty
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

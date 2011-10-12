@@ -1,0 +1,71 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdeclarativeexpression.html
+
+output_urn
+QDeclarativeExpression
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDeclarativeExpression ()
+QDeclarativeExpression ( QDeclarativeContext * ctxt, QObject * scope, const QString & expression, QObject * parent = 0 )
+ virtual ~QDeclarativeExpression ()
+ void clearError ()
+ QDeclarativeContext * context () const
+ QDeclarativeEngine * engine () const
+ QDeclarativeError error () const
+ QVariant evaluate ( bool * valueIsUndefined = 0 )
+ QString expression () const
+ bool hasError () const
+ int lineNumber () const
+ bool notifyOnValueChanged () const
+ QObject * scopeObject () const
+ void setExpression ( const QString & expression )
+ void setNotifyOnValueChanged ( bool notifyOnChange )
+ void setSourceLocation ( const QString & url, int line )
+ QString sourceFile () const
+
+public_slots
+
+signals
+ void valueChanged ()
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

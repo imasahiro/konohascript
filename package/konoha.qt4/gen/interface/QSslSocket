@@ -1,0 +1,147 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsslsocket.html
+
+output_urn
+QSslSocket
+
+inherits
+
+public_types
+ enum PeerVerifyMode { VerifyNone, QueryPeer, VerifyPeer, AutoVerifyPeer }
+ enum SslMode { UnencryptedMode, SslClientMode, SslServerMode }
+
+properties
+
+public_functions
+QSslSocket ( QObject * parent = 0 )
+~QSslSocket ()
+ void abort ()
+ void addCaCertificate ( const QSslCertificate & certificate )
+ bool addCaCertificates ( const QString & path, QSsl::EncodingFormat format = QSsl::Pem, QRegExp::PatternSyntax syntax = QRegExp::FixedString )
+ void addCaCertificates ( const QList<QSslCertificate> & certificates )
+ QList<QSslCertificate> caCertificates () const
+ QList<QSslCipher> ciphers () const
+ void connectToHostEncrypted ( const QString & hostName, quint16 port, OpenMode mode = ReadWrite )
+ void connectToHostEncrypted ( const QString & hostName, quint16 port, const QString & sslPeerName, OpenMode mode = ReadWrite )
+ qint64 encryptedBytesAvailable () const
+ qint64 encryptedBytesToWrite () const
+ bool flush ()
+ void ignoreSslErrors ( const QList<QSslError> & errors )
+ bool isEncrypted () const
+ QSslCertificate localCertificate () const
+ SslMode mode () const
+ QSslCertificate peerCertificate () const
+ QList<QSslCertificate> peerCertificateChain () const
+ int peerVerifyDepth () const
+ QSslSocket::PeerVerifyMode peerVerifyMode () const
+ QSslKey privateKey () const
+ QSsl::SslProtocol protocol () const
+ QSslCipher sessionCipher () const
+ void setCaCertificates ( const QList<QSslCertificate> & certificates )
+ void setCiphers ( const QList<QSslCipher> & ciphers )
+ void setCiphers ( const QString & ciphers )
+ void setLocalCertificate ( const QSslCertificate & certificate )
+ void setLocalCertificate ( const QString & path, QSsl::EncodingFormat format = QSsl::Pem )
+ void setPeerVerifyDepth ( int depth )
+ void setPeerVerifyMode ( QSslSocket::PeerVerifyMode mode )
+ void setPrivateKey ( const QSslKey & key )
+ void setPrivateKey ( const QString & fileName, QSsl::KeyAlgorithm algorithm = QSsl::Rsa, QSsl::EncodingFormat format = QSsl::Pem, const QByteArray & passPhrase = QByteArray() )
+ void setProtocol ( QSsl::SslProtocol protocol )
+ void setReadBufferSize ( qint64 size )
+ bool setSocketDescriptor ( int socketDescriptor, SocketState state = ConnectedState, OpenMode openMode = ReadWrite )
+ void setSocketOption ( QAbstractSocket::SocketOption option, const QVariant & value )
+ void setSslConfiguration ( const QSslConfiguration & configuration )
+ QVariant socketOption ( QAbstractSocket::SocketOption option )
+ QSslConfiguration sslConfiguration () const
+ QList<QSslError> sslErrors () const
+ bool waitForConnected ( int msecs = 30000 )
+ bool waitForDisconnected ( int msecs = 30000 )
+ bool waitForEncrypted ( int msecs = 30000 )
+
+public_slots
+ void ignoreSslErrors ()
+ void startClientEncryption ()
+ void startServerEncryption ()
+
+signals
+ void encrypted ()
+ void encryptedBytesWritten ( qint64 written )
+ void modeChanged ( QSslSocket::SslMode mode )
+ void peerVerifyError ( const QSslError & error )
+ void sslErrors ( const QList<QSslError> & errors )
+
+static_public_members
+ void addDefaultCaCertificate ( const QSslCertificate & certificate )
+ bool addDefaultCaCertificates ( const QString & path, QSsl::EncodingFormat encoding = QSsl::Pem, QRegExp::PatternSyntax syntax = QRegExp::FixedString )
+ void addDefaultCaCertificates ( const QList<QSslCertificate> & certificates )
+ QList<QSslCertificate> defaultCaCertificates ()
+ QList<QSslCipher> defaultCiphers ()
+ void setDefaultCaCertificates ( const QList<QSslCertificate> & certificates )
+ void setDefaultCiphers ( const QList<QSslCipher> & ciphers )
+ QList<QSslCipher> supportedCiphers ()
+ bool supportsSsl ()
+ QList<QSslCertificate> systemCaCertificates ()
+
+protected_functions
+
+reimplemented_public_functions
+ virtual bool atEnd () const
+ virtual qint64 bytesAvailable () const
+ virtual qint64 bytesToWrite () const
+ virtual bool canReadLine () const
+ virtual void close ()
+ virtual bool waitForBytesWritten ( int msecs = 30000 )
+ virtual bool waitForReadyRead ( int msecs = 30000 )
+
+reimplemented_protected_functions
+ virtual qint64 readData ( char * data, qint64 maxlen )
+ virtual qint64 writeData ( const char * data, qint64 len )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QSslSocket
+name
+PeerVerifyMode
+key
+VerifyNone
+QueryPeer
+VerifyPeer
+AutoVerifyPeer
+public_flag
+true
+class_name
+QSslSocket
+name
+SslMode
+key
+UnencryptedMode
+SslClientMode
+SslServerMode
+public_flag
+true
+
+parent_enums
+
+parent_index
+355
+
+parent_name
+QTcpSocket
+

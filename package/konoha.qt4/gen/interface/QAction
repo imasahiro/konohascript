@@ -1,0 +1,175 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qaction.html
+
+output_urn
+QAction
+
+inherits
+
+public_types
+ enum ActionEvent { Trigger, Hover }
+ enum MenuRole { NoRole, TextHeuristicRole, ApplicationSpecificRole, AboutQtRole, ..., QuitRole }
+ enum Priority { LowPriority, NormalPriority, HighPriority }
+ enum SoftKeyRole { NoSoftKey, PositiveSoftKey, NegativeSoftKey, SelectSoftKey }
+
+properties
+autoRepeat : bool
+checkable : bool
+checked : bool
+enabled : bool
+font : QFont
+icon : QIcon
+iconText : QString
+iconVisibleInMenu : bool
+menuRole : MenuRole
+
+public_functions
+QAction ( QObject * parent )
+QAction ( const QString & text, QObject * parent )
+QAction ( const QIcon & icon, const QString & text, QObject * parent )
+~QAction ()
+ QActionGroup * actionGroup () const
+ void activate ( ActionEvent event )
+ QList<QGraphicsWidget *> associatedGraphicsWidgets () const
+ QList<QWidget *> associatedWidgets () const
+ bool autoRepeat () const
+ QVariant data () const
+ QFont font () const
+ QIcon icon () const
+ QString iconText () const
+ bool isCheckable () const
+ bool isChecked () const
+ bool isEnabled () const
+ bool isIconVisibleInMenu () const
+ bool isSeparator () const
+ bool isVisible () const
+ QMenu * menu () const
+ MenuRole menuRole () const
+ QWidget * parentWidget () const
+ Priority priority () const
+ void setActionGroup ( QActionGroup * group )
+ void setAutoRepeat ( bool )
+ void setCheckable ( bool )
+ void setData ( const QVariant & userData )
+ void setFont ( const QFont & font )
+ void setIcon ( const QIcon & icon )
+ void setIconText ( const QString & text )
+ void setIconVisibleInMenu ( bool visible )
+ void setMenu ( QMenu * menu )
+ void setMenuRole ( MenuRole menuRole )
+ void setPriority ( Priority priority )
+ void setSeparator ( bool b )
+ void setShortcut ( const QKeySequence & shortcut )
+ void setShortcutContext ( Qt::ShortcutContext context )
+ void setShortcuts ( const QList<QKeySequence> & shortcuts )
+ void setShortcuts ( QKeySequence::StandardKey key )
+ void setSoftKeyRole ( SoftKeyRole softKeyRole )
+ void setStatusTip ( const QString & statusTip )
+ void setText ( const QString & text )
+ void setToolTip ( const QString & tip )
+ void setWhatsThis ( const QString & what )
+ QKeySequence shortcut () const
+ Qt::ShortcutContext shortcutContext () const
+ QList<QKeySequence> shortcuts () const
+ bool showStatusText ( QWidget * widget = 0 )
+ SoftKeyRole softKeyRole () const
+ QString statusTip () const
+ QString text () const
+ QString toolTip () const
+ QString whatsThis () const
+
+public_slots
+ void hover ()
+ void setChecked ( bool )
+ void setDisabled ( bool b )
+ void setEnabled ( bool )
+ void setVisible ( bool )
+ void toggle ()
+ void trigger ()
+
+signals
+ void changed ()
+ void hovered ()
+ void toggled ( bool checked )
+ void triggered ( bool checked = false )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QAction
+name
+ActionEvent
+key
+Trigger
+Hover
+public_flag
+true
+class_name
+QAction
+name
+MenuRole
+key
+NoRole
+TextHeuristicRole
+ApplicationSpecificRole
+AboutQtRole
+AboutRole
+PreferencesRole
+QuitRole
+public_flag
+true
+class_name
+QAction
+name
+Priority
+key
+LowPriority
+NormalPriority
+HighPriority
+public_flag
+true
+class_name
+QAction
+name
+SoftKeyRole
+key
+NoSoftKey
+PositiveSoftKey
+NegativeSoftKey
+SelectSoftKey
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

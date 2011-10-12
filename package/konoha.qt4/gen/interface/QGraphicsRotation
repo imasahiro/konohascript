@@ -1,0 +1,69 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgraphicsrotation.html
+
+output_urn
+QGraphicsRotation
+
+inherits
+
+public_types
+
+properties
+angle : qreal
+axis : QVector3D
+origin : QVector3D
+
+public_functions
+QGraphicsRotation ( QObject * parent = 0 )
+~QGraphicsRotation ()
+ qreal angle () const
+ QVector3D axis () const
+ QVector3D origin () const
+ void setAngle ( qreal )
+ void setAxis ( const QVector3D & axis )
+ void setAxis ( Qt::Axis axis )
+ void setOrigin ( const QVector3D & point )
+
+public_slots
+
+signals
+ void angleChanged ()
+ void axisChanged ()
+ void originChanged ()
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void applyTo ( QMatrix4x4 * matrix ) const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+352
+
+parent_name
+QGraphicsTransform
+

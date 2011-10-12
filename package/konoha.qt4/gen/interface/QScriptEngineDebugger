@@ -1,0 +1,117 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qscriptenginedebugger.html
+
+output_urn
+QScriptEngineDebugger
+
+inherits
+
+public_types
+ enum DebuggerAction { InterruptAction, ContinueAction, StepIntoAction, StepOverAction, ..., GoToLineAction }
+ enum DebuggerState { RunningState, SuspendedState }
+ enum DebuggerWidget { ConsoleWidget, StackWidget, ScriptsWidget, LocalsWidget, ..., ErrorLogWidget }
+
+properties
+
+public_functions
+QScriptEngineDebugger ( QObject * parent = 0 )
+~QScriptEngineDebugger ()
+ QAction * action ( DebuggerAction action ) const
+ void attachTo ( QScriptEngine * engine )
+ bool autoShowStandardWindow () const
+ QMenu * createStandardMenu ( QWidget * parent = 0 )
+ QToolBar * createStandardToolBar ( QWidget * parent = 0 )
+ void detach ()
+ void setAutoShowStandardWindow ( bool autoShow )
+ QMainWindow * standardWindow () const
+ DebuggerState state () const
+ QWidget * widget ( DebuggerWidget widget ) const
+
+public_slots
+
+signals
+ void evaluationResumed ()
+ void evaluationSuspended ()
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QScriptEngineDebugger
+name
+DebuggerAction
+key
+InterruptAction
+ContinueAction
+StepIntoAction
+StepOverAction
+StepOutAction
+RunToCursorAction
+RunToNewScriptAction
+ToggleBreakpointAction
+ClearDebugOutputAction
+ClearErrorLogAction
+ClearConsoleAction
+FindInScriptAction
+FindNextInScriptAction
+FindPreviousInScriptAction
+GoToLineAction
+public_flag
+true
+class_name
+QScriptEngineDebugger
+name
+DebuggerState
+key
+RunningState
+SuspendedState
+public_flag
+true
+class_name
+QScriptEngineDebugger
+name
+DebuggerWidget
+key
+ConsoleWidget
+StackWidget
+ScriptsWidget
+LocalsWidget
+CodeWidget
+CodeFinderWidget
+BreakpointsWidget
+DebugOutputWidget
+ErrorLogWidget
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

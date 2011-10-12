@@ -1,0 +1,67 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qaxscriptmanager.html
+
+output_urn
+QAxScriptManager
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QAxScriptManager ( QObject * parent = 0 )
+~QAxScriptManager ()
+ void addObject ( QAxBase * object )
+ void addObject ( QObject * object )
+ QVariant call ( const QString & function, const QVariant & var1 = QVariant(), const QVariant & var2 = QVariant(), const QVariant & var3 = QVariant(), const QVariant & var4 = QVariant(), const QVariant & var5 = QVariant(), const QVariant & var6 = QVariant(), const QVariant & var7 = QVariant(), const QVariant & var8 = QVariant() )
+ QVariant call ( const QString & function, QList<QVariant> & arguments )
+ QStringList functions ( QAxScript::FunctionFlags flags = QAxScript::FunctionNames ) const
+ QAxScript * load ( const QString & code, const QString & name, const QString & language )
+ QAxScript * load ( const QString & file, const QString & name )
+ QAxScript * script ( const QString & name ) const
+ QStringList scriptNames () const
+
+public_slots
+
+signals
+ void error ( QAxScript * script, int code, const QString & description, int sourcePosition, const QString & sourceText )
+
+static_public_members
+ bool registerEngine ( const QString & name, const QString & extension, const QString & code = QString() )
+ QString scriptFileFilter ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

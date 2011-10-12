@@ -1,0 +1,70 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qlayoutitem.html
+
+output_urn
+QLayoutItem
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QLayoutItem ( Qt::Alignment alignment = 0 )
+ virtual ~QLayoutItem ()
+ Qt::Alignment alignment () const
+ QSizePolicy::ControlTypes controlTypes () const
+ virtual Qt::Orientations expandingDirections () const = 0
+ virtual QRect geometry () const = 0
+ virtual bool hasHeightForWidth () const
+ virtual int heightForWidth ( int w ) const
+ virtual void invalidate ()
+ virtual bool isEmpty () const = 0
+ virtual QLayout * layout ()
+ virtual QSize maximumSize () const = 0
+ virtual int minimumHeightForWidth ( int w ) const
+ virtual QSize minimumSize () const = 0
+ void setAlignment ( Qt::Alignment alignment )
+ virtual void setGeometry ( const QRect & r ) = 0
+ virtual QSize sizeHint () const = 0
+ virtual QSpacerItem * spacerItem ()
+ virtual QWidget * widget ()
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,183 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qprocess.html
+
+output_urn
+QProcess
+
+inherits
+
+public_types
+ enum ExitStatus { NormalExit, CrashExit }
+ enum ProcessChannel { StandardOutput, StandardError }
+ enum ProcessChannelMode { SeparateChannels, MergedChannels, ForwardedChannels }
+ enum ProcessError { FailedToStart, Crashed, Timedout, WriteError, ReadError, UnknownError }
+ enum ProcessState { NotRunning, Starting, Running }
+
+properties
+
+public_functions
+QProcess ( QObject * parent = 0 )
+ virtual ~QProcess ()
+ void closeReadChannel ( ProcessChannel channel )
+ void closeWriteChannel ()
+ QStringList environment () const (deprecated)
+ QProcess::ProcessError error () const
+ int exitCode () const
+ QProcess::ExitStatus exitStatus () const
+ QString nativeArguments () const
+ Q_PID pid () const
+ ProcessChannelMode processChannelMode () const
+ QProcessEnvironment processEnvironment () const
+ QByteArray readAllStandardError ()
+ QByteArray readAllStandardOutput ()
+ ProcessChannel readChannel () const
+ void setEnvironment ( const QStringList & environment ) (deprecated)
+ void setNativeArguments ( const QString & arguments )
+ void setProcessChannelMode ( ProcessChannelMode mode )
+ void setProcessEnvironment ( const QProcessEnvironment & environment )
+ void setReadChannel ( ProcessChannel channel )
+ void setStandardErrorFile ( const QString & fileName, OpenMode mode = Truncate )
+ void setStandardInputFile ( const QString & fileName )
+ void setStandardOutputFile ( const QString & fileName, OpenMode mode = Truncate )
+ void setStandardOutputProcess ( QProcess * destination )
+ void setWorkingDirectory ( const QString & dir )
+ void start ( const QString & program, const QStringList & arguments, OpenMode mode = ReadWrite )
+ void start ( const QString & program, OpenMode mode = ReadWrite )
+ QProcess::ProcessState state () const
+ bool waitForFinished ( int msecs = 30000 )
+ bool waitForStarted ( int msecs = 30000 )
+ QString workingDirectory () const
+
+public_slots
+ void kill ()
+ void terminate ()
+
+signals
+ void error ( QProcess::ProcessError error )
+ void finished ( int exitCode, QProcess::ExitStatus exitStatus )
+ void readyReadStandardError ()
+ void readyReadStandardOutput ()
+ void started ()
+ void stateChanged ( QProcess::ProcessState newState )
+
+static_public_members
+ int execute ( const QString & program, const QStringList & arguments )
+ int execute ( const QString & program )
+ bool startDetached ( const QString & program, const QStringList & arguments, const QString & workingDirectory, qint64 * pid = 0 )
+ bool startDetached ( const QString & program, const QStringList & arguments )
+ bool startDetached ( const QString & program )
+ QStringList systemEnvironment ()
+
+protected_functions
+ void setProcessState ( ProcessState state )
+ virtual void setupChildProcess ()
+
+reimplemented_public_functions
+ virtual bool atEnd () const
+ virtual qint64 bytesAvailable () const
+ virtual qint64 bytesToWrite () const
+ virtual bool canReadLine () const
+ virtual void close ()
+ virtual bool isSequential () const
+ virtual bool waitForBytesWritten ( int msecs = 30000 )
+ virtual bool waitForReadyRead ( int msecs = 30000 )
+
+reimplemented_protected_functions
+ virtual qint64 readData ( char * data, qint64 maxlen )
+ virtual qint64 writeData ( const char * data, qint64 len )
+
+protected_slots
+
+related_non_members
+ typedef Q_PID
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+OpenMode
+
+enums
+class_name
+QProcess
+name
+ExitStatus
+key
+NormalExit
+CrashExit
+public_flag
+true
+class_name
+QProcess
+name
+ProcessChannel
+key
+StandardOutput
+StandardError
+public_flag
+true
+class_name
+QProcess
+name
+ProcessChannelMode
+key
+SeparateChannels
+MergedChannels
+ForwardedChannels
+public_flag
+true
+class_name
+QProcess
+name
+ProcessError
+key
+FailedToStart
+Crashed
+Timedout
+WriteError
+ReadError
+UnknownError
+public_flag
+true
+class_name
+QProcess
+name
+ProcessState
+key
+NotRunning
+Starting
+Running
+public_flag
+true
+
+parent_enums
+class_name
+QIODevice
+name
+OpenModeFlag
+key
+NotOpen
+ReadOnly
+WriteOnly
+ReadWrite
+Append
+Truncate
+Text
+Unbuffered
+public_flag
+true
+
+parent_index
+732
+
+parent_name
+QIODevice
+

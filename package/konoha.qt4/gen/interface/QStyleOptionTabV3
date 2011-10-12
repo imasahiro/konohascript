@@ -1,0 +1,75 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qstyleoptiontabv3.html
+
+output_urn
+QStyleOptionTabV3
+
+inherits
+
+public_types
+ enum StyleOptionVersion { Version }
+
+properties
+
+public_functions
+QStyleOptionTabV3 ()
+QStyleOptionTabV3 ( const QStyleOptionTabV3 & other )
+QStyleOptionTabV3 ( const QStyleOptionTabV2 & other )
+QStyleOptionTabV3 ( const QStyleOptionTab & other )
+ QStyleOptionTabV3 & operator= ( const QStyleOptionTab & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QStyleOptionTabV3
+name
+StyleOptionVersion
+key
+Version
+public_flag
+true
+
+parent_enums
+class_name
+QStyleOptionTabV2
+name
+StyleOptionVersion
+key
+Version
+public_flag
+true
+
+parent_index
+222
+
+parent_name
+QStyleOptionTabV2
+

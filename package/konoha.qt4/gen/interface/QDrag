@@ -1,0 +1,68 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdrag.html
+
+output_urn
+QDrag
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDrag ( QWidget * dragSource )
+~QDrag ()
+ Qt::DropAction exec ( Qt::DropActions supportedActions = Qt::MoveAction )
+ Qt::DropAction exec ( Qt::DropActions supportedActions, Qt::DropAction defaultDropAction )
+ QPoint hotSpot () const
+ QMimeData * mimeData () const
+ QPixmap pixmap () const
+ void setDragCursor ( const QPixmap & cursor, Qt::DropAction action )
+ void setHotSpot ( const QPoint & hotspot )
+ void setMimeData ( QMimeData * data )
+ void setPixmap ( const QPixmap & pixmap )
+ QWidget * source () const
+ QWidget * target () const
+
+public_slots
+
+signals
+ void actionChanged ( Qt::DropAction action )
+ void targetChanged ( QWidget * newTarget )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

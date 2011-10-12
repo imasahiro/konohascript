@@ -1,0 +1,67 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfontinfo.html
+
+output_urn
+QFontInfo
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QFontInfo ( const QFont & font )
+QFontInfo ( const QFontInfo & fi )
+~QFontInfo ()
+ bool bold () const
+ bool exactMatch () const
+ QString family () const
+ bool fixedPitch () const
+ bool italic () const
+ int pixelSize () const
+ int pointSize () const
+ qreal pointSizeF () const
+ bool rawMode () const
+ QFont::Style style () const
+ QFont::StyleHint styleHint () const
+ int weight () const
+ QFontInfo & operator= ( const QFontInfo & fi )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

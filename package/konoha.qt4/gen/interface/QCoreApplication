@@ -1,0 +1,118 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qcoreapplication.html
+
+output_urn
+QCoreApplication
+
+inherits
+
+public_types
+ enum Encoding { CodecForTr, UnicodeUTF8, DefaultCodec }
+ typedef EventFilter
+
+properties
+applicationName : QString
+applicationVersion : QString
+organizationDomain : QString
+organizationName : QString
+
+public_functions
+QCoreApplication ( int & argc, char ** argv )
+~QCoreApplication ()
+ bool filterEvent ( void * message, long * result )
+ virtual bool notify ( QObject * receiver, QEvent * event )
+ EventFilter setEventFilter ( EventFilter filter )
+ virtual bool winEventFilter ( MSG * msg, long * result )
+
+public_slots
+ void quit ()
+
+signals
+ void aboutToQuit ()
+
+static_public_members
+ void addLibraryPath ( const QString & path )
+ QString applicationDirPath ()
+ QString applicationFilePath ()
+ QString applicationName ()
+ qint64 applicationPid ()
+ QString applicationVersion ()
+ QStringList arguments ()
+ bool closingDown ()
+ int exec ()
+ void exit ( int returnCode = 0 )
+ void flush ()
+ bool hasPendingEvents ()
+ void installTranslator ( QTranslator * translationFile )
+ QCoreApplication * instance ()
+ QStringList libraryPaths ()
+ QString organizationDomain ()
+ QString organizationName ()
+ void postEvent ( QObject * receiver, QEvent * event )
+ void postEvent ( QObject * receiver, QEvent * event, int priority )
+ void processEvents ( QEventLoop::ProcessEventsFlags flags = QEventLoop::AllEvents )
+ void processEvents ( QEventLoop::ProcessEventsFlags flags, int maxtime )
+ void removeLibraryPath ( const QString & path )
+ void removePostedEvents ( QObject * receiver )
+ void removePostedEvents ( QObject * receiver, int eventType )
+ void removeTranslator ( QTranslator * translationFile )
+ bool sendEvent ( QObject * receiver, QEvent * event )
+ void sendPostedEvents ( QObject * receiver, int event_type )
+ void sendPostedEvents ()
+ void setApplicationName ( const QString & application )
+ void setApplicationVersion ( const QString & version )
+ void setAttribute ( Qt::ApplicationAttribute attribute, bool on = true )
+ void setLibraryPaths ( const QStringList & paths )
+ void setOrganizationDomain ( const QString & orgDomain )
+ void setOrganizationName ( const QString & orgName )
+ bool startingUp ()
+ bool testAttribute ( Qt::ApplicationAttribute attribute )
+ QString translate ( const char * context, const char * sourceText, const char * disambiguation, Encoding encoding, int n )
+ QString translate ( const char * context, const char * sourceText, const char * disambiguation = 0, Encoding encoding = CodecForTr )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+
+protected_slots
+
+related_non_members
+ void qAddPostRoutine ( QtCleanUpFunction ptr )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+EventFilter
+
+parent_typedefed_objects
+
+enums
+class_name
+QCoreApplication
+name
+Encoding
+key
+CodecForTr
+UnicodeUTF8
+DefaultCodec
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

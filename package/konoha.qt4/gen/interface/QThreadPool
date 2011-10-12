@@ -1,0 +1,69 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qthreadpool.html
+
+output_urn
+QThreadPool
+
+inherits
+
+public_types
+
+properties
+activeThreadCount : const int
+expiryTimeout : int
+maxThreadCount : int
+
+public_functions
+QThreadPool ( QObject * parent = 0 )
+~QThreadPool ()
+ int activeThreadCount () const
+ int expiryTimeout () const
+ int maxThreadCount () const
+ void releaseThread ()
+ void reserveThread ()
+ void setExpiryTimeout ( int expiryTimeout )
+ void setMaxThreadCount ( int maxThreadCount )
+ void start ( QRunnable * runnable, int priority = 0 )
+ bool tryStart ( QRunnable * runnable )
+ void waitForDone ()
+
+public_slots
+
+signals
+
+static_public_members
+ QThreadPool * globalInstance ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

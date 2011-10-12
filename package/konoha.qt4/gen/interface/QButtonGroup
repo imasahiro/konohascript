@@ -1,0 +1,73 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qbuttongroup.html
+
+output_urn
+QButtonGroup
+
+inherits
+
+public_types
+
+properties
+exclusive : bool
+
+public_functions
+QButtonGroup ( QObject * parent = 0 )
+~QButtonGroup ()
+ void addButton ( QAbstractButton * button )
+ void addButton ( QAbstractButton * button, int id )
+ QAbstractButton * button ( int id ) const
+ QList<QAbstractButton *> buttons () const
+ QAbstractButton * checkedButton () const
+ int checkedId () const
+ bool exclusive () const
+ int id ( QAbstractButton * button ) const
+ void removeButton ( QAbstractButton * button )
+ void setExclusive ( bool )
+ void setId ( QAbstractButton * button, int id )
+
+public_slots
+
+signals
+ void buttonClicked ( QAbstractButton * button )
+ void buttonClicked ( int id )
+ void buttonPressed ( QAbstractButton * button )
+ void buttonPressed ( int id )
+ void buttonReleased ( QAbstractButton * button )
+ void buttonReleased ( int id )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

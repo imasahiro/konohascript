@@ -1,0 +1,118 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmdisubwindow.html
+
+output_urn
+QMdiSubWindow
+
+inherits
+
+public_types
+ enum SubWindowOption { RubberBandResize, RubberBandMove }
+ flags SubWindowOptions
+
+properties
+keyboardPageStep : int
+keyboardSingleStep : int
+
+public_functions
+QMdiSubWindow ( QWidget * parent = 0, Qt::WindowFlags flags = 0 )
+~QMdiSubWindow ()
+ bool isShaded () const
+ int keyboardPageStep () const
+ int keyboardSingleStep () const
+ QMdiArea * mdiArea () const
+ void setKeyboardPageStep ( int step )
+ void setKeyboardSingleStep ( int step )
+ void setOption ( SubWindowOption option, bool on = true )
+ void setSystemMenu ( QMenu * systemMenu )
+ void setWidget ( QWidget * widget )
+ QMenu * systemMenu () const
+ bool testOption ( SubWindowOption option ) const
+ QWidget * widget () const
+
+public_slots
+ void showShaded ()
+ void showSystemMenu ()
+
+signals
+ void aboutToActivate ()
+ void windowStateChanged ( Qt::WindowStates oldState, Qt::WindowStates newState )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QSize minimumSizeHint () const
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * changeEvent )
+ virtual void childEvent ( QChildEvent * childEvent )
+ virtual void closeEvent ( QCloseEvent * closeEvent )
+ virtual void contextMenuEvent ( QContextMenuEvent * contextMenuEvent )
+ virtual bool event ( QEvent * event )
+ virtual bool eventFilter ( QObject * object, QEvent * event )
+ virtual void focusInEvent ( QFocusEvent * focusInEvent )
+ virtual void focusOutEvent ( QFocusEvent * focusOutEvent )
+ virtual void hideEvent ( QHideEvent * hideEvent )
+ virtual void keyPressEvent ( QKeyEvent * keyEvent )
+ virtual void leaveEvent ( QEvent * leaveEvent )
+ virtual void mouseDoubleClickEvent ( QMouseEvent * mouseEvent )
+ virtual void mouseMoveEvent ( QMouseEvent * mouseEvent )
+ virtual void mousePressEvent ( QMouseEvent * mouseEvent )
+ virtual void mouseReleaseEvent ( QMouseEvent * mouseEvent )
+ virtual void moveEvent ( QMoveEvent * moveEvent )
+ virtual void paintEvent ( QPaintEvent * paintEvent )
+ virtual void resizeEvent ( QResizeEvent * resizeEvent )
+ virtual void showEvent ( QShowEvent * showEvent )
+ virtual void timerEvent ( QTimerEvent * timerEvent )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+SubWindowOptions
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+class_name
+QMdiSubWindow
+name
+SubWindowOption
+key
+RubberBandResize
+RubberBandMove
+public_flag
+true
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

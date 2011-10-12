@@ -1,0 +1,147 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qlist.html
+
+output_urn
+QList
+
+inherits
+
+public_types
+ class const_iterator
+ class iterator
+ typedef ConstIterator
+ typedef Iterator
+ typedef const_pointer
+ typedef const_reference
+ typedef difference_type
+ typedef pointer
+ typedef reference
+ typedef size_type
+ typedef value_type
+
+properties
+
+public_functions
+QList ()
+QList ( const QList<T> & other )
+~QList ()
+ void append ( const T & value )
+ void append ( const QList<T> & value )
+ const T & at ( int i ) const
+ T & back ()
+ const T & back () const
+ iterator begin ()
+ const_iterator begin () const
+ void clear ()
+ const_iterator constBegin () const
+ const_iterator constEnd () const
+ bool contains ( const T & value ) const
+ int count ( const T & value ) const
+ int count () const
+ bool empty () const
+ iterator end ()
+ const_iterator end () const
+ bool endsWith ( const T & value ) const
+ iterator erase ( iterator pos )
+ iterator erase ( iterator begin, iterator end )
+ T & first ()
+ const T & first () const
+ T & front ()
+ const T & front () const
+ int indexOf ( const T & value, int from = 0 ) const
+ void insert ( int i, const T & value )
+ iterator insert ( iterator before, const T & value )
+ bool isEmpty () const
+ T & last ()
+ const T & last () const
+ int lastIndexOf ( const T & value, int from = -1 ) const
+ int length () const
+ QList<T> mid ( int pos, int length = -1 ) const
+ void move ( int from, int to )
+ void pop_back ()
+ void pop_front ()
+ void prepend ( const T & value )
+ void push_back ( const T & value )
+ void push_front ( const T & value )
+ int removeAll ( const T & value )
+ void removeAt ( int i )
+ void removeFirst ()
+ void removeLast ()
+ bool removeOne ( const T & value )
+ void replace ( int i, const T & value )
+ void reserve ( int alloc )
+ int size () const
+ bool startsWith ( const T & value ) const
+ void swap ( int i, int j )
+ T takeAt ( int i )
+ T takeFirst ()
+ T takeLast ()
+ QSet<T> toSet () const
+ std::list<T> toStdList () const
+ QVector<T> toVector () const
+ T value ( int i ) const
+ T value ( int i, const T & defaultValue ) const
+ bool operator!= ( const QList<T> & other ) const
+ QList<T> operator+ ( const QList<T> & other ) const
+ QList<T> & operator+= ( const QList<T> & other )
+ QList<T> & operator+= ( const T & value )
+ QList<T> & operator<< ( const QList<T> & other )
+ QList<T> & operator<< ( const T & value )
+ QList<T> & operator= ( const QList<T> & other )
+ bool operator== ( const QList<T> & other ) const
+ T & operator[] ( int i )
+ const T & operator[] ( int i ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QList<T> fromSet ( const QSet<T> & set )
+ QList<T> fromStdList ( const std::list<T> & list )
+ QList<T> fromVector ( const QVector<T> & vector )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & out, const QList<T> & list )
+ QDataStream & operator>> ( QDataStream & in, QList<T> & list )
+
+templateClass
+true
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+const_iterator
+iterator
+ConstIterator
+Iterator
+const_pointer
+const_reference
+difference_type
+pointer
+reference
+size_type
+value_type
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,81 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwswindow.html
+
+output_urn
+QWSWindow
+
+inherits
+
+public_types
+ enum State { NoState, Hidden, Showing, Visible, ..., Destroyed }
+
+properties
+
+public_functions
+ const QString & caption () const
+ QWSClient * client () const
+ QRegion dirtyOnScreen () const
+ bool isFullyObscured () const
+ bool isOpaque () const
+ bool isVisible () const
+ const QString & name () const
+ uint opacity () const
+ const QRegion & requestedRegion () const
+ State state () const
+ int winId () const
+ Qt::WindowFlags windowFlags () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+true
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QWSWindow
+name
+State
+key
+NoState
+Hidden
+Showing
+Visible
+Hiding
+Raising
+Lowering
+Moving
+ChangingGeometry
+Destroyed
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

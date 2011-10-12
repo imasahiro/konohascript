@@ -1,0 +1,114 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qprintpreviewwidget.html
+
+output_urn
+QPrintPreviewWidget
+
+inherits
+
+public_types
+ enum ViewMode { SinglePageView, FacingPagesView, AllPagesView }
+ enum ZoomMode { CustomZoom, FitToWidth, FitInView }
+
+properties
+
+public_functions
+QPrintPreviewWidget ( QPrinter * printer, QWidget * parent = 0, Qt::WindowFlags flags = 0 )
+QPrintPreviewWidget ( QWidget * parent = 0, Qt::WindowFlags flags = 0 )
+~QPrintPreviewWidget ()
+ int currentPage () const
+ QPrinter::Orientation orientation () const
+ int pageCount () const
+ ViewMode viewMode () const
+ qreal zoomFactor () const
+ ZoomMode zoomMode () const
+
+public_slots
+ void fitInView ()
+ void fitToWidth ()
+ void print ()
+ void setAllPagesViewMode ()
+ void setCurrentPage ( int page )
+ void setFacingPagesViewMode ()
+ void setLandscapeOrientation ()
+ void setOrientation ( QPrinter::Orientation orientation )
+ void setPortraitOrientation ()
+ void setSinglePageViewMode ()
+ void setViewMode ( ViewMode mode )
+ void setZoomFactor ( qreal factor )
+ void setZoomMode ( ZoomMode zoomMode )
+ void updatePreview ()
+ void zoomIn ( qreal factor = 1.1 )
+ void zoomOut ( qreal factor = 1.1 )
+
+signals
+ void paintRequested ( QPrinter * printer )
+ void previewChanged ()
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void setVisible ( bool visible )
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+class_name
+QPrintPreviewWidget
+name
+ViewMode
+key
+SinglePageView
+FacingPagesView
+AllPagesView
+public_flag
+true
+class_name
+QPrintPreviewWidget
+name
+ZoomMode
+key
+CustomZoom
+FitToWidth
+FitInView
+public_flag
+true
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

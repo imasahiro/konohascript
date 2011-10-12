@@ -1,0 +1,71 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qimageioplugin.html
+
+output_urn
+QImageIOPlugin
+
+inherits
+
+public_types
+ flags Capabilities
+ enum Capability { CanRead, CanWrite, CanReadIncremental }
+
+properties
+
+public_functions
+QImageIOPlugin ( QObject * parent = 0 )
+ virtual ~QImageIOPlugin ()
+ virtual Capabilities capabilities ( QIODevice * device, const QByteArray & format ) const = 0
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QImageIOHandler * create ( QIODevice * device, const QByteArray & format = QByteArray() ) const = 0
+ virtual QStringList keys () const = 0
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+Capabilities
+
+parent_typedefed_objects
+
+enums
+class_name
+QImageIOPlugin
+name
+Capability
+key
+CanRead
+CanWrite
+CanReadIncremental
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

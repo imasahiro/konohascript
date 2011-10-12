@@ -1,0 +1,65 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qstringlistmodel.html
+
+output_urn
+QStringListModel
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QStringListModel ( QObject * parent = 0 )
+QStringListModel ( const QStringList & strings, QObject * parent = 0 )
+ void setStringList ( const QStringList & strings )
+ QStringList stringList () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QVariant data ( const QModelIndex & index, int role ) const
+ virtual Qt::ItemFlags flags ( const QModelIndex & index ) const
+ virtual bool insertRows ( int row, int count, const QModelIndex & parent = QModelIndex() )
+ virtual bool removeRows ( int row, int count, const QModelIndex & parent = QModelIndex() )
+ virtual int rowCount ( const QModelIndex & parent = QModelIndex() ) const
+ virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole )
+ virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder )
+ virtual Qt::DropActions supportedDropActions () const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+381
+
+parent_name
+QAbstractListModel
+

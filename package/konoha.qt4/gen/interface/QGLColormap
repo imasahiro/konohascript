@@ -1,0 +1,64 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qglcolormap.html
+
+output_urn
+QGLColormap
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QGLColormap ()
+QGLColormap ( const QGLColormap & map )
+~QGLColormap ()
+ QColor entryColor ( int idx ) const
+ QRgb entryRgb ( int idx ) const
+ int find ( QRgb color ) const
+ int findNearest ( QRgb color ) const
+ bool isEmpty () const
+ void setEntries ( int count, const QRgb * colors, int base = 0 )
+ void setEntry ( int idx, QRgb color )
+ void setEntry ( int idx, const QColor & color )
+ int size () const
+ QGLColormap & operator= ( const QGLColormap & map )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

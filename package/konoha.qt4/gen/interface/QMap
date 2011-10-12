@@ -1,0 +1,114 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmap.html
+
+output_urn
+QMap
+
+inherits
+
+public_types
+ class const_iterator
+ class iterator
+ typedef ConstIterator
+ typedef Iterator
+ typedef difference_type
+ typedef key_type
+ typedef mapped_type
+ typedef size_type
+
+properties
+
+public_functions
+QMap ()
+QMap ( const QMap<Key, T> & other )
+QMap ( const std::map<Key, T> & other )
+~QMap ()
+ iterator begin ()
+ const_iterator begin () const
+ void clear ()
+ const_iterator constBegin () const
+ const_iterator constEnd () const
+ const_iterator constFind ( const Key & key ) const
+ bool contains ( const Key & key ) const
+ int count ( const Key & key ) const
+ int count () const
+ bool empty () const
+ iterator end ()
+ const_iterator end () const
+ iterator erase ( iterator pos )
+ iterator find ( const Key & key )
+ const_iterator find ( const Key & key ) const
+ iterator insert ( const Key & key, const T & value )
+ iterator insertMulti ( const Key & key, const T & value )
+ bool isEmpty () const
+ const Key key ( const T & value ) const
+ const Key key ( const T & value, const Key & defaultKey ) const
+ QList<Key> keys () const
+ QList<Key> keys ( const T & value ) const
+ iterator lowerBound ( const Key & key )
+ const_iterator lowerBound ( const Key & key ) const
+ int remove ( const Key & key )
+ int size () const
+ T take ( const Key & key )
+ std::map<Key, T> toStdMap () const
+ QList<Key> uniqueKeys () const
+ QMap<Key, T> & unite ( const QMap<Key, T> & other )
+ iterator upperBound ( const Key & key )
+ const_iterator upperBound ( const Key & key ) const
+ const T value ( const Key & key ) const
+ const T value ( const Key & key, const T & defaultValue ) const
+ QList<T> values () const
+ QList<T> values ( const Key & key ) const
+ bool operator!= ( const QMap<Key, T> & other ) const
+ QMap<Key, T> & operator= ( const QMap<Key, T> & other )
+ bool operator== ( const QMap<Key, T> & other ) const
+ T & operator[] ( const Key & key )
+ const T operator[] ( const Key & key ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & out, const QMap<Key, T> & map )
+ QDataStream & operator>> ( QDataStream & in, QMap<Key, T> & map )
+
+templateClass
+true
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+const_iterator
+iterator
+ConstIterator
+Iterator
+difference_type
+key_type
+mapped_type
+size_type
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

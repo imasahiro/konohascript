@@ -1,0 +1,66 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgraphicssvgitem.html
+
+output_urn
+QGraphicsSvgItem
+
+inherits
+
+public_types
+
+properties
+elementId : QString
+maximumCacheSize : QSize
+
+public_functions
+QGraphicsSvgItem ( QGraphicsItem * parent = 0 )
+QGraphicsSvgItem ( const QString & fileName, QGraphicsItem * parent = 0 )
+ QString elementId () const
+ QSize maximumCacheSize () const
+ QSvgRenderer * renderer () const
+ void setElementId ( const QString & id )
+ void setMaximumCacheSize ( const QSize & size )
+ void setSharedRenderer ( QSvgRenderer * renderer )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QRectF boundingRect () const
+ virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 )
+ virtual int type () const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+737
+
+parent_name
+QGraphicsObject
+

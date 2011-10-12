@@ -1,0 +1,66 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qxmlschemavalidator.html
+
+output_urn
+QXmlSchemaValidator
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QXmlSchemaValidator ()
+QXmlSchemaValidator ( const QXmlSchema & schema )
+~QXmlSchemaValidator ()
+ QAbstractMessageHandler * messageHandler () const
+ QXmlNamePool namePool () const
+ QNetworkAccessManager * networkAccessManager () const
+ QXmlSchema schema () const
+ void setMessageHandler ( QAbstractMessageHandler * handler )
+ void setNetworkAccessManager ( QNetworkAccessManager * manager )
+ void setSchema ( const QXmlSchema & schema )
+ void setUriResolver ( const QAbstractUriResolver * resolver )
+ const QAbstractUriResolver * uriResolver () const
+ bool validate ( const QUrl & source ) const
+ bool validate ( QIODevice * source, const QUrl & documentUri = QUrl() ) const
+ bool validate ( const QByteArray & data, const QUrl & documentUri = QUrl() ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

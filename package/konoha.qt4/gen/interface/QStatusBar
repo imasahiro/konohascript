@@ -1,0 +1,84 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qstatusbar.html
+
+output_urn
+QStatusBar
+
+inherits
+
+public_types
+
+properties
+sizeGripEnabled : bool
+
+public_functions
+QStatusBar ( QWidget * parent = 0 )
+ virtual ~QStatusBar ()
+ void addPermanentWidget ( QWidget * widget, int stretch = 0 )
+ void addWidget ( QWidget * widget, int stretch = 0 )
+ QString currentMessage () const
+ int insertPermanentWidget ( int index, QWidget * widget, int stretch = 0 )
+ int insertWidget ( int index, QWidget * widget, int stretch = 0 )
+ bool isSizeGripEnabled () const
+ void removeWidget ( QWidget * widget )
+ void setSizeGripEnabled ( bool )
+
+public_slots
+ void clearMessage ()
+ void showMessage ( const QString & message, int timeout = 0 )
+
+signals
+ void messageChanged ( const QString & message )
+
+static_public_members
+
+protected_functions
+ void hideOrShow ()
+ void reformat ()
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+ virtual void paintEvent ( QPaintEvent * event )
+ virtual void resizeEvent ( QResizeEvent * e )
+ virtual void showEvent ( QShowEvent * )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

@@ -1,0 +1,73 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qactiongroup.html
+
+output_urn
+QActionGroup
+
+inherits
+
+public_types
+
+properties
+enabled : bool
+exclusive : bool
+visible : bool
+
+public_functions
+QActionGroup ( QObject * parent )
+~QActionGroup ()
+ QList<QAction *> actions () const
+ QAction * addAction ( QAction * action )
+ QAction * addAction ( const QString & text )
+ QAction * addAction ( const QIcon & icon, const QString & text )
+ QAction * checkedAction () const
+ bool isEnabled () const
+ bool isExclusive () const
+ bool isVisible () const
+ void removeAction ( QAction * action )
+
+public_slots
+ void setDisabled ( bool b )
+ void setEnabled ( bool )
+ void setExclusive ( bool )
+ void setVisible ( bool )
+
+signals
+ void hovered ( QAction * action )
+ void triggered ( QAction * action )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

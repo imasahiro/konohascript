@@ -1,0 +1,108 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwidgetaction.html
+
+output_urn
+QWidgetAction
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QWidgetAction ( QObject * parent )
+ virtual ~QWidgetAction ()
+ QWidget * defaultWidget () const
+ void releaseWidget ( QWidget * widget )
+ QWidget * requestWidget ( QWidget * parent )
+ void setDefaultWidget ( QWidget * widget )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ virtual QWidget * createWidget ( QWidget * parent )
+ QList<QWidget *> createdWidgets () const
+ virtual void deleteWidget ( QWidget * widget )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * event )
+ virtual bool eventFilter ( QObject * obj, QEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QAction
+name
+ActionEvent
+key
+Trigger
+Hover
+public_flag
+true
+class_name
+QAction
+name
+MenuRole
+key
+NoRole
+TextHeuristicRole
+ApplicationSpecificRole
+AboutQtRole
+AboutRole
+PreferencesRole
+QuitRole
+public_flag
+true
+class_name
+QAction
+name
+Priority
+key
+LowPriority
+NormalPriority
+HighPriority
+public_flag
+true
+class_name
+QAction
+name
+SoftKeyRole
+key
+NoSoftKey
+PositiveSoftKey
+NegativeSoftKey
+SelectSoftKey
+public_flag
+true
+
+parent_index
+770
+
+parent_name
+QAction
+

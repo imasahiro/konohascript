@@ -1,0 +1,116 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractbutton.html
+
+output_urn
+QAbstractButton
+
+inherits
+
+public_types
+
+properties
+autoExclusive : bool
+autoRepeat : bool
+autoRepeatDelay : int
+autoRepeatInterval : int
+checkable : bool
+checked : bool
+
+public_functions
+QAbstractButton ( QWidget * parent = 0 )
+~QAbstractButton ()
+ bool autoExclusive () const
+ bool autoRepeat () const
+ int autoRepeatDelay () const
+ int autoRepeatInterval () const
+ QButtonGroup * group () const
+ QIcon icon () const
+ QSize iconSize () const
+ bool isCheckable () const
+ bool isChecked () const
+ bool isDown () const
+ void setAutoExclusive ( bool )
+ void setAutoRepeat ( bool )
+ void setAutoRepeatDelay ( int )
+ void setAutoRepeatInterval ( int )
+ void setCheckable ( bool )
+ void setDown ( bool )
+ void setIcon ( const QIcon & icon )
+ void setShortcut ( const QKeySequence & key )
+ void setText ( const QString & text )
+ QKeySequence shortcut () const
+ QString text () const
+
+public_slots
+ void animateClick ( int msec = 100 )
+ void click ()
+ void setChecked ( bool )
+ void setIconSize ( const QSize & size )
+ void toggle ()
+
+signals
+ void clicked ( bool checked = false )
+ void pressed ()
+ void released ()
+ void toggled ( bool checked )
+
+static_public_members
+
+protected_functions
+ virtual void checkStateSet ()
+ virtual bool hitButton ( const QPoint & pos ) const
+ virtual void nextCheckState ()
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * e )
+ virtual bool event ( QEvent * e )
+ virtual void focusInEvent ( QFocusEvent * e )
+ virtual void focusOutEvent ( QFocusEvent * e )
+ virtual void keyPressEvent ( QKeyEvent * e )
+ virtual void keyReleaseEvent ( QKeyEvent * e )
+ virtual void mouseMoveEvent ( QMouseEvent * e )
+ virtual void mousePressEvent ( QMouseEvent * e )
+ virtual void mouseReleaseEvent ( QMouseEvent * e )
+ virtual void paintEvent ( QPaintEvent * e ) = 0
+ virtual void timerEvent ( QTimerEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

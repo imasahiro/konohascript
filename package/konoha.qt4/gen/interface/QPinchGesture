@@ -1,0 +1,103 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qpinchgesture.html
+
+output_urn
+QPinchGesture
+
+inherits
+
+public_types
+ enum ChangeFlag { ScaleFactorChanged, RotationAngleChanged, CenterPointChanged }
+ flags ChangeFlags
+
+properties
+centerPoint : QPointF
+changeFlags : ChangeFlags
+lastCenterPoint : QPointF
+lastRotationAngle : qreal
+lastScaleFactor : qreal
+rotationAngle : qreal
+
+public_functions
+ QPointF centerPoint () const
+ ChangeFlags changeFlags () const
+ QPointF lastCenterPoint () const
+ qreal lastRotationAngle () const
+ qreal lastScaleFactor () const
+ qreal rotationAngle () const
+ qreal scaleFactor () const
+ void setCenterPoint ( const QPointF & value )
+ void setChangeFlags ( ChangeFlags value )
+ void setLastCenterPoint ( const QPointF & value )
+ void setLastRotationAngle ( qreal value )
+ void setLastScaleFactor ( qreal value )
+ void setRotationAngle ( qreal value )
+ void setScaleFactor ( qreal value )
+ void setStartCenterPoint ( const QPointF & value )
+ void setTotalChangeFlags ( ChangeFlags value )
+ void setTotalRotationAngle ( qreal value )
+ void setTotalScaleFactor ( qreal value )
+ QPointF startCenterPoint () const
+ ChangeFlags totalChangeFlags () const
+ qreal totalRotationAngle () const
+ qreal totalScaleFactor () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+ChangeFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QPinchGesture
+name
+ChangeFlag
+key
+ScaleFactorChanged
+RotationAngleChanged
+CenterPointChanged
+public_flag
+true
+
+parent_enums
+class_name
+QGesture
+name
+GestureCancelPolicy
+key
+CancelNone
+CancelAllInContext
+public_flag
+true
+
+parent_index
+41
+
+parent_name
+QGesture
+

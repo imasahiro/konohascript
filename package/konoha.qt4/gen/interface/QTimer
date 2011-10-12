@@ -1,0 +1,70 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtimer.html
+
+output_urn
+QTimer
+
+inherits
+
+public_types
+
+properties
+active : const bool
+interval : int
+singleShot : bool
+
+public_functions
+QTimer ( QObject * parent = 0 )
+~QTimer ()
+ int interval () const
+ bool isActive () const
+ bool isSingleShot () const
+ void setInterval ( int msec )
+ void setSingleShot ( bool singleShot )
+ int timerId () const
+
+public_slots
+ void start ( int msec )
+ void start ()
+ void stop ()
+
+signals
+ void timeout ()
+
+static_public_members
+ void singleShot ( int msec, QObject * receiver, const char * member )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual void timerEvent ( QTimerEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

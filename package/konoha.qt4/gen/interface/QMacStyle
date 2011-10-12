@@ -1,0 +1,97 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmacstyle.html
+
+output_urn
+QMacStyle
+
+inherits
+
+public_types
+ enum FocusRectPolicy { FocusEnabled, FocusDisabled, FocusDefault }
+ enum WidgetSizePolicy { SizeSmall, SizeLarge, SizeMini, SizeDefault }
+
+properties
+
+public_functions
+QMacStyle ()
+ virtual ~QMacStyle ()
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void drawComplexControl ( ComplexControl cc, const QStyleOptionComplex * opt, QPainter * p, const QWidget * widget = 0 ) const
+ virtual void drawControl ( ControlElement ce, const QStyleOption * opt, QPainter * p, const QWidget * w = 0 ) const
+ virtual void drawItemText ( QPainter * p, const QRect & r, int flags, const QPalette & pal, bool enabled, const QString & text, QPalette::ColorRole textRole = QPalette::NoRole ) const
+ virtual void drawPrimitive ( PrimitiveElement pe, const QStyleOption * opt, QPainter * p, const QWidget * w = 0 ) const
+ virtual bool event ( QEvent * e )
+ virtual QPixmap generatedIconPixmap ( QIcon::Mode iconMode, const QPixmap & pixmap, const QStyleOption * opt ) const
+ virtual SubControl hitTestComplexControl ( ComplexControl cc, const QStyleOptionComplex * opt, const QPoint & pt, const QWidget * widget = 0 ) const
+ virtual int pixelMetric ( PixelMetric metric, const QStyleOption * opt = 0, const QWidget * widget = 0 ) const
+ virtual void polish ( QWidget * w )
+ virtual void polish ( QApplication * )
+ virtual void polish ( QPalette & pal )
+ virtual QSize sizeFromContents ( ContentsType ct, const QStyleOption * opt, const QSize & csz, const QWidget * widget = 0 ) const
+ virtual QPalette standardPalette () const
+ virtual QPixmap standardPixmap ( StandardPixmap standardPixmap, const QStyleOption * opt, const QWidget * widget = 0 ) const
+ virtual int styleHint ( StyleHint sh, const QStyleOption * opt = 0, const QWidget * w = 0, QStyleHintReturn * hret = 0 ) const
+ virtual QRect subControlRect ( ComplexControl cc, const QStyleOptionComplex * opt, SubControl sc, const QWidget * widget = 0 ) const
+ virtual QRect subElementRect ( SubElement sr, const QStyleOption * opt, const QWidget * widget = 0 ) const
+ virtual void unpolish ( QWidget * w )
+ virtual void unpolish ( QApplication * )
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QMacStyle
+name
+FocusRectPolicy
+key
+FocusEnabled
+FocusDisabled
+FocusDefault
+public_flag
+true
+class_name
+QMacStyle
+name
+WidgetSizePolicy
+key
+SizeSmall
+SizeLarge
+SizeMini
+SizeDefault
+public_flag
+true
+
+parent_enums
+
+parent_index
+121
+
+parent_name
+QWindowsStyle
+

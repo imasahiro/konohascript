@@ -1,0 +1,89 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdeclarativecomponent.html
+
+output_urn
+QDeclarativeComponent
+
+inherits
+
+public_types
+ enum Status { Null, Ready, Loading, Error }
+
+properties
+progress : const qreal
+status : const Status
+url : const QUrl
+
+public_functions
+QDeclarativeComponent ( QDeclarativeEngine * engine, QObject * parent = 0 )
+QDeclarativeComponent ( QDeclarativeEngine * engine, const QString & fileName, QObject * parent = 0 )
+QDeclarativeComponent ( QDeclarativeEngine * engine, const QUrl & url, QObject * parent = 0 )
+ virtual ~QDeclarativeComponent ()
+ virtual QObject * beginCreate ( QDeclarativeContext * context )
+ virtual void completeCreate ()
+ virtual QObject * create ( QDeclarativeContext * context = 0 )
+ QDeclarativeContext * creationContext () const
+ QList<QDeclarativeError> errors () const
+ bool isError () const
+ bool isLoading () const
+ bool isNull () const
+ bool isReady () const
+ void loadUrl ( const QUrl & url )
+ qreal progress () const
+ void setData ( const QByteArray & data, const QUrl & url )
+ Status status () const
+ QUrl url () const
+
+public_slots
+
+signals
+ void progressChanged ( qreal progress )
+ void statusChanged ( QDeclarativeComponent::Status status )
+
+static_public_members
+
+protected_functions
+Q_REVISION ()
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDeclarativeComponent
+name
+Status
+key
+Null
+Ready
+Loading
+Error
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

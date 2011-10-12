@@ -1,0 +1,62 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qhttprequestheader.html
+
+output_urn
+QHttpRequestHeader
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QHttpRequestHeader ()
+QHttpRequestHeader ( const QString & method, const QString & path, int majorVer = 1, int minorVer = 1 )
+QHttpRequestHeader ( const QHttpRequestHeader & header )
+QHttpRequestHeader ( const QString & str )
+ QString method () const
+ QString path () const
+ void setRequest ( const QString & method, const QString & path, int majorVer = 1, int minorVer = 1 )
+ QHttpRequestHeader & operator= ( const QHttpRequestHeader & header )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual int majorVersion () const
+ virtual int minorVersion () const
+ virtual QString toString () const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

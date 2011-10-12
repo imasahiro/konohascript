@@ -1,0 +1,107 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfontcombobox.html
+
+output_urn
+QFontComboBox
+
+inherits
+
+public_types
+ enum FontFilter { AllFonts, ScalableFonts, NonScalableFonts, MonospacedFonts, ProportionalFonts }
+ flags FontFilters
+
+properties
+currentFont : QFont
+fontFilters : FontFilters
+writingSystem : QFontDatabase::WritingSystem
+
+public_functions
+QFontComboBox ( QWidget * parent = 0 )
+~QFontComboBox ()
+ QFont currentFont () const
+ FontFilters fontFilters () const
+ void setFontFilters ( FontFilters filters )
+ void setWritingSystem ( QFontDatabase::WritingSystem script )
+ QFontDatabase::WritingSystem writingSystem () const
+
+public_slots
+ void setCurrentFont ( const QFont & font )
+
+signals
+ void currentFontChanged ( const QFont & font )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+FontFilters
+
+parent_typedefed_objects
+
+enums
+class_name
+QFontComboBox
+name
+FontFilter
+key
+AllFonts
+ScalableFonts
+NonScalableFonts
+MonospacedFonts
+ProportionalFonts
+public_flag
+true
+
+parent_enums
+class_name
+QComboBox
+name
+InsertPolicy
+key
+NoInsert
+InsertAtTop
+InsertAtCurrent
+InsertAtBottom
+InsertAfterCurrent
+InsertBeforeCurrent
+InsertAlphabetically
+public_flag
+true
+class_name
+QComboBox
+name
+SizeAdjustPolicy
+key
+AdjustToContents
+AdjustToContentsOnFirstShow
+AdjustToMinimumContentsLength
+AdjustToMinimumContentsLengthWithIcon
+public_flag
+true
+
+parent_index
+600
+
+parent_name
+QComboBox
+

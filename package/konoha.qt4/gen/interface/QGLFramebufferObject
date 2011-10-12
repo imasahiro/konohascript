@@ -1,0 +1,105 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qglframebufferobject.html
+
+output_urn
+QGLFramebufferObject
+
+inherits
+
+public_types
+ enum Attachment { NoAttachment, CombinedDepthStencil, Depth }
+
+properties
+
+public_functions
+QGLFramebufferObject ( const QSize & size, GLenum target = GL_TEXTURE_2D )
+QGLFramebufferObject ( int width, int height, GLenum target = GL_TEXTURE_2D )
+QGLFramebufferObject ( const QSize & size, const QGLFramebufferObjectFormat & format )
+QGLFramebufferObject ( int width, int height, const QGLFramebufferObjectFormat & format )
+QGLFramebufferObject ( int width, int height, Attachment attachment, GLenum target = GL_TEXTURE_2D, GLenum internal_format = GL_RGBA8 )
+QGLFramebufferObject ( const QSize & size, Attachment attachment, GLenum target = GL_TEXTURE_2D, GLenum internal_format = GL_RGBA8 )
+ virtual ~QGLFramebufferObject ()
+ Attachment attachment () const
+ bool bind ()
+ void drawTexture ( const QRectF & target, GLuint textureId, GLenum textureTarget = GL_TEXTURE_2D )
+ void drawTexture ( const QPointF & point, GLuint textureId, GLenum textureTarget = GL_TEXTURE_2D )
+ QGLFramebufferObjectFormat format () const
+ GLuint handle () const
+ bool isBound () const
+ bool isValid () const
+ bool release ()
+ QSize size () const
+ GLuint texture () const
+ QImage toImage () const
+
+public_slots
+
+signals
+
+static_public_members
+ void blitFramebuffer ( QGLFramebufferObject * target, const QRect & targetRect, QGLFramebufferObject * source, const QRect & sourceRect, GLbitfield buffers = GL_COLOR_BUFFER_BIT, GLenum filter = GL_NEAREST )
+ bool hasOpenGLFramebufferBlit ()
+ bool hasOpenGLFramebufferObjects ()
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QPaintEngine * paintEngine () const
+
+reimplemented_protected_functions
+ virtual int metric ( PaintDeviceMetric metric ) const
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QGLFramebufferObject
+name
+Attachment
+key
+NoAttachment
+CombinedDepthStencil
+Depth
+public_flag
+true
+
+parent_enums
+class_name
+QPaintDevice
+name
+PaintDeviceMetric
+key
+PdmWidth
+PdmHeight
+PdmWidthMM
+PdmHeightMM
+PdmNumColors
+PdmDepth
+PdmDpiX
+PdmDpiY
+PdmPhysicalDpiX
+PdmPhysicalDpiY
+public_flag
+true
+
+parent_index
+194
+
+parent_name
+QPaintDevice
+

@@ -1,0 +1,62 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qundocommand.html
+
+output_urn
+QUndoCommand
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QUndoCommand ( QUndoCommand * parent = 0 )
+QUndoCommand ( const QString & text, QUndoCommand * parent = 0 )
+ virtual ~QUndoCommand ()
+ const QUndoCommand * child ( int index ) const
+ int childCount () const
+ virtual int id () const
+ virtual bool mergeWith ( const QUndoCommand * command )
+ virtual void redo ()
+ void setText ( const QString & text )
+ QString text () const
+ virtual void undo ()
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

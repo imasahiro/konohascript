@@ -1,0 +1,57 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qiconengine.html
+
+output_urn
+QIconEngine
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+ virtual ~QIconEngine ()
+ virtual QSize actualSize ( const QSize & size, QIcon::Mode mode, QIcon::State state )
+ virtual void addFile ( const QString & fileName, const QSize & size, QIcon::Mode mode, QIcon::State state )
+ virtual void addPixmap ( const QPixmap & pixmap, QIcon::Mode mode, QIcon::State state )
+ virtual void paint ( QPainter * painter, const QRect & rect, QIcon::Mode mode, QIcon::State state ) = 0
+ virtual QPixmap pixmap ( const QSize & size, QIcon::Mode mode, QIcon::State state )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

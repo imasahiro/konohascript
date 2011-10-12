@@ -1,0 +1,62 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qhttpresponseheader.html
+
+output_urn
+QHttpResponseHeader
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QHttpResponseHeader ()
+QHttpResponseHeader ( const QHttpResponseHeader & header )
+QHttpResponseHeader ( const QString & str )
+QHttpResponseHeader ( int code, const QString & text = QString(), int majorVer = 1, int minorVer = 1 )
+ QString reasonPhrase () const
+ void setStatusLine ( int code, const QString & text = QString(), int majorVer = 1, int minorVer = 1 )
+ int statusCode () const
+ QHttpResponseHeader & operator= ( const QHttpResponseHeader & header )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual int majorVersion () const
+ virtual int minorVersion () const
+ virtual QString toString () const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,176 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfsfileengine.html
+
+output_urn
+QFSFileEngine
+
+inherits
+
+public_types
+ typedef Iterator
+
+properties
+
+public_functions
+QFSFileEngine ()
+QFSFileEngine ( const QString & file )
+~QFSFileEngine ()
+ bool open ( QIODevice::OpenMode openMode, FILE * fh )
+ bool open ( QIODevice::OpenMode openMode, int fd )
+
+public_slots
+
+signals
+
+static_public_members
+ QString currentPath ( const QString & fileName = QString() )
+ QFileInfoList drives ()
+ QString homePath ()
+ QString rootPath ()
+ bool setCurrentPath ( const QString & path )
+ QString tempPath ()
+
+protected_functions
+
+reimplemented_public_functions
+ virtual bool caseSensitive () const
+ virtual bool close ()
+ virtual bool copy ( const QString & copyName )
+ virtual bool extension ( Extension extension, const ExtensionOption * option = 0, ExtensionReturn * output = 0 )
+ virtual FileFlags fileFlags ( FileFlags type ) const
+ virtual QString fileName ( FileName file ) const
+ virtual QDateTime fileTime ( FileTime time ) const
+ virtual bool flush ()
+ virtual int handle () const
+ virtual bool isRelativePath () const
+ virtual bool isSequential () const
+ virtual bool link ( const QString & newName )
+ virtual bool mkdir ( const QString & name, bool createParentDirectories ) const
+ virtual bool open ( QIODevice::OpenMode openMode )
+ virtual QString owner ( FileOwner own ) const
+ virtual uint ownerId ( FileOwner own ) const
+ virtual qint64 pos () const
+ virtual qint64 read ( char * data, qint64 maxlen )
+ virtual qint64 readLine ( char * data, qint64 maxlen )
+ virtual bool remove ()
+ virtual bool rename ( const QString & newName )
+ virtual bool rmdir ( const QString & name, bool recurseParentDirectories ) const
+ virtual bool seek ( qint64 pos )
+ virtual void setFileName ( const QString & file )
+ virtual bool setPermissions ( uint perms )
+ virtual bool setSize ( qint64 size )
+ virtual qint64 size () const
+ virtual bool supportsExtension ( Extension extension ) const
+ virtual qint64 write ( const char * data, qint64 len )
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+Iterator
+
+parent_typedefed_objects
+ExtensionOption
+ExtensionReturn
+MapExtensionOption
+MapExtensionReturn
+UnMapExtensionOption
+FileFlags
+Iterator
+
+enums
+
+parent_enums
+class_name
+QAbstractFileEngine
+name
+Extension
+key
+AtEndExtension
+FastReadLineExtension
+MapExtension
+UnMapExtension
+public_flag
+true
+class_name
+QAbstractFileEngine
+name
+FileFlag
+key
+ReadOwnerPerm
+WriteOwnerPerm
+ExeOwnerPerm
+ReadUserPerm
+WriteUserPerm
+ExeUserPerm
+ReadGroupPerm
+WriteGroupPerm
+ExeGroupPerm
+ReadOtherPerm
+WriteOtherPerm
+ExeOtherPerm
+LinkType
+FileType
+BundleType
+DirectoryType
+HiddenFlag
+ExistsFlag
+RootFlag
+LocalDiskFlag
+Refresh
+public_flag
+true
+class_name
+QAbstractFileEngine
+name
+FileName
+key
+DefaultName
+BaseName
+PathName
+AbsoluteName
+AbsolutePathName
+LinkName
+CanonicalName
+CanonicalPathName
+BundleName
+public_flag
+true
+class_name
+QAbstractFileEngine
+name
+FileOwner
+key
+OwnerUser
+OwnerGroup
+public_flag
+true
+class_name
+QAbstractFileEngine
+name
+FileTime
+key
+CreationTime
+ModificationTime
+AccessTime
+public_flag
+true
+
+parent_index
+399
+
+parent_name
+QAbstractFileEngine
+

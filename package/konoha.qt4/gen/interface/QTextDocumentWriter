@@ -1,0 +1,66 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextdocumentwriter.html
+
+output_urn
+QTextDocumentWriter
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QTextDocumentWriter ()
+QTextDocumentWriter ( QIODevice * device, const QByteArray & format )
+QTextDocumentWriter ( const QString & fileName, const QByteArray & format = QByteArray() )
+~QTextDocumentWriter ()
+ QTextCodec * codec () const
+ QIODevice * device () const
+ QString fileName () const
+ QByteArray format () const
+ void setCodec ( QTextCodec * codec )
+ void setDevice ( QIODevice * device )
+ void setFileName ( const QString & fileName )
+ void setFormat ( const QByteArray & format )
+ bool write ( const QTextDocument * document )
+ bool write ( const QTextDocumentFragment & fragment )
+
+public_slots
+
+signals
+
+static_public_members
+ QList<QByteArray> supportedDocumentFormats ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

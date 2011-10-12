@@ -1,0 +1,81 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsessionmanager.html
+
+output_urn
+QSessionManager
+
+inherits
+
+public_types
+ enum RestartHint { RestartIfRunning, RestartAnyway, RestartImmediately, RestartNever }
+
+properties
+
+public_functions
+ bool allowsErrorInteraction ()
+ bool allowsInteraction ()
+ void cancel ()
+ QStringList discardCommand () const
+ bool isPhase2 () const
+ void release ()
+ void requestPhase2 ()
+ QStringList restartCommand () const
+ RestartHint restartHint () const
+ QString sessionId () const
+ QString sessionKey () const
+ void setDiscardCommand ( const QStringList & list )
+ void setManagerProperty ( const QString & name, const QStringList & value )
+ void setManagerProperty ( const QString & name, const QString & value )
+ void setRestartCommand ( const QStringList & command )
+ void setRestartHint ( RestartHint hint )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QSessionManager
+name
+RestartHint
+key
+RestartIfRunning
+RestartAnyway
+RestartImmediately
+RestartNever
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

@@ -1,0 +1,81 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qhostinfo.html
+
+output_urn
+QHostInfo
+
+inherits
+
+public_types
+ enum HostInfoError { NoError, HostNotFound, UnknownError }
+
+properties
+
+public_functions
+QHostInfo ( int id = -1 )
+QHostInfo ( const QHostInfo & other )
+~QHostInfo ()
+ QList<QHostAddress> addresses () const
+ HostInfoError error () const
+ QString errorString () const
+ QString hostName () const
+ int lookupId () const
+ void setAddresses ( const QList<QHostAddress> & addresses )
+ void setError ( HostInfoError error )
+ void setErrorString ( const QString & str )
+ void setHostName ( const QString & hostName )
+ void setLookupId ( int id )
+ QHostInfo & operator= ( const QHostInfo & other )
+
+public_slots
+
+signals
+
+static_public_members
+ void abortHostLookup ( int id )
+ QHostInfo fromName ( const QString & name )
+ QString localDomainName ()
+ QString localHostName ()
+ int lookupHost ( const QString & name, QObject * receiver, const char * member )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QHostInfo
+name
+HostInfoError
+key
+NoError
+HostNotFound
+UnknownError
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

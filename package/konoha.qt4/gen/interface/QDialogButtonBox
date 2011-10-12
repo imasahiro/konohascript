@@ -1,0 +1,151 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdialogbuttonbox.html
+
+output_urn
+QDialogButtonBox
+
+inherits
+
+public_types
+ enum ButtonLayout { WinLayout, MacLayout, KdeLayout, GnomeLayout }
+ enum ButtonRole { InvalidRole, AcceptRole, RejectRole, DestructiveRole, ..., ResetRole }
+ enum StandardButton { Ok, Open, Save, Cancel, ..., NoButton }
+ flags StandardButtons
+
+properties
+centerButtons : bool
+orientation : Qt::Orientation
+standardButtons : StandardButtons
+
+public_functions
+QDialogButtonBox ( QWidget * parent = 0 )
+QDialogButtonBox ( Qt::Orientation orientation, QWidget * parent = 0 )
+QDialogButtonBox ( StandardButtons buttons, Qt::Orientation orientation = Qt::Horizontal, QWidget * parent = 0 )
+~QDialogButtonBox ()
+ void addButton ( QAbstractButton * button, ButtonRole role )
+ QPushButton * addButton ( const QString & text, ButtonRole role )
+ QPushButton * addButton ( StandardButton button )
+ QPushButton * button ( StandardButton which ) const
+ ButtonRole buttonRole ( QAbstractButton * button ) const
+ QList<QAbstractButton *> buttons () const
+ bool centerButtons () const
+ void clear ()
+ Qt::Orientation orientation () const
+ void removeButton ( QAbstractButton * button )
+ void setCenterButtons ( bool center )
+ void setOrientation ( Qt::Orientation orientation )
+ void setStandardButtons ( StandardButtons buttons )
+ StandardButton standardButton ( QAbstractButton * button ) const
+ StandardButtons standardButtons () const
+
+public_slots
+
+signals
+ void accepted ()
+ void clicked ( QAbstractButton * button )
+ void helpRequested ()
+ void rejected ()
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * event )
+ virtual bool event ( QEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+StandardButtons
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+class_name
+QDialogButtonBox
+name
+ButtonLayout
+key
+WinLayout
+MacLayout
+KdeLayout
+GnomeLayout
+public_flag
+true
+class_name
+QDialogButtonBox
+name
+ButtonRole
+key
+InvalidRole
+AcceptRole
+RejectRole
+DestructiveRole
+ActionRole
+HelpRole
+YesRole
+NoRole
+ApplyRole
+ResetRole
+public_flag
+true
+class_name
+QDialogButtonBox
+name
+StandardButton
+key
+Ok
+Open
+Save
+Cancel
+Close
+Discard
+Apply
+Reset
+RestoreDefaults
+Help
+SaveAll
+Yes
+YesToAll
+No
+NoToAll
+Abort
+Retry
+Ignore
+NoButton
+public_flag
+true
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

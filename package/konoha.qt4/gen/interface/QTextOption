@@ -1,0 +1,114 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextoption.html
+
+output_urn
+QTextOption
+
+inherits
+
+public_types
+ class Tab
+ enum Flag { IncludeTrailingSpaces, ShowTabsAndSpaces, ShowLineAndParagraphSeparators, AddSpaceForLineAndParagraphSeparators, SuppressColors }
+ flags Flags
+ enum TabType { LeftTab, RightTab, CenterTab, DelimiterTab }
+ enum WrapMode { NoWrap, WordWrap, ManualWrap, WrapAnywhere, WrapAtWordBoundaryOrAnywhere }
+
+properties
+
+public_functions
+QTextOption ()
+QTextOption ( Qt::Alignment alignment )
+QTextOption ( const QTextOption & other )
+~QTextOption ()
+ Qt::Alignment alignment () const
+ Flags flags () const
+ void setAlignment ( Qt::Alignment alignment )
+ void setFlags ( Flags flags )
+ void setTabArray ( QList<qreal> tabStops )
+ void setTabStop ( qreal tabStop )
+ void setTabs ( QList<Tab> tabStops )
+ void setTextDirection ( Qt::LayoutDirection direction )
+ void setUseDesignMetrics ( bool enable )
+ void setWrapMode ( WrapMode mode )
+ QList<qreal> tabArray () const
+ qreal tabStop () const
+ QList<Tab> tabs () const
+ Qt::LayoutDirection textDirection () const
+ bool useDesignMetrics () const
+ WrapMode wrapMode () const
+ QTextOption & operator= ( const QTextOption & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+Tab
+Flags
+
+parent_typedefed_objects
+
+enums
+class_name
+QTextOption
+name
+Flag
+key
+IncludeTrailingSpaces
+ShowTabsAndSpaces
+ShowLineAndParagraphSeparators
+AddSpaceForLineAndParagraphSeparators
+SuppressColors
+public_flag
+true
+class_name
+QTextOption
+name
+TabType
+key
+LeftTab
+RightTab
+CenterTab
+DelimiterTab
+public_flag
+true
+class_name
+QTextOption
+name
+WrapMode
+key
+NoWrap
+WordWrap
+ManualWrap
+WrapAnywhere
+WrapAtWordBoundaryOrAnywhere
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

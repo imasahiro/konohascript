@@ -1,0 +1,111 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmenubar.html
+
+output_urn
+QMenuBar
+
+inherits
+
+public_types
+
+properties
+defaultUp : bool
+nativeMenuBar : bool
+
+public_functions
+QMenuBar ( QWidget * parent = 0 )
+~QMenuBar ()
+ QAction * actionAt ( const QPoint & pt ) const
+ QRect actionGeometry ( QAction * act ) const
+ QAction * activeAction () const
+ QAction * addAction ( const QString & text )
+ QAction * addAction ( const QString & text, const QObject * receiver, const char * member )
+ void addAction ( QAction * action )
+ QAction * addMenu ( QMenu * menu )
+ QMenu * addMenu ( const QString & title )
+ QMenu * addMenu ( const QIcon & icon, const QString & title )
+ QAction * addSeparator ()
+ void clear ()
+ QWidget * cornerWidget ( Qt::Corner corner = Qt::TopRightCorner ) const
+ QAction * defaultAction () const
+ QAction * insertMenu ( QAction * before, QMenu * menu )
+ QAction * insertSeparator ( QAction * before )
+ bool isDefaultUp () const
+ bool isNativeMenuBar () const
+ void setActiveAction ( QAction * act )
+ void setCornerWidget ( QWidget * widget, Qt::Corner corner = Qt::TopRightCorner )
+ void setDefaultAction ( QAction * act )
+ void setDefaultUp ( bool )
+ void setNativeMenuBar ( bool nativeMenuBar )
+
+public_slots
+ virtual void setVisible ( bool visible )
+
+signals
+ void hovered ( QAction * action )
+ void triggered ( QAction * action )
+
+static_public_members
+
+protected_functions
+ void initStyleOption ( QStyleOptionMenuItem * option, const QAction * action ) const
+
+reimplemented_public_functions
+ virtual int heightForWidth ( int ) const
+ virtual QSize minimumSizeHint () const
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void actionEvent ( QActionEvent * e )
+ virtual void changeEvent ( QEvent * e )
+ virtual bool event ( QEvent * e )
+ virtual bool eventFilter ( QObject * object, QEvent * event )
+ virtual void focusInEvent ( QFocusEvent * )
+ virtual void focusOutEvent ( QFocusEvent * )
+ virtual void keyPressEvent ( QKeyEvent * e )
+ virtual void leaveEvent ( QEvent * )
+ virtual void mouseMoveEvent ( QMouseEvent * e )
+ virtual void mousePressEvent ( QMouseEvent * e )
+ virtual void mouseReleaseEvent ( QMouseEvent * e )
+ virtual void paintEvent ( QPaintEvent * e )
+ virtual void resizeEvent ( QResizeEvent * )
+ virtual void timerEvent ( QTimerEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

@@ -1,0 +1,72 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qscrollarea.html
+
+output_urn
+QScrollArea
+
+inherits
+
+public_types
+
+properties
+alignment : Qt::Alignment
+widgetResizable : bool
+
+public_functions
+QScrollArea ( QWidget * parent = 0 )
+~QScrollArea ()
+ Qt::Alignment alignment () const
+ void ensureVisible ( int x, int y, int xmargin = 50, int ymargin = 50 )
+ void ensureWidgetVisible ( QWidget * childWidget, int xmargin = 50, int ymargin = 50 )
+ void setAlignment ( Qt::Alignment )
+ void setWidget ( QWidget * widget )
+ void setWidgetResizable ( bool resizable )
+ QWidget * takeWidget ()
+ QWidget * widget () const
+ bool widgetResizable () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual bool focusNextPrevChild ( bool next )
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+ virtual bool eventFilter ( QObject * o, QEvent * e )
+ virtual void resizeEvent ( QResizeEvent * )
+ virtual void scrollContentsBy ( int dx, int dy )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+359
+
+parent_name
+QAbstractScrollArea
+

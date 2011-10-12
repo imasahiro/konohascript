@@ -1,0 +1,67 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdbusabstractinterface.html
+
+output_urn
+QDBusAbstractInterface
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+ virtual ~QDBusAbstractInterface ()
+ QDBusPendingCall asyncCall ( const QString & method, const QVariant & arg1 = QVariant(), const QVariant & arg2 = QVariant(), const QVariant & arg3 = QVariant(), const QVariant & arg4 = QVariant(), const QVariant & arg5 = QVariant(), const QVariant & arg6 = QVariant(), const QVariant & arg7 = QVariant(), const QVariant & arg8 = QVariant() )
+ QDBusPendingCall asyncCallWithArgumentList ( const QString & method, const QList<QVariant> & args )
+ QDBusMessage call ( const QString & method, const QVariant & arg1 = QVariant(), const QVariant & arg2 = QVariant(), const QVariant & arg3 = QVariant(), const QVariant & arg4 = QVariant(), const QVariant & arg5 = QVariant(), const QVariant & arg6 = QVariant(), const QVariant & arg7 = QVariant(), const QVariant & arg8 = QVariant() )
+ QDBusMessage call ( QDBus::CallMode mode, const QString & method, const QVariant & arg1 = QVariant(), const QVariant & arg2 = QVariant(), const QVariant & arg3 = QVariant(), const QVariant & arg4 = QVariant(), const QVariant & arg5 = QVariant(), const QVariant & arg6 = QVariant(), const QVariant & arg7 = QVariant(), const QVariant & arg8 = QVariant() )
+ QDBusMessage callWithArgumentList ( QDBus::CallMode mode, const QString & method, const QList<QVariant> & args )
+ bool callWithCallback ( const QString & method, const QList<QVariant> & args, QObject * receiver, const char * returnMethod, const char * errorMethod )
+ bool callWithCallback ( const QString & method, const QList<QVariant> & args, QObject * receiver, const char * slot )
+ QDBusConnection connection () const
+ QString interface () const
+ bool isValid () const
+ QDBusError lastError () const
+ QString path () const
+ QString service () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

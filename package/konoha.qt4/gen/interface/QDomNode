@@ -1,0 +1,153 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdomnode.html
+
+output_urn
+QDomNode
+
+inherits
+
+public_types
+ enum EncodingPolicy { EncodingFromDocument, EncodingFromTextStream }
+ enum NodeType { ElementNode, AttributeNode, TextNode, CDATASectionNode, ..., CharacterDataNode }
+
+properties
+
+public_functions
+QDomNode ()
+QDomNode ( const QDomNode & n )
+~QDomNode ()
+ QDomNode appendChild ( const QDomNode & newChild )
+ QDomNamedNodeMap attributes () const
+ QDomNodeList childNodes () const
+ void clear ()
+ QDomNode cloneNode ( bool deep = true ) const
+ int columnNumber () const
+ QDomNode firstChild () const
+ QDomElement firstChildElement ( const QString & tagName = QString() ) const
+ bool hasAttributes () const
+ bool hasChildNodes () const
+ QDomNode insertAfter ( const QDomNode & newChild, const QDomNode & refChild )
+ QDomNode insertBefore ( const QDomNode & newChild, const QDomNode & refChild )
+ bool isAttr () const
+ bool isCDATASection () const
+ bool isCharacterData () const
+ bool isComment () const
+ bool isDocument () const
+ bool isDocumentFragment () const
+ bool isDocumentType () const
+ bool isElement () const
+ bool isEntity () const
+ bool isEntityReference () const
+ bool isNotation () const
+ bool isNull () const
+ bool isProcessingInstruction () const
+ bool isSupported ( const QString & feature, const QString & version ) const
+ bool isText () const
+ QDomNode lastChild () const
+ QDomElement lastChildElement ( const QString & tagName = QString() ) const
+ int lineNumber () const
+ QString localName () const
+ QDomNode namedItem ( const QString & name ) const
+ QString namespaceURI () const
+ QDomNode nextSibling () const
+ QDomElement nextSiblingElement ( const QString & tagName = QString() ) const
+ QString nodeName () const
+ NodeType nodeType () const
+ QString nodeValue () const
+ void normalize ()
+ QDomDocument ownerDocument () const
+ QDomNode parentNode () const
+ QString prefix () const
+ QDomNode previousSibling () const
+ QDomElement previousSiblingElement ( const QString & tagName = QString() ) const
+ QDomNode removeChild ( const QDomNode & oldChild )
+ QDomNode replaceChild ( const QDomNode & newChild, const QDomNode & oldChild )
+ void save ( QTextStream & str, int indent ) const
+ void save ( QTextStream & str, int indent, EncodingPolicy encodingPolicy ) const
+ void setNodeValue ( const QString & v )
+ void setPrefix ( const QString & pre )
+ QDomAttr toAttr () const
+ QDomCDATASection toCDATASection () const
+ QDomCharacterData toCharacterData () const
+ QDomComment toComment () const
+ QDomDocument toDocument () const
+ QDomDocumentFragment toDocumentFragment () const
+ QDomDocumentType toDocumentType () const
+ QDomElement toElement () const
+ QDomEntity toEntity () const
+ QDomEntityReference toEntityReference () const
+ QDomNotation toNotation () const
+ QDomProcessingInstruction toProcessingInstruction () const
+ QDomText toText () const
+ bool operator!= ( const QDomNode & n ) const
+ QDomNode & operator= ( const QDomNode & n )
+ bool operator== ( const QDomNode & n ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QTextStream & operator<< ( QTextStream & str, const QDomNode & node )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDomNode
+name
+EncodingPolicy
+key
+EncodingFromDocument
+EncodingFromTextStream
+public_flag
+true
+class_name
+QDomNode
+name
+NodeType
+key
+ElementNode
+AttributeNode
+TextNode
+CDATASectionNode
+EntityReferenceNode
+EntityNode
+ProcessingInstructionNode
+CommentNode
+DocumentNode
+DocumentTypeNode
+DocumentFragmentNode
+NotationNode
+BaseNode
+CharacterDataNode
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

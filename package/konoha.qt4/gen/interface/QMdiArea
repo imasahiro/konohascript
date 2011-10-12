@@ -1,0 +1,129 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmdiarea.html
+
+output_urn
+QMdiArea
+
+inherits
+
+public_types
+ enum AreaOption { DontMaximizeSubWindowOnActivation }
+ flags AreaOptions
+ enum ViewMode { SubWindowView, TabbedView }
+ enum WindowOrder { CreationOrder, StackingOrder, ActivationHistoryOrder }
+
+properties
+activationOrder : WindowOrder
+background : QBrush
+documentMode : bool
+
+public_functions
+QMdiArea ( QWidget * parent = 0 )
+~QMdiArea ()
+ WindowOrder activationOrder () const
+ QMdiSubWindow * activeSubWindow () const
+ QMdiSubWindow * addSubWindow ( QWidget * widget, Qt::WindowFlags windowFlags = 0 )
+ QBrush background () const
+ QMdiSubWindow * currentSubWindow () const
+ bool documentMode () const
+ void removeSubWindow ( QWidget * widget )
+ void setActivationOrder ( WindowOrder order )
+ void setBackground ( const QBrush & background )
+ void setDocumentMode ( bool enabled )
+ void setOption ( AreaOption option, bool on = true )
+ void setTabPosition ( QTabWidget::TabPosition position )
+ void setTabShape ( QTabWidget::TabShape shape )
+ void setViewMode ( ViewMode mode )
+ QList<QMdiSubWindow *> subWindowList ( WindowOrder order = CreationOrder ) const
+ QTabWidget::TabPosition tabPosition () const
+ QTabWidget::TabShape tabShape () const
+ bool testOption ( AreaOption option ) const
+ ViewMode viewMode () const
+
+public_slots
+ void activateNextSubWindow ()
+ void activatePreviousSubWindow ()
+ void cascadeSubWindows ()
+ void closeActiveSubWindow ()
+ void closeAllSubWindows ()
+ void setActiveSubWindow ( QMdiSubWindow * window )
+ void tileSubWindows ()
+
+signals
+ void subWindowActivated ( QMdiSubWindow * window )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QSize minimumSizeHint () const
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void childEvent ( QChildEvent * childEvent )
+ virtual bool event ( QEvent * event )
+ virtual bool eventFilter ( QObject * object, QEvent * event )
+ virtual void paintEvent ( QPaintEvent * paintEvent )
+ virtual void resizeEvent ( QResizeEvent * resizeEvent )
+ virtual void scrollContentsBy ( int dx, int dy )
+ virtual void showEvent ( QShowEvent * showEvent )
+ virtual void timerEvent ( QTimerEvent * timerEvent )
+ virtual bool viewportEvent ( QEvent * event )
+
+protected_slots
+ void setupViewport ( QWidget * viewport )
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+AreaOptions
+
+parent_typedefed_objects
+
+enums
+class_name
+QMdiArea
+name
+AreaOption
+key
+DontMaximizeSubWindowOnActivation
+public_flag
+true
+class_name
+QMdiArea
+name
+ViewMode
+key
+SubWindowView
+TabbedView
+public_flag
+true
+class_name
+QMdiArea
+name
+WindowOrder
+key
+CreationOrder
+StackingOrder
+ActivationHistoryOrder
+public_flag
+true
+
+parent_enums
+
+parent_index
+359
+
+parent_name
+QAbstractScrollArea
+

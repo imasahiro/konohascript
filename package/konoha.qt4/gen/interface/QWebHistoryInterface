@@ -1,0 +1,59 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwebhistoryinterface.html
+
+output_urn
+QWebHistoryInterface
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QWebHistoryInterface ( QObject * parent = 0 )
+~QWebHistoryInterface ()
+ virtual void addHistoryEntry ( const QString & url ) = 0
+ virtual bool historyContains ( const QString & url ) const = 0
+
+public_slots
+
+signals
+
+static_public_members
+ QWebHistoryInterface * defaultInterface ()
+ void setDefaultInterface ( QWebHistoryInterface * defaultInterface )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

@@ -1,0 +1,84 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qpolygonf.html
+
+output_urn
+QPolygonF
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QPolygonF ()
+QPolygonF ( int size )
+QPolygonF ( const QPolygonF & polygon )
+QPolygonF ( const QVector<QPointF> & points )
+QPolygonF ( const QRectF & rectangle )
+QPolygonF ( const QPolygon & polygon )
+~QPolygonF ()
+ QRectF boundingRect () const
+ bool containsPoint ( const QPointF & point, Qt::FillRule fillRule ) const
+ QPolygonF intersected ( const QPolygonF & r ) const
+ bool isClosed () const
+ QPolygonF subtracted ( const QPolygonF & r ) const
+ QPolygon toPolygon () const
+ void translate ( const QPointF & offset )
+ void translate ( qreal dx, qreal dy )
+ QPolygonF translated ( const QPointF & offset ) const
+ QPolygonF translated ( qreal dx, qreal dy ) const
+ QPolygonF united ( const QPolygonF & r ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & stream, const QPolygonF & polygon )
+ QDataStream & operator>> ( QDataStream & stream, QPolygonF & polygon )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+ConstIterator
+Iterator
+const_iterator
+const_pointer
+const_reference
+difference_type
+iterator
+pointer
+reference
+size_type
+value_type
+
+enums
+
+parent_enums
+
+parent_index
+73
+
+parent_name
+QVector
+

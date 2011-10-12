@@ -1,0 +1,74 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qflags.html
+
+output_urn
+QFlags
+
+inherits
+
+public_types
+ typedef enum_type
+
+properties
+
+public_functions
+QFlags ( const QFlags & other )
+QFlags ( Enum flag )
+QFlags ( Zero zero = 0 )
+QFlags ( QFlag value )
+ bool testFlag ( Enum flag ) const
+operator int () const
+ bool operator! () const
+ QFlags operator& ( int mask ) const
+ QFlags operator& ( uint mask ) const
+ QFlags operator& ( Enum mask ) const
+ QFlags & operator&= ( int mask )
+ QFlags & operator&= ( uint mask )
+ QFlags & operator= ( const QFlags & other )
+ QFlags operator^ ( QFlags other ) const
+ QFlags operator^ ( Enum other ) const
+ QFlags & operator^= ( QFlags other )
+ QFlags & operator^= ( Enum other )
+ QFlags operator| ( QFlags other ) const
+ QFlags operator| ( Enum other ) const
+ QFlags & operator|= ( QFlags other )
+ QFlags & operator|= ( Enum other )
+ QFlags operator~ () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

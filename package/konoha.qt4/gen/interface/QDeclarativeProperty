@@ -1,0 +1,112 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdeclarativeproperty.html
+
+output_urn
+QDeclarativeProperty
+
+inherits
+
+public_types
+ enum PropertyTypeCategory { InvalidCategory, List, Object, Normal }
+ enum Type { Invalid, Property, SignalProperty }
+
+properties
+
+public_functions
+QDeclarativeProperty ()
+QDeclarativeProperty ( QObject * obj )
+QDeclarativeProperty ( QObject * obj, QDeclarativeContext * ctxt )
+QDeclarativeProperty ( QObject * obj, QDeclarativeEngine * engine )
+QDeclarativeProperty ( QObject * obj, const QString & name )
+QDeclarativeProperty ( QObject * obj, const QString & name, QDeclarativeContext * ctxt )
+QDeclarativeProperty ( QObject * obj, const QString & name, QDeclarativeEngine * engine )
+QDeclarativeProperty ( const QDeclarativeProperty & other )
+ bool connectNotifySignal ( QObject * dest, const char * slot ) const
+ bool connectNotifySignal ( QObject * dest, int method ) const
+ bool hasNotifySignal () const
+ int index () const
+ bool isDesignable () const
+ bool isProperty () const
+ bool isResettable () const
+ bool isSignalProperty () const
+ bool isValid () const
+ bool isWritable () const
+ QMetaMethod method () const
+ QString name () const
+ bool needsNotifySignal () const
+ QObject * object () const
+ QMetaProperty property () const
+ int propertyType () const
+ PropertyTypeCategory propertyTypeCategory () const
+ const char * propertyTypeName () const
+ QVariant read () const
+ bool reset () const
+ Type type () const
+ bool write ( const QVariant & value ) const
+ QDeclarativeProperty & operator= ( const QDeclarativeProperty & other )
+ bool operator== ( const QDeclarativeProperty & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QVariant read ( QObject * object, const QString & name )
+ QVariant read ( QObject * object, const QString & name, QDeclarativeContext * ctxt )
+ QVariant read ( QObject * object, const QString & name, QDeclarativeEngine * engine )
+ bool write ( QObject * object, const QString & name, const QVariant & value )
+ bool write ( QObject * object, const QString & name, const QVariant & value, QDeclarativeContext * ctxt )
+ bool write ( QObject * object, const QString & name, const QVariant & value, QDeclarativeEngine * engine )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDeclarativeProperty
+name
+PropertyTypeCategory
+key
+InvalidCategory
+List
+Object
+Normal
+public_flag
+true
+class_name
+QDeclarativeProperty
+name
+Type
+key
+Invalid
+Property
+SignalProperty
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

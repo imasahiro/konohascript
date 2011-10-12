@@ -1,0 +1,58 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdbusobjectpath.html
+
+output_urn
+QDBusObjectPath
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDBusObjectPath ()
+QDBusObjectPath ( const char * path )
+QDBusObjectPath ( const QLatin1String & path )
+QDBusObjectPath ( const QString & path )
+ QString path () const
+ void setPath ( const QString & path )
+ QDBusObjectPath & operator= ( const QDBusObjectPath & path )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

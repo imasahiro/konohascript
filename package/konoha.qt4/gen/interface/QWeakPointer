@@ -1,0 +1,74 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qweakpointer.html
+
+output_urn
+QWeakPointer
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QWeakPointer ()
+QWeakPointer ( const QWeakPointer<T> & other )
+QWeakPointer ( const QSharedPointer<T> & other )
+QWeakPointer ( const QObject * obj )
+~QWeakPointer ()
+ void clear ()
+ T * data () const
+ bool isNull () const
+ QSharedPointer<T> toStrongRef () const
+operator bool () const
+ bool operator! () const
+ QWeakPointer<T> operator= ( const QWeakPointer<T> & other )
+ QWeakPointer<T> operator= ( const QSharedPointer<T> & other )
+ QWeakPointer<T> operator= ( const QObject * obj )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QSharedPointer<X> qSharedPointerCast ( const QWeakPointer<T> & other )
+ QSharedPointer<X> qSharedPointerConstCast ( const QWeakPointer<T> & other )
+ QSharedPointer<X> qSharedPointerDynamicCast ( const QWeakPointer<T> & other )
+ QSharedPointer<X> qSharedPointerObjectCast ( const QWeakPointer<T> & other )
+ QWeakPointer<X> qWeakPointerCast ( const QWeakPointer<T> & other )
+ bool operator!= ( const QWeakPointer<T> & ptr1, const QSharedPointer<X> & ptr2 )
+ bool operator!= ( const QSharedPointer<T> & ptr1, const QWeakPointer<X> & ptr2 )
+ bool operator== ( const QWeakPointer<T> & ptr1, const QSharedPointer<X> & ptr2 )
+ bool operator== ( const QSharedPointer<T> & ptr1, const QWeakPointer<X> & ptr2 )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

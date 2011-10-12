@@ -1,0 +1,62 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwebpluginfactory.html
+
+output_urn
+QWebPluginFactory
+
+inherits
+
+public_types
+ class MimeType
+ class Plugin
+
+properties
+
+public_functions
+QWebPluginFactory ( QObject * parent = 0 )
+ virtual ~QWebPluginFactory ()
+ virtual QObject * create ( const QString & mimeType, const QUrl & url, const QStringList & argumentNames, const QStringList & argumentValues ) const = 0
+ virtual QList<Plugin> plugins () const = 0
+ virtual void refreshPlugins ()
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+MimeType
+Plugin
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

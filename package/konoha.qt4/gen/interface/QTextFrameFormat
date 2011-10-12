@@ -1,0 +1,229 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextframeformat.html
+
+output_urn
+QTextFrameFormat
+
+inherits
+
+public_types
+ enum BorderStyle { BorderStyle_None, BorderStyle_Dotted, BorderStyle_Dashed, BorderStyle_Solid, ..., BorderStyle_Outset }
+ enum Position { InFlow, FloatLeft, FloatRight }
+
+properties
+
+public_functions
+QTextFrameFormat ()
+ qreal border () const
+ QBrush borderBrush () const
+ BorderStyle borderStyle () const
+ qreal bottomMargin () const
+ QTextLength height () const
+ bool isValid () const
+ qreal leftMargin () const
+ qreal margin () const
+ qreal padding () const
+ PageBreakFlags pageBreakPolicy () const
+ Position position () const
+ qreal rightMargin () const
+ void setBorder ( qreal width )
+ void setBorderBrush ( const QBrush & brush )
+ void setBorderStyle ( BorderStyle style )
+ void setBottomMargin ( qreal margin )
+ void setHeight ( const QTextLength & height )
+ void setHeight ( qreal height )
+ void setLeftMargin ( qreal margin )
+ void setMargin ( qreal margin )
+ void setPadding ( qreal width )
+ void setPageBreakPolicy ( PageBreakFlags policy )
+ void setPosition ( Position policy )
+ void setRightMargin ( qreal margin )
+ void setTopMargin ( qreal margin )
+ void setWidth ( const QTextLength & width )
+ void setWidth ( qreal width )
+ qreal topMargin () const
+ QTextLength width () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+PageBreakFlags
+
+enums
+class_name
+QTextFrameFormat
+name
+BorderStyle
+key
+BorderStyle_None
+BorderStyle_Dotted
+BorderStyle_Dashed
+BorderStyle_Solid
+BorderStyle_Double
+BorderStyle_DotDash
+BorderStyle_DotDotDash
+BorderStyle_Groove
+BorderStyle_Ridge
+BorderStyle_Inset
+BorderStyle_Outset
+public_flag
+true
+class_name
+QTextFrameFormat
+name
+Position
+key
+InFlow
+FloatLeft
+FloatRight
+public_flag
+true
+
+parent_enums
+class_name
+QTextFormat
+name
+FormatType
+key
+InvalidFormat
+BlockFormat
+CharFormat
+ListFormat
+TableFormat
+FrameFormat
+UserFormat
+public_flag
+true
+class_name
+QTextFormat
+name
+ObjectTypes
+key
+NoObject
+ImageObject
+TableObject
+TableCellObject
+UserObject
+public_flag
+true
+class_name
+QTextFormat
+name
+PageBreakFlag
+key
+PageBreak_Auto
+PageBreak_AlwaysBefore
+PageBreak_AlwaysAfter
+public_flag
+true
+class_name
+QTextFormat
+name
+Property
+key
+ObjectIndex
+CssFloat
+LayoutDirection
+OutlinePen
+ForegroundBrush
+BackgroundBrush
+BackgroundImageUrl
+BlockAlignment
+BlockTopMargin
+BlockBottomMargin
+BlockLeftMargin
+BlockRightMargin
+TextIndent
+TabPositions
+BlockIndent
+BlockNonBreakableLines
+BlockTrailingHorizontalRulerWidth
+FontFamily
+FontPointSize
+FontPixelSize
+FontSizeAdjustment
+FontFixedPitch
+FontWeight
+FontItalic
+FontUnderline
+FontOverline
+FontStrikeOut
+FontCapitalization
+FontLetterSpacing
+FontWordSpacing
+FontStyleHint
+FontStyleStrategy
+FontKerning
+TextUnderlineColor
+TextVerticalAlignment
+TextOutline
+TextUnderlineStyle
+TextToolTip
+IsAnchor
+AnchorHref
+AnchorName
+ObjectType
+ListStyle
+ListIndent
+FrameBorder
+FrameBorderBrush
+FrameBorderStyle
+FrameBottomMargin
+FrameHeight
+FrameLeftMargin
+FrameMargin
+FramePadding
+FrameRightMargin
+FrameTopMargin
+FrameWidth
+TableCellSpacing
+TableCellPadding
+TableColumns
+TableColumnWidthConstraints
+TableHeaderRowCount
+TableCellRowSpan
+TableCellColumnSpan
+TableCellLeftPadding
+TableCellRightPadding
+TableCellTopPadding
+TableCellBottomPadding
+ImageName
+ImageWidth
+ImageHeight
+FullWidthSelection
+PageBreakPolicy
+UserProperty
+public_flag
+true
+
+parent_index
+170
+
+parent_name
+QTextFormat
+

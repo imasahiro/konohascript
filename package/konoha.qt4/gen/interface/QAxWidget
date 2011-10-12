@@ -1,0 +1,83 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qaxwidget.html
+
+output_urn
+QAxWidget
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QAxWidget ( QWidget * parent = 0, Qt::WindowFlags f = 0 )
+QAxWidget ( const QString & c, QWidget * parent = 0, Qt::WindowFlags f = 0 )
+QAxWidget ( IUnknown * iface, QWidget * parent = 0, Qt::WindowFlags f = 0 )
+~QAxWidget ()
+ virtual QAxAggregated * createAggregate ()
+ bool doVerb ( const QString & verb )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ virtual bool createHostWindow ( bool initialized )
+ bool createHostWindow ( bool initialized, const QByteArray & data )
+ virtual bool translateKeyEvent ( int message, int keycode ) const
+
+reimplemented_public_functions
+ virtual void clear ()
+ virtual QSize minimumSizeHint () const
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * e )
+ virtual void connectNotify ( const char * signal )
+ virtual bool initialize ( IUnknown ** ptr )
+ virtual void resizeEvent ( QResizeEvent * )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+PropertyBag
+RenderFlags
+
+enums
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+152
+216
+
+parent_name
+QAxBase
+QWidget
+

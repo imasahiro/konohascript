@@ -1,0 +1,85 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qpaintdevice.html
+
+output_urn
+QPaintDevice
+
+inherits
+
+public_types
+ enum PaintDeviceMetric { PdmWidth, PdmHeight, PdmWidthMM, PdmHeightMM, ..., PdmPhysicalDpiY }
+
+properties
+
+public_functions
+ virtual ~QPaintDevice ()
+ int colorCount () const
+ int depth () const
+ int height () const
+ int heightMM () const
+ int logicalDpiX () const
+ int logicalDpiY () const
+ int numColors () const (deprecated)
+ virtual QPaintEngine * paintEngine () const = 0
+ bool paintingActive () const
+ int physicalDpiX () const
+ int physicalDpiY () const
+ int width () const
+ int widthMM () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+QPaintDevice ()
+ virtual int metric ( PaintDeviceMetric metric ) const
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QPaintDevice
+name
+PaintDeviceMetric
+key
+PdmWidth
+PdmHeight
+PdmWidthMM
+PdmHeightMM
+PdmNumColors
+PdmDepth
+PdmDpiX
+PdmDpiY
+PdmPhysicalDpiX
+PdmPhysicalDpiY
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

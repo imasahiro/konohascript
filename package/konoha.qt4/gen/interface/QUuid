@@ -1,0 +1,97 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/quuid.html
+
+output_urn
+QUuid
+
+inherits
+
+public_types
+ enum Variant { VarUnknown, NCS, DCE, Microsoft, Reserved }
+ enum Version { VerUnknown, Time, EmbeddedPOSIX, Name, Random }
+
+properties
+
+public_functions
+QUuid ()
+QUuid ( uint l, ushort w1, ushort w2, uchar b1, uchar b2, uchar b3, uchar b4, uchar b5, uchar b6, uchar b7, uchar b8 )
+QUuid ( const QString & text )
+QUuid ( const GUID & guid )
+ bool isNull () const
+ QString toString () const
+ QUuid::Variant variant () const
+ QUuid::Version version () const
+operator GUID () const
+operator QString () const
+ bool operator!= ( const QUuid & other ) const
+ bool operator!= ( const GUID & guid ) const
+ bool operator< ( const QUuid & other ) const
+ QUuid & operator= ( const GUID & guid )
+ bool operator== ( const QUuid & other ) const
+ bool operator== ( const GUID & guid ) const
+ bool operator> ( const QUuid & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QUuid createUuid ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & s, const QUuid & id )
+ QDataStream & operator>> ( QDataStream & s, QUuid & id )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QUuid
+name
+Variant
+key
+VarUnknown
+NCS
+DCE
+Microsoft
+Reserved
+public_flag
+true
+class_name
+QUuid
+name
+Version
+key
+VerUnknown
+Time
+EmbeddedPOSIX
+Name
+Random
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

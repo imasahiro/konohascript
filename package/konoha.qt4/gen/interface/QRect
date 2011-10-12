@@ -1,0 +1,122 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qrect.html
+
+output_urn
+QRect
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QRect ()
+QRect ( const QPoint & topLeft, const QPoint & bottomRight )
+QRect ( const QPoint & topLeft, const QSize & size )
+QRect ( int x, int y, int width, int height )
+ void adjust ( int dx1, int dy1, int dx2, int dy2 )
+ QRect adjusted ( int dx1, int dy1, int dx2, int dy2 ) const
+ int bottom () const
+ QPoint bottomLeft () const
+ QPoint bottomRight () const
+ QPoint center () const
+ bool contains ( const QPoint & point, bool proper = false ) const
+ bool contains ( int x, int y, bool proper ) const
+ bool contains ( int x, int y ) const
+ bool contains ( const QRect & rectangle, bool proper = false ) const
+ void getCoords ( int * x1, int * y1, int * x2, int * y2 ) const
+ void getRect ( int * x, int * y, int * width, int * height ) const
+ int height () const
+ QRect intersected ( const QRect & rectangle ) const
+ bool intersects ( const QRect & rectangle ) const
+ bool isEmpty () const
+ bool isNull () const
+ bool isValid () const
+ int left () const
+ void moveBottom ( int y )
+ void moveBottomLeft ( const QPoint & position )
+ void moveBottomRight ( const QPoint & position )
+ void moveCenter ( const QPoint & position )
+ void moveLeft ( int x )
+ void moveRight ( int x )
+ void moveTo ( int x, int y )
+ void moveTo ( const QPoint & position )
+ void moveTop ( int y )
+ void moveTopLeft ( const QPoint & position )
+ void moveTopRight ( const QPoint & position )
+ QRect normalized () const
+ int right () const
+ void setBottom ( int y )
+ void setBottomLeft ( const QPoint & position )
+ void setBottomRight ( const QPoint & position )
+ void setCoords ( int x1, int y1, int x2, int y2 )
+ void setHeight ( int height )
+ void setLeft ( int x )
+ void setRect ( int x, int y, int width, int height )
+ void setRight ( int x )
+ void setSize ( const QSize & size )
+ void setTop ( int y )
+ void setTopLeft ( const QPoint & position )
+ void setTopRight ( const QPoint & position )
+ void setWidth ( int width )
+ void setX ( int x )
+ void setY ( int y )
+ QSize size () const
+ int top () const
+ QPoint topLeft () const
+ QPoint topRight () const
+ void translate ( int dx, int dy )
+ void translate ( const QPoint & offset )
+ QRect translated ( int dx, int dy ) const
+ QRect translated ( const QPoint & offset ) const
+ QRect united ( const QRect & rectangle ) const
+ int width () const
+ int x () const
+ int y () const
+ QRect operator& ( const QRect & rectangle ) const
+ QRect & operator&= ( const QRect & rectangle )
+ QRect operator| ( const QRect & rectangle ) const
+ QRect & operator|= ( const QRect & rectangle )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ bool operator!= ( const QRect & r1, const QRect & r2 )
+ QDataStream & operator<< ( QDataStream & stream, const QRect & rectangle )
+ bool operator== ( const QRect & r1, const QRect & r2 )
+ QDataStream & operator>> ( QDataStream & stream, QRect & rectangle )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

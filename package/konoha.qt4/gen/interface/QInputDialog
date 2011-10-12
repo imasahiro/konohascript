@@ -1,0 +1,149 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qinputdialog.html
+
+output_urn
+QInputDialog
+
+inherits
+
+public_types
+ enum InputDialogOption { NoButtons, UseListViewForComboBoxItems }
+ flags InputDialogOptions
+ enum InputMode { TextInput, IntInput, DoubleInput }
+
+properties
+cancelButtonText : QString
+comboBoxEditable : bool
+comboBoxItems : QStringList
+doubleDecimals : int
+doubleMaximum : double
+doubleMinimum : double
+doubleValue : int
+inputMode : InputMode
+intMaximum : int
+
+public_functions
+QInputDialog ( QWidget * parent = 0, Qt::WindowFlags flags = 0 )
+~QInputDialog ()
+ QString cancelButtonText () const
+ QStringList comboBoxItems () const
+ int doubleDecimals () const
+ double doubleMaximum () const
+ double doubleMinimum () const
+ double doubleValue () const
+ InputMode inputMode () const
+ int intMaximum () const
+ int intMinimum () const
+ int intStep () const
+ int intValue () const
+ bool isComboBoxEditable () const
+ QString labelText () const
+ QString okButtonText () const
+ void open ( QObject * receiver, const char * member )
+ InputDialogOptions options () const
+ void setCancelButtonText ( const QString & text )
+ void setComboBoxEditable ( bool editable )
+ void setComboBoxItems ( const QStringList & items )
+ void setDoubleDecimals ( int decimals )
+ void setDoubleMaximum ( double max )
+ void setDoubleMinimum ( double min )
+ void setDoubleRange ( double min, double max )
+ void setDoubleValue ( double value )
+ void setInputMode ( InputMode mode )
+ void setIntMaximum ( int max )
+ void setIntMinimum ( int min )
+ void setIntRange ( int min, int max )
+ void setIntStep ( int step )
+ void setIntValue ( int value )
+ void setLabelText ( const QString & text )
+ void setOkButtonText ( const QString & text )
+ void setOption ( InputDialogOption option, bool on = true )
+ void setOptions ( InputDialogOptions options )
+ void setTextEchoMode ( QLineEdit::EchoMode mode )
+ void setTextValue ( const QString & text )
+ bool testOption ( InputDialogOption option ) const
+ QLineEdit::EchoMode textEchoMode () const
+ QString textValue () const
+
+public_slots
+
+signals
+ void doubleValueChanged ( double value )
+ void doubleValueSelected ( double value )
+ void intValueChanged ( int value )
+ void intValueSelected ( int value )
+ void textValueChanged ( const QString & text )
+ void textValueSelected ( const QString & text )
+
+static_public_members
+ double getDouble ( QWidget * parent, const QString & title, const QString & label, double value = 0, double min = -2147483647, double max = 2147483647, int decimals = 1, bool * ok = 0, Qt::WindowFlags flags = 0 )
+ int getInt ( QWidget * parent, const QString & title, const QString & label, int value = 0, int min = -2147483647, int max = 2147483647, int step = 1, bool * ok = 0, Qt::WindowFlags flags = 0 )
+ QString getItem ( QWidget * parent, const QString & title, const QString & label, const QStringList & items, int current = 0, bool editable = true, bool * ok = 0, Qt::WindowFlags flags = 0 )
+ QString getText ( QWidget * parent, const QString & title, const QString & label, QLineEdit::EchoMode mode = QLineEdit::Normal, const QString & text = QString(), bool * ok = 0, Qt::WindowFlags flags = 0 )
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void done ( int result )
+ virtual QSize minimumSizeHint () const
+ virtual void setVisible ( bool visible )
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+InputDialogOptions
+
+parent_typedefed_objects
+
+enums
+class_name
+QInputDialog
+name
+InputDialogOption
+key
+NoButtons
+UseListViewForComboBoxItems
+public_flag
+true
+class_name
+QInputDialog
+name
+InputMode
+key
+TextInput
+IntInput
+DoubleInput
+public_flag
+true
+
+parent_enums
+class_name
+QDialog
+name
+DialogCode
+key
+Accepted
+Rejected
+public_flag
+true
+
+parent_index
+719
+
+parent_name
+QDialog
+

@@ -1,0 +1,64 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwidgetitem.html
+
+output_urn
+QWidgetItem
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QWidgetItem ( QWidget * widget )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual Qt::Orientations expandingDirections () const
+ virtual QRect geometry () const
+ virtual bool hasHeightForWidth () const
+ virtual int heightForWidth ( int w ) const
+ virtual bool isEmpty () const
+ virtual QSize maximumSize () const
+ virtual QSize minimumSize () const
+ virtual void setGeometry ( const QRect & rect )
+ virtual QSize sizeHint () const
+ virtual QWidget * widget ()
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+651
+
+parent_name
+QLayoutItem
+

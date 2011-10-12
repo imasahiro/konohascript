@@ -1,0 +1,65 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractxmlreceiver.html
+
+output_urn
+QAbstractXmlReceiver
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QAbstractXmlReceiver ()
+ virtual ~QAbstractXmlReceiver ()
+ virtual void atomicValue ( const QVariant & value ) = 0
+ virtual void attribute ( const QXmlName & name, const QStringRef & value ) = 0
+ virtual void characters ( const QStringRef & value ) = 0
+ virtual void comment ( const QString & value ) = 0
+ virtual void endDocument () = 0
+ virtual void endElement () = 0
+ virtual void endOfSequence () = 0
+ virtual void namespaceBinding ( const QXmlName & name ) = 0
+ virtual void processingInstruction ( const QXmlName & target, const QString & value ) = 0
+ virtual void startDocument () = 0
+ virtual void startElement ( const QXmlName & name ) = 0
+ virtual void startOfSequence () = 0
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,69 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qxmlserializer.html
+
+output_urn
+QXmlSerializer
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QXmlSerializer ( const QXmlQuery & query, QIODevice * outputDevice )
+ const QTextCodec * codec () const
+ QIODevice * outputDevice () const
+ void setCodec ( const QTextCodec * outputCodec )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void atomicValue ( const QVariant & value )
+ virtual void attribute ( const QXmlName & name, const QStringRef & value )
+ virtual void characters ( const QStringRef & value )
+ virtual void comment ( const QString & value )
+ virtual void endDocument ()
+ virtual void endElement ()
+ virtual void endOfSequence ()
+ virtual void namespaceBinding ( const QXmlName & nb )
+ virtual void processingInstruction ( const QXmlName & name, const QString & value )
+ virtual void startDocument ()
+ virtual void startElement ( const QXmlName & name )
+ virtual void startOfSequence ()
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+738
+
+parent_name
+QAbstractXmlReceiver
+

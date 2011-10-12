@@ -1,0 +1,93 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtreewidgetitemiterator.html
+
+output_urn
+QTreeWidgetItemIterator
+
+inherits
+
+public_types
+ enum IteratorFlag { All, Hidden, NotHidden, Selected, ..., UserFlag }
+ flags IteratorFlags
+
+properties
+
+public_functions
+QTreeWidgetItemIterator ( const QTreeWidgetItemIterator & it )
+QTreeWidgetItemIterator ( QTreeWidget * widget, IteratorFlags flags = All )
+QTreeWidgetItemIterator ( QTreeWidgetItem * item, IteratorFlags flags = All )
+~QTreeWidgetItemIterator ()
+ QTreeWidgetItem * operator* () const
+ QTreeWidgetItemIterator & operator++ ()
+ const QTreeWidgetItemIterator operator++ ( int )
+ QTreeWidgetItemIterator & operator+= ( int n )
+ QTreeWidgetItemIterator & operator-- ()
+ const QTreeWidgetItemIterator operator-- ( int )
+ QTreeWidgetItemIterator & operator-= ( int n )
+ QTreeWidgetItemIterator & operator= ( const QTreeWidgetItemIterator & it )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+IteratorFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QTreeWidgetItemIterator
+name
+IteratorFlag
+key
+All
+Hidden
+NotHidden
+Selected
+Unselected
+Selectable
+NotSelectable
+DragEnabled
+DragDisabled
+DropEnabled
+DropDisabled
+HasChildren
+NoChildren
+Checked
+NotChecked
+Enabled
+Disabled
+Editable
+NotEditable
+UserFlag
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

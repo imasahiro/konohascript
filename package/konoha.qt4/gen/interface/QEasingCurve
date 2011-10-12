@@ -1,0 +1,121 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qeasingcurve.html
+
+output_urn
+QEasingCurve
+
+inherits
+
+public_types
+ typedef EasingFunction
+ enum Type { Linear, InQuad, OutQuad, InOutQuad, ..., Custom }
+
+properties
+
+public_functions
+QEasingCurve ( Type type = Linear )
+QEasingCurve ( const QEasingCurve & other )
+~QEasingCurve ()
+ qreal amplitude () const
+ EasingFunction customType () const
+ qreal overshoot () const
+ qreal period () const
+ void setAmplitude ( qreal amplitude )
+ void setCustomType ( EasingFunction func )
+ void setOvershoot ( qreal overshoot )
+ void setPeriod ( qreal period )
+ void setType ( Type type )
+ Type type () const
+ qreal valueForProgress ( qreal progress ) const
+ bool operator!= ( const QEasingCurve & other ) const
+ QEasingCurve & operator= ( const QEasingCurve & other )
+ bool operator== ( const QEasingCurve & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & stream, const QEasingCurve & easing )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+EasingFunction
+
+parent_typedefed_objects
+
+enums
+class_name
+QEasingCurve
+name
+Type
+key
+Linear
+InQuad
+OutQuad
+InOutQuad
+OutInQuad
+InCubic
+OutCubic
+InOutCubic
+OutInCubic
+InQuart
+OutQuart
+InOutQuart
+OutInQuart
+InQuint
+OutQuint
+InOutQuint
+OutInQuint
+InSine
+OutSine
+InOutSine
+OutInSine
+InExpo
+OutExpo
+InOutExpo
+OutInExpo
+InCirc
+OutCirc
+InOutCirc
+OutInCirc
+InElastic
+OutElastic
+InOutElastic
+OutInElastic
+InBack
+OutBack
+InOutBack
+OutInBack
+InBounce
+OutBounce
+InOutBounce
+OutInBounce
+Custom
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

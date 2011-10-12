@@ -1,0 +1,95 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtexttableformat.html
+
+output_urn
+QTextTableFormat
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QTextTableFormat ()
+ Qt::Alignment alignment () const
+ qreal cellPadding () const
+ qreal cellSpacing () const
+ void clearColumnWidthConstraints ()
+ QVector<QTextLength> columnWidthConstraints () const
+ int columns () const
+ int headerRowCount () const
+ bool isValid () const
+ void setAlignment ( Qt::Alignment alignment )
+ void setCellPadding ( qreal padding )
+ void setCellSpacing ( qreal spacing )
+ void setColumnWidthConstraints ( const QVector<QTextLength> & constraints )
+ void setHeaderRowCount ( int count )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QTextFrameFormat
+name
+BorderStyle
+key
+BorderStyle_None
+BorderStyle_Dotted
+BorderStyle_Dashed
+BorderStyle_Solid
+BorderStyle_Double
+BorderStyle_DotDash
+BorderStyle_DotDotDash
+BorderStyle_Groove
+BorderStyle_Ridge
+BorderStyle_Inset
+BorderStyle_Outset
+public_flag
+true
+class_name
+QTextFrameFormat
+name
+Position
+key
+InFlow
+FloatLeft
+FloatRight
+public_flag
+true
+
+parent_index
+454
+
+parent_name
+QTextFrameFormat
+

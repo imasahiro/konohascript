@@ -1,0 +1,80 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qpictureio.html
+
+output_urn
+QPictureIO
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QPictureIO ()
+QPictureIO ( QIODevice * ioDevice, const char * format )
+QPictureIO ( const QString & fileName, const char * format )
+~QPictureIO ()
+ QString description () const
+ QString fileName () const
+ const char * format () const
+ float gamma () const
+ QIODevice * ioDevice () const
+ const char * parameters () const
+ const QPicture & picture () const
+ int quality () const
+ bool read ()
+ void setDescription ( const QString & description )
+ void setFileName ( const QString & fileName )
+ void setFormat ( const char * format )
+ void setGamma ( float gamma )
+ void setIODevice ( QIODevice * ioDevice )
+ void setParameters ( const char * parameters )
+ void setPicture ( const QPicture & picture )
+ void setQuality ( int q )
+ void setStatus ( int status )
+ int status () const
+ bool write ()
+
+public_slots
+
+signals
+
+static_public_members
+ void defineIOHandler ( const char * format, const char * header, const char * flags, picture_io_handler readPicture, picture_io_handler writePicture )
+ QList<QByteArray> inputFormats ()
+ QList<QByteArray> outputFormats ()
+ QByteArray pictureFormat ( const QString & fileName )
+ QByteArray pictureFormat ( QIODevice * d )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

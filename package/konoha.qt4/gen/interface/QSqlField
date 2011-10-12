@@ -1,0 +1,92 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsqlfield.html
+
+output_urn
+QSqlField
+
+inherits
+
+public_types
+ enum RequiredStatus { Required, Optional, Unknown }
+
+properties
+
+public_functions
+QSqlField ( const QString & fieldName = QString(), QVariant::Type type = QVariant::Invalid )
+QSqlField ( const QSqlField & other )
+~QSqlField ()
+ void clear ()
+ QVariant defaultValue () const
+ bool isAutoValue () const
+ bool isGenerated () const
+ bool isNull () const
+ bool isReadOnly () const
+ bool isValid () const
+ int length () const
+ QString name () const
+ int precision () const
+ RequiredStatus requiredStatus () const
+ void setAutoValue ( bool autoVal )
+ void setDefaultValue ( const QVariant & value )
+ void setGenerated ( bool gen )
+ void setLength ( int fieldLength )
+ void setName ( const QString & name )
+ void setPrecision ( int precision )
+ void setReadOnly ( bool readOnly )
+ void setRequired ( bool required )
+ void setRequiredStatus ( RequiredStatus required )
+ void setType ( QVariant::Type type )
+ void setValue ( const QVariant & value )
+ QVariant::Type type () const
+ QVariant value () const
+ bool operator!= ( const QSqlField & other ) const
+ QSqlField & operator= ( const QSqlField & other )
+ bool operator== ( const QSqlField & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QSqlField
+name
+RequiredStatus
+key
+Required
+Optional
+Unknown
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,59 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextblockgroup.html
+
+output_urn
+QTextBlockGroup
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+QTextBlockGroup ( QTextDocument * document )
+~QTextBlockGroup ()
+ virtual void blockFormatChanged ( const QTextBlock & block )
+ virtual void blockInserted ( const QTextBlock & block )
+ QList<QTextBlock> blockList () const
+ virtual void blockRemoved ( const QTextBlock & block )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+20
+
+parent_name
+QTextObject
+

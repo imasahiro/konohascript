@@ -1,0 +1,89 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwizardpage.html
+
+output_urn
+QWizardPage
+
+inherits
+
+public_types
+
+properties
+subTitle : QString
+title : QString
+
+public_functions
+QWizardPage ( QWidget * parent = 0 )
+ QString buttonText ( QWizard::WizardButton which ) const
+ virtual void cleanupPage ()
+ virtual void initializePage ()
+ bool isCommitPage () const
+ virtual bool isComplete () const
+ bool isFinalPage () const
+ virtual int nextId () const
+ QPixmap pixmap ( QWizard::WizardPixmap which ) const
+ void setButtonText ( QWizard::WizardButton which, const QString & text )
+ void setCommitPage ( bool commitPage )
+ void setFinalPage ( bool finalPage )
+ void setPixmap ( QWizard::WizardPixmap which, const QPixmap & pixmap )
+ void setSubTitle ( const QString & subTitle )
+ void setTitle ( const QString & title )
+ QString subTitle () const
+ QString title () const
+ virtual bool validatePage ()
+
+public_slots
+
+signals
+ void completeChanged ()
+
+static_public_members
+
+protected_functions
+ QVariant field ( const QString & name ) const
+ void registerField ( const QString & name, QWidget * widget, const char * property = 0, const char * changedSignal = 0 )
+ void setField ( const QString & name, const QVariant & value )
+ QWizard * wizard () const
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

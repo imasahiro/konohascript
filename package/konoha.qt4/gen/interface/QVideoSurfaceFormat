@@ -1,0 +1,105 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qvideosurfaceformat.html
+
+output_urn
+QVideoSurfaceFormat
+
+inherits
+
+public_types
+ enum Direction { TopToBottom, BottomToTop }
+ enum YCbCrColorSpace { YCbCr_Undefined, YCbCr_BT601, YCbCr_BT709, YCbCr_xvYCC601, YCbCr_xvYCC709, YCbCr_JPEG }
+
+properties
+
+public_functions
+QVideoSurfaceFormat ()
+QVideoSurfaceFormat ( const QSize & size, QVideoFrame::PixelFormat format, QAbstractVideoBuffer::HandleType type = QAbstractVideoBuffer::NoHandle )
+QVideoSurfaceFormat ( const QVideoSurfaceFormat & other )
+~QVideoSurfaceFormat ()
+ int frameHeight () const
+ qreal frameRate () const
+ QSize frameSize () const
+ int frameWidth () const
+ QAbstractVideoBuffer::HandleType handleType () const
+ bool isValid () const
+ QSize pixelAspectRatio () const
+ QVideoFrame::PixelFormat pixelFormat () const
+ QVariant property ( const char * name ) const
+ QList<QByteArray> propertyNames () const
+ Direction scanLineDirection () const
+ void setFrameRate ( qreal rate )
+ void setFrameSize ( const QSize & size )
+ void setFrameSize ( int width, int height )
+ void setPixelAspectRatio ( const QSize & ratio )
+ void setPixelAspectRatio ( int horizontal, int vertical )
+ void setProperty ( const char * name, const QVariant & value )
+ void setScanLineDirection ( Direction direction )
+ void setViewport ( const QRect & viewport )
+ void setYCbCrColorSpace ( YCbCrColorSpace space )
+ QSize sizeHint () const
+ QRect viewport () const
+ YCbCrColorSpace yCbCrColorSpace () const
+ bool operator!= ( const QVideoSurfaceFormat & other ) const
+ QVideoSurfaceFormat & operator= ( const QVideoSurfaceFormat & other )
+ bool operator== ( const QVideoSurfaceFormat & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QVideoSurfaceFormat
+name
+Direction
+key
+TopToBottom
+BottomToTop
+public_flag
+true
+class_name
+QVideoSurfaceFormat
+name
+YCbCrColorSpace
+key
+YCbCr_Undefined
+YCbCr_BT601
+YCbCr_BT709
+YCbCr_xvYCC601
+YCbCr_xvYCC709
+YCbCr_JPEG
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

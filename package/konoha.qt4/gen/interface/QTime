@@ -1,0 +1,81 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtime.html
+
+output_urn
+QTime
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QTime ()
+QTime ( int h, int m, int s = 0, int ms = 0 )
+ QTime addMSecs ( int ms ) const
+ QTime addSecs ( int s ) const
+ int elapsed () const
+ int hour () const
+ bool isNull () const
+ bool isValid () const
+ int minute () const
+ int msec () const
+ int msecsTo ( const QTime & t ) const
+ int restart ()
+ int second () const
+ int secsTo ( const QTime & t ) const
+ bool setHMS ( int h, int m, int s, int ms = 0 )
+ void start ()
+ QString toString ( const QString & format ) const
+ QString toString ( Qt::DateFormat format = Qt::TextDate ) const
+ bool operator!= ( const QTime & t ) const
+ bool operator< ( const QTime & t ) const
+ bool operator<= ( const QTime & t ) const
+ bool operator== ( const QTime & t ) const
+ bool operator> ( const QTime & t ) const
+ bool operator>= ( const QTime & t ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QTime currentTime ()
+ QTime fromString ( const QString & string, Qt::DateFormat format = Qt::TextDate )
+ QTime fromString ( const QString & string, const QString & format )
+ bool isValid ( int h, int m, int s, int ms = 0 )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & out, const QTime & time )
+ QDataStream & operator>> ( QDataStream & in, QTime & time )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

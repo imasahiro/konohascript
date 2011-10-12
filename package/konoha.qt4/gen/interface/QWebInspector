@@ -1,0 +1,74 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwebinspector.html
+
+output_urn
+QWebInspector
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QWebInspector ( QWidget * parent = 0 )
+~QWebInspector ()
+ QWebPage * page () const
+ void setPage ( QWebPage * page )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual bool event ( QEvent * ev )
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void closeEvent ( QCloseEvent * event )
+ virtual void hideEvent ( QHideEvent * event )
+ virtual void resizeEvent ( QResizeEvent * event )
+ virtual void showEvent ( QShowEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

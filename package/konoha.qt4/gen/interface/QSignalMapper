@@ -1,0 +1,70 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsignalmapper.html
+
+output_urn
+QSignalMapper
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QSignalMapper ( QObject * parent = 0 )
+~QSignalMapper ()
+ QObject * mapping ( int id ) const
+ QObject * mapping ( const QString & id ) const
+ QObject * mapping ( QWidget * widget ) const
+ QObject * mapping ( QObject * object ) const
+ void removeMappings ( QObject * sender )
+ void setMapping ( QObject * sender, int id )
+ void setMapping ( QObject * sender, const QString & text )
+ void setMapping ( QObject * sender, QWidget * widget )
+ void setMapping ( QObject * sender, QObject * object )
+
+public_slots
+ void map ()
+ void map ( QObject * sender )
+
+signals
+ void mapped ( int i )
+ void mapped ( const QString & text )
+ void mapped ( QWidget * widget )
+ void mapped ( QObject * object )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

@@ -1,0 +1,126 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractscrollarea.html
+
+output_urn
+QAbstractScrollArea
+
+inherits
+
+public_types
+
+properties
+horizontalScrollBarPolicy : Qt::ScrollBarPolicy
+verticalScrollBarPolicy : Qt::ScrollBarPolicy
+
+public_functions
+QAbstractScrollArea ( QWidget * parent = 0 )
+~QAbstractScrollArea ()
+ void addScrollBarWidget ( QWidget * widget, Qt::Alignment alignment )
+ QWidget * cornerWidget () const
+ QScrollBar * horizontalScrollBar () const
+ Qt::ScrollBarPolicy horizontalScrollBarPolicy () const
+ QSize maximumViewportSize () const
+ QWidgetList scrollBarWidgets ( Qt::Alignment alignment )
+ void setCornerWidget ( QWidget * widget )
+ void setHorizontalScrollBar ( QScrollBar * scrollBar )
+ void setHorizontalScrollBarPolicy ( Qt::ScrollBarPolicy )
+ void setVerticalScrollBar ( QScrollBar * scrollBar )
+ void setVerticalScrollBarPolicy ( Qt::ScrollBarPolicy )
+ void setViewport ( QWidget * widget )
+ QScrollBar * verticalScrollBar () const
+ Qt::ScrollBarPolicy verticalScrollBarPolicy () const
+ QWidget * viewport () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ virtual void scrollContentsBy ( int dx, int dy )
+ void setViewportMargins ( int left, int top, int right, int bottom )
+ void setViewportMargins ( const QMargins & margins )
+ virtual bool viewportEvent ( QEvent * event )
+
+reimplemented_public_functions
+ virtual QSize minimumSizeHint () const
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void contextMenuEvent ( QContextMenuEvent * e )
+ virtual void dragEnterEvent ( QDragEnterEvent * event )
+ virtual void dragLeaveEvent ( QDragLeaveEvent * event )
+ virtual void dragMoveEvent ( QDragMoveEvent * event )
+ virtual void dropEvent ( QDropEvent * event )
+ virtual bool event ( QEvent * event )
+ virtual void keyPressEvent ( QKeyEvent * e )
+ virtual void mouseDoubleClickEvent ( QMouseEvent * e )
+ virtual void mouseMoveEvent ( QMouseEvent * e )
+ virtual void mousePressEvent ( QMouseEvent * e )
+ virtual void mouseReleaseEvent ( QMouseEvent * e )
+ virtual void paintEvent ( QPaintEvent * event )
+ virtual void resizeEvent ( QResizeEvent * event )
+ virtual void wheelEvent ( QWheelEvent * e )
+
+protected_slots
+ void setupViewport ( QWidget * viewport )
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QFrame
+name
+Shadow
+key
+Plain
+Raised
+Sunken
+public_flag
+true
+class_name
+QFrame
+name
+Shape
+key
+NoFrame
+Box
+Panel
+StyledPanel
+HLine
+VLine
+WinPanel
+public_flag
+true
+class_name
+QFrame
+name
+StyleMask
+key
+Shadow_Mask
+Shape_Mask
+public_flag
+true
+
+parent_index
+432
+
+parent_name
+QFrame
+

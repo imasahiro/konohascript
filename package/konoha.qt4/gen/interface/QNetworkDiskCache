@@ -1,0 +1,71 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qnetworkdiskcache.html
+
+output_urn
+QNetworkDiskCache
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QNetworkDiskCache ( QObject * parent = 0 )
+~QNetworkDiskCache ()
+ QString cacheDirectory () const
+ QNetworkCacheMetaData fileMetaData ( const QString & fileName ) const
+ qint64 maximumCacheSize () const
+ void setCacheDirectory ( const QString & cacheDir )
+ void setMaximumCacheSize ( qint64 size )
+
+public_slots
+ virtual void clear ()
+
+signals
+1 public slot inherited from QAbstractNetworkCache
+1 public slot inherited from QObject
+
+static_public_members
+
+protected_functions
+ virtual qint64 expire ()
+
+reimplemented_public_functions
+ virtual qint64 cacheSize () const
+ virtual QIODevice * data ( const QUrl & url )
+ virtual void insert ( QIODevice * device )
+ virtual QNetworkCacheMetaData metaData ( const QUrl & url )
+ virtual QIODevice * prepare ( const QNetworkCacheMetaData & metaData )
+ virtual bool remove ( const QUrl & url )
+ virtual void updateMetaData ( const QNetworkCacheMetaData & metaData )
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+492
+
+parent_name
+QAbstractNetworkCache
+

@@ -1,0 +1,128 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwebelement.html
+
+output_urn
+QWebElement
+
+inherits
+
+public_types
+ enum StyleResolveStrategy { InlineStyle, CascadedStyle, ComputedStyle }
+
+properties
+
+public_functions
+QWebElement ()
+QWebElement ( const QWebElement & other )
+~QWebElement ()
+ void addClass ( const QString & name )
+ void appendInside ( const QString & markup )
+ void appendInside ( const QWebElement & element )
+ void appendOutside ( const QString & markup )
+ void appendOutside ( const QWebElement & element )
+ QString attribute ( const QString & name, const QString & defaultValue = QString() ) const
+ QString attributeNS ( const QString & namespaceUri, const QString & name, const QString & defaultValue = QString() ) const
+ QStringList attributeNames ( const QString & namespaceUri = QString() ) const
+ QStringList classes () const
+ QWebElement clone () const
+ QWebElement document () const
+ void encloseContentsWith ( const QWebElement & element )
+ void encloseContentsWith ( const QString & markup )
+ void encloseWith ( const QString & markup )
+ void encloseWith ( const QWebElement & element )
+ QVariant evaluateJavaScript ( const QString & scriptSource )
+ QWebElementCollection findAll ( const QString & selectorQuery ) const
+ QWebElement findFirst ( const QString & selectorQuery ) const
+ QWebElement firstChild () const
+ QRect geometry () const
+ bool hasAttribute ( const QString & name ) const
+ bool hasAttributeNS ( const QString & namespaceUri, const QString & name ) const
+ bool hasAttributes () const
+ bool hasClass ( const QString & name ) const
+ bool hasFocus () const
+ bool isNull () const
+ QWebElement lastChild () const
+ QString localName () const
+ QString namespaceUri () const
+ QWebElement nextSibling () const
+ QWebElement parent () const
+ QString prefix () const
+ void prependInside ( const QString & markup )
+ void prependInside ( const QWebElement & element )
+ void prependOutside ( const QString & markup )
+ void prependOutside ( const QWebElement & element )
+ QWebElement previousSibling () const
+ void removeAllChildren ()
+ void removeAttribute ( const QString & name )
+ void removeAttributeNS ( const QString & namespaceUri, const QString & name )
+ void removeClass ( const QString & name )
+ void removeFromDocument ()
+ void render ( QPainter * painter )
+ void replace ( const QString & markup )
+ void replace ( const QWebElement & element )
+ void setAttribute ( const QString & name, const QString & value )
+ void setAttributeNS ( const QString & namespaceUri, const QString & name, const QString & value )
+ void setFocus ()
+ void setInnerXml ( const QString & markup )
+ void setOuterXml ( const QString & markup )
+ void setPlainText ( const QString & text )
+ void setStyleProperty ( const QString & name, const QString & value )
+ QString styleProperty ( const QString & name, StyleResolveStrategy strategy ) const
+ QString tagName () const
+ QWebElement & takeFromDocument ()
+ QString toInnerXml () const
+ QString toOuterXml () const
+ QString toPlainText () const
+ void toggleClass ( const QString & name )
+ QWebFrame * webFrame () const
+ bool operator!= ( const QWebElement & o ) const
+ QWebElement & operator= ( const QWebElement & other )
+ bool operator== ( const QWebElement & o ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QWebElement
+name
+StyleResolveStrategy
+key
+InlineStyle
+CascadedStyle
+ComputedStyle
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

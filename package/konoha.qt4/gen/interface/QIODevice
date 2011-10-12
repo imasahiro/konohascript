@@ -1,0 +1,116 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qiodevice.html
+
+output_urn
+QIODevice
+
+inherits
+
+public_types
+ flags OpenMode
+ enum OpenModeFlag { NotOpen, ReadOnly, WriteOnly, ReadWrite, ..., Unbuffered }
+
+properties
+
+public_functions
+QIODevice ()
+QIODevice ( QObject * parent )
+ virtual ~QIODevice ()
+ virtual bool atEnd () const
+ virtual qint64 bytesAvailable () const
+ virtual qint64 bytesToWrite () const
+ virtual bool canReadLine () const
+ virtual void close ()
+ QString errorString () const
+ bool getChar ( char * c )
+ bool isOpen () const
+ bool isReadable () const
+ virtual bool isSequential () const
+ bool isTextModeEnabled () const
+ bool isWritable () const
+ virtual bool open ( OpenMode mode )
+ OpenMode openMode () const
+ qint64 peek ( char * data, qint64 maxSize )
+ QByteArray peek ( qint64 maxSize )
+ virtual qint64 pos () const
+ bool putChar ( char c )
+ qint64 read ( char * data, qint64 maxSize )
+ QByteArray read ( qint64 maxSize )
+ QByteArray readAll ()
+ qint64 readLine ( char * data, qint64 maxSize )
+ QByteArray readLine ( qint64 maxSize = 0 )
+ virtual bool reset ()
+ virtual bool seek ( qint64 pos )
+ void setTextModeEnabled ( bool enabled )
+ virtual qint64 size () const
+ void ungetChar ( char c )
+ virtual bool waitForBytesWritten ( int msecs )
+ virtual bool waitForReadyRead ( int msecs )
+ qint64 write ( const char * data, qint64 maxSize )
+ qint64 write ( const char * data )
+ qint64 write ( const QByteArray & byteArray )
+
+public_slots
+
+signals
+ void aboutToClose ()
+ void bytesWritten ( qint64 bytes )
+ void readChannelFinished ()
+ void readyRead ()
+
+static_public_members
+
+protected_functions
+ virtual qint64 readData ( char * data, qint64 maxSize ) = 0
+ virtual qint64 readLineData ( char * data, qint64 maxSize )
+ void setErrorString ( const QString & str )
+ void setOpenMode ( OpenMode openMode )
+ virtual qint64 writeData ( const char * data, qint64 maxSize ) = 0
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+OpenMode
+
+parent_typedefed_objects
+
+enums
+class_name
+QIODevice
+name
+OpenModeFlag
+key
+NotOpen
+ReadOnly
+WriteOnly
+ReadWrite
+Append
+Truncate
+Text
+Unbuffered
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

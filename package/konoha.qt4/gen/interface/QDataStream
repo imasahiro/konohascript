@@ -1,0 +1,150 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdatastream.html
+
+output_urn
+QDataStream
+
+inherits
+
+public_types
+ enum ByteOrder { BigEndian, LittleEndian }
+ enum FloatingPointPrecision { SinglePrecision, DoublePrecision }
+ enum Status { Ok, ReadPastEnd, ReadCorruptData }
+ enum Version { Qt_1_0, Qt_2_0, Qt_2_1, Qt_3_0, ..., Qt_4_7 }
+
+properties
+
+public_functions
+QDataStream ()
+QDataStream ( QIODevice * d )
+QDataStream ( QByteArray * a, QIODevice::OpenMode mode )
+QDataStream ( const QByteArray & a )
+ virtual ~QDataStream ()
+ bool atEnd () const
+ ByteOrder byteOrder () const
+ QIODevice * device () const
+ FloatingPointPrecision floatingPointPrecision () const
+ QDataStream & readBytes ( char *& s, uint & l )
+ int readRawData ( char * s, int len )
+ void resetStatus ()
+ void setByteOrder ( ByteOrder bo )
+ void setDevice ( QIODevice * d )
+ void setFloatingPointPrecision ( FloatingPointPrecision precision )
+ void setStatus ( Status status )
+ void setVersion ( int v )
+ int skipRawData ( int len )
+ Status status () const
+ int version () const
+ QDataStream & writeBytes ( const char * s, uint len )
+ int writeRawData ( const char * s, int len )
+ QDataStream & operator<< ( qint8 i )
+ QDataStream & operator<< ( bool i )
+ QDataStream & operator<< ( quint8 i )
+ QDataStream & operator<< ( quint16 i )
+ QDataStream & operator<< ( qint16 i )
+ QDataStream & operator<< ( qint32 i )
+ QDataStream & operator<< ( quint64 i )
+ QDataStream & operator<< ( qint64 i )
+ QDataStream & operator<< ( quint32 i )
+ QDataStream & operator<< ( float f )
+ QDataStream & operator<< ( double f )
+ QDataStream & operator<< ( const char * s )
+ QDataStream & operator>> ( qint8 & i )
+ QDataStream & operator>> ( bool & i )
+ QDataStream & operator>> ( quint8 & i )
+ QDataStream & operator>> ( quint16 & i )
+ QDataStream & operator>> ( qint16 & i )
+ QDataStream & operator>> ( quint32 & i )
+ QDataStream & operator>> ( qint32 & i )
+ QDataStream & operator>> ( quint64 & i )
+ QDataStream & operator>> ( qint64 & i )
+ QDataStream & operator>> ( float & f )
+ QDataStream & operator>> ( double & f )
+ QDataStream & operator>> ( char *& s )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDataStream
+name
+ByteOrder
+key
+BigEndian
+LittleEndian
+public_flag
+true
+class_name
+QDataStream
+name
+FloatingPointPrecision
+key
+SinglePrecision
+DoublePrecision
+public_flag
+true
+class_name
+QDataStream
+name
+Status
+key
+Ok
+ReadPastEnd
+ReadCorruptData
+public_flag
+true
+class_name
+QDataStream
+name
+Version
+key
+Qt_1_0
+Qt_2_0
+Qt_2_1
+Qt_3_0
+Qt_3_1
+Qt_3_3
+Qt_4_0
+Qt_4_1
+Qt_4_2
+Qt_4_3
+Qt_4_4
+Qt_4_5
+Qt_4_6
+Qt_4_7
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

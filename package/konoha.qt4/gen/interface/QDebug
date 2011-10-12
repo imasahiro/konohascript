@@ -1,0 +1,79 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdebug.html
+
+output_urn
+QDebug
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDebug ( QIODevice * device )
+QDebug ( QString * string )
+QDebug ( QtMsgType type )
+QDebug ( const QDebug & other )
+~QDebug ()
+ QDebug & maybeSpace ()
+ QDebug & nospace ()
+ QDebug & space ()
+ QDebug & operator<< ( QChar t )
+ QDebug & operator<< ( bool t )
+ QDebug & operator<< ( char t )
+ QDebug & operator<< ( signed short i )
+ QDebug & operator<< ( unsigned short i )
+ QDebug & operator<< ( signed int i )
+ QDebug & operator<< ( unsigned int i )
+ QDebug & operator<< ( signed long l )
+ QDebug & operator<< ( unsigned long l )
+ QDebug & operator<< ( qint64 i )
+ QDebug & operator<< ( quint64 i )
+ QDebug & operator<< ( float f )
+ QDebug & operator<< ( double f )
+ QDebug & operator<< ( const char * s )
+ QDebug & operator<< ( const QString & s )
+ QDebug & operator<< ( const QStringRef & s )
+ QDebug & operator<< ( const QLatin1String & s )
+ QDebug & operator<< ( const QByteArray & b )
+ QDebug & operator<< ( const void * p )
+ QDebug & operator= ( const QDebug & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,67 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdeclarativecontext.html
+
+output_urn
+QDeclarativeContext
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDeclarativeContext ( QDeclarativeEngine * engine, QObject * parent = 0 )
+QDeclarativeContext ( QDeclarativeContext * parentContext, QObject * parent = 0 )
+ virtual ~QDeclarativeContext ()
+ QUrl baseUrl () const
+ QObject * contextObject () const
+ QVariant contextProperty ( const QString & name ) const
+ QDeclarativeEngine * engine () const
+ bool isValid () const
+ QDeclarativeContext * parentContext () const
+ QUrl resolvedUrl ( const QUrl & src )
+ void setBaseUrl ( const QUrl & baseUrl )
+ void setContextObject ( QObject * object )
+ void setContextProperty ( const QString & name, QObject * value )
+ void setContextProperty ( const QString & name, const QVariant & value )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

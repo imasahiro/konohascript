@@ -1,0 +1,75 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qpoint.html
+
+output_urn
+QPoint
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QPoint ()
+QPoint ( int x, int y )
+ bool isNull () const
+ int manhattanLength () const
+ int & rx ()
+ int & ry ()
+ void setX ( int x )
+ void setY ( int y )
+ int x () const
+ int y () const
+ QPoint & operator*= ( qreal factor )
+ QPoint & operator+= ( const QPoint & point )
+ QPoint & operator-= ( const QPoint & point )
+ QPoint & operator/= ( qreal divisor )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ bool operator!= ( const QPoint & p1, const QPoint & p2 )
+ const QPoint operator* ( qreal factor, const QPoint & point )
+ const QPoint operator* ( const QPoint & point, qreal factor )
+ const QPoint operator+ ( const QPoint & p1, const QPoint & p2 )
+ const QPoint operator- ( const QPoint & p1, const QPoint & p2 )
+ const QPoint operator- ( const QPoint & point )
+ const QPoint operator/ ( const QPoint & point, qreal divisor )
+ QDataStream & operator<< ( QDataStream & stream, const QPoint & point )
+ bool operator== ( const QPoint & p1, const QPoint & p2 )
+ QDataStream & operator>> ( QDataStream & stream, QPoint & point )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

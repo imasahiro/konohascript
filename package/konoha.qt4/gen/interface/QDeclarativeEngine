@@ -1,0 +1,99 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdeclarativeengine.html
+
+output_urn
+QDeclarativeEngine
+
+inherits
+
+public_types
+ enum ObjectOwnership { CppOwnership, JavaScriptOwnership }
+
+properties
+offlineStoragePath : QString
+
+public_functions
+QDeclarativeEngine ( QObject * parent = 0 )
+ virtual ~QDeclarativeEngine ()
+ void addImageProvider ( const QString & providerId, QDeclarativeImageProvider * provider )
+ void addImportPath ( const QString & path )
+ void addPluginPath ( const QString & path )
+ QUrl baseUrl () const
+ void clearComponentCache ()
+ QDeclarativeImageProvider * imageProvider ( const QString & providerId ) const
+ QStringList importPathList () const
+ bool importPlugin ( const QString & filePath, const QString & uri, QString * errorString )
+ QNetworkAccessManager * networkAccessManager () const
+ QDeclarativeNetworkAccessManagerFactory * networkAccessManagerFactory () const
+ QString offlineStoragePath () const
+ bool outputWarningsToStandardError () const
+ QStringList pluginPathList () const
+ void removeImageProvider ( const QString & providerId )
+ QDeclarativeContext * rootContext () const
+ void setBaseUrl ( const QUrl & url )
+ void setImportPathList ( const QStringList & paths )
+ void setNetworkAccessManagerFactory ( QDeclarativeNetworkAccessManagerFactory * factory )
+ void setOfflineStoragePath ( const QString & dir )
+ void setOutputWarningsToStandardError ( bool enabled )
+ void setPluginPathList ( const QStringList & paths )
+
+public_slots
+
+signals
+ void quit ()
+ void warnings ( const QList<QDeclarativeError> & warnings )
+
+static_public_members
+ QDeclarativeContext * contextForObject ( const QObject * object )
+ ObjectOwnership objectOwnership ( QObject * object )
+ void setContextForObject ( QObject * object, QDeclarativeContext * context )
+ void setObjectOwnership ( QObject * object, ObjectOwnership ownership )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDeclarativeInfo qmlInfo ( const QObject * object )
+ int qmlRegisterInterface ( const char * typeName )
+ int qmlRegisterType ( const char * uri, int versionMajor, int versionMinor, const char * qmlName )
+ int qmlRegisterType ()
+ int qmlRegisterTypeNotAvailable ( const char * uri, int versionMajor, int versionMinor, const char * qmlName, const QString & message )
+ int qmlRegisterUncreatableType ( const char * uri, int versionMajor, int versionMinor, const char * qmlName, const QString & message )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDeclarativeEngine
+name
+ObjectOwnership
+key
+CppOwnership
+JavaScriptOwnership
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

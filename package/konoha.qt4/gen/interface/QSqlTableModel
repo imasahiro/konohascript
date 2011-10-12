@@ -1,0 +1,107 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsqltablemodel.html
+
+output_urn
+QSqlTableModel
+
+inherits
+
+public_types
+ enum EditStrategy { OnFieldChange, OnRowChange, OnManualSubmit }
+
+properties
+
+public_functions
+QSqlTableModel ( QObject * parent = 0, QSqlDatabase db = QSqlDatabase() )
+ virtual ~QSqlTableModel ()
+ QSqlDatabase database () const
+ EditStrategy editStrategy () const
+ int fieldIndex ( const QString & fieldName ) const
+ QString filter () const
+ bool insertRecord ( int row, const QSqlRecord & record )
+ bool isDirty ( const QModelIndex & index ) const
+ QSqlIndex primaryKey () const
+ virtual void revertRow ( int row )
+ virtual bool select ()
+ virtual void setEditStrategy ( EditStrategy strategy )
+ virtual void setFilter ( const QString & filter )
+ bool setRecord ( int row, const QSqlRecord & record )
+ virtual void setSort ( int column, Qt::SortOrder order )
+ virtual void setTable ( const QString & tableName )
+ QString tableName () const
+
+public_slots
+ virtual void revert ()
+ void revertAll ()
+ virtual bool submit ()
+ bool submitAll ()
+
+signals
+ void beforeDelete ( int row )
+ void beforeInsert ( QSqlRecord & record )
+ void beforeUpdate ( int row, QSqlRecord & record )
+ void primeInsert ( int row, QSqlRecord & record )
+
+static_public_members
+
+protected_functions
+ virtual bool deleteRowFromTable ( int row )
+ QModelIndex indexInQuery ( const QModelIndex & item ) const
+ virtual bool insertRowIntoTable ( const QSqlRecord & values )
+ virtual QString orderByClause () const
+ virtual QString selectStatement () const
+ void setPrimaryKey ( const QSqlIndex & key )
+ void setQuery ( const QSqlQuery & query )
+ virtual bool updateRowInTable ( int row, const QSqlRecord & values )
+
+reimplemented_public_functions
+ virtual void clear ()
+ virtual QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const
+ virtual Qt::ItemFlags flags ( const QModelIndex & index ) const
+ virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const
+ virtual bool insertRows ( int row, int count, const QModelIndex & parent = QModelIndex() )
+ virtual bool removeColumns ( int column, int count, const QModelIndex & parent = QModelIndex() )
+ virtual bool removeRows ( int row, int count, const QModelIndex & parent = QModelIndex() )
+ virtual int rowCount ( const QModelIndex & parent = QModelIndex() ) const
+ virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole )
+ virtual void sort ( int column, Qt::SortOrder order )
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QSqlTableModel
+name
+EditStrategy
+key
+OnFieldChange
+OnRowChange
+OnManualSubmit
+public_flag
+true
+
+parent_enums
+
+parent_index
+483
+
+parent_name
+QSqlQueryModel
+

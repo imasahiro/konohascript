@@ -1,0 +1,62 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextlist.html
+
+output_urn
+QTextList
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+ void add ( const QTextBlock & block )
+ int count () const
+ QTextListFormat format () const
+ QTextBlock item ( int i ) const
+ int itemNumber ( const QTextBlock & block ) const
+ QString itemText ( const QTextBlock & block ) const
+ void remove ( const QTextBlock & block )
+ void removeItem ( int i )
+ void setFormat ( const QTextListFormat & format )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+641
+
+parent_name
+QTextBlockGroup
+

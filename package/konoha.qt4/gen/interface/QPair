@@ -1,0 +1,67 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qpair.html
+
+output_urn
+QPair
+
+inherits
+
+public_types
+ typedef first_type
+ typedef second_type
+
+properties
+
+public_functions
+QPair ()
+QPair ( const T1 & value1, const T2 & value2 )
+ QPair<T1, T2> & operator= ( const QPair<T1, T2> & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QPair<T1, T2> qMakePair ( const T1 & value1, const T2 & value2 )
+ bool operator!= ( const QPair<T1, T2> & p1, const QPair<T1, T2> & p2 )
+ bool operator< ( const QPair<T1, T2> & p1, const QPair<T1, T2> & p2 )
+ QDataStream & operator<< ( QDataStream & out, const QPair<T1, T2> & pair )
+ bool operator<= ( const QPair<T1, T2> & p1, const QPair<T1, T2> & p2 )
+ bool operator== ( const QPair<T1, T2> & p1, const QPair<T1, T2> & p2 )
+ bool operator> ( const QPair<T1, T2> & p1, const QPair<T1, T2> & p2 )
+ bool operator>= ( const QPair<T1, T2> & p1, const QPair<T1, T2> & p2 )
+ QDataStream & operator>> ( QDataStream & in, QPair<T1, T2> & pair )
+
+templateClass
+true
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+first_type
+second_type
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

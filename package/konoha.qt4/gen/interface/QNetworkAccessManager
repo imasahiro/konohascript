@@ -1,0 +1,108 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qnetworkaccessmanager.html
+
+output_urn
+QNetworkAccessManager
+
+inherits
+
+public_types
+ enum NetworkAccessibility { UnknownAccessibility, NotAccessible, Accessible }
+ enum Operation { HeadOperation, GetOperation, PutOperation, PostOperation, DeleteOperation, CustomOperation }
+
+properties
+networkAccessible : NetworkAccessibility
+
+public_functions
+QNetworkAccessManager ( QObject * parent = 0 )
+~QNetworkAccessManager ()
+ QNetworkConfiguration activeConfiguration () const
+ QAbstractNetworkCache * cache () const
+ QNetworkConfiguration configuration () const
+ QNetworkCookieJar * cookieJar () const
+ QNetworkReply * deleteResource ( const QNetworkRequest & request )
+ QNetworkReply * get ( const QNetworkRequest & request )
+ QNetworkReply * head ( const QNetworkRequest & request )
+ NetworkAccessibility networkAccessible () const
+ QNetworkReply * post ( const QNetworkRequest & request, QIODevice * data )
+ QNetworkReply * post ( const QNetworkRequest & request, const QByteArray & data )
+ QNetworkProxy proxy () const
+ QNetworkProxyFactory * proxyFactory () const
+ QNetworkReply * put ( const QNetworkRequest & request, QIODevice * data )
+ QNetworkReply * put ( const QNetworkRequest & request, const QByteArray & data )
+ QNetworkReply * sendCustomRequest ( const QNetworkRequest & request, const QByteArray & verb, QIODevice * data = 0 )
+ void setCache ( QAbstractNetworkCache * cache )
+ void setConfiguration ( const QNetworkConfiguration & config )
+ void setCookieJar ( QNetworkCookieJar * cookieJar )
+ void setNetworkAccessible ( NetworkAccessibility accessible )
+ void setProxy ( const QNetworkProxy & proxy )
+ void setProxyFactory ( QNetworkProxyFactory * factory )
+
+public_slots
+
+signals
+ void authenticationRequired ( QNetworkReply * reply, QAuthenticator * authenticator )
+ void finished ( QNetworkReply * reply )
+ void networkAccessibleChanged ( QNetworkAccessManager::NetworkAccessibility accessible )
+ void proxyAuthenticationRequired ( const QNetworkProxy & proxy, QAuthenticator * authenticator )
+ void sslErrors ( QNetworkReply * reply, const QList<QSslError> & errors )
+
+static_public_members
+
+protected_functions
+ virtual QNetworkReply * createRequest ( Operation op, const QNetworkRequest & req, QIODevice * outgoingData = 0 )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QNetworkAccessManager
+name
+NetworkAccessibility
+key
+UnknownAccessibility
+NotAccessible
+Accessible
+public_flag
+true
+class_name
+QNetworkAccessManager
+name
+Operation
+key
+HeadOperation
+GetOperation
+PutOperation
+PostOperation
+DeleteOperation
+CustomOperation
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

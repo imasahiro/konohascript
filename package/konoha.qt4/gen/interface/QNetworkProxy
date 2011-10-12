@@ -1,0 +1,103 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qnetworkproxy.html
+
+output_urn
+QNetworkProxy
+
+inherits
+
+public_types
+ flags Capabilities
+ enum Capability { TunnelingCapability, ListeningCapability, UdpTunnelingCapability, CachingCapability, HostNameLookupCapability }
+ enum ProxyType { NoProxy, DefaultProxy, Socks5Proxy, HttpProxy, HttpCachingProxy, FtpCachingProxy }
+
+properties
+
+public_functions
+QNetworkProxy ()
+QNetworkProxy ( ProxyType type, const QString & hostName = QString(), quint16 port = 0, const QString & user = QString(), const QString & password = QString() )
+QNetworkProxy ( const QNetworkProxy & other )
+~QNetworkProxy ()
+ Capabilities capabilities () const
+ QString hostName () const
+ bool isCachingProxy () const
+ bool isTransparentProxy () const
+ QString password () const
+ quint16 port () const
+ void setCapabilities ( Capabilities capabilities )
+ void setHostName ( const QString & hostName )
+ void setPassword ( const QString & password )
+ void setPort ( quint16 port )
+ void setType ( QNetworkProxy::ProxyType type )
+ void setUser ( const QString & user )
+ QNetworkProxy::ProxyType type () const
+ QString user () const
+ bool operator!= ( const QNetworkProxy & other ) const
+ QNetworkProxy & operator= ( const QNetworkProxy & other )
+ bool operator== ( const QNetworkProxy & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QNetworkProxy applicationProxy ()
+ void setApplicationProxy ( const QNetworkProxy & networkProxy )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+Capabilities
+
+parent_typedefed_objects
+
+enums
+class_name
+QNetworkProxy
+name
+Capability
+key
+TunnelingCapability
+ListeningCapability
+UdpTunnelingCapability
+CachingCapability
+HostNameLookupCapability
+public_flag
+true
+class_name
+QNetworkProxy
+name
+ProxyType
+key
+NoProxy
+DefaultProxy
+Socks5Proxy
+HttpProxy
+HttpCachingProxy
+FtpCachingProxy
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

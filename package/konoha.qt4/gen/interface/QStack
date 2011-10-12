@@ -1,0 +1,70 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qstack.html
+
+output_urn
+QStack
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QStack ()
+~QStack ()
+ T pop ()
+ void push ( const T & t )
+ T & top ()
+ const T & top () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+true
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+ConstIterator
+Iterator
+const_iterator
+const_pointer
+const_reference
+difference_type
+iterator
+pointer
+reference
+size_type
+value_type
+
+enums
+
+parent_enums
+
+parent_index
+73
+
+parent_name
+QVector
+

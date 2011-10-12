@@ -1,0 +1,109 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qimagereader.html
+
+output_urn
+QImageReader
+
+inherits
+
+public_types
+ enum ImageReaderError { FileNotFoundError, DeviceError, UnsupportedFormatError, InvalidDataError, UnknownError }
+
+properties
+
+public_functions
+QImageReader ()
+QImageReader ( QIODevice * device, const QByteArray & format = QByteArray() )
+QImageReader ( const QString & fileName, const QByteArray & format = QByteArray() )
+~QImageReader ()
+ bool autoDetectImageFormat () const
+ QColor backgroundColor () const
+ bool canRead () const
+ QRect clipRect () const
+ int currentImageNumber () const
+ QRect currentImageRect () const
+ bool decideFormatFromContent () const
+ QIODevice * device () const
+ ImageReaderError error () const
+ QString errorString () const
+ QString fileName () const
+ QByteArray format () const
+ int imageCount () const
+ QImage::Format imageFormat () const
+ bool jumpToImage ( int imageNumber )
+ bool jumpToNextImage ()
+ int loopCount () const
+ int nextImageDelay () const
+ int quality () const
+ QImage read ()
+ bool read ( QImage * image )
+ QRect scaledClipRect () const
+ QSize scaledSize () const
+ void setAutoDetectImageFormat ( bool enabled )
+ void setBackgroundColor ( const QColor & color )
+ void setClipRect ( const QRect & rect )
+ void setDecideFormatFromContent ( bool ignored )
+ void setDevice ( QIODevice * device )
+ void setFileName ( const QString & fileName )
+ void setFormat ( const QByteArray & format )
+ void setQuality ( int quality )
+ void setScaledClipRect ( const QRect & rect )
+ void setScaledSize ( const QSize & size )
+ QSize size () const
+ bool supportsAnimation () const
+ bool supportsOption ( QImageIOHandler::ImageOption option ) const
+ QString text ( const QString & key ) const
+ QStringList textKeys () const
+
+public_slots
+
+signals
+
+static_public_members
+ QByteArray imageFormat ( const QString & fileName )
+ QByteArray imageFormat ( QIODevice * device )
+ QList<QByteArray> supportedImageFormats ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QImageReader
+name
+ImageReaderError
+key
+FileNotFoundError
+DeviceError
+UnsupportedFormatError
+InvalidDataError
+UnknownError
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

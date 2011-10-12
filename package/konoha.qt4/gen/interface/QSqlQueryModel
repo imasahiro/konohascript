@@ -1,0 +1,74 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsqlquerymodel.html
+
+output_urn
+QSqlQueryModel
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QSqlQueryModel ( QObject * parent = 0 )
+ virtual ~QSqlQueryModel ()
+ virtual void clear ()
+ QSqlError lastError () const
+ QSqlQuery query () const
+ QSqlRecord record ( int row ) const
+ QSqlRecord record () const
+ void setQuery ( const QSqlQuery & query )
+ void setQuery ( const QString & query, const QSqlDatabase & db = QSqlDatabase() )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ QModelIndex indexInQuery ( const QModelIndex & item ) const
+ virtual void queryChange ()
+ void setLastError ( const QSqlError & error )
+
+reimplemented_public_functions
+ virtual bool canFetchMore ( const QModelIndex & parent = QModelIndex() ) const
+ virtual int columnCount ( const QModelIndex & index = QModelIndex() ) const
+ virtual QVariant data ( const QModelIndex & item, int role = Qt::DisplayRole ) const
+ virtual void fetchMore ( const QModelIndex & parent = QModelIndex() )
+ virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const
+ virtual bool insertColumns ( int column, int count, const QModelIndex & parent = QModelIndex() )
+ virtual bool removeColumns ( int column, int count, const QModelIndex & parent = QModelIndex() )
+ virtual int rowCount ( const QModelIndex & parent = QModelIndex() ) const
+ virtual bool setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role = Qt::EditRole )
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+588
+
+parent_name
+QAbstractTableModel
+

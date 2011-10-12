@@ -1,0 +1,93 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qscriptcontext.html
+
+output_urn
+QScriptContext
+
+inherits
+
+public_types
+ enum Error { ReferenceError, SyntaxError, TypeError, RangeError, URIError, UnknownError }
+ enum ExecutionState { NormalState, ExceptionState }
+
+properties
+
+public_functions
+~QScriptContext ()
+ QScriptValue activationObject () const
+ QScriptValue argument ( int index ) const
+ int argumentCount () const
+ QScriptValue argumentsObject () const
+ QStringList backtrace () const
+ QScriptValue callee () const
+ QScriptEngine * engine () const
+ bool isCalledAsConstructor () const
+ QScriptContext * parentContext () const
+ void setActivationObject ( const QScriptValue & activation )
+ void setThisObject ( const QScriptValue & thisObject )
+ ExecutionState state () const
+ QScriptValue thisObject () const
+ QScriptValue throwError ( Error error, const QString & text )
+ QScriptValue throwError ( const QString & text )
+ QScriptValue throwValue ( const QScriptValue & value )
+ QString toString () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QScriptContext
+name
+Error
+key
+ReferenceError
+SyntaxError
+TypeError
+RangeError
+URIError
+UnknownError
+public_flag
+true
+class_name
+QScriptContext
+name
+ExecutionState
+key
+NormalState
+ExceptionState
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

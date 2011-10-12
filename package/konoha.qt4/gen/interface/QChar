@@ -1,0 +1,275 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qchar.html
+
+output_urn
+QChar
+
+inherits
+
+public_types
+ enum Category { Mark_NonSpacing, Mark_SpacingCombining, Mark_Enclosing, Number_DecimalDigit, ..., NoCategory }
+ enum Decomposition { NoDecomposition, Canonical, Circle, Compat, ..., Wide }
+ enum Direction { DirAL, DirAN, DirB, DirBN, ..., DirWS }
+ enum Joining { Center, Dual, OtherJoining, Right }
+ enum SpecialCharacter { Null, Nbsp, ReplacementCharacter, ObjectReplacementCharacter, ..., LineSeparator }
+ enum UnicodeVersion { Unicode_1_1, Unicode_2_0, Unicode_2_1_2, Unicode_3_0, ..., Unicode_Unassigned }
+
+properties
+
+public_functions
+QChar ()
+QChar ( char ch )
+QChar ( uchar ch )
+QChar ( QLatin1Char ch )
+QChar ( uchar cell, uchar row )
+QChar ( ushort code )
+QChar ( short code )
+QChar ( uint code )
+QChar ( int code )
+QChar ( SpecialCharacter ch )
+ Category category () const
+ uchar cell () const
+ unsigned char combiningClass () const
+ QString decomposition () const
+ Decomposition decompositionTag () const
+ int digitValue () const
+ Direction direction () const
+ bool hasMirrored () const
+ bool isDigit () const
+ bool isHighSurrogate () const
+ bool isLetter () const
+ bool isLetterOrNumber () const
+ bool isLowSurrogate () const
+ bool isLower () const
+ bool isMark () const
+ bool isNull () const
+ bool isNumber () const
+ bool isPrint () const
+ bool isPunct () const
+ bool isSpace () const
+ bool isSymbol () const
+ bool isTitleCase () const
+ bool isUpper () const
+ Joining joining () const
+ QChar mirroredChar () const
+ uchar row () const
+ char toAscii () const
+ QChar toCaseFolded () const
+ char toLatin1 () const
+ QChar toLower () const
+ QChar toTitleCase () const
+ QChar toUpper () const
+ ushort & unicode ()
+ ushort unicode () const
+ UnicodeVersion unicodeVersion () const
+
+public_slots
+
+signals
+
+static_public_members
+ Category category ( uint ucs4 )
+ Category category ( ushort ucs2 )
+ unsigned char combiningClass ( uint ucs4 )
+ unsigned char combiningClass ( ushort ucs2 )
+ QString decomposition ( uint ucs4 )
+ Decomposition decompositionTag ( uint ucs4 )
+ int digitValue ( ushort ucs2 )
+ int digitValue ( uint ucs4 )
+ Direction direction ( uint ucs4 )
+ Direction direction ( ushort ucs2 )
+ QChar fromAscii ( char c )
+ QChar fromLatin1 ( char c )
+ ushort highSurrogate ( uint ucs4 )
+ bool isHighSurrogate ( uint ucs4 )
+ bool isLowSurrogate ( uint ucs4 )
+ Joining joining ( uint ucs4 )
+ Joining joining ( ushort ucs2 )
+ ushort lowSurrogate ( uint ucs4 )
+ uint mirroredChar ( uint ucs4 )
+ ushort mirroredChar ( ushort ucs2 )
+ bool requiresSurrogates ( uint ucs4 )
+ uint surrogateToUcs4 ( ushort high, ushort low )
+ uint surrogateToUcs4 ( QChar high, QChar low )
+ uint toCaseFolded ( uint ucs4 )
+ ushort toCaseFolded ( ushort ucs2 )
+ uint toLower ( uint ucs4 )
+ ushort toLower ( ushort ucs2 )
+ uint toTitleCase ( uint ucs4 )
+ ushort toTitleCase ( ushort ucs2 )
+ uint toUpper ( uint ucs4 )
+ ushort toUpper ( ushort ucs2 )
+ UnicodeVersion unicodeVersion ( uint ucs4 )
+ UnicodeVersion unicodeVersion ( ushort ucs2 )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ bool operator!= ( QChar c1, QChar c2 )
+ bool operator< ( QChar c1, QChar c2 )
+ QDataStream & operator<< ( QDataStream & out, const QChar & chr )
+ bool operator<= ( QChar c1, QChar c2 )
+ bool operator== ( QChar c1, QChar c2 )
+ bool operator> ( QChar c1, QChar c2 )
+ bool operator>= ( QChar c1, QChar c2 )
+ QDataStream & operator>> ( QDataStream & in, QChar & chr )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QChar
+name
+Category
+key
+Mark_NonSpacing
+Mark_SpacingCombining
+Mark_Enclosing
+Number_DecimalDigit
+Number_Letter
+Number_Other
+Separator_Space
+Separator_Line
+Separator_Paragraph
+Other_Control
+Other_Format
+Other_Surrogate
+Other_PrivateUse
+Other_NotAssigned
+Letter_Uppercase
+Letter_Lowercase
+Letter_Titlecase
+Letter_Modifier
+Letter_Other
+Punctuation_Connector
+Punctuation_Dash
+Punctuation_Open
+Punctuation_Close
+Punctuation_InitialQuote
+Punctuation_FinalQuote
+Punctuation_Other
+Symbol_Math
+Symbol_Currency
+Symbol_Modifier
+Symbol_Other
+NoCategory
+public_flag
+true
+class_name
+QChar
+name
+Decomposition
+key
+NoDecomposition
+Canonical
+Circle
+Compat
+Final
+Font
+Fraction
+Initial
+Isolated
+Medial
+Narrow
+NoBreak
+Small
+Square
+Sub
+Super
+Vertical
+Wide
+public_flag
+true
+class_name
+QChar
+name
+Direction
+key
+DirAL
+DirAN
+DirB
+DirBN
+DirCS
+DirEN
+DirES
+DirET
+DirL
+DirLRE
+DirLRO
+DirNSM
+DirON
+DirPDF
+DirR
+DirRLE
+DirRLO
+DirS
+DirWS
+public_flag
+true
+class_name
+QChar
+name
+Joining
+key
+Center
+Dual
+OtherJoining
+Right
+public_flag
+true
+class_name
+QChar
+name
+SpecialCharacter
+key
+Null
+Nbsp
+ReplacementCharacter
+ObjectReplacementCharacter
+ByteOrderMark
+ByteOrderSwapped
+ParagraphSeparator
+LineSeparator
+public_flag
+true
+class_name
+QChar
+name
+UnicodeVersion
+key
+Unicode_1_1
+Unicode_2_0
+Unicode_2_1_2
+Unicode_3_0
+Unicode_3_1
+Unicode_3_2
+Unicode_4_0
+Unicode_4_1
+Unicode_5_0
+Unicode_Unassigned
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

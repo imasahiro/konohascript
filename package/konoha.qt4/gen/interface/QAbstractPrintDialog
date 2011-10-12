@@ -1,0 +1,104 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractprintdialog.html
+
+output_urn
+QAbstractPrintDialog
+
+inherits
+
+public_types
+ enum PrintDialogOption { None, PrintToFile, PrintSelection, PrintPageRange, ..., DontUseSheet }
+ flags PrintDialogOptions
+ enum PrintRange { AllPages, Selection, PageRange, CurrentPage }
+
+properties
+
+public_functions
+QAbstractPrintDialog ( QPrinter * printer, QWidget * parent = 0 )
+ virtual int exec () = 0
+ int fromPage () const
+ int maxPage () const
+ int minPage () const
+ PrintRange printRange () const
+ QPrinter * printer () const
+ void setFromTo ( int from, int to )
+ void setMinMax ( int min, int max )
+ void setOptionTabs ( const QList<QWidget *> & tabs )
+ void setPrintRange ( PrintRange range )
+ int toPage () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+PrintDialogOptions
+
+parent_typedefed_objects
+
+enums
+class_name
+QAbstractPrintDialog
+name
+PrintDialogOption
+key
+None
+PrintToFile
+PrintSelection
+PrintPageRange
+PrintShowPageSize
+PrintCollateCopies
+PrintCurrentPage
+DontUseSheet
+public_flag
+true
+class_name
+QAbstractPrintDialog
+name
+PrintRange
+key
+AllPages
+Selection
+PageRange
+CurrentPage
+public_flag
+true
+
+parent_enums
+class_name
+QDialog
+name
+DialogCode
+key
+Accepted
+Rejected
+public_flag
+true
+
+parent_index
+719
+
+parent_name
+QDialog
+

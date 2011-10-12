@@ -1,0 +1,60 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwscalibratedmousehandler.html
+
+output_urn
+QWSCalibratedMouseHandler
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ void readCalibration ()
+ bool sendFiltered ( const QPoint & position, int state )
+ void setFilterSize ( int size )
+ QPoint transform ( const QPoint & position )
+ void writeCalibration ()
+
+reimplemented_public_functions
+ virtual void calibrate ( const QWSPointerCalibrationData * data )
+ virtual void clearCalibration ()
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+true
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+62
+
+parent_name
+QWSMouseHandler
+

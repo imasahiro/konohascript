@@ -1,0 +1,177 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtabbar.html
+
+output_urn
+QTabBar
+
+inherits
+
+public_types
+ enum ButtonPosition { LeftSide, RightSide }
+ enum SelectionBehavior { SelectLeftTab, SelectRightTab, SelectPreviousTab }
+ enum Shape { RoundedNorth, RoundedSouth, RoundedWest, RoundedEast, ..., TriangularEast }
+
+properties
+count : const int
+currentIndex : int
+documentMode : bool
+drawBase : bool
+elideMode : Qt::TextElideMode
+expanding : bool
+
+public_functions
+QTabBar ( QWidget * parent = 0 )
+~QTabBar ()
+ int addTab ( const QString & text )
+ int addTab ( const QIcon & icon, const QString & text )
+ int count () const
+ int currentIndex () const
+ bool documentMode () const
+ bool drawBase () const
+ Qt::TextElideMode elideMode () const
+ bool expanding () const
+ QSize iconSize () const
+ int insertTab ( int index, const QString & text )
+ int insertTab ( int index, const QIcon & icon, const QString & text )
+ bool isMovable () const
+ bool isTabEnabled ( int index ) const
+ void moveTab ( int from, int to )
+ void removeTab ( int index )
+ SelectionBehavior selectionBehaviorOnRemove () const
+ void setDocumentMode ( bool set )
+ void setDrawBase ( bool drawTheBase )
+ void setElideMode ( Qt::TextElideMode )
+ void setExpanding ( bool enabled )
+ void setIconSize ( const QSize & size )
+ void setMovable ( bool movable )
+ void setSelectionBehaviorOnRemove ( SelectionBehavior behavior )
+ void setShape ( Shape shape )
+ void setTabButton ( int index, ButtonPosition position, QWidget * widget )
+ void setTabData ( int index, const QVariant & data )
+ void setTabEnabled ( int index, bool enabled )
+ void setTabIcon ( int index, const QIcon & icon )
+ void setTabText ( int index, const QString & text )
+ void setTabTextColor ( int index, const QColor & color )
+ void setTabToolTip ( int index, const QString & tip )
+ void setTabWhatsThis ( int index, const QString & text )
+ void setTabsClosable ( bool closable )
+ void setUsesScrollButtons ( bool useButtons )
+ Shape shape () const
+ int tabAt ( const QPoint & position ) const
+ QWidget * tabButton ( int index, ButtonPosition position ) const
+ QVariant tabData ( int index ) const
+ QIcon tabIcon ( int index ) const
+ QRect tabRect ( int index ) const
+ QString tabText ( int index ) const
+ QColor tabTextColor ( int index ) const
+ QString tabToolTip ( int index ) const
+ QString tabWhatsThis ( int index ) const
+ bool tabsClosable () const
+ bool usesScrollButtons () const
+
+public_slots
+ void setCurrentIndex ( int index )
+
+signals
+ void currentChanged ( int index )
+ void tabCloseRequested ( int index )
+ void tabMoved ( int from, int to )
+
+static_public_members
+
+protected_functions
+ void initStyleOption ( QStyleOptionTab * option, int tabIndex ) const
+ virtual void tabInserted ( int index )
+ virtual void tabLayoutChange ()
+ virtual void tabRemoved ( int index )
+ virtual QSize tabSizeHint ( int index ) const
+
+reimplemented_public_functions
+ virtual QSize minimumSizeHint () const
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * event )
+ virtual bool event ( QEvent * event )
+ virtual void hideEvent ( QHideEvent * )
+ virtual void keyPressEvent ( QKeyEvent * event )
+ virtual void mouseMoveEvent ( QMouseEvent * event )
+ virtual void mousePressEvent ( QMouseEvent * event )
+ virtual void mouseReleaseEvent ( QMouseEvent * event )
+ virtual void paintEvent ( QPaintEvent * )
+ virtual void resizeEvent ( QResizeEvent * )
+ virtual void showEvent ( QShowEvent * )
+ virtual void wheelEvent ( QWheelEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+class_name
+QTabBar
+name
+ButtonPosition
+key
+LeftSide
+RightSide
+public_flag
+true
+class_name
+QTabBar
+name
+SelectionBehavior
+key
+SelectLeftTab
+SelectRightTab
+SelectPreviousTab
+public_flag
+true
+class_name
+QTabBar
+name
+Shape
+key
+RoundedNorth
+RoundedSouth
+RoundedWest
+RoundedEast
+TriangularNorth
+TriangularSouth
+TriangularWest
+TriangularEast
+public_flag
+true
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

@@ -1,0 +1,64 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qhelpcontentmodel.html
+
+output_urn
+QHelpContentModel
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+~QHelpContentModel ()
+ QHelpContentItem * contentItemAt ( const QModelIndex & index ) const
+ void createContents ( const QString & customFilterName )
+ bool isCreatingContents () const
+
+public_slots
+
+signals
+ void contentsCreated ()
+ void contentsCreationStarted ()
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual int columnCount ( const QModelIndex & parent = QModelIndex() ) const
+ virtual QVariant data ( const QModelIndex & index, int role ) const
+ virtual QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const
+ virtual QModelIndex parent ( const QModelIndex & index ) const
+ virtual int rowCount ( const QModelIndex & parent = QModelIndex() ) const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+34
+
+parent_name
+QAbstractItemModel
+

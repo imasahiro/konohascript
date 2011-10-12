@@ -1,0 +1,63 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdomnodelist.html
+
+output_urn
+QDomNodeList
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDomNodeList ()
+QDomNodeList ( const QDomNodeList & n )
+~QDomNodeList ()
+ QDomNode at ( int index ) const
+ int count () const
+ bool isEmpty () const
+ QDomNode item ( int index ) const
+ uint length () const
+ int size () const
+ bool operator!= ( const QDomNodeList & n ) const
+ QDomNodeList & operator= ( const QDomNodeList & n )
+ bool operator== ( const QDomNodeList & n ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

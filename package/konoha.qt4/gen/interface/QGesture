@@ -1,0 +1,76 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgesture.html
+
+output_urn
+QGesture
+
+inherits
+
+public_types
+ enum GestureCancelPolicy { CancelNone, CancelAllInContext }
+
+properties
+gestureCancelPolicy : QGesture::GestureCancelPolicy
+gestureType : const Qt::GestureType
+hasHotSpot : const bool
+
+public_functions
+QGesture ( QObject * parent = 0 )
+~QGesture ()
+ GestureCancelPolicy gestureCancelPolicy () const
+ Qt::GestureType gestureType () const
+ bool hasHotSpot () const
+ QPointF hotSpot () const
+ void setGestureCancelPolicy ( GestureCancelPolicy policy )
+ void setHotSpot ( const QPointF & value )
+ Qt::GestureState state () const
+ void unsetHotSpot ()
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QGesture
+name
+GestureCancelPolicy
+key
+CancelNone
+CancelAllInContext
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

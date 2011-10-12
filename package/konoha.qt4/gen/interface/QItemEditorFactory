@@ -1,0 +1,58 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qitemeditorfactory.html
+
+output_urn
+QItemEditorFactory
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QItemEditorFactory ()
+ virtual ~QItemEditorFactory ()
+ virtual QWidget * createEditor ( QVariant::Type type, QWidget * parent ) const
+ void registerEditor ( QVariant::Type type, QItemEditorCreatorBase * creator )
+ virtual QByteArray valuePropertyName ( QVariant::Type type ) const
+
+public_slots
+
+signals
+
+static_public_members
+ const QItemEditorFactory * defaultFactory ()
+ void setDefaultFactory ( QItemEditorFactory * factory )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

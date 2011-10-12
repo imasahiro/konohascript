@@ -1,0 +1,116 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmovie.html
+
+output_urn
+QMovie
+
+inherits
+
+public_types
+ enum CacheMode { CacheNone, CacheAll }
+ enum MovieState { NotRunning, Paused, Running }
+
+properties
+cacheMode : CacheMode
+speed : int
+
+public_functions
+QMovie ( QObject * parent = 0 )
+QMovie ( QIODevice * device, const QByteArray & format = QByteArray(), QObject * parent = 0 )
+QMovie ( const QString & fileName, const QByteArray & format = QByteArray(), QObject * parent = 0 )
+~QMovie ()
+ QColor backgroundColor () const
+ CacheMode cacheMode () const
+ int currentFrameNumber () const
+ QImage currentImage () const
+ QPixmap currentPixmap () const
+ QIODevice * device () const
+ QString fileName () const
+ QByteArray format () const
+ int frameCount () const
+ QRect frameRect () const
+ bool isValid () const
+ bool jumpToFrame ( int frameNumber )
+ int loopCount () const
+ int nextFrameDelay () const
+ QSize scaledSize ()
+ void setBackgroundColor ( const QColor & color )
+ void setCacheMode ( CacheMode mode )
+ void setDevice ( QIODevice * device )
+ void setFileName ( const QString & fileName )
+ void setFormat ( const QByteArray & format )
+ void setScaledSize ( const QSize & size )
+ int speed () const
+ MovieState state () const
+
+public_slots
+ bool jumpToNextFrame ()
+ void setPaused ( bool paused )
+ void setSpeed ( int percentSpeed )
+ void start ()
+ void stop ()
+
+signals
+ void error ( QImageReader::ImageReaderError error )
+ void finished ()
+ void frameChanged ( int frameNumber )
+ void resized ( const QSize & size )
+ void started ()
+ void stateChanged ( QMovie::MovieState state )
+ void updated ( const QRect & rect )
+
+static_public_members
+ QList<QByteArray> supportedFormats ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QMovie
+name
+CacheMode
+key
+CacheNone
+CacheAll
+public_flag
+true
+class_name
+QMovie
+name
+MovieState
+key
+NotRunning
+Paused
+Running
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

@@ -1,0 +1,98 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtabletevent.html
+
+output_urn
+QTabletEvent
+
+inherits
+
+public_types
+ enum PointerType { UnknownPointer, Pen, Cursor, Eraser }
+ enum TabletDevice { NoDevice, Puck, Stylus, Airbrush, FourDMouse, RotationStylus }
+
+properties
+
+public_functions
+QTabletEvent ( Type type, const QPoint & pos, const QPoint & globalPos, const QPointF & hiResGlobalPos, int device, int pointerType, qreal pressure, int xTilt, int yTilt, qreal tangentialPressure, qreal rotation, int z, Qt::KeyboardModifiers keyState, qint64 uniqueID )
+ TabletDevice device () const
+ const QPoint & globalPos () const
+ int globalX () const
+ int globalY () const
+ const QPointF & hiResGlobalPos () const
+ qreal hiResGlobalX () const
+ qreal hiResGlobalY () const
+ PointerType pointerType () const
+ const QPoint & pos () const
+ qreal pressure () const
+ qreal rotation () const
+ qreal tangentialPressure () const
+ qint64 uniqueId () const
+ int x () const
+ int xTilt () const
+ int y () const
+ int yTilt () const
+ int z () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QTabletEvent
+name
+PointerType
+key
+UnknownPointer
+Pen
+Cursor
+Eraser
+public_flag
+true
+class_name
+QTabletEvent
+name
+TabletDevice
+key
+NoDevice
+Puck
+Stylus
+Airbrush
+FourDMouse
+RotationStylus
+public_flag
+true
+
+parent_enums
+
+parent_index
+434
+
+parent_name
+QInputEvent
+

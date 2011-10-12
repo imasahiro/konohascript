@@ -1,0 +1,123 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qnetworkconfiguration.html
+
+output_urn
+QNetworkConfiguration
+
+inherits
+
+public_types
+ enum BearerType { BearerUnknown, BearerEthernet, BearerWLAN, Bearer2G, ..., BearerWiMAX }
+ enum Purpose { UnknownPurpose, PublicPurpose, PrivatePurpose, ServiceSpecificPurpose }
+ enum StateFlag { Undefined, Defined, Discovered, Active }
+ flags StateFlags
+ enum Type { InternetAccessPoint, ServiceNetwork, UserChoice, Invalid }
+
+properties
+
+public_functions
+QNetworkConfiguration ()
+QNetworkConfiguration ( const QNetworkConfiguration & other )
+~QNetworkConfiguration ()
+ QString bearerName () const (deprecated)
+ BearerType bearerType () const
+ QString bearerTypeName () const
+ QList<QNetworkConfiguration> children () const
+ QString identifier () const
+ bool isRoamingAvailable () const
+ bool isValid () const
+ QString name () const
+ Purpose purpose () const
+ StateFlags state () const
+ Type type () const
+ bool operator!= ( const QNetworkConfiguration & other ) const
+ QNetworkConfiguration & operator= ( const QNetworkConfiguration & other )
+ bool operator== ( const QNetworkConfiguration & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+StateFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QNetworkConfiguration
+name
+BearerType
+key
+BearerUnknown
+BearerEthernet
+BearerWLAN
+Bearer2G
+BearerCDMA2000
+BearerWCDMA
+BearerHSPA
+BearerBluetooth
+BearerWiMAX
+public_flag
+true
+class_name
+QNetworkConfiguration
+name
+Purpose
+key
+UnknownPurpose
+PublicPurpose
+PrivatePurpose
+ServiceSpecificPurpose
+public_flag
+true
+class_name
+QNetworkConfiguration
+name
+StateFlag
+key
+Undefined
+Defined
+Discovered
+Active
+public_flag
+true
+class_name
+QNetworkConfiguration
+name
+Type
+key
+InternetAccessPoint
+ServiceNetwork
+UserChoice
+Invalid
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

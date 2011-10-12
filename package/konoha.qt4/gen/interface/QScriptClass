@@ -1,0 +1,85 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qscriptclass.html
+
+output_urn
+QScriptClass
+
+inherits
+
+public_types
+ enum Extension { Callable, HasInstance }
+ enum QueryFlag { HandlesReadAccess, HandlesWriteAccess }
+ flags QueryFlags
+
+properties
+
+public_functions
+QScriptClass ( QScriptEngine * engine )
+ virtual ~QScriptClass ()
+ QScriptEngine * engine () const
+ virtual QVariant extension ( Extension extension, const QVariant & argument = QVariant() )
+ virtual QString name () const
+ virtual QScriptClassPropertyIterator * newIterator ( const QScriptValue & object )
+ virtual QScriptValue property ( const QScriptValue & object, const QScriptString & name, uint id )
+ virtual QScriptValue::PropertyFlags propertyFlags ( const QScriptValue & object, const QScriptString & name, uint id )
+ virtual QScriptValue prototype () const
+ virtual QueryFlags queryProperty ( const QScriptValue & object, const QScriptString & name, QueryFlags flags, uint * id )
+ virtual void setProperty ( QScriptValue & object, const QScriptString & name, uint id, const QScriptValue & value )
+ virtual bool supportsExtension ( Extension extension ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+QueryFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QScriptClass
+name
+Extension
+key
+Callable
+HasInstance
+public_flag
+true
+class_name
+QScriptClass
+name
+QueryFlag
+key
+HandlesReadAccess
+HandlesWriteAccess
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

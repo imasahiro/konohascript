@@ -1,0 +1,92 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qconicalgradient.html
+
+output_urn
+QConicalGradient
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QConicalGradient ()
+QConicalGradient ( const QPointF & center, qreal angle )
+QConicalGradient ( qreal cx, qreal cy, qreal angle )
+ qreal angle () const
+ QPointF center () const
+ void setAngle ( qreal angle )
+ void setCenter ( const QPointF & center )
+ void setCenter ( qreal x, qreal y )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QGradient
+name
+CoordinateMode
+key
+LogicalMode
+StretchToDeviceMode
+ObjectBoundingMode
+public_flag
+true
+class_name
+QGradient
+name
+Spread
+key
+PadSpread
+RepeatSpread
+ReflectSpread
+public_flag
+true
+class_name
+QGradient
+name
+Type
+key
+LinearGradient
+RadialGradient
+ConicalGradient
+NoGradient
+public_flag
+true
+
+parent_index
+714
+
+parent_name
+QGradient
+

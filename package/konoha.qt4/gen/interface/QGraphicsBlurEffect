@@ -1,0 +1,100 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgraphicsblureffect.html
+
+output_urn
+QGraphicsBlurEffect
+
+inherits
+
+public_types
+ enum BlurHint { PerformanceHint, QualityHint, AnimationHint }
+ flags BlurHints
+
+properties
+blurHints : BlurHints
+blurRadius : qreal
+
+public_functions
+QGraphicsBlurEffect ( QObject * parent = 0 )
+~QGraphicsBlurEffect ()
+ BlurHints blurHints () const
+ qreal blurRadius () const
+
+public_slots
+ void setBlurHints ( BlurHints hints )
+ void setBlurRadius ( qreal blurRadius )
+
+signals
+ void blurHintsChanged ( BlurHints hints )
+ void blurRadiusChanged ( qreal radius )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QRectF boundingRectFor ( const QRectF & rect ) const
+
+reimplemented_protected_functions
+ virtual void draw ( QPainter * painter )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+BlurHints
+
+parent_typedefed_objects
+ChangeFlags
+
+enums
+class_name
+QGraphicsBlurEffect
+name
+BlurHint
+key
+PerformanceHint
+QualityHint
+AnimationHint
+public_flag
+true
+
+parent_enums
+class_name
+QGraphicsEffect
+name
+ChangeFlag
+key
+SourceAttached
+SourceDetached
+SourceBoundingRectChanged
+SourceInvalidated
+public_flag
+true
+class_name
+QGraphicsEffect
+name
+PixmapPadMode
+key
+NoPad
+PadToTransparentBorder
+PadToEffectiveBoundingRect
+public_flag
+true
+
+parent_index
+539
+
+parent_name
+QGraphicsEffect
+

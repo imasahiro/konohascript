@@ -1,0 +1,117 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdomelement.html
+
+output_urn
+QDomElement
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDomElement ()
+QDomElement ( const QDomElement & x )
+ QString attribute ( const QString & name, const QString & defValue = QString() ) const
+ QString attributeNS ( const QString nsURI, const QString & localName, const QString & defValue = QString() ) const
+ QDomAttr attributeNode ( const QString & name )
+ QDomAttr attributeNodeNS ( const QString & nsURI, const QString & localName )
+ QDomNamedNodeMap attributes () const
+ QDomNodeList elementsByTagName ( const QString & tagname ) const
+ QDomNodeList elementsByTagNameNS ( const QString & nsURI, const QString & localName ) const
+ bool hasAttribute ( const QString & name ) const
+ bool hasAttributeNS ( const QString & nsURI, const QString & localName ) const
+ QDomNode::NodeType nodeType () const
+ void removeAttribute ( const QString & name )
+ void removeAttributeNS ( const QString & nsURI, const QString & localName )
+ QDomAttr removeAttributeNode ( const QDomAttr & oldAttr )
+ void setAttribute ( const QString & name, const QString & value )
+ void setAttribute ( const QString & name, int value )
+ void setAttribute ( const QString & name, uint value )
+ void setAttribute ( const QString & name, qlonglong value )
+ void setAttribute ( const QString & name, qulonglong value )
+ void setAttribute ( const QString & name, float value )
+ void setAttribute ( const QString & name, double value )
+ void setAttributeNS ( const QString nsURI, const QString & qName, const QString & value )
+ void setAttributeNS ( const QString nsURI, const QString & qName, int value )
+ void setAttributeNS ( const QString nsURI, const QString & qName, uint value )
+ void setAttributeNS ( const QString nsURI, const QString & qName, qlonglong value )
+ void setAttributeNS ( const QString nsURI, const QString & qName, qulonglong value )
+ void setAttributeNS ( const QString nsURI, const QString & qName, double value )
+ QDomAttr setAttributeNode ( const QDomAttr & newAttr )
+ QDomAttr setAttributeNodeNS ( const QDomAttr & newAttr )
+ void setTagName ( const QString & name )
+ QString tagName () const
+ QString text () const
+ QDomElement & operator= ( const QDomElement & x )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QDomNode
+name
+EncodingPolicy
+key
+EncodingFromDocument
+EncodingFromTextStream
+public_flag
+true
+class_name
+QDomNode
+name
+NodeType
+key
+ElementNode
+AttributeNode
+TextNode
+CDATASectionNode
+EntityReferenceNode
+EntityNode
+ProcessingInstructionNode
+CommentNode
+DocumentNode
+DocumentTypeNode
+DocumentFragmentNode
+NotationNode
+BaseNode
+CharacterDataNode
+public_flag
+true
+
+parent_index
+758
+
+parent_name
+QDomNode
+

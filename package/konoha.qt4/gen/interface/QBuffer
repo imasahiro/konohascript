@@ -1,0 +1,87 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qbuffer.html
+
+output_urn
+QBuffer
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QBuffer ( QObject * parent = 0 )
+QBuffer ( QByteArray * byteArray, QObject * parent = 0 )
+~QBuffer ()
+ QByteArray & buffer ()
+ const QByteArray & buffer () const
+ const QByteArray & data () const
+ void setBuffer ( QByteArray * byteArray )
+ void setData ( const QByteArray & data )
+ void setData ( const char * data, int size )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual bool atEnd () const
+ virtual bool canReadLine () const
+ virtual void close ()
+ virtual bool open ( OpenMode flags )
+ virtual qint64 pos () const
+ virtual bool seek ( qint64 pos )
+ virtual qint64 size () const
+
+reimplemented_protected_functions
+ virtual qint64 readData ( char * data, qint64 len )
+ virtual qint64 writeData ( const char * data, qint64 len )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+OpenMode
+
+enums
+
+parent_enums
+class_name
+QIODevice
+name
+OpenModeFlag
+key
+NotOpen
+ReadOnly
+WriteOnly
+ReadWrite
+Append
+Truncate
+Text
+Unbuffered
+public_flag
+true
+
+parent_index
+732
+
+parent_name
+QIODevice
+

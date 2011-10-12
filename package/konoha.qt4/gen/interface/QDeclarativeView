@@ -1,0 +1,147 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdeclarativeview.html
+
+output_urn
+QDeclarativeView
+
+inherits
+
+public_types
+ enum ResizeMode { SizeViewToRootObject, SizeRootObjectToView }
+ enum Status { Null, Ready, Loading, Error }
+
+properties
+resizeMode : ResizeMode
+source : QUrl
+status : const Status
+
+public_functions
+QDeclarativeView ( QWidget * parent = 0 )
+QDeclarativeView ( const QUrl & source, QWidget * parent = 0 )
+ virtual ~QDeclarativeView ()
+ QDeclarativeEngine * engine () const
+ QList<QDeclarativeError> errors () const
+ QSize initialSize () const
+ ResizeMode resizeMode () const
+ QDeclarativeContext * rootContext () const
+ QGraphicsObject * rootObject () const
+ void setResizeMode ( ResizeMode )
+ void setSource ( const QUrl & url )
+ QUrl source () const
+ Status status () const
+
+public_slots
+
+signals
+ void sceneResized ( QSize size )
+ void statusChanged ( QDeclarativeView::Status status )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+CacheMode
+OptimizationFlags
+
+enums
+class_name
+QDeclarativeView
+name
+ResizeMode
+key
+SizeViewToRootObject
+SizeRootObjectToView
+public_flag
+true
+class_name
+QDeclarativeView
+name
+Status
+key
+Null
+Ready
+Loading
+Error
+public_flag
+true
+
+parent_enums
+class_name
+QGraphicsView
+name
+CacheModeFlag
+key
+CacheNone
+CacheBackground
+public_flag
+true
+class_name
+QGraphicsView
+name
+DragMode
+key
+NoDrag
+ScrollHandDrag
+RubberBandDrag
+public_flag
+true
+class_name
+QGraphicsView
+name
+OptimizationFlag
+key
+DontClipPainter
+DontSavePainterState
+DontAdjustForAntialiasing
+IndirectPainting
+public_flag
+true
+class_name
+QGraphicsView
+name
+ViewportAnchor
+key
+NoAnchor
+AnchorViewCenter
+AnchorUnderMouse
+public_flag
+true
+class_name
+QGraphicsView
+name
+ViewportUpdateMode
+key
+FullViewportUpdate
+MinimalViewportUpdate
+SmartViewportUpdate
+BoundingRectViewportUpdate
+NoViewportUpdate
+public_flag
+true
+
+parent_index
+188
+
+parent_name
+QGraphicsView
+

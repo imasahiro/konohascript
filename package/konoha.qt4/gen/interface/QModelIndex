@@ -1,0 +1,69 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmodelindex.html
+
+output_urn
+QModelIndex
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QModelIndex ()
+QModelIndex ( const QModelIndex & other )
+~QModelIndex ()
+ QModelIndex child ( int row, int column ) const
+ int column () const
+ QVariant data ( int role = Qt::DisplayRole ) const
+ Qt::ItemFlags flags () const
+ qint64 internalId () const
+ void * internalPointer () const
+ bool isValid () const
+ const QAbstractItemModel * model () const
+ QModelIndex parent () const
+ int row () const
+ QModelIndex sibling ( int row, int column ) const
+ bool operator!= ( const QModelIndex & other ) const
+ bool operator< ( const QModelIndex & other ) const
+ bool operator== ( const QModelIndex & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ typedef QModelIndexList
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

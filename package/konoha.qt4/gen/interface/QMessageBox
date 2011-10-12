@@ -1,0 +1,182 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmessagebox.html
+
+output_urn
+QMessageBox
+
+inherits
+
+public_types
+ enum ButtonRole { InvalidRole, AcceptRole, RejectRole, DestructiveRole, ..., ResetRole }
+ enum Icon { NoIcon, Question, Information, Warning, Critical }
+ enum StandardButton { Ok, Open, Save, Cancel, ..., ButtonMask }
+ flags StandardButtons
+
+properties
+detailedText : QString
+icon : Icon
+iconPixmap : QPixmap
+informativeText : QString
+
+public_functions
+QMessageBox ( QWidget * parent = 0 )
+QMessageBox ( Icon icon, const QString & title, const QString & text, StandardButtons buttons = NoButton, QWidget * parent = 0, Qt::WindowFlags f = Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint )
+~QMessageBox ()
+ void addButton ( QAbstractButton * button, ButtonRole role )
+ QPushButton * addButton ( const QString & text, ButtonRole role )
+ QPushButton * addButton ( StandardButton button )
+ QAbstractButton * button ( StandardButton which ) const
+ ButtonRole buttonRole ( QAbstractButton * button ) const
+ QList<QAbstractButton *> buttons () const
+ QAbstractButton * clickedButton () const
+ QPushButton * defaultButton () const
+ QString detailedText () const
+ QAbstractButton * escapeButton () const
+ Icon icon () const
+ QPixmap iconPixmap () const
+ QString informativeText () const
+ void open ( QObject * receiver, const char * member )
+ void removeButton ( QAbstractButton * button )
+ void setDefaultButton ( QPushButton * button )
+ void setDefaultButton ( StandardButton button )
+ void setDetailedText ( const QString & text )
+ void setEscapeButton ( QAbstractButton * button )
+ void setEscapeButton ( StandardButton button )
+ void setIcon ( Icon )
+ void setIconPixmap ( const QPixmap & pixmap )
+ void setInformativeText ( const QString & text )
+ void setStandardButtons ( StandardButtons buttons )
+ void setText ( const QString & text )
+ void setTextFormat ( Qt::TextFormat format )
+ void setWindowModality ( Qt::WindowModality windowModality )
+ void setWindowTitle ( const QString & title )
+ StandardButton standardButton ( QAbstractButton * button ) const
+ StandardButtons standardButtons () const
+ QString text () const
+ Qt::TextFormat textFormat () const
+
+public_slots
+ int exec ()
+
+signals
+ void buttonClicked ( QAbstractButton * button )
+
+static_public_members
+ void about ( QWidget * parent, const QString & title, const QString & text )
+ void aboutQt ( QWidget * parent, const QString & title = QString() )
+ StandardButton critical ( QWidget * parent, const QString & title, const QString & text, StandardButtons buttons = Ok, StandardButton defaultButton = NoButton )
+ StandardButton information ( QWidget * parent, const QString & title, const QString & text, StandardButtons buttons = Ok, StandardButton defaultButton = NoButton )
+ StandardButton question ( QWidget * parent, const QString & title, const QString & text, StandardButtons buttons = Ok, StandardButton defaultButton = NoButton )
+ StandardButton warning ( QWidget * parent, const QString & title, const QString & text, StandardButtons buttons = Ok, StandardButton defaultButton = NoButton )
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void setVisible ( bool visible )
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * ev )
+ virtual void closeEvent ( QCloseEvent * e )
+ virtual bool event ( QEvent * e )
+ virtual void keyPressEvent ( QKeyEvent * e )
+ virtual void resizeEvent ( QResizeEvent * event )
+ virtual void showEvent ( QShowEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+StandardButtons
+
+parent_typedefed_objects
+
+enums
+class_name
+QMessageBox
+name
+ButtonRole
+key
+InvalidRole
+AcceptRole
+RejectRole
+DestructiveRole
+ActionRole
+HelpRole
+YesRole
+NoRole
+ApplyRole
+ResetRole
+public_flag
+true
+class_name
+QMessageBox
+name
+Icon
+key
+NoIcon
+Question
+Information
+Warning
+Critical
+public_flag
+true
+class_name
+QMessageBox
+name
+StandardButton
+key
+Ok
+Open
+Save
+Cancel
+Close
+Discard
+Apply
+Reset
+RestoreDefaults
+Help
+SaveAll
+Yes
+YesToAll
+No
+NoToAll
+Abort
+Retry
+Ignore
+NoButton
+YesAll
+NoAll
+Default
+Escape
+FlagMask
+ButtonMask
+public_flag
+true
+
+parent_enums
+class_name
+QDialog
+name
+DialogCode
+key
+Accepted
+Rejected
+public_flag
+true
+
+parent_index
+719
+
+parent_name
+QDialog
+

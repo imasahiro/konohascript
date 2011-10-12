@@ -1,0 +1,78 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qatomicpointer.html
+
+output_urn
+QAtomicPointer
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QAtomicPointer ( T * value = 0 )
+QAtomicPointer ( const QAtomicPointer<T> & other )
+ T * fetchAndAddAcquire ( qptrdiff valueToAdd )
+ T * fetchAndAddOrdered ( qptrdiff valueToAdd )
+ T * fetchAndAddRelaxed ( qptrdiff valueToAdd )
+ T * fetchAndAddRelease ( qptrdiff valueToAdd )
+ T * fetchAndStoreAcquire ( T * newValue )
+ T * fetchAndStoreOrdered ( T * newValue )
+ T * fetchAndStoreRelaxed ( T * newValue )
+ T * fetchAndStoreRelease ( T * newValue )
+ bool testAndSetAcquire ( T * expectedValue, T * newValue )
+ bool testAndSetOrdered ( T * expectedValue, T * newValue )
+ bool testAndSetRelaxed ( T * expectedValue, T * newValue )
+ bool testAndSetRelease ( T * expectedValue, T * newValue )
+operator T * () const
+ bool operator! () const
+ bool operator!= ( T * value ) const
+ T * operator-> () const
+ QAtomicPointer<T> & operator= ( T * value )
+ QAtomicPointer<T> & operator= ( const QAtomicPointer<T> & other )
+ bool operator== ( T * value ) const
+
+public_slots
+
+signals
+
+static_public_members
+ bool isFetchAndAddNative ()
+ bool isFetchAndAddWaitFree ()
+ bool isFetchAndStoreNative ()
+ bool isFetchAndStoreWaitFree ()
+ bool isTestAndSetNative ()
+ bool isTestAndSetWaitFree ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+true
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

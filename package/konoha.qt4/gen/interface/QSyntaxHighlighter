@@ -1,0 +1,73 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsyntaxhighlighter.html
+
+output_urn
+QSyntaxHighlighter
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QSyntaxHighlighter ( QObject * parent )
+QSyntaxHighlighter ( QTextDocument * parent )
+QSyntaxHighlighter ( QTextEdit * parent )
+ virtual ~QSyntaxHighlighter ()
+ QTextDocument * document () const
+ void setDocument ( QTextDocument * doc )
+
+public_slots
+ void rehighlight ()
+ void rehighlightBlock ( const QTextBlock & block )
+
+signals
+1 public slot inherited from QObject
+
+static_public_members
+
+protected_functions
+ QTextBlock currentBlock () const
+ int currentBlockState () const
+ QTextBlockUserData * currentBlockUserData () const
+ QTextCharFormat format ( int position ) const
+ virtual void highlightBlock ( const QString & text ) = 0
+ int previousBlockState () const
+ void setCurrentBlockState ( int newState )
+ void setCurrentBlockUserData ( QTextBlockUserData * data )
+ void setFormat ( int start, int count, const QTextCharFormat & format )
+ void setFormat ( int start, int count, const QColor & color )
+ void setFormat ( int start, int count, const QFont & font )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

@@ -1,0 +1,79 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qstyleditemdelegate.html
+
+output_urn
+QStyledItemDelegate
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QStyledItemDelegate ( QObject * parent = 0 )
+~QStyledItemDelegate ()
+ virtual QString displayText ( const QVariant & value, const QLocale & locale ) const
+ QItemEditorFactory * itemEditorFactory () const
+ void setItemEditorFactory ( QItemEditorFactory * factory )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ virtual void initStyleOption ( QStyleOptionViewItem * option, const QModelIndex & index ) const
+
+reimplemented_public_functions
+ virtual QWidget * createEditor ( QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
+ virtual void paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
+ virtual void setEditorData ( QWidget * editor, const QModelIndex & index ) const
+ virtual void setModelData ( QWidget * editor, QAbstractItemModel * model, const QModelIndex & index ) const
+ virtual QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
+ virtual void updateEditorGeometry ( QWidget * editor, const QStyleOptionViewItem & option, const QModelIndex & index ) const
+
+reimplemented_protected_functions
+ virtual bool editorEvent ( QEvent * event, QAbstractItemModel * model, const QStyleOptionViewItem & option, const QModelIndex & index )
+ virtual bool eventFilter ( QObject * editor, QEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QAbstractItemDelegate
+name
+EndEditHint
+key
+NoHint
+EditNextItem
+EditPreviousItem
+SubmitModelCache
+RevertModelCache
+public_flag
+true
+
+parent_index
+583
+
+parent_name
+QAbstractItemDelegate
+

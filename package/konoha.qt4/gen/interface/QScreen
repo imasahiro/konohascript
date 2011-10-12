@@ -1,0 +1,139 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qscreen.html
+
+output_urn
+QScreen
+
+inherits
+
+public_types
+ enum ClassId { LinuxFBClass, TransformedClass, VNCClass, MultiClass, ..., CustomClass }
+ enum PixelType { NormalPixel, BGRPixel }
+
+properties
+
+public_functions
+QScreen ( int display_id, ClassId classId )
+QScreen ( int displayId )
+ virtual ~QScreen ()
+ virtual int alloc ( unsigned int red, unsigned int green, unsigned int blue )
+ uchar * base () const
+ virtual void blank ( bool on )
+ virtual void blit ( const QImage & image, const QPoint & topLeft, const QRegion & region )
+ ClassId classId () const
+ QRgb * clut ()
+ int colorCount ()
+ virtual bool connect ( const QString & displaySpec ) = 0
+ virtual QWSWindowSurface * createSurface ( const QString & key ) const
+ virtual QWSWindowSurface * createSurface ( QWidget * widget ) const
+ int depth () const
+ int deviceHeight () const
+ int deviceWidth () const
+ virtual void disconnect () = 0
+ virtual void exposeRegion ( QRegion region, int windowIndex )
+ int height () const
+ virtual bool initDevice () = 0
+ virtual bool isInterlaced () const
+ virtual bool isTransformed () const
+ int linestep () const
+ virtual QSize mapFromDevice ( const QSize & size ) const
+ virtual QPoint mapFromDevice ( const QPoint & point, const QSize & screenSize ) const
+ virtual QRect mapFromDevice ( const QRect & rectangle, const QSize & screenSize ) const
+ virtual QImage mapFromDevice ( const QImage & image ) const
+ virtual QRegion mapFromDevice ( const QRegion & region, const QSize & screenSize ) const
+ virtual QSize mapToDevice ( const QSize & size ) const
+ virtual QPoint mapToDevice ( const QPoint & point, const QSize & screenSize ) const
+ virtual QRect mapToDevice ( const QRect & rectangle, const QSize & screenSize ) const
+ virtual QImage mapToDevice ( const QImage & image ) const
+ virtual QRegion mapToDevice ( const QRegion & region, const QSize & screenSize ) const
+ QPoint offset () const
+ virtual bool onCard ( const unsigned char * buffer ) const
+ virtual bool onCard ( const unsigned char * buffer, ulong & offset ) const
+ int physicalHeight () const
+ int physicalWidth () const
+ QImage::Format pixelFormat () const
+ PixelType pixelType () const
+ virtual int pixmapDepth () const
+ virtual int pixmapLinestepAlignment ()
+ virtual int pixmapOffsetAlignment ()
+ virtual QRegion region () const
+ virtual void restore ()
+ virtual void save ()
+ int screenSize () const
+ virtual void setDirty ( const QRect & rectangle )
+ virtual void setMode ( int width, int height, int depth ) = 0
+ virtual void shutdownDevice ()
+ virtual void solidFill ( const QColor & color, const QRegion & region )
+ int subScreenIndexAt ( const QPoint & position ) const
+ virtual QList<QScreen *> subScreens () const
+ virtual bool supportsDepth ( int depth ) const
+ int totalSize () const
+ virtual int transformOrientation () const
+ int width () const
+
+public_slots
+
+signals
+
+static_public_members
+ QScreen * instance ()
+
+protected_functions
+ void setPixelFormat ( QImage::Format format )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ void setTransformation ( int transformation, int screenNo = -1 )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+true
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QScreen
+name
+ClassId
+key
+LinuxFBClass
+TransformedClass
+VNCClass
+MultiClass
+VFbClass
+DirectFBClass
+SvgalibClass
+ProxyClass
+GLClass
+CustomClass
+public_flag
+true
+class_name
+QScreen
+name
+PixelType
+key
+NormalPixel
+BGRPixel
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

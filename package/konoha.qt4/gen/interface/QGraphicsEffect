@@ -1,0 +1,94 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgraphicseffect.html
+
+output_urn
+QGraphicsEffect
+
+inherits
+
+public_types
+ enum ChangeFlag { SourceAttached, SourceDetached, SourceBoundingRectChanged, SourceInvalidated }
+ flags ChangeFlags
+ enum PixmapPadMode { NoPad, PadToTransparentBorder, PadToEffectiveBoundingRect }
+
+properties
+enabled : bool
+
+public_functions
+QGraphicsEffect ( QObject * parent = 0 )
+ virtual ~QGraphicsEffect ()
+ QRectF boundingRect () const
+ virtual QRectF boundingRectFor ( const QRectF & rect ) const
+ bool isEnabled () const
+
+public_slots
+ void setEnabled ( bool enable )
+ void update ()
+
+signals
+ void enabledChanged ( bool enabled )
+
+static_public_members
+
+protected_functions
+ virtual void draw ( QPainter * painter ) = 0
+ void drawSource ( QPainter * painter )
+ QRectF sourceBoundingRect ( Qt::CoordinateSystem system = Qt::LogicalCoordinates ) const
+ virtual void sourceChanged ( ChangeFlags flags )
+ bool sourceIsPixmap () const
+ QPixmap sourcePixmap ( Qt::CoordinateSystem system = Qt::LogicalCoordinates, QPoint * offset = 0, PixmapPadMode mode = PadToEffectiveBoundingRect ) const
+ void updateBoundingRect ()
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+ChangeFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QGraphicsEffect
+name
+ChangeFlag
+key
+SourceAttached
+SourceDetached
+SourceBoundingRectChanged
+SourceInvalidated
+public_flag
+true
+class_name
+QGraphicsEffect
+name
+PixmapPadMode
+key
+NoPad
+PadToTransparentBorder
+PadToEffectiveBoundingRect
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

@@ -1,0 +1,66 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmouseeventtransition.html
+
+output_urn
+QMouseEventTransition
+
+inherits
+
+public_types
+
+properties
+button : Qt::MouseButton
+modifierMask : Qt::KeyboardModifiers
+
+public_functions
+QMouseEventTransition ( QState * sourceState = 0 )
+QMouseEventTransition ( QObject * object, QEvent::Type type, Qt::MouseButton button, QState * sourceState = 0 )
+~QMouseEventTransition ()
+ Qt::MouseButton button () const
+ QPainterPath hitTestPath () const
+ Qt::KeyboardModifiers modifierMask () const
+ void setButton ( Qt::MouseButton button )
+ void setHitTestPath ( const QPainterPath & path )
+ void setModifierMask ( Qt::KeyboardModifiers modifierMask )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool eventTest ( QEvent * event )
+ virtual void onTransition ( QEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+760
+
+parent_name
+QEventTransition
+

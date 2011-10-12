@@ -1,0 +1,88 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qxmlnodemodelindex.html
+
+output_urn
+QXmlNodeModelIndex
+
+inherits
+
+public_types
+ enum DocumentOrder { Precedes, Follows, Is }
+ typedef List
+ enum NodeKind { Attribute, Text, Comment, Document, ..., ProcessingInstruction }
+
+properties
+
+public_functions
+QXmlNodeModelIndex ()
+QXmlNodeModelIndex ( const QXmlNodeModelIndex & other )
+ qint64 additionalData () const
+ qint64 data () const
+ void * internalPointer () const
+ bool isNull () const
+ const QAbstractXmlNodeModel * model () const
+ bool operator!= ( const QXmlNodeModelIndex & other ) const
+ bool operator== ( const QXmlNodeModelIndex & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+List
+
+parent_typedefed_objects
+
+enums
+class_name
+QXmlNodeModelIndex
+name
+DocumentOrder
+key
+Precedes
+Follows
+Is
+public_flag
+true
+class_name
+QXmlNodeModelIndex
+name
+NodeKind
+key
+Attribute
+Text
+Comment
+Document
+Element
+Namespace
+ProcessingInstruction
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

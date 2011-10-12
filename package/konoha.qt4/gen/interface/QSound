@@ -1,0 +1,65 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsound.html
+
+output_urn
+QSound
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QSound ( const QString & filename, QObject * parent = 0 )
+~QSound ()
+ QString fileName () const
+ bool isFinished () const
+ int loops () const
+ int loopsRemaining () const
+ void setLoops ( int number )
+
+public_slots
+ void play ()
+ void stop ()
+
+signals
+1 public slot inherited from QObject
+
+static_public_members
+ bool isAvailable ()
+ void play ( const QString & filename )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

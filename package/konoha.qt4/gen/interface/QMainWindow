@@ -1,0 +1,138 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmainwindow.html
+
+output_urn
+QMainWindow
+
+inherits
+
+public_types
+ enum DockOption { AnimatedDocks, AllowNestedDocks, AllowTabbedDocks, ForceTabbedDocks, VerticalTabs }
+ flags DockOptions
+
+properties
+animated : bool
+dockNestingEnabled : bool
+dockOptions : DockOptions
+documentMode : bool
+
+public_functions
+QMainWindow ( QWidget * parent = 0, Qt::WindowFlags flags = 0 )
+~QMainWindow ()
+ void addDockWidget ( Qt::DockWidgetArea area, QDockWidget * dockwidget )
+ void addDockWidget ( Qt::DockWidgetArea area, QDockWidget * dockwidget, Qt::Orientation orientation )
+ void addToolBar ( Qt::ToolBarArea area, QToolBar * toolbar )
+ void addToolBar ( QToolBar * toolbar )
+ QToolBar * addToolBar ( const QString & title )
+ void addToolBarBreak ( Qt::ToolBarArea area = Qt::TopToolBarArea )
+ QWidget * centralWidget () const
+ Qt::DockWidgetArea corner ( Qt::Corner corner ) const
+ virtual QMenu * createPopupMenu ()
+ DockOptions dockOptions () const
+ Qt::DockWidgetArea dockWidgetArea ( QDockWidget * dockwidget ) const
+ bool documentMode () const
+ QSize iconSize () const
+ void insertToolBar ( QToolBar * before, QToolBar * toolbar )
+ void insertToolBarBreak ( QToolBar * before )
+ bool isAnimated () const
+ bool isDockNestingEnabled () const
+ QMenuBar * menuBar () const
+ QWidget * menuWidget () const
+ void removeDockWidget ( QDockWidget * dockwidget )
+ void removeToolBar ( QToolBar * toolbar )
+ void removeToolBarBreak ( QToolBar * before )
+ bool restoreDockWidget ( QDockWidget * dockwidget )
+ bool restoreState ( const QByteArray & state, int version = 0 )
+ QByteArray saveState ( int version = 0 ) const
+ void setCentralWidget ( QWidget * widget )
+ void setCorner ( Qt::Corner corner, Qt::DockWidgetArea area )
+ void setDockOptions ( DockOptions options )
+ void setDocumentMode ( bool enabled )
+ void setIconSize ( const QSize & iconSize )
+ void setMenuBar ( QMenuBar * menuBar )
+ void setMenuWidget ( QWidget * menuBar )
+ void setStatusBar ( QStatusBar * statusbar )
+ void setTabPosition ( Qt::DockWidgetAreas areas, QTabWidget::TabPosition tabPosition )
+ void setTabShape ( QTabWidget::TabShape tabShape )
+ void setToolButtonStyle ( Qt::ToolButtonStyle toolButtonStyle )
+ void setUnifiedTitleAndToolBarOnMac ( bool set )
+ void splitDockWidget ( QDockWidget * first, QDockWidget * second, Qt::Orientation orientation )
+ QStatusBar * statusBar () const
+ QTabWidget::TabPosition tabPosition ( Qt::DockWidgetArea area ) const
+ QTabWidget::TabShape tabShape () const
+ QList<QDockWidget *> tabifiedDockWidgets ( QDockWidget * dockwidget ) const
+ void tabifyDockWidget ( QDockWidget * first, QDockWidget * second )
+ Qt::ToolBarArea toolBarArea ( QToolBar * toolbar ) const
+ bool toolBarBreak ( QToolBar * toolbar ) const
+ Qt::ToolButtonStyle toolButtonStyle () const
+ bool unifiedTitleAndToolBarOnMac () const
+
+public_slots
+ void setAnimated ( bool enabled )
+ void setDockNestingEnabled ( bool enabled )
+
+signals
+ void iconSizeChanged ( const QSize & iconSize )
+ void toolButtonStyleChanged ( Qt::ToolButtonStyle toolButtonStyle )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual void contextMenuEvent ( QContextMenuEvent * event )
+ virtual bool event ( QEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+DockOptions
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+class_name
+QMainWindow
+name
+DockOption
+key
+AnimatedDocks
+AllowNestedDocks
+AllowTabbedDocks
+ForceTabbedDocks
+VerticalTabs
+public_flag
+true
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

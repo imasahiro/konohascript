@@ -1,0 +1,86 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfontmetrics.html
+
+output_urn
+QFontMetrics
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QFontMetrics ( const QFont & font )
+QFontMetrics ( const QFont & font, QPaintDevice * paintdevice )
+QFontMetrics ( const QFontMetrics & fm )
+~QFontMetrics ()
+ int ascent () const
+ int averageCharWidth () const
+ QRect boundingRect ( QChar ch ) const
+ QRect boundingRect ( const QString & text ) const
+ QRect boundingRect ( int x, int y, int width, int height, int flags, const QString & text, int tabStops = 0, int * tabArray = 0 ) const
+ QRect boundingRect ( const QRect & rect, int flags, const QString & text, int tabStops = 0, int * tabArray = 0 ) const
+ int descent () const
+ QString elidedText ( const QString & text, Qt::TextElideMode mode, int width, int flags = 0 ) const
+ int height () const
+ bool inFont ( QChar ch ) const
+ int leading () const
+ int leftBearing ( QChar ch ) const
+ int lineSpacing () const
+ int lineWidth () const
+ int maxWidth () const
+ int minLeftBearing () const
+ int minRightBearing () const
+ int overlinePos () const
+ int rightBearing ( QChar ch ) const
+ QSize size ( int flags, const QString & text, int tabStops = 0, int * tabArray = 0 ) const
+ int strikeOutPos () const
+ QRect tightBoundingRect ( const QString & text ) const
+ int underlinePos () const
+ int width ( const QString & text, int len = -1 ) const
+ int width ( QChar ch ) const
+ int xHeight () const
+ bool operator!= ( const QFontMetrics & other )
+ bool operator!= ( const QFontMetrics & other ) const
+ QFontMetrics & operator= ( const QFontMetrics & fm )
+ bool operator== ( const QFontMetrics & other )
+ bool operator== ( const QFontMetrics & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

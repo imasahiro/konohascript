@@ -1,0 +1,75 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qxmlstreamattributes.html
+
+output_urn
+QXmlStreamAttributes
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+ void append ( const QString & namespaceUri, const QString & name, const QString & value )
+ void append ( const QXmlStreamAttribute & attribute )
+ void append ( const QString & qualifiedName, const QString & value )
+ bool hasAttribute ( const QString & qualifiedName ) const
+ bool hasAttribute ( const QLatin1String & qualifiedName ) const
+ bool hasAttribute ( const QString & namespaceUri, const QString & name ) const
+ QStringRef value ( const QString & namespaceUri, const QString & name ) const
+ QStringRef value ( const QString & namespaceUri, const QLatin1String & name ) const
+ QStringRef value ( const QLatin1String & namespaceUri, const QLatin1String & name ) const
+ QStringRef value ( const QString & qualifiedName ) const
+ QStringRef value ( const QLatin1String & qualifiedName ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+ConstIterator
+Iterator
+const_iterator
+const_pointer
+const_reference
+difference_type
+iterator
+pointer
+reference
+size_type
+value_type
+
+enums
+
+parent_enums
+
+parent_index
+73
+
+parent_name
+QVector
+

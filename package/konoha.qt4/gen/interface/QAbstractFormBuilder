@@ -1,0 +1,57 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractformbuilder.html
+
+output_urn
+QAbstractFormBuilder
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QAbstractFormBuilder ()
+ virtual ~QAbstractFormBuilder ()
+ virtual QWidget * load ( QIODevice * device, QWidget * parent = 0 )
+ virtual void save ( QIODevice * device, QWidget * widget )
+ void setWorkingDirectory ( const QDir & directory )
+ QDir workingDirectory () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

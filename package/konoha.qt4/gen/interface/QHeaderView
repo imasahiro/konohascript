@@ -1,0 +1,270 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qheaderview.html
+
+output_urn
+QHeaderView
+
+inherits
+
+public_types
+ enum ResizeMode { Interactive, Fixed, Stretch, ResizeToContents, Custom }
+
+properties
+cascadingSectionResizes : bool
+defaultAlignment : Qt::Alignment
+defaultSectionSize : int
+highlightSections : bool
+
+public_functions
+QHeaderView ( Qt::Orientation orientation, QWidget * parent = 0 )
+ virtual ~QHeaderView ()
+ bool cascadingSectionResizes () const
+ int count () const
+ Qt::Alignment defaultAlignment () const
+ int defaultSectionSize () const
+ int hiddenSectionCount () const
+ void hideSection ( int logicalIndex )
+ bool highlightSections () const
+ bool isClickable () const
+ bool isMovable () const
+ bool isSectionHidden ( int logicalIndex ) const
+ bool isSortIndicatorShown () const
+ int length () const
+ int logicalIndex ( int visualIndex ) const
+ int logicalIndexAt ( int position ) const
+ int logicalIndexAt ( int x, int y ) const
+ int logicalIndexAt ( const QPoint & pos ) const
+ int minimumSectionSize () const
+ void moveSection ( int from, int to )
+ int offset () const
+ Qt::Orientation orientation () const
+ ResizeMode resizeMode ( int logicalIndex ) const
+ void resizeSection ( int logicalIndex, int size )
+ void resizeSections ( QHeaderView::ResizeMode mode )
+ bool restoreState ( const QByteArray & state )
+ QByteArray saveState () const
+ int sectionPosition ( int logicalIndex ) const
+ int sectionSize ( int logicalIndex ) const
+ int sectionSizeHint ( int logicalIndex ) const
+ int sectionViewportPosition ( int logicalIndex ) const
+ bool sectionsHidden () const
+ bool sectionsMoved () const
+ void setCascadingSectionResizes ( bool enable )
+ void setClickable ( bool clickable )
+ void setDefaultAlignment ( Qt::Alignment alignment )
+ void setDefaultSectionSize ( int size )
+ void setHighlightSections ( bool highlight )
+ void setMinimumSectionSize ( int size )
+ void setMovable ( bool movable )
+ void setResizeMode ( ResizeMode mode )
+ void setResizeMode ( int logicalIndex, ResizeMode mode )
+ void setSectionHidden ( int logicalIndex, bool hide )
+ void setSortIndicator ( int logicalIndex, Qt::SortOrder order )
+ void setSortIndicatorShown ( bool show )
+ void setStretchLastSection ( bool stretch )
+ void showSection ( int logicalIndex )
+ Qt::SortOrder sortIndicatorOrder () const
+ int sortIndicatorSection () const
+ bool stretchLastSection () const
+ int stretchSectionCount () const
+ void swapSections ( int first, int second )
+ int visualIndex ( int logicalIndex ) const
+ int visualIndexAt ( int position ) const
+
+public_slots
+ void headerDataChanged ( Qt::Orientation orientation, int logicalFirst, int logicalLast )
+ void setOffset ( int offset )
+ void setOffsetToLastSection ()
+ void setOffsetToSectionPosition ( int visualIndex )
+
+signals
+ void geometriesChanged ()
+ void sectionAutoResize ( int logicalIndex, QHeaderView::ResizeMode mode )
+ void sectionClicked ( int logicalIndex )
+ void sectionCountChanged ( int oldCount, int newCount )
+ void sectionDoubleClicked ( int logicalIndex )
+ void sectionEntered ( int logicalIndex )
+ void sectionHandleDoubleClicked ( int logicalIndex )
+ void sectionMoved ( int logicalIndex, int oldVisualIndex, int newVisualIndex )
+ void sectionPressed ( int logicalIndex )
+ void sectionResized ( int logicalIndex, int oldSize, int newSize )
+ void sortIndicatorChanged ( int logicalIndex, Qt::SortOrder order )
+
+static_public_members
+
+protected_functions
+ void initStyleOption ( QStyleOptionHeader * option ) const
+ virtual void paintSection ( QPainter * painter, const QRect & rect, int logicalIndex ) const
+ virtual QSize sectionSizeFromContents ( int logicalIndex ) const
+
+reimplemented_public_functions
+ virtual void reset ()
+ virtual void setModel ( QAbstractItemModel * model )
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void currentChanged ( const QModelIndex & current, const QModelIndex & old )
+ virtual bool event ( QEvent * e )
+ virtual int horizontalOffset () const
+ virtual void mouseDoubleClickEvent ( QMouseEvent * e )
+ virtual void mouseMoveEvent ( QMouseEvent * e )
+ virtual void mousePressEvent ( QMouseEvent * e )
+ virtual void mouseReleaseEvent ( QMouseEvent * e )
+ virtual void paintEvent ( QPaintEvent * e )
+ virtual void setSelection ( const QRect & rect, QItemSelectionModel::SelectionFlags flags )
+ virtual int verticalOffset () const
+ virtual bool viewportEvent ( QEvent * e )
+
+protected_slots
+ void resizeSections ()
+ void sectionsAboutToBeRemoved ( const QModelIndex & parent, int logicalFirst, int logicalLast )
+ void sectionsInserted ( const QModelIndex & parent, int logicalFirst, int logicalLast )
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+EditTriggers
+
+enums
+class_name
+QHeaderView
+name
+ResizeMode
+key
+Interactive
+Fixed
+Stretch
+ResizeToContents
+Custom
+public_flag
+true
+
+parent_enums
+class_name
+QAbstractItemView
+name
+CursorAction
+key
+MoveUp
+MoveDown
+MoveLeft
+MoveRight
+MoveHome
+MoveEnd
+MovePageUp
+MovePageDown
+MoveNext
+MovePrevious
+public_flag
+false
+class_name
+QAbstractItemView
+name
+DragDropMode
+key
+NoDragDrop
+DragOnly
+DropOnly
+DragDrop
+InternalMove
+public_flag
+true
+class_name
+QAbstractItemView
+name
+DropIndicatorPosition
+key
+OnItem
+AboveItem
+BelowItem
+OnViewport
+public_flag
+false
+class_name
+QAbstractItemView
+name
+EditTrigger
+key
+NoEditTriggers
+CurrentChanged
+DoubleClicked
+SelectedClicked
+EditKeyPressed
+AnyKeyPressed
+AllEditTriggers
+public_flag
+true
+class_name
+QAbstractItemView
+name
+ScrollHint
+key
+EnsureVisible
+PositionAtTop
+PositionAtBottom
+PositionAtCenter
+public_flag
+true
+class_name
+QAbstractItemView
+name
+ScrollMode
+key
+ScrollPerItem
+ScrollPerPixel
+public_flag
+true
+class_name
+QAbstractItemView
+name
+SelectionBehavior
+key
+SelectItems
+SelectRows
+SelectColumns
+public_flag
+true
+class_name
+QAbstractItemView
+name
+SelectionMode
+key
+SingleSelection
+ContiguousSelection
+ExtendedSelection
+MultiSelection
+NoSelection
+public_flag
+true
+class_name
+QAbstractItemView
+name
+State
+key
+NoState
+DraggingState
+DragSelectingState
+EditingState
+ExpandingState
+CollapsingState
+AnimatingState
+public_flag
+false
+
+parent_index
+808
+
+parent_name
+QAbstractItemView
+

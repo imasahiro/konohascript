@@ -1,0 +1,72 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdeclarativetypeloader.html
+
+output_urn
+QDeclarativeTypeLoader
+
+inherits
+
+public_types
+ enum Option { None, PreserveParser }
+ flags Options
+
+properties
+
+public_functions
+QDeclarativeTypeLoader ( QDeclarativeEngine * )
+~QDeclarativeTypeLoader ()
+ void clearCache ()
+ QDeclarativeTypeData * get ( const QUrl & url )
+ QDeclarativeTypeData * get ( const QByteArray & data, const QUrl & url, Options options = None )
+ QDeclarativeQmldirData * getQmldir ( const QUrl & url )
+ QDeclarativeScriptData * getScript ( const QUrl & url )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+Options
+
+parent_typedefed_objects
+
+enums
+class_name
+QDeclarativeTypeLoader
+name
+Option
+key
+None
+PreserveParser
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

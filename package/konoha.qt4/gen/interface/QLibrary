@@ -1,0 +1,88 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qlibrary.html
+
+output_urn
+QLibrary
+
+inherits
+
+public_types
+ enum LoadHint { ResolveAllSymbolsHint, ExportExternalSymbolsHint, LoadArchiveMemberHint }
+ flags LoadHints
+
+properties
+fileName : QString
+loadHints : LoadHints
+
+public_functions
+QLibrary ( QObject * parent = 0 )
+QLibrary ( const QString & fileName, QObject * parent = 0 )
+QLibrary ( const QString & fileName, int verNum, QObject * parent = 0 )
+QLibrary ( const QString & fileName, const QString & version, QObject * parent = 0 )
+~QLibrary ()
+ QString errorString () const
+ QString fileName () const
+ bool isLoaded () const
+ bool load ()
+ LoadHints loadHints () const
+ void * resolve ( const char * symbol )
+ void setFileName ( const QString & fileName )
+ void setFileNameAndVersion ( const QString & fileName, int versionNumber )
+ void setFileNameAndVersion ( const QString & fileName, const QString & version )
+ void setLoadHints ( LoadHints hints )
+ bool unload ()
+
+public_slots
+
+signals
+
+static_public_members
+ bool isLibrary ( const QString & fileName )
+ void * resolve ( const QString & fileName, const char * symbol )
+ void * resolve ( const QString & fileName, int verNum, const char * symbol )
+ void * resolve ( const QString & fileName, const QString & version, const char * symbol )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+LoadHints
+
+parent_typedefed_objects
+
+enums
+class_name
+QLibrary
+name
+LoadHint
+key
+ResolveAllSymbolsHint
+ExportExternalSymbolsHint
+LoadArchiveMemberHint
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

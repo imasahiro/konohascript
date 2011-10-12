@@ -1,0 +1,93 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qlineargradient.html
+
+output_urn
+QLinearGradient
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QLinearGradient ()
+QLinearGradient ( const QPointF & start, const QPointF & finalStop )
+QLinearGradient ( qreal x1, qreal y1, qreal x2, qreal y2 )
+ QPointF finalStop () const
+ void setFinalStop ( const QPointF & stop )
+ void setFinalStop ( qreal x, qreal y )
+ void setStart ( const QPointF & start )
+ void setStart ( qreal x, qreal y )
+ QPointF start () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QGradient
+name
+CoordinateMode
+key
+LogicalMode
+StretchToDeviceMode
+ObjectBoundingMode
+public_flag
+true
+class_name
+QGradient
+name
+Spread
+key
+PadSpread
+RepeatSpread
+ReflectSpread
+public_flag
+true
+class_name
+QGradient
+name
+Type
+key
+LinearGradient
+RadialGradient
+ConicalGradient
+NoGradient
+public_flag
+true
+
+parent_index
+714
+
+parent_name
+QGradient
+

@@ -1,0 +1,92 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsslcertificate.html
+
+output_urn
+QSslCertificate
+
+inherits
+
+public_types
+ enum SubjectInfo { Organization, CommonName, LocalityName, OrganizationalUnitName, CountryName, StateOrProvinceName }
+
+properties
+
+public_functions
+QSslCertificate ( QIODevice * device, QSsl::EncodingFormat format = QSsl::Pem )
+QSslCertificate ( const QByteArray & data = QByteArray(), QSsl::EncodingFormat format = QSsl::Pem )
+QSslCertificate ( const QSslCertificate & other )
+~QSslCertificate ()
+ QMultiMap<QSsl::AlternateNameEntryType, QString> alternateSubjectNames () const
+ void clear ()
+ QByteArray digest ( QCryptographicHash::Algorithm algorithm = QCryptographicHash::Md5 ) const
+ QDateTime effectiveDate () const
+ QDateTime expiryDate () const
+ Qt::HANDLE handle () const
+ bool isNull () const
+ bool isValid () const
+ QString issuerInfo ( SubjectInfo subject ) const
+ QString issuerInfo ( const QByteArray & tag ) const
+ QSslKey publicKey () const
+ QByteArray serialNumber () const
+ QString subjectInfo ( SubjectInfo subject ) const
+ QString subjectInfo ( const QByteArray & tag ) const
+ QByteArray toDer () const
+ QByteArray toPem () const
+ QByteArray version () const
+ bool operator!= ( const QSslCertificate & other ) const
+ QSslCertificate & operator= ( const QSslCertificate & other )
+ bool operator== ( const QSslCertificate & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QList<QSslCertificate> fromData ( const QByteArray & data, QSsl::EncodingFormat format = QSsl::Pem )
+ QList<QSslCertificate> fromDevice ( QIODevice * device, QSsl::EncodingFormat format = QSsl::Pem )
+ QList<QSslCertificate> fromPath ( const QString & path, QSsl::EncodingFormat format = QSsl::Pem, QRegExp::PatternSyntax syntax = QRegExp::FixedString )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QSslCertificate
+name
+SubjectInfo
+key
+Organization
+CommonName
+LocalityName
+OrganizationalUnitName
+CountryName
+StateOrProvinceName
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

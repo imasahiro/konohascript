@@ -1,0 +1,70 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qregexpvalidator.html
+
+output_urn
+QRegExpValidator
+
+inherits
+
+public_types
+
+properties
+regExp : QRegExp
+
+public_functions
+QRegExpValidator ( QObject * parent = 0 )
+QRegExpValidator ( const QRegExp & rx, QObject * parent )
+~QRegExpValidator ()
+ const QRegExp & regExp () const
+ void setRegExp ( const QRegExp & rx )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QValidator::State validate ( QString & input, int & pos ) const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QValidator
+name
+State
+key
+Invalid
+Intermediate
+Acceptable
+public_flag
+true
+
+parent_index
+510
+
+parent_name
+QValidator
+

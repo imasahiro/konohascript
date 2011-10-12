@@ -1,0 +1,171 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qkeysequence.html
+
+output_urn
+QKeySequence
+
+inherits
+
+public_types
+ enum SequenceFormat { NativeText, PortableText }
+ enum SequenceMatch { NoMatch, PartialMatch, ExactMatch }
+ enum StandardKey { AddTab, Back, Bold, Close, ..., ZoomOut }
+
+properties
+
+public_functions
+QKeySequence ()
+QKeySequence ( const QString & key )
+QKeySequence ( const QString & key, SequenceFormat format )
+QKeySequence ( int k1, int k2 = 0, int k3 = 0, int k4 = 0 )
+QKeySequence ( const QKeySequence & keysequence )
+QKeySequence ( StandardKey key )
+~QKeySequence ()
+ uint count () const
+ bool isEmpty () const
+ SequenceMatch matches ( const QKeySequence & seq ) const
+ QString toString ( SequenceFormat format = PortableText ) const
+operator QVariant () const
+ bool operator!= ( const QKeySequence & other ) const
+ bool operator< ( const QKeySequence & other ) const
+ bool operator<= ( const QKeySequence & other ) const
+ QKeySequence & operator= ( const QKeySequence & other )
+ bool operator== ( const QKeySequence & other ) const
+ bool operator> ( const QKeySequence & other ) const
+ bool operator>= ( const QKeySequence & other ) const
+ int operator[] ( uint index ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QKeySequence fromString ( const QString & str, SequenceFormat format = PortableText )
+ QList<QKeySequence> keyBindings ( StandardKey key )
+ QKeySequence mnemonic ( const QString & text )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & stream, const QKeySequence & sequence )
+ QDataStream & operator>> ( QDataStream & stream, QKeySequence & sequence )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QKeySequence
+name
+SequenceFormat
+key
+NativeText
+PortableText
+public_flag
+true
+class_name
+QKeySequence
+name
+SequenceMatch
+key
+NoMatch
+PartialMatch
+ExactMatch
+public_flag
+true
+class_name
+QKeySequence
+name
+StandardKey
+key
+AddTab
+Back
+Bold
+Close
+Copy
+Cut
+Delete
+DeleteEndOfLine
+DeleteEndOfWord
+DeleteStartOfWord
+Find
+FindNext
+FindPrevious
+Forward
+HelpContents
+InsertLineSeparator
+InsertParagraphSeparator
+Italic
+MoveToEndOfBlock
+MoveToEndOfDocument
+MoveToEndOfLine
+MoveToNextChar
+MoveToNextLine
+MoveToNextPage
+MoveToNextWord
+MoveToPreviousChar
+MoveToPreviousLine
+MoveToPreviousPage
+MoveToPreviousWord
+MoveToStartOfBlock
+MoveToStartOfDocument
+MoveToStartOfLine
+New
+NextChild
+Open
+Paste
+Preferences
+PreviousChild
+Print
+Quit
+Redo
+Refresh
+Replace
+SaveAs
+Save
+SelectAll
+SelectEndOfBlock
+SelectEndOfDocument
+SelectEndOfLine
+SelectNextChar
+SelectNextLine
+SelectNextPage
+SelectNextWord
+SelectPreviousChar
+SelectPreviousLine
+SelectPreviousPage
+SelectPreviousWord
+SelectStartOfBlock
+SelectStartOfDocument
+SelectStartOfLine
+Underline
+Undo
+UnknownKey
+WhatsThis
+ZoomIn
+ZoomOut
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

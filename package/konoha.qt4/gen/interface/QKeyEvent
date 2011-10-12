@@ -1,0 +1,65 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qkeyevent.html
+
+output_urn
+QKeyEvent
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QKeyEvent ( Type type, int key, Qt::KeyboardModifiers modifiers, const QString & text = QString(), bool autorep = false, ushort count = 1 )
+ int count () const
+ bool isAutoRepeat () const
+ int key () const
+ bool matches ( QKeySequence::StandardKey key ) const
+ Qt::KeyboardModifiers modifiers () const
+ quint32 nativeModifiers () const
+ quint32 nativeScanCode () const
+ quint32 nativeVirtualKey () const
+ QString text () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ bool operator== ( QKeyEvent * e, QKeySequence::StandardKey key )
+ bool operator== ( QKeySequence::StandardKey key, QKeyEvent * e )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+434
+
+parent_name
+QInputEvent
+

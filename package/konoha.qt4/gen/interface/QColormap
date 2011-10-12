@@ -1,0 +1,73 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qcolormap.html
+
+output_urn
+QColormap
+
+inherits
+
+public_types
+ enum Mode { Direct, Indexed, Gray }
+
+properties
+
+public_functions
+QColormap ( const QColormap & colormap )
+~QColormap ()
+ const QColor colorAt ( uint pixel ) const
+ const QVector<QColor> colormap () const
+ int depth () const
+ Mode mode () const
+ uint pixel ( const QColor & color ) const
+ int size () const
+ QColormap & operator= ( const QColormap & colormap )
+
+public_slots
+
+signals
+
+static_public_members
+ HPALETTE hPal ()
+ QColormap instance ( int screen = -1 )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QColormap
+name
+Mode
+key
+Direct
+Indexed
+Gray
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

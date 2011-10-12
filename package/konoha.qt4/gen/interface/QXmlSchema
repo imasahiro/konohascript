@@ -1,0 +1,66 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qxmlschema.html
+
+output_urn
+QXmlSchema
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QXmlSchema ()
+QXmlSchema ( const QXmlSchema & other )
+~QXmlSchema ()
+ QUrl documentUri () const
+ bool isValid () const
+ bool load ( const QUrl & source )
+ bool load ( QIODevice * source, const QUrl & documentUri = QUrl() )
+ bool load ( const QByteArray & data, const QUrl & documentUri = QUrl() )
+ QAbstractMessageHandler * messageHandler () const
+ QXmlNamePool namePool () const
+ QNetworkAccessManager * networkAccessManager () const
+ void setMessageHandler ( QAbstractMessageHandler * handler )
+ void setNetworkAccessManager ( QNetworkAccessManager * manager )
+ void setUriResolver ( const QAbstractUriResolver * resolver )
+ const QAbstractUriResolver * uriResolver () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

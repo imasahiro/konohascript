@@ -1,0 +1,70 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qvalidator.html
+
+output_urn
+QValidator
+
+inherits
+
+public_types
+ enum State { Invalid, Intermediate, Acceptable }
+
+properties
+
+public_functions
+QValidator ( QObject * parent = 0 )
+~QValidator ()
+ virtual void fixup ( QString & input ) const
+ QLocale locale () const
+ void setLocale ( const QLocale & locale )
+ virtual State validate ( QString & input, int & pos ) const = 0
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QValidator
+name
+State
+key
+Invalid
+Intermediate
+Acceptable
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

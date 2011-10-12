@@ -1,0 +1,98 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qvector3d.html
+
+output_urn
+QVector3D
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QVector3D ()
+QVector3D ( qreal xpos, qreal ypos, qreal zpos )
+QVector3D ( const QPoint & point )
+QVector3D ( const QPointF & point )
+QVector3D ( const QVector2D & vector )
+QVector3D ( const QVector2D & vector, qreal zpos )
+QVector3D ( const QVector4D & vector )
+ qreal distanceToLine ( const QVector3D & point, const QVector3D & direction ) const
+ qreal distanceToPlane ( const QVector3D & plane, const QVector3D & normal ) const
+ qreal distanceToPlane ( const QVector3D & plane1, const QVector3D & plane2, const QVector3D & plane3 ) const
+ bool isNull () const
+ qreal length () const
+ qreal lengthSquared () const
+ void normalize ()
+ QVector3D normalized () const
+ void setX ( qreal x )
+ void setY ( qreal y )
+ void setZ ( qreal z )
+ QPoint toPoint () const
+ QPointF toPointF () const
+ QVector2D toVector2D () const
+ QVector4D toVector4D () const
+ qreal x () const
+ qreal y () const
+ qreal z () const
+operator QVariant () const
+ QVector3D & operator*= ( qreal factor )
+ QVector3D & operator*= ( const QVector3D & vector )
+ QVector3D & operator+= ( const QVector3D & vector )
+ QVector3D & operator-= ( const QVector3D & vector )
+ QVector3D & operator/= ( qreal divisor )
+
+public_slots
+
+signals
+
+static_public_members
+ QVector3D crossProduct ( const QVector3D & v1, const QVector3D & v2 )
+ qreal dotProduct ( const QVector3D & v1, const QVector3D & v2 )
+ QVector3D normal ( const QVector3D & v1, const QVector3D & v2 )
+ QVector3D normal ( const QVector3D & v1, const QVector3D & v2, const QVector3D & v3 )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ bool qFuzzyCompare ( const QVector3D & v1, const QVector3D & v2 )
+ bool operator!= ( const QVector3D & v1, const QVector3D & v2 )
+ const QVector3D operator* ( qreal factor, const QVector3D & vector )
+ const QVector3D operator* ( const QVector3D & vector, qreal factor )
+ const QVector3D operator* ( const QVector3D & v1, const QVector3D & v2 )
+ const QVector3D operator+ ( const QVector3D & v1, const QVector3D & v2 )
+ const QVector3D operator- ( const QVector3D & v1, const QVector3D & v2 )
+ const QVector3D operator- ( const QVector3D & vector )
+ const QVector3D operator/ ( const QVector3D & vector, qreal divisor )
+ QDataStream & operator<< ( QDataStream & stream, const QVector3D & vector )
+ bool operator== ( const QVector3D & v1, const QVector3D & v2 )
+ QDataStream & operator>> ( QDataStream & stream, QVector3D & vector )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

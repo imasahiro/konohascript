@@ -1,0 +1,283 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qlistview.html
+
+output_urn
+QListView
+
+inherits
+
+public_types
+ enum Flow { LeftToRight, TopToBottom }
+ enum LayoutMode { SinglePass, Batched }
+ enum Movement { Static, Free, Snap }
+ enum ResizeMode { Fixed, Adjust }
+ enum ViewMode { ListMode, IconMode }
+
+properties
+batchSize : int
+flow : Flow
+gridSize : QSize
+isWrapping : bool
+layoutMode : LayoutMode
+modelColumn : int
+movement : Movement
+
+public_functions
+QListView ( QWidget * parent = 0 )
+~QListView ()
+ int batchSize () const
+ void clearPropertyFlags ()
+ Flow flow () const
+ QSize gridSize () const
+ bool isRowHidden ( int row ) const
+ bool isSelectionRectVisible () const
+ bool isWrapping () const
+ LayoutMode layoutMode () const
+ int modelColumn () const
+ Movement movement () const
+ ResizeMode resizeMode () const
+ void setBatchSize ( int batchSize )
+ void setFlow ( Flow flow )
+ void setGridSize ( const QSize & size )
+ void setLayoutMode ( LayoutMode mode )
+ void setModelColumn ( int column )
+ void setMovement ( Movement movement )
+ void setResizeMode ( ResizeMode mode )
+ void setRowHidden ( int row, bool hide )
+ void setSelectionRectVisible ( bool show )
+ void setSpacing ( int space )
+ void setUniformItemSizes ( bool enable )
+ void setViewMode ( ViewMode mode )
+ void setWordWrap ( bool on )
+ void setWrapping ( bool enable )
+ int spacing () const
+ bool uniformItemSizes () const
+ ViewMode viewMode () const
+ bool wordWrap () const
+
+public_slots
+
+signals
+ void indexesMoved ( const QModelIndexList & indexes )
+
+static_public_members
+
+protected_functions
+ QRect rectForIndex ( const QModelIndex & index ) const
+ void setPositionForIndex ( const QPoint & position, const QModelIndex & index )
+
+reimplemented_public_functions
+ virtual QModelIndex indexAt ( const QPoint & p ) const
+ virtual void scrollTo ( const QModelIndex & index, ScrollHint hint = EnsureVisible )
+ virtual QRect visualRect ( const QModelIndex & index ) const
+
+reimplemented_protected_functions
+ virtual void currentChanged ( const QModelIndex & current, const QModelIndex & previous )
+ virtual void dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight )
+ virtual void dragLeaveEvent ( QDragLeaveEvent * e )
+ virtual void dragMoveEvent ( QDragMoveEvent * e )
+ virtual void dropEvent ( QDropEvent * e )
+ virtual bool event ( QEvent * e )
+ virtual int horizontalOffset () const
+ virtual bool isIndexHidden ( const QModelIndex & index ) const
+ virtual void mouseMoveEvent ( QMouseEvent * e )
+ virtual void mouseReleaseEvent ( QMouseEvent * e )
+ virtual QModelIndex moveCursor ( CursorAction cursorAction, Qt::KeyboardModifiers modifiers )
+ virtual void paintEvent ( QPaintEvent * e )
+ virtual void resizeEvent ( QResizeEvent * e )
+ virtual void rowsAboutToBeRemoved ( const QModelIndex & parent, int start, int end )
+ virtual void rowsInserted ( const QModelIndex & parent, int start, int end )
+ virtual QModelIndexList selectedIndexes () const
+ virtual void selectionChanged ( const QItemSelection & selected, const QItemSelection & deselected )
+ virtual void setSelection ( const QRect & rect, QItemSelectionModel::SelectionFlags command )
+ virtual void startDrag ( Qt::DropActions supportedActions )
+ virtual void timerEvent ( QTimerEvent * e )
+ virtual void updateGeometries ()
+ virtual int verticalOffset () const
+ virtual QStyleOptionViewItem viewOptions () const
+ virtual QRegion visualRegionForSelection ( const QItemSelection & selection ) const
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+EditTriggers
+
+enums
+class_name
+QListView
+name
+Flow
+key
+LeftToRight
+TopToBottom
+public_flag
+true
+class_name
+QListView
+name
+LayoutMode
+key
+SinglePass
+Batched
+public_flag
+true
+class_name
+QListView
+name
+Movement
+key
+Static
+Free
+Snap
+public_flag
+true
+class_name
+QListView
+name
+ResizeMode
+key
+Fixed
+Adjust
+public_flag
+true
+class_name
+QListView
+name
+ViewMode
+key
+ListMode
+IconMode
+public_flag
+true
+
+parent_enums
+class_name
+QAbstractItemView
+name
+CursorAction
+key
+MoveUp
+MoveDown
+MoveLeft
+MoveRight
+MoveHome
+MoveEnd
+MovePageUp
+MovePageDown
+MoveNext
+MovePrevious
+public_flag
+false
+class_name
+QAbstractItemView
+name
+DragDropMode
+key
+NoDragDrop
+DragOnly
+DropOnly
+DragDrop
+InternalMove
+public_flag
+true
+class_name
+QAbstractItemView
+name
+DropIndicatorPosition
+key
+OnItem
+AboveItem
+BelowItem
+OnViewport
+public_flag
+false
+class_name
+QAbstractItemView
+name
+EditTrigger
+key
+NoEditTriggers
+CurrentChanged
+DoubleClicked
+SelectedClicked
+EditKeyPressed
+AnyKeyPressed
+AllEditTriggers
+public_flag
+true
+class_name
+QAbstractItemView
+name
+ScrollHint
+key
+EnsureVisible
+PositionAtTop
+PositionAtBottom
+PositionAtCenter
+public_flag
+true
+class_name
+QAbstractItemView
+name
+ScrollMode
+key
+ScrollPerItem
+ScrollPerPixel
+public_flag
+true
+class_name
+QAbstractItemView
+name
+SelectionBehavior
+key
+SelectItems
+SelectRows
+SelectColumns
+public_flag
+true
+class_name
+QAbstractItemView
+name
+SelectionMode
+key
+SingleSelection
+ContiguousSelection
+ExtendedSelection
+MultiSelection
+NoSelection
+public_flag
+true
+class_name
+QAbstractItemView
+name
+State
+key
+NoState
+DraggingState
+DragSelectingState
+EditingState
+ExpandingState
+CollapsingState
+AnimatingState
+public_flag
+false
+
+parent_index
+808
+
+parent_name
+QAbstractItemView
+

@@ -1,0 +1,64 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextdocumentfragment.html
+
+output_urn
+QTextDocumentFragment
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QTextDocumentFragment ()
+QTextDocumentFragment ( const QTextDocument * document )
+QTextDocumentFragment ( const QTextCursor & cursor )
+QTextDocumentFragment ( const QTextDocumentFragment & other )
+~QTextDocumentFragment ()
+ bool isEmpty () const
+ QString toHtml ( const QByteArray & encoding ) const
+ QString toHtml () const
+ QString toPlainText () const
+ QTextDocumentFragment & operator= ( const QTextDocumentFragment & other )
+
+public_slots
+
+signals
+
+static_public_members
+ QTextDocumentFragment fromHtml ( const QString & text )
+ QTextDocumentFragment fromHtml ( const QString & text, const QTextDocument * resourceProvider )
+ QTextDocumentFragment fromPlainText ( const QString & plainText )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

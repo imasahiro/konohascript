@@ -1,0 +1,185 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextcursor.html
+
+output_urn
+QTextCursor
+
+inherits
+
+public_types
+ enum MoveMode { MoveAnchor, KeepAnchor }
+ enum MoveOperation { NoMove, Start, StartOfLine, StartOfBlock, ..., PreviousRow }
+ enum SelectionType { Document, BlockUnderCursor, LineUnderCursor, WordUnderCursor }
+
+properties
+
+public_functions
+QTextCursor ()
+QTextCursor ( QTextDocument * document )
+QTextCursor ( QTextFrame * frame )
+QTextCursor ( const QTextBlock & block )
+QTextCursor ( const QTextCursor & cursor )
+~QTextCursor ()
+ int anchor () const
+ bool atBlockEnd () const
+ bool atBlockStart () const
+ bool atEnd () const
+ bool atStart () const
+ void beginEditBlock ()
+ QTextBlock block () const
+ QTextCharFormat blockCharFormat () const
+ QTextBlockFormat blockFormat () const
+ int blockNumber () const
+ QTextCharFormat charFormat () const
+ void clearSelection ()
+ int columnNumber () const
+ QTextList * createList ( const QTextListFormat & format )
+ QTextList * createList ( QTextListFormat::Style style )
+ QTextFrame * currentFrame () const
+ QTextList * currentList () const
+ QTextTable * currentTable () const
+ void deleteChar ()
+ void deletePreviousChar ()
+ QTextDocument * document () const
+ void endEditBlock ()
+ bool hasComplexSelection () const
+ bool hasSelection () const
+ void insertBlock ()
+ void insertBlock ( const QTextBlockFormat & format )
+ void insertBlock ( const QTextBlockFormat & format, const QTextCharFormat & charFormat )
+ void insertFragment ( const QTextDocumentFragment & fragment )
+ QTextFrame * insertFrame ( const QTextFrameFormat & format )
+ void insertHtml ( const QString & html )
+ void insertImage ( const QTextImageFormat & format )
+ void insertImage ( const QTextImageFormat & format, QTextFrameFormat::Position alignment )
+ void insertImage ( const QString & name )
+ void insertImage ( const QImage & image, const QString & name = QString() )
+ QTextList * insertList ( const QTextListFormat & format )
+ QTextList * insertList ( QTextListFormat::Style style )
+ QTextTable * insertTable ( int rows, int columns, const QTextTableFormat & format )
+ QTextTable * insertTable ( int rows, int columns )
+ void insertText ( const QString & text )
+ void insertText ( const QString & text, const QTextCharFormat & format )
+ bool isCopyOf ( const QTextCursor & other ) const
+ bool isNull () const
+ void joinPreviousEditBlock ()
+ bool keepPositionOnInsert () const
+ void mergeBlockCharFormat ( const QTextCharFormat & modifier )
+ void mergeBlockFormat ( const QTextBlockFormat & modifier )
+ void mergeCharFormat ( const QTextCharFormat & modifier )
+ bool movePosition ( MoveOperation operation, MoveMode mode = MoveAnchor, int n = 1 )
+ int position () const
+ int positionInBlock () const
+ void removeSelectedText ()
+ void select ( SelectionType selection )
+ void selectedTableCells ( int * firstRow, int * numRows, int * firstColumn, int * numColumns ) const
+ QString selectedText () const
+ QTextDocumentFragment selection () const
+ int selectionEnd () const
+ int selectionStart () const
+ void setBlockCharFormat ( const QTextCharFormat & format )
+ void setBlockFormat ( const QTextBlockFormat & format )
+ void setCharFormat ( const QTextCharFormat & format )
+ void setKeepPositionOnInsert ( bool b )
+ void setPosition ( int pos, MoveMode m = MoveAnchor )
+ void setVerticalMovementX ( int x )
+ void setVisualNavigation ( bool b )
+ int verticalMovementX () const
+ bool visualNavigation () const
+ bool operator!= ( const QTextCursor & other ) const
+ bool operator< ( const QTextCursor & other ) const
+ bool operator<= ( const QTextCursor & other ) const
+ QTextCursor & operator= ( const QTextCursor & cursor )
+ bool operator== ( const QTextCursor & other ) const
+ bool operator> ( const QTextCursor & other ) const
+ bool operator>= ( const QTextCursor & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QTextCursor
+name
+MoveMode
+key
+MoveAnchor
+KeepAnchor
+public_flag
+true
+class_name
+QTextCursor
+name
+MoveOperation
+key
+NoMove
+Start
+StartOfLine
+StartOfBlock
+StartOfWord
+PreviousBlock
+PreviousCharacter
+PreviousWord
+Up
+Left
+WordLeft
+End
+EndOfLine
+EndOfWord
+EndOfBlock
+NextBlock
+NextCharacter
+NextWord
+Down
+Right
+WordRight
+NextCell
+PreviousCell
+NextRow
+PreviousRow
+public_flag
+true
+class_name
+QTextCursor
+name
+SelectionType
+key
+Document
+BlockUnderCursor
+LineUnderCursor
+WordUnderCursor
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

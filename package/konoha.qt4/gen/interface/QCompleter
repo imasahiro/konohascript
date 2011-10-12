@@ -1,0 +1,120 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qcompleter.html
+
+output_urn
+QCompleter
+
+inherits
+
+public_types
+ enum CompletionMode { PopupCompletion, InlineCompletion, UnfilteredPopupCompletion }
+ enum ModelSorting { UnsortedModel, CaseSensitivelySortedModel, CaseInsensitivelySortedModel }
+
+properties
+caseSensitivity : Qt::CaseSensitivity
+completionColumn : int
+completionMode : CompletionMode
+completionPrefix : QString
+
+public_functions
+QCompleter ( QObject * parent = 0 )
+QCompleter ( QAbstractItemModel * model, QObject * parent = 0 )
+QCompleter ( const QStringList & list, QObject * parent = 0 )
+~QCompleter ()
+ Qt::CaseSensitivity caseSensitivity () const
+ int completionColumn () const
+ int completionCount () const
+ CompletionMode completionMode () const
+ QAbstractItemModel * completionModel () const
+ QString completionPrefix () const
+ int completionRole () const
+ QString currentCompletion () const
+ QModelIndex currentIndex () const
+ int currentRow () const
+ int maxVisibleItems () const
+ QAbstractItemModel * model () const
+ ModelSorting modelSorting () const
+ virtual QString pathFromIndex ( const QModelIndex & index ) const
+ QAbstractItemView * popup () const
+ void setCaseSensitivity ( Qt::CaseSensitivity caseSensitivity )
+ void setCompletionColumn ( int column )
+ void setCompletionMode ( CompletionMode mode )
+ void setCompletionRole ( int role )
+ bool setCurrentRow ( int row )
+ void setMaxVisibleItems ( int maxItems )
+ void setModel ( QAbstractItemModel * model )
+ void setModelSorting ( ModelSorting sorting )
+ void setPopup ( QAbstractItemView * popup )
+ void setWidget ( QWidget * widget )
+ virtual QStringList splitPath ( const QString & path ) const
+ QWidget * widget () const
+ bool wrapAround () const
+
+public_slots
+ void complete ( const QRect & rect = QRect() )
+ void setCompletionPrefix ( const QString & prefix )
+ void setWrapAround ( bool wrap )
+
+signals
+ void activated ( const QString & text )
+ void activated ( const QModelIndex & index )
+ void highlighted ( const QString & text )
+ void highlighted ( const QModelIndex & index )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * ev )
+ virtual bool eventFilter ( QObject * o, QEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QCompleter
+name
+CompletionMode
+key
+PopupCompletion
+InlineCompletion
+UnfilteredPopupCompletion
+public_flag
+true
+class_name
+QCompleter
+name
+ModelSorting
+key
+UnsortedModel
+CaseSensitivelySortedModel
+CaseInsensitivelySortedModel
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

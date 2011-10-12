@@ -1,0 +1,61 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qradiobutton.html
+
+output_urn
+QRadioButton
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QRadioButton ( QWidget * parent = 0 )
+QRadioButton ( const QString & text, QWidget * parent = 0 )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ void initStyleOption ( QStyleOptionButton * option ) const
+
+reimplemented_public_functions
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+ virtual bool hitButton ( const QPoint & pos ) const
+ virtual void mouseMoveEvent ( QMouseEvent * e )
+ virtual void paintEvent ( QPaintEvent * )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+238
+
+parent_name
+QAbstractButton
+

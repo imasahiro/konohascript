@@ -1,0 +1,72 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsocketnotifier.html
+
+output_urn
+QSocketNotifier
+
+inherits
+
+public_types
+ enum Type { Read, Write, Exception }
+
+properties
+
+public_functions
+QSocketNotifier ( int socket, Type type, QObject * parent = 0 )
+~QSocketNotifier ()
+ bool isEnabled () const
+ int socket () const
+ Type type () const
+
+public_slots
+ void setEnabled ( bool enable )
+
+signals
+ void activated ( int socket )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QSocketNotifier
+name
+Type
+key
+Read
+Write
+Exception
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

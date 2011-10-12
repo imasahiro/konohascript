@@ -1,0 +1,74 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgesturerecognizer.html
+
+output_urn
+QGestureRecognizer
+
+inherits
+
+public_types
+ flags Result
+ enum ResultFlag { Ignore, MayBeGesture, TriggerGesture, FinishGesture, CancelGesture, ConsumeEventHint }
+
+properties
+
+public_functions
+QGestureRecognizer ()
+ virtual ~QGestureRecognizer ()
+ virtual QGesture * create ( QObject * target )
+ virtual Result recognize ( QGesture * gesture, QObject * watched, QEvent * event ) = 0
+ virtual void reset ( QGesture * gesture )
+
+public_slots
+
+signals
+
+static_public_members
+ Qt::GestureType registerRecognizer ( QGestureRecognizer * recognizer )
+ void unregisterRecognizer ( Qt::GestureType type )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+Result
+
+parent_typedefed_objects
+
+enums
+class_name
+QGestureRecognizer
+name
+ResultFlag
+key
+Ignore
+MayBeGesture
+TriggerGesture
+FinishGesture
+CancelGesture
+ConsumeEventHint
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

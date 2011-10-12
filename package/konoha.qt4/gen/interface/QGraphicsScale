@@ -1,0 +1,73 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgraphicsscale.html
+
+output_urn
+QGraphicsScale
+
+inherits
+
+public_types
+
+properties
+origin : QVector3D
+xScale : qreal
+yScale : qreal
+zScale : qreal
+
+public_functions
+QGraphicsScale ( QObject * parent = 0 )
+~QGraphicsScale ()
+ QVector3D origin () const
+ void setOrigin ( const QVector3D & point )
+ void setXScale ( qreal )
+ void setYScale ( qreal )
+ void setZScale ( qreal )
+ qreal xScale () const
+ qreal yScale () const
+ qreal zScale () const
+
+public_slots
+
+signals
+ void originChanged ()
+ void scaleChanged ()
+ void xScaleChanged ()
+ void yScaleChanged ()
+ void zScaleChanged ()
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void applyTo ( QMatrix4x4 * matrix ) const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+352
+
+parent_name
+QGraphicsTransform
+

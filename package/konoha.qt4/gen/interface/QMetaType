@@ -1,0 +1,137 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmetatype.html
+
+output_urn
+QMetaType
+
+inherits
+
+public_types
+ enum Type { Void, Bool, Int, UInt, ..., User }
+
+properties
+
+public_functions
+
+public_slots
+
+signals
+
+static_public_members
+ void * construct ( int type, const void * copy = 0 )
+ void destroy ( int type, void * data )
+ bool isRegistered ( int type )
+ bool load ( QDataStream & stream, int type, void * data )
+ bool save ( QDataStream & stream, int type, const void * data )
+ int type ( const char * typeName )
+ const char * typeName ( int type )
+ void unregisterType ( const char * typeName )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ int qMetaTypeId ()
+ int qRegisterMetaType ( const char * typeName )
+ int qRegisterMetaType ()
+ void qRegisterMetaTypeStreamOperators ( const char * typeName )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QMetaType
+name
+Type
+key
+Void
+Bool
+Int
+UInt
+Double
+QChar
+QString
+QByteArray
+VoidStar
+Long
+LongLong
+Short
+Char
+ULong
+ULongLong
+UShort
+UChar
+Float
+QObjectStar
+QWidgetStar
+QVariant
+QColorGroup
+QCursor
+QDate
+QSize
+QTime
+QVariantList
+QPolygon
+QColor
+QSizeF
+QRectF
+QLine
+QTextLength
+QStringList
+QVariantMap
+QVariantHash
+QIcon
+QPen
+QLineF
+QTextFormat
+QRect
+QPoint
+QUrl
+QRegExp
+QDateTime
+QPointF
+QPalette
+QFont
+QBrush
+QRegion
+QBitArray
+QImage
+QKeySequence
+QSizePolicy
+QPixmap
+QLocale
+QBitmap
+QMatrix
+QTransform
+QMatrix4x4
+QVector2D
+QVector3D
+QVector4D
+QQuaternion
+QEasingCurve
+User
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

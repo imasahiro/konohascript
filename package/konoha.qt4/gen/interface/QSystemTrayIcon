@@ -1,0 +1,101 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsystemtrayicon.html
+
+output_urn
+QSystemTrayIcon
+
+inherits
+
+public_types
+ enum ActivationReason { Unknown, Context, DoubleClick, Trigger, MiddleClick }
+ enum MessageIcon { NoIcon, Information, Warning, Critical }
+
+properties
+icon : QIcon
+toolTip : QString
+visible : bool
+
+public_functions
+QSystemTrayIcon ( QObject * parent = 0 )
+QSystemTrayIcon ( const QIcon & icon, QObject * parent = 0 )
+~QSystemTrayIcon ()
+ QMenu * contextMenu () const
+ QRect geometry () const
+ QIcon icon () const
+ bool isVisible () const
+ void setContextMenu ( QMenu * menu )
+ void setIcon ( const QIcon & icon )
+ void setToolTip ( const QString & tip )
+ void showMessage ( const QString & title, const QString & message, MessageIcon icon = Information, int millisecondsTimeoutHint = 10000 )
+ QString toolTip () const
+
+public_slots
+ void hide ()
+ void setVisible ( bool visible )
+ void show ()
+
+signals
+ void activated ( QSystemTrayIcon::ActivationReason reason )
+ void messageClicked ()
+
+static_public_members
+ bool isSystemTrayAvailable ()
+ bool supportsMessages ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QSystemTrayIcon
+name
+ActivationReason
+key
+Unknown
+Context
+DoubleClick
+Trigger
+MiddleClick
+public_flag
+true
+class_name
+QSystemTrayIcon
+name
+MessageIcon
+key
+NoIcon
+Information
+Warning
+Critical
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

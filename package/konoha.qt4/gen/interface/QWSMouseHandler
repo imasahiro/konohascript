@@ -1,0 +1,62 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwsmousehandler.html
+
+output_urn
+QWSMouseHandler
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QWSMouseHandler ( const QString & driver = QString(), const QString & device = QString() )
+ virtual ~QWSMouseHandler ()
+ virtual void calibrate ( const QWSPointerCalibrationData * data )
+ virtual void clearCalibration ()
+ virtual void getCalibration ( QWSPointerCalibrationData * data ) const
+ void limitToScreen ( QPoint & position )
+ void mouseChanged ( const QPoint & position, int state, int wheel = 0 )
+ const QPoint & pos () const
+ virtual void resume () = 0
+ void setScreen ( const QScreen * screen )
+ virtual void suspend () = 0
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+true
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

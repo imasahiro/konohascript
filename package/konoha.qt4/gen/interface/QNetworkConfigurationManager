@@ -1,0 +1,83 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qnetworkconfigurationmanager.html
+
+output_urn
+QNetworkConfigurationManager
+
+inherits
+
+public_types
+ flags Capabilities
+ enum Capability { CanStartAndStopInterfaces, DirectConnectionRouting, SystemSessionSupport, ApplicationLevelRoaming, ..., NetworkSessionRequired }
+
+properties
+
+public_functions
+QNetworkConfigurationManager ( QObject * parent = 0 )
+ virtual ~QNetworkConfigurationManager ()
+ QList<QNetworkConfiguration> allConfigurations ( QNetworkConfiguration::StateFlags filter = 0 ) const
+ QNetworkConfigurationManager::Capabilities capabilities () const
+ QNetworkConfiguration configurationFromIdentifier ( const QString & identifier ) const
+ QNetworkConfiguration defaultConfiguration () const
+ bool isOnline () const
+ void updateConfigurations ()
+
+public_slots
+
+signals
+ void configurationAdded ( const QNetworkConfiguration & config )
+ void configurationChanged ( const QNetworkConfiguration & config )
+ void configurationRemoved ( const QNetworkConfiguration & configuration )
+ void onlineStateChanged ( bool isOnline )
+ void updateCompleted ()
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+Capabilities
+
+parent_typedefed_objects
+
+enums
+class_name
+QNetworkConfigurationManager
+name
+Capability
+key
+CanStartAndStopInterfaces
+DirectConnectionRouting
+SystemSessionSupport
+ApplicationLevelRoaming
+ForcedRoaming
+DataStatistics
+NetworkSessionRequired
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

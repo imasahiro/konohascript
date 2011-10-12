@@ -1,0 +1,92 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtexttablecellformat.html
+
+output_urn
+QTextTableCellFormat
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QTextTableCellFormat ()
+ qreal bottomPadding () const
+ bool isValid () const
+ qreal leftPadding () const
+ qreal rightPadding () const
+ void setBottomPadding ( qreal padding )
+ void setLeftPadding ( qreal padding )
+ void setPadding ( qreal padding )
+ void setRightPadding ( qreal padding )
+ void setTopPadding ( qreal padding )
+ qreal topPadding () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QTextCharFormat
+name
+UnderlineStyle
+key
+NoUnderline
+SingleUnderline
+DashUnderline
+DotLine
+DashDotLine
+DashDotDotLine
+WaveUnderline
+SpellCheckUnderline
+public_flag
+true
+class_name
+QTextCharFormat
+name
+VerticalAlignment
+key
+AlignNormal
+AlignSuperScript
+AlignSubScript
+AlignMiddle
+AlignBottom
+AlignTop
+public_flag
+true
+
+parent_index
+743
+
+parent_name
+QTextCharFormat
+

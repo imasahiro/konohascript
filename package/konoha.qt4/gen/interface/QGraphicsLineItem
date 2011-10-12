@@ -1,0 +1,154 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgraphicslineitem.html
+
+output_urn
+QGraphicsLineItem
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QGraphicsLineItem ( QGraphicsItem * parent = 0 )
+QGraphicsLineItem ( const QLineF & line, QGraphicsItem * parent = 0 )
+QGraphicsLineItem ( qreal x1, qreal y1, qreal x2, qreal y2, QGraphicsItem * parent = 0 )
+~QGraphicsLineItem ()
+ QLineF line () const
+ QPen pen () const
+ void setLine ( const QLineF & line )
+ void setLine ( qreal x1, qreal y1, qreal x2, qreal y2 )
+ void setPen ( const QPen & pen )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QRectF boundingRect () const
+ virtual bool contains ( const QPointF & point ) const
+ virtual bool isObscuredBy ( const QGraphicsItem * item ) const
+ virtual QPainterPath opaqueArea () const
+ virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 )
+ virtual QPainterPath shape () const
+ virtual int type () const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+GraphicsItemFlags
+
+enums
+
+parent_enums
+class_name
+QGraphicsItem
+name
+CacheMode
+key
+NoCache
+ItemCoordinateCache
+DeviceCoordinateCache
+public_flag
+true
+class_name
+QGraphicsItem
+name
+GraphicsItemChange
+key
+ItemEnabledChange
+ItemEnabledHasChanged
+ItemMatrixChange
+ItemPositionChange
+ItemPositionHasChanged
+ItemTransformChange
+ItemTransformHasChanged
+ItemRotationChange
+ItemRotationHasChanged
+ItemScaleChange
+ItemScaleHasChanged
+ItemTransformOriginPointChange
+ItemTransformOriginPointHasChanged
+ItemSelectedChange
+ItemSelectedHasChanged
+ItemVisibleChange
+ItemVisibleHasChanged
+ItemParentChange
+ItemParentHasChanged
+ItemChildAddedChange
+ItemChildRemovedChange
+ItemSceneChange
+ItemSceneHasChanged
+ItemCursorChange
+ItemCursorHasChanged
+ItemToolTipChange
+ItemToolTipHasChanged
+ItemFlagsChange
+ItemFlagsHaveChanged
+ItemZValueChange
+ItemZValueHasChanged
+ItemOpacityChange
+ItemOpacityHasChanged
+ItemScenePositionHasChanged
+public_flag
+true
+class_name
+QGraphicsItem
+name
+GraphicsItemFlag
+key
+ItemIsMovable
+ItemIsSelectable
+ItemIsFocusable
+ItemClipsToShape
+ItemClipsChildrenToShape
+ItemIgnoresTransformations
+ItemIgnoresParentOpacity
+ItemDoesntPropagateOpacityToChildren
+ItemStacksBehindParent
+ItemUsesExtendedStyleOption
+ItemHasNoContents
+ItemSendsGeometryChanges
+ItemAcceptsInputMethod
+ItemNegativeZStacksBehindParent
+ItemIsPanel
+ItemSendsScenePositionChanges
+public_flag
+true
+class_name
+QGraphicsItem
+name
+PanelModality
+key
+NonModal
+PanelModal
+SceneModal
+public_flag
+true
+
+parent_index
+319
+
+parent_name
+QGraphicsItem
+

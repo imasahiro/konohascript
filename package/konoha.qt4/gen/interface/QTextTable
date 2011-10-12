@@ -1,0 +1,74 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtexttable.html
+
+output_urn
+QTextTable
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+ void appendColumns ( int count )
+ void appendRows ( int count )
+ QTextTableCell cellAt ( int row, int column ) const
+ QTextTableCell cellAt ( int position ) const
+ QTextTableCell cellAt ( const QTextCursor & cursor ) const
+ int columns () const
+ QTextTableFormat format () const
+ void insertColumns ( int index, int columns )
+ void insertRows ( int index, int rows )
+ void mergeCells ( int row, int column, int numRows, int numCols )
+ void mergeCells ( const QTextCursor & cursor )
+ void removeColumns ( int index, int columns )
+ void removeRows ( int index, int rows )
+ void resize ( int rows, int columns )
+ QTextCursor rowEnd ( const QTextCursor & cursor ) const
+ QTextCursor rowStart ( const QTextCursor & cursor ) const
+ int rows () const
+ void setFormat ( const QTextTableFormat & format )
+ void splitCell ( int row, int column, int numRows, int numCols )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+iterator
+Iterator
+
+enums
+
+parent_enums
+
+parent_index
+754
+
+parent_name
+QTextFrame
+

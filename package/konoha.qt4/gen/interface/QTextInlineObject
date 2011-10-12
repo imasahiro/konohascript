@@ -1,0 +1,65 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextinlineobject.html
+
+output_urn
+QTextInlineObject
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QTextInlineObject ( int i, QTextEngine * e )
+ qreal ascent () const
+ qreal descent () const
+ QTextFormat format () const
+ int formatIndex () const
+ qreal height () const
+ bool isValid () const
+ QRectF rect () const
+ void setAscent ( qreal a )
+ void setDescent ( qreal d )
+ void setWidth ( qreal w )
+ Qt::LayoutDirection textDirection () const
+ int textPosition () const
+ qreal width () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

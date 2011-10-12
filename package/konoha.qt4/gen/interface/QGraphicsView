@@ -1,0 +1,231 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgraphicsview.html
+
+output_urn
+QGraphicsView
+
+inherits
+
+public_types
+ flags CacheMode
+ enum CacheModeFlag { CacheNone, CacheBackground }
+ enum DragMode { NoDrag, ScrollHandDrag, RubberBandDrag }
+ enum OptimizationFlag { DontClipPainter, DontSavePainterState, DontAdjustForAntialiasing, IndirectPainting }
+ flags OptimizationFlags
+ enum ViewportAnchor { NoAnchor, AnchorViewCenter, AnchorUnderMouse }
+ enum ViewportUpdateMode { FullViewportUpdate, MinimalViewportUpdate, SmartViewportUpdate, BoundingRectViewportUpdate, NoViewportUpdate }
+
+properties
+alignment : Qt::Alignment
+backgroundBrush : QBrush
+cacheMode : CacheMode
+dragMode : DragMode
+foregroundBrush : QBrush
+interactive : bool
+optimizationFlags : OptimizationFlags
+
+public_functions
+QGraphicsView ( QWidget * parent = 0 )
+QGraphicsView ( QGraphicsScene * scene, QWidget * parent = 0 )
+~QGraphicsView ()
+ Qt::Alignment alignment () const
+ QBrush backgroundBrush () const
+ CacheMode cacheMode () const
+ void centerOn ( const QPointF & pos )
+ void centerOn ( qreal x, qreal y )
+ void centerOn ( const QGraphicsItem * item )
+ DragMode dragMode () const
+ void ensureVisible ( const QRectF & rect, int xmargin = 50, int ymargin = 50 )
+ void ensureVisible ( qreal x, qreal y, qreal w, qreal h, int xmargin = 50, int ymargin = 50 )
+ void ensureVisible ( const QGraphicsItem * item, int xmargin = 50, int ymargin = 50 )
+ void fitInView ( const QRectF & rect, Qt::AspectRatioMode aspectRatioMode = Qt::IgnoreAspectRatio )
+ void fitInView ( qreal x, qreal y, qreal w, qreal h, Qt::AspectRatioMode aspectRatioMode = Qt::IgnoreAspectRatio )
+ void fitInView ( const QGraphicsItem * item, Qt::AspectRatioMode aspectRatioMode = Qt::IgnoreAspectRatio )
+ QBrush foregroundBrush () const
+ bool isInteractive () const
+ bool isTransformed () const
+ QGraphicsItem * itemAt ( const QPoint & pos ) const
+ QGraphicsItem * itemAt ( int x, int y ) const
+ QList<QGraphicsItem *> items () const
+ QList<QGraphicsItem *> items ( const QPoint & pos ) const
+ QList<QGraphicsItem *> items ( int x, int y ) const
+ QList<QGraphicsItem *> items ( int x, int y, int w, int h, Qt::ItemSelectionMode mode = Qt::IntersectsItemShape ) const
+ QList<QGraphicsItem *> items ( const QRect & rect, Qt::ItemSelectionMode mode = Qt::IntersectsItemShape ) const
+ QList<QGraphicsItem *> items ( const QPolygon & polygon, Qt::ItemSelectionMode mode = Qt::IntersectsItemShape ) const
+ QList<QGraphicsItem *> items ( const QPainterPath & path, Qt::ItemSelectionMode mode = Qt::IntersectsItemShape ) const
+ QPoint mapFromScene ( const QPointF & point ) const
+ QPolygon mapFromScene ( const QRectF & rect ) const
+ QPolygon mapFromScene ( const QPolygonF & polygon ) const
+ QPainterPath mapFromScene ( const QPainterPath & path ) const
+ QPoint mapFromScene ( qreal x, qreal y ) const
+ QPolygon mapFromScene ( qreal x, qreal y, qreal w, qreal h ) const
+ QPointF mapToScene ( const QPoint & point ) const
+ QPolygonF mapToScene ( const QRect & rect ) const
+ QPolygonF mapToScene ( const QPolygon & polygon ) const
+ QPainterPath mapToScene ( const QPainterPath & path ) const
+ QPointF mapToScene ( int x, int y ) const
+ QPolygonF mapToScene ( int x, int y, int w, int h ) const
+ QMatrix matrix () const
+ OptimizationFlags optimizationFlags () const
+ void render ( QPainter * painter, const QRectF & target = QRectF(), const QRect & source = QRect(), Qt::AspectRatioMode aspectRatioMode = Qt::KeepAspectRatio )
+ QPainter::RenderHints renderHints () const
+ void resetCachedContent ()
+ void resetMatrix ()
+ void resetTransform ()
+ ViewportAnchor resizeAnchor () const
+ void rotate ( qreal angle )
+ Qt::ItemSelectionMode rubberBandSelectionMode () const
+ void scale ( qreal sx, qreal sy )
+ QGraphicsScene * scene () const
+ QRectF sceneRect () const
+ void setAlignment ( Qt::Alignment alignment )
+ void setBackgroundBrush ( const QBrush & brush )
+ void setCacheMode ( CacheMode mode )
+ void setDragMode ( DragMode mode )
+ void setForegroundBrush ( const QBrush & brush )
+ void setInteractive ( bool allowed )
+ void setMatrix ( const QMatrix & matrix, bool combine = false )
+ void setOptimizationFlag ( OptimizationFlag flag, bool enabled = true )
+ void setOptimizationFlags ( OptimizationFlags flags )
+ void setRenderHint ( QPainter::RenderHint hint, bool enabled = true )
+ void setRenderHints ( QPainter::RenderHints hints )
+ void setResizeAnchor ( ViewportAnchor anchor )
+ void setRubberBandSelectionMode ( Qt::ItemSelectionMode mode )
+ void setScene ( QGraphicsScene * scene )
+ void setSceneRect ( const QRectF & rect )
+ void setSceneRect ( qreal x, qreal y, qreal w, qreal h )
+ void setTransform ( const QTransform & matrix, bool combine = false )
+ void setTransformationAnchor ( ViewportAnchor anchor )
+ void setViewportUpdateMode ( ViewportUpdateMode mode )
+ void shear ( qreal sh, qreal sv )
+ QTransform transform () const
+ ViewportAnchor transformationAnchor () const
+ void translate ( qreal dx, qreal dy )
+ QTransform viewportTransform () const
+ ViewportUpdateMode viewportUpdateMode () const
+
+public_slots
+ void invalidateScene ( const QRectF & rect = QRectF(), QGraphicsScene::SceneLayers layers = QGraphicsScene::AllLayers )
+ void updateScene ( const QList<QRectF> & rects )
+ void updateSceneRect ( const QRectF & rect )
+
+signals
+19 public slots inherited from QWidget
+1 public slot inherited from QObject
+
+static_public_members
+
+protected_functions
+ virtual void drawBackground ( QPainter * painter, const QRectF & rect )
+ virtual void drawForeground ( QPainter * painter, const QRectF & rect )
+
+reimplemented_public_functions
+ virtual QVariant inputMethodQuery ( Qt::InputMethodQuery query ) const
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void contextMenuEvent ( QContextMenuEvent * event )
+ virtual void dragEnterEvent ( QDragEnterEvent * event )
+ virtual void dragLeaveEvent ( QDragLeaveEvent * event )
+ virtual void dragMoveEvent ( QDragMoveEvent * event )
+ virtual void dropEvent ( QDropEvent * event )
+ virtual bool event ( QEvent * event )
+ virtual void focusInEvent ( QFocusEvent * event )
+ virtual bool focusNextPrevChild ( bool next )
+ virtual void focusOutEvent ( QFocusEvent * event )
+ virtual void inputMethodEvent ( QInputMethodEvent * event )
+ virtual void keyPressEvent ( QKeyEvent * event )
+ virtual void keyReleaseEvent ( QKeyEvent * event )
+ virtual void mouseDoubleClickEvent ( QMouseEvent * event )
+ virtual void mouseMoveEvent ( QMouseEvent * event )
+ virtual void mousePressEvent ( QMouseEvent * event )
+ virtual void mouseReleaseEvent ( QMouseEvent * event )
+ virtual void paintEvent ( QPaintEvent * event )
+ virtual void resizeEvent ( QResizeEvent * event )
+ virtual void scrollContentsBy ( int dx, int dy )
+ virtual void showEvent ( QShowEvent * event )
+ virtual bool viewportEvent ( QEvent * event )
+ virtual void wheelEvent ( QWheelEvent * event )
+
+protected_slots
+ void setupViewport ( QWidget * widget )
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+CacheMode
+OptimizationFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QGraphicsView
+name
+CacheModeFlag
+key
+CacheNone
+CacheBackground
+public_flag
+true
+class_name
+QGraphicsView
+name
+DragMode
+key
+NoDrag
+ScrollHandDrag
+RubberBandDrag
+public_flag
+true
+class_name
+QGraphicsView
+name
+OptimizationFlag
+key
+DontClipPainter
+DontSavePainterState
+DontAdjustForAntialiasing
+IndirectPainting
+public_flag
+true
+class_name
+QGraphicsView
+name
+ViewportAnchor
+key
+NoAnchor
+AnchorViewCenter
+AnchorUnderMouse
+public_flag
+true
+class_name
+QGraphicsView
+name
+ViewportUpdateMode
+key
+FullViewportUpdate
+MinimalViewportUpdate
+SmartViewportUpdate
+BoundingRectViewportUpdate
+NoViewportUpdate
+public_flag
+true
+
+parent_enums
+
+parent_index
+359
+
+parent_name
+QAbstractScrollArea
+

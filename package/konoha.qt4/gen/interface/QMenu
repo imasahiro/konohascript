@@ -1,0 +1,127 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmenu.html
+
+output_urn
+QMenu
+
+inherits
+
+public_types
+
+properties
+icon : QIcon
+separatorsCollapsible : bool
+tearOffEnabled : bool
+title : QString
+
+public_functions
+QMenu ( QWidget * parent = 0 )
+QMenu ( const QString & title, QWidget * parent = 0 )
+~QMenu ()
+ QAction * actionAt ( const QPoint & pt ) const
+ QRect actionGeometry ( QAction * act ) const
+ QAction * activeAction () const
+ QAction * addAction ( const QString & text )
+ QAction * addAction ( const QIcon & icon, const QString & text )
+ QAction * addAction ( const QString & text, const QObject * receiver, const char * member, const QKeySequence & shortcut = 0 )
+ QAction * addAction ( const QIcon & icon, const QString & text, const QObject * receiver, const char * member, const QKeySequence & shortcut = 0 )
+ void addAction ( QAction * action )
+ QAction * addMenu ( QMenu * menu )
+ QMenu * addMenu ( const QString & title )
+ QMenu * addMenu ( const QIcon & icon, const QString & title )
+ QAction * addSeparator ()
+ void clear ()
+ QAction * defaultAction () const
+ QAction * exec ()
+ QAction * exec ( const QPoint & p, QAction * action = 0 )
+ void hideTearOffMenu ()
+ QIcon icon () const
+ QAction * insertMenu ( QAction * before, QMenu * menu )
+ QAction * insertSeparator ( QAction * before )
+ bool isEmpty () const
+ bool isTearOffEnabled () const
+ bool isTearOffMenuVisible () const
+ QAction * menuAction () const
+ void popup ( const QPoint & p, QAction * atAction = 0 )
+ bool separatorsCollapsible () const
+ void setActiveAction ( QAction * act )
+ void setDefaultAction ( QAction * act )
+ void setIcon ( const QIcon & icon )
+ void setSeparatorsCollapsible ( bool collapse )
+ void setTearOffEnabled ( bool )
+ void setTitle ( const QString & title )
+ QString title () const
+
+public_slots
+
+signals
+ void aboutToHide ()
+ void aboutToShow ()
+ void hovered ( QAction * action )
+ void triggered ( QAction * action )
+
+static_public_members
+ QAction * exec ( QList<QAction *> actions, const QPoint & pos, QAction * at, QWidget * parent )
+ QAction * exec ( QList<QAction *> actions, const QPoint & pos, QAction * at = 0 )
+
+protected_functions
+ int columnCount () const
+ void initStyleOption ( QStyleOptionMenuItem * option, const QAction * action ) const
+
+reimplemented_public_functions
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void actionEvent ( QActionEvent * e )
+ virtual void changeEvent ( QEvent * e )
+ virtual void enterEvent ( QEvent * )
+ virtual bool event ( QEvent * e )
+ virtual bool focusNextPrevChild ( bool next )
+ virtual void hideEvent ( QHideEvent * )
+ virtual void keyPressEvent ( QKeyEvent * e )
+ virtual void leaveEvent ( QEvent * )
+ virtual void mouseMoveEvent ( QMouseEvent * e )
+ virtual void mousePressEvent ( QMouseEvent * e )
+ virtual void mouseReleaseEvent ( QMouseEvent * e )
+ virtual void paintEvent ( QPaintEvent * e )
+ virtual void timerEvent ( QTimerEvent * e )
+ virtual void wheelEvent ( QWheelEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

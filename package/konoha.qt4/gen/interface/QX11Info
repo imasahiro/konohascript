@@ -1,0 +1,81 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qx11info.html
+
+output_urn
+QX11Info
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QX11Info ()
+QX11Info ( const QX11Info & other )
+~QX11Info ()
+ int cells () const
+ Qt::HANDLE colormap () const
+ bool defaultColormap () const
+ bool defaultVisual () const
+ int depth () const
+ int screen () const
+ void * visual () const
+ QX11Info & operator= ( const QX11Info & other )
+
+public_slots
+
+signals
+
+static_public_members
+ int appCells ( int screen = -1 )
+ const char * appClass ()
+ Qt::HANDLE appColormap ( int screen = -1 )
+ bool appDefaultColormap ( int screen = -1 )
+ bool appDefaultVisual ( int screen = -1 )
+ int appDepth ( int screen = -1 )
+ int appDpiX ( int screen = -1 )
+ int appDpiY ( int screen = -1 )
+ Qt::HANDLE appRootWindow ( int screen = -1 )
+ int appScreen ()
+ unsigned long appTime ()
+ unsigned long appUserTime ()
+ void * appVisual ( int screen = -1 )
+ Display * display ()
+ bool isCompositingManagerRunning ()
+ void setAppDpiX ( int screen, int xdpi )
+ void setAppDpiY ( int screen, int ydpi )
+ void setAppTime ( unsigned long time )
+ void setAppUserTime ( unsigned long time )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

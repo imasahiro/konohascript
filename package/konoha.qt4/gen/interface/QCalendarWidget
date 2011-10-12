@@ -1,0 +1,157 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qcalendarwidget.html
+
+output_urn
+QCalendarWidget
+
+inherits
+
+public_types
+ enum HorizontalHeaderFormat { SingleLetterDayNames, ShortDayNames, LongDayNames, NoHorizontalHeader }
+ enum SelectionMode { NoSelection, SingleSelection }
+ enum VerticalHeaderFormat { ISOWeekNumbers, NoVerticalHeader }
+
+properties
+dateEditAcceptDelay : int
+dateEditEnabled : bool
+firstDayOfWeek : Qt::DayOfWeek
+gridVisible : bool
+horizontalHeaderFormat : HorizontalHeaderFormat
+maximumDate : QDate
+
+public_functions
+QCalendarWidget ( QWidget * parent = 0 )
+~QCalendarWidget ()
+ int dateEditAcceptDelay () const
+ QMap<QDate, QTextCharFormat> dateTextFormat () const
+ QTextCharFormat dateTextFormat ( const QDate & date ) const
+ Qt::DayOfWeek firstDayOfWeek () const
+ QTextCharFormat headerTextFormat () const
+ HorizontalHeaderFormat horizontalHeaderFormat () const
+ bool isDateEditEnabled () const
+ bool isGridVisible () const
+ bool isNavigationBarVisible () const
+ QDate maximumDate () const
+ QDate minimumDate () const
+ int monthShown () const
+ QDate selectedDate () const
+ SelectionMode selectionMode () const
+ void setDateEditAcceptDelay ( int delay )
+ void setDateEditEnabled ( bool enable )
+ void setDateTextFormat ( const QDate & date, const QTextCharFormat & format )
+ void setFirstDayOfWeek ( Qt::DayOfWeek dayOfWeek )
+ void setHeaderTextFormat ( const QTextCharFormat & format )
+ void setHorizontalHeaderFormat ( HorizontalHeaderFormat format )
+ void setMaximumDate ( const QDate & date )
+ void setMinimumDate ( const QDate & date )
+ void setSelectionMode ( SelectionMode mode )
+ void setVerticalHeaderFormat ( VerticalHeaderFormat format )
+ void setWeekdayTextFormat ( Qt::DayOfWeek dayOfWeek, const QTextCharFormat & format )
+ VerticalHeaderFormat verticalHeaderFormat () const
+ QTextCharFormat weekdayTextFormat ( Qt::DayOfWeek dayOfWeek ) const
+ int yearShown () const
+
+public_slots
+ void setCurrentPage ( int year, int month )
+ void setDateRange ( const QDate & min, const QDate & max )
+ void setGridVisible ( bool show )
+ void setNavigationBarVisible ( bool visible )
+ void setSelectedDate ( const QDate & date )
+ void showNextMonth ()
+ void showNextYear ()
+ void showPreviousMonth ()
+ void showPreviousYear ()
+ void showSelectedDate ()
+ void showToday ()
+
+signals
+ void activated ( const QDate & date )
+ void clicked ( const QDate & date )
+ void currentPageChanged ( int year, int month )
+ void selectionChanged ()
+
+static_public_members
+
+protected_functions
+ virtual void paintCell ( QPainter * painter, const QRect & rect, const QDate & date ) const
+ void updateCell ( const QDate & date )
+ void updateCells ()
+
+reimplemented_public_functions
+ virtual QSize minimumSizeHint () const
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * event )
+ virtual bool eventFilter ( QObject * watched, QEvent * event )
+ virtual void keyPressEvent ( QKeyEvent * event )
+ virtual void mousePressEvent ( QMouseEvent * event )
+ virtual void resizeEvent ( QResizeEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+class_name
+QCalendarWidget
+name
+HorizontalHeaderFormat
+key
+SingleLetterDayNames
+ShortDayNames
+LongDayNames
+NoHorizontalHeader
+public_flag
+true
+class_name
+QCalendarWidget
+name
+SelectionMode
+key
+NoSelection
+SingleSelection
+public_flag
+true
+class_name
+QCalendarWidget
+name
+VerticalHeaderFormat
+key
+ISOWeekNumbers
+NoVerticalHeader
+public_flag
+true
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

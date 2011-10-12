@@ -1,0 +1,172 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qlineedit.html
+
+output_urn
+QLineEdit
+
+inherits
+
+public_types
+ enum EchoMode { Normal, NoEcho, Password, PasswordEchoOnEdit }
+
+properties
+acceptableInput : const bool
+alignment : Qt::Alignment
+cursorPosition : int
+displayText : const QString
+dragEnabled : bool
+echoMode : EchoMode
+frame : bool
+hasSelectedText : const bool
+inputMask : QString
+
+public_functions
+QLineEdit ( QWidget * parent = 0 )
+QLineEdit ( const QString & contents, QWidget * parent = 0 )
+~QLineEdit ()
+ Qt::Alignment alignment () const
+ void backspace ()
+ QCompleter * completer () const
+ QMenu * createStandardContextMenu ()
+ void cursorBackward ( bool mark, int steps = 1 )
+ void cursorForward ( bool mark, int steps = 1 )
+ int cursorPosition () const
+ int cursorPositionAt ( const QPoint & pos )
+ void cursorWordBackward ( bool mark )
+ void cursorWordForward ( bool mark )
+ void del ()
+ void deselect ()
+ QString displayText () const
+ bool dragEnabled () const
+ EchoMode echoMode () const
+ void end ( bool mark )
+ void getTextMargins ( int * left, int * top, int * right, int * bottom ) const
+ bool hasAcceptableInput () const
+ bool hasFrame () const
+ bool hasSelectedText () const
+ void home ( bool mark )
+ QString inputMask () const
+ void insert ( const QString & newText )
+ bool isModified () const
+ bool isReadOnly () const
+ bool isRedoAvailable () const
+ bool isUndoAvailable () const
+ int maxLength () const
+ QString placeholderText () const
+ QString selectedText () const
+ int selectionStart () const
+ void setAlignment ( Qt::Alignment flag )
+ void setCompleter ( QCompleter * c )
+ void setCursorPosition ( int )
+ void setDragEnabled ( bool b )
+ void setEchoMode ( EchoMode )
+ void setFrame ( bool )
+ void setInputMask ( const QString & inputMask )
+ void setMaxLength ( int )
+ void setModified ( bool )
+ void setPlaceholderText ( const QString & )
+ void setReadOnly ( bool )
+ void setSelection ( int start, int length )
+ void setTextMargins ( int left, int top, int right, int bottom )
+ void setTextMargins ( const QMargins & margins )
+ void setValidator ( const QValidator * v )
+ QString text () const
+ QMargins textMargins () const
+ const QValidator * validator () const
+
+public_slots
+ void clear ()
+ void copy () const
+ void cut ()
+ void paste ()
+ void redo ()
+ void selectAll ()
+ void setText ( const QString & )
+ void undo ()
+
+signals
+ void cursorPositionChanged ( int old, int new )
+ void editingFinished ()
+ void returnPressed ()
+ void selectionChanged ()
+ void textChanged ( const QString & text )
+ void textEdited ( const QString & text )
+
+static_public_members
+
+protected_functions
+ QRect cursorRect () const
+ void initStyleOption ( QStyleOptionFrame * option ) const
+
+reimplemented_public_functions
+ virtual bool event ( QEvent * e )
+ virtual QVariant inputMethodQuery ( Qt::InputMethodQuery property ) const
+ virtual QSize minimumSizeHint () const
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * ev )
+ virtual void contextMenuEvent ( QContextMenuEvent * event )
+ virtual void dragEnterEvent ( QDragEnterEvent * e )
+ virtual void dragLeaveEvent ( QDragLeaveEvent * e )
+ virtual void dragMoveEvent ( QDragMoveEvent * e )
+ virtual void dropEvent ( QDropEvent * e )
+ virtual void focusInEvent ( QFocusEvent * e )
+ virtual void focusOutEvent ( QFocusEvent * e )
+ virtual void inputMethodEvent ( QInputMethodEvent * e )
+ virtual void keyPressEvent ( QKeyEvent * event )
+ virtual void mouseDoubleClickEvent ( QMouseEvent * e )
+ virtual void mouseMoveEvent ( QMouseEvent * e )
+ virtual void mousePressEvent ( QMouseEvent * e )
+ virtual void mouseReleaseEvent ( QMouseEvent * e )
+ virtual void paintEvent ( QPaintEvent * )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+class_name
+QLineEdit
+name
+EchoMode
+key
+Normal
+NoEcho
+Password
+PasswordEchoOnEdit
+public_flag
+true
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

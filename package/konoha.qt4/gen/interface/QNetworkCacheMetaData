@@ -1,0 +1,78 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qnetworkcachemetadata.html
+
+output_urn
+QNetworkCacheMetaData
+
+inherits
+
+public_types
+ typedef AttributesMap
+ typedef RawHeader
+ typedef RawHeaderList
+
+properties
+
+public_functions
+QNetworkCacheMetaData ()
+QNetworkCacheMetaData ( const QNetworkCacheMetaData & other )
+~QNetworkCacheMetaData ()
+ AttributesMap attributes () const
+ QDateTime expirationDate () const
+ bool isValid () const
+ QDateTime lastModified () const
+ RawHeaderList rawHeaders () const
+ bool saveToDisk () const
+ void setAttributes ( const AttributesMap & attributes )
+ void setExpirationDate ( const QDateTime & dateTime )
+ void setLastModified ( const QDateTime & dateTime )
+ void setRawHeaders ( const RawHeaderList & list )
+ void setSaveToDisk ( bool allow )
+ void setUrl ( const QUrl & url )
+ QUrl url () const
+ bool operator!= ( const QNetworkCacheMetaData & other ) const
+ QNetworkCacheMetaData & operator= ( const QNetworkCacheMetaData & other )
+ bool operator== ( const QNetworkCacheMetaData & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & out, const QNetworkCacheMetaData & metaData )
+ QDataStream & operator>> ( QDataStream & in, QNetworkCacheMetaData & metaData )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+AttributesMap
+RawHeader
+RawHeaderList
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

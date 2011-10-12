@@ -1,0 +1,66 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgraphicslayout.html
+
+output_urn
+QGraphicsLayout
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QGraphicsLayout ( QGraphicsLayoutItem * parent = 0 )
+~QGraphicsLayout ()
+ void activate ()
+ virtual int count () const = 0
+ virtual void invalidate ()
+ bool isActivated () const
+ virtual QGraphicsLayoutItem * itemAt ( int i ) const = 0
+ virtual void removeAt ( int index ) = 0
+ void setContentsMargins ( qreal left, qreal top, qreal right, qreal bottom )
+ virtual void widgetEvent ( QEvent * e )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ void addChildLayoutItem ( QGraphicsLayoutItem * layoutItem )
+
+reimplemented_public_functions
+ virtual void getContentsMargins ( qreal * left, qreal * top, qreal * right, qreal * bottom ) const
+ virtual void updateGeometry ()
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+688
+
+parent_name
+QGraphicsLayoutItem
+

@@ -1,0 +1,85 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfuturewatcher.html
+
+output_urn
+QFutureWatcher
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QFutureWatcher ( QObject * parent = 0 )
+~QFutureWatcher ()
+ QFuture<T> future () const
+ bool isCanceled () const
+ bool isFinished () const
+ bool isPaused () const
+ bool isRunning () const
+ bool isStarted () const
+ int progressMaximum () const
+ int progressMinimum () const
+ QString progressText () const
+ int progressValue () const
+ T result () const
+ T resultAt ( int index ) const
+ void setFuture ( const QFuture<T> & future )
+ void setPendingResultsLimit ( int limit )
+ void waitForFinished ()
+
+public_slots
+ void cancel ()
+ void pause ()
+ void resume ()
+ void setPaused ( bool paused )
+ void togglePaused ()
+
+signals
+ void canceled ()
+ void finished ()
+ void paused ()
+ void progressRangeChanged ( int minimum, int maximum )
+ void progressTextChanged ( const QString & progressText )
+ void progressValueChanged ( int progressValue )
+ void resultReadyAt ( int index )
+ void resultsReadyAt ( int beginIndex, int endIndex )
+ void resumed ()
+ void started ()
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

@@ -1,0 +1,57 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwhatsthis.html
+
+output_urn
+QWhatsThis
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+
+public_slots
+
+signals
+
+static_public_members
+ QAction * createAction ( QObject * parent = 0 )
+ void enterWhatsThisMode ()
+ void hideText ()
+ bool inWhatsThisMode ()
+ void leaveWhatsThisMode ()
+ void showText ( const QPoint & pos, const QString & text, QWidget * w = 0 )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

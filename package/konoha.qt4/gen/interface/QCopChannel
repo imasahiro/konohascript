@@ -1,0 +1,62 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qcopchannel.html
+
+output_urn
+QCopChannel
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QCopChannel ( const QString & channel, QObject * parent = 0 )
+ virtual ~QCopChannel ()
+ QString channel () const
+ virtual void receive ( const QString & message, const QByteArray & data )
+
+public_slots
+
+signals
+ void received ( const QString & message, const QByteArray & data )
+
+static_public_members
+ bool flush ()
+ bool isRegistered ( const QString & channel )
+ bool send ( const QString & channel, const QString & message, const QByteArray & data )
+ bool send ( const QString & channel, const QString & message )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+true
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

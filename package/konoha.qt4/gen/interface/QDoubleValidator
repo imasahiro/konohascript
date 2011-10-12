@@ -1,0 +1,90 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdoublevalidator.html
+
+output_urn
+QDoubleValidator
+
+inherits
+
+public_types
+ enum Notation { StandardNotation, ScientificNotation }
+
+properties
+bottom : double
+decimals : int
+notation : Notation
+top : double
+
+public_functions
+QDoubleValidator ( QObject * parent = 0 )
+QDoubleValidator ( double bottom, double top, int decimals, QObject * parent )
+~QDoubleValidator ()
+ double bottom () const
+ int decimals () const
+ Notation notation () const
+ void setBottom ( double )
+ void setDecimals ( int )
+ void setNotation ( Notation )
+ virtual void setRange ( double minimum, double maximum, int decimals = 0 )
+ void setTop ( double )
+ double top () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QValidator::State validate ( QString & input, int & pos ) const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDoubleValidator
+name
+Notation
+key
+StandardNotation
+ScientificNotation
+public_flag
+true
+
+parent_enums
+class_name
+QValidator
+name
+State
+key
+Invalid
+Intermediate
+Acceptable
+public_flag
+true
+
+parent_index
+510
+
+parent_name
+QValidator
+

@@ -1,0 +1,129 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qlocalsocket.html
+
+output_urn
+QLocalSocket
+
+inherits
+
+public_types
+ enum LocalSocketError { ConnectionRefusedError, PeerClosedError, ServerNotFoundError, SocketAccessError, ..., UnknownSocketError }
+ enum LocalSocketState { UnconnectedState, ConnectingState, ConnectedState, ClosingState }
+
+properties
+
+public_functions
+QLocalSocket ( QObject * parent = 0 )
+~QLocalSocket ()
+ void abort ()
+ void connectToServer ( const QString & name, OpenMode openMode = ReadWrite )
+ void disconnectFromServer ()
+ LocalSocketError error () const
+ bool flush ()
+ QString fullServerName () const
+ bool isValid () const
+ qint64 readBufferSize () const
+ QString serverName () const
+ void setReadBufferSize ( qint64 size )
+ bool setSocketDescriptor ( quintptr socketDescriptor, LocalSocketState socketState = ConnectedState, OpenMode openMode = ReadWrite )
+ quintptr socketDescriptor () const
+ LocalSocketState state () const
+ bool waitForConnected ( int msecs = 30000 )
+ bool waitForDisconnected ( int msecs = 30000 )
+
+public_slots
+
+signals
+ void connected ()
+ void disconnected ()
+ void error ( QLocalSocket::LocalSocketError socketError )
+ void stateChanged ( QLocalSocket::LocalSocketState socketState )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual qint64 bytesAvailable () const
+ virtual qint64 bytesToWrite () const
+ virtual bool canReadLine () const
+ virtual void close ()
+ virtual bool isSequential () const
+ virtual bool waitForBytesWritten ( int msecs = 30000 )
+ virtual bool waitForReadyRead ( int msecs = 30000 )
+
+reimplemented_protected_functions
+ virtual qint64 readData ( char * data, qint64 c )
+ virtual qint64 writeData ( const char * data, qint64 c )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+OpenMode
+
+enums
+class_name
+QLocalSocket
+name
+LocalSocketError
+key
+ConnectionRefusedError
+PeerClosedError
+ServerNotFoundError
+SocketAccessError
+SocketResourceError
+SocketTimeoutError
+DatagramTooLargeError
+ConnectionError
+UnsupportedSocketOperationError
+UnknownSocketError
+public_flag
+true
+class_name
+QLocalSocket
+name
+LocalSocketState
+key
+UnconnectedState
+ConnectingState
+ConnectedState
+ClosingState
+public_flag
+true
+
+parent_enums
+class_name
+QIODevice
+name
+OpenModeFlag
+key
+NotOpen
+ReadOnly
+WriteOnly
+ReadWrite
+Append
+Truncate
+Text
+Unbuffered
+public_flag
+true
+
+parent_index
+732
+
+parent_name
+QIODevice
+

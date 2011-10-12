@@ -1,0 +1,73 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qcursor.html
+
+output_urn
+QCursor
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QCursor ()
+QCursor ( Qt::CursorShape shape )
+QCursor ( const QBitmap & bitmap, const QBitmap & mask, int hotX = -1, int hotY = -1 )
+QCursor ( const QPixmap & pixmap, int hotX = -1, int hotY = -1 )
+QCursor ( const QCursor & c )
+QCursor ( HCURSOR cursor )
+QCursor ( Qt::HANDLE handle )
+~QCursor ()
+ const QBitmap * bitmap () const
+ HCURSOR_or_HANDLE handle () const
+ QPoint hotSpot () const
+ const QBitmap * mask () const
+ QPixmap pixmap () const
+ void setShape ( Qt::CursorShape shape )
+ Qt::CursorShape shape () const
+operator QVariant () const
+ QCursor & operator= ( const QCursor & c )
+
+public_slots
+
+signals
+
+static_public_members
+ QPoint pos ()
+ void setPos ( int x, int y )
+ void setPos ( const QPoint & p )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & stream, const QCursor & cursor )
+ QDataStream & operator>> ( QDataStream & stream, QCursor & cursor )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,86 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgraphicsopacityeffect.html
+
+output_urn
+QGraphicsOpacityEffect
+
+inherits
+
+public_types
+
+properties
+opacity : qreal
+opacityMask : QBrush
+
+public_functions
+QGraphicsOpacityEffect ( QObject * parent = 0 )
+~QGraphicsOpacityEffect ()
+ qreal opacity () const
+ QBrush opacityMask () const
+
+public_slots
+ void setOpacity ( qreal opacity )
+ void setOpacityMask ( const QBrush & mask )
+
+signals
+ void opacityChanged ( qreal opacity )
+ void opacityMaskChanged ( const QBrush & mask )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual void draw ( QPainter * painter )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+ChangeFlags
+
+enums
+
+parent_enums
+class_name
+QGraphicsEffect
+name
+ChangeFlag
+key
+SourceAttached
+SourceDetached
+SourceBoundingRectChanged
+SourceInvalidated
+public_flag
+true
+class_name
+QGraphicsEffect
+name
+PixmapPadMode
+key
+NoPad
+PadToTransparentBorder
+PadToEffectiveBoundingRect
+public_flag
+true
+
+parent_index
+539
+
+parent_name
+QGraphicsEffect
+

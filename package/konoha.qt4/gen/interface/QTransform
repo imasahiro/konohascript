@@ -1,0 +1,138 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtransform.html
+
+output_urn
+QTransform
+
+inherits
+
+public_types
+ enum TransformationType { TxNone, TxTranslate, TxScale, TxRotate, TxShear, TxProject }
+
+properties
+
+public_functions
+QTransform ()
+QTransform ( qreal m11, qreal m12, qreal m13, qreal m21, qreal m22, qreal m23, qreal m31, qreal m32, qreal m33 = 1.0 )
+QTransform ( qreal m11, qreal m12, qreal m21, qreal m22, qreal dx, qreal dy )
+QTransform ( const QMatrix & matrix )
+ qreal m11 () const
+ qreal m12 () const
+ qreal m13 () const
+ qreal m21 () const
+ qreal m22 () const
+ qreal m23 () const
+ qreal m31 () const
+ qreal m32 () const
+ qreal m33 () const
+ QTransform adjoint () const
+ qreal determinant () const
+ qreal dx () const
+ qreal dy () const
+ QTransform inverted ( bool * invertible = 0 ) const
+ bool isAffine () const
+ bool isIdentity () const
+ bool isInvertible () const
+ bool isRotating () const
+ bool isScaling () const
+ bool isTranslating () const
+ void map ( qreal x, qreal y, qreal * tx, qreal * ty ) const
+ QPointF map ( const QPointF & p ) const
+ QPoint map ( const QPoint & point ) const
+ QLine map ( const QLine & l ) const
+ QLineF map ( const QLineF & line ) const
+ QPolygonF map ( const QPolygonF & polygon ) const
+ QPolygon map ( const QPolygon & polygon ) const
+ QRegion map ( const QRegion & region ) const
+ QPainterPath map ( const QPainterPath & path ) const
+ void map ( int x, int y, int * tx, int * ty ) const
+ QRectF mapRect ( const QRectF & rectangle ) const
+ QRect mapRect ( const QRect & rectangle ) const
+ QPolygon mapToPolygon ( const QRect & rectangle ) const
+ void reset ()
+ QTransform & rotate ( qreal angle, Qt::Axis axis = Qt::ZAxis )
+ QTransform & rotateRadians ( qreal angle, Qt::Axis axis = Qt::ZAxis )
+ QTransform & scale ( qreal sx, qreal sy )
+ void setMatrix ( qreal m11, qreal m12, qreal m13, qreal m21, qreal m22, qreal m23, qreal m31, qreal m32, qreal m33 )
+ QTransform & shear ( qreal sh, qreal sv )
+ const QMatrix & toAffine () const
+ QTransform & translate ( qreal dx, qreal dy )
+ QTransform transposed () const
+ TransformationType type () const
+operator QVariant () const
+ bool operator!= ( const QTransform & matrix ) const
+ QTransform operator* ( const QTransform & matrix ) const
+ QTransform & operator*= ( const QTransform & matrix )
+ QTransform & operator*= ( qreal scalar )
+ QTransform & operator+= ( qreal scalar )
+ QTransform & operator-= ( qreal scalar )
+ QTransform & operator/= ( qreal scalar )
+ QTransform & operator= ( const QTransform & matrix )
+ bool operator== ( const QTransform & matrix ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QTransform fromScale ( qreal sx, qreal sy )
+ QTransform fromTranslate ( qreal dx, qreal dy )
+ bool quadToQuad ( const QPolygonF & one, const QPolygonF & two, QTransform & trans )
+ bool quadToSquare ( const QPolygonF & quad, QTransform & trans )
+ bool squareToQuad ( const QPolygonF & quad, QTransform & trans )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ bool qFuzzyCompare ( const QTransform & t1, const QTransform & t2 )
+ QPoint operator* ( const QPoint & point, const QTransform & matrix )
+ QPointF operator* ( const QPointF & point, const QTransform & matrix )
+ QLineF operator* ( const QLineF & line, const QTransform & matrix )
+ QLine operator* ( const QLine & line, const QTransform & matrix )
+ QPolygon operator* ( const QPolygon & polygon, const QTransform & matrix )
+ QPolygonF operator* ( const QPolygonF & polygon, const QTransform & matrix )
+ QRegion operator* ( const QRegion & region, const QTransform & matrix )
+ QPainterPath operator* ( const QPainterPath & path, const QTransform & matrix )
+ QDataStream & operator<< ( QDataStream & stream, const QTransform & matrix )
+ QDataStream & operator>> ( QDataStream & stream, QTransform & matrix )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QTransform
+name
+TransformationType
+key
+TxNone
+TxTranslate
+TxScale
+TxRotate
+TxShear
+TxProject
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

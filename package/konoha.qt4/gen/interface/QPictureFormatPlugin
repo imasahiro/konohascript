@@ -1,0 +1,59 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qpictureformatplugin.html
+
+output_urn
+QPictureFormatPlugin
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QPictureFormatPlugin ( QObject * parent = 0 )
+~QPictureFormatPlugin ()
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual bool installIOHandler ( const QString & format ) = 0
+ virtual QStringList keys () const = 0
+ virtual bool loadPicture ( const QString & format, const QString & fileName, QPicture * picture )
+ virtual bool savePicture ( const QString & format, const QString & fileName, const QPicture & picture )
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

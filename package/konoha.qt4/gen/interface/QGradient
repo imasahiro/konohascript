@@ -1,0 +1,97 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgradient.html
+
+output_urn
+QGradient
+
+inherits
+
+public_types
+ enum CoordinateMode { LogicalMode, StretchToDeviceMode, ObjectBoundingMode }
+ enum Spread { PadSpread, RepeatSpread, ReflectSpread }
+ enum Type { LinearGradient, RadialGradient, ConicalGradient, NoGradient }
+
+properties
+
+public_functions
+ CoordinateMode coordinateMode () const
+ void setColorAt ( qreal position, const QColor & color )
+ void setCoordinateMode ( CoordinateMode mode )
+ void setSpread ( Spread method )
+ void setStops ( const QGradientStops & stopPoints )
+ Spread spread () const
+ QGradientStops stops () const
+ Type type () const
+ bool operator!= ( const QGradient & gradient ) const
+ bool operator== ( const QGradient & gradient ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ typedef QGradientStop
+ typedef QGradientStops
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QGradient
+name
+CoordinateMode
+key
+LogicalMode
+StretchToDeviceMode
+ObjectBoundingMode
+public_flag
+true
+class_name
+QGradient
+name
+Spread
+key
+PadSpread
+RepeatSpread
+ReflectSpread
+public_flag
+true
+class_name
+QGradient
+name
+Type
+key
+LinearGradient
+RadialGradient
+ConicalGradient
+NoGradient
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

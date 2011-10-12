@@ -1,0 +1,72 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdesigneractioneditorinterface.html
+
+output_urn
+QDesignerActionEditorInterface
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDesignerActionEditorInterface ( QWidget * parent, Qt::WindowFlags flags = 0 )
+ virtual ~QDesignerActionEditorInterface ()
+ virtual QDesignerFormEditorInterface * core () const
+ virtual void manageAction ( QAction * action ) = 0
+ virtual void unmanageAction ( QAction * action ) = 0
+
+public_slots
+ virtual void setFormWindow ( QDesignerFormWindowInterface * formWindow ) = 0
+
+signals
+19 public slots inherited from QWidget
+1 public slot inherited from QObject
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

@@ -1,0 +1,90 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qhelpenginecore.html
+
+output_urn
+QHelpEngineCore
+
+inherits
+
+public_types
+
+properties
+autoSaveFilter : bool
+collectionFile : QString
+currentFilter : QString
+
+public_functions
+QHelpEngineCore ( const QString & collectionFile, QObject * parent = 0 )
+ virtual ~QHelpEngineCore ()
+ bool addCustomFilter ( const QString & filterName, const QStringList & attributes )
+ bool autoSaveFilter () const
+ QString collectionFile () const
+ bool copyCollectionFile ( const QString & fileName )
+ QString currentFilter () const
+ QStringList customFilters () const
+ QVariant customValue ( const QString & key, const QVariant & defaultValue = QVariant() ) const
+ QString documentationFileName ( const QString & namespaceName )
+ QString error () const
+ QByteArray fileData ( const QUrl & url ) const
+ QList<QUrl> files ( const QString namespaceName, const QStringList & filterAttributes, const QString & extensionFilter = QString() )
+ QList<QStringList> filterAttributeSets ( const QString & namespaceName ) const
+ QStringList filterAttributes () const
+ QStringList filterAttributes ( const QString & filterName ) const
+ QUrl findFile ( const QUrl & url ) const
+ QMap<QString, QUrl> linksForIdentifier ( const QString & id ) const
+ bool registerDocumentation ( const QString & documentationFileName )
+ QStringList registeredDocumentations () const
+ bool removeCustomFilter ( const QString & filterName )
+ bool removeCustomValue ( const QString & key )
+ void setAutoSaveFilter ( bool save )
+ void setCollectionFile ( const QString & fileName )
+ void setCurrentFilter ( const QString & filterName )
+ bool setCustomValue ( const QString & key, const QVariant & value )
+ bool setupData ()
+ bool unregisterDocumentation ( const QString & namespaceName )
+
+public_slots
+
+signals
+ void currentFilterChanged ( const QString & newFilter )
+ void setupFinished ()
+ void setupStarted ()
+ void warning ( const QString & msg )
+
+static_public_members
+ QVariant metaData ( const QString & documentationFileName, const QString & name )
+ QString namespaceName ( const QString & documentationFileName )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

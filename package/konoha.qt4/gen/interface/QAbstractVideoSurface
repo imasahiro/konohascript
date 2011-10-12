@@ -1,0 +1,81 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractvideosurface.html
+
+output_urn
+QAbstractVideoSurface
+
+inherits
+
+public_types
+ enum Error { NoError, UnsupportedFormatError, IncorrectFormatError, StoppedError, ResourceError }
+
+properties
+
+public_functions
+QAbstractVideoSurface ( QObject * parent = 0 )
+~QAbstractVideoSurface ()
+ Error error () const
+ bool isActive () const
+ virtual bool isFormatSupported ( const QVideoSurfaceFormat & format ) const
+ virtual QVideoSurfaceFormat nearestFormat ( const QVideoSurfaceFormat & format ) const
+ virtual bool present ( const QVideoFrame & frame ) = 0
+ virtual bool start ( const QVideoSurfaceFormat & format )
+ virtual void stop ()
+ virtual QList<QVideoFrame::PixelFormat> supportedPixelFormats ( QAbstractVideoBuffer::HandleType type = QAbstractVideoBuffer::NoHandle ) const = 0
+ QVideoSurfaceFormat surfaceFormat () const
+
+public_slots
+
+signals
+ void activeChanged ( bool active )
+ void supportedFormatsChanged ()
+ void surfaceFormatChanged ( const QVideoSurfaceFormat & format )
+
+static_public_members
+
+protected_functions
+ void setError ( Error error )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QAbstractVideoSurface
+name
+Error
+key
+NoError
+UnsupportedFormatError
+IncorrectFormatError
+StoppedError
+ResourceError
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

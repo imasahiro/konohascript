@@ -1,0 +1,159 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractspinbox.html
+
+output_urn
+QAbstractSpinBox
+
+inherits
+
+public_types
+ enum ButtonSymbols { UpDownArrows, PlusMinus, NoButtons }
+ enum CorrectionMode { CorrectToPreviousValue, CorrectToNearestValue }
+ flags StepEnabled
+ enum StepEnabledFlag { StepNone, StepUpEnabled, StepDownEnabled }
+
+properties
+accelerated : bool
+acceptableInput : const bool
+alignment : Qt::Alignment
+buttonSymbols : ButtonSymbols
+correctionMode : CorrectionMode
+frame : bool
+
+public_functions
+QAbstractSpinBox ( QWidget * parent = 0 )
+~QAbstractSpinBox ()
+ Qt::Alignment alignment () const
+ ButtonSymbols buttonSymbols () const
+ CorrectionMode correctionMode () const
+ virtual void fixup ( QString & input ) const
+ bool hasAcceptableInput () const
+ bool hasFrame () const
+ void interpretText ()
+ bool isAccelerated () const
+ bool isReadOnly () const
+ bool keyboardTracking () const
+ void setAccelerated ( bool on )
+ void setAlignment ( Qt::Alignment flag )
+ void setButtonSymbols ( ButtonSymbols bs )
+ void setCorrectionMode ( CorrectionMode cm )
+ void setFrame ( bool )
+ void setKeyboardTracking ( bool kt )
+ void setReadOnly ( bool r )
+ void setSpecialValueText ( const QString & txt )
+ void setWrapping ( bool w )
+ QString specialValueText () const
+ virtual void stepBy ( int steps )
+ QString text () const
+ virtual QValidator::State validate ( QString & input, int & pos ) const
+ bool wrapping () const
+
+public_slots
+ virtual void clear ()
+ void selectAll ()
+ void stepDown ()
+ void stepUp ()
+
+signals
+ void editingFinished ()
+
+static_public_members
+
+protected_functions
+ void initStyleOption ( QStyleOptionSpinBox * option ) const
+ QLineEdit * lineEdit () const
+ void setLineEdit ( QLineEdit * lineEdit )
+ virtual StepEnabled stepEnabled () const
+
+reimplemented_public_functions
+ virtual bool event ( QEvent * event )
+ virtual QVariant inputMethodQuery ( Qt::InputMethodQuery query ) const
+ virtual QSize minimumSizeHint () const
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * event )
+ virtual void closeEvent ( QCloseEvent * event )
+ virtual void contextMenuEvent ( QContextMenuEvent * event )
+ virtual void focusInEvent ( QFocusEvent * event )
+ virtual void focusOutEvent ( QFocusEvent * event )
+ virtual void hideEvent ( QHideEvent * event )
+ virtual void keyPressEvent ( QKeyEvent * event )
+ virtual void keyReleaseEvent ( QKeyEvent * event )
+ virtual void mouseMoveEvent ( QMouseEvent * event )
+ virtual void mousePressEvent ( QMouseEvent * event )
+ virtual void mouseReleaseEvent ( QMouseEvent * event )
+ virtual void paintEvent ( QPaintEvent * event )
+ virtual void resizeEvent ( QResizeEvent * event )
+ virtual void showEvent ( QShowEvent * event )
+ virtual void timerEvent ( QTimerEvent * event )
+ virtual void wheelEvent ( QWheelEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+StepEnabled
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+class_name
+QAbstractSpinBox
+name
+ButtonSymbols
+key
+UpDownArrows
+PlusMinus
+NoButtons
+public_flag
+true
+class_name
+QAbstractSpinBox
+name
+CorrectionMode
+key
+CorrectToPreviousValue
+CorrectToNearestValue
+public_flag
+true
+class_name
+QAbstractSpinBox
+name
+StepEnabledFlag
+key
+StepNone
+StepUpEnabled
+StepDownEnabled
+public_flag
+true
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

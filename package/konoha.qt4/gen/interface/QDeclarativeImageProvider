@@ -1,0 +1,66 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdeclarativeimageprovider.html
+
+output_urn
+QDeclarativeImageProvider
+
+inherits
+
+public_types
+ enum ImageType { Image, Pixmap }
+
+properties
+
+public_functions
+QDeclarativeImageProvider ( ImageType type )
+ virtual ~QDeclarativeImageProvider ()
+ ImageType imageType () const
+ virtual QImage requestImage ( const QString & id, QSize * size, const QSize & requestedSize )
+ virtual QPixmap requestPixmap ( const QString & id, QSize * size, const QSize & requestedSize )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDeclarativeImageProvider
+name
+ImageType
+key
+Image
+Pixmap
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

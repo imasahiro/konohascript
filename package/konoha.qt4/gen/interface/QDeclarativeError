@@ -1,0 +1,65 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdeclarativeerror.html
+
+output_urn
+QDeclarativeError
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDeclarativeError ()
+QDeclarativeError ( const QDeclarativeError & other )
+ int column () const
+ QString description () const
+ bool isValid () const
+ int line () const
+ void setColumn ( int column )
+ void setDescription ( const QString & description )
+ void setLine ( int line )
+ void setUrl ( const QUrl & url )
+ QString toString () const
+ QUrl url () const
+ QDeclarativeError & operator= ( const QDeclarativeError & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDebug operator<< ( QDebug debug, const QDeclarativeError & error )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

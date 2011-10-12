@@ -1,0 +1,123 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qset.html
+
+output_urn
+QSet
+
+inherits
+
+public_types
+ class const_iterator
+ class iterator
+ typedef ConstIterator
+ typedef Iterator
+ typedef const_pointer
+ typedef const_reference
+ typedef difference_type
+ typedef key_type
+ typedef pointer
+ typedef reference
+ typedef size_type
+ typedef value_type
+
+properties
+
+public_functions
+QSet ()
+QSet ( const QSet<T> & other )
+ const_iterator begin () const
+ iterator begin ()
+ int capacity () const
+ void clear ()
+ const_iterator constBegin () const
+ const_iterator constEnd () const
+ const_iterator constFind ( const T & value ) const
+ bool contains ( const T & value ) const
+ bool contains ( const QSet<T> & other ) const
+ int count () const
+ bool empty () const
+ const_iterator end () const
+ iterator end ()
+ iterator erase ( iterator pos )
+ const_iterator find ( const T & value ) const
+ iterator find ( const T & value )
+ const_iterator insert ( const T & value )
+ QSet<T> & intersect ( const QSet<T> & other )
+ bool isEmpty () const
+ bool remove ( const T & value )
+ void reserve ( int size )
+ int size () const
+ void squeeze ()
+ QSet<T> & subtract ( const QSet<T> & other )
+ QList<T> toList () const
+ QSet<T> & unite ( const QSet<T> & other )
+ QList<T> values () const
+ bool operator!= ( const QSet<T> & other ) const
+ QSet<T> operator& ( const QSet<T> & other ) const
+ QSet<T> & operator&= ( const QSet<T> & other )
+ QSet<T> & operator&= ( const T & value )
+ QSet<T> operator+ ( const QSet<T> & other ) const
+ QSet<T> & operator+= ( const QSet<T> & other )
+ QSet<T> & operator+= ( const T & value )
+ QSet<T> operator- ( const QSet<T> & other ) const
+ QSet<T> & operator-= ( const QSet<T> & other )
+ QSet<T> & operator-= ( const T & value )
+ QSet<T> & operator<< ( const T & value )
+ QSet<T> & operator= ( const QSet<T> & other )
+ bool operator== ( const QSet<T> & other ) const
+ QSet<T> operator| ( const QSet<T> & other ) const
+ QSet<T> & operator|= ( const QSet<T> & other )
+ QSet<T> & operator|= ( const T & value )
+
+public_slots
+
+signals
+
+static_public_members
+ QSet<T> fromList ( const QList<T> & list )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & out, const QSet<T> & set )
+ QDataStream & operator>> ( QDataStream & in, QSet<T> & set )
+
+templateClass
+true
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+const_iterator
+iterator
+ConstIterator
+Iterator
+const_pointer
+const_reference
+difference_type
+key_type
+pointer
+reference
+size_type
+value_type
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

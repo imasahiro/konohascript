@@ -1,0 +1,97 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfontdialog.html
+
+output_urn
+QFontDialog
+
+inherits
+
+public_types
+ enum FontDialogOption { NoButtons, DontUseNativeDialog }
+ flags FontDialogOptions
+
+properties
+currentFont : QFont
+options : FontDialogOptions
+
+public_functions
+QFontDialog ( QWidget * parent = 0 )
+QFontDialog ( const QFont & initial, QWidget * parent = 0 )
+ QFont currentFont () const
+ void open ( QObject * receiver, const char * member )
+ FontDialogOptions options () const
+ QFont selectedFont () const
+ void setCurrentFont ( const QFont & font )
+ void setOption ( FontDialogOption option, bool on = true )
+ void setOptions ( FontDialogOptions options )
+ bool testOption ( FontDialogOption option ) const
+
+public_slots
+
+signals
+ void currentFontChanged ( const QFont & font )
+ void fontSelected ( const QFont & font )
+
+static_public_members
+ QFont getFont ( bool * ok, const QFont & initial, QWidget * parent, const QString & title, FontDialogOptions options )
+ QFont getFont ( bool * ok, const QFont & initial, QWidget * parent, const char * name )
+ QFont getFont ( bool * ok, QWidget * parent, const char * name )
+ QFont getFont ( bool * ok, const QFont & initial, QWidget * parent, const QString & title )
+ QFont getFont ( bool * ok, const QFont & initial, QWidget * parent = 0 )
+ QFont getFont ( bool * ok, QWidget * parent = 0 )
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void setVisible ( bool visible )
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * e )
+ virtual void done ( int result )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+FontDialogOptions
+
+parent_typedefed_objects
+
+enums
+class_name
+QFontDialog
+name
+FontDialogOption
+key
+NoButtons
+DontUseNativeDialog
+public_flag
+true
+
+parent_enums
+class_name
+QDialog
+name
+DialogCode
+key
+Accepted
+Rejected
+public_flag
+true
+
+parent_index
+719
+
+parent_name
+QDialog
+

@@ -1,0 +1,72 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwebhittestresult.html
+
+output_urn
+QWebHitTestResult
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QWebHitTestResult ()
+QWebHitTestResult ( const QWebHitTestResult & other )
+~QWebHitTestResult ()
+ QString alternateText () const
+ QRect boundingRect () const
+ QWebElement element () const
+ QWebElement enclosingBlockElement () const
+ QWebFrame * frame () const
+ QUrl imageUrl () const
+ bool isContentEditable () const
+ bool isContentSelected () const
+ bool isNull () const
+ QWebElement linkElement () const
+ QWebFrame * linkTargetFrame () const
+ QString linkText () const
+ QUrl linkTitle () const
+ QUrl linkUrl () const
+ QPixmap pixmap () const
+ QPoint pos () const
+ QString title () const
+ QWebHitTestResult & operator= ( const QWebHitTestResult & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,86 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdirectpainter.html
+
+output_urn
+QDirectPainter
+
+inherits
+
+public_types
+ enum SurfaceFlag { NonReserved, Reserved, ReservedSynchronous }
+
+properties
+
+public_functions
+QDirectPainter ( QObject * parent = 0, SurfaceFlag flag = NonReserved )
+~QDirectPainter ()
+ QRegion allocatedRegion () const
+ void endPainting ()
+ void endPainting ( const QRegion & region )
+ void flush ( const QRegion & region )
+ QRect geometry () const
+ void lower ()
+ void raise ()
+ virtual void regionChanged ( const QRegion & newRegion )
+ QRegion requestedRegion () const
+ void setGeometry ( const QRect & rectangle )
+ void setRegion ( const QRegion & region )
+ void startPainting ( bool lockDisplay = true )
+ WId winId () const
+
+public_slots
+
+signals
+
+static_public_members
+ uchar * frameBuffer ()
+ int linestep ()
+ void lock ()
+ int screenDepth ()
+ int screenHeight ()
+ int screenWidth ()
+ void unlock ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+true
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDirectPainter
+name
+SurfaceFlag
+key
+NonReserved
+Reserved
+ReservedSynchronous
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

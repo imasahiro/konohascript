@@ -1,0 +1,87 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qvarlengtharray.html
+
+output_urn
+QVarLengthArray
+
+inherits
+
+public_types
+ typedef const_pointer
+ typedef const_reference
+ typedef difference_type
+ typedef pointer
+ typedef reference
+ typedef size_type
+ typedef value_type
+
+properties
+
+public_functions
+QVarLengthArray ( int size = 0 )
+QVarLengthArray ( const QVarLengthArray<T, Prealloc> & other )
+~QVarLengthArray ()
+ void append ( const T & t )
+ void append ( const T * buf, int size )
+ const T & at ( int i ) const
+ int capacity () const
+ void clear ()
+ const T * constData () const
+ int count () const
+ T * data ()
+ const T * data () const
+ bool isEmpty () const
+ void removeLast ()
+ void reserve ( int size )
+ void resize ( int size )
+ int size () const
+ T value ( int i ) const
+ T value ( int i, const T & defaultValue ) const
+ QVarLengthArray<T, Prealloc> & operator= ( const QVarLengthArray<T, Prealloc> & other )
+ T & operator[] ( int i )
+ const T & operator[] ( int i ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+const_pointer
+const_reference
+difference_type
+pointer
+reference
+size_type
+value_type
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

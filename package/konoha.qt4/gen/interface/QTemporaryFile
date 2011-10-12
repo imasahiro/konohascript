@@ -1,0 +1,120 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtemporaryfile.html
+
+output_urn
+QTemporaryFile
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QTemporaryFile ()
+QTemporaryFile ( const QString & templateName )
+QTemporaryFile ( QObject * parent )
+QTemporaryFile ( const QString & templateName, QObject * parent )
+~QTemporaryFile ()
+ bool autoRemove () const
+ QString fileName () const
+ QString fileTemplate () const
+ bool open ()
+ void setAutoRemove ( bool b )
+ void setFileTemplate ( const QString & name )
+
+public_slots
+
+signals
+
+static_public_members
+ QTemporaryFile * createLocalFile ( QFile & file )
+ QTemporaryFile * createLocalFile ( const QString & fileName )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool open ( OpenMode flags )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+DecoderFn
+EncoderFn
+PermissionSpec
+Permissions
+
+enums
+
+parent_enums
+class_name
+QFile
+name
+FileError
+key
+NoError
+ReadError
+WriteError
+FatalError
+ResourceError
+OpenError
+AbortError
+TimeOutError
+UnspecifiedError
+RemoveError
+RenameError
+PositionError
+ResizeError
+PermissionsError
+CopyError
+public_flag
+true
+class_name
+QFile
+name
+MemoryMapFlags
+key
+NoOptions
+public_flag
+true
+class_name
+QFile
+name
+Permission
+key
+ReadOwner
+WriteOwner
+ExeOwner
+ReadUser
+WriteUser
+ExeUser
+ReadGroup
+WriteGroup
+ExeGroup
+ReadOther
+WriteOther
+ExeOther
+public_flag
+true
+
+parent_index
+137
+
+parent_name
+QFile
+

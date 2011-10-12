@@ -1,0 +1,65 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qprocessenvironment.html
+
+output_urn
+QProcessEnvironment
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QProcessEnvironment ()
+QProcessEnvironment ( const QProcessEnvironment & other )
+~QProcessEnvironment ()
+ void clear ()
+ bool contains ( const QString & name ) const
+ void insert ( const QString & name, const QString & value )
+ bool isEmpty () const
+ void remove ( const QString & name )
+ QStringList toStringList () const
+ QString value ( const QString & name, const QString & defaultValue = QString() ) const
+ bool operator!= ( const QProcessEnvironment & other ) const
+ QProcessEnvironment & operator= ( const QProcessEnvironment & other )
+ bool operator== ( const QProcessEnvironment & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QProcessEnvironment systemEnvironment ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

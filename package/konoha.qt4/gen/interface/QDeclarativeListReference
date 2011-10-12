@@ -1,0 +1,64 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdeclarativelistreference.html
+
+output_urn
+QDeclarativeListReference
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDeclarativeListReference ()
+QDeclarativeListReference ( QObject * object, const char * property, QDeclarativeEngine * engine = 0 )
+ bool append ( QObject * object ) const
+ QObject * at ( int index ) const
+ bool canAppend () const
+ bool canAt () const
+ bool canClear () const
+ bool canCount () const
+ bool clear () const
+ int count () const
+ bool isValid () const
+ const QMetaObject * listElementType () const
+ QObject * object () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

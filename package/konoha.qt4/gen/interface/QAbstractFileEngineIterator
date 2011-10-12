@@ -1,0 +1,61 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractfileengineiterator.html
+
+output_urn
+QAbstractFileEngineIterator
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QAbstractFileEngineIterator ( QDir::Filters filters, const QStringList & nameFilters )
+ virtual ~QAbstractFileEngineIterator ()
+ virtual QFileInfo currentFileInfo () const
+ virtual QString currentFileName () const = 0
+ QString currentFilePath () const
+ QDir::Filters filters () const
+ virtual bool hasNext () const = 0
+ QStringList nameFilters () const
+ virtual QString next () = 0
+ QString path () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,131 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtablewidget.html
+
+output_urn
+QTableWidget
+
+inherits
+
+public_types
+
+properties
+columnCount : int
+rowCount : int
+
+public_functions
+QTableWidget ( QWidget * parent = 0 )
+QTableWidget ( int rows, int columns, QWidget * parent = 0 )
+~QTableWidget ()
+ QWidget * cellWidget ( int row, int column ) const
+ void closePersistentEditor ( QTableWidgetItem * item )
+ int column ( const QTableWidgetItem * item ) const
+ int columnCount () const
+ int currentColumn () const
+ QTableWidgetItem * currentItem () const
+ int currentRow () const
+ void editItem ( QTableWidgetItem * item )
+ QList<QTableWidgetItem *> findItems ( const QString & text, Qt::MatchFlags flags ) const
+ QTableWidgetItem * horizontalHeaderItem ( int column ) const
+ QTableWidgetItem * item ( int row, int column ) const
+ QTableWidgetItem * itemAt ( const QPoint & point ) const
+ QTableWidgetItem * itemAt ( int ax, int ay ) const
+ const QTableWidgetItem * itemPrototype () const
+ void openPersistentEditor ( QTableWidgetItem * item )
+ void removeCellWidget ( int row, int column )
+ int row ( const QTableWidgetItem * item ) const
+ int rowCount () const
+ QList<QTableWidgetItem *> selectedItems ()
+ QList<QTableWidgetSelectionRange> selectedRanges () const
+ void setCellWidget ( int row, int column, QWidget * widget )
+ void setColumnCount ( int columns )
+ void setCurrentCell ( int row, int column )
+ void setCurrentCell ( int row, int column, QItemSelectionModel::SelectionFlags command )
+ void setCurrentItem ( QTableWidgetItem * item )
+ void setCurrentItem ( QTableWidgetItem * item, QItemSelectionModel::SelectionFlags command )
+ void setHorizontalHeaderItem ( int column, QTableWidgetItem * item )
+ void setHorizontalHeaderLabels ( const QStringList & labels )
+ void setItem ( int row, int column, QTableWidgetItem * item )
+ void setItemPrototype ( const QTableWidgetItem * item )
+ void setRangeSelected ( const QTableWidgetSelectionRange & range, bool select )
+ void setRowCount ( int rows )
+ void setVerticalHeaderItem ( int row, QTableWidgetItem * item )
+ void setVerticalHeaderLabels ( const QStringList & labels )
+ void sortItems ( int column, Qt::SortOrder order = Qt::AscendingOrder )
+ QTableWidgetItem * takeHorizontalHeaderItem ( int column )
+ QTableWidgetItem * takeItem ( int row, int column )
+ QTableWidgetItem * takeVerticalHeaderItem ( int row )
+ QTableWidgetItem * verticalHeaderItem ( int row ) const
+ int visualColumn ( int logicalColumn ) const
+ QRect visualItemRect ( const QTableWidgetItem * item ) const
+ int visualRow ( int logicalRow ) const
+
+public_slots
+ void clear ()
+ void clearContents ()
+ void insertColumn ( int column )
+ void insertRow ( int row )
+ void removeColumn ( int column )
+ void removeRow ( int row )
+ void scrollToItem ( const QTableWidgetItem * item, QAbstractItemView::ScrollHint hint = EnsureVisible )
+
+signals
+ void cellActivated ( int row, int column )
+ void cellChanged ( int row, int column )
+ void cellClicked ( int row, int column )
+ void cellDoubleClicked ( int row, int column )
+ void cellEntered ( int row, int column )
+ void cellPressed ( int row, int column )
+ void currentCellChanged ( int currentRow, int currentColumn, int previousRow, int previousColumn )
+ void currentItemChanged ( QTableWidgetItem * current, QTableWidgetItem * previous )
+ void itemActivated ( QTableWidgetItem * item )
+ void itemChanged ( QTableWidgetItem * item )
+ void itemClicked ( QTableWidgetItem * item )
+ void itemDoubleClicked ( QTableWidgetItem * item )
+ void itemEntered ( QTableWidgetItem * item )
+ void itemPressed ( QTableWidgetItem * item )
+ void itemSelectionChanged ()
+
+static_public_members
+
+protected_functions
+ virtual bool dropMimeData ( int row, int column, const QMimeData * data, Qt::DropAction action )
+ QModelIndex indexFromItem ( QTableWidgetItem * item ) const
+ QTableWidgetItem * itemFromIndex ( const QModelIndex & index ) const
+ QList<QTableWidgetItem *> items ( const QMimeData * data ) const
+ virtual QMimeData * mimeData ( const QList<QTableWidgetItem *> items ) const
+ virtual QStringList mimeTypes () const
+ virtual Qt::DropActions supportedDropActions () const
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual void dropEvent ( QDropEvent * event )
+ virtual bool event ( QEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+477
+
+parent_name
+QTableView
+

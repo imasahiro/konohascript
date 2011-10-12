@@ -1,0 +1,109 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdockwidget.html
+
+output_urn
+QDockWidget
+
+inherits
+
+public_types
+ enum DockWidgetFeature { DockWidgetClosable, DockWidgetMovable, DockWidgetFloatable, DockWidgetVerticalTitleBar, AllDockWidgetFeatures, NoDockWidgetFeatures }
+ flags DockWidgetFeatures
+
+properties
+allowedAreas : Qt::DockWidgetAreas
+features : DockWidgetFeatures
+floating : bool
+windowTitle : QString
+
+public_functions
+QDockWidget ( const QString & title, QWidget * parent = 0, Qt::WindowFlags flags = 0 )
+QDockWidget ( QWidget * parent = 0, Qt::WindowFlags flags = 0 )
+~QDockWidget ()
+ Qt::DockWidgetAreas allowedAreas () const
+ DockWidgetFeatures features () const
+ bool isAreaAllowed ( Qt::DockWidgetArea area ) const
+ bool isFloating () const
+ void setAllowedAreas ( Qt::DockWidgetAreas areas )
+ void setFeatures ( DockWidgetFeatures features )
+ void setFloating ( bool floating )
+ void setTitleBarWidget ( QWidget * widget )
+ void setWidget ( QWidget * widget )
+ QWidget * titleBarWidget () const
+ QAction * toggleViewAction () const
+ QWidget * widget () const
+
+public_slots
+
+signals
+ void allowedAreasChanged ( Qt::DockWidgetAreas allowedAreas )
+ void dockLocationChanged ( Qt::DockWidgetArea area )
+ void featuresChanged ( QDockWidget::DockWidgetFeatures features )
+ void topLevelChanged ( bool topLevel )
+ void visibilityChanged ( bool visible )
+
+static_public_members
+
+protected_functions
+ void initStyleOption ( QStyleOptionDockWidget * option ) const
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * event )
+ virtual void closeEvent ( QCloseEvent * event )
+ virtual bool event ( QEvent * event )
+ virtual void paintEvent ( QPaintEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+DockWidgetFeatures
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+class_name
+QDockWidget
+name
+DockWidgetFeature
+key
+DockWidgetClosable
+DockWidgetMovable
+DockWidgetFloatable
+DockWidgetVerticalTitleBar
+AllDockWidgetFeatures
+NoDockWidgetFeatures
+public_flag
+true
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

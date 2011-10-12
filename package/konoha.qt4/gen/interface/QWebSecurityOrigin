@@ -1,0 +1,65 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwebsecurityorigin.html
+
+output_urn
+QWebSecurityOrigin
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QWebSecurityOrigin ( const QWebSecurityOrigin & other )
+~QWebSecurityOrigin ()
+ qint64 databaseQuota () const
+ qint64 databaseUsage () const
+ QList<QWebDatabase> databases () const
+ QString host () const
+ int port () const
+ QString scheme () const
+ void setDatabaseQuota ( qint64 quota )
+ QWebSecurityOrigin & operator= ( const QWebSecurityOrigin & other )
+
+public_slots
+
+signals
+
+static_public_members
+ void addLocalScheme ( const QString & scheme )
+ QList<QWebSecurityOrigin> allOrigins ()
+ QStringList localSchemes ()
+ void removeLocalScheme ( const QString & scheme )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

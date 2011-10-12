@@ -1,0 +1,99 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextlayout.html
+
+output_urn
+QTextLayout
+
+inherits
+
+public_types
+ class FormatRange
+ enum CursorMode { SkipCharacters, SkipWords }
+
+properties
+
+public_functions
+QTextLayout ()
+QTextLayout ( const QString & text )
+QTextLayout ( const QString & text, const QFont & font, QPaintDevice * paintdevice = 0 )
+~QTextLayout ()
+ QList<FormatRange> additionalFormats () const
+ void beginLayout ()
+ QRectF boundingRect () const
+ bool cacheEnabled () const
+ void clearAdditionalFormats ()
+ void clearLayout ()
+ QTextLine createLine ()
+ void draw ( QPainter * p, const QPointF & pos, const QVector<FormatRange> & selections = QVector<FormatRange> (), const QRectF & clip = QRectF() ) const
+ void drawCursor ( QPainter * painter, const QPointF & position, int cursorPosition, int width ) const
+ void drawCursor ( QPainter * painter, const QPointF & position, int cursorPosition ) const
+ void endLayout ()
+ QFont font () const
+ bool isValidCursorPosition ( int pos ) const
+ QTextLine lineAt ( int i ) const
+ int lineCount () const
+ QTextLine lineForTextPosition ( int pos ) const
+ qreal maximumWidth () const
+ qreal minimumWidth () const
+ int nextCursorPosition ( int oldPos, CursorMode mode = SkipCharacters ) const
+ QPointF position () const
+ int preeditAreaPosition () const
+ QString preeditAreaText () const
+ int previousCursorPosition ( int oldPos, CursorMode mode = SkipCharacters ) const
+ void setAdditionalFormats ( const QList<FormatRange> & formatList )
+ void setCacheEnabled ( bool enable )
+ void setFont ( const QFont & font )
+ void setPosition ( const QPointF & p )
+ void setPreeditArea ( int position, const QString & text )
+ void setText ( const QString & string )
+ void setTextOption ( const QTextOption & option )
+ QString text () const
+ QTextOption textOption () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+FormatRange
+
+parent_typedefed_objects
+
+enums
+class_name
+QTextLayout
+name
+CursorMode
+key
+SkipCharacters
+SkipWords
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

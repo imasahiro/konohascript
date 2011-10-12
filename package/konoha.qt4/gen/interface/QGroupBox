@@ -1,0 +1,93 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgroupbox.html
+
+output_urn
+QGroupBox
+
+inherits
+
+public_types
+
+properties
+alignment : Qt::Alignment
+checkable : bool
+checked : bool
+
+public_functions
+QGroupBox ( QWidget * parent = 0 )
+QGroupBox ( const QString & title, QWidget * parent = 0 )
+~QGroupBox ()
+ Qt::Alignment alignment () const
+ bool isCheckable () const
+ bool isChecked () const
+ bool isFlat () const
+ void setAlignment ( int alignment )
+ void setCheckable ( bool checkable )
+ void setFlat ( bool flat )
+ void setTitle ( const QString & title )
+ QString title () const
+
+public_slots
+ void setChecked ( bool checked )
+
+signals
+ void clicked ( bool checked = false )
+ void toggled ( bool on )
+
+static_public_members
+
+protected_functions
+ void initStyleOption ( QStyleOptionGroupBox * option ) const
+
+reimplemented_public_functions
+ virtual QSize minimumSizeHint () const
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * ev )
+ virtual void childEvent ( QChildEvent * c )
+ virtual bool event ( QEvent * e )
+ virtual void focusInEvent ( QFocusEvent * fe )
+ virtual void mouseMoveEvent ( QMouseEvent * event )
+ virtual void mousePressEvent ( QMouseEvent * event )
+ virtual void mouseReleaseEvent ( QMouseEvent * event )
+ virtual void paintEvent ( QPaintEvent * event )
+ virtual void resizeEvent ( QResizeEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

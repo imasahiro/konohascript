@@ -1,0 +1,132 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdbusconnection.html
+
+output_urn
+QDBusConnection
+
+inherits
+
+public_types
+ enum BusType { SessionBus, SystemBus, ActivationBus }
+ enum RegisterOption { ExportAdaptors, ExportScriptableSlots, ExportScriptableSignals, ExportScriptableProperties, ..., ExportChildObjects }
+ flags RegisterOptions
+ enum UnregisterMode { UnregisterNode, UnregisterTree }
+
+properties
+
+public_functions
+QDBusConnection ( const QString & name )
+QDBusConnection ( const QDBusConnection & other )
+~QDBusConnection ()
+ QDBusPendingCall asyncCall ( const QDBusMessage & message, int timeout = -1 ) const
+ QString baseService () const
+ QDBusMessage call ( const QDBusMessage & message, QDBus::CallMode mode = QDBus::Block, int timeout = -1 ) const
+ bool callWithCallback ( const QDBusMessage & message, QObject * receiver, const char * returnMethod, const char * errorMethod, int timeout = -1 ) const
+ bool callWithCallback ( const QDBusMessage & message, QObject * receiver, const char * returnMethod, int timeout = -1 ) const (deprecated)
+ bool connect ( const QString & service, const QString & path, const QString & interface, const QString & name, QObject * receiver, const char * slot )
+ bool connect ( const QString & service, const QString & path, const QString & interface, const QString & name, const QString & signature, QObject * receiver, const char * slot )
+ bool connect ( const QString & service, const QString & path, const QString & interface, const QString & name, const QStringList & argumentMatch, const QString & signature, QObject * receiver, const char * slot )
+ bool disconnect ( const QString & service, const QString & path, const QString & interface, const QString & name, QObject * receiver, const char * slot )
+ bool disconnect ( const QString & service, const QString & path, const QString & interface, const QString & name, const QString & signature, QObject * receiver, const char * slot )
+ bool disconnect ( const QString & service, const QString & path, const QString & interface, const QString & name, const QStringList & argumentMatch, const QString & signature, QObject * receiver, const char * slot )
+ QDBusConnectionInterface * interface () const
+ bool isConnected () const
+ QDBusError lastError () const
+ QString name () const
+ QObject * objectRegisteredAt ( const QString & path ) const
+ bool registerObject ( const QString & path, QObject * object, RegisterOptions options = ExportAdaptors )
+ bool registerService ( const QString & serviceName )
+ bool send ( const QDBusMessage & message ) const
+ void unregisterObject ( const QString & path, UnregisterMode mode = UnregisterNode )
+ bool unregisterService ( const QString & serviceName )
+ QDBusConnection & operator= ( const QDBusConnection & other )
+
+public_slots
+
+signals
+
+static_public_members
+ QDBusConnection connectToBus ( BusType type, const QString & name )
+ QDBusConnection connectToBus ( const QString & address, const QString & name )
+ void disconnectFromBus ( const QString & name )
+ QDBusConnection sender ()
+ QDBusConnection sessionBus ()
+ QDBusConnection systemBus ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDBusConnection sessionBus ()
+ QDBusConnection systemBus ()
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+RegisterOptions
+
+parent_typedefed_objects
+
+enums
+class_name
+QDBusConnection
+name
+BusType
+key
+SessionBus
+SystemBus
+ActivationBus
+public_flag
+true
+class_name
+QDBusConnection
+name
+RegisterOption
+key
+ExportAdaptors
+ExportScriptableSlots
+ExportScriptableSignals
+ExportScriptableProperties
+ExportScriptableInvokables
+ExportScriptableContents
+ExportNonScriptableSlots
+ExportNonScriptableSignals
+ExportNonScriptableProperties
+ExportNonScriptableInvokables
+ExportNonScriptableContents
+ExportAllSlots
+ExportAllSignals
+ExportAllProperties
+ExportAllInvokables
+ExportAllContents
+ExportChildObjects
+public_flag
+true
+class_name
+QDBusConnection
+name
+UnregisterMode
+key
+UnregisterNode
+UnregisterTree
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

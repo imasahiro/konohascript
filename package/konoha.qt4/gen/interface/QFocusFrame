@@ -1,0 +1,72 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qfocusframe.html
+
+output_urn
+QFocusFrame
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QFocusFrame ( QWidget * parent = 0 )
+~QFocusFrame ()
+ void setWidget ( QWidget * widget )
+ QWidget * widget () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ void initStyleOption ( QStyleOption * option ) const
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+ virtual bool eventFilter ( QObject * o, QEvent * e )
+ virtual void paintEvent ( QPaintEvent * )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

@@ -1,0 +1,74 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qitemselectionrange.html
+
+output_urn
+QItemSelectionRange
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QItemSelectionRange ()
+QItemSelectionRange ( const QItemSelectionRange & other )
+QItemSelectionRange ( const QModelIndex & topLeft, const QModelIndex & bottomRight )
+QItemSelectionRange ( const QModelIndex & index )
+ int bottom () const
+ QModelIndex bottomRight () const
+ bool contains ( const QModelIndex & index ) const
+ bool contains ( int row, int column, const QModelIndex & parentIndex ) const
+ int height () const
+ QModelIndexList indexes () const
+ QItemSelectionRange intersected ( const QItemSelectionRange & other ) const
+ bool intersects ( const QItemSelectionRange & other ) const
+ bool isEmpty () const
+ bool isValid () const
+ int left () const
+ const QAbstractItemModel * model () const
+ QModelIndex parent () const
+ int right () const
+ int top () const
+ QModelIndex topLeft () const
+ int width () const
+ bool operator!= ( const QItemSelectionRange & other ) const
+ bool operator== ( const QItemSelectionRange & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

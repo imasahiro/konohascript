@@ -1,0 +1,117 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdbusargument.html
+
+output_urn
+QDBusArgument
+
+inherits
+
+public_types
+ enum ElementType { BasicType, VariantType, ArrayType, StructureType, ..., UnknownType }
+
+properties
+
+public_functions
+QDBusArgument ()
+QDBusArgument ( const QDBusArgument & other )
+~QDBusArgument ()
+ QVariant asVariant () const
+ bool atEnd () const
+ void beginArray ( int id )
+ void beginArray () const
+ void beginMap ( int kid, int vid )
+ void beginMap () const
+ void beginMapEntry ()
+ void beginMapEntry () const
+ void beginStructure ()
+ void beginStructure () const
+ ElementType currentType () const
+ void endArray ()
+ void endArray () const
+ void endMap ()
+ void endMap () const
+ void endMapEntry ()
+ void endMapEntry () const
+ void endStructure ()
+ void endStructure () const
+ QDBusArgument & operator<< ( uchar arg )
+ QDBusArgument & operator<< ( bool arg )
+ QDBusArgument & operator<< ( short arg )
+ QDBusArgument & operator<< ( ushort arg )
+ QDBusArgument & operator<< ( int arg )
+ QDBusArgument & operator<< ( uint arg )
+ QDBusArgument & operator<< ( qlonglong arg )
+ QDBusArgument & operator<< ( qulonglong arg )
+ QDBusArgument & operator<< ( double arg )
+ QDBusArgument & operator<< ( const QString & arg )
+ QDBusArgument & operator<< ( const QDBusVariant & arg )
+ QDBusArgument & operator<< ( const QStringList & arg )
+ QDBusArgument & operator<< ( const QByteArray & arg )
+ QDBusArgument & operator= ( const QDBusArgument & other )
+ const QDBusArgument & operator>> ( uchar & arg ) const
+ const QDBusArgument & operator>> ( bool & arg ) const
+ const QDBusArgument & operator>> ( ushort & arg ) const
+ const QDBusArgument & operator>> ( short & arg ) const
+ const QDBusArgument & operator>> ( int & arg ) const
+ const QDBusArgument & operator>> ( uint & arg ) const
+ const QDBusArgument & operator>> ( qlonglong & arg ) const
+ const QDBusArgument & operator>> ( qulonglong & arg ) const
+ const QDBusArgument & operator>> ( double & arg ) const
+ const QDBusArgument & operator>> ( QString & arg ) const
+ const QDBusArgument & operator>> ( QDBusVariant & arg ) const
+ const QDBusArgument & operator>> ( QStringList & arg ) const
+ const QDBusArgument & operator>> ( QByteArray & arg ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ int qDBusRegisterMetaType ()
+ T qdbus_cast ( const QDBusArgument & argument )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDBusArgument
+name
+ElementType
+key
+BasicType
+VariantType
+ArrayType
+StructureType
+MapType
+MapEntryType
+UnknownType
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

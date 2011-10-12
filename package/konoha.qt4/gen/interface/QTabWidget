@@ -1,0 +1,149 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtabwidget.html
+
+output_urn
+QTabWidget
+
+inherits
+
+public_types
+ enum TabPosition { North, South, West, East }
+ enum TabShape { Rounded, Triangular }
+
+properties
+count : const int
+currentIndex : int
+documentMode : bool
+elideMode : Qt::TextElideMode
+iconSize : QSize
+
+public_functions
+QTabWidget ( QWidget * parent = 0 )
+~QTabWidget ()
+ int addTab ( QWidget * page, const QString & label )
+ int addTab ( QWidget * page, const QIcon & icon, const QString & label )
+ void clear ()
+ QWidget * cornerWidget ( Qt::Corner corner = Qt::TopRightCorner ) const
+ int count () const
+ int currentIndex () const
+ QWidget * currentWidget () const
+ bool documentMode () const
+ Qt::TextElideMode elideMode () const
+ QSize iconSize () const
+ int indexOf ( QWidget * w ) const
+ int insertTab ( int index, QWidget * page, const QString & label )
+ int insertTab ( int index, QWidget * page, const QIcon & icon, const QString & label )
+ bool isMovable () const
+ bool isTabEnabled ( int index ) const
+ void removeTab ( int index )
+ void setCornerWidget ( QWidget * widget, Qt::Corner corner = Qt::TopRightCorner )
+ void setDocumentMode ( bool set )
+ void setElideMode ( Qt::TextElideMode )
+ void setIconSize ( const QSize & size )
+ void setMovable ( bool movable )
+ void setTabEnabled ( int index, bool enable )
+ void setTabIcon ( int index, const QIcon & icon )
+ void setTabPosition ( TabPosition )
+ void setTabShape ( TabShape s )
+ void setTabText ( int index, const QString & label )
+ void setTabToolTip ( int index, const QString & tip )
+ void setTabWhatsThis ( int index, const QString & text )
+ void setTabsClosable ( bool closeable )
+ void setUsesScrollButtons ( bool useButtons )
+ QIcon tabIcon ( int index ) const
+ TabPosition tabPosition () const
+ TabShape tabShape () const
+ QString tabText ( int index ) const
+ QString tabToolTip ( int index ) const
+ QString tabWhatsThis ( int index ) const
+ bool tabsClosable () const
+ bool usesScrollButtons () const
+ QWidget * widget ( int index ) const
+
+public_slots
+ void setCurrentIndex ( int index )
+ void setCurrentWidget ( QWidget * widget )
+
+signals
+ void currentChanged ( int index )
+ void tabCloseRequested ( int index )
+
+static_public_members
+
+protected_functions
+ void initStyleOption ( QStyleOptionTabWidgetFrame * option ) const
+ void setTabBar ( QTabBar * tb )
+ QTabBar * tabBar () const
+ virtual void tabInserted ( int index )
+ virtual void tabRemoved ( int index )
+
+reimplemented_public_functions
+ virtual QSize minimumSizeHint () const
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * ev )
+ virtual bool event ( QEvent * ev )
+ virtual void keyPressEvent ( QKeyEvent * e )
+ virtual void paintEvent ( QPaintEvent * event )
+ virtual void resizeEvent ( QResizeEvent * e )
+ virtual void showEvent ( QShowEvent * )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+class_name
+QTabWidget
+name
+TabPosition
+key
+North
+South
+West
+East
+public_flag
+true
+class_name
+QTabWidget
+name
+TabShape
+key
+Rounded
+Triangular
+public_flag
+true
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

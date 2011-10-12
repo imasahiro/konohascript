@@ -1,0 +1,177 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdatetimeedit.html
+
+output_urn
+QDateTimeEdit
+
+inherits
+
+public_types
+ enum Section { NoSection, AmPmSection, MSecSection, SecondSection, ..., YearSection }
+ flags Sections
+
+properties
+calendarPopup : bool
+currentSection : Section
+currentSectionIndex : int
+date : QDate
+dateTime : QDateTime
+displayFormat : QString
+displayedSections : const Sections
+maximumDate : QDate
+
+public_functions
+QDateTimeEdit ( QWidget * parent = 0 )
+QDateTimeEdit ( const QDateTime & datetime, QWidget * parent = 0 )
+QDateTimeEdit ( const QDate & date, QWidget * parent = 0 )
+QDateTimeEdit ( const QTime & time, QWidget * parent = 0 )
+ bool calendarPopup () const
+ QCalendarWidget * calendarWidget () const
+ void clearMaximumDate ()
+ void clearMaximumDateTime ()
+ void clearMaximumTime ()
+ void clearMinimumDate ()
+ void clearMinimumDateTime ()
+ void clearMinimumTime ()
+ Section currentSection () const
+ int currentSectionIndex () const
+ QDate date () const
+ QDateTime dateTime () const
+ QString displayFormat () const
+ Sections displayedSections () const
+ QDate maximumDate () const
+ QDateTime maximumDateTime () const
+ QTime maximumTime () const
+ QDate minimumDate () const
+ QDateTime minimumDateTime () const
+ QTime minimumTime () const
+ Section sectionAt ( int index ) const
+ int sectionCount () const
+ QString sectionText ( Section section ) const
+ void setCalendarPopup ( bool enable )
+ void setCalendarWidget ( QCalendarWidget * calendarWidget )
+ void setCurrentSection ( Section section )
+ void setCurrentSectionIndex ( int index )
+ void setDateRange ( const QDate & min, const QDate & max )
+ void setDateTimeRange ( const QDateTime & min, const QDateTime & max )
+ void setDisplayFormat ( const QString & format )
+ void setMaximumDate ( const QDate & max )
+ void setMaximumDateTime ( const QDateTime & dt )
+ void setMaximumTime ( const QTime & max )
+ void setMinimumDate ( const QDate & min )
+ void setMinimumDateTime ( const QDateTime & dt )
+ void setMinimumTime ( const QTime & min )
+ void setSelectedSection ( Section section )
+ void setTimeRange ( const QTime & min, const QTime & max )
+ void setTimeSpec ( Qt::TimeSpec spec )
+ QTime time () const
+ Qt::TimeSpec timeSpec () const
+
+public_slots
+ void setDate ( const QDate & date )
+ void setDateTime ( const QDateTime & dateTime )
+ void setTime ( const QTime & time )
+
+signals
+ void dateChanged ( const QDate & date )
+ void dateTimeChanged ( const QDateTime & datetime )
+ void timeChanged ( const QTime & time )
+
+static_public_members
+
+protected_functions
+ virtual QDateTime dateTimeFromText ( const QString & text ) const
+ void initStyleOption ( QStyleOptionSpinBox * option ) const
+ virtual QString textFromDateTime ( const QDateTime & dateTime ) const
+
+reimplemented_public_functions
+ virtual void clear ()
+ virtual bool event ( QEvent * event )
+ virtual QSize sizeHint () const
+ virtual void stepBy ( int steps )
+
+reimplemented_protected_functions
+ virtual void fixup ( QString & input ) const
+ virtual void focusInEvent ( QFocusEvent * event )
+ virtual bool focusNextPrevChild ( bool next )
+ virtual void keyPressEvent ( QKeyEvent * event )
+ virtual void mousePressEvent ( QMouseEvent * event )
+ virtual void paintEvent ( QPaintEvent * event )
+ virtual StepEnabled stepEnabled () const
+ virtual QValidator::State validate ( QString & text, int & pos ) const
+ virtual void wheelEvent ( QWheelEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+Sections
+
+parent_typedefed_objects
+StepEnabled
+
+enums
+class_name
+QDateTimeEdit
+name
+Section
+key
+NoSection
+AmPmSection
+MSecSection
+SecondSection
+MinuteSection
+HourSection
+DaySection
+MonthSection
+YearSection
+public_flag
+true
+
+parent_enums
+class_name
+QAbstractSpinBox
+name
+ButtonSymbols
+key
+UpDownArrows
+PlusMinus
+NoButtons
+public_flag
+true
+class_name
+QAbstractSpinBox
+name
+CorrectionMode
+key
+CorrectToPreviousValue
+CorrectToNearestValue
+public_flag
+true
+class_name
+QAbstractSpinBox
+name
+StepEnabledFlag
+key
+StepNone
+StepUpEnabled
+StepDownEnabled
+public_flag
+true
+
+parent_index
+674
+
+parent_name
+QAbstractSpinBox
+

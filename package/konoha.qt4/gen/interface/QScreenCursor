@@ -1,0 +1,63 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qscreencursor.html
+
+output_urn
+QScreenCursor
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QScreenCursor ()
+ virtual ~QScreenCursor ()
+ QRect boundingRect () const
+ virtual void hide ()
+ QImage image () const
+ bool isAccelerated () const
+ bool isVisible () const
+ virtual void move ( int x, int y )
+ virtual void set ( const QImage & image, int hotx, int hoty )
+ virtual void show ()
+
+public_slots
+
+signals
+
+static_public_members
+ void initSoftwareCursor ()
+ QScreenCursor * instance ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+true
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,75 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qaudiooutput.html
+
+output_urn
+QAudioOutput
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QAudioOutput ( const QAudioFormat & format = QAudioFormat(), QObject * parent = 0 )
+QAudioOutput ( const QAudioDeviceInfo & audioDevice, const QAudioFormat & format = QAudioFormat(), QObject * parent = 0 )
+~QAudioOutput ()
+ int bufferSize () const
+ int bytesFree () const
+ qint64 elapsedUSecs () const
+ QAudio::Error error () const
+ QAudioFormat format () const
+ int notifyInterval () const
+ int periodSize () const
+ qint64 processedUSecs () const
+ void reset ()
+ void resume ()
+ void setBufferSize ( int value )
+ void setNotifyInterval ( int ms )
+ void start ( QIODevice * device )
+ QIODevice * start ()
+ QAudio::State state () const
+ void stop ()
+ void suspend ()
+
+public_slots
+
+signals
+ void notify ()
+ void stateChanged ( QAudio::State state )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

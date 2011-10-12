@@ -1,0 +1,71 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextitem.html
+
+output_urn
+QTextItem
+
+inherits
+
+public_types
+ enum RenderFlag { RightToLeft, Overline, Underline, StrikeOut }
+ flags RenderFlags
+
+properties
+
+public_functions
+ qreal ascent () const
+ qreal descent () const
+ QFont font () const
+ RenderFlags renderFlags () const
+ QString text () const
+ qreal width () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+RenderFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QTextItem
+name
+RenderFlag
+key
+RightToLeft
+Overline
+Underline
+StrikeOut
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,67 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qcache.html
+
+output_urn
+QCache
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QCache ( int maxCost = 100 )
+~QCache ()
+ void clear ()
+ bool contains ( const Key & key ) const
+ int count () const
+ bool insert ( const Key & key, T * object, int cost = 1 )
+ bool isEmpty () const
+ QList<Key> keys () const
+ int maxCost () const
+ T * object ( const Key & key ) const
+ bool remove ( const Key & key )
+ void setMaxCost ( int cost )
+ int size () const
+ T * take ( const Key & key )
+ int totalCost () const
+ T * operator[] ( const Key & key ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+true
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

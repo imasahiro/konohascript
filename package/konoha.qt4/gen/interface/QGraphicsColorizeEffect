@@ -1,0 +1,86 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgraphicscolorizeeffect.html
+
+output_urn
+QGraphicsColorizeEffect
+
+inherits
+
+public_types
+
+properties
+color : QColor
+strength : qreal
+
+public_functions
+QGraphicsColorizeEffect ( QObject * parent = 0 )
+~QGraphicsColorizeEffect ()
+ QColor color () const
+ qreal strength () const
+
+public_slots
+ void setColor ( const QColor & c )
+ void setStrength ( qreal strength )
+
+signals
+ void colorChanged ( const QColor & color )
+ void strengthChanged ( qreal strength )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual void draw ( QPainter * painter )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+ChangeFlags
+
+enums
+
+parent_enums
+class_name
+QGraphicsEffect
+name
+ChangeFlag
+key
+SourceAttached
+SourceDetached
+SourceBoundingRectChanged
+SourceInvalidated
+public_flag
+true
+class_name
+QGraphicsEffect
+name
+PixmapPadMode
+key
+NoPad
+PadToTransparentBorder
+PadToEffectiveBoundingRect
+public_flag
+true
+
+parent_index
+539
+
+parent_name
+QGraphicsEffect
+

@@ -1,0 +1,60 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdeclarativescriptstring.html
+
+output_urn
+QDeclarativeScriptString
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QDeclarativeScriptString ()
+QDeclarativeScriptString ( const QDeclarativeScriptString & other )
+ QDeclarativeContext * context () const
+ QObject * scopeObject () const
+ QString script () const
+ void setContext ( QDeclarativeContext * context )
+ void setScopeObject ( QObject * object )
+ void setScript ( const QString & script )
+ QDeclarativeScriptString & operator= ( const QDeclarativeScriptString & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

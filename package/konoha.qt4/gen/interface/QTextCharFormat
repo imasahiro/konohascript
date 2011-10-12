@@ -1,0 +1,247 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextcharformat.html
+
+output_urn
+QTextCharFormat
+
+inherits
+
+public_types
+ enum UnderlineStyle { NoUnderline, SingleUnderline, DashUnderline, DotLine, ..., SpellCheckUnderline }
+ enum VerticalAlignment { AlignNormal, AlignSuperScript, AlignSubScript, AlignMiddle, AlignBottom, AlignTop }
+
+properties
+
+public_functions
+QTextCharFormat ()
+ QString anchorHref () const
+ QStringList anchorNames () const
+ QFont font () const
+ QFont::Capitalization fontCapitalization () const
+ QString fontFamily () const
+ bool fontFixedPitch () const
+ bool fontItalic () const
+ bool fontKerning () const
+ qreal fontLetterSpacing () const
+ bool fontOverline () const
+ qreal fontPointSize () const
+ bool fontStrikeOut () const
+ QFont::StyleHint fontStyleHint () const
+ QFont::StyleStrategy fontStyleStrategy () const
+ bool fontUnderline () const
+ int fontWeight () const
+ qreal fontWordSpacing () const
+ bool isAnchor () const
+ bool isValid () const
+ void setAnchor ( bool anchor )
+ void setAnchorHref ( const QString & value )
+ void setAnchorNames ( const QStringList & names )
+ void setFont ( const QFont & font )
+ void setFontCapitalization ( QFont::Capitalization capitalization )
+ void setFontFamily ( const QString & family )
+ void setFontFixedPitch ( bool fixedPitch )
+ void setFontItalic ( bool italic )
+ void setFontKerning ( bool enable )
+ void setFontLetterSpacing ( qreal spacing )
+ void setFontOverline ( bool overline )
+ void setFontPointSize ( qreal size )
+ void setFontStrikeOut ( bool strikeOut )
+ void setFontStyleHint ( QFont::StyleHint hint, QFont::StyleStrategy strategy = QFont::PreferDefault )
+ void setFontStyleStrategy ( QFont::StyleStrategy strategy )
+ void setFontUnderline ( bool underline )
+ void setFontWeight ( int weight )
+ void setFontWordSpacing ( qreal spacing )
+ void setTextOutline ( const QPen & pen )
+ void setToolTip ( const QString & text )
+ void setUnderlineColor ( const QColor & color )
+ void setUnderlineStyle ( UnderlineStyle style )
+ void setVerticalAlignment ( VerticalAlignment alignment )
+ QPen textOutline () const
+ QString toolTip () const
+ QColor underlineColor () const
+ UnderlineStyle underlineStyle () const
+ VerticalAlignment verticalAlignment () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+PageBreakFlags
+
+enums
+class_name
+QTextCharFormat
+name
+UnderlineStyle
+key
+NoUnderline
+SingleUnderline
+DashUnderline
+DotLine
+DashDotLine
+DashDotDotLine
+WaveUnderline
+SpellCheckUnderline
+public_flag
+true
+class_name
+QTextCharFormat
+name
+VerticalAlignment
+key
+AlignNormal
+AlignSuperScript
+AlignSubScript
+AlignMiddle
+AlignBottom
+AlignTop
+public_flag
+true
+
+parent_enums
+class_name
+QTextFormat
+name
+FormatType
+key
+InvalidFormat
+BlockFormat
+CharFormat
+ListFormat
+TableFormat
+FrameFormat
+UserFormat
+public_flag
+true
+class_name
+QTextFormat
+name
+ObjectTypes
+key
+NoObject
+ImageObject
+TableObject
+TableCellObject
+UserObject
+public_flag
+true
+class_name
+QTextFormat
+name
+PageBreakFlag
+key
+PageBreak_Auto
+PageBreak_AlwaysBefore
+PageBreak_AlwaysAfter
+public_flag
+true
+class_name
+QTextFormat
+name
+Property
+key
+ObjectIndex
+CssFloat
+LayoutDirection
+OutlinePen
+ForegroundBrush
+BackgroundBrush
+BackgroundImageUrl
+BlockAlignment
+BlockTopMargin
+BlockBottomMargin
+BlockLeftMargin
+BlockRightMargin
+TextIndent
+TabPositions
+BlockIndent
+BlockNonBreakableLines
+BlockTrailingHorizontalRulerWidth
+FontFamily
+FontPointSize
+FontPixelSize
+FontSizeAdjustment
+FontFixedPitch
+FontWeight
+FontItalic
+FontUnderline
+FontOverline
+FontStrikeOut
+FontCapitalization
+FontLetterSpacing
+FontWordSpacing
+FontStyleHint
+FontStyleStrategy
+FontKerning
+TextUnderlineColor
+TextVerticalAlignment
+TextOutline
+TextUnderlineStyle
+TextToolTip
+IsAnchor
+AnchorHref
+AnchorName
+ObjectType
+ListStyle
+ListIndent
+FrameBorder
+FrameBorderBrush
+FrameBorderStyle
+FrameBottomMargin
+FrameHeight
+FrameLeftMargin
+FrameMargin
+FramePadding
+FrameRightMargin
+FrameTopMargin
+FrameWidth
+TableCellSpacing
+TableCellPadding
+TableColumns
+TableColumnWidthConstraints
+TableHeaderRowCount
+TableCellRowSpan
+TableCellColumnSpan
+TableCellLeftPadding
+TableCellRightPadding
+TableCellTopPadding
+TableCellBottomPadding
+ImageName
+ImageWidth
+ImageHeight
+FullWidthSelection
+PageBreakPolicy
+UserProperty
+public_flag
+true
+
+parent_index
+170
+
+parent_name
+QTextFormat
+

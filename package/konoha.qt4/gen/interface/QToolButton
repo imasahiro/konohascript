@@ -1,0 +1,98 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtoolbutton.html
+
+output_urn
+QToolButton
+
+inherits
+
+public_types
+ enum ToolButtonPopupMode { DelayedPopup, MenuButtonPopup, InstantPopup }
+
+properties
+arrowType : Qt::ArrowType
+autoRaise : bool
+popupMode : ToolButtonPopupMode
+toolButtonStyle : Qt::ToolButtonStyle
+
+public_functions
+QToolButton ( QWidget * parent = 0 )
+~QToolButton ()
+ Qt::ArrowType arrowType () const
+ bool autoRaise () const
+ QAction * defaultAction () const
+ QMenu * menu () const
+ ToolButtonPopupMode popupMode () const
+ void setArrowType ( Qt::ArrowType type )
+ void setAutoRaise ( bool enable )
+ void setMenu ( QMenu * menu )
+ void setPopupMode ( ToolButtonPopupMode mode )
+ Qt::ToolButtonStyle toolButtonStyle () const
+
+public_slots
+ void setDefaultAction ( QAction * action )
+ void setToolButtonStyle ( Qt::ToolButtonStyle style )
+ void showMenu ()
+
+signals
+ void triggered ( QAction * action )
+
+static_public_members
+
+protected_functions
+ void initStyleOption ( QStyleOptionToolButton * option ) const
+
+reimplemented_public_functions
+ virtual QSize minimumSizeHint () const
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual void actionEvent ( QActionEvent * event )
+ virtual void changeEvent ( QEvent * e )
+ virtual void enterEvent ( QEvent * e )
+ virtual bool event ( QEvent * event )
+ virtual bool hitButton ( const QPoint & pos ) const
+ virtual void leaveEvent ( QEvent * e )
+ virtual void mousePressEvent ( QMouseEvent * e )
+ virtual void mouseReleaseEvent ( QMouseEvent * e )
+ virtual void nextCheckState ()
+ virtual void paintEvent ( QPaintEvent * event )
+ virtual void timerEvent ( QTimerEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QToolButton
+name
+ToolButtonPopupMode
+key
+DelayedPopup
+MenuButtonPopup
+InstantPopup
+public_flag
+true
+
+parent_enums
+
+parent_index
+238
+
+parent_name
+QAbstractButton
+

@@ -1,0 +1,139 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qhttp.html
+
+output_urn
+QHttp
+
+inherits
+
+public_types
+ enum ConnectionMode { ConnectionModeHttp, ConnectionModeHttps }
+ enum Error { NoError, HostNotFound, ConnectionRefused, UnexpectedClose, ..., UnknownError }
+ enum State { Unconnected, HostLookup, Connecting, Sending, ..., Closing }
+
+properties
+
+public_functions
+QHttp ( QObject * parent = 0 )
+QHttp ( const QString & hostName, quint16 port = 80, QObject * parent = 0 )
+QHttp ( const QString & hostName, ConnectionMode mode, quint16 port = 0, QObject * parent = 0 )
+ virtual ~QHttp ()
+ qint64 bytesAvailable () const
+ void clearPendingRequests ()
+ int close ()
+ QIODevice * currentDestinationDevice () const
+ int currentId () const
+ QHttpRequestHeader currentRequest () const
+ QIODevice * currentSourceDevice () const
+ Error error () const
+ QString errorString () const
+ int get ( const QString & path, QIODevice * to = 0 )
+ bool hasPendingRequests () const
+ int head ( const QString & path )
+ QHttpResponseHeader lastResponse () const
+ int post ( const QString & path, QIODevice * data, QIODevice * to = 0 )
+ int post ( const QString & path, const QByteArray & data, QIODevice * to = 0 )
+ qint64 read ( char * data, qint64 maxlen )
+ QByteArray readAll ()
+ int request ( const QHttpRequestHeader & header, QIODevice * data = 0, QIODevice * to = 0 )
+ int request ( const QHttpRequestHeader & header, const QByteArray & data, QIODevice * to = 0 )
+ int setHost ( const QString & hostName, quint16 port = 80 )
+ int setHost ( const QString & hostName, ConnectionMode mode, quint16 port = 0 )
+ int setProxy ( const QString & host, int port, const QString & username = QString(), const QString & password = QString() )
+ int setProxy ( const QNetworkProxy & proxy )
+ int setSocket ( QTcpSocket * socket )
+ int setUser ( const QString & userName, const QString & password = QString() )
+ State state () const
+
+public_slots
+ void abort ()
+ void ignoreSslErrors ()
+
+signals
+ void authenticationRequired ( const QString & hostname, quint16 port, QAuthenticator * authenticator )
+ void dataReadProgress ( int done, int total )
+ void dataSendProgress ( int done, int total )
+ void done ( bool error )
+ void proxyAuthenticationRequired ( const QNetworkProxy & proxy, QAuthenticator * authenticator )
+ void readyRead ( const QHttpResponseHeader & resp )
+ void requestFinished ( int id, bool error )
+ void requestStarted ( int id )
+ void responseHeaderReceived ( const QHttpResponseHeader & resp )
+ void sslErrors ( const QList<QSslError> & errors )
+ void stateChanged ( int state )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QHttp
+name
+ConnectionMode
+key
+ConnectionModeHttp
+ConnectionModeHttps
+public_flag
+true
+class_name
+QHttp
+name
+Error
+key
+NoError
+HostNotFound
+ConnectionRefused
+UnexpectedClose
+InvalidResponseHeader
+WrongContentLength
+Aborted
+ProxyAuthenticationRequiredError
+AuthenticationRequiredError
+UnknownError
+public_flag
+true
+class_name
+QHttp
+name
+State
+key
+Unconnected
+HostLookup
+Connecting
+Sending
+Reading
+Connected
+Closing
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

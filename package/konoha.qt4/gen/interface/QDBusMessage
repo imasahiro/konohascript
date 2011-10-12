@@ -1,0 +1,94 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdbusmessage.html
+
+output_urn
+QDBusMessage
+
+inherits
+
+public_types
+ enum MessageType { MethodCallMessage, SignalMessage, ReplyMessage, ErrorMessage, InvalidMessage }
+
+properties
+
+public_functions
+QDBusMessage ()
+QDBusMessage ( const QDBusMessage & other )
+~QDBusMessage ()
+ QList<QVariant> arguments () const
+ bool autoStartService () const
+ QDBusMessage createErrorReply ( const QString name, const QString & msg ) const
+ QDBusMessage createErrorReply ( const QDBusError & error ) const
+ QDBusMessage createErrorReply ( QDBusError::ErrorType type, const QString & msg ) const
+ QDBusMessage createReply ( const QList<QVariant> & arguments = QList<QVariant> () ) const
+ QDBusMessage createReply ( const QVariant & argument ) const
+ QString errorMessage () const
+ QString errorName () const
+ QString interface () const
+ bool isDelayedReply () const
+ bool isReplyRequired () const
+ QString member () const
+ QString path () const
+ QString service () const
+ void setArguments ( const QList<QVariant> & arguments )
+ void setAutoStartService ( bool enable )
+ void setDelayedReply ( bool enable ) const
+ QString signature () const
+ MessageType type () const
+ QDBusMessage & operator<< ( const QVariant & arg )
+ QDBusMessage & operator= ( const QDBusMessage & other )
+
+public_slots
+
+signals
+
+static_public_members
+ QDBusMessage createError ( const QString & name, const QString & msg )
+ QDBusMessage createError ( const QDBusError & error )
+ QDBusMessage createError ( QDBusError::ErrorType type, const QString & msg )
+ QDBusMessage createMethodCall ( const QString & service, const QString & path, const QString & interface, const QString & method )
+ QDBusMessage createSignal ( const QString & path, const QString & interface, const QString & name )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDBusMessage
+name
+MessageType
+key
+MethodCallMessage
+SignalMessage
+ReplyMessage
+ErrorMessage
+InvalidMessage
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

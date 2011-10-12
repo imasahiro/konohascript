@@ -1,0 +1,87 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qundostack.html
+
+output_urn
+QUndoStack
+
+inherits
+
+public_types
+
+properties
+active : bool
+undoLimit : int
+
+public_functions
+QUndoStack ( QObject * parent = 0 )
+~QUndoStack ()
+ void beginMacro ( const QString & text )
+ bool canRedo () const
+ bool canUndo () const
+ int cleanIndex () const
+ void clear ()
+ const QUndoCommand * command ( int index ) const
+ int count () const
+ QAction * createRedoAction ( QObject * parent, const QString & prefix = QString() ) const
+ QAction * createUndoAction ( QObject * parent, const QString & prefix = QString() ) const
+ void endMacro ()
+ int index () const
+ bool isActive () const
+ bool isClean () const
+ void push ( QUndoCommand * cmd )
+ QString redoText () const
+ void setUndoLimit ( int limit )
+ QString text ( int idx ) const
+ int undoLimit () const
+ QString undoText () const
+
+public_slots
+ void redo ()
+ void setActive ( bool active = true )
+ void setClean ()
+ void setIndex ( int idx )
+ void undo ()
+
+signals
+ void canRedoChanged ( bool canRedo )
+ void canUndoChanged ( bool canUndo )
+ void cleanChanged ( bool clean )
+ void indexChanged ( int idx )
+ void redoTextChanged ( const QString & redoText )
+ void undoTextChanged ( const QString & undoText )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

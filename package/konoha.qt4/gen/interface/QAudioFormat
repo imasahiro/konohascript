@@ -1,0 +1,92 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qaudioformat.html
+
+output_urn
+QAudioFormat
+
+inherits
+
+public_types
+ enum Endian { BigEndian, LittleEndian }
+ enum SampleType { Unknown, SignedInt, UnSignedInt, Float }
+
+properties
+
+public_functions
+QAudioFormat ()
+QAudioFormat ( const QAudioFormat & other )
+~QAudioFormat ()
+ QAudioFormat::Endian byteOrder () const
+ int channelCount () const
+ QString codec () const
+ bool isValid () const
+ int sampleRate () const
+ int sampleSize () const
+ QAudioFormat::SampleType sampleType () const
+ void setByteOrder ( QAudioFormat::Endian byteOrder )
+ void setChannelCount ( int channels )
+ void setCodec ( const QString & codec )
+ void setSampleRate ( int samplerate )
+ void setSampleSize ( int sampleSize )
+ void setSampleType ( QAudioFormat::SampleType sampleType )
+ bool operator!= ( const QAudioFormat & other ) const
+ QAudioFormat & operator= ( const QAudioFormat & other )
+ bool operator== ( const QAudioFormat & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QAudioFormat
+name
+Endian
+key
+BigEndian
+LittleEndian
+public_flag
+true
+class_name
+QAudioFormat
+name
+SampleType
+key
+Unknown
+SignedInt
+UnSignedInt
+Float
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

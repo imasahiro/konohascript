@@ -1,0 +1,100 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qcolordialog.html
+
+output_urn
+QColorDialog
+
+inherits
+
+public_types
+ enum ColorDialogOption { ShowAlphaChannel, NoButtons, DontUseNativeDialog }
+ flags ColorDialogOptions
+
+properties
+currentColor : QColor
+options : ColorDialogOptions
+
+public_functions
+QColorDialog ( QWidget * parent = 0 )
+QColorDialog ( const QColor & initial, QWidget * parent = 0 )
+~QColorDialog ()
+ QColor currentColor () const
+ void open ()
+ void open ( QObject * receiver, const char * member )
+ ColorDialogOptions options () const
+ QColor selectedColor () const
+ void setCurrentColor ( const QColor & color )
+ void setOption ( ColorDialogOption option, bool on = true )
+ void setOptions ( ColorDialogOptions options )
+ bool testOption ( ColorDialogOption option ) const
+
+public_slots
+
+signals
+ void colorSelected ( const QColor & color )
+ void currentColorChanged ( const QColor & color )
+
+static_public_members
+ QRgb customColor ( int index )
+ int customCount ()
+ QColor getColor ( const QColor & initial, QWidget * parent, const QString & title, ColorDialogOptions options = 0 )
+ QColor getColor ( const QColor & initial = Qt::white, QWidget * parent = 0 )
+ void setCustomColor ( int index, QRgb color )
+ void setStandardColor ( int index, QRgb color )
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void setVisible ( bool visible )
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * e )
+ virtual void done ( int result )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+ColorDialogOptions
+
+parent_typedefed_objects
+
+enums
+class_name
+QColorDialog
+name
+ColorDialogOption
+key
+ShowAlphaChannel
+NoButtons
+DontUseNativeDialog
+public_flag
+true
+
+parent_enums
+class_name
+QDialog
+name
+DialogCode
+key
+Accepted
+Rejected
+public_flag
+true
+
+parent_index
+719
+
+parent_name
+QDialog
+

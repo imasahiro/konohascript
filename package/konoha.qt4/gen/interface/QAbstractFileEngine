@@ -1,0 +1,185 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractfileengine.html
+
+output_urn
+QAbstractFileEngine
+
+inherits
+
+public_types
+ class ExtensionOption
+ class ExtensionReturn
+ class MapExtensionOption
+ class MapExtensionReturn
+ class UnMapExtensionOption
+ enum Extension { AtEndExtension, FastReadLineExtension, MapExtension, UnMapExtension }
+ enum FileFlag { ReadOwnerPerm, WriteOwnerPerm, ExeOwnerPerm, ReadUserPerm, ..., Refresh }
+ flags FileFlags
+ enum FileName { DefaultName, BaseName, PathName, AbsoluteName, ..., BundleName }
+ enum FileOwner { OwnerUser, OwnerGroup }
+ enum FileTime { CreationTime, ModificationTime, AccessTime }
+ typedef Iterator
+
+properties
+
+public_functions
+ virtual ~QAbstractFileEngine ()
+ bool atEnd () const
+ virtual Iterator * beginEntryList ( QDir::Filters filters, const QStringList & filterNames )
+ virtual bool caseSensitive () const
+ virtual bool close ()
+ virtual bool copy ( const QString & newName )
+ virtual QStringList entryList ( QDir::Filters filters, const QStringList & filterNames ) const
+ QFile::FileError error () const
+ QString errorString () const
+ virtual bool extension ( Extension extension, const ExtensionOption * option = 0, ExtensionReturn * output = 0 )
+ virtual FileFlags fileFlags ( FileFlags type = FileInfoAll ) const
+ virtual QString fileName ( FileName file = DefaultName ) const
+ virtual QDateTime fileTime ( FileTime time ) const
+ virtual bool flush ()
+ virtual int handle () const
+ virtual bool isRelativePath () const
+ virtual bool isSequential () const
+ virtual bool link ( const QString & newName )
+ uchar * map ( qint64 offset, qint64 size, QFile::MemoryMapFlags flags )
+ virtual bool mkdir ( const QString & dirName, bool createParentDirectories ) const
+ virtual bool open ( QIODevice::OpenMode mode )
+ virtual QString owner ( FileOwner owner ) const
+ virtual uint ownerId ( FileOwner owner ) const
+ virtual qint64 pos () const
+ virtual qint64 read ( char * data, qint64 maxlen )
+ virtual qint64 readLine ( char * data, qint64 maxlen )
+ virtual bool remove ()
+ virtual bool rename ( const QString & newName )
+ virtual bool rmdir ( const QString & dirName, bool recurseParentDirectories ) const
+ virtual bool seek ( qint64 offset )
+ virtual void setFileName ( const QString & file )
+ virtual bool setPermissions ( uint perms )
+ virtual bool setSize ( qint64 size )
+ virtual qint64 size () const
+ virtual bool supportsExtension ( Extension extension ) const
+ bool unmap ( uchar * address )
+ virtual qint64 write ( const char * data, qint64 len )
+
+public_slots
+
+signals
+
+static_public_members
+ QAbstractFileEngine * create ( const QString & fileName )
+
+protected_functions
+QAbstractFileEngine ()
+ void setError ( QFile::FileError error, const QString & errorString )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ typedef Iterator
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+ExtensionOption
+ExtensionReturn
+MapExtensionOption
+MapExtensionReturn
+UnMapExtensionOption
+FileFlags
+Iterator
+
+parent_typedefed_objects
+
+enums
+class_name
+QAbstractFileEngine
+name
+Extension
+key
+AtEndExtension
+FastReadLineExtension
+MapExtension
+UnMapExtension
+public_flag
+true
+class_name
+QAbstractFileEngine
+name
+FileFlag
+key
+ReadOwnerPerm
+WriteOwnerPerm
+ExeOwnerPerm
+ReadUserPerm
+WriteUserPerm
+ExeUserPerm
+ReadGroupPerm
+WriteGroupPerm
+ExeGroupPerm
+ReadOtherPerm
+WriteOtherPerm
+ExeOtherPerm
+LinkType
+FileType
+BundleType
+DirectoryType
+HiddenFlag
+ExistsFlag
+RootFlag
+LocalDiskFlag
+Refresh
+public_flag
+true
+class_name
+QAbstractFileEngine
+name
+FileName
+key
+DefaultName
+BaseName
+PathName
+AbsoluteName
+AbsolutePathName
+LinkName
+CanonicalName
+CanonicalPathName
+BundleName
+public_flag
+true
+class_name
+QAbstractFileEngine
+name
+FileOwner
+key
+OwnerUser
+OwnerGroup
+public_flag
+true
+class_name
+QAbstractFileEngine
+name
+FileTime
+key
+CreationTime
+ModificationTime
+AccessTime
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

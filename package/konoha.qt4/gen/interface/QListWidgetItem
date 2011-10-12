@@ -1,0 +1,105 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qlistwidgetitem.html
+
+output_urn
+QListWidgetItem
+
+inherits
+
+public_types
+ enum ItemType { Type, UserType }
+
+properties
+
+public_functions
+QListWidgetItem ( QListWidget * parent = 0, int type = Type )
+QListWidgetItem ( const QString & text, QListWidget * parent = 0, int type = Type )
+QListWidgetItem ( const QIcon & icon, const QString & text, QListWidget * parent = 0, int type = Type )
+QListWidgetItem ( const QListWidgetItem & other )
+ virtual ~QListWidgetItem ()
+ QBrush background () const
+ Qt::CheckState checkState () const
+ virtual QListWidgetItem * clone () const
+ virtual QVariant data ( int role ) const
+ Qt::ItemFlags flags () const
+ QFont font () const
+ QBrush foreground () const
+ QIcon icon () const
+ bool isHidden () const
+ bool isSelected () const
+ QListWidget * listWidget () const
+ virtual void read ( QDataStream & in )
+ void setBackground ( const QBrush & brush )
+ void setCheckState ( Qt::CheckState state )
+ virtual void setData ( int role, const QVariant & value )
+ void setFlags ( Qt::ItemFlags flags )
+ void setFont ( const QFont & font )
+ void setForeground ( const QBrush & brush )
+ void setHidden ( bool hide )
+ void setIcon ( const QIcon & icon )
+ void setSelected ( bool select )
+ void setSizeHint ( const QSize & size )
+ void setStatusTip ( const QString & statusTip )
+ void setText ( const QString & text )
+ void setTextAlignment ( int alignment )
+ void setToolTip ( const QString & toolTip )
+ void setWhatsThis ( const QString & whatsThis )
+ QSize sizeHint () const
+ QString statusTip () const
+ QString text () const
+ int textAlignment () const
+ QString toolTip () const
+ int type () const
+ QString whatsThis () const
+ virtual void write ( QDataStream & out ) const
+ virtual bool operator< ( const QListWidgetItem & other ) const
+ QListWidgetItem & operator= ( const QListWidgetItem & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & out, const QListWidgetItem & item )
+ QDataStream & operator>> ( QDataStream & in, QListWidgetItem & item )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QListWidgetItem
+name
+ItemType
+key
+Type
+UserType
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

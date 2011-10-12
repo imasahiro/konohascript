@@ -1,0 +1,127 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qstylepainter.html
+
+output_urn
+QStylePainter
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QStylePainter ()
+QStylePainter ( QWidget * widget )
+QStylePainter ( QPaintDevice * pd, QWidget * widget )
+ bool begin ( QWidget * widget )
+ bool begin ( QPaintDevice * pd, QWidget * widget )
+ void drawComplexControl ( QStyle::ComplexControl cc, const QStyleOptionComplex & option )
+ void drawControl ( QStyle::ControlElement ce, const QStyleOption & option )
+ void drawItemPixmap ( const QRect & rect, int flags, const QPixmap & pixmap )
+ void drawItemText ( const QRect & rect, int flags, const QPalette & pal, bool enabled, const QString & text, QPalette::ColorRole textRole = QPalette::NoRole )
+ void drawPrimitive ( QStyle::PrimitiveElement pe, const QStyleOption & option )
+ QStyle * style () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+PixmapFragment
+PixmapFragmentHints
+RenderHints
+
+enums
+
+parent_enums
+class_name
+QPainter
+name
+CompositionMode
+key
+CompositionMode_SourceOver
+CompositionMode_DestinationOver
+CompositionMode_Clear
+CompositionMode_Source
+CompositionMode_Destination
+CompositionMode_SourceIn
+CompositionMode_DestinationIn
+CompositionMode_SourceOut
+CompositionMode_DestinationOut
+CompositionMode_SourceAtop
+CompositionMode_DestinationAtop
+CompositionMode_Xor
+CompositionMode_Plus
+CompositionMode_Multiply
+CompositionMode_Screen
+CompositionMode_Overlay
+CompositionMode_Darken
+CompositionMode_Lighten
+CompositionMode_ColorDodge
+CompositionMode_ColorBurn
+CompositionMode_HardLight
+CompositionMode_SoftLight
+CompositionMode_Difference
+CompositionMode_Exclusion
+RasterOp_SourceOrDestination
+RasterOp_SourceAndDestination
+RasterOp_SourceXorDestination
+RasterOp_NotSourceAndNotDestination
+RasterOp_NotSourceOrNotDestination
+RasterOp_NotSourceXorDestination
+RasterOp_NotSource
+RasterOp_NotSourceAndDestination
+RasterOp_SourceAndNotDestination
+public_flag
+true
+class_name
+QPainter
+name
+PixmapFragmentHint
+key
+OpaqueHint
+public_flag
+true
+class_name
+QPainter
+name
+RenderHint
+key
+Antialiasing
+TextAntialiasing
+SmoothPixmapTransform
+HighQualityAntialiasing
+NonCosmeticDefaultPen
+public_flag
+true
+
+parent_index
+225
+
+parent_name
+QPainter
+

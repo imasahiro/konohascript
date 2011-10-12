@@ -1,0 +1,69 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qaudiodeviceinfo.html
+
+output_urn
+QAudioDeviceInfo
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QAudioDeviceInfo ()
+QAudioDeviceInfo ( const QAudioDeviceInfo & other )
+~QAudioDeviceInfo ()
+ QString deviceName () const
+ bool isFormatSupported ( const QAudioFormat & settings ) const
+ bool isNull () const
+ QAudioFormat nearestFormat ( const QAudioFormat & settings ) const
+ QAudioFormat preferredFormat () const
+ QList<QAudioFormat::Endian> supportedByteOrders () const
+ QList<int> supportedChannelCounts () const
+ QStringList supportedCodecs () const
+ QList<int> supportedSampleRates () const
+ QList<int> supportedSampleSizes () const
+ QList<QAudioFormat::SampleType> supportedSampleTypes () const
+ QAudioDeviceInfo & operator= ( const QAudioDeviceInfo & other )
+
+public_slots
+
+signals
+
+static_public_members
+ QList<QAudioDeviceInfo> availableDevices ( QAudio::Mode mode )
+ QAudioDeviceInfo defaultInputDevice ()
+ QAudioDeviceInfo defaultOutputDevice ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

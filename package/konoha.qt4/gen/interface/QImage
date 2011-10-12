@@ -1,0 +1,192 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qimage.html
+
+output_urn
+QImage
+
+inherits
+
+public_types
+ enum Format { Format_Invalid, Format_Mono, Format_MonoLSB, Format_Indexed8, ..., Format_ARGB4444_Premultiplied }
+ enum InvertMode { InvertRgb, InvertRgba }
+
+properties
+
+public_functions
+QImage ()
+QImage ( const QSize & size, Format format )
+QImage ( int width, int height, Format format )
+QImage ( uchar * data, int width, int height, Format format )
+QImage ( const uchar * data, int width, int height, Format format )
+QImage ( uchar * data, int width, int height, int bytesPerLine, Format format )
+QImage ( const uchar * data, int width, int height, int bytesPerLine, Format format )
+QImage ( const char * const[] xpm )
+QImage ( const QString & fileName, const char * format = 0 )
+QImage ( const char * fileName, const char * format = 0 )
+QImage ( const QImage & image )
+~QImage ()
+ bool allGray () const
+ int bitPlaneCount () const
+ uchar * bits ()
+ const uchar * bits () const
+ int byteCount () const
+ int bytesPerLine () const
+ qint64 cacheKey () const
+ QRgb color ( int i ) const
+ int colorCount () const
+ QVector<QRgb> colorTable () const
+ const uchar * constBits () const
+ const uchar * constScanLine ( int i ) const
+ QImage convertToFormat ( Format format, Qt::ImageConversionFlags flags = Qt::AutoColor ) const
+ QImage convertToFormat ( Format format, const QVector<QRgb> & colorTable, Qt::ImageConversionFlags flags = Qt::AutoColor ) const
+ QImage copy ( const QRect & rectangle = QRect() ) const
+ QImage copy ( int x, int y, int width, int height ) const
+ QImage createAlphaMask ( Qt::ImageConversionFlags flags = Qt::AutoColor ) const
+ QImage createHeuristicMask ( bool clipTight = true ) const
+ QImage createMaskFromColor ( QRgb color, Qt::MaskMode mode = Qt::MaskInColor ) const
+ int depth () const
+ int dotsPerMeterX () const
+ int dotsPerMeterY () const
+ void fill ( uint pixelValue )
+ Format format () const
+ bool hasAlphaChannel () const
+ int height () const
+ void invertPixels ( InvertMode mode = InvertRgb )
+ bool isGrayscale () const
+ bool isNull () const
+ bool load ( const QString & fileName, const char * format = 0 )
+ bool load ( QIODevice * device, const char * format )
+ bool loadFromData ( const uchar * data, int len, const char * format = 0 )
+ bool loadFromData ( const QByteArray & data, const char * format = 0 )
+ QImage mirrored ( bool horizontal = false, bool vertical = true ) const
+ QPoint offset () const
+ QRgb pixel ( const QPoint & position ) const
+ QRgb pixel ( int x, int y ) const
+ int pixelIndex ( const QPoint & position ) const
+ int pixelIndex ( int x, int y ) const
+ QRect rect () const
+ QImage rgbSwapped () const
+ bool save ( const QString & fileName, const char * format = 0, int quality = -1 ) const
+ bool save ( QIODevice * device, const char * format = 0, int quality = -1 ) const
+ QImage scaled ( const QSize & size, Qt::AspectRatioMode aspectRatioMode = Qt::IgnoreAspectRatio, Qt::TransformationMode transformMode = Qt::FastTransformation ) const
+ QImage scaled ( int width, int height, Qt::AspectRatioMode aspectRatioMode = Qt::IgnoreAspectRatio, Qt::TransformationMode transformMode = Qt::FastTransformation ) const
+ QImage scaledToHeight ( int height, Qt::TransformationMode mode = Qt::FastTransformation ) const
+ QImage scaledToWidth ( int width, Qt::TransformationMode mode = Qt::FastTransformation ) const
+ uchar * scanLine ( int i )
+ const uchar * scanLine ( int i ) const
+ void setColor ( int index, QRgb colorValue )
+ void setColorCount ( int colorCount )
+ void setColorTable ( const QVector<QRgb> colors )
+ void setDotsPerMeterX ( int x )
+ void setDotsPerMeterY ( int y )
+ void setOffset ( const QPoint & offset )
+ void setPixel ( const QPoint & position, uint index_or_rgb )
+ void setPixel ( int x, int y, uint index_or_rgb )
+ void setText ( const QString & key, const QString & text )
+ QSize size () const
+ QString text ( const QString & key = QString() ) const
+ QStringList textKeys () const
+ QImage transformed ( const QMatrix & matrix, Qt::TransformationMode mode = Qt::FastTransformation ) const
+ QImage transformed ( const QTransform & matrix, Qt::TransformationMode mode = Qt::FastTransformation ) const
+ bool valid ( const QPoint & pos ) const
+ bool valid ( int x, int y ) const
+ int width () const
+operator QVariant () const
+ bool operator!= ( const QImage & image ) const
+ QImage & operator= ( const QImage & image )
+ bool operator== ( const QImage & image ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QImage fromData ( const uchar * data, int size, const char * format = 0 )
+ QImage fromData ( const QByteArray & data, const char * format = 0 )
+ QMatrix trueMatrix ( const QMatrix & matrix, int width, int height )
+ QTransform trueMatrix ( const QTransform & matrix, int width, int height )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & stream, const QImage & image )
+ QDataStream & operator>> ( QDataStream & stream, QImage & image )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QImage
+name
+Format
+key
+Format_Invalid
+Format_Mono
+Format_MonoLSB
+Format_Indexed8
+Format_RGB32
+Format_ARGB32
+Format_ARGB32_Premultiplied
+Format_RGB16
+Format_ARGB8565_Premultiplied
+Format_RGB666
+Format_ARGB6666_Premultiplied
+Format_RGB555
+Format_ARGB8555_Premultiplied
+Format_RGB888
+Format_RGB444
+Format_ARGB4444_Premultiplied
+public_flag
+true
+class_name
+QImage
+name
+InvertMode
+key
+InvertRgb
+InvertRgba
+public_flag
+true
+
+parent_enums
+class_name
+QPaintDevice
+name
+PaintDeviceMetric
+key
+PdmWidth
+PdmHeight
+PdmWidthMM
+PdmHeightMM
+PdmNumColors
+PdmDepth
+PdmDpiX
+PdmDpiY
+PdmPhysicalDpiX
+PdmPhysicalDpiY
+public_flag
+true
+
+parent_index
+194
+
+parent_name
+QPaintDevice
+

@@ -1,0 +1,69 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qpluginloader.html
+
+output_urn
+QPluginLoader
+
+inherits
+
+public_types
+
+properties
+fileName : QString
+loadHints : QLibrary::LoadHints
+
+public_functions
+QPluginLoader ( QObject * parent = 0 )
+QPluginLoader ( const QString & fileName, QObject * parent = 0 )
+~QPluginLoader ()
+ QString errorString () const
+ QString fileName () const
+ QObject * instance ()
+ bool isLoaded () const
+ bool load ()
+ QLibrary::LoadHints loadHints () const
+ void setFileName ( const QString & fileName )
+ void setLoadHints ( QLibrary::LoadHints loadHints )
+ bool unload ()
+
+public_slots
+
+signals
+
+static_public_members
+ QObjectList staticInstances ()
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ void qRegisterStaticPluginInstanceFunction ( QtPluginInstanceFunction function )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

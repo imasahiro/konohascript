@@ -1,0 +1,75 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdiriterator.html
+
+output_urn
+QDirIterator
+
+inherits
+
+public_types
+ enum IteratorFlag { NoIteratorFlags, Subdirectories, FollowSymlinks }
+ flags IteratorFlags
+
+properties
+
+public_functions
+QDirIterator ( const QDir & dir, IteratorFlags flags = NoIteratorFlags )
+QDirIterator ( const QString & path, IteratorFlags flags = NoIteratorFlags )
+QDirIterator ( const QString & path, QDir::Filters filters, IteratorFlags flags = NoIteratorFlags )
+QDirIterator ( const QString & path, const QStringList & nameFilters, QDir::Filters filters = QDir::NoFilter, IteratorFlags flags = NoIteratorFlags )
+ virtual ~QDirIterator ()
+ QFileInfo fileInfo () const
+ QString fileName () const
+ QString filePath () const
+ bool hasNext () const
+ QString next ()
+ QString path () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+IteratorFlags
+
+parent_typedefed_objects
+
+enums
+class_name
+QDirIterator
+name
+IteratorFlag
+key
+NoIteratorFlags
+Subdirectories
+FollowSymlinks
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,84 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qbitmap.html
+
+output_urn
+QBitmap
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QBitmap ()
+QBitmap ( const QPixmap & pixmap )
+QBitmap ( int width, int height )
+QBitmap ( const QSize & size )
+QBitmap ( const QString & fileName, const char * format = 0 )
+~QBitmap ()
+ void clear ()
+ QBitmap transformed ( const QTransform & matrix ) const
+operator QVariant () const
+ QBitmap & operator= ( const QPixmap & pixmap )
+
+public_slots
+
+signals
+
+static_public_members
+ QBitmap fromData ( const QSize & size, const uchar * bits, QImage::Format monoFormat = QImage::Format_MonoLSB )
+ QBitmap fromImage ( const QImage & image, Qt::ImageConversionFlags flags = Qt::AutoColor )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QPixmap
+name
+HBitmapFormat
+key
+NoAlpha
+PremultipliedAlpha
+Alpha
+public_flag
+true
+class_name
+QPixmap
+name
+ShareMode
+key
+ImplicitlyShared
+ExplicitlyShared
+public_flag
+true
+
+parent_index
+597
+
+parent_name
+QPixmap
+

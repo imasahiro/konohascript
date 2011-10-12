@@ -1,0 +1,86 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qstate.html
+
+output_urn
+QState
+
+inherits
+
+public_types
+ enum ChildMode { ExclusiveStates, ParallelStates }
+
+properties
+childMode : ChildMode
+errorState : QAbstractState *
+initialState : QAbstractState *
+
+public_functions
+QState ( QState * parent = 0 )
+QState ( ChildMode childMode, QState * parent = 0 )
+~QState ()
+ void addTransition ( QAbstractTransition * transition )
+ QSignalTransition * addTransition ( QObject * sender, const char * signal, QAbstractState * target )
+ QAbstractTransition * addTransition ( QAbstractState * target )
+ void assignProperty ( QObject * object, const char * name, const QVariant & value )
+ ChildMode childMode () const
+ QAbstractState * errorState () const
+ QAbstractState * initialState () const
+ void removeTransition ( QAbstractTransition * transition )
+ void setChildMode ( ChildMode mode )
+ void setErrorState ( QAbstractState * state )
+ void setInitialState ( QAbstractState * state )
+ QList<QAbstractTransition *> transitions () const
+
+public_slots
+
+signals
+ void finished ()
+ void propertiesAssigned ()
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+ virtual void onEntry ( QEvent * event )
+ virtual void onExit ( QEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QState
+name
+ChildMode
+key
+ExclusiveStates
+ParallelStates
+public_flag
+true
+
+parent_enums
+
+parent_index
+584
+
+parent_name
+QAbstractState
+

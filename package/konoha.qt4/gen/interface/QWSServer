@@ -1,0 +1,125 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwsserver.html
+
+output_urn
+QWSServer
+
+inherits
+
+public_types
+ class KeyboardFilter
+ enum IMMouse { MousePress, MouseRelease, MouseMove, MouseOutside }
+ enum WindowEvent { Create, Destroy, Hide, Show, ..., Name }
+
+properties
+
+public_functions
+ const QBrush & backgroundBrush () const
+ const QList<QWSWindow *> & clientWindows ()
+ void closeKeyboard ()
+ void closeMouse ()
+ void enablePainting ( bool enable )
+ void openKeyboard ()
+ void openMouse ()
+ void refresh ()
+ void refresh ( QRegion & region )
+ void resumeMouse ()
+ void sendIMEvent ( const QInputMethodEvent * event )
+ void sendIMQuery ( int property )
+ void suspendMouse ()
+ QWSWindow * windowAt ( const QPoint & position )
+
+public_slots
+
+signals
+ void markedText ( const QString & selection )
+ void newChannel ( const QString & channel )
+ void removedChannel ( const QString & channel )
+ void windowEvent ( QWSWindow * window, QWSServer::WindowEvent eventType )
+
+static_public_members
+ void addKeyboardFilter ( KeyboardFilter * filter )
+ QWSServer * instance ()
+ bool isCursorVisible ()
+ QWSKeyboardHandler * keyboardHandler ()
+ QWSMouseHandler * mouseHandler ()
+ const QList<QWSMouseHandler *> & mouseHandlers ()
+ void processKeyEvent ( int unicode, int keycode, Qt::KeyboardModifiers modifiers, bool isPress, bool autoRepeat )
+ void removeKeyboardFilter ()
+ void screenSaverActivate ( bool activate )
+ bool screenSaverActive ()
+ void sendKeyEvent ( int unicode, int keycode, Qt::KeyboardModifiers modifiers, bool isPress, bool autoRepeat )
+ void setBackground ( const QBrush & brush )
+ void setCurrentInputMethod ( QWSInputMethod * method )
+ void setCursorVisible ( bool visible )
+ void setDefaultKeyboard ( const char * keyboardDriver )
+ void setDefaultMouse ( const char * mouseDriver )
+ void setKeyboardHandler ( QWSKeyboardHandler * driver )
+ void setMaxWindowRect ( const QRect & rectangle )
+ void setMouseHandler ( QWSMouseHandler * driver )
+ void setScreenSaver ( QWSScreenSaver * screenSaver )
+ void setScreenSaverBlockLevel ( int eventBlockLevel )
+ void setScreenSaverInterval ( int milliseconds )
+ void setScreenSaverIntervals ( int * intervals )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+true
+
+typedefed_objects
+KeyboardFilter
+
+parent_typedefed_objects
+
+enums
+class_name
+QWSServer
+name
+IMMouse
+key
+MousePress
+MouseRelease
+MouseMove
+MouseOutside
+public_flag
+true
+class_name
+QWSServer
+name
+WindowEvent
+key
+Create
+Destroy
+Hide
+Show
+Raise
+Lower
+Geometry
+Active
+Name
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

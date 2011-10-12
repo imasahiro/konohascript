@@ -1,0 +1,173 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qplaintextedit.html
+
+output_urn
+QPlainTextEdit
+
+inherits
+
+public_types
+ enum LineWrapMode { NoWrap, WidgetWidth }
+
+properties
+backgroundVisible : bool
+blockCount : const int
+centerOnScroll : bool
+cursorWidth : int
+documentTitle : QString
+lineWrapMode : LineWrapMode
+maximumBlockCount : int
+overwriteMode : bool
+
+public_functions
+QPlainTextEdit ( QWidget * parent = 0 )
+QPlainTextEdit ( const QString & text, QWidget * parent = 0 )
+ virtual ~QPlainTextEdit ()
+ QString anchorAt ( const QPoint & pos ) const
+ bool backgroundVisible () const
+ int blockCount () const
+ bool canPaste () const
+ bool centerOnScroll () const
+ QMenu * createStandardContextMenu ()
+ QTextCharFormat currentCharFormat () const
+ QTextCursor cursorForPosition ( const QPoint & pos ) const
+ QRect cursorRect ( const QTextCursor & cursor ) const
+ QRect cursorRect () const
+ int cursorWidth () const
+ QTextDocument * document () const
+ QString documentTitle () const
+ void ensureCursorVisible ()
+ QList<QTextEdit::ExtraSelection> extraSelections () const
+ bool find ( const QString & exp, QTextDocument::FindFlags options = 0 )
+ bool isReadOnly () const
+ bool isUndoRedoEnabled () const
+ LineWrapMode lineWrapMode () const
+ virtual QVariant loadResource ( int type, const QUrl & name )
+ int maximumBlockCount () const
+ void mergeCurrentCharFormat ( const QTextCharFormat & modifier )
+ void moveCursor ( QTextCursor::MoveOperation operation, QTextCursor::MoveMode mode = QTextCursor::MoveAnchor )
+ bool overwriteMode () const
+ void print ( QPrinter * printer ) const
+ void setBackgroundVisible ( bool visible )
+ void setCenterOnScroll ( bool enabled )
+ void setCurrentCharFormat ( const QTextCharFormat & format )
+ void setCursorWidth ( int width )
+ void setDocument ( QTextDocument * document )
+ void setDocumentTitle ( const QString & title )
+ void setExtraSelections ( const QList<QTextEdit::ExtraSelection> & selections )
+ void setLineWrapMode ( LineWrapMode mode )
+ void setMaximumBlockCount ( int maximum )
+ void setOverwriteMode ( bool overwrite )
+ void setReadOnly ( bool ro )
+ void setTabChangesFocus ( bool b )
+ void setTabStopWidth ( int width )
+ void setTextCursor ( const QTextCursor & cursor )
+ void setTextInteractionFlags ( Qt::TextInteractionFlags flags )
+ void setUndoRedoEnabled ( bool enable )
+ void setWordWrapMode ( QTextOption::WrapMode policy )
+ bool tabChangesFocus () const
+ int tabStopWidth () const
+ QTextCursor textCursor () const
+ Qt::TextInteractionFlags textInteractionFlags () const
+ QString toPlainText () const
+ QTextOption::WrapMode wordWrapMode () const
+
+public_slots
+ void appendHtml ( const QString & html )
+ void appendPlainText ( const QString & text )
+ void centerCursor ()
+ void clear ()
+ void copy ()
+ void cut ()
+ void insertPlainText ( const QString & text )
+ void paste ()
+ void redo ()
+ void selectAll ()
+ void setPlainText ( const QString & text )
+ void undo ()
+
+signals
+ void blockCountChanged ( int newBlockCount )
+ void copyAvailable ( bool yes )
+ void cursorPositionChanged ()
+ void modificationChanged ( bool changed )
+ void redoAvailable ( bool available )
+ void selectionChanged ()
+ void textChanged ()
+ void undoAvailable ( bool available )
+ void updateRequest ( const QRect & rect, int dy )
+
+static_public_members
+
+protected_functions
+ QRectF blockBoundingGeometry ( const QTextBlock & block ) const
+ QRectF blockBoundingRect ( const QTextBlock & block ) const
+ virtual bool canInsertFromMimeData ( const QMimeData * source ) const
+ QPointF contentOffset () const
+ virtual QMimeData * createMimeDataFromSelection () const
+ QTextBlock firstVisibleBlock () const
+ QAbstractTextDocumentLayout::PaintContext getPaintContext () const
+ virtual void insertFromMimeData ( const QMimeData * source )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual void changeEvent ( QEvent * e )
+ virtual void contextMenuEvent ( QContextMenuEvent * event )
+ virtual void dragEnterEvent ( QDragEnterEvent * e )
+ virtual void dragLeaveEvent ( QDragLeaveEvent * e )
+ virtual void dragMoveEvent ( QDragMoveEvent * e )
+ virtual void dropEvent ( QDropEvent * e )
+ virtual void focusInEvent ( QFocusEvent * e )
+ virtual bool focusNextPrevChild ( bool next )
+ virtual void focusOutEvent ( QFocusEvent * e )
+ virtual void inputMethodEvent ( QInputMethodEvent * e )
+ virtual QVariant inputMethodQuery ( Qt::InputMethodQuery property ) const
+ virtual void keyPressEvent ( QKeyEvent * e )
+ virtual void keyReleaseEvent ( QKeyEvent * e )
+ virtual void mouseDoubleClickEvent ( QMouseEvent * e )
+ virtual void mouseMoveEvent ( QMouseEvent * e )
+ virtual void mousePressEvent ( QMouseEvent * e )
+ virtual void mouseReleaseEvent ( QMouseEvent * e )
+ virtual void paintEvent ( QPaintEvent * e )
+ virtual void resizeEvent ( QResizeEvent * e )
+ virtual void scrollContentsBy ( int dx, int dy )
+ virtual void showEvent ( QShowEvent * )
+ virtual void wheelEvent ( QWheelEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QPlainTextEdit
+name
+LineWrapMode
+key
+NoWrap
+WidgetWidth
+public_flag
+true
+
+parent_enums
+
+parent_index
+359
+
+parent_name
+QAbstractScrollArea
+

@@ -1,0 +1,98 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtextline.html
+
+output_urn
+QTextLine
+
+inherits
+
+public_types
+ enum CursorPosition { CursorBetweenCharacters, CursorOnCharacter }
+ enum Edge { Leading, Trailing }
+
+properties
+
+public_functions
+QTextLine ()
+ qreal ascent () const
+ qreal cursorToX ( int * cursorPos, Edge edge = Leading ) const
+ qreal cursorToX ( int cursorPos, Edge edge = Leading ) const
+ qreal descent () const
+ void draw ( QPainter * painter, const QPointF & position, const QTextLayout::FormatRange * selection = 0 ) const
+ qreal height () const
+ qreal horizontalAdvance () const
+ bool isValid () const
+ qreal leading () const
+ bool leadingIncluded () const
+ int lineNumber () const
+ QRectF naturalTextRect () const
+ qreal naturalTextWidth () const
+ QPointF position () const
+ QRectF rect () const
+ void setLeadingIncluded ( bool included )
+ void setLineWidth ( qreal width )
+ void setNumColumns ( int numColumns )
+ void setNumColumns ( int numColumns, qreal alignmentWidth )
+ void setPosition ( const QPointF & pos )
+ int textLength () const
+ int textStart () const
+ qreal width () const
+ qreal x () const
+ int xToCursor ( qreal x, CursorPosition cpos = CursorBetweenCharacters ) const
+ qreal y () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QTextLine
+name
+CursorPosition
+key
+CursorBetweenCharacters
+CursorOnCharacter
+public_flag
+true
+class_name
+QTextLine
+name
+Edge
+key
+Leading
+Trailing
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

@@ -1,0 +1,59 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qobjectcleanuphandler.html
+
+output_urn
+QObjectCleanupHandler
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QObjectCleanupHandler ()
+~QObjectCleanupHandler ()
+ QObject * add ( QObject * object )
+ void clear ()
+ bool isEmpty () const
+ void remove ( QObject * object )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

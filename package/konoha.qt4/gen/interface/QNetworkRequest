@@ -1,0 +1,144 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qnetworkrequest.html
+
+output_urn
+QNetworkRequest
+
+inherits
+
+public_types
+ enum Attribute { HttpStatusCodeAttribute, HttpReasonPhraseAttribute, RedirectionTargetAttribute, ConnectionEncryptedAttribute, ..., UserMax }
+ enum CacheLoadControl { AlwaysNetwork, PreferNetwork, PreferCache, AlwaysCache }
+ enum KnownHeaders { ContentTypeHeader, ContentLengthHeader, LocationHeader, LastModifiedHeader, CookieHeader, SetCookieHeader }
+ enum LoadControl { Automatic, Manual }
+ enum Priority { HighPriority, NormalPriority, LowPriority }
+
+properties
+
+public_functions
+QNetworkRequest ( const QUrl & url = QUrl() )
+QNetworkRequest ( const QNetworkRequest & other )
+~QNetworkRequest ()
+ QVariant attribute ( Attribute code, const QVariant & defaultValue = QVariant() ) const
+ bool hasRawHeader ( const QByteArray & headerName ) const
+ QVariant header ( KnownHeaders header ) const
+ QObject * originatingObject () const
+ Priority priority () const
+ QByteArray rawHeader ( const QByteArray & headerName ) const
+ QList<QByteArray> rawHeaderList () const
+ void setAttribute ( Attribute code, const QVariant & value )
+ void setHeader ( KnownHeaders header, const QVariant & value )
+ void setOriginatingObject ( QObject * object )
+ void setPriority ( Priority priority )
+ void setRawHeader ( const QByteArray & headerName, const QByteArray & headerValue )
+ void setSslConfiguration ( const QSslConfiguration & config )
+ void setUrl ( const QUrl & url )
+ QSslConfiguration sslConfiguration () const
+ QUrl url () const
+ bool operator!= ( const QNetworkRequest & other ) const
+ QNetworkRequest & operator= ( const QNetworkRequest & other )
+ bool operator== ( const QNetworkRequest & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QNetworkRequest
+name
+Attribute
+key
+HttpStatusCodeAttribute
+HttpReasonPhraseAttribute
+RedirectionTargetAttribute
+ConnectionEncryptedAttribute
+CacheLoadControlAttribute
+CacheSaveControlAttribute
+SourceIsFromCacheAttribute
+DoNotBufferUploadDataAttribute
+HttpPipeliningAllowedAttribute
+HttpPipeliningWasUsedAttribute
+CustomVerbAttribute
+CookieLoadControlAttribute
+CookieSaveControlAttribute
+AuthenticationReuseAttribute
+User
+UserMax
+public_flag
+true
+class_name
+QNetworkRequest
+name
+CacheLoadControl
+key
+AlwaysNetwork
+PreferNetwork
+PreferCache
+AlwaysCache
+public_flag
+true
+class_name
+QNetworkRequest
+name
+KnownHeaders
+key
+ContentTypeHeader
+ContentLengthHeader
+LocationHeader
+LastModifiedHeader
+CookieHeader
+SetCookieHeader
+public_flag
+true
+class_name
+QNetworkRequest
+name
+LoadControl
+key
+Automatic
+Manual
+public_flag
+true
+class_name
+QNetworkRequest
+name
+Priority
+key
+HighPriority
+NormalPriority
+LowPriority
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

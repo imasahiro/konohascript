@@ -1,0 +1,71 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qitemselection.html
+
+output_urn
+QItemSelection
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QItemSelection ()
+QItemSelection ( const QModelIndex & topLeft, const QModelIndex & bottomRight )
+ bool contains ( const QModelIndex & index ) const
+ QModelIndexList indexes () const
+ void merge ( const QItemSelection & other, QItemSelectionModel::SelectionFlags command )
+ void select ( const QModelIndex & topLeft, const QModelIndex & bottomRight )
+
+public_slots
+
+signals
+
+static_public_members
+ void split ( const QItemSelectionRange & range, const QItemSelectionRange & other, QItemSelection * result )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+const_iterator
+iterator
+ConstIterator
+Iterator
+const_pointer
+const_reference
+difference_type
+pointer
+reference
+size_type
+value_type
+
+enums
+
+parent_enums
+
+parent_index
+686
+
+parent_name
+QList
+

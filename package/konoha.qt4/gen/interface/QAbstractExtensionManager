@@ -1,0 +1,55 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractextensionmanager.html
+
+output_urn
+QAbstractExtensionManager
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+ virtual ~QAbstractExtensionManager ()
+ virtual QObject * extension ( QObject * object, const QString & iid ) const = 0
+ virtual void registerExtensions ( QAbstractExtensionFactory * factory, const QString & iid ) = 0
+ virtual void unregisterExtensions ( QAbstractExtensionFactory * factory, const QString & iid ) = 0
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

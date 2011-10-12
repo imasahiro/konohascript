@@ -1,0 +1,139 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qnetworkreply.html
+
+output_urn
+QNetworkReply
+
+inherits
+
+public_types
+ enum NetworkError { NoError, ConnectionRefusedError, RemoteHostClosedError, HostNotFoundError, ..., ProtocolFailure }
+ typedef RawHeaderPair
+
+properties
+
+public_functions
+~QNetworkReply ()
+ virtual void abort () = 0
+ QVariant attribute ( QNetworkRequest::Attribute code ) const
+ NetworkError error () const
+ bool hasRawHeader ( const QByteArray & headerName ) const
+ QVariant header ( QNetworkRequest::KnownHeaders header ) const
+ void ignoreSslErrors ( const QList<QSslError> & errors )
+ bool isFinished () const
+ bool isRunning () const
+ QNetworkAccessManager * manager () const
+ QNetworkAccessManager::Operation operation () const
+ QByteArray rawHeader ( const QByteArray & headerName ) const
+ QList<QByteArray> rawHeaderList () const
+ const QList<RawHeaderPair> & rawHeaderPairs () const
+ qint64 readBufferSize () const
+ QNetworkRequest request () const
+ virtual void setReadBufferSize ( qint64 size )
+ void setSslConfiguration ( const QSslConfiguration & config )
+ QSslConfiguration sslConfiguration () const
+ QUrl url () const
+
+public_slots
+ virtual void ignoreSslErrors ()
+
+signals
+ void downloadProgress ( qint64 bytesReceived, qint64 bytesTotal )
+ void error ( QNetworkReply::NetworkError code )
+ void finished ()
+ void metaDataChanged ()
+ void sslErrors ( const QList<QSslError> & errors )
+ void uploadProgress ( qint64 bytesSent, qint64 bytesTotal )
+
+static_public_members
+
+protected_functions
+QNetworkReply ( QObject * parent = 0 )
+ void setAttribute ( QNetworkRequest::Attribute code, const QVariant & value )
+ void setError ( NetworkError errorCode, const QString & errorString )
+ void setHeader ( QNetworkRequest::KnownHeaders header, const QVariant & value )
+ void setOperation ( QNetworkAccessManager::Operation operation )
+ void setRawHeader ( const QByteArray & headerName, const QByteArray & value )
+ void setRequest ( const QNetworkRequest & request )
+ void setUrl ( const QUrl & url )
+
+reimplemented_public_functions
+ virtual void close ()
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+RawHeaderPair
+
+parent_typedefed_objects
+OpenMode
+
+enums
+class_name
+QNetworkReply
+name
+NetworkError
+key
+NoError
+ConnectionRefusedError
+RemoteHostClosedError
+HostNotFoundError
+TimeoutError
+OperationCanceledError
+SslHandshakeFailedError
+TemporaryNetworkFailureError
+ProxyConnectionRefusedError
+ProxyConnectionClosedError
+ProxyNotFoundError
+ProxyTimeoutError
+ProxyAuthenticationRequiredError
+ContentAccessDenied
+ContentOperationNotPermittedError
+ContentNotFoundError
+AuthenticationRequiredError
+ContentReSendError
+ProtocolUnknownError
+ProtocolInvalidOperationError
+UnknownNetworkError
+UnknownProxyError
+UnknownContentError
+ProtocolFailure
+public_flag
+true
+
+parent_enums
+class_name
+QIODevice
+name
+OpenModeFlag
+key
+NotOpen
+ReadOnly
+WriteOnly
+ReadWrite
+Append
+Truncate
+Text
+Unbuffered
+public_flag
+true
+
+parent_index
+732
+
+parent_name
+QIODevice
+

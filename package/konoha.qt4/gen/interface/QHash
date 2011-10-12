@@ -1,0 +1,129 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qhash.html
+
+output_urn
+QHash
+
+inherits
+
+public_types
+ class const_iterator
+ class iterator
+ typedef ConstIterator
+ typedef Iterator
+ typedef difference_type
+ typedef key_type
+ typedef mapped_type
+ typedef size_type
+
+properties
+
+public_functions
+QHash ()
+QHash ( const QHash<Key, T> & other )
+~QHash ()
+ iterator begin ()
+ const_iterator begin () const
+ int capacity () const
+ void clear ()
+ const_iterator constBegin () const
+ const_iterator constEnd () const
+ const_iterator constFind ( const Key & key ) const
+ bool contains ( const Key & key ) const
+ int count ( const Key & key ) const
+ int count () const
+ bool empty () const
+ iterator end ()
+ const_iterator end () const
+ iterator erase ( iterator pos )
+ iterator find ( const Key & key )
+ const_iterator find ( const Key & key ) const
+ iterator insert ( const Key & key, const T & value )
+ iterator insertMulti ( const Key & key, const T & value )
+ bool isEmpty () const
+ const Key key ( const T & value ) const
+ const Key key ( const T & value, const Key & defaultKey ) const
+ QList<Key> keys () const
+ QList<Key> keys ( const T & value ) const
+ int remove ( const Key & key )
+ void reserve ( int size )
+ int size () const
+ void squeeze ()
+ T take ( const Key & key )
+ QList<Key> uniqueKeys () const
+ QHash<Key, T> & unite ( const QHash<Key, T> & other )
+ const T value ( const Key & key ) const
+ const T value ( const Key & key, const T & defaultValue ) const
+ QList<T> values () const
+ QList<T> values ( const Key & key ) const
+ bool operator!= ( const QHash<Key, T> & other ) const
+ QHash<Key, T> & operator= ( const QHash<Key, T> & other )
+ bool operator== ( const QHash<Key, T> & other ) const
+ T & operator[] ( const Key & key )
+ const T operator[] ( const Key & key ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ uint qHash ( const QString & key )
+ uint qHash ( const T * key )
+ uint qHash ( const QPair<T1, T2> & key )
+ uint qHash ( const QXmlNodeModelIndex & index )
+ uint qHash ( char key )
+ uint qHash ( uchar key )
+ uint qHash ( signed char key )
+ uint qHash ( ushort key )
+ uint qHash ( short key )
+ uint qHash ( uint key )
+ uint qHash ( int key )
+ uint qHash ( ulong key )
+ uint qHash ( long key )
+ uint qHash ( quint64 key )
+ uint qHash ( qint64 key )
+ uint qHash ( QChar key )
+ uint qHash ( const QByteArray & key )
+ uint qHash ( const QBitArray & key )
+ QDataStream & operator<< ( QDataStream & out, const QHash<Key, T> & hash )
+ QDataStream & operator>> ( QDataStream & in, QHash<Key, T> & hash )
+
+templateClass
+true
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+const_iterator
+iterator
+ConstIterator
+Iterator
+difference_type
+key_type
+mapped_type
+size_type
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

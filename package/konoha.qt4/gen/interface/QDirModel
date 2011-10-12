@@ -1,0 +1,110 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdirmodel.html
+
+output_urn
+QDirModel
+
+inherits
+
+public_types
+ enum Roles { FileIconRole, FilePathRole, FileNameRole }
+
+properties
+lazyChildCount : bool
+readOnly : bool
+resolveSymlinks : bool
+
+public_functions
+QDirModel ( const QStringList & nameFilters, QDir::Filters filters, QDir::SortFlags sort, QObject * parent = 0 )
+QDirModel ( QObject * parent = 0 )
+~QDirModel ()
+ QIcon fileIcon ( const QModelIndex & index ) const
+ QFileInfo fileInfo ( const QModelIndex & index ) const
+ QString fileName ( const QModelIndex & index ) const
+ QString filePath ( const QModelIndex & index ) const
+ QDir::Filters filter () const
+ QFileIconProvider * iconProvider () const
+ QModelIndex index ( const QString & path, int column = 0 ) const
+ bool isDir ( const QModelIndex & index ) const
+ bool isReadOnly () const
+ bool lazyChildCount () const
+ QModelIndex mkdir ( const QModelIndex & parent, const QString & name )
+ QStringList nameFilters () const
+ bool remove ( const QModelIndex & index )
+ bool resolveSymlinks () const
+ bool rmdir ( const QModelIndex & index )
+ void setFilter ( QDir::Filters filters )
+ void setIconProvider ( QFileIconProvider * provider )
+ void setLazyChildCount ( bool enable )
+ void setNameFilters ( const QStringList & filters )
+ void setReadOnly ( bool enable )
+ void setResolveSymlinks ( bool enable )
+ void setSorting ( QDir::SortFlags sort )
+ QDir::SortFlags sorting () const
+
+public_slots
+ void refresh ( const QModelIndex & parent = QModelIndex() )
+
+signals
+2 public slots inherited from QAbstractItemModel
+1 public slot inherited from QObject
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual int columnCount ( const QModelIndex & parent = QModelIndex() ) const
+ virtual QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const
+ virtual bool dropMimeData ( const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent )
+ virtual Qt::ItemFlags flags ( const QModelIndex & index ) const
+ virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const
+ virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const
+ virtual QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const
+ virtual QMimeData * mimeData ( const QModelIndexList & indexes ) const
+ virtual QStringList mimeTypes () const
+ virtual QModelIndex parent ( const QModelIndex & child ) const
+ virtual int rowCount ( const QModelIndex & parent = QModelIndex() ) const
+ virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole )
+ virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder )
+ virtual Qt::DropActions supportedDropActions () const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDirModel
+name
+Roles
+key
+FileIconRole
+FilePathRole
+FileNameRole
+public_flag
+true
+
+parent_enums
+
+parent_index
+34
+
+parent_name
+QAbstractItemModel
+

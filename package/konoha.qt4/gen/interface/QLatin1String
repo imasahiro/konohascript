@@ -1,0 +1,66 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qlatin1string.html
+
+output_urn
+QLatin1String
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QLatin1String ( const char * str )
+ const char * latin1 () const
+ bool operator!= ( const QString & other ) const
+ bool operator!= ( const char * other ) const
+ bool operator< ( const QString & other ) const
+ bool operator< ( const char * other ) const
+ bool operator<= ( const QString & other ) const
+ bool operator<= ( const char * other ) const
+ QLatin1String & operator= ( const QLatin1String & other )
+ bool operator== ( const QString & other ) const
+ bool operator== ( const char * other ) const
+ bool operator> ( const QString & other ) const
+ bool operator> ( const char * other ) const
+ bool operator>= ( const QString & other ) const
+ bool operator>= ( const char * other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

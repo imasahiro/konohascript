@@ -1,0 +1,70 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qxmlattributes.html
+
+output_urn
+QXmlAttributes
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QXmlAttributes ()
+ virtual ~QXmlAttributes ()
+ void append ( const QString & qName, const QString & uri, const QString & localPart, const QString & value )
+ void clear ()
+ int count () const
+ int index ( const QString & qName ) const
+ int index ( const QLatin1String & qName ) const
+ int index ( const QString & uri, const QString & localPart ) const
+ int length () const
+ QString localName ( int index ) const
+ QString qName ( int index ) const
+ QString type ( int index ) const
+ QString type ( const QString & qName ) const
+ QString type ( const QString & uri, const QString & localName ) const
+ QString uri ( int index ) const
+ QString value ( int index ) const
+ QString value ( const QString & qName ) const
+ QString value ( const QLatin1String & qName ) const
+ QString value ( const QString & uri, const QString & localName ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

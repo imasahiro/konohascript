@@ -1,0 +1,109 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qprogressbar.html
+
+output_urn
+QProgressBar
+
+inherits
+
+public_types
+ enum Direction { TopToBottom, BottomToTop }
+
+properties
+alignment : Qt::Alignment
+format : QString
+invertedAppearance : bool
+maximum : int
+minimum : int
+
+public_functions
+QProgressBar ( QWidget * parent = 0 )
+ Qt::Alignment alignment () const
+ QString format () const
+ bool invertedAppearance ()
+ bool invertedAppearance () const
+ bool isTextVisible () const
+ int maximum () const
+ int minimum () const
+ Qt::Orientation orientation () const
+ void setAlignment ( Qt::Alignment alignment )
+ void setFormat ( const QString & format )
+ void setInvertedAppearance ( bool invert )
+ void setTextDirection ( QProgressBar::Direction textDirection )
+ void setTextVisible ( bool visible )
+ virtual QString text () const
+ QProgressBar::Direction textDirection ()
+ QProgressBar::Direction textDirection () const
+ int value () const
+
+public_slots
+ void reset ()
+ void setMaximum ( int maximum )
+ void setMinimum ( int minimum )
+ void setOrientation ( Qt::Orientation )
+ void setRange ( int minimum, int maximum )
+ void setValue ( int value )
+
+signals
+ void valueChanged ( int value )
+
+static_public_members
+
+protected_functions
+ void initStyleOption ( QStyleOptionProgressBar * option ) const
+
+reimplemented_public_functions
+ virtual QSize minimumSizeHint () const
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+ virtual void paintEvent ( QPaintEvent * )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+class_name
+QProgressBar
+name
+Direction
+key
+TopToBottom
+BottomToTop
+public_flag
+true
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

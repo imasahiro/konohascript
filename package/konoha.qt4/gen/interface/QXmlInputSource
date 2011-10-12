@@ -1,0 +1,61 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qxmlinputsource.html
+
+output_urn
+QXmlInputSource
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QXmlInputSource ()
+QXmlInputSource ( QIODevice * dev )
+ virtual ~QXmlInputSource ()
+ virtual QString data () const
+ virtual void fetchData ()
+ virtual QChar next ()
+ virtual void reset ()
+ virtual void setData ( const QString & dat )
+ virtual void setData ( const QByteArray & dat )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ virtual QString fromRawData ( const QByteArray & data, bool beginning = false )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

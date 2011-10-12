@@ -1,0 +1,80 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qwskeyboardhandler.html
+
+output_urn
+QWSKeyboardHandler
+
+inherits
+
+public_types
+ enum KeycodeAction { None, CapsLockOn, CapsLockOff, NumLockOn, ..., Reboot }
+
+properties
+
+public_functions
+QWSKeyboardHandler ( const QString & device )
+QWSKeyboardHandler ()
+ virtual ~QWSKeyboardHandler ()
+ virtual void processKeyEvent ( int unicode, int keycode, Qt::KeyboardModifiers modifiers, bool isPress, bool autoRepeat )
+ KeycodeAction processKeycode ( quint16 keycode, bool isPress, bool autoRepeat )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ void beginAutoRepeat ( int unicode, int keycode, Qt::KeyboardModifiers modifier )
+ void endAutoRepeat ()
+ int transformDirKey ( int keycode )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+true
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QWSKeyboardHandler
+name
+KeycodeAction
+key
+None
+CapsLockOn
+CapsLockOff
+NumLockOn
+NumLockOff
+ScrollLockOn
+ScrollLockOff
+PreviousConsole
+NextConsole
+SwitchConsoleFirst
+SwitchConsoleLast
+SwitchConsoleMask
+Reboot
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

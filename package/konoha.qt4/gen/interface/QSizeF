@@ -1,0 +1,82 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsizef.html
+
+output_urn
+QSizeF
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QSizeF ()
+QSizeF ( const QSize & size )
+QSizeF ( qreal width, qreal height )
+ QSizeF boundedTo ( const QSizeF & otherSize ) const
+ QSizeF expandedTo ( const QSizeF & otherSize ) const
+ qreal height () const
+ bool isEmpty () const
+ bool isNull () const
+ bool isValid () const
+ qreal & rheight ()
+ qreal & rwidth ()
+ void scale ( qreal width, qreal height, Qt::AspectRatioMode mode )
+ void scale ( const QSizeF & size, Qt::AspectRatioMode mode )
+ void setHeight ( qreal height )
+ void setWidth ( qreal width )
+ QSize toSize () const
+ void transpose ()
+ qreal width () const
+ QSizeF & operator*= ( qreal factor )
+ QSizeF & operator+= ( const QSizeF & size )
+ QSizeF & operator-= ( const QSizeF & size )
+ QSizeF & operator/= ( qreal divisor )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ bool operator!= ( const QSizeF & s1, const QSizeF & s2 )
+ const QSizeF operator* ( const QSizeF & size, qreal factor )
+ const QSizeF operator* ( qreal factor, const QSizeF & size )
+ const QSizeF operator+ ( const QSizeF & s1, const QSizeF & s2 )
+ const QSizeF operator- ( const QSizeF & s1, const QSizeF & s2 )
+ const QSizeF operator/ ( const QSizeF & size, qreal divisor )
+ QDataStream & operator<< ( QDataStream & stream, const QSizeF & size )
+ bool operator== ( const QSizeF & s1, const QSizeF & s2 )
+ QDataStream & operator>> ( QDataStream & stream, QSizeF & size )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

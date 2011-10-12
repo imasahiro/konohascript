@@ -1,0 +1,237 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtableview.html
+
+output_urn
+QTableView
+
+inherits
+
+public_types
+
+properties
+cornerButtonEnabled : bool
+gridStyle : Qt::PenStyle
+showGrid : bool
+
+public_functions
+QTableView ( QWidget * parent = 0 )
+~QTableView ()
+ void clearSpans ()
+ int columnAt ( int x ) const
+ int columnSpan ( int row, int column ) const
+ int columnViewportPosition ( int column ) const
+ int columnWidth ( int column ) const
+ Qt::PenStyle gridStyle () const
+ QHeaderView * horizontalHeader () const
+ bool isColumnHidden ( int column ) const
+ bool isCornerButtonEnabled () const
+ bool isRowHidden ( int row ) const
+ bool isSortingEnabled () const
+ int rowAt ( int y ) const
+ int rowHeight ( int row ) const
+ int rowSpan ( int row, int column ) const
+ int rowViewportPosition ( int row ) const
+ void setColumnHidden ( int column, bool hide )
+ void setColumnWidth ( int column, int width )
+ void setCornerButtonEnabled ( bool enable )
+ void setGridStyle ( Qt::PenStyle style )
+ void setHorizontalHeader ( QHeaderView * header )
+ void setRowHeight ( int row, int height )
+ void setRowHidden ( int row, bool hide )
+ void setSortingEnabled ( bool enable )
+ void setSpan ( int row, int column, int rowSpanCount, int columnSpanCount )
+ void setVerticalHeader ( QHeaderView * header )
+ void setWordWrap ( bool on )
+ bool showGrid () const
+ void sortByColumn ( int column, Qt::SortOrder order )
+ QHeaderView * verticalHeader () const
+ bool wordWrap () const
+
+public_slots
+ void hideColumn ( int column )
+ void hideRow ( int row )
+ void resizeColumnToContents ( int column )
+ void resizeColumnsToContents ()
+ void resizeRowToContents ( int row )
+ void resizeRowsToContents ()
+ void selectColumn ( int column )
+ void selectRow ( int row )
+ void setShowGrid ( bool show )
+ void showColumn ( int column )
+ void showRow ( int row )
+
+signals
+9 public slots inherited from QAbstractItemView
+19 public slots inherited from QWidget
+1 public slot inherited from QObject
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QModelIndex indexAt ( const QPoint & pos ) const
+ virtual void setModel ( QAbstractItemModel * model )
+ virtual void setRootIndex ( const QModelIndex & index )
+ virtual void setSelectionModel ( QItemSelectionModel * selectionModel )
+
+reimplemented_protected_functions
+ virtual void currentChanged ( const QModelIndex & current, const QModelIndex & previous )
+ virtual int horizontalOffset () const
+ virtual bool isIndexHidden ( const QModelIndex & index ) const
+ virtual QModelIndex moveCursor ( CursorAction cursorAction, Qt::KeyboardModifiers modifiers )
+ virtual void paintEvent ( QPaintEvent * event )
+ virtual QModelIndexList selectedIndexes () const
+ virtual void selectionChanged ( const QItemSelection & selected, const QItemSelection & deselected )
+ virtual void setSelection ( const QRect & rect, QItemSelectionModel::SelectionFlags flags )
+ virtual int sizeHintForColumn ( int column ) const
+ virtual int sizeHintForRow ( int row ) const
+ virtual void timerEvent ( QTimerEvent * event )
+ virtual void updateGeometries ()
+ virtual int verticalOffset () const
+ virtual QStyleOptionViewItem viewOptions () const
+
+protected_slots
+ void columnCountChanged ( int oldCount, int newCount )
+ void columnMoved ( int column, int oldIndex, int newIndex )
+ void columnResized ( int column, int oldWidth, int newWidth )
+ void rowCountChanged ( int oldCount, int newCount )
+ void rowMoved ( int row, int oldIndex, int newIndex )
+ void rowResized ( int row, int oldHeight, int newHeight )
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+EditTriggers
+
+enums
+
+parent_enums
+class_name
+QAbstractItemView
+name
+CursorAction
+key
+MoveUp
+MoveDown
+MoveLeft
+MoveRight
+MoveHome
+MoveEnd
+MovePageUp
+MovePageDown
+MoveNext
+MovePrevious
+public_flag
+false
+class_name
+QAbstractItemView
+name
+DragDropMode
+key
+NoDragDrop
+DragOnly
+DropOnly
+DragDrop
+InternalMove
+public_flag
+true
+class_name
+QAbstractItemView
+name
+DropIndicatorPosition
+key
+OnItem
+AboveItem
+BelowItem
+OnViewport
+public_flag
+false
+class_name
+QAbstractItemView
+name
+EditTrigger
+key
+NoEditTriggers
+CurrentChanged
+DoubleClicked
+SelectedClicked
+EditKeyPressed
+AnyKeyPressed
+AllEditTriggers
+public_flag
+true
+class_name
+QAbstractItemView
+name
+ScrollHint
+key
+EnsureVisible
+PositionAtTop
+PositionAtBottom
+PositionAtCenter
+public_flag
+true
+class_name
+QAbstractItemView
+name
+ScrollMode
+key
+ScrollPerItem
+ScrollPerPixel
+public_flag
+true
+class_name
+QAbstractItemView
+name
+SelectionBehavior
+key
+SelectItems
+SelectRows
+SelectColumns
+public_flag
+true
+class_name
+QAbstractItemView
+name
+SelectionMode
+key
+SingleSelection
+ContiguousSelection
+ExtendedSelection
+MultiSelection
+NoSelection
+public_flag
+true
+class_name
+QAbstractItemView
+name
+State
+key
+NoState
+DraggingState
+DragSelectingState
+EditingState
+ExpandingState
+CollapsingState
+AnimatingState
+public_flag
+false
+
+parent_index
+808
+
+parent_name
+QAbstractItemView
+

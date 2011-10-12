@@ -1,0 +1,204 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qapplication.html
+
+output_urn
+QApplication
+
+inherits
+
+public_types
+ enum ColorSpec { NormalColor, CustomColor, ManyColor }
+ typedef QS60MainApplicationFactory
+ enum Type { Tty, GuiClient, GuiServer }
+
+properties
+autoMaximizeThreshold : int
+autoSipEnabled : bool
+cursorFlashTime : int
+doubleClickInterval : int
+globalStrut : QSize
+keyboardInputInterval : int
+layoutDirection : Qt::LayoutDirection
+
+public_functions
+QApplication ( int & argc, char ** argv )
+QApplication ( int & argc, char ** argv, bool GUIenabled )
+QApplication ( int & argc, char ** argv, Type type )
+QApplication ( Display * display, Qt::HANDLE visual = 0, Qt::HANDLE colormap = 0 )
+QApplication ( Display * display, int & argc, char ** argv, Qt::HANDLE visual = 0, Qt::HANDLE colormap = 0 )
+QApplication ( QApplication::QS60MainApplicationFactory factory, int & argc, char ** argv )
+ virtual ~QApplication ()
+ virtual void commitData ( QSessionManager & manager )
+ QInputContext * inputContext () const
+ bool isSessionRestored () const
+ virtual bool macEventFilter ( EventHandlerCallRef caller, EventRef event )
+ virtual bool qwsEventFilter ( QWSEvent * event )
+ void qwsSetCustomColors ( QRgb * colorTable, int start, int numColors )
+ virtual void saveState ( QSessionManager & manager )
+ QString sessionId () const
+ QString sessionKey () const
+ void setInputContext ( QInputContext * inputContext )
+ QString styleSheet () const
+ virtual bool symbianEventFilter ( const QSymbianEvent * event )
+ int symbianProcessEvent ( const QSymbianEvent * event )
+ virtual bool x11EventFilter ( XEvent * event )
+ int x11ProcessEvent ( XEvent * event )
+
+public_slots
+ void aboutQt ()
+ int autoMaximizeThreshold () const
+ bool autoSipEnabled () const
+ void closeAllWindows ()
+ void setAutoMaximizeThreshold ( const int threshold )
+ void setAutoSipEnabled ( const bool enabled )
+ void setStyleSheet ( const QString & sheet )
+
+signals
+ void commitDataRequest ( QSessionManager & manager )
+ void focusChanged ( QWidget * old, QWidget * now )
+ void fontDatabaseChanged ()
+ void lastWindowClosed ()
+ void saveStateRequest ( QSessionManager & manager )
+
+static_public_members
+ QWidget * activeModalWidget ()
+ QWidget * activePopupWidget ()
+ QWidget * activeWindow ()
+ void alert ( QWidget * widget, int msec = 0 )
+ QWidgetList allWidgets ()
+ void beep ()
+ void changeOverrideCursor ( const QCursor & cursor )
+ QClipboard * clipboard ()
+ int colorSpec ()
+ int cursorFlashTime ()
+ QDesktopWidget * desktop ()
+ bool desktopSettingsAware ()
+ int doubleClickInterval ()
+ int exec ()
+ QWidget * focusWidget ()
+ QFont font ()
+ QFont font ( const QWidget * widget )
+ QFont font ( const char * className )
+ QFontMetrics fontMetrics ()
+ QSize globalStrut ()
+ bool isEffectEnabled ( Qt::UIEffect effect )
+ bool isLeftToRight ()
+ bool isRightToLeft ()
+ Qt::LayoutDirection keyboardInputDirection ()
+ int keyboardInputInterval ()
+ QLocale keyboardInputLocale ()
+ Qt::KeyboardModifiers keyboardModifiers ()
+ bool keypadNavigationEnabled () (deprecated)
+ Qt::LayoutDirection layoutDirection ()
+ Qt::MouseButtons mouseButtons ()
+ Qt::NavigationMode navigationMode ()
+ QCursor * overrideCursor ()
+ QPalette palette ()
+ QPalette palette ( const QWidget * widget )
+ QPalette palette ( const char * className )
+ bool quitOnLastWindowClosed ()
+ QDecoration & qwsDecoration ()
+ void qwsSetDecoration ( QDecoration * decoration )
+ QDecoration * qwsSetDecoration ( const QString & decoration )
+ void restoreOverrideCursor ()
+ void setActiveWindow ( QWidget * active )
+ void setColorSpec ( int spec )
+ void setCursorFlashTime ( int )
+ void setDesktopSettingsAware ( bool on )
+ void setDoubleClickInterval ( int )
+ void setEffectEnabled ( Qt::UIEffect effect, bool enable = true )
+ void setFont ( const QFont & font, const char * className = 0 )
+ void setGlobalStrut ( const QSize & )
+ void setGraphicsSystem ( const QString & system )
+ void setKeyboardInputInterval ( int )
+ void setLayoutDirection ( Qt::LayoutDirection direction )
+ void setNavigationMode ( Qt::NavigationMode mode )
+ void setOverrideCursor ( const QCursor & cursor )
+ void setPalette ( const QPalette & palette, const char * className = 0 )
+ void setQuitOnLastWindowClosed ( bool quit )
+ void setStartDragDistance ( int l )
+ void setStartDragTime ( int ms )
+ void setStyle ( QStyle * style )
+ QStyle * setStyle ( const QString & style )
+ void setWheelScrollLines ( int )
+ void setWindowIcon ( const QIcon & icon )
+ int startDragDistance ()
+ int startDragTime ()
+ QStyle * style ()
+ void syncX ()
+ QWidget * topLevelAt ( const QPoint & point )
+ QWidget * topLevelAt ( int x, int y )
+ QWidgetList topLevelWidgets ()
+ Type type ()
+ int wheelScrollLines ()
+ QWidget * widgetAt ( const QPoint & point )
+ QWidget * widgetAt ( int x, int y )
+ QIcon windowIcon ()
+
+protected_functions
+
+reimplemented_public_functions
+ virtual bool notify ( QObject * receiver, QEvent * e )
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+QS60MainApplicationFactory
+
+parent_typedefed_objects
+EventFilter
+
+enums
+class_name
+QApplication
+name
+ColorSpec
+key
+NormalColor
+CustomColor
+ManyColor
+public_flag
+true
+class_name
+QApplication
+name
+Type
+key
+Tty
+GuiClient
+GuiServer
+public_flag
+true
+
+parent_enums
+class_name
+QCoreApplication
+name
+Encoding
+key
+CodecForTr
+UnicodeUTF8
+DefaultCodec
+public_flag
+true
+
+parent_index
+649
+
+parent_name
+QCoreApplication
+

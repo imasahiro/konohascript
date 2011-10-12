@@ -1,0 +1,107 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qregion.html
+
+output_urn
+QRegion
+
+inherits
+
+public_types
+ enum RegionType { Rectangle, Ellipse }
+
+properties
+
+public_functions
+QRegion ()
+QRegion ( int x, int y, int w, int h, RegionType t = Rectangle )
+QRegion ( const QPolygon & a, Qt::FillRule fillRule = Qt::OddEvenFill )
+QRegion ( const QRegion & r )
+QRegion ( const QBitmap & bm )
+QRegion ( const QRect & r, RegionType t = Rectangle )
+ QRect boundingRect () const
+ bool contains ( const QPoint & p ) const
+ bool contains ( const QRect & r ) const
+ Handle handle () const
+ QRegion intersected ( const QRegion & r ) const
+ QRegion intersected ( const QRect & rect ) const
+ bool intersects ( const QRegion & region ) const
+ bool intersects ( const QRect & rect ) const
+ bool isEmpty () const
+ int rectCount () const
+ QVector<QRect> rects () const
+ void setRects ( const QRect * rects, int number )
+ QRegion subtracted ( const QRegion & r ) const
+ void translate ( int dx, int dy )
+ void translate ( const QPoint & point )
+ QRegion translated ( int dx, int dy ) const
+ QRegion translated ( const QPoint & p ) const
+ QRegion united ( const QRegion & r ) const
+ QRegion united ( const QRect & rect ) const
+ QRegion xored ( const QRegion & r ) const
+operator QVariant () const
+ bool operator!= ( const QRegion & other ) const
+ const QRegion operator& ( const QRegion & r ) const
+ const QRegion operator& ( const QRect & r ) const
+ QRegion & operator&= ( const QRegion & r )
+ QRegion & operator&= ( const QRect & r )
+ const QRegion operator+ ( const QRegion & r ) const
+ const QRegion operator+ ( const QRect & r ) const
+ QRegion & operator+= ( const QRegion & r )
+ QRegion & operator+= ( const QRect & rect )
+ const QRegion operator- ( const QRegion & r ) const
+ QRegion & operator-= ( const QRegion & r )
+ QRegion & operator= ( const QRegion & r )
+ bool operator== ( const QRegion & r ) const
+ const QRegion operator^ ( const QRegion & r ) const
+ QRegion & operator^= ( const QRegion & r )
+ const QRegion operator| ( const QRegion & r ) const
+ QRegion & operator|= ( const QRegion & r )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & s, const QRegion & r )
+ QDataStream & operator>> ( QDataStream & s, QRegion & r )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QRegion
+name
+RegionType
+key
+Rectangle
+Ellipse
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

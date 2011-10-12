@@ -1,0 +1,62 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qaxobject.html
+
+output_urn
+QAxObject
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QAxObject ( QObject * parent = 0 )
+QAxObject ( const QString & c, QObject * parent = 0 )
+QAxObject ( IUnknown * iface, QObject * parent = 0 )
+~QAxObject ()
+ bool doVerb ( const QString & verb )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual void connectNotify ( const char * signal )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+PropertyBag
+
+enums
+
+parent_enums
+
+parent_index
+152
+343
+
+parent_name
+QAxBase
+QObject
+

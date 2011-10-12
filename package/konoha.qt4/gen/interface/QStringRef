@@ -1,0 +1,89 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qstringref.html
+
+output_urn
+QStringRef
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QStringRef ()
+QStringRef ( const QString * string, int position, int length )
+QStringRef ( const QString * string )
+QStringRef ( const QStringRef & other )
+~QStringRef ()
+ QStringRef appendTo ( QString * string ) const
+ const QChar at ( int position ) const
+ void clear ()
+ int compare ( const QString & other, Qt::CaseSensitivity cs = Qt::CaseSensitive ) const
+ int compare ( const QStringRef & other, Qt::CaseSensitivity cs = Qt::CaseSensitive ) const
+ int compare ( QLatin1String other, Qt::CaseSensitivity cs = Qt::CaseSensitive ) const
+ const QChar * constData () const
+ int count () const
+ const QChar * data () const
+ bool isEmpty () const
+ bool isNull () const
+ int length () const
+ int localeAwareCompare ( const QString & other ) const
+ int localeAwareCompare ( const QStringRef & other ) const
+ int position () const
+ int size () const
+ const QString * string () const
+ QString toString () const
+ const QChar * unicode () const
+ QStringRef & operator= ( const QStringRef & other )
+ QStringRef & operator= ( const QString * string )
+
+public_slots
+
+signals
+
+static_public_members
+ int compare ( const QStringRef & s1, const QString & s2, Qt::CaseSensitivity cs = Qt::CaseSensitive )
+ int compare ( const QStringRef & s1, const QStringRef & s2, Qt::CaseSensitivity cs = Qt::CaseSensitive )
+ int compare ( const QStringRef & s1, QLatin1String s2, Qt::CaseSensitivity cs = Qt::CaseSensitive )
+ int localeAwareCompare ( const QStringRef & s1, const QString & s2 )
+ int localeAwareCompare ( const QStringRef & s1, const QStringRef & s2 )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ bool operator< ( const QStringRef & s1, const QStringRef & s2 )
+ bool operator<= ( const QStringRef & s1, const QStringRef & s2 )
+ bool operator== ( const QStringRef & s1, const QStringRef & s2 )
+ bool operator== ( const QString & s1, const QStringRef & s2 )
+ bool operator== ( const QLatin1String & s1, const QStringRef & s2 )
+ bool operator> ( const QStringRef & s1, const QStringRef & s2 )
+ bool operator>= ( const QStringRef & s1, const QStringRef & s2 )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

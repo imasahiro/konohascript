@@ -1,0 +1,89 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qstringlist.html
+
+output_urn
+QStringList
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QStringList ()
+QStringList ( const QString & str )
+QStringList ( const QStringList & other )
+QStringList ( const QList<QString> & other )
+ bool contains ( const QString & str, Qt::CaseSensitivity cs = Qt::CaseSensitive ) const
+ QStringList filter ( const QString & str, Qt::CaseSensitivity cs = Qt::CaseSensitive ) const
+ QStringList filter ( const QRegExp & rx ) const
+ int indexOf ( const QRegExp & rx, int from = 0 ) const
+ int indexOf ( const QString & value, int from = 0 ) const
+ int indexOf ( QRegExp & rx, int from = 0 ) const
+ QString join ( const QString & separator ) const
+ int lastIndexOf ( const QRegExp & rx, int from = -1 ) const
+ int lastIndexOf ( const QString & value, int from = -1 ) const
+ int lastIndexOf ( QRegExp & rx, int from = -1 ) const
+ int removeDuplicates ()
+ QStringList & replaceInStrings ( const QString & before, const QString & after, Qt::CaseSensitivity cs = Qt::CaseSensitive )
+ QStringList & replaceInStrings ( const QRegExp & rx, const QString & after )
+ void sort ()
+ QStringList operator+ ( const QStringList & other ) const
+ QStringList & operator<< ( const QString & str )
+ QStringList & operator<< ( const QStringList & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ typedef QMutableStringListIterator
+ typedef QStringListIterator
+ QDataStream & operator<< ( QDataStream & out, const QStringList & list )
+ QDataStream & operator>> ( QDataStream & in, QStringList & list )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+const_iterator
+iterator
+ConstIterator
+Iterator
+const_pointer
+const_reference
+difference_type
+pointer
+reference
+size_type
+value_type
+
+enums
+
+parent_enums
+
+parent_index
+686
+
+parent_name
+QList
+

@@ -1,0 +1,74 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qshareddatapointer.html
+
+output_urn
+QSharedDataPointer
+
+inherits
+
+public_types
+ typedef Type
+
+properties
+
+public_functions
+QSharedDataPointer ()
+QSharedDataPointer ( T * sharedData )
+QSharedDataPointer ( const QSharedDataPointer<T> & other )
+~QSharedDataPointer ()
+ const T * constData () const
+ T * data ()
+ const T * data () const
+ void detach ()
+ void swap ( QSharedDataPointer & other )
+operator T * ()
+operator const T * () const
+ bool operator! () const
+ bool operator!= ( const QSharedDataPointer<T> & other ) const
+ T & operator* ()
+ const T & operator* () const
+ T * operator-> ()
+ const T * operator-> () const
+ QSharedDataPointer<T> & operator= ( const QSharedDataPointer<T> & other )
+ QSharedDataPointer & operator= ( T * sharedData )
+ bool operator== ( const QSharedDataPointer<T> & other ) const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+ T * clone ()
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+Type
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

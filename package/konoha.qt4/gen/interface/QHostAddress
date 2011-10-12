@@ -1,0 +1,98 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qhostaddress.html
+
+output_urn
+QHostAddress
+
+inherits
+
+public_types
+ enum SpecialAddress { Null, LocalHost, LocalHostIPv6, Broadcast, Any, AnyIPv6 }
+
+properties
+
+public_functions
+QHostAddress ()
+QHostAddress ( quint32 ip4Addr )
+QHostAddress ( quint8 * ip6Addr )
+QHostAddress ( const Q_IPV6ADDR & ip6Addr )
+QHostAddress ( const sockaddr * sockaddr )
+QHostAddress ( const QString & address )
+QHostAddress ( const QHostAddress & address )
+QHostAddress ( SpecialAddress address )
+~QHostAddress ()
+ void clear ()
+ bool isInSubnet ( const QHostAddress & subnet, int netmask ) const
+ bool isInSubnet ( const QPair<QHostAddress, int> & subnet ) const
+ bool isNull () const
+ QAbstractSocket::NetworkLayerProtocol protocol () const
+ QString scopeId () const
+ void setAddress ( quint32 ip4Addr )
+ void setAddress ( quint8 * ip6Addr )
+ void setAddress ( const Q_IPV6ADDR & ip6Addr )
+ bool setAddress ( const QString & address )
+ void setAddress ( const sockaddr * sockaddr )
+ void setScopeId ( const QString & id )
+ quint32 toIPv4Address () const
+ Q_IPV6ADDR toIPv6Address () const
+ QString toString () const
+ bool operator!= ( const QHostAddress & other ) const
+ bool operator!= ( SpecialAddress other ) const
+ QHostAddress & operator= ( const QHostAddress & address )
+ QHostAddress & operator= ( const QString & address )
+ bool operator== ( const QHostAddress & other ) const
+ bool operator== ( SpecialAddress other ) const
+
+public_slots
+
+signals
+
+static_public_members
+ QPair<QHostAddress, int> parseSubnet ( const QString & subnet )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ QDataStream & operator<< ( QDataStream & out, const QHostAddress & address )
+ QDataStream & operator>> ( QDataStream & in, QHostAddress & address )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QHostAddress
+name
+SpecialAddress
+key
+Null
+LocalHost
+LocalHostIPv6
+Broadcast
+Any
+AnyIPv6
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

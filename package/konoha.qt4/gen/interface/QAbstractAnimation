@@ -1,0 +1,114 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractanimation.html
+
+output_urn
+QAbstractAnimation
+
+inherits
+
+public_types
+ enum DeletionPolicy { KeepWhenStopped, DeleteWhenStopped }
+ enum Direction { Forward, Backward }
+ enum State { Stopped, Paused, Running }
+
+properties
+currentLoop : const int
+currentTime : int
+direction : Direction
+
+public_functions
+QAbstractAnimation ( QObject * parent = 0 )
+ virtual ~QAbstractAnimation ()
+ int currentLoop () const
+ int currentLoopTime () const
+ int currentTime () const
+ Direction direction () const
+ virtual int duration () const = 0
+ QAnimationGroup * group () const
+ int loopCount () const
+ void setDirection ( Direction direction )
+ void setLoopCount ( int loopCount )
+ State state () const
+ int totalDuration () const
+
+public_slots
+ void pause ()
+ void resume ()
+ void setCurrentTime ( int msecs )
+ void setPaused ( bool paused )
+ void start ( QAbstractAnimation::DeletionPolicy policy = KeepWhenStopped )
+ void stop ()
+
+signals
+ void currentLoopChanged ( int currentLoop )
+ void directionChanged ( QAbstractAnimation::Direction newDirection )
+ void finished ()
+ void stateChanged ( QAbstractAnimation::State newState, QAbstractAnimation::State oldState )
+
+static_public_members
+
+protected_functions
+ virtual void updateCurrentTime ( int currentTime ) = 0
+ virtual void updateDirection ( QAbstractAnimation::Direction direction )
+ virtual void updateState ( QAbstractAnimation::State newState, QAbstractAnimation::State oldState )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QAbstractAnimation
+name
+DeletionPolicy
+key
+KeepWhenStopped
+DeleteWhenStopped
+public_flag
+true
+class_name
+QAbstractAnimation
+name
+Direction
+key
+Forward
+Backward
+public_flag
+true
+class_name
+QAbstractAnimation
+name
+State
+key
+Stopped
+Paused
+Running
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

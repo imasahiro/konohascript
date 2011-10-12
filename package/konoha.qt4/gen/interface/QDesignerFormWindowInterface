@@ -1,0 +1,135 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdesignerformwindowinterface.html
+
+output_urn
+QDesignerFormWindowInterface
+
+inherits
+
+public_types
+ flags Feature
+ enum FeatureFlag { EditFeature, GridFeature, TabOrderFeature, DefaultFeature }
+
+properties
+
+public_functions
+QDesignerFormWindowInterface ( QWidget * parent = 0, Qt::WindowFlags flags = 0 )
+ virtual ~QDesignerFormWindowInterface ()
+ virtual QDir absoluteDir () const = 0
+ virtual void addResourceFile ( const QString & path ) = 0
+ virtual QString author () const = 0
+ virtual QString comment () const = 0
+ virtual QString contents () const = 0
+ virtual QDesignerFormEditorInterface * core () const
+ virtual QDesignerFormWindowCursorInterface * cursor () const = 0
+ virtual void emitSelectionChanged () = 0
+ virtual QString exportMacro () const = 0
+ virtual Feature features () const = 0
+ virtual QString fileName () const = 0
+ virtual QPoint grid () const = 0
+ virtual bool hasFeature ( Feature feature ) const = 0
+ virtual QStringList includeHints () const = 0
+ virtual bool isDirty () const = 0
+ virtual bool isManaged ( QWidget * widget ) const = 0
+ virtual void layoutDefault ( int * margin, int * spacing ) = 0
+ virtual void layoutFunction ( QString * margin, QString * spacing ) = 0
+ virtual QWidget * mainContainer () const = 0
+ virtual QString pixmapFunction () const = 0
+ virtual void removeResourceFile ( const QString & path ) = 0
+ virtual QStringList resourceFiles () const = 0
+ virtual void setAuthor ( const QString & author ) = 0
+ virtual void setComment ( const QString & comment ) = 0
+ virtual void setContents ( QIODevice * device ) = 0
+ virtual void setExportMacro ( const QString & exportMacro ) = 0
+ virtual void setIncludeHints ( const QStringList & includeHints ) = 0
+ virtual void setLayoutDefault ( int margin, int spacing ) = 0
+ virtual void setLayoutFunction ( const QString & margin, const QString & spacing ) = 0
+ virtual void setMainContainer ( QWidget * mainContainer ) = 0
+ virtual void setPixmapFunction ( const QString & pixmapFunction ) = 0
+
+public_slots
+ virtual void clearSelection ( bool update = true ) = 0
+ virtual void manageWidget ( QWidget * widget ) = 0
+ virtual void selectWidget ( QWidget * widget, bool select = true ) = 0
+ virtual void setContents ( const QString & contents ) = 0
+ virtual void setDirty ( bool dirty ) = 0
+ virtual void setFeatures ( Feature features ) = 0
+ virtual void setFileName ( const QString & fileName ) = 0
+ virtual void setGrid ( const QPoint & grid ) = 0
+ virtual void unmanageWidget ( QWidget * widget ) = 0
+
+signals
+ void aboutToUnmanageWidget ( QWidget * widget )
+ void activated ( QWidget * widget )
+ void changed ()
+ void featureChanged ( Feature feature )
+ void fileNameChanged ( const QString & fileName )
+ void geometryChanged ()
+ void mainContainerChanged ( QWidget * mainContainer )
+ void objectRemoved ( QObject * object )
+ void resourceFilesChanged ()
+ void selectionChanged ()
+ void widgetManaged ( QWidget * widget )
+ void widgetRemoved ( QWidget * widget )
+ void widgetUnmanaged ( QWidget * widget )
+
+static_public_members
+ QDesignerFormWindowInterface * findFormWindow ( QWidget * widget )
+ QDesignerFormWindowInterface * findFormWindow ( QObject * object )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+Feature
+
+parent_typedefed_objects
+RenderFlags
+
+enums
+class_name
+QDesignerFormWindowInterface
+name
+FeatureFlag
+key
+EditFeature
+GridFeature
+TabOrderFeature
+DefaultFeature
+public_flag
+true
+
+parent_enums
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+
+parent_index
+216
+
+parent_name
+QWidget
+

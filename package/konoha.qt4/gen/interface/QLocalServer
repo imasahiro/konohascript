@@ -1,0 +1,70 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qlocalserver.html
+
+output_urn
+QLocalServer
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QLocalServer ( QObject * parent = 0 )
+~QLocalServer ()
+ void close ()
+ QString errorString () const
+ QString fullServerName () const
+ virtual bool hasPendingConnections () const
+ bool isListening () const
+ bool listen ( const QString & name )
+ int maxPendingConnections () const
+ virtual QLocalSocket * nextPendingConnection ()
+ QAbstractSocket::SocketError serverError () const
+ QString serverName () const
+ void setMaxPendingConnections ( int numConnections )
+ bool waitForNewConnection ( int msec = 0, bool * timedOut = 0 )
+
+public_slots
+
+signals
+ void newConnection ()
+
+static_public_members
+ bool removeServer ( const QString & name )
+
+protected_functions
+ virtual void incomingConnection ( quintptr socketDescriptor )
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

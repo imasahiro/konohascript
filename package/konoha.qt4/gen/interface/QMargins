@@ -1,0 +1,64 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qmargins.html
+
+output_urn
+QMargins
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QMargins ()
+QMargins ( int left, int top, int right, int bottom )
+ int bottom () const
+ bool isNull () const
+ int left () const
+ int right () const
+ void setBottom ( int bottom )
+ void setLeft ( int left )
+ void setRight ( int right )
+ void setTop ( int Top )
+ int top () const
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ bool operator!= ( const QMargins & m1, const QMargins & m2 )
+ bool operator== ( const QMargins & m1, const QMargins & m2 )
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

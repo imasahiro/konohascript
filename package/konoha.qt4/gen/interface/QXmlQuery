@@ -1,0 +1,97 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qxmlquery.html
+
+output_urn
+QXmlQuery
+
+inherits
+
+public_types
+ enum QueryLanguage { XQuery10, XSLT20 }
+
+properties
+
+public_functions
+QXmlQuery ()
+QXmlQuery ( const QXmlQuery & other )
+QXmlQuery ( const QXmlNamePool & np )
+QXmlQuery ( QueryLanguage queryLanguage, const QXmlNamePool & np = QXmlNamePool() )
+~QXmlQuery ()
+ void bindVariable ( const QXmlName & name, const QXmlItem & value )
+ void bindVariable ( const QXmlName & name, QIODevice * device )
+ void bindVariable ( const QXmlName & name, const QXmlQuery & query )
+ void bindVariable ( const QString & localName, const QXmlItem & value )
+ void bindVariable ( const QString & localName, QIODevice * device )
+ void bindVariable ( const QString & localName, const QXmlQuery & query )
+ void evaluateTo ( QXmlResultItems * result ) const
+ bool evaluateTo ( QAbstractXmlReceiver * callback ) const
+ bool evaluateTo ( QStringList * target ) const
+ bool evaluateTo ( QString * output ) const
+ bool evaluateTo ( QIODevice * target ) const
+ QXmlName initialTemplateName () const
+ bool isValid () const
+ QAbstractMessageHandler * messageHandler () const
+ QXmlNamePool namePool () const
+ QNetworkAccessManager * networkAccessManager () const
+ QueryLanguage queryLanguage () const
+ void setFocus ( const QXmlItem & item )
+ bool setFocus ( const QUrl & documentURI )
+ bool setFocus ( QIODevice * document )
+ bool setFocus ( const QString & focus )
+ void setInitialTemplateName ( const QXmlName & name )
+ void setInitialTemplateName ( const QString & localName )
+ void setMessageHandler ( QAbstractMessageHandler * aMessageHandler )
+ void setNetworkAccessManager ( QNetworkAccessManager * newManager )
+ void setQuery ( QIODevice * sourceCode, const QUrl & documentURI = QUrl() )
+ void setQuery ( const QUrl & queryURI, const QUrl & baseURI = QUrl() )
+ void setQuery ( const QString & sourceCode, const QUrl & documentURI = QUrl() )
+ void setUriResolver ( const QAbstractUriResolver * resolver )
+ const QAbstractUriResolver * uriResolver () const
+ QXmlQuery & operator= ( const QXmlQuery & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QXmlQuery
+name
+QueryLanguage
+key
+XQuery10
+XSLT20
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

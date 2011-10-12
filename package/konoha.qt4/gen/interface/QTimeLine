@@ -1,0 +1,128 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qtimeline.html
+
+output_urn
+QTimeLine
+
+inherits
+
+public_types
+ enum CurveShape { EaseInCurve, EaseOutCurve, EaseInOutCurve, LinearCurve, SineCurve, CosineCurve }
+ enum Direction { Forward, Backward }
+ enum State { NotRunning, Paused, Running }
+
+properties
+currentTime : int
+curveShape : CurveShape
+direction : Direction
+duration : int
+
+public_functions
+QTimeLine ( int duration = 1000, QObject * parent = 0 )
+ virtual ~QTimeLine ()
+ int currentFrame () const
+ int currentTime () const
+ qreal currentValue () const
+ CurveShape curveShape () const
+ Direction direction () const
+ int duration () const
+ QEasingCurve easingCurve () const
+ int endFrame () const
+ int frameForTime ( int msec ) const
+ int loopCount () const
+ void setCurveShape ( CurveShape shape )
+ void setDirection ( Direction direction )
+ void setDuration ( int duration )
+ void setEasingCurve ( const QEasingCurve & curve )
+ void setEndFrame ( int frame )
+ void setFrameRange ( int startFrame, int endFrame )
+ void setLoopCount ( int count )
+ void setStartFrame ( int frame )
+ void setUpdateInterval ( int interval )
+ int startFrame () const
+ State state () const
+ int updateInterval () const
+ virtual qreal valueForTime ( int msec ) const
+
+public_slots
+ void resume ()
+ void setCurrentTime ( int msec )
+ void setPaused ( bool paused )
+ void start ()
+ void stop ()
+ void toggleDirection ()
+
+signals
+ void finished ()
+ void frameChanged ( int frame )
+ void stateChanged ( QTimeLine::State newState )
+ void valueChanged ( qreal value )
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+ virtual void timerEvent ( QTimerEvent * event )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QTimeLine
+name
+CurveShape
+key
+EaseInCurve
+EaseOutCurve
+EaseInOutCurve
+LinearCurve
+SineCurve
+CosineCurve
+public_flag
+true
+class_name
+QTimeLine
+name
+Direction
+key
+Forward
+Backward
+public_flag
+true
+class_name
+QTimeLine
+name
+State
+key
+NotRunning
+Paused
+Running
+public_flag
+true
+
+parent_enums
+
+parent_index
+343
+
+parent_name
+QObject
+

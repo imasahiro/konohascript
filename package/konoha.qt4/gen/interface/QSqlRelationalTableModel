@@ -1,0 +1,82 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qsqlrelationaltablemodel.html
+
+output_urn
+QSqlRelationalTableModel
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QSqlRelationalTableModel ( QObject * parent = 0, QSqlDatabase db = QSqlDatabase() )
+ virtual ~QSqlRelationalTableModel ()
+ QSqlRelation relation ( int column ) const
+ virtual QSqlTableModel * relationModel ( int column ) const
+ virtual void setRelation ( int column, const QSqlRelation & relation )
+
+public_slots
+ virtual void revertRow ( int row )
+
+signals
+4 public slots inherited from QSqlTableModel
+2 public slots inherited from QAbstractItemModel
+1 public slot inherited from QObject
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void clear ()
+ virtual QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const
+ virtual bool removeColumns ( int column, int count, const QModelIndex & parent = QModelIndex() )
+ virtual bool select ()
+ virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole )
+ virtual void setTable ( const QString & table )
+
+reimplemented_protected_functions
+ virtual bool insertRowIntoTable ( const QSqlRecord & values )
+ virtual QString orderByClause () const
+ virtual QString selectStatement () const
+ virtual bool updateRowInTable ( int row, const QSqlRecord & values )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+class_name
+QSqlTableModel
+name
+EditStrategy
+key
+OnFieldChange
+OnRowChange
+OnManualSubmit
+public_flag
+true
+
+parent_index
+593
+
+parent_name
+QSqlTableModel
+

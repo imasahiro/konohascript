@@ -1,0 +1,75 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qdesktopservices.html
+
+output_urn
+QDesktopServices
+
+inherits
+
+public_types
+ enum StandardLocation { DesktopLocation, DocumentsLocation, FontsLocation, ApplicationsLocation, ..., CacheLocation }
+
+properties
+
+public_functions
+
+public_slots
+
+signals
+
+static_public_members
+ QString displayName ( StandardLocation type )
+ bool openUrl ( const QUrl & url )
+ void setUrlHandler ( const QString & scheme, QObject * receiver, const char * method )
+ QString storageLocation ( StandardLocation type )
+ void unsetUrlHandler ( const QString & scheme )
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QDesktopServices
+name
+StandardLocation
+key
+DesktopLocation
+DocumentsLocation
+FontsLocation
+ApplicationsLocation
+MusicLocation
+MoviesLocation
+PicturesLocation
+TempLocation
+HomeLocation
+DataLocation
+CacheLocation
+public_flag
+true
+
+parent_enums
+
+parent_index
+
+parent_name
+

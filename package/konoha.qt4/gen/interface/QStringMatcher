@@ -1,0 +1,63 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qstringmatcher.html
+
+output_urn
+QStringMatcher
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QStringMatcher ()
+QStringMatcher ( const QString & pattern, Qt::CaseSensitivity cs = Qt::CaseSensitive )
+QStringMatcher ( const QChar * uc, int length, Qt::CaseSensitivity cs = Qt::CaseSensitive )
+QStringMatcher ( const QStringMatcher & other )
+~QStringMatcher ()
+ Qt::CaseSensitivity caseSensitivity () const
+ int indexIn ( const QString & str, int from = 0 ) const
+ int indexIn ( const QChar * str, int length, int from = 0 ) const
+ QString pattern () const
+ void setCaseSensitivity ( Qt::CaseSensitivity cs )
+ void setPattern ( const QString & pattern )
+ QStringMatcher & operator= ( const QStringMatcher & other )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+
+parent_name
+

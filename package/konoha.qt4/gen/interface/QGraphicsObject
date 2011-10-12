@@ -1,0 +1,159 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qgraphicsobject.html
+
+output_urn
+QGraphicsObject
+
+inherits
+
+public_types
+
+properties
+effect : QGraphicsEffect * const
+enabled : const bool
+opacity : const qreal
+parent : QGraphicsObject * const
+pos : const QPointF
+rotation : const qreal
+
+public_functions
+QGraphicsObject ( QGraphicsItem * parent = 0 )
+ void grabGesture ( Qt::GestureType gesture, Qt::GestureFlags flags = Qt::GestureFlags() )
+ void ungrabGesture ( Qt::GestureType gesture )
+
+public_slots
+
+signals
+ void enabledChanged ()
+ void opacityChanged ()
+ void parentChanged ()
+ void rotationChanged ()
+ void scaleChanged ()
+ void visibleChanged ()
+ void xChanged ()
+ void yChanged ()
+ void zChanged ()
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+
+reimplemented_protected_functions
+
+protected_slots
+ void updateMicroFocus ()
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+GraphicsItemFlags
+
+enums
+
+parent_enums
+class_name
+QGraphicsItem
+name
+CacheMode
+key
+NoCache
+ItemCoordinateCache
+DeviceCoordinateCache
+public_flag
+true
+class_name
+QGraphicsItem
+name
+GraphicsItemChange
+key
+ItemEnabledChange
+ItemEnabledHasChanged
+ItemMatrixChange
+ItemPositionChange
+ItemPositionHasChanged
+ItemTransformChange
+ItemTransformHasChanged
+ItemRotationChange
+ItemRotationHasChanged
+ItemScaleChange
+ItemScaleHasChanged
+ItemTransformOriginPointChange
+ItemTransformOriginPointHasChanged
+ItemSelectedChange
+ItemSelectedHasChanged
+ItemVisibleChange
+ItemVisibleHasChanged
+ItemParentChange
+ItemParentHasChanged
+ItemChildAddedChange
+ItemChildRemovedChange
+ItemSceneChange
+ItemSceneHasChanged
+ItemCursorChange
+ItemCursorHasChanged
+ItemToolTipChange
+ItemToolTipHasChanged
+ItemFlagsChange
+ItemFlagsHaveChanged
+ItemZValueChange
+ItemZValueHasChanged
+ItemOpacityChange
+ItemOpacityHasChanged
+ItemScenePositionHasChanged
+public_flag
+true
+class_name
+QGraphicsItem
+name
+GraphicsItemFlag
+key
+ItemIsMovable
+ItemIsSelectable
+ItemIsFocusable
+ItemClipsToShape
+ItemClipsChildrenToShape
+ItemIgnoresTransformations
+ItemIgnoresParentOpacity
+ItemDoesntPropagateOpacityToChildren
+ItemStacksBehindParent
+ItemUsesExtendedStyleOption
+ItemHasNoContents
+ItemSendsGeometryChanges
+ItemAcceptsInputMethod
+ItemNegativeZStacksBehindParent
+ItemIsPanel
+ItemSendsScenePositionChanges
+public_flag
+true
+class_name
+QGraphicsItem
+name
+PanelModality
+key
+NonModal
+PanelModal
+SceneModal
+public_flag
+true
+
+parent_index
+319
+343
+
+parent_name
+QGraphicsItem
+QObject
+

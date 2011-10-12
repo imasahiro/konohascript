@@ -1,0 +1,68 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qs60style.html
+
+output_urn
+QS60Style
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QS60Style ()
+~QS60Style ()
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual void drawComplexControl ( ComplexControl control, const QStyleOptionComplex * option, QPainter * painter, const QWidget * widget = 0 ) const
+ virtual void drawControl ( ControlElement element, const QStyleOption * option, QPainter * painter, const QWidget * widget = 0 ) const
+ virtual void drawPrimitive ( PrimitiveElement element, const QStyleOption * option, QPainter * painter, const QWidget * widget = 0 ) const
+ virtual bool event ( QEvent * e )
+ virtual int pixelMetric ( PixelMetric metric, const QStyleOption * option = 0, const QWidget * widget = 0 ) const
+ virtual void polish ( QWidget * widget )
+ virtual void polish ( QApplication * application )
+ virtual QSize sizeFromContents ( ContentsType ct, const QStyleOption * opt, const QSize & csz, const QWidget * widget = 0 ) const
+ virtual int styleHint ( StyleHint sh, const QStyleOption * opt = 0, const QWidget * widget = 0, QStyleHintReturn * hret = 0 ) const
+ virtual QRect subControlRect ( ComplexControl control, const QStyleOptionComplex * option, SubControl scontrol, const QWidget * widget = 0 ) const
+ virtual QRect subElementRect ( SubElement element, const QStyleOption * opt, const QWidget * widget = 0 ) const
+ virtual void unpolish ( QWidget * widget )
+ virtual void unpolish ( QApplication * application )
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+
+parent_enums
+
+parent_index
+57
+
+parent_name
+QCommonStyle
+

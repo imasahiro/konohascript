@@ -1,0 +1,196 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qabstractsocket.html
+
+output_urn
+QAbstractSocket
+
+inherits
+
+public_types
+ enum NetworkLayerProtocol { IPv4Protocol, IPv6Protocol, UnknownNetworkLayerProtocol }
+ enum SocketError { ConnectionRefusedError, RemoteHostClosedError, HostNotFoundError, SocketAccessError, ..., UnknownSocketError }
+ enum SocketOption { LowDelayOption, KeepAliveOption }
+ enum SocketState { UnconnectedState, HostLookupState, ConnectingState, ConnectedState, ..., ListeningState }
+ enum SocketType { TcpSocket, UdpSocket, UnknownSocketType }
+
+properties
+
+public_functions
+QAbstractSocket ( SocketType socketType, QObject * parent )
+ virtual ~QAbstractSocket ()
+ void abort ()
+ void connectToHost ( const QString & hostName, quint16 port, OpenMode openMode = ReadWrite )
+ void connectToHost ( const QHostAddress & address, quint16 port, OpenMode openMode = ReadWrite )
+ void disconnectFromHost ()
+ SocketError error () const
+ bool flush ()
+ bool isValid () const
+ QHostAddress localAddress () const
+ quint16 localPort () const
+ QHostAddress peerAddress () const
+ QString peerName () const
+ quint16 peerPort () const
+ QNetworkProxy proxy () const
+ qint64 readBufferSize () const
+ void setProxy ( const QNetworkProxy & networkProxy )
+ void setReadBufferSize ( qint64 size )
+ bool setSocketDescriptor ( int socketDescriptor, SocketState socketState = ConnectedState, OpenMode openMode = ReadWrite )
+ void setSocketOption ( QAbstractSocket::SocketOption option, const QVariant & value )
+ int socketDescriptor () const
+ QVariant socketOption ( QAbstractSocket::SocketOption option )
+ SocketType socketType () const
+ SocketState state () const
+ bool waitForConnected ( int msecs = 30000 )
+ bool waitForDisconnected ( int msecs = 30000 )
+
+public_slots
+
+signals
+ void connected ()
+ void disconnected ()
+ void error ( QAbstractSocket::SocketError socketError )
+ void hostFound ()
+ void proxyAuthenticationRequired ( const QNetworkProxy & proxy, QAuthenticator * authenticator )
+ void stateChanged ( QAbstractSocket::SocketState socketState )
+
+static_public_members
+
+protected_functions
+ void setLocalAddress ( const QHostAddress & address )
+ void setLocalPort ( quint16 port )
+ void setPeerAddress ( const QHostAddress & address )
+ void setPeerName ( const QString & name )
+ void setPeerPort ( quint16 port )
+ void setSocketError ( SocketError socketError )
+ void setSocketState ( SocketState state )
+
+reimplemented_public_functions
+ virtual bool atEnd () const
+ virtual qint64 bytesAvailable () const
+ virtual qint64 bytesToWrite () const
+ virtual bool canReadLine () const
+ virtual void close ()
+ virtual bool isSequential () const
+ virtual bool waitForBytesWritten ( int msecs = 30000 )
+ virtual bool waitForReadyRead ( int msecs = 30000 )
+
+reimplemented_protected_functions
+ virtual qint64 readData ( char * data, qint64 maxSize )
+ virtual qint64 readLineData ( char * data, qint64 maxlen )
+ virtual qint64 writeData ( const char * data, qint64 size )
+
+protected_slots
+ void connectToHostImplementation ( const QString & hostName, quint16 port, OpenMode openMode = ReadWrite )
+ void disconnectFromHostImplementation ()
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+true
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+OpenMode
+
+enums
+class_name
+QAbstractSocket
+name
+NetworkLayerProtocol
+key
+IPv4Protocol
+IPv6Protocol
+UnknownNetworkLayerProtocol
+public_flag
+true
+class_name
+QAbstractSocket
+name
+SocketError
+key
+ConnectionRefusedError
+RemoteHostClosedError
+HostNotFoundError
+SocketAccessError
+SocketResourceError
+SocketTimeoutError
+DatagramTooLargeError
+NetworkError
+AddressInUseError
+SocketAddressNotAvailableError
+UnsupportedSocketOperationError
+ProxyAuthenticationRequiredError
+SslHandshakeFailedError
+UnfinishedSocketOperationError
+ProxyConnectionRefusedError
+ProxyConnectionClosedError
+ProxyConnectionTimeoutError
+ProxyNotFoundError
+ProxyProtocolError
+UnknownSocketError
+public_flag
+true
+class_name
+QAbstractSocket
+name
+SocketOption
+key
+LowDelayOption
+KeepAliveOption
+public_flag
+true
+class_name
+QAbstractSocket
+name
+SocketState
+key
+UnconnectedState
+HostLookupState
+ConnectingState
+ConnectedState
+BoundState
+ClosingState
+ListeningState
+public_flag
+true
+class_name
+QAbstractSocket
+name
+SocketType
+key
+TcpSocket
+UdpSocket
+UnknownSocketType
+public_flag
+true
+
+parent_enums
+class_name
+QIODevice
+name
+OpenModeFlag
+key
+NotOpen
+ReadOnly
+WriteOnly
+ReadWrite
+Append
+Truncate
+Text
+Unbuffered
+public_flag
+true
+
+parent_index
+732
+
+parent_name
+QIODevice
+

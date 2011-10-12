@@ -1,0 +1,139 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qlcdnumber.html
+
+output_urn
+QLCDNumber
+
+inherits
+
+public_types
+ enum Mode { Hex, Dec, Oct, Bin }
+ enum SegmentStyle { Outline, Filled, Flat }
+
+properties
+digitCount : int
+intValue : int
+mode : Mode
+numDigits : int (deprecated)
+
+public_functions
+QLCDNumber ( QWidget * parent = 0 )
+QLCDNumber ( uint numDigits, QWidget * parent = 0 )
+~QLCDNumber ()
+ bool checkOverflow ( double num ) const
+ bool checkOverflow ( int num ) const
+ int digitCount () const
+ int intValue () const
+ Mode mode () const
+ SegmentStyle segmentStyle () const
+ void setDigitCount ( int numDigits )
+ void setMode ( Mode )
+ void setSegmentStyle ( SegmentStyle )
+ bool smallDecimalPoint () const
+ double value () const
+
+public_slots
+ void display ( const QString & s )
+ void display ( double num )
+ void display ( int num )
+ void setBinMode ()
+ void setDecMode ()
+ void setHexMode ()
+ void setOctMode ()
+ void setSmallDecimalPoint ( bool )
+
+signals
+ void overflow ()
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual QSize sizeHint () const
+
+reimplemented_protected_functions
+ virtual bool event ( QEvent * e )
+ virtual void paintEvent ( QPaintEvent * )
+
+protected_slots
+
+related_non_members
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+false
+
+typedefed_objects
+
+parent_typedefed_objects
+
+enums
+class_name
+QLCDNumber
+name
+Mode
+key
+Hex
+Dec
+Oct
+Bin
+public_flag
+true
+class_name
+QLCDNumber
+name
+SegmentStyle
+key
+Outline
+Filled
+Flat
+public_flag
+true
+
+parent_enums
+class_name
+QFrame
+name
+Shadow
+key
+Plain
+Raised
+Sunken
+public_flag
+true
+class_name
+QFrame
+name
+Shape
+key
+NoFrame
+Box
+Panel
+StyledPanel
+HLine
+VLine
+WinPanel
+public_flag
+true
+class_name
+QFrame
+name
+StyleMask
+key
+Shadow_Mask
+Shape_Mask
+public_flag
+true
+
+parent_index
+432
+
+parent_name
+QFrame
+

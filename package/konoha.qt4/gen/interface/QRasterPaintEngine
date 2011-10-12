@@ -1,0 +1,164 @@
+input_urn
+/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/doc/html/qrasterpaintengine.html
+
+output_urn
+QRasterPaintEngine
+
+inherits
+
+public_types
+
+properties
+
+public_functions
+QRasterPaintEngine ( QPaintDevice * device )
+~QRasterPaintEngine ()
+ virtual void drawBufferSpan ( const uint * buffer, int size, int x, int y, int length, uint alpha )
+ virtual void drawColorSpans ( const QSpan * spans, int count, uint color )
+
+public_slots
+
+signals
+
+static_public_members
+
+protected_functions
+
+reimplemented_public_functions
+ virtual bool begin ( QPaintDevice * device )
+ virtual void drawEllipse ( const QRectF & rect )
+ virtual void drawEllipse ( const QRect & rect )
+ virtual void drawImage ( const QRectF & r, const QImage & img, const QRectF & sr, Qt::ImageConversionFlags falgs = Qt::AutoColor )
+ virtual void drawLines ( const QLine * lines, int lineCount )
+ virtual void drawLines ( const QLineF * lines, int lineCount )
+ virtual void drawPixmap ( const QRectF & r, const QPixmap & pixmap, const QRectF & sr )
+ virtual void drawPoints ( const QPointF * points, int pointCount )
+ virtual void drawPoints ( const QPoint * points, int pointCount )
+ virtual void drawPolygon ( const QPointF * points, int pointCount, PolygonDrawMode mode )
+ virtual void drawPolygon ( const QPoint * points, int pointCount, PolygonDrawMode mode )
+ virtual void drawRects ( const QRect * rects, int rectCount )
+ virtual void drawRects ( const QRectF * rects, int rectCount )
+ virtual void drawStaticTextItem ( QStaticTextItem * textItem )
+ virtual void drawTextItem ( const QPointF & p, const QTextItem & textItem )
+ virtual void drawTiledPixmap ( const QRectF & r, const QPixmap & pixmap, const QPointF & sr )
+ virtual bool end ()
+ virtual void fillRect ( const QRectF & r, const QBrush & brush )
+ virtual void fillRect ( const QRectF & r, const QColor & color )
+ virtual Type type () const
+
+reimplemented_protected_functions
+
+protected_slots
+
+related_non_members
+ typedef QSpan
+
+templateClass
+false
+
+abstractClass
+false
+
+enbeddedClass
+true
+
+typedefed_objects
+
+parent_typedefed_objects
+DirtyFlags
+PaintEngineFeatures
+
+enums
+
+parent_enums
+class_name
+QPaintEngine
+name
+DirtyFlag
+key
+DirtyPen
+DirtyBrush
+DirtyBrushOrigin
+DirtyFont
+DirtyBackground
+DirtyBackgroundMode
+DirtyTransform
+DirtyClipRegion
+DirtyClipPath
+DirtyHints
+DirtyCompositionMode
+DirtyClipEnabled
+DirtyOpacity
+AllDirty
+public_flag
+true
+class_name
+QPaintEngine
+name
+PaintEngineFeature
+key
+AlphaBlend
+Antialiasing
+BlendModes
+BrushStroke
+ConicalGradientFill
+ConstantOpacity
+LinearGradientFill
+MaskedBrush
+ObjectBoundingModeGradients
+PainterPaths
+PaintOutsidePaintEvent
+PatternBrush
+PatternTransform
+PerspectiveTransform
+PixmapTransform
+PorterDuff
+PrimitiveTransform
+RadialGradientFill
+RasterOpModes
+AllFeatures
+public_flag
+true
+class_name
+QPaintEngine
+name
+PolygonDrawMode
+key
+OddEvenMode
+WindingMode
+ConvexMode
+PolylineMode
+public_flag
+true
+class_name
+QPaintEngine
+name
+Type
+key
+X11
+Windows
+MacPrinter
+CoreGraphics
+QuickDraw
+QWindowSystem
+PostScript
+OpenGL
+Picture
+SVG
+Raster
+Direct3D
+Pdf
+OpenVG
+User
+MaxUser
+OpenGL2
+PaintBuffer
+public_flag
+true
+
+parent_index
+525
+
+parent_name
+QPaintEngine
+
