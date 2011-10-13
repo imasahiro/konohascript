@@ -1567,6 +1567,16 @@ KMETHOD IRBuilder_createPHI(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
+//## void IRBuilder.addIncoming(Type Ty, BasicBlock bb);
+KMETHOD PHINode_addIncoming(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	PHINode *self = konoha::object_cast<PHINode *>(sfp[0].p);
+	Value *v = konoha::object_cast<Value *>(sfp[1].p);
+	BasicBlock *bb = konoha::object_cast<BasicBlock *>(sfp[2].p);
+	self->addIncoming(v, bb);
+	RETURNvoid_();
+}
+
 //## CallInst IRBuilder.CreateCall1(Value Callee, Value Arg);
 KMETHOD IRBuilder_createCall1(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -1770,6 +1780,15 @@ KMETHOD IRBuilder_setInsertPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+//## BasicBlock IRBuilder.GetInsertBlock();
+KMETHOD IRBuilder_getInsertBlock(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
+	BasicBlock *BB = self->GetInsertBlock();
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(BB), obj_free);
+	RETURN_(p);
+}
+
 //## Function BasicBlock.getParent();
 KMETHOD BasicBlock_getParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -1833,6 +1852,15 @@ static void Module_obj_free(void *p)
 	delete m;
 }
 
+//## Argument Argument.new(Type ty, int scid);
+KMETHOD Argument_new(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	Type *ty = konoha::object_cast<Type *>(sfp[1].p);
+	Value *v = new Argument(ty, "", 0);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(v), obj_free);
+	RETURN_(p);
+}
+
 //## Module Module.new(String name);
 KMETHOD Module_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -1856,6 +1884,14 @@ KMETHOD Module_addTypeName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Module_dump(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	Module *self = konoha::object_cast<Module *>(sfp[0].p);
+	(*self).dump();
+	RETURNvoid_();
+}
+
+//## void BasicBlock.dump();
+KMETHOD BasicBlock_dump(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	BasicBlock *self = konoha::object_cast<BasicBlock *>(sfp[0].p);
 	(*self).dump();
 	RETURNvoid_();
 }
@@ -1991,7 +2027,7 @@ KMETHOD ExecutionEngine_getPointerToFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-//## void Func.setFunction(NativeFunction func);
+//## void Method.setFunction(NativeFunction func);
 KMETHOD Method_setFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = (knh_Method_t*) sfp[0].o;
@@ -2025,7 +2061,14 @@ KMETHOD Function_getArguments(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	RETURN_(a);
 }
-
+//## void Value.replaceAllUsesWith(Value v);
+KMETHOD Value_replaceAllUsesWith(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	Value *self = konoha::object_cast<Value *>(sfp[0].p);
+	Value *v = konoha::object_cast<Value *>(sfp[1].p);
+	self->replaceAllUsesWith(v);
+	RETURNvoid_();
+}
 //## Value Value.setName(String name);
 KMETHOD Value_setName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
