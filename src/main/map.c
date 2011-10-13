@@ -783,7 +783,7 @@ void knh_PtrMap_addS(CTX ctx, knh_PtrMap_t *pm, knh_String_t *v)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
 	const char *k = S_totext(v);
-	size_t len = knh_strlen(k);
+	size_t len = S_size(v);
 	knh_hashcode_t hcode = knh_hash(0, k, len);
 	knh_hentry_t *e = new_hentry(ctx, hmap, hcode);
 	DBG_ASSERT(IS_bString(v));
