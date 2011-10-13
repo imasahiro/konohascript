@@ -27,6 +27,7 @@
 
 include "lib:gluelink";
 
+
 @Public @Native String System.getHostName();
 
 // user, group
@@ -36,21 +37,45 @@ include "lib:gluelink";
 @Public @Native int System.getGid();
 @Public @Native int System.getEgid();
 
+@Public @Native Array<int> System.getGroups();
+//@Public @Restricted @Native boolean System.setGroups(int pid, Array<int> groups);
+
 // process 
 @Public @Native int System.getPid();
 @Public @Native int System.getPPid();
+@Public @Native int System.getPgid(int pid);
 @Public @Native int System.sleep(int sec);
 @Public @Native boolean System.usleep(int sec);
 
+//@Public @Restricted @Native boolean System.setPgid(int pid, int pgid);
+
+// resource usage
+@Public @Native Map System.getResourceUsage(int who);
+@Public @Native Map System.getRlimit(int rtype);
+
+
 // file system
-@Public @Native boolean System.link(Path path, Path path2);
-@Public @Native boolean System.symlink(Path path, Path path2);
-@Public @Native boolean System.rename(Path path, Path path2);
-@Public @Native boolean System.unlink(Path path);
+@Public @Restricted @Native boolean System.link(Path path, Path path2);
+@Public @Restricted @Native boolean System.symlink(Path path, Path path2);
+@Public @Restricted @Native boolean System.rename(Path path, Path path2);
+@Public @Restricted @Native boolean System.unlink(Path path);
+
+@Public @Native boolean System.truncate(Path path, int length);
+
+@Public @Native Map System.stat(Path path);
+@Public @Native String System.readlink(Path path);
+@Public @Restricted @Native boolean System.chmod(Path path, int mode);
+@Public @Restricted @Native boolean System.chown(Path path, int owner, int group);
+@Public @Restricted @Native int System.access(Path path, int mode);
 
 @Public @Native String System.getCwd();
 @Public @Native boolean System.chdir(Path path);
-@Public @Native boolean System.chroot(Path path);
+@Public @Restricted @Native boolean System.chroot(Path path);
+@Public @Restricted @Native boolean System.mkdir(Path path, int mode);
+@Public @Restricted @Native boolean System.rmdir(Path path);
+
+@Public @Native int System.getPriority(int which, int who);
+@Public @Restricted @Native boolean System.setPriority(int which, int who, int pri);
 
 // DIR
 @Public @Native class Dir;
@@ -59,13 +84,22 @@ include "lib:gluelink";
 @Public @Native void Dir.close();
 @Public @Native @Iterative Map Dir.read();
 
-// FILE
+//FILE Stream
 @Public @Native class File;
 @Public @Native @Throwable File System.fopen(Path path, String mode);
-@Public @Native int File.getc();
+
+@Public @Native int File.getC();
 @Public @Native int File.read(Bytes buf, int offset, int len);
-@Public @Native boolean File.putc(int ch);
+@Public @Native boolean File.putC(int ch);
 @Public @Native int File.write(Bytes buf, int offset, int len);
 @Public @Native void File.close();
 
+// FILE low-level
+@Public @Native int File.lseek(int offset, int whence);
+@Public @Native boolean File.truncate(int length);
+@Public @Restricted @Native boolean File.chmod(int mode);
+@Public @Restricted @Native boolean File.chown(int owner, int group);
+
+
 //include func:SystemCONST;
+
