@@ -1332,38 +1332,40 @@ static void gc_sweep(CTX ctx) // ide' ultra faster sweep
 }
 #endif
 
-#ifndef K_USING_RCGC
-static void gc_extendObjectArena(CTX ctx)
-{
-	knh_share_t *ctxshare = (knh_share_t*) ctx->share;
-	knh_ObjectArenaTBL_t *oat = ctxshare->ObjectArenaTBL + (ctxshare->sizeObjectArenaTBL - 1);
-	size_t arenasize = oat->arenasize;
-	knh_uint64_t stime = knh_getTimeMilliSecond();
-//	const knh_sysinfo_t *sysinfo = knh_getsysinfo();
-//	size_t max = (sysinfo->hw_usermem > 0) ? sysinfo->hw_usermem / 20 : 64 * (1024 * 1024);
-//	if(arenasize <= max) arenasize *= 2;
-	knh_Object_t *newobj = get_memBlock(ctx, arenasize);
-	knh_Object_t *p = ctx->freeObjectList;
-	if(p == NULL) {
-		((knh_context_t*)ctx)->freeObjectList = newobj;
-		((knh_context_t*)ctx)->freeObjectTail = newobj->ref4_tail;
-	}
-	else {
-		p = ctx->freeObjectTail;
-		p->ref = newobj;
-		((knh_context_t*)ctx)->freeObjectTail = newobj->ref4_tail;
-	}
-	GC_LOG("extendObjectArena: id=%d newarena=%luMb, used_memory=%luMb extending_time=%dms",
-			(int)(ctx->share->sizeObjectArenaTBL - 1),
-			(arenasize / MB_), (ctx->stat->usedMemorySize / MB_),
-			(int)(knh_getTimeMilliSecond()-stime));
-}
-#endif
+//#ifndef K_USING_RCGC
+//static void gc_extendObjectArena(CTX ctx)
+//{
+//	knh_share_t *ctxshare = (knh_share_t*) ctx->share;
+//	knh_ObjectArenaTBL_t *oat = ctxshare->ObjectArenaTBL + (ctxshare->sizeObjectArenaTBL - 1);
+//	size_t arenasize = oat->arenasize;
+//	knh_uint64_t stime = knh_getTimeMilliSecond();
+////	const knh_sysinfo_t *sysinfo = knh_getsysinfo();
+////	size_t max = (sysinfo->hw_usermem > 0) ? sysinfo->hw_usermem / 20 : 64 * (1024 * 1024);
+////	if(arenasize <= max) arenasize *= 2;
+//	knh_Object_t *newobj = get_memBlock(ctx, arenasize);
+//	knh_Object_t *p = ctx->freeObjectList;
+//	if(p == NULL) {
+//		((knh_context_t*)ctx)->freeObjectList = newobj;
+//		((knh_context_t*)ctx)->freeObjectTail = newobj->ref4_tail;
+//	}
+//	else {
+//		p = ctx->freeObjectTail;
+//		p->ref = newobj;
+//		((knh_context_t*)ctx)->freeObjectTail = newobj->ref4_tail;
+//	}
+//	GC_LOG("extendObjectArena: id=%d newarena=%luMb, used_memory=%luMb extending_time=%dms",
+//			(int)(ctx->share->sizeObjectArenaTBL - 1),
+//			(arenasize / MB_), (ctx->stat->usedMemorySize / MB_),
+//			(int)(knh_getTimeMilliSecond()-stime));
+//}
+//#endif
 
 static void gc_freeMemBlock(CTX ctx, knh_context_t *deadCtx)
 {
 	knh_ObjectArenaTBL_t *oat = ctx->share->ObjectArenaTBL;
 	size_t collected=0, moved = 0, atindex, size = ctx->share->sizeObjectArenaTBL;
+	(void)collected;
+	(void)moved;
 	for(atindex = 0; atindex < size; atindex++) {
 		knh_ObjectPage_t *opage = oat[atindex].head;
 		for(;opage < oat[atindex].bottom; opage++) {
@@ -1379,7 +1381,7 @@ static void gc_freeCtx(CTX ctx)
 	int i;
 	knh_share_t *share = ctx->wshare;
 	for(i = knh_Array_size(share->contextListNULL) - 1; i >= 0; i--) {
-		knh_context_t *c = ((knh_Context_t *)knh_Array_n(share->contextListNULL, i))->ctx;
+		knh_context_t *c = WCTX(((knh_Context_t *)knh_Array_n(share->contextListNULL, i))->ctx);
 		if(!IS_RUNNING(c)) {
 			gc_freeMemBlock(ctx, c);
 			knh_Context_free(ctx, c);

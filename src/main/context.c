@@ -742,7 +742,7 @@ void check_allThreadExit(CTX ctx)
 	for(i = knh_Array_size(ctx->share->contextListNULL) - 1; i >= 0; i--) {
 		knh_Context_t *c = (knh_Context_t *)knh_Array_n(ctx->share->contextListNULL, i);
 		if(c->ctx != ctx) {
-			knh_Context_free(ctx, c->ctx);
+			knh_Context_free(ctx, WCTX(c->ctx));
 			knh_Array_remove(ctx, ctx->share->contextListNULL, i);
 		}
 	}
