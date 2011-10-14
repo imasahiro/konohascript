@@ -27,8 +27,22 @@
 
 include "lib:gluelink";
 
+@Native class GslPolyComplexWorkspace;
+@Native GslPolyComplexWorkspace GslPolyComplexWorkspace.new(int size);
+
 @Singleton @Native class GslPoly;
+@Native float GslPoly.eval(float[] c, float x);
+//@Native complex GslPoly.complexEval(double[] c, complex z);
+//@Native complex GslPoly.complexEval(complex[] c, complex z);
+@Native int GslPoly.evalDerivs(float[] c, float x, float[] res);
+@Native int GslPoly.ddInit(float[] dd, float[] xa, float[] ya);
+@Native float GslPoly.ddEval(float[] dd, float[] xa, float x);
+@Native int GslPoly.ddTaylor(float[] c, float xp, float[] dd, float[] xa, double[] w);
 @Native Tuple<float,float> GslPoly.solveQuadratic(float a, float b, float c);
+//@Native Tuple<complex,complex> GslPoly.complexSolveQuadratic(float a, float b, float c);
+@Native Tuple<float,float,float> GslPoly.solveCubic(float a, float b, float c);
+//@Native Tuple<complex,complex,complex> GslPoly.complecSolveCubic(float a, float b, float c);
+@Native float[] GslPoly.complexSolve(float[] a, GslPolyComplexWorkspace ws);
 
 @Singleton @Native class GslStats;
 @Native float GslStats.mean(float[] data);

@@ -4,6 +4,10 @@ set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
 set(CMAKE_BUILD_TYPE Release)
 project(gsl)
 find_library(HAVE_LIB_GSL NAMES gsl)
+set(VERSION_MAJOR "1")
+set(VERSION_MINOR "0")
+set(VERSION_PATCH "0")
+set(KONOHA_VERSION  ${VERSION_MAJOR}.${VERSION_MINOR})
 if(HAVE_LIB_GSL)
 
 set(PACKAGE_SOURCE_CODE 
