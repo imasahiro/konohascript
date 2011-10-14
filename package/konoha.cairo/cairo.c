@@ -6,6 +6,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 {
 	RETURN_PKGINFO("konoha.cairo");
@@ -15,27 +16,46 @@ DEFAPI(void) defCairo(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->name = "Cairo";
 }
 
-DEFAPI(void) constCairo(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+static int CairoRegion_equal(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
-	kapi->loadClassIntConst(ctx, cid, CairoConstInt);
+    cairo_region_t* a = PKGRawPtr_to_(cairo_region_t*, p1);
+    cairo_region_t* b = PKGRawPtr_to_(cairo_region_t*, p2);
+    return cairo_region_equal(a, b);
 }
 
+DEFAPI(void) defCairoRegion(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	cdef->name = "CairoRegion";
+	cdef->compareTo = CairoRegion_equal;
+}
 
-////## @Native int Cairo.version();
-//KMETHOD Cairo_version(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//
-//    int ret = cairo_version();
-//    RETURNi_(ret);
-//}
-//
-////## @Native char* Cairo.version_string();
-//KMETHOD Cairo_version_string(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//
-//    char* ret = cairo_version_string();
-//    RETURN_(p);
-//}
+static int CairoFontOptions_equal(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+    cairo_font_options_t* a = PKGRawPtr_to_(cairo_font_options_t*, p1);
+    cairo_font_options_t* b = PKGRawPtr_to_(cairo_font_options_t*, p2);
+    return cairo_font_options_equal(a, b);
+}
+
+DEFAPI(void) defCairoFontOptions(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	cdef->name = "CairoFontOptions";
+	cdef->compareTo = CairoFontOptions_equal;
+}
+
+DEFAPI(void) constCairo(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+{
+	knh_IntData_t _CairoConstInt[] = {
+		{"VERSION", cairo_version()},
+		{NULL, 0}
+	};
+	knh_StringData_t _CairoConstString[] = {
+		{"VERSION_STRING", cairo_version_string()},
+		{NULL, 0}
+	};
+	kapi->loadClassIntConst(ctx, cid, CairoConstInt);
+	kapi->loadClassIntConst(ctx, cid, _CairoConstInt);
+	kapi->loadStringClassConst(ctx, cid, _CairoConstString);
+}
 
 static void my_cairo_free(void *p)
 {
@@ -846,16 +866,6 @@ KMETHOD CairoFontOptions_merge(CTX ctx, knh_sfp_t *sfp _RIX)
 
     cairo_font_options_merge(options, other);
     RETURNvoid_();
-}
-
-//## @Native cairo_bool_t Cairo.font_options_equal(cairo_font_options_t* options, cairo_font_options_t* other);
-KMETHOD CairoFontOptions_equal(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-    cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 0);
-    cairo_font_options_t* other = PKGRawPtr_to(cairo_font_options_t*, 1);
-
-    cairo_bool_t ret = cairo_font_options_equal(options, other);
-    RETURNb_(ret);
 }
 
 //## @Native long Cairo.font_options_hash(cairo_font_options_t* options);
@@ -2664,7 +2674,7 @@ static void my_cairo_region_free(void *p)
     cairo_region_destroy(region);
 }
 //## @Native cairo_region_t* Cairo.region_create();
-KMETHOD CairoRegion_create(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 
     cairo_region_t* ret = cairo_region_create();
@@ -2696,7 +2706,7 @@ KMETHOD CairoRegion_createRectangles(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Native cairo_region_t* Cairo.region_copy(cairo_region_t* original);
 KMETHOD CairoRegion_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-    cairo_region_t* original = PKGRawPtr_to(cairo_region_t*, 0);
+    cairo_region_t* original = PKGRawPtr_to(cairo_region_t*, 1);
 
     cairo_region_t* ret = cairo_region_copy(original);
     knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ret), my_cairo_region_free);
@@ -2712,16 +2722,6 @@ KMETHOD CairoRegion_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 //    knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ret), my_cairo_region_free);
 //    RETURN_(p);
 //}
-
-//## @Native cairo_bool_t Cairo.region_equal(cairo_region_t* a, cairo_region_t* b);
-KMETHOD CairoRegion_equal(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-    cairo_region_t* a = PKGRawPtr_to(cairo_region_t*, 0);
-    cairo_region_t* b = PKGRawPtr_to(cairo_region_t*, 1);
-
-    cairo_bool_t ret = cairo_region_equal(a, b);
-    RETURNb_(ret);
-}
 
 //## @Native cairo_status_t Cairo.region_status(cairo_region_t* region);
 KMETHOD CairoRegion_status(CTX ctx, knh_sfp_t *sfp _RIX)

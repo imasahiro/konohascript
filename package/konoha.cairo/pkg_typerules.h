@@ -5,6 +5,8 @@
 #define PKGFArray_to(T, I)  ((T) sfp[I].a); assert(0)
 #define PKGIArray_to(T, I)  ((T) sfp[I].a); assert(0)
 #define PKGRawPtr_to(T, I) ((T) sfp[I].p->rawptr)
+#define PKGRawPtr_to_(T, O) ((T) (O)->rawptr)
+
 #define PKG_Error_to(T, I) ((T)0); assert(0)
 #define RETURN_error(V) ((void)V); assert(0)
 #define WRAP(p) ((void*)p)
