@@ -5,7 +5,6 @@ KMETHOD QCompleter_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQCompleter *ret_v = new KQCompleter(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QCompleter_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[2]);
 	KQCompleter *ret_v = new KQCompleter(model, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -442,7 +440,7 @@ bool DummyQCompleter::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCompleter::event_map->bigin();
 	if ((itr = DummyQCompleter::event_map->find(str)) == DummyQCompleter::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -454,8 +452,8 @@ bool DummyQCompleter::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQCompleter::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCompleter::slot_map->bigin();
-	if ((itr = DummyQCompleter::event_map->find(str)) == DummyQCompleter::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQCompleter::slot_map->find(str)) == DummyQCompleter::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -465,9 +463,16 @@ bool DummyQCompleter::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQCompleter::connection(QObject *o)
+{
+	DummyQObject::connection(o);
+}
+
 KQCompleter::KQCompleter(QObject* parent) : QCompleter(parent)
 {
 	self = NULL;
+	dummy = new DummyQCompleter();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QCompleter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -483,14 +488,13 @@ KMETHOD QCompleter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQCompleter::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCompleter]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QCompleter_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -504,7 +508,7 @@ KMETHOD QCompleter_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQCompleter::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCompleter]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -524,6 +528,9 @@ static void QCompleter_free(CTX ctx, knh_RawPtr_t *p)
 static void QCompleter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQCompleter *qp = (KQCompleter *)p->rawptr;
 		(void)qp;
@@ -535,9 +542,15 @@ static int QCompleter_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQCompleter::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQCompleter::event(QEvent *event)
 {
-	if (!DummyQCompleter::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QCompleter::event(event);
 		return false;
 	}

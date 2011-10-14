@@ -35,7 +35,6 @@ KMETHOD QProgressBar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQProgressBar *ret_v = new KQProgressBar(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -336,8 +335,10 @@ KMETHOD QProgressBar_setValue(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQProgressBar::DummyQProgressBar()
 {
 	self = NULL;
+	value_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("value-changed", NULL));
 }
 
 void DummyQProgressBar::setSelf(knh_RawPtr_t *ptr)
@@ -357,11 +358,24 @@ bool DummyQProgressBar::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQProgressBar::valueChangedSlot(int value)
+{
+	if (value_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = value;
+		knh_Func_invoke(lctx, value_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQProgressBar::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQProgressBar::event_map->bigin();
 	if ((itr = DummyQProgressBar::event_map->find(str)) == DummyQProgressBar::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -373,20 +387,29 @@ bool DummyQProgressBar::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQProgressBar::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQProgressBar::slot_map->bigin();
-	if ((itr = DummyQProgressBar::event_map->find(str)) == DummyQProgressBar::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQProgressBar::slot_map->find(str)) == DummyQProgressBar::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		value_changed_func = (*slot_map)["value-changed"];
 		return true;
 	}
 }
 
 
+void DummyQProgressBar::connection(QObject *o)
+{
+	connect(o, SIGNAL(valueChanged(int)), this, SLOT(valueChangedSlot(int)));
+	DummyQWidget::connection(o);
+}
+
 KQProgressBar::KQProgressBar(QWidget* parent) : QProgressBar(parent)
 {
 	self = NULL;
+	dummy = new DummyQProgressBar();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QProgressBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -402,14 +425,13 @@ KMETHOD QProgressBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQProgressBar::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QProgressBar]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QProgressBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -423,7 +445,7 @@ KMETHOD QProgressBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQProgressBar::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QProgressBar]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -442,10 +464,17 @@ static void QProgressBar_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QProgressBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQProgressBar *qp = (KQProgressBar *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->value_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->value_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -454,9 +483,15 @@ static int QProgressBar_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQProgressBar::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQProgressBar::event(QEvent *event)
 {
-	if (!DummyQProgressBar::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QProgressBar::event(event);
 		return false;
 	}

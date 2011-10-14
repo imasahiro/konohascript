@@ -130,7 +130,7 @@ bool DummyQGraphicsSceneHoverEvent::addEvent(knh_Func_t *callback_func, string s
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsSceneHoverEvent::event_map->bigin();
 	if ((itr = DummyQGraphicsSceneHoverEvent::event_map->find(str)) == DummyQGraphicsSceneHoverEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGraphicsSceneEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -142,8 +142,8 @@ bool DummyQGraphicsSceneHoverEvent::addEvent(knh_Func_t *callback_func, string s
 bool DummyQGraphicsSceneHoverEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsSceneHoverEvent::slot_map->bigin();
-	if ((itr = DummyQGraphicsSceneHoverEvent::event_map->find(str)) == DummyQGraphicsSceneHoverEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsSceneHoverEvent::slot_map->find(str)) == DummyQGraphicsSceneHoverEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGraphicsSceneEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -153,9 +153,16 @@ bool DummyQGraphicsSceneHoverEvent::signalConnect(knh_Func_t *callback_func, str
 }
 
 
+void DummyQGraphicsSceneHoverEvent::connection(QObject *o)
+{
+	DummyQGraphicsSceneEvent::connection(o);
+}
+
 KQGraphicsSceneHoverEvent::KQGraphicsSceneHoverEvent() : QGraphicsSceneHoverEvent()
 {
 	self = NULL;
+	dummy = new DummyQGraphicsSceneHoverEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsSceneHoverEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -171,14 +178,13 @@ KMETHOD QGraphicsSceneHoverEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsSceneHoverEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsSceneHoverEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsSceneHoverEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -192,7 +198,7 @@ KMETHOD QGraphicsSceneHoverEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsSceneHoverEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsSceneHoverEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -212,6 +218,9 @@ static void QGraphicsSceneHoverEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QGraphicsSceneHoverEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneHoverEvent *qp = (KQGraphicsSceneHoverEvent *)p->rawptr;
 		(void)qp;
@@ -221,6 +230,12 @@ static void QGraphicsSceneHoverEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QGraphicsSceneHoverEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQGraphicsSceneHoverEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQGraphicsSceneHoverEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

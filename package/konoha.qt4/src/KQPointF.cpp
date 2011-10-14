@@ -4,7 +4,6 @@ KMETHOD QPointF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQPointF *ret_v = new KQPointF();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QPointF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
 	KQPointF *ret_v = new KQPointF(point);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -31,7 +29,6 @@ KMETHOD QPointF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	qreal y = Float_to(qreal, sfp[2]);
 	KQPointF *ret_v = new KQPointF(x, y);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -181,7 +178,7 @@ bool DummyQPointF::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPointF::event_map->bigin();
 	if ((itr = DummyQPointF::event_map->find(str)) == DummyQPointF::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -192,8 +189,8 @@ bool DummyQPointF::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQPointF::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPointF::slot_map->bigin();
-	if ((itr = DummyQPointF::event_map->find(str)) == DummyQPointF::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQPointF::slot_map->find(str)) == DummyQPointF::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -202,9 +199,16 @@ bool DummyQPointF::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQPointF::connection(QObject *o)
+{
+	return;
+}
+
 KQPointF::KQPointF() : QPointF()
 {
 	self = NULL;
+	dummy = new DummyQPointF();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPointF_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -220,14 +224,13 @@ KMETHOD QPointF_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQPointF::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPointF]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QPointF_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -241,7 +244,7 @@ KMETHOD QPointF_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQPointF::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPointF]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -261,6 +264,9 @@ static void QPointF_free(CTX ctx, knh_RawPtr_t *p)
 static void QPointF_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQPointF *qp = (KQPointF *)p->rawptr;
 		(void)qp;
@@ -270,6 +276,12 @@ static void QPointF_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QPointF_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQPointF::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQPointF(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

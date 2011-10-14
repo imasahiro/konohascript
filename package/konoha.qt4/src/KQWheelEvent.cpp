@@ -9,7 +9,6 @@ KMETHOD QWheelEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::Orientation orient = Int_to(Qt::Orientation, sfp[5]);
 	KQWheelEvent *ret_v = new KQWheelEvent(pos, delta, buttons, modifiers, orient);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -27,7 +26,6 @@ KMETHOD QWheelEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::Orientation orient = Int_to(Qt::Orientation, sfp[6]);
 	KQWheelEvent *ret_v = new KQWheelEvent(pos, globalPos, delta, buttons, modifiers, orient);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -182,7 +180,7 @@ bool DummyQWheelEvent::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQWheelEvent::event_map->bigin();
 	if ((itr = DummyQWheelEvent::event_map->find(str)) == DummyQWheelEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQInputEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -194,8 +192,8 @@ bool DummyQWheelEvent::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQWheelEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQWheelEvent::slot_map->bigin();
-	if ((itr = DummyQWheelEvent::event_map->find(str)) == DummyQWheelEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQWheelEvent::slot_map->find(str)) == DummyQWheelEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQInputEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -205,9 +203,16 @@ bool DummyQWheelEvent::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQWheelEvent::connection(QObject *o)
+{
+	DummyQInputEvent::connection(o);
+}
+
 KQWheelEvent::KQWheelEvent(const QPoint pos, int delta, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, Qt::Orientation orient) : QWheelEvent(pos, delta, buttons, modifiers, orient)
 {
 	self = NULL;
+	dummy = new DummyQWheelEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QWheelEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -223,14 +228,13 @@ KMETHOD QWheelEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQWheelEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QWheelEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QWheelEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -244,7 +248,7 @@ KMETHOD QWheelEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQWheelEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QWheelEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -264,6 +268,9 @@ static void QWheelEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QWheelEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQWheelEvent *qp = (KQWheelEvent *)p->rawptr;
 		(void)qp;
@@ -273,6 +280,12 @@ static void QWheelEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QWheelEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQWheelEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQWheelEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

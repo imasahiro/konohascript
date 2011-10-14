@@ -6,7 +6,6 @@ KMETHOD QResizeEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QSize  oldSize = *RawPtr_to(const QSize *, sfp[2]);
 	KQResizeEvent *ret_v = new KQResizeEvent(size, oldSize);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -70,7 +69,7 @@ bool DummyQResizeEvent::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQResizeEvent::event_map->bigin();
 	if ((itr = DummyQResizeEvent::event_map->find(str)) == DummyQResizeEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -82,8 +81,8 @@ bool DummyQResizeEvent::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQResizeEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQResizeEvent::slot_map->bigin();
-	if ((itr = DummyQResizeEvent::event_map->find(str)) == DummyQResizeEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQResizeEvent::slot_map->find(str)) == DummyQResizeEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -93,9 +92,16 @@ bool DummyQResizeEvent::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQResizeEvent::connection(QObject *o)
+{
+	DummyQEvent::connection(o);
+}
+
 KQResizeEvent::KQResizeEvent(const QSize size, const QSize oldSize) : QResizeEvent(size, oldSize)
 {
 	self = NULL;
+	dummy = new DummyQResizeEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QResizeEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -111,14 +117,13 @@ KMETHOD QResizeEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQResizeEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QResizeEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QResizeEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -132,7 +137,7 @@ KMETHOD QResizeEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQResizeEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QResizeEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -152,6 +157,9 @@ static void QResizeEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QResizeEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQResizeEvent *qp = (KQResizeEvent *)p->rawptr;
 		(void)qp;
@@ -161,6 +169,12 @@ static void QResizeEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QResizeEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQResizeEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQResizeEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

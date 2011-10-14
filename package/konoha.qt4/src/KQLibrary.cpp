@@ -5,7 +5,6 @@ KMETHOD QLibrary_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQLibrary *ret_v = new KQLibrary(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QLibrary_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[2]);
 	KQLibrary *ret_v = new KQLibrary(fileName, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -34,7 +32,6 @@ KMETHOD QLibrary_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[3]);
 	KQLibrary *ret_v = new KQLibrary(fileName, verNum, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -49,7 +46,6 @@ KMETHOD QLibrary_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[3]);
 	KQLibrary *ret_v = new KQLibrary(fileName, version, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -296,7 +292,7 @@ bool DummyQLibrary::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLibrary::event_map->bigin();
 	if ((itr = DummyQLibrary::event_map->find(str)) == DummyQLibrary::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -308,8 +304,8 @@ bool DummyQLibrary::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQLibrary::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLibrary::slot_map->bigin();
-	if ((itr = DummyQLibrary::event_map->find(str)) == DummyQLibrary::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQLibrary::slot_map->find(str)) == DummyQLibrary::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -319,9 +315,16 @@ bool DummyQLibrary::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQLibrary::connection(QObject *o)
+{
+	DummyQObject::connection(o);
+}
+
 KQLibrary::KQLibrary(QObject* parent) : QLibrary(parent)
 {
 	self = NULL;
+	dummy = new DummyQLibrary();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QLibrary_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -337,14 +340,13 @@ KMETHOD QLibrary_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQLibrary::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLibrary]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QLibrary_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -358,7 +360,7 @@ KMETHOD QLibrary_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQLibrary::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLibrary]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -378,6 +380,9 @@ static void QLibrary_free(CTX ctx, knh_RawPtr_t *p)
 static void QLibrary_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQLibrary *qp = (KQLibrary *)p->rawptr;
 		(void)qp;
@@ -389,9 +394,15 @@ static int QLibrary_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQLibrary::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQLibrary::event(QEvent *event)
 {
-	if (!DummyQLibrary::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QLibrary::event(event);
 		return false;
 	}

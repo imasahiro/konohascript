@@ -94,7 +94,6 @@ KMETHOD QStyledItemDelegate_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQStyledItemDelegate *ret_v = new KQStyledItemDelegate(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -170,7 +169,7 @@ bool DummyQStyledItemDelegate::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyledItemDelegate::event_map->bigin();
 	if ((itr = DummyQStyledItemDelegate::event_map->find(str)) == DummyQStyledItemDelegate::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractItemDelegate::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -182,8 +181,8 @@ bool DummyQStyledItemDelegate::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStyledItemDelegate::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyledItemDelegate::slot_map->bigin();
-	if ((itr = DummyQStyledItemDelegate::event_map->find(str)) == DummyQStyledItemDelegate::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStyledItemDelegate::slot_map->find(str)) == DummyQStyledItemDelegate::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractItemDelegate::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -193,9 +192,16 @@ bool DummyQStyledItemDelegate::signalConnect(knh_Func_t *callback_func, string s
 }
 
 
+void DummyQStyledItemDelegate::connection(QObject *o)
+{
+	DummyQAbstractItemDelegate::connection(o);
+}
+
 KQStyledItemDelegate::KQStyledItemDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
 	self = NULL;
+	dummy = new DummyQStyledItemDelegate();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyledItemDelegate_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -211,14 +217,13 @@ KMETHOD QStyledItemDelegate_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStyledItemDelegate::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyledItemDelegate]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStyledItemDelegate_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -232,7 +237,7 @@ KMETHOD QStyledItemDelegate_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStyledItemDelegate::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyledItemDelegate]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -252,6 +257,9 @@ static void QStyledItemDelegate_free(CTX ctx, knh_RawPtr_t *p)
 static void QStyledItemDelegate_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStyledItemDelegate *qp = (KQStyledItemDelegate *)p->rawptr;
 		(void)qp;
@@ -263,9 +271,15 @@ static int QStyledItemDelegate_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQStyledItemDelegate::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQStyledItemDelegate::event(QEvent *event)
 {
-	if (!DummyQStyledItemDelegate::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QStyledItemDelegate::event(event);
 		return false;
 	}

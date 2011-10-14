@@ -5,7 +5,6 @@ KMETHOD QThreadPool_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQThreadPool *ret_v = new KQThreadPool(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -176,7 +175,7 @@ bool DummyQThreadPool::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQThreadPool::event_map->bigin();
 	if ((itr = DummyQThreadPool::event_map->find(str)) == DummyQThreadPool::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -188,8 +187,8 @@ bool DummyQThreadPool::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQThreadPool::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQThreadPool::slot_map->bigin();
-	if ((itr = DummyQThreadPool::event_map->find(str)) == DummyQThreadPool::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQThreadPool::slot_map->find(str)) == DummyQThreadPool::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -199,9 +198,16 @@ bool DummyQThreadPool::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQThreadPool::connection(QObject *o)
+{
+	DummyQObject::connection(o);
+}
+
 KQThreadPool::KQThreadPool(QObject* parent) : QThreadPool(parent)
 {
 	self = NULL;
+	dummy = new DummyQThreadPool();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QThreadPool_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -217,14 +223,13 @@ KMETHOD QThreadPool_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQThreadPool::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QThreadPool]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QThreadPool_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -238,7 +243,7 @@ KMETHOD QThreadPool_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQThreadPool::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QThreadPool]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -258,6 +263,9 @@ static void QThreadPool_free(CTX ctx, knh_RawPtr_t *p)
 static void QThreadPool_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQThreadPool *qp = (KQThreadPool *)p->rawptr;
 		(void)qp;
@@ -269,9 +277,15 @@ static int QThreadPool_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQThreadPool::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQThreadPool::event(QEvent *event)
 {
-	if (!DummyQThreadPool::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QThreadPool::event(event);
 		return false;
 	}

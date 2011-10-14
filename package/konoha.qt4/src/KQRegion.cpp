@@ -4,7 +4,6 @@ KMETHOD QRegion_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQRegion *ret_v = new KQRegion();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -21,7 +20,6 @@ KMETHOD QRegion_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QRegion::RegionType t = Int_to(QRegion::RegionType, sfp[5]);
 	KQRegion *ret_v = new KQRegion(x, y, w, h, t);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -35,7 +33,6 @@ KMETHOD QRegion_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::FillRule fillRule = Int_to(Qt::FillRule, sfp[2]);
 	KQRegion *ret_v = new KQRegion(a, fillRule);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -48,7 +45,6 @@ KMETHOD QRegion_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QRegion  r = *RawPtr_to(const QRegion *, sfp[1]);
 	KQRegion *ret_v = new KQRegion(r);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -61,7 +57,6 @@ KMETHOD QRegion_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QBitmap  bm = *RawPtr_to(const QBitmap *, sfp[1]);
 	KQRegion *ret_v = new KQRegion(bm);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -75,7 +70,6 @@ KMETHOD QRegion_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QRegion::RegionType t = Int_to(QRegion::RegionType, sfp[2]);
 	KQRegion *ret_v = new KQRegion(r, t);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -378,7 +372,7 @@ bool DummyQRegion::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQRegion::event_map->bigin();
 	if ((itr = DummyQRegion::event_map->find(str)) == DummyQRegion::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -389,8 +383,8 @@ bool DummyQRegion::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQRegion::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQRegion::slot_map->bigin();
-	if ((itr = DummyQRegion::event_map->find(str)) == DummyQRegion::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQRegion::slot_map->find(str)) == DummyQRegion::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -399,9 +393,16 @@ bool DummyQRegion::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQRegion::connection(QObject *o)
+{
+	return;
+}
+
 KQRegion::KQRegion() : QRegion()
 {
 	self = NULL;
+	dummy = new DummyQRegion();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QRegion_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -417,14 +418,13 @@ KMETHOD QRegion_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQRegion::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QRegion]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QRegion_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -438,7 +438,7 @@ KMETHOD QRegion_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQRegion::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QRegion]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -458,6 +458,9 @@ static void QRegion_free(CTX ctx, knh_RawPtr_t *p)
 static void QRegion_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQRegion *qp = (KQRegion *)p->rawptr;
 		(void)qp;
@@ -467,6 +470,12 @@ static void QRegion_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QRegion_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QRegion*>(p1->rawptr) == *static_cast<QRegion*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQRegion::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQRegion(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

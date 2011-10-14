@@ -20,7 +20,6 @@ KMETHOD QFontComboBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQFontComboBox *ret_v = new KQFontComboBox(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -106,8 +105,10 @@ KMETHOD QFontComboBox_setCurrentFont(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQFontComboBox::DummyQFontComboBox()
 {
 	self = NULL;
+	current_font_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("current-font-changed", NULL));
 }
 
 void DummyQFontComboBox::setSelf(knh_RawPtr_t *ptr)
@@ -127,11 +128,25 @@ bool DummyQFontComboBox::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQFontComboBox::currentFontChangedSlot(const QFont font)
+{
+	if (current_font_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QFont, font);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, current_font_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQFontComboBox::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQFontComboBox::event_map->bigin();
 	if ((itr = DummyQFontComboBox::event_map->find(str)) == DummyQFontComboBox::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQComboBox::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -143,20 +158,29 @@ bool DummyQFontComboBox::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQFontComboBox::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQFontComboBox::slot_map->bigin();
-	if ((itr = DummyQFontComboBox::event_map->find(str)) == DummyQFontComboBox::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQFontComboBox::slot_map->find(str)) == DummyQFontComboBox::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQComboBox::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		current_font_changed_func = (*slot_map)["current-font-changed"];
 		return true;
 	}
 }
 
 
+void DummyQFontComboBox::connection(QObject *o)
+{
+	connect(o, SIGNAL(currentFontChanged(const QFont)), this, SLOT(currentFontChangedSlot(const QFont)));
+	DummyQComboBox::connection(o);
+}
+
 KQFontComboBox::KQFontComboBox(QWidget* parent) : QFontComboBox(parent)
 {
 	self = NULL;
+	dummy = new DummyQFontComboBox();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QFontComboBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -172,14 +196,13 @@ KMETHOD QFontComboBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQFontComboBox::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QFontComboBox]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QFontComboBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -193,7 +216,7 @@ KMETHOD QFontComboBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQFontComboBox::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QFontComboBox]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -212,10 +235,17 @@ static void QFontComboBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QFontComboBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQFontComboBox *qp = (KQFontComboBox *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->current_font_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->current_font_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -224,9 +254,15 @@ static int QFontComboBox_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQFontComboBox::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQFontComboBox::event(QEvent *event)
 {
-	if (!DummyQFontComboBox::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QFontComboBox::event(event);
 		return false;
 	}

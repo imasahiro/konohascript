@@ -35,7 +35,6 @@ KMETHOD QCalendarWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQCalendarWidget *ret_v = new KQCalendarWidget(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -528,8 +527,16 @@ KMETHOD QCalendarWidget_showToday(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQCalendarWidget::DummyQCalendarWidget()
 {
 	self = NULL;
+	activated_func = NULL;
+	clicked_func = NULL;
+	current_page_changed_func = NULL;
+	selection_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("activated", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("clicked", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("current-page-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("selection-changed", NULL));
 }
 
 void DummyQCalendarWidget::setSelf(knh_RawPtr_t *ptr)
@@ -549,11 +556,65 @@ bool DummyQCalendarWidget::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQCalendarWidget::activatedSlot(const QDate date)
+{
+	if (activated_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QDate, date);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, activated_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQCalendarWidget::clickedSlot(const QDate date)
+{
+	if (clicked_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QDate, date);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, clicked_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQCalendarWidget::currentPageChangedSlot(int year, int month)
+{
+	if (current_page_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = year;
+		lsfp[K_CALLDELTA+3].ivalue = month;
+		knh_Func_invoke(lctx, current_page_changed_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQCalendarWidget::selectionChangedSlot()
+{
+	if (selection_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, selection_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQCalendarWidget::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCalendarWidget::event_map->bigin();
 	if ((itr = DummyQCalendarWidget::event_map->find(str)) == DummyQCalendarWidget::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -565,20 +626,35 @@ bool DummyQCalendarWidget::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQCalendarWidget::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCalendarWidget::slot_map->bigin();
-	if ((itr = DummyQCalendarWidget::event_map->find(str)) == DummyQCalendarWidget::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQCalendarWidget::slot_map->find(str)) == DummyQCalendarWidget::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		activated_func = (*slot_map)["activated"];
+		clicked_func = (*slot_map)["clicked"];
+		current_page_changed_func = (*slot_map)["current-page-changed"];
+		selection_changed_func = (*slot_map)["selection-changed"];
 		return true;
 	}
 }
 
 
+void DummyQCalendarWidget::connection(QObject *o)
+{
+	connect(o, SIGNAL(activated(const QDate)), this, SLOT(activatedSlot(const QDate)));
+	connect(o, SIGNAL(clicked(const QDate)), this, SLOT(clickedSlot(const QDate)));
+	connect(o, SIGNAL(currentPageChanged(int, int)), this, SLOT(currentPageChangedSlot(int, int)));
+	connect(o, SIGNAL(selectionChanged()), this, SLOT(selectionChangedSlot()));
+	DummyQWidget::connection(o);
+}
+
 KQCalendarWidget::KQCalendarWidget(QWidget* parent) : QCalendarWidget(parent)
 {
 	self = NULL;
+	dummy = new DummyQCalendarWidget();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QCalendarWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -594,14 +670,13 @@ KMETHOD QCalendarWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQCalendarWidget::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCalendarWidget]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QCalendarWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -615,7 +690,7 @@ KMETHOD QCalendarWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQCalendarWidget::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCalendarWidget]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -634,10 +709,29 @@ static void QCalendarWidget_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QCalendarWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQCalendarWidget *qp = (KQCalendarWidget *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->activated_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->activated_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->clicked_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->clicked_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->current_page_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->current_page_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->selection_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->selection_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -646,9 +740,15 @@ static int QCalendarWidget_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQCalendarWidget::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQCalendarWidget::event(QEvent *event)
 {
-	if (!DummyQCalendarWidget::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QCalendarWidget::event(event);
 		return false;
 	}

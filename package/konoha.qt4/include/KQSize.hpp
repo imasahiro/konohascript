@@ -1,6 +1,7 @@
 #ifndef QSIZE
 #define QSIZE
 class DummyQSize {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQSize : public QSize, public DummyQSize {
+class KQSize : public QSize {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQSize *dummy;
 	KQSize();
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QSIZE

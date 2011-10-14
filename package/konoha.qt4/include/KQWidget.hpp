@@ -1,6 +1,7 @@
 #ifndef QWIDGET
 #define QWIDGET
 class DummyQWidget : public DummyQObject, public DummyQPaintDevice {
+	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -31,44 +32,50 @@ public:
 	knh_Func_t *show_event_func;
 	knh_Func_t *tablet_event_func;
 	knh_Func_t *wheel_event_func;
+	knh_Func_t *custom_context_menu_requested_func;
 	DummyQWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
-	bool actionEvent(QActionEvent* event);
-	bool changeEvent(QEvent* event);
-	bool closeEvent(QCloseEvent* event);
-	bool contextMenuEvent(QContextMenuEvent* event);
-	bool dragEnterEvent(QDragEnterEvent* event);
-	bool dragLeaveEvent(QDragLeaveEvent* event);
-	bool dragMoveEvent(QDragMoveEvent* event);
-	bool dropEvent(QDropEvent* event);
-	bool enterEvent(QEvent* event);
-	bool focusInEvent(QFocusEvent* event);
-	bool focusOutEvent(QFocusEvent* event);
-	bool hideEvent(QHideEvent* event);
-	bool inputMethodEvent(QInputMethodEvent* event);
-	bool keyPressEvent(QKeyEvent* event);
-	bool keyReleaseEvent(QKeyEvent* event);
-	bool leaveEvent(QEvent* event);
-	bool mouseDoubleClickEvent(QMouseEvent* event);
-	bool mouseMoveEvent(QMouseEvent* event);
-	bool mousePressEvent(QMouseEvent* event);
-	bool mouseReleaseEvent(QMouseEvent* event);
-	bool moveEvent(QMoveEvent* event);
-	bool paintEvent(QPaintEvent* event);
-	bool resizeEvent(QResizeEvent* event);
-	bool showEvent(QShowEvent* event);
-	bool tabletEvent(QTabletEvent* event);
-	bool wheelEvent(QWheelEvent* event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
+	bool actionEventDummy(QActionEvent* event);
+	bool changeEventDummy(QEvent* event);
+	bool closeEventDummy(QCloseEvent* event);
+	bool contextMenuEventDummy(QContextMenuEvent* event);
+	bool dragEnterEventDummy(QDragEnterEvent* event);
+	bool dragLeaveEventDummy(QDragLeaveEvent* event);
+	bool dragMoveEventDummy(QDragMoveEvent* event);
+	bool dropEventDummy(QDropEvent* event);
+	bool enterEventDummy(QEvent* event);
+	bool focusInEventDummy(QFocusEvent* event);
+	bool focusOutEventDummy(QFocusEvent* event);
+	bool hideEventDummy(QHideEvent* event);
+	bool inputMethodEventDummy(QInputMethodEvent* event);
+	bool keyPressEventDummy(QKeyEvent* event);
+	bool keyReleaseEventDummy(QKeyEvent* event);
+	bool leaveEventDummy(QEvent* event);
+	bool mouseDoubleClickEventDummy(QMouseEvent* event);
+	bool mouseMoveEventDummy(QMouseEvent* event);
+	bool mousePressEventDummy(QMouseEvent* event);
+	bool mouseReleaseEventDummy(QMouseEvent* event);
+	bool moveEventDummy(QMoveEvent* event);
+	bool paintEventDummy(QPaintEvent* event);
+	bool resizeEventDummy(QResizeEvent* event);
+	bool showEventDummy(QShowEvent* event);
+	bool tabletEventDummy(QTabletEvent* event);
+	bool wheelEventDummy(QWheelEvent* event);
+public slots:
+	bool customContextMenuRequestedSlot(const QPoint pos);
 };
 
-class KQWidget : public QWidget, public DummyQWidget {
+class KQWidget : public QWidget {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQWidget *dummy;
 	KQWidget(QWidget* parent, Qt::WindowFlags f);
+	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
 

@@ -1,22 +1,23 @@
 using konoha.qt4.*;
 
-void clicked() {
+void clicked(QGraphicsScene scene, QGraphicsSceneMouseEvent event) {
 	print "clicked";
+	print event.scenePos().x;
+	print event.scenePos().y;
 }
 
 void time() {
 	print "timer";
 }
 
-void main(String[] args)
-{
-	QApplication app = new QApplication();
-	QGraphicsScene s = new QGraphicsScene();
-	s.addEvent("mouse-press-event", clicked);
-	s.addEvent("timer-event", time);
-	QGraphicsView v = new QGraphicsView();
-	v.setScene(s);
-	v.show();
-	s.startTimer(1000);
-	app.exec();
-}
+QApplication app = new QApplication(0, NULL);
+print app;
+QGraphicsScene s = new QGraphicsScene();
+s.addEvent("mouse-press-event", clicked);
+s.addEvent("timer-event", time);
+QGraphicsView v = new QGraphicsView();
+v.setScene(s);
+v.show();
+s.startTimer(1000);
+
+app.exec();

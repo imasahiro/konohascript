@@ -50,7 +50,6 @@ KMETHOD QLabel_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[2]);
 	KQLabel *ret_v = new KQLabel(parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -65,7 +64,6 @@ KMETHOD QLabel_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[3]);
 	KQLabel *ret_v = new KQLabel(text, parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -493,8 +491,12 @@ KMETHOD QLabel_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQLabel::DummyQLabel()
 {
 	self = NULL;
+	link_activated_func = NULL;
+	link_hovered_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("link-activated", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("link-hovered", NULL));
 }
 
 void DummyQLabel::setSelf(knh_RawPtr_t *ptr)
@@ -514,11 +516,39 @@ bool DummyQLabel::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQLabel::linkActivatedSlot(const QString link)
+{
+	if (link_activated_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QString, link);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, link_activated_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQLabel::linkHoveredSlot(const QString link)
+{
+	if (link_hovered_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QString, link);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, link_hovered_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQLabel::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLabel::event_map->bigin();
 	if ((itr = DummyQLabel::event_map->find(str)) == DummyQLabel::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQFrame::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -530,20 +560,31 @@ bool DummyQLabel::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQLabel::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLabel::slot_map->bigin();
-	if ((itr = DummyQLabel::event_map->find(str)) == DummyQLabel::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQLabel::slot_map->find(str)) == DummyQLabel::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQFrame::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		link_activated_func = (*slot_map)["link-activated"];
+		link_hovered_func = (*slot_map)["link-hovered"];
 		return true;
 	}
 }
 
 
+void DummyQLabel::connection(QObject *o)
+{
+	connect(o, SIGNAL(linkActivated(const QString)), this, SLOT(linkActivatedSlot(const QString)));
+	connect(o, SIGNAL(linkHovered(const QString)), this, SLOT(linkHoveredSlot(const QString)));
+	DummyQFrame::connection(o);
+}
+
 KQLabel::KQLabel(QWidget* parent, Qt::WindowFlags f) : QLabel(parent, f)
 {
 	self = NULL;
+	dummy = new DummyQLabel();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QLabel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -559,14 +600,13 @@ KMETHOD QLabel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQLabel::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLabel]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QLabel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -580,7 +620,7 @@ KMETHOD QLabel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQLabel::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLabel]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -599,10 +639,21 @@ static void QLabel_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QLabel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQLabel *qp = (KQLabel *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->link_activated_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->link_activated_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->link_hovered_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->link_hovered_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -611,9 +662,15 @@ static int QLabel_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQLabel::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQLabel::event(QEvent *event)
 {
-	if (!DummyQLabel::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QLabel::event(event);
 		return false;
 	}

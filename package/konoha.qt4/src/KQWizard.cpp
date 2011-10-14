@@ -33,7 +33,6 @@ KMETHOD QWizard_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[2]);
 	KQWizard *ret_v = new KQWizard(parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -564,8 +563,18 @@ KMETHOD QWizard_restart(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQWizard::DummyQWizard()
 {
 	self = NULL;
+	current_id_changed_func = NULL;
+	custom_button_clicked_func = NULL;
+	help_requested_func = NULL;
+	page_added_func = NULL;
+	page_removed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("current-id-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("custom-button-clicked", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("help-requested", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("page-added", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("page-removed", NULL));
 }
 
 void DummyQWizard::setSelf(knh_RawPtr_t *ptr)
@@ -585,11 +594,75 @@ bool DummyQWizard::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQWizard::currentIdChangedSlot(int id)
+{
+	if (current_id_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = id;
+		knh_Func_invoke(lctx, current_id_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQWizard::customButtonClickedSlot(int which)
+{
+	if (custom_button_clicked_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = which;
+		knh_Func_invoke(lctx, custom_button_clicked_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQWizard::helpRequestedSlot()
+{
+	if (help_requested_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, help_requested_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQWizard::pageAddedSlot(int id)
+{
+	if (page_added_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = id;
+		knh_Func_invoke(lctx, page_added_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQWizard::pageRemovedSlot(int id)
+{
+	if (page_removed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = id;
+		knh_Func_invoke(lctx, page_removed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQWizard::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQWizard::event_map->bigin();
 	if ((itr = DummyQWizard::event_map->find(str)) == DummyQWizard::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQDialog::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -601,20 +674,37 @@ bool DummyQWizard::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQWizard::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQWizard::slot_map->bigin();
-	if ((itr = DummyQWizard::event_map->find(str)) == DummyQWizard::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQWizard::slot_map->find(str)) == DummyQWizard::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQDialog::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		current_id_changed_func = (*slot_map)["current-id-changed"];
+		custom_button_clicked_func = (*slot_map)["custom-button-clicked"];
+		help_requested_func = (*slot_map)["help-requested"];
+		page_added_func = (*slot_map)["page-added"];
+		page_removed_func = (*slot_map)["page-removed"];
 		return true;
 	}
 }
 
 
+void DummyQWizard::connection(QObject *o)
+{
+	connect(o, SIGNAL(currentIdChanged(int)), this, SLOT(currentIdChangedSlot(int)));
+	connect(o, SIGNAL(customButtonClicked(int)), this, SLOT(customButtonClickedSlot(int)));
+	connect(o, SIGNAL(helpRequested()), this, SLOT(helpRequestedSlot()));
+	connect(o, SIGNAL(pageAdded(int)), this, SLOT(pageAddedSlot(int)));
+	connect(o, SIGNAL(pageRemoved(int)), this, SLOT(pageRemovedSlot(int)));
+	DummyQDialog::connection(o);
+}
+
 KQWizard::KQWizard(QWidget* parent, Qt::WindowFlags flags) : QWizard(parent, flags)
 {
 	self = NULL;
+	dummy = new DummyQWizard();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QWizard_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -630,14 +720,13 @@ KMETHOD QWizard_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQWizard::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QWizard]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QWizard_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -651,7 +740,7 @@ KMETHOD QWizard_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQWizard::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QWizard]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -670,10 +759,33 @@ static void QWizard_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QWizard_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 5;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQWizard *qp = (KQWizard *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->current_id_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->current_id_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->custom_button_clicked_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->custom_button_clicked_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->help_requested_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->help_requested_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->page_added_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->page_added_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->page_removed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->page_removed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -682,9 +794,15 @@ static int QWizard_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQWizard::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQWizard::event(QEvent *event)
 {
-	if (!DummyQWizard::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QWizard::event(event);
 		return false;
 	}

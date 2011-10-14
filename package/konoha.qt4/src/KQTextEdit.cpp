@@ -5,7 +5,6 @@ KMETHOD QTextEdit_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQTextEdit *ret_v = new KQTextEdit(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QTextEdit_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQTextEdit *ret_v = new KQTextEdit(text, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -1107,8 +1105,22 @@ KMETHOD QTextEdit_zoomOut(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQTextEdit::DummyQTextEdit()
 {
 	self = NULL;
+	copy_available_func = NULL;
+	current_char_format_changed_func = NULL;
+	cursor_position_changed_func = NULL;
+	redo_available_func = NULL;
+	selection_changed_func = NULL;
+	text_changed_func = NULL;
+	undo_available_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("copy-available", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("current-char-format-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("cursor-position-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("redo-available", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("selection-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("text-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("undo-available", NULL));
 }
 
 void DummyQTextEdit::setSelf(knh_RawPtr_t *ptr)
@@ -1128,11 +1140,100 @@ bool DummyQTextEdit::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQTextEdit::copyAvailableSlot(bool yes)
+{
+	if (copy_available_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = yes;
+		knh_Func_invoke(lctx, copy_available_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextEdit::currentCharFormatChangedSlot(const QTextCharFormat f)
+{
+	if (current_char_format_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QTextCharFormat, f);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, current_char_format_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextEdit::cursorPositionChangedSlot()
+{
+	if (cursor_position_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, cursor_position_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextEdit::redoAvailableSlot(bool available)
+{
+	if (redo_available_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = available;
+		knh_Func_invoke(lctx, redo_available_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextEdit::selectionChangedSlot()
+{
+	if (selection_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, selection_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextEdit::textChangedSlot()
+{
+	if (text_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, text_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextEdit::undoAvailableSlot(bool available)
+{
+	if (undo_available_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = available;
+		knh_Func_invoke(lctx, undo_available_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQTextEdit::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextEdit::event_map->bigin();
 	if ((itr = DummyQTextEdit::event_map->find(str)) == DummyQTextEdit::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractScrollArea::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -1144,20 +1245,41 @@ bool DummyQTextEdit::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTextEdit::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextEdit::slot_map->bigin();
-	if ((itr = DummyQTextEdit::event_map->find(str)) == DummyQTextEdit::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTextEdit::slot_map->find(str)) == DummyQTextEdit::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractScrollArea::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		copy_available_func = (*slot_map)["copy-available"];
+		current_char_format_changed_func = (*slot_map)["current-char-format-changed"];
+		cursor_position_changed_func = (*slot_map)["cursor-position-changed"];
+		redo_available_func = (*slot_map)["redo-available"];
+		selection_changed_func = (*slot_map)["selection-changed"];
+		text_changed_func = (*slot_map)["text-changed"];
+		undo_available_func = (*slot_map)["undo-available"];
 		return true;
 	}
 }
 
 
+void DummyQTextEdit::connection(QObject *o)
+{
+	connect(o, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailableSlot(bool)));
+	connect(o, SIGNAL(currentCharFormatChanged(const QTextCharFormat)), this, SLOT(currentCharFormatChangedSlot(const QTextCharFormat)));
+	connect(o, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChangedSlot()));
+	connect(o, SIGNAL(redoAvailable(bool)), this, SLOT(redoAvailableSlot(bool)));
+	connect(o, SIGNAL(selectionChanged()), this, SLOT(selectionChangedSlot()));
+	connect(o, SIGNAL(textChanged()), this, SLOT(textChangedSlot()));
+	connect(o, SIGNAL(undoAvailable(bool)), this, SLOT(undoAvailableSlot(bool)));
+	DummyQAbstractScrollArea::connection(o);
+}
+
 KQTextEdit::KQTextEdit(QWidget* parent) : QTextEdit(parent)
 {
 	self = NULL;
+	dummy = new DummyQTextEdit();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextEdit_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1173,14 +1295,13 @@ KMETHOD QTextEdit_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTextEdit::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextEdit]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTextEdit_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1194,7 +1315,7 @@ KMETHOD QTextEdit_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTextEdit::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextEdit]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -1213,10 +1334,41 @@ static void QTextEdit_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextEdit_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 7;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTextEdit *qp = (KQTextEdit *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->copy_available_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->copy_available_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->current_char_format_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->current_char_format_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->cursor_position_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->cursor_position_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->redo_available_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->redo_available_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->selection_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->selection_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->text_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->text_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->undo_available_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->undo_available_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -1225,9 +1377,15 @@ static int QTextEdit_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQTextEdit::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQTextEdit::event(QEvent *event)
 {
-	if (!DummyQTextEdit::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QTextEdit::event(event);
 		return false;
 	}

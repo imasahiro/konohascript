@@ -72,7 +72,7 @@ bool DummyQInputContextFactory::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQInputContextFactory::event_map->bigin();
 	if ((itr = DummyQInputContextFactory::event_map->find(str)) == DummyQInputContextFactory::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -83,8 +83,8 @@ bool DummyQInputContextFactory::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQInputContextFactory::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQInputContextFactory::slot_map->bigin();
-	if ((itr = DummyQInputContextFactory::event_map->find(str)) == DummyQInputContextFactory::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQInputContextFactory::slot_map->find(str)) == DummyQInputContextFactory::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -93,9 +93,16 @@ bool DummyQInputContextFactory::signalConnect(knh_Func_t *callback_func, string 
 }
 
 
+void DummyQInputContextFactory::connection(QObject *o)
+{
+	return;
+}
+
 KQInputContextFactory::KQInputContextFactory() : QInputContextFactory()
 {
 	self = NULL;
+	dummy = new DummyQInputContextFactory();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QInputContextFactory_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -111,14 +118,13 @@ KMETHOD QInputContextFactory_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQInputContextFactory::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QInputContextFactory]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QInputContextFactory_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -132,7 +138,7 @@ KMETHOD QInputContextFactory_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQInputContextFactory::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QInputContextFactory]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -152,6 +158,9 @@ static void QInputContextFactory_free(CTX ctx, knh_RawPtr_t *p)
 static void QInputContextFactory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQInputContextFactory *qp = (KQInputContextFactory *)p->rawptr;
 		(void)qp;
@@ -161,6 +170,12 @@ static void QInputContextFactory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QInputContextFactory_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQInputContextFactory::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQInputContextFactory(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

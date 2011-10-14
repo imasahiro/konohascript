@@ -9,7 +9,6 @@ KMETHOD QMouseEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::KeyboardModifiers modifiers = Int_to(Qt::KeyboardModifiers, sfp[5]);
 	KQMouseEvent *ret_v = new KQMouseEvent(type, position, button, buttons, modifiers);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -27,7 +26,6 @@ KMETHOD QMouseEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::KeyboardModifiers modifiers = Int_to(Qt::KeyboardModifiers, sfp[6]);
 	KQMouseEvent *ret_v = new KQMouseEvent(type, pos, globalPos, button, buttons, modifiers);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -184,7 +182,7 @@ bool DummyQMouseEvent::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMouseEvent::event_map->bigin();
 	if ((itr = DummyQMouseEvent::event_map->find(str)) == DummyQMouseEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQInputEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -196,8 +194,8 @@ bool DummyQMouseEvent::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQMouseEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMouseEvent::slot_map->bigin();
-	if ((itr = DummyQMouseEvent::event_map->find(str)) == DummyQMouseEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQMouseEvent::slot_map->find(str)) == DummyQMouseEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQInputEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -207,9 +205,16 @@ bool DummyQMouseEvent::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQMouseEvent::connection(QObject *o)
+{
+	DummyQInputEvent::connection(o);
+}
+
 KQMouseEvent::KQMouseEvent(QMouseEvent::Type type, const QPoint position, Qt::MouseButton button, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers) : QMouseEvent(type, position, button, buttons, modifiers)
 {
 	self = NULL;
+	dummy = new DummyQMouseEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMouseEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -225,14 +230,13 @@ KMETHOD QMouseEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQMouseEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMouseEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QMouseEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -246,7 +250,7 @@ KMETHOD QMouseEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQMouseEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMouseEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -266,6 +270,9 @@ static void QMouseEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QMouseEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQMouseEvent *qp = (KQMouseEvent *)p->rawptr;
 		(void)qp;
@@ -275,6 +282,12 @@ static void QMouseEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QMouseEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQMouseEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQMouseEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

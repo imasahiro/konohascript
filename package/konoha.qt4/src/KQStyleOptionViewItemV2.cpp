@@ -4,7 +4,6 @@ KMETHOD QStyleOptionViewItemV2_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQStyleOptionViewItemV2 *ret_v = new KQStyleOptionViewItemV2();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QStyleOptionViewItemV2_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionViewItemV2  other = *RawPtr_to(const QStyleOptionViewItemV2 *, sfp[1]);
 	KQStyleOptionViewItemV2 *ret_v = new KQStyleOptionViewItemV2(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -30,7 +28,6 @@ KMETHOD QStyleOptionViewItemV2_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionViewItem  other = *RawPtr_to(const QStyleOptionViewItem *, sfp[1]);
 	KQStyleOptionViewItemV2 *ret_v = new KQStyleOptionViewItemV2(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -64,7 +61,7 @@ bool DummyQStyleOptionViewItemV2::addEvent(knh_Func_t *callback_func, string str
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionViewItemV2::event_map->bigin();
 	if ((itr = DummyQStyleOptionViewItemV2::event_map->find(str)) == DummyQStyleOptionViewItemV2::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQStyleOptionViewItem::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -76,8 +73,8 @@ bool DummyQStyleOptionViewItemV2::addEvent(knh_Func_t *callback_func, string str
 bool DummyQStyleOptionViewItemV2::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionViewItemV2::slot_map->bigin();
-	if ((itr = DummyQStyleOptionViewItemV2::event_map->find(str)) == DummyQStyleOptionViewItemV2::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStyleOptionViewItemV2::slot_map->find(str)) == DummyQStyleOptionViewItemV2::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQStyleOptionViewItem::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -87,9 +84,16 @@ bool DummyQStyleOptionViewItemV2::signalConnect(knh_Func_t *callback_func, strin
 }
 
 
+void DummyQStyleOptionViewItemV2::connection(QObject *o)
+{
+	DummyQStyleOptionViewItem::connection(o);
+}
+
 KQStyleOptionViewItemV2::KQStyleOptionViewItemV2() : QStyleOptionViewItemV2()
 {
 	self = NULL;
+	dummy = new DummyQStyleOptionViewItemV2();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionViewItemV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -105,14 +109,13 @@ KMETHOD QStyleOptionViewItemV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStyleOptionViewItemV2::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionViewItemV2]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStyleOptionViewItemV2_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -126,7 +129,7 @@ KMETHOD QStyleOptionViewItemV2_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStyleOptionViewItemV2::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionViewItemV2]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -146,6 +149,9 @@ static void QStyleOptionViewItemV2_free(CTX ctx, knh_RawPtr_t *p)
 static void QStyleOptionViewItemV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStyleOptionViewItemV2 *qp = (KQStyleOptionViewItemV2 *)p->rawptr;
 		(void)qp;
@@ -155,6 +161,12 @@ static void QStyleOptionViewItemV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QStyleOptionViewItemV2_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQStyleOptionViewItemV2::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStyleOptionViewItemV2(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

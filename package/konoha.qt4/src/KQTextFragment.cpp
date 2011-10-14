@@ -4,7 +4,6 @@ KMETHOD QTextFragment_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQTextFragment *ret_v = new KQTextFragment();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QTextFragment_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QTextFragment  other = *RawPtr_to(const QTextFragment *, sfp[1]);
 	KQTextFragment *ret_v = new KQTextFragment(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -145,7 +143,7 @@ bool DummyQTextFragment::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextFragment::event_map->bigin();
 	if ((itr = DummyQTextFragment::event_map->find(str)) == DummyQTextFragment::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -156,8 +154,8 @@ bool DummyQTextFragment::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTextFragment::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextFragment::slot_map->bigin();
-	if ((itr = DummyQTextFragment::event_map->find(str)) == DummyQTextFragment::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTextFragment::slot_map->find(str)) == DummyQTextFragment::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -166,9 +164,16 @@ bool DummyQTextFragment::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQTextFragment::connection(QObject *o)
+{
+	return;
+}
+
 KQTextFragment::KQTextFragment() : QTextFragment()
 {
 	self = NULL;
+	dummy = new DummyQTextFragment();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextFragment_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -184,14 +189,13 @@ KMETHOD QTextFragment_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTextFragment::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextFragment]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTextFragment_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -205,7 +209,7 @@ KMETHOD QTextFragment_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTextFragment::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextFragment]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -225,6 +229,9 @@ static void QTextFragment_free(CTX ctx, knh_RawPtr_t *p)
 static void QTextFragment_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTextFragment *qp = (KQTextFragment *)p->rawptr;
 		(void)qp;
@@ -234,6 +241,12 @@ static void QTextFragment_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QTextFragment_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QTextFragment*>(p1->rawptr) == *static_cast<QTextFragment*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQTextFragment::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQTextFragment(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

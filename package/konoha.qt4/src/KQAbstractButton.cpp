@@ -333,8 +333,16 @@ KMETHOD QAbstractButton_toggle(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQAbstractButton::DummyQAbstractButton()
 {
 	self = NULL;
+	clicked_func = NULL;
+	pressed_func = NULL;
+	released_func = NULL;
+	toggled_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("clicked", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("pressed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("released", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("toggled", NULL));
 }
 
 void DummyQAbstractButton::setSelf(knh_RawPtr_t *ptr)
@@ -354,11 +362,61 @@ bool DummyQAbstractButton::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQAbstractButton::clickedSlot(bool checked)
+{
+	if (clicked_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = checked;
+		knh_Func_invoke(lctx, clicked_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractButton::pressedSlot()
+{
+	if (pressed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, pressed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractButton::releasedSlot()
+{
+	if (released_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, released_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractButton::toggledSlot(bool checked)
+{
+	if (toggled_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = checked;
+		knh_Func_invoke(lctx, toggled_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQAbstractButton::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractButton::event_map->bigin();
 	if ((itr = DummyQAbstractButton::event_map->find(str)) == DummyQAbstractButton::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -370,20 +428,35 @@ bool DummyQAbstractButton::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQAbstractButton::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractButton::slot_map->bigin();
-	if ((itr = DummyQAbstractButton::event_map->find(str)) == DummyQAbstractButton::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAbstractButton::slot_map->find(str)) == DummyQAbstractButton::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		clicked_func = (*slot_map)["clicked"];
+		pressed_func = (*slot_map)["pressed"];
+		released_func = (*slot_map)["released"];
+		toggled_func = (*slot_map)["toggled"];
 		return true;
 	}
 }
 
 
+void DummyQAbstractButton::connection(QObject *o)
+{
+	connect(o, SIGNAL(clicked(bool)), this, SLOT(clickedSlot(bool)));
+	connect(o, SIGNAL(pressed()), this, SLOT(pressedSlot()));
+	connect(o, SIGNAL(released()), this, SLOT(releasedSlot()));
+	connect(o, SIGNAL(toggled(bool)), this, SLOT(toggledSlot(bool)));
+	DummyQWidget::connection(o);
+}
+
 KQAbstractButton::KQAbstractButton(QWidget* parent) : QAbstractButton(parent)
 {
 	self = NULL;
+	dummy = new DummyQAbstractButton();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractButton_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -399,14 +472,13 @@ KMETHOD QAbstractButton_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAbstractButton::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractButton]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAbstractButton_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -420,7 +492,7 @@ KMETHOD QAbstractButton_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAbstractButton::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractButton]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -439,10 +511,29 @@ static void QAbstractButton_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAbstractButton *qp = (KQAbstractButton *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->clicked_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->clicked_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->pressed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->pressed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->released_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->released_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->toggled_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->toggled_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -451,9 +542,15 @@ static int QAbstractButton_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQAbstractButton::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQAbstractButton::event(QEvent *event)
 {
-	if (!DummyQAbstractButton::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QAbstractButton::event(event);
 		return false;
 	}

@@ -4,7 +4,6 @@ KMETHOD QBrush_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQBrush *ret_v = new KQBrush();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QBrush_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::BrushStyle style = Int_to(Qt::BrushStyle, sfp[1]);
 	KQBrush *ret_v = new KQBrush(style);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -31,7 +29,6 @@ KMETHOD QBrush_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::BrushStyle style = Int_to(Qt::BrushStyle, sfp[2]);
 	KQBrush *ret_v = new KQBrush(color, style);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -45,7 +42,6 @@ KMETHOD QBrush_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::BrushStyle style = Int_to(Qt::BrushStyle, sfp[2]);
 	KQBrush *ret_v = new KQBrush(color, style);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -59,7 +55,6 @@ KMETHOD QBrush_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
 	KQBrush *ret_v = new KQBrush(color, pixmap);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -73,7 +68,6 @@ KMETHOD QBrush_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
 	KQBrush *ret_v = new KQBrush(color, pixmap);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -86,7 +80,6 @@ KMETHOD QBrush_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[1]);
 	KQBrush *ret_v = new KQBrush(pixmap);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -99,7 +92,6 @@ KMETHOD QBrush_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QImage  image = *RawPtr_to(const QImage *, sfp[1]);
 	KQBrush *ret_v = new KQBrush(image);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -112,7 +104,6 @@ KMETHOD QBrush_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QBrush  other = *RawPtr_to(const QBrush *, sfp[1]);
 	KQBrush *ret_v = new KQBrush(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -125,7 +116,6 @@ KMETHOD QBrush_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QGradient  gradient = *RawPtr_to(const QGradient *, sfp[1]);
 	KQBrush *ret_v = new KQBrush(gradient);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -358,7 +348,7 @@ bool DummyQBrush::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQBrush::event_map->bigin();
 	if ((itr = DummyQBrush::event_map->find(str)) == DummyQBrush::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -369,8 +359,8 @@ bool DummyQBrush::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQBrush::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQBrush::slot_map->bigin();
-	if ((itr = DummyQBrush::event_map->find(str)) == DummyQBrush::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQBrush::slot_map->find(str)) == DummyQBrush::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -379,9 +369,16 @@ bool DummyQBrush::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQBrush::connection(QObject *o)
+{
+	return;
+}
+
 KQBrush::KQBrush() : QBrush()
 {
 	self = NULL;
+	dummy = new DummyQBrush();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QBrush_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -397,14 +394,13 @@ KMETHOD QBrush_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQBrush::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QBrush]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QBrush_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -418,7 +414,7 @@ KMETHOD QBrush_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQBrush::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QBrush]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -438,6 +434,9 @@ static void QBrush_free(CTX ctx, knh_RawPtr_t *p)
 static void QBrush_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQBrush *qp = (KQBrush *)p->rawptr;
 		(void)qp;
@@ -447,6 +446,12 @@ static void QBrush_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QBrush_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QBrush*>(p1->rawptr) == *static_cast<QBrush*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQBrush::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQBrush(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

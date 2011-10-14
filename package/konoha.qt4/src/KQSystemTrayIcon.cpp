@@ -5,7 +5,6 @@ KMETHOD QSystemTrayIcon_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQSystemTrayIcon *ret_v = new KQSystemTrayIcon(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QSystemTrayIcon_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[2]);
 	KQSystemTrayIcon *ret_v = new KQSystemTrayIcon(icon, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -210,8 +208,12 @@ KMETHOD QSystemTrayIcon_show(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQSystemTrayIcon::DummyQSystemTrayIcon()
 {
 	self = NULL;
+	activated_func = NULL;
+	message_clicked_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("activated", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("message-clicked", NULL));
 }
 
 void DummyQSystemTrayIcon::setSelf(knh_RawPtr_t *ptr)
@@ -231,11 +233,36 @@ bool DummyQSystemTrayIcon::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQSystemTrayIcon::activatedSlot(QSystemTrayIcon::ActivationReason reason)
+{
+	if (activated_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = reason;
+		knh_Func_invoke(lctx, activated_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQSystemTrayIcon::messageClickedSlot()
+{
+	if (message_clicked_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, message_clicked_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQSystemTrayIcon::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSystemTrayIcon::event_map->bigin();
 	if ((itr = DummyQSystemTrayIcon::event_map->find(str)) == DummyQSystemTrayIcon::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -247,20 +274,31 @@ bool DummyQSystemTrayIcon::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQSystemTrayIcon::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSystemTrayIcon::slot_map->bigin();
-	if ((itr = DummyQSystemTrayIcon::event_map->find(str)) == DummyQSystemTrayIcon::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQSystemTrayIcon::slot_map->find(str)) == DummyQSystemTrayIcon::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		activated_func = (*slot_map)["activated"];
+		message_clicked_func = (*slot_map)["message-clicked"];
 		return true;
 	}
 }
 
 
+void DummyQSystemTrayIcon::connection(QObject *o)
+{
+	connect(o, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(activatedSlot(QSystemTrayIcon::ActivationReason)));
+	connect(o, SIGNAL(messageClicked()), this, SLOT(messageClickedSlot()));
+	DummyQObject::connection(o);
+}
+
 KQSystemTrayIcon::KQSystemTrayIcon(QObject* parent) : QSystemTrayIcon(parent)
 {
 	self = NULL;
+	dummy = new DummyQSystemTrayIcon();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSystemTrayIcon_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -276,14 +314,13 @@ KMETHOD QSystemTrayIcon_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQSystemTrayIcon::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSystemTrayIcon]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QSystemTrayIcon_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -297,7 +334,7 @@ KMETHOD QSystemTrayIcon_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQSystemTrayIcon::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSystemTrayIcon]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -316,10 +353,21 @@ static void QSystemTrayIcon_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSystemTrayIcon_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQSystemTrayIcon *qp = (KQSystemTrayIcon *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->activated_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->activated_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->message_clicked_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->message_clicked_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -328,9 +376,15 @@ static int QSystemTrayIcon_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQSystemTrayIcon::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQSystemTrayIcon::event(QEvent *event)
 {
-	if (!DummyQSystemTrayIcon::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QSystemTrayIcon::event(event);
 		return false;
 	}

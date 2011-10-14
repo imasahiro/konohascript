@@ -4,7 +4,6 @@ KMETHOD QTransform_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQTransform *ret_v = new KQTransform();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -25,7 +24,6 @@ KMETHOD QTransform_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	qreal m33 = Float_to(qreal, sfp[9]);
 	KQTransform *ret_v = new KQTransform(m11, m12, m13, m21, m22, m23, m31, m32, m33);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -43,7 +41,6 @@ KMETHOD QTransform_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	qreal dy = Float_to(qreal, sfp[6]);
 	KQTransform *ret_v = new KQTransform(m11, m12, m21, m22, dx, dy);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -56,7 +53,6 @@ KMETHOD QTransform_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QMatrix  matrix = *RawPtr_to(const QMatrix *, sfp[1]);
 	KQTransform *ret_v = new KQTransform(matrix);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -809,7 +805,7 @@ bool DummyQTransform::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTransform::event_map->bigin();
 	if ((itr = DummyQTransform::event_map->find(str)) == DummyQTransform::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -820,8 +816,8 @@ bool DummyQTransform::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTransform::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTransform::slot_map->bigin();
-	if ((itr = DummyQTransform::event_map->find(str)) == DummyQTransform::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTransform::slot_map->find(str)) == DummyQTransform::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -830,9 +826,16 @@ bool DummyQTransform::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQTransform::connection(QObject *o)
+{
+	return;
+}
+
 KQTransform::KQTransform() : QTransform()
 {
 	self = NULL;
+	dummy = new DummyQTransform();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTransform_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -848,14 +851,13 @@ KMETHOD QTransform_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTransform::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTransform]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTransform_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -869,7 +871,7 @@ KMETHOD QTransform_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTransform::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTransform]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -889,6 +891,9 @@ static void QTransform_free(CTX ctx, knh_RawPtr_t *p)
 static void QTransform_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTransform *qp = (KQTransform *)p->rawptr;
 		(void)qp;
@@ -898,6 +903,12 @@ static void QTransform_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QTransform_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QTransform*>(p1->rawptr) == *static_cast<QTransform*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQTransform::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQTransform(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

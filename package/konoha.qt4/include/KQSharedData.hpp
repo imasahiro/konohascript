@@ -1,6 +1,7 @@
 #ifndef QSHAREDDATA
 #define QSHAREDDATA
 class DummyQSharedData {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQSharedData : public QSharedData, public DummyQSharedData {
+class KQSharedData : public QSharedData {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQSharedData *dummy;
 	KQSharedData();
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QSHAREDDATA

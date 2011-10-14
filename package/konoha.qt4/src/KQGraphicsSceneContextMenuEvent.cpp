@@ -98,7 +98,7 @@ bool DummyQGraphicsSceneContextMenuEvent::addEvent(knh_Func_t *callback_func, st
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsSceneContextMenuEvent::event_map->bigin();
 	if ((itr = DummyQGraphicsSceneContextMenuEvent::event_map->find(str)) == DummyQGraphicsSceneContextMenuEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGraphicsSceneEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -110,8 +110,8 @@ bool DummyQGraphicsSceneContextMenuEvent::addEvent(knh_Func_t *callback_func, st
 bool DummyQGraphicsSceneContextMenuEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsSceneContextMenuEvent::slot_map->bigin();
-	if ((itr = DummyQGraphicsSceneContextMenuEvent::event_map->find(str)) == DummyQGraphicsSceneContextMenuEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsSceneContextMenuEvent::slot_map->find(str)) == DummyQGraphicsSceneContextMenuEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGraphicsSceneEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -121,9 +121,16 @@ bool DummyQGraphicsSceneContextMenuEvent::signalConnect(knh_Func_t *callback_fun
 }
 
 
+void DummyQGraphicsSceneContextMenuEvent::connection(QObject *o)
+{
+	DummyQGraphicsSceneEvent::connection(o);
+}
+
 KQGraphicsSceneContextMenuEvent::KQGraphicsSceneContextMenuEvent() : QGraphicsSceneContextMenuEvent()
 {
 	self = NULL;
+	dummy = new DummyQGraphicsSceneContextMenuEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsSceneContextMenuEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -139,14 +146,13 @@ KMETHOD QGraphicsSceneContextMenuEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsSceneContextMenuEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsSceneContextMenuEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsSceneContextMenuEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -160,7 +166,7 @@ KMETHOD QGraphicsSceneContextMenuEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RI
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsSceneContextMenuEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsSceneContextMenuEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -180,6 +186,9 @@ static void QGraphicsSceneContextMenuEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QGraphicsSceneContextMenuEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneContextMenuEvent *qp = (KQGraphicsSceneContextMenuEvent *)p->rawptr;
 		(void)qp;
@@ -189,6 +198,12 @@ static void QGraphicsSceneContextMenuEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTR
 static int QGraphicsSceneContextMenuEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQGraphicsSceneContextMenuEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQGraphicsSceneContextMenuEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

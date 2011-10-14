@@ -5,7 +5,6 @@ KMETHOD QFocusFrame_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQFocusFrame *ret_v = new KQFocusFrame(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -65,7 +64,7 @@ bool DummyQFocusFrame::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQFocusFrame::event_map->bigin();
 	if ((itr = DummyQFocusFrame::event_map->find(str)) == DummyQFocusFrame::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -77,8 +76,8 @@ bool DummyQFocusFrame::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQFocusFrame::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQFocusFrame::slot_map->bigin();
-	if ((itr = DummyQFocusFrame::event_map->find(str)) == DummyQFocusFrame::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQFocusFrame::slot_map->find(str)) == DummyQFocusFrame::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -88,9 +87,16 @@ bool DummyQFocusFrame::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQFocusFrame::connection(QObject *o)
+{
+	DummyQWidget::connection(o);
+}
+
 KQFocusFrame::KQFocusFrame(QWidget* parent) : QFocusFrame(parent)
 {
 	self = NULL;
+	dummy = new DummyQFocusFrame();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QFocusFrame_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -106,14 +112,13 @@ KMETHOD QFocusFrame_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQFocusFrame::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QFocusFrame]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QFocusFrame_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -127,7 +132,7 @@ KMETHOD QFocusFrame_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQFocusFrame::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QFocusFrame]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -147,6 +152,9 @@ static void QFocusFrame_free(CTX ctx, knh_RawPtr_t *p)
 static void QFocusFrame_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQFocusFrame *qp = (KQFocusFrame *)p->rawptr;
 		(void)qp;
@@ -158,9 +166,15 @@ static int QFocusFrame_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQFocusFrame::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQFocusFrame::event(QEvent *event)
 {
-	if (!DummyQFocusFrame::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QFocusFrame::event(event);
 		return false;
 	}

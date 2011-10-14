@@ -4,7 +4,6 @@ KMETHOD QStyleOptionSlider_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQStyleOptionSlider *ret_v = new KQStyleOptionSlider();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QStyleOptionSlider_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionSlider  other = *RawPtr_to(const QStyleOptionSlider *, sfp[1]);
 	KQStyleOptionSlider *ret_v = new KQStyleOptionSlider(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -51,7 +49,7 @@ bool DummyQStyleOptionSlider::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionSlider::event_map->bigin();
 	if ((itr = DummyQStyleOptionSlider::event_map->find(str)) == DummyQStyleOptionSlider::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQStyleOptionComplex::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -63,8 +61,8 @@ bool DummyQStyleOptionSlider::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStyleOptionSlider::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionSlider::slot_map->bigin();
-	if ((itr = DummyQStyleOptionSlider::event_map->find(str)) == DummyQStyleOptionSlider::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStyleOptionSlider::slot_map->find(str)) == DummyQStyleOptionSlider::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQStyleOptionComplex::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -74,9 +72,16 @@ bool DummyQStyleOptionSlider::signalConnect(knh_Func_t *callback_func, string st
 }
 
 
+void DummyQStyleOptionSlider::connection(QObject *o)
+{
+	DummyQStyleOptionComplex::connection(o);
+}
+
 KQStyleOptionSlider::KQStyleOptionSlider() : QStyleOptionSlider()
 {
 	self = NULL;
+	dummy = new DummyQStyleOptionSlider();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionSlider_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -92,14 +97,13 @@ KMETHOD QStyleOptionSlider_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStyleOptionSlider::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionSlider]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStyleOptionSlider_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -113,7 +117,7 @@ KMETHOD QStyleOptionSlider_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStyleOptionSlider::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionSlider]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -133,6 +137,9 @@ static void QStyleOptionSlider_free(CTX ctx, knh_RawPtr_t *p)
 static void QStyleOptionSlider_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStyleOptionSlider *qp = (KQStyleOptionSlider *)p->rawptr;
 		(void)qp;
@@ -142,6 +149,12 @@ static void QStyleOptionSlider_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QStyleOptionSlider_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQStyleOptionSlider::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStyleOptionSlider(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

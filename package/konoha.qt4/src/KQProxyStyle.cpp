@@ -343,7 +343,6 @@ KMETHOD QProxyStyle_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QStyle*  style = RawPtr_to(QStyle*, sfp[1]);
 	KQProxyStyle *ret_v = new KQProxyStyle(style);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -403,7 +402,7 @@ bool DummyQProxyStyle::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQProxyStyle::event_map->bigin();
 	if ((itr = DummyQProxyStyle::event_map->find(str)) == DummyQProxyStyle::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQCommonStyle::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -415,8 +414,8 @@ bool DummyQProxyStyle::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQProxyStyle::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQProxyStyle::slot_map->bigin();
-	if ((itr = DummyQProxyStyle::event_map->find(str)) == DummyQProxyStyle::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQProxyStyle::slot_map->find(str)) == DummyQProxyStyle::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQCommonStyle::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -426,9 +425,16 @@ bool DummyQProxyStyle::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQProxyStyle::connection(QObject *o)
+{
+	DummyQCommonStyle::connection(o);
+}
+
 KQProxyStyle::KQProxyStyle(QStyle* style) : QProxyStyle(style)
 {
 	self = NULL;
+	dummy = new DummyQProxyStyle();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QProxyStyle_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -444,14 +450,13 @@ KMETHOD QProxyStyle_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQProxyStyle::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QProxyStyle]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QProxyStyle_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -465,7 +470,7 @@ KMETHOD QProxyStyle_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQProxyStyle::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QProxyStyle]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -485,6 +490,9 @@ static void QProxyStyle_free(CTX ctx, knh_RawPtr_t *p)
 static void QProxyStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQProxyStyle *qp = (KQProxyStyle *)p->rawptr;
 		(void)qp;
@@ -496,9 +504,15 @@ static int QProxyStyle_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQProxyStyle::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQProxyStyle::event(QEvent *event)
 {
-	if (!DummyQProxyStyle::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QProxyStyle::event(event);
 		return false;
 	}

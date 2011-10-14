@@ -1,6 +1,7 @@
 #ifndef QSTYLEOPTIONSIZEGRIP
 #define QSTYLEOPTIONSIZEGRIP
 class DummyQStyleOptionSizeGrip : public DummyQStyleOptionComplex {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQStyleOptionSizeGrip : public QStyleOptionSizeGrip, public DummyQStyleOptionSizeGrip {
+class KQStyleOptionSizeGrip : public QStyleOptionSizeGrip {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQStyleOptionSizeGrip *dummy;
 	KQStyleOptionSizeGrip();
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QSTYLEOPTIONSIZEGRIP

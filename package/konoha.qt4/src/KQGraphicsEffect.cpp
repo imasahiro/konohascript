@@ -70,8 +70,10 @@ KMETHOD QGraphicsEffect_update(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQGraphicsEffect::DummyQGraphicsEffect()
 {
 	self = NULL;
+	enabled_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("enabled-changed", NULL));
 }
 
 void DummyQGraphicsEffect::setSelf(knh_RawPtr_t *ptr)
@@ -91,11 +93,24 @@ bool DummyQGraphicsEffect::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQGraphicsEffect::enabledChangedSlot(bool enabled)
+{
+	if (enabled_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = enabled;
+		knh_Func_invoke(lctx, enabled_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQGraphicsEffect::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsEffect::event_map->bigin();
 	if ((itr = DummyQGraphicsEffect::event_map->find(str)) == DummyQGraphicsEffect::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -107,20 +122,29 @@ bool DummyQGraphicsEffect::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGraphicsEffect::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsEffect::slot_map->bigin();
-	if ((itr = DummyQGraphicsEffect::event_map->find(str)) == DummyQGraphicsEffect::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsEffect::slot_map->find(str)) == DummyQGraphicsEffect::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		enabled_changed_func = (*slot_map)["enabled-changed"];
 		return true;
 	}
 }
 
 
+void DummyQGraphicsEffect::connection(QObject *o)
+{
+	connect(o, SIGNAL(enabledChanged(bool)), this, SLOT(enabledChangedSlot(bool)));
+	DummyQObject::connection(o);
+}
+
 KQGraphicsEffect::KQGraphicsEffect(QObject* parent) : QGraphicsEffect(parent)
 {
 	self = NULL;
+	dummy = new DummyQGraphicsEffect();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsEffect_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,14 +160,13 @@ KMETHOD QGraphicsEffect_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsEffect::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsEffect]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsEffect_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -157,7 +180,7 @@ KMETHOD QGraphicsEffect_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsEffect::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsEffect]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -176,10 +199,17 @@ static void QGraphicsEffect_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsEffect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsEffect *qp = (KQGraphicsEffect *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->enabled_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->enabled_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -188,9 +218,15 @@ static int QGraphicsEffect_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQGraphicsEffect::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQGraphicsEffect::event(QEvent *event)
 {
-	if (!DummyQGraphicsEffect::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QGraphicsEffect::event(event);
 		return false;
 	}

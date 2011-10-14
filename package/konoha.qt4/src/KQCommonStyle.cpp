@@ -256,7 +256,6 @@ KMETHOD QCommonStyle_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQCommonStyle *ret_v = new KQCommonStyle();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -290,7 +289,7 @@ bool DummyQCommonStyle::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCommonStyle::event_map->bigin();
 	if ((itr = DummyQCommonStyle::event_map->find(str)) == DummyQCommonStyle::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQStyle::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -302,8 +301,8 @@ bool DummyQCommonStyle::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQCommonStyle::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCommonStyle::slot_map->bigin();
-	if ((itr = DummyQCommonStyle::event_map->find(str)) == DummyQCommonStyle::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQCommonStyle::slot_map->find(str)) == DummyQCommonStyle::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQStyle::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -313,9 +312,16 @@ bool DummyQCommonStyle::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQCommonStyle::connection(QObject *o)
+{
+	DummyQStyle::connection(o);
+}
+
 KQCommonStyle::KQCommonStyle() : QCommonStyle()
 {
 	self = NULL;
+	dummy = new DummyQCommonStyle();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QCommonStyle_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -331,14 +337,13 @@ KMETHOD QCommonStyle_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQCommonStyle::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCommonStyle]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QCommonStyle_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -352,7 +357,7 @@ KMETHOD QCommonStyle_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQCommonStyle::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCommonStyle]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -372,6 +377,9 @@ static void QCommonStyle_free(CTX ctx, knh_RawPtr_t *p)
 static void QCommonStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQCommonStyle *qp = (KQCommonStyle *)p->rawptr;
 		(void)qp;
@@ -383,9 +391,15 @@ static int QCommonStyle_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQCommonStyle::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQCommonStyle::event(QEvent *event)
 {
-	if (!DummyQCommonStyle::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QCommonStyle::event(event);
 		return false;
 	}

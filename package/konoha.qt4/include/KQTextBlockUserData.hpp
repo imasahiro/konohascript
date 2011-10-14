@@ -1,6 +1,7 @@
 #ifndef QTEXTBLOCKUSERDATA
 #define QTEXTBLOCKUSERDATA
 class DummyQTextBlockUserData {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQTextBlockUserData : public QTextBlockUserData, public DummyQTextBlockUserData {
+class KQTextBlockUserData : public QTextBlockUserData {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQTextBlockUserData *dummy;
 	KQTextBlockUserData();
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QTEXTBLOCKUSERDATA

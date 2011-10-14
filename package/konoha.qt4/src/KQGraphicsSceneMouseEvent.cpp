@@ -204,7 +204,7 @@ bool DummyQGraphicsSceneMouseEvent::addEvent(knh_Func_t *callback_func, string s
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsSceneMouseEvent::event_map->bigin();
 	if ((itr = DummyQGraphicsSceneMouseEvent::event_map->find(str)) == DummyQGraphicsSceneMouseEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGraphicsSceneEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -216,8 +216,8 @@ bool DummyQGraphicsSceneMouseEvent::addEvent(knh_Func_t *callback_func, string s
 bool DummyQGraphicsSceneMouseEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsSceneMouseEvent::slot_map->bigin();
-	if ((itr = DummyQGraphicsSceneMouseEvent::event_map->find(str)) == DummyQGraphicsSceneMouseEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsSceneMouseEvent::slot_map->find(str)) == DummyQGraphicsSceneMouseEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGraphicsSceneEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -227,9 +227,16 @@ bool DummyQGraphicsSceneMouseEvent::signalConnect(knh_Func_t *callback_func, str
 }
 
 
+void DummyQGraphicsSceneMouseEvent::connection(QObject *o)
+{
+	DummyQGraphicsSceneEvent::connection(o);
+}
+
 KQGraphicsSceneMouseEvent::KQGraphicsSceneMouseEvent() : QGraphicsSceneMouseEvent()
 {
 	self = NULL;
+	dummy = new DummyQGraphicsSceneMouseEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsSceneMouseEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -245,14 +252,13 @@ KMETHOD QGraphicsSceneMouseEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsSceneMouseEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsSceneMouseEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsSceneMouseEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -266,7 +272,7 @@ KMETHOD QGraphicsSceneMouseEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsSceneMouseEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsSceneMouseEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -286,6 +292,9 @@ static void QGraphicsSceneMouseEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QGraphicsSceneMouseEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneMouseEvent *qp = (KQGraphicsSceneMouseEvent *)p->rawptr;
 		(void)qp;
@@ -295,6 +304,12 @@ static void QGraphicsSceneMouseEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QGraphicsSceneMouseEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQGraphicsSceneMouseEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQGraphicsSceneMouseEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

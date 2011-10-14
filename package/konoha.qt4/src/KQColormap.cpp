@@ -5,7 +5,6 @@ KMETHOD QColormap_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QColormap  colormap = *RawPtr_to(const QColormap *, sfp[1]);
 	KQColormap *ret_v = new KQColormap(colormap);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -125,7 +124,7 @@ bool DummyQColormap::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQColormap::event_map->bigin();
 	if ((itr = DummyQColormap::event_map->find(str)) == DummyQColormap::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -136,8 +135,8 @@ bool DummyQColormap::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQColormap::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQColormap::slot_map->bigin();
-	if ((itr = DummyQColormap::event_map->find(str)) == DummyQColormap::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQColormap::slot_map->find(str)) == DummyQColormap::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -146,9 +145,16 @@ bool DummyQColormap::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQColormap::connection(QObject *o)
+{
+	return;
+}
+
 KQColormap::KQColormap(const QColormap colormap) : QColormap(colormap)
 {
 	self = NULL;
+	dummy = new DummyQColormap();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QColormap_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -164,14 +170,13 @@ KMETHOD QColormap_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQColormap::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QColormap]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QColormap_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -185,7 +190,7 @@ KMETHOD QColormap_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQColormap::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QColormap]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -205,6 +210,9 @@ static void QColormap_free(CTX ctx, knh_RawPtr_t *p)
 static void QColormap_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQColormap *qp = (KQColormap *)p->rawptr;
 		(void)qp;
@@ -214,6 +222,12 @@ static void QColormap_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QColormap_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQColormap::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQColormap(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

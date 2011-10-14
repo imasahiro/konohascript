@@ -5,7 +5,6 @@ KMETHOD QDataWidgetMapper_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQDataWidgetMapper *ret_v = new KQDataWidgetMapper(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -344,8 +343,10 @@ KMETHOD QDataWidgetMapper_toPrevious(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQDataWidgetMapper::DummyQDataWidgetMapper()
 {
 	self = NULL;
+	current_index_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("current-index-changed", NULL));
 }
 
 void DummyQDataWidgetMapper::setSelf(knh_RawPtr_t *ptr)
@@ -365,11 +366,24 @@ bool DummyQDataWidgetMapper::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQDataWidgetMapper::currentIndexChangedSlot(int index)
+{
+	if (current_index_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = index;
+		knh_Func_invoke(lctx, current_index_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQDataWidgetMapper::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDataWidgetMapper::event_map->bigin();
 	if ((itr = DummyQDataWidgetMapper::event_map->find(str)) == DummyQDataWidgetMapper::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -381,20 +395,29 @@ bool DummyQDataWidgetMapper::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDataWidgetMapper::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDataWidgetMapper::slot_map->bigin();
-	if ((itr = DummyQDataWidgetMapper::event_map->find(str)) == DummyQDataWidgetMapper::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDataWidgetMapper::slot_map->find(str)) == DummyQDataWidgetMapper::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		current_index_changed_func = (*slot_map)["current-index-changed"];
 		return true;
 	}
 }
 
 
+void DummyQDataWidgetMapper::connection(QObject *o)
+{
+	connect(o, SIGNAL(currentIndexChanged(int)), this, SLOT(currentIndexChangedSlot(int)));
+	DummyQObject::connection(o);
+}
+
 KQDataWidgetMapper::KQDataWidgetMapper(QObject* parent) : QDataWidgetMapper(parent)
 {
 	self = NULL;
+	dummy = new DummyQDataWidgetMapper();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDataWidgetMapper_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -410,14 +433,13 @@ KMETHOD QDataWidgetMapper_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDataWidgetMapper::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDataWidgetMapper]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDataWidgetMapper_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -431,7 +453,7 @@ KMETHOD QDataWidgetMapper_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDataWidgetMapper::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDataWidgetMapper]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -450,10 +472,17 @@ static void QDataWidgetMapper_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDataWidgetMapper_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDataWidgetMapper *qp = (KQDataWidgetMapper *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->current_index_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->current_index_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -462,9 +491,15 @@ static int QDataWidgetMapper_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQDataWidgetMapper::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQDataWidgetMapper::event(QEvent *event)
 {
-	if (!DummyQDataWidgetMapper::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QDataWidgetMapper::event(event);
 		return false;
 	}

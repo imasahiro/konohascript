@@ -4,7 +4,6 @@ KMETHOD QDate_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQDate *ret_v = new KQDate();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QDate_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int d = Int_to(int, sfp[3]);
 	KQDate *ret_v = new KQDate(y, m, d);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -544,7 +542,7 @@ bool DummyQDate::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDate::event_map->bigin();
 	if ((itr = DummyQDate::event_map->find(str)) == DummyQDate::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -555,8 +553,8 @@ bool DummyQDate::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDate::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDate::slot_map->bigin();
-	if ((itr = DummyQDate::event_map->find(str)) == DummyQDate::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDate::slot_map->find(str)) == DummyQDate::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -565,9 +563,16 @@ bool DummyQDate::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQDate::connection(QObject *o)
+{
+	return;
+}
+
 KQDate::KQDate() : QDate()
 {
 	self = NULL;
+	dummy = new DummyQDate();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDate_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -583,14 +588,13 @@ KMETHOD QDate_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDate::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDate]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDate_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -604,7 +608,7 @@ KMETHOD QDate_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDate::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDate]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -624,6 +628,9 @@ static void QDate_free(CTX ctx, knh_RawPtr_t *p)
 static void QDate_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDate *qp = (KQDate *)p->rawptr;
 		(void)qp;
@@ -633,6 +640,12 @@ static void QDate_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QDate_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QDate*>(p1->rawptr) == *static_cast<QDate*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQDate::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQDate(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

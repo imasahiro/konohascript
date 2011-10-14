@@ -4,7 +4,6 @@ KMETHOD QObjectCleanupHandler_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQObjectCleanupHandler *ret_v = new KQObjectCleanupHandler();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -89,7 +88,7 @@ bool DummyQObjectCleanupHandler::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQObjectCleanupHandler::event_map->bigin();
 	if ((itr = DummyQObjectCleanupHandler::event_map->find(str)) == DummyQObjectCleanupHandler::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -101,8 +100,8 @@ bool DummyQObjectCleanupHandler::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQObjectCleanupHandler::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQObjectCleanupHandler::slot_map->bigin();
-	if ((itr = DummyQObjectCleanupHandler::event_map->find(str)) == DummyQObjectCleanupHandler::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQObjectCleanupHandler::slot_map->find(str)) == DummyQObjectCleanupHandler::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -112,9 +111,16 @@ bool DummyQObjectCleanupHandler::signalConnect(knh_Func_t *callback_func, string
 }
 
 
+void DummyQObjectCleanupHandler::connection(QObject *o)
+{
+	DummyQObject::connection(o);
+}
+
 KQObjectCleanupHandler::KQObjectCleanupHandler() : QObjectCleanupHandler()
 {
 	self = NULL;
+	dummy = new DummyQObjectCleanupHandler();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QObjectCleanupHandler_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -130,14 +136,13 @@ KMETHOD QObjectCleanupHandler_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQObjectCleanupHandler::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QObjectCleanupHandler]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QObjectCleanupHandler_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -151,7 +156,7 @@ KMETHOD QObjectCleanupHandler_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQObjectCleanupHandler::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QObjectCleanupHandler]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -171,6 +176,9 @@ static void QObjectCleanupHandler_free(CTX ctx, knh_RawPtr_t *p)
 static void QObjectCleanupHandler_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQObjectCleanupHandler *qp = (KQObjectCleanupHandler *)p->rawptr;
 		(void)qp;
@@ -182,9 +190,15 @@ static int QObjectCleanupHandler_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQObjectCleanupHandler::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQObjectCleanupHandler::event(QEvent *event)
 {
-	if (!DummyQObjectCleanupHandler::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QObjectCleanupHandler::event(event);
 		return false;
 	}

@@ -1,6 +1,7 @@
 #ifndef QTHREADPOOL
 #define QTHREADPOOL
 class DummyQThreadPool : public DummyQObject {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQThreadPool : public QThreadPool, public DummyQThreadPool {
+class KQThreadPool : public QThreadPool {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQThreadPool *dummy;
 	KQThreadPool(QObject* parent);
+	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
 

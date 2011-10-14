@@ -45,7 +45,6 @@ KMETHOD QGraphicsProxyWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags wFlags = Int_to(Qt::WindowFlags, sfp[2]);
 	KQGraphicsProxyWidget *ret_v = new KQGraphicsProxyWidget(parent, wFlags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -136,7 +135,7 @@ bool DummyQGraphicsProxyWidget::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsProxyWidget::event_map->bigin();
 	if ((itr = DummyQGraphicsProxyWidget::event_map->find(str)) == DummyQGraphicsProxyWidget::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGraphicsWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -148,8 +147,8 @@ bool DummyQGraphicsProxyWidget::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGraphicsProxyWidget::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsProxyWidget::slot_map->bigin();
-	if ((itr = DummyQGraphicsProxyWidget::event_map->find(str)) == DummyQGraphicsProxyWidget::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsProxyWidget::slot_map->find(str)) == DummyQGraphicsProxyWidget::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGraphicsWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -159,9 +158,16 @@ bool DummyQGraphicsProxyWidget::signalConnect(knh_Func_t *callback_func, string 
 }
 
 
+void DummyQGraphicsProxyWidget::connection(QObject *o)
+{
+	DummyQGraphicsWidget::connection(o);
+}
+
 KQGraphicsProxyWidget::KQGraphicsProxyWidget(QGraphicsItem* parent, Qt::WindowFlags wFlags) : QGraphicsProxyWidget(parent, wFlags)
 {
 	self = NULL;
+	dummy = new DummyQGraphicsProxyWidget();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsProxyWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -177,14 +183,13 @@ KMETHOD QGraphicsProxyWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsProxyWidget::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsProxyWidget]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsProxyWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -198,7 +203,7 @@ KMETHOD QGraphicsProxyWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsProxyWidget::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsProxyWidget]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -218,6 +223,9 @@ static void QGraphicsProxyWidget_free(CTX ctx, knh_RawPtr_t *p)
 static void QGraphicsProxyWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsProxyWidget *qp = (KQGraphicsProxyWidget *)p->rawptr;
 		(void)qp;
@@ -229,9 +237,15 @@ static int QGraphicsProxyWidget_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQGraphicsProxyWidget::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQGraphicsProxyWidget::event(QEvent *event)
 {
-	if (!DummyQGraphicsProxyWidget::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QGraphicsProxyWidget::event(event);
 		return false;
 	}

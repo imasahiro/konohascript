@@ -19,7 +19,6 @@ KMETHOD QPrintPreviewWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[3]);
 	KQPrintPreviewWidget *ret_v = new KQPrintPreviewWidget(printer, parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -33,7 +32,6 @@ KMETHOD QPrintPreviewWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[2]);
 	KQPrintPreviewWidget *ret_v = new KQPrintPreviewWidget(parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -303,8 +301,12 @@ KMETHOD QPrintPreviewWidget_zoomOut(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQPrintPreviewWidget::DummyQPrintPreviewWidget()
 {
 	self = NULL;
+	paint_requested_func = NULL;
+	preview_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("paint-requested", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("preview-changed", NULL));
 }
 
 void DummyQPrintPreviewWidget::setSelf(knh_RawPtr_t *ptr)
@@ -324,11 +326,37 @@ bool DummyQPrintPreviewWidget::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQPrintPreviewWidget::paintRequestedSlot(QPrinter* printer)
+{
+	if (paint_requested_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QPrinter, printer);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, paint_requested_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQPrintPreviewWidget::previewChangedSlot()
+{
+	if (preview_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, preview_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQPrintPreviewWidget::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPrintPreviewWidget::event_map->bigin();
 	if ((itr = DummyQPrintPreviewWidget::event_map->find(str)) == DummyQPrintPreviewWidget::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -340,20 +368,31 @@ bool DummyQPrintPreviewWidget::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQPrintPreviewWidget::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPrintPreviewWidget::slot_map->bigin();
-	if ((itr = DummyQPrintPreviewWidget::event_map->find(str)) == DummyQPrintPreviewWidget::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQPrintPreviewWidget::slot_map->find(str)) == DummyQPrintPreviewWidget::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		paint_requested_func = (*slot_map)["paint-requested"];
+		preview_changed_func = (*slot_map)["preview-changed"];
 		return true;
 	}
 }
 
 
+void DummyQPrintPreviewWidget::connection(QObject *o)
+{
+	connect(o, SIGNAL(paintRequested(QPrinter*)), this, SLOT(paintRequestedSlot(QPrinter*)));
+	connect(o, SIGNAL(previewChanged()), this, SLOT(previewChangedSlot()));
+	DummyQWidget::connection(o);
+}
+
 KQPrintPreviewWidget::KQPrintPreviewWidget(QPrinter* printer, QWidget* parent, Qt::WindowFlags flags) : QPrintPreviewWidget(printer, parent, flags)
 {
 	self = NULL;
+	dummy = new DummyQPrintPreviewWidget();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPrintPreviewWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -369,14 +408,13 @@ KMETHOD QPrintPreviewWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQPrintPreviewWidget::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPrintPreviewWidget]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QPrintPreviewWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -390,7 +428,7 @@ KMETHOD QPrintPreviewWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQPrintPreviewWidget::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPrintPreviewWidget]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -409,10 +447,21 @@ static void QPrintPreviewWidget_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPrintPreviewWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQPrintPreviewWidget *qp = (KQPrintPreviewWidget *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->paint_requested_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->paint_requested_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->preview_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->preview_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -421,9 +470,15 @@ static int QPrintPreviewWidget_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQPrintPreviewWidget::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQPrintPreviewWidget::event(QEvent *event)
 {
-	if (!DummyQPrintPreviewWidget::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QPrintPreviewWidget::event(event);
 		return false;
 	}

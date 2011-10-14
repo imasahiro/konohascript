@@ -6,7 +6,6 @@ KMETHOD QStyleOptionComplex_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int type = Int_to(int, sfp[2]);
 	KQStyleOptionComplex *ret_v = new KQStyleOptionComplex(version, type);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QStyleOptionComplex_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionComplex  other = *RawPtr_to(const QStyleOptionComplex *, sfp[1]);
 	KQStyleOptionComplex *ret_v = new KQStyleOptionComplex(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -53,7 +51,7 @@ bool DummyQStyleOptionComplex::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionComplex::event_map->bigin();
 	if ((itr = DummyQStyleOptionComplex::event_map->find(str)) == DummyQStyleOptionComplex::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQStyleOption::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -65,8 +63,8 @@ bool DummyQStyleOptionComplex::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStyleOptionComplex::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionComplex::slot_map->bigin();
-	if ((itr = DummyQStyleOptionComplex::event_map->find(str)) == DummyQStyleOptionComplex::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStyleOptionComplex::slot_map->find(str)) == DummyQStyleOptionComplex::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQStyleOption::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -76,9 +74,16 @@ bool DummyQStyleOptionComplex::signalConnect(knh_Func_t *callback_func, string s
 }
 
 
+void DummyQStyleOptionComplex::connection(QObject *o)
+{
+	DummyQStyleOption::connection(o);
+}
+
 KQStyleOptionComplex::KQStyleOptionComplex(int version, int type) : QStyleOptionComplex(version, type)
 {
 	self = NULL;
+	dummy = new DummyQStyleOptionComplex();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionComplex_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -94,14 +99,13 @@ KMETHOD QStyleOptionComplex_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStyleOptionComplex::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionComplex]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStyleOptionComplex_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -115,7 +119,7 @@ KMETHOD QStyleOptionComplex_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStyleOptionComplex::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionComplex]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -135,6 +139,9 @@ static void QStyleOptionComplex_free(CTX ctx, knh_RawPtr_t *p)
 static void QStyleOptionComplex_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStyleOptionComplex *qp = (KQStyleOptionComplex *)p->rawptr;
 		(void)qp;
@@ -144,6 +151,12 @@ static void QStyleOptionComplex_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QStyleOptionComplex_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQStyleOptionComplex::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStyleOptionComplex(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -6,7 +6,6 @@ KMETHOD QSound_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[2]);
 	KQSound *ret_v = new KQSound(filename, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -153,7 +152,7 @@ bool DummyQSound::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSound::event_map->bigin();
 	if ((itr = DummyQSound::event_map->find(str)) == DummyQSound::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -165,8 +164,8 @@ bool DummyQSound::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQSound::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSound::slot_map->bigin();
-	if ((itr = DummyQSound::event_map->find(str)) == DummyQSound::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQSound::slot_map->find(str)) == DummyQSound::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -176,9 +175,16 @@ bool DummyQSound::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQSound::connection(QObject *o)
+{
+	DummyQObject::connection(o);
+}
+
 KQSound::KQSound(const QString filename, QObject* parent) : QSound(filename, parent)
 {
 	self = NULL;
+	dummy = new DummyQSound();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSound_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -194,14 +200,13 @@ KMETHOD QSound_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQSound::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSound]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QSound_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -215,7 +220,7 @@ KMETHOD QSound_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQSound::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSound]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -235,6 +240,9 @@ static void QSound_free(CTX ctx, knh_RawPtr_t *p)
 static void QSound_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQSound *qp = (KQSound *)p->rawptr;
 		(void)qp;
@@ -246,9 +254,15 @@ static int QSound_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQSound::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQSound::event(QEvent *event)
 {
-	if (!DummyQSound::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QSound::event(event);
 		return false;
 	}

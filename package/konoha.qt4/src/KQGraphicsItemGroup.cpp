@@ -123,7 +123,7 @@ bool DummyQGraphicsItemGroup::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsItemGroup::event_map->bigin();
 	if ((itr = DummyQGraphicsItemGroup::event_map->find(str)) == DummyQGraphicsItemGroup::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGraphicsItem::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -135,8 +135,8 @@ bool DummyQGraphicsItemGroup::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGraphicsItemGroup::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsItemGroup::slot_map->bigin();
-	if ((itr = DummyQGraphicsItemGroup::event_map->find(str)) == DummyQGraphicsItemGroup::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsItemGroup::slot_map->find(str)) == DummyQGraphicsItemGroup::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGraphicsItem::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -146,9 +146,16 @@ bool DummyQGraphicsItemGroup::signalConnect(knh_Func_t *callback_func, string st
 }
 
 
+void DummyQGraphicsItemGroup::connection(QObject *o)
+{
+	DummyQGraphicsItem::connection(o);
+}
+
 KQGraphicsItemGroup::KQGraphicsItemGroup(QGraphicsItem* parent) : QGraphicsItemGroup(parent)
 {
 	self = NULL;
+	dummy = new DummyQGraphicsItemGroup();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsItemGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -164,14 +171,13 @@ KMETHOD QGraphicsItemGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsItemGroup::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsItemGroup]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsItemGroup_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -185,7 +191,7 @@ KMETHOD QGraphicsItemGroup_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsItemGroup::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsItemGroup]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -205,6 +211,9 @@ static void QGraphicsItemGroup_free(CTX ctx, knh_RawPtr_t *p)
 static void QGraphicsItemGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsItemGroup *qp = (KQGraphicsItemGroup *)p->rawptr;
 		(void)qp;
@@ -214,6 +223,12 @@ static void QGraphicsItemGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QGraphicsItemGroup_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQGraphicsItemGroup::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQGraphicsItemGroup(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

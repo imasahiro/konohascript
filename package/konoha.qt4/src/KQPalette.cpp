@@ -4,7 +4,6 @@ KMETHOD QPalette_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQPalette *ret_v = new KQPalette();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QPalette_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QColor  button = *RawPtr_to(const QColor *, sfp[1]);
 	KQPalette *ret_v = new KQPalette(button);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -30,7 +28,6 @@ KMETHOD QPalette_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::GlobalColor button = Int_to(Qt::GlobalColor, sfp[1]);
 	KQPalette *ret_v = new KQPalette(button);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -44,7 +41,6 @@ KMETHOD QPalette_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QColor  window = *RawPtr_to(const QColor *, sfp[2]);
 	KQPalette *ret_v = new KQPalette(button, window);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -65,7 +61,6 @@ KMETHOD QPalette_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QBrush  window = *RawPtr_to(const QBrush *, sfp[9]);
 	KQPalette *ret_v = new KQPalette(windowText, button, light, dark, mid, text, bright_text, base, window);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -78,7 +73,6 @@ KMETHOD QPalette_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPalette  p = *RawPtr_to(const QPalette *, sfp[1]);
 	KQPalette *ret_v = new KQPalette(p);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -641,7 +635,7 @@ bool DummyQPalette::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPalette::event_map->bigin();
 	if ((itr = DummyQPalette::event_map->find(str)) == DummyQPalette::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -652,8 +646,8 @@ bool DummyQPalette::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQPalette::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPalette::slot_map->bigin();
-	if ((itr = DummyQPalette::event_map->find(str)) == DummyQPalette::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQPalette::slot_map->find(str)) == DummyQPalette::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -662,9 +656,16 @@ bool DummyQPalette::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQPalette::connection(QObject *o)
+{
+	return;
+}
+
 KQPalette::KQPalette() : QPalette()
 {
 	self = NULL;
+	dummy = new DummyQPalette();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPalette_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -680,14 +681,13 @@ KMETHOD QPalette_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQPalette::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPalette]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QPalette_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -701,7 +701,7 @@ KMETHOD QPalette_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQPalette::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPalette]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -721,6 +721,9 @@ static void QPalette_free(CTX ctx, knh_RawPtr_t *p)
 static void QPalette_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQPalette *qp = (KQPalette *)p->rawptr;
 		(void)qp;
@@ -730,6 +733,12 @@ static void QPalette_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QPalette_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QPalette*>(p1->rawptr) == *static_cast<QPalette*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQPalette::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQPalette(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

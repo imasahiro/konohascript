@@ -5,7 +5,6 @@ KMETHOD QStatusBar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQStatusBar *ret_v = new KQStatusBar(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -147,8 +146,10 @@ KMETHOD QStatusBar_showMessage(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQStatusBar::DummyQStatusBar()
 {
 	self = NULL;
+	message_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("message-changed", NULL));
 }
 
 void DummyQStatusBar::setSelf(knh_RawPtr_t *ptr)
@@ -168,11 +169,25 @@ bool DummyQStatusBar::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQStatusBar::messageChangedSlot(const QString message)
+{
+	if (message_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QString, message);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, message_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQStatusBar::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStatusBar::event_map->bigin();
 	if ((itr = DummyQStatusBar::event_map->find(str)) == DummyQStatusBar::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -184,20 +199,29 @@ bool DummyQStatusBar::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStatusBar::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStatusBar::slot_map->bigin();
-	if ((itr = DummyQStatusBar::event_map->find(str)) == DummyQStatusBar::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStatusBar::slot_map->find(str)) == DummyQStatusBar::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		message_changed_func = (*slot_map)["message-changed"];
 		return true;
 	}
 }
 
 
+void DummyQStatusBar::connection(QObject *o)
+{
+	connect(o, SIGNAL(messageChanged(const QString)), this, SLOT(messageChangedSlot(const QString)));
+	DummyQWidget::connection(o);
+}
+
 KQStatusBar::KQStatusBar(QWidget* parent) : QStatusBar(parent)
 {
 	self = NULL;
+	dummy = new DummyQStatusBar();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStatusBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -213,14 +237,13 @@ KMETHOD QStatusBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStatusBar::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStatusBar]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStatusBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -234,7 +257,7 @@ KMETHOD QStatusBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStatusBar::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStatusBar]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -253,10 +276,17 @@ static void QStatusBar_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStatusBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStatusBar *qp = (KQStatusBar *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->message_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->message_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -265,9 +295,15 @@ static int QStatusBar_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQStatusBar::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQStatusBar::event(QEvent *event)
 {
-	if (!DummyQStatusBar::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QStatusBar::event(event);
 		return false;
 	}

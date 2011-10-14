@@ -4,7 +4,6 @@ KMETHOD QHBoxLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQHBoxLayout *ret_v = new KQHBoxLayout();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QHBoxLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQHBoxLayout *ret_v = new KQHBoxLayout(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -51,7 +49,7 @@ bool DummyQHBoxLayout::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQHBoxLayout::event_map->bigin();
 	if ((itr = DummyQHBoxLayout::event_map->find(str)) == DummyQHBoxLayout::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQBoxLayout::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -63,8 +61,8 @@ bool DummyQHBoxLayout::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQHBoxLayout::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQHBoxLayout::slot_map->bigin();
-	if ((itr = DummyQHBoxLayout::event_map->find(str)) == DummyQHBoxLayout::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQHBoxLayout::slot_map->find(str)) == DummyQHBoxLayout::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQBoxLayout::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -74,9 +72,16 @@ bool DummyQHBoxLayout::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQHBoxLayout::connection(QObject *o)
+{
+	DummyQBoxLayout::connection(o);
+}
+
 KQHBoxLayout::KQHBoxLayout() : QHBoxLayout()
 {
 	self = NULL;
+	dummy = new DummyQHBoxLayout();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QHBoxLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -92,14 +97,13 @@ KMETHOD QHBoxLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQHBoxLayout::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QHBoxLayout]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QHBoxLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -113,7 +117,7 @@ KMETHOD QHBoxLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQHBoxLayout::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QHBoxLayout]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -133,6 +137,9 @@ static void QHBoxLayout_free(CTX ctx, knh_RawPtr_t *p)
 static void QHBoxLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQHBoxLayout *qp = (KQHBoxLayout *)p->rawptr;
 		(void)qp;
@@ -144,9 +151,15 @@ static int QHBoxLayout_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQHBoxLayout::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQHBoxLayout::event(QEvent *event)
 {
-	if (!DummyQHBoxLayout::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QHBoxLayout::event(event);
 		return false;
 	}

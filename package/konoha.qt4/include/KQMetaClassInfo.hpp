@@ -1,6 +1,7 @@
 #ifndef QMETACLASSINFO
 #define QMETACLASSINFO
 class DummyQMetaClassInfo {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQMetaClassInfo : public QMetaClassInfo, public DummyQMetaClassInfo {
+class KQMetaClassInfo : public QMetaClassInfo {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQMetaClassInfo *dummy;
 	KQMetaClassInfo();
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QMETACLASSINFO

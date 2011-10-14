@@ -1,6 +1,7 @@
 #ifndef QGRAPHICSSIMPLETEXTITEM
 #define QGRAPHICSSIMPLETEXTITEM
 class DummyQGraphicsSimpleTextItem : public DummyQAbstractGraphicsShapeItem {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQGraphicsSimpleTextItem : public QGraphicsSimpleTextItem, public DummyQGraphicsSimpleTextItem {
+class KQGraphicsSimpleTextItem : public QGraphicsSimpleTextItem {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQGraphicsSimpleTextItem *dummy;
 	KQGraphicsSimpleTextItem(QGraphicsItem* parent);
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QGRAPHICSSIMPLETEXTITEM

@@ -5,7 +5,6 @@ KMETHOD QFontMetricsF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QFont  font = *RawPtr_to(const QFont *, sfp[1]);
 	KQFontMetricsF *ret_v = new KQFontMetricsF(font);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QFontMetricsF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QPaintDevice*  paintdevice = RawPtr_to(QPaintDevice*, sfp[2]);
 	KQFontMetricsF *ret_v = new KQFontMetricsF(font, paintdevice);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -32,7 +30,6 @@ KMETHOD QFontMetricsF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QFontMetrics  fontMetrics = *RawPtr_to(const QFontMetrics *, sfp[1]);
 	KQFontMetricsF *ret_v = new KQFontMetricsF(fontMetrics);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -45,7 +42,6 @@ KMETHOD QFontMetricsF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QFontMetricsF  fm = *RawPtr_to(const QFontMetricsF *, sfp[1]);
 	KQFontMetricsF *ret_v = new KQFontMetricsF(fm);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -438,7 +434,7 @@ bool DummyQFontMetricsF::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQFontMetricsF::event_map->bigin();
 	if ((itr = DummyQFontMetricsF::event_map->find(str)) == DummyQFontMetricsF::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -449,8 +445,8 @@ bool DummyQFontMetricsF::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQFontMetricsF::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQFontMetricsF::slot_map->bigin();
-	if ((itr = DummyQFontMetricsF::event_map->find(str)) == DummyQFontMetricsF::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQFontMetricsF::slot_map->find(str)) == DummyQFontMetricsF::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -459,9 +455,16 @@ bool DummyQFontMetricsF::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQFontMetricsF::connection(QObject *o)
+{
+	return;
+}
+
 KQFontMetricsF::KQFontMetricsF(const QFont font) : QFontMetricsF(font)
 {
 	self = NULL;
+	dummy = new DummyQFontMetricsF();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QFontMetricsF_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -477,14 +480,13 @@ KMETHOD QFontMetricsF_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQFontMetricsF::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QFontMetricsF]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QFontMetricsF_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -498,7 +500,7 @@ KMETHOD QFontMetricsF_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQFontMetricsF::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QFontMetricsF]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -518,6 +520,9 @@ static void QFontMetricsF_free(CTX ctx, knh_RawPtr_t *p)
 static void QFontMetricsF_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQFontMetricsF *qp = (KQFontMetricsF *)p->rawptr;
 		(void)qp;
@@ -527,6 +532,12 @@ static void QFontMetricsF_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QFontMetricsF_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QFontMetricsF*>(p1->rawptr) == *static_cast<QFontMetricsF*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQFontMetricsF::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQFontMetricsF(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

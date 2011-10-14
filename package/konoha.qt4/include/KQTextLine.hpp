@@ -1,6 +1,7 @@
 #ifndef QTEXTLINE
 #define QTEXTLINE
 class DummyQTextLine {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQTextLine : public QTextLine, public DummyQTextLine {
+class KQTextLine : public QTextLine {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQTextLine *dummy;
 	KQTextLine();
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QTEXTLINE

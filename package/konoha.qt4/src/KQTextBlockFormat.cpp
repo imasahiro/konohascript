@@ -4,7 +4,6 @@ KMETHOD QTextBlockFormat_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQTextBlockFormat *ret_v = new KQTextBlockFormat();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -316,7 +315,7 @@ bool DummyQTextBlockFormat::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextBlockFormat::event_map->bigin();
 	if ((itr = DummyQTextBlockFormat::event_map->find(str)) == DummyQTextBlockFormat::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQTextFormat::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -328,8 +327,8 @@ bool DummyQTextBlockFormat::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTextBlockFormat::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextBlockFormat::slot_map->bigin();
-	if ((itr = DummyQTextBlockFormat::event_map->find(str)) == DummyQTextBlockFormat::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTextBlockFormat::slot_map->find(str)) == DummyQTextBlockFormat::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQTextFormat::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -339,9 +338,16 @@ bool DummyQTextBlockFormat::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQTextBlockFormat::connection(QObject *o)
+{
+	DummyQTextFormat::connection(o);
+}
+
 KQTextBlockFormat::KQTextBlockFormat() : QTextBlockFormat()
 {
 	self = NULL;
+	dummy = new DummyQTextBlockFormat();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextBlockFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -357,14 +363,13 @@ KMETHOD QTextBlockFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTextBlockFormat::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextBlockFormat]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTextBlockFormat_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -378,7 +383,7 @@ KMETHOD QTextBlockFormat_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTextBlockFormat::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextBlockFormat]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -398,6 +403,9 @@ static void QTextBlockFormat_free(CTX ctx, knh_RawPtr_t *p)
 static void QTextBlockFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTextBlockFormat *qp = (KQTextBlockFormat *)p->rawptr;
 		(void)qp;
@@ -407,6 +415,12 @@ static void QTextBlockFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QTextBlockFormat_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQTextBlockFormat::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQTextBlockFormat(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -4,7 +4,6 @@ KMETHOD QTextLine_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQTextLine *ret_v = new KQTextLine();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -386,7 +385,7 @@ bool DummyQTextLine::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextLine::event_map->bigin();
 	if ((itr = DummyQTextLine::event_map->find(str)) == DummyQTextLine::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -397,8 +396,8 @@ bool DummyQTextLine::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTextLine::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextLine::slot_map->bigin();
-	if ((itr = DummyQTextLine::event_map->find(str)) == DummyQTextLine::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTextLine::slot_map->find(str)) == DummyQTextLine::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -407,9 +406,16 @@ bool DummyQTextLine::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQTextLine::connection(QObject *o)
+{
+	return;
+}
+
 KQTextLine::KQTextLine() : QTextLine()
 {
 	self = NULL;
+	dummy = new DummyQTextLine();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextLine_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -425,14 +431,13 @@ KMETHOD QTextLine_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTextLine::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextLine]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTextLine_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -446,7 +451,7 @@ KMETHOD QTextLine_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTextLine::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextLine]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -466,6 +471,9 @@ static void QTextLine_free(CTX ctx, knh_RawPtr_t *p)
 static void QTextLine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTextLine *qp = (KQTextLine *)p->rawptr;
 		(void)qp;
@@ -475,6 +483,12 @@ static void QTextLine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QTextLine_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQTextLine::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQTextLine(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

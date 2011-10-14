@@ -79,7 +79,7 @@ bool DummyQTapAndHoldGesture::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTapAndHoldGesture::event_map->bigin();
 	if ((itr = DummyQTapAndHoldGesture::event_map->find(str)) == DummyQTapAndHoldGesture::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGesture::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -91,8 +91,8 @@ bool DummyQTapAndHoldGesture::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTapAndHoldGesture::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTapAndHoldGesture::slot_map->bigin();
-	if ((itr = DummyQTapAndHoldGesture::event_map->find(str)) == DummyQTapAndHoldGesture::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTapAndHoldGesture::slot_map->find(str)) == DummyQTapAndHoldGesture::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGesture::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -102,9 +102,16 @@ bool DummyQTapAndHoldGesture::signalConnect(knh_Func_t *callback_func, string st
 }
 
 
+void DummyQTapAndHoldGesture::connection(QObject *o)
+{
+	DummyQGesture::connection(o);
+}
+
 KQTapAndHoldGesture::KQTapAndHoldGesture() : QTapAndHoldGesture()
 {
 	self = NULL;
+	dummy = new DummyQTapAndHoldGesture();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTapAndHoldGesture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -120,14 +127,13 @@ KMETHOD QTapAndHoldGesture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTapAndHoldGesture::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTapAndHoldGesture]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTapAndHoldGesture_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -141,7 +147,7 @@ KMETHOD QTapAndHoldGesture_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTapAndHoldGesture::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTapAndHoldGesture]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -161,6 +167,9 @@ static void QTapAndHoldGesture_free(CTX ctx, knh_RawPtr_t *p)
 static void QTapAndHoldGesture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTapAndHoldGesture *qp = (KQTapAndHoldGesture *)p->rawptr;
 		(void)qp;
@@ -172,9 +181,15 @@ static int QTapAndHoldGesture_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQTapAndHoldGesture::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQTapAndHoldGesture::event(QEvent *event)
 {
-	if (!DummyQTapAndHoldGesture::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QTapAndHoldGesture::event(event);
 		return false;
 	}

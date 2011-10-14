@@ -20,7 +20,6 @@ KMETHOD QCheckBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQCheckBox *ret_v = new KQCheckBox(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -34,7 +33,6 @@ KMETHOD QCheckBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQCheckBox *ret_v = new KQCheckBox(text, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -93,8 +91,10 @@ KMETHOD QCheckBox_setTristate(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQCheckBox::DummyQCheckBox()
 {
 	self = NULL;
+	state_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("state-changed", NULL));
 }
 
 void DummyQCheckBox::setSelf(knh_RawPtr_t *ptr)
@@ -114,11 +114,24 @@ bool DummyQCheckBox::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQCheckBox::stateChangedSlot(int state)
+{
+	if (state_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = state;
+		knh_Func_invoke(lctx, state_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQCheckBox::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCheckBox::event_map->bigin();
 	if ((itr = DummyQCheckBox::event_map->find(str)) == DummyQCheckBox::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractButton::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -130,20 +143,29 @@ bool DummyQCheckBox::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQCheckBox::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCheckBox::slot_map->bigin();
-	if ((itr = DummyQCheckBox::event_map->find(str)) == DummyQCheckBox::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQCheckBox::slot_map->find(str)) == DummyQCheckBox::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractButton::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		state_changed_func = (*slot_map)["state-changed"];
 		return true;
 	}
 }
 
 
+void DummyQCheckBox::connection(QObject *o)
+{
+	connect(o, SIGNAL(stateChanged(int)), this, SLOT(stateChangedSlot(int)));
+	DummyQAbstractButton::connection(o);
+}
+
 KQCheckBox::KQCheckBox(QWidget* parent) : QCheckBox(parent)
 {
 	self = NULL;
+	dummy = new DummyQCheckBox();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QCheckBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -159,14 +181,13 @@ KMETHOD QCheckBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQCheckBox::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCheckBox]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QCheckBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -180,7 +201,7 @@ KMETHOD QCheckBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQCheckBox::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCheckBox]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -199,10 +220,17 @@ static void QCheckBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QCheckBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQCheckBox *qp = (KQCheckBox *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->state_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->state_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -211,9 +239,15 @@ static int QCheckBox_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQCheckBox::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQCheckBox::event(QEvent *event)
 {
-	if (!DummyQCheckBox::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QCheckBox::event(event);
 		return false;
 	}

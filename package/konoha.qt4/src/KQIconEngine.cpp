@@ -106,7 +106,7 @@ bool DummyQIconEngine::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQIconEngine::event_map->bigin();
 	if ((itr = DummyQIconEngine::event_map->find(str)) == DummyQIconEngine::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -117,8 +117,8 @@ bool DummyQIconEngine::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQIconEngine::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQIconEngine::slot_map->bigin();
-	if ((itr = DummyQIconEngine::event_map->find(str)) == DummyQIconEngine::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQIconEngine::slot_map->find(str)) == DummyQIconEngine::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -127,9 +127,16 @@ bool DummyQIconEngine::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQIconEngine::connection(QObject *o)
+{
+	return;
+}
+
 KQIconEngine::KQIconEngine() : QIconEngine()
 {
 	self = NULL;
+	dummy = new DummyQIconEngine();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QIconEngine_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -145,14 +152,13 @@ KMETHOD QIconEngine_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQIconEngine::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QIconEngine]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QIconEngine_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -166,7 +172,7 @@ KMETHOD QIconEngine_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQIconEngine::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QIconEngine]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -186,6 +192,9 @@ static void QIconEngine_free(CTX ctx, knh_RawPtr_t *p)
 static void QIconEngine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQIconEngine *qp = (KQIconEngine *)p->rawptr;
 		(void)qp;
@@ -195,6 +204,12 @@ static void QIconEngine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QIconEngine_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQIconEngine::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQIconEngine(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

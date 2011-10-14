@@ -220,7 +220,7 @@ bool DummyQInputContext::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQInputContext::event_map->bigin();
 	if ((itr = DummyQInputContext::event_map->find(str)) == DummyQInputContext::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -232,8 +232,8 @@ bool DummyQInputContext::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQInputContext::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQInputContext::slot_map->bigin();
-	if ((itr = DummyQInputContext::event_map->find(str)) == DummyQInputContext::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQInputContext::slot_map->find(str)) == DummyQInputContext::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -243,9 +243,16 @@ bool DummyQInputContext::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQInputContext::connection(QObject *o)
+{
+	DummyQObject::connection(o);
+}
+
 KQInputContext::KQInputContext(QObject* parent) : QInputContext(parent)
 {
 	self = NULL;
+	dummy = new DummyQInputContext();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QInputContext_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -261,14 +268,13 @@ KMETHOD QInputContext_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQInputContext::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QInputContext]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QInputContext_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -282,7 +288,7 @@ KMETHOD QInputContext_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQInputContext::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QInputContext]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -302,6 +308,9 @@ static void QInputContext_free(CTX ctx, knh_RawPtr_t *p)
 static void QInputContext_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQInputContext *qp = (KQInputContext *)p->rawptr;
 		(void)qp;
@@ -313,9 +322,15 @@ static int QInputContext_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQInputContext::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQInputContext::event(QEvent *event)
 {
-	if (!DummyQInputContext::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QInputContext::event(event);
 		return false;
 	}

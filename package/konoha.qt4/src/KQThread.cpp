@@ -5,7 +5,6 @@ KMETHOD QThread_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQThread *ret_v = new KQThread(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -190,8 +189,14 @@ KMETHOD QThread_terminate(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQThread::DummyQThread()
 {
 	self = NULL;
+	finished_func = NULL;
+	started_func = NULL;
+	terminated_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("finished", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("started", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("terminated", NULL));
 }
 
 void DummyQThread::setSelf(knh_RawPtr_t *ptr)
@@ -211,11 +216,47 @@ bool DummyQThread::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQThread::finishedSlot()
+{
+	if (finished_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, finished_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQThread::startedSlot()
+{
+	if (started_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, started_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQThread::terminatedSlot()
+{
+	if (terminated_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, terminated_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQThread::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQThread::event_map->bigin();
 	if ((itr = DummyQThread::event_map->find(str)) == DummyQThread::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -227,20 +268,33 @@ bool DummyQThread::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQThread::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQThread::slot_map->bigin();
-	if ((itr = DummyQThread::event_map->find(str)) == DummyQThread::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQThread::slot_map->find(str)) == DummyQThread::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		finished_func = (*slot_map)["finished"];
+		started_func = (*slot_map)["started"];
+		terminated_func = (*slot_map)["terminated"];
 		return true;
 	}
 }
 
 
+void DummyQThread::connection(QObject *o)
+{
+	connect(o, SIGNAL(finished()), this, SLOT(finishedSlot()));
+	connect(o, SIGNAL(started()), this, SLOT(startedSlot()));
+	connect(o, SIGNAL(terminated()), this, SLOT(terminatedSlot()));
+	DummyQObject::connection(o);
+}
+
 KQThread::KQThread(QObject* parent) : QThread(parent)
 {
 	self = NULL;
+	dummy = new DummyQThread();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QThread_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -256,14 +310,13 @@ KMETHOD QThread_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQThread::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QThread]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QThread_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -277,7 +330,7 @@ KMETHOD QThread_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQThread::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QThread]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -296,10 +349,25 @@ static void QThread_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QThread_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 3;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQThread *qp = (KQThread *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->finished_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->finished_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->started_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->started_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->terminated_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->terminated_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -308,9 +376,15 @@ static int QThread_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQThread::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQThread::event(QEvent *event)
 {
-	if (!DummyQThread::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QThread::event(event);
 		return false;
 	}

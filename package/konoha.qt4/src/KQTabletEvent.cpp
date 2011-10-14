@@ -18,7 +18,6 @@ KMETHOD QTabletEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	qint64 uniqueID = Int_to(qint64, sfp[14]);
 	KQTabletEvent *ret_v = new KQTabletEvent(type, pos, globalPos, hiResGlobalPos, device, pointerType, pressure, xTilt, yTilt, tangentialPressure, rotation, z, keyState, uniqueID);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -294,7 +293,7 @@ bool DummyQTabletEvent::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTabletEvent::event_map->bigin();
 	if ((itr = DummyQTabletEvent::event_map->find(str)) == DummyQTabletEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQInputEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -306,8 +305,8 @@ bool DummyQTabletEvent::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTabletEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTabletEvent::slot_map->bigin();
-	if ((itr = DummyQTabletEvent::event_map->find(str)) == DummyQTabletEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTabletEvent::slot_map->find(str)) == DummyQTabletEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQInputEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -317,9 +316,16 @@ bool DummyQTabletEvent::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQTabletEvent::connection(QObject *o)
+{
+	DummyQInputEvent::connection(o);
+}
+
 KQTabletEvent::KQTabletEvent(QTabletEvent::Type type, const QPoint pos, const QPoint globalPos, const QPointF hiResGlobalPos, int device, int pointerType, qreal pressure, int xTilt, int yTilt, qreal tangentialPressure, qreal rotation, int z, Qt::KeyboardModifiers keyState, qint64 uniqueID) : QTabletEvent(type, pos, globalPos, hiResGlobalPos, device, pointerType, pressure, xTilt, yTilt, tangentialPressure, rotation, z, keyState, uniqueID)
 {
 	self = NULL;
+	dummy = new DummyQTabletEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTabletEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -335,14 +341,13 @@ KMETHOD QTabletEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTabletEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTabletEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTabletEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -356,7 +361,7 @@ KMETHOD QTabletEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTabletEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTabletEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -376,6 +381,9 @@ static void QTabletEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QTabletEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTabletEvent *qp = (KQTabletEvent *)p->rawptr;
 		(void)qp;
@@ -385,6 +393,12 @@ static void QTabletEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QTabletEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQTabletEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQTabletEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

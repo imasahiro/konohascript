@@ -1,6 +1,7 @@
 #ifndef QTOUCHEVENT
 #define QTOUCHEVENT
 class DummyQTouchEvent : public DummyQInputEvent {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQTouchEvent : public QTouchEvent, public DummyQTouchEvent {
+class KQTouchEvent : public QTouchEvent {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQTouchEvent *dummy;
 	KQTouchEvent(QEvent::Type eventType, QTouchEvent::DeviceType deviceType, Qt::KeyboardModifiers modifiers, Qt::TouchPointStates touchPointStates, const QList<QTouchEvent::TouchPoint> touchPoints);
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QTOUCHEVENT

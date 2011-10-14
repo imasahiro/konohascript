@@ -85,7 +85,6 @@ KMETHOD QGraphicsLinearLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsLayoutItem*  parent = RawPtr_to(QGraphicsLayoutItem*, sfp[1]);
 	KQGraphicsLinearLayout *ret_v = new KQGraphicsLinearLayout(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -99,7 +98,6 @@ KMETHOD QGraphicsLinearLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsLayoutItem*  parent = RawPtr_to(QGraphicsLayoutItem*, sfp[2]);
 	KQGraphicsLinearLayout *ret_v = new KQGraphicsLinearLayout(orientation, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -326,7 +324,7 @@ bool DummyQGraphicsLinearLayout::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsLinearLayout::event_map->bigin();
 	if ((itr = DummyQGraphicsLinearLayout::event_map->find(str)) == DummyQGraphicsLinearLayout::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGraphicsLayout::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -338,8 +336,8 @@ bool DummyQGraphicsLinearLayout::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGraphicsLinearLayout::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsLinearLayout::slot_map->bigin();
-	if ((itr = DummyQGraphicsLinearLayout::event_map->find(str)) == DummyQGraphicsLinearLayout::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsLinearLayout::slot_map->find(str)) == DummyQGraphicsLinearLayout::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGraphicsLayout::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -349,9 +347,16 @@ bool DummyQGraphicsLinearLayout::signalConnect(knh_Func_t *callback_func, string
 }
 
 
+void DummyQGraphicsLinearLayout::connection(QObject *o)
+{
+	DummyQGraphicsLayout::connection(o);
+}
+
 KQGraphicsLinearLayout::KQGraphicsLinearLayout(QGraphicsLayoutItem* parent) : QGraphicsLinearLayout(parent)
 {
 	self = NULL;
+	dummy = new DummyQGraphicsLinearLayout();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsLinearLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -367,14 +372,13 @@ KMETHOD QGraphicsLinearLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsLinearLayout::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsLinearLayout]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsLinearLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -388,7 +392,7 @@ KMETHOD QGraphicsLinearLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsLinearLayout::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsLinearLayout]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -408,6 +412,9 @@ static void QGraphicsLinearLayout_free(CTX ctx, knh_RawPtr_t *p)
 static void QGraphicsLinearLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsLinearLayout *qp = (KQGraphicsLinearLayout *)p->rawptr;
 		(void)qp;
@@ -417,6 +424,12 @@ static void QGraphicsLinearLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QGraphicsLinearLayout_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQGraphicsLinearLayout::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQGraphicsLinearLayout(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -60,7 +60,6 @@ KMETHOD QInputDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[2]);
 	KQInputDialog *ret_v = new KQInputDialog(parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -612,8 +611,20 @@ KMETHOD QInputDialog_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQInputDialog::DummyQInputDialog()
 {
 	self = NULL;
+	double_value_changed_func = NULL;
+	double_value_selected_func = NULL;
+	int_value_changed_func = NULL;
+	int_value_selected_func = NULL;
+	text_value_changed_func = NULL;
+	text_value_selected_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("double-value-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("double-value-selected", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("int-value-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("int-value-selected", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("text-value-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("text-value-selected", NULL));
 }
 
 void DummyQInputDialog::setSelf(knh_RawPtr_t *ptr)
@@ -633,11 +644,93 @@ bool DummyQInputDialog::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQInputDialog::doubleValueChangedSlot(double value)
+{
+	if (double_value_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, double, value);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, double_value_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQInputDialog::doubleValueSelectedSlot(double value)
+{
+	if (double_value_selected_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, double, value);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, double_value_selected_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQInputDialog::intValueChangedSlot(int value)
+{
+	if (int_value_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = value;
+		knh_Func_invoke(lctx, int_value_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQInputDialog::intValueSelectedSlot(int value)
+{
+	if (int_value_selected_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = value;
+		knh_Func_invoke(lctx, int_value_selected_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQInputDialog::textValueChangedSlot(const QString text)
+{
+	if (text_value_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QString, text);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, text_value_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQInputDialog::textValueSelectedSlot(const QString text)
+{
+	if (text_value_selected_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QString, text);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, text_value_selected_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQInputDialog::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQInputDialog::event_map->bigin();
 	if ((itr = DummyQInputDialog::event_map->find(str)) == DummyQInputDialog::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQDialog::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -649,20 +742,39 @@ bool DummyQInputDialog::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQInputDialog::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQInputDialog::slot_map->bigin();
-	if ((itr = DummyQInputDialog::event_map->find(str)) == DummyQInputDialog::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQInputDialog::slot_map->find(str)) == DummyQInputDialog::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQDialog::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		double_value_changed_func = (*slot_map)["double-value-changed"];
+		double_value_selected_func = (*slot_map)["double-value-selected"];
+		int_value_changed_func = (*slot_map)["int-value-changed"];
+		int_value_selected_func = (*slot_map)["int-value-selected"];
+		text_value_changed_func = (*slot_map)["text-value-changed"];
+		text_value_selected_func = (*slot_map)["text-value-selected"];
 		return true;
 	}
 }
 
 
+void DummyQInputDialog::connection(QObject *o)
+{
+	connect(o, SIGNAL(doubleValueChanged(double)), this, SLOT(doubleValueChangedSlot(double)));
+	connect(o, SIGNAL(doubleValueSelected(double)), this, SLOT(doubleValueSelectedSlot(double)));
+	connect(o, SIGNAL(intValueChanged(int)), this, SLOT(intValueChangedSlot(int)));
+	connect(o, SIGNAL(intValueSelected(int)), this, SLOT(intValueSelectedSlot(int)));
+	connect(o, SIGNAL(textValueChanged(const QString)), this, SLOT(textValueChangedSlot(const QString)));
+	connect(o, SIGNAL(textValueSelected(const QString)), this, SLOT(textValueSelectedSlot(const QString)));
+	DummyQDialog::connection(o);
+}
+
 KQInputDialog::KQInputDialog(QWidget* parent, Qt::WindowFlags flags) : QInputDialog(parent, flags)
 {
 	self = NULL;
+	dummy = new DummyQInputDialog();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QInputDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -678,14 +790,13 @@ KMETHOD QInputDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQInputDialog::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QInputDialog]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QInputDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -699,7 +810,7 @@ KMETHOD QInputDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQInputDialog::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QInputDialog]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -718,10 +829,37 @@ static void QInputDialog_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QInputDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 6;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQInputDialog *qp = (KQInputDialog *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->double_value_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->double_value_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->double_value_selected_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->double_value_selected_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->int_value_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->int_value_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->int_value_selected_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->int_value_selected_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->text_value_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->text_value_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->text_value_selected_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->text_value_selected_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -730,9 +868,15 @@ static int QInputDialog_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQInputDialog::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQInputDialog::event(QEvent *event)
 {
-	if (!DummyQInputDialog::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QInputDialog::event(event);
 		return false;
 	}

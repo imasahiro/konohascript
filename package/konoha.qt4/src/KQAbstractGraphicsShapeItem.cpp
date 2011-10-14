@@ -111,7 +111,7 @@ bool DummyQAbstractGraphicsShapeItem::addEvent(knh_Func_t *callback_func, string
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractGraphicsShapeItem::event_map->bigin();
 	if ((itr = DummyQAbstractGraphicsShapeItem::event_map->find(str)) == DummyQAbstractGraphicsShapeItem::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGraphicsItem::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -123,8 +123,8 @@ bool DummyQAbstractGraphicsShapeItem::addEvent(knh_Func_t *callback_func, string
 bool DummyQAbstractGraphicsShapeItem::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractGraphicsShapeItem::slot_map->bigin();
-	if ((itr = DummyQAbstractGraphicsShapeItem::event_map->find(str)) == DummyQAbstractGraphicsShapeItem::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAbstractGraphicsShapeItem::slot_map->find(str)) == DummyQAbstractGraphicsShapeItem::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGraphicsItem::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -134,9 +134,16 @@ bool DummyQAbstractGraphicsShapeItem::signalConnect(knh_Func_t *callback_func, s
 }
 
 
+void DummyQAbstractGraphicsShapeItem::connection(QObject *o)
+{
+	DummyQGraphicsItem::connection(o);
+}
+
 KQAbstractGraphicsShapeItem::KQAbstractGraphicsShapeItem(QGraphicsItem* parent) : QAbstractGraphicsShapeItem(parent)
 {
 	self = NULL;
+	dummy = new DummyQAbstractGraphicsShapeItem();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractGraphicsShapeItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -152,14 +159,13 @@ KMETHOD QAbstractGraphicsShapeItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAbstractGraphicsShapeItem::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractGraphicsShapeItem]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAbstractGraphicsShapeItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -173,7 +179,7 @@ KMETHOD QAbstractGraphicsShapeItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAbstractGraphicsShapeItem::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractGraphicsShapeItem]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -193,6 +199,9 @@ static void QAbstractGraphicsShapeItem_free(CTX ctx, knh_RawPtr_t *p)
 static void QAbstractGraphicsShapeItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAbstractGraphicsShapeItem *qp = (KQAbstractGraphicsShapeItem *)p->rawptr;
 		(void)qp;
@@ -202,6 +211,12 @@ static void QAbstractGraphicsShapeItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QAbstractGraphicsShapeItem_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQAbstractGraphicsShapeItem::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQAbstractGraphicsShapeItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

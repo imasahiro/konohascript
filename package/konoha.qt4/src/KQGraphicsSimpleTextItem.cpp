@@ -105,7 +105,6 @@ KMETHOD QGraphicsSimpleTextItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsItem*  parent = RawPtr_to(QGraphicsItem*, sfp[1]);
 	KQGraphicsSimpleTextItem *ret_v = new KQGraphicsSimpleTextItem(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -119,7 +118,6 @@ KMETHOD QGraphicsSimpleTextItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsItem*  parent = RawPtr_to(QGraphicsItem*, sfp[2]);
 	KQGraphicsSimpleTextItem *ret_v = new KQGraphicsSimpleTextItem(text, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -206,7 +204,7 @@ bool DummyQGraphicsSimpleTextItem::addEvent(knh_Func_t *callback_func, string st
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsSimpleTextItem::event_map->bigin();
 	if ((itr = DummyQGraphicsSimpleTextItem::event_map->find(str)) == DummyQGraphicsSimpleTextItem::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractGraphicsShapeItem::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -218,8 +216,8 @@ bool DummyQGraphicsSimpleTextItem::addEvent(knh_Func_t *callback_func, string st
 bool DummyQGraphicsSimpleTextItem::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsSimpleTextItem::slot_map->bigin();
-	if ((itr = DummyQGraphicsSimpleTextItem::event_map->find(str)) == DummyQGraphicsSimpleTextItem::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsSimpleTextItem::slot_map->find(str)) == DummyQGraphicsSimpleTextItem::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractGraphicsShapeItem::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -229,9 +227,16 @@ bool DummyQGraphicsSimpleTextItem::signalConnect(knh_Func_t *callback_func, stri
 }
 
 
+void DummyQGraphicsSimpleTextItem::connection(QObject *o)
+{
+	DummyQAbstractGraphicsShapeItem::connection(o);
+}
+
 KQGraphicsSimpleTextItem::KQGraphicsSimpleTextItem(QGraphicsItem* parent) : QGraphicsSimpleTextItem(parent)
 {
 	self = NULL;
+	dummy = new DummyQGraphicsSimpleTextItem();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsSimpleTextItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -247,14 +252,13 @@ KMETHOD QGraphicsSimpleTextItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsSimpleTextItem::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsSimpleTextItem]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsSimpleTextItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -268,7 +272,7 @@ KMETHOD QGraphicsSimpleTextItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsSimpleTextItem::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsSimpleTextItem]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -288,6 +292,9 @@ static void QGraphicsSimpleTextItem_free(CTX ctx, knh_RawPtr_t *p)
 static void QGraphicsSimpleTextItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsSimpleTextItem *qp = (KQGraphicsSimpleTextItem *)p->rawptr;
 		(void)qp;
@@ -297,6 +304,12 @@ static void QGraphicsSimpleTextItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QGraphicsSimpleTextItem_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQGraphicsSimpleTextItem::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQGraphicsSimpleTextItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

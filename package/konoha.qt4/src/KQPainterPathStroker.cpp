@@ -4,7 +4,6 @@ KMETHOD QPainterPathStroker_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQPainterPathStroker *ret_v = new KQPainterPathStroker();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -215,7 +214,7 @@ bool DummyQPainterPathStroker::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPainterPathStroker::event_map->bigin();
 	if ((itr = DummyQPainterPathStroker::event_map->find(str)) == DummyQPainterPathStroker::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -226,8 +225,8 @@ bool DummyQPainterPathStroker::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQPainterPathStroker::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPainterPathStroker::slot_map->bigin();
-	if ((itr = DummyQPainterPathStroker::event_map->find(str)) == DummyQPainterPathStroker::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQPainterPathStroker::slot_map->find(str)) == DummyQPainterPathStroker::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -236,9 +235,16 @@ bool DummyQPainterPathStroker::signalConnect(knh_Func_t *callback_func, string s
 }
 
 
+void DummyQPainterPathStroker::connection(QObject *o)
+{
+	return;
+}
+
 KQPainterPathStroker::KQPainterPathStroker() : QPainterPathStroker()
 {
 	self = NULL;
+	dummy = new DummyQPainterPathStroker();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPainterPathStroker_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -254,14 +260,13 @@ KMETHOD QPainterPathStroker_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQPainterPathStroker::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPainterPathStroker]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QPainterPathStroker_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -275,7 +280,7 @@ KMETHOD QPainterPathStroker_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQPainterPathStroker::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPainterPathStroker]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -295,6 +300,9 @@ static void QPainterPathStroker_free(CTX ctx, knh_RawPtr_t *p)
 static void QPainterPathStroker_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQPainterPathStroker *qp = (KQPainterPathStroker *)p->rawptr;
 		(void)qp;
@@ -304,6 +312,12 @@ static void QPainterPathStroker_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QPainterPathStroker_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQPainterPathStroker::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQPainterPathStroker(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

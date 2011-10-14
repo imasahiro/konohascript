@@ -5,7 +5,6 @@ KMETHOD QTreeWidgetItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int type = Int_to(int, sfp[1]);
 	KQTreeWidgetItem *ret_v = new KQTreeWidgetItem(type);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QTreeWidgetItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int type = Int_to(int, sfp[2]);
 	KQTreeWidgetItem *ret_v = new KQTreeWidgetItem(parent, type);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -34,7 +32,6 @@ KMETHOD QTreeWidgetItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int type = Int_to(int, sfp[3]);
 	KQTreeWidgetItem *ret_v = new KQTreeWidgetItem(parent, preceding, type);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -48,7 +45,6 @@ KMETHOD QTreeWidgetItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int type = Int_to(int, sfp[2]);
 	KQTreeWidgetItem *ret_v = new KQTreeWidgetItem(parent, type);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -63,7 +59,6 @@ KMETHOD QTreeWidgetItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int type = Int_to(int, sfp[3]);
 	KQTreeWidgetItem *ret_v = new KQTreeWidgetItem(parent, preceding, type);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -76,7 +71,6 @@ KMETHOD QTreeWidgetItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QTreeWidgetItem  other = *RawPtr_to(const QTreeWidgetItem *, sfp[1]);
 	KQTreeWidgetItem *ret_v = new KQTreeWidgetItem(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -859,7 +853,7 @@ bool DummyQTreeWidgetItem::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTreeWidgetItem::event_map->bigin();
 	if ((itr = DummyQTreeWidgetItem::event_map->find(str)) == DummyQTreeWidgetItem::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -870,8 +864,8 @@ bool DummyQTreeWidgetItem::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTreeWidgetItem::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTreeWidgetItem::slot_map->bigin();
-	if ((itr = DummyQTreeWidgetItem::event_map->find(str)) == DummyQTreeWidgetItem::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTreeWidgetItem::slot_map->find(str)) == DummyQTreeWidgetItem::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -880,9 +874,16 @@ bool DummyQTreeWidgetItem::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQTreeWidgetItem::connection(QObject *o)
+{
+	return;
+}
+
 KQTreeWidgetItem::KQTreeWidgetItem(int type) : QTreeWidgetItem(type)
 {
 	self = NULL;
+	dummy = new DummyQTreeWidgetItem();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTreeWidgetItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -898,14 +899,13 @@ KMETHOD QTreeWidgetItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTreeWidgetItem::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTreeWidgetItem]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTreeWidgetItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -919,7 +919,7 @@ KMETHOD QTreeWidgetItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTreeWidgetItem::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTreeWidgetItem]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -939,6 +939,9 @@ static void QTreeWidgetItem_free(CTX ctx, knh_RawPtr_t *p)
 static void QTreeWidgetItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTreeWidgetItem *qp = (KQTreeWidgetItem *)p->rawptr;
 		(void)qp;
@@ -948,6 +951,12 @@ static void QTreeWidgetItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QTreeWidgetItem_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQTreeWidgetItem::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQTreeWidgetItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

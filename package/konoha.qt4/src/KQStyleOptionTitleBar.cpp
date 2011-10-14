@@ -4,7 +4,6 @@ KMETHOD QStyleOptionTitleBar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQStyleOptionTitleBar *ret_v = new KQStyleOptionTitleBar();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QStyleOptionTitleBar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionTitleBar  other = *RawPtr_to(const QStyleOptionTitleBar *, sfp[1]);
 	KQStyleOptionTitleBar *ret_v = new KQStyleOptionTitleBar(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -51,7 +49,7 @@ bool DummyQStyleOptionTitleBar::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionTitleBar::event_map->bigin();
 	if ((itr = DummyQStyleOptionTitleBar::event_map->find(str)) == DummyQStyleOptionTitleBar::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQStyleOptionComplex::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -63,8 +61,8 @@ bool DummyQStyleOptionTitleBar::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStyleOptionTitleBar::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionTitleBar::slot_map->bigin();
-	if ((itr = DummyQStyleOptionTitleBar::event_map->find(str)) == DummyQStyleOptionTitleBar::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStyleOptionTitleBar::slot_map->find(str)) == DummyQStyleOptionTitleBar::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQStyleOptionComplex::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -74,9 +72,16 @@ bool DummyQStyleOptionTitleBar::signalConnect(knh_Func_t *callback_func, string 
 }
 
 
+void DummyQStyleOptionTitleBar::connection(QObject *o)
+{
+	DummyQStyleOptionComplex::connection(o);
+}
+
 KQStyleOptionTitleBar::KQStyleOptionTitleBar() : QStyleOptionTitleBar()
 {
 	self = NULL;
+	dummy = new DummyQStyleOptionTitleBar();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionTitleBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -92,14 +97,13 @@ KMETHOD QStyleOptionTitleBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStyleOptionTitleBar::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionTitleBar]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStyleOptionTitleBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -113,7 +117,7 @@ KMETHOD QStyleOptionTitleBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStyleOptionTitleBar::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionTitleBar]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -133,6 +137,9 @@ static void QStyleOptionTitleBar_free(CTX ctx, knh_RawPtr_t *p)
 static void QStyleOptionTitleBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStyleOptionTitleBar *qp = (KQStyleOptionTitleBar *)p->rawptr;
 		(void)qp;
@@ -142,6 +149,12 @@ static void QStyleOptionTitleBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QStyleOptionTitleBar_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQStyleOptionTitleBar::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStyleOptionTitleBar(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

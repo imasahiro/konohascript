@@ -170,7 +170,6 @@ KMETHOD QGridLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQGridLayout *ret_v = new KQGridLayout(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -182,7 +181,6 @@ KMETHOD QGridLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQGridLayout *ret_v = new KQGridLayout();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -582,7 +580,7 @@ bool DummyQGridLayout::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGridLayout::event_map->bigin();
 	if ((itr = DummyQGridLayout::event_map->find(str)) == DummyQGridLayout::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQLayout::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -594,8 +592,8 @@ bool DummyQGridLayout::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGridLayout::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGridLayout::slot_map->bigin();
-	if ((itr = DummyQGridLayout::event_map->find(str)) == DummyQGridLayout::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGridLayout::slot_map->find(str)) == DummyQGridLayout::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQLayout::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -605,9 +603,16 @@ bool DummyQGridLayout::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQGridLayout::connection(QObject *o)
+{
+	DummyQLayout::connection(o);
+}
+
 KQGridLayout::KQGridLayout(QWidget* parent) : QGridLayout(parent)
 {
 	self = NULL;
+	dummy = new DummyQGridLayout();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGridLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -623,14 +628,13 @@ KMETHOD QGridLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGridLayout::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGridLayout]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGridLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -644,7 +648,7 @@ KMETHOD QGridLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGridLayout::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGridLayout]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -664,6 +668,9 @@ static void QGridLayout_free(CTX ctx, knh_RawPtr_t *p)
 static void QGridLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGridLayout *qp = (KQGridLayout *)p->rawptr;
 		(void)qp;
@@ -675,9 +682,15 @@ static int QGridLayout_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQGridLayout::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQGridLayout::event(QEvent *event)
 {
-	if (!DummyQGridLayout::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QGridLayout::event(event);
 		return false;
 	}

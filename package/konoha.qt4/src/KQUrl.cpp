@@ -4,7 +4,6 @@ KMETHOD QUrl_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQUrl *ret_v = new KQUrl();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QUrl_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QString url = String_to(const QString, sfp[1]);
 	KQUrl *ret_v = new KQUrl(url);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -30,7 +28,6 @@ KMETHOD QUrl_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QUrl  other = *RawPtr_to(const QUrl *, sfp[1]);
 	KQUrl *ret_v = new KQUrl(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -44,7 +41,6 @@ KMETHOD QUrl_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QUrl::ParsingMode parsingMode = Int_to(QUrl::ParsingMode, sfp[2]);
 	KQUrl *ret_v = new KQUrl(url, parsingMode);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -1033,7 +1029,7 @@ bool DummyQUrl::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQUrl::event_map->bigin();
 	if ((itr = DummyQUrl::event_map->find(str)) == DummyQUrl::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -1044,8 +1040,8 @@ bool DummyQUrl::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQUrl::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQUrl::slot_map->bigin();
-	if ((itr = DummyQUrl::event_map->find(str)) == DummyQUrl::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQUrl::slot_map->find(str)) == DummyQUrl::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -1054,9 +1050,16 @@ bool DummyQUrl::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQUrl::connection(QObject *o)
+{
+	return;
+}
+
 KQUrl::KQUrl() : QUrl()
 {
 	self = NULL;
+	dummy = new DummyQUrl();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QUrl_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1072,14 +1075,13 @@ KMETHOD QUrl_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQUrl::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QUrl]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QUrl_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1093,7 +1095,7 @@ KMETHOD QUrl_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQUrl::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QUrl]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -1113,6 +1115,9 @@ static void QUrl_free(CTX ctx, knh_RawPtr_t *p)
 static void QUrl_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQUrl *qp = (KQUrl *)p->rawptr;
 		(void)qp;
@@ -1122,6 +1127,12 @@ static void QUrl_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QUrl_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QUrl*>(p1->rawptr) == *static_cast<QUrl*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQUrl::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQUrl(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -105,7 +105,6 @@ KMETHOD QGraphicsTextItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsItem*  parent = RawPtr_to(QGraphicsItem*, sfp[1]);
 	KQGraphicsTextItem *ret_v = new KQGraphicsTextItem(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -119,7 +118,6 @@ KMETHOD QGraphicsTextItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsItem*  parent = RawPtr_to(QGraphicsItem*, sfp[2]);
 	KQGraphicsTextItem *ret_v = new KQGraphicsTextItem(text, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -398,8 +396,12 @@ KMETHOD QGraphicsTextItem_toPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQGraphicsTextItem::DummyQGraphicsTextItem()
 {
 	self = NULL;
+	link_activated_func = NULL;
+	link_hovered_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("link-activated", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("link-hovered", NULL));
 }
 
 void DummyQGraphicsTextItem::setSelf(knh_RawPtr_t *ptr)
@@ -419,11 +421,39 @@ bool DummyQGraphicsTextItem::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQGraphicsTextItem::linkActivatedSlot(const QString link)
+{
+	if (link_activated_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QString, link);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, link_activated_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQGraphicsTextItem::linkHoveredSlot(const QString link)
+{
+	if (link_hovered_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QString, link);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, link_hovered_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQGraphicsTextItem::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsTextItem::event_map->bigin();
 	if ((itr = DummyQGraphicsTextItem::event_map->find(str)) == DummyQGraphicsTextItem::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGraphicsObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -435,20 +465,31 @@ bool DummyQGraphicsTextItem::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGraphicsTextItem::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsTextItem::slot_map->bigin();
-	if ((itr = DummyQGraphicsTextItem::event_map->find(str)) == DummyQGraphicsTextItem::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsTextItem::slot_map->find(str)) == DummyQGraphicsTextItem::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGraphicsObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		link_activated_func = (*slot_map)["link-activated"];
+		link_hovered_func = (*slot_map)["link-hovered"];
 		return true;
 	}
 }
 
 
+void DummyQGraphicsTextItem::connection(QObject *o)
+{
+	connect(o, SIGNAL(linkActivated(const QString)), this, SLOT(linkActivatedSlot(const QString)));
+	connect(o, SIGNAL(linkHovered(const QString)), this, SLOT(linkHoveredSlot(const QString)));
+	DummyQGraphicsObject::connection(o);
+}
+
 KQGraphicsTextItem::KQGraphicsTextItem(QGraphicsItem* parent) : QGraphicsTextItem(parent)
 {
 	self = NULL;
+	dummy = new DummyQGraphicsTextItem();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsTextItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -464,14 +505,13 @@ KMETHOD QGraphicsTextItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsTextItem::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsTextItem]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsTextItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -485,7 +525,7 @@ KMETHOD QGraphicsTextItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsTextItem::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsTextItem]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -504,10 +544,21 @@ static void QGraphicsTextItem_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsTextItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsTextItem *qp = (KQGraphicsTextItem *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->link_activated_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->link_activated_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->link_hovered_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->link_hovered_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -516,9 +567,15 @@ static int QGraphicsTextItem_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQGraphicsTextItem::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQGraphicsTextItem::event(QEvent *event)
 {
-	if (!DummyQGraphicsTextItem::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QGraphicsTextItem::event(event);
 		return false;
 	}

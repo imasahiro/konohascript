@@ -105,7 +105,6 @@ KMETHOD QGraphicsEllipseItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsItem*  parent = RawPtr_to(QGraphicsItem*, sfp[1]);
 	KQGraphicsEllipseItem *ret_v = new KQGraphicsEllipseItem(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -119,7 +118,6 @@ KMETHOD QGraphicsEllipseItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsItem*  parent = RawPtr_to(QGraphicsItem*, sfp[2]);
 	KQGraphicsEllipseItem *ret_v = new KQGraphicsEllipseItem(rect, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -136,7 +134,6 @@ KMETHOD QGraphicsEllipseItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsItem*  parent = RawPtr_to(QGraphicsItem*, sfp[5]);
 	KQGraphicsEllipseItem *ret_v = new KQGraphicsEllipseItem(x, y, width, height, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -263,7 +260,7 @@ bool DummyQGraphicsEllipseItem::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsEllipseItem::event_map->bigin();
 	if ((itr = DummyQGraphicsEllipseItem::event_map->find(str)) == DummyQGraphicsEllipseItem::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractGraphicsShapeItem::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -275,8 +272,8 @@ bool DummyQGraphicsEllipseItem::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGraphicsEllipseItem::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsEllipseItem::slot_map->bigin();
-	if ((itr = DummyQGraphicsEllipseItem::event_map->find(str)) == DummyQGraphicsEllipseItem::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsEllipseItem::slot_map->find(str)) == DummyQGraphicsEllipseItem::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractGraphicsShapeItem::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -286,9 +283,16 @@ bool DummyQGraphicsEllipseItem::signalConnect(knh_Func_t *callback_func, string 
 }
 
 
+void DummyQGraphicsEllipseItem::connection(QObject *o)
+{
+	DummyQAbstractGraphicsShapeItem::connection(o);
+}
+
 KQGraphicsEllipseItem::KQGraphicsEllipseItem(QGraphicsItem* parent) : QGraphicsEllipseItem(parent)
 {
 	self = NULL;
+	dummy = new DummyQGraphicsEllipseItem();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsEllipseItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -304,14 +308,13 @@ KMETHOD QGraphicsEllipseItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsEllipseItem::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsEllipseItem]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsEllipseItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -325,7 +328,7 @@ KMETHOD QGraphicsEllipseItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsEllipseItem::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsEllipseItem]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -345,6 +348,9 @@ static void QGraphicsEllipseItem_free(CTX ctx, knh_RawPtr_t *p)
 static void QGraphicsEllipseItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsEllipseItem *qp = (KQGraphicsEllipseItem *)p->rawptr;
 		(void)qp;
@@ -354,6 +360,12 @@ static void QGraphicsEllipseItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QGraphicsEllipseItem_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQGraphicsEllipseItem::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQGraphicsEllipseItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

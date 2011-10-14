@@ -185,8 +185,14 @@ KMETHOD QDesktopWidget_screenNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQDesktopWidget::DummyQDesktopWidget()
 {
 	self = NULL;
+	resized_func = NULL;
+	screen_count_changed_func = NULL;
+	work_area_resized_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("resized", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("screen-count-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("work-area-resized", NULL));
 }
 
 void DummyQDesktopWidget::setSelf(knh_RawPtr_t *ptr)
@@ -206,11 +212,50 @@ bool DummyQDesktopWidget::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQDesktopWidget::resizedSlot(int screen)
+{
+	if (resized_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = screen;
+		knh_Func_invoke(lctx, resized_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQDesktopWidget::screenCountChangedSlot(int new_Count)
+{
+	if (screen_count_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = new_Count;
+		knh_Func_invoke(lctx, screen_count_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQDesktopWidget::workAreaResizedSlot(int screen)
+{
+	if (work_area_resized_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = screen;
+		knh_Func_invoke(lctx, work_area_resized_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQDesktopWidget::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDesktopWidget::event_map->bigin();
 	if ((itr = DummyQDesktopWidget::event_map->find(str)) == DummyQDesktopWidget::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -222,20 +267,33 @@ bool DummyQDesktopWidget::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDesktopWidget::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDesktopWidget::slot_map->bigin();
-	if ((itr = DummyQDesktopWidget::event_map->find(str)) == DummyQDesktopWidget::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDesktopWidget::slot_map->find(str)) == DummyQDesktopWidget::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		resized_func = (*slot_map)["resized"];
+		screen_count_changed_func = (*slot_map)["screen-count-changed"];
+		work_area_resized_func = (*slot_map)["work-area-resized"];
 		return true;
 	}
 }
 
 
+void DummyQDesktopWidget::connection(QObject *o)
+{
+	connect(o, SIGNAL(resized(int)), this, SLOT(resizedSlot(int)));
+	connect(o, SIGNAL(screenCountChanged(int)), this, SLOT(screenCountChangedSlot(int)));
+	connect(o, SIGNAL(workAreaResized(int)), this, SLOT(workAreaResizedSlot(int)));
+	DummyQWidget::connection(o);
+}
+
 KQDesktopWidget::KQDesktopWidget() : QDesktopWidget()
 {
 	self = NULL;
+	dummy = new DummyQDesktopWidget();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDesktopWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -251,14 +309,13 @@ KMETHOD QDesktopWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDesktopWidget::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDesktopWidget]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDesktopWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -272,7 +329,7 @@ KMETHOD QDesktopWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDesktopWidget::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDesktopWidget]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -291,10 +348,25 @@ static void QDesktopWidget_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDesktopWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 3;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDesktopWidget *qp = (KQDesktopWidget *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->resized_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->resized_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->screen_count_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->screen_count_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->work_area_resized_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->work_area_resized_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -303,9 +375,15 @@ static int QDesktopWidget_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQDesktopWidget::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQDesktopWidget::event(QEvent *event)
 {
-	if (!DummyQDesktopWidget::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QDesktopWidget::event(event);
 		return false;
 	}

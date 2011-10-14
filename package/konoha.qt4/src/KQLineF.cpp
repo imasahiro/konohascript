@@ -4,7 +4,6 @@ KMETHOD QLineF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQLineF *ret_v = new KQLineF();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -18,7 +17,6 @@ KMETHOD QLineF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPointF  p2 = *RawPtr_to(const QPointF *, sfp[2]);
 	KQLineF *ret_v = new KQLineF(p1, p2);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -34,7 +32,6 @@ KMETHOD QLineF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	qreal y2 = Float_to(qreal, sfp[4]);
 	KQLineF *ret_v = new KQLineF(x1, y1, x2, y2);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -47,7 +44,6 @@ KMETHOD QLineF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QLine  line = *RawPtr_to(const QLine *, sfp[1]);
 	KQLineF *ret_v = new KQLineF(line);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -470,7 +466,7 @@ bool DummyQLineF::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLineF::event_map->bigin();
 	if ((itr = DummyQLineF::event_map->find(str)) == DummyQLineF::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -481,8 +477,8 @@ bool DummyQLineF::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQLineF::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLineF::slot_map->bigin();
-	if ((itr = DummyQLineF::event_map->find(str)) == DummyQLineF::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQLineF::slot_map->find(str)) == DummyQLineF::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -491,9 +487,16 @@ bool DummyQLineF::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQLineF::connection(QObject *o)
+{
+	return;
+}
+
 KQLineF::KQLineF() : QLineF()
 {
 	self = NULL;
+	dummy = new DummyQLineF();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QLineF_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -509,14 +512,13 @@ KMETHOD QLineF_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQLineF::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLineF]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QLineF_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -530,7 +532,7 @@ KMETHOD QLineF_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQLineF::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLineF]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -550,6 +552,9 @@ static void QLineF_free(CTX ctx, knh_RawPtr_t *p)
 static void QLineF_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQLineF *qp = (KQLineF *)p->rawptr;
 		(void)qp;
@@ -559,6 +564,12 @@ static void QLineF_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QLineF_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QLineF*>(p1->rawptr) == *static_cast<QLineF*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQLineF::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQLineF(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -6,7 +6,6 @@ KMETHOD QSplashScreen_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[2]);
 	KQSplashScreen *ret_v = new KQSplashScreen(pixmap, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -21,7 +20,6 @@ KMETHOD QSplashScreen_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[3]);
 	KQSplashScreen *ret_v = new KQSplashScreen(parent, pixmap, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -105,8 +103,10 @@ KMETHOD QSplashScreen_showMessage(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQSplashScreen::DummyQSplashScreen()
 {
 	self = NULL;
+	message_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("message-changed", NULL));
 }
 
 void DummyQSplashScreen::setSelf(knh_RawPtr_t *ptr)
@@ -126,11 +126,25 @@ bool DummyQSplashScreen::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQSplashScreen::messageChangedSlot(const QString message)
+{
+	if (message_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QString, message);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, message_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQSplashScreen::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSplashScreen::event_map->bigin();
 	if ((itr = DummyQSplashScreen::event_map->find(str)) == DummyQSplashScreen::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -142,20 +156,29 @@ bool DummyQSplashScreen::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQSplashScreen::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSplashScreen::slot_map->bigin();
-	if ((itr = DummyQSplashScreen::event_map->find(str)) == DummyQSplashScreen::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQSplashScreen::slot_map->find(str)) == DummyQSplashScreen::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		message_changed_func = (*slot_map)["message-changed"];
 		return true;
 	}
 }
 
 
+void DummyQSplashScreen::connection(QObject *o)
+{
+	connect(o, SIGNAL(messageChanged(const QString)), this, SLOT(messageChangedSlot(const QString)));
+	DummyQWidget::connection(o);
+}
+
 KQSplashScreen::KQSplashScreen(const QPixmap pixmap, Qt::WindowFlags f) : QSplashScreen(pixmap, f)
 {
 	self = NULL;
+	dummy = new DummyQSplashScreen();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSplashScreen_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -171,14 +194,13 @@ KMETHOD QSplashScreen_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQSplashScreen::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSplashScreen]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QSplashScreen_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -192,7 +214,7 @@ KMETHOD QSplashScreen_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQSplashScreen::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSplashScreen]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -211,10 +233,17 @@ static void QSplashScreen_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSplashScreen_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQSplashScreen *qp = (KQSplashScreen *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->message_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->message_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -223,9 +252,15 @@ static int QSplashScreen_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQSplashScreen::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQSplashScreen::event(QEvent *event)
 {
-	if (!DummyQSplashScreen::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QSplashScreen::event(event);
 		return false;
 	}

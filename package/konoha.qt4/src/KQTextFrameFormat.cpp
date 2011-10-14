@@ -4,7 +4,6 @@ KMETHOD QTextFrameFormat_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQTextFrameFormat *ret_v = new KQTextFrameFormat();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -408,7 +407,7 @@ bool DummyQTextFrameFormat::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextFrameFormat::event_map->bigin();
 	if ((itr = DummyQTextFrameFormat::event_map->find(str)) == DummyQTextFrameFormat::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQTextFormat::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -420,8 +419,8 @@ bool DummyQTextFrameFormat::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTextFrameFormat::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextFrameFormat::slot_map->bigin();
-	if ((itr = DummyQTextFrameFormat::event_map->find(str)) == DummyQTextFrameFormat::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTextFrameFormat::slot_map->find(str)) == DummyQTextFrameFormat::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQTextFormat::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -431,9 +430,16 @@ bool DummyQTextFrameFormat::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQTextFrameFormat::connection(QObject *o)
+{
+	DummyQTextFormat::connection(o);
+}
+
 KQTextFrameFormat::KQTextFrameFormat() : QTextFrameFormat()
 {
 	self = NULL;
+	dummy = new DummyQTextFrameFormat();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextFrameFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -449,14 +455,13 @@ KMETHOD QTextFrameFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTextFrameFormat::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextFrameFormat]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTextFrameFormat_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -470,7 +475,7 @@ KMETHOD QTextFrameFormat_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTextFrameFormat::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextFrameFormat]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -490,6 +495,9 @@ static void QTextFrameFormat_free(CTX ctx, knh_RawPtr_t *p)
 static void QTextFrameFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTextFrameFormat *qp = (KQTextFrameFormat *)p->rawptr;
 		(void)qp;
@@ -499,6 +507,12 @@ static void QTextFrameFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QTextFrameFormat_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQTextFrameFormat::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQTextFrameFormat(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

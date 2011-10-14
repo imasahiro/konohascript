@@ -481,7 +481,7 @@ bool DummyQTextCodec::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextCodec::event_map->bigin();
 	if ((itr = DummyQTextCodec::event_map->find(str)) == DummyQTextCodec::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -492,8 +492,8 @@ bool DummyQTextCodec::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTextCodec::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextCodec::slot_map->bigin();
-	if ((itr = DummyQTextCodec::event_map->find(str)) == DummyQTextCodec::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTextCodec::slot_map->find(str)) == DummyQTextCodec::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -502,9 +502,16 @@ bool DummyQTextCodec::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQTextCodec::connection(QObject *o)
+{
+	return;
+}
+
 KQTextCodec::KQTextCodec() : QTextCodec()
 {
 	self = NULL;
+	dummy = new DummyQTextCodec();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextCodec_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -520,14 +527,13 @@ KMETHOD QTextCodec_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTextCodec::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextCodec]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTextCodec_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -541,7 +547,7 @@ KMETHOD QTextCodec_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTextCodec::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextCodec]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -561,6 +567,9 @@ static void QTextCodec_free(CTX ctx, knh_RawPtr_t *p)
 static void QTextCodec_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTextCodec *qp = (KQTextCodec *)p->rawptr;
 		(void)qp;
@@ -570,6 +579,12 @@ static void QTextCodec_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QTextCodec_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQTextCodec::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQTextCodec(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

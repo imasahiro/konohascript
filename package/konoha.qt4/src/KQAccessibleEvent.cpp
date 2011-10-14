@@ -6,7 +6,6 @@ KMETHOD QAccessibleEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int child = Int_to(int, sfp[2]);
 	KQAccessibleEvent *ret_v = new KQAccessibleEvent(type, child);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -79,7 +78,7 @@ bool DummyQAccessibleEvent::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAccessibleEvent::event_map->bigin();
 	if ((itr = DummyQAccessibleEvent::event_map->find(str)) == DummyQAccessibleEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -91,8 +90,8 @@ bool DummyQAccessibleEvent::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQAccessibleEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAccessibleEvent::slot_map->bigin();
-	if ((itr = DummyQAccessibleEvent::event_map->find(str)) == DummyQAccessibleEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAccessibleEvent::slot_map->find(str)) == DummyQAccessibleEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -102,9 +101,16 @@ bool DummyQAccessibleEvent::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQAccessibleEvent::connection(QObject *o)
+{
+	DummyQEvent::connection(o);
+}
+
 KQAccessibleEvent::KQAccessibleEvent(QAccessibleEvent::Type type, int child) : QAccessibleEvent(type, child)
 {
 	self = NULL;
+	dummy = new DummyQAccessibleEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAccessibleEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -120,14 +126,13 @@ KMETHOD QAccessibleEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAccessibleEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAccessibleEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAccessibleEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -141,7 +146,7 @@ KMETHOD QAccessibleEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAccessibleEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAccessibleEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -161,6 +166,9 @@ static void QAccessibleEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QAccessibleEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAccessibleEvent *qp = (KQAccessibleEvent *)p->rawptr;
 		(void)qp;
@@ -170,6 +178,12 @@ static void QAccessibleEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QAccessibleEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQAccessibleEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQAccessibleEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

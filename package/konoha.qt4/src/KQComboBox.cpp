@@ -49,7 +49,6 @@ KMETHOD QComboBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQComboBox *ret_v = new KQComboBox(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -802,8 +801,10 @@ KMETHOD QComboBox_setEditText(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQComboBox::DummyQComboBox()
 {
 	self = NULL;
+	edit_text_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("edit-text-changed", NULL));
 }
 
 void DummyQComboBox::setSelf(knh_RawPtr_t *ptr)
@@ -823,11 +824,25 @@ bool DummyQComboBox::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQComboBox::editTextChangedSlot(const QString text)
+{
+	if (edit_text_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QString, text);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, edit_text_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQComboBox::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQComboBox::event_map->bigin();
 	if ((itr = DummyQComboBox::event_map->find(str)) == DummyQComboBox::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -839,20 +854,29 @@ bool DummyQComboBox::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQComboBox::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQComboBox::slot_map->bigin();
-	if ((itr = DummyQComboBox::event_map->find(str)) == DummyQComboBox::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQComboBox::slot_map->find(str)) == DummyQComboBox::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		edit_text_changed_func = (*slot_map)["edit-text-changed"];
 		return true;
 	}
 }
 
 
+void DummyQComboBox::connection(QObject *o)
+{
+	connect(o, SIGNAL(editTextChanged(const QString)), this, SLOT(editTextChangedSlot(const QString)));
+	DummyQWidget::connection(o);
+}
+
 KQComboBox::KQComboBox(QWidget* parent) : QComboBox(parent)
 {
 	self = NULL;
+	dummy = new DummyQComboBox();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QComboBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -868,14 +892,13 @@ KMETHOD QComboBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQComboBox::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QComboBox]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QComboBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -889,7 +912,7 @@ KMETHOD QComboBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQComboBox::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QComboBox]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -908,10 +931,17 @@ static void QComboBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QComboBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQComboBox *qp = (KQComboBox *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->edit_text_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->edit_text_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -920,9 +950,15 @@ static int QComboBox_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQComboBox::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQComboBox::event(QEvent *event)
 {
-	if (!DummyQComboBox::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QComboBox::event(event);
 		return false;
 	}

@@ -6,7 +6,6 @@ KMETHOD QSharedMemory_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[2]);
 	KQSharedMemory *ret_v = new KQSharedMemory(key, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QSharedMemory_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQSharedMemory *ret_v = new KQSharedMemory(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -243,7 +241,7 @@ bool DummyQSharedMemory::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSharedMemory::event_map->bigin();
 	if ((itr = DummyQSharedMemory::event_map->find(str)) == DummyQSharedMemory::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -255,8 +253,8 @@ bool DummyQSharedMemory::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQSharedMemory::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSharedMemory::slot_map->bigin();
-	if ((itr = DummyQSharedMemory::event_map->find(str)) == DummyQSharedMemory::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQSharedMemory::slot_map->find(str)) == DummyQSharedMemory::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -266,9 +264,16 @@ bool DummyQSharedMemory::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQSharedMemory::connection(QObject *o)
+{
+	DummyQObject::connection(o);
+}
+
 KQSharedMemory::KQSharedMemory(const QString key, QObject* parent) : QSharedMemory(key, parent)
 {
 	self = NULL;
+	dummy = new DummyQSharedMemory();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSharedMemory_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -284,14 +289,13 @@ KMETHOD QSharedMemory_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQSharedMemory::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSharedMemory]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QSharedMemory_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -305,7 +309,7 @@ KMETHOD QSharedMemory_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQSharedMemory::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSharedMemory]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -325,6 +329,9 @@ static void QSharedMemory_free(CTX ctx, knh_RawPtr_t *p)
 static void QSharedMemory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQSharedMemory *qp = (KQSharedMemory *)p->rawptr;
 		(void)qp;
@@ -336,9 +343,15 @@ static int QSharedMemory_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQSharedMemory::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQSharedMemory::event(QEvent *event)
 {
-	if (!DummyQSharedMemory::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QSharedMemory::event(event);
 		return false;
 	}

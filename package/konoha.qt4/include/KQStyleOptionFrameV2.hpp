@@ -1,6 +1,7 @@
 #ifndef QSTYLEOPTIONFRAMEV2
 #define QSTYLEOPTIONFRAMEV2
 class DummyQStyleOptionFrameV2 : public DummyQStyleOptionFrame {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQStyleOptionFrameV2 : public QStyleOptionFrameV2, public DummyQStyleOptionFrameV2 {
+class KQStyleOptionFrameV2 : public QStyleOptionFrameV2 {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQStyleOptionFrameV2 *dummy;
 	KQStyleOptionFrameV2();
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QSTYLEOPTIONFRAMEV2

@@ -126,8 +126,14 @@ KMETHOD QAbstractItemDelegate_helpEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQAbstractItemDelegate::DummyQAbstractItemDelegate()
 {
 	self = NULL;
+	close_editor_func = NULL;
+	commit_data_func = NULL;
+	size_hint_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("close-editor", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("commit-data", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("size-hint-changed", NULL));
 }
 
 void DummyQAbstractItemDelegate::setSelf(knh_RawPtr_t *ptr)
@@ -147,11 +153,54 @@ bool DummyQAbstractItemDelegate::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQAbstractItemDelegate::closeEditorSlot(QWidget* editor, QAbstractItemDelegate::EndEditHint hint)
+{
+	if (close_editor_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QWidget, editor);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = hint;
+		knh_Func_invoke(lctx, close_editor_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemDelegate::commitDataSlot(QWidget* editor)
+{
+	if (commit_data_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QWidget, editor);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, commit_data_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemDelegate::sizeHintChangedSlot(const QModelIndex index)
+{
+	if (size_hint_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, index);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, size_hint_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQAbstractItemDelegate::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractItemDelegate::event_map->bigin();
 	if ((itr = DummyQAbstractItemDelegate::event_map->find(str)) == DummyQAbstractItemDelegate::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -163,20 +212,33 @@ bool DummyQAbstractItemDelegate::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQAbstractItemDelegate::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractItemDelegate::slot_map->bigin();
-	if ((itr = DummyQAbstractItemDelegate::event_map->find(str)) == DummyQAbstractItemDelegate::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAbstractItemDelegate::slot_map->find(str)) == DummyQAbstractItemDelegate::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		close_editor_func = (*slot_map)["close-editor"];
+		commit_data_func = (*slot_map)["commit-data"];
+		size_hint_changed_func = (*slot_map)["size-hint-changed"];
 		return true;
 	}
 }
 
 
+void DummyQAbstractItemDelegate::connection(QObject *o)
+{
+	connect(o, SIGNAL(closeEditor(QWidget*, QAbstractItemDelegate::EndEditHint)), this, SLOT(closeEditorSlot(QWidget*, QAbstractItemDelegate::EndEditHint)));
+	connect(o, SIGNAL(commitData(QWidget*)), this, SLOT(commitDataSlot(QWidget*)));
+	connect(o, SIGNAL(sizeHintChanged(const QModelIndex)), this, SLOT(sizeHintChangedSlot(const QModelIndex)));
+	DummyQObject::connection(o);
+}
+
 KQAbstractItemDelegate::KQAbstractItemDelegate(QObject* parent) : QAbstractItemDelegate(parent)
 {
 	self = NULL;
+	dummy = new DummyQAbstractItemDelegate();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractItemDelegate_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -192,14 +254,13 @@ KMETHOD QAbstractItemDelegate_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAbstractItemDelegate::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractItemDelegate]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAbstractItemDelegate_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -213,7 +274,7 @@ KMETHOD QAbstractItemDelegate_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAbstractItemDelegate::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractItemDelegate]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -232,10 +293,25 @@ static void QAbstractItemDelegate_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractItemDelegate_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 3;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAbstractItemDelegate *qp = (KQAbstractItemDelegate *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->close_editor_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->close_editor_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->commit_data_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->commit_data_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->size_hint_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->size_hint_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -244,9 +320,15 @@ static int QAbstractItemDelegate_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQAbstractItemDelegate::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQAbstractItemDelegate::event(QEvent *event)
 {
-	if (!DummyQAbstractItemDelegate::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QAbstractItemDelegate::event(event);
 		return false;
 	}

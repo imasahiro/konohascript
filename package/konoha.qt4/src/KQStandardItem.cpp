@@ -4,7 +4,6 @@ KMETHOD QStandardItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQStandardItem *ret_v = new KQStandardItem();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QStandardItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QString text = String_to(const QString, sfp[1]);
 	KQStandardItem *ret_v = new KQStandardItem(text);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -31,7 +29,6 @@ KMETHOD QStandardItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QString text = String_to(const QString, sfp[2]);
 	KQStandardItem *ret_v = new KQStandardItem(icon, text);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -45,7 +42,6 @@ KMETHOD QStandardItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int columns = Int_to(int, sfp[2]);
 	KQStandardItem *ret_v = new KQStandardItem(rows, columns);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -1139,7 +1135,7 @@ bool DummyQStandardItem::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStandardItem::event_map->bigin();
 	if ((itr = DummyQStandardItem::event_map->find(str)) == DummyQStandardItem::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -1150,8 +1146,8 @@ bool DummyQStandardItem::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStandardItem::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStandardItem::slot_map->bigin();
-	if ((itr = DummyQStandardItem::event_map->find(str)) == DummyQStandardItem::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStandardItem::slot_map->find(str)) == DummyQStandardItem::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -1160,9 +1156,16 @@ bool DummyQStandardItem::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQStandardItem::connection(QObject *o)
+{
+	return;
+}
+
 KQStandardItem::KQStandardItem() : QStandardItem()
 {
 	self = NULL;
+	dummy = new DummyQStandardItem();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStandardItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1178,14 +1181,13 @@ KMETHOD QStandardItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStandardItem::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStandardItem]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStandardItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1199,7 +1201,7 @@ KMETHOD QStandardItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStandardItem::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStandardItem]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -1219,6 +1221,9 @@ static void QStandardItem_free(CTX ctx, knh_RawPtr_t *p)
 static void QStandardItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStandardItem *qp = (KQStandardItem *)p->rawptr;
 		(void)qp;
@@ -1228,6 +1233,12 @@ static void QStandardItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QStandardItem_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQStandardItem::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStandardItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

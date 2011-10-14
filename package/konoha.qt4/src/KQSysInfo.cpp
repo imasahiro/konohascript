@@ -26,7 +26,7 @@ bool DummyQSysInfo::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSysInfo::event_map->bigin();
 	if ((itr = DummyQSysInfo::event_map->find(str)) == DummyQSysInfo::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -37,8 +37,8 @@ bool DummyQSysInfo::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQSysInfo::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSysInfo::slot_map->bigin();
-	if ((itr = DummyQSysInfo::event_map->find(str)) == DummyQSysInfo::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQSysInfo::slot_map->find(str)) == DummyQSysInfo::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -47,9 +47,16 @@ bool DummyQSysInfo::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQSysInfo::connection(QObject *o)
+{
+	return;
+}
+
 KQSysInfo::KQSysInfo() : QSysInfo()
 {
 	self = NULL;
+	dummy = new DummyQSysInfo();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSysInfo_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -65,14 +72,13 @@ KMETHOD QSysInfo_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQSysInfo::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSysInfo]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QSysInfo_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -86,7 +92,7 @@ KMETHOD QSysInfo_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQSysInfo::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSysInfo]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -106,6 +112,9 @@ static void QSysInfo_free(CTX ctx, knh_RawPtr_t *p)
 static void QSysInfo_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQSysInfo *qp = (KQSysInfo *)p->rawptr;
 		(void)qp;
@@ -115,6 +124,12 @@ static void QSysInfo_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QSysInfo_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQSysInfo::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQSysInfo(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

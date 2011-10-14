@@ -107,7 +107,7 @@ bool DummyQTextItem::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextItem::event_map->bigin();
 	if ((itr = DummyQTextItem::event_map->find(str)) == DummyQTextItem::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -118,8 +118,8 @@ bool DummyQTextItem::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTextItem::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextItem::slot_map->bigin();
-	if ((itr = DummyQTextItem::event_map->find(str)) == DummyQTextItem::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTextItem::slot_map->find(str)) == DummyQTextItem::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -128,9 +128,16 @@ bool DummyQTextItem::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQTextItem::connection(QObject *o)
+{
+	return;
+}
+
 KQTextItem::KQTextItem() : QTextItem()
 {
 	self = NULL;
+	dummy = new DummyQTextItem();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -146,14 +153,13 @@ KMETHOD QTextItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTextItem::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextItem]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTextItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -167,7 +173,7 @@ KMETHOD QTextItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTextItem::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextItem]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -187,6 +193,9 @@ static void QTextItem_free(CTX ctx, knh_RawPtr_t *p)
 static void QTextItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTextItem *qp = (KQTextItem *)p->rawptr;
 		(void)qp;
@@ -196,6 +205,12 @@ static void QTextItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QTextItem_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQTextItem::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQTextItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

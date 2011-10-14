@@ -4,7 +4,6 @@ KMETHOD QPen_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQPen *ret_v = new KQPen();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QPen_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::PenStyle style = Int_to(Qt::PenStyle, sfp[1]);
 	KQPen *ret_v = new KQPen(style);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -30,7 +28,6 @@ KMETHOD QPen_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QColor  color = *RawPtr_to(const QColor *, sfp[1]);
 	KQPen *ret_v = new KQPen(color);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -47,7 +44,6 @@ KMETHOD QPen_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::PenJoinStyle join = Int_to(Qt::PenJoinStyle, sfp[5]);
 	KQPen *ret_v = new KQPen(brush, width, style, cap, join);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -60,7 +56,6 @@ KMETHOD QPen_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPen  pen = *RawPtr_to(const QPen *, sfp[1]);
 	KQPen *ret_v = new KQPen(pen);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -360,7 +355,7 @@ bool DummyQPen::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPen::event_map->bigin();
 	if ((itr = DummyQPen::event_map->find(str)) == DummyQPen::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -371,8 +366,8 @@ bool DummyQPen::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQPen::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPen::slot_map->bigin();
-	if ((itr = DummyQPen::event_map->find(str)) == DummyQPen::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQPen::slot_map->find(str)) == DummyQPen::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -381,9 +376,16 @@ bool DummyQPen::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQPen::connection(QObject *o)
+{
+	return;
+}
+
 KQPen::KQPen() : QPen()
 {
 	self = NULL;
+	dummy = new DummyQPen();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPen_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -399,14 +401,13 @@ KMETHOD QPen_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQPen::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPen]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QPen_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -420,7 +421,7 @@ KMETHOD QPen_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQPen::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPen]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -440,6 +441,9 @@ static void QPen_free(CTX ctx, knh_RawPtr_t *p)
 static void QPen_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQPen *qp = (KQPen *)p->rawptr;
 		(void)qp;
@@ -449,6 +453,12 @@ static void QPen_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QPen_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QPen*>(p1->rawptr) == *static_cast<QPen*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQPen::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQPen(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

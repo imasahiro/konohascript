@@ -64,7 +64,7 @@ bool DummyQAbstractTableModel::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractTableModel::event_map->bigin();
 	if ((itr = DummyQAbstractTableModel::event_map->find(str)) == DummyQAbstractTableModel::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractItemModel::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -76,8 +76,8 @@ bool DummyQAbstractTableModel::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQAbstractTableModel::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractTableModel::slot_map->bigin();
-	if ((itr = DummyQAbstractTableModel::event_map->find(str)) == DummyQAbstractTableModel::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAbstractTableModel::slot_map->find(str)) == DummyQAbstractTableModel::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractItemModel::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -87,9 +87,16 @@ bool DummyQAbstractTableModel::signalConnect(knh_Func_t *callback_func, string s
 }
 
 
+void DummyQAbstractTableModel::connection(QObject *o)
+{
+	DummyQAbstractItemModel::connection(o);
+}
+
 KQAbstractTableModel::KQAbstractTableModel(QObject* parent) : QAbstractTableModel(parent)
 {
 	self = NULL;
+	dummy = new DummyQAbstractTableModel();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractTableModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -105,14 +112,13 @@ KMETHOD QAbstractTableModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAbstractTableModel::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractTableModel]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAbstractTableModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -126,7 +132,7 @@ KMETHOD QAbstractTableModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAbstractTableModel::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractTableModel]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -146,6 +152,9 @@ static void QAbstractTableModel_free(CTX ctx, knh_RawPtr_t *p)
 static void QAbstractTableModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAbstractTableModel *qp = (KQAbstractTableModel *)p->rawptr;
 		(void)qp;
@@ -157,9 +166,15 @@ static int QAbstractTableModel_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQAbstractTableModel::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQAbstractTableModel::event(QEvent *event)
 {
-	if (!DummyQAbstractTableModel::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QAbstractTableModel::event(event);
 		return false;
 	}

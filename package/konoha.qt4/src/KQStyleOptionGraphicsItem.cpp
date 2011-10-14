@@ -4,7 +4,6 @@ KMETHOD QStyleOptionGraphicsItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQStyleOptionGraphicsItem *ret_v = new KQStyleOptionGraphicsItem();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QStyleOptionGraphicsItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionGraphicsItem  other = *RawPtr_to(const QStyleOptionGraphicsItem *, sfp[1]);
 	KQStyleOptionGraphicsItem *ret_v = new KQStyleOptionGraphicsItem(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -65,7 +63,7 @@ bool DummyQStyleOptionGraphicsItem::addEvent(knh_Func_t *callback_func, string s
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionGraphicsItem::event_map->bigin();
 	if ((itr = DummyQStyleOptionGraphicsItem::event_map->find(str)) == DummyQStyleOptionGraphicsItem::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQStyleOption::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -77,8 +75,8 @@ bool DummyQStyleOptionGraphicsItem::addEvent(knh_Func_t *callback_func, string s
 bool DummyQStyleOptionGraphicsItem::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionGraphicsItem::slot_map->bigin();
-	if ((itr = DummyQStyleOptionGraphicsItem::event_map->find(str)) == DummyQStyleOptionGraphicsItem::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStyleOptionGraphicsItem::slot_map->find(str)) == DummyQStyleOptionGraphicsItem::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQStyleOption::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -88,9 +86,16 @@ bool DummyQStyleOptionGraphicsItem::signalConnect(knh_Func_t *callback_func, str
 }
 
 
+void DummyQStyleOptionGraphicsItem::connection(QObject *o)
+{
+	DummyQStyleOption::connection(o);
+}
+
 KQStyleOptionGraphicsItem::KQStyleOptionGraphicsItem() : QStyleOptionGraphicsItem()
 {
 	self = NULL;
+	dummy = new DummyQStyleOptionGraphicsItem();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionGraphicsItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -106,14 +111,13 @@ KMETHOD QStyleOptionGraphicsItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStyleOptionGraphicsItem::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionGraphicsItem]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStyleOptionGraphicsItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -127,7 +131,7 @@ KMETHOD QStyleOptionGraphicsItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStyleOptionGraphicsItem::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionGraphicsItem]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -147,6 +151,9 @@ static void QStyleOptionGraphicsItem_free(CTX ctx, knh_RawPtr_t *p)
 static void QStyleOptionGraphicsItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStyleOptionGraphicsItem *qp = (KQStyleOptionGraphicsItem *)p->rawptr;
 		(void)qp;
@@ -156,6 +163,12 @@ static void QStyleOptionGraphicsItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QStyleOptionGraphicsItem_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQStyleOptionGraphicsItem::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStyleOptionGraphicsItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -105,7 +105,6 @@ KMETHOD QGraphicsRectItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsItem*  parent = RawPtr_to(QGraphicsItem*, sfp[1]);
 	KQGraphicsRectItem *ret_v = new KQGraphicsRectItem(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -119,7 +118,6 @@ KMETHOD QGraphicsRectItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsItem*  parent = RawPtr_to(QGraphicsItem*, sfp[2]);
 	KQGraphicsRectItem *ret_v = new KQGraphicsRectItem(rect, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -136,7 +134,6 @@ KMETHOD QGraphicsRectItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsItem*  parent = RawPtr_to(QGraphicsItem*, sfp[5]);
 	KQGraphicsRectItem *ret_v = new KQGraphicsRectItem(x, y, width, height, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -213,7 +210,7 @@ bool DummyQGraphicsRectItem::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsRectItem::event_map->bigin();
 	if ((itr = DummyQGraphicsRectItem::event_map->find(str)) == DummyQGraphicsRectItem::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractGraphicsShapeItem::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -225,8 +222,8 @@ bool DummyQGraphicsRectItem::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGraphicsRectItem::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsRectItem::slot_map->bigin();
-	if ((itr = DummyQGraphicsRectItem::event_map->find(str)) == DummyQGraphicsRectItem::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsRectItem::slot_map->find(str)) == DummyQGraphicsRectItem::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractGraphicsShapeItem::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -236,9 +233,16 @@ bool DummyQGraphicsRectItem::signalConnect(knh_Func_t *callback_func, string str
 }
 
 
+void DummyQGraphicsRectItem::connection(QObject *o)
+{
+	DummyQAbstractGraphicsShapeItem::connection(o);
+}
+
 KQGraphicsRectItem::KQGraphicsRectItem(QGraphicsItem* parent) : QGraphicsRectItem(parent)
 {
 	self = NULL;
+	dummy = new DummyQGraphicsRectItem();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsRectItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -254,14 +258,13 @@ KMETHOD QGraphicsRectItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsRectItem::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsRectItem]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsRectItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -275,7 +278,7 @@ KMETHOD QGraphicsRectItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsRectItem::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsRectItem]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -295,6 +298,9 @@ static void QGraphicsRectItem_free(CTX ctx, knh_RawPtr_t *p)
 static void QGraphicsRectItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsRectItem *qp = (KQGraphicsRectItem *)p->rawptr;
 		(void)qp;
@@ -304,6 +310,12 @@ static void QGraphicsRectItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QGraphicsRectItem_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQGraphicsRectItem::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQGraphicsRectItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

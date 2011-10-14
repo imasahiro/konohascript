@@ -5,7 +5,6 @@ KMETHOD QErrorMessage_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQErrorMessage *ret_v = new KQErrorMessage(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -79,7 +78,7 @@ bool DummyQErrorMessage::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQErrorMessage::event_map->bigin();
 	if ((itr = DummyQErrorMessage::event_map->find(str)) == DummyQErrorMessage::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQDialog::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -91,8 +90,8 @@ bool DummyQErrorMessage::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQErrorMessage::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQErrorMessage::slot_map->bigin();
-	if ((itr = DummyQErrorMessage::event_map->find(str)) == DummyQErrorMessage::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQErrorMessage::slot_map->find(str)) == DummyQErrorMessage::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQDialog::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -102,9 +101,16 @@ bool DummyQErrorMessage::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQErrorMessage::connection(QObject *o)
+{
+	DummyQDialog::connection(o);
+}
+
 KQErrorMessage::KQErrorMessage(QWidget* parent) : QErrorMessage(parent)
 {
 	self = NULL;
+	dummy = new DummyQErrorMessage();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QErrorMessage_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -120,14 +126,13 @@ KMETHOD QErrorMessage_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQErrorMessage::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QErrorMessage]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QErrorMessage_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -141,7 +146,7 @@ KMETHOD QErrorMessage_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQErrorMessage::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QErrorMessage]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -161,6 +166,9 @@ static void QErrorMessage_free(CTX ctx, knh_RawPtr_t *p)
 static void QErrorMessage_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQErrorMessage *qp = (KQErrorMessage *)p->rawptr;
 		(void)qp;
@@ -172,9 +180,15 @@ static int QErrorMessage_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQErrorMessage::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQErrorMessage::event(QEvent *event)
 {
-	if (!DummyQErrorMessage::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QErrorMessage::event(event);
 		return false;
 	}

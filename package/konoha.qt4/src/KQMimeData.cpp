@@ -4,7 +4,6 @@ KMETHOD QMimeData_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQMimeData *ret_v = new KQMimeData();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -315,7 +314,7 @@ bool DummyQMimeData::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMimeData::event_map->bigin();
 	if ((itr = DummyQMimeData::event_map->find(str)) == DummyQMimeData::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -327,8 +326,8 @@ bool DummyQMimeData::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQMimeData::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMimeData::slot_map->bigin();
-	if ((itr = DummyQMimeData::event_map->find(str)) == DummyQMimeData::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQMimeData::slot_map->find(str)) == DummyQMimeData::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -338,9 +337,16 @@ bool DummyQMimeData::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQMimeData::connection(QObject *o)
+{
+	DummyQObject::connection(o);
+}
+
 KQMimeData::KQMimeData() : QMimeData()
 {
 	self = NULL;
+	dummy = new DummyQMimeData();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMimeData_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -356,14 +362,13 @@ KMETHOD QMimeData_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQMimeData::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMimeData]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QMimeData_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -377,7 +382,7 @@ KMETHOD QMimeData_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQMimeData::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMimeData]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -397,6 +402,9 @@ static void QMimeData_free(CTX ctx, knh_RawPtr_t *p)
 static void QMimeData_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQMimeData *qp = (KQMimeData *)p->rawptr;
 		(void)qp;
@@ -408,9 +416,15 @@ static int QMimeData_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQMimeData::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQMimeData::event(QEvent *event)
 {
-	if (!DummyQMimeData::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QMimeData::event(event);
 		return false;
 	}

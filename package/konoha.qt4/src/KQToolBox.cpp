@@ -6,7 +6,6 @@ KMETHOD QToolBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[2]);
 	KQToolBox *ret_v = new KQToolBox(parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -298,8 +297,10 @@ KMETHOD QToolBox_setCurrentWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQToolBox::DummyQToolBox()
 {
 	self = NULL;
+	current_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("current-changed", NULL));
 }
 
 void DummyQToolBox::setSelf(knh_RawPtr_t *ptr)
@@ -319,11 +320,24 @@ bool DummyQToolBox::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQToolBox::currentChangedSlot(int index)
+{
+	if (current_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = index;
+		knh_Func_invoke(lctx, current_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQToolBox::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQToolBox::event_map->bigin();
 	if ((itr = DummyQToolBox::event_map->find(str)) == DummyQToolBox::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQFrame::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -335,20 +349,29 @@ bool DummyQToolBox::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQToolBox::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQToolBox::slot_map->bigin();
-	if ((itr = DummyQToolBox::event_map->find(str)) == DummyQToolBox::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQToolBox::slot_map->find(str)) == DummyQToolBox::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQFrame::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		current_changed_func = (*slot_map)["current-changed"];
 		return true;
 	}
 }
 
 
+void DummyQToolBox::connection(QObject *o)
+{
+	connect(o, SIGNAL(currentChanged(int)), this, SLOT(currentChangedSlot(int)));
+	DummyQFrame::connection(o);
+}
+
 KQToolBox::KQToolBox(QWidget* parent, Qt::WindowFlags f) : QToolBox(parent, f)
 {
 	self = NULL;
+	dummy = new DummyQToolBox();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QToolBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -364,14 +387,13 @@ KMETHOD QToolBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQToolBox::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QToolBox]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QToolBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -385,7 +407,7 @@ KMETHOD QToolBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQToolBox::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QToolBox]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -404,10 +426,17 @@ static void QToolBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QToolBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQToolBox *qp = (KQToolBox *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->current_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->current_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -416,9 +445,15 @@ static int QToolBox_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQToolBox::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQToolBox::event(QEvent *event)
 {
-	if (!DummyQToolBox::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QToolBox::event(event);
 		return false;
 	}

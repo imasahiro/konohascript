@@ -9,7 +9,6 @@ KMETHOD QDragEnterEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::KeyboardModifiers modifiers = Int_to(Qt::KeyboardModifiers, sfp[5]);
 	KQDragEnterEvent *ret_v = new KQDragEnterEvent(point, actions, data, buttons, modifiers);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -43,7 +42,7 @@ bool DummyQDragEnterEvent::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDragEnterEvent::event_map->bigin();
 	if ((itr = DummyQDragEnterEvent::event_map->find(str)) == DummyQDragEnterEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQDragMoveEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -55,8 +54,8 @@ bool DummyQDragEnterEvent::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDragEnterEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDragEnterEvent::slot_map->bigin();
-	if ((itr = DummyQDragEnterEvent::event_map->find(str)) == DummyQDragEnterEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDragEnterEvent::slot_map->find(str)) == DummyQDragEnterEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQDragMoveEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -66,9 +65,16 @@ bool DummyQDragEnterEvent::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQDragEnterEvent::connection(QObject *o)
+{
+	DummyQDragMoveEvent::connection(o);
+}
+
 KQDragEnterEvent::KQDragEnterEvent(const QPoint point, Qt::DropActions actions, const QMimeData* data, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers) : QDragEnterEvent(point, actions, data, buttons, modifiers)
 {
 	self = NULL;
+	dummy = new DummyQDragEnterEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDragEnterEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -84,14 +90,13 @@ KMETHOD QDragEnterEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDragEnterEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDragEnterEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDragEnterEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -105,7 +110,7 @@ KMETHOD QDragEnterEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDragEnterEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDragEnterEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -125,6 +130,9 @@ static void QDragEnterEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QDragEnterEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDragEnterEvent *qp = (KQDragEnterEvent *)p->rawptr;
 		(void)qp;
@@ -134,6 +142,12 @@ static void QDragEnterEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QDragEnterEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQDragEnterEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQDragEnterEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

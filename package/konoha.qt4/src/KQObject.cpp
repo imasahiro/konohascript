@@ -5,7 +5,6 @@ KMETHOD QObject_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQObject *ret_v = new KQObject(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -439,11 +438,13 @@ DummyQObject::DummyQObject()
 	child_event_func = NULL;
 	custom_event_func = NULL;
 	timer_event_func = NULL;
+	destroyed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	event_map->insert(map<string, knh_Func_t *>::value_type("child-event", NULL));
 	event_map->insert(map<string, knh_Func_t *>::value_type("custom-event", NULL));
 	event_map->insert(map<string, knh_Func_t *>::value_type("timer-event", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("destroyed", NULL));
 }
 
 void DummyQObject::setSelf(knh_RawPtr_t *ptr)
@@ -455,12 +456,12 @@ bool DummyQObject::eventDispatcher(QEvent *event)
 {
 	bool ret = true;
 	switch (event->type()) {
-		ret = childEvent(dynamic_cast<QChildEvent*>(event));
+		ret = childEventDummy(dynamic_cast<QChildEvent*>(event));
 		break;
-		ret = customEvent(dynamic_cast<QEvent*>(event));
+		ret = customEventDummy(dynamic_cast<QEvent*>(event));
 		break;
 	case QEvent::Timer:
-		ret = timerEvent(dynamic_cast<QTimerEvent*>(event));
+		ret = timerEventDummy(dynamic_cast<QTimerEvent*>(event));
 		break;
 	default:
 		ret = false;
@@ -469,7 +470,7 @@ bool DummyQObject::eventDispatcher(QEvent *event)
 	return ret;
 }
 
-bool DummyQObject::childEvent(QChildEvent* event)
+bool DummyQObject::childEventDummy(QChildEvent* event)
 {
 	if (child_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -483,7 +484,7 @@ bool DummyQObject::childEvent(QChildEvent* event)
 	return false;
 }
 
-bool DummyQObject::customEvent(QEvent* event)
+bool DummyQObject::customEventDummy(QEvent* event)
 {
 	if (custom_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -497,7 +498,7 @@ bool DummyQObject::customEvent(QEvent* event)
 	return false;
 }
 
-bool DummyQObject::timerEvent(QTimerEvent* event)
+bool DummyQObject::timerEventDummy(QTimerEvent* event)
 {
 	if (timer_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -511,11 +512,25 @@ bool DummyQObject::timerEvent(QTimerEvent* event)
 	return false;
 }
 
+bool DummyQObject::destroyedSlot(QObject* obj)
+{
+	if (destroyed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QObject, obj);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, destroyed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQObject::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQObject::event_map->bigin();
 	if ((itr = DummyQObject::event_map->find(str)) == DummyQObject::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -529,19 +544,28 @@ bool DummyQObject::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQObject::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQObject::slot_map->bigin();
-	if ((itr = DummyQObject::event_map->find(str)) == DummyQObject::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQObject::slot_map->find(str)) == DummyQObject::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		destroyed_func = (*slot_map)["destroyed"];
 		return true;
 	}
 }
 
 
+void DummyQObject::connection(QObject *o)
+{
+	connect(o, SIGNAL(destroyed(QObject*)), this, SLOT(destroyedSlot(QObject*)));
+	return;
+}
+
 KQObject::KQObject(QObject* parent) : QObject(parent)
 {
 	self = NULL;
+	dummy = new DummyQObject();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QObject_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -557,14 +581,13 @@ KMETHOD QObject_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQObject::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QObject]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QObject_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -578,7 +601,7 @@ KMETHOD QObject_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQObject::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QObject]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -598,19 +621,26 @@ static void QObject_free(CTX ctx, knh_RawPtr_t *p)
 static void QObject_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQObject *qp = (KQObject *)p->rawptr;
 //		(void)qp;
-		if (qp->child_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->child_event_func);
+		if (qp->dummy->child_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->child_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->custom_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->custom_event_func);
+		if (qp->dummy->custom_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->custom_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->timer_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->timer_event_func);
+		if (qp->dummy->timer_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->timer_event_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->destroyed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->destroyed_func);
 			KNH_SIZEREF(ctx);
 		}
 	}
@@ -621,9 +651,15 @@ static int QObject_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQObject::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQObject::event(QEvent *event)
 {
-	if (!DummyQObject::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QObject::event(event);
 		return false;
 	}

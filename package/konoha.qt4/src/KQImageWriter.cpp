@@ -4,7 +4,6 @@ KMETHOD QImageWriter_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQImageWriter *ret_v = new KQImageWriter();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -18,7 +17,6 @@ KMETHOD QImageWriter_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QByteArray  format = *RawPtr_to(const QByteArray *, sfp[2]);
 	KQImageWriter *ret_v = new KQImageWriter(device, format);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -32,7 +30,6 @@ KMETHOD QImageWriter_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QByteArray  format = *RawPtr_to(const QByteArray *, sfp[2]);
 	KQImageWriter *ret_v = new KQImageWriter(fileName, format);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -322,7 +319,7 @@ bool DummyQImageWriter::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQImageWriter::event_map->bigin();
 	if ((itr = DummyQImageWriter::event_map->find(str)) == DummyQImageWriter::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -333,8 +330,8 @@ bool DummyQImageWriter::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQImageWriter::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQImageWriter::slot_map->bigin();
-	if ((itr = DummyQImageWriter::event_map->find(str)) == DummyQImageWriter::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQImageWriter::slot_map->find(str)) == DummyQImageWriter::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -343,9 +340,16 @@ bool DummyQImageWriter::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQImageWriter::connection(QObject *o)
+{
+	return;
+}
+
 KQImageWriter::KQImageWriter() : QImageWriter()
 {
 	self = NULL;
+	dummy = new DummyQImageWriter();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QImageWriter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -361,14 +365,13 @@ KMETHOD QImageWriter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQImageWriter::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QImageWriter]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QImageWriter_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -382,7 +385,7 @@ KMETHOD QImageWriter_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQImageWriter::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QImageWriter]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -402,6 +405,9 @@ static void QImageWriter_free(CTX ctx, knh_RawPtr_t *p)
 static void QImageWriter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQImageWriter *qp = (KQImageWriter *)p->rawptr;
 		(void)qp;
@@ -411,6 +417,12 @@ static void QImageWriter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QImageWriter_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQImageWriter::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQImageWriter(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

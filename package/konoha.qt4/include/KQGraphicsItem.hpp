@@ -1,6 +1,7 @@
 #ifndef QGRAPHICSITEM
 #define QGRAPHICSITEM
 class DummyQGraphicsItem {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -27,34 +28,37 @@ public:
 	DummyQGraphicsItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
-	bool contextMenuEvent(QGraphicsSceneContextMenuEvent* event);
-	bool dragEnterEvent(QGraphicsSceneDragDropEvent* event);
-	bool dragLeaveEvent(QGraphicsSceneDragDropEvent* event);
-	bool dragMoveEvent(QGraphicsSceneDragDropEvent* event);
-	bool dropEvent(QGraphicsSceneDragDropEvent* event);
-	bool focusInEvent(QFocusEvent* event);
-	bool focusOutEvent(QFocusEvent* event);
-	bool hoverEnterEvent(QGraphicsSceneHoverEvent* event);
-	bool hoverLeaveEvent(QGraphicsSceneHoverEvent* event);
-	bool hoverMoveEvent(QGraphicsSceneHoverEvent* event);
-	bool inputMethodEvent(QInputMethodEvent* event);
-	bool keyPressEvent(QKeyEvent* event);
-	bool keyReleaseEvent(QKeyEvent* event);
-	bool mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event);
-	bool mouseMoveEvent(QGraphicsSceneMouseEvent* event);
-	bool mousePressEvent(QGraphicsSceneMouseEvent* event);
-	bool mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
-	bool sceneEvent(QEvent* event);
-	bool wheelEvent(QGraphicsSceneWheelEvent* event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
+	bool contextMenuEventDummy(QGraphicsSceneContextMenuEvent* event);
+	bool dragEnterEventDummy(QGraphicsSceneDragDropEvent* event);
+	bool dragLeaveEventDummy(QGraphicsSceneDragDropEvent* event);
+	bool dragMoveEventDummy(QGraphicsSceneDragDropEvent* event);
+	bool dropEventDummy(QGraphicsSceneDragDropEvent* event);
+	bool focusInEventDummy(QFocusEvent* event);
+	bool focusOutEventDummy(QFocusEvent* event);
+	bool hoverEnterEventDummy(QGraphicsSceneHoverEvent* event);
+	bool hoverLeaveEventDummy(QGraphicsSceneHoverEvent* event);
+	bool hoverMoveEventDummy(QGraphicsSceneHoverEvent* event);
+	bool inputMethodEventDummy(QInputMethodEvent* event);
+	bool keyPressEventDummy(QKeyEvent* event);
+	bool keyReleaseEventDummy(QKeyEvent* event);
+	bool mouseDoubleClickEventDummy(QGraphicsSceneMouseEvent* event);
+	bool mouseMoveEventDummy(QGraphicsSceneMouseEvent* event);
+	bool mousePressEventDummy(QGraphicsSceneMouseEvent* event);
+	bool mouseReleaseEventDummy(QGraphicsSceneMouseEvent* event);
+	bool sceneEventDummy(QEvent* event);
+	bool wheelEventDummy(QGraphicsSceneWheelEvent* event);
 };
 
-class KQGraphicsItem : public QGraphicsItem, public DummyQGraphicsItem {
+class KQGraphicsItem : public QGraphicsItem {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQGraphicsItem *dummy;
 	KQGraphicsItem(QGraphicsItem* parent);
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QGRAPHICSITEM

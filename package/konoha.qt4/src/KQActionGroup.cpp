@@ -5,7 +5,6 @@ KMETHOD QActionGroup_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQActionGroup *ret_v = new KQActionGroup(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -196,8 +195,12 @@ KMETHOD QActionGroup_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQActionGroup::DummyQActionGroup()
 {
 	self = NULL;
+	hovered_func = NULL;
+	triggered_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("hovered", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("triggered", NULL));
 }
 
 void DummyQActionGroup::setSelf(knh_RawPtr_t *ptr)
@@ -217,11 +220,39 @@ bool DummyQActionGroup::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQActionGroup::hoveredSlot(QAction* action)
+{
+	if (hovered_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QAction, action);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, hovered_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQActionGroup::triggeredSlot(QAction* action)
+{
+	if (triggered_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QAction, action);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, triggered_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQActionGroup::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQActionGroup::event_map->bigin();
 	if ((itr = DummyQActionGroup::event_map->find(str)) == DummyQActionGroup::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -233,20 +264,31 @@ bool DummyQActionGroup::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQActionGroup::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQActionGroup::slot_map->bigin();
-	if ((itr = DummyQActionGroup::event_map->find(str)) == DummyQActionGroup::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQActionGroup::slot_map->find(str)) == DummyQActionGroup::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		hovered_func = (*slot_map)["hovered"];
+		triggered_func = (*slot_map)["triggered"];
 		return true;
 	}
 }
 
 
+void DummyQActionGroup::connection(QObject *o)
+{
+	connect(o, SIGNAL(hovered(QAction*)), this, SLOT(hoveredSlot(QAction*)));
+	connect(o, SIGNAL(triggered(QAction*)), this, SLOT(triggeredSlot(QAction*)));
+	DummyQObject::connection(o);
+}
+
 KQActionGroup::KQActionGroup(QObject* parent) : QActionGroup(parent)
 {
 	self = NULL;
+	dummy = new DummyQActionGroup();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QActionGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -262,14 +304,13 @@ KMETHOD QActionGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQActionGroup::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QActionGroup]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QActionGroup_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -283,7 +324,7 @@ KMETHOD QActionGroup_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQActionGroup::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QActionGroup]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -302,10 +343,21 @@ static void QActionGroup_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QActionGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQActionGroup *qp = (KQActionGroup *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->hovered_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->hovered_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->triggered_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->triggered_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -314,9 +366,15 @@ static int QActionGroup_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQActionGroup::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQActionGroup::event(QEvent *event)
 {
-	if (!DummyQActionGroup::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QActionGroup::event(event);
 		return false;
 	}

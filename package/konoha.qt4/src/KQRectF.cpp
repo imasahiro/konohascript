@@ -4,7 +4,6 @@ KMETHOD QRectF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQRectF *ret_v = new KQRectF();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -18,7 +17,6 @@ KMETHOD QRectF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QSizeF  size = *RawPtr_to(const QSizeF *, sfp[2]);
 	KQRectF *ret_v = new KQRectF(topLeft, size);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -32,7 +30,6 @@ KMETHOD QRectF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPointF  bottomRight = *RawPtr_to(const QPointF *, sfp[2]);
 	KQRectF *ret_v = new KQRectF(topLeft, bottomRight);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -48,7 +45,6 @@ KMETHOD QRectF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	qreal height = Float_to(qreal, sfp[4]);
 	KQRectF *ret_v = new KQRectF(x, y, width, height);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -61,7 +57,6 @@ KMETHOD QRectF_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 	KQRectF *ret_v = new KQRectF(rectangle);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -907,7 +902,7 @@ bool DummyQRectF::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQRectF::event_map->bigin();
 	if ((itr = DummyQRectF::event_map->find(str)) == DummyQRectF::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -918,8 +913,8 @@ bool DummyQRectF::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQRectF::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQRectF::slot_map->bigin();
-	if ((itr = DummyQRectF::event_map->find(str)) == DummyQRectF::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQRectF::slot_map->find(str)) == DummyQRectF::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -928,9 +923,16 @@ bool DummyQRectF::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQRectF::connection(QObject *o)
+{
+	return;
+}
+
 KQRectF::KQRectF() : QRectF()
 {
 	self = NULL;
+	dummy = new DummyQRectF();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QRectF_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -946,14 +948,13 @@ KMETHOD QRectF_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQRectF::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QRectF]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QRectF_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -967,7 +968,7 @@ KMETHOD QRectF_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQRectF::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QRectF]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -987,6 +988,9 @@ static void QRectF_free(CTX ctx, knh_RawPtr_t *p)
 static void QRectF_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQRectF *qp = (KQRectF *)p->rawptr;
 		(void)qp;
@@ -996,6 +1000,12 @@ static void QRectF_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QRectF_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQRectF::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQRectF(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -7,7 +7,6 @@ KMETHOD QDockWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[3]);
 	KQDockWidget *ret_v = new KQDockWidget(title, parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -21,7 +20,6 @@ KMETHOD QDockWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[2]);
 	KQDockWidget *ret_v = new KQDockWidget(parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -185,8 +183,18 @@ KMETHOD QDockWidget_getWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQDockWidget::DummyQDockWidget()
 {
 	self = NULL;
+	allowed_areas_changed_func = NULL;
+	dock_location_changed_func = NULL;
+	features_changed_func = NULL;
+	top_level_changed_func = NULL;
+	visibility_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("allowed-areas-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("dock-location-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("features-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("top-level-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("visibility-changed", NULL));
 }
 
 void DummyQDockWidget::setSelf(knh_RawPtr_t *ptr)
@@ -206,11 +214,76 @@ bool DummyQDockWidget::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQDockWidget::allowedAreasChangedSlot(Qt::DockWidgetAreas allowedAreas)
+{
+	if (allowed_areas_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = allowedAreas;
+		knh_Func_invoke(lctx, allowed_areas_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQDockWidget::dockLocationChangedSlot(Qt::DockWidgetArea area)
+{
+	if (dock_location_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = area;
+		knh_Func_invoke(lctx, dock_location_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQDockWidget::featuresChangedSlot(QDockWidget::DockWidgetFeatures features)
+{
+	if (features_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = features;
+		knh_Func_invoke(lctx, features_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQDockWidget::topLevelChangedSlot(bool topLevel)
+{
+	if (top_level_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = topLevel;
+		knh_Func_invoke(lctx, top_level_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQDockWidget::visibilityChangedSlot(bool visible)
+{
+	if (visibility_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = visible;
+		knh_Func_invoke(lctx, visibility_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQDockWidget::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDockWidget::event_map->bigin();
 	if ((itr = DummyQDockWidget::event_map->find(str)) == DummyQDockWidget::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -222,20 +295,37 @@ bool DummyQDockWidget::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDockWidget::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDockWidget::slot_map->bigin();
-	if ((itr = DummyQDockWidget::event_map->find(str)) == DummyQDockWidget::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDockWidget::slot_map->find(str)) == DummyQDockWidget::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		allowed_areas_changed_func = (*slot_map)["allowed-areas-changed"];
+		dock_location_changed_func = (*slot_map)["dock-location-changed"];
+		features_changed_func = (*slot_map)["features-changed"];
+		top_level_changed_func = (*slot_map)["top-level-changed"];
+		visibility_changed_func = (*slot_map)["visibility-changed"];
 		return true;
 	}
 }
 
 
+void DummyQDockWidget::connection(QObject *o)
+{
+	connect(o, SIGNAL(allowedAreasChanged(Qt::DockWidgetAreas)), this, SLOT(allowedAreasChangedSlot(Qt::DockWidgetAreas)));
+	connect(o, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(dockLocationChangedSlot(Qt::DockWidgetArea)));
+	connect(o, SIGNAL(featuresChanged(QDockWidget::DockWidgetFeatures)), this, SLOT(featuresChangedSlot(QDockWidget::DockWidgetFeatures)));
+	connect(o, SIGNAL(topLevelChanged(bool)), this, SLOT(topLevelChangedSlot(bool)));
+	connect(o, SIGNAL(visibilityChanged(bool)), this, SLOT(visibilityChangedSlot(bool)));
+	DummyQWidget::connection(o);
+}
+
 KQDockWidget::KQDockWidget(const QString title, QWidget* parent, Qt::WindowFlags flags) : QDockWidget(title, parent, flags)
 {
 	self = NULL;
+	dummy = new DummyQDockWidget();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDockWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -251,14 +341,13 @@ KMETHOD QDockWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDockWidget::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDockWidget]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDockWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -272,7 +361,7 @@ KMETHOD QDockWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDockWidget::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDockWidget]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -291,10 +380,33 @@ static void QDockWidget_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDockWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 5;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDockWidget *qp = (KQDockWidget *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->allowed_areas_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->allowed_areas_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->dock_location_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->dock_location_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->features_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->features_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->top_level_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->top_level_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->visibility_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->visibility_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -303,9 +415,15 @@ static int QDockWidget_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQDockWidget::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQDockWidget::event(QEvent *event)
 {
-	if (!DummyQDockWidget::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QDockWidget::event(event);
 		return false;
 	}

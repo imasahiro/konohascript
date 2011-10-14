@@ -4,7 +4,6 @@ KMETHOD QStyleOptionTabV3_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQStyleOptionTabV3 *ret_v = new KQStyleOptionTabV3();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QStyleOptionTabV3_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionTabV3  other = *RawPtr_to(const QStyleOptionTabV3 *, sfp[1]);
 	KQStyleOptionTabV3 *ret_v = new KQStyleOptionTabV3(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -30,7 +28,6 @@ KMETHOD QStyleOptionTabV3_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionTabV2  other = *RawPtr_to(const QStyleOptionTabV2 *, sfp[1]);
 	KQStyleOptionTabV3 *ret_v = new KQStyleOptionTabV3(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -43,7 +40,6 @@ KMETHOD QStyleOptionTabV3_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionTab  other = *RawPtr_to(const QStyleOptionTab *, sfp[1]);
 	KQStyleOptionTabV3 *ret_v = new KQStyleOptionTabV3(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -77,7 +73,7 @@ bool DummyQStyleOptionTabV3::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionTabV3::event_map->bigin();
 	if ((itr = DummyQStyleOptionTabV3::event_map->find(str)) == DummyQStyleOptionTabV3::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQStyleOptionTabV2::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -89,8 +85,8 @@ bool DummyQStyleOptionTabV3::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStyleOptionTabV3::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionTabV3::slot_map->bigin();
-	if ((itr = DummyQStyleOptionTabV3::event_map->find(str)) == DummyQStyleOptionTabV3::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStyleOptionTabV3::slot_map->find(str)) == DummyQStyleOptionTabV3::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQStyleOptionTabV2::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -100,9 +96,16 @@ bool DummyQStyleOptionTabV3::signalConnect(knh_Func_t *callback_func, string str
 }
 
 
+void DummyQStyleOptionTabV3::connection(QObject *o)
+{
+	DummyQStyleOptionTabV2::connection(o);
+}
+
 KQStyleOptionTabV3::KQStyleOptionTabV3() : QStyleOptionTabV3()
 {
 	self = NULL;
+	dummy = new DummyQStyleOptionTabV3();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionTabV3_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -118,14 +121,13 @@ KMETHOD QStyleOptionTabV3_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStyleOptionTabV3::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionTabV3]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStyleOptionTabV3_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,7 +141,7 @@ KMETHOD QStyleOptionTabV3_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStyleOptionTabV3::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionTabV3]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -159,6 +161,9 @@ static void QStyleOptionTabV3_free(CTX ctx, knh_RawPtr_t *p)
 static void QStyleOptionTabV3_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStyleOptionTabV3 *qp = (KQStyleOptionTabV3 *)p->rawptr;
 		(void)qp;
@@ -168,6 +173,12 @@ static void QStyleOptionTabV3_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QStyleOptionTabV3_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQStyleOptionTabV3::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStyleOptionTabV3(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

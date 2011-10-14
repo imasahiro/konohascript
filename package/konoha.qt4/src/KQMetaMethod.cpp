@@ -218,7 +218,7 @@ bool DummyQMetaMethod::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMetaMethod::event_map->bigin();
 	if ((itr = DummyQMetaMethod::event_map->find(str)) == DummyQMetaMethod::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -229,8 +229,8 @@ bool DummyQMetaMethod::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQMetaMethod::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMetaMethod::slot_map->bigin();
-	if ((itr = DummyQMetaMethod::event_map->find(str)) == DummyQMetaMethod::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQMetaMethod::slot_map->find(str)) == DummyQMetaMethod::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -239,9 +239,16 @@ bool DummyQMetaMethod::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQMetaMethod::connection(QObject *o)
+{
+	return;
+}
+
 KQMetaMethod::KQMetaMethod() : QMetaMethod()
 {
 	self = NULL;
+	dummy = new DummyQMetaMethod();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMetaMethod_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -257,14 +264,13 @@ KMETHOD QMetaMethod_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQMetaMethod::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMetaMethod]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QMetaMethod_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -278,7 +284,7 @@ KMETHOD QMetaMethod_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQMetaMethod::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMetaMethod]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -298,6 +304,9 @@ static void QMetaMethod_free(CTX ctx, knh_RawPtr_t *p)
 static void QMetaMethod_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQMetaMethod *qp = (KQMetaMethod *)p->rawptr;
 		(void)qp;
@@ -307,6 +316,12 @@ static void QMetaMethod_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QMetaMethod_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQMetaMethod::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQMetaMethod(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

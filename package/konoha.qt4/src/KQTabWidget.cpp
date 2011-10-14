@@ -35,7 +35,6 @@ KMETHOD QTabWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQTabWidget *ret_v = new KQTabWidget(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -596,8 +595,12 @@ KMETHOD QTabWidget_setCurrentWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQTabWidget::DummyQTabWidget()
 {
 	self = NULL;
+	current_changed_func = NULL;
+	tab_close_requested_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("current-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("tab-close-requested", NULL));
 }
 
 void DummyQTabWidget::setSelf(knh_RawPtr_t *ptr)
@@ -617,11 +620,37 @@ bool DummyQTabWidget::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQTabWidget::currentChangedSlot(int index)
+{
+	if (current_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = index;
+		knh_Func_invoke(lctx, current_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTabWidget::tabCloseRequestedSlot(int index)
+{
+	if (tab_close_requested_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = index;
+		knh_Func_invoke(lctx, tab_close_requested_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQTabWidget::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTabWidget::event_map->bigin();
 	if ((itr = DummyQTabWidget::event_map->find(str)) == DummyQTabWidget::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -633,20 +662,31 @@ bool DummyQTabWidget::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTabWidget::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTabWidget::slot_map->bigin();
-	if ((itr = DummyQTabWidget::event_map->find(str)) == DummyQTabWidget::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTabWidget::slot_map->find(str)) == DummyQTabWidget::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		current_changed_func = (*slot_map)["current-changed"];
+		tab_close_requested_func = (*slot_map)["tab-close-requested"];
 		return true;
 	}
 }
 
 
+void DummyQTabWidget::connection(QObject *o)
+{
+	connect(o, SIGNAL(currentChanged(int)), this, SLOT(currentChangedSlot(int)));
+	connect(o, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequestedSlot(int)));
+	DummyQWidget::connection(o);
+}
+
 KQTabWidget::KQTabWidget(QWidget* parent) : QTabWidget(parent)
 {
 	self = NULL;
+	dummy = new DummyQTabWidget();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTabWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -662,14 +702,13 @@ KMETHOD QTabWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTabWidget::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTabWidget]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTabWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -683,7 +722,7 @@ KMETHOD QTabWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTabWidget::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTabWidget]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -702,10 +741,21 @@ static void QTabWidget_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTabWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTabWidget *qp = (KQTabWidget *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->current_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->current_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->tab_close_requested_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->tab_close_requested_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -714,9 +764,15 @@ static int QTabWidget_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQTabWidget::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQTabWidget::event(QEvent *event)
 {
-	if (!DummyQTabWidget::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QTabWidget::event(event);
 		return false;
 	}

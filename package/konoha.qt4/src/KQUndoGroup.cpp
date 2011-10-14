@@ -5,7 +5,6 @@ KMETHOD QUndoGroup_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQUndoGroup *ret_v = new KQUndoGroup(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -206,8 +205,22 @@ KMETHOD QUndoGroup_undo(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQUndoGroup::DummyQUndoGroup()
 {
 	self = NULL;
+	active_stack_changed_func = NULL;
+	can_redo_changed_func = NULL;
+	can_undo_changed_func = NULL;
+	clean_changed_func = NULL;
+	index_changed_func = NULL;
+	redo_text_changed_func = NULL;
+	undo_text_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("active-stack-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("can-redo-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("can-undo-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("clean-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("index-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("redo-text-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("undo-text-changed", NULL));
 }
 
 void DummyQUndoGroup::setSelf(knh_RawPtr_t *ptr)
@@ -227,11 +240,105 @@ bool DummyQUndoGroup::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQUndoGroup::activeStackChangedSlot(QUndoStack* stack)
+{
+	if (active_stack_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QUndoStack, stack);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, active_stack_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQUndoGroup::canRedoChangedSlot(bool canRedo)
+{
+	if (can_redo_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = canRedo;
+		knh_Func_invoke(lctx, can_redo_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQUndoGroup::canUndoChangedSlot(bool canUndo)
+{
+	if (can_undo_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = canUndo;
+		knh_Func_invoke(lctx, can_undo_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQUndoGroup::cleanChangedSlot(bool clean)
+{
+	if (clean_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = clean;
+		knh_Func_invoke(lctx, clean_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQUndoGroup::indexChangedSlot(int idx)
+{
+	if (index_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = idx;
+		knh_Func_invoke(lctx, index_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQUndoGroup::redoTextChangedSlot(const QString redoText)
+{
+	if (redo_text_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QString, redoText);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, redo_text_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQUndoGroup::undoTextChangedSlot(const QString undoText)
+{
+	if (undo_text_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QString, undoText);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, undo_text_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQUndoGroup::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQUndoGroup::event_map->bigin();
 	if ((itr = DummyQUndoGroup::event_map->find(str)) == DummyQUndoGroup::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -243,20 +350,41 @@ bool DummyQUndoGroup::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQUndoGroup::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQUndoGroup::slot_map->bigin();
-	if ((itr = DummyQUndoGroup::event_map->find(str)) == DummyQUndoGroup::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQUndoGroup::slot_map->find(str)) == DummyQUndoGroup::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		active_stack_changed_func = (*slot_map)["active-stack-changed"];
+		can_redo_changed_func = (*slot_map)["can-redo-changed"];
+		can_undo_changed_func = (*slot_map)["can-undo-changed"];
+		clean_changed_func = (*slot_map)["clean-changed"];
+		index_changed_func = (*slot_map)["index-changed"];
+		redo_text_changed_func = (*slot_map)["redo-text-changed"];
+		undo_text_changed_func = (*slot_map)["undo-text-changed"];
 		return true;
 	}
 }
 
 
+void DummyQUndoGroup::connection(QObject *o)
+{
+	connect(o, SIGNAL(activeStackChanged(QUndoStack*)), this, SLOT(activeStackChangedSlot(QUndoStack*)));
+	connect(o, SIGNAL(canRedoChanged(bool)), this, SLOT(canRedoChangedSlot(bool)));
+	connect(o, SIGNAL(canUndoChanged(bool)), this, SLOT(canUndoChangedSlot(bool)));
+	connect(o, SIGNAL(cleanChanged(bool)), this, SLOT(cleanChangedSlot(bool)));
+	connect(o, SIGNAL(indexChanged(int)), this, SLOT(indexChangedSlot(int)));
+	connect(o, SIGNAL(redoTextChanged(const QString)), this, SLOT(redoTextChangedSlot(const QString)));
+	connect(o, SIGNAL(undoTextChanged(const QString)), this, SLOT(undoTextChangedSlot(const QString)));
+	DummyQObject::connection(o);
+}
+
 KQUndoGroup::KQUndoGroup(QObject* parent) : QUndoGroup(parent)
 {
 	self = NULL;
+	dummy = new DummyQUndoGroup();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QUndoGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -272,14 +400,13 @@ KMETHOD QUndoGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQUndoGroup::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QUndoGroup]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QUndoGroup_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -293,7 +420,7 @@ KMETHOD QUndoGroup_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQUndoGroup::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QUndoGroup]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -312,10 +439,41 @@ static void QUndoGroup_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QUndoGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 7;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQUndoGroup *qp = (KQUndoGroup *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->active_stack_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->active_stack_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->can_redo_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->can_redo_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->can_undo_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->can_undo_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->clean_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->clean_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->index_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->index_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->redo_text_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->redo_text_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->undo_text_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->undo_text_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -324,9 +482,15 @@ static int QUndoGroup_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQUndoGroup::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQUndoGroup::event(QEvent *event)
 {
-	if (!DummyQUndoGroup::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QUndoGroup::event(event);
 		return false;
 	}

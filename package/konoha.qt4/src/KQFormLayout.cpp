@@ -153,7 +153,6 @@ KMETHOD QFormLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQFormLayout *ret_v = new KQFormLayout(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -675,7 +674,7 @@ bool DummyQFormLayout::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQFormLayout::event_map->bigin();
 	if ((itr = DummyQFormLayout::event_map->find(str)) == DummyQFormLayout::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQLayout::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -687,8 +686,8 @@ bool DummyQFormLayout::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQFormLayout::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQFormLayout::slot_map->bigin();
-	if ((itr = DummyQFormLayout::event_map->find(str)) == DummyQFormLayout::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQFormLayout::slot_map->find(str)) == DummyQFormLayout::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQLayout::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -698,9 +697,16 @@ bool DummyQFormLayout::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQFormLayout::connection(QObject *o)
+{
+	DummyQLayout::connection(o);
+}
+
 KQFormLayout::KQFormLayout(QWidget* parent) : QFormLayout(parent)
 {
 	self = NULL;
+	dummy = new DummyQFormLayout();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QFormLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -716,14 +722,13 @@ KMETHOD QFormLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQFormLayout::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QFormLayout]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QFormLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -737,7 +742,7 @@ KMETHOD QFormLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQFormLayout::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QFormLayout]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -757,6 +762,9 @@ static void QFormLayout_free(CTX ctx, knh_RawPtr_t *p)
 static void QFormLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQFormLayout *qp = (KQFormLayout *)p->rawptr;
 		(void)qp;
@@ -768,9 +776,15 @@ static int QFormLayout_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQFormLayout::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQFormLayout::event(QEvent *event)
 {
-	if (!DummyQFormLayout::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QFormLayout::event(event);
 		return false;
 	}

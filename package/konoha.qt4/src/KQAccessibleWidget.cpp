@@ -188,7 +188,6 @@ KMETHOD QAccessibleWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QString name = String_to(const QString, sfp[3]);
 	KQAccessibleWidget *ret_v = new KQAccessibleWidget(w, role, name);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -222,7 +221,7 @@ bool DummyQAccessibleWidget::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAccessibleWidget::event_map->bigin();
 	if ((itr = DummyQAccessibleWidget::event_map->find(str)) == DummyQAccessibleWidget::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAccessibleObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -234,8 +233,8 @@ bool DummyQAccessibleWidget::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQAccessibleWidget::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAccessibleWidget::slot_map->bigin();
-	if ((itr = DummyQAccessibleWidget::event_map->find(str)) == DummyQAccessibleWidget::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAccessibleWidget::slot_map->find(str)) == DummyQAccessibleWidget::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAccessibleObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -245,9 +244,16 @@ bool DummyQAccessibleWidget::signalConnect(knh_Func_t *callback_func, string str
 }
 
 
+void DummyQAccessibleWidget::connection(QObject *o)
+{
+	DummyQAccessibleObject::connection(o);
+}
+
 KQAccessibleWidget::KQAccessibleWidget(QWidget* w, QAccessibleWidget::Role role, const QString name) : QAccessibleWidget(w, role, name)
 {
 	self = NULL;
+	dummy = new DummyQAccessibleWidget();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAccessibleWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -263,14 +269,13 @@ KMETHOD QAccessibleWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAccessibleWidget::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAccessibleWidget]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAccessibleWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -284,7 +289,7 @@ KMETHOD QAccessibleWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAccessibleWidget::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAccessibleWidget]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -304,6 +309,9 @@ static void QAccessibleWidget_free(CTX ctx, knh_RawPtr_t *p)
 static void QAccessibleWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAccessibleWidget *qp = (KQAccessibleWidget *)p->rawptr;
 		(void)qp;
@@ -313,6 +321,12 @@ static void QAccessibleWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QAccessibleWidget_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQAccessibleWidget::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQAccessibleWidget(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

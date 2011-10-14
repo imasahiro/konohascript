@@ -5,7 +5,6 @@ KMETHOD QTimer_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQTimer *ret_v = new KQTimer(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -139,8 +138,10 @@ KMETHOD QTimer_stop(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQTimer::DummyQTimer()
 {
 	self = NULL;
+	timeout_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("timeout", NULL));
 }
 
 void DummyQTimer::setSelf(knh_RawPtr_t *ptr)
@@ -160,11 +161,23 @@ bool DummyQTimer::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQTimer::timeoutSlot()
+{
+	if (timeout_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, timeout_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQTimer::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTimer::event_map->bigin();
 	if ((itr = DummyQTimer::event_map->find(str)) == DummyQTimer::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -176,20 +189,29 @@ bool DummyQTimer::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTimer::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTimer::slot_map->bigin();
-	if ((itr = DummyQTimer::event_map->find(str)) == DummyQTimer::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTimer::slot_map->find(str)) == DummyQTimer::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		timeout_func = (*slot_map)["timeout"];
 		return true;
 	}
 }
 
 
+void DummyQTimer::connection(QObject *o)
+{
+	connect(o, SIGNAL(timeout()), this, SLOT(timeoutSlot()));
+	DummyQObject::connection(o);
+}
+
 KQTimer::KQTimer(QObject* parent) : QTimer(parent)
 {
 	self = NULL;
+	dummy = new DummyQTimer();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTimer_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -205,14 +227,13 @@ KMETHOD QTimer_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTimer::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTimer]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTimer_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -226,7 +247,7 @@ KMETHOD QTimer_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTimer::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTimer]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -245,10 +266,17 @@ static void QTimer_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTimer_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTimer *qp = (KQTimer *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->timeout_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->timeout_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -257,9 +285,15 @@ static int QTimer_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQTimer::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQTimer::event(QEvent *event)
 {
-	if (!DummyQTimer::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QTimer::event(event);
 		return false;
 	}

@@ -35,7 +35,6 @@ KMETHOD QMdiArea_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQMdiArea *ret_v = new KQMdiArea(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -379,8 +378,10 @@ KMETHOD QMdiArea_tileSubWindows(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQMdiArea::DummyQMdiArea()
 {
 	self = NULL;
+	sub_window_activated_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("sub-window-activated", NULL));
 }
 
 void DummyQMdiArea::setSelf(knh_RawPtr_t *ptr)
@@ -400,11 +401,25 @@ bool DummyQMdiArea::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQMdiArea::subWindowActivatedSlot(QMdiSubWindow* window)
+{
+	if (sub_window_activated_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QMdiSubWindow, window);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, sub_window_activated_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQMdiArea::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMdiArea::event_map->bigin();
 	if ((itr = DummyQMdiArea::event_map->find(str)) == DummyQMdiArea::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractScrollArea::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -416,20 +431,29 @@ bool DummyQMdiArea::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQMdiArea::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMdiArea::slot_map->bigin();
-	if ((itr = DummyQMdiArea::event_map->find(str)) == DummyQMdiArea::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQMdiArea::slot_map->find(str)) == DummyQMdiArea::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractScrollArea::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		sub_window_activated_func = (*slot_map)["sub-window-activated"];
 		return true;
 	}
 }
 
 
+void DummyQMdiArea::connection(QObject *o)
+{
+	connect(o, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(subWindowActivatedSlot(QMdiSubWindow*)));
+	DummyQAbstractScrollArea::connection(o);
+}
+
 KQMdiArea::KQMdiArea(QWidget* parent) : QMdiArea(parent)
 {
 	self = NULL;
+	dummy = new DummyQMdiArea();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMdiArea_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -445,14 +469,13 @@ KMETHOD QMdiArea_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQMdiArea::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMdiArea]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QMdiArea_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -466,7 +489,7 @@ KMETHOD QMdiArea_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQMdiArea::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMdiArea]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -485,10 +508,17 @@ static void QMdiArea_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMdiArea_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQMdiArea *qp = (KQMdiArea *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->sub_window_activated_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->sub_window_activated_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -497,9 +527,15 @@ static int QMdiArea_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQMdiArea::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQMdiArea::event(QEvent *event)
 {
-	if (!DummyQMdiArea::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QMdiArea::event(event);
 		return false;
 	}

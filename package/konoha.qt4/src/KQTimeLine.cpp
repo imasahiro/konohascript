@@ -6,7 +6,6 @@ KMETHOD QTimeLine_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[2]);
 	KQTimeLine *ret_v = new KQTimeLine(duration, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -378,8 +377,16 @@ KMETHOD QTimeLine_toggleDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQTimeLine::DummyQTimeLine()
 {
 	self = NULL;
+	finished_func = NULL;
+	frame_changed_func = NULL;
+	state_changed_func = NULL;
+	value_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("finished", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("frame-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("state-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("value-changed", NULL));
 }
 
 void DummyQTimeLine::setSelf(knh_RawPtr_t *ptr)
@@ -399,11 +406,63 @@ bool DummyQTimeLine::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQTimeLine::finishedSlot()
+{
+	if (finished_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, finished_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTimeLine::frameChangedSlot(int frame)
+{
+	if (frame_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = frame;
+		knh_Func_invoke(lctx, frame_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTimeLine::stateChangedSlot(QTimeLine::State new_State)
+{
+	if (state_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = new_State;
+		knh_Func_invoke(lctx, state_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTimeLine::valueChangedSlot(qreal value)
+{
+	if (value_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, qreal, value);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, value_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQTimeLine::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTimeLine::event_map->bigin();
 	if ((itr = DummyQTimeLine::event_map->find(str)) == DummyQTimeLine::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -415,20 +474,35 @@ bool DummyQTimeLine::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTimeLine::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTimeLine::slot_map->bigin();
-	if ((itr = DummyQTimeLine::event_map->find(str)) == DummyQTimeLine::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTimeLine::slot_map->find(str)) == DummyQTimeLine::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		finished_func = (*slot_map)["finished"];
+		frame_changed_func = (*slot_map)["frame-changed"];
+		state_changed_func = (*slot_map)["state-changed"];
+		value_changed_func = (*slot_map)["value-changed"];
 		return true;
 	}
 }
 
 
+void DummyQTimeLine::connection(QObject *o)
+{
+	connect(o, SIGNAL(finished()), this, SLOT(finishedSlot()));
+	connect(o, SIGNAL(frameChanged(int)), this, SLOT(frameChangedSlot(int)));
+	connect(o, SIGNAL(stateChanged(QTimeLine::State)), this, SLOT(stateChangedSlot(QTimeLine::State)));
+	connect(o, SIGNAL(valueChanged(qreal)), this, SLOT(valueChangedSlot(qreal)));
+	DummyQObject::connection(o);
+}
+
 KQTimeLine::KQTimeLine(int duration, QObject* parent) : QTimeLine(duration, parent)
 {
 	self = NULL;
+	dummy = new DummyQTimeLine();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTimeLine_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -444,14 +518,13 @@ KMETHOD QTimeLine_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTimeLine::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTimeLine]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTimeLine_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -465,7 +538,7 @@ KMETHOD QTimeLine_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTimeLine::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTimeLine]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -484,10 +557,29 @@ static void QTimeLine_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTimeLine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTimeLine *qp = (KQTimeLine *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->finished_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->finished_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->frame_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->frame_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->state_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->state_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->value_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->value_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -496,9 +588,15 @@ static int QTimeLine_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQTimeLine::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQTimeLine::event(QEvent *event)
 {
-	if (!DummyQTimeLine::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QTimeLine::event(event);
 		return false;
 	}

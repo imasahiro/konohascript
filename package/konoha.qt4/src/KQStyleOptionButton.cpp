@@ -4,7 +4,6 @@ KMETHOD QStyleOptionButton_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQStyleOptionButton *ret_v = new KQStyleOptionButton();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QStyleOptionButton_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionButton  other = *RawPtr_to(const QStyleOptionButton *, sfp[1]);
 	KQStyleOptionButton *ret_v = new KQStyleOptionButton(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -51,7 +49,7 @@ bool DummyQStyleOptionButton::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionButton::event_map->bigin();
 	if ((itr = DummyQStyleOptionButton::event_map->find(str)) == DummyQStyleOptionButton::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQStyleOption::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -63,8 +61,8 @@ bool DummyQStyleOptionButton::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStyleOptionButton::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionButton::slot_map->bigin();
-	if ((itr = DummyQStyleOptionButton::event_map->find(str)) == DummyQStyleOptionButton::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStyleOptionButton::slot_map->find(str)) == DummyQStyleOptionButton::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQStyleOption::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -74,9 +72,16 @@ bool DummyQStyleOptionButton::signalConnect(knh_Func_t *callback_func, string st
 }
 
 
+void DummyQStyleOptionButton::connection(QObject *o)
+{
+	DummyQStyleOption::connection(o);
+}
+
 KQStyleOptionButton::KQStyleOptionButton() : QStyleOptionButton()
 {
 	self = NULL;
+	dummy = new DummyQStyleOptionButton();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionButton_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -92,14 +97,13 @@ KMETHOD QStyleOptionButton_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStyleOptionButton::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionButton]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStyleOptionButton_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -113,7 +117,7 @@ KMETHOD QStyleOptionButton_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStyleOptionButton::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionButton]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -133,6 +137,9 @@ static void QStyleOptionButton_free(CTX ctx, knh_RawPtr_t *p)
 static void QStyleOptionButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStyleOptionButton *qp = (KQStyleOptionButton *)p->rawptr;
 		(void)qp;
@@ -142,6 +149,12 @@ static void QStyleOptionButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QStyleOptionButton_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQStyleOptionButton::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStyleOptionButton(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

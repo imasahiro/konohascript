@@ -4,7 +4,6 @@ KMETHOD QFont_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQFont *ret_v = new KQFont();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -20,7 +19,6 @@ KMETHOD QFont_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	bool italic = Boolean_to(bool, sfp[4]);
 	KQFont *ret_v = new KQFont(family, pointSize, weight, italic);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -34,7 +32,6 @@ KMETHOD QFont_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QPaintDevice*  pd = RawPtr_to(QPaintDevice*, sfp[2]);
 	KQFont *ret_v = new KQFont(font, pd);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -47,7 +44,6 @@ KMETHOD QFont_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QFont  font = *RawPtr_to(const QFont *, sfp[1]);
 	KQFont *ret_v = new KQFont(font);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -789,7 +785,7 @@ bool DummyQFont::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQFont::event_map->bigin();
 	if ((itr = DummyQFont::event_map->find(str)) == DummyQFont::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -800,8 +796,8 @@ bool DummyQFont::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQFont::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQFont::slot_map->bigin();
-	if ((itr = DummyQFont::event_map->find(str)) == DummyQFont::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQFont::slot_map->find(str)) == DummyQFont::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -810,9 +806,16 @@ bool DummyQFont::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQFont::connection(QObject *o)
+{
+	return;
+}
+
 KQFont::KQFont() : QFont()
 {
 	self = NULL;
+	dummy = new DummyQFont();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QFont_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -828,14 +831,13 @@ KMETHOD QFont_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQFont::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QFont]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QFont_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -849,7 +851,7 @@ KMETHOD QFont_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQFont::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QFont]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -869,6 +871,9 @@ static void QFont_free(CTX ctx, knh_RawPtr_t *p)
 static void QFont_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQFont *qp = (KQFont *)p->rawptr;
 		(void)qp;
@@ -878,6 +883,12 @@ static void QFont_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QFont_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QFont*>(p1->rawptr) == *static_cast<QFont*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQFont::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQFont(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

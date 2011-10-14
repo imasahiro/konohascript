@@ -17,7 +17,6 @@ KMETHOD QGraphicsRotation_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQGraphicsRotation *ret_v = new KQGraphicsRotation(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -63,8 +62,14 @@ KMETHOD QGraphicsRotation_setAxis(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQGraphicsRotation::DummyQGraphicsRotation()
 {
 	self = NULL;
+	angle_changed_func = NULL;
+	axis_changed_func = NULL;
+	origin_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("angle-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("axis-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("origin-changed", NULL));
 }
 
 void DummyQGraphicsRotation::setSelf(knh_RawPtr_t *ptr)
@@ -84,11 +89,47 @@ bool DummyQGraphicsRotation::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQGraphicsRotation::angleChangedSlot()
+{
+	if (angle_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, angle_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQGraphicsRotation::axisChangedSlot()
+{
+	if (axis_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, axis_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQGraphicsRotation::originChangedSlot()
+{
+	if (origin_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, origin_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQGraphicsRotation::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsRotation::event_map->bigin();
 	if ((itr = DummyQGraphicsRotation::event_map->find(str)) == DummyQGraphicsRotation::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGraphicsTransform::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -100,20 +141,33 @@ bool DummyQGraphicsRotation::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGraphicsRotation::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsRotation::slot_map->bigin();
-	if ((itr = DummyQGraphicsRotation::event_map->find(str)) == DummyQGraphicsRotation::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsRotation::slot_map->find(str)) == DummyQGraphicsRotation::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGraphicsTransform::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		angle_changed_func = (*slot_map)["angle-changed"];
+		axis_changed_func = (*slot_map)["axis-changed"];
+		origin_changed_func = (*slot_map)["origin-changed"];
 		return true;
 	}
 }
 
 
+void DummyQGraphicsRotation::connection(QObject *o)
+{
+	connect(o, SIGNAL(angleChanged()), this, SLOT(angleChangedSlot()));
+	connect(o, SIGNAL(axisChanged()), this, SLOT(axisChangedSlot()));
+	connect(o, SIGNAL(originChanged()), this, SLOT(originChangedSlot()));
+	DummyQGraphicsTransform::connection(o);
+}
+
 KQGraphicsRotation::KQGraphicsRotation(QObject* parent) : QGraphicsRotation(parent)
 {
 	self = NULL;
+	dummy = new DummyQGraphicsRotation();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsRotation_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -129,14 +183,13 @@ KMETHOD QGraphicsRotation_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsRotation::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsRotation]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsRotation_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -150,7 +203,7 @@ KMETHOD QGraphicsRotation_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsRotation::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsRotation]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -169,10 +222,25 @@ static void QGraphicsRotation_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsRotation_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 3;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsRotation *qp = (KQGraphicsRotation *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->angle_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->angle_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->axis_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->axis_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->origin_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->origin_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -181,9 +249,15 @@ static int QGraphicsRotation_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQGraphicsRotation::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQGraphicsRotation::event(QEvent *event)
 {
-	if (!DummyQGraphicsRotation::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QGraphicsRotation::event(event);
 		return false;
 	}

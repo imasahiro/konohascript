@@ -113,7 +113,6 @@ KMETHOD QProcess_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQProcess *ret_v = new KQProcess(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -486,8 +485,20 @@ KMETHOD QProcess_terminate(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQProcess::DummyQProcess()
 {
 	self = NULL;
+	error_func = NULL;
+	finished_func = NULL;
+	ready_read_standard_error_func = NULL;
+	ready_read_standard_output_func = NULL;
+	started_func = NULL;
+	state_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("error", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("finished", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("ready-read-standard-error", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("ready-read-standard-output", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("started", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("state-changed", NULL));
 }
 
 void DummyQProcess::setSelf(knh_RawPtr_t *ptr)
@@ -507,11 +518,87 @@ bool DummyQProcess::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQProcess::errorSlot(QProcess::ProcessError error)
+{
+	if (error_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = error;
+		knh_Func_invoke(lctx, error_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQProcess::finishedSlot(int exitCode, QProcess::ExitStatus exitStatus)
+{
+	if (finished_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = exitCode;
+		lsfp[K_CALLDELTA+3].ivalue = exitStatus;
+		knh_Func_invoke(lctx, finished_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQProcess::readyReadStandardErrorSlot()
+{
+	if (ready_read_standard_error_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, ready_read_standard_error_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQProcess::readyReadStandardOutputSlot()
+{
+	if (ready_read_standard_output_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, ready_read_standard_output_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQProcess::startedSlot()
+{
+	if (started_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, started_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQProcess::stateChangedSlot(QProcess::ProcessState new_State)
+{
+	if (state_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = new_State;
+		knh_Func_invoke(lctx, state_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQProcess::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQProcess::event_map->bigin();
 	if ((itr = DummyQProcess::event_map->find(str)) == DummyQProcess::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQIODevice::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -523,20 +610,39 @@ bool DummyQProcess::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQProcess::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQProcess::slot_map->bigin();
-	if ((itr = DummyQProcess::event_map->find(str)) == DummyQProcess::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQProcess::slot_map->find(str)) == DummyQProcess::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQIODevice::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		error_func = (*slot_map)["error"];
+		finished_func = (*slot_map)["finished"];
+		ready_read_standard_error_func = (*slot_map)["ready-read-standard-error"];
+		ready_read_standard_output_func = (*slot_map)["ready-read-standard-output"];
+		started_func = (*slot_map)["started"];
+		state_changed_func = (*slot_map)["state-changed"];
 		return true;
 	}
 }
 
 
+void DummyQProcess::connection(QObject *o)
+{
+	connect(o, SIGNAL(error(QProcess::ProcessError)), this, SLOT(errorSlot(QProcess::ProcessError)));
+	connect(o, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finishedSlot(int, QProcess::ExitStatus)));
+	connect(o, SIGNAL(readyReadStandardError()), this, SLOT(readyReadStandardErrorSlot()));
+	connect(o, SIGNAL(readyReadStandardOutput()), this, SLOT(readyReadStandardOutputSlot()));
+	connect(o, SIGNAL(started()), this, SLOT(startedSlot()));
+	connect(o, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(stateChangedSlot(QProcess::ProcessState)));
+	DummyQIODevice::connection(o);
+}
+
 KQProcess::KQProcess(QObject* parent) : QProcess(parent)
 {
 	self = NULL;
+	dummy = new DummyQProcess();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QProcess_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -552,14 +658,13 @@ KMETHOD QProcess_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQProcess::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QProcess]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QProcess_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -573,7 +678,7 @@ KMETHOD QProcess_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQProcess::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QProcess]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -592,10 +697,37 @@ static void QProcess_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QProcess_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 6;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQProcess *qp = (KQProcess *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->error_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->error_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->finished_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->finished_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->ready_read_standard_error_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->ready_read_standard_error_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->ready_read_standard_output_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->ready_read_standard_output_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->started_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->started_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->state_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->state_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -604,9 +736,15 @@ static int QProcess_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQProcess::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQProcess::event(QEvent *event)
 {
-	if (!DummyQProcess::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QProcess::event(event);
 		return false;
 	}

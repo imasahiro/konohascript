@@ -22,7 +22,6 @@ KMETHOD QTextBrowser_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQTextBrowser *ret_v = new KQTextBrowser(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -246,8 +245,18 @@ KMETHOD QTextBrowser_setSource(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQTextBrowser::DummyQTextBrowser()
 {
 	self = NULL;
+	anchor_clicked_func = NULL;
+	backward_available_func = NULL;
+	forward_available_func = NULL;
+	history_changed_func = NULL;
+	source_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("anchor-clicked", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("backward-available", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("forward-available", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("history-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("source-changed", NULL));
 }
 
 void DummyQTextBrowser::setSelf(knh_RawPtr_t *ptr)
@@ -267,11 +276,77 @@ bool DummyQTextBrowser::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQTextBrowser::anchorClickedSlot(const QUrl link)
+{
+	if (anchor_clicked_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QUrl, link);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, anchor_clicked_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextBrowser::backwardAvailableSlot(bool available)
+{
+	if (backward_available_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = available;
+		knh_Func_invoke(lctx, backward_available_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextBrowser::forwardAvailableSlot(bool available)
+{
+	if (forward_available_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = available;
+		knh_Func_invoke(lctx, forward_available_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextBrowser::historyChangedSlot()
+{
+	if (history_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, history_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextBrowser::sourceChangedSlot(const QUrl src)
+{
+	if (source_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QUrl, src);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, source_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQTextBrowser::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextBrowser::event_map->bigin();
 	if ((itr = DummyQTextBrowser::event_map->find(str)) == DummyQTextBrowser::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQTextEdit::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -283,20 +358,37 @@ bool DummyQTextBrowser::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTextBrowser::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextBrowser::slot_map->bigin();
-	if ((itr = DummyQTextBrowser::event_map->find(str)) == DummyQTextBrowser::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTextBrowser::slot_map->find(str)) == DummyQTextBrowser::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQTextEdit::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		anchor_clicked_func = (*slot_map)["anchor-clicked"];
+		backward_available_func = (*slot_map)["backward-available"];
+		forward_available_func = (*slot_map)["forward-available"];
+		history_changed_func = (*slot_map)["history-changed"];
+		source_changed_func = (*slot_map)["source-changed"];
 		return true;
 	}
 }
 
 
+void DummyQTextBrowser::connection(QObject *o)
+{
+	connect(o, SIGNAL(anchorClicked(const QUrl)), this, SLOT(anchorClickedSlot(const QUrl)));
+	connect(o, SIGNAL(backwardAvailable(bool)), this, SLOT(backwardAvailableSlot(bool)));
+	connect(o, SIGNAL(forwardAvailable(bool)), this, SLOT(forwardAvailableSlot(bool)));
+	connect(o, SIGNAL(historyChanged()), this, SLOT(historyChangedSlot()));
+	connect(o, SIGNAL(sourceChanged(const QUrl)), this, SLOT(sourceChangedSlot(const QUrl)));
+	DummyQTextEdit::connection(o);
+}
+
 KQTextBrowser::KQTextBrowser(QWidget* parent) : QTextBrowser(parent)
 {
 	self = NULL;
+	dummy = new DummyQTextBrowser();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextBrowser_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -312,14 +404,13 @@ KMETHOD QTextBrowser_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTextBrowser::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextBrowser]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTextBrowser_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -333,7 +424,7 @@ KMETHOD QTextBrowser_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTextBrowser::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextBrowser]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -352,10 +443,33 @@ static void QTextBrowser_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextBrowser_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 5;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTextBrowser *qp = (KQTextBrowser *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->anchor_clicked_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->anchor_clicked_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->backward_available_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->backward_available_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->forward_available_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->forward_available_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->history_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->history_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->source_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->source_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -364,9 +478,15 @@ static int QTextBrowser_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQTextBrowser::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQTextBrowser::event(QEvent *event)
 {
-	if (!DummyQTextBrowser::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QTextBrowser::event(event);
 		return false;
 	}

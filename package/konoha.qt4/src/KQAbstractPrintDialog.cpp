@@ -176,7 +176,7 @@ bool DummyQAbstractPrintDialog::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractPrintDialog::event_map->bigin();
 	if ((itr = DummyQAbstractPrintDialog::event_map->find(str)) == DummyQAbstractPrintDialog::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQDialog::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -188,8 +188,8 @@ bool DummyQAbstractPrintDialog::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQAbstractPrintDialog::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractPrintDialog::slot_map->bigin();
-	if ((itr = DummyQAbstractPrintDialog::event_map->find(str)) == DummyQAbstractPrintDialog::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAbstractPrintDialog::slot_map->find(str)) == DummyQAbstractPrintDialog::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQDialog::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -199,9 +199,16 @@ bool DummyQAbstractPrintDialog::signalConnect(knh_Func_t *callback_func, string 
 }
 
 
+void DummyQAbstractPrintDialog::connection(QObject *o)
+{
+	DummyQDialog::connection(o);
+}
+
 KQAbstractPrintDialog::KQAbstractPrintDialog(QPrinter* printer, QWidget* parent) : QAbstractPrintDialog(printer, parent)
 {
 	self = NULL;
+	dummy = new DummyQAbstractPrintDialog();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractPrintDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -217,14 +224,13 @@ KMETHOD QAbstractPrintDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAbstractPrintDialog::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractPrintDialog]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAbstractPrintDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -238,7 +244,7 @@ KMETHOD QAbstractPrintDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAbstractPrintDialog::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractPrintDialog]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -258,6 +264,9 @@ static void QAbstractPrintDialog_free(CTX ctx, knh_RawPtr_t *p)
 static void QAbstractPrintDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAbstractPrintDialog *qp = (KQAbstractPrintDialog *)p->rawptr;
 		(void)qp;
@@ -269,9 +278,15 @@ static int QAbstractPrintDialog_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQAbstractPrintDialog::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQAbstractPrintDialog::event(QEvent *event)
 {
-	if (!DummyQAbstractPrintDialog::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QAbstractPrintDialog::event(event);
 		return false;
 	}

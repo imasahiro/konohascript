@@ -4,7 +4,6 @@ KMETHOD QSize_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQSize *ret_v = new KQSize();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -18,7 +17,6 @@ KMETHOD QSize_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int height = Int_to(int, sfp[2]);
 	KQSize *ret_v = new KQSize(width, height);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -237,7 +235,7 @@ bool DummyQSize::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSize::event_map->bigin();
 	if ((itr = DummyQSize::event_map->find(str)) == DummyQSize::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -248,8 +246,8 @@ bool DummyQSize::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQSize::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSize::slot_map->bigin();
-	if ((itr = DummyQSize::event_map->find(str)) == DummyQSize::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQSize::slot_map->find(str)) == DummyQSize::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -258,9 +256,16 @@ bool DummyQSize::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQSize::connection(QObject *o)
+{
+	return;
+}
+
 KQSize::KQSize() : QSize()
 {
 	self = NULL;
+	dummy = new DummyQSize();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSize_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -276,14 +281,13 @@ KMETHOD QSize_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQSize::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSize]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QSize_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -297,7 +301,7 @@ KMETHOD QSize_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQSize::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSize]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -317,6 +321,9 @@ static void QSize_free(CTX ctx, knh_RawPtr_t *p)
 static void QSize_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQSize *qp = (KQSize *)p->rawptr;
 		(void)qp;
@@ -326,6 +333,12 @@ static void QSize_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QSize_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQSize::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQSize(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

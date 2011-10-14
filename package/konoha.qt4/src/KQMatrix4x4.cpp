@@ -4,7 +4,6 @@ KMETHOD QMatrix4x4_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQMatrix4x4 *ret_v = new KQMatrix4x4();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QMatrix4x4_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const qreal*  values = RawPtr_to(const qreal*, sfp[1]);
 	KQMatrix4x4 *ret_v = new KQMatrix4x4(values);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -45,7 +43,6 @@ KMETHOD QMatrix4x4_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	qreal m44 = Float_to(qreal, sfp[16]);
 	KQMatrix4x4 *ret_v = new KQMatrix4x4(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -58,7 +55,6 @@ KMETHOD QMatrix4x4_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QTransform  transform = *RawPtr_to(const QTransform *, sfp[1]);
 	KQMatrix4x4 *ret_v = new KQMatrix4x4(transform);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -71,7 +67,6 @@ KMETHOD QMatrix4x4_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QMatrix  matrix = *RawPtr_to(const QMatrix *, sfp[1]);
 	KQMatrix4x4 *ret_v = new KQMatrix4x4(matrix);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -558,7 +553,7 @@ bool DummyQMatrix4x4::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMatrix4x4::event_map->bigin();
 	if ((itr = DummyQMatrix4x4::event_map->find(str)) == DummyQMatrix4x4::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -569,8 +564,8 @@ bool DummyQMatrix4x4::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQMatrix4x4::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMatrix4x4::slot_map->bigin();
-	if ((itr = DummyQMatrix4x4::event_map->find(str)) == DummyQMatrix4x4::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQMatrix4x4::slot_map->find(str)) == DummyQMatrix4x4::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -579,9 +574,16 @@ bool DummyQMatrix4x4::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQMatrix4x4::connection(QObject *o)
+{
+	return;
+}
+
 KQMatrix4x4::KQMatrix4x4() : QMatrix4x4()
 {
 	self = NULL;
+	dummy = new DummyQMatrix4x4();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMatrix4x4_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -597,14 +599,13 @@ KMETHOD QMatrix4x4_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQMatrix4x4::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMatrix4x4]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QMatrix4x4_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -618,7 +619,7 @@ KMETHOD QMatrix4x4_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQMatrix4x4::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMatrix4x4]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -638,6 +639,9 @@ static void QMatrix4x4_free(CTX ctx, knh_RawPtr_t *p)
 static void QMatrix4x4_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQMatrix4x4 *qp = (KQMatrix4x4 *)p->rawptr;
 		(void)qp;
@@ -647,6 +651,12 @@ static void QMatrix4x4_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QMatrix4x4_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QMatrix4x4*>(p1->rawptr) == *static_cast<QMatrix4x4*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQMatrix4x4::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQMatrix4x4(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

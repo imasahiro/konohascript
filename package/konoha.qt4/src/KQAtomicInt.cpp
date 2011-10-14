@@ -5,7 +5,6 @@ KMETHOD QAtomicInt_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int value = Int_to(int, sfp[1]);
 	KQAtomicInt *ret_v = new KQAtomicInt(value);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -18,7 +17,6 @@ KMETHOD QAtomicInt_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QAtomicInt  other = *RawPtr_to(const QAtomicInt *, sfp[1]);
 	KQAtomicInt *ret_v = new KQAtomicInt(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -353,7 +351,7 @@ bool DummyQAtomicInt::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAtomicInt::event_map->bigin();
 	if ((itr = DummyQAtomicInt::event_map->find(str)) == DummyQAtomicInt::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -364,8 +362,8 @@ bool DummyQAtomicInt::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQAtomicInt::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAtomicInt::slot_map->bigin();
-	if ((itr = DummyQAtomicInt::event_map->find(str)) == DummyQAtomicInt::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAtomicInt::slot_map->find(str)) == DummyQAtomicInt::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -374,9 +372,16 @@ bool DummyQAtomicInt::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQAtomicInt::connection(QObject *o)
+{
+	return;
+}
+
 KQAtomicInt::KQAtomicInt(int value) : QAtomicInt(value)
 {
 	self = NULL;
+	dummy = new DummyQAtomicInt();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAtomicInt_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -392,14 +397,13 @@ KMETHOD QAtomicInt_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAtomicInt::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAtomicInt]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAtomicInt_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -413,7 +417,7 @@ KMETHOD QAtomicInt_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAtomicInt::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAtomicInt]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -433,6 +437,9 @@ static void QAtomicInt_free(CTX ctx, knh_RawPtr_t *p)
 static void QAtomicInt_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAtomicInt *qp = (KQAtomicInt *)p->rawptr;
 		(void)qp;
@@ -442,6 +449,12 @@ static void QAtomicInt_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QAtomicInt_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QAtomicInt*>(p1->rawptr) == *static_cast<QAtomicInt*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQAtomicInt::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQAtomicInt(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -4,7 +4,6 @@ KMETHOD QDateTime_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQDateTime *ret_v = new KQDateTime();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QDateTime_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QDate  date = *RawPtr_to(const QDate *, sfp[1]);
 	KQDateTime *ret_v = new KQDateTime(date);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -32,7 +30,6 @@ KMETHOD QDateTime_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::TimeSpec spec = Int_to(Qt::TimeSpec, sfp[3]);
 	KQDateTime *ret_v = new KQDateTime(date, time, spec);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -45,7 +42,6 @@ KMETHOD QDateTime_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QDateTime  other = *RawPtr_to(const QDateTime *, sfp[1]);
 	KQDateTime *ret_v = new KQDateTime(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -550,7 +546,7 @@ bool DummyQDateTime::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDateTime::event_map->bigin();
 	if ((itr = DummyQDateTime::event_map->find(str)) == DummyQDateTime::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -561,8 +557,8 @@ bool DummyQDateTime::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDateTime::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDateTime::slot_map->bigin();
-	if ((itr = DummyQDateTime::event_map->find(str)) == DummyQDateTime::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDateTime::slot_map->find(str)) == DummyQDateTime::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -571,9 +567,16 @@ bool DummyQDateTime::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQDateTime::connection(QObject *o)
+{
+	return;
+}
+
 KQDateTime::KQDateTime() : QDateTime()
 {
 	self = NULL;
+	dummy = new DummyQDateTime();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDateTime_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -589,14 +592,13 @@ KMETHOD QDateTime_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDateTime::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDateTime]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDateTime_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -610,7 +612,7 @@ KMETHOD QDateTime_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDateTime::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDateTime]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -630,6 +632,9 @@ static void QDateTime_free(CTX ctx, knh_RawPtr_t *p)
 static void QDateTime_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDateTime *qp = (KQDateTime *)p->rawptr;
 		(void)qp;
@@ -639,6 +644,12 @@ static void QDateTime_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QDateTime_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QDateTime*>(p1->rawptr) == *static_cast<QDateTime*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQDateTime::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQDateTime(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

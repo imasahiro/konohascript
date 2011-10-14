@@ -5,7 +5,6 @@ KMETHOD QShortcut_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQShortcut *ret_v = new KQShortcut(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -22,7 +21,6 @@ KMETHOD QShortcut_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::ShortcutContext context = Int_to(Qt::ShortcutContext, sfp[5]);
 	KQShortcut *ret_v = new KQShortcut(key, parent, member, ambiguousMember, context);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -186,8 +184,12 @@ KMETHOD QShortcut_getWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQShortcut::DummyQShortcut()
 {
 	self = NULL;
+	activated_func = NULL;
+	activated_ambiguously_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("activated", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("activated-ambiguously", NULL));
 }
 
 void DummyQShortcut::setSelf(knh_RawPtr_t *ptr)
@@ -207,11 +209,35 @@ bool DummyQShortcut::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQShortcut::activatedSlot()
+{
+	if (activated_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, activated_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQShortcut::activatedAmbiguouslySlot()
+{
+	if (activated_ambiguously_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, activated_ambiguously_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQShortcut::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQShortcut::event_map->bigin();
 	if ((itr = DummyQShortcut::event_map->find(str)) == DummyQShortcut::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -223,20 +249,31 @@ bool DummyQShortcut::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQShortcut::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQShortcut::slot_map->bigin();
-	if ((itr = DummyQShortcut::event_map->find(str)) == DummyQShortcut::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQShortcut::slot_map->find(str)) == DummyQShortcut::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		activated_func = (*slot_map)["activated"];
+		activated_ambiguously_func = (*slot_map)["activated-ambiguously"];
 		return true;
 	}
 }
 
 
+void DummyQShortcut::connection(QObject *o)
+{
+	connect(o, SIGNAL(activated()), this, SLOT(activatedSlot()));
+	connect(o, SIGNAL(activatedAmbiguously()), this, SLOT(activatedAmbiguouslySlot()));
+	DummyQObject::connection(o);
+}
+
 KQShortcut::KQShortcut(QWidget* parent) : QShortcut(parent)
 {
 	self = NULL;
+	dummy = new DummyQShortcut();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QShortcut_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -252,14 +289,13 @@ KMETHOD QShortcut_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQShortcut::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QShortcut]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QShortcut_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -273,7 +309,7 @@ KMETHOD QShortcut_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQShortcut::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QShortcut]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -292,10 +328,21 @@ static void QShortcut_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QShortcut_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQShortcut *qp = (KQShortcut *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->activated_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->activated_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->activated_ambiguously_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->activated_ambiguously_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -304,9 +351,15 @@ static int QShortcut_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQShortcut::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQShortcut::event(QEvent *event)
 {
-	if (!DummyQShortcut::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QShortcut::event(event);
 		return false;
 	}

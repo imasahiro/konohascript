@@ -96,7 +96,7 @@ bool DummyQDesktopServices::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDesktopServices::event_map->bigin();
 	if ((itr = DummyQDesktopServices::event_map->find(str)) == DummyQDesktopServices::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -107,8 +107,8 @@ bool DummyQDesktopServices::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDesktopServices::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDesktopServices::slot_map->bigin();
-	if ((itr = DummyQDesktopServices::event_map->find(str)) == DummyQDesktopServices::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDesktopServices::slot_map->find(str)) == DummyQDesktopServices::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -117,9 +117,16 @@ bool DummyQDesktopServices::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQDesktopServices::connection(QObject *o)
+{
+	return;
+}
+
 KQDesktopServices::KQDesktopServices() : QDesktopServices()
 {
 	self = NULL;
+	dummy = new DummyQDesktopServices();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDesktopServices_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -135,14 +142,13 @@ KMETHOD QDesktopServices_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDesktopServices::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDesktopServices]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDesktopServices_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -156,7 +162,7 @@ KMETHOD QDesktopServices_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDesktopServices::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDesktopServices]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -176,6 +182,9 @@ static void QDesktopServices_free(CTX ctx, knh_RawPtr_t *p)
 static void QDesktopServices_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDesktopServices *qp = (KQDesktopServices *)p->rawptr;
 		(void)qp;
@@ -185,6 +194,12 @@ static void QDesktopServices_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QDesktopServices_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQDesktopServices::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQDesktopServices(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

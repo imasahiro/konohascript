@@ -5,7 +5,6 @@ KMETHOD QGraphicsColorizeEffect_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQGraphicsColorizeEffect *ret_v = new KQGraphicsColorizeEffect(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -66,8 +65,12 @@ KMETHOD QGraphicsColorizeEffect_setStrength(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQGraphicsColorizeEffect::DummyQGraphicsColorizeEffect()
 {
 	self = NULL;
+	color_changed_func = NULL;
+	strength_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("color-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("strength-changed", NULL));
 }
 
 void DummyQGraphicsColorizeEffect::setSelf(knh_RawPtr_t *ptr)
@@ -87,11 +90,39 @@ bool DummyQGraphicsColorizeEffect::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQGraphicsColorizeEffect::colorChangedSlot(const QColor color)
+{
+	if (color_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QColor, color);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, color_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQGraphicsColorizeEffect::strengthChangedSlot(qreal strength)
+{
+	if (strength_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, qreal, strength);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, strength_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQGraphicsColorizeEffect::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsColorizeEffect::event_map->bigin();
 	if ((itr = DummyQGraphicsColorizeEffect::event_map->find(str)) == DummyQGraphicsColorizeEffect::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGraphicsEffect::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -103,20 +134,31 @@ bool DummyQGraphicsColorizeEffect::addEvent(knh_Func_t *callback_func, string st
 bool DummyQGraphicsColorizeEffect::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsColorizeEffect::slot_map->bigin();
-	if ((itr = DummyQGraphicsColorizeEffect::event_map->find(str)) == DummyQGraphicsColorizeEffect::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsColorizeEffect::slot_map->find(str)) == DummyQGraphicsColorizeEffect::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGraphicsEffect::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		color_changed_func = (*slot_map)["color-changed"];
+		strength_changed_func = (*slot_map)["strength-changed"];
 		return true;
 	}
 }
 
 
+void DummyQGraphicsColorizeEffect::connection(QObject *o)
+{
+	connect(o, SIGNAL(colorChanged(const QColor)), this, SLOT(colorChangedSlot(const QColor)));
+	connect(o, SIGNAL(strengthChanged(qreal)), this, SLOT(strengthChangedSlot(qreal)));
+	DummyQGraphicsEffect::connection(o);
+}
+
 KQGraphicsColorizeEffect::KQGraphicsColorizeEffect(QObject* parent) : QGraphicsColorizeEffect(parent)
 {
 	self = NULL;
+	dummy = new DummyQGraphicsColorizeEffect();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsColorizeEffect_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -132,14 +174,13 @@ KMETHOD QGraphicsColorizeEffect_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsColorizeEffect::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsColorizeEffect]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsColorizeEffect_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -153,7 +194,7 @@ KMETHOD QGraphicsColorizeEffect_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsColorizeEffect::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsColorizeEffect]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -172,10 +213,21 @@ static void QGraphicsColorizeEffect_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsColorizeEffect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsColorizeEffect *qp = (KQGraphicsColorizeEffect *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->color_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->color_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->strength_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->strength_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -184,9 +236,15 @@ static int QGraphicsColorizeEffect_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQGraphicsColorizeEffect::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQGraphicsColorizeEffect::event(QEvent *event)
 {
-	if (!DummyQGraphicsColorizeEffect::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QGraphicsColorizeEffect::event(event);
 		return false;
 	}

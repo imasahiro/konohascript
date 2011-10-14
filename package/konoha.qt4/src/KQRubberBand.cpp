@@ -6,7 +6,6 @@ KMETHOD QRubberBand_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  p = RawPtr_to(QWidget*, sfp[2]);
 	KQRubberBand *ret_v = new KQRubberBand(s, p);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -133,7 +132,7 @@ bool DummyQRubberBand::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQRubberBand::event_map->bigin();
 	if ((itr = DummyQRubberBand::event_map->find(str)) == DummyQRubberBand::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -145,8 +144,8 @@ bool DummyQRubberBand::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQRubberBand::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQRubberBand::slot_map->bigin();
-	if ((itr = DummyQRubberBand::event_map->find(str)) == DummyQRubberBand::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQRubberBand::slot_map->find(str)) == DummyQRubberBand::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -156,9 +155,16 @@ bool DummyQRubberBand::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQRubberBand::connection(QObject *o)
+{
+	DummyQWidget::connection(o);
+}
+
 KQRubberBand::KQRubberBand(QRubberBand::Shape s, QWidget* p) : QRubberBand(s, p)
 {
 	self = NULL;
+	dummy = new DummyQRubberBand();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QRubberBand_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -174,14 +180,13 @@ KMETHOD QRubberBand_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQRubberBand::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QRubberBand]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QRubberBand_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -195,7 +200,7 @@ KMETHOD QRubberBand_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQRubberBand::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QRubberBand]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -215,6 +220,9 @@ static void QRubberBand_free(CTX ctx, knh_RawPtr_t *p)
 static void QRubberBand_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQRubberBand *qp = (KQRubberBand *)p->rawptr;
 		(void)qp;
@@ -226,9 +234,15 @@ static int QRubberBand_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQRubberBand::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQRubberBand::event(QEvent *event)
 {
-	if (!DummyQRubberBand::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QRubberBand::event(event);
 		return false;
 	}

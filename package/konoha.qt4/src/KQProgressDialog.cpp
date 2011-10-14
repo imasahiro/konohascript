@@ -21,7 +21,6 @@ KMETHOD QProgressDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[2]);
 	KQProgressDialog *ret_v = new KQProgressDialog(parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -39,7 +38,6 @@ KMETHOD QProgressDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[6]);
 	KQProgressDialog *ret_v = new KQProgressDialog(labelText, cancelButtonText, minimum, maximum, parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -333,8 +331,10 @@ KMETHOD QProgressDialog_setValue(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQProgressDialog::DummyQProgressDialog()
 {
 	self = NULL;
+	canceled_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("canceled", NULL));
 }
 
 void DummyQProgressDialog::setSelf(knh_RawPtr_t *ptr)
@@ -354,11 +354,23 @@ bool DummyQProgressDialog::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQProgressDialog::canceledSlot()
+{
+	if (canceled_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, canceled_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQProgressDialog::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQProgressDialog::event_map->bigin();
 	if ((itr = DummyQProgressDialog::event_map->find(str)) == DummyQProgressDialog::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQDialog::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -370,20 +382,29 @@ bool DummyQProgressDialog::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQProgressDialog::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQProgressDialog::slot_map->bigin();
-	if ((itr = DummyQProgressDialog::event_map->find(str)) == DummyQProgressDialog::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQProgressDialog::slot_map->find(str)) == DummyQProgressDialog::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQDialog::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		canceled_func = (*slot_map)["canceled"];
 		return true;
 	}
 }
 
 
+void DummyQProgressDialog::connection(QObject *o)
+{
+	connect(o, SIGNAL(canceled()), this, SLOT(canceledSlot()));
+	DummyQDialog::connection(o);
+}
+
 KQProgressDialog::KQProgressDialog(QWidget* parent, Qt::WindowFlags f) : QProgressDialog(parent, f)
 {
 	self = NULL;
+	dummy = new DummyQProgressDialog();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QProgressDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -399,14 +420,13 @@ KMETHOD QProgressDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQProgressDialog::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QProgressDialog]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QProgressDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -420,7 +440,7 @@ KMETHOD QProgressDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQProgressDialog::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QProgressDialog]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -439,10 +459,17 @@ static void QProgressDialog_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QProgressDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQProgressDialog *qp = (KQProgressDialog *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->canceled_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->canceled_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -451,9 +478,15 @@ static int QProgressDialog_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQProgressDialog::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQProgressDialog::event(QEvent *event)
 {
-	if (!DummyQProgressDialog::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QProgressDialog::event(event);
 		return false;
 	}

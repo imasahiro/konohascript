@@ -6,7 +6,6 @@ KMETHOD QCoreApplication_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	char**  argv = RawPtr_to(char**, sfp[2]);
 	KQCoreApplication *ret_v = new KQCoreApplication(argc, argv);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -525,8 +524,10 @@ KMETHOD QCoreApplication_quit(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQCoreApplication::DummyQCoreApplication()
 {
 	self = NULL;
+	about_to_quit_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("about-to-quit", NULL));
 }
 
 void DummyQCoreApplication::setSelf(knh_RawPtr_t *ptr)
@@ -546,11 +547,23 @@ bool DummyQCoreApplication::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQCoreApplication::aboutToQuitSlot()
+{
+	if (about_to_quit_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, about_to_quit_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQCoreApplication::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCoreApplication::event_map->bigin();
 	if ((itr = DummyQCoreApplication::event_map->find(str)) == DummyQCoreApplication::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -562,20 +575,29 @@ bool DummyQCoreApplication::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQCoreApplication::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCoreApplication::slot_map->bigin();
-	if ((itr = DummyQCoreApplication::event_map->find(str)) == DummyQCoreApplication::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQCoreApplication::slot_map->find(str)) == DummyQCoreApplication::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		about_to_quit_func = (*slot_map)["about-to-quit"];
 		return true;
 	}
 }
 
 
+void DummyQCoreApplication::connection(QObject *o)
+{
+	connect(o, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuitSlot()));
+	DummyQObject::connection(o);
+}
+
 KQCoreApplication::KQCoreApplication(int argc, char** argv) : QCoreApplication(argc, argv)
 {
 	self = NULL;
+	dummy = new DummyQCoreApplication();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QCoreApplication_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -591,14 +613,13 @@ KMETHOD QCoreApplication_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQCoreApplication::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCoreApplication]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QCoreApplication_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -612,7 +633,7 @@ KMETHOD QCoreApplication_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQCoreApplication::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCoreApplication]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -631,10 +652,17 @@ static void QCoreApplication_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QCoreApplication_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQCoreApplication *qp = (KQCoreApplication *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->about_to_quit_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->about_to_quit_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -643,9 +671,15 @@ static int QCoreApplication_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQCoreApplication::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQCoreApplication::event(QEvent *event)
 {
-	if (!DummyQCoreApplication::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QCoreApplication::event(event);
 		return false;
 	}

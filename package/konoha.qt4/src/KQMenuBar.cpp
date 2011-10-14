@@ -49,7 +49,6 @@ KMETHOD QMenuBar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQMenuBar *ret_v = new KQMenuBar(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -355,8 +354,12 @@ KMETHOD QMenuBar_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQMenuBar::DummyQMenuBar()
 {
 	self = NULL;
+	hovered_func = NULL;
+	triggered_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("hovered", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("triggered", NULL));
 }
 
 void DummyQMenuBar::setSelf(knh_RawPtr_t *ptr)
@@ -376,11 +379,39 @@ bool DummyQMenuBar::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQMenuBar::hoveredSlot(QAction* action)
+{
+	if (hovered_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QAction, action);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, hovered_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQMenuBar::triggeredSlot(QAction* action)
+{
+	if (triggered_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QAction, action);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, triggered_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQMenuBar::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMenuBar::event_map->bigin();
 	if ((itr = DummyQMenuBar::event_map->find(str)) == DummyQMenuBar::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -392,20 +423,31 @@ bool DummyQMenuBar::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQMenuBar::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMenuBar::slot_map->bigin();
-	if ((itr = DummyQMenuBar::event_map->find(str)) == DummyQMenuBar::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQMenuBar::slot_map->find(str)) == DummyQMenuBar::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		hovered_func = (*slot_map)["hovered"];
+		triggered_func = (*slot_map)["triggered"];
 		return true;
 	}
 }
 
 
+void DummyQMenuBar::connection(QObject *o)
+{
+	connect(o, SIGNAL(hovered(QAction*)), this, SLOT(hoveredSlot(QAction*)));
+	connect(o, SIGNAL(triggered(QAction*)), this, SLOT(triggeredSlot(QAction*)));
+	DummyQWidget::connection(o);
+}
+
 KQMenuBar::KQMenuBar(QWidget* parent) : QMenuBar(parent)
 {
 	self = NULL;
+	dummy = new DummyQMenuBar();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMenuBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -421,14 +463,13 @@ KMETHOD QMenuBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQMenuBar::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMenuBar]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QMenuBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -442,7 +483,7 @@ KMETHOD QMenuBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQMenuBar::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMenuBar]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -461,10 +502,21 @@ static void QMenuBar_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMenuBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQMenuBar *qp = (KQMenuBar *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->hovered_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->hovered_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->triggered_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->triggered_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -473,9 +525,15 @@ static int QMenuBar_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQMenuBar::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQMenuBar::event(QEvent *event)
 {
-	if (!DummyQMenuBar::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QMenuBar::event(event);
 		return false;
 	}

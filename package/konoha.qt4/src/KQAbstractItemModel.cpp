@@ -459,8 +459,44 @@ KMETHOD QAbstractItemModel_submit(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQAbstractItemModel::DummyQAbstractItemModel()
 {
 	self = NULL;
+	columns_about_to_be_inserted_func = NULL;
+	columns_about_to_be_moved_func = NULL;
+	columns_about_to_be_removed_func = NULL;
+	columns_inserted_func = NULL;
+	columns_moved_func = NULL;
+	columns_removed_func = NULL;
+	data_changed_func = NULL;
+	header_data_changed_func = NULL;
+	layout_about_to_be_changed_func = NULL;
+	layout_changed_func = NULL;
+	model_about_to_be_reset_func = NULL;
+	model_reset_func = NULL;
+	rows_about_to_be_inserted_func = NULL;
+	rows_about_to_be_moved_func = NULL;
+	rows_about_to_be_removed_func = NULL;
+	rows_inserted_func = NULL;
+	rows_moved_func = NULL;
+	rows_removed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("columns-about-to-be-inserted", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("columns-about-to-be-moved", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("columns-about-to-be-removed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("columns-inserted", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("columns-moved", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("columns-removed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("data-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("header-data-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("layout-about-to-be-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("layout-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("model-about-to-be-reset", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("model-reset", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("rows-about-to-be-inserted", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("rows-about-to-be-moved", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("rows-about-to-be-removed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("rows-inserted", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("rows-moved", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("rows-removed", NULL));
 }
 
 void DummyQAbstractItemModel::setSelf(knh_RawPtr_t *ptr)
@@ -480,11 +516,294 @@ bool DummyQAbstractItemModel::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQAbstractItemModel::columnsAboutToBeInsertedSlot(const QModelIndex parent, int start, int end)
+{
+	if (columns_about_to_be_inserted_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, parent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = start;
+		lsfp[K_CALLDELTA+4].ivalue = end;
+		knh_Func_invoke(lctx, columns_about_to_be_inserted_func, lsfp, 4);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::columnsAboutToBeMovedSlot(const QModelIndex sourceParent, int sourceStart, int sourceEnd, const QModelIndex destinationParent, int destinationColumn)
+{
+	if (columns_about_to_be_moved_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, sourceParent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = sourceStart;
+		lsfp[K_CALLDELTA+4].ivalue = sourceEnd;
+		knh_RawPtr_t *p4 = new_QRawPtr(lctx, QModelIndex, destinationParent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+5].o, UPCAST(p4));
+		lsfp[K_CALLDELTA+6].ivalue = destinationColumn;
+		knh_Func_invoke(lctx, columns_about_to_be_moved_func, lsfp, 6);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::columnsAboutToBeRemovedSlot(const QModelIndex parent, int start, int end)
+{
+	if (columns_about_to_be_removed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, parent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = start;
+		lsfp[K_CALLDELTA+4].ivalue = end;
+		knh_Func_invoke(lctx, columns_about_to_be_removed_func, lsfp, 4);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::columnsInsertedSlot(const QModelIndex parent, int start, int end)
+{
+	if (columns_inserted_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, parent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = start;
+		lsfp[K_CALLDELTA+4].ivalue = end;
+		knh_Func_invoke(lctx, columns_inserted_func, lsfp, 4);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::columnsMovedSlot(const QModelIndex sourceParent, int sourceStart, int sourceEnd, const QModelIndex destinationParent, int destinationColumn)
+{
+	if (columns_moved_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, sourceParent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = sourceStart;
+		lsfp[K_CALLDELTA+4].ivalue = sourceEnd;
+		knh_RawPtr_t *p4 = new_QRawPtr(lctx, QModelIndex, destinationParent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+5].o, UPCAST(p4));
+		lsfp[K_CALLDELTA+6].ivalue = destinationColumn;
+		knh_Func_invoke(lctx, columns_moved_func, lsfp, 6);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::columnsRemovedSlot(const QModelIndex parent, int start, int end)
+{
+	if (columns_removed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, parent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = start;
+		lsfp[K_CALLDELTA+4].ivalue = end;
+		knh_Func_invoke(lctx, columns_removed_func, lsfp, 4);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::dataChangedSlot(const QModelIndex topLeft, const QModelIndex bottomRight)
+{
+	if (data_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, topLeft);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_RawPtr_t *p2 = new_QRawPtr(lctx, QModelIndex, bottomRight);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+3].o, UPCAST(p2));
+		knh_Func_invoke(lctx, data_changed_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::headerDataChangedSlot(Qt::Orientation orientation, int first, int last)
+{
+	if (header_data_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = orientation;
+		lsfp[K_CALLDELTA+3].ivalue = first;
+		lsfp[K_CALLDELTA+4].ivalue = last;
+		knh_Func_invoke(lctx, header_data_changed_func, lsfp, 4);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::layoutAboutToBeChangedSlot()
+{
+	if (layout_about_to_be_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, layout_about_to_be_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::layoutChangedSlot()
+{
+	if (layout_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, layout_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::modelAboutToBeResetSlot()
+{
+	if (model_about_to_be_reset_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, model_about_to_be_reset_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::modelResetSlot()
+{
+	if (model_reset_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, model_reset_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::rowsAboutToBeInsertedSlot(const QModelIndex parent, int start, int end)
+{
+	if (rows_about_to_be_inserted_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, parent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = start;
+		lsfp[K_CALLDELTA+4].ivalue = end;
+		knh_Func_invoke(lctx, rows_about_to_be_inserted_func, lsfp, 4);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::rowsAboutToBeMovedSlot(const QModelIndex sourceParent, int sourceStart, int sourceEnd, const QModelIndex destinationParent, int destinationRow)
+{
+	if (rows_about_to_be_moved_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, sourceParent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = sourceStart;
+		lsfp[K_CALLDELTA+4].ivalue = sourceEnd;
+		knh_RawPtr_t *p4 = new_QRawPtr(lctx, QModelIndex, destinationParent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+5].o, UPCAST(p4));
+		lsfp[K_CALLDELTA+6].ivalue = destinationRow;
+		knh_Func_invoke(lctx, rows_about_to_be_moved_func, lsfp, 6);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::rowsAboutToBeRemovedSlot(const QModelIndex parent, int start, int end)
+{
+	if (rows_about_to_be_removed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, parent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = start;
+		lsfp[K_CALLDELTA+4].ivalue = end;
+		knh_Func_invoke(lctx, rows_about_to_be_removed_func, lsfp, 4);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::rowsInsertedSlot(const QModelIndex parent, int start, int end)
+{
+	if (rows_inserted_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, parent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = start;
+		lsfp[K_CALLDELTA+4].ivalue = end;
+		knh_Func_invoke(lctx, rows_inserted_func, lsfp, 4);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::rowsMovedSlot(const QModelIndex sourceParent, int sourceStart, int sourceEnd, const QModelIndex destinationParent, int destinationRow)
+{
+	if (rows_moved_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, sourceParent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = sourceStart;
+		lsfp[K_CALLDELTA+4].ivalue = sourceEnd;
+		knh_RawPtr_t *p4 = new_QRawPtr(lctx, QModelIndex, destinationParent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+5].o, UPCAST(p4));
+		lsfp[K_CALLDELTA+6].ivalue = destinationRow;
+		knh_Func_invoke(lctx, rows_moved_func, lsfp, 6);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemModel::rowsRemovedSlot(const QModelIndex parent, int start, int end)
+{
+	if (rows_removed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, parent);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = start;
+		lsfp[K_CALLDELTA+4].ivalue = end;
+		knh_Func_invoke(lctx, rows_removed_func, lsfp, 4);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQAbstractItemModel::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractItemModel::event_map->bigin();
 	if ((itr = DummyQAbstractItemModel::event_map->find(str)) == DummyQAbstractItemModel::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -496,20 +815,63 @@ bool DummyQAbstractItemModel::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQAbstractItemModel::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractItemModel::slot_map->bigin();
-	if ((itr = DummyQAbstractItemModel::event_map->find(str)) == DummyQAbstractItemModel::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAbstractItemModel::slot_map->find(str)) == DummyQAbstractItemModel::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		columns_about_to_be_inserted_func = (*slot_map)["columns-about-to-be-inserted"];
+		columns_about_to_be_moved_func = (*slot_map)["columns-about-to-be-moved"];
+		columns_about_to_be_removed_func = (*slot_map)["columns-about-to-be-removed"];
+		columns_inserted_func = (*slot_map)["columns-inserted"];
+		columns_moved_func = (*slot_map)["columns-moved"];
+		columns_removed_func = (*slot_map)["columns-removed"];
+		data_changed_func = (*slot_map)["data-changed"];
+		header_data_changed_func = (*slot_map)["header-data-changed"];
+		layout_about_to_be_changed_func = (*slot_map)["layout-about-to-be-changed"];
+		layout_changed_func = (*slot_map)["layout-changed"];
+		model_about_to_be_reset_func = (*slot_map)["model-about-to-be-reset"];
+		model_reset_func = (*slot_map)["model-reset"];
+		rows_about_to_be_inserted_func = (*slot_map)["rows-about-to-be-inserted"];
+		rows_about_to_be_moved_func = (*slot_map)["rows-about-to-be-moved"];
+		rows_about_to_be_removed_func = (*slot_map)["rows-about-to-be-removed"];
+		rows_inserted_func = (*slot_map)["rows-inserted"];
+		rows_moved_func = (*slot_map)["rows-moved"];
+		rows_removed_func = (*slot_map)["rows-removed"];
 		return true;
 	}
 }
 
 
+void DummyQAbstractItemModel::connection(QObject *o)
+{
+	connect(o, SIGNAL(columnsAboutToBeInserted(const QModelIndex, int, int)), this, SLOT(columnsAboutToBeInsertedSlot(const QModelIndex, int, int)));
+	connect(o, SIGNAL(columnsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int)), this, SLOT(columnsAboutToBeMovedSlot(const QModelIndex, int, int, const QModelIndex, int)));
+	connect(o, SIGNAL(columnsAboutToBeRemoved(const QModelIndex, int, int)), this, SLOT(columnsAboutToBeRemovedSlot(const QModelIndex, int, int)));
+	connect(o, SIGNAL(columnsInserted(const QModelIndex, int, int)), this, SLOT(columnsInsertedSlot(const QModelIndex, int, int)));
+	connect(o, SIGNAL(columnsMoved(const QModelIndex, int, int, const QModelIndex, int)), this, SLOT(columnsMovedSlot(const QModelIndex, int, int, const QModelIndex, int)));
+	connect(o, SIGNAL(columnsRemoved(const QModelIndex, int, int)), this, SLOT(columnsRemovedSlot(const QModelIndex, int, int)));
+	connect(o, SIGNAL(dataChanged(const QModelIndex, const QModelIndex)), this, SLOT(dataChangedSlot(const QModelIndex, const QModelIndex)));
+	connect(o, SIGNAL(headerDataChanged(Qt::Orientation, int, int)), this, SLOT(headerDataChangedSlot(Qt::Orientation, int, int)));
+	connect(o, SIGNAL(layoutAboutToBeChanged()), this, SLOT(layoutAboutToBeChangedSlot()));
+	connect(o, SIGNAL(layoutChanged()), this, SLOT(layoutChangedSlot()));
+	connect(o, SIGNAL(modelAboutToBeReset()), this, SLOT(modelAboutToBeResetSlot()));
+	connect(o, SIGNAL(modelReset()), this, SLOT(modelResetSlot()));
+	connect(o, SIGNAL(rowsAboutToBeInserted(const QModelIndex, int, int)), this, SLOT(rowsAboutToBeInsertedSlot(const QModelIndex, int, int)));
+	connect(o, SIGNAL(rowsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int)), this, SLOT(rowsAboutToBeMovedSlot(const QModelIndex, int, int, const QModelIndex, int)));
+	connect(o, SIGNAL(rowsAboutToBeRemoved(const QModelIndex, int, int)), this, SLOT(rowsAboutToBeRemovedSlot(const QModelIndex, int, int)));
+	connect(o, SIGNAL(rowsInserted(const QModelIndex, int, int)), this, SLOT(rowsInsertedSlot(const QModelIndex, int, int)));
+	connect(o, SIGNAL(rowsMoved(const QModelIndex, int, int, const QModelIndex, int)), this, SLOT(rowsMovedSlot(const QModelIndex, int, int, const QModelIndex, int)));
+	connect(o, SIGNAL(rowsRemoved(const QModelIndex, int, int)), this, SLOT(rowsRemovedSlot(const QModelIndex, int, int)));
+	DummyQObject::connection(o);
+}
+
 KQAbstractItemModel::KQAbstractItemModel(QObject* parent) : QAbstractItemModel(parent)
 {
 	self = NULL;
+	dummy = new DummyQAbstractItemModel();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractItemModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -525,14 +887,13 @@ KMETHOD QAbstractItemModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAbstractItemModel::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractItemModel]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAbstractItemModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -546,7 +907,7 @@ KMETHOD QAbstractItemModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAbstractItemModel::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractItemModel]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -565,10 +926,85 @@ static void QAbstractItemModel_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractItemModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 18;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAbstractItemModel *qp = (KQAbstractItemModel *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->columns_about_to_be_inserted_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->columns_about_to_be_inserted_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->columns_about_to_be_moved_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->columns_about_to_be_moved_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->columns_about_to_be_removed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->columns_about_to_be_removed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->columns_inserted_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->columns_inserted_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->columns_moved_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->columns_moved_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->columns_removed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->columns_removed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->data_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->data_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->header_data_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->header_data_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->layout_about_to_be_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->layout_about_to_be_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->layout_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->layout_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->model_about_to_be_reset_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->model_about_to_be_reset_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->model_reset_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->model_reset_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->rows_about_to_be_inserted_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->rows_about_to_be_inserted_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->rows_about_to_be_moved_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->rows_about_to_be_moved_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->rows_about_to_be_removed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->rows_about_to_be_removed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->rows_inserted_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->rows_inserted_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->rows_moved_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->rows_moved_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->rows_removed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->rows_removed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -577,9 +1013,15 @@ static int QAbstractItemModel_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQAbstractItemModel::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQAbstractItemModel::event(QEvent *event)
 {
-	if (!DummyQAbstractItemModel::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QAbstractItemModel::event(event);
 		return false;
 	}

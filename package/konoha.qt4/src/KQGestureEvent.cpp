@@ -5,7 +5,6 @@ KMETHOD QGestureEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QList<QGesture*>  gestures = *RawPtr_to(const QList<QGesture*> *, sfp[1]);
 	KQGestureEvent *ret_v = new KQGestureEvent(gestures);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -304,7 +303,7 @@ bool DummyQGestureEvent::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGestureEvent::event_map->bigin();
 	if ((itr = DummyQGestureEvent::event_map->find(str)) == DummyQGestureEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -316,8 +315,8 @@ bool DummyQGestureEvent::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGestureEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGestureEvent::slot_map->bigin();
-	if ((itr = DummyQGestureEvent::event_map->find(str)) == DummyQGestureEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGestureEvent::slot_map->find(str)) == DummyQGestureEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -327,9 +326,16 @@ bool DummyQGestureEvent::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQGestureEvent::connection(QObject *o)
+{
+	DummyQEvent::connection(o);
+}
+
 KQGestureEvent::KQGestureEvent(const QList<QGesture*> gestures) : QGestureEvent(gestures)
 {
 	self = NULL;
+	dummy = new DummyQGestureEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGestureEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -345,14 +351,13 @@ KMETHOD QGestureEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGestureEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGestureEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGestureEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -366,7 +371,7 @@ KMETHOD QGestureEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGestureEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGestureEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -386,6 +391,9 @@ static void QGestureEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QGestureEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGestureEvent *qp = (KQGestureEvent *)p->rawptr;
 		(void)qp;
@@ -395,6 +403,12 @@ static void QGestureEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QGestureEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQGestureEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQGestureEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

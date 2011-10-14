@@ -188,7 +188,7 @@ bool DummyQGraphicsSceneDragDropEvent::addEvent(knh_Func_t *callback_func, strin
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsSceneDragDropEvent::event_map->bigin();
 	if ((itr = DummyQGraphicsSceneDragDropEvent::event_map->find(str)) == DummyQGraphicsSceneDragDropEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGraphicsSceneEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -200,8 +200,8 @@ bool DummyQGraphicsSceneDragDropEvent::addEvent(knh_Func_t *callback_func, strin
 bool DummyQGraphicsSceneDragDropEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsSceneDragDropEvent::slot_map->bigin();
-	if ((itr = DummyQGraphicsSceneDragDropEvent::event_map->find(str)) == DummyQGraphicsSceneDragDropEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsSceneDragDropEvent::slot_map->find(str)) == DummyQGraphicsSceneDragDropEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGraphicsSceneEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -211,9 +211,16 @@ bool DummyQGraphicsSceneDragDropEvent::signalConnect(knh_Func_t *callback_func, 
 }
 
 
+void DummyQGraphicsSceneDragDropEvent::connection(QObject *o)
+{
+	DummyQGraphicsSceneEvent::connection(o);
+}
+
 KQGraphicsSceneDragDropEvent::KQGraphicsSceneDragDropEvent() : QGraphicsSceneDragDropEvent()
 {
 	self = NULL;
+	dummy = new DummyQGraphicsSceneDragDropEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsSceneDragDropEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -229,14 +236,13 @@ KMETHOD QGraphicsSceneDragDropEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsSceneDragDropEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsSceneDragDropEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsSceneDragDropEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -250,7 +256,7 @@ KMETHOD QGraphicsSceneDragDropEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsSceneDragDropEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsSceneDragDropEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -270,6 +276,9 @@ static void QGraphicsSceneDragDropEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QGraphicsSceneDragDropEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneDragDropEvent *qp = (KQGraphicsSceneDragDropEvent *)p->rawptr;
 		(void)qp;
@@ -279,6 +288,12 @@ static void QGraphicsSceneDragDropEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG
 static int QGraphicsSceneDragDropEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQGraphicsSceneDragDropEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQGraphicsSceneDragDropEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

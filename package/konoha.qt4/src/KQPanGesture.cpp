@@ -121,7 +121,7 @@ bool DummyQPanGesture::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPanGesture::event_map->bigin();
 	if ((itr = DummyQPanGesture::event_map->find(str)) == DummyQPanGesture::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGesture::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -133,8 +133,8 @@ bool DummyQPanGesture::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQPanGesture::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPanGesture::slot_map->bigin();
-	if ((itr = DummyQPanGesture::event_map->find(str)) == DummyQPanGesture::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQPanGesture::slot_map->find(str)) == DummyQPanGesture::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGesture::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -144,9 +144,16 @@ bool DummyQPanGesture::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQPanGesture::connection(QObject *o)
+{
+	DummyQGesture::connection(o);
+}
+
 KQPanGesture::KQPanGesture() : QPanGesture()
 {
 	self = NULL;
+	dummy = new DummyQPanGesture();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPanGesture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -162,14 +169,13 @@ KMETHOD QPanGesture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQPanGesture::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPanGesture]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QPanGesture_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -183,7 +189,7 @@ KMETHOD QPanGesture_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQPanGesture::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPanGesture]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -203,6 +209,9 @@ static void QPanGesture_free(CTX ctx, knh_RawPtr_t *p)
 static void QPanGesture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQPanGesture *qp = (KQPanGesture *)p->rawptr;
 		(void)qp;
@@ -214,9 +223,15 @@ static int QPanGesture_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQPanGesture::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQPanGesture::event(QEvent *event)
 {
-	if (!DummyQPanGesture::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QPanGesture::event(event);
 		return false;
 	}

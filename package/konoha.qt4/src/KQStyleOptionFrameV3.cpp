@@ -4,7 +4,6 @@ KMETHOD QStyleOptionFrameV3_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQStyleOptionFrameV3 *ret_v = new KQStyleOptionFrameV3();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QStyleOptionFrameV3_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionFrameV3  other = *RawPtr_to(const QStyleOptionFrameV3 *, sfp[1]);
 	KQStyleOptionFrameV3 *ret_v = new KQStyleOptionFrameV3(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -30,7 +28,6 @@ KMETHOD QStyleOptionFrameV3_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionFrame  other = *RawPtr_to(const QStyleOptionFrame *, sfp[1]);
 	KQStyleOptionFrameV3 *ret_v = new KQStyleOptionFrameV3(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -64,7 +61,7 @@ bool DummyQStyleOptionFrameV3::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionFrameV3::event_map->bigin();
 	if ((itr = DummyQStyleOptionFrameV3::event_map->find(str)) == DummyQStyleOptionFrameV3::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQStyleOptionFrameV2::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -76,8 +73,8 @@ bool DummyQStyleOptionFrameV3::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStyleOptionFrameV3::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionFrameV3::slot_map->bigin();
-	if ((itr = DummyQStyleOptionFrameV3::event_map->find(str)) == DummyQStyleOptionFrameV3::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStyleOptionFrameV3::slot_map->find(str)) == DummyQStyleOptionFrameV3::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQStyleOptionFrameV2::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -87,9 +84,16 @@ bool DummyQStyleOptionFrameV3::signalConnect(knh_Func_t *callback_func, string s
 }
 
 
+void DummyQStyleOptionFrameV3::connection(QObject *o)
+{
+	DummyQStyleOptionFrameV2::connection(o);
+}
+
 KQStyleOptionFrameV3::KQStyleOptionFrameV3() : QStyleOptionFrameV3()
 {
 	self = NULL;
+	dummy = new DummyQStyleOptionFrameV3();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionFrameV3_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -105,14 +109,13 @@ KMETHOD QStyleOptionFrameV3_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStyleOptionFrameV3::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionFrameV3]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStyleOptionFrameV3_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -126,7 +129,7 @@ KMETHOD QStyleOptionFrameV3_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStyleOptionFrameV3::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionFrameV3]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -146,6 +149,9 @@ static void QStyleOptionFrameV3_free(CTX ctx, knh_RawPtr_t *p)
 static void QStyleOptionFrameV3_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStyleOptionFrameV3 *qp = (KQStyleOptionFrameV3 *)p->rawptr;
 		(void)qp;
@@ -155,6 +161,12 @@ static void QStyleOptionFrameV3_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QStyleOptionFrameV3_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQStyleOptionFrameV3::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStyleOptionFrameV3(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

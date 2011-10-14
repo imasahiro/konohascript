@@ -4,7 +4,6 @@ KMETHOD QImage_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQImage *ret_v = new KQImage();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -18,7 +17,6 @@ KMETHOD QImage_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QImage::Format format = Int_to(QImage::Format, sfp[2]);
 	KQImage *ret_v = new KQImage(size, format);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -33,7 +31,6 @@ KMETHOD QImage_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QImage::Format format = Int_to(QImage::Format, sfp[3]);
 	KQImage *ret_v = new KQImage(width, height, format);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -49,7 +46,6 @@ KMETHOD QImage_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QImage::Format format = Int_to(QImage::Format, sfp[4]);
 	KQImage *ret_v = new KQImage(data, width, height, format);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -65,7 +61,6 @@ KMETHOD QImage_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QImage::Format format = Int_to(QImage::Format, sfp[4]);
 	KQImage *ret_v = new KQImage(data, width, height, format);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -82,7 +77,6 @@ KMETHOD QImage_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QImage::Format format = Int_to(QImage::Format, sfp[5]);
 	KQImage *ret_v = new KQImage(data, width, height, bytesPerLine, format);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -99,7 +93,6 @@ KMETHOD QImage_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QImage::Format format = Int_to(QImage::Format, sfp[5]);
 	KQImage *ret_v = new KQImage(data, width, height, bytesPerLine, format);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -113,7 +106,6 @@ KMETHOD QImage_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const char*  format = RawPtr_to(const char*, sfp[2]);
 	KQImage *ret_v = new KQImage(fileName, format);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -127,7 +119,6 @@ KMETHOD QImage_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const char*  format = RawPtr_to(const char*, sfp[2]);
 	KQImage *ret_v = new KQImage(fileName, format);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -140,7 +131,6 @@ KMETHOD QImage_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QImage  image = *RawPtr_to(const QImage *, sfp[1]);
 	KQImage *ret_v = new KQImage(image);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -1166,7 +1156,7 @@ bool DummyQImage::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQImage::event_map->bigin();
 	if ((itr = DummyQImage::event_map->find(str)) == DummyQImage::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQPaintDevice::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -1178,8 +1168,8 @@ bool DummyQImage::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQImage::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQImage::slot_map->bigin();
-	if ((itr = DummyQImage::event_map->find(str)) == DummyQImage::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQImage::slot_map->find(str)) == DummyQImage::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQPaintDevice::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -1189,9 +1179,16 @@ bool DummyQImage::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQImage::connection(QObject *o)
+{
+	DummyQPaintDevice::connection(o);
+}
+
 KQImage::KQImage() : QImage()
 {
 	self = NULL;
+	dummy = new DummyQImage();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QImage_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1207,14 +1204,13 @@ KMETHOD QImage_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQImage::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QImage]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QImage_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1228,7 +1224,7 @@ KMETHOD QImage_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQImage::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QImage]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -1248,6 +1244,9 @@ static void QImage_free(CTX ctx, knh_RawPtr_t *p)
 static void QImage_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQImage *qp = (KQImage *)p->rawptr;
 		(void)qp;
@@ -1257,6 +1256,12 @@ static void QImage_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QImage_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QImage*>(p1->rawptr) == *static_cast<QImage*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQImage::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQImage(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

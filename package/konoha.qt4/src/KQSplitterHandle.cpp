@@ -21,7 +21,6 @@ KMETHOD QSplitterHandle_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QSplitter*  parent = RawPtr_to(QSplitter*, sfp[2]);
 	KQSplitterHandle *ret_v = new KQSplitterHandle(orientation, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -107,7 +106,7 @@ bool DummyQSplitterHandle::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSplitterHandle::event_map->bigin();
 	if ((itr = DummyQSplitterHandle::event_map->find(str)) == DummyQSplitterHandle::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -119,8 +118,8 @@ bool DummyQSplitterHandle::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQSplitterHandle::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSplitterHandle::slot_map->bigin();
-	if ((itr = DummyQSplitterHandle::event_map->find(str)) == DummyQSplitterHandle::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQSplitterHandle::slot_map->find(str)) == DummyQSplitterHandle::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -130,9 +129,16 @@ bool DummyQSplitterHandle::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQSplitterHandle::connection(QObject *o)
+{
+	DummyQWidget::connection(o);
+}
+
 KQSplitterHandle::KQSplitterHandle(Qt::Orientation orientation, QSplitter* parent) : QSplitterHandle(orientation, parent)
 {
 	self = NULL;
+	dummy = new DummyQSplitterHandle();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSplitterHandle_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -148,14 +154,13 @@ KMETHOD QSplitterHandle_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQSplitterHandle::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSplitterHandle]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QSplitterHandle_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -169,7 +174,7 @@ KMETHOD QSplitterHandle_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQSplitterHandle::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSplitterHandle]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -189,6 +194,9 @@ static void QSplitterHandle_free(CTX ctx, knh_RawPtr_t *p)
 static void QSplitterHandle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQSplitterHandle *qp = (KQSplitterHandle *)p->rawptr;
 		(void)qp;
@@ -200,9 +208,15 @@ static int QSplitterHandle_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQSplitterHandle::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQSplitterHandle::event(QEvent *event)
 {
-	if (!DummyQSplitterHandle::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QSplitterHandle::event(event);
 		return false;
 	}

@@ -20,7 +20,6 @@ KMETHOD QGroupBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQGroupBox *ret_v = new KQGroupBox(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -34,7 +33,6 @@ KMETHOD QGroupBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQGroupBox *ret_v = new KQGroupBox(title, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -169,8 +167,12 @@ KMETHOD QGroupBox_setChecked(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQGroupBox::DummyQGroupBox()
 {
 	self = NULL;
+	clicked_func = NULL;
+	toggled_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("clicked", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("toggled", NULL));
 }
 
 void DummyQGroupBox::setSelf(knh_RawPtr_t *ptr)
@@ -190,11 +192,37 @@ bool DummyQGroupBox::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQGroupBox::clickedSlot(bool checked)
+{
+	if (clicked_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = checked;
+		knh_Func_invoke(lctx, clicked_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQGroupBox::toggledSlot(bool on)
+{
+	if (toggled_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = on;
+		knh_Func_invoke(lctx, toggled_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQGroupBox::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGroupBox::event_map->bigin();
 	if ((itr = DummyQGroupBox::event_map->find(str)) == DummyQGroupBox::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -206,20 +234,31 @@ bool DummyQGroupBox::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGroupBox::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGroupBox::slot_map->bigin();
-	if ((itr = DummyQGroupBox::event_map->find(str)) == DummyQGroupBox::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGroupBox::slot_map->find(str)) == DummyQGroupBox::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		clicked_func = (*slot_map)["clicked"];
+		toggled_func = (*slot_map)["toggled"];
 		return true;
 	}
 }
 
 
+void DummyQGroupBox::connection(QObject *o)
+{
+	connect(o, SIGNAL(clicked(bool)), this, SLOT(clickedSlot(bool)));
+	connect(o, SIGNAL(toggled(bool)), this, SLOT(toggledSlot(bool)));
+	DummyQWidget::connection(o);
+}
+
 KQGroupBox::KQGroupBox(QWidget* parent) : QGroupBox(parent)
 {
 	self = NULL;
+	dummy = new DummyQGroupBox();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGroupBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -235,14 +274,13 @@ KMETHOD QGroupBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGroupBox::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGroupBox]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGroupBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -256,7 +294,7 @@ KMETHOD QGroupBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGroupBox::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGroupBox]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -275,10 +313,21 @@ static void QGroupBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGroupBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGroupBox *qp = (KQGroupBox *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->clicked_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->clicked_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->toggled_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->toggled_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -287,9 +336,15 @@ static int QGroupBox_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQGroupBox::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQGroupBox::event(QEvent *event)
 {
-	if (!DummyQGroupBox::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QGroupBox::event(event);
 		return false;
 	}

@@ -93,7 +93,6 @@ KMETHOD QPlainTextDocumentLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QTextDocument*  document = RawPtr_to(QTextDocument*, sfp[1]);
 	KQPlainTextDocumentLayout *ret_v = new KQPlainTextDocumentLayout(document);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -175,7 +174,7 @@ bool DummyQPlainTextDocumentLayout::addEvent(knh_Func_t *callback_func, string s
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPlainTextDocumentLayout::event_map->bigin();
 	if ((itr = DummyQPlainTextDocumentLayout::event_map->find(str)) == DummyQPlainTextDocumentLayout::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractTextDocumentLayout::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -187,8 +186,8 @@ bool DummyQPlainTextDocumentLayout::addEvent(knh_Func_t *callback_func, string s
 bool DummyQPlainTextDocumentLayout::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPlainTextDocumentLayout::slot_map->bigin();
-	if ((itr = DummyQPlainTextDocumentLayout::event_map->find(str)) == DummyQPlainTextDocumentLayout::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQPlainTextDocumentLayout::slot_map->find(str)) == DummyQPlainTextDocumentLayout::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractTextDocumentLayout::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -198,9 +197,16 @@ bool DummyQPlainTextDocumentLayout::signalConnect(knh_Func_t *callback_func, str
 }
 
 
+void DummyQPlainTextDocumentLayout::connection(QObject *o)
+{
+	DummyQAbstractTextDocumentLayout::connection(o);
+}
+
 KQPlainTextDocumentLayout::KQPlainTextDocumentLayout(QTextDocument* document) : QPlainTextDocumentLayout(document)
 {
 	self = NULL;
+	dummy = new DummyQPlainTextDocumentLayout();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPlainTextDocumentLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -216,14 +222,13 @@ KMETHOD QPlainTextDocumentLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQPlainTextDocumentLayout::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPlainTextDocumentLayout]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QPlainTextDocumentLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -237,7 +242,7 @@ KMETHOD QPlainTextDocumentLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQPlainTextDocumentLayout::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPlainTextDocumentLayout]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -257,6 +262,9 @@ static void QPlainTextDocumentLayout_free(CTX ctx, knh_RawPtr_t *p)
 static void QPlainTextDocumentLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQPlainTextDocumentLayout *qp = (KQPlainTextDocumentLayout *)p->rawptr;
 		(void)qp;
@@ -268,9 +276,15 @@ static int QPlainTextDocumentLayout_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQPlainTextDocumentLayout::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQPlainTextDocumentLayout::event(QEvent *event)
 {
-	if (!DummyQPlainTextDocumentLayout::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QPlainTextDocumentLayout::event(event);
 		return false;
 	}

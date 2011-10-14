@@ -32,7 +32,6 @@ KMETHOD QDoubleSpinBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQDoubleSpinBox *ret_v = new KQDoubleSpinBox(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -309,7 +308,7 @@ bool DummyQDoubleSpinBox::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDoubleSpinBox::event_map->bigin();
 	if ((itr = DummyQDoubleSpinBox::event_map->find(str)) == DummyQDoubleSpinBox::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractSpinBox::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -321,8 +320,8 @@ bool DummyQDoubleSpinBox::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDoubleSpinBox::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDoubleSpinBox::slot_map->bigin();
-	if ((itr = DummyQDoubleSpinBox::event_map->find(str)) == DummyQDoubleSpinBox::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDoubleSpinBox::slot_map->find(str)) == DummyQDoubleSpinBox::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractSpinBox::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -332,9 +331,16 @@ bool DummyQDoubleSpinBox::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQDoubleSpinBox::connection(QObject *o)
+{
+	DummyQAbstractSpinBox::connection(o);
+}
+
 KQDoubleSpinBox::KQDoubleSpinBox(QWidget* parent) : QDoubleSpinBox(parent)
 {
 	self = NULL;
+	dummy = new DummyQDoubleSpinBox();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDoubleSpinBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -350,14 +356,13 @@ KMETHOD QDoubleSpinBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDoubleSpinBox::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDoubleSpinBox]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDoubleSpinBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -371,7 +376,7 @@ KMETHOD QDoubleSpinBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDoubleSpinBox::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDoubleSpinBox]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -391,6 +396,9 @@ static void QDoubleSpinBox_free(CTX ctx, knh_RawPtr_t *p)
 static void QDoubleSpinBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDoubleSpinBox *qp = (KQDoubleSpinBox *)p->rawptr;
 		(void)qp;
@@ -402,9 +410,15 @@ static int QDoubleSpinBox_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQDoubleSpinBox::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQDoubleSpinBox::event(QEvent *event)
 {
-	if (!DummyQDoubleSpinBox::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QDoubleSpinBox::event(event);
 		return false;
 	}

@@ -5,7 +5,6 @@ KMETHOD QUndoCommand_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QUndoCommand*  parent = RawPtr_to(QUndoCommand*, sfp[1]);
 	KQUndoCommand *ret_v = new KQUndoCommand(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QUndoCommand_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QUndoCommand*  parent = RawPtr_to(QUndoCommand*, sfp[2]);
 	KQUndoCommand *ret_v = new KQUndoCommand(text, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -155,7 +153,7 @@ bool DummyQUndoCommand::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQUndoCommand::event_map->bigin();
 	if ((itr = DummyQUndoCommand::event_map->find(str)) == DummyQUndoCommand::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -166,8 +164,8 @@ bool DummyQUndoCommand::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQUndoCommand::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQUndoCommand::slot_map->bigin();
-	if ((itr = DummyQUndoCommand::event_map->find(str)) == DummyQUndoCommand::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQUndoCommand::slot_map->find(str)) == DummyQUndoCommand::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -176,9 +174,16 @@ bool DummyQUndoCommand::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQUndoCommand::connection(QObject *o)
+{
+	return;
+}
+
 KQUndoCommand::KQUndoCommand(QUndoCommand* parent) : QUndoCommand(parent)
 {
 	self = NULL;
+	dummy = new DummyQUndoCommand();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QUndoCommand_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -194,14 +199,13 @@ KMETHOD QUndoCommand_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQUndoCommand::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QUndoCommand]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QUndoCommand_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -215,7 +219,7 @@ KMETHOD QUndoCommand_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQUndoCommand::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QUndoCommand]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -235,6 +239,9 @@ static void QUndoCommand_free(CTX ctx, knh_RawPtr_t *p)
 static void QUndoCommand_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQUndoCommand *qp = (KQUndoCommand *)p->rawptr;
 		(void)qp;
@@ -244,6 +251,12 @@ static void QUndoCommand_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QUndoCommand_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQUndoCommand::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQUndoCommand(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

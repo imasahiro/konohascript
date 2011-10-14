@@ -85,7 +85,6 @@ KMETHOD QGraphicsGridLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsLayoutItem*  parent = RawPtr_to(QGraphicsLayoutItem*, sfp[1]);
 	KQGraphicsGridLayout *ret_v = new KQGraphicsGridLayout(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -634,7 +633,7 @@ bool DummyQGraphicsGridLayout::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsGridLayout::event_map->bigin();
 	if ((itr = DummyQGraphicsGridLayout::event_map->find(str)) == DummyQGraphicsGridLayout::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGraphicsLayout::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -646,8 +645,8 @@ bool DummyQGraphicsGridLayout::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGraphicsGridLayout::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsGridLayout::slot_map->bigin();
-	if ((itr = DummyQGraphicsGridLayout::event_map->find(str)) == DummyQGraphicsGridLayout::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsGridLayout::slot_map->find(str)) == DummyQGraphicsGridLayout::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGraphicsLayout::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -657,9 +656,16 @@ bool DummyQGraphicsGridLayout::signalConnect(knh_Func_t *callback_func, string s
 }
 
 
+void DummyQGraphicsGridLayout::connection(QObject *o)
+{
+	DummyQGraphicsLayout::connection(o);
+}
+
 KQGraphicsGridLayout::KQGraphicsGridLayout(QGraphicsLayoutItem* parent) : QGraphicsGridLayout(parent)
 {
 	self = NULL;
+	dummy = new DummyQGraphicsGridLayout();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsGridLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -675,14 +681,13 @@ KMETHOD QGraphicsGridLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsGridLayout::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsGridLayout]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsGridLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -696,7 +701,7 @@ KMETHOD QGraphicsGridLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsGridLayout::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsGridLayout]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -716,6 +721,9 @@ static void QGraphicsGridLayout_free(CTX ctx, knh_RawPtr_t *p)
 static void QGraphicsGridLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsGridLayout *qp = (KQGraphicsGridLayout *)p->rawptr;
 		(void)qp;
@@ -725,6 +733,12 @@ static void QGraphicsGridLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QGraphicsGridLayout_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQGraphicsGridLayout::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQGraphicsGridLayout(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

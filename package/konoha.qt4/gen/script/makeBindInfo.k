@@ -76,6 +76,8 @@ BindInfo[] makeBindInfo(QtInterface[] interfaces, QtHierarchy hierarchy) {
 	BIsetParentIndex(bia, hierarchy);
 	foreach (BindInfo bi in bia) {
 		BIsetHierarchyDepth(bia, bi);
+		bi.checkInheritsQObject();
+		if (bi.class_name == "QAbstractButton") print bi.checkInheritsQObject();
 	}
 	return bia;
 }

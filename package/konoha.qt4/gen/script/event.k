@@ -112,7 +112,7 @@ class QMethod {
 	void setFixedFunctionSource() {
 //		fixed_src += return_type + " ";
 		fixed_src += "bool" + " ";
-		fixed_src += mtd_name + "(";
+		fixed_src += mtd_name + "Dummy(";
 		for (int i = 0; i < |argtypes|; i++) {
 			fixed_src += argtypes[i] + " ";
 			fixed_src += values[i];
@@ -124,7 +124,8 @@ class QMethod {
 	}
 
 	void setSlotSource() {
-		slot_src += return_type + " ";
+//		slot_src += return_type + " ";
+		slot_src += "bool" + " ";
 		slot_src += mtd_name + "Slot" + "(";
 		for (int i = 0; i < |argtypes|; i++) {
 			slot_src += argtypes[i] + " ";
@@ -167,123 +168,64 @@ class QMethod {
 
 String genHeaderSource(String class_name, QMethod[] mtds, QMethod[] sigs, BindInfo bi)
 {
-// //======================== Generate Macros ========================//
-// 	String macros = "";
-// 	macros += "//#define getClassTBL(CLASS) lctx->share->ClassTBL[knh_getcid(lctx, STEXT(#CLASS))]\n";
-// 	macros += "//#define new_RawPtrFromClass(CLASS, o) new_RawPtr(lctx, getClassTBL(CLASS), o)\n";
 //=========================Generate KQClass =======================//
 	String kqclass = "";
 	kqclass += """
-<PARENT>
-class K<C> : <INHERITS> {
-//	Q_OBJECT;
+class K<C> : public <C> {
+<UNUSE>	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	Dummy<C> *dummy;
 <CR>
 """;
+
+	kqclass += "\tvoid setSelf(knh_RawPtr_t *ptr);\n";
 	if (bi.checkHaveEventMethod()) kqclass += "\tbool event(QEvent *event);\n";
-	if (bi.inherits_qobject_flag) {
-		kqclass = kqclass.replace("<PARENT>", "");
-		kqclass = kqclass.replace("<INHERITS>", "public <C>, public Dummy<C>");
-	} else {
-		String parent = """
-class BaseK<C> : public <C>, public QObject {
-public:
-    BaseK<C>(ARGS);
-};
-""";
-		kqclass = kqclass.replace("<PARENT>", parent);
-		kqclass = kqclass.replace("<INHERITS>", "public BaseK<C>, public Dummy<C>");
-	}
-	// foreach (QMethod mtd in mtds) {
-	// 	kqclass += "\tknh_Func_t *" + mtd.mtd_cname + "_func;\n"
-	// }
-	// foreach (QMethod mtd in sigs) {
-	// 	kqclass += "\tknh_Func_t *" + mtd.mtd_cname + "_func;\n"
-	// }
-
-
+//	if (bi.checkInheritsQObject() && |sigs| != 0) {
+//		kqclass = kqclass.replace("<UNUSE>", "");
+//	} else {
+	kqclass = kqclass.replace("<UNUSE>", "//");
+//	}
+	kqclass += "};\n";
 //========================= Constructor ==========================//
+	String constructor = "";
+	String args = "";
 	if (bi.checkHaveConstructor()) {
-		String constructor = "\tK<C>(ARGS);";
-//	if (bi.class_name == "QWidget") print constructor;
+		constructor += "\tK<C>(ARGS);";
 		FunctionElement f = bi.constructor;
-		String args = "";//, argnames = "";
 		for (int i = 0; i < f.argument_number; i++) {
-//		if ("Array<" in? f.argument_type[i]) f.argument_type[i] = "";
 			f.argument_type[i] = f.argument_type[i].replace("Array<", "QList<");
 			args += f.argument_type[i] + " " + f.argument_name[i];
 			if (f.argument_number > i + 1) {
 				args += ", ";
 			}
 		}
-//	constructor = constructor.replace("ARGS", args);
-//	if (bi.class_name == "QWidget") print constructor;
-		kqclass = kqclass.replace("<CR>", constructor);
-		kqclass = kqclass.replace("ARGS", args);
-	} else {
-		kqclass = kqclass.replace("<CR>", "");
 	}
-// //============== Generate Public Event Method List ================//
-// 	foreach (QMethod mtd in mtds) {
-// 		kqclass += "\t" + mtd.fixed_src + ";\n";
-// 	}
-// 	kqclass += "\tvoid setEventFunc(knh_Func_t *callback_func, std::string str);\n";
-// 	kqclass += "\tvoid setSlotFunc(knh_Func_t *callback_func, std::string str);\n";
-// // //====================== Generate Signals ========================//
-// // 	kqclass += "signals:\n";
-// // 	foreach (QMethod mtd in sigs) {
-// // 		kqclass += "\t" + mtd.fixed_src + ";\n";
-// // 	}
-// //==================== Generate Public Slot ======================//
-// 	kqclass += "public slots:\n";
-// 	foreach (QMethod mtd in sigs) {
-// 		kqclass += "\t" + mtd.slot_src + ";\n";
-// 	}
-// //===============================================================//
 
-	kqclass += "};\n";
-	
-	String header = ""
+//===============================================================//
+	String hpp_src = "";
 	if (!GEN_CONCATENATE_FILE) header += "#include <<C>>\n";
-
-//	if (bi.class_name == "QWidget")print bi.make_rapper_class_flag;
-	if (bi.make_rapper_class_flag) {
-		header += kqclass;
-	}
-	header = header.replace("<C>", class_name);
-	return header;
+	hpp_src += kqclass;
+	hpp_src = hpp_src.replace("<CR>", constructor);
+	hpp_src = hpp_src.replace("<C>", class_name);
+	hpp_src = hpp_src.replace("ARGS", args);
+	return hpp_src;
 }
 
 String genCppSource(String class_name, QMethod[] mtds, QMethod[] sigs, BindInfo bi)
 {
-	String cpp_src = "";
-	//================= Generate Constructor ====================//
+//================= Generate Constructor ====================//
+	String constructor = "";
 	if (bi.checkHaveConstructor()) {
-//    if (bi.make_rapper_class_flag) {
-// 	if (bi.class_name == "QGraphicsAnchor") {
-// 		cpp_src += """
-// KQGraphicsAnchor::KQGraphicsAnchor()
-// {
-// """; 
-//	} else if (bi.inherits_qobject_flag) {
-		if (bi.inherits_qobject_flag) {
-			cpp_src += """
+		constructor += """
 K<C>::K<C>(ARGS) : <C>(ARGNAMES)
 {
-""";
-		} else {
-			cpp_src += """
-BaseK<C>::BaseK<C>(ARGS) : <C>(ARGNAMES)
-{
+	self = NULL;
+	dummy = new Dummy<C>();
+	dummy->connection((QObject*)this);
 }
 
-K<C>::K<C>(ARGS) : BaseK<C>(ARGNAMES)
-{
 """;
-		}
-		cpp_src += "\tself = NULL;\n";
-
 		FunctionElement f = bi.constructor;
 		String args = "", argnames = "";
 		for (int i = 0; i < f.argument_number; i++) {
@@ -294,156 +236,12 @@ K<C>::K<C>(ARGS) : BaseK<C>(ARGNAMES)
 				argnames += ", ";
 			}
 		}
-		cpp_src = cpp_src.replace("ARGS", args);
-		cpp_src = cpp_src.replace("ARGNAMES", argnames);
-
-// 		foreach (QMethod mtd in mtds) {
-// 			cpp_src += "\t" + mtd.mtd_cname + "_func = NULL;\n";
-// 		}
-// 		foreach (QMethod mtd in sigs) {
-// 			cpp_src += "\t" + mtd.mtd_cname + "_func = NULL;\n";
-// 		}
-// 		cpp_src += "\tevent_map = new map<string, knh_Func_t *>();\n";
-// 		cpp_src += "\tslot_map = new map<string, knh_Func_t *>();\n";
-// 		foreach (QMethod mtd in mtds) {
-// //			cpp_src += "\tevent_map->insert(map<string, knh_Func_t *>::value_type(\"" + mtd.event_type_name + "\", " + mtd.mtd_cname + "_func));\n";
-// 			cpp_src += "\tevent_map->insert(map<string, knh_Func_t *>::value_type(\"" + mtd.event_type_name + "\", NULL));\n";
-// 		}
-// 		foreach (QMethod mtd in sigs) {
-// //			cpp_src += "\tslot_map->insert(map<string, knh_Func_t *>::value_type(\"" + mtd.event_type_name + "\", " + mtd.mtd_cname + "_func));\n";
-// 			cpp_src += "\tslot_map->insert(map<string, knh_Func_t *>::value_type(\"" + mtd.event_type_name + "\", NULL));\n";
-// 		}
-		foreach (QMethod mtd in sigs) {
-			cpp_src += "\tconnect(this, SIGNAL(<SIG>), this, SLOT(<SLOT>));\n";
-			String tmp = "";
-			for (int i = 0; i < |mtd.argtypes|; i++) {
-				tmp += mtd.argtypes[i];
-				if (|mtd.argtypes| > i+1) tmp += ", ";
-			}
-			cpp_src = cpp_src.replace("<SIG>", mtd.mtd_name + "(" + tmp + ")");
-			cpp_src = cpp_src.replace("<SLOT>", mtd.mtd_name + "Slot(" + tmp + ")");
-		}
-		cpp_src += "}\n\n";
+		constructor = constructor.replace("ARGS", args);
+		constructor = constructor.replace("ARGNAMES", argnames);
 	}
-// 	//================= Generate Event Methods =================//
-//     if (bi.make_rapper_class_flag) {
-// 		int i = 0;
-// 		foreach (QMethod mtd in mtds) {
-// 			cpp_src += "<R> K<C>::<M>(";
-// 			for (i = 0; i < |mtd.argtypes|; i++) {
-// 				cpp_src += mtd.argtypes[i] + " " + mtd.values[i];
-// 				if (|mtd.argtypes| > i+1) {
-// 					cpp_src += ", ";
-// 				}
-// 			}
-// 			cpp_src += ")\n";
-// 			cpp_src += "{\n";
-// 			cpp_src += "\tif (<F> != NULL) {\n";
-// 			cpp_src	+= "\t\tCTX lctx = knh_getCurrentContext();\n";
-// 			cpp_src += "\t\tknh_sfp_t *lsfp = lctx->esp;\n";
-// 			cpp_src += "\t\tKNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));\n";
-//  			for (i = 0; i < |mtd.argtypes|; i++) {
-// 				if ("::" in? mtd.knh_argtypes[i]) {
-// 					print bi.class_name;
-// 					print mtd.mtd_name;
-// 				}
-// 				// if ("QList" in? mtd.knh_argtypes[i]) {
-// 				// 	print bi.class_name;
-// 				// 	print mtd.mtd_name;
-// 				// }
-// 				cpp_src += EventArgPassing(mtd.knh_argtypes[i]);
-//  				cpp_src = cpp_src.replace("<N>", (String)(i + 1));
-//  				cpp_src = cpp_src.replace("<KT>", mtd.knh_argtypes[i]);
-//  				cpp_src = cpp_src.replace("<V>", mtd.values[i]);
-//  				cpp_src = cpp_src.replace("<T>", mtd.knh_argtypes[i] - "QList<" - ">");
-//  				cpp_src = cpp_src.replace("<N>", (String)(i + 1));
-//  				cpp_src = cpp_src.replace("<DELTA>", (String)(i + 2));
-//  			}
-// 			cpp_src += "\t\tknh_Func_invoke(lctx, " + mtd.mtd_cname + "_func, lsfp, <N>);\n";
-// 			cpp_src = cpp_src.replace("<N>", (String)(i + 1));
-// 			cpp_src += "\t}\n";
-// 			cpp_src += EventReturn_(mtd.return_type, mtd.return_value_type_object_flag);
-// 			cpp_src += "}\n";
-// 			cpp_src += "\n";
-// 			cpp_src = cpp_src.replace("<R>", mtd.return_type);
-// 			cpp_src = cpp_src.replace("<C>", class_name);
-// 			cpp_src = cpp_src.replace("<M>", mtd.mtd_name);
-// 			cpp_src = cpp_src.replace("<F>", mtd.mtd_cname + "_func");
-// 		}
-// 	}
-// //================ Generate Slot Methods ===================//
-// 	if (bi.make_rapper_class_flag) {
-// 		i = 0;
-// 		foreach (QMethod mtd in sigs) {
-// 			cpp_src += "<R> K<C>::<M>(";
-// 			for (i = 0; i < |mtd.argtypes|; i++) {
-// 				cpp_src += mtd.argtypes[i] + " " + mtd.values[i];
-// 				if (|mtd.argtypes| > i+1) {
-// 					cpp_src += ", ";
-// 				}
-// 			}
-// 			cpp_src += ")\n";
-// 			cpp_src += "{\n";
-// 			cpp_src += "\tif (<F> != NULL) {\n";
-// 			cpp_src	+= "\t\tCTX lctx = knh_getCurrentContext();\n";
-// 			cpp_src += "\t\tknh_sfp_t *lsfp = lctx->esp;\n";
-// 			cpp_src += "\t\tKNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));\n";
-//  			for (i = 0; i < |mtd.argtypes|; i++) {
-// 				if ("::" in? mtd.knh_argtypes[i]) {
-// 					print bi.class_name;
-// 					print mtd.mtd_name;
-// 				}
-// 				// if ("QList<" in? mtd.knh_argtypes[i]) {
-// 				// 	print bi.class_name;
-// 				// 	print mtd.mtd_name;
-// 				// }
-// 				cpp_src += EventArgPassing(mtd.knh_argtypes[i]);
-//  				cpp_src = cpp_src.replace("<N>", (String)(i + 1));
-//  				cpp_src = cpp_src.replace("<KT>", mtd.knh_argtypes[i]);
-//  				cpp_src = cpp_src.replace("<V>", mtd.values[i]);
-//  				cpp_src = cpp_src.replace("<T>", mtd.knh_argtypes[i] - "QList<" - ">");
-//  				cpp_src = cpp_src.replace("<N>", (String)(i + 1));
-//  				cpp_src = cpp_src.replace("<DELTA>", (String)(i + 2));
-//  			}
-// 			cpp_src += "\t\tknh_Func_invoke(lctx, " + mtd.mtd_cname + "_func, lsfp, <N>);\n";
-// 			cpp_src = cpp_src.replace("<N>", (String)(i + 1));
-// 			cpp_src += "\t}\n";
-// 			cpp_src += EventReturn_(mtd.return_type, mtd.return_value_type_object_flag);
-// 			cpp_src += "}\n";
-// 			cpp_src += "\n";
-// 			cpp_src = cpp_src.replace("<R>", mtd.return_type);
-// 			cpp_src = cpp_src.replace("<C>", class_name);
-// 			cpp_src = cpp_src.replace("<M>", mtd.mtd_name + "Slot");
-// 			cpp_src = cpp_src.replace("<F>", mtd.mtd_cname + "_func");
-// 		}
-// 	}
-// //================== Generate setFunc =========================//
-// 	if (bi.make_rapper_class_flag) {
-// 		cpp_src += """
-// void K<C>::setEventFunc(knh_Func_t *callback_func, string str)
-// {
-// 	KNH_INITv((*event_map)[str], callback_func);
-// """;
-// 		foreach (QMethod mtd in mtds) {
-// 			cpp_src += "\t" + mtd.mtd_cname + "_func = (*event_map)[\"" + mtd.event_type_name + "\"];\n";
-// 		}
-// 		cpp_src += "}\n\n";
 
-
-// 		cpp_src += """
-// void K<C>::setSlotFunc(knh_Func_t *callback_func, string str)
-// {
-// 	KNH_INITv((*slot_map)[str], callback_func);
-// """;
-// 		foreach (QMethod mtd in sigs) {
-// 			cpp_src += "\t" + mtd.mtd_cname + "_func = (*slot_map)[\"" + mtd.event_type_name + "\"];\n";
-// 		}
-// 		cpp_src += "}\n\n";
-// 	}
-
-//================== Generate Binding Methods ====================//
-//	if (bi.make_rapper_class_flag) {
-cpp_src += """
+//================== Generate addEvent ====================//
+	String addEvent = """
 KMETHOD <C>_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -457,14 +255,16 @@ KMETHOD <C>_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->Dummy<C>::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, \"WARNING:[<C>]unknown event name [%s]\\n\", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
+""";
+//================== Generate signalConnect ====================//
+	String signalConnect = """
 KMETHOD <C>_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -478,7 +278,7 @@ KMETHOD <C>_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->Dummy<C>::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, \"WARNING:[<C>]unknown signal name [%s]\\n\", signal_name);
 			return;
 		}
@@ -486,133 +286,111 @@ KMETHOD <C>_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 """;
-cpp_src = cpp_src.replace("<C>", class_name);
-cpp_src = cpp_src.replace("<T>", "K" + class_name + " *");
-//	}
 //========================Generate for GC================================//
-cpp_src += """
+	String gc += "";
+    gc +="""
 
-static void <CLASSNAME>_free(CTX ctx, knh_RawPtr_t *p)
+static void <C>_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
 	if (p->rawptr != NULL) {
-		<RAPPER><CLASSNAME> *qp = (<RAPPER><CLASSNAME> *)p->rawptr;
+		K<C> *qp = (K<C> *)p->rawptr;
 		(void)qp;
 		//delete qp;
 	}
 }
 """;
 
-cpp_src += """
-static void <CLASSNAME>_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+	gc += """
+static void <C>_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 <UNUSE>	(void)ctx; (void)p; (void)tail_;
+	int list_size = <NUM>;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
-		<RAPPER><CLASSNAME> *qp = (<RAPPER><CLASSNAME> *)p->rawptr;
+		K<C> *qp = (K<C> *)p->rawptr;
 <UNUSE>		(void)qp;
 """;
-if (|mtds| == 0 && |sigs| == 0) {
-	cpp_src = cpp_src.replace("<UNUSE>", "");
-} else {
-	cpp_src = cpp_src.replace("<UNUSE>", "//");
-		}
+	if (|mtds| == 0 && |sigs| == 0) {
+		gc = gc.replace("<UNUSE>", "");
+	} else {
+		gc = gc.replace("<UNUSE>", "//");
+			}
+
+	int num = |mtds| + |sigs|;
+	gc = gc.replace("<NUM>", (String)num);
 
 	foreach (QMethod mtd in mtds) {
-		cpp_src += "\t\tif (qp->" + mtd.mtd_cname + "_func != NULL) {\n";
-		cpp_src += "\t\t\tKNH_ADDREF(ctx, qp->" + mtd.mtd_cname + "_func);\n";
-		cpp_src	+= "\t\t\tKNH_SIZEREF(ctx);\n";
-		cpp_src	+= "\t\t}\n";
+		gc += "\t\tif (qp->dummy->" + mtd.mtd_cname + "_func != NULL) {\n";
+		gc += "\t\t\tKNH_ADDREF(ctx, qp->dummy->" + mtd.mtd_cname + "_func);\n";
+		gc += "\t\t\tKNH_SIZEREF(ctx);\n";
+		gc += "\t\t}\n";
 	}
 	foreach (QMethod mtd in sigs) {
-		cpp_src += "\t\tif (qp->" + mtd.mtd_cname + "_func != NULL) {\n";
-		cpp_src += "\t\t\tKNH_ADDREF(ctx, qp->" + mtd.mtd_cname + "_func);\n";
-		cpp_src	+= "\t\t\tKNH_SIZEREF(ctx);\n";
-		cpp_src	+= "\t\t}\n";
+		gc += "\t\tif (qp->dummy->" + mtd.mtd_cname + "_func != NULL) {\n";
+		gc += "\t\t\tKNH_ADDREF(ctx, qp->dummy->" + mtd.mtd_cname + "_func);\n";
+		gc	+= "\t\t\tKNH_SIZEREF(ctx);\n";
+		gc	+= "\t\t}\n";
 	}
-	cpp_src += """
+	gc += """
 	}
 }
 """;
 //=======================Generate compareTo==============================//
 
-	cpp_src += COMPARE_TO(class_name, bi.have_compare_operator_flag);
+	String compare_to = COMPARE_TO(class_name, bi.have_compare_operator_flag);
 
-//======================= Generate event ==============================//
-	if (bi.checkHaveEventMethod()) {
-		cpp_src += """
+//================== Generate setSelf =====================//
+	String setSelf = "";
+	setSelf += """
 
-bool K<CLASSNAME>::event(QEvent *event)
+void K<C>::setSelf(knh_RawPtr_t *ptr)
 {
-	if (!Dummy<CLASSNAME>::eventDispatcher(event)) {
-		<CLASSNAME>::event(event);
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+""";
+//======================= Generate event ==============================//
+	String event = "";
+	if (bi.checkHaveEventMethod()) {
+		event += """
+
+bool K<C>::event(QEvent *event)
+{
+	if (!dummy->eventDispatcher(event)) {
+		<C>::event(event);
 		return false;
 	}
 	return true;
 }
 """;
 	}
-	// } else {
-	// 	int i = 0;
-	// 	String wrapper = "";
-	// 	foreach (QMethod mtd in mtds) {
-	// 		 += "<R> K<C>::<M>(";
-	// 		for (i = 0; i < |mtd.argtypes|; i++) {
-	// 			dummy_cpp += mtd.argtypes[i] + " " + mtd.values[i];
-	// 			if (|mtd.argtypes| > i+1) {
-	// 				dummy_cpp += ", ";
-	// 			}
-	// 		}
-	// 		dummy_cpp += ")\n";
-	// 		dummy_cpp += "{\n";
-	// 		for (i = 0; i < |mtd.argtypes|; i++) {
-	// 			if ("::" in? mtd.knh_argtypes[i]) {
-	// 				print bi.class_name;
-	// 				print mtd.mtd_name;
-	// 			}
-	// 			// if ("QList" in? mtd.knh_argtypes[i]) {
-	// 			// 	print bi.class_name;
-	// 			// 	print mtd.mtd_name;
-	// 			// }
-	// 			dummy_cpp += EventArgPassing(mtd.knh_argtypes[i]);
-	// 			dummy_cpp = dummy_cpp.replace("<N>", (String)(i + 1));
-	// 			dummy_cpp = dummy_cpp.replace("<KT>", mtd.knh_argtypes[i]);
-	// 			dummy_cpp = dummy_cpp.replace("<V>", mtd.values[i]);
-	// 			dummy_cpp = dummy_cpp.replace("<T>", mtd.knh_argtypes[i] - "QList<" - ">");
-	// 			dummy_cpp = dummy_cpp.replace("<N>", (String)(i + 1));
-	// 			dummy_cpp = dummy_cpp.replace("<DELTA>", (String)(i + 2));
-	// 		}
-	// 		dummy_cpp = dummy_cpp.replace("<N>", (String)(i + 1));
-	// 		dummy_cpp += "}\n";
-	// 		dummy_cpp += "\n";
-	// 		dummy_cpp = dummy_cpp.replace("<R>", mtd.return_type);
-	// 		dummy_cpp = dummy_cpp.replace("<C>", bi.class_name);
-	// 		dummy_cpp = dummy_cpp.replace("<M>", mtd.mtd_name);
-	// 		dummy_cpp = dummy_cpp.replace("<F>", mtd.mtd_cname + "_func");
-	// 	}
-	// }
-
-
-
 
 //======================= def ==========================================//
-	cpp_src += """
+	String def_class = """
 
-DEFAPI(void) def<CLASSNAME>(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) def<C>(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	(void)ctx; (void) cid;
-	cdef->name = \"<CLASSNAME>\";
-	cdef->free = <CLASSNAME>_free;
-	cdef->reftrace = <CLASSNAME>_reftrace;
-	cdef->compareTo = <CLASSNAME>_compareTo;
+	cdef->name = \"<C>\";
+	cdef->free = <C>_free;
+	cdef->reftrace = <C>_reftrace;
+	cdef->compareTo = <C>_compareTo;
 }
 """;
 //=================================================================//
-	if (!bi.make_rapper_class_flag) {
-		cpp_src = cpp_src.replace("<RAPPER>", "");
-	} else {
-		cpp_src = cpp_src.replace("<RAPPER>", "K");
-	}
-	cpp_src = cpp_src.replace("<CLASSNAME>", class_name);
+    String cpp_src = "";
+	cpp_src += constructor;
+	cpp_src += addEvent;
+	cpp_src += signalConnect;
+	cpp_src += gc;
+	cpp_src += compare_to;
+	cpp_src += setSelf;
+	cpp_src += event;
+	cpp_src += def_class;
+	cpp_src = cpp_src.replace("<C>", class_name);
+	cpp_src = cpp_src.replace("<T>", "K" + class_name + " *");
 	return cpp_src;
 }
 
@@ -649,101 +427,135 @@ void removeOverloadQMethod(QMethod[] methods)
 
 String genDummyHeaderSource(BindInfo bi, QMethod[] mtds, QMethod[] sigs, BindInfo[] bia)
 {
-	String dummy_hpp = "";
 //=================== Generate dummy class definition =======================//
-	dummy_hpp += """
-class Dummy<CLASS><INHERITS> {
+	String class_definition = "";
+	class_definition += """
+class Dummy<C><INHERITS> {
+<UNUSE>	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 """;
 	foreach (QMethod mtd in mtds) {
-		dummy_hpp += "\tknh_Func_t *" + mtd.mtd_cname + "_func;\n"
+		class_definition += "\tknh_Func_t *" + mtd.mtd_cname + "_func;\n"
 	}
 	foreach (QMethod mtd in sigs) {
-		dummy_hpp += "\tknh_Func_t *" + mtd.mtd_cname + "_func;\n"
+		class_definition += "\tknh_Func_t *" + mtd.mtd_cname + "_func;\n"
 	}
-	dummy_hpp += """
-	Dummy<CLASS>();
+	class_definition += """
+	Dummy<C>();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
+	bool addEvent(knh_Func_t *callback_func, std::string str);
+	bool signalConnect(knh_Func_t *callback_func, std::string str);
+<CONNECTION><EVENT><SLOTS>};
 """;
-//============== Generate Public Event Method List ================//
-	foreach (QMethod mtd in mtds) {
-		dummy_hpp += "\t" + mtd.fixed_src + ";\n";
+
+	if (bi.checkInheritsQObject() && |sigs| != 0) {
+		class_definition = class_definition.replace("<UNUSE>", "");
+	} else {
+		class_definition = class_definition.replace("<UNUSE>", "//");
 	}
-	dummy_hpp += "\tbool addEvent(knh_Func_t *callback_func, std::string str);\n";
-	dummy_hpp += "\tbool signalConnect(knh_Func_t *callback_func, std::string str);\n";
-// //====================== Generate Signals ========================//
-// 	kqclass += "signals:\n";
-// 	foreach (QMethod mtd in sigs) {
-// 		kqclass += "\t" + mtd.fixed_src + ";\n";
-// 	}
-//==================== Generate Public Slot ======================//
-	// dummy_hpp += "public slots:\n";
-	// foreach (QMethod mtd in sigs) {
-	// 	dummy_hpp += "\t" + mtd.slot_src + ";\n";
-	// }
-//======================== replace ==================================//
-	dummy_hpp = dummy_hpp.replace("<CLASS>", bi.class_name);
-	String inherits = "";
-	if (|bi.parent_name| != 0) {
-		inherits += " : ";
-		for (int i = 0; i < |bi.parent_name|; i++) {
-			inherits += "public Dummy" + bi.parent_name[i];
-			if (i < |bi.parent_name| - 1) inherits += ", ";
+
+//====================== connection =============================//
+	String connection = "";
+//	if (bi.checkInheritsQObject() && |sigs| != 0) {
+	connection += "\tvoid connection(QObject *o);\n";
+//	}
+
+//============== Generate Public Event Method List ================//
+	String event_method = "";
+	foreach (QMethod mtd in mtds) {
+		event_method += "\t" + mtd.fixed_src + ";\n";
+	}
+
+//==================== Generate Public Slots ======================//
+	String public_slots = "";
+	if (bi.checkInheritsQObject() && |sigs| != 0) {
+//	if (bi.checkInheritsQObject()) {
+		public_slots += "public slots:\n";
+		foreach (QMethod mtd in sigs) {
+			public_slots += "\t" + mtd.slot_src + ";\n";
 		}
 	}
-	dummy_hpp = dummy_hpp.replace("<INHERITS>", inherits);
 
-	dummy_hpp += "};";
-	return dummy_hpp;
+//==============================================================//
+	String hpp_src = "";
+	hpp_src += class_definition;
+	hpp_src = hpp_src.replace("<CONNECTION>", connection);
+	hpp_src = hpp_src.replace("<EVENT>", event_method);
+	hpp_src = hpp_src.replace("<SLOTS>", public_slots);
+	hpp_src = hpp_src.replace("<C>", bi.class_name);
+
+	String inherits = "";
+	if (bi.class_name == "QObject") {
+		inherits += " : public QObject";
+	} else if (|bi.parent_name| != 0) {
+		for (int i = 0; i < |bi.parent_name|; i++) {
+			int size = |bi.parent_name|;
+			foreach (String check in bi.parent_name) {
+				if (check == "QObject") size--;
+			}
+			if (bi.parent_name[i] == "QObject") {
+				inherits = "public Dummy" + bi.parent_name[i] + (|bi.parent_name| == 1 ? "" : ", ") + inherits;
+			} else {
+				inherits += "public Dummy" + bi.parent_name[i];
+				if (i < size - 1) inherits += ", ";
+			}
+		}
+		inherits = " : " + inherits;
+	}
+	hpp_src = hpp_src.replace("<INHERITS>", inherits);
+
+	return hpp_src;
 }
 
 
 String genDummyCppSource(BindInfo bi, QMethod[] mtds, QMethod[] sigs, BindInfo[] bia, String[] e_table)
 {
-	String dummy_cpp = "";
 //======================== Generate constructor ==============================//
-	dummy_cpp += """
-Dummy<CLASS>::Dummy<CLASS>()
+	String constructor = "";
+	constructor += """
+Dummy<C>::Dummy<C>()
 {
 	self = NULL;
 """;
 	foreach (QMethod mtd in mtds) {
-		dummy_cpp += "\t" + mtd.mtd_cname + "_func = NULL;\n";
+		constructor += "\t" + mtd.mtd_cname + "_func = NULL;\n";
 	}
 	foreach (QMethod mtd in sigs) {
-		dummy_cpp += "\t" + mtd.mtd_cname + "_func = NULL;\n";
+		constructor += "\t" + mtd.mtd_cname + "_func = NULL;\n";
 	}
-	dummy_cpp += "\tevent_map = new map<string, knh_Func_t *>();\n";
-	dummy_cpp += "\tslot_map = new map<string, knh_Func_t *>();\n";
+	constructor += "\tevent_map = new map<string, knh_Func_t *>();\n";
+	constructor += "\tslot_map = new map<string, knh_Func_t *>();\n";
 	foreach (QMethod mtd in mtds) {
-		dummy_cpp += "\tevent_map->insert(map<string, knh_Func_t *>::value_type(\"" + mtd.event_type_name + "\", NULL));\n";
+		constructor += "\tevent_map->insert(map<string, knh_Func_t *>::value_type(\"" + mtd.event_type_name + "\", NULL));\n";
 	}
 	foreach (QMethod mtd in sigs) {
-		dummy_cpp += "\tslot_map->insert(map<string, knh_Func_t *>::value_type(\"" + mtd.event_type_name + "\", NULL));\n";
+		constructor += "\tslot_map->insert(map<string, knh_Func_t *>::value_type(\"" + mtd.event_type_name + "\", NULL));\n";
 	}
-	dummy_cpp += "}\n"
+	constructor += "}\n"
 
 //====================== setSelf =================================//
 
-	dummy_cpp += """
+	String setSelf = "";
+	setSelf += """
 
 void Dummy<C>::setSelf(knh_RawPtr_t *ptr)
 {
 	Dummy<C>::self = ptr;
 """;
 	foreach (String pn in bi.parent_name) {
-		dummy_cpp += "\tDummy" + pn + "::setSelf(ptr);\n";
+		setSelf += "\tDummy" + pn + "::setSelf(ptr);\n";
 	}
-	dummy_cpp += "}\n";
+	setSelf += "}\n";
 
 //======================== Generate eventDispatcher ================================//
-	dummy_cpp += """
+	String eventDispatcher = "";
+	eventDispatcher += """
 
-bool Dummy<CLASS>::eventDispatcher(QEvent *event)
+bool Dummy<C>::eventDispatcher(QEvent *event)
 {
 	bool ret = true;
 	switch (event->type()) {""";
@@ -753,7 +565,7 @@ bool Dummy<CLASS>::eventDispatcher(QEvent *event)
 		}
 		String case_ = "";
 		case_ += "<EVENT>\n";
-		case_ += "\t\tret = " + mtd.mtd_name + "(dynamic_cast<" + mtd.argtypes[0] + ">(event));\n";
+		case_ += "\t\tret = " + mtd.mtd_name + "Dummy(dynamic_cast<" + mtd.argtypes[0] + ">(event));\n";
 		case_ += "\t\tbreak;";
 
 		String event = "";
@@ -786,168 +598,195 @@ bool Dummy<CLASS>::eventDispatcher(QEvent *event)
 			}
 		}
 		case_ = case_.replace("<EVENT>", event);
-		dummy_cpp += case_;
+		eventDispatcher += case_;
 	}
 
-	dummy_cpp +=  "\n\tdefault:\n";
+	eventDispatcher +=  "\n\tdefault:\n";
 	if (|bi.parent_name| == 0) {
-		dummy_cpp += "\t\tret = false;\n";
+		eventDispatcher += "\t\tret = false;\n";
 	} else {
 		for (int i = 0; i < |bi.parent_name|; i++) {
-			dummy_cpp += "\t\tret = Dummy" + bi.parent_name[i] + "::eventDispatcher(event);\n";
+			eventDispatcher += "\t\tret = Dummy" + bi.parent_name[i] + "::eventDispatcher(event);\n";
 			if (i < |bi.parent_name| - 1) {
-				dummy_cpp += "\t\tif (ret) break;\n";
+				eventDispatcher += "\t\tif (ret) break;\n";
 			}
 		}
 	}
-	dummy_cpp += "\t\tbreak;\n";
-	dummy_cpp += "\t}\n\treturn ret;\n}\n\n";
+	eventDispatcher += "\t\tbreak;\n";
+	eventDispatcher += "\t}\n\treturn ret;\n}\n\n";
 
 //================= Generate Event Methods =================//
-//    if (bi.make_rapper_class_flag) {
+    String eventMethods = "";
 	int i = 0;
 	foreach (QMethod mtd in mtds) {
-		dummy_cpp += "bool Dummy<C>::<M>(";
+		eventMethods += "bool Dummy<C>::<M>(";
 		for (i = 0; i < |mtd.argtypes|; i++) {
-			dummy_cpp += mtd.argtypes[i] + " " + mtd.values[i];
+			eventMethods += mtd.argtypes[i] + " " + mtd.values[i];
 			if (|mtd.argtypes| > i+1) {
-				dummy_cpp += ", ";
+				eventMethods += ", ";
 			}
 		}
-		dummy_cpp += ")\n";
-		dummy_cpp += "{\n";
-		dummy_cpp += "\tif (<F> != NULL) {\n";
-		dummy_cpp += "\t\tCTX lctx = knh_getCurrentContext();\n";
-		dummy_cpp += "\t\tknh_sfp_t *lsfp = lctx->esp;\n";
-		dummy_cpp += "\t\tKNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));\n";
+		eventMethods += ")\n";
+		eventMethods += "{\n";
+		eventMethods += "\tif (<F> != NULL) {\n";
+		eventMethods += "\t\tCTX lctx = knh_getCurrentContext();\n";
+		eventMethods += "\t\tknh_sfp_t *lsfp = lctx->esp;\n";
+		eventMethods += "\t\tKNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));\n";
 		for (i = 0; i < |mtd.argtypes|; i++) {
 			if ("::" in? mtd.knh_argtypes[i]) {
 				print bi.class_name;
 				print mtd.mtd_name;
 			}
-			// if ("QList" in? mtd.knh_argtypes[i]) {
-			// 	print bi.class_name;
-			// 	print mtd.mtd_name;
-			// }
-			dummy_cpp += EventArgPassing(mtd.knh_argtypes[i]);
-			dummy_cpp = dummy_cpp.replace("<N>", (String)(i + 1));
-			dummy_cpp = dummy_cpp.replace("<KT>", mtd.knh_argtypes[i]);
-			dummy_cpp = dummy_cpp.replace("<V>", mtd.values[i]);
-			dummy_cpp = dummy_cpp.replace("<T>", mtd.knh_argtypes[i] - "QList<" - ">");
-			dummy_cpp = dummy_cpp.replace("<N>", (String)(i + 1));
-			dummy_cpp = dummy_cpp.replace("<DELTA>", (String)(i + 2));
+			eventMethods += EventArgPassing(mtd.knh_argtypes[i]);
+			eventMethods = eventMethods.replace("<N>", (String)(i + 1));
+			eventMethods = eventMethods.replace("<KT>", mtd.knh_argtypes[i]);
+			eventMethods = eventMethods.replace("<V>", mtd.values[i]);
+			eventMethods = eventMethods.replace("<T>", mtd.knh_argtypes[i] - "QList<" - ">");
+			eventMethods = eventMethods.replace("<N>", (String)(i + 1));
+			eventMethods = eventMethods.replace("<DELTA>", (String)(i + 2));
 		}
-		dummy_cpp += "\t\tknh_Func_invoke(lctx, " + mtd.mtd_cname + "_func, lsfp, <N>);\n";
-		dummy_cpp += "\t\treturn true;\n";
-		dummy_cpp = dummy_cpp.replace("<N>", (String)(i + 1));
-		dummy_cpp += "\t}\n";
-		dummy_cpp += "\treturn false;\n";
-//		dummy_cpp += EventReturn_(mtd.return_type, mtd.return_value_type_object_flag);
-		dummy_cpp += "}\n";
-		dummy_cpp += "\n";
-		dummy_cpp = dummy_cpp.replace("<R>", mtd.return_type);
-		dummy_cpp = dummy_cpp.replace("<C>", bi.class_name);
-		dummy_cpp = dummy_cpp.replace("<M>", mtd.mtd_name);
-		dummy_cpp = dummy_cpp.replace("<F>", mtd.mtd_cname + "_func");
+		eventMethods += "\t\tknh_Func_invoke(lctx, " + mtd.mtd_cname + "_func, lsfp, <N>);\n";
+		eventMethods += "\t\treturn true;\n";
+		eventMethods = eventMethods.replace("<N>", (String)(i + 1));
+		eventMethods += "\t}\n";
+		eventMethods += "\treturn false;\n";
+		eventMethods += "}\n";
+		eventMethods += "\n";
+		eventMethods = eventMethods.replace("<R>", mtd.return_type);
+		eventMethods = eventMethods.replace("<C>", bi.class_name);
+		eventMethods = eventMethods.replace("<M>", mtd.mtd_name + "Dummy");
+		eventMethods = eventMethods.replace("<F>", mtd.mtd_cname + "_func");
 	}
-//	}
 //================ Generate Slot Methods ===================//
-//	if (bi.make_rapper_class_flag) {
+    String slotMethods = "";
 	i = 0;
 	foreach (QMethod mtd in sigs) {
-		dummy_cpp += "bool Dummy<C>::<M>(";
+		slotMethods += "bool Dummy<C>::<M>(";
 		for (i = 0; i < |mtd.argtypes|; i++) {
-			dummy_cpp += mtd.argtypes[i] + " " + mtd.values[i];
+			slotMethods += mtd.argtypes[i] + " " + mtd.values[i];
 			if (|mtd.argtypes| > i+1) {
-				dummy_cpp += ", ";
+				slotMethods += ", ";
 			}
 		}
-		dummy_cpp += ")\n";
-		dummy_cpp += "{\n";
-		dummy_cpp += "\tif (<F> != NULL) {\n";
-		dummy_cpp	+= "\t\tCTX lctx = knh_getCurrentContext();\n";
-		dummy_cpp += "\t\tknh_sfp_t *lsfp = lctx->esp;\n";
-		dummy_cpp += "\t\tKNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));\n";
+		slotMethods += ")\n";
+		slotMethods += "{\n";
+		slotMethods += "\tif (<F> != NULL) {\n";
+		slotMethods	+= "\t\tCTX lctx = knh_getCurrentContext();\n";
+		slotMethods += "\t\tknh_sfp_t *lsfp = lctx->esp;\n";
+		slotMethods += "\t\tKNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));\n";
 		for (i = 0; i < |mtd.argtypes|; i++) {
 			if ("::" in? mtd.knh_argtypes[i]) {
 				print bi.class_name;
 				print mtd.mtd_name;
 			}
-			// if ("QList<" in? mtd.knh_argtypes[i]) {
-			// 	print bi.class_name;
-			// 	print mtd.mtd_name;
-			// }
-			dummy_cpp += EventArgPassing(mtd.knh_argtypes[i]);
-			dummy_cpp = dummy_cpp.replace("<N>", (String)(i + 1));
-			dummy_cpp = dummy_cpp.replace("<KT>", mtd.knh_argtypes[i]);
-			dummy_cpp = dummy_cpp.replace("<V>", mtd.values[i]);
-			dummy_cpp = dummy_cpp.replace("<T>", mtd.knh_argtypes[i] - "QList<" - ">");
-			dummy_cpp = dummy_cpp.replace("<N>", (String)(i + 1));
-			dummy_cpp = dummy_cpp.replace("<DELTA>", (String)(i + 2));
+			slotMethods += EventArgPassing(mtd.knh_argtypes[i]);
+			slotMethods = slotMethods.replace("<N>", (String)(i + 1));
+			slotMethods = slotMethods.replace("<KT>", mtd.knh_argtypes[i]);
+			slotMethods = slotMethods.replace("<V>", mtd.values[i]);
+			slotMethods = slotMethods.replace("<T>", mtd.knh_argtypes[i] - "QList<" - ">");
+			slotMethods = slotMethods.replace("<N>", (String)(i + 1));
+			slotMethods = slotMethods.replace("<DELTA>", (String)(i + 2));
 		}
-		dummy_cpp += "\t\tknh_Func_invoke(lctx, " + mtd.mtd_cname + "_func, lsfp, <N>);\n";
-		dummy_cpp += "\t\treturn true;\n";
-		dummy_cpp = dummy_cpp.replace("<N>", (String)(i + 1));
-		dummy_cpp += "\t}\n";
-		dummy_cpp += "\treturn false;\n";
-//		dummy_cpp += EventReturn_(mtd.return_type, mtd.return_value_type_object_flag);
-		dummy_cpp += "}\n";
-		dummy_cpp += "\n";
-		dummy_cpp = dummy_cpp.replace("<R>", mtd.return_type);
-		dummy_cpp = dummy_cpp.replace("<C>", bi.class_name);
-		dummy_cpp = dummy_cpp.replace("<M>", mtd.mtd_name + "Slot");
-		dummy_cpp = dummy_cpp.replace("<F>", mtd.mtd_cname + "_func");
+		slotMethods += "\t\tknh_Func_invoke(lctx, " + mtd.mtd_cname + "_func, lsfp, <N>);\n";
+		slotMethods += "\t\treturn true;\n";
+		slotMethods = slotMethods.replace("<N>", (String)(i + 1));
+		slotMethods += "\t}\n";
+		slotMethods += "\treturn false;\n";
+		slotMethods += "}\n";
+		slotMethods += "\n";
+		slotMethods = slotMethods.replace("<R>", mtd.return_type);
+		slotMethods = slotMethods.replace("<C>", bi.class_name);
+		slotMethods = slotMethods.replace("<M>", mtd.mtd_name + "Slot");
+		slotMethods = slotMethods.replace("<F>", mtd.mtd_cname + "_func");
 	}
-//	}
-//=========== Generate dummy::addEvent, dummy::signalConnect (setFunc) ==================//
-//	if (bi.make_rapper_class_flag) {
-	dummy_cpp += """
+//===================== Generate dummy::addEvent =========================//
+	String addEvent = "";
+	addEvent += """
 bool Dummy<C>::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = Dummy<C>::event_map->bigin();
 	if ((itr = Dummy<C>::event_map->find(str)) == Dummy<C>::event_map->end()) {
-		bool ret;
+		bool ret = false;
 """;
 	for (int i = 0; i < |bi.parent_name|; i++) {
-		dummy_cpp += "\t\tret = Dummy" + bi.parent_name[i] + "::addEvent(callback_func, str);\n";
+		addEvent += "\t\tret = Dummy" + bi.parent_name[i] + "::addEvent(callback_func, str);\n";
 		if (i < |bi.parent_name| - 1) {
-			dummy_cpp += "\t\tif (ret) return true;\n";
+			addEvent += "\t\tif (ret) return true;\n";
 		}
 	}
-	dummy_cpp += """
+	addEvent += """
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
 """;
 	foreach (QMethod mtd in mtds) {
-		dummy_cpp += "\t\t" + mtd.mtd_cname + "_func = (*event_map)[\"" + mtd.event_type_name + "\"];\n";
+		addEvent += "\t\t" + mtd.mtd_cname + "_func = (*event_map)[\"" + mtd.event_type_name + "\"];\n";
 	}
-	dummy_cpp += "\t\treturn true;\n\t}\n}\n\n";
-//
-	dummy_cpp += """
+	addEvent += "\t\treturn true;\n\t}\n}\n\n";
+//=================== dummy::signalConnect  ==================//
+	String signalConnect = "";
+	signalConnect += """
 bool Dummy<C>::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = Dummy<C>::slot_map->bigin();
-	if ((itr = Dummy<C>::event_map->find(str)) == Dummy<C>::slot_map->end()) {
-		bool ret;
+	if ((itr = Dummy<C>::slot_map->find(str)) == Dummy<C>::slot_map->end()) {
+		bool ret = false;
 """;
 	for (int i = 0; i < |bi.parent_name|; i++) {
-		dummy_cpp += "\t\tret = Dummy" + bi.parent_name[i] + "::signalConnect(callback_func, str);\n";
+		signalConnect += "\t\tret = Dummy" + bi.parent_name[i] + "::signalConnect(callback_func, str);\n";
 		if (i < |bi.parent_name| - 1) {
-			dummy_cpp += "\t\tif (ret) return true;\n";
+			signalConnect += "\t\tif (ret) return true;\n";
 		}
 	}
-	dummy_cpp += """
+	signalConnect += """
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
 """;
 	foreach (QMethod mtd in sigs) {
-		dummy_cpp += "\t\t" + mtd.mtd_cname + "_func = (*slot_map)[\"" + mtd.event_type_name + "\"];\n";
+		signalConnect += "\t\t" + mtd.mtd_cname + "_func = (*slot_map)[\"" + mtd.event_type_name + "\"];\n";
 	}
-	dummy_cpp += "\t\treturn true;\n\t}\n}\n\n";
+	signalConnect += "\t\treturn true;\n\t}\n}\n\n";
 
-//======================= replace ============================//
+//================== connection =========================//
+
+	String connection = "";
+	connection = """
+
+void Dummy<C>::connection(QObject *o)
+{
+""";
+	foreach (QMethod sig in sigs) {
+		String line = "";
+		line += "\tconnect(o, SIGNAL(" + sig.mtd_name + "(<ARGTYPES>)), this, SLOT(" + sig.mtd_name + "Slot(<ARGTYPES>)));\n";
+		String argtypes = "";
+		for (int i = 0; i < |sig.argtypes|; i++) {
+			argtypes += sig.argtypes[i];
+			if (i < |sig.argtypes| - 1) argtypes += ", ";
+		}
+		line = line.replace("<ARGTYPES>", argtypes);
+		connection += line;
+	}
+	if (|bi.parent_name| == 0) {
+		connection += "\treturn;\n";
+	} else {
+		for (int i = 0; i < |bi.parent_name|; i++) {
+			connection += "\tDummy" + bi.parent_name[i] + "::connection(o);\n";
+		}
+	}
+	connection += "}\n";
+
+//=======================================================//
+	String dummy_cpp = "";
+	dummy_cpp += constructor;
+	dummy_cpp += setSelf;
+	dummy_cpp += eventDispatcher;
+	dummy_cpp += eventMethods;
+	dummy_cpp += slotMethods;
+	dummy_cpp += addEvent;
+	dummy_cpp += signalConnect;
+	dummy_cpp += connection;
+
 	dummy_cpp = dummy_cpp.replace("<C>", bi.class_name);
 	dummy_cpp = dummy_cpp.replace("<T>", "K" + bi.class_name + " *");
 	dummy_cpp = dummy_cpp.replace("<CLASS>", bi.class_name);
@@ -973,16 +812,12 @@ void genEventSource(BindInfo[] bia, QtInterface[] interfaces)
 {
 	int qevent_index = QIsearchClassIndex(interfaces, "QEvent");
 	String[] e_table = makeEventTable(interfaces[qevent_index]);
-//    print e_table;
 	int event_mtd_num = 0;
 
 	foreach (BindInfo bi in bia) {
 		if (bi.checkUnusedClass()) {
 			continue;
 		}
-//		if (!bi.inherits_qobject_flag) {
-//			continue;
-//		}
 		QMethod[] mtds = [];
 		QMethod[] sigs = [];
 		String class_name = bi.class_name;
@@ -1017,24 +852,16 @@ void genEventSource(BindInfo[] bia, QtInterface[] interfaces)
 		}
 		removeOverloadQMethod(sigs);
 
-		// if (OUTPUT_EVENT_BIND) {
-		// 	if (!(|mtds| == 0 && |sigs| == 0)) {
-		// 		bi.make_rapper_class_flag = true;
-		// 	} else {
-		// 		print "not make rapper class of " + class_name;
-		// 	}
-		// }
+//		event_mtd_num += (|mtds| + |sigs|);
 
-		event_mtd_num += (|mtds| + |sigs|);
-
-		// bi.dummy_hpp = genDummyHeaderSource(bi, mtds, sigs, bia);
-		// bi.dummy_cpp = genDummyCppSource(bi, mtds, sigs, bia, e_table);
-		// bi.header = genHeaderSource(class_name, mtds, sigs, bi);
-		// bi.event_bind = genCppSource(class_name, mtds, sigs, bi);
-		bi.dummy_hpp = genDummyHeaderSource(bi, mtds, [], bia);
-		bi.dummy_cpp = genDummyCppSource(bi, mtds, [], bia, e_table);
-		bi.header = genHeaderSource(class_name, mtds, [], bi);
-		bi.event_bind = genCppSource(class_name, mtds, [], bi);
+		bi.dummy_hpp = genDummyHeaderSource(bi, mtds, sigs, bia);
+		bi.dummy_cpp = genDummyCppSource(bi, mtds, sigs, bia, e_table);
+		bi.header = genHeaderSource(class_name, mtds, sigs, bi);
+		bi.event_bind = genCppSource(class_name, mtds, sigs, bi);
+		// bi.dummy_hpp = genDummyHeaderSource(bi, mtds, [], bia);
+		// bi.dummy_cpp = genDummyCppSource(bi, mtds, [], bia, e_table);
+		// bi.header = genHeaderSource(class_name, mtds, [], bi);
+		// bi.event_bind = genCppSource(class_name, mtds, [], bi);
 
 	}
 }

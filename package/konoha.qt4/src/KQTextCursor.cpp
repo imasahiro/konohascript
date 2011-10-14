@@ -4,7 +4,6 @@ KMETHOD QTextCursor_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQTextCursor *ret_v = new KQTextCursor();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QTextCursor_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QTextDocument*  document = RawPtr_to(QTextDocument*, sfp[1]);
 	KQTextCursor *ret_v = new KQTextCursor(document);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -30,7 +28,6 @@ KMETHOD QTextCursor_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QTextFrame*  frame = RawPtr_to(QTextFrame*, sfp[1]);
 	KQTextCursor *ret_v = new KQTextCursor(frame);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -43,7 +40,6 @@ KMETHOD QTextCursor_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QTextBlock  block = *RawPtr_to(const QTextBlock *, sfp[1]);
 	KQTextCursor *ret_v = new KQTextCursor(block);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -56,7 +52,6 @@ KMETHOD QTextCursor_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QTextCursor  cursor = *RawPtr_to(const QTextCursor *, sfp[1]);
 	KQTextCursor *ret_v = new KQTextCursor(cursor);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -962,7 +957,7 @@ bool DummyQTextCursor::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextCursor::event_map->bigin();
 	if ((itr = DummyQTextCursor::event_map->find(str)) == DummyQTextCursor::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -973,8 +968,8 @@ bool DummyQTextCursor::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTextCursor::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextCursor::slot_map->bigin();
-	if ((itr = DummyQTextCursor::event_map->find(str)) == DummyQTextCursor::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTextCursor::slot_map->find(str)) == DummyQTextCursor::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -983,9 +978,16 @@ bool DummyQTextCursor::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQTextCursor::connection(QObject *o)
+{
+	return;
+}
+
 KQTextCursor::KQTextCursor() : QTextCursor()
 {
 	self = NULL;
+	dummy = new DummyQTextCursor();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextCursor_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1001,14 +1003,13 @@ KMETHOD QTextCursor_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTextCursor::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextCursor]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTextCursor_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1022,7 +1023,7 @@ KMETHOD QTextCursor_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTextCursor::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextCursor]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -1042,6 +1043,9 @@ static void QTextCursor_free(CTX ctx, knh_RawPtr_t *p)
 static void QTextCursor_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTextCursor *qp = (KQTextCursor *)p->rawptr;
 		(void)qp;
@@ -1051,6 +1055,12 @@ static void QTextCursor_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QTextCursor_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QTextCursor*>(p1->rawptr) == *static_cast<QTextCursor*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQTextCursor::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQTextCursor(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

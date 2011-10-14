@@ -129,7 +129,7 @@ bool DummyQGradient::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGradient::event_map->bigin();
 	if ((itr = DummyQGradient::event_map->find(str)) == DummyQGradient::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -140,8 +140,8 @@ bool DummyQGradient::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGradient::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGradient::slot_map->bigin();
-	if ((itr = DummyQGradient::event_map->find(str)) == DummyQGradient::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGradient::slot_map->find(str)) == DummyQGradient::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -150,9 +150,16 @@ bool DummyQGradient::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQGradient::connection(QObject *o)
+{
+	return;
+}
+
 KQGradient::KQGradient() : QGradient()
 {
 	self = NULL;
+	dummy = new DummyQGradient();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGradient_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -168,14 +175,13 @@ KMETHOD QGradient_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGradient::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGradient]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGradient_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -189,7 +195,7 @@ KMETHOD QGradient_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGradient::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGradient]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -209,6 +215,9 @@ static void QGradient_free(CTX ctx, knh_RawPtr_t *p)
 static void QGradient_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGradient *qp = (KQGradient *)p->rawptr;
 		(void)qp;
@@ -218,6 +227,12 @@ static void QGradient_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QGradient_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QGradient*>(p1->rawptr) == *static_cast<QGradient*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQGradient::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQGradient(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -6,7 +6,6 @@ KMETHOD QMoveEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPoint  oldPos = *RawPtr_to(const QPoint *, sfp[2]);
 	KQMoveEvent *ret_v = new KQMoveEvent(pos, oldPos);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -70,7 +69,7 @@ bool DummyQMoveEvent::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMoveEvent::event_map->bigin();
 	if ((itr = DummyQMoveEvent::event_map->find(str)) == DummyQMoveEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -82,8 +81,8 @@ bool DummyQMoveEvent::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQMoveEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMoveEvent::slot_map->bigin();
-	if ((itr = DummyQMoveEvent::event_map->find(str)) == DummyQMoveEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQMoveEvent::slot_map->find(str)) == DummyQMoveEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -93,9 +92,16 @@ bool DummyQMoveEvent::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQMoveEvent::connection(QObject *o)
+{
+	DummyQEvent::connection(o);
+}
+
 KQMoveEvent::KQMoveEvent(const QPoint pos, const QPoint oldPos) : QMoveEvent(pos, oldPos)
 {
 	self = NULL;
+	dummy = new DummyQMoveEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMoveEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -111,14 +117,13 @@ KMETHOD QMoveEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQMoveEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMoveEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QMoveEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -132,7 +137,7 @@ KMETHOD QMoveEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQMoveEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMoveEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -152,6 +157,9 @@ static void QMoveEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QMoveEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQMoveEvent *qp = (KQMoveEvent *)p->rawptr;
 		(void)qp;
@@ -161,6 +169,12 @@ static void QMoveEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QMoveEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQMoveEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQMoveEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

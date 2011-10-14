@@ -410,8 +410,10 @@ KMETHOD QAbstractSpinBox_stepUp(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQAbstractSpinBox::DummyQAbstractSpinBox()
 {
 	self = NULL;
+	editing_finished_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("editing-finished", NULL));
 }
 
 void DummyQAbstractSpinBox::setSelf(knh_RawPtr_t *ptr)
@@ -431,11 +433,23 @@ bool DummyQAbstractSpinBox::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQAbstractSpinBox::editingFinishedSlot()
+{
+	if (editing_finished_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, editing_finished_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQAbstractSpinBox::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractSpinBox::event_map->bigin();
 	if ((itr = DummyQAbstractSpinBox::event_map->find(str)) == DummyQAbstractSpinBox::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -447,20 +461,29 @@ bool DummyQAbstractSpinBox::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQAbstractSpinBox::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractSpinBox::slot_map->bigin();
-	if ((itr = DummyQAbstractSpinBox::event_map->find(str)) == DummyQAbstractSpinBox::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAbstractSpinBox::slot_map->find(str)) == DummyQAbstractSpinBox::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		editing_finished_func = (*slot_map)["editing-finished"];
 		return true;
 	}
 }
 
 
+void DummyQAbstractSpinBox::connection(QObject *o)
+{
+	connect(o, SIGNAL(editingFinished()), this, SLOT(editingFinishedSlot()));
+	DummyQWidget::connection(o);
+}
+
 KQAbstractSpinBox::KQAbstractSpinBox(QWidget* parent) : QAbstractSpinBox(parent)
 {
 	self = NULL;
+	dummy = new DummyQAbstractSpinBox();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractSpinBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -476,14 +499,13 @@ KMETHOD QAbstractSpinBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAbstractSpinBox::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractSpinBox]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAbstractSpinBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -497,7 +519,7 @@ KMETHOD QAbstractSpinBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAbstractSpinBox::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractSpinBox]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -516,10 +538,17 @@ static void QAbstractSpinBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractSpinBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAbstractSpinBox *qp = (KQAbstractSpinBox *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->editing_finished_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->editing_finished_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -528,9 +557,15 @@ static int QAbstractSpinBox_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQAbstractSpinBox::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQAbstractSpinBox::event(QEvent *event)
 {
-	if (!DummyQAbstractSpinBox::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QAbstractSpinBox::event(event);
 		return false;
 	}

@@ -752,8 +752,16 @@ KMETHOD QAction_trigger(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQAction::DummyQAction()
 {
 	self = NULL;
+	changed_func = NULL;
+	hovered_func = NULL;
+	toggled_func = NULL;
+	triggered_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("hovered", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("toggled", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("triggered", NULL));
 }
 
 void DummyQAction::setSelf(knh_RawPtr_t *ptr)
@@ -773,11 +781,61 @@ bool DummyQAction::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQAction::changedSlot()
+{
+	if (changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAction::hoveredSlot()
+{
+	if (hovered_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, hovered_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAction::toggledSlot(bool checked)
+{
+	if (toggled_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = checked;
+		knh_Func_invoke(lctx, toggled_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAction::triggeredSlot(bool checked)
+{
+	if (triggered_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = checked;
+		knh_Func_invoke(lctx, triggered_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQAction::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAction::event_map->bigin();
 	if ((itr = DummyQAction::event_map->find(str)) == DummyQAction::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -789,20 +847,35 @@ bool DummyQAction::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQAction::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAction::slot_map->bigin();
-	if ((itr = DummyQAction::event_map->find(str)) == DummyQAction::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAction::slot_map->find(str)) == DummyQAction::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		changed_func = (*slot_map)["changed"];
+		hovered_func = (*slot_map)["hovered"];
+		toggled_func = (*slot_map)["toggled"];
+		triggered_func = (*slot_map)["triggered"];
 		return true;
 	}
 }
 
 
+void DummyQAction::connection(QObject *o)
+{
+	connect(o, SIGNAL(changed()), this, SLOT(changedSlot()));
+	connect(o, SIGNAL(hovered()), this, SLOT(hoveredSlot()));
+	connect(o, SIGNAL(toggled(bool)), this, SLOT(toggledSlot(bool)));
+	connect(o, SIGNAL(triggered(bool)), this, SLOT(triggeredSlot(bool)));
+	DummyQObject::connection(o);
+}
+
 KQAction::KQAction(QObject* parent) : QAction(parent)
 {
 	self = NULL;
+	dummy = new DummyQAction();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAction_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -818,14 +891,13 @@ KMETHOD QAction_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAction::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAction]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAction_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -839,7 +911,7 @@ KMETHOD QAction_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAction::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAction]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -858,10 +930,29 @@ static void QAction_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAction_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAction *qp = (KQAction *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->hovered_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->hovered_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->toggled_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->toggled_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->triggered_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->triggered_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -870,9 +961,15 @@ static int QAction_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQAction::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQAction::event(QEvent *event)
 {
-	if (!DummyQAction::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QAction::event(event);
 		return false;
 	}

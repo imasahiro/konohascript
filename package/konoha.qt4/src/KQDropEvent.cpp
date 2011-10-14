@@ -55,7 +55,6 @@ KMETHOD QDropEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QDropEvent::Type type = Int_to(QDropEvent::Type, sfp[6]);
 	KQDropEvent *ret_v = new KQDropEvent(pos, actions, data, buttons, modifiers, type);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -220,7 +219,7 @@ bool DummyQDropEvent::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDropEvent::event_map->bigin();
 	if ((itr = DummyQDropEvent::event_map->find(str)) == DummyQDropEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -232,8 +231,8 @@ bool DummyQDropEvent::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDropEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDropEvent::slot_map->bigin();
-	if ((itr = DummyQDropEvent::event_map->find(str)) == DummyQDropEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDropEvent::slot_map->find(str)) == DummyQDropEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -243,9 +242,16 @@ bool DummyQDropEvent::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQDropEvent::connection(QObject *o)
+{
+	DummyQEvent::connection(o);
+}
+
 KQDropEvent::KQDropEvent(const QPoint pos, Qt::DropActions actions, const QMimeData* data, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QDropEvent::Type type) : QDropEvent(pos, actions, data, buttons, modifiers, type)
 {
 	self = NULL;
+	dummy = new DummyQDropEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDropEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -261,14 +267,13 @@ KMETHOD QDropEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDropEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDropEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDropEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -282,7 +287,7 @@ KMETHOD QDropEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDropEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDropEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -302,6 +307,9 @@ static void QDropEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QDropEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDropEvent *qp = (KQDropEvent *)p->rawptr;
 		(void)qp;
@@ -311,6 +319,12 @@ static void QDropEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QDropEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQDropEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQDropEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

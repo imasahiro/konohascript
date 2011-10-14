@@ -4,7 +4,6 @@ KMETHOD QChar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQChar *ret_v = new KQChar();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QChar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	char  ch = *RawPtr_to(char *, sfp[1]);
 	KQChar *ret_v = new KQChar(ch);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -30,7 +28,6 @@ KMETHOD QChar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	uchar  ch = *RawPtr_to(uchar *, sfp[1]);
 	KQChar *ret_v = new KQChar(ch);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -43,7 +40,6 @@ KMETHOD QChar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QLatin1Char  ch = *RawPtr_to(QLatin1Char *, sfp[1]);
 	KQChar *ret_v = new KQChar(ch);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -57,7 +53,6 @@ KMETHOD QChar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	uchar  row = *RawPtr_to(uchar *, sfp[2]);
 	KQChar *ret_v = new KQChar(cell, row);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -70,7 +65,6 @@ KMETHOD QChar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	ushort  code = *RawPtr_to(ushort *, sfp[1]);
 	KQChar *ret_v = new KQChar(code);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -83,7 +77,6 @@ KMETHOD QChar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	short  code = *RawPtr_to(short *, sfp[1]);
 	KQChar *ret_v = new KQChar(code);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -96,7 +89,6 @@ KMETHOD QChar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	uint  code = *RawPtr_to(uint *, sfp[1]);
 	KQChar *ret_v = new KQChar(code);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -109,7 +101,6 @@ KMETHOD QChar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int code = Int_to(int, sfp[1]);
 	KQChar *ret_v = new KQChar(code);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -122,7 +113,6 @@ KMETHOD QChar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QChar::SpecialCharacter ch = Int_to(QChar::SpecialCharacter, sfp[1]);
 	KQChar *ret_v = new KQChar(ch);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -1164,7 +1154,7 @@ bool DummyQChar::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQChar::event_map->bigin();
 	if ((itr = DummyQChar::event_map->find(str)) == DummyQChar::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -1175,8 +1165,8 @@ bool DummyQChar::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQChar::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQChar::slot_map->bigin();
-	if ((itr = DummyQChar::event_map->find(str)) == DummyQChar::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQChar::slot_map->find(str)) == DummyQChar::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -1185,9 +1175,16 @@ bool DummyQChar::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQChar::connection(QObject *o)
+{
+	return;
+}
+
 KQChar::KQChar() : QChar()
 {
 	self = NULL;
+	dummy = new DummyQChar();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QChar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1203,14 +1200,13 @@ KMETHOD QChar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQChar::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QChar]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QChar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1224,7 +1220,7 @@ KMETHOD QChar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQChar::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QChar]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -1244,6 +1240,9 @@ static void QChar_free(CTX ctx, knh_RawPtr_t *p)
 static void QChar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQChar *qp = (KQChar *)p->rawptr;
 		(void)qp;
@@ -1253,6 +1252,12 @@ static void QChar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QChar_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQChar::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQChar(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

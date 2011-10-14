@@ -5,7 +5,6 @@ KMETHOD QSignalMapper_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQSignalMapper *ret_v = new KQSignalMapper(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -193,7 +192,7 @@ bool DummyQSignalMapper::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSignalMapper::event_map->bigin();
 	if ((itr = DummyQSignalMapper::event_map->find(str)) == DummyQSignalMapper::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -205,8 +204,8 @@ bool DummyQSignalMapper::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQSignalMapper::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSignalMapper::slot_map->bigin();
-	if ((itr = DummyQSignalMapper::event_map->find(str)) == DummyQSignalMapper::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQSignalMapper::slot_map->find(str)) == DummyQSignalMapper::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -216,9 +215,16 @@ bool DummyQSignalMapper::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQSignalMapper::connection(QObject *o)
+{
+	DummyQObject::connection(o);
+}
+
 KQSignalMapper::KQSignalMapper(QObject* parent) : QSignalMapper(parent)
 {
 	self = NULL;
+	dummy = new DummyQSignalMapper();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSignalMapper_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -234,14 +240,13 @@ KMETHOD QSignalMapper_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQSignalMapper::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSignalMapper]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QSignalMapper_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -255,7 +260,7 @@ KMETHOD QSignalMapper_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQSignalMapper::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSignalMapper]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -275,6 +280,9 @@ static void QSignalMapper_free(CTX ctx, knh_RawPtr_t *p)
 static void QSignalMapper_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQSignalMapper *qp = (KQSignalMapper *)p->rawptr;
 		(void)qp;
@@ -286,9 +294,15 @@ static int QSignalMapper_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQSignalMapper::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQSignalMapper::event(QEvent *event)
 {
-	if (!DummyQSignalMapper::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QSignalMapper::event(event);
 		return false;
 	}

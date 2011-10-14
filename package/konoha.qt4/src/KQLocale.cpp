@@ -4,7 +4,6 @@ KMETHOD QLocale_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQLocale *ret_v = new KQLocale();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QLocale_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QString name = String_to(const QString, sfp[1]);
 	KQLocale *ret_v = new KQLocale(name);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -31,7 +29,6 @@ KMETHOD QLocale_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QLocale::Country country = Int_to(QLocale::Country, sfp[2]);
 	KQLocale *ret_v = new KQLocale(language, country);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -44,7 +41,6 @@ KMETHOD QLocale_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QLocale  other = *RawPtr_to(const QLocale *, sfp[1]);
 	KQLocale *ret_v = new KQLocale(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -981,7 +977,7 @@ bool DummyQLocale::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLocale::event_map->bigin();
 	if ((itr = DummyQLocale::event_map->find(str)) == DummyQLocale::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -992,8 +988,8 @@ bool DummyQLocale::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQLocale::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLocale::slot_map->bigin();
-	if ((itr = DummyQLocale::event_map->find(str)) == DummyQLocale::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQLocale::slot_map->find(str)) == DummyQLocale::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -1002,9 +998,16 @@ bool DummyQLocale::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQLocale::connection(QObject *o)
+{
+	return;
+}
+
 KQLocale::KQLocale() : QLocale()
 {
 	self = NULL;
+	dummy = new DummyQLocale();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QLocale_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1020,14 +1023,13 @@ KMETHOD QLocale_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQLocale::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLocale]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QLocale_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1041,7 +1043,7 @@ KMETHOD QLocale_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQLocale::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLocale]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -1061,6 +1063,9 @@ static void QLocale_free(CTX ctx, knh_RawPtr_t *p)
 static void QLocale_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQLocale *qp = (KQLocale *)p->rawptr;
 		(void)qp;
@@ -1070,6 +1075,12 @@ static void QLocale_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QLocale_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QLocale*>(p1->rawptr) == *static_cast<QLocale*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQLocale::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQLocale(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -4,7 +4,6 @@ KMETHOD QStyleOptionTabWidgetFrameV2_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQStyleOptionTabWidgetFrameV2 *ret_v = new KQStyleOptionTabWidgetFrameV2();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QStyleOptionTabWidgetFrameV2_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionTabWidgetFrameV2  other = *RawPtr_to(const QStyleOptionTabWidgetFrameV2 *, sfp[1]);
 	KQStyleOptionTabWidgetFrameV2 *ret_v = new KQStyleOptionTabWidgetFrameV2(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -30,7 +28,6 @@ KMETHOD QStyleOptionTabWidgetFrameV2_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionTabWidgetFrame  other = *RawPtr_to(const QStyleOptionTabWidgetFrame *, sfp[1]);
 	KQStyleOptionTabWidgetFrameV2 *ret_v = new KQStyleOptionTabWidgetFrameV2(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -64,7 +61,7 @@ bool DummyQStyleOptionTabWidgetFrameV2::addEvent(knh_Func_t *callback_func, stri
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionTabWidgetFrameV2::event_map->bigin();
 	if ((itr = DummyQStyleOptionTabWidgetFrameV2::event_map->find(str)) == DummyQStyleOptionTabWidgetFrameV2::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQStyleOptionTabWidgetFrame::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -76,8 +73,8 @@ bool DummyQStyleOptionTabWidgetFrameV2::addEvent(knh_Func_t *callback_func, stri
 bool DummyQStyleOptionTabWidgetFrameV2::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionTabWidgetFrameV2::slot_map->bigin();
-	if ((itr = DummyQStyleOptionTabWidgetFrameV2::event_map->find(str)) == DummyQStyleOptionTabWidgetFrameV2::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStyleOptionTabWidgetFrameV2::slot_map->find(str)) == DummyQStyleOptionTabWidgetFrameV2::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQStyleOptionTabWidgetFrame::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -87,9 +84,16 @@ bool DummyQStyleOptionTabWidgetFrameV2::signalConnect(knh_Func_t *callback_func,
 }
 
 
+void DummyQStyleOptionTabWidgetFrameV2::connection(QObject *o)
+{
+	DummyQStyleOptionTabWidgetFrame::connection(o);
+}
+
 KQStyleOptionTabWidgetFrameV2::KQStyleOptionTabWidgetFrameV2() : QStyleOptionTabWidgetFrameV2()
 {
 	self = NULL;
+	dummy = new DummyQStyleOptionTabWidgetFrameV2();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionTabWidgetFrameV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -105,14 +109,13 @@ KMETHOD QStyleOptionTabWidgetFrameV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStyleOptionTabWidgetFrameV2::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionTabWidgetFrameV2]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStyleOptionTabWidgetFrameV2_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -126,7 +129,7 @@ KMETHOD QStyleOptionTabWidgetFrameV2_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStyleOptionTabWidgetFrameV2::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionTabWidgetFrameV2]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -146,6 +149,9 @@ static void QStyleOptionTabWidgetFrameV2_free(CTX ctx, knh_RawPtr_t *p)
 static void QStyleOptionTabWidgetFrameV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStyleOptionTabWidgetFrameV2 *qp = (KQStyleOptionTabWidgetFrameV2 *)p->rawptr;
 		(void)qp;
@@ -155,6 +161,12 @@ static void QStyleOptionTabWidgetFrameV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRAR
 static int QStyleOptionTabWidgetFrameV2_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQStyleOptionTabWidgetFrameV2::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStyleOptionTabWidgetFrameV2(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

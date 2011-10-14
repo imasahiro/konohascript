@@ -4,7 +4,6 @@ KMETHOD QTextBoundaryFinder_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQTextBoundaryFinder *ret_v = new KQTextBoundaryFinder();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QTextBoundaryFinder_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QTextBoundaryFinder  other = *RawPtr_to(const QTextBoundaryFinder *, sfp[1]);
 	KQTextBoundaryFinder *ret_v = new KQTextBoundaryFinder(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -31,7 +29,6 @@ KMETHOD QTextBoundaryFinder_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QString string = String_to(const QString, sfp[2]);
 	KQTextBoundaryFinder *ret_v = new KQTextBoundaryFinder(type, string);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -48,7 +45,6 @@ KMETHOD QTextBoundaryFinder_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int bufferSize = Int_to(int, sfp[5]);
 	KQTextBoundaryFinder *ret_v = new KQTextBoundaryFinder(type, chars, length, buffer, bufferSize);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -220,7 +216,7 @@ bool DummyQTextBoundaryFinder::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextBoundaryFinder::event_map->bigin();
 	if ((itr = DummyQTextBoundaryFinder::event_map->find(str)) == DummyQTextBoundaryFinder::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -231,8 +227,8 @@ bool DummyQTextBoundaryFinder::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTextBoundaryFinder::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextBoundaryFinder::slot_map->bigin();
-	if ((itr = DummyQTextBoundaryFinder::event_map->find(str)) == DummyQTextBoundaryFinder::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTextBoundaryFinder::slot_map->find(str)) == DummyQTextBoundaryFinder::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -241,9 +237,16 @@ bool DummyQTextBoundaryFinder::signalConnect(knh_Func_t *callback_func, string s
 }
 
 
+void DummyQTextBoundaryFinder::connection(QObject *o)
+{
+	return;
+}
+
 KQTextBoundaryFinder::KQTextBoundaryFinder() : QTextBoundaryFinder()
 {
 	self = NULL;
+	dummy = new DummyQTextBoundaryFinder();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextBoundaryFinder_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -259,14 +262,13 @@ KMETHOD QTextBoundaryFinder_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTextBoundaryFinder::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextBoundaryFinder]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTextBoundaryFinder_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -280,7 +282,7 @@ KMETHOD QTextBoundaryFinder_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTextBoundaryFinder::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextBoundaryFinder]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -300,6 +302,9 @@ static void QTextBoundaryFinder_free(CTX ctx, knh_RawPtr_t *p)
 static void QTextBoundaryFinder_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTextBoundaryFinder *qp = (KQTextBoundaryFinder *)p->rawptr;
 		(void)qp;
@@ -309,6 +314,12 @@ static void QTextBoundaryFinder_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QTextBoundaryFinder_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQTextBoundaryFinder::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQTextBoundaryFinder(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

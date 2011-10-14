@@ -5,7 +5,6 @@ KMETHOD QEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QEvent::Type type = Int_to(QEvent::Type, sfp[1]);
 	KQEvent *ret_v = new KQEvent(type);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -125,7 +124,7 @@ bool DummyQEvent::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQEvent::event_map->bigin();
 	if ((itr = DummyQEvent::event_map->find(str)) == DummyQEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -136,8 +135,8 @@ bool DummyQEvent::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQEvent::slot_map->bigin();
-	if ((itr = DummyQEvent::event_map->find(str)) == DummyQEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQEvent::slot_map->find(str)) == DummyQEvent::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -146,9 +145,16 @@ bool DummyQEvent::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQEvent::connection(QObject *o)
+{
+	return;
+}
+
 KQEvent::KQEvent(QEvent::Type type) : QEvent(type)
 {
 	self = NULL;
+	dummy = new DummyQEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -164,14 +170,13 @@ KMETHOD QEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -185,7 +190,7 @@ KMETHOD QEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -205,6 +210,9 @@ static void QEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQEvent *qp = (KQEvent *)p->rawptr;
 		(void)qp;
@@ -214,6 +222,12 @@ static void QEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

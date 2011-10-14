@@ -4,7 +4,6 @@ KMETHOD QBitmap_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQBitmap *ret_v = new KQBitmap();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QBitmap_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[1]);
 	KQBitmap *ret_v = new KQBitmap(pixmap);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -31,7 +29,6 @@ KMETHOD QBitmap_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int height = Int_to(int, sfp[2]);
 	KQBitmap *ret_v = new KQBitmap(width, height);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -44,7 +41,6 @@ KMETHOD QBitmap_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QSize  size = *RawPtr_to(const QSize *, sfp[1]);
 	KQBitmap *ret_v = new KQBitmap(size);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -58,7 +54,6 @@ KMETHOD QBitmap_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const char*  format = RawPtr_to(const char*, sfp[2]);
 	KQBitmap *ret_v = new KQBitmap(fileName, format);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -154,7 +149,7 @@ bool DummyQBitmap::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQBitmap::event_map->bigin();
 	if ((itr = DummyQBitmap::event_map->find(str)) == DummyQBitmap::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQPixmap::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -166,8 +161,8 @@ bool DummyQBitmap::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQBitmap::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQBitmap::slot_map->bigin();
-	if ((itr = DummyQBitmap::event_map->find(str)) == DummyQBitmap::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQBitmap::slot_map->find(str)) == DummyQBitmap::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQPixmap::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -177,9 +172,16 @@ bool DummyQBitmap::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQBitmap::connection(QObject *o)
+{
+	DummyQPixmap::connection(o);
+}
+
 KQBitmap::KQBitmap() : QBitmap()
 {
 	self = NULL;
+	dummy = new DummyQBitmap();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QBitmap_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -195,14 +197,13 @@ KMETHOD QBitmap_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQBitmap::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QBitmap]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QBitmap_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -216,7 +217,7 @@ KMETHOD QBitmap_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQBitmap::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QBitmap]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -236,6 +237,9 @@ static void QBitmap_free(CTX ctx, knh_RawPtr_t *p)
 static void QBitmap_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQBitmap *qp = (KQBitmap *)p->rawptr;
 		(void)qp;
@@ -245,6 +249,12 @@ static void QBitmap_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QBitmap_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQBitmap::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQBitmap(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

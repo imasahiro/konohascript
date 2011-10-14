@@ -181,7 +181,7 @@ bool DummyQMetaEnum::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMetaEnum::event_map->bigin();
 	if ((itr = DummyQMetaEnum::event_map->find(str)) == DummyQMetaEnum::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -192,8 +192,8 @@ bool DummyQMetaEnum::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQMetaEnum::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMetaEnum::slot_map->bigin();
-	if ((itr = DummyQMetaEnum::event_map->find(str)) == DummyQMetaEnum::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQMetaEnum::slot_map->find(str)) == DummyQMetaEnum::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -202,9 +202,16 @@ bool DummyQMetaEnum::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQMetaEnum::connection(QObject *o)
+{
+	return;
+}
+
 KQMetaEnum::KQMetaEnum() : QMetaEnum()
 {
 	self = NULL;
+	dummy = new DummyQMetaEnum();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMetaEnum_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -220,14 +227,13 @@ KMETHOD QMetaEnum_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQMetaEnum::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMetaEnum]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QMetaEnum_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -241,7 +247,7 @@ KMETHOD QMetaEnum_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQMetaEnum::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMetaEnum]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -261,6 +267,9 @@ static void QMetaEnum_free(CTX ctx, knh_RawPtr_t *p)
 static void QMetaEnum_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQMetaEnum *qp = (KQMetaEnum *)p->rawptr;
 		(void)qp;
@@ -270,6 +279,12 @@ static void QMetaEnum_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QMetaEnum_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQMetaEnum::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQMetaEnum(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -120,7 +120,6 @@ KMETHOD QSpacerItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QSizePolicy::Policy vPolicy = Int_to(QSizePolicy::Policy, sfp[4]);
 	KQSpacerItem *ret_v = new KQSpacerItem(w, h, hPolicy, vPolicy);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -169,7 +168,7 @@ bool DummyQSpacerItem::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSpacerItem::event_map->bigin();
 	if ((itr = DummyQSpacerItem::event_map->find(str)) == DummyQSpacerItem::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQLayoutItem::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -181,8 +180,8 @@ bool DummyQSpacerItem::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQSpacerItem::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSpacerItem::slot_map->bigin();
-	if ((itr = DummyQSpacerItem::event_map->find(str)) == DummyQSpacerItem::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQSpacerItem::slot_map->find(str)) == DummyQSpacerItem::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQLayoutItem::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -192,9 +191,16 @@ bool DummyQSpacerItem::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQSpacerItem::connection(QObject *o)
+{
+	DummyQLayoutItem::connection(o);
+}
+
 KQSpacerItem::KQSpacerItem(int w, int h, QSizePolicy::Policy hPolicy, QSizePolicy::Policy vPolicy) : QSpacerItem(w, h, hPolicy, vPolicy)
 {
 	self = NULL;
+	dummy = new DummyQSpacerItem();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSpacerItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -210,14 +216,13 @@ KMETHOD QSpacerItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQSpacerItem::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSpacerItem]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QSpacerItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -231,7 +236,7 @@ KMETHOD QSpacerItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQSpacerItem::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSpacerItem]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -251,6 +256,9 @@ static void QSpacerItem_free(CTX ctx, knh_RawPtr_t *p)
 static void QSpacerItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQSpacerItem *qp = (KQSpacerItem *)p->rawptr;
 		(void)qp;
@@ -260,6 +268,12 @@ static void QSpacerItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QSpacerItem_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQSpacerItem::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQSpacerItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -17,7 +17,6 @@ KMETHOD QTreeWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQTreeWidget *ret_v = new KQTreeWidget(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -596,8 +595,28 @@ KMETHOD QTreeWidget_scrollToItem(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQTreeWidget::DummyQTreeWidget()
 {
 	self = NULL;
+	current_item_changed_func = NULL;
+	item_activated_func = NULL;
+	item_changed_func = NULL;
+	item_clicked_func = NULL;
+	item_collapsed_func = NULL;
+	item_double_clicked_func = NULL;
+	item_entered_func = NULL;
+	item_expanded_func = NULL;
+	item_pressed_func = NULL;
+	item_selection_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("current-item-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("item-activated", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("item-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("item-clicked", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("item-collapsed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("item-double-clicked", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("item-entered", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("item-expanded", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("item-pressed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("item-selection-changed", NULL));
 }
 
 void DummyQTreeWidget::setSelf(knh_RawPtr_t *ptr)
@@ -617,11 +636,157 @@ bool DummyQTreeWidget::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQTreeWidget::currentItemChangedSlot(QTreeWidgetItem* current, QTreeWidgetItem* previous)
+{
+	if (current_item_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QTreeWidgetItem, current);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_RawPtr_t *p2 = new_QRawPtr(lctx, QTreeWidgetItem, previous);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+3].o, UPCAST(p2));
+		knh_Func_invoke(lctx, current_item_changed_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTreeWidget::itemActivatedSlot(QTreeWidgetItem* item, int column)
+{
+	if (item_activated_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QTreeWidgetItem, item);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = column;
+		knh_Func_invoke(lctx, item_activated_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTreeWidget::itemChangedSlot(QTreeWidgetItem* item, int column)
+{
+	if (item_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QTreeWidgetItem, item);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = column;
+		knh_Func_invoke(lctx, item_changed_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTreeWidget::itemClickedSlot(QTreeWidgetItem* item, int column)
+{
+	if (item_clicked_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QTreeWidgetItem, item);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = column;
+		knh_Func_invoke(lctx, item_clicked_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTreeWidget::itemCollapsedSlot(QTreeWidgetItem* item)
+{
+	if (item_collapsed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QTreeWidgetItem, item);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, item_collapsed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTreeWidget::itemDoubleClickedSlot(QTreeWidgetItem* item, int column)
+{
+	if (item_double_clicked_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QTreeWidgetItem, item);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = column;
+		knh_Func_invoke(lctx, item_double_clicked_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTreeWidget::itemEnteredSlot(QTreeWidgetItem* item, int column)
+{
+	if (item_entered_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QTreeWidgetItem, item);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = column;
+		knh_Func_invoke(lctx, item_entered_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTreeWidget::itemExpandedSlot(QTreeWidgetItem* item)
+{
+	if (item_expanded_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QTreeWidgetItem, item);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, item_expanded_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTreeWidget::itemPressedSlot(QTreeWidgetItem* item, int column)
+{
+	if (item_pressed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QTreeWidgetItem, item);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+3].ivalue = column;
+		knh_Func_invoke(lctx, item_pressed_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTreeWidget::itemSelectionChangedSlot()
+{
+	if (item_selection_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, item_selection_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQTreeWidget::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTreeWidget::event_map->bigin();
 	if ((itr = DummyQTreeWidget::event_map->find(str)) == DummyQTreeWidget::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQTreeView::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -633,20 +798,47 @@ bool DummyQTreeWidget::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTreeWidget::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTreeWidget::slot_map->bigin();
-	if ((itr = DummyQTreeWidget::event_map->find(str)) == DummyQTreeWidget::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTreeWidget::slot_map->find(str)) == DummyQTreeWidget::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQTreeView::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		current_item_changed_func = (*slot_map)["current-item-changed"];
+		item_activated_func = (*slot_map)["item-activated"];
+		item_changed_func = (*slot_map)["item-changed"];
+		item_clicked_func = (*slot_map)["item-clicked"];
+		item_collapsed_func = (*slot_map)["item-collapsed"];
+		item_double_clicked_func = (*slot_map)["item-double-clicked"];
+		item_entered_func = (*slot_map)["item-entered"];
+		item_expanded_func = (*slot_map)["item-expanded"];
+		item_pressed_func = (*slot_map)["item-pressed"];
+		item_selection_changed_func = (*slot_map)["item-selection-changed"];
 		return true;
 	}
 }
 
 
+void DummyQTreeWidget::connection(QObject *o)
+{
+	connect(o, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this, SLOT(currentItemChangedSlot(QTreeWidgetItem*, QTreeWidgetItem*)));
+	connect(o, SIGNAL(itemActivated(QTreeWidgetItem*, int)), this, SLOT(itemActivatedSlot(QTreeWidgetItem*, int)));
+	connect(o, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(itemChangedSlot(QTreeWidgetItem*, int)));
+	connect(o, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(itemClickedSlot(QTreeWidgetItem*, int)));
+	connect(o, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(itemCollapsedSlot(QTreeWidgetItem*)));
+	connect(o, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(itemDoubleClickedSlot(QTreeWidgetItem*, int)));
+	connect(o, SIGNAL(itemEntered(QTreeWidgetItem*, int)), this, SLOT(itemEnteredSlot(QTreeWidgetItem*, int)));
+	connect(o, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(itemExpandedSlot(QTreeWidgetItem*)));
+	connect(o, SIGNAL(itemPressed(QTreeWidgetItem*, int)), this, SLOT(itemPressedSlot(QTreeWidgetItem*, int)));
+	connect(o, SIGNAL(itemSelectionChanged()), this, SLOT(itemSelectionChangedSlot()));
+	DummyQTreeView::connection(o);
+}
+
 KQTreeWidget::KQTreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
 	self = NULL;
+	dummy = new DummyQTreeWidget();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTreeWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -662,14 +854,13 @@ KMETHOD QTreeWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTreeWidget::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTreeWidget]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTreeWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -683,7 +874,7 @@ KMETHOD QTreeWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTreeWidget::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTreeWidget]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -702,10 +893,53 @@ static void QTreeWidget_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTreeWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 10;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTreeWidget *qp = (KQTreeWidget *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->current_item_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->current_item_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->item_activated_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->item_activated_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->item_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->item_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->item_clicked_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->item_clicked_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->item_collapsed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->item_collapsed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->item_double_clicked_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->item_double_clicked_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->item_entered_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->item_entered_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->item_expanded_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->item_expanded_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->item_pressed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->item_pressed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->item_selection_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->item_selection_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -714,9 +948,15 @@ static int QTreeWidget_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQTreeWidget::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQTreeWidget::event(QEvent *event)
 {
-	if (!DummyQTreeWidget::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QTreeWidget::event(event);
 		return false;
 	}

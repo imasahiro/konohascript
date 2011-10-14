@@ -6,7 +6,6 @@ KMETHOD QTileRules_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::TileRule verticalRule = Int_to(Qt::TileRule, sfp[2]);
 	KQTileRules *ret_v = new KQTileRules(horizontalRule, verticalRule);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QTileRules_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::TileRule rule = Int_to(Qt::TileRule, sfp[1]);
 	KQTileRules *ret_v = new KQTileRules(rule);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -52,7 +50,7 @@ bool DummyQTileRules::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTileRules::event_map->bigin();
 	if ((itr = DummyQTileRules::event_map->find(str)) == DummyQTileRules::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -63,8 +61,8 @@ bool DummyQTileRules::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTileRules::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTileRules::slot_map->bigin();
-	if ((itr = DummyQTileRules::event_map->find(str)) == DummyQTileRules::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTileRules::slot_map->find(str)) == DummyQTileRules::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -73,9 +71,16 @@ bool DummyQTileRules::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQTileRules::connection(QObject *o)
+{
+	return;
+}
+
 KQTileRules::KQTileRules(Qt::TileRule horizontalRule, Qt::TileRule verticalRule) : QTileRules(horizontalRule, verticalRule)
 {
 	self = NULL;
+	dummy = new DummyQTileRules();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTileRules_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -91,14 +96,13 @@ KMETHOD QTileRules_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTileRules::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTileRules]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTileRules_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -112,7 +116,7 @@ KMETHOD QTileRules_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTileRules::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTileRules]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -132,6 +136,9 @@ static void QTileRules_free(CTX ctx, knh_RawPtr_t *p)
 static void QTileRules_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTileRules *qp = (KQTileRules *)p->rawptr;
 		(void)qp;
@@ -141,6 +148,12 @@ static void QTileRules_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QTileRules_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQTileRules::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQTileRules(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

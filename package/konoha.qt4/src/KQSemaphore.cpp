@@ -5,7 +5,6 @@ KMETHOD QSemaphore_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int n = Int_to(int, sfp[1]);
 	KQSemaphore *ret_v = new KQSemaphore(n);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -105,7 +104,7 @@ bool DummyQSemaphore::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSemaphore::event_map->bigin();
 	if ((itr = DummyQSemaphore::event_map->find(str)) == DummyQSemaphore::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -116,8 +115,8 @@ bool DummyQSemaphore::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQSemaphore::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSemaphore::slot_map->bigin();
-	if ((itr = DummyQSemaphore::event_map->find(str)) == DummyQSemaphore::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQSemaphore::slot_map->find(str)) == DummyQSemaphore::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -126,9 +125,16 @@ bool DummyQSemaphore::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQSemaphore::connection(QObject *o)
+{
+	return;
+}
+
 KQSemaphore::KQSemaphore(int n) : QSemaphore(n)
 {
 	self = NULL;
+	dummy = new DummyQSemaphore();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSemaphore_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -144,14 +150,13 @@ KMETHOD QSemaphore_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQSemaphore::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSemaphore]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QSemaphore_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -165,7 +170,7 @@ KMETHOD QSemaphore_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQSemaphore::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSemaphore]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -185,6 +190,9 @@ static void QSemaphore_free(CTX ctx, knh_RawPtr_t *p)
 static void QSemaphore_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQSemaphore *qp = (KQSemaphore *)p->rawptr;
 		(void)qp;
@@ -194,6 +202,12 @@ static void QSemaphore_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QSemaphore_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQSemaphore::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQSemaphore(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

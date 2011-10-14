@@ -247,7 +247,7 @@ bool DummyQAbstractScrollArea::eventDispatcher(QEvent *event)
 {
 	bool ret = true;
 	switch (event->type()) {
-		ret = viewportEvent(dynamic_cast<QEvent*>(event));
+		ret = viewportEventDummy(dynamic_cast<QEvent*>(event));
 		break;
 	default:
 		ret = DummyQFrame::eventDispatcher(event);
@@ -256,7 +256,7 @@ bool DummyQAbstractScrollArea::eventDispatcher(QEvent *event)
 	return ret;
 }
 
-bool DummyQAbstractScrollArea::viewportEvent(QEvent* event)
+bool DummyQAbstractScrollArea::viewportEventDummy(QEvent* event)
 {
 	if (viewport_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -274,7 +274,7 @@ bool DummyQAbstractScrollArea::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractScrollArea::event_map->bigin();
 	if ((itr = DummyQAbstractScrollArea::event_map->find(str)) == DummyQAbstractScrollArea::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQFrame::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -287,8 +287,8 @@ bool DummyQAbstractScrollArea::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQAbstractScrollArea::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractScrollArea::slot_map->bigin();
-	if ((itr = DummyQAbstractScrollArea::event_map->find(str)) == DummyQAbstractScrollArea::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAbstractScrollArea::slot_map->find(str)) == DummyQAbstractScrollArea::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQFrame::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -298,9 +298,16 @@ bool DummyQAbstractScrollArea::signalConnect(knh_Func_t *callback_func, string s
 }
 
 
+void DummyQAbstractScrollArea::connection(QObject *o)
+{
+	DummyQFrame::connection(o);
+}
+
 KQAbstractScrollArea::KQAbstractScrollArea(QWidget* parent) : QAbstractScrollArea(parent)
 {
 	self = NULL;
+	dummy = new DummyQAbstractScrollArea();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractScrollArea_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -316,14 +323,13 @@ KMETHOD QAbstractScrollArea_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAbstractScrollArea::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractScrollArea]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAbstractScrollArea_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -337,7 +343,7 @@ KMETHOD QAbstractScrollArea_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAbstractScrollArea::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractScrollArea]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -357,11 +363,14 @@ static void QAbstractScrollArea_free(CTX ctx, knh_RawPtr_t *p)
 static void QAbstractScrollArea_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAbstractScrollArea *qp = (KQAbstractScrollArea *)p->rawptr;
 //		(void)qp;
-		if (qp->viewport_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->viewport_event_func);
+		if (qp->dummy->viewport_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->viewport_event_func);
 			KNH_SIZEREF(ctx);
 		}
 	}
@@ -372,9 +381,15 @@ static int QAbstractScrollArea_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQAbstractScrollArea::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQAbstractScrollArea::event(QEvent *event)
 {
-	if (!DummyQAbstractScrollArea::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QAbstractScrollArea::event(event);
 		return false;
 	}

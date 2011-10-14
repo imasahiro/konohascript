@@ -36,7 +36,6 @@ KMETHOD QMdiSubWindow_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[2]);
 	KQMdiSubWindow *ret_v = new KQMdiSubWindow(parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -223,8 +222,12 @@ KMETHOD QMdiSubWindow_showSystemMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQMdiSubWindow::DummyQMdiSubWindow()
 {
 	self = NULL;
+	about_to_activate_func = NULL;
+	window_state_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("about-to-activate", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("window-state-changed", NULL));
 }
 
 void DummyQMdiSubWindow::setSelf(knh_RawPtr_t *ptr)
@@ -244,11 +247,37 @@ bool DummyQMdiSubWindow::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQMdiSubWindow::aboutToActivateSlot()
+{
+	if (about_to_activate_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, about_to_activate_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQMdiSubWindow::windowStateChangedSlot(Qt::WindowStates oldState, Qt::WindowStates new_State)
+{
+	if (window_state_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = oldState;
+		lsfp[K_CALLDELTA+3].ivalue = new_State;
+		knh_Func_invoke(lctx, window_state_changed_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQMdiSubWindow::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMdiSubWindow::event_map->bigin();
 	if ((itr = DummyQMdiSubWindow::event_map->find(str)) == DummyQMdiSubWindow::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -260,20 +289,31 @@ bool DummyQMdiSubWindow::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQMdiSubWindow::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMdiSubWindow::slot_map->bigin();
-	if ((itr = DummyQMdiSubWindow::event_map->find(str)) == DummyQMdiSubWindow::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQMdiSubWindow::slot_map->find(str)) == DummyQMdiSubWindow::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		about_to_activate_func = (*slot_map)["about-to-activate"];
+		window_state_changed_func = (*slot_map)["window-state-changed"];
 		return true;
 	}
 }
 
 
+void DummyQMdiSubWindow::connection(QObject *o)
+{
+	connect(o, SIGNAL(aboutToActivate()), this, SLOT(aboutToActivateSlot()));
+	connect(o, SIGNAL(windowStateChanged(Qt::WindowStates, Qt::WindowStates)), this, SLOT(windowStateChangedSlot(Qt::WindowStates, Qt::WindowStates)));
+	DummyQWidget::connection(o);
+}
+
 KQMdiSubWindow::KQMdiSubWindow(QWidget* parent, Qt::WindowFlags flags) : QMdiSubWindow(parent, flags)
 {
 	self = NULL;
+	dummy = new DummyQMdiSubWindow();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMdiSubWindow_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -289,14 +329,13 @@ KMETHOD QMdiSubWindow_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQMdiSubWindow::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMdiSubWindow]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QMdiSubWindow_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -310,7 +349,7 @@ KMETHOD QMdiSubWindow_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQMdiSubWindow::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMdiSubWindow]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -329,10 +368,21 @@ static void QMdiSubWindow_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMdiSubWindow_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQMdiSubWindow *qp = (KQMdiSubWindow *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->about_to_activate_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->about_to_activate_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->window_state_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->window_state_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -341,9 +391,15 @@ static int QMdiSubWindow_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQMdiSubWindow::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQMdiSubWindow::event(QEvent *event)
 {
-	if (!DummyQMdiSubWindow::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QMdiSubWindow::event(event);
 		return false;
 	}

@@ -2633,60 +2633,60 @@ bool DummyQGraphicsItem::eventDispatcher(QEvent *event)
 	bool ret = true;
 	switch (event->type()) {
 	case QEvent::ContextMenu:
-		ret = contextMenuEvent(dynamic_cast<QGraphicsSceneContextMenuEvent*>(event));
+		ret = contextMenuEventDummy(dynamic_cast<QGraphicsSceneContextMenuEvent*>(event));
 		break;
 	case QEvent::DragEnter:
-		ret = dragEnterEvent(dynamic_cast<QGraphicsSceneDragDropEvent*>(event));
+		ret = dragEnterEventDummy(dynamic_cast<QGraphicsSceneDragDropEvent*>(event));
 		break;
 	case QEvent::DragLeave:
-		ret = dragLeaveEvent(dynamic_cast<QGraphicsSceneDragDropEvent*>(event));
+		ret = dragLeaveEventDummy(dynamic_cast<QGraphicsSceneDragDropEvent*>(event));
 		break;
 	case QEvent::DragMove:
-		ret = dragMoveEvent(dynamic_cast<QGraphicsSceneDragDropEvent*>(event));
+		ret = dragMoveEventDummy(dynamic_cast<QGraphicsSceneDragDropEvent*>(event));
 		break;
 	case QEvent::Drop:
-		ret = dropEvent(dynamic_cast<QGraphicsSceneDragDropEvent*>(event));
+		ret = dropEventDummy(dynamic_cast<QGraphicsSceneDragDropEvent*>(event));
 		break;
 	case QEvent::FocusIn:
-		ret = focusInEvent(dynamic_cast<QFocusEvent*>(event));
+		ret = focusInEventDummy(dynamic_cast<QFocusEvent*>(event));
 		break;
 	case QEvent::FocusOut:
-		ret = focusOutEvent(dynamic_cast<QFocusEvent*>(event));
+		ret = focusOutEventDummy(dynamic_cast<QFocusEvent*>(event));
 		break;
 	case QEvent::HoverEnter:
-		ret = hoverEnterEvent(dynamic_cast<QGraphicsSceneHoverEvent*>(event));
+		ret = hoverEnterEventDummy(dynamic_cast<QGraphicsSceneHoverEvent*>(event));
 		break;
 	case QEvent::HoverLeave:
-		ret = hoverLeaveEvent(dynamic_cast<QGraphicsSceneHoverEvent*>(event));
+		ret = hoverLeaveEventDummy(dynamic_cast<QGraphicsSceneHoverEvent*>(event));
 		break;
 	case QEvent::HoverMove:
-		ret = hoverMoveEvent(dynamic_cast<QGraphicsSceneHoverEvent*>(event));
+		ret = hoverMoveEventDummy(dynamic_cast<QGraphicsSceneHoverEvent*>(event));
 		break;
 	case QEvent::InputMethod:
-		ret = inputMethodEvent(dynamic_cast<QInputMethodEvent*>(event));
+		ret = inputMethodEventDummy(dynamic_cast<QInputMethodEvent*>(event));
 		break;
 	case QEvent::KeyPress:
-		ret = keyPressEvent(dynamic_cast<QKeyEvent*>(event));
+		ret = keyPressEventDummy(dynamic_cast<QKeyEvent*>(event));
 		break;
 	case QEvent::KeyRelease:
-		ret = keyReleaseEvent(dynamic_cast<QKeyEvent*>(event));
+		ret = keyReleaseEventDummy(dynamic_cast<QKeyEvent*>(event));
 		break;
 	case QEvent::MouseButtonDblClick:
-		ret = mouseDoubleClickEvent(dynamic_cast<QGraphicsSceneMouseEvent*>(event));
+		ret = mouseDoubleClickEventDummy(dynamic_cast<QGraphicsSceneMouseEvent*>(event));
 		break;
 	case QEvent::MouseMove:
-		ret = mouseMoveEvent(dynamic_cast<QGraphicsSceneMouseEvent*>(event));
+		ret = mouseMoveEventDummy(dynamic_cast<QGraphicsSceneMouseEvent*>(event));
 		break;
 	case QEvent::MouseButtonPress:
-		ret = mousePressEvent(dynamic_cast<QGraphicsSceneMouseEvent*>(event));
+		ret = mousePressEventDummy(dynamic_cast<QGraphicsSceneMouseEvent*>(event));
 		break;
 	case QEvent::MouseButtonRelease:
-		ret = mouseReleaseEvent(dynamic_cast<QGraphicsSceneMouseEvent*>(event));
+		ret = mouseReleaseEventDummy(dynamic_cast<QGraphicsSceneMouseEvent*>(event));
 		break;
-		ret = sceneEvent(dynamic_cast<QEvent*>(event));
+		ret = sceneEventDummy(dynamic_cast<QEvent*>(event));
 		break;
 	case QEvent::Wheel:
-		ret = wheelEvent(dynamic_cast<QGraphicsSceneWheelEvent*>(event));
+		ret = wheelEventDummy(dynamic_cast<QGraphicsSceneWheelEvent*>(event));
 		break;
 	default:
 		ret = false;
@@ -2695,7 +2695,7 @@ bool DummyQGraphicsItem::eventDispatcher(QEvent *event)
 	return ret;
 }
 
-bool DummyQGraphicsItem::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
+bool DummyQGraphicsItem::contextMenuEventDummy(QGraphicsSceneContextMenuEvent* event)
 {
 	if (context_menu_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2709,7 +2709,7 @@ bool DummyQGraphicsItem::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::dragEnterEvent(QGraphicsSceneDragDropEvent* event)
+bool DummyQGraphicsItem::dragEnterEventDummy(QGraphicsSceneDragDropEvent* event)
 {
 	if (drag_enter_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2723,7 +2723,7 @@ bool DummyQGraphicsItem::dragEnterEvent(QGraphicsSceneDragDropEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::dragLeaveEvent(QGraphicsSceneDragDropEvent* event)
+bool DummyQGraphicsItem::dragLeaveEventDummy(QGraphicsSceneDragDropEvent* event)
 {
 	if (drag_leave_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2737,7 +2737,7 @@ bool DummyQGraphicsItem::dragLeaveEvent(QGraphicsSceneDragDropEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::dragMoveEvent(QGraphicsSceneDragDropEvent* event)
+bool DummyQGraphicsItem::dragMoveEventDummy(QGraphicsSceneDragDropEvent* event)
 {
 	if (drag_move_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2751,7 +2751,7 @@ bool DummyQGraphicsItem::dragMoveEvent(QGraphicsSceneDragDropEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::dropEvent(QGraphicsSceneDragDropEvent* event)
+bool DummyQGraphicsItem::dropEventDummy(QGraphicsSceneDragDropEvent* event)
 {
 	if (drop_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2765,7 +2765,7 @@ bool DummyQGraphicsItem::dropEvent(QGraphicsSceneDragDropEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::focusInEvent(QFocusEvent* event)
+bool DummyQGraphicsItem::focusInEventDummy(QFocusEvent* event)
 {
 	if (focus_in_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2779,7 +2779,7 @@ bool DummyQGraphicsItem::focusInEvent(QFocusEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::focusOutEvent(QFocusEvent* event)
+bool DummyQGraphicsItem::focusOutEventDummy(QFocusEvent* event)
 {
 	if (focus_out_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2793,7 +2793,7 @@ bool DummyQGraphicsItem::focusOutEvent(QFocusEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
+bool DummyQGraphicsItem::hoverEnterEventDummy(QGraphicsSceneHoverEvent* event)
 {
 	if (hover_enter_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2807,7 +2807,7 @@ bool DummyQGraphicsItem::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
+bool DummyQGraphicsItem::hoverLeaveEventDummy(QGraphicsSceneHoverEvent* event)
 {
 	if (hover_leave_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2821,7 +2821,7 @@ bool DummyQGraphicsItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event)
+bool DummyQGraphicsItem::hoverMoveEventDummy(QGraphicsSceneHoverEvent* event)
 {
 	if (hover_move_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2835,7 +2835,7 @@ bool DummyQGraphicsItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::inputMethodEvent(QInputMethodEvent* event)
+bool DummyQGraphicsItem::inputMethodEventDummy(QInputMethodEvent* event)
 {
 	if (input_method_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2849,7 +2849,7 @@ bool DummyQGraphicsItem::inputMethodEvent(QInputMethodEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::keyPressEvent(QKeyEvent* event)
+bool DummyQGraphicsItem::keyPressEventDummy(QKeyEvent* event)
 {
 	if (key_press_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2863,7 +2863,7 @@ bool DummyQGraphicsItem::keyPressEvent(QKeyEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::keyReleaseEvent(QKeyEvent* event)
+bool DummyQGraphicsItem::keyReleaseEventDummy(QKeyEvent* event)
 {
 	if (key_release_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2877,7 +2877,7 @@ bool DummyQGraphicsItem::keyReleaseEvent(QKeyEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
+bool DummyQGraphicsItem::mouseDoubleClickEventDummy(QGraphicsSceneMouseEvent* event)
 {
 	if (mouse_double_click_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2891,7 +2891,7 @@ bool DummyQGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
+bool DummyQGraphicsItem::mouseMoveEventDummy(QGraphicsSceneMouseEvent* event)
 {
 	if (mouse_move_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2905,7 +2905,7 @@ bool DummyQGraphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
+bool DummyQGraphicsItem::mousePressEventDummy(QGraphicsSceneMouseEvent* event)
 {
 	if (mouse_press_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2919,7 +2919,7 @@ bool DummyQGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+bool DummyQGraphicsItem::mouseReleaseEventDummy(QGraphicsSceneMouseEvent* event)
 {
 	if (mouse_release_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2933,7 +2933,7 @@ bool DummyQGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::sceneEvent(QEvent* event)
+bool DummyQGraphicsItem::sceneEventDummy(QEvent* event)
 {
 	if (scene_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2947,7 +2947,7 @@ bool DummyQGraphicsItem::sceneEvent(QEvent* event)
 	return false;
 }
 
-bool DummyQGraphicsItem::wheelEvent(QGraphicsSceneWheelEvent* event)
+bool DummyQGraphicsItem::wheelEventDummy(QGraphicsSceneWheelEvent* event)
 {
 	if (wheel_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -2965,7 +2965,7 @@ bool DummyQGraphicsItem::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsItem::event_map->bigin();
 	if ((itr = DummyQGraphicsItem::event_map->find(str)) == DummyQGraphicsItem::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -2995,8 +2995,8 @@ bool DummyQGraphicsItem::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGraphicsItem::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsItem::slot_map->bigin();
-	if ((itr = DummyQGraphicsItem::event_map->find(str)) == DummyQGraphicsItem::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsItem::slot_map->find(str)) == DummyQGraphicsItem::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -3005,9 +3005,16 @@ bool DummyQGraphicsItem::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQGraphicsItem::connection(QObject *o)
+{
+	return;
+}
+
 KQGraphicsItem::KQGraphicsItem(QGraphicsItem* parent) : QGraphicsItem(parent)
 {
 	self = NULL;
+	dummy = new DummyQGraphicsItem();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -3023,14 +3030,13 @@ KMETHOD QGraphicsItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsItem::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsItem]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -3044,7 +3050,7 @@ KMETHOD QGraphicsItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsItem::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsItem]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -3064,83 +3070,86 @@ static void QGraphicsItem_free(CTX ctx, knh_RawPtr_t *p)
 static void QGraphicsItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+	int list_size = 19;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsItem *qp = (KQGraphicsItem *)p->rawptr;
 //		(void)qp;
-		if (qp->context_menu_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->context_menu_event_func);
+		if (qp->dummy->context_menu_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->context_menu_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->drag_enter_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->drag_enter_event_func);
+		if (qp->dummy->drag_enter_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->drag_enter_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->drag_leave_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->drag_leave_event_func);
+		if (qp->dummy->drag_leave_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->drag_leave_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->drag_move_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->drag_move_event_func);
+		if (qp->dummy->drag_move_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->drag_move_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->drop_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->drop_event_func);
+		if (qp->dummy->drop_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->drop_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->focus_in_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->focus_in_event_func);
+		if (qp->dummy->focus_in_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->focus_in_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->focus_out_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->focus_out_event_func);
+		if (qp->dummy->focus_out_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->focus_out_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->hover_enter_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->hover_enter_event_func);
+		if (qp->dummy->hover_enter_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->hover_enter_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->hover_leave_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->hover_leave_event_func);
+		if (qp->dummy->hover_leave_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->hover_leave_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->hover_move_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->hover_move_event_func);
+		if (qp->dummy->hover_move_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->hover_move_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->input_method_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->input_method_event_func);
+		if (qp->dummy->input_method_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->input_method_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->key_press_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->key_press_event_func);
+		if (qp->dummy->key_press_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->key_press_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->key_release_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->key_release_event_func);
+		if (qp->dummy->key_release_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->key_release_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->mouse_double_click_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->mouse_double_click_event_func);
+		if (qp->dummy->mouse_double_click_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->mouse_double_click_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->mouse_move_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->mouse_move_event_func);
+		if (qp->dummy->mouse_move_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->mouse_move_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->mouse_press_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->mouse_press_event_func);
+		if (qp->dummy->mouse_press_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->mouse_press_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->mouse_release_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->mouse_release_event_func);
+		if (qp->dummy->mouse_release_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->mouse_release_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->scene_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->scene_event_func);
+		if (qp->dummy->scene_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->scene_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->wheel_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->wheel_event_func);
+		if (qp->dummy->wheel_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->wheel_event_func);
 			KNH_SIZEREF(ctx);
 		}
 	}
@@ -3149,6 +3158,12 @@ static void QGraphicsItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QGraphicsItem_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQGraphicsItem::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQGraphicsItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

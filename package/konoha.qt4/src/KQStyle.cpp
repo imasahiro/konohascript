@@ -520,7 +520,7 @@ bool DummyQStyle::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyle::event_map->bigin();
 	if ((itr = DummyQStyle::event_map->find(str)) == DummyQStyle::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -532,8 +532,8 @@ bool DummyQStyle::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStyle::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyle::slot_map->bigin();
-	if ((itr = DummyQStyle::event_map->find(str)) == DummyQStyle::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStyle::slot_map->find(str)) == DummyQStyle::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -543,9 +543,16 @@ bool DummyQStyle::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQStyle::connection(QObject *o)
+{
+	DummyQObject::connection(o);
+}
+
 KQStyle::KQStyle() : QStyle()
 {
 	self = NULL;
+	dummy = new DummyQStyle();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyle_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -561,14 +568,13 @@ KMETHOD QStyle_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStyle::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyle]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStyle_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -582,7 +588,7 @@ KMETHOD QStyle_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStyle::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyle]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -602,6 +608,9 @@ static void QStyle_free(CTX ctx, knh_RawPtr_t *p)
 static void QStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStyle *qp = (KQStyle *)p->rawptr;
 		(void)qp;
@@ -613,9 +622,15 @@ static int QStyle_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQStyle::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQStyle::event(QEvent *event)
 {
-	if (!DummyQStyle::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QStyle::event(event);
 		return false;
 	}

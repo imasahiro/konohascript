@@ -9,7 +9,6 @@ KMETHOD QTouchEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QList<QTouchEvent::TouchPoint>  touchPoints = *RawPtr_to(const QList<QTouchEvent::TouchPoint> *, sfp[5]);
 	KQTouchEvent *ret_v = new KQTouchEvent(eventType, deviceType, modifiers, touchPointStates, touchPoints);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -107,7 +106,7 @@ bool DummyQTouchEvent::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTouchEvent::event_map->bigin();
 	if ((itr = DummyQTouchEvent::event_map->find(str)) == DummyQTouchEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQInputEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -119,8 +118,8 @@ bool DummyQTouchEvent::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTouchEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTouchEvent::slot_map->bigin();
-	if ((itr = DummyQTouchEvent::event_map->find(str)) == DummyQTouchEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTouchEvent::slot_map->find(str)) == DummyQTouchEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQInputEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -130,9 +129,16 @@ bool DummyQTouchEvent::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQTouchEvent::connection(QObject *o)
+{
+	DummyQInputEvent::connection(o);
+}
+
 KQTouchEvent::KQTouchEvent(QEvent::Type eventType, QTouchEvent::DeviceType deviceType, Qt::KeyboardModifiers modifiers, Qt::TouchPointStates touchPointStates, const QList<QTouchEvent::TouchPoint> touchPoints) : QTouchEvent(eventType, deviceType, modifiers, touchPointStates, touchPoints)
 {
 	self = NULL;
+	dummy = new DummyQTouchEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTouchEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -148,14 +154,13 @@ KMETHOD QTouchEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTouchEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTouchEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTouchEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -169,7 +174,7 @@ KMETHOD QTouchEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTouchEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTouchEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -189,6 +194,9 @@ static void QTouchEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QTouchEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTouchEvent *qp = (KQTouchEvent *)p->rawptr;
 		(void)qp;
@@ -198,6 +206,12 @@ static void QTouchEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QTouchEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQTouchEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQTouchEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -1,6 +1,7 @@
 #ifndef QOBJECT
 #define QOBJECT
-class DummyQObject {
+class DummyQObject : public QObject {
+	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -8,21 +9,27 @@ public:
 	knh_Func_t *child_event_func;
 	knh_Func_t *custom_event_func;
 	knh_Func_t *timer_event_func;
+	knh_Func_t *destroyed_func;
 	DummyQObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
-	bool childEvent(QChildEvent* event);
-	bool customEvent(QEvent* event);
-	bool timerEvent(QTimerEvent* event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
+	bool childEventDummy(QChildEvent* event);
+	bool customEventDummy(QEvent* event);
+	bool timerEventDummy(QTimerEvent* event);
+public slots:
+	bool destroyedSlot(QObject* obj);
 };
 
-class KQObject : public QObject, public DummyQObject {
+class KQObject : public QObject {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQObject *dummy;
 	KQObject(QObject* parent);
+	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
 

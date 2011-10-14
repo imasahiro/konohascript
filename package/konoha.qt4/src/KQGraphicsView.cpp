@@ -36,7 +36,6 @@ KMETHOD QGraphicsView_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQGraphicsView *ret_v = new KQGraphicsView(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -50,7 +49,6 @@ KMETHOD QGraphicsView_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQGraphicsView *ret_v = new KQGraphicsView(scene, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -1250,7 +1248,7 @@ bool DummyQGraphicsView::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsView::event_map->bigin();
 	if ((itr = DummyQGraphicsView::event_map->find(str)) == DummyQGraphicsView::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractScrollArea::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -1262,8 +1260,8 @@ bool DummyQGraphicsView::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGraphicsView::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsView::slot_map->bigin();
-	if ((itr = DummyQGraphicsView::event_map->find(str)) == DummyQGraphicsView::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsView::slot_map->find(str)) == DummyQGraphicsView::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractScrollArea::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -1273,9 +1271,16 @@ bool DummyQGraphicsView::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQGraphicsView::connection(QObject *o)
+{
+	DummyQAbstractScrollArea::connection(o);
+}
+
 KQGraphicsView::KQGraphicsView(QWidget* parent) : QGraphicsView(parent)
 {
 	self = NULL;
+	dummy = new DummyQGraphicsView();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsView_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1291,14 +1296,13 @@ KMETHOD QGraphicsView_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsView::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsView]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsView_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1312,7 +1316,7 @@ KMETHOD QGraphicsView_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsView::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsView]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -1332,6 +1336,9 @@ static void QGraphicsView_free(CTX ctx, knh_RawPtr_t *p)
 static void QGraphicsView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsView *qp = (KQGraphicsView *)p->rawptr;
 		(void)qp;
@@ -1343,9 +1350,15 @@ static int QGraphicsView_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQGraphicsView::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQGraphicsView::event(QEvent *event)
 {
-	if (!DummyQGraphicsView::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QGraphicsView::event(event);
 		return false;
 	}

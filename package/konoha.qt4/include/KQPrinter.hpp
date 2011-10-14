@@ -1,6 +1,7 @@
 #ifndef QPRINTER
 #define QPRINTER
 class DummyQPrinter : public DummyQPaintDevice {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQPrinter : public QPrinter, public DummyQPrinter {
+class KQPrinter : public QPrinter {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQPrinter *dummy;
 	KQPrinter(QPrinter::PrinterMode mode);
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QPRINTER

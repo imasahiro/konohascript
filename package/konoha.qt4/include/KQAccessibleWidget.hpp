@@ -1,6 +1,7 @@
 #ifndef QACCESSIBLEWIDGET
 #define QACCESSIBLEWIDGET
 class DummyQAccessibleWidget : public DummyQAccessibleObject {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQAccessibleWidget : public QAccessibleWidget, public DummyQAccessibleWidget {
+class KQAccessibleWidget : public QAccessibleWidget {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQAccessibleWidget *dummy;
 	KQAccessibleWidget(QWidget* w, QAccessibleWidget::Role role, const QString name);
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QACCESSIBLEWIDGET

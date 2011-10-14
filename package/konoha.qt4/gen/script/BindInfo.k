@@ -28,8 +28,7 @@ class BindInfo {
 		abstract_class_flag = interface.isAbstractClass();
 		template_class_flag = interface.isTemplateClass();
 		have_parent_flag = (|interface.parent_index| == 0 ? false : true);
-//		inherits_qobject_flag = checkInheritsQObject(class_name);
-		inherits_qobject_flag = true;
+		inherits_qobject_flag = false;
 		make_rapper_class_flag = true;
 		have_compare_operator_flag = false;
 		fea = [];
@@ -98,9 +97,10 @@ class BindInfo {
 //		if (class_name == "QGestureEvent") print k_src;
 	}
 
-	boolean checkInheritsQObject(String name) {
+	boolean checkInheritsQObject() {
 		foreach (String nio in NOT_INHERITS_QOBJECT) {
-			if (nio == name) {
+			if (class_name == "QObject") return true;
+			if ((nio == class_name || |parent_index| == 0)) {
 				return false;
 			}
 		}

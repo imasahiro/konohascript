@@ -35,7 +35,6 @@ KMETHOD QToolButton_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQToolButton *ret_v = new KQToolButton(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -181,8 +180,10 @@ KMETHOD QToolButton_showMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQToolButton::DummyQToolButton()
 {
 	self = NULL;
+	triggered_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("triggered", NULL));
 }
 
 void DummyQToolButton::setSelf(knh_RawPtr_t *ptr)
@@ -202,11 +203,25 @@ bool DummyQToolButton::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQToolButton::triggeredSlot(QAction* action)
+{
+	if (triggered_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QAction, action);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, triggered_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQToolButton::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQToolButton::event_map->bigin();
 	if ((itr = DummyQToolButton::event_map->find(str)) == DummyQToolButton::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractButton::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -218,20 +233,29 @@ bool DummyQToolButton::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQToolButton::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQToolButton::slot_map->bigin();
-	if ((itr = DummyQToolButton::event_map->find(str)) == DummyQToolButton::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQToolButton::slot_map->find(str)) == DummyQToolButton::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractButton::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		triggered_func = (*slot_map)["triggered"];
 		return true;
 	}
 }
 
 
+void DummyQToolButton::connection(QObject *o)
+{
+	connect(o, SIGNAL(triggered(QAction*)), this, SLOT(triggeredSlot(QAction*)));
+	DummyQAbstractButton::connection(o);
+}
+
 KQToolButton::KQToolButton(QWidget* parent) : QToolButton(parent)
 {
 	self = NULL;
+	dummy = new DummyQToolButton();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QToolButton_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -247,14 +271,13 @@ KMETHOD QToolButton_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQToolButton::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QToolButton]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QToolButton_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -268,7 +291,7 @@ KMETHOD QToolButton_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQToolButton::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QToolButton]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -287,10 +310,17 @@ static void QToolButton_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QToolButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQToolButton *qp = (KQToolButton *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->triggered_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->triggered_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -299,9 +329,15 @@ static int QToolButton_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQToolButton::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQToolButton::event(QEvent *event)
 {
-	if (!DummyQToolButton::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QToolButton::event(event);
 		return false;
 	}

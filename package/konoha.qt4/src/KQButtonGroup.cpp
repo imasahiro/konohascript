@@ -5,7 +5,6 @@ KMETHOD QButtonGroup_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQButtonGroup *ret_v = new KQButtonGroup(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -192,7 +191,7 @@ bool DummyQButtonGroup::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQButtonGroup::event_map->bigin();
 	if ((itr = DummyQButtonGroup::event_map->find(str)) == DummyQButtonGroup::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -204,8 +203,8 @@ bool DummyQButtonGroup::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQButtonGroup::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQButtonGroup::slot_map->bigin();
-	if ((itr = DummyQButtonGroup::event_map->find(str)) == DummyQButtonGroup::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQButtonGroup::slot_map->find(str)) == DummyQButtonGroup::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -215,9 +214,16 @@ bool DummyQButtonGroup::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQButtonGroup::connection(QObject *o)
+{
+	DummyQObject::connection(o);
+}
+
 KQButtonGroup::KQButtonGroup(QObject* parent) : QButtonGroup(parent)
 {
 	self = NULL;
+	dummy = new DummyQButtonGroup();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QButtonGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -233,14 +239,13 @@ KMETHOD QButtonGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQButtonGroup::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QButtonGroup]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QButtonGroup_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -254,7 +259,7 @@ KMETHOD QButtonGroup_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQButtonGroup::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QButtonGroup]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -274,6 +279,9 @@ static void QButtonGroup_free(CTX ctx, knh_RawPtr_t *p)
 static void QButtonGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQButtonGroup *qp = (KQButtonGroup *)p->rawptr;
 		(void)qp;
@@ -285,9 +293,15 @@ static int QButtonGroup_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQButtonGroup::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQButtonGroup::event(QEvent *event)
 {
-	if (!DummyQButtonGroup::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QButtonGroup::event(event);
 		return false;
 	}

@@ -205,7 +205,6 @@ KMETHOD QDirModel_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQDirModel *ret_v = new KQDirModel(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -499,7 +498,7 @@ bool DummyQDirModel::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDirModel::event_map->bigin();
 	if ((itr = DummyQDirModel::event_map->find(str)) == DummyQDirModel::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractItemModel::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -511,8 +510,8 @@ bool DummyQDirModel::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDirModel::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDirModel::slot_map->bigin();
-	if ((itr = DummyQDirModel::event_map->find(str)) == DummyQDirModel::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDirModel::slot_map->find(str)) == DummyQDirModel::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractItemModel::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -522,9 +521,16 @@ bool DummyQDirModel::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQDirModel::connection(QObject *o)
+{
+	DummyQAbstractItemModel::connection(o);
+}
+
 KQDirModel::KQDirModel(QObject* parent) : QDirModel(parent)
 {
 	self = NULL;
+	dummy = new DummyQDirModel();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDirModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -540,14 +546,13 @@ KMETHOD QDirModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDirModel::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDirModel]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDirModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -561,7 +566,7 @@ KMETHOD QDirModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDirModel::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDirModel]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -581,6 +586,9 @@ static void QDirModel_free(CTX ctx, knh_RawPtr_t *p)
 static void QDirModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDirModel *qp = (KQDirModel *)p->rawptr;
 		(void)qp;
@@ -592,9 +600,15 @@ static int QDirModel_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQDirModel::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQDirModel::event(QEvent *event)
 {
-	if (!DummyQDirModel::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QDirModel::event(event);
 		return false;
 	}

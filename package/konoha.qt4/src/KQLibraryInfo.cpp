@@ -98,7 +98,7 @@ bool DummyQLibraryInfo::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLibraryInfo::event_map->bigin();
 	if ((itr = DummyQLibraryInfo::event_map->find(str)) == DummyQLibraryInfo::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -109,8 +109,8 @@ bool DummyQLibraryInfo::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQLibraryInfo::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLibraryInfo::slot_map->bigin();
-	if ((itr = DummyQLibraryInfo::event_map->find(str)) == DummyQLibraryInfo::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQLibraryInfo::slot_map->find(str)) == DummyQLibraryInfo::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -118,6 +118,11 @@ bool DummyQLibraryInfo::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+
+void DummyQLibraryInfo::connection(QObject *o)
+{
+	return;
+}
 
 KMETHOD QLibraryInfo_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -132,14 +137,13 @@ KMETHOD QLibraryInfo_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQLibraryInfo::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLibraryInfo]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QLibraryInfo_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -153,7 +157,7 @@ KMETHOD QLibraryInfo_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQLibraryInfo::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLibraryInfo]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -173,6 +177,9 @@ static void QLibraryInfo_free(CTX ctx, knh_RawPtr_t *p)
 static void QLibraryInfo_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQLibraryInfo *qp = (KQLibraryInfo *)p->rawptr;
 		(void)qp;
@@ -182,6 +189,12 @@ static void QLibraryInfo_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QLibraryInfo_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQLibraryInfo::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQLibraryInfo(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

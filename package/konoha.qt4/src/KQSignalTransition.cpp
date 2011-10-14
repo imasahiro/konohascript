@@ -5,7 +5,6 @@ KMETHOD QSignalTransition_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QState*  sourceState = RawPtr_to(QState*, sfp[1]);
 	KQSignalTransition *ret_v = new KQSignalTransition(sourceState);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -20,7 +19,6 @@ KMETHOD QSignalTransition_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QState*  sourceState = RawPtr_to(QState*, sfp[3]);
 	KQSignalTransition *ret_v = new KQSignalTransition(sender, signal, sourceState);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -107,7 +105,7 @@ bool DummyQSignalTransition::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSignalTransition::event_map->bigin();
 	if ((itr = DummyQSignalTransition::event_map->find(str)) == DummyQSignalTransition::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractTransition::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -119,8 +117,8 @@ bool DummyQSignalTransition::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQSignalTransition::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSignalTransition::slot_map->bigin();
-	if ((itr = DummyQSignalTransition::event_map->find(str)) == DummyQSignalTransition::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQSignalTransition::slot_map->find(str)) == DummyQSignalTransition::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractTransition::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -130,9 +128,16 @@ bool DummyQSignalTransition::signalConnect(knh_Func_t *callback_func, string str
 }
 
 
+void DummyQSignalTransition::connection(QObject *o)
+{
+	DummyQAbstractTransition::connection(o);
+}
+
 KQSignalTransition::KQSignalTransition(QState* sourceState) : QSignalTransition(sourceState)
 {
 	self = NULL;
+	dummy = new DummyQSignalTransition();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSignalTransition_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -148,14 +153,13 @@ KMETHOD QSignalTransition_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQSignalTransition::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSignalTransition]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QSignalTransition_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -169,7 +173,7 @@ KMETHOD QSignalTransition_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQSignalTransition::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSignalTransition]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -189,6 +193,9 @@ static void QSignalTransition_free(CTX ctx, knh_RawPtr_t *p)
 static void QSignalTransition_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQSignalTransition *qp = (KQSignalTransition *)p->rawptr;
 		(void)qp;
@@ -200,9 +207,15 @@ static int QSignalTransition_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQSignalTransition::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQSignalTransition::event(QEvent *event)
 {
-	if (!DummyQSignalTransition::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QSignalTransition::event(event);
 		return false;
 	}

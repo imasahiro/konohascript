@@ -94,7 +94,6 @@ KMETHOD QItemDelegate_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQItemDelegate *ret_v = new KQItemDelegate(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -179,7 +178,7 @@ bool DummyQItemDelegate::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQItemDelegate::event_map->bigin();
 	if ((itr = DummyQItemDelegate::event_map->find(str)) == DummyQItemDelegate::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractItemDelegate::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -191,8 +190,8 @@ bool DummyQItemDelegate::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQItemDelegate::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQItemDelegate::slot_map->bigin();
-	if ((itr = DummyQItemDelegate::event_map->find(str)) == DummyQItemDelegate::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQItemDelegate::slot_map->find(str)) == DummyQItemDelegate::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractItemDelegate::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -202,9 +201,16 @@ bool DummyQItemDelegate::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQItemDelegate::connection(QObject *o)
+{
+	DummyQAbstractItemDelegate::connection(o);
+}
+
 KQItemDelegate::KQItemDelegate(QObject* parent) : QItemDelegate(parent)
 {
 	self = NULL;
+	dummy = new DummyQItemDelegate();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QItemDelegate_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -220,14 +226,13 @@ KMETHOD QItemDelegate_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQItemDelegate::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QItemDelegate]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QItemDelegate_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -241,7 +246,7 @@ KMETHOD QItemDelegate_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQItemDelegate::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QItemDelegate]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -261,6 +266,9 @@ static void QItemDelegate_free(CTX ctx, knh_RawPtr_t *p)
 static void QItemDelegate_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQItemDelegate *qp = (KQItemDelegate *)p->rawptr;
 		(void)qp;
@@ -272,9 +280,15 @@ static int QItemDelegate_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQItemDelegate::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQItemDelegate::event(QEvent *event)
 {
-	if (!DummyQItemDelegate::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QItemDelegate::event(event);
 		return false;
 	}

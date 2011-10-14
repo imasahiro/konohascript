@@ -48,7 +48,6 @@ KMETHOD QDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[2]);
 	KQDialog *ret_v = new KQDialog(parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -177,8 +176,14 @@ KMETHOD QDialog_reject(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQDialog::DummyQDialog()
 {
 	self = NULL;
+	accepted_func = NULL;
+	finished_func = NULL;
+	rejected_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("accepted", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("finished", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("rejected", NULL));
 }
 
 void DummyQDialog::setSelf(knh_RawPtr_t *ptr)
@@ -198,11 +203,48 @@ bool DummyQDialog::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQDialog::acceptedSlot()
+{
+	if (accepted_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, accepted_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQDialog::finishedSlot(int result)
+{
+	if (finished_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = result;
+		knh_Func_invoke(lctx, finished_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQDialog::rejectedSlot()
+{
+	if (rejected_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, rejected_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQDialog::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDialog::event_map->bigin();
 	if ((itr = DummyQDialog::event_map->find(str)) == DummyQDialog::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -214,20 +256,33 @@ bool DummyQDialog::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDialog::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDialog::slot_map->bigin();
-	if ((itr = DummyQDialog::event_map->find(str)) == DummyQDialog::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDialog::slot_map->find(str)) == DummyQDialog::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		accepted_func = (*slot_map)["accepted"];
+		finished_func = (*slot_map)["finished"];
+		rejected_func = (*slot_map)["rejected"];
 		return true;
 	}
 }
 
 
+void DummyQDialog::connection(QObject *o)
+{
+	connect(o, SIGNAL(accepted()), this, SLOT(acceptedSlot()));
+	connect(o, SIGNAL(finished(int)), this, SLOT(finishedSlot(int)));
+	connect(o, SIGNAL(rejected()), this, SLOT(rejectedSlot()));
+	DummyQWidget::connection(o);
+}
+
 KQDialog::KQDialog(QWidget* parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
 	self = NULL;
+	dummy = new DummyQDialog();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -243,14 +298,13 @@ KMETHOD QDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDialog::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDialog]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -264,7 +318,7 @@ KMETHOD QDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDialog::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDialog]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -283,10 +337,25 @@ static void QDialog_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 3;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDialog *qp = (KQDialog *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->accepted_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->accepted_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->finished_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->finished_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->rejected_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->rejected_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -295,9 +364,15 @@ static int QDialog_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQDialog::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQDialog::event(QEvent *event)
 {
-	if (!DummyQDialog::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QDialog::event(event);
 		return false;
 	}

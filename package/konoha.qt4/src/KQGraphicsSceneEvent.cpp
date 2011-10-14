@@ -41,7 +41,7 @@ bool DummyQGraphicsSceneEvent::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsSceneEvent::event_map->bigin();
 	if ((itr = DummyQGraphicsSceneEvent::event_map->find(str)) == DummyQGraphicsSceneEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -53,8 +53,8 @@ bool DummyQGraphicsSceneEvent::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGraphicsSceneEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsSceneEvent::slot_map->bigin();
-	if ((itr = DummyQGraphicsSceneEvent::event_map->find(str)) == DummyQGraphicsSceneEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsSceneEvent::slot_map->find(str)) == DummyQGraphicsSceneEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -63,6 +63,11 @@ bool DummyQGraphicsSceneEvent::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+
+void DummyQGraphicsSceneEvent::connection(QObject *o)
+{
+	DummyQEvent::connection(o);
+}
 
 KMETHOD QGraphicsSceneEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -77,14 +82,13 @@ KMETHOD QGraphicsSceneEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsSceneEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsSceneEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsSceneEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -98,7 +102,7 @@ KMETHOD QGraphicsSceneEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsSceneEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsSceneEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -118,6 +122,9 @@ static void QGraphicsSceneEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QGraphicsSceneEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneEvent *qp = (KQGraphicsSceneEvent *)p->rawptr;
 		(void)qp;
@@ -127,6 +134,12 @@ static void QGraphicsSceneEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QGraphicsSceneEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQGraphicsSceneEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQGraphicsSceneEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

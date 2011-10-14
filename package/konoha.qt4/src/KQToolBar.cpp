@@ -6,7 +6,6 @@ KMETHOD QToolBar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQToolBar *ret_v = new KQToolBar(title, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QToolBar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQToolBar *ret_v = new KQToolBar(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -421,8 +419,24 @@ KMETHOD QToolBar_setToolButtonStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQToolBar::DummyQToolBar()
 {
 	self = NULL;
+	action_triggered_func = NULL;
+	allowed_areas_changed_func = NULL;
+	icon_size_changed_func = NULL;
+	movable_changed_func = NULL;
+	orientation_changed_func = NULL;
+	tool_button_style_changed_func = NULL;
+	top_level_changed_func = NULL;
+	visibility_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("action-triggered", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("allowed-areas-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("icon-size-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("movable-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("orientation-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("tool-button-style-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("top-level-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("visibility-changed", NULL));
 }
 
 void DummyQToolBar::setSelf(knh_RawPtr_t *ptr)
@@ -442,11 +456,117 @@ bool DummyQToolBar::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQToolBar::actionTriggeredSlot(QAction* action)
+{
+	if (action_triggered_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QAction, action);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, action_triggered_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQToolBar::allowedAreasChangedSlot(Qt::ToolBarAreas allowedAreas)
+{
+	if (allowed_areas_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = allowedAreas;
+		knh_Func_invoke(lctx, allowed_areas_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQToolBar::iconSizeChangedSlot(const QSize iconSize)
+{
+	if (icon_size_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QSize, iconSize);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, icon_size_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQToolBar::movableChangedSlot(bool movable)
+{
+	if (movable_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = movable;
+		knh_Func_invoke(lctx, movable_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQToolBar::orientationChangedSlot(Qt::Orientation orientation)
+{
+	if (orientation_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = orientation;
+		knh_Func_invoke(lctx, orientation_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQToolBar::toolButtonStyleChangedSlot(Qt::ToolButtonStyle toolButtonStyle)
+{
+	if (tool_button_style_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = toolButtonStyle;
+		knh_Func_invoke(lctx, tool_button_style_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQToolBar::topLevelChangedSlot(bool topLevel)
+{
+	if (top_level_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = topLevel;
+		knh_Func_invoke(lctx, top_level_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQToolBar::visibilityChangedSlot(bool visible)
+{
+	if (visibility_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = visible;
+		knh_Func_invoke(lctx, visibility_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQToolBar::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQToolBar::event_map->bigin();
 	if ((itr = DummyQToolBar::event_map->find(str)) == DummyQToolBar::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -458,20 +578,43 @@ bool DummyQToolBar::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQToolBar::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQToolBar::slot_map->bigin();
-	if ((itr = DummyQToolBar::event_map->find(str)) == DummyQToolBar::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQToolBar::slot_map->find(str)) == DummyQToolBar::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		action_triggered_func = (*slot_map)["action-triggered"];
+		allowed_areas_changed_func = (*slot_map)["allowed-areas-changed"];
+		icon_size_changed_func = (*slot_map)["icon-size-changed"];
+		movable_changed_func = (*slot_map)["movable-changed"];
+		orientation_changed_func = (*slot_map)["orientation-changed"];
+		tool_button_style_changed_func = (*slot_map)["tool-button-style-changed"];
+		top_level_changed_func = (*slot_map)["top-level-changed"];
+		visibility_changed_func = (*slot_map)["visibility-changed"];
 		return true;
 	}
 }
 
 
+void DummyQToolBar::connection(QObject *o)
+{
+	connect(o, SIGNAL(actionTriggered(QAction*)), this, SLOT(actionTriggeredSlot(QAction*)));
+	connect(o, SIGNAL(allowedAreasChanged(Qt::ToolBarAreas)), this, SLOT(allowedAreasChangedSlot(Qt::ToolBarAreas)));
+	connect(o, SIGNAL(iconSizeChanged(const QSize)), this, SLOT(iconSizeChangedSlot(const QSize)));
+	connect(o, SIGNAL(movableChanged(bool)), this, SLOT(movableChangedSlot(bool)));
+	connect(o, SIGNAL(orientationChanged(Qt::Orientation)), this, SLOT(orientationChangedSlot(Qt::Orientation)));
+	connect(o, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)), this, SLOT(toolButtonStyleChangedSlot(Qt::ToolButtonStyle)));
+	connect(o, SIGNAL(topLevelChanged(bool)), this, SLOT(topLevelChangedSlot(bool)));
+	connect(o, SIGNAL(visibilityChanged(bool)), this, SLOT(visibilityChangedSlot(bool)));
+	DummyQWidget::connection(o);
+}
+
 KQToolBar::KQToolBar(const QString title, QWidget* parent) : QToolBar(title, parent)
 {
 	self = NULL;
+	dummy = new DummyQToolBar();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QToolBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -487,14 +630,13 @@ KMETHOD QToolBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQToolBar::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QToolBar]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QToolBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -508,7 +650,7 @@ KMETHOD QToolBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQToolBar::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QToolBar]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -527,10 +669,45 @@ static void QToolBar_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QToolBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 8;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQToolBar *qp = (KQToolBar *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->action_triggered_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->action_triggered_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->allowed_areas_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->allowed_areas_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->icon_size_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->icon_size_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->movable_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->movable_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->orientation_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->orientation_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->tool_button_style_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->tool_button_style_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->top_level_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->top_level_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->visibility_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->visibility_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -539,9 +716,15 @@ static int QToolBar_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQToolBar::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQToolBar::event(QEvent *event)
 {
-	if (!DummyQToolBar::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QToolBar::event(event);
 		return false;
 	}

@@ -17,7 +17,6 @@ KMETHOD QMessageBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQMessageBox *ret_v = new KQMessageBox(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -35,7 +34,6 @@ KMETHOD QMessageBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[6]);
 	KQMessageBox *ret_v = new KQMessageBox(icon, title, text, buttons, parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -587,8 +585,10 @@ KMETHOD QMessageBox_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQMessageBox::DummyQMessageBox()
 {
 	self = NULL;
+	button_clicked_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("button-clicked", NULL));
 }
 
 void DummyQMessageBox::setSelf(knh_RawPtr_t *ptr)
@@ -608,11 +608,25 @@ bool DummyQMessageBox::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQMessageBox::buttonClickedSlot(QAbstractButton* button)
+{
+	if (button_clicked_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QAbstractButton, button);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, button_clicked_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQMessageBox::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMessageBox::event_map->bigin();
 	if ((itr = DummyQMessageBox::event_map->find(str)) == DummyQMessageBox::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQDialog::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -624,20 +638,29 @@ bool DummyQMessageBox::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQMessageBox::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMessageBox::slot_map->bigin();
-	if ((itr = DummyQMessageBox::event_map->find(str)) == DummyQMessageBox::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQMessageBox::slot_map->find(str)) == DummyQMessageBox::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQDialog::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		button_clicked_func = (*slot_map)["button-clicked"];
 		return true;
 	}
 }
 
 
+void DummyQMessageBox::connection(QObject *o)
+{
+	connect(o, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(buttonClickedSlot(QAbstractButton*)));
+	DummyQDialog::connection(o);
+}
+
 KQMessageBox::KQMessageBox(QWidget* parent) : QMessageBox(parent)
 {
 	self = NULL;
+	dummy = new DummyQMessageBox();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMessageBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -653,14 +676,13 @@ KMETHOD QMessageBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQMessageBox::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMessageBox]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QMessageBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -674,7 +696,7 @@ KMETHOD QMessageBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQMessageBox::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMessageBox]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -693,10 +715,17 @@ static void QMessageBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMessageBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQMessageBox *qp = (KQMessageBox *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->button_clicked_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->button_clicked_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -705,9 +734,15 @@ static int QMessageBox_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQMessageBox::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQMessageBox::event(QEvent *event)
 {
-	if (!DummyQMessageBox::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QMessageBox::event(event);
 		return false;
 	}

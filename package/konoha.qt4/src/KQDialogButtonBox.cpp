@@ -5,7 +5,6 @@ KMETHOD QDialogButtonBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQDialogButtonBox *ret_v = new KQDialogButtonBox(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QDialogButtonBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQDialogButtonBox *ret_v = new KQDialogButtonBox(orientation, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -34,7 +32,6 @@ KMETHOD QDialogButtonBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[3]);
 	KQDialogButtonBox *ret_v = new KQDialogButtonBox(buttons, orientation, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -251,8 +248,16 @@ KMETHOD QDialogButtonBox_getStandardButtons(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQDialogButtonBox::DummyQDialogButtonBox()
 {
 	self = NULL;
+	accepted_func = NULL;
+	clicked_func = NULL;
+	help_requested_func = NULL;
+	rejected_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("accepted", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("clicked", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("help-requested", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("rejected", NULL));
 }
 
 void DummyQDialogButtonBox::setSelf(knh_RawPtr_t *ptr)
@@ -272,11 +277,61 @@ bool DummyQDialogButtonBox::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQDialogButtonBox::acceptedSlot()
+{
+	if (accepted_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, accepted_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQDialogButtonBox::clickedSlot(QAbstractButton* button)
+{
+	if (clicked_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QAbstractButton, button);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, clicked_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQDialogButtonBox::helpRequestedSlot()
+{
+	if (help_requested_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, help_requested_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQDialogButtonBox::rejectedSlot()
+{
+	if (rejected_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, rejected_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQDialogButtonBox::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDialogButtonBox::event_map->bigin();
 	if ((itr = DummyQDialogButtonBox::event_map->find(str)) == DummyQDialogButtonBox::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -288,20 +343,35 @@ bool DummyQDialogButtonBox::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDialogButtonBox::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDialogButtonBox::slot_map->bigin();
-	if ((itr = DummyQDialogButtonBox::event_map->find(str)) == DummyQDialogButtonBox::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDialogButtonBox::slot_map->find(str)) == DummyQDialogButtonBox::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		accepted_func = (*slot_map)["accepted"];
+		clicked_func = (*slot_map)["clicked"];
+		help_requested_func = (*slot_map)["help-requested"];
+		rejected_func = (*slot_map)["rejected"];
 		return true;
 	}
 }
 
 
+void DummyQDialogButtonBox::connection(QObject *o)
+{
+	connect(o, SIGNAL(accepted()), this, SLOT(acceptedSlot()));
+	connect(o, SIGNAL(clicked(QAbstractButton*)), this, SLOT(clickedSlot(QAbstractButton*)));
+	connect(o, SIGNAL(helpRequested()), this, SLOT(helpRequestedSlot()));
+	connect(o, SIGNAL(rejected()), this, SLOT(rejectedSlot()));
+	DummyQWidget::connection(o);
+}
+
 KQDialogButtonBox::KQDialogButtonBox(QWidget* parent) : QDialogButtonBox(parent)
 {
 	self = NULL;
+	dummy = new DummyQDialogButtonBox();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDialogButtonBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -317,14 +387,13 @@ KMETHOD QDialogButtonBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDialogButtonBox::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDialogButtonBox]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDialogButtonBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -338,7 +407,7 @@ KMETHOD QDialogButtonBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDialogButtonBox::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDialogButtonBox]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -357,10 +426,29 @@ static void QDialogButtonBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDialogButtonBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDialogButtonBox *qp = (KQDialogButtonBox *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->accepted_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->accepted_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->clicked_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->clicked_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->help_requested_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->help_requested_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->rejected_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->rejected_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -369,9 +457,15 @@ static int QDialogButtonBox_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQDialogButtonBox::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQDialogButtonBox::event(QEvent *event)
 {
-	if (!DummyQDialogButtonBox::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QDialogButtonBox::event(event);
 		return false;
 	}

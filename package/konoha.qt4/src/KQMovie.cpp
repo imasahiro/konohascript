@@ -5,7 +5,6 @@ KMETHOD QMovie_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQMovie *ret_v = new KQMovie(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -20,7 +19,6 @@ KMETHOD QMovie_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[3]);
 	KQMovie *ret_v = new KQMovie(device, format, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -35,7 +33,6 @@ KMETHOD QMovie_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[3]);
 	KQMovie *ret_v = new KQMovie(fileName, format, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -433,8 +430,22 @@ KMETHOD QMovie_stop(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQMovie::DummyQMovie()
 {
 	self = NULL;
+	error_func = NULL;
+	finished_func = NULL;
+	frame_changed_func = NULL;
+	resized_func = NULL;
+	started_func = NULL;
+	state_changed_func = NULL;
+	updated_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("error", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("finished", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("frame-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("resized", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("started", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("state-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("updated", NULL));
 }
 
 void DummyQMovie::setSelf(knh_RawPtr_t *ptr)
@@ -454,11 +465,102 @@ bool DummyQMovie::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQMovie::errorSlot(QImageReader::ImageReaderError error)
+{
+	if (error_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = error;
+		knh_Func_invoke(lctx, error_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQMovie::finishedSlot()
+{
+	if (finished_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, finished_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQMovie::frameChangedSlot(int frameNumber)
+{
+	if (frame_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = frameNumber;
+		knh_Func_invoke(lctx, frame_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQMovie::resizedSlot(const QSize size)
+{
+	if (resized_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QSize, size);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, resized_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQMovie::startedSlot()
+{
+	if (started_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, started_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQMovie::stateChangedSlot(QMovie::MovieState state)
+{
+	if (state_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = state;
+		knh_Func_invoke(lctx, state_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQMovie::updatedSlot(const QRect rect)
+{
+	if (updated_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QRect, rect);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, updated_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQMovie::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMovie::event_map->bigin();
 	if ((itr = DummyQMovie::event_map->find(str)) == DummyQMovie::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -470,20 +572,41 @@ bool DummyQMovie::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQMovie::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMovie::slot_map->bigin();
-	if ((itr = DummyQMovie::event_map->find(str)) == DummyQMovie::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQMovie::slot_map->find(str)) == DummyQMovie::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		error_func = (*slot_map)["error"];
+		finished_func = (*slot_map)["finished"];
+		frame_changed_func = (*slot_map)["frame-changed"];
+		resized_func = (*slot_map)["resized"];
+		started_func = (*slot_map)["started"];
+		state_changed_func = (*slot_map)["state-changed"];
+		updated_func = (*slot_map)["updated"];
 		return true;
 	}
 }
 
 
+void DummyQMovie::connection(QObject *o)
+{
+	connect(o, SIGNAL(error(QImageReader::ImageReaderError)), this, SLOT(errorSlot(QImageReader::ImageReaderError)));
+	connect(o, SIGNAL(finished()), this, SLOT(finishedSlot()));
+	connect(o, SIGNAL(frameChanged(int)), this, SLOT(frameChangedSlot(int)));
+	connect(o, SIGNAL(resized(const QSize)), this, SLOT(resizedSlot(const QSize)));
+	connect(o, SIGNAL(started()), this, SLOT(startedSlot()));
+	connect(o, SIGNAL(stateChanged(QMovie::MovieState)), this, SLOT(stateChangedSlot(QMovie::MovieState)));
+	connect(o, SIGNAL(updated(const QRect)), this, SLOT(updatedSlot(const QRect)));
+	DummyQObject::connection(o);
+}
+
 KQMovie::KQMovie(QObject* parent) : QMovie(parent)
 {
 	self = NULL;
+	dummy = new DummyQMovie();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMovie_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -499,14 +622,13 @@ KMETHOD QMovie_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQMovie::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMovie]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QMovie_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -520,7 +642,7 @@ KMETHOD QMovie_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQMovie::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMovie]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -539,10 +661,41 @@ static void QMovie_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMovie_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 7;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQMovie *qp = (KQMovie *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->error_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->error_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->finished_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->finished_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->frame_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->frame_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->resized_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->resized_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->started_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->started_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->state_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->state_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->updated_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->updated_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -551,9 +704,15 @@ static int QMovie_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQMovie::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQMovie::event(QEvent *event)
 {
-	if (!DummyQMovie::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QMovie::event(event);
 		return false;
 	}

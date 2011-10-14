@@ -4,7 +4,6 @@ KMETHOD QStylePainter_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQStylePainter *ret_v = new KQStylePainter();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QStylePainter_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 	KQStylePainter *ret_v = new KQStylePainter(widget);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -31,7 +29,6 @@ KMETHOD QStylePainter_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  widget = RawPtr_to(QWidget*, sfp[2]);
 	KQStylePainter *ret_v = new KQStylePainter(pd, widget);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -179,7 +176,7 @@ bool DummyQStylePainter::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStylePainter::event_map->bigin();
 	if ((itr = DummyQStylePainter::event_map->find(str)) == DummyQStylePainter::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQPainter::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -191,8 +188,8 @@ bool DummyQStylePainter::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStylePainter::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStylePainter::slot_map->bigin();
-	if ((itr = DummyQStylePainter::event_map->find(str)) == DummyQStylePainter::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStylePainter::slot_map->find(str)) == DummyQStylePainter::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQPainter::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -202,9 +199,16 @@ bool DummyQStylePainter::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQStylePainter::connection(QObject *o)
+{
+	DummyQPainter::connection(o);
+}
+
 KQStylePainter::KQStylePainter() : QStylePainter()
 {
 	self = NULL;
+	dummy = new DummyQStylePainter();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStylePainter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -220,14 +224,13 @@ KMETHOD QStylePainter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStylePainter::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStylePainter]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStylePainter_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -241,7 +244,7 @@ KMETHOD QStylePainter_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStylePainter::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStylePainter]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -261,6 +264,9 @@ static void QStylePainter_free(CTX ctx, knh_RawPtr_t *p)
 static void QStylePainter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStylePainter *qp = (KQStylePainter *)p->rawptr;
 		(void)qp;
@@ -270,6 +276,12 @@ static void QStylePainter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QStylePainter_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQStylePainter::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStylePainter(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -308,7 +308,7 @@ bool DummyQPinchGesture::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPinchGesture::event_map->bigin();
 	if ((itr = DummyQPinchGesture::event_map->find(str)) == DummyQPinchGesture::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGesture::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -320,8 +320,8 @@ bool DummyQPinchGesture::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQPinchGesture::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPinchGesture::slot_map->bigin();
-	if ((itr = DummyQPinchGesture::event_map->find(str)) == DummyQPinchGesture::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQPinchGesture::slot_map->find(str)) == DummyQPinchGesture::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGesture::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -331,9 +331,16 @@ bool DummyQPinchGesture::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQPinchGesture::connection(QObject *o)
+{
+	DummyQGesture::connection(o);
+}
+
 KQPinchGesture::KQPinchGesture() : QPinchGesture()
 {
 	self = NULL;
+	dummy = new DummyQPinchGesture();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPinchGesture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -349,14 +356,13 @@ KMETHOD QPinchGesture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQPinchGesture::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPinchGesture]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QPinchGesture_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -370,7 +376,7 @@ KMETHOD QPinchGesture_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQPinchGesture::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPinchGesture]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -390,6 +396,9 @@ static void QPinchGesture_free(CTX ctx, knh_RawPtr_t *p)
 static void QPinchGesture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQPinchGesture *qp = (KQPinchGesture *)p->rawptr;
 		(void)qp;
@@ -401,9 +410,15 @@ static int QPinchGesture_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQPinchGesture::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQPinchGesture::event(QEvent *event)
 {
-	if (!DummyQPinchGesture::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QPinchGesture::event(event);
 		return false;
 	}

@@ -19,7 +19,6 @@ KMETHOD QPrinter_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QPrinter::PrinterMode mode = Int_to(QPrinter::PrinterMode, sfp[1]);
 	KQPrinter *ret_v = new KQPrinter(mode);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -33,7 +32,6 @@ KMETHOD QPrinter_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QPrinter::PrinterMode mode = Int_to(QPrinter::PrinterMode, sfp[2]);
 	KQPrinter *ret_v = new KQPrinter(printer, mode);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -840,7 +838,7 @@ bool DummyQPrinter::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPrinter::event_map->bigin();
 	if ((itr = DummyQPrinter::event_map->find(str)) == DummyQPrinter::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQPaintDevice::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -852,8 +850,8 @@ bool DummyQPrinter::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQPrinter::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPrinter::slot_map->bigin();
-	if ((itr = DummyQPrinter::event_map->find(str)) == DummyQPrinter::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQPrinter::slot_map->find(str)) == DummyQPrinter::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQPaintDevice::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -863,9 +861,16 @@ bool DummyQPrinter::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQPrinter::connection(QObject *o)
+{
+	DummyQPaintDevice::connection(o);
+}
+
 KQPrinter::KQPrinter(QPrinter::PrinterMode mode) : QPrinter(mode)
 {
 	self = NULL;
+	dummy = new DummyQPrinter();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPrinter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -881,14 +886,13 @@ KMETHOD QPrinter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQPrinter::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPrinter]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QPrinter_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -902,7 +906,7 @@ KMETHOD QPrinter_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQPrinter::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPrinter]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -922,6 +926,9 @@ static void QPrinter_free(CTX ctx, knh_RawPtr_t *p)
 static void QPrinter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQPrinter *qp = (KQPrinter *)p->rawptr;
 		(void)qp;
@@ -931,6 +938,12 @@ static void QPrinter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QPrinter_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQPrinter::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQPrinter(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

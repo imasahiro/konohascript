@@ -44,7 +44,6 @@ KMETHOD QHeaderView_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQHeaderView *ret_v = new KQHeaderView(orientation, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -784,8 +783,30 @@ KMETHOD QHeaderView_setOffsetToSectionPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQHeaderView::DummyQHeaderView()
 {
 	self = NULL;
+	geometries_changed_func = NULL;
+	section_auto_resize_func = NULL;
+	section_clicked_func = NULL;
+	section_count_changed_func = NULL;
+	section_double_clicked_func = NULL;
+	section_entered_func = NULL;
+	section_handle_double_clicked_func = NULL;
+	section_moved_func = NULL;
+	section_pressed_func = NULL;
+	section_resized_func = NULL;
+	sort_indicator_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("geometries-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("section-auto-resize", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("section-clicked", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("section-count-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("section-double-clicked", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("section-entered", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("section-handle-double-clicked", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("section-moved", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("section-pressed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("section-resized", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("sort-indicator-changed", NULL));
 }
 
 void DummyQHeaderView::setSelf(knh_RawPtr_t *ptr)
@@ -805,11 +826,160 @@ bool DummyQHeaderView::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQHeaderView::geometriesChangedSlot()
+{
+	if (geometries_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, geometries_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQHeaderView::sectionAutoResizeSlot(int logicalIndex, QHeaderView::ResizeMode mode)
+{
+	if (section_auto_resize_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = logicalIndex;
+		lsfp[K_CALLDELTA+3].ivalue = mode;
+		knh_Func_invoke(lctx, section_auto_resize_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQHeaderView::sectionClickedSlot(int logicalIndex)
+{
+	if (section_clicked_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = logicalIndex;
+		knh_Func_invoke(lctx, section_clicked_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQHeaderView::sectionCountChangedSlot(int oldCount, int new_Count)
+{
+	if (section_count_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = oldCount;
+		lsfp[K_CALLDELTA+3].ivalue = new_Count;
+		knh_Func_invoke(lctx, section_count_changed_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQHeaderView::sectionDoubleClickedSlot(int logicalIndex)
+{
+	if (section_double_clicked_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = logicalIndex;
+		knh_Func_invoke(lctx, section_double_clicked_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQHeaderView::sectionEnteredSlot(int logicalIndex)
+{
+	if (section_entered_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = logicalIndex;
+		knh_Func_invoke(lctx, section_entered_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQHeaderView::sectionHandleDoubleClickedSlot(int logicalIndex)
+{
+	if (section_handle_double_clicked_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = logicalIndex;
+		knh_Func_invoke(lctx, section_handle_double_clicked_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQHeaderView::sectionMovedSlot(int logicalIndex, int oldVisualIndex, int new_VisualIndex)
+{
+	if (section_moved_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = logicalIndex;
+		lsfp[K_CALLDELTA+3].ivalue = oldVisualIndex;
+		lsfp[K_CALLDELTA+4].ivalue = new_VisualIndex;
+		knh_Func_invoke(lctx, section_moved_func, lsfp, 4);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQHeaderView::sectionPressedSlot(int logicalIndex)
+{
+	if (section_pressed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = logicalIndex;
+		knh_Func_invoke(lctx, section_pressed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQHeaderView::sectionResizedSlot(int logicalIndex, int oldSize, int new_Size)
+{
+	if (section_resized_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = logicalIndex;
+		lsfp[K_CALLDELTA+3].ivalue = oldSize;
+		lsfp[K_CALLDELTA+4].ivalue = new_Size;
+		knh_Func_invoke(lctx, section_resized_func, lsfp, 4);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQHeaderView::sortIndicatorChangedSlot(int logicalIndex, Qt::SortOrder order)
+{
+	if (sort_indicator_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = logicalIndex;
+		lsfp[K_CALLDELTA+3].ivalue = order;
+		knh_Func_invoke(lctx, sort_indicator_changed_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQHeaderView::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQHeaderView::event_map->bigin();
 	if ((itr = DummyQHeaderView::event_map->find(str)) == DummyQHeaderView::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractItemView::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -821,20 +991,49 @@ bool DummyQHeaderView::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQHeaderView::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQHeaderView::slot_map->bigin();
-	if ((itr = DummyQHeaderView::event_map->find(str)) == DummyQHeaderView::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQHeaderView::slot_map->find(str)) == DummyQHeaderView::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractItemView::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		geometries_changed_func = (*slot_map)["geometries-changed"];
+		section_auto_resize_func = (*slot_map)["section-auto-resize"];
+		section_clicked_func = (*slot_map)["section-clicked"];
+		section_count_changed_func = (*slot_map)["section-count-changed"];
+		section_double_clicked_func = (*slot_map)["section-double-clicked"];
+		section_entered_func = (*slot_map)["section-entered"];
+		section_handle_double_clicked_func = (*slot_map)["section-handle-double-clicked"];
+		section_moved_func = (*slot_map)["section-moved"];
+		section_pressed_func = (*slot_map)["section-pressed"];
+		section_resized_func = (*slot_map)["section-resized"];
+		sort_indicator_changed_func = (*slot_map)["sort-indicator-changed"];
 		return true;
 	}
 }
 
 
+void DummyQHeaderView::connection(QObject *o)
+{
+	connect(o, SIGNAL(geometriesChanged()), this, SLOT(geometriesChangedSlot()));
+	connect(o, SIGNAL(sectionAutoResize(int, QHeaderView::ResizeMode)), this, SLOT(sectionAutoResizeSlot(int, QHeaderView::ResizeMode)));
+	connect(o, SIGNAL(sectionClicked(int)), this, SLOT(sectionClickedSlot(int)));
+	connect(o, SIGNAL(sectionCountChanged(int, int)), this, SLOT(sectionCountChangedSlot(int, int)));
+	connect(o, SIGNAL(sectionDoubleClicked(int)), this, SLOT(sectionDoubleClickedSlot(int)));
+	connect(o, SIGNAL(sectionEntered(int)), this, SLOT(sectionEnteredSlot(int)));
+	connect(o, SIGNAL(sectionHandleDoubleClicked(int)), this, SLOT(sectionHandleDoubleClickedSlot(int)));
+	connect(o, SIGNAL(sectionMoved(int, int, int)), this, SLOT(sectionMovedSlot(int, int, int)));
+	connect(o, SIGNAL(sectionPressed(int)), this, SLOT(sectionPressedSlot(int)));
+	connect(o, SIGNAL(sectionResized(int, int, int)), this, SLOT(sectionResizedSlot(int, int, int)));
+	connect(o, SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)), this, SLOT(sortIndicatorChangedSlot(int, Qt::SortOrder)));
+	DummyQAbstractItemView::connection(o);
+}
+
 KQHeaderView::KQHeaderView(Qt::Orientation orientation, QWidget* parent) : QHeaderView(orientation, parent)
 {
 	self = NULL;
+	dummy = new DummyQHeaderView();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QHeaderView_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -850,14 +1049,13 @@ KMETHOD QHeaderView_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQHeaderView::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QHeaderView]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QHeaderView_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -871,7 +1069,7 @@ KMETHOD QHeaderView_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQHeaderView::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QHeaderView]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -890,10 +1088,57 @@ static void QHeaderView_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QHeaderView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 11;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQHeaderView *qp = (KQHeaderView *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->geometries_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->geometries_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->section_auto_resize_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->section_auto_resize_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->section_clicked_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->section_clicked_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->section_count_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->section_count_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->section_double_clicked_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->section_double_clicked_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->section_entered_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->section_entered_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->section_handle_double_clicked_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->section_handle_double_clicked_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->section_moved_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->section_moved_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->section_pressed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->section_pressed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->section_resized_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->section_resized_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->sort_indicator_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->sort_indicator_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -902,9 +1147,15 @@ static int QHeaderView_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQHeaderView::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQHeaderView::event(QEvent *event)
 {
-	if (!DummyQHeaderView::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QHeaderView::event(event);
 		return false;
 	}

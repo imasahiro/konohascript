@@ -5,7 +5,6 @@ KMETHOD QStatusTipEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QString tip = String_to(const QString, sfp[1]);
 	KQStatusTipEvent *ret_v = new KQStatusTipEvent(tip);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -53,7 +52,7 @@ bool DummyQStatusTipEvent::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStatusTipEvent::event_map->bigin();
 	if ((itr = DummyQStatusTipEvent::event_map->find(str)) == DummyQStatusTipEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -65,8 +64,8 @@ bool DummyQStatusTipEvent::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStatusTipEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStatusTipEvent::slot_map->bigin();
-	if ((itr = DummyQStatusTipEvent::event_map->find(str)) == DummyQStatusTipEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStatusTipEvent::slot_map->find(str)) == DummyQStatusTipEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -76,9 +75,16 @@ bool DummyQStatusTipEvent::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQStatusTipEvent::connection(QObject *o)
+{
+	DummyQEvent::connection(o);
+}
+
 KQStatusTipEvent::KQStatusTipEvent(const QString tip) : QStatusTipEvent(tip)
 {
 	self = NULL;
+	dummy = new DummyQStatusTipEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStatusTipEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -94,14 +100,13 @@ KMETHOD QStatusTipEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStatusTipEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStatusTipEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStatusTipEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -115,7 +120,7 @@ KMETHOD QStatusTipEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStatusTipEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStatusTipEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -135,6 +140,9 @@ static void QStatusTipEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QStatusTipEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStatusTipEvent *qp = (KQStatusTipEvent *)p->rawptr;
 		(void)qp;
@@ -144,6 +152,12 @@ static void QStatusTipEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QStatusTipEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQStatusTipEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStatusTipEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

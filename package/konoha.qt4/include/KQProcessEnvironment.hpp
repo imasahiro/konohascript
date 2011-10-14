@@ -1,6 +1,7 @@
 #ifndef QPROCESSENVIRONMENT
 #define QPROCESSENVIRONMENT
 class DummyQProcessEnvironment {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQProcessEnvironment : public QProcessEnvironment, public DummyQProcessEnvironment {
+class KQProcessEnvironment : public QProcessEnvironment {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQProcessEnvironment *dummy;
 	KQProcessEnvironment();
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QPROCESSENVIRONMENT

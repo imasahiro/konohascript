@@ -42,7 +42,7 @@ bool DummyQAbstractFileEngineHandler::addEvent(knh_Func_t *callback_func, string
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractFileEngineHandler::event_map->bigin();
 	if ((itr = DummyQAbstractFileEngineHandler::event_map->find(str)) == DummyQAbstractFileEngineHandler::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -53,8 +53,8 @@ bool DummyQAbstractFileEngineHandler::addEvent(knh_Func_t *callback_func, string
 bool DummyQAbstractFileEngineHandler::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractFileEngineHandler::slot_map->bigin();
-	if ((itr = DummyQAbstractFileEngineHandler::event_map->find(str)) == DummyQAbstractFileEngineHandler::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAbstractFileEngineHandler::slot_map->find(str)) == DummyQAbstractFileEngineHandler::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -63,9 +63,16 @@ bool DummyQAbstractFileEngineHandler::signalConnect(knh_Func_t *callback_func, s
 }
 
 
+void DummyQAbstractFileEngineHandler::connection(QObject *o)
+{
+	return;
+}
+
 KQAbstractFileEngineHandler::KQAbstractFileEngineHandler() : QAbstractFileEngineHandler()
 {
 	self = NULL;
+	dummy = new DummyQAbstractFileEngineHandler();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractFileEngineHandler_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -81,14 +88,13 @@ KMETHOD QAbstractFileEngineHandler_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAbstractFileEngineHandler::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractFileEngineHandler]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAbstractFileEngineHandler_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -102,7 +108,7 @@ KMETHOD QAbstractFileEngineHandler_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAbstractFileEngineHandler::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractFileEngineHandler]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -122,6 +128,9 @@ static void QAbstractFileEngineHandler_free(CTX ctx, knh_RawPtr_t *p)
 static void QAbstractFileEngineHandler_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAbstractFileEngineHandler *qp = (KQAbstractFileEngineHandler *)p->rawptr;
 		(void)qp;
@@ -131,6 +140,12 @@ static void QAbstractFileEngineHandler_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QAbstractFileEngineHandler_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQAbstractFileEngineHandler::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQAbstractFileEngineHandler(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

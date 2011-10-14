@@ -4,7 +4,6 @@ KMETHOD QCursor_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQCursor *ret_v = new KQCursor();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QCursor_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::CursorShape shape = Int_to(Qt::CursorShape, sfp[1]);
 	KQCursor *ret_v = new KQCursor(shape);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -33,7 +31,6 @@ KMETHOD QCursor_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int hotY = Int_to(int, sfp[4]);
 	KQCursor *ret_v = new KQCursor(bitmap, mask, hotX, hotY);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -48,7 +45,6 @@ KMETHOD QCursor_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int hotY = Int_to(int, sfp[3]);
 	KQCursor *ret_v = new KQCursor(pixmap, hotX, hotY);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -61,7 +57,6 @@ KMETHOD QCursor_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QCursor  c = *RawPtr_to(const QCursor *, sfp[1]);
 	KQCursor *ret_v = new KQCursor(c);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -74,7 +69,6 @@ KMETHOD QCursor_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QCursor::HCURSOR cursor = Int_to(QCursor::HCURSOR, sfp[1]);
 	KQCursor *ret_v = new KQCursor(cursor);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -231,7 +225,7 @@ bool DummyQCursor::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCursor::event_map->bigin();
 	if ((itr = DummyQCursor::event_map->find(str)) == DummyQCursor::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -242,8 +236,8 @@ bool DummyQCursor::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQCursor::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCursor::slot_map->bigin();
-	if ((itr = DummyQCursor::event_map->find(str)) == DummyQCursor::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQCursor::slot_map->find(str)) == DummyQCursor::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -252,9 +246,16 @@ bool DummyQCursor::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQCursor::connection(QObject *o)
+{
+	return;
+}
+
 KQCursor::KQCursor() : QCursor()
 {
 	self = NULL;
+	dummy = new DummyQCursor();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QCursor_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -270,14 +271,13 @@ KMETHOD QCursor_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQCursor::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCursor]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QCursor_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -291,7 +291,7 @@ KMETHOD QCursor_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQCursor::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCursor]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -311,6 +311,9 @@ static void QCursor_free(CTX ctx, knh_RawPtr_t *p)
 static void QCursor_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQCursor *qp = (KQCursor *)p->rawptr;
 		(void)qp;
@@ -320,6 +323,12 @@ static void QCursor_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QCursor_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQCursor::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQCursor(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

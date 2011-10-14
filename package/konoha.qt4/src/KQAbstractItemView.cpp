@@ -857,8 +857,20 @@ KMETHOD QAbstractItemView_update(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQAbstractItemView::DummyQAbstractItemView()
 {
 	self = NULL;
+	activated_func = NULL;
+	clicked_func = NULL;
+	double_clicked_func = NULL;
+	entered_func = NULL;
+	pressed_func = NULL;
+	viewport_entered_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("activated", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("clicked", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("double-clicked", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("entered", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("pressed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("viewport-entered", NULL));
 }
 
 void DummyQAbstractItemView::setSelf(knh_RawPtr_t *ptr)
@@ -878,11 +890,93 @@ bool DummyQAbstractItemView::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQAbstractItemView::activatedSlot(const QModelIndex index)
+{
+	if (activated_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, index);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, activated_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemView::clickedSlot(const QModelIndex index)
+{
+	if (clicked_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, index);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, clicked_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemView::doubleClickedSlot(const QModelIndex index)
+{
+	if (double_clicked_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, index);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, double_clicked_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemView::enteredSlot(const QModelIndex index)
+{
+	if (entered_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, index);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, entered_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemView::pressedSlot(const QModelIndex index)
+{
+	if (pressed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, index);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, pressed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractItemView::viewportEnteredSlot()
+{
+	if (viewport_entered_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, viewport_entered_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQAbstractItemView::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractItemView::event_map->bigin();
 	if ((itr = DummyQAbstractItemView::event_map->find(str)) == DummyQAbstractItemView::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractScrollArea::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -894,20 +988,39 @@ bool DummyQAbstractItemView::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQAbstractItemView::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractItemView::slot_map->bigin();
-	if ((itr = DummyQAbstractItemView::event_map->find(str)) == DummyQAbstractItemView::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAbstractItemView::slot_map->find(str)) == DummyQAbstractItemView::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractScrollArea::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		activated_func = (*slot_map)["activated"];
+		clicked_func = (*slot_map)["clicked"];
+		double_clicked_func = (*slot_map)["double-clicked"];
+		entered_func = (*slot_map)["entered"];
+		pressed_func = (*slot_map)["pressed"];
+		viewport_entered_func = (*slot_map)["viewport-entered"];
 		return true;
 	}
 }
 
 
+void DummyQAbstractItemView::connection(QObject *o)
+{
+	connect(o, SIGNAL(activated(const QModelIndex)), this, SLOT(activatedSlot(const QModelIndex)));
+	connect(o, SIGNAL(clicked(const QModelIndex)), this, SLOT(clickedSlot(const QModelIndex)));
+	connect(o, SIGNAL(doubleClicked(const QModelIndex)), this, SLOT(doubleClickedSlot(const QModelIndex)));
+	connect(o, SIGNAL(entered(const QModelIndex)), this, SLOT(enteredSlot(const QModelIndex)));
+	connect(o, SIGNAL(pressed(const QModelIndex)), this, SLOT(pressedSlot(const QModelIndex)));
+	connect(o, SIGNAL(viewportEntered()), this, SLOT(viewportEnteredSlot()));
+	DummyQAbstractScrollArea::connection(o);
+}
+
 KQAbstractItemView::KQAbstractItemView(QWidget* parent) : QAbstractItemView(parent)
 {
 	self = NULL;
+	dummy = new DummyQAbstractItemView();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractItemView_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -923,14 +1036,13 @@ KMETHOD QAbstractItemView_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAbstractItemView::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractItemView]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAbstractItemView_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -944,7 +1056,7 @@ KMETHOD QAbstractItemView_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAbstractItemView::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractItemView]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -963,10 +1075,37 @@ static void QAbstractItemView_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractItemView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 6;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAbstractItemView *qp = (KQAbstractItemView *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->activated_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->activated_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->clicked_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->clicked_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->double_clicked_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->double_clicked_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->entered_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->entered_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->pressed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->pressed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->viewport_entered_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->viewport_entered_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -975,9 +1114,15 @@ static int QAbstractItemView_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQAbstractItemView::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQAbstractItemView::event(QEvent *event)
 {
-	if (!DummyQAbstractItemView::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QAbstractItemView::event(event);
 		return false;
 	}

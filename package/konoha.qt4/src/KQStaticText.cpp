@@ -4,7 +4,6 @@ KMETHOD QStaticText_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQStaticText *ret_v = new KQStaticText();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QStaticText_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QString text = String_to(const QString, sfp[1]);
 	KQStaticText *ret_v = new KQStaticText(text);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -30,7 +28,6 @@ KMETHOD QStaticText_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStaticText  other = *RawPtr_to(const QStaticText *, sfp[1]);
 	KQStaticText *ret_v = new KQStaticText(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -219,7 +216,7 @@ bool DummyQStaticText::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStaticText::event_map->bigin();
 	if ((itr = DummyQStaticText::event_map->find(str)) == DummyQStaticText::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -230,8 +227,8 @@ bool DummyQStaticText::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStaticText::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStaticText::slot_map->bigin();
-	if ((itr = DummyQStaticText::event_map->find(str)) == DummyQStaticText::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStaticText::slot_map->find(str)) == DummyQStaticText::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -240,9 +237,16 @@ bool DummyQStaticText::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQStaticText::connection(QObject *o)
+{
+	return;
+}
+
 KQStaticText::KQStaticText() : QStaticText()
 {
 	self = NULL;
+	dummy = new DummyQStaticText();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStaticText_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -258,14 +262,13 @@ KMETHOD QStaticText_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStaticText::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStaticText]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStaticText_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -279,7 +282,7 @@ KMETHOD QStaticText_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStaticText::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStaticText]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -299,6 +302,9 @@ static void QStaticText_free(CTX ctx, knh_RawPtr_t *p)
 static void QStaticText_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStaticText *qp = (KQStaticText *)p->rawptr;
 		(void)qp;
@@ -308,6 +314,12 @@ static void QStaticText_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QStaticText_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QStaticText*>(p1->rawptr) == *static_cast<QStaticText*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQStaticText::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStaticText(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

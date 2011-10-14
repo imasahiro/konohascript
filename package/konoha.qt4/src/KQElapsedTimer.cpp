@@ -178,7 +178,7 @@ bool DummyQElapsedTimer::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQElapsedTimer::event_map->bigin();
 	if ((itr = DummyQElapsedTimer::event_map->find(str)) == DummyQElapsedTimer::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -189,8 +189,8 @@ bool DummyQElapsedTimer::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQElapsedTimer::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQElapsedTimer::slot_map->bigin();
-	if ((itr = DummyQElapsedTimer::event_map->find(str)) == DummyQElapsedTimer::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQElapsedTimer::slot_map->find(str)) == DummyQElapsedTimer::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -199,9 +199,16 @@ bool DummyQElapsedTimer::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQElapsedTimer::connection(QObject *o)
+{
+	return;
+}
+
 KQElapsedTimer::KQElapsedTimer() : QElapsedTimer()
 {
 	self = NULL;
+	dummy = new DummyQElapsedTimer();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QElapsedTimer_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -217,14 +224,13 @@ KMETHOD QElapsedTimer_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQElapsedTimer::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QElapsedTimer]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QElapsedTimer_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -238,7 +244,7 @@ KMETHOD QElapsedTimer_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQElapsedTimer::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QElapsedTimer]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -258,6 +264,9 @@ static void QElapsedTimer_free(CTX ctx, knh_RawPtr_t *p)
 static void QElapsedTimer_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQElapsedTimer *qp = (KQElapsedTimer *)p->rawptr;
 		(void)qp;
@@ -267,6 +276,12 @@ static void QElapsedTimer_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QElapsedTimer_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QElapsedTimer*>(p1->rawptr) == *static_cast<QElapsedTimer*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQElapsedTimer::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQElapsedTimer(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

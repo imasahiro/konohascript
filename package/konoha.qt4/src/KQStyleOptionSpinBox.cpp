@@ -4,7 +4,6 @@ KMETHOD QStyleOptionSpinBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQStyleOptionSpinBox *ret_v = new KQStyleOptionSpinBox();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QStyleOptionSpinBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionSpinBox  other = *RawPtr_to(const QStyleOptionSpinBox *, sfp[1]);
 	KQStyleOptionSpinBox *ret_v = new KQStyleOptionSpinBox(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -51,7 +49,7 @@ bool DummyQStyleOptionSpinBox::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionSpinBox::event_map->bigin();
 	if ((itr = DummyQStyleOptionSpinBox::event_map->find(str)) == DummyQStyleOptionSpinBox::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQStyleOptionComplex::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -63,8 +61,8 @@ bool DummyQStyleOptionSpinBox::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStyleOptionSpinBox::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionSpinBox::slot_map->bigin();
-	if ((itr = DummyQStyleOptionSpinBox::event_map->find(str)) == DummyQStyleOptionSpinBox::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStyleOptionSpinBox::slot_map->find(str)) == DummyQStyleOptionSpinBox::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQStyleOptionComplex::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -74,9 +72,16 @@ bool DummyQStyleOptionSpinBox::signalConnect(knh_Func_t *callback_func, string s
 }
 
 
+void DummyQStyleOptionSpinBox::connection(QObject *o)
+{
+	DummyQStyleOptionComplex::connection(o);
+}
+
 KQStyleOptionSpinBox::KQStyleOptionSpinBox() : QStyleOptionSpinBox()
 {
 	self = NULL;
+	dummy = new DummyQStyleOptionSpinBox();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionSpinBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -92,14 +97,13 @@ KMETHOD QStyleOptionSpinBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStyleOptionSpinBox::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionSpinBox]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStyleOptionSpinBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -113,7 +117,7 @@ KMETHOD QStyleOptionSpinBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStyleOptionSpinBox::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionSpinBox]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -133,6 +137,9 @@ static void QStyleOptionSpinBox_free(CTX ctx, knh_RawPtr_t *p)
 static void QStyleOptionSpinBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStyleOptionSpinBox *qp = (KQStyleOptionSpinBox *)p->rawptr;
 		(void)qp;
@@ -142,6 +149,12 @@ static void QStyleOptionSpinBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QStyleOptionSpinBox_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQStyleOptionSpinBox::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStyleOptionSpinBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

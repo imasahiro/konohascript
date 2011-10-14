@@ -6,7 +6,6 @@ KMETHOD QTextInlineObject_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QTextEngine*  e = RawPtr_to(QTextEngine*, sfp[2]);
 	KQTextInlineObject *ret_v = new KQTextInlineObject(i, e);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -209,7 +208,7 @@ bool DummyQTextInlineObject::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextInlineObject::event_map->bigin();
 	if ((itr = DummyQTextInlineObject::event_map->find(str)) == DummyQTextInlineObject::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -220,8 +219,8 @@ bool DummyQTextInlineObject::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTextInlineObject::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextInlineObject::slot_map->bigin();
-	if ((itr = DummyQTextInlineObject::event_map->find(str)) == DummyQTextInlineObject::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTextInlineObject::slot_map->find(str)) == DummyQTextInlineObject::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -230,9 +229,16 @@ bool DummyQTextInlineObject::signalConnect(knh_Func_t *callback_func, string str
 }
 
 
+void DummyQTextInlineObject::connection(QObject *o)
+{
+	return;
+}
+
 KQTextInlineObject::KQTextInlineObject(int i, QTextEngine* e) : QTextInlineObject(i, e)
 {
 	self = NULL;
+	dummy = new DummyQTextInlineObject();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextInlineObject_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -248,14 +254,13 @@ KMETHOD QTextInlineObject_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTextInlineObject::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextInlineObject]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTextInlineObject_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -269,7 +274,7 @@ KMETHOD QTextInlineObject_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTextInlineObject::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextInlineObject]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -289,6 +294,9 @@ static void QTextInlineObject_free(CTX ctx, knh_RawPtr_t *p)
 static void QTextInlineObject_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTextInlineObject *qp = (KQTextInlineObject *)p->rawptr;
 		(void)qp;
@@ -298,6 +306,12 @@ static void QTextInlineObject_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QTextInlineObject_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQTextInlineObject::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQTextInlineObject(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

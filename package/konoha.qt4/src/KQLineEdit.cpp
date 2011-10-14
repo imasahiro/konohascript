@@ -65,7 +65,6 @@ KMETHOD QLineEdit_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQLineEdit *ret_v = new KQLineEdit(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -79,7 +78,6 @@ KMETHOD QLineEdit_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQLineEdit *ret_v = new KQLineEdit(contents, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -806,8 +804,20 @@ KMETHOD QLineEdit_undo(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQLineEdit::DummyQLineEdit()
 {
 	self = NULL;
+	cursor_position_changed_func = NULL;
+	editing_finished_func = NULL;
+	return_pressed_func = NULL;
+	selection_changed_func = NULL;
+	text_changed_func = NULL;
+	text_edited_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("cursor-position-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("editing-finished", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("return-pressed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("selection-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("text-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("text-edited", NULL));
 }
 
 void DummyQLineEdit::setSelf(knh_RawPtr_t *ptr)
@@ -827,11 +837,89 @@ bool DummyQLineEdit::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQLineEdit::cursorPositionChangedSlot(int old, int new_)
+{
+	if (cursor_position_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = old;
+		lsfp[K_CALLDELTA+3].ivalue = new_;
+		knh_Func_invoke(lctx, cursor_position_changed_func, lsfp, 3);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQLineEdit::editingFinishedSlot()
+{
+	if (editing_finished_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, editing_finished_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQLineEdit::returnPressedSlot()
+{
+	if (return_pressed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, return_pressed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQLineEdit::selectionChangedSlot()
+{
+	if (selection_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, selection_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQLineEdit::textChangedSlot(const QString text)
+{
+	if (text_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QString, text);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, text_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQLineEdit::textEditedSlot(const QString text)
+{
+	if (text_edited_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QString, text);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, text_edited_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQLineEdit::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLineEdit::event_map->bigin();
 	if ((itr = DummyQLineEdit::event_map->find(str)) == DummyQLineEdit::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -843,20 +931,39 @@ bool DummyQLineEdit::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQLineEdit::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLineEdit::slot_map->bigin();
-	if ((itr = DummyQLineEdit::event_map->find(str)) == DummyQLineEdit::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQLineEdit::slot_map->find(str)) == DummyQLineEdit::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		cursor_position_changed_func = (*slot_map)["cursor-position-changed"];
+		editing_finished_func = (*slot_map)["editing-finished"];
+		return_pressed_func = (*slot_map)["return-pressed"];
+		selection_changed_func = (*slot_map)["selection-changed"];
+		text_changed_func = (*slot_map)["text-changed"];
+		text_edited_func = (*slot_map)["text-edited"];
 		return true;
 	}
 }
 
 
+void DummyQLineEdit::connection(QObject *o)
+{
+	connect(o, SIGNAL(cursorPositionChanged(int, int)), this, SLOT(cursorPositionChangedSlot(int, int)));
+	connect(o, SIGNAL(editingFinished()), this, SLOT(editingFinishedSlot()));
+	connect(o, SIGNAL(returnPressed()), this, SLOT(returnPressedSlot()));
+	connect(o, SIGNAL(selectionChanged()), this, SLOT(selectionChangedSlot()));
+	connect(o, SIGNAL(textChanged(const QString)), this, SLOT(textChangedSlot(const QString)));
+	connect(o, SIGNAL(textEdited(const QString)), this, SLOT(textEditedSlot(const QString)));
+	DummyQWidget::connection(o);
+}
+
 KQLineEdit::KQLineEdit(QWidget* parent) : QLineEdit(parent)
 {
 	self = NULL;
+	dummy = new DummyQLineEdit();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QLineEdit_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -872,14 +979,13 @@ KMETHOD QLineEdit_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQLineEdit::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLineEdit]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QLineEdit_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -893,7 +999,7 @@ KMETHOD QLineEdit_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQLineEdit::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLineEdit]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -912,10 +1018,37 @@ static void QLineEdit_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QLineEdit_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 6;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQLineEdit *qp = (KQLineEdit *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->cursor_position_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->cursor_position_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->editing_finished_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->editing_finished_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->return_pressed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->return_pressed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->selection_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->selection_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->text_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->text_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->text_edited_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->text_edited_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -924,9 +1057,15 @@ static int QLineEdit_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQLineEdit::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQLineEdit::event(QEvent *event)
 {
-	if (!DummyQLineEdit::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QLineEdit::event(event);
 		return false;
 	}

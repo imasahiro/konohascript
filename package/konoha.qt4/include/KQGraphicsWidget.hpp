@@ -1,6 +1,7 @@
 #ifndef QGRAPHICSWIDGET
 #define QGRAPHICSWIDGET
 class DummyQGraphicsWidget : public DummyQGraphicsObject, public DummyQGraphicsLayoutItem {
+	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -17,30 +18,36 @@ public:
 	knh_Func_t *ungrab_keyboard_event_func;
 	knh_Func_t *ungrab_mouse_event_func;
 	knh_Func_t *window_frame_event_func;
+	knh_Func_t *geometry_changed_func;
 	DummyQGraphicsWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
-	bool changeEvent(QEvent* event);
-	bool closeEvent(QCloseEvent* event);
-	bool grabKeyboardEvent(QEvent* event);
-	bool grabMouseEvent(QEvent* event);
-	bool hideEvent(QHideEvent* event);
-	bool moveEvent(QGraphicsSceneMoveEvent* event);
-	bool polishEvent();
-	bool resizeEvent(QGraphicsSceneResizeEvent* event);
-	bool showEvent(QShowEvent* event);
-	bool ungrabKeyboardEvent(QEvent* event);
-	bool ungrabMouseEvent(QEvent* event);
-	bool windowFrameEvent(QEvent* event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
+	bool changeEventDummy(QEvent* event);
+	bool closeEventDummy(QCloseEvent* event);
+	bool grabKeyboardEventDummy(QEvent* event);
+	bool grabMouseEventDummy(QEvent* event);
+	bool hideEventDummy(QHideEvent* event);
+	bool moveEventDummy(QGraphicsSceneMoveEvent* event);
+	bool polishEventDummy();
+	bool resizeEventDummy(QGraphicsSceneResizeEvent* event);
+	bool showEventDummy(QShowEvent* event);
+	bool ungrabKeyboardEventDummy(QEvent* event);
+	bool ungrabMouseEventDummy(QEvent* event);
+	bool windowFrameEventDummy(QEvent* event);
+public slots:
+	bool geometryChangedSlot();
 };
 
-class KQGraphicsWidget : public QGraphicsWidget, public DummyQGraphicsWidget {
+class KQGraphicsWidget : public QGraphicsWidget {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQGraphicsWidget *dummy;
 	KQGraphicsWidget(QGraphicsItem* parent, Qt::WindowFlags wFlags);
+	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
 

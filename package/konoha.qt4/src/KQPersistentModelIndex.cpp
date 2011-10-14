@@ -5,7 +5,6 @@ KMETHOD QPersistentModelIndex_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 	KQPersistentModelIndex *ret_v = new KQPersistentModelIndex(index);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -18,7 +17,6 @@ KMETHOD QPersistentModelIndex_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPersistentModelIndex  other = *RawPtr_to(const QPersistentModelIndex *, sfp[1]);
 	KQPersistentModelIndex *ret_v = new KQPersistentModelIndex(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -182,7 +180,7 @@ bool DummyQPersistentModelIndex::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPersistentModelIndex::event_map->bigin();
 	if ((itr = DummyQPersistentModelIndex::event_map->find(str)) == DummyQPersistentModelIndex::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -193,8 +191,8 @@ bool DummyQPersistentModelIndex::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQPersistentModelIndex::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPersistentModelIndex::slot_map->bigin();
-	if ((itr = DummyQPersistentModelIndex::event_map->find(str)) == DummyQPersistentModelIndex::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQPersistentModelIndex::slot_map->find(str)) == DummyQPersistentModelIndex::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -203,9 +201,16 @@ bool DummyQPersistentModelIndex::signalConnect(knh_Func_t *callback_func, string
 }
 
 
+void DummyQPersistentModelIndex::connection(QObject *o)
+{
+	return;
+}
+
 KQPersistentModelIndex::KQPersistentModelIndex(const QModelIndex index) : QPersistentModelIndex(index)
 {
 	self = NULL;
+	dummy = new DummyQPersistentModelIndex();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPersistentModelIndex_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -221,14 +226,13 @@ KMETHOD QPersistentModelIndex_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQPersistentModelIndex::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPersistentModelIndex]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QPersistentModelIndex_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -242,7 +246,7 @@ KMETHOD QPersistentModelIndex_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQPersistentModelIndex::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPersistentModelIndex]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -262,6 +266,9 @@ static void QPersistentModelIndex_free(CTX ctx, knh_RawPtr_t *p)
 static void QPersistentModelIndex_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQPersistentModelIndex *qp = (KQPersistentModelIndex *)p->rawptr;
 		(void)qp;
@@ -271,6 +278,12 @@ static void QPersistentModelIndex_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QPersistentModelIndex_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QPersistentModelIndex*>(p1->rawptr) == *static_cast<QPersistentModelIndex*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQPersistentModelIndex::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQPersistentModelIndex(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

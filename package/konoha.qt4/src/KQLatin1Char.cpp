@@ -5,7 +5,6 @@ KMETHOD QLatin1Char_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	char  c = *RawPtr_to(char *, sfp[1]);
 	KQLatin1Char *ret_v = new KQLatin1Char(c);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -68,7 +67,7 @@ bool DummyQLatin1Char::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLatin1Char::event_map->bigin();
 	if ((itr = DummyQLatin1Char::event_map->find(str)) == DummyQLatin1Char::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -79,8 +78,8 @@ bool DummyQLatin1Char::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQLatin1Char::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLatin1Char::slot_map->bigin();
-	if ((itr = DummyQLatin1Char::event_map->find(str)) == DummyQLatin1Char::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQLatin1Char::slot_map->find(str)) == DummyQLatin1Char::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -89,9 +88,16 @@ bool DummyQLatin1Char::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQLatin1Char::connection(QObject *o)
+{
+	return;
+}
+
 KQLatin1Char::KQLatin1Char(char c) : QLatin1Char(c)
 {
 	self = NULL;
+	dummy = new DummyQLatin1Char();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QLatin1Char_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -107,14 +113,13 @@ KMETHOD QLatin1Char_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQLatin1Char::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLatin1Char]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QLatin1Char_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -128,7 +133,7 @@ KMETHOD QLatin1Char_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQLatin1Char::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLatin1Char]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -148,6 +153,9 @@ static void QLatin1Char_free(CTX ctx, knh_RawPtr_t *p)
 static void QLatin1Char_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQLatin1Char *qp = (KQLatin1Char *)p->rawptr;
 		(void)qp;
@@ -157,6 +165,12 @@ static void QLatin1Char_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QLatin1Char_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQLatin1Char::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQLatin1Char(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

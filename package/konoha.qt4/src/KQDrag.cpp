@@ -5,7 +5,6 @@ KMETHOD QDrag_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  dragSource = RawPtr_to(QWidget*, sfp[1]);
 	KQDrag *ret_v = new KQDrag(dragSource);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -165,8 +164,12 @@ KMETHOD QDrag_target(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQDrag::DummyQDrag()
 {
 	self = NULL;
+	action_changed_func = NULL;
+	target_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("action-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("target-changed", NULL));
 }
 
 void DummyQDrag::setSelf(knh_RawPtr_t *ptr)
@@ -186,11 +189,38 @@ bool DummyQDrag::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQDrag::actionChangedSlot(Qt::DropAction action)
+{
+	if (action_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = action;
+		knh_Func_invoke(lctx, action_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQDrag::targetChangedSlot(QWidget* new_Target)
+{
+	if (target_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QWidget, new_Target);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, target_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQDrag::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDrag::event_map->bigin();
 	if ((itr = DummyQDrag::event_map->find(str)) == DummyQDrag::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -202,20 +232,31 @@ bool DummyQDrag::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDrag::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDrag::slot_map->bigin();
-	if ((itr = DummyQDrag::event_map->find(str)) == DummyQDrag::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDrag::slot_map->find(str)) == DummyQDrag::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		action_changed_func = (*slot_map)["action-changed"];
+		target_changed_func = (*slot_map)["target-changed"];
 		return true;
 	}
 }
 
 
+void DummyQDrag::connection(QObject *o)
+{
+	connect(o, SIGNAL(actionChanged(Qt::DropAction)), this, SLOT(actionChangedSlot(Qt::DropAction)));
+	connect(o, SIGNAL(targetChanged(QWidget*)), this, SLOT(targetChangedSlot(QWidget*)));
+	DummyQObject::connection(o);
+}
+
 KQDrag::KQDrag(QWidget* dragSource) : QDrag(dragSource)
 {
 	self = NULL;
+	dummy = new DummyQDrag();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDrag_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -231,14 +272,13 @@ KMETHOD QDrag_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDrag::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDrag]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDrag_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -252,7 +292,7 @@ KMETHOD QDrag_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDrag::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDrag]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -271,10 +311,21 @@ static void QDrag_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDrag_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDrag *qp = (KQDrag *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->action_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->action_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->target_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->target_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -283,9 +334,15 @@ static int QDrag_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQDrag::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQDrag::event(QEvent *event)
 {
-	if (!DummyQDrag::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QDrag::event(event);
 		return false;
 	}

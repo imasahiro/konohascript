@@ -32,7 +32,6 @@ KMETHOD QIntValidator_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQIntValidator *ret_v = new KQIntValidator(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -47,7 +46,6 @@ KMETHOD QIntValidator_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[3]);
 	KQIntValidator *ret_v = new KQIntValidator(minimum, maximum, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -144,7 +142,7 @@ bool DummyQIntValidator::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQIntValidator::event_map->bigin();
 	if ((itr = DummyQIntValidator::event_map->find(str)) == DummyQIntValidator::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQValidator::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -156,8 +154,8 @@ bool DummyQIntValidator::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQIntValidator::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQIntValidator::slot_map->bigin();
-	if ((itr = DummyQIntValidator::event_map->find(str)) == DummyQIntValidator::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQIntValidator::slot_map->find(str)) == DummyQIntValidator::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQValidator::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -167,9 +165,16 @@ bool DummyQIntValidator::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQIntValidator::connection(QObject *o)
+{
+	DummyQValidator::connection(o);
+}
+
 KQIntValidator::KQIntValidator(QObject* parent) : QIntValidator(parent)
 {
 	self = NULL;
+	dummy = new DummyQIntValidator();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QIntValidator_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -185,14 +190,13 @@ KMETHOD QIntValidator_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQIntValidator::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QIntValidator]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QIntValidator_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -206,7 +210,7 @@ KMETHOD QIntValidator_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQIntValidator::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QIntValidator]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -226,6 +230,9 @@ static void QIntValidator_free(CTX ctx, knh_RawPtr_t *p)
 static void QIntValidator_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQIntValidator *qp = (KQIntValidator *)p->rawptr;
 		(void)qp;
@@ -237,9 +244,15 @@ static int QIntValidator_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQIntValidator::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQIntValidator::event(QEvent *event)
 {
-	if (!DummyQIntValidator::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QIntValidator::event(event);
 		return false;
 	}

@@ -5,7 +5,6 @@ KMETHOD QMouseEventTransition_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QState*  sourceState = RawPtr_to(QState*, sfp[1]);
 	KQMouseEventTransition *ret_v = new KQMouseEventTransition(sourceState);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -21,7 +20,6 @@ KMETHOD QMouseEventTransition_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QState*  sourceState = RawPtr_to(QState*, sfp[4]);
 	KQMouseEventTransition *ret_v = new KQMouseEventTransition(object, type, button, sourceState);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -132,7 +130,7 @@ bool DummyQMouseEventTransition::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMouseEventTransition::event_map->bigin();
 	if ((itr = DummyQMouseEventTransition::event_map->find(str)) == DummyQMouseEventTransition::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQEventTransition::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -144,8 +142,8 @@ bool DummyQMouseEventTransition::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQMouseEventTransition::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMouseEventTransition::slot_map->bigin();
-	if ((itr = DummyQMouseEventTransition::event_map->find(str)) == DummyQMouseEventTransition::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQMouseEventTransition::slot_map->find(str)) == DummyQMouseEventTransition::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQEventTransition::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -155,9 +153,16 @@ bool DummyQMouseEventTransition::signalConnect(knh_Func_t *callback_func, string
 }
 
 
+void DummyQMouseEventTransition::connection(QObject *o)
+{
+	DummyQEventTransition::connection(o);
+}
+
 KQMouseEventTransition::KQMouseEventTransition(QState* sourceState) : QMouseEventTransition(sourceState)
 {
 	self = NULL;
+	dummy = new DummyQMouseEventTransition();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMouseEventTransition_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -173,14 +178,13 @@ KMETHOD QMouseEventTransition_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQMouseEventTransition::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMouseEventTransition]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QMouseEventTransition_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -194,7 +198,7 @@ KMETHOD QMouseEventTransition_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQMouseEventTransition::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMouseEventTransition]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -214,6 +218,9 @@ static void QMouseEventTransition_free(CTX ctx, knh_RawPtr_t *p)
 static void QMouseEventTransition_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQMouseEventTransition *qp = (KQMouseEventTransition *)p->rawptr;
 		(void)qp;
@@ -225,9 +232,15 @@ static int QMouseEventTransition_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQMouseEventTransition::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQMouseEventTransition::event(QEvent *event)
 {
-	if (!DummyQMouseEventTransition::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QMouseEventTransition::event(event);
 		return false;
 	}

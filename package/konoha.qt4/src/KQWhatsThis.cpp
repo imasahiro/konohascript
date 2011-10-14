@@ -101,7 +101,7 @@ bool DummyQWhatsThis::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQWhatsThis::event_map->bigin();
 	if ((itr = DummyQWhatsThis::event_map->find(str)) == DummyQWhatsThis::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -112,8 +112,8 @@ bool DummyQWhatsThis::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQWhatsThis::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQWhatsThis::slot_map->bigin();
-	if ((itr = DummyQWhatsThis::event_map->find(str)) == DummyQWhatsThis::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQWhatsThis::slot_map->find(str)) == DummyQWhatsThis::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -121,6 +121,11 @@ bool DummyQWhatsThis::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+
+void DummyQWhatsThis::connection(QObject *o)
+{
+	return;
+}
 
 KMETHOD QWhatsThis_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -135,14 +140,13 @@ KMETHOD QWhatsThis_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQWhatsThis::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QWhatsThis]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QWhatsThis_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -156,7 +160,7 @@ KMETHOD QWhatsThis_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQWhatsThis::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QWhatsThis]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -176,6 +180,9 @@ static void QWhatsThis_free(CTX ctx, knh_RawPtr_t *p)
 static void QWhatsThis_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQWhatsThis *qp = (KQWhatsThis *)p->rawptr;
 		(void)qp;
@@ -185,6 +192,12 @@ static void QWhatsThis_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QWhatsThis_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQWhatsThis::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQWhatsThis(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

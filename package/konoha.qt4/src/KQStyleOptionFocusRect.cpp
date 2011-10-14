@@ -4,7 +4,6 @@ KMETHOD QStyleOptionFocusRect_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQStyleOptionFocusRect *ret_v = new KQStyleOptionFocusRect();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QStyleOptionFocusRect_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionFocusRect  other = *RawPtr_to(const QStyleOptionFocusRect *, sfp[1]);
 	KQStyleOptionFocusRect *ret_v = new KQStyleOptionFocusRect(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -51,7 +49,7 @@ bool DummyQStyleOptionFocusRect::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionFocusRect::event_map->bigin();
 	if ((itr = DummyQStyleOptionFocusRect::event_map->find(str)) == DummyQStyleOptionFocusRect::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQStyleOption::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -63,8 +61,8 @@ bool DummyQStyleOptionFocusRect::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStyleOptionFocusRect::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionFocusRect::slot_map->bigin();
-	if ((itr = DummyQStyleOptionFocusRect::event_map->find(str)) == DummyQStyleOptionFocusRect::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStyleOptionFocusRect::slot_map->find(str)) == DummyQStyleOptionFocusRect::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQStyleOption::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -74,9 +72,16 @@ bool DummyQStyleOptionFocusRect::signalConnect(knh_Func_t *callback_func, string
 }
 
 
+void DummyQStyleOptionFocusRect::connection(QObject *o)
+{
+	DummyQStyleOption::connection(o);
+}
+
 KQStyleOptionFocusRect::KQStyleOptionFocusRect() : QStyleOptionFocusRect()
 {
 	self = NULL;
+	dummy = new DummyQStyleOptionFocusRect();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionFocusRect_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -92,14 +97,13 @@ KMETHOD QStyleOptionFocusRect_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStyleOptionFocusRect::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionFocusRect]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStyleOptionFocusRect_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -113,7 +117,7 @@ KMETHOD QStyleOptionFocusRect_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStyleOptionFocusRect::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionFocusRect]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -133,6 +137,9 @@ static void QStyleOptionFocusRect_free(CTX ctx, knh_RawPtr_t *p)
 static void QStyleOptionFocusRect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStyleOptionFocusRect *qp = (KQStyleOptionFocusRect *)p->rawptr;
 		(void)qp;
@@ -142,6 +149,12 @@ static void QStyleOptionFocusRect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QStyleOptionFocusRect_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQStyleOptionFocusRect::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStyleOptionFocusRect(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

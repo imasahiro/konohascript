@@ -105,7 +105,6 @@ KMETHOD QGraphicsPolygonItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsItem*  parent = RawPtr_to(QGraphicsItem*, sfp[1]);
 	KQGraphicsPolygonItem *ret_v = new KQGraphicsPolygonItem(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -119,7 +118,6 @@ KMETHOD QGraphicsPolygonItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsItem*  parent = RawPtr_to(QGraphicsItem*, sfp[2]);
 	KQGraphicsPolygonItem *ret_v = new KQGraphicsPolygonItem(polygon, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -205,7 +203,7 @@ bool DummyQGraphicsPolygonItem::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsPolygonItem::event_map->bigin();
 	if ((itr = DummyQGraphicsPolygonItem::event_map->find(str)) == DummyQGraphicsPolygonItem::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractGraphicsShapeItem::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -217,8 +215,8 @@ bool DummyQGraphicsPolygonItem::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQGraphicsPolygonItem::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsPolygonItem::slot_map->bigin();
-	if ((itr = DummyQGraphicsPolygonItem::event_map->find(str)) == DummyQGraphicsPolygonItem::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQGraphicsPolygonItem::slot_map->find(str)) == DummyQGraphicsPolygonItem::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractGraphicsShapeItem::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -228,9 +226,16 @@ bool DummyQGraphicsPolygonItem::signalConnect(knh_Func_t *callback_func, string 
 }
 
 
+void DummyQGraphicsPolygonItem::connection(QObject *o)
+{
+	DummyQAbstractGraphicsShapeItem::connection(o);
+}
+
 KQGraphicsPolygonItem::KQGraphicsPolygonItem(QGraphicsItem* parent) : QGraphicsPolygonItem(parent)
 {
 	self = NULL;
+	dummy = new DummyQGraphicsPolygonItem();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsPolygonItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -246,14 +251,13 @@ KMETHOD QGraphicsPolygonItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQGraphicsPolygonItem::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsPolygonItem]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QGraphicsPolygonItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -267,7 +271,7 @@ KMETHOD QGraphicsPolygonItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQGraphicsPolygonItem::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QGraphicsPolygonItem]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -287,6 +291,9 @@ static void QGraphicsPolygonItem_free(CTX ctx, knh_RawPtr_t *p)
 static void QGraphicsPolygonItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQGraphicsPolygonItem *qp = (KQGraphicsPolygonItem *)p->rawptr;
 		(void)qp;
@@ -296,6 +303,12 @@ static void QGraphicsPolygonItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QGraphicsPolygonItem_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQGraphicsPolygonItem::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQGraphicsPolygonItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -30,8 +30,12 @@ KMETHOD QAbstractState_parentState(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQAbstractState::DummyQAbstractState()
 {
 	self = NULL;
+	entered_func = NULL;
+	exited_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("entered", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("exited", NULL));
 }
 
 void DummyQAbstractState::setSelf(knh_RawPtr_t *ptr)
@@ -51,11 +55,35 @@ bool DummyQAbstractState::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQAbstractState::enteredSlot()
+{
+	if (entered_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, entered_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractState::exitedSlot()
+{
+	if (exited_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, exited_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQAbstractState::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractState::event_map->bigin();
 	if ((itr = DummyQAbstractState::event_map->find(str)) == DummyQAbstractState::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -67,20 +95,31 @@ bool DummyQAbstractState::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQAbstractState::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractState::slot_map->bigin();
-	if ((itr = DummyQAbstractState::event_map->find(str)) == DummyQAbstractState::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAbstractState::slot_map->find(str)) == DummyQAbstractState::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		entered_func = (*slot_map)["entered"];
+		exited_func = (*slot_map)["exited"];
 		return true;
 	}
 }
 
 
+void DummyQAbstractState::connection(QObject *o)
+{
+	connect(o, SIGNAL(entered()), this, SLOT(enteredSlot()));
+	connect(o, SIGNAL(exited()), this, SLOT(exitedSlot()));
+	DummyQObject::connection(o);
+}
+
 KQAbstractState::KQAbstractState(QState* parent) : QAbstractState(parent)
 {
 	self = NULL;
+	dummy = new DummyQAbstractState();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractState_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -96,14 +135,13 @@ KMETHOD QAbstractState_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAbstractState::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractState]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAbstractState_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -117,7 +155,7 @@ KMETHOD QAbstractState_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAbstractState::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractState]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -136,10 +174,21 @@ static void QAbstractState_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAbstractState *qp = (KQAbstractState *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->entered_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->entered_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->exited_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->exited_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -148,9 +197,15 @@ static int QAbstractState_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQAbstractState::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQAbstractState::event(QEvent *event)
 {
-	if (!DummyQAbstractState::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QAbstractState::event(event);
 		return false;
 	}

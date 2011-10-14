@@ -21,7 +21,6 @@ KMETHOD QFrame_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[2]);
 	KQFrame *ret_v = new KQFrame(parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -220,7 +219,7 @@ bool DummyQFrame::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQFrame::event_map->bigin();
 	if ((itr = DummyQFrame::event_map->find(str)) == DummyQFrame::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -232,8 +231,8 @@ bool DummyQFrame::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQFrame::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQFrame::slot_map->bigin();
-	if ((itr = DummyQFrame::event_map->find(str)) == DummyQFrame::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQFrame::slot_map->find(str)) == DummyQFrame::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -243,9 +242,16 @@ bool DummyQFrame::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQFrame::connection(QObject *o)
+{
+	DummyQWidget::connection(o);
+}
+
 KQFrame::KQFrame(QWidget* parent, Qt::WindowFlags f) : QFrame(parent, f)
 {
 	self = NULL;
+	dummy = new DummyQFrame();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QFrame_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -261,14 +267,13 @@ KMETHOD QFrame_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQFrame::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QFrame]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QFrame_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -282,7 +287,7 @@ KMETHOD QFrame_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQFrame::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QFrame]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -302,6 +307,9 @@ static void QFrame_free(CTX ctx, knh_RawPtr_t *p)
 static void QFrame_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQFrame *qp = (KQFrame *)p->rawptr;
 		(void)qp;
@@ -313,9 +321,15 @@ static int QFrame_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQFrame::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQFrame::event(QEvent *event)
 {
-	if (!DummyQFrame::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QFrame::event(event);
 		return false;
 	}

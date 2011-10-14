@@ -20,7 +20,6 @@ KMETHOD QWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[2]);
 	KQWidget *ret_v = new KQWidget(parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -3061,6 +3060,7 @@ DummyQWidget::DummyQWidget()
 	show_event_func = NULL;
 	tablet_event_func = NULL;
 	wheel_event_func = NULL;
+	custom_context_menu_requested_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	event_map->insert(map<string, knh_Func_t *>::value_type("action-event", NULL));
@@ -3089,6 +3089,7 @@ DummyQWidget::DummyQWidget()
 	event_map->insert(map<string, knh_Func_t *>::value_type("show-event", NULL));
 	event_map->insert(map<string, knh_Func_t *>::value_type("tablet-event", NULL));
 	event_map->insert(map<string, knh_Func_t *>::value_type("wheel-event", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("custom-context-menu-requested", NULL));
 }
 
 void DummyQWidget::setSelf(knh_RawPtr_t *ptr)
@@ -3105,7 +3106,7 @@ bool DummyQWidget::eventDispatcher(QEvent *event)
 	case QEvent::ActionAdded:
 	case QEvent::ActionChanged:
 	case QEvent::ActionRemoved:
-		ret = actionEvent(dynamic_cast<QActionEvent*>(event));
+		ret = actionEventDummy(dynamic_cast<QActionEvent*>(event));
 		break;
 	case QEvent::ActivationChange:
 	case QEvent::ApplicationFontChange:
@@ -3136,83 +3137,83 @@ bool DummyQWidget::eventDispatcher(QEvent *event)
 	case QEvent::KeyboardLayoutChange:
 	case QEvent::DynamicPropertyChange:
 	case QEvent::WinIdChange:
-		ret = changeEvent(dynamic_cast<QEvent*>(event));
+		ret = changeEventDummy(dynamic_cast<QEvent*>(event));
 		break;
 	case QEvent::Close:
-		ret = closeEvent(dynamic_cast<QCloseEvent*>(event));
+		ret = closeEventDummy(dynamic_cast<QCloseEvent*>(event));
 		break;
 	case QEvent::ContextMenu:
-		ret = contextMenuEvent(dynamic_cast<QContextMenuEvent*>(event));
+		ret = contextMenuEventDummy(dynamic_cast<QContextMenuEvent*>(event));
 		break;
 	case QEvent::DragEnter:
-		ret = dragEnterEvent(dynamic_cast<QDragEnterEvent*>(event));
+		ret = dragEnterEventDummy(dynamic_cast<QDragEnterEvent*>(event));
 		break;
 	case QEvent::DragLeave:
-		ret = dragLeaveEvent(dynamic_cast<QDragLeaveEvent*>(event));
+		ret = dragLeaveEventDummy(dynamic_cast<QDragLeaveEvent*>(event));
 		break;
 	case QEvent::DragMove:
-		ret = dragMoveEvent(dynamic_cast<QDragMoveEvent*>(event));
+		ret = dragMoveEventDummy(dynamic_cast<QDragMoveEvent*>(event));
 		break;
 	case QEvent::Drop:
-		ret = dropEvent(dynamic_cast<QDropEvent*>(event));
+		ret = dropEventDummy(dynamic_cast<QDropEvent*>(event));
 		break;
 	case QEvent::Enter:
-		ret = enterEvent(dynamic_cast<QEvent*>(event));
+		ret = enterEventDummy(dynamic_cast<QEvent*>(event));
 		break;
 	case QEvent::FocusIn:
-		ret = focusInEvent(dynamic_cast<QFocusEvent*>(event));
+		ret = focusInEventDummy(dynamic_cast<QFocusEvent*>(event));
 		break;
 	case QEvent::FocusOut:
-		ret = focusOutEvent(dynamic_cast<QFocusEvent*>(event));
+		ret = focusOutEventDummy(dynamic_cast<QFocusEvent*>(event));
 		break;
 	case QEvent::Hide:
-		ret = hideEvent(dynamic_cast<QHideEvent*>(event));
+		ret = hideEventDummy(dynamic_cast<QHideEvent*>(event));
 		break;
 	case QEvent::InputMethod:
-		ret = inputMethodEvent(dynamic_cast<QInputMethodEvent*>(event));
+		ret = inputMethodEventDummy(dynamic_cast<QInputMethodEvent*>(event));
 		break;
 	case QEvent::KeyPress:
-		ret = keyPressEvent(dynamic_cast<QKeyEvent*>(event));
+		ret = keyPressEventDummy(dynamic_cast<QKeyEvent*>(event));
 		break;
 	case QEvent::KeyRelease:
-		ret = keyReleaseEvent(dynamic_cast<QKeyEvent*>(event));
+		ret = keyReleaseEventDummy(dynamic_cast<QKeyEvent*>(event));
 		break;
 	case QEvent::Leave:
-		ret = leaveEvent(dynamic_cast<QEvent*>(event));
+		ret = leaveEventDummy(dynamic_cast<QEvent*>(event));
 		break;
 	case QEvent::MouseButtonDblClick:
-		ret = mouseDoubleClickEvent(dynamic_cast<QMouseEvent*>(event));
+		ret = mouseDoubleClickEventDummy(dynamic_cast<QMouseEvent*>(event));
 		break;
 	case QEvent::MouseMove:
-		ret = mouseMoveEvent(dynamic_cast<QMouseEvent*>(event));
+		ret = mouseMoveEventDummy(dynamic_cast<QMouseEvent*>(event));
 		break;
 	case QEvent::MouseButtonPress:
-		ret = mousePressEvent(dynamic_cast<QMouseEvent*>(event));
+		ret = mousePressEventDummy(dynamic_cast<QMouseEvent*>(event));
 		break;
 	case QEvent::MouseButtonRelease:
-		ret = mouseReleaseEvent(dynamic_cast<QMouseEvent*>(event));
+		ret = mouseReleaseEventDummy(dynamic_cast<QMouseEvent*>(event));
 		break;
 	case QEvent::Move:
-		ret = moveEvent(dynamic_cast<QMoveEvent*>(event));
+		ret = moveEventDummy(dynamic_cast<QMoveEvent*>(event));
 		break;
 	case QEvent::Paint:
-		ret = paintEvent(dynamic_cast<QPaintEvent*>(event));
+		ret = paintEventDummy(dynamic_cast<QPaintEvent*>(event));
 		break;
 	case QEvent::Resize:
-		ret = resizeEvent(dynamic_cast<QResizeEvent*>(event));
+		ret = resizeEventDummy(dynamic_cast<QResizeEvent*>(event));
 		break;
 	case QEvent::Show:
-		ret = showEvent(dynamic_cast<QShowEvent*>(event));
+		ret = showEventDummy(dynamic_cast<QShowEvent*>(event));
 		break;
 	case QEvent::TabletMove:
 	case QEvent::TabletPress:
 	case QEvent::TabletRelease:
 	case QEvent::TabletEnterProximity:
 	case QEvent::TabletLeaveProximity:
-		ret = tabletEvent(dynamic_cast<QTabletEvent*>(event));
+		ret = tabletEventDummy(dynamic_cast<QTabletEvent*>(event));
 		break;
 	case QEvent::Wheel:
-		ret = wheelEvent(dynamic_cast<QWheelEvent*>(event));
+		ret = wheelEventDummy(dynamic_cast<QWheelEvent*>(event));
 		break;
 	default:
 		ret = DummyQObject::eventDispatcher(event);
@@ -3223,7 +3224,7 @@ bool DummyQWidget::eventDispatcher(QEvent *event)
 	return ret;
 }
 
-bool DummyQWidget::actionEvent(QActionEvent* event)
+bool DummyQWidget::actionEventDummy(QActionEvent* event)
 {
 	if (action_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3237,7 +3238,7 @@ bool DummyQWidget::actionEvent(QActionEvent* event)
 	return false;
 }
 
-bool DummyQWidget::changeEvent(QEvent* event)
+bool DummyQWidget::changeEventDummy(QEvent* event)
 {
 	if (change_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3251,7 +3252,7 @@ bool DummyQWidget::changeEvent(QEvent* event)
 	return false;
 }
 
-bool DummyQWidget::closeEvent(QCloseEvent* event)
+bool DummyQWidget::closeEventDummy(QCloseEvent* event)
 {
 	if (close_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3265,7 +3266,7 @@ bool DummyQWidget::closeEvent(QCloseEvent* event)
 	return false;
 }
 
-bool DummyQWidget::contextMenuEvent(QContextMenuEvent* event)
+bool DummyQWidget::contextMenuEventDummy(QContextMenuEvent* event)
 {
 	if (context_menu_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3279,7 +3280,7 @@ bool DummyQWidget::contextMenuEvent(QContextMenuEvent* event)
 	return false;
 }
 
-bool DummyQWidget::dragEnterEvent(QDragEnterEvent* event)
+bool DummyQWidget::dragEnterEventDummy(QDragEnterEvent* event)
 {
 	if (drag_enter_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3293,7 +3294,7 @@ bool DummyQWidget::dragEnterEvent(QDragEnterEvent* event)
 	return false;
 }
 
-bool DummyQWidget::dragLeaveEvent(QDragLeaveEvent* event)
+bool DummyQWidget::dragLeaveEventDummy(QDragLeaveEvent* event)
 {
 	if (drag_leave_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3307,7 +3308,7 @@ bool DummyQWidget::dragLeaveEvent(QDragLeaveEvent* event)
 	return false;
 }
 
-bool DummyQWidget::dragMoveEvent(QDragMoveEvent* event)
+bool DummyQWidget::dragMoveEventDummy(QDragMoveEvent* event)
 {
 	if (drag_move_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3321,7 +3322,7 @@ bool DummyQWidget::dragMoveEvent(QDragMoveEvent* event)
 	return false;
 }
 
-bool DummyQWidget::dropEvent(QDropEvent* event)
+bool DummyQWidget::dropEventDummy(QDropEvent* event)
 {
 	if (drop_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3335,7 +3336,7 @@ bool DummyQWidget::dropEvent(QDropEvent* event)
 	return false;
 }
 
-bool DummyQWidget::enterEvent(QEvent* event)
+bool DummyQWidget::enterEventDummy(QEvent* event)
 {
 	if (enter_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3349,7 +3350,7 @@ bool DummyQWidget::enterEvent(QEvent* event)
 	return false;
 }
 
-bool DummyQWidget::focusInEvent(QFocusEvent* event)
+bool DummyQWidget::focusInEventDummy(QFocusEvent* event)
 {
 	if (focus_in_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3363,7 +3364,7 @@ bool DummyQWidget::focusInEvent(QFocusEvent* event)
 	return false;
 }
 
-bool DummyQWidget::focusOutEvent(QFocusEvent* event)
+bool DummyQWidget::focusOutEventDummy(QFocusEvent* event)
 {
 	if (focus_out_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3377,7 +3378,7 @@ bool DummyQWidget::focusOutEvent(QFocusEvent* event)
 	return false;
 }
 
-bool DummyQWidget::hideEvent(QHideEvent* event)
+bool DummyQWidget::hideEventDummy(QHideEvent* event)
 {
 	if (hide_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3391,7 +3392,7 @@ bool DummyQWidget::hideEvent(QHideEvent* event)
 	return false;
 }
 
-bool DummyQWidget::inputMethodEvent(QInputMethodEvent* event)
+bool DummyQWidget::inputMethodEventDummy(QInputMethodEvent* event)
 {
 	if (input_method_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3405,7 +3406,7 @@ bool DummyQWidget::inputMethodEvent(QInputMethodEvent* event)
 	return false;
 }
 
-bool DummyQWidget::keyPressEvent(QKeyEvent* event)
+bool DummyQWidget::keyPressEventDummy(QKeyEvent* event)
 {
 	if (key_press_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3419,7 +3420,7 @@ bool DummyQWidget::keyPressEvent(QKeyEvent* event)
 	return false;
 }
 
-bool DummyQWidget::keyReleaseEvent(QKeyEvent* event)
+bool DummyQWidget::keyReleaseEventDummy(QKeyEvent* event)
 {
 	if (key_release_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3433,7 +3434,7 @@ bool DummyQWidget::keyReleaseEvent(QKeyEvent* event)
 	return false;
 }
 
-bool DummyQWidget::leaveEvent(QEvent* event)
+bool DummyQWidget::leaveEventDummy(QEvent* event)
 {
 	if (leave_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3447,7 +3448,7 @@ bool DummyQWidget::leaveEvent(QEvent* event)
 	return false;
 }
 
-bool DummyQWidget::mouseDoubleClickEvent(QMouseEvent* event)
+bool DummyQWidget::mouseDoubleClickEventDummy(QMouseEvent* event)
 {
 	if (mouse_double_click_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3461,7 +3462,7 @@ bool DummyQWidget::mouseDoubleClickEvent(QMouseEvent* event)
 	return false;
 }
 
-bool DummyQWidget::mouseMoveEvent(QMouseEvent* event)
+bool DummyQWidget::mouseMoveEventDummy(QMouseEvent* event)
 {
 	if (mouse_move_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3475,7 +3476,7 @@ bool DummyQWidget::mouseMoveEvent(QMouseEvent* event)
 	return false;
 }
 
-bool DummyQWidget::mousePressEvent(QMouseEvent* event)
+bool DummyQWidget::mousePressEventDummy(QMouseEvent* event)
 {
 	if (mouse_press_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3489,7 +3490,7 @@ bool DummyQWidget::mousePressEvent(QMouseEvent* event)
 	return false;
 }
 
-bool DummyQWidget::mouseReleaseEvent(QMouseEvent* event)
+bool DummyQWidget::mouseReleaseEventDummy(QMouseEvent* event)
 {
 	if (mouse_release_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3503,7 +3504,7 @@ bool DummyQWidget::mouseReleaseEvent(QMouseEvent* event)
 	return false;
 }
 
-bool DummyQWidget::moveEvent(QMoveEvent* event)
+bool DummyQWidget::moveEventDummy(QMoveEvent* event)
 {
 	if (move_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3517,7 +3518,7 @@ bool DummyQWidget::moveEvent(QMoveEvent* event)
 	return false;
 }
 
-bool DummyQWidget::paintEvent(QPaintEvent* event)
+bool DummyQWidget::paintEventDummy(QPaintEvent* event)
 {
 	if (paint_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3531,7 +3532,7 @@ bool DummyQWidget::paintEvent(QPaintEvent* event)
 	return false;
 }
 
-bool DummyQWidget::resizeEvent(QResizeEvent* event)
+bool DummyQWidget::resizeEventDummy(QResizeEvent* event)
 {
 	if (resize_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3545,7 +3546,7 @@ bool DummyQWidget::resizeEvent(QResizeEvent* event)
 	return false;
 }
 
-bool DummyQWidget::showEvent(QShowEvent* event)
+bool DummyQWidget::showEventDummy(QShowEvent* event)
 {
 	if (show_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3559,7 +3560,7 @@ bool DummyQWidget::showEvent(QShowEvent* event)
 	return false;
 }
 
-bool DummyQWidget::tabletEvent(QTabletEvent* event)
+bool DummyQWidget::tabletEventDummy(QTabletEvent* event)
 {
 	if (tablet_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3573,7 +3574,7 @@ bool DummyQWidget::tabletEvent(QTabletEvent* event)
 	return false;
 }
 
-bool DummyQWidget::wheelEvent(QWheelEvent* event)
+bool DummyQWidget::wheelEventDummy(QWheelEvent* event)
 {
 	if (wheel_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
@@ -3587,11 +3588,25 @@ bool DummyQWidget::wheelEvent(QWheelEvent* event)
 	return false;
 }
 
+bool DummyQWidget::customContextMenuRequestedSlot(const QPoint pos)
+{
+	if (custom_context_menu_requested_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QPoint, pos);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, custom_context_menu_requested_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQWidget::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQWidget::event_map->bigin();
 	if ((itr = DummyQWidget::event_map->find(str)) == DummyQWidget::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		if (ret) return true;
 		ret = DummyQPaintDevice::addEvent(callback_func, str);
@@ -3631,22 +3646,32 @@ bool DummyQWidget::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQWidget::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQWidget::slot_map->bigin();
-	if ((itr = DummyQWidget::event_map->find(str)) == DummyQWidget::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQWidget::slot_map->find(str)) == DummyQWidget::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		if (ret) return true;
 		ret = DummyQPaintDevice::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		custom_context_menu_requested_func = (*slot_map)["custom-context-menu-requested"];
 		return true;
 	}
 }
 
 
+void DummyQWidget::connection(QObject *o)
+{
+	connect(o, SIGNAL(customContextMenuRequested(const QPoint)), this, SLOT(customContextMenuRequestedSlot(const QPoint)));
+	DummyQObject::connection(o);
+	DummyQPaintDevice::connection(o);
+}
+
 KQWidget::KQWidget(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
 {
 	self = NULL;
+	dummy = new DummyQWidget();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -3662,14 +3687,13 @@ KMETHOD QWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQWidget::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QWidget]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -3683,7 +3707,7 @@ KMETHOD QWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQWidget::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QWidget]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -3703,111 +3727,118 @@ static void QWidget_free(CTX ctx, knh_RawPtr_t *p)
 static void QWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+	int list_size = 27;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQWidget *qp = (KQWidget *)p->rawptr;
 //		(void)qp;
-		if (qp->action_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->action_event_func);
+		if (qp->dummy->action_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->action_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->change_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->change_event_func);
+		if (qp->dummy->change_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->change_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->close_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->close_event_func);
+		if (qp->dummy->close_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->close_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->context_menu_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->context_menu_event_func);
+		if (qp->dummy->context_menu_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->context_menu_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->drag_enter_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->drag_enter_event_func);
+		if (qp->dummy->drag_enter_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->drag_enter_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->drag_leave_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->drag_leave_event_func);
+		if (qp->dummy->drag_leave_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->drag_leave_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->drag_move_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->drag_move_event_func);
+		if (qp->dummy->drag_move_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->drag_move_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->drop_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->drop_event_func);
+		if (qp->dummy->drop_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->drop_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->enter_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->enter_event_func);
+		if (qp->dummy->enter_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->enter_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->focus_in_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->focus_in_event_func);
+		if (qp->dummy->focus_in_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->focus_in_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->focus_out_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->focus_out_event_func);
+		if (qp->dummy->focus_out_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->focus_out_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->hide_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->hide_event_func);
+		if (qp->dummy->hide_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->hide_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->input_method_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->input_method_event_func);
+		if (qp->dummy->input_method_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->input_method_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->key_press_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->key_press_event_func);
+		if (qp->dummy->key_press_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->key_press_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->key_release_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->key_release_event_func);
+		if (qp->dummy->key_release_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->key_release_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->leave_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->leave_event_func);
+		if (qp->dummy->leave_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->leave_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->mouse_double_click_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->mouse_double_click_event_func);
+		if (qp->dummy->mouse_double_click_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->mouse_double_click_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->mouse_move_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->mouse_move_event_func);
+		if (qp->dummy->mouse_move_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->mouse_move_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->mouse_press_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->mouse_press_event_func);
+		if (qp->dummy->mouse_press_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->mouse_press_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->mouse_release_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->mouse_release_event_func);
+		if (qp->dummy->mouse_release_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->mouse_release_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->move_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->move_event_func);
+		if (qp->dummy->move_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->move_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->paint_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->paint_event_func);
+		if (qp->dummy->paint_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->paint_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->resize_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->resize_event_func);
+		if (qp->dummy->resize_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->resize_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->show_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->show_event_func);
+		if (qp->dummy->show_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->show_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->tablet_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->tablet_event_func);
+		if (qp->dummy->tablet_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->tablet_event_func);
 			KNH_SIZEREF(ctx);
 		}
-		if (qp->wheel_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->wheel_event_func);
+		if (qp->dummy->wheel_event_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->wheel_event_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->custom_context_menu_requested_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->custom_context_menu_requested_func);
 			KNH_SIZEREF(ctx);
 		}
 	}
@@ -3818,9 +3849,15 @@ static int QWidget_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQWidget::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQWidget::event(QEvent *event)
 {
-	if (!DummyQWidget::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QWidget::event(event);
 		return false;
 	}

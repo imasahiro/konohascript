@@ -20,7 +20,6 @@ KMETHOD QLCDNumber_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQLCDNumber *ret_v = new KQLCDNumber(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -34,7 +33,6 @@ KMETHOD QLCDNumber_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQLCDNumber *ret_v = new KQLCDNumber(numDigits, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -282,8 +280,10 @@ KMETHOD QLCDNumber_setSmallDecimalPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQLCDNumber::DummyQLCDNumber()
 {
 	self = NULL;
+	overflow_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("overflow", NULL));
 }
 
 void DummyQLCDNumber::setSelf(knh_RawPtr_t *ptr)
@@ -303,11 +303,23 @@ bool DummyQLCDNumber::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQLCDNumber::overflowSlot()
+{
+	if (overflow_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, overflow_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQLCDNumber::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLCDNumber::event_map->bigin();
 	if ((itr = DummyQLCDNumber::event_map->find(str)) == DummyQLCDNumber::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQFrame::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -319,20 +331,29 @@ bool DummyQLCDNumber::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQLCDNumber::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQLCDNumber::slot_map->bigin();
-	if ((itr = DummyQLCDNumber::event_map->find(str)) == DummyQLCDNumber::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQLCDNumber::slot_map->find(str)) == DummyQLCDNumber::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQFrame::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		overflow_func = (*slot_map)["overflow"];
 		return true;
 	}
 }
 
 
+void DummyQLCDNumber::connection(QObject *o)
+{
+	connect(o, SIGNAL(overflow()), this, SLOT(overflowSlot()));
+	DummyQFrame::connection(o);
+}
+
 KQLCDNumber::KQLCDNumber(QWidget* parent) : QLCDNumber(parent)
 {
 	self = NULL;
+	dummy = new DummyQLCDNumber();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QLCDNumber_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -348,14 +369,13 @@ KMETHOD QLCDNumber_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQLCDNumber::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLCDNumber]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QLCDNumber_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -369,7 +389,7 @@ KMETHOD QLCDNumber_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQLCDNumber::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QLCDNumber]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -388,10 +408,17 @@ static void QLCDNumber_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QLCDNumber_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQLCDNumber *qp = (KQLCDNumber *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->overflow_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->overflow_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -400,9 +427,15 @@ static int QLCDNumber_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQLCDNumber::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQLCDNumber::event(QEvent *event)
 {
-	if (!DummyQLCDNumber::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QLCDNumber::event(event);
 		return false;
 	}

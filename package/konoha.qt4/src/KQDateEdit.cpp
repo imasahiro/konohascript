@@ -5,7 +5,6 @@ KMETHOD QDateEdit_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQDateEdit *ret_v = new KQDateEdit(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QDateEdit_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQDateEdit *ret_v = new KQDateEdit(date, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -53,7 +51,7 @@ bool DummyQDateEdit::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDateEdit::event_map->bigin();
 	if ((itr = DummyQDateEdit::event_map->find(str)) == DummyQDateEdit::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQDateTimeEdit::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -65,8 +63,8 @@ bool DummyQDateEdit::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDateEdit::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDateEdit::slot_map->bigin();
-	if ((itr = DummyQDateEdit::event_map->find(str)) == DummyQDateEdit::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDateEdit::slot_map->find(str)) == DummyQDateEdit::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQDateTimeEdit::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -76,9 +74,16 @@ bool DummyQDateEdit::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQDateEdit::connection(QObject *o)
+{
+	DummyQDateTimeEdit::connection(o);
+}
+
 KQDateEdit::KQDateEdit(QWidget* parent) : QDateEdit(parent)
 {
 	self = NULL;
+	dummy = new DummyQDateEdit();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDateEdit_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -94,14 +99,13 @@ KMETHOD QDateEdit_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDateEdit::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDateEdit]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDateEdit_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -115,7 +119,7 @@ KMETHOD QDateEdit_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDateEdit::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDateEdit]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -135,6 +139,9 @@ static void QDateEdit_free(CTX ctx, knh_RawPtr_t *p)
 static void QDateEdit_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDateEdit *qp = (KQDateEdit *)p->rawptr;
 		(void)qp;
@@ -146,9 +153,15 @@ static int QDateEdit_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQDateEdit::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQDateEdit::event(QEvent *event)
 {
-	if (!DummyQDateEdit::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QDateEdit::event(event);
 		return false;
 	}

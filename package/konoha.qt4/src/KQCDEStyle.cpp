@@ -66,7 +66,6 @@ KMETHOD QCDEStyle_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	bool useHighlightCols = Boolean_to(bool, sfp[1]);
 	KQCDEStyle *ret_v = new KQCDEStyle(useHighlightCols);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -100,7 +99,7 @@ bool DummyQCDEStyle::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCDEStyle::event_map->bigin();
 	if ((itr = DummyQCDEStyle::event_map->find(str)) == DummyQCDEStyle::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQMotifStyle::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -112,8 +111,8 @@ bool DummyQCDEStyle::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQCDEStyle::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCDEStyle::slot_map->bigin();
-	if ((itr = DummyQCDEStyle::event_map->find(str)) == DummyQCDEStyle::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQCDEStyle::slot_map->find(str)) == DummyQCDEStyle::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQMotifStyle::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -123,9 +122,16 @@ bool DummyQCDEStyle::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQCDEStyle::connection(QObject *o)
+{
+	DummyQMotifStyle::connection(o);
+}
+
 KQCDEStyle::KQCDEStyle(bool useHighlightCols) : QCDEStyle(useHighlightCols)
 {
 	self = NULL;
+	dummy = new DummyQCDEStyle();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QCDEStyle_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -141,14 +147,13 @@ KMETHOD QCDEStyle_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQCDEStyle::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCDEStyle]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QCDEStyle_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -162,7 +167,7 @@ KMETHOD QCDEStyle_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQCDEStyle::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCDEStyle]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -182,6 +187,9 @@ static void QCDEStyle_free(CTX ctx, knh_RawPtr_t *p)
 static void QCDEStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQCDEStyle *qp = (KQCDEStyle *)p->rawptr;
 		(void)qp;
@@ -193,9 +201,15 @@ static int QCDEStyle_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQCDEStyle::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQCDEStyle::event(QEvent *event)
 {
-	if (!DummyQCDEStyle::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QCDEStyle::event(event);
 		return false;
 	}

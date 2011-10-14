@@ -78,7 +78,7 @@ bool DummyQSwipeGesture::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSwipeGesture::event_map->bigin();
 	if ((itr = DummyQSwipeGesture::event_map->find(str)) == DummyQSwipeGesture::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQGesture::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -90,8 +90,8 @@ bool DummyQSwipeGesture::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQSwipeGesture::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSwipeGesture::slot_map->bigin();
-	if ((itr = DummyQSwipeGesture::event_map->find(str)) == DummyQSwipeGesture::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQSwipeGesture::slot_map->find(str)) == DummyQSwipeGesture::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQGesture::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -101,9 +101,16 @@ bool DummyQSwipeGesture::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQSwipeGesture::connection(QObject *o)
+{
+	DummyQGesture::connection(o);
+}
+
 KQSwipeGesture::KQSwipeGesture() : QSwipeGesture()
 {
 	self = NULL;
+	dummy = new DummyQSwipeGesture();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSwipeGesture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -119,14 +126,13 @@ KMETHOD QSwipeGesture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQSwipeGesture::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSwipeGesture]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QSwipeGesture_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -140,7 +146,7 @@ KMETHOD QSwipeGesture_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQSwipeGesture::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSwipeGesture]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -160,6 +166,9 @@ static void QSwipeGesture_free(CTX ctx, knh_RawPtr_t *p)
 static void QSwipeGesture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQSwipeGesture *qp = (KQSwipeGesture *)p->rawptr;
 		(void)qp;
@@ -171,9 +180,15 @@ static int QSwipeGesture_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQSwipeGesture::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQSwipeGesture::event(QEvent *event)
 {
-	if (!DummyQSwipeGesture::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QSwipeGesture::event(event);
 		return false;
 	}

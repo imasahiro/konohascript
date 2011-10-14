@@ -485,8 +485,16 @@ KMETHOD QIODevice_write(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQIODevice::DummyQIODevice()
 {
 	self = NULL;
+	about_to_close_func = NULL;
+	bytes_written_func = NULL;
+	read_channel_finished_func = NULL;
+	ready_read_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("about-to-close", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("bytes-written", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("read-channel-finished", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("ready-read", NULL));
 }
 
 void DummyQIODevice::setSelf(knh_RawPtr_t *ptr)
@@ -506,11 +514,61 @@ bool DummyQIODevice::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQIODevice::aboutToCloseSlot()
+{
+	if (about_to_close_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, about_to_close_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQIODevice::bytesWrittenSlot(qint64 bytes)
+{
+	if (bytes_written_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, qint64, bytes);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, bytes_written_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQIODevice::readChannelFinishedSlot()
+{
+	if (read_channel_finished_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, read_channel_finished_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQIODevice::readyReadSlot()
+{
+	if (ready_read_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, ready_read_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQIODevice::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQIODevice::event_map->bigin();
 	if ((itr = DummyQIODevice::event_map->find(str)) == DummyQIODevice::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -522,20 +580,35 @@ bool DummyQIODevice::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQIODevice::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQIODevice::slot_map->bigin();
-	if ((itr = DummyQIODevice::event_map->find(str)) == DummyQIODevice::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQIODevice::slot_map->find(str)) == DummyQIODevice::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		about_to_close_func = (*slot_map)["about-to-close"];
+		bytes_written_func = (*slot_map)["bytes-written"];
+		read_channel_finished_func = (*slot_map)["read-channel-finished"];
+		ready_read_func = (*slot_map)["ready-read"];
 		return true;
 	}
 }
 
 
+void DummyQIODevice::connection(QObject *o)
+{
+	connect(o, SIGNAL(aboutToClose()), this, SLOT(aboutToCloseSlot()));
+	connect(o, SIGNAL(bytesWritten(qint64)), this, SLOT(bytesWrittenSlot(qint64)));
+	connect(o, SIGNAL(readChannelFinished()), this, SLOT(readChannelFinishedSlot()));
+	connect(o, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
+	DummyQObject::connection(o);
+}
+
 KQIODevice::KQIODevice() : QIODevice()
 {
 	self = NULL;
+	dummy = new DummyQIODevice();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QIODevice_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -551,14 +624,13 @@ KMETHOD QIODevice_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQIODevice::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QIODevice]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QIODevice_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -572,7 +644,7 @@ KMETHOD QIODevice_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQIODevice::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QIODevice]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -591,10 +663,29 @@ static void QIODevice_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QIODevice_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQIODevice *qp = (KQIODevice *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->about_to_close_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->about_to_close_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->bytes_written_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->bytes_written_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->read_channel_finished_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->read_channel_finished_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->ready_read_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->ready_read_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -603,9 +694,15 @@ static int QIODevice_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQIODevice::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQIODevice::event(QEvent *event)
 {
-	if (!DummyQIODevice::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QIODevice::event(event);
 		return false;
 	}

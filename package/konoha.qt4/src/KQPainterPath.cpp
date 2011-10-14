@@ -4,7 +4,6 @@ KMETHOD QPainterPath_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQPainterPath *ret_v = new KQPainterPath();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QPainterPath_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPointF  startPoint = *RawPtr_to(const QPointF *, sfp[1]);
 	KQPainterPath *ret_v = new KQPainterPath(startPoint);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -30,7 +28,6 @@ KMETHOD QPainterPath_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 	KQPainterPath *ret_v = new KQPainterPath(path);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -967,7 +964,7 @@ bool DummyQPainterPath::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPainterPath::event_map->bigin();
 	if ((itr = DummyQPainterPath::event_map->find(str)) == DummyQPainterPath::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -978,8 +975,8 @@ bool DummyQPainterPath::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQPainterPath::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPainterPath::slot_map->bigin();
-	if ((itr = DummyQPainterPath::event_map->find(str)) == DummyQPainterPath::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQPainterPath::slot_map->find(str)) == DummyQPainterPath::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -988,9 +985,16 @@ bool DummyQPainterPath::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQPainterPath::connection(QObject *o)
+{
+	return;
+}
+
 KQPainterPath::KQPainterPath() : QPainterPath()
 {
 	self = NULL;
+	dummy = new DummyQPainterPath();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPainterPath_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1006,14 +1010,13 @@ KMETHOD QPainterPath_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQPainterPath::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPainterPath]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QPainterPath_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1027,7 +1030,7 @@ KMETHOD QPainterPath_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQPainterPath::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPainterPath]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -1047,6 +1050,9 @@ static void QPainterPath_free(CTX ctx, knh_RawPtr_t *p)
 static void QPainterPath_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQPainterPath *qp = (KQPainterPath *)p->rawptr;
 		(void)qp;
@@ -1056,6 +1062,12 @@ static void QPainterPath_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QPainterPath_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QPainterPath*>(p1->rawptr) == *static_cast<QPainterPath*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQPainterPath::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQPainterPath(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

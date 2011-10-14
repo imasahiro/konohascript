@@ -20,7 +20,6 @@ KMETHOD QRegExpValidator_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQRegExpValidator *ret_v = new KQRegExpValidator(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -34,7 +33,6 @@ KMETHOD QRegExpValidator_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[2]);
 	KQRegExpValidator *ret_v = new KQRegExpValidator(rx, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -95,7 +93,7 @@ bool DummyQRegExpValidator::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQRegExpValidator::event_map->bigin();
 	if ((itr = DummyQRegExpValidator::event_map->find(str)) == DummyQRegExpValidator::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQValidator::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -107,8 +105,8 @@ bool DummyQRegExpValidator::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQRegExpValidator::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQRegExpValidator::slot_map->bigin();
-	if ((itr = DummyQRegExpValidator::event_map->find(str)) == DummyQRegExpValidator::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQRegExpValidator::slot_map->find(str)) == DummyQRegExpValidator::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQValidator::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -118,9 +116,16 @@ bool DummyQRegExpValidator::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQRegExpValidator::connection(QObject *o)
+{
+	DummyQValidator::connection(o);
+}
+
 KQRegExpValidator::KQRegExpValidator(QObject* parent) : QRegExpValidator(parent)
 {
 	self = NULL;
+	dummy = new DummyQRegExpValidator();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QRegExpValidator_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,14 +141,13 @@ KMETHOD QRegExpValidator_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQRegExpValidator::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QRegExpValidator]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QRegExpValidator_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -157,7 +161,7 @@ KMETHOD QRegExpValidator_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQRegExpValidator::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QRegExpValidator]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -177,6 +181,9 @@ static void QRegExpValidator_free(CTX ctx, knh_RawPtr_t *p)
 static void QRegExpValidator_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQRegExpValidator *qp = (KQRegExpValidator *)p->rawptr;
 		(void)qp;
@@ -188,9 +195,15 @@ static int QRegExpValidator_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQRegExpValidator::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQRegExpValidator::event(QEvent *event)
 {
-	if (!DummyQRegExpValidator::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QRegExpValidator::event(event);
 		return false;
 	}

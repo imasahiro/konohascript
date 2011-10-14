@@ -18,7 +18,6 @@ KMETHOD QPageSetupDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQPageSetupDialog *ret_v = new KQPageSetupDialog(printer, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -31,7 +30,6 @@ KMETHOD QPageSetupDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQPageSetupDialog *ret_v = new KQPageSetupDialog(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -144,7 +142,7 @@ bool DummyQPageSetupDialog::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPageSetupDialog::event_map->bigin();
 	if ((itr = DummyQPageSetupDialog::event_map->find(str)) == DummyQPageSetupDialog::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQDialog::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -156,8 +154,8 @@ bool DummyQPageSetupDialog::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQPageSetupDialog::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPageSetupDialog::slot_map->bigin();
-	if ((itr = DummyQPageSetupDialog::event_map->find(str)) == DummyQPageSetupDialog::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQPageSetupDialog::slot_map->find(str)) == DummyQPageSetupDialog::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQDialog::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -167,9 +165,16 @@ bool DummyQPageSetupDialog::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQPageSetupDialog::connection(QObject *o)
+{
+	DummyQDialog::connection(o);
+}
+
 KQPageSetupDialog::KQPageSetupDialog(QPrinter* printer, QWidget* parent) : QPageSetupDialog(printer, parent)
 {
 	self = NULL;
+	dummy = new DummyQPageSetupDialog();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPageSetupDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -185,14 +190,13 @@ KMETHOD QPageSetupDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQPageSetupDialog::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPageSetupDialog]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QPageSetupDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -206,7 +210,7 @@ KMETHOD QPageSetupDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQPageSetupDialog::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPageSetupDialog]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -226,6 +230,9 @@ static void QPageSetupDialog_free(CTX ctx, knh_RawPtr_t *p)
 static void QPageSetupDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQPageSetupDialog *qp = (KQPageSetupDialog *)p->rawptr;
 		(void)qp;
@@ -237,9 +244,15 @@ static int QPageSetupDialog_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQPageSetupDialog::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQPageSetupDialog::event(QEvent *event)
 {
-	if (!DummyQPageSetupDialog::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QPageSetupDialog::event(event);
 		return false;
 	}

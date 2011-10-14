@@ -1,6 +1,7 @@
 #ifndef QSTYLEOPTIONTAB
 #define QSTYLEOPTIONTAB
 class DummyQStyleOptionTab : public DummyQStyleOption {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQStyleOptionTab : public QStyleOptionTab, public DummyQStyleOptionTab {
+class KQStyleOptionTab : public QStyleOptionTab {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQStyleOptionTab *dummy;
 	KQStyleOptionTab();
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QSTYLEOPTIONTAB

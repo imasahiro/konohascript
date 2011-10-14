@@ -224,7 +224,7 @@ bool DummyQAbstractProxyModel::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractProxyModel::event_map->bigin();
 	if ((itr = DummyQAbstractProxyModel::event_map->find(str)) == DummyQAbstractProxyModel::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractItemModel::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -236,8 +236,8 @@ bool DummyQAbstractProxyModel::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQAbstractProxyModel::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractProxyModel::slot_map->bigin();
-	if ((itr = DummyQAbstractProxyModel::event_map->find(str)) == DummyQAbstractProxyModel::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAbstractProxyModel::slot_map->find(str)) == DummyQAbstractProxyModel::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractItemModel::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -247,9 +247,16 @@ bool DummyQAbstractProxyModel::signalConnect(knh_Func_t *callback_func, string s
 }
 
 
+void DummyQAbstractProxyModel::connection(QObject *o)
+{
+	DummyQAbstractItemModel::connection(o);
+}
+
 KQAbstractProxyModel::KQAbstractProxyModel(QObject* parent) : QAbstractProxyModel(parent)
 {
 	self = NULL;
+	dummy = new DummyQAbstractProxyModel();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractProxyModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -265,14 +272,13 @@ KMETHOD QAbstractProxyModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAbstractProxyModel::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractProxyModel]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAbstractProxyModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -286,7 +292,7 @@ KMETHOD QAbstractProxyModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAbstractProxyModel::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractProxyModel]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -306,6 +312,9 @@ static void QAbstractProxyModel_free(CTX ctx, knh_RawPtr_t *p)
 static void QAbstractProxyModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAbstractProxyModel *qp = (KQAbstractProxyModel *)p->rawptr;
 		(void)qp;
@@ -317,9 +326,15 @@ static int QAbstractProxyModel_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQAbstractProxyModel::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQAbstractProxyModel::event(QEvent *event)
 {
-	if (!DummyQAbstractProxyModel::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QAbstractProxyModel::event(event);
 		return false;
 	}

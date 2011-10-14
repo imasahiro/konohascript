@@ -6,7 +6,6 @@ KMETHOD QMainWindow_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[2]);
 	KQMainWindow *ret_v = new KQMainWindow(parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -668,8 +667,12 @@ KMETHOD QMainWindow_setDockNestingEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQMainWindow::DummyQMainWindow()
 {
 	self = NULL;
+	icon_size_changed_func = NULL;
+	tool_button_style_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("icon-size-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("tool-button-style-changed", NULL));
 }
 
 void DummyQMainWindow::setSelf(knh_RawPtr_t *ptr)
@@ -689,11 +692,38 @@ bool DummyQMainWindow::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQMainWindow::iconSizeChangedSlot(const QSize iconSize)
+{
+	if (icon_size_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QSize, iconSize);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, icon_size_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQMainWindow::toolButtonStyleChangedSlot(Qt::ToolButtonStyle toolButtonStyle)
+{
+	if (tool_button_style_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = toolButtonStyle;
+		knh_Func_invoke(lctx, tool_button_style_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQMainWindow::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMainWindow::event_map->bigin();
 	if ((itr = DummyQMainWindow::event_map->find(str)) == DummyQMainWindow::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -705,20 +735,31 @@ bool DummyQMainWindow::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQMainWindow::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMainWindow::slot_map->bigin();
-	if ((itr = DummyQMainWindow::event_map->find(str)) == DummyQMainWindow::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQMainWindow::slot_map->find(str)) == DummyQMainWindow::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		icon_size_changed_func = (*slot_map)["icon-size-changed"];
+		tool_button_style_changed_func = (*slot_map)["tool-button-style-changed"];
 		return true;
 	}
 }
 
 
+void DummyQMainWindow::connection(QObject *o)
+{
+	connect(o, SIGNAL(iconSizeChanged(const QSize)), this, SLOT(iconSizeChangedSlot(const QSize)));
+	connect(o, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)), this, SLOT(toolButtonStyleChangedSlot(Qt::ToolButtonStyle)));
+	DummyQWidget::connection(o);
+}
+
 KQMainWindow::KQMainWindow(QWidget* parent, Qt::WindowFlags flags) : QMainWindow(parent, flags)
 {
 	self = NULL;
+	dummy = new DummyQMainWindow();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMainWindow_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -734,14 +775,13 @@ KMETHOD QMainWindow_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQMainWindow::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMainWindow]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QMainWindow_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -755,7 +795,7 @@ KMETHOD QMainWindow_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQMainWindow::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMainWindow]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -774,10 +814,21 @@ static void QMainWindow_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMainWindow_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQMainWindow *qp = (KQMainWindow *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->icon_size_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->icon_size_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->tool_button_style_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->tool_button_style_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -786,9 +837,15 @@ static int QMainWindow_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQMainWindow::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQMainWindow::event(QEvent *event)
 {
-	if (!DummyQMainWindow::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QMainWindow::event(event);
 		return false;
 	}

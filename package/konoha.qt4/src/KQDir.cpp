@@ -5,7 +5,6 @@ KMETHOD QDir_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QDir  dir = *RawPtr_to(const QDir *, sfp[1]);
 	KQDir *ret_v = new KQDir(dir);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -18,7 +17,6 @@ KMETHOD QDir_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QString path = String_to(const QString, sfp[1]);
 	KQDir *ret_v = new KQDir(path);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -33,7 +31,6 @@ KMETHOD QDir_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QDir::SortFlags sort = Int_to(QDir::SortFlags, sfp[3]);
 	KQDir *ret_v = new KQDir(path, nameFilter, sort);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -706,7 +703,7 @@ bool DummyQDir::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDir::event_map->bigin();
 	if ((itr = DummyQDir::event_map->find(str)) == DummyQDir::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -717,8 +714,8 @@ bool DummyQDir::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDir::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDir::slot_map->bigin();
-	if ((itr = DummyQDir::event_map->find(str)) == DummyQDir::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDir::slot_map->find(str)) == DummyQDir::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -727,9 +724,16 @@ bool DummyQDir::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQDir::connection(QObject *o)
+{
+	return;
+}
+
 KQDir::KQDir(const QDir dir) : QDir(dir)
 {
 	self = NULL;
+	dummy = new DummyQDir();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDir_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -745,14 +749,13 @@ KMETHOD QDir_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDir::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDir]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDir_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -766,7 +769,7 @@ KMETHOD QDir_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDir::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDir]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -786,6 +789,9 @@ static void QDir_free(CTX ctx, knh_RawPtr_t *p)
 static void QDir_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDir *qp = (KQDir *)p->rawptr;
 		(void)qp;
@@ -795,6 +801,12 @@ static void QDir_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QDir_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QDir*>(p1->rawptr) == *static_cast<QDir*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQDir::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQDir(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

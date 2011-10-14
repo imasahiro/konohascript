@@ -94,7 +94,7 @@ UNUSED_ARG_NAMES = [
 NOT_INHERITS_QOBJECT = [
 	"QTextCodec", "QAccessibleWidget", "QPrinter", "QStandardItem",
 	"QGraphicsLayoutItem", "QResource", "QTreeWidgetItem",
-	"QGraphicsLayout", "QPaintDevice", "QGraphicsItem"
+	"QGraphicsLayout", "QPaintDevice", "QGraphicsItem", "QReadLocker"
 	];
 
 ADD_VIRTUAL_FUNCTION_LIST = [

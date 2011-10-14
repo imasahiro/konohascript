@@ -354,7 +354,7 @@ bool DummyQMetaProperty::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMetaProperty::event_map->bigin();
 	if ((itr = DummyQMetaProperty::event_map->find(str)) == DummyQMetaProperty::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -365,8 +365,8 @@ bool DummyQMetaProperty::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQMetaProperty::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQMetaProperty::slot_map->bigin();
-	if ((itr = DummyQMetaProperty::event_map->find(str)) == DummyQMetaProperty::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQMetaProperty::slot_map->find(str)) == DummyQMetaProperty::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -375,9 +375,16 @@ bool DummyQMetaProperty::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQMetaProperty::connection(QObject *o)
+{
+	return;
+}
+
 KQMetaProperty::KQMetaProperty() : QMetaProperty()
 {
 	self = NULL;
+	dummy = new DummyQMetaProperty();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMetaProperty_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -393,14 +400,13 @@ KMETHOD QMetaProperty_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQMetaProperty::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMetaProperty]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QMetaProperty_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -414,7 +420,7 @@ KMETHOD QMetaProperty_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQMetaProperty::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QMetaProperty]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -434,6 +440,9 @@ static void QMetaProperty_free(CTX ctx, knh_RawPtr_t *p)
 static void QMetaProperty_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQMetaProperty *qp = (KQMetaProperty *)p->rawptr;
 		(void)qp;
@@ -443,6 +452,12 @@ static void QMetaProperty_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QMetaProperty_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQMetaProperty::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQMetaProperty(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

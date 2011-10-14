@@ -1,6 +1,7 @@
 #ifndef QTEXTITEM
 #define QTEXTITEM
 class DummyQTextItem {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQTextItem : public QTextItem, public DummyQTextItem {
+class KQTextItem : public QTextItem {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQTextItem *dummy;
 	KQTextItem();
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QTEXTITEM

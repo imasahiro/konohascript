@@ -1,6 +1,7 @@
 #ifndef QDRAGENTEREVENT
 #define QDRAGENTEREVENT
 class DummyQDragEnterEvent : public DummyQDragMoveEvent {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQDragEnterEvent : public QDragEnterEvent, public DummyQDragEnterEvent {
+class KQDragEnterEvent : public QDragEnterEvent {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQDragEnterEvent *dummy;
 	KQDragEnterEvent(const QPoint point, Qt::DropActions actions, const QMimeData* data, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers);
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QDRAGENTEREVENT

@@ -31,7 +31,6 @@ KMETHOD QPrintPreviewDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[3]);
 	KQPrintPreviewDialog *ret_v = new KQPrintPreviewDialog(printer, parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -45,7 +44,6 @@ KMETHOD QPrintPreviewDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[2]);
 	KQPrintPreviewDialog *ret_v = new KQPrintPreviewDialog(parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -81,8 +79,10 @@ KMETHOD QPrintPreviewDialog_printer(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQPrintPreviewDialog::DummyQPrintPreviewDialog()
 {
 	self = NULL;
+	paint_requested_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("paint-requested", NULL));
 }
 
 void DummyQPrintPreviewDialog::setSelf(knh_RawPtr_t *ptr)
@@ -102,11 +102,25 @@ bool DummyQPrintPreviewDialog::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQPrintPreviewDialog::paintRequestedSlot(QPrinter* printer)
+{
+	if (paint_requested_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QPrinter, printer);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, paint_requested_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQPrintPreviewDialog::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPrintPreviewDialog::event_map->bigin();
 	if ((itr = DummyQPrintPreviewDialog::event_map->find(str)) == DummyQPrintPreviewDialog::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQDialog::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -118,20 +132,29 @@ bool DummyQPrintPreviewDialog::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQPrintPreviewDialog::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPrintPreviewDialog::slot_map->bigin();
-	if ((itr = DummyQPrintPreviewDialog::event_map->find(str)) == DummyQPrintPreviewDialog::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQPrintPreviewDialog::slot_map->find(str)) == DummyQPrintPreviewDialog::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQDialog::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		paint_requested_func = (*slot_map)["paint-requested"];
 		return true;
 	}
 }
 
 
+void DummyQPrintPreviewDialog::connection(QObject *o)
+{
+	connect(o, SIGNAL(paintRequested(QPrinter*)), this, SLOT(paintRequestedSlot(QPrinter*)));
+	DummyQDialog::connection(o);
+}
+
 KQPrintPreviewDialog::KQPrintPreviewDialog(QPrinter* printer, QWidget* parent, Qt::WindowFlags flags) : QPrintPreviewDialog(printer, parent, flags)
 {
 	self = NULL;
+	dummy = new DummyQPrintPreviewDialog();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPrintPreviewDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -147,14 +170,13 @@ KMETHOD QPrintPreviewDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQPrintPreviewDialog::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPrintPreviewDialog]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QPrintPreviewDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -168,7 +190,7 @@ KMETHOD QPrintPreviewDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQPrintPreviewDialog::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPrintPreviewDialog]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -187,10 +209,17 @@ static void QPrintPreviewDialog_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPrintPreviewDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQPrintPreviewDialog *qp = (KQPrintPreviewDialog *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->paint_requested_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->paint_requested_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -199,9 +228,15 @@ static int QPrintPreviewDialog_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQPrintPreviewDialog::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQPrintPreviewDialog::event(QEvent *event)
 {
-	if (!DummyQPrintPreviewDialog::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QPrintPreviewDialog::event(event);
 		return false;
 	}

@@ -4,7 +4,6 @@ KMETHOD QKeySequence_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQKeySequence *ret_v = new KQKeySequence();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QKeySequence_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QString key = String_to(const QString, sfp[1]);
 	KQKeySequence *ret_v = new KQKeySequence(key);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -31,7 +29,6 @@ KMETHOD QKeySequence_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QKeySequence::SequenceFormat format = Int_to(QKeySequence::SequenceFormat, sfp[2]);
 	KQKeySequence *ret_v = new KQKeySequence(key, format);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -47,7 +44,6 @@ KMETHOD QKeySequence_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int k4 = Int_to(int, sfp[4]);
 	KQKeySequence *ret_v = new KQKeySequence(k1, k2, k3, k4);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -60,7 +56,6 @@ KMETHOD QKeySequence_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QKeySequence  keysequence = *RawPtr_to(const QKeySequence *, sfp[1]);
 	KQKeySequence *ret_v = new KQKeySequence(keysequence);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -73,7 +68,6 @@ KMETHOD QKeySequence_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QKeySequence::StandardKey key = Int_to(QKeySequence::StandardKey, sfp[1]);
 	KQKeySequence *ret_v = new KQKeySequence(key);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -219,7 +213,7 @@ bool DummyQKeySequence::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQKeySequence::event_map->bigin();
 	if ((itr = DummyQKeySequence::event_map->find(str)) == DummyQKeySequence::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -230,8 +224,8 @@ bool DummyQKeySequence::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQKeySequence::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQKeySequence::slot_map->bigin();
-	if ((itr = DummyQKeySequence::event_map->find(str)) == DummyQKeySequence::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQKeySequence::slot_map->find(str)) == DummyQKeySequence::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -240,9 +234,16 @@ bool DummyQKeySequence::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQKeySequence::connection(QObject *o)
+{
+	return;
+}
+
 KQKeySequence::KQKeySequence() : QKeySequence()
 {
 	self = NULL;
+	dummy = new DummyQKeySequence();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QKeySequence_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -258,14 +259,13 @@ KMETHOD QKeySequence_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQKeySequence::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QKeySequence]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QKeySequence_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -279,7 +279,7 @@ KMETHOD QKeySequence_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQKeySequence::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QKeySequence]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -299,6 +299,9 @@ static void QKeySequence_free(CTX ctx, knh_RawPtr_t *p)
 static void QKeySequence_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQKeySequence *qp = (KQKeySequence *)p->rawptr;
 		(void)qp;
@@ -308,6 +311,12 @@ static void QKeySequence_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QKeySequence_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QKeySequence*>(p1->rawptr) == *static_cast<QKeySequence*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQKeySequence::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQKeySequence(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

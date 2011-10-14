@@ -112,7 +112,6 @@ KMETHOD QColumnView_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQColumnView *ret_v = new KQColumnView(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -212,8 +211,10 @@ KMETHOD QColumnView_setResizeGripsVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQColumnView::DummyQColumnView()
 {
 	self = NULL;
+	update_preview_widget_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("update-preview-widget", NULL));
 }
 
 void DummyQColumnView::setSelf(knh_RawPtr_t *ptr)
@@ -233,11 +234,25 @@ bool DummyQColumnView::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQColumnView::updatePreviewWidgetSlot(const QModelIndex index)
+{
+	if (update_preview_widget_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QModelIndex, index);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, update_preview_widget_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQColumnView::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQColumnView::event_map->bigin();
 	if ((itr = DummyQColumnView::event_map->find(str)) == DummyQColumnView::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractItemView::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -249,20 +264,29 @@ bool DummyQColumnView::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQColumnView::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQColumnView::slot_map->bigin();
-	if ((itr = DummyQColumnView::event_map->find(str)) == DummyQColumnView::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQColumnView::slot_map->find(str)) == DummyQColumnView::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractItemView::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		update_preview_widget_func = (*slot_map)["update-preview-widget"];
 		return true;
 	}
 }
 
 
+void DummyQColumnView::connection(QObject *o)
+{
+	connect(o, SIGNAL(updatePreviewWidget(const QModelIndex)), this, SLOT(updatePreviewWidgetSlot(const QModelIndex)));
+	DummyQAbstractItemView::connection(o);
+}
+
 KQColumnView::KQColumnView(QWidget* parent) : QColumnView(parent)
 {
 	self = NULL;
+	dummy = new DummyQColumnView();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QColumnView_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -278,14 +302,13 @@ KMETHOD QColumnView_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQColumnView::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QColumnView]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QColumnView_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -299,7 +322,7 @@ KMETHOD QColumnView_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQColumnView::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QColumnView]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -318,10 +341,17 @@ static void QColumnView_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QColumnView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQColumnView *qp = (KQColumnView *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->update_preview_widget_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->update_preview_widget_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -330,9 +360,15 @@ static int QColumnView_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQColumnView::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQColumnView::event(QEvent *event)
 {
-	if (!DummyQColumnView::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QColumnView::event(event);
 		return false;
 	}

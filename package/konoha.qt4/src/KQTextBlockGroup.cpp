@@ -27,7 +27,7 @@ bool DummyQTextBlockGroup::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextBlockGroup::event_map->bigin();
 	if ((itr = DummyQTextBlockGroup::event_map->find(str)) == DummyQTextBlockGroup::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQTextObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -39,8 +39,8 @@ bool DummyQTextBlockGroup::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTextBlockGroup::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextBlockGroup::slot_map->bigin();
-	if ((itr = DummyQTextBlockGroup::event_map->find(str)) == DummyQTextBlockGroup::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTextBlockGroup::slot_map->find(str)) == DummyQTextBlockGroup::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQTextObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -50,9 +50,16 @@ bool DummyQTextBlockGroup::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQTextBlockGroup::connection(QObject *o)
+{
+	DummyQTextObject::connection(o);
+}
+
 KQTextBlockGroup::KQTextBlockGroup(QTextDocument* document) : QTextBlockGroup(document)
 {
 	self = NULL;
+	dummy = new DummyQTextBlockGroup();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextBlockGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -68,14 +75,13 @@ KMETHOD QTextBlockGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTextBlockGroup::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextBlockGroup]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTextBlockGroup_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -89,7 +95,7 @@ KMETHOD QTextBlockGroup_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTextBlockGroup::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextBlockGroup]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -109,6 +115,9 @@ static void QTextBlockGroup_free(CTX ctx, knh_RawPtr_t *p)
 static void QTextBlockGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTextBlockGroup *qp = (KQTextBlockGroup *)p->rawptr;
 		(void)qp;
@@ -120,9 +129,15 @@ static int QTextBlockGroup_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQTextBlockGroup::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQTextBlockGroup::event(QEvent *event)
 {
-	if (!DummyQTextBlockGroup::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QTextBlockGroup::event(event);
 		return false;
 	}

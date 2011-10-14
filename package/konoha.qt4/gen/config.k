@@ -1,5 +1,5 @@
 //=========== qt install directory setting ====================//
-QT_HOME_DIR = "/usr/local/Trolltech/Qt-4.7.3/";
+QT_HOME_DIR = "";
 //=============================================================//
 
 QT_DOC_DIR = QT_HOME_DIR + "doc/html/";

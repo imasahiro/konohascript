@@ -5,7 +5,6 @@ KMETHOD QTextDocument_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQTextDocument *ret_v = new KQTextDocument(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QTextDocument_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[2]);
 	KQTextDocument *ret_v = new KQTextDocument(text, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -984,8 +982,26 @@ KMETHOD QTextDocument_undo(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQTextDocument::DummyQTextDocument()
 {
 	self = NULL;
+	block_count_changed_func = NULL;
+	contents_change_func = NULL;
+	contents_changed_func = NULL;
+	cursor_position_changed_func = NULL;
+	document_layout_changed_func = NULL;
+	modification_changed_func = NULL;
+	redo_available_func = NULL;
+	undo_available_func = NULL;
+	undo_command_added_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("block-count-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("contents-change", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("contents-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("cursor-position-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("document-layout-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("modification-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("redo-available", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("undo-available", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("undo-command-added", NULL));
 }
 
 void DummyQTextDocument::setSelf(knh_RawPtr_t *ptr)
@@ -1005,11 +1021,128 @@ bool DummyQTextDocument::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQTextDocument::blockCountChangedSlot(int new_BlockCount)
+{
+	if (block_count_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = new_BlockCount;
+		knh_Func_invoke(lctx, block_count_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextDocument::contentsChangeSlot(int position, int charsRemoved, int charsAdded)
+{
+	if (contents_change_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = position;
+		lsfp[K_CALLDELTA+3].ivalue = charsRemoved;
+		lsfp[K_CALLDELTA+4].ivalue = charsAdded;
+		knh_Func_invoke(lctx, contents_change_func, lsfp, 4);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextDocument::contentsChangedSlot()
+{
+	if (contents_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, contents_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextDocument::cursorPositionChangedSlot(const QTextCursor cursor)
+{
+	if (cursor_position_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QTextCursor, cursor);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, cursor_position_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextDocument::documentLayoutChangedSlot()
+{
+	if (document_layout_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, document_layout_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextDocument::modificationChangedSlot(bool changed)
+{
+	if (modification_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = changed;
+		knh_Func_invoke(lctx, modification_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextDocument::redoAvailableSlot(bool available)
+{
+	if (redo_available_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = available;
+		knh_Func_invoke(lctx, redo_available_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextDocument::undoAvailableSlot(bool available)
+{
+	if (undo_available_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].bvalue = available;
+		knh_Func_invoke(lctx, undo_available_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQTextDocument::undoCommandAddedSlot()
+{
+	if (undo_command_added_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, undo_command_added_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQTextDocument::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextDocument::event_map->bigin();
 	if ((itr = DummyQTextDocument::event_map->find(str)) == DummyQTextDocument::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -1021,20 +1154,45 @@ bool DummyQTextDocument::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTextDocument::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextDocument::slot_map->bigin();
-	if ((itr = DummyQTextDocument::event_map->find(str)) == DummyQTextDocument::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTextDocument::slot_map->find(str)) == DummyQTextDocument::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		block_count_changed_func = (*slot_map)["block-count-changed"];
+		contents_change_func = (*slot_map)["contents-change"];
+		contents_changed_func = (*slot_map)["contents-changed"];
+		cursor_position_changed_func = (*slot_map)["cursor-position-changed"];
+		document_layout_changed_func = (*slot_map)["document-layout-changed"];
+		modification_changed_func = (*slot_map)["modification-changed"];
+		redo_available_func = (*slot_map)["redo-available"];
+		undo_available_func = (*slot_map)["undo-available"];
+		undo_command_added_func = (*slot_map)["undo-command-added"];
 		return true;
 	}
 }
 
 
+void DummyQTextDocument::connection(QObject *o)
+{
+	connect(o, SIGNAL(blockCountChanged(int)), this, SLOT(blockCountChangedSlot(int)));
+	connect(o, SIGNAL(contentsChange(int, int, int)), this, SLOT(contentsChangeSlot(int, int, int)));
+	connect(o, SIGNAL(contentsChanged()), this, SLOT(contentsChangedSlot()));
+	connect(o, SIGNAL(cursorPositionChanged(const QTextCursor)), this, SLOT(cursorPositionChangedSlot(const QTextCursor)));
+	connect(o, SIGNAL(documentLayoutChanged()), this, SLOT(documentLayoutChangedSlot()));
+	connect(o, SIGNAL(modificationChanged(bool)), this, SLOT(modificationChangedSlot(bool)));
+	connect(o, SIGNAL(redoAvailable(bool)), this, SLOT(redoAvailableSlot(bool)));
+	connect(o, SIGNAL(undoAvailable(bool)), this, SLOT(undoAvailableSlot(bool)));
+	connect(o, SIGNAL(undoCommandAdded()), this, SLOT(undoCommandAddedSlot()));
+	DummyQObject::connection(o);
+}
+
 KQTextDocument::KQTextDocument(QObject* parent) : QTextDocument(parent)
 {
 	self = NULL;
+	dummy = new DummyQTextDocument();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextDocument_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1050,14 +1208,13 @@ KMETHOD QTextDocument_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTextDocument::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextDocument]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTextDocument_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1071,7 +1228,7 @@ KMETHOD QTextDocument_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTextDocument::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextDocument]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -1090,10 +1247,49 @@ static void QTextDocument_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextDocument_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 9;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTextDocument *qp = (KQTextDocument *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->block_count_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->block_count_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->contents_change_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->contents_change_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->contents_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->contents_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->cursor_position_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->cursor_position_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->document_layout_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->document_layout_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->modification_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->modification_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->redo_available_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->redo_available_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->undo_available_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->undo_available_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->undo_command_added_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->undo_command_added_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -1102,9 +1298,15 @@ static int QTextDocument_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQTextDocument::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQTextDocument::event(QEvent *event)
 {
-	if (!DummyQTextDocument::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QTextDocument::event(event);
 		return false;
 	}

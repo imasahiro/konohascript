@@ -4,7 +4,6 @@ KMETHOD QUuid_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQUuid *ret_v = new KQUuid();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -27,7 +26,6 @@ KMETHOD QUuid_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	uchar  b8 = *RawPtr_to(uchar *, sfp[11]);
 	KQUuid *ret_v = new KQUuid(l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -40,7 +38,6 @@ KMETHOD QUuid_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QString text = String_to(const QString, sfp[1]);
 	KQUuid *ret_v = new KQUuid(text);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -53,7 +50,6 @@ KMETHOD QUuid_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const GUID  guid = *RawPtr_to(const GUID *, sfp[1]);
 	KQUuid *ret_v = new KQUuid(guid);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -154,7 +150,7 @@ bool DummyQUuid::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQUuid::event_map->bigin();
 	if ((itr = DummyQUuid::event_map->find(str)) == DummyQUuid::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -165,8 +161,8 @@ bool DummyQUuid::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQUuid::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQUuid::slot_map->bigin();
-	if ((itr = DummyQUuid::event_map->find(str)) == DummyQUuid::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQUuid::slot_map->find(str)) == DummyQUuid::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -175,9 +171,16 @@ bool DummyQUuid::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQUuid::connection(QObject *o)
+{
+	return;
+}
+
 KQUuid::KQUuid() : QUuid()
 {
 	self = NULL;
+	dummy = new DummyQUuid();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QUuid_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -193,14 +196,13 @@ KMETHOD QUuid_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQUuid::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QUuid]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QUuid_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -214,7 +216,7 @@ KMETHOD QUuid_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQUuid::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QUuid]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -234,6 +236,9 @@ static void QUuid_free(CTX ctx, knh_RawPtr_t *p)
 static void QUuid_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQUuid *qp = (KQUuid *)p->rawptr;
 		(void)qp;
@@ -243,6 +248,12 @@ static void QUuid_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QUuid_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QUuid*>(p1->rawptr) == *static_cast<QUuid*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQUuid::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQUuid(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

@@ -5,7 +5,6 @@ KMETHOD QWizardPage_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQWizardPage *ret_v = new KQWizardPage(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -234,8 +233,10 @@ KMETHOD QWizardPage_validatePage(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQWizardPage::DummyQWizardPage()
 {
 	self = NULL;
+	complete_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("complete-changed", NULL));
 }
 
 void DummyQWizardPage::setSelf(knh_RawPtr_t *ptr)
@@ -255,11 +256,23 @@ bool DummyQWizardPage::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQWizardPage::completeChangedSlot()
+{
+	if (complete_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, complete_changed_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQWizardPage::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQWizardPage::event_map->bigin();
 	if ((itr = DummyQWizardPage::event_map->find(str)) == DummyQWizardPage::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -271,20 +284,29 @@ bool DummyQWizardPage::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQWizardPage::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQWizardPage::slot_map->bigin();
-	if ((itr = DummyQWizardPage::event_map->find(str)) == DummyQWizardPage::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQWizardPage::slot_map->find(str)) == DummyQWizardPage::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		complete_changed_func = (*slot_map)["complete-changed"];
 		return true;
 	}
 }
 
 
+void DummyQWizardPage::connection(QObject *o)
+{
+	connect(o, SIGNAL(completeChanged()), this, SLOT(completeChangedSlot()));
+	DummyQWidget::connection(o);
+}
+
 KQWizardPage::KQWizardPage(QWidget* parent) : QWizardPage(parent)
 {
 	self = NULL;
+	dummy = new DummyQWizardPage();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QWizardPage_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -300,14 +322,13 @@ KMETHOD QWizardPage_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQWizardPage::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QWizardPage]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QWizardPage_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -321,7 +342,7 @@ KMETHOD QWizardPage_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQWizardPage::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QWizardPage]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -340,10 +361,17 @@ static void QWizardPage_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QWizardPage_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQWizardPage *qp = (KQWizardPage *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->complete_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->complete_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -352,9 +380,15 @@ static int QWizardPage_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQWizardPage::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQWizardPage::event(QEvent *event)
 {
-	if (!DummyQWizardPage::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QWizardPage::event(event);
 		return false;
 	}

@@ -1,6 +1,7 @@
 #ifndef QCURSOR
 #define QCURSOR
 class DummyQCursor {
+//	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -10,13 +11,16 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void connection(QObject *o);
 };
 
-class KQCursor : public QCursor, public DummyQCursor {
+class KQCursor : public QCursor {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	DummyQCursor *dummy;
 	KQCursor();
+	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QCURSOR

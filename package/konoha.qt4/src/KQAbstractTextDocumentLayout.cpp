@@ -174,8 +174,16 @@ KMETHOD QAbstractTextDocumentLayout_setPaintDevice(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQAbstractTextDocumentLayout::DummyQAbstractTextDocumentLayout()
 {
 	self = NULL;
+	document_size_changed_func = NULL;
+	page_count_changed_func = NULL;
+	update_func = NULL;
+	update_block_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("document-size-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("page-count-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("update", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("update-block", NULL));
 }
 
 void DummyQAbstractTextDocumentLayout::setSelf(knh_RawPtr_t *ptr)
@@ -195,11 +203,66 @@ bool DummyQAbstractTextDocumentLayout::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQAbstractTextDocumentLayout::documentSizeChangedSlot(const QSizeF new_Size)
+{
+	if (document_size_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QSizeF, new_Size);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, document_size_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractTextDocumentLayout::pageCountChangedSlot(int new_Pages)
+{
+	if (page_count_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		lsfp[K_CALLDELTA+2].ivalue = new_Pages;
+		knh_Func_invoke(lctx, page_count_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractTextDocumentLayout::updateSlot(const QRectF rect)
+{
+	if (update_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QRectF, rect);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, update_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQAbstractTextDocumentLayout::updateBlockSlot(const QTextBlock block)
+{
+	if (update_block_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QTextBlock, block);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, update_block_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQAbstractTextDocumentLayout::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractTextDocumentLayout::event_map->bigin();
 	if ((itr = DummyQAbstractTextDocumentLayout::event_map->find(str)) == DummyQAbstractTextDocumentLayout::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQObject::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -211,20 +274,35 @@ bool DummyQAbstractTextDocumentLayout::addEvent(knh_Func_t *callback_func, strin
 bool DummyQAbstractTextDocumentLayout::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQAbstractTextDocumentLayout::slot_map->bigin();
-	if ((itr = DummyQAbstractTextDocumentLayout::event_map->find(str)) == DummyQAbstractTextDocumentLayout::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQAbstractTextDocumentLayout::slot_map->find(str)) == DummyQAbstractTextDocumentLayout::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQObject::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		document_size_changed_func = (*slot_map)["document-size-changed"];
+		page_count_changed_func = (*slot_map)["page-count-changed"];
+		update_func = (*slot_map)["update"];
+		update_block_func = (*slot_map)["update-block"];
 		return true;
 	}
 }
 
 
+void DummyQAbstractTextDocumentLayout::connection(QObject *o)
+{
+	connect(o, SIGNAL(documentSizeChanged(const QSizeF)), this, SLOT(documentSizeChangedSlot(const QSizeF)));
+	connect(o, SIGNAL(pageCountChanged(int)), this, SLOT(pageCountChangedSlot(int)));
+	connect(o, SIGNAL(update(const QRectF)), this, SLOT(updateSlot(const QRectF)));
+	connect(o, SIGNAL(updateBlock(const QTextBlock)), this, SLOT(updateBlockSlot(const QTextBlock)));
+	DummyQObject::connection(o);
+}
+
 KQAbstractTextDocumentLayout::KQAbstractTextDocumentLayout(QTextDocument* document) : QAbstractTextDocumentLayout(document)
 {
 	self = NULL;
+	dummy = new DummyQAbstractTextDocumentLayout();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractTextDocumentLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -240,14 +318,13 @@ KMETHOD QAbstractTextDocumentLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQAbstractTextDocumentLayout::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractTextDocumentLayout]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QAbstractTextDocumentLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -261,7 +338,7 @@ KMETHOD QAbstractTextDocumentLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQAbstractTextDocumentLayout::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QAbstractTextDocumentLayout]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -280,10 +357,29 @@ static void QAbstractTextDocumentLayout_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractTextDocumentLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQAbstractTextDocumentLayout *qp = (KQAbstractTextDocumentLayout *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->document_size_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->document_size_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->page_count_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->page_count_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->update_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->update_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->update_block_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->update_block_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -292,9 +388,15 @@ static int QAbstractTextDocumentLayout_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t 
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQAbstractTextDocumentLayout::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQAbstractTextDocumentLayout::event(QEvent *event)
 {
-	if (!DummyQAbstractTextDocumentLayout::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QAbstractTextDocumentLayout::event(event);
 		return false;
 	}

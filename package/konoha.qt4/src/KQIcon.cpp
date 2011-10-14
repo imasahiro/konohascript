@@ -4,7 +4,6 @@ KMETHOD QIcon_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQIcon *ret_v = new KQIcon();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QIcon_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[1]);
 	KQIcon *ret_v = new KQIcon(pixmap);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -30,7 +28,6 @@ KMETHOD QIcon_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QIcon  other = *RawPtr_to(const QIcon *, sfp[1]);
 	KQIcon *ret_v = new KQIcon(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -43,7 +40,6 @@ KMETHOD QIcon_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QString fileName = String_to(const QString, sfp[1]);
 	KQIcon *ret_v = new KQIcon(fileName);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -56,7 +52,6 @@ KMETHOD QIcon_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QIconEngine*  engine = RawPtr_to(QIconEngine*, sfp[1]);
 	KQIcon *ret_v = new KQIcon(engine);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -69,7 +64,6 @@ KMETHOD QIcon_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QIconEngineV2*  engine = RawPtr_to(QIconEngineV2*, sfp[1]);
 	KQIcon *ret_v = new KQIcon(engine);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -365,7 +359,7 @@ bool DummyQIcon::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQIcon::event_map->bigin();
 	if ((itr = DummyQIcon::event_map->find(str)) == DummyQIcon::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -376,8 +370,8 @@ bool DummyQIcon::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQIcon::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQIcon::slot_map->bigin();
-	if ((itr = DummyQIcon::event_map->find(str)) == DummyQIcon::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQIcon::slot_map->find(str)) == DummyQIcon::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -386,9 +380,16 @@ bool DummyQIcon::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQIcon::connection(QObject *o)
+{
+	return;
+}
+
 KQIcon::KQIcon() : QIcon()
 {
 	self = NULL;
+	dummy = new DummyQIcon();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QIcon_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -404,14 +405,13 @@ KMETHOD QIcon_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQIcon::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QIcon]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QIcon_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -425,7 +425,7 @@ KMETHOD QIcon_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQIcon::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QIcon]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -445,6 +445,9 @@ static void QIcon_free(CTX ctx, knh_RawPtr_t *p)
 static void QIcon_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQIcon *qp = (KQIcon *)p->rawptr;
 		(void)qp;
@@ -454,6 +457,12 @@ static void QIcon_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QIcon_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQIcon::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQIcon(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

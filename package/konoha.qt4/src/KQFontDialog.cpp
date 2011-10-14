@@ -17,7 +17,6 @@ KMETHOD QFontDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQFontDialog *ret_v = new KQFontDialog(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -31,7 +30,6 @@ KMETHOD QFontDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQFontDialog *ret_v = new KQFontDialog(initial, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -263,8 +261,12 @@ KMETHOD QFontDialog_getFontOL(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQFontDialog::DummyQFontDialog()
 {
 	self = NULL;
+	current_font_changed_func = NULL;
+	font_selected_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("current-font-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("font-selected", NULL));
 }
 
 void DummyQFontDialog::setSelf(knh_RawPtr_t *ptr)
@@ -284,11 +286,39 @@ bool DummyQFontDialog::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQFontDialog::currentFontChangedSlot(const QFont font)
+{
+	if (current_font_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QFont, font);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, current_font_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQFontDialog::fontSelectedSlot(const QFont font)
+{
+	if (font_selected_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QFont, font);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, font_selected_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQFontDialog::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQFontDialog::event_map->bigin();
 	if ((itr = DummyQFontDialog::event_map->find(str)) == DummyQFontDialog::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQDialog::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -300,20 +330,31 @@ bool DummyQFontDialog::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQFontDialog::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQFontDialog::slot_map->bigin();
-	if ((itr = DummyQFontDialog::event_map->find(str)) == DummyQFontDialog::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQFontDialog::slot_map->find(str)) == DummyQFontDialog::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQDialog::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		current_font_changed_func = (*slot_map)["current-font-changed"];
+		font_selected_func = (*slot_map)["font-selected"];
 		return true;
 	}
 }
 
 
+void DummyQFontDialog::connection(QObject *o)
+{
+	connect(o, SIGNAL(currentFontChanged(const QFont)), this, SLOT(currentFontChangedSlot(const QFont)));
+	connect(o, SIGNAL(fontSelected(const QFont)), this, SLOT(fontSelectedSlot(const QFont)));
+	DummyQDialog::connection(o);
+}
+
 KQFontDialog::KQFontDialog(QWidget* parent) : QFontDialog(parent)
 {
 	self = NULL;
+	dummy = new DummyQFontDialog();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QFontDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -329,14 +370,13 @@ KMETHOD QFontDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQFontDialog::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QFontDialog]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QFontDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -350,7 +390,7 @@ KMETHOD QFontDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQFontDialog::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QFontDialog]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -369,10 +409,21 @@ static void QFontDialog_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QFontDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQFontDialog *qp = (KQFontDialog *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->current_font_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->current_font_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->font_selected_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->font_selected_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -381,9 +432,15 @@ static int QFontDialog_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQFontDialog::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQFontDialog::event(QEvent *event)
 {
-	if (!DummyQFontDialog::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QFontDialog::event(event);
 		return false;
 	}

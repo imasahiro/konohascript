@@ -32,7 +32,6 @@ KMETHOD QSizeGrip_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQSizeGrip *ret_v = new KQSizeGrip(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -66,7 +65,7 @@ bool DummyQSizeGrip::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSizeGrip::event_map->bigin();
 	if ((itr = DummyQSizeGrip::event_map->find(str)) == DummyQSizeGrip::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -78,8 +77,8 @@ bool DummyQSizeGrip::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQSizeGrip::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSizeGrip::slot_map->bigin();
-	if ((itr = DummyQSizeGrip::event_map->find(str)) == DummyQSizeGrip::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQSizeGrip::slot_map->find(str)) == DummyQSizeGrip::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -89,9 +88,16 @@ bool DummyQSizeGrip::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQSizeGrip::connection(QObject *o)
+{
+	DummyQWidget::connection(o);
+}
+
 KQSizeGrip::KQSizeGrip(QWidget* parent) : QSizeGrip(parent)
 {
 	self = NULL;
+	dummy = new DummyQSizeGrip();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSizeGrip_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -107,14 +113,13 @@ KMETHOD QSizeGrip_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQSizeGrip::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSizeGrip]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QSizeGrip_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -128,7 +133,7 @@ KMETHOD QSizeGrip_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQSizeGrip::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSizeGrip]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -148,6 +153,9 @@ static void QSizeGrip_free(CTX ctx, knh_RawPtr_t *p)
 static void QSizeGrip_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQSizeGrip *qp = (KQSizeGrip *)p->rawptr;
 		(void)qp;
@@ -159,9 +167,15 @@ static int QSizeGrip_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQSizeGrip::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQSizeGrip::event(QEvent *event)
 {
-	if (!DummyQSizeGrip::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QSizeGrip::event(event);
 		return false;
 	}

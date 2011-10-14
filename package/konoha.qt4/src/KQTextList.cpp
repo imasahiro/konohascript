@@ -148,7 +148,7 @@ bool DummyQTextList::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextList::event_map->bigin();
 	if ((itr = DummyQTextList::event_map->find(str)) == DummyQTextList::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQTextBlockGroup::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -160,8 +160,8 @@ bool DummyQTextList::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQTextList::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQTextList::slot_map->bigin();
-	if ((itr = DummyQTextList::event_map->find(str)) == DummyQTextList::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQTextList::slot_map->find(str)) == DummyQTextList::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQTextBlockGroup::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -170,6 +170,11 @@ bool DummyQTextList::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+
+void DummyQTextList::connection(QObject *o)
+{
+	DummyQTextBlockGroup::connection(o);
+}
 
 KMETHOD QTextList_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -184,14 +189,13 @@ KMETHOD QTextList_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQTextList::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextList]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QTextList_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -205,7 +209,7 @@ KMETHOD QTextList_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQTextList::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QTextList]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -225,6 +229,9 @@ static void QTextList_free(CTX ctx, knh_RawPtr_t *p)
 static void QTextList_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQTextList *qp = (KQTextList *)p->rawptr;
 		(void)qp;
@@ -236,9 +243,15 @@ static int QTextList_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQTextList::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQTextList::event(QEvent *event)
 {
-	if (!DummyQTextList::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QTextList::event(event);
 		return false;
 	}

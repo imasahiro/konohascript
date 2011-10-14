@@ -4,7 +4,6 @@ KMETHOD QPixmap_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQPixmap *ret_v = new KQPixmap();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -18,7 +17,6 @@ KMETHOD QPixmap_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int height = Int_to(int, sfp[2]);
 	KQPixmap *ret_v = new KQPixmap(width, height);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -33,7 +31,6 @@ KMETHOD QPixmap_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	Qt::ImageConversionFlags flags = Int_to(Qt::ImageConversionFlags, sfp[3]);
 	KQPixmap *ret_v = new KQPixmap(fileName, format, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -46,7 +43,6 @@ KMETHOD QPixmap_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[1]);
 	KQPixmap *ret_v = new KQPixmap(pixmap);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -59,7 +55,6 @@ KMETHOD QPixmap_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QSize  size = *RawPtr_to(const QSize *, sfp[1]);
 	KQPixmap *ret_v = new KQPixmap(size);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -770,7 +765,7 @@ bool DummyQPixmap::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPixmap::event_map->bigin();
 	if ((itr = DummyQPixmap::event_map->find(str)) == DummyQPixmap::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQPaintDevice::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -782,8 +777,8 @@ bool DummyQPixmap::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQPixmap::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQPixmap::slot_map->bigin();
-	if ((itr = DummyQPixmap::event_map->find(str)) == DummyQPixmap::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQPixmap::slot_map->find(str)) == DummyQPixmap::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQPaintDevice::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -793,9 +788,16 @@ bool DummyQPixmap::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQPixmap::connection(QObject *o)
+{
+	DummyQPaintDevice::connection(o);
+}
+
 KQPixmap::KQPixmap() : QPixmap()
 {
 	self = NULL;
+	dummy = new DummyQPixmap();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPixmap_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -811,14 +813,13 @@ KMETHOD QPixmap_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQPixmap::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPixmap]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QPixmap_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -832,7 +833,7 @@ KMETHOD QPixmap_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQPixmap::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QPixmap]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -852,6 +853,9 @@ static void QPixmap_free(CTX ctx, knh_RawPtr_t *p)
 static void QPixmap_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQPixmap *qp = (KQPixmap *)p->rawptr;
 		(void)qp;
@@ -861,6 +865,12 @@ static void QPixmap_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QPixmap_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQPixmap::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQPixmap(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

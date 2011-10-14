@@ -4,7 +4,6 @@ KMETHOD QCloseEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQCloseEvent *ret_v = new KQCloseEvent();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -38,7 +37,7 @@ bool DummyQCloseEvent::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCloseEvent::event_map->bigin();
 	if ((itr = DummyQCloseEvent::event_map->find(str)) == DummyQCloseEvent::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQEvent::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -50,8 +49,8 @@ bool DummyQCloseEvent::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQCloseEvent::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQCloseEvent::slot_map->bigin();
-	if ((itr = DummyQCloseEvent::event_map->find(str)) == DummyQCloseEvent::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQCloseEvent::slot_map->find(str)) == DummyQCloseEvent::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQEvent::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -61,9 +60,16 @@ bool DummyQCloseEvent::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQCloseEvent::connection(QObject *o)
+{
+	DummyQEvent::connection(o);
+}
+
 KQCloseEvent::KQCloseEvent() : QCloseEvent()
 {
 	self = NULL;
+	dummy = new DummyQCloseEvent();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QCloseEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -79,14 +85,13 @@ KMETHOD QCloseEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQCloseEvent::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCloseEvent]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QCloseEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -100,7 +105,7 @@ KMETHOD QCloseEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQCloseEvent::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QCloseEvent]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -120,6 +125,9 @@ static void QCloseEvent_free(CTX ctx, knh_RawPtr_t *p)
 static void QCloseEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQCloseEvent *qp = (KQCloseEvent *)p->rawptr;
 		(void)qp;
@@ -129,6 +137,12 @@ static void QCloseEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QCloseEvent_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQCloseEvent::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQCloseEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

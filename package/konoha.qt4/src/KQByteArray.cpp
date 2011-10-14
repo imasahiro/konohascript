@@ -4,7 +4,6 @@ KMETHOD QByteArray_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQByteArray *ret_v = new KQByteArray();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QByteArray_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const char*  str = RawPtr_to(const char*, sfp[1]);
 	KQByteArray *ret_v = new KQByteArray(str);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -31,7 +29,6 @@ KMETHOD QByteArray_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int size = Int_to(int, sfp[2]);
 	KQByteArray *ret_v = new KQByteArray(data, size);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -45,7 +42,6 @@ KMETHOD QByteArray_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	char  ch = *RawPtr_to(char *, sfp[2]);
 	KQByteArray *ret_v = new KQByteArray(size, ch);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -58,7 +54,6 @@ KMETHOD QByteArray_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QByteArray  other = *RawPtr_to(const QByteArray *, sfp[1]);
 	KQByteArray *ret_v = new KQByteArray(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -1925,7 +1920,7 @@ bool DummyQByteArray::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQByteArray::event_map->bigin();
 	if ((itr = DummyQByteArray::event_map->find(str)) == DummyQByteArray::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
@@ -1936,8 +1931,8 @@ bool DummyQByteArray::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQByteArray::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQByteArray::slot_map->bigin();
-	if ((itr = DummyQByteArray::event_map->find(str)) == DummyQByteArray::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQByteArray::slot_map->find(str)) == DummyQByteArray::slot_map->end()) {
+		bool ret = false;
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
@@ -1946,9 +1941,16 @@ bool DummyQByteArray::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQByteArray::connection(QObject *o)
+{
+	return;
+}
+
 KQByteArray::KQByteArray() : QByteArray()
 {
 	self = NULL;
+	dummy = new DummyQByteArray();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QByteArray_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1964,14 +1966,13 @@ KMETHOD QByteArray_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQByteArray::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QByteArray]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QByteArray_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1985,7 +1986,7 @@ KMETHOD QByteArray_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQByteArray::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QByteArray]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -2005,6 +2006,9 @@ static void QByteArray_free(CTX ctx, knh_RawPtr_t *p)
 static void QByteArray_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQByteArray *qp = (KQByteArray *)p->rawptr;
 		(void)qp;
@@ -2014,6 +2018,12 @@ static void QByteArray_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QByteArray_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (*static_cast<QByteArray*>(p1->rawptr) == *static_cast<QByteArray*>(p2->rawptr) ? 0 : 1);
+}
+
+void KQByteArray::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQByteArray(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

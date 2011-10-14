@@ -34,7 +34,6 @@ KMETHOD QScrollBar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQScrollBar *ret_v = new KQScrollBar(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -48,7 +47,6 @@ KMETHOD QScrollBar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQScrollBar *ret_v = new KQScrollBar(orientation, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -82,7 +80,7 @@ bool DummyQScrollBar::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQScrollBar::event_map->bigin();
 	if ((itr = DummyQScrollBar::event_map->find(str)) == DummyQScrollBar::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractSlider::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -94,8 +92,8 @@ bool DummyQScrollBar::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQScrollBar::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQScrollBar::slot_map->bigin();
-	if ((itr = DummyQScrollBar::event_map->find(str)) == DummyQScrollBar::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQScrollBar::slot_map->find(str)) == DummyQScrollBar::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractSlider::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -105,9 +103,16 @@ bool DummyQScrollBar::signalConnect(knh_Func_t *callback_func, string str)
 }
 
 
+void DummyQScrollBar::connection(QObject *o)
+{
+	DummyQAbstractSlider::connection(o);
+}
+
 KQScrollBar::KQScrollBar(QWidget* parent) : QScrollBar(parent)
 {
 	self = NULL;
+	dummy = new DummyQScrollBar();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QScrollBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -123,14 +128,13 @@ KMETHOD QScrollBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQScrollBar::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QScrollBar]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QScrollBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -144,7 +148,7 @@ KMETHOD QScrollBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQScrollBar::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QScrollBar]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -164,6 +168,9 @@ static void QScrollBar_free(CTX ctx, knh_RawPtr_t *p)
 static void QScrollBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQScrollBar *qp = (KQScrollBar *)p->rawptr;
 		(void)qp;
@@ -175,9 +182,15 @@ static int QScrollBar_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQScrollBar::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQScrollBar::event(QEvent *event)
 {
-	if (!DummyQScrollBar::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QScrollBar::event(event);
 		return false;
 	}

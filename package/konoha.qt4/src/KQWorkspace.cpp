@@ -20,7 +20,6 @@ KMETHOD QWorkspace_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQWorkspace *ret_v = new KQWorkspace(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -216,8 +215,10 @@ KMETHOD QWorkspace_tile(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQWorkspace::DummyQWorkspace()
 {
 	self = NULL;
+	window_activated_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("window-activated", NULL));
 }
 
 void DummyQWorkspace::setSelf(knh_RawPtr_t *ptr)
@@ -237,11 +238,25 @@ bool DummyQWorkspace::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQWorkspace::windowActivatedSlot(QWidget* w)
+{
+	if (window_activated_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QWidget, w);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, window_activated_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQWorkspace::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQWorkspace::event_map->bigin();
 	if ((itr = DummyQWorkspace::event_map->find(str)) == DummyQWorkspace::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQWidget::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -253,20 +268,29 @@ bool DummyQWorkspace::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQWorkspace::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQWorkspace::slot_map->bigin();
-	if ((itr = DummyQWorkspace::event_map->find(str)) == DummyQWorkspace::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQWorkspace::slot_map->find(str)) == DummyQWorkspace::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQWidget::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		window_activated_func = (*slot_map)["window-activated"];
 		return true;
 	}
 }
 
 
+void DummyQWorkspace::connection(QObject *o)
+{
+	connect(o, SIGNAL(windowActivated(QWidget*)), this, SLOT(windowActivatedSlot(QWidget*)));
+	DummyQWidget::connection(o);
+}
+
 KQWorkspace::KQWorkspace(QWidget* parent) : QWorkspace(parent)
 {
 	self = NULL;
+	dummy = new DummyQWorkspace();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QWorkspace_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -282,14 +306,13 @@ KMETHOD QWorkspace_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQWorkspace::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QWorkspace]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QWorkspace_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -303,7 +326,7 @@ KMETHOD QWorkspace_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQWorkspace::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QWorkspace]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -322,10 +345,17 @@ static void QWorkspace_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QWorkspace_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQWorkspace *qp = (KQWorkspace *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->window_activated_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->window_activated_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -334,9 +364,15 @@ static int QWorkspace_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQWorkspace::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQWorkspace::event(QEvent *event)
 {
-	if (!DummyQWorkspace::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QWorkspace::event(event);
 		return false;
 	}

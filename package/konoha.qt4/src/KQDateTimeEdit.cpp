@@ -57,7 +57,6 @@ KMETHOD QDateTimeEdit_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	KQDateTimeEdit *ret_v = new KQDateTimeEdit(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -71,7 +70,6 @@ KMETHOD QDateTimeEdit_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQDateTimeEdit *ret_v = new KQDateTimeEdit(datetime, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -85,7 +83,6 @@ KMETHOD QDateTimeEdit_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQDateTimeEdit *ret_v = new KQDateTimeEdit(date, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -99,7 +96,6 @@ KMETHOD QDateTimeEdit_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 	KQDateTimeEdit *ret_v = new KQDateTimeEdit(time, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -675,8 +671,14 @@ KMETHOD QDateTimeEdit_setTime(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQDateTimeEdit::DummyQDateTimeEdit()
 {
 	self = NULL;
+	date_changed_func = NULL;
+	date_time_changed_func = NULL;
+	time_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("date-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("date-time-changed", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("time-changed", NULL));
 }
 
 void DummyQDateTimeEdit::setSelf(knh_RawPtr_t *ptr)
@@ -696,11 +698,53 @@ bool DummyQDateTimeEdit::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQDateTimeEdit::dateChangedSlot(const QDate date)
+{
+	if (date_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QDate, date);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, date_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQDateTimeEdit::dateTimeChangedSlot(const QDateTime datetime)
+{
+	if (date_time_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QDateTime, datetime);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, date_time_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQDateTimeEdit::timeChangedSlot(const QTime time)
+{
+	if (time_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QTime, time);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, time_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQDateTimeEdit::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDateTimeEdit::event_map->bigin();
 	if ((itr = DummyQDateTimeEdit::event_map->find(str)) == DummyQDateTimeEdit::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractSpinBox::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -712,20 +756,33 @@ bool DummyQDateTimeEdit::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQDateTimeEdit::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQDateTimeEdit::slot_map->bigin();
-	if ((itr = DummyQDateTimeEdit::event_map->find(str)) == DummyQDateTimeEdit::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQDateTimeEdit::slot_map->find(str)) == DummyQDateTimeEdit::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractSpinBox::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		date_changed_func = (*slot_map)["date-changed"];
+		date_time_changed_func = (*slot_map)["date-time-changed"];
+		time_changed_func = (*slot_map)["time-changed"];
 		return true;
 	}
 }
 
 
+void DummyQDateTimeEdit::connection(QObject *o)
+{
+	connect(o, SIGNAL(dateChanged(const QDate)), this, SLOT(dateChangedSlot(const QDate)));
+	connect(o, SIGNAL(dateTimeChanged(const QDateTime)), this, SLOT(dateTimeChangedSlot(const QDateTime)));
+	connect(o, SIGNAL(timeChanged(const QTime)), this, SLOT(timeChangedSlot(const QTime)));
+	DummyQAbstractSpinBox::connection(o);
+}
+
 KQDateTimeEdit::KQDateTimeEdit(QWidget* parent) : QDateTimeEdit(parent)
 {
 	self = NULL;
+	dummy = new DummyQDateTimeEdit();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDateTimeEdit_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -741,14 +798,13 @@ KMETHOD QDateTimeEdit_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQDateTimeEdit::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDateTimeEdit]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QDateTimeEdit_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -762,7 +818,7 @@ KMETHOD QDateTimeEdit_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQDateTimeEdit::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QDateTimeEdit]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -781,10 +837,25 @@ static void QDateTimeEdit_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDateTimeEdit_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 3;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQDateTimeEdit *qp = (KQDateTimeEdit *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->date_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->date_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->date_time_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->date_time_changed_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->time_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->time_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -793,9 +864,15 @@ static int QDateTimeEdit_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQDateTimeEdit::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQDateTimeEdit::event(QEvent *event)
 {
-	if (!DummyQDateTimeEdit::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QDateTimeEdit::event(event);
 		return false;
 	}

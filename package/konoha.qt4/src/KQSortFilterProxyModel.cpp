@@ -440,7 +440,6 @@ KMETHOD QSortFilterProxyModel_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQSortFilterProxyModel *ret_v = new KQSortFilterProxyModel(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -750,7 +749,7 @@ bool DummyQSortFilterProxyModel::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSortFilterProxyModel::event_map->bigin();
 	if ((itr = DummyQSortFilterProxyModel::event_map->find(str)) == DummyQSortFilterProxyModel::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractProxyModel::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -762,8 +761,8 @@ bool DummyQSortFilterProxyModel::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQSortFilterProxyModel::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQSortFilterProxyModel::slot_map->bigin();
-	if ((itr = DummyQSortFilterProxyModel::event_map->find(str)) == DummyQSortFilterProxyModel::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQSortFilterProxyModel::slot_map->find(str)) == DummyQSortFilterProxyModel::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractProxyModel::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -773,9 +772,16 @@ bool DummyQSortFilterProxyModel::signalConnect(knh_Func_t *callback_func, string
 }
 
 
+void DummyQSortFilterProxyModel::connection(QObject *o)
+{
+	DummyQAbstractProxyModel::connection(o);
+}
+
 KQSortFilterProxyModel::KQSortFilterProxyModel(QObject* parent) : QSortFilterProxyModel(parent)
 {
 	self = NULL;
+	dummy = new DummyQSortFilterProxyModel();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSortFilterProxyModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -791,14 +797,13 @@ KMETHOD QSortFilterProxyModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQSortFilterProxyModel::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSortFilterProxyModel]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QSortFilterProxyModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -812,7 +817,7 @@ KMETHOD QSortFilterProxyModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQSortFilterProxyModel::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QSortFilterProxyModel]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -832,6 +837,9 @@ static void QSortFilterProxyModel_free(CTX ctx, knh_RawPtr_t *p)
 static void QSortFilterProxyModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQSortFilterProxyModel *qp = (KQSortFilterProxyModel *)p->rawptr;
 		(void)qp;
@@ -843,9 +851,15 @@ static int QSortFilterProxyModel_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQSortFilterProxyModel::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQSortFilterProxyModel::event(QEvent *event)
 {
-	if (!DummyQSortFilterProxyModel::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QSortFilterProxyModel::event(event);
 		return false;
 	}

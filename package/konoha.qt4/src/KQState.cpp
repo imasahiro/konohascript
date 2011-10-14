@@ -5,7 +5,6 @@ KMETHOD QState_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QState*  parent = RawPtr_to(QState*, sfp[1]);
 	KQState *ret_v = new KQState(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -19,7 +18,6 @@ KMETHOD QState_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QState*  parent = RawPtr_to(QState*, sfp[2]);
 	KQState *ret_v = new KQState(childMode, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -198,8 +196,12 @@ KMETHOD QState_transitions(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQState::DummyQState()
 {
 	self = NULL;
+	finished_func = NULL;
+	properties_assigned_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("finished", NULL));
+	slot_map->insert(map<string, knh_Func_t *>::value_type("properties-assigned", NULL));
 }
 
 void DummyQState::setSelf(knh_RawPtr_t *ptr)
@@ -219,11 +221,35 @@ bool DummyQState::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQState::finishedSlot()
+{
+	if (finished_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, finished_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
+bool DummyQState::propertiesAssignedSlot()
+{
+	if (properties_assigned_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_Func_invoke(lctx, properties_assigned_func, lsfp, 1);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQState::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQState::event_map->bigin();
 	if ((itr = DummyQState::event_map->find(str)) == DummyQState::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractState::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -235,20 +261,31 @@ bool DummyQState::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQState::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQState::slot_map->bigin();
-	if ((itr = DummyQState::event_map->find(str)) == DummyQState::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQState::slot_map->find(str)) == DummyQState::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractState::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		finished_func = (*slot_map)["finished"];
+		properties_assigned_func = (*slot_map)["properties-assigned"];
 		return true;
 	}
 }
 
 
+void DummyQState::connection(QObject *o)
+{
+	connect(o, SIGNAL(finished()), this, SLOT(finishedSlot()));
+	connect(o, SIGNAL(propertiesAssigned()), this, SLOT(propertiesAssignedSlot()));
+	DummyQAbstractState::connection(o);
+}
+
 KQState::KQState(QState* parent) : QState(parent)
 {
 	self = NULL;
+	dummy = new DummyQState();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QState_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -264,14 +301,13 @@ KMETHOD QState_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQState::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QState]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QState_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -285,7 +321,7 @@ KMETHOD QState_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQState::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QState]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -304,10 +340,21 @@ static void QState_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQState *qp = (KQState *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->finished_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->finished_func);
+			KNH_SIZEREF(ctx);
+		}
+		if (qp->dummy->properties_assigned_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->properties_assigned_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -316,9 +363,15 @@ static int QState_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQState::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQState::event(QEvent *event)
 {
-	if (!DummyQState::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QState::event(event);
 		return false;
 	}

@@ -4,7 +4,6 @@ KMETHOD QStyleOptionTabWidgetFrame_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	(void)ctx;
 	KQStyleOptionTabWidgetFrame *ret_v = new KQStyleOptionTabWidgetFrame();
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -17,7 +16,6 @@ KMETHOD QStyleOptionTabWidgetFrame_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QStyleOptionTabWidgetFrame  other = *RawPtr_to(const QStyleOptionTabWidgetFrame *, sfp[1]);
 	KQStyleOptionTabWidgetFrame *ret_v = new KQStyleOptionTabWidgetFrame(other);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -51,7 +49,7 @@ bool DummyQStyleOptionTabWidgetFrame::addEvent(knh_Func_t *callback_func, string
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionTabWidgetFrame::event_map->bigin();
 	if ((itr = DummyQStyleOptionTabWidgetFrame::event_map->find(str)) == DummyQStyleOptionTabWidgetFrame::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQStyleOption::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -63,8 +61,8 @@ bool DummyQStyleOptionTabWidgetFrame::addEvent(knh_Func_t *callback_func, string
 bool DummyQStyleOptionTabWidgetFrame::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStyleOptionTabWidgetFrame::slot_map->bigin();
-	if ((itr = DummyQStyleOptionTabWidgetFrame::event_map->find(str)) == DummyQStyleOptionTabWidgetFrame::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStyleOptionTabWidgetFrame::slot_map->find(str)) == DummyQStyleOptionTabWidgetFrame::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQStyleOption::signalConnect(callback_func, str);
 		return ret;
 	} else {
@@ -74,9 +72,16 @@ bool DummyQStyleOptionTabWidgetFrame::signalConnect(knh_Func_t *callback_func, s
 }
 
 
+void DummyQStyleOptionTabWidgetFrame::connection(QObject *o)
+{
+	DummyQStyleOption::connection(o);
+}
+
 KQStyleOptionTabWidgetFrame::KQStyleOptionTabWidgetFrame() : QStyleOptionTabWidgetFrame()
 {
 	self = NULL;
+	dummy = new DummyQStyleOptionTabWidgetFrame();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionTabWidgetFrame_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -92,14 +97,13 @@ KMETHOD QStyleOptionTabWidgetFrame_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStyleOptionTabWidgetFrame::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionTabWidgetFrame]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStyleOptionTabWidgetFrame_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -113,7 +117,7 @@ KMETHOD QStyleOptionTabWidgetFrame_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStyleOptionTabWidgetFrame::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStyleOptionTabWidgetFrame]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -133,6 +137,9 @@ static void QStyleOptionTabWidgetFrame_free(CTX ctx, knh_RawPtr_t *p)
 static void QStyleOptionTabWidgetFrame_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStyleOptionTabWidgetFrame *qp = (KQStyleOptionTabWidgetFrame *)p->rawptr;
 		(void)qp;
@@ -142,6 +149,12 @@ static void QStyleOptionTabWidgetFrame_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 static int QStyleOptionTabWidgetFrame_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
+}
+
+void KQStyleOptionTabWidgetFrame::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
 }
 
 DEFAPI(void) defQStyleOptionTabWidgetFrame(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)

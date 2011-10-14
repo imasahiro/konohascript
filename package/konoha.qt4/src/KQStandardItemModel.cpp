@@ -286,7 +286,6 @@ KMETHOD QStandardItemModel_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 	KQStandardItemModel *ret_v = new KQStandardItemModel(parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -301,7 +300,6 @@ KMETHOD QStandardItemModel_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QObject*  parent = RawPtr_to(QObject*, sfp[3]);
 	KQStandardItemModel *ret_v = new KQStandardItemModel(rows, columns, parent);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->self = rptr;
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -788,8 +786,10 @@ KMETHOD QStandardItemModel_getVerticalHeaderItem(CTX ctx, knh_sfp_t *sfp _RIX)
 DummyQStandardItemModel::DummyQStandardItemModel()
 {
 	self = NULL;
+	item_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	slot_map->insert(map<string, knh_Func_t *>::value_type("item-changed", NULL));
 }
 
 void DummyQStandardItemModel::setSelf(knh_RawPtr_t *ptr)
@@ -809,11 +809,25 @@ bool DummyQStandardItemModel::eventDispatcher(QEvent *event)
 	return ret;
 }
 
+bool DummyQStandardItemModel::itemChangedSlot(QStandardItem* item)
+{
+	if (item_changed_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QStandardItem, item);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_Func_invoke(lctx, item_changed_func, lsfp, 2);
+		return true;
+	}
+	return false;
+}
+
 bool DummyQStandardItemModel::addEvent(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStandardItemModel::event_map->bigin();
 	if ((itr = DummyQStandardItemModel::event_map->find(str)) == DummyQStandardItemModel::event_map->end()) {
-		bool ret;
+		bool ret = false;
 		ret = DummyQAbstractItemModel::addEvent(callback_func, str);
 		return ret;
 	} else {
@@ -825,20 +839,29 @@ bool DummyQStandardItemModel::addEvent(knh_Func_t *callback_func, string str)
 bool DummyQStandardItemModel::signalConnect(knh_Func_t *callback_func, string str)
 {
 	std::map<string, knh_Func_t*>::iterator itr;// = DummyQStandardItemModel::slot_map->bigin();
-	if ((itr = DummyQStandardItemModel::event_map->find(str)) == DummyQStandardItemModel::slot_map->end()) {
-		bool ret;
+	if ((itr = DummyQStandardItemModel::slot_map->find(str)) == DummyQStandardItemModel::slot_map->end()) {
+		bool ret = false;
 		ret = DummyQAbstractItemModel::signalConnect(callback_func, str);
 		return ret;
 	} else {
 		KNH_INITv((*slot_map)[str], callback_func);
+		item_changed_func = (*slot_map)["item-changed"];
 		return true;
 	}
 }
 
 
+void DummyQStandardItemModel::connection(QObject *o)
+{
+	connect(o, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(itemChangedSlot(QStandardItem*)));
+	DummyQAbstractItemModel::connection(o);
+}
+
 KQStandardItemModel::KQStandardItemModel(QObject* parent) : QStandardItemModel(parent)
 {
 	self = NULL;
+	dummy = new DummyQStandardItemModel();
+	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStandardItemModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -854,14 +877,13 @@ KMETHOD QStandardItemModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(event_name);
 //		KNH_INITv((*(qp->event_map))[event_name], callback_func);
-		if (!qp->DummyQStandardItemModel::addEvent(callback_func, str)) {
+		if (!qp->dummy->addEvent(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStandardItemModel]unknown event name [%s]\n", event_name);
 			return;
 		}
 	}
 	RETURNvoid_();
 }
-
 KMETHOD QStandardItemModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -875,7 +897,7 @@ KMETHOD QStandardItemModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 //		}
 		string str = string(signal_name);
 //		KNH_INITv((*(qp->slot_map))[signal_name], callback_func);
-		if (!qp->DummyQStandardItemModel::signalConnect(callback_func, str)) {
+		if (!qp->dummy->signalConnect(callback_func, str)) {
 			fprintf(stderr, "WARNING:[QStandardItemModel]unknown signal name [%s]\n", signal_name);
 			return;
 		}
@@ -894,10 +916,17 @@ static void QStandardItemModel_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStandardItemModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
 	if (p->rawptr != NULL) {
 		KQStandardItemModel *qp = (KQStandardItemModel *)p->rawptr;
-		(void)qp;
+//		(void)qp;
+		if (qp->dummy->item_changed_func != NULL) {
+			KNH_ADDREF(ctx, qp->dummy->item_changed_func);
+			KNH_SIZEREF(ctx);
+		}
 	}
 }
 
@@ -906,9 +935,15 @@ static int QStandardItemModel_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
 }
 
+void KQStandardItemModel::setSelf(knh_RawPtr_t *ptr)
+{
+	self = ptr;
+	dummy->setSelf(ptr);
+}
+
 bool KQStandardItemModel::event(QEvent *event)
 {
-	if (!DummyQStandardItemModel::eventDispatcher(event)) {
+	if (!dummy->eventDispatcher(event)) {
 		QStandardItemModel::event(event);
 		return false;
 	}
