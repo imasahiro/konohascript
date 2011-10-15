@@ -94,25 +94,25 @@ include "lib:gluelink";
 @Public @Native @Iterative Map Dir.read();
 
 //FILE Stream
-@Public @Native class DFile;
-@Public @Native @Throwable DFile System.fopen(Path path, String mode);
+@Public @Native class File;
+@Public @Native @Throwable File System.fopen(Path path, String mode);
 
-@Public @Native int DFile.getC();
-@Public @Native int DFile.read(Bytes buf, int offset, int len);
-@Public @Native boolean DFile.putC(int ch);
-@Public @Native int DFile.write(Bytes buf, int offset, int len);
-@Public @Native void DFile.close();
+@Public @Native int File.getC();
+@Public @Native int File.read(Bytes buf, int offset, int len);
+@Public @Native boolean File.putC(int ch);
+@Public @Native int File.write(Bytes buf, int offset, int len);
+@Public @Native void File.close();
 
 // FILE low-level
-@Public @Native int DFile.lseek(int offset, int whence);
-@Public @Restricted @Native boolean DFile.truncate(int length);
-@Public @Restricted @Native boolean DFile.chmod(int mode);
-@Public @Restricted @Native boolean DFile.chown(int owner, int group);
-//@Public @Native boolean DFile.dup2(DFile f, DFile f2);
-//@Public @Restricted @Native boolean DFile.fcntl
-//@Public @Restricted @Native int DFile.ioctl(int request, String arg);
-@Public @Restricted @Native boolean DFile.flock(int operation);
-@Public @Restricted @Native boolean DFile.sync();
+@Public @Native int File.lseek(int offset, int whence);
+@Public @Restricted @Native boolean File.truncate(int length);
+@Public @Restricted @Native boolean File.chmod(int mode);
+@Public @Restricted @Native boolean File.chown(int owner, int group);
+//@Public @Native boolean File.dup2(File f, File f2);
+//@Public @Restricted @Native boolean File.fcntl
+//@Public @Restricted @Native int File.ioctl(int request, String arg);
+@Public @Restricted @Native boolean File.flock(int operation);
+@Public @Restricted @Native boolean File.sync();
 
 
 

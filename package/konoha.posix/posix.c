@@ -550,12 +550,12 @@ KMETHOD Dir_readName(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ======================================================================== */
 /* FILE Stream*/
 
-static void DFile_init(CTX ctx, knh_RawPtr_t *po)
+static void File_init(CTX ctx, knh_RawPtr_t *po)
 {
 	po->rawptr = NULL;
 }
 
-static void DFile_free(CTX ctx, knh_RawPtr_t *po)
+static void File_free(CTX ctx, knh_RawPtr_t *po)
 {
 	if (po->rawptr != NULL) {
 		fclose((FILE*)po->rawptr);
@@ -563,7 +563,7 @@ static void DFile_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-static void DFile_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
+static void File_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
 {
 	if (po->rawptr != NULL) {
 		fclose((FILE*)po->rawptr);
@@ -571,12 +571,12 @@ static void DFile_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
 	}
 }
 
-DEFAPI(void) defDFile(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defFile(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
-	cdef->name = "DFile";
-	cdef->init = DFile_init;
-	cdef->free = DFile_free;
-	cdef->checkout = DFile_checkout;
+	cdef->name = "File";
+	cdef->init = File_init;
+	cdef->free = File_free;
+	cdef->checkout = File_checkout;
 }
 
 //## @Native @Throwable DFile System.fopen(Path path, String mode);
@@ -705,7 +705,7 @@ KMETHOD System_stat(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int File.getC();
-KMETHOD DFile_getC(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_getC(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	int ch = EOF;
@@ -716,7 +716,7 @@ KMETHOD DFile_getC(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int File.read(Bytes buf, int offset, int len);
-KMETHOD DFile_read(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_read(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	size_t size = 0;
@@ -735,7 +735,7 @@ KMETHOD DFile_read(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean File.putC(int ch);
-KMETHOD DFile_putC(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_putC(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	if(fp != NULL) {
@@ -746,7 +746,7 @@ KMETHOD DFile_putC(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int File.write(Bytes buf, int offset, int len);
-KMETHOD DFile_write(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_write(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	size_t size = 0;
@@ -765,7 +765,7 @@ KMETHOD DFile_write(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void File.close();
-KMETHOD DFile_close(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_close(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	if(fp != NULL) {
@@ -779,7 +779,7 @@ KMETHOD DFile_close(CTX ctx, knh_sfp_t *sfp _RIX)
 /* FILE low-level*/
 
 //## @Native int DFile.lseek(int offset, int whence)
-KMETHOD DFile_lseek(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_lseek(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	// fileno only returns EBADF
@@ -801,7 +801,7 @@ KMETHOD DFile_lseek(CTX ctx, knh_sfp_t *sfp _RIX)
 
 
 //## @Native boolean DFile.truncate(int length)
-KMETHOD DFile_truncate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_truncate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	int length = Int_to(int, sfp[1]);
@@ -819,7 +819,7 @@ KMETHOD DFile_truncate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean DFile.chmod(int length)
-KMETHOD DFile_chmod(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_chmod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	mode_t mode = Int_to(mode_t, sfp[1]);
@@ -837,7 +837,7 @@ KMETHOD DFile_chmod(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean DFile.chown(int owner, int group)
-KMETHOD DFile_chown(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_chown(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	uid_t owner = Int_to(uid_t, sfp[1]);
@@ -857,7 +857,7 @@ KMETHOD DFile_chown(CTX ctx, knh_sfp_t *sfp _RIX)
 
 // TODO: isn't ioctl difficult for script users? should we support this?
 //## @Native int File.ioctl(int request, String[] args)
-KMETHOD DFile_ioctl(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_ioctl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	int request  = Int_to(int, sfp[1]);
@@ -877,7 +877,7 @@ KMETHOD DFile_ioctl(CTX ctx, knh_sfp_t *sfp _RIX)
 
 // NOTE: sys_flock can use for a file, only for 
 //## @Native boolean File.flock(int opretaion);
-KMETHOD DFile_flock(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_flock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	int operation  = Int_to(int, sfp[1]);
@@ -896,7 +896,7 @@ KMETHOD DFile_flock(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean File.sync(void);
-KMETHOD DFile_sync(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD File_sync(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	if (fp == NULL) RETURNb_(0);
