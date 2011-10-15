@@ -35,15 +35,21 @@
 #define USE_STRUCT_Path
 #include<konoha1.h>
 
+
+
 #include <unistd.h>
 #include <signal.h>
 #include <dirent.h>
+#include <errno.h>
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <errno.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <sys/ioctl.h>
+#include <sys/file.h>
+#include <sys/utsname.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,6 +69,42 @@ KMETHOD System_getHostName(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	else {
 		s = (const char*)buf;
+	}
+	RETURN_(new_String(ctx, s));
+}
+
+//## @Native Map System.uname();
+KMETHOD System_uname(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Map_t *mdata = KNH_TNULL(Map);
+	struct utsname buf;
+	int ret = uname(&buf);
+	knh_ldata_t ldata[] = {LOG_END};
+	if (ret == -1) {
+	  KNH_NTRACE(ctx, "uname", K_PERROR, ldata);
+	} else {
+	  mdata = new_DataMap(ctx);
+	  knh_DataMap_setString(ctx, mdata, "sysname", buf.sysname);
+	  knh_DataMap_setString(ctx, mdata, "nodename", buf.nodename);
+	  knh_DataMap_setString(ctx, mdata, "release", buf.release);
+	  knh_DataMap_setString(ctx, mdata, "version", buf.version);
+	  knh_DataMap_setString(ctx, mdata, "machine", buf.machine);
+	  KNH_NTRACE(ctx, "uname", K_OK, ldata);
+	  
+	}
+	RETURN_(mdata);
+}
+
+//## @Native String System.getDomainName();
+KMETHOD System_getDomainName(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	const char *s = NULL;
+	char buf[256];
+	if (getdomainname(buf, sizeof(buf)) == -1) {
+	  knh_ldata_t ldata[] = {LOG_END};
+	  KNH_NTRACE(ctx, "getdomainname", K_PERROR, ldata);
+	} else {
+	  s = (const char *)buf;
 	}
 	RETURN_(new_String(ctx, s));
 }
@@ -384,6 +426,13 @@ KMETHOD System_setPriority(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNb_(ret == -1);
 }
 
+//## @Native int System.getPageSize()
+KMETHOD System_getPageSize(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	// there is no error in getpagesize
+	RETURNi_(getpagesize());
+}
+
 
 /* ------------------------------------------------------------------------ */
 /* [DIR] */
@@ -496,15 +545,17 @@ KMETHOD Dir_readName(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(new_String(ctx, dname));
 }
 
+
+
 /* ======================================================================== */
 /* FILE Stream*/
 
-static void File_init(CTX ctx, knh_RawPtr_t *po)
+static void DFile_init(CTX ctx, knh_RawPtr_t *po)
 {
 	po->rawptr = NULL;
 }
 
-static void File_free(CTX ctx, knh_RawPtr_t *po)
+static void DFile_free(CTX ctx, knh_RawPtr_t *po)
 {
 	if (po->rawptr != NULL) {
 		fclose((FILE*)po->rawptr);
@@ -512,7 +563,7 @@ static void File_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-static void File_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
+static void DFile_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
 {
 	if (po->rawptr != NULL) {
 		fclose((FILE*)po->rawptr);
@@ -520,15 +571,15 @@ static void File_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
 	}
 }
 
-DEFAPI(void) defFile(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defDFile(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
-	cdef->name = "File";
-	cdef->init = File_init;
-	cdef->free = File_free;
-	cdef->checkout = File_checkout;
+	cdef->name = "DFile";
+	cdef->init = DFile_init;
+	cdef->free = DFile_free;
+	cdef->checkout = DFile_checkout;
 }
 
-//## @Native @Throwable File System.fopen(Path path, String mode);
+//## @Native @Throwable DFile System.fopen(Path path, String mode);
 KMETHOD System_fopen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Path_t *pth = sfp[1].pth;
@@ -575,6 +626,14 @@ KMETHOD System_access(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_ldata_t ldata[] = {LOG_s("path", S_totext(pth->urn)), LOG_s("ospath", pth->ospath), LOG_i("mode", mode), LOG_END};
 	KNH_NTRACE(ctx, "access", ret == 0 ? K_OK : K_PERROR, ldata);
 	RETURNb_(ret == 0);
+}
+
+//## @Native void System.sync(void);
+KMETHOD System_sync(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	// there is no error in sync
+	sync();
+	RETURNvoid_();
 }
 
 //## @Native Map System.truncate(Path path, int length);
@@ -646,7 +705,7 @@ KMETHOD System_stat(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int File.getC();
-KMETHOD File_getC(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD DFile_getC(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	int ch = EOF;
@@ -657,7 +716,7 @@ KMETHOD File_getC(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int File.read(Bytes buf, int offset, int len);
-KMETHOD File_read(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD DFile_read(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	size_t size = 0;
@@ -676,7 +735,7 @@ KMETHOD File_read(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean File.putC(int ch);
-KMETHOD File_putC(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD DFile_putC(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	if(fp != NULL) {
@@ -687,7 +746,7 @@ KMETHOD File_putC(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int File.write(Bytes buf, int offset, int len);
-KMETHOD File_write(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD DFile_write(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	size_t size = 0;
@@ -706,7 +765,7 @@ KMETHOD File_write(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void File.close();
-KMETHOD File_close(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD DFile_close(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	if(fp != NULL) {
@@ -719,8 +778,8 @@ KMETHOD File_close(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ======================================================================== */
 /* FILE low-level*/
 
-//## @Native File_lseek(int offset, int whence)
-KMETHOD File_lseek(CTX ctx, knh_sfp_t *sfp _RIX)
+//## @Native int DFile.lseek(int offset, int whence)
+KMETHOD DFile_lseek(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	// fileno only returns EBADF
@@ -741,8 +800,8 @@ KMETHOD File_lseek(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 
-//## @Native File_truncate(int length)
-KMETHOD File_truncate(CTX ctx, knh_sfp_t *sfp _RIX)
+//## @Native boolean DFile.truncate(int length)
+KMETHOD DFile_truncate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	int length = Int_to(int, sfp[1]);
@@ -753,15 +812,14 @@ KMETHOD File_truncate(CTX ctx, knh_sfp_t *sfp _RIX)
 	  KNH_NTRACE(ctx, "fileno", K_PERROR, ldata);
 	  RETURNb_(0);
 	}
-	
 	int ret = ftruncate(fd, length);
 	knh_ldata_t ldata2[] = {LOG_p("fp", fp), LOG_i("length", length), LOG_END};
 	KNH_NTRACE(ctx, "ftruncate", (ret == 0) ? K_OK : K_PERROR, ldata2);
 	RETURNb_(ret == 0);
 }
 
-//## @Native File_chmod(int length)
-KMETHOD File_chmod(CTX ctx, knh_sfp_t *sfp _RIX)
+//## @Native boolean DFile.chmod(int length)
+KMETHOD DFile_chmod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	mode_t mode = Int_to(mode_t, sfp[1]);
@@ -778,8 +836,8 @@ KMETHOD File_chmod(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNb_(ret == 0);
 }
 
-//## @Native File_chown(int owner, int group)
-KMETHOD File_chown(CTX ctx, knh_sfp_t *sfp _RIX)
+//## @Native boolean DFile.chown(int owner, int group)
+KMETHOD DFile_chown(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	uid_t owner = Int_to(uid_t, sfp[1]);
@@ -794,6 +852,63 @@ KMETHOD File_chown(CTX ctx, knh_sfp_t *sfp _RIX)
 	int ret = fchown(fd, owner, group);
 	knh_ldata_t ldata2[] = {LOG_p("fp", fp), LOG_i("owner", owner), LOG_i("group", group), LOG_END};
 	KNH_NTRACE(ctx, "fchown", ret == 0 ? K_OK : K_PERROR, ldata2);
+	RETURNb_(ret == 0);
+}
+
+// TODO: isn't ioctl difficult for script users? should we support this?
+//## @Native int File.ioctl(int request, String[] args)
+KMETHOD DFile_ioctl(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	FILE *fp = (FILE*)sfp[0].p->rawptr;
+	int request  = Int_to(int, sfp[1]);
+	char *argp = String_to(char*, sfp[2]);
+	if (fp == NULL) RETURNb_(0);
+	int fd = fileno(fp);
+	knh_ldata_t ldata[] = {LOG_p("fp", fp), LOG_END};
+	if (fd == -1) {
+	  KNH_NTRACE(ctx, "fileno", K_PERROR, ldata);
+	  RETURNb_(0);
+	}
+	int ret = ioctl(fd, request, argp);
+	knh_ldata_t ldata2[] = {LOG_p("fp", fp), LOG_i("request", request), LOG_s("arg", argp), LOG_END};
+	KNH_NTRACE(ctx, "ioctl", ret != -1 ? K_OK : K_PERROR, ldata2); 
+	RETURNb_(ret != -1);
+}
+
+// NOTE: sys_flock can use for a file, only for 
+//## @Native boolean File.flock(int opretaion);
+KMETHOD DFile_flock(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	FILE *fp = (FILE*)sfp[0].p->rawptr;
+	int operation  = Int_to(int, sfp[1]);
+	if (fp == NULL) RETURNb_(0);
+	int fd = fileno(fp);
+	knh_ldata_t ldata[] = {LOG_p("fp", fp), LOG_END};
+	if (fd == -1) {
+	  KNH_NTRACE(ctx, "fileno", K_PERROR, ldata);
+	  RETURNb_(0);
+	}
+
+	int ret = flock(fd, operation);
+	knh_ldata_t ldata2[] = {LOG_p("fp", fp), LOG_i("operation", operation), LOG_END};
+	KNH_NTRACE(ctx, "flock", ret == 0 ? K_OK : K_PERROR, ldata2);
+	RETURNb_(ret == 0);
+}
+
+//## @Native boolean File.sync(void);
+KMETHOD DFile_sync(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	FILE *fp = (FILE*)sfp[0].p->rawptr;
+	if (fp == NULL) RETURNb_(0);
+	int fd = fileno(fp);
+	knh_ldata_t ldata[] = {LOG_p("fp", fp), LOG_END};
+	if (fd == -1) {
+	  KNH_NTRACE(ctx, "fileno", K_PERROR, ldata);
+	  RETURNb_(0);
+	}
+	int ret = fsync(fd);
+	knh_ldata_t ldata2[] = {LOG_p("fp", fp), LOG_END};
+	KNH_NTRACE(ctx, "fsync", ret == 0 ? K_OK : K_PERROR, ldata2);
 	RETURNb_(ret == 0);
 }
 
