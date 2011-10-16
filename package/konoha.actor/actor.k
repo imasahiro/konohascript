@@ -31,27 +31,23 @@
 //  goccy - Masaaki Goshima, Yokohama National University, Japan
 //  chen_ji - Takuma Wakamori, Yokohama National University, Japan
 // **************************************************************************
+
 using konoha.socket.*;
 using konoha.io.*;
-using konoha.proc.*;
+using konoha.memcached.*;
 
 include "lib:gluelink";
 
 @Native class Actor;
-@Native class StoreActor extends Actor;
 
 @Native @Hidden Actor Actor.opLINK(String path, NameSpace _);
-@Native boolean Actor.setStore(StoreActor store);
-//@Native boolean Actor.sendMethod(Func<dynamic=>dynamic> method);
-
 @Native String Actor.getName();
 @Native String Actor.getHost();
 @Native int Actor.getPort();
 
-boolean Actor.eval(String script) {
-	Socket s;
+@Throwable boolean Actor.eval(String script) {
 	try {
-		s = new Socket(this.host, this.port);
+		Socket s = new Socket(this.host, this.port);
 		OutputStream ous = s.getOutputStream();
 		//TODO: we need \n as a termination term
 		ous.writeMsgPack(script + "\n");
@@ -59,22 +55,42 @@ boolean Actor.eval(String script) {
 		ous.close();
 		s.close();
 	} catch (Exception!! e) {
-		print e;
+		throw new Script!!("cannot establish connection");
 	}
 	return true;
 }
 
-void Actor.startActorMyself (int port) {
-	p = new Proc(["/usr/local/bin/konoha", "mailbox.k", (String)port]);
-	print p;
-	InputStream ins = p.getInputStream();
-	while (p.isAlive()) {
-		String msg = ins.readLine();
-		System.eval(msg);
+class StoreActor {
+	Map m;
+	String name;
+
+	StoreActor(String name, String host, int port) {
+		m = Map.open("memcached:" + host + ":" + (to String)port);
+		if (m == null) throw new Script!!("cannot open memcached");
+		_name = name;
+	}
+
+	dynamic get(String key) {
+		if (m[key] == null) return null;
+		Bytes b;
+		if (m[key] <: String)
+			b = (to Bytes)(to String)m[key];
+		else
+			b = m[key];
+		return b.readMsgPack(0, |b|);
+	}
+
+	void set(String key, Object data) {
+		Bytes b = new Bytes();
+		b.writeMsgPack(data);
+		m[key] = b;
 	}
 }
 
-@Native StoreActor StoreActor.new(String name, String host, int port);
+//@Native boolean Actor.setStore(StoreActor store);
+//@Native boolean Actor.sendMethod(Func<dynamic=>dynamic> method);
+
+//@Native StoreActor StoreActor.new(String name, String host, int port);
 
 //class ConnectionObject {
 //	String mtd_name;

@@ -39,80 +39,148 @@ extern "C" {
 
 #define K_INTERNAL
 #include <konoha1.h>
+#include <konoha1/inlinelibs.h>
 
 /* ======================================================================== */
 // [private functions]
 
 /* ------------------------------------------------------------------------ */
-// [bytes]
-
-static inline knh_bytes_t new_bytes2(const char *text, size_t len)
-{
-	knh_bytes_t v;
-	v.text = text;
-	v.len = len;
-	return v;
-}
-
-static inline knh_bytes_t knh_bytes_next(knh_bytes_t v, int ch)
-{
-	size_t i;
-	for(i = 0; i < v.len; i++) {
-		if(v.utext[i] == ch) {
-			v.text = v.text + (i+1);
-			v.len = v.len - (i+1);
-			break;
-		}
-	}
-	return v;
-}
-
-static inline knh_index_t knh_bytes_index(knh_bytes_t v, int ch)
-{
-	size_t i;
-	for(i = 0; i < v.len; i++) {
-		if(v.utext[i] == ch) return (knh_index_t)i;
-	}
-	return -1;
-}
-
-/* ------------------------------------------------------------------------ */
 // [actor]
 
 typedef struct {
-	knh_hObject_t h;
-	knh_String_t *name;
-	knh_String_t *host;
+	const char *name;
+	const char *host;
 	int port;
-} knh_Actor_t;
+} knh_actor_t;
+
+static knh_actor_t *knh_actor_malloc(CTX ctx)
+{
+	return (knh_actor_t *)KNH_MALLOC(ctx, sizeof(knh_actor_t));
+}
+
+static void knh_actor_init(CTX ctx, knh_actor_t *a, const char *name, const char *host, int port)
+{
+	if (name != NULL) {
+		size_t len = knh_strlen(name);
+		a->name = (const char *)KNH_MALLOC(ctx, len);
+		strncpy((char *)a->name, name, len);
+	}
+	if (host != NULL) {
+		size_t len = knh_strlen(host);
+		a->host = (const char *)KNH_MALLOC(ctx, len);
+		strncpy((char *)a->host, host, len);
+	}
+	a->port = port;
+}
+
+static void knh_actor_free(CTX ctx, knh_actor_t *a)
+{
+	if (a->name != NULL) {
+		KNH_FREE(ctx, (char *)a->name, strlen(a->name));
+		a->name = NULL;
+	}
+	if (a->host != NULL) {
+		KNH_FREE(ctx, (char *)a->host, strlen(a->host));
+		a->host = NULL;
+	}
+	KNH_FREE(ctx, a, sizeof(knh_actor_t));
+}
 
 static void Actor_init(CTX ctx, knh_RawPtr_t *po)
 {
-	knh_Actor_t *actor = (knh_Actor_t *)po;
-	actor->name = NULL;
-	actor->host = NULL;
-	actor->port = 0;
+	knh_actor_t *a = knh_actor_malloc(ctx);
+	knh_actor_init(ctx, a, NULL, NULL, 0);
+	po->rawptr = a;
 }
 
 static void Actor_free(CTX ctx, knh_RawPtr_t *po)
 {
-	knh_Actor_t *actor = (knh_Actor_t *)po;
-	if (actor->name != NULL) {
-		KNH_FINALv(ctx, actor->name);
-	}
-	if (actor->host != NULL) {
-		KNH_FINALv(ctx, actor->host);
-	}
+	knh_actor_t *a = (knh_actor_t *)po->rawptr;
+	knh_actor_free(ctx, a);
+	po->rawptr = NULL;
 }
 
-static knh_Actor_t *knh_Actor_new(CTX ctx, knh_bytes_t name, knh_bytes_t host, int port)
+/* ======================================================================== */
+// [KMETHODS]
+
+//## @Native @Hidden Actor Actor.opLINK(String path, NameSpace _);
+KMETHOD Actor_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Actor_t *actor = (knh_Actor_t *)new_O(Actor, knh_getcid(ctx, STEXT("Actor")));
-	KNH_INITv(actor->name, new_String2(ctx, CLASS_String, name.text, name.len, 0));
-	KNH_INITv(actor->host, new_String2(ctx, CLASS_String, host.text, host.len, 0));
-	actor->port = port;
-	return actor;
+	knh_bytes_t host_port = knh_bytes_next(S_tobytes(sfp[1].s), ':');
+	knh_index_t idx = knh_bytes_index(host_port, ':');
+	if (idx == -1) {
+		knh_ldata_t ldata[] = {LOG_s("path", host_port.text), LOG_s("type", "Actor"), LOG_END};
+		KNH_NTRACE(ctx, "konoha:format", K_FAILED, ldata);
+		knh_Object_toNULL(ctx, sfp[0].o);
+		RETURN_(sfp[0].o);
+	}
+	knh_int_t port;
+	if (!knh_bytes_parseint(knh_bytes_next(host_port, ':'), &port)) {
+		knh_ldata_t ldata[] = {LOG_s("path", host_port.text), LOG_s("type", "Actor"), LOG_END};
+		KNH_NTRACE(ctx, "konoha:format", K_FAILED, ldata);
+		knh_Object_toNULL(ctx, sfp[0].o);
+		RETURN_(sfp[0].o);
+	}
+	knh_actor_t *actor = knh_actor_malloc(ctx);
+	knh_bytes_t host = knh_bytes_first(host_port, idx);
+	char tmp = host.buf[host.len];
+	host.buf[host.len] = '\0';
+	knh_actor_init(ctx, actor, NULL, host.text, port);
+	host.buf[host.len] = tmp;
+	DBG_P( "[actor] name=%s", actor->name);
+	DBG_P( "[actor] host=%s", actor->host);
+	DBG_P( "[actor] port=%d", actor->port);
+	RETURN_(new_ReturnRawPtr(ctx, sfp, actor));
 }
+
+//## @Native String Actor.getName();
+KMETHOD Actor_getName(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_actor_t *actor = RawPtr_to(knh_actor_t *, sfp[0]);
+	if (actor->name == NULL) {
+		RETURN_(KNH_TNULL(String));
+	}
+	RETURN_(new_String(ctx, actor->name));
+}
+
+//## @Native String Actor.getHost();
+KMETHOD Actor_getHost(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_actor_t *actor = RawPtr_to(knh_actor_t *, sfp[0]);
+	if (actor->host == NULL) {
+		RETURN_(KNH_TNULL(String));
+	}
+	RETURN_(new_String(ctx, actor->host));
+}
+
+//## @Native int Actor.getPort();
+KMETHOD Actor_getPort(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_actor_t *actor = RawPtr_to(knh_actor_t *, sfp[0]);
+	RETURNi_(actor->port);
+}
+
+/* ======================================================================== */
+// [DEFAPI]
+
+DEFAPI(void) defActor(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	cdef->name = "Actor";
+	cdef->init = Actor_init;
+	cdef->free = Actor_free;
+	knh_NameSpace_setLinkClass(ctx, ctx->share->rootns, STEXT("actor"), ClassTBL(knh_getcid(ctx, STEXT("Actor"))));
+}
+
+#ifdef _SETUP
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
+{
+	RETURN_PKGINFO("konoha.actor");
+}
+#endif /* _SETUP */
+
+#ifdef __cplusplus
+}
+#endif
 
 /* ------------------------------------------------------------------------ */
 // [memcached]
@@ -372,7 +440,7 @@ static knh_Actor_t *knh_Actor_new(CTX ctx, knh_bytes_t name, knh_bytes_t host, i
 //	box->end++;
 //}
 
-//static void knh_Actor_addMessageToMailBox(knh_Actor_t *a, const char *mtd_name, Object *msg)
+//static void knh_Actor_addMessageToMailBox(knh_actor_t *a, const char *mtd_name, Object *msg)
 //{
 //	knh_Message_t m;
 //	//m.actor_name = actor_name;
@@ -381,7 +449,7 @@ static knh_Actor_t *knh_Actor_new(CTX ctx, knh_bytes_t name, knh_bytes_t host, i
 //	knh_MailBox_pushMessage(a->mailbox, &m);
 //}
 
-//static void knh_Actor_invokeMethod(CTX ctx, knh_Actor_t *a, const char *mtd_name, Object *msg)
+//static void knh_Actor_invokeMethod(CTX ctx, knh_actor_t *a, const char *mtd_name, Object *msg)
 //{
 //	//knh_MailBox_t *box = a->mailbox;
 //	//knh_Message_t *msg = knh_MailBox_popMessage(box);
@@ -416,7 +484,7 @@ static knh_Actor_t *knh_Actor_new(CTX ctx, knh_bytes_t name, knh_bytes_t host, i
 //}
 
 //#define MAX_BUF_SIZE 128
-//static void knh_Actor_addMemcached(CTX ctx, knh_Actor_t *a)
+//static void knh_Actor_addMemcached(CTX ctx, knh_actor_t *a)
 //{
 //	const char *actor_name = DP(a)->actor_name;
 //	knh_String_t *p = ctx->script->ns->path->urn;
@@ -444,7 +512,7 @@ static knh_Actor_t *knh_Actor_new(CTX ctx, knh_bytes_t name, knh_bytes_t host, i
 //}
 
 
-//static void knh_Actor_setMethodInfo(CTX ctx, knh_Actor_t *actor)
+//static void knh_Actor_setMethodInfo(CTX ctx, knh_actor_t *actor)
 //{
 //	knh_MethodInfo_t **info = actor->mtd_info;
 //	knh_Array_t *mn_array = O_cTBL(ctx->script)->methods;
@@ -460,7 +528,7 @@ static knh_Actor_t *knh_Actor_new(CTX ctx, knh_bytes_t name, knh_bytes_t host, i
 //	}
 //}
 
-//static void knh_Actor_readMessage(CTX ctx, knh_Actor_t *a, knh_Object_t *o)
+//static void knh_Actor_readMessage(CTX ctx, knh_actor_t *a, knh_Object_t *o)
 //{
 //	//DBG_P( "readMessage\n");
 //	knh_Object_t **v = ((knh_ObjectField_t *)o)->fields;
@@ -473,7 +541,7 @@ static knh_Actor_t *knh_Actor_new(CTX ctx, knh_bytes_t name, knh_bytes_t host, i
 //	knh_Actor_invokeMethod(ctx, a, mtd_name, msg);
 //}
 
-//static void knh_Actor_mainLoop(CTX ctx, knh_sfp_t *sfp, knh_Actor_t *a)
+//static void knh_Actor_mainLoop(CTX ctx, knh_sfp_t *sfp, knh_actor_t *a)
 //{
 //	const char *name = DP(a)->actor_name;
 //	const char *path = DP(a)->path;
@@ -514,9 +582,9 @@ static knh_Actor_t *knh_Actor_new(CTX ctx, knh_bytes_t name, knh_bytes_t host, i
 //	}
 //}
 
-//static knh_Actor_t *knh_Actor_new(CTX ctx)
+//static knh_actor_t *knh_Actor_new(CTX ctx)
 //{
-//	knh_Actor_t *actor = (knh_Actor_t *)KNH_MALLOC(ctx, sizeof(knh_Actor_t));
+//	knh_actor_t *actor = (knh_actor_t *)KNH_MALLOC(ctx, sizeof(knh_actor_t));
 //	knh_ActorEX_t *b = (knh_ActorEX_t *)KNH_MALLOC(ctx, sizeof(knh_ActorEX_t));
 //	actor->mtd_info = (knh_MethodInfo_t **)KNH_MALLOC(ctx, sizeof(knh_MethodInfo_t *) * MAX_KMETHOD_NUM);
 //	int i = 0;
@@ -611,61 +679,11 @@ static knh_Actor_t *knh_Actor_new(CTX ctx, knh_bytes_t name, knh_bytes_t host, i
 //	}
 //}
 
-/* ======================================================================== */
-// [KMETHODS]
-
-//## @Hidden Actor Actor.opLINK(String path, NameSpace _);
-KMETHOD Actor_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_bytes_t host_port = knh_bytes_next(S_tobytes(sfp[1].s), ':');
-	knh_bytes_t host;
-	knh_index_t idx = knh_bytes_index(host_port, ':');
-	if (idx == -1) {
-		knh_ldata_t ldata[] = {LOG_s("path", host_port.text), LOG_s("type", "Actor"), LOG_END};
-		KNH_NTRACE(ctx, "konoha:format", K_FAILED, ldata);
-		knh_Object_toNULL(ctx, sfp[0].o);
-		RETURN_(sfp[0].o);
-	}
-	host = new_bytes2(host_port.text, idx);
-	knh_int_t port;
-	if (!knh_bytes_parseint(knh_bytes_next(host_port, ':'), &port)) {
-		knh_ldata_t ldata[] = {LOG_s("path", host_port.text), LOG_s("type", "Actor"), LOG_END};
-		KNH_NTRACE(ctx, "konoha:format", K_FAILED, ldata);
-		knh_Object_toNULL(ctx, sfp[0].o);
-		RETURN_(sfp[0].o);
-	}
-	knh_Actor_t *actor = knh_Actor_new(ctx, STEXT(""), host, port);
-	DBG_P( "[actor] name=%s", S_totext(actor->name));
-	DBG_P( "[actor] host=%s", S_totext(actor->host));
-	DBG_P( "[actor] port=%d", actor->port);
-	RETURN_(actor);
-}
-
-//## String Actor.getName();
-KMETHOD Actor_getName(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Actor_t *actor = (knh_Actor_t*)sfp[0].o;
-	RETURN_(actor->name);
-}
-//## String Actor.getHost();
-KMETHOD Actor_getHost(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Actor_t *actor = (knh_Actor_t*)sfp[0].o;
-	RETURN_(actor->host);
-}
-
-//## int Actor.getPort();
-KMETHOD Actor_getPort(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Actor_t *actor = (knh_Actor_t *)sfp[0].o;
-	RETURNi_(actor->port);
-}
-
 //## boolean Actor.setStore(StoreActor store);
-KMETHOD Actor_setStore(CTX ctx, knh_sfp_t *sfp _RIX)
-{
+//KMETHOD Actor_setStore(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
 //	KNH_TODO("Actor.setStore");
-}
+//}
 
 //## boolean Actor.sendMethod(Func<dynamic=>dynamic> method);
 /* KMETHOD Actor_sendMethod(CTX ctx, knh_sfp_t *sfp _RIX) */
@@ -686,30 +704,30 @@ KMETHOD Actor_setStore(CTX ctx, knh_sfp_t *sfp _RIX)
 /* } */
 
 //# StoreActor StoreActor.new(String name, String host, int port);
-KMETHOD StoreActor_new(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Actor_t *actor = (knh_Actor_t *)sfp[0].o;
-	if (actor->name == NULL) {
-		KNH_INITv(actor->name, sfp[1].s);
-	} else {
-		KNH_SETv(ctx, actor->name, sfp[1].s);
-	}
-	if (actor->host == NULL) {
-		KNH_INITv(actor->host, sfp[2].s);
-	} else {
-		KNH_SETv(ctx, actor->host, sfp[2].s);
-	}
-	actor->port = Int_to(int, sfp[3]);
-	DBG_P( "[actor] name=%s", S_totext(actor->name));
-	DBG_P( "[actor] host=%s", S_totext(actor->host));
-	DBG_P( "[actor] port=%d", actor->port);
-	RETURN_(actor);
-}
+//KMETHOD StoreActor_new(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_actor_t *actor = (knh_actor_t *)sfp[0].o;
+//	if (actor->name == NULL) {
+//		KNH_INITv(actor->name, sfp[1].s);
+//	} else {
+//		KNH_SETv(ctx, actor->name, sfp[1].s);
+//	}
+//	if (actor->host == NULL) {
+//		KNH_INITv(actor->host, sfp[2].s);
+//	} else {
+//		KNH_SETv(ctx, actor->host, sfp[2].s);
+//	}
+//	actor->port = Int_to(int, sfp[3]);
+//	DBG_P( "[actor] name=%s", S_totext(actor->name));
+//	DBG_P( "[actor] host=%s", S_totext(actor->host));
+//	DBG_P( "[actor] port=%d", actor->port);
+//	RETURN_(actor);
+//}
 
 
 //KMETHOD Actor_act(CTX ctx, knh_sfp_t *sfp _RIX)
 //{
-//	knh_Actor_t *actor = knh_Actor_new(ctx);
+//	knh_actor_t *actor = knh_Actor_new(ctx);
 //	DP(actor)->actor_name = String_to(const char *, sfp[1]);
 //	knh_Actor_addMemcached(ctx, actor);
 //	knh_Actor_setMethodInfo(ctx, actor);
@@ -841,33 +859,9 @@ KMETHOD StoreActor_new(CTX ctx, knh_sfp_t *sfp _RIX)
 //		DBG_P( "ERROR [%d] : cannot delte JavaVM\n", result);
 //	}
 //	RETURNvoid_();
+//}//DEFAPI(void) defStoreActor(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+//{
+//	cdef->name = "StoreActor";
+//	cdef->init = Actor_init;
+//	cdef->free = Actor_free;
 //}
-
-/* ======================================================================== */
-// [DEFAPI]
-
-DEFAPI(void) defActor(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	cdef->name = "Actor";
-	cdef->init = Actor_init;
-	cdef->free = Actor_free;
-	knh_NameSpace_setLinkClass(ctx, ctx->share->rootns, STEXT("actor"), ClassTBL(knh_getcid(ctx, STEXT("Actor"))));
-}
-
-DEFAPI(void) defStoreActor(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	cdef->name = "StoreActor";
-	cdef->init = Actor_init;
-	cdef->free = Actor_free;
-}
-
-#ifdef _SETUP
-DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
-{
-	RETURN_PKGINFO("konoha.actor");
-}
-#endif /* _SETUP */
-
-#ifdef __cplusplus
-}
-#endif

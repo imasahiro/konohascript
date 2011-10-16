@@ -1,11 +1,10 @@
 using konoha.io.*;
 using konoha.socket.*;
 
-
 String[] inbox;
-// we only suppose 
+// we only suppose
 // mailbox.k $(port)
-void main (String[] args)
+void main(String[] args)
 {
 	int argc = |args|;
 	int port = 2000;
@@ -21,4 +20,3 @@ void main (String[] args)
 		OUT << msg << EOL;
 	}
 }
-

@@ -1,0 +1,34 @@
+using konoha.actor.*;
+using konoha.posix.*;
+using konoha.proc.*;
+
+Proc p;
+
+@Around void System.exit(int status)
+{
+	p.terminate();
+	proceed(status);
+}
+
+void main(String[] args)
+{
+	int argc = |args|;
+	int port = 2000;
+	if (argc > 0) {
+		port = (int)args[0];
+	}
+
+	OUT << "start a konoha actor with port: " + (to String)port << EOL;
+	p = new Proc([$konoha.bin.path, $konoha.package.path + "/konoha.actor/mailbox.k", (String)port]);
+	InputStream ins = p.getInputStream();
+	String recvmsg = "";
+	while (p.isAlive()) {
+		String line = ins.readLine();
+		if (line == "" && recvmsg != "") {
+			System.eval(recvmsg);
+			recvmsg = "";
+		} else if (line != "") {
+			recvmsg += line;
+		}
+	}
+}
