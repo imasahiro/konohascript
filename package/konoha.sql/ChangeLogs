@@ -1,3 +1,23 @@
+2011-10-13 Motoki Yoan <myoan@gmail.com>
+    * mysql.c fixed for KonohaScript
+
+2010-01-11 Yutaro Hiraoka <utrhira@users.sourceforge.jp>
+    * mysql.c fixed for konoha-0.7.2
+
+2010-09-17 Utaro Hiraoka <utrhira@users.sourceforge.jp>
+    * mysql.c  changed how to parse path string
+
+2010-09-09 Utaro Hiraoka <utrhira@users.sourceforge.jp>
+    * Makefile  removed
+
+2010-06-29 Utaro Hiraoka <utrhira@users.sourceforge.jp>
+    * mysql.c  fixed for new QueryDSPI
+
+2010-06-23 Utaro Hiraoka <utrhira@users.sourceforge.jp>
+    * mysql.c  first commit
+    * mysql.k  first commit
+    * Makefile	first commit
+
 2010-01-11 Yutaro Hiraoka <utrhira@users.sourceforge.jp>
     * mysql.c fixed for konoha-0.7.2
 

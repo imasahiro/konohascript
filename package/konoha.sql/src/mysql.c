@@ -59,7 +59,8 @@ static inline knh_bytes_t knh_bytes_last(knh_bytes_t t, knh_intptr_t loc)
 /* ------------------------------------------------------------------------ */
 // url mysql://uname:passwd@host:port/dbname
 
-static knh_qconn_t *MYSQL_qopen(CTX ctx, knh_bytes_t url)
+//static knh_qconn_t *MYSQL_qopen(CTX ctx, knh_bytes_t url)
+knh_qconn_t *MYSQL_qopen(CTX ctx, knh_bytes_t url)
 {
 	char *puser, user[MYSQL_USER_MAXLEN+1] = {0};
 	char *ppass, pass[MYSQL_PASS_MAXLEN+1] = {0}; // temporary defined
@@ -96,7 +97,8 @@ static inline knh_bytes_t new_bytes(char *c_buf)
 	return t;
 }
 
-static int MYSQL_qnext(CTX ctx, knh_qcur_t *qcur, struct knh_ResultSet_t *rs)
+//static int MYSQL_qnext(CTX ctx, knh_qcur_t *qcur, struct knh_ResultSet_t *rs)
+int MYSQL_qnext(CTX ctx, knh_qcur_t *qcur, struct knh_ResultSet_t *rs)
 {
 	MYSQL_ROW row;
 	if ((row = mysql_fetch_row((MYSQL_RES*)qcur)) != NULL) {
@@ -113,7 +115,7 @@ static int MYSQL_qnext(CTX ctx, knh_qcur_t *qcur, struct knh_ResultSet_t *rs)
 			case MYSQL_TYPE_SHORT:
 			case MYSQL_TYPE_INT24:
 			case MYSQL_TYPE_LONG:
-			case MYSQL_TYPE_LONGLONG:
+			//case MYSQL_TYPE_LONGLONG:
 			case MYSQL_TYPE_YEAR:
 				knh_bytes_parseint(B(row[i]), &ival);
 				ResultSet_setInt(ctx, rs, i, ival);
@@ -150,7 +152,8 @@ static int MYSQL_qnext(CTX ctx, knh_qcur_t *qcur, struct knh_ResultSet_t *rs)
 }
 /* ------------------------------------------------------------------------ */
 
-static knh_qcur_t *MYSQL_query(CTX ctx, knh_qconn_t *hdr, knh_bytes_t sql, knh_ResultSet_t *rs)
+//static knh_qcur_t *MYSQL_query(CTX ctx, knh_qconn_t *hdr, knh_bytes_t sql, knh_ResultSet_t *rs)
+knh_qcur_t *MYSQL_query(CTX ctx, knh_qconn_t *hdr, knh_bytes_t sql, knh_ResultSet_t *rs)
 {
 	MYSQL_RES *res = NULL;
 	if (hdr == NULL) {
@@ -172,6 +175,7 @@ static knh_qcur_t *MYSQL_query(CTX ctx, knh_qconn_t *hdr, knh_bytes_t sql, knh_R
 		else {
 			res = mysql_store_result((MYSQL*)hdr);
 			if (res == NULL) { // NULL RESULT
+				mysql_free_result(res);
 				knh_mysql_perror(ctx, (MYSQL*)hdr, 0);
 			}
 			else {
@@ -191,13 +195,15 @@ static knh_qcur_t *MYSQL_query(CTX ctx, knh_qconn_t *hdr, knh_bytes_t sql, knh_R
 }
 /* ------------------------------------------------------------------------ */
 
-static void MYSQL_qclose(CTX ctx, knh_qconn_t *hdr)
+//static void MYSQL_qclose(CTX ctx, knh_qconn_t *hdr)
+void MYSQL_qclose(CTX ctx, knh_qconn_t *hdr)
 {
 	mysql_close((MYSQL*)hdr);
 }
 /* ------------------------------------------------------------------------ */
 
-static void MYSQL_qfree(knh_qcur_t *qcur)
+//static void MYSQL_qfree(knh_qcur_t *qcur)
+void MYSQL_qfree(knh_qcur_t *qcur)
 {
 	if (qcur != NULL) {
 		MYSQL_RES *res = (MYSQL_RES*)qcur;
@@ -205,14 +211,9 @@ static void MYSQL_qfree(knh_qcur_t *qcur)
 	}
 }
 
-static const knh_QueryDSPI_t DB__mysql = {
-	K_DSPI_QUERY,
-	"mysql",
-	MYSQL_qopen,
-	MYSQL_query,
-	MYSQL_qclose,
-	MYSQL_qnext,
-	MYSQL_qfree
+const knh_QueryDSPI_t DB__mysql = {
+	K_DSPI_QUERY, "mysql",
+	MYSQL_qopen, MYSQL_query, MYSQL_qclose, MYSQL_qnext, MYSQL_qfree
 };
 
 /* ------------------------------------------------------------------------ */
