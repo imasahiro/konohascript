@@ -2337,17 +2337,20 @@ void knh_NameSpace_setLinkClass(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t linkna
 
 const knh_ClassTBL_t *knh_NameSpace_getLinkClassTBLNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path, knh_class_t tcid)
 {
-	knh_bytes_t scheme = knh_bytes_head(path, ':');
 	if(path.text[0] == 't' && path.text[1] == 'o' && (path.text[2] == ':' || path.text[2] == 0)) {
 		if(CLASS_Converter <= tcid && tcid <= CLASS_StringConverter) return ClassTBL(tcid);
 		return ClassTBL(CLASS_Converter);
 	}
-	knh_class_t cid = knh_NameSpace_getcid(ctx, ns, scheme);
-	if(cid == CLASS_unknown && scheme.len < 81) {
+	knh_bytes_t scheme = knh_bytes_head(path, ':');
+	knh_class_t cid = CLASS_unknown; /* = knh_NameSpace_getcid(ctx, ns, scheme);*/
+	if(islower(scheme.buf[0]) && scheme.len < 81) {
 		char buf[128] = {0}; // zero clear
 		knh_memcpy(buf, scheme.text, scheme.len);
 		buf[scheme.len] = ':';
 		cid = knh_NameSpace_getcid(ctx, ns, B(buf));
+	}
+	if(cid == CLASS_unknown) {
+		cid = knh_NameSpace_getcid(ctx, ns, scheme);
 	}
 	if(cid != CLASS_unknown) {
 		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, ns, cid, MN_opLINK);
