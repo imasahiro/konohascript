@@ -50,6 +50,11 @@ include "lib:gluelink";
 @Public @Native int System.sleep(int sec);
 @Public @Native boolean System.usleep(int sec);
 
+@Public @Native int System.fork();
+//@Public @Native int System.execv(Path path, String[] args);
+@Public @Native int System.wait();
+@Public @Native int System.waitpid(int pid, int options);
+
 //@Public @Restricted @Native boolean System.setPgid(int pid, int pgid);
 
 // resource usage
@@ -75,7 +80,7 @@ include "lib:gluelink";
 @Public @Native String System.getCwd();
 @Public @Native boolean System.chdir(Path path);
 @Public @Restricted @Native boolean System.chroot(Path path);
-@Public @Restricted @Native boolean System.mkdir(Path path, int mode);
+@Public @Restricted @Native boolean System.mkdir(Path path, int mode=0755);
 @Public @Restricted @Native boolean System.rmdir(Path path);
 
 @Public @Native int System.getPriority(int which, int who);

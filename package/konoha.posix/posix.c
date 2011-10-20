@@ -35,8 +35,6 @@
 #define USE_STRUCT_Path
 #include<konoha1.h>
 
-
-
 #include <unistd.h>
 #include <signal.h>
 #include <dirent.h>
@@ -63,11 +61,11 @@ KMETHOD System_getHostName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	const char *s = NULL;
 	char buf[256];
+	knh_ldata_t ldata[] = {LOG_END};
 	if(gethostname(buf, sizeof(buf)) == -1) {
-		knh_ldata_t ldata[] = {LOG_END};
 		KNH_NTRACE(ctx, "gethostname", K_PERROR, ldata);
-	}
-	else {
+	} else {
+		KNH_NTRACE(ctx, "gethostname", K_OK, ldata);
 		s = (const char*)buf;
 	}
 	RETURN_(new_String(ctx, s));
@@ -100,11 +98,12 @@ KMETHOD System_getDomainName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	const char *s = NULL;
 	char buf[256];
+	knh_ldata_t ldata[] = {LOG_END};
 	if (getdomainname(buf, sizeof(buf)) == -1) {
-	  knh_ldata_t ldata[] = {LOG_END};
 	  KNH_NTRACE(ctx, "getdomainname", K_PERROR, ldata);
 	} else {
 	  s = (const char *)buf;
+	  KNH_NTRACE(ctx, "getdomainname", K_OK, ldata);
 	}
 	RETURN_(new_String(ctx, s));
 }
@@ -121,36 +120,48 @@ KMETHOD System_getLogin(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Native int System.getUid();
 KMETHOD System_getUid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
+	knh_ldata_t ldata[] = {LOG_END};
+	KNH_NTRACE(ctx, "getuid", K_OK, ldata);
 	RETURNi_(getuid());
 }
 
 //## @Native int System.getEuid();
 KMETHOD System_getEuid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
+	knh_ldata_t ldata[] = {LOG_END};
+	KNH_NTRACE(ctx, "geteuid", K_OK, ldata);
 	RETURNi_(geteuid());
 }
 
 //## @Native int System.getGid();
 KMETHOD System_getGid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
+	knh_ldata_t ldata[] = {LOG_END};
+	KNH_NTRACE(ctx, "getgid", K_OK, ldata);
 	RETURNi_(getgid());
 }
 
 //## @Native int System.getEgid();
 KMETHOD System_getEgid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
+	knh_ldata_t ldata[] = {LOG_END};
+	KNH_NTRACE(ctx, "getegid", K_OK, ldata);
 	RETURNi_(getegid());
 }
 
 //## @Native int System.getPid();
 KMETHOD System_getPid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
+	knh_ldata_t ldata[] = {LOG_END};
+	KNH_NTRACE(ctx, "getpid", K_OK, ldata);
 	RETURNi_(getpid());
 }
 
 //## @Native int System.getPPid();
 KMETHOD System_getPPid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
+	knh_ldata_t ldata[] = {LOG_END};
+	KNH_NTRACE(ctx, "getppid", K_OK, ldata);
 	RETURNi_(getppid());
 }
 
@@ -262,38 +273,82 @@ KMETHOD System_getRlimit(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	RETURN_(mdata);
 }
+
+/* ------------------------------------------------------------------------ */
+/* [process] */
+
+//## @Native int System.fork(void)
+KMETHOD System_fork(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	pid_t pid = fork();
+	knh_ldata_t ldata[] = {LOG_END};
+	KNH_NTRACE(ctx, "fork", pid == -1 ? K_PERROR : K_OK, ldata);
+	RETURNi_(pid);
+}
+
+//## @Native int System.wait(void)
+KMETHOD System_wait(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	int status = 0;
+	pid_t pid = wait(&status);
+	knh_ldata_t ldata[] = {LOG_END};
+	KNH_NTRACE(ctx, "wait", pid != -1 ? K_OK : K_PERROR, ldata);
+	RETURNi_(pid);
+}
+
+//## @Native int System.waitpid(int pid, int options)
+KMETHOD System_waitpid(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	int status = 0;
+	pid_t target_pid = Int_to(pid_t, sfp[1]);
+	int options = Int_to(int, sfp[2]);
+	pid_t pid = waitpid(target_pid, &status, options);
+	knh_ldata_t ldata[] = {LOG_i("pid", target_pid), LOG_i("options", options), LOG_END};
+	KNH_NTRACE(ctx, "waitpid", pid != -1 ? K_OK : K_PERROR, ldata);
+	RETURNi_(pid);
+}
+
+//## @Native int System_execv(Path path, String[] args)
+/*KMETHOD System_execv(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	int status = 0;
+	
+}	
+*/
 /* ------------------------------------------------------------------------ */
 /* [signal] */
 
 //## @Native int System.sleep(int sec);
 KMETHOD System_sleep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURNi_(sleep(Int_to(int, sfp[1])));
+	//TODO: sleep it only accepts unsigned
+	unsigned int sec = Int_to(unsigned int, sfp[1]);
+	unsigned int left = sleep(sec);
+	knh_ldata_t ldata[] = {LOG_i("sec", sec), LOG_s("status", "elapsed"), LOG_END};
+	KNH_NTRACE(ctx, "sleep", K_OK, ldata);
+	RETURNi_(left);
 }
 
 //## @Native boolean System.usleep(int usec);
 KMETHOD System_usleep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int tf = (usleep(Int_to(useconds_t, sfp[1])) != -1);
+	knh_ldata_t ldata[] = {LOG_i("usec", sfp[1].ivalue), LOG_END};
 	if(!tf) {
-		knh_ldata_t ldata[] = {LOG_i("usec", sfp[1].ivalue), LOG_END};
 		KNH_NTRACE(ctx, "usleep", K_PERROR, ldata);
+	} else {
+		KNH_NTRACE(ctx, "usleep", K_OK, ldata);	  
 	}
 	RETURNb_(tf);
 }
 
-/* ------------------------------------------------------------------------ */
-
 //## @Native String System.getCwd();
-
 KMETHOD System_getCwd(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	char tmpbuf[K_PATHMAX];
 	char *ret = getcwd(tmpbuf, sizeof(tmpbuf));
-	if (ret == NULL) {
-	  knh_ldata_t ldata[] = {LOG_END};
-	  KNH_NTRACE(ctx, "getcwd", K_PERROR, ldata);
-	}
+	knh_ldata_t ldata[] = {LOG_END};
+	KNH_NTRACE(ctx, "getcwd", (ret == NULL) ? K_PERROR : K_OK , ldata);
 	RETURN_(new_String(ctx, (const char*)tmpbuf));
 }
 
@@ -381,17 +436,16 @@ KMETHOD System_chroot(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNb_(fileop(ctx, sfp, "chroot", chroot, sfp[1].pth));
 }
 
-
-
 //## @Native @Restricted boolean System.mkdir(Path path, int mode);
 KMETHOD System_mkdir(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Path_t *pth = sfp[1].pth;
-	mode_t mode =  (mode_t)sfp[2].ivalue;
+	//	mode_t mode =  IS_NULL(sfp[2].o) ? 0755 : (mode_t)sfp[2].ivalue;
+	mode_t mode = sfp[2].ivalue;
 	int ret = mkdir(pth->ospath, mode);
 	knh_ldata_t ldata[] = {LOG_s("path", S_totext(pth->urn)), LOG_s("ospath", pth->ospath), LOG_i("mode", mode), LOG_END};
 	KNH_NTRACE(ctx, "mkdir", (ret == 0) ? K_OK : K_PERROR, ldata);
-	RETURNb_(ret == 0 ? 1 : 0);
+	RETURNb_(ret == 0);
 }
 
 //## @Native @Restricted boolean System.rmdir(Path path);
@@ -419,10 +473,8 @@ KMETHOD System_setPriority(CTX ctx, knh_sfp_t *sfp _RIX)
 	int who = Int_to(int, sfp[2]);
 	int pri = Int_to(int, sfp[3]);
 	int ret = setpriority(which, who, pri);
-	if (ret == -1) {
-	  knh_ldata_t ldata[] = {LOG_i("which", which), LOG_i("who", who), LOG_i("pri", pri), LOG_END};
-	  KNH_NTRACE(ctx, "setpriority", K_PERROR, ldata);
-	}
+	knh_ldata_t ldata[] = {LOG_i("which", which), LOG_i("who", who), LOG_i("pri", pri), LOG_END};
+	KNH_NTRACE(ctx, "setpriority", ret == -1 ? K_PERROR : K_OK, ldata);
 	RETURNb_(ret == -1);
 }
 
@@ -430,6 +482,8 @@ KMETHOD System_setPriority(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD System_getPageSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	// there is no error in getpagesize
+	knh_ldata_t ldata[] = {LOG_END};
+	KNH_NTRACE(ctx, "getpagesize", K_OK, ldata);
 	RETURNi_(getpagesize());
 }
 
@@ -503,7 +557,9 @@ KMETHOD Dir_close(CTX ctx, knh_sfp_t *sfp _RIX)
 	DIR *dirptr = (DIR*)sfp[0].p->rawptr;
 	if(dirptr != NULL) {
 		sfp[0].p->rawptr = NULL;
-		closedir(dirptr);
+		int ret = closedir(dirptr);
+		knh_ldata_t ldata[] = {LOG_END};
+		KNH_NTRACE(ctx, "closedir", (ret == 0) ? K_OK : K_PERROR, ldata);
 	}
 	RETURNvoid_();
 }
@@ -521,11 +577,19 @@ KMETHOD Dir_read(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Map_t *mdata = KNH_TNULL(Map);
 	DIR *dirptr = (DIR*)sfp[0].p->rawptr;
 	if(dirptr != NULL) {
+		errno = 0; 
 		struct dirent *dp = readdir(dirptr);
+		knh_ldata_t ldata[] = {LOG_END};
 		if(dp != NULL) {
 			mdata = new_DataMap(ctx);
 			knh_DataMap_setString(ctx, mdata, "d_name", dp->d_name);
 			knh_DataMap_setInt(ctx, mdata, "d_type", dp->d_type);
+			KNH_NTRACE(ctx, "readdir", K_OK, ldata);
+		} else if (errno != 0) {
+			knh_DataMap_setInt(ctx, mdata, "d_type", dp->d_type);
+			KNH_NTRACE(ctx, "readdir", K_PERROR, ldata);
+		} else {
+			KNH_NTRACE(ctx, "readdir", K_OK, ldata);
 		}
 	}
 	RETURN_(mdata);
@@ -544,8 +608,6 @@ KMETHOD Dir_readName(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	RETURN_(new_String(ctx, dname));
 }
-
-
 
 /* ======================================================================== */
 /* FILE Stream*/
@@ -567,6 +629,10 @@ static void File_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
 {
 	if (po->rawptr != NULL) {
 		fclose((FILE*)po->rawptr);
+		int ret = fclose((FILE*)po->rawptr);
+		knh_ldata_t ldata[] = {LOG_END};
+		// TODO: should raise exception
+		KNH_NTRACE(ctx, "fclose", (ret == 0) ? K_OK : K_PERROR, ldata);
 		po->rawptr = NULL;
 	}
 }
@@ -633,6 +699,8 @@ KMETHOD System_sync(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	// there is no error in sync
 	sync();
+	knh_ldata_t ldata[] = {LOG_END};
+	KNH_NTRACE(ctx, "sync", K_OK, ldata);
 	RETURNvoid_();
 }
 
@@ -777,6 +845,8 @@ KMETHOD File_close(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ======================================================================== */
 /* FILE low-level*/
+
+// TODO: functions below will return integer which indecates file descriptor
 
 //## @Native int DFile.lseek(int offset, int whence)
 KMETHOD File_lseek(CTX ctx, knh_sfp_t *sfp _RIX)
