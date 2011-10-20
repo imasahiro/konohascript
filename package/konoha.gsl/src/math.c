@@ -74,7 +74,7 @@ KMETHOD GslMath_isInf(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(gsl_isinf(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_finite(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_isFinite(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(gsl_finite(Float_to(const double, sfp[1])));
 }

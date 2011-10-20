@@ -59,7 +59,7 @@ include "lib:gluelink";
 @Singleton @Native class GslMath;
 @Native boolean GslMath.isNan(float x);
 @Native int GslMath.isInf(float x);
-@Native boolean GslMath.finite(float x);
+@Native boolean GslMath.isFinite(float x);
 @Native float GslMath.log1p(float x);
 @Native float GslMath.expm1(float x);
 @Native float GslMath.hypot(float x, float y);

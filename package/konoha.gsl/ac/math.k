@@ -1,11 +1,13 @@
 using konoha.gsl.*;
 using konoha.math.*;
 
+epsilon = 2.2204460492503131e-16;
+rough_epsilon = 2.2204460492503131e-14;
+
 boolean nearly_equal(float f1, float f2) {
 	float diff;
-	if (f1 < f2) diff = f2 - f1;
-	else diff = f1 - f2;
-	if (diff < 2.2204460492503131e-16/*epsilon*/) {
+	diff = (f1 < f2 ? f2 - f1 : f1 - f2);
+	if (diff < epsilon) {
 		return true;
 	}
 	print f1, f2;
@@ -13,9 +15,8 @@ boolean nearly_equal(float f1, float f2) {
 }
 boolean roughly_nearly_equal(float f1, float f2) { //Compare two float values more roughly.
 	float diff;
-	if (f1 < f2) diff = f2 - f1;
-	else diff = f1 - f2;
-	if (diff < 2.2204460492503131e-14/*epsilon*/) {
+	diff = (f1 < f2 ? f2 - f1 : f1 - f2);
+	if (diff < rough_epsilon) {
 		return true;
 	}
 	print f1, f2;
@@ -23,21 +24,21 @@ boolean roughly_nearly_equal(float f1, float f2) { //Compare two float values mo
 }
 
 assure "GslMath.isNan" {
-	assert GslMath.isNan(0.0/0.0);
+	assert GslMath.isNan(0.0/0.0) == true;
 	assert GslMath.isNan(1.0) == false;
 }
 
 assure "GslMath.isInf" {
-	assert GslMath.isInf(1.0/0.0) == 1;
-	assert GslMath.isInf(-1.0/0.0) == -1;
-	assert GslMath.isInf(1.0) == 0;
+	assert GslMath.isInf(1.0/0.0) == 1; //Value is positive infinity.
+	assert GslMath.isInf(-1.0/0.0) == -1; //Value is negative infinity.
+	assert GslMath.isInf(1.0) == 0; //Value is finite.
 }
 
-assure "GslMath.finite" {
-	assert GslMath.finite(1.0);
-	assert GslMath.finite(1.0/0.0) == false;
-	assert GslMath.finite(-1.0/0.0) == false;
-	assert GslMath.finite(0.0/0.0) == false;
+assure "GslMath.isFinite" {
+	assert GslMath.isFinite(1.0) == true;
+	assert GslMath.isFinite(1.0/0.0) == false;
+	assert GslMath.isFinite(-1.0/0.0) == false;
+	assert GslMath.isFinite(0.0/0.0) == false;
 }
 
 assure "GslMath.log1p" {
@@ -126,21 +127,21 @@ assure "GslMath.pow9" {
 }
 
 assure "GslMath.sign" {
-	assert GslMath.sign(1);
-	assert GslMath.sign(0);
+	assert GslMath.sign(1) == true;
+	assert GslMath.sign(0) == true;
 	assert GslMath.sign(-1) == false;
 }
 
 assure "GslMath.isOdd" {
-	assert GslMath.isOdd(1);
+	assert GslMath.isOdd(1) == true;
 	assert GslMath.isOdd(2) == false;
 	assert GslMath.isOdd(0) == false;
 }
 
 assure "GslMath.isEven" {
 	assert GslMath.isEven(1) == false;
-	assert GslMath.isEven(2);
-	assert GslMath.isEven(0);
+	assert GslMath.isEven(2) == true;
+	assert GslMath.isEven(0) == true;
 }
 
 assure "GslMath.fcmp" {
