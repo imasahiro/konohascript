@@ -27,13 +27,23 @@
 // **************************************************************************
 // LIST OF CONTRIBUTERS
 //  kimio - Kimio Kuramitsu, Yokohama National University, Japan
+//  sugy - Taihei Sugimoto, Yokohama National University, Japan
 // **************************************************************************
 
+#include <gsl/gsl_errno.h>
+#define K_INTERNAL
 #include <konoha1.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+static void knh_gsl_error_handler(const char *reason, const char *file, int line, int gsl_errno)
+{
+	knh_ldata_t ldata[] = {LOG_s("reason", reason), LOG_s("file", file), LOG_i("line", line), 
+		LOG_i("gsl_errno", gsl_errno), LOG_s("gsl_strerror", gsl_strerror(gsl_errno)), LOG_END};
+	KNH_NTRACE(knh_getCurrentContext(), "gsl_error", K_FAILED, ldata);
+}
 
 /* ------------------------------------------------------------------------ */
 
@@ -41,6 +51,7 @@ extern "C" {
 
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
+	gsl_set_error_handler(knh_gsl_error_handler);
 	RETURN_PKGINFO("konoha.gsl");
 }
 

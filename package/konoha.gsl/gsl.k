@@ -49,6 +49,22 @@ include "lib:gluelink";
 
 @Native class GslPerm;
 @Native GslPerm GslPerm.new(int n);
+@Native int GslPerm.get(int i);
+@Native int GslPerm.swap(int i, int j);
+@Native int GslPerm.size();
+@Native Array<int> GslPerm.data();
+@Native int GslPerm.valid();
+@Native void GslPerm.reverse();
+@Native GslPerm GslPerm.inverse();
+@Native int GslPerm.next();
+@Native int GslPerm.prev();
+@Native GslPerm GslPerm.mul(GslPerm pb);
+@Native void GslPerm.fprintf(OutputStream out, String formatter);
+@Native GslPerm GslPerm.linearToCanonical();
+@Native GslPerm GslPerm.canonicalToLinear();
+@Native int GslPerm.inversions();
+@Native int GslPerm.linearCycles();
+@Native int GslPerm.canonicalCycles();
 
 @Native class GslComb;
 @Native GslComb GslComb.new(int n);
