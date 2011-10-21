@@ -43,8 +43,13 @@ include "lib:gluelink";
 //}
 
 class Compiler {
-    Compiler() {}
+    Compiler() {
+        print "hello";
+    }
     void asm(Stmt stmt) {
+    }
+    void emit(Method mtd) {
+        print "emit ", mtd;
     }
     /* stmt = {...} */
     @Native void asmBLOCK(Stmt stmt) {}

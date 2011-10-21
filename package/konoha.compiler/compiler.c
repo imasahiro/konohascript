@@ -28,49 +28,89 @@
 #include <konoha1.h>
 #include <konoha1/konohalang.h>
 #include <konoha1/inlinelibs.h>
-#define CAST(T, O)    ((T) o)
+#define CAST(T, O)    ((T) O)
 #define WRAP(p) ((void*)p)
 #define tkNN(stmt, n)        (stmt)->tokens[(n)]
 #define stmtNN(stmt, n)      (stmt)->stmts[(n)]
 #define STT_(stmt)   SP(stmt)->stt
 #define TT_(tk)   SP(tk)->tt
 
+#define SET0(n, o0)                     KNH_SETv(ctx, lsfp[n].o, o0)
+#define SET1(n, o0, o1)                 SET0(n, o0);                SET0(n+1, o1)
+#define SET2(n, o0, o1, o2)             SET1(n, o0, o1);            SET0(n+2, o2)
+#define SET3(n, o0, o1, o2, o3)         SET2(n, o0, o1, o2);        SET0(n+3, o3)
+#define SET4(n, o0, o1, o2, o3, o4)     SET3(n, o0, o1, o2, o3);    SET0(n+4, o4)
+#define SET5(n, o0, o1, o2, o3, o4, o5) SET4(n, o0, o1, o2, o3, o4);SET0(n+5, o5)
+
+#define CALL_(ctx, lsfp, mtd, argc) KNH_SCALL(ctx, lsfp, 0, mtd, argc)
+#define CALL(ctx, mtd, n, ...) do {\
+    BEGIN_LOCAL(ctx, lsfp, K_CALLDELTA+n);\
+    SET##n (K_CALLDELTA, COMPILER_API.Instance, ## __VA_ARGS__);\
+    CALL_(ctx, lsfp, mtd, n);\
+    END_LOCAL(ctx, lsfp);\
+} while (0)
+
+struct knh_CompilerAPI_t {
+    knh_Object_t *Instance;
+#define DEF1(a) knh_Method_t *a
+#define DEF2(a, b)                   DEF1(a);DEF1(b)
+#define DEF4(a, b, c, d)             DEF2(a, b);DEF2(c, d)
+#define DEF8(a, b, c, d, e, f, g, h) DEF4(a, b, c, d);DEF4(e, f, g, h)
+    DEF8(ASM, BLOCK, LET, IF, SWITCH, WHILE, DO, FOR);
+    DEF8(FOREACH, BREAK, CONTINUE, TRY, THROW, RETURN, YIELD, PRINT);
+    DEF8(ASSURE, ASSERT, ERR, EXPR, LETEXPR, FUNCCALL, CALL, CALL1);
+    DEF8(BOX, OPR, NEW, TCAST, AND, OR, ALT, TRI);
+    DEF4(SEND, W1, FMTCALL, EMITCODE);
+};
+static struct knh_CompilerAPI_t COMPILER_API = {};
+
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
 	RETURN_PKGINFO("compiler-0.1");
 }
 
-#define CASE_ASM(XX, ...) case STT_##XX : do { \
-    XX##_asm(ctx, stmt, ## __VA_ARGS__); \
-    break;\
-} while(0)
-
 static void BLOCK_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    CALL(ctx, COMPILER_API.BLOCK, 1, stmt);
 }
 
 static void LET_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    knh_Token_t *tkL = tkNN(stmt, 1);
+    knh_Token_t *tkV = tkNN(stmt, 2);
+    CALL(ctx, COMPILER_API.LET, 3, stmt, tkL, tkV);
 }
 
 static void IF_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    knh_Stmt_t *stmt0 = stmtNN(stmt, 1);
+    knh_Stmt_t *stmt1 = stmtNN(stmt, 2);
+    knh_Stmt_t *stmt2 = stmtNN(stmt, 2);
+    CALL(ctx, COMPILER_API.IF, 4, stmt, stmt0, stmt1, stmt2);
 }
 
 static void SWITCH_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    KNH_TODO("");
 }
 
 static void WHILE_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    KNH_TODO("");
 }
 
 static void DO_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    KNH_TODO("");
 }
 
 static void FOR_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
+    knh_Stmt_t *stmt1 = stmtNN(stmt, 1);
+    knh_Stmt_t *stmt2 = stmtNN(stmt, 2);
+    knh_Stmt_t *stmt3 = stmtNN(stmt, 3);
+    CALL(ctx, COMPILER_API.FOR, 5, stmt, stmt0, stmt1, stmt2, stmt3);
 }
 
 static void FOREACH_asm(CTX ctx, knh_Stmt_t *stmt)
@@ -178,32 +218,37 @@ static void FMTCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 }
 
 #define STT_LETEXPR  STT_LET
+#define CASE_ASM(XX, ...) case STT_##XX : do { \
+    XX##_asm(ctx, stmt, ## __VA_ARGS__); \
+    break;\
+} while(0)
+
 static void EXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
-	switch(STT_(stmt)) {
-	CASE_ASM(LETEXPR, espidx);
-	CASE_ASM(FUNCCALL, espidx);
-	CASE_ASM(CALL, espidx);
-	CASE_ASM(CALL1, espidx);
-	CASE_ASM(BOX, espidx);
-	CASE_ASM(OPR, espidx);
-	CASE_ASM(NEW, espidx);
-	CASE_ASM(TCAST, espidx);
-	CASE_ASM(AND, espidx);
-	CASE_ASM(OR, espidx);
-	CASE_ASM(ALT, espidx);
-	CASE_ASM(TRI, espidx);
-	CASE_ASM(SEND, espidx);
-	CASE_ASM(W1, espidx);
-	CASE_ASM(FMTCALL, espidx);
-	default:
-		DBG_ABORT("unknown stt=%d", STT_(stmt));
-	}
+    switch(STT_(stmt)) {
+        CASE_ASM(LETEXPR, espidx);
+        CASE_ASM(FUNCCALL, espidx);
+        CASE_ASM(CALL, espidx);
+        CASE_ASM(CALL1, espidx);
+        CASE_ASM(BOX, espidx);
+        CASE_ASM(OPR, espidx);
+        CASE_ASM(NEW, espidx);
+        CASE_ASM(TCAST, espidx);
+        CASE_ASM(AND, espidx);
+        CASE_ASM(OR, espidx);
+        CASE_ASM(ALT, espidx);
+        CASE_ASM(TRI, espidx);
+        CASE_ASM(SEND, espidx);
+        CASE_ASM(W1, espidx);
+        CASE_ASM(FMTCALL, espidx);
+        default:
+        DBG_ABORT("unknown stt=%d", STT_(stmt));
+    }
 }
 
 KMETHOD Compiler_asmBLOCK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-    knh_Object_t *o  = sfp[0].o;
+    //knh_Object_t *o  = sfp[0].o;
     knh_Stmt_t *stmtH = CAST(knh_Stmt_t*, sfp[1].o);
     knh_Stmt_t *stmt = stmtH;
     while(stmt != NULL) {
@@ -241,49 +286,16 @@ KMETHOD Compiler_asmBLOCK(CTX ctx, knh_sfp_t *sfp _RIX)
     RETURNvoid_();
 }
 
-struct knh_CompilerAPI_t {
-    knh_Object_t *Instance;
-    knh_Method_t *ASM;
-    knh_Method_t *BLOCK;
-    knh_Method_t *LET;
-    knh_Method_t *IF;
-    knh_Method_t *SWITCH;
-    knh_Method_t *WHILE;
-    knh_Method_t *DO;
-    knh_Method_t *FOR;
-    knh_Method_t *FOREACH;
-    knh_Method_t *BREAK;
-    knh_Method_t *CONTINUE;
-    knh_Method_t *TRY;
-    knh_Method_t *THROW;
-    knh_Method_t *RETURN;
-    knh_Method_t *YIELD;
-    knh_Method_t *PRINT;
-    knh_Method_t *ASSURE;
-    knh_Method_t *ASSERT;
-    knh_Method_t *ERR;
-    knh_Method_t *EXPR;
-    knh_Method_t *LETEXPR;
-    knh_Method_t *FUNCCALL;
-    knh_Method_t *CALL;
-    knh_Method_t *CALL1;
-    knh_Method_t *BOX;
-    knh_Method_t *OPR;
-    knh_Method_t *NEW;
-    knh_Method_t *TCAST;
-    knh_Method_t *AND;
-    knh_Method_t *OR;
-    knh_Method_t *ALT;
-    knh_Method_t *TRI;
-    knh_Method_t *SEND;
-    knh_Method_t *W1;
-    knh_Method_t *FMTCALL;
-};
+static void kook_compiler_emit(CTX ctx, knh_Method_t *mtd)
+{
+    CALL(ctx, COMPILER_API.EMITCODE, 1, mtd);
+}
 
 static void kook_compiler_compiler(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB)
 {
     KNH_P("hello world");
-    knh_Method_sync(ctx, mtd, f);
+    BLOCK_asm(ctx, stmtB);
+    kook_compiler_emit(ctx, mtd);
 }
 
 static knh_Method_t *load_method(CTX ctx, knh_class_t cid, knh_bytes_t t)
@@ -295,11 +307,11 @@ static knh_Method_t *load_method(CTX ctx, knh_class_t cid, knh_bytes_t t)
 }
 #define LOADMTD(ctx, cid, name) load_method(ctx, cid, STEXT(name))
 
-static struct knh_CompilerAPI_t COMPILER_API = {};
 DEFAPI(void) complete(CTX ctx)
 {
     knh_class_t cid = knh_getcid(ctx, B("konoha.compiler.Compiler"));
     struct knh_CompilerAPI_t *api = &COMPILER_API;
+    knh_Method_t *newmtd = LOADMTD(ctx, cid, "new");
     api->Instance = new_Object_init2(ctx, ClassTBL(cid));
     api->ASM      = LOADMTD(ctx, cid, "asm");
     api->BLOCK    = LOADMTD(ctx, cid, "asmBLOCK");
@@ -336,7 +348,9 @@ DEFAPI(void) complete(CTX ctx)
     api->SEND     = LOADMTD(ctx, cid, "asmSEND");
     api->W1       = LOADMTD(ctx, cid, "asmW1");
     api->FMTCALL  = LOADMTD(ctx, cid, "asmFMTCALL");
+    api->EMITCODE = LOADMTD(ctx, cid, "emit");
     ctx->wshare->konoha_compiler = api->Instance;
     ctx->wshare->compilerAPI = (void *) kook_compiler_compiler;
+    CALL(ctx, newmtd, 0);
 }
 
