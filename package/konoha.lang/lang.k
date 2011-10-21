@@ -30,7 +30,7 @@
 //
 // **************************************************************************
 
-//include "lib:gluelink";
+include "lib:gluelink";
 
 /** 
 class Charset extends String;
@@ -62,6 +62,15 @@ class Charset extends String;
 @Public @Native @Const String[] Method.getParamNames();
 @Public @Native @Const String Method.getSourceCode();
 
+@Public @Native int TypeMap.getSource();
+@Public @Native int TypeMap.getTarget();
+@Public @Native int Stmt.getStmtSize();
+@Public @Native Stmt Stmt.next();
+@Public @Native Token Stmt.getT(int n);
+@Public @Native Token Stmt.getS(int n);
+@Public @Native int Stmt.getStmtType();
+@Public @Native int Token.getTokenType();
+@Public @Native Object Token.getD();
 
 /* *****************
 @Native class Symbol;

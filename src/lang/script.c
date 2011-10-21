@@ -347,6 +347,7 @@ void knh_Script_setNSName(CTX ctx, knh_Script_t* scr, knh_String_t *nsname)
 	KNH_SETv(ctx, ((knh_ClassTBL_t*)O_cTBL(scr))->lname, CWB_newString(ctx, cwb, K_SPOLICY_ASCII));
 }
 
+typedef void (*knh_Fpkgcomplete)(CTX);
 knh_status_t knh_loadPackage(CTX ctx, knh_bytes_t pkgname)
 {
 	knh_status_t status = K_CONTINUE;
@@ -370,6 +371,12 @@ knh_status_t knh_loadPackage(CTX ctx, knh_bytes_t pkgname)
 				scr = ctx->gma->scr;
 				KNH_SETv(ctx, ctx->gma->scr, newscr);
 				status = knh_InputStream_load(ctx, in);
+				if (newscr->ns->gluehdr) {
+					void *p = newscr->ns->gluehdr;
+					knh_Fpkgcomplete pkgcomplete = (knh_Fpkgcomplete) knh_dlsym(ctx, p, "complete", NULL, 1/*isTest*/);
+					if (pkgcomplete)
+						pkgcomplete(ctx);
+				}
 				KNH_SETv(ctx, ctx->gma->scr, scr);
 			}
 		}

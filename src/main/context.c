@@ -329,6 +329,10 @@ static knh_context_t* new_RootContext(void)
 	share->ctx0 = ctx;
 	knh_Gamma_init(ctx);  // initalize gamma->gf, reported by uh
 	knh_initBuiltInPackage(ctx, knh_getLoaderAPI());
+
+	/* CompilerAPI */
+	KNH_INITv(share->konoha_compiler, KNH_NULL);
+	share->compilerAPI = NULL;
 	return ctx;
 }
 
@@ -484,12 +488,16 @@ static knh_Object_t **share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 		}
 		KNH_ADDNNREF(ctx, ct->constPoolMapNULL);
 	}
+	/* CompilerAPI */
+	KNH_ADDREF(ctx, share->konoha_compiler);
 	return tail_;
 }
 
 static void share_free(CTX ctx, knh_share_t *share)
 {
 	size_t i;
+	/* CompilerAPI */
+	share->compilerAPI = NULL;
 	KNH_FREE(ctx, share->nameinfo, sizeof(knh_nameinfo_t)*share->namecapacity);
 	KNH_FREE(ctx, (void*)share->EventTBL, SIZEOF_TEXPT(ctx->share->capacityEventTBL));
 	share->EventTBL = NULL;

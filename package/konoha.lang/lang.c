@@ -25,15 +25,77 @@
  *
  ****************************************************************************/
 
-//#include <konoha1.h>
-//#include <konoha1/konohalang.h>
-//#include <konoha1/konoha_code_.h>
-//#include "./data_.h"
-//
-//#ifdef __cplusplus
-//extern "C" {
-//#endif
-//
+#define K_INTERNAL 1
+#include <konoha1.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#define tkNN(stmt, n)        (stmt)->tokens[(n)]
+#define stmtNN(stmt, n)      (stmt)->stmts[(n)]
+#define STT_(stmt)   SP(stmt)->stt
+#define TT_(tk)   SP(tk)->tt
+
+
+//## int TypeMap.getSource();
+KMETHOD TypeMap_getSource(CTX ctx, knh_sfp_t *sfp _RIX) {
+  knh_TypeMap_t *tmr = sfp[0].tmr;
+  RETURNi_(tmr->scid);
+}
+
+//## int TypeMap.getTarget();
+KMETHOD TypeMap_getTarget(CTX ctx, knh_sfp_t *sfp _RIX) {
+  knh_TypeMap_t *tmr = sfp[0].tmr;
+  RETURNi_(tmr->tcid);
+}
+
+//## int Stmt.getStmtSize();
+KMETHOD Stmt_getStmtSize(CTX ctx, knh_sfp_t *sfp _RIX) {
+  knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
+  RETURNi_(DP(stmt)->size);
+}
+
+//## Token Stmt.getT(int n);
+KMETHOD Stmt_getT(CTX ctx, knh_sfp_t *sfp _RIX) {
+  knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
+  knh_int_t i = Int_to(knh_int_t, sfp[1]);
+  RETURN_(tkNN(stmt, i));
+}
+
+//## Stmt Stmt.next();
+KMETHOD Stmt_next(CTX ctx, knh_sfp_t *sfp _RIX) {
+  knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
+  knh_Stmt_t *res = DP(stmt)->nextNULL;
+  if (res) {
+	RETURN_(res);
+  } else {
+	RETURN_(KNH_NULL);
+  }
+}
+
+//## Token Stmt.getS(int n);
+KMETHOD Stmt_getS(CTX ctx, knh_sfp_t *sfp _RIX) {
+  knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
+  knh_int_t i = Int_to(knh_int_t, sfp[1]);
+  RETURN_(stmtNN(stmt, i));
+}
+
+//## int Stmt.getStmtType();
+KMETHOD Stmt_getStmtType(CTX ctx, knh_sfp_t *sfp _RIX) {
+  knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
+  RETURNi_(STT_(stmt));
+}
+
+//## int Token.getTokenType();
+KMETHOD Token_getTokenType(CTX ctx, knh_sfp_t *sfp _RIX) {
+  knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
+  RETURNi_(TT_(tk));
+}
+//## Object Token.getD();
+KMETHOD Token_getD(CTX ctx, knh_sfp_t *sfp _RIX) {
+  knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
+  RETURN_(tk->data);
+}
 ///* ------------------------------------------------------------------------ */
 ///* [Macros] */
 //
@@ -863,24 +925,24 @@
 //	{NULL, K_INT0}
 //};
 //
-//DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
-//{
-//	kapi->setPackageProperty(ctx, "name", "lang");
-//	kapi->setPackageProperty(ctx, "version", "0.0");
-//	RETURN_PKGINFO("konoha.lang");
-//}
-//
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
+{
+	kapi->setPackageProperty(ctx, "name", "lang");
+	kapi->setPackageProperty(ctx, "version", "0.0");
+	RETURN_PKGINFO("konoha.lang");
+}
+
 //DEFAPI(void) constInstruction(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 //{
 //	kapi->loadClassIntConst(ctx, cid, IntConstData);
 //}
 //
 //#endif
-//
-//#ifdef __cplusplus
-//}
-//#endif
-//
+
+#ifdef __cplusplus
+}
+#endif
+
 /////* ------------------------------------------------------------------------ */
 /////* [Others] */
 ////

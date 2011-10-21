@@ -882,6 +882,8 @@ struct knh_nameinfo_t { // FIXME
 typedef struct knh_ObjectArenaTBL_t knh_ObjectArenaTBL_t;
 typedef struct knh_memslot_t knh_memslot_t;
 typedef struct knh_MemoryArenaTBL_t knh_MemoryArenaTBL_t;
+struct knh_Stmt_t;
+typedef void (*fMethod_compile)(CTX, struct knh_Method_t *, struct knh_Stmt_t *);
 
 typedef struct knh_share_t {
 	/* system table */
@@ -973,6 +975,10 @@ typedef struct knh_share_t {
 	size_t              contextCounter;
 	size_t              threadCounter;
 	struct knh_Array_t *contextListNULL;  // for matz
+
+	/* CompilerAPI */
+	struct knh_Object_t *konoha_compiler;
+	fMethod_compile compilerAPI;
 } knh_share_t ;
 
 #define KNH_ASSERT_CTX0(ctx)   KNH_ASSERT((ctx)->ctxid == 0)
@@ -1129,7 +1135,6 @@ typedef struct knh_context_t {
 #define K_SIGNAL_MAX _POSIX_SIGQUEUE_MAX
 #endif
 	struct knh_Func_t             **sighandlers; // modified by Wakamori
-
 } knh_context_t ;
 
 #define SAFEPOINT_GC                  1
