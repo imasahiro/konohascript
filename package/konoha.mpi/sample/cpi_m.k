@@ -40,7 +40,7 @@ if (myid == 0) {
     OUT.println("n="+"%d"(nd[0]));
 }
 
-world.bcast((MPIData)nd, 0, 0, 0);
+world.bcast((MPIData)nd, 0, 0);
 n = nd[0];
 
 world.barrier();
@@ -61,13 +61,13 @@ mypi = h * sum;
 
 /* collect all the partial sums */
 pi = new float[1];
-world.reduce((MPIData)[mypi], 0, (MPIData)pi, 0, 1, MPIOp.SUM, 0);
+world.reduce((MPIData)[mypi], (MPIData)pi, 1, MPIOp.SUM, 0);
 
 world.barrier();
 t2 = getMPIWtime();
 t0 =  t2 - t1;
 t_w = new float[1];
-world.reduce((MPIData)[t0], 0, (MPIData)t_w, 0, 1, MPIOp.MAX, 0);
+world.reduce((MPIData)[t0], (MPIData)t_w, 1, MPIOp.MAX, 0);
 
 /* node 0 prints the answer. */
 if (myid == 0) {

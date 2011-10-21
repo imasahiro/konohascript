@@ -17,7 +17,7 @@ for (i = myid+1; i <= N; i += numprocs) {
 mypi = h * sum;
 
 pi = new float[1];
-world.reduce((MPIData)[mypi], 0, (MPIData)pi, 0, 1, MPIOp.SUM, 0);
+world.reduce((MPIData)[mypi], (MPIData)pi, 1, MPIOp.SUM, 0);
 
 if (myid == 0) {
     OUT.println("  pi is approximately: ","%18.16f"(pi[0]),

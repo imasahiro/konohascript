@@ -62,19 +62,19 @@ idata = new int[0];
 fdata = new float[0];
 if (rank == 0) {
     assure "CollectiveReduceNativeFunction" {
-        world.reduce((MPIData)(Bytes)"123", 0, (MPIData)bdata, 0, 3, op_bsum, 0);
-        world.reduce((MPIData)[1024, 896], 0, (MPIData)idata, 0, 2, op_igcd, 0);
-        world.reduce((MPIData)[0.1, 0.01], 0, (MPIData)fdata, 0, 2, op_fdiv, 0);
+        world.reduce((MPIData)(Bytes)"123", (MPIData)bdata, 3, op_bsum, 0);
+        world.reduce((MPIData)[1024, 896], (MPIData)idata, 2, op_igcd, 0);
+        world.reduce((MPIData)[0.1, 0.01], (MPIData)fdata, 2, op_fdiv, 0);
         assert (bdata.decode() == "666");
         assert (idata == [128, 128]);
         assert (fdata == [1/(1/(0.1 + 0.01) + 0.1), 1/(1/(0.01 + 0.1) + 0.001)]);
     }
 } else if (rank == 1) {
-    world.reduce((MPIData)(Bytes)"222", 0, (MPIData)bdata, 0, 3, op_bsum, 0);
-    world.reduce((MPIData)[384, 384], 0, (MPIData)idata, 0, 2, op_igcd, 0);
-    world.reduce((MPIData)[0.01, 0.1], 0, (MPIData)fdata, 0, 2, op_fdiv, 0);
+    world.reduce((MPIData)(Bytes)"222", (MPIData)bdata, 3, op_bsum, 0);
+    world.reduce((MPIData)[384, 384], (MPIData)idata, 2, op_igcd, 0);
+    world.reduce((MPIData)[0.01, 0.1], (MPIData)fdata, 2, op_fdiv, 0);
 } else {
-    world.reduce((MPIData)(Bytes)"321", 0, (MPIData)bdata, 0, 3, op_bsum, 0);
-    world.reduce((MPIData)[896, 1024], 0, (MPIData)idata, 0, 2, op_igcd, 0);
-    world.reduce((MPIData)[0.1, 0.001], 0, (MPIData)fdata, 0, 2, op_fdiv, 0);
+    world.reduce((MPIData)(Bytes)"321", (MPIData)bdata, 3, op_bsum, 0);
+    world.reduce((MPIData)[896, 1024], (MPIData)idata, 2, op_igcd, 0);
+    world.reduce((MPIData)[0.1, 0.001], (MPIData)fdata, 2, op_fdiv, 0);
 }

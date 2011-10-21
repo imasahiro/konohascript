@@ -29,13 +29,16 @@ include "lib:gluelink";
 @Native int    MPIComm.barrier();
 
 @Native class MPIData;
+@Native MPIData : (int i);
 @Native MPIData : (int[] ia);
+@Native MPIData : (float f);
 @Native MPIData : (float[] fa);
 @Native MPIData : (byte[] ba);
 @Native int[]   : (MPIData md);
 @Native float[] : (MPIData md);
 @Native byte[]  : (MPIData md);
-@Native Class MPIData.getContentClass();
+@Native Class   MPIData.getContentClass();
+@Native MPIData MPIData.opADD(int offset);
 
 @Native class MPIRequest;
 @Native boolean MPIRequest.test();
@@ -49,22 +52,21 @@ include "lib:gluelink";
 /* ------------------------------------------------------------------------ */
 /* Point-to-Point Communication API */
 
-@Native boolean    MPIComm.send(MPIData sdata, int offset, int count, int dest_rank, int tag);
-@Native boolean    MPIComm.recv(MPIData rdata, int offset, int count, int src_rank, int tag);
-@Native boolean    MPIComm.sendrecv(MPIData sdata, int soffset, int count, int dest_rank, int stag,
-                                    MPIData rdata, int roffset, int count, int src_rank, int rtag);
-@Native MPIRequest MPIComm.iSend(MPIData sdata, int offset, int count, int dest_rank, int tag, MPIRequest _);
-@Native MPIRequest MPIComm.iRecv(MPIData rdata, int offset, int count, int src_rank, int tag, MPIRequest _);
+@Native boolean    MPIComm.send(MPIData sdata, int count, int dest_rank, int tag);
+@Native boolean    MPIComm.recv(MPIData rdata, int count, int src_rank, int tag);
+@Native boolean    MPIComm.sendrecv(MPIData sdata, int count, int dest_rank, int stag,
+                                    MPIData rdata, int count, int src_rank, int rtag);
+@Native MPIRequest MPIComm.iSend(MPIData sdata, int count, int dest_rank, int tag, MPIRequest _);
+@Native MPIRequest MPIComm.iRecv(MPIData rdata, int count, int src_rank, int tag, MPIRequest _);
 
 
 /* ------------------------------------------------------------------------ */
 /* Collective Communication API */
 
-@Native boolean MPIComm.bcast(MPIData sdata, int offset, int count, int root_rank);
-@Native boolean MPIComm.scatter(MPIData sdata, int soffset, int scount, MPIData rdata, int roffset, int rcount, int root_rank);
-@Native boolean MPIComm.gather(MPIData sdata, int soffset, int scount, MPIData rdata, int roffset, int rcount, int root_rank);
-@Native boolean MPIComm.allGather(MPIData sdata, int soffset, int scount, MPIData rdata, int roffset, int rcount);
-@Native boolean MPIComm.allToAll(MPIData sdata, int soffset, int scount, MPIData rdata, int roffset, int rcount);
-@Native boolean MPIComm.reduce(MPIData sdata, int soffset, MPIData rdata, int roffset, int rcount, MPIOp op, int root_rank);
-@Native boolean MPIComm.allReduce(MPIData sdata, int soffset, MPIData rdata, int roffset, int rcount, MPIOp op);
-
+@Native boolean MPIComm.bcast(MPIData sdata, int count, int root_rank);
+@Native boolean MPIComm.scatter(MPIData sdata, int scount, MPIData rdata, int rcount, int root_rank);
+@Native boolean MPIComm.gather(MPIData sdata, int scount, MPIData rdata, int rcount, int root_rank);
+@Native boolean MPIComm.allGather(MPIData sdata, int scount, MPIData rdata, int rcount);
+@Native boolean MPIComm.allToAll(MPIData sdata, int scount, MPIData rdata, int rcount);
+@Native boolean MPIComm.reduce(MPIData sdata, MPIData rdata, int rcount, MPIOp op, int root_rank);
+@Native boolean MPIComm.allReduce(MPIData sdata, MPIData rdata, int rcount, MPIOp op);

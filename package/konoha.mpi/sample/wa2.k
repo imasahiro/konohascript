@@ -18,11 +18,11 @@ t0 = getMPIWtime();
     k = 1;
     for(i=0; i<=inlogp-1; i++) {
         if ((myid & k) == k) {
-            world.recv((MPIData)drecvbuf, 0, 1, myid-k, i);
+            world.recv((MPIData)drecvbuf, 1, myid-k, i);
             dsendbuf[0] = dsendbuf[0] + drecvbuf[0];
             k *= 2;
         } else {
-            world.send((MPIData)dsendbuf, 0, 1, myid+k, i);
+            world.send((MPIData)dsendbuf, 1, myid+k, i);
             break;
         }
     }
@@ -36,7 +36,7 @@ t1 = getMPIWtime();
 t2 = t1 - t0;
 t_w = new float[1];
 
-world.reduce((MPIData)[t2], 0, (MPIData)t_w, 0, 1, MPIOp.MAX, 0);
+world.reduce((MPIData)[t2], (MPIData)t_w, 1, MPIOp.MAX, 0);
 if (myid == 0) {
     OUT.println("Max Time = "+"%f"(t_w[0]));
 }

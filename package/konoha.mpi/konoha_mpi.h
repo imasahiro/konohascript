@@ -10,15 +10,10 @@
 /* ------------------------------------------------------------------------ */
 /* Konoha Type */
 
-//## type IArray Array 0 Int;
+//## type ArrayFloat Array 0 Float;
 
-//## type FArray Array 0 Float;
-
-#ifndef IS_IArray
-#define IS_IArray(o) (IS_bArray(o) && O_p1(o) == CLASS_Int)
-#endif
-#ifndef IS_FArray
-#define IS_FArray(o) (IS_bArray(o) && O_p1(o) == CLASS_Float)
+#ifndef IS_ArrayFloat
+#define IS_ArrayFloat(o) (IS_bArray(o) && O_p1(o) == CLASS_Float)
 #endif
 
 /* ------------------------------------------------------------------------ */
@@ -34,11 +29,10 @@ typedef struct {
 	char *proc_name;
 } knh_MPIComm_t;
 
-#define MPIC_SIZE(c) ((c)->numprocs)
-#define MPIC_RANK(c) ((c)->myrank)
 #define MPIC_COMM(c) ((c)->comm)
-
-#define KNH_MPI_SUCCESS(res) ((res) == MPI_SUCCESS) /* defined in mpi.h */
+#define MPIC_RANK(c) ((c)->myrank)
+#define MPIC_SIZE(c) ((c)->numprocs)
+#define MPIC_PROC(d) ((d)->proc_name)
 #define MPIC(v, o) knh_MPIComm_t *v = ((knh_MPIComm_t*)o)
 
 /* ------------------------------------------------------------------------ */
@@ -50,31 +44,32 @@ typedef struct {
 	knh_hObject_t h;
 	union {
 		knh_Object_t *o;
+		knh_RawPtr_t *r;
 		knh_Int_t    *i;
 		knh_Float_t  *f;
 		knh_Array_t  *a;
-		knh_Bytes_t  *b;
+		knh_Bytes_t  *ba;
 		knh_String_t *s;
-		void *v;
 	};
 	MPI_Datatype type;
 	knh_class_t cid;
+	size_t offset;
 } knh_MPIData_t;
 
-#define MPID_TYPE(data) (data->type)
-#define MPID_CID(data) (data->cid)
-#define MPID_ADDR(data, offset) knh_MPIData_getAddr(data, offset)
-#define MPID_SIZE(data) knh_MPIData_getSize(data)
-#define MPID_INITCID(data) (MPID_CID(data) = O_cid(data->o))
+#define MPID_ADDR(d) knh_MPIData_getAddr(d)
+#define MPID_TYPE(d) ((d)->type)
+#define MPID_DCID(d) ((d)->cid)
+#define MPID_POFS(d) ((d)->offset)
+#define MPID_SIZE(d) knh_MPIData_getSize(d)
+#define MPID_CCHK(d, c) knh_MPIData_checkCount(d, &(c));
 #define MPID(v, o) knh_MPIData_t *v = ((knh_MPIData_t*)o)
 
-void* knh_MPIData_getAddr(knh_MPIData_t *data, int offset);
-void  knh_MPIData_expand(CTX ctx, knh_MPIData_t *data, int offset, int *count, int *inc);
+void* knh_MPIData_getAddr(knh_MPIData_t *data);
+void  knh_MPIData_expand(CTX ctx, knh_MPIData_t *data, int *count, int *inc);
 int   knh_MPIData_getSize(knh_MPIData_t *data);
 int   knh_MPIData_incSize(knh_MPIData_t *data, int count);
 int   knh_MPIData_getCapacity(knh_MPIData_t *data);
-void  knh_MPIData_checkCount(knh_MPIData_t *data, int offset, int *count);
-
+void  knh_MPIData_checkCount(knh_MPIData_t *data, int *count);
 
 /* ------------------------------------------------------------------------ */
 /* MPI Request */
@@ -92,7 +87,7 @@ typedef struct {
 #define MPIR_DATA(req) ((req)->data)
 #define MPIR_TYPE(req) (MPID_TYPE(MPIR_DATA(req)))
 #define MPIR_INC(req) ((req)->incflag)
-#define Request_new(ctx, req) (req) = new_O(MPIRequest, O_cid(req))
+#define MPIR(v, o) knh_MPIRequest_t *v = ((knh_MPIRequest_t*)o)
 
 /* ------------------------------------------------------------------------ */
 /* MPI Operator */

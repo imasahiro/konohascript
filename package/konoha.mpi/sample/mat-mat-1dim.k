@@ -57,7 +57,7 @@ void main(String[] args) {
     t2 = getMPIWtime();
     t0 =  t2 - t1;
     t_w = new float[1];
-    world.reduce((MPIData)[t0], 0, (MPIData)t_w, 0, 1, MPIOp.MAX, 0);
+    world.reduce((MPIData)[t0], (MPIData)t_w, 1, MPIOp.MAX, 0);
     /* End of mat-vec routine --------------------------- */
 
     if (myid == 0) {
@@ -87,7 +87,7 @@ void main(String[] args) {
         /* ------------------------------------- */
 
         iflag_t = new int[1];
-        world.reduce((MPIData)[iflag], 0, (MPIData)iflag_t, 0, 1, MPIOp.SUM, 0);
+        world.reduce((MPIData)[iflag], (MPIData)iflag_t, 1, MPIOp.SUM, 0);
         if (myid == 0) {
             if (iflag_t[0] == 0) OUT.println(" OK! ");
         }

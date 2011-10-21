@@ -191,9 +191,9 @@ typedef void (*print_func)(CTX ctx, knh_OutputStream_t *out, knh_Array_t *base, 
 
 static print_func getPrintFunc(knh_Array_t *base)
 {
-	if (IS_IArray(base))
+	if (IS_ArrayInt(base))
 		return printIA;
-	else if (IS_FArray(base))
+	else if (IS_ArrayFloat(base))
 		return printFA;
 	else
 		return printOA;

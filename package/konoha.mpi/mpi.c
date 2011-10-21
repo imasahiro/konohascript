@@ -9,53 +9,49 @@ extern "C" {
 
 static void knh_MPIComm_init(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_MPIComm_t *comm = (knh_MPIComm_t*)o;
+	MPIC(comm, o);
 	MPIC_COMM(comm) = 0;
 	MPIC_RANK(comm) = -1;
 	MPIC_SIZE(comm) = -1;
-	comm->proc_name = NULL;
+	MPIC_PROC(comm) = NULL;
 	int init = 0;
 	MPI_Initialized(&init);
 	if (init) {
 		char pname[MPI_MAX_PROCESSOR_NAME] = {0};
 		int len = 0;
 		MPI_Get_processor_name(pname, &len);
-		if (len > 0)
-			comm->proc_name = strdup(pname); // to be free
+		if (len) MPIC_PROC(comm) = strdup(pname); // to be free
 	}
 }
 
 static void knh_MPIComm_free(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_MPIComm_t *comm = (knh_MPIComm_t*)o;
-	if (comm->proc_name != NULL) {
-		free(comm->proc_name); // allocated by strdup
-	}
+	MPIC(comm, o);
+	if (MPIC_PROC(comm)) free(comm->proc_name); // allocated by strdup
 }
 
 static void knh_MPIData_init(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_MPIData_t *data = (knh_MPIData_t*)o;
-	data->v = NULL;
-	data->type = MPI_BYTE;
+	MPID(data, o);
+	data->o = NULL;
+	MPID_TYPE(data) = MPI_BYTE;
 }
 
 static void knh_MPIData_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	MPID(data, p);
-	if (data->v != NULL) {
+	if (data->o != NULL) {
 		KNH_ENSUREREF(ctx, 1);
-		KNH_ADDREF(ctx, data->v);
+		KNH_ADDREF(ctx, data->o);
 		KNH_SIZEREF(ctx);
 	}
 }
 
 static void knh_MPIData_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
-	knh_MPIData_t *data = (knh_MPIData_t*)o;
-	const knh_ClassTBL_t* tbl = ClassTBL(MPID_CID(data));
-	knh_ClassDef_t *cdefbuf = (knh_ClassDef_t*)tbl->cdef;
-	cdefbuf->p(ctx, w, (knh_RawPtr_t*)data->o, level);
+	MPID(data, o);
+	ClassTBL(MPID_DCID(data))->cdef->p(ctx, w, data->r, level);
+	if (MPID_POFS(data) > 0) knh_printf(ctx, w, "(+%d)offset", MPID_POFS(data));
 }
 
 static void knh_MPIOp_init(CTX ctx, knh_RawPtr_t *o)
@@ -77,7 +73,7 @@ static void knh_MPIOp_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 static void knh_MPIRequest_init(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_MPIRequest_t *req = (knh_MPIRequest_t*)o;
+	MPIR(req, o);
 	MPIR_INC(req) = 0;
 }
 
@@ -114,29 +110,29 @@ DEFAPI(void) defMPIOp(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 
 static void knh_MPI_initWorld(CTX ctx, knh_class_t cid)
 {
-	knh_MPIComm_t *world = new_O(MPIComm, cid);
-	world->comm = MPI_COMM_WORLD;
-	MPI_Comm_rank(world->comm, &MPIC_RANK(world));
-	MPI_Comm_size(world->comm, &MPIC_SIZE(world));
-	knh_addClassConst(ctx, cid, new_String(ctx, "WORLD"), (Object*)world);
+	MPIC(world, new_O(MPIComm, cid));
+	MPIC_COMM(world) = MPI_COMM_WORLD;
+	MPI_Comm_rank(MPIC_COMM(world), &MPIC_RANK(world));
+	MPI_Comm_size(MPIC_COMM(world), &MPIC_SIZE(world));
+	knh_addClassConst(ctx, cid, new_String(ctx, "WORLD"), (knh_Object_t*)world);
 }
 
 static void knh_MPI_initSelf(CTX ctx, knh_class_t cid)
 {
-	knh_MPIComm_t *self = new_O(MPIComm, cid);
-	self->comm = MPI_COMM_SELF;
-	MPI_Comm_rank(self->comm, &MPIC_RANK(self));
-	MPI_Comm_size(self->comm, &MPIC_SIZE(self));
-	knh_addClassConst(ctx, cid, new_String(ctx, "SELF"), (Object*)self);
+	MPIC(self, new_O(MPIComm, cid));
+	MPIC_COMM(self) = MPI_COMM_SELF;
+	MPI_Comm_rank(MPIC_COMM(self), &MPIC_RANK(self));
+	MPI_Comm_size(MPIC_COMM(self), &MPIC_SIZE(self));
+	knh_addClassConst(ctx, cid, new_String(ctx, "SELF"), (knh_Object_t*)self);
 }
 
 static void knh_MPI_initParent(CTX ctx, knh_class_t cid)
 {
-	knh_MPIComm_t *parent = new_O(MPIComm, cid);
-	if (MPI_Comm_get_parent(&(parent->comm)) == MPI_SUCCESS) {
-		MPI_Comm_rank(parent->comm, &MPIC_RANK(parent));
-		MPI_Comm_size(parent->comm, &MPIC_SIZE(parent));
-		knh_addClassConst(ctx, cid, new_String(ctx, "PARENT"), (Object*)parent);
+	MPIC(parent, new_O(MPIComm, cid));
+	if (MPI_Comm_get_parent(&MPIC_COMM(parent)) == MPI_SUCCESS) {
+		MPI_Comm_rank(MPIC_COMM(parent), &MPIC_RANK(parent));
+		MPI_Comm_size(MPIC_COMM(parent), &MPIC_SIZE(parent));
+		knh_addClassConst(ctx, cid, new_String(ctx, "PARENT"), (knh_Object_t*)parent);
 	}
 }
 
@@ -158,9 +154,9 @@ static void knh_MPI_initOp(CTX ctx, knh_class_t cid)
 {
 	knh_IntData_t *d;
 	for (d = &MPIConstOp[0]; d->ivalue > 0; d++) {
-		knh_MPIOp_t *op = new_O(MPIOp, cid);
-		op->op = (MPI_Op)d->ivalue;
-		op->func = NULL;
+		MPIO(op, new_O(MPIOp, cid));
+		MPIO_OP(op) = (MPI_Op)d->ivalue;
+		MPIO_OPFUNC(op) = NULL;
 		knh_addClassConst(ctx, cid, new_String(ctx, d->name), (Object*)op);
 	}
 }
@@ -203,7 +199,7 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 	if (init) {
 		MPI_Errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
 	} else {
-		KNH_NOTE("Process is not initialized as MPI Proc. MPI functions are disable");
+		KNH_NOTE("Process is not initialized as MPI Proc.: MPI functions are NOT available");
 	}
 	knh_MPI_initArrayFuncData(ctx);
 	knh_MPI_initArrayPrintFunc(ctx);
