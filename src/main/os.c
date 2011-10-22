@@ -468,7 +468,8 @@ void knh_System_initPath(CTX ctx)
 			CWB_clear(cwb, 0);
 			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, new_bytes2(buf, bufsiz));
 			knh_buff_trim(ctx, cwb->ba, cwb->pos, '\\');
-			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 1/*isSep*/, STEXT("konoha"));
+			knh_buff_trim(ctx, cwb->ba, cwb->pos, '\\');
+			knh_buff_addospath(ctx, cwb->ba, cwb->pos, 1/*isSep*/, STEXT("konoha"));
 			s = CWB_newString(ctx, cwb, 0);
 			SETPROP("konoha.home.path", s);
 			home = S_tobytes(s);

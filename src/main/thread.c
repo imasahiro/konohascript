@@ -372,7 +372,6 @@ int knh_thread_cond_broadcast(knh_cond_t *cond)
 }
 
 #elif defined(K_USING_WINTHREAD_)
-#warning "DEFINED K_USING_WINTHREAD_"
 
 // reference URL: http://www.cs.wustl.edu/~schmidt/win32-cv-1.html
 
