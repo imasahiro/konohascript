@@ -72,6 +72,7 @@ class Charset extends String;
 @Public @Native int Stmt.getStmtType();
 @Public @Native int Token.getTokenType();
 @Public @Native Object Token.getD();
+@Public @Native Token Stmt.toToken();
 
 /* *****************
 @Native class Symbol;

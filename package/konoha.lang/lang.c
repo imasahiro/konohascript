@@ -103,6 +103,18 @@ KMETHOD Token_getD(CTX ctx, knh_sfp_t *sfp _RIX) {
     RETURN_(tk->data);
 }
 
+//## Token Stmt.toToken();
+KMETHOD Stmt_toToken(CTX ctx, knh_sfp_t *sfp _RIX) {
+    knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
+    knh_Token_t *ret;
+    if (IS_Token(tk))
+        ret = tk;
+    else 
+        ret = KNH_TNULL(Token);
+    RETURN_(tk);
+}
+
+
 ///* ------------------------------------------------------------------------ */
 ///* [Macros] */
 //

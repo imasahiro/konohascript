@@ -59,26 +59,38 @@ class Compiler {
     }
     /* stmt = if stmt[0] then stmt[1]:BLOCK else stmt[2] endif */
     void asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
+        print "IF";
         //int index = stmt.getIndex();
-        //asm(stmtCond);
-        //asmBlock(stmtThen);
-        //asmBlock(stmtElse);
+        print stmtThen;
+        print stmtElse;
+        print "", stmtCond.toToken();
+        asm(stmtCond, stmtCond.toToken());
+        asmBlock(stmtThen);
+        asmBlock(stmtElse);
     }
     void asmSWITCH(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
+        print "switch";
     }
     void asmWHILE(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
+        print "while";
     }
     void asmDO(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
+        print "do-while";
     }
     void asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBody) {
+        print "for";
     }
     void asmFOREACH(Stmt stmt, Token tkVar, Stmt stmtItr, Stmt stmtBody, Stmt stmtVar) {
+        print "foreach";
     }
     void asmBREAK(Stmt stmt, Stmt stmtLabel) {
+        print "break";
     }
     void asmCONTINUE(Stmt stmt, Stmt stmtLabel) {
+        print "continue";
     }
     void asmTRY(Stmt stmt, Stmt stmtTry, Stmt stmtCATCH, Stmt stmtFINAL) {
+        print "try";
     }
     void asmTHROW(Stmt stmt) {
         //int espidx = stmt.getESPIDX;
@@ -86,7 +98,9 @@ class Compiler {
     }
     void asmRETURN(Stmt stmt, Stmt stmtRetExpr) {
         if (stmtRetExpr == null) {
+            print "return;";
         } else {
+            print "return expr;";
         }
     }
     void asmYIELD(Stmt stmt) {

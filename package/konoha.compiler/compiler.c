@@ -88,8 +88,8 @@ static void kook_LET_asm(CTX ctx, knh_Stmt_t *stmt)
 
 static void kook_IF_asm(CTX ctx, knh_Stmt_t *stmt)
 {
-    knh_Stmt_t *stmt0 = stmtNN(stmt, 1);
-    knh_Stmt_t *stmt1 = stmtNN(stmt, 2);
+    knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
+    knh_Stmt_t *stmt1 = stmtNN(stmt, 1);
     knh_Stmt_t *stmt2 = stmtNN(stmt, 2);
     CALL(ctx, COMPILER_API.IF, 4, stmt, stmt0, stmt1, stmt2);
 }
