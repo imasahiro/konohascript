@@ -139,6 +139,17 @@ KMETHOD Token_getTokenIndex(CTX ctx, knh_sfp_t *sfp _RIX) {
     RETURNi_(Token_index_(ctx, tk));
 }
 
+// String Method.toString()
+KMETHOD Method_toString(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+    CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+    knh_write_cid(ctx, cwb->w, (sfp[0].mtd)->cid);
+    knh_putc(ctx, cwb->w, '.');
+    knh_write_mn(ctx, cwb->w, (sfp[0].mtd)->mn);
+    RETURN_(CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII));
+}
+
+
 ///* ------------------------------------------------------------------------ */
 ///* [Macros] */
 //
