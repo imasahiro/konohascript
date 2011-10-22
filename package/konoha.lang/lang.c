@@ -114,6 +114,11 @@ KMETHOD Stmt_toToken(CTX ctx, knh_sfp_t *sfp _RIX) {
     RETURN_(tk);
 }
 
+//## int Token.getIndex();
+KMETHOD TOken_getIndex(CTX ctx, knh_sfp_t *sfp _RIX) {
+    knh_Token_t *tk = (knh_Token_t *) sfp[0].o;
+    RETURNi_(tk->index);
+}
 
 ///* ------------------------------------------------------------------------ */
 ///* [Macros] */

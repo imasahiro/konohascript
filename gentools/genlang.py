@@ -593,6 +593,25 @@ const char* knh_getopMethodName(knh_methodn_t mn)
 
 ''')
 
+def write_lang_pkgfile(f):
+	write_line(f)
+	f.write('''
+static knh_IntData_t StmtInt[] = {
+''')
+	for stmt in STMT_LIST:
+		f.write('''
+    {"%s", %s},''' % (stmt.TT, stmt.TT))
+	f.write('''
+};
+static knh_IntData_t TokenInt[] = {
+''')
+	for tk in TOKEN_LIST:
+		f.write('''
+    {"%s", %s},''' % (tk.TT, tk.TT))
+	f.write('''
+};
+''')
+
 def gen_stmt(bdir):
     f = open('include/konoha1/konohalang.h', 'w')
     f.write('''// THIS FILE WAS AUTOMATICALLY GENERATED
@@ -612,11 +631,11 @@ extern "C" {
 // THIS FILE WAS AUTOMATICALLY GENERATED. DON'T EDIT.
 
 ''')
-
     f.close()
 
 if __name__ == '__main__':
     bdir = '..'
     readData()
-    write_hfile(sys.stdout)
+    #write_hfile(sys.stdout)
     #gen_stmt(bdir)
+    write_lang_pkgfile(open('./package/konoha.lang/data_.h', 'w'))
