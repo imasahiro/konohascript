@@ -28,19 +28,97 @@ using konoha.lang.*;
 using konoha.llvm.*;
 include "lib:gluelink";
 
+//DEBUG = false;
+DEBUG = true;
+TYPE_Int = 5;
+TYPE_Float = 6;
+TYPE_Boolean = 3;
+TYPE_Array = 13;
+TYPE_Object = 55;
+FUNC_STATIC = 0;
+FUNC_VIRTUAL = 1;
+FUNC_VIRTUAL2 = 1;
+FUNC_FASTCALL = 2;
+K_MTDIDX2 = -1;
+K_RTNIDX = -4;
+PHI_DEFIDX = -100;
+FLAG_OBJECT_NULLOBJECT = 1 << 1;
+NOT_SCAST = -1;
+
 class Compiler {
+    Module m;
+    IRBuilder builder;
+    Function  func;
+    Value     ctx;
+    Value     sfp;
+    Value     rix;
+    Method    mtd;
+    BasicBlock entryBB;
+    BasicBlock[] bblist;
+    Type intTy, floatTy, boolTy, objectTy;
+    Class[] paramsclass;
+    Class   retclass;
+    Map<String, Type> ktype;
+    Array<dynamic> const_table;
+
+    void constructKonohaTypes();
     Compiler() {
-        print "hello";
+        this.m = new Module("konoha");
+        ktype = {};
+        constructKonohaTypes();
+        const_table = [];
+        this.intTy = Type.getInt64Ty();
+        this.boolTy = Type.getInt1Ty();
+        this.floatTy = Type.getDoubleTy();
+        this.objectTy = ktype["objectPtrTy"];
     }
+    void init(Method mtd) {
+        print "init ", mtd;
+        this.mtd = mtd;
+        func = Function.create("_", (FunctionType)ktype["fmethodTy"], m);
+        bblist = [];
+        Array<Value> vargs = func.getArguments();
+        if (DEBUG) {
+            vargs[0].setName("ctx");
+            vargs[1].setName("sfp");
+            vargs[2].setName("rix");
+        }
+        ctx = vargs[0];
+        sfp = vargs[1];
+        rix = vargs[2];
+        register_table = [];
+        value_table = {};
+        //register_types = [];
+        paramsclass = mtd.getParamTypes();
+        retclass    = mtd.getReturnType();
+    }
+
+    Type convertType(int type) {
+        switch (type) {
+            case TYPE_Int:
+                return intTy;
+            case TYPE_Float:
+                return floatTy;
+            case TYPE_Boolean:
+                return boolTy;
+            default:
+                return objectTy;
+        }
+    }
+    void shiftesp(int shift) {
+        if (shift > 0) {
+            vesp = builder.createStructGEP(ctx, 7);
+            vsfp = builder.createConstGEP1_32(sfp, shift);
+            builder.createStore(vsfp, vesp);
+        }
+    }
+
     void asm(Stmt stmt, Token tk, int espidx) {
         if (tk.isNotNULL()) {
             print "ASM_SMOV();"
         } else {
             asmEXPR(stmt, espidx);
         }
-    }
-    void init(Method mtd) {
-        print "init ", mtd;
     }
     void emit(Method mtd) {
         print "emit ", mtd;
@@ -116,7 +194,7 @@ class Compiler {
     void asmERR(Stmt stmt, Token tkERR) {
     }
 
-    @Native void asmEXPR(Stmt stmt);
+    @Native void asmEXPR(Stmt stmt, int espidx);
     void asmLETEXPR(Stmt stmt, int espidx, Token tkL, Stmt expr) {
         print "Hi";
     }
@@ -153,24 +231,6 @@ class Compiler {
     }
 }
 
-Map<String, Type> ktype = {};
-void rewrite(Method mtd);
-//DEBUG = false;
-DEBUG = true;
-TYPE_Int = 5;
-TYPE_Float = 6;
-TYPE_Boolean = 3;
-TYPE_Array = 13;
-TYPE_Object = 55;
-FUNC_STATIC = 0;
-FUNC_VIRTUAL = 1;
-FUNC_VIRTUAL2 = 1;
-FUNC_FASTCALL = 2;
-K_MTDIDX2 = -1;
-K_RTNIDX = -4;
-PHI_DEFIDX = -100;
-FLAG_OBJECT_NULLOBJECT = 1 << 1;
-NOT_SCAST = -1;
 String getTypeName(int type) {
     switch (type) {
         case TYPE_Int:
@@ -214,84 +274,6 @@ int getcid(Class classType) {
     this.createStore(v, r);
 }
 
-class LLVMAsm {
-    Module m;
-    IRBuilder builder;
-    Value     ctx;
-    Value     sfp;
-    Value     rix;
-    Function  func;
-    Method    mtd;
-    BasicBlock entryBB;
-    Func<LLVMAsm,int=>void>[] asm;
-    Type intTy, floatTy, boolTy, objectTy;
-    Class[] paramsclass;
-    Class   retclass;
-    Array<Array<Int>> linklist;
-
-    /*dummy*/
-    Array<BasicBlock> bblist;
-
-    LLVMAsm(Module m, Method mtd) {
-        this.m = m;
-        this.mtd = mtd;
-        this.intTy = Type.getInt64Ty();
-        this.boolTy = Type.getInt1Ty();
-        this.floatTy = Type.getDoubleTy();
-        init();
-    }
-    void init() {
-        func = Function.create("_", (FunctionType)ktype["fmethodTy"], m);
-        bblist = [];
-        Array<Value> vargs = func.getArguments();
-        if (DEBUG) {
-            vargs[0].setName("ctx");
-            vargs[1].setName("sfp");
-            vargs[2].setName("rix");
-        }
-        ctx = vargs[0];
-        sfp = vargs[1];
-        rix = vargs[2];
-        register_table = [];
-        value_table = {};
-        //register_types = [];
-        paramsclass = mtd.getParamTypes();
-        retclass    = mtd.getReturnType();
-
-        this.intTy = Type.getInt64Ty();
-        this.boolTy = Type.getInt1Ty();
-        this.floatTy = Type.getDoubleTy();
-        this.objectTy = ktype["objectPtrTy"];
-    }
-    void emit() {
-        func.dump();
-        ee = m.createExecutionEngine();
-        mtd.setFunction(ee.getPointerToFunction(m, func));
-        rewrite(mtd);
-    }
-
-    void shiftesp(int shift) {
-        if (shift > 0) {
-            vesp = builder.createStructGEP(ctx, 7);
-            vsfp = builder.createConstGEP1_32(sfp, shift);
-            builder.createStore(vsfp, vesp);
-        }
-    }
-
-    Type convertType(int type) {
-        switch(type) {
-            case Type_Int:
-                return intTy;
-            case Type_Float:
-                return floatTy;
-            case TYPE_Boolean:
-                return boolTy;
-            default:
-                return objectTy;
-        }
-    }
-}
-
 class K_BasicBlock;
 class K_Function;
 class K_Inst;
@@ -325,11 +307,11 @@ class K_Inst {
     /*for dump const_value*/
     String dynName;
 
-    @Virtual void codegen(LLVMAsm asm) {
+    @Virtual void codegen(Compiler asm) {
     }
     @Virtual void dump () {
     }
-    Value getLLVMValue (LLVMAsm asm) {
+    Value getLLVMValue (Compiler asm) {
         if (value == null) {
             value = new Argument(asm.convertType(type));
             return value;
@@ -337,7 +319,7 @@ class K_Inst {
             return value;
         }
     }
-    void setLLVMValue (LLVMAsm asm, Value value) {
+    void setLLVMValue (Compiler asm, Value value) {
         if (this.value == null) {
             this.value = value;
         } else {
@@ -442,7 +424,7 @@ class K_PHI extends K_Inst {
         res = res[0 to |res|-3];
         OUT << res + "]" << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         PHINode pn = asm.builder.createPHI(asm.convertType(type), |bbs|);
         for (int i = 0; i < |bbs|; i++) {
             pn.addIncoming(insts[i].getLLVMValue(asm), asm.bblist[bbs[i]]);
@@ -563,7 +545,7 @@ class K_Function {
         }
         OUT << "}" << EOL;
     }
-    void codegen(LLVMAsm asm) {
+    void codegen(Compiler asm) {
         for (int i = 0; i < |bbs|; i++) {
             asm.bblist.add(BasicBlock.create(asm.func));
         }
@@ -604,7 +586,7 @@ class K_ADD extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = add "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v;
         switch(type) {
             case TYPE_Int:
@@ -635,7 +617,7 @@ class K_SUB extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = sub "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v;
         switch(type) {
             case TYPE_Int:
@@ -668,7 +650,7 @@ class K_MUL extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = mul "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v;
         switch(type) {
             case TYPE_Int:
@@ -699,7 +681,7 @@ class K_DIV extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = div "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v;
         switch(type) {
             case TYPE_Int:
@@ -731,7 +713,7 @@ class K_MOD extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = mod "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v = asm.builder.createSRem(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
         setLLVMValue(asm, v);
     }
@@ -755,7 +737,7 @@ class K_EQ extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = eq "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v;
         switch(type) {
             case TYPE_Int:
@@ -797,7 +779,7 @@ class K_NEQ extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = neq "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v;
         switch(type) {
             case TYPE_Int:
@@ -839,7 +821,7 @@ class K_LT extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = lt "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v;
         switch(type) {
             case TYPE_Int:
@@ -871,7 +853,7 @@ class K_GT extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = gt "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v;
         switch(type) {
             case TYPE_Int:
@@ -903,7 +885,7 @@ class K_LTE extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = lte "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v;
         switch(type) {
             case TYPE_Int:
@@ -935,7 +917,7 @@ class K_GTE extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = gte "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v;
         switch(type) {
             case TYPE_Int:
@@ -966,7 +948,7 @@ class K_AND extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = and "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v = asm.builder.createAnd(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
         setLLVMValue(asm, v);
     }
@@ -989,7 +971,7 @@ class K_OR extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = or "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v = asm.builder.createOr(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
         setLLVMValue(asm, v);
     }
@@ -1013,7 +995,7 @@ class K_XOR extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = xor "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v = asm.builder.createXor(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
         setLLVMValue(asm, v);
     }
@@ -1036,7 +1018,7 @@ class K_LSFT extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = lsft "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v = asm.builder.createShl(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
         setLLVMValue(asm, v);
     }
@@ -1054,7 +1036,7 @@ class K_RSFT extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = rsft "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v = asm.builder.createLShr(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
         setLLVMValue(asm, v);
     }
@@ -1090,13 +1072,13 @@ class K_CAST extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = cast " + getTypeName(type) + " " + op.inst0.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         v = op.inst0.getLLVMValue(asm);
         if (op.cast == 0) {
             v = asm.builder.createBitCast(v, asm.convertType(type));
         } else {
             typemap_exec = ConstantInt.get(asm.intTy, op.fptr);
-            typemap_exec = asm.builder.createIntToPtr(typemap_exec, ktype["typemapmtdPtrTy"]);
+            typemap_exec = asm.builder.createIntToPtr(typemap_exec, asm.ktype["typemapmtdPtrTy"]);
             asm.builder.createStoreValueToSfp(asm.sfp, asm.convertType(type), op.b, op.inst0.getLLVMValue(asm));
             asm.shiftesp(op.espshift);
             vsfp = asm.builder.createInBoundsGEP1(asm.sfp, ConstantInt.get(asm.intTy, op.b));
@@ -1124,7 +1106,7 @@ class K_JMP extends K_Inst {
     @Override void dump() {
         OUT << "\tjmp bb" + op.jmpidx << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         asm.builder.createBr(asm.bblist[op.jmpidx]);
     }
 }
@@ -1145,7 +1127,7 @@ class K_COND extends K_Inst {
     @Override void dump() {
         OUT << "\tcond " + op.inst0.getName() + " bb" + op.bbThen + " bb" + op.bbElse << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         asm.builder.createCondBr(op.inst0.getLLVMValue, asm.bblist[op.bbThen], asm.bblist[op.bbElse]);
     }
 }
@@ -1184,12 +1166,12 @@ class K_CALL extends K_Inst {
         res = res[0 to |res|-3] + ")";
         OUT << res << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value func;
         Value[] vargs;
         if (op.ftype != FUNC_FASTCALL) {
             func = ConstantInt.get(asm.intTy, op.mtdNC);
-            func = asm.builder.createIntToPtr(func, ktype["methodPtrTy"]);
+            func = asm.builder.createIntToPtr(func, asm.ktype["methodPtrTy"]);
             func = asm.builder.createStructGEP(func, 4);
             func = asm.builder.createLoad(func);
             thisidx = ConstantInt.get(asm.intTy, op.thisidx);
@@ -1200,7 +1182,7 @@ class K_CALL extends K_Inst {
                 asm.builder.createStoreValueToSfp(asm.sfp, asm.convertType(args[i].type), op.thisidx + i + op.flagStatic, args[i].getLLVMValue(asm));
             }
         } else {
-            Type methodTy = ktype["fmethodPtrTy"];
+            Type methodTy = asm.ktype["fmethodPtrTy"];
             func = ConstantInt.get(asm.intTy, op.mtdNC);
             func = asm.builder.CreateIntToPtr(func, methodTy);
             vb = ConstantInt.get(asm.intTy, op.thisidx);
@@ -1235,11 +1217,11 @@ class K_PRINT extends K_Inst {
     }
     @Override void dump() {
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         if (op.inst0 != null) {
             asm.builder.createStoreValueToSfp(asm.sfp, asm.convertType(type), op.sfpidx, op.inst0.getLLVMValue(asm));
         }
-        fmethodTy = ktype["fmethodPtrTy"];
+        fmethodTy = asm.ktype["fmethodPtrTy"];
         func = ConstantInt.get(asm.intTy, op.fprint);
         func = asm.builder.CreateIntToPtr(func, fmethodTy);
         vop = ConstantInt.get(asm.intTy, op.opline);
@@ -1268,8 +1250,8 @@ class K_TR extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = tr " + getTypeName(type) << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
-        Type methodTy = ktype["trmethodPtrTy"];
+    @Override void codegen(Compiler asm) {
+        Type methodTy = asm.ktype["trmethodPtrTy"];
         func = ConstantInt.get(asm.intTy, op.ftr);
         func = asm.builder.CreateIntToPtr(func, methodTy);
         vb = ConstantInt.get(asm.intTy, kvalue.idx);
@@ -1303,8 +1285,8 @@ class K_NEW extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = new " + getTypeName(type) << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
-        Type methodTy = ktype["trmethodPtrTy"];
+    @Override void codegen(Compiler asm) {
+        Type methodTy = asm.ktype["trmethodPtrTy"];
         func = ConstantInt.get(asm.intTy, op.ftr);
         func = asm.builder.CreateIntToPtr(func, methodTy);
         vb = ConstantInt.get(asm.intTy, kvalue.idx);
@@ -1335,9 +1317,9 @@ class K_GETIDX extends K_Inst {
     @Override void dump() {
         OUT << "\t" + getName() + " = getidx " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         v = op.inst0.getLLVMValue(asm);
-        v = asm.builder.createBitCast(v, ktype["arrayPtrTy"]);
+        v = asm.builder.createBitCast(v, asm.ktype["arrayPtrTy"]);
         v = asm.builder.createStructGEP(v, 1);
         v = asm.builder.createLoad(v);
         v = asm.builder.createBitCast(v, PointerType.get(asm.intTy));
@@ -1366,11 +1348,11 @@ class K_SETIDX extends K_Inst {
     @Override void dump() {
         OUT << "\t" + "setidx " + op.inst0.getName() + " " + op.inst1.getName() + " " + op.inst2.getName() << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         v = op.inst0.getLLVMValue(asm);
-        v = asm.builder.createBitCast(v, ktype["objectPtrTy"]);
+        v = asm.builder.createBitCast(v, asm.ktype["objectPtrTy"]);
         v = asm.builder.createStructGEP(v, 1);
-        v = asm.builder.createBitCast(v, ktype["objectPtrPtrTy"]);
+        v = asm.builder.createBitCast(v, asm.ktype["objectPtrPtrTy"]);
         v = asm.builder.createInBoundsGEP1(v, op.inst1.getLLVMValue(asm));
         v = asm.builder.createBitCast(v, PointerType.get(asm.convertType(op.inst2.type)));
         v = asm.builder.createStore(op.inst2.getLLVMValue(asm), v);
@@ -1414,7 +1396,7 @@ class K_CONST extends K_Inst {
         addUse(op, idx);
         dynName = "%s"(op.const_table[op.table_idx]);
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         Value v;
         switch(type) {
             case (TYPE_Int) :
@@ -1424,7 +1406,7 @@ class K_CONST extends K_Inst {
                 v = ConstantFP.get(asm.floatTy, (float)op.const_table[op.table_idx]);
                 break;
             default:
-                v = asm.builder.CreateIntToPtr(ConstantInt.get(asm.intTy, op.objptr), ktype["objectPtrTy"]);
+                v = asm.builder.CreateIntToPtr(ConstantInt.get(asm.intTy, op.objptr), asm.ktype["objectPtrTy"]);
                 break;
         }
         setLLVMValue(asm, v);
@@ -1453,12 +1435,12 @@ class K_MOVx extends K_Inst {
     }
     @Override void dump() {
     }
-    @Override void codegen (LLVMAsm asm) {
+    @Override void codegen (Compiler asm) {
         v = op.inst0.getLLVMValue(asm);
-        v = asm.builder.createBitCast(v, ktype["objectPtrTy"]);
+        v = asm.builder.createBitCast(v, asm.ktype["objectPtrTy"]);
         v = asm.builder.createStructGEP(v, 1);
         v = asm.builder.createLoad(v);
-        v = asm.builder.createBitCast(v, ktype["objectPtrPtrTy"]);
+        v = asm.builder.createBitCast(v, asm.ktype["objectPtrPtrTy"]);
         vn = ConstantInt.get(asm.intTy, op.bn);
         v = asm.builder.createInBoundsGEP1(v, vn);
         v = asm.builder.createBitCast(v, PointerType.get(asm.convertType(type)));
@@ -1481,12 +1463,12 @@ class K_xMOV extends K_Inst {
         this.op = op;
         addUse(op, idx);
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         v = op.inst0.getLLVMValue(asm);
-        v = asm.builder.createBitCast(v, ktype["objectPtrTy"]);
+        v = asm.builder.createBitCast(v, asm.ktype["objectPtrTy"]);
         v = asm.builder.createStructGEP(v, 1);
         v = asm.builder.createLoad(v);
-        v = asm.builder.createBitCast(v, ktype["objectPtrPtrTy"]);
+        v = asm.builder.createBitCast(v, asm.ktype["objectPtrPtrTy"]);
         vn = ConstantInt.get(asm.intTy, op.an);
         v = asm.builder.createInBoundsGEP1(v, vn);
         v = asm.builder.createBitCast(v, PointerType.get(asm.convertType(op.inst1.type)));
@@ -1519,9 +1501,9 @@ class K_NEXT extends K_Inst {
     }
     @Override void dump() {
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         itr = op.inst0.getLLVMValue(asm);
-        itr = asm.builder.createBitCast(itr, ktype["IteratorPtrTy"]);
+        itr = asm.builder.createBitCast(itr, asm.ktype["IteratorPtrTy"]);
         fnext_1 = asm.builder.createStructGEP(itr, 2);
         fnext_1 = asm.builder.createLoad(fnext_1);
         vctx = asm.ctx;
@@ -1586,8 +1568,8 @@ class K_LDMTD extends K_Inst {
     }
     @Override void dump() {
     }
-    @Override void codegen(LLVMAsm asm) {
-        fmethodTy = ktype["fmethodPtrTy"];
+    @Override void codegen(Compiler asm) {
+        fmethodTy = asm.ktype["fmethodPtrTy"];
         func = ConstantInt.get(asm.intTy, op.ldmtd);
         func = asm.builder.CreateIntToPtr(func, fmethodTy);
         vop = ConstantInt.get(asm.intTy, op.opline);
@@ -1609,7 +1591,7 @@ class K_ARGUMENT extends K_Inst {
         this.op = op;
         addDef(kvalue, idx);
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         v = asm.builder.createLoadValueFromSfp(asm.sfp, asm.convertType(type), op.argidx);
         setLLVMValue(asm, v);
     }
@@ -1629,11 +1611,342 @@ class K_RET extends K_Inst {
         if (op.inst0 != null) name = op.inst0.getName();
         OUT << "\treturn " + name << EOL;
     }
-    @Override void codegen(LLVMAsm asm) {
+    @Override void codegen(Compiler asm) {
         if (op.inst0 != null) {
             asm.builder.createStoreValueToSfp(asm.sfp, asm.convertType(op.inst0.type), K_RTNIDX, op.inst0.getLLVMValue(asm));
         }
         asm.builder.createRetVoid();
     }
+}
+
+void Compiler.constructKonohaTypes() {
+    print "hi";
+    int32Ty = Type.getInt32Ty();
+    int64Ty = Type.getInt64Ty();
+    int8PtrTy = Type.getInt8PtrTy();
+
+    voidPtrTy = Type.getInt8PtrTy();
+    longTy  = int64Ty;
+    shortTy = Type.getInt16Ty();
+    intTy   = int64Ty;
+    sizeTy  = int64Ty;
+    floatTy = Type.getDoubleTy();
+
+    // TODO
+    classTBLPtrTy = Type.getInt8PtrTy();
+    typeMapPtrTy  = Type.getInt8PtrTy();
+
+    Type[] fields = [];
+    fields.add(int32Ty);
+    fields.add(int32Ty);
+    hcacheTy = StructType.get(fields, false);
+    m.addTypeName("knh_hcache_t", hcacheTy);
+
+    fields = [];
+    fields.add(int64Ty);
+    fields.add(int64Ty);
+    sfxTy = StructType.get(fields, false);
+    m.addTypeName("knh_sfx_t", sfxTy);
+
+    fields = [];
+    fields.add(int64Ty);
+    fields.add(int8PtrTy);
+    fields.add(int64Ty);
+    fields.add(int8PtrTy);
+    hObjectTy = StructType.get(fields, false);
+    m.addTypeName("hObject", hObjectTy);
+
+    fields = [];
+    fields.add(hObjectTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    objectTy = StructType.get(fields, false);
+    objectPtrTy = PointerType.get(objectTy);
+    objectPtrPtrTy = PointerType.get(objectPtrTy);
+    m.addTypeName("Object", objectTy);
+    m.addTypeName("ObjectPtr", objectPtrTy);
+    ktype["objectPtrTy"] = objectPtrTy;
+    ktype["objectPtrPtrTy"] = objectPtrPtrTy;
+
+    fields = [];
+    fields.add(hObjectTy);
+    fields.add(int8PtrTy);
+    fields.add(int64Ty);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    arrayTy = StructType.get(fields, false);
+    arrayPtrTy = PointerType.get(arrayTy);
+    m.addTypeName("Array", arrayTy);
+    ktype["arrayPtrTy"] = arrayPtrTy;
+
+    fields = [];
+    fields.add(hObjectTy);
+    fields.add(Type.getInt1PtrTy()); /* text */
+    fields.add(int64Ty);   /* len */
+    stringTy = StructType.get(fields, false);
+    stringPtrTy = PointerType.get(stringTy);
+    m.addTypeName("String", stringTy);
+    ktype["stringPtrTy"] = stringPtrTy;
+
+
+    fields = [];
+    fields.add(hObjectTy);
+    fields.add(objectPtrPtrTy);
+    fields.add(objectPtrTy);
+    objectFieldTy    = StructType.get(fields, false);
+    objectFieldPtrTy = PointerType.get(objectFieldTy);
+    m.addTypeName("ObjectField", objectFieldTy);
+    ktype["objectFieldTy"] = stringPtrTy;
+
+    fields = [];
+    fields.add(hObjectTy);
+    fields.add(int8PtrTy);
+    fields.add(int64Ty);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    outputStreamTy = StructType.get(fields, false);
+    outputStreamPtrTy = PointerType.get(outputStreamTy);
+    m.addTypeName("OutputStream", outputStreamTy);
+    ktype["outputStreamPtrTy"] = outputStreamPtrTy;
+
+    fields = [];
+    fields.add(hObjectTy);
+    fields.add(int8PtrTy);
+    fields.add(int64Ty);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    inputStreamTy = StructType.get(fields, false);
+    inputStreamPtrTy = PointerType.get(inputStreamTy);
+    m.addTypeName("InputStream", inputStreamTy);
+    ktype["inputStreamPtrTy"] = inputStreamPtrTy;
+
+    fields = [];
+    fields.add(objectPtrTy);
+    fields.add(Type.getDoubleTy());
+    sfpTy = StructType.get(fields, false);
+    sfpPtrTy = PointerType.get(sfpTy);
+    m.addTypeName("sfp", sfpTy);
+    ktype["sfpPtrTy"] = sfpPtrTy;
+
+    fields = [];
+    fields.add(int64Ty);
+    fields.add(int64Ty);
+    fields.add(int8PtrTy);
+    fields.add(inputStreamPtrTy);
+    fields.add(outputStreamPtrTy);
+    fields.add(outputStreamPtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int64Ty);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(arrayPtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    sysExTy = StructType.get(fields, false);
+
+    fields = [];
+    fields.add(hObjectTy);
+    fields.add(sysExTy);
+    sysTy = StructType.get(fields, false);
+    sysPtrTy = PointerType.get(sysTy);
+    m.addTypeName("System", sysTy);
+    ktype["sysPtrTy"] = sysPtrTy;
+
+    fields = [];
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(sysPtrTy);
+    fields.add(int8PtrTy);
+    fields.add(sfpPtrTy);
+    fields.add(sfpPtrTy);
+    fields.add(int64Ty);
+    fields.add(sfpPtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(objectPtrTy);
+    fields.add(objectPtrTy);
+    fields.add(int64Ty);
+    fields.add(int64Ty);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(objectPtrPtrTy);
+    fields.add(int64Ty);
+    fields.add(objectPtrPtrTy);
+    fields.add(int64Ty);
+    fields.add(objectPtrPtrTy);
+    fields.add(int64Ty);
+    fields.add(int64Ty);
+    fields.add(int8PtrTy);
+    fields.add(inputStreamPtrTy);
+    fields.add(outputStreamPtrTy);
+    fields.add(outputStreamPtrTy);
+    fields.add(int8PtrTy);
+    fields.add(outputStreamPtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(Type.getInt32Ty);
+    fields.add(Type.getInt32Ty);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    Type[] vec16_fields = [];
+    for (i=0; i < 16; i++) {
+        vec16_fields.add(Type.getInt1Ty());
+    }
+    fields.add(StructType.get(vec16_fields, false));
+    fields.add(int64Ty);
+    fields.add(int8PtrTy);
+    fields.add(objectPtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+    fields.add(int8PtrTy);
+
+    ctxTy = StructType.get(fields, false);
+    ctxPtrTy = PointerType.get(ctxTy);
+    m.addTypeName("context", ctxTy);
+    m.addTypeName("CTX", ctxPtrTy);
+    ktype["ctxTy"] = ctxPtrTy;
+
+    Type[] argsTy = [];
+    argsTy.add(ctxPtrTy);
+    argsTy.add(sfpPtrTy);
+    argsTy.add(int64Ty);
+    FunctionType fmethodTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
+    fmethodPtrTy = PointerType.get(fmethodTy);
+    m.addTypeName("fmethod", fmethodTy);
+    ktype["fmethodTy"]    = fmethodTy;
+    ktype["fmethodPtrTy"] = fmethodPtrTy;
+
+    argsTy = [];
+    argsTy.add(ctxPtrTy);
+    argsTy.add(sfpPtrTy);
+    argsTy.add(int64Ty);
+    argsTy.add(int64Ty);
+    FunctionType trmethodTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
+    trmethodPtrTy = PointerType.get(trmethodTy);
+    m.addTypeName("trmethod", trmethodTy);
+    ktype["trmethodTy"]    = trmethodTy;
+    ktype["trmethodPtrTy"] = trmethodPtrTy;
+
+    argsTy = [];
+    argsTy.add(ctxPtrTy);
+    argsTy.add(sfpPtrTy);
+    argsTy.add(int64Ty);
+    FunctionType fitrnextTy = FunctionType.get(Type.getInt64Ty(), argsTy, false);
+    fitrnextPtrTy = PointerType.get(fitrnextTy);
+    m.addTypeName("fitrnext", fitrnextTy);
+    ktype["fitrnextTy"]    = fitrnextTy;
+    ktype["fitrnextPtrTy"] = fitrnextPtrTy;
+
+    argsTy = [];
+    argsTy.add(ctxPtrTy);
+    argsTy.add(int64Ty);
+    argsTy.add(sfpPtrTy);
+    argsTy.add(int64Ty);
+    FunctionType typemapmtdTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
+    typemapmtdPtrTy = PointerType.get(typemapmtdTy);
+    m.addTypeName("typemapmtd", typemapmtdTy);
+    ktype["typemapmtdTy"]    = typemapmtdTy;
+    ktype["typemapmtdPtrTy"] = typemapmtdPtrTy;
+
+    argsTy = [];
+    argsTy.add(ctxPtrTy);
+    argsTy.add(sfpPtrTy);
+    argsTy.add(int64Ty);
+    argsTy.add(int64Ty);
+    FunctionType fTRTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
+    fTRPtrTy = PointerType.get(fTRTy);
+    ktype["fTRTy"]    = fTRTy;
+    ktype["fTRPtrTy"] = fTRPtrTy;
+
+    fields = [];
+    fields.add(int8PtrTy); /* codeaddr */
+    fields.add(int64Ty);   /* count */
+    fields.add(Type.getInt16Ty());   /* opcode */
+    fields.add(Type.getInt16Ty());   /* line */
+    fields.add(int64Ty);   /* data[0] */
+    fields.add(int64Ty);   /* data[1] */
+    fields.add(int64Ty);   /* data[2] */
+    fields.add(int64Ty);   /* data[3] */
+    fields.add(int64Ty);   /* data[4] */
+    fields.add(int64Ty);   /* data[5] */
+    fields.add(int64Ty);   /* data[6] */
+    fields.add(int64Ty);   /* data[7] */
+    oplineTy = StructType.get(fields, false);
+    oplinePtrTy = PointerType.get(oplineTy);
+    m.addTypeName("opline_t", oplineTy);
+    ktype["oplineTy"] = oplineTy;
+    ktype["oplinePtrTy"] = oplinePtrTy;
+    ktype["oplinePtrPtrTy"] = PointerType.get(oplinePtrTy);
+
+    fields = [];
+    fields.add(hObjectTy);
+    fields.add(int8PtrTy);
+    fields.add(Type.getInt32Ty);
+    fields.add(Type.getInt32Ty);
+    fields.add(fmethodPtrTy);
+    fields.add(oplinePtrTy);
+    methodTy = StructType.get(fields, false);
+    m.addTypeName("Method", methodTy);
+    methodPtrTy = PointerType.get(methodTy);
+    ktype["methodPtrTy"] = methodPtrTy;
+
+    fields = [];
+    fields.add(hObjectTy);
+    fields.add(int8PtrTy);
+    fields.add(fitrnextPtrTy);
+    iteratorTy = StructType.get(fields, false);
+    m.addTypeName("Iterator", iteratorTy);
+    ktype["IteratorPtrTy"] = PointerType.get(iteratorTy);
+
+    /* THCODE */
+    fields = [];
+    fields.add(voidPtrTy); /* codeaddr */
+    fields.add(sizeTy);   /* count */
+    fields.add(shortTy);   /* opcode */
+    fields.add(shortTy);   /* line */
+    fields.add(voidPtrTy); /* th */
+    fields.add(longTy); /* uri */
+    type = StructType.get(fields, false);
+    m.addTypeName("THCODE_t", type);
+    ktype["THCODE"] = PointerType.get(type);
+
+    /* PROBE */
+    fields = [];
+    fields.add(voidPtrTy); /* codeaddr */
+    fields.add(sizeTy);   /* count */
+    fields.add(shortTy);   /* opcode */
+    fields.add(shortTy);   /* line */
+    fields.add(longTy); /* sfpidx */
+    fields.add(voidPtrTy); /* probe */
+    fields.add(longTy); /* n */
+    fields.add(longTy); /* n2 */
+    type = StructType.get(fields, false);
+    m.addTypeName("PROBE_t", type);
+    ktype["PROBE"] = PointerType.get(type);
+
+    /* RET */
+    fields = [];
+    fields.add(voidPtrTy); /* codeaddr */
+    fields.add(sizeTy);   /* count */
+    fields.add(shortTy);   /* opcode */
+    fields.add(shortTy);   /* line */
+    type = StructType.get(fields, false);
+    m.addTypeName("RET_t", type);
+    ktype["RET"] = PointerType.get(type);
+
+    print "Constructkonohatypes end";
 }
 

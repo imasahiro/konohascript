@@ -250,6 +250,14 @@ static void kook_EXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
         DBG_ABORT("unknown stt=%d", STT_(stmt));
     }
 }
+KMETHOD Compiler_asmEXPR(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+    //knh_Object_t *o  = sfp[0].o;
+    knh_Stmt_t *stmt = CAST(knh_Stmt_t*, sfp[1].o);
+    int espidx = sfp[2].ivalue;
+    kook_EXPR_asm(ctx, stmt, espidx);
+    RETURNvoid_();
+}
 
 KMETHOD Compiler_asmBLOCK(CTX ctx, knh_sfp_t *sfp _RIX)
 {
