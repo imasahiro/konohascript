@@ -1191,6 +1191,14 @@ void Compiler.asm_smov(int alocal, Token tk) {
 
             }
             break;
+		case Token.TT_FVAR:
+			int b = tk.getTokenIndex();
+			if (is_Tunbox(type)) {
+				kfunc.storeKInst(alocal, kfunc.getKInst(b));
+			} else {
+
+			}
+			break;
     }
 }
 void Compiler.asm(Stmt stmt, Token tk, int espidx) {
