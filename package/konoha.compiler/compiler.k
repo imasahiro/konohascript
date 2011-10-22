@@ -51,9 +51,9 @@ class Compiler {
     void asmLET(Stmt stmt, Token tkL, Stmt tkV, Token tkVTk) {
         int espidx = stmt.getESPIDX();
         if (tkVTk.isNotNull()) {
-            print "ASM_MOV(lhs, tkV, espidx);";
+            print "ASM_MOV(lhs, tkV, espidx);", tkL, tkV;
         } else {
-            asm(tkV, tkVTk);
+            asm(tkV, tkVTk, espidx);
             print espidx;
         }
     }
