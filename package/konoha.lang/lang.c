@@ -27,6 +27,8 @@
 
 #define K_INTERNAL 1
 #include <konoha1.h>
+#include <konoha1/konohalang.h>
+#include <konoha1/inlinelibs.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,6 +38,7 @@ extern "C" {
 #define STT_(stmt)   SP(stmt)->stt
 #define TT_(tk)   SP(tk)->tt
 
+#include "./data_.h"
 
 //## int TypeMap.getSource();
 KMETHOD TypeMap_getSource(CTX ctx, knh_sfp_t *sfp _RIX) {
@@ -951,9 +954,11 @@ KMETHOD TOken_getIndex(CTX ctx, knh_sfp_t *sfp _RIX) {
 //
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
-	kapi->setPackageProperty(ctx, "name", "lang");
-	kapi->setPackageProperty(ctx, "version", "0.0");
-	RETURN_PKGINFO("konoha.lang");
+    kapi->setPackageProperty(ctx, "name", "lang");
+    kapi->setPackageProperty(ctx, "version", "0.0");
+    kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Stmt")), StmtInt);
+    kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Token")), TokenInt);
+    RETURN_PKGINFO("konoha.lang");
 }
 
 //DEFAPI(void) constInstruction(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)

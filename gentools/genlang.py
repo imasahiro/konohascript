@@ -596,21 +596,21 @@ const char* knh_getopMethodName(knh_methodn_t mn)
 def write_lang_pkgfile(f):
 	write_line(f)
 	f.write('''
-static knh_IntData_t StmtInt[] = {
-''')
+static knh_IntData_t StmtInt[] = {''')
 	for stmt in STMT_LIST:
 		f.write('''
     {"%s", %s},''' % (stmt.TT, stmt.TT))
 	f.write('''
+	{NULL, 0}
 };
-static knh_IntData_t TokenInt[] = {
-''')
+
+static knh_IntData_t TokenInt[] = {''')
 	for tk in TOKEN_LIST:
 		f.write('''
     {"%s", %s},''' % (tk.TT, tk.TT))
 	f.write('''
-};
-''')
+	{NULL, 0}
+};''')
 
 def gen_stmt(bdir):
     f = open('include/konoha1/konohalang.h', 'w')

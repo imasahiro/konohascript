@@ -2,7 +2,6 @@
 /* ------------------------------------------------------------------------ */
 
 static knh_IntData_t StmtInt[] = {
-
     {"STT_DONE", STT_DONE},
     {"STT_BLOCK", STT_BLOCK},
     {"STT_PRAGMA", STT_PRAGMA},
@@ -62,9 +61,10 @@ static knh_IntData_t StmtInt[] = {
     {"STT_FMTCALL", STT_FMTCALL},
     {"STT_CALL1", STT_CALL1},
     {"STT_GO", STT_GO},
+	{NULL, 0}
 };
-static knh_IntData_t TokenInt[] = {
 
+static knh_IntData_t TokenInt[] = {
     {"TT_PRAGMA", TT_PRAGMA},
     {"TT_NAMESPACE", TT_NAMESPACE},
     {"TT_INCLUDE", TT_INCLUDE},
@@ -209,4 +209,5 @@ static knh_IntData_t TokenInt[] = {
     {"TT_LFIELD", TT_LFIELD},
     {"TT_ERR", TT_ERR},
     {"TT_EOT", TT_EOT},
+	{NULL, 0}
 };
