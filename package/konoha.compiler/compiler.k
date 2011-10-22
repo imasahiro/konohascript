@@ -45,286 +45,10 @@ PHI_DEFIDX = -100;
 FLAG_OBJECT_NULLOBJECT = 1 << 1;
 NOT_SCAST = -1;
 
-class Compiler {
-    Module m;
-    IRBuilder builder;
-    Function  func;
-    Value     ctx;
-    Value     sfp;
-    Value     rix;
-    Method    mtd;
-    BasicBlock entryBB;
-    BasicBlock[] bblist;
-    Type intTy, floatTy, boolTy, objectTy;
-    Class[] paramsclass;
-    Class   retclass;
-    Map<String, Type> ktype;
-    Array<dynamic> const_table;
-
-    void constructKonohaTypes();
-    Compiler() {
-        this.m = new Module("konoha");
-        ktype = {};
-        constructKonohaTypes();
-        const_table = [];
-        this.intTy = Type.getInt64Ty();
-        this.boolTy = Type.getInt1Ty();
-        this.floatTy = Type.getDoubleTy();
-        this.objectTy = ktype["objectPtrTy"];
-    }
-    void init(Method mtd) {
-        print "init ", mtd;
-        this.mtd = mtd;
-        func = Function.create("_", (FunctionType)ktype["fmethodTy"], m);
-        bblist = [];
-        Array<Value> vargs = func.getArguments();
-        if (DEBUG) {
-            vargs[0].setName("ctx");
-            vargs[1].setName("sfp");
-            vargs[2].setName("rix");
-        }
-        ctx = vargs[0];
-        sfp = vargs[1];
-        rix = vargs[2];
-        register_table = [];
-        value_table = {};
-        //register_types = [];
-        paramsclass = mtd.getParamTypes();
-        retclass    = mtd.getReturnType();
-    }
-
-    Type convertType(int type) {
-        switch (type) {
-            case TYPE_Int:
-                return intTy;
-            case TYPE_Float:
-                return floatTy;
-            case TYPE_Boolean:
-                return boolTy;
-            default:
-                return objectTy;
-        }
-    }
-    void shiftesp(int shift) {
-        if (shift > 0) {
-            vesp = builder.createStructGEP(ctx, 7);
-            vsfp = builder.createConstGEP1_32(sfp, shift);
-            builder.createStore(vsfp, vesp);
-        }
-    }
-
-    void asm(Stmt stmt, Token tk, int espidx) {
-        if (tk.isNotNULL()) {
-            print "ASM_SMOV();"
-        } else {
-            asmEXPR(stmt, espidx);
-        }
-    }
-    void emit(Method mtd) {
-        print "emit ", mtd;
-    }
-    /* stmt = {...} */
-    @Native void asmBLOCK(Stmt stmt);
-    /* stmt = let stmt[1] = stmt[2] */
-    void asmLET(Stmt stmt, Token tkL, Stmt tkV, Token tkVTk) {
-        int espidx = stmt.getESPIDX();
-        if (tkVTk.isNotNull()) {
-            print "ASM_MOV(lhs, tkV, espidx);", tkL, tkV;
-        } else {
-            asm(tkV, tkVTk, espidx);
-            print espidx;
-        }
-    }
-    /* stmt = if stmt[0] then stmt[1]:BLOCK else stmt[2] endif */
-    void asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
-        print "IF";
-        //int index = stmt.getIndex();
-        print stmtThen;
-        print stmtElse;
-        print "", stmtCond.toToken();
-        asm(stmtCond, stmtCond.toToken());
-        asmBlock(stmtThen);
-        asmBlock(stmtElse);
-    }
-    void asmSWITCH(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
-        print "switch";
-        print stmtC;
-        print stmtBody;
-    }
-    void asmWHILE(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
-        print "while";
-        print stmt;
-        print stmtC;
-        print stmtBody;
-    }
-    void asmDO(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
-        print "do-while";
-        print stmtC;
-        print stmtBody;
-    }
-    void asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBody) {
-        print "for";
-        print stmt1;
-        print stmt2;
-        print stmt3;
-        print stmtBody;
-    }
-    void asmFOREACH(Stmt stmt, Token tkVar, Stmt stmtItr, Stmt stmtBody, Stmt stmtVar) {
-        print "foreach";
-        print tkVar;
-        print stmtItr;
-        print stmtBody;
-        print stmtVar;
-    }
-    void asmBREAK(Stmt stmt, Stmt stmtLabel) {
-        print "break";
-        print stmtLabel;
-    }
-    void asmCONTINUE(Stmt stmt, Stmt stmtLabel) {
-        print "continue";
-        print stmtLabel;
-    }
-    void asmTRY(Stmt stmt, Stmt stmtTry, Stmt stmtCATCH, Stmt stmtFINAL) {
-        print "try";
-        print stmtTry;
-        print stmtCATCH;
-        print stmtFINAL;
-    }
-    void asmTHROW(Stmt stmt) {
-        print "throw";
-        print stmt;
-        //int espidx = stmt.getESPIDX;
-        //print espidx;
-    }
-    void asmRETURN(Stmt stmt, Stmt stmtRetExpr) {
-        if (stmtRetExpr == null) {
-            print "return;";
-        } else {
-            print "return expr;";
-            print stmt;
-            print stmtRetExpr;
-        }
-    }
-    void asmYIELD(Stmt stmt) {
-        /* TODO */
-    }
-    void asmPRINT(Stmt stmt) {
-        /* TODO */
-    }
-    void asmASSURE(Stmt stmt, Stmt stmtInit, Stmt stmtBody) {
-        print "assure";
-        print stmtInit;
-        print stmtBody;
-    }
-    void asmASSERT(Stmt stmt, Stmt cond) {
-        print "assert";
-        print cond;
-    }
-    void asmERR(Stmt stmt, Token tkERR) {
-        print "err";
-        print tkERR;
-    }
-
-    @Native void asmEXPR(Stmt stmt, int espidx);
-    void asmLETEXPR(Stmt stmt, int espidx, Token tkL, Stmt expr) {
-        print "Hi";
-        print espidx;
-        print tkL;
-        print expr;
-    }
-    void asmFUNCCALL(Stmt stmt, int espidx, Method mtd, Class c, Stmt stmt) {
-        print "funccall";
-        print stmt;
-        print espidx;
-        print mtd;
-        print c;
-        print stmt;
-    }
-    void asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, Class c) {
-        print "call";
-        print stmt;
-        print espidx;
-        print tkMTD;
-        print mtd;
-        print c;
-    }
-    void asmCALL1(Stmt stmt, int espidx, Stmt expr1, Stmt stmtPost) {
-        print "call";
-        print stmt;
-        print espidx;
-        print expr1;
-        print stmtPost;
-    }
-    void asmBOX(Stmt stmt, int espidx, Class c, Stmt expr) {
-        print "box";
-        print stmt;
-        print espidx;
-        print c;
-        print expr;
-
-    }
-    void asmOPR(Stmt stmt, int espidx, Method mtd, Class c, Stmt lhs, Stmt rhs) {
-        print "opr";
-        print stmt;
-        print espidx;
-        print mtd;
-        print c;
-        print lhs;
-        print rhs;
-    }
-    void asmNEW(Stmt stmt, int espidx, Class thisCid, Method mtd) {
-        print "new";
-        print stmt;
-        print espidx;
-        print thisCid;
-        print mtd;
-    }
-    void asmTCAST(Stmt stmt, int espidx, TypeMap tmr, Stmt expr) {
-        print "tcast";
-        print stmt;
-        print espidx;
-        print tmr;
-        print expr;
-    }
-    void asmAND(Stmt stmt, int espidx) {
-        print "and";
-        print stmt;
-        print espidx;
-    }
-    void asmOR(Stmt stmt, int espidx) {
-        print "or";
-        print stmt;
-        print espidx;
-    }
-    void asmALT(Stmt stmt, int espidx) {
-        /* TODO */
-    }
-    void asmTRI(Stmt stmt, int espidx, Stmt cond, Stmt lhs, Stmt rhs) {
-        /* use CreateSelect */
-        print "tri";
-        print espidx;
-        print cond;
-        print lhs;
-        print rhs;
-    }
-    void asmSEND(Stmt stmt, int espidx) {
-        print "send";
-        print stmt;
-        print espidx;
-    }
-    void asmW1(Stmt stmt, int espidx, Method mtd, Token streamTk, Stmt expr) {
-        print "W1";
-        print stmt;
-        print espidx;
-        print mtd;
-        print streamTk;
-        print expr;
-    }
-    void asmFMTCALL(Stmt stmt, int espidx) {
-        /* TODO */
-    }
-}
-
+class K_BasicBlock;
+class K_Function;
+class K_Inst;
+class Compiler;
 String getTypeName(int type) {
     switch (type) {
         case TYPE_Int:
@@ -368,9 +92,7 @@ int getcid(Class classType) {
     this.createStore(v, r);
 }
 
-class K_BasicBlock;
-class K_Function;
-class K_Inst;
+
 class K_Value {
     int idx; //sfp[idx]
     int defCount;
@@ -388,7 +110,6 @@ class K_Value {
 class K_Opcode {
     K_Inst inst0, inst1, inst2;
 }
-
 
 class K_Inst {
     K_Value kvalue;
@@ -661,7 +382,6 @@ class K_Function {
         asm.emit();
     }
 }
-
 class K_ADDop extends K_Opcode {
     K_ADDop (K_Inst inst0, K_Inst inst1) {
         this.inst0 = inst0;
@@ -1713,8 +1433,290 @@ class K_RET extends K_Inst {
     }
 }
 
+
+class Compiler {
+    Module m;
+    IRBuilder builder;
+    Function  func;
+    Value     ctx;
+    Value     sfp;
+    Value     rix;
+    Method    mtd;
+    BasicBlock entryBB;
+    BasicBlock[] bblist;
+    Type intTy, floatTy, boolTy, objectTy;
+    Class[] paramsclass;
+    Class   retclass;
+    Map<String, Type> ktype;
+    Array<dynamic> const_table;
+    K_Function kfunc;
+
+    void constructKonohaTypes();
+    Compiler() {
+        this.m = new Module("konoha");
+        ktype = {};
+        constructKonohaTypes();
+        const_table = [];
+        this.intTy = Type.getInt64Ty();
+        this.boolTy = Type.getInt1Ty();
+        this.floatTy = Type.getDoubleTy();
+        this.objectTy = ktype["objectPtrTy"];
+    }
+    void init(Method mtd) {
+        print "init ", mtd;
+        this.mtd = mtd;
+        func = Function.create("_", (FunctionType)ktype["fmethodTy"], m);
+        bblist = [];
+        Array<Value> vargs = func.getArguments();
+        if (DEBUG) {
+            vargs[0].setName("ctx");
+            vargs[1].setName("sfp");
+            vargs[2].setName("rix");
+        }
+        ctx = vargs[0];
+        sfp = vargs[1];
+        rix = vargs[2];
+        register_table = [];
+        value_table = {};
+        //register_types = [];
+        paramsclass = mtd.getParamTypes();
+        retclass    = mtd.getReturnType();
+        kfunc = new K_Function(mtd);
+    }
+
+    Type convertType(int type) {
+        switch (type) {
+            case TYPE_Int:
+                return intTy;
+            case TYPE_Float:
+                return floatTy;
+            case TYPE_Boolean:
+                return boolTy;
+            default:
+                return objectTy;
+        }
+    }
+    void shiftesp(int shift) {
+        if (shift > 0) {
+            vesp = builder.createStructGEP(ctx, 7);
+            vsfp = builder.createConstGEP1_32(sfp, shift);
+            builder.createStore(vsfp, vesp);
+        }
+    }
+
+    void asm(Stmt stmt, Token tk, int espidx) {
+        if (tk.isNotNULL()) {
+            print "ASM_SMOV();"
+        } else {
+            asmEXPR(stmt, espidx);
+        }
+    }
+    void emit(Method mtd) {
+        print "emit ", mtd;
+        kfunc.dump();
+    }
+    /* stmt = {...} */
+    @Native void asmBLOCK(Stmt stmt);
+    /* stmt = let stmt[1] = stmt[2] */
+    void asmLET(Stmt stmt, Token tkL, Stmt tkV, Token tkVTk) {
+        int espidx = stmt.getESPIDX();
+        if (tkVTk.isNotNull()) {
+            print "ASM_MOV(lhs, tkV, espidx);", tkL, tkV;
+        } else {
+            asm(tkV, tkVTk, espidx);
+            print espidx;
+        }
+    }
+    /* stmt = if stmt[0] then stmt[1]:BLOCK else stmt[2] endif */
+    void asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
+        print "IF";
+        //int index = stmt.getIndex();
+        print stmtThen;
+        print stmtElse;
+        print "", stmtCond.toToken();
+        asm(stmtCond, stmtCond.toToken());
+        asmBlock(stmtThen);
+        asmBlock(stmtElse);
+    }
+    void asmSWITCH(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
+        print "switch";
+        print stmtC;
+        print stmtBody;
+    }
+    void asmWHILE(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
+        print "while";
+        print stmt;
+        print stmtC;
+        print stmtBody;
+    }
+    void asmDO(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
+        print "do-while";
+        print stmtC;
+        print stmtBody;
+    }
+    void asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBody) {
+        print "for";
+        print stmt1;
+        print stmt2;
+        print stmt3;
+        print stmtBody;
+    }
+    void asmFOREACH(Stmt stmt, Token tkVar, Stmt stmtItr, Stmt stmtBody, Stmt stmtVar) {
+        print "foreach";
+        print tkVar;
+        print stmtItr;
+        print stmtBody;
+        print stmtVar;
+    }
+    void asmBREAK(Stmt stmt, Stmt stmtLabel) {
+        print "break";
+        print stmtLabel;
+    }
+    void asmCONTINUE(Stmt stmt, Stmt stmtLabel) {
+        print "continue";
+        print stmtLabel;
+    }
+    void asmTRY(Stmt stmt, Stmt stmtTry, Stmt stmtCATCH, Stmt stmtFINAL) {
+        print "try";
+        print stmtTry;
+        print stmtCATCH;
+        print stmtFINAL;
+    }
+    void asmTHROW(Stmt stmt) {
+        print "throw";
+        print stmt;
+        //int espidx = stmt.getESPIDX;
+        //print espidx;
+    }
+    void asmRETURN(Stmt stmt, Stmt stmtRetExpr) {
+        if (stmtRetExpr == null) {
+            print "return;";
+        } else {
+            print "return expr;";
+            print stmt;
+            print stmtRetExpr;
+        }
+    }
+    void asmYIELD(Stmt stmt) {
+        /* TODO */
+    }
+    void asmPRINT(Stmt stmt) {
+        /* TODO */
+    }
+    void asmASSURE(Stmt stmt, Stmt stmtInit, Stmt stmtBody) {
+        print "assure";
+        print stmtInit;
+        print stmtBody;
+    }
+    void asmASSERT(Stmt stmt, Stmt cond) {
+        print "assert";
+        print cond;
+    }
+    void asmERR(Stmt stmt, Token tkERR) {
+        print "err";
+        print tkERR;
+    }
+
+    @Native void asmEXPR(Stmt stmt, int espidx);
+    void asmLETEXPR(Stmt stmt, int espidx, Token tkL, Stmt expr) {
+        print "Hi";
+        print espidx;
+        print tkL;
+        print expr;
+    }
+    void asmFUNCCALL(Stmt stmt, int espidx, Method mtd, Class c, Stmt stmt) {
+        print "funccall";
+        print stmt;
+        print espidx;
+        print mtd;
+        print c;
+        print stmt;
+    }
+    void asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, Class c) {
+        print "call";
+        print stmt;
+        print espidx;
+        print tkMTD;
+        print mtd;
+        print c;
+    }
+    void asmCALL1(Stmt stmt, int espidx, Stmt expr1, Stmt stmtPost) {
+        print "call";
+        print stmt;
+        print espidx;
+        print expr1;
+        print stmtPost;
+    }
+    void asmBOX(Stmt stmt, int espidx, Class c, Stmt expr) {
+        print "box";
+        print stmt;
+        print espidx;
+        print c;
+        print expr;
+
+    }
+    void asmOPR(Stmt stmt, int espidx, Method mtd, Class c, Stmt lhs, Stmt rhs) {
+        print "opr";
+        print stmt;
+        print espidx;
+        print mtd;
+        print c;
+        print lhs;
+        print rhs;
+    }
+    void asmNEW(Stmt stmt, int espidx, Class thisCid, Method mtd) {
+        print "new";
+        print stmt;
+        print espidx;
+        print thisCid;
+        print mtd;
+    }
+    void asmTCAST(Stmt stmt, int espidx, TypeMap tmr, Stmt expr) {
+        print "tcast";
+        print stmt;
+        print espidx;
+        print tmr;
+        print expr;
+    }
+    void asmAND(Stmt stmt, int espidx) {
+        print "and";
+        print stmt;
+        print espidx;
+    }
+    void asmOR(Stmt stmt, int espidx) {
+        print "or";
+        print stmt;
+        print espidx;
+    }
+    void asmALT(Stmt stmt, int espidx) {
+        /* TODO */
+    }
+    void asmTRI(Stmt stmt, int espidx, Stmt cond, Stmt lhs, Stmt rhs) {
+        /* use CreateSelect */
+        print "tri";
+        print espidx;
+        print cond;
+        print lhs;
+        print rhs;
+    }
+    void asmSEND(Stmt stmt, int espidx) {
+        print "send";
+        print stmt;
+        print espidx;
+    }
+    void asmW1(Stmt stmt, int espidx, Method mtd, Token streamTk, Stmt expr) {
+        print "W1";
+        print stmt;
+        print espidx;
+        print mtd;
+        print streamTk;
+        print expr;
+    }
+    void asmFMTCALL(Stmt stmt, int espidx) {
+        /* TODO */
+    }
+}
 void Compiler.constructKonohaTypes() {
-    print "hi";
     int32Ty = Type.getInt32Ty();
     int64Ty = Type.getInt64Ty();
     int8PtrTy = Type.getInt8PtrTy();
@@ -2040,7 +2042,5 @@ void Compiler.constructKonohaTypes() {
     type = StructType.get(fields, false);
     m.addTypeName("RET_t", type);
     ktype["RET"] = PointerType.get(type);
-
-    print "Constructkonohatypes end";
 }
 
