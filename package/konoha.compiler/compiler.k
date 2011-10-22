@@ -148,29 +148,51 @@ class Compiler {
     }
     void asmSWITCH(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
         print "switch";
+        print stmtC;
+        print stmtBody;
     }
     void asmWHILE(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
         print "while";
+        print stmt;
+        print stmtC;
+        print stmtBody;
     }
     void asmDO(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
         print "do-while";
+        print stmtC;
+        print stmtBody;
     }
     void asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBody) {
         print "for";
+        print stmt1;
+        print stmt2;
+        print stmt3;
+        print stmtBody;
     }
     void asmFOREACH(Stmt stmt, Token tkVar, Stmt stmtItr, Stmt stmtBody, Stmt stmtVar) {
         print "foreach";
+        print tkVar;
+        print stmtItr;
+        print stmtBody;
+        print stmtVar;
     }
     void asmBREAK(Stmt stmt, Stmt stmtLabel) {
         print "break";
+        print stmtLabel;
     }
     void asmCONTINUE(Stmt stmt, Stmt stmtLabel) {
         print "continue";
+        print stmtLabel;
     }
     void asmTRY(Stmt stmt, Stmt stmtTry, Stmt stmtCATCH, Stmt stmtFINAL) {
         print "try";
+        print stmtTry;
+        print stmtCATCH;
+        print stmtFINAL;
     }
     void asmTHROW(Stmt stmt) {
+        print "throw";
+        print stmt;
         //int espidx = stmt.getESPIDX;
         //print espidx;
     }
@@ -179,6 +201,8 @@ class Compiler {
             print "return;";
         } else {
             print "return expr;";
+            print stmt;
+            print stmtRetExpr;
         }
     }
     void asmYIELD(Stmt stmt) {
@@ -188,43 +212,113 @@ class Compiler {
         /* TODO */
     }
     void asmASSURE(Stmt stmt, Stmt stmtInit, Stmt stmtBody) {
+        print "assure";
+        print stmtInit;
+        print stmtBody;
     }
     void asmASSERT(Stmt stmt, Stmt cond) {
+        print "assert";
+        print cond;
     }
     void asmERR(Stmt stmt, Token tkERR) {
+        print "err";
+        print tkERR;
     }
 
     @Native void asmEXPR(Stmt stmt, int espidx);
     void asmLETEXPR(Stmt stmt, int espidx, Token tkL, Stmt expr) {
         print "Hi";
+        print espidx;
+        print tkL;
+        print expr;
     }
     void asmFUNCCALL(Stmt stmt, int espidx, Method mtd, Class c, Stmt stmt) {
+        print "funccall";
+        print stmt;
+        print espidx;
+        print mtd;
+        print c;
+        print stmt;
     }
     void asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, Class c) {
+        print "call";
+        print stmt;
+        print espidx;
+        print tkMTD;
+        print mtd;
+        print c;
     }
     void asmCALL1(Stmt stmt, int espidx, Stmt expr1, Stmt stmtPost) {
+        print "call";
+        print stmt;
+        print espidx;
+        print expr1;
+        print stmtPost;
     }
     void asmBOX(Stmt stmt, int espidx, Class c, Stmt expr) {
+        print "box";
+        print stmt;
+        print espidx;
+        print c;
+        print expr;
+
     }
     void asmOPR(Stmt stmt, int espidx, Method mtd, Class c, Stmt lhs, Stmt rhs) {
+        print "opr";
+        print stmt;
+        print espidx;
+        print mtd;
+        print c;
+        print lhs;
+        print rhs;
     }
     void asmNEW(Stmt stmt, int espidx, Class thisCid, Method mtd) {
+        print "new";
+        print stmt;
+        print espidx;
+        print thisCid;
+        print mtd;
     }
     void asmTCAST(Stmt stmt, int espidx, TypeMap tmr, Stmt expr) {
+        print "tcast";
+        print stmt;
+        print espidx;
+        print tmr;
+        print expr;
     }
     void asmAND(Stmt stmt, int espidx) {
+        print "and";
+        print stmt;
+        print espidx;
     }
     void asmOR(Stmt stmt, int espidx) {
+        print "or";
+        print stmt;
+        print espidx;
     }
     void asmALT(Stmt stmt, int espidx) {
         /* TODO */
     }
     void asmTRI(Stmt stmt, int espidx, Stmt cond, Stmt lhs, Stmt rhs) {
         /* use CreateSelect */
+        print "tri";
+        print espidx;
+        print cond;
+        print lhs;
+        print rhs;
     }
     void asmSEND(Stmt stmt, int espidx) {
+        print "send";
+        print stmt;
+        print espidx;
     }
     void asmW1(Stmt stmt, int espidx, Method mtd, Token streamTk, Stmt expr) {
+        print "W1";
+        print stmt;
+        print espidx;
+        print mtd;
+        print streamTk;
+        print expr;
     }
     void asmFMTCALL(Stmt stmt, int espidx) {
         /* TODO */

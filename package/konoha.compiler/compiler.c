@@ -96,17 +96,23 @@ static void kook_IF_asm(CTX ctx, knh_Stmt_t *stmt)
 
 static void kook_SWITCH_asm(CTX ctx, knh_Stmt_t *stmt)
 {
-    KNH_TODO("");
+    knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
+    knh_Stmt_t *stmt1 = stmtNN(stmt, 1);
+    CALL(ctx, COMPILER_API.SWITCH, 3, stmt, stmt0, stmt1);
 }
 
 static void kook_WHILE_asm(CTX ctx, knh_Stmt_t *stmt)
 {
-    KNH_TODO("");
+    knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
+    knh_Stmt_t *stmt1 = stmtNN(stmt, 1);
+    CALL(ctx, COMPILER_API.WHILE, 3, stmt, stmt0, stmt1);
 }
 
 static void kook_DO_asm(CTX ctx, knh_Stmt_t *stmt)
 {
-    KNH_TODO("");
+    knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
+    knh_Stmt_t *stmt1 = stmtNN(stmt, 1);
+    CALL(ctx, COMPILER_API.DO, 3, stmt, stmt0, stmt1);
 }
 
 static void kook_FOR_asm(CTX ctx, knh_Stmt_t *stmt)
@@ -124,22 +130,34 @@ static void kook_FOREACH_asm(CTX ctx, knh_Stmt_t *stmt)
 
 static void kook_BREAK_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
+    CALL(ctx, COMPILER_API.BREAK, 2, stmt, stmt0);
 }
 
 static void kook_CONTINUE_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
+    CALL(ctx, COMPILER_API.CONTINUE, 2, stmt, stmt0);
 }
 
 static void kook_TRY_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
+    knh_Stmt_t *stmt1 = stmtNN(stmt, 1);
+    knh_Stmt_t *stmt2 = stmtNN(stmt, 2);
+    CALL(ctx, COMPILER_API.TRY, 4, stmt, stmt0, stmt1, stmt2);
 }
 
 static void kook_THROW_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
+    CALL(ctx, COMPILER_API.THROW, 2, stmt, stmt0);
 }
 
 static void kook_RETURN_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
+    CALL(ctx, COMPILER_API.RETURN, 2, stmt, stmt0);
 }
 
 static void kook_YIELD_asm(CTX ctx, knh_Stmt_t *stmt)
@@ -152,6 +170,9 @@ static void kook_PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
 
 static void kook_ASSURE_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
+    knh_Stmt_t *stmt1 = stmtNN(stmt, 1);
+    CALL(ctx, COMPILER_API.ASSURE, 3, stmt, stmt0, stmt1);
 }
 
 static void kook_ASSERT_asm(CTX ctx, knh_Stmt_t *stmt)
