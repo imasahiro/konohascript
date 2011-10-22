@@ -70,10 +70,12 @@ class Charset extends String;
 @Public @Native Token Stmt.getT(int n);
 @Public @Native Token Stmt.getS(int n);
 @Public @Native int Stmt.getStmtType();
-@Public @Native int Token.getTokenType();
 @Public @Native Object Token.getD();
 @Public @Native Token Stmt.toToken();
-@Public @Native int Token.getIndex();
+@Public @Native Stmt Stmt.getStmtPost();
+@Public @Native int Token.getTT();
+@Public @Native int Token.getT();
+@Public @Native int Token.getTokenIndex();
 
 /* *****************
 @Native class Symbol;

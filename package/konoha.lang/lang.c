@@ -94,9 +94,14 @@ KMETHOD Stmt_getStmtType(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
     RETURNi_(STT_(stmt));
 }
+//## Stmt Stmt.getStmtPost();
+KMETHOD Stmt_getStmtPost(CTX ctx, knh_sfp_t *sfp _RIX) {
+    knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
+    RETURN_(DP(stmt)->stmtPOST);
+}
 
-//## int Token.getTokenType();
-KMETHOD Token_getTokenType(CTX ctx, knh_sfp_t *sfp _RIX) {
+//## int Token.getTT();
+KMETHOD Token_getTT(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
     RETURNi_(TT_(tk));
 }
@@ -117,10 +122,21 @@ KMETHOD Stmt_toToken(CTX ctx, knh_sfp_t *sfp _RIX) {
     RETURN_(tk);
 }
 
-//## int Token.getIndex();
-KMETHOD Token_getIndex(CTX ctx, knh_sfp_t *sfp _RIX) {
-    knh_Token_t *tk = (knh_Token_t *) sfp[0].o;
-    RETURNi_(tk->index);
+//## int Token.getT();
+KMETHOD Token_getT(CTX ctx, knh_sfp_t *sfp _RIX) {
+    knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
+    RETURNi_(SP(tk)->type);
+}
+
+static int Token_index_(CTX ctx, knh_Token_t *tk) 
+{
+    return (int)(tk)->index;
+}
+
+//## int Token.getTokenIndex();
+KMETHOD Token_getTokenIndex(CTX ctx, knh_sfp_t *sfp _RIX) {
+    knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
+    RETURNi_(Token_index_(ctx, tk));
 }
 
 ///* ------------------------------------------------------------------------ */
