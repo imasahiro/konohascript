@@ -337,9 +337,11 @@ static knh_context_t* new_RootContext(void)
 	share->gcStopCounter = 0;
 	KNH_INITv(share->contextListNULL, new_Array0(ctx, 4));
 	knh_Array_add(ctx, ctx->share->contextListNULL, knh_toContext(ctx));
+#if defined(K_USING_THREAD)
 	share->stop_cond = knh_thread_cond_init(ctx);
 	share->start_cond = knh_thread_cond_init(ctx);
 	share->close_cond = knh_thread_cond_init(ctx);
+#endif
 	return ctx;
 }
 

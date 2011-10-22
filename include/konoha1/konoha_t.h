@@ -475,7 +475,33 @@ typedef knh_uintptr_t             knh_uline_t;
 #if defined(K_USING_WINTHREAD_)
 #define knh_thread_t HANDLE
 #define knh_thread_key_t DWORD
+
+// reference URL: http://www.cs.wustl.edu/~schmidt/win32-cv-1.html
+
+enum {
+	E_SIGNAL = 0,
+	E_BROADCAST = 1,
+	E_MAX_EVENTS = 2
+};
+
+typedef struct {
+	HANDLE events_[E_MAX_EVENTS];
+	// Signal and broadcast event HANDLEs.
+} knh_cond_t;
+
 #define knh_mutex_t CRITICAL_SECTION
+
+typedef struct {
+	// Current count of the semaphore.
+	u_int count_;
+	// Number of threads that have called <sema_wait>.  
+	u_long waiters_count_;
+	// Serialize access to <count_> and <waiters_count_>.
+	knh_mutex_t lock_;
+	// Condition variable that blocks the <count_> 0.
+	knh_cond_t count_nonzero_;
+} sema_t;
+
 #elif defined(K_USING_PTHREAD)
 #define knh_thread_t pthread_t
 #define knh_thread_key_t pthread_key_t

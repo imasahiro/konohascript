@@ -47,10 +47,6 @@
 #include <process.h>
 #endif
 
-#ifdef K_USING_MINGW_
-#undef K_USING_WINTHREAD_
-#endif
-
 /* ************************************************************************ */
 
 #ifdef __cplusplus
@@ -120,7 +116,7 @@ int knh_thread_create(CTX ctx, knh_thread_t *thread, void *attr, knh_Fthread fgo
 	*thread = err;
 	return 0;
 #elif defined(K_USING_WINTHREAD_)
-	return _beginthread((void (__cdecl *)(void *))fgo, 0, NULL);
+	return _beginthread((void (__cdecl *)(void *))fgo, 0, arg);
 #else
 	return -1;
 #endif
@@ -351,7 +347,7 @@ void knh_mutex_free(CTX ctx, knh_mutex_t *m)
 	free(m);
 }
 
-#ifdef K_USING_PTHREAD
+#if defined(K_USING_PTHREAD)
 
 knh_cond_t *knh_thread_cond_init(CTX ctx)
 {
@@ -374,7 +370,56 @@ int knh_thread_cond_broadcast(knh_cond_t *cond)
 {
 	return pthread_cond_broadcast((pthread_cond_t *)cond);
 }
-#endif
+
+#elif defined(K_USING_WINTHREAD_)
+#warning "DEFINED K_USING_WINTHREAD_"
+
+// reference URL: http://www.cs.wustl.edu/~schmidt/win32-cv-1.html
+
+knh_cond_t *knh_thread_cond_init(CTX ctx)
+{
+	knh_cond_t *c = (knh_cond_t *)KNH_MALLOC(ctx, sizeof(knh_cond_t));
+	// Create an auto-reset event.
+	c->events_[E_SIGNAL] = CreateEvent(NULL,  // no security
+			FALSE, // auto-reset event
+			FALSE, // non-signaled initially
+			NULL); // unnamed
+	// Create a manual-reset event.
+	c->events_[E_BROADCAST] = CreateEvent(NULL,  // no security
+			TRUE,  // manual-reset
+			FALSE, // non-signaled initially
+			NULL); // unnamed
+	return c;
+}
+
+int knh_thread_cond_wait(knh_cond_t *cond, knh_mutex_t *m)
+{
+	// Release the <external_mutex> here and wait for either event
+	// to become signaled, due to <pthread_cond_signal> being
+	// called or <pthread_cond_broadcast> being called.
+	LeaveCriticalSection(m);
+	WaitForMultipleObjects(2, // Wait on both <events_>
+			cond->events_,
+			FALSE, // Wait for either event to be signaled
+			INFINITE); // Wait "forever"
+	// Reacquire the mutex before returning.
+	EnterCriticalSection(m);
+	return 0;
+}
+
+int knh_thread_cond_signal(knh_cond_t *cond)
+{
+	// Try to release one waiting thread.
+	return PulseEvent(cond->events_[E_SIGNAL]);
+}
+
+int knh_thread_cond_broadcast(knh_cond_t *cond)
+{
+	// Try to release all waiting threads.
+	return PulseEvent(cond->events_[E_BROADCAST]);
+}
+
+#endif /* defined(K_USING_WINTHREAD_) */
 
 /* ------------------------------------------------------------------------ */
 /* [TLS] */

@@ -263,9 +263,9 @@ typedef struct knh_sysinfo_t {
 /* [API] */
 
 /* officially supported */
-#define K_USING_PTHREAD
 
 #if defined(__linux__)
+#define		K_USING_PTHREAD
 #define		K_USING_STDC_    1
 #define 	K_USING_POSIX_   1
 #define 	K_USING_LINUX_   1
@@ -276,6 +276,7 @@ typedef struct knh_sysinfo_t {
 #endif
 
 #if defined(__APPLE__) /* MacOS X */
+#define		K_USING_PTHREAD
 #define		K_USING_STDC_    1
 #define 	K_USING_POSIX_      1
 #define 	K_USING_BSD_        1
@@ -295,9 +296,7 @@ typedef struct knh_sysinfo_t {
 #define     K_USING_ICONV       1
 //#define     K_USING_SYSLOG       1   // if not available, report to konohaken
 #define     K_USING_SQLITE3  1
-#if defined(K_USING_THREAD)
 #define		K_USING_WINTHREAD_   1
-#endif
 #define 	K_OSLINEFEED "\r\n"
 #define 	K_OSDLLEXT ".dll"
 #define		K_SEP '\\'
@@ -312,9 +311,7 @@ typedef struct knh_sysinfo_t {
 #define     K_USING_SYSLOG       1   // if not available, report to konohaken
 #define     K_USING_SQLITE3  1
 #define     K_USING_PCRE     1
-#if defined(K_USING_THREAD)
 #define		K_USING_WINTHREAD_   1
-#endif
 #if defined(_WIN64)
 #define		K_USING_WIN64_   1
 #endif
