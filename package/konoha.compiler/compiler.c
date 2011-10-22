@@ -223,10 +223,10 @@ static void kook_FMTCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 }
 
 #define STT_LETEXPR  STT_LET
-#define CASE_ASM(XX, ...) case STT_##XX : do { \
+#define CASE_ASM(XX, ...) case STT_##XX : { \
     kook_##XX##_asm(ctx, stmt, ## __VA_ARGS__); \
     break;\
-} while(0)
+}
 
 static void kook_EXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {

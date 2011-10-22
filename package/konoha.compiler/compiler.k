@@ -34,7 +34,7 @@ class Compiler {
     }
     void asm(Stmt stmt, Token tk, int espidx) {
         if (tk.isNotNULL()) {
-            /* ASM_SMOV(); */
+            print "ASM_SMOV();"
         } else {
             asmEXPR(stmt, espidx);
         }
@@ -51,7 +51,7 @@ class Compiler {
     void asmLET(Stmt stmt, Token tkL, Stmt tkV, Token tkVTk) {
         int espidx = stmt.getESPIDX();
         if (tkVTk.isNotNull()) {
-            /* ASM_MOV(lhs, tkV, espidx); */
+            print "ASM_MOV(lhs, tkV, espidx);";
         } else {
             asm(tkV, tkVTk);
             print espidx;
@@ -102,8 +102,9 @@ class Compiler {
     void asmERR(Stmt stmt, Token tkERR) {
     }
 
-    void asmEXPR(Stmt stmt);
+    @Native void asmEXPR(Stmt stmt);
     void asmLETEXPR(Stmt stmt, int espidx, Token tkL, Stmt expr) {
+        print "Hi";
     }
     void asmFUNCCALL(Stmt stmt, int espidx, Method mtd, Class c, Stmt stmt) {
     }
