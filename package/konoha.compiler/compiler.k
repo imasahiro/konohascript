@@ -1201,6 +1201,7 @@ void Compiler.asm_smov(int alocal, Token tk) {
     }
 }
 void Compiler.asm(Stmt stmt, Token tk, int espidx) {
+    print tk.isNotNULL();
     if (tk.isNotNULL()) {
         asm_smov(espidx, tk);
     } else {
@@ -1242,16 +1243,24 @@ void Compiler.asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
     print stmtThen;
     print stmtElse;
     print "", stmtCond.toToken();
-    asm(stmtCond, stmtCond.toToken());
-    int bbsize = |kfunc.bbs|;
-    K_BasicBlock bbThen = new K_BasicBlock(bbsize + 0);
-    K_BasicBlock bbElse = new K_BasicBlock(bbsize + 1);
-    K_BasicBlock bb     = new K_BasicBlock(bbsize + 2);
-    kfunc.curBB = bbThen;kfunc.bbs.add(bbThen);
+    asm(stmtCond, stmtCond.toToken(), stmt.getESPIDX());
+    K_Value kvalue = kfunc.getKValue(stmt.getESPIDX(), type);
+    kvalue.dump();
+    K_BasicBlock bbThen = new K_BasicBlock(kfunc.bbs.size);
+    K_BasicBlock bbElse = new K_BasicBlock(kfunc.bbs.size);
+    K_BasicBlock bb     = new K_BasicBlock(kfunc.bbs.size);
+
+    kfunc.bbs.add(bbThen, bbElse, bb);
+    kfunc.curBB = bbThen;
     asmBlock(stmtThen);
-    kfunc.curBB = bbElse;kfunc.bbs.add(bbElse);
+    K_Inst jmp = new K_JMP(new K_JMPop(bb.bbidx));
+    kfunc.curBB.insts.add(jmp);
+
+    kfunc.curBB = bbElse;
     asmBlock(stmtElse);
-    kfunc.curBB = bb;kfunc.bbs.add(bb);
+    K_Inst jmp = new K_JMP(new K_JMPop(bb.bbidx));
+    kfunc.curBB.insts.add(jmp);
+    kfunc.curBB = bb;
 }
 void Compiler.asmSWITCH(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
     print "switch";
