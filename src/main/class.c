@@ -1587,17 +1587,6 @@ static TYPEMAP Ftypemap_null(CTX ctx, knh_sfp_t *sfp _RIX)
 	KNH_TODO("null translator");
 }
 
-///* ------------------------------------------------------------------------ */
-//
-//static TYPEMAP Ftypemap_method(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_Method_t *mtd = DP(sfp[0].trlNC)->mtd;
-//	DBG_ASSERT(IS_Method(mtd));
-//	KNH_SETv(ctx, sfp[1+K_CALLDELTA].o, sfp[0].o);
-//	KNH_SCALL(ctx, sfp, 1, mtd, /*argc*/, 0);
-//	RETURN(ctx, sfp, rtnidx, sfp[1+K_CALLDELTA].o);
-//}
-
 /* ------------------------------------------------------------------------ */
 
 KNHAPI2(knh_TypeMap_t*) new_TypeMap(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func)
@@ -1635,17 +1624,31 @@ static TYPEMAP Ftypemap_method(CTX ctx, knh_sfp_t *sfp _RIX)
 	DBG_ASSERT(IS_Method(mtd));
 	DBG_ASSERT(sfp < lsfp);
 	KNH_SETv(ctx, lsfp[0+K_CALLDELTA+1].o, sfp[0].o);
+//	lsfp[0+K_CALLDELTA+1].ndata = sfp[0].ndata;  // no necessary
+	KNH_SCALL(ctx, lsfp, 0, mtd, 1);
+	KNH_SETv(ctx, sfp[K_RIX].o, lsfp[0].o);
+	sfp[K_RIX].ndata = lsfp[0].ndata;
+}
+
+static TYPEMAP Ftypemap_methodN(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_TypeMap_t *tmr = sfp[K_TMRIDX].tmr;
+	knh_Method_t *mtd = tmr->mtd;
+	knh_sfp_t *lsfp = ctx->esp;
+	DBG_ASSERT(IS_Method(mtd));
+	DBG_ASSERT(sfp < lsfp);
+//	KNH_SETv(ctx, lsfp[0+K_CALLDELTA+1].o, sfp[0].o); // no necessary
 	lsfp[0+K_CALLDELTA+1].ndata = sfp[0].ndata;
 	KNH_SCALL(ctx, lsfp, 0, mtd, 1);
 	KNH_SETv(ctx, sfp[K_RIX].o, lsfp[0].o);
 	sfp[K_RIX].ndata = lsfp[0].ndata;
-	DBG_P("maped cid=%s ivalue=%d", CLASS__(O_cid(sfp[K_RIX].o)), sfp[K_RIX].ivalue);
 }
 
 knh_TypeMap_t *new_TypeMapMethod(CTX ctx, knh_flag_t flag, knh_Method_t *mtd)
 {
 	knh_class_t scid = knh_ParamArray_get(DP(mtd)->mp, 0)->type, tcid = knh_ParamArray_rtype(DP(mtd)->mp);
-	knh_TypeMap_t *tmr = new_TypeMap(ctx, flag, scid, tcid, Ftypemap_method);
+	knh_Ftypemap f = IS_Tunbox(scid) ? Ftypemap_methodN : Ftypemap_method;
+	knh_TypeMap_t *tmr = new_TypeMap(ctx, flag, scid, tcid, f);
 	KNH_SETv(ctx, tmr->mtd, mtd);
 	return tmr;
 }
