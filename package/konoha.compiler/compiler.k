@@ -1517,14 +1517,19 @@ class Compiler {
     }
     /* stmt = {...} */
     @Native void asmBLOCK(Stmt stmt);
+    void asm_mov(Token tka, Token tkb, int espidx) {
+        if (tka.tokenType == Token.FIELD) {
+        }
+    }
     /* stmt = let stmt[1] = stmt[2] */
     void asmLET(Stmt stmt, Token tkL, Stmt tkV, Token tkVTk) {
         int espidx = stmt.getESPIDX();
         if (tkVTk.isNotNull()) {
+            int index = tkL.getIndex();
             print "ASM_MOV(lhs, tkV, espidx);", tkL, tkV;
         } else {
             asm(tkV, tkVTk, espidx);
-            print espidx;
+            print espidx, tkV, tkVTk;
         }
     }
     /* stmt = if stmt[0] then stmt[1]:BLOCK else stmt[2] endif */

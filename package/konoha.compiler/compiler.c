@@ -31,16 +31,25 @@
 #define CAST(T, O)    ((T) O)
 #define WRAP(p) ((void*)p)
 #define tkNN(stmt, n)        (stmt)->tokens[(n)]
+#define tmNN(stmt, n)        (stmt)->terms[(n)]
 #define stmtNN(stmt, n)      (stmt)->stmts[(n)]
 #define STT_(stmt)   SP(stmt)->stt
 #define TT_(tk)   SP(tk)->tt
+#define Tn_type(stmt, n)     SP(tmNN(stmt, n))->type
+#define Tn_cid(stmt, n)      CLASS_t(Tn_type(stmt, n))
 
-#define SET0(n, o0)                     KNH_SETv(ctx, lsfp[n].o, o0)
-#define SET1(n, o0, o1)                 SET0(n, o0);                SET0(n+1, o1)
-#define SET2(n, o0, o1, o2)             SET1(n, o0, o1);            SET0(n+2, o2)
-#define SET3(n, o0, o1, o2, o3)         SET2(n, o0, o1, o2);        SET0(n+3, o3)
-#define SET4(n, o0, o1, o2, o3, o4)     SET3(n, o0, o1, o2, o3);    SET0(n+4, o4)
-#define SET5(n, o0, o1, o2, o3, o4, o5) SET4(n, o0, o1, o2, o3, o4);SET0(n+5, o5)
+#define NN(n) new_Int(ctx, n)
+#define SET0(n, a) do {\
+    KNH_SETv(ctx, lsfp[n].o, a);\
+    lsfp[n].ndata = O_data(a);\
+} while (0)
+
+#define SET1(n, a, b)                SET0(n, a);               SET0(n+1, b)
+#define SET2(n, a, b, c)             SET1(n, a, b);            SET0(n+2, c)
+#define SET3(n, a, b, c, d)          SET2(n, a, b, c);         SET0(n+3, d)
+#define SET4(n, a, b, c, d, e)       SET3(n, a, b, c, d);      SET0(n+4, e)
+#define SET5(n, a, b, c, d, e, f)    SET4(n, a, b, c, d, e);   SET0(n+5, f)
+#define SET6(n, a, b, c, d, e, f, g) SET5(n, a, b, c, d, e, f);SET0(n+6, g)
 
 #define CALL_(ctx, lsfp, mtd, argc) KNH_SCALL(ctx, lsfp, 0, mtd, argc)
 #define CALL(ctx, mtd, n, ...) do {\
@@ -126,6 +135,11 @@ static void kook_FOR_asm(CTX ctx, knh_Stmt_t *stmt)
 
 static void kook_FOREACH_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    knh_Token_t *tkVar = tkNN(stmt, 0);
+    knh_Stmt_t *stmt1 = stmtNN(stmt, 1);
+    knh_Stmt_t *stmt2 = stmtNN(stmt, 2);
+    knh_Stmt_t *stmt3 = stmtNN(stmt, 3);
+    CALL(ctx, COMPILER_API.FOREACH, 5, stmt, tkVar, stmt1, stmt2, stmt3);
 }
 
 static void kook_BREAK_asm(CTX ctx, knh_Stmt_t *stmt)
@@ -162,10 +176,12 @@ static void kook_RETURN_asm(CTX ctx, knh_Stmt_t *stmt)
 
 static void kook_YIELD_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    KNH_TODO("");
 }
 
 static void kook_PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    KNH_TODO("");
 }
 
 static void kook_ASSURE_asm(CTX ctx, knh_Stmt_t *stmt)
@@ -177,50 +193,88 @@ static void kook_ASSURE_asm(CTX ctx, knh_Stmt_t *stmt)
 
 static void kook_ASSERT_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
+    CALL(ctx, COMPILER_API.ASSERT, 2, stmt, stmt0);
 }
 
 static void kook_ERR_asm(CTX ctx, knh_Stmt_t *stmt)
 {
+    knh_Token_t *tkErr = tkNN(stmt, 0);
+    CALL(ctx, COMPILER_API.ERR, 2, stmt, tkErr);
 }
 
 static void kook_LETEXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
+    knh_Token_t *tk = tkNN(stmt, 0);
+    CALL(ctx, COMPILER_API.LETEXPR, 3, stmt, NN(espidx), tk);
 }
 
 static void kook_FUNCCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
+    knh_Method_t *mtd = tkNN(stmt, 0)->mtd;
+    knh_class_t cid = Tn_cid(stmt, 1);
+    knh_Stmt_t *stmt0 = stmtNN(stmt, 1);
+    knh_Class_t *c = new_Type(ctx, cid);
+    CALL(ctx, COMPILER_API.FUNCCALL, 5, stmt, NN(espidx), mtd, c, stmt0);
 }
 
 static void kook_CALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
+    knh_Method_t *mtd = tkNN(stmt, 0)->mtd;
+    knh_class_t cid = Tn_cid(stmt, 1);
+    knh_Stmt_t *stmt0 = stmtNN(stmt, 2);
+    knh_Class_t *c = new_Type(ctx, cid);
+    CALL(ctx, COMPILER_API.CALL, 5, stmt, NN(espidx), mtd, c, stmt0);
 }
 
 static void kook_CALL1_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
+    knh_Stmt_t *expr1 = stmtNN(stmt, 0);
+    knh_Stmt_t *stmtPost = DP(stmt)->stmtPOST;
+    CALL(ctx, COMPILER_API.CALL1, 4, stmt, NN(espidx), expr1, stmtPost);
 }
 
 static void kook_BOX_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
+    knh_class_t cid = Tn_cid(stmt, 0);
+    knh_Stmt_t *expr = stmtNN(stmt, 0);
+    knh_Class_t *c = new_Type(ctx, cid);
+    CALL(ctx, COMPILER_API.BOX, 4, stmt, NN(espidx), c, expr);
 }
 
 static void kook_OPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
+    knh_Method_t *mtd = tkNN(stmt, 0)->mtd;
+    knh_class_t cid = Tn_cid(stmt, 1);
+    knh_Stmt_t *lhs = stmtNN(stmt, 1);
+    knh_Stmt_t *rhs = stmtNN(stmt, 2);
+    knh_Class_t *c = new_Type(ctx, cid);
+    CALL(ctx, COMPILER_API.OPR, 6, stmt, NN(espidx), mtd, c, lhs, rhs);
 }
 
 static void kook_NEW_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
+    knh_Method_t *mtd = tkNN(stmt, 0)->mtd;
+    knh_class_t cid = Tn_cid(stmt, 1);
+    knh_Class_t *c = new_Type(ctx, cid);
+    CALL(ctx, COMPILER_API.NEW, 4, stmt, NN(espidx), c, mtd);
 }
 
 static void kook_TCAST_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
+    knh_TypeMap_t *tmr = tkNN(stmt, 0)->mpr;
+    knh_Stmt_t *expr = stmtNN(stmt, 0);
+    CALL(ctx, COMPILER_API.TCAST, 4, stmt, NN(espidx), tmr, expr);
 }
 
 static void kook_AND_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
+    CALL(ctx, COMPILER_API.AND, 2, stmt, NN(espidx));
 }
 
 static void kook_OR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
+    CALL(ctx, COMPILER_API.OR, 2, stmt, NN(espidx));
 }
 
 static void kook_ALT_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
@@ -229,18 +283,31 @@ static void kook_ALT_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 
 static void kook_TRI_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
+    knh_Stmt_t *stmt1 = stmtNN(stmt, 1);
+    knh_Stmt_t *stmt2 = stmtNN(stmt, 2);
+    knh_Stmt_t *stmt3 = stmtNN(stmt, 3);
+    CALL(ctx, COMPILER_API.TRI, 5, stmt, NN(espidx), stmt1, stmt2, stmt3);
 }
 
 static void kook_SEND_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
+    CALL(ctx, COMPILER_API.SEND, 2, stmt, NN(espidx));
 }
 
 static void kook_W1_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
+    knh_Method_t *mtd = tkNN(stmt, 0)->mtd;
+    knh_Token_t *streamTk = tkNN(stmt, 1);
+    knh_Stmt_t *expr = stmtNN(stmt, 2);
+    CALL(ctx, COMPILER_API.W1, 5, stmt, NN(espidx), mtd, streamTk, expr);
 }
 
 static void kook_FMTCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
+    knh_Method_t *mtd = tkNN(stmt, 0)->mtd;
+    knh_Token_t *streamTk = tkNN(stmt, 1);
+    knh_Stmt_t *expr = stmtNN(stmt, 2);
+    CALL(ctx, COMPILER_API.W1, 5, stmt, NN(espidx), mtd, streamTk, expr);
 }
 
 #define STT_LETEXPR  STT_LET
