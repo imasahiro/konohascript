@@ -26,20 +26,36 @@
 
 using konoha.lang.*;
 using konoha.llvm.*;
+include "lib:gluelink";
 
 class Compiler {
     Compiler() {
         print "hello";
     }
-    void asm(Stmt stmt) {
+    void asm(Stmt stmt, Token tk, int espidx) {
+        if (tk.isNotNULL()) {
+            /* ASM_SMOV(); */
+        } else {
+            asmEXPR(stmt, espidx);
+        }
+    }
+    void init(Method mtd) {
+        print "init ", mtd;
     }
     void emit(Method mtd) {
         print "emit ", mtd;
     }
     /* stmt = {...} */
-    @Native void asmBLOCK(Stmt stmt) {}
+    @Native void asmBLOCK(Stmt stmt);
     /* stmt = let stmt[1] = stmt[2] */
-    void asmLET(Stmt stmt, Stmt lhs, Stmt rhs) {
+    void asmLET(Stmt stmt, Token tkL, Stmt tkV, Token tkVTk) {
+        int espidx = stmt.getESPIDX();
+        if (tkVTk.isNotNull()) {
+            /* ASM_MOV(lhs, tkV, espidx); */
+        } else {
+            asm(tkV, tkVTk);
+            print espidx;
+        }
     }
     /* stmt = if stmt[0] then stmt[1]:BLOCK else stmt[2] endif */
     void asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
@@ -1606,4 +1622,3 @@ class K_RET extends K_Inst {
     }
 }
 
-include "lib:gluelink";

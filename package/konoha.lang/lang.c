@@ -39,63 +39,70 @@ extern "C" {
 
 //## int TypeMap.getSource();
 KMETHOD TypeMap_getSource(CTX ctx, knh_sfp_t *sfp _RIX) {
-  knh_TypeMap_t *tmr = sfp[0].tmr;
-  RETURNi_(tmr->scid);
+    knh_TypeMap_t *tmr = sfp[0].tmr;
+    RETURNi_(tmr->scid);
 }
 
 //## int TypeMap.getTarget();
 KMETHOD TypeMap_getTarget(CTX ctx, knh_sfp_t *sfp _RIX) {
-  knh_TypeMap_t *tmr = sfp[0].tmr;
-  RETURNi_(tmr->tcid);
+    knh_TypeMap_t *tmr = sfp[0].tmr;
+    RETURNi_(tmr->tcid);
 }
 
 //## int Stmt.getStmtSize();
 KMETHOD Stmt_getStmtSize(CTX ctx, knh_sfp_t *sfp _RIX) {
-  knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
-  RETURNi_(DP(stmt)->size);
+    knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
+    RETURNi_(DP(stmt)->size);
+}
+
+//## int Stmt.getESPIDX();
+KMETHOD Stmt_getESPIDX(CTX ctx, knh_sfp_t *sfp _RIX) {
+    knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
+    RETURNi_(DP(stmt)->espidx);
 }
 
 //## Token Stmt.getT(int n);
 KMETHOD Stmt_getT(CTX ctx, knh_sfp_t *sfp _RIX) {
-  knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
-  knh_int_t i = Int_to(knh_int_t, sfp[1]);
-  RETURN_(tkNN(stmt, i));
+    knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
+    knh_int_t i = Int_to(knh_int_t, sfp[1]);
+    RETURN_(tkNN(stmt, i));
 }
 
 //## Stmt Stmt.next();
 KMETHOD Stmt_next(CTX ctx, knh_sfp_t *sfp _RIX) {
-  knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
-  knh_Stmt_t *res = DP(stmt)->nextNULL;
-  if (res) {
-	RETURN_(res);
-  } else {
-	RETURN_(KNH_NULL);
-  }
+    knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
+    knh_Stmt_t *res = DP(stmt)->nextNULL;
+    if (res) {
+        RETURN_(res);
+    } else {
+        RETURN_(KNH_NULL);
+    }
 }
 
 //## Token Stmt.getS(int n);
 KMETHOD Stmt_getS(CTX ctx, knh_sfp_t *sfp _RIX) {
-  knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
-  knh_int_t i = Int_to(knh_int_t, sfp[1]);
-  RETURN_(stmtNN(stmt, i));
+    knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
+    knh_int_t i = Int_to(knh_int_t, sfp[1]);
+    RETURN_(stmtNN(stmt, i));
 }
 
 //## int Stmt.getStmtType();
 KMETHOD Stmt_getStmtType(CTX ctx, knh_sfp_t *sfp _RIX) {
-  knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
-  RETURNi_(STT_(stmt));
+    knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
+    RETURNi_(STT_(stmt));
 }
 
 //## int Token.getTokenType();
 KMETHOD Token_getTokenType(CTX ctx, knh_sfp_t *sfp _RIX) {
-  knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
-  RETURNi_(TT_(tk));
+    knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
+    RETURNi_(TT_(tk));
 }
 //## Object Token.getD();
 KMETHOD Token_getD(CTX ctx, knh_sfp_t *sfp _RIX) {
-  knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
-  RETURN_(tk->data);
+    knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
+    RETURN_(tk->data);
 }
+
 ///* ------------------------------------------------------------------------ */
 ///* [Macros] */
 //

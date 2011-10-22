@@ -65,6 +65,7 @@ class Charset extends String;
 @Public @Native int TypeMap.getSource();
 @Public @Native int TypeMap.getTarget();
 @Public @Native int Stmt.getStmtSize();
+@Public @Native int Stmt.getESPIDX();
 @Public @Native Stmt Stmt.next();
 @Public @Native Token Stmt.getT(int n);
 @Public @Native Token Stmt.getS(int n);

@@ -61,6 +61,7 @@ struct knh_CompilerAPI_t {
     DEF8(ASSURE, ASSERT, ERR, EXPR, LETEXPR, FUNCCALL, CALL, CALL1);
     DEF8(BOX, OPR, NEW, TCAST, AND, OR, ALT, TRI);
     DEF4(SEND, W1, FMTCALL, EMITCODE);
+    DEF1(INIT);
 };
 static struct knh_CompilerAPI_t COMPILER_API = {};
 
@@ -78,7 +79,11 @@ static void kook_LET_asm(CTX ctx, knh_Stmt_t *stmt)
 {
     knh_Token_t *tkL = tkNN(stmt, 1);
     knh_Token_t *tkV = tkNN(stmt, 2);
-    CALL(ctx, COMPILER_API.LET, 3, stmt, tkL, tkV);
+    knh_Token_t *tk3 = KNH_TNULL(Token);
+    if (IS_Token(tkV)) {
+        tk3 = tkV;
+    }
+    CALL(ctx, COMPILER_API.LET, 4, stmt, tkL, tkV, tk3);
 }
 
 static void kook_IF_asm(CTX ctx, knh_Stmt_t *stmt)
@@ -294,6 +299,7 @@ static void kook_compiler_emit(CTX ctx, knh_Method_t *mtd)
 static void kook_compiler_compiler(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB)
 {
     KNH_P("hello world");
+    CALL(ctx, COMPILER_API.INIT, 1, mtd);
     kook_BLOCK_asm(ctx, stmtB);
     kook_compiler_emit(ctx, mtd);
 }
@@ -349,6 +355,7 @@ DEFAPI(void) complete(CTX ctx)
     api->W1       = LOADMTD(ctx, cid, "asmW1");
     api->FMTCALL  = LOADMTD(ctx, cid, "asmFMTCALL");
     api->EMITCODE = LOADMTD(ctx, cid, "emit");
+    api->INIT     = LOADMTD(ctx, cid, "init");
     ctx->wshare->konoha_compiler = api->Instance;
     ctx->wshare->compilerAPI = (void *) kook_compiler_compiler;
     CALL(ctx, newmtd, 0);
