@@ -1260,9 +1260,18 @@ void Compiler.asmSWITCH(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
 }
 void Compiler.asmWHILE(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
     print "while";
-    print stmt;
     print stmtC;
     print stmtBody;
+
+    K_BasicBlock bbCond = new K_BasicBlock(kfunc.bbs.size);
+    kfunc.bbs.add(bbCond);
+    K_BasicBlock bbBody = new K_BasicBlock(kfunc.bbs.size);
+    kfunc.bbs.add(bbBody);
+
+    kfunc.curBB = bbCond;
+    asmBlock(stmtC);
+    kfunc.curBB = bbBody;
+    asmBlock(stmtBody);
 }
 void Compiler.asmDO(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
     print "do-while";
@@ -1275,6 +1284,25 @@ void Compiler.asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBod
     print stmt2;
     print stmt3;
     print stmtBody;
+
+    K_BasicBlock bb1 = new K_BasicBlock(kfunc.bbs.size);
+    kfunc.bbs.add(bb1);
+    K_BasicBlock bb2 = new K_BasicBlock(kfunc.bbs.size);
+    kfunc.bbs.add(bb2);
+    K_BasicBlock bb3 = new K_BasicBlock(kfunc.bbs.size);
+    kfunc.bbs.add(bb3);
+    K_BasicBlock bbBody = new K_BasicBlock(kfunc.bbs.size);
+    kfunc.bbs.add(bbBody);
+
+    kfunc.curBB = bb1;
+    asmBlock(stmt1);
+    kfunc.curBB = bb2;
+    asmBlock(stmt2);
+    kfunc.curBB = bb3;
+    asmBlock(stmt3);
+    kfunc.curBB = bbBody;
+    asmBlock(stmtBody);
+
 }
 void Compiler.asmFOREACH(Stmt stmt, Token tkVar, Stmt stmtItr, Stmt stmtBody, Stmt stmtVar) {
     print "foreach";
