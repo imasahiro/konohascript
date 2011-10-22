@@ -69,19 +69,19 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 	RETURN_PKGINFO("compiler-0.1");
 }
 
-static void BLOCK_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_BLOCK_asm(CTX ctx, knh_Stmt_t *stmt)
 {
     CALL(ctx, COMPILER_API.BLOCK, 1, stmt);
 }
 
-static void LET_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_LET_asm(CTX ctx, knh_Stmt_t *stmt)
 {
     knh_Token_t *tkL = tkNN(stmt, 1);
     knh_Token_t *tkV = tkNN(stmt, 2);
     CALL(ctx, COMPILER_API.LET, 3, stmt, tkL, tkV);
 }
 
-static void IF_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_IF_asm(CTX ctx, knh_Stmt_t *stmt)
 {
     knh_Stmt_t *stmt0 = stmtNN(stmt, 1);
     knh_Stmt_t *stmt1 = stmtNN(stmt, 2);
@@ -89,22 +89,22 @@ static void IF_asm(CTX ctx, knh_Stmt_t *stmt)
     CALL(ctx, COMPILER_API.IF, 4, stmt, stmt0, stmt1, stmt2);
 }
 
-static void SWITCH_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_SWITCH_asm(CTX ctx, knh_Stmt_t *stmt)
 {
     KNH_TODO("");
 }
 
-static void WHILE_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_WHILE_asm(CTX ctx, knh_Stmt_t *stmt)
 {
     KNH_TODO("");
 }
 
-static void DO_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_DO_asm(CTX ctx, knh_Stmt_t *stmt)
 {
     KNH_TODO("");
 }
 
-static void FOR_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_FOR_asm(CTX ctx, knh_Stmt_t *stmt)
 {
     knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
     knh_Stmt_t *stmt1 = stmtNN(stmt, 1);
@@ -113,117 +113,117 @@ static void FOR_asm(CTX ctx, knh_Stmt_t *stmt)
     CALL(ctx, COMPILER_API.FOR, 5, stmt, stmt0, stmt1, stmt2, stmt3);
 }
 
-static void FOREACH_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_FOREACH_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 }
 
-static void BREAK_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_BREAK_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 }
 
-static void CONTINUE_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_CONTINUE_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 }
 
-static void TRY_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_TRY_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 }
 
-static void THROW_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_THROW_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 }
 
-static void RETURN_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_RETURN_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 }
 
-static void YIELD_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_YIELD_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 }
 
-static void PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 }
 
-static void ASSURE_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_ASSURE_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 }
 
-static void ASSERT_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_ASSERT_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 }
 
-static void ERR_asm(CTX ctx, knh_Stmt_t *stmt)
+static void kook_ERR_asm(CTX ctx, knh_Stmt_t *stmt)
 {
 }
 
-static void LETEXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_LETEXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 }
 
-static void FUNCCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_FUNCCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 }
 
-static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_CALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 }
 
-static void CALL1_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_CALL1_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 }
 
-static void BOX_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_BOX_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 }
 
-static void OPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_OPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 }
 
-static void NEW_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_NEW_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 }
 
-static void TCAST_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_TCAST_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 }
 
-static void AND_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_AND_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 }
 
-static void OR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_OR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 }
 
-static void ALT_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_ALT_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 }
 
-static void TRI_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_TRI_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 }
 
-static void SEND_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_SEND_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 }
 
-static void W1_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_W1_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 }
 
-static void FMTCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_FMTCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
 }
 
 #define STT_LETEXPR  STT_LET
 #define CASE_ASM(XX, ...) case STT_##XX : do { \
-    XX##_asm(ctx, stmt, ## __VA_ARGS__); \
+    kook_##XX##_asm(ctx, stmt, ## __VA_ARGS__); \
     break;\
 } while(0)
 
-static void EXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void kook_EXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
     switch(STT_(stmt)) {
         CASE_ASM(LETEXPR, espidx);
@@ -258,7 +258,7 @@ KMETHOD Compiler_asmBLOCK(CTX ctx, knh_sfp_t *sfp _RIX)
                 KNH_TODO("no support register stmt");
                 break;
             case STT_BLOCK :
-                BLOCK_asm(ctx, stmtNN(stmt, 0));
+                kook_BLOCK_asm(ctx, stmtNN(stmt, 0));
                 break;
             CASE_ASM(LET);
             CASE_ASM(IF);
@@ -279,7 +279,7 @@ KMETHOD Compiler_asmBLOCK(CTX ctx, knh_sfp_t *sfp _RIX)
             CASE_ASM(ERR);
             case STT_DECL: case STT_DONE: break;
             default:
-                EXPR_asm(ctx, stmt, DP(stmt)->espidx);
+                kook_EXPR_asm(ctx, stmt, DP(stmt)->espidx);
         }
         stmt = DP(stmt)->nextNULL;
     }
@@ -294,7 +294,7 @@ static void kook_compiler_emit(CTX ctx, knh_Method_t *mtd)
 static void kook_compiler_compiler(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB)
 {
     KNH_P("hello world");
-    BLOCK_asm(ctx, stmtB);
+    kook_BLOCK_asm(ctx, stmtB);
     kook_compiler_emit(ctx, mtd);
 }
 

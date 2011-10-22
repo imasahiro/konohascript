@@ -26,7 +26,6 @@
 
 using konoha.lang.*;
 using konoha.llvm.*;
-include "lib:gluelink";
 
 class Compiler {
     Compiler() {
@@ -1606,3 +1605,5 @@ class K_RET extends K_Inst {
         asm.builder.createRetVoid();
     }
 }
+
+include "lib:gluelink";
