@@ -70,7 +70,17 @@ include "lib:gluelink";
 @Native GslComb GslComb.new(int n);
 
 @Native class GslMulti;
-@Native GslMulti GslMulti.new(int n);
+@Native GslMulti GslMulti.new(int n, int k);
+@Native void GslMulti.initFirst();
+@Native void GslMulti.initLast();
+@Native GslMulti GslMulti.copy();
+@Native int GslMulti.get(int i);
+@Native int GslMulti.range();
+@Native int GslMulti.size();
+@Native Array<Int> GslMulti.getData();
+@Native boolean GslMulti.valid();
+@Native GslMulti GslMulti.next();
+@Native GslMulti GslMulti.prev();
 
 @Singleton @Native class GslMath;
 @Native boolean GslMath.isNan(float x);

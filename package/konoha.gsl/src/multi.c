@@ -28,6 +28,7 @@
 // LIST OF CONTRIBUTERS
 //  kimio - Kimio Kuramitsu, Yokohama National University, Japan
 //  shinpei - Shinpei Nakata, Yokohama National University, Japan
+//  shunsuke - Shunsuke Shida, Yokohama National University, Japan
 // **************************************************************************
 
 #include <gsl/gsl_multiset.h>
@@ -65,11 +66,118 @@ KMETHOD GslMulti_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	size_t n = Int_to(size_t, sfp[1]);
 	size_t k = Int_to(size_t, sfp[2]);
 	knh_RawPtr_t *p = sfp[0].p;
-	p->rawptr = (void *)gsl_multiset_alloc(n, k);
-	if (p->rawptr == NULL) {
-		/* add error handling here */
-	}
+	p->rawptr = gsl_multiset_calloc(n, k);
 	RETURN_(p);
+}
+
+//## @Native void GslMulti.InitFirst();
+KMETHOD GslMulti_initFirst(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	gsl_multiset *c = RawPtr_to(gsl_multiset *, sfp[0]);
+	gsl_multiset_init_first(c);
+	RETURNvoid_();
+}
+
+//## @Native void GslMulti.InitLast();
+KMETHOD GslMulti_initLast(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	gsl_multiset *c = RawPtr_to(gsl_multiset *, sfp[0]);
+	gsl_multiset_init_last(c);
+	RETURNvoid_();
+}
+
+//## @Native GslMulti GslMulti.copy();
+KMETHOD GslMulti_copy(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	const gsl_multiset *src = RawPtr_to(const gsl_multiset *, sfp[0]);
+	size_t n = gsl_multiset_n(src);
+	size_t k = gsl_multiset_k(src);
+	gsl_multiset *dest = gsl_multiset_alloc(n, k);
+	gsl_multiset_memcpy(dest, src);
+	knh_RawPtr_t *res = new_ReturnRawPtr(ctx, sfp, dest);
+	RETURN_(res);
+}
+
+//## @Native int GslMulti.get(int i);
+KMETHOD GslMulti_get(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	const gsl_multiset *c = RawPtr_to(const gsl_multiset *, sfp[0]);
+	size_t i = Int_to(size_t, sfp[1]);
+	RETURNi_(gsl_multiset_get(c, i));
+}
+
+//## @Native int GslMulti.range();
+KMETHOD GslMulti_range(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	const gsl_multiset *c = RawPtr_to(const gsl_multiset *, sfp[0]);
+	size_t range = gsl_multiset_n(c);
+	RETURNi_(range);
+}
+
+//## @Native int GslMulti.size();
+KMETHOD GslMulti_size(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	const gsl_multiset *c = RawPtr_to(const gsl_multiset *, sfp[0]);
+	size_t size = gsl_multiset_k(c);
+	RETURNi_(size);
+}
+
+//## @Native Array<Int> GslMulti.getData();
+KMETHOD GslMulti_getData(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	const gsl_multiset *c = RawPtr_to(const gsl_multiset *, sfp[0]);
+	size_t *data = gsl_multiset_data(c);
+	size_t k = gsl_multiset_k(c);
+	int i = 0;
+	knh_Array_t *res = new_Array(ctx, CLASS_Int, 0);
+	for (; i < k; i++) {
+		knh_Array_add(ctx, res, data[i]);
+	}
+	RETURN_(res);
+}
+
+//## @Native boolean GslMulti.valid();
+KMETHOD GslMulti_valid(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	gsl_multiset *c = RawPtr_to(gsl_multiset *, sfp[0]);
+	RETURNb_(gsl_multiset_valid(c));
+}
+
+//## @Native GslMulti GslMulti.next();
+KMETHOD GslMulti_next(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	gsl_multiset *c = RawPtr_to(gsl_multiset *, sfp[0]);
+	size_t n = gsl_multiset_n(c);
+	size_t k = gsl_multiset_k(c);
+	gsl_multiset *dest = gsl_multiset_alloc(n, k);
+	gsl_multiset_memcpy(dest, c);
+	int res = gsl_multiset_next(dest);
+	if (res == GSL_SUCCESS) {
+		RETURN_(new_ReturnRawPtr(ctx, sfp, dest));
+	} else {
+		knh_ldata_t ldata [] = {LOG_s("msg", gsl_strerror(GSL_FAILURE)), LOG_END};
+		KNH_NTRACE(ctx, "gsl.multiset", K_NOTICE, ldata);
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## @Native GslMulti GslMulti.prev();
+KMETHOD GslMulti_prev(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	gsl_multiset *c = RawPtr_to(gsl_multiset *, sfp[0]);
+	size_t n = gsl_multiset_n(c);
+	size_t k = gsl_multiset_k(c);
+	gsl_multiset *dest = gsl_multiset_alloc(n, k);
+	gsl_multiset_memcpy(dest, c);
+	int res = gsl_multiset_prev(dest);
+	if (res == GSL_SUCCESS) {
+		RETURN_(new_ReturnRawPtr(ctx, sfp, dest));
+	} else {
+		knh_ldata_t ldata [] = {LOG_s("msg", gsl_strerror(GSL_FAILURE)), LOG_END};
+		KNH_NTRACE(ctx, "gsl.multiset", K_NOTICE, ldata);
+		RETURN_(KNH_NULL);
+	}
+
 }
 
 #ifdef __cplusplus
