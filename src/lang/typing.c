@@ -1541,12 +1541,15 @@ static knh_type_t Class_lookupVariableType(CTX ctx, knh_class_t cid, knh_fieldn_
 		return cf->type;
 	}
 	else {
-		knh_Array_t *a = ClassTBL(cid)->methods;
-		long i;
-		for(i = knh_Array_size(a) - 1; i >=0; i--) {
-			knh_Method_t *mtd = a->methods[i];
-			knh_type_t itype = Method_lookupVariableType(ctx, mtd, fn);
-			if(itype != TYPE_var) return itype;
+		const char *vname = FN__(fn);
+		if(vname[1] != 0) {
+			knh_Array_t *a = ClassTBL(cid)->methods;
+			long i;
+			for(i = knh_Array_size(a) - 1; i >=0; i--) {
+				knh_Method_t *mtd = a->methods[i];
+				knh_type_t itype = Method_lookupVariableType(ctx, mtd, fn);
+				if(itype != TYPE_var) return itype;
+			}
 		}
 	}
 	return TYPE_var;
