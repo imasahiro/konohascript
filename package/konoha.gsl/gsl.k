@@ -67,7 +67,17 @@ include "lib:gluelink";
 @Native int GslPerm.canonicalCycles();
 
 @Native class GslComb;
-@Native GslComb GslComb.new(int n);
+@Native GslComb GslComb.new(int n, int k);
+@Native void GslComb.initFirst();
+@Native void GslComb.initLast();
+@Narive GslComb GslComb.memcpy();
+@Narive int GslComb.get(int i);
+@Narive int GslComb.getN();
+@Narive int GslComb.getK();
+@Narive Array<Int> GslComb.getData();
+@Native int GslComb.valid();
+@Native GslComb GslComb.next();
+@Native GslComb GslComb.prev();
 
 @Native class GslMulti;
 @Native GslMulti GslMulti.new(int n, int k);

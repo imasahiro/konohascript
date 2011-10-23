@@ -28,6 +28,7 @@
 // LIST OF CONTRIBUTERS
 //  kimio - Kimio Kuramitsu, Yokohama National University, Japan
 //  shinpei - Shinpei Nakata, Yokohama National University, Japan
+//  takeo - Takeo Onoda, Yokohama National University, Japan
 // **************************************************************************
 
 #include <gsl/gsl_combination.h>
@@ -65,11 +66,133 @@ KMETHOD GslComb_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	size_t n = Int_to(size_t, sfp[1]);
 	size_t k = Int_to(size_t, sfp[2]);
 	knh_RawPtr_t *p = sfp[0].p;
-	p->rawptr = (void *)gsl_combination_alloc(n, k);
-	if (p->rawptr == NULL) {
-		/* add error handling here */
-	}
+	p->rawptr = gsl_combination_calloc(n, k);
 	RETURN_(p);
+}
+
+//## @Native void GslComb.initFirst();
+KMETHOD GslComb_initFirst(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	gsl_combination *c = RawPtr_to(gsl_combination *, sfp[0]);
+	gsl_combination_init_first(c);
+	RETURNvoid_();
+}
+
+//## @Native void GslComb.initLast();
+KMETHOD GslComb_initLast(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	gsl_combination *c = RawPtr_to(gsl_combination *, sfp[0]);
+	gsl_combination_init_last(c);
+	RETURNvoid_();
+}
+
+//## @Narive GslComb GslComb.memcpy();
+KMETHOD GslComb_memcpy(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	gsl_combination *c = RawPtr_to(gsl_combination *, sfp[0]);
+	size_t n = gsl_combination_n(c);
+	size_t k = gsl_combination_k(c);
+	gsl_combination *dest = gsl_combination_alloc(n, k);
+	gsl_combination_memcpy(dest, c);
+	if (dest != NULL) {
+		knh_RawPtr_t *ret = new_ReturnRawPtr(ctx, sfp, dest);
+		RETURN_(ret);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## @Narive int GslComb.get(int i);
+KMETHOD GslComb_get(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	gsl_combination *c = RawPtr_to(gsl_combination *, sfp[0]);
+	size_t i = Int_to(size_t, sfp[1]);
+	size_t ret = gsl_combination_get(c, i);
+	RETURNi_(ret);
+}
+
+//## @Narive int GslComb.getN();
+KMETHOD GslComb_getN(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	gsl_combination *c = RawPtr_to(gsl_combination *, sfp[0]);
+	size_t ret = gsl_combination_n(c);
+	RETURNi_(ret);
+}
+
+//## @Narive int GslComb.getK();
+KMETHOD GslComb_getK(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	gsl_combination *c = RawPtr_to(gsl_combination *, sfp[0]);
+	size_t ret = gsl_combination_k(c);
+	RETURNi_(ret);
+}
+
+//## @Narive Array<Int> GslComb.getData();
+KMETHOD GslComb_getData(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	gsl_combination *c = RawPtr_to(gsl_combination *, sfp[0]);
+	size_t *data = gsl_combination_data(c);
+	size_t k = gsl_combination_k(c);
+	knh_Array_t *res = new_Array(ctx, CLASS_Int, k);
+	BEGIN_LOCAL(ctx, lsfp, k);
+	int i;
+	for (i = 0; i < k; i++) {
+		lsfp[i].ivalue = data[i];
+		//knh_Array_add(ctx, res, data[i]);
+	}
+	res->api->multiadd(ctx, res, lsfp);
+	END_LOCAL(ctx, lsfp);
+	RETURN_(res);
+}
+
+//## @Native bool GslComb.valid();
+KMETHOD GslComb_valid(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	gsl_combination *c = RawPtr_to(gsl_combination *, sfp[0]);
+	if (c != NULL) {
+		int ret = gsl_combination_valid(c);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(0);
+	}
+}
+
+//## @Native GslComb GslComb.next();
+KMETHOD GslComb_next(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	gsl_combination *src = RawPtr_to(gsl_combination *, sfp[0]);
+	size_t n = gsl_combination_n(src);
+	size_t k = gsl_combination_k(src);
+	gsl_combination *dist = gsl_combination_calloc(n, k);
+	gsl_combination_memcpy(dist, src);
+
+	int flag = gsl_combination_next(dist);
+	if (flag == GSL_SUCCESS) {
+		knh_RawPtr_t *ret = new_ReturnRawPtr(ctx, sfp, dist);
+		RETURN_(ret);
+	} else {
+		gsl_combination_free(dist);
+	}
+	RETURN_(KNH_NULL);
+}
+
+//## @Native GslComb GslComb.prev();
+KMETHOD GslComb_prev(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	gsl_combination *src = RawPtr_to(gsl_combination *, sfp[0]);
+	size_t n = gsl_combination_n(src);
+	size_t k = gsl_combination_k(src);
+	gsl_combination *dist = gsl_combination_calloc(n, k);
+	gsl_combination_memcpy(dist, src);
+
+	int flag = gsl_combination_prev(dist);
+	if (flag == GSL_SUCCESS) {
+		knh_RawPtr_t *ret = new_ReturnRawPtr(ctx, sfp, dist);
+		RETURN_(ret);
+	} else {
+		gsl_combination_free(dist);
+	}
+	RETURN_(KNH_NULL);
 }
 
 #ifdef __cplusplus
