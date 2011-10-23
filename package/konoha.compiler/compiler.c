@@ -121,7 +121,7 @@ static void kook_DO_asm(CTX ctx, knh_Stmt_t *stmt)
 {
     knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
     knh_Stmt_t *stmt1 = stmtNN(stmt, 1);
-    CALL(ctx, COMPILER_API.DO, 3, stmt, stmt1, stmt0);
+    CALL(ctx, COMPILER_API.DO, 3, stmt, stmt0, stmt1);
 }
 
 static void kook_FOR_asm(CTX ctx, knh_Stmt_t *stmt)
