@@ -63,6 +63,7 @@ class Charset extends String;
 @Public @Native @Const String Method.getSourceCode();
 @Public @Native String Method.toString();
 @Public @Native String Method.getName();
+@Public @Native boolean Method.isStaticMtd();
 
 @Public @Native int TypeMap.getSource();
 @Public @Native int TypeMap.getTarget();
@@ -70,7 +71,7 @@ class Charset extends String;
 @Public @Native int Stmt.getESPIDX();
 @Public @Native Stmt Stmt.next();
 @Public @Native Token Stmt.getT(int n);
-@Public @Native Token Stmt.getS(int n);
+@Public @Native Stmt Stmt.getS(int n);
 @Public @Native int Stmt.getStmtType();
 @Public @Native Object Token.getD();
 @Public @Native Token Stmt.toToken();
@@ -78,6 +79,7 @@ class Charset extends String;
 @Public @Native int Token.getTT();
 @Public @Native int Token.getT();
 @Public @Native int Token.getTokenIndex();
+@Public @Native int Object.getPtr();
 
 /* *****************
 @Native class Symbol;

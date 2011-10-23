@@ -121,7 +121,7 @@ static void kook_DO_asm(CTX ctx, knh_Stmt_t *stmt)
 {
     knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
     knh_Stmt_t *stmt1 = stmtNN(stmt, 1);
-    CALL(ctx, COMPILER_API.DO, 3, stmt, stmt0, stmt1);
+    CALL(ctx, COMPILER_API.DO, 3, stmt, stmt1, stmt0);
 }
 
 static void kook_FOR_asm(CTX ctx, knh_Stmt_t *stmt)
@@ -220,11 +220,12 @@ static void kook_FUNCCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 
 static void kook_CALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
-    knh_Method_t *mtd = tkNN(stmt, 0)->mtd;
+    knh_Token_t *tkMTD = tkNN(stmt, 0);
+    knh_Method_t *mtd = tkMTD->mtd;
     knh_class_t cid = Tn_cid(stmt, 1);
     knh_Stmt_t *stmt0 = stmtNN(stmt, 2);
     knh_Class_t *c = new_Type(ctx, cid);
-    CALL(ctx, COMPILER_API.CALL, 5, stmt, NN(espidx), mtd, c, stmt0);
+    CALL(ctx, COMPILER_API.CALL, 5, stmt, NN(espidx), tkMTD, mtd, NN(cid));
 }
 
 static void kook_CALL1_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
@@ -249,7 +250,7 @@ static void kook_OPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
     knh_Stmt_t *lhs = stmtNN(stmt, 1);
     knh_Stmt_t *rhs = stmtNN(stmt, 2);
     knh_Class_t *c = new_Type(ctx, cid);
-    CALL(ctx, COMPILER_API.OPR, 6, stmt, NN(espidx), mtd, c, lhs, rhs);
+    CALL(ctx, COMPILER_API.OPR, 6, stmt, NN(espidx), mtd, c, lhs, rhs != NULL ? rhs : KNH_NULL);
 }
 
 static void kook_NEW_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
