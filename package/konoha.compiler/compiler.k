@@ -1244,8 +1244,9 @@ void Compiler.asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
     print stmtElse;
     print "", stmtCond.toToken();
     asm(stmtCond, stmtCond.toToken(), stmt.getESPIDX());
+    int type = stmtCond.toToken().getT();
     K_Value kvalue = kfunc.getKValue(stmt.getESPIDX(), type);
-    kvalue.dump();
+    print kvalue;
     K_BasicBlock bbThen = new K_BasicBlock(kfunc.bbs.size);
     K_BasicBlock bbElse = new K_BasicBlock(kfunc.bbs.size);
     K_BasicBlock bb     = new K_BasicBlock(kfunc.bbs.size);
