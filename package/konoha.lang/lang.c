@@ -40,6 +40,13 @@ extern "C" {
 
 #include "./data_.h"
 
+//## boolean Method.isStaticMtd();
+KMETHOD Method_isStaticMtd(CTX ctx, knh_sfp_t *sfp _RIX) {
+	knh_Method_t *mtd = sfp[0].mtd;
+	int b = Method_isStatic(mtd);
+	RETURNb_(b);
+}
+
 //## int TypeMap.getSource();
 KMETHOD TypeMap_getSource(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_TypeMap_t *tmr = sfp[0].tmr;
@@ -110,7 +117,6 @@ KMETHOD Token_getD(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
     RETURN_(tk->data);
 }
-
 //## Token Stmt.toToken();
 KMETHOD Stmt_toToken(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
@@ -119,7 +125,7 @@ KMETHOD Stmt_toToken(CTX ctx, knh_sfp_t *sfp _RIX) {
         ret = tk;
     else 
         ret = KNH_TNULL(Token);
-    RETURN_(tk);
+    RETURN_(ret);
 }
 
 //## int Token.getT();
@@ -149,6 +155,11 @@ KMETHOD Method_toString(CTX ctx, knh_sfp_t *sfp _RIX)
     RETURN_(CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII));
 }
 
+//## int Object.getPtr() {
+KMETHOD Object_getPtr(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNi_((knh_int_t)sfp[0].o);
+}
 
 ///* ------------------------------------------------------------------------ */
 ///* [Macros] */

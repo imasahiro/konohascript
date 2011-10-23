@@ -220,11 +220,12 @@ static void kook_FUNCCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 
 static void kook_CALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
-    knh_Method_t *mtd = tkNN(stmt, 0)->mtd;
+    knh_Token_t *tkMTD = tkNN(stmt, 0);
+    knh_Method_t *mtd = tkMTD->mtd;
     knh_class_t cid = Tn_cid(stmt, 1);
     knh_Stmt_t *stmt0 = stmtNN(stmt, 2);
     knh_Class_t *c = new_Type(ctx, cid);
-    CALL(ctx, COMPILER_API.CALL, 5, stmt, NN(espidx), mtd, c, stmt0);
+    CALL(ctx, COMPILER_API.CALL, 5, stmt, NN(espidx), tkMTD, mtd, NN(cid));
 }
 
 static void kook_CALL1_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)

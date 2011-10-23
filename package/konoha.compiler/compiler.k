@@ -41,6 +41,7 @@ FUNC_VIRTUAL2 = 1;
 FUNC_FASTCALL = 2;
 K_MTDIDX2 = -1;
 K_RTNIDX = -4;
+K_CALLDELTA = 4;
 PHI_DEFIDX = -100;
 FLAG_OBJECT_NULLOBJECT = 1 << 1;
 NOT_SCAST = -1;
@@ -116,9 +117,8 @@ int getcid(Class classType) {
     if (classType == null) return -1;
     if (classType == Int) return TYPE_Int;
     if (classType == Float) return TYPE_Float;
-    if (classType == Array) return TYPE_Array;
     if (classType == Boolean) return TYPE_Boolean;
-    return 0;
+    return TYPE_Object;
 }
 
 @Public Value IRBuilder.getValueFromSfp(Value sfp, Type rTy, int sfpidx) {
@@ -1142,6 +1142,23 @@ class K_RET extends K_Inst {
     }
 }
 
+class SFX {
+	int i;
+	int n;
+	SFX(int i, int n) {
+		this.i = i;
+		this.n = n;
+	}
+}
+
+int getcid(Class classType) {
+	if (classType == null) return -1;
+	if (classType == Int) return TYPE_Int;
+	if (classType == Float) return TYPE_Float;
+	if (classType == Array) return TYPE_Array;
+	if (classType == Boolean) return TYPE_Boolean;
+	return TYPE_Object;
+}
 
 void Compiler.init(Method mtd) {
     print "init ", mtd;
@@ -1157,12 +1174,23 @@ void Compiler.init(Method mtd) {
     ctx = vargs[0];
     sfp = vargs[1];
     rix = vargs[2];
-    //register_table = [];
-    //value_table = {};
-    //register_types = [];
     paramsclass = mtd.getParamTypes();
     retclass    = mtd.getReturnType();
     kfunc = new K_Function(mtd);
+
+	if (!mtd.isStaticMtd()) {
+		K_Value kvalue = kfunc.getKValue(0, TYPE_Object);
+		K_Inst inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
+		kfunc.storeKInst(0, inst);
+		kfunc.funcargs.add(inst);
+	}
+	for (int i = 0; i < |paramsclass|; i++) {
+		int j = getcid(paramsclass[i]);
+		K_Value kvalue = kfunc.getKValue(i+1, j);
+		inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(i+1));
+		kfunc.storeKInst(i+1, inst);
+		kfunc.funcargs.add(inst);
+	}
 }
 
 void Compiler.shiftesp(int shift) {
@@ -1175,6 +1203,43 @@ void Compiler.shiftesp(int shift) {
 
 @Native void Compiler.asmEXPR(Stmt stmt, int espidx);
 
+void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
+	int btype = tkb.getT();
+	int used_espidx = -1;
+	switch (tkb.getTT()) {
+		case Token.TT_NULL:
+
+		case Token.TT_CID:
+
+		case Token.TT_CONST:
+			Object v = tkb.getD();
+			int table_idx;
+			int objptr = 0;
+			if (is_Tunbox(btype)) {
+				table_idx = kfunc.addConstTable(v);
+			} else {
+				objptr = v.getPtr();
+				table_idx = kfunc.addConstTable(v);
+			}
+			K_Inst tmp = new K_CONST(null, btype, new K_CONSTop(table_idx, objptr, const_table), 0);
+			kfunc.curBB.insts.add(tmp);
+			K_Inst inst0 = kfunc.getKInst(ax.i);
+			K_Inst inst = new K_xMOV(new K_xMOVop(inst0, tmp, ax.n), 0);
+			kfunc.curBB.insts.add(inst);
+			break;
+		case Token.TT_FVAR:
+
+		case Token.TT_FIELD:
+
+		case Token.TT_SYSVAL:
+
+		case Token.TT_PROPN:
+
+	}
+	if (used_espidx != -1) {
+
+	}
+}
 void Compiler.asm_smov(int alocal, Token tk) {
     int type = tk.getT();
     switch(tk.getTT()) {
@@ -1195,7 +1260,7 @@ void Compiler.asm_smov(int alocal, Token tk) {
             if (is_Tunbox(type)) {
                 kfunc.storeKInst(alocal, kfunc.getKInst(b));
             } else {
-
+				kfunc.storeKInst(alocal, kfunc.getKInst(b));
             }
             break;
     }
@@ -1214,11 +1279,21 @@ void Compiler.emit(Method mtd) {
     kfunc.codegen(this);
     func.dump();
 }
+SFX getsfx(Token tk) {
+	int i = 0;
+	int n = tk.getTokenIndex();
+	if (typeof(tk.getD()) == typeof(tk) && getTT(tk.getD()) == TT_FVAR) {
+		i = tk.getD().getTokenIndex();
+	}
+	return new SFX(i, n);
+}
 void Compiler.asm_mov(Token tka, Token tkb, int espidx) {
     print "mov";
     if (tka.getTT() == Token.TT_FVAR) {
         asm_smov(tka.getTokenIndex(), tkb);
     } else {
+		SFX x = getsfx(tka);
+		asm_xmov(x, tkb, espidx);
         print "ASM_XMOV();";
     }
 }
@@ -1348,7 +1423,10 @@ void Compiler.asmRETURN(Stmt stmt, Stmt stmtRetExpr) {
         print "return expr;";
         print stmt;
         print stmtRetExpr;
-        asm(stmt, stmt.getT(0), -4);
+		espidx = stmt.getESPIDX();
+		print stmtRetExpr.toToken();
+        asm(stmtRetExpr, stmtRetExpr.toToken(), espidx);
+		kfunc.storeKInst(K_RTNIDX, kfunc.getKInst(espidx))
         K_RET inst = new K_RET(new K_RETop(kfunc.retval));
         kfunc.curBB.insts.add(inst);
 
@@ -1388,13 +1466,60 @@ void Compiler.asmFUNCCALL(Stmt stmt, int espidx, Method mtd, Class c, Stmt stmt)
     print c;
     print stmt;
 }
-void Compiler.asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, Class c) {
-    print "call";
-    print stmt;
+boolean Compiler.callparams_asm(Stmt stmt, int s, int local, int cid, Method mtd) {
+	int i;
+	print cid;
+	if (s == 1 && mtd.isStaticMtd()) {
+		s = 2;
+	}
+	/*TODO chkstack*/
+	for (i = s; i < stmt.getStmtSize(); i++) {
+		asm(stmt.getS(i), stmt.getS(i).toToken(), local + i + (K_CALLDELTA-1));
+	}
+	return true;
+}
+void Compiler.asmCALL_sub(int espidx, int rtype, Method mtd, boolean flag, int argc) {
+	/*TODO*/
+	//if (Method_isFinal(mtd) || isStatic) {
+	/*SCALL*/
+	{
+		int thisidx = espidx + K_CALLDELTA;
+		int espshift = espidx + argc + K_CALLDELTA + 1;
+		int mtdptr = mtd.getPtr();
+		int isStatic = (flag) ? 0 : 1;
+		Array<K_Inst> args = [];
+		foreach (inst in kfunc.register_table) {
+			print inst;
+			print "";
+			print "";
+		}
+		for (int i = isStatic; i < argc; i++) {
+			print thisidx + i;
+			K_Inst arg = kfunc.getKInst(thisidx + i + 1);
+			print arg;
+			args.add(arg);
+		}
+		K_Value kvalue = null;
+		if (is_Tunbox(rtype)) {
+			kvalue = kfunc.getKValue(thisidx - 4, rtype);
+		}
+		K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtdptr, thisidx, espshift, FUNC_STATIC, K_RTNIDX, isStatic));
+		kfunc.curBB.insts.add(inst);
+		kfunc.storeKInst(thisidx + K_RTNIDX, inst);
+	}
+	//}
+}
+void Compiler.asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, int cid) {
+	print "call";
+	print stmt;
     print espidx;
     print tkMTD;
     print mtd;
-    print c;
+	print cid;
+
+	if (callparams_asm(stmt, 1, espidx, cid, mtd)) {
+		asmCALL_sub(espidx, kfunc.retTy, mtd, mtd.isStaticMtd(), stmt.getStmtSize() - 2);
+	}
 }
 void Compiler.asmCALL1(Stmt stmt, int espidx, Stmt expr1, Stmt stmtPost) {
     print "call";
