@@ -62,6 +62,7 @@ class Charset extends String;
 @Public @Native @Const String[] Method.getParamNames();
 @Public @Native @Const String Method.getSourceCode();
 @Public @Native String Method.toString();
+@Public @Native String Method.getName();
 
 @Public @Native int TypeMap.getSource();
 @Public @Native int TypeMap.getTarget();
