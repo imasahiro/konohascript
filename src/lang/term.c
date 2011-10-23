@@ -2878,7 +2878,7 @@ static int ITR_indexINFROM(tkitr_t *itr)
 		if(TT_(itr->ts[c]) == TT_UNAME) c++;  // skip InputSteam in
 		for(i = c; i < itr->e; i++) {
 			knh_term_t tt = TT_(itr->ts[i]);
-			if(tt == TT_LINK || tt == TT_COLON) {
+			if(tt == TT_FROM || tt == TT_COLON) {
 				return i;
 			}
 			if(tt == TT_NAME && ISB(S_tobytes((itr->ts[i])->text), "in")) {
@@ -2896,10 +2896,11 @@ static void _EACH(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 		tkitr_t pbuf, *pitr = ITR_first(itr, idx, &pbuf, +1);
 		_PARAMs(ctx, stmt, pitr);
 		_EXPR(ctx, stmt, itr);
+		_ASIS(ctx, stmt, itr);
 	}
 	else {
 		itr->c += 1;
-		_ERROR(ctx, stmt, itr, "from");
+		_ERROR(ctx, stmt, itr, "in");
 	}
 }
 
@@ -2916,7 +2917,7 @@ static void _PEACH(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 			_EACH(ctx, stmt, pitr);
 		}
 		else {
-			_ERROR(ctx, stmt, itr, "(... from ...)");
+			_ERROR(ctx, stmt, itr, "(... in ...)");
 		}
 	}
 }
@@ -2939,13 +2940,15 @@ static void _PSTMT3(CTX ctx, knh_Stmt_t *stmt, tkitr_t *itr)
 				_EXPR(ctx, stmt, stmtitr);
 			}
 			knh_Stmt_add(ctx, stmt, new_StmtSTMT1(ctx, pitr));
-			return;
 		}
 		else if(ITR_indexINFROM(pitr) != -1) {
-			_EACH(ctx, stmt, pitr); return;
+			STT_(stmt) = STT_FOREACH;
+			_EACH(ctx, stmt, pitr);
 		}
 	}
-	_ERROR(ctx, stmt, itr, _("(...; ...; ...) in for statement"));
+	else {
+		_ERROR(ctx, stmt, itr, _("(...; ...; ...) in for statement"));
+	}
 }
 
 static int isLABEL(knh_Token_t *tk)
@@ -3413,7 +3416,7 @@ static knh_Stmt_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 		CASE_(WHILE, +1, _PEXPR, _STMT1);
 		CASE_(DO, +1, _DOWHILE, _PEXPR, _SEMICOLON);
 		CASE_(FOR, +1, _PSTMT3, _STMT1);
-		CASE_(FOREACH, +1, _PEACH, _STMT1, _ASIS);  /* it */
+		CASE_(FOREACH, +1, _PEACH, _STMT1);
 		CASE_(TRY, +1, _STMT1, _CATCH, _ASIS);  /* it */
 		CASE_(ASSURE, +1, _ONEEXPR, _STMT1, _ASIS/*it*/);
 		CASE_L(ASSERT, +1, 1/*;*/, _EXPR);

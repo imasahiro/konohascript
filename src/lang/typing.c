@@ -3911,7 +3911,7 @@ static knh_Token_t* FOREACH1_typing(CTX ctx, knh_Stmt_t *stmt)
 			p1 = C_p1(itrcid);
 			KNH_SETv(ctx, tkNN(stmt, 0), Gamma_addLVAR(ctx, 0, p1, fn, 1/*ucnt*/));
 			INFO_Typing(ctx, "", TK_tobytes(tkN), p1);
-			Tn_it(ctx, stmt, 3, itrcid);
+			Tn_it(ctx, stmt, 2, itrcid);
 			goto L_BLOCK;
 		}
 		p1 = tkN2->type;
@@ -3927,12 +3927,10 @@ static knh_Token_t* FOREACH1_typing(CTX ctx, knh_Stmt_t *stmt)
 	}
 	itrcid = knh_class_P1(ctx, CLASS_Iterator, p1);
 	TYPING(ctx, stmt, 1, itrcid, _COERCION);
-//	tkT = FOREACH1_toIterator(ctx, stmt, 1, p1/*CLASS_Tvar*/);
-//	if(TT_(tkT) == TT_ERR) return tkT;
-	Tn_it(ctx, stmt, 3, itrcid);
+	Tn_it(ctx, stmt, 2, itrcid);
 
 	L_BLOCK:;
-	TYPING_Block(ctx, stmt, 2);
+	TYPING_Block(ctx, stmt, 3);
 	END_BLOCK(stmt, esp);
 	return Stmt_typed(ctx, stmt, TYPE_void);
 }

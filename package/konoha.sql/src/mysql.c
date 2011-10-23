@@ -35,9 +35,9 @@
 extern "C" {
 #endif
 
-#define K_INTERNAL
+#ifdef K_USING_MYSQL
 #include <mysql.h>
-#include <konoha_query.h>
+#include "../include/konoha_query.h"
 
 #define MYSQL_USER_MAXLEN 16
 #define MYSQL_PASS_MAXLEN 255
@@ -215,6 +215,8 @@ const knh_QueryDSPI_t DB__mysql = {
 	K_DSPI_QUERY, "mysql",
 	MYSQL_qopen, MYSQL_query, MYSQL_qclose, MYSQL_qnext, MYSQL_qfree
 };
+
+#endif
 
 /* ------------------------------------------------------------------------ */
 /* [DEFAPI] */

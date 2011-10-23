@@ -2391,13 +2391,13 @@ static void FOREACH_asm(CTX ctx, knh_Stmt_t *stmt)
 	{
 		knh_Token_t *tkN = tkNN(stmt, 0);
 		int varidx = Token_index(tkN);
-		int itridx = Token_index(tkNN(stmt, 3));
+		int itridx = Token_index(tkNN(stmt, 2));
 		Tn_asm(ctx, stmt, 1, itridx);
 		ASM_LABEL(ctx, lbC);
 		ASM_SAFEPOINT(ctx, DP(stmt)->espidx);
 		ASMbranch(NEXT, lbB, RTNIDX_(ctx, varidx, (tkN)->type), SFP_(itridx), RIX_(varidx - itridx), SFP_(_ESPIDX));
 	}
-	Tn_asmBLOCK(ctx, stmt, 2);
+	Tn_asmBLOCK(ctx, stmt, 3);
 	ASM_JMP(ctx, lbC);
 	/* end */
 	ASM_LABEL(ctx, lbB);

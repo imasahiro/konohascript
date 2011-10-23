@@ -36,7 +36,7 @@ extern "C" {
 #endif
 
 #define K_INTERNAL
-#include <konoha_query.h>
+#include "../include/konoha_query.h"
 
 extern knh_QueryDSPI_t DB__mysql;
 //#define USE_cwb_open      1
