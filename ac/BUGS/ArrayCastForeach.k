@@ -9,7 +9,7 @@ String[] : (String s) {
 
 assure "ArrayCastForeach" {
     count = 0;
-    strs = (String[])[1,2,3];
+    strs = (String[])"1,2,3";
     foreach (s in strs) {
         print s;
         count++;
