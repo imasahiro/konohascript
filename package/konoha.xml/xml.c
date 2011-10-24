@@ -412,15 +412,15 @@ KMETHOD XmlReader_isNamespaceDecl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int ret = (reader != NULL) ? xmlTextReaderIsNamespaceDecl(reader) : 0;
-	RETURNi_(ret);
+	RETURNb_(ret);
 }
 
-//## @Native int XmlReader.isEmptyElement();
+//## @Native boolean XmlReader.isEmptyElement();
 KMETHOD XmlReader_isEmptyElement(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int ret = (reader != NULL) ? xmlTextReaderIsEmptyElement(reader) : 0;
-	RETURNi_(ret);
+	RETURNb_(ret);
 }
 
 //## @Native boolean XmlReader.hasAttributes();
@@ -439,12 +439,12 @@ KMETHOD XmlReader_hasValue(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNb_(ret);
 }
 
-//## @Native boolean XmlReader.getDepth();
+//## @Native int XmlReader.getDepth();
 KMETHOD XmlReader_getDepth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int ret = (reader != NULL) ? xmlTextReaderDepth(reader) : 0;
-	RETURNb_(ret);
+	RETURNi_(ret);
 }
 
 //## @Native int XmlReader.getAttributeCount();
