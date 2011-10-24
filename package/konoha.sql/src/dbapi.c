@@ -292,31 +292,6 @@ KMETHOD ResultSet_close(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_ResultSet_close(ctx, (knh_ResultSet_t*)sfp[0].o);
 	RETURNvoid_();
 }
-///* ------------------------------------------------------------------------ */
-///* [DEFAPI] */
-//
-//DEFAPI(void) defConnection(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-//{
-//	cdef->name = "Connection";
-//	//cdef->init = Connection_init;
-//	//cdef->free = Connection_free;
-//}
-//
-//DEFAPI(void) defResultSet(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-//{
-//	cdef->name = "ResultSet";
-//	//cdef->init = Connection_init;
-//	//cdef->free = Connection_free;
-//}
-
-#ifdef _SETUP
-//DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
-//{
-////	kapi->loadClassIntConst(ctx, CLASS_System, IntConstData);
-//	RETURN_PKGINFO("konoha.sql");
-//}
-#endif
-
 #ifdef __cplusplus
 }
 #endif

@@ -35,10 +35,11 @@
 extern "C" {
 #endif
 
-#define K_INTERNAL
 #include "../include/konoha_query.h"
 
+#ifdef K_USING_MYSQL
 extern knh_QueryDSPI_t DB__mysql;
+#endif
 //#define USE_cwb_open      1
 
 /* ======================================================================== */
@@ -174,8 +175,11 @@ void knh_Connection_open(CTX ctx, knh_Connection_t *c, knh_String_t *urn)
 {
 	knh_bytes_t u = S_tobytes(urn);
 	KNH_SETv(ctx, (c)->urn, urn);
-	//(c)->dspi = knh_getQueryDSPI(ctx, S_tobytes(urn));
+#ifdef K_USING_MYSQL
 	(c)->dspi = &DB__mysql;
+#else
+	(c)->dspi = &NOP_DSPI;
+#endif
 	(c)->conn = (c)->dspi->qopen(ctx, u);
 	KNH_INITv((c)->urn, urn);
 }

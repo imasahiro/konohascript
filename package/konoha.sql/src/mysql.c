@@ -35,9 +35,9 @@
 extern "C" {
 #endif
 
+#include "../include/konoha_query.h"
 #ifdef K_USING_MYSQL
 #include <mysql.h>
-#include "../include/konoha_query.h"
 
 #define MYSQL_USER_MAXLEN 16
 #define MYSQL_PASS_MAXLEN 255
@@ -216,24 +216,9 @@ const knh_QueryDSPI_t DB__mysql = {
 	MYSQL_qopen, MYSQL_query, MYSQL_qclose, MYSQL_qnext, MYSQL_qfree
 };
 
-#endif
 
 /* ------------------------------------------------------------------------ */
 /* [DEFAPI] */
-
-//DEFAPI(void) defConnection(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-//{
-//	cdef->name = "Connection";
-//	cdef->init = Connection_init;
-//	cdef->free = Connection_free;
-//}
-//
-//DEFAPI(void) defResultSet(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-//{
-//	cdef->name = "ResultSet";
-//	cdef->init = ResultSet_init;
-//	cdef->free = ResultSet_free;
-//}
 
 #ifdef _SETUP
 
@@ -243,6 +228,8 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 }
 
 #endif
+#endif
+
 #ifdef __cplusplus 
 }
 #endif
