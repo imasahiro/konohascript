@@ -1038,7 +1038,7 @@ knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in)
 knh_status_t knh_load(CTX ctx, knh_Path_t *pth)
 {
 	knh_io_t fd = pth->dpi->fopenSPI(ctx, pth, "r", NULL);
-	DBG_P("dpi->name=%s, fd=%d, ospath=%s", pth->dpi->name, fd, pth->ospath);
+	//DBG_P("dpi->name=%s, fd=%d, ospath=%s", pth->dpi->name, fd, pth->ospath);
 	if(fd != IO_NULL) {
 		knh_InputStream_t *in = new_InputStreamDPI(ctx, fd, pth->dpi, pth);
 		knh_uri_t uri = knh_getURI(ctx, S_tobytes(pth->urn));

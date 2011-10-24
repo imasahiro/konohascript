@@ -32,6 +32,7 @@ include "lib:gluelink";
 // stream.c
 @Public @Native int InputStream.getByte();
 @Public @Native int InputStream.read(Bytes buf, int offset, int length);
+@Public @Native void InputStream.eachLine(Func<String> f);
 @Public @Native boolean InputStream.isClosed();
 @Public @Native void InputStream.setCharset(StringDecoder c);
 @Public @Native void OutputStream.putByte(Int ch);

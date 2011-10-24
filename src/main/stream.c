@@ -1401,6 +1401,21 @@ static KMETHOD InputStream_read(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(knh_InputStream_read(ctx, sfp[0].in, (char*)buf.ubuf, buf.len));
 }
 
+static KMETHOD InputStream_eachLine(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_sfp_t *thissfp = sfp + 2 + K_CALLDELTA;
+	//knh_Method_t *mtd = knh_Func_preset(ctx, sfp[1].fo, thissfp);
+	while(1) {
+		knh_String_t *line = knh_InputStream_readLine(ctx, sfp[0].in);
+		if(IS_NULL(line)) break;
+		KNH_SETv(ctx, thissfp[1].o, line);
+		knh_Func_invoke(ctx, sfp[1].fo, sfp+2, 1);
+//		((knh_context_t*)ctx)->esp = thissfp + 2;
+//		(mtd)->fcall_1(ctx, thissfp, K_CALLDELTA);
+	}
+	RETURNvoid_();
+}
+
 static KMETHOD InputStream_isClosed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURNb_(knh_InputStream_isClosed(ctx, sfp[0].in));
@@ -1439,18 +1454,25 @@ static KMETHOD OutputStream_setCharset(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(sfp[1].o);
 }
 
+static KMETHOD System_addHistory(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	ctx->spi->add_history(S_totext(sfp[1].s));
+	RETURNvoid_();
+}
+
 #define FuncData(X) {#X , X}
 
 static knh_FuncData_t FuncData[] = {
-//	FuncData(Object_hasMethod),
 	FuncData(InputStream_getByte),
 	FuncData(InputStream_read),
+	FuncData(InputStream_eachLine),
 	FuncData(InputStream_isClosed),
 	FuncData(InputStream_setCharset),
 	FuncData(OutputStream_putByte),
 	FuncData(OutputStream_isClosed),
 	FuncData(OutputStream_clearBuffer),
 	FuncData(OutputStream_setCharset),
+	FuncData(System_addHistory),
 	{NULL, NULL},
 };
 

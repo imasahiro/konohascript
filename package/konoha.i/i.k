@@ -28,3 +28,4 @@
 include "lib:gluelink";
 
 @Public @Native void System.man(Object c, NameSpace _);
+@Public @Native void System.addHistory(String text);
