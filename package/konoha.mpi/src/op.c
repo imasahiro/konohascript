@@ -46,27 +46,22 @@ void knh_reduce(knh_Func_t *fo, void *ivec, void *iovec, int *len, MPI_Datatype 
 	size_t rsize;
 	int vlen = *len;
 	CLOSURE_start(2);
-	switch (*dtype) {
-	case MPI_CHAR: {
+	if (*dtype == MPI_CHAR) {
 		new_func = new_MPIData_Bytes;
 		rsize = vlen;
-		break;
 	}
-	case MPI_LONG: {
+	else if (*dtype == MPI_LONG) {
 		new_func = new_MPIData_ArrayInt;
 		rsize = sizeof(knh_int_t) * vlen;
-		break;
 	}
-	case MPI_DOUBLE: {
+	else if (*dtype == MPI_DOUBLE) {
 		new_func = new_MPIData_ArrayFloat;
 		rsize = sizeof(knh_float_t) * vlen;
-		break;
 	}
-	default :{
+	else {
 		knh_ldata_t ldata[] = {LOG_i("unsupported datatype", *dtype), LOG_END};
 		KNH_NTHROW(lctx, lsfp, "Script!!", "MPI_Reduce failed", K_FAILED, ldata);
 		CLOSURE_end(return);
-	}
 	}
 	knh_MPIData_t *o1 = new_func(lctx, ivec, vlen);
 	knh_MPIData_t *o2 = new_func(lctx, iovec, vlen);
