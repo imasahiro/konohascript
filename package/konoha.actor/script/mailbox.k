@@ -17,6 +17,10 @@ void main(String[] args)
 		Socket conn = ss.accept();
 		InputStream ins = conn.getInputStream();
 		String msg = ins.readMsgPack();
+		if (msg == "close()\n") {
+			break;
+		}
 		OUT << msg << EOL;
 	}
+	ss.close();
 }

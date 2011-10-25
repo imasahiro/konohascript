@@ -31,12 +31,13 @@ using konoha.actor.*;
 
 ping = actor:localhost:2000;
 
-count = 10;
+count = 100;
 
 void recvmsg(String msg) {
 	OUT << 'Pong: ' + msg << EOL;
 	OUT << 'count: ' + count-- << EOL;
 	if (count == 0) {
+		ping.close();
 		exit(0);
 	} else {
 		ping.eval("recvmsg('pong')");

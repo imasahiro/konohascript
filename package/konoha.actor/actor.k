@@ -40,12 +40,13 @@ include "lib:gluelink";
 
 @Native class Actor;
 
+@Native Actor Actor.new(String name, String host, int port);
 @Native @Hidden Actor Actor.opLINK(String path, NameSpace _);
 @Native String Actor.getName();
 @Native String Actor.getHost();
 @Native int Actor.getPort();
 
-@Throwable boolean Actor.eval(String script) {
+boolean Actor.eval(String script) {
 	try {
 		Socket s = new Socket(this.host, this.port);
 		OutputStream ous = s.getOutputStream();
@@ -60,13 +61,17 @@ include "lib:gluelink";
 	return true;
 }
 
+void Actor.close() {
+	this.eval("close()");
+}
+
 class StoreActor {
 	Map m;
 	String name;
 
 	StoreActor(String name, String host, int port) {
-		m = Map.open("memcached:" + host + ":" + (to String)port);
-		if (m == null) throw new Script!!("cannot open memcached");
+		_m = Map.open("memcached:" + host + ":" + (to String)port);
+		if (_m == null) throw new Script!!("cannot open memcached");
 		_name = name;
 	}
 
@@ -86,39 +91,3 @@ class StoreActor {
 		m[key] = b;
 	}
 }
-
-//@Native boolean Actor.setStore(StoreActor store);
-//@Native boolean Actor.sendMethod(Func<dynamic=>dynamic> method);
-
-//@Native StoreActor StoreActor.new(String name, String host, int port);
-
-//class ConnectionObject {
-//	String mtd_name;
-//	dynamic msg;
-//};
-
-//void Actor.act(String actor_name);
-//void Actor.send(String target_name, String mtd_name, dynamic msg);
-//void Actor.spawn(String actor_name, Array<Func<dynamic>> func_list);
-
-//class Person {
-//	String name;
-//	int age;
-//	Person(String name, int age) {
-//		_name = name;
-//		_age = age;
-//	}
-//}
-
-//class RingMessage {
-//	String name;
-//	int actor_num;
-//	int actor_count;
-//	int loop_count;
-//	RingMessage(String name, int num1, int num2, int num3) {
-//		_name = name;
-//		_actor_num = num1;
-//		_actor_count = num2;
-//		_loop_count = num3;
-//	}
-//}
