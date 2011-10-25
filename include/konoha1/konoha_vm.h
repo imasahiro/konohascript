@@ -461,6 +461,7 @@ extern "C" {
 	knh_ExceptionHandler_t* _hdr = Rh_(hn); \
 	DBG_ASSERT(IS_ExceptionHandler(_hdr)); \
 	((knh_context_t*)ctx)->ehdrNC = _hdr->parentNC;\
+	klr_mov(ctx, Ro_(hn), KNH_TNULL(ExceptionHandler));\
 } \
 
 #else
@@ -498,6 +499,7 @@ extern "C" {
 	DP(_hdr)->return_address = NULL;\
 	DP(_hdr)->frame_address  = NULL;\
 	((knh_context_t*)ctx)->ehdrNC = _hdr->parentNC;\
+	klr_mov(ctx, Ro_(hn), KNH_TNULL(ExceptionHandler));\
 } \
 
 #endif
