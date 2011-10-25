@@ -25,6 +25,7 @@ KMETHOD MPIComm_recv(CTX ctx, knh_sfp_t *sfp _RIX)
 	int src_rank = Int_to(int, sfp[3]);
 	int tag = Int_to(int, sfp[4]);
 	MPI_Status stat;
+	MPID_WCHK(rdata);
 	if (MPI_Probe(src_rank, tag, MPIC_COMM(comm), &stat) == MPI_SUCCESS) {
 		int rcount = 0;
 		MPI_Get_count(&stat, MPID_TYPE(rdata), &rcount);
@@ -59,6 +60,7 @@ KMETHOD MPIComm_sendrecv(CTX ctx, knh_sfp_t *sfp _RIX)
 	int src_rank = Int_to(int, sfp[7]);
 	int rtag = Int_to(int, sfp[8]);
 	MPID_CCHK(sdata, scount);
+	MPID_WCHK(rdata);
 	MPI_Status stat;
 	{
 		int rrcount = 0;
@@ -106,6 +108,7 @@ KMETHOD MPIComm_iRecv(CTX ctx, knh_sfp_t *sfp _RIX)
 	MPIR_DATA(req) = rdata;
 	int flag = 0;
 	MPI_Status stat;
+	MPID_WCHK(rdata);
 	MPI_Iprobe(src_rank, tag, MPIC_COMM(comm), &flag, &stat);
 	if (flag) {
 		int rcount = 0;

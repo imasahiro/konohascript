@@ -3,45 +3,77 @@
 /* ------------------------------------------------------------------------ */
 //## method MPIOp MPIOp.new(MPIOpFunc opfunc, Boolean commutable);
 
+static knh_MPIData_t* new_MPIData_Bytes(CTX ctx, void *vec, int vlen)
+{
+	knh_Bytes_t *ba = new_Bytes(ctx, NULL, vlen);
+	knh_memcpy(ba->bu.buf, vec, vlen);
+	BA_size(ba) = vlen;
+	MPID(data, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
+	data->ba = ba;
+	MPID_TYPE(data) = MPI_CHAR;
+	MPID_DCID(data) = CLASS_Bytes;
+	return data;
+}
+
+static knh_MPIData_t* new_MPIData_ArrayInt(CTX ctx, void *vec, int vlen)
+{
+	knh_Array_t *a = new_Array(ctx, CLASS_Int, vlen);
+	knh_memcpy(a->ilist, vec, sizeof(knh_int_t) * vlen);
+	knh_Array_size(a) = vlen;
+	MPID(data, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
+	data->a = a;
+	MPID_TYPE(data) = MPI_LONG;
+	MPID_DCID(data) = CLASS_Array;
+	return data;
+}
+
+static knh_MPIData_t* new_MPIData_ArrayFloat(CTX ctx, void *vec, int vlen)
+{
+	knh_Array_t *a = new_Array(ctx, CLASS_Float, vlen);
+	knh_memcpy(a->flist, vec, sizeof(knh_float_t) * vlen);
+	knh_Array_size(a) = vlen;
+	MPID(data, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
+	data->a = a;
+	MPID_TYPE(data) = MPI_DOUBLE;
+	MPID_DCID(data) = CLASS_Array;
+	return data;
+}
+
+
 void knh_reduce(knh_Func_t *fo, void *ivec, void *iovec, int *len, MPI_Datatype *dtype)
 {
+	knh_MPIData_t* (*new_func)(CTX ctx, void *vec, int vlen);
+	size_t rsize;
+	int vlen = *len;
 	CLOSURE_start(2);
-	CTX ctx = lctx;
-	int vlen = len[0];
-	if (dtype[0] == MPI_CHAR && dtype[1] == MPI_CHAR) {
-		knh_Bytes_t *o1 = new_Bytes(ctx, NULL, vlen);
-		knh_memcpy(o1->bu.buf, ivec, vlen);
-		BA_size(o1) = vlen;
-		knh_Bytes_t *o2 = new_Bytes(ctx, NULL, vlen);
-		knh_memcpy(o2->bu.buf, iovec, vlen);
-		BA_size(o2) = vlen;
-		lsfp[1].o = (Object*)o1;
-		lsfp[2].o = (Object*)o2;
-		CLOSURE_call(fo);
-		knh_memcpy(iovec, o2->bu.buf, vlen);
-	} else if (dtype[0] == MPI_LONG && dtype[1] == MPI_LONG) {
-		knh_Array_t *o1 = new_Array(ctx, CLASS_Int, vlen);
-		knh_memcpy(o1->ilist, ivec, sizeof(knh_int_t) * vlen);
-		knh_Array_size(o1) = vlen;
-		knh_Array_t *o2 = new_Array(ctx, CLASS_Int, vlen);
-		knh_memcpy(o2->ilist, iovec, sizeof(knh_int_t) * vlen);
-		knh_Array_size(o2) = vlen;
-		lsfp[1].o = (Object*)o1;
-		lsfp[2].o = (Object*)o2;
-		CLOSURE_call(fo);
-		knh_memcpy(iovec, o2->ilist, sizeof(knh_int_t) * vlen);
-	} else if (dtype[0] == MPI_DOUBLE && dtype[1] == MPI_DOUBLE) {
-		knh_Array_t *o1 = new_Array(ctx, CLASS_Float, vlen);
-		knh_memcpy(o1->flist, ivec, sizeof(knh_float_t) * vlen);
-		knh_Array_size(o1) = vlen;
-		knh_Array_t *o2 = new_Array(ctx, CLASS_Int, vlen);
-		knh_memcpy(o2->flist, iovec, sizeof(knh_float_t) * vlen);
-		knh_Array_size(o2) = vlen;
-		lsfp[1].o = (Object*)o1;
-		lsfp[2].o = (Object*)o2;
-		CLOSURE_call(fo);
-		knh_memcpy(iovec, o2->ilist, sizeof(knh_float_t) * vlen);
+	switch (*dtype) {
+	case MPI_CHAR: {
+		new_func = new_MPIData_Bytes;
+		rsize = vlen;
+		break;
 	}
+	case MPI_LONG: {
+		new_func = new_MPIData_ArrayInt;
+		rsize = sizeof(knh_int_t) * vlen;
+		break;
+	}
+	case MPI_DOUBLE: {
+		new_func = new_MPIData_ArrayFloat;
+		rsize = sizeof(knh_float_t) * vlen;
+		break;
+	}
+	default :{
+		knh_ldata_t ldata[] = {LOG_i("unsupported datatype", *dtype), LOG_END};
+		KNH_NTHROW(lctx, lsfp, "Script!!", "MPI_Reduce failed", K_FAILED, ldata);
+		CLOSURE_end(return);
+	}
+	}
+	knh_MPIData_t *o1 = new_func(lctx, ivec, vlen);
+	knh_MPIData_t *o2 = new_func(lctx, iovec, vlen);
+	lsfp[1].o = (Object*)o1;
+	lsfp[2].o = (Object*)o2;
+	CLOSURE_call(fo);
+	knh_memcpy(iovec, MPID_ADDR(o2), rsize);
 	CLOSURE_end(return);
 }
 
@@ -56,15 +88,14 @@ KMETHOD MPIOp_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Func_t *fo = (knh_Func_t*)sfp[1].fo;
 	MPI_User_function *func = (MPI_User_function*)knh_copyCallbackFunc(ctx, (void*)dummyMPIOpFunc, (void*)knh_reduce, fo);
 	if (func) {
-		MPI_Op newop;
-		if (MPI_Op_create(func, ((sfp[2].bvalue) ? 1 : 0), &newop) == MPI_SUCCESS) {
-			MPIO_OP(op) = newop;
+		if (MPI_Op_create(func, ((sfp[2].bvalue) ? 1 : 0), &MPIO_OP(op)) == MPI_SUCCESS) {
 			MPIO_OPFUNC(op) = func;
 			goto L_RET;
 		}
 	}
-	fprintf(stderr, "some error\n");
 	KNH_MPI_OP_NULL(op);
+	knh_ldata_t ldata[] = {LOG_p("MPI_User_function", func), LOG_END};
+	KNH_NTHROW(ctx, sfp, "Script!!", "MPIOp_new failed", K_FAILED, ldata);
 	L_RET:;
 	RETURN_(op);
 }

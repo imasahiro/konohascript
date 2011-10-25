@@ -61,13 +61,13 @@ mypi = h * sum;
 
 /* collect all the partial sums */
 pi = new float[1];
-world.reduce((MPIData)[mypi], (MPIData)pi, 1, MPIOp.SUM, 0);
+world.reduce((MPIData)mypi, (MPIData)pi, 1, MPIOp.SUM, 0);
 
 world.barrier();
 t2 = getMPIWtime();
 t0 =  t2 - t1;
 t_w = new float[1];
-world.reduce((MPIData)[t0], (MPIData)t_w, 1, MPIOp.MAX, 0);
+world.reduce((MPIData)t0, (MPIData)t_w, 1, MPIOp.MAX, 0);
 
 /* node 0 prints the answer. */
 if (myid == 0) {

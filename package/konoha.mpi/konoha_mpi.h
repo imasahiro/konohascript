@@ -61,7 +61,18 @@ typedef struct {
 #define MPID_DCID(d) ((d)->cid)
 #define MPID_POFS(d) ((d)->offset)
 #define MPID_SIZE(d) knh_MPIData_getSize(d)
-#define MPID_CCHK(d, c) knh_MPIData_checkCount(d, &(c));
+#define MPID_WCHK(d) \
+	{\
+		if (knh_MPIData_getCapacity(d) == -1) {\
+			knh_ldata_t ldata[] = {LOG_p("unwritable data", d), LOG_END};\
+			KNH_NTHROW(ctx, sfp, "Script!!", "MPIData unwritable", K_FAILED, ldata);\
+		}\
+	}
+#define MPID_CCHK(d, c) \
+	{\
+		int psize = MPID_SIZE(d) - MPID_POFS(d);\
+		if (c > psize) c = psize;\
+	}
 #define MPID(v, o) knh_MPIData_t *v = ((knh_MPIData_t*)o)
 
 void* knh_MPIData_getAddr(knh_MPIData_t *data);
@@ -69,7 +80,6 @@ void  knh_MPIData_expand(CTX ctx, knh_MPIData_t *data, int *count, int *inc);
 int   knh_MPIData_getSize(knh_MPIData_t *data);
 int   knh_MPIData_incSize(knh_MPIData_t *data, int count);
 int   knh_MPIData_getCapacity(knh_MPIData_t *data);
-void  knh_MPIData_checkCount(knh_MPIData_t *data, int *count);
 
 /* ------------------------------------------------------------------------ */
 /* MPI Request */
