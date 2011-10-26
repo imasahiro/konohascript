@@ -35,6 +35,8 @@ static void knh_MPIData_init(CTX ctx, knh_RawPtr_t *o)
 	MPID(data, o);
 	data->o = NULL;
 	MPID_TYPE(data) = MPI_BYTE;
+	MPID_DCID(data) = CLASS_Object;
+	MPID_POFS(data) = 0;
 }
 
 static void knh_MPIData_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)

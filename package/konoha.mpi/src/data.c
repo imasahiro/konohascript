@@ -9,6 +9,7 @@ TYPEMAP Int_MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
 	data->i = new_Int(ctx, sfp[1].ivalue);
 	MPID_TYPE(data) = MPI_LONG;
 	MPID_DCID(data) = CLASS_Int;
+	MPID_POFS(data) = 0;
 	RETURN_(data);
 }
 
@@ -18,6 +19,7 @@ TYPEMAP int___MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
 	data->a = sfp[1].a;
 	MPID_TYPE(data) = MPI_LONG;
 	MPID_DCID(data) = CLASS_Array;
+	MPID_POFS(data) = 0;
 	RETURN_(data);
 }
 
@@ -27,6 +29,7 @@ TYPEMAP Float_MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
 	data->f = new_Float_(ctx, CLASS_Float, sfp[1].fvalue);
 	MPID_TYPE(data) = MPI_DOUBLE;
 	MPID_DCID(data) = CLASS_Float;
+	MPID_POFS(data) = 0;
 	RETURN_(data);
 }
 
@@ -36,6 +39,7 @@ TYPEMAP float___MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
 	data->a = sfp[1].a;
 	MPID_TYPE(data) = MPI_DOUBLE;
 	MPID_DCID(data) = CLASS_Array;
+	MPID_POFS(data) = 0;
 	RETURN_(data);
 }
 
@@ -45,6 +49,7 @@ TYPEMAP Bytes_MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
 	data->ba = sfp[1].ba;
 	MPID_TYPE(data) = MPI_CHAR;
 	MPID_DCID(data) = CLASS_Bytes;
+	MPID_POFS(data) = 0;
 	RETURN_(data);
 }
 
@@ -54,6 +59,7 @@ TYPEMAP String_MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
 	data->s = sfp[1].s;
 	MPID_TYPE(data) = MPI_CHAR;
 	MPID_DCID(data) = CLASS_String;
+	MPID_POFS(data) = 0;
 	RETURN_(data);
 }
 
