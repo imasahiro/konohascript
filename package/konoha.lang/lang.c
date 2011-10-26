@@ -40,6 +40,11 @@ extern "C" {
 
 #include "./data_.h"
 
+//## Class Class.getClassTablePtr();
+KMETHOD Class_getClassTablePtr(CTX ctx, knh_sfp_t *sfp _RIX) {
+    knh_Class_t *c = sfp[0].c;
+    RETURNi_((knh_int_t)c->cTBL);
+}
 //## boolean Method.isStaticMtd();
 KMETHOD Method_isStaticMtd(CTX ctx, knh_sfp_t *sfp _RIX) {
 	knh_Method_t *mtd = sfp[0].mtd;
