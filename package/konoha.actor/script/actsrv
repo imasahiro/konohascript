@@ -17,7 +17,7 @@ void main(String[] args)
 		port = (int)args[0];
 	}
 
-	OUT << "start a konoha actor with port: " + (to String)port << EOL;
+	OUT << "start an ActorServer with port: " + (to String)port << EOL;
 	p = new Proc([$konoha.bin.path, $konoha.script.path + "/mailbox.k", (String)port]);
 	InputStream ins = p.getInputStream();
 	String recvmsg = "";

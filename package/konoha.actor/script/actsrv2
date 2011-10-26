@@ -1,0 +1,66 @@
+using konoha.io.*;
+using konoha.thread.*;
+using konoha.socket.*;
+using konoha.posix.*;
+
+void waitmsg(String[] messagebox, Mutex m, int port) {
+	port = (port == 0) ? 2000 : port;
+	ServerSocket ss = new ServerSocket(port, 3);
+	while (true) {
+		Socket conn = ss.accept();
+		InputStream ins = conn.getInputStream();
+		String msg = ins.readMsgPack();
+		m.lock();
+		messagebox.add(msg);
+		m.unlock();
+		if (msg == "close()\n") {
+			break;
+		}
+	}
+	ss.close();
+}
+
+class ActorServer
+{
+	String host;
+	int port;
+	String[] messagebox;
+	Mutex m;
+
+	ActorServer(String host, int port) {
+		_host = host;
+		_port = port;
+		_messagebox = [];
+		_m = new Mutex();
+	}
+
+	void start() {
+		Thread t = Thread.spawn(waitmsg, [messagebox, m, port]);
+		while (true) {
+			System.usleep(1000);
+			m.lock();
+			if (|messagebox| > 0) {
+				String msg = messagebox[0];
+				if (msg == "close()\n") {
+					break;
+				}
+				System.eval(msg);
+				messagebox.remove(0);
+			}
+			m.unlock();
+		}
+		t.join();
+	}
+}
+
+void main(String[] args)
+{
+	int argc = |args|;
+	int port = 2000;
+	if (argc > 0) {
+		port = (to int)args[0];
+	}
+	a = new ActorServer("localhost", port);
+	OUT << "start an ActorServer with port: " + (to String)port << EOL;
+	a.start();
+}
