@@ -76,14 +76,27 @@ static void *spawn_start(void *v)
 	KNH_SYSLOCK(ctx);
 	ctx->ctxobjNC = NULL;
 	ctx->wshare->threadCounter--;
+	KONOHA_END(ctx);
 	if(ctx->share->gcStopCounter != 0) {
 		knh_thread_cond_signal(ctx->share->start_cond);
 	}else if(ctx->share->threadCounter == 1) {
 		knh_thread_cond_signal(ctx->share->close_cond);
 	}
 	KNH_SYSUNLOCK(ctx);
-	KONOHA_END(ctx);
 	return NULL;
+}
+
+static void Mutex_init(CTX ctx, knh_RawPtr_t *po)
+{
+	po->rawptr = NULL;
+}
+
+static void Mutex_free(CTX ctx, knh_RawPtr_t *po)
+{
+	if(po->rawptr != NULL) {
+		knh_mutex_free(ctx, (knh_mutex_t *)po->rawptr);
+		po->rawptr = NULL;
+	}
 }
 
 /* ======================================================================== */
@@ -140,12 +153,56 @@ KMETHOD Object_synchronized(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+//## @Native Mutex Mutex.new()
+KMETHOD Mutex_new(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+  knh_RawPtr_t *p = sfp[0].p;
+  p->rawptr = (void *)knh_mutex_malloc(ctx);
+  RETURN_(p);
+}
+
+//## @Native void Mutex.lock()
+KMETHOD Mutex_lock(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+  knh_mutex_t *m = RawPtr_to(knh_mutex_t *, sfp[0]);
+
+	KNH_SYSLOCK(ctx);
+	ctx->wshare->stopCounter++;
+	if(ctx->share->gcStopCounter != 0) {
+		knh_thread_cond_signal(ctx->share->start_cond);
+	}
+	KNH_SYSUNLOCK(ctx);
+
+  knh_mutex_lock(m);
+
+	KNH_SYSLOCK(ctx);
+	ctx->wshare->stopCounter--;
+	KNH_SYSUNLOCK(ctx);
+
+  RETURNvoid_();
+}
+
+//## @Native void Mutex.unlock()
+KMETHOD Mutex_unlock(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+  knh_mutex_t *m = RawPtr_to(knh_mutex_t *, sfp[0]);
+  knh_mutex_unlock(m);
+  RETURNvoid_();
+}
+
 /* ======================================================================== */
 // [DEFAPI]
 
 DEFAPI(void) defThread(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	cdef->name = "Thread";
+}
+
+DEFAPI(void) defMutex(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	cdef->name = "Mutex";
+	cdef->init = Mutex_init;
+	cdef->free = Mutex_free;
 }
 
 #ifdef _SETUP

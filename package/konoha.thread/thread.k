@@ -38,3 +38,8 @@ include "lib:gluelink";
 @Native void Thread.join();
 //@Native @Public void Object.synchronized(dynamic f, dynamic[] args);
 
+@Native class Mutex;
+@Native Mutex Mutex.new();
+@Native void Mutex.lock();
+@Native void Mutex.unlock();
+
