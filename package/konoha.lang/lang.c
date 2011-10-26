@@ -125,7 +125,7 @@ KMETHOD Stmt_toToken(CTX ctx, knh_sfp_t *sfp _RIX) {
         ret = tk;
     else 
         ret = KNH_TNULL(Token);
-    RETURN_(tk);
+    RETURN_(ret);
 }
 
 //## int Token.getT();

@@ -170,13 +170,18 @@ static void kook_THROW_asm(CTX ctx, knh_Stmt_t *stmt)
 
 static void kook_RETURN_asm(CTX ctx, knh_Stmt_t *stmt)
 {
-    knh_Stmt_t *stmt0 = stmtNN(stmt, 0);
-    CALL(ctx, COMPILER_API.RETURN, 2, stmt, stmt0);
+	knh_Stmt_t *stmt0 = NULL;
+	if (DP(stmt)->size > 0) {
+		stmt0 = stmtNN(stmt, 0);
+	} else {
+		stmt0 = KNH_TNULL(Stmt);
+	}
+	CALL(ctx, COMPILER_API.RETURN, 2, stmt, stmt0);
 }
 
 static void kook_YIELD_asm(CTX ctx, knh_Stmt_t *stmt)
 {
-    KNH_TODO("");
+	KNH_TODO("");
 }
 
 static void kook_PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
@@ -223,8 +228,8 @@ static void kook_CALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
     knh_Token_t *tkMTD = tkNN(stmt, 0);
     knh_Method_t *mtd = tkMTD->mtd;
     knh_class_t cid = Tn_cid(stmt, 1);
-    knh_Stmt_t *stmt0 = stmtNN(stmt, 2);
-    knh_Class_t *c = new_Type(ctx, cid);
+    //knh_Stmt_t *stmt0 = stmtNN(stmt, 2);
+    //knh_Class_t *c = new_Type(ctx, cid);
     CALL(ctx, COMPILER_API.CALL, 5, stmt, NN(espidx), tkMTD, mtd, NN(cid));
 }
 
@@ -250,7 +255,8 @@ static void kook_OPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
     knh_Stmt_t *lhs = stmtNN(stmt, 1);
     knh_Stmt_t *rhs = stmtNN(stmt, 2);
     knh_Class_t *c = new_Type(ctx, cid);
-    CALL(ctx, COMPILER_API.OPR, 6, stmt, NN(espidx), mtd, c, lhs, rhs != NULL ? rhs : KNH_NULL);
+    knh_Stmt_t *_rhs = (rhs != NULL ? rhs : KNH_TNULL(Stmt));
+    CALL(ctx, COMPILER_API.OPR, 6, stmt, NN(espidx), mtd, c, lhs, _rhs);
 }
 
 static void kook_NEW_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
@@ -388,6 +394,11 @@ KMETHOD Compiler_asmBLOCK(CTX ctx, knh_sfp_t *sfp _RIX)
     RETURNvoid_();
 }
 
+KMETHOD Compiler_debug(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+    asm volatile("int3");
+}
+
 static void kook_compiler_emit(CTX ctx, knh_Method_t *mtd)
 {
     CALL(ctx, COMPILER_API.EMITCODE, 1, mtd);
@@ -408,6 +419,7 @@ static knh_Method_t *load_method(CTX ctx, knh_class_t cid, knh_bytes_t t)
     assert(mtd != NULL);
     return mtd;
 }
+
 #define LOADMTD(ctx, cid, name) load_method(ctx, cid, STEXT(name))
 
 DEFAPI(void) complete(CTX ctx)
