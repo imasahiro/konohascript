@@ -2991,13 +2991,13 @@ void knh_loadScriptSystemKonohaCode(CTX ctx)
 /* ------------------------------------------------------------------------ */
 
 typedef struct knh_funcname_t {
-	void *func;
 	char *name;
+	void *func;
 } knh_funcname_t;
 
-#define _FUNC(func, name) { (void*) func, (char *) name }
+#define _FUNC(func, name) { (char *) name , (void*) func}
 
-static struct knh_funcname_t _FuncData[] = {
+struct knh_funcname_t _FuncData[] = {
 	_FUNC(_PRINT, "PRINT"), _FUNC(_BOX, "BOX"), _FUNC(TR_NEW, "NEW"),
 	_FUNC(_NULVAL, "NULL"), _FUNC(_CWB, "CWB"), _FUNC(_TOSTR, "TOSTR"),
 	_FUNC(_LOOKUPMTD, "LOOKUPMTD"),

@@ -990,12 +990,20 @@ KMETHOD Object_getPtr(CTX ctx, knh_sfp_t *sfp _RIX)
 //	{NULL, K_INT0}
 //};
 //
+
+typedef struct knh_funcname_t {
+	char *name;
+	void *func;
+} knh_funcname_t;
+extern knh_IntData_t _FuncData[];
+
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
     kapi->setPackageProperty(ctx, "name", "lang");
     kapi->setPackageProperty(ctx, "version", "0.0");
     kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Stmt")), StmtInt);
     kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Token")), TokenInt);
+    kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Stmt")), (knh_IntData_t*)_FuncData);
     RETURN_PKGINFO("konoha.lang");
 }
 
