@@ -73,7 +73,6 @@ class Compiler {
     Class[] paramsclass;
     Class   retclass;
     Map<String, Type> ktype;
-    Array<dynamic> const_table;
     K_Function kfunc;
     Method[] system_method;
     Int[] system_method_cid;
@@ -83,7 +82,6 @@ class Compiler {
         this.ee = m.createExecutionEngine();
         ktype = {};
         constructKonohaTypes();
-        const_table = [];
         this.intTy = Type.getInt64Ty();
         this.boolTy = Type.getInt1Ty();
         this.floatTy = Type.getDoubleTy();
@@ -936,10 +934,13 @@ class K_PRINT extends K_Inst {
     }
 }
 class K_TRop extends K_Opcode {
+    int espidx;
     int rix;
     int cTBL;
     int ftr;
-    K_TRop(int rix, int cTBL, int ftr) {
+    K_TRop(K_Inst inst0, int espidx, int rix, int cTBL, int ftr) {
+        this.espidx = espidx;
+        this.inst0 = inst0;
         this.rix = rix;
         this.cTBL = cTBL;
         this.ftr = ftr;
@@ -954,7 +955,7 @@ class K_TR extends K_Inst {
         addDef(kvalue, idx);
     }
     @Override void dump() {
-        OUT << "\t" + getName() + " = tr " + getTypeName(type) << EOL;
+        OUT << "\t" + getName() + " = tr " + getTypeName(type) + " " + op.inst0.getName()<< EOL;
     }
 }
 class K_NEWop extends K_Opcode {
@@ -1234,6 +1235,11 @@ void Compiler.init(Method mtd) {
         vargs[0].setName("ctx");
         vargs[1].setName("sfp");
         vargs[2].setName("rix");
+        print mtd;
+        print mtd.getName();
+        print mtd.getReturnType();
+        print mtd.getParamTypes();
+        print mtd.toString();
     }
     ctx = vargs[0];
     sfp = vargs[1];
@@ -1241,9 +1247,16 @@ void Compiler.init(Method mtd) {
     paramsclass = mtd.getParamTypes();
     retclass    = mtd.getReturnType();
     kfunc = new K_Function(mtd);
-    //print mtd, retclass, kfunc;
 
+    if (mtd.toString() == "global.Script." || mtd.toString() == "main.Script.") {
+        K_Value kvalue = kfunc.getKValue(0, TYPE_Object);
+        K_Inst inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
+        kfunc.storeKInst(0, inst);
+        kfunc.funcargs.add(inst);
+        return;
+    }
     if (!mtd.isStaticMtd()) {
+        print "global";
         K_Value kvalue = kfunc.getKValue(0, TYPE_Object);
         K_Inst inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
         kfunc.storeKInst(0, inst);
@@ -1353,13 +1366,24 @@ SFX getsfx(Token tk) {
     return new SFX(i, n);
 }
 @Native void Compiler.asmEXPR(Stmt stmt, int espidx);
-@Native void Compiler.debug(int x);
+@Native void Compiler.debug();
 
 void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
     int btype = tkb.getT();
     int used_espidx = -1;
     switch (tkb.getTT()) {
         case Token.TT_NULL:
+            /* TODO overwriting default null value */
+            Class c = tkb.getTokenClass();
+            Object v = c.getNullValue();
+            int table_idx = kfunc.addConstTable(v);
+            int objptr = v.getPtr();
+            K_CONST tmp = new K_CONST(null, getcid(c), new K_CONSTop(table_idx, objptr, kfunc.const_table));
+            kfunc.curBB.insts.add(tmp);
+            K_Inst inst0 = kfunc.getKInst(ax.i);
+            K_Inst inst = new K_xMOV(new K_xMOVop(inst0, tmp, ax.n), 0);
+            kfunc.curBB.insts.add(inst);
+
             break;
         case Token.TT_CID:
         case Token.TT_CONST:
@@ -1372,13 +1396,14 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
                 objptr = v.getPtr();
                 table_idx = kfunc.addConstTable(v);
             }
-            K_Inst tmp = new K_CONST(null, btype, new K_CONSTop(table_idx, objptr, const_table), 0);
+            K_Inst tmp = new K_CONST(null, btype, new K_CONSTop(table_idx, objptr, kfunc.const_table), 0);
             kfunc.curBB.insts.add(tmp);
             K_Inst inst0 = kfunc.getKInst(ax.i);
             K_Inst inst = new K_xMOV(new K_xMOVop(inst0, tmp, ax.n), 0);
             kfunc.curBB.insts.add(inst);
             break;
         case Token.TT_FVAR:
+            print "TT_FVAR";
             int b = tkb.getTokenIndex();
             K_Inst inst0 = kfunc.getKInst(ax.i);
             K_Inst inst1 = kfunc.getKInst(b);
@@ -1386,6 +1411,7 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
             kfunc.curBB.insts.add(inst);
             break;
         case Token.TT_FIELD:
+            print "TT_FIELD";
             SFX bx = getsfx(tkb);
             K_Inst vb = kfunc.getKInst(bx.i);
             K_Inst tmp = new K_MOVx(null, new K_MOVxop(vb, bx.n), 0);
@@ -1432,6 +1458,15 @@ void Compiler.asm_smov(int alocal, Token tk) {
         case Token.TT_ASIS:
             break;
         case Token.TT_NULL:
+            /* TODO overwriting default null value */
+            Class c = tk.getTokenClass();
+            Object v = c.getNullValue();
+            int table_idx = kfunc.addConstTable(v);
+            int objptr = v.getPtr();
+            K_Value kvalue = kfunc.getKValue(alocal, getcid(c));
+            K_CONST inst = new K_CONST(kvalue, getcid(c), new K_CONSTop(table_idx, objptr, kfunc.const_table));
+            kfunc.curBB.insts.add(inst);
+            kfunc.storeKInst(alocal, inst);
             break;
         case Token.TT_CID:
         case Token.TT_CONST:
@@ -1441,7 +1476,6 @@ void Compiler.asm_smov(int alocal, Token tk) {
             if (!is_Tunbox(type)) {
                 objptr = v.getPtr();
             }
-            //print type, objptr;
             K_Value kvalue = kfunc.getKValue(alocal, type);
             K_CONST inst = new K_CONST(kvalue, type, new K_CONSTop(table_idx, objptr, kfunc.const_table));
             kfunc.curBB.insts.add(inst);
@@ -1495,6 +1529,10 @@ void Compiler.asm(Stmt stmt, Token tk, int espidx) {
     }
 }
 void Compiler.emit(Method mtd) {
+    if (!kfunc.bbs[kfunc.bbs.size-1].hasReturn) {
+        K_RET inst = new K_RET(new K_RETop(null));
+        kfunc.bbs[kfunc.bbs.size-1].insts.add(inst);
+    }
     kfunc.codegen(this);
     if (DEBUG) {
         kfunc.dump();
@@ -1895,6 +1933,7 @@ void Compiler.asmCALL_sub(int espidx, int rtype, Method mtd, boolean flag, int a
         int isStatic = (flag) ? 1 : 0;
         Array<K_Inst> args = [];
         for (int i = isStatic; i <= argc; i++) {
+            print "parans ", i;
             K_Inst arg = kfunc.getKInst(thisidx + i);
             args.add(arg);
         }
@@ -1914,8 +1953,9 @@ void Compiler.asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, int cid) {
         print tkMTD;
         print mtd;
         print cid;
+        print mtd.isStaticMtd();
+        print stmt.getStmtSize() - 2;
     }
-
     if (callparams_asm(stmt, 1, espidx, cid, mtd)) {
         asmCALL_sub(espidx, getcid(mtd.getReturnType()), mtd, mtd.isStaticMtd(), stmt.getStmtSize() - 2);
     }
@@ -1938,13 +1978,14 @@ void Compiler.asmBOX(Stmt stmt, int espidx, Class c, Stmt expr) {
     K_Inst inst;
     asm(expr, expr.toToken(), espidx);
     if (c == Boolean) {
+        K_Inst thisObj = kfunc.getKInst(espidx);
         K_Value vb = kfunc.getKValue(espidx, TYPE_Object);
-        inst = new K_TR(vb, new K_TRop(espidx - espidx, c.getClassTablePtr(), Stmt.BOX), 0);
+        inst = new K_TR(vb, new K_TRop(thisObj, espidx, espidx - espidx, c.getClassTablePtr(), Stmt.BOX), 0);
         kfunc.curBB.insts.add(inst);
-        //ASM(TR, OC_(espidx), SFP_(espidx), RIX_(espidx-espidx), ClassTBL(cid), _bBOX);
     } else {
+        K_Inst thisObj = kfunc.getKInst(espidx);
         K_Value vb = kfunc.getKValue(espidx, TYPE_Object);
-        inst = new K_TR(vb, new K_TRop(espidx - espidx, c.getClassTablePtr(), Stmt.BOX), 0);
+        inst = new K_TR(vb, new K_TRop(thisObj, espidx, espidx - espidx, c.getClassTablePtr(), Stmt.BOX), 0);
         kfunc.curBB.insts.add(inst);
     }
     kfunc.storeKInst(espidx, inst);
@@ -2052,24 +2093,26 @@ void Compiler.asmNEW(Stmt stmt, int espidx, Class thisCid, Method mtd) {
     if (DEBUG) {
         print "new";
         print stmt;
+        print stmt.getStmtSize();
+        print getcid(thisCid);
         print espidx;
         print thisCid;
         print mtd;
         print mtd.getName();
     }
     int thisidx = espidx + K_CALLDELTA;
-    if (stmt.getStmtSize() == 2 && getcid(thisCid) == TYPE_Object && mtd.getName == "new") {
-        K_Value vb = kfunc.getKValue(thisidx, TYPE_Object);
-        inst = new K_NEW(vb, new K_NEWop(espidx-thisidx, thisCid.getClassTablePtr(), Stmt.NEW));
+    if (stmt.getStmtSize() == 2 && getcid(thisCid) == TYPE_Object && mtd.getName() == "new") {
+        K_Value vb = kfunc.getKValue(espidx, TYPE_Object);
+        K_Inst inst = new K_NEW(vb, new K_NEWop(espidx-thisidx, thisCid.getClassTablePtr(), Stmt.NEW));
         kfunc.curBB.insts.add(inst);
-        kfunc.storeKInst(thisidx, inst);
+        kfunc.storeKInst(espidx, inst);
     } else {
         K_Value vb = kfunc.getKValue(thisidx, TYPE_Object);
-        inst = new K_NEW(vb, new K_NEWop(thisidx-thisidx, thisCid.getClassTablePtr(), Stmt.NEW));
+        K_Inst inst = new K_NEW(vb, new K_NEWop(thisidx-thisidx, thisCid.getClassTablePtr(), Stmt.NEW));
         kfunc.curBB.insts.add(inst);
         kfunc.storeKInst(thisidx, inst);
         callparams_asm(stmt, 2, espidx, getcid(thisCid), mtd);
-        asmCALL_sub(espidx, getcid(mtd.getReturnType()), mtd, true, stmt.getStmtSize() - 2);
+        asmCALL_sub(espidx, getcid(mtd.getReturnType()), mtd, false, stmt.getStmtSize() - 2);
     }
     //ASM(TR, OC_(thisidx), SFP_(thisidx), RIX_(thisidx-thisidx), ClassTBL(cid), TR_NEW);
 }
@@ -2718,8 +2761,9 @@ void K_Function.codegen(Compiler asm) {
     Value rix = ConstantInt.get(asm.intTy, op.rix);
     Value cid = ConstantInt.get(asm.intTy, op.cTBL);
     Value[] vargs = [asm.ctx, vb, rix, cid];
+    asm.builder.createStoreValueToSfp(asm.sfp, asm.convertType(op.inst0.type), op.espidx, op.inst0.getLLVMValue(asm));
     asm.builder.createCall(func, vargs);
-    Value v = asm.builder.createLoadValueFromSfp(asm.sfp, asm.convertType(type), kvalue.idx + op.rix);
+    Value v = asm.builder.createLoadValueFromSfp(asm.sfp, asm.convertType(type), op.espidx + op.rix);
     setLLVMValue(asm, v);
 }
 @Override void K_NEW.codegen(Compiler asm) {

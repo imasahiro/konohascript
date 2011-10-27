@@ -262,7 +262,7 @@ static void kook_OPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 static void kook_NEW_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
     knh_Method_t *mtd = tkNN(stmt, 0)->mtd;
-    knh_class_t cid = Tn_cid(stmt, 1);
+    knh_class_t cid = (tkNN(stmt, 1))->cid;
     knh_Class_t *c = new_Type(ctx, cid);
     CALL(ctx, COMPILER_API.NEW, 4, stmt, NN(espidx), c, mtd);
 }

@@ -45,6 +45,11 @@ KMETHOD Class_getClassTablePtr(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_Class_t *c = sfp[0].c;
     RETURNi_((knh_int_t)c->cTBL);
 }
+//## Object Class.getNullValue();
+KMETHOD Class_getNullValue(CTX ctx, knh_sfp_t *sfp _RIX) {
+    knh_Class_t *c = sfp[0].c;
+    RETURN_(KNH_NULVAL(c->cid));
+}
 //## boolean Method.isStaticMtd();
 KMETHOD Method_isStaticMtd(CTX ctx, knh_sfp_t *sfp _RIX) {
 	knh_Method_t *mtd = sfp[0].mtd;
@@ -122,6 +127,12 @@ KMETHOD Token_getD(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
     RETURN_(tk->data);
 }
+//## Class Token.getClass();
+KMETHOD Token_getTokenClass(CTX ctx, knh_sfp_t *sfp _RIX) {
+    knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
+    knh_class_t cid = tk->cid;
+    RETURN_(new_Type(ctx, cid));
+}
 //## Token Stmt.toToken();
 KMETHOD Stmt_toToken(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
@@ -159,7 +170,12 @@ KMETHOD Method_toString(CTX ctx, knh_sfp_t *sfp _RIX)
     knh_write_mn(ctx, cwb->w, (sfp[0].mtd)->mn);
     RETURN_(CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER|K_SPOLICY_ASCII));
 }
-
+// Class Method.getMethodClass()
+KMETHOD Method_getMethodClass(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+    knh_Method_t *mtd = sfp[0].mtd;
+	RETURN_(new_Type(ctx, mtd->cid));
+}
 //## int Object.getPtr() {
 KMETHOD Object_getPtr(CTX ctx, knh_sfp_t *sfp _RIX)
 {

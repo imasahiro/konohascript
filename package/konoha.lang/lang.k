@@ -54,6 +54,7 @@ class Charset extends String;
 @Public @Native Class Class.opLINK(String path, NameSpace _);
 @Public @Native @Static Class[] Class.query(String path);
 @Public @Native int Class.getClassTablePtr();
+@Public @Native Object Class.getNullValue();
 
 @Public @Native Method Method.opLINK(String path, NameSpace _);
 @Public @Native Method[] Class.getMethods(NameSpace _);
@@ -80,7 +81,9 @@ class Charset extends String;
 @Public @Native int Token.getTT();
 @Public @Native int Token.getT();
 @Public @Native int Token.getTokenIndex();
+@Public @Native Class Token.getTokenClass();
 @Public @Native int Object.getPtr();
+@Public @Native Class Method.getMethodClass();
 
 /* *****************
 @Native class Symbol;
