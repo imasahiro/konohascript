@@ -2,6 +2,9 @@
  * KONOHA COPYRIGHT, LICENSE NOTICE, AND DISCRIMER
  *
  * Copyright (c) 2011 Masahiro Ide <imasahiro9 at gmail.com>
+ *           (c) 2011 Shunsuke Shida
+ *           (c) 2011 Konoha Team konohaken@googlegroups.com
+ *
  * All rights reserved.
  * You may choose one of the following two licenses when you use konoha.
  * If you want to use the latter license, please contact us.
