@@ -60,16 +60,16 @@ KMETHOD Method_isStatic(CTX ctx, knh_sfp_t *sfp _RIX) {
 	RETURNb_(b);
 }
 
-//## int TypeMap.getSource();
+//## Class TypeMap.getSource();
 KMETHOD TypeMap_getSource(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_TypeMap_t *tmr = sfp[0].tmr;
-    RETURNi_(tmr->scid);
+    RETURN_(new_Type(ctx, tmr->scid));
 }
 
-//## int TypeMap.getTarget();
+//## Class TypeMap.getTarget();
 KMETHOD TypeMap_getTarget(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_TypeMap_t *tmr = sfp[0].tmr;
-    RETURNi_(tmr->tcid);
+    RETURN_(new_Type(ctx, tmr->tcid));
 }
 
 //## int Stmt.getStmtSize();

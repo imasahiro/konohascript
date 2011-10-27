@@ -52,8 +52,6 @@ boolean is_Tunbox(int type) {
     return b;
 }
 
-void rewrite(Method mtd);
-
 
 class K_BasicBlock;
 class K_Function;
@@ -1541,13 +1539,17 @@ void Compiler.emit(Method mtd) {
     mtd.setFunction(ee.getPointerToFunction(m, func));
 }
 void Compiler.asm_mov(Token tka, Token tkb, int espidx) {
-    print "mov";
+    if (DEBUG) {
+        print "mov";
+    }
     if (tka.getTT() == Token.TT_FVAR) {
         asm_smov(tka.getTokenIndex(), tkb);
     } else {
         SFX x = getsfx(tka);
         asm_xmov(x, tkb, espidx);
-        print "ASM_XMOV();";
+        if (DEBUG) {
+            print "ASM_XMOV();";
+        }
     }
 }
 
@@ -1558,12 +1560,18 @@ void Compiler.asmLET(Stmt stmt, Token tkL, Stmt tkV, Token tkVTk) {
     int espidx = stmt.getESPIDX();
     if (tkVTk.isNotNull()) {
         asm_mov(tkL, tkVtk, espidx);
-        print "ASM_MOV(lhs, tkV, espidx);", tkL, tkV;
+        if (DEBUG) {
+            print "ASM_MOV(lhs, tkV, espidx);", tkL, tkV;
+        }
     } else {
         asm(tkV, tkVtk, espidx);
-        print espidx, tkV, tkVTk, tkL.getTokenIndex();
+        if (DEBUG) {
+            print espidx, tkV, tkVTk, tkL.getTokenIndex();
+        }
         if (tkL.getTT() == Token.TT_FVAR) {
-            print "TT_FVAR ", tkL.getTokenIndex(), espidx;
+            if (DEBUG) {
+                print "TT_FVAR ", tkL.getTokenIndex(), espidx;
+            }
             kfunc.storeKInst(tkL.getTokenIndex(), kfunc.getKInst(espidx));
         } else {
             SFX ax = getsfx(tkL);
@@ -1746,19 +1754,23 @@ void Compiler.asmDO(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
     kfunc.curBB = bbBreak;
 }
 void Compiler.asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBody) {
-    print "for";
-    print stmt;
-    print stmt.getESPIDX();
-    print stmt1.getESPIDX();
-    print stmt2.getESPIDX();
-    print stmt3.getESPIDX();
-    print stmtBody.getESPIDX();
+    if (DEBUG) {
+        print "for";
+        print stmt;
+        print stmt.getESPIDX();
+        print stmt1.getESPIDX();
+        print stmt2.getESPIDX();
+        print stmt3.getESPIDX();
+        print stmtBody.getESPIDX();
+    }
 
     K_BasicBlock bbCond     = new K_BasicBlock(kfunc.bbs.size);
     K_BasicBlock bbContinue = new K_BasicBlock(kfunc.bbs.size + 1);
     K_BasicBlock bbBody     = new K_BasicBlock(kfunc.bbs.size + 2);
     K_BasicBlock bbBreak    = new K_BasicBlock(kfunc.bbs.size + 3);
-    print bbBreak.bbidx;
+    if (DEBUG) {
+        print bbBreak.bbidx;
+    }
     kfunc.bbs.add(bbCond, bbContinue, bbBody, bbBreak);
     int espidx = stmt1.getESPIDX();
 
@@ -1901,12 +1913,15 @@ void Compiler.asmLETEXPR(Stmt stmt, int espidx, Token tkL, Stmt expr) {
     }
 }
 void Compiler.asmFUNCCALL(Stmt stmt, int espidx, Method mtd, Class c, Stmt stmt) {
-    print "funccall";
-    print stmt;
-    print espidx;
-    print mtd;
-    print c;
-    print stmt;
+    if (DEBUG) {
+        print "funccall";
+        print stmt;
+        print espidx;
+        print mtd;
+        print c;
+        print stmt;
+    }
+    print "*****************TODO*****************";
 }
 boolean Compiler.callparams_asm(Stmt stmt, int s, int local, int cid, Method mtd) {
     int i;
@@ -2123,7 +2138,10 @@ void Compiler.asmTCAST(Stmt stmt, int espidx, TypeMap tmr, Stmt expr) {
     print stmt;
     print espidx;
     print tmr;
+    print tmr.source;
+    print tmr.target;
     print expr;
+
 }
 void Compiler.asmAND(Stmt stmt, int espidx) {
     print "and";
@@ -2491,7 +2509,9 @@ void Compiler.constructKonohaTypes() {
 }
 @Override void K_PHI.codegen(Compiler asm) {
     if (|bbs| == 1) {
-        print "hi";
+        if (DEBUG) {
+            print "hi";
+        }
         setLLVMValue(asm, insts[0].getLLVMValue(asm));
         return;
     } else {
@@ -2861,7 +2881,7 @@ void K_Function.codegen(Compiler asm) {
     Value func = ConstantInt.get(asm.intTy, op.ldmtd);
     func = asm.builder.CreateIntToPtr(func, fmethodTy);
     Value vop = ConstantInt.get(asm.intTy, op.opline);
-    Value []vargs = [asm.ctx, asm.sfp, vop];
+    Value[] vargs = [asm.ctx, asm.sfp, vop];
     asm.builder.createCall(func, vargs);
 }
 @Override void K_ARGUMENT.codegen(Compiler asm) {
@@ -2874,3 +2894,4 @@ void K_Function.codegen(Compiler asm) {
     }
     asm.builder.createRetVoid();
 }
+
