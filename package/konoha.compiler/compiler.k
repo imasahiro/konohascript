@@ -28,8 +28,8 @@ using konoha.lang.*;
 using konoha.llvm.*;
 include "lib:gluelink";
 
-//DEBUG = false;
-DEBUG = true;
+DEBUG = false;
+//DEBUG = true;
 TYPE_Tvoid = 0;
 TYPE_Int = 5;
 TYPE_Float = 6;
@@ -1255,7 +1255,7 @@ void Compiler.init(Method mtd) {
         kfunc.funcargs.add(inst);
         return;
     }
-    if (!mtd.isStaticMtd()) {
+    if (!mtd.isStatic()) {
         print "global";
         K_Value kvalue = kfunc.getKValue(0, TYPE_Object);
         K_Inst inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
@@ -1913,7 +1913,7 @@ boolean Compiler.callparams_asm(Stmt stmt, int s, int local, int cid, Method mtd
     if (DEBUG) {
         print cid;
     }
-    if (s == 1 && mtd.isStaticMtd()) {
+    if (s == 1 && mtd.isStatic()) {
         s = 2;
     }
     /*TODO chkstack*/
@@ -1933,7 +1933,9 @@ void Compiler.asmCALL_sub(int espidx, int rtype, Method mtd, boolean flag, int a
         int isStatic = (flag) ? 1 : 0;
         Array<K_Inst> args = [];
         for (int i = isStatic; i <= argc; i++) {
-            print "parans ", i;
+            if (DEBUG) {
+                print "parans ", i;
+            }
             K_Inst arg = kfunc.getKInst(thisidx + i);
             args.add(arg);
         }
@@ -1953,11 +1955,11 @@ void Compiler.asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, int cid) {
         print tkMTD;
         print mtd;
         print cid;
-        print mtd.isStaticMtd();
+        print mtd.isStatic();
         print stmt.getStmtSize() - 2;
     }
     if (callparams_asm(stmt, 1, espidx, cid, mtd)) {
-        asmCALL_sub(espidx, getcid(mtd.getReturnType()), mtd, mtd.isStaticMtd(), stmt.getStmtSize() - 2);
+        asmCALL_sub(espidx, getcid(mtd.getReturnType()), mtd, mtd.isStatic(), stmt.getStmtSize() - 2);
     }
 }
 void Compiler.asmCALL1(Stmt stmt, int espidx, Stmt expr1, Stmt stmtPost) {

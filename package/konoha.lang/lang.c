@@ -50,10 +50,13 @@ KMETHOD Class_getNullValue(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_Class_t *c = sfp[0].c;
     RETURN_(KNH_NULVAL(c->cid));
 }
-//## boolean Method.isStaticMtd();
-KMETHOD Method_isStaticMtd(CTX ctx, knh_sfp_t *sfp _RIX) {
+
+#undef Method_isStatic
+#define Method_isStatic_(o) (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Static))
+//## boolean Method.isStatic();
+KMETHOD Method_isStatic(CTX ctx, knh_sfp_t *sfp _RIX) {
 	knh_Method_t *mtd = sfp[0].mtd;
-	int b = Method_isStatic(mtd);
+	int b = Method_isStatic_(mtd);
 	RETURNb_(b);
 }
 
