@@ -71,6 +71,7 @@ class Compiler {
     Class[] paramsclass;
     Class   retclass;
     Map<String, Type> ktype;
+    FunctionType funcTy;
     K_Function kfunc;
     Method[] system_method;
     Int[] system_method_cid;
@@ -1226,7 +1227,7 @@ int getcid(Class classType) {
 
 void Compiler.init(Method mtd) {
     this.mtd = mtd;
-    func = Function.create("_", (FunctionType)ktype["fmethodTy"], m);
+    func = Function.create("_", this.funcTy, m);
     bblist = [];
     Array<Value> vargs = func.getArguments();
     if (DEBUG) {
@@ -2149,6 +2150,7 @@ void Compiler.asmTCAST(Stmt stmt, int espidx, TypeMap tmr, Stmt expr) {
         K_Inst inst = kfunc.getKInst(espidx);
         //K_Inst inst = new K_NEW(vb, new K_NEWop(thisidx-thisidx, thisCid.getClassTablePtr(), Stmt.NEW));
         K_Inst cast = new K_CAST(v, new K_CASTop(inst, getcid(target), getcid(source), espidx, espidx, 0, 0, 0));
+        print "********TODO******";
     }
 
 }
@@ -2397,6 +2399,7 @@ void Compiler.constructKonohaTypes() {
     m.addTypeName("fmethod", fmethodTy);
     ktype["fmethodTy"]    = fmethodTy;
     ktype["fmethodPtrTy"] = fmethodPtrTy;
+    this.funcTy = fmethodTy;
 
     argsTy = [];
     argsTy.add(ctxPtrTy);
