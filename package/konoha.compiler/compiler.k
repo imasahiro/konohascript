@@ -2141,6 +2141,15 @@ void Compiler.asmTCAST(Stmt stmt, int espidx, TypeMap tmr, Stmt expr) {
     print tmr.source;
     print tmr.target;
     print expr;
+    Class source = tmr.source;
+    Class target = tmr.target;
+    if (source == Int && target == Float) {
+        asm(expr, expr.toToken(), espidx);
+        K_Value v = kfunc.getKValue(espidx, getcid(target));
+        K_Inst inst = kfunc.getKInst(espidx);
+        //K_Inst inst = new K_NEW(vb, new K_NEWop(thisidx-thisidx, thisCid.getClassTablePtr(), Stmt.NEW));
+        K_Inst cast = new K_CAST(v, new K_CASTop(inst, getcid(target), getcid(source), espidx, espidx, 0, 0, 0));
+    }
 
 }
 void Compiler.asmAND(Stmt stmt, int espidx) {
