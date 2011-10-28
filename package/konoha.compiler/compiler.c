@@ -232,8 +232,8 @@ static void kook_CALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
     knh_Method_t *mtd = tkMTD->mtd;
     knh_class_t cid = Tn_cid(stmt, 1);
     //knh_Stmt_t *stmt0 = stmtNN(stmt, 2);
-    //knh_Class_t *c = new_Type(ctx, cid);
-    CALL(ctx, COMPILER_API.CALL, 5, stmt, NN(espidx), tkMTD, mtd, NN(cid));
+    knh_Class_t *c = new_Type(ctx, cid);
+    CALL(ctx, COMPILER_API.CALL, 5, stmt, NN(espidx), tkMTD, mtd, c);
 }
 
 static void kook_CALL1_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
@@ -273,8 +273,9 @@ static void kook_NEW_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 static void kook_TCAST_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
     knh_TypeMap_t *tmr = tkNN(stmt, 0)->mpr;
-    knh_Stmt_t *expr = stmtNN(stmt, 0);
-    CALL(ctx, COMPILER_API.TCAST, 4, stmt, NN(espidx), tmr, expr);
+    knh_Stmt_t *expr = stmtNN(stmt, 1);
+    knh_int_t fptr = (knh_int_t)knh_TypeMap_exec;
+    CALL(ctx, COMPILER_API.TCAST, 5, stmt, NN(espidx), tmr, expr, NN(fptr));
 }
 
 static void kook_AND_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)

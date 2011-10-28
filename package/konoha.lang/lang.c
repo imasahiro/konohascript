@@ -50,7 +50,11 @@ KMETHOD Class_getNullValue(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_Class_t *c = sfp[0].c;
     RETURN_(KNH_NULVAL(c->cid));
 }
-
+//## Class Class.getP1();
+KMETHOD Class_getP1(CTX ctx, knh_sfp_t *sfp _RIX) {
+    knh_Class_t *c = sfp[0].c;
+    RETURN_(new_Type(ctx, c->cTBL->p1));
+}
 #undef Method_isStatic
 #define Method_isStatic_(o) (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Static))
 //## boolean Method.isStatic();
