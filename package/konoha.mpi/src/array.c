@@ -1,12 +1,16 @@
+#ifndef _KNH_ON_T2K
 #include "../konoha_mpi.h"
+#include <konoha1/konohalang.h>
+#else
+#include "../../konoha1/konohalang.h"
+#endif
 
-/* ======================================================================== */
-/* Internal Array APIs */
+#define ArrayMNFunc(X) {MN_##X , __Array_##X}
 
 /* ------------------------------------------------------------------------ */
 /* Array Index */
 
-static KMETHOD Array_new__ARRAY(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD __Array_new__ARRAY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	knh_int_t init, x = 0, y = 1, z = 1, w = 1;
@@ -43,7 +47,7 @@ static KMETHOD Array_new__ARRAY(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(a);
 }
 
-static KMETHOD Array_get2(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD __Array_get2(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = a->dim;
@@ -52,7 +56,7 @@ static KMETHOD Array_get2(CTX ctx, knh_sfp_t *sfp _RIX)
 	a->api->fastget(ctx, sfp, n2, K_RIX);
 }
 
-static KMETHOD Array_get3(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD __Array_get3(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = a->dim;
@@ -61,7 +65,7 @@ static KMETHOD Array_get3(CTX ctx, knh_sfp_t *sfp _RIX)
 	a->api->fastget(ctx, sfp, n2, K_RIX);
 }
 
-static KMETHOD Array_get4(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD __Array_get4(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = a->dim;
@@ -70,7 +74,7 @@ static KMETHOD Array_get4(CTX ctx, knh_sfp_t *sfp _RIX)
 	a->api->fastget(ctx, sfp, n2, K_RIX);
 }
 
-static KMETHOD Array_set2(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD __Array_set2(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = (sfp[0].a)->dim;
@@ -80,7 +84,7 @@ static KMETHOD Array_set2(CTX ctx, knh_sfp_t *sfp _RIX)
 	a->api->fastget(ctx, sfp, n2, K_RIX);
 }
 
-static KMETHOD Array_set3(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD __Array_set3(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = (sfp[0].a)->dim;
@@ -90,7 +94,7 @@ static KMETHOD Array_set3(CTX ctx, knh_sfp_t *sfp _RIX)
 	a->api->fastget(ctx, sfp, n2, K_RIX);
 }
 
-static KMETHOD Array_set4(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD __Array_set4(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = (sfp[0].a)->dim;
@@ -104,9 +108,6 @@ typedef struct {
 	knh_methodn_t mn;
 	knh_Fmethod func;
 } knh_MNFunc_t;
-
-#define ArrayMNFunc(X) {MN_##X , Array_##X}
-#include <konoha1/konohalang.h>
 
 static const knh_MNFunc_t ARRAY_APIs[] = {
 	ArrayMNFunc(new__ARRAY),
@@ -270,9 +271,6 @@ void knh_MPI_initArrayPrintFunc(CTX ctx)
 	knh_ClassDef_t *cdefbuf = (knh_ClassDef_t*)tbl->cdef;
 	cdefbuf->p = knh_MPI_Array_p;
 }
-
-/* ======================================================================== */
-// Extra Methods
 
 /* ------------------------------------------------------------------------ */
 //## method IArray Array.getShape();

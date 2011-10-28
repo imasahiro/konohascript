@@ -1,4 +1,6 @@
+#ifndef _KNH_ON_T2K
 #include "../konoha_mpi.h"
+#endif
 
 /* ------------------------------------------------------------------------ */
 //## method MPIOp MPIOp.new(MPIOpFunc opfunc, Boolean commutable);

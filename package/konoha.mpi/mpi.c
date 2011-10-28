@@ -1,4 +1,10 @@
+#ifndef _KNH_ON_T2K
 #include "konoha_mpi.h"
+#endif
+
+/**
+ * @T2K src/main/struct.c
+ */
 
 #ifdef __cplusplus
 extern "C" {
@@ -79,6 +85,37 @@ static void knh_MPIRequest_init(CTX ctx, knh_RawPtr_t *o)
 	MPIR_INC(req) = 0;
 }
 
+#ifdef _KNH_ON_T2K
+
+static const knh_ClassDef_t MPICommDef = {
+	knh_MPIComm_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
+	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
+	"MPIComm", CFLAG_Tvar, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
+static const knh_ClassDef_t MPIOpDef = {
+	knh_MPIOp_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
+	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
+	"MPIOp", CFLAG_Tvar, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
+static const knh_ClassDef_t MPIRequestDef = {
+	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
+	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
+	"MPIRequest", CFLAG_Tvar, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
+};
+
+#else
+
 DEFAPI(void) defMPIComm(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	cdef->name = "MPIComm";
@@ -107,6 +144,8 @@ DEFAPI(void) defMPIOp(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->reftrace = knh_MPIOp_reftrace;
 }
 
+#endif /* _KNH_ON_T2K */
+
 /* ------------------------------------------------------------------------ */
 /* Const */
 
@@ -118,6 +157,8 @@ static void knh_MPI_initWorld(CTX ctx, knh_class_t cid)
 	MPI_Comm_size(MPIC_COMM(world), &MPIC_SIZE(world));
 	knh_addClassConst(ctx, cid, new_String(ctx, "WORLD"), (knh_Object_t*)world);
 }
+
+#ifndef _KNH_ON_T2K
 
 static void knh_MPI_initSelf(CTX ctx, knh_class_t cid)
 {
@@ -137,6 +178,8 @@ static void knh_MPI_initParent(CTX ctx, knh_class_t cid)
 		knh_addClassConst(ctx, cid, new_String(ctx, "PARENT"), (knh_Object_t*)parent);
 	}
 }
+
+#endif
 
 static knh_IntData_t MPIConstOp[] = {
 	{"MAX",  (knh_int_t)MPI_MAX},
@@ -162,6 +205,11 @@ static void knh_MPI_initOp(CTX ctx, knh_class_t cid)
 		knh_addClassConst(ctx, cid, new_String(ctx, d->name), (Object*)op);
 	}
 }
+
+void knh_MPI_initArrayFuncData(CTX ctx);
+void knh_MPI_initArrayPrintFunc(CTX ctx);
+
+#ifndef _KNH_ON_T2K
 
 DEFAPI(void) constMPIComm(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
@@ -191,9 +239,6 @@ DEFAPI(void) constMPIOp(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 
 #ifdef _SETUP
 
-void knh_MPI_initArrayFuncData(CTX ctx);
-void knh_MPI_initArrayPrintFunc(CTX ctx);
-
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 {
 	int init = 0;
@@ -211,6 +256,21 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 }
 
 #endif /* _SETUP */
+
+#else /* _KNH_ON_T2K */
+
+/**
+ * @T2K src/main/struct.c:knh_loadScriptSystemData
+ */
+void knh_initMPI(CTX ctx)
+{
+	knh_MPI_initArrayFuncData(ctx);
+	knh_MPI_initArrayPrintFunc(ctx);
+	knh_MPI_initWorld(ctx, CLASS_MPIComm);
+	knh_MPI_initOp(ctx, CLASS_MPIOp);
+}
+
+#endif /* _KNH_ON_T2K */
 
 /* ------------------------------------------------------------------------ */
 

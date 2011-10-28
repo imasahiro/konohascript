@@ -1,6 +1,8 @@
+#ifndef _KNH_ON_T2K
 #include "../konoha_mpi.h"
+#endif
 
-/* ======================================================================== */
+/* ------------------------------------------------------------------------ */
 /* TYPEMAP */
 
 TYPEMAP Int_MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -91,35 +93,6 @@ TYPEMAP MPIData_Bytes(CTX ctx, knh_sfp_t *sfp _RIX)
 		KNH_NTHROW(ctx, sfp, "Script!!", "invalid type casting", K_FAILED, ldata);
 	}
 	RETURN_(data->ba);
-}
-
-/* ------------------------------------------------------------------------ */
-//## method Class MPIData.getContentClass();
-
-KMETHOD MPIData_getContentClass(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	MPID(data, sfp[0].o);
-	RETURN_(new_Type(ctx, O_cid(data->o)));
-}
-
-/* ------------------------------------------------------------------------ */
-//## method MPIData MPIData.opADD(int offset);
-
-KMETHOD MPIData_opADD(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	MPID(data, sfp[0].o);
-	MPID(newdata, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
-	newdata->o = data->o;
-	MPID_TYPE(newdata) = MPID_TYPE(data);
-	MPID_DCID(newdata) = MPID_DCID(data);
-	int ofs = Int_to(int, sfp[1]);
-	if (ofs < 0 || MPID_SIZE(data) < ofs) {
-		knh_ldata_t ldata[] = {LOG_i("offset", ofs), LOG_END};
-		ofs = 0;
-		KNH_NTHROW(ctx, sfp, "Script!!", "invalid offset value", K_FAILED, ldata);
-	}
-	MPID_POFS(newdata) = MPID_POFS(data) + ofs;
-	RETURN_(newdata);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -229,3 +202,33 @@ void  knh_MPIData_checkCount(knh_MPIData_t *data, int *count)
 		*count = size - pofs;
 	}
 }
+
+/* ------------------------------------------------------------------------ */
+//## method Class MPIData.getContentClass();
+
+KMETHOD MPIData_getContentClass(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	MPID(data, sfp[0].o);
+	RETURN_(new_Type(ctx, O_cid(data->o)));
+}
+
+/* ------------------------------------------------------------------------ */
+//## method MPIData MPIData.opADD(int offset);
+
+KMETHOD MPIData_opADD(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	MPID(data, sfp[0].o);
+	MPID(newdata, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
+	newdata->o = data->o;
+	MPID_TYPE(newdata) = MPID_TYPE(data);
+	MPID_DCID(newdata) = MPID_DCID(data);
+	int ofs = Int_to(int, sfp[1]);
+	if (ofs < 0 || MPID_SIZE(data) < ofs) {
+		knh_ldata_t ldata[] = {LOG_i("offset", ofs), LOG_END};
+		ofs = 0;
+		KNH_NTHROW(ctx, sfp, "Script!!", "invalid offset value", K_FAILED, ldata);
+	}
+	MPID_POFS(newdata) = MPID_POFS(data) + ofs;
+	RETURN_(newdata);
+}
+

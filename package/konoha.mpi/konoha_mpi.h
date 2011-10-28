@@ -1,10 +1,15 @@
-
+#ifndef _KNH_ON_T2K
 #ifndef KNH_INCLUDE_MPI
 #define KNH_INCLUDE_MPI
-
 #define K_INTERNAL
 #include <konoha1.h>
 #include <konoha1/inlinelibs.h>
+#endif /* _KNH_ON_T2K */
+
+/**
+ * @T2K include/konoha1/konoha_class.h
+ */
+
 #include <mpi.h>
 
 /* ------------------------------------------------------------------------ */
@@ -118,4 +123,6 @@ typedef struct {
 #define KNH_MPI_OP_IS_NULL(op) (MPIO_OP(op) == 0)
 #define MPIO(v, op) knh_MPIOp_t *v = (knh_MPIOp_t*)op
 
+#ifndef _KNH_ON_T2K
 #endif /* KNH_INCLUDE_MPI */
+#endif

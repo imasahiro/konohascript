@@ -1,4 +1,6 @@
+#ifndef _KNH_ON_T2K
 #include "../konoha_mpi.h"
+#endif
 
 /* ------------------------------------------------------------------------ */
 //## method int MPIComm.send(MPIData sdata, int count, int dest, int tag);
@@ -45,8 +47,7 @@ KMETHOD MPIComm_recv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## method int MPIComm.sendrecv(MPIData sdata, int scount, int dest_rank, int stag,
-//##                             MPIData rdata, int rcount, int src_rank,  int rtag);
+//## method int MPIComm.sendrecv(MPIData sdata, int scount, int dest_rank, int stag, MPIData rdata, int rcount, int src_rank,  int rtag);
 
 KMETHOD MPIComm_sendrecv(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -126,9 +127,6 @@ KMETHOD MPIComm_iRecv(CTX ctx, knh_sfp_t *sfp _RIX)
 	MPI_Irecv(MPID_ADDR(rdata), count, MPID_TYPE(rdata), src_rank, tag, MPIC_COMM(comm), MPIR_REQ(req));
 	RETURN_(req);
 }
-
-/* ======================================================================== */
-/* Request */
 
 /* ------------------------------------------------------------------------ */
 //## method boolean MPIRequest.test();
