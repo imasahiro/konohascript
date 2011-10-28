@@ -3,64 +3,60 @@ using konoha.thread.*;
 using konoha.socket.*;
 using konoha.posix.*;
 
-void waitmsg(String[] messagebox, Mutex m, int port) {
-	port = (port == 0) ? 2000 : port;
-	ServerSocket ss = new ServerSocket(port, 3);
+ACTSRV2_MAX_LEN=20;
+String[] actsrv2_messagebox;
+int actsrv2_sidx;
+int actsrv2_eidx;
+
+void actsrv2_waitmsg(int actsrv2_port) {
+	actsrv2_eidx = 0;
+	ServerSocket actsrv2_ss = new ServerSocket(actsrv2_port, 3);
+	actsrv2_ss.setSoTimeout(1000);
 	while (true) {
-		Socket conn = ss.accept();
-		InputStream ins = conn.getInputStream();
-		String msg = ins.readMsgPack();
-		m.lock();
-		messagebox.add(msg);
-		m.unlock();
-		if (msg == "close()\n") {
-			break;
-		}
-	}
-	ss.close();
-}
-
-class ActorServer
-{
-	String host;
-	int port;
-	String[] messagebox;
-	Mutex m;
-
-	ActorServer(String host, int port) {
-		_host = host;
-		_port = port;
-		_messagebox = [];
-		_m = new Mutex();
-	}
-
-	void start() {
-		Thread t = Thread.spawn(waitmsg, [messagebox, m, port]);
-		while (true) {
-			System.usleep(1000);
-			m.lock();
-			if (|messagebox| > 0) {
-				String msg = messagebox[0];
-				if (msg == "close()\n") {
-					break;
-				}
-				System.eval(msg);
-				messagebox.remove(0);
+		Socket actsrv2_conn = actsrv2_ss.accept();
+		InputStream actsrv2_ins = actsrv2_conn.getInputStream();
+		String actsrv2_msg = actsrv2_ins.readMsgPack();
+		if (actsrv2_messagebox[actsrv2_eidx] == null) {
+			actsrv2_messagebox[actsrv2_eidx] = actsrv2_msg;
+			actsrv2_eidx = (actsrv2_eidx == ACTSRV2_MAX_LEN - 1) ? 0 : actsrv2_eidx + 1;
+			if (actsrv2_msg == "close()" + EOL) {
+				break;
 			}
-			m.unlock();
+		} else {
+			throw new Script!!("messagebox overflowed");
 		}
-		t.join();
+		actsrv2_conn.close();
 	}
+	actsrv2_ss.close();
 }
 
-void main(String[] args)
-{
-	int argc = |args|;
-	int port = 2000;
-	if (argc > 0) {
-		port = (to int)args[0];
+void actsrv2_start(int actsrv2_port) {
+	actsrv2_sidx = 0;
+	Thread actsrv2_t = Thread.spawn(actsrv2_waitmsg, [actsrv2_port]);
+	while (true) {
+		System.usleep(1000);
+		if (actsrv2_sidx - actsrv2_eidx != 0) {
+			String actsrv2_msg = actsrv2_messagebox[actsrv2_sidx];
+			if (actsrv2_msg == "close()" + EOL) {
+				break;
+			}
+			if (actsrv2_msg != "") {
+				System.eval(actsrv2_msg);
+			}
+			actsrv2_messagebox[actsrv2_sidx] = null;
+			actsrv2_sidx = (actsrv2_sidx == ACTSRV2_MAX_LEN - 1) ? 0 : actsrv2_sidx + 1;
+		}
 	}
-	a = new ActorServer("localhost", port);
-	OUT << "start an ActorServer with port: " + (to String)port << EOL;
-	a.start();
+	actsrv2_t.join();
+}
+
+void main(String[] actsrv2_args)
+{
+	actsrv2_messagebox = new String[20];
+	int actsrv2_port = 2000;
+	if (|actsrv2_args| > 0) {
+		actsrv2_port = (to int)actsrv2_args[0];
+	}
+	OUT << "start an ActorServer with port: " + (to String)actsrv2_port << EOL;
+	actsrv2_start(actsrv2_port);
 }

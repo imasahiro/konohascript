@@ -36,36 +36,64 @@ using konoha.socket.*;
 using konoha.io.*;
 using konoha.memcached.*;
 
-include "lib:gluelink";
+class Actor
+{
+	String name;
+	String host;
+	int port;
 
-@Native class Actor;
-
-@Native Actor Actor.new(String name, String host, int port);
-@Native @Hidden Actor Actor.opLINK(String path, NameSpace _);
-@Native String Actor.getName();
-@Native String Actor.getHost();
-@Native int Actor.getPort();
-
-boolean Actor.eval(String script) {
-	try {
-		Socket s = new Socket(this.host, this.port);
-		OutputStream ous = s.getOutputStream();
-		//TODO: we need \n as a termination term
-		ous.writeMsgPack(script + "\n");
-		ous.flush();
-		ous.close();
-		s.close();
-	} catch (Exception!! e) {
-		throw new Script!!("cannot establish connection");
+	Actor(String name, String host, int port) {
+		_name = name;
+		_host = host;
+		_port = port;
 	}
-	return true;
+
+	@Hidden Actor opLINK(String path, NameSpace _) {
+		String[] link = path.split(":");
+		if (|link| == 3) {
+			return new Actor("default", link[1], (to int)link[2]);
+		} else if (|link| == 4) {
+			return new Actor(link[3], link[1], (to int)link[2]);
+		}
+		return null;
+	}
+
+	@Virtual boolean eval(String script) {
+		try {
+			Socket s = new Socket(this.host, this.port);
+			OutputStream ous = s.getOutputStream();
+			//TODO: we need EOL as a termination term
+			ous.writeMsgPack(script + EOL);
+			ous.flush();
+			ous.close();
+			s.close();
+		} catch (Exception!! e) {
+			throw new Script!!("cannot establish connection to host: " + host + ", port: " + (to String)port);
+		}
+		return true;
+	}
+
+	boolean evalFile(Path urn) {
+		InputStream ins = new InputStream(urn, "r");
+		String buf = "";
+		foreach (String line in ins) {
+			if (line.trim() != "") {
+				buf += line + EOL;
+			}
+		}
+		this.eval(buf);
+		ins.close();
+		return true;
+	}
+
+	boolean close() {
+		this.eval("close()");
+		return true;
+	}
 }
 
-void Actor.close() {
-	this.eval("close()");
-}
-
-class StoreActor {
+class StoreActor
+{
 	Map m;
 	String name;
 
