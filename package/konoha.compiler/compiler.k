@@ -69,6 +69,7 @@ class Compiler {
     Method    mtd;
     BasicBlock entryBB;
     BasicBlock[] bblist;
+    BasicBlock[] bblist2;
     Type intTy, floatTy, boolTy, objectTy;
     Class[] paramsclass;
     Class   retclass;
@@ -78,6 +79,7 @@ class Compiler {
     Method[] system_method;
     Int[] system_method_cid;
     void constructKonohaTypes();
+    int safePointMtd;
     @Hidden Compiler() {
         this.m = new Module("konoha");
         this.ee = m.createExecutionEngine();
@@ -338,14 +340,18 @@ class K_BasicBlock {
     boolean hasBrBreakBlock;
     boolean hasBrContinueBlock;
     Array<K_Inst> insts;
+    Array<K_Inst> insts_safepoint;
     Map<String, K_PHI> phis;
+    int safepoint;
     K_BasicBlock (int bbidx) {
         hasReturn = false;
         hasBrBreakBlock = false;
         hasBrContinueBlock = false;
         this.phis = {};
         this.insts = [];
+        this.insts_safepoint = [];
         this.bbidx = bbidx;
+        this.safepoint = -1;
     }
 }
 class K_Function {
@@ -439,6 +445,7 @@ class K_Function {
         str = (|str| > 0) ? str[0 to |str|-3] + ") {" : ") {";
         OUT << str << EOL;
         for (int i = 0; i < |bbs|; i++) {
+            if (bbs[i] == null) continue;
             OUT << "  BasicBlock" + i + ":\tpred = ";
             //for (int j = 0; j < |pred[i]|; j++) {
             //    OUT<< "bb" + pred[i][j] + " ";
@@ -1224,10 +1231,12 @@ int getcid(Class classType) {
     return TYPE_Object;
 }
 
+@Native void Compiler.createSafePointMtd();
 void Compiler.init(Method mtd) {
     this.mtd = mtd;
     func = Function.create("_", this.funcTy, m);
-    bblist = [];
+    bblist  = [];
+    bblist2 = [];
     Array<Value> vargs = func.getArguments();
     if (DEBUG) {
         vargs[0].setName("ctx");
@@ -1245,6 +1254,7 @@ void Compiler.init(Method mtd) {
     paramsclass = mtd.getParamTypes();
     retclass    = mtd.getReturnType();
     kfunc = new K_Function(mtd);
+    safePointMtd = createSafePointMtd();
 
     if (mtd.toString() == "global.Script." || mtd.toString() == "main.Script.") {
         K_Value kvalue = kfunc.getKValue(0, TYPE_Object);
@@ -1265,6 +1275,11 @@ void Compiler.init(Method mtd) {
         K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(i+1));
         kfunc.storeKInst(i+1, inst);
         kfunc.funcargs.add(inst);
+    }
+}
+void Compiler.addSafePoint(int espidx) {
+    if (kfunc.curBB.safepoint == -1) {
+        kfunc.curBB.safepoint = espidx;
     }
 }
 
@@ -1679,6 +1694,7 @@ void Compiler.asmWHILE(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
 
     K_Inst jmpCond = new K_JMP(new K_JMPop(bbCond.bbidx));
     kfunc.curBB.insts.add(jmpCond);
+    addSafePoint(espidx);
     Array<K_Inst> regTableEntry = kfunc.register_table;
     Array<K_PHI> regTablePhi = regTableToPHI(espidx, bbCond);
     kfunc.register_table = cloneTable(regTablePhi);
@@ -1733,6 +1749,7 @@ void Compiler.asmDO(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
     kfunc.breakpoint.add(bbBreak);
     kfunc.continuepoint.add(bbCond);
     kfunc.curBB = bbBody;
+    addSafePoint(espidx);
     asmBlock(stmtBody);
     kfunc.breakpoint.pop();
     kfunc.continuepoint.pop();
@@ -1817,6 +1834,7 @@ void Compiler.asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBod
     kfunc.continueList = [];
     kfunc.register_table = regTableCont;
     kfunc.curBB = bbContinue;
+    addSafePoint(espidx);
     asmBlock(stmt3);
     kfunc.curBB.insts.add(jmpCond);
     createPhiArrayBackEdge(regTablePhi, kfunc.register_table, kfunc.curBB, espidx);
@@ -1966,6 +1984,7 @@ void Compiler.asmCALL_sub(int espidx, int rtype, Method mtd, boolean flag, int a
     }
     //}
 }
+@Native void Compiler.asmCALL2(Stmt stmt, int espidx);
 void Compiler.asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, Class c) {
     if (DEBUG) {
         print "call";
@@ -2038,6 +2057,9 @@ void Compiler.asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, Class c) {
             retClass = p1;
         }
     }
+    if (mtd.getMethodClass() == Object) {
+        print mtd.getName();
+    }
     if (callparams_asm(stmt, 1, espidx, getcid(c), mtd)) {
         asmCALL_sub(espidx, getcid(retClass), mtd, mtd.isStatic(), stmt.getStmtSize() - 2);
     }
@@ -2065,6 +2087,7 @@ void Compiler.asmBOX(Stmt stmt, int espidx, Class c, Stmt expr) {
         inst = new K_TR(vb, new K_TRop(thisObj, espidx, espidx - espidx, c.getClassTablePtr(), Stmt.BOX), 0);
         kfunc.curBB.insts.add(inst);
     } else {
+        addSafePoint(espidx + 1);
         K_Inst thisObj = kfunc.getKInst(espidx);
         K_Value vb = kfunc.getKValue(espidx, TYPE_Object);
         inst = new K_TR(vb, new K_TRop(thisObj, espidx, espidx - espidx, c.getClassTablePtr(), Stmt.BOX), 0);
@@ -2079,6 +2102,7 @@ void Compiler.asmOPR(Stmt stmt, int espidx, Method mtd, Class c, Stmt lhs, Stmt 
     }
 
     int type = getcid(c);
+    addSafePoint(espidx);
     if(type == TYPE_Boolean && mtd.getName() == "!") {
         print "TODO: " + mtd; // TODO
         return;
@@ -2161,6 +2185,13 @@ void Compiler.asmOPR(Stmt stmt, int espidx, Method mtd, Class c, Stmt lhs, Stmt 
                 K_Value kval = kfunc.getKValue(espidx, type);
                 inst = new K_RSFT(kval, type, new K_RSFTop(inst_l, inst_r), espidx);
                 break;
+            case "---":
+                K_Value kval = kfunc.getKValue(espidx, type);
+                int table_idx = kfunc.addConstTable(0);
+                inst_r = new K_CONST(null, type, new K_CONSTop(table_idx, 0, kfunc.const_table));
+                kfunc.curBB.insts.add(inst_r);
+                inst = new K_SUB(kval, type, new K_SUBop(inst_r, inst_l), espidx);
+                break;
             default:
                 print "TODO: " + mtd; // TODO
                 break;
@@ -2170,6 +2201,7 @@ void Compiler.asmOPR(Stmt stmt, int espidx, Method mtd, Class c, Stmt lhs, Stmt 
 
         return;
     }
+    asmCALL2(stmt, espidx);
 }
 void Compiler.asmNEW(Stmt stmt, int espidx, Class thisCid, Method mtd) {
     if (DEBUG) {
@@ -2415,6 +2447,7 @@ void Compiler.constructKonohaTypes() {
     ktype["sysPtrTy"] = sysPtrTy;
 
     fields = [];
+    fields.add(int64Ty);
     fields.add(int8PtrTy);
     fields.add(int8PtrTy);
     fields.add(int8PtrTy);
@@ -2495,6 +2528,17 @@ void Compiler.constructKonohaTypes() {
     m.addTypeName("trmethod", trmethodTy);
     ktype["trmethodTy"]    = trmethodTy;
     ktype["trmethodPtrTy"] = trmethodPtrTy;
+
+    argsTy = [];
+    argsTy.add(ctxPtrTy);
+    argsTy.add(sfpPtrTy);
+    argsTy.add(int8PtrTy);
+    argsTy.add(int64Ty);
+    FunctionType safeptmethodTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
+    Type safeptmethodPtrTy = PointerType.get(safeptmethodTy);
+    m.addTypeName("safeptmethod", safeptmethodTy);
+    ktype["safeptmethodTy"]    = safeptmethodTy;
+    ktype["safeptmethodPtrTy"] = safeptmethodPtrTy;
 
     argsTy = [];
     argsTy.add(ctxPtrTy);
@@ -2610,23 +2654,62 @@ void Compiler.constructKonohaTypes() {
     } else {
         PHINode pn = asm.builder.createPHI(asm.convertType(type), |bbs|);
         for (int i = 0; i < |bbs|; i++) {
-            pn.addIncoming(insts[i].getLLVMValue(asm), asm.bblist[bbs[i]]);
+            if (asm.bblist2[bbs[i]] != null) {
+                pn.addIncoming(insts[i].getLLVMValue(asm), asm.bblist2[bbs[i]]);
+            } else {
+                pn.addIncoming(insts[i].getLLVMValue(asm), asm.bblist[bbs[i]]);
+            }
         }
         setLLVMValue(asm, pn);
     }
 }
-
+void K_BasicBlock.codegen(Compiler asm) {
+    int idx = this.bbidx;
+    Value vsafepoint = asm.builder.createStructGEP(asm.ctx, 0);
+    vsafepoint = asm.builder.createLoad(vsafepoint);
+    BasicBlock bbThen = BasicBlock.create(asm.func);
+    Value cond = asm.builder.createICmpEQ(vsafepoint, ConstantInt.get(asm.intTy, 1));
+    asm.builder.createCondBr(cond, bbThen, asm.bblist2[idx]);
+    asm.builder.setInsertPoint(bbThen);
+    asm.shiftesp(this.safepoint);
+    Type fType = asm.ktype["safeptmethodPtrTy"];
+    Value vfunc = ConstantInt.get(asm.intTy, asm.safePointMtd);
+    vfunc = asm.builder.CreateIntToPtr(vfunc, fType);
+    Value vctx  = asm.ctx;
+    Value vsfp  = asm.builder.createConstGEP1_32(asm.sfp, this.safepoint);
+    Value vstr  = asm.builder.createGlobalString("%d\n");
+    vstr = asm.builder.createBitCast(vstr, Type.getInt8PtrTy());
+    Value vline = ConstantInt.get(asm.intTy, 0);
+    Value[] args = [vctx, vsfp, vstr, vline];
+    asm.builder.createCall(vfunc, args);
+    asm.builder.createBr(asm.bblist2[idx]);
+    asm.builder.setInsertPoint(asm.bblist2[idx]);
+}
 void K_Function.codegen(Compiler asm) {
     for (int i = 0; i < |bbs|; i++) {
-        asm.bblist.add(BasicBlock.create(asm.func));
+        if (bbs[i] != null) {
+            asm.bblist.add(BasicBlock.create(asm.func));
+            if (bbs[i].safepoint != -1) {
+                asm.bblist2.add(BasicBlock.create(asm.func));
+            } else {
+                asm.bblist2.add(null);
+            }
+        } else {
+            asm.bblist.add(null);
+            asm.bblist2.add(null);
+        }
     }
     asm.builder = new IRBuilder(asm.bblist[0]);
     for (int i = 0; i < |bbs|; i++) {
+        if (bbs[i] == null) continue;
         asm.builder.setInsertPoint(asm.bblist[i]);
         if (bbs[i].phis != null) {
             foreach (String s in bbs[i].phis.keys()) {
                 bbs[i].phis[s].codegen(asm);
             }
+        }
+        if (bbs[i].safepoint != -1) {
+            bbs[i].codegen(asm);
         }
         if (i == 0) {
             foreach(K_Inst inst in funcargs) {

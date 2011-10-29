@@ -349,6 +349,21 @@ static void kook_EXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
         DBG_ABORT("unknown stt=%d", STT_(stmt));
     }
 }
+KMETHOD Compiler_asmCALL2(CTX ctx, knh_sfp_t *sfp _RIX) {
+    knh_Stmt_t *stmt = CAST(knh_Stmt_t*, sfp[1].o);
+    knh_int_t espidx = Int_to(knh_int_t, sfp[2]);
+    knh_Token_t *tkMTD = tkNN(stmt, 0);
+    knh_Method_t *mtd = tkMTD->mtd;
+    knh_class_t cid = Tn_cid(stmt, 1);
+    //knh_Stmt_t *stmt0 = stmtNN(stmt, 2);
+    knh_Class_t *c = new_Type(ctx, cid);
+    CALL(ctx, COMPILER_API.CALL, 5, stmt, NN(espidx), tkMTD, mtd, c);
+}
+
+KMETHOD Compiler_createSafePointMtd(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+    RETURNi_((knh_int_t)knh_checkSafePoint);
+}
 KMETHOD Compiler_asmEXPR(CTX ctx, knh_sfp_t *sfp _RIX)
 {
     //knh_Object_t *o  = sfp[0].o;
