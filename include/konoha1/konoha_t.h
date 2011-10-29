@@ -40,7 +40,9 @@
 #define __STDC_LIMIT_MACROS
 #endif
 #include<stdint.h>
+#ifndef __STDC_FORMAT_MACROS
 #define __STDC_FORMAT_MACROS
+#endif
 #include<inttypes.h>
 #endif
 

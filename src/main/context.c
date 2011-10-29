@@ -281,7 +281,7 @@ static knh_context_t* new_RootContext(void)
 		KNH_INITv(share->constFalse, o);
 	}
 	{
-		static const knh_dim_t dimINIT = {0};
+		static const knh_dim_t dimINIT = {};
 		knh_Array_t *a = new_H(Array);
 		(a)->size = 0;
 		(a)->dim = &dimINIT;
