@@ -1469,17 +1469,33 @@ KNHAPI2(void) THROW_OutOfRange(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t max)
 void THROW_TypeError(CTX ctx, knh_sfp_t *sfp, knh_type_t reqt, knh_type_t type)
 {
 	knh_ldata_t ldata[] = {LOG_t("requested_type", reqt), LOG_t("given_type", type), LOG_END};
-	KNH_NTHROW(ctx, sfp, "Script!!", "konoha:type", K_FAILED, ldata);
+	KNH_NTHROW(ctx, sfp, "Script!!: Type Error", "konoha:type", K_FAILED, ldata);
 }
 void THROW_NoSuchMethod(CTX ctx, knh_sfp_t *sfp, knh_class_t cid, knh_methodn_t mn)
 {
-	knh_ldata_t ldata[] = {LOG_msg("undefined method"), /* MDATA("method", cid, mn),*/ LOG_END};
-	KNH_NTHROW(ctx, sfp, "Script!!", "konoha:type", K_FAILED, ldata);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+	char msg[256], mname[256];
+	knh_printf(ctx, cwb->w, "Script!!: No Such Method: %T.%M", cid, mn);
+	knh_snprintf(msg, sizeof(msg), "%s", CWB_totext(ctx, cwb));
+	CWB_close(cwb);
+	knh_printf(ctx, cwb->w, "%C.%M", cid, mn);
+	knh_snprintf(mname, sizeof(mname), "%s", CWB_totext(ctx, cwb));
+	CWB_close(cwb);
+	knh_ldata_t ldata[] = {LOG_msg(msg), LOG_s("method", mname), LOG_END};
+	KNH_NTHROW(ctx, sfp, msg, "konoha:type", K_FAILED, ldata);
 }
 void THROW_ParamTypeError(CTX ctx, knh_sfp_t *sfp, size_t n, knh_methodn_t mn, knh_class_t reqt, knh_class_t cid)
 {
-	knh_ldata_t ldata[] = {/*MDATA("method", cid, mn),*/ LOG_i("argument", n), LOG_t("requested_type", reqt), LOG_t("given_type", cid), LOG_END};
-	KNH_NTHROW(ctx, sfp, "Script!!", "konoha:type", K_FAILED, ldata);
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+	char msg[256], mname[256];
+	knh_printf(ctx, cwb->w, "Script!!: Type Error: %T.%M(#%d)", cid, mn, (int)n);
+	knh_snprintf(msg, sizeof(msg), "%s", CWB_totext(ctx, cwb));
+	CWB_close(cwb);
+	knh_printf(ctx, cwb->w, "%C.%M", cid, mn);
+	knh_snprintf(mname, sizeof(mname), "%s", CWB_totext(ctx, cwb));
+	CWB_close(cwb);
+	knh_ldata_t ldata[] = {LOG_msg(msg), LOG_s("method", mname), LOG_i("argument", n), LOG_t("requested_type", reqt), LOG_t("given_type", cid), LOG_END};
+	KNH_NTHROW(ctx, sfp, msg, "konoha:type", K_FAILED, ldata);
 }
 
 /* ------------------------------------------------------------------------ */
