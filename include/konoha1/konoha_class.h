@@ -348,8 +348,8 @@ struct knh_Array_t {
 		struct knh_Int_t       **ints;
 		struct knh_Method_t    **methods;
 		struct knh_TypeMap_t   **trans;
-		struct knh_Token_t     **tokens;
-		struct knh_Stmt_t      **stmts;
+		struct knh_Term_t     **tokens;
+		struct knh_StmtExpr_t      **stmts;
 	};
 	size_t size;
 	const knh_dim_t *dim;
@@ -361,7 +361,7 @@ struct knh_Array_t {
 #define knh_Array_trimSize(ctx, a, newsize)  knh_Array_clear(ctx, a, newsize)
 #define knh_Array_add(ctx, a, o)    knh_Array_add_(ctx, a, UPCAST(o))
 #define knh_Array_remove(ctx, a, n)    knh_Array_remove_(ctx, a, n)
-//#define knh_TOKENs_n(a, n)    ((knh_Token_t*)(a)->list[(n)])
+//#define knh_TOKENs_n(a, n)    ((knh_Term_t*)(a)->list[(n)])
 
 ///* ------------------------------------------------------------------------ */
 //## class Map Object;
@@ -510,12 +510,12 @@ typedef struct {
 		knh_Object_t            *objdata;
 		struct knh_KonohaCode_t *kcode;
 		struct knh_Script_t     *gmascr;       // Dynamic
-		struct knh_Stmt_t       *stmtB;        // stmt block
+		struct knh_StmtExpr_t       *stmtB;        // stmt block
 		struct knh_RawPtr_t     *rfunc;        // ffi
 		struct knh_Method_t     *proceed;      // during typing, asm
 	};
 	struct knh_Array_t *paramsNULL;
-	struct knh_Token_t *tsource;
+	struct knh_Term_t *tsource;
 	knh_uri_t      uri;   knh_uri_t      domain;
 	knh_uintptr_t  count;
 } knh_MethodEX_t;
@@ -1067,74 +1067,183 @@ struct knh_Assurance_t {
 /* ------------------------------------------------------------------------ */
 /* konohac.h */
 
+//## class Token Object;
+//## class Sugar Object;
+//## class Expr  Object;
+//## class Stmt  Object;
+
+typedef knh_ushort_t   knh_token_t;
+typedef knh_ushort_t   knh_sugar_t;
+typedef knh_ushort_t   knh_expr_t;
+typedef knh_ushort_t   knh_stmt_t;
+
+typedef struct knh_Token_t knh_Token_t;
+
+#define TK_CODE     0
+#define TK_SYMBOL   1
+#define TK_USYMBOL  2
+#define TK_OPERATOR 3
+#define TK_TEXT     4
+#define TK_STEXT    5
+#define TK_REGEX    6
+#define TK_INT      7
+#define TK_FLOAT    8
+#define TK_URN      9
+#define TK_PROP    10
+#define TK_META    11
+#define TK_INDENT  12
+#define TK_WHITESPACE 13
+
+#ifdef USE_STRUCT_Token
+struct knh_Token_t {
+	knh_hObject_t h;
+	knh_token_t token;  knh_short_t optnum;
+	knh_uline_t  uline;
+	struct knh_String_t *text;
+};
+#endif
+
+//sugar binary "+" > "=";
+//
+//a = {
+//	_ = $expr;
+//	$expr = $expr + 1;
+//	=> _;
+//}
+
+#define SUGAR_SYNTAX    0
+#define SUGAR_BINARY    1
+#define SUGAR_STATEMENT 2
+
+typedef struct knh_Sugar_t knh_Sugar_t;
+#ifdef USE_STRUCT_Sugar
+struct knh_Sugar_t {
+	knh_hObject_t h;
+	knh_sugar_t sugar;  knh_short_t optnum;
+	struct knh_Array_t *rules;
+	struct knh_String_t *action;
+};
+#endif
+
+#define EXPR_USER            0
+#define TERM_TYPE            1
+#define TERM_CONSTVALUE      2
+#define TERM_FUNCVAR         3
+#define TERM_BLOCKVAR        4
+#define TERM_FUNCFIELD       5
+#define TERM_BLOCKFIELD      6
+
+typedef struct knh_Expr_t knh_Expr_t;
+#ifdef USE_STRUCT_Expr
+struct knh_Expr_t {
+	knh_hObject_t h;
+	knh_expr_t expr; knh_type_t type;
+	knh_uline_t uline;
+	union {
+		struct knh_Array_t *cons;
+		Object* data;
+//		struct knh_Array_t   *list;
+//		struct knh_String_t  *text;
+//		struct knh_Term_t   *token;
+//		struct knh_StmtExpr_t    *stmt;
+//		struct knh_Method_t  *mtd;
+//		struct knh_TypeMap_t *mpr;
+//		struct knh_Term_t   *tkIDX;
+//		struct knh_Int_t     *num;
+	};
+	union {
+		knh_short_t   index;
+		knh_class_t   cid;
+		knh_methodn_t mn;
+	};
+	knh_flag_t xindex;
+};
+#endif
+
+#define STMT_USER  0
+#define STMT_BLOCK 1
+#define STMT_DECL  2
+#define STMT_IF    3
+
+typedef struct knh_Stmt_t knh_Stmt_t;
+#ifdef K_INTERNAL
+struct knh_Stmt_t {
+	knh_hObject_t h;
+	knh_stmt_t   stmt; knh_ushort_t optnum;
+	knh_uline_t uline;
+	union {
+		struct knh_DictMap_t* clauseDictMap;
+		struct knh_Array_t* blocks;
+	};
+};
+#endif
+
 /* ------------------------------------------------------------------------ */
-//## @Struct class Token Object;
-//## flag Token BOL           0 SP(%s)->flag0 is set * *;
-//## flag Token DOT           1 SP(%s)->flag0 is set * *;
-//## flag Token NWS           2 SP(%s)->flag0 is set * *;
-//## flag Token ISBOOL        3 SP(%s)->flag0 is set * *;
-//## flag Token Getter        4 SP(%s)->flag0 is set * *;
-//## flag Token Setter        5 SP(%s)->flag0 is set * *;
-//## flag Token ExceptionType 6 SP(%s)->flag0 is set * *;
-//## flag Token Diamond       7 SP(%s)->flag0 is set * *;
-//## flag Token MEMO1         8 SP(%s)->flag0 is set * *;
+//## class Term Object;
+//## flag Term BOL           0 SP(%s)->flag0 is set * *;
+//## flag Term DOT           1 SP(%s)->flag0 is set * *;
+//## flag Term NWS           2 SP(%s)->flag0 is set * *;
+//## flag Term ISBOOL        3 SP(%s)->flag0 is set * *;
+//## flag Term Getter        4 SP(%s)->flag0 is set * *;
+//## flag Term Setter        5 SP(%s)->flag0 is set * *;
+//## flag Term ExceptionType 6 SP(%s)->flag0 is set * *;
+//## flag Term Diamond       7 SP(%s)->flag0 is set * *;
+//## flag Term MEMO1         8 SP(%s)->flag0 is set * *;
 
 // TT_BRACE, TT_PARENTHESIS, TT_BRANCET
-#define Token_isSAMELINE(o)  Token_isMEMO1(o)
-#define Token_setSAMELINE(o, b) Token_setMEMO1(o, b)
+#define Term_isSAMELINE(o)  Term_isMEMO1(o)
+#define Term_setSAMELINE(o, b) Term_setMEMO1(o, b)
 
 // TT_NAME
-#define Token_isPNAME(o)      Token_isMEMO1(o)
-#define Token_setPNAME(o, b)  Token_setMEMO1(o, b)
+#define Term_isPNAME(o)      Term_isMEMO1(o)
+#define Term_setPNAME(o, b)  Term_setMEMO1(o, b)
 
 // TT_UNAME
-#define Token_isBYTE(o)       Token_isMEMO1(o)
-#define Token_setBYTE(o, b)   Token_setMEMO1(o, b)
+#define Term_isBYTE(o)       Term_isMEMO1(o)
+#define Term_setBYTE(o, b)   Term_setMEMO1(o, b)
 
 // TT_URN
-#define Token_isDYNAMIC(o)  Token_isMEMO1(o)
-#define Token_setDYNAMIC(o, b) Token_setMEMO1(o, b)
+#define Term_isDYNAMIC(o)  Term_isMEMO1(o)
+#define Term_setDYNAMIC(o, b) Term_setMEMO1(o, b)
 
 // TT_LVAR,
-#define Token_isSUPER(o)      Token_isMEMO1(o)
-#define Token_setSUPER(o, b)  Token_setMEMO1(o, b)
+#define Term_isSUPER(o)      Term_isMEMO1(o)
+#define Term_setSUPER(o, b)  Term_setMEMO1(o, b)
 
 // TT_LVAR, TT_FIELD, TT_SCRIPT
-#define Token_isReadOnly(tk)   Token_isBOL(tk)
-#define Token_setReadOnly(tk, b)   Token_setBOL(tk, b)
+#define Term_isReadOnly(tk)   Term_isBOL(tk)
+#define Term_setReadOnly(tk, b)   Term_setBOL(tk, b)
 
 typedef knh_ushort_t   knh_term_t;
+
+//typedef struct knh_Term_t knh_Term_t;
+//#ifdef K_INTERNAL
+//struct knh_Term_t {
+//	knh_hObject_t h;
+//	void *ref;
+//	knh_uline_t uline;                   //Term
+//	knh_type_t type; knh_term_t  tt;     //Term
+//};
+//#endif
 
 typedef struct knh_Term_t knh_Term_t;
 #ifdef K_INTERNAL
 struct knh_Term_t {
 	knh_hObject_t h;
-	void *ref;
-	knh_uline_t uline;                   //Term
-	knh_type_t type; knh_term_t  tt;     //Term
-};
-#endif
-
-#define Term_isTyped(o)     (o->type != TYPE_var)
-
-typedef struct knh_Token_t knh_Token_t;
-#ifdef K_INTERNAL
-struct knh_Token_t {
-	knh_hObject_t h;
 	union {
 		Object* data;
 		struct knh_Array_t   *list;
 		struct knh_String_t  *text;
-		struct knh_Token_t   *token;
-		struct knh_Stmt_t    *stmt;
+		struct knh_Term_t   *token;
+		struct knh_StmtExpr_t    *stmt;
 		struct knh_Method_t  *mtd;
 		struct knh_TypeMap_t *mpr;
-		struct knh_Token_t   *tkIDX;
+		struct knh_Term_t   *tkIDX;
 		struct knh_Int_t     *num;
 	};
 	knh_uline_t uline;                  // Term
 	knh_type_t type; knh_term_t  tt;    // Term
-	knh_flag_t   flag0;
+	knh_flag_t flag0;
 	union {
 		knh_short_t   index;
 		knh_class_t   cid;
@@ -1143,12 +1252,11 @@ struct knh_Token_t {
 };
 #endif
 
-#define Token_isTyped(o)    (SP(o)->type != TYPE_var)
-#define new_TokenCONST(ctx, d)  new_TokenCONST_(ctx, UPCAST(d))
-#define new_TermCONST(ctx, d)   TM(new_TokenCONST_(ctx, UPCAST(d)))
+#define Term_isTyped(o)    (SP(o)->type != TYPE_var)
+#define new_TermCONST(ctx, d)  new_TermCONST_(ctx, UPCAST(d))
 
 /* ------------------------------------------------------------------------ */
-//## @Struct class Stmt Object;
+//## @Struct class StmtExpr Object;
 //## flag Stmt STOPITR    0 DP(%s)->flag0 is set * *;
 //## flag Stmt CONSTOLD      2 DP(%s)->flag0 is set * *;
 //## flag Stmt Memo1      4 DP(%s)->flag0 is set * *;
@@ -1188,7 +1296,7 @@ struct knh_Token_t {
 #define Stmt_isLSHIFT(s)          Stmt_isMemo1(s)
 #define Stmt_setLSHIFT(s,b)       Stmt_setMemo1(s,b)
 
-typedef struct knh_Stmt_t knh_Stmt_t;
+typedef struct knh_StmtExpr_t knh_StmtExpr_t;
 #ifdef K_INTERNAL
 typedef struct {
 	knh_flag_t   flag0;   knh_ushort_t espidx;
@@ -1196,20 +1304,20 @@ typedef struct {
 	union {
 		struct knh_DictMap_t* metaDictCaseMap;
 		struct knh_String_t*  errMsg;
-		struct knh_Stmt_t*    stmtPOST;
+		struct knh_StmtExpr_t*    stmtPOST;
 	};
-	struct knh_Stmt_t* nextNULL;
+	struct knh_StmtExpr_t* nextNULL;
 } knh_StmtEX_t;
 
-struct knh_Stmt_t {
+struct knh_StmtExpr_t {
 	knh_hObject_t h;
 	knh_StmtEX_t *b;
 	knh_uline_t uline;                 // Term
 	knh_type_t type; knh_term_t  stt;  // Term
 	union {
 		struct knh_Term_t**  terms;
-		struct knh_Token_t** tokens;
-		struct knh_Stmt_t**  stmts;
+		struct knh_Term_t** tokens;
+		struct knh_StmtExpr_t**  stmts;
 	};
 };
 #endif
@@ -1243,11 +1351,11 @@ typedef struct {
 	knh_flag_t    flag;  knh_term_t    ucnt;
 	knh_type_t    type;  knh_fieldn_t  fn;
 	union {
-		knh_Token_t   *tkIDX;
+		knh_Term_t   *tkIDX;
 	};
 	union {
-		knh_Token_t   *tk;
-		knh_Stmt_t    *stmt;
+		knh_Term_t   *tk;
+		knh_StmtExpr_t    *stmt;
 	};
 } knh_gamma2_t ;
 
@@ -1257,7 +1365,7 @@ typedef struct {
 typedef struct knh_GammaEX_t {
 	knh_flag_t                 flag;
 	knh_flag_t                 cflag;
-	struct knh_Stmt_t*         stmt;
+	struct knh_StmtExpr_t*         stmt;
 	struct knh_Method_t*       mtd;
 	knh_class_t                this_cid;
 	knh_gint_t                 funcbase0;
@@ -1269,14 +1377,14 @@ typedef struct knh_GammaEX_t {
 	knh_gint_t                psize; /* param size */
 	knh_gint_t                fvarsize;
 
-	knh_Token_t              *tkScriptNC;
-	knh_Token_t              *tkFuncThisNC;
+	knh_Term_t              *tkScriptNC;
+	knh_Term_t              *tkFuncThisNC;
 	knh_Method_t             *proceedNC;  /*@Around*/
 
 	struct knh_BasicBlock_t    *bbNC;
 	struct knh_Array_t         *insts;  // bbNC->listNC
 	struct knh_Array_t         *lstacks;
-	struct knh_Stmt_t          *finallyStmt;
+	struct knh_StmtExpr_t          *finallyStmt;
 	struct knh_Array_t         *errmsgs;
 	void  *asm_data;           // what is this?
 } knh_GammaEX_t;
@@ -1289,7 +1397,7 @@ struct knh_Gamma_t {
 };
 #endif
 
-typedef knh_bool_t (*knh_Ftyping)(CTX, knh_Method_t *, knh_Stmt_t *);
+typedef knh_bool_t (*knh_Ftyping)(CTX, knh_Method_t *, knh_StmtExpr_t *);
 
 ///* ------------------------------------------------------------------------ */
 

@@ -236,8 +236,8 @@ static void opt_v(int mode, const char *optstr)
 		isVerboseVM     = 1;
 		dump_sysinfo(NULL, NULL, 1/*isALL*/);
 		KNH_ASSERT(sizeof(knh_intptr_t) == sizeof(void*));
-		KNH_ASSERT(sizeof(knh_Token_t) <= sizeof(knh_Object_t));
-		KNH_ASSERT(sizeof(knh_Stmt_t) <= sizeof(knh_Object_t));
+		KNH_ASSERT(sizeof(knh_Term_t) <= sizeof(knh_Object_t));
+		KNH_ASSERT(sizeof(knh_StmtExpr_t) <= sizeof(knh_Object_t));
 		KNH_ASSERT(sizeof(knh_int_t) <= sizeof(knh_float_t));
 #ifdef K_USING_RBP_
 		KNH_ASSERT(sizeof(knh_rbp_t) * 2 == sizeof(knh_sfp_t));

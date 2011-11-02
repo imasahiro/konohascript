@@ -367,7 +367,7 @@ void knh_initBuiltInPackage(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
 	knh_initClassFuncData(ctx, kapi);
 	knh_initStreamFuncData(ctx, kapi);
-
+	knh_initSugarFuncData(ctx, kapi);
 }
 
 /* ------------------------------------------------------------------------ */

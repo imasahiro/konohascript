@@ -2647,8 +2647,8 @@ static KMETHOD Method_getParamNames(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD Method_getSourceCode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = sfp[0].mtd;
-	knh_Token_t *tk = DP(mtd)->tsource;
-	RETURN_(IS_Token(tk)
+	knh_Term_t *tk = DP(mtd)->tsource;
+	RETURN_(IS_Term(tk)
 			? tk->text : KNH_TNULL(String));
 }
 

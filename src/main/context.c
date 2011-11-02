@@ -228,7 +228,7 @@ void knh_EventTBL_expand(CTX ctx)
 }
 
 static void initServiceSPI(knh_ServiceSPI_t *spi);
-void knh_loadScriptAliasTokenData(CTX ctx);
+void knh_loadScriptAliasTermData(CTX ctx);
 
 static knh_context_t* new_RootContext(void)
 {
@@ -326,8 +326,8 @@ static knh_context_t* new_RootContext(void)
 	loadPolicy(ctx); // added by Wakamori
 	knh_loadScriptSystemMethod(ctx, kapi);
 	CommonContext_init(ctx, ctx);
-	knh_loadScriptTokenData(ctx);
-	knh_loadScriptAliasTokenData(ctx);
+	knh_loadScriptTermData(ctx);
+	knh_loadScriptAliasTermData(ctx);
 	share->ctx0 = ctx;
 	knh_Gamma_init(ctx);  // initalize gamma->gf, reported by uh
 	knh_initBuiltInPackage(ctx, knh_getLoaderAPI());

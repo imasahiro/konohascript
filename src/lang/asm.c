@@ -39,8 +39,8 @@ extern "C" {
 
 #define K_INLINECODE    (10)
 
-static void Tn_asm(CTX ctx, knh_Stmt_t *stmt, size_t n, int espidx);
-static void BLOCK_asm(CTX ctx, knh_Stmt_t *stmtH);
+static void Tn_asm(CTX ctx, knh_StmtExpr_t *stmt, size_t n, int espidx);
+static void BLOCK_asm(CTX ctx, knh_StmtExpr_t *stmtH);
 #define GammaLabel(ctx, n)   (knh_BasicBlock_t*)knh_Array_n(DP(ctx->gma)->lstacks, n)
 #define HAS_OPCODE(C)     1
 
@@ -737,7 +737,7 @@ static void ASM_BRANCH_(CTX ctx, knh_BasicBlock_t *jump, knh_opline_t *op, size_
 	DP(ctx->gma)->bbNC = newbb;
 }
 
-static void ASM_RET(CTX ctx, knh_Stmt_t *stmt)
+static void ASM_RET(CTX ctx, knh_StmtExpr_t *stmt)
 {
 //	while(DP(stmt)->nextNULL != NULL) {
 //		stmt = DP(stmt)->nextNULL;
@@ -953,10 +953,10 @@ static knh_Fmethod SYSVAL_MTD[] = {
 /* [Gamma] */
 
 #define TT_isSFPIDX(tk)   (TT_(tk) == TT_LVAR || TT_(tk) == TT_FVAR)
-#define Token_index(tk)   Token_index_(ctx, tk)
+#define Term_index(tk)   Term_index_(ctx, tk)
 #define _ESPIDX           DP(stmt)->espidx
 
-static inline int Token_index_(CTX ctx, knh_Token_t *tk)
+static inline int Term_index_(CTX ctx, knh_Term_t *tk)
 {
 	return (int)(tk)->index/* + ((TT_(tk) == TT_LVAR) ? DP(ctx->gma)->ebpidx : 0)*/;
 }
@@ -979,20 +979,20 @@ static inline int Token_index_(CTX ctx, knh_Token_t *tk)
 //	}
 //}
 
-static int Tn_put(CTX ctx, knh_Stmt_t *stmt, size_t n, int alocal)
+static int Tn_put(CTX ctx, knh_StmtExpr_t *stmt, size_t n, int alocal)
 {
-	knh_Token_t *tk = tkNN(stmt, n);
-	if(TT_(tk) == TT_FVAR) return Token_index(tk);
+	knh_Term_t *tk = tkNN(stmt, n);
+	if(TT_(tk) == TT_FVAR) return Term_index(tk);
 	Tn_asm(ctx, stmt, n, alocal);
 	return alocal;
 }
 
-static knh_Token_t* Tn_putTK(CTX ctx, knh_Stmt_t *stmt, size_t n, int alocal)
+static knh_Term_t* Tn_putTK(CTX ctx, knh_StmtExpr_t *stmt, size_t n, int alocal)
 {
-	knh_Token_t *tk = tkNN(stmt, n);
-	if(IS_Stmt(tk)) {
+	knh_Term_t *tk = tkNN(stmt, n);
+	if(IS_StmtExpr(tk)) {
 		Tn_asm(ctx, stmt, n, alocal);
-		DBG_ASSERT(IS_Token(tkNN(stmt, n)));
+		DBG_ASSERT(IS_Term(tkNN(stmt, n)));
 		return tkNN(stmt, n);
 	}
 	return tk;
@@ -1009,17 +1009,17 @@ static void ASM_SMOVx(CTX ctx, int alocal, knh_type_t btype, knh_sfx_t bx)
 	}
 }
 
-static void Token_setsfx(CTX ctx, knh_Token_t *tk, knh_sfx_t *x)
+static void Term_setsfx(CTX ctx, knh_Term_t *tk, knh_sfx_t *x)
 {
 	x->i = 0;
 	x->n = (tk)->index;
-	if(IS_Token(tk->tkIDX) && TT_(tk->tkIDX) == TT_FVAR) {
-		x->i = OC_(Token_index(tk->tkIDX));
+	if(IS_Term(tk->tkIDX) && TT_(tk->tkIDX) == TT_FVAR) {
+		x->i = OC_(Term_index(tk->tkIDX));
 	}
 	DBG_P("tk=%s, x->i=%d, x->n=%d", TT__(tk->tt), x->i/2, x->n);
 }
 
-static void ASM_SMOV(CTX ctx, int alocal, knh_Token_t *tk)
+static void ASM_SMOV(CTX ctx, int alocal, knh_Term_t *tk)
 {
 	knh_type_t type = SP(tk)->type;
 	switch(TT_(tk)) {
@@ -1048,7 +1048,7 @@ static void ASM_SMOV(CTX ctx, int alocal, knh_Token_t *tk)
 			break;
 		}
 		case TT_FVAR: {
-			int b = Token_index(tk);
+			int b = Term_index(tk);
 			if(IS_Tunbox(type)) {
 				ASM(NMOV, NC_(alocal), NC_(b));
 			}
@@ -1059,7 +1059,7 @@ static void ASM_SMOV(CTX ctx, int alocal, knh_Token_t *tk)
 		}
 		case TT_FIELD: {
 			knh_sfx_t bx;
-			Token_setsfx(ctx, tk, &bx);
+			Term_setsfx(ctx, tk, &bx);
 			ASM_SMOVx(ctx, alocal, type, bx);
 			break;
 		}
@@ -1096,7 +1096,7 @@ static void ASM_XMOVx(CTX ctx, knh_sfx_t ax, knh_type_t btype, knh_sfx_t bx)
 	}
 }
 
-static void ASM_XMOV(CTX ctx, int alocal, size_t an, knh_Token_t *tkb, int espidx)
+static void ASM_XMOV(CTX ctx, int alocal, size_t an, knh_Term_t *tkb, int espidx)
 {
 	knh_sfx_t ax = {OC_(alocal), an};
 	knh_type_t btype = SP(tkb)->type;
@@ -1127,7 +1127,7 @@ static void ASM_XMOV(CTX ctx, int alocal, size_t an, knh_Token_t *tkb, int espid
 			break;
 		}
 		case TT_FVAR: {
-			int b = Token_index(tkb);
+			int b = Term_index(tkb);
 			if(IS_Tunbox(btype)) {
 				ASM(XNMOV, ax, NC_(b));
 			}
@@ -1138,7 +1138,7 @@ static void ASM_XMOV(CTX ctx, int alocal, size_t an, knh_Token_t *tkb, int espid
 		}
 		case TT_FIELD: {
 			knh_sfx_t bx;
-			Token_setsfx(ctx, tkb, &bx);
+			Term_setsfx(ctx, tkb, &bx);
 			ASM_XMOVx(ctx, ax, btype, bx);
 			break;
 		}
@@ -1175,26 +1175,26 @@ static void ASM_XMOV(CTX ctx, int alocal, size_t an, knh_Token_t *tkb, int espid
 	}
 }
 
-static void ASM_MOV(CTX ctx, knh_Token_t *tka, knh_Token_t *tkb, int espidx)
+static void ASM_MOV(CTX ctx, knh_Term_t *tka, knh_Term_t *tkb, int espidx)
 {
-	DBG_ASSERT(Token_isTyped(tka));
-	DBG_ASSERT(IS_Token(tkb));
-	DBG_ASSERT(Token_isTyped(tkb));
+	DBG_ASSERT(Term_isTyped(tka));
+	DBG_ASSERT(IS_Term(tkb));
+	DBG_ASSERT(Term_isTyped(tkb));
 	if(TT_(tka) == TT_FVAR) {
-		ASM_SMOV(ctx, Token_index(tka), tkb);
+		ASM_SMOV(ctx, Term_index(tka), tkb);
 	}
 	else {
 		DBG_P("TT=%s", TT__(tka->tt));
 		DBG_ASSERT(TT_(tka) == TT_FIELD);
 		knh_sfx_t x;
-		Token_setsfx(ctx, tka, &x);
+		Term_setsfx(ctx, tka, &x);
 		ASM_XMOV(ctx, x.i, x.n, tkb, espidx);
 	}
 }
 
-static knh_BasicBlock_t* Tn_JMPIF(CTX ctx, knh_Stmt_t *stmt, size_t n, int isTRUE, knh_BasicBlock_t* label, int alocal)
+static knh_BasicBlock_t* Tn_JMPIF(CTX ctx, knh_StmtExpr_t *stmt, size_t n, int isTRUE, knh_BasicBlock_t* label, int alocal)
 {
-	knh_Token_t *tk = tkNN(stmt, n);
+	knh_Term_t *tk = tkNN(stmt, n);
 	if(TT_(tk) == TT_CONST) {
 		int isTRUE2 = IS_TRUE((tk)->data);
 		ASM_SMOV(ctx, alocal, tk);
@@ -1205,7 +1205,7 @@ static knh_BasicBlock_t* Tn_JMPIF(CTX ctx, knh_Stmt_t *stmt, size_t n, int isTRU
 		return NULL;
 	}
 	if(TT_(tk) == TT_FVAR) {
-		int index = Token_index(tk);
+		int index = Term_index(tk);
 		if(isTRUE) {
 			ASM(bNOT, NC_(index), NC_(index));
 		}
@@ -1239,21 +1239,21 @@ static void ASM_SAFEPOINT(CTX ctx, int espidx)
 /* ------------------------------------------------------------------------ */
 /* CALL */
 
-static inline knh_int_t Tn_int(knh_Stmt_t *stmt, size_t n)
+static inline knh_int_t Tn_int(knh_StmtExpr_t *stmt, size_t n)
 {
-	knh_Token_t *tk = tkNN(stmt, n);
+	knh_Term_t *tk = tkNN(stmt, n);
 	DBG_ASSERT(TT_(tk) == TT_CONST);
 	return ((tk)->num)->n.ivalue;
 }
 
-static inline knh_float_t Tn_float(knh_Stmt_t *stmt, size_t n)
+static inline knh_float_t Tn_float(knh_StmtExpr_t *stmt, size_t n)
 {
-	knh_Token_t *tk = tkNN(stmt, n);
+	knh_Term_t *tk = tkNN(stmt, n);
 	DBG_ASSERT(TT_(tk) == TT_CONST);
 	return ((tk)->num)->n.fvalue;
 }
 
-//static knh_type_t Tn_ptype(CTX ctx, knh_Stmt_t *stmt, size_t n, knh_class_t cid, knh_Method_t *mtd)
+//static knh_type_t Tn_ptype(CTX ctx, knh_StmtExpr_t *stmt, size_t n, knh_class_t cid, knh_Method_t *mtd)
 //{
 //	if(!IS_Method(mtd)) {
 //		return TYPE_dyn;  // boxing
@@ -1275,7 +1275,7 @@ static inline knh_float_t Tn_float(knh_Stmt_t *stmt, size_t n)
 //	}
 //}
 
-static int CALLPARAMs_asm(CTX ctx, knh_Stmt_t *stmt, size_t s, int local, knh_class_t cid, knh_Method_t *mtd)
+static int CALLPARAMs_asm(CTX ctx, knh_StmtExpr_t *stmt, size_t s, int local, knh_class_t cid, knh_Method_t *mtd)
 {
 	size_t i;
 	if(s == 1 && Method_isStatic(mtd)) s = 2;   // ignoring static caller, like Script
@@ -1435,9 +1435,9 @@ static int Tuple_index(CTX ctx, knh_ParamArray_t *pa, size_t n, size_t psize)
 #endif
 }
 
-static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void CALL_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 {
-	knh_Token_t *tkMTD = tkNN(stmt, 0);
+	knh_Term_t *tkMTD = tkNN(stmt, 0);
 	knh_Method_t *mtd = (tkMTD)->mtd;
 	knh_class_t cid = Tn_cid(stmt, 1);
 	if(!IS_Method(mtd) && C_bcid(cid) == CLASS_Tuple && (tkMTD->mn == MN_get || tkMTD->mn == MN_set)) {
@@ -1598,7 +1598,7 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 		deltaidx = knh_Method_indexOfSetterField(mtd);
 		if(deltaidx != -1) {
 			int b = Tn_put(ctx, stmt, 1, espidx + 1);
-			knh_Token_t *tkV = Tn_putTK(ctx, stmt, 2, espidx + 2);
+			knh_Term_t *tkV = Tn_putTK(ctx, stmt, 2, espidx + 2);
 			ASM_XMOV(ctx, b, deltaidx, tkV, espidx+3);
 //			if(reqt != TYPE_void) {
 //				ASM_SMOV(ctx, espidx, tkV);
@@ -1631,7 +1631,7 @@ static void CALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	}
 }
 
-static void FUNCCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void FUNCCALL_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 {
 	knh_Method_t *mtd = (tkNN(stmt, 0))->mtd;
 	knh_class_t cid = Tn_cid(stmt, 1);
@@ -1696,7 +1696,7 @@ static knh_opcode_t OPCODE_fmn(knh_methodn_t mn, int diff)
 	return OPCODE_NOP;
 }
 
-static knh_bool_t OPR_hasCONST(CTX ctx, knh_Stmt_t *stmt, knh_methodn_t *mn, int swap)
+static knh_bool_t OPR_hasCONST(CTX ctx, knh_StmtExpr_t *stmt, knh_methodn_t *mn, int swap)
 {
 	int isCONST = (TT_(tmNN(stmt, 2)) == TT_CONST);
 	if(swap == 1 && TT_(tmNN(stmt, 1)) == TT_CONST) {
@@ -1713,7 +1713,7 @@ static knh_bool_t OPR_hasCONST(CTX ctx, knh_Stmt_t *stmt, knh_methodn_t *mn, int
 	return isCONST;
 }
 
-static void OPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void OPR_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 {
 	knh_Method_t *mtd = (tkNN(stmt, 0))->mtd;
 	if(IS_NULL(mtd)) {
@@ -1781,18 +1781,18 @@ static void OPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 }
 
 
-static void EXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx);
+static void EXPR_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx);
 
-static void CALL1_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void CALL1_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 {
 	Tn_asm(ctx, stmt, 0, espidx);
-	if(IS_Stmt(DP(stmt)->stmtPOST)) {  /* a++ */
+	if(IS_StmtExpr(DP(stmt)->stmtPOST)) {  /* a++ */
 		DP(DP(stmt)->stmtPOST)->espidx = espidx + 1;
 		EXPR_asm(ctx, DP(stmt)->stmtPOST, espidx + 1);
 	}
 }
 
-static void BOX_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void BOX_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 {
 	knh_class_t cid = Tn_cid(stmt, 0);
 	Tn_asm(ctx, stmt, 0, espidx);
@@ -1805,7 +1805,7 @@ static void BOX_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	}
 }
 
-static void NEW_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void NEW_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 {
 	int thisidx = espidx + K_CALLDELTA;
 	knh_Method_t *mtd = (tkNN(stmt, 0))->mtd;
@@ -1821,9 +1821,9 @@ static void NEW_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	}
 }
 
-static void TCAST_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void TCAST_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 {
-	knh_Token_t *tkC = tkNN(stmt, 0);
+	knh_Term_t *tkC = tkNN(stmt, 0);
 	knh_TypeMap_t *tmr = (tkC)->mpr;
 	Tn_asm(ctx, stmt, 1, espidx);
 	if(IS_TypeMap(tmr)) {
@@ -1852,7 +1852,7 @@ static void TCAST_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	}
 }
 
-static void ALT_asm(CTX ctx, knh_Stmt_t *stmt, int sfpidx)
+static void ALT_asm(CTX ctx, knh_StmtExpr_t *stmt, int sfpidx)
 {
 //	knh_BasicBlock_t* label = new_BasicBlockLABEL(ctx);
 //	int local = ASML(sfpidx);
@@ -1867,7 +1867,7 @@ static void ALT_asm(CTX ctx, knh_Stmt_t *stmt, int sfpidx)
 	DBG_ABORT("TODO: ALT");
 }
 
-static void OR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void OR_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 {
 	int i, size = DP(stmt)->size;
 	knh_BasicBlock_t*  lbTRUE = new_BasicBlockLABEL(ctx);
@@ -1882,7 +1882,7 @@ static void OR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	ASM_LABEL(ctx, lbFALSE); // false
 }
 
-static void AND_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void AND_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 {
 	int i, size = DP(stmt)->size;
 	knh_BasicBlock_t*  lbTRUE = new_BasicBlockLABEL(ctx);
@@ -1897,7 +1897,7 @@ static void AND_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	ASM_LABEL(ctx, lbTRUE);   // TRUE
 }
 
-static void TRI_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void TRI_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 {
 	knh_BasicBlock_t*  lbelse = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t*  lbend  = new_BasicBlockLABEL(ctx);
@@ -1911,24 +1911,24 @@ static void TRI_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	ASM_LABEL(ctx, lbend);
 }
 
-static void LETEXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void LETEXPR_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 {
-	knh_Token_t *tkL = tkNN(stmt, 1);
+	knh_Term_t *tkL = tkNN(stmt, 1);
 	Tn_asm(ctx, stmt, 2, espidx);
 	knh_type_t atype = tkL->type;
 	DBG_P("LETEXPR TT=%s", TT__(tkL->tt));
 	if(TT_(tkL) == TT_FVAR) {
 		if(IS_Tunbox(atype)) {
-			ASM(NMOV, NC_(Token_index(tkL)), NC_(espidx));
+			ASM(NMOV, NC_(Term_index(tkL)), NC_(espidx));
 		}
 		else {
-			ASM(OMOV, OC_(Token_index(tkL)), OC_(espidx));
+			ASM(OMOV, OC_(Term_index(tkL)), OC_(espidx));
 		}
 	}
 	else {
 		DBG_ASSERT(TT_(tkL) == TT_FIELD);
 		knh_sfx_t ax;
-		Token_setsfx(ctx, tkL, &ax);
+		Term_setsfx(ctx, tkL, &ax);
 		if(IS_Tunbox(atype)) {
 			ASM(XNMOV, ax, NC_(espidx));
 		}
@@ -1954,7 +1954,7 @@ static knh_Method_t* Gamma_getFmt(CTX ctx, knh_class_t cid, knh_methodn_t mn0)
 	return mtd;
 }
 
-static void W1_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void W1_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 {
 	int isCWB = 0;
 	size_t thisidx = espidx + K_CALLDELTA;
@@ -1963,7 +1963,7 @@ static void W1_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	if(TT_(tmNN(stmt, 1)) == TT_ASIS) {
 		isCWB = 1;
 		ASM(TR, OC_(thisidx), SFP_(thisidx), RIX_(thisidx-thisidx), ClassTBL(CLASS_OutputStream), _CWB);
-		KNH_SETv(ctx, tmNN(stmt, 1), knh_Token_toTYPED(ctx, tkNN(stmt, 1), TT_FVAR, TYPE_OutputStream, thisidx));
+		KNH_SETv(ctx, tmNN(stmt, 1), knh_Term_toTYPED(ctx, tkNN(stmt, 1), TT_FVAR, TYPE_OutputStream, thisidx));
 	}
 	else {
 		DBG_ASSERT(TT_(tkNN(stmt, 1)) == TT_FVAR);
@@ -1980,7 +1980,7 @@ static void W1_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	}
 }
 
-static void FMTCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void FMTCALL_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 {
 	int isCWB = 0;
 	size_t i, thisidx = espidx + (DP(stmt)->size - 2) + K_CALLDELTA;
@@ -1990,7 +1990,7 @@ static void FMTCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	if(TT_(tmNN(stmt, 1)) == TT_ASIS) {
 		isCWB = 1;
 		ASM(TR, OC_(thisidx), SFP_(thisidx), RIX_(thisidx-thisidx), ClassTBL(CLASS_OutputStream), _CWB);
-		knh_Token_toTYPED(ctx, tkNN(stmt, 1), TT_FVAR, TYPE_OutputStream, thisidx);
+		knh_Term_toTYPED(ctx, tkNN(stmt, 1), TT_FVAR, TYPE_OutputStream, thisidx);
 	}
 	else {
 		DBG_ASSERT(TT_(tkNN(stmt, 1)) == TT_FVAR);
@@ -1998,12 +1998,12 @@ static void FMTCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 		thisidx = tkNN(stmt, 1)->index;
 	}
 	{
-		knh_Stmt_t *stmtW = stmtNN(stmt, 0);
+		knh_StmtExpr_t *stmtW = stmtNN(stmt, 0);
 		while(stmtW != NULL) {
 			if(STT_(stmtW) == STT_W1) {
 				DBG_ASSERT(tkNN(stmt, 1) == tkNN(stmtW, 1));
 				if(TT_(tkNN(stmtW, 2)) == TT_NUM) {
-					knh_Token_t *tkIDX = tkNN(stmtW, 2);
+					knh_Term_t *tkIDX = tkNN(stmtW, 2);
 					tkIDX->index += espidx;
 					TT_(tkIDX) = TT_FVAR;
 				}
@@ -2017,21 +2017,21 @@ static void FMTCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 	}
 }
 
-static void SEND_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void SEND_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 {
 	size_t i, thisidx = espidx + K_CALLDELTA;
 	int isCWB = 0;
 	if(TT_(tmNN(stmt, 1)) == TT_ASIS) {
 		isCWB = 1;
 		ASM(TR, OC_(thisidx), SFP_(thisidx), RIX_(thisidx-thisidx), ClassTBL(CLASS_OutputStream), _CWB);
-		KNH_SETv(ctx, tmNN(stmt, 1), knh_Token_toTYPED(ctx, tkNN(stmt, 1), TT_FVAR, TYPE_OutputStream, thisidx));
+		KNH_SETv(ctx, tmNN(stmt, 1), knh_Term_toTYPED(ctx, tkNN(stmt, 1), TT_FVAR, TYPE_OutputStream, thisidx));
 	}
 	else {
 		Tn_asm(ctx, stmt, 1, thisidx);
 	}
 	for(i = 2; i < DP(stmt)->size; i++) {
 		if(STT_(stmtNN(stmt, i)) == STT_W1) {
-			knh_Stmt_t *stmtIN = stmtNN(stmt, i);
+			knh_StmtExpr_t *stmtIN = stmtNN(stmt, i);
 			DBG_ASSERT(TT_(tkNN(stmtIN, 1)) == TT_ASIS);
 			KNH_SETv(ctx, tkNN(stmtIN, 1), tkNN(stmt, 1));
 			W1_asm(ctx, stmtIN, espidx + 1);
@@ -2064,7 +2064,7 @@ static void SEND_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 		break;\
 	}\
 
-static void EXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
+static void EXPR_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 {
 	switch(STT_(stmt)) {
 	CASE_ASM(LETEXPR, espidx);
@@ -2088,22 +2088,22 @@ static void EXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 }
 
 
-static void Tn_asm(CTX ctx, knh_Stmt_t *stmt, size_t n, int espidx)
+static void Tn_asm(CTX ctx, knh_StmtExpr_t *stmt, size_t n, int espidx)
 {
-	if(IS_Token(tkNN(stmt, n))) {
+	if(IS_Term(tkNN(stmt, n))) {
 		ASM_SMOV(ctx, espidx, tkNN(stmt, n));
 	}
 	else {
 		EXPR_asm(ctx, stmtNN(stmt, n), espidx);
 	}
-	if(IS_Token(tkNN(stmt, n))) {
-		knh_Token_t *tk = tkNN(stmt, n);
+	if(IS_Term(tkNN(stmt, n))) {
+		knh_Term_t *tk = tkNN(stmt, n);
 		if(TT_(tk) != TT_FVAR) {
-			knh_Token_toTYPED(ctx, tk, TT_FVAR, tk->type, espidx);
+			knh_Term_toTYPED(ctx, tk, TT_FVAR, tk->type, espidx);
 		}
 	}
 	else {
-		knh_Token_t *tk = new_TokenTYPED(ctx, TT_FVAR, Tn_type(stmt, n), espidx);
+		knh_Term_t *tk = new_TermTYPED(ctx, TT_FVAR, Tn_type(stmt, n), espidx);
 		KNH_SETv(ctx, tkNN(stmt, n), tk);
 	}
 }
@@ -2111,7 +2111,7 @@ static void Tn_asm(CTX ctx, knh_Stmt_t *stmt, size_t n, int espidx)
 /* ------------------------------------------------------------------------ */
 /* [LABEL]  */
 
-static void Gamma_pushLABEL(CTX ctx, knh_Stmt_t *stmt, knh_BasicBlock_t *lbC, knh_BasicBlock_t *lbB)
+static void Gamma_pushLABEL(CTX ctx, knh_StmtExpr_t *stmt, knh_BasicBlock_t *lbC, knh_BasicBlock_t *lbB)
 {
 	knh_Object_t *tkL = NULL;
 	if(IS_Map(DP(stmt)->metaDictCaseMap)) {
@@ -2136,15 +2136,15 @@ static void Gamma_popLABEL(CTX ctx)
 /* ------------------------------------------------------------------------ */
 /* [IF, WHILE, DO, FOR, FOREACH]  */
 
-static inline knh_Token_t *Tn_it(knh_Stmt_t *stmt, size_t n)
+static inline knh_Term_t *Tn_it(knh_StmtExpr_t *stmt, size_t n)
 {
 	DBG_ASSERT(n < DP(stmt)->size);
 	return tkNN(stmt, n);
 }
 
-static inline void Tn_asmBLOCK(CTX ctx, knh_Stmt_t *stmt, size_t n)
+static inline void Tn_asmBLOCK(CTX ctx, knh_StmtExpr_t *stmt, size_t n)
 {
-	DBG_ASSERT(IS_Stmt(stmtNN(stmt, n)));
+	DBG_ASSERT(IS_StmtExpr(stmtNN(stmt, n)));
 	BLOCK_asm(ctx, stmtNN(stmt, n));
 }
 
@@ -2198,24 +2198,24 @@ static void ASM_PMOV(CTX ctx, int isUNBOX, int a, int b)
 	}
 }
 
-static void LET_asm(CTX ctx, knh_Stmt_t *stmt)
+static void LET_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
-	knh_Token_t *tkL = tkNN(stmt, 1);
-	knh_Token_t *tkV = tkNN(stmt, 2);
+	knh_Term_t *tkL = tkNN(stmt, 1);
+	knh_Term_t *tkV = tkNN(stmt, 2);
 	knh_type_t atype = tkL->type;
-	if(IS_Token(tkV)) {
+	if(IS_Term(tkV)) {
 		ASM_MOV(ctx, tkL, tkV, DP(stmt)->espidx);
 	}
 	else {
 		Tn_asm(ctx, stmt, 2, DP(stmt)->espidx);
 		if(TT_(tkL) == TT_FVAR) {
-			ASM_PMOV(ctx, IS_Tunbox(atype), Token_index(tkL), DP(stmt)->espidx);
+			ASM_PMOV(ctx, IS_Tunbox(atype), Term_index(tkL), DP(stmt)->espidx);
 		}
 		else {
 			DBG_ASSERT(TT_(tkL) == TT_FIELD);
 			knh_type_t atype = tkL->type;
 			knh_sfx_t ax;
-			Token_setsfx(ctx, tkL, &ax);
+			Term_setsfx(ctx, tkL, &ax);
 			if(IS_Tunbox(atype)) {
 				ASM(XNMOV, ax, NC_(DP(stmt)->espidx));
 			}
@@ -2226,7 +2226,7 @@ static void LET_asm(CTX ctx, knh_Stmt_t *stmt)
 	}
 }
 
-static void IF_asm(CTX ctx, knh_Stmt_t *stmt)
+static void IF_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_BasicBlock_t*  lbELSE = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t*  lbEND  = new_BasicBlockLABEL(ctx);
@@ -2242,17 +2242,17 @@ static void IF_asm(CTX ctx, knh_Stmt_t *stmt)
 	ASM_LABEL(ctx, lbEND);
 }
 
-static void SWITCH_asm(CTX ctx, knh_Stmt_t *stmt)
+static void SWITCH_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
-	knh_Stmt_t *stmtCASE;
-	knh_Token_t *tkIT = Tn_it(stmt, 2);
+	knh_StmtExpr_t *stmtCASE;
+	knh_Term_t *tkIT = Tn_it(stmt, 2);
 	knh_BasicBlock_t* lbCONTINUE = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t* lbBREAK = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t *lbNEXT = NULL;
 	Gamma_pushLABEL(ctx, stmt, lbCONTINUE, lbBREAK);
 	ASM_LABEL(ctx, lbCONTINUE);
 	//switch(it)
-	Tn_asm(ctx, stmt, 0, Token_index(tkIT));
+	Tn_asm(ctx, stmt, 0, Term_index(tkIT));
 	stmtCASE = stmtNN(stmt, 1);
 	while(stmtCASE != NULL) {
 		// case 'a' :
@@ -2284,14 +2284,14 @@ static void SWITCH_asm(CTX ctx, knh_Stmt_t *stmt)
 	Gamma_popLABEL(ctx);
 }
 
-static void ASM_JUMPLABEL(CTX ctx, knh_Stmt_t *stmt, int delta)
+static void ASM_JUMPLABEL(CTX ctx, knh_StmtExpr_t *stmt, int delta)
 {
 	size_t s = knh_Array_size(DP(ctx->gma)->lstacks);
 	if(s < 4) {
-		knh_Stmt_toERR(ctx, stmt, ERROR_OnlyTopLevel(ctx, Stmt__(stmt)));
+		knh_StmtExpr_toERR(ctx, stmt, ERROR_OnlyTopLevel(ctx, Stmt__(stmt)));
 	}
 	else {
-		knh_Token_t *tkL = NULL;
+		knh_Term_t *tkL = NULL;
 		knh_BasicBlock_t *lbBLOCK = NULL;
 		if(DP(stmt)->size == 1) {
 			tkL = tkNN(stmt, 0);
@@ -2301,7 +2301,7 @@ static void ASM_JUMPLABEL(CTX ctx, knh_Stmt_t *stmt, int delta)
 			int i;
 			knh_bytes_t lname = S_tobytes((tkL)->text);
 			for(i = s - 4; i >= 0; i -= 4) {
-				knh_Token_t *tkSTACK = DP(ctx->gma)->lstacks->tokens[i];
+				knh_Term_t *tkSTACK = DP(ctx->gma)->lstacks->tokens[i];
 				if(IS_NOTNULL(tkSTACK) && S_equals((tkSTACK)->text, lname)) {
 					lbBLOCK = GammaLabel(ctx,  i + delta);
 					goto L_JUMP;
@@ -2316,17 +2316,17 @@ static void ASM_JUMPLABEL(CTX ctx, knh_Stmt_t *stmt, int delta)
 	}
 }
 
-static void CONTINUE_asm(CTX ctx, knh_Stmt_t *stmt)
+static void CONTINUE_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	ASM_JUMPLABEL(ctx, stmt, 1);
 }
 
-static void BREAK_asm(CTX ctx, knh_Stmt_t *stmt)
+static void BREAK_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	ASM_JUMPLABEL(ctx, stmt, 2);
 }
 
-static void WHILE_asm(CTX ctx, knh_Stmt_t *stmt)
+static void WHILE_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_BasicBlock_t* lbCONTINUE = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t* lbBREAK = new_BasicBlockLABEL(ctx);
@@ -2343,7 +2343,7 @@ static void WHILE_asm(CTX ctx, knh_Stmt_t *stmt)
 	Gamma_popLABEL(ctx);
 }
 
-static void DO_asm(CTX ctx, knh_Stmt_t *stmt)
+static void DO_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_BasicBlock_t* lbCONTINUE = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t* lbBREAK = new_BasicBlockLABEL(ctx);
@@ -2357,7 +2357,7 @@ static void DO_asm(CTX ctx, knh_Stmt_t *stmt)
 	Gamma_popLABEL(ctx);
 }
 
-static void FOR_asm(CTX ctx, knh_Stmt_t *stmt)
+static void FOR_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_BasicBlock_t* lbCONTINUE = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t* lbBREAK = new_BasicBlockLABEL(ctx);
@@ -2383,15 +2383,15 @@ static void FOR_asm(CTX ctx, knh_Stmt_t *stmt)
 
 /* ------------------------------------------------------------------------ */
 
-static void FOREACH_asm(CTX ctx, knh_Stmt_t *stmt)
+static void FOREACH_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_BasicBlock_t* lbC = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t* lbB = new_BasicBlockLABEL(ctx);
 	Gamma_pushLABEL(ctx, stmt, lbC, lbB);
 	{
-		knh_Token_t *tkN = tkNN(stmt, 0);
-		int varidx = Token_index(tkN);
-		int itridx = Token_index(tkNN(stmt, 2));
+		knh_Term_t *tkN = tkNN(stmt, 0);
+		int varidx = Term_index(tkN);
+		int itridx = Term_index(tkNN(stmt, 2));
 		Tn_asm(ctx, stmt, 1, itridx);
 		ASM_LABEL(ctx, lbC);
 		ASM_SAFEPOINT(ctx, DP(stmt)->espidx);
@@ -2407,9 +2407,9 @@ static void FOREACH_asm(CTX ctx, knh_Stmt_t *stmt)
 /* ------------------------------------------------------------------------ */
 /* [TRY] */
 
-#define Gamma_inTry(ctx)  IS_Stmt(DP(ctx->gma)->finallyStmt)
+#define Gamma_inTry(ctx)  IS_StmtExpr(DP(ctx->gma)->finallyStmt)
 
-static void Gamma_setFINALLY(CTX ctx, knh_Stmt_t *stmt)
+static void Gamma_setFINALLY(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	if(IS_NOTNULL(stmt)) {
 		if(IS_NOTNULL(DP(ctx->gma)->finallyStmt)) {
@@ -2431,26 +2431,26 @@ static void ASM_FINALLY(CTX ctx)
 	}
 }
 
-static void TRY_asm(CTX ctx, knh_Stmt_t *stmt)
+static void TRY_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_BasicBlock_t*  lbCATCH   = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t*  lbFINALLY = new_BasicBlockLABEL(ctx);
-	knh_Token_t *tkIT = Tn_it(stmt, 3/*HDR*/);
-	knh_Stmt_t *stmtCATCH = stmtNN(stmt, 1);
+	knh_Term_t *tkIT = Tn_it(stmt, 3/*HDR*/);
+	knh_StmtExpr_t *stmtCATCH = stmtNN(stmt, 1);
 	Gamma_setFINALLY(ctx, stmtNN(stmt, 2/*finally*/));
 	/* try { */
 	ASMbranch(TRY, lbCATCH, OC_((tkIT)->index));
 	Tn_asmBLOCK(ctx, stmt, 0/*try*/);
 	ASM_JMP(ctx, lbFINALLY);
-	Gamma_setFINALLY(ctx, (knh_Stmt_t*)KNH_NULL); // InTry
+	Gamma_setFINALLY(ctx, (knh_StmtExpr_t*)KNH_NULL); // InTry
 	/* catch */
 	ASM_LABEL(ctx, lbCATCH);
 	DBG_P("stmtCATCH=%s", CLASS__(O_cid(stmtCATCH)));
 	while(stmtCATCH != NULL) {
-		DBG_ASSERT(IS_Stmt(stmtCATCH));
+		DBG_ASSERT(IS_StmtExpr(stmtCATCH));
 		if(SP(stmtCATCH)->stt == STT_CATCH) {
 			knh_String_t *emsg = tkNN(stmtCATCH, 0)->text;
-			knh_Token_t *tkN = tkNN(stmtCATCH, 1);
+			knh_Term_t *tkN = tkNN(stmtCATCH, 1);
 			DBG_ASSERT(IS_String(emsg));
 			DBG_ASSERT(TT_(tkN) == TT_FVAR || TT_(tkN) == TT_LVAR);
 			if(!knh_isDefinedEvent(ctx, S_tobytes(emsg))) {
@@ -2469,16 +2469,16 @@ static void TRY_asm(CTX ctx, knh_Stmt_t *stmt)
 	ASM(THROW, SFP_(((tkIT)->index)-1));
 }
 
-static void ASSURE_asm(CTX ctx, knh_Stmt_t *stmt)
+static void ASSURE_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
-	int index = Token_index(tkNN(stmt, 2)); // it
+	int index = Term_index(tkNN(stmt, 2)); // it
 	Tn_asm(ctx, stmt, 0, index);
 	ASM(CHKIN, OC_(index), ClassTBL(CLASS_Assurance)->cdef->checkin);
 	Tn_asmBLOCK(ctx, stmt, 1);
 	ASM(CHKOUT, OC_(index), ClassTBL(CLASS_Assurance)->cdef->checkout);
 }
 
-static void THROW_asm(CTX ctx, knh_Stmt_t *stmt)
+static void THROW_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	int start = 0, espidx = DP(stmt)->espidx;
 	if(Gamma_inTry(ctx)) {
@@ -2489,7 +2489,7 @@ static void THROW_asm(CTX ctx, knh_Stmt_t *stmt)
 	ASM(THROW, SFP_(start));
 }
 
-static void RETURN_asm(CTX ctx, knh_Stmt_t *stmt)
+static void RETURN_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	ASM_FINALLY(ctx);
 	size_t size = DP(stmt)->size;
@@ -2497,7 +2497,7 @@ static void RETURN_asm(CTX ctx, knh_Stmt_t *stmt)
 		Tn_asm(ctx, stmt, 0, DP(stmt)->espidx);
 		ASM_PMOV(ctx, IS_Tunbox(Tn_type(stmt, 0)), K_RTNIDX, DP(stmt)->espidx);
 	}
-	if(IS_Stmt(DP(stmt)->stmtPOST)) {
+	if(IS_StmtExpr(DP(stmt)->stmtPOST)) {
 		DP(DP(stmt)->stmtPOST)->espidx = DP(stmt)->espidx + 1;
 		EXPR_asm(ctx, DP(stmt)->stmtPOST, DP(stmt)->espidx + 1);
 	}
@@ -2506,15 +2506,15 @@ static void RETURN_asm(CTX ctx, knh_Stmt_t *stmt)
 	}
 }
 
-static void YIELD_asm(CTX ctx, knh_Stmt_t *stmt)
+static void YIELD_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	KNH_TODO("yield");
 }
 
-static void ERR_asm(CTX ctx, knh_Stmt_t *stmt)
+static void ERR_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	int start = 0, espidx = DP(stmt)->espidx;
-	knh_Token_t *tkERR = tkNN(stmt, 0);
+	knh_Term_t *tkERR = tkNN(stmt, 0);
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	DBG_ASSERT(DP(stmt)->size > 0);
 	DBG_ASSERT(TT_(tkERR) == TT_ERR);
@@ -2542,7 +2542,7 @@ static void ERR_asm(CTX ctx, knh_Stmt_t *stmt)
 #define K_FLAG_PF_BREAK       (1<<7)
 
 
-static knh_flag_t PRINT_flag(CTX ctx, knh_Stmt_t *o)
+static knh_flag_t PRINT_flag(CTX ctx, knh_StmtExpr_t *o)
 {
 	knh_flag_t flag = 0;
 	if(IS_Map(DP(o)->metaDictCaseMap)) {
@@ -2678,12 +2678,12 @@ void knh_PRINTb(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, knh_uline_t uline, knh
 	_PRINTln(ctx, sfp, w, &op);
 }
 
-static void PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
+static void PRINT_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_flag_t flag = PRINT_flag(ctx, stmt) | K_FLAG_PF_BOL | K_FLAG_PF_LINE;
 	long i, espidx = DP(stmt)->espidx;
 	for(i = 0; i < DP(stmt)->size; i++) {
-		knh_Token_t *tkn = tkNN(stmt, i);
+		knh_Term_t *tkn = tkNN(stmt, i);
 		if(TT_(tkn) != TT_CONST || !IS_String((tkn)->data)) {
 			Tn_asm(ctx, stmt, i, espidx + i);
 		}
@@ -2692,7 +2692,7 @@ static void PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
 		knh_flag_t mask = 0;
 		knh_String_t *msg = (knh_String_t*)KNH_NULL;
 		L_REDO:;
-		knh_Token_t *tkn = tkNN(stmt, i);
+		knh_Term_t *tkn = tkNN(stmt, i);
 		if(i == (long)DP(stmt)->size - 1) {
 			mask |= K_FLAG_PF_EOL;
 			if(Stmt_isBreakPoint(stmt)) {
@@ -2700,7 +2700,7 @@ static void PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
 			}
 		}
 		if(TT_(tkn) == TT_CONST && IS_String((tkn)->data)) {
-			if(Token_isPNAME(tkn)) { /* name= */
+			if(Term_isPNAME(tkn)) { /* name= */
 				msg = (tkn)->text;
 				mask |= K_FLAG_PF_NAME; i++;
 				goto L_REDO;
@@ -2728,7 +2728,7 @@ static void PRINT_asm(CTX ctx, knh_Stmt_t *stmt)
 	}
 }
 
-static void ASSERT_asm(CTX ctx, knh_Stmt_t *stmt)
+static void ASSERT_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	int espidx = DP(stmt)->espidx;
 	knh_BasicBlock_t* lbskip = new_BasicBlockLABEL(ctx);
@@ -2741,9 +2741,9 @@ static void ASSERT_asm(CTX ctx, knh_Stmt_t *stmt)
 
 /* ------------------------------------------------------------------------ */
 
-static void BLOCK_asm(CTX ctx, knh_Stmt_t *stmtH)
+static void BLOCK_asm(CTX ctx, knh_StmtExpr_t *stmtH)
 {
-	knh_Stmt_t *stmt = stmtH;
+	knh_StmtExpr_t *stmt = stmtH;
 	while(stmt != NULL) {
 		ctx->gma->uline = stmt->uline;
 		switch(STT_(stmt)) {
@@ -2751,7 +2751,7 @@ static void BLOCK_asm(CTX ctx, knh_Stmt_t *stmtH)
 		{
 			size_t i;
 			for(i = 0; i < DP(stmt)->size; i++) {
-				knh_Stmt_t *stmtLET = stmtNN(stmt, i);
+				knh_StmtExpr_t *stmtLET = stmtNN(stmt, i);
 				if(STT_(stmtLET) == STT_LET) {
 					DP(stmtLET)->espidx = DP(stmt)->espidx;
 					LET_asm(ctx, stmtLET);
@@ -2809,8 +2809,8 @@ void Gamma_shiftLocalScope(CTX ctx)
 	size_t i;
 	knh_Array_t *a = DP(ctx->gma)->insts;
 	for(i = 0; i < knh_Array_size(a); i++) {
-		if(IS_Token(a->tokens[i])) {
-			knh_Token_t *tk = a->tokens[i];
+		if(IS_Term(a->tokens[i])) {
+			knh_Term_t *tk = a->tokens[i];
 			if(TT_(tk) == TT_LVAR) {
 				TT_(tk) = TT_FVAR;
 				tk->index += shift;
@@ -2820,15 +2820,15 @@ void Gamma_shiftLocalScope(CTX ctx)
 				tk->index += shift;
 			}
 		}
-		if(IS_Stmt(a->stmts[i])) {
-			knh_Stmt_t *stmt = a->stmts[i];
+		if(IS_StmtExpr(a->stmts[i])) {
+			knh_StmtExpr_t *stmt = a->stmts[i];
 			DP(stmt)->espidx += shift;
 		}
 	}
 	knh_Array_clear(ctx, a, 0);
 }
 
-static void Method_compile(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB)
+static void Method_compile(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB)
 {
 	DBG_ASSERT(knh_Array_size(DP(ctx->gma)->insts) == 0);
 	DBG_ASSERT(knh_Array_size(DP(ctx->gma)->lstacks) == 0);
@@ -2887,7 +2887,7 @@ static void Method_compile(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB)
 	Gamma_compile(ctx, lbINIT, lbEND);
 }
 
-void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB, knh_Ftyping typing)
+void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB, knh_Ftyping typing)
 {
 	// FIXME
 	//DBG_ASSERT(knh_Array_size(DP(ctx->gma)->insts) == 0);
@@ -2898,7 +2898,7 @@ void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB, knh_Ftyping t
 	Gamma_shiftLocalScope(ctx);
 	knh_Array_clear(ctx, DP(ctx->gma)->lstacks, 0);
 #ifdef K_USING_LLVM
-	void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtP);
+	void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtP);
 	knh_LLVMMethod_asm(ctx, mtd, stmtB);
 #else
 	Method_compile(ctx, mtd, stmtB);
@@ -2915,8 +2915,8 @@ KMETHOD knh_Fmethod_asm(CTX ctx, knh_sfp_t *sfp _RIX)
 	KNH_SETv(ctx, DP(ctx->gma)->mtd, mtd);
 	knh_Method_toAbstract(ctx, mtd);
 	DP(ctx->gma)->fvarsize = DP(mtd)->delta;
-	DBG_ASSERT(IS_Stmt(lsfp[0].o));
-	Method_compile(ctx, mtd, (knh_Stmt_t*)lsfp[0].o);
+	DBG_ASSERT(IS_StmtExpr(lsfp[0].o));
+	Method_compile(ctx, mtd, (knh_StmtExpr_t*)lsfp[0].o);
 	END_LOCAL(ctx, lsfp);
 	(mtd)->fcall_1(ctx, sfp, K_RIX);
 }

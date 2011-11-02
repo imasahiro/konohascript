@@ -476,7 +476,7 @@ static TERMDATA_t TERMDATA[] = {
 	{NULL, 0, 0}
 };
 
-static void knh_loadScriptTokenData(CTX ctx)
+static void knh_loadScriptTermData(CTX ctx)
 {
 	knh_DictSet_t *ds = ctx->share->tokenDictSet;
 	TERMDATA_t *data = TERMDATA + STT_MAX;
@@ -560,7 +560,7 @@ static ALIASDATA_t __AliasData[] = {
 	{NULL, NULL}
 };
 
-void knh_loadScriptAliasTokenData(CTX ctx)
+void knh_loadScriptAliasTermData(CTX ctx)
 {
 	ALIASDATA_t *data = __AliasData;
 	knh_DictMap_t *dm = new_DictMap0(ctx, sizeof(__AliasData), 0/*isCaseMap*/, "AliasDictMap");

@@ -1120,8 +1120,8 @@ static void knh_ObjectObjectArenaTBL_free(CTX ctx, const knh_ObjectArenaTBL_t *o
 //				case CLASS_String:
 //					fprintf(stderr, "str='%s'\n", S_totext((knh_String_t*)o));
 //				break;
-//				case CLASS_Token:
-//					fprintf(stderr, "tt='%s'\n", TT__(((knh_Token_t*)o)->tt));
+//				case CLASS_Term:
+//					fprintf(stderr, "tt='%s'\n", TT__(((knh_Term_t*)o)->tt));
 //				break;
 //				case CLASS_Method: {
 //					knh_Method_t *mtd = (knh_Method_t*)o;
@@ -1129,7 +1129,7 @@ static void knh_ObjectObjectArenaTBL_free(CTX ctx, const knh_ObjectArenaTBL_t *o
 //					break;
 //				}
 //				case CLASS_Stmt:
-//					fprintf(stderr, "stmt='%s'\n", TT__((SP(knh_Stmt_t*)o)->stt));
+//					fprintf(stderr, "stmt='%s'\n", TT__((SP(knh_StmtExpr_t*)o)->stt));
 //				break;
 //				default:
 //					fprintf(stderr, "\n");

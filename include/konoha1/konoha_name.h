@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      702
+#define K_REVISION                      724
 #endif
-#define K_BUILDID                       1180
+#define K_BUILDID                       1183
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -370,8 +370,26 @@
 #define FLAG_Token              KNH_MAGICFLAG(CFLAG_Token)
 
 /* ------------------------------------------------------------------------ */
+/* Sugar */
+#define CLASS_Sugar             ((knh_class_t)40)
+#define IS_Sugar(o)             (O_cid(o) == CLASS_Sugar)
+#define IS_bSugar(o)            (O_bcid(o) == CLASS_Sugar)
+#define TYPE_Sugar              CLASS_Sugar
+#define CFLAG_Sugar             ((knh_flag_t)0)
+#define FLAG_Sugar              KNH_MAGICFLAG(CFLAG_Sugar)
+
+/* ------------------------------------------------------------------------ */
+/* Expr */
+#define CLASS_Expr              ((knh_class_t)41)
+#define IS_Expr(o)              (O_cid(o) == CLASS_Expr)
+#define IS_bExpr(o)             (O_bcid(o) == CLASS_Expr)
+#define TYPE_Expr               CLASS_Expr
+#define CFLAG_Expr              ((knh_flag_t)0)
+#define FLAG_Expr               KNH_MAGICFLAG(CFLAG_Expr)
+
+/* ------------------------------------------------------------------------ */
 /* Stmt */
-#define CLASS_Stmt              ((knh_class_t)40)
+#define CLASS_Stmt              ((knh_class_t)42)
 #define IS_Stmt(o)              (O_cid(o) == CLASS_Stmt)
 #define IS_bStmt(o)             (O_bcid(o) == CLASS_Stmt)
 #define TYPE_Stmt               CLASS_Stmt
@@ -379,8 +397,26 @@
 #define FLAG_Stmt               KNH_MAGICFLAG(CFLAG_Stmt)
 
 /* ------------------------------------------------------------------------ */
+/* Term */
+#define CLASS_Term              ((knh_class_t)43)
+#define IS_Term(o)              (O_cid(o) == CLASS_Term)
+#define IS_bTerm(o)             (O_bcid(o) == CLASS_Term)
+#define TYPE_Term               CLASS_Term
+#define CFLAG_Term              ((knh_flag_t)0)
+#define FLAG_Term               KNH_MAGICFLAG(CFLAG_Term)
+
+/* ------------------------------------------------------------------------ */
+/* StmtExpr */
+#define CLASS_StmtExpr          ((knh_class_t)44)
+#define IS_StmtExpr(o)          (O_cid(o) == CLASS_StmtExpr)
+#define IS_bStmtExpr(o)         (O_bcid(o) == CLASS_StmtExpr)
+#define TYPE_StmtExpr           CLASS_StmtExpr
+#define CFLAG_StmtExpr          ((knh_flag_t)0)
+#define FLAG_StmtExpr           KNH_MAGICFLAG(CFLAG_StmtExpr)
+
+/* ------------------------------------------------------------------------ */
 /* Gamma */
-#define CLASS_Gamma             ((knh_class_t)41)
+#define CLASS_Gamma             ((knh_class_t)45)
 #define IS_Gamma(o)             (O_cid(o) == CLASS_Gamma)
 #define IS_bGamma(o)            (O_bcid(o) == CLASS_Gamma)
 #define TYPE_Gamma              CLASS_Gamma
@@ -389,7 +425,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* BasicBlock */
-#define CLASS_BasicBlock        ((knh_class_t)42)
+#define CLASS_BasicBlock        ((knh_class_t)46)
 #define IS_BasicBlock(o)        (O_cid(o) == CLASS_BasicBlock)
 #define IS_bBasicBlock(o)       (O_bcid(o) == CLASS_BasicBlock)
 #define TYPE_BasicBlock         CLASS_BasicBlock
@@ -398,7 +434,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* KonohaCode */
-#define CLASS_KonohaCode        ((knh_class_t)43)
+#define CLASS_KonohaCode        ((knh_class_t)47)
 #define IS_KonohaCode(o)        (O_cid(o) == CLASS_KonohaCode)
 #define IS_bKonohaCode(o)       (O_bcid(o) == CLASS_KonohaCode)
 #define TYPE_KonohaCode         CLASS_KonohaCode
@@ -407,7 +443,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* Immutable */
-#define CLASS_Immutable         ((knh_class_t)44)
+#define CLASS_Immutable         ((knh_class_t)48)
 #define IS_Immutable(o)         (O_cid(o) == CLASS_Immutable)
 #define IS_bImmutable(o)        (O_bcid(o) == CLASS_Immutable)
 #define TYPE_Immutable          CLASS_Immutable
@@ -416,7 +452,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* KindOf */
-#define CLASS_KindOf            ((knh_class_t)45)
+#define CLASS_KindOf            ((knh_class_t)49)
 #define IS_KindOf(o)            (O_cid(o) == CLASS_KindOf)
 #define IS_bKindOf(o)           (O_bcid(o) == CLASS_KindOf)
 #define TYPE_KindOf             CLASS_KindOf
@@ -425,7 +461,7 @@
 
 /* ------------------------------------------------------------------------ */
 /* Tdynamic */
-#define CLASS_Tdynamic          ((knh_class_t)46)
+#define CLASS_Tdynamic          ((knh_class_t)50)
 #define IS_Tdynamic(o)          (O_cid(o) == CLASS_Tdynamic)
 #define IS_bTdynamic(o)         (O_bcid(o) == CLASS_Tdynamic)
 #define TYPE_Tdynamic           CLASS_Tdynamic
@@ -473,7 +509,11 @@
 #define USE_STRUCT_Context
 #define USE_STRUCT_Assurance
 #define USE_STRUCT_Token
+#define USE_STRUCT_Sugar
+#define USE_STRUCT_Expr
 #define USE_STRUCT_Stmt
+#define USE_STRUCT_Term
+#define USE_STRUCT_StmtExpr
 #define USE_STRUCT_Gamma
 #define USE_STRUCT_BasicBlock
 #define USE_STRUCT_KonohaCode
@@ -490,64 +530,64 @@
 
 /* ------------------------------------------------------------------------ */
 /* IteratorVar */
-#define CLASS_IteratorVar       ((knh_class_t)47)
+#define CLASS_IteratorVar       ((knh_class_t)51)
 #define IS_IteratorVar(o)       (O_cid(o) == CLASS_IteratorVar)
 #define TYPE_IteratorVar        CLASS_IteratorVar
 
 /* ------------------------------------------------------------------------ */
 /* DataITR */
-#define CLASS_DataITR           ((knh_class_t)48)
+#define CLASS_DataITR           ((knh_class_t)52)
 #define IS_DataITR(o)           (O_cid(o) == CLASS_DataITR)
 #define TYPE_DataITR            CLASS_DataITR
 
 /* ------------------------------------------------------------------------ */
 /* FuncEach */
-#define CLASS_FuncEach          ((knh_class_t)49)
+#define CLASS_FuncEach          ((knh_class_t)53)
 #define IS_FuncEach(o)          (O_cid(o) == CLASS_FuncEach)
 #define TYPE_FuncEach           CLASS_FuncEach
 
 /* ------------------------------------------------------------------------ */
 /* FuncWhere */
-#define CLASS_FuncWhere         ((knh_class_t)50)
+#define CLASS_FuncWhere         ((knh_class_t)54)
 #define IS_FuncWhere(o)         (O_cid(o) == CLASS_FuncWhere)
 #define TYPE_FuncWhere          CLASS_FuncWhere
 
 /* ------------------------------------------------------------------------ */
 /* RangeInt */
-#define CLASS_RangeInt          ((knh_class_t)51)
+#define CLASS_RangeInt          ((knh_class_t)55)
 #define IS_RangeInt(o)          (O_cid(o) == CLASS_RangeInt)
 #define TYPE_RangeInt           CLASS_RangeInt
 
 /* ------------------------------------------------------------------------ */
 /* ArrayInt */
-#define CLASS_ArrayInt          ((knh_class_t)52)
+#define CLASS_ArrayInt          ((knh_class_t)56)
 #define IS_ArrayInt(o)          (O_cid(o) == CLASS_ArrayInt)
 #define TYPE_ArrayInt           CLASS_ArrayInt
 
 /* ------------------------------------------------------------------------ */
 /* CmprT1 */
-#define CLASS_CmprT1            ((knh_class_t)53)
+#define CLASS_CmprT1            ((knh_class_t)57)
 #define IS_CmprT1(o)            (O_cid(o) == CLASS_CmprT1)
 #define TYPE_CmprT1             CLASS_CmprT1
 
 /* ------------------------------------------------------------------------ */
 /* StringARRAY */
-#define CLASS_StringARRAY       ((knh_class_t)54)
+#define CLASS_StringARRAY       ((knh_class_t)58)
 #define IS_StringARRAY(o)       (O_cid(o) == CLASS_StringARRAY)
 #define TYPE_StringARRAY        CLASS_StringARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringITR */
-#define CLASS_StringITR         ((knh_class_t)55)
+#define CLASS_StringITR         ((knh_class_t)59)
 #define IS_StringITR(o)         (O_cid(o) == CLASS_StringITR)
 #define TYPE_StringITR          CLASS_StringITR
 
 /* ------------------------------------------------------------------------ */
 /* T1ARRAY */
-#define CLASS_T1ARRAY           ((knh_class_t)56)
+#define CLASS_T1ARRAY           ((knh_class_t)60)
 #define IS_T1ARRAY(o)           (O_cid(o) == CLASS_T1ARRAY)
 #define TYPE_T1ARRAY            CLASS_T1ARRAY
-#define K_CLASS_INITSIZE                58
+#define K_CLASS_INITSIZE                62
 
 /* ------------------------------------------------------------------------ */
 /* FLAG */
@@ -715,33 +755,33 @@
 #define FLAG_Assurance_CheckedIn FLAG_Object_Local1
 #define Assurance_isCheckedIn(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Assurance_CheckedIn))
 #define Assurance_setCheckedIn(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Assurance_CheckedIn,b)
-#define FLAG_Token_BOL ((knh_flag_t)(1<<0))
-#define Token_isBOL(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Token_BOL))
-#define Token_setBOL(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Token_BOL,b)
-#define FLAG_Token_DOT ((knh_flag_t)(1<<1))
-#define Token_isDOT(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Token_DOT))
-#define Token_setDOT(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Token_DOT,b)
-#define FLAG_Token_NWS ((knh_flag_t)(1<<2))
-#define Token_isNWS(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Token_NWS))
-#define Token_setNWS(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Token_NWS,b)
-#define FLAG_Token_ISBOOL ((knh_flag_t)(1<<3))
-#define Token_isISBOOL(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Token_ISBOOL))
-#define Token_setISBOOL(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Token_ISBOOL,b)
-#define FLAG_Token_Getter ((knh_flag_t)(1<<4))
-#define Token_isGetter(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Token_Getter))
-#define Token_setGetter(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Token_Getter,b)
-#define FLAG_Token_Setter ((knh_flag_t)(1<<5))
-#define Token_isSetter(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Token_Setter))
-#define Token_setSetter(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Token_Setter,b)
-#define FLAG_Token_ExceptionType ((knh_flag_t)(1<<6))
-#define Token_isExceptionType(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Token_ExceptionType))
-#define Token_setExceptionType(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Token_ExceptionType,b)
-#define FLAG_Token_Diamond ((knh_flag_t)(1<<7))
-#define Token_isDiamond(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Token_Diamond))
-#define Token_setDiamond(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Token_Diamond,b)
-#define FLAG_Token_MEMO1 ((knh_flag_t)(1<<8))
-#define Token_isMEMO1(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Token_MEMO1))
-#define Token_setMEMO1(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Token_MEMO1,b)
+#define FLAG_Term_BOL ((knh_flag_t)(1<<0))
+#define Term_isBOL(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_BOL))
+#define Term_setBOL(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_BOL,b)
+#define FLAG_Term_DOT ((knh_flag_t)(1<<1))
+#define Term_isDOT(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_DOT))
+#define Term_setDOT(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_DOT,b)
+#define FLAG_Term_NWS ((knh_flag_t)(1<<2))
+#define Term_isNWS(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_NWS))
+#define Term_setNWS(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_NWS,b)
+#define FLAG_Term_ISBOOL ((knh_flag_t)(1<<3))
+#define Term_isISBOOL(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_ISBOOL))
+#define Term_setISBOOL(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_ISBOOL,b)
+#define FLAG_Term_Getter ((knh_flag_t)(1<<4))
+#define Term_isGetter(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_Getter))
+#define Term_setGetter(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_Getter,b)
+#define FLAG_Term_Setter ((knh_flag_t)(1<<5))
+#define Term_isSetter(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_Setter))
+#define Term_setSetter(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_Setter,b)
+#define FLAG_Term_ExceptionType ((knh_flag_t)(1<<6))
+#define Term_isExceptionType(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_ExceptionType))
+#define Term_setExceptionType(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_ExceptionType,b)
+#define FLAG_Term_Diamond ((knh_flag_t)(1<<7))
+#define Term_isDiamond(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_Diamond))
+#define Term_setDiamond(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_Diamond,b)
+#define FLAG_Term_MEMO1 ((knh_flag_t)(1<<8))
+#define Term_isMEMO1(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_MEMO1))
+#define Term_setMEMO1(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_MEMO1,b)
 #define FLAG_Stmt_STOPITR ((knh_flag_t)(1<<0))
 #define Stmt_isSTOPITR(o)  (TFLAG_is(knh_flag_t,DP(o)->flag0,FLAG_Stmt_STOPITR))
 #define Stmt_setSTOPITR(o,b) TFLAG_set(knh_flag_t,DP(o)->flag0,FLAG_Stmt_STOPITR,b)

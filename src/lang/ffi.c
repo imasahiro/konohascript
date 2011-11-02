@@ -29,7 +29,7 @@
 
 #include"commons.h"
 #include"../../include/konoha1/konohalang.h"
-#define Token_fn(ctx, tk) FN_UNMASK(Token_fnq(ctx, tk))
+#define Term_fn(ctx, tk) FN_UNMASK(Term_fnq(ctx, tk))
 
 /* ************************************************************************ */
 
@@ -1122,11 +1122,11 @@ static void dumpBinary(unsigned char *ptr, size_t size)
 //const char* TT__(knh_term_t tt);
 ///* ------------------------------------------------------------------------ */
 //
-//void Method_linkFFI(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmt)
+//void Method_linkFFI(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmt)
 //{
 //	int argc = 0;
 //	knh_ffiparam_t params[16] = {};
-//	knh_Token_t *tkF = NULL;
+//	knh_Term_t *tkF = NULL;
 //	if(STT_(stmt) != STT_FUNCCALL) goto L_ERROR;
 //	tkF = tkNN(stmt, 0);
 //	DBG_P("TT=%s, '%s'", TT__(tkF->tt), S_totext(tkF->text));

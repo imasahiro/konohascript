@@ -2593,12 +2593,15 @@ static const knh_ClassDef_t AssuranceDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
 };
 
-/* --------------- */
-/* Token */
 
-static void Token_init(CTX ctx, knh_RawPtr_t *o)
+#include "../sugar/struct.h"
+
+/* --------------- */
+/* Term */
+
+static void Term_init(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_Token_t *tk = (knh_Token_t*)o;
+	knh_Term_t *tk = (knh_Term_t*)o;
 	tk->tt        =  TT_ASIS;
 	tk->type      =  TYPE_var;
 	tk->uline     =   0;
@@ -2607,23 +2610,23 @@ static void Token_init(CTX ctx, knh_RawPtr_t *o)
 	KNH_INITv(tk->data, KNH_NULL);
 }
 
-static void Token_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
+static void Term_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
-	knh_Token_t *tk = (knh_Token_t*)o;
+	knh_Term_t *tk = (knh_Term_t*)o;
 	KNH_ADDREF(ctx, tk->data);
 	KNH_SIZEREF(ctx);
 }
 
 const char* TT__(knh_term_t tt);
 
-static void Token_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
+static void Term_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
-	knh_Token_t *tk = (knh_Token_t*)o;
+	knh_Term_t *tk = (knh_Term_t*)o;
 	knh_term_t tt = tk->tt;
 	if(tt < TT_NUM) {
 		knh_write_ascii(ctx, w, TT__(tt));
 		if(tt == TT_PARENTHESIS || tt == TT_BRACE || tt == TT_BRANCET) {
-			if(IS_Token(tk->data)) {
+			if(IS_Term(tk->data)) {
 				knh_write_InObject(ctx, w, tk->data, level);
 			}
 			else if(IS_Array(tk->data)) {
@@ -2657,12 +2660,12 @@ static void Token_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 		case TT_URN: case TT_TLINK:
 			knh_write_utf8(ctx, w, t, hasUTF8); break;
 		case TT_NAME: case TT_UNAME:
-			if(Token_isDOT(tk)) knh_putc(ctx, w, '.');
-			if(Token_isGetter(tk)) knh_write(ctx, w, STEXT("get_"));
-			else if(Token_isSetter(tk)) knh_write(ctx, w, STEXT("set_"));
-			else if(Token_isISBOOL(tk)) knh_write(ctx, w, STEXT("is_"));
+			if(Term_isDOT(tk)) knh_putc(ctx, w, '.');
+			if(Term_isGetter(tk)) knh_write(ctx, w, STEXT("get_"));
+			else if(Term_isSetter(tk)) knh_write(ctx, w, STEXT("set_"));
+			else if(Term_isISBOOL(tk)) knh_write(ctx, w, STEXT("is_"));
 			knh_write(ctx, w, t); //break;
-			if(Token_isExceptionType(tk)) {
+			if(Term_isExceptionType(tk)) {
 				knh_write(ctx, w, STEXT("!!"));
 			}
 			break;
@@ -2698,7 +2701,7 @@ static void Token_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 			if(IS_FMTdump(level) || !IS_String(tk->data)) {
 				knh_write_ascii(ctx, w, TT__(tt));
 				knh_putc(ctx, w, '=');
-				if(IS_Token(tk->data)) {
+				if(IS_Term(tk->data)) {
 					knh_write_ifmt(ctx, w, K_INT_FMT, (knh_int_t)tk->index);
 				}
 				else {
@@ -2711,7 +2714,7 @@ static void Token_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 		case TT_ERR:
 			knh_write(ctx, w, t); break;
 		default:
-			fprintf(stderr, "DEFINE %s in Token_stmt", TT__(tt));
+			fprintf(stderr, "DEFINE %s in Term_stmt", TT__(tt));
 		}
 	}
 	if(IS_FMTdump(level)) {
@@ -2725,21 +2728,21 @@ static void Token_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	}
 }
 
-static const knh_ClassDef_t TokenDef = {
-	Token_init, TODO_initcopy, Token_reftrace, DEFAULT_free,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Token_p,
+static const knh_ClassDef_t TermDef = {
+	Term_init, TODO_initcopy, Term_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Term_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
-	"Token", CFLAG_Token, 0, NULL,
+	"Term", CFLAG_Term, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
 };
 
 /* --------------- */
 /* Stmt */
 
-static void Stmt_init(CTX ctx, knh_RawPtr_t *o)
+static void StmtExpr_init(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
+	knh_StmtExpr_t *stmt = (knh_StmtExpr_t*)o;
 	knh_StmtEX_t *b = knh_bodymalloc(ctx, Stmt);
 	o->rawptr = b;
 	SP(stmt)->uline = 0;
@@ -2754,10 +2757,10 @@ static void Stmt_init(CTX ctx, knh_RawPtr_t *o)
 	b->nextNULL = NULL;
 }
 
-static void Stmt_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
+static void StmtExpr_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
-	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
-	knh_StmtEX_t *b = DP((knh_Stmt_t*)o);
+	knh_StmtExpr_t *stmt = (knh_StmtExpr_t*)o;
+	knh_StmtEX_t *b = DP((knh_StmtExpr_t*)o);
 	KNH_ADDREF(ctx, (b->metaDictCaseMap));
 	KNH_ADDNNREF(ctx, (b->nextNULL));
 	if(stmt->terms != NULL) {
@@ -2770,10 +2773,10 @@ static void Stmt_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void Stmt_free(CTX ctx, knh_RawPtr_t *o)
+static void StmtExpr_free(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
-	knh_StmtEX_t *b = DP((knh_Stmt_t*)o);
+	knh_StmtExpr_t *stmt = (knh_StmtExpr_t*)o;
+	knh_StmtEX_t *b = DP((knh_StmtExpr_t*)o);
 	if(stmt->terms != NULL) {
 		KNH_FREE(ctx, stmt->terms, sizeof(knh_Term_t*) * b->capacity);
 		stmt->terms = NULL;
@@ -2781,9 +2784,9 @@ static void Stmt_free(CTX ctx, knh_RawPtr_t *o)
 	knh_bodyfree(ctx, b, Stmt);
 }
 
-static void Stmt_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
+static void StmtExpr_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
-	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
+	knh_StmtExpr_t *stmt = (knh_StmtExpr_t*)o;
 	knh_intptr_t i, size;
 	L_TAILCALLED:;
 	knh_putc(ctx, w, '(');
@@ -2825,12 +2828,12 @@ static void Stmt_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	}
 }
 
-static const knh_ClassDef_t StmtDef = {
-	Stmt_init, TODO_initcopy, Stmt_reftrace, Stmt_free,
-	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Stmt_p,
+static const knh_ClassDef_t StmtExprDef = {
+	StmtExpr_init, TODO_initcopy, StmtExpr_reftrace, StmtExpr_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, StmtExpr_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
-	"Stmt", CFLAG_Stmt, sizeof(knh_StmtEX_t), NULL,
+	"StmtExpr", CFLAG_StmtExpr, sizeof(knh_StmtEX_t), NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
 };
 
@@ -3069,7 +3072,7 @@ static void knh_setDefaultValues(CTX ctx)
 //	knh_setClassDefaultValue(ctx, CLASS_System, UPCAST(ctx->sys), NULL);
 	knh_loadSystemDriver(ctx, ctx->share->rootns);
 	{
-		knh_Token_t *tk = KNH_TNULL(Token);
+		knh_Term_t *tk = KNH_TNULL(Term);
 		tk->tt = TT_FVAR;
 		(tk)->index = 0;
 	}
