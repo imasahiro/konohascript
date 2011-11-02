@@ -442,6 +442,17 @@ void knh_Array_clear(CTX ctx, knh_Array_t *a, size_t n);
 knh_Array_t* new_Array0(CTX ctx, size_t capacity);
 void knh_Array_initAPI(CTX ctx, knh_Array_t *a);
 void knh_Iterator_close(CTX ctx, knh_Iterator_t *it);
+void *bm_malloc(CTX ctx, knh_gcinfo_t *gcinfo, size_t n);
+void bm_free(CTX ctx, knh_gcinfo_t *gcinfo, void *ptr, size_t n);
+void *bm_realloc(CTX ctx, knh_gcinfo_t *gcinfo, void *ptr, size_t os, size_t ns);
+void knh_share_initArena(CTX ctx, knh_share_t *share);
+void knh_share_freeArena(CTX ctx, knh_share_t *share);
+void knh_initFirstObjectArena(CTX ctx);
+void knh_ObjectArena_finalfree(CTX ctx, knh_ObjectArenaTBL_t *oat, size_t oatSize);
+knh_bool_t knh_isObject(CTX ctx, knh_Object_t *o);
+knh_Object_t *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct);
+knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct);
+void TR_NEW(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct);
 size_t k_goodsize(size_t ss);
 size_t k_goodsize2(size_t ss, size_t wsize);
 const knh_dim_t *new_dim(CTX ctx, size_t capacity, size_t wsize);
@@ -792,7 +803,7 @@ int knh_thread_key_create(knh_thread_key_t *key);
 int thread_setspecific(knh_thread_key_t key, const void *data);
 void* knh_thread_getspecific(knh_thread_key_t key);
 int knh_thread_key_delete(knh_thread_key_t key);
-void knh_initStreamFuncData(CTX ctx, const knh_LoaderAPI_t *kapi);
+void knh_initSugarFuncData(CTX ctx, const knh_LoaderAPI_t *kapi);
 
 #ifdef __cplusplus
 }

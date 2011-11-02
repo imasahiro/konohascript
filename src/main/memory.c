@@ -824,6 +824,7 @@ static void DBG_checkOnArena(CTX ctx, void *used K_TRACEARGV)
 //#define DBG_UNOBJdec(ctx, N)
 #endif
 
+#ifndef K_USING_BMGC
 #define K_MEMBLOCKPAGE			64
 #define K_MEMBLOCKSIZE			(K_MEMBLOCKPAGE * K_PAGESIZE)
 #define GET_PAGECTX(page)		((knh_context_t *)((page)->h.ctx))
@@ -853,6 +854,7 @@ static knh_Object_t* get_memBlock(CTX ctx, size_t mbsize)
 	WCTX(ctx)->freeObjectListSize += K_PAGEOBJECTSIZE * K_MEMBLOCKPAGE;
 	return p;
 }
+#endif
 
 #define CHECK_UNUSED_OBJECT(ctx) { \
 		if(ctx->freeObjectList == NULL) { \
@@ -1337,7 +1339,6 @@ static void gc_sweep(CTX ctx)
 	)
 }
 #endif
-#endif /* K_USING_BMGC */
 
 //#ifndef K_USING_RCGC
 //static void gc_extendObjectArena(CTX ctx)
@@ -1437,6 +1438,7 @@ static void start_the_world(CTX ctx)
 	knh_thread_cond_broadcast(ctx->share->stop_cond);
 	KNH_SYSUNLOCK(ctx);
 }
+#endif /* K_USING_BMGC */
 
 
 #define GCLOCK(ctx)

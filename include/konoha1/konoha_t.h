@@ -808,6 +808,9 @@ typedef struct knh_ClassTBL_t {
 	size_t subclass;
 	size_t count;
 	size_t total;
+#ifdef K_USING_BMGC
+	size_t struct_size;
+#endif
 } knh_ClassTBL_t;
 
 #define C_bcid(c)           ClassTBL(c)->bcid
@@ -893,6 +896,8 @@ struct knh_nameinfo_t { // FIXME
 
 /* ------------------------------------------------------------------------ */
 /* Arena */
+
+typedef void knh_gcinfo_t;
 
 #define K_OPAGE(o)    ((knh_ObjectPage_t*)((((knh_uintptr_t)(o)) / K_PAGESIZE) * K_PAGESIZE))
 #define K_SHIFTPTR(p, size)   ((char*)p + size)

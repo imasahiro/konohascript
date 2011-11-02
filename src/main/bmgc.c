@@ -548,9 +548,9 @@ static inline void do_free(void *ptr, size_t size)
 
 /* bmgc */
 static knh_Object_t *bm_malloc_internal(CTX, GCInfo *gcinfo, size_t n);
-void *bm_malloc(CTX, GCInfo *gcinfo, size_t n);
-void *bm_realloc(CTX ctx, GCInfo *gcinfo, void *ptr, size_t os, size_t ns);
-void bm_free(CTX, GCInfo *gcinfo, void *ptr, size_t n);
+void *bm_malloc(CTX, knh_gcinfo_t *gcinfo, size_t n);
+void *bm_realloc(CTX ctx, knh_gcinfo_t *gcinfo, void *ptr, size_t os, size_t ns);
+void bm_free(CTX, knh_gcinfo_t *gcinfo, void *ptr, size_t n);
 static void BMGC_dump(GCInfo *info);
 static void bitmapMarkingGC(CTX ctx, GCInfo *gcinfo);
 #if GCDEBUG
@@ -1327,12 +1327,12 @@ static void bmgc_gc_mark(CTX ctx, HeapManager *mng, int needsCStackTrace)
     ostack_free(ctx, ostack);
 }
 
-void *bm_malloc(CTX ctx, GCInfo *gcinfo, size_t n)
+void *bm_malloc(CTX ctx, knh_gcinfo_t *gcinfo, size_t n)
 {
     return (void *) bm_malloc_internal(ctx, gcinfo, n);
 }
 
-void bm_free(CTX ctx, GCInfo *gcinfo, void *ptr, size_t n)
+void bm_free(CTX ctx, knh_gcinfo_t *gcinfo, void *ptr, size_t n)
 {
     if (n <= HEAP_KLASS_SIZE_MAX) {
         knh_Object_t *o = (knh_Object_t *) ptr;
@@ -1353,7 +1353,7 @@ void bm_free(CTX ctx, GCInfo *gcinfo, void *ptr, size_t n)
     }
 }
 
-void *bm_realloc(CTX ctx, GCInfo *gcinfo, void *ptr, size_t os, size_t ns)
+void *bm_realloc(CTX ctx, knh_gcinfo_t *gcinfo, void *ptr, size_t os, size_t ns)
 {
     if(os <= K_FASTMALLOC_SIZE) {
         void *newptr = (void *) bm_malloc_internal(ctx, gcinfo, ns);
@@ -1590,6 +1590,16 @@ static inline void bmgc_Object_free(CTX ctx, knh_Object_t *o)
         global_gc_stat.collected[seg->heap_klass] += 1;
 #endif
     }
+}
+
+static bool stop_the_world(CTX ctx)
+{
+	return true;
+}
+
+static bool start_the_world(CTX ctx)
+{
+	return true;
 }
 
 #define gc_init(ctx)         bmgc_gc_init(ctx, (HeapManager *) GCDATA(ctx))
