@@ -81,6 +81,7 @@ set(KONOHA_SRC
 	src/main/system.c
 	src/main/thread.c
 	src/ext/mt19937ar.c
+	src/sugar/sugar.c
 )
 set(KONOHA_BIN src/konoha.c)
 
