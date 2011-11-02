@@ -322,6 +322,7 @@ void xmem_freeall(CTX ctx)
 
 /* ------------------------------------------------------------------------ */
 
+#ifndef K_USING_BMGC
 static void knh_fastmemset(void *p, size_t n, knh_intptr_t M)
 {
 	size_t i, size = n / sizeof(knh_intptr_t);
@@ -332,6 +333,7 @@ static void knh_fastmemset(void *p, size_t n, knh_intptr_t M)
 		np += 8;
 	}
 }
+#endif
 
 /* ------------------------------------------------------------------------ */
 /* [fastmalloc] */
@@ -596,6 +598,7 @@ struct knh_ObjectArenaTBL_t {
 	knh_uintptr_t    *tenure;
 };
 
+#ifndef K_USING_BMGC
 void knh_share_initArena(CTX ctx, knh_share_t *share)
 {
 	share->ObjectArenaTBL = (knh_ObjectArenaTBL_t*)KNH_MALLOC(ctx, K_ARENATBL_INITSIZE * sizeof(knh_ObjectArenaTBL_t));
@@ -723,6 +726,7 @@ knh_bool_t knh_isObject(CTX ctx, knh_Object_t *o)
 	}
 	return 0;
 }
+#endif
 
 /* ------------------------------------------------------------------------ */
 /* [cstack trace] */
@@ -773,13 +777,14 @@ static void knh_dump_cstack(CTX ctx)
 }
 #endif /* K_USING_CTRACE */
 
+#ifdef __GNUC__
+#define C_STACK_TOP(ctx) ((void**) __builtin_frame_address(0))
+#else
+#define C_STACK_TOP(ctx) ((void**) &ctx)
+#endif
 static void cstack_mark(CTX ctx FTRARG)
 {
-#ifdef __GNUC__
-	void** stack  = (void**) __builtin_frame_address(0);
-#else
-	void** stack  = (void**) &ctx;
-#endif
+	void** stack  = C_STACK_TOP(ctx);
 	void** bottom = (void**) ctx->cstack_bottom;
 	for (; stack < bottom; ++stack) {
 		knh_Object_t *o = (knh_Object_t*)(*stack);
@@ -799,6 +804,7 @@ static void cstack_mark(CTX ctx FTRARG)
 //#define DBG_UNOBJinc(ctx, N) ((knh_context_t*)ctx)->freeObjectListSize += N
 //#define DBG_UNOBJdec(ctx, N) ((knh_context_t*)ctx)->freeObjectListSize -= N
 
+#ifndef K_USING_BMGC
 static void DBG_checkOnArena(CTX ctx, void *used K_TRACEARGV)
 {
 	size_t i, size = ctx->share->sizeObjectArenaTBL;
@@ -809,6 +815,7 @@ static void DBG_checkOnArena(CTX ctx, void *used K_TRACEARGV)
 	}
 	TRACE_P("not paged object %p", used);
 }
+#endif
 
 #else/*K_USING_DEBUG*/
 #define DBG_CHECK_ONARENA(ctx, p)
@@ -871,9 +878,10 @@ static knh_Object_t* get_memBlock(CTX ctx, size_t mbsize)
 		/*DBG_UNOBJinc((ctx), 1);*/\
 	}\
 
-#define K_OZERO(o) {\
-		o->h.cTBL = NULL;\
-	}\
+#define K_OZERO(o) do {\
+	o->h.cTBL = NULL;\
+} while(0)
+
 
 #define K_OZERO2(o) {\
 		knh_intptr_t *p = (knh_intptr_t*)o;\
@@ -889,6 +897,7 @@ static knh_Object_t* get_memBlock(CTX ctx, size_t mbsize)
 /* ------------------------------------------------------------------------ */
 /* [hObject] */
 
+#ifndef K_USING_BMGC
 void knh_initFirstObjectArena(CTX ctx)
 {
 	DBG_ASSERT(ctx->freeObjectList == NULL);
@@ -974,26 +983,28 @@ static void knh_Object_finalfree(CTX ctx, knh_Object_t *o)
 	O_set_tenure(o); // uncollectable
 }
 
+#endif /* K_USING_BMGC */
+
 typedef struct knh_ostack_t {
 	knh_Object_t **stack;
 	size_t cur;
 	size_t tail;
 	size_t capacity;
-	size_t log2;
-} knh_ostack_t ;
+	size_t capacity_log2;
+} knh_ostack_t;
 
 static knh_ostack_t *ostack_init(CTX ctx, knh_ostack_t *ostack)
 {
 	ostack->capacity = ctx->queue_capacity;
 	ostack->stack = ctx->queue;
-	ostack->log2  = ctx->queue_log2;
+	ostack->capacity_log2  = ctx->queue_log2;
 	if(ostack->capacity == 0) {
-		ostack->capacity = K_PAGESIZE - 1;
-		ostack->log2 = 12;
+		ostack->capacity_log2 = 12;
+		ostack->capacity = (1 << ostack->capacity_log2) - 1;
 		DBG_ASSERT(K_PAGESIZE == 1 << 12);
-		ostack->stack = (knh_Object_t**)KNH_MALLOC(ctx, sizeof(knh_Object_t*) * (1 << ostack->log2));
+		ostack->stack = (knh_Object_t**)KNH_MALLOC(ctx, sizeof(knh_Object_t*) * (ostack->capacity + 1));
 	}
-	ostack->cur = 0;
+	ostack->cur  = 0;
 	ostack->tail = 0;
 	return ostack;
 }
@@ -1002,10 +1013,10 @@ static void ostack_push(CTX ctx, knh_ostack_t *ostack, knh_Object_t *ref)
 {
 	size_t ntail = (ostack->tail + 1 ) & ostack->capacity;
 	if(unlikely(ntail == ostack->cur)) {
-		size_t capacity = 1 << ostack->log2;
+		size_t capacity = 1 << ostack->capacity_log2;
 		ostack->stack = (knh_Object_t**)KNH_REALLOC(ctx, "ostack", ostack->stack, capacity, capacity * 2, sizeof(knh_Object_t*));
-		ostack->log2 += 1;
-		ostack->capacity = (1 << ostack->log2) - 1;
+		ostack->capacity_log2 += 1;
+		ostack->capacity = (1 << ostack->capacity_log2) - 1;
 		ntail = (ostack->tail + 1) & ostack->capacity;
 	}
 	ostack->stack[ostack->tail] = ref;
@@ -1015,10 +1026,6 @@ static void ostack_push(CTX ctx, knh_ostack_t *ostack, knh_Object_t *ref)
 static knh_Object_t *ostack_next(knh_ostack_t *ostack)
 {
 	knh_Object_t *ref = NULL;
-//	if(ostack->cur != ostack->tail) {
-//		ref = ostack->stack[ostack->cur];
-//		ostack->cur = (ostack->cur + 1) % ostack->capacity ;
-//	}
 	if(likely(ostack->cur != ostack->tail)) {
 		ostack->tail -=1;
 		ref = ostack->stack[ostack->tail];
@@ -1032,7 +1039,7 @@ static void ostack_free(CTX ctx, knh_ostack_t *ostack)
 	knh_context_t *wctx = (knh_context_t*)ctx;
 	wctx->queue_capacity = ostack->capacity;
 	wctx->queue = ostack->stack;
-	wctx->queue_log2 = ostack->log2;
+	wctx->queue_log2 = ostack->capacity_log2;
 }
 
 knh_Object_t** knh_ensurerefs(CTX ctx, knh_Object_t** tail, size_t size)
@@ -1051,16 +1058,15 @@ knh_Object_t** knh_ensurerefs(CTX ctx, knh_Object_t** tail, size_t size)
 	}
 	return tail;
 }
-#if defined(K_USING_RCGC)
+
+#ifdef K_USING_RCGC
 static void deref_ostack(CTX ctx, knh_Object_t *ref, knh_ostack_t *ostack)
 {
 	if (knh_Object_RCdec(ref) == 1) {
 		ostack_push(ctx, ostack, ref);
 	}
 }
-#endif
 
-#if defined(K_USING_RCGC)
 void knh_Object_RCfree(CTX ctx, Object *o)
 {
 #define ctx_update_refs(ctx, buf, size) \
@@ -1094,7 +1100,9 @@ void knh_Object_RCsweep(CTX ctx, Object *o)
 		knh_Object_RCfree(ctx, o);
 	}
 }
-#endif/*K_USING_RCGC*/
+#elif defined(K_USING_BMGC)
+#include "bmgc.c"
+#else
 
 static void knh_ObjectObjectArenaTBL_free(CTX ctx, const knh_ObjectArenaTBL_t *oat)
 {
@@ -1290,13 +1298,11 @@ static void gc_sweep(CTX ctx)
 #else/*GNUC*/
 
 #define CLEAR(b,n)     (b &= ~(INDEX2MASK(n)))
-#ifdef __i386__
-#define CTZ(x)    __builtin_ctz(x)
-#else
-#define CTZ(x)    __builtin_ctzll(x)
+#ifndef CTZ
+#define CTZ(x)    __builtin_ctzl(x)
 #endif
 
-static void gc_sweep(CTX ctx) // ide' ultra faster sweep
+static void gc_sweep(CTX ctx)
 {
 	knh_ObjectArenaTBL_t *oat = ctx->share->ObjectArenaTBL;
 	size_t collected = 0, moved = 0, atindex, size = ctx->share->sizeObjectArenaTBL;
@@ -1331,6 +1337,7 @@ static void gc_sweep(CTX ctx) // ide' ultra faster sweep
 	)
 }
 #endif
+#endif /* K_USING_BMGC */
 
 //#ifndef K_USING_RCGC
 //static void gc_extendObjectArena(CTX ctx)
