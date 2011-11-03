@@ -221,8 +221,9 @@ static size_t addBlock(CTX ctx, tenv_t *tenv, size_t pos)
 
 static void addSymbol(CTX ctx, tenv_t *tenv, size_t s, size_t e)
 {
+	DBG_P("line='%s', s=%d, e=%d", tenv->line, s, e);
 	if(s < e) {
-		knh_String_t *text = new_String2(ctx, CLASS_String, (const char*)tenv->line, (e-s), K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS);
+		knh_String_t *text = new_String2(ctx, CLASS_String, (const char*)tenv->line + s, (e-s), K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS);
 		int ttype = (isupper(S_totext(text)[0])) ? TK_USYMBOL : TK_SYMBOL;
 		addToken(ctx, tenv, new_Token(ctx, ttype, tenv->uline, 0, text));
 	}
@@ -461,7 +462,11 @@ static size_t addWhiteSpace(CTX ctx, tenv_t *tenv, size_t pos)
 	return pos-1;
 }
 
-static size_t addNewLine(CTX ctx, tenv_t *tenv, size_t pos)
+#define _UNFOLD      (1)
+#define _WHITESPACE  (1<<1)
+#define _INDENT      (1<<2)
+
+static size_t addNewLine(CTX ctx, tenv_t *tenv, size_t pos, int pol)
 {
 	int ch, c = 0;
 	while((ch = tenv->line[pos++]) != 0) {
@@ -469,17 +474,16 @@ static size_t addNewLine(CTX ctx, tenv_t *tenv, size_t pos)
 		else if(ch == ' ') { c += 1; }
 		break;
 	}
-	addToken(ctx, tenv, new_Token(ctx, TK_INDENT, tenv->uline, c, TS_EMPTY));
-	return pos;
+	if(FLAG_is(pol, _INDENT)) {
+		addToken(ctx, tenv, new_Token(ctx, TK_INDENT, tenv->uline, c, TS_EMPTY));
+	}
+	return pos - 1;
 }
-
-#define _UNFOLD      (1)
-#define _WHITESPACE  (1<<1)
 
 static void parse(CTX ctx, tenv_t *tenv, int pol)
 {
 	int ch;
-	size_t pos = addNewLine(ctx, tenv, 0), tok_start = 0;
+	size_t pos = addNewLine(ctx, tenv, 0, pol), tok_start = 0;
 
 	L_NEWTOKEN:;
 	tok_start = pos;
@@ -488,7 +492,7 @@ static void parse(CTX ctx, tenv_t *tenv, int pol)
 		case '\n':
 			addSymbol(ctx, tenv, tok_start, pos-1);
 			tenv->uline += 1;
-			pos = addNewLine(ctx, tenv, 0);
+			pos = addNewLine(ctx, tenv, pos, pol);
 			goto L_NEWTOKEN;
 
 		case '{':
@@ -592,21 +596,151 @@ static void parse(CTX ctx, tenv_t *tenv, int pol)
 		} /* switch */
 	}/*while*/
 	addSymbol(ctx, tenv, tok_start, pos-1);
+}
+
+void addTokenSugar(CTX ctx)
+{
 
 }
 
 /* ------------------------------------------------------------------------ */
-
-/**
-typedef struct {
-	knh_uline_t uline;
-	knh_Array_t *list;
-	const knh_uchar_t *line;
-	knh_Bytes_t *buf;
-	int bufhead;
-	int tab;
-} tenv_t;
-**/
+//
+//typedef struct stmtenv {
+//	knh_Array_t *toks;
+//	int cur;
+//	knh_Sugar_t *sugar;
+//	knh_Stmt_t  *stmt;
+//} stmtenv_t;
+//
+//static int skipToken(knh_Array_t *toks, int cur)
+//{
+//	return cur;
+//}
+//
+//int isExpr(CTX ctx, knh_Array_t *toks, int cur, knh_Token_t *pattern)
+//{
+//	if(Expr)
+//}
+//
+//int isSequence(CTX ctx, knh_Array_t *toks, int cur, knh_Token_t *pattern)
+//{
+//
+//}
+//
+//int isSymbol(CTX ctx, knh_Array_t *toks, int cur, knh_Token_t *pattern)
+//{
+//	knh_Token_t *tok = toks->tokens[cur];
+//	knh_bytes_t t = S_tobytes(tok), p = S_tobytes(pattern);
+//	if(t.text[0] == p.text[0] && t.len == p.len) {
+//		return (strncmp(t.text, p.text, t.len) == 0);
+//	}
+//	return 0;
+//}
+//
+////#sugar "if" "(" cond: expr ")" stmt ";"
+//
+//int Sugar_matchLeft(CTX ctx, knh_Sugar_t *sugar, knh_Array_t *toks, int cur)
+//{
+//	size_t i;
+//	int start = cur, isERR;
+//	knh_Array_t *rules = sugar->rules;
+//	for(i = 0; i < knh_Array_size(rules); i++) {
+//		knh_Token_t *pattern = rules->tokens[i];
+//		cur = skipToken(toks, cur);
+//		if(cur != -1) {
+//			switch(pattern->type) {
+//			case PATTERN_KEY:
+//				continue;
+//			case TK_TEXT:
+//				cur = isSymbol(ctx, toks, cur, pattern);
+//				break;
+//			case TK_SYMBOL:
+//				cur = isSequence(ctx, toks, cur, pattern);
+//				break;
+//			default:
+//				// undefined
+//				cur = 0;
+//			}
+//		}
+//		if(cur == 0) {
+//			DBG_P("error");
+//			return start;
+//		}
+//	}
+//	return cur;
+//}
+//
+//Int Sugar.isSymbolPattern(Int pcur)
+//{
+//	Token[] p = this.patterns;
+//	if(p[pcur].type == Token.TEXT) return pcur+1;
+//	return -1;
+//}
+//
+//class Tokens {
+//	Token[] toks;
+//	int cur;
+//};
+//
+//// sugar "for" "(" [ type ] variable ":" expr ")" stmt => ForeachStmt
+//// sugar "if" "(" cond: expr ")" then: stmt [ "else" else: stmt ] => IfStmt
+//// sugar "try" block *[ "catch" "(" exception variable ")" block ] ["finally" block] = TryStmt;
+//
+//Stmt Sugar.matchLeft(Tokens toks, NameSpace ns)
+//{
+//	Tokens[] patterns = this.patterns;
+//	int pcur = 0;
+//	String key = null;
+//	Stmt stmt = null;
+//	while(pcur < patterns.getSize()) {
+//		Token p = patterns[i];
+//		if(checkStmtKey(ctx, pcur)) {
+//			key = p.text;
+//			if(stmt == null) = new Stmt();
+//			pcur += 2;
+//		}
+//		if(checkSymbolPattern(ctx, pcur)) {
+//			String data = parseSymbol(toks, pcur, ns);
+//			if(data == null) {
+//				if(stmt == null) return null;
+//				return stmt.error();
+//			}
+//			key = null; pcur += 1;
+//			continue;
+//		}
+//		if(checkSequencePattern(ctx, pcur)) {
+//			Object data = parseSequence(toks, pcur, ns);
+//			if(data == null) {
+//				if(stmt == null) return null;
+//				return stmt.error();
+//			}
+//			if(stmt != null) {
+//				stmt[key] = data;
+//			}
+//			key = null; pcur = + 2;
+//		}
+//	}
+//}
+//
+//Stmt System.newStmt(Token[] toks, NameSpace ns)
+//{
+//	Sugar[] rules = NameSpace.getStatementRules(toks);
+//	for(rule : rules) {
+//		stmt = rule.matchLeft(toks, ns);
+//		if(stmt != null) break;
+//	}
+//	if(stmt == null) {
+//
+//	}
+//	return stmt;
+//}
+//
+//boolean ExprOp.type(Gamma gma, Int type)
+//{
+//	if(cons[1].type() && cons[2].type()) {
+//
+//	}
+//}
 
 /* ------------------------------------------------------------------------ */
 /* api */
@@ -648,6 +782,24 @@ static KMETHOD System_tokenize(CTX ctx, knh_sfp_t *sfp _RIX)
 	};
 	KNH_SETv(ctx, sfp[K_RIX].o, a);
 	parse(ctx, &tenvbuf, 0);
+}
+
+static KMETHOD Token_getType(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
+	RETURNi_(tok->token);
+}
+
+static KMETHOD Token_getText(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
+	RETURN_(tok->text);
+}
+
+static KMETHOD Token_getLine(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
+	RETURNi_(ULINE_line(tok->uline));
 }
 
 

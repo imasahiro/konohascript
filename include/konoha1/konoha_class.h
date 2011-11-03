@@ -75,21 +75,21 @@ struct knh_ObjectField_t  {
 };
 #endif
 
-#define IS_NULL(o)     ((((o)->h.magicflag) & FLAG_Object_NullObject) == FLAG_Object_NullObject)
-#define IS_NOTNULL(o)  ((((o)->h.magicflag) & FLAG_Object_NullObject) != FLAG_Object_NullObject)
+#define IS_NULL(o)        ((((o)->h.magicflag) & FLAG_Object_NullObject) == FLAG_Object_NullObject)
+#define IS_NOTNULL(o)     ((((o)->h.magicflag) & FLAG_Object_NullObject) != FLAG_Object_NullObject)
 
 #define CLASS_ObjectField   CLASS_Object
-#define O_cid(o)   (((o)->h.cTBL)->cid)
-#define O_bcid(o)  (((o)->h.cTBL)->bcid)
-#define O_cTBL(o)     ((o)->h.cTBL)
-#define O_p1(o)    (((o)->h.cTBL)->p1)
-#define O_p2(o)    (((o)->h.cTBL)->p2)
-#define IS_ObjectField(o)  (((o)->h.cTBL)->bcid == CLASS_Object)
+#define O_cid(o)          (((o)->h.cTBL)->cid)
+#define O_bcid(o)         (((o)->h.cTBL)->bcid)
+#define O_cTBL(o)          ((o)->h.cTBL)
+#define O_p1(o)           (((o)->h.cTBL)->p1)
+#define O_p2(o)           (((o)->h.cTBL)->p2)
+#define IS_ObjectField(o) (((o)->h.cTBL)->bcid == CLASS_Object)
 
-#define new_H(C)         (knh_##C##_t*)new_hObject_(ctx, ClassTBL(CLASS_##C))
+#define new_H(C)          (knh_##C##_t*)new_hObject_(ctx, ClassTBL(CLASS_##C))
 #define new_hObject(ctx, cid)          new_hObject_(ctx, ClassTBL(cid))
-#define new_(C)          (knh_##C##_t*)new_Object_init2(ctx, ClassTBL(CLASS_##C))
-#define new_O(C,cid)     (knh_##C##_t*)new_Object_init2(ctx, ClassTBL(cid))
+#define new_(C)           (knh_##C##_t*)new_Object_init2(ctx, ClassTBL(CLASS_##C))
+#define new_O(C,cid)      (knh_##C##_t*)new_Object_init2(ctx, ClassTBL(cid))
 
 /* ------------------------------------------------------------------------ */
 //## @Immutable class Boolean Object;
@@ -1177,6 +1177,8 @@ struct knh_Stmt_t {
 	};
 };
 #endif
+
+
 
 /* ------------------------------------------------------------------------ */
 //## class Term Object;

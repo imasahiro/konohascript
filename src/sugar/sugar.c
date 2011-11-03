@@ -63,6 +63,9 @@ static knh_IntData_t TokenConstInt[] = {
 static knh_FuncData_t FuncData[] = {
 	FuncData(String_tokenize),
 	FuncData(System_tokenize),
+	FuncData(Token_getLine),
+	FuncData(Token_getText),
+	FuncData(Token_getType),
 	{NULL, NULL},
 };
 

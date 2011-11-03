@@ -496,7 +496,7 @@ typedef struct {
 typedef struct {
 	// Current count of the semaphore.
 	u_int count_;
-	// Number of threads that have called <sema_wait>.  
+	// Number of threads that have called <sema_wait>.
 	u_long waiters_count_;
 	// Serialize access to <count_> and <waiters_count_>.
 	knh_mutex_t lock_;
@@ -531,7 +531,7 @@ typedef void *(*knh_Fthread)(void *);
 #define KNH_SYSUNLOCK(ctx) knh_mutex_unlock(ctx->share->syslock)
 #define KNH_CTXLOCK(ctx)   knh_mutex_lock(ctx->ctxlock)
 #define KNH_CTXUNLOCK(ctx) knh_mutex_unlock(ctx->ctxlock)
- 
+
 /* ------------------------------------------------------------------------ */
 /* Stack Frame Pointer */
 /* ------------------------------------------------------------------------ */
