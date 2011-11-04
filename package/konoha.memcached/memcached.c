@@ -110,7 +110,7 @@ static knh_mapptr_t *memc_init(CTX ctx, size_t init, const char *path, struct kn
 static void memc_reftrace(CTX ctx, knh_mapptr_t *m FTRARG)
 {
 	knh_memcached_t *memc = (knh_memcached_t *)m;
-	KNH_ADDREF(ctx, memc->a);
+	KNH_ADDNNREF(ctx, memc->a);
 	KNH_SIZEREF(ctx);
 }
 
