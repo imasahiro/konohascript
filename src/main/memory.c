@@ -1448,7 +1448,7 @@ void knh_System_gc(CTX ctx, int needsCStackTrace)
 {
 	knh_stat_t *ctxstat = ctx->stat;
 	size_t avail = ctx->freeObjectListSize;
-	knh_uint64_t stime = knh_getTimeMilliSecond(), mtime = 0, ctime = 0, intval;
+	knh_uint64_t start_time = knh_getTimeMilliSecond(), mark_time = 0, sweep_time= 0, intval;
 	if(stop_the_world(ctx)) {
 #ifdef K_USING_CTRACE
 		knh_dump_cstack(ctx);
@@ -1456,19 +1456,19 @@ void knh_System_gc(CTX ctx, int needsCStackTrace)
 		gc_init(ctx);
 		gc_mark(ctx, needsCStackTrace);
 		gc_move(ctx, needsCStackTrace);
-		mtime = knh_getTimeMilliSecond();
+		mark_time = knh_getTimeMilliSecond();
 		start_the_world(ctx);
 	}
 	gc_sweep(ctx);
-	ctime = knh_getTimeMilliSecond();
-	intval = stime - ctxstat->latestGcTime;
+	sweep_time = knh_getTimeMilliSecond();
+	intval = start_time - ctxstat->latestGcTime;
 //	if(knh_isVerboseGC()) {
 //		STAT_(
 		GC_LOG("GC(%dMb): marked=%lu, collected=%lu, avail=%lu=>%lu, interval=%dms, marking_time=%dms, sweeping_time=%dms",
 				ctxstat->usedMemorySize/ MB_,
 				ctxstat->markedObject, ctxstat->collectedObject,
 				avail, ctx->freeObjectListSize,
-				(int)(intval), (int)(mtime-stime), (int)(ctime-mtime));
+				(int)(intval), (int)(mark_time-start_time), (int)(sweep_time-mark_time));
 //		)
 //	}
 	//STAT_(KNH_ASSERT(ctxstat->markedObject == ctxstat->usedObjectSize);)
@@ -1477,10 +1477,10 @@ void knh_System_gc(CTX ctx, int needsCStackTrace)
 //		gc_extendObjectArena(ctx);
 //	})
 	ctxstat->gcCount++;
-	ctxstat->markingTime += (mtime-stime);
-	ctxstat->sweepingTime += (ctime-mtime);
+	ctxstat->markingTime += (mark_time-start_time);
+	ctxstat->sweepingTime += (sweep_time-mark_time);
 	ctxstat->latestGcTime = knh_getTimeMilliSecond();
-	ctxstat->gcTime += (ctxstat->latestGcTime - stime);
+	ctxstat->gcTime += (ctxstat->latestGcTime - start_time);
 }
 
 /* ------------------------------------------------------------------------ */
