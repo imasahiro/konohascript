@@ -412,7 +412,7 @@ static knh_class_t TermPTYPE_cid(CTX ctx, knh_Term_t *tk, knh_class_t bcid)
 	size_t i;
 	int psize = knh_Array_size(tk->list) - 1;
 	for(i = 1; i < knh_Array_size((tk)->list); i++) {
-		knh_Term_t *tkT = (tk)->list->tokens[i];
+		knh_Term_t *tkT = (tk)->list->terms[i];
 		if(TT_(tkT) == TT_DARROW) { i++; break; }
 		knh_type_t ptype = knh_Term_cid(ctx, tkT, CLASS_Tdynamic);
 		if(ptype == TYPE_void) continue;
@@ -423,7 +423,7 @@ static knh_class_t TermPTYPE_cid(CTX ctx, knh_Term_t *tk, knh_class_t bcid)
 	}
 	if(bcid == CLASS_Func) { /* Func<T => T> */
 		if(i < knh_Array_size((tk)->list)) {
-			knh_Term_t *tkT = tk->list->tokens[i];
+			knh_Term_t *tkT = tk->list->terms[i];
 			knh_ParamArray_addReturnType(ctx, pa, knh_Term_cid(ctx, tkT, CLASS_Tdynamic));
 		}
 		if(pa->psize == 0 && pa->rsize == 0) {
@@ -505,7 +505,7 @@ knh_class_t knh_Term_cid(CTX ctx, knh_Term_t *tk, knh_type_t reqt)
 		}
 		case TT_PTYPE: {
 			DBG_ASSERT(IS_Array((tk)->list));
-			knh_Term_t *tkC = tk->list->tokens[0];
+			knh_Term_t *tkC = tk->list->terms[0];
 			knh_class_t bcid = knh_Term_cid(ctx, tkC, CLASS_unknown);
 			if(bcid != CLASS_unknown && C_isGenerics(bcid)) {
 				cid = TermPTYPE_cid(ctx, tk, bcid);

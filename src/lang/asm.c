@@ -2301,7 +2301,7 @@ static void ASM_JUMPLABEL(CTX ctx, knh_StmtExpr_t *stmt, int delta)
 			int i;
 			knh_bytes_t lname = S_tobytes((tkL)->text);
 			for(i = s - 4; i >= 0; i -= 4) {
-				knh_Term_t *tkSTACK = DP(ctx->gma)->lstacks->tokens[i];
+				knh_Term_t *tkSTACK = DP(ctx->gma)->lstacks->terms[i];
 				if(IS_NOTNULL(tkSTACK) && S_equals((tkSTACK)->text, lname)) {
 					lbBLOCK = GammaLabel(ctx,  i + delta);
 					goto L_JUMP;
@@ -2809,8 +2809,8 @@ void Gamma_shiftLocalScope(CTX ctx)
 	size_t i;
 	knh_Array_t *a = DP(ctx->gma)->insts;
 	for(i = 0; i < knh_Array_size(a); i++) {
-		if(IS_Term(a->tokens[i])) {
-			knh_Term_t *tk = a->tokens[i];
+		if(IS_Term(a->terms[i])) {
+			knh_Term_t *tk = a->terms[i];
 			if(TT_(tk) == TT_LVAR) {
 				TT_(tk) = TT_FVAR;
 				tk->index += shift;

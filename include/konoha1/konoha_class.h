@@ -339,16 +339,17 @@ typedef struct knh_Array_t knh_Array_t;
 struct knh_Array_t {
 	knh_hObject_t h;
 	union {
-		knh_ndata_t             *nlist;
-		knh_int_t               *ilist;
-		knh_float_t             *flist;
-		struct knh_Object_t    **list;
-		struct knh_RawPtr_t    **ptrs;
-		struct knh_String_t    **strings;
-		struct knh_Int_t       **ints;
-		struct knh_Method_t    **methods;
-		struct knh_TypeMap_t   **trans;
-		struct knh_Term_t     **tokens;
+		knh_ndata_t                 *nlist;
+		knh_int_t                   *ilist;
+		knh_float_t                 *flist;
+		struct knh_Object_t        **list;
+		struct knh_RawPtr_t        **ptrs;
+		struct knh_String_t        **strings;
+		struct knh_Int_t           **ints;
+		struct knh_Method_t        **methods;
+		struct knh_TypeMap_t       **trans;
+		struct knh_Token_t         **tokens;
+		struct knh_Term_t          **terms;
 		struct knh_StmtExpr_t      **stmts;
 	};
 	size_t size;
@@ -992,7 +993,7 @@ struct knh_View_t {
 //## class NameSpace Object;
 typedef struct knh_NameSpace_t knh_NameSpace_t;
 
-#ifdef K_INTERNAL
+#ifdef USE_STRUCT_NameSpace
 typedef struct knh_NameSpaceEX_t {
 	knh_String_t *nsname;
 	struct knh_DictMap_t*   constDictCaseMapNULL;
@@ -1003,6 +1004,11 @@ typedef struct knh_NameSpaceEX_t {
 	struct knh_DictMap_t*   name2dpiNameDictMapNULL;
 	struct knh_Array_t*     methodsNULL;
 	struct knh_Array_t*     formattersNULL;
+
+	struct knh_DictMap_t*   aliasRulesNULL;
+	struct knh_Array_t*     syntaxRulesNULL;
+	struct knh_DictMap_t*   binaryRulesNULL;
+	struct knh_Array_t*     statementRulesNULL;
 } knh_NameSpaceEX_t;
 
 struct knh_NameSpace_t {
@@ -1093,6 +1099,7 @@ typedef struct knh_Token_t knh_Token_t;
 #define TK_META    11
 #define TK_INDENT  12
 #define TK_WHITESPACE 13
+#define TK_END 14/*dummy*/
 
 #ifdef USE_STRUCT_Token
 struct knh_Token_t {

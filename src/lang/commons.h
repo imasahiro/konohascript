@@ -55,7 +55,7 @@ const char* TT__(knh_term_t tt);
 #define isSINGLEFOREACH(stmt)   (DP(stmt)->size == 3)
 
 #define tmNN(stmt, n)        (stmt)->terms[(n)]
-#define tkNN(stmt, n)        (stmt)->tokens[(n)]
+#define tkNN(stmt, n)        (stmt)->terms[(n)]
 #define stmtNN(stmt, n)      (stmt)->stmts[(n)]
 
 #define Tn__(stmt, n)        TT__(TT_(tmNN(stmt, n)))

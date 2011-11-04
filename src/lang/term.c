@@ -145,7 +145,7 @@ static tkitr_t* ITR_new(knh_Term_t *tk, tkitr_t *buf)
 	buf->meta = -1;
 	buf->c = 0;
 	if(IS_Array((tk)->data)) {
-		buf->ts = ((tk)->list)->tokens;
+		buf->ts = ((tk)->list)->terms;
 		buf->e = knh_Array_size((tk)->list);
 	}
 	else if(IS_Term((tk)->data)) {
@@ -304,7 +304,7 @@ static void TermBlock_add(CTX ctx, knh_Term_t *tkB, knh_Term_t *tk)
 		a = (tkB)->list;
 		DBG_ASSERT(knh_Array_size(a) > 0);
 		prev_idx = knh_Array_size(a)-1;
-		tkPREV = a->tokens[prev_idx];
+		tkPREV = a->terms[prev_idx];
 	}
 
 	if(TT_(tk) == TT_SEMICOLON) {
@@ -346,7 +346,7 @@ static void TermBlock_add(CTX ctx, knh_Term_t *tkB, knh_Term_t *tk)
 	}
 
 	if(prev_idx > 0 && TT_(tk) == TT_CODE && TT_(tkPREV) == TT_DARROW) {
-		knh_Term_t *tkPREV2 = a->tokens[prev_idx - 1];
+		knh_Term_t *tkPREV2 = a->terms[prev_idx - 1];
 		if(TT_(tkPREV2) == TT_PARENTHESIS) {  // (n) => {} ==> function(n) {}
 			TT_(tkPREV) = TT_FUNCTION;
 			knh_Array_swap(ctx, a, prev_idx-1, prev_idx);
@@ -462,7 +462,7 @@ static void TermBlock_add(CTX ctx, knh_Term_t *tkB, knh_Term_t *tk)
 
 static void TermB_setline(knh_Term_t *tkB, knh_uline_t uline)
 {
-	knh_Term_t *tk = IS_Array((tkB)->data) ? (tkB)->list->tokens[knh_Array_size((tkB)->list) - 1] : (tkB)->token;
+	knh_Term_t *tk = IS_Array((tkB)->data) ? (tkB)->list->terms[knh_Array_size((tkB)->list) - 1] : (tkB)->token;
 	tk->uline = uline;
 }
 
@@ -471,7 +471,7 @@ static knh_Term_t *Term_lastChildNULL(knh_Term_t *tkB)
 	if(IS_Array((tkB)->data)) {
 		size_t n = knh_Array_size((tkB)->list);
 		DBG_ASSERT(n>0);
-		return (tkB)->list->tokens[n-1];
+		return (tkB)->list->terms[n-1];
 	}
 	else if(IS_Term((tkB)->data)) {
 		return (tkB)->token;
