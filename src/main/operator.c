@@ -1002,6 +1002,7 @@ static KMETHOD String_match(CTX ctx, knh_sfp_t *sfp _RIX)
 		knh_regmatch_t *p, pmatch[nmatch+1];
 		int i, isGlobalOption = Regex_isGlobalOption(re);
 		a = new_Array(ctx, CLASS_String, nmatch);
+		KNH_SETv(ctx, sfp[2].o, a); WCTX(ctx)->esp = sfp+3; //FIXME
 		do {
 			int res = re->spi->regexec(ctx, re->reg, str, nmatch, pmatch, re->eflags);
 			if(res != 0) {
@@ -1083,6 +1084,7 @@ static KMETHOD String_split(CTX ctx, knh_sfp_t *sfp _RIX)
 		knh_regmatch_t pmatch[K_REGEX_MATCHSIZE+1];
 		if (str < eos) {
 			a = new_Array(ctx, CLASS_String, 0);
+			KNH_SETv(ctx, sfp[2].o, a); WCTX(ctx)->esp = sfp+3; //FIXME
 			while (str <= eos) {
 				int res = re->spi->regexec(ctx, re->reg, str, K_REGEX_MATCHSIZE, pmatch, re->eflags);
 				if (res == 0) {
@@ -1115,6 +1117,7 @@ static KMETHOD String_extract(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_String_t *s = sfp[0].s;
 	knh_Regex_t *re = sfp[1].re;
 	knh_DictMap_t *m = new_DictMap0(ctx, 0, 0/*isCase*/, "regex");
+	KNH_SETv(ctx, sfp[2].o, m); WCTX(ctx)->esp = sfp+3; //FIXME
 	if (IS_NOTNULL(re) && S_size(re->pattern) > 0) {
 		size_t nmatch = re->spi->regnmatchsize(ctx, re->reg);  //
 		const char *str = s->str.text;
