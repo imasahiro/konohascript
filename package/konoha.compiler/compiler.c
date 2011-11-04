@@ -221,9 +221,9 @@ static void kook_FUNCCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
     knh_Method_t *mtd = tkNN(stmt, 0)->mtd;
     knh_class_t cid = Tn_cid(stmt, 1);
-    knh_Stmt_t *stmt0 = stmtNN(stmt, 1);
+    knh_bool_t flag = Stmt_isDYNCALL(stmt);
     knh_Class_t *c = new_Type(ctx, cid);
-    CALL(ctx, COMPILER_API.FUNCCALL, 5, stmt, NN(espidx), mtd, c, stmt0);
+    CALL(ctx, COMPILER_API.FUNCCALL, 5, stmt, NN(espidx), mtd, c, NN(flag));
 }
 
 static void kook_CALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
@@ -294,9 +294,9 @@ static void kook_ALT_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 
 static void kook_TRI_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
-    knh_Stmt_t *stmt1 = stmtNN(stmt, 1);
-    knh_Stmt_t *stmt2 = stmtNN(stmt, 2);
-    knh_Stmt_t *stmt3 = stmtNN(stmt, 3);
+    knh_Stmt_t *stmt1 = stmtNN(stmt, 0);
+    knh_Stmt_t *stmt2 = stmtNN(stmt, 1);
+    knh_Stmt_t *stmt3 = stmtNN(stmt, 2);
     CALL(ctx, COMPILER_API.TRI, 5, stmt, NN(espidx), stmt1, stmt2, stmt3);
 }
 
@@ -359,7 +359,39 @@ KMETHOD Compiler_asmCALL2(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_Class_t *c = new_Type(ctx, cid);
     CALL(ctx, COMPILER_API.CALL, 5, stmt, NN(espidx), tkMTD, mtd, c);
 }
-
+KMETHOD Compiler_gammaHasFIELD(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+    RETURNb_(Gamma_hasFIELD(ctx->gma));
+}
+KMETHOD Compiler_gammaGetThiscid(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+    RETURN_(new_Type(ctx, DP(ctx->gma)->this_cid));
+}
+static KMETHOD Fmethod_empty(CTX ctx, knh_sfp_t *sfp _RIX) {}
+static knh_Method_t* Gamma_getFmt(CTX ctx, knh_class_t cid, knh_methodn_t mn0) 
+{
+    knh_methodn_t mn = mn0; 
+    knh_NameSpace_t *ns = K_GMANS;
+    knh_Method_t *mtd = knh_NameSpace_getFmtNULL(ctx, ns, cid, mn); 
+    if(mtd == NULL) {
+        WarningUndefinedFmt(ctx, cid, mn0);
+        mtd = new_Method(ctx, 0, cid, mn0, Fmethod_empty);
+        KNH_SETv(ctx, DP(mtd)->mp, KNH_TNULL(ParamArray));
+        knh_NameSpace_addFmt(ctx, ns, mtd);
+    }    
+    return mtd; 
+}
+KMETHOD Compiler_getSendMethod(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+    knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[1].o;
+    knh_int_t idx = Int_to(knh_int_t, sfp[2]);
+    knh_class_t cid = Tn_cid(stmt, idx);
+    if (cid == CLASS_String) {
+        RETURN_(knh_NameSpace_getMethodNULL(ctx, K_GMANS, TYPE_OutputStream, MN_send));
+    } else {
+        RETURN_(Gamma_getFmt(ctx, cid, MN__s));
+    }
+}
 KMETHOD Compiler_createSafePointMtd(CTX ctx, knh_sfp_t *sfp _RIX)
 {
     RETURNi_((knh_int_t)knh_checkSafePoint);
