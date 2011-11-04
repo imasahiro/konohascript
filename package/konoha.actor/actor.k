@@ -35,6 +35,7 @@
 using konoha.socket.*;
 using konoha.io.*;
 using konoha.memcached.*;
+using konoha.ntrace.*;
 
 class Actor
 {
@@ -46,6 +47,17 @@ class Actor
 		_name = name;
 		_host = host;
 		_port = port;
+		Socket s = new Socket(host, port);
+		if (s != null) {
+			Map ldata = {};
+			ldata["name"] = name;
+			ldata["host"] = host;
+			ldata["port"] = port;
+			System.ntrace_notice("actor:new", ldata);
+			s.close();
+		} else {
+			throw new Script!!("cannot establish connection to host: " + host + ", port: " + (to String)port);
+		}
 	}
 
 	@Hidden Actor opLINK(String path, NameSpace _) {
