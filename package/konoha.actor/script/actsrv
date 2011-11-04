@@ -26,7 +26,7 @@ void main(String[] actsrv_args)
 			System.eval(actsrv_recvmsg);
 			actsrv_recvmsg = "";
 		} else if (actsrv_line != "") {
-			actsrv_recvmsg += actsrv_line;
+			actsrv_recvmsg += actsrv_line + EOL;
 		}
 	}
 }
