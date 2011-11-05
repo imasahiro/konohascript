@@ -2461,6 +2461,10 @@ static void NameSpace_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 	KNH_ADDNNREF(ctx, b->constDictCaseMapNULL);
 	KNH_ADDNNREF(ctx, b->formattersNULL);
 	KNH_ADDNNREF(ctx, b->methodsNULL);
+	KNH_ADDNNREF(ctx, b->aliasRulesNULL);
+	KNH_ADDNNREF(ctx, b->syntaxRulesNULL);
+	KNH_ADDNNREF(ctx, b->binaryRulesNULL);
+	KNH_ADDNNREF(ctx, b->statementRulesNULL);
 	KNH_SIZEREF(ctx);
 }
 
