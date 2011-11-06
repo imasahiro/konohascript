@@ -44,7 +44,6 @@ knh_NameSpace_t* new_NameSpace(CTX ctx, knh_NameSpace_t *parent)
 {
 	knh_NameSpace_t* ns = new_(NameSpace);
 	DBG_ASSERT(IS_NameSpace(parent));
-	memset(DP(ns), 0, sizeof(knh_NameSpaceEX_t));
 	KNH_INITv(ns->parentNULL, parent);
 	KNH_SETv(ctx, DP(ns)->nsname, DP(parent)->nsname);
 	KNH_SETv(ctx, ns->path, parent->path);

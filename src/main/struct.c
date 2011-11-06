@@ -2433,6 +2433,7 @@ static void NameSpace_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
 	knh_NameSpaceEX_t *b = knh_bodymalloc(ctx, NameSpace);
+	memset(b, 0, sizeof(knh_NameSpaceEX_t));
 	KNH_INITv(b->nsname, TS_main);
 	KNH_INITv(ns->path, ctx->share->cwdPath);
 	ns->parentNULL          = NULL;
