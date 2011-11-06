@@ -37,6 +37,10 @@
 #include<unistd.h>
 #endif
 
+#if defined(HAVE_LIBMEMCACHED)
+#include <libmemcached/memcached.h>
+#endif
+
 /* ************************************************************************ */
 
 #ifdef __cplusplus
@@ -220,6 +224,74 @@ static void opt_a(int mode, const char *optstr)
 #else
 	KNH_DIE("konoha: no available logging system.");
 #endif
+}
+
+#if defined(HAVE_LIBMEMCACHED)
+
+static memcached_st *memc = NULL;
+
+/* added by Wakamori */
+static void memcached_vsyslog(int p, const char *fmt, va_list ap)
+{
+	if(memc != NULL) {
+		char buf[K_LOG_msgSIZE];
+		vsnprintf(buf, sizeof(buf), fmt, ap);
+		const char *key = (const char *)buf;
+		char *ptr = strchr(key, ' ');
+		size_t key_length = ptr - key;
+		const char *value = ptr + 1;
+		size_t value_length = strlen(value);
+
+		memcached_return rc;
+		time_t expire = 30 * 60; /* 30 minutes */
+		rc = memcached_add(memc, key, key_length, value, value_length, expire, 0);
+		DBG_ASSERT(rc == MEMCACHED_SUCCESS);
+	}
+}
+
+/* added by Wakamori */
+static void memcached_syslog(int p, const char *fmt, ...)
+{
+	va_list ap;
+	va_start(ap , fmt);
+	memcached_vsyslog(p, fmt, ap);
+	va_end(ap);
+}
+
+#endif /* defined(HAVE_LIBMEMCACHED) */
+
+/* added by Wakamori */
+static void opt_logcached(int mode, const char *optstr)
+{
+#if defined(HAVE_LIBMEMCACHED)
+	knh_syslog = memcached_syslog;
+	knh_vsyslog = memcached_vsyslog;
+
+	knh_bytes_t host_port = B(optstr);
+	knh_bytes_t host = knh_bytes_head(host_port, ':');
+	knh_int_t port;
+	if (!knh_bytes_parseint(knh_bytes_next(host_port, ':'), &port)) {
+		KNH_DIE("konoha: invalid arguments.");
+	}
+	memc = memcached_create(NULL);
+	char tmp = host.buf[host.len];
+	host.buf[host.len] = '\0';
+
+	memcached_return rc;
+	memcached_server_list_st servers;
+	servers = memcached_server_list_append(NULL, host.text, port, &rc);
+	if (rc != MEMCACHED_SUCCESS) {
+		KNH_DIE("konoha: cannot append a memcached server.");
+	}
+	host.buf[host.len] = tmp;
+	rc = memcached_server_push(memc, servers);
+	if (rc != MEMCACHED_SUCCESS) {
+		KNH_DIE("konoha: cannot push a memcached server.");
+	}
+	memcached_server_list_free(servers);
+#else
+	KNH_DIE("konoha: memcached library is not installed.");
+#endif /* defined(HAVE_LIBMEMCACHED) */
 }
 
 KNHAPI2(int) knh_isVerbose(void)
@@ -750,6 +822,7 @@ static knh_optdata_t optdata[] = {
 	{OPT_("-a"), OPT_NUMBER, opt_a},
 	{OPT_("-l"), OPT_STRING, opt_l},
 	{OPT_("--enforce-security"), OPT_STRING, opt_enforce_security},
+	{OPT_("--logcached"), OPT_STRING, opt_logcached},
 	{OPT_("--verbose:gc"), OPT_EMPTY, opt_verbose_gc},
 	{OPT_("--verbose:lang"), OPT_EMPTY, opt_verbose_lang},
 	{OPT_("--verbose:pref"), OPT_EMPTY, opt_verbose_pref},

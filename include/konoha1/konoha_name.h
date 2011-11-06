@@ -3,7 +3,7 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      729
+#define K_REVISION                      743
 #endif
 #define K_BUILDID                       1183
 
@@ -981,22 +981,23 @@
 #define FN_time         (MN_OPSIZE+115)
 #define FN_tmr          (MN_OPSIZE+116)
 #define FN_to           (MN_OPSIZE+117)
-#define FN_trim         (MN_OPSIZE+118)
-#define FN_typeCheck    (MN_OPSIZE+119)
-#define FN_typecheck    (MN_OPSIZE+119)
-#define FN_u            (MN_OPSIZE+120)
-#define FN_urn          (MN_OPSIZE+121)
-#define FN_v            (MN_OPSIZE+122)
-#define FN_value        (MN_OPSIZE+123)
-#define FN_vargs        (MN_OPSIZE+124)
-#define FN_w            (MN_OPSIZE+125)
-#define FN_write        (MN_OPSIZE+126)
-#define FN_x            (MN_OPSIZE+127)
-#define FN_xdata        (MN_OPSIZE+128)
-#define FN_y            (MN_OPSIZE+129)
-#define FN_year         (MN_OPSIZE+130)
-#define FN_z            (MN_OPSIZE+131)
-#define K_TFIELD_SIZE   132
+#define FN_trace        (MN_OPSIZE+118)
+#define FN_trim         (MN_OPSIZE+119)
+#define FN_typeCheck    (MN_OPSIZE+120)
+#define FN_typecheck    (MN_OPSIZE+120)
+#define FN_u            (MN_OPSIZE+121)
+#define FN_urn          (MN_OPSIZE+122)
+#define FN_v            (MN_OPSIZE+123)
+#define FN_value        (MN_OPSIZE+124)
+#define FN_vargs        (MN_OPSIZE+125)
+#define FN_w            (MN_OPSIZE+126)
+#define FN_write        (MN_OPSIZE+127)
+#define FN_x            (MN_OPSIZE+128)
+#define FN_xdata        (MN_OPSIZE+129)
+#define FN_y            (MN_OPSIZE+130)
+#define FN_year         (MN_OPSIZE+131)
+#define FN_z            (MN_OPSIZE+132)
+#define K_TFIELD_SIZE   133
 
 /* ------------------------------------------------------------------------ */
 /* METHODN */
@@ -1041,6 +1042,7 @@
 #define MN__f           MN_toFMT(FN_f)
 #define MN_getOut       MN_toGETTER(FN_out)
 #define MN__c           MN_toFMT(FN_c)
+#define MN_getTrace     MN_toGETTER(FN_trace)
 #define MN_getTime      MN_toGETTER(FN_time)
 #define MN_proceed      FN_proceed
 #define MN_getIn        MN_toGETTER(FN_in)

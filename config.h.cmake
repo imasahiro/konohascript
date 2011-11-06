@@ -31,6 +31,9 @@
 /* Define to 1 if you have the `pthread' library (-lptread). */
 #cmakedefine HAVE_PTHREAD 1
 
+/* Define to 1 if you have the `memcached' library (-lmemcached). */
+#cmakedefine HAVE_LIBMEMCACHED 1
+
 /* Define to 1 if you have the <limits.h> header file. */
 #cmakedefine HAVE_LIMITS_H 1
 

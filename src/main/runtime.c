@@ -219,6 +219,7 @@ static knh_optdata_t optdata[] = {
 //	{"--utest", OPT_EMPTY, opt_utest},
 	{OPT_("--help"), OPT_EMPTY, opt_help},
 	{OPT_("--enforce-security"), OPT_STRING, opt_dummy},
+	{OPT_("--logcached"), OPT_STRING, opt_dummy},
 	{OPT_("-V"), OPT_NUMBER, opt_version},
 	{OPT_("--version"), OPT_NUMBER, opt_version},
 	{NULL, 0, OPT_EMPTY, NULL}, // END
