@@ -333,6 +333,7 @@ KMETHOD Proc_terminate(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	kill(sp->pid, SIGTERM);
 	raise(SIGCHLD);
+	Proc_free(ctx, (knh_RawPtr_t *)sp);
 }
 
 //## @Native int Proc.wait();
@@ -343,6 +344,7 @@ KMETHOD Proc_wait(CTX ctx, knh_sfp_t *sfp _RIX)
 	pid_t ret = 0;
 	errno = 0;
 	ret = waitpid(sp->pid, &status, 0);
+	Proc_free(ctx, (knh_RawPtr_t *)sp);
 	if (ret == -1) {
 		knh_ldata_t ldata[] = {LOG_END};
 		KNH_NTHROW(ctx, sfp, "System!!", "waitpid", K_PERROR, ldata);
@@ -374,8 +376,7 @@ KMETHOD Proc_isAlive(CTX ctx, knh_sfp_t *sfp _RIX)
 		if (ret != 0) {
 			// process died close fds
 			DBG_P("process already died, close fds");
-			PROC_close(ctx, sp->out);
-			sp->out = IO_NULL;
+			Proc_free(ctx, (knh_RawPtr_t *)sp);
 		}
 		DBG_P("ret=%d", ret);
 		DBG_P("WIFEXITED=%s", WIFEXITED(status) ? "true" : "false");
