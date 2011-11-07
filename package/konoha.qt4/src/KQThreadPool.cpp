@@ -14,7 +14,7 @@ KMETHOD QThreadPool_activeThreadCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThreadPool *  qp = RawPtr_to(QThreadPool *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->activeThreadCount();
 		RETURNi_(ret_v);
 	} else {
@@ -27,7 +27,7 @@ KMETHOD QThreadPool_getExpiryTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThreadPool *  qp = RawPtr_to(QThreadPool *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->expiryTimeout();
 		RETURNi_(ret_v);
 	} else {
@@ -40,7 +40,7 @@ KMETHOD QThreadPool_getMaxThreadCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThreadPool *  qp = RawPtr_to(QThreadPool *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->maxThreadCount();
 		RETURNi_(ret_v);
 	} else {
@@ -53,7 +53,7 @@ KMETHOD QThreadPool_releaseThread(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThreadPool *  qp = RawPtr_to(QThreadPool *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->releaseThread();
 	}
 	RETURNvoid_();
@@ -64,7 +64,7 @@ KMETHOD QThreadPool_reserveThread(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThreadPool *  qp = RawPtr_to(QThreadPool *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->reserveThread();
 	}
 	RETURNvoid_();
@@ -75,7 +75,7 @@ KMETHOD QThreadPool_setExpiryTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThreadPool *  qp = RawPtr_to(QThreadPool *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int expiryTimeout = Int_to(int, sfp[1]);
 		qp->setExpiryTimeout(expiryTimeout);
 	}
@@ -87,7 +87,7 @@ KMETHOD QThreadPool_setMaxThreadCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThreadPool *  qp = RawPtr_to(QThreadPool *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int maxThreadCount = Int_to(int, sfp[1]);
 		qp->setMaxThreadCount(maxThreadCount);
 	}
@@ -99,7 +99,7 @@ KMETHOD QThreadPool_start(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThreadPool *  qp = RawPtr_to(QThreadPool *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRunnable*  runnable = RawPtr_to(QRunnable*, sfp[1]);
 		int priority = Int_to(int, sfp[2]);
 		qp->start(runnable, priority);
@@ -112,7 +112,7 @@ KMETHOD QThreadPool_tryStart(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThreadPool *  qp = RawPtr_to(QThreadPool *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRunnable*  runnable = RawPtr_to(QRunnable*, sfp[1]);
 		bool ret_v = qp->tryStart(runnable);
 		RETURNb_(ret_v);
@@ -126,7 +126,7 @@ KMETHOD QThreadPool_waitForDone(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThreadPool *  qp = RawPtr_to(QThreadPool *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->waitForDone();
 	}
 	RETURNvoid_();
@@ -136,9 +136,8 @@ KMETHOD QThreadPool_waitForDone(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QThreadPool_globalInstance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QThreadPool *  qp = RawPtr_to(QThreadPool *, sfp[0]);
-	if (qp != NULL) {
-		QThreadPool* ret_v = qp->globalInstance();
+	if (true) {
+		QThreadPool* ret_v = QThreadPool::globalInstance();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QThreadPool*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -197,9 +196,23 @@ bool DummyQThreadPool::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQThreadPool::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQThreadPool::connection(QObject *o)
 {
+	QThreadPool *p = dynamic_cast<QThreadPool*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
 }
 
@@ -262,13 +275,9 @@ static void QThreadPool_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QThreadPool_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQThreadPool *qp = (KQThreadPool *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -291,6 +300,8 @@ bool KQThreadPool::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQThreadPool(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

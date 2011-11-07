@@ -82,7 +82,7 @@ KMETHOD QPalette_alternateBase(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->alternateBase();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -97,7 +97,7 @@ KMETHOD QPalette_base(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->base();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -112,7 +112,7 @@ KMETHOD QPalette_brightText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->brightText();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -127,7 +127,7 @@ KMETHOD QPalette_getBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorGroup group = Int_to(QPalette::ColorGroup, sfp[1]);
 		QPalette::ColorRole role = Int_to(QPalette::ColorRole, sfp[2]);
 		const QBrush ret_v = qp->brush(group, role);
@@ -145,7 +145,7 @@ KMETHOD QPalette_getBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorRole role = Int_to(QPalette::ColorRole, sfp[1]);
 		const QBrush ret_v = qp->brush(role);
 		QBrush *ret_v_ = new QBrush(ret_v);
@@ -161,7 +161,7 @@ KMETHOD QPalette_button(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->button();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -176,7 +176,7 @@ KMETHOD QPalette_buttonText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->buttonText();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -191,7 +191,7 @@ KMETHOD QPalette_cacheKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->cacheKey();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -206,7 +206,7 @@ KMETHOD QPalette_getColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorGroup group = Int_to(QPalette::ColorGroup, sfp[1]);
 		QPalette::ColorRole role = Int_to(QPalette::ColorRole, sfp[2]);
 		const QColor ret_v = qp->color(group, role);
@@ -224,7 +224,7 @@ KMETHOD QPalette_getColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorRole role = Int_to(QPalette::ColorRole, sfp[1]);
 		const QColor ret_v = qp->color(role);
 		QColor *ret_v_ = new QColor(ret_v);
@@ -240,7 +240,7 @@ KMETHOD QPalette_getCurrentColorGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorGroup ret_v = qp->currentColorGroup();
 		RETURNi_(ret_v);
 	} else {
@@ -253,7 +253,7 @@ KMETHOD QPalette_dark(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->dark();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -268,7 +268,7 @@ KMETHOD QPalette_highlight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->highlight();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -283,7 +283,7 @@ KMETHOD QPalette_highlightedText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->highlightedText();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -298,7 +298,7 @@ KMETHOD QPalette_isBrushSet(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorGroup cg = Int_to(QPalette::ColorGroup, sfp[1]);
 		QPalette::ColorRole cr = Int_to(QPalette::ColorRole, sfp[2]);
 		bool ret_v = qp->isBrushSet(cg, cr);
@@ -313,7 +313,7 @@ KMETHOD QPalette_isCopyOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPalette  p = *RawPtr_to(const QPalette *, sfp[1]);
 		bool ret_v = qp->isCopyOf(p);
 		RETURNb_(ret_v);
@@ -327,7 +327,7 @@ KMETHOD QPalette_isEqual(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorGroup cg1 = Int_to(QPalette::ColorGroup, sfp[1]);
 		QPalette::ColorGroup cg2 = Int_to(QPalette::ColorGroup, sfp[2]);
 		bool ret_v = qp->isEqual(cg1, cg2);
@@ -342,7 +342,7 @@ KMETHOD QPalette_light(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->light();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -357,7 +357,7 @@ KMETHOD QPalette_link(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->link();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -372,7 +372,7 @@ KMETHOD QPalette_linkVisited(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->linkVisited();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -387,7 +387,7 @@ KMETHOD QPalette_mid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->mid();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -402,7 +402,7 @@ KMETHOD QPalette_midlight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->midlight();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -417,7 +417,7 @@ KMETHOD QPalette_resolve(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPalette  other = *RawPtr_to(const QPalette *, sfp[1]);
 		QPalette ret_v = qp->resolve(other);
 		QPalette *ret_v_ = new QPalette(ret_v);
@@ -433,7 +433,7 @@ KMETHOD QPalette_setBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorRole role = Int_to(QPalette::ColorRole, sfp[1]);
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[2]);
 		qp->setBrush(role, brush);
@@ -447,7 +447,7 @@ KMETHOD QPalette_setBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorGroup group = Int_to(QPalette::ColorGroup, sfp[1]);
 		QPalette::ColorRole role = Int_to(QPalette::ColorRole, sfp[2]);
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[3]);
@@ -461,7 +461,7 @@ KMETHOD QPalette_setColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorGroup group = Int_to(QPalette::ColorGroup, sfp[1]);
 		QPalette::ColorRole role = Int_to(QPalette::ColorRole, sfp[2]);
 		const QColor  color = *RawPtr_to(const QColor *, sfp[3]);
@@ -476,7 +476,7 @@ KMETHOD QPalette_setColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorRole role = Int_to(QPalette::ColorRole, sfp[1]);
 		const QColor  color = *RawPtr_to(const QColor *, sfp[2]);
 		qp->setColor(role, color);
@@ -489,7 +489,7 @@ KMETHOD QPalette_setColorGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorGroup cg = Int_to(QPalette::ColorGroup, sfp[1]);
 		const QBrush  windowText = *RawPtr_to(const QBrush *, sfp[2]);
 		const QBrush  button = *RawPtr_to(const QBrush *, sfp[3]);
@@ -510,7 +510,7 @@ KMETHOD QPalette_setCurrentColorGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorGroup cg = Int_to(QPalette::ColorGroup, sfp[1]);
 		qp->setCurrentColorGroup(cg);
 	}
@@ -522,7 +522,7 @@ KMETHOD QPalette_shadow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->shadow();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -537,7 +537,7 @@ KMETHOD QPalette_text(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->text();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -552,7 +552,7 @@ KMETHOD QPalette_toolTipBase(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->toolTipBase();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -567,7 +567,7 @@ KMETHOD QPalette_toolTipText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->toolTipText();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -582,7 +582,7 @@ KMETHOD QPalette_window(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->window();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -597,7 +597,7 @@ KMETHOD QPalette_windowText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPalette *  qp = RawPtr_to(QPalette *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->windowText();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -607,6 +607,24 @@ KMETHOD QPalette_windowText(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QPalette.parents();
+KMETHOD QPalette_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPalette *qp = RawPtr_to(QPalette*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQPalette::DummyQPalette()
 {
@@ -655,17 +673,28 @@ bool DummyQPalette::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPalette::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQPalette::connection(QObject *o)
 {
-	return;
+	QPalette *p = dynamic_cast<QPalette*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQPalette::KQPalette() : QPalette()
 {
 	self = NULL;
 	dummy = new DummyQPalette();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPalette_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -720,13 +749,9 @@ static void QPalette_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPalette_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPalette *qp = (KQPalette *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -739,15 +764,6 @@ void KQPalette::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQPalette(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QPalette";
-	cdef->free = QPalette_free;
-	cdef->reftrace = QPalette_reftrace;
-	cdef->compareTo = QPalette_compareTo;
 }
 
 static knh_IntData_t QPaletteConstInt[] = {
@@ -783,4 +799,15 @@ static knh_IntData_t QPaletteConstInt[] = {
 DEFAPI(void) constQPalette(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QPaletteConstInt);
 }
+
+
+DEFAPI(void) defQPalette(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QPalette";
+	cdef->free = QPalette_free;
+	cdef->reftrace = QPalette_reftrace;
+	cdef->compareTo = QPalette_compareTo;
+}
+
 

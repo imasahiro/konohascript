@@ -37,7 +37,7 @@ KMETHOD QTextFormat_getBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBrush ret_v = qp->background();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -47,12 +47,12 @@ KMETHOD QTextFormat_getBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//boolean QTextFormat.booleanProperty(int propertyId);
+//boolean QTextFormat.boolProperty(int propertyId);
 KMETHOD QTextFormat_boolProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int propertyId = Int_to(int, sfp[1]);
 		bool ret_v = qp->boolProperty(propertyId);
 		RETURNb_(ret_v);
@@ -66,7 +66,7 @@ KMETHOD QTextFormat_brushProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int propertyId = Int_to(int, sfp[1]);
 		QBrush ret_v = qp->brushProperty(propertyId);
 		QBrush *ret_v_ = new QBrush(ret_v);
@@ -82,7 +82,7 @@ KMETHOD QTextFormat_clearBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearBackground();
 	}
 	RETURNvoid_();
@@ -93,7 +93,7 @@ KMETHOD QTextFormat_clearForeground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearForeground();
 	}
 	RETURNvoid_();
@@ -104,7 +104,7 @@ KMETHOD QTextFormat_clearProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int propertyId = Int_to(int, sfp[1]);
 		qp->clearProperty(propertyId);
 	}
@@ -116,7 +116,7 @@ KMETHOD QTextFormat_colorProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int propertyId = Int_to(int, sfp[1]);
 		QColor ret_v = qp->colorProperty(propertyId);
 		QColor *ret_v_ = new QColor(ret_v);
@@ -132,7 +132,7 @@ KMETHOD QTextFormat_doubleProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int propertyId = Int_to(int, sfp[1]);
 		qreal ret_v = qp->doubleProperty(propertyId);
 		RETURNf_(ret_v);
@@ -146,7 +146,7 @@ KMETHOD QTextFormat_getForeground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBrush ret_v = qp->foreground();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -161,7 +161,7 @@ KMETHOD QTextFormat_hasProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int propertyId = Int_to(int, sfp[1]);
 		bool ret_v = qp->hasProperty(propertyId);
 		RETURNb_(ret_v);
@@ -175,7 +175,7 @@ KMETHOD QTextFormat_intProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int propertyId = Int_to(int, sfp[1]);
 		int ret_v = qp->intProperty(propertyId);
 		RETURNi_(ret_v);
@@ -189,7 +189,7 @@ KMETHOD QTextFormat_isBlockFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isBlockFormat();
 		RETURNb_(ret_v);
 	} else {
@@ -202,7 +202,7 @@ KMETHOD QTextFormat_isCharFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isCharFormat();
 		RETURNb_(ret_v);
 	} else {
@@ -215,7 +215,7 @@ KMETHOD QTextFormat_isFrameFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isFrameFormat();
 		RETURNb_(ret_v);
 	} else {
@@ -228,7 +228,7 @@ KMETHOD QTextFormat_isImageFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isImageFormat();
 		RETURNb_(ret_v);
 	} else {
@@ -241,7 +241,7 @@ KMETHOD QTextFormat_isListFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isListFormat();
 		RETURNb_(ret_v);
 	} else {
@@ -254,7 +254,7 @@ KMETHOD QTextFormat_isTableCellFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isTableCellFormat();
 		RETURNb_(ret_v);
 	} else {
@@ -267,21 +267,8 @@ KMETHOD QTextFormat_isTableFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isTableFormat();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QTextFormat.isValid();
-KMETHOD QTextFormat_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -293,7 +280,7 @@ KMETHOD QTextFormat_getLayoutDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::LayoutDirection ret_v = qp->layoutDirection();
 		RETURNi_(ret_v);
 	} else {
@@ -306,7 +293,7 @@ KMETHOD QTextFormat_lengthProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int propertyId = Int_to(int, sfp[1]);
 		QTextLength ret_v = qp->lengthProperty(propertyId);
 		QTextLength *ret_v_ = new QTextLength(ret_v);
@@ -322,7 +309,7 @@ KMETHOD QTextFormat_merge(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextFormat  other = *RawPtr_to(const QTextFormat *, sfp[1]);
 		qp->merge(other);
 	}
@@ -334,7 +321,7 @@ KMETHOD QTextFormat_getObjectIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->objectIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -347,7 +334,7 @@ KMETHOD QTextFormat_getObjectType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->objectType();
 		RETURNi_(ret_v);
 	} else {
@@ -360,7 +347,7 @@ KMETHOD QTextFormat_penProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int propertyId = Int_to(int, sfp[1]);
 		QPen ret_v = qp->penProperty(propertyId);
 		QPen *ret_v_ = new QPen(ret_v);
@@ -376,7 +363,7 @@ KMETHOD QTextFormat_getProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int propertyId = Int_to(int, sfp[1]);
 		QVariant ret_v = qp->property(propertyId);
 		QVariant *ret_v_ = new QVariant(ret_v);
@@ -392,7 +379,7 @@ KMETHOD QTextFormat_propertyCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->propertyCount();
 		RETURNi_(ret_v);
 	} else {
@@ -405,7 +392,7 @@ KMETHOD QTextFormat_setBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[1]);
 		qp->setBackground(brush);
 	}
@@ -417,7 +404,7 @@ KMETHOD QTextFormat_setForeground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[1]);
 		qp->setForeground(brush);
 	}
@@ -429,7 +416,7 @@ KMETHOD QTextFormat_setLayoutDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::LayoutDirection direction = Int_to(Qt::LayoutDirection, sfp[1]);
 		qp->setLayoutDirection(direction);
 	}
@@ -441,7 +428,7 @@ KMETHOD QTextFormat_setObjectIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		qp->setObjectIndex(index);
 	}
@@ -453,7 +440,7 @@ KMETHOD QTextFormat_setObjectType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int type = Int_to(int, sfp[1]);
 		qp->setObjectType(type);
 	}
@@ -465,7 +452,7 @@ KMETHOD QTextFormat_setProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int propertyId = Int_to(int, sfp[1]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[2]);
 		qp->setProperty(propertyId, value);
@@ -473,12 +460,12 @@ KMETHOD QTextFormat_setProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//String QTextFormat.strProperty(int propertyId);
+//String QTextFormat.stringProperty(int propertyId);
 KMETHOD QTextFormat_stringProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int propertyId = Int_to(int, sfp[1]);
 		QString ret_v = qp->stringProperty(propertyId);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -493,7 +480,7 @@ KMETHOD QTextFormat_toBlockFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextBlockFormat ret_v = qp->toBlockFormat();
 		QTextBlockFormat *ret_v_ = new QTextBlockFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -508,7 +495,7 @@ KMETHOD QTextFormat_toCharFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCharFormat ret_v = qp->toCharFormat();
 		QTextCharFormat *ret_v_ = new QTextCharFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -523,7 +510,7 @@ KMETHOD QTextFormat_toFrameFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextFrameFormat ret_v = qp->toFrameFormat();
 		QTextFrameFormat *ret_v_ = new QTextFrameFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -538,7 +525,7 @@ KMETHOD QTextFormat_toImageFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextImageFormat ret_v = qp->toImageFormat();
 		QTextImageFormat *ret_v_ = new QTextImageFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -553,7 +540,7 @@ KMETHOD QTextFormat_toListFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextListFormat ret_v = qp->toListFormat();
 		QTextListFormat *ret_v_ = new QTextListFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -568,7 +555,7 @@ KMETHOD QTextFormat_toTableCellFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextTableCellFormat ret_v = qp->toTableCellFormat();
 		QTextTableCellFormat *ret_v_ = new QTextTableCellFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -583,7 +570,7 @@ KMETHOD QTextFormat_toTableFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextTableFormat ret_v = qp->toTableFormat();
 		QTextTableFormat *ret_v_ = new QTextTableFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -598,7 +585,7 @@ KMETHOD QTextFormat_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFormat *  qp = RawPtr_to(QTextFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -606,6 +593,24 @@ KMETHOD QTextFormat_type(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QTextFormat.parents();
+KMETHOD QTextFormat_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextFormat *qp = RawPtr_to(QTextFormat*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextFormat::DummyQTextFormat()
 {
@@ -654,17 +659,28 @@ bool DummyQTextFormat::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextFormat::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextFormat::connection(QObject *o)
 {
-	return;
+	QTextFormat *p = dynamic_cast<QTextFormat*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTextFormat::KQTextFormat() : QTextFormat()
 {
 	self = NULL;
 	dummy = new DummyQTextFormat();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -719,13 +735,9 @@ static void QTextFormat_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextFormat *qp = (KQTextFormat *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -738,15 +750,6 @@ void KQTextFormat::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQTextFormat(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTextFormat";
-	cdef->free = QTextFormat_free;
-	cdef->reftrace = QTextFormat_reftrace;
-	cdef->compareTo = QTextFormat_compareTo;
 }
 
 static knh_IntData_t QTextFormatConstInt[] = {
@@ -842,5 +845,179 @@ static knh_IntData_t QTextFormatConstInt[] = {
 
 DEFAPI(void) constQTextFormat(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTextFormatConstInt);
+}
+
+
+DEFAPI(void) defQTextFormat(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextFormat";
+	cdef->free = QTextFormat_free;
+	cdef->reftrace = QTextFormat_reftrace;
+	cdef->compareTo = QTextFormat_compareTo;
+}
+
+//## QTextFormatPageBreakFlags QTextFormatPageBreakFlags.new(int value);
+KMETHOD QTextFormatPageBreakFlags_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextFormat::PageBreakFlag i = Int_to(QTextFormat::PageBreakFlag, sfp[1]);
+	QTextFormat::PageBreakFlags *ret_v = new QTextFormat::PageBreakFlags(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QTextFormatPageBreakFlags QTextFormatPageBreakFlags.and(int mask);
+KMETHOD QTextFormatPageBreakFlags_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextFormat::PageBreakFlags *qp = RawPtr_to(QTextFormat::PageBreakFlags*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QTextFormat::PageBreakFlags ret = ((*qp) & i);
+		QTextFormat::PageBreakFlags *ret_ = new QTextFormat::PageBreakFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextFormatPageBreakFlags QTextFormatPageBreakFlags.iand(QTextFormat::QTextFormatPageBreakFlags other);
+KMETHOD QTextFormatPageBreakFlags_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextFormat::PageBreakFlags *qp = RawPtr_to(QTextFormat::PageBreakFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextFormat::PageBreakFlags *other = RawPtr_to(QTextFormat::PageBreakFlags *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextFormatPageBreakFlags QTextFormatPageBreakFlags.or(QTextFormatPageBreakFlags f);
+KMETHOD QTextFormatPageBreakFlags_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextFormat::PageBreakFlags *qp = RawPtr_to(QTextFormat::PageBreakFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextFormat::PageBreakFlags *f = RawPtr_to(QTextFormat::PageBreakFlags*, sfp[1]);
+		QTextFormat::PageBreakFlags ret = ((*qp) | (*f));
+		QTextFormat::PageBreakFlags *ret_ = new QTextFormat::PageBreakFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextFormatPageBreakFlags QTextFormatPageBreakFlags.ior(QTextFormat::QTextFormatPageBreakFlags other);
+KMETHOD QTextFormatPageBreakFlags_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextFormat::PageBreakFlags *qp = RawPtr_to(QTextFormat::PageBreakFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextFormat::PageBreakFlags *other = RawPtr_to(QTextFormat::PageBreakFlags *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextFormatPageBreakFlags QTextFormatPageBreakFlags.xor(QTextFormatPageBreakFlags f);
+KMETHOD QTextFormatPageBreakFlags_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextFormat::PageBreakFlags *qp = RawPtr_to(QTextFormat::PageBreakFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextFormat::PageBreakFlags *f = RawPtr_to(QTextFormat::PageBreakFlags*, sfp[1]);
+		QTextFormat::PageBreakFlags ret = ((*qp) ^ (*f));
+		QTextFormat::PageBreakFlags *ret_ = new QTextFormat::PageBreakFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextFormatPageBreakFlags QTextFormatPageBreakFlags.ixor(QTextFormat::QTextFormatPageBreakFlags other);
+KMETHOD QTextFormatPageBreakFlags_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextFormat::PageBreakFlags *qp = RawPtr_to(QTextFormat::PageBreakFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextFormat::PageBreakFlags *other = RawPtr_to(QTextFormat::PageBreakFlags *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QTextFormatPageBreakFlags.testFlag(int flag);
+KMETHOD QTextFormatPageBreakFlags_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextFormat::PageBreakFlags *qp = RawPtr_to(QTextFormat::PageBreakFlags *, sfp[0]);
+	if (qp != NULL) {
+		QTextFormat::PageBreakFlag flag = Int_to(QTextFormat::PageBreakFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QTextFormatPageBreakFlags.value();
+KMETHOD QTextFormatPageBreakFlags_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextFormat::PageBreakFlags *qp = RawPtr_to(QTextFormat::PageBreakFlags *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QTextFormatPageBreakFlags_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QTextFormat::PageBreakFlags *qp = (QTextFormat::PageBreakFlags *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QTextFormatPageBreakFlags_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QTextFormat::PageBreakFlags *qp = (QTextFormat::PageBreakFlags *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QTextFormatPageBreakFlags_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QTextFormat::PageBreakFlags*)p1->rawptr);
+//		int v2 = int(*(QTextFormat::PageBreakFlags*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QTextFormat::PageBreakFlags v1 = *(QTextFormat::PageBreakFlags*)p1->rawptr;
+		QTextFormat::PageBreakFlags v2 = *(QTextFormat::PageBreakFlags*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQTextFormatPageBreakFlags(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextFormatPageBreakFlags";
+	cdef->free = QTextFormatPageBreakFlags_free;
+	cdef->reftrace = QTextFormatPageBreakFlags_reftrace;
+	cdef->compareTo = QTextFormatPageBreakFlags_compareTo;
 }
 

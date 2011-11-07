@@ -3,7 +3,7 @@ KMETHOD QScrollArea_focusNextPrevChild(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QScrollArea *  qp = RawPtr_to(QScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool next = Boolean_to(bool, sfp[1]);
 		bool ret_v = qp->focusNextPrevChild(next);
 		RETURNb_(ret_v);
@@ -17,7 +17,7 @@ KMETHOD QScrollArea_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QScrollArea *  qp = RawPtr_to(QScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -38,16 +38,18 @@ KMETHOD QScrollArea_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 
-//int QScrollArea.getAlignment();
+//QtAlignment QScrollArea.getAlignment();
 KMETHOD QScrollArea_getAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QScrollArea *  qp = RawPtr_to(QScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->alignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -56,7 +58,7 @@ KMETHOD QScrollArea_ensureVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QScrollArea *  qp = RawPtr_to(QScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int xmargin = Int_to(int, sfp[3]);
@@ -71,7 +73,7 @@ KMETHOD QScrollArea_ensureWidgetVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QScrollArea *  qp = RawPtr_to(QScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  childWidget = RawPtr_to(QWidget*, sfp[1]);
 		int xmargin = Int_to(int, sfp[2]);
 		int ymargin = Int_to(int, sfp[3]);
@@ -80,13 +82,13 @@ KMETHOD QScrollArea_ensureWidgetVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//void QScrollArea.setAlignment(int arg0);
+//void QScrollArea.setAlignment(QtAlignment arg0);
 KMETHOD QScrollArea_setAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QScrollArea *  qp = RawPtr_to(QScrollArea *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment arg0 = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(arg0, Qt::Alignment, sfp[1]);
 		qp->setAlignment(arg0);
 	}
 	RETURNvoid_();
@@ -97,7 +99,7 @@ KMETHOD QScrollArea_setWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QScrollArea *  qp = RawPtr_to(QScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->setWidget(widget);
 	}
@@ -109,7 +111,7 @@ KMETHOD QScrollArea_setWidgetResizable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QScrollArea *  qp = RawPtr_to(QScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool resizable = Boolean_to(bool, sfp[1]);
 		qp->setWidgetResizable(resizable);
 	}
@@ -121,7 +123,7 @@ KMETHOD QScrollArea_takeWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QScrollArea *  qp = RawPtr_to(QScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->takeWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -135,7 +137,7 @@ KMETHOD QScrollArea_getWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QScrollArea *  qp = RawPtr_to(QScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->widget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -149,7 +151,7 @@ KMETHOD QScrollArea_getWidgetResizable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QScrollArea *  qp = RawPtr_to(QScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->widgetResizable();
 		RETURNb_(ret_v);
 	} else {
@@ -208,9 +210,23 @@ bool DummyQScrollArea::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQScrollArea::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractScrollArea::reftrace(ctx, p, tail_);
+}
 
 void DummyQScrollArea::connection(QObject *o)
 {
+	QScrollArea *p = dynamic_cast<QScrollArea*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractScrollArea::connection(o);
 }
 
@@ -273,13 +289,9 @@ static void QScrollArea_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QScrollArea_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQScrollArea *qp = (KQScrollArea *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -302,6 +314,8 @@ bool KQScrollArea::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQScrollArea(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

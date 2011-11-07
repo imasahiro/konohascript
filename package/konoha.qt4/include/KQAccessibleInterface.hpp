@@ -11,6 +11,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -19,7 +20,7 @@ class KQAccessibleInterface : public QAccessibleInterface {
 public:
 	knh_RawPtr_t *self;
 	DummyQAccessibleInterface *dummy;
-	KQAccessibleInterface();
+
 	void setSelf(knh_RawPtr_t *ptr);
 };
 

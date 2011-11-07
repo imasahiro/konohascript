@@ -3,7 +3,7 @@ KMETHOD QScrollBar_event(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QScrollBar *  qp = RawPtr_to(QScrollBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEvent*  event = RawPtr_to(QEvent*, sfp[1]);
 		bool ret_v = qp->event(event);
 		RETURNb_(ret_v);
@@ -17,7 +17,7 @@ KMETHOD QScrollBar_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QScrollBar *  qp = RawPtr_to(QScrollBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -102,9 +102,23 @@ bool DummyQScrollBar::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQScrollBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractSlider::reftrace(ctx, p, tail_);
+}
 
 void DummyQScrollBar::connection(QObject *o)
 {
+	QScrollBar *p = dynamic_cast<QScrollBar*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractSlider::connection(o);
 }
 
@@ -167,13 +181,9 @@ static void QScrollBar_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QScrollBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQScrollBar *qp = (KQScrollBar *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -196,6 +206,8 @@ bool KQScrollBar::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQScrollBar(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

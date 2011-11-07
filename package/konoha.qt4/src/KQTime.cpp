@@ -28,7 +28,7 @@ KMETHOD QTime_addMSecs(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ms = Int_to(int, sfp[1]);
 		QTime ret_v = qp->addMSecs(ms);
 		QTime *ret_v_ = new QTime(ret_v);
@@ -44,7 +44,7 @@ KMETHOD QTime_addSecs(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int s = Int_to(int, sfp[1]);
 		QTime ret_v = qp->addSecs(s);
 		QTime *ret_v_ = new QTime(ret_v);
@@ -60,7 +60,7 @@ KMETHOD QTime_elapsed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->elapsed();
 		RETURNi_(ret_v);
 	} else {
@@ -73,37 +73,11 @@ KMETHOD QTime_hour(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->hour();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
-	}
-}
-
-////boolean QTime.isNull();
-KMETHOD QTime_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QTime.isValid();
-KMETHOD QTime_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
 	}
 }
 
@@ -112,7 +86,7 @@ KMETHOD QTime_minute(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->minute();
 		RETURNi_(ret_v);
 	} else {
@@ -125,7 +99,7 @@ KMETHOD QTime_msec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->msec();
 		RETURNi_(ret_v);
 	} else {
@@ -138,7 +112,7 @@ KMETHOD QTime_msecsTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTime  t = *RawPtr_to(const QTime *, sfp[1]);
 		int ret_v = qp->msecsTo(t);
 		RETURNi_(ret_v);
@@ -152,7 +126,7 @@ KMETHOD QTime_restart(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->restart();
 		RETURNi_(ret_v);
 	} else {
@@ -165,7 +139,7 @@ KMETHOD QTime_second(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->second();
 		RETURNi_(ret_v);
 	} else {
@@ -178,7 +152,7 @@ KMETHOD QTime_secsTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTime  t = *RawPtr_to(const QTime *, sfp[1]);
 		int ret_v = qp->secsTo(t);
 		RETURNi_(ret_v);
@@ -192,7 +166,7 @@ KMETHOD QTime_setHMS(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int h = Int_to(int, sfp[1]);
 		int m = Int_to(int, sfp[2]);
 		int s = Int_to(int, sfp[3]);
@@ -209,7 +183,7 @@ KMETHOD QTime_start(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->start();
 	}
 	RETURNvoid_();
@@ -220,7 +194,7 @@ KMETHOD QTime_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString format = String_to(const QString, sfp[1]);
 		QString ret_v = qp->toString(format);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -236,7 +210,7 @@ KMETHOD QTime_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DateFormat format = Int_to(Qt::DateFormat, sfp[1]);
 		QString ret_v = qp->toString(format);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -250,9 +224,8 @@ KMETHOD QTime_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTime_currentTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
-		QTime ret_v = qp->currentTime();
+	if (true) {
+		QTime ret_v = QTime::currentTime();
 		QTime *ret_v_ = new QTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -265,11 +238,10 @@ KMETHOD QTime_currentTime(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTime_fromString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString string = String_to(const QString, sfp[1]);
 		Qt::DateFormat format = Int_to(Qt::DateFormat, sfp[2]);
-		QTime ret_v = qp->fromString(string, format);
+		QTime ret_v = QTime::fromString(string, format);
 		QTime *ret_v_ = new QTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -283,11 +255,10 @@ KMETHOD QTime_fromString(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTime_fromString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString string = String_to(const QString, sfp[1]);
 		const QString format = String_to(const QString, sfp[2]);
-		QTime ret_v = qp->fromString(string, format);
+		QTime ret_v = QTime::fromString(string, format);
 		QTime *ret_v_ = new QTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -296,24 +267,24 @@ KMETHOD QTime_fromString(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 */
-/*
-////boolean QTime.isValid(int h, int m, int s, int ms);
-KMETHOD QTime_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
+//Array<String> QTime.parents();
+KMETHOD QTime_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTime *  qp = RawPtr_to(QTime *, sfp[0]);
+	QTime *qp = RawPtr_to(QTime*, sfp[0]);
 	if (qp != NULL) {
-		int h = Int_to(int, sfp[1]);
-		int m = Int_to(int, sfp[2]);
-		int s = Int_to(int, sfp[3]);
-		int ms = Int_to(int, sfp[4]);
-		bool ret_v = qp->isValid(h, m, s, ms);
-		RETURNb_(ret_v);
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
 	} else {
-		RETURNb_(false);
+		RETURN_(KNH_NULL);
 	}
 }
-*/
 
 DummyQTime::DummyQTime()
 {
@@ -362,17 +333,28 @@ bool DummyQTime::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTime::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTime::connection(QObject *o)
 {
-	return;
+	QTime *p = dynamic_cast<QTime*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTime::KQTime() : QTime()
 {
 	self = NULL;
 	dummy = new DummyQTime();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTime_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -427,13 +409,9 @@ static void QTime_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTime_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTime *qp = (KQTime *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -447,6 +425,8 @@ void KQTime::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQTime(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

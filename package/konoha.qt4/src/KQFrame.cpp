@@ -3,7 +3,7 @@ KMETHOD QFrame_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFrame *  qp = RawPtr_to(QFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -13,12 +13,12 @@ KMETHOD QFrame_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QFrame QFrame.new(QWidget parent, int f);
+//QFrame QFrame.new(QWidget parent, QtWindowFlags f);
 KMETHOD QFrame_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
-	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[2]);
+	initFlag(f, Qt::WindowFlags, sfp[2]);
 	KQFrame *ret_v = new KQFrame(parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -30,7 +30,7 @@ KMETHOD QFrame_getFrameRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFrame *  qp = RawPtr_to(QFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->frameRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -45,7 +45,7 @@ KMETHOD QFrame_getFrameShadow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFrame *  qp = RawPtr_to(QFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFrame::Shadow ret_v = qp->frameShadow();
 		RETURNi_(ret_v);
 	} else {
@@ -58,7 +58,7 @@ KMETHOD QFrame_getFrameShape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFrame *  qp = RawPtr_to(QFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFrame::Shape ret_v = qp->frameShape();
 		RETURNi_(ret_v);
 	} else {
@@ -71,7 +71,7 @@ KMETHOD QFrame_getFrameStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFrame *  qp = RawPtr_to(QFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->frameStyle();
 		RETURNi_(ret_v);
 	} else {
@@ -84,7 +84,7 @@ KMETHOD QFrame_frameWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFrame *  qp = RawPtr_to(QFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->frameWidth();
 		RETURNi_(ret_v);
 	} else {
@@ -97,7 +97,7 @@ KMETHOD QFrame_getLineWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFrame *  qp = RawPtr_to(QFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->lineWidth();
 		RETURNi_(ret_v);
 	} else {
@@ -110,7 +110,7 @@ KMETHOD QFrame_getMidLineWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFrame *  qp = RawPtr_to(QFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->midLineWidth();
 		RETURNi_(ret_v);
 	} else {
@@ -123,7 +123,7 @@ KMETHOD QFrame_setFrameRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFrame *  qp = RawPtr_to(QFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  arg0 = *RawPtr_to(const QRect *, sfp[1]);
 		qp->setFrameRect(arg0);
 	}
@@ -135,7 +135,7 @@ KMETHOD QFrame_setFrameShadow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFrame *  qp = RawPtr_to(QFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFrame::Shadow arg0 = Int_to(QFrame::Shadow, sfp[1]);
 		qp->setFrameShadow(arg0);
 	}
@@ -147,7 +147,7 @@ KMETHOD QFrame_setFrameShape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFrame *  qp = RawPtr_to(QFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFrame::Shape arg0 = Int_to(QFrame::Shape, sfp[1]);
 		qp->setFrameShape(arg0);
 	}
@@ -159,7 +159,7 @@ KMETHOD QFrame_setFrameStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFrame *  qp = RawPtr_to(QFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int style = Int_to(int, sfp[1]);
 		qp->setFrameStyle(style);
 	}
@@ -171,7 +171,7 @@ KMETHOD QFrame_setLineWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFrame *  qp = RawPtr_to(QFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setLineWidth(arg0);
 	}
@@ -183,7 +183,7 @@ KMETHOD QFrame_setMidLineWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFrame *  qp = RawPtr_to(QFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setMidLineWidth(arg0);
 	}
@@ -241,9 +241,23 @@ bool DummyQFrame::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQFrame::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQFrame::connection(QObject *o)
 {
+	QFrame *p = dynamic_cast<QFrame*>(o);
+	if (p != NULL) {
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -306,13 +320,9 @@ static void QFrame_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QFrame_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQFrame *qp = (KQFrame *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -336,15 +346,6 @@ bool KQFrame::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQFrame(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QFrame";
-	cdef->free = QFrame_free;
-	cdef->reftrace = QFrame_reftrace;
-	cdef->compareTo = QFrame_compareTo;
-}
-
 static knh_IntData_t QFrameConstInt[] = {
 	{"Plain", QFrame::Plain},
 	{"Raised", QFrame::Raised},
@@ -364,4 +365,15 @@ static knh_IntData_t QFrameConstInt[] = {
 DEFAPI(void) constQFrame(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QFrameConstInt);
 }
+
+
+DEFAPI(void) defQFrame(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QFrame";
+	cdef->free = QFrame_free;
+	cdef->reftrace = QFrame_reftrace;
+	cdef->compareTo = QFrame_compareTo;
+}
+
 

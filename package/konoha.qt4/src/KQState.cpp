@@ -27,7 +27,7 @@ KMETHOD QState_addTransition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QState *  qp = RawPtr_to(QState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractTransition*  transition = RawPtr_to(QAbstractTransition*, sfp[1]);
 		qp->addTransition(transition);
 	}
@@ -40,7 +40,7 @@ KMETHOD QState_addTransition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QState *  qp = RawPtr_to(QState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  sender = RawPtr_to(QObject*, sfp[1]);
 		const char*  signal = RawPtr_to(const char*, sfp[2]);
 		QAbstractState*  target = RawPtr_to(QAbstractState*, sfp[3]);
@@ -58,7 +58,7 @@ KMETHOD QState_addTransition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QState *  qp = RawPtr_to(QState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractState*  target = RawPtr_to(QAbstractState*, sfp[1]);
 		QAbstractTransition* ret_v = qp->addTransition(target);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractTransition*)ret_v, NULL);
@@ -73,7 +73,7 @@ KMETHOD QState_assignProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QState *  qp = RawPtr_to(QState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
 		const char*  name = RawPtr_to(const char*, sfp[2]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[3]);
@@ -87,7 +87,7 @@ KMETHOD QState_getChildMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QState *  qp = RawPtr_to(QState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QState::ChildMode ret_v = qp->childMode();
 		RETURNi_(ret_v);
 	} else {
@@ -100,7 +100,7 @@ KMETHOD QState_getErrorState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QState *  qp = RawPtr_to(QState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractState* ret_v = qp->errorState();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractState*)ret_v, NULL);
 		RETURN_(rptr);
@@ -114,7 +114,7 @@ KMETHOD QState_getInitialState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QState *  qp = RawPtr_to(QState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractState* ret_v = qp->initialState();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractState*)ret_v, NULL);
 		RETURN_(rptr);
@@ -128,7 +128,7 @@ KMETHOD QState_removeTransition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QState *  qp = RawPtr_to(QState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractTransition*  transition = RawPtr_to(QAbstractTransition*, sfp[1]);
 		qp->removeTransition(transition);
 	}
@@ -140,7 +140,7 @@ KMETHOD QState_setChildMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QState *  qp = RawPtr_to(QState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QState::ChildMode mode = Int_to(QState::ChildMode, sfp[1]);
 		qp->setChildMode(mode);
 	}
@@ -152,7 +152,7 @@ KMETHOD QState_setErrorState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QState *  qp = RawPtr_to(QState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractState*  state = RawPtr_to(QAbstractState*, sfp[1]);
 		qp->setErrorState(state);
 	}
@@ -164,7 +164,7 @@ KMETHOD QState_setInitialState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QState *  qp = RawPtr_to(QState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractState*  state = RawPtr_to(QAbstractState*, sfp[1]);
 		qp->setInitialState(state);
 	}
@@ -176,8 +176,8 @@ KMETHOD QState_transitions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QState *  qp = RawPtr_to(QState *, sfp[0]);
-	if (qp != NULL) {
-		QList<QAbstractTransition*>ret_v = qp->transitions();
+	if (qp) {
+		QList<QAbstractTransition*> ret_v = qp->transitions();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QAbstractTransition"));
@@ -273,11 +273,27 @@ bool DummyQState::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQState::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, finished_func);
+	KNH_ADDNNREF(ctx, properties_assigned_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractState::reftrace(ctx, p, tail_);
+}
 
 void DummyQState::connection(QObject *o)
 {
-	connect(o, SIGNAL(finished()), this, SLOT(finishedSlot()));
-	connect(o, SIGNAL(propertiesAssigned()), this, SLOT(propertiesAssignedSlot()));
+	QState *p = dynamic_cast<QState*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(finished()), this, SLOT(finishedSlot()));
+		connect(p, SIGNAL(propertiesAssigned()), this, SLOT(propertiesAssignedSlot()));
+	}
 	DummyQAbstractState::connection(o);
 }
 
@@ -340,21 +356,9 @@ static void QState_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQState *qp = (KQState *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->finished_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->finished_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->properties_assigned_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->properties_assigned_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -378,15 +382,6 @@ bool KQState::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQState(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QState";
-	cdef->free = QState_free;
-	cdef->reftrace = QState_reftrace;
-	cdef->compareTo = QState_compareTo;
-}
-
 static knh_IntData_t QStateConstInt[] = {
 	{"ExclusiveStates", QState::ExclusiveStates},
 	{"ParallelStates", QState::ParallelStates},
@@ -396,4 +391,15 @@ static knh_IntData_t QStateConstInt[] = {
 DEFAPI(void) constQState(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStateConstInt);
 }
+
+
+DEFAPI(void) defQState(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QState";
+	cdef->free = QState_free;
+	cdef->reftrace = QState_reftrace;
+	cdef->compareTo = QState_compareTo;
+}
+
 

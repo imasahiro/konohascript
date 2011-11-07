@@ -14,7 +14,7 @@ KMETHOD QDynamicPropertyChangeEvent_propertyName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDynamicPropertyChangeEvent *  qp = RawPtr_to(QDynamicPropertyChangeEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->propertyName();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -75,9 +75,23 @@ bool DummyQDynamicPropertyChangeEvent::signalConnect(knh_Func_t *callback_func, 
 	}
 }
 
+void DummyQDynamicPropertyChangeEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQDynamicPropertyChangeEvent::connection(QObject *o)
 {
+	QDynamicPropertyChangeEvent *p = dynamic_cast<QDynamicPropertyChangeEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -85,7 +99,6 @@ KQDynamicPropertyChangeEvent::KQDynamicPropertyChangeEvent(const QByteArray name
 {
 	self = NULL;
 	dummy = new DummyQDynamicPropertyChangeEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDynamicPropertyChangeEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -140,13 +153,9 @@ static void QDynamicPropertyChangeEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDynamicPropertyChangeEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDynamicPropertyChangeEvent *qp = (KQDynamicPropertyChangeEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -160,6 +169,8 @@ void KQDynamicPropertyChangeEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQDynamicPropertyChangeEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

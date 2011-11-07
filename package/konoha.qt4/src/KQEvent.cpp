@@ -9,59 +9,12 @@ KMETHOD QEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 
-////void QEvent.accept();
-KMETHOD QEvent_accept(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QEvent *  qp = RawPtr_to(QEvent *, sfp[0]);
-	if (qp != NULL) {
-		qp->accept();
-	}
-	RETURNvoid_();
-}
-
-////void QEvent.ignore();
-KMETHOD QEvent_ignore(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QEvent *  qp = RawPtr_to(QEvent *, sfp[0]);
-	if (qp != NULL) {
-		qp->ignore();
-	}
-	RETURNvoid_();
-}
-
-////boolean QEvent.isAccepted();
-KMETHOD QEvent_isAccepted(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QEvent *  qp = RawPtr_to(QEvent *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isAccepted();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-//////void QEvent.setAccepted(boolean accepted);
-KMETHOD QEvent_setAccepted(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QEvent *  qp = RawPtr_to(QEvent *, sfp[0]);
-	if (qp != NULL) {
-		bool accepted = Boolean_to(bool, sfp[1]);
-		qp->setAccepted(accepted);
-	}
-	RETURNvoid_();
-}
-
 //boolean QEvent.spontaneous();
 KMETHOD QEvent_spontaneous(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEvent *  qp = RawPtr_to(QEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->spontaneous();
 		RETURNb_(ret_v);
 	} else {
@@ -74,7 +27,7 @@ KMETHOD QEvent_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEvent *  qp = RawPtr_to(QEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEvent::Type ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -86,16 +39,33 @@ KMETHOD QEvent_type(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QEvent_registerEventType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QEvent *  qp = RawPtr_to(QEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int hint = Int_to(int, sfp[1]);
-		int ret_v = qp->registerEventType(hint);
+		int ret_v = QEvent::registerEventType(hint);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
 	}
 }
 
+//Array<String> QEvent.parents();
+KMETHOD QEvent_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QEvent *qp = RawPtr_to(QEvent*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQEvent::DummyQEvent()
 {
@@ -144,17 +114,28 @@ bool DummyQEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQEvent::connection(QObject *o)
 {
-	return;
+	QEvent *p = dynamic_cast<QEvent*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQEvent::KQEvent(QEvent::Type type) : QEvent(type)
 {
 	self = NULL;
 	dummy = new DummyQEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -209,13 +190,9 @@ static void QEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQEvent *qp = (KQEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -228,15 +205,6 @@ void KQEvent::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QEvent";
-	cdef->free = QEvent_free;
-	cdef->reftrace = QEvent_reftrace;
-	cdef->compareTo = QEvent_compareTo;
 }
 
 static knh_IntData_t QEventConstInt[] = {
@@ -387,4 +355,15 @@ static knh_IntData_t QEventConstInt[] = {
 DEFAPI(void) constQEvent(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QEventConstInt);
 }
+
+
+DEFAPI(void) defQEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QEvent";
+	cdef->free = QEvent_free;
+	cdef->reftrace = QEvent_reftrace;
+	cdef->compareTo = QEvent_compareTo;
+}
+
 

@@ -9,13 +9,13 @@ KMETHOD QEventLoop_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 
-//int QEventLoop.exec(int flags);
+//int QEventLoop.exec(QEventLoopProcessEventsFlags flags);
 KMETHOD QEventLoop_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEventLoop *  qp = RawPtr_to(QEventLoop *, sfp[0]);
-	if (qp != NULL) {
-		QEventLoop::ProcessEventsFlags flags = Int_to(QEventLoop::ProcessEventsFlags, sfp[1]);
+	if (qp) {
+		initFlag(flags, QEventLoop::ProcessEventsFlags, sfp[1]);
 		int ret_v = qp->exec(flags);
 		RETURNi_(ret_v);
 	} else {
@@ -28,7 +28,7 @@ KMETHOD QEventLoop_exit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEventLoop *  qp = RawPtr_to(QEventLoop *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int returnCode = Int_to(int, sfp[1]);
 		qp->exit(returnCode);
 	}
@@ -40,7 +40,7 @@ KMETHOD QEventLoop_isRunning(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEventLoop *  qp = RawPtr_to(QEventLoop *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isRunning();
 		RETURNb_(ret_v);
 	} else {
@@ -48,13 +48,13 @@ KMETHOD QEventLoop_isRunning(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//boolean QEventLoop.processEvents(int flags);
+//boolean QEventLoop.processEvents(QEventLoopProcessEventsFlags flags);
 KMETHOD QEventLoop_processEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEventLoop *  qp = RawPtr_to(QEventLoop *, sfp[0]);
-	if (qp != NULL) {
-		QEventLoop::ProcessEventsFlags flags = Int_to(QEventLoop::ProcessEventsFlags, sfp[1]);
+	if (qp) {
+		initFlag(flags, QEventLoop::ProcessEventsFlags, sfp[1]);
 		bool ret_v = qp->processEvents(flags);
 		RETURNb_(ret_v);
 	} else {
@@ -63,13 +63,13 @@ KMETHOD QEventLoop_processEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//void QEventLoop.processEvents(int flags, int maxTime);
+//void QEventLoop.processEvents(QEventLoopProcessEventsFlags flags, int maxTime);
 KMETHOD QEventLoop_processEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEventLoop *  qp = RawPtr_to(QEventLoop *, sfp[0]);
-	if (qp != NULL) {
-		QEventLoop::ProcessEventsFlags flags = Int_to(QEventLoop::ProcessEventsFlags, sfp[1]);
+	if (qp) {
+		initFlag(flags, QEventLoop::ProcessEventsFlags, sfp[1]);
 		int maxTime = Int_to(int, sfp[2]);
 		qp->processEvents(flags, maxTime);
 	}
@@ -81,7 +81,7 @@ KMETHOD QEventLoop_wakeUp(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEventLoop *  qp = RawPtr_to(QEventLoop *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->wakeUp();
 	}
 	RETURNvoid_();
@@ -92,7 +92,7 @@ KMETHOD QEventLoop_quit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEventLoop *  qp = RawPtr_to(QEventLoop *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->quit();
 	}
 	RETURNvoid_();
@@ -149,9 +149,23 @@ bool DummyQEventLoop::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQEventLoop::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQEventLoop::connection(QObject *o)
 {
+	QEventLoop *p = dynamic_cast<QEventLoop*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
 }
 
@@ -214,13 +228,9 @@ static void QEventLoop_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QEventLoop_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQEventLoop *qp = (KQEventLoop *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -244,15 +254,6 @@ bool KQEventLoop::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQEventLoop(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QEventLoop";
-	cdef->free = QEventLoop_free;
-	cdef->reftrace = QEventLoop_reftrace;
-	cdef->compareTo = QEventLoop_compareTo;
-}
-
 static knh_IntData_t QEventLoopConstInt[] = {
 	{"AllEvents", QEventLoop::AllEvents},
 	{"ExcludeUserInputEvents", QEventLoop::ExcludeUserInputEvents},
@@ -264,5 +265,179 @@ static knh_IntData_t QEventLoopConstInt[] = {
 
 DEFAPI(void) constQEventLoop(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QEventLoopConstInt);
+}
+
+
+DEFAPI(void) defQEventLoop(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QEventLoop";
+	cdef->free = QEventLoop_free;
+	cdef->reftrace = QEventLoop_reftrace;
+	cdef->compareTo = QEventLoop_compareTo;
+}
+
+//## QEventLoopProcessEventsFlags QEventLoopProcessEventsFlags.new(int value);
+KMETHOD QEventLoopProcessEventsFlags_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QEventLoop::ProcessEventsFlag i = Int_to(QEventLoop::ProcessEventsFlag, sfp[1]);
+	QEventLoop::ProcessEventsFlags *ret_v = new QEventLoop::ProcessEventsFlags(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QEventLoopProcessEventsFlags QEventLoopProcessEventsFlags.and(int mask);
+KMETHOD QEventLoopProcessEventsFlags_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QEventLoop::ProcessEventsFlags *qp = RawPtr_to(QEventLoop::ProcessEventsFlags*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QEventLoop::ProcessEventsFlags ret = ((*qp) & i);
+		QEventLoop::ProcessEventsFlags *ret_ = new QEventLoop::ProcessEventsFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QEventLoopProcessEventsFlags QEventLoopProcessEventsFlags.iand(QEventLoop::QEventLoopProcessEventsFlags other);
+KMETHOD QEventLoopProcessEventsFlags_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QEventLoop::ProcessEventsFlags *qp = RawPtr_to(QEventLoop::ProcessEventsFlags*, sfp[0]);
+	if (qp != NULL) {
+		QEventLoop::ProcessEventsFlags *other = RawPtr_to(QEventLoop::ProcessEventsFlags *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QEventLoopProcessEventsFlags QEventLoopProcessEventsFlags.or(QEventLoopProcessEventsFlags f);
+KMETHOD QEventLoopProcessEventsFlags_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QEventLoop::ProcessEventsFlags *qp = RawPtr_to(QEventLoop::ProcessEventsFlags*, sfp[0]);
+	if (qp != NULL) {
+		QEventLoop::ProcessEventsFlags *f = RawPtr_to(QEventLoop::ProcessEventsFlags*, sfp[1]);
+		QEventLoop::ProcessEventsFlags ret = ((*qp) | (*f));
+		QEventLoop::ProcessEventsFlags *ret_ = new QEventLoop::ProcessEventsFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QEventLoopProcessEventsFlags QEventLoopProcessEventsFlags.ior(QEventLoop::QEventLoopProcessEventsFlags other);
+KMETHOD QEventLoopProcessEventsFlags_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QEventLoop::ProcessEventsFlags *qp = RawPtr_to(QEventLoop::ProcessEventsFlags*, sfp[0]);
+	if (qp != NULL) {
+		QEventLoop::ProcessEventsFlags *other = RawPtr_to(QEventLoop::ProcessEventsFlags *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QEventLoopProcessEventsFlags QEventLoopProcessEventsFlags.xor(QEventLoopProcessEventsFlags f);
+KMETHOD QEventLoopProcessEventsFlags_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QEventLoop::ProcessEventsFlags *qp = RawPtr_to(QEventLoop::ProcessEventsFlags*, sfp[0]);
+	if (qp != NULL) {
+		QEventLoop::ProcessEventsFlags *f = RawPtr_to(QEventLoop::ProcessEventsFlags*, sfp[1]);
+		QEventLoop::ProcessEventsFlags ret = ((*qp) ^ (*f));
+		QEventLoop::ProcessEventsFlags *ret_ = new QEventLoop::ProcessEventsFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QEventLoopProcessEventsFlags QEventLoopProcessEventsFlags.ixor(QEventLoop::QEventLoopProcessEventsFlags other);
+KMETHOD QEventLoopProcessEventsFlags_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QEventLoop::ProcessEventsFlags *qp = RawPtr_to(QEventLoop::ProcessEventsFlags*, sfp[0]);
+	if (qp != NULL) {
+		QEventLoop::ProcessEventsFlags *other = RawPtr_to(QEventLoop::ProcessEventsFlags *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QEventLoopProcessEventsFlags.testFlag(int flag);
+KMETHOD QEventLoopProcessEventsFlags_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QEventLoop::ProcessEventsFlags *qp = RawPtr_to(QEventLoop::ProcessEventsFlags *, sfp[0]);
+	if (qp != NULL) {
+		QEventLoop::ProcessEventsFlag flag = Int_to(QEventLoop::ProcessEventsFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QEventLoopProcessEventsFlags.value();
+KMETHOD QEventLoopProcessEventsFlags_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QEventLoop::ProcessEventsFlags *qp = RawPtr_to(QEventLoop::ProcessEventsFlags *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QEventLoopProcessEventsFlags_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QEventLoop::ProcessEventsFlags *qp = (QEventLoop::ProcessEventsFlags *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QEventLoopProcessEventsFlags_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QEventLoop::ProcessEventsFlags *qp = (QEventLoop::ProcessEventsFlags *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QEventLoopProcessEventsFlags_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QEventLoop::ProcessEventsFlags*)p1->rawptr);
+//		int v2 = int(*(QEventLoop::ProcessEventsFlags*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QEventLoop::ProcessEventsFlags v1 = *(QEventLoop::ProcessEventsFlags*)p1->rawptr;
+		QEventLoop::ProcessEventsFlags v2 = *(QEventLoop::ProcessEventsFlags*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQEventLoopProcessEventsFlags(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QEventLoopProcessEventsFlags";
+	cdef->free = QEventLoopProcessEventsFlags_free;
+	cdef->reftrace = QEventLoopProcessEventsFlags_reftrace;
+	cdef->compareTo = QEventLoopProcessEventsFlags_compareTo;
 }
 

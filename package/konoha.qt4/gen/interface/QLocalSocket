@@ -69,10 +69,21 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+class
+QIODevice
+name
+OpenMode
+
 typedefed_objects
 
 parent_typedefed_objects
-OpenMode
+
+class_objects
+
+parent_class_objects
 
 enums
 class_name

@@ -1,12 +1,12 @@
-//QMouseEvent QMouseEvent.new(int type, QPoint position, int button, int buttons, int modifiers);
+//QMouseEvent QMouseEvent.new(int type, QPoint position, int button, QtMouseButtons buttons, QtKeyboardModifiers modifiers);
 KMETHOD QMouseEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEvent::Type type = Int_to(QMouseEvent::Type, sfp[1]);
 	const QPoint  position = *RawPtr_to(const QPoint *, sfp[2]);
 	Qt::MouseButton button = Int_to(Qt::MouseButton, sfp[3]);
-	Qt::MouseButtons buttons = Int_to(Qt::MouseButtons, sfp[4]);
-	Qt::KeyboardModifiers modifiers = Int_to(Qt::KeyboardModifiers, sfp[5]);
+	initFlag(buttons, Qt::MouseButtons, sfp[4]);
+	initFlag(modifiers, Qt::KeyboardModifiers, sfp[5]);
 	KQMouseEvent *ret_v = new KQMouseEvent(type, position, button, buttons, modifiers);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -14,7 +14,7 @@ KMETHOD QMouseEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//QMouseEvent QMouseEvent.new(int type, QPoint pos, QPoint globalPos, int button, int buttons, int modifiers);
+//QMouseEvent QMouseEvent.new(int type, QPoint pos, QPoint globalPos, int button, QtMouseButtons buttons, QtKeyboardModifiers modifiers);
 KMETHOD QMouseEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -22,8 +22,8 @@ KMETHOD QMouseEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	const QPoint  pos = *RawPtr_to(const QPoint *, sfp[2]);
 	const QPoint  globalPos = *RawPtr_to(const QPoint *, sfp[3]);
 	Qt::MouseButton button = Int_to(Qt::MouseButton, sfp[4]);
-	Qt::MouseButtons buttons = Int_to(Qt::MouseButtons, sfp[5]);
-	Qt::KeyboardModifiers modifiers = Int_to(Qt::KeyboardModifiers, sfp[6]);
+	initFlag(buttons, Qt::MouseButtons, sfp[5]);
+	initFlag(modifiers, Qt::KeyboardModifiers, sfp[6]);
 	KQMouseEvent *ret_v = new KQMouseEvent(type, pos, globalPos, button, buttons, modifiers);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -35,7 +35,7 @@ KMETHOD QMouseEvent_button(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEvent *  qp = RawPtr_to(QMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::MouseButton ret_v = qp->button();
 		RETURNi_(ret_v);
 	} else {
@@ -43,16 +43,18 @@ KMETHOD QMouseEvent_button(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QMouseEvent.buttons();
+//QtMouseButtons QMouseEvent.buttons();
 KMETHOD QMouseEvent_buttons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEvent *  qp = RawPtr_to(QMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::MouseButtons ret_v = qp->buttons();
-		RETURNi_(ret_v);
+		Qt::MouseButtons *ret_v_ = new Qt::MouseButtons(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -61,7 +63,7 @@ KMETHOD QMouseEvent_globalPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEvent *  qp = RawPtr_to(QMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint ret_v = qp->globalPos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -76,7 +78,7 @@ KMETHOD QMouseEvent_globalX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEvent *  qp = RawPtr_to(QMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->globalX();
 		RETURNi_(ret_v);
 	} else {
@@ -89,7 +91,7 @@ KMETHOD QMouseEvent_globalY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEvent *  qp = RawPtr_to(QMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->globalY();
 		RETURNi_(ret_v);
 	} else {
@@ -102,7 +104,7 @@ KMETHOD QMouseEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEvent *  qp = RawPtr_to(QMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint ret_v = qp->pos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -117,7 +119,7 @@ KMETHOD QMouseEvent_posF(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEvent *  qp = RawPtr_to(QMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->posF();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -132,7 +134,7 @@ KMETHOD QMouseEvent_x(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEvent *  qp = RawPtr_to(QMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->x();
 		RETURNi_(ret_v);
 	} else {
@@ -145,7 +147,7 @@ KMETHOD QMouseEvent_y(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEvent *  qp = RawPtr_to(QMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->y();
 		RETURNi_(ret_v);
 	} else {
@@ -204,9 +206,23 @@ bool DummyQMouseEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMouseEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQInputEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQMouseEvent::connection(QObject *o)
 {
+	QMouseEvent *p = dynamic_cast<QMouseEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQInputEvent::connection(o);
 }
 
@@ -214,7 +230,6 @@ KQMouseEvent::KQMouseEvent(QMouseEvent::Type type, const QPoint position, Qt::Mo
 {
 	self = NULL;
 	dummy = new DummyQMouseEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMouseEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -269,13 +284,9 @@ static void QMouseEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMouseEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMouseEvent *qp = (KQMouseEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -289,6 +300,8 @@ void KQMouseEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQMouseEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

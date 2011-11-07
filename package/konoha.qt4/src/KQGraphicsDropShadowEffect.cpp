@@ -3,7 +3,7 @@ KMETHOD QGraphicsDropShadowEffect_boundingRectFor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsDropShadowEffect *  qp = RawPtr_to(QGraphicsDropShadowEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		QRectF ret_v = qp->boundingRectFor(rect);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -30,7 +30,7 @@ KMETHOD QGraphicsDropShadowEffect_getBlurRadius(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsDropShadowEffect *  qp = RawPtr_to(QGraphicsDropShadowEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->blurRadius();
 		RETURNf_(ret_v);
 	} else {
@@ -43,7 +43,7 @@ KMETHOD QGraphicsDropShadowEffect_getColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsDropShadowEffect *  qp = RawPtr_to(QGraphicsDropShadowEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QColor ret_v = qp->color();
 		QColor *ret_v_ = new QColor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -58,7 +58,7 @@ KMETHOD QGraphicsDropShadowEffect_offset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsDropShadowEffect *  qp = RawPtr_to(QGraphicsDropShadowEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->offset();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -73,7 +73,7 @@ KMETHOD QGraphicsDropShadowEffect_xOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsDropShadowEffect *  qp = RawPtr_to(QGraphicsDropShadowEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->xOffset();
 		RETURNf_(ret_v);
 	} else {
@@ -86,7 +86,7 @@ KMETHOD QGraphicsDropShadowEffect_yOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsDropShadowEffect *  qp = RawPtr_to(QGraphicsDropShadowEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->yOffset();
 		RETURNf_(ret_v);
 	} else {
@@ -99,7 +99,7 @@ KMETHOD QGraphicsDropShadowEffect_setBlurRadius(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsDropShadowEffect *  qp = RawPtr_to(QGraphicsDropShadowEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal blurRadius = Float_to(qreal, sfp[1]);
 		qp->setBlurRadius(blurRadius);
 	}
@@ -111,7 +111,7 @@ KMETHOD QGraphicsDropShadowEffect_setColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsDropShadowEffect *  qp = RawPtr_to(QGraphicsDropShadowEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor  color = *RawPtr_to(const QColor *, sfp[1]);
 		qp->setColor(color);
 	}
@@ -123,7 +123,7 @@ KMETHOD QGraphicsDropShadowEffect_setOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsDropShadowEffect *  qp = RawPtr_to(QGraphicsDropShadowEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  ofs = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setOffset(ofs);
 	}
@@ -136,7 +136,7 @@ KMETHOD QGraphicsDropShadowEffect_setOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsDropShadowEffect *  qp = RawPtr_to(QGraphicsDropShadowEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dx = Float_to(qreal, sfp[1]);
 		qreal dy = Float_to(qreal, sfp[2]);
 		qp->setOffset(dx, dy);
@@ -150,7 +150,7 @@ KMETHOD QGraphicsDropShadowEffect_setOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsDropShadowEffect *  qp = RawPtr_to(QGraphicsDropShadowEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal d = Float_to(qreal, sfp[1]);
 		qp->setOffset(d);
 	}
@@ -162,7 +162,7 @@ KMETHOD QGraphicsDropShadowEffect_setXOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsDropShadowEffect *  qp = RawPtr_to(QGraphicsDropShadowEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dx = Float_to(qreal, sfp[1]);
 		qp->setXOffset(dx);
 	}
@@ -174,7 +174,7 @@ KMETHOD QGraphicsDropShadowEffect_setYOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsDropShadowEffect *  qp = RawPtr_to(QGraphicsDropShadowEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dy = Float_to(qreal, sfp[1]);
 		qp->setYOffset(dy);
 	}
@@ -283,12 +283,29 @@ bool DummyQGraphicsDropShadowEffect::signalConnect(knh_Func_t *callback_func, st
 	}
 }
 
+void DummyQGraphicsDropShadowEffect::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 3;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, blur_radius_changed_func);
+	KNH_ADDNNREF(ctx, color_changed_func);
+	KNH_ADDNNREF(ctx, offset_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsEffect::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsDropShadowEffect::connection(QObject *o)
 {
-	connect(o, SIGNAL(blurRadiusChanged(qreal)), this, SLOT(blurRadiusChangedSlot(qreal)));
-	connect(o, SIGNAL(colorChanged(const QColor)), this, SLOT(colorChangedSlot(const QColor)));
-	connect(o, SIGNAL(offsetChanged(const QPointF)), this, SLOT(offsetChangedSlot(const QPointF)));
+	QGraphicsDropShadowEffect *p = dynamic_cast<QGraphicsDropShadowEffect*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(blurRadiusChanged(qreal)), this, SLOT(blurRadiusChangedSlot(qreal)));
+		connect(p, SIGNAL(colorChanged(const QColor)), this, SLOT(colorChangedSlot(const QColor)));
+		connect(p, SIGNAL(offsetChanged(const QPointF)), this, SLOT(offsetChangedSlot(const QPointF)));
+	}
 	DummyQGraphicsEffect::connection(o);
 }
 
@@ -351,25 +368,9 @@ static void QGraphicsDropShadowEffect_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsDropShadowEffect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 3;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsDropShadowEffect *qp = (KQGraphicsDropShadowEffect *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->blur_radius_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->blur_radius_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->color_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->color_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->offset_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->offset_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -392,6 +393,8 @@ bool KQGraphicsDropShadowEffect::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQGraphicsDropShadowEffect(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

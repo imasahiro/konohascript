@@ -20,6 +20,24 @@ KMETHOD QSharedData_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 */
+//Array<String> QSharedData.parents();
+KMETHOD QSharedData_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QSharedData *qp = RawPtr_to(QSharedData*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQSharedData::DummyQSharedData()
 {
@@ -68,17 +86,28 @@ bool DummyQSharedData::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSharedData::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQSharedData::connection(QObject *o)
 {
-	return;
+	QSharedData *p = dynamic_cast<QSharedData*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQSharedData::KQSharedData() : QSharedData()
 {
 	self = NULL;
 	dummy = new DummyQSharedData();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSharedData_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -133,13 +162,9 @@ static void QSharedData_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSharedData_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSharedData *qp = (KQSharedData *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -153,6 +178,8 @@ void KQSharedData::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQSharedData(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

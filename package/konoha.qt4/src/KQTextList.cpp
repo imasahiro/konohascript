@@ -3,7 +3,7 @@ KMETHOD QTextList_add(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextList *  qp = RawPtr_to(QTextList *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextBlock  block = *RawPtr_to(const QTextBlock *, sfp[1]);
 		qp->add(block);
 	}
@@ -15,7 +15,7 @@ KMETHOD QTextList_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextList *  qp = RawPtr_to(QTextList *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->count();
 		RETURNi_(ret_v);
 	} else {
@@ -28,7 +28,7 @@ KMETHOD QTextList_getFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextList *  qp = RawPtr_to(QTextList *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextListFormat ret_v = qp->format();
 		QTextListFormat *ret_v_ = new QTextListFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -43,7 +43,7 @@ KMETHOD QTextList_item(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextList *  qp = RawPtr_to(QTextList *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		QTextBlock ret_v = qp->item(i);
 		QTextBlock *ret_v_ = new QTextBlock(ret_v);
@@ -59,7 +59,7 @@ KMETHOD QTextList_itemNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextList *  qp = RawPtr_to(QTextList *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextBlock  block = *RawPtr_to(const QTextBlock *, sfp[1]);
 		int ret_v = qp->itemNumber(block);
 		RETURNi_(ret_v);
@@ -73,7 +73,7 @@ KMETHOD QTextList_itemText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextList *  qp = RawPtr_to(QTextList *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextBlock  block = *RawPtr_to(const QTextBlock *, sfp[1]);
 		QString ret_v = qp->itemText(block);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -88,7 +88,7 @@ KMETHOD QTextList_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextList *  qp = RawPtr_to(QTextList *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextBlock  block = *RawPtr_to(const QTextBlock *, sfp[1]);
 		qp->remove(block);
 	}
@@ -100,7 +100,7 @@ KMETHOD QTextList_removeItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextList *  qp = RawPtr_to(QTextList *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		qp->removeItem(i);
 	}
@@ -112,7 +112,7 @@ KMETHOD QTextList_setFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextList *  qp = RawPtr_to(QTextList *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextListFormat  format = *RawPtr_to(const QTextListFormat *, sfp[1]);
 		qp->setFormat(format);
 	}
@@ -170,9 +170,23 @@ bool DummyQTextList::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextList::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQTextBlockGroup::reftrace(ctx, p, tail_);
+}
 
 void DummyQTextList::connection(QObject *o)
 {
+	QTextList *p = dynamic_cast<QTextList*>(o);
+	if (p != NULL) {
+	}
 	DummyQTextBlockGroup::connection(o);
 }
 
@@ -228,13 +242,9 @@ static void QTextList_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextList_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextList *qp = (KQTextList *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -257,6 +267,8 @@ bool KQTextList::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQTextList(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

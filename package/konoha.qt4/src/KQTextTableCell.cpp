@@ -20,27 +20,12 @@ KMETHOD QTextTableCell_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 */
-//int QTextTableCell.begin();
-KMETHOD QTextTableCell_begin(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextTableCell *  qp = RawPtr_to(QTextTableCell *, sfp[0]);
-	if (qp != NULL) {
-		QTextFrame::iterator ret_v = qp->begin();
-		QTextFrame::iterator *ret_v_ = new QTextFrame::iterator(ret_v);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-
 //int QTextTableCell.column();
 KMETHOD QTextTableCell_column(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableCell *  qp = RawPtr_to(QTextTableCell *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->column();
 		RETURNi_(ret_v);
 	} else {
@@ -53,26 +38,11 @@ KMETHOD QTextTableCell_columnSpan(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableCell *  qp = RawPtr_to(QTextTableCell *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->columnSpan();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
-	}
-}
-
-//int QTextTableCell.end();
-KMETHOD QTextTableCell_end(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextTableCell *  qp = RawPtr_to(QTextTableCell *, sfp[0]);
-	if (qp != NULL) {
-		QTextFrame::iterator ret_v = qp->end();
-		QTextFrame::iterator *ret_v_ = new QTextFrame::iterator(ret_v);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
 	}
 }
 
@@ -81,7 +51,7 @@ KMETHOD QTextTableCell_firstCursorPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableCell *  qp = RawPtr_to(QTextTableCell *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCursor ret_v = qp->firstCursorPosition();
 		QTextCursor *ret_v_ = new QTextCursor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -96,7 +66,7 @@ KMETHOD QTextTableCell_getFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableCell *  qp = RawPtr_to(QTextTableCell *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCharFormat ret_v = qp->format();
 		QTextCharFormat *ret_v_ = new QTextCharFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -106,25 +76,12 @@ KMETHOD QTextTableCell_getFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////boolean QTextTableCell.isValid();
-KMETHOD QTextTableCell_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextTableCell *  qp = RawPtr_to(QTextTableCell *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
 //QTextCursor QTextTableCell.lastCursorPosition();
 KMETHOD QTextTableCell_lastCursorPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableCell *  qp = RawPtr_to(QTextTableCell *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCursor ret_v = qp->lastCursorPosition();
 		QTextCursor *ret_v_ = new QTextCursor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -139,7 +96,7 @@ KMETHOD QTextTableCell_row(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableCell *  qp = RawPtr_to(QTextTableCell *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->row();
 		RETURNi_(ret_v);
 	} else {
@@ -152,7 +109,7 @@ KMETHOD QTextTableCell_rowSpan(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableCell *  qp = RawPtr_to(QTextTableCell *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->rowSpan();
 		RETURNi_(ret_v);
 	} else {
@@ -165,7 +122,7 @@ KMETHOD QTextTableCell_setFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableCell *  qp = RawPtr_to(QTextTableCell *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCharFormat  format = *RawPtr_to(const QTextCharFormat *, sfp[1]);
 		qp->setFormat(format);
 	}
@@ -177,7 +134,7 @@ KMETHOD QTextTableCell_tableCellFormatIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableCell *  qp = RawPtr_to(QTextTableCell *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->tableCellFormatIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -185,6 +142,24 @@ KMETHOD QTextTableCell_tableCellFormatIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QTextTableCell.parents();
+KMETHOD QTextTableCell_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextTableCell *qp = RawPtr_to(QTextTableCell*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextTableCell::DummyQTextTableCell()
 {
@@ -233,17 +208,28 @@ bool DummyQTextTableCell::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextTableCell::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextTableCell::connection(QObject *o)
 {
-	return;
+	QTextTableCell *p = dynamic_cast<QTextTableCell*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTextTableCell::KQTextTableCell() : QTextTableCell()
 {
 	self = NULL;
 	dummy = new DummyQTextTableCell();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextTableCell_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -298,13 +284,9 @@ static void QTextTableCell_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextTableCell_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextTableCell *qp = (KQTextTableCell *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -318,6 +300,8 @@ void KQTextTableCell::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQTextTableCell(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

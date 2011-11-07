@@ -70,11 +70,19 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+
 typedefed_objects
-const_iterator
 ConstIterator
 
 parent_typedefed_objects
+
+class_objects
+const_iterator
+
+parent_class_objects
 
 enums
 

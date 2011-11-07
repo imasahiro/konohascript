@@ -3,7 +3,7 @@ KMETHOD QGraphicsSceneMouseEvent_button(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneMouseEvent *  qp = RawPtr_to(QGraphicsSceneMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::MouseButton ret_v = qp->button();
 		RETURNi_(ret_v);
 	} else {
@@ -16,7 +16,7 @@ KMETHOD QGraphicsSceneMouseEvent_buttonDownPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneMouseEvent *  qp = RawPtr_to(QGraphicsSceneMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::MouseButton button = Int_to(Qt::MouseButton, sfp[1]);
 		QPointF ret_v = qp->buttonDownPos(button);
 		QPointF *ret_v_ = new QPointF(ret_v);
@@ -32,7 +32,7 @@ KMETHOD QGraphicsSceneMouseEvent_buttonDownScenePos(CTX ctx, knh_sfp_t *sfp _RIX
 {
 	(void)ctx;
 	QGraphicsSceneMouseEvent *  qp = RawPtr_to(QGraphicsSceneMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::MouseButton button = Int_to(Qt::MouseButton, sfp[1]);
 		QPointF ret_v = qp->buttonDownScenePos(button);
 		QPointF *ret_v_ = new QPointF(ret_v);
@@ -48,7 +48,7 @@ KMETHOD QGraphicsSceneMouseEvent_buttonDownScreenPos(CTX ctx, knh_sfp_t *sfp _RI
 {
 	(void)ctx;
 	QGraphicsSceneMouseEvent *  qp = RawPtr_to(QGraphicsSceneMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::MouseButton button = Int_to(Qt::MouseButton, sfp[1]);
 		QPoint ret_v = qp->buttonDownScreenPos(button);
 		QPoint *ret_v_ = new QPoint(ret_v);
@@ -59,16 +59,18 @@ KMETHOD QGraphicsSceneMouseEvent_buttonDownScreenPos(CTX ctx, knh_sfp_t *sfp _RI
 	}
 }
 
-//int QGraphicsSceneMouseEvent.buttons();
+//QtMouseButtons QGraphicsSceneMouseEvent.buttons();
 KMETHOD QGraphicsSceneMouseEvent_buttons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneMouseEvent *  qp = RawPtr_to(QGraphicsSceneMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::MouseButtons ret_v = qp->buttons();
-		RETURNi_(ret_v);
+		Qt::MouseButtons *ret_v_ = new Qt::MouseButtons(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -77,7 +79,7 @@ KMETHOD QGraphicsSceneMouseEvent_lastPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneMouseEvent *  qp = RawPtr_to(QGraphicsSceneMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->lastPos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -92,7 +94,7 @@ KMETHOD QGraphicsSceneMouseEvent_lastScenePos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneMouseEvent *  qp = RawPtr_to(QGraphicsSceneMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->lastScenePos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -107,7 +109,7 @@ KMETHOD QGraphicsSceneMouseEvent_lastScreenPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneMouseEvent *  qp = RawPtr_to(QGraphicsSceneMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPoint ret_v = qp->lastScreenPos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -117,16 +119,18 @@ KMETHOD QGraphicsSceneMouseEvent_lastScreenPos(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QGraphicsSceneMouseEvent.modifiers();
+//QtKeyboardModifiers QGraphicsSceneMouseEvent.modifiers();
 KMETHOD QGraphicsSceneMouseEvent_modifiers(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneMouseEvent *  qp = RawPtr_to(QGraphicsSceneMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::KeyboardModifiers ret_v = qp->modifiers();
-		RETURNi_(ret_v);
+		Qt::KeyboardModifiers *ret_v_ = new Qt::KeyboardModifiers(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -135,7 +139,7 @@ KMETHOD QGraphicsSceneMouseEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneMouseEvent *  qp = RawPtr_to(QGraphicsSceneMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->pos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -150,7 +154,7 @@ KMETHOD QGraphicsSceneMouseEvent_scenePos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneMouseEvent *  qp = RawPtr_to(QGraphicsSceneMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->scenePos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -165,7 +169,7 @@ KMETHOD QGraphicsSceneMouseEvent_screenPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneMouseEvent *  qp = RawPtr_to(QGraphicsSceneMouseEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPoint ret_v = qp->screenPos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -226,17 +230,24 @@ bool DummyQGraphicsSceneMouseEvent::signalConnect(knh_Func_t *callback_func, str
 	}
 }
 
+void DummyQGraphicsSceneMouseEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsSceneEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsSceneMouseEvent::connection(QObject *o)
 {
+	QGraphicsSceneMouseEvent *p = dynamic_cast<QGraphicsSceneMouseEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQGraphicsSceneEvent::connection(o);
-}
-
-KQGraphicsSceneMouseEvent::KQGraphicsSceneMouseEvent() : QGraphicsSceneMouseEvent()
-{
-	self = NULL;
-	dummy = new DummyQGraphicsSceneMouseEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsSceneMouseEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -291,13 +302,9 @@ static void QGraphicsSceneMouseEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsSceneMouseEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneMouseEvent *qp = (KQGraphicsSceneMouseEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -311,6 +318,8 @@ void KQGraphicsSceneMouseEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGraphicsSceneMouseEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

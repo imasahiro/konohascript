@@ -3,7 +3,7 @@ KMETHOD QAbstractSpinBox_event(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEvent*  event = RawPtr_to(QEvent*, sfp[1]);
 		bool ret_v = qp->event(event);
 		RETURNb_(ret_v);
@@ -17,7 +17,7 @@ KMETHOD QAbstractSpinBox_inputMethodQuery(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::InputMethodQuery query = Int_to(Qt::InputMethodQuery, sfp[1]);
 		QVariant ret_v = qp->inputMethodQuery(query);
 		QVariant *ret_v_ = new QVariant(ret_v);
@@ -33,7 +33,7 @@ KMETHOD QAbstractSpinBox_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -48,7 +48,7 @@ KMETHOD QAbstractSpinBox_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -59,16 +59,18 @@ KMETHOD QAbstractSpinBox_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //
-//int QAbstractSpinBox.getAlignment();
+//QtAlignment QAbstractSpinBox.getAlignment();
 KMETHOD QAbstractSpinBox_getAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->alignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -77,7 +79,7 @@ KMETHOD QAbstractSpinBox_getButtonSymbols(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractSpinBox::ButtonSymbols ret_v = qp->buttonSymbols();
 		RETURNi_(ret_v);
 	} else {
@@ -90,7 +92,7 @@ KMETHOD QAbstractSpinBox_getCorrectionMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractSpinBox::CorrectionMode ret_v = qp->correctionMode();
 		RETURNi_(ret_v);
 	} else {
@@ -103,7 +105,7 @@ KMETHOD QAbstractSpinBox_fixup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString input = String_to(QString, sfp[1]);
 		qp->fixup(input);
 	}
@@ -115,7 +117,7 @@ KMETHOD QAbstractSpinBox_hasAcceptableInput(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasAcceptableInput();
 		RETURNb_(ret_v);
 	} else {
@@ -128,7 +130,7 @@ KMETHOD QAbstractSpinBox_hasFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasFrame();
 		RETURNb_(ret_v);
 	} else {
@@ -141,7 +143,7 @@ KMETHOD QAbstractSpinBox_interpretText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->interpretText();
 	}
 	RETURNvoid_();
@@ -152,7 +154,7 @@ KMETHOD QAbstractSpinBox_isAccelerated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isAccelerated();
 		RETURNb_(ret_v);
 	} else {
@@ -165,7 +167,7 @@ KMETHOD QAbstractSpinBox_isReadOnly(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isReadOnly();
 		RETURNb_(ret_v);
 	} else {
@@ -178,7 +180,7 @@ KMETHOD QAbstractSpinBox_getKeyboardTracking(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->keyboardTracking();
 		RETURNb_(ret_v);
 	} else {
@@ -191,20 +193,20 @@ KMETHOD QAbstractSpinBox_setAccelerated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool on = Boolean_to(bool, sfp[1]);
 		qp->setAccelerated(on);
 	}
 	RETURNvoid_();
 }
 
-//void QAbstractSpinBox.setAlignment(int flag);
+//void QAbstractSpinBox.setAlignment(QtAlignment flag);
 KMETHOD QAbstractSpinBox_setAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment flag = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(flag, Qt::Alignment, sfp[1]);
 		qp->setAlignment(flag);
 	}
 	RETURNvoid_();
@@ -215,7 +217,7 @@ KMETHOD QAbstractSpinBox_setButtonSymbols(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractSpinBox::ButtonSymbols bs = Int_to(QAbstractSpinBox::ButtonSymbols, sfp[1]);
 		qp->setButtonSymbols(bs);
 	}
@@ -227,7 +229,7 @@ KMETHOD QAbstractSpinBox_setCorrectionMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractSpinBox::CorrectionMode cm = Int_to(QAbstractSpinBox::CorrectionMode, sfp[1]);
 		qp->setCorrectionMode(cm);
 	}
@@ -239,7 +241,7 @@ KMETHOD QAbstractSpinBox_setFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setFrame(arg0);
 	}
@@ -251,7 +253,7 @@ KMETHOD QAbstractSpinBox_setKeyboardTracking(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool kt = Boolean_to(bool, sfp[1]);
 		qp->setKeyboardTracking(kt);
 	}
@@ -263,7 +265,7 @@ KMETHOD QAbstractSpinBox_setReadOnly(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool r = Boolean_to(bool, sfp[1]);
 		qp->setReadOnly(r);
 	}
@@ -275,7 +277,7 @@ KMETHOD QAbstractSpinBox_setSpecialValueText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString txt = String_to(const QString, sfp[1]);
 		qp->setSpecialValueText(txt);
 	}
@@ -287,7 +289,7 @@ KMETHOD QAbstractSpinBox_setWrapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool w = Boolean_to(bool, sfp[1]);
 		qp->setWrapping(w);
 	}
@@ -299,7 +301,7 @@ KMETHOD QAbstractSpinBox_getSpecialValueText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->specialValueText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -313,7 +315,7 @@ KMETHOD QAbstractSpinBox_stepBy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int steps = Int_to(int, sfp[1]);
 		qp->stepBy(steps);
 	}
@@ -325,7 +327,7 @@ KMETHOD QAbstractSpinBox_text(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->text();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -339,7 +341,7 @@ KMETHOD QAbstractSpinBox_validate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString input = String_to(QString, sfp[1]);
 		int pos = Int_to(int, sfp[2]);
 		QValidator::State ret_v = qp->validate(input, pos);
@@ -354,7 +356,7 @@ KMETHOD QAbstractSpinBox_getWrapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->wrapping();
 		RETURNb_(ret_v);
 	} else {
@@ -367,7 +369,7 @@ KMETHOD QAbstractSpinBox_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -378,7 +380,7 @@ KMETHOD QAbstractSpinBox_selectAll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->selectAll();
 	}
 	RETURNvoid_();
@@ -389,7 +391,7 @@ KMETHOD QAbstractSpinBox_stepDown(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->stepDown();
 	}
 	RETURNvoid_();
@@ -400,7 +402,7 @@ KMETHOD QAbstractSpinBox_stepUp(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSpinBox *  qp = RawPtr_to(QAbstractSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->stepUp();
 	}
 	RETURNvoid_();
@@ -472,10 +474,25 @@ bool DummyQAbstractSpinBox::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQAbstractSpinBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, editing_finished_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQAbstractSpinBox::connection(QObject *o)
 {
-	connect(o, SIGNAL(editingFinished()), this, SLOT(editingFinishedSlot()));
+	QAbstractSpinBox *p = dynamic_cast<QAbstractSpinBox*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(editingFinished()), this, SLOT(editingFinishedSlot()));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -538,17 +555,9 @@ static void QAbstractSpinBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractSpinBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAbstractSpinBox *qp = (KQAbstractSpinBox *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->editing_finished_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->editing_finished_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -572,15 +581,6 @@ bool KQAbstractSpinBox::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQAbstractSpinBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QAbstractSpinBox";
-	cdef->free = QAbstractSpinBox_free;
-	cdef->reftrace = QAbstractSpinBox_reftrace;
-	cdef->compareTo = QAbstractSpinBox_compareTo;
-}
-
 static knh_IntData_t QAbstractSpinBoxConstInt[] = {
 	{"UpDownArrows", QAbstractSpinBox::UpDownArrows},
 	{"PlusMinus", QAbstractSpinBox::PlusMinus},
@@ -595,5 +595,179 @@ static knh_IntData_t QAbstractSpinBoxConstInt[] = {
 
 DEFAPI(void) constQAbstractSpinBox(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QAbstractSpinBoxConstInt);
+}
+
+
+DEFAPI(void) defQAbstractSpinBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QAbstractSpinBox";
+	cdef->free = QAbstractSpinBox_free;
+	cdef->reftrace = QAbstractSpinBox_reftrace;
+	cdef->compareTo = QAbstractSpinBox_compareTo;
+}
+
+//## QAbstractSpinBoxStepEnabled QAbstractSpinBoxStepEnabled.new(int value);
+KMETHOD QAbstractSpinBoxStepEnabled_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAbstractSpinBox::StepEnabledFlag i = Int_to(QAbstractSpinBox::StepEnabledFlag, sfp[1]);
+	QAbstractSpinBox::StepEnabled *ret_v = new QAbstractSpinBox::StepEnabled(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QAbstractSpinBoxStepEnabled QAbstractSpinBoxStepEnabled.and(int mask);
+KMETHOD QAbstractSpinBoxStepEnabled_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAbstractSpinBox::StepEnabled *qp = RawPtr_to(QAbstractSpinBox::StepEnabled*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QAbstractSpinBox::StepEnabled ret = ((*qp) & i);
+		QAbstractSpinBox::StepEnabled *ret_ = new QAbstractSpinBox::StepEnabled(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAbstractSpinBoxStepEnabled QAbstractSpinBoxStepEnabled.iand(QAbstractSpinBox::QAbstractSpinBoxStepEnabled other);
+KMETHOD QAbstractSpinBoxStepEnabled_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAbstractSpinBox::StepEnabled *qp = RawPtr_to(QAbstractSpinBox::StepEnabled*, sfp[0]);
+	if (qp != NULL) {
+		QAbstractSpinBox::StepEnabled *other = RawPtr_to(QAbstractSpinBox::StepEnabled *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAbstractSpinBoxStepEnabled QAbstractSpinBoxStepEnabled.or(QAbstractSpinBoxStepEnabled f);
+KMETHOD QAbstractSpinBoxStepEnabled_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QAbstractSpinBox::StepEnabled *qp = RawPtr_to(QAbstractSpinBox::StepEnabled*, sfp[0]);
+	if (qp != NULL) {
+		QAbstractSpinBox::StepEnabled *f = RawPtr_to(QAbstractSpinBox::StepEnabled*, sfp[1]);
+		QAbstractSpinBox::StepEnabled ret = ((*qp) | (*f));
+		QAbstractSpinBox::StepEnabled *ret_ = new QAbstractSpinBox::StepEnabled(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAbstractSpinBoxStepEnabled QAbstractSpinBoxStepEnabled.ior(QAbstractSpinBox::QAbstractSpinBoxStepEnabled other);
+KMETHOD QAbstractSpinBoxStepEnabled_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAbstractSpinBox::StepEnabled *qp = RawPtr_to(QAbstractSpinBox::StepEnabled*, sfp[0]);
+	if (qp != NULL) {
+		QAbstractSpinBox::StepEnabled *other = RawPtr_to(QAbstractSpinBox::StepEnabled *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAbstractSpinBoxStepEnabled QAbstractSpinBoxStepEnabled.xor(QAbstractSpinBoxStepEnabled f);
+KMETHOD QAbstractSpinBoxStepEnabled_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QAbstractSpinBox::StepEnabled *qp = RawPtr_to(QAbstractSpinBox::StepEnabled*, sfp[0]);
+	if (qp != NULL) {
+		QAbstractSpinBox::StepEnabled *f = RawPtr_to(QAbstractSpinBox::StepEnabled*, sfp[1]);
+		QAbstractSpinBox::StepEnabled ret = ((*qp) ^ (*f));
+		QAbstractSpinBox::StepEnabled *ret_ = new QAbstractSpinBox::StepEnabled(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAbstractSpinBoxStepEnabled QAbstractSpinBoxStepEnabled.ixor(QAbstractSpinBox::QAbstractSpinBoxStepEnabled other);
+KMETHOD QAbstractSpinBoxStepEnabled_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAbstractSpinBox::StepEnabled *qp = RawPtr_to(QAbstractSpinBox::StepEnabled*, sfp[0]);
+	if (qp != NULL) {
+		QAbstractSpinBox::StepEnabled *other = RawPtr_to(QAbstractSpinBox::StepEnabled *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QAbstractSpinBoxStepEnabled.testFlag(int flag);
+KMETHOD QAbstractSpinBoxStepEnabled_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAbstractSpinBox::StepEnabled *qp = RawPtr_to(QAbstractSpinBox::StepEnabled *, sfp[0]);
+	if (qp != NULL) {
+		QAbstractSpinBox::StepEnabledFlag flag = Int_to(QAbstractSpinBox::StepEnabledFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QAbstractSpinBoxStepEnabled.value();
+KMETHOD QAbstractSpinBoxStepEnabled_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAbstractSpinBox::StepEnabled *qp = RawPtr_to(QAbstractSpinBox::StepEnabled *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QAbstractSpinBoxStepEnabled_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QAbstractSpinBox::StepEnabled *qp = (QAbstractSpinBox::StepEnabled *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QAbstractSpinBoxStepEnabled_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QAbstractSpinBox::StepEnabled *qp = (QAbstractSpinBox::StepEnabled *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QAbstractSpinBoxStepEnabled_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QAbstractSpinBox::StepEnabled*)p1->rawptr);
+//		int v2 = int(*(QAbstractSpinBox::StepEnabled*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QAbstractSpinBox::StepEnabled v1 = *(QAbstractSpinBox::StepEnabled*)p1->rawptr;
+		QAbstractSpinBox::StepEnabled v2 = *(QAbstractSpinBox::StepEnabled*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQAbstractSpinBoxStepEnabled(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QAbstractSpinBoxStepEnabled";
+	cdef->free = QAbstractSpinBoxStepEnabled_free;
+	cdef->reftrace = QAbstractSpinBoxStepEnabled_reftrace;
+	cdef->compareTo = QAbstractSpinBoxStepEnabled_compareTo;
 }
 

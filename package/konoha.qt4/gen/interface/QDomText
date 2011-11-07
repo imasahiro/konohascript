@@ -42,13 +42,51 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+
 typedefed_objects
 
 parent_typedefed_objects
 
+class_objects
+
+parent_class_objects
+
 enums
 
 parent_enums
+class_name
+QDomNode
+name
+EncodingPolicy
+key
+EncodingFromDocument
+EncodingFromTextStream
+public_flag
+true
+class_name
+QDomNode
+name
+NodeType
+key
+ElementNode
+AttributeNode
+TextNode
+CDATASectionNode
+EntityReferenceNode
+EntityNode
+ProcessingInstructionNode
+CommentNode
+DocumentNode
+DocumentTypeNode
+DocumentFragmentNode
+NotationNode
+BaseNode
+CharacterDataNode
+public_flag
+true
 
 parent_index
 634

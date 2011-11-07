@@ -11,6 +11,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -19,7 +20,7 @@ class KQMetaEnum : public QMetaEnum {
 public:
 	knh_RawPtr_t *self;
 	DummyQMetaEnum *dummy;
-	KQMetaEnum();
+
 	void setSelf(knh_RawPtr_t *ptr);
 };
 

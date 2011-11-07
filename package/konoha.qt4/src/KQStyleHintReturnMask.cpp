@@ -59,9 +59,23 @@ bool DummyQStyleHintReturnMask::signalConnect(knh_Func_t *callback_func, string 
 	}
 }
 
+void DummyQStyleHintReturnMask::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleHintReturn::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleHintReturnMask::connection(QObject *o)
 {
+	QStyleHintReturnMask *p = dynamic_cast<QStyleHintReturnMask*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleHintReturn::connection(o);
 }
 
@@ -69,7 +83,6 @@ KQStyleHintReturnMask::KQStyleHintReturnMask() : QStyleHintReturnMask()
 {
 	self = NULL;
 	dummy = new DummyQStyleHintReturnMask();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleHintReturnMask_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -124,13 +137,9 @@ static void QStyleHintReturnMask_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleHintReturnMask_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleHintReturnMask *qp = (KQStyleHintReturnMask *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -145,15 +154,6 @@ void KQStyleHintReturnMask::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStyleHintReturnMask(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleHintReturnMask";
-	cdef->free = QStyleHintReturnMask_free;
-	cdef->reftrace = QStyleHintReturnMask_reftrace;
-	cdef->compareTo = QStyleHintReturnMask_compareTo;
-}
-
 static knh_IntData_t QStyleHintReturnMaskConstInt[] = {
 	{"Type", QStyleHintReturnMask::Type},
 	{"Version", QStyleHintReturnMask::Version},
@@ -163,4 +163,15 @@ static knh_IntData_t QStyleHintReturnMaskConstInt[] = {
 DEFAPI(void) constQStyleHintReturnMask(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleHintReturnMaskConstInt);
 }
+
+
+DEFAPI(void) defQStyleHintReturnMask(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleHintReturnMask";
+	cdef->free = QStyleHintReturnMask_free;
+	cdef->reftrace = QStyleHintReturnMask_reftrace;
+	cdef->compareTo = QStyleHintReturnMask_compareTo;
+}
+
 

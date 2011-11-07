@@ -8,16 +8,18 @@ KMETHOD QTextTableFormat_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 
-//int QTextTableFormat.getAlignment();
+//QtAlignment QTextTableFormat.getAlignment();
 KMETHOD QTextTableFormat_getAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableFormat *  qp = RawPtr_to(QTextTableFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->alignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -26,7 +28,7 @@ KMETHOD QTextTableFormat_getCellPadding(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableFormat *  qp = RawPtr_to(QTextTableFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->cellPadding();
 		RETURNf_(ret_v);
 	} else {
@@ -39,7 +41,7 @@ KMETHOD QTextTableFormat_getCellSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableFormat *  qp = RawPtr_to(QTextTableFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->cellSpacing();
 		RETURNf_(ret_v);
 	} else {
@@ -52,7 +54,7 @@ KMETHOD QTextTableFormat_clearColumnWidthConstraints(CTX ctx, knh_sfp_t *sfp _RI
 {
 	(void)ctx;
 	QTextTableFormat *  qp = RawPtr_to(QTextTableFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearColumnWidthConstraints();
 	}
 	RETURNvoid_();
@@ -63,7 +65,7 @@ KMETHOD QTextTableFormat_columns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableFormat *  qp = RawPtr_to(QTextTableFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->columns();
 		RETURNi_(ret_v);
 	} else {
@@ -76,7 +78,7 @@ KMETHOD QTextTableFormat_getHeaderRowCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableFormat *  qp = RawPtr_to(QTextTableFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->headerRowCount();
 		RETURNi_(ret_v);
 	} else {
@@ -84,26 +86,13 @@ KMETHOD QTextTableFormat_getHeaderRowCount(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////boolean QTextTableFormat.isValid();
-KMETHOD QTextTableFormat_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextTableFormat *  qp = RawPtr_to(QTextTableFormat *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-//void QTextTableFormat.setAlignment(int alignment);
+//void QTextTableFormat.setAlignment(QtAlignment alignment);
 KMETHOD QTextTableFormat_setAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableFormat *  qp = RawPtr_to(QTextTableFormat *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(alignment, Qt::Alignment, sfp[1]);
 		qp->setAlignment(alignment);
 	}
 	RETURNvoid_();
@@ -114,7 +103,7 @@ KMETHOD QTextTableFormat_setCellPadding(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableFormat *  qp = RawPtr_to(QTextTableFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal padding = Float_to(qreal, sfp[1]);
 		qp->setCellPadding(padding);
 	}
@@ -126,7 +115,7 @@ KMETHOD QTextTableFormat_setCellSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableFormat *  qp = RawPtr_to(QTextTableFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal spacing = Float_to(qreal, sfp[1]);
 		qp->setCellSpacing(spacing);
 	}
@@ -138,7 +127,7 @@ KMETHOD QTextTableFormat_setHeaderRowCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTableFormat *  qp = RawPtr_to(QTextTableFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int count = Int_to(int, sfp[1]);
 		qp->setHeaderRowCount(count);
 	}
@@ -196,9 +185,23 @@ bool DummyQTextTableFormat::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextTableFormat::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQTextFrameFormat::reftrace(ctx, p, tail_);
+}
 
 void DummyQTextTableFormat::connection(QObject *o)
 {
+	QTextTableFormat *p = dynamic_cast<QTextTableFormat*>(o);
+	if (p != NULL) {
+	}
 	DummyQTextFrameFormat::connection(o);
 }
 
@@ -206,7 +209,6 @@ KQTextTableFormat::KQTextTableFormat() : QTextTableFormat()
 {
 	self = NULL;
 	dummy = new DummyQTextTableFormat();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextTableFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -261,13 +263,9 @@ static void QTextTableFormat_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextTableFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextTableFormat *qp = (KQTextTableFormat *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -281,6 +279,8 @@ void KQTextTableFormat::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQTextTableFormat(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

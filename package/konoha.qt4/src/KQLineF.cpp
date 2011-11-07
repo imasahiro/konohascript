@@ -53,7 +53,7 @@ KMETHOD QLineF_getP1(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->p1();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -68,7 +68,7 @@ KMETHOD QLineF_getP2(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->p2();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -83,7 +83,7 @@ KMETHOD QLineF_x1(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->x1();
 		RETURNf_(ret_v);
 	} else {
@@ -96,7 +96,7 @@ KMETHOD QLineF_x2(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->x2();
 		RETURNf_(ret_v);
 	} else {
@@ -109,7 +109,7 @@ KMETHOD QLineF_y1(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->y1();
 		RETURNf_(ret_v);
 	} else {
@@ -122,7 +122,7 @@ KMETHOD QLineF_y2(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->y2();
 		RETURNf_(ret_v);
 	} else {
@@ -135,7 +135,7 @@ KMETHOD QLineF_getAngle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->angle();
 		RETURNf_(ret_v);
 	} else {
@@ -148,7 +148,7 @@ KMETHOD QLineF_angleTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QLineF  line = *RawPtr_to(const QLineF *, sfp[1]);
 		qreal ret_v = qp->angleTo(line);
 		RETURNf_(ret_v);
@@ -162,7 +162,7 @@ KMETHOD QLineF_dx(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->dx();
 		RETURNf_(ret_v);
 	} else {
@@ -175,7 +175,7 @@ KMETHOD QLineF_dy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->dy();
 		RETURNf_(ret_v);
 	} else {
@@ -188,7 +188,7 @@ KMETHOD QLineF_intersect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QLineF  line = *RawPtr_to(const QLineF *, sfp[1]);
 		QPointF*  intersectionPoint = RawPtr_to(QPointF*, sfp[2]);
 		QLineF::IntersectType ret_v = qp->intersect(line, intersectionPoint);
@@ -198,25 +198,12 @@ KMETHOD QLineF_intersect(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////boolean QLineF.isNull();
-KMETHOD QLineF_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
 //float QLineF.getLength();
 KMETHOD QLineF_getLength(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->length();
 		RETURNf_(ret_v);
 	} else {
@@ -229,7 +216,7 @@ KMETHOD QLineF_normalVector(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLineF ret_v = qp->normalVector();
 		QLineF *ret_v_ = new QLineF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -244,7 +231,7 @@ KMETHOD QLineF_pointAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal t = Float_to(qreal, sfp[1]);
 		QPointF ret_v = qp->pointAt(t);
 		QPointF *ret_v_ = new QPointF(ret_v);
@@ -260,7 +247,7 @@ KMETHOD QLineF_setP1(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  p1 = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setP1(p1);
 	}
@@ -272,7 +259,7 @@ KMETHOD QLineF_setP2(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  p2 = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setP2(p2);
 	}
@@ -284,7 +271,7 @@ KMETHOD QLineF_setAngle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal angle = Float_to(qreal, sfp[1]);
 		qp->setAngle(angle);
 	}
@@ -296,7 +283,7 @@ KMETHOD QLineF_setLength(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal length = Float_to(qreal, sfp[1]);
 		qp->setLength(length);
 	}
@@ -308,7 +295,7 @@ KMETHOD QLineF_setLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x1 = Float_to(qreal, sfp[1]);
 		qreal y1 = Float_to(qreal, sfp[2]);
 		qreal x2 = Float_to(qreal, sfp[3]);
@@ -323,7 +310,7 @@ KMETHOD QLineF_setPoints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  p1 = *RawPtr_to(const QPointF *, sfp[1]);
 		const QPointF  p2 = *RawPtr_to(const QPointF *, sfp[2]);
 		qp->setPoints(p1, p2);
@@ -336,7 +323,7 @@ KMETHOD QLineF_toLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLine ret_v = qp->toLine();
 		QLine *ret_v_ = new QLine(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -351,7 +338,7 @@ KMETHOD QLineF_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  offset = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->translate(offset);
 	}
@@ -364,7 +351,7 @@ KMETHOD QLineF_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dx = Float_to(qreal, sfp[1]);
 		qreal dy = Float_to(qreal, sfp[2]);
 		qp->translate(dx, dy);
@@ -377,7 +364,7 @@ KMETHOD QLineF_translated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  offset = *RawPtr_to(const QPointF *, sfp[1]);
 		QLineF ret_v = qp->translated(offset);
 		QLineF *ret_v_ = new QLineF(ret_v);
@@ -394,7 +381,7 @@ KMETHOD QLineF_translated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dx = Float_to(qreal, sfp[1]);
 		qreal dy = Float_to(qreal, sfp[2]);
 		QLineF ret_v = qp->translated(dx, dy);
@@ -411,7 +398,7 @@ KMETHOD QLineF_unitVector(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLineF ret_v = qp->unitVector();
 		QLineF *ret_v_ = new QLineF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -425,11 +412,10 @@ KMETHOD QLineF_unitVector(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QLineF_fromPolar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QLineF *  qp = RawPtr_to(QLineF *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		qreal length = Float_to(qreal, sfp[1]);
 		qreal angle = Float_to(qreal, sfp[2]);
-		QLineF ret_v = qp->fromPolar(length, angle);
+		QLineF ret_v = QLineF::fromPolar(length, angle);
 		QLineF *ret_v_ = new QLineF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -438,6 +424,24 @@ KMETHOD QLineF_fromPolar(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QLineF.parents();
+KMETHOD QLineF_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QLineF *qp = RawPtr_to(QLineF*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQLineF::DummyQLineF()
 {
@@ -486,17 +490,28 @@ bool DummyQLineF::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQLineF::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQLineF::connection(QObject *o)
 {
-	return;
+	QLineF *p = dynamic_cast<QLineF*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQLineF::KQLineF() : QLineF()
 {
 	self = NULL;
 	dummy = new DummyQLineF();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QLineF_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -551,13 +566,9 @@ static void QLineF_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QLineF_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQLineF *qp = (KQLineF *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -572,15 +583,6 @@ void KQLineF::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQLineF(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QLineF";
-	cdef->free = QLineF_free;
-	cdef->reftrace = QLineF_reftrace;
-	cdef->compareTo = QLineF_compareTo;
-}
-
 static knh_IntData_t QLineFConstInt[] = {
 	{"NoIntersection", QLineF::NoIntersection},
 	{"UnboundedIntersection", QLineF::UnboundedIntersection},
@@ -591,4 +593,15 @@ static knh_IntData_t QLineFConstInt[] = {
 DEFAPI(void) constQLineF(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QLineFConstInt);
 }
+
+
+DEFAPI(void) defQLineF(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QLineF";
+	cdef->free = QLineF_free;
+	cdef->reftrace = QLineF_reftrace;
+	cdef->compareTo = QLineF_compareTo;
+}
+
 

@@ -51,7 +51,7 @@ KMETHOD QStandardItem_getAccessibleDescription(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->accessibleDescription();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -65,7 +65,7 @@ KMETHOD QStandardItem_getAccessibleText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->accessibleText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -79,7 +79,7 @@ KMETHOD QStandardItem_appendColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<QStandardItem*> items;
@@ -97,7 +97,7 @@ KMETHOD QStandardItem_appendRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<QStandardItem*> items;
@@ -116,7 +116,7 @@ KMETHOD QStandardItem_appendRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStandardItem*  item = RawPtr_to(QStandardItem*, sfp[1]);
 		qp->appendRow(item);
 	}
@@ -128,7 +128,7 @@ KMETHOD QStandardItem_appendRows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<QStandardItem*> items;
@@ -146,7 +146,7 @@ KMETHOD QStandardItem_getBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBrush ret_v = qp->background();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -161,7 +161,7 @@ KMETHOD QStandardItem_getCheckState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::CheckState ret_v = qp->checkState();
 		RETURNi_(ret_v);
 	} else {
@@ -174,7 +174,7 @@ KMETHOD QStandardItem_getChild(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		QStandardItem* ret_v = qp->child(row, column);
@@ -190,7 +190,7 @@ KMETHOD QStandardItem_clone(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStandardItem* ret_v = qp->clone();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStandardItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -204,7 +204,7 @@ KMETHOD QStandardItem_column(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->column();
 		RETURNi_(ret_v);
 	} else {
@@ -217,7 +217,7 @@ KMETHOD QStandardItem_getColumnCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->columnCount();
 		RETURNi_(ret_v);
 	} else {
@@ -230,7 +230,7 @@ KMETHOD QStandardItem_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int role = Int_to(int, sfp[1]);
 		QVariant ret_v = qp->data(role);
 		QVariant *ret_v_ = new QVariant(ret_v);
@@ -241,16 +241,18 @@ KMETHOD QStandardItem_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QStandardItem.getFlags();
+//QtItemFlags QStandardItem.getFlags();
 KMETHOD QStandardItem_getFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ItemFlags ret_v = qp->flags();
-		RETURNi_(ret_v);
+		Qt::ItemFlags *ret_v_ = new Qt::ItemFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -259,7 +261,7 @@ KMETHOD QStandardItem_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont ret_v = qp->font();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -274,7 +276,7 @@ KMETHOD QStandardItem_getForeground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBrush ret_v = qp->foreground();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -289,7 +291,7 @@ KMETHOD QStandardItem_hasChildren(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasChildren();
 		RETURNb_(ret_v);
 	} else {
@@ -302,7 +304,7 @@ KMETHOD QStandardItem_getIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIcon ret_v = qp->icon();
 		QIcon *ret_v_ = new QIcon(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -317,7 +319,7 @@ KMETHOD QStandardItem_index(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QModelIndex ret_v = qp->index();
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -327,31 +329,12 @@ KMETHOD QStandardItem_index(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////void QStandardItem.insertColumn(int column, Array<QStandardItem> items);
-KMETHOD QStandardItem_insertColumn(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
-		int column = Int_to(int, sfp[1]);
-		knh_Array_t *a = sfp[2].a;
-		int asize = knh_Array_size(a);
-		QList<QStandardItem*> items;
-		for (int n = 0; n < asize; n++) {
-			knh_RawPtr_t *p = (knh_RawPtr_t*)(a->list[n]);
-			items.append((QStandardItem*)p->rawptr);
-		}
-		qp->insertColumn(column, items);
-	}
-	RETURNvoid_();
-}
-
-////void QStandardItem.insertColumns(int column, int count);
+//void QStandardItem.insertColumns(int column, int count);
 KMETHOD QStandardItem_insertColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		qp->insertColumns(column, count);
@@ -359,45 +342,12 @@ KMETHOD QStandardItem_insertColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-////void QStandardItem.insertRow(int row, Array<QStandardItem> items);
-KMETHOD QStandardItem_insertRow(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
-		int row = Int_to(int, sfp[1]);
-		knh_Array_t *a = sfp[2].a;
-		int asize = knh_Array_size(a);
-		QList<QStandardItem*> items;
-		for (int n = 0; n < asize; n++) {
-			knh_RawPtr_t *p = (knh_RawPtr_t*)(a->list[n]);
-			items.append((QStandardItem*)p->rawptr);
-		}
-		qp->insertRow(row, items);
-	}
-	RETURNvoid_();
-}
-
-/*
-////void QStandardItem.insertRow(int row, QStandardItem item);
-KMETHOD QStandardItem_insertRow(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
-		int row = Int_to(int, sfp[1]);
-		QStandardItem*  item = RawPtr_to(QStandardItem*, sfp[2]);
-		qp->insertRow(row, item);
-	}
-	RETURNvoid_();
-}
-*/
-////void QStandardItem.insertRows(int row, Array<QStandardItem> items);
+//void QStandardItem.insertRows(int row, Array<QStandardItem> items);
 KMETHOD QStandardItem_insertRows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		knh_Array_t *a = sfp[2].a;
 		int asize = knh_Array_size(a);
@@ -412,12 +362,12 @@ KMETHOD QStandardItem_insertRows(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-////void QStandardItem.insertRows(int row, int count);
+//void QStandardItem.insertRows(int row, int count);
 KMETHOD QStandardItem_insertRows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		qp->insertRows(row, count);
@@ -430,7 +380,7 @@ KMETHOD QStandardItem_isCheckable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isCheckable();
 		RETURNb_(ret_v);
 	} else {
@@ -443,7 +393,7 @@ KMETHOD QStandardItem_isDragEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isDragEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -456,7 +406,7 @@ KMETHOD QStandardItem_isDropEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isDropEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -469,7 +419,7 @@ KMETHOD QStandardItem_isEditable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEditable();
 		RETURNb_(ret_v);
 	} else {
@@ -482,7 +432,7 @@ KMETHOD QStandardItem_isEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -495,7 +445,7 @@ KMETHOD QStandardItem_isSelectable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSelectable();
 		RETURNb_(ret_v);
 	} else {
@@ -508,7 +458,7 @@ KMETHOD QStandardItem_isTristate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isTristate();
 		RETURNb_(ret_v);
 	} else {
@@ -521,7 +471,7 @@ KMETHOD QStandardItem_model(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStandardItemModel* ret_v = qp->model();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStandardItemModel*)ret_v, NULL);
 		RETURN_(rptr);
@@ -535,7 +485,7 @@ KMETHOD QStandardItem_parent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStandardItem* ret_v = qp->parent();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStandardItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -549,7 +499,7 @@ KMETHOD QStandardItem_removeColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		qp->removeColumn(column);
 	}
@@ -561,7 +511,7 @@ KMETHOD QStandardItem_removeColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		qp->removeColumns(column, count);
@@ -574,7 +524,7 @@ KMETHOD QStandardItem_removeRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		qp->removeRow(row);
 	}
@@ -586,7 +536,7 @@ KMETHOD QStandardItem_removeRows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		qp->removeRows(row, count);
@@ -599,7 +549,7 @@ KMETHOD QStandardItem_row(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->row();
 		RETURNi_(ret_v);
 	} else {
@@ -612,7 +562,7 @@ KMETHOD QStandardItem_getRowCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->rowCount();
 		RETURNi_(ret_v);
 	} else {
@@ -625,7 +575,7 @@ KMETHOD QStandardItem_setAccessibleDescription(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString accessibleDescription = String_to(const QString, sfp[1]);
 		qp->setAccessibleDescription(accessibleDescription);
 	}
@@ -637,7 +587,7 @@ KMETHOD QStandardItem_setAccessibleText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString accessibleText = String_to(const QString, sfp[1]);
 		qp->setAccessibleText(accessibleText);
 	}
@@ -649,7 +599,7 @@ KMETHOD QStandardItem_setBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[1]);
 		qp->setBackground(brush);
 	}
@@ -661,7 +611,7 @@ KMETHOD QStandardItem_setCheckState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::CheckState state = Int_to(Qt::CheckState, sfp[1]);
 		qp->setCheckState(state);
 	}
@@ -673,7 +623,7 @@ KMETHOD QStandardItem_setCheckable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool checkable = Boolean_to(bool, sfp[1]);
 		qp->setCheckable(checkable);
 	}
@@ -685,7 +635,7 @@ KMETHOD QStandardItem_setChild(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		QStandardItem*  item = RawPtr_to(QStandardItem*, sfp[3]);
@@ -700,7 +650,7 @@ KMETHOD QStandardItem_setChild(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		QStandardItem*  item = RawPtr_to(QStandardItem*, sfp[2]);
 		qp->setChild(row, item);
@@ -713,7 +663,7 @@ KMETHOD QStandardItem_setColumnCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int columns = Int_to(int, sfp[1]);
 		qp->setColumnCount(columns);
 	}
@@ -725,7 +675,7 @@ KMETHOD QStandardItem_setData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[1]);
 		int role = Int_to(int, sfp[2]);
 		qp->setData(value, role);
@@ -738,7 +688,7 @@ KMETHOD QStandardItem_setDragEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool dragEnabled = Boolean_to(bool, sfp[1]);
 		qp->setDragEnabled(dragEnabled);
 	}
@@ -750,7 +700,7 @@ KMETHOD QStandardItem_setDropEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool dropEnabled = Boolean_to(bool, sfp[1]);
 		qp->setDropEnabled(dropEnabled);
 	}
@@ -762,7 +712,7 @@ KMETHOD QStandardItem_setEditable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool editable = Boolean_to(bool, sfp[1]);
 		qp->setEditable(editable);
 	}
@@ -774,20 +724,20 @@ KMETHOD QStandardItem_setEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setEnabled(enabled);
 	}
 	RETURNvoid_();
 }
 
-//void QStandardItem.setFlags(int flags);
+//void QStandardItem.setFlags(QtItemFlags flags);
 KMETHOD QStandardItem_setFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
-		Qt::ItemFlags flags = Int_to(Qt::ItemFlags, sfp[1]);
+	if (qp) {
+		initFlag(flags, Qt::ItemFlags, sfp[1]);
 		qp->setFlags(flags);
 	}
 	RETURNvoid_();
@@ -798,7 +748,7 @@ KMETHOD QStandardItem_setFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont  font = *RawPtr_to(const QFont *, sfp[1]);
 		qp->setFont(font);
 	}
@@ -810,7 +760,7 @@ KMETHOD QStandardItem_setForeground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[1]);
 		qp->setForeground(brush);
 	}
@@ -822,7 +772,7 @@ KMETHOD QStandardItem_setIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[1]);
 		qp->setIcon(icon);
 	}
@@ -834,7 +784,7 @@ KMETHOD QStandardItem_setRowCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int rows = Int_to(int, sfp[1]);
 		qp->setRowCount(rows);
 	}
@@ -846,7 +796,7 @@ KMETHOD QStandardItem_setSelectable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool selectable = Boolean_to(bool, sfp[1]);
 		qp->setSelectable(selectable);
 	}
@@ -858,7 +808,7 @@ KMETHOD QStandardItem_setSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  size = *RawPtr_to(const QSize *, sfp[1]);
 		qp->setSizeHint(size);
 	}
@@ -870,7 +820,7 @@ KMETHOD QStandardItem_setStatusTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString statusTip = String_to(const QString, sfp[1]);
 		qp->setStatusTip(statusTip);
 	}
@@ -882,20 +832,20 @@ KMETHOD QStandardItem_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setText(text);
 	}
 	RETURNvoid_();
 }
 
-//void QStandardItem.setTextAlignment(int alignment);
+//void QStandardItem.setTextAlignment(QtAlignment alignment);
 KMETHOD QStandardItem_setTextAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(alignment, Qt::Alignment, sfp[1]);
 		qp->setTextAlignment(alignment);
 	}
 	RETURNvoid_();
@@ -906,7 +856,7 @@ KMETHOD QStandardItem_setToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString toolTip = String_to(const QString, sfp[1]);
 		qp->setToolTip(toolTip);
 	}
@@ -918,7 +868,7 @@ KMETHOD QStandardItem_setTristate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool tristate = Boolean_to(bool, sfp[1]);
 		qp->setTristate(tristate);
 	}
@@ -930,7 +880,7 @@ KMETHOD QStandardItem_setWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString whatsThis = String_to(const QString, sfp[1]);
 		qp->setWhatsThis(whatsThis);
 	}
@@ -942,7 +892,7 @@ KMETHOD QStandardItem_getSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -957,7 +907,7 @@ KMETHOD QStandardItem_sortChildren(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[2]);
 		qp->sortChildren(column, order);
@@ -970,7 +920,7 @@ KMETHOD QStandardItem_getStatusTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->statusTip();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -984,7 +934,7 @@ KMETHOD QStandardItem_takeChild(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		QStandardItem* ret_v = qp->takeChild(row, column);
@@ -1000,9 +950,9 @@ KMETHOD QStandardItem_takeColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
-		QList<QStandardItem*>ret_v = qp->takeColumn(column);
+		QList<QStandardItem*> ret_v = qp->takeColumn(column);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QStandardItem"));
@@ -1022,9 +972,9 @@ KMETHOD QStandardItem_takeRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
-		QList<QStandardItem*>ret_v = qp->takeRow(row);
+		QList<QStandardItem*> ret_v = qp->takeRow(row);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QStandardItem"));
@@ -1044,7 +994,7 @@ KMETHOD QStandardItem_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->text();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -1053,16 +1003,18 @@ KMETHOD QStandardItem_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QStandardItem.getTextAlignment();
+//QtAlignment QStandardItem.getTextAlignment();
 KMETHOD QStandardItem_getTextAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->textAlignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -1071,7 +1023,7 @@ KMETHOD QStandardItem_getToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->toolTip();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -1085,7 +1037,7 @@ KMETHOD QStandardItem_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -1098,7 +1050,7 @@ KMETHOD QStandardItem_getWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItem *  qp = RawPtr_to(QStandardItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->whatsThis();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -1107,6 +1059,24 @@ KMETHOD QStandardItem_getWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QStandardItem.parents();
+KMETHOD QStandardItem_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QStandardItem *qp = RawPtr_to(QStandardItem*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQStandardItem::DummyQStandardItem()
 {
@@ -1155,17 +1125,28 @@ bool DummyQStandardItem::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQStandardItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQStandardItem::connection(QObject *o)
 {
-	return;
+	QStandardItem *p = dynamic_cast<QStandardItem*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQStandardItem::KQStandardItem() : QStandardItem()
 {
 	self = NULL;
 	dummy = new DummyQStandardItem();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStandardItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1220,13 +1201,9 @@ static void QStandardItem_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStandardItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStandardItem *qp = (KQStandardItem *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -1241,15 +1218,6 @@ void KQStandardItem::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStandardItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStandardItem";
-	cdef->free = QStandardItem_free;
-	cdef->reftrace = QStandardItem_reftrace;
-	cdef->compareTo = QStandardItem_compareTo;
-}
-
 static knh_IntData_t QStandardItemConstInt[] = {
 	{"Type", QStandardItem::Type},
 	{"UserType", QStandardItem::UserType},
@@ -1259,4 +1227,15 @@ static knh_IntData_t QStandardItemConstInt[] = {
 DEFAPI(void) constQStandardItem(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStandardItemConstInt);
 }
+
+
+DEFAPI(void) defQStandardItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStandardItem";
+	cdef->free = QStandardItem_free;
+	cdef->reftrace = QStandardItem_reftrace;
+	cdef->compareTo = QStandardItem_compareTo;
+}
+
 

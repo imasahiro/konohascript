@@ -13,7 +13,7 @@ KMETHOD QObjectCleanupHandler_add(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObjectCleanupHandler *  qp = RawPtr_to(QObjectCleanupHandler *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
 		QObject* ret_v = qp->add(object);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QObject*)ret_v, NULL);
@@ -28,7 +28,7 @@ KMETHOD QObjectCleanupHandler_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObjectCleanupHandler *  qp = RawPtr_to(QObjectCleanupHandler *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -39,7 +39,7 @@ KMETHOD QObjectCleanupHandler_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObjectCleanupHandler *  qp = RawPtr_to(QObjectCleanupHandler *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
 		RETURNb_(ret_v);
 	} else {
@@ -52,7 +52,7 @@ KMETHOD QObjectCleanupHandler_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObjectCleanupHandler *  qp = RawPtr_to(QObjectCleanupHandler *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
 		qp->remove(object);
 	}
@@ -110,9 +110,23 @@ bool DummyQObjectCleanupHandler::signalConnect(knh_Func_t *callback_func, string
 	}
 }
 
+void DummyQObjectCleanupHandler::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQObjectCleanupHandler::connection(QObject *o)
 {
+	QObjectCleanupHandler *p = dynamic_cast<QObjectCleanupHandler*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
 }
 
@@ -175,13 +189,9 @@ static void QObjectCleanupHandler_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QObjectCleanupHandler_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQObjectCleanupHandler *qp = (KQObjectCleanupHandler *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -204,6 +214,8 @@ bool KQObjectCleanupHandler::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQObjectCleanupHandler(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

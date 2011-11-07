@@ -3,7 +3,7 @@ KMETHOD QLCDNumber_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -42,7 +42,7 @@ KMETHOD QLCDNumber_checkOverflow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  num = *RawPtr_to(double *, sfp[1]);
 		bool ret_v = qp->checkOverflow(num);
 		RETURNb_(ret_v);
@@ -57,7 +57,7 @@ KMETHOD QLCDNumber_checkOverflow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int num = Int_to(int, sfp[1]);
 		bool ret_v = qp->checkOverflow(num);
 		RETURNb_(ret_v);
@@ -71,7 +71,7 @@ KMETHOD QLCDNumber_getDigitCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->digitCount();
 		RETURNi_(ret_v);
 	} else {
@@ -84,7 +84,7 @@ KMETHOD QLCDNumber_intValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->intValue();
 		RETURNi_(ret_v);
 	} else {
@@ -97,7 +97,7 @@ KMETHOD QLCDNumber_getMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLCDNumber::Mode ret_v = qp->mode();
 		RETURNi_(ret_v);
 	} else {
@@ -110,7 +110,7 @@ KMETHOD QLCDNumber_getSegmentStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLCDNumber::SegmentStyle ret_v = qp->segmentStyle();
 		RETURNi_(ret_v);
 	} else {
@@ -123,7 +123,7 @@ KMETHOD QLCDNumber_setDigitCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int numDigits = Int_to(int, sfp[1]);
 		qp->setDigitCount(numDigits);
 	}
@@ -135,7 +135,7 @@ KMETHOD QLCDNumber_setMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLCDNumber::Mode arg0 = Int_to(QLCDNumber::Mode, sfp[1]);
 		qp->setMode(arg0);
 	}
@@ -147,7 +147,7 @@ KMETHOD QLCDNumber_setSegmentStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLCDNumber::SegmentStyle arg0 = Int_to(QLCDNumber::SegmentStyle, sfp[1]);
 		qp->setSegmentStyle(arg0);
 	}
@@ -159,7 +159,7 @@ KMETHOD QLCDNumber_getSmallDecimalPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->smallDecimalPoint();
 		RETURNb_(ret_v);
 	} else {
@@ -172,7 +172,7 @@ KMETHOD QLCDNumber_value(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double ret_v = qp->value();
 		double *ret_v_ = new double(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -187,7 +187,7 @@ KMETHOD QLCDNumber_display(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString s = String_to(const QString, sfp[1]);
 		qp->display(s);
 	}
@@ -200,7 +200,7 @@ KMETHOD QLCDNumber_display(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  num = *RawPtr_to(double *, sfp[1]);
 		qp->display(num);
 	}
@@ -213,7 +213,7 @@ KMETHOD QLCDNumber_display(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int num = Int_to(int, sfp[1]);
 		qp->display(num);
 	}
@@ -225,7 +225,7 @@ KMETHOD QLCDNumber_setBinMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->setBinMode();
 	}
 	RETURNvoid_();
@@ -236,7 +236,7 @@ KMETHOD QLCDNumber_setDecMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->setDecMode();
 	}
 	RETURNvoid_();
@@ -247,7 +247,7 @@ KMETHOD QLCDNumber_setHexMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->setHexMode();
 	}
 	RETURNvoid_();
@@ -258,7 +258,7 @@ KMETHOD QLCDNumber_setOctMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->setOctMode();
 	}
 	RETURNvoid_();
@@ -269,7 +269,7 @@ KMETHOD QLCDNumber_setSmallDecimalPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLCDNumber *  qp = RawPtr_to(QLCDNumber *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setSmallDecimalPoint(arg0);
 	}
@@ -342,10 +342,25 @@ bool DummyQLCDNumber::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQLCDNumber::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, overflow_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQFrame::reftrace(ctx, p, tail_);
+}
 
 void DummyQLCDNumber::connection(QObject *o)
 {
-	connect(o, SIGNAL(overflow()), this, SLOT(overflowSlot()));
+	QLCDNumber *p = dynamic_cast<QLCDNumber*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(overflow()), this, SLOT(overflowSlot()));
+	}
 	DummyQFrame::connection(o);
 }
 
@@ -408,17 +423,9 @@ static void QLCDNumber_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QLCDNumber_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQLCDNumber *qp = (KQLCDNumber *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->overflow_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->overflow_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -442,15 +449,6 @@ bool KQLCDNumber::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQLCDNumber(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QLCDNumber";
-	cdef->free = QLCDNumber_free;
-	cdef->reftrace = QLCDNumber_reftrace;
-	cdef->compareTo = QLCDNumber_compareTo;
-}
-
 static knh_IntData_t QLCDNumberConstInt[] = {
 	{"Hex", QLCDNumber::Hex},
 	{"Dec", QLCDNumber::Dec},
@@ -465,4 +463,15 @@ static knh_IntData_t QLCDNumberConstInt[] = {
 DEFAPI(void) constQLCDNumber(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QLCDNumberConstInt);
 }
+
+
+DEFAPI(void) defQLCDNumber(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QLCDNumber";
+	cdef->free = QLCDNumber_free;
+	cdef->reftrace = QLCDNumber_reftrace;
+	cdef->compareTo = QLCDNumber_compareTo;
+}
+
 

@@ -3,7 +3,7 @@ KMETHOD QTapGesture_getPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTapGesture *  qp = RawPtr_to(QTapGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->position();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QTapGesture_setPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTapGesture *  qp = RawPtr_to(QTapGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  pos = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setPosition(pos);
 	}
@@ -76,17 +76,24 @@ bool DummyQTapGesture::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTapGesture::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGesture::reftrace(ctx, p, tail_);
+}
 
 void DummyQTapGesture::connection(QObject *o)
 {
+	QTapGesture *p = dynamic_cast<QTapGesture*>(o);
+	if (p != NULL) {
+	}
 	DummyQGesture::connection(o);
-}
-
-KQTapGesture::KQTapGesture() : QTapGesture()
-{
-	self = NULL;
-	dummy = new DummyQTapGesture();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTapGesture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -141,13 +148,9 @@ static void QTapGesture_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTapGesture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTapGesture *qp = (KQTapGesture *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -170,6 +173,8 @@ bool KQTapGesture::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQTapGesture(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -14,7 +14,7 @@ KMETHOD QSemaphore_acquire(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSemaphore *  qp = RawPtr_to(QSemaphore *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int n = Int_to(int, sfp[1]);
 		qp->acquire(n);
 	}
@@ -26,7 +26,7 @@ KMETHOD QSemaphore_available(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSemaphore *  qp = RawPtr_to(QSemaphore *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->available();
 		RETURNi_(ret_v);
 	} else {
@@ -39,7 +39,7 @@ KMETHOD QSemaphore_release(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSemaphore *  qp = RawPtr_to(QSemaphore *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int n = Int_to(int, sfp[1]);
 		qp->release(n);
 	}
@@ -51,7 +51,7 @@ KMETHOD QSemaphore_tryAcquire(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSemaphore *  qp = RawPtr_to(QSemaphore *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int n = Int_to(int, sfp[1]);
 		bool ret_v = qp->tryAcquire(n);
 		RETURNb_(ret_v);
@@ -66,7 +66,7 @@ KMETHOD QSemaphore_tryAcquire(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSemaphore *  qp = RawPtr_to(QSemaphore *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int n = Int_to(int, sfp[1]);
 		int timeout = Int_to(int, sfp[2]);
 		bool ret_v = qp->tryAcquire(n, timeout);
@@ -76,6 +76,24 @@ KMETHOD QSemaphore_tryAcquire(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 */
+//Array<String> QSemaphore.parents();
+KMETHOD QSemaphore_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QSemaphore *qp = RawPtr_to(QSemaphore*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQSemaphore::DummyQSemaphore()
 {
@@ -124,17 +142,28 @@ bool DummyQSemaphore::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSemaphore::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQSemaphore::connection(QObject *o)
 {
-	return;
+	QSemaphore *p = dynamic_cast<QSemaphore*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQSemaphore::KQSemaphore(int n) : QSemaphore(n)
 {
 	self = NULL;
 	dummy = new DummyQSemaphore();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSemaphore_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -189,13 +218,9 @@ static void QSemaphore_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSemaphore_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSemaphore *qp = (KQSemaphore *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -209,6 +234,8 @@ void KQSemaphore::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQSemaphore(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

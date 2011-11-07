@@ -51,13 +51,28 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+class
+QFile
+name
+Permissions
+class
+QIODevice
+name
+OpenMode
+
 typedefed_objects
 
 parent_typedefed_objects
 DecoderFn
 EncoderFn
 PermissionSpec
-Permissions
+
+class_objects
+
+parent_class_objects
 
 enums
 
@@ -109,6 +124,21 @@ ExeGroup
 ReadOther
 WriteOther
 ExeOther
+public_flag
+true
+class_name
+QIODevice
+name
+OpenModeFlag
+key
+NotOpen
+ReadOnly
+WriteOnly
+ReadWrite
+Append
+Truncate
+Text
+Unbuffered
 public_flag
 true
 

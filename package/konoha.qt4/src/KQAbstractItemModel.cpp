@@ -4,7 +4,7 @@ KMETHOD QAbstractItemModel_buddy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QModelIndex ret_v = qp->buddy(index);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -20,7 +20,7 @@ KMETHOD QAbstractItemModel_canFetchMore(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		bool ret_v = qp->canFetchMore(parent);
 		RETURNb_(ret_v);
@@ -34,7 +34,7 @@ KMETHOD QAbstractItemModel_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int role = Int_to(int, sfp[2]);
 		QVariant ret_v = qp->data(index, role);
@@ -51,7 +51,7 @@ KMETHOD QAbstractItemModel_dropMimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMimeData*  data = RawPtr_to(const QMimeData*, sfp[1]);
 		Qt::DropAction action = Int_to(Qt::DropAction, sfp[2]);
 		int row = Int_to(int, sfp[3]);
@@ -69,24 +69,26 @@ KMETHOD QAbstractItemModel_fetchMore(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		qp->fetchMore(parent);
 	}
 	RETURNvoid_();
 }
 
-//@Virtual int QAbstractItemModel.flags(QModelIndex index);
+//@Virtual QtItemFlags QAbstractItemModel.flags(QModelIndex index);
 KMETHOD QAbstractItemModel_flags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		Qt::ItemFlags ret_v = qp->flags(index);
-		RETURNi_(ret_v);
+		Qt::ItemFlags *ret_v_ = new Qt::ItemFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -95,7 +97,7 @@ KMETHOD QAbstractItemModel_hasChildren(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		bool ret_v = qp->hasChildren(parent);
 		RETURNb_(ret_v);
@@ -109,7 +111,7 @@ KMETHOD QAbstractItemModel_hasIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -125,7 +127,7 @@ KMETHOD QAbstractItemModel_getHeaderData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int section = Int_to(int, sfp[1]);
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[2]);
 		int role = Int_to(int, sfp[3]);
@@ -138,27 +140,12 @@ KMETHOD QAbstractItemModel_getHeaderData(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////boolean QAbstractItemModel.insertColumn(int column, QModelIndex parent);
-KMETHOD QAbstractItemModel_insertColumn(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
-		int column = Int_to(int, sfp[1]);
-		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[2]);
-		bool ret_v = qp->insertColumn(column, parent);
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////@Virtual boolean QAbstractItemModel.insertColumns(int column, int count, QModelIndex parent);
+//@Virtual boolean QAbstractItemModel.insertColumns(int column, int count, QModelIndex parent);
 KMETHOD QAbstractItemModel_insertColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -169,27 +156,12 @@ KMETHOD QAbstractItemModel_insertColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////boolean QAbstractItemModel.insertRow(int row, QModelIndex parent);
-KMETHOD QAbstractItemModel_insertRow(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
-		int row = Int_to(int, sfp[1]);
-		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[2]);
-		bool ret_v = qp->insertRow(row, parent);
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////@Virtual boolean QAbstractItemModel.insertRows(int row, int count, QModelIndex parent);
+//@Virtual boolean QAbstractItemModel.insertRows(int row, int count, QModelIndex parent);
 KMETHOD QAbstractItemModel_insertRows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -200,17 +172,17 @@ KMETHOD QAbstractItemModel_insertRows(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual QModelIndexList QAbstractItemModel.match(QModelIndex start, int role, QVariant value, int hits, int flags);
+//@Virtual QModelIndexList QAbstractItemModel.match(QModelIndex start, int role, QVariant value, int hits, QtMatchFlags flags);
 KMETHOD QAbstractItemModel_match(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  start = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int role = Int_to(int, sfp[2]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[3]);
 		int hits = Int_to(int, sfp[4]);
-		Qt::MatchFlags flags = Int_to(Qt::MatchFlags, sfp[5]);
+		initFlag(flags, Qt::MatchFlags, sfp[5]);
 		QModelIndexList ret_v = qp->match(start, role, value, hits, flags);
 		QModelIndexList *ret_v_ = new QModelIndexList(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -225,7 +197,7 @@ KMETHOD QAbstractItemModel_mimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndexList  indexes = *RawPtr_to(const QModelIndexList *, sfp[1]);
 		QMimeData* ret_v = qp->mimeData(indexes);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMimeData*)ret_v, NULL);
@@ -240,7 +212,7 @@ KMETHOD QAbstractItemModel_parent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QModelIndex ret_v = qp->parent(index);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -256,7 +228,7 @@ KMETHOD QAbstractItemModel_removeColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[2]);
 		bool ret_v = qp->removeColumn(column, parent);
@@ -271,7 +243,7 @@ KMETHOD QAbstractItemModel_removeColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -287,7 +259,7 @@ KMETHOD QAbstractItemModel_removeRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[2]);
 		bool ret_v = qp->removeRow(row, parent);
@@ -302,7 +274,7 @@ KMETHOD QAbstractItemModel_removeRows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -318,7 +290,7 @@ KMETHOD QAbstractItemModel_setData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[2]);
 		int role = Int_to(int, sfp[3]);
@@ -334,7 +306,7 @@ KMETHOD QAbstractItemModel_setHeaderData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int section = Int_to(int, sfp[1]);
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[2]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[3]);
@@ -346,13 +318,13 @@ KMETHOD QAbstractItemModel_setHeaderData(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QAbstractItemModel.setSupportedDragActions(int actions);
+//void QAbstractItemModel.setSupportedDragActions(QtDropActions actions);
 KMETHOD QAbstractItemModel_setSupportedDragActions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
-		Qt::DropActions actions = Int_to(Qt::DropActions, sfp[1]);
+	if (qp) {
+		initFlag(actions, Qt::DropActions, sfp[1]);
 		qp->setSupportedDragActions(actions);
 	}
 	RETURNvoid_();
@@ -363,7 +335,7 @@ KMETHOD QAbstractItemModel_sibling(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -381,7 +353,7 @@ KMETHOD QAbstractItemModel_sort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[2]);
 		qp->sort(column, order);
@@ -394,7 +366,7 @@ KMETHOD QAbstractItemModel_span(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QSize ret_v = qp->span(index);
 		QSize *ret_v_ = new QSize(ret_v);
@@ -405,29 +377,33 @@ KMETHOD QAbstractItemModel_span(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QAbstractItemModel.getSupportedDragActions();
+//QtDropActions QAbstractItemModel.getSupportedDragActions();
 KMETHOD QAbstractItemModel_getSupportedDragActions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DropActions ret_v = qp->supportedDragActions();
-		RETURNi_(ret_v);
+		Qt::DropActions *ret_v_ = new Qt::DropActions(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
-//@Virtual int QAbstractItemModel.supportedDropActions();
+//@Virtual QtDropActions QAbstractItemModel.supportedDropActions();
 KMETHOD QAbstractItemModel_supportedDropActions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DropActions ret_v = qp->supportedDropActions();
-		RETURNi_(ret_v);
+		Qt::DropActions *ret_v_ = new Qt::DropActions(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -436,7 +412,7 @@ KMETHOD QAbstractItemModel_revert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->revert();
 	}
 	RETURNvoid_();
@@ -447,7 +423,7 @@ KMETHOD QAbstractItemModel_submit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemModel *  qp = RawPtr_to(QAbstractItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->submit();
 		RETURNb_(ret_v);
 	} else {
@@ -843,27 +819,59 @@ bool DummyQAbstractItemModel::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
+void DummyQAbstractItemModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 18;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, columns_about_to_be_inserted_func);
+	KNH_ADDNNREF(ctx, columns_about_to_be_moved_func);
+	KNH_ADDNNREF(ctx, columns_about_to_be_removed_func);
+	KNH_ADDNNREF(ctx, columns_inserted_func);
+	KNH_ADDNNREF(ctx, columns_moved_func);
+	KNH_ADDNNREF(ctx, columns_removed_func);
+	KNH_ADDNNREF(ctx, data_changed_func);
+	KNH_ADDNNREF(ctx, header_data_changed_func);
+	KNH_ADDNNREF(ctx, layout_about_to_be_changed_func);
+	KNH_ADDNNREF(ctx, layout_changed_func);
+	KNH_ADDNNREF(ctx, model_about_to_be_reset_func);
+	KNH_ADDNNREF(ctx, model_reset_func);
+	KNH_ADDNNREF(ctx, rows_about_to_be_inserted_func);
+	KNH_ADDNNREF(ctx, rows_about_to_be_moved_func);
+	KNH_ADDNNREF(ctx, rows_about_to_be_removed_func);
+	KNH_ADDNNREF(ctx, rows_inserted_func);
+	KNH_ADDNNREF(ctx, rows_moved_func);
+	KNH_ADDNNREF(ctx, rows_removed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQAbstractItemModel::connection(QObject *o)
 {
-	connect(o, SIGNAL(columnsAboutToBeInserted(const QModelIndex, int, int)), this, SLOT(columnsAboutToBeInsertedSlot(const QModelIndex, int, int)));
-	connect(o, SIGNAL(columnsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int)), this, SLOT(columnsAboutToBeMovedSlot(const QModelIndex, int, int, const QModelIndex, int)));
-	connect(o, SIGNAL(columnsAboutToBeRemoved(const QModelIndex, int, int)), this, SLOT(columnsAboutToBeRemovedSlot(const QModelIndex, int, int)));
-	connect(o, SIGNAL(columnsInserted(const QModelIndex, int, int)), this, SLOT(columnsInsertedSlot(const QModelIndex, int, int)));
-	connect(o, SIGNAL(columnsMoved(const QModelIndex, int, int, const QModelIndex, int)), this, SLOT(columnsMovedSlot(const QModelIndex, int, int, const QModelIndex, int)));
-	connect(o, SIGNAL(columnsRemoved(const QModelIndex, int, int)), this, SLOT(columnsRemovedSlot(const QModelIndex, int, int)));
-	connect(o, SIGNAL(dataChanged(const QModelIndex, const QModelIndex)), this, SLOT(dataChangedSlot(const QModelIndex, const QModelIndex)));
-	connect(o, SIGNAL(headerDataChanged(Qt::Orientation, int, int)), this, SLOT(headerDataChangedSlot(Qt::Orientation, int, int)));
-	connect(o, SIGNAL(layoutAboutToBeChanged()), this, SLOT(layoutAboutToBeChangedSlot()));
-	connect(o, SIGNAL(layoutChanged()), this, SLOT(layoutChangedSlot()));
-	connect(o, SIGNAL(modelAboutToBeReset()), this, SLOT(modelAboutToBeResetSlot()));
-	connect(o, SIGNAL(modelReset()), this, SLOT(modelResetSlot()));
-	connect(o, SIGNAL(rowsAboutToBeInserted(const QModelIndex, int, int)), this, SLOT(rowsAboutToBeInsertedSlot(const QModelIndex, int, int)));
-	connect(o, SIGNAL(rowsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int)), this, SLOT(rowsAboutToBeMovedSlot(const QModelIndex, int, int, const QModelIndex, int)));
-	connect(o, SIGNAL(rowsAboutToBeRemoved(const QModelIndex, int, int)), this, SLOT(rowsAboutToBeRemovedSlot(const QModelIndex, int, int)));
-	connect(o, SIGNAL(rowsInserted(const QModelIndex, int, int)), this, SLOT(rowsInsertedSlot(const QModelIndex, int, int)));
-	connect(o, SIGNAL(rowsMoved(const QModelIndex, int, int, const QModelIndex, int)), this, SLOT(rowsMovedSlot(const QModelIndex, int, int, const QModelIndex, int)));
-	connect(o, SIGNAL(rowsRemoved(const QModelIndex, int, int)), this, SLOT(rowsRemovedSlot(const QModelIndex, int, int)));
+	QAbstractItemModel *p = dynamic_cast<QAbstractItemModel*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(columnsAboutToBeInserted(const QModelIndex, int, int)), this, SLOT(columnsAboutToBeInsertedSlot(const QModelIndex, int, int)));
+		connect(p, SIGNAL(columnsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int)), this, SLOT(columnsAboutToBeMovedSlot(const QModelIndex, int, int, const QModelIndex, int)));
+		connect(p, SIGNAL(columnsAboutToBeRemoved(const QModelIndex, int, int)), this, SLOT(columnsAboutToBeRemovedSlot(const QModelIndex, int, int)));
+		connect(p, SIGNAL(columnsInserted(const QModelIndex, int, int)), this, SLOT(columnsInsertedSlot(const QModelIndex, int, int)));
+		connect(p, SIGNAL(columnsMoved(const QModelIndex, int, int, const QModelIndex, int)), this, SLOT(columnsMovedSlot(const QModelIndex, int, int, const QModelIndex, int)));
+		connect(p, SIGNAL(columnsRemoved(const QModelIndex, int, int)), this, SLOT(columnsRemovedSlot(const QModelIndex, int, int)));
+		connect(p, SIGNAL(dataChanged(const QModelIndex, const QModelIndex)), this, SLOT(dataChangedSlot(const QModelIndex, const QModelIndex)));
+		connect(p, SIGNAL(headerDataChanged(Qt::Orientation, int, int)), this, SLOT(headerDataChangedSlot(Qt::Orientation, int, int)));
+		connect(p, SIGNAL(layoutAboutToBeChanged()), this, SLOT(layoutAboutToBeChangedSlot()));
+		connect(p, SIGNAL(layoutChanged()), this, SLOT(layoutChangedSlot()));
+		connect(p, SIGNAL(modelAboutToBeReset()), this, SLOT(modelAboutToBeResetSlot()));
+		connect(p, SIGNAL(modelReset()), this, SLOT(modelResetSlot()));
+		connect(p, SIGNAL(rowsAboutToBeInserted(const QModelIndex, int, int)), this, SLOT(rowsAboutToBeInsertedSlot(const QModelIndex, int, int)));
+		connect(p, SIGNAL(rowsAboutToBeMoved(const QModelIndex, int, int, const QModelIndex, int)), this, SLOT(rowsAboutToBeMovedSlot(const QModelIndex, int, int, const QModelIndex, int)));
+		connect(p, SIGNAL(rowsAboutToBeRemoved(const QModelIndex, int, int)), this, SLOT(rowsAboutToBeRemovedSlot(const QModelIndex, int, int)));
+		connect(p, SIGNAL(rowsInserted(const QModelIndex, int, int)), this, SLOT(rowsInsertedSlot(const QModelIndex, int, int)));
+		connect(p, SIGNAL(rowsMoved(const QModelIndex, int, int, const QModelIndex, int)), this, SLOT(rowsMovedSlot(const QModelIndex, int, int, const QModelIndex, int)));
+		connect(p, SIGNAL(rowsRemoved(const QModelIndex, int, int)), this, SLOT(rowsRemovedSlot(const QModelIndex, int, int)));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -926,85 +934,9 @@ static void QAbstractItemModel_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractItemModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 18;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAbstractItemModel *qp = (KQAbstractItemModel *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->columns_about_to_be_inserted_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->columns_about_to_be_inserted_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->columns_about_to_be_moved_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->columns_about_to_be_moved_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->columns_about_to_be_removed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->columns_about_to_be_removed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->columns_inserted_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->columns_inserted_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->columns_moved_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->columns_moved_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->columns_removed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->columns_removed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->data_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->data_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->header_data_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->header_data_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->layout_about_to_be_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->layout_about_to_be_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->layout_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->layout_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->model_about_to_be_reset_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->model_about_to_be_reset_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->model_reset_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->model_reset_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->rows_about_to_be_inserted_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->rows_about_to_be_inserted_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->rows_about_to_be_moved_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->rows_about_to_be_moved_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->rows_about_to_be_removed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->rows_about_to_be_removed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->rows_inserted_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->rows_inserted_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->rows_moved_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->rows_moved_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->rows_removed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->rows_removed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -1027,6 +959,8 @@ bool KQAbstractItemModel::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQAbstractItemModel(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

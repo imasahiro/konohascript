@@ -125,7 +125,7 @@ KMETHOD QBrush_getColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBrush *  qp = RawPtr_to(QBrush *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor ret_v = qp->color();
 		QColor *ret_v_ = new QColor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -140,7 +140,7 @@ KMETHOD QBrush_gradient(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBrush *  qp = RawPtr_to(QBrush *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGradient* ret_v = qp->gradient();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGradient*)ret_v, NULL);
 		RETURN_(rptr);
@@ -154,7 +154,7 @@ KMETHOD QBrush_isOpaque(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBrush *  qp = RawPtr_to(QBrush *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isOpaque();
 		RETURNb_(ret_v);
 	} else {
@@ -167,7 +167,7 @@ KMETHOD QBrush_getMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBrush *  qp = RawPtr_to(QBrush *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMatrix ret_v = qp->matrix();
 		QMatrix *ret_v_ = new QMatrix(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -182,7 +182,7 @@ KMETHOD QBrush_setColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBrush *  qp = RawPtr_to(QBrush *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor  color = *RawPtr_to(const QColor *, sfp[1]);
 		qp->setColor(color);
 	}
@@ -195,7 +195,7 @@ KMETHOD QBrush_setColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBrush *  qp = RawPtr_to(QBrush *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::GlobalColor color = Int_to(Qt::GlobalColor, sfp[1]);
 		qp->setColor(color);
 	}
@@ -207,7 +207,7 @@ KMETHOD QBrush_setMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBrush *  qp = RawPtr_to(QBrush *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMatrix  matrix = *RawPtr_to(const QMatrix *, sfp[1]);
 		qp->setMatrix(matrix);
 	}
@@ -219,7 +219,7 @@ KMETHOD QBrush_setStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBrush *  qp = RawPtr_to(QBrush *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::BrushStyle style = Int_to(Qt::BrushStyle, sfp[1]);
 		qp->setStyle(style);
 	}
@@ -231,7 +231,7 @@ KMETHOD QBrush_setTexture(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBrush *  qp = RawPtr_to(QBrush *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[1]);
 		qp->setTexture(pixmap);
 	}
@@ -243,7 +243,7 @@ KMETHOD QBrush_setTextureImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBrush *  qp = RawPtr_to(QBrush *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QImage  image = *RawPtr_to(const QImage *, sfp[1]);
 		qp->setTextureImage(image);
 	}
@@ -255,7 +255,7 @@ KMETHOD QBrush_setTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBrush *  qp = RawPtr_to(QBrush *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTransform  matrix = *RawPtr_to(const QTransform *, sfp[1]);
 		qp->setTransform(matrix);
 	}
@@ -267,7 +267,7 @@ KMETHOD QBrush_getStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBrush *  qp = RawPtr_to(QBrush *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::BrushStyle ret_v = qp->style();
 		RETURNi_(ret_v);
 	} else {
@@ -280,7 +280,7 @@ KMETHOD QBrush_getTexture(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBrush *  qp = RawPtr_to(QBrush *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPixmap ret_v = qp->texture();
 		QPixmap *ret_v_ = new QPixmap(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -295,7 +295,7 @@ KMETHOD QBrush_getTextureImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBrush *  qp = RawPtr_to(QBrush *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QImage ret_v = qp->textureImage();
 		QImage *ret_v_ = new QImage(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -310,7 +310,7 @@ KMETHOD QBrush_getTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBrush *  qp = RawPtr_to(QBrush *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTransform ret_v = qp->transform();
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -320,6 +320,24 @@ KMETHOD QBrush_getTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QBrush.parents();
+KMETHOD QBrush_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QBrush *qp = RawPtr_to(QBrush*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQBrush::DummyQBrush()
 {
@@ -368,17 +386,28 @@ bool DummyQBrush::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQBrush::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQBrush::connection(QObject *o)
 {
-	return;
+	QBrush *p = dynamic_cast<QBrush*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQBrush::KQBrush() : QBrush()
 {
 	self = NULL;
 	dummy = new DummyQBrush();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QBrush_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -433,13 +462,9 @@ static void QBrush_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QBrush_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQBrush *qp = (KQBrush *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -453,6 +478,8 @@ void KQBrush::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQBrush(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

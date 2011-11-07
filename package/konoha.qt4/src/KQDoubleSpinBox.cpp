@@ -3,7 +3,7 @@ KMETHOD QDoubleSpinBox_fixup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString input = String_to(QString, sfp[1]);
 		qp->fixup(input);
 	}
@@ -15,7 +15,7 @@ KMETHOD QDoubleSpinBox_validate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString text = String_to(QString, sfp[1]);
 		int pos = Int_to(int, sfp[2]);
 		QValidator::State ret_v = qp->validate(text, pos);
@@ -41,7 +41,7 @@ KMETHOD QDoubleSpinBox_cleanText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->cleanText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -55,7 +55,7 @@ KMETHOD QDoubleSpinBox_getDecimals(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->decimals();
 		RETURNi_(ret_v);
 	} else {
@@ -68,7 +68,7 @@ KMETHOD QDoubleSpinBox_getMaximum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double ret_v = qp->maximum();
 		double *ret_v_ = new double(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -83,7 +83,7 @@ KMETHOD QDoubleSpinBox_getMinimum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double ret_v = qp->minimum();
 		double *ret_v_ = new double(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -98,7 +98,7 @@ KMETHOD QDoubleSpinBox_getPrefix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->prefix();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -112,7 +112,7 @@ KMETHOD QDoubleSpinBox_setDecimals(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int prec = Int_to(int, sfp[1]);
 		qp->setDecimals(prec);
 	}
@@ -124,7 +124,7 @@ KMETHOD QDoubleSpinBox_setMaximum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  max = *RawPtr_to(double *, sfp[1]);
 		qp->setMaximum(max);
 	}
@@ -136,7 +136,7 @@ KMETHOD QDoubleSpinBox_setMinimum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  min = *RawPtr_to(double *, sfp[1]);
 		qp->setMinimum(min);
 	}
@@ -148,7 +148,7 @@ KMETHOD QDoubleSpinBox_setPrefix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString prefix = String_to(const QString, sfp[1]);
 		qp->setPrefix(prefix);
 	}
@@ -160,7 +160,7 @@ KMETHOD QDoubleSpinBox_setRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  minimum = *RawPtr_to(double *, sfp[1]);
 		double  maximum = *RawPtr_to(double *, sfp[2]);
 		qp->setRange(minimum, maximum);
@@ -173,7 +173,7 @@ KMETHOD QDoubleSpinBox_setSingleStep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  val = *RawPtr_to(double *, sfp[1]);
 		qp->setSingleStep(val);
 	}
@@ -185,7 +185,7 @@ KMETHOD QDoubleSpinBox_setSuffix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString suffix = String_to(const QString, sfp[1]);
 		qp->setSuffix(suffix);
 	}
@@ -197,7 +197,7 @@ KMETHOD QDoubleSpinBox_getSingleStep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double ret_v = qp->singleStep();
 		double *ret_v_ = new double(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -212,7 +212,7 @@ KMETHOD QDoubleSpinBox_getSuffix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->suffix();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -226,7 +226,7 @@ KMETHOD QDoubleSpinBox_textFromValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  value = *RawPtr_to(double *, sfp[1]);
 		QString ret_v = qp->textFromValue(value);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -241,7 +241,7 @@ KMETHOD QDoubleSpinBox_getValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double ret_v = qp->value();
 		double *ret_v_ = new double(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -256,7 +256,7 @@ KMETHOD QDoubleSpinBox_valueFromText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		double ret_v = qp->valueFromText(text);
 		double *ret_v_ = new double(ret_v);
@@ -272,7 +272,7 @@ KMETHOD QDoubleSpinBox_setValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleSpinBox *  qp = RawPtr_to(QDoubleSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  val = *RawPtr_to(double *, sfp[1]);
 		qp->setValue(val);
 	}
@@ -330,9 +330,23 @@ bool DummyQDoubleSpinBox::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDoubleSpinBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractSpinBox::reftrace(ctx, p, tail_);
+}
 
 void DummyQDoubleSpinBox::connection(QObject *o)
 {
+	QDoubleSpinBox *p = dynamic_cast<QDoubleSpinBox*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractSpinBox::connection(o);
 }
 
@@ -395,13 +409,9 @@ static void QDoubleSpinBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDoubleSpinBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDoubleSpinBox *qp = (KQDoubleSpinBox *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -424,6 +434,8 @@ bool KQDoubleSpinBox::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQDoubleSpinBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

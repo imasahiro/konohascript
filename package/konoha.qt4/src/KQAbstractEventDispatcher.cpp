@@ -4,7 +4,7 @@ KMETHOD QAbstractEventDispatcher_filterEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractEventDispatcher *  qp = RawPtr_to(QAbstractEventDispatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		void*  message = RawPtr_to(void*, sfp[1]);
 		bool ret_v = qp->filterEvent(message);
 		RETURNb_(ret_v);
@@ -18,7 +18,7 @@ KMETHOD QAbstractEventDispatcher_flush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractEventDispatcher *  qp = RawPtr_to(QAbstractEventDispatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->flush();
 	}
 	RETURNvoid_();
@@ -29,7 +29,7 @@ KMETHOD QAbstractEventDispatcher_hasPendingEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractEventDispatcher *  qp = RawPtr_to(QAbstractEventDispatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasPendingEvents();
 		RETURNb_(ret_v);
 	} else {
@@ -42,7 +42,7 @@ KMETHOD QAbstractEventDispatcher_interrupt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractEventDispatcher *  qp = RawPtr_to(QAbstractEventDispatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->interrupt();
 	}
 	RETURNvoid_();
@@ -53,7 +53,7 @@ KMETHOD QAbstractEventDispatcher_processEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractEventDispatcher *  qp = RawPtr_to(QAbstractEventDispatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEventLoop::ProcessEventsFlags flags = Int_to(QEventLoop::ProcessEventsFlags, sfp[1]);
 		bool ret_v = qp->processEvents(flags);
 		RETURNb_(ret_v);
@@ -67,7 +67,7 @@ KMETHOD QAbstractEventDispatcher_registerSocketNotifier(CTX ctx, knh_sfp_t *sfp 
 {
 	(void)ctx;
 	QAbstractEventDispatcher *  qp = RawPtr_to(QAbstractEventDispatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSocketNotifier*  notifier = RawPtr_to(QSocketNotifier*, sfp[1]);
 		qp->registerSocketNotifier(notifier);
 	}
@@ -79,7 +79,7 @@ KMETHOD QAbstractEventDispatcher_registerTimer(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractEventDispatcher *  qp = RawPtr_to(QAbstractEventDispatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int interval = Int_to(int, sfp[1]);
 		QObject*  object = RawPtr_to(QObject*, sfp[2]);
 		int ret_v = qp->registerTimer(interval, object);
@@ -95,7 +95,7 @@ KMETHOD QAbstractEventDispatcher_registerTimer(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractEventDispatcher *  qp = RawPtr_to(QAbstractEventDispatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int timerId = Int_to(int, sfp[1]);
 		int interval = Int_to(int, sfp[2]);
 		QObject*  object = RawPtr_to(QObject*, sfp[3]);
@@ -104,35 +104,12 @@ KMETHOD QAbstractEventDispatcher_registerTimer(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 */
-//@Virtual Array<int> QAbstractEventDispatcher.registeredTimers(QObject object);
-KMETHOD QAbstractEventDispatcher_registeredTimers(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QAbstractEventDispatcher *  qp = RawPtr_to(QAbstractEventDispatcher *, sfp[0]);
-	if (qp != NULL) {
-		QObject*  object = RawPtr_to(QObject*, sfp[1]);
-		QList<QAbstractEventDispatcher::TimerInfo>ret_v = qp->registeredTimers(object);
-		int list_size = ret_v.size();
-		knh_Array_t *a = new_Array0(ctx, list_size);
-		knh_class_t cid = knh_getcid(ctx, STEXT("QAbstractEventDispatcher::TimerInfo"));
-		for (int n = 0; n < list_size; n++) {
-			QAbstractEventDispatcher::TimerInfo *ret_v_ = new QAbstractEventDispatcher::TimerInfo(ret_v[n]);
-			knh_RawPtr_t *p = new_RawPtr(ctx, ClassTBL(cid), ret_v_);
-			knh_Array_add(ctx, a, (knh_Object_t *)p);
-		}
-		RETURN_(a);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-	
-
 //@Virtual void QAbstractEventDispatcher.unregisterSocketNotifier(QSocketNotifier notifier);
 KMETHOD QAbstractEventDispatcher_unregisterSocketNotifier(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractEventDispatcher *  qp = RawPtr_to(QAbstractEventDispatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSocketNotifier*  notifier = RawPtr_to(QSocketNotifier*, sfp[1]);
 		qp->unregisterSocketNotifier(notifier);
 	}
@@ -144,7 +121,7 @@ KMETHOD QAbstractEventDispatcher_unregisterTimer(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractEventDispatcher *  qp = RawPtr_to(QAbstractEventDispatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int timerId = Int_to(int, sfp[1]);
 		bool ret_v = qp->unregisterTimer(timerId);
 		RETURNb_(ret_v);
@@ -158,7 +135,7 @@ KMETHOD QAbstractEventDispatcher_unregisterTimers(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractEventDispatcher *  qp = RawPtr_to(QAbstractEventDispatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
 		bool ret_v = qp->unregisterTimers(object);
 		RETURNb_(ret_v);
@@ -172,7 +149,7 @@ KMETHOD QAbstractEventDispatcher_wakeUp(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractEventDispatcher *  qp = RawPtr_to(QAbstractEventDispatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->wakeUp();
 	}
 	RETURNvoid_();
@@ -182,10 +159,9 @@ KMETHOD QAbstractEventDispatcher_wakeUp(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QAbstractEventDispatcher_instance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QAbstractEventDispatcher *  qp = RawPtr_to(QAbstractEventDispatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QThread*  thread = RawPtr_to(QThread*, sfp[1]);
-		QAbstractEventDispatcher* ret_v = qp->instance(thread);
+		QAbstractEventDispatcher* ret_v = QAbstractEventDispatcher::instance(thread);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractEventDispatcher*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -274,11 +250,27 @@ bool DummyQAbstractEventDispatcher::signalConnect(knh_Func_t *callback_func, str
 	}
 }
 
+void DummyQAbstractEventDispatcher::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, about_to_block_func);
+	KNH_ADDNNREF(ctx, awake_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQAbstractEventDispatcher::connection(QObject *o)
 {
-	connect(o, SIGNAL(aboutToBlock()), this, SLOT(aboutToBlockSlot()));
-	connect(o, SIGNAL(awake()), this, SLOT(awakeSlot()));
+	QAbstractEventDispatcher *p = dynamic_cast<QAbstractEventDispatcher*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(aboutToBlock()), this, SLOT(aboutToBlockSlot()));
+		connect(p, SIGNAL(awake()), this, SLOT(awakeSlot()));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -341,21 +333,9 @@ static void QAbstractEventDispatcher_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractEventDispatcher_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAbstractEventDispatcher *qp = (KQAbstractEventDispatcher *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->about_to_block_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->about_to_block_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->awake_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->awake_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -378,6 +358,8 @@ bool KQAbstractEventDispatcher::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQAbstractEventDispatcher(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

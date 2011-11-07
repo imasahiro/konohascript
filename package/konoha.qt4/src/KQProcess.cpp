@@ -3,7 +3,7 @@ KMETHOD QProcess_atEnd(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->atEnd();
 		RETURNb_(ret_v);
 	} else {
@@ -16,7 +16,7 @@ KMETHOD QProcess_bytesAvailable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->bytesAvailable();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -31,7 +31,7 @@ KMETHOD QProcess_bytesToWrite(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->bytesToWrite();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -46,7 +46,7 @@ KMETHOD QProcess_canReadLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->canReadLine();
 		RETURNb_(ret_v);
 	} else {
@@ -59,7 +59,7 @@ KMETHOD QProcess_close(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->close();
 	}
 	RETURNvoid_();
@@ -70,7 +70,7 @@ KMETHOD QProcess_isSequential(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSequential();
 		RETURNb_(ret_v);
 	} else {
@@ -83,7 +83,7 @@ KMETHOD QProcess_waitForBytesWritten(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int msecs = Int_to(int, sfp[1]);
 		bool ret_v = qp->waitForBytesWritten(msecs);
 		RETURNb_(ret_v);
@@ -97,7 +97,7 @@ KMETHOD QProcess_waitForReadyRead(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int msecs = Int_to(int, sfp[1]);
 		bool ret_v = qp->waitForReadyRead(msecs);
 		RETURNb_(ret_v);
@@ -122,7 +122,7 @@ KMETHOD QProcess_closeReadChannel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProcess::ProcessChannel channel = Int_to(QProcess::ProcessChannel, sfp[1]);
 		qp->closeReadChannel(channel);
 	}
@@ -134,7 +134,7 @@ KMETHOD QProcess_closeWriteChannel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->closeWriteChannel();
 	}
 	RETURNvoid_();
@@ -145,7 +145,7 @@ KMETHOD QProcess_error(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProcess::ProcessError ret_v = qp->error();
 		RETURNi_(ret_v);
 	} else {
@@ -158,7 +158,7 @@ KMETHOD QProcess_exitCode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->exitCode();
 		RETURNi_(ret_v);
 	} else {
@@ -171,7 +171,7 @@ KMETHOD QProcess_exitStatus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProcess::ExitStatus ret_v = qp->exitStatus();
 		RETURNi_(ret_v);
 	} else {
@@ -184,7 +184,7 @@ KMETHOD QProcess_pid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Q_PID ret_v = qp->pid();
 		Q_PID *ret_v_ = new Q_PID(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -199,7 +199,7 @@ KMETHOD QProcess_getProcessChannelMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProcess::ProcessChannelMode ret_v = qp->processChannelMode();
 		RETURNi_(ret_v);
 	} else {
@@ -212,7 +212,7 @@ KMETHOD QProcess_getProcessEnvironment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProcessEnvironment ret_v = qp->processEnvironment();
 		QProcessEnvironment *ret_v_ = new QProcessEnvironment(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -227,7 +227,7 @@ KMETHOD QProcess_readAllStandardError(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->readAllStandardError();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -242,7 +242,7 @@ KMETHOD QProcess_readAllStandardOutput(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->readAllStandardOutput();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -257,7 +257,7 @@ KMETHOD QProcess_getReadChannel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProcess::ProcessChannel ret_v = qp->readChannel();
 		RETURNi_(ret_v);
 	} else {
@@ -270,7 +270,7 @@ KMETHOD QProcess_setProcessChannelMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProcess::ProcessChannelMode mode = Int_to(QProcess::ProcessChannelMode, sfp[1]);
 		qp->setProcessChannelMode(mode);
 	}
@@ -282,7 +282,7 @@ KMETHOD QProcess_setProcessEnvironment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QProcessEnvironment  environment = *RawPtr_to(const QProcessEnvironment *, sfp[1]);
 		qp->setProcessEnvironment(environment);
 	}
@@ -294,21 +294,21 @@ KMETHOD QProcess_setReadChannel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProcess::ProcessChannel channel = Int_to(QProcess::ProcessChannel, sfp[1]);
 		qp->setReadChannel(channel);
 	}
 	RETURNvoid_();
 }
 
-//void QProcess.setStandardErrorFile(String fileName, int mode);
+//void QProcess.setStandardErrorFile(String fileName, QIODeviceOpenMode mode);
 KMETHOD QProcess_setStandardErrorFile(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
-		QProcess::OpenMode  mode = *RawPtr_to(QProcess::OpenMode *, sfp[2]);
+		initFlag(mode, QIODevice::OpenMode, sfp[2]);
 		qp->setStandardErrorFile(fileName, mode);
 	}
 	RETURNvoid_();
@@ -319,21 +319,21 @@ KMETHOD QProcess_setStandardInputFile(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
 		qp->setStandardInputFile(fileName);
 	}
 	RETURNvoid_();
 }
 
-//void QProcess.setStandardOutputFile(String fileName, int mode);
+//void QProcess.setStandardOutputFile(String fileName, QIODeviceOpenMode mode);
 KMETHOD QProcess_setStandardOutputFile(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
-		QProcess::OpenMode  mode = *RawPtr_to(QProcess::OpenMode *, sfp[2]);
+		initFlag(mode, QIODevice::OpenMode, sfp[2]);
 		qp->setStandardOutputFile(fileName, mode);
 	}
 	RETURNvoid_();
@@ -344,7 +344,7 @@ KMETHOD QProcess_setStandardOutputProcess(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProcess*  destination = RawPtr_to(QProcess*, sfp[1]);
 		qp->setStandardOutputProcess(destination);
 	}
@@ -356,21 +356,21 @@ KMETHOD QProcess_setWorkingDirectory(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString dir = String_to(const QString, sfp[1]);
 		qp->setWorkingDirectory(dir);
 	}
 	RETURNvoid_();
 }
 
-//void QProcess.start(String program, int mode);
+//void QProcess.start(String program, QIODeviceOpenMode mode);
 KMETHOD QProcess_start(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString program = String_to(const QString, sfp[1]);
-		QProcess::OpenMode  mode = *RawPtr_to(QProcess::OpenMode *, sfp[2]);
+		initFlag(mode, QIODevice::OpenMode, sfp[2]);
 		qp->start(program, mode);
 	}
 	RETURNvoid_();
@@ -381,7 +381,7 @@ KMETHOD QProcess_state(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProcess::ProcessState ret_v = qp->state();
 		RETURNi_(ret_v);
 	} else {
@@ -394,7 +394,7 @@ KMETHOD QProcess_waitForFinished(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int msecs = Int_to(int, sfp[1]);
 		bool ret_v = qp->waitForFinished(msecs);
 		RETURNb_(ret_v);
@@ -408,7 +408,7 @@ KMETHOD QProcess_waitForStarted(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int msecs = Int_to(int, sfp[1]);
 		bool ret_v = qp->waitForStarted(msecs);
 		RETURNb_(ret_v);
@@ -422,7 +422,7 @@ KMETHOD QProcess_getWorkingDirectory(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->workingDirectory();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -435,10 +435,9 @@ KMETHOD QProcess_getWorkingDirectory(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QProcess_execute(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString program = String_to(const QString, sfp[1]);
-		int ret_v = qp->execute(program);
+		int ret_v = QProcess::execute(program);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -449,10 +448,9 @@ KMETHOD QProcess_execute(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QProcess_startDetached(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString program = String_to(const QString, sfp[1]);
-		bool ret_v = qp->startDetached(program);
+		bool ret_v = QProcess::startDetached(program);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -464,7 +462,7 @@ KMETHOD QProcess_kill(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->kill();
 	}
 	RETURNvoid_();
@@ -475,7 +473,7 @@ KMETHOD QProcess_terminate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcess *  qp = RawPtr_to(QProcess *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->terminate();
 	}
 	RETURNvoid_();
@@ -626,15 +624,35 @@ bool DummyQProcess::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQProcess::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 6;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, error_func);
+	KNH_ADDNNREF(ctx, finished_func);
+	KNH_ADDNNREF(ctx, ready_read_standard_error_func);
+	KNH_ADDNNREF(ctx, ready_read_standard_output_func);
+	KNH_ADDNNREF(ctx, started_func);
+	KNH_ADDNNREF(ctx, state_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQIODevice::reftrace(ctx, p, tail_);
+}
 
 void DummyQProcess::connection(QObject *o)
 {
-	connect(o, SIGNAL(error(QProcess::ProcessError)), this, SLOT(errorSlot(QProcess::ProcessError)));
-	connect(o, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finishedSlot(int, QProcess::ExitStatus)));
-	connect(o, SIGNAL(readyReadStandardError()), this, SLOT(readyReadStandardErrorSlot()));
-	connect(o, SIGNAL(readyReadStandardOutput()), this, SLOT(readyReadStandardOutputSlot()));
-	connect(o, SIGNAL(started()), this, SLOT(startedSlot()));
-	connect(o, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(stateChangedSlot(QProcess::ProcessState)));
+	QProcess *p = dynamic_cast<QProcess*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(error(QProcess::ProcessError)), this, SLOT(errorSlot(QProcess::ProcessError)));
+		connect(p, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finishedSlot(int, QProcess::ExitStatus)));
+		connect(p, SIGNAL(readyReadStandardError()), this, SLOT(readyReadStandardErrorSlot()));
+		connect(p, SIGNAL(readyReadStandardOutput()), this, SLOT(readyReadStandardOutputSlot()));
+		connect(p, SIGNAL(started()), this, SLOT(startedSlot()));
+		connect(p, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(stateChangedSlot(QProcess::ProcessState)));
+	}
 	DummyQIODevice::connection(o);
 }
 
@@ -697,37 +715,9 @@ static void QProcess_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QProcess_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 6;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQProcess *qp = (KQProcess *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->error_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->error_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->finished_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->finished_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->ready_read_standard_error_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->ready_read_standard_error_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->ready_read_standard_output_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->ready_read_standard_output_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->started_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->started_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->state_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->state_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -749,15 +739,6 @@ bool KQProcess::event(QEvent *event)
 		return false;
 	}
 	return true;
-}
-
-DEFAPI(void) defQProcess(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QProcess";
-	cdef->free = QProcess_free;
-	cdef->reftrace = QProcess_reftrace;
-	cdef->compareTo = QProcess_compareTo;
 }
 
 static knh_IntData_t QProcessConstInt[] = {
@@ -783,4 +764,15 @@ static knh_IntData_t QProcessConstInt[] = {
 DEFAPI(void) constQProcess(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QProcessConstInt);
 }
+
+
+DEFAPI(void) defQProcess(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QProcess";
+	cdef->free = QProcess_free;
+	cdef->reftrace = QProcess_reftrace;
+	cdef->compareTo = QProcess_compareTo;
+}
+
 

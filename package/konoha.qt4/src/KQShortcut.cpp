@@ -30,7 +30,7 @@ KMETHOD QShortcut_getAutoRepeat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QShortcut *  qp = RawPtr_to(QShortcut *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->autoRepeat();
 		RETURNb_(ret_v);
 	} else {
@@ -43,7 +43,7 @@ KMETHOD QShortcut_getContext(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QShortcut *  qp = RawPtr_to(QShortcut *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ShortcutContext ret_v = qp->context();
 		RETURNi_(ret_v);
 	} else {
@@ -56,7 +56,7 @@ KMETHOD QShortcut_id(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QShortcut *  qp = RawPtr_to(QShortcut *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->id();
 		RETURNi_(ret_v);
 	} else {
@@ -69,7 +69,7 @@ KMETHOD QShortcut_isEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QShortcut *  qp = RawPtr_to(QShortcut *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -82,7 +82,7 @@ KMETHOD QShortcut_getKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QShortcut *  qp = RawPtr_to(QShortcut *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QKeySequence ret_v = qp->key();
 		QKeySequence *ret_v_ = new QKeySequence(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -97,7 +97,7 @@ KMETHOD QShortcut_parentWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QShortcut *  qp = RawPtr_to(QShortcut *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->parentWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -111,7 +111,7 @@ KMETHOD QShortcut_setAutoRepeat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QShortcut *  qp = RawPtr_to(QShortcut *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool on = Boolean_to(bool, sfp[1]);
 		qp->setAutoRepeat(on);
 	}
@@ -123,7 +123,7 @@ KMETHOD QShortcut_setContext(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QShortcut *  qp = RawPtr_to(QShortcut *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ShortcutContext context = Int_to(Qt::ShortcutContext, sfp[1]);
 		qp->setContext(context);
 	}
@@ -135,7 +135,7 @@ KMETHOD QShortcut_setEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QShortcut *  qp = RawPtr_to(QShortcut *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setEnabled(enable);
 	}
@@ -147,7 +147,7 @@ KMETHOD QShortcut_setKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QShortcut *  qp = RawPtr_to(QShortcut *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QKeySequence  key = *RawPtr_to(const QKeySequence *, sfp[1]);
 		qp->setKey(key);
 	}
@@ -159,7 +159,7 @@ KMETHOD QShortcut_setWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QShortcut *  qp = RawPtr_to(QShortcut *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setWhatsThis(text);
 	}
@@ -171,7 +171,7 @@ KMETHOD QShortcut_getWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QShortcut *  qp = RawPtr_to(QShortcut *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->whatsThis();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -261,11 +261,27 @@ bool DummyQShortcut::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQShortcut::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, activated_func);
+	KNH_ADDNNREF(ctx, activated_ambiguously_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQShortcut::connection(QObject *o)
 {
-	connect(o, SIGNAL(activated()), this, SLOT(activatedSlot()));
-	connect(o, SIGNAL(activatedAmbiguously()), this, SLOT(activatedAmbiguouslySlot()));
+	QShortcut *p = dynamic_cast<QShortcut*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(activated()), this, SLOT(activatedSlot()));
+		connect(p, SIGNAL(activatedAmbiguously()), this, SLOT(activatedAmbiguouslySlot()));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -328,21 +344,9 @@ static void QShortcut_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QShortcut_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQShortcut *qp = (KQShortcut *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->activated_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->activated_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->activated_ambiguously_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->activated_ambiguously_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -365,6 +369,8 @@ bool KQShortcut::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQShortcut(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

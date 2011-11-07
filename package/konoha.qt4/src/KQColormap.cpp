@@ -14,7 +14,7 @@ KMETHOD QColormap_colorAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColormap *  qp = RawPtr_to(QColormap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uint  pixel = *RawPtr_to(uint *, sfp[1]);
 		const QColor ret_v = qp->colorAt(pixel);
 		QColor *ret_v_ = new QColor(ret_v);
@@ -30,7 +30,7 @@ KMETHOD QColormap_depth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColormap *  qp = RawPtr_to(QColormap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->depth();
 		RETURNi_(ret_v);
 	} else {
@@ -43,7 +43,7 @@ KMETHOD QColormap_mode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColormap *  qp = RawPtr_to(QColormap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QColormap::Mode ret_v = qp->mode();
 		RETURNi_(ret_v);
 	} else {
@@ -56,7 +56,7 @@ KMETHOD QColormap_pixel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColormap *  qp = RawPtr_to(QColormap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor  color = *RawPtr_to(const QColor *, sfp[1]);
 		uint ret_v = qp->pixel(color);
 		uint *ret_v_ = new uint(ret_v);
@@ -72,7 +72,7 @@ KMETHOD QColormap_size(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColormap *  qp = RawPtr_to(QColormap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->size();
 		RETURNi_(ret_v);
 	} else {
@@ -84,10 +84,9 @@ KMETHOD QColormap_size(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QColormap_instance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QColormap *  qp = RawPtr_to(QColormap *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int screen = Int_to(int, sfp[1]);
-		QColormap ret_v = qp->instance(screen);
+		QColormap ret_v = QColormap::instance(screen);
 		QColormap *ret_v_ = new QColormap(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -96,6 +95,24 @@ KMETHOD QColormap_instance(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QColormap.parents();
+KMETHOD QColormap_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QColormap *qp = RawPtr_to(QColormap*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQColormap::DummyQColormap()
 {
@@ -144,17 +161,28 @@ bool DummyQColormap::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQColormap::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQColormap::connection(QObject *o)
 {
-	return;
+	QColormap *p = dynamic_cast<QColormap*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQColormap::KQColormap(const QColormap colormap) : QColormap(colormap)
 {
 	self = NULL;
 	dummy = new DummyQColormap();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QColormap_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -209,13 +237,9 @@ static void QColormap_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QColormap_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQColormap *qp = (KQColormap *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -230,15 +254,6 @@ void KQColormap::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQColormap(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QColormap";
-	cdef->free = QColormap_free;
-	cdef->reftrace = QColormap_reftrace;
-	cdef->compareTo = QColormap_compareTo;
-}
-
 static knh_IntData_t QColormapConstInt[] = {
 	{"Direct", QColormap::Direct},
 	{"Indexed", QColormap::Indexed},
@@ -249,4 +264,15 @@ static knh_IntData_t QColormapConstInt[] = {
 DEFAPI(void) constQColormap(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QColormapConstInt);
 }
+
+
+DEFAPI(void) defQColormap(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QColormap";
+	cdef->free = QColormap_free;
+	cdef->reftrace = QColormap_reftrace;
+	cdef->compareTo = QColormap_compareTo;
+}
+
 

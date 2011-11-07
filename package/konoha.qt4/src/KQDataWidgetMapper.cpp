@@ -14,7 +14,7 @@ KMETHOD QDataWidgetMapper_addMapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		int section = Int_to(int, sfp[2]);
 		qp->addMapping(widget, section);
@@ -28,7 +28,7 @@ KMETHOD QDataWidgetMapper_addMapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		int section = Int_to(int, sfp[2]);
 		const QByteArray  propertyName = *RawPtr_to(const QByteArray *, sfp[3]);
@@ -42,7 +42,7 @@ KMETHOD QDataWidgetMapper_clearMapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearMapping();
 	}
 	RETURNvoid_();
@@ -53,7 +53,7 @@ KMETHOD QDataWidgetMapper_getCurrentIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->currentIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -66,7 +66,7 @@ KMETHOD QDataWidgetMapper_getItemDelegate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemDelegate* ret_v = qp->itemDelegate();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractItemDelegate*)ret_v, NULL);
 		RETURN_(rptr);
@@ -80,7 +80,7 @@ KMETHOD QDataWidgetMapper_mappedPropertyName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		QByteArray ret_v = qp->mappedPropertyName(widget);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -96,7 +96,7 @@ KMETHOD QDataWidgetMapper_mappedSection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		int ret_v = qp->mappedSection(widget);
 		RETURNi_(ret_v);
@@ -110,7 +110,7 @@ KMETHOD QDataWidgetMapper_mappedWidgetAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int section = Int_to(int, sfp[1]);
 		QWidget* ret_v = qp->mappedWidgetAt(section);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
@@ -125,7 +125,7 @@ KMETHOD QDataWidgetMapper_getModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel* ret_v = qp->model();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractItemModel*)ret_v, NULL);
 		RETURN_(rptr);
@@ -139,7 +139,7 @@ KMETHOD QDataWidgetMapper_getOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation ret_v = qp->orientation();
 		RETURNi_(ret_v);
 	} else {
@@ -152,7 +152,7 @@ KMETHOD QDataWidgetMapper_removeMapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->removeMapping(widget);
 	}
@@ -164,7 +164,7 @@ KMETHOD QDataWidgetMapper_getRootIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QModelIndex ret_v = qp->rootIndex();
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -179,7 +179,7 @@ KMETHOD QDataWidgetMapper_setItemDelegate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemDelegate*  delegate = RawPtr_to(QAbstractItemDelegate*, sfp[1]);
 		qp->setItemDelegate(delegate);
 	}
@@ -191,7 +191,7 @@ KMETHOD QDataWidgetMapper_setModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel*  model = RawPtr_to(QAbstractItemModel*, sfp[1]);
 		qp->setModel(model);
 	}
@@ -203,7 +203,7 @@ KMETHOD QDataWidgetMapper_setOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation aOrientation = Int_to(Qt::Orientation, sfp[1]);
 		qp->setOrientation(aOrientation);
 	}
@@ -215,7 +215,7 @@ KMETHOD QDataWidgetMapper_setRootIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		qp->setRootIndex(index);
 	}
@@ -227,7 +227,7 @@ KMETHOD QDataWidgetMapper_setSubmitPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDataWidgetMapper::SubmitPolicy policy = Int_to(QDataWidgetMapper::SubmitPolicy, sfp[1]);
 		qp->setSubmitPolicy(policy);
 	}
@@ -239,7 +239,7 @@ KMETHOD QDataWidgetMapper_getSubmitPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDataWidgetMapper::SubmitPolicy ret_v = qp->submitPolicy();
 		RETURNi_(ret_v);
 	} else {
@@ -252,7 +252,7 @@ KMETHOD QDataWidgetMapper_revert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->revert();
 	}
 	RETURNvoid_();
@@ -263,7 +263,7 @@ KMETHOD QDataWidgetMapper_setCurrentIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		qp->setCurrentIndex(index);
 	}
@@ -275,7 +275,7 @@ KMETHOD QDataWidgetMapper_setCurrentModelIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		qp->setCurrentModelIndex(index);
 	}
@@ -287,7 +287,7 @@ KMETHOD QDataWidgetMapper_submit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->submit();
 		RETURNb_(ret_v);
 	} else {
@@ -300,7 +300,7 @@ KMETHOD QDataWidgetMapper_toFirst(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->toFirst();
 	}
 	RETURNvoid_();
@@ -311,7 +311,7 @@ KMETHOD QDataWidgetMapper_toLast(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->toLast();
 	}
 	RETURNvoid_();
@@ -322,7 +322,7 @@ KMETHOD QDataWidgetMapper_toNext(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->toNext();
 	}
 	RETURNvoid_();
@@ -333,7 +333,7 @@ KMETHOD QDataWidgetMapper_toPrevious(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDataWidgetMapper *  qp = RawPtr_to(QDataWidgetMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->toPrevious();
 	}
 	RETURNvoid_();
@@ -406,10 +406,25 @@ bool DummyQDataWidgetMapper::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
+void DummyQDataWidgetMapper::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, current_index_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQDataWidgetMapper::connection(QObject *o)
 {
-	connect(o, SIGNAL(currentIndexChanged(int)), this, SLOT(currentIndexChangedSlot(int)));
+	QDataWidgetMapper *p = dynamic_cast<QDataWidgetMapper*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(currentIndexChanged(int)), this, SLOT(currentIndexChangedSlot(int)));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -472,17 +487,9 @@ static void QDataWidgetMapper_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDataWidgetMapper_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDataWidgetMapper *qp = (KQDataWidgetMapper *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->current_index_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->current_index_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -506,15 +513,6 @@ bool KQDataWidgetMapper::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQDataWidgetMapper(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QDataWidgetMapper";
-	cdef->free = QDataWidgetMapper_free;
-	cdef->reftrace = QDataWidgetMapper_reftrace;
-	cdef->compareTo = QDataWidgetMapper_compareTo;
-}
-
 static knh_IntData_t QDataWidgetMapperConstInt[] = {
 	{"AutoSubmit", QDataWidgetMapper::AutoSubmit},
 	{"ManualSubmit", QDataWidgetMapper::ManualSubmit},
@@ -524,4 +522,15 @@ static knh_IntData_t QDataWidgetMapperConstInt[] = {
 DEFAPI(void) constQDataWidgetMapper(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QDataWidgetMapperConstInt);
 }
+
+
+DEFAPI(void) defQDataWidgetMapper(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QDataWidgetMapper";
+	cdef->free = QDataWidgetMapper_free;
+	cdef->reftrace = QDataWidgetMapper_reftrace;
+	cdef->compareTo = QDataWidgetMapper_compareTo;
+}
+
 

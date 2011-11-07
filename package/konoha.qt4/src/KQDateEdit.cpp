@@ -73,9 +73,23 @@ bool DummyQDateEdit::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDateEdit::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQDateTimeEdit::reftrace(ctx, p, tail_);
+}
 
 void DummyQDateEdit::connection(QObject *o)
 {
+	QDateEdit *p = dynamic_cast<QDateEdit*>(o);
+	if (p != NULL) {
+	}
 	DummyQDateTimeEdit::connection(o);
 }
 
@@ -138,13 +152,9 @@ static void QDateEdit_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDateEdit_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDateEdit *qp = (KQDateEdit *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -167,6 +177,8 @@ bool KQDateEdit::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQDateEdit(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

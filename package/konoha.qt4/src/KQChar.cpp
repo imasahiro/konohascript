@@ -122,7 +122,7 @@ KMETHOD QChar_category(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar::Category ret_v = qp->category();
 		RETURNi_(ret_v);
 	} else {
@@ -135,7 +135,7 @@ KMETHOD QChar_cell(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uchar ret_v = qp->cell();
 		uchar *ret_v_ = new uchar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -145,12 +145,12 @@ KMETHOD QChar_cell(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-// char QChar.combiningClass();
+//String QChar.combiningClass();
 KMETHOD QChar_combiningClass(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		unsigned char ret_v = qp->combiningClass();
 		unsigned char *ret_v_ = new unsigned char(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -165,7 +165,7 @@ KMETHOD QChar_decomposition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->decomposition();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -179,7 +179,7 @@ KMETHOD QChar_decompositionTag(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar::Decomposition ret_v = qp->decompositionTag();
 		RETURNi_(ret_v);
 	} else {
@@ -192,7 +192,7 @@ KMETHOD QChar_digitValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->digitValue();
 		RETURNi_(ret_v);
 	} else {
@@ -205,7 +205,7 @@ KMETHOD QChar_direction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar::Direction ret_v = qp->direction();
 		RETURNi_(ret_v);
 	} else {
@@ -218,7 +218,7 @@ KMETHOD QChar_hasMirrored(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasMirrored();
 		RETURNb_(ret_v);
 	} else {
@@ -231,7 +231,7 @@ KMETHOD QChar_isDigit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isDigit();
 		RETURNb_(ret_v);
 	} else {
@@ -244,7 +244,7 @@ KMETHOD QChar_isHighSurrogate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isHighSurrogate();
 		RETURNb_(ret_v);
 	} else {
@@ -257,7 +257,7 @@ KMETHOD QChar_isLetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isLetter();
 		RETURNb_(ret_v);
 	} else {
@@ -270,7 +270,7 @@ KMETHOD QChar_isLetterOrNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isLetterOrNumber();
 		RETURNb_(ret_v);
 	} else {
@@ -283,7 +283,7 @@ KMETHOD QChar_isLowSurrogate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isLowSurrogate();
 		RETURNb_(ret_v);
 	} else {
@@ -296,7 +296,7 @@ KMETHOD QChar_isLower(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isLower();
 		RETURNb_(ret_v);
 	} else {
@@ -309,21 +309,8 @@ KMETHOD QChar_isMark(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isMark();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QChar.isNull();
-KMETHOD QChar_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -335,7 +322,7 @@ KMETHOD QChar_isNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isNumber();
 		RETURNb_(ret_v);
 	} else {
@@ -348,7 +335,7 @@ KMETHOD QChar_isPrint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isPrint();
 		RETURNb_(ret_v);
 	} else {
@@ -361,7 +348,7 @@ KMETHOD QChar_isPunct(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isPunct();
 		RETURNb_(ret_v);
 	} else {
@@ -374,7 +361,7 @@ KMETHOD QChar_isSpace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSpace();
 		RETURNb_(ret_v);
 	} else {
@@ -387,7 +374,7 @@ KMETHOD QChar_isSymbol(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSymbol();
 		RETURNb_(ret_v);
 	} else {
@@ -400,7 +387,7 @@ KMETHOD QChar_isTitleCase(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isTitleCase();
 		RETURNb_(ret_v);
 	} else {
@@ -413,7 +400,7 @@ KMETHOD QChar_isUpper(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isUpper();
 		RETURNb_(ret_v);
 	} else {
@@ -426,7 +413,7 @@ KMETHOD QChar_joining(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar::Joining ret_v = qp->joining();
 		RETURNi_(ret_v);
 	} else {
@@ -439,7 +426,7 @@ KMETHOD QChar_mirroredChar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar ret_v = qp->mirroredChar();
 		QChar *ret_v_ = new QChar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -454,7 +441,7 @@ KMETHOD QChar_row(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uchar ret_v = qp->row();
 		uchar *ret_v_ = new uchar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -469,7 +456,7 @@ KMETHOD QChar_toAscii(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char ret_v = qp->toAscii();
 		char *ret_v_ = new char(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -484,7 +471,7 @@ KMETHOD QChar_toCaseFolded(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar ret_v = qp->toCaseFolded();
 		QChar *ret_v_ = new QChar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -499,7 +486,7 @@ KMETHOD QChar_toLatin1(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char ret_v = qp->toLatin1();
 		char *ret_v_ = new char(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -514,7 +501,7 @@ KMETHOD QChar_toLower(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar ret_v = qp->toLower();
 		QChar *ret_v_ = new QChar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -529,7 +516,7 @@ KMETHOD QChar_toTitleCase(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar ret_v = qp->toTitleCase();
 		QChar *ret_v_ = new QChar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -544,7 +531,7 @@ KMETHOD QChar_toUpper(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar ret_v = qp->toUpper();
 		QChar *ret_v_ = new QChar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -559,7 +546,7 @@ KMETHOD QChar_unicode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		ushort ret_v = qp->unicode();
 		ushort *ret_v_ = new ushort(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -575,7 +562,7 @@ KMETHOD QChar_unicode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		ushort ret_v = qp->unicode();
 		ushort *ret_v_ = new ushort(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -590,7 +577,7 @@ KMETHOD QChar_unicodeVersion(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar::UnicodeVersion ret_v = qp->unicodeVersion();
 		RETURNi_(ret_v);
 	} else {
@@ -603,10 +590,9 @@ KMETHOD QChar_unicodeVersion(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_category(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		QChar::Category ret_v = qp->category(ucs4);
+		QChar::Category ret_v = QChar::category(ucs4);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -618,10 +604,9 @@ KMETHOD QChar_category(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_category(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		ushort  ucs2 = *RawPtr_to(ushort *, sfp[1]);
-		QChar::Category ret_v = qp->category(ucs2);
+		QChar::Category ret_v = QChar::category(ucs2);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -629,14 +614,13 @@ KMETHOD QChar_category(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 */
 /*
-// char QChar.combiningClass(int ucs4);
+//String QChar.combiningClass(int ucs4);
 KMETHOD QChar_combiningClass(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		unsigned char ret_v = qp->combiningClass(ucs4);
+		unsigned char ret_v = QChar::combiningClass(ucs4);
 		unsigned char *ret_v_ = new unsigned char(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -646,14 +630,13 @@ KMETHOD QChar_combiningClass(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 */
 /*
-// char QChar.combiningClass(int ucs2);
+//String QChar.combiningClass(int ucs2);
 KMETHOD QChar_combiningClass(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		ushort  ucs2 = *RawPtr_to(ushort *, sfp[1]);
-		unsigned char ret_v = qp->combiningClass(ucs2);
+		unsigned char ret_v = QChar::combiningClass(ucs2);
 		unsigned char *ret_v_ = new unsigned char(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -667,10 +650,9 @@ KMETHOD QChar_combiningClass(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_decomposition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		QString ret_v = qp->decomposition(ucs4);
+		QString ret_v = QChar::decomposition(ucs4);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -683,10 +665,9 @@ KMETHOD QChar_decomposition(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_decompositionTag(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		QChar::Decomposition ret_v = qp->decompositionTag(ucs4);
+		QChar::Decomposition ret_v = QChar::decompositionTag(ucs4);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -698,10 +679,9 @@ KMETHOD QChar_decompositionTag(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_digitValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		ushort  ucs2 = *RawPtr_to(ushort *, sfp[1]);
-		int ret_v = qp->digitValue(ucs2);
+		int ret_v = QChar::digitValue(ucs2);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -713,10 +693,9 @@ KMETHOD QChar_digitValue(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_digitValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		int ret_v = qp->digitValue(ucs4);
+		int ret_v = QChar::digitValue(ucs4);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -728,10 +707,9 @@ KMETHOD QChar_digitValue(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_direction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		QChar::Direction ret_v = qp->direction(ucs4);
+		QChar::Direction ret_v = QChar::direction(ucs4);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -743,10 +721,9 @@ KMETHOD QChar_direction(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_direction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		ushort  ucs2 = *RawPtr_to(ushort *, sfp[1]);
-		QChar::Direction ret_v = qp->direction(ucs2);
+		QChar::Direction ret_v = QChar::direction(ucs2);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -757,10 +734,9 @@ KMETHOD QChar_direction(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_fromAscii(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		char  c = *RawPtr_to(char *, sfp[1]);
-		QChar ret_v = qp->fromAscii(c);
+		QChar ret_v = QChar::fromAscii(c);
 		QChar *ret_v_ = new QChar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -773,10 +749,9 @@ KMETHOD QChar_fromAscii(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_fromLatin1(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		char  c = *RawPtr_to(char *, sfp[1]);
-		QChar ret_v = qp->fromLatin1(c);
+		QChar ret_v = QChar::fromLatin1(c);
 		QChar *ret_v_ = new QChar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -789,10 +764,9 @@ KMETHOD QChar_fromLatin1(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_highSurrogate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		ushort ret_v = qp->highSurrogate(ucs4);
+		ushort ret_v = QChar::highSurrogate(ucs4);
 		ushort *ret_v_ = new ushort(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -806,10 +780,9 @@ KMETHOD QChar_highSurrogate(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_isHighSurrogate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		bool ret_v = qp->isHighSurrogate(ucs4);
+		bool ret_v = QChar::isHighSurrogate(ucs4);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -821,10 +794,9 @@ KMETHOD QChar_isHighSurrogate(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_isLowSurrogate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		bool ret_v = qp->isLowSurrogate(ucs4);
+		bool ret_v = QChar::isLowSurrogate(ucs4);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -836,10 +808,9 @@ KMETHOD QChar_isLowSurrogate(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_joining(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		QChar::Joining ret_v = qp->joining(ucs4);
+		QChar::Joining ret_v = QChar::joining(ucs4);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -851,10 +822,9 @@ KMETHOD QChar_joining(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_joining(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		ushort  ucs2 = *RawPtr_to(ushort *, sfp[1]);
-		QChar::Joining ret_v = qp->joining(ucs2);
+		QChar::Joining ret_v = QChar::joining(ucs2);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -865,10 +835,9 @@ KMETHOD QChar_joining(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_lowSurrogate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		ushort ret_v = qp->lowSurrogate(ucs4);
+		ushort ret_v = QChar::lowSurrogate(ucs4);
 		ushort *ret_v_ = new ushort(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -882,10 +851,9 @@ KMETHOD QChar_lowSurrogate(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_mirroredChar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		uint ret_v = qp->mirroredChar(ucs4);
+		uint ret_v = QChar::mirroredChar(ucs4);
 		uint *ret_v_ = new uint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -899,10 +867,9 @@ KMETHOD QChar_mirroredChar(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_mirroredChar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		ushort  ucs2 = *RawPtr_to(ushort *, sfp[1]);
-		ushort ret_v = qp->mirroredChar(ucs2);
+		ushort ret_v = QChar::mirroredChar(ucs2);
 		ushort *ret_v_ = new ushort(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -915,10 +882,9 @@ KMETHOD QChar_mirroredChar(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_requiresSurrogates(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		bool ret_v = qp->requiresSurrogates(ucs4);
+		bool ret_v = QChar::requiresSurrogates(ucs4);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -929,11 +895,10 @@ KMETHOD QChar_requiresSurrogates(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_surrogateToUcs4(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		ushort  high = *RawPtr_to(ushort *, sfp[1]);
 		ushort  low = *RawPtr_to(ushort *, sfp[2]);
-		uint ret_v = qp->surrogateToUcs4(high, low);
+		uint ret_v = QChar::surrogateToUcs4(high, low);
 		uint *ret_v_ = new uint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -947,11 +912,10 @@ KMETHOD QChar_surrogateToUcs4(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_surrogateToUcs4(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QChar  high = *RawPtr_to(QChar *, sfp[1]);
 		QChar  low = *RawPtr_to(QChar *, sfp[2]);
-		uint ret_v = qp->surrogateToUcs4(high, low);
+		uint ret_v = QChar::surrogateToUcs4(high, low);
 		uint *ret_v_ = new uint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -965,10 +929,9 @@ KMETHOD QChar_surrogateToUcs4(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_toCaseFolded(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		uint ret_v = qp->toCaseFolded(ucs4);
+		uint ret_v = QChar::toCaseFolded(ucs4);
 		uint *ret_v_ = new uint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -982,10 +945,9 @@ KMETHOD QChar_toCaseFolded(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_toCaseFolded(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		ushort  ucs2 = *RawPtr_to(ushort *, sfp[1]);
-		ushort ret_v = qp->toCaseFolded(ucs2);
+		ushort ret_v = QChar::toCaseFolded(ucs2);
 		ushort *ret_v_ = new ushort(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -999,10 +961,9 @@ KMETHOD QChar_toCaseFolded(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_toLower(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		uint ret_v = qp->toLower(ucs4);
+		uint ret_v = QChar::toLower(ucs4);
 		uint *ret_v_ = new uint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1016,10 +977,9 @@ KMETHOD QChar_toLower(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_toLower(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		ushort  ucs2 = *RawPtr_to(ushort *, sfp[1]);
-		ushort ret_v = qp->toLower(ucs2);
+		ushort ret_v = QChar::toLower(ucs2);
 		ushort *ret_v_ = new ushort(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1033,10 +993,9 @@ KMETHOD QChar_toLower(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_toTitleCase(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		uint ret_v = qp->toTitleCase(ucs4);
+		uint ret_v = QChar::toTitleCase(ucs4);
 		uint *ret_v_ = new uint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1050,10 +1009,9 @@ KMETHOD QChar_toTitleCase(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_toTitleCase(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		ushort  ucs2 = *RawPtr_to(ushort *, sfp[1]);
-		ushort ret_v = qp->toTitleCase(ucs2);
+		ushort ret_v = QChar::toTitleCase(ucs2);
 		ushort *ret_v_ = new ushort(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1067,10 +1025,9 @@ KMETHOD QChar_toTitleCase(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_toUpper(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		uint ret_v = qp->toUpper(ucs4);
+		uint ret_v = QChar::toUpper(ucs4);
 		uint *ret_v_ = new uint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1084,10 +1041,9 @@ KMETHOD QChar_toUpper(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_toUpper(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		ushort  ucs2 = *RawPtr_to(ushort *, sfp[1]);
-		ushort ret_v = qp->toUpper(ucs2);
+		ushort ret_v = QChar::toUpper(ucs2);
 		ushort *ret_v_ = new ushort(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1101,10 +1057,9 @@ KMETHOD QChar_toUpper(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_unicodeVersion(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  ucs4 = *RawPtr_to(uint *, sfp[1]);
-		QChar::UnicodeVersion ret_v = qp->unicodeVersion(ucs4);
+		QChar::UnicodeVersion ret_v = QChar::unicodeVersion(ucs4);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -1116,16 +1071,33 @@ KMETHOD QChar_unicodeVersion(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QChar_unicodeVersion(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QChar *  qp = RawPtr_to(QChar *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		ushort  ucs2 = *RawPtr_to(ushort *, sfp[1]);
-		QChar::UnicodeVersion ret_v = qp->unicodeVersion(ucs2);
+		QChar::UnicodeVersion ret_v = QChar::unicodeVersion(ucs2);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
 	}
 }
 */
+//Array<String> QChar.parents();
+KMETHOD QChar_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QChar *qp = RawPtr_to(QChar*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQChar::DummyQChar()
 {
@@ -1174,17 +1146,28 @@ bool DummyQChar::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQChar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQChar::connection(QObject *o)
 {
-	return;
+	QChar *p = dynamic_cast<QChar*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQChar::KQChar() : QChar()
 {
 	self = NULL;
 	dummy = new DummyQChar();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QChar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1239,34 +1222,21 @@ static void QChar_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QChar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQChar *qp = (KQChar *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
 static int QChar_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
-	return (p1->rawptr == p2->rawptr ? 0 : 1);
+	return (*static_cast<QChar*>(p1->rawptr) == *static_cast<QChar*>(p2->rawptr) ? 0 : 1);
 }
 
 void KQChar::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQChar(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QChar";
-	cdef->free = QChar_free;
-	cdef->reftrace = QChar_reftrace;
-	cdef->compareTo = QChar_compareTo;
 }
 
 static knh_IntData_t QCharConstInt[] = {
@@ -1366,4 +1336,15 @@ static knh_IntData_t QCharConstInt[] = {
 DEFAPI(void) constQChar(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QCharConstInt);
 }
+
+
+DEFAPI(void) defQChar(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QChar";
+	cdef->free = QChar_free;
+	cdef->reftrace = QChar_reftrace;
+	cdef->compareTo = QChar_compareTo;
+}
+
 

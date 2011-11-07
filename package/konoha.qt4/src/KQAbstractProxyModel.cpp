@@ -3,7 +3,7 @@ KMETHOD QAbstractProxyModel_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractProxyModel *  qp = RawPtr_to(QAbstractProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  proxyIndex = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int role = Int_to(int, sfp[2]);
 		QVariant ret_v = qp->data(proxyIndex, role);
@@ -15,17 +15,19 @@ KMETHOD QAbstractProxyModel_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual @Override int QAbstractProxyModel.flags(QModelIndex index);
+//@Virtual @Override QtItemFlags QAbstractProxyModel.flags(QModelIndex index);
 KMETHOD QAbstractProxyModel_flags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractProxyModel *  qp = RawPtr_to(QAbstractProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		Qt::ItemFlags ret_v = qp->flags(index);
-		RETURNi_(ret_v);
+		Qt::ItemFlags *ret_v_ = new Qt::ItemFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -34,7 +36,7 @@ KMETHOD QAbstractProxyModel_getHeaderData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractProxyModel *  qp = RawPtr_to(QAbstractProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int section = Int_to(int, sfp[1]);
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[2]);
 		int role = Int_to(int, sfp[3]);
@@ -52,7 +54,7 @@ KMETHOD QAbstractProxyModel_revert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractProxyModel *  qp = RawPtr_to(QAbstractProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->revert();
 	}
 	RETURNvoid_();
@@ -63,7 +65,7 @@ KMETHOD QAbstractProxyModel_setData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractProxyModel *  qp = RawPtr_to(QAbstractProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[2]);
 		int role = Int_to(int, sfp[3]);
@@ -79,7 +81,7 @@ KMETHOD QAbstractProxyModel_setHeaderData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractProxyModel *  qp = RawPtr_to(QAbstractProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int section = Int_to(int, sfp[1]);
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[2]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[3]);
@@ -96,7 +98,7 @@ KMETHOD QAbstractProxyModel_submit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractProxyModel *  qp = RawPtr_to(QAbstractProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->submit();
 		RETURNb_(ret_v);
 	} else {
@@ -110,7 +112,7 @@ KMETHOD QAbstractProxyModel_mapFromSource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractProxyModel *  qp = RawPtr_to(QAbstractProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  sourceIndex = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QModelIndex ret_v = qp->mapFromSource(sourceIndex);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -126,7 +128,7 @@ KMETHOD QAbstractProxyModel_mapSelectionFromSource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractProxyModel *  qp = RawPtr_to(QAbstractProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QItemSelection  sourceSelection = *RawPtr_to(const QItemSelection *, sfp[1]);
 		QItemSelection ret_v = qp->mapSelectionFromSource(sourceSelection);
 		QItemSelection *ret_v_ = new QItemSelection(ret_v);
@@ -142,7 +144,7 @@ KMETHOD QAbstractProxyModel_mapSelectionToSource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractProxyModel *  qp = RawPtr_to(QAbstractProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QItemSelection  proxySelection = *RawPtr_to(const QItemSelection *, sfp[1]);
 		QItemSelection ret_v = qp->mapSelectionToSource(proxySelection);
 		QItemSelection *ret_v_ = new QItemSelection(ret_v);
@@ -158,7 +160,7 @@ KMETHOD QAbstractProxyModel_mapToSource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractProxyModel *  qp = RawPtr_to(QAbstractProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  proxyIndex = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QModelIndex ret_v = qp->mapToSource(proxyIndex);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -174,7 +176,7 @@ KMETHOD QAbstractProxyModel_setSourceModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractProxyModel *  qp = RawPtr_to(QAbstractProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel*  sourceModel = RawPtr_to(QAbstractItemModel*, sfp[1]);
 		qp->setSourceModel(sourceModel);
 	}
@@ -186,7 +188,7 @@ KMETHOD QAbstractProxyModel_getSourceModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractProxyModel *  qp = RawPtr_to(QAbstractProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel* ret_v = qp->sourceModel();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractItemModel*)ret_v, NULL);
 		RETURN_(rptr);
@@ -246,9 +248,23 @@ bool DummyQAbstractProxyModel::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQAbstractProxyModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractItemModel::reftrace(ctx, p, tail_);
+}
 
 void DummyQAbstractProxyModel::connection(QObject *o)
 {
+	QAbstractProxyModel *p = dynamic_cast<QAbstractProxyModel*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractItemModel::connection(o);
 }
 
@@ -311,13 +327,9 @@ static void QAbstractProxyModel_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractProxyModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAbstractProxyModel *qp = (KQAbstractProxyModel *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -340,6 +352,8 @@ bool KQAbstractProxyModel::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQAbstractProxyModel(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

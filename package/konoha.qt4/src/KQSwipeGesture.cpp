@@ -3,7 +3,7 @@ KMETHOD QSwipeGesture_horizontalDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSwipeGesture *  qp = RawPtr_to(QSwipeGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSwipeGesture::SwipeDirection ret_v = qp->horizontalDirection();
 		RETURNi_(ret_v);
 	} else {
@@ -16,7 +16,7 @@ KMETHOD QSwipeGesture_setSwipeAngle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSwipeGesture *  qp = RawPtr_to(QSwipeGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal value = Float_to(qreal, sfp[1]);
 		qp->setSwipeAngle(value);
 	}
@@ -28,7 +28,7 @@ KMETHOD QSwipeGesture_getSwipeAngle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSwipeGesture *  qp = RawPtr_to(QSwipeGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->swipeAngle();
 		RETURNf_(ret_v);
 	} else {
@@ -41,7 +41,7 @@ KMETHOD QSwipeGesture_verticalDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSwipeGesture *  qp = RawPtr_to(QSwipeGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSwipeGesture::SwipeDirection ret_v = qp->verticalDirection();
 		RETURNi_(ret_v);
 	} else {
@@ -100,17 +100,24 @@ bool DummyQSwipeGesture::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSwipeGesture::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGesture::reftrace(ctx, p, tail_);
+}
 
 void DummyQSwipeGesture::connection(QObject *o)
 {
+	QSwipeGesture *p = dynamic_cast<QSwipeGesture*>(o);
+	if (p != NULL) {
+	}
 	DummyQGesture::connection(o);
-}
-
-KQSwipeGesture::KQSwipeGesture() : QSwipeGesture()
-{
-	self = NULL;
-	dummy = new DummyQSwipeGesture();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSwipeGesture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -165,13 +172,9 @@ static void QSwipeGesture_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSwipeGesture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSwipeGesture *qp = (KQSwipeGesture *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -195,15 +198,6 @@ bool KQSwipeGesture::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQSwipeGesture(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QSwipeGesture";
-	cdef->free = QSwipeGesture_free;
-	cdef->reftrace = QSwipeGesture_reftrace;
-	cdef->compareTo = QSwipeGesture_compareTo;
-}
-
 static knh_IntData_t QSwipeGestureConstInt[] = {
 	{"NoDirection", QSwipeGesture::NoDirection},
 	{"Left", QSwipeGesture::Left},
@@ -216,4 +210,15 @@ static knh_IntData_t QSwipeGestureConstInt[] = {
 DEFAPI(void) constQSwipeGesture(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QSwipeGestureConstInt);
 }
+
+
+DEFAPI(void) defQSwipeGesture(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QSwipeGesture";
+	cdef->free = QSwipeGesture_free;
+	cdef->reftrace = QSwipeGesture_reftrace;
+	cdef->compareTo = QSwipeGesture_compareTo;
+}
+
 

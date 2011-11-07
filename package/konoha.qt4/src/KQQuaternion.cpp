@@ -28,7 +28,7 @@ KMETHOD QQuaternion_conjugate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QQuaternion ret_v = qp->conjugate();
 		QQuaternion *ret_v_ = new QQuaternion(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -43,21 +43,8 @@ KMETHOD QQuaternion_isIdentity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isIdentity();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QQuaternion.isNull();
-KMETHOD QQuaternion_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -69,7 +56,7 @@ KMETHOD QQuaternion_length(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->length();
 		RETURNf_(ret_v);
 	} else {
@@ -82,7 +69,7 @@ KMETHOD QQuaternion_lengthSquared(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->lengthSquared();
 		RETURNf_(ret_v);
 	} else {
@@ -95,7 +82,7 @@ KMETHOD QQuaternion_normalize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->normalize();
 	}
 	RETURNvoid_();
@@ -106,7 +93,7 @@ KMETHOD QQuaternion_normalized(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QQuaternion ret_v = qp->normalized();
 		QQuaternion *ret_v_ = new QQuaternion(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -121,7 +108,7 @@ KMETHOD QQuaternion_getScalar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->scalar();
 		RETURNf_(ret_v);
 	} else {
@@ -134,7 +121,7 @@ KMETHOD QQuaternion_setScalar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal scalar = Float_to(qreal, sfp[1]);
 		qp->setScalar(scalar);
 	}
@@ -146,7 +133,7 @@ KMETHOD QQuaternion_setVector(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal z = Float_to(qreal, sfp[3]);
@@ -160,7 +147,7 @@ KMETHOD QQuaternion_setX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qp->setX(x);
 	}
@@ -172,7 +159,7 @@ KMETHOD QQuaternion_setY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal y = Float_to(qreal, sfp[1]);
 		qp->setY(y);
 	}
@@ -184,7 +171,7 @@ KMETHOD QQuaternion_setZ(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal z = Float_to(qreal, sfp[1]);
 		qp->setZ(z);
 	}
@@ -196,7 +183,7 @@ KMETHOD QQuaternion_getX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->x();
 		RETURNf_(ret_v);
 	} else {
@@ -209,7 +196,7 @@ KMETHOD QQuaternion_getY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->y();
 		RETURNf_(ret_v);
 	} else {
@@ -222,7 +209,7 @@ KMETHOD QQuaternion_getZ(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->z();
 		RETURNf_(ret_v);
 	} else {
@@ -234,13 +221,12 @@ KMETHOD QQuaternion_getZ(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QQuaternion_fromAxisAndAngle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal z = Float_to(qreal, sfp[3]);
 		qreal angle = Float_to(qreal, sfp[4]);
-		QQuaternion ret_v = qp->fromAxisAndAngle(x, y, z, angle);
+		QQuaternion ret_v = QQuaternion::fromAxisAndAngle(x, y, z, angle);
 		QQuaternion *ret_v_ = new QQuaternion(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -253,12 +239,11 @@ KMETHOD QQuaternion_fromAxisAndAngle(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QQuaternion_nlerp(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QQuaternion  q1 = *RawPtr_to(const QQuaternion *, sfp[1]);
 		const QQuaternion  q2 = *RawPtr_to(const QQuaternion *, sfp[2]);
 		qreal t = Float_to(qreal, sfp[3]);
-		QQuaternion ret_v = qp->nlerp(q1, q2, t);
+		QQuaternion ret_v = QQuaternion::nlerp(q1, q2, t);
 		QQuaternion *ret_v_ = new QQuaternion(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -271,12 +256,11 @@ KMETHOD QQuaternion_nlerp(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QQuaternion_slerp(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QQuaternion *  qp = RawPtr_to(QQuaternion *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QQuaternion  q1 = *RawPtr_to(const QQuaternion *, sfp[1]);
 		const QQuaternion  q2 = *RawPtr_to(const QQuaternion *, sfp[2]);
 		qreal t = Float_to(qreal, sfp[3]);
-		QQuaternion ret_v = qp->slerp(q1, q2, t);
+		QQuaternion ret_v = QQuaternion::slerp(q1, q2, t);
 		QQuaternion *ret_v_ = new QQuaternion(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -285,6 +269,24 @@ KMETHOD QQuaternion_slerp(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QQuaternion.parents();
+KMETHOD QQuaternion_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QQuaternion *qp = RawPtr_to(QQuaternion*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQQuaternion::DummyQQuaternion()
 {
@@ -333,17 +335,28 @@ bool DummyQQuaternion::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQQuaternion::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQQuaternion::connection(QObject *o)
 {
-	return;
+	QQuaternion *p = dynamic_cast<QQuaternion*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQQuaternion::KQQuaternion() : QQuaternion()
 {
 	self = NULL;
 	dummy = new DummyQQuaternion();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QQuaternion_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -398,19 +411,15 @@ static void QQuaternion_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QQuaternion_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQQuaternion *qp = (KQQuaternion *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
 static int QQuaternion_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
-	return (p1->rawptr == p2->rawptr ? 0 : 1);
+	return (*static_cast<QQuaternion*>(p1->rawptr) == *static_cast<QQuaternion*>(p2->rawptr) ? 0 : 1);
 }
 
 void KQQuaternion::setSelf(knh_RawPtr_t *ptr)
@@ -418,6 +427,8 @@ void KQQuaternion::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQQuaternion(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

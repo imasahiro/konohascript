@@ -3,7 +3,7 @@ KMETHOD QColumnView_indexAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColumnView *  qp = RawPtr_to(QColumnView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
 		QModelIndex ret_v = qp->indexAt(point);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -19,7 +19,7 @@ KMETHOD QColumnView_scrollTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColumnView *  qp = RawPtr_to(QColumnView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QColumnView::ScrollHint hint = Int_to(QColumnView::ScrollHint, sfp[2]);
 		qp->scrollTo(index, hint);
@@ -32,7 +32,7 @@ KMETHOD QColumnView_selectAll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColumnView *  qp = RawPtr_to(QColumnView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->selectAll();
 	}
 	RETURNvoid_();
@@ -43,7 +43,7 @@ KMETHOD QColumnView_setModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColumnView *  qp = RawPtr_to(QColumnView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel*  model = RawPtr_to(QAbstractItemModel*, sfp[1]);
 		qp->setModel(model);
 	}
@@ -55,7 +55,7 @@ KMETHOD QColumnView_setRootIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColumnView *  qp = RawPtr_to(QColumnView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		qp->setRootIndex(index);
 	}
@@ -67,7 +67,7 @@ KMETHOD QColumnView_setSelectionModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColumnView *  qp = RawPtr_to(QColumnView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QItemSelectionModel*  new_SelectionModel = RawPtr_to(QItemSelectionModel*, sfp[1]);
 		qp->setSelectionModel(new_SelectionModel);
 	}
@@ -79,7 +79,7 @@ KMETHOD QColumnView_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColumnView *  qp = RawPtr_to(QColumnView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -94,7 +94,7 @@ KMETHOD QColumnView_visualRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColumnView *  qp = RawPtr_to(QColumnView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QRect ret_v = qp->visualRect(index);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -121,8 +121,8 @@ KMETHOD QColumnView_getColumnWidths(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColumnView *  qp = RawPtr_to(QColumnView *, sfp[0]);
-	if (qp != NULL) {
-		QList<int>ret_v = qp->columnWidths();
+	if (qp) {
+		QList<int> ret_v = qp->columnWidths();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("int"));
@@ -143,7 +143,7 @@ KMETHOD QColumnView_getPreviewWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColumnView *  qp = RawPtr_to(QColumnView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->previewWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -157,7 +157,7 @@ KMETHOD QColumnView_getResizeGripsVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColumnView *  qp = RawPtr_to(QColumnView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->resizeGripsVisible();
 		RETURNb_(ret_v);
 	} else {
@@ -170,7 +170,7 @@ KMETHOD QColumnView_setColumnWidths(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColumnView *  qp = RawPtr_to(QColumnView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<int> list;
@@ -188,7 +188,7 @@ KMETHOD QColumnView_setPreviewWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColumnView *  qp = RawPtr_to(QColumnView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->setPreviewWidget(widget);
 	}
@@ -200,7 +200,7 @@ KMETHOD QColumnView_setResizeGripsVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColumnView *  qp = RawPtr_to(QColumnView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setResizeGripsVisible(visible);
 	}
@@ -275,10 +275,25 @@ bool DummyQColumnView::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQColumnView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, update_preview_widget_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractItemView::reftrace(ctx, p, tail_);
+}
 
 void DummyQColumnView::connection(QObject *o)
 {
-	connect(o, SIGNAL(updatePreviewWidget(const QModelIndex)), this, SLOT(updatePreviewWidgetSlot(const QModelIndex)));
+	QColumnView *p = dynamic_cast<QColumnView*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(updatePreviewWidget(const QModelIndex)), this, SLOT(updatePreviewWidgetSlot(const QModelIndex)));
+	}
 	DummyQAbstractItemView::connection(o);
 }
 
@@ -341,17 +356,9 @@ static void QColumnView_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QColumnView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQColumnView *qp = (KQColumnView *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->update_preview_widget_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->update_preview_widget_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -374,6 +381,8 @@ bool KQColumnView::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQColumnView(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

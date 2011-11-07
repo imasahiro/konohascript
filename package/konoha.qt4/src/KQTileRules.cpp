@@ -22,6 +22,24 @@ KMETHOD QTileRules_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 */
+//Array<String> QTileRules.parents();
+KMETHOD QTileRules_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTileRules *qp = RawPtr_to(QTileRules*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTileRules::DummyQTileRules()
 {
@@ -70,17 +88,28 @@ bool DummyQTileRules::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTileRules::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTileRules::connection(QObject *o)
 {
-	return;
+	QTileRules *p = dynamic_cast<QTileRules*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTileRules::KQTileRules(Qt::TileRule horizontalRule, Qt::TileRule verticalRule) : QTileRules(horizontalRule, verticalRule)
 {
 	self = NULL;
 	dummy = new DummyQTileRules();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTileRules_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -135,13 +164,9 @@ static void QTileRules_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTileRules_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTileRules *qp = (KQTileRules *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -155,6 +180,8 @@ void KQTileRules::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQTileRules(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -39,7 +39,7 @@ KMETHOD QImageReader_getAutoDetectImageFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->autoDetectImageFormat();
 		RETURNb_(ret_v);
 	} else {
@@ -52,7 +52,7 @@ KMETHOD QImageReader_getBackgroundColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QColor ret_v = qp->backgroundColor();
 		QColor *ret_v_ = new QColor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -67,7 +67,7 @@ KMETHOD QImageReader_canRead(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->canRead();
 		RETURNb_(ret_v);
 	} else {
@@ -80,7 +80,7 @@ KMETHOD QImageReader_getClipRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->clipRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -95,7 +95,7 @@ KMETHOD QImageReader_currentImageNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->currentImageNumber();
 		RETURNi_(ret_v);
 	} else {
@@ -108,7 +108,7 @@ KMETHOD QImageReader_currentImageRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->currentImageRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -123,7 +123,7 @@ KMETHOD QImageReader_getDecideFormatFromContent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->decideFormatFromContent();
 		RETURNb_(ret_v);
 	} else {
@@ -136,7 +136,7 @@ KMETHOD QImageReader_getDevice(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIODevice* ret_v = qp->device();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QIODevice*)ret_v, NULL);
 		RETURN_(rptr);
@@ -150,7 +150,7 @@ KMETHOD QImageReader_error(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QImageReader::ImageReaderError ret_v = qp->error();
 		RETURNi_(ret_v);
 	} else {
@@ -163,7 +163,7 @@ KMETHOD QImageReader_errorString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->errorString();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -177,7 +177,7 @@ KMETHOD QImageReader_getFileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->fileName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -191,7 +191,7 @@ KMETHOD QImageReader_getFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->format();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -206,7 +206,7 @@ KMETHOD QImageReader_imageCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->imageCount();
 		RETURNi_(ret_v);
 	} else {
@@ -219,7 +219,7 @@ KMETHOD QImageReader_imageFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QImage::Format ret_v = qp->imageFormat();
 		RETURNi_(ret_v);
 	} else {
@@ -232,7 +232,7 @@ KMETHOD QImageReader_jumpToImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int imageNumber = Int_to(int, sfp[1]);
 		bool ret_v = qp->jumpToImage(imageNumber);
 		RETURNb_(ret_v);
@@ -246,7 +246,7 @@ KMETHOD QImageReader_jumpToNextImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->jumpToNextImage();
 		RETURNb_(ret_v);
 	} else {
@@ -259,7 +259,7 @@ KMETHOD QImageReader_loopCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->loopCount();
 		RETURNi_(ret_v);
 	} else {
@@ -272,7 +272,7 @@ KMETHOD QImageReader_nextImageDelay(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->nextImageDelay();
 		RETURNi_(ret_v);
 	} else {
@@ -285,7 +285,7 @@ KMETHOD QImageReader_getQuality(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->quality();
 		RETURNi_(ret_v);
 	} else {
@@ -298,7 +298,7 @@ KMETHOD QImageReader_read(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QImage ret_v = qp->read();
 		QImage *ret_v_ = new QImage(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -314,7 +314,7 @@ KMETHOD QImageReader_read(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QImage*  image = RawPtr_to(QImage*, sfp[1]);
 		bool ret_v = qp->read(image);
 		RETURNb_(ret_v);
@@ -328,7 +328,7 @@ KMETHOD QImageReader_getScaledClipRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->scaledClipRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -343,7 +343,7 @@ KMETHOD QImageReader_getScaledSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->scaledSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -358,7 +358,7 @@ KMETHOD QImageReader_setAutoDetectImageFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setAutoDetectImageFormat(enabled);
 	}
@@ -370,7 +370,7 @@ KMETHOD QImageReader_setBackgroundColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor  color = *RawPtr_to(const QColor *, sfp[1]);
 		qp->setBackgroundColor(color);
 	}
@@ -382,19 +382,19 @@ KMETHOD QImageReader_setClipRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		qp->setClipRect(rect);
 	}
 	RETURNvoid_();
 }
 
-////void QImageReader.setDecideFormatFromContent(boolean ignored);
+//void QImageReader.setDecideFormatFromContent(boolean ignored);
 KMETHOD QImageReader_setDecideFormatFromContent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ignored = Boolean_to(bool, sfp[1]);
 		qp->setDecideFormatFromContent(ignored);
 	}
@@ -406,7 +406,7 @@ KMETHOD QImageReader_setDevice(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIODevice*  device = RawPtr_to(QIODevice*, sfp[1]);
 		qp->setDevice(device);
 	}
@@ -418,7 +418,7 @@ KMETHOD QImageReader_setFileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
 		qp->setFileName(fileName);
 	}
@@ -430,7 +430,7 @@ KMETHOD QImageReader_setFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  format = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->setFormat(format);
 	}
@@ -442,7 +442,7 @@ KMETHOD QImageReader_setQuality(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int quality = Int_to(int, sfp[1]);
 		qp->setQuality(quality);
 	}
@@ -454,7 +454,7 @@ KMETHOD QImageReader_setScaledClipRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		qp->setScaledClipRect(rect);
 	}
@@ -466,7 +466,7 @@ KMETHOD QImageReader_setScaledSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  size = *RawPtr_to(const QSize *, sfp[1]);
 		qp->setScaledSize(size);
 	}
@@ -478,7 +478,7 @@ KMETHOD QImageReader_size(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->size();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -493,7 +493,7 @@ KMETHOD QImageReader_supportsAnimation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->supportsAnimation();
 		RETURNb_(ret_v);
 	} else {
@@ -506,7 +506,7 @@ KMETHOD QImageReader_supportsOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QImageIOHandler::ImageOption option = Int_to(QImageIOHandler::ImageOption, sfp[1]);
 		bool ret_v = qp->supportsOption(option);
 		RETURNb_(ret_v);
@@ -520,7 +520,7 @@ KMETHOD QImageReader_text(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString key = String_to(const QString, sfp[1]);
 		QString ret_v = qp->text(key);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -535,10 +535,9 @@ KMETHOD QImageReader_text(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QImageReader_imageFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString fileName = String_to(const QString, sfp[1]);
-		QByteArray ret_v = qp->imageFormat(fileName);
+		QByteArray ret_v = QImageReader::imageFormat(fileName);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -552,10 +551,9 @@ KMETHOD QImageReader_imageFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QImageReader_imageFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QIODevice*  device = RawPtr_to(QIODevice*, sfp[1]);
-		QByteArray ret_v = qp->imageFormat(device);
+		QByteArray ret_v = QImageReader::imageFormat(device);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -568,9 +566,8 @@ KMETHOD QImageReader_imageFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QImageReader_supportedImageFormats(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QImageReader *  qp = RawPtr_to(QImageReader *, sfp[0]);
-	if (qp != NULL) {
-		QList<QByteArray>ret_v = qp->supportedImageFormats();
+	if (true) {
+		QList<QByteArray> ret_v = QImageReader::supportedImageFormats();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QByteArray"));
@@ -586,6 +583,24 @@ KMETHOD QImageReader_supportedImageFormats(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 	
 
+//Array<String> QImageReader.parents();
+KMETHOD QImageReader_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QImageReader *qp = RawPtr_to(QImageReader*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQImageReader::DummyQImageReader()
 {
@@ -634,17 +649,28 @@ bool DummyQImageReader::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQImageReader::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQImageReader::connection(QObject *o)
 {
-	return;
+	QImageReader *p = dynamic_cast<QImageReader*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQImageReader::KQImageReader() : QImageReader()
 {
 	self = NULL;
 	dummy = new DummyQImageReader();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QImageReader_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -699,13 +725,9 @@ static void QImageReader_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QImageReader_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQImageReader *qp = (KQImageReader *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -720,15 +742,6 @@ void KQImageReader::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQImageReader(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QImageReader";
-	cdef->free = QImageReader_free;
-	cdef->reftrace = QImageReader_reftrace;
-	cdef->compareTo = QImageReader_compareTo;
-}
-
 static knh_IntData_t QImageReaderConstInt[] = {
 	{"FileNotFoundError", QImageReader::FileNotFoundError},
 	{"DeviceError", QImageReader::DeviceError},
@@ -741,4 +754,15 @@ static knh_IntData_t QImageReaderConstInt[] = {
 DEFAPI(void) constQImageReader(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QImageReaderConstInt);
 }
+
+
+DEFAPI(void) defQImageReader(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QImageReader";
+	cdef->free = QImageReader_free;
+	cdef->reftrace = QImageReader_reftrace;
+	cdef->compareTo = QImageReader_compareTo;
+}
+
 

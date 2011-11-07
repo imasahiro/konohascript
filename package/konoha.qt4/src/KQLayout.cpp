@@ -1,13 +1,15 @@
-//@Virtual @Override int QLayout.expandingDirections();
+//@Virtual @Override QtOrientations QLayout.expandingDirections();
 KMETHOD QLayout_expandingDirections(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientations ret_v = qp->expandingDirections();
-		RETURNi_(ret_v);
+		Qt::Orientations *ret_v_ = new Qt::Orientations(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -16,7 +18,7 @@ KMETHOD QLayout_getGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->geometry();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -31,7 +33,7 @@ KMETHOD QLayout_invalidate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->invalidate();
 	}
 	RETURNvoid_();
@@ -42,7 +44,7 @@ KMETHOD QLayout_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
 		RETURNb_(ret_v);
 	} else {
@@ -55,7 +57,7 @@ KMETHOD QLayout_layout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayout* ret_v = qp->layout();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QLayout*)ret_v, NULL);
 		RETURN_(rptr);
@@ -69,7 +71,7 @@ KMETHOD QLayout_maximumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->maximumSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -84,7 +86,7 @@ KMETHOD QLayout_minimumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -99,7 +101,7 @@ KMETHOD QLayout_setGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  r = *RawPtr_to(const QRect *, sfp[1]);
 		qp->setGeometry(r);
 	}
@@ -114,7 +116,7 @@ KMETHOD QLayout_activate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->activate();
 		RETURNb_(ret_v);
 	} else {
@@ -127,7 +129,7 @@ KMETHOD QLayout_addItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayoutItem*  item = RawPtr_to(QLayoutItem*, sfp[1]);
 		qp->addItem(item);
 	}
@@ -139,7 +141,7 @@ KMETHOD QLayout_addWidgetOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  w = RawPtr_to(QWidget*, sfp[1]);
 		qp->addWidget(w);
 	}
@@ -151,7 +153,7 @@ KMETHOD QLayout_contentsMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMargins ret_v = qp->contentsMargins();
 		QMargins *ret_v_ = new QMargins(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -166,7 +168,7 @@ KMETHOD QLayout_contentsRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->contentsRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -181,7 +183,7 @@ KMETHOD QLayout_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->count();
 		RETURNi_(ret_v);
 	} else {
@@ -194,7 +196,7 @@ KMETHOD QLayout_getContentsMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int* left = Int_to(int*, sfp[1]);
 		int* top = Int_to(int*, sfp[2]);
 		int* right = Int_to(int*, sfp[3]);
@@ -209,7 +211,7 @@ KMETHOD QLayout_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		int ret_v = qp->indexOf(widget);
 		RETURNi_(ret_v);
@@ -223,7 +225,7 @@ KMETHOD QLayout_isEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -236,7 +238,7 @@ KMETHOD QLayout_itemAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QLayoutItem* ret_v = qp->itemAt(index);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QLayoutItem*)ret_v, NULL);
@@ -251,7 +253,7 @@ KMETHOD QLayout_getMenuBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->menuBar();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -265,7 +267,7 @@ KMETHOD QLayout_parentWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->parentWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -279,7 +281,7 @@ KMETHOD QLayout_removeItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayoutItem*  item = RawPtr_to(QLayoutItem*, sfp[1]);
 		qp->removeItem(item);
 	}
@@ -291,21 +293,21 @@ KMETHOD QLayout_removeWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->removeWidget(widget);
 	}
 	RETURNvoid_();
 }
 
-//boolean QLayout.setAlignmentOL(QWidget w, int alignment);
+//boolean QLayout.setAlignmentOL(QWidget w, QtAlignment alignment);
 KMETHOD QLayout_setAlignmentOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  w = RawPtr_to(QWidget*, sfp[1]);
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[2]);
+		initFlag(alignment, Qt::Alignment, sfp[2]);
 		bool ret_v = qp->setAlignment(w, alignment);
 		RETURNb_(ret_v);
 	} else {
@@ -314,27 +316,27 @@ KMETHOD QLayout_setAlignmentOL(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//void QLayout.setAlignmentOL(int alignment);
+//void QLayout.setAlignmentOL(QtAlignment alignment);
 KMETHOD QLayout_setAlignmentOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(alignment, Qt::Alignment, sfp[1]);
 		qp->setAlignment(alignment);
 	}
 	RETURNvoid_();
 }
 */
 /*
-//boolean QLayout.setAlignmentOL(QLayout l, int alignment);
+//boolean QLayout.setAlignmentOL(QLayout l, QtAlignment alignment);
 KMETHOD QLayout_setAlignmentOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayout*  l = RawPtr_to(QLayout*, sfp[1]);
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[2]);
+		initFlag(alignment, Qt::Alignment, sfp[2]);
 		bool ret_v = qp->setAlignment(l, alignment);
 		RETURNb_(ret_v);
 	} else {
@@ -347,7 +349,7 @@ KMETHOD QLayout_setContentsMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int left = Int_to(int, sfp[1]);
 		int top = Int_to(int, sfp[2]);
 		int right = Int_to(int, sfp[3]);
@@ -363,7 +365,7 @@ KMETHOD QLayout_setContentsMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMargins  margins = *RawPtr_to(const QMargins *, sfp[1]);
 		qp->setContentsMargins(margins);
 	}
@@ -375,7 +377,7 @@ KMETHOD QLayout_setEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setEnabled(enable);
 	}
@@ -387,7 +389,7 @@ KMETHOD QLayout_setMenuBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->setMenuBar(widget);
 	}
@@ -399,7 +401,7 @@ KMETHOD QLayout_setSizeConstraint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayout::SizeConstraint arg0 = Int_to(QLayout::SizeConstraint, sfp[1]);
 		qp->setSizeConstraint(arg0);
 	}
@@ -411,7 +413,7 @@ KMETHOD QLayout_setSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setSpacing(arg0);
 	}
@@ -423,7 +425,7 @@ KMETHOD QLayout_getSizeConstraint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayout::SizeConstraint ret_v = qp->sizeConstraint();
 		RETURNi_(ret_v);
 	} else {
@@ -436,7 +438,7 @@ KMETHOD QLayout_getSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->spacing();
 		RETURNi_(ret_v);
 	} else {
@@ -449,7 +451,7 @@ KMETHOD QLayout_takeAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QLayoutItem* ret_v = qp->takeAt(index);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QLayoutItem*)ret_v, NULL);
@@ -464,7 +466,7 @@ KMETHOD QLayout_update(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->update();
 	}
 	RETURNvoid_();
@@ -474,11 +476,10 @@ KMETHOD QLayout_update(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QLayout_closestAcceptableSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QLayout *  qp = RawPtr_to(QLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[1]);
 		const QSize  size = *RawPtr_to(const QSize *, sfp[2]);
-		QSize ret_v = qp->closestAcceptableSize(widget, size);
+		QSize ret_v = QLayout::closestAcceptableSize(widget, size);
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -545,9 +546,24 @@ bool DummyQLayout::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQLayout::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQLayoutItem::reftrace(ctx, p, tail_);
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQLayout::connection(QObject *o)
 {
+	QLayout *p = dynamic_cast<QLayout*>(o);
+	if (p != NULL) {
+	}
 	DummyQLayoutItem::connection(o);
 	DummyQObject::connection(o);
 }
@@ -611,13 +627,9 @@ static void QLayout_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQLayout *qp = (KQLayout *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -641,15 +653,6 @@ bool KQLayout::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQLayout(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QLayout";
-	cdef->free = QLayout_free;
-	cdef->reftrace = QLayout_reftrace;
-	cdef->compareTo = QLayout_compareTo;
-}
-
 static knh_IntData_t QLayoutConstInt[] = {
 	{"SetDefaultConstraint", QLayout::SetDefaultConstraint},
 	{"SetFixedSize", QLayout::SetFixedSize},
@@ -663,4 +666,15 @@ static knh_IntData_t QLayoutConstInt[] = {
 DEFAPI(void) constQLayout(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QLayoutConstInt);
 }
+
+
+DEFAPI(void) defQLayout(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QLayout";
+	cdef->free = QLayout_free;
+	cdef->reftrace = QLayout_reftrace;
+	cdef->compareTo = QLayout_compareTo;
+}
+
 

@@ -3,7 +3,7 @@ KMETHOD QTextBrowser_loadResource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int type = Int_to(int, sfp[1]);
 		const QUrl  name = *RawPtr_to(const QUrl *, sfp[2]);
 		QVariant ret_v = qp->loadResource(type, name);
@@ -31,7 +31,7 @@ KMETHOD QTextBrowser_backwardHistoryCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->backwardHistoryCount();
 		RETURNi_(ret_v);
 	} else {
@@ -44,7 +44,7 @@ KMETHOD QTextBrowser_clearHistory(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearHistory();
 	}
 	RETURNvoid_();
@@ -55,7 +55,7 @@ KMETHOD QTextBrowser_forwardHistoryCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->forwardHistoryCount();
 		RETURNi_(ret_v);
 	} else {
@@ -68,7 +68,7 @@ KMETHOD QTextBrowser_historyTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		QString ret_v = qp->historyTitle(i);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -83,7 +83,7 @@ KMETHOD QTextBrowser_historyUrl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		QUrl ret_v = qp->historyUrl(i);
 		QUrl *ret_v_ = new QUrl(ret_v);
@@ -99,7 +99,7 @@ KMETHOD QTextBrowser_isBackwardAvailable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isBackwardAvailable();
 		RETURNb_(ret_v);
 	} else {
@@ -112,7 +112,7 @@ KMETHOD QTextBrowser_isForwardAvailable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isForwardAvailable();
 		RETURNb_(ret_v);
 	} else {
@@ -125,7 +125,7 @@ KMETHOD QTextBrowser_getOpenExternalLinks(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->openExternalLinks();
 		RETURNb_(ret_v);
 	} else {
@@ -138,7 +138,7 @@ KMETHOD QTextBrowser_getOpenLinks(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->openLinks();
 		RETURNb_(ret_v);
 	} else {
@@ -151,7 +151,7 @@ KMETHOD QTextBrowser_setOpenExternalLinks(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool open = Boolean_to(bool, sfp[1]);
 		qp->setOpenExternalLinks(open);
 	}
@@ -163,7 +163,7 @@ KMETHOD QTextBrowser_setOpenLinks(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool open = Boolean_to(bool, sfp[1]);
 		qp->setOpenLinks(open);
 	}
@@ -175,7 +175,7 @@ KMETHOD QTextBrowser_getSource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QUrl ret_v = qp->source();
 		QUrl *ret_v_ = new QUrl(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -190,7 +190,7 @@ KMETHOD QTextBrowser_backward(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->backward();
 	}
 	RETURNvoid_();
@@ -201,7 +201,7 @@ KMETHOD QTextBrowser_forward(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->forward();
 	}
 	RETURNvoid_();
@@ -212,7 +212,7 @@ KMETHOD QTextBrowser_home(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->home();
 	}
 	RETURNvoid_();
@@ -223,7 +223,7 @@ KMETHOD QTextBrowser_reload(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->reload();
 	}
 	RETURNvoid_();
@@ -234,7 +234,7 @@ KMETHOD QTextBrowser_setSource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBrowser *  qp = RawPtr_to(QTextBrowser *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QUrl  name = *RawPtr_to(const QUrl *, sfp[1]);
 		qp->setSource(name);
 	}
@@ -373,14 +373,33 @@ bool DummyQTextBrowser::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextBrowser::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 5;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, anchor_clicked_func);
+	KNH_ADDNNREF(ctx, backward_available_func);
+	KNH_ADDNNREF(ctx, forward_available_func);
+	KNH_ADDNNREF(ctx, history_changed_func);
+	KNH_ADDNNREF(ctx, source_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQTextEdit::reftrace(ctx, p, tail_);
+}
 
 void DummyQTextBrowser::connection(QObject *o)
 {
-	connect(o, SIGNAL(anchorClicked(const QUrl)), this, SLOT(anchorClickedSlot(const QUrl)));
-	connect(o, SIGNAL(backwardAvailable(bool)), this, SLOT(backwardAvailableSlot(bool)));
-	connect(o, SIGNAL(forwardAvailable(bool)), this, SLOT(forwardAvailableSlot(bool)));
-	connect(o, SIGNAL(historyChanged()), this, SLOT(historyChangedSlot()));
-	connect(o, SIGNAL(sourceChanged(const QUrl)), this, SLOT(sourceChangedSlot(const QUrl)));
+	QTextBrowser *p = dynamic_cast<QTextBrowser*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(anchorClicked(const QUrl)), this, SLOT(anchorClickedSlot(const QUrl)));
+		connect(p, SIGNAL(backwardAvailable(bool)), this, SLOT(backwardAvailableSlot(bool)));
+		connect(p, SIGNAL(forwardAvailable(bool)), this, SLOT(forwardAvailableSlot(bool)));
+		connect(p, SIGNAL(historyChanged()), this, SLOT(historyChangedSlot()));
+		connect(p, SIGNAL(sourceChanged(const QUrl)), this, SLOT(sourceChangedSlot(const QUrl)));
+	}
 	DummyQTextEdit::connection(o);
 }
 
@@ -443,33 +462,9 @@ static void QTextBrowser_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextBrowser_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 5;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextBrowser *qp = (KQTextBrowser *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->anchor_clicked_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->anchor_clicked_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->backward_available_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->backward_available_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->forward_available_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->forward_available_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->history_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->history_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->source_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->source_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -492,6 +487,8 @@ bool KQTextBrowser::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQTextBrowser(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

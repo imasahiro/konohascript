@@ -3,7 +3,7 @@ KMETHOD QSplitter_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QSplitter_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -57,7 +57,7 @@ KMETHOD QSplitter_addWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->addWidget(widget);
 	}
@@ -69,7 +69,7 @@ KMETHOD QSplitter_getChildrenCollapsible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->childrenCollapsible();
 		RETURNb_(ret_v);
 	} else {
@@ -82,7 +82,7 @@ KMETHOD QSplitter_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->count();
 		RETURNi_(ret_v);
 	} else {
@@ -95,7 +95,7 @@ KMETHOD QSplitter_getRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		int* min = Int_to(int*, sfp[2]);
 		int* max = Int_to(int*, sfp[3]);
@@ -109,7 +109,7 @@ KMETHOD QSplitter_handle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QSplitterHandle* ret_v = qp->handle(index);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QSplitterHandle*)ret_v, NULL);
@@ -124,7 +124,7 @@ KMETHOD QSplitter_getHandleWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->handleWidth();
 		RETURNi_(ret_v);
 	} else {
@@ -137,7 +137,7 @@ KMETHOD QSplitter_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		int ret_v = qp->indexOf(widget);
 		RETURNi_(ret_v);
@@ -151,7 +151,7 @@ KMETHOD QSplitter_insertWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[2]);
 		qp->insertWidget(index, widget);
@@ -164,7 +164,7 @@ KMETHOD QSplitter_isCollapsible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		bool ret_v = qp->isCollapsible(index);
 		RETURNb_(ret_v);
@@ -178,7 +178,7 @@ KMETHOD QSplitter_getOpaqueResize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->opaqueResize();
 		RETURNb_(ret_v);
 	} else {
@@ -191,7 +191,7 @@ KMETHOD QSplitter_getOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation ret_v = qp->orientation();
 		RETURNi_(ret_v);
 	} else {
@@ -204,7 +204,7 @@ KMETHOD QSplitter_refresh(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->refresh();
 	}
 	RETURNvoid_();
@@ -215,7 +215,7 @@ KMETHOD QSplitter_restoreState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  state = *RawPtr_to(const QByteArray *, sfp[1]);
 		bool ret_v = qp->restoreState(state);
 		RETURNb_(ret_v);
@@ -229,7 +229,7 @@ KMETHOD QSplitter_saveState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->saveState();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -244,7 +244,7 @@ KMETHOD QSplitter_setChildrenCollapsible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setChildrenCollapsible(arg0);
 	}
@@ -256,7 +256,7 @@ KMETHOD QSplitter_setCollapsible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		bool collapse = Boolean_to(bool, sfp[2]);
 		qp->setCollapsible(index, collapse);
@@ -269,7 +269,7 @@ KMETHOD QSplitter_setHandleWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setHandleWidth(arg0);
 	}
@@ -281,7 +281,7 @@ KMETHOD QSplitter_setOpaqueResize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool opaque = Boolean_to(bool, sfp[1]);
 		qp->setOpaqueResize(opaque);
 	}
@@ -293,7 +293,7 @@ KMETHOD QSplitter_setOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation arg0 = Int_to(Qt::Orientation, sfp[1]);
 		qp->setOrientation(arg0);
 	}
@@ -305,7 +305,7 @@ KMETHOD QSplitter_setSizes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<int> list;
@@ -323,7 +323,7 @@ KMETHOD QSplitter_setStretchFactor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		int stretch = Int_to(int, sfp[2]);
 		qp->setStretchFactor(index, stretch);
@@ -336,8 +336,8 @@ KMETHOD QSplitter_getSizes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
-		QList<int>ret_v = qp->sizes();
+	if (qp) {
+		QList<int> ret_v = qp->sizes();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("int"));
@@ -358,7 +358,7 @@ KMETHOD QSplitter_widget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitter *  qp = RawPtr_to(QSplitter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QWidget* ret_v = qp->widget(index);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
@@ -436,10 +436,25 @@ bool DummyQSplitter::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSplitter::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, splitter_moved_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQFrame::reftrace(ctx, p, tail_);
+}
 
 void DummyQSplitter::connection(QObject *o)
 {
-	connect(o, SIGNAL(splitterMoved(int, int)), this, SLOT(splitterMovedSlot(int, int)));
+	QSplitter *p = dynamic_cast<QSplitter*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(splitterMoved(int, int)), this, SLOT(splitterMovedSlot(int, int)));
+	}
 	DummyQFrame::connection(o);
 }
 
@@ -502,17 +517,9 @@ static void QSplitter_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSplitter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSplitter *qp = (KQSplitter *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->splitter_moved_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->splitter_moved_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -535,6 +542,8 @@ bool KQSplitter::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQSplitter(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

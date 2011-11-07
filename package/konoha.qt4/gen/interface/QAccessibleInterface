@@ -55,12 +55,26 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+class
+QAccessible
+name
+Relation
+class
+QAccessible
+name
+State
+
 typedefed_objects
 
 parent_typedefed_objects
 InterfaceFactory
-Relation
-State
+
+class_objects
+
+parent_class_objects
 
 enums
 

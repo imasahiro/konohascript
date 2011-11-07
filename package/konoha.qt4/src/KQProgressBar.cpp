@@ -3,7 +3,7 @@ KMETHOD QProgressBar_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QProgressBar_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -39,16 +39,18 @@ KMETHOD QProgressBar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 
-//int QProgressBar.getAlignment();
+//QtAlignment QProgressBar.getAlignment();
 KMETHOD QProgressBar_getAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->alignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -57,7 +59,7 @@ KMETHOD QProgressBar_getFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->format();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -71,7 +73,7 @@ KMETHOD QProgressBar_getInvertedAppearance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->invertedAppearance();
 		RETURNb_(ret_v);
 	} else {
@@ -85,7 +87,7 @@ KMETHOD QProgressBar_getInvertedAppearance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->invertedAppearance();
 		RETURNb_(ret_v);
 	} else {
@@ -98,7 +100,7 @@ KMETHOD QProgressBar_isTextVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isTextVisible();
 		RETURNb_(ret_v);
 	} else {
@@ -111,7 +113,7 @@ KMETHOD QProgressBar_getMaximum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->maximum();
 		RETURNi_(ret_v);
 	} else {
@@ -124,7 +126,7 @@ KMETHOD QProgressBar_getMinimum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->minimum();
 		RETURNi_(ret_v);
 	} else {
@@ -137,7 +139,7 @@ KMETHOD QProgressBar_getOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation ret_v = qp->orientation();
 		RETURNi_(ret_v);
 	} else {
@@ -145,13 +147,13 @@ KMETHOD QProgressBar_getOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QProgressBar.setAlignment(int alignment);
+//void QProgressBar.setAlignment(QtAlignment alignment);
 KMETHOD QProgressBar_setAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(alignment, Qt::Alignment, sfp[1]);
 		qp->setAlignment(alignment);
 	}
 	RETURNvoid_();
@@ -162,7 +164,7 @@ KMETHOD QProgressBar_setFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString format = String_to(const QString, sfp[1]);
 		qp->setFormat(format);
 	}
@@ -174,7 +176,7 @@ KMETHOD QProgressBar_setInvertedAppearance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool invert = Boolean_to(bool, sfp[1]);
 		qp->setInvertedAppearance(invert);
 	}
@@ -186,7 +188,7 @@ KMETHOD QProgressBar_setTextDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProgressBar::Direction textDirection = Int_to(QProgressBar::Direction, sfp[1]);
 		qp->setTextDirection(textDirection);
 	}
@@ -198,7 +200,7 @@ KMETHOD QProgressBar_setTextVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setTextVisible(visible);
 	}
@@ -210,7 +212,7 @@ KMETHOD QProgressBar_text(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->text();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -224,7 +226,7 @@ KMETHOD QProgressBar_getTextDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProgressBar::Direction ret_v = qp->textDirection();
 		RETURNi_(ret_v);
 	} else {
@@ -238,7 +240,7 @@ KMETHOD QProgressBar_getTextDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProgressBar::Direction ret_v = qp->textDirection();
 		RETURNi_(ret_v);
 	} else {
@@ -251,7 +253,7 @@ KMETHOD QProgressBar_getValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->value();
 		RETURNi_(ret_v);
 	} else {
@@ -264,7 +266,7 @@ KMETHOD QProgressBar_reset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->reset();
 	}
 	RETURNvoid_();
@@ -275,7 +277,7 @@ KMETHOD QProgressBar_setMaximum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int maximum = Int_to(int, sfp[1]);
 		qp->setMaximum(maximum);
 	}
@@ -287,7 +289,7 @@ KMETHOD QProgressBar_setMinimum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int minimum = Int_to(int, sfp[1]);
 		qp->setMinimum(minimum);
 	}
@@ -299,7 +301,7 @@ KMETHOD QProgressBar_setOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation arg0 = Int_to(Qt::Orientation, sfp[1]);
 		qp->setOrientation(arg0);
 	}
@@ -311,7 +313,7 @@ KMETHOD QProgressBar_setRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int minimum = Int_to(int, sfp[1]);
 		int maximum = Int_to(int, sfp[2]);
 		qp->setRange(minimum, maximum);
@@ -324,7 +326,7 @@ KMETHOD QProgressBar_setValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressBar *  qp = RawPtr_to(QProgressBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int value = Int_to(int, sfp[1]);
 		qp->setValue(value);
 	}
@@ -398,10 +400,25 @@ bool DummyQProgressBar::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQProgressBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, value_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQProgressBar::connection(QObject *o)
 {
-	connect(o, SIGNAL(valueChanged(int)), this, SLOT(valueChangedSlot(int)));
+	QProgressBar *p = dynamic_cast<QProgressBar*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(valueChanged(int)), this, SLOT(valueChangedSlot(int)));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -464,17 +481,9 @@ static void QProgressBar_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QProgressBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQProgressBar *qp = (KQProgressBar *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->value_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->value_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -498,15 +507,6 @@ bool KQProgressBar::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQProgressBar(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QProgressBar";
-	cdef->free = QProgressBar_free;
-	cdef->reftrace = QProgressBar_reftrace;
-	cdef->compareTo = QProgressBar_compareTo;
-}
-
 static knh_IntData_t QProgressBarConstInt[] = {
 	{"TopToBottom", QProgressBar::TopToBottom},
 	{"BottomToTop", QProgressBar::BottomToTop},
@@ -516,4 +516,15 @@ static knh_IntData_t QProgressBarConstInt[] = {
 DEFAPI(void) constQProgressBar(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QProgressBarConstInt);
 }
+
+
+DEFAPI(void) defQProgressBar(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QProgressBar";
+	cdef->free = QProgressBar_free;
+	cdef->reftrace = QProgressBar_reftrace;
+	cdef->compareTo = QProgressBar_compareTo;
+}
+
 

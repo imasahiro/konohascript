@@ -3,7 +3,7 @@ KMETHOD QCDEStyle_drawControl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCDEStyle *  qp = RawPtr_to(QCDEStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCDEStyle::ControlElement element = Int_to(QCDEStyle::ControlElement, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		QPainter*  p = RawPtr_to(QPainter*, sfp[3]);
@@ -18,7 +18,7 @@ KMETHOD QCDEStyle_drawPrimitive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCDEStyle *  qp = RawPtr_to(QCDEStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCDEStyle::PrimitiveElement pe = Int_to(QCDEStyle::PrimitiveElement, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		QPainter*  p = RawPtr_to(QPainter*, sfp[3]);
@@ -33,7 +33,7 @@ KMETHOD QCDEStyle_pixelMetric(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCDEStyle *  qp = RawPtr_to(QCDEStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCDEStyle::PixelMetric metric = Int_to(QCDEStyle::PixelMetric, sfp[1]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -49,7 +49,7 @@ KMETHOD QCDEStyle_standardPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCDEStyle *  qp = RawPtr_to(QCDEStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette ret_v = qp->standardPalette();
 		QPalette *ret_v_ = new QPalette(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -121,9 +121,23 @@ bool DummyQCDEStyle::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQCDEStyle::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQMotifStyle::reftrace(ctx, p, tail_);
+}
 
 void DummyQCDEStyle::connection(QObject *o)
 {
+	QCDEStyle *p = dynamic_cast<QCDEStyle*>(o);
+	if (p != NULL) {
+	}
 	DummyQMotifStyle::connection(o);
 }
 
@@ -186,13 +200,9 @@ static void QCDEStyle_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QCDEStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQCDEStyle *qp = (KQCDEStyle *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -215,6 +225,8 @@ bool KQCDEStyle::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQCDEStyle(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

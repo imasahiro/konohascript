@@ -3,7 +3,7 @@ KMETHOD QGraphicsBlurEffect_boundingRectFor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsBlurEffect *  qp = RawPtr_to(QGraphicsBlurEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		QRectF ret_v = qp->boundingRectFor(rect);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -25,16 +25,18 @@ KMETHOD QGraphicsBlurEffect_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 
-//int QGraphicsBlurEffect.getBlurHints();
+//QGraphicsBlurEffectBlurHints QGraphicsBlurEffect.getBlurHints();
 KMETHOD QGraphicsBlurEffect_getBlurHints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsBlurEffect *  qp = RawPtr_to(QGraphicsBlurEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsBlurEffect::BlurHints ret_v = qp->blurHints();
-		RETURNi_(ret_v);
+		QGraphicsBlurEffect::BlurHints *ret_v_ = new QGraphicsBlurEffect::BlurHints(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -43,7 +45,7 @@ KMETHOD QGraphicsBlurEffect_getBlurRadius(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsBlurEffect *  qp = RawPtr_to(QGraphicsBlurEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->blurRadius();
 		RETURNf_(ret_v);
 	} else {
@@ -51,13 +53,13 @@ KMETHOD QGraphicsBlurEffect_getBlurRadius(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QGraphicsBlurEffect.setBlurHints(int hints);
+//void QGraphicsBlurEffect.setBlurHints(QGraphicsBlurEffectBlurHints hints);
 KMETHOD QGraphicsBlurEffect_setBlurHints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsBlurEffect *  qp = RawPtr_to(QGraphicsBlurEffect *, sfp[0]);
-	if (qp != NULL) {
-		QGraphicsBlurEffect::BlurHints hints = Int_to(QGraphicsBlurEffect::BlurHints, sfp[1]);
+	if (qp) {
+		initFlag(hints, QGraphicsBlurEffect::BlurHints, sfp[1]);
 		qp->setBlurHints(hints);
 	}
 	RETURNvoid_();
@@ -68,7 +70,7 @@ KMETHOD QGraphicsBlurEffect_setBlurRadius(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsBlurEffect *  qp = RawPtr_to(QGraphicsBlurEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal blurRadius = Float_to(qreal, sfp[1]);
 		qp->setBlurRadius(blurRadius);
 	}
@@ -110,7 +112,8 @@ bool DummyQGraphicsBlurEffect::blurHintsChangedSlot(QGraphicsBlurEffect::BlurHin
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		lsfp[K_CALLDELTA+2].ivalue = hints;
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QGraphicsBlurEffect::BlurHints, hints);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
 		knh_Func_invoke(lctx, blur_hints_changed_func, lsfp, 2);
 		return true;
 	}
@@ -159,11 +162,27 @@ bool DummyQGraphicsBlurEffect::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQGraphicsBlurEffect::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, blur_hints_changed_func);
+	KNH_ADDNNREF(ctx, blur_radius_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsEffect::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsBlurEffect::connection(QObject *o)
 {
-	connect(o, SIGNAL(blurHintsChanged(QGraphicsBlurEffect::BlurHints)), this, SLOT(blurHintsChangedSlot(QGraphicsBlurEffect::BlurHints)));
-	connect(o, SIGNAL(blurRadiusChanged(qreal)), this, SLOT(blurRadiusChangedSlot(qreal)));
+	QGraphicsBlurEffect *p = dynamic_cast<QGraphicsBlurEffect*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(blurHintsChanged(QGraphicsBlurEffect::BlurHints)), this, SLOT(blurHintsChangedSlot(QGraphicsBlurEffect::BlurHints)));
+		connect(p, SIGNAL(blurRadiusChanged(qreal)), this, SLOT(blurRadiusChangedSlot(qreal)));
+	}
 	DummyQGraphicsEffect::connection(o);
 }
 
@@ -226,21 +245,9 @@ static void QGraphicsBlurEffect_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsBlurEffect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsBlurEffect *qp = (KQGraphicsBlurEffect *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->blur_hints_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->blur_hints_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->blur_radius_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->blur_radius_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -264,15 +271,6 @@ bool KQGraphicsBlurEffect::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQGraphicsBlurEffect(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QGraphicsBlurEffect";
-	cdef->free = QGraphicsBlurEffect_free;
-	cdef->reftrace = QGraphicsBlurEffect_reftrace;
-	cdef->compareTo = QGraphicsBlurEffect_compareTo;
-}
-
 static knh_IntData_t QGraphicsBlurEffectConstInt[] = {
 	{"PerformanceHint", QGraphicsBlurEffect::PerformanceHint},
 	{"QualityHint", QGraphicsBlurEffect::QualityHint},
@@ -282,5 +280,179 @@ static knh_IntData_t QGraphicsBlurEffectConstInt[] = {
 
 DEFAPI(void) constQGraphicsBlurEffect(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QGraphicsBlurEffectConstInt);
+}
+
+
+DEFAPI(void) defQGraphicsBlurEffect(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QGraphicsBlurEffect";
+	cdef->free = QGraphicsBlurEffect_free;
+	cdef->reftrace = QGraphicsBlurEffect_reftrace;
+	cdef->compareTo = QGraphicsBlurEffect_compareTo;
+}
+
+//## QGraphicsBlurEffectBlurHints QGraphicsBlurEffectBlurHints.new(int value);
+KMETHOD QGraphicsBlurEffectBlurHints_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsBlurEffect::BlurHint i = Int_to(QGraphicsBlurEffect::BlurHint, sfp[1]);
+	QGraphicsBlurEffect::BlurHints *ret_v = new QGraphicsBlurEffect::BlurHints(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QGraphicsBlurEffectBlurHints QGraphicsBlurEffectBlurHints.and(int mask);
+KMETHOD QGraphicsBlurEffectBlurHints_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsBlurEffect::BlurHints *qp = RawPtr_to(QGraphicsBlurEffect::BlurHints*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QGraphicsBlurEffect::BlurHints ret = ((*qp) & i);
+		QGraphicsBlurEffect::BlurHints *ret_ = new QGraphicsBlurEffect::BlurHints(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsBlurEffectBlurHints QGraphicsBlurEffectBlurHints.iand(QGraphicsBlurEffect::QGraphicsBlurEffectBlurHints other);
+KMETHOD QGraphicsBlurEffectBlurHints_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsBlurEffect::BlurHints *qp = RawPtr_to(QGraphicsBlurEffect::BlurHints*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsBlurEffect::BlurHints *other = RawPtr_to(QGraphicsBlurEffect::BlurHints *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsBlurEffectBlurHints QGraphicsBlurEffectBlurHints.or(QGraphicsBlurEffectBlurHints f);
+KMETHOD QGraphicsBlurEffectBlurHints_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGraphicsBlurEffect::BlurHints *qp = RawPtr_to(QGraphicsBlurEffect::BlurHints*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsBlurEffect::BlurHints *f = RawPtr_to(QGraphicsBlurEffect::BlurHints*, sfp[1]);
+		QGraphicsBlurEffect::BlurHints ret = ((*qp) | (*f));
+		QGraphicsBlurEffect::BlurHints *ret_ = new QGraphicsBlurEffect::BlurHints(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsBlurEffectBlurHints QGraphicsBlurEffectBlurHints.ior(QGraphicsBlurEffect::QGraphicsBlurEffectBlurHints other);
+KMETHOD QGraphicsBlurEffectBlurHints_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsBlurEffect::BlurHints *qp = RawPtr_to(QGraphicsBlurEffect::BlurHints*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsBlurEffect::BlurHints *other = RawPtr_to(QGraphicsBlurEffect::BlurHints *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsBlurEffectBlurHints QGraphicsBlurEffectBlurHints.xor(QGraphicsBlurEffectBlurHints f);
+KMETHOD QGraphicsBlurEffectBlurHints_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGraphicsBlurEffect::BlurHints *qp = RawPtr_to(QGraphicsBlurEffect::BlurHints*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsBlurEffect::BlurHints *f = RawPtr_to(QGraphicsBlurEffect::BlurHints*, sfp[1]);
+		QGraphicsBlurEffect::BlurHints ret = ((*qp) ^ (*f));
+		QGraphicsBlurEffect::BlurHints *ret_ = new QGraphicsBlurEffect::BlurHints(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsBlurEffectBlurHints QGraphicsBlurEffectBlurHints.ixor(QGraphicsBlurEffect::QGraphicsBlurEffectBlurHints other);
+KMETHOD QGraphicsBlurEffectBlurHints_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsBlurEffect::BlurHints *qp = RawPtr_to(QGraphicsBlurEffect::BlurHints*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsBlurEffect::BlurHints *other = RawPtr_to(QGraphicsBlurEffect::BlurHints *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QGraphicsBlurEffectBlurHints.testFlag(int flag);
+KMETHOD QGraphicsBlurEffectBlurHints_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsBlurEffect::BlurHints *qp = RawPtr_to(QGraphicsBlurEffect::BlurHints *, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsBlurEffect::BlurHint flag = Int_to(QGraphicsBlurEffect::BlurHint, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QGraphicsBlurEffectBlurHints.value();
+KMETHOD QGraphicsBlurEffectBlurHints_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsBlurEffect::BlurHints *qp = RawPtr_to(QGraphicsBlurEffect::BlurHints *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QGraphicsBlurEffectBlurHints_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QGraphicsBlurEffect::BlurHints *qp = (QGraphicsBlurEffect::BlurHints *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QGraphicsBlurEffectBlurHints_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QGraphicsBlurEffect::BlurHints *qp = (QGraphicsBlurEffect::BlurHints *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QGraphicsBlurEffectBlurHints_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QGraphicsBlurEffect::BlurHints*)p1->rawptr);
+//		int v2 = int(*(QGraphicsBlurEffect::BlurHints*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QGraphicsBlurEffect::BlurHints v1 = *(QGraphicsBlurEffect::BlurHints*)p1->rawptr;
+		QGraphicsBlurEffect::BlurHints v2 = *(QGraphicsBlurEffect::BlurHints*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQGraphicsBlurEffectBlurHints(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QGraphicsBlurEffectBlurHints";
+	cdef->free = QGraphicsBlurEffectBlurHints_free;
+	cdef->reftrace = QGraphicsBlurEffectBlurHints_reftrace;
+	cdef->compareTo = QGraphicsBlurEffectBlurHints_compareTo;
 }
 

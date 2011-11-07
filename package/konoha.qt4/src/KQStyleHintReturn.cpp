@@ -10,6 +10,24 @@ KMETHOD QStyleHintReturn_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 
+//Array<String> QStyleHintReturn.parents();
+KMETHOD QStyleHintReturn_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QStyleHintReturn *qp = RawPtr_to(QStyleHintReturn*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQStyleHintReturn::DummyQStyleHintReturn()
 {
@@ -58,17 +76,28 @@ bool DummyQStyleHintReturn::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQStyleHintReturn::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQStyleHintReturn::connection(QObject *o)
 {
-	return;
+	QStyleHintReturn *p = dynamic_cast<QStyleHintReturn*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQStyleHintReturn::KQStyleHintReturn(int version, int type) : QStyleHintReturn(version, type)
 {
 	self = NULL;
 	dummy = new DummyQStyleHintReturn();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleHintReturn_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -123,13 +152,9 @@ static void QStyleHintReturn_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleHintReturn_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleHintReturn *qp = (KQStyleHintReturn *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -144,15 +169,6 @@ void KQStyleHintReturn::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStyleHintReturn(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleHintReturn";
-	cdef->free = QStyleHintReturn_free;
-	cdef->reftrace = QStyleHintReturn_reftrace;
-	cdef->compareTo = QStyleHintReturn_compareTo;
-}
-
 static knh_IntData_t QStyleHintReturnConstInt[] = {
 	{"SH_Default", QStyleHintReturn::SH_Default},
 	{"SH_Mask", QStyleHintReturn::SH_Mask},
@@ -165,4 +181,15 @@ static knh_IntData_t QStyleHintReturnConstInt[] = {
 DEFAPI(void) constQStyleHintReturn(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleHintReturnConstInt);
 }
+
+
+DEFAPI(void) defQStyleHintReturn(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleHintReturn";
+	cdef->free = QStyleHintReturn_free;
+	cdef->reftrace = QStyleHintReturn_reftrace;
+	cdef->compareTo = QStyleHintReturn_compareTo;
+}
+
 

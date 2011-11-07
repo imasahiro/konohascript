@@ -4,7 +4,7 @@ KMETHOD QValidator_fixup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QValidator *  qp = RawPtr_to(QValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString input = String_to(QString, sfp[1]);
 		qp->fixup(input);
 	}
@@ -16,7 +16,7 @@ KMETHOD QValidator_getLocale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QValidator *  qp = RawPtr_to(QValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLocale ret_v = qp->locale();
 		QLocale *ret_v_ = new QLocale(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -31,7 +31,7 @@ KMETHOD QValidator_setLocale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QValidator *  qp = RawPtr_to(QValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QLocale  locale = *RawPtr_to(const QLocale *, sfp[1]);
 		qp->setLocale(locale);
 	}
@@ -43,7 +43,7 @@ KMETHOD QValidator_validate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QValidator *  qp = RawPtr_to(QValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString input = String_to(QString, sfp[1]);
 		int pos = Int_to(int, sfp[2]);
 		QValidator::State ret_v = qp->validate(input, pos);
@@ -104,9 +104,23 @@ bool DummyQValidator::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQValidator::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQValidator::connection(QObject *o)
 {
+	QValidator *p = dynamic_cast<QValidator*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
 }
 
@@ -169,13 +183,9 @@ static void QValidator_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QValidator_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQValidator *qp = (KQValidator *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -199,15 +209,6 @@ bool KQValidator::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQValidator(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QValidator";
-	cdef->free = QValidator_free;
-	cdef->reftrace = QValidator_reftrace;
-	cdef->compareTo = QValidator_compareTo;
-}
-
 static knh_IntData_t QValidatorConstInt[] = {
 	{"Invalid", QValidator::Invalid},
 	{"Intermediate", QValidator::Intermediate},
@@ -218,4 +219,15 @@ static knh_IntData_t QValidatorConstInt[] = {
 DEFAPI(void) constQValidator(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QValidatorConstInt);
 }
+
+
+DEFAPI(void) defQValidator(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QValidator";
+	cdef->free = QValidator_free;
+	cdef->reftrace = QValidator_reftrace;
+	cdef->compareTo = QValidator_compareTo;
+}
+
 

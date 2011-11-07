@@ -3,7 +3,7 @@ KMETHOD QTabBar_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QTabBar_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -44,7 +44,7 @@ KMETHOD QTabBar_addTab(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		int ret_v = qp->addTab(text);
 		RETURNi_(ret_v);
@@ -59,7 +59,7 @@ KMETHOD QTabBar_addTab(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		int ret_v = qp->addTab(icon, text);
@@ -74,7 +74,7 @@ KMETHOD QTabBar_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->count();
 		RETURNi_(ret_v);
 	} else {
@@ -87,7 +87,7 @@ KMETHOD QTabBar_getCurrentIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->currentIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -100,7 +100,7 @@ KMETHOD QTabBar_getDocumentMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->documentMode();
 		RETURNb_(ret_v);
 	} else {
@@ -113,7 +113,7 @@ KMETHOD QTabBar_getDrawBase(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->drawBase();
 		RETURNb_(ret_v);
 	} else {
@@ -126,7 +126,7 @@ KMETHOD QTabBar_getElideMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TextElideMode ret_v = qp->elideMode();
 		RETURNi_(ret_v);
 	} else {
@@ -139,7 +139,7 @@ KMETHOD QTabBar_getExpanding(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->expanding();
 		RETURNb_(ret_v);
 	} else {
@@ -152,7 +152,7 @@ KMETHOD QTabBar_getIconSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->iconSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -167,7 +167,7 @@ KMETHOD QTabBar_insertTab(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		int ret_v = qp->insertTab(index, text);
@@ -183,7 +183,7 @@ KMETHOD QTabBar_insertTab(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
@@ -199,7 +199,7 @@ KMETHOD QTabBar_isMovable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isMovable();
 		RETURNb_(ret_v);
 	} else {
@@ -212,7 +212,7 @@ KMETHOD QTabBar_isTabEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		bool ret_v = qp->isTabEnabled(index);
 		RETURNb_(ret_v);
@@ -226,7 +226,7 @@ KMETHOD QTabBar_moveTab(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int from = Int_to(int, sfp[1]);
 		int to = Int_to(int, sfp[2]);
 		qp->moveTab(from, to);
@@ -239,7 +239,7 @@ KMETHOD QTabBar_removeTab(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		qp->removeTab(index);
 	}
@@ -251,7 +251,7 @@ KMETHOD QTabBar_getSelectionBehaviorOnRemove(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTabBar::SelectionBehavior ret_v = qp->selectionBehaviorOnRemove();
 		RETURNi_(ret_v);
 	} else {
@@ -264,7 +264,7 @@ KMETHOD QTabBar_setDocumentMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool set = Boolean_to(bool, sfp[1]);
 		qp->setDocumentMode(set);
 	}
@@ -276,7 +276,7 @@ KMETHOD QTabBar_setDrawBase(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool drawTheBase = Boolean_to(bool, sfp[1]);
 		qp->setDrawBase(drawTheBase);
 	}
@@ -288,7 +288,7 @@ KMETHOD QTabBar_setElideMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TextElideMode arg0 = Int_to(Qt::TextElideMode, sfp[1]);
 		qp->setElideMode(arg0);
 	}
@@ -300,7 +300,7 @@ KMETHOD QTabBar_setExpanding(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setExpanding(enabled);
 	}
@@ -312,7 +312,7 @@ KMETHOD QTabBar_setIconSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  size = *RawPtr_to(const QSize *, sfp[1]);
 		qp->setIconSize(size);
 	}
@@ -324,7 +324,7 @@ KMETHOD QTabBar_setMovable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool movable = Boolean_to(bool, sfp[1]);
 		qp->setMovable(movable);
 	}
@@ -336,7 +336,7 @@ KMETHOD QTabBar_setSelectionBehaviorOnRemove(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTabBar::SelectionBehavior behavior = Int_to(QTabBar::SelectionBehavior, sfp[1]);
 		qp->setSelectionBehaviorOnRemove(behavior);
 	}
@@ -348,7 +348,7 @@ KMETHOD QTabBar_setShape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTabBar::Shape shape = Int_to(QTabBar::Shape, sfp[1]);
 		qp->setShape(shape);
 	}
@@ -360,7 +360,7 @@ KMETHOD QTabBar_setTabButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QTabBar::ButtonPosition position = Int_to(QTabBar::ButtonPosition, sfp[2]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
@@ -374,7 +374,7 @@ KMETHOD QTabBar_setTabData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QVariant  data = *RawPtr_to(const QVariant *, sfp[2]);
 		qp->setTabData(index, data);
@@ -387,7 +387,7 @@ KMETHOD QTabBar_setTabEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		bool enabled = Boolean_to(bool, sfp[2]);
 		qp->setTabEnabled(index, enabled);
@@ -400,7 +400,7 @@ KMETHOD QTabBar_setTabIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[2]);
 		qp->setTabIcon(index, icon);
@@ -413,7 +413,7 @@ KMETHOD QTabBar_setTabText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		qp->setTabText(index, text);
@@ -426,7 +426,7 @@ KMETHOD QTabBar_setTabTextColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QColor  color = *RawPtr_to(const QColor *, sfp[2]);
 		qp->setTabTextColor(index, color);
@@ -439,7 +439,7 @@ KMETHOD QTabBar_setTabToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QString tip = String_to(const QString, sfp[2]);
 		qp->setTabToolTip(index, tip);
@@ -452,7 +452,7 @@ KMETHOD QTabBar_setTabWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		qp->setTabWhatsThis(index, text);
@@ -465,7 +465,7 @@ KMETHOD QTabBar_setTabsClosable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool closable = Boolean_to(bool, sfp[1]);
 		qp->setTabsClosable(closable);
 	}
@@ -477,7 +477,7 @@ KMETHOD QTabBar_setUsesScrollButtons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool useButtons = Boolean_to(bool, sfp[1]);
 		qp->setUsesScrollButtons(useButtons);
 	}
@@ -489,7 +489,7 @@ KMETHOD QTabBar_getShape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTabBar::Shape ret_v = qp->shape();
 		RETURNi_(ret_v);
 	} else {
@@ -502,7 +502,7 @@ KMETHOD QTabBar_tabAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  position = *RawPtr_to(const QPoint *, sfp[1]);
 		int ret_v = qp->tabAt(position);
 		RETURNi_(ret_v);
@@ -516,7 +516,7 @@ KMETHOD QTabBar_getTabButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QTabBar::ButtonPosition position = Int_to(QTabBar::ButtonPosition, sfp[2]);
 		QWidget* ret_v = qp->tabButton(index, position);
@@ -532,7 +532,7 @@ KMETHOD QTabBar_getTabData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QVariant ret_v = qp->tabData(index);
 		QVariant *ret_v_ = new QVariant(ret_v);
@@ -548,7 +548,7 @@ KMETHOD QTabBar_getTabIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QIcon ret_v = qp->tabIcon(index);
 		QIcon *ret_v_ = new QIcon(ret_v);
@@ -564,7 +564,7 @@ KMETHOD QTabBar_tabRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QRect ret_v = qp->tabRect(index);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -580,7 +580,7 @@ KMETHOD QTabBar_getTabText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QString ret_v = qp->tabText(index);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -595,7 +595,7 @@ KMETHOD QTabBar_getTabTextColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QColor ret_v = qp->tabTextColor(index);
 		QColor *ret_v_ = new QColor(ret_v);
@@ -611,7 +611,7 @@ KMETHOD QTabBar_getTabToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QString ret_v = qp->tabToolTip(index);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -626,7 +626,7 @@ KMETHOD QTabBar_getTabWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QString ret_v = qp->tabWhatsThis(index);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -641,7 +641,7 @@ KMETHOD QTabBar_getTabsClosable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->tabsClosable();
 		RETURNb_(ret_v);
 	} else {
@@ -654,7 +654,7 @@ KMETHOD QTabBar_getUsesScrollButtons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->usesScrollButtons();
 		RETURNb_(ret_v);
 	} else {
@@ -667,7 +667,7 @@ KMETHOD QTabBar_setCurrentIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabBar *  qp = RawPtr_to(QTabBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		qp->setCurrentIndex(index);
 	}
@@ -774,12 +774,29 @@ bool DummyQTabBar::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTabBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 3;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, current_changed_func);
+	KNH_ADDNNREF(ctx, tab_close_requested_func);
+	KNH_ADDNNREF(ctx, tab_moved_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQTabBar::connection(QObject *o)
 {
-	connect(o, SIGNAL(currentChanged(int)), this, SLOT(currentChangedSlot(int)));
-	connect(o, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequestedSlot(int)));
-	connect(o, SIGNAL(tabMoved(int, int)), this, SLOT(tabMovedSlot(int, int)));
+	QTabBar *p = dynamic_cast<QTabBar*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(currentChanged(int)), this, SLOT(currentChangedSlot(int)));
+		connect(p, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequestedSlot(int)));
+		connect(p, SIGNAL(tabMoved(int, int)), this, SLOT(tabMovedSlot(int, int)));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -842,25 +859,9 @@ static void QTabBar_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTabBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 3;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTabBar *qp = (KQTabBar *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->current_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->current_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->tab_close_requested_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->tab_close_requested_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->tab_moved_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->tab_moved_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -884,15 +885,6 @@ bool KQTabBar::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQTabBar(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTabBar";
-	cdef->free = QTabBar_free;
-	cdef->reftrace = QTabBar_reftrace;
-	cdef->compareTo = QTabBar_compareTo;
-}
-
 static knh_IntData_t QTabBarConstInt[] = {
 	{"LeftSide", QTabBar::LeftSide},
 	{"RightSide", QTabBar::RightSide},
@@ -913,4 +905,15 @@ static knh_IntData_t QTabBarConstInt[] = {
 DEFAPI(void) constQTabBar(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTabBarConstInt);
 }
+
+
+DEFAPI(void) defQTabBar(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTabBar";
+	cdef->free = QTabBar_free;
+	cdef->reftrace = QTabBar_reftrace;
+	cdef->compareTo = QTabBar_compareTo;
+}
+
 

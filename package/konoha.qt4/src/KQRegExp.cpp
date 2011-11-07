@@ -39,7 +39,7 @@ KMETHOD QRegExp_cap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int nth = Int_to(int, sfp[1]);
 		QString ret_v = qp->cap(nth);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -54,7 +54,7 @@ KMETHOD QRegExp_captureCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->captureCount();
 		RETURNi_(ret_v);
 	} else {
@@ -67,7 +67,7 @@ KMETHOD QRegExp_getCaseSensitivity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::CaseSensitivity ret_v = qp->caseSensitivity();
 		RETURNi_(ret_v);
 	} else {
@@ -80,7 +80,7 @@ KMETHOD QRegExp_errorString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->errorString();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -94,7 +94,7 @@ KMETHOD QRegExp_exactMatch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString str = String_to(const QString, sfp[1]);
 		bool ret_v = qp->exactMatch(str);
 		RETURNb_(ret_v);
@@ -108,7 +108,7 @@ KMETHOD QRegExp_indexIn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString str = String_to(const QString, sfp[1]);
 		int offset = Int_to(int, sfp[2]);
 		QRegExp::CaretMode caretMode = Int_to(QRegExp::CaretMode, sfp[3]);
@@ -124,7 +124,7 @@ KMETHOD QRegExp_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
 		RETURNb_(ret_v);
 	} else {
@@ -137,21 +137,8 @@ KMETHOD QRegExp_isMinimal(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isMinimal();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QRegExp.isValid();
-KMETHOD QRegExp_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -163,7 +150,7 @@ KMETHOD QRegExp_lastIndexIn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString str = String_to(const QString, sfp[1]);
 		int offset = Int_to(int, sfp[2]);
 		QRegExp::CaretMode caretMode = Int_to(QRegExp::CaretMode, sfp[3]);
@@ -179,7 +166,7 @@ KMETHOD QRegExp_matchedLength(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->matchedLength();
 		RETURNi_(ret_v);
 	} else {
@@ -192,7 +179,7 @@ KMETHOD QRegExp_getPattern(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->pattern();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -206,7 +193,7 @@ KMETHOD QRegExp_getPatternSyntax(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRegExp::PatternSyntax ret_v = qp->patternSyntax();
 		RETURNi_(ret_v);
 	} else {
@@ -219,7 +206,7 @@ KMETHOD QRegExp_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int nth = Int_to(int, sfp[1]);
 		int ret_v = qp->pos(nth);
 		RETURNi_(ret_v);
@@ -233,7 +220,7 @@ KMETHOD QRegExp_setCaseSensitivity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::CaseSensitivity cs = Int_to(Qt::CaseSensitivity, sfp[1]);
 		qp->setCaseSensitivity(cs);
 	}
@@ -245,7 +232,7 @@ KMETHOD QRegExp_setMinimal(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool minimal = Boolean_to(bool, sfp[1]);
 		qp->setMinimal(minimal);
 	}
@@ -257,7 +244,7 @@ KMETHOD QRegExp_setPattern(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString pattern = String_to(const QString, sfp[1]);
 		qp->setPattern(pattern);
 	}
@@ -269,7 +256,7 @@ KMETHOD QRegExp_setPatternSyntax(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRegExp::PatternSyntax syntax = Int_to(QRegExp::PatternSyntax, sfp[1]);
 		qp->setPatternSyntax(syntax);
 	}
@@ -280,10 +267,9 @@ KMETHOD QRegExp_setPatternSyntax(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QRegExp_escape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QRegExp *  qp = RawPtr_to(QRegExp *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString str = String_to(const QString, sfp[1]);
-		QString ret_v = qp->escape(str);
+		QString ret_v = QRegExp::escape(str);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -291,6 +277,24 @@ KMETHOD QRegExp_escape(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QRegExp.parents();
+KMETHOD QRegExp_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QRegExp *qp = RawPtr_to(QRegExp*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQRegExp::DummyQRegExp()
 {
@@ -339,17 +343,28 @@ bool DummyQRegExp::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQRegExp::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQRegExp::connection(QObject *o)
 {
-	return;
+	QRegExp *p = dynamic_cast<QRegExp*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQRegExp::KQRegExp() : QRegExp()
 {
 	self = NULL;
 	dummy = new DummyQRegExp();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QRegExp_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -404,13 +419,9 @@ static void QRegExp_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QRegExp_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQRegExp *qp = (KQRegExp *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -423,15 +434,6 @@ void KQRegExp::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQRegExp(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QRegExp";
-	cdef->free = QRegExp_free;
-	cdef->reftrace = QRegExp_reftrace;
-	cdef->compareTo = QRegExp_compareTo;
 }
 
 static knh_IntData_t QRegExpConstInt[] = {
@@ -450,4 +452,15 @@ static knh_IntData_t QRegExpConstInt[] = {
 DEFAPI(void) constQRegExp(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QRegExpConstInt);
 }
+
+
+DEFAPI(void) defQRegExp(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QRegExp";
+	cdef->free = QRegExp_free;
+	cdef->reftrace = QRegExp_reftrace;
+	cdef->compareTo = QRegExp_compareTo;
+}
+
 

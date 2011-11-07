@@ -78,17 +78,28 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+class
+QAbstractFileEngine
+name
+FileFlags
+
 typedefed_objects
 Iterator
 
 parent_typedefed_objects
+Iterator
+
+class_objects
+
+parent_class_objects
 ExtensionOption
 ExtensionReturn
 MapExtensionOption
 MapExtensionReturn
 UnMapExtensionOption
-FileFlags
-Iterator
 
 enums
 

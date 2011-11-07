@@ -4,7 +4,7 @@ KMETHOD QStyle_combinedLayoutSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizePolicy::ControlTypes controls1 = Int_to(QSizePolicy::ControlTypes, sfp[1]);
 		QSizePolicy::ControlTypes controls2 = Int_to(QSizePolicy::ControlTypes, sfp[2]);
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[3]);
@@ -22,7 +22,7 @@ KMETHOD QStyle_drawComplexControl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle::ComplexControl control = Int_to(QStyle::ComplexControl, sfp[1]);
 		const QStyleOptionComplex*  option = RawPtr_to(const QStyleOptionComplex*, sfp[2]);
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[3]);
@@ -37,7 +37,7 @@ KMETHOD QStyle_drawControl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle::ControlElement element = Int_to(QStyle::ControlElement, sfp[1]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[2]);
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[3]);
@@ -52,7 +52,7 @@ KMETHOD QStyle_drawItemPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[2]);
 		int alignment = Int_to(int, sfp[3]);
@@ -67,7 +67,7 @@ KMETHOD QStyle_drawItemText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[2]);
 		int alignment = Int_to(int, sfp[3]);
@@ -85,7 +85,7 @@ KMETHOD QStyle_drawPrimitive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle::PrimitiveElement element = Int_to(QStyle::PrimitiveElement, sfp[1]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[2]);
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[3]);
@@ -100,7 +100,7 @@ KMETHOD QStyle_generatedIconPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIcon::Mode iconMode = Int_to(QIcon::Mode, sfp[1]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[3]);
@@ -118,7 +118,7 @@ KMETHOD QStyle_hitTestComplexControl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle::ComplexControl control = Int_to(QStyle::ComplexControl, sfp[1]);
 		const QStyleOptionComplex*  option = RawPtr_to(const QStyleOptionComplex*, sfp[2]);
 		const QPoint  position = *RawPtr_to(const QPoint *, sfp[3]);
@@ -135,7 +135,7 @@ KMETHOD QStyle_itemPixmapRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		int alignment = Int_to(int, sfp[2]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[3]);
@@ -153,7 +153,7 @@ KMETHOD QStyle_itemTextRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFontMetrics  metrics = *RawPtr_to(const QFontMetrics *, sfp[1]);
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[2]);
 		int alignment = Int_to(int, sfp[3]);
@@ -173,7 +173,7 @@ KMETHOD QStyle_layoutSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizePolicy::ControlType control1 = Int_to(QSizePolicy::ControlType, sfp[1]);
 		QSizePolicy::ControlType control2 = Int_to(QSizePolicy::ControlType, sfp[2]);
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[3]);
@@ -191,7 +191,7 @@ KMETHOD QStyle_pixelMetric(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle::PixelMetric metric = Int_to(QStyle::PixelMetric, sfp[1]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -207,7 +207,7 @@ KMETHOD QStyle_polish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->polish(widget);
 	}
@@ -220,7 +220,7 @@ KMETHOD QStyle_polish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QApplication*  application = RawPtr_to(QApplication*, sfp[1]);
 		qp->polish(application);
 	}
@@ -233,7 +233,7 @@ KMETHOD QStyle_polish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette  palette = *RawPtr_to(QPalette *, sfp[1]);
 		qp->polish(palette);
 	}
@@ -245,7 +245,7 @@ KMETHOD QStyle_proxy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QStyle* ret_v = qp->proxy();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStyle*)ret_v, NULL);
 		RETURN_(rptr);
@@ -259,7 +259,7 @@ KMETHOD QStyle_sizeFromContents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle::ContentsType type = Int_to(QStyle::ContentsType, sfp[1]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QSize  contentsSize = *RawPtr_to(const QSize *, sfp[3]);
@@ -278,7 +278,7 @@ KMETHOD QStyle_standardIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle::StandardPixmap standardIcon = Int_to(QStyle::StandardPixmap, sfp[1]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -296,7 +296,7 @@ KMETHOD QStyle_standardPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette ret_v = qp->standardPalette();
 		QPalette *ret_v_ = new QPalette(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -311,7 +311,7 @@ KMETHOD QStyle_styleHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle::StyleHint hint = Int_to(QStyle::StyleHint, sfp[1]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -328,7 +328,7 @@ KMETHOD QStyle_subControlRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle::ComplexControl control = Int_to(QStyle::ComplexControl, sfp[1]);
 		const QStyleOptionComplex*  option = RawPtr_to(const QStyleOptionComplex*, sfp[2]);
 		QStyle::SubControl subControl = Int_to(QStyle::SubControl, sfp[3]);
@@ -347,7 +347,7 @@ KMETHOD QStyle_subElementRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle::SubElement element = Int_to(QStyle::SubElement, sfp[1]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -365,7 +365,7 @@ KMETHOD QStyle_unpolish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->unpolish(widget);
 	}
@@ -378,24 +378,23 @@ KMETHOD QStyle_unpolish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QApplication*  application = RawPtr_to(QApplication*, sfp[1]);
 		qp->unpolish(application);
 	}
 	RETURNvoid_();
 }
 */
-//QRect QStyle.alignedRect(int direction, int alignment, QSize size, QRect rectangle);
+//QRect QStyle.alignedRect(int direction, QtAlignment alignment, QSize size, QRect rectangle);
 KMETHOD QStyle_alignedRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		Qt::LayoutDirection direction = Int_to(Qt::LayoutDirection, sfp[1]);
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[2]);
+		initFlag(alignment, Qt::Alignment, sfp[2]);
 		const QSize  size = *RawPtr_to(const QSize *, sfp[3]);
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[4]);
-		QRect ret_v = qp->alignedRect(direction, alignment, size, rectangle);
+		QRect ret_v = QStyle::alignedRect(direction, alignment, size, rectangle);
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -408,14 +407,13 @@ KMETHOD QStyle_alignedRect(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QStyle_sliderPositionFromValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int min = Int_to(int, sfp[1]);
 		int max = Int_to(int, sfp[2]);
 		int logicalValue = Int_to(int, sfp[3]);
 		int span = Int_to(int, sfp[4]);
 		bool upsideDown = Boolean_to(bool, sfp[5]);
-		int ret_v = qp->sliderPositionFromValue(min, max, logicalValue, span, upsideDown);
+		int ret_v = QStyle::sliderPositionFromValue(min, max, logicalValue, span, upsideDown);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -426,32 +424,32 @@ KMETHOD QStyle_sliderPositionFromValue(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QStyle_sliderValueFromPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int min = Int_to(int, sfp[1]);
 		int max = Int_to(int, sfp[2]);
 		int position = Int_to(int, sfp[3]);
 		int span = Int_to(int, sfp[4]);
 		bool upsideDown = Boolean_to(bool, sfp[5]);
-		int ret_v = qp->sliderValueFromPosition(min, max, position, span, upsideDown);
+		int ret_v = QStyle::sliderValueFromPosition(min, max, position, span, upsideDown);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
 	}
 }
 
-//int QStyle.visualAlignment(int direction, int alignment);
+//QtAlignment QStyle.visualAlignment(int direction, QtAlignment alignment);
 KMETHOD QStyle_visualAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		Qt::LayoutDirection direction = Int_to(Qt::LayoutDirection, sfp[1]);
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[2]);
-		Qt::Alignment ret_v = qp->visualAlignment(direction, alignment);
-		RETURNi_(ret_v);
+		initFlag(alignment, Qt::Alignment, sfp[2]);
+		Qt::Alignment ret_v = QStyle::visualAlignment(direction, alignment);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -459,12 +457,11 @@ KMETHOD QStyle_visualAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QStyle_visualPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		Qt::LayoutDirection direction = Int_to(Qt::LayoutDirection, sfp[1]);
 		const QRect  boundingRectangle = *RawPtr_to(const QRect *, sfp[2]);
 		const QPoint  logicalPosition = *RawPtr_to(const QPoint *, sfp[3]);
-		QPoint ret_v = qp->visualPos(direction, boundingRectangle, logicalPosition);
+		QPoint ret_v = QStyle::visualPos(direction, boundingRectangle, logicalPosition);
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -477,12 +474,11 @@ KMETHOD QStyle_visualPos(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QStyle_visualRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QStyle *  qp = RawPtr_to(QStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		Qt::LayoutDirection direction = Int_to(Qt::LayoutDirection, sfp[1]);
 		const QRect  boundingRectangle = *RawPtr_to(const QRect *, sfp[2]);
 		const QRect  logicalRectangle = *RawPtr_to(const QRect *, sfp[3]);
-		QRect ret_v = qp->visualRect(direction, boundingRectangle, logicalRectangle);
+		QRect ret_v = QStyle::visualRect(direction, boundingRectangle, logicalRectangle);
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -542,9 +538,23 @@ bool DummyQStyle::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQStyle::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyle::connection(QObject *o)
 {
+	QStyle *p = dynamic_cast<QStyle*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
 }
 
@@ -607,13 +617,9 @@ static void QStyle_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyle *qp = (KQStyle *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -635,15 +641,6 @@ bool KQStyle::event(QEvent *event)
 		return false;
 	}
 	return true;
-}
-
-DEFAPI(void) defQStyle(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyle";
-	cdef->free = QStyle_free;
-	cdef->reftrace = QStyle_reftrace;
-	cdef->compareTo = QStyle_compareTo;
 }
 
 static knh_IntData_t QStyleConstInt[] = {
@@ -1183,5 +1180,342 @@ static knh_IntData_t QStyleConstInt[] = {
 
 DEFAPI(void) constQStyle(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleConstInt);
+}
+
+
+DEFAPI(void) defQStyle(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyle";
+	cdef->free = QStyle_free;
+	cdef->reftrace = QStyle_reftrace;
+	cdef->compareTo = QStyle_compareTo;
+}
+
+//## QStyleState QStyleState.new(int value);
+KMETHOD QStyleState_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyle::StateFlag i = Int_to(QStyle::StateFlag, sfp[1]);
+	QStyle::State *ret_v = new QStyle::State(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QStyleState QStyleState.and(int mask);
+KMETHOD QStyleState_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyle::State *qp = RawPtr_to(QStyle::State*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QStyle::State ret = ((*qp) & i);
+		QStyle::State *ret_ = new QStyle::State(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleState QStyleState.iand(QStyle::QStyleState other);
+KMETHOD QStyleState_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyle::State *qp = RawPtr_to(QStyle::State*, sfp[0]);
+	if (qp != NULL) {
+		QStyle::State *other = RawPtr_to(QStyle::State *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleState QStyleState.or(QStyleState f);
+KMETHOD QStyleState_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QStyle::State *qp = RawPtr_to(QStyle::State*, sfp[0]);
+	if (qp != NULL) {
+		QStyle::State *f = RawPtr_to(QStyle::State*, sfp[1]);
+		QStyle::State ret = ((*qp) | (*f));
+		QStyle::State *ret_ = new QStyle::State(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleState QStyleState.ior(QStyle::QStyleState other);
+KMETHOD QStyleState_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyle::State *qp = RawPtr_to(QStyle::State*, sfp[0]);
+	if (qp != NULL) {
+		QStyle::State *other = RawPtr_to(QStyle::State *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleState QStyleState.xor(QStyleState f);
+KMETHOD QStyleState_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QStyle::State *qp = RawPtr_to(QStyle::State*, sfp[0]);
+	if (qp != NULL) {
+		QStyle::State *f = RawPtr_to(QStyle::State*, sfp[1]);
+		QStyle::State ret = ((*qp) ^ (*f));
+		QStyle::State *ret_ = new QStyle::State(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleState QStyleState.ixor(QStyle::QStyleState other);
+KMETHOD QStyleState_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyle::State *qp = RawPtr_to(QStyle::State*, sfp[0]);
+	if (qp != NULL) {
+		QStyle::State *other = RawPtr_to(QStyle::State *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QStyleState.testFlag(int flag);
+KMETHOD QStyleState_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyle::State *qp = RawPtr_to(QStyle::State *, sfp[0]);
+	if (qp != NULL) {
+		QStyle::StateFlag flag = Int_to(QStyle::StateFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QStyleState.value();
+KMETHOD QStyleState_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyle::State *qp = RawPtr_to(QStyle::State *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QStyleState_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QStyle::State *qp = (QStyle::State *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QStyleState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QStyle::State *qp = (QStyle::State *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QStyleState_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QStyle::State*)p1->rawptr);
+//		int v2 = int(*(QStyle::State*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QStyle::State v1 = *(QStyle::State*)p1->rawptr;
+		QStyle::State v2 = *(QStyle::State*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQStyleState(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleState";
+	cdef->free = QStyleState_free;
+	cdef->reftrace = QStyleState_reftrace;
+	cdef->compareTo = QStyleState_compareTo;
+}
+//## QStyleSubControls QStyleSubControls.new(int value);
+KMETHOD QStyleSubControls_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyle::SubControl i = Int_to(QStyle::SubControl, sfp[1]);
+	QStyle::SubControls *ret_v = new QStyle::SubControls(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QStyleSubControls QStyleSubControls.and(int mask);
+KMETHOD QStyleSubControls_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyle::SubControls *qp = RawPtr_to(QStyle::SubControls*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QStyle::SubControls ret = ((*qp) & i);
+		QStyle::SubControls *ret_ = new QStyle::SubControls(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleSubControls QStyleSubControls.iand(QStyle::QStyleSubControls other);
+KMETHOD QStyleSubControls_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyle::SubControls *qp = RawPtr_to(QStyle::SubControls*, sfp[0]);
+	if (qp != NULL) {
+		QStyle::SubControls *other = RawPtr_to(QStyle::SubControls *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleSubControls QStyleSubControls.or(QStyleSubControls f);
+KMETHOD QStyleSubControls_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QStyle::SubControls *qp = RawPtr_to(QStyle::SubControls*, sfp[0]);
+	if (qp != NULL) {
+		QStyle::SubControls *f = RawPtr_to(QStyle::SubControls*, sfp[1]);
+		QStyle::SubControls ret = ((*qp) | (*f));
+		QStyle::SubControls *ret_ = new QStyle::SubControls(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleSubControls QStyleSubControls.ior(QStyle::QStyleSubControls other);
+KMETHOD QStyleSubControls_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyle::SubControls *qp = RawPtr_to(QStyle::SubControls*, sfp[0]);
+	if (qp != NULL) {
+		QStyle::SubControls *other = RawPtr_to(QStyle::SubControls *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleSubControls QStyleSubControls.xor(QStyleSubControls f);
+KMETHOD QStyleSubControls_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QStyle::SubControls *qp = RawPtr_to(QStyle::SubControls*, sfp[0]);
+	if (qp != NULL) {
+		QStyle::SubControls *f = RawPtr_to(QStyle::SubControls*, sfp[1]);
+		QStyle::SubControls ret = ((*qp) ^ (*f));
+		QStyle::SubControls *ret_ = new QStyle::SubControls(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleSubControls QStyleSubControls.ixor(QStyle::QStyleSubControls other);
+KMETHOD QStyleSubControls_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyle::SubControls *qp = RawPtr_to(QStyle::SubControls*, sfp[0]);
+	if (qp != NULL) {
+		QStyle::SubControls *other = RawPtr_to(QStyle::SubControls *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QStyleSubControls.testFlag(int flag);
+KMETHOD QStyleSubControls_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyle::SubControls *qp = RawPtr_to(QStyle::SubControls *, sfp[0]);
+	if (qp != NULL) {
+		QStyle::SubControl flag = Int_to(QStyle::SubControl, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QStyleSubControls.value();
+KMETHOD QStyleSubControls_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyle::SubControls *qp = RawPtr_to(QStyle::SubControls *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QStyleSubControls_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QStyle::SubControls *qp = (QStyle::SubControls *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QStyleSubControls_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QStyle::SubControls *qp = (QStyle::SubControls *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QStyleSubControls_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QStyle::SubControls*)p1->rawptr);
+//		int v2 = int(*(QStyle::SubControls*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QStyle::SubControls v1 = *(QStyle::SubControls*)p1->rawptr;
+		QStyle::SubControls v2 = *(QStyle::SubControls*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQStyleSubControls(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleSubControls";
+	cdef->free = QStyleSubControls_free;
+	cdef->reftrace = QStyleSubControls_reftrace;
+	cdef->compareTo = QStyleSubControls_compareTo;
 }
 

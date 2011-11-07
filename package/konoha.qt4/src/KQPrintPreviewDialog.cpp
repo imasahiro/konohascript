@@ -3,7 +3,7 @@ KMETHOD QPrintPreviewDialog_done(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewDialog *  qp = RawPtr_to(QPrintPreviewDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int result = Int_to(int, sfp[1]);
 		qp->done(result);
 	}
@@ -15,20 +15,20 @@ KMETHOD QPrintPreviewDialog_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewDialog *  qp = RawPtr_to(QPrintPreviewDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setVisible(visible);
 	}
 	RETURNvoid_();
 }
 
-//QPrintPreviewDialog QPrintPreviewDialog.new(QPrinter printer, QWidget parent, int flags);
+//QPrintPreviewDialog QPrintPreviewDialog.new(QPrinter printer, QWidget parent, QtWindowFlags flags);
 KMETHOD QPrintPreviewDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter*  printer = RawPtr_to(QPrinter*, sfp[1]);
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
-	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[3]);
+	initFlag(flags, Qt::WindowFlags, sfp[3]);
 	KQPrintPreviewDialog *ret_v = new KQPrintPreviewDialog(printer, parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -36,12 +36,12 @@ KMETHOD QPrintPreviewDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//QPrintPreviewDialog QPrintPreviewDialog.new(QWidget parent, int flags);
+//QPrintPreviewDialog QPrintPreviewDialog.new(QWidget parent, QtWindowFlags flags);
 KMETHOD QPrintPreviewDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
-	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[2]);
+	initFlag(flags, Qt::WindowFlags, sfp[2]);
 	KQPrintPreviewDialog *ret_v = new KQPrintPreviewDialog(parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -53,7 +53,7 @@ KMETHOD QPrintPreviewDialog_open(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewDialog *  qp = RawPtr_to(QPrintPreviewDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
 		const char*  member = RawPtr_to(const char*, sfp[2]);
 		qp->open(receiver, member);
@@ -66,7 +66,7 @@ KMETHOD QPrintPreviewDialog_printer(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewDialog *  qp = RawPtr_to(QPrintPreviewDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter* ret_v = qp->printer();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPrinter*)ret_v, NULL);
 		RETURN_(rptr);
@@ -143,10 +143,25 @@ bool DummyQPrintPreviewDialog::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQPrintPreviewDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, paint_requested_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQDialog::reftrace(ctx, p, tail_);
+}
 
 void DummyQPrintPreviewDialog::connection(QObject *o)
 {
-	connect(o, SIGNAL(paintRequested(QPrinter*)), this, SLOT(paintRequestedSlot(QPrinter*)));
+	QPrintPreviewDialog *p = dynamic_cast<QPrintPreviewDialog*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(paintRequested(QPrinter*)), this, SLOT(paintRequestedSlot(QPrinter*)));
+	}
 	DummyQDialog::connection(o);
 }
 
@@ -209,17 +224,9 @@ static void QPrintPreviewDialog_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPrintPreviewDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPrintPreviewDialog *qp = (KQPrintPreviewDialog *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->paint_requested_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->paint_requested_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -242,6 +249,8 @@ bool KQPrintPreviewDialog::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQPrintPreviewDialog(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

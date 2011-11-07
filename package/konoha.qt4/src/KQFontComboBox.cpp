@@ -3,7 +3,7 @@ KMETHOD QFontComboBox_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontComboBox *  qp = RawPtr_to(QFontComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -29,7 +29,7 @@ KMETHOD QFontComboBox_getCurrentFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontComboBox *  qp = RawPtr_to(QFontComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont ret_v = qp->currentFont();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -39,26 +39,28 @@ KMETHOD QFontComboBox_getCurrentFont(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QFontComboBox.getFontFilters();
+//QFontComboBoxFontFilters QFontComboBox.getFontFilters();
 KMETHOD QFontComboBox_getFontFilters(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontComboBox *  qp = RawPtr_to(QFontComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFontComboBox::FontFilters ret_v = qp->fontFilters();
-		RETURNi_(ret_v);
+		QFontComboBox::FontFilters *ret_v_ = new QFontComboBox::FontFilters(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
-//void QFontComboBox.setFontFilters(int filters);
+//void QFontComboBox.setFontFilters(QFontComboBoxFontFilters filters);
 KMETHOD QFontComboBox_setFontFilters(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontComboBox *  qp = RawPtr_to(QFontComboBox *, sfp[0]);
-	if (qp != NULL) {
-		QFontComboBox::FontFilters filters = Int_to(QFontComboBox::FontFilters, sfp[1]);
+	if (qp) {
+		initFlag(filters, QFontComboBox::FontFilters, sfp[1]);
 		qp->setFontFilters(filters);
 	}
 	RETURNvoid_();
@@ -69,7 +71,7 @@ KMETHOD QFontComboBox_setWritingSystem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontComboBox *  qp = RawPtr_to(QFontComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFontDatabase::WritingSystem script = Int_to(QFontDatabase::WritingSystem, sfp[1]);
 		qp->setWritingSystem(script);
 	}
@@ -81,7 +83,7 @@ KMETHOD QFontComboBox_getWritingSystem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontComboBox *  qp = RawPtr_to(QFontComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFontDatabase::WritingSystem ret_v = qp->writingSystem();
 		RETURNi_(ret_v);
 	} else {
@@ -94,7 +96,7 @@ KMETHOD QFontComboBox_setCurrentFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontComboBox *  qp = RawPtr_to(QFontComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont  font = *RawPtr_to(const QFont *, sfp[1]);
 		qp->setCurrentFont(font);
 	}
@@ -169,10 +171,25 @@ bool DummyQFontComboBox::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQFontComboBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, current_font_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQComboBox::reftrace(ctx, p, tail_);
+}
 
 void DummyQFontComboBox::connection(QObject *o)
 {
-	connect(o, SIGNAL(currentFontChanged(const QFont)), this, SLOT(currentFontChangedSlot(const QFont)));
+	QFontComboBox *p = dynamic_cast<QFontComboBox*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(currentFontChanged(const QFont)), this, SLOT(currentFontChangedSlot(const QFont)));
+	}
 	DummyQComboBox::connection(o);
 }
 
@@ -235,17 +252,9 @@ static void QFontComboBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QFontComboBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQFontComboBox *qp = (KQFontComboBox *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->current_font_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->current_font_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -269,15 +278,6 @@ bool KQFontComboBox::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQFontComboBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QFontComboBox";
-	cdef->free = QFontComboBox_free;
-	cdef->reftrace = QFontComboBox_reftrace;
-	cdef->compareTo = QFontComboBox_compareTo;
-}
-
 static knh_IntData_t QFontComboBoxConstInt[] = {
 	{"AllFonts", QFontComboBox::AllFonts},
 	{"ScalableFonts", QFontComboBox::ScalableFonts},
@@ -289,5 +289,179 @@ static knh_IntData_t QFontComboBoxConstInt[] = {
 
 DEFAPI(void) constQFontComboBox(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QFontComboBoxConstInt);
+}
+
+
+DEFAPI(void) defQFontComboBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QFontComboBox";
+	cdef->free = QFontComboBox_free;
+	cdef->reftrace = QFontComboBox_reftrace;
+	cdef->compareTo = QFontComboBox_compareTo;
+}
+
+//## QFontComboBoxFontFilters QFontComboBoxFontFilters.new(int value);
+KMETHOD QFontComboBoxFontFilters_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QFontComboBox::FontFilter i = Int_to(QFontComboBox::FontFilter, sfp[1]);
+	QFontComboBox::FontFilters *ret_v = new QFontComboBox::FontFilters(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QFontComboBoxFontFilters QFontComboBoxFontFilters.and(int mask);
+KMETHOD QFontComboBoxFontFilters_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QFontComboBox::FontFilters *qp = RawPtr_to(QFontComboBox::FontFilters*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QFontComboBox::FontFilters ret = ((*qp) & i);
+		QFontComboBox::FontFilters *ret_ = new QFontComboBox::FontFilters(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QFontComboBoxFontFilters QFontComboBoxFontFilters.iand(QFontComboBox::QFontComboBoxFontFilters other);
+KMETHOD QFontComboBoxFontFilters_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QFontComboBox::FontFilters *qp = RawPtr_to(QFontComboBox::FontFilters*, sfp[0]);
+	if (qp != NULL) {
+		QFontComboBox::FontFilters *other = RawPtr_to(QFontComboBox::FontFilters *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QFontComboBoxFontFilters QFontComboBoxFontFilters.or(QFontComboBoxFontFilters f);
+KMETHOD QFontComboBoxFontFilters_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QFontComboBox::FontFilters *qp = RawPtr_to(QFontComboBox::FontFilters*, sfp[0]);
+	if (qp != NULL) {
+		QFontComboBox::FontFilters *f = RawPtr_to(QFontComboBox::FontFilters*, sfp[1]);
+		QFontComboBox::FontFilters ret = ((*qp) | (*f));
+		QFontComboBox::FontFilters *ret_ = new QFontComboBox::FontFilters(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QFontComboBoxFontFilters QFontComboBoxFontFilters.ior(QFontComboBox::QFontComboBoxFontFilters other);
+KMETHOD QFontComboBoxFontFilters_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QFontComboBox::FontFilters *qp = RawPtr_to(QFontComboBox::FontFilters*, sfp[0]);
+	if (qp != NULL) {
+		QFontComboBox::FontFilters *other = RawPtr_to(QFontComboBox::FontFilters *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QFontComboBoxFontFilters QFontComboBoxFontFilters.xor(QFontComboBoxFontFilters f);
+KMETHOD QFontComboBoxFontFilters_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QFontComboBox::FontFilters *qp = RawPtr_to(QFontComboBox::FontFilters*, sfp[0]);
+	if (qp != NULL) {
+		QFontComboBox::FontFilters *f = RawPtr_to(QFontComboBox::FontFilters*, sfp[1]);
+		QFontComboBox::FontFilters ret = ((*qp) ^ (*f));
+		QFontComboBox::FontFilters *ret_ = new QFontComboBox::FontFilters(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QFontComboBoxFontFilters QFontComboBoxFontFilters.ixor(QFontComboBox::QFontComboBoxFontFilters other);
+KMETHOD QFontComboBoxFontFilters_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QFontComboBox::FontFilters *qp = RawPtr_to(QFontComboBox::FontFilters*, sfp[0]);
+	if (qp != NULL) {
+		QFontComboBox::FontFilters *other = RawPtr_to(QFontComboBox::FontFilters *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QFontComboBoxFontFilters.testFlag(int flag);
+KMETHOD QFontComboBoxFontFilters_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QFontComboBox::FontFilters *qp = RawPtr_to(QFontComboBox::FontFilters *, sfp[0]);
+	if (qp != NULL) {
+		QFontComboBox::FontFilter flag = Int_to(QFontComboBox::FontFilter, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QFontComboBoxFontFilters.value();
+KMETHOD QFontComboBoxFontFilters_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QFontComboBox::FontFilters *qp = RawPtr_to(QFontComboBox::FontFilters *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QFontComboBoxFontFilters_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QFontComboBox::FontFilters *qp = (QFontComboBox::FontFilters *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QFontComboBoxFontFilters_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QFontComboBox::FontFilters *qp = (QFontComboBox::FontFilters *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QFontComboBoxFontFilters_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QFontComboBox::FontFilters*)p1->rawptr);
+//		int v2 = int(*(QFontComboBox::FontFilters*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QFontComboBox::FontFilters v1 = *(QFontComboBox::FontFilters*)p1->rawptr;
+		QFontComboBox::FontFilters v2 = *(QFontComboBox::FontFilters*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQFontComboBoxFontFilters(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QFontComboBoxFontFilters";
+	cdef->free = QFontComboBoxFontFilters_free;
+	cdef->reftrace = QFontComboBoxFontFilters_reftrace;
+	cdef->compareTo = QFontComboBoxFontFilters_compareTo;
 }
 

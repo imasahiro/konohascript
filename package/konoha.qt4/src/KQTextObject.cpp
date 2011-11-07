@@ -3,7 +3,7 @@ KMETHOD QTextObject_document(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextObject *  qp = RawPtr_to(QTextObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextDocument* ret_v = qp->document();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextDocument*)ret_v, NULL);
 		RETURN_(rptr);
@@ -12,12 +12,12 @@ KMETHOD QTextObject_document(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QTextFormat QTextObject.fmt();
+//QTextFormat QTextObject.format();
 KMETHOD QTextObject_format(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextObject *  qp = RawPtr_to(QTextObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextFormat ret_v = qp->format();
 		QTextFormat *ret_v_ = new QTextFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -32,7 +32,7 @@ KMETHOD QTextObject_formatIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextObject *  qp = RawPtr_to(QTextObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->formatIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -45,7 +45,7 @@ KMETHOD QTextObject_objectIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextObject *  qp = RawPtr_to(QTextObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->objectIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -104,17 +104,24 @@ bool DummyQTextObject::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextObject::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQTextObject::connection(QObject *o)
 {
+	QTextObject *p = dynamic_cast<QTextObject*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
-}
-
-KQTextObject::KQTextObject(QTextDocument* document) : QTextObject(document)
-{
-	self = NULL;
-	dummy = new DummyQTextObject();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextObject_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -169,13 +176,9 @@ static void QTextObject_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextObject_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextObject *qp = (KQTextObject *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -198,6 +201,8 @@ bool KQTextObject::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQTextObject(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

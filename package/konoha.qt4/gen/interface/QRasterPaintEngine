@@ -62,11 +62,25 @@ false
 enbeddedClass
 true
 
+flag_objects
+
+parent_flag_objects
+class
+QPaintEngine
+name
+DirtyFlags
+class
+QPaintEngine
+name
+PaintEngineFeatures
+
 typedefed_objects
 
 parent_typedefed_objects
-DirtyFlags
-PaintEngineFeatures
+
+class_objects
+
+parent_class_objects
 
 enums
 

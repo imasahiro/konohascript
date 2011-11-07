@@ -8,16 +8,18 @@ KMETHOD QTextBlockFormat_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 
-//int QTextBlockFormat.getAlignment();
+//QtAlignment QTextBlockFormat.getAlignment();
 KMETHOD QTextBlockFormat_getAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->alignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -26,7 +28,7 @@ KMETHOD QTextBlockFormat_getBottomMargin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->bottomMargin();
 		RETURNf_(ret_v);
 	} else {
@@ -39,24 +41,11 @@ KMETHOD QTextBlockFormat_getIndent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->indent();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
-	}
-}
-
-////boolean QTextBlockFormat.isValid();
-KMETHOD QTextBlockFormat_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
 	}
 }
 
@@ -65,7 +54,7 @@ KMETHOD QTextBlockFormat_getLeftMargin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->leftMargin();
 		RETURNf_(ret_v);
 	} else {
@@ -78,7 +67,7 @@ KMETHOD QTextBlockFormat_getNonBreakableLines(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->nonBreakableLines();
 		RETURNb_(ret_v);
 	} else {
@@ -86,16 +75,18 @@ KMETHOD QTextBlockFormat_getNonBreakableLines(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QTextBlockFormat.getPageBreakPolicy();
+//QTextFormatPageBreakFlags QTextBlockFormat.getPageBreakPolicy();
 KMETHOD QTextBlockFormat_getPageBreakPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
-		QTextBlockFormat::PageBreakFlags ret_v = qp->pageBreakPolicy();
-		RETURNi_(ret_v);
+	if (qp) {
+		QTextFormat::PageBreakFlags ret_v = qp->pageBreakPolicy();
+		QTextFormat::PageBreakFlags *ret_v_ = new QTextFormat::PageBreakFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -104,7 +95,7 @@ KMETHOD QTextBlockFormat_getRightMargin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->rightMargin();
 		RETURNf_(ret_v);
 	} else {
@@ -112,13 +103,13 @@ KMETHOD QTextBlockFormat_getRightMargin(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QTextBlockFormat.setAlignment(int alignment);
+//void QTextBlockFormat.setAlignment(QtAlignment alignment);
 KMETHOD QTextBlockFormat_setAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(alignment, Qt::Alignment, sfp[1]);
 		qp->setAlignment(alignment);
 	}
 	RETURNvoid_();
@@ -129,7 +120,7 @@ KMETHOD QTextBlockFormat_setBottomMargin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal margin = Float_to(qreal, sfp[1]);
 		qp->setBottomMargin(margin);
 	}
@@ -141,7 +132,7 @@ KMETHOD QTextBlockFormat_setIndent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int indentation = Int_to(int, sfp[1]);
 		qp->setIndent(indentation);
 	}
@@ -153,7 +144,7 @@ KMETHOD QTextBlockFormat_setLeftMargin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal margin = Float_to(qreal, sfp[1]);
 		qp->setLeftMargin(margin);
 	}
@@ -165,20 +156,20 @@ KMETHOD QTextBlockFormat_setNonBreakableLines(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool b = Boolean_to(bool, sfp[1]);
 		qp->setNonBreakableLines(b);
 	}
 	RETURNvoid_();
 }
 
-//void QTextBlockFormat.setPageBreakPolicy(int policy);
+//void QTextBlockFormat.setPageBreakPolicy(QTextFormatPageBreakFlags policy);
 KMETHOD QTextBlockFormat_setPageBreakPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
-		QTextBlockFormat::PageBreakFlags policy = Int_to(QTextBlockFormat::PageBreakFlags, sfp[1]);
+	if (qp) {
+		initFlag(policy, QTextFormat::PageBreakFlags, sfp[1]);
 		qp->setPageBreakPolicy(policy);
 	}
 	RETURNvoid_();
@@ -189,27 +180,9 @@ KMETHOD QTextBlockFormat_setRightMargin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal margin = Float_to(qreal, sfp[1]);
 		qp->setRightMargin(margin);
-	}
-	RETURNvoid_();
-}
-
-//void QTextBlockFormat.setTabPositions(Array<int> tabs);
-KMETHOD QTextBlockFormat_setTabPositions(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
-		knh_Array_t *a = sfp[1].a;
-		int asize = knh_Array_size(a);
-		QList<QTextOption::Tab> tabs;
-		for (int n = 0; n < asize; n++) {
-			knh_RawPtr_t *p = (knh_RawPtr_t*)(a->list[n]);
-			tabs.append(*(QTextOption::Tab*)p->rawptr);
-		}
-		qp->setTabPositions(tabs);
 	}
 	RETURNvoid_();
 }
@@ -219,53 +192,31 @@ KMETHOD QTextBlockFormat_setTextIndent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal indent = Float_to(qreal, sfp[1]);
 		qp->setTextIndent(indent);
 	}
 	RETURNvoid_();
 }
 
-//void QTextBlockFormat.settopMargin(float margin);
+//void QTextBlockFormat.setTopMargin(float margin);
 KMETHOD QTextBlockFormat_setTopMargin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal margin = Float_to(qreal, sfp[1]);
 		qp->setTopMargin(margin);
 	}
 	RETURNvoid_();
 }
 
-//Array<int> QTextBlockFormat.getTabPositions();
-KMETHOD QTextBlockFormat_getTabPositions(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
-		QList<QTextOption::Tab>ret_v = qp->tabPositions();
-		int list_size = ret_v.size();
-		knh_Array_t *a = new_Array0(ctx, list_size);
-		knh_class_t cid = knh_getcid(ctx, STEXT("QTextOption::Tab"));
-		for (int n = 0; n < list_size; n++) {
-			QTextOption::Tab *ret_v_ = new QTextOption::Tab(ret_v[n]);
-			knh_RawPtr_t *p = new_RawPtr(ctx, ClassTBL(cid), ret_v_);
-			knh_Array_add(ctx, a, (knh_Object_t *)p);
-		}
-		RETURN_(a);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-	
-
 //float QTextBlockFormat.getTextIndent();
 KMETHOD QTextBlockFormat_getTextIndent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->textIndent();
 		RETURNf_(ret_v);
 	} else {
@@ -273,12 +224,12 @@ KMETHOD QTextBlockFormat_getTextIndent(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//float QTextBlockFormat.gettopMargin();
+//float QTextBlockFormat.getTopMargin();
 KMETHOD QTextBlockFormat_getTopMargin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlockFormat *  qp = RawPtr_to(QTextBlockFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->topMargin();
 		RETURNf_(ret_v);
 	} else {
@@ -337,9 +288,23 @@ bool DummyQTextBlockFormat::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextBlockFormat::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQTextFormat::reftrace(ctx, p, tail_);
+}
 
 void DummyQTextBlockFormat::connection(QObject *o)
 {
+	QTextBlockFormat *p = dynamic_cast<QTextBlockFormat*>(o);
+	if (p != NULL) {
+	}
 	DummyQTextFormat::connection(o);
 }
 
@@ -347,7 +312,6 @@ KQTextBlockFormat::KQTextBlockFormat() : QTextBlockFormat()
 {
 	self = NULL;
 	dummy = new DummyQTextBlockFormat();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextBlockFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -402,13 +366,9 @@ static void QTextBlockFormat_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextBlockFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextBlockFormat *qp = (KQTextBlockFormat *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -422,6 +382,8 @@ void KQTextBlockFormat::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQTextBlockFormat(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

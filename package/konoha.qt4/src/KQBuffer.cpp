@@ -3,7 +3,7 @@ KMETHOD QBuffer_atEnd(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBuffer *  qp = RawPtr_to(QBuffer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->atEnd();
 		RETURNb_(ret_v);
 	} else {
@@ -16,7 +16,7 @@ KMETHOD QBuffer_canReadLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBuffer *  qp = RawPtr_to(QBuffer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->canReadLine();
 		RETURNb_(ret_v);
 	} else {
@@ -29,19 +29,19 @@ KMETHOD QBuffer_close(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBuffer *  qp = RawPtr_to(QBuffer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->close();
 	}
 	RETURNvoid_();
 }
 
-//@Virtual @Override boolean QBuffer.open(int flags);
+//@Virtual @Override boolean QBuffer.open(QIODeviceOpenMode flags);
 KMETHOD QBuffer_open(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBuffer *  qp = RawPtr_to(QBuffer *, sfp[0]);
-	if (qp != NULL) {
-		QBuffer::OpenMode  flags = *RawPtr_to(QBuffer::OpenMode *, sfp[1]);
+	if (qp) {
+		initFlag(flags, QIODevice::OpenMode, sfp[1]);
 		bool ret_v = qp->open(flags);
 		RETURNb_(ret_v);
 	} else {
@@ -54,7 +54,7 @@ KMETHOD QBuffer_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBuffer *  qp = RawPtr_to(QBuffer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->pos();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -69,7 +69,7 @@ KMETHOD QBuffer_seek(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBuffer *  qp = RawPtr_to(QBuffer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 pos = Int_to(qint64, sfp[1]);
 		bool ret_v = qp->seek(pos);
 		RETURNb_(ret_v);
@@ -83,7 +83,7 @@ KMETHOD QBuffer_size(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBuffer *  qp = RawPtr_to(QBuffer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->size();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -122,7 +122,7 @@ KMETHOD QBuffer_getBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBuffer *  qp = RawPtr_to(QBuffer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->buffer();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -138,7 +138,7 @@ KMETHOD QBuffer_getBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBuffer *  qp = RawPtr_to(QBuffer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray ret_v = qp->buffer();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -153,7 +153,7 @@ KMETHOD QBuffer_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBuffer *  qp = RawPtr_to(QBuffer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray ret_v = qp->data();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -168,7 +168,7 @@ KMETHOD QBuffer_setBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBuffer *  qp = RawPtr_to(QBuffer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray*  byteArray = RawPtr_to(QByteArray*, sfp[1]);
 		qp->setBuffer(byteArray);
 	}
@@ -180,7 +180,7 @@ KMETHOD QBuffer_setData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBuffer *  qp = RawPtr_to(QBuffer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  data = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->setData(data);
 	}
@@ -193,7 +193,7 @@ KMETHOD QBuffer_setData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBuffer *  qp = RawPtr_to(QBuffer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  data = RawPtr_to(const char*, sfp[1]);
 		int size = Int_to(int, sfp[2]);
 		qp->setData(data, size);
@@ -252,9 +252,23 @@ bool DummyQBuffer::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQBuffer::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQIODevice::reftrace(ctx, p, tail_);
+}
 
 void DummyQBuffer::connection(QObject *o)
 {
+	QBuffer *p = dynamic_cast<QBuffer*>(o);
+	if (p != NULL) {
+	}
 	DummyQIODevice::connection(o);
 }
 
@@ -317,13 +331,9 @@ static void QBuffer_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QBuffer_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQBuffer *qp = (KQBuffer *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -346,6 +356,8 @@ bool KQBuffer::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQBuffer(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

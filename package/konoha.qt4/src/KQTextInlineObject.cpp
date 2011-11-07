@@ -15,7 +15,7 @@ KMETHOD QTextInlineObject_getAscent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextInlineObject *  qp = RawPtr_to(QTextInlineObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->ascent();
 		RETURNf_(ret_v);
 	} else {
@@ -28,7 +28,7 @@ KMETHOD QTextInlineObject_getDescent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextInlineObject *  qp = RawPtr_to(QTextInlineObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->descent();
 		RETURNf_(ret_v);
 	} else {
@@ -36,12 +36,12 @@ KMETHOD QTextInlineObject_getDescent(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QTextFormat QTextInlineObject.fmt();
+//QTextFormat QTextInlineObject.format();
 KMETHOD QTextInlineObject_format(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextInlineObject *  qp = RawPtr_to(QTextInlineObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextFormat ret_v = qp->format();
 		QTextFormat *ret_v_ = new QTextFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -56,7 +56,7 @@ KMETHOD QTextInlineObject_formatIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextInlineObject *  qp = RawPtr_to(QTextInlineObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->formatIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -69,24 +69,11 @@ KMETHOD QTextInlineObject_height(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextInlineObject *  qp = RawPtr_to(QTextInlineObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->height();
 		RETURNf_(ret_v);
 	} else {
 		RETURNf_(0.0f);
-	}
-}
-
-////boolean QTextInlineObject.isValid();
-KMETHOD QTextInlineObject_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextInlineObject *  qp = RawPtr_to(QTextInlineObject *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
 	}
 }
 
@@ -95,7 +82,7 @@ KMETHOD QTextInlineObject_rect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextInlineObject *  qp = RawPtr_to(QTextInlineObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->rect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -110,7 +97,7 @@ KMETHOD QTextInlineObject_setAscent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextInlineObject *  qp = RawPtr_to(QTextInlineObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal a = Float_to(qreal, sfp[1]);
 		qp->setAscent(a);
 	}
@@ -122,7 +109,7 @@ KMETHOD QTextInlineObject_setDescent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextInlineObject *  qp = RawPtr_to(QTextInlineObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal d = Float_to(qreal, sfp[1]);
 		qp->setDescent(d);
 	}
@@ -134,7 +121,7 @@ KMETHOD QTextInlineObject_setWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextInlineObject *  qp = RawPtr_to(QTextInlineObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal w = Float_to(qreal, sfp[1]);
 		qp->setWidth(w);
 	}
@@ -146,7 +133,7 @@ KMETHOD QTextInlineObject_textDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextInlineObject *  qp = RawPtr_to(QTextInlineObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::LayoutDirection ret_v = qp->textDirection();
 		RETURNi_(ret_v);
 	} else {
@@ -159,7 +146,7 @@ KMETHOD QTextInlineObject_textPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextInlineObject *  qp = RawPtr_to(QTextInlineObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->textPosition();
 		RETURNi_(ret_v);
 	} else {
@@ -172,7 +159,7 @@ KMETHOD QTextInlineObject_getWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextInlineObject *  qp = RawPtr_to(QTextInlineObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->width();
 		RETURNf_(ret_v);
 	} else {
@@ -180,6 +167,24 @@ KMETHOD QTextInlineObject_getWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QTextInlineObject.parents();
+KMETHOD QTextInlineObject_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextInlineObject *qp = RawPtr_to(QTextInlineObject*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextInlineObject::DummyQTextInlineObject()
 {
@@ -228,17 +233,28 @@ bool DummyQTextInlineObject::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
+void DummyQTextInlineObject::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextInlineObject::connection(QObject *o)
 {
-	return;
+	QTextInlineObject *p = dynamic_cast<QTextInlineObject*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTextInlineObject::KQTextInlineObject(int i, QTextEngine* e) : QTextInlineObject(i, e)
 {
 	self = NULL;
 	dummy = new DummyQTextInlineObject();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextInlineObject_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -293,13 +309,9 @@ static void QTextInlineObject_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextInlineObject_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextInlineObject *qp = (KQTextInlineObject *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -313,6 +325,8 @@ void KQTextInlineObject::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQTextInlineObject(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

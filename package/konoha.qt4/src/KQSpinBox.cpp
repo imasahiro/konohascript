@@ -14,7 +14,7 @@ KMETHOD QSpinBox_cleanText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSpinBox *  qp = RawPtr_to(QSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->cleanText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -28,7 +28,7 @@ KMETHOD QSpinBox_getMaximum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSpinBox *  qp = RawPtr_to(QSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->maximum();
 		RETURNi_(ret_v);
 	} else {
@@ -41,7 +41,7 @@ KMETHOD QSpinBox_getMinimum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSpinBox *  qp = RawPtr_to(QSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->minimum();
 		RETURNi_(ret_v);
 	} else {
@@ -54,7 +54,7 @@ KMETHOD QSpinBox_getPrefix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSpinBox *  qp = RawPtr_to(QSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->prefix();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -68,7 +68,7 @@ KMETHOD QSpinBox_setMaximum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSpinBox *  qp = RawPtr_to(QSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int max = Int_to(int, sfp[1]);
 		qp->setMaximum(max);
 	}
@@ -80,7 +80,7 @@ KMETHOD QSpinBox_setMinimum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSpinBox *  qp = RawPtr_to(QSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int min = Int_to(int, sfp[1]);
 		qp->setMinimum(min);
 	}
@@ -92,7 +92,7 @@ KMETHOD QSpinBox_setPrefix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSpinBox *  qp = RawPtr_to(QSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString prefix = String_to(const QString, sfp[1]);
 		qp->setPrefix(prefix);
 	}
@@ -104,7 +104,7 @@ KMETHOD QSpinBox_setRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSpinBox *  qp = RawPtr_to(QSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int minimum = Int_to(int, sfp[1]);
 		int maximum = Int_to(int, sfp[2]);
 		qp->setRange(minimum, maximum);
@@ -117,7 +117,7 @@ KMETHOD QSpinBox_setSingleStep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSpinBox *  qp = RawPtr_to(QSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int val = Int_to(int, sfp[1]);
 		qp->setSingleStep(val);
 	}
@@ -129,7 +129,7 @@ KMETHOD QSpinBox_setSuffix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSpinBox *  qp = RawPtr_to(QSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString suffix = String_to(const QString, sfp[1]);
 		qp->setSuffix(suffix);
 	}
@@ -141,7 +141,7 @@ KMETHOD QSpinBox_getSingleStep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSpinBox *  qp = RawPtr_to(QSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->singleStep();
 		RETURNi_(ret_v);
 	} else {
@@ -154,7 +154,7 @@ KMETHOD QSpinBox_getSuffix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSpinBox *  qp = RawPtr_to(QSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->suffix();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -168,7 +168,7 @@ KMETHOD QSpinBox_getValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSpinBox *  qp = RawPtr_to(QSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->value();
 		RETURNi_(ret_v);
 	} else {
@@ -181,7 +181,7 @@ KMETHOD QSpinBox_setValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSpinBox *  qp = RawPtr_to(QSpinBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int val = Int_to(int, sfp[1]);
 		qp->setValue(val);
 	}
@@ -239,9 +239,23 @@ bool DummyQSpinBox::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSpinBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractSpinBox::reftrace(ctx, p, tail_);
+}
 
 void DummyQSpinBox::connection(QObject *o)
 {
+	QSpinBox *p = dynamic_cast<QSpinBox*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractSpinBox::connection(o);
 }
 
@@ -304,13 +318,9 @@ static void QSpinBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSpinBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSpinBox *qp = (KQSpinBox *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -333,6 +343,8 @@ bool KQSpinBox::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQSpinBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

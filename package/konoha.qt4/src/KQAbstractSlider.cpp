@@ -4,7 +4,7 @@ KMETHOD QAbstractSlider_hasTracking(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasTracking();
 		RETURNb_(ret_v);
 	} else {
@@ -17,7 +17,7 @@ KMETHOD QAbstractSlider_getInvertedAppearance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->invertedAppearance();
 		RETURNb_(ret_v);
 	} else {
@@ -30,7 +30,7 @@ KMETHOD QAbstractSlider_getInvertedControls(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->invertedControls();
 		RETURNb_(ret_v);
 	} else {
@@ -43,7 +43,7 @@ KMETHOD QAbstractSlider_isSliderDown(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSliderDown();
 		RETURNb_(ret_v);
 	} else {
@@ -56,7 +56,7 @@ KMETHOD QAbstractSlider_getMaximum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->maximum();
 		RETURNi_(ret_v);
 	} else {
@@ -69,7 +69,7 @@ KMETHOD QAbstractSlider_getMinimum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->minimum();
 		RETURNi_(ret_v);
 	} else {
@@ -82,7 +82,7 @@ KMETHOD QAbstractSlider_getOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation ret_v = qp->orientation();
 		RETURNi_(ret_v);
 	} else {
@@ -95,7 +95,7 @@ KMETHOD QAbstractSlider_getPageStep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->pageStep();
 		RETURNi_(ret_v);
 	} else {
@@ -108,7 +108,7 @@ KMETHOD QAbstractSlider_setInvertedAppearance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setInvertedAppearance(arg0);
 	}
@@ -120,7 +120,7 @@ KMETHOD QAbstractSlider_setInvertedControls(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setInvertedControls(arg0);
 	}
@@ -132,7 +132,7 @@ KMETHOD QAbstractSlider_setMaximum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setMaximum(arg0);
 	}
@@ -144,7 +144,7 @@ KMETHOD QAbstractSlider_setMinimum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setMinimum(arg0);
 	}
@@ -156,7 +156,7 @@ KMETHOD QAbstractSlider_setPageStep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setPageStep(arg0);
 	}
@@ -168,7 +168,7 @@ KMETHOD QAbstractSlider_setRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int min = Int_to(int, sfp[1]);
 		int max = Int_to(int, sfp[2]);
 		qp->setRange(min, max);
@@ -181,7 +181,7 @@ KMETHOD QAbstractSlider_setSingleStep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setSingleStep(arg0);
 	}
@@ -193,7 +193,7 @@ KMETHOD QAbstractSlider_setSliderDown(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setSliderDown(arg0);
 	}
@@ -205,7 +205,7 @@ KMETHOD QAbstractSlider_setSliderPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setSliderPosition(arg0);
 	}
@@ -217,7 +217,7 @@ KMETHOD QAbstractSlider_setTracking(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setTracking(enable);
 	}
@@ -229,7 +229,7 @@ KMETHOD QAbstractSlider_getSingleStep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->singleStep();
 		RETURNi_(ret_v);
 	} else {
@@ -242,7 +242,7 @@ KMETHOD QAbstractSlider_getSliderPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->sliderPosition();
 		RETURNi_(ret_v);
 	} else {
@@ -255,7 +255,7 @@ KMETHOD QAbstractSlider_triggerAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractSlider::SliderAction action = Int_to(QAbstractSlider::SliderAction, sfp[1]);
 		qp->triggerAction(action);
 	}
@@ -267,7 +267,7 @@ KMETHOD QAbstractSlider_getValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->value();
 		RETURNi_(ret_v);
 	} else {
@@ -280,7 +280,7 @@ KMETHOD QAbstractSlider_setOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation arg0 = Int_to(Qt::Orientation, sfp[1]);
 		qp->setOrientation(arg0);
 	}
@@ -292,7 +292,7 @@ KMETHOD QAbstractSlider_setValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractSlider *  qp = RawPtr_to(QAbstractSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setValue(arg0);
 	}
@@ -445,15 +445,35 @@ bool DummyQAbstractSlider::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQAbstractSlider::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 6;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, action_triggered_func);
+	KNH_ADDNNREF(ctx, range_changed_func);
+	KNH_ADDNNREF(ctx, slider_moved_func);
+	KNH_ADDNNREF(ctx, slider_pressed_func);
+	KNH_ADDNNREF(ctx, slider_released_func);
+	KNH_ADDNNREF(ctx, value_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQAbstractSlider::connection(QObject *o)
 {
-	connect(o, SIGNAL(actionTriggered(int)), this, SLOT(actionTriggeredSlot(int)));
-	connect(o, SIGNAL(rangeChanged(int, int)), this, SLOT(rangeChangedSlot(int, int)));
-	connect(o, SIGNAL(sliderMoved(int)), this, SLOT(sliderMovedSlot(int)));
-	connect(o, SIGNAL(sliderPressed()), this, SLOT(sliderPressedSlot()));
-	connect(o, SIGNAL(sliderReleased()), this, SLOT(sliderReleasedSlot()));
-	connect(o, SIGNAL(valueChanged(int)), this, SLOT(valueChangedSlot(int)));
+	QAbstractSlider *p = dynamic_cast<QAbstractSlider*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(actionTriggered(int)), this, SLOT(actionTriggeredSlot(int)));
+		connect(p, SIGNAL(rangeChanged(int, int)), this, SLOT(rangeChangedSlot(int, int)));
+		connect(p, SIGNAL(sliderMoved(int)), this, SLOT(sliderMovedSlot(int)));
+		connect(p, SIGNAL(sliderPressed()), this, SLOT(sliderPressedSlot()));
+		connect(p, SIGNAL(sliderReleased()), this, SLOT(sliderReleasedSlot()));
+		connect(p, SIGNAL(valueChanged(int)), this, SLOT(valueChangedSlot(int)));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -516,37 +536,9 @@ static void QAbstractSlider_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractSlider_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 6;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAbstractSlider *qp = (KQAbstractSlider *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->action_triggered_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->action_triggered_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->range_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->range_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->slider_moved_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->slider_moved_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->slider_pressed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->slider_pressed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->slider_released_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->slider_released_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->value_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->value_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -570,15 +562,6 @@ bool KQAbstractSlider::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQAbstractSlider(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QAbstractSlider";
-	cdef->free = QAbstractSlider_free;
-	cdef->reftrace = QAbstractSlider_reftrace;
-	cdef->compareTo = QAbstractSlider_compareTo;
-}
-
 static knh_IntData_t QAbstractSliderConstInt[] = {
 	{"SliderNoAction", QAbstractSlider::SliderNoAction},
 	{"SliderSingleStepAdd", QAbstractSlider::SliderSingleStepAdd},
@@ -594,4 +577,15 @@ static knh_IntData_t QAbstractSliderConstInt[] = {
 DEFAPI(void) constQAbstractSlider(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QAbstractSliderConstInt);
 }
+
+
+DEFAPI(void) defQAbstractSlider(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QAbstractSlider";
+	cdef->free = QAbstractSlider_free;
+	cdef->reftrace = QAbstractSlider_reftrace;
+	cdef->compareTo = QAbstractSlider_compareTo;
+}
+
 

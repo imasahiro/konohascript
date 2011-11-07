@@ -14,7 +14,7 @@ KMETHOD QButtonGroup_addButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QButtonGroup *  qp = RawPtr_to(QButtonGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton*  button = RawPtr_to(QAbstractButton*, sfp[1]);
 		qp->addButton(button);
 	}
@@ -27,7 +27,7 @@ KMETHOD QButtonGroup_addButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QButtonGroup *  qp = RawPtr_to(QButtonGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton*  button = RawPtr_to(QAbstractButton*, sfp[1]);
 		int id = Int_to(int, sfp[2]);
 		qp->addButton(button, id);
@@ -40,7 +40,7 @@ KMETHOD QButtonGroup_button(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QButtonGroup *  qp = RawPtr_to(QButtonGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int id = Int_to(int, sfp[1]);
 		QAbstractButton* ret_v = qp->button(id);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractButton*)ret_v, NULL);
@@ -55,8 +55,8 @@ KMETHOD QButtonGroup_buttons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QButtonGroup *  qp = RawPtr_to(QButtonGroup *, sfp[0]);
-	if (qp != NULL) {
-		QList<QAbstractButton*>ret_v = qp->buttons();
+	if (qp) {
+		QList<QAbstractButton*> ret_v = qp->buttons();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QAbstractButton"));
@@ -76,7 +76,7 @@ KMETHOD QButtonGroup_checkedButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QButtonGroup *  qp = RawPtr_to(QButtonGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton* ret_v = qp->checkedButton();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractButton*)ret_v, NULL);
 		RETURN_(rptr);
@@ -90,7 +90,7 @@ KMETHOD QButtonGroup_checkedId(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QButtonGroup *  qp = RawPtr_to(QButtonGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->checkedId();
 		RETURNi_(ret_v);
 	} else {
@@ -103,7 +103,7 @@ KMETHOD QButtonGroup_getExclusive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QButtonGroup *  qp = RawPtr_to(QButtonGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->exclusive();
 		RETURNb_(ret_v);
 	} else {
@@ -116,7 +116,7 @@ KMETHOD QButtonGroup_getId(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QButtonGroup *  qp = RawPtr_to(QButtonGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton*  button = RawPtr_to(QAbstractButton*, sfp[1]);
 		int ret_v = qp->id(button);
 		RETURNi_(ret_v);
@@ -130,7 +130,7 @@ KMETHOD QButtonGroup_removeButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QButtonGroup *  qp = RawPtr_to(QButtonGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton*  button = RawPtr_to(QAbstractButton*, sfp[1]);
 		qp->removeButton(button);
 	}
@@ -142,7 +142,7 @@ KMETHOD QButtonGroup_setExclusive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QButtonGroup *  qp = RawPtr_to(QButtonGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setExclusive(arg0);
 	}
@@ -154,7 +154,7 @@ KMETHOD QButtonGroup_setId(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QButtonGroup *  qp = RawPtr_to(QButtonGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton*  button = RawPtr_to(QAbstractButton*, sfp[1]);
 		int id = Int_to(int, sfp[2]);
 		qp->setId(button, id);
@@ -213,9 +213,23 @@ bool DummyQButtonGroup::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQButtonGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQButtonGroup::connection(QObject *o)
 {
+	QButtonGroup *p = dynamic_cast<QButtonGroup*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
 }
 
@@ -278,13 +292,9 @@ static void QButtonGroup_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QButtonGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQButtonGroup *qp = (KQButtonGroup *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -307,6 +317,8 @@ bool KQButtonGroup::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQButtonGroup(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

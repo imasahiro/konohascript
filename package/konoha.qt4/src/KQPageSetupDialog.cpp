@@ -3,7 +3,7 @@ KMETHOD QPageSetupDialog_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPageSetupDialog *  qp = RawPtr_to(QPageSetupDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setVisible(visible);
 	}
@@ -39,7 +39,7 @@ KMETHOD QPageSetupDialog_open(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPageSetupDialog *  qp = RawPtr_to(QPageSetupDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
 		const char*  member = RawPtr_to(const char*, sfp[2]);
 		qp->open(receiver, member);
@@ -47,16 +47,18 @@ KMETHOD QPageSetupDialog_open(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//int QPageSetupDialog.getOptions();
+//QPageSetupDialogPageSetupDialogOptions QPageSetupDialog.getOptions();
 KMETHOD QPageSetupDialog_getOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPageSetupDialog *  qp = RawPtr_to(QPageSetupDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPageSetupDialog::PageSetupDialogOptions ret_v = qp->options();
-		RETURNi_(ret_v);
+		QPageSetupDialog::PageSetupDialogOptions *ret_v_ = new QPageSetupDialog::PageSetupDialogOptions(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -65,7 +67,7 @@ KMETHOD QPageSetupDialog_printer(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPageSetupDialog *  qp = RawPtr_to(QPageSetupDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter* ret_v = qp->printer();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPrinter*)ret_v, NULL);
 		RETURN_(rptr);
@@ -79,7 +81,7 @@ KMETHOD QPageSetupDialog_setOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPageSetupDialog *  qp = RawPtr_to(QPageSetupDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPageSetupDialog::PageSetupDialogOption option = Int_to(QPageSetupDialog::PageSetupDialogOption, sfp[1]);
 		bool on = Boolean_to(bool, sfp[2]);
 		qp->setOption(option, on);
@@ -87,13 +89,13 @@ KMETHOD QPageSetupDialog_setOption(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//void QPageSetupDialog.setOptions(int options);
+//void QPageSetupDialog.setOptions(QPageSetupDialogPageSetupDialogOptions options);
 KMETHOD QPageSetupDialog_setOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPageSetupDialog *  qp = RawPtr_to(QPageSetupDialog *, sfp[0]);
-	if (qp != NULL) {
-		QPageSetupDialog::PageSetupDialogOptions options = Int_to(QPageSetupDialog::PageSetupDialogOptions, sfp[1]);
+	if (qp) {
+		initFlag(options, QPageSetupDialog::PageSetupDialogOptions, sfp[1]);
 		qp->setOptions(options);
 	}
 	RETURNvoid_();
@@ -104,7 +106,7 @@ KMETHOD QPageSetupDialog_testOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPageSetupDialog *  qp = RawPtr_to(QPageSetupDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPageSetupDialog::PageSetupDialogOption option = Int_to(QPageSetupDialog::PageSetupDialogOption, sfp[1]);
 		bool ret_v = qp->testOption(option);
 		RETURNb_(ret_v);
@@ -164,9 +166,23 @@ bool DummyQPageSetupDialog::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPageSetupDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQDialog::reftrace(ctx, p, tail_);
+}
 
 void DummyQPageSetupDialog::connection(QObject *o)
 {
+	QPageSetupDialog *p = dynamic_cast<QPageSetupDialog*>(o);
+	if (p != NULL) {
+	}
 	DummyQDialog::connection(o);
 }
 
@@ -229,13 +245,9 @@ static void QPageSetupDialog_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPageSetupDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPageSetupDialog *qp = (KQPageSetupDialog *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -259,6 +271,16 @@ bool KQPageSetupDialog::event(QEvent *event)
 	return true;
 }
 
+static knh_IntData_t QPageSetupDialogConstInt[] = {
+	{"DontUseSheet", QPageSetupDialog::DontUseSheet},
+	{NULL, 0}
+};
+
+DEFAPI(void) constQPageSetupDialog(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
+	kapi->loadClassIntConst(ctx, cid, QPageSetupDialogConstInt);
+}
+
+
 DEFAPI(void) defQPageSetupDialog(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	(void)ctx; (void) cid;
@@ -268,12 +290,167 @@ DEFAPI(void) defQPageSetupDialog(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->compareTo = QPageSetupDialog_compareTo;
 }
 
-static knh_IntData_t QPageSetupDialogConstInt[] = {
-	{"DontUseSheet", QPageSetupDialog::DontUseSheet},
-	{NULL, 0}
-};
+//## QPageSetupDialogPageSetupDialogOptions QPageSetupDialogPageSetupDialogOptions.new(int value);
+KMETHOD QPageSetupDialogPageSetupDialogOptions_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPageSetupDialog::PageSetupDialogOption i = Int_to(QPageSetupDialog::PageSetupDialogOption, sfp[1]);
+	QPageSetupDialog::PageSetupDialogOptions *ret_v = new QPageSetupDialog::PageSetupDialogOptions(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
 
-DEFAPI(void) constQPageSetupDialog(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
-	kapi->loadClassIntConst(ctx, cid, QPageSetupDialogConstInt);
+//## QPageSetupDialogPageSetupDialogOptions QPageSetupDialogPageSetupDialogOptions.and(int mask);
+KMETHOD QPageSetupDialogPageSetupDialogOptions_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPageSetupDialog::PageSetupDialogOptions *qp = RawPtr_to(QPageSetupDialog::PageSetupDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QPageSetupDialog::PageSetupDialogOptions ret = ((*qp) & i);
+		QPageSetupDialog::PageSetupDialogOptions *ret_ = new QPageSetupDialog::PageSetupDialogOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QPageSetupDialogPageSetupDialogOptions QPageSetupDialogPageSetupDialogOptions.iand(QPageSetupDialog::QPageSetupDialogPageSetupDialogOptions other);
+KMETHOD QPageSetupDialogPageSetupDialogOptions_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPageSetupDialog::PageSetupDialogOptions *qp = RawPtr_to(QPageSetupDialog::PageSetupDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QPageSetupDialog::PageSetupDialogOptions *other = RawPtr_to(QPageSetupDialog::PageSetupDialogOptions *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QPageSetupDialogPageSetupDialogOptions QPageSetupDialogPageSetupDialogOptions.or(QPageSetupDialogPageSetupDialogOptions f);
+KMETHOD QPageSetupDialogPageSetupDialogOptions_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPageSetupDialog::PageSetupDialogOptions *qp = RawPtr_to(QPageSetupDialog::PageSetupDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QPageSetupDialog::PageSetupDialogOptions *f = RawPtr_to(QPageSetupDialog::PageSetupDialogOptions*, sfp[1]);
+		QPageSetupDialog::PageSetupDialogOptions ret = ((*qp) | (*f));
+		QPageSetupDialog::PageSetupDialogOptions *ret_ = new QPageSetupDialog::PageSetupDialogOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QPageSetupDialogPageSetupDialogOptions QPageSetupDialogPageSetupDialogOptions.ior(QPageSetupDialog::QPageSetupDialogPageSetupDialogOptions other);
+KMETHOD QPageSetupDialogPageSetupDialogOptions_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPageSetupDialog::PageSetupDialogOptions *qp = RawPtr_to(QPageSetupDialog::PageSetupDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QPageSetupDialog::PageSetupDialogOptions *other = RawPtr_to(QPageSetupDialog::PageSetupDialogOptions *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QPageSetupDialogPageSetupDialogOptions QPageSetupDialogPageSetupDialogOptions.xor(QPageSetupDialogPageSetupDialogOptions f);
+KMETHOD QPageSetupDialogPageSetupDialogOptions_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPageSetupDialog::PageSetupDialogOptions *qp = RawPtr_to(QPageSetupDialog::PageSetupDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QPageSetupDialog::PageSetupDialogOptions *f = RawPtr_to(QPageSetupDialog::PageSetupDialogOptions*, sfp[1]);
+		QPageSetupDialog::PageSetupDialogOptions ret = ((*qp) ^ (*f));
+		QPageSetupDialog::PageSetupDialogOptions *ret_ = new QPageSetupDialog::PageSetupDialogOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QPageSetupDialogPageSetupDialogOptions QPageSetupDialogPageSetupDialogOptions.ixor(QPageSetupDialog::QPageSetupDialogPageSetupDialogOptions other);
+KMETHOD QPageSetupDialogPageSetupDialogOptions_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPageSetupDialog::PageSetupDialogOptions *qp = RawPtr_to(QPageSetupDialog::PageSetupDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QPageSetupDialog::PageSetupDialogOptions *other = RawPtr_to(QPageSetupDialog::PageSetupDialogOptions *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QPageSetupDialogPageSetupDialogOptions.testFlag(int flag);
+KMETHOD QPageSetupDialogPageSetupDialogOptions_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPageSetupDialog::PageSetupDialogOptions *qp = RawPtr_to(QPageSetupDialog::PageSetupDialogOptions *, sfp[0]);
+	if (qp != NULL) {
+		QPageSetupDialog::PageSetupDialogOption flag = Int_to(QPageSetupDialog::PageSetupDialogOption, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QPageSetupDialogPageSetupDialogOptions.value();
+KMETHOD QPageSetupDialogPageSetupDialogOptions_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPageSetupDialog::PageSetupDialogOptions *qp = RawPtr_to(QPageSetupDialog::PageSetupDialogOptions *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QPageSetupDialogPageSetupDialogOptions_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QPageSetupDialog::PageSetupDialogOptions *qp = (QPageSetupDialog::PageSetupDialogOptions *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QPageSetupDialogPageSetupDialogOptions_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QPageSetupDialog::PageSetupDialogOptions *qp = (QPageSetupDialog::PageSetupDialogOptions *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QPageSetupDialogPageSetupDialogOptions_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QPageSetupDialog::PageSetupDialogOptions*)p1->rawptr);
+//		int v2 = int(*(QPageSetupDialog::PageSetupDialogOptions*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QPageSetupDialog::PageSetupDialogOptions v1 = *(QPageSetupDialog::PageSetupDialogOptions*)p1->rawptr;
+		QPageSetupDialog::PageSetupDialogOptions v2 = *(QPageSetupDialog::PageSetupDialogOptions*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQPageSetupDialogPageSetupDialogOptions(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QPageSetupDialogPageSetupDialogOptions";
+	cdef->free = QPageSetupDialogPageSetupDialogOptions_free;
+	cdef->reftrace = QPageSetupDialogPageSetupDialogOptions_reftrace;
+	cdef->compareTo = QPageSetupDialogPageSetupDialogOptions_compareTo;
 }
 

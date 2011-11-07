@@ -140,7 +140,7 @@ KMETHOD QImage_allGray(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->allGray();
 		RETURNb_(ret_v);
 	} else {
@@ -153,7 +153,7 @@ KMETHOD QImage_bitPlaneCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->bitPlaneCount();
 		RETURNi_(ret_v);
 	} else {
@@ -166,7 +166,7 @@ KMETHOD QImage_bits(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uchar* ret_v = qp->bits();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (uchar*)ret_v, NULL);
 		RETURN_(rptr);
@@ -181,7 +181,7 @@ KMETHOD QImage_bits(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const uchar* ret_v = qp->bits();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (uchar*)ret_v, NULL);
 		RETURN_(rptr);
@@ -195,7 +195,7 @@ KMETHOD QImage_byteCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->byteCount();
 		RETURNi_(ret_v);
 	} else {
@@ -208,7 +208,7 @@ KMETHOD QImage_bytesPerLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->bytesPerLine();
 		RETURNi_(ret_v);
 	} else {
@@ -221,7 +221,7 @@ KMETHOD QImage_cacheKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->cacheKey();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -236,7 +236,7 @@ KMETHOD QImage_getColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		QRgb ret_v = qp->color(i);
 		QRgb *ret_v_ = new QRgb(ret_v);
@@ -252,7 +252,7 @@ KMETHOD QImage_getColorCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->colorCount();
 		RETURNi_(ret_v);
 	} else {
@@ -265,7 +265,7 @@ KMETHOD QImage_constBits(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const uchar* ret_v = qp->constBits();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (uchar*)ret_v, NULL);
 		RETURN_(rptr);
@@ -279,7 +279,7 @@ KMETHOD QImage_constScanLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		const uchar* ret_v = qp->constScanLine(i);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (uchar*)ret_v, NULL);
@@ -289,14 +289,14 @@ KMETHOD QImage_constScanLine(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QImage QImage.convertToFormat(int fmt, int flags);
+//QImage QImage.convertToFormat(int fmt, QtImageConversionFlags flags);
 KMETHOD QImage_convertToFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QImage::Format format = Int_to(QImage::Format, sfp[1]);
-		Qt::ImageConversionFlags flags = Int_to(Qt::ImageConversionFlags, sfp[2]);
+		initFlag(flags, Qt::ImageConversionFlags, sfp[2]);
 		QImage ret_v = qp->convertToFormat(format, flags);
 		QImage *ret_v_ = new QImage(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -311,7 +311,7 @@ KMETHOD QImage_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		QImage ret_v = qp->copy(rectangle);
 		QImage *ret_v_ = new QImage(ret_v);
@@ -328,7 +328,7 @@ KMETHOD QImage_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -342,13 +342,13 @@ KMETHOD QImage_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 */
-//QImage QImage.createAlphaMask(int flags);
+//QImage QImage.createAlphaMask(QtImageConversionFlags flags);
 KMETHOD QImage_createAlphaMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
-		Qt::ImageConversionFlags flags = Int_to(Qt::ImageConversionFlags, sfp[1]);
+	if (qp) {
+		initFlag(flags, Qt::ImageConversionFlags, sfp[1]);
 		QImage ret_v = qp->createAlphaMask(flags);
 		QImage *ret_v_ = new QImage(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -363,7 +363,7 @@ KMETHOD QImage_createHeuristicMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool clipTight = Boolean_to(bool, sfp[1]);
 		QImage ret_v = qp->createHeuristicMask(clipTight);
 		QImage *ret_v_ = new QImage(ret_v);
@@ -379,7 +379,7 @@ KMETHOD QImage_createMaskFromColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRgb  color = *RawPtr_to(QRgb *, sfp[1]);
 		Qt::MaskMode mode = Int_to(Qt::MaskMode, sfp[2]);
 		QImage ret_v = qp->createMaskFromColor(color, mode);
@@ -396,7 +396,7 @@ KMETHOD QImage_depth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->depth();
 		RETURNi_(ret_v);
 	} else {
@@ -409,7 +409,7 @@ KMETHOD QImage_getDotsPerMeterX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->dotsPerMeterX();
 		RETURNi_(ret_v);
 	} else {
@@ -422,7 +422,7 @@ KMETHOD QImage_getDotsPerMeterY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->dotsPerMeterY();
 		RETURNi_(ret_v);
 	} else {
@@ -435,19 +435,19 @@ KMETHOD QImage_fill(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uint  pixelValue = *RawPtr_to(uint *, sfp[1]);
 		qp->fill(pixelValue);
 	}
 	RETURNvoid_();
 }
 
-//int QImage.fmt();
+//int QImage.format();
 KMETHOD QImage_format(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QImage::Format ret_v = qp->format();
 		RETURNi_(ret_v);
 	} else {
@@ -460,7 +460,7 @@ KMETHOD QImage_hasAlphaChannel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasAlphaChannel();
 		RETURNb_(ret_v);
 	} else {
@@ -473,7 +473,7 @@ KMETHOD QImage_height(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->height();
 		RETURNi_(ret_v);
 	} else {
@@ -486,7 +486,7 @@ KMETHOD QImage_invertPixels(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QImage::InvertMode mode = Int_to(QImage::InvertMode, sfp[1]);
 		qp->invertPixels(mode);
 	}
@@ -498,21 +498,8 @@ KMETHOD QImage_isGrayscale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isGrayscale();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QImage.isNull();
-KMETHOD QImage_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -524,7 +511,7 @@ KMETHOD QImage_load(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
 		const char*  format = RawPtr_to(const char*, sfp[2]);
 		bool ret_v = qp->load(fileName, format);
@@ -540,7 +527,7 @@ KMETHOD QImage_load(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIODevice*  device = RawPtr_to(QIODevice*, sfp[1]);
 		const char*  format = RawPtr_to(const char*, sfp[2]);
 		bool ret_v = qp->load(device, format);
@@ -555,7 +542,7 @@ KMETHOD QImage_loadFromData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const uchar*  data = RawPtr_to(const uchar*, sfp[1]);
 		int len = Int_to(int, sfp[2]);
 		const char*  format = RawPtr_to(const char*, sfp[3]);
@@ -572,7 +559,7 @@ KMETHOD QImage_loadFromData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  data = *RawPtr_to(const QByteArray *, sfp[1]);
 		const char*  format = RawPtr_to(const char*, sfp[2]);
 		bool ret_v = qp->loadFromData(data, format);
@@ -587,7 +574,7 @@ KMETHOD QImage_mirrored(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool horizontal = Boolean_to(bool, sfp[1]);
 		bool vertical = Boolean_to(bool, sfp[2]);
 		QImage ret_v = qp->mirrored(horizontal, vertical);
@@ -604,7 +591,7 @@ KMETHOD QImage_offset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPoint ret_v = qp->offset();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -619,7 +606,7 @@ KMETHOD QImage_getPixel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  position = *RawPtr_to(const QPoint *, sfp[1]);
 		QRgb ret_v = qp->pixel(position);
 		QRgb *ret_v_ = new QRgb(ret_v);
@@ -636,7 +623,7 @@ KMETHOD QImage_getPixel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		QRgb ret_v = qp->pixel(x, y);
@@ -653,7 +640,7 @@ KMETHOD QImage_pixelIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  position = *RawPtr_to(const QPoint *, sfp[1]);
 		int ret_v = qp->pixelIndex(position);
 		RETURNi_(ret_v);
@@ -668,7 +655,7 @@ KMETHOD QImage_pixelIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int ret_v = qp->pixelIndex(x, y);
@@ -683,7 +670,7 @@ KMETHOD QImage_rect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->rect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -698,7 +685,7 @@ KMETHOD QImage_rgbSwapped(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QImage ret_v = qp->rgbSwapped();
 		QImage *ret_v_ = new QImage(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -713,7 +700,7 @@ KMETHOD QImage_save(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
 		const char*  format = RawPtr_to(const char*, sfp[2]);
 		int quality = Int_to(int, sfp[3]);
@@ -730,7 +717,7 @@ KMETHOD QImage_save(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIODevice*  device = RawPtr_to(QIODevice*, sfp[1]);
 		const char*  format = RawPtr_to(const char*, sfp[2]);
 		int quality = Int_to(int, sfp[3]);
@@ -746,7 +733,7 @@ KMETHOD QImage_scaled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  size = *RawPtr_to(const QSize *, sfp[1]);
 		Qt::AspectRatioMode aspectRatioMode = Int_to(Qt::AspectRatioMode, sfp[2]);
 		Qt::TransformationMode transformMode = Int_to(Qt::TransformationMode, sfp[3]);
@@ -765,7 +752,7 @@ KMETHOD QImage_scaled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int width = Int_to(int, sfp[1]);
 		int height = Int_to(int, sfp[2]);
 		Qt::AspectRatioMode aspectRatioMode = Int_to(Qt::AspectRatioMode, sfp[3]);
@@ -784,7 +771,7 @@ KMETHOD QImage_scaledToHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int height = Int_to(int, sfp[1]);
 		Qt::TransformationMode mode = Int_to(Qt::TransformationMode, sfp[2]);
 		QImage ret_v = qp->scaledToHeight(height, mode);
@@ -801,7 +788,7 @@ KMETHOD QImage_scaledToWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int width = Int_to(int, sfp[1]);
 		Qt::TransformationMode mode = Int_to(Qt::TransformationMode, sfp[2]);
 		QImage ret_v = qp->scaledToWidth(width, mode);
@@ -818,7 +805,7 @@ KMETHOD QImage_scanLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		uchar* ret_v = qp->scanLine(i);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (uchar*)ret_v, NULL);
@@ -834,7 +821,7 @@ KMETHOD QImage_scanLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		const uchar* ret_v = qp->scanLine(i);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (uchar*)ret_v, NULL);
@@ -849,7 +836,7 @@ KMETHOD QImage_setColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QRgb  colorValue = *RawPtr_to(QRgb *, sfp[2]);
 		qp->setColor(index, colorValue);
@@ -862,7 +849,7 @@ KMETHOD QImage_setColorCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int colorCount = Int_to(int, sfp[1]);
 		qp->setColorCount(colorCount);
 	}
@@ -874,7 +861,7 @@ KMETHOD QImage_setDotsPerMeterX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		qp->setDotsPerMeterX(x);
 	}
@@ -886,7 +873,7 @@ KMETHOD QImage_setDotsPerMeterY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int y = Int_to(int, sfp[1]);
 		qp->setDotsPerMeterY(y);
 	}
@@ -898,7 +885,7 @@ KMETHOD QImage_setOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  offset = *RawPtr_to(const QPoint *, sfp[1]);
 		qp->setOffset(offset);
 	}
@@ -910,7 +897,7 @@ KMETHOD QImage_setPixel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  position = *RawPtr_to(const QPoint *, sfp[1]);
 		uint  index_or_rgb = *RawPtr_to(uint *, sfp[2]);
 		qp->setPixel(position, index_or_rgb);
@@ -924,7 +911,7 @@ KMETHOD QImage_setPixel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		uint  index_or_rgb = *RawPtr_to(uint *, sfp[3]);
@@ -938,7 +925,7 @@ KMETHOD QImage_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString key = String_to(const QString, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		qp->setText(key, text);
@@ -951,7 +938,7 @@ KMETHOD QImage_size(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->size();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -966,7 +953,7 @@ KMETHOD QImage_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString key = String_to(const QString, sfp[1]);
 		QString ret_v = qp->text(key);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -976,47 +963,12 @@ KMETHOD QImage_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////QImage QImage.transformed(QMatrix matrix, int mode);
-KMETHOD QImage_transformed(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
-		const QMatrix  matrix = *RawPtr_to(const QMatrix *, sfp[1]);
-		Qt::TransformationMode mode = Int_to(Qt::TransformationMode, sfp[2]);
-		QImage ret_v = qp->transformed(matrix, mode);
-		QImage *ret_v_ = new QImage(ret_v);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-
-/*
-////QImage QImage.transformed(QTransform matrix, int mode);
-KMETHOD QImage_transformed(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
-		const QTransform  matrix = *RawPtr_to(const QTransform *, sfp[1]);
-		Qt::TransformationMode mode = Int_to(Qt::TransformationMode, sfp[2]);
-		QImage ret_v = qp->transformed(matrix, mode);
-		QImage *ret_v_ = new QImage(ret_v);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-*/
 //boolean QImage.valid(QPoint pos);
 KMETHOD QImage_valid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 		bool ret_v = qp->valid(pos);
 		RETURNb_(ret_v);
@@ -1031,7 +983,7 @@ KMETHOD QImage_valid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		bool ret_v = qp->valid(x, y);
@@ -1046,7 +998,7 @@ KMETHOD QImage_width(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->width();
 		RETURNi_(ret_v);
 	} else {
@@ -1058,12 +1010,11 @@ KMETHOD QImage_width(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QImage_fromData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const uchar*  data = RawPtr_to(const uchar*, sfp[1]);
 		int size = Int_to(int, sfp[2]);
 		const char*  format = RawPtr_to(const char*, sfp[3]);
-		QImage ret_v = qp->fromData(data, size, format);
+		QImage ret_v = QImage::fromData(data, size, format);
 		QImage *ret_v_ = new QImage(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1077,11 +1028,10 @@ KMETHOD QImage_fromData(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QImage_fromData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QByteArray  data = *RawPtr_to(const QByteArray *, sfp[1]);
 		const char*  format = RawPtr_to(const char*, sfp[2]);
-		QImage ret_v = qp->fromData(data, format);
+		QImage ret_v = QImage::fromData(data, format);
 		QImage *ret_v_ = new QImage(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1094,12 +1044,11 @@ KMETHOD QImage_fromData(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QImage_trueMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QMatrix  matrix = *RawPtr_to(const QMatrix *, sfp[1]);
 		int width = Int_to(int, sfp[2]);
 		int height = Int_to(int, sfp[3]);
-		QMatrix ret_v = qp->trueMatrix(matrix, width, height);
+		QMatrix ret_v = QImage::trueMatrix(matrix, width, height);
 		QMatrix *ret_v_ = new QMatrix(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1113,12 +1062,11 @@ KMETHOD QImage_trueMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QImage_trueMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QImage *  qp = RawPtr_to(QImage *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QTransform  matrix = *RawPtr_to(const QTransform *, sfp[1]);
 		int width = Int_to(int, sfp[2]);
 		int height = Int_to(int, sfp[3]);
-		QTransform ret_v = qp->trueMatrix(matrix, width, height);
+		QTransform ret_v = QImage::trueMatrix(matrix, width, height);
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1178,9 +1126,23 @@ bool DummyQImage::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQImage::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQPaintDevice::reftrace(ctx, p, tail_);
+}
 
 void DummyQImage::connection(QObject *o)
 {
+	QImage *p = dynamic_cast<QImage*>(o);
+	if (p != NULL) {
+	}
 	DummyQPaintDevice::connection(o);
 }
 
@@ -1188,7 +1150,6 @@ KQImage::KQImage() : QImage()
 {
 	self = NULL;
 	dummy = new DummyQImage();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QImage_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1243,13 +1204,9 @@ static void QImage_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QImage_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQImage *qp = (KQImage *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -1262,15 +1219,6 @@ void KQImage::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQImage(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QImage";
-	cdef->free = QImage_free;
-	cdef->reftrace = QImage_reftrace;
-	cdef->compareTo = QImage_compareTo;
 }
 
 static knh_IntData_t QImageConstInt[] = {
@@ -1298,4 +1246,15 @@ static knh_IntData_t QImageConstInt[] = {
 DEFAPI(void) constQImage(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QImageConstInt);
 }
+
+
+DEFAPI(void) defQImage(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QImage";
+	cdef->free = QImage_free;
+	cdef->reftrace = QImage_reftrace;
+	cdef->compareTo = QImage_compareTo;
+}
+
 

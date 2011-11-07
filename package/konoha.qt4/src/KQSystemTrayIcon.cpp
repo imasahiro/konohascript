@@ -27,7 +27,7 @@ KMETHOD QSystemTrayIcon_getContextMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSystemTrayIcon *  qp = RawPtr_to(QSystemTrayIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMenu* ret_v = qp->contextMenu();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMenu*)ret_v, NULL);
 		RETURN_(rptr);
@@ -41,7 +41,7 @@ KMETHOD QSystemTrayIcon_geometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSystemTrayIcon *  qp = RawPtr_to(QSystemTrayIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->geometry();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -56,7 +56,7 @@ KMETHOD QSystemTrayIcon_getIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSystemTrayIcon *  qp = RawPtr_to(QSystemTrayIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIcon ret_v = qp->icon();
 		QIcon *ret_v_ = new QIcon(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -71,7 +71,7 @@ KMETHOD QSystemTrayIcon_isVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSystemTrayIcon *  qp = RawPtr_to(QSystemTrayIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isVisible();
 		RETURNb_(ret_v);
 	} else {
@@ -84,7 +84,7 @@ KMETHOD QSystemTrayIcon_setContextMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSystemTrayIcon *  qp = RawPtr_to(QSystemTrayIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMenu*  menu = RawPtr_to(QMenu*, sfp[1]);
 		qp->setContextMenu(menu);
 	}
@@ -96,7 +96,7 @@ KMETHOD QSystemTrayIcon_setIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSystemTrayIcon *  qp = RawPtr_to(QSystemTrayIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[1]);
 		qp->setIcon(icon);
 	}
@@ -108,7 +108,7 @@ KMETHOD QSystemTrayIcon_setToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSystemTrayIcon *  qp = RawPtr_to(QSystemTrayIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString tip = String_to(const QString, sfp[1]);
 		qp->setToolTip(tip);
 	}
@@ -120,7 +120,7 @@ KMETHOD QSystemTrayIcon_showMessage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSystemTrayIcon *  qp = RawPtr_to(QSystemTrayIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString title = String_to(const QString, sfp[1]);
 		const QString message = String_to(const QString, sfp[2]);
 		QSystemTrayIcon::MessageIcon icon = Int_to(QSystemTrayIcon::MessageIcon, sfp[3]);
@@ -135,7 +135,7 @@ KMETHOD QSystemTrayIcon_getToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSystemTrayIcon *  qp = RawPtr_to(QSystemTrayIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->toolTip();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -148,9 +148,8 @@ KMETHOD QSystemTrayIcon_getToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QSystemTrayIcon_isSystemTrayAvailable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QSystemTrayIcon *  qp = RawPtr_to(QSystemTrayIcon *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isSystemTrayAvailable();
+	if (true) {
+		bool ret_v = QSystemTrayIcon::isSystemTrayAvailable();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -161,9 +160,8 @@ KMETHOD QSystemTrayIcon_isSystemTrayAvailable(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QSystemTrayIcon_supportsMessages(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QSystemTrayIcon *  qp = RawPtr_to(QSystemTrayIcon *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->supportsMessages();
+	if (true) {
+		bool ret_v = QSystemTrayIcon::supportsMessages();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -175,7 +173,7 @@ KMETHOD QSystemTrayIcon_hide(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSystemTrayIcon *  qp = RawPtr_to(QSystemTrayIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->hide();
 	}
 	RETURNvoid_();
@@ -186,7 +184,7 @@ KMETHOD QSystemTrayIcon_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSystemTrayIcon *  qp = RawPtr_to(QSystemTrayIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setVisible(visible);
 	}
@@ -198,7 +196,7 @@ KMETHOD QSystemTrayIcon_show(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSystemTrayIcon *  qp = RawPtr_to(QSystemTrayIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->show();
 	}
 	RETURNvoid_();
@@ -286,11 +284,27 @@ bool DummyQSystemTrayIcon::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSystemTrayIcon::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, activated_func);
+	KNH_ADDNNREF(ctx, message_clicked_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQSystemTrayIcon::connection(QObject *o)
 {
-	connect(o, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(activatedSlot(QSystemTrayIcon::ActivationReason)));
-	connect(o, SIGNAL(messageClicked()), this, SLOT(messageClickedSlot()));
+	QSystemTrayIcon *p = dynamic_cast<QSystemTrayIcon*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(activatedSlot(QSystemTrayIcon::ActivationReason)));
+		connect(p, SIGNAL(messageClicked()), this, SLOT(messageClickedSlot()));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -353,21 +367,9 @@ static void QSystemTrayIcon_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSystemTrayIcon_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSystemTrayIcon *qp = (KQSystemTrayIcon *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->activated_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->activated_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->message_clicked_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->message_clicked_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -391,15 +393,6 @@ bool KQSystemTrayIcon::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQSystemTrayIcon(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QSystemTrayIcon";
-	cdef->free = QSystemTrayIcon_free;
-	cdef->reftrace = QSystemTrayIcon_reftrace;
-	cdef->compareTo = QSystemTrayIcon_compareTo;
-}
-
 static knh_IntData_t QSystemTrayIconConstInt[] = {
 	{"Unknown", QSystemTrayIcon::Unknown},
 	{"Context", QSystemTrayIcon::Context},
@@ -416,4 +409,15 @@ static knh_IntData_t QSystemTrayIconConstInt[] = {
 DEFAPI(void) constQSystemTrayIcon(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QSystemTrayIconConstInt);
 }
+
+
+DEFAPI(void) defQSystemTrayIcon(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QSystemTrayIcon";
+	cdef->free = QSystemTrayIcon_free;
+	cdef->reftrace = QSystemTrayIcon_reftrace;
+	cdef->compareTo = QSystemTrayIcon_compareTo;
+}
+
 

@@ -71,9 +71,23 @@ bool DummyQStyleOptionToolBar::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQStyleOptionToolBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOption::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionToolBar::connection(QObject *o)
 {
+	QStyleOptionToolBar *p = dynamic_cast<QStyleOptionToolBar*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOption::connection(o);
 }
 
@@ -81,7 +95,6 @@ KQStyleOptionToolBar::KQStyleOptionToolBar() : QStyleOptionToolBar()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionToolBar();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionToolBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,13 +149,9 @@ static void QStyleOptionToolBar_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionToolBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionToolBar *qp = (KQStyleOptionToolBar *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -155,15 +164,6 @@ void KQStyleOptionToolBar::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQStyleOptionToolBar(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionToolBar";
-	cdef->free = QStyleOptionToolBar_free;
-	cdef->reftrace = QStyleOptionToolBar_reftrace;
-	cdef->compareTo = QStyleOptionToolBar_compareTo;
 }
 
 static knh_IntData_t QStyleOptionToolBarConstInt[] = {
@@ -180,5 +180,179 @@ static knh_IntData_t QStyleOptionToolBarConstInt[] = {
 
 DEFAPI(void) constQStyleOptionToolBar(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionToolBarConstInt);
+}
+
+
+DEFAPI(void) defQStyleOptionToolBar(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionToolBar";
+	cdef->free = QStyleOptionToolBar_free;
+	cdef->reftrace = QStyleOptionToolBar_reftrace;
+	cdef->compareTo = QStyleOptionToolBar_compareTo;
+}
+
+//## QStyleOptionToolBarToolBarFeatures QStyleOptionToolBarToolBarFeatures.new(int value);
+KMETHOD QStyleOptionToolBarToolBarFeatures_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionToolBar::ToolBarFeature i = Int_to(QStyleOptionToolBar::ToolBarFeature, sfp[1]);
+	QStyleOptionToolBar::ToolBarFeatures *ret_v = new QStyleOptionToolBar::ToolBarFeatures(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QStyleOptionToolBarToolBarFeatures QStyleOptionToolBarToolBarFeatures.and(int mask);
+KMETHOD QStyleOptionToolBarToolBarFeatures_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionToolBar::ToolBarFeatures *qp = RawPtr_to(QStyleOptionToolBar::ToolBarFeatures*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QStyleOptionToolBar::ToolBarFeatures ret = ((*qp) & i);
+		QStyleOptionToolBar::ToolBarFeatures *ret_ = new QStyleOptionToolBar::ToolBarFeatures(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleOptionToolBarToolBarFeatures QStyleOptionToolBarToolBarFeatures.iand(QStyleOptionToolBar::QStyleOptionToolBarToolBarFeatures other);
+KMETHOD QStyleOptionToolBarToolBarFeatures_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionToolBar::ToolBarFeatures *qp = RawPtr_to(QStyleOptionToolBar::ToolBarFeatures*, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionToolBar::ToolBarFeatures *other = RawPtr_to(QStyleOptionToolBar::ToolBarFeatures *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleOptionToolBarToolBarFeatures QStyleOptionToolBarToolBarFeatures.or(QStyleOptionToolBarToolBarFeatures f);
+KMETHOD QStyleOptionToolBarToolBarFeatures_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QStyleOptionToolBar::ToolBarFeatures *qp = RawPtr_to(QStyleOptionToolBar::ToolBarFeatures*, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionToolBar::ToolBarFeatures *f = RawPtr_to(QStyleOptionToolBar::ToolBarFeatures*, sfp[1]);
+		QStyleOptionToolBar::ToolBarFeatures ret = ((*qp) | (*f));
+		QStyleOptionToolBar::ToolBarFeatures *ret_ = new QStyleOptionToolBar::ToolBarFeatures(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleOptionToolBarToolBarFeatures QStyleOptionToolBarToolBarFeatures.ior(QStyleOptionToolBar::QStyleOptionToolBarToolBarFeatures other);
+KMETHOD QStyleOptionToolBarToolBarFeatures_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionToolBar::ToolBarFeatures *qp = RawPtr_to(QStyleOptionToolBar::ToolBarFeatures*, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionToolBar::ToolBarFeatures *other = RawPtr_to(QStyleOptionToolBar::ToolBarFeatures *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleOptionToolBarToolBarFeatures QStyleOptionToolBarToolBarFeatures.xor(QStyleOptionToolBarToolBarFeatures f);
+KMETHOD QStyleOptionToolBarToolBarFeatures_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QStyleOptionToolBar::ToolBarFeatures *qp = RawPtr_to(QStyleOptionToolBar::ToolBarFeatures*, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionToolBar::ToolBarFeatures *f = RawPtr_to(QStyleOptionToolBar::ToolBarFeatures*, sfp[1]);
+		QStyleOptionToolBar::ToolBarFeatures ret = ((*qp) ^ (*f));
+		QStyleOptionToolBar::ToolBarFeatures *ret_ = new QStyleOptionToolBar::ToolBarFeatures(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleOptionToolBarToolBarFeatures QStyleOptionToolBarToolBarFeatures.ixor(QStyleOptionToolBar::QStyleOptionToolBarToolBarFeatures other);
+KMETHOD QStyleOptionToolBarToolBarFeatures_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionToolBar::ToolBarFeatures *qp = RawPtr_to(QStyleOptionToolBar::ToolBarFeatures*, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionToolBar::ToolBarFeatures *other = RawPtr_to(QStyleOptionToolBar::ToolBarFeatures *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QStyleOptionToolBarToolBarFeatures.testFlag(int flag);
+KMETHOD QStyleOptionToolBarToolBarFeatures_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionToolBar::ToolBarFeatures *qp = RawPtr_to(QStyleOptionToolBar::ToolBarFeatures *, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionToolBar::ToolBarFeature flag = Int_to(QStyleOptionToolBar::ToolBarFeature, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QStyleOptionToolBarToolBarFeatures.value();
+KMETHOD QStyleOptionToolBarToolBarFeatures_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionToolBar::ToolBarFeatures *qp = RawPtr_to(QStyleOptionToolBar::ToolBarFeatures *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QStyleOptionToolBarToolBarFeatures_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QStyleOptionToolBar::ToolBarFeatures *qp = (QStyleOptionToolBar::ToolBarFeatures *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QStyleOptionToolBarToolBarFeatures_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QStyleOptionToolBar::ToolBarFeatures *qp = (QStyleOptionToolBar::ToolBarFeatures *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QStyleOptionToolBarToolBarFeatures_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QStyleOptionToolBar::ToolBarFeatures*)p1->rawptr);
+//		int v2 = int(*(QStyleOptionToolBar::ToolBarFeatures*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QStyleOptionToolBar::ToolBarFeatures v1 = *(QStyleOptionToolBar::ToolBarFeatures*)p1->rawptr;
+		QStyleOptionToolBar::ToolBarFeatures v2 = *(QStyleOptionToolBar::ToolBarFeatures*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQStyleOptionToolBarToolBarFeatures(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionToolBarToolBarFeatures";
+	cdef->free = QStyleOptionToolBarToolBarFeatures_free;
+	cdef->reftrace = QStyleOptionToolBarToolBarFeatures_reftrace;
+	cdef->compareTo = QStyleOptionToolBarToolBarFeatures_compareTo;
 }
 

@@ -13,7 +13,7 @@ KMETHOD QPainterPathStroker_getCapStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainterPathStroker *  qp = RawPtr_to(QPainterPathStroker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::PenCapStyle ret_v = qp->capStyle();
 		RETURNi_(ret_v);
 	} else {
@@ -26,7 +26,7 @@ KMETHOD QPainterPathStroker_createStroke(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainterPathStroker *  qp = RawPtr_to(QPainterPathStroker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		QPainterPath ret_v = qp->createStroke(path);
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
@@ -42,7 +42,7 @@ KMETHOD QPainterPathStroker_getCurveThreshold(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainterPathStroker *  qp = RawPtr_to(QPainterPathStroker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->curveThreshold();
 		RETURNf_(ret_v);
 	} else {
@@ -55,7 +55,7 @@ KMETHOD QPainterPathStroker_dashOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainterPathStroker *  qp = RawPtr_to(QPainterPathStroker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->dashOffset();
 		RETURNf_(ret_v);
 	} else {
@@ -68,7 +68,7 @@ KMETHOD QPainterPathStroker_getJoinStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainterPathStroker *  qp = RawPtr_to(QPainterPathStroker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::PenJoinStyle ret_v = qp->joinStyle();
 		RETURNi_(ret_v);
 	} else {
@@ -81,7 +81,7 @@ KMETHOD QPainterPathStroker_getMiterLimit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainterPathStroker *  qp = RawPtr_to(QPainterPathStroker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->miterLimit();
 		RETURNf_(ret_v);
 	} else {
@@ -94,7 +94,7 @@ KMETHOD QPainterPathStroker_setCapStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainterPathStroker *  qp = RawPtr_to(QPainterPathStroker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::PenCapStyle style = Int_to(Qt::PenCapStyle, sfp[1]);
 		qp->setCapStyle(style);
 	}
@@ -106,7 +106,7 @@ KMETHOD QPainterPathStroker_setCurveThreshold(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainterPathStroker *  qp = RawPtr_to(QPainterPathStroker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal threshold = Float_to(qreal, sfp[1]);
 		qp->setCurveThreshold(threshold);
 	}
@@ -118,7 +118,7 @@ KMETHOD QPainterPathStroker_setDashOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainterPathStroker *  qp = RawPtr_to(QPainterPathStroker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal offset = Float_to(qreal, sfp[1]);
 		qp->setDashOffset(offset);
 	}
@@ -130,7 +130,7 @@ KMETHOD QPainterPathStroker_setDashPattern(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainterPathStroker *  qp = RawPtr_to(QPainterPathStroker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::PenStyle style = Int_to(Qt::PenStyle, sfp[1]);
 		qp->setDashPattern(style);
 	}
@@ -142,7 +142,7 @@ KMETHOD QPainterPathStroker_setJoinStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainterPathStroker *  qp = RawPtr_to(QPainterPathStroker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::PenJoinStyle style = Int_to(Qt::PenJoinStyle, sfp[1]);
 		qp->setJoinStyle(style);
 	}
@@ -154,7 +154,7 @@ KMETHOD QPainterPathStroker_setMiterLimit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainterPathStroker *  qp = RawPtr_to(QPainterPathStroker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal limit = Float_to(qreal, sfp[1]);
 		qp->setMiterLimit(limit);
 	}
@@ -166,7 +166,7 @@ KMETHOD QPainterPathStroker_setWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainterPathStroker *  qp = RawPtr_to(QPainterPathStroker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal width = Float_to(qreal, sfp[1]);
 		qp->setWidth(width);
 	}
@@ -178,7 +178,7 @@ KMETHOD QPainterPathStroker_getWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainterPathStroker *  qp = RawPtr_to(QPainterPathStroker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->width();
 		RETURNf_(ret_v);
 	} else {
@@ -186,6 +186,24 @@ KMETHOD QPainterPathStroker_getWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QPainterPathStroker.parents();
+KMETHOD QPainterPathStroker_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPainterPathStroker *qp = RawPtr_to(QPainterPathStroker*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQPainterPathStroker::DummyQPainterPathStroker()
 {
@@ -234,17 +252,28 @@ bool DummyQPainterPathStroker::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQPainterPathStroker::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQPainterPathStroker::connection(QObject *o)
 {
-	return;
+	QPainterPathStroker *p = dynamic_cast<QPainterPathStroker*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQPainterPathStroker::KQPainterPathStroker() : QPainterPathStroker()
 {
 	self = NULL;
 	dummy = new DummyQPainterPathStroker();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPainterPathStroker_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -299,13 +328,9 @@ static void QPainterPathStroker_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPainterPathStroker_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPainterPathStroker *qp = (KQPainterPathStroker *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -319,6 +344,8 @@ void KQPainterPathStroker::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQPainterPathStroker(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

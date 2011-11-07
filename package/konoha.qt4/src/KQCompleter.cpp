@@ -27,7 +27,7 @@ KMETHOD QCompleter_getCaseSensitivity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::CaseSensitivity ret_v = qp->caseSensitivity();
 		RETURNi_(ret_v);
 	} else {
@@ -40,7 +40,7 @@ KMETHOD QCompleter_getCompletionColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->completionColumn();
 		RETURNi_(ret_v);
 	} else {
@@ -53,7 +53,7 @@ KMETHOD QCompleter_completionCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->completionCount();
 		RETURNi_(ret_v);
 	} else {
@@ -66,7 +66,7 @@ KMETHOD QCompleter_getCompletionMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCompleter::CompletionMode ret_v = qp->completionMode();
 		RETURNi_(ret_v);
 	} else {
@@ -79,7 +79,7 @@ KMETHOD QCompleter_completionModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel* ret_v = qp->completionModel();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractItemModel*)ret_v, NULL);
 		RETURN_(rptr);
@@ -93,7 +93,7 @@ KMETHOD QCompleter_getCompletionPrefix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->completionPrefix();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -107,7 +107,7 @@ KMETHOD QCompleter_getCompletionRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->completionRole();
 		RETURNi_(ret_v);
 	} else {
@@ -120,7 +120,7 @@ KMETHOD QCompleter_currentCompletion(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->currentCompletion();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -134,7 +134,7 @@ KMETHOD QCompleter_currentIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QModelIndex ret_v = qp->currentIndex();
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -149,7 +149,7 @@ KMETHOD QCompleter_getCurrentRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->currentRow();
 		RETURNi_(ret_v);
 	} else {
@@ -162,7 +162,7 @@ KMETHOD QCompleter_getMaxVisibleItems(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->maxVisibleItems();
 		RETURNi_(ret_v);
 	} else {
@@ -175,7 +175,7 @@ KMETHOD QCompleter_getModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel* ret_v = qp->model();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractItemModel*)ret_v, NULL);
 		RETURN_(rptr);
@@ -189,7 +189,7 @@ KMETHOD QCompleter_getModelSorting(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCompleter::ModelSorting ret_v = qp->modelSorting();
 		RETURNi_(ret_v);
 	} else {
@@ -202,7 +202,7 @@ KMETHOD QCompleter_pathFromIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QString ret_v = qp->pathFromIndex(index);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -217,7 +217,7 @@ KMETHOD QCompleter_getPopup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemView* ret_v = qp->popup();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractItemView*)ret_v, NULL);
 		RETURN_(rptr);
@@ -231,7 +231,7 @@ KMETHOD QCompleter_setCaseSensitivity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::CaseSensitivity caseSensitivity = Int_to(Qt::CaseSensitivity, sfp[1]);
 		qp->setCaseSensitivity(caseSensitivity);
 	}
@@ -243,7 +243,7 @@ KMETHOD QCompleter_setCompletionColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		qp->setCompletionColumn(column);
 	}
@@ -255,7 +255,7 @@ KMETHOD QCompleter_setCompletionMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCompleter::CompletionMode mode = Int_to(QCompleter::CompletionMode, sfp[1]);
 		qp->setCompletionMode(mode);
 	}
@@ -267,7 +267,7 @@ KMETHOD QCompleter_setCompletionRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int role = Int_to(int, sfp[1]);
 		qp->setCompletionRole(role);
 	}
@@ -279,7 +279,7 @@ KMETHOD QCompleter_setCurrentRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		bool ret_v = qp->setCurrentRow(row);
 		RETURNb_(ret_v);
@@ -293,7 +293,7 @@ KMETHOD QCompleter_setMaxVisibleItems(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int maxItems = Int_to(int, sfp[1]);
 		qp->setMaxVisibleItems(maxItems);
 	}
@@ -305,7 +305,7 @@ KMETHOD QCompleter_setModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel*  model = RawPtr_to(QAbstractItemModel*, sfp[1]);
 		qp->setModel(model);
 	}
@@ -317,7 +317,7 @@ KMETHOD QCompleter_setModelSorting(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCompleter::ModelSorting sorting = Int_to(QCompleter::ModelSorting, sfp[1]);
 		qp->setModelSorting(sorting);
 	}
@@ -329,7 +329,7 @@ KMETHOD QCompleter_setPopup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemView*  popup = RawPtr_to(QAbstractItemView*, sfp[1]);
 		qp->setPopup(popup);
 	}
@@ -341,7 +341,7 @@ KMETHOD QCompleter_setWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->setWidget(widget);
 	}
@@ -353,7 +353,7 @@ KMETHOD QCompleter_getWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->widget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -367,7 +367,7 @@ KMETHOD QCompleter_getWrapAround(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->wrapAround();
 		RETURNb_(ret_v);
 	} else {
@@ -380,7 +380,7 @@ KMETHOD QCompleter_complete(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		qp->complete(rect);
 	}
@@ -392,7 +392,7 @@ KMETHOD QCompleter_setCompletionPrefix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString prefix = String_to(const QString, sfp[1]);
 		qp->setCompletionPrefix(prefix);
 	}
@@ -404,7 +404,7 @@ KMETHOD QCompleter_setWrapAround(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCompleter *  qp = RawPtr_to(QCompleter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool wrap = Boolean_to(bool, sfp[1]);
 		qp->setWrapAround(wrap);
 	}
@@ -462,9 +462,23 @@ bool DummyQCompleter::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQCompleter::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQCompleter::connection(QObject *o)
 {
+	QCompleter *p = dynamic_cast<QCompleter*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
 }
 
@@ -527,13 +541,9 @@ static void QCompleter_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QCompleter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQCompleter *qp = (KQCompleter *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -557,15 +567,6 @@ bool KQCompleter::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQCompleter(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QCompleter";
-	cdef->free = QCompleter_free;
-	cdef->reftrace = QCompleter_reftrace;
-	cdef->compareTo = QCompleter_compareTo;
-}
-
 static knh_IntData_t QCompleterConstInt[] = {
 	{"PopupCompletion", QCompleter::PopupCompletion},
 	{"InlineCompletion", QCompleter::InlineCompletion},
@@ -579,4 +580,15 @@ static knh_IntData_t QCompleterConstInt[] = {
 DEFAPI(void) constQCompleter(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QCompleterConstInt);
 }
+
+
+DEFAPI(void) defQCompleter(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QCompleter";
+	cdef->free = QCompleter_free;
+	cdef->reftrace = QCompleter_reftrace;
+	cdef->compareTo = QCompleter_compareTo;
+}
+
 

@@ -70,7 +70,7 @@ KMETHOD QRadialGradient_getCenter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRadialGradient *  qp = RawPtr_to(QRadialGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->center();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -85,7 +85,7 @@ KMETHOD QRadialGradient_getFocalPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRadialGradient *  qp = RawPtr_to(QRadialGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->focalPoint();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -100,7 +100,7 @@ KMETHOD QRadialGradient_getRadius(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRadialGradient *  qp = RawPtr_to(QRadialGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->radius();
 		RETURNf_(ret_v);
 	} else {
@@ -113,7 +113,7 @@ KMETHOD QRadialGradient_setCenter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRadialGradient *  qp = RawPtr_to(QRadialGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  center = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setCenter(center);
 	}
@@ -126,7 +126,7 @@ KMETHOD QRadialGradient_setCenter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRadialGradient *  qp = RawPtr_to(QRadialGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qp->setCenter(x, y);
@@ -139,7 +139,7 @@ KMETHOD QRadialGradient_setFocalPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRadialGradient *  qp = RawPtr_to(QRadialGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  focalPoint = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setFocalPoint(focalPoint);
 	}
@@ -152,7 +152,7 @@ KMETHOD QRadialGradient_setFocalPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRadialGradient *  qp = RawPtr_to(QRadialGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qp->setFocalPoint(x, y);
@@ -165,7 +165,7 @@ KMETHOD QRadialGradient_setRadius(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRadialGradient *  qp = RawPtr_to(QRadialGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal radius = Float_to(qreal, sfp[1]);
 		qp->setRadius(radius);
 	}
@@ -223,9 +223,23 @@ bool DummyQRadialGradient::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQRadialGradient::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGradient::reftrace(ctx, p, tail_);
+}
 
 void DummyQRadialGradient::connection(QObject *o)
 {
+	QRadialGradient *p = dynamic_cast<QRadialGradient*>(o);
+	if (p != NULL) {
+	}
 	DummyQGradient::connection(o);
 }
 
@@ -233,7 +247,6 @@ KQRadialGradient::KQRadialGradient() : QRadialGradient()
 {
 	self = NULL;
 	dummy = new DummyQRadialGradient();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QRadialGradient_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -288,13 +301,9 @@ static void QRadialGradient_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QRadialGradient_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQRadialGradient *qp = (KQRadialGradient *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -308,6 +317,8 @@ void KQRadialGradient::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQRadialGradient(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

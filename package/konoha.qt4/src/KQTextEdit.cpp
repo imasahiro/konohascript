@@ -27,7 +27,7 @@ KMETHOD QTextEdit_getAcceptRichText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->acceptRichText();
 		RETURNb_(ret_v);
 	} else {
@@ -35,16 +35,18 @@ KMETHOD QTextEdit_getAcceptRichText(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QTextEdit.getAlignment();
+//QtAlignment QTextEdit.getAlignment();
 KMETHOD QTextEdit_getAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->alignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -53,7 +55,7 @@ KMETHOD QTextEdit_anchorAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 		QString ret_v = qp->anchorAt(pos);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -63,12 +65,12 @@ KMETHOD QTextEdit_anchorAt(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QTextEdit.getAutoFormatting();
+//QTextEditAutoFormatting QTextEdit.getAutoFormatting();
 KMETHOD QTextEdit_getAutoFormatting(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextEdit::AutoFormatting ret_v = qp->autoFormatting();
 		QTextEdit::AutoFormatting *ret_v_ = new QTextEdit::AutoFormatting(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -83,7 +85,7 @@ KMETHOD QTextEdit_canPaste(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->canPaste();
 		RETURNb_(ret_v);
 	} else {
@@ -96,7 +98,7 @@ KMETHOD QTextEdit_createStandardContextMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMenu* ret_v = qp->createStandardContextMenu();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMenu*)ret_v, NULL);
 		RETURN_(rptr);
@@ -111,7 +113,7 @@ KMETHOD QTextEdit_createStandardContextMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  position = *RawPtr_to(const QPoint *, sfp[1]);
 		QMenu* ret_v = qp->createStandardContextMenu(position);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMenu*)ret_v, NULL);
@@ -126,7 +128,7 @@ KMETHOD QTextEdit_getCurrentCharFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCharFormat ret_v = qp->currentCharFormat();
 		QTextCharFormat *ret_v_ = new QTextCharFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -141,7 +143,7 @@ KMETHOD QTextEdit_getCurrentFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont ret_v = qp->currentFont();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -156,7 +158,7 @@ KMETHOD QTextEdit_cursorForPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 		QTextCursor ret_v = qp->cursorForPosition(pos);
 		QTextCursor *ret_v_ = new QTextCursor(ret_v);
@@ -172,7 +174,7 @@ KMETHOD QTextEdit_cursorRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCursor  cursor = *RawPtr_to(const QTextCursor *, sfp[1]);
 		QRect ret_v = qp->cursorRect(cursor);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -189,7 +191,7 @@ KMETHOD QTextEdit_cursorRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->cursorRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -204,7 +206,7 @@ KMETHOD QTextEdit_getCursorWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->cursorWidth();
 		RETURNi_(ret_v);
 	} else {
@@ -217,7 +219,7 @@ KMETHOD QTextEdit_getDocument(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextDocument* ret_v = qp->document();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextDocument*)ret_v, NULL);
 		RETURN_(rptr);
@@ -231,7 +233,7 @@ KMETHOD QTextEdit_getDocumentTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->documentTitle();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -245,40 +247,18 @@ KMETHOD QTextEdit_ensureCursorVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->ensureCursorVisible();
 	}
 	RETURNvoid_();
 }
-
-//Array<int> QTextEdit.getExtraSelections();
-KMETHOD QTextEdit_getExtraSelections(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
-		QList<QTextEdit::ExtraSelection>ret_v = qp->extraSelections();
-		int list_size = ret_v.size();
-		knh_Array_t *a = new_Array0(ctx, list_size);
-		knh_class_t cid = knh_getcid(ctx, STEXT("QTextEdit::ExtraSelection"));
-		for (int n = 0; n < list_size; n++) {
-			QTextEdit::ExtraSelection *ret_v_ = new QTextEdit::ExtraSelection(ret_v[n]);
-			knh_RawPtr_t *p = new_RawPtr(ctx, ClassTBL(cid), ret_v_);
-			knh_Array_add(ctx, a, (knh_Object_t *)p);
-		}
-		RETURN_(a);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-	
 
 //boolean QTextEdit.find(String exp, int options);
 KMETHOD QTextEdit_find(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString exp = String_to(const QString, sfp[1]);
 		QTextDocument::FindFlags options = Int_to(QTextDocument::FindFlags, sfp[2]);
 		bool ret_v = qp->find(exp, options);
@@ -293,7 +273,7 @@ KMETHOD QTextEdit_getFontFamily(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->fontFamily();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -307,7 +287,7 @@ KMETHOD QTextEdit_getFontItalic(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->fontItalic();
 		RETURNb_(ret_v);
 	} else {
@@ -320,7 +300,7 @@ KMETHOD QTextEdit_getFontPointSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->fontPointSize();
 		RETURNf_(ret_v);
 	} else {
@@ -333,7 +313,7 @@ KMETHOD QTextEdit_getFontUnderline(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->fontUnderline();
 		RETURNb_(ret_v);
 	} else {
@@ -346,7 +326,7 @@ KMETHOD QTextEdit_getFontWeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->fontWeight();
 		RETURNi_(ret_v);
 	} else {
@@ -359,7 +339,7 @@ KMETHOD QTextEdit_isReadOnly(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isReadOnly();
 		RETURNb_(ret_v);
 	} else {
@@ -372,7 +352,7 @@ KMETHOD QTextEdit_isUndoRedoEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isUndoRedoEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -385,7 +365,7 @@ KMETHOD QTextEdit_getLineWrapColumnOrWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->lineWrapColumnOrWidth();
 		RETURNi_(ret_v);
 	} else {
@@ -398,7 +378,7 @@ KMETHOD QTextEdit_getLineWrapMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextEdit::LineWrapMode ret_v = qp->lineWrapMode();
 		RETURNi_(ret_v);
 	} else {
@@ -411,7 +391,7 @@ KMETHOD QTextEdit_loadResource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int type = Int_to(int, sfp[1]);
 		const QUrl  name = *RawPtr_to(const QUrl *, sfp[2]);
 		QVariant ret_v = qp->loadResource(type, name);
@@ -428,7 +408,7 @@ KMETHOD QTextEdit_mergeCurrentCharFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCharFormat  modifier = *RawPtr_to(const QTextCharFormat *, sfp[1]);
 		qp->mergeCurrentCharFormat(modifier);
 	}
@@ -440,7 +420,7 @@ KMETHOD QTextEdit_moveCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCursor::MoveOperation operation = Int_to(QTextCursor::MoveOperation, sfp[1]);
 		QTextCursor::MoveMode mode = Int_to(QTextCursor::MoveMode, sfp[2]);
 		qp->moveCursor(operation, mode);
@@ -453,7 +433,7 @@ KMETHOD QTextEdit_getOverwriteMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->overwriteMode();
 		RETURNb_(ret_v);
 	} else {
@@ -466,32 +446,32 @@ KMETHOD QTextEdit_print(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter*  printer = RawPtr_to(QPrinter*, sfp[1]);
 		qp->print(printer);
 	}
 	RETURNvoid_();
 }
 
-////void QTextEdit.setAcceptRichText(boolean accept);
+//void QTextEdit.setAcceptRichText(boolean accept);
 KMETHOD QTextEdit_setAcceptRichText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool accept = Boolean_to(bool, sfp[1]);
 		qp->setAcceptRichText(accept);
 	}
 	RETURNvoid_();
 }
 
-//void QTextEdit.setAutoFormatting(int features);
+//void QTextEdit.setAutoFormatting(QTextEditAutoFormatting features);
 KMETHOD QTextEdit_setAutoFormatting(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
-		QTextEdit::AutoFormatting  features = *RawPtr_to(QTextEdit::AutoFormatting *, sfp[1]);
+	if (qp) {
+		initFlag(features, QTextEdit::AutoFormatting, sfp[1]);
 		qp->setAutoFormatting(features);
 	}
 	RETURNvoid_();
@@ -502,7 +482,7 @@ KMETHOD QTextEdit_setCurrentCharFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCharFormat  format = *RawPtr_to(const QTextCharFormat *, sfp[1]);
 		qp->setCurrentCharFormat(format);
 	}
@@ -514,7 +494,7 @@ KMETHOD QTextEdit_setCursorWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int width = Int_to(int, sfp[1]);
 		qp->setCursorWidth(width);
 	}
@@ -526,7 +506,7 @@ KMETHOD QTextEdit_setDocument(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextDocument*  document = RawPtr_to(QTextDocument*, sfp[1]);
 		qp->setDocument(document);
 	}
@@ -538,27 +518,9 @@ KMETHOD QTextEdit_setDocumentTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString title = String_to(const QString, sfp[1]);
 		qp->setDocumentTitle(title);
-	}
-	RETURNvoid_();
-}
-
-//void QTextEdit.setExtraSelections(Array<int> selections);
-KMETHOD QTextEdit_setExtraSelections(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
-		knh_Array_t *a = sfp[1].a;
-		int asize = knh_Array_size(a);
-		QList<QTextEdit::ExtraSelection> selections;
-		for (int n = 0; n < asize; n++) {
-			knh_RawPtr_t *p = (knh_RawPtr_t*)(a->list[n]);
-			selections.append(*(QTextEdit::ExtraSelection*)p->rawptr);
-		}
-		qp->setExtraSelections(selections);
 	}
 	RETURNvoid_();
 }
@@ -568,7 +530,7 @@ KMETHOD QTextEdit_setLineWrapColumnOrWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int w = Int_to(int, sfp[1]);
 		qp->setLineWrapColumnOrWidth(w);
 	}
@@ -580,7 +542,7 @@ KMETHOD QTextEdit_setLineWrapMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextEdit::LineWrapMode mode = Int_to(QTextEdit::LineWrapMode, sfp[1]);
 		qp->setLineWrapMode(mode);
 	}
@@ -592,7 +554,7 @@ KMETHOD QTextEdit_setOverwriteMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool overwrite = Boolean_to(bool, sfp[1]);
 		qp->setOverwriteMode(overwrite);
 	}
@@ -604,7 +566,7 @@ KMETHOD QTextEdit_setReadOnly(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ro = Boolean_to(bool, sfp[1]);
 		qp->setReadOnly(ro);
 	}
@@ -616,7 +578,7 @@ KMETHOD QTextEdit_setTabChangesFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool b = Boolean_to(bool, sfp[1]);
 		qp->setTabChangesFocus(b);
 	}
@@ -628,7 +590,7 @@ KMETHOD QTextEdit_setTabStopWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int width = Int_to(int, sfp[1]);
 		qp->setTabStopWidth(width);
 	}
@@ -640,20 +602,20 @@ KMETHOD QTextEdit_setTextCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCursor  cursor = *RawPtr_to(const QTextCursor *, sfp[1]);
 		qp->setTextCursor(cursor);
 	}
 	RETURNvoid_();
 }
 
-//void QTextEdit.setTextInteractionFlags(int flags);
+//void QTextEdit.setTextInteractionFlags(QtTextInteractionFlags flags);
 KMETHOD QTextEdit_setTextInteractionFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
-		Qt::TextInteractionFlags flags = Int_to(Qt::TextInteractionFlags, sfp[1]);
+	if (qp) {
+		initFlag(flags, Qt::TextInteractionFlags, sfp[1]);
 		qp->setTextInteractionFlags(flags);
 	}
 	RETURNvoid_();
@@ -664,7 +626,7 @@ KMETHOD QTextEdit_setUndoRedoEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setUndoRedoEnabled(enable);
 	}
@@ -676,7 +638,7 @@ KMETHOD QTextEdit_setWordWrapMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextOption::WrapMode policy = Int_to(QTextOption::WrapMode, sfp[1]);
 		qp->setWordWrapMode(policy);
 	}
@@ -688,7 +650,7 @@ KMETHOD QTextEdit_getTabChangesFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->tabChangesFocus();
 		RETURNb_(ret_v);
 	} else {
@@ -701,7 +663,7 @@ KMETHOD QTextEdit_getTabStopWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->tabStopWidth();
 		RETURNi_(ret_v);
 	} else {
@@ -714,7 +676,7 @@ KMETHOD QTextEdit_getTextBackgroundColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QColor ret_v = qp->textBackgroundColor();
 		QColor *ret_v_ = new QColor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -729,7 +691,7 @@ KMETHOD QTextEdit_getTextColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QColor ret_v = qp->textColor();
 		QColor *ret_v_ = new QColor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -744,7 +706,7 @@ KMETHOD QTextEdit_getTextCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCursor ret_v = qp->textCursor();
 		QTextCursor *ret_v_ = new QTextCursor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -754,16 +716,18 @@ KMETHOD QTextEdit_getTextCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QTextEdit.getTextInteractionFlags();
+//QtTextInteractionFlags QTextEdit.getTextInteractionFlags();
 KMETHOD QTextEdit_getTextInteractionFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TextInteractionFlags ret_v = qp->textInteractionFlags();
-		RETURNi_(ret_v);
+		Qt::TextInteractionFlags *ret_v_ = new Qt::TextInteractionFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -772,7 +736,7 @@ KMETHOD QTextEdit_toHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->toHtml();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -786,7 +750,7 @@ KMETHOD QTextEdit_toPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->toPlainText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -800,7 +764,7 @@ KMETHOD QTextEdit_getWordWrapMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextOption::WrapMode ret_v = qp->wordWrapMode();
 		RETURNi_(ret_v);
 	} else {
@@ -813,7 +777,7 @@ KMETHOD QTextEdit_append(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->append(text);
 	}
@@ -825,7 +789,7 @@ KMETHOD QTextEdit_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -836,7 +800,7 @@ KMETHOD QTextEdit_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->copy();
 	}
 	RETURNvoid_();
@@ -847,7 +811,7 @@ KMETHOD QTextEdit_cut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->cut();
 	}
 	RETURNvoid_();
@@ -858,7 +822,7 @@ KMETHOD QTextEdit_insertHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->insertHtml(text);
 	}
@@ -870,7 +834,7 @@ KMETHOD QTextEdit_insertPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->insertPlainText(text);
 	}
@@ -882,7 +846,7 @@ KMETHOD QTextEdit_paste(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->paste();
 	}
 	RETURNvoid_();
@@ -893,7 +857,7 @@ KMETHOD QTextEdit_redo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->redo();
 	}
 	RETURNvoid_();
@@ -904,7 +868,7 @@ KMETHOD QTextEdit_scrollToAnchor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString name = String_to(const QString, sfp[1]);
 		qp->scrollToAnchor(name);
 	}
@@ -916,19 +880,19 @@ KMETHOD QTextEdit_selectAll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->selectAll();
 	}
 	RETURNvoid_();
 }
 
-//void QTextEdit.setAlignment(int a);
+//void QTextEdit.setAlignment(QtAlignment a);
 KMETHOD QTextEdit_setAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment a = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(a, Qt::Alignment, sfp[1]);
 		qp->setAlignment(a);
 	}
 	RETURNvoid_();
@@ -939,7 +903,7 @@ KMETHOD QTextEdit_setCurrentFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont  f = *RawPtr_to(const QFont *, sfp[1]);
 		qp->setCurrentFont(f);
 	}
@@ -951,7 +915,7 @@ KMETHOD QTextEdit_setFontFamily(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fontFamily = String_to(const QString, sfp[1]);
 		qp->setFontFamily(fontFamily);
 	}
@@ -963,7 +927,7 @@ KMETHOD QTextEdit_setFontItalic(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool italic = Boolean_to(bool, sfp[1]);
 		qp->setFontItalic(italic);
 	}
@@ -975,7 +939,7 @@ KMETHOD QTextEdit_setFontPointSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal s = Float_to(qreal, sfp[1]);
 		qp->setFontPointSize(s);
 	}
@@ -987,7 +951,7 @@ KMETHOD QTextEdit_setFontUnderline(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool underline = Boolean_to(bool, sfp[1]);
 		qp->setFontUnderline(underline);
 	}
@@ -999,7 +963,7 @@ KMETHOD QTextEdit_setFontWeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int weight = Int_to(int, sfp[1]);
 		qp->setFontWeight(weight);
 	}
@@ -1011,7 +975,7 @@ KMETHOD QTextEdit_setHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setHtml(text);
 	}
@@ -1023,7 +987,7 @@ KMETHOD QTextEdit_setPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setPlainText(text);
 	}
@@ -1035,7 +999,7 @@ KMETHOD QTextEdit_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setText(text);
 	}
@@ -1047,7 +1011,7 @@ KMETHOD QTextEdit_setTextBackgroundColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor  c = *RawPtr_to(const QColor *, sfp[1]);
 		qp->setTextBackgroundColor(c);
 	}
@@ -1059,7 +1023,7 @@ KMETHOD QTextEdit_setTextColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor  c = *RawPtr_to(const QColor *, sfp[1]);
 		qp->setTextColor(c);
 	}
@@ -1071,7 +1035,7 @@ KMETHOD QTextEdit_undo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->undo();
 	}
 	RETURNvoid_();
@@ -1082,7 +1046,7 @@ KMETHOD QTextEdit_zoomIn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int range = Int_to(int, sfp[1]);
 		qp->zoomIn(range);
 	}
@@ -1094,7 +1058,7 @@ KMETHOD QTextEdit_zoomOut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEdit *  qp = RawPtr_to(QTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int range = Int_to(int, sfp[1]);
 		qp->zoomOut(range);
 	}
@@ -1262,16 +1226,37 @@ bool DummyQTextEdit::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextEdit::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 7;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, copy_available_func);
+	KNH_ADDNNREF(ctx, current_char_format_changed_func);
+	KNH_ADDNNREF(ctx, cursor_position_changed_func);
+	KNH_ADDNNREF(ctx, redo_available_func);
+	KNH_ADDNNREF(ctx, selection_changed_func);
+	KNH_ADDNNREF(ctx, text_changed_func);
+	KNH_ADDNNREF(ctx, undo_available_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractScrollArea::reftrace(ctx, p, tail_);
+}
 
 void DummyQTextEdit::connection(QObject *o)
 {
-	connect(o, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailableSlot(bool)));
-	connect(o, SIGNAL(currentCharFormatChanged(const QTextCharFormat)), this, SLOT(currentCharFormatChangedSlot(const QTextCharFormat)));
-	connect(o, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChangedSlot()));
-	connect(o, SIGNAL(redoAvailable(bool)), this, SLOT(redoAvailableSlot(bool)));
-	connect(o, SIGNAL(selectionChanged()), this, SLOT(selectionChangedSlot()));
-	connect(o, SIGNAL(textChanged()), this, SLOT(textChangedSlot()));
-	connect(o, SIGNAL(undoAvailable(bool)), this, SLOT(undoAvailableSlot(bool)));
+	QTextEdit *p = dynamic_cast<QTextEdit*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailableSlot(bool)));
+		connect(p, SIGNAL(currentCharFormatChanged(const QTextCharFormat)), this, SLOT(currentCharFormatChangedSlot(const QTextCharFormat)));
+		connect(p, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChangedSlot()));
+		connect(p, SIGNAL(redoAvailable(bool)), this, SLOT(redoAvailableSlot(bool)));
+		connect(p, SIGNAL(selectionChanged()), this, SLOT(selectionChangedSlot()));
+		connect(p, SIGNAL(textChanged()), this, SLOT(textChangedSlot()));
+		connect(p, SIGNAL(undoAvailable(bool)), this, SLOT(undoAvailableSlot(bool)));
+	}
 	DummyQAbstractScrollArea::connection(o);
 }
 
@@ -1334,41 +1319,9 @@ static void QTextEdit_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextEdit_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 7;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextEdit *qp = (KQTextEdit *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->copy_available_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->copy_available_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->current_char_format_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->current_char_format_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->cursor_position_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->cursor_position_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->redo_available_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->redo_available_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->selection_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->selection_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->text_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->text_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->undo_available_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->undo_available_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -1392,15 +1345,6 @@ bool KQTextEdit::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQTextEdit(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTextEdit";
-	cdef->free = QTextEdit_free;
-	cdef->reftrace = QTextEdit_reftrace;
-	cdef->compareTo = QTextEdit_compareTo;
-}
-
 static knh_IntData_t QTextEditConstInt[] = {
 	{"AutoNone", QTextEdit::AutoNone},
 	{"AutoBulletList", QTextEdit::AutoBulletList},
@@ -1414,5 +1358,179 @@ static knh_IntData_t QTextEditConstInt[] = {
 
 DEFAPI(void) constQTextEdit(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTextEditConstInt);
+}
+
+
+DEFAPI(void) defQTextEdit(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextEdit";
+	cdef->free = QTextEdit_free;
+	cdef->reftrace = QTextEdit_reftrace;
+	cdef->compareTo = QTextEdit_compareTo;
+}
+
+//## QTextEditAutoFormatting QTextEditAutoFormatting.new(int value);
+KMETHOD QTextEditAutoFormatting_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextEdit::AutoFormattingFlag i = Int_to(QTextEdit::AutoFormattingFlag, sfp[1]);
+	QTextEdit::AutoFormatting *ret_v = new QTextEdit::AutoFormatting(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QTextEditAutoFormatting QTextEditAutoFormatting.and(int mask);
+KMETHOD QTextEditAutoFormatting_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextEdit::AutoFormatting *qp = RawPtr_to(QTextEdit::AutoFormatting*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QTextEdit::AutoFormatting ret = ((*qp) & i);
+		QTextEdit::AutoFormatting *ret_ = new QTextEdit::AutoFormatting(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextEditAutoFormatting QTextEditAutoFormatting.iand(QTextEdit::QTextEditAutoFormatting other);
+KMETHOD QTextEditAutoFormatting_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextEdit::AutoFormatting *qp = RawPtr_to(QTextEdit::AutoFormatting*, sfp[0]);
+	if (qp != NULL) {
+		QTextEdit::AutoFormatting *other = RawPtr_to(QTextEdit::AutoFormatting *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextEditAutoFormatting QTextEditAutoFormatting.or(QTextEditAutoFormatting f);
+KMETHOD QTextEditAutoFormatting_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextEdit::AutoFormatting *qp = RawPtr_to(QTextEdit::AutoFormatting*, sfp[0]);
+	if (qp != NULL) {
+		QTextEdit::AutoFormatting *f = RawPtr_to(QTextEdit::AutoFormatting*, sfp[1]);
+		QTextEdit::AutoFormatting ret = ((*qp) | (*f));
+		QTextEdit::AutoFormatting *ret_ = new QTextEdit::AutoFormatting(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextEditAutoFormatting QTextEditAutoFormatting.ior(QTextEdit::QTextEditAutoFormatting other);
+KMETHOD QTextEditAutoFormatting_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextEdit::AutoFormatting *qp = RawPtr_to(QTextEdit::AutoFormatting*, sfp[0]);
+	if (qp != NULL) {
+		QTextEdit::AutoFormatting *other = RawPtr_to(QTextEdit::AutoFormatting *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextEditAutoFormatting QTextEditAutoFormatting.xor(QTextEditAutoFormatting f);
+KMETHOD QTextEditAutoFormatting_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextEdit::AutoFormatting *qp = RawPtr_to(QTextEdit::AutoFormatting*, sfp[0]);
+	if (qp != NULL) {
+		QTextEdit::AutoFormatting *f = RawPtr_to(QTextEdit::AutoFormatting*, sfp[1]);
+		QTextEdit::AutoFormatting ret = ((*qp) ^ (*f));
+		QTextEdit::AutoFormatting *ret_ = new QTextEdit::AutoFormatting(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextEditAutoFormatting QTextEditAutoFormatting.ixor(QTextEdit::QTextEditAutoFormatting other);
+KMETHOD QTextEditAutoFormatting_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextEdit::AutoFormatting *qp = RawPtr_to(QTextEdit::AutoFormatting*, sfp[0]);
+	if (qp != NULL) {
+		QTextEdit::AutoFormatting *other = RawPtr_to(QTextEdit::AutoFormatting *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QTextEditAutoFormatting.testFlag(int flag);
+KMETHOD QTextEditAutoFormatting_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextEdit::AutoFormatting *qp = RawPtr_to(QTextEdit::AutoFormatting *, sfp[0]);
+	if (qp != NULL) {
+		QTextEdit::AutoFormattingFlag flag = Int_to(QTextEdit::AutoFormattingFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QTextEditAutoFormatting.value();
+KMETHOD QTextEditAutoFormatting_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextEdit::AutoFormatting *qp = RawPtr_to(QTextEdit::AutoFormatting *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QTextEditAutoFormatting_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QTextEdit::AutoFormatting *qp = (QTextEdit::AutoFormatting *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QTextEditAutoFormatting_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QTextEdit::AutoFormatting *qp = (QTextEdit::AutoFormatting *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QTextEditAutoFormatting_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QTextEdit::AutoFormatting*)p1->rawptr);
+//		int v2 = int(*(QTextEdit::AutoFormatting*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QTextEdit::AutoFormatting v1 = *(QTextEdit::AutoFormatting*)p1->rawptr;
+		QTextEdit::AutoFormatting v2 = *(QTextEdit::AutoFormatting*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQTextEditAutoFormatting(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextEditAutoFormatting";
+	cdef->free = QTextEditAutoFormatting_free;
+	cdef->reftrace = QTextEditAutoFormatting_reftrace;
+	cdef->compareTo = QTextEditAutoFormatting_compareTo;
 }
 

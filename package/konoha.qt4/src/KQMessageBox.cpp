@@ -3,7 +3,7 @@ KMETHOD QMessageBox_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setVisible(visible);
 	}
@@ -22,16 +22,16 @@ KMETHOD QMessageBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//QMessageBox QMessageBox.new(int icon, String title, String text, int buttons, QWidget parent, int f);
+//QMessageBox QMessageBox.new(int icon, String title, String text, QMessageBoxStandardButtons buttons, QWidget parent, QtWindowFlags f);
 KMETHOD QMessageBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox::Icon icon = Int_to(QMessageBox::Icon, sfp[1]);
 	const QString title = String_to(const QString, sfp[2]);
 	const QString text = String_to(const QString, sfp[3]);
-	QMessageBox::StandardButtons buttons = Int_to(QMessageBox::StandardButtons, sfp[4]);
+	initFlag(buttons, QMessageBox::StandardButtons, sfp[4]);
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[5]);
-	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[6]);
+	initFlag(f, Qt::WindowFlags, sfp[6]);
 	KQMessageBox *ret_v = new KQMessageBox(icon, title, text, buttons, parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -43,7 +43,7 @@ KMETHOD QMessageBox_addButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton*  button = RawPtr_to(QAbstractButton*, sfp[1]);
 		QMessageBox::ButtonRole role = Int_to(QMessageBox::ButtonRole, sfp[2]);
 		qp->addButton(button, role);
@@ -57,7 +57,7 @@ KMETHOD QMessageBox_addButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		QMessageBox::ButtonRole role = Int_to(QMessageBox::ButtonRole, sfp[2]);
 		QPushButton* ret_v = qp->addButton(text, role);
@@ -74,7 +74,7 @@ KMETHOD QMessageBox_addButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMessageBox::StandardButton button = Int_to(QMessageBox::StandardButton, sfp[1]);
 		QPushButton* ret_v = qp->addButton(button);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPushButton*)ret_v, NULL);
@@ -89,7 +89,7 @@ KMETHOD QMessageBox_button(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMessageBox::StandardButton which = Int_to(QMessageBox::StandardButton, sfp[1]);
 		QAbstractButton* ret_v = qp->button(which);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractButton*)ret_v, NULL);
@@ -104,7 +104,7 @@ KMETHOD QMessageBox_buttonRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton*  button = RawPtr_to(QAbstractButton*, sfp[1]);
 		QMessageBox::ButtonRole ret_v = qp->buttonRole(button);
 		RETURNi_(ret_v);
@@ -118,8 +118,8 @@ KMETHOD QMessageBox_buttons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
-		QList<QAbstractButton*>ret_v = qp->buttons();
+	if (qp) {
+		QList<QAbstractButton*> ret_v = qp->buttons();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QAbstractButton"));
@@ -139,7 +139,7 @@ KMETHOD QMessageBox_clickedButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton* ret_v = qp->clickedButton();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractButton*)ret_v, NULL);
 		RETURN_(rptr);
@@ -153,7 +153,7 @@ KMETHOD QMessageBox_getDefaultButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPushButton* ret_v = qp->defaultButton();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPushButton*)ret_v, NULL);
 		RETURN_(rptr);
@@ -167,7 +167,7 @@ KMETHOD QMessageBox_getDetailedText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->detailedText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -181,7 +181,7 @@ KMETHOD QMessageBox_getEscapeButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton* ret_v = qp->escapeButton();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractButton*)ret_v, NULL);
 		RETURN_(rptr);
@@ -195,7 +195,7 @@ KMETHOD QMessageBox_getIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMessageBox::Icon ret_v = qp->icon();
 		RETURNi_(ret_v);
 	} else {
@@ -208,7 +208,7 @@ KMETHOD QMessageBox_getIconPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPixmap ret_v = qp->iconPixmap();
 		QPixmap *ret_v_ = new QPixmap(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -223,7 +223,7 @@ KMETHOD QMessageBox_getInformativeText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->informativeText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -237,7 +237,7 @@ KMETHOD QMessageBox_open(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
 		const char*  member = RawPtr_to(const char*, sfp[2]);
 		qp->open(receiver, member);
@@ -250,7 +250,7 @@ KMETHOD QMessageBox_removeButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton*  button = RawPtr_to(QAbstractButton*, sfp[1]);
 		qp->removeButton(button);
 	}
@@ -262,7 +262,7 @@ KMETHOD QMessageBox_setDefaultButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPushButton*  button = RawPtr_to(QPushButton*, sfp[1]);
 		qp->setDefaultButton(button);
 	}
@@ -275,7 +275,7 @@ KMETHOD QMessageBox_setDefaultButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMessageBox::StandardButton button = Int_to(QMessageBox::StandardButton, sfp[1]);
 		qp->setDefaultButton(button);
 	}
@@ -287,7 +287,7 @@ KMETHOD QMessageBox_setDetailedText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setDetailedText(text);
 	}
@@ -299,7 +299,7 @@ KMETHOD QMessageBox_setEscapeButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton*  button = RawPtr_to(QAbstractButton*, sfp[1]);
 		qp->setEscapeButton(button);
 	}
@@ -312,7 +312,7 @@ KMETHOD QMessageBox_setEscapeButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMessageBox::StandardButton button = Int_to(QMessageBox::StandardButton, sfp[1]);
 		qp->setEscapeButton(button);
 	}
@@ -324,7 +324,7 @@ KMETHOD QMessageBox_setIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMessageBox::Icon arg0 = Int_to(QMessageBox::Icon, sfp[1]);
 		qp->setIcon(arg0);
 	}
@@ -336,7 +336,7 @@ KMETHOD QMessageBox_setIconPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[1]);
 		qp->setIconPixmap(pixmap);
 	}
@@ -348,20 +348,20 @@ KMETHOD QMessageBox_setInformativeText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setInformativeText(text);
 	}
 	RETURNvoid_();
 }
 
-//void QMessageBox.setStandardButtons(int buttons);
+//void QMessageBox.setStandardButtons(QMessageBoxStandardButtons buttons);
 KMETHOD QMessageBox_setStandardButtons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
-		QMessageBox::StandardButtons buttons = Int_to(QMessageBox::StandardButtons, sfp[1]);
+	if (qp) {
+		initFlag(buttons, QMessageBox::StandardButtons, sfp[1]);
 		qp->setStandardButtons(buttons);
 	}
 	RETURNvoid_();
@@ -372,7 +372,7 @@ KMETHOD QMessageBox_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setText(text);
 	}
@@ -384,19 +384,19 @@ KMETHOD QMessageBox_setTextFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TextFormat format = Int_to(Qt::TextFormat, sfp[1]);
 		qp->setTextFormat(format);
 	}
 	RETURNvoid_();
 }
 
-////void QMessageBox.setWindowModality(int windowModality);
+//void QMessageBox.setWindowModality(int windowModality);
 KMETHOD QMessageBox_setWindowModality(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::WindowModality windowModality = Int_to(Qt::WindowModality, sfp[1]);
 		qp->setWindowModality(windowModality);
 	}
@@ -408,7 +408,7 @@ KMETHOD QMessageBox_setWindowTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString title = String_to(const QString, sfp[1]);
 		qp->setWindowTitle(title);
 	}
@@ -420,7 +420,7 @@ KMETHOD QMessageBox_standardButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton*  button = RawPtr_to(QAbstractButton*, sfp[1]);
 		QMessageBox::StandardButton ret_v = qp->standardButton(button);
 		RETURNi_(ret_v);
@@ -429,16 +429,18 @@ KMETHOD QMessageBox_standardButton(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QMessageBox.getStandardButtons();
+//QMessageBoxStandardButtons QMessageBox.getStandardButtons();
 KMETHOD QMessageBox_getStandardButtons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMessageBox::StandardButtons ret_v = qp->standardButtons();
-		RETURNi_(ret_v);
+		QMessageBox::StandardButtons *ret_v_ = new QMessageBox::StandardButtons(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -447,7 +449,7 @@ KMETHOD QMessageBox_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->text();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -461,7 +463,7 @@ KMETHOD QMessageBox_getTextFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TextFormat ret_v = qp->textFormat();
 		RETURNi_(ret_v);
 	} else {
@@ -473,12 +475,11 @@ KMETHOD QMessageBox_getTextFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QMessageBox_about(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 		const QString title = String_to(const QString, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
-		qp->about(parent, title, text);
+		QMessageBox::about(parent, title, text);
 	}
 	RETURNvoid_();
 }
@@ -487,81 +488,76 @@ KMETHOD QMessageBox_about(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QMessageBox_aboutQt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 		const QString title = String_to(const QString, sfp[2]);
-		qp->aboutQt(parent, title);
+		QMessageBox::aboutQt(parent, title);
 	}
 	RETURNvoid_();
 }
 
-//int QMessageBox.critical(QWidget parent, String title, String text, int buttons, int defaultButton);
+//int QMessageBox.critical(QWidget parent, String title, String text, QMessageBoxStandardButtons buttons, int defaultButton);
 KMETHOD QMessageBox_critical(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 		const QString title = String_to(const QString, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
-		QMessageBox::StandardButtons buttons = Int_to(QMessageBox::StandardButtons, sfp[4]);
+		initFlag(buttons, QMessageBox::StandardButtons, sfp[4]);
 		QMessageBox::StandardButton defaultButton = Int_to(QMessageBox::StandardButton, sfp[5]);
-		QMessageBox::StandardButton ret_v = qp->critical(parent, title, text, buttons, defaultButton);
+		QMessageBox::StandardButton ret_v = QMessageBox::critical(parent, title, text, buttons, defaultButton);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
 	}
 }
 
-//int QMessageBox.information(QWidget parent, String title, String text, int buttons, int defaultButton);
+//int QMessageBox.information(QWidget parent, String title, String text, QMessageBoxStandardButtons buttons, int defaultButton);
 KMETHOD QMessageBox_information(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 		const QString title = String_to(const QString, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
-		QMessageBox::StandardButtons buttons = Int_to(QMessageBox::StandardButtons, sfp[4]);
+		initFlag(buttons, QMessageBox::StandardButtons, sfp[4]);
 		QMessageBox::StandardButton defaultButton = Int_to(QMessageBox::StandardButton, sfp[5]);
-		QMessageBox::StandardButton ret_v = qp->information(parent, title, text, buttons, defaultButton);
+		QMessageBox::StandardButton ret_v = QMessageBox::information(parent, title, text, buttons, defaultButton);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
 	}
 }
 
-//int QMessageBox.question(QWidget parent, String title, String text, int buttons, int defaultButton);
+//int QMessageBox.question(QWidget parent, String title, String text, QMessageBoxStandardButtons buttons, int defaultButton);
 KMETHOD QMessageBox_question(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 		const QString title = String_to(const QString, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
-		QMessageBox::StandardButtons buttons = Int_to(QMessageBox::StandardButtons, sfp[4]);
+		initFlag(buttons, QMessageBox::StandardButtons, sfp[4]);
 		QMessageBox::StandardButton defaultButton = Int_to(QMessageBox::StandardButton, sfp[5]);
-		QMessageBox::StandardButton ret_v = qp->question(parent, title, text, buttons, defaultButton);
+		QMessageBox::StandardButton ret_v = QMessageBox::question(parent, title, text, buttons, defaultButton);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
 	}
 }
 
-//int QMessageBox.warning(QWidget parent, String title, String text, int buttons, int defaultButton);
+//int QMessageBox.warning(QWidget parent, String title, String text, QMessageBoxStandardButtons buttons, int defaultButton);
 KMETHOD QMessageBox_warning(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 		const QString title = String_to(const QString, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
-		QMessageBox::StandardButtons buttons = Int_to(QMessageBox::StandardButtons, sfp[4]);
+		initFlag(buttons, QMessageBox::StandardButtons, sfp[4]);
 		QMessageBox::StandardButton defaultButton = Int_to(QMessageBox::StandardButton, sfp[5]);
-		QMessageBox::StandardButton ret_v = qp->warning(parent, title, text, buttons, defaultButton);
+		QMessageBox::StandardButton ret_v = QMessageBox::warning(parent, title, text, buttons, defaultButton);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -573,7 +569,7 @@ KMETHOD QMessageBox_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMessageBox *  qp = RawPtr_to(QMessageBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->exec();
 		RETURNi_(ret_v);
 	} else {
@@ -649,10 +645,25 @@ bool DummyQMessageBox::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMessageBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, button_clicked_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQDialog::reftrace(ctx, p, tail_);
+}
 
 void DummyQMessageBox::connection(QObject *o)
 {
-	connect(o, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(buttonClickedSlot(QAbstractButton*)));
+	QMessageBox *p = dynamic_cast<QMessageBox*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(buttonClickedSlot(QAbstractButton*)));
+	}
 	DummyQDialog::connection(o);
 }
 
@@ -715,17 +726,9 @@ static void QMessageBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMessageBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMessageBox *qp = (KQMessageBox *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->button_clicked_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->button_clicked_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -747,15 +750,6 @@ bool KQMessageBox::event(QEvent *event)
 		return false;
 	}
 	return true;
-}
-
-DEFAPI(void) defQMessageBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QMessageBox";
-	cdef->free = QMessageBox_free;
-	cdef->reftrace = QMessageBox_reftrace;
-	cdef->compareTo = QMessageBox_compareTo;
 }
 
 static knh_IntData_t QMessageBoxConstInt[] = {
@@ -804,5 +798,179 @@ static knh_IntData_t QMessageBoxConstInt[] = {
 
 DEFAPI(void) constQMessageBox(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QMessageBoxConstInt);
+}
+
+
+DEFAPI(void) defQMessageBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QMessageBox";
+	cdef->free = QMessageBox_free;
+	cdef->reftrace = QMessageBox_reftrace;
+	cdef->compareTo = QMessageBox_compareTo;
+}
+
+//## QMessageBoxStandardButtons QMessageBoxStandardButtons.new(int value);
+KMETHOD QMessageBoxStandardButtons_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMessageBox::StandardButton i = Int_to(QMessageBox::StandardButton, sfp[1]);
+	QMessageBox::StandardButtons *ret_v = new QMessageBox::StandardButtons(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QMessageBoxStandardButtons QMessageBoxStandardButtons.and(int mask);
+KMETHOD QMessageBoxStandardButtons_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMessageBox::StandardButtons *qp = RawPtr_to(QMessageBox::StandardButtons*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QMessageBox::StandardButtons ret = ((*qp) & i);
+		QMessageBox::StandardButtons *ret_ = new QMessageBox::StandardButtons(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMessageBoxStandardButtons QMessageBoxStandardButtons.iand(QMessageBox::QMessageBoxStandardButtons other);
+KMETHOD QMessageBoxStandardButtons_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMessageBox::StandardButtons *qp = RawPtr_to(QMessageBox::StandardButtons*, sfp[0]);
+	if (qp != NULL) {
+		QMessageBox::StandardButtons *other = RawPtr_to(QMessageBox::StandardButtons *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMessageBoxStandardButtons QMessageBoxStandardButtons.or(QMessageBoxStandardButtons f);
+KMETHOD QMessageBoxStandardButtons_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMessageBox::StandardButtons *qp = RawPtr_to(QMessageBox::StandardButtons*, sfp[0]);
+	if (qp != NULL) {
+		QMessageBox::StandardButtons *f = RawPtr_to(QMessageBox::StandardButtons*, sfp[1]);
+		QMessageBox::StandardButtons ret = ((*qp) | (*f));
+		QMessageBox::StandardButtons *ret_ = new QMessageBox::StandardButtons(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMessageBoxStandardButtons QMessageBoxStandardButtons.ior(QMessageBox::QMessageBoxStandardButtons other);
+KMETHOD QMessageBoxStandardButtons_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMessageBox::StandardButtons *qp = RawPtr_to(QMessageBox::StandardButtons*, sfp[0]);
+	if (qp != NULL) {
+		QMessageBox::StandardButtons *other = RawPtr_to(QMessageBox::StandardButtons *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMessageBoxStandardButtons QMessageBoxStandardButtons.xor(QMessageBoxStandardButtons f);
+KMETHOD QMessageBoxStandardButtons_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMessageBox::StandardButtons *qp = RawPtr_to(QMessageBox::StandardButtons*, sfp[0]);
+	if (qp != NULL) {
+		QMessageBox::StandardButtons *f = RawPtr_to(QMessageBox::StandardButtons*, sfp[1]);
+		QMessageBox::StandardButtons ret = ((*qp) ^ (*f));
+		QMessageBox::StandardButtons *ret_ = new QMessageBox::StandardButtons(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMessageBoxStandardButtons QMessageBoxStandardButtons.ixor(QMessageBox::QMessageBoxStandardButtons other);
+KMETHOD QMessageBoxStandardButtons_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMessageBox::StandardButtons *qp = RawPtr_to(QMessageBox::StandardButtons*, sfp[0]);
+	if (qp != NULL) {
+		QMessageBox::StandardButtons *other = RawPtr_to(QMessageBox::StandardButtons *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QMessageBoxStandardButtons.testFlag(int flag);
+KMETHOD QMessageBoxStandardButtons_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMessageBox::StandardButtons *qp = RawPtr_to(QMessageBox::StandardButtons *, sfp[0]);
+	if (qp != NULL) {
+		QMessageBox::StandardButton flag = Int_to(QMessageBox::StandardButton, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QMessageBoxStandardButtons.value();
+KMETHOD QMessageBoxStandardButtons_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMessageBox::StandardButtons *qp = RawPtr_to(QMessageBox::StandardButtons *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QMessageBoxStandardButtons_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QMessageBox::StandardButtons *qp = (QMessageBox::StandardButtons *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QMessageBoxStandardButtons_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QMessageBox::StandardButtons *qp = (QMessageBox::StandardButtons *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QMessageBoxStandardButtons_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QMessageBox::StandardButtons*)p1->rawptr);
+//		int v2 = int(*(QMessageBox::StandardButtons*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QMessageBox::StandardButtons v1 = *(QMessageBox::StandardButtons*)p1->rawptr;
+		QMessageBox::StandardButtons v2 = *(QMessageBox::StandardButtons*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQMessageBoxStandardButtons(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QMessageBoxStandardButtons";
+	cdef->free = QMessageBoxStandardButtons_free;
+	cdef->reftrace = QMessageBoxStandardButtons_reftrace;
+	cdef->compareTo = QMessageBoxStandardButtons_compareTo;
 }
 

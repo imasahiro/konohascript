@@ -18,17 +18,17 @@ class QMethod {
 		return_type = fe.return_value_type.replace("Array<", "QList<");
 		return_value_type_object_flag = fe.return_value_type_object_flag;
 		argument_type_object_flag = []
-		foreach (boolean b in fe.argument_type_object_flag) {
+		foreach (boolean b in fe.argument_type_object_flags) {
 			argument_type_object_flag <<< b;
 		}
 		argtypes = [];
-		foreach (String at in fe.argument_type) {
-			at = at.replace("Array<", "QList<");
-			argtypes <<< at;
+		foreach (String argument_type in fe.argument_types) {
+			argument_type = argument_type.replace("Array<", "QList<");
+			argtypes <<< argument_type;
 		}
 		values = [];
-		foreach (String an in fe.argument_name) {
-			values <<< an;
+		foreach (String argument_name in fe.argument_names) {
+			values <<< argument_name;
 		}
 		knh_argtypes = [];
         overloadFlag = false;
@@ -170,7 +170,18 @@ String genHeaderSource(String class_name, QMethod[] mtds, QMethod[] sigs, BindIn
 {
 //=========================Generate KQClass =======================//
 	String kqclass = "";
-	kqclass += """
+	if (bi.have_private_destructor_flag) {
+		kqclass += """
+class K<C> {
+<UNUSE> Q_OBJECT;
+public:
+	<C> *q_self;
+	knh_RawPtr_t *self;
+	Dummy<C> *dummy;
+<CR>
+"""
+	} else {
+		kqclass += """
 class K<C> : public <C> {
 <UNUSE>	Q_OBJECT;
 public:
@@ -178,7 +189,8 @@ public:
 	Dummy<C> *dummy;
 <CR>
 """;
-
+	}
+	
 	kqclass += "\tvoid setSelf(knh_RawPtr_t *ptr);\n";
 	if (bi.checkHaveEventMethod()) kqclass += "\tbool event(QEvent *event);\n";
 //	if (bi.checkInheritsQObject() && |sigs| != 0) {
@@ -194,8 +206,8 @@ public:
 		constructor += "\tK<C>(ARGS);";
 		FunctionElement f = bi.constructor;
 		for (int i = 0; i < f.argument_number; i++) {
-			f.argument_type[i] = f.argument_type[i].replace("Array<", "QList<");
-			args += f.argument_type[i] + " " + f.argument_name[i];
+			args += f.argument_types[i].replace("Array<", "QList<");
+			args += " " + f.argument_names[i];
 			if (f.argument_number > i + 1) {
 				args += ", ";
 			}
@@ -222,15 +234,18 @@ K<C>::K<C>(ARGS) : <C>(ARGNAMES)
 {
 	self = NULL;
 	dummy = new Dummy<C>();
-	dummy->connection((QObject*)this);
-}
-
 """;
+		if (bi.inherits_qobject_flag) {
+			constructor += "\tdummy->connection((QObject*)this);\n";
+		}
+		constructor += "}\n\n";
+
 		FunctionElement f = bi.constructor;
 		String args = "", argnames = "";
 		for (int i = 0; i < f.argument_number; i++) {
-			args += f.argument_type[i] + " " + f.argument_name[i];
-			argnames += f.argument_name[i];
+			args += f.argument_types[i].replace("Array<", "QList<");
+			args += " " + f.argument_names[i];
+			argnames += f.argument_names[i];
 			if (f.argument_number > i + 1) {
 				args += ", ";
 				argnames += ", ";
@@ -301,42 +316,51 @@ static void <C>_free(CTX ctx, knh_RawPtr_t *p)
 }
 """;
 
-	gc += """
+gc += """
 static void <C>_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-<UNUSE>	(void)ctx; (void)p; (void)tail_;
-	int list_size = <NUM>;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		K<C> *qp = (K<C> *)p->rawptr;
-<UNUSE>		(void)qp;
-""";
-	if (|mtds| == 0 && |sigs| == 0) {
-		gc = gc.replace("<UNUSE>", "");
-	} else {
-		gc = gc.replace("<UNUSE>", "//");
-			}
-
-	int num = |mtds| + |sigs|;
-	gc = gc.replace("<NUM>", (String)num);
-
-	foreach (QMethod mtd in mtds) {
-		gc += "\t\tif (qp->dummy->" + mtd.mtd_cname + "_func != NULL) {\n";
-		gc += "\t\t\tKNH_ADDREF(ctx, qp->dummy->" + mtd.mtd_cname + "_func);\n";
-		gc += "\t\t\tKNH_SIZEREF(ctx);\n";
-		gc += "\t\t}\n";
-	}
-	foreach (QMethod mtd in sigs) {
-		gc += "\t\tif (qp->dummy->" + mtd.mtd_cname + "_func != NULL) {\n";
-		gc += "\t\t\tKNH_ADDREF(ctx, qp->dummy->" + mtd.mtd_cname + "_func);\n";
-		gc	+= "\t\t\tKNH_SIZEREF(ctx);\n";
-		gc	+= "\t\t}\n";
-	}
-	gc += """
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 """;
+// 	gc += """
+// static void <C>_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+// {
+// <UNUSE>	(void)ctx; (void)p; (void)tail_;
+// 	int list_size = <NUM>;
+// 	KNH_ENSUREREF(ctx, list_size);
+
+// 	if (p->rawptr != NULL) {
+// 		K<C> *qp = (K<C> *)p->rawptr;
+// <UNUSE>		(void)qp;
+// """;
+// 	if (|mtds| == 0 && |sigs| == 0) {
+// 		gc = gc.replace("<UNUSE>", "");
+// 	} else {
+// 		gc = gc.replace("<UNUSE>", "//");
+// 	}
+
+// 	int num = |mtds| + |sigs|;
+// 	gc = gc.replace("<NUM>", (String)num);
+
+// 	foreach (QMethod mtd in mtds) {
+// 		gc += "\t\tif (qp->dummy->" + mtd.mtd_cname + "_func != NULL) {\n";
+// 		gc += "\t\t\tKNH_ADDREF(ctx, qp->dummy->" + mtd.mtd_cname + "_func);\n";
+// 		gc += "\t\t\tKNH_SIZEREF(ctx);\n";
+// 		gc += "\t\t}\n";
+// 	}
+// 	foreach (QMethod mtd in sigs) {
+// 		gc += "\t\tif (qp->dummy->" + mtd.mtd_cname + "_func != NULL) {\n";
+// 		gc += "\t\t\tKNH_ADDREF(ctx, qp->dummy->" + mtd.mtd_cname + "_func);\n";
+// 		gc	+= "\t\t\tKNH_SIZEREF(ctx);\n";
+// 		gc	+= "\t\t}\n";
+// 	}
+// 	gc += """
+// 	}
+// }
+// """;
 //=======================Generate compareTo==============================//
 
 	String compare_to = COMPARE_TO(class_name, bi.have_compare_operator_flag);
@@ -359,26 +383,31 @@ void K<C>::setSelf(knh_RawPtr_t *ptr)
 bool K<C>::event(QEvent *event)
 {
 	if (!dummy->eventDispatcher(event)) {
-		<C>::event(event);
+		<CALL>event(event);
 		return false;
 	}
 	return true;
 }
 """;
+		if (bi.have_private_destructor_flag) {
+			event = event.replace("<CALL>", "q_self->");
+		} else {
+			event = event.replace("<CALL>", "<C>::");
+		}
 	}
 
-//======================= def ==========================================//
-	String def_class = """
+// //======================= def ==========================================//
+// 	String def_class = """
 
-DEFAPI(void) def<C>(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = \"<C>\";
-	cdef->free = <C>_free;
-	cdef->reftrace = <C>_reftrace;
-	cdef->compareTo = <C>_compareTo;
-}
-""";
+// DEFAPI(void) def<C>(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+// {
+// 	(void)ctx; (void) cid;
+// 	cdef->name = \"<C>\";
+// 	cdef->free = <C>_free;
+// 	cdef->reftrace = <C>_reftrace;
+// 	cdef->compareTo = <C>_compareTo;
+// }
+// """;
 //=================================================================//
     String cpp_src = "";
 	cpp_src += constructor;
@@ -388,7 +417,7 @@ DEFAPI(void) def<C>(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cpp_src += compare_to;
 	cpp_src += setSelf;
 	cpp_src += event;
-	cpp_src += def_class;
+//	cpp_src += def_class;
 	cpp_src = cpp_src.replace("<C>", class_name);
 	cpp_src = cpp_src.replace("<T>", "K" + class_name + " *");
 	return cpp_src;
@@ -449,10 +478,11 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 <CONNECTION><EVENT><SLOTS>};
 """;
 
-	if (bi.checkInheritsQObject() && |sigs| != 0) {
+	if (bi.inherits_qobject_flag && |sigs| != 0) {
 		class_definition = class_definition.replace("<UNUSE>", "");
 	} else {
 		class_definition = class_definition.replace("<UNUSE>", "//");
@@ -472,7 +502,7 @@ public:
 
 //==================== Generate Public Slots ======================//
 	String public_slots = "";
-	if (bi.checkInheritsQObject() && |sigs| != 0) {
+	if (bi.inherits_qobject_flag && |sigs| != 0) {
 //	if (bi.checkInheritsQObject()) {
 		public_slots += "public slots:\n";
 		foreach (QMethod mtd in sigs) {
@@ -675,10 +705,10 @@ bool Dummy<C>::eventDispatcher(QEvent *event)
 		slotMethods += "\t\tknh_sfp_t *lsfp = lctx->esp;\n";
 		slotMethods += "\t\tKNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));\n";
 		for (i = 0; i < |mtd.argtypes|; i++) {
-			if ("::" in? mtd.knh_argtypes[i]) {
-				print bi.class_name;
-				print mtd.mtd_name;
-			}
+			// if ("::" in? mtd.knh_argtypes[i]) {
+			// 	print bi.class_name;
+			// 	print mtd.mtd_name;
+			// }
 			slotMethods += EventArgPassing(mtd.knh_argtypes[i]);
 			slotMethods = slotMethods.replace("<N>", (String)(i + 1));
 			slotMethods = slotMethods.replace("<KT>", mtd.knh_argtypes[i]);
@@ -748,6 +778,39 @@ bool Dummy<C>::signalConnect(knh_Func_t *callback_func, string str)
 	}
 	signalConnect += "\t\treturn true;\n\t}\n}\n\n";
 
+//================== dummy::reftrace ====================//
+
+	String reftrace = "";
+	reftrace += """
+void Dummy<C>::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+<UNUSE>	(void)ctx; (void)p; (void)tail_;
+	int list_size = <NUM>;
+	KNH_ENSUREREF(ctx, list_size);
+
+""";
+	if (|mtds| == 0 && |sigs| == 0) {
+		reftrace = reftrace.replace("<UNUSE>", "");
+	} else {
+		reftrace = reftrace.replace("<UNUSE>", "//");
+	}
+
+	int num = |mtds| + |sigs|;
+	reftrace = reftrace.replace("<NUM>", (String)num);
+
+	foreach (QMethod mtd in mtds) {
+		reftrace += "\tKNH_ADDNNREF(ctx, " + mtd.mtd_cname + "_func);\n";
+	}
+	foreach (QMethod mtd in sigs) {
+		reftrace += "\tKNH_ADDNNREF(ctx, " + mtd.mtd_cname + "_func);\n";
+	}
+	reftrace += "\n\tKNH_SIZEREF(ctx);\n\n";
+//	reftrace += "\t}\n";
+	foreach (String pn in bi.parent_name) {
+		reftrace += "\tDummy" + pn + "::reftrace(ctx, p, tail_);\n";
+	}
+	reftrace += "}\n";
+
 //================== connection =========================//
 
 	String connection = "";
@@ -755,10 +818,12 @@ bool Dummy<C>::signalConnect(knh_Func_t *callback_func, string str)
 
 void Dummy<C>::connection(QObject *o)
 {
+	<C> *p = dynamic_cast<<C>*>(o);
 """;
+	connection += "\tif (p != NULL) {\n";
 	foreach (QMethod sig in sigs) {
 		String line = "";
-		line += "\tconnect(o, SIGNAL(" + sig.mtd_name + "(<ARGTYPES>)), this, SLOT(" + sig.mtd_name + "Slot(<ARGTYPES>)));\n";
+		line += "\t\tconnect(p, SIGNAL(" + sig.mtd_name + "(<ARGTYPES>)), this, SLOT(" + sig.mtd_name + "Slot(<ARGTYPES>)));\n";
 		String argtypes = "";
 		for (int i = 0; i < |sig.argtypes|; i++) {
 			argtypes += sig.argtypes[i];
@@ -767,9 +832,8 @@ void Dummy<C>::connection(QObject *o)
 		line = line.replace("<ARGTYPES>", argtypes);
 		connection += line;
 	}
-	if (|bi.parent_name| == 0) {
-		connection += "\treturn;\n";
-	} else {
+	connection += "\t}\n";
+	if (|bi.parent_name| != 0) {
 		for (int i = 0; i < |bi.parent_name|; i++) {
 			connection += "\tDummy" + bi.parent_name[i] + "::connection(o);\n";
 		}
@@ -785,6 +849,7 @@ void Dummy<C>::connection(QObject *o)
 	dummy_cpp += slotMethods;
 	dummy_cpp += addEvent;
 	dummy_cpp += signalConnect;
+	dummy_cpp += reftrace;
 	dummy_cpp += connection;
 
 	dummy_cpp = dummy_cpp.replace("<C>", bi.class_name);
@@ -808,8 +873,10 @@ String[] makeEventTable(QtInterface qevent)
 	return e_table;
 }
 
-void genEventSource(BindInfo[] bia, QtInterface[] interfaces)
+int genEventSource(BindInfo[] bia, QtInterface[] interfaces)
 {
+	OUT << "genEventSource" << EOL;
+
 	int qevent_index = QIsearchClassIndex(interfaces, "QEvent");
 	String[] e_table = makeEventTable(interfaces[qevent_index]);
 	int event_mtd_num = 0;
@@ -827,13 +894,11 @@ void genEventSource(BindInfo[] bia, QtInterface[] interfaces)
 		foreach (f in interface.protected_functions) {
 			if (bi.checkUnusedWord(f)) continue;
 			FunctionElement fe = new FunctionElement(f, class_name);
-			fe.renamePublicTypes(bi.all_enums, bi.all_typedefed_objects);
-			if (bi.constructor == null && fe.constructorFlag) bi.constructor = fe;
+			fe.renamePublicTypes(bi.all_enums, bi.all_typedefed_objects, bi.all_flag_objects, bi.all_class_objects);
+//			if (bi.constructor == null && fe.constructorFlag) bi.constructor = fe;
 			if (bi.checkUnusedMethod(fe) ||
 				fe.constructorFlag ||
 				!("Event" in? fe.func_name && fe.virtualFlag)) continue;
-//				(fe.virtualFlag && fe.return_value_type != "void")) continue;
-//			if (fe.virtualFlag && fe.return_value_type != "void") print  "v & v " + fe.func_name;
 			QMethod mtd = new QMethod(fe);
 			mtds << mtd;
 		}
@@ -841,110 +906,20 @@ void genEventSource(BindInfo[] bia, QtInterface[] interfaces)
 		foreach (f in interface.signals) {
 			if (bi.checkUnusedWord(f)) continue;
 			FunctionElement fe = new FunctionElement(f, class_name);
-			fe.renamePublicTypes(bi.all_enums, bi.all_typedefed_objects);
+			fe.renamePublicTypes(bi.all_enums, bi.all_typedefed_objects, bi.all_flag_objects, bi.all_class_objects);
 			if (bi.checkUnusedMethod(fe) ||
 				fe.constructorFlag) continue;
-//				!("Event" in? fe.func_name && fe.virtualFlag)) continue;
-//				(fe.virtualFlag && fe.return_value_type != "void")) continue;
-//			if (fe.virtualFlag && fe.return_value_type != "void") print  "v & v " + fe.func_name;
 			QMethod mtd = new QMethod(fe);
 			sigs << mtd;
 		}
 		removeOverloadQMethod(sigs);
 
-//		event_mtd_num += (|mtds| + |sigs|);
+		event_mtd_num += (|mtds| + |sigs|);
 
 		bi.dummy_hpp = genDummyHeaderSource(bi, mtds, sigs, bia);
 		bi.dummy_cpp = genDummyCppSource(bi, mtds, sigs, bia, e_table);
 		bi.header = genHeaderSource(class_name, mtds, sigs, bi);
 		bi.event_bind = genCppSource(class_name, mtds, sigs, bi);
-		// bi.dummy_hpp = genDummyHeaderSource(bi, mtds, [], bia);
-		// bi.dummy_cpp = genDummyCppSource(bi, mtds, [], bia, e_table);
-		// bi.header = genHeaderSource(class_name, mtds, [], bi);
-		// bi.event_bind = genCppSource(class_name, mtds, [], bi);
-
 	}
+	return event_mtd_num;
 }
-
-
-
-
-// void genEventSource(String class_name, String[] protected_functions, String[] signals)
-// {
-// 	QMethod[] mtds = [];
-// 	QMethod[] sigs = [];
-// //	print protected_functions;
-// 	foreach (f in protected_functions) {
-// 		FunctionElement fe = new FunctionElement(f, class_name);
-// 		QMethod mtd = new QMethod(fe.func_name, fe.return_value_type, fe.argument_type, fe.argument_name);
-// 		//mtd.debugPrint();
-// 		mtds << mtd;
-// 	}
-// //	print signals;
-// 	foreach (f in signals) {
-// 		FunctionElement fe = new FunctionElement(f, class_name);
-// 		QMethod mtd = new QMethod(fe.func_name, fe.return_value_type, fe.argument_type, fe.argument_name);
-// 		//mtd.debugPrint();
-// 		sigs << mtd;
-// 	}
-// 	//print |mtds|;
-// 	//print |sigs|;
-// 	String header = genHeaderSource(class_name, mtds, sigs);
-// 	String src = genCppSource(class_name, mtds, sigs);
-//     //========== Please write to File!! ==============//
-//     hous = new OutputStream(class_name + ".hpp");
-// 	sous = new OutputStream(class_name + ".cpp");
-// 	hous << header << EOL;
-//     tmp = "#include <" + class_name + ".hpp>\n\n";
-//     tmp += """#ifdef __cplusplus
-// extern \"C\" {
-// #endif
-// """;
-//     sous << tmp << EOL;
-//     sous << src << EOL;
-//     sous << """
-// DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
-// {
-// 	(void)ctx; (void)kapi;
-// 	RETURN_PKGINFO("konoha.tmp");
-// }
-
-// #ifdef __cplusplus
-// }
-// #endif
-// """;
-//     hous.close();
-//     sous.close();
-//     //================================================//
-//}
-
-// void main(String[] args)
-// {
-// 	String class_name = "QGraphicsScene";
-// 	String[] signals = [
-// 		" void changed ( const QList<QRectF> & region )",
-// 		" void sceneRectChanged ( const QRectF & rect )",
-// 		" void selectionChanged ()"
-// 		];
-// 	String[] protected_functions = [
-// 		" virtual void contextMenuEvent ( QGraphicsSceneContextMenuEvent * contextMenuEvent )",
-// 		" virtual void dragEnterEvent ( QGraphicsSceneDragDropEvent * event )",
-// 		" virtual void dragLeaveEvent ( QGraphicsSceneDragDropEvent * event )",
-// 		" virtual void dragMoveEvent ( QGraphicsSceneDragDropEvent * event )",
-// 		" virtual void drawBackground ( QPainter * painter, const QRectF & rect )",
-// 		" virtual void drawForeground ( QPainter * painter, const QRectF & rect )",
-// 		" virtual void dropEvent ( QGraphicsSceneDragDropEvent * event )",
-// 		" virtual void focusInEvent ( QFocusEvent * focusEvent )",
-// 		" virtual void focusOutEvent ( QFocusEvent * focusEvent )",
-// 		" virtual void helpEvent ( QGraphicsSceneHelpEvent * helpEvent )",
-// 		" virtual void inputMethodEvent ( QInputMethodEvent * event )",
-// 		" virtual void keyPressEvent ( QKeyEvent * keyEvent )",
-// 		" virtual void keyReleaseEvent ( QKeyEvent * keyEvent )",
-// 		" virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * mouseEvent )",
-// 		" virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent * mouseEvent )",
-// 		" virtual void mousePressEvent ( QGraphicsSceneMouseEvent * mouseEvent )",
-// 		" virtual void mouseReleaseEvent ( QGraphicsSceneMouseEvent * mouseEvent )",
-// 		" virtual void wheelEvent ( QGraphicsSceneWheelEvent * wheelEvent )"
-// 		];
-// 	genEventSource(class_name, protected_functions, signals);
-// }

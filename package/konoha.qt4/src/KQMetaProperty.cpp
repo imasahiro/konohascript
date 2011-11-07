@@ -3,7 +3,7 @@ KMETHOD QMetaProperty_enumerator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMetaEnum ret_v = qp->enumerator();
 		QMetaEnum *ret_v_ = new QMetaEnum(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QMetaProperty_hasNotifySignal(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasNotifySignal();
 		RETURNb_(ret_v);
 	} else {
@@ -31,7 +31,7 @@ KMETHOD QMetaProperty_isConstant(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isConstant();
 		RETURNb_(ret_v);
 	} else {
@@ -44,7 +44,7 @@ KMETHOD QMetaProperty_isDesignable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QObject*  object = RawPtr_to(const QObject*, sfp[1]);
 		bool ret_v = qp->isDesignable(object);
 		RETURNb_(ret_v);
@@ -58,7 +58,7 @@ KMETHOD QMetaProperty_isEnumType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEnumType();
 		RETURNb_(ret_v);
 	} else {
@@ -71,7 +71,7 @@ KMETHOD QMetaProperty_isFinal(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isFinal();
 		RETURNb_(ret_v);
 	} else {
@@ -84,7 +84,7 @@ KMETHOD QMetaProperty_isFlagType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isFlagType();
 		RETURNb_(ret_v);
 	} else {
@@ -97,7 +97,7 @@ KMETHOD QMetaProperty_isReadable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isReadable();
 		RETURNb_(ret_v);
 	} else {
@@ -110,7 +110,7 @@ KMETHOD QMetaProperty_isResettable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isResettable();
 		RETURNb_(ret_v);
 	} else {
@@ -123,7 +123,7 @@ KMETHOD QMetaProperty_isScriptable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QObject*  object = RawPtr_to(const QObject*, sfp[1]);
 		bool ret_v = qp->isScriptable(object);
 		RETURNb_(ret_v);
@@ -137,7 +137,7 @@ KMETHOD QMetaProperty_isStored(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QObject*  object = RawPtr_to(const QObject*, sfp[1]);
 		bool ret_v = qp->isStored(object);
 		RETURNb_(ret_v);
@@ -151,22 +151,9 @@ KMETHOD QMetaProperty_isUser(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QObject*  object = RawPtr_to(const QObject*, sfp[1]);
 		bool ret_v = qp->isUser(object);
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QMetaProperty.isValid();
-KMETHOD QMetaProperty_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -178,7 +165,7 @@ KMETHOD QMetaProperty_isWritable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isWritable();
 		RETURNb_(ret_v);
 	} else {
@@ -191,7 +178,7 @@ KMETHOD QMetaProperty_name(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char* ret_v = qp->name();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (char*)ret_v, NULL);
 		RETURN_(rptr);
@@ -205,7 +192,7 @@ KMETHOD QMetaProperty_notifySignal(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMetaMethod ret_v = qp->notifySignal();
 		QMetaMethod *ret_v_ = new QMetaMethod(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -220,7 +207,7 @@ KMETHOD QMetaProperty_notifySignalIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->notifySignalIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -233,7 +220,7 @@ KMETHOD QMetaProperty_propertyIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->propertyIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -246,7 +233,7 @@ KMETHOD QMetaProperty_read(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QObject*  object = RawPtr_to(const QObject*, sfp[1]);
 		QVariant ret_v = qp->read(object);
 		QVariant *ret_v_ = new QVariant(ret_v);
@@ -262,7 +249,7 @@ KMETHOD QMetaProperty_reset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
 		bool ret_v = qp->reset(object);
 		RETURNb_(ret_v);
@@ -276,7 +263,7 @@ KMETHOD QMetaProperty_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QVariant::Type ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -289,7 +276,7 @@ KMETHOD QMetaProperty_typeName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char* ret_v = qp->typeName();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (char*)ret_v, NULL);
 		RETURN_(rptr);
@@ -303,7 +290,7 @@ KMETHOD QMetaProperty_userType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->userType();
 		RETURNi_(ret_v);
 	} else {
@@ -316,7 +303,7 @@ KMETHOD QMetaProperty_write(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaProperty *  qp = RawPtr_to(QMetaProperty *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[2]);
 		bool ret_v = qp->write(object, value);
@@ -326,6 +313,24 @@ KMETHOD QMetaProperty_write(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QMetaProperty.parents();
+KMETHOD QMetaProperty_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMetaProperty *qp = RawPtr_to(QMetaProperty*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQMetaProperty::DummyQMetaProperty()
 {
@@ -374,17 +379,22 @@ bool DummyQMetaProperty::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMetaProperty::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQMetaProperty::connection(QObject *o)
 {
-	return;
-}
-
-KQMetaProperty::KQMetaProperty() : QMetaProperty()
-{
-	self = NULL;
-	dummy = new DummyQMetaProperty();
-	dummy->connection((QObject*)this);
+	QMetaProperty *p = dynamic_cast<QMetaProperty*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QMetaProperty_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -439,13 +449,9 @@ static void QMetaProperty_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMetaProperty_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMetaProperty *qp = (KQMetaProperty *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -459,6 +465,8 @@ void KQMetaProperty::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQMetaProperty(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

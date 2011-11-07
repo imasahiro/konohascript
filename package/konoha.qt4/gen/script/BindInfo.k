@@ -9,8 +9,13 @@ class BindInfo {
 	boolean make_rapper_class_flag;
 	boolean have_parent_flag;
 	boolean have_compare_operator_flag;
+	boolean have_private_destructor_flag;
 	String[] all_enums;
 	String[] all_typedefed_objects;
+//	String[] flag_objects;
+	Tuple<String, String>[] all_flag_objects;
+	String[] class_objects;
+	String[] all_class_objects;
 	String enum_bind;
 	String func_bind;
 	String event_bind;
@@ -20,46 +25,61 @@ class BindInfo {
 	String dummy_cpp;
 	int[] parent_index;
 	String[] parent_name;
+	int[] children_index;
+	String[] children_name;
 	int hierarchy_depth;
 	int qtInterfaceIndex;
 
 	BindInfo(QtInterface interface) {
-		class_name = interface.class_name;
-		abstract_class_flag = interface.isAbstractClass();
-		template_class_flag = interface.isTemplateClass();
-		have_parent_flag = (|interface.parent_index| == 0 ? false : true);
 		inherits_qobject_flag = false;
 		make_rapper_class_flag = true;
 		have_compare_operator_flag = false;
+		have_private_destructor_flag = false;
 		fea = [];
 		unused_classes = [];
+		constructor = null;
 		unused_words = [];
 		enum_bind = "";
 		func_bind = "";
 		event_bind = "";
 		header = "";
 		k_src = "";
-		all_enums = [];
-		all_typedefed_objects = [];
 		parent_index = [];
 		parent_name = [];
+		children_index = [];
+		children_name = [];
 		hierarchy_depth = -1;
 		qtInterfaceIndex = -1;
 		dummy_hpp = "";
 		dummy_cpp = "";
+		all_enums = [];
+		all_typedefed_objects = [];
+		all_flag_objects = [];
+		class_objects = [];
+		all_class_objects = [];
 
+		class_name = interface.class_name;
+		abstract_class_flag = interface.isAbstractClass();
+		template_class_flag = interface.isTemplateClass();
 		if (checkUnusedClass()) return;
 
-//		initializeAllMemberTypes(interface);
+		have_parent_flag = (|interface.parent_index| == 0 ? false : true);
+		have_compare_operator_flag = checkHaveCompareToOperator(interface);
 		all_enums = organizeAllEnums(interface);
-		all_typedefed_objects = organizeAllTypedefedObjects(interface);
+		all_typedefed_objects = mergeStringArray(interface.typedefed_objects, interface.parent_typedefed_objects);
+
+		all_flag_objects = organizeAllFlagObjects(interface);
+		class_objects = interface.class_objects;
+		all_class_objects = mergeStringArray(interface.class_objects, interface.parent_class_objects);
+
 		makeFunctionElements(interface.reimplemented_public_functions, true);
 		makeFunctionElements(interface.public_functions);
 		holdConstructor();
-		makeFunctionElements(interface.static_public_members);
+		makeFunctionElements(interface.static_public_members, false, true);
 		makeFunctionElements(interface.public_slots);
+
 		enum_bind = genEnumBind(interface.enums);
-//		genSrc();
+		have_private_destructor_flag = checkHavePrivateDestructor();
 	}
 
 	void genSrc() {
@@ -67,13 +87,13 @@ class BindInfo {
 		String knh_interface = "";
 		foreach (FunctionElement fe in fea) {
 			bind = "";
-			bind = fe.genBind(make_rapper_class_flag);
+			bind = fe.genBind(make_rapper_class_flag, have_private_destructor_flag);
 			bind = checkRenameFunctionList(bind);
 			knh_interface = "";
 			knh_interface = fe.genKonohaInterface();
 			knh_interface = checkRenameFunctionList(knh_interface);
 			bind = "//" + knh_interface + bind;
-			if (fe.overloadFlag) {
+			if (fe.overloadFlag || checkUnusedMethod(fe)) {
 				bind = "/*\n" + bind + "*/";
 				knh_interface = "//" + knh_interface;
 			}
@@ -83,7 +103,7 @@ class BindInfo {
 //				print "error bind";
 //				print bind;
 			} else {
-				k_src = k_src.replace("QList<", "Array<");
+				knh_interface = knh_interface.replace("QList<", "Array<");
 				k_src += knh_interface;
 			}
 		}
@@ -93,19 +113,21 @@ class BindInfo {
 			if (have_parent_flag) k_src += "@Override ";
 			k_src += "@Virtual void <CLASS>.signalConnect(String signal_name, dynamic callback_func);\n";
 			k_src = k_src.replace("<CLASS>", class_name);
-		}
-//		if (class_name == "QGestureEvent") print k_src;
-	}
-
-	boolean checkInheritsQObject() {
-		foreach (String nio in NOT_INHERITS_QOBJECT) {
-			if (class_name == "QObject") return true;
-			if ((nio == class_name || |parent_index| == 0)) {
-				return false;
+			if (|parent_index| == 0) {
+				func_bind += FUNC_PARENTS(class_name);
+				k_src += "Array<String> <CLASS>.parents();\n".replace("<CLASS>", class_name);
 			}
 		}
-		return true;
 	}
+
+// 	boolean checkMakeRapperClass() {
+// 		if (have_destructor_flag) {
+// 			return true;
+// 		} else {
+// //			print class_name;
+// 			return false;
+// 		}
+// 	}
 
 	boolean checkUnusedEnumName(String name) {
 		foreach (String unused_enum in UNUSED_ENUM_NAME) {
@@ -166,13 +188,31 @@ class BindInfo {
 		return ret;
 	}
 
-	String[] organizeAllTypedefedObjects(QtInterface interface) {
-		String[] ret = [];
-		foreach (String typedefed_object in interface.typedefed_objects) {
-			ret <<< typedefed_object;
+	Tuple<String, String>[] organizeAllFlagObjects(QtInterface interface) {
+		Tuple<String, String>[] ret = [];
+		foreach (Tuple<String, String> flag_object in interface.flag_objects) {
+			ret <<< flag_object;
 		}
-		foreach (String parent_typedefed_object in interface.parent_typedefed_objects) {
-			ret <<< parent_typedefed_object;
+		foreach (Tuple<String, String> parent_flag_object in interface.parent_flag_objects) {
+			ret <<< parent_flag_object;
+		}
+		foreach (Tuple<String, String> global_flag_object in GLOBAL_FLAG_LIST) {
+			ret <<< global_flag_object;
+		}
+// 		if (class_name == "QAbstractFileEngine") {
+// //			print interface;
+// //			print ret;
+// 		}
+		return ret;
+	}
+
+	String[] mergeStringArray(String[] sa1, String[] sa2) {
+		String[] ret = [];
+		foreach (String s in sa1) {
+			ret <<< s;
+		}
+		foreach (String s in sa2) {
+			ret <<< s;
 		}
 		return ret;
 	}
@@ -185,6 +225,13 @@ class BindInfo {
 		return false;
 	}
 
+	boolean checkHavePrivateDestructor() {
+		foreach (String key in HAVE_PRIVATE_DESTRUCTOR_LIST) {
+			if (key == class_name) return true;
+		}
+		return false;
+	}
+
 	boolean checkHaveEventMethod() {
 		foreach (String key in NOT_HAVE_EVENT_METHOD) {
 			if (key == class_name) return false;
@@ -193,10 +240,14 @@ class BindInfo {
 	}
 
 	boolean checkHaveConstructor() {
-		foreach (String key in NOT_HAVE_CONSTRUCTOR) {
-			if (key == class_name) return false;
+		// foreach (String key in NOT_HAVE_CONSTRUCTOR) {
+		// 	if (key == class_name) return false;
+		// }
+		if (constructor == null) {
+			return false;
+		} else {
+			return true;
 		}
-		return true;
 	}
 
 	boolean checkObsolateClass() {
@@ -221,6 +272,13 @@ class BindInfo {
 	boolean checkUnusedMethod(FunctionElement fe) {
 		if (fe.notMakeFlag) return true;
 		if (fe.destructorFlag) return true;
+//		if (fe.return_value_type_object_flag) return true;
+		// foreach (boolean b in fe.argument_type_object_flag) {
+		// 	if (b) return true;
+		// }
+		foreach (String key in UNUSED_METHOD) {
+			if (key == fe.func_name) return true;
+		}
 //		if (abstract_class_flag &&
 //			fe.func_name == "new") return true;
 		return false;
@@ -256,7 +314,7 @@ class BindInfo {
 		}
 	}
 
-	FunctionElement[] renameGetter() {
+	void renameGetter() {
 		FunctionElement[] setter = [];
 		foreach (fe in fea) {
 			if (fe.func_name.startsWith("set")) {
@@ -310,15 +368,34 @@ class BindInfo {
 		return;
 	}
 
-	void makeFunctionElements(String[] declarations, boolean overrideFlag = false) {
+	boolean checkHaveCompareToOperator(QtInterface interface) {
+		foreach (String declaration in interface.public_functions) {
+			if ("operator==" in? declaration) {
+//				|declaration.split(class_name)| == 3) {
+				return true;
+			}
+		}
+		foreach (String declaration in interface.related_non_members) {
+			if ("operator==" in? declaration &&
+				|declaration.split(class_name)| == 3) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void makeFunctionElements(String[] declarations, boolean overrideFlag = false, boolean staticFlag = false) {
 		foreach (String declaration in declarations) {
-			if ("operator==" in? declaration) have_compare_operator_flag = true;
+//			if ("operator==" in? declaration) have_compare_operator_flag = true;
 			if (checkUnusedWord(declaration)) continue;
 			FunctionElement fe = new FunctionElement(declaration, class_name);
-			if (checkUnusedMethod(fe)) continue;
 			fe.pureVirtualFlag = checkPureVirtual(fe);
-			fe.renamePublicTypes(all_enums, all_typedefed_objects);
+			fe.renamePublicTypes(all_enums, all_typedefed_objects, all_flag_objects, all_class_objects);
 			fe.overrideFlag = overrideFlag;
+			fe.staticFlag = staticFlag;
+			fe.setKonohaTypes();
+//			if (fe.destructorFlag) have_destructor_flag = true;
+			if (checkUnusedMethod(fe)) continue;
 			fea <<< fe;
 		}
 		overloadCheck(overrideFlag);

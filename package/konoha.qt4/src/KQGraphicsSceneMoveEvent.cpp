@@ -13,7 +13,7 @@ KMETHOD QGraphicsSceneMoveEvent_newPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneMoveEvent *  qp = RawPtr_to(QGraphicsSceneMoveEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->newPos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -28,7 +28,7 @@ KMETHOD QGraphicsSceneMoveEvent_oldPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneMoveEvent *  qp = RawPtr_to(QGraphicsSceneMoveEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->oldPos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -89,9 +89,23 @@ bool DummyQGraphicsSceneMoveEvent::signalConnect(knh_Func_t *callback_func, stri
 	}
 }
 
+void DummyQGraphicsSceneMoveEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsSceneEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsSceneMoveEvent::connection(QObject *o)
 {
+	QGraphicsSceneMoveEvent *p = dynamic_cast<QGraphicsSceneMoveEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQGraphicsSceneEvent::connection(o);
 }
 
@@ -99,7 +113,6 @@ KQGraphicsSceneMoveEvent::KQGraphicsSceneMoveEvent() : QGraphicsSceneMoveEvent()
 {
 	self = NULL;
 	dummy = new DummyQGraphicsSceneMoveEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsSceneMoveEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -154,13 +167,9 @@ static void QGraphicsSceneMoveEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsSceneMoveEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneMoveEvent *qp = (KQGraphicsSceneMoveEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -174,6 +183,8 @@ void KQGraphicsSceneMoveEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGraphicsSceneMoveEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

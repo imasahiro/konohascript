@@ -27,7 +27,7 @@ KMETHOD QPlainTextEdit_anchorAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 		QString ret_v = qp->anchorAt(pos);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -42,7 +42,7 @@ KMETHOD QPlainTextEdit_getBackgroundVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->backgroundVisible();
 		RETURNb_(ret_v);
 	} else {
@@ -55,7 +55,7 @@ KMETHOD QPlainTextEdit_blockCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->blockCount();
 		RETURNi_(ret_v);
 	} else {
@@ -68,7 +68,7 @@ KMETHOD QPlainTextEdit_canPaste(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->canPaste();
 		RETURNb_(ret_v);
 	} else {
@@ -81,7 +81,7 @@ KMETHOD QPlainTextEdit_getCenterOnScroll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->centerOnScroll();
 		RETURNb_(ret_v);
 	} else {
@@ -94,7 +94,7 @@ KMETHOD QPlainTextEdit_createStandardContextMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMenu* ret_v = qp->createStandardContextMenu();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMenu*)ret_v, NULL);
 		RETURN_(rptr);
@@ -108,7 +108,7 @@ KMETHOD QPlainTextEdit_getCurrentCharFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCharFormat ret_v = qp->currentCharFormat();
 		QTextCharFormat *ret_v_ = new QTextCharFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -123,7 +123,7 @@ KMETHOD QPlainTextEdit_cursorForPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 		QTextCursor ret_v = qp->cursorForPosition(pos);
 		QTextCursor *ret_v_ = new QTextCursor(ret_v);
@@ -139,7 +139,7 @@ KMETHOD QPlainTextEdit_cursorRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCursor  cursor = *RawPtr_to(const QTextCursor *, sfp[1]);
 		QRect ret_v = qp->cursorRect(cursor);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -156,7 +156,7 @@ KMETHOD QPlainTextEdit_cursorRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->cursorRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -171,7 +171,7 @@ KMETHOD QPlainTextEdit_getCursorWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->cursorWidth();
 		RETURNi_(ret_v);
 	} else {
@@ -184,7 +184,7 @@ KMETHOD QPlainTextEdit_getDocument(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextDocument* ret_v = qp->document();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextDocument*)ret_v, NULL);
 		RETURN_(rptr);
@@ -198,7 +198,7 @@ KMETHOD QPlainTextEdit_getDocumentTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->documentTitle();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -212,7 +212,7 @@ KMETHOD QPlainTextEdit_ensureCursorVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->ensureCursorVisible();
 	}
 	RETURNvoid_();
@@ -223,8 +223,8 @@ KMETHOD QPlainTextEdit_getExtraSelections(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
-		QList<QTextEdit::ExtraSelection>ret_v = qp->extraSelections();
+	if (qp) {
+		QList<QTextEdit::ExtraSelection> ret_v = qp->extraSelections();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QTextEdit::ExtraSelection"));
@@ -245,7 +245,7 @@ KMETHOD QPlainTextEdit_find(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString exp = String_to(const QString, sfp[1]);
 		QTextDocument::FindFlags options = Int_to(QTextDocument::FindFlags, sfp[2]);
 		bool ret_v = qp->find(exp, options);
@@ -260,7 +260,7 @@ KMETHOD QPlainTextEdit_isReadOnly(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isReadOnly();
 		RETURNb_(ret_v);
 	} else {
@@ -273,7 +273,7 @@ KMETHOD QPlainTextEdit_isUndoRedoEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isUndoRedoEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -286,7 +286,7 @@ KMETHOD QPlainTextEdit_getLineWrapMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPlainTextEdit::LineWrapMode ret_v = qp->lineWrapMode();
 		RETURNi_(ret_v);
 	} else {
@@ -299,7 +299,7 @@ KMETHOD QPlainTextEdit_loadResource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int type = Int_to(int, sfp[1]);
 		const QUrl  name = *RawPtr_to(const QUrl *, sfp[2]);
 		QVariant ret_v = qp->loadResource(type, name);
@@ -316,7 +316,7 @@ KMETHOD QPlainTextEdit_getMaximumBlockCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->maximumBlockCount();
 		RETURNi_(ret_v);
 	} else {
@@ -329,7 +329,7 @@ KMETHOD QPlainTextEdit_mergeCurrentCharFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCharFormat  modifier = *RawPtr_to(const QTextCharFormat *, sfp[1]);
 		qp->mergeCurrentCharFormat(modifier);
 	}
@@ -341,7 +341,7 @@ KMETHOD QPlainTextEdit_moveCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCursor::MoveOperation operation = Int_to(QTextCursor::MoveOperation, sfp[1]);
 		QTextCursor::MoveMode mode = Int_to(QTextCursor::MoveMode, sfp[2]);
 		qp->moveCursor(operation, mode);
@@ -354,7 +354,7 @@ KMETHOD QPlainTextEdit_getOverwriteMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->overwriteMode();
 		RETURNb_(ret_v);
 	} else {
@@ -367,7 +367,7 @@ KMETHOD QPlainTextEdit_print(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter*  printer = RawPtr_to(QPrinter*, sfp[1]);
 		qp->print(printer);
 	}
@@ -379,7 +379,7 @@ KMETHOD QPlainTextEdit_setBackgroundVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setBackgroundVisible(visible);
 	}
@@ -391,7 +391,7 @@ KMETHOD QPlainTextEdit_setCenterOnScroll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setCenterOnScroll(enabled);
 	}
@@ -403,7 +403,7 @@ KMETHOD QPlainTextEdit_setCurrentCharFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCharFormat  format = *RawPtr_to(const QTextCharFormat *, sfp[1]);
 		qp->setCurrentCharFormat(format);
 	}
@@ -415,7 +415,7 @@ KMETHOD QPlainTextEdit_setCursorWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int width = Int_to(int, sfp[1]);
 		qp->setCursorWidth(width);
 	}
@@ -427,7 +427,7 @@ KMETHOD QPlainTextEdit_setDocument(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextDocument*  document = RawPtr_to(QTextDocument*, sfp[1]);
 		qp->setDocument(document);
 	}
@@ -439,7 +439,7 @@ KMETHOD QPlainTextEdit_setDocumentTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString title = String_to(const QString, sfp[1]);
 		qp->setDocumentTitle(title);
 	}
@@ -451,7 +451,7 @@ KMETHOD QPlainTextEdit_setExtraSelections(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<QTextEdit::ExtraSelection> selections;
@@ -469,7 +469,7 @@ KMETHOD QPlainTextEdit_setLineWrapMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPlainTextEdit::LineWrapMode mode = Int_to(QPlainTextEdit::LineWrapMode, sfp[1]);
 		qp->setLineWrapMode(mode);
 	}
@@ -481,7 +481,7 @@ KMETHOD QPlainTextEdit_setMaximumBlockCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int maximum = Int_to(int, sfp[1]);
 		qp->setMaximumBlockCount(maximum);
 	}
@@ -493,7 +493,7 @@ KMETHOD QPlainTextEdit_setOverwriteMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool overwrite = Boolean_to(bool, sfp[1]);
 		qp->setOverwriteMode(overwrite);
 	}
@@ -505,7 +505,7 @@ KMETHOD QPlainTextEdit_setReadOnly(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ro = Boolean_to(bool, sfp[1]);
 		qp->setReadOnly(ro);
 	}
@@ -517,7 +517,7 @@ KMETHOD QPlainTextEdit_setTabChangesFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool b = Boolean_to(bool, sfp[1]);
 		qp->setTabChangesFocus(b);
 	}
@@ -529,7 +529,7 @@ KMETHOD QPlainTextEdit_setTabStopWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int width = Int_to(int, sfp[1]);
 		qp->setTabStopWidth(width);
 	}
@@ -541,20 +541,20 @@ KMETHOD QPlainTextEdit_setTextCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCursor  cursor = *RawPtr_to(const QTextCursor *, sfp[1]);
 		qp->setTextCursor(cursor);
 	}
 	RETURNvoid_();
 }
 
-//void QPlainTextEdit.setTextInteractionFlags(int flags);
+//void QPlainTextEdit.setTextInteractionFlags(QtTextInteractionFlags flags);
 KMETHOD QPlainTextEdit_setTextInteractionFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
-		Qt::TextInteractionFlags flags = Int_to(Qt::TextInteractionFlags, sfp[1]);
+	if (qp) {
+		initFlag(flags, Qt::TextInteractionFlags, sfp[1]);
 		qp->setTextInteractionFlags(flags);
 	}
 	RETURNvoid_();
@@ -565,7 +565,7 @@ KMETHOD QPlainTextEdit_setUndoRedoEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setUndoRedoEnabled(enable);
 	}
@@ -577,7 +577,7 @@ KMETHOD QPlainTextEdit_setWordWrapMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextOption::WrapMode policy = Int_to(QTextOption::WrapMode, sfp[1]);
 		qp->setWordWrapMode(policy);
 	}
@@ -589,7 +589,7 @@ KMETHOD QPlainTextEdit_getTabChangesFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->tabChangesFocus();
 		RETURNb_(ret_v);
 	} else {
@@ -602,7 +602,7 @@ KMETHOD QPlainTextEdit_getTabStopWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->tabStopWidth();
 		RETURNi_(ret_v);
 	} else {
@@ -615,7 +615,7 @@ KMETHOD QPlainTextEdit_getTextCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCursor ret_v = qp->textCursor();
 		QTextCursor *ret_v_ = new QTextCursor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -625,16 +625,18 @@ KMETHOD QPlainTextEdit_getTextCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QPlainTextEdit.getTextInteractionFlags();
+//QtTextInteractionFlags QPlainTextEdit.getTextInteractionFlags();
 KMETHOD QPlainTextEdit_getTextInteractionFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TextInteractionFlags ret_v = qp->textInteractionFlags();
-		RETURNi_(ret_v);
+		Qt::TextInteractionFlags *ret_v_ = new Qt::TextInteractionFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -643,7 +645,7 @@ KMETHOD QPlainTextEdit_toPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->toPlainText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -657,7 +659,7 @@ KMETHOD QPlainTextEdit_getWordWrapMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextOption::WrapMode ret_v = qp->wordWrapMode();
 		RETURNi_(ret_v);
 	} else {
@@ -670,7 +672,7 @@ KMETHOD QPlainTextEdit_appendHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString html = String_to(const QString, sfp[1]);
 		qp->appendHtml(html);
 	}
@@ -682,7 +684,7 @@ KMETHOD QPlainTextEdit_appendPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->appendPlainText(text);
 	}
@@ -694,7 +696,7 @@ KMETHOD QPlainTextEdit_centerCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->centerCursor();
 	}
 	RETURNvoid_();
@@ -705,7 +707,7 @@ KMETHOD QPlainTextEdit_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -716,7 +718,7 @@ KMETHOD QPlainTextEdit_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->copy();
 	}
 	RETURNvoid_();
@@ -727,7 +729,7 @@ KMETHOD QPlainTextEdit_cut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->cut();
 	}
 	RETURNvoid_();
@@ -738,7 +740,7 @@ KMETHOD QPlainTextEdit_insertPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->insertPlainText(text);
 	}
@@ -750,7 +752,7 @@ KMETHOD QPlainTextEdit_paste(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->paste();
 	}
 	RETURNvoid_();
@@ -761,7 +763,7 @@ KMETHOD QPlainTextEdit_redo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->redo();
 	}
 	RETURNvoid_();
@@ -772,7 +774,7 @@ KMETHOD QPlainTextEdit_selectAll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->selectAll();
 	}
 	RETURNvoid_();
@@ -783,7 +785,7 @@ KMETHOD QPlainTextEdit_setPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setPlainText(text);
 	}
@@ -795,7 +797,7 @@ KMETHOD QPlainTextEdit_undo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPlainTextEdit *  qp = RawPtr_to(QPlainTextEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->undo();
 	}
 	RETURNvoid_();
@@ -995,18 +997,41 @@ bool DummyQPlainTextEdit::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPlainTextEdit::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 9;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, block_count_changed_func);
+	KNH_ADDNNREF(ctx, copy_available_func);
+	KNH_ADDNNREF(ctx, cursor_position_changed_func);
+	KNH_ADDNNREF(ctx, modification_changed_func);
+	KNH_ADDNNREF(ctx, redo_available_func);
+	KNH_ADDNNREF(ctx, selection_changed_func);
+	KNH_ADDNNREF(ctx, text_changed_func);
+	KNH_ADDNNREF(ctx, undo_available_func);
+	KNH_ADDNNREF(ctx, update_request_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractScrollArea::reftrace(ctx, p, tail_);
+}
 
 void DummyQPlainTextEdit::connection(QObject *o)
 {
-	connect(o, SIGNAL(blockCountChanged(int)), this, SLOT(blockCountChangedSlot(int)));
-	connect(o, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailableSlot(bool)));
-	connect(o, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChangedSlot()));
-	connect(o, SIGNAL(modificationChanged(bool)), this, SLOT(modificationChangedSlot(bool)));
-	connect(o, SIGNAL(redoAvailable(bool)), this, SLOT(redoAvailableSlot(bool)));
-	connect(o, SIGNAL(selectionChanged()), this, SLOT(selectionChangedSlot()));
-	connect(o, SIGNAL(textChanged()), this, SLOT(textChangedSlot()));
-	connect(o, SIGNAL(undoAvailable(bool)), this, SLOT(undoAvailableSlot(bool)));
-	connect(o, SIGNAL(updateRequest(const QRect, int)), this, SLOT(updateRequestSlot(const QRect, int)));
+	QPlainTextEdit *p = dynamic_cast<QPlainTextEdit*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(blockCountChanged(int)), this, SLOT(blockCountChangedSlot(int)));
+		connect(p, SIGNAL(copyAvailable(bool)), this, SLOT(copyAvailableSlot(bool)));
+		connect(p, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChangedSlot()));
+		connect(p, SIGNAL(modificationChanged(bool)), this, SLOT(modificationChangedSlot(bool)));
+		connect(p, SIGNAL(redoAvailable(bool)), this, SLOT(redoAvailableSlot(bool)));
+		connect(p, SIGNAL(selectionChanged()), this, SLOT(selectionChangedSlot()));
+		connect(p, SIGNAL(textChanged()), this, SLOT(textChangedSlot()));
+		connect(p, SIGNAL(undoAvailable(bool)), this, SLOT(undoAvailableSlot(bool)));
+		connect(p, SIGNAL(updateRequest(const QRect, int)), this, SLOT(updateRequestSlot(const QRect, int)));
+	}
 	DummyQAbstractScrollArea::connection(o);
 }
 
@@ -1069,49 +1094,9 @@ static void QPlainTextEdit_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPlainTextEdit_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 9;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPlainTextEdit *qp = (KQPlainTextEdit *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->block_count_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->block_count_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->copy_available_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->copy_available_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->cursor_position_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->cursor_position_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->modification_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->modification_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->redo_available_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->redo_available_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->selection_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->selection_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->text_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->text_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->undo_available_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->undo_available_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->update_request_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->update_request_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -1135,15 +1120,6 @@ bool KQPlainTextEdit::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQPlainTextEdit(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QPlainTextEdit";
-	cdef->free = QPlainTextEdit_free;
-	cdef->reftrace = QPlainTextEdit_reftrace;
-	cdef->compareTo = QPlainTextEdit_compareTo;
-}
-
 static knh_IntData_t QPlainTextEditConstInt[] = {
 	{"NoWrap", QPlainTextEdit::NoWrap},
 	{"WidgetWidth", QPlainTextEdit::WidgetWidth},
@@ -1153,4 +1129,15 @@ static knh_IntData_t QPlainTextEditConstInt[] = {
 DEFAPI(void) constQPlainTextEdit(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QPlainTextEditConstInt);
 }
+
+
+DEFAPI(void) defQPlainTextEdit(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QPlainTextEdit";
+	cdef->free = QPlainTextEdit_free;
+	cdef->reftrace = QPlainTextEdit_reftrace;
+	cdef->compareTo = QPlainTextEdit_compareTo;
+}
+
 

@@ -3,7 +3,7 @@ KMETHOD QMenuBar_heightForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		int ret_v = qp->heightForWidth(arg0);
 		RETURNi_(ret_v);
@@ -17,7 +17,7 @@ KMETHOD QMenuBar_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -32,7 +32,7 @@ KMETHOD QMenuBar_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -58,7 +58,7 @@ KMETHOD QMenuBar_actionAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  pt = *RawPtr_to(const QPoint *, sfp[1]);
 		QAction* ret_v = qp->actionAt(pt);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAction*)ret_v, NULL);
@@ -73,7 +73,7 @@ KMETHOD QMenuBar_actionGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction*  act = RawPtr_to(QAction*, sfp[1]);
 		QRect ret_v = qp->actionGeometry(act);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -89,7 +89,7 @@ KMETHOD QMenuBar_getActiveAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction* ret_v = qp->activeAction();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAction*)ret_v, NULL);
 		RETURN_(rptr);
@@ -98,58 +98,12 @@ KMETHOD QMenuBar_getActiveAction(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////QAction QMenuBar.addAction(String text);
-KMETHOD QMenuBar_addAction(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
-		const QString text = String_to(const QString, sfp[1]);
-		QAction* ret_v = qp->addAction(text);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAction*)ret_v, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-
-/*
-////QAction QMenuBar.addAction(String text, QObject receiver, String member);
-KMETHOD QMenuBar_addAction(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
-		const QString text = String_to(const QString, sfp[1]);
-		const QObject*  receiver = RawPtr_to(const QObject*, sfp[2]);
-		const char*  member = RawPtr_to(const char*, sfp[3]);
-		QAction* ret_v = qp->addAction(text, receiver, member);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAction*)ret_v, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-*/
-/*
-////void QMenuBar.addAction(QAction action);
-KMETHOD QMenuBar_addAction(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
-		QAction*  action = RawPtr_to(QAction*, sfp[1]);
-		qp->addAction(action);
-	}
-	RETURNvoid_();
-}
-*/
 //QAction QMenuBar.addMenu(QMenu menu);
 KMETHOD QMenuBar_addMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMenu*  menu = RawPtr_to(QMenu*, sfp[1]);
 		QAction* ret_v = qp->addMenu(menu);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAction*)ret_v, NULL);
@@ -165,7 +119,7 @@ KMETHOD QMenuBar_addMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString title = String_to(const QString, sfp[1]);
 		QMenu* ret_v = qp->addMenu(title);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMenu*)ret_v, NULL);
@@ -181,7 +135,7 @@ KMETHOD QMenuBar_addMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[1]);
 		const QString title = String_to(const QString, sfp[2]);
 		QMenu* ret_v = qp->addMenu(icon, title);
@@ -197,7 +151,7 @@ KMETHOD QMenuBar_addSeparator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction* ret_v = qp->addSeparator();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAction*)ret_v, NULL);
 		RETURN_(rptr);
@@ -211,7 +165,7 @@ KMETHOD QMenuBar_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -222,7 +176,7 @@ KMETHOD QMenuBar_getCornerWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Corner corner = Int_to(Qt::Corner, sfp[1]);
 		QWidget* ret_v = qp->cornerWidget(corner);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
@@ -237,7 +191,7 @@ KMETHOD QMenuBar_insertMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction*  before = RawPtr_to(QAction*, sfp[1]);
 		QMenu*  menu = RawPtr_to(QMenu*, sfp[2]);
 		QAction* ret_v = qp->insertMenu(before, menu);
@@ -253,7 +207,7 @@ KMETHOD QMenuBar_insertSeparator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction*  before = RawPtr_to(QAction*, sfp[1]);
 		QAction* ret_v = qp->insertSeparator(before);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAction*)ret_v, NULL);
@@ -268,7 +222,7 @@ KMETHOD QMenuBar_isDefaultUp(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isDefaultUp();
 		RETURNb_(ret_v);
 	} else {
@@ -281,7 +235,7 @@ KMETHOD QMenuBar_isNativeMenuBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isNativeMenuBar();
 		RETURNb_(ret_v);
 	} else {
@@ -294,7 +248,7 @@ KMETHOD QMenuBar_setActiveAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction*  act = RawPtr_to(QAction*, sfp[1]);
 		qp->setActiveAction(act);
 	}
@@ -306,7 +260,7 @@ KMETHOD QMenuBar_setCornerWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		Qt::Corner corner = Int_to(Qt::Corner, sfp[2]);
 		qp->setCornerWidget(widget, corner);
@@ -319,7 +273,7 @@ KMETHOD QMenuBar_setDefaultUp(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setDefaultUp(arg0);
 	}
@@ -331,7 +285,7 @@ KMETHOD QMenuBar_setNativeMenuBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool nativeMenuBar = Boolean_to(bool, sfp[1]);
 		qp->setNativeMenuBar(nativeMenuBar);
 	}
@@ -343,7 +297,7 @@ KMETHOD QMenuBar_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMenuBar *  qp = RawPtr_to(QMenuBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setVisible(visible);
 	}
@@ -435,11 +389,27 @@ bool DummyQMenuBar::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMenuBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, hovered_func);
+	KNH_ADDNNREF(ctx, triggered_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQMenuBar::connection(QObject *o)
 {
-	connect(o, SIGNAL(hovered(QAction*)), this, SLOT(hoveredSlot(QAction*)));
-	connect(o, SIGNAL(triggered(QAction*)), this, SLOT(triggeredSlot(QAction*)));
+	QMenuBar *p = dynamic_cast<QMenuBar*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(hovered(QAction*)), this, SLOT(hoveredSlot(QAction*)));
+		connect(p, SIGNAL(triggered(QAction*)), this, SLOT(triggeredSlot(QAction*)));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -502,21 +472,9 @@ static void QMenuBar_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMenuBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMenuBar *qp = (KQMenuBar *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->hovered_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->hovered_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->triggered_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->triggered_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -539,6 +497,8 @@ bool KQMenuBar::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQMenuBar(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

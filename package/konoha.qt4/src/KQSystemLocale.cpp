@@ -13,7 +13,7 @@ KMETHOD QSystemLocale_fallbackLocale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSystemLocale *  qp = RawPtr_to(QSystemLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLocale ret_v = qp->fallbackLocale();
 		QLocale *ret_v_ = new QLocale(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -28,7 +28,7 @@ KMETHOD QSystemLocale_query(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSystemLocale *  qp = RawPtr_to(QSystemLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSystemLocale::QueryType type = Int_to(QSystemLocale::QueryType, sfp[1]);
 		QVariant  in = *RawPtr_to(QVariant *, sfp[2]);
 		QVariant ret_v = qp->query(type, in);
@@ -40,6 +40,24 @@ KMETHOD QSystemLocale_query(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QSystemLocale.parents();
+KMETHOD QSystemLocale_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QSystemLocale *qp = RawPtr_to(QSystemLocale*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQSystemLocale::DummyQSystemLocale()
 {
@@ -88,17 +106,28 @@ bool DummyQSystemLocale::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSystemLocale::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQSystemLocale::connection(QObject *o)
 {
-	return;
+	QSystemLocale *p = dynamic_cast<QSystemLocale*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQSystemLocale::KQSystemLocale() : QSystemLocale()
 {
 	self = NULL;
 	dummy = new DummyQSystemLocale();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSystemLocale_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -153,13 +182,9 @@ static void QSystemLocale_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSystemLocale_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSystemLocale *qp = (KQSystemLocale *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -172,15 +197,6 @@ void KQSystemLocale::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQSystemLocale(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QSystemLocale";
-	cdef->free = QSystemLocale_free;
-	cdef->reftrace = QSystemLocale_reftrace;
-	cdef->compareTo = QSystemLocale_compareTo;
 }
 
 static knh_IntData_t QSystemLocaleConstInt[] = {
@@ -216,4 +232,15 @@ static knh_IntData_t QSystemLocaleConstInt[] = {
 DEFAPI(void) constQSystemLocale(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QSystemLocaleConstInt);
 }
+
+
+DEFAPI(void) defQSystemLocale(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QSystemLocale";
+	cdef->free = QSystemLocale_free;
+	cdef->reftrace = QSystemLocale_reftrace;
+	cdef->compareTo = QSystemLocale_compareTo;
+}
+
 

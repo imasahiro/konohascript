@@ -41,7 +41,7 @@ KMETHOD QLine_getP1(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPoint ret_v = qp->p1();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -56,7 +56,7 @@ KMETHOD QLine_getP2(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPoint ret_v = qp->p2();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -71,7 +71,7 @@ KMETHOD QLine_x1(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->x1();
 		RETURNi_(ret_v);
 	} else {
@@ -84,7 +84,7 @@ KMETHOD QLine_x2(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->x2();
 		RETURNi_(ret_v);
 	} else {
@@ -97,7 +97,7 @@ KMETHOD QLine_y1(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->y1();
 		RETURNi_(ret_v);
 	} else {
@@ -110,7 +110,7 @@ KMETHOD QLine_y2(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->y2();
 		RETURNi_(ret_v);
 	} else {
@@ -123,7 +123,7 @@ KMETHOD QLine_dx(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->dx();
 		RETURNi_(ret_v);
 	} else {
@@ -136,24 +136,11 @@ KMETHOD QLine_dy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->dy();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
-	}
-}
-
-////boolean QLine.isNull();
-KMETHOD QLine_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
 	}
 }
 
@@ -162,7 +149,7 @@ KMETHOD QLine_setP1(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  p1 = *RawPtr_to(const QPoint *, sfp[1]);
 		qp->setP1(p1);
 	}
@@ -174,7 +161,7 @@ KMETHOD QLine_setP2(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  p2 = *RawPtr_to(const QPoint *, sfp[1]);
 		qp->setP2(p2);
 	}
@@ -186,7 +173,7 @@ KMETHOD QLine_setLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x1 = Int_to(int, sfp[1]);
 		int y1 = Int_to(int, sfp[2]);
 		int x2 = Int_to(int, sfp[3]);
@@ -201,7 +188,7 @@ KMETHOD QLine_setPoints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  p1 = *RawPtr_to(const QPoint *, sfp[1]);
 		const QPoint  p2 = *RawPtr_to(const QPoint *, sfp[2]);
 		qp->setPoints(p1, p2);
@@ -214,7 +201,7 @@ KMETHOD QLine_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  offset = *RawPtr_to(const QPoint *, sfp[1]);
 		qp->translate(offset);
 	}
@@ -227,7 +214,7 @@ KMETHOD QLine_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int dx = Int_to(int, sfp[1]);
 		int dy = Int_to(int, sfp[2]);
 		qp->translate(dx, dy);
@@ -240,7 +227,7 @@ KMETHOD QLine_translated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  offset = *RawPtr_to(const QPoint *, sfp[1]);
 		QLine ret_v = qp->translated(offset);
 		QLine *ret_v_ = new QLine(ret_v);
@@ -257,7 +244,7 @@ KMETHOD QLine_translated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLine *  qp = RawPtr_to(QLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int dx = Int_to(int, sfp[1]);
 		int dy = Int_to(int, sfp[2]);
 		QLine ret_v = qp->translated(dx, dy);
@@ -269,6 +256,24 @@ KMETHOD QLine_translated(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 */
+//Array<String> QLine.parents();
+KMETHOD QLine_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QLine *qp = RawPtr_to(QLine*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQLine::DummyQLine()
 {
@@ -317,17 +322,28 @@ bool DummyQLine::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQLine::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQLine::connection(QObject *o)
 {
-	return;
+	QLine *p = dynamic_cast<QLine*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQLine::KQLine() : QLine()
 {
 	self = NULL;
 	dummy = new DummyQLine();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QLine_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -382,13 +398,9 @@ static void QLine_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QLine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQLine *qp = (KQLine *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -402,6 +414,8 @@ void KQLine::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQLine(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

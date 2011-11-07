@@ -4,7 +4,7 @@ KMETHOD QRunnable_getAutoDelete(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRunnable *  qp = RawPtr_to(QRunnable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->autoDelete();
 		RETURNb_(ret_v);
 	} else {
@@ -17,7 +17,7 @@ KMETHOD QRunnable_run(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRunnable *  qp = RawPtr_to(QRunnable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->run();
 	}
 	RETURNvoid_();
@@ -28,13 +28,31 @@ KMETHOD QRunnable_setAutoDelete(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRunnable *  qp = RawPtr_to(QRunnable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool autoDelete = Boolean_to(bool, sfp[1]);
 		qp->setAutoDelete(autoDelete);
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QRunnable.parents();
+KMETHOD QRunnable_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QRunnable *qp = RawPtr_to(QRunnable*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQRunnable::DummyQRunnable()
 {
@@ -83,17 +101,28 @@ bool DummyQRunnable::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQRunnable::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQRunnable::connection(QObject *o)
 {
-	return;
+	QRunnable *p = dynamic_cast<QRunnable*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQRunnable::KQRunnable() : QRunnable()
 {
 	self = NULL;
 	dummy = new DummyQRunnable();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QRunnable_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -148,13 +177,9 @@ static void QRunnable_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QRunnable_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQRunnable *qp = (KQRunnable *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -168,6 +193,8 @@ void KQRunnable::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQRunnable(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

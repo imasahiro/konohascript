@@ -3,7 +3,7 @@ KMETHOD QProgressDialog_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -13,12 +13,12 @@ KMETHOD QProgressDialog_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QProgressDialog QProgressDialog.new(QWidget parent, int f);
+//QProgressDialog QProgressDialog.new(QWidget parent, QtWindowFlags f);
 KMETHOD QProgressDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
-	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[2]);
+	initFlag(f, Qt::WindowFlags, sfp[2]);
 	KQProgressDialog *ret_v = new KQProgressDialog(parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -26,7 +26,7 @@ KMETHOD QProgressDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//QProgressDialog QProgressDialog.new(String labelText, String cancelButtonText, int minimum, int maximum, QWidget parent, int f);
+//QProgressDialog QProgressDialog.new(String labelText, String cancelButtonText, int minimum, int maximum, QWidget parent, QtWindowFlags f);
 KMETHOD QProgressDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -35,7 +35,7 @@ KMETHOD QProgressDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int minimum = Int_to(int, sfp[3]);
 	int maximum = Int_to(int, sfp[4]);
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[5]);
-	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[6]);
+	initFlag(f, Qt::WindowFlags, sfp[6]);
 	KQProgressDialog *ret_v = new KQProgressDialog(labelText, cancelButtonText, minimum, maximum, parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -47,7 +47,7 @@ KMETHOD QProgressDialog_getAutoClose(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->autoClose();
 		RETURNb_(ret_v);
 	} else {
@@ -60,7 +60,7 @@ KMETHOD QProgressDialog_autoReset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->autoReset();
 		RETURNb_(ret_v);
 	} else {
@@ -73,7 +73,7 @@ KMETHOD QProgressDialog_getLabelText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->labelText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -87,7 +87,7 @@ KMETHOD QProgressDialog_getMaximum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->maximum();
 		RETURNi_(ret_v);
 	} else {
@@ -100,7 +100,7 @@ KMETHOD QProgressDialog_getMinimum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->minimum();
 		RETURNi_(ret_v);
 	} else {
@@ -113,7 +113,7 @@ KMETHOD QProgressDialog_getMinimumDuration(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->minimumDuration();
 		RETURNi_(ret_v);
 	} else {
@@ -121,12 +121,12 @@ KMETHOD QProgressDialog_getMinimumDuration(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QProgressDialog.open(QObject receiver, String member);
-KMETHOD QProgressDialog_open(CTX ctx, knh_sfp_t *sfp _RIX)
+//void QProgressDialog.openOL(QObject receiver, String member);
+KMETHOD QProgressDialog_openOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
 		const char*  member = RawPtr_to(const char*, sfp[2]);
 		qp->open(receiver, member);
@@ -139,7 +139,7 @@ KMETHOD QProgressDialog_setAutoClose(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool close = Boolean_to(bool, sfp[1]);
 		qp->setAutoClose(close);
 	}
@@ -151,7 +151,7 @@ KMETHOD QProgressDialog_setAutoReset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool reset = Boolean_to(bool, sfp[1]);
 		qp->setAutoReset(reset);
 	}
@@ -163,7 +163,7 @@ KMETHOD QProgressDialog_setBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProgressBar*  bar = RawPtr_to(QProgressBar*, sfp[1]);
 		qp->setBar(bar);
 	}
@@ -175,7 +175,7 @@ KMETHOD QProgressDialog_setCancelButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPushButton*  cancelButton = RawPtr_to(QPushButton*, sfp[1]);
 		qp->setCancelButton(cancelButton);
 	}
@@ -187,7 +187,7 @@ KMETHOD QProgressDialog_setLabel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLabel*  label = RawPtr_to(QLabel*, sfp[1]);
 		qp->setLabel(label);
 	}
@@ -199,7 +199,7 @@ KMETHOD QProgressDialog_getValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->value();
 		RETURNi_(ret_v);
 	} else {
@@ -212,7 +212,7 @@ KMETHOD QProgressDialog_wasCanceled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->wasCanceled();
 		RETURNb_(ret_v);
 	} else {
@@ -225,7 +225,7 @@ KMETHOD QProgressDialog_cancel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->cancel();
 	}
 	RETURNvoid_();
@@ -236,7 +236,7 @@ KMETHOD QProgressDialog_reset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->reset();
 	}
 	RETURNvoid_();
@@ -247,7 +247,7 @@ KMETHOD QProgressDialog_setCancelButtonText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString cancelButtonText = String_to(const QString, sfp[1]);
 		qp->setCancelButtonText(cancelButtonText);
 	}
@@ -259,7 +259,7 @@ KMETHOD QProgressDialog_setLabelText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setLabelText(text);
 	}
@@ -271,7 +271,7 @@ KMETHOD QProgressDialog_setMaximum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int maximum = Int_to(int, sfp[1]);
 		qp->setMaximum(maximum);
 	}
@@ -283,7 +283,7 @@ KMETHOD QProgressDialog_setMinimum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int minimum = Int_to(int, sfp[1]);
 		qp->setMinimum(minimum);
 	}
@@ -295,7 +295,7 @@ KMETHOD QProgressDialog_setMinimumDuration(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ms = Int_to(int, sfp[1]);
 		qp->setMinimumDuration(ms);
 	}
@@ -307,7 +307,7 @@ KMETHOD QProgressDialog_setRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int minimum = Int_to(int, sfp[1]);
 		int maximum = Int_to(int, sfp[2]);
 		qp->setRange(minimum, maximum);
@@ -320,7 +320,7 @@ KMETHOD QProgressDialog_setValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProgressDialog *  qp = RawPtr_to(QProgressDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int progress = Int_to(int, sfp[1]);
 		qp->setValue(progress);
 	}
@@ -393,10 +393,25 @@ bool DummyQProgressDialog::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQProgressDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, canceled_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQDialog::reftrace(ctx, p, tail_);
+}
 
 void DummyQProgressDialog::connection(QObject *o)
 {
-	connect(o, SIGNAL(canceled()), this, SLOT(canceledSlot()));
+	QProgressDialog *p = dynamic_cast<QProgressDialog*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(canceled()), this, SLOT(canceledSlot()));
+	}
 	DummyQDialog::connection(o);
 }
 
@@ -459,17 +474,9 @@ static void QProgressDialog_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QProgressDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQProgressDialog *qp = (KQProgressDialog *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->canceled_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->canceled_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -492,6 +499,8 @@ bool KQProgressDialog::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQProgressDialog(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

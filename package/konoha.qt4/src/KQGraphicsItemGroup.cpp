@@ -3,7 +3,7 @@ KMETHOD QGraphicsItemGroup_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItemGroup *  qp = RawPtr_to(QGraphicsItemGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->boundingRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QGraphicsItemGroup_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItemGroup *  qp = RawPtr_to(QGraphicsItemGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		bool ret_v = qp->isObscuredBy(item);
 		RETURNb_(ret_v);
@@ -32,7 +32,7 @@ KMETHOD QGraphicsItemGroup_opaqueArea(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItemGroup *  qp = RawPtr_to(QGraphicsItemGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->opaqueArea();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -47,7 +47,7 @@ KMETHOD QGraphicsItemGroup_paint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItemGroup *  qp = RawPtr_to(QGraphicsItemGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
@@ -61,7 +61,7 @@ KMETHOD QGraphicsItemGroup_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItemGroup *  qp = RawPtr_to(QGraphicsItemGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -69,13 +69,23 @@ KMETHOD QGraphicsItemGroup_type(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//
+//QGraphicsItemGroup QGraphicsItemGroup.new(QGraphicsItem parent);
+KMETHOD QGraphicsItemGroup_new(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGraphicsItem*  parent = RawPtr_to(QGraphicsItem*, sfp[1]);
+	KQGraphicsItemGroup *ret_v = new KQGraphicsItemGroup(parent);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	ret_v->setSelf(rptr);
+	RETURN_(rptr);
+}
+
 //void QGraphicsItemGroup.addToGroup(QGraphicsItem item);
 KMETHOD QGraphicsItemGroup_addToGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItemGroup *  qp = RawPtr_to(QGraphicsItemGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem*  item = RawPtr_to(QGraphicsItem*, sfp[1]);
 		qp->addToGroup(item);
 	}
@@ -87,7 +97,7 @@ KMETHOD QGraphicsItemGroup_removeFromGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItemGroup *  qp = RawPtr_to(QGraphicsItemGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem*  item = RawPtr_to(QGraphicsItem*, sfp[1]);
 		qp->removeFromGroup(item);
 	}
@@ -145,9 +155,23 @@ bool DummyQGraphicsItemGroup::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
+void DummyQGraphicsItemGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsItem::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsItemGroup::connection(QObject *o)
 {
+	QGraphicsItemGroup *p = dynamic_cast<QGraphicsItemGroup*>(o);
+	if (p != NULL) {
+	}
 	DummyQGraphicsItem::connection(o);
 }
 
@@ -155,7 +179,6 @@ KQGraphicsItemGroup::KQGraphicsItemGroup(QGraphicsItem* parent) : QGraphicsItemG
 {
 	self = NULL;
 	dummy = new DummyQGraphicsItemGroup();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsItemGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -210,13 +233,9 @@ static void QGraphicsItemGroup_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsItemGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsItemGroup *qp = (KQGraphicsItemGroup *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -230,6 +249,8 @@ void KQGraphicsItemGroup::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGraphicsItemGroup(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

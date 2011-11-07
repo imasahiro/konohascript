@@ -3,7 +3,7 @@ KMETHOD QProxyModel_columnCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int ret_v = qp->columnCount(parent);
 		RETURNi_(ret_v);
@@ -17,7 +17,7 @@ KMETHOD QProxyModel_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int role = Int_to(int, sfp[2]);
 		QVariant ret_v = qp->data(index, role);
@@ -34,7 +34,7 @@ KMETHOD QProxyModel_dropMimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMimeData*  data = RawPtr_to(const QMimeData*, sfp[1]);
 		Qt::DropAction action = Int_to(Qt::DropAction, sfp[2]);
 		int row = Int_to(int, sfp[3]);
@@ -52,24 +52,26 @@ KMETHOD QProxyModel_fetchMore(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		qp->fetchMore(parent);
 	}
 	RETURNvoid_();
 }
 
-//@Virtual @Override int QProxyModel.flags(QModelIndex index);
+//@Virtual @Override QtItemFlags QProxyModel.flags(QModelIndex index);
 KMETHOD QProxyModel_flags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		Qt::ItemFlags ret_v = qp->flags(index);
-		RETURNi_(ret_v);
+		Qt::ItemFlags *ret_v_ = new Qt::ItemFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -78,7 +80,7 @@ KMETHOD QProxyModel_hasChildren(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		bool ret_v = qp->hasChildren(parent);
 		RETURNb_(ret_v);
@@ -92,7 +94,7 @@ KMETHOD QProxyModel_getHeaderData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int section = Int_to(int, sfp[1]);
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[2]);
 		int role = Int_to(int, sfp[3]);
@@ -110,7 +112,7 @@ KMETHOD QProxyModel_index(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -123,12 +125,12 @@ KMETHOD QProxyModel_index(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////@Virtual @Override boolean QProxyModel.insertColumns(int column, int count, QModelIndex parent);
+//@Virtual @Override boolean QProxyModel.insertColumns(int column, int count, QModelIndex parent);
 KMETHOD QProxyModel_insertColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -139,12 +141,12 @@ KMETHOD QProxyModel_insertColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////@Virtual @Override boolean QProxyModel.insertRows(int row, int count, QModelIndex parent);
+//@Virtual @Override boolean QProxyModel.insertRows(int row, int count, QModelIndex parent);
 KMETHOD QProxyModel_insertRows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -155,17 +157,17 @@ KMETHOD QProxyModel_insertRows(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual @Override QModelIndexList QProxyModel.match(QModelIndex start, int role, QVariant value, int hits, int flags);
+//@Virtual @Override QModelIndexList QProxyModel.match(QModelIndex start, int role, QVariant value, int hits, QtMatchFlags flags);
 KMETHOD QProxyModel_match(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  start = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int role = Int_to(int, sfp[2]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[3]);
 		int hits = Int_to(int, sfp[4]);
-		Qt::MatchFlags flags = Int_to(Qt::MatchFlags, sfp[5]);
+		initFlag(flags, Qt::MatchFlags, sfp[5]);
 		QModelIndexList ret_v = qp->match(start, role, value, hits, flags);
 		QModelIndexList *ret_v_ = new QModelIndexList(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -180,7 +182,7 @@ KMETHOD QProxyModel_mimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndexList  indexes = *RawPtr_to(const QModelIndexList *, sfp[1]);
 		QMimeData* ret_v = qp->mimeData(indexes);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMimeData*)ret_v, NULL);
@@ -195,7 +197,7 @@ KMETHOD QProxyModel_parent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  child = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QModelIndex ret_v = qp->parent(child);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -211,7 +213,7 @@ KMETHOD QProxyModel_revert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->revert();
 	}
 	RETURNvoid_();
@@ -222,7 +224,7 @@ KMETHOD QProxyModel_rowCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int ret_v = qp->rowCount(parent);
 		RETURNi_(ret_v);
@@ -236,7 +238,7 @@ KMETHOD QProxyModel_setData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[2]);
 		int role = Int_to(int, sfp[3]);
@@ -252,7 +254,7 @@ KMETHOD QProxyModel_setHeaderData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int section = Int_to(int, sfp[1]);
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[2]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[3]);
@@ -269,7 +271,7 @@ KMETHOD QProxyModel_sort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[2]);
 		qp->sort(column, order);
@@ -282,7 +284,7 @@ KMETHOD QProxyModel_span(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QSize ret_v = qp->span(index);
 		QSize *ret_v_ = new QSize(ret_v);
@@ -298,7 +300,7 @@ KMETHOD QProxyModel_submit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->submit();
 		RETURNb_(ret_v);
 	} else {
@@ -306,16 +308,18 @@ KMETHOD QProxyModel_submit(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual @Override int QProxyModel.supportedDropActions();
+//@Virtual @Override QtDropActions QProxyModel.supportedDropActions();
 KMETHOD QProxyModel_supportedDropActions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DropActions ret_v = qp->supportedDropActions();
-		RETURNi_(ret_v);
+		Qt::DropActions *ret_v_ = new Qt::DropActions(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -335,7 +339,7 @@ KMETHOD QProxyModel_getModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel* ret_v = qp->model();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractItemModel*)ret_v, NULL);
 		RETURN_(rptr);
@@ -349,7 +353,7 @@ KMETHOD QProxyModel_setModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyModel *  qp = RawPtr_to(QProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel*  model = RawPtr_to(QAbstractItemModel*, sfp[1]);
 		qp->setModel(model);
 	}
@@ -407,9 +411,23 @@ bool DummyQProxyModel::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQProxyModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractItemModel::reftrace(ctx, p, tail_);
+}
 
 void DummyQProxyModel::connection(QObject *o)
 {
+	QProxyModel *p = dynamic_cast<QProxyModel*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractItemModel::connection(o);
 }
 
@@ -472,13 +490,9 @@ static void QProxyModel_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QProxyModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQProxyModel *qp = (KQProxyModel *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -501,6 +515,8 @@ bool KQProxyModel::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQProxyModel(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

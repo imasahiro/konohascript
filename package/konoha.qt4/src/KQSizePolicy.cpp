@@ -40,7 +40,7 @@ KMETHOD QSizePolicy_getControlType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizePolicy *  qp = RawPtr_to(QSizePolicy *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizePolicy::ControlType ret_v = qp->controlType();
 		RETURNi_(ret_v);
 	} else {
@@ -48,16 +48,18 @@ KMETHOD QSizePolicy_getControlType(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QSizePolicy.expandingDirections();
+//QtOrientations QSizePolicy.expandingDirections();
 KMETHOD QSizePolicy_expandingDirections(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizePolicy *  qp = RawPtr_to(QSizePolicy *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientations ret_v = qp->expandingDirections();
-		RETURNi_(ret_v);
+		Qt::Orientations *ret_v_ = new Qt::Orientations(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -66,7 +68,7 @@ KMETHOD QSizePolicy_hasHeightForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizePolicy *  qp = RawPtr_to(QSizePolicy *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasHeightForWidth();
 		RETURNb_(ret_v);
 	} else {
@@ -79,7 +81,7 @@ KMETHOD QSizePolicy_getHorizontalPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizePolicy *  qp = RawPtr_to(QSizePolicy *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizePolicy::Policy ret_v = qp->horizontalPolicy();
 		RETURNi_(ret_v);
 	} else {
@@ -92,7 +94,7 @@ KMETHOD QSizePolicy_getHorizontalStretch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizePolicy *  qp = RawPtr_to(QSizePolicy *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->horizontalStretch();
 		RETURNi_(ret_v);
 	} else {
@@ -105,7 +107,7 @@ KMETHOD QSizePolicy_setControlType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizePolicy *  qp = RawPtr_to(QSizePolicy *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizePolicy::ControlType type = Int_to(QSizePolicy::ControlType, sfp[1]);
 		qp->setControlType(type);
 	}
@@ -117,7 +119,7 @@ KMETHOD QSizePolicy_setHeightForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizePolicy *  qp = RawPtr_to(QSizePolicy *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool dependent = Boolean_to(bool, sfp[1]);
 		qp->setHeightForWidth(dependent);
 	}
@@ -129,7 +131,7 @@ KMETHOD QSizePolicy_setHorizontalPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizePolicy *  qp = RawPtr_to(QSizePolicy *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizePolicy::Policy policy = Int_to(QSizePolicy::Policy, sfp[1]);
 		qp->setHorizontalPolicy(policy);
 	}
@@ -141,7 +143,7 @@ KMETHOD QSizePolicy_setHorizontalStretch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizePolicy *  qp = RawPtr_to(QSizePolicy *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uchar  stretchFactor = *RawPtr_to(uchar *, sfp[1]);
 		qp->setHorizontalStretch(stretchFactor);
 	}
@@ -153,7 +155,7 @@ KMETHOD QSizePolicy_setVerticalPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizePolicy *  qp = RawPtr_to(QSizePolicy *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizePolicy::Policy policy = Int_to(QSizePolicy::Policy, sfp[1]);
 		qp->setVerticalPolicy(policy);
 	}
@@ -165,7 +167,7 @@ KMETHOD QSizePolicy_setVerticalStretch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizePolicy *  qp = RawPtr_to(QSizePolicy *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uchar  stretchFactor = *RawPtr_to(uchar *, sfp[1]);
 		qp->setVerticalStretch(stretchFactor);
 	}
@@ -177,7 +179,7 @@ KMETHOD QSizePolicy_transpose(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizePolicy *  qp = RawPtr_to(QSizePolicy *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->transpose();
 	}
 	RETURNvoid_();
@@ -188,7 +190,7 @@ KMETHOD QSizePolicy_getVerticalPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizePolicy *  qp = RawPtr_to(QSizePolicy *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizePolicy::Policy ret_v = qp->verticalPolicy();
 		RETURNi_(ret_v);
 	} else {
@@ -201,7 +203,7 @@ KMETHOD QSizePolicy_getVerticalStretch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizePolicy *  qp = RawPtr_to(QSizePolicy *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->verticalStretch();
 		RETURNi_(ret_v);
 	} else {
@@ -209,6 +211,24 @@ KMETHOD QSizePolicy_getVerticalStretch(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QSizePolicy.parents();
+KMETHOD QSizePolicy_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QSizePolicy *qp = RawPtr_to(QSizePolicy*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQSizePolicy::DummyQSizePolicy()
 {
@@ -257,17 +277,28 @@ bool DummyQSizePolicy::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSizePolicy::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQSizePolicy::connection(QObject *o)
 {
-	return;
+	QSizePolicy *p = dynamic_cast<QSizePolicy*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQSizePolicy::KQSizePolicy() : QSizePolicy()
 {
 	self = NULL;
 	dummy = new DummyQSizePolicy();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSizePolicy_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -322,13 +353,9 @@ static void QSizePolicy_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSizePolicy_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSizePolicy *qp = (KQSizePolicy *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -341,15 +368,6 @@ void KQSizePolicy::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQSizePolicy(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QSizePolicy";
-	cdef->free = QSizePolicy_free;
-	cdef->reftrace = QSizePolicy_reftrace;
-	cdef->compareTo = QSizePolicy_compareTo;
 }
 
 static knh_IntData_t QSizePolicyConstInt[] = {
@@ -384,5 +402,179 @@ static knh_IntData_t QSizePolicyConstInt[] = {
 
 DEFAPI(void) constQSizePolicy(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QSizePolicyConstInt);
+}
+
+
+DEFAPI(void) defQSizePolicy(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QSizePolicy";
+	cdef->free = QSizePolicy_free;
+	cdef->reftrace = QSizePolicy_reftrace;
+	cdef->compareTo = QSizePolicy_compareTo;
+}
+
+//## QSizePolicyControlTypes QSizePolicyControlTypes.new(int value);
+KMETHOD QSizePolicyControlTypes_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QSizePolicy::ControlType i = Int_to(QSizePolicy::ControlType, sfp[1]);
+	QSizePolicy::ControlTypes *ret_v = new QSizePolicy::ControlTypes(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QSizePolicyControlTypes QSizePolicyControlTypes.and(int mask);
+KMETHOD QSizePolicyControlTypes_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QSizePolicy::ControlTypes *qp = RawPtr_to(QSizePolicy::ControlTypes*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QSizePolicy::ControlTypes ret = ((*qp) & i);
+		QSizePolicy::ControlTypes *ret_ = new QSizePolicy::ControlTypes(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QSizePolicyControlTypes QSizePolicyControlTypes.iand(QSizePolicy::QSizePolicyControlTypes other);
+KMETHOD QSizePolicyControlTypes_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QSizePolicy::ControlTypes *qp = RawPtr_to(QSizePolicy::ControlTypes*, sfp[0]);
+	if (qp != NULL) {
+		QSizePolicy::ControlTypes *other = RawPtr_to(QSizePolicy::ControlTypes *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QSizePolicyControlTypes QSizePolicyControlTypes.or(QSizePolicyControlTypes f);
+KMETHOD QSizePolicyControlTypes_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QSizePolicy::ControlTypes *qp = RawPtr_to(QSizePolicy::ControlTypes*, sfp[0]);
+	if (qp != NULL) {
+		QSizePolicy::ControlTypes *f = RawPtr_to(QSizePolicy::ControlTypes*, sfp[1]);
+		QSizePolicy::ControlTypes ret = ((*qp) | (*f));
+		QSizePolicy::ControlTypes *ret_ = new QSizePolicy::ControlTypes(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QSizePolicyControlTypes QSizePolicyControlTypes.ior(QSizePolicy::QSizePolicyControlTypes other);
+KMETHOD QSizePolicyControlTypes_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QSizePolicy::ControlTypes *qp = RawPtr_to(QSizePolicy::ControlTypes*, sfp[0]);
+	if (qp != NULL) {
+		QSizePolicy::ControlTypes *other = RawPtr_to(QSizePolicy::ControlTypes *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QSizePolicyControlTypes QSizePolicyControlTypes.xor(QSizePolicyControlTypes f);
+KMETHOD QSizePolicyControlTypes_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QSizePolicy::ControlTypes *qp = RawPtr_to(QSizePolicy::ControlTypes*, sfp[0]);
+	if (qp != NULL) {
+		QSizePolicy::ControlTypes *f = RawPtr_to(QSizePolicy::ControlTypes*, sfp[1]);
+		QSizePolicy::ControlTypes ret = ((*qp) ^ (*f));
+		QSizePolicy::ControlTypes *ret_ = new QSizePolicy::ControlTypes(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QSizePolicyControlTypes QSizePolicyControlTypes.ixor(QSizePolicy::QSizePolicyControlTypes other);
+KMETHOD QSizePolicyControlTypes_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QSizePolicy::ControlTypes *qp = RawPtr_to(QSizePolicy::ControlTypes*, sfp[0]);
+	if (qp != NULL) {
+		QSizePolicy::ControlTypes *other = RawPtr_to(QSizePolicy::ControlTypes *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QSizePolicyControlTypes.testFlag(int flag);
+KMETHOD QSizePolicyControlTypes_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QSizePolicy::ControlTypes *qp = RawPtr_to(QSizePolicy::ControlTypes *, sfp[0]);
+	if (qp != NULL) {
+		QSizePolicy::ControlType flag = Int_to(QSizePolicy::ControlType, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QSizePolicyControlTypes.value();
+KMETHOD QSizePolicyControlTypes_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QSizePolicy::ControlTypes *qp = RawPtr_to(QSizePolicy::ControlTypes *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QSizePolicyControlTypes_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QSizePolicy::ControlTypes *qp = (QSizePolicy::ControlTypes *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QSizePolicyControlTypes_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QSizePolicy::ControlTypes *qp = (QSizePolicy::ControlTypes *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QSizePolicyControlTypes_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QSizePolicy::ControlTypes*)p1->rawptr);
+//		int v2 = int(*(QSizePolicy::ControlTypes*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QSizePolicy::ControlTypes v1 = *(QSizePolicy::ControlTypes*)p1->rawptr;
+		QSizePolicy::ControlTypes v2 = *(QSizePolicy::ControlTypes*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQSizePolicyControlTypes(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QSizePolicyControlTypes";
+	cdef->free = QSizePolicyControlTypes_free;
+	cdef->reftrace = QSizePolicyControlTypes_reftrace;
+	cdef->compareTo = QSizePolicyControlTypes_compareTo;
 }
 

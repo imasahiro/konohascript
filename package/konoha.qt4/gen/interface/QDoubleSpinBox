@@ -64,10 +64,25 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+class
+QAbstractSpinBox
+name
+StepEnabled
+class
+QWidget
+name
+RenderFlags
+
 typedefed_objects
 
 parent_typedefed_objects
-StepEnabled
+
+class_objects
+
+parent_class_objects
 
 enums
 
@@ -99,6 +114,33 @@ key
 StepNone
 StepUpEnabled
 StepDownEnabled
+public_flag
+true
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+class_name
+QPaintDevice
+name
+PaintDeviceMetric
+key
+PdmWidth
+PdmHeight
+PdmWidthMM
+PdmHeightMM
+PdmNumColors
+PdmDepth
+PdmDpiX
+PdmDpiY
+PdmPhysicalDpiX
+PdmPhysicalDpiY
 public_flag
 true
 

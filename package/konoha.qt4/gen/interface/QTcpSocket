@@ -39,9 +39,21 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+class
+QIODevice
+name
+OpenMode
+
 typedefed_objects
 
 parent_typedefed_objects
+
+class_objects
+
+parent_class_objects
 
 enums
 
@@ -114,6 +126,21 @@ key
 TcpSocket
 UdpSocket
 UnknownSocketType
+public_flag
+true
+class_name
+QIODevice
+name
+OpenModeFlag
+key
+NotOpen
+ReadOnly
+WriteOnly
+ReadWrite
+Append
+Truncate
+Text
+Unbuffered
 public_flag
 true
 

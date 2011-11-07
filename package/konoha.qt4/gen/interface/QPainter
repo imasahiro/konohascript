@@ -232,12 +232,26 @@ false
 enbeddedClass
 false
 
-typedefed_objects
-PixmapFragment
+flag_objects
+class
+QPainter
+name
 PixmapFragmentHints
+class
+QPainter
+name
 RenderHints
 
+parent_flag_objects
+
+typedefed_objects
+
 parent_typedefed_objects
+
+class_objects
+PixmapFragment
+
+parent_class_objects
 
 enums
 class_name

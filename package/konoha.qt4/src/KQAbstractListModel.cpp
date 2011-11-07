@@ -3,7 +3,7 @@ KMETHOD QAbstractListModel_dropMimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractListModel *  qp = RawPtr_to(QAbstractListModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMimeData*  data = RawPtr_to(const QMimeData*, sfp[1]);
 		Qt::DropAction action = Int_to(Qt::DropAction, sfp[2]);
 		int row = Int_to(int, sfp[3]);
@@ -21,7 +21,7 @@ KMETHOD QAbstractListModel_index(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractListModel *  qp = RawPtr_to(QAbstractListModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -86,9 +86,23 @@ bool DummyQAbstractListModel::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
+void DummyQAbstractListModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractItemModel::reftrace(ctx, p, tail_);
+}
 
 void DummyQAbstractListModel::connection(QObject *o)
 {
+	QAbstractListModel *p = dynamic_cast<QAbstractListModel*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractItemModel::connection(o);
 }
 
@@ -151,13 +165,9 @@ static void QAbstractListModel_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractListModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAbstractListModel *qp = (KQAbstractListModel *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -180,6 +190,8 @@ bool KQAbstractListModel::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQAbstractListModel(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

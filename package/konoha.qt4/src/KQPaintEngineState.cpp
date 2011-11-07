@@ -3,7 +3,7 @@ KMETHOD QPaintEngineState_backgroundBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBrush ret_v = qp->backgroundBrush();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QPaintEngineState_backgroundMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::BGMode ret_v = qp->backgroundMode();
 		RETURNi_(ret_v);
 	} else {
@@ -31,7 +31,7 @@ KMETHOD QPaintEngineState_brush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBrush ret_v = qp->brush();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -46,7 +46,7 @@ KMETHOD QPaintEngineState_brushNeedsResolving(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->brushNeedsResolving();
 		RETURNb_(ret_v);
 	} else {
@@ -59,7 +59,7 @@ KMETHOD QPaintEngineState_brushOrigin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->brushOrigin();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -74,7 +74,7 @@ KMETHOD QPaintEngineState_clipOperation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ClipOperation ret_v = qp->clipOperation();
 		RETURNi_(ret_v);
 	} else {
@@ -87,7 +87,7 @@ KMETHOD QPaintEngineState_clipPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->clipPath();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -102,7 +102,7 @@ KMETHOD QPaintEngineState_clipRegion(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRegion ret_v = qp->clipRegion();
 		QRegion *ret_v_ = new QRegion(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -117,7 +117,7 @@ KMETHOD QPaintEngineState_compositionMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter::CompositionMode ret_v = qp->compositionMode();
 		RETURNi_(ret_v);
 	} else {
@@ -130,7 +130,7 @@ KMETHOD QPaintEngineState_font(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont ret_v = qp->font();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -145,7 +145,7 @@ KMETHOD QPaintEngineState_isClipEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isClipEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -158,7 +158,7 @@ KMETHOD QPaintEngineState_opacity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->opacity();
 		RETURNf_(ret_v);
 	} else {
@@ -171,7 +171,7 @@ KMETHOD QPaintEngineState_painter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter* ret_v = qp->painter();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPainter*)ret_v, NULL);
 		RETURN_(rptr);
@@ -185,7 +185,7 @@ KMETHOD QPaintEngineState_pen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPen ret_v = qp->pen();
 		QPen *ret_v_ = new QPen(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -200,7 +200,7 @@ KMETHOD QPaintEngineState_penNeedsResolving(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->penNeedsResolving();
 		RETURNb_(ret_v);
 	} else {
@@ -213,7 +213,7 @@ KMETHOD QPaintEngineState_renderHints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter::RenderHints ret_v = qp->renderHints();
 		RETURNi_(ret_v);
 	} else {
@@ -226,7 +226,7 @@ KMETHOD QPaintEngineState_state(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPaintEngine::DirtyFlags ret_v = qp->state();
 		RETURNi_(ret_v);
 	} else {
@@ -239,7 +239,7 @@ KMETHOD QPaintEngineState_transform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintEngineState *  qp = RawPtr_to(QPaintEngineState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTransform ret_v = qp->transform();
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -249,6 +249,24 @@ KMETHOD QPaintEngineState_transform(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QPaintEngineState.parents();
+KMETHOD QPaintEngineState_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPaintEngineState *qp = RawPtr_to(QPaintEngineState*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQPaintEngineState::DummyQPaintEngineState()
 {
@@ -297,17 +315,22 @@ bool DummyQPaintEngineState::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
+void DummyQPaintEngineState::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQPaintEngineState::connection(QObject *o)
 {
-	return;
-}
-
-KQPaintEngineState::KQPaintEngineState() : QPaintEngineState()
-{
-	self = NULL;
-	dummy = new DummyQPaintEngineState();
-	dummy->connection((QObject*)this);
+	QPaintEngineState *p = dynamic_cast<QPaintEngineState*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QPaintEngineState_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -362,13 +385,9 @@ static void QPaintEngineState_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPaintEngineState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPaintEngineState *qp = (KQPaintEngineState *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -382,6 +401,8 @@ void KQPaintEngineState::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQPaintEngineState(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

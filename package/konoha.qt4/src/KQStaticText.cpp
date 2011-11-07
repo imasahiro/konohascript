@@ -37,7 +37,7 @@ KMETHOD QStaticText_getPerformanceHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStaticText *  qp = RawPtr_to(QStaticText *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStaticText::PerformanceHint ret_v = qp->performanceHint();
 		RETURNi_(ret_v);
 	} else {
@@ -50,7 +50,7 @@ KMETHOD QStaticText_prepare(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStaticText *  qp = RawPtr_to(QStaticText *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTransform  matrix = *RawPtr_to(const QTransform *, sfp[1]);
 		const QFont  font = *RawPtr_to(const QFont *, sfp[2]);
 		qp->prepare(matrix, font);
@@ -63,7 +63,7 @@ KMETHOD QStaticText_setPerformanceHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStaticText *  qp = RawPtr_to(QStaticText *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStaticText::PerformanceHint performanceHint = Int_to(QStaticText::PerformanceHint, sfp[1]);
 		qp->setPerformanceHint(performanceHint);
 	}
@@ -75,7 +75,7 @@ KMETHOD QStaticText_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStaticText *  qp = RawPtr_to(QStaticText *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setText(text);
 	}
@@ -87,7 +87,7 @@ KMETHOD QStaticText_setTextFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStaticText *  qp = RawPtr_to(QStaticText *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TextFormat textFormat = Int_to(Qt::TextFormat, sfp[1]);
 		qp->setTextFormat(textFormat);
 	}
@@ -99,7 +99,7 @@ KMETHOD QStaticText_setTextOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStaticText *  qp = RawPtr_to(QStaticText *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextOption  textOption = *RawPtr_to(const QTextOption *, sfp[1]);
 		qp->setTextOption(textOption);
 	}
@@ -111,7 +111,7 @@ KMETHOD QStaticText_setTextWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStaticText *  qp = RawPtr_to(QStaticText *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal textWidth = Float_to(qreal, sfp[1]);
 		qp->setTextWidth(textWidth);
 	}
@@ -123,7 +123,7 @@ KMETHOD QStaticText_size(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStaticText *  qp = RawPtr_to(QStaticText *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizeF ret_v = qp->size();
 		QSizeF *ret_v_ = new QSizeF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -138,7 +138,7 @@ KMETHOD QStaticText_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStaticText *  qp = RawPtr_to(QStaticText *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->text();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -152,7 +152,7 @@ KMETHOD QStaticText_getTextFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStaticText *  qp = RawPtr_to(QStaticText *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TextFormat ret_v = qp->textFormat();
 		RETURNi_(ret_v);
 	} else {
@@ -165,7 +165,7 @@ KMETHOD QStaticText_getTextOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStaticText *  qp = RawPtr_to(QStaticText *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextOption ret_v = qp->textOption();
 		QTextOption *ret_v_ = new QTextOption(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -180,7 +180,7 @@ KMETHOD QStaticText_getTextWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStaticText *  qp = RawPtr_to(QStaticText *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->textWidth();
 		RETURNf_(ret_v);
 	} else {
@@ -188,6 +188,24 @@ KMETHOD QStaticText_getTextWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QStaticText.parents();
+KMETHOD QStaticText_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QStaticText *qp = RawPtr_to(QStaticText*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQStaticText::DummyQStaticText()
 {
@@ -236,17 +254,28 @@ bool DummyQStaticText::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQStaticText::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQStaticText::connection(QObject *o)
 {
-	return;
+	QStaticText *p = dynamic_cast<QStaticText*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQStaticText::KQStaticText() : QStaticText()
 {
 	self = NULL;
 	dummy = new DummyQStaticText();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStaticText_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -301,13 +330,9 @@ static void QStaticText_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStaticText_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStaticText *qp = (KQStaticText *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -322,15 +347,6 @@ void KQStaticText::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStaticText(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStaticText";
-	cdef->free = QStaticText_free;
-	cdef->reftrace = QStaticText_reftrace;
-	cdef->compareTo = QStaticText_compareTo;
-}
-
 static knh_IntData_t QStaticTextConstInt[] = {
 	{"ModerateCaching", QStaticText::ModerateCaching},
 	{"AggressiveCaching", QStaticText::AggressiveCaching},
@@ -340,4 +356,15 @@ static knh_IntData_t QStaticTextConstInt[] = {
 DEFAPI(void) constQStaticText(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStaticTextConstInt);
 }
+
+
+DEFAPI(void) defQStaticText(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStaticText";
+	cdef->free = QStaticText_free;
+	cdef->reftrace = QStaticText_reftrace;
+	cdef->compareTo = QStaticText_compareTo;
+}
+
 

@@ -76,7 +76,7 @@ KMETHOD QMatrix4x4_constData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const qreal* ret_v = qp->constData();
 		RETURNf_(*ret_v);
 	} else {
@@ -89,7 +89,7 @@ KMETHOD QMatrix4x4_copyDataTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal*  values = RawPtr_to(qreal*, sfp[1]);
 		qp->copyDataTo(values);
 	}
@@ -101,7 +101,7 @@ KMETHOD QMatrix4x4_data(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal* ret_v = qp->data();
 		RETURNf_(*ret_v);
 	} else {
@@ -115,7 +115,7 @@ KMETHOD QMatrix4x4_data(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const qreal* ret_v = qp->data();
 		RETURNf_(*ret_v);
 	} else {
@@ -128,7 +128,7 @@ KMETHOD QMatrix4x4_determinant(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->determinant();
 		RETURNf_(ret_v);
 	} else {
@@ -141,7 +141,7 @@ KMETHOD QMatrix4x4_fill(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal value = Float_to(qreal, sfp[1]);
 		qp->fill(value);
 	}
@@ -153,7 +153,7 @@ KMETHOD QMatrix4x4_flipCoordinates(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->flipCoordinates();
 	}
 	RETURNvoid_();
@@ -164,7 +164,7 @@ KMETHOD QMatrix4x4_frustum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal left = Float_to(qreal, sfp[1]);
 		qreal right = Float_to(qreal, sfp[2]);
 		qreal bottom = Float_to(qreal, sfp[3]);
@@ -181,7 +181,7 @@ KMETHOD QMatrix4x4_inverted(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool* invertible = Boolean_to(bool*, sfp[1]);
 		QMatrix4x4 ret_v = qp->inverted(invertible);
 		QMatrix4x4 *ret_v_ = new QMatrix4x4(ret_v);
@@ -197,7 +197,7 @@ KMETHOD QMatrix4x4_isIdentity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isIdentity();
 		RETURNb_(ret_v);
 	} else {
@@ -210,7 +210,7 @@ KMETHOD QMatrix4x4_map(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
 		QPoint ret_v = qp->map(point);
 		QPoint *ret_v_ = new QPoint(ret_v);
@@ -227,7 +227,7 @@ KMETHOD QMatrix4x4_map(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		QPointF ret_v = qp->map(point);
 		QPointF *ret_v_ = new QPointF(ret_v);
@@ -243,7 +243,7 @@ KMETHOD QMatrix4x4_mapRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		QRect ret_v = qp->mapRect(rect);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -260,7 +260,7 @@ KMETHOD QMatrix4x4_mapRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		QRectF ret_v = qp->mapRect(rect);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -276,7 +276,7 @@ KMETHOD QMatrix4x4_normalMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMatrix3x3 ret_v = qp->normalMatrix();
 		QMatrix3x3 *ret_v_ = new QMatrix3x3(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -291,7 +291,7 @@ KMETHOD QMatrix4x4_optimize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->optimize();
 	}
 	RETURNvoid_();
@@ -302,7 +302,7 @@ KMETHOD QMatrix4x4_ortho(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal left = Float_to(qreal, sfp[1]);
 		qreal right = Float_to(qreal, sfp[2]);
 		qreal bottom = Float_to(qreal, sfp[3]);
@@ -320,7 +320,7 @@ KMETHOD QMatrix4x4_ortho(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		qp->ortho(rect);
 	}
@@ -333,7 +333,7 @@ KMETHOD QMatrix4x4_ortho(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		qp->ortho(rect);
 	}
@@ -345,7 +345,7 @@ KMETHOD QMatrix4x4_perspective(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal angle = Float_to(qreal, sfp[1]);
 		qreal aspect = Float_to(qreal, sfp[2]);
 		qreal nearPlane = Float_to(qreal, sfp[3]);
@@ -360,7 +360,7 @@ KMETHOD QMatrix4x4_rotate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QQuaternion  quaternion = *RawPtr_to(const QQuaternion *, sfp[1]);
 		qp->rotate(quaternion);
 	}
@@ -373,7 +373,7 @@ KMETHOD QMatrix4x4_rotate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal angle = Float_to(qreal, sfp[1]);
 		qreal x = Float_to(qreal, sfp[2]);
 		qreal y = Float_to(qreal, sfp[3]);
@@ -388,7 +388,7 @@ KMETHOD QMatrix4x4_scale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qp->scale(x, y);
@@ -402,7 +402,7 @@ KMETHOD QMatrix4x4_scale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal z = Float_to(qreal, sfp[3]);
@@ -417,7 +417,7 @@ KMETHOD QMatrix4x4_scale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal factor = Float_to(qreal, sfp[1]);
 		qp->scale(factor);
 	}
@@ -429,7 +429,7 @@ KMETHOD QMatrix4x4_setToIdentity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->setToIdentity();
 	}
 	RETURNvoid_();
@@ -440,7 +440,7 @@ KMETHOD QMatrix4x4_toAffine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMatrix ret_v = qp->toAffine();
 		QMatrix *ret_v_ = new QMatrix(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -455,7 +455,7 @@ KMETHOD QMatrix4x4_toTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTransform ret_v = qp->toTransform();
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -471,7 +471,7 @@ KMETHOD QMatrix4x4_toTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal distanceToPlane = Float_to(qreal, sfp[1]);
 		QTransform ret_v = qp->toTransform(distanceToPlane);
 		QTransform *ret_v_ = new QTransform(ret_v);
@@ -487,7 +487,7 @@ KMETHOD QMatrix4x4_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qp->translate(x, y);
@@ -501,7 +501,7 @@ KMETHOD QMatrix4x4_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal z = Float_to(qreal, sfp[3]);
@@ -515,7 +515,7 @@ KMETHOD QMatrix4x4_transposed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMatrix4x4 *  qp = RawPtr_to(QMatrix4x4 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMatrix4x4 ret_v = qp->transposed();
 		QMatrix4x4 *ret_v_ = new QMatrix4x4(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -525,6 +525,24 @@ KMETHOD QMatrix4x4_transposed(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QMatrix4x4.parents();
+KMETHOD QMatrix4x4_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMatrix4x4 *qp = RawPtr_to(QMatrix4x4*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQMatrix4x4::DummyQMatrix4x4()
 {
@@ -573,17 +591,28 @@ bool DummyQMatrix4x4::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMatrix4x4::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQMatrix4x4::connection(QObject *o)
 {
-	return;
+	QMatrix4x4 *p = dynamic_cast<QMatrix4x4*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQMatrix4x4::KQMatrix4x4() : QMatrix4x4()
 {
 	self = NULL;
 	dummy = new DummyQMatrix4x4();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMatrix4x4_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -638,13 +667,9 @@ static void QMatrix4x4_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMatrix4x4_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMatrix4x4 *qp = (KQMatrix4x4 *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -658,6 +683,8 @@ void KQMatrix4x4::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQMatrix4x4(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

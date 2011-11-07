@@ -1,13 +1,15 @@
-//int QGraphicsSceneContextMenuEvent.modifiers();
+//QtKeyboardModifiers QGraphicsSceneContextMenuEvent.modifiers();
 KMETHOD QGraphicsSceneContextMenuEvent_modifiers(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneContextMenuEvent *  qp = RawPtr_to(QGraphicsSceneContextMenuEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::KeyboardModifiers ret_v = qp->modifiers();
-		RETURNi_(ret_v);
+		Qt::KeyboardModifiers *ret_v_ = new Qt::KeyboardModifiers(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -16,7 +18,7 @@ KMETHOD QGraphicsSceneContextMenuEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneContextMenuEvent *  qp = RawPtr_to(QGraphicsSceneContextMenuEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->pos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -31,7 +33,7 @@ KMETHOD QGraphicsSceneContextMenuEvent_reason(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneContextMenuEvent *  qp = RawPtr_to(QGraphicsSceneContextMenuEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsSceneContextMenuEvent::Reason ret_v = qp->reason();
 		RETURNi_(ret_v);
 	} else {
@@ -44,7 +46,7 @@ KMETHOD QGraphicsSceneContextMenuEvent_scenePos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneContextMenuEvent *  qp = RawPtr_to(QGraphicsSceneContextMenuEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->scenePos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -59,7 +61,7 @@ KMETHOD QGraphicsSceneContextMenuEvent_screenPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneContextMenuEvent *  qp = RawPtr_to(QGraphicsSceneContextMenuEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPoint ret_v = qp->screenPos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -120,17 +122,24 @@ bool DummyQGraphicsSceneContextMenuEvent::signalConnect(knh_Func_t *callback_fun
 	}
 }
 
+void DummyQGraphicsSceneContextMenuEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsSceneEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsSceneContextMenuEvent::connection(QObject *o)
 {
+	QGraphicsSceneContextMenuEvent *p = dynamic_cast<QGraphicsSceneContextMenuEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQGraphicsSceneEvent::connection(o);
-}
-
-KQGraphicsSceneContextMenuEvent::KQGraphicsSceneContextMenuEvent() : QGraphicsSceneContextMenuEvent()
-{
-	self = NULL;
-	dummy = new DummyQGraphicsSceneContextMenuEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsSceneContextMenuEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -185,13 +194,9 @@ static void QGraphicsSceneContextMenuEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsSceneContextMenuEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneContextMenuEvent *qp = (KQGraphicsSceneContextMenuEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -206,15 +211,6 @@ void KQGraphicsSceneContextMenuEvent::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQGraphicsSceneContextMenuEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QGraphicsSceneContextMenuEvent";
-	cdef->free = QGraphicsSceneContextMenuEvent_free;
-	cdef->reftrace = QGraphicsSceneContextMenuEvent_reftrace;
-	cdef->compareTo = QGraphicsSceneContextMenuEvent_compareTo;
-}
-
 static knh_IntData_t QGraphicsSceneContextMenuEventConstInt[] = {
 	{"Mouse", QGraphicsSceneContextMenuEvent::Mouse},
 	{"Keyboard", QGraphicsSceneContextMenuEvent::Keyboard},
@@ -225,4 +221,15 @@ static knh_IntData_t QGraphicsSceneContextMenuEventConstInt[] = {
 DEFAPI(void) constQGraphicsSceneContextMenuEvent(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QGraphicsSceneContextMenuEventConstInt);
 }
+
+
+DEFAPI(void) defQGraphicsSceneContextMenuEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QGraphicsSceneContextMenuEvent";
+	cdef->free = QGraphicsSceneContextMenuEvent_free;
+	cdef->reftrace = QGraphicsSceneContextMenuEvent_reftrace;
+	cdef->compareTo = QGraphicsSceneContextMenuEvent_compareTo;
+}
+
 

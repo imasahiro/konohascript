@@ -27,7 +27,7 @@ KMETHOD QDate_addDays(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ndays = Int_to(int, sfp[1]);
 		QDate ret_v = qp->addDays(ndays);
 		QDate *ret_v_ = new QDate(ret_v);
@@ -43,7 +43,7 @@ KMETHOD QDate_addMonths(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int nmonths = Int_to(int, sfp[1]);
 		QDate ret_v = qp->addMonths(nmonths);
 		QDate *ret_v_ = new QDate(ret_v);
@@ -59,7 +59,7 @@ KMETHOD QDate_addYears(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int nyears = Int_to(int, sfp[1]);
 		QDate ret_v = qp->addYears(nyears);
 		QDate *ret_v_ = new QDate(ret_v);
@@ -75,7 +75,7 @@ KMETHOD QDate_day(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->day();
 		RETURNi_(ret_v);
 	} else {
@@ -88,7 +88,7 @@ KMETHOD QDate_dayOfWeek(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->dayOfWeek();
 		RETURNi_(ret_v);
 	} else {
@@ -101,7 +101,7 @@ KMETHOD QDate_dayOfYear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->dayOfYear();
 		RETURNi_(ret_v);
 	} else {
@@ -114,7 +114,7 @@ KMETHOD QDate_daysInMonth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->daysInMonth();
 		RETURNi_(ret_v);
 	} else {
@@ -127,7 +127,7 @@ KMETHOD QDate_daysInYear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->daysInYear();
 		RETURNi_(ret_v);
 	} else {
@@ -140,7 +140,7 @@ KMETHOD QDate_daysTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDate  d = *RawPtr_to(const QDate *, sfp[1]);
 		int ret_v = qp->daysTo(d);
 		RETURNi_(ret_v);
@@ -154,7 +154,7 @@ KMETHOD QDate_getDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int* year = Int_to(int*, sfp[1]);
 		int* month = Int_to(int*, sfp[2]);
 		int* day = Int_to(int*, sfp[3]);
@@ -163,38 +163,12 @@ KMETHOD QDate_getDate(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-////boolean QDate.isNull();
-KMETHOD QDate_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QDate.isValid();
-KMETHOD QDate_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
 //int QDate.month();
 KMETHOD QDate_month(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->month();
 		RETURNi_(ret_v);
 	} else {
@@ -207,7 +181,7 @@ KMETHOD QDate_setDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int year = Int_to(int, sfp[1]);
 		int month = Int_to(int, sfp[2]);
 		int day = Int_to(int, sfp[3]);
@@ -223,7 +197,7 @@ KMETHOD QDate_toJulianDay(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->toJulianDay();
 		RETURNi_(ret_v);
 	} else {
@@ -236,7 +210,7 @@ KMETHOD QDate_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString format = String_to(const QString, sfp[1]);
 		QString ret_v = qp->toString(format);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -252,7 +226,7 @@ KMETHOD QDate_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DateFormat format = Int_to(Qt::DateFormat, sfp[1]);
 		QString ret_v = qp->toString(format);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -267,7 +241,7 @@ KMETHOD QDate_weekNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int* yearNumber = Int_to(int*, sfp[1]);
 		int ret_v = qp->weekNumber(yearNumber);
 		RETURNi_(ret_v);
@@ -281,7 +255,7 @@ KMETHOD QDate_year(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->year();
 		RETURNi_(ret_v);
 	} else {
@@ -293,9 +267,8 @@ KMETHOD QDate_year(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDate_currentDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
-		QDate ret_v = qp->currentDate();
+	if (true) {
+		QDate ret_v = QDate::currentDate();
 		QDate *ret_v_ = new QDate(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -308,10 +281,9 @@ KMETHOD QDate_currentDate(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDate_fromJulianDay(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int jd = Int_to(int, sfp[1]);
-		QDate ret_v = qp->fromJulianDay(jd);
+		QDate ret_v = QDate::fromJulianDay(jd);
 		QDate *ret_v_ = new QDate(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -324,11 +296,10 @@ KMETHOD QDate_fromJulianDay(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDate_fromString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString string = String_to(const QString, sfp[1]);
 		Qt::DateFormat format = Int_to(Qt::DateFormat, sfp[2]);
-		QDate ret_v = qp->fromString(string, format);
+		QDate ret_v = QDate::fromString(string, format);
 		QDate *ret_v_ = new QDate(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -342,11 +313,10 @@ KMETHOD QDate_fromString(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDate_fromString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString string = String_to(const QString, sfp[1]);
 		const QString format = String_to(const QString, sfp[2]);
-		QDate ret_v = qp->fromString(string, format);
+		QDate ret_v = QDate::fromString(string, format);
 		QDate *ret_v_ = new QDate(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -359,41 +329,22 @@ KMETHOD QDate_fromString(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDate_isLeapYear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int year = Int_to(int, sfp[1]);
-		bool ret_v = qp->isLeapYear(year);
+		bool ret_v = QDate::isLeapYear(year);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
 	}
 }
 
-/*
-////boolean QDate.isValid(int year, int month, int day);
-KMETHOD QDate_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
-		int year = Int_to(int, sfp[1]);
-		int month = Int_to(int, sfp[2]);
-		int day = Int_to(int, sfp[3]);
-		bool ret_v = qp->isValid(year, month, day);
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-*/
 //String QDate.longDayName(int weekday);
 KMETHOD QDate_longDayName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int weekday = Int_to(int, sfp[1]);
-		QString ret_v = qp->longDayName(weekday);
+		QString ret_v = QDate::longDayName(weekday);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -406,11 +357,10 @@ KMETHOD QDate_longDayName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDate_longDayName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int weekday = Int_to(int, sfp[1]);
 		QDate::MonthNameType type = Int_to(QDate::MonthNameType, sfp[2]);
-		QString ret_v = qp->longDayName(weekday, type);
+		QString ret_v = QDate::longDayName(weekday, type);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -422,10 +372,9 @@ KMETHOD QDate_longDayName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDate_longMonthName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int month = Int_to(int, sfp[1]);
-		QString ret_v = qp->longMonthName(month);
+		QString ret_v = QDate::longMonthName(month);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -438,11 +387,10 @@ KMETHOD QDate_longMonthName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDate_longMonthName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int month = Int_to(int, sfp[1]);
 		QDate::MonthNameType type = Int_to(QDate::MonthNameType, sfp[2]);
-		QString ret_v = qp->longMonthName(month, type);
+		QString ret_v = QDate::longMonthName(month, type);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -454,10 +402,9 @@ KMETHOD QDate_longMonthName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDate_shortDayName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int weekday = Int_to(int, sfp[1]);
-		QString ret_v = qp->shortDayName(weekday);
+		QString ret_v = QDate::shortDayName(weekday);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -470,11 +417,10 @@ KMETHOD QDate_shortDayName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDate_shortDayName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int weekday = Int_to(int, sfp[1]);
 		QDate::MonthNameType type = Int_to(QDate::MonthNameType, sfp[2]);
-		QString ret_v = qp->shortDayName(weekday, type);
+		QString ret_v = QDate::shortDayName(weekday, type);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -486,10 +432,9 @@ KMETHOD QDate_shortDayName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDate_shortMonthName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int month = Int_to(int, sfp[1]);
-		QString ret_v = qp->shortMonthName(month);
+		QString ret_v = QDate::shortMonthName(month);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -502,11 +447,10 @@ KMETHOD QDate_shortMonthName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDate_shortMonthName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDate *  qp = RawPtr_to(QDate *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int month = Int_to(int, sfp[1]);
 		QDate::MonthNameType type = Int_to(QDate::MonthNameType, sfp[2]);
-		QString ret_v = qp->shortMonthName(month, type);
+		QString ret_v = QDate::shortMonthName(month, type);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -514,6 +458,24 @@ KMETHOD QDate_shortMonthName(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 */
+//Array<String> QDate.parents();
+KMETHOD QDate_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QDate *qp = RawPtr_to(QDate*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQDate::DummyQDate()
 {
@@ -562,17 +524,28 @@ bool DummyQDate::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDate::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQDate::connection(QObject *o)
 {
-	return;
+	QDate *p = dynamic_cast<QDate*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQDate::KQDate() : QDate()
 {
 	self = NULL;
 	dummy = new DummyQDate();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDate_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -627,13 +600,9 @@ static void QDate_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDate_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDate *qp = (KQDate *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -648,15 +617,6 @@ void KQDate::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQDate(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QDate";
-	cdef->free = QDate_free;
-	cdef->reftrace = QDate_reftrace;
-	cdef->compareTo = QDate_compareTo;
-}
-
 static knh_IntData_t QDateConstInt[] = {
 	{"DateFormat", QDate::DateFormat},
 	{"StandaloneFormat", QDate::StandaloneFormat},
@@ -666,4 +626,15 @@ static knh_IntData_t QDateConstInt[] = {
 DEFAPI(void) constQDate(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QDateConstInt);
 }
+
+
+DEFAPI(void) defQDate(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QDate";
+	cdef->free = QDate_free;
+	cdef->reftrace = QDate_reftrace;
+	cdef->compareTo = QDate_compareTo;
+}
+
 

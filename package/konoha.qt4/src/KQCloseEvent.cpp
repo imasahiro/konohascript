@@ -59,9 +59,23 @@ bool DummyQCloseEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQCloseEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQCloseEvent::connection(QObject *o)
 {
+	QCloseEvent *p = dynamic_cast<QCloseEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -69,7 +83,6 @@ KQCloseEvent::KQCloseEvent() : QCloseEvent()
 {
 	self = NULL;
 	dummy = new DummyQCloseEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QCloseEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -124,13 +137,9 @@ static void QCloseEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QCloseEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQCloseEvent *qp = (KQCloseEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -144,6 +153,8 @@ void KQCloseEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQCloseEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -14,7 +14,7 @@ KMETHOD QLatin1Char_toLatin1(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLatin1Char *  qp = RawPtr_to(QLatin1Char *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char ret_v = qp->toLatin1();
 		char *ret_v_ = new char(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -29,7 +29,7 @@ KMETHOD QLatin1Char_unicode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLatin1Char *  qp = RawPtr_to(QLatin1Char *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		ushort ret_v = qp->unicode();
 		ushort *ret_v_ = new ushort(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -39,6 +39,24 @@ KMETHOD QLatin1Char_unicode(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QLatin1Char.parents();
+KMETHOD QLatin1Char_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QLatin1Char *qp = RawPtr_to(QLatin1Char*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQLatin1Char::DummyQLatin1Char()
 {
@@ -87,17 +105,28 @@ bool DummyQLatin1Char::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQLatin1Char::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQLatin1Char::connection(QObject *o)
 {
-	return;
+	QLatin1Char *p = dynamic_cast<QLatin1Char*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQLatin1Char::KQLatin1Char(char c) : QLatin1Char(c)
 {
 	self = NULL;
 	dummy = new DummyQLatin1Char();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QLatin1Char_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -152,13 +181,9 @@ static void QLatin1Char_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QLatin1Char_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQLatin1Char *qp = (KQLatin1Char *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -172,6 +197,8 @@ void KQLatin1Char::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQLatin1Char(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -2,10 +2,9 @@
 KMETHOD QStyleFactory_create(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QStyleFactory *  qp = RawPtr_to(QStyleFactory *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString key = String_to(const QString, sfp[1]);
-		QStyle* ret_v = qp->create(key);
+		QStyle* ret_v = QStyleFactory::create(key);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStyle*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -13,6 +12,24 @@ KMETHOD QStyleFactory_create(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QStyleFactory.parents();
+KMETHOD QStyleFactory_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QStyleFactory *qp = RawPtr_to(QStyleFactory*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQStyleFactory::DummyQStyleFactory()
 {
@@ -61,17 +78,22 @@ bool DummyQStyleFactory::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQStyleFactory::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQStyleFactory::connection(QObject *o)
 {
-	return;
-}
-
-KQStyleFactory::KQStyleFactory() : QStyleFactory()
-{
-	self = NULL;
-	dummy = new DummyQStyleFactory();
-	dummy->connection((QObject*)this);
+	QStyleFactory *p = dynamic_cast<QStyleFactory*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QStyleFactory_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -126,13 +148,9 @@ static void QStyleFactory_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleFactory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleFactory *qp = (KQStyleFactory *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -146,6 +164,8 @@ void KQStyleFactory::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQStyleFactory(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

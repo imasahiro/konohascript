@@ -3,7 +3,7 @@ KMETHOD QPrintEngine_abort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintEngine *  qp = RawPtr_to(QPrintEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->abort();
 		RETURNb_(ret_v);
 	} else {
@@ -16,7 +16,7 @@ KMETHOD QPrintEngine_metric(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintEngine *  qp = RawPtr_to(QPrintEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPaintDevice::PaintDeviceMetric id = Int_to(QPaintDevice::PaintDeviceMetric, sfp[1]);
 		int ret_v = qp->metric(id);
 		RETURNi_(ret_v);
@@ -30,7 +30,7 @@ KMETHOD QPrintEngine_newPage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintEngine *  qp = RawPtr_to(QPrintEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->newPage();
 		RETURNb_(ret_v);
 	} else {
@@ -43,7 +43,7 @@ KMETHOD QPrintEngine_printerState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintEngine *  qp = RawPtr_to(QPrintEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::PrinterState ret_v = qp->printerState();
 		RETURNi_(ret_v);
 	} else {
@@ -56,7 +56,7 @@ KMETHOD QPrintEngine_getProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintEngine *  qp = RawPtr_to(QPrintEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrintEngine::PrintEnginePropertyKey key = Int_to(QPrintEngine::PrintEnginePropertyKey, sfp[1]);
 		QVariant ret_v = qp->property(key);
 		QVariant *ret_v_ = new QVariant(ret_v);
@@ -72,7 +72,7 @@ KMETHOD QPrintEngine_setProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintEngine *  qp = RawPtr_to(QPrintEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrintEngine::PrintEnginePropertyKey key = Int_to(QPrintEngine::PrintEnginePropertyKey, sfp[1]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[2]);
 		qp->setProperty(key, value);
@@ -80,6 +80,24 @@ KMETHOD QPrintEngine_setProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+//Array<String> QPrintEngine.parents();
+KMETHOD QPrintEngine_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPrintEngine *qp = RawPtr_to(QPrintEngine*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQPrintEngine::DummyQPrintEngine()
 {
@@ -128,17 +146,22 @@ bool DummyQPrintEngine::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPrintEngine::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQPrintEngine::connection(QObject *o)
 {
-	return;
-}
-
-KQPrintEngine::KQPrintEngine() : QPrintEngine()
-{
-	self = NULL;
-	dummy = new DummyQPrintEngine();
-	dummy->connection((QObject*)this);
+	QPrintEngine *p = dynamic_cast<QPrintEngine*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QPrintEngine_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -193,13 +216,9 @@ static void QPrintEngine_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPrintEngine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPrintEngine *qp = (KQPrintEngine *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -212,15 +231,6 @@ void KQPrintEngine::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQPrintEngine(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QPrintEngine";
-	cdef->free = QPrintEngine_free;
-	cdef->reftrace = QPrintEngine_reftrace;
-	cdef->compareTo = QPrintEngine_compareTo;
 }
 
 static knh_IntData_t QPrintEngineConstInt[] = {
@@ -259,4 +269,15 @@ static knh_IntData_t QPrintEngineConstInt[] = {
 DEFAPI(void) constQPrintEngine(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QPrintEngineConstInt);
 }
+
+
+DEFAPI(void) defQPrintEngine(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QPrintEngine";
+	cdef->free = QPrintEngine_free;
+	cdef->reftrace = QPrintEngine_reftrace;
+	cdef->compareTo = QPrintEngine_compareTo;
+}
+
 

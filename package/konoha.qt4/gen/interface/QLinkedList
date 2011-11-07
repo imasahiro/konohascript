@@ -101,9 +101,11 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+
 typedefed_objects
-const_iterator
-iterator
 ConstIterator
 Iterator
 const_pointer
@@ -115,6 +117,12 @@ size_type
 value_type
 
 parent_typedefed_objects
+
+class_objects
+const_iterator
+iterator
+
+parent_class_objects
 
 enums
 

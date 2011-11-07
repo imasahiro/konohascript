@@ -14,7 +14,7 @@ KMETHOD QUndoGroup_getActiveStack(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoGroup *  qp = RawPtr_to(QUndoGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QUndoStack* ret_v = qp->activeStack();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QUndoStack*)ret_v, NULL);
 		RETURN_(rptr);
@@ -28,7 +28,7 @@ KMETHOD QUndoGroup_addStack(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoGroup *  qp = RawPtr_to(QUndoGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QUndoStack*  stack = RawPtr_to(QUndoStack*, sfp[1]);
 		qp->addStack(stack);
 	}
@@ -40,7 +40,7 @@ KMETHOD QUndoGroup_canRedo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoGroup *  qp = RawPtr_to(QUndoGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->canRedo();
 		RETURNb_(ret_v);
 	} else {
@@ -53,7 +53,7 @@ KMETHOD QUndoGroup_canUndo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoGroup *  qp = RawPtr_to(QUndoGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->canUndo();
 		RETURNb_(ret_v);
 	} else {
@@ -66,7 +66,7 @@ KMETHOD QUndoGroup_createRedoAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoGroup *  qp = RawPtr_to(QUndoGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 		const QString prefix = String_to(const QString, sfp[2]);
 		QAction* ret_v = qp->createRedoAction(parent, prefix);
@@ -82,7 +82,7 @@ KMETHOD QUndoGroup_createUndoAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoGroup *  qp = RawPtr_to(QUndoGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 		const QString prefix = String_to(const QString, sfp[2]);
 		QAction* ret_v = qp->createUndoAction(parent, prefix);
@@ -98,7 +98,7 @@ KMETHOD QUndoGroup_isClean(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoGroup *  qp = RawPtr_to(QUndoGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isClean();
 		RETURNb_(ret_v);
 	} else {
@@ -111,7 +111,7 @@ KMETHOD QUndoGroup_redoText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoGroup *  qp = RawPtr_to(QUndoGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->redoText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -125,7 +125,7 @@ KMETHOD QUndoGroup_removeStack(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoGroup *  qp = RawPtr_to(QUndoGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QUndoStack*  stack = RawPtr_to(QUndoStack*, sfp[1]);
 		qp->removeStack(stack);
 	}
@@ -137,8 +137,8 @@ KMETHOD QUndoGroup_stacks(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoGroup *  qp = RawPtr_to(QUndoGroup *, sfp[0]);
-	if (qp != NULL) {
-		QList<QUndoStack*>ret_v = qp->stacks();
+	if (qp) {
+		QList<QUndoStack*> ret_v = qp->stacks();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QUndoStack"));
@@ -158,7 +158,7 @@ KMETHOD QUndoGroup_undoText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoGroup *  qp = RawPtr_to(QUndoGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->undoText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -172,7 +172,7 @@ KMETHOD QUndoGroup_redo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoGroup *  qp = RawPtr_to(QUndoGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->redo();
 	}
 	RETURNvoid_();
@@ -183,7 +183,7 @@ KMETHOD QUndoGroup_setActiveStack(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoGroup *  qp = RawPtr_to(QUndoGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QUndoStack*  stack = RawPtr_to(QUndoStack*, sfp[1]);
 		qp->setActiveStack(stack);
 	}
@@ -195,7 +195,7 @@ KMETHOD QUndoGroup_undo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoGroup *  qp = RawPtr_to(QUndoGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->undo();
 	}
 	RETURNvoid_();
@@ -367,16 +367,37 @@ bool DummyQUndoGroup::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQUndoGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 7;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, active_stack_changed_func);
+	KNH_ADDNNREF(ctx, can_redo_changed_func);
+	KNH_ADDNNREF(ctx, can_undo_changed_func);
+	KNH_ADDNNREF(ctx, clean_changed_func);
+	KNH_ADDNNREF(ctx, index_changed_func);
+	KNH_ADDNNREF(ctx, redo_text_changed_func);
+	KNH_ADDNNREF(ctx, undo_text_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQUndoGroup::connection(QObject *o)
 {
-	connect(o, SIGNAL(activeStackChanged(QUndoStack*)), this, SLOT(activeStackChangedSlot(QUndoStack*)));
-	connect(o, SIGNAL(canRedoChanged(bool)), this, SLOT(canRedoChangedSlot(bool)));
-	connect(o, SIGNAL(canUndoChanged(bool)), this, SLOT(canUndoChangedSlot(bool)));
-	connect(o, SIGNAL(cleanChanged(bool)), this, SLOT(cleanChangedSlot(bool)));
-	connect(o, SIGNAL(indexChanged(int)), this, SLOT(indexChangedSlot(int)));
-	connect(o, SIGNAL(redoTextChanged(const QString)), this, SLOT(redoTextChangedSlot(const QString)));
-	connect(o, SIGNAL(undoTextChanged(const QString)), this, SLOT(undoTextChangedSlot(const QString)));
+	QUndoGroup *p = dynamic_cast<QUndoGroup*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(activeStackChanged(QUndoStack*)), this, SLOT(activeStackChangedSlot(QUndoStack*)));
+		connect(p, SIGNAL(canRedoChanged(bool)), this, SLOT(canRedoChangedSlot(bool)));
+		connect(p, SIGNAL(canUndoChanged(bool)), this, SLOT(canUndoChangedSlot(bool)));
+		connect(p, SIGNAL(cleanChanged(bool)), this, SLOT(cleanChangedSlot(bool)));
+		connect(p, SIGNAL(indexChanged(int)), this, SLOT(indexChangedSlot(int)));
+		connect(p, SIGNAL(redoTextChanged(const QString)), this, SLOT(redoTextChangedSlot(const QString)));
+		connect(p, SIGNAL(undoTextChanged(const QString)), this, SLOT(undoTextChangedSlot(const QString)));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -439,41 +460,9 @@ static void QUndoGroup_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QUndoGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 7;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQUndoGroup *qp = (KQUndoGroup *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->active_stack_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->active_stack_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->can_redo_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->can_redo_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->can_undo_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->can_undo_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->clean_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->clean_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->index_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->index_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->redo_text_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->redo_text_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->undo_text_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->undo_text_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -496,6 +485,8 @@ bool KQUndoGroup::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQUndoGroup(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

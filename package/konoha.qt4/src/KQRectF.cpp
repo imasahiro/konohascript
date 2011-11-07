@@ -66,7 +66,7 @@ KMETHOD QRectF_adjust(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dx1 = Float_to(qreal, sfp[1]);
 		qreal dy1 = Float_to(qreal, sfp[2]);
 		qreal dx2 = Float_to(qreal, sfp[3]);
@@ -81,7 +81,7 @@ KMETHOD QRectF_adjusted(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dx1 = Float_to(qreal, sfp[1]);
 		qreal dy1 = Float_to(qreal, sfp[2]);
 		qreal dx2 = Float_to(qreal, sfp[3]);
@@ -100,7 +100,7 @@ KMETHOD QRectF_getBottom(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->bottom();
 		RETURNf_(ret_v);
 	} else {
@@ -113,7 +113,7 @@ KMETHOD QRectF_getBottomLeft(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->bottomLeft();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -128,7 +128,7 @@ KMETHOD QRectF_getBottomRight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->bottomRight();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -143,7 +143,7 @@ KMETHOD QRectF_center(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->center();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -158,7 +158,7 @@ KMETHOD QRectF_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		bool ret_v = qp->contains(point);
 		RETURNb_(ret_v);
@@ -173,7 +173,7 @@ KMETHOD QRectF_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		bool ret_v = qp->contains(x, y);
@@ -189,7 +189,7 @@ KMETHOD QRectF_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		bool ret_v = qp->contains(rectangle);
 		RETURNb_(ret_v);
@@ -203,7 +203,7 @@ KMETHOD QRectF_getCoords(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal*  x1 = RawPtr_to(qreal*, sfp[1]);
 		qreal*  y1 = RawPtr_to(qreal*, sfp[2]);
 		qreal*  x2 = RawPtr_to(qreal*, sfp[3]);
@@ -218,7 +218,7 @@ KMETHOD QRectF_getRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal*  x = RawPtr_to(qreal*, sfp[1]);
 		qreal*  y = RawPtr_to(qreal*, sfp[2]);
 		qreal*  width = RawPtr_to(qreal*, sfp[3]);
@@ -233,7 +233,7 @@ KMETHOD QRectF_getHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->height();
 		RETURNf_(ret_v);
 	} else {
@@ -246,7 +246,7 @@ KMETHOD QRectF_intersected(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		QRectF ret_v = qp->intersected(rectangle);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -262,7 +262,7 @@ KMETHOD QRectF_intersects(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		bool ret_v = qp->intersects(rectangle);
 		RETURNb_(ret_v);
@@ -276,34 +276,8 @@ KMETHOD QRectF_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QRectF.isNull();
-KMETHOD QRectF_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QRectF.isValid();
-KMETHOD QRectF_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -315,7 +289,7 @@ KMETHOD QRectF_getLeft(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->left();
 		RETURNf_(ret_v);
 	} else {
@@ -328,7 +302,7 @@ KMETHOD QRectF_moveBottom(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal y = Float_to(qreal, sfp[1]);
 		qp->moveBottom(y);
 	}
@@ -340,7 +314,7 @@ KMETHOD QRectF_moveBottomLeft(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->moveBottomLeft(position);
 	}
@@ -352,7 +326,7 @@ KMETHOD QRectF_moveBottomRight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->moveBottomRight(position);
 	}
@@ -364,7 +338,7 @@ KMETHOD QRectF_moveCenter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->moveCenter(position);
 	}
@@ -376,7 +350,7 @@ KMETHOD QRectF_moveLeft(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qp->moveLeft(x);
 	}
@@ -388,7 +362,7 @@ KMETHOD QRectF_moveRight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qp->moveRight(x);
 	}
@@ -400,7 +374,7 @@ KMETHOD QRectF_moveTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qp->moveTo(x, y);
@@ -414,43 +388,43 @@ KMETHOD QRectF_moveTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->moveTo(position);
 	}
 	RETURNvoid_();
 }
 */
-//void QRectF.movetop(float y);
+//void QRectF.moveTop(float y);
 KMETHOD QRectF_moveTop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal y = Float_to(qreal, sfp[1]);
 		qp->moveTop(y);
 	}
 	RETURNvoid_();
 }
 
-//void QRectF.movetopLeft(QPointF position);
+//void QRectF.moveTopLeft(QPointF position);
 KMETHOD QRectF_moveTopLeft(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->moveTopLeft(position);
 	}
 	RETURNvoid_();
 }
 
-//void QRectF.movetopRight(QPointF position);
+//void QRectF.moveTopRight(QPointF position);
 KMETHOD QRectF_moveTopRight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->moveTopRight(position);
 	}
@@ -462,7 +436,7 @@ KMETHOD QRectF_normalized(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->normalized();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -477,7 +451,7 @@ KMETHOD QRectF_getRight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->right();
 		RETURNf_(ret_v);
 	} else {
@@ -490,7 +464,7 @@ KMETHOD QRectF_setBottom(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal y = Float_to(qreal, sfp[1]);
 		qp->setBottom(y);
 	}
@@ -502,7 +476,7 @@ KMETHOD QRectF_setBottomLeft(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setBottomLeft(position);
 	}
@@ -514,7 +488,7 @@ KMETHOD QRectF_setBottomRight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setBottomRight(position);
 	}
@@ -526,7 +500,7 @@ KMETHOD QRectF_setCoords(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x1 = Float_to(qreal, sfp[1]);
 		qreal y1 = Float_to(qreal, sfp[2]);
 		qreal x2 = Float_to(qreal, sfp[3]);
@@ -541,7 +515,7 @@ KMETHOD QRectF_setHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal height = Float_to(qreal, sfp[1]);
 		qp->setHeight(height);
 	}
@@ -553,7 +527,7 @@ KMETHOD QRectF_setLeft(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qp->setLeft(x);
 	}
@@ -565,7 +539,7 @@ KMETHOD QRectF_setRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal width = Float_to(qreal, sfp[3]);
@@ -580,7 +554,7 @@ KMETHOD QRectF_setRight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qp->setRight(x);
 	}
@@ -592,43 +566,43 @@ KMETHOD QRectF_setSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSizeF  size = *RawPtr_to(const QSizeF *, sfp[1]);
 		qp->setSize(size);
 	}
 	RETURNvoid_();
 }
 
-//void QRectF.settop(float y);
+//void QRectF.setTop(float y);
 KMETHOD QRectF_setTop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal y = Float_to(qreal, sfp[1]);
 		qp->setTop(y);
 	}
 	RETURNvoid_();
 }
 
-//void QRectF.settopLeft(QPointF position);
+//void QRectF.setTopLeft(QPointF position);
 KMETHOD QRectF_setTopLeft(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setTopLeft(position);
 	}
 	RETURNvoid_();
 }
 
-//void QRectF.settopRight(QPointF position);
+//void QRectF.setTopRight(QPointF position);
 KMETHOD QRectF_setTopRight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setTopRight(position);
 	}
@@ -640,7 +614,7 @@ KMETHOD QRectF_setWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal width = Float_to(qreal, sfp[1]);
 		qp->setWidth(width);
 	}
@@ -652,7 +626,7 @@ KMETHOD QRectF_setX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qp->setX(x);
 	}
@@ -664,7 +638,7 @@ KMETHOD QRectF_setY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal y = Float_to(qreal, sfp[1]);
 		qp->setY(y);
 	}
@@ -676,7 +650,7 @@ KMETHOD QRectF_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizeF ret_v = qp->size();
 		QSizeF *ret_v_ = new QSizeF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -691,7 +665,7 @@ KMETHOD QRectF_toAlignedRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->toAlignedRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -706,7 +680,7 @@ KMETHOD QRectF_toRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->toRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -716,12 +690,12 @@ KMETHOD QRectF_toRect(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//float QRectF.gettop();
+//float QRectF.getTop();
 KMETHOD QRectF_getTop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->top();
 		RETURNf_(ret_v);
 	} else {
@@ -729,12 +703,12 @@ KMETHOD QRectF_getTop(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QPointF QRectF.gettopLeft();
+//QPointF QRectF.getTopLeft();
 KMETHOD QRectF_getTopLeft(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->topLeft();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -744,12 +718,12 @@ KMETHOD QRectF_getTopLeft(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QPointF QRectF.gettopRight();
+//QPointF QRectF.getTopRight();
 KMETHOD QRectF_getTopRight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->topRight();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -764,7 +738,7 @@ KMETHOD QRectF_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dx = Float_to(qreal, sfp[1]);
 		qreal dy = Float_to(qreal, sfp[2]);
 		qp->translate(dx, dy);
@@ -778,7 +752,7 @@ KMETHOD QRectF_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  offset = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->translate(offset);
 	}
@@ -790,7 +764,7 @@ KMETHOD QRectF_translated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dx = Float_to(qreal, sfp[1]);
 		qreal dy = Float_to(qreal, sfp[2]);
 		QRectF ret_v = qp->translated(dx, dy);
@@ -808,7 +782,7 @@ KMETHOD QRectF_translated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  offset = *RawPtr_to(const QPointF *, sfp[1]);
 		QRectF ret_v = qp->translated(offset);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -824,7 +798,7 @@ KMETHOD QRectF_united(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		QRectF ret_v = qp->united(rectangle);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -840,7 +814,7 @@ KMETHOD QRectF_getWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->width();
 		RETURNf_(ret_v);
 	} else {
@@ -853,7 +827,7 @@ KMETHOD QRectF_getX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->x();
 		RETURNf_(ret_v);
 	} else {
@@ -866,7 +840,7 @@ KMETHOD QRectF_getY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRectF *  qp = RawPtr_to(QRectF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->y();
 		RETURNf_(ret_v);
 	} else {
@@ -874,6 +848,24 @@ KMETHOD QRectF_getY(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QRectF.parents();
+KMETHOD QRectF_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QRectF *qp = RawPtr_to(QRectF*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQRectF::DummyQRectF()
 {
@@ -922,17 +914,28 @@ bool DummyQRectF::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQRectF::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQRectF::connection(QObject *o)
 {
-	return;
+	QRectF *p = dynamic_cast<QRectF*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQRectF::KQRectF() : QRectF()
 {
 	self = NULL;
 	dummy = new DummyQRectF();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QRectF_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -987,19 +990,15 @@ static void QRectF_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QRectF_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQRectF *qp = (KQRectF *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
 static int QRectF_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
-	return (p1->rawptr == p2->rawptr ? 0 : 1);
+	return (*static_cast<QRectF*>(p1->rawptr) == *static_cast<QRectF*>(p2->rawptr) ? 0 : 1);
 }
 
 void KQRectF::setSelf(knh_RawPtr_t *ptr)
@@ -1007,6 +1006,8 @@ void KQRectF::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQRectF(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

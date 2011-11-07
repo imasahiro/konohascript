@@ -3,7 +3,7 @@ KMETHOD QStyledItemDelegate_createEditor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyledItemDelegate *  qp = RawPtr_to(QStyledItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 		const QStyleOptionViewItem  option = *RawPtr_to(const QStyleOptionViewItem *, sfp[2]);
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -20,7 +20,7 @@ KMETHOD QStyledItemDelegate_paint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyledItemDelegate *  qp = RawPtr_to(QStyledItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QStyleOptionViewItem  option = *RawPtr_to(const QStyleOptionViewItem *, sfp[2]);
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -34,7 +34,7 @@ KMETHOD QStyledItemDelegate_setEditorData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyledItemDelegate *  qp = RawPtr_to(QStyledItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  editor = RawPtr_to(QWidget*, sfp[1]);
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[2]);
 		qp->setEditorData(editor, index);
@@ -47,7 +47,7 @@ KMETHOD QStyledItemDelegate_setModelData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyledItemDelegate *  qp = RawPtr_to(QStyledItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  editor = RawPtr_to(QWidget*, sfp[1]);
 		QAbstractItemModel*  model = RawPtr_to(QAbstractItemModel*, sfp[2]);
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -61,7 +61,7 @@ KMETHOD QStyledItemDelegate_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyledItemDelegate *  qp = RawPtr_to(QStyledItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QStyleOptionViewItem  option = *RawPtr_to(const QStyleOptionViewItem *, sfp[1]);
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[2]);
 		QSize ret_v = qp->sizeHint(option, index);
@@ -78,7 +78,7 @@ KMETHOD QStyledItemDelegate_updateEditorGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyledItemDelegate *  qp = RawPtr_to(QStyledItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  editor = RawPtr_to(QWidget*, sfp[1]);
 		const QStyleOptionViewItem  option = *RawPtr_to(const QStyleOptionViewItem *, sfp[2]);
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -103,7 +103,7 @@ KMETHOD QStyledItemDelegate_displayText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyledItemDelegate *  qp = RawPtr_to(QStyledItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[1]);
 		const QLocale  locale = *RawPtr_to(const QLocale *, sfp[2]);
 		QString ret_v = qp->displayText(value, locale);
@@ -119,7 +119,7 @@ KMETHOD QStyledItemDelegate_getItemEditorFactory(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyledItemDelegate *  qp = RawPtr_to(QStyledItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QItemEditorFactory* ret_v = qp->itemEditorFactory();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QItemEditorFactory*)ret_v, NULL);
 		RETURN_(rptr);
@@ -133,7 +133,7 @@ KMETHOD QStyledItemDelegate_setItemEditorFactory(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyledItemDelegate *  qp = RawPtr_to(QStyledItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QItemEditorFactory*  factory = RawPtr_to(QItemEditorFactory*, sfp[1]);
 		qp->setItemEditorFactory(factory);
 	}
@@ -191,9 +191,23 @@ bool DummyQStyledItemDelegate::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQStyledItemDelegate::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractItemDelegate::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyledItemDelegate::connection(QObject *o)
 {
+	QStyledItemDelegate *p = dynamic_cast<QStyledItemDelegate*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractItemDelegate::connection(o);
 }
 
@@ -256,13 +270,9 @@ static void QStyledItemDelegate_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyledItemDelegate_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyledItemDelegate *qp = (KQStyledItemDelegate *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -285,6 +295,8 @@ bool KQStyledItemDelegate::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQStyledItemDelegate(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

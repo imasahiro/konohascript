@@ -50,7 +50,7 @@ KMETHOD QUrl_addEncodedQueryItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  key = *RawPtr_to(const QByteArray *, sfp[1]);
 		const QByteArray  value = *RawPtr_to(const QByteArray *, sfp[2]);
 		qp->addEncodedQueryItem(key, value);
@@ -63,7 +63,7 @@ KMETHOD QUrl_addQueryItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString key = String_to(const QString, sfp[1]);
 		const QString value = String_to(const QString, sfp[2]);
 		qp->addQueryItem(key, value);
@@ -76,9 +76,9 @@ KMETHOD QUrl_allEncodedQueryItemValues(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  key = *RawPtr_to(const QByteArray *, sfp[1]);
-		QList<QByteArray>ret_v = qp->allEncodedQueryItemValues(key);
+		QList<QByteArray> ret_v = qp->allEncodedQueryItemValues(key);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QByteArray"));
@@ -99,7 +99,7 @@ KMETHOD QUrl_getAuthority(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->authority();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -113,7 +113,7 @@ KMETHOD QUrl_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -124,7 +124,7 @@ KMETHOD QUrl_getEncodedFragment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->encodedFragment();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -139,7 +139,7 @@ KMETHOD QUrl_getEncodedHost(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->encodedHost();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -154,7 +154,7 @@ KMETHOD QUrl_getEncodedPassword(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->encodedPassword();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -169,7 +169,7 @@ KMETHOD QUrl_getEncodedPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->encodedPath();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -184,7 +184,7 @@ KMETHOD QUrl_getEncodedQuery(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->encodedQuery();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -199,7 +199,7 @@ KMETHOD QUrl_encodedQueryItemValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  key = *RawPtr_to(const QByteArray *, sfp[1]);
 		QByteArray ret_v = qp->encodedQueryItemValue(key);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -215,7 +215,7 @@ KMETHOD QUrl_getEncodedUserName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->encodedUserName();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -230,7 +230,7 @@ KMETHOD QUrl_errorString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->errorString();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -244,7 +244,7 @@ KMETHOD QUrl_getFragment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->fragment();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -258,7 +258,7 @@ KMETHOD QUrl_hasEncodedQueryItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  key = *RawPtr_to(const QByteArray *, sfp[1]);
 		bool ret_v = qp->hasEncodedQueryItem(key);
 		RETURNb_(ret_v);
@@ -272,7 +272,7 @@ KMETHOD QUrl_hasFragment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasFragment();
 		RETURNb_(ret_v);
 	} else {
@@ -285,7 +285,7 @@ KMETHOD QUrl_hasQuery(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasQuery();
 		RETURNb_(ret_v);
 	} else {
@@ -298,7 +298,7 @@ KMETHOD QUrl_hasQueryItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString key = String_to(const QString, sfp[1]);
 		bool ret_v = qp->hasQueryItem(key);
 		RETURNb_(ret_v);
@@ -312,7 +312,7 @@ KMETHOD QUrl_getHost(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->host();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -326,7 +326,7 @@ KMETHOD QUrl_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
 		RETURNb_(ret_v);
 	} else {
@@ -339,7 +339,7 @@ KMETHOD QUrl_isParentOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QUrl  childUrl = *RawPtr_to(const QUrl *, sfp[1]);
 		bool ret_v = qp->isParentOf(childUrl);
 		RETURNb_(ret_v);
@@ -353,21 +353,8 @@ KMETHOD QUrl_isRelative(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isRelative();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QUrl.isValid();
-KMETHOD QUrl_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -379,7 +366,7 @@ KMETHOD QUrl_getPassword(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->password();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -393,7 +380,7 @@ KMETHOD QUrl_getPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->path();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -407,7 +394,7 @@ KMETHOD QUrl_getPort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->port();
 		RETURNi_(ret_v);
 	} else {
@@ -421,7 +408,7 @@ KMETHOD QUrl_getPort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int defaultPort = Int_to(int, sfp[1]);
 		int ret_v = qp->port(defaultPort);
 		RETURNi_(ret_v);
@@ -435,7 +422,7 @@ KMETHOD QUrl_queryItemValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString key = String_to(const QString, sfp[1]);
 		QString ret_v = qp->queryItemValue(key);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -450,7 +437,7 @@ KMETHOD QUrl_queryPairDelimiter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char ret_v = qp->queryPairDelimiter();
 		char *ret_v_ = new char(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -465,7 +452,7 @@ KMETHOD QUrl_queryValueDelimiter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char ret_v = qp->queryValueDelimiter();
 		char *ret_v_ = new char(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -480,7 +467,7 @@ KMETHOD QUrl_removeAllEncodedQueryItems(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  key = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->removeAllEncodedQueryItems(key);
 	}
@@ -492,7 +479,7 @@ KMETHOD QUrl_removeAllQueryItems(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString key = String_to(const QString, sfp[1]);
 		qp->removeAllQueryItems(key);
 	}
@@ -504,7 +491,7 @@ KMETHOD QUrl_removeEncodedQueryItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  key = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->removeEncodedQueryItem(key);
 	}
@@ -516,7 +503,7 @@ KMETHOD QUrl_removeQueryItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString key = String_to(const QString, sfp[1]);
 		qp->removeQueryItem(key);
 	}
@@ -528,7 +515,7 @@ KMETHOD QUrl_resolved(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QUrl  relative = *RawPtr_to(const QUrl *, sfp[1]);
 		QUrl ret_v = qp->resolved(relative);
 		QUrl *ret_v_ = new QUrl(ret_v);
@@ -544,7 +531,7 @@ KMETHOD QUrl_getScheme(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->scheme();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -558,7 +545,7 @@ KMETHOD QUrl_setAuthority(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString authority = String_to(const QString, sfp[1]);
 		qp->setAuthority(authority);
 	}
@@ -570,7 +557,7 @@ KMETHOD QUrl_setEncodedFragment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  fragment = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->setEncodedFragment(fragment);
 	}
@@ -582,7 +569,7 @@ KMETHOD QUrl_setEncodedHost(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  host = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->setEncodedHost(host);
 	}
@@ -594,7 +581,7 @@ KMETHOD QUrl_setEncodedPassword(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  password = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->setEncodedPassword(password);
 	}
@@ -606,7 +593,7 @@ KMETHOD QUrl_setEncodedPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  path = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->setEncodedPath(path);
 	}
@@ -618,7 +605,7 @@ KMETHOD QUrl_setEncodedQuery(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  query = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->setEncodedQuery(query);
 	}
@@ -630,7 +617,7 @@ KMETHOD QUrl_setEncodedUrl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  encodedUrl = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->setEncodedUrl(encodedUrl);
 	}
@@ -643,7 +630,7 @@ KMETHOD QUrl_setEncodedUrl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  encodedUrl = *RawPtr_to(const QByteArray *, sfp[1]);
 		QUrl::ParsingMode parsingMode = Int_to(QUrl::ParsingMode, sfp[2]);
 		qp->setEncodedUrl(encodedUrl, parsingMode);
@@ -656,7 +643,7 @@ KMETHOD QUrl_setEncodedUserName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  userName = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->setEncodedUserName(userName);
 	}
@@ -668,7 +655,7 @@ KMETHOD QUrl_setFragment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fragment = String_to(const QString, sfp[1]);
 		qp->setFragment(fragment);
 	}
@@ -680,7 +667,7 @@ KMETHOD QUrl_setHost(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString host = String_to(const QString, sfp[1]);
 		qp->setHost(host);
 	}
@@ -692,7 +679,7 @@ KMETHOD QUrl_setPassword(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString password = String_to(const QString, sfp[1]);
 		qp->setPassword(password);
 	}
@@ -704,7 +691,7 @@ KMETHOD QUrl_setPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString path = String_to(const QString, sfp[1]);
 		qp->setPath(path);
 	}
@@ -716,7 +703,7 @@ KMETHOD QUrl_setPort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int port = Int_to(int, sfp[1]);
 		qp->setPort(port);
 	}
@@ -728,7 +715,7 @@ KMETHOD QUrl_setQueryDelimiters(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  valueDelimiter = *RawPtr_to(char *, sfp[1]);
 		char  pairDelimiter = *RawPtr_to(char *, sfp[2]);
 		qp->setQueryDelimiters(valueDelimiter, pairDelimiter);
@@ -741,7 +728,7 @@ KMETHOD QUrl_setScheme(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString scheme = String_to(const QString, sfp[1]);
 		qp->setScheme(scheme);
 	}
@@ -753,7 +740,7 @@ KMETHOD QUrl_setUrl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString url = String_to(const QString, sfp[1]);
 		qp->setUrl(url);
 	}
@@ -766,7 +753,7 @@ KMETHOD QUrl_setUrl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString url = String_to(const QString, sfp[1]);
 		QUrl::ParsingMode parsingMode = Int_to(QUrl::ParsingMode, sfp[2]);
 		qp->setUrl(url, parsingMode);
@@ -779,7 +766,7 @@ KMETHOD QUrl_setUserInfo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString userInfo = String_to(const QString, sfp[1]);
 		qp->setUserInfo(userInfo);
 	}
@@ -791,20 +778,20 @@ KMETHOD QUrl_setUserName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString userName = String_to(const QString, sfp[1]);
 		qp->setUserName(userName);
 	}
 	RETURNvoid_();
 }
 
-//QByteArray QUrl.toEncoded(int options);
+//QByteArray QUrl.toEncoded(QUrlFormattingOptions options);
 KMETHOD QUrl_toEncoded(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
-		QUrl::FormattingOptions options = Int_to(QUrl::FormattingOptions, sfp[1]);
+	if (qp) {
+		initFlag(options, QUrl::FormattingOptions, sfp[1]);
 		QByteArray ret_v = qp->toEncoded(options);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -819,7 +806,7 @@ KMETHOD QUrl_toLocalFile(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->toLocalFile();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -828,13 +815,13 @@ KMETHOD QUrl_toLocalFile(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//String QUrl.toString(int options);
+//String QUrl.toString(QUrlFormattingOptions options);
 KMETHOD QUrl_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
-		QUrl::FormattingOptions options = Int_to(QUrl::FormattingOptions, sfp[1]);
+	if (qp) {
+		initFlag(options, QUrl::FormattingOptions, sfp[1]);
 		QString ret_v = qp->toString(options);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -848,7 +835,7 @@ KMETHOD QUrl_getUserInfo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->userInfo();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -862,7 +849,7 @@ KMETHOD QUrl_getUserName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->userName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -875,10 +862,9 @@ KMETHOD QUrl_getUserName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QUrl_fromAce(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QByteArray  domain = *RawPtr_to(const QByteArray *, sfp[1]);
-		QString ret_v = qp->fromAce(domain);
+		QString ret_v = QUrl::fromAce(domain);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -890,10 +876,9 @@ KMETHOD QUrl_fromAce(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QUrl_fromEncoded(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QByteArray  input = *RawPtr_to(const QByteArray *, sfp[1]);
-		QUrl ret_v = qp->fromEncoded(input);
+		QUrl ret_v = QUrl::fromEncoded(input);
 		QUrl *ret_v_ = new QUrl(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -907,11 +892,10 @@ KMETHOD QUrl_fromEncoded(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QUrl_fromEncoded(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QByteArray  input = *RawPtr_to(const QByteArray *, sfp[1]);
 		QUrl::ParsingMode parsingMode = Int_to(QUrl::ParsingMode, sfp[2]);
-		QUrl ret_v = qp->fromEncoded(input, parsingMode);
+		QUrl ret_v = QUrl::fromEncoded(input, parsingMode);
 		QUrl *ret_v_ = new QUrl(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -924,10 +908,9 @@ KMETHOD QUrl_fromEncoded(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QUrl_fromLocalFile(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString localFile = String_to(const QString, sfp[1]);
-		QUrl ret_v = qp->fromLocalFile(localFile);
+		QUrl ret_v = QUrl::fromLocalFile(localFile);
 		QUrl *ret_v_ = new QUrl(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -940,10 +923,9 @@ KMETHOD QUrl_fromLocalFile(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QUrl_fromPercentEncoding(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QByteArray  input = *RawPtr_to(const QByteArray *, sfp[1]);
-		QString ret_v = qp->fromPercentEncoding(input);
+		QString ret_v = QUrl::fromPercentEncoding(input);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -955,10 +937,9 @@ KMETHOD QUrl_fromPercentEncoding(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QUrl_fromUserInput(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString userInput = String_to(const QString, sfp[1]);
-		QUrl ret_v = qp->fromUserInput(userInput);
+		QUrl ret_v = QUrl::fromUserInput(userInput);
 		QUrl *ret_v_ = new QUrl(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -971,10 +952,9 @@ KMETHOD QUrl_fromUserInput(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QUrl_toAce(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString domain = String_to(const QString, sfp[1]);
-		QByteArray ret_v = qp->toAce(domain);
+		QByteArray ret_v = QUrl::toAce(domain);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -987,12 +967,11 @@ KMETHOD QUrl_toAce(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QUrl_toPercentEncoding(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QUrl *  qp = RawPtr_to(QUrl *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString input = String_to(const QString, sfp[1]);
 		const QByteArray  exclude = *RawPtr_to(const QByteArray *, sfp[2]);
 		const QByteArray  include = *RawPtr_to(const QByteArray *, sfp[3]);
-		QByteArray ret_v = qp->toPercentEncoding(input, exclude, include);
+		QByteArray ret_v = QUrl::toPercentEncoding(input, exclude, include);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1001,6 +980,24 @@ KMETHOD QUrl_toPercentEncoding(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QUrl.parents();
+KMETHOD QUrl_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QUrl *qp = RawPtr_to(QUrl*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQUrl::DummyQUrl()
 {
@@ -1049,17 +1046,28 @@ bool DummyQUrl::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQUrl::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQUrl::connection(QObject *o)
 {
-	return;
+	QUrl *p = dynamic_cast<QUrl*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQUrl::KQUrl() : QUrl()
 {
 	self = NULL;
 	dummy = new DummyQUrl();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QUrl_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1114,13 +1122,9 @@ static void QUrl_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QUrl_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQUrl *qp = (KQUrl *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -1133,15 +1137,6 @@ void KQUrl::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQUrl(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QUrl";
-	cdef->free = QUrl_free;
-	cdef->reftrace = QUrl_reftrace;
-	cdef->compareTo = QUrl_compareTo;
 }
 
 static knh_IntData_t QUrlConstInt[] = {
@@ -1162,5 +1157,179 @@ static knh_IntData_t QUrlConstInt[] = {
 
 DEFAPI(void) constQUrl(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QUrlConstInt);
+}
+
+
+DEFAPI(void) defQUrl(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QUrl";
+	cdef->free = QUrl_free;
+	cdef->reftrace = QUrl_reftrace;
+	cdef->compareTo = QUrl_compareTo;
+}
+
+//## QUrlFormattingOptions QUrlFormattingOptions.new(int value);
+KMETHOD QUrlFormattingOptions_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QUrl::FormattingOption i = Int_to(QUrl::FormattingOption, sfp[1]);
+	QUrl::FormattingOptions *ret_v = new QUrl::FormattingOptions(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QUrlFormattingOptions QUrlFormattingOptions.and(int mask);
+KMETHOD QUrlFormattingOptions_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QUrl::FormattingOptions *qp = RawPtr_to(QUrl::FormattingOptions*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QUrl::FormattingOptions ret = ((*qp) & i);
+		QUrl::FormattingOptions *ret_ = new QUrl::FormattingOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QUrlFormattingOptions QUrlFormattingOptions.iand(QUrl::QUrlFormattingOptions other);
+KMETHOD QUrlFormattingOptions_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QUrl::FormattingOptions *qp = RawPtr_to(QUrl::FormattingOptions*, sfp[0]);
+	if (qp != NULL) {
+		QUrl::FormattingOptions *other = RawPtr_to(QUrl::FormattingOptions *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QUrlFormattingOptions QUrlFormattingOptions.or(QUrlFormattingOptions f);
+KMETHOD QUrlFormattingOptions_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QUrl::FormattingOptions *qp = RawPtr_to(QUrl::FormattingOptions*, sfp[0]);
+	if (qp != NULL) {
+		QUrl::FormattingOptions *f = RawPtr_to(QUrl::FormattingOptions*, sfp[1]);
+		QUrl::FormattingOptions ret = ((*qp) | (*f));
+		QUrl::FormattingOptions *ret_ = new QUrl::FormattingOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QUrlFormattingOptions QUrlFormattingOptions.ior(QUrl::QUrlFormattingOptions other);
+KMETHOD QUrlFormattingOptions_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QUrl::FormattingOptions *qp = RawPtr_to(QUrl::FormattingOptions*, sfp[0]);
+	if (qp != NULL) {
+		QUrl::FormattingOptions *other = RawPtr_to(QUrl::FormattingOptions *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QUrlFormattingOptions QUrlFormattingOptions.xor(QUrlFormattingOptions f);
+KMETHOD QUrlFormattingOptions_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QUrl::FormattingOptions *qp = RawPtr_to(QUrl::FormattingOptions*, sfp[0]);
+	if (qp != NULL) {
+		QUrl::FormattingOptions *f = RawPtr_to(QUrl::FormattingOptions*, sfp[1]);
+		QUrl::FormattingOptions ret = ((*qp) ^ (*f));
+		QUrl::FormattingOptions *ret_ = new QUrl::FormattingOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QUrlFormattingOptions QUrlFormattingOptions.ixor(QUrl::QUrlFormattingOptions other);
+KMETHOD QUrlFormattingOptions_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QUrl::FormattingOptions *qp = RawPtr_to(QUrl::FormattingOptions*, sfp[0]);
+	if (qp != NULL) {
+		QUrl::FormattingOptions *other = RawPtr_to(QUrl::FormattingOptions *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QUrlFormattingOptions.testFlag(int flag);
+KMETHOD QUrlFormattingOptions_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QUrl::FormattingOptions *qp = RawPtr_to(QUrl::FormattingOptions *, sfp[0]);
+	if (qp != NULL) {
+		QUrl::FormattingOption flag = Int_to(QUrl::FormattingOption, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QUrlFormattingOptions.value();
+KMETHOD QUrlFormattingOptions_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QUrl::FormattingOptions *qp = RawPtr_to(QUrl::FormattingOptions *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QUrlFormattingOptions_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QUrl::FormattingOptions *qp = (QUrl::FormattingOptions *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QUrlFormattingOptions_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QUrl::FormattingOptions *qp = (QUrl::FormattingOptions *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QUrlFormattingOptions_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QUrl::FormattingOptions*)p1->rawptr);
+//		int v2 = int(*(QUrl::FormattingOptions*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QUrl::FormattingOptions v1 = *(QUrl::FormattingOptions*)p1->rawptr;
+		QUrl::FormattingOptions v2 = *(QUrl::FormattingOptions*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQUrlFormattingOptions(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QUrlFormattingOptions";
+	cdef->free = QUrlFormattingOptions_free;
+	cdef->reftrace = QUrlFormattingOptions_reftrace;
+	cdef->compareTo = QUrlFormattingOptions_compareTo;
 }
 

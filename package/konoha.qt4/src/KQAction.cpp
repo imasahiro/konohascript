@@ -1,14 +1,47 @@
-//
+//QAction QAction.new(QObject parent);
+KMETHOD QAction_new(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QObject*  parent = RawPtr_to(QObject*, sfp[1]);
+	KQAction *ret_v = new KQAction(parent);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	ret_v->setSelf(rptr);
+	RETURN_(rptr);
+}
+
 /*
-//*/
+//QAction QAction.new(String text, QObject parent);
+KMETHOD QAction_new(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	const QString text = String_to(const QString, sfp[1]);
+	QObject*  parent = RawPtr_to(QObject*, sfp[2]);
+	KQAction *ret_v = new KQAction(text, parent);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	ret_v->setSelf(rptr);
+	RETURN_(rptr);
+}
+*/
 /*
-//*/
+//QAction QAction.new(QIcon icon, String text, QObject parent);
+KMETHOD QAction_new(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	const QIcon  icon = *RawPtr_to(const QIcon *, sfp[1]);
+	const QString text = String_to(const QString, sfp[2]);
+	QObject*  parent = RawPtr_to(QObject*, sfp[3]);
+	KQAction *ret_v = new KQAction(icon, text, parent);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	ret_v->setSelf(rptr);
+	RETURN_(rptr);
+}
+*/
 //QActionGroup QAction.getActionGroup();
 KMETHOD QAction_getActionGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QActionGroup* ret_v = qp->actionGroup();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QActionGroup*)ret_v, NULL);
 		RETURN_(rptr);
@@ -22,7 +55,7 @@ KMETHOD QAction_activate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction::ActionEvent event = Int_to(QAction::ActionEvent, sfp[1]);
 		qp->activate(event);
 	}
@@ -34,8 +67,8 @@ KMETHOD QAction_associatedGraphicsWidgets(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
-		QList<QGraphicsWidget*>ret_v = qp->associatedGraphicsWidgets();
+	if (qp) {
+		QList<QGraphicsWidget*> ret_v = qp->associatedGraphicsWidgets();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsWidget"));
@@ -55,8 +88,8 @@ KMETHOD QAction_associatedWidgets(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
-		QList<QWidget*>ret_v = qp->associatedWidgets();
+	if (qp) {
+		QList<QWidget*> ret_v = qp->associatedWidgets();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QWidget"));
@@ -76,7 +109,7 @@ KMETHOD QAction_getAutoRepeat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->autoRepeat();
 		RETURNb_(ret_v);
 	} else {
@@ -89,7 +122,7 @@ KMETHOD QAction_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QVariant ret_v = qp->data();
 		QVariant *ret_v_ = new QVariant(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -104,7 +137,7 @@ KMETHOD QAction_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont ret_v = qp->font();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -119,7 +152,7 @@ KMETHOD QAction_getIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIcon ret_v = qp->icon();
 		QIcon *ret_v_ = new QIcon(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -134,7 +167,7 @@ KMETHOD QAction_getIconText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->iconText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -148,7 +181,7 @@ KMETHOD QAction_isCheckable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isCheckable();
 		RETURNb_(ret_v);
 	} else {
@@ -161,7 +194,7 @@ KMETHOD QAction_isChecked(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isChecked();
 		RETURNb_(ret_v);
 	} else {
@@ -174,7 +207,7 @@ KMETHOD QAction_isEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -187,7 +220,7 @@ KMETHOD QAction_isIconVisibleInMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isIconVisibleInMenu();
 		RETURNb_(ret_v);
 	} else {
@@ -200,7 +233,7 @@ KMETHOD QAction_isSeparator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSeparator();
 		RETURNb_(ret_v);
 	} else {
@@ -213,7 +246,7 @@ KMETHOD QAction_isVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isVisible();
 		RETURNb_(ret_v);
 	} else {
@@ -226,7 +259,7 @@ KMETHOD QAction_getMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMenu* ret_v = qp->menu();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMenu*)ret_v, NULL);
 		RETURN_(rptr);
@@ -240,7 +273,7 @@ KMETHOD QAction_getMenuRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction::MenuRole ret_v = qp->menuRole();
 		RETURNi_(ret_v);
 	} else {
@@ -253,7 +286,7 @@ KMETHOD QAction_parentWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->parentWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -267,7 +300,7 @@ KMETHOD QAction_getPriority(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction::Priority ret_v = qp->priority();
 		RETURNi_(ret_v);
 	} else {
@@ -280,7 +313,7 @@ KMETHOD QAction_setActionGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QActionGroup*  group = RawPtr_to(QActionGroup*, sfp[1]);
 		qp->setActionGroup(group);
 	}
@@ -292,7 +325,7 @@ KMETHOD QAction_setAutoRepeat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setAutoRepeat(arg0);
 	}
@@ -304,7 +337,7 @@ KMETHOD QAction_setCheckable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setCheckable(arg0);
 	}
@@ -316,7 +349,7 @@ KMETHOD QAction_setData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QVariant  userData = *RawPtr_to(const QVariant *, sfp[1]);
 		qp->setData(userData);
 	}
@@ -328,7 +361,7 @@ KMETHOD QAction_setFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont  font = *RawPtr_to(const QFont *, sfp[1]);
 		qp->setFont(font);
 	}
@@ -340,7 +373,7 @@ KMETHOD QAction_setIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[1]);
 		qp->setIcon(icon);
 	}
@@ -352,7 +385,7 @@ KMETHOD QAction_setIconText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setIconText(text);
 	}
@@ -364,7 +397,7 @@ KMETHOD QAction_setIconVisibleInMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setIconVisibleInMenu(visible);
 	}
@@ -376,7 +409,7 @@ KMETHOD QAction_setMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMenu*  menu = RawPtr_to(QMenu*, sfp[1]);
 		qp->setMenu(menu);
 	}
@@ -388,7 +421,7 @@ KMETHOD QAction_setMenuRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction::MenuRole menuRole = Int_to(QAction::MenuRole, sfp[1]);
 		qp->setMenuRole(menuRole);
 	}
@@ -400,7 +433,7 @@ KMETHOD QAction_setPriority(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction::Priority priority = Int_to(QAction::Priority, sfp[1]);
 		qp->setPriority(priority);
 	}
@@ -412,7 +445,7 @@ KMETHOD QAction_setSeparator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool b = Boolean_to(bool, sfp[1]);
 		qp->setSeparator(b);
 	}
@@ -424,7 +457,7 @@ KMETHOD QAction_setShortcut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QKeySequence  shortcut = *RawPtr_to(const QKeySequence *, sfp[1]);
 		qp->setShortcut(shortcut);
 	}
@@ -436,7 +469,7 @@ KMETHOD QAction_setShortcutContext(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ShortcutContext context = Int_to(Qt::ShortcutContext, sfp[1]);
 		qp->setShortcutContext(context);
 	}
@@ -448,7 +481,7 @@ KMETHOD QAction_setShortcuts(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<QKeySequence> shortcuts;
@@ -467,7 +500,7 @@ KMETHOD QAction_setShortcuts(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QKeySequence::StandardKey key = Int_to(QKeySequence::StandardKey, sfp[1]);
 		qp->setShortcuts(key);
 	}
@@ -479,7 +512,7 @@ KMETHOD QAction_setSoftKeyRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction::SoftKeyRole softKeyRole = Int_to(QAction::SoftKeyRole, sfp[1]);
 		qp->setSoftKeyRole(softKeyRole);
 	}
@@ -491,7 +524,7 @@ KMETHOD QAction_setStatusTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString statusTip = String_to(const QString, sfp[1]);
 		qp->setStatusTip(statusTip);
 	}
@@ -503,7 +536,7 @@ KMETHOD QAction_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setText(text);
 	}
@@ -515,7 +548,7 @@ KMETHOD QAction_setToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString tip = String_to(const QString, sfp[1]);
 		qp->setToolTip(tip);
 	}
@@ -527,7 +560,7 @@ KMETHOD QAction_setWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString what = String_to(const QString, sfp[1]);
 		qp->setWhatsThis(what);
 	}
@@ -539,7 +572,7 @@ KMETHOD QAction_getShortcut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QKeySequence ret_v = qp->shortcut();
 		QKeySequence *ret_v_ = new QKeySequence(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -554,7 +587,7 @@ KMETHOD QAction_getShortcutContext(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ShortcutContext ret_v = qp->shortcutContext();
 		RETURNi_(ret_v);
 	} else {
@@ -567,8 +600,8 @@ KMETHOD QAction_getShortcuts(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
-		QList<QKeySequence>ret_v = qp->shortcuts();
+	if (qp) {
+		QList<QKeySequence> ret_v = qp->shortcuts();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QKeySequence"));
@@ -589,7 +622,7 @@ KMETHOD QAction_showStatusText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		bool ret_v = qp->showStatusText(widget);
 		RETURNb_(ret_v);
@@ -603,7 +636,7 @@ KMETHOD QAction_getSoftKeyRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction::SoftKeyRole ret_v = qp->softKeyRole();
 		RETURNi_(ret_v);
 	} else {
@@ -616,7 +649,7 @@ KMETHOD QAction_getStatusTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->statusTip();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -630,7 +663,7 @@ KMETHOD QAction_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->text();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -644,7 +677,7 @@ KMETHOD QAction_getToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->toolTip();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -658,7 +691,7 @@ KMETHOD QAction_getWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->whatsThis();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -672,7 +705,7 @@ KMETHOD QAction_hover(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->hover();
 	}
 	RETURNvoid_();
@@ -683,7 +716,7 @@ KMETHOD QAction_setChecked(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setChecked(arg0);
 	}
@@ -695,7 +728,7 @@ KMETHOD QAction_setDisabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool b = Boolean_to(bool, sfp[1]);
 		qp->setDisabled(b);
 	}
@@ -707,7 +740,7 @@ KMETHOD QAction_setEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setEnabled(arg0);
 	}
@@ -719,7 +752,7 @@ KMETHOD QAction_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setVisible(arg0);
 	}
@@ -731,7 +764,7 @@ KMETHOD QAction_toggle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->toggle();
 	}
 	RETURNvoid_();
@@ -742,7 +775,7 @@ KMETHOD QAction_trigger(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAction *  qp = RawPtr_to(QAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->trigger();
 	}
 	RETURNvoid_();
@@ -861,13 +894,31 @@ bool DummyQAction::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQAction::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, changed_func);
+	KNH_ADDNNREF(ctx, hovered_func);
+	KNH_ADDNNREF(ctx, toggled_func);
+	KNH_ADDNNREF(ctx, triggered_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQAction::connection(QObject *o)
 {
-	connect(o, SIGNAL(changed()), this, SLOT(changedSlot()));
-	connect(o, SIGNAL(hovered()), this, SLOT(hoveredSlot()));
-	connect(o, SIGNAL(toggled(bool)), this, SLOT(toggledSlot(bool)));
-	connect(o, SIGNAL(triggered(bool)), this, SLOT(triggeredSlot(bool)));
+	QAction *p = dynamic_cast<QAction*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(changed()), this, SLOT(changedSlot()));
+		connect(p, SIGNAL(hovered()), this, SLOT(hoveredSlot()));
+		connect(p, SIGNAL(toggled(bool)), this, SLOT(toggledSlot(bool)));
+		connect(p, SIGNAL(triggered(bool)), this, SLOT(triggeredSlot(bool)));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -930,29 +981,9 @@ static void QAction_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAction_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 4;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAction *qp = (KQAction *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->hovered_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->hovered_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->toggled_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->toggled_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->triggered_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->triggered_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -974,15 +1005,6 @@ bool KQAction::event(QEvent *event)
 		return false;
 	}
 	return true;
-}
-
-DEFAPI(void) defQAction(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QAction";
-	cdef->free = QAction_free;
-	cdef->reftrace = QAction_reftrace;
-	cdef->compareTo = QAction_compareTo;
 }
 
 static knh_IntData_t QActionConstInt[] = {
@@ -1008,4 +1030,15 @@ static knh_IntData_t QActionConstInt[] = {
 DEFAPI(void) constQAction(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QActionConstInt);
 }
+
+
+DEFAPI(void) defQAction(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QAction";
+	cdef->free = QAction_free;
+	cdef->reftrace = QAction_reftrace;
+	cdef->compareTo = QAction_compareTo;
+}
+
 

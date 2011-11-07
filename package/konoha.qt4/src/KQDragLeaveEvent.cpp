@@ -59,9 +59,23 @@ bool DummyQDragLeaveEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDragLeaveEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQDragLeaveEvent::connection(QObject *o)
 {
+	QDragLeaveEvent *p = dynamic_cast<QDragLeaveEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -69,7 +83,6 @@ KQDragLeaveEvent::KQDragLeaveEvent() : QDragLeaveEvent()
 {
 	self = NULL;
 	dummy = new DummyQDragLeaveEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDragLeaveEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -124,13 +137,9 @@ static void QDragLeaveEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDragLeaveEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDragLeaveEvent *qp = (KQDragLeaveEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -144,6 +153,8 @@ void KQDragLeaveEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQDragLeaveEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

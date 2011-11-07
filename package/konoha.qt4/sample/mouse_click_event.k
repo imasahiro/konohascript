@@ -21,3 +21,4 @@ v.show();
 s.startTimer(1000);
 
 app.exec();
+

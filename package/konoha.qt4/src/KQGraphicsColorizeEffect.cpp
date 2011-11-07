@@ -14,7 +14,7 @@ KMETHOD QGraphicsColorizeEffect_getColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsColorizeEffect *  qp = RawPtr_to(QGraphicsColorizeEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QColor ret_v = qp->color();
 		QColor *ret_v_ = new QColor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -29,7 +29,7 @@ KMETHOD QGraphicsColorizeEffect_getStrength(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsColorizeEffect *  qp = RawPtr_to(QGraphicsColorizeEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->strength();
 		RETURNf_(ret_v);
 	} else {
@@ -42,7 +42,7 @@ KMETHOD QGraphicsColorizeEffect_setColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsColorizeEffect *  qp = RawPtr_to(QGraphicsColorizeEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor  c = *RawPtr_to(const QColor *, sfp[1]);
 		qp->setColor(c);
 	}
@@ -54,7 +54,7 @@ KMETHOD QGraphicsColorizeEffect_setStrength(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsColorizeEffect *  qp = RawPtr_to(QGraphicsColorizeEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal strength = Float_to(qreal, sfp[1]);
 		qp->setStrength(strength);
 	}
@@ -146,11 +146,27 @@ bool DummyQGraphicsColorizeEffect::signalConnect(knh_Func_t *callback_func, stri
 	}
 }
 
+void DummyQGraphicsColorizeEffect::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, color_changed_func);
+	KNH_ADDNNREF(ctx, strength_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsEffect::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsColorizeEffect::connection(QObject *o)
 {
-	connect(o, SIGNAL(colorChanged(const QColor)), this, SLOT(colorChangedSlot(const QColor)));
-	connect(o, SIGNAL(strengthChanged(qreal)), this, SLOT(strengthChangedSlot(qreal)));
+	QGraphicsColorizeEffect *p = dynamic_cast<QGraphicsColorizeEffect*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(colorChanged(const QColor)), this, SLOT(colorChangedSlot(const QColor)));
+		connect(p, SIGNAL(strengthChanged(qreal)), this, SLOT(strengthChangedSlot(qreal)));
+	}
 	DummyQGraphicsEffect::connection(o);
 }
 
@@ -213,21 +229,9 @@ static void QGraphicsColorizeEffect_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsColorizeEffect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsColorizeEffect *qp = (KQGraphicsColorizeEffect *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->color_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->color_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->strength_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->strength_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -250,6 +254,8 @@ bool KQGraphicsColorizeEffect::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQGraphicsColorizeEffect(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -13,9 +13,8 @@ KMETHOD QErrorMessage_new(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QErrorMessage_qtHandler(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QErrorMessage *  qp = RawPtr_to(QErrorMessage *, sfp[0]);
-	if (qp != NULL) {
-		QErrorMessage* ret_v = qp->qtHandler();
+	if (true) {
+		QErrorMessage* ret_v = QErrorMessage::qtHandler();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QErrorMessage*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -28,7 +27,7 @@ KMETHOD QErrorMessage_showMessage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QErrorMessage *  qp = RawPtr_to(QErrorMessage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString message = String_to(const QString, sfp[1]);
 		qp->showMessage(message);
 	}
@@ -41,7 +40,7 @@ KMETHOD QErrorMessage_showMessage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QErrorMessage *  qp = RawPtr_to(QErrorMessage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString message = String_to(const QString, sfp[1]);
 		const QString type = String_to(const QString, sfp[2]);
 		qp->showMessage(message, type);
@@ -100,9 +99,23 @@ bool DummyQErrorMessage::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQErrorMessage::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQDialog::reftrace(ctx, p, tail_);
+}
 
 void DummyQErrorMessage::connection(QObject *o)
 {
+	QErrorMessage *p = dynamic_cast<QErrorMessage*>(o);
+	if (p != NULL) {
+	}
 	DummyQDialog::connection(o);
 }
 
@@ -165,13 +178,9 @@ static void QErrorMessage_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QErrorMessage_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQErrorMessage *qp = (KQErrorMessage *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -194,6 +203,8 @@ bool KQErrorMessage::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQErrorMessage(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -18,7 +18,7 @@ void concatenateHpp(InputStream ins)
 
 	foreach (String line in ins) {
 		kq_headers <<< "include/K" + line + ".hpp";
-		qt_headers += "#include <" + line + ">\n";
+//		qt_headers += "#include <" + line + ">\n";
 		all_class_decralation += "class " + line + ";\n";
 		all_class_decralation += "class Dummy" + line + ";\n";
 	}

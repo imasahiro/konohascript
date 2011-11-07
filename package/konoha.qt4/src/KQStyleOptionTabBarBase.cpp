@@ -71,9 +71,23 @@ bool DummyQStyleOptionTabBarBase::signalConnect(knh_Func_t *callback_func, strin
 	}
 }
 
+void DummyQStyleOptionTabBarBase::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOption::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionTabBarBase::connection(QObject *o)
 {
+	QStyleOptionTabBarBase *p = dynamic_cast<QStyleOptionTabBarBase*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOption::connection(o);
 }
 
@@ -81,7 +95,6 @@ KQStyleOptionTabBarBase::KQStyleOptionTabBarBase() : QStyleOptionTabBarBase()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionTabBarBase();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionTabBarBase_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,13 +149,9 @@ static void QStyleOptionTabBarBase_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionTabBarBase_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionTabBarBase *qp = (KQStyleOptionTabBarBase *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -157,15 +166,6 @@ void KQStyleOptionTabBarBase::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStyleOptionTabBarBase(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionTabBarBase";
-	cdef->free = QStyleOptionTabBarBase_free;
-	cdef->reftrace = QStyleOptionTabBarBase_reftrace;
-	cdef->compareTo = QStyleOptionTabBarBase_compareTo;
-}
-
 static knh_IntData_t QStyleOptionTabBarBaseConstInt[] = {
 	{"Type", QStyleOptionTabBarBase::Type},
 	{"Version", QStyleOptionTabBarBase::Version},
@@ -175,4 +175,15 @@ static knh_IntData_t QStyleOptionTabBarBaseConstInt[] = {
 DEFAPI(void) constQStyleOptionTabBarBase(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionTabBarBaseConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionTabBarBase(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionTabBarBase";
+	cdef->free = QStyleOptionTabBarBase_free;
+	cdef->reftrace = QStyleOptionTabBarBase_reftrace;
+	cdef->compareTo = QStyleOptionTabBarBase_compareTo;
+}
+
 

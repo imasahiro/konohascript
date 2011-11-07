@@ -3,7 +3,7 @@ KMETHOD QDirModel_columnCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int ret_v = qp->columnCount(parent);
 		RETURNi_(ret_v);
@@ -17,7 +17,7 @@ KMETHOD QDirModel_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int role = Int_to(int, sfp[2]);
 		QVariant ret_v = qp->data(index, role);
@@ -34,7 +34,7 @@ KMETHOD QDirModel_dropMimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMimeData*  data = RawPtr_to(const QMimeData*, sfp[1]);
 		Qt::DropAction action = Int_to(Qt::DropAction, sfp[2]);
 		int row = Int_to(int, sfp[3]);
@@ -47,17 +47,19 @@ KMETHOD QDirModel_dropMimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual @Override int QDirModel.flags(QModelIndex index);
+//@Virtual @Override QtItemFlags QDirModel.flags(QModelIndex index);
 KMETHOD QDirModel_flags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		Qt::ItemFlags ret_v = qp->flags(index);
-		RETURNi_(ret_v);
+		Qt::ItemFlags *ret_v_ = new Qt::ItemFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -66,7 +68,7 @@ KMETHOD QDirModel_hasChildren(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		bool ret_v = qp->hasChildren(parent);
 		RETURNb_(ret_v);
@@ -80,7 +82,7 @@ KMETHOD QDirModel_headerData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int section = Int_to(int, sfp[1]);
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[2]);
 		int role = Int_to(int, sfp[3]);
@@ -98,7 +100,7 @@ KMETHOD QDirModel_index(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -116,7 +118,7 @@ KMETHOD QDirModel_mimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndexList  indexes = *RawPtr_to(const QModelIndexList *, sfp[1]);
 		QMimeData* ret_v = qp->mimeData(indexes);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMimeData*)ret_v, NULL);
@@ -131,7 +133,7 @@ KMETHOD QDirModel_parent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  child = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QModelIndex ret_v = qp->parent(child);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -147,7 +149,7 @@ KMETHOD QDirModel_rowCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int ret_v = qp->rowCount(parent);
 		RETURNi_(ret_v);
@@ -161,7 +163,7 @@ KMETHOD QDirModel_setData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[2]);
 		int role = Int_to(int, sfp[3]);
@@ -177,7 +179,7 @@ KMETHOD QDirModel_sort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[2]);
 		qp->sort(column, order);
@@ -185,16 +187,18 @@ KMETHOD QDirModel_sort(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//@Virtual @Override int QDirModel.supportedDropActions();
+//@Virtual @Override QtDropActions QDirModel.supportedDropActions();
 KMETHOD QDirModel_supportedDropActions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DropActions ret_v = qp->supportedDropActions();
-		RETURNi_(ret_v);
+		Qt::DropActions *ret_v_ = new Qt::DropActions(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -214,7 +218,7 @@ KMETHOD QDirModel_fileIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QIcon ret_v = qp->fileIcon(index);
 		QIcon *ret_v_ = new QIcon(ret_v);
@@ -230,7 +234,7 @@ KMETHOD QDirModel_fileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QString ret_v = qp->fileName(index);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -245,7 +249,7 @@ KMETHOD QDirModel_filePath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QString ret_v = qp->filePath(index);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -260,7 +264,7 @@ KMETHOD QDirModel_getFilter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDir::Filters ret_v = qp->filter();
 		RETURNi_(ret_v);
 	} else {
@@ -274,7 +278,7 @@ KMETHOD QDirModel_index(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString path = String_to(const QString, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		QModelIndex ret_v = qp->index(path, column);
@@ -291,7 +295,7 @@ KMETHOD QDirModel_isDir(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		bool ret_v = qp->isDir(index);
 		RETURNb_(ret_v);
@@ -305,7 +309,7 @@ KMETHOD QDirModel_isReadOnly(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isReadOnly();
 		RETURNb_(ret_v);
 	} else {
@@ -318,7 +322,7 @@ KMETHOD QDirModel_getLazyChildCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->lazyChildCount();
 		RETURNb_(ret_v);
 	} else {
@@ -331,7 +335,7 @@ KMETHOD QDirModel_mkdir(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		const QString name = String_to(const QString, sfp[2]);
 		QModelIndex ret_v = qp->mkdir(parent, name);
@@ -348,7 +352,7 @@ KMETHOD QDirModel_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		bool ret_v = qp->remove(index);
 		RETURNb_(ret_v);
@@ -362,7 +366,7 @@ KMETHOD QDirModel_getResolveSymlinks(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->resolveSymlinks();
 		RETURNb_(ret_v);
 	} else {
@@ -375,7 +379,7 @@ KMETHOD QDirModel_rmdir(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		bool ret_v = qp->rmdir(index);
 		RETURNb_(ret_v);
@@ -389,7 +393,7 @@ KMETHOD QDirModel_setFilter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDir::Filters filters = Int_to(QDir::Filters, sfp[1]);
 		qp->setFilter(filters);
 	}
@@ -401,7 +405,7 @@ KMETHOD QDirModel_setLazyChildCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setLazyChildCount(enable);
 	}
@@ -413,7 +417,7 @@ KMETHOD QDirModel_setReadOnly(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setReadOnly(enable);
 	}
@@ -425,7 +429,7 @@ KMETHOD QDirModel_setResolveSymlinks(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setResolveSymlinks(enable);
 	}
@@ -437,7 +441,7 @@ KMETHOD QDirModel_setSorting(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDir::SortFlags sort = Int_to(QDir::SortFlags, sfp[1]);
 		qp->setSorting(sort);
 	}
@@ -449,7 +453,7 @@ KMETHOD QDirModel_getSorting(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDir::SortFlags ret_v = qp->sorting();
 		RETURNi_(ret_v);
 	} else {
@@ -462,7 +466,7 @@ KMETHOD QDirModel_refresh(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDirModel *  qp = RawPtr_to(QDirModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		qp->refresh(parent);
 	}
@@ -520,9 +524,23 @@ bool DummyQDirModel::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDirModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractItemModel::reftrace(ctx, p, tail_);
+}
 
 void DummyQDirModel::connection(QObject *o)
 {
+	QDirModel *p = dynamic_cast<QDirModel*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractItemModel::connection(o);
 }
 
@@ -585,13 +603,9 @@ static void QDirModel_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDirModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDirModel *qp = (KQDirModel *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -615,15 +629,6 @@ bool KQDirModel::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQDirModel(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QDirModel";
-	cdef->free = QDirModel_free;
-	cdef->reftrace = QDirModel_reftrace;
-	cdef->compareTo = QDirModel_compareTo;
-}
-
 static knh_IntData_t QDirModelConstInt[] = {
 	{"FileIconRole", QDirModel::FileIconRole},
 	{"FilePathRole", QDirModel::FilePathRole},
@@ -634,4 +639,15 @@ static knh_IntData_t QDirModelConstInt[] = {
 DEFAPI(void) constQDirModel(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QDirModelConstInt);
 }
+
+
+DEFAPI(void) defQDirModel(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QDirModel";
+	cdef->free = QDirModel_free;
+	cdef->reftrace = QDirModel_reftrace;
+	cdef->compareTo = QDirModel_compareTo;
+}
+
 

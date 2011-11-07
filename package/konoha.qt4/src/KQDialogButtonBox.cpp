@@ -23,11 +23,11 @@ KMETHOD QDialogButtonBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 */
 /*
-//QDialogButtonBox QDialogButtonBox.new(int buttons, int orientation, QWidget parent);
+//QDialogButtonBox QDialogButtonBox.new(QDialogButtonBoxStandardButtons buttons, int orientation, QWidget parent);
 KMETHOD QDialogButtonBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDialogButtonBox::StandardButtons buttons = Int_to(QDialogButtonBox::StandardButtons, sfp[1]);
+	initFlag(buttons, QDialogButtonBox::StandardButtons, sfp[1]);
 	Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[2]);
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[3]);
 	KQDialogButtonBox *ret_v = new KQDialogButtonBox(buttons, orientation, parent);
@@ -41,7 +41,7 @@ KMETHOD QDialogButtonBox_addButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialogButtonBox *  qp = RawPtr_to(QDialogButtonBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton*  button = RawPtr_to(QAbstractButton*, sfp[1]);
 		QDialogButtonBox::ButtonRole role = Int_to(QDialogButtonBox::ButtonRole, sfp[2]);
 		qp->addButton(button, role);
@@ -55,7 +55,7 @@ KMETHOD QDialogButtonBox_addButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialogButtonBox *  qp = RawPtr_to(QDialogButtonBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		QDialogButtonBox::ButtonRole role = Int_to(QDialogButtonBox::ButtonRole, sfp[2]);
 		QPushButton* ret_v = qp->addButton(text, role);
@@ -72,7 +72,7 @@ KMETHOD QDialogButtonBox_addButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialogButtonBox *  qp = RawPtr_to(QDialogButtonBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDialogButtonBox::StandardButton button = Int_to(QDialogButtonBox::StandardButton, sfp[1]);
 		QPushButton* ret_v = qp->addButton(button);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPushButton*)ret_v, NULL);
@@ -87,7 +87,7 @@ KMETHOD QDialogButtonBox_button(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialogButtonBox *  qp = RawPtr_to(QDialogButtonBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDialogButtonBox::StandardButton which = Int_to(QDialogButtonBox::StandardButton, sfp[1]);
 		QPushButton* ret_v = qp->button(which);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPushButton*)ret_v, NULL);
@@ -102,7 +102,7 @@ KMETHOD QDialogButtonBox_buttonRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialogButtonBox *  qp = RawPtr_to(QDialogButtonBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton*  button = RawPtr_to(QAbstractButton*, sfp[1]);
 		QDialogButtonBox::ButtonRole ret_v = qp->buttonRole(button);
 		RETURNi_(ret_v);
@@ -116,8 +116,8 @@ KMETHOD QDialogButtonBox_buttons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialogButtonBox *  qp = RawPtr_to(QDialogButtonBox *, sfp[0]);
-	if (qp != NULL) {
-		QList<QAbstractButton*>ret_v = qp->buttons();
+	if (qp) {
+		QList<QAbstractButton*> ret_v = qp->buttons();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QAbstractButton"));
@@ -137,7 +137,7 @@ KMETHOD QDialogButtonBox_getCenterButtons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialogButtonBox *  qp = RawPtr_to(QDialogButtonBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->centerButtons();
 		RETURNb_(ret_v);
 	} else {
@@ -150,7 +150,7 @@ KMETHOD QDialogButtonBox_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialogButtonBox *  qp = RawPtr_to(QDialogButtonBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -161,7 +161,7 @@ KMETHOD QDialogButtonBox_getOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialogButtonBox *  qp = RawPtr_to(QDialogButtonBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation ret_v = qp->orientation();
 		RETURNi_(ret_v);
 	} else {
@@ -174,7 +174,7 @@ KMETHOD QDialogButtonBox_removeButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialogButtonBox *  qp = RawPtr_to(QDialogButtonBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton*  button = RawPtr_to(QAbstractButton*, sfp[1]);
 		qp->removeButton(button);
 	}
@@ -186,7 +186,7 @@ KMETHOD QDialogButtonBox_setCenterButtons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialogButtonBox *  qp = RawPtr_to(QDialogButtonBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool center = Boolean_to(bool, sfp[1]);
 		qp->setCenterButtons(center);
 	}
@@ -198,20 +198,20 @@ KMETHOD QDialogButtonBox_setOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialogButtonBox *  qp = RawPtr_to(QDialogButtonBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[1]);
 		qp->setOrientation(orientation);
 	}
 	RETURNvoid_();
 }
 
-//void QDialogButtonBox.setStandardButtons(int buttons);
+//void QDialogButtonBox.setStandardButtons(QDialogButtonBoxStandardButtons buttons);
 KMETHOD QDialogButtonBox_setStandardButtons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialogButtonBox *  qp = RawPtr_to(QDialogButtonBox *, sfp[0]);
-	if (qp != NULL) {
-		QDialogButtonBox::StandardButtons buttons = Int_to(QDialogButtonBox::StandardButtons, sfp[1]);
+	if (qp) {
+		initFlag(buttons, QDialogButtonBox::StandardButtons, sfp[1]);
 		qp->setStandardButtons(buttons);
 	}
 	RETURNvoid_();
@@ -222,7 +222,7 @@ KMETHOD QDialogButtonBox_standardButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialogButtonBox *  qp = RawPtr_to(QDialogButtonBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractButton*  button = RawPtr_to(QAbstractButton*, sfp[1]);
 		QDialogButtonBox::StandardButton ret_v = qp->standardButton(button);
 		RETURNi_(ret_v);
@@ -231,16 +231,18 @@ KMETHOD QDialogButtonBox_standardButton(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QDialogButtonBox.getStandardButtons();
+//QDialogButtonBoxStandardButtons QDialogButtonBox.getStandardButtons();
 KMETHOD QDialogButtonBox_getStandardButtons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialogButtonBox *  qp = RawPtr_to(QDialogButtonBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDialogButtonBox::StandardButtons ret_v = qp->standardButtons();
-		RETURNi_(ret_v);
+		QDialogButtonBox::StandardButtons *ret_v_ = new QDialogButtonBox::StandardButtons(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -357,13 +359,31 @@ bool DummyQDialogButtonBox::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDialogButtonBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, accepted_func);
+	KNH_ADDNNREF(ctx, clicked_func);
+	KNH_ADDNNREF(ctx, help_requested_func);
+	KNH_ADDNNREF(ctx, rejected_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQDialogButtonBox::connection(QObject *o)
 {
-	connect(o, SIGNAL(accepted()), this, SLOT(acceptedSlot()));
-	connect(o, SIGNAL(clicked(QAbstractButton*)), this, SLOT(clickedSlot(QAbstractButton*)));
-	connect(o, SIGNAL(helpRequested()), this, SLOT(helpRequestedSlot()));
-	connect(o, SIGNAL(rejected()), this, SLOT(rejectedSlot()));
+	QDialogButtonBox *p = dynamic_cast<QDialogButtonBox*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(accepted()), this, SLOT(acceptedSlot()));
+		connect(p, SIGNAL(clicked(QAbstractButton*)), this, SLOT(clickedSlot(QAbstractButton*)));
+		connect(p, SIGNAL(helpRequested()), this, SLOT(helpRequestedSlot()));
+		connect(p, SIGNAL(rejected()), this, SLOT(rejectedSlot()));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -426,29 +446,9 @@ static void QDialogButtonBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDialogButtonBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 4;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDialogButtonBox *qp = (KQDialogButtonBox *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->accepted_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->accepted_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->clicked_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->clicked_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->help_requested_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->help_requested_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->rejected_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->rejected_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -470,15 +470,6 @@ bool KQDialogButtonBox::event(QEvent *event)
 		return false;
 	}
 	return true;
-}
-
-DEFAPI(void) defQDialogButtonBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QDialogButtonBox";
-	cdef->free = QDialogButtonBox_free;
-	cdef->reftrace = QDialogButtonBox_reftrace;
-	cdef->compareTo = QDialogButtonBox_compareTo;
 }
 
 static knh_IntData_t QDialogButtonBoxConstInt[] = {
@@ -520,5 +511,179 @@ static knh_IntData_t QDialogButtonBoxConstInt[] = {
 
 DEFAPI(void) constQDialogButtonBox(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QDialogButtonBoxConstInt);
+}
+
+
+DEFAPI(void) defQDialogButtonBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QDialogButtonBox";
+	cdef->free = QDialogButtonBox_free;
+	cdef->reftrace = QDialogButtonBox_reftrace;
+	cdef->compareTo = QDialogButtonBox_compareTo;
+}
+
+//## QDialogButtonBoxStandardButtons QDialogButtonBoxStandardButtons.new(int value);
+KMETHOD QDialogButtonBoxStandardButtons_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDialogButtonBox::StandardButton i = Int_to(QDialogButtonBox::StandardButton, sfp[1]);
+	QDialogButtonBox::StandardButtons *ret_v = new QDialogButtonBox::StandardButtons(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QDialogButtonBoxStandardButtons QDialogButtonBoxStandardButtons.and(int mask);
+KMETHOD QDialogButtonBoxStandardButtons_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDialogButtonBox::StandardButtons *qp = RawPtr_to(QDialogButtonBox::StandardButtons*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QDialogButtonBox::StandardButtons ret = ((*qp) & i);
+		QDialogButtonBox::StandardButtons *ret_ = new QDialogButtonBox::StandardButtons(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QDialogButtonBoxStandardButtons QDialogButtonBoxStandardButtons.iand(QDialogButtonBox::QDialogButtonBoxStandardButtons other);
+KMETHOD QDialogButtonBoxStandardButtons_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDialogButtonBox::StandardButtons *qp = RawPtr_to(QDialogButtonBox::StandardButtons*, sfp[0]);
+	if (qp != NULL) {
+		QDialogButtonBox::StandardButtons *other = RawPtr_to(QDialogButtonBox::StandardButtons *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QDialogButtonBoxStandardButtons QDialogButtonBoxStandardButtons.or(QDialogButtonBoxStandardButtons f);
+KMETHOD QDialogButtonBoxStandardButtons_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QDialogButtonBox::StandardButtons *qp = RawPtr_to(QDialogButtonBox::StandardButtons*, sfp[0]);
+	if (qp != NULL) {
+		QDialogButtonBox::StandardButtons *f = RawPtr_to(QDialogButtonBox::StandardButtons*, sfp[1]);
+		QDialogButtonBox::StandardButtons ret = ((*qp) | (*f));
+		QDialogButtonBox::StandardButtons *ret_ = new QDialogButtonBox::StandardButtons(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QDialogButtonBoxStandardButtons QDialogButtonBoxStandardButtons.ior(QDialogButtonBox::QDialogButtonBoxStandardButtons other);
+KMETHOD QDialogButtonBoxStandardButtons_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDialogButtonBox::StandardButtons *qp = RawPtr_to(QDialogButtonBox::StandardButtons*, sfp[0]);
+	if (qp != NULL) {
+		QDialogButtonBox::StandardButtons *other = RawPtr_to(QDialogButtonBox::StandardButtons *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QDialogButtonBoxStandardButtons QDialogButtonBoxStandardButtons.xor(QDialogButtonBoxStandardButtons f);
+KMETHOD QDialogButtonBoxStandardButtons_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QDialogButtonBox::StandardButtons *qp = RawPtr_to(QDialogButtonBox::StandardButtons*, sfp[0]);
+	if (qp != NULL) {
+		QDialogButtonBox::StandardButtons *f = RawPtr_to(QDialogButtonBox::StandardButtons*, sfp[1]);
+		QDialogButtonBox::StandardButtons ret = ((*qp) ^ (*f));
+		QDialogButtonBox::StandardButtons *ret_ = new QDialogButtonBox::StandardButtons(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QDialogButtonBoxStandardButtons QDialogButtonBoxStandardButtons.ixor(QDialogButtonBox::QDialogButtonBoxStandardButtons other);
+KMETHOD QDialogButtonBoxStandardButtons_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDialogButtonBox::StandardButtons *qp = RawPtr_to(QDialogButtonBox::StandardButtons*, sfp[0]);
+	if (qp != NULL) {
+		QDialogButtonBox::StandardButtons *other = RawPtr_to(QDialogButtonBox::StandardButtons *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QDialogButtonBoxStandardButtons.testFlag(int flag);
+KMETHOD QDialogButtonBoxStandardButtons_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDialogButtonBox::StandardButtons *qp = RawPtr_to(QDialogButtonBox::StandardButtons *, sfp[0]);
+	if (qp != NULL) {
+		QDialogButtonBox::StandardButton flag = Int_to(QDialogButtonBox::StandardButton, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QDialogButtonBoxStandardButtons.value();
+KMETHOD QDialogButtonBoxStandardButtons_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDialogButtonBox::StandardButtons *qp = RawPtr_to(QDialogButtonBox::StandardButtons *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QDialogButtonBoxStandardButtons_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QDialogButtonBox::StandardButtons *qp = (QDialogButtonBox::StandardButtons *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QDialogButtonBoxStandardButtons_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QDialogButtonBox::StandardButtons *qp = (QDialogButtonBox::StandardButtons *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QDialogButtonBoxStandardButtons_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QDialogButtonBox::StandardButtons*)p1->rawptr);
+//		int v2 = int(*(QDialogButtonBox::StandardButtons*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QDialogButtonBox::StandardButtons v1 = *(QDialogButtonBox::StandardButtons*)p1->rawptr;
+		QDialogButtonBox::StandardButtons v2 = *(QDialogButtonBox::StandardButtons*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQDialogButtonBoxStandardButtons(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QDialogButtonBoxStandardButtons";
+	cdef->free = QDialogButtonBoxStandardButtons_free;
+	cdef->reftrace = QDialogButtonBoxStandardButtons_reftrace;
+	cdef->compareTo = QDialogButtonBoxStandardButtons_compareTo;
 }
 

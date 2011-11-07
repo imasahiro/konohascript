@@ -38,7 +38,7 @@ KMETHOD QSizeF_boundedTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizeF *  qp = RawPtr_to(QSizeF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSizeF  otherSize = *RawPtr_to(const QSizeF *, sfp[1]);
 		QSizeF ret_v = qp->boundedTo(otherSize);
 		QSizeF *ret_v_ = new QSizeF(ret_v);
@@ -54,7 +54,7 @@ KMETHOD QSizeF_expandedTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizeF *  qp = RawPtr_to(QSizeF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSizeF  otherSize = *RawPtr_to(const QSizeF *, sfp[1]);
 		QSizeF ret_v = qp->expandedTo(otherSize);
 		QSizeF *ret_v_ = new QSizeF(ret_v);
@@ -70,7 +70,7 @@ KMETHOD QSizeF_getHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizeF *  qp = RawPtr_to(QSizeF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->height();
 		RETURNf_(ret_v);
 	} else {
@@ -83,34 +83,8 @@ KMETHOD QSizeF_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizeF *  qp = RawPtr_to(QSizeF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QSizeF.isNull();
-KMETHOD QSizeF_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QSizeF *  qp = RawPtr_to(QSizeF *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QSizeF.isValid();
-KMETHOD QSizeF_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QSizeF *  qp = RawPtr_to(QSizeF *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -122,7 +96,7 @@ KMETHOD QSizeF_rheight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizeF *  qp = RawPtr_to(QSizeF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->rheight();
 		RETURNf_(ret_v);
 	} else {
@@ -135,7 +109,7 @@ KMETHOD QSizeF_rwidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizeF *  qp = RawPtr_to(QSizeF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->rwidth();
 		RETURNf_(ret_v);
 	} else {
@@ -148,7 +122,7 @@ KMETHOD QSizeF_scale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizeF *  qp = RawPtr_to(QSizeF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal width = Float_to(qreal, sfp[1]);
 		qreal height = Float_to(qreal, sfp[2]);
 		Qt::AspectRatioMode mode = Int_to(Qt::AspectRatioMode, sfp[3]);
@@ -163,7 +137,7 @@ KMETHOD QSizeF_scale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizeF *  qp = RawPtr_to(QSizeF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSizeF  size = *RawPtr_to(const QSizeF *, sfp[1]);
 		Qt::AspectRatioMode mode = Int_to(Qt::AspectRatioMode, sfp[2]);
 		qp->scale(size, mode);
@@ -176,7 +150,7 @@ KMETHOD QSizeF_setHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizeF *  qp = RawPtr_to(QSizeF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal height = Float_to(qreal, sfp[1]);
 		qp->setHeight(height);
 	}
@@ -188,7 +162,7 @@ KMETHOD QSizeF_setWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizeF *  qp = RawPtr_to(QSizeF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal width = Float_to(qreal, sfp[1]);
 		qp->setWidth(width);
 	}
@@ -200,7 +174,7 @@ KMETHOD QSizeF_toSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizeF *  qp = RawPtr_to(QSizeF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->toSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -215,7 +189,7 @@ KMETHOD QSizeF_transpose(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizeF *  qp = RawPtr_to(QSizeF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->transpose();
 	}
 	RETURNvoid_();
@@ -226,7 +200,7 @@ KMETHOD QSizeF_getWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSizeF *  qp = RawPtr_to(QSizeF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->width();
 		RETURNf_(ret_v);
 	} else {
@@ -234,6 +208,24 @@ KMETHOD QSizeF_getWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QSizeF.parents();
+KMETHOD QSizeF_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QSizeF *qp = RawPtr_to(QSizeF*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQSizeF::DummyQSizeF()
 {
@@ -282,17 +274,28 @@ bool DummyQSizeF::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSizeF::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQSizeF::connection(QObject *o)
 {
-	return;
+	QSizeF *p = dynamic_cast<QSizeF*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQSizeF::KQSizeF() : QSizeF()
 {
 	self = NULL;
 	dummy = new DummyQSizeF();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QSizeF_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -347,19 +350,15 @@ static void QSizeF_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSizeF_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSizeF *qp = (KQSizeF *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
 static int QSizeF_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
-	return (p1->rawptr == p2->rawptr ? 0 : 1);
+	return (*static_cast<QSizeF*>(p1->rawptr) == *static_cast<QSizeF*>(p2->rawptr) ? 0 : 1);
 }
 
 void KQSizeF::setSelf(knh_RawPtr_t *ptr)
@@ -367,6 +366,8 @@ void KQSizeF::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQSizeF(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

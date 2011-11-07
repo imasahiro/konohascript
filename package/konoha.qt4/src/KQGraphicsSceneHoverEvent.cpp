@@ -3,7 +3,7 @@ KMETHOD QGraphicsSceneHoverEvent_lastPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneHoverEvent *  qp = RawPtr_to(QGraphicsSceneHoverEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->lastPos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QGraphicsSceneHoverEvent_lastScenePos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneHoverEvent *  qp = RawPtr_to(QGraphicsSceneHoverEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->lastScenePos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -33,7 +33,7 @@ KMETHOD QGraphicsSceneHoverEvent_lastScreenPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneHoverEvent *  qp = RawPtr_to(QGraphicsSceneHoverEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPoint ret_v = qp->lastScreenPos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -43,16 +43,18 @@ KMETHOD QGraphicsSceneHoverEvent_lastScreenPos(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QGraphicsSceneHoverEvent.modifiers();
+//QtKeyboardModifiers QGraphicsSceneHoverEvent.modifiers();
 KMETHOD QGraphicsSceneHoverEvent_modifiers(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneHoverEvent *  qp = RawPtr_to(QGraphicsSceneHoverEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::KeyboardModifiers ret_v = qp->modifiers();
-		RETURNi_(ret_v);
+		Qt::KeyboardModifiers *ret_v_ = new Qt::KeyboardModifiers(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -61,7 +63,7 @@ KMETHOD QGraphicsSceneHoverEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneHoverEvent *  qp = RawPtr_to(QGraphicsSceneHoverEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->pos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -76,7 +78,7 @@ KMETHOD QGraphicsSceneHoverEvent_scenePos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneHoverEvent *  qp = RawPtr_to(QGraphicsSceneHoverEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->scenePos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -91,7 +93,7 @@ KMETHOD QGraphicsSceneHoverEvent_screenPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneHoverEvent *  qp = RawPtr_to(QGraphicsSceneHoverEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPoint ret_v = qp->screenPos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -152,17 +154,24 @@ bool DummyQGraphicsSceneHoverEvent::signalConnect(knh_Func_t *callback_func, str
 	}
 }
 
+void DummyQGraphicsSceneHoverEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsSceneEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsSceneHoverEvent::connection(QObject *o)
 {
+	QGraphicsSceneHoverEvent *p = dynamic_cast<QGraphicsSceneHoverEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQGraphicsSceneEvent::connection(o);
-}
-
-KQGraphicsSceneHoverEvent::KQGraphicsSceneHoverEvent() : QGraphicsSceneHoverEvent()
-{
-	self = NULL;
-	dummy = new DummyQGraphicsSceneHoverEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsSceneHoverEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -217,13 +226,9 @@ static void QGraphicsSceneHoverEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsSceneHoverEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneHoverEvent *qp = (KQGraphicsSceneHoverEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -237,6 +242,8 @@ void KQGraphicsSceneHoverEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGraphicsSceneHoverEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

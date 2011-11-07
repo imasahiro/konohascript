@@ -1,6 +1,6 @@
 void genCMake(BindInfo[] binded_class)
 {
-	print "genCMake";
+	OUT << "genCMake" << EOL;
 	String cppsrc = "";
 	String hppsrc = "";
 

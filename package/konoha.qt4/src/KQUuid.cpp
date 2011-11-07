@@ -54,25 +54,12 @@ KMETHOD QUuid_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 */
-////boolean QUuid.isNull();
-KMETHOD QUuid_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QUuid *  qp = RawPtr_to(QUuid *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
 //String QUuid.toString();
 KMETHOD QUuid_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUuid *  qp = RawPtr_to(QUuid *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->toString();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -86,7 +73,7 @@ KMETHOD QUuid_variant(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUuid *  qp = RawPtr_to(QUuid *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QUuid::Variant ret_v = qp->variant();
 		RETURNi_(ret_v);
 	} else {
@@ -99,7 +86,7 @@ KMETHOD QUuid_version(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUuid *  qp = RawPtr_to(QUuid *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QUuid::Version ret_v = qp->version();
 		RETURNi_(ret_v);
 	} else {
@@ -111,9 +98,8 @@ KMETHOD QUuid_version(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QUuid_createUuid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QUuid *  qp = RawPtr_to(QUuid *, sfp[0]);
-	if (qp != NULL) {
-		QUuid ret_v = qp->createUuid();
+	if (true) {
+		QUuid ret_v = QUuid::createUuid();
 		QUuid *ret_v_ = new QUuid(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -122,6 +108,24 @@ KMETHOD QUuid_createUuid(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QUuid.parents();
+KMETHOD QUuid_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QUuid *qp = RawPtr_to(QUuid*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQUuid::DummyQUuid()
 {
@@ -170,17 +174,28 @@ bool DummyQUuid::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQUuid::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQUuid::connection(QObject *o)
 {
-	return;
+	QUuid *p = dynamic_cast<QUuid*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQUuid::KQUuid() : QUuid()
 {
 	self = NULL;
 	dummy = new DummyQUuid();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QUuid_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -235,13 +250,9 @@ static void QUuid_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QUuid_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQUuid *qp = (KQUuid *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -254,15 +265,6 @@ void KQUuid::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQUuid(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QUuid";
-	cdef->free = QUuid_free;
-	cdef->reftrace = QUuid_reftrace;
-	cdef->compareTo = QUuid_compareTo;
 }
 
 static knh_IntData_t QUuidConstInt[] = {
@@ -282,4 +284,15 @@ static knh_IntData_t QUuidConstInt[] = {
 DEFAPI(void) constQUuid(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QUuidConstInt);
 }
+
+
+DEFAPI(void) defQUuid(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QUuid";
+	cdef->free = QUuid_free;
+	cdef->reftrace = QUuid_reftrace;
+	cdef->compareTo = QUuid_compareTo;
+}
+
 

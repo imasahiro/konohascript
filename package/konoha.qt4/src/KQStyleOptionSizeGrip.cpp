@@ -71,9 +71,23 @@ bool DummyQStyleOptionSizeGrip::signalConnect(knh_Func_t *callback_func, string 
 	}
 }
 
+void DummyQStyleOptionSizeGrip::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOptionComplex::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionSizeGrip::connection(QObject *o)
 {
+	QStyleOptionSizeGrip *p = dynamic_cast<QStyleOptionSizeGrip*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOptionComplex::connection(o);
 }
 
@@ -81,7 +95,6 @@ KQStyleOptionSizeGrip::KQStyleOptionSizeGrip() : QStyleOptionSizeGrip()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionSizeGrip();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionSizeGrip_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,13 +149,9 @@ static void QStyleOptionSizeGrip_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionSizeGrip_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionSizeGrip *qp = (KQStyleOptionSizeGrip *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -157,15 +166,6 @@ void KQStyleOptionSizeGrip::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStyleOptionSizeGrip(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionSizeGrip";
-	cdef->free = QStyleOptionSizeGrip_free;
-	cdef->reftrace = QStyleOptionSizeGrip_reftrace;
-	cdef->compareTo = QStyleOptionSizeGrip_compareTo;
-}
-
 static knh_IntData_t QStyleOptionSizeGripConstInt[] = {
 	{"Type", QStyleOptionSizeGrip::Type},
 	{"Version", QStyleOptionSizeGrip::Version},
@@ -175,4 +175,15 @@ static knh_IntData_t QStyleOptionSizeGripConstInt[] = {
 DEFAPI(void) constQStyleOptionSizeGrip(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionSizeGripConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionSizeGrip(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionSizeGrip";
+	cdef->free = QStyleOptionSizeGrip_free;
+	cdef->reftrace = QStyleOptionSizeGrip_reftrace;
+	cdef->compareTo = QStyleOptionSizeGrip_compareTo;
+}
+
 

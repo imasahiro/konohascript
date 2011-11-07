@@ -27,7 +27,7 @@ KMETHOD QSharedMemory_attach(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSharedMemory *  qp = RawPtr_to(QSharedMemory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSharedMemory::AccessMode mode = Int_to(QSharedMemory::AccessMode, sfp[1]);
 		bool ret_v = qp->attach(mode);
 		RETURNb_(ret_v);
@@ -41,7 +41,7 @@ KMETHOD QSharedMemory_constData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSharedMemory *  qp = RawPtr_to(QSharedMemory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const void* ret_v = qp->constData();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (void*)ret_v, NULL);
 		RETURN_(rptr);
@@ -55,7 +55,7 @@ KMETHOD QSharedMemory_create(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSharedMemory *  qp = RawPtr_to(QSharedMemory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int size = Int_to(int, sfp[1]);
 		QSharedMemory::AccessMode mode = Int_to(QSharedMemory::AccessMode, sfp[2]);
 		bool ret_v = qp->create(size, mode);
@@ -70,7 +70,7 @@ KMETHOD QSharedMemory_data(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSharedMemory *  qp = RawPtr_to(QSharedMemory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		void* ret_v = qp->data();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (void*)ret_v, NULL);
 		RETURN_(rptr);
@@ -85,7 +85,7 @@ KMETHOD QSharedMemory_data(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSharedMemory *  qp = RawPtr_to(QSharedMemory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const void* ret_v = qp->data();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (void*)ret_v, NULL);
 		RETURN_(rptr);
@@ -99,7 +99,7 @@ KMETHOD QSharedMemory_detach(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSharedMemory *  qp = RawPtr_to(QSharedMemory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->detach();
 		RETURNb_(ret_v);
 	} else {
@@ -112,7 +112,7 @@ KMETHOD QSharedMemory_error(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSharedMemory *  qp = RawPtr_to(QSharedMemory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSharedMemory::SharedMemoryError ret_v = qp->error();
 		RETURNi_(ret_v);
 	} else {
@@ -125,7 +125,7 @@ KMETHOD QSharedMemory_errorString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSharedMemory *  qp = RawPtr_to(QSharedMemory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->errorString();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -139,7 +139,7 @@ KMETHOD QSharedMemory_isAttached(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSharedMemory *  qp = RawPtr_to(QSharedMemory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isAttached();
 		RETURNb_(ret_v);
 	} else {
@@ -152,7 +152,7 @@ KMETHOD QSharedMemory_getKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSharedMemory *  qp = RawPtr_to(QSharedMemory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->key();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -166,7 +166,7 @@ KMETHOD QSharedMemory_lock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSharedMemory *  qp = RawPtr_to(QSharedMemory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->lock();
 		RETURNb_(ret_v);
 	} else {
@@ -179,7 +179,7 @@ KMETHOD QSharedMemory_setKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSharedMemory *  qp = RawPtr_to(QSharedMemory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString key = String_to(const QString, sfp[1]);
 		qp->setKey(key);
 	}
@@ -191,7 +191,7 @@ KMETHOD QSharedMemory_size(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSharedMemory *  qp = RawPtr_to(QSharedMemory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->size();
 		RETURNi_(ret_v);
 	} else {
@@ -204,7 +204,7 @@ KMETHOD QSharedMemory_unlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSharedMemory *  qp = RawPtr_to(QSharedMemory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->unlock();
 		RETURNb_(ret_v);
 	} else {
@@ -263,9 +263,23 @@ bool DummyQSharedMemory::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSharedMemory::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQSharedMemory::connection(QObject *o)
 {
+	QSharedMemory *p = dynamic_cast<QSharedMemory*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
 }
 
@@ -328,13 +342,9 @@ static void QSharedMemory_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSharedMemory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSharedMemory *qp = (KQSharedMemory *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -358,15 +368,6 @@ bool KQSharedMemory::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQSharedMemory(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QSharedMemory";
-	cdef->free = QSharedMemory_free;
-	cdef->reftrace = QSharedMemory_reftrace;
-	cdef->compareTo = QSharedMemory_compareTo;
-}
-
 static knh_IntData_t QSharedMemoryConstInt[] = {
 	{"ReadOnly", QSharedMemory::ReadOnly},
 	{"ReadWrite", QSharedMemory::ReadWrite},
@@ -385,4 +386,15 @@ static knh_IntData_t QSharedMemoryConstInt[] = {
 DEFAPI(void) constQSharedMemory(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QSharedMemoryConstInt);
 }
+
+
+DEFAPI(void) defQSharedMemory(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QSharedMemory";
+	cdef->free = QSharedMemory_free;
+	cdef->reftrace = QSharedMemory_reftrace;
+	cdef->compareTo = QSharedMemory_compareTo;
+}
+
 

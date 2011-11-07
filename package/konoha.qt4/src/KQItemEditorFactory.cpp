@@ -13,7 +13,7 @@ KMETHOD QItemEditorFactory_createEditor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QItemEditorFactory *  qp = RawPtr_to(QItemEditorFactory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QVariant::Type type = Int_to(QVariant::Type, sfp[1]);
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 		QWidget* ret_v = qp->createEditor(type, parent);
@@ -29,7 +29,7 @@ KMETHOD QItemEditorFactory_registerEditor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QItemEditorFactory *  qp = RawPtr_to(QItemEditorFactory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QVariant::Type type = Int_to(QVariant::Type, sfp[1]);
 		QItemEditorCreatorBase*  creator = RawPtr_to(QItemEditorCreatorBase*, sfp[2]);
 		qp->registerEditor(type, creator);
@@ -42,7 +42,7 @@ KMETHOD QItemEditorFactory_valuePropertyName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QItemEditorFactory *  qp = RawPtr_to(QItemEditorFactory *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QVariant::Type type = Int_to(QVariant::Type, sfp[1]);
 		QByteArray ret_v = qp->valuePropertyName(type);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -57,9 +57,8 @@ KMETHOD QItemEditorFactory_valuePropertyName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QItemEditorFactory_getDefaultFactory(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QItemEditorFactory *  qp = RawPtr_to(QItemEditorFactory *, sfp[0]);
-	if (qp != NULL) {
-		const QItemEditorFactory* ret_v = qp->defaultFactory();
+	if (true) {
+		const QItemEditorFactory* ret_v = QItemEditorFactory::defaultFactory();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QItemEditorFactory*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -71,14 +70,31 @@ KMETHOD QItemEditorFactory_getDefaultFactory(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QItemEditorFactory_setDefaultFactory(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QItemEditorFactory *  qp = RawPtr_to(QItemEditorFactory *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QItemEditorFactory*  factory = RawPtr_to(QItemEditorFactory*, sfp[1]);
-		qp->setDefaultFactory(factory);
+		QItemEditorFactory::setDefaultFactory(factory);
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QItemEditorFactory.parents();
+KMETHOD QItemEditorFactory_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QItemEditorFactory *qp = RawPtr_to(QItemEditorFactory*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQItemEditorFactory::DummyQItemEditorFactory()
 {
@@ -127,17 +143,28 @@ bool DummyQItemEditorFactory::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
+void DummyQItemEditorFactory::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQItemEditorFactory::connection(QObject *o)
 {
-	return;
+	QItemEditorFactory *p = dynamic_cast<QItemEditorFactory*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQItemEditorFactory::KQItemEditorFactory() : QItemEditorFactory()
 {
 	self = NULL;
 	dummy = new DummyQItemEditorFactory();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QItemEditorFactory_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -192,13 +219,9 @@ static void QItemEditorFactory_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QItemEditorFactory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQItemEditorFactory *qp = (KQItemEditorFactory *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -212,6 +235,8 @@ void KQItemEditorFactory::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQItemEditorFactory(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

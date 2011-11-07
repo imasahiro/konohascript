@@ -61,9 +61,23 @@ bool DummyQGenericReturnArgument::signalConnect(knh_Func_t *callback_func, strin
 	}
 }
 
+void DummyQGenericReturnArgument::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGenericArgument::reftrace(ctx, p, tail_);
+}
 
 void DummyQGenericReturnArgument::connection(QObject *o)
 {
+	QGenericReturnArgument *p = dynamic_cast<QGenericReturnArgument*>(o);
+	if (p != NULL) {
+	}
 	DummyQGenericArgument::connection(o);
 }
 
@@ -71,7 +85,6 @@ KQGenericReturnArgument::KQGenericReturnArgument(const char* name, void* data) :
 {
 	self = NULL;
 	dummy = new DummyQGenericReturnArgument();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGenericReturnArgument_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -126,13 +139,9 @@ static void QGenericReturnArgument_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGenericReturnArgument_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGenericReturnArgument *qp = (KQGenericReturnArgument *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -146,6 +155,8 @@ void KQGenericReturnArgument::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGenericReturnArgument(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

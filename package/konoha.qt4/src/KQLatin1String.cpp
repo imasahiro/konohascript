@@ -14,7 +14,7 @@ KMETHOD QLatin1String_latin1(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLatin1String *  qp = RawPtr_to(QLatin1String *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char* ret_v = qp->latin1();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (char*)ret_v, NULL);
 		RETURN_(rptr);
@@ -23,6 +23,24 @@ KMETHOD QLatin1String_latin1(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QLatin1String.parents();
+KMETHOD QLatin1String_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QLatin1String *qp = RawPtr_to(QLatin1String*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQLatin1String::DummyQLatin1String()
 {
@@ -71,17 +89,28 @@ bool DummyQLatin1String::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQLatin1String::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQLatin1String::connection(QObject *o)
 {
-	return;
+	QLatin1String *p = dynamic_cast<QLatin1String*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQLatin1String::KQLatin1String(const char* str) : QLatin1String(str)
 {
 	self = NULL;
 	dummy = new DummyQLatin1String();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QLatin1String_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,13 +165,9 @@ static void QLatin1String_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QLatin1String_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQLatin1String *qp = (KQLatin1String *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -156,6 +181,8 @@ void KQLatin1String::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQLatin1String(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -71,9 +71,23 @@ bool DummyQStyleOptionComboBox::signalConnect(knh_Func_t *callback_func, string 
 	}
 }
 
+void DummyQStyleOptionComboBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOptionComplex::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionComboBox::connection(QObject *o)
 {
+	QStyleOptionComboBox *p = dynamic_cast<QStyleOptionComboBox*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOptionComplex::connection(o);
 }
 
@@ -81,7 +95,6 @@ KQStyleOptionComboBox::KQStyleOptionComboBox() : QStyleOptionComboBox()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionComboBox();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionComboBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,13 +149,9 @@ static void QStyleOptionComboBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionComboBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionComboBox *qp = (KQStyleOptionComboBox *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -157,15 +166,6 @@ void KQStyleOptionComboBox::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStyleOptionComboBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionComboBox";
-	cdef->free = QStyleOptionComboBox_free;
-	cdef->reftrace = QStyleOptionComboBox_reftrace;
-	cdef->compareTo = QStyleOptionComboBox_compareTo;
-}
-
 static knh_IntData_t QStyleOptionComboBoxConstInt[] = {
 	{"Type", QStyleOptionComboBox::Type},
 	{"Version", QStyleOptionComboBox::Version},
@@ -175,4 +175,15 @@ static knh_IntData_t QStyleOptionComboBoxConstInt[] = {
 DEFAPI(void) constQStyleOptionComboBox(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionComboBoxConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionComboBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionComboBox";
+	cdef->free = QStyleOptionComboBox_free;
+	cdef->reftrace = QStyleOptionComboBox_reftrace;
+	cdef->compareTo = QStyleOptionComboBox_compareTo;
+}
+
 

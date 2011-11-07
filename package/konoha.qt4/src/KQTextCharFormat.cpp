@@ -13,7 +13,7 @@ KMETHOD QTextCharFormat_getAnchorHref(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->anchorHref();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -27,7 +27,7 @@ KMETHOD QTextCharFormat_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont ret_v = qp->font();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -42,7 +42,7 @@ KMETHOD QTextCharFormat_getFontCapitalization(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont::Capitalization ret_v = qp->fontCapitalization();
 		RETURNi_(ret_v);
 	} else {
@@ -55,7 +55,7 @@ KMETHOD QTextCharFormat_getFontFamily(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->fontFamily();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -69,7 +69,7 @@ KMETHOD QTextCharFormat_getFontFixedPitch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->fontFixedPitch();
 		RETURNb_(ret_v);
 	} else {
@@ -82,7 +82,7 @@ KMETHOD QTextCharFormat_getFontItalic(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->fontItalic();
 		RETURNb_(ret_v);
 	} else {
@@ -95,7 +95,7 @@ KMETHOD QTextCharFormat_getFontKerning(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->fontKerning();
 		RETURNb_(ret_v);
 	} else {
@@ -108,7 +108,7 @@ KMETHOD QTextCharFormat_getFontLetterSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->fontLetterSpacing();
 		RETURNf_(ret_v);
 	} else {
@@ -121,7 +121,7 @@ KMETHOD QTextCharFormat_getFontOverline(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->fontOverline();
 		RETURNb_(ret_v);
 	} else {
@@ -134,7 +134,7 @@ KMETHOD QTextCharFormat_getFontPointSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->fontPointSize();
 		RETURNf_(ret_v);
 	} else {
@@ -147,7 +147,7 @@ KMETHOD QTextCharFormat_getFontStrikeOut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->fontStrikeOut();
 		RETURNb_(ret_v);
 	} else {
@@ -160,7 +160,7 @@ KMETHOD QTextCharFormat_getFontStyleHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont::StyleHint ret_v = qp->fontStyleHint();
 		RETURNi_(ret_v);
 	} else {
@@ -173,7 +173,7 @@ KMETHOD QTextCharFormat_getFontStyleStrategy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont::StyleStrategy ret_v = qp->fontStyleStrategy();
 		RETURNi_(ret_v);
 	} else {
@@ -186,7 +186,7 @@ KMETHOD QTextCharFormat_getFontUnderline(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->fontUnderline();
 		RETURNb_(ret_v);
 	} else {
@@ -199,7 +199,7 @@ KMETHOD QTextCharFormat_getFontWeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->fontWeight();
 		RETURNi_(ret_v);
 	} else {
@@ -212,7 +212,7 @@ KMETHOD QTextCharFormat_getFontWordSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->fontWordSpacing();
 		RETURNf_(ret_v);
 	} else {
@@ -225,21 +225,8 @@ KMETHOD QTextCharFormat_isAnchor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isAnchor();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QTextCharFormat.isValid();
-KMETHOD QTextCharFormat_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -251,7 +238,7 @@ KMETHOD QTextCharFormat_setAnchor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool anchor = Boolean_to(bool, sfp[1]);
 		qp->setAnchor(anchor);
 	}
@@ -263,7 +250,7 @@ KMETHOD QTextCharFormat_setAnchorHref(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString value = String_to(const QString, sfp[1]);
 		qp->setAnchorHref(value);
 	}
@@ -275,7 +262,7 @@ KMETHOD QTextCharFormat_setFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont  font = *RawPtr_to(const QFont *, sfp[1]);
 		qp->setFont(font);
 	}
@@ -287,7 +274,7 @@ KMETHOD QTextCharFormat_setFontCapitalization(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont::Capitalization capitalization = Int_to(QFont::Capitalization, sfp[1]);
 		qp->setFontCapitalization(capitalization);
 	}
@@ -299,7 +286,7 @@ KMETHOD QTextCharFormat_setFontFamily(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString family = String_to(const QString, sfp[1]);
 		qp->setFontFamily(family);
 	}
@@ -311,7 +298,7 @@ KMETHOD QTextCharFormat_setFontFixedPitch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool fixedPitch = Boolean_to(bool, sfp[1]);
 		qp->setFontFixedPitch(fixedPitch);
 	}
@@ -323,7 +310,7 @@ KMETHOD QTextCharFormat_setFontItalic(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool italic = Boolean_to(bool, sfp[1]);
 		qp->setFontItalic(italic);
 	}
@@ -335,7 +322,7 @@ KMETHOD QTextCharFormat_setFontKerning(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setFontKerning(enable);
 	}
@@ -347,7 +334,7 @@ KMETHOD QTextCharFormat_setFontLetterSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal spacing = Float_to(qreal, sfp[1]);
 		qp->setFontLetterSpacing(spacing);
 	}
@@ -359,7 +346,7 @@ KMETHOD QTextCharFormat_setFontOverline(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool overline = Boolean_to(bool, sfp[1]);
 		qp->setFontOverline(overline);
 	}
@@ -371,7 +358,7 @@ KMETHOD QTextCharFormat_setFontPointSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal size = Float_to(qreal, sfp[1]);
 		qp->setFontPointSize(size);
 	}
@@ -383,7 +370,7 @@ KMETHOD QTextCharFormat_setFontStrikeOut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool strikeOut = Boolean_to(bool, sfp[1]);
 		qp->setFontStrikeOut(strikeOut);
 	}
@@ -395,7 +382,7 @@ KMETHOD QTextCharFormat_setFontStyleHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont::StyleHint hint = Int_to(QFont::StyleHint, sfp[1]);
 		QFont::StyleStrategy strategy = Int_to(QFont::StyleStrategy, sfp[2]);
 		qp->setFontStyleHint(hint, strategy);
@@ -408,7 +395,7 @@ KMETHOD QTextCharFormat_setFontStyleStrategy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont::StyleStrategy strategy = Int_to(QFont::StyleStrategy, sfp[1]);
 		qp->setFontStyleStrategy(strategy);
 	}
@@ -420,7 +407,7 @@ KMETHOD QTextCharFormat_setFontUnderline(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool underline = Boolean_to(bool, sfp[1]);
 		qp->setFontUnderline(underline);
 	}
@@ -432,7 +419,7 @@ KMETHOD QTextCharFormat_setFontWeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int weight = Int_to(int, sfp[1]);
 		qp->setFontWeight(weight);
 	}
@@ -444,7 +431,7 @@ KMETHOD QTextCharFormat_setFontWordSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal spacing = Float_to(qreal, sfp[1]);
 		qp->setFontWordSpacing(spacing);
 	}
@@ -456,7 +443,7 @@ KMETHOD QTextCharFormat_setTextOutline(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPen  pen = *RawPtr_to(const QPen *, sfp[1]);
 		qp->setTextOutline(pen);
 	}
@@ -468,7 +455,7 @@ KMETHOD QTextCharFormat_setToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setToolTip(text);
 	}
@@ -480,7 +467,7 @@ KMETHOD QTextCharFormat_setUnderlineColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor  color = *RawPtr_to(const QColor *, sfp[1]);
 		qp->setUnderlineColor(color);
 	}
@@ -492,7 +479,7 @@ KMETHOD QTextCharFormat_setUnderlineStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCharFormat::UnderlineStyle style = Int_to(QTextCharFormat::UnderlineStyle, sfp[1]);
 		qp->setUnderlineStyle(style);
 	}
@@ -504,7 +491,7 @@ KMETHOD QTextCharFormat_setVerticalAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCharFormat::VerticalAlignment alignment = Int_to(QTextCharFormat::VerticalAlignment, sfp[1]);
 		qp->setVerticalAlignment(alignment);
 	}
@@ -516,7 +503,7 @@ KMETHOD QTextCharFormat_getTextOutline(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPen ret_v = qp->textOutline();
 		QPen *ret_v_ = new QPen(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -531,7 +518,7 @@ KMETHOD QTextCharFormat_getToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->toolTip();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -545,7 +532,7 @@ KMETHOD QTextCharFormat_getUnderlineColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QColor ret_v = qp->underlineColor();
 		QColor *ret_v_ = new QColor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -560,7 +547,7 @@ KMETHOD QTextCharFormat_getUnderlineStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCharFormat::UnderlineStyle ret_v = qp->underlineStyle();
 		RETURNi_(ret_v);
 	} else {
@@ -573,7 +560,7 @@ KMETHOD QTextCharFormat_getVerticalAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCharFormat *  qp = RawPtr_to(QTextCharFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCharFormat::VerticalAlignment ret_v = qp->verticalAlignment();
 		RETURNi_(ret_v);
 	} else {
@@ -632,9 +619,23 @@ bool DummyQTextCharFormat::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextCharFormat::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQTextFormat::reftrace(ctx, p, tail_);
+}
 
 void DummyQTextCharFormat::connection(QObject *o)
 {
+	QTextCharFormat *p = dynamic_cast<QTextCharFormat*>(o);
+	if (p != NULL) {
+	}
 	DummyQTextFormat::connection(o);
 }
 
@@ -642,7 +643,6 @@ KQTextCharFormat::KQTextCharFormat() : QTextCharFormat()
 {
 	self = NULL;
 	dummy = new DummyQTextCharFormat();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextCharFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -697,13 +697,9 @@ static void QTextCharFormat_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextCharFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextCharFormat *qp = (KQTextCharFormat *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -716,15 +712,6 @@ void KQTextCharFormat::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQTextCharFormat(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTextCharFormat";
-	cdef->free = QTextCharFormat_free;
-	cdef->reftrace = QTextCharFormat_reftrace;
-	cdef->compareTo = QTextCharFormat_compareTo;
 }
 
 static knh_IntData_t QTextCharFormatConstInt[] = {
@@ -748,4 +735,15 @@ static knh_IntData_t QTextCharFormatConstInt[] = {
 DEFAPI(void) constQTextCharFormat(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTextCharFormatConstInt);
 }
+
+
+DEFAPI(void) defQTextCharFormat(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextCharFormat";
+	cdef->free = QTextCharFormat_free;
+	cdef->reftrace = QTextCharFormat_reftrace;
+	cdef->compareTo = QTextCharFormat_compareTo;
+}
+
 

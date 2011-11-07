@@ -71,9 +71,23 @@ bool DummyQStyleOptionDockWidget::signalConnect(knh_Func_t *callback_func, strin
 	}
 }
 
+void DummyQStyleOptionDockWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOption::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionDockWidget::connection(QObject *o)
 {
+	QStyleOptionDockWidget *p = dynamic_cast<QStyleOptionDockWidget*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOption::connection(o);
 }
 
@@ -81,7 +95,6 @@ KQStyleOptionDockWidget::KQStyleOptionDockWidget() : QStyleOptionDockWidget()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionDockWidget();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionDockWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,13 +149,9 @@ static void QStyleOptionDockWidget_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionDockWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionDockWidget *qp = (KQStyleOptionDockWidget *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -157,15 +166,6 @@ void KQStyleOptionDockWidget::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStyleOptionDockWidget(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionDockWidget";
-	cdef->free = QStyleOptionDockWidget_free;
-	cdef->reftrace = QStyleOptionDockWidget_reftrace;
-	cdef->compareTo = QStyleOptionDockWidget_compareTo;
-}
-
 static knh_IntData_t QStyleOptionDockWidgetConstInt[] = {
 	{"Type", QStyleOptionDockWidget::Type},
 	{"Version", QStyleOptionDockWidget::Version},
@@ -175,4 +175,15 @@ static knh_IntData_t QStyleOptionDockWidgetConstInt[] = {
 DEFAPI(void) constQStyleOptionDockWidget(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionDockWidgetConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionDockWidget(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionDockWidget";
+	cdef->free = QStyleOptionDockWidget_free;
+	cdef->reftrace = QStyleOptionDockWidget_reftrace;
+	cdef->compareTo = QStyleOptionDockWidget_compareTo;
+}
+
 

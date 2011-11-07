@@ -16,7 +16,7 @@ KMETHOD QSocketNotifier_isEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSocketNotifier *  qp = RawPtr_to(QSocketNotifier *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -29,7 +29,7 @@ KMETHOD QSocketNotifier_socket(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSocketNotifier *  qp = RawPtr_to(QSocketNotifier *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->socket();
 		RETURNi_(ret_v);
 	} else {
@@ -42,7 +42,7 @@ KMETHOD QSocketNotifier_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSocketNotifier *  qp = RawPtr_to(QSocketNotifier *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSocketNotifier::Type ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -55,7 +55,7 @@ KMETHOD QSocketNotifier_setEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSocketNotifier *  qp = RawPtr_to(QSocketNotifier *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setEnabled(enable);
 	}
@@ -129,10 +129,25 @@ bool DummyQSocketNotifier::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSocketNotifier::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, activated_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQSocketNotifier::connection(QObject *o)
 {
-	connect(o, SIGNAL(activated(int)), this, SLOT(activatedSlot(int)));
+	QSocketNotifier *p = dynamic_cast<QSocketNotifier*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(activated(int)), this, SLOT(activatedSlot(int)));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -195,17 +210,9 @@ static void QSocketNotifier_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSocketNotifier_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSocketNotifier *qp = (KQSocketNotifier *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->activated_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->activated_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -229,15 +236,6 @@ bool KQSocketNotifier::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQSocketNotifier(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QSocketNotifier";
-	cdef->free = QSocketNotifier_free;
-	cdef->reftrace = QSocketNotifier_reftrace;
-	cdef->compareTo = QSocketNotifier_compareTo;
-}
-
 static knh_IntData_t QSocketNotifierConstInt[] = {
 	{"Read", QSocketNotifier::Read},
 	{"Write", QSocketNotifier::Write},
@@ -248,4 +246,15 @@ static knh_IntData_t QSocketNotifierConstInt[] = {
 DEFAPI(void) constQSocketNotifier(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QSocketNotifierConstInt);
 }
+
+
+DEFAPI(void) defQSocketNotifier(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QSocketNotifier";
+	cdef->free = QSocketNotifier_free;
+	cdef->reftrace = QSocketNotifier_reftrace;
+	cdef->compareTo = QSocketNotifier_compareTo;
+}
+
 

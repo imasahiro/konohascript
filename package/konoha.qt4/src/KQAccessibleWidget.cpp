@@ -3,7 +3,7 @@ KMETHOD QAccessibleWidget_actionText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleWidget *  qp = RawPtr_to(QAccessibleWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int action = Int_to(int, sfp[1]);
 		QAccessibleWidget::Text t = Int_to(QAccessibleWidget::Text, sfp[2]);
 		int child = Int_to(int, sfp[3]);
@@ -20,7 +20,7 @@ KMETHOD QAccessibleWidget_childAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleWidget *  qp = RawPtr_to(QAccessibleWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int ret_v = qp->childAt(x, y);
@@ -35,7 +35,7 @@ KMETHOD QAccessibleWidget_childCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleWidget *  qp = RawPtr_to(QAccessibleWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->childCount();
 		RETURNi_(ret_v);
 	} else {
@@ -48,7 +48,7 @@ KMETHOD QAccessibleWidget_doAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleWidget *  qp = RawPtr_to(QAccessibleWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int action = Int_to(int, sfp[1]);
 		int child = Int_to(int, sfp[2]);
 		const QVariantList  params = *RawPtr_to(const QVariantList *, sfp[3]);
@@ -64,7 +64,7 @@ KMETHOD QAccessibleWidget_indexOfChild(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleWidget *  qp = RawPtr_to(QAccessibleWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QAccessibleInterface*  child = RawPtr_to(const QAccessibleInterface*, sfp[1]);
 		int ret_v = qp->indexOfChild(child);
 		RETURNi_(ret_v);
@@ -78,7 +78,7 @@ KMETHOD QAccessibleWidget_navigate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleWidget *  qp = RawPtr_to(QAccessibleWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAccessibleWidget::RelationFlag relation = Int_to(QAccessibleWidget::RelationFlag, sfp[1]);
 		int entry = Int_to(int, sfp[2]);
 		QAccessibleInterface**  target = RawPtr_to(QAccessibleInterface**, sfp[3]);
@@ -94,7 +94,7 @@ KMETHOD QAccessibleWidget_rect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleWidget *  qp = RawPtr_to(QAccessibleWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int child = Int_to(int, sfp[1]);
 		QRect ret_v = qp->rect(child);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -105,19 +105,21 @@ KMETHOD QAccessibleWidget_rect(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual @Override int QAccessibleWidget.relationTo(int child, QAccessibleInterface other, int otherChild);
+//@Virtual @Override QAccessibleRelation QAccessibleWidget.relationTo(int child, QAccessibleInterface other, int otherChild);
 KMETHOD QAccessibleWidget_relationTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleWidget *  qp = RawPtr_to(QAccessibleWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int child = Int_to(int, sfp[1]);
 		const QAccessibleInterface*  other = RawPtr_to(const QAccessibleInterface*, sfp[2]);
 		int otherChild = Int_to(int, sfp[3]);
-		QAccessibleWidget::Relation ret_v = qp->relationTo(child, other, otherChild);
-		RETURNi_(ret_v);
+		QAccessible::Relation ret_v = qp->relationTo(child, other, otherChild);
+		QAccessible::Relation *ret_v_ = new QAccessible::Relation(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -126,7 +128,7 @@ KMETHOD QAccessibleWidget_role(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleWidget *  qp = RawPtr_to(QAccessibleWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int child = Int_to(int, sfp[1]);
 		QAccessibleWidget::Role ret_v = qp->role(child);
 		RETURNi_(ret_v);
@@ -135,17 +137,19 @@ KMETHOD QAccessibleWidget_role(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual @Override int QAccessibleWidget.state(int child);
+//@Virtual @Override QAccessibleState QAccessibleWidget.state(int child);
 KMETHOD QAccessibleWidget_state(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleWidget *  qp = RawPtr_to(QAccessibleWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int child = Int_to(int, sfp[1]);
-		QAccessibleWidget::State ret_v = qp->state(child);
-		RETURNi_(ret_v);
+		QAccessible::State ret_v = qp->state(child);
+		QAccessible::State *ret_v_ = new QAccessible::State(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -154,7 +158,7 @@ KMETHOD QAccessibleWidget_text(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleWidget *  qp = RawPtr_to(QAccessibleWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAccessibleWidget::Text t = Int_to(QAccessibleWidget::Text, sfp[1]);
 		int child = Int_to(int, sfp[2]);
 		QString ret_v = qp->text(t, child);
@@ -170,7 +174,7 @@ KMETHOD QAccessibleWidget_userActionCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleWidget *  qp = RawPtr_to(QAccessibleWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int child = Int_to(int, sfp[1]);
 		int ret_v = qp->userActionCount(child);
 		RETURNi_(ret_v);
@@ -243,9 +247,23 @@ bool DummyQAccessibleWidget::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
+void DummyQAccessibleWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAccessibleObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQAccessibleWidget::connection(QObject *o)
 {
+	QAccessibleWidget *p = dynamic_cast<QAccessibleWidget*>(o);
+	if (p != NULL) {
+	}
 	DummyQAccessibleObject::connection(o);
 }
 
@@ -253,7 +271,6 @@ KQAccessibleWidget::KQAccessibleWidget(QWidget* w, QAccessibleWidget::Role role,
 {
 	self = NULL;
 	dummy = new DummyQAccessibleWidget();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAccessibleWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -308,13 +325,9 @@ static void QAccessibleWidget_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAccessibleWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAccessibleWidget *qp = (KQAccessibleWidget *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -328,6 +341,8 @@ void KQAccessibleWidget::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQAccessibleWidget(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -99,10 +99,25 @@ false
 enbeddedClass
 false
 
-typedefed_objects
+flag_objects
+class
+QWizard
+name
 WizardOptions
 
+parent_flag_objects
+class
+QWidget
+name
+RenderFlags
+
+typedefed_objects
+
 parent_typedefed_objects
+
+class_objects
+
+parent_class_objects
 
 enums
 class_name
@@ -176,6 +191,33 @@ DialogCode
 key
 Accepted
 Rejected
+public_flag
+true
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+class_name
+QPaintDevice
+name
+PaintDeviceMetric
+key
+PdmWidth
+PdmHeight
+PdmWidthMM
+PdmHeightMM
+PdmNumColors
+PdmDepth
+PdmDpiX
+PdmDpiY
+PdmPhysicalDpiX
+PdmPhysicalDpiY
 public_flag
 true
 

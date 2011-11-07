@@ -39,7 +39,7 @@ KMETHOD QTextDocumentWriter_getCodec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocumentWriter *  qp = RawPtr_to(QTextDocumentWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCodec* ret_v = qp->codec();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextCodec*)ret_v, NULL);
 		RETURN_(rptr);
@@ -53,7 +53,7 @@ KMETHOD QTextDocumentWriter_getDevice(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocumentWriter *  qp = RawPtr_to(QTextDocumentWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIODevice* ret_v = qp->device();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QIODevice*)ret_v, NULL);
 		RETURN_(rptr);
@@ -67,7 +67,7 @@ KMETHOD QTextDocumentWriter_getFileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocumentWriter *  qp = RawPtr_to(QTextDocumentWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->fileName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -81,7 +81,7 @@ KMETHOD QTextDocumentWriter_getFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocumentWriter *  qp = RawPtr_to(QTextDocumentWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->format();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -96,7 +96,7 @@ KMETHOD QTextDocumentWriter_setCodec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocumentWriter *  qp = RawPtr_to(QTextDocumentWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCodec*  codec = RawPtr_to(QTextCodec*, sfp[1]);
 		qp->setCodec(codec);
 	}
@@ -108,7 +108,7 @@ KMETHOD QTextDocumentWriter_setDevice(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocumentWriter *  qp = RawPtr_to(QTextDocumentWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIODevice*  device = RawPtr_to(QIODevice*, sfp[1]);
 		qp->setDevice(device);
 	}
@@ -120,7 +120,7 @@ KMETHOD QTextDocumentWriter_setFileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocumentWriter *  qp = RawPtr_to(QTextDocumentWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
 		qp->setFileName(fileName);
 	}
@@ -132,7 +132,7 @@ KMETHOD QTextDocumentWriter_setFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocumentWriter *  qp = RawPtr_to(QTextDocumentWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  format = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->setFormat(format);
 	}
@@ -144,7 +144,7 @@ KMETHOD QTextDocumentWriter_write(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocumentWriter *  qp = RawPtr_to(QTextDocumentWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextDocument*  document = RawPtr_to(const QTextDocument*, sfp[1]);
 		bool ret_v = qp->write(document);
 		RETURNb_(ret_v);
@@ -159,7 +159,7 @@ KMETHOD QTextDocumentWriter_write(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocumentWriter *  qp = RawPtr_to(QTextDocumentWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextDocumentFragment  fragment = *RawPtr_to(const QTextDocumentFragment *, sfp[1]);
 		bool ret_v = qp->write(fragment);
 		RETURNb_(ret_v);
@@ -172,9 +172,8 @@ KMETHOD QTextDocumentWriter_write(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextDocumentWriter_supportedDocumentFormats(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextDocumentWriter *  qp = RawPtr_to(QTextDocumentWriter *, sfp[0]);
-	if (qp != NULL) {
-		QList<QByteArray>ret_v = qp->supportedDocumentFormats();
+	if (true) {
+		QList<QByteArray> ret_v = QTextDocumentWriter::supportedDocumentFormats();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QByteArray"));
@@ -190,6 +189,24 @@ KMETHOD QTextDocumentWriter_supportedDocumentFormats(CTX ctx, knh_sfp_t *sfp _RI
 }
 	
 
+//Array<String> QTextDocumentWriter.parents();
+KMETHOD QTextDocumentWriter_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextDocumentWriter *qp = RawPtr_to(QTextDocumentWriter*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextDocumentWriter::DummyQTextDocumentWriter()
 {
@@ -238,17 +255,28 @@ bool DummyQTextDocumentWriter::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQTextDocumentWriter::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextDocumentWriter::connection(QObject *o)
 {
-	return;
+	QTextDocumentWriter *p = dynamic_cast<QTextDocumentWriter*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTextDocumentWriter::KQTextDocumentWriter() : QTextDocumentWriter()
 {
 	self = NULL;
 	dummy = new DummyQTextDocumentWriter();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextDocumentWriter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -303,13 +331,9 @@ static void QTextDocumentWriter_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextDocumentWriter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextDocumentWriter *qp = (KQTextDocumentWriter *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -323,6 +347,8 @@ void KQTextDocumentWriter::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQTextDocumentWriter(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

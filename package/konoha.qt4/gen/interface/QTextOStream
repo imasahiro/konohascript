@@ -40,10 +40,21 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+class
+QTextStream
+name
+NumberFlags
+
 typedefed_objects
 
 parent_typedefed_objects
-NumberFlags
+
+class_objects
+
+parent_class_objects
 
 enums
 

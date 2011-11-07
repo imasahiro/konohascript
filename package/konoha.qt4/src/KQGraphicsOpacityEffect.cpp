@@ -14,7 +14,7 @@ KMETHOD QGraphicsOpacityEffect_getOpacity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsOpacityEffect *  qp = RawPtr_to(QGraphicsOpacityEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->opacity();
 		RETURNf_(ret_v);
 	} else {
@@ -27,7 +27,7 @@ KMETHOD QGraphicsOpacityEffect_getOpacityMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsOpacityEffect *  qp = RawPtr_to(QGraphicsOpacityEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBrush ret_v = qp->opacityMask();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -42,7 +42,7 @@ KMETHOD QGraphicsOpacityEffect_setOpacity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsOpacityEffect *  qp = RawPtr_to(QGraphicsOpacityEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal opacity = Float_to(qreal, sfp[1]);
 		qp->setOpacity(opacity);
 	}
@@ -54,7 +54,7 @@ KMETHOD QGraphicsOpacityEffect_setOpacityMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsOpacityEffect *  qp = RawPtr_to(QGraphicsOpacityEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush  mask = *RawPtr_to(const QBrush *, sfp[1]);
 		qp->setOpacityMask(mask);
 	}
@@ -146,11 +146,27 @@ bool DummyQGraphicsOpacityEffect::signalConnect(knh_Func_t *callback_func, strin
 	}
 }
 
+void DummyQGraphicsOpacityEffect::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, opacity_changed_func);
+	KNH_ADDNNREF(ctx, opacity_mask_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsEffect::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsOpacityEffect::connection(QObject *o)
 {
-	connect(o, SIGNAL(opacityChanged(qreal)), this, SLOT(opacityChangedSlot(qreal)));
-	connect(o, SIGNAL(opacityMaskChanged(const QBrush)), this, SLOT(opacityMaskChangedSlot(const QBrush)));
+	QGraphicsOpacityEffect *p = dynamic_cast<QGraphicsOpacityEffect*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(opacityChanged(qreal)), this, SLOT(opacityChangedSlot(qreal)));
+		connect(p, SIGNAL(opacityMaskChanged(const QBrush)), this, SLOT(opacityMaskChangedSlot(const QBrush)));
+	}
 	DummyQGraphicsEffect::connection(o);
 }
 
@@ -213,21 +229,9 @@ static void QGraphicsOpacityEffect_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsOpacityEffect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsOpacityEffect *qp = (KQGraphicsOpacityEffect *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->opacity_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->opacity_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->opacity_mask_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->opacity_mask_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -250,6 +254,8 @@ bool KQGraphicsOpacityEffect::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQGraphicsOpacityEffect(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -41,7 +41,7 @@ KMETHOD QLinearGradient_getFinalStop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLinearGradient *  qp = RawPtr_to(QLinearGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->finalStop();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -56,7 +56,7 @@ KMETHOD QLinearGradient_setFinalStop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLinearGradient *  qp = RawPtr_to(QLinearGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  stop = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setFinalStop(stop);
 	}
@@ -69,7 +69,7 @@ KMETHOD QLinearGradient_setFinalStop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLinearGradient *  qp = RawPtr_to(QLinearGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qp->setFinalStop(x, y);
@@ -82,7 +82,7 @@ KMETHOD QLinearGradient_setStart(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLinearGradient *  qp = RawPtr_to(QLinearGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  start = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setStart(start);
 	}
@@ -95,7 +95,7 @@ KMETHOD QLinearGradient_setStart(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLinearGradient *  qp = RawPtr_to(QLinearGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qp->setStart(x, y);
@@ -108,7 +108,7 @@ KMETHOD QLinearGradient_getStart(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLinearGradient *  qp = RawPtr_to(QLinearGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->start();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -169,9 +169,23 @@ bool DummyQLinearGradient::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQLinearGradient::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGradient::reftrace(ctx, p, tail_);
+}
 
 void DummyQLinearGradient::connection(QObject *o)
 {
+	QLinearGradient *p = dynamic_cast<QLinearGradient*>(o);
+	if (p != NULL) {
+	}
 	DummyQGradient::connection(o);
 }
 
@@ -179,7 +193,6 @@ KQLinearGradient::KQLinearGradient() : QLinearGradient()
 {
 	self = NULL;
 	dummy = new DummyQLinearGradient();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QLinearGradient_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -234,13 +247,9 @@ static void QLinearGradient_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QLinearGradient_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQLinearGradient *qp = (KQLinearGradient *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -254,6 +263,8 @@ void KQLinearGradient::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQLinearGradient(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

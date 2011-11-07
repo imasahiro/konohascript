@@ -14,7 +14,7 @@ KMETHOD QWidgetAction_getDefaultWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidgetAction *  qp = RawPtr_to(QWidgetAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->defaultWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -28,7 +28,7 @@ KMETHOD QWidgetAction_releaseWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidgetAction *  qp = RawPtr_to(QWidgetAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->releaseWidget(widget);
 	}
@@ -40,7 +40,7 @@ KMETHOD QWidgetAction_requestWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidgetAction *  qp = RawPtr_to(QWidgetAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 		QWidget* ret_v = qp->requestWidget(parent);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
@@ -55,7 +55,7 @@ KMETHOD QWidgetAction_setDefaultWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidgetAction *  qp = RawPtr_to(QWidgetAction *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->setDefaultWidget(widget);
 	}
@@ -113,9 +113,23 @@ bool DummyQWidgetAction::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQWidgetAction::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAction::reftrace(ctx, p, tail_);
+}
 
 void DummyQWidgetAction::connection(QObject *o)
 {
+	QWidgetAction *p = dynamic_cast<QWidgetAction*>(o);
+	if (p != NULL) {
+	}
 	DummyQAction::connection(o);
 }
 
@@ -178,13 +192,9 @@ static void QWidgetAction_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QWidgetAction_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQWidgetAction *qp = (KQWidgetAction *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -207,6 +217,8 @@ bool KQWidgetAction::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQWidgetAction(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

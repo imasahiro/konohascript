@@ -3,7 +3,7 @@ KMETHOD QAccessibleBridge_notifyAccessibilityUpdate(CTX ctx, knh_sfp_t *sfp _RIX
 {
 	(void)ctx;
 	QAccessibleBridge *  qp = RawPtr_to(QAccessibleBridge *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int reason = Int_to(int, sfp[1]);
 		QAccessibleInterface*  interface = RawPtr_to(QAccessibleInterface*, sfp[2]);
 		int child = Int_to(int, sfp[3]);
@@ -17,13 +17,31 @@ KMETHOD QAccessibleBridge_setRootObject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleBridge *  qp = RawPtr_to(QAccessibleBridge *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAccessibleInterface*  object = RawPtr_to(QAccessibleInterface*, sfp[1]);
 		qp->setRootObject(object);
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QAccessibleBridge.parents();
+KMETHOD QAccessibleBridge_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QAccessibleBridge *qp = RawPtr_to(QAccessibleBridge*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQAccessibleBridge::DummyQAccessibleBridge()
 {
@@ -72,17 +90,22 @@ bool DummyQAccessibleBridge::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
+void DummyQAccessibleBridge::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQAccessibleBridge::connection(QObject *o)
 {
-	return;
-}
-
-KQAccessibleBridge::KQAccessibleBridge() : QAccessibleBridge()
-{
-	self = NULL;
-	dummy = new DummyQAccessibleBridge();
-	dummy->connection((QObject*)this);
+	QAccessibleBridge *p = dynamic_cast<QAccessibleBridge*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QAccessibleBridge_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -137,13 +160,9 @@ static void QAccessibleBridge_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAccessibleBridge_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAccessibleBridge *qp = (KQAccessibleBridge *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -157,6 +176,8 @@ void KQAccessibleBridge::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQAccessibleBridge(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -3,7 +3,7 @@ KMETHOD QDateTimeEdit_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -14,7 +14,7 @@ KMETHOD QDateTimeEdit_event(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEvent*  event = RawPtr_to(QEvent*, sfp[1]);
 		bool ret_v = qp->event(event);
 		RETURNb_(ret_v);
@@ -28,7 +28,7 @@ KMETHOD QDateTimeEdit_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -43,7 +43,7 @@ KMETHOD QDateTimeEdit_stepBy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int steps = Int_to(int, sfp[1]);
 		qp->stepBy(steps);
 	}
@@ -105,7 +105,7 @@ KMETHOD QDateTimeEdit_getCalendarPopup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->calendarPopup();
 		RETURNb_(ret_v);
 	} else {
@@ -118,7 +118,7 @@ KMETHOD QDateTimeEdit_getCalendarWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCalendarWidget* ret_v = qp->calendarWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QCalendarWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -132,7 +132,7 @@ KMETHOD QDateTimeEdit_clearMaximumDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearMaximumDate();
 	}
 	RETURNvoid_();
@@ -143,7 +143,7 @@ KMETHOD QDateTimeEdit_clearMaximumDateTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearMaximumDateTime();
 	}
 	RETURNvoid_();
@@ -154,7 +154,7 @@ KMETHOD QDateTimeEdit_clearMaximumTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearMaximumTime();
 	}
 	RETURNvoid_();
@@ -165,7 +165,7 @@ KMETHOD QDateTimeEdit_clearMinimumDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearMinimumDate();
 	}
 	RETURNvoid_();
@@ -176,7 +176,7 @@ KMETHOD QDateTimeEdit_clearMinimumDateTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearMinimumDateTime();
 	}
 	RETURNvoid_();
@@ -187,7 +187,7 @@ KMETHOD QDateTimeEdit_clearMinimumTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearMinimumTime();
 	}
 	RETURNvoid_();
@@ -198,7 +198,7 @@ KMETHOD QDateTimeEdit_getCurrentSection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDateTimeEdit::Section ret_v = qp->currentSection();
 		RETURNi_(ret_v);
 	} else {
@@ -211,7 +211,7 @@ KMETHOD QDateTimeEdit_getCurrentSectionIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->currentSectionIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -224,7 +224,7 @@ KMETHOD QDateTimeEdit_getDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDate ret_v = qp->date();
 		QDate *ret_v_ = new QDate(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -239,7 +239,7 @@ KMETHOD QDateTimeEdit_getDateTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDateTime ret_v = qp->dateTime();
 		QDateTime *ret_v_ = new QDateTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -254,7 +254,7 @@ KMETHOD QDateTimeEdit_getDisplayFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->displayFormat();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -263,16 +263,18 @@ KMETHOD QDateTimeEdit_getDisplayFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QDateTimeEdit.displayedSections();
+//QDateTimeEditSections QDateTimeEdit.displayedSections();
 KMETHOD QDateTimeEdit_displayedSections(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDateTimeEdit::Sections ret_v = qp->displayedSections();
-		RETURNi_(ret_v);
+		QDateTimeEdit::Sections *ret_v_ = new QDateTimeEdit::Sections(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -281,7 +283,7 @@ KMETHOD QDateTimeEdit_getMaximumDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDate ret_v = qp->maximumDate();
 		QDate *ret_v_ = new QDate(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -296,7 +298,7 @@ KMETHOD QDateTimeEdit_getMaximumDateTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDateTime ret_v = qp->maximumDateTime();
 		QDateTime *ret_v_ = new QDateTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -311,7 +313,7 @@ KMETHOD QDateTimeEdit_getMaximumTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTime ret_v = qp->maximumTime();
 		QTime *ret_v_ = new QTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -326,7 +328,7 @@ KMETHOD QDateTimeEdit_getMinimumDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDate ret_v = qp->minimumDate();
 		QDate *ret_v_ = new QDate(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -341,7 +343,7 @@ KMETHOD QDateTimeEdit_getMinimumDateTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDateTime ret_v = qp->minimumDateTime();
 		QDateTime *ret_v_ = new QDateTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -356,7 +358,7 @@ KMETHOD QDateTimeEdit_getMinimumTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTime ret_v = qp->minimumTime();
 		QTime *ret_v_ = new QTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -371,7 +373,7 @@ KMETHOD QDateTimeEdit_sectionAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QDateTimeEdit::Section ret_v = qp->sectionAt(index);
 		RETURNi_(ret_v);
@@ -385,7 +387,7 @@ KMETHOD QDateTimeEdit_sectionCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->sectionCount();
 		RETURNi_(ret_v);
 	} else {
@@ -398,7 +400,7 @@ KMETHOD QDateTimeEdit_sectionText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDateTimeEdit::Section section = Int_to(QDateTimeEdit::Section, sfp[1]);
 		QString ret_v = qp->sectionText(section);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -413,7 +415,7 @@ KMETHOD QDateTimeEdit_setCalendarPopup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setCalendarPopup(enable);
 	}
@@ -425,7 +427,7 @@ KMETHOD QDateTimeEdit_setCalendarWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCalendarWidget*  calendarWidget = RawPtr_to(QCalendarWidget*, sfp[1]);
 		qp->setCalendarWidget(calendarWidget);
 	}
@@ -437,7 +439,7 @@ KMETHOD QDateTimeEdit_setCurrentSection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDateTimeEdit::Section section = Int_to(QDateTimeEdit::Section, sfp[1]);
 		qp->setCurrentSection(section);
 	}
@@ -449,7 +451,7 @@ KMETHOD QDateTimeEdit_setCurrentSectionIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		qp->setCurrentSectionIndex(index);
 	}
@@ -461,7 +463,7 @@ KMETHOD QDateTimeEdit_setDateRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDate  min = *RawPtr_to(const QDate *, sfp[1]);
 		const QDate  max = *RawPtr_to(const QDate *, sfp[2]);
 		qp->setDateRange(min, max);
@@ -474,7 +476,7 @@ KMETHOD QDateTimeEdit_setDateTimeRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDateTime  min = *RawPtr_to(const QDateTime *, sfp[1]);
 		const QDateTime  max = *RawPtr_to(const QDateTime *, sfp[2]);
 		qp->setDateTimeRange(min, max);
@@ -487,7 +489,7 @@ KMETHOD QDateTimeEdit_setDisplayFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString format = String_to(const QString, sfp[1]);
 		qp->setDisplayFormat(format);
 	}
@@ -499,7 +501,7 @@ KMETHOD QDateTimeEdit_setMaximumDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDate  max = *RawPtr_to(const QDate *, sfp[1]);
 		qp->setMaximumDate(max);
 	}
@@ -511,7 +513,7 @@ KMETHOD QDateTimeEdit_setMaximumDateTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDateTime  dt = *RawPtr_to(const QDateTime *, sfp[1]);
 		qp->setMaximumDateTime(dt);
 	}
@@ -523,7 +525,7 @@ KMETHOD QDateTimeEdit_setMaximumTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTime  max = *RawPtr_to(const QTime *, sfp[1]);
 		qp->setMaximumTime(max);
 	}
@@ -535,7 +537,7 @@ KMETHOD QDateTimeEdit_setMinimumDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDate  min = *RawPtr_to(const QDate *, sfp[1]);
 		qp->setMinimumDate(min);
 	}
@@ -547,7 +549,7 @@ KMETHOD QDateTimeEdit_setMinimumDateTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDateTime  dt = *RawPtr_to(const QDateTime *, sfp[1]);
 		qp->setMinimumDateTime(dt);
 	}
@@ -559,7 +561,7 @@ KMETHOD QDateTimeEdit_setMinimumTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTime  min = *RawPtr_to(const QTime *, sfp[1]);
 		qp->setMinimumTime(min);
 	}
@@ -571,7 +573,7 @@ KMETHOD QDateTimeEdit_setSelectedSection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDateTimeEdit::Section section = Int_to(QDateTimeEdit::Section, sfp[1]);
 		qp->setSelectedSection(section);
 	}
@@ -583,7 +585,7 @@ KMETHOD QDateTimeEdit_setTimeRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTime  min = *RawPtr_to(const QTime *, sfp[1]);
 		const QTime  max = *RawPtr_to(const QTime *, sfp[2]);
 		qp->setTimeRange(min, max);
@@ -596,7 +598,7 @@ KMETHOD QDateTimeEdit_setTimeSpec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TimeSpec spec = Int_to(Qt::TimeSpec, sfp[1]);
 		qp->setTimeSpec(spec);
 	}
@@ -608,7 +610,7 @@ KMETHOD QDateTimeEdit_getTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTime ret_v = qp->time();
 		QTime *ret_v_ = new QTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -623,7 +625,7 @@ KMETHOD QDateTimeEdit_getTimeSpec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TimeSpec ret_v = qp->timeSpec();
 		RETURNi_(ret_v);
 	} else {
@@ -636,7 +638,7 @@ KMETHOD QDateTimeEdit_setDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDate  date = *RawPtr_to(const QDate *, sfp[1]);
 		qp->setDate(date);
 	}
@@ -648,7 +650,7 @@ KMETHOD QDateTimeEdit_setDateTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDateTime  dateTime = *RawPtr_to(const QDateTime *, sfp[1]);
 		qp->setDateTime(dateTime);
 	}
@@ -660,7 +662,7 @@ KMETHOD QDateTimeEdit_setTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTimeEdit *  qp = RawPtr_to(QDateTimeEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTime  time = *RawPtr_to(const QTime *, sfp[1]);
 		qp->setTime(time);
 	}
@@ -769,12 +771,29 @@ bool DummyQDateTimeEdit::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDateTimeEdit::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 3;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, date_changed_func);
+	KNH_ADDNNREF(ctx, date_time_changed_func);
+	KNH_ADDNNREF(ctx, time_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractSpinBox::reftrace(ctx, p, tail_);
+}
 
 void DummyQDateTimeEdit::connection(QObject *o)
 {
-	connect(o, SIGNAL(dateChanged(const QDate)), this, SLOT(dateChangedSlot(const QDate)));
-	connect(o, SIGNAL(dateTimeChanged(const QDateTime)), this, SLOT(dateTimeChangedSlot(const QDateTime)));
-	connect(o, SIGNAL(timeChanged(const QTime)), this, SLOT(timeChangedSlot(const QTime)));
+	QDateTimeEdit *p = dynamic_cast<QDateTimeEdit*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(dateChanged(const QDate)), this, SLOT(dateChangedSlot(const QDate)));
+		connect(p, SIGNAL(dateTimeChanged(const QDateTime)), this, SLOT(dateTimeChangedSlot(const QDateTime)));
+		connect(p, SIGNAL(timeChanged(const QTime)), this, SLOT(timeChangedSlot(const QTime)));
+	}
 	DummyQAbstractSpinBox::connection(o);
 }
 
@@ -837,25 +856,9 @@ static void QDateTimeEdit_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDateTimeEdit_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 3;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDateTimeEdit *qp = (KQDateTimeEdit *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->date_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->date_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->date_time_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->date_time_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->time_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->time_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -879,15 +882,6 @@ bool KQDateTimeEdit::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQDateTimeEdit(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QDateTimeEdit";
-	cdef->free = QDateTimeEdit_free;
-	cdef->reftrace = QDateTimeEdit_reftrace;
-	cdef->compareTo = QDateTimeEdit_compareTo;
-}
-
 static knh_IntData_t QDateTimeEditConstInt[] = {
 	{"NoSection", QDateTimeEdit::NoSection},
 	{"AmPmSection", QDateTimeEdit::AmPmSection},
@@ -903,5 +897,179 @@ static knh_IntData_t QDateTimeEditConstInt[] = {
 
 DEFAPI(void) constQDateTimeEdit(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QDateTimeEditConstInt);
+}
+
+
+DEFAPI(void) defQDateTimeEdit(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QDateTimeEdit";
+	cdef->free = QDateTimeEdit_free;
+	cdef->reftrace = QDateTimeEdit_reftrace;
+	cdef->compareTo = QDateTimeEdit_compareTo;
+}
+
+//## QDateTimeEditSections QDateTimeEditSections.new(int value);
+KMETHOD QDateTimeEditSections_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDateTimeEdit::Section i = Int_to(QDateTimeEdit::Section, sfp[1]);
+	QDateTimeEdit::Sections *ret_v = new QDateTimeEdit::Sections(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QDateTimeEditSections QDateTimeEditSections.and(int mask);
+KMETHOD QDateTimeEditSections_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDateTimeEdit::Sections *qp = RawPtr_to(QDateTimeEdit::Sections*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QDateTimeEdit::Sections ret = ((*qp) & i);
+		QDateTimeEdit::Sections *ret_ = new QDateTimeEdit::Sections(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QDateTimeEditSections QDateTimeEditSections.iand(QDateTimeEdit::QDateTimeEditSections other);
+KMETHOD QDateTimeEditSections_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDateTimeEdit::Sections *qp = RawPtr_to(QDateTimeEdit::Sections*, sfp[0]);
+	if (qp != NULL) {
+		QDateTimeEdit::Sections *other = RawPtr_to(QDateTimeEdit::Sections *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QDateTimeEditSections QDateTimeEditSections.or(QDateTimeEditSections f);
+KMETHOD QDateTimeEditSections_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QDateTimeEdit::Sections *qp = RawPtr_to(QDateTimeEdit::Sections*, sfp[0]);
+	if (qp != NULL) {
+		QDateTimeEdit::Sections *f = RawPtr_to(QDateTimeEdit::Sections*, sfp[1]);
+		QDateTimeEdit::Sections ret = ((*qp) | (*f));
+		QDateTimeEdit::Sections *ret_ = new QDateTimeEdit::Sections(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QDateTimeEditSections QDateTimeEditSections.ior(QDateTimeEdit::QDateTimeEditSections other);
+KMETHOD QDateTimeEditSections_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDateTimeEdit::Sections *qp = RawPtr_to(QDateTimeEdit::Sections*, sfp[0]);
+	if (qp != NULL) {
+		QDateTimeEdit::Sections *other = RawPtr_to(QDateTimeEdit::Sections *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QDateTimeEditSections QDateTimeEditSections.xor(QDateTimeEditSections f);
+KMETHOD QDateTimeEditSections_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QDateTimeEdit::Sections *qp = RawPtr_to(QDateTimeEdit::Sections*, sfp[0]);
+	if (qp != NULL) {
+		QDateTimeEdit::Sections *f = RawPtr_to(QDateTimeEdit::Sections*, sfp[1]);
+		QDateTimeEdit::Sections ret = ((*qp) ^ (*f));
+		QDateTimeEdit::Sections *ret_ = new QDateTimeEdit::Sections(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QDateTimeEditSections QDateTimeEditSections.ixor(QDateTimeEdit::QDateTimeEditSections other);
+KMETHOD QDateTimeEditSections_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDateTimeEdit::Sections *qp = RawPtr_to(QDateTimeEdit::Sections*, sfp[0]);
+	if (qp != NULL) {
+		QDateTimeEdit::Sections *other = RawPtr_to(QDateTimeEdit::Sections *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QDateTimeEditSections.testFlag(int flag);
+KMETHOD QDateTimeEditSections_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDateTimeEdit::Sections *qp = RawPtr_to(QDateTimeEdit::Sections *, sfp[0]);
+	if (qp != NULL) {
+		QDateTimeEdit::Section flag = Int_to(QDateTimeEdit::Section, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QDateTimeEditSections.value();
+KMETHOD QDateTimeEditSections_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDateTimeEdit::Sections *qp = RawPtr_to(QDateTimeEdit::Sections *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QDateTimeEditSections_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QDateTimeEdit::Sections *qp = (QDateTimeEdit::Sections *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QDateTimeEditSections_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QDateTimeEdit::Sections *qp = (QDateTimeEdit::Sections *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QDateTimeEditSections_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QDateTimeEdit::Sections*)p1->rawptr);
+//		int v2 = int(*(QDateTimeEdit::Sections*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QDateTimeEdit::Sections v1 = *(QDateTimeEdit::Sections*)p1->rawptr;
+		QDateTimeEdit::Sections v2 = *(QDateTimeEdit::Sections*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQDateTimeEditSections(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QDateTimeEditSections";
+	cdef->free = QDateTimeEditSections_free;
+	cdef->reftrace = QDateTimeEditSections_reftrace;
+	cdef->compareTo = QDateTimeEditSections_compareTo;
 }
 

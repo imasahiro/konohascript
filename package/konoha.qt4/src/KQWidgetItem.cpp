@@ -1,13 +1,15 @@
-//@Virtual @Override int QWidgetItem.expandingDirections();
+//@Virtual @Override QtOrientations QWidgetItem.expandingDirections();
 KMETHOD QWidgetItem_expandingDirections(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidgetItem *  qp = RawPtr_to(QWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientations ret_v = qp->expandingDirections();
-		RETURNi_(ret_v);
+		Qt::Orientations *ret_v_ = new Qt::Orientations(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -16,7 +18,7 @@ KMETHOD QWidgetItem_getGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidgetItem *  qp = RawPtr_to(QWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->geometry();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -31,7 +33,7 @@ KMETHOD QWidgetItem_hasHeightForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidgetItem *  qp = RawPtr_to(QWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasHeightForWidth();
 		RETURNb_(ret_v);
 	} else {
@@ -44,7 +46,7 @@ KMETHOD QWidgetItem_heightForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidgetItem *  qp = RawPtr_to(QWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int w = Int_to(int, sfp[1]);
 		int ret_v = qp->heightForWidth(w);
 		RETURNi_(ret_v);
@@ -58,7 +60,7 @@ KMETHOD QWidgetItem_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidgetItem *  qp = RawPtr_to(QWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
 		RETURNb_(ret_v);
 	} else {
@@ -71,7 +73,7 @@ KMETHOD QWidgetItem_maximumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidgetItem *  qp = RawPtr_to(QWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->maximumSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -86,7 +88,7 @@ KMETHOD QWidgetItem_minimumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidgetItem *  qp = RawPtr_to(QWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -101,7 +103,7 @@ KMETHOD QWidgetItem_setGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidgetItem *  qp = RawPtr_to(QWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		qp->setGeometry(rect);
 	}
@@ -113,7 +115,7 @@ KMETHOD QWidgetItem_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidgetItem *  qp = RawPtr_to(QWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -128,7 +130,7 @@ KMETHOD QWidgetItem_widget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidgetItem *  qp = RawPtr_to(QWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->widget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -199,9 +201,23 @@ bool DummyQWidgetItem::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQWidgetItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQLayoutItem::reftrace(ctx, p, tail_);
+}
 
 void DummyQWidgetItem::connection(QObject *o)
 {
+	QWidgetItem *p = dynamic_cast<QWidgetItem*>(o);
+	if (p != NULL) {
+	}
 	DummyQLayoutItem::connection(o);
 }
 
@@ -209,7 +225,6 @@ KQWidgetItem::KQWidgetItem(QWidget* widget) : QWidgetItem(widget)
 {
 	self = NULL;
 	dummy = new DummyQWidgetItem();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QWidgetItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -264,13 +279,9 @@ static void QWidgetItem_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QWidgetItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQWidgetItem *qp = (KQWidgetItem *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -284,6 +295,8 @@ void KQWidgetItem::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQWidgetItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

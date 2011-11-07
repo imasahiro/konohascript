@@ -15,7 +15,7 @@ KMETHOD QCoreApplication_filterEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		void*  message = RawPtr_to(void*, sfp[1]);
 		long*  result = RawPtr_to(long*, sfp[2]);
 		bool ret_v = qp->filterEvent(message, result);
@@ -30,7 +30,7 @@ KMETHOD QCoreApplication_notify(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
 		QEvent*  event = RawPtr_to(QEvent*, sfp[2]);
 		bool ret_v = qp->notify(receiver, event);
@@ -44,10 +44,9 @@ KMETHOD QCoreApplication_notify(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_addLibraryPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString path = String_to(const QString, sfp[1]);
-		qp->addLibraryPath(path);
+		QCoreApplication::addLibraryPath(path);
 	}
 	RETURNvoid_();
 }
@@ -56,9 +55,8 @@ KMETHOD QCoreApplication_addLibraryPath(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_applicationDirPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
-		QString ret_v = qp->applicationDirPath();
+	if (true) {
+		QString ret_v = QCoreApplication::applicationDirPath();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -70,9 +68,8 @@ KMETHOD QCoreApplication_applicationDirPath(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_applicationFilePath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
-		QString ret_v = qp->applicationFilePath();
+	if (true) {
+		QString ret_v = QCoreApplication::applicationFilePath();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -84,9 +81,8 @@ KMETHOD QCoreApplication_applicationFilePath(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_getApplicationName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
-		QString ret_v = qp->applicationName();
+	if (true) {
+		QString ret_v = QCoreApplication::applicationName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -98,9 +94,8 @@ KMETHOD QCoreApplication_getApplicationName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_applicationPid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
-		qint64 ret_v = qp->applicationPid();
+	if (true) {
+		qint64 ret_v = QCoreApplication::applicationPid();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -113,9 +108,8 @@ KMETHOD QCoreApplication_applicationPid(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_getApplicationVersion(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
-		QString ret_v = qp->applicationVersion();
+	if (true) {
+		QString ret_v = QCoreApplication::applicationVersion();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -127,9 +121,8 @@ KMETHOD QCoreApplication_getApplicationVersion(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_closingDown(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->closingDown();
+	if (true) {
+		bool ret_v = QCoreApplication::closingDown();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -140,9 +133,8 @@ KMETHOD QCoreApplication_closingDown(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
-		int ret_v = qp->exec();
+	if (true) {
+		int ret_v = QCoreApplication::exec();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -153,10 +145,9 @@ KMETHOD QCoreApplication_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_exit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int returnCode = Int_to(int, sfp[1]);
-		qp->exit(returnCode);
+		QCoreApplication::exit(returnCode);
 	}
 	RETURNvoid_();
 }
@@ -165,9 +156,8 @@ KMETHOD QCoreApplication_exit(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_flush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
-		qp->flush();
+	if (true) {
+		QCoreApplication::flush();
 	}
 	RETURNvoid_();
 }
@@ -176,9 +166,8 @@ KMETHOD QCoreApplication_flush(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_hasPendingEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->hasPendingEvents();
+	if (true) {
+		bool ret_v = QCoreApplication::hasPendingEvents();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -189,10 +178,9 @@ KMETHOD QCoreApplication_hasPendingEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_installTranslator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QTranslator*  translationFile = RawPtr_to(QTranslator*, sfp[1]);
-		qp->installTranslator(translationFile);
+		QCoreApplication::installTranslator(translationFile);
 	}
 	RETURNvoid_();
 }
@@ -201,9 +189,8 @@ KMETHOD QCoreApplication_installTranslator(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_instance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
-		QCoreApplication* ret_v = qp->instance();
+	if (true) {
+		QCoreApplication* ret_v = QCoreApplication::instance();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QCoreApplication*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -215,9 +202,8 @@ KMETHOD QCoreApplication_instance(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_getOrganizationDomain(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
-		QString ret_v = qp->organizationDomain();
+	if (true) {
+		QString ret_v = QCoreApplication::organizationDomain();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -229,9 +215,8 @@ KMETHOD QCoreApplication_getOrganizationDomain(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_getOrganizationName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
-		QString ret_v = qp->organizationName();
+	if (true) {
+		QString ret_v = QCoreApplication::organizationName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -243,11 +228,10 @@ KMETHOD QCoreApplication_getOrganizationName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_postEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
 		QEvent*  event = RawPtr_to(QEvent*, sfp[2]);
-		qp->postEvent(receiver, event);
+		QCoreApplication::postEvent(receiver, event);
 	}
 	RETURNvoid_();
 }
@@ -257,12 +241,11 @@ KMETHOD QCoreApplication_postEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_postEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
 		QEvent*  event = RawPtr_to(QEvent*, sfp[2]);
 		int priority = Int_to(int, sfp[3]);
-		qp->postEvent(receiver, event, priority);
+		QCoreApplication::postEvent(receiver, event, priority);
 	}
 	RETURNvoid_();
 }
@@ -271,10 +254,9 @@ KMETHOD QCoreApplication_postEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_processEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QEventLoop::ProcessEventsFlags flags = Int_to(QEventLoop::ProcessEventsFlags, sfp[1]);
-		qp->processEvents(flags);
+		QCoreApplication::processEvents(flags);
 	}
 	RETURNvoid_();
 }
@@ -284,11 +266,10 @@ KMETHOD QCoreApplication_processEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_processEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QEventLoop::ProcessEventsFlags flags = Int_to(QEventLoop::ProcessEventsFlags, sfp[1]);
 		int maxtime = Int_to(int, sfp[2]);
-		qp->processEvents(flags, maxtime);
+		QCoreApplication::processEvents(flags, maxtime);
 	}
 	RETURNvoid_();
 }
@@ -297,10 +278,9 @@ KMETHOD QCoreApplication_processEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_removeLibraryPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString path = String_to(const QString, sfp[1]);
-		qp->removeLibraryPath(path);
+		QCoreApplication::removeLibraryPath(path);
 	}
 	RETURNvoid_();
 }
@@ -309,10 +289,9 @@ KMETHOD QCoreApplication_removeLibraryPath(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_removePostedEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
-		qp->removePostedEvents(receiver);
+		QCoreApplication::removePostedEvents(receiver);
 	}
 	RETURNvoid_();
 }
@@ -322,11 +301,10 @@ KMETHOD QCoreApplication_removePostedEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_removePostedEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
 		int eventType = Int_to(int, sfp[2]);
-		qp->removePostedEvents(receiver, eventType);
+		QCoreApplication::removePostedEvents(receiver, eventType);
 	}
 	RETURNvoid_();
 }
@@ -335,10 +313,9 @@ KMETHOD QCoreApplication_removePostedEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_removeTranslator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QTranslator*  translationFile = RawPtr_to(QTranslator*, sfp[1]);
-		qp->removeTranslator(translationFile);
+		QCoreApplication::removeTranslator(translationFile);
 	}
 	RETURNvoid_();
 }
@@ -347,11 +324,10 @@ KMETHOD QCoreApplication_removeTranslator(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_sendEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
 		QEvent*  event = RawPtr_to(QEvent*, sfp[2]);
-		bool ret_v = qp->sendEvent(receiver, event);
+		bool ret_v = QCoreApplication::sendEvent(receiver, event);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -362,11 +338,10 @@ KMETHOD QCoreApplication_sendEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_sendPostedEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
 		int event_type = Int_to(int, sfp[2]);
-		qp->sendPostedEvents(receiver, event_type);
+		QCoreApplication::sendPostedEvents(receiver, event_type);
 	}
 	RETURNvoid_();
 }
@@ -376,9 +351,8 @@ KMETHOD QCoreApplication_sendPostedEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_sendPostedEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
-		qp->sendPostedEvents();
+	if (true) {
+		QCoreApplication::sendPostedEvents();
 	}
 	RETURNvoid_();
 }
@@ -387,10 +361,9 @@ KMETHOD QCoreApplication_sendPostedEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_setApplicationName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString application = String_to(const QString, sfp[1]);
-		qp->setApplicationName(application);
+		QCoreApplication::setApplicationName(application);
 	}
 	RETURNvoid_();
 }
@@ -399,10 +372,9 @@ KMETHOD QCoreApplication_setApplicationName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_setApplicationVersion(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString version = String_to(const QString, sfp[1]);
-		qp->setApplicationVersion(version);
+		QCoreApplication::setApplicationVersion(version);
 	}
 	RETURNvoid_();
 }
@@ -411,11 +383,10 @@ KMETHOD QCoreApplication_setApplicationVersion(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_setAttribute(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		Qt::ApplicationAttribute attribute = Int_to(Qt::ApplicationAttribute, sfp[1]);
 		bool on = Boolean_to(bool, sfp[2]);
-		qp->setAttribute(attribute, on);
+		QCoreApplication::setAttribute(attribute, on);
 	}
 	RETURNvoid_();
 }
@@ -424,10 +395,9 @@ KMETHOD QCoreApplication_setAttribute(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_setOrganizationDomain(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString orgDomain = String_to(const QString, sfp[1]);
-		qp->setOrganizationDomain(orgDomain);
+		QCoreApplication::setOrganizationDomain(orgDomain);
 	}
 	RETURNvoid_();
 }
@@ -436,10 +406,9 @@ KMETHOD QCoreApplication_setOrganizationDomain(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_setOrganizationName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString orgName = String_to(const QString, sfp[1]);
-		qp->setOrganizationName(orgName);
+		QCoreApplication::setOrganizationName(orgName);
 	}
 	RETURNvoid_();
 }
@@ -448,9 +417,8 @@ KMETHOD QCoreApplication_setOrganizationName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_startingUp(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->startingUp();
+	if (true) {
+		bool ret_v = QCoreApplication::startingUp();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -461,10 +429,9 @@ KMETHOD QCoreApplication_startingUp(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_testAttribute(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		Qt::ApplicationAttribute attribute = Int_to(Qt::ApplicationAttribute, sfp[1]);
-		bool ret_v = qp->testAttribute(attribute);
+		bool ret_v = QCoreApplication::testAttribute(attribute);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -475,14 +442,13 @@ KMETHOD QCoreApplication_testAttribute(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const char*  context = RawPtr_to(const char*, sfp[1]);
 		const char*  sourceText = RawPtr_to(const char*, sfp[2]);
 		const char*  disambiguation = RawPtr_to(const char*, sfp[3]);
 		QCoreApplication::Encoding encoding = Int_to(QCoreApplication::Encoding, sfp[4]);
 		int n = Int_to(int, sfp[5]);
-		QString ret_v = qp->translate(context, sourceText, disambiguation, encoding, n);
+		QString ret_v = QCoreApplication::translate(context, sourceText, disambiguation, encoding, n);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -495,13 +461,12 @@ KMETHOD QCoreApplication_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCoreApplication_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const char*  context = RawPtr_to(const char*, sfp[1]);
 		const char*  sourceText = RawPtr_to(const char*, sfp[2]);
 		const char*  disambiguation = RawPtr_to(const char*, sfp[3]);
 		QCoreApplication::Encoding encoding = Int_to(QCoreApplication::Encoding, sfp[4]);
-		QString ret_v = qp->translate(context, sourceText, disambiguation, encoding);
+		QString ret_v = QCoreApplication::translate(context, sourceText, disambiguation, encoding);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -514,7 +479,7 @@ KMETHOD QCoreApplication_quit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCoreApplication *  qp = RawPtr_to(QCoreApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->quit();
 	}
 	RETURNvoid_();
@@ -586,10 +551,25 @@ bool DummyQCoreApplication::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQCoreApplication::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, about_to_quit_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQCoreApplication::connection(QObject *o)
 {
-	connect(o, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuitSlot()));
+	QCoreApplication *p = dynamic_cast<QCoreApplication*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuitSlot()));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -652,17 +632,9 @@ static void QCoreApplication_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QCoreApplication_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQCoreApplication *qp = (KQCoreApplication *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->about_to_quit_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->about_to_quit_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -686,15 +658,6 @@ bool KQCoreApplication::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQCoreApplication(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QCoreApplication";
-	cdef->free = QCoreApplication_free;
-	cdef->reftrace = QCoreApplication_reftrace;
-	cdef->compareTo = QCoreApplication_compareTo;
-}
-
 static knh_IntData_t QCoreApplicationConstInt[] = {
 	{"CodecForTr", QCoreApplication::CodecForTr},
 	{"UnicodeUTF8", QCoreApplication::UnicodeUTF8},
@@ -705,4 +668,15 @@ static knh_IntData_t QCoreApplicationConstInt[] = {
 DEFAPI(void) constQCoreApplication(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QCoreApplicationConstInt);
 }
+
+
+DEFAPI(void) defQCoreApplication(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QCoreApplication";
+	cdef->free = QCoreApplication_free;
+	cdef->reftrace = QCoreApplication_reftrace;
+	cdef->compareTo = QCoreApplication_compareTo;
+}
+
 

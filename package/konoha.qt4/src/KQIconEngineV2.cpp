@@ -3,10 +3,10 @@ KMETHOD QIconEngineV2_availableSizes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIconEngineV2 *  qp = RawPtr_to(QIconEngineV2 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIcon::Mode mode = Int_to(QIcon::Mode, sfp[1]);
 		QIcon::State state = Int_to(QIcon::State, sfp[2]);
-		QList<QSize>ret_v = qp->availableSizes(mode, state);
+		QList<QSize> ret_v = qp->availableSizes(mode, state);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QSize"));
@@ -27,7 +27,7 @@ KMETHOD QIconEngineV2_clone(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIconEngineV2 *  qp = RawPtr_to(QIconEngineV2 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIconEngineV2* ret_v = qp->clone();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QIconEngineV2*)ret_v, NULL);
 		RETURN_(rptr);
@@ -41,7 +41,7 @@ KMETHOD QIconEngineV2_iconName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIconEngineV2 *  qp = RawPtr_to(QIconEngineV2 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->iconName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -55,7 +55,7 @@ KMETHOD QIconEngineV2_key(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIconEngineV2 *  qp = RawPtr_to(QIconEngineV2 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->key();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -69,7 +69,7 @@ KMETHOD QIconEngineV2_virtual_hook(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIconEngineV2 *  qp = RawPtr_to(QIconEngineV2 *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int id = Int_to(int, sfp[1]);
 		void*  data = RawPtr_to(void*, sfp[2]);
 		qp->virtual_hook(id, data);
@@ -128,17 +128,24 @@ bool DummyQIconEngineV2::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQIconEngineV2::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQIconEngine::reftrace(ctx, p, tail_);
+}
 
 void DummyQIconEngineV2::connection(QObject *o)
 {
+	QIconEngineV2 *p = dynamic_cast<QIconEngineV2*>(o);
+	if (p != NULL) {
+	}
 	DummyQIconEngine::connection(o);
-}
-
-KQIconEngineV2::KQIconEngineV2() : QIconEngineV2()
-{
-	self = NULL;
-	dummy = new DummyQIconEngineV2();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QIconEngineV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -193,13 +200,9 @@ static void QIconEngineV2_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QIconEngineV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQIconEngineV2 *qp = (KQIconEngineV2 *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -214,15 +217,6 @@ void KQIconEngineV2::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQIconEngineV2(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QIconEngineV2";
-	cdef->free = QIconEngineV2_free;
-	cdef->reftrace = QIconEngineV2_reftrace;
-	cdef->compareTo = QIconEngineV2_compareTo;
-}
-
 static knh_IntData_t QIconEngineV2ConstInt[] = {
 	{"AvailableSizesHook", QIconEngineV2::AvailableSizesHook},
 	{"IconNameHook", QIconEngineV2::IconNameHook},
@@ -232,4 +226,15 @@ static knh_IntData_t QIconEngineV2ConstInt[] = {
 DEFAPI(void) constQIconEngineV2(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QIconEngineV2ConstInt);
 }
+
+
+DEFAPI(void) defQIconEngineV2(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QIconEngineV2";
+	cdef->free = QIconEngineV2_free;
+	cdef->reftrace = QIconEngineV2_reftrace;
+	cdef->compareTo = QIconEngineV2_compareTo;
+}
+
 

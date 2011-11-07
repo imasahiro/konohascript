@@ -34,7 +34,7 @@ KMETHOD QTextBoundaryFinder_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 */
 /*
-//QTextBoundaryFinder QTextBoundaryFinder.new(int type, QChar chars, int length,  char buffer, int bufferSize);
+//QTextBoundaryFinder QTextBoundaryFinder.new(int type, QChar chars, int length, String buffer, int bufferSize);
 KMETHOD QTextBoundaryFinder_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -49,16 +49,18 @@ KMETHOD QTextBoundaryFinder_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 */
-//int QTextBoundaryFinder.boundaryReasons();
+//QTextBoundaryFinderBoundaryReasons QTextBoundaryFinder.boundaryReasons();
 KMETHOD QTextBoundaryFinder_boundaryReasons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBoundaryFinder *  qp = RawPtr_to(QTextBoundaryFinder *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextBoundaryFinder::BoundaryReasons ret_v = qp->boundaryReasons();
-		RETURNi_(ret_v);
+		QTextBoundaryFinder::BoundaryReasons *ret_v_ = new QTextBoundaryFinder::BoundaryReasons(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -67,21 +69,8 @@ KMETHOD QTextBoundaryFinder_isAtBoundary(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBoundaryFinder *  qp = RawPtr_to(QTextBoundaryFinder *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isAtBoundary();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QTextBoundaryFinder.isValid();
-KMETHOD QTextBoundaryFinder_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextBoundaryFinder *  qp = RawPtr_to(QTextBoundaryFinder *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -93,7 +82,7 @@ KMETHOD QTextBoundaryFinder_getPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBoundaryFinder *  qp = RawPtr_to(QTextBoundaryFinder *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->position();
 		RETURNi_(ret_v);
 	} else {
@@ -106,19 +95,19 @@ KMETHOD QTextBoundaryFinder_setPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBoundaryFinder *  qp = RawPtr_to(QTextBoundaryFinder *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int position = Int_to(int, sfp[1]);
 		qp->setPosition(position);
 	}
 	RETURNvoid_();
 }
 
-//String QTextBoundaryFinder.str();
+//String QTextBoundaryFinder.string();
 KMETHOD QTextBoundaryFinder_string(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBoundaryFinder *  qp = RawPtr_to(QTextBoundaryFinder *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->string();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -132,7 +121,7 @@ KMETHOD QTextBoundaryFinder_toEnd(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBoundaryFinder *  qp = RawPtr_to(QTextBoundaryFinder *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->toEnd();
 	}
 	RETURNvoid_();
@@ -143,7 +132,7 @@ KMETHOD QTextBoundaryFinder_toNextBoundary(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBoundaryFinder *  qp = RawPtr_to(QTextBoundaryFinder *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->toNextBoundary();
 		RETURNi_(ret_v);
 	} else {
@@ -156,7 +145,7 @@ KMETHOD QTextBoundaryFinder_toPreviousBoundary(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBoundaryFinder *  qp = RawPtr_to(QTextBoundaryFinder *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->toPreviousBoundary();
 		RETURNi_(ret_v);
 	} else {
@@ -169,7 +158,7 @@ KMETHOD QTextBoundaryFinder_toStart(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBoundaryFinder *  qp = RawPtr_to(QTextBoundaryFinder *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->toStart();
 	}
 	RETURNvoid_();
@@ -180,7 +169,7 @@ KMETHOD QTextBoundaryFinder_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBoundaryFinder *  qp = RawPtr_to(QTextBoundaryFinder *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextBoundaryFinder::BoundaryType ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -188,6 +177,24 @@ KMETHOD QTextBoundaryFinder_type(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QTextBoundaryFinder.parents();
+KMETHOD QTextBoundaryFinder_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextBoundaryFinder *qp = RawPtr_to(QTextBoundaryFinder*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextBoundaryFinder::DummyQTextBoundaryFinder()
 {
@@ -236,17 +243,28 @@ bool DummyQTextBoundaryFinder::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQTextBoundaryFinder::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextBoundaryFinder::connection(QObject *o)
 {
-	return;
+	QTextBoundaryFinder *p = dynamic_cast<QTextBoundaryFinder*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTextBoundaryFinder::KQTextBoundaryFinder() : QTextBoundaryFinder()
 {
 	self = NULL;
 	dummy = new DummyQTextBoundaryFinder();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextBoundaryFinder_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -301,13 +319,9 @@ static void QTextBoundaryFinder_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextBoundaryFinder_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextBoundaryFinder *qp = (KQTextBoundaryFinder *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -320,15 +334,6 @@ void KQTextBoundaryFinder::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQTextBoundaryFinder(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTextBoundaryFinder";
-	cdef->free = QTextBoundaryFinder_free;
-	cdef->reftrace = QTextBoundaryFinder_reftrace;
-	cdef->compareTo = QTextBoundaryFinder_compareTo;
 }
 
 static knh_IntData_t QTextBoundaryFinderConstInt[] = {
@@ -344,5 +349,179 @@ static knh_IntData_t QTextBoundaryFinderConstInt[] = {
 
 DEFAPI(void) constQTextBoundaryFinder(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTextBoundaryFinderConstInt);
+}
+
+
+DEFAPI(void) defQTextBoundaryFinder(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextBoundaryFinder";
+	cdef->free = QTextBoundaryFinder_free;
+	cdef->reftrace = QTextBoundaryFinder_reftrace;
+	cdef->compareTo = QTextBoundaryFinder_compareTo;
+}
+
+//## QTextBoundaryFinderBoundaryReasons QTextBoundaryFinderBoundaryReasons.new(int value);
+KMETHOD QTextBoundaryFinderBoundaryReasons_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextBoundaryFinder::BoundaryReason i = Int_to(QTextBoundaryFinder::BoundaryReason, sfp[1]);
+	QTextBoundaryFinder::BoundaryReasons *ret_v = new QTextBoundaryFinder::BoundaryReasons(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QTextBoundaryFinderBoundaryReasons QTextBoundaryFinderBoundaryReasons.and(int mask);
+KMETHOD QTextBoundaryFinderBoundaryReasons_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextBoundaryFinder::BoundaryReasons *qp = RawPtr_to(QTextBoundaryFinder::BoundaryReasons*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QTextBoundaryFinder::BoundaryReasons ret = ((*qp) & i);
+		QTextBoundaryFinder::BoundaryReasons *ret_ = new QTextBoundaryFinder::BoundaryReasons(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextBoundaryFinderBoundaryReasons QTextBoundaryFinderBoundaryReasons.iand(QTextBoundaryFinder::QTextBoundaryFinderBoundaryReasons other);
+KMETHOD QTextBoundaryFinderBoundaryReasons_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextBoundaryFinder::BoundaryReasons *qp = RawPtr_to(QTextBoundaryFinder::BoundaryReasons*, sfp[0]);
+	if (qp != NULL) {
+		QTextBoundaryFinder::BoundaryReasons *other = RawPtr_to(QTextBoundaryFinder::BoundaryReasons *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextBoundaryFinderBoundaryReasons QTextBoundaryFinderBoundaryReasons.or(QTextBoundaryFinderBoundaryReasons f);
+KMETHOD QTextBoundaryFinderBoundaryReasons_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextBoundaryFinder::BoundaryReasons *qp = RawPtr_to(QTextBoundaryFinder::BoundaryReasons*, sfp[0]);
+	if (qp != NULL) {
+		QTextBoundaryFinder::BoundaryReasons *f = RawPtr_to(QTextBoundaryFinder::BoundaryReasons*, sfp[1]);
+		QTextBoundaryFinder::BoundaryReasons ret = ((*qp) | (*f));
+		QTextBoundaryFinder::BoundaryReasons *ret_ = new QTextBoundaryFinder::BoundaryReasons(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextBoundaryFinderBoundaryReasons QTextBoundaryFinderBoundaryReasons.ior(QTextBoundaryFinder::QTextBoundaryFinderBoundaryReasons other);
+KMETHOD QTextBoundaryFinderBoundaryReasons_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextBoundaryFinder::BoundaryReasons *qp = RawPtr_to(QTextBoundaryFinder::BoundaryReasons*, sfp[0]);
+	if (qp != NULL) {
+		QTextBoundaryFinder::BoundaryReasons *other = RawPtr_to(QTextBoundaryFinder::BoundaryReasons *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextBoundaryFinderBoundaryReasons QTextBoundaryFinderBoundaryReasons.xor(QTextBoundaryFinderBoundaryReasons f);
+KMETHOD QTextBoundaryFinderBoundaryReasons_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextBoundaryFinder::BoundaryReasons *qp = RawPtr_to(QTextBoundaryFinder::BoundaryReasons*, sfp[0]);
+	if (qp != NULL) {
+		QTextBoundaryFinder::BoundaryReasons *f = RawPtr_to(QTextBoundaryFinder::BoundaryReasons*, sfp[1]);
+		QTextBoundaryFinder::BoundaryReasons ret = ((*qp) ^ (*f));
+		QTextBoundaryFinder::BoundaryReasons *ret_ = new QTextBoundaryFinder::BoundaryReasons(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextBoundaryFinderBoundaryReasons QTextBoundaryFinderBoundaryReasons.ixor(QTextBoundaryFinder::QTextBoundaryFinderBoundaryReasons other);
+KMETHOD QTextBoundaryFinderBoundaryReasons_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextBoundaryFinder::BoundaryReasons *qp = RawPtr_to(QTextBoundaryFinder::BoundaryReasons*, sfp[0]);
+	if (qp != NULL) {
+		QTextBoundaryFinder::BoundaryReasons *other = RawPtr_to(QTextBoundaryFinder::BoundaryReasons *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QTextBoundaryFinderBoundaryReasons.testFlag(int flag);
+KMETHOD QTextBoundaryFinderBoundaryReasons_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextBoundaryFinder::BoundaryReasons *qp = RawPtr_to(QTextBoundaryFinder::BoundaryReasons *, sfp[0]);
+	if (qp != NULL) {
+		QTextBoundaryFinder::BoundaryReason flag = Int_to(QTextBoundaryFinder::BoundaryReason, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QTextBoundaryFinderBoundaryReasons.value();
+KMETHOD QTextBoundaryFinderBoundaryReasons_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextBoundaryFinder::BoundaryReasons *qp = RawPtr_to(QTextBoundaryFinder::BoundaryReasons *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QTextBoundaryFinderBoundaryReasons_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QTextBoundaryFinder::BoundaryReasons *qp = (QTextBoundaryFinder::BoundaryReasons *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QTextBoundaryFinderBoundaryReasons_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QTextBoundaryFinder::BoundaryReasons *qp = (QTextBoundaryFinder::BoundaryReasons *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QTextBoundaryFinderBoundaryReasons_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QTextBoundaryFinder::BoundaryReasons*)p1->rawptr);
+//		int v2 = int(*(QTextBoundaryFinder::BoundaryReasons*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QTextBoundaryFinder::BoundaryReasons v1 = *(QTextBoundaryFinder::BoundaryReasons*)p1->rawptr;
+		QTextBoundaryFinder::BoundaryReasons v2 = *(QTextBoundaryFinder::BoundaryReasons*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQTextBoundaryFinderBoundaryReasons(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextBoundaryFinderBoundaryReasons";
+	cdef->free = QTextBoundaryFinderBoundaryReasons_free;
+	cdef->reftrace = QTextBoundaryFinderBoundaryReasons_reftrace;
+	cdef->compareTo = QTextBoundaryFinderBoundaryReasons_compareTo;
 }
 

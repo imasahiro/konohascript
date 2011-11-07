@@ -13,7 +13,7 @@ KMETHOD QTextLine_ascent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->ascent();
 		RETURNf_(ret_v);
 	} else {
@@ -26,7 +26,7 @@ KMETHOD QTextLine_cursorToX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int* cursorPos = Int_to(int*, sfp[1]);
 		QTextLine::Edge edge = Int_to(QTextLine::Edge, sfp[2]);
 		qreal ret_v = qp->cursorToX(cursorPos, edge);
@@ -42,7 +42,7 @@ KMETHOD QTextLine_cursorToX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int cursorPos = Int_to(int, sfp[1]);
 		QTextLine::Edge edge = Int_to(QTextLine::Edge, sfp[2]);
 		qreal ret_v = qp->cursorToX(cursorPos, edge);
@@ -57,7 +57,7 @@ KMETHOD QTextLine_descent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->descent();
 		RETURNf_(ret_v);
 	} else {
@@ -70,7 +70,7 @@ KMETHOD QTextLine_draw(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[2]);
 		const QTextLayout::FormatRange* selection = Int_to(const QTextLayout::FormatRange*, sfp[3]);
@@ -84,7 +84,7 @@ KMETHOD QTextLine_height(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->height();
 		RETURNf_(ret_v);
 	} else {
@@ -97,24 +97,11 @@ KMETHOD QTextLine_horizontalAdvance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->horizontalAdvance();
 		RETURNf_(ret_v);
 	} else {
 		RETURNf_(0.0f);
-	}
-}
-
-////boolean QTextLine.isValid();
-KMETHOD QTextLine_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
 	}
 }
 
@@ -123,7 +110,7 @@ KMETHOD QTextLine_leading(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->leading();
 		RETURNf_(ret_v);
 	} else {
@@ -136,7 +123,7 @@ KMETHOD QTextLine_getLeadingIncluded(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->leadingIncluded();
 		RETURNb_(ret_v);
 	} else {
@@ -149,7 +136,7 @@ KMETHOD QTextLine_lineNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->lineNumber();
 		RETURNi_(ret_v);
 	} else {
@@ -162,7 +149,7 @@ KMETHOD QTextLine_naturalTextRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->naturalTextRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -177,7 +164,7 @@ KMETHOD QTextLine_naturalTextWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->naturalTextWidth();
 		RETURNf_(ret_v);
 	} else {
@@ -190,7 +177,7 @@ KMETHOD QTextLine_getPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->position();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -205,7 +192,7 @@ KMETHOD QTextLine_rect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->rect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -220,7 +207,7 @@ KMETHOD QTextLine_setLeadingIncluded(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool included = Boolean_to(bool, sfp[1]);
 		qp->setLeadingIncluded(included);
 	}
@@ -232,7 +219,7 @@ KMETHOD QTextLine_setLineWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal width = Float_to(qreal, sfp[1]);
 		qp->setLineWidth(width);
 	}
@@ -244,7 +231,7 @@ KMETHOD QTextLine_setNumColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int numColumns = Int_to(int, sfp[1]);
 		qp->setNumColumns(numColumns);
 	}
@@ -257,7 +244,7 @@ KMETHOD QTextLine_setNumColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int numColumns = Int_to(int, sfp[1]);
 		qreal alignmentWidth = Float_to(qreal, sfp[2]);
 		qp->setNumColumns(numColumns, alignmentWidth);
@@ -270,7 +257,7 @@ KMETHOD QTextLine_setPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  pos = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setPosition(pos);
 	}
@@ -282,7 +269,7 @@ KMETHOD QTextLine_textLength(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->textLength();
 		RETURNi_(ret_v);
 	} else {
@@ -295,7 +282,7 @@ KMETHOD QTextLine_textStart(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->textStart();
 		RETURNi_(ret_v);
 	} else {
@@ -308,7 +295,7 @@ KMETHOD QTextLine_width(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->width();
 		RETURNf_(ret_v);
 	} else {
@@ -321,7 +308,7 @@ KMETHOD QTextLine_x(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->x();
 		RETURNf_(ret_v);
 	} else {
@@ -334,7 +321,7 @@ KMETHOD QTextLine_xToCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		QTextLine::CursorPosition cpos = Int_to(QTextLine::CursorPosition, sfp[2]);
 		int ret_v = qp->xToCursor(x, cpos);
@@ -349,7 +336,7 @@ KMETHOD QTextLine_y(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLine *  qp = RawPtr_to(QTextLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->y();
 		RETURNf_(ret_v);
 	} else {
@@ -357,6 +344,24 @@ KMETHOD QTextLine_y(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QTextLine.parents();
+KMETHOD QTextLine_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextLine *qp = RawPtr_to(QTextLine*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextLine::DummyQTextLine()
 {
@@ -405,17 +410,28 @@ bool DummyQTextLine::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextLine::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextLine::connection(QObject *o)
 {
-	return;
+	QTextLine *p = dynamic_cast<QTextLine*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTextLine::KQTextLine() : QTextLine()
 {
 	self = NULL;
 	dummy = new DummyQTextLine();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextLine_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -470,13 +486,9 @@ static void QTextLine_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextLine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextLine *qp = (KQTextLine *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -491,15 +503,6 @@ void KQTextLine::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQTextLine(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTextLine";
-	cdef->free = QTextLine_free;
-	cdef->reftrace = QTextLine_reftrace;
-	cdef->compareTo = QTextLine_compareTo;
-}
-
 static knh_IntData_t QTextLineConstInt[] = {
 	{"CursorBetweenCharacters", QTextLine::CursorBetweenCharacters},
 	{"CursorOnCharacter", QTextLine::CursorOnCharacter},
@@ -511,4 +514,15 @@ static knh_IntData_t QTextLineConstInt[] = {
 DEFAPI(void) constQTextLine(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTextLineConstInt);
 }
+
+
+DEFAPI(void) defQTextLine(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextLine";
+	cdef->free = QTextLine_free;
+	cdef->reftrace = QTextLine_reftrace;
+	cdef->compareTo = QTextLine_compareTo;
+}
+
 

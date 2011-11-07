@@ -80,7 +80,7 @@ KMETHOD QTreeWidgetItem_addChild(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTreeWidgetItem*  child = RawPtr_to(QTreeWidgetItem*, sfp[1]);
 		qp->addChild(child);
 	}
@@ -92,7 +92,7 @@ KMETHOD QTreeWidgetItem_addChildren(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<QTreeWidgetItem*> children;
@@ -110,7 +110,7 @@ KMETHOD QTreeWidgetItem_getBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		QBrush ret_v = qp->background(column);
 		QBrush *ret_v_ = new QBrush(ret_v);
@@ -126,7 +126,7 @@ KMETHOD QTreeWidgetItem_getCheckState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		Qt::CheckState ret_v = qp->checkState(column);
 		RETURNi_(ret_v);
@@ -140,7 +140,7 @@ KMETHOD QTreeWidgetItem_child(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QTreeWidgetItem* ret_v = qp->child(index);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTreeWidgetItem*)ret_v, NULL);
@@ -155,7 +155,7 @@ KMETHOD QTreeWidgetItem_childCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->childCount();
 		RETURNi_(ret_v);
 	} else {
@@ -168,7 +168,7 @@ KMETHOD QTreeWidgetItem_getChildIndicatorPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTreeWidgetItem::ChildIndicatorPolicy ret_v = qp->childIndicatorPolicy();
 		RETURNi_(ret_v);
 	} else {
@@ -181,7 +181,7 @@ KMETHOD QTreeWidgetItem_clone(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTreeWidgetItem* ret_v = qp->clone();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTreeWidgetItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -195,7 +195,7 @@ KMETHOD QTreeWidgetItem_columnCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->columnCount();
 		RETURNi_(ret_v);
 	} else {
@@ -208,7 +208,7 @@ KMETHOD QTreeWidgetItem_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int role = Int_to(int, sfp[2]);
 		QVariant ret_v = qp->data(column, role);
@@ -220,16 +220,18 @@ KMETHOD QTreeWidgetItem_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QTreeWidgetItem.getFlags();
+//QtItemFlags QTreeWidgetItem.getFlags();
 KMETHOD QTreeWidgetItem_getFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ItemFlags ret_v = qp->flags();
-		RETURNi_(ret_v);
+		Qt::ItemFlags *ret_v_ = new Qt::ItemFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -238,7 +240,7 @@ KMETHOD QTreeWidgetItem_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		QFont ret_v = qp->font(column);
 		QFont *ret_v_ = new QFont(ret_v);
@@ -254,7 +256,7 @@ KMETHOD QTreeWidgetItem_getForeground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		QBrush ret_v = qp->foreground(column);
 		QBrush *ret_v_ = new QBrush(ret_v);
@@ -270,7 +272,7 @@ KMETHOD QTreeWidgetItem_getIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		QIcon ret_v = qp->icon(column);
 		QIcon *ret_v_ = new QIcon(ret_v);
@@ -286,7 +288,7 @@ KMETHOD QTreeWidgetItem_indexOfChild(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTreeWidgetItem*  child = RawPtr_to(QTreeWidgetItem*, sfp[1]);
 		int ret_v = qp->indexOfChild(child);
 		RETURNi_(ret_v);
@@ -300,7 +302,7 @@ KMETHOD QTreeWidgetItem_insertChild(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QTreeWidgetItem*  child = RawPtr_to(QTreeWidgetItem*, sfp[2]);
 		qp->insertChild(index, child);
@@ -313,7 +315,7 @@ KMETHOD QTreeWidgetItem_insertChildren(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		knh_Array_t *a = sfp[2].a;
 		int asize = knh_Array_size(a);
@@ -332,7 +334,7 @@ KMETHOD QTreeWidgetItem_isDisabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isDisabled();
 		RETURNb_(ret_v);
 	} else {
@@ -345,7 +347,7 @@ KMETHOD QTreeWidgetItem_isExpanded(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isExpanded();
 		RETURNb_(ret_v);
 	} else {
@@ -358,7 +360,7 @@ KMETHOD QTreeWidgetItem_isFirstColumnSpanned(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isFirstColumnSpanned();
 		RETURNb_(ret_v);
 	} else {
@@ -371,7 +373,7 @@ KMETHOD QTreeWidgetItem_isHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isHidden();
 		RETURNb_(ret_v);
 	} else {
@@ -384,7 +386,7 @@ KMETHOD QTreeWidgetItem_isSelected(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSelected();
 		RETURNb_(ret_v);
 	} else {
@@ -397,7 +399,7 @@ KMETHOD QTreeWidgetItem_parent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTreeWidgetItem* ret_v = qp->parent();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTreeWidgetItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -411,7 +413,7 @@ KMETHOD QTreeWidgetItem_removeChild(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTreeWidgetItem*  child = RawPtr_to(QTreeWidgetItem*, sfp[1]);
 		qp->removeChild(child);
 	}
@@ -423,7 +425,7 @@ KMETHOD QTreeWidgetItem_setBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[2]);
 		qp->setBackground(column, brush);
@@ -436,7 +438,7 @@ KMETHOD QTreeWidgetItem_setCheckState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		Qt::CheckState state = Int_to(Qt::CheckState, sfp[2]);
 		qp->setCheckState(column, state);
@@ -449,7 +451,7 @@ KMETHOD QTreeWidgetItem_setChildIndicatorPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTreeWidgetItem::ChildIndicatorPolicy policy = Int_to(QTreeWidgetItem::ChildIndicatorPolicy, sfp[1]);
 		qp->setChildIndicatorPolicy(policy);
 	}
@@ -461,7 +463,7 @@ KMETHOD QTreeWidgetItem_setData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int role = Int_to(int, sfp[2]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[3]);
@@ -475,7 +477,7 @@ KMETHOD QTreeWidgetItem_setDisabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool disabled = Boolean_to(bool, sfp[1]);
 		qp->setDisabled(disabled);
 	}
@@ -487,7 +489,7 @@ KMETHOD QTreeWidgetItem_setExpanded(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool expand = Boolean_to(bool, sfp[1]);
 		qp->setExpanded(expand);
 	}
@@ -499,20 +501,20 @@ KMETHOD QTreeWidgetItem_setFirstColumnSpanned(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool span = Boolean_to(bool, sfp[1]);
 		qp->setFirstColumnSpanned(span);
 	}
 	RETURNvoid_();
 }
 
-//void QTreeWidgetItem.setFlags(int flags);
+//void QTreeWidgetItem.setFlags(QtItemFlags flags);
 KMETHOD QTreeWidgetItem_setFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
-		Qt::ItemFlags flags = Int_to(Qt::ItemFlags, sfp[1]);
+	if (qp) {
+		initFlag(flags, Qt::ItemFlags, sfp[1]);
 		qp->setFlags(flags);
 	}
 	RETURNvoid_();
@@ -523,7 +525,7 @@ KMETHOD QTreeWidgetItem_setFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		const QFont  font = *RawPtr_to(const QFont *, sfp[2]);
 		qp->setFont(column, font);
@@ -536,7 +538,7 @@ KMETHOD QTreeWidgetItem_setForeground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[2]);
 		qp->setForeground(column, brush);
@@ -549,7 +551,7 @@ KMETHOD QTreeWidgetItem_setHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool hide = Boolean_to(bool, sfp[1]);
 		qp->setHidden(hide);
 	}
@@ -561,7 +563,7 @@ KMETHOD QTreeWidgetItem_setIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[2]);
 		qp->setIcon(column, icon);
@@ -574,7 +576,7 @@ KMETHOD QTreeWidgetItem_setSelected(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool select = Boolean_to(bool, sfp[1]);
 		qp->setSelected(select);
 	}
@@ -586,7 +588,7 @@ KMETHOD QTreeWidgetItem_setSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		const QSize  size = *RawPtr_to(const QSize *, sfp[2]);
 		qp->setSizeHint(column, size);
@@ -599,7 +601,7 @@ KMETHOD QTreeWidgetItem_setStatusTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		const QString statusTip = String_to(const QString, sfp[2]);
 		qp->setStatusTip(column, statusTip);
@@ -612,7 +614,7 @@ KMETHOD QTreeWidgetItem_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		qp->setText(column, text);
@@ -625,7 +627,7 @@ KMETHOD QTreeWidgetItem_setTextAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int alignment = Int_to(int, sfp[2]);
 		qp->setTextAlignment(column, alignment);
@@ -638,7 +640,7 @@ KMETHOD QTreeWidgetItem_setToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		const QString toolTip = String_to(const QString, sfp[2]);
 		qp->setToolTip(column, toolTip);
@@ -651,7 +653,7 @@ KMETHOD QTreeWidgetItem_setWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		const QString whatsThis = String_to(const QString, sfp[2]);
 		qp->setWhatsThis(column, whatsThis);
@@ -664,7 +666,7 @@ KMETHOD QTreeWidgetItem_getSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		QSize ret_v = qp->sizeHint(column);
 		QSize *ret_v_ = new QSize(ret_v);
@@ -680,7 +682,7 @@ KMETHOD QTreeWidgetItem_sortChildren(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[2]);
 		qp->sortChildren(column, order);
@@ -693,7 +695,7 @@ KMETHOD QTreeWidgetItem_getStatusTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		QString ret_v = qp->statusTip(column);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -708,7 +710,7 @@ KMETHOD QTreeWidgetItem_takeChild(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QTreeWidgetItem* ret_v = qp->takeChild(index);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTreeWidgetItem*)ret_v, NULL);
@@ -723,8 +725,8 @@ KMETHOD QTreeWidgetItem_takeChildren(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
-		QList<QTreeWidgetItem*>ret_v = qp->takeChildren();
+	if (qp) {
+		QList<QTreeWidgetItem*> ret_v = qp->takeChildren();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QTreeWidgetItem"));
@@ -744,7 +746,7 @@ KMETHOD QTreeWidgetItem_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		QString ret_v = qp->text(column);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -759,7 +761,7 @@ KMETHOD QTreeWidgetItem_getTextAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int ret_v = qp->textAlignment(column);
 		RETURNi_(ret_v);
@@ -773,7 +775,7 @@ KMETHOD QTreeWidgetItem_getToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		QString ret_v = qp->toolTip(column);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -788,7 +790,7 @@ KMETHOD QTreeWidgetItem_treeWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTreeWidget* ret_v = qp->treeWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTreeWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -802,7 +804,7 @@ KMETHOD QTreeWidgetItem_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -815,7 +817,7 @@ KMETHOD QTreeWidgetItem_getWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeWidgetItem *  qp = RawPtr_to(QTreeWidgetItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		QString ret_v = qp->whatsThis(column);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -825,6 +827,24 @@ KMETHOD QTreeWidgetItem_getWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QTreeWidgetItem.parents();
+KMETHOD QTreeWidgetItem_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTreeWidgetItem *qp = RawPtr_to(QTreeWidgetItem*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTreeWidgetItem::DummyQTreeWidgetItem()
 {
@@ -873,17 +893,28 @@ bool DummyQTreeWidgetItem::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTreeWidgetItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTreeWidgetItem::connection(QObject *o)
 {
-	return;
+	QTreeWidgetItem *p = dynamic_cast<QTreeWidgetItem*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTreeWidgetItem::KQTreeWidgetItem(int type) : QTreeWidgetItem(type)
 {
 	self = NULL;
 	dummy = new DummyQTreeWidgetItem();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTreeWidgetItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -938,13 +969,9 @@ static void QTreeWidgetItem_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTreeWidgetItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTreeWidgetItem *qp = (KQTreeWidgetItem *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -959,15 +986,6 @@ void KQTreeWidgetItem::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQTreeWidgetItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTreeWidgetItem";
-	cdef->free = QTreeWidgetItem_free;
-	cdef->reftrace = QTreeWidgetItem_reftrace;
-	cdef->compareTo = QTreeWidgetItem_compareTo;
-}
-
 static knh_IntData_t QTreeWidgetItemConstInt[] = {
 	{"ShowIndicator", QTreeWidgetItem::ShowIndicator},
 	{"DontShowIndicator", QTreeWidgetItem::DontShowIndicator},
@@ -980,4 +998,15 @@ static knh_IntData_t QTreeWidgetItemConstInt[] = {
 DEFAPI(void) constQTreeWidgetItem(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTreeWidgetItemConstInt);
 }
+
+
+DEFAPI(void) defQTreeWidgetItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTreeWidgetItem";
+	cdef->free = QTreeWidgetItem_free;
+	cdef->reftrace = QTreeWidgetItem_reftrace;
+	cdef->compareTo = QTreeWidgetItem_compareTo;
+}
+
 

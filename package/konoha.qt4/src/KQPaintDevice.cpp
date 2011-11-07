@@ -3,7 +3,7 @@ KMETHOD QPaintDevice_colorCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintDevice *  qp = RawPtr_to(QPaintDevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->colorCount();
 		RETURNi_(ret_v);
 	} else {
@@ -16,7 +16,7 @@ KMETHOD QPaintDevice_depth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintDevice *  qp = RawPtr_to(QPaintDevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->depth();
 		RETURNi_(ret_v);
 	} else {
@@ -29,7 +29,7 @@ KMETHOD QPaintDevice_height(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintDevice *  qp = RawPtr_to(QPaintDevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->height();
 		RETURNi_(ret_v);
 	} else {
@@ -42,7 +42,7 @@ KMETHOD QPaintDevice_heightMM(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintDevice *  qp = RawPtr_to(QPaintDevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->heightMM();
 		RETURNi_(ret_v);
 	} else {
@@ -55,7 +55,7 @@ KMETHOD QPaintDevice_logicalDpiX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintDevice *  qp = RawPtr_to(QPaintDevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->logicalDpiX();
 		RETURNi_(ret_v);
 	} else {
@@ -68,7 +68,7 @@ KMETHOD QPaintDevice_logicalDpiY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintDevice *  qp = RawPtr_to(QPaintDevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->logicalDpiY();
 		RETURNi_(ret_v);
 	} else {
@@ -81,7 +81,7 @@ KMETHOD QPaintDevice_numColors(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintDevice *  qp = RawPtr_to(QPaintDevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->numColors();
 		RETURNi_(ret_v);
 	} else {
@@ -94,7 +94,7 @@ KMETHOD QPaintDevice_paintEngine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintDevice *  qp = RawPtr_to(QPaintDevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPaintEngine* ret_v = qp->paintEngine();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPaintEngine*)ret_v, NULL);
 		RETURN_(rptr);
@@ -108,7 +108,7 @@ KMETHOD QPaintDevice_paintingActive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintDevice *  qp = RawPtr_to(QPaintDevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->paintingActive();
 		RETURNb_(ret_v);
 	} else {
@@ -121,7 +121,7 @@ KMETHOD QPaintDevice_physicalDpiX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintDevice *  qp = RawPtr_to(QPaintDevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->physicalDpiX();
 		RETURNi_(ret_v);
 	} else {
@@ -134,7 +134,7 @@ KMETHOD QPaintDevice_physicalDpiY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintDevice *  qp = RawPtr_to(QPaintDevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->physicalDpiY();
 		RETURNi_(ret_v);
 	} else {
@@ -147,7 +147,7 @@ KMETHOD QPaintDevice_width(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintDevice *  qp = RawPtr_to(QPaintDevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->width();
 		RETURNi_(ret_v);
 	} else {
@@ -160,7 +160,7 @@ KMETHOD QPaintDevice_widthMM(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPaintDevice *  qp = RawPtr_to(QPaintDevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->widthMM();
 		RETURNi_(ret_v);
 	} else {
@@ -168,6 +168,24 @@ KMETHOD QPaintDevice_widthMM(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QPaintDevice.parents();
+KMETHOD QPaintDevice_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPaintDevice *qp = RawPtr_to(QPaintDevice*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQPaintDevice::DummyQPaintDevice()
 {
@@ -216,17 +234,22 @@ bool DummyQPaintDevice::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPaintDevice::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQPaintDevice::connection(QObject *o)
 {
-	return;
-}
-
-KQPaintDevice::KQPaintDevice() : QPaintDevice()
-{
-	self = NULL;
-	dummy = new DummyQPaintDevice();
-	dummy->connection((QObject*)this);
+	QPaintDevice *p = dynamic_cast<QPaintDevice*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QPaintDevice_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -281,13 +304,9 @@ static void QPaintDevice_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPaintDevice_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPaintDevice *qp = (KQPaintDevice *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -300,15 +319,6 @@ void KQPaintDevice::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQPaintDevice(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QPaintDevice";
-	cdef->free = QPaintDevice_free;
-	cdef->reftrace = QPaintDevice_reftrace;
-	cdef->compareTo = QPaintDevice_compareTo;
 }
 
 static knh_IntData_t QPaintDeviceConstInt[] = {
@@ -328,4 +338,15 @@ static knh_IntData_t QPaintDeviceConstInt[] = {
 DEFAPI(void) constQPaintDevice(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QPaintDeviceConstInt);
 }
+
+
+DEFAPI(void) defQPaintDevice(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QPaintDevice";
+	cdef->free = QPaintDevice_free;
+	cdef->reftrace = QPaintDevice_reftrace;
+	cdef->compareTo = QPaintDevice_compareTo;
+}
+
 

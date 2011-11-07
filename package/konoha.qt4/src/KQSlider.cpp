@@ -3,7 +3,7 @@ KMETHOD QSlider_event(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSlider *  qp = RawPtr_to(QSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEvent*  event = RawPtr_to(QEvent*, sfp[1]);
 		bool ret_v = qp->event(event);
 		RETURNb_(ret_v);
@@ -17,7 +17,7 @@ KMETHOD QSlider_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSlider *  qp = RawPtr_to(QSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -32,7 +32,7 @@ KMETHOD QSlider_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSlider *  qp = RawPtr_to(QSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -71,7 +71,7 @@ KMETHOD QSlider_setTickInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSlider *  qp = RawPtr_to(QSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ti = Int_to(int, sfp[1]);
 		qp->setTickInterval(ti);
 	}
@@ -83,7 +83,7 @@ KMETHOD QSlider_setTickPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSlider *  qp = RawPtr_to(QSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSlider::TickPosition position = Int_to(QSlider::TickPosition, sfp[1]);
 		qp->setTickPosition(position);
 	}
@@ -95,7 +95,7 @@ KMETHOD QSlider_getTickInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSlider *  qp = RawPtr_to(QSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->tickInterval();
 		RETURNi_(ret_v);
 	} else {
@@ -108,7 +108,7 @@ KMETHOD QSlider_getTickPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSlider *  qp = RawPtr_to(QSlider *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSlider::TickPosition ret_v = qp->tickPosition();
 		RETURNi_(ret_v);
 	} else {
@@ -167,9 +167,23 @@ bool DummyQSlider::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSlider::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractSlider::reftrace(ctx, p, tail_);
+}
 
 void DummyQSlider::connection(QObject *o)
 {
+	QSlider *p = dynamic_cast<QSlider*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractSlider::connection(o);
 }
 
@@ -232,13 +246,9 @@ static void QSlider_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSlider_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSlider *qp = (KQSlider *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -262,15 +272,6 @@ bool KQSlider::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQSlider(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QSlider";
-	cdef->free = QSlider_free;
-	cdef->reftrace = QSlider_reftrace;
-	cdef->compareTo = QSlider_compareTo;
-}
-
 static knh_IntData_t QSliderConstInt[] = {
 	{"NoTicks", QSlider::NoTicks},
 	{"TicksBothSides", QSlider::TicksBothSides},
@@ -284,4 +285,15 @@ static knh_IntData_t QSliderConstInt[] = {
 DEFAPI(void) constQSlider(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QSliderConstInt);
 }
+
+
+DEFAPI(void) defQSlider(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QSlider";
+	cdef->free = QSlider_free;
+	cdef->reftrace = QSlider_reftrace;
+	cdef->compareTo = QSlider_compareTo;
+}
+
 

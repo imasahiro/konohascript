@@ -1,5 +1,6 @@
 //=========== qt install directory setting ====================//
-QT_HOME_DIR = "";
+//QT_HOME_DIR = "";
+QT_HOME_DIR = "/home/onoda/Documents/qt-everywhere-opensource-src-4.7.4/"
 //=============================================================//
 
 QT_DOC_DIR = QT_HOME_DIR + "doc/html/";

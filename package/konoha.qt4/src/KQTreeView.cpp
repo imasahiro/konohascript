@@ -3,7 +3,7 @@ KMETHOD QTreeView_dataChanged(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  topLeft = *RawPtr_to(const QModelIndex *, sfp[1]);
 		const QModelIndex  bottomRight = *RawPtr_to(const QModelIndex *, sfp[2]);
 		qp->dataChanged(topLeft, bottomRight);
@@ -16,7 +16,7 @@ KMETHOD QTreeView_indexAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
 		QModelIndex ret_v = qp->indexAt(point);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -32,7 +32,7 @@ KMETHOD QTreeView_keyboardSearch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString search = String_to(const QString, sfp[1]);
 		qp->keyboardSearch(search);
 	}
@@ -44,7 +44,7 @@ KMETHOD QTreeView_reset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->reset();
 	}
 	RETURNvoid_();
@@ -55,7 +55,7 @@ KMETHOD QTreeView_scrollTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QTreeView::ScrollHint hint = Int_to(QTreeView::ScrollHint, sfp[2]);
 		qp->scrollTo(index, hint);
@@ -68,7 +68,7 @@ KMETHOD QTreeView_selectAll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->selectAll();
 	}
 	RETURNvoid_();
@@ -79,7 +79,7 @@ KMETHOD QTreeView_setModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel*  model = RawPtr_to(QAbstractItemModel*, sfp[1]);
 		qp->setModel(model);
 	}
@@ -91,7 +91,7 @@ KMETHOD QTreeView_setRootIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		qp->setRootIndex(index);
 	}
@@ -103,7 +103,7 @@ KMETHOD QTreeView_setSelectionModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QItemSelectionModel*  selectionModel = RawPtr_to(QItemSelectionModel*, sfp[1]);
 		qp->setSelectionModel(selectionModel);
 	}
@@ -115,7 +115,7 @@ KMETHOD QTreeView_visualRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QRect ret_v = qp->visualRect(index);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -142,7 +142,7 @@ KMETHOD QTreeView_getAllColumnsShowFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->allColumnsShowFocus();
 		RETURNb_(ret_v);
 	} else {
@@ -155,7 +155,7 @@ KMETHOD QTreeView_getAutoExpandDelay(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->autoExpandDelay();
 		RETURNi_(ret_v);
 	} else {
@@ -168,7 +168,7 @@ KMETHOD QTreeView_columnAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int ret_v = qp->columnAt(x);
 		RETURNi_(ret_v);
@@ -182,7 +182,7 @@ KMETHOD QTreeView_columnViewportPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int ret_v = qp->columnViewportPosition(column);
 		RETURNi_(ret_v);
@@ -196,7 +196,7 @@ KMETHOD QTreeView_getColumnWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int ret_v = qp->columnWidth(column);
 		RETURNi_(ret_v);
@@ -210,7 +210,7 @@ KMETHOD QTreeView_getExpandsOnDoubleClick(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->expandsOnDoubleClick();
 		RETURNb_(ret_v);
 	} else {
@@ -223,7 +223,7 @@ KMETHOD QTreeView_getHeader(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QHeaderView* ret_v = qp->header();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QHeaderView*)ret_v, NULL);
 		RETURN_(rptr);
@@ -237,7 +237,7 @@ KMETHOD QTreeView_getIndentation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->indentation();
 		RETURNi_(ret_v);
 	} else {
@@ -250,7 +250,7 @@ KMETHOD QTreeView_indexAbove(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QModelIndex ret_v = qp->indexAbove(index);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -266,7 +266,7 @@ KMETHOD QTreeView_indexBelow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QModelIndex ret_v = qp->indexBelow(index);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -282,7 +282,7 @@ KMETHOD QTreeView_isAnimated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isAnimated();
 		RETURNb_(ret_v);
 	} else {
@@ -295,7 +295,7 @@ KMETHOD QTreeView_isColumnHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		bool ret_v = qp->isColumnHidden(column);
 		RETURNb_(ret_v);
@@ -309,7 +309,7 @@ KMETHOD QTreeView_isExpanded(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		bool ret_v = qp->isExpanded(index);
 		RETURNb_(ret_v);
@@ -323,7 +323,7 @@ KMETHOD QTreeView_isFirstColumnSpanned(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[2]);
 		bool ret_v = qp->isFirstColumnSpanned(row, parent);
@@ -338,7 +338,7 @@ KMETHOD QTreeView_isHeaderHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isHeaderHidden();
 		RETURNb_(ret_v);
 	} else {
@@ -351,7 +351,7 @@ KMETHOD QTreeView_isRowHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[2]);
 		bool ret_v = qp->isRowHidden(row, parent);
@@ -366,7 +366,7 @@ KMETHOD QTreeView_isSortingEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSortingEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -379,7 +379,7 @@ KMETHOD QTreeView_getItemsExpandable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->itemsExpandable();
 		RETURNb_(ret_v);
 	} else {
@@ -392,7 +392,7 @@ KMETHOD QTreeView_getRootIsDecorated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->rootIsDecorated();
 		RETURNb_(ret_v);
 	} else {
@@ -405,7 +405,7 @@ KMETHOD QTreeView_setAllColumnsShowFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setAllColumnsShowFocus(enable);
 	}
@@ -417,7 +417,7 @@ KMETHOD QTreeView_setAnimated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setAnimated(enable);
 	}
@@ -429,7 +429,7 @@ KMETHOD QTreeView_setAutoExpandDelay(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int delay = Int_to(int, sfp[1]);
 		qp->setAutoExpandDelay(delay);
 	}
@@ -441,7 +441,7 @@ KMETHOD QTreeView_setColumnHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		bool hide = Boolean_to(bool, sfp[2]);
 		qp->setColumnHidden(column, hide);
@@ -454,7 +454,7 @@ KMETHOD QTreeView_setColumnWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int width = Int_to(int, sfp[2]);
 		qp->setColumnWidth(column, width);
@@ -467,7 +467,7 @@ KMETHOD QTreeView_setExpanded(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		bool expanded = Boolean_to(bool, sfp[2]);
 		qp->setExpanded(index, expanded);
@@ -480,7 +480,7 @@ KMETHOD QTreeView_setExpandsOnDoubleClick(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setExpandsOnDoubleClick(enable);
 	}
@@ -492,7 +492,7 @@ KMETHOD QTreeView_setFirstColumnSpanned(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[2]);
 		bool span = Boolean_to(bool, sfp[3]);
@@ -506,7 +506,7 @@ KMETHOD QTreeView_setHeader(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QHeaderView*  header = RawPtr_to(QHeaderView*, sfp[1]);
 		qp->setHeader(header);
 	}
@@ -518,7 +518,7 @@ KMETHOD QTreeView_setHeaderHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool hide = Boolean_to(bool, sfp[1]);
 		qp->setHeaderHidden(hide);
 	}
@@ -530,7 +530,7 @@ KMETHOD QTreeView_setIndentation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		qp->setIndentation(i);
 	}
@@ -542,7 +542,7 @@ KMETHOD QTreeView_setItemsExpandable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setItemsExpandable(enable);
 	}
@@ -554,7 +554,7 @@ KMETHOD QTreeView_setRootIsDecorated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool show = Boolean_to(bool, sfp[1]);
 		qp->setRootIsDecorated(show);
 	}
@@ -566,7 +566,7 @@ KMETHOD QTreeView_setRowHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[2]);
 		bool hide = Boolean_to(bool, sfp[3]);
@@ -580,7 +580,7 @@ KMETHOD QTreeView_setSortingEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setSortingEnabled(enable);
 	}
@@ -592,7 +592,7 @@ KMETHOD QTreeView_setUniformRowHeights(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool uniform = Boolean_to(bool, sfp[1]);
 		qp->setUniformRowHeights(uniform);
 	}
@@ -604,7 +604,7 @@ KMETHOD QTreeView_setWordWrap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool on = Boolean_to(bool, sfp[1]);
 		qp->setWordWrap(on);
 	}
@@ -616,7 +616,7 @@ KMETHOD QTreeView_sortByColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[2]);
 		qp->sortByColumn(column, order);
@@ -629,7 +629,7 @@ KMETHOD QTreeView_getUniformRowHeights(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->uniformRowHeights();
 		RETURNb_(ret_v);
 	} else {
@@ -642,7 +642,7 @@ KMETHOD QTreeView_getWordWrap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->wordWrap();
 		RETURNb_(ret_v);
 	} else {
@@ -655,7 +655,7 @@ KMETHOD QTreeView_collapse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		qp->collapse(index);
 	}
@@ -667,7 +667,7 @@ KMETHOD QTreeView_collapseAll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->collapseAll();
 	}
 	RETURNvoid_();
@@ -678,7 +678,7 @@ KMETHOD QTreeView_expand(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		qp->expand(index);
 	}
@@ -690,7 +690,7 @@ KMETHOD QTreeView_expandAll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->expandAll();
 	}
 	RETURNvoid_();
@@ -701,7 +701,7 @@ KMETHOD QTreeView_expandToDepth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int depth = Int_to(int, sfp[1]);
 		qp->expandToDepth(depth);
 	}
@@ -713,7 +713,7 @@ KMETHOD QTreeView_hideColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		qp->hideColumn(column);
 	}
@@ -725,7 +725,7 @@ KMETHOD QTreeView_resizeColumnToContents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		qp->resizeColumnToContents(column);
 	}
@@ -737,7 +737,7 @@ KMETHOD QTreeView_showColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTreeView *  qp = RawPtr_to(QTreeView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		qp->showColumn(column);
 	}
@@ -829,11 +829,27 @@ bool DummyQTreeView::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTreeView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, collapsed_func);
+	KNH_ADDNNREF(ctx, expanded_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractItemView::reftrace(ctx, p, tail_);
+}
 
 void DummyQTreeView::connection(QObject *o)
 {
-	connect(o, SIGNAL(collapsed(const QModelIndex)), this, SLOT(collapsedSlot(const QModelIndex)));
-	connect(o, SIGNAL(expanded(const QModelIndex)), this, SLOT(expandedSlot(const QModelIndex)));
+	QTreeView *p = dynamic_cast<QTreeView*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(collapsed(const QModelIndex)), this, SLOT(collapsedSlot(const QModelIndex)));
+		connect(p, SIGNAL(expanded(const QModelIndex)), this, SLOT(expandedSlot(const QModelIndex)));
+	}
 	DummyQAbstractItemView::connection(o);
 }
 
@@ -896,21 +912,9 @@ static void QTreeView_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTreeView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTreeView *qp = (KQTreeView *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->collapsed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->collapsed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->expanded_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->expanded_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -933,6 +937,8 @@ bool KQTreeView::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQTreeView(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

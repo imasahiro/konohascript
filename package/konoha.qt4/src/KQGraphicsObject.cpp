@@ -1,12 +1,12 @@
 //
-//void QGraphicsObject.grabGesture(int gesture, int flags);
+//void QGraphicsObject.grabGesture(int gesture, QtGestureFlags flags);
 KMETHOD QGraphicsObject_grabGesture(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsObject *  qp = RawPtr_to(QGraphicsObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::GestureType gesture = Int_to(Qt::GestureType, sfp[1]);
-		Qt::GestureFlags flags = Int_to(Qt::GestureFlags, sfp[2]);
+		initFlag(flags, Qt::GestureFlags, sfp[2]);
 		qp->grabGesture(gesture, flags);
 	}
 	RETURNvoid_();
@@ -17,7 +17,7 @@ KMETHOD QGraphicsObject_ungrabGesture(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsObject *  qp = RawPtr_to(QGraphicsObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::GestureType gesture = Int_to(Qt::GestureType, sfp[1]);
 		qp->ungrabGesture(gesture);
 	}
@@ -217,18 +217,42 @@ bool DummyQGraphicsObject::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQGraphicsObject::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 9;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, enabled_changed_func);
+	KNH_ADDNNREF(ctx, opacity_changed_func);
+	KNH_ADDNNREF(ctx, parent_changed_func);
+	KNH_ADDNNREF(ctx, rotation_changed_func);
+	KNH_ADDNNREF(ctx, scale_changed_func);
+	KNH_ADDNNREF(ctx, visible_changed_func);
+	KNH_ADDNNREF(ctx, x_changed_func);
+	KNH_ADDNNREF(ctx, y_changed_func);
+	KNH_ADDNNREF(ctx, z_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsItem::reftrace(ctx, p, tail_);
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsObject::connection(QObject *o)
 {
-	connect(o, SIGNAL(enabledChanged()), this, SLOT(enabledChangedSlot()));
-	connect(o, SIGNAL(opacityChanged()), this, SLOT(opacityChangedSlot()));
-	connect(o, SIGNAL(parentChanged()), this, SLOT(parentChangedSlot()));
-	connect(o, SIGNAL(rotationChanged()), this, SLOT(rotationChangedSlot()));
-	connect(o, SIGNAL(scaleChanged()), this, SLOT(scaleChangedSlot()));
-	connect(o, SIGNAL(visibleChanged()), this, SLOT(visibleChangedSlot()));
-	connect(o, SIGNAL(xChanged()), this, SLOT(xChangedSlot()));
-	connect(o, SIGNAL(yChanged()), this, SLOT(yChangedSlot()));
-	connect(o, SIGNAL(zChanged()), this, SLOT(zChangedSlot()));
+	QGraphicsObject *p = dynamic_cast<QGraphicsObject*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(enabledChanged()), this, SLOT(enabledChangedSlot()));
+		connect(p, SIGNAL(opacityChanged()), this, SLOT(opacityChangedSlot()));
+		connect(p, SIGNAL(parentChanged()), this, SLOT(parentChangedSlot()));
+		connect(p, SIGNAL(rotationChanged()), this, SLOT(rotationChangedSlot()));
+		connect(p, SIGNAL(scaleChanged()), this, SLOT(scaleChangedSlot()));
+		connect(p, SIGNAL(visibleChanged()), this, SLOT(visibleChangedSlot()));
+		connect(p, SIGNAL(xChanged()), this, SLOT(xChangedSlot()));
+		connect(p, SIGNAL(yChanged()), this, SLOT(yChangedSlot()));
+		connect(p, SIGNAL(zChanged()), this, SLOT(zChangedSlot()));
+	}
 	DummyQGraphicsItem::connection(o);
 	DummyQObject::connection(o);
 }
@@ -292,49 +316,9 @@ static void QGraphicsObject_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsObject_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 9;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsObject *qp = (KQGraphicsObject *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->enabled_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->enabled_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->opacity_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->opacity_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->parent_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->parent_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->rotation_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->rotation_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->scale_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->scale_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->visible_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->visible_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->x_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->x_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->y_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->y_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->z_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->z_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -357,6 +341,8 @@ bool KQGraphicsObject::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQGraphicsObject(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

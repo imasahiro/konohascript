@@ -15,7 +15,7 @@ KMETHOD QTimeLine_currentFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->currentFrame();
 		RETURNi_(ret_v);
 	} else {
@@ -28,7 +28,7 @@ KMETHOD QTimeLine_getCurrentTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->currentTime();
 		RETURNi_(ret_v);
 	} else {
@@ -41,7 +41,7 @@ KMETHOD QTimeLine_currentValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->currentValue();
 		RETURNf_(ret_v);
 	} else {
@@ -54,7 +54,7 @@ KMETHOD QTimeLine_getCurveShape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTimeLine::CurveShape ret_v = qp->curveShape();
 		RETURNi_(ret_v);
 	} else {
@@ -67,7 +67,7 @@ KMETHOD QTimeLine_getDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTimeLine::Direction ret_v = qp->direction();
 		RETURNi_(ret_v);
 	} else {
@@ -80,7 +80,7 @@ KMETHOD QTimeLine_getDuration(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->duration();
 		RETURNi_(ret_v);
 	} else {
@@ -93,7 +93,7 @@ KMETHOD QTimeLine_getEasingCurve(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEasingCurve ret_v = qp->easingCurve();
 		QEasingCurve *ret_v_ = new QEasingCurve(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -108,7 +108,7 @@ KMETHOD QTimeLine_getEndFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->endFrame();
 		RETURNi_(ret_v);
 	} else {
@@ -121,7 +121,7 @@ KMETHOD QTimeLine_frameForTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int msec = Int_to(int, sfp[1]);
 		int ret_v = qp->frameForTime(msec);
 		RETURNi_(ret_v);
@@ -135,7 +135,7 @@ KMETHOD QTimeLine_getLoopCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->loopCount();
 		RETURNi_(ret_v);
 	} else {
@@ -148,7 +148,7 @@ KMETHOD QTimeLine_setCurveShape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTimeLine::CurveShape shape = Int_to(QTimeLine::CurveShape, sfp[1]);
 		qp->setCurveShape(shape);
 	}
@@ -160,7 +160,7 @@ KMETHOD QTimeLine_setDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTimeLine::Direction direction = Int_to(QTimeLine::Direction, sfp[1]);
 		qp->setDirection(direction);
 	}
@@ -172,7 +172,7 @@ KMETHOD QTimeLine_setDuration(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int duration = Int_to(int, sfp[1]);
 		qp->setDuration(duration);
 	}
@@ -184,7 +184,7 @@ KMETHOD QTimeLine_setEasingCurve(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QEasingCurve  curve = *RawPtr_to(const QEasingCurve *, sfp[1]);
 		qp->setEasingCurve(curve);
 	}
@@ -196,7 +196,7 @@ KMETHOD QTimeLine_setEndFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int frame = Int_to(int, sfp[1]);
 		qp->setEndFrame(frame);
 	}
@@ -208,7 +208,7 @@ KMETHOD QTimeLine_setFrameRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int startFrame = Int_to(int, sfp[1]);
 		int endFrame = Int_to(int, sfp[2]);
 		qp->setFrameRange(startFrame, endFrame);
@@ -221,7 +221,7 @@ KMETHOD QTimeLine_setLoopCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int count = Int_to(int, sfp[1]);
 		qp->setLoopCount(count);
 	}
@@ -233,7 +233,7 @@ KMETHOD QTimeLine_setStartFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int frame = Int_to(int, sfp[1]);
 		qp->setStartFrame(frame);
 	}
@@ -245,7 +245,7 @@ KMETHOD QTimeLine_setUpdateInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int interval = Int_to(int, sfp[1]);
 		qp->setUpdateInterval(interval);
 	}
@@ -257,7 +257,7 @@ KMETHOD QTimeLine_getStartFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->startFrame();
 		RETURNi_(ret_v);
 	} else {
@@ -270,7 +270,7 @@ KMETHOD QTimeLine_state(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTimeLine::State ret_v = qp->state();
 		RETURNi_(ret_v);
 	} else {
@@ -283,7 +283,7 @@ KMETHOD QTimeLine_getUpdateInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->updateInterval();
 		RETURNi_(ret_v);
 	} else {
@@ -296,7 +296,7 @@ KMETHOD QTimeLine_valueForTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int msec = Int_to(int, sfp[1]);
 		qreal ret_v = qp->valueForTime(msec);
 		RETURNf_(ret_v);
@@ -310,7 +310,7 @@ KMETHOD QTimeLine_resume(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->resume();
 	}
 	RETURNvoid_();
@@ -321,7 +321,7 @@ KMETHOD QTimeLine_setCurrentTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int msec = Int_to(int, sfp[1]);
 		qp->setCurrentTime(msec);
 	}
@@ -333,7 +333,7 @@ KMETHOD QTimeLine_setPaused(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool paused = Boolean_to(bool, sfp[1]);
 		qp->setPaused(paused);
 	}
@@ -345,7 +345,7 @@ KMETHOD QTimeLine_start(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->start();
 	}
 	RETURNvoid_();
@@ -356,7 +356,7 @@ KMETHOD QTimeLine_stop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->stop();
 	}
 	RETURNvoid_();
@@ -367,7 +367,7 @@ KMETHOD QTimeLine_toggleDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimeLine *  qp = RawPtr_to(QTimeLine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->toggleDirection();
 	}
 	RETURNvoid_();
@@ -488,13 +488,31 @@ bool DummyQTimeLine::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTimeLine::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, finished_func);
+	KNH_ADDNNREF(ctx, frame_changed_func);
+	KNH_ADDNNREF(ctx, state_changed_func);
+	KNH_ADDNNREF(ctx, value_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQTimeLine::connection(QObject *o)
 {
-	connect(o, SIGNAL(finished()), this, SLOT(finishedSlot()));
-	connect(o, SIGNAL(frameChanged(int)), this, SLOT(frameChangedSlot(int)));
-	connect(o, SIGNAL(stateChanged(QTimeLine::State)), this, SLOT(stateChangedSlot(QTimeLine::State)));
-	connect(o, SIGNAL(valueChanged(qreal)), this, SLOT(valueChangedSlot(qreal)));
+	QTimeLine *p = dynamic_cast<QTimeLine*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(finished()), this, SLOT(finishedSlot()));
+		connect(p, SIGNAL(frameChanged(int)), this, SLOT(frameChangedSlot(int)));
+		connect(p, SIGNAL(stateChanged(QTimeLine::State)), this, SLOT(stateChangedSlot(QTimeLine::State)));
+		connect(p, SIGNAL(valueChanged(qreal)), this, SLOT(valueChangedSlot(qreal)));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -557,29 +575,9 @@ static void QTimeLine_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTimeLine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 4;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTimeLine *qp = (KQTimeLine *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->finished_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->finished_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->frame_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->frame_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->state_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->state_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->value_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->value_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -603,15 +601,6 @@ bool KQTimeLine::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQTimeLine(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTimeLine";
-	cdef->free = QTimeLine_free;
-	cdef->reftrace = QTimeLine_reftrace;
-	cdef->compareTo = QTimeLine_compareTo;
-}
-
 static knh_IntData_t QTimeLineConstInt[] = {
 	{"EaseInCurve", QTimeLine::EaseInCurve},
 	{"EaseOutCurve", QTimeLine::EaseOutCurve},
@@ -630,4 +619,15 @@ static knh_IntData_t QTimeLineConstInt[] = {
 DEFAPI(void) constQTimeLine(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTimeLineConstInt);
 }
+
+
+DEFAPI(void) defQTimeLine(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTimeLine";
+	cdef->free = QTimeLine_free;
+	cdef->reftrace = QTimeLine_reftrace;
+	cdef->compareTo = QTimeLine_compareTo;
+}
+
 

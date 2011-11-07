@@ -3,20 +3,20 @@ KMETHOD QPrintPreviewWidget_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setVisible(visible);
 	}
 	RETURNvoid_();
 }
 
-//QPrintPreviewWidget QPrintPreviewWidget.new(QPrinter printer, QWidget parent, int flags);
+//QPrintPreviewWidget QPrintPreviewWidget.new(QPrinter printer, QWidget parent, QtWindowFlags flags);
 KMETHOD QPrintPreviewWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter*  printer = RawPtr_to(QPrinter*, sfp[1]);
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
-	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[3]);
+	initFlag(flags, Qt::WindowFlags, sfp[3]);
 	KQPrintPreviewWidget *ret_v = new KQPrintPreviewWidget(printer, parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -24,12 +24,12 @@ KMETHOD QPrintPreviewWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//QPrintPreviewWidget QPrintPreviewWidget.new(QWidget parent, int flags);
+//QPrintPreviewWidget QPrintPreviewWidget.new(QWidget parent, QtWindowFlags flags);
 KMETHOD QPrintPreviewWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
-	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[2]);
+	initFlag(flags, Qt::WindowFlags, sfp[2]);
 	KQPrintPreviewWidget *ret_v = new KQPrintPreviewWidget(parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -41,7 +41,7 @@ KMETHOD QPrintPreviewWidget_getCurrentPage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->currentPage();
 		RETURNi_(ret_v);
 	} else {
@@ -54,7 +54,7 @@ KMETHOD QPrintPreviewWidget_getOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::Orientation ret_v = qp->orientation();
 		RETURNi_(ret_v);
 	} else {
@@ -67,7 +67,7 @@ KMETHOD QPrintPreviewWidget_pageCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->pageCount();
 		RETURNi_(ret_v);
 	} else {
@@ -80,7 +80,7 @@ KMETHOD QPrintPreviewWidget_getViewMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrintPreviewWidget::ViewMode ret_v = qp->viewMode();
 		RETURNi_(ret_v);
 	} else {
@@ -93,7 +93,7 @@ KMETHOD QPrintPreviewWidget_getZoomFactor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->zoomFactor();
 		RETURNf_(ret_v);
 	} else {
@@ -106,7 +106,7 @@ KMETHOD QPrintPreviewWidget_getZoomMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrintPreviewWidget::ZoomMode ret_v = qp->zoomMode();
 		RETURNi_(ret_v);
 	} else {
@@ -119,7 +119,7 @@ KMETHOD QPrintPreviewWidget_fitInView(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->fitInView();
 	}
 	RETURNvoid_();
@@ -130,7 +130,7 @@ KMETHOD QPrintPreviewWidget_fitToWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->fitToWidth();
 	}
 	RETURNvoid_();
@@ -141,7 +141,7 @@ KMETHOD QPrintPreviewWidget_print(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->print();
 	}
 	RETURNvoid_();
@@ -152,7 +152,7 @@ KMETHOD QPrintPreviewWidget_setAllPagesViewMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->setAllPagesViewMode();
 	}
 	RETURNvoid_();
@@ -163,7 +163,7 @@ KMETHOD QPrintPreviewWidget_setCurrentPage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int page = Int_to(int, sfp[1]);
 		qp->setCurrentPage(page);
 	}
@@ -175,7 +175,7 @@ KMETHOD QPrintPreviewWidget_setFacingPagesViewMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->setFacingPagesViewMode();
 	}
 	RETURNvoid_();
@@ -186,7 +186,7 @@ KMETHOD QPrintPreviewWidget_setLandscapeOrientation(CTX ctx, knh_sfp_t *sfp _RIX
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->setLandscapeOrientation();
 	}
 	RETURNvoid_();
@@ -197,7 +197,7 @@ KMETHOD QPrintPreviewWidget_setOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::Orientation orientation = Int_to(QPrinter::Orientation, sfp[1]);
 		qp->setOrientation(orientation);
 	}
@@ -209,7 +209,7 @@ KMETHOD QPrintPreviewWidget_setPortraitOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->setPortraitOrientation();
 	}
 	RETURNvoid_();
@@ -220,7 +220,7 @@ KMETHOD QPrintPreviewWidget_setSinglePageViewMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->setSinglePageViewMode();
 	}
 	RETURNvoid_();
@@ -231,7 +231,7 @@ KMETHOD QPrintPreviewWidget_setViewMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrintPreviewWidget::ViewMode mode = Int_to(QPrintPreviewWidget::ViewMode, sfp[1]);
 		qp->setViewMode(mode);
 	}
@@ -243,7 +243,7 @@ KMETHOD QPrintPreviewWidget_setZoomFactor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal factor = Float_to(qreal, sfp[1]);
 		qp->setZoomFactor(factor);
 	}
@@ -255,7 +255,7 @@ KMETHOD QPrintPreviewWidget_setZoomMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrintPreviewWidget::ZoomMode zoomMode = Int_to(QPrintPreviewWidget::ZoomMode, sfp[1]);
 		qp->setZoomMode(zoomMode);
 	}
@@ -267,7 +267,7 @@ KMETHOD QPrintPreviewWidget_updatePreview(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->updatePreview();
 	}
 	RETURNvoid_();
@@ -278,7 +278,7 @@ KMETHOD QPrintPreviewWidget_zoomIn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal factor = Float_to(qreal, sfp[1]);
 		qp->zoomIn(factor);
 	}
@@ -290,7 +290,7 @@ KMETHOD QPrintPreviewWidget_zoomOut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintPreviewWidget *  qp = RawPtr_to(QPrintPreviewWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal factor = Float_to(qreal, sfp[1]);
 		qp->zoomOut(factor);
 	}
@@ -380,11 +380,27 @@ bool DummyQPrintPreviewWidget::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQPrintPreviewWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, paint_requested_func);
+	KNH_ADDNNREF(ctx, preview_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQPrintPreviewWidget::connection(QObject *o)
 {
-	connect(o, SIGNAL(paintRequested(QPrinter*)), this, SLOT(paintRequestedSlot(QPrinter*)));
-	connect(o, SIGNAL(previewChanged()), this, SLOT(previewChangedSlot()));
+	QPrintPreviewWidget *p = dynamic_cast<QPrintPreviewWidget*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(paintRequested(QPrinter*)), this, SLOT(paintRequestedSlot(QPrinter*)));
+		connect(p, SIGNAL(previewChanged()), this, SLOT(previewChangedSlot()));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -447,21 +463,9 @@ static void QPrintPreviewWidget_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPrintPreviewWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPrintPreviewWidget *qp = (KQPrintPreviewWidget *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->paint_requested_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->paint_requested_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->preview_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->preview_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -485,15 +489,6 @@ bool KQPrintPreviewWidget::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQPrintPreviewWidget(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QPrintPreviewWidget";
-	cdef->free = QPrintPreviewWidget_free;
-	cdef->reftrace = QPrintPreviewWidget_reftrace;
-	cdef->compareTo = QPrintPreviewWidget_compareTo;
-}
-
 static knh_IntData_t QPrintPreviewWidgetConstInt[] = {
 	{"SinglePageView", QPrintPreviewWidget::SinglePageView},
 	{"FacingPagesView", QPrintPreviewWidget::FacingPagesView},
@@ -507,4 +502,15 @@ static knh_IntData_t QPrintPreviewWidgetConstInt[] = {
 DEFAPI(void) constQPrintPreviewWidget(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QPrintPreviewWidgetConstInt);
 }
+
+
+DEFAPI(void) defQPrintPreviewWidget(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QPrintPreviewWidget";
+	cdef->free = QPrintPreviewWidget_free;
+	cdef->reftrace = QPrintPreviewWidget_reftrace;
+	cdef->compareTo = QPrintPreviewWidget_compareTo;
+}
+
 

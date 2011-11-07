@@ -42,7 +42,7 @@ KMETHOD QMovie_getBackgroundColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QColor ret_v = qp->backgroundColor();
 		QColor *ret_v_ = new QColor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -57,7 +57,7 @@ KMETHOD QMovie_getCacheMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMovie::CacheMode ret_v = qp->cacheMode();
 		RETURNi_(ret_v);
 	} else {
@@ -70,7 +70,7 @@ KMETHOD QMovie_currentFrameNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->currentFrameNumber();
 		RETURNi_(ret_v);
 	} else {
@@ -83,7 +83,7 @@ KMETHOD QMovie_currentImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QImage ret_v = qp->currentImage();
 		QImage *ret_v_ = new QImage(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -98,7 +98,7 @@ KMETHOD QMovie_currentPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPixmap ret_v = qp->currentPixmap();
 		QPixmap *ret_v_ = new QPixmap(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -113,7 +113,7 @@ KMETHOD QMovie_getDevice(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIODevice* ret_v = qp->device();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QIODevice*)ret_v, NULL);
 		RETURN_(rptr);
@@ -127,7 +127,7 @@ KMETHOD QMovie_getFileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->fileName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -141,7 +141,7 @@ KMETHOD QMovie_getFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->format();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -156,7 +156,7 @@ KMETHOD QMovie_frameCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->frameCount();
 		RETURNi_(ret_v);
 	} else {
@@ -169,7 +169,7 @@ KMETHOD QMovie_frameRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->frameRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -179,25 +179,12 @@ KMETHOD QMovie_frameRect(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////boolean QMovie.isValid();
-KMETHOD QMovie_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
 //boolean QMovie.jumpToFrame(int frameNumber);
 KMETHOD QMovie_jumpToFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int frameNumber = Int_to(int, sfp[1]);
 		bool ret_v = qp->jumpToFrame(frameNumber);
 		RETURNb_(ret_v);
@@ -211,7 +198,7 @@ KMETHOD QMovie_loopCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->loopCount();
 		RETURNi_(ret_v);
 	} else {
@@ -224,7 +211,7 @@ KMETHOD QMovie_nextFrameDelay(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->nextFrameDelay();
 		RETURNi_(ret_v);
 	} else {
@@ -237,7 +224,7 @@ KMETHOD QMovie_getScaledSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->scaledSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -252,7 +239,7 @@ KMETHOD QMovie_setBackgroundColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor  color = *RawPtr_to(const QColor *, sfp[1]);
 		qp->setBackgroundColor(color);
 	}
@@ -264,7 +251,7 @@ KMETHOD QMovie_setCacheMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMovie::CacheMode mode = Int_to(QMovie::CacheMode, sfp[1]);
 		qp->setCacheMode(mode);
 	}
@@ -276,7 +263,7 @@ KMETHOD QMovie_setDevice(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIODevice*  device = RawPtr_to(QIODevice*, sfp[1]);
 		qp->setDevice(device);
 	}
@@ -288,7 +275,7 @@ KMETHOD QMovie_setFileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
 		qp->setFileName(fileName);
 	}
@@ -300,7 +287,7 @@ KMETHOD QMovie_setFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  format = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->setFormat(format);
 	}
@@ -312,7 +299,7 @@ KMETHOD QMovie_setScaledSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  size = *RawPtr_to(const QSize *, sfp[1]);
 		qp->setScaledSize(size);
 	}
@@ -324,7 +311,7 @@ KMETHOD QMovie_getSpeed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->speed();
 		RETURNi_(ret_v);
 	} else {
@@ -337,7 +324,7 @@ KMETHOD QMovie_state(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMovie::MovieState ret_v = qp->state();
 		RETURNi_(ret_v);
 	} else {
@@ -349,9 +336,8 @@ KMETHOD QMovie_state(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QMovie_supportedFormats(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
-		QList<QByteArray>ret_v = qp->supportedFormats();
+	if (true) {
+		QList<QByteArray> ret_v = QMovie::supportedFormats();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QByteArray"));
@@ -372,7 +358,7 @@ KMETHOD QMovie_jumpToNextFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->jumpToNextFrame();
 		RETURNb_(ret_v);
 	} else {
@@ -385,7 +371,7 @@ KMETHOD QMovie_setPaused(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool paused = Boolean_to(bool, sfp[1]);
 		qp->setPaused(paused);
 	}
@@ -397,7 +383,7 @@ KMETHOD QMovie_setSpeed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int percentSpeed = Int_to(int, sfp[1]);
 		qp->setSpeed(percentSpeed);
 	}
@@ -409,7 +395,7 @@ KMETHOD QMovie_start(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->start();
 	}
 	RETURNvoid_();
@@ -420,7 +406,7 @@ KMETHOD QMovie_stop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMovie *  qp = RawPtr_to(QMovie *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->stop();
 	}
 	RETURNvoid_();
@@ -589,16 +575,37 @@ bool DummyQMovie::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMovie::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 7;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, error_func);
+	KNH_ADDNNREF(ctx, finished_func);
+	KNH_ADDNNREF(ctx, frame_changed_func);
+	KNH_ADDNNREF(ctx, resized_func);
+	KNH_ADDNNREF(ctx, started_func);
+	KNH_ADDNNREF(ctx, state_changed_func);
+	KNH_ADDNNREF(ctx, updated_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQMovie::connection(QObject *o)
 {
-	connect(o, SIGNAL(error(QImageReader::ImageReaderError)), this, SLOT(errorSlot(QImageReader::ImageReaderError)));
-	connect(o, SIGNAL(finished()), this, SLOT(finishedSlot()));
-	connect(o, SIGNAL(frameChanged(int)), this, SLOT(frameChangedSlot(int)));
-	connect(o, SIGNAL(resized(const QSize)), this, SLOT(resizedSlot(const QSize)));
-	connect(o, SIGNAL(started()), this, SLOT(startedSlot()));
-	connect(o, SIGNAL(stateChanged(QMovie::MovieState)), this, SLOT(stateChangedSlot(QMovie::MovieState)));
-	connect(o, SIGNAL(updated(const QRect)), this, SLOT(updatedSlot(const QRect)));
+	QMovie *p = dynamic_cast<QMovie*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(error(QImageReader::ImageReaderError)), this, SLOT(errorSlot(QImageReader::ImageReaderError)));
+		connect(p, SIGNAL(finished()), this, SLOT(finishedSlot()));
+		connect(p, SIGNAL(frameChanged(int)), this, SLOT(frameChangedSlot(int)));
+		connect(p, SIGNAL(resized(const QSize)), this, SLOT(resizedSlot(const QSize)));
+		connect(p, SIGNAL(started()), this, SLOT(startedSlot()));
+		connect(p, SIGNAL(stateChanged(QMovie::MovieState)), this, SLOT(stateChangedSlot(QMovie::MovieState)));
+		connect(p, SIGNAL(updated(const QRect)), this, SLOT(updatedSlot(const QRect)));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -661,41 +668,9 @@ static void QMovie_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMovie_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 7;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMovie *qp = (KQMovie *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->error_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->error_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->finished_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->finished_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->frame_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->frame_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->resized_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->resized_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->started_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->started_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->state_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->state_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->updated_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->updated_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -719,15 +694,6 @@ bool KQMovie::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQMovie(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QMovie";
-	cdef->free = QMovie_free;
-	cdef->reftrace = QMovie_reftrace;
-	cdef->compareTo = QMovie_compareTo;
-}
-
 static knh_IntData_t QMovieConstInt[] = {
 	{"CacheNone", QMovie::CacheNone},
 	{"CacheAll", QMovie::CacheAll},
@@ -740,4 +706,15 @@ static knh_IntData_t QMovieConstInt[] = {
 DEFAPI(void) constQMovie(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QMovieConstInt);
 }
+
+
+DEFAPI(void) defQMovie(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QMovie";
+	cdef->free = QMovie_free;
+	cdef->reftrace = QMovie_reftrace;
+	cdef->compareTo = QMovie_compareTo;
+}
+
 

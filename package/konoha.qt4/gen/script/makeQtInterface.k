@@ -30,18 +30,44 @@ void QIsetParentIndex(QtInterface[] interfaces, QtHierarchy hierarchy)
 	return;
 }
 
-void setParentMemberTypes(QtInterface[] interfaces)
+void setParentMemberTypes(QtInterface interface, QtInterface[] interfaces)
 {
-	foreach (QtInterface interface in interfaces) {
-//		if (interface.class_name == "QWidget") print interface;
-		if (|interface.parent_index| == 0) continue;
-		foreach (int index in interface.parent_index) {
-			foreach (String pto in interfaces[index].typedefed_objects) {
-				interface.parent_typedefed_objects <<< pto;
-			}
-			foreach (EnumInterface ppe in interfaces[index].enums) {
-				interface.parent_enums <<< ppe;
-			}
+	if (|interface.parent_class_objects| == 0 &&
+		|interface.parent_flag_objects| == 0 &&
+		|interface.parent_typedefed_objects| == 0 &&
+		|interface.parent_enums| == 0) {
+
+	} else {
+		return;
+	}
+	foreach (int index in interface.parent_index) {
+		if (|interfaces[index].parent_index| == 0) {
+		} else {
+			setParentMemberTypes(interfaces[index], interfaces);
+		}
+		foreach (String pto in interfaces[index].typedefed_objects) {
+			interface.parent_typedefed_objects <<< pto;
+		}
+		foreach (String pto in interfaces[index].parent_typedefed_objects) {
+			interface.parent_typedefed_objects <<< pto;
+		}
+		foreach (EnumInterface ppe in interfaces[index].enums) {
+			interface.parent_enums <<< ppe;
+		}
+		foreach (EnumInterface ppe in interfaces[index].parent_enums) {
+			interface.parent_enums <<< ppe;
+		}
+		foreach (Tuple<String, String> pfo in interfaces[index].flag_objects) {
+			interface.parent_flag_objects <<< pfo;
+		}
+		foreach (Tuple<String, String> pfo in interfaces[index].parent_flag_objects) {
+			interface.parent_flag_objects <<< pfo;
+		}
+		foreach (String pco in interfaces[index].class_objects) {
+			interface.parent_class_objects <<< pco;
+		}
+		foreach (String pco in interfaces[index].parent_class_objects) {
+			interface.parent_class_objects <<< pco;
 		}
 	}
 }
@@ -73,8 +99,13 @@ void genInterfaceFile(QtInterface[] interfaces)
 		ous.println(MEMBERb_info("templateClass", interface.templateClass));
 		ous.println(MEMBERb_info("abstractClass", interface.abstractClass));
 		ous.println(MEMBERb_info("enbeddedClass", interface.enbeddedClass));
+//		ous.println(MEMBERsa_info("flag_objects", interface.flag_objects));
+		ous.println(MEMBERtssa_info("flag_objects", interface.flag_objects));
+		ous.println(MEMBERtssa_info("parent_flag_objects", interface.parent_flag_objects));
 		ous.println(MEMBERsa_info("typedefed_objects", interface.typedefed_objects));
 		ous.println(MEMBERsa_info("parent_typedefed_objects", interface.parent_typedefed_objects));
+		ous.println(MEMBERsa_info("class_objects", interface.class_objects));
+		ous.println(MEMBERsa_info("parent_class_objects", interface.parent_class_objects));
 		ous.println(MEMBERea_info("enums", interface.enums));
 		ous.println(MEMBERea_info("parent_enums", interface.parent_enums));
 		ous.println(MEMBERia_info("parent_index", interface.parent_index));
@@ -87,6 +118,8 @@ void genInterfaceFile(QtInterface[] interfaces)
 
 QtInterface[] loadInterfaceFile()
 {
+	QtInterface fordebug = null;
+
 //	print "start loadInterfaceFile";
 	String interface_path = "gen/interface/";
 	Dir interface_dir = System.openDir(interface_path);
@@ -95,12 +128,13 @@ QtInterface[] loadInterfaceFile()
 		return [];
 	}
 	QtInterface[] interfaces = [];
+	QtInterface qi = null;
 	foreach (String filename in interface_dir.readName() ..) {
 
 //		if (filename != "QWidget") continue;
 
 //		print filename;
-		QtInterface qi = new QtInterface("");
+		qi = new QtInterface("");
 		qi.class_name = filename;
 		ins = new InputStream(interface_path + filename);
 		String line = "";
@@ -158,11 +192,27 @@ QtInterface[] loadInterfaceFile()
 			case "enbeddedClass":
 				qi.enbeddedClass = toMEMBERb(ins);
 				break;
+			case "flag_objects":
+				setMEMBERtssa(qi.flag_objects, ins);
+				// if (qi.class_name == "QAbstractFileEngine") {
+				// 	qi.flag_objects;
+				// 	print qi.flag_objects;
+				// }
+				break;
+			case "parent_flag_objects":
+				setMEMBERtssa(qi.parent_flag_objects, ins);
+				break;
 			case "typedefed_objects":
 				setMEMBERsa(qi.typedefed_objects, ins);
 				break;
 			case "parent_typedefed_objects":
 				setMEMBERsa(qi.parent_typedefed_objects, ins);
+				break;
+			case "class_objects":
+				setMEMBERsa(qi.class_objects, ins);
+				break;
+			case "parent_class_objects":
+				setMEMBERsa(qi.parent_class_objects, ins);
 				break;
 			case "enums":
 				setMEMBERea(qi.enums, ins);
@@ -178,13 +228,15 @@ QtInterface[] loadInterfaceFile()
 				break;
 			}
 		}
-//		print qi;
 		interfaces <<< qi;
+//		if (qi.class_name == "QWidget") print qi;
 	}
 	return interfaces;
 }
 
 QtInterface[] makeQtInterface(Path doc_path, QtHierarchy hierarchy) {
+	OUT << "make QtInterface" << EOL;
+
 	QtInterface[] ret = [];
 	Dir doc_dir = System.openDir(doc_path);
 	if (doc_dir == null) return [];
@@ -193,28 +245,23 @@ QtInterface[] makeQtInterface(Path doc_path, QtHierarchy hierarchy) {
 			if (filename.startsWith("q") &&	filename.indexOf("qt3") == -1 &&
 				filename.indexOf("q3") == -1 && filename.indexOf("-") == -1 &&
 				filename.endsWith(".html")) {
-//				print filename;
 				QtInterface qi = new QtInterface(doc_path + filename);
+//				if (filename == "qt.html") {
+//					print "!";
+//					print qi;
+//				}
 				if (qi.error_flag) continue;
+//				if (filename == "qt.html") print "!!";
 				ret << qi;
 			}
 		}
 		QIsetParentIndex(ret, hierarchy);
-		setParentMemberTypes(ret);
+		foreach (QtInterface interface in ret) {
+			setParentMemberTypes(interface, ret);
+		}
 		genInterfaceFile(ret);
 	} else {
 		ret = loadInterfaceFile();
-//		foreach (i in ret) {
-//			if (i.class_name == "QAbstractItemView") print i;
-//		}
 	}
-//	ous = new OutputStream("face_" + (String)GEN_INTERFACE_FILE);
-//	foreach (r in ret) {
-//		ous.println(r);
-//	}
-//	ous.flush();
-//	ous.close();
-
-
 	return ret;
 }

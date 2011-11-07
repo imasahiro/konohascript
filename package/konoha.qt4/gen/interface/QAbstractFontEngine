@@ -54,14 +54,28 @@ true
 enbeddedClass
 true
 
-typedefed_objects
-FixedPoint
-GlyphMetrics
+flag_objects
+class
+QAbstractFontEngine
+name
 Capabilities
-Fixed
+class
+QAbstractFontEngine
+name
 TextShapingFlags
 
+parent_flag_objects
+
+typedefed_objects
+Fixed
+
 parent_typedefed_objects
+
+class_objects
+FixedPoint
+GlyphMetrics
+
+parent_class_objects
 
 enums
 class_name

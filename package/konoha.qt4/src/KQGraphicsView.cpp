@@ -3,7 +3,7 @@ KMETHOD QGraphicsView_inputMethodQuery(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::InputMethodQuery query = Int_to(Qt::InputMethodQuery, sfp[1]);
 		QVariant ret_v = qp->inputMethodQuery(query);
 		QVariant *ret_v_ = new QVariant(ret_v);
@@ -19,7 +19,7 @@ KMETHOD QGraphicsView_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -53,16 +53,18 @@ KMETHOD QGraphicsView_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 */
-//int QGraphicsView.getAlignment();
+//QtAlignment QGraphicsView.getAlignment();
 KMETHOD QGraphicsView_getAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->alignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -71,7 +73,7 @@ KMETHOD QGraphicsView_getBackgroundBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBrush ret_v = qp->backgroundBrush();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -81,12 +83,12 @@ KMETHOD QGraphicsView_getBackgroundBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QGraphicsView.getCacheMode();
+//QGraphicsViewCacheMode QGraphicsView.getCacheMode();
 KMETHOD QGraphicsView_getCacheMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsView::CacheMode ret_v = qp->cacheMode();
 		QGraphicsView::CacheMode *ret_v_ = new QGraphicsView::CacheMode(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -101,7 +103,7 @@ KMETHOD QGraphicsView_centerOn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  pos = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->centerOn(pos);
 	}
@@ -114,7 +116,7 @@ KMETHOD QGraphicsView_centerOn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qp->centerOn(x, y);
@@ -128,7 +130,7 @@ KMETHOD QGraphicsView_centerOn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		qp->centerOn(item);
 	}
@@ -140,7 +142,7 @@ KMETHOD QGraphicsView_getDragMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsView::DragMode ret_v = qp->dragMode();
 		RETURNi_(ret_v);
 	} else {
@@ -153,7 +155,7 @@ KMETHOD QGraphicsView_ensureVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		int xmargin = Int_to(int, sfp[2]);
 		int ymargin = Int_to(int, sfp[3]);
@@ -168,7 +170,7 @@ KMETHOD QGraphicsView_ensureVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -186,7 +188,7 @@ KMETHOD QGraphicsView_ensureVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		int xmargin = Int_to(int, sfp[2]);
 		int ymargin = Int_to(int, sfp[3]);
@@ -200,7 +202,7 @@ KMETHOD QGraphicsView_fitInView(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		Qt::AspectRatioMode aspectRatioMode = Int_to(Qt::AspectRatioMode, sfp[2]);
 		qp->fitInView(rect, aspectRatioMode);
@@ -214,7 +216,7 @@ KMETHOD QGraphicsView_fitInView(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -231,7 +233,7 @@ KMETHOD QGraphicsView_fitInView(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		Qt::AspectRatioMode aspectRatioMode = Int_to(Qt::AspectRatioMode, sfp[2]);
 		qp->fitInView(item, aspectRatioMode);
@@ -244,7 +246,7 @@ KMETHOD QGraphicsView_getForegroundBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBrush ret_v = qp->foregroundBrush();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -259,7 +261,7 @@ KMETHOD QGraphicsView_isInteractive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isInteractive();
 		RETURNb_(ret_v);
 	} else {
@@ -272,7 +274,7 @@ KMETHOD QGraphicsView_isTransformed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isTransformed();
 		RETURNb_(ret_v);
 	} else {
@@ -285,7 +287,7 @@ KMETHOD QGraphicsView_itemAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 		QGraphicsItem* ret_v = qp->itemAt(pos);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsItem*)ret_v, NULL);
@@ -301,7 +303,7 @@ KMETHOD QGraphicsView_itemAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		QGraphicsItem* ret_v = qp->itemAt(x, y);
@@ -317,8 +319,8 @@ KMETHOD QGraphicsView_items(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
-		QList<QGraphicsItem*>ret_v = qp->items();
+	if (qp) {
+		QList<QGraphicsItem*> ret_v = qp->items();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -339,9 +341,9 @@ KMETHOD QGraphicsView_items(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
-		QList<QGraphicsItem*>ret_v = qp->items(pos);
+		QList<QGraphicsItem*> ret_v = qp->items(pos);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -362,10 +364,10 @@ KMETHOD QGraphicsView_items(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
-		QList<QGraphicsItem*>ret_v = qp->items(x, y);
+		QList<QGraphicsItem*> ret_v = qp->items(x, y);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -386,13 +388,13 @@ KMETHOD QGraphicsView_items(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int w = Int_to(int, sfp[3]);
 		int h = Int_to(int, sfp[4]);
 		Qt::ItemSelectionMode mode = Int_to(Qt::ItemSelectionMode, sfp[5]);
-		QList<QGraphicsItem*>ret_v = qp->items(x, y, w, h, mode);
+		QList<QGraphicsItem*> ret_v = qp->items(x, y, w, h, mode);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -413,10 +415,10 @@ KMETHOD QGraphicsView_items(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		Qt::ItemSelectionMode mode = Int_to(Qt::ItemSelectionMode, sfp[2]);
-		QList<QGraphicsItem*>ret_v = qp->items(rect, mode);
+		QList<QGraphicsItem*> ret_v = qp->items(rect, mode);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -437,10 +439,10 @@ KMETHOD QGraphicsView_items(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygon  polygon = *RawPtr_to(const QPolygon *, sfp[1]);
 		Qt::ItemSelectionMode mode = Int_to(Qt::ItemSelectionMode, sfp[2]);
-		QList<QGraphicsItem*>ret_v = qp->items(polygon, mode);
+		QList<QGraphicsItem*> ret_v = qp->items(polygon, mode);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -461,10 +463,10 @@ KMETHOD QGraphicsView_items(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		Qt::ItemSelectionMode mode = Int_to(Qt::ItemSelectionMode, sfp[2]);
-		QList<QGraphicsItem*>ret_v = qp->items(path, mode);
+		QList<QGraphicsItem*> ret_v = qp->items(path, mode);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -484,7 +486,7 @@ KMETHOD QGraphicsView_mapFromScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		QPoint ret_v = qp->mapFromScene(point);
 		QPoint *ret_v_ = new QPoint(ret_v);
@@ -501,7 +503,7 @@ KMETHOD QGraphicsView_mapFromScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		QPolygon ret_v = qp->mapFromScene(rect);
 		QPolygon *ret_v_ = new QPolygon(ret_v);
@@ -518,7 +520,7 @@ KMETHOD QGraphicsView_mapFromScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  polygon = *RawPtr_to(const QPolygonF *, sfp[1]);
 		QPolygon ret_v = qp->mapFromScene(polygon);
 		QPolygon *ret_v_ = new QPolygon(ret_v);
@@ -535,7 +537,7 @@ KMETHOD QGraphicsView_mapFromScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		QPainterPath ret_v = qp->mapFromScene(path);
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
@@ -552,7 +554,7 @@ KMETHOD QGraphicsView_mapFromScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		QPoint ret_v = qp->mapFromScene(x, y);
@@ -570,7 +572,7 @@ KMETHOD QGraphicsView_mapFromScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -589,7 +591,7 @@ KMETHOD QGraphicsView_mapToScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
 		QPointF ret_v = qp->mapToScene(point);
 		QPointF *ret_v_ = new QPointF(ret_v);
@@ -606,7 +608,7 @@ KMETHOD QGraphicsView_mapToScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		QPolygonF ret_v = qp->mapToScene(rect);
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
@@ -623,7 +625,7 @@ KMETHOD QGraphicsView_mapToScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygon  polygon = *RawPtr_to(const QPolygon *, sfp[1]);
 		QPolygonF ret_v = qp->mapToScene(polygon);
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
@@ -640,7 +642,7 @@ KMETHOD QGraphicsView_mapToScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		QPainterPath ret_v = qp->mapToScene(path);
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
@@ -657,7 +659,7 @@ KMETHOD QGraphicsView_mapToScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		QPointF ret_v = qp->mapToScene(x, y);
@@ -675,7 +677,7 @@ KMETHOD QGraphicsView_mapToScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int w = Int_to(int, sfp[3]);
@@ -694,7 +696,7 @@ KMETHOD QGraphicsView_getMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMatrix ret_v = qp->matrix();
 		QMatrix *ret_v_ = new QMatrix(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -704,16 +706,18 @@ KMETHOD QGraphicsView_getMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QGraphicsView.getOptimizationFlags();
+//QGraphicsViewOptimizationFlags QGraphicsView.getOptimizationFlags();
 KMETHOD QGraphicsView_getOptimizationFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsView::OptimizationFlags ret_v = qp->optimizationFlags();
-		RETURNi_(ret_v);
+		QGraphicsView::OptimizationFlags *ret_v_ = new QGraphicsView::OptimizationFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -722,7 +726,7 @@ KMETHOD QGraphicsView_render(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QRectF  target = *RawPtr_to(const QRectF *, sfp[2]);
 		const QRect  source = *RawPtr_to(const QRect *, sfp[3]);
@@ -737,7 +741,7 @@ KMETHOD QGraphicsView_getRenderHints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter::RenderHints ret_v = qp->renderHints();
 		RETURNi_(ret_v);
 	} else {
@@ -750,7 +754,7 @@ KMETHOD QGraphicsView_resetCachedContent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->resetCachedContent();
 	}
 	RETURNvoid_();
@@ -761,7 +765,7 @@ KMETHOD QGraphicsView_resetMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->resetMatrix();
 	}
 	RETURNvoid_();
@@ -772,7 +776,7 @@ KMETHOD QGraphicsView_resetTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->resetTransform();
 	}
 	RETURNvoid_();
@@ -783,7 +787,7 @@ KMETHOD QGraphicsView_getResizeAnchor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsView::ViewportAnchor ret_v = qp->resizeAnchor();
 		RETURNi_(ret_v);
 	} else {
@@ -796,7 +800,7 @@ KMETHOD QGraphicsView_rotate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal angle = Float_to(qreal, sfp[1]);
 		qp->rotate(angle);
 	}
@@ -808,7 +812,7 @@ KMETHOD QGraphicsView_getRubberBandSelectionMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ItemSelectionMode ret_v = qp->rubberBandSelectionMode();
 		RETURNi_(ret_v);
 	} else {
@@ -821,7 +825,7 @@ KMETHOD QGraphicsView_scale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal sx = Float_to(qreal, sfp[1]);
 		qreal sy = Float_to(qreal, sfp[2]);
 		qp->scale(sx, sy);
@@ -834,7 +838,7 @@ KMETHOD QGraphicsView_getScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsScene* ret_v = qp->scene();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsScene*)ret_v, NULL);
 		RETURN_(rptr);
@@ -848,7 +852,7 @@ KMETHOD QGraphicsView_getSceneRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->sceneRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -858,13 +862,13 @@ KMETHOD QGraphicsView_getSceneRect(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QGraphicsView.setAlignment(int alignment);
+//void QGraphicsView.setAlignment(QtAlignment alignment);
 KMETHOD QGraphicsView_setAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(alignment, Qt::Alignment, sfp[1]);
 		qp->setAlignment(alignment);
 	}
 	RETURNvoid_();
@@ -875,20 +879,20 @@ KMETHOD QGraphicsView_setBackgroundBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[1]);
 		qp->setBackgroundBrush(brush);
 	}
 	RETURNvoid_();
 }
 
-//void QGraphicsView.setCacheMode(int mode);
+//void QGraphicsView.setCacheMode(QGraphicsViewCacheMode mode);
 KMETHOD QGraphicsView_setCacheMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
-		QGraphicsView::CacheMode  mode = *RawPtr_to(QGraphicsView::CacheMode *, sfp[1]);
+	if (qp) {
+		initFlag(mode, QGraphicsView::CacheMode, sfp[1]);
 		qp->setCacheMode(mode);
 	}
 	RETURNvoid_();
@@ -899,7 +903,7 @@ KMETHOD QGraphicsView_setDragMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsView::DragMode mode = Int_to(QGraphicsView::DragMode, sfp[1]);
 		qp->setDragMode(mode);
 	}
@@ -911,7 +915,7 @@ KMETHOD QGraphicsView_setForegroundBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[1]);
 		qp->setForegroundBrush(brush);
 	}
@@ -923,7 +927,7 @@ KMETHOD QGraphicsView_setInteractive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool allowed = Boolean_to(bool, sfp[1]);
 		qp->setInteractive(allowed);
 	}
@@ -935,7 +939,7 @@ KMETHOD QGraphicsView_setMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMatrix  matrix = *RawPtr_to(const QMatrix *, sfp[1]);
 		bool combine = Boolean_to(bool, sfp[2]);
 		qp->setMatrix(matrix, combine);
@@ -948,7 +952,7 @@ KMETHOD QGraphicsView_setOptimizationFlag(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsView::OptimizationFlag flag = Int_to(QGraphicsView::OptimizationFlag, sfp[1]);
 		bool enabled = Boolean_to(bool, sfp[2]);
 		qp->setOptimizationFlag(flag, enabled);
@@ -956,13 +960,13 @@ KMETHOD QGraphicsView_setOptimizationFlag(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//void QGraphicsView.setOptimizationFlags(int flags);
+//void QGraphicsView.setOptimizationFlags(QGraphicsViewOptimizationFlags flags);
 KMETHOD QGraphicsView_setOptimizationFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
-		QGraphicsView::OptimizationFlags flags = Int_to(QGraphicsView::OptimizationFlags, sfp[1]);
+	if (qp) {
+		initFlag(flags, QGraphicsView::OptimizationFlags, sfp[1]);
 		qp->setOptimizationFlags(flags);
 	}
 	RETURNvoid_();
@@ -973,7 +977,7 @@ KMETHOD QGraphicsView_setRenderHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter::RenderHint hint = Int_to(QPainter::RenderHint, sfp[1]);
 		bool enabled = Boolean_to(bool, sfp[2]);
 		qp->setRenderHint(hint, enabled);
@@ -986,7 +990,7 @@ KMETHOD QGraphicsView_setRenderHints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter::RenderHints hints = Int_to(QPainter::RenderHints, sfp[1]);
 		qp->setRenderHints(hints);
 	}
@@ -998,7 +1002,7 @@ KMETHOD QGraphicsView_setResizeAnchor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsView::ViewportAnchor anchor = Int_to(QGraphicsView::ViewportAnchor, sfp[1]);
 		qp->setResizeAnchor(anchor);
 	}
@@ -1010,7 +1014,7 @@ KMETHOD QGraphicsView_setRubberBandSelectionMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ItemSelectionMode mode = Int_to(Qt::ItemSelectionMode, sfp[1]);
 		qp->setRubberBandSelectionMode(mode);
 	}
@@ -1022,7 +1026,7 @@ KMETHOD QGraphicsView_setScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsScene*  scene = RawPtr_to(QGraphicsScene*, sfp[1]);
 		qp->setScene(scene);
 	}
@@ -1034,7 +1038,7 @@ KMETHOD QGraphicsView_setSceneRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		qp->setSceneRect(rect);
 	}
@@ -1047,7 +1051,7 @@ KMETHOD QGraphicsView_setSceneRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -1062,7 +1066,7 @@ KMETHOD QGraphicsView_setTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTransform  matrix = *RawPtr_to(const QTransform *, sfp[1]);
 		bool combine = Boolean_to(bool, sfp[2]);
 		qp->setTransform(matrix, combine);
@@ -1075,7 +1079,7 @@ KMETHOD QGraphicsView_setTransformationAnchor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsView::ViewportAnchor anchor = Int_to(QGraphicsView::ViewportAnchor, sfp[1]);
 		qp->setTransformationAnchor(anchor);
 	}
@@ -1087,7 +1091,7 @@ KMETHOD QGraphicsView_setViewportUpdateMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsView::ViewportUpdateMode mode = Int_to(QGraphicsView::ViewportUpdateMode, sfp[1]);
 		qp->setViewportUpdateMode(mode);
 	}
@@ -1099,7 +1103,7 @@ KMETHOD QGraphicsView_shear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal sh = Float_to(qreal, sfp[1]);
 		qreal sv = Float_to(qreal, sfp[2]);
 		qp->shear(sh, sv);
@@ -1112,7 +1116,7 @@ KMETHOD QGraphicsView_getTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTransform ret_v = qp->transform();
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1127,7 +1131,7 @@ KMETHOD QGraphicsView_getTransformationAnchor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsView::ViewportAnchor ret_v = qp->transformationAnchor();
 		RETURNi_(ret_v);
 	} else {
@@ -1140,7 +1144,7 @@ KMETHOD QGraphicsView_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dx = Float_to(qreal, sfp[1]);
 		qreal dy = Float_to(qreal, sfp[2]);
 		qp->translate(dx, dy);
@@ -1153,7 +1157,7 @@ KMETHOD QGraphicsView_viewportTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTransform ret_v = qp->viewportTransform();
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1168,7 +1172,7 @@ KMETHOD QGraphicsView_getViewportUpdateMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsView::ViewportUpdateMode ret_v = qp->viewportUpdateMode();
 		RETURNi_(ret_v);
 	} else {
@@ -1181,7 +1185,7 @@ KMETHOD QGraphicsView_invalidateScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		QGraphicsScene::SceneLayers layers = Int_to(QGraphicsScene::SceneLayers, sfp[2]);
 		qp->invalidateScene(rect, layers);
@@ -1194,7 +1198,7 @@ KMETHOD QGraphicsView_updateScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<QRectF> rects;
@@ -1212,7 +1216,7 @@ KMETHOD QGraphicsView_updateSceneRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsView *  qp = RawPtr_to(QGraphicsView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		qp->updateSceneRect(rect);
 	}
@@ -1270,9 +1274,23 @@ bool DummyQGraphicsView::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQGraphicsView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractScrollArea::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsView::connection(QObject *o)
 {
+	QGraphicsView *p = dynamic_cast<QGraphicsView*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractScrollArea::connection(o);
 }
 
@@ -1335,13 +1353,9 @@ static void QGraphicsView_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsView *qp = (KQGraphicsView *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -1363,15 +1377,6 @@ bool KQGraphicsView::event(QEvent *event)
 		return false;
 	}
 	return true;
-}
-
-DEFAPI(void) defQGraphicsView(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QGraphicsView";
-	cdef->free = QGraphicsView_free;
-	cdef->reftrace = QGraphicsView_reftrace;
-	cdef->compareTo = QGraphicsView_compareTo;
 }
 
 static knh_IntData_t QGraphicsViewConstInt[] = {
@@ -1397,5 +1402,342 @@ static knh_IntData_t QGraphicsViewConstInt[] = {
 
 DEFAPI(void) constQGraphicsView(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QGraphicsViewConstInt);
+}
+
+
+DEFAPI(void) defQGraphicsView(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QGraphicsView";
+	cdef->free = QGraphicsView_free;
+	cdef->reftrace = QGraphicsView_reftrace;
+	cdef->compareTo = QGraphicsView_compareTo;
+}
+
+//## QGraphicsViewCacheMode QGraphicsViewCacheMode.new(int value);
+KMETHOD QGraphicsViewCacheMode_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsView::CacheModeFlag i = Int_to(QGraphicsView::CacheModeFlag, sfp[1]);
+	QGraphicsView::CacheMode *ret_v = new QGraphicsView::CacheMode(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QGraphicsViewCacheMode QGraphicsViewCacheMode.and(int mask);
+KMETHOD QGraphicsViewCacheMode_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsView::CacheMode *qp = RawPtr_to(QGraphicsView::CacheMode*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QGraphicsView::CacheMode ret = ((*qp) & i);
+		QGraphicsView::CacheMode *ret_ = new QGraphicsView::CacheMode(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsViewCacheMode QGraphicsViewCacheMode.iand(QGraphicsView::QGraphicsViewCacheMode other);
+KMETHOD QGraphicsViewCacheMode_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsView::CacheMode *qp = RawPtr_to(QGraphicsView::CacheMode*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsView::CacheMode *other = RawPtr_to(QGraphicsView::CacheMode *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsViewCacheMode QGraphicsViewCacheMode.or(QGraphicsViewCacheMode f);
+KMETHOD QGraphicsViewCacheMode_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGraphicsView::CacheMode *qp = RawPtr_to(QGraphicsView::CacheMode*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsView::CacheMode *f = RawPtr_to(QGraphicsView::CacheMode*, sfp[1]);
+		QGraphicsView::CacheMode ret = ((*qp) | (*f));
+		QGraphicsView::CacheMode *ret_ = new QGraphicsView::CacheMode(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsViewCacheMode QGraphicsViewCacheMode.ior(QGraphicsView::QGraphicsViewCacheMode other);
+KMETHOD QGraphicsViewCacheMode_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsView::CacheMode *qp = RawPtr_to(QGraphicsView::CacheMode*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsView::CacheMode *other = RawPtr_to(QGraphicsView::CacheMode *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsViewCacheMode QGraphicsViewCacheMode.xor(QGraphicsViewCacheMode f);
+KMETHOD QGraphicsViewCacheMode_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGraphicsView::CacheMode *qp = RawPtr_to(QGraphicsView::CacheMode*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsView::CacheMode *f = RawPtr_to(QGraphicsView::CacheMode*, sfp[1]);
+		QGraphicsView::CacheMode ret = ((*qp) ^ (*f));
+		QGraphicsView::CacheMode *ret_ = new QGraphicsView::CacheMode(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsViewCacheMode QGraphicsViewCacheMode.ixor(QGraphicsView::QGraphicsViewCacheMode other);
+KMETHOD QGraphicsViewCacheMode_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsView::CacheMode *qp = RawPtr_to(QGraphicsView::CacheMode*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsView::CacheMode *other = RawPtr_to(QGraphicsView::CacheMode *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QGraphicsViewCacheMode.testFlag(int flag);
+KMETHOD QGraphicsViewCacheMode_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsView::CacheMode *qp = RawPtr_to(QGraphicsView::CacheMode *, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsView::CacheModeFlag flag = Int_to(QGraphicsView::CacheModeFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QGraphicsViewCacheMode.value();
+KMETHOD QGraphicsViewCacheMode_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsView::CacheMode *qp = RawPtr_to(QGraphicsView::CacheMode *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QGraphicsViewCacheMode_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QGraphicsView::CacheMode *qp = (QGraphicsView::CacheMode *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QGraphicsViewCacheMode_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QGraphicsView::CacheMode *qp = (QGraphicsView::CacheMode *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QGraphicsViewCacheMode_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QGraphicsView::CacheMode*)p1->rawptr);
+//		int v2 = int(*(QGraphicsView::CacheMode*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QGraphicsView::CacheMode v1 = *(QGraphicsView::CacheMode*)p1->rawptr;
+		QGraphicsView::CacheMode v2 = *(QGraphicsView::CacheMode*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQGraphicsViewCacheMode(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QGraphicsViewCacheMode";
+	cdef->free = QGraphicsViewCacheMode_free;
+	cdef->reftrace = QGraphicsViewCacheMode_reftrace;
+	cdef->compareTo = QGraphicsViewCacheMode_compareTo;
+}
+//## QGraphicsViewOptimizationFlags QGraphicsViewOptimizationFlags.new(int value);
+KMETHOD QGraphicsViewOptimizationFlags_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsView::OptimizationFlag i = Int_to(QGraphicsView::OptimizationFlag, sfp[1]);
+	QGraphicsView::OptimizationFlags *ret_v = new QGraphicsView::OptimizationFlags(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QGraphicsViewOptimizationFlags QGraphicsViewOptimizationFlags.and(int mask);
+KMETHOD QGraphicsViewOptimizationFlags_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsView::OptimizationFlags *qp = RawPtr_to(QGraphicsView::OptimizationFlags*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QGraphicsView::OptimizationFlags ret = ((*qp) & i);
+		QGraphicsView::OptimizationFlags *ret_ = new QGraphicsView::OptimizationFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsViewOptimizationFlags QGraphicsViewOptimizationFlags.iand(QGraphicsView::QGraphicsViewOptimizationFlags other);
+KMETHOD QGraphicsViewOptimizationFlags_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsView::OptimizationFlags *qp = RawPtr_to(QGraphicsView::OptimizationFlags*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsView::OptimizationFlags *other = RawPtr_to(QGraphicsView::OptimizationFlags *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsViewOptimizationFlags QGraphicsViewOptimizationFlags.or(QGraphicsViewOptimizationFlags f);
+KMETHOD QGraphicsViewOptimizationFlags_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGraphicsView::OptimizationFlags *qp = RawPtr_to(QGraphicsView::OptimizationFlags*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsView::OptimizationFlags *f = RawPtr_to(QGraphicsView::OptimizationFlags*, sfp[1]);
+		QGraphicsView::OptimizationFlags ret = ((*qp) | (*f));
+		QGraphicsView::OptimizationFlags *ret_ = new QGraphicsView::OptimizationFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsViewOptimizationFlags QGraphicsViewOptimizationFlags.ior(QGraphicsView::QGraphicsViewOptimizationFlags other);
+KMETHOD QGraphicsViewOptimizationFlags_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsView::OptimizationFlags *qp = RawPtr_to(QGraphicsView::OptimizationFlags*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsView::OptimizationFlags *other = RawPtr_to(QGraphicsView::OptimizationFlags *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsViewOptimizationFlags QGraphicsViewOptimizationFlags.xor(QGraphicsViewOptimizationFlags f);
+KMETHOD QGraphicsViewOptimizationFlags_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGraphicsView::OptimizationFlags *qp = RawPtr_to(QGraphicsView::OptimizationFlags*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsView::OptimizationFlags *f = RawPtr_to(QGraphicsView::OptimizationFlags*, sfp[1]);
+		QGraphicsView::OptimizationFlags ret = ((*qp) ^ (*f));
+		QGraphicsView::OptimizationFlags *ret_ = new QGraphicsView::OptimizationFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsViewOptimizationFlags QGraphicsViewOptimizationFlags.ixor(QGraphicsView::QGraphicsViewOptimizationFlags other);
+KMETHOD QGraphicsViewOptimizationFlags_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsView::OptimizationFlags *qp = RawPtr_to(QGraphicsView::OptimizationFlags*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsView::OptimizationFlags *other = RawPtr_to(QGraphicsView::OptimizationFlags *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QGraphicsViewOptimizationFlags.testFlag(int flag);
+KMETHOD QGraphicsViewOptimizationFlags_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsView::OptimizationFlags *qp = RawPtr_to(QGraphicsView::OptimizationFlags *, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsView::OptimizationFlag flag = Int_to(QGraphicsView::OptimizationFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QGraphicsViewOptimizationFlags.value();
+KMETHOD QGraphicsViewOptimizationFlags_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsView::OptimizationFlags *qp = RawPtr_to(QGraphicsView::OptimizationFlags *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QGraphicsViewOptimizationFlags_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QGraphicsView::OptimizationFlags *qp = (QGraphicsView::OptimizationFlags *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QGraphicsViewOptimizationFlags_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QGraphicsView::OptimizationFlags *qp = (QGraphicsView::OptimizationFlags *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QGraphicsViewOptimizationFlags_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QGraphicsView::OptimizationFlags*)p1->rawptr);
+//		int v2 = int(*(QGraphicsView::OptimizationFlags*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QGraphicsView::OptimizationFlags v1 = *(QGraphicsView::OptimizationFlags*)p1->rawptr;
+		QGraphicsView::OptimizationFlags v2 = *(QGraphicsView::OptimizationFlags*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQGraphicsViewOptimizationFlags(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QGraphicsViewOptimizationFlags";
+	cdef->free = QGraphicsViewOptimizationFlags_free;
+	cdef->reftrace = QGraphicsViewOptimizationFlags_reftrace;
+	cdef->compareTo = QGraphicsViewOptimizationFlags_compareTo;
 }
 

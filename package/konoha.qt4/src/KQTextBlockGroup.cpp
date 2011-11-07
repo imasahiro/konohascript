@@ -49,17 +49,24 @@ bool DummyQTextBlockGroup::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextBlockGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQTextObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQTextBlockGroup::connection(QObject *o)
 {
+	QTextBlockGroup *p = dynamic_cast<QTextBlockGroup*>(o);
+	if (p != NULL) {
+	}
 	DummyQTextObject::connection(o);
-}
-
-KQTextBlockGroup::KQTextBlockGroup(QTextDocument* document) : QTextBlockGroup(document)
-{
-	self = NULL;
-	dummy = new DummyQTextBlockGroup();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextBlockGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -114,13 +121,9 @@ static void QTextBlockGroup_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextBlockGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextBlockGroup *qp = (KQTextBlockGroup *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -143,6 +146,8 @@ bool KQTextBlockGroup::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQTextBlockGroup(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

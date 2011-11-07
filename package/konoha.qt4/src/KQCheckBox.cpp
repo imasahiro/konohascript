@@ -3,7 +3,7 @@ KMETHOD QCheckBox_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCheckBox *  qp = RawPtr_to(QCheckBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -42,7 +42,7 @@ KMETHOD QCheckBox_getCheckState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCheckBox *  qp = RawPtr_to(QCheckBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::CheckState ret_v = qp->checkState();
 		RETURNi_(ret_v);
 	} else {
@@ -55,7 +55,7 @@ KMETHOD QCheckBox_isTristate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCheckBox *  qp = RawPtr_to(QCheckBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isTristate();
 		RETURNb_(ret_v);
 	} else {
@@ -68,7 +68,7 @@ KMETHOD QCheckBox_setCheckState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCheckBox *  qp = RawPtr_to(QCheckBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::CheckState state = Int_to(Qt::CheckState, sfp[1]);
 		qp->setCheckState(state);
 	}
@@ -80,7 +80,7 @@ KMETHOD QCheckBox_setTristate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCheckBox *  qp = RawPtr_to(QCheckBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool y = Boolean_to(bool, sfp[1]);
 		qp->setTristate(y);
 	}
@@ -154,10 +154,25 @@ bool DummyQCheckBox::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQCheckBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, state_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractButton::reftrace(ctx, p, tail_);
+}
 
 void DummyQCheckBox::connection(QObject *o)
 {
-	connect(o, SIGNAL(stateChanged(int)), this, SLOT(stateChangedSlot(int)));
+	QCheckBox *p = dynamic_cast<QCheckBox*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(stateChanged(int)), this, SLOT(stateChangedSlot(int)));
+	}
 	DummyQAbstractButton::connection(o);
 }
 
@@ -220,17 +235,9 @@ static void QCheckBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QCheckBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQCheckBox *qp = (KQCheckBox *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->state_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->state_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -253,6 +260,8 @@ bool KQCheckBox::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQCheckBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

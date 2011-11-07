@@ -51,10 +51,25 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+class
+QAbstractPrintDialog
+name
+PrintDialogOptions
+class
+QWidget
+name
+RenderFlags
+
 typedefed_objects
 
 parent_typedefed_objects
-PrintDialogOptions
+
+class_objects
+
+parent_class_objects
 
 enums
 
@@ -83,6 +98,42 @@ AllPages
 Selection
 PageRange
 CurrentPage
+public_flag
+true
+class_name
+QDialog
+name
+DialogCode
+key
+Accepted
+Rejected
+public_flag
+true
+class_name
+QWidget
+name
+RenderFlag
+key
+DrawWindowBackground
+DrawChildren
+IgnoreMask
+public_flag
+true
+class_name
+QPaintDevice
+name
+PaintDeviceMetric
+key
+PdmWidth
+PdmHeight
+PdmWidthMM
+PdmHeightMM
+PdmNumColors
+PdmDepth
+PdmDpiX
+PdmDpiY
+PdmPhysicalDpiX
+PdmPhysicalDpiY
 public_flag
 true
 

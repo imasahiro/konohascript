@@ -59,9 +59,23 @@ bool DummyQIconDragEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQIconDragEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQIconDragEvent::connection(QObject *o)
 {
+	QIconDragEvent *p = dynamic_cast<QIconDragEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -69,7 +83,6 @@ KQIconDragEvent::KQIconDragEvent() : QIconDragEvent()
 {
 	self = NULL;
 	dummy = new DummyQIconDragEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QIconDragEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -124,13 +137,9 @@ static void QIconDragEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QIconDragEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQIconDragEvent *qp = (KQIconDragEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -144,6 +153,8 @@ void KQIconDragEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQIconDragEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

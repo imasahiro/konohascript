@@ -26,7 +26,7 @@ KMETHOD QAtomicInt_deref(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->deref();
 		RETURNb_(ret_v);
 	} else {
@@ -39,7 +39,7 @@ KMETHOD QAtomicInt_fetchAndAddAcquire(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int valueToAdd = Int_to(int, sfp[1]);
 		int ret_v = qp->fetchAndAddAcquire(valueToAdd);
 		RETURNi_(ret_v);
@@ -53,7 +53,7 @@ KMETHOD QAtomicInt_fetchAndAddOrdered(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int valueToAdd = Int_to(int, sfp[1]);
 		int ret_v = qp->fetchAndAddOrdered(valueToAdd);
 		RETURNi_(ret_v);
@@ -67,7 +67,7 @@ KMETHOD QAtomicInt_fetchAndAddRelaxed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int valueToAdd = Int_to(int, sfp[1]);
 		int ret_v = qp->fetchAndAddRelaxed(valueToAdd);
 		RETURNi_(ret_v);
@@ -81,7 +81,7 @@ KMETHOD QAtomicInt_fetchAndAddRelease(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int valueToAdd = Int_to(int, sfp[1]);
 		int ret_v = qp->fetchAndAddRelease(valueToAdd);
 		RETURNi_(ret_v);
@@ -95,7 +95,7 @@ KMETHOD QAtomicInt_fetchAndStoreAcquire(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int new_Value = Int_to(int, sfp[1]);
 		int ret_v = qp->fetchAndStoreAcquire(new_Value);
 		RETURNi_(ret_v);
@@ -109,7 +109,7 @@ KMETHOD QAtomicInt_fetchAndStoreOrdered(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int new_Value = Int_to(int, sfp[1]);
 		int ret_v = qp->fetchAndStoreOrdered(new_Value);
 		RETURNi_(ret_v);
@@ -123,7 +123,7 @@ KMETHOD QAtomicInt_fetchAndStoreRelaxed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int new_Value = Int_to(int, sfp[1]);
 		int ret_v = qp->fetchAndStoreRelaxed(new_Value);
 		RETURNi_(ret_v);
@@ -137,7 +137,7 @@ KMETHOD QAtomicInt_fetchAndStoreRelease(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int new_Value = Int_to(int, sfp[1]);
 		int ret_v = qp->fetchAndStoreRelease(new_Value);
 		RETURNi_(ret_v);
@@ -151,7 +151,7 @@ KMETHOD QAtomicInt_ref(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->ref();
 		RETURNb_(ret_v);
 	} else {
@@ -164,7 +164,7 @@ KMETHOD QAtomicInt_testAndSetAcquire(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int expectedValue = Int_to(int, sfp[1]);
 		int new_Value = Int_to(int, sfp[2]);
 		bool ret_v = qp->testAndSetAcquire(expectedValue, new_Value);
@@ -179,7 +179,7 @@ KMETHOD QAtomicInt_testAndSetOrdered(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int expectedValue = Int_to(int, sfp[1]);
 		int new_Value = Int_to(int, sfp[2]);
 		bool ret_v = qp->testAndSetOrdered(expectedValue, new_Value);
@@ -194,7 +194,7 @@ KMETHOD QAtomicInt_testAndSetRelaxed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int expectedValue = Int_to(int, sfp[1]);
 		int new_Value = Int_to(int, sfp[2]);
 		bool ret_v = qp->testAndSetRelaxed(expectedValue, new_Value);
@@ -209,7 +209,7 @@ KMETHOD QAtomicInt_testAndSetRelease(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int expectedValue = Int_to(int, sfp[1]);
 		int new_Value = Int_to(int, sfp[2]);
 		bool ret_v = qp->testAndSetRelease(expectedValue, new_Value);
@@ -223,9 +223,8 @@ KMETHOD QAtomicInt_testAndSetRelease(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QAtomicInt_isFetchAndAddNative(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isFetchAndAddNative();
+	if (true) {
+		bool ret_v = QAtomicInt::isFetchAndAddNative();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -236,9 +235,8 @@ KMETHOD QAtomicInt_isFetchAndAddNative(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QAtomicInt_isFetchAndAddWaitFree(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isFetchAndAddWaitFree();
+	if (true) {
+		bool ret_v = QAtomicInt::isFetchAndAddWaitFree();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -249,9 +247,8 @@ KMETHOD QAtomicInt_isFetchAndAddWaitFree(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QAtomicInt_isFetchAndStoreNative(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isFetchAndStoreNative();
+	if (true) {
+		bool ret_v = QAtomicInt::isFetchAndStoreNative();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -262,9 +259,8 @@ KMETHOD QAtomicInt_isFetchAndStoreNative(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QAtomicInt_isFetchAndStoreWaitFree(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isFetchAndStoreWaitFree();
+	if (true) {
+		bool ret_v = QAtomicInt::isFetchAndStoreWaitFree();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -275,9 +271,8 @@ KMETHOD QAtomicInt_isFetchAndStoreWaitFree(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QAtomicInt_isReferenceCountingNative(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isReferenceCountingNative();
+	if (true) {
+		bool ret_v = QAtomicInt::isReferenceCountingNative();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -288,9 +283,8 @@ KMETHOD QAtomicInt_isReferenceCountingNative(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QAtomicInt_isReferenceCountingWaitFree(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isReferenceCountingWaitFree();
+	if (true) {
+		bool ret_v = QAtomicInt::isReferenceCountingWaitFree();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -301,9 +295,8 @@ KMETHOD QAtomicInt_isReferenceCountingWaitFree(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QAtomicInt_isTestAndSetNative(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isTestAndSetNative();
+	if (true) {
+		bool ret_v = QAtomicInt::isTestAndSetNative();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -314,15 +307,32 @@ KMETHOD QAtomicInt_isTestAndSetNative(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QAtomicInt_isTestAndSetWaitFree(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QAtomicInt *  qp = RawPtr_to(QAtomicInt *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isTestAndSetWaitFree();
+	if (true) {
+		bool ret_v = QAtomicInt::isTestAndSetWaitFree();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
 	}
 }
 
+//Array<String> QAtomicInt.parents();
+KMETHOD QAtomicInt_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QAtomicInt *qp = RawPtr_to(QAtomicInt*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQAtomicInt::DummyQAtomicInt()
 {
@@ -371,17 +381,28 @@ bool DummyQAtomicInt::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQAtomicInt::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQAtomicInt::connection(QObject *o)
 {
-	return;
+	QAtomicInt *p = dynamic_cast<QAtomicInt*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQAtomicInt::KQAtomicInt(int value) : QAtomicInt(value)
 {
 	self = NULL;
 	dummy = new DummyQAtomicInt();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAtomicInt_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -436,13 +457,9 @@ static void QAtomicInt_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAtomicInt_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAtomicInt *qp = (KQAtomicInt *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -456,6 +473,8 @@ void KQAtomicInt::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQAtomicInt(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

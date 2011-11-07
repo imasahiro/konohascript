@@ -1,6 +1,3 @@
-abstract_classes = ["Abstract", "QGraphicsLayout", "QGraphicsEffect", "QAccessibleObject",
-					"QGraphicsItem", "QIODevice", "QValidator", "QRunnable", "QGraphicsObject",
-					"QGraphicsItem", "QLayout"];
 class QtInterface {
 	XmlReader reader;
 	String input_urn, output_urn;
@@ -21,12 +18,19 @@ class QtInterface {
 	boolean templateClass;
 	boolean abstractClass;
 	boolean enbeddedClass;
+	int[] parent_index;
+	String[] parent_name;
+
+//public_types
+	String[] class_objects;
+	String[] parent_class_objects;
+//	String[] flag_objects;
+	Tuple<String, String>[] flag_objects; //Tuple<String => flag defined class, String => flag name>
+	Tuple<String, String>[] parent_flag_objects;
 	String[] typedefed_objects; //typedefed object the class defined
 	String[] parent_typedefed_objects; //typedefed object parent class defined
 	EnumInterface[] enums; //enum the class defined
 	EnumInterface[] parent_enums; //enum parent class defined
-	int[] parent_index;
-	String[] parent_name;
 
 	QtInterface(String iu) {
 		initMember();
@@ -60,8 +64,12 @@ class QtInterface {
 		templateClass = false;
 		abstractClass = false;
 		embeddedClass = false;
+		flag_objects = [];
+		parent_flag_objects = [];
 		typedefed_objects = [];
 		parent_typedefed_objects = [];
+		class_objects = [];
+		parent_class_objects = [];
 		enums = [];
 		parent_enums = [];
 		parent_index = [];
@@ -76,14 +84,21 @@ class QtInterface {
 		return templateClass;
 	}
 	
-	void collectTypedefedObject() {
-//		print public_types;
+	void collectPublicTypes() {
 		if (|public_types| == 0) return;
 		foreach (String public_type in public_types) {
-//			print public_type;
 			String name = (public_type.split(" "))[2];
-			if (!("enum" in? public_type)) {
+			// if (!("enum" in? public_type)) {
+			// 	typedefed_objects <<< name;
+			// }
+			if ("typedef" in? public_type) {
 				typedefed_objects <<< name;
+			}
+			if ("flag" in? public_type) {
+				flag_objects <<< (class_name, name);
+			}
+			if ("class" in? public_type) {
+				class_objects <<< name;
 			}
 		}
 		return;
@@ -186,7 +201,7 @@ class QtInterface {
 					templateClass = true;
 				} else if ("abstract" in? reader.constValue()) {
 					data += "abstract class\n";
-					abstractClass = true;
+//					abstractClass = true;
 				} else if ("Embedded" in? reader.constValue()) {
 					enbeddedClass = true;
 				}
@@ -233,8 +248,9 @@ class QtInterface {
 				output_urn -= " Class Reference";
 				inheritanceStructure();
 				class_name = output_urn;
-				foreach (abst_class in abstract_classes) {
-					if (abst_class in? class_name) {
+				foreach (abst_class in ABSTRACT_CLASSES) {
+					if (abst_class == class_name ||
+						"Abstract" in? class_name) {
 						abstractClass = true;
 						break;
 					}
@@ -244,7 +260,7 @@ class QtInterface {
 				switch (reader.constValue()) {
 				case "Public Types":
 					public_types = extractedValue();
-					collectTypedefedObject();
+					collectPublicTypes();
 					break;
 				case "Properties":
 					properties = extractedValue();

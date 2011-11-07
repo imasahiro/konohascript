@@ -71,9 +71,23 @@ bool DummyQVBoxLayout::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQVBoxLayout::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQBoxLayout::reftrace(ctx, p, tail_);
+}
 
 void DummyQVBoxLayout::connection(QObject *o)
 {
+	QVBoxLayout *p = dynamic_cast<QVBoxLayout*>(o);
+	if (p != NULL) {
+	}
 	DummyQBoxLayout::connection(o);
 }
 
@@ -136,13 +150,9 @@ static void QVBoxLayout_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QVBoxLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQVBoxLayout *qp = (KQVBoxLayout *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -165,6 +175,8 @@ bool KQVBoxLayout::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQVBoxLayout(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

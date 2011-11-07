@@ -1,12 +1,12 @@
-//QDragEnterEvent QDragEnterEvent.new(QPoint point, int actions, QMimeData data, int buttons, int modifiers);
+//QDragEnterEvent QDragEnterEvent.new(QPoint point, QtDropActions actions, QMimeData data, QtMouseButtons buttons, QtKeyboardModifiers modifiers);
 KMETHOD QDragEnterEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
-	Qt::DropActions actions = Int_to(Qt::DropActions, sfp[2]);
+	initFlag(actions, Qt::DropActions, sfp[2]);
 	const QMimeData*  data = RawPtr_to(const QMimeData*, sfp[3]);
-	Qt::MouseButtons buttons = Int_to(Qt::MouseButtons, sfp[4]);
-	Qt::KeyboardModifiers modifiers = Int_to(Qt::KeyboardModifiers, sfp[5]);
+	initFlag(buttons, Qt::MouseButtons, sfp[4]);
+	initFlag(modifiers, Qt::KeyboardModifiers, sfp[5]);
 	KQDragEnterEvent *ret_v = new KQDragEnterEvent(point, actions, data, buttons, modifiers);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -64,9 +64,23 @@ bool DummyQDragEnterEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDragEnterEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQDragMoveEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQDragEnterEvent::connection(QObject *o)
 {
+	QDragEnterEvent *p = dynamic_cast<QDragEnterEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQDragMoveEvent::connection(o);
 }
 
@@ -74,7 +88,6 @@ KQDragEnterEvent::KQDragEnterEvent(const QPoint point, Qt::DropActions actions, 
 {
 	self = NULL;
 	dummy = new DummyQDragEnterEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDragEnterEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -129,13 +142,9 @@ static void QDragEnterEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDragEnterEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDragEnterEvent *qp = (KQDragEnterEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -149,6 +158,8 @@ void KQDragEnterEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQDragEnterEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -60,9 +60,23 @@ bool DummyQFinalState::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQFinalState::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractState::reftrace(ctx, p, tail_);
+}
 
 void DummyQFinalState::connection(QObject *o)
 {
+	QFinalState *p = dynamic_cast<QFinalState*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractState::connection(o);
 }
 
@@ -125,13 +139,9 @@ static void QFinalState_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QFinalState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQFinalState *qp = (KQFinalState *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -154,6 +164,8 @@ bool KQFinalState::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQFinalState(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

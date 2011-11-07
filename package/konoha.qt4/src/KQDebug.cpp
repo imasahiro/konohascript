@@ -50,7 +50,7 @@ KMETHOD QDebug_maybeSpace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDebug *  qp = RawPtr_to(QDebug *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDebug ret_v = qp->maybeSpace();
 		QDebug *ret_v_ = new QDebug(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -65,7 +65,7 @@ KMETHOD QDebug_nospace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDebug *  qp = RawPtr_to(QDebug *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDebug ret_v = qp->nospace();
 		QDebug *ret_v_ = new QDebug(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -80,7 +80,7 @@ KMETHOD QDebug_space(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDebug *  qp = RawPtr_to(QDebug *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDebug ret_v = qp->space();
 		QDebug *ret_v_ = new QDebug(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -90,6 +90,24 @@ KMETHOD QDebug_space(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QDebug.parents();
+KMETHOD QDebug_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QDebug *qp = RawPtr_to(QDebug*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQDebug::DummyQDebug()
 {
@@ -138,17 +156,28 @@ bool DummyQDebug::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDebug::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQDebug::connection(QObject *o)
 {
-	return;
+	QDebug *p = dynamic_cast<QDebug*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQDebug::KQDebug(QIODevice* device) : QDebug(device)
 {
 	self = NULL;
 	dummy = new DummyQDebug();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDebug_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -203,13 +232,9 @@ static void QDebug_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDebug_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDebug *qp = (KQDebug *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -223,6 +248,8 @@ void KQDebug::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQDebug(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

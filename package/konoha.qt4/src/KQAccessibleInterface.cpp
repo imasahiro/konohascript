@@ -3,7 +3,7 @@ KMETHOD QAccessibleInterface_actionText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int action = Int_to(int, sfp[1]);
 		QAccessibleInterface::Text t = Int_to(QAccessibleInterface::Text, sfp[2]);
 		int child = Int_to(int, sfp[3]);
@@ -20,7 +20,7 @@ KMETHOD QAccessibleInterface_childAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int ret_v = qp->childAt(x, y);
@@ -35,7 +35,7 @@ KMETHOD QAccessibleInterface_childCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->childCount();
 		RETURNi_(ret_v);
 	} else {
@@ -48,7 +48,7 @@ KMETHOD QAccessibleInterface_doAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int action = Int_to(int, sfp[1]);
 		int child = Int_to(int, sfp[2]);
 		const QVariantList  params = *RawPtr_to(const QVariantList *, sfp[3]);
@@ -64,7 +64,7 @@ KMETHOD QAccessibleInterface_indexOfChild(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QAccessibleInterface*  child = RawPtr_to(const QAccessibleInterface*, sfp[1]);
 		int ret_v = qp->indexOfChild(child);
 		RETURNi_(ret_v);
@@ -78,7 +78,7 @@ KMETHOD QAccessibleInterface_invokeMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAccessibleInterface::Method method = Int_to(QAccessibleInterface::Method, sfp[1]);
 		int child = Int_to(int, sfp[2]);
 		const QVariantList  params = *RawPtr_to(const QVariantList *, sfp[3]);
@@ -91,25 +91,12 @@ KMETHOD QAccessibleInterface_invokeMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////@Virtual boolean QAccessibleInterface.isValid();
-KMETHOD QAccessibleInterface_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
 //@Virtual int QAccessibleInterface.navigate(int relation, int entry, QAccessibleInterface target);
 KMETHOD QAccessibleInterface_navigate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAccessibleInterface::RelationFlag relation = Int_to(QAccessibleInterface::RelationFlag, sfp[1]);
 		int entry = Int_to(int, sfp[2]);
 		QAccessibleInterface**  target = RawPtr_to(QAccessibleInterface**, sfp[3]);
@@ -125,7 +112,7 @@ KMETHOD QAccessibleInterface_object(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject* ret_v = qp->object();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QObject*)ret_v, NULL);
 		RETURN_(rptr);
@@ -139,7 +126,7 @@ KMETHOD QAccessibleInterface_rect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int child = Int_to(int, sfp[1]);
 		QRect ret_v = qp->rect(child);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -150,17 +137,17 @@ KMETHOD QAccessibleInterface_rect(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual int QAccessibleInterface.relationTo(int child, QAccessibleInterface other, int otherChild);
+//@Virtual QAccessibleRelation QAccessibleInterface.relationTo(int child, QAccessibleInterface other, int otherChild);
 KMETHOD QAccessibleInterface_relationTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int child = Int_to(int, sfp[1]);
 		const QAccessibleInterface*  other = RawPtr_to(const QAccessibleInterface*, sfp[2]);
 		int otherChild = Int_to(int, sfp[3]);
-		QAccessibleInterface::Relation ret_v = qp->relationTo(child, other, otherChild);
-		QAccessibleInterface::Relation *ret_v_ = new QAccessibleInterface::Relation(ret_v);
+		QAccessible::Relation ret_v = qp->relationTo(child, other, otherChild);
+		QAccessible::Relation *ret_v_ = new QAccessible::Relation(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
 	} else {
@@ -173,7 +160,7 @@ KMETHOD QAccessibleInterface_role(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int child = Int_to(int, sfp[1]);
 		QAccessibleInterface::Role ret_v = qp->role(child);
 		RETURNi_(ret_v);
@@ -187,7 +174,7 @@ KMETHOD QAccessibleInterface_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAccessibleInterface::Text t = Int_to(QAccessibleInterface::Text, sfp[1]);
 		int child = Int_to(int, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
@@ -196,15 +183,15 @@ KMETHOD QAccessibleInterface_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//@Virtual int QAccessibleInterface.state(int child);
+//@Virtual QAccessibleState QAccessibleInterface.state(int child);
 KMETHOD QAccessibleInterface_state(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int child = Int_to(int, sfp[1]);
-		QAccessibleInterface::State ret_v = qp->state(child);
-		QAccessibleInterface::State *ret_v_ = new QAccessibleInterface::State(ret_v);
+		QAccessible::State ret_v = qp->state(child);
+		QAccessible::State *ret_v_ = new QAccessible::State(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
 	} else {
@@ -217,7 +204,7 @@ KMETHOD QAccessibleInterface_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAccessibleInterface::Text t = Int_to(QAccessibleInterface::Text, sfp[1]);
 		int child = Int_to(int, sfp[2]);
 		QString ret_v = qp->text(t, child);
@@ -233,7 +220,7 @@ KMETHOD QAccessibleInterface_userActionCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleInterface *  qp = RawPtr_to(QAccessibleInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int child = Int_to(int, sfp[1]);
 		int ret_v = qp->userActionCount(child);
 		RETURNi_(ret_v);
@@ -293,17 +280,24 @@ bool DummyQAccessibleInterface::signalConnect(knh_Func_t *callback_func, string 
 	}
 }
 
+void DummyQAccessibleInterface::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAccessible::reftrace(ctx, p, tail_);
+}
 
 void DummyQAccessibleInterface::connection(QObject *o)
 {
+	QAccessibleInterface *p = dynamic_cast<QAccessibleInterface*>(o);
+	if (p != NULL) {
+	}
 	DummyQAccessible::connection(o);
-}
-
-KQAccessibleInterface::KQAccessibleInterface() : QAccessibleInterface()
-{
-	self = NULL;
-	dummy = new DummyQAccessibleInterface();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAccessibleInterface_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -358,13 +352,9 @@ static void QAccessibleInterface_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAccessibleInterface_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAccessibleInterface *qp = (KQAccessibleInterface *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -378,6 +368,8 @@ void KQAccessibleInterface::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQAccessibleInterface(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

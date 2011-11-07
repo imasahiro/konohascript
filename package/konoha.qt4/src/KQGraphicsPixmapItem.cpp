@@ -3,7 +3,7 @@ KMETHOD QGraphicsPixmapItem_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->boundingRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QGraphicsPixmapItem_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		bool ret_v = qp->contains(point);
 		RETURNb_(ret_v);
@@ -32,7 +32,7 @@ KMETHOD QGraphicsPixmapItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		bool ret_v = qp->isObscuredBy(item);
 		RETURNb_(ret_v);
@@ -46,7 +46,7 @@ KMETHOD QGraphicsPixmapItem_opaqueArea(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->opaqueArea();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -61,7 +61,7 @@ KMETHOD QGraphicsPixmapItem_paint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
@@ -75,7 +75,7 @@ KMETHOD QGraphicsPixmapItem_shape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->shape();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -90,7 +90,7 @@ KMETHOD QGraphicsPixmapItem_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -127,7 +127,7 @@ KMETHOD QGraphicsPixmapItem_offset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->offset();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -142,7 +142,7 @@ KMETHOD QGraphicsPixmapItem_getPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPixmap ret_v = qp->pixmap();
 		QPixmap *ret_v_ = new QPixmap(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -157,7 +157,7 @@ KMETHOD QGraphicsPixmapItem_setOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  offset = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setOffset(offset);
 	}
@@ -170,7 +170,7 @@ KMETHOD QGraphicsPixmapItem_setOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qp->setOffset(x, y);
@@ -183,7 +183,7 @@ KMETHOD QGraphicsPixmapItem_setPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[1]);
 		qp->setPixmap(pixmap);
 	}
@@ -195,7 +195,7 @@ KMETHOD QGraphicsPixmapItem_setShapeMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsPixmapItem::ShapeMode mode = Int_to(QGraphicsPixmapItem::ShapeMode, sfp[1]);
 		qp->setShapeMode(mode);
 	}
@@ -207,7 +207,7 @@ KMETHOD QGraphicsPixmapItem_setTransformationMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TransformationMode mode = Int_to(Qt::TransformationMode, sfp[1]);
 		qp->setTransformationMode(mode);
 	}
@@ -219,7 +219,7 @@ KMETHOD QGraphicsPixmapItem_getShapeMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsPixmapItem::ShapeMode ret_v = qp->shapeMode();
 		RETURNi_(ret_v);
 	} else {
@@ -232,7 +232,7 @@ KMETHOD QGraphicsPixmapItem_getTransformationMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPixmapItem *  qp = RawPtr_to(QGraphicsPixmapItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TransformationMode ret_v = qp->transformationMode();
 		RETURNi_(ret_v);
 	} else {
@@ -291,9 +291,23 @@ bool DummyQGraphicsPixmapItem::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQGraphicsPixmapItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsItem::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsPixmapItem::connection(QObject *o)
 {
+	QGraphicsPixmapItem *p = dynamic_cast<QGraphicsPixmapItem*>(o);
+	if (p != NULL) {
+	}
 	DummyQGraphicsItem::connection(o);
 }
 
@@ -301,7 +315,6 @@ KQGraphicsPixmapItem::KQGraphicsPixmapItem(QGraphicsItem* parent) : QGraphicsPix
 {
 	self = NULL;
 	dummy = new DummyQGraphicsPixmapItem();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsPixmapItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -356,13 +369,9 @@ static void QGraphicsPixmapItem_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsPixmapItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsPixmapItem *qp = (KQGraphicsPixmapItem *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -377,15 +386,6 @@ void KQGraphicsPixmapItem::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQGraphicsPixmapItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QGraphicsPixmapItem";
-	cdef->free = QGraphicsPixmapItem_free;
-	cdef->reftrace = QGraphicsPixmapItem_reftrace;
-	cdef->compareTo = QGraphicsPixmapItem_compareTo;
-}
-
 static knh_IntData_t QGraphicsPixmapItemConstInt[] = {
 	{"MaskShape", QGraphicsPixmapItem::MaskShape},
 	{"BoundingRectShape", QGraphicsPixmapItem::BoundingRectShape},
@@ -396,4 +396,15 @@ static knh_IntData_t QGraphicsPixmapItemConstInt[] = {
 DEFAPI(void) constQGraphicsPixmapItem(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QGraphicsPixmapItemConstInt);
 }
+
+
+DEFAPI(void) defQGraphicsPixmapItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QGraphicsPixmapItem";
+	cdef->free = QGraphicsPixmapItem_free;
+	cdef->reftrace = QGraphicsPixmapItem_reftrace;
+	cdef->compareTo = QGraphicsPixmapItem_compareTo;
+}
+
 

@@ -3,7 +3,7 @@ KMETHOD QLineEdit_event(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEvent*  e = RawPtr_to(QEvent*, sfp[1]);
 		bool ret_v = qp->event(e);
 		RETURNb_(ret_v);
@@ -17,7 +17,7 @@ KMETHOD QLineEdit_inputMethodQuery(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::InputMethodQuery property = Int_to(Qt::InputMethodQuery, sfp[1]);
 		QVariant ret_v = qp->inputMethodQuery(property);
 		QVariant *ret_v_ = new QVariant(ret_v);
@@ -33,7 +33,7 @@ KMETHOD QLineEdit_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -48,7 +48,7 @@ KMETHOD QLineEdit_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -82,16 +82,18 @@ KMETHOD QLineEdit_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 */
-//int QLineEdit.getAlignment();
+//QtAlignment QLineEdit.getAlignment();
 KMETHOD QLineEdit_getAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->alignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -100,7 +102,7 @@ KMETHOD QLineEdit_backspace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->backspace();
 	}
 	RETURNvoid_();
@@ -111,7 +113,7 @@ KMETHOD QLineEdit_getCompleter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCompleter* ret_v = qp->completer();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QCompleter*)ret_v, NULL);
 		RETURN_(rptr);
@@ -125,7 +127,7 @@ KMETHOD QLineEdit_createStandardContextMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMenu* ret_v = qp->createStandardContextMenu();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMenu*)ret_v, NULL);
 		RETURN_(rptr);
@@ -139,7 +141,7 @@ KMETHOD QLineEdit_cursorBackward(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool mark = Boolean_to(bool, sfp[1]);
 		int steps = Int_to(int, sfp[2]);
 		qp->cursorBackward(mark, steps);
@@ -152,7 +154,7 @@ KMETHOD QLineEdit_cursorForward(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool mark = Boolean_to(bool, sfp[1]);
 		int steps = Int_to(int, sfp[2]);
 		qp->cursorForward(mark, steps);
@@ -165,7 +167,7 @@ KMETHOD QLineEdit_getCursorPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->cursorPosition();
 		RETURNi_(ret_v);
 	} else {
@@ -178,7 +180,7 @@ KMETHOD QLineEdit_cursorPositionAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 		int ret_v = qp->cursorPositionAt(pos);
 		RETURNi_(ret_v);
@@ -192,7 +194,7 @@ KMETHOD QLineEdit_cursorWordBackward(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool mark = Boolean_to(bool, sfp[1]);
 		qp->cursorWordBackward(mark);
 	}
@@ -204,7 +206,7 @@ KMETHOD QLineEdit_cursorWordForward(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool mark = Boolean_to(bool, sfp[1]);
 		qp->cursorWordForward(mark);
 	}
@@ -216,7 +218,7 @@ KMETHOD QLineEdit_del(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->del();
 	}
 	RETURNvoid_();
@@ -227,7 +229,7 @@ KMETHOD QLineEdit_deselect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->deselect();
 	}
 	RETURNvoid_();
@@ -238,7 +240,7 @@ KMETHOD QLineEdit_displayText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->displayText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -252,7 +254,7 @@ KMETHOD QLineEdit_getDragEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->dragEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -265,7 +267,7 @@ KMETHOD QLineEdit_getEchoMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLineEdit::EchoMode ret_v = qp->echoMode();
 		RETURNi_(ret_v);
 	} else {
@@ -278,7 +280,7 @@ KMETHOD QLineEdit_end(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool mark = Boolean_to(bool, sfp[1]);
 		qp->end(mark);
 	}
@@ -290,7 +292,7 @@ KMETHOD QLineEdit_getTextMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int* left = Int_to(int*, sfp[1]);
 		int* top = Int_to(int*, sfp[2]);
 		int* right = Int_to(int*, sfp[3]);
@@ -305,7 +307,7 @@ KMETHOD QLineEdit_hasAcceptableInput(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasAcceptableInput();
 		RETURNb_(ret_v);
 	} else {
@@ -318,7 +320,7 @@ KMETHOD QLineEdit_hasFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasFrame();
 		RETURNb_(ret_v);
 	} else {
@@ -331,7 +333,7 @@ KMETHOD QLineEdit_hasSelectedText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasSelectedText();
 		RETURNb_(ret_v);
 	} else {
@@ -344,7 +346,7 @@ KMETHOD QLineEdit_home(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool mark = Boolean_to(bool, sfp[1]);
 		qp->home(mark);
 	}
@@ -356,7 +358,7 @@ KMETHOD QLineEdit_getInputMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->inputMask();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -370,7 +372,7 @@ KMETHOD QLineEdit_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString new_Text = String_to(const QString, sfp[1]);
 		qp->insert(new_Text);
 	}
@@ -382,7 +384,7 @@ KMETHOD QLineEdit_isModified(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isModified();
 		RETURNb_(ret_v);
 	} else {
@@ -395,7 +397,7 @@ KMETHOD QLineEdit_isReadOnly(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isReadOnly();
 		RETURNb_(ret_v);
 	} else {
@@ -408,7 +410,7 @@ KMETHOD QLineEdit_isRedoAvailable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isRedoAvailable();
 		RETURNb_(ret_v);
 	} else {
@@ -421,7 +423,7 @@ KMETHOD QLineEdit_isUndoAvailable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isUndoAvailable();
 		RETURNb_(ret_v);
 	} else {
@@ -434,7 +436,7 @@ KMETHOD QLineEdit_getMaxLength(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->maxLength();
 		RETURNi_(ret_v);
 	} else {
@@ -447,7 +449,7 @@ KMETHOD QLineEdit_getPlaceholderText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->placeholderText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -461,7 +463,7 @@ KMETHOD QLineEdit_selectedText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->selectedText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -475,7 +477,7 @@ KMETHOD QLineEdit_selectionStart(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->selectionStart();
 		RETURNi_(ret_v);
 	} else {
@@ -483,13 +485,13 @@ KMETHOD QLineEdit_selectionStart(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QLineEdit.setAlignment(int flag);
+//void QLineEdit.setAlignment(QtAlignment flag);
 KMETHOD QLineEdit_setAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment flag = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(flag, Qt::Alignment, sfp[1]);
 		qp->setAlignment(flag);
 	}
 	RETURNvoid_();
@@ -500,7 +502,7 @@ KMETHOD QLineEdit_setCompleter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCompleter*  c = RawPtr_to(QCompleter*, sfp[1]);
 		qp->setCompleter(c);
 	}
@@ -512,7 +514,7 @@ KMETHOD QLineEdit_setCursorPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setCursorPosition(arg0);
 	}
@@ -524,7 +526,7 @@ KMETHOD QLineEdit_setDragEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool b = Boolean_to(bool, sfp[1]);
 		qp->setDragEnabled(b);
 	}
@@ -536,7 +538,7 @@ KMETHOD QLineEdit_setEchoMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLineEdit::EchoMode arg0 = Int_to(QLineEdit::EchoMode, sfp[1]);
 		qp->setEchoMode(arg0);
 	}
@@ -548,7 +550,7 @@ KMETHOD QLineEdit_setFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setFrame(arg0);
 	}
@@ -560,7 +562,7 @@ KMETHOD QLineEdit_setInputMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString inputMask = String_to(const QString, sfp[1]);
 		qp->setInputMask(inputMask);
 	}
@@ -572,7 +574,7 @@ KMETHOD QLineEdit_setMaxLength(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setMaxLength(arg0);
 	}
@@ -584,7 +586,7 @@ KMETHOD QLineEdit_setModified(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setModified(arg0);
 	}
@@ -596,7 +598,7 @@ KMETHOD QLineEdit_setPlaceholderText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString arg0 = String_to(const QString, sfp[1]);
 		qp->setPlaceholderText(arg0);
 	}
@@ -608,7 +610,7 @@ KMETHOD QLineEdit_setReadOnly(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setReadOnly(arg0);
 	}
@@ -620,7 +622,7 @@ KMETHOD QLineEdit_setSelection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int start = Int_to(int, sfp[1]);
 		int length = Int_to(int, sfp[2]);
 		qp->setSelection(start, length);
@@ -633,7 +635,7 @@ KMETHOD QLineEdit_setTextMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int left = Int_to(int, sfp[1]);
 		int top = Int_to(int, sfp[2]);
 		int right = Int_to(int, sfp[3]);
@@ -649,7 +651,7 @@ KMETHOD QLineEdit_setTextMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMargins  margins = *RawPtr_to(const QMargins *, sfp[1]);
 		qp->setTextMargins(margins);
 	}
@@ -661,7 +663,7 @@ KMETHOD QLineEdit_setValidator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QValidator*  v = RawPtr_to(const QValidator*, sfp[1]);
 		qp->setValidator(v);
 	}
@@ -673,7 +675,7 @@ KMETHOD QLineEdit_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->text();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -687,7 +689,7 @@ KMETHOD QLineEdit_textMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMargins ret_v = qp->textMargins();
 		QMargins *ret_v_ = new QMargins(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -702,7 +704,7 @@ KMETHOD QLineEdit_getValidator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QValidator* ret_v = qp->validator();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QValidator*)ret_v, NULL);
 		RETURN_(rptr);
@@ -716,7 +718,7 @@ KMETHOD QLineEdit_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -727,7 +729,7 @@ KMETHOD QLineEdit_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->copy();
 	}
 	RETURNvoid_();
@@ -738,7 +740,7 @@ KMETHOD QLineEdit_cut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->cut();
 	}
 	RETURNvoid_();
@@ -749,7 +751,7 @@ KMETHOD QLineEdit_paste(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->paste();
 	}
 	RETURNvoid_();
@@ -760,7 +762,7 @@ KMETHOD QLineEdit_redo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->redo();
 	}
 	RETURNvoid_();
@@ -771,7 +773,7 @@ KMETHOD QLineEdit_selectAll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->selectAll();
 	}
 	RETURNvoid_();
@@ -782,7 +784,7 @@ KMETHOD QLineEdit_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString arg0 = String_to(const QString, sfp[1]);
 		qp->setText(arg0);
 	}
@@ -794,7 +796,7 @@ KMETHOD QLineEdit_undo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLineEdit *  qp = RawPtr_to(QLineEdit *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->undo();
 	}
 	RETURNvoid_();
@@ -947,15 +949,35 @@ bool DummyQLineEdit::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQLineEdit::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 6;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, cursor_position_changed_func);
+	KNH_ADDNNREF(ctx, editing_finished_func);
+	KNH_ADDNNREF(ctx, return_pressed_func);
+	KNH_ADDNNREF(ctx, selection_changed_func);
+	KNH_ADDNNREF(ctx, text_changed_func);
+	KNH_ADDNNREF(ctx, text_edited_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQLineEdit::connection(QObject *o)
 {
-	connect(o, SIGNAL(cursorPositionChanged(int, int)), this, SLOT(cursorPositionChangedSlot(int, int)));
-	connect(o, SIGNAL(editingFinished()), this, SLOT(editingFinishedSlot()));
-	connect(o, SIGNAL(returnPressed()), this, SLOT(returnPressedSlot()));
-	connect(o, SIGNAL(selectionChanged()), this, SLOT(selectionChangedSlot()));
-	connect(o, SIGNAL(textChanged(const QString)), this, SLOT(textChangedSlot(const QString)));
-	connect(o, SIGNAL(textEdited(const QString)), this, SLOT(textEditedSlot(const QString)));
+	QLineEdit *p = dynamic_cast<QLineEdit*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(cursorPositionChanged(int, int)), this, SLOT(cursorPositionChangedSlot(int, int)));
+		connect(p, SIGNAL(editingFinished()), this, SLOT(editingFinishedSlot()));
+		connect(p, SIGNAL(returnPressed()), this, SLOT(returnPressedSlot()));
+		connect(p, SIGNAL(selectionChanged()), this, SLOT(selectionChangedSlot()));
+		connect(p, SIGNAL(textChanged(const QString)), this, SLOT(textChangedSlot(const QString)));
+		connect(p, SIGNAL(textEdited(const QString)), this, SLOT(textEditedSlot(const QString)));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -1018,37 +1040,9 @@ static void QLineEdit_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QLineEdit_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 6;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQLineEdit *qp = (KQLineEdit *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->cursor_position_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->cursor_position_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->editing_finished_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->editing_finished_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->return_pressed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->return_pressed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->selection_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->selection_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->text_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->text_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->text_edited_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->text_edited_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -1072,15 +1066,6 @@ bool KQLineEdit::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQLineEdit(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QLineEdit";
-	cdef->free = QLineEdit_free;
-	cdef->reftrace = QLineEdit_reftrace;
-	cdef->compareTo = QLineEdit_compareTo;
-}
-
 static knh_IntData_t QLineEditConstInt[] = {
 	{"Normal", QLineEdit::Normal},
 	{"NoEcho", QLineEdit::NoEcho},
@@ -1092,4 +1077,15 @@ static knh_IntData_t QLineEditConstInt[] = {
 DEFAPI(void) constQLineEdit(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QLineEditConstInt);
 }
+
+
+DEFAPI(void) defQLineEdit(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QLineEdit";
+	cdef->free = QLineEdit_free;
+	cdef->reftrace = QLineEdit_reftrace;
+	cdef->compareTo = QLineEdit_compareTo;
+}
+
 

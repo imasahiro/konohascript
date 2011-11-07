@@ -1,14 +1,16 @@
 //
-//int QLayoutItem.getAlignment();
+//QtAlignment QLayoutItem.getAlignment();
 KMETHOD QLayoutItem_getAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->alignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -17,7 +19,7 @@ KMETHOD QLayoutItem_controlTypes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizePolicy::ControlTypes ret_v = qp->controlTypes();
 		RETURNi_(ret_v);
 	} else {
@@ -25,16 +27,18 @@ KMETHOD QLayoutItem_controlTypes(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual int QLayoutItem.expandingDirections();
+//@Virtual QtOrientations QLayoutItem.expandingDirections();
 KMETHOD QLayoutItem_expandingDirections(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientations ret_v = qp->expandingDirections();
-		RETURNi_(ret_v);
+		Qt::Orientations *ret_v_ = new Qt::Orientations(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -43,7 +47,7 @@ KMETHOD QLayoutItem_getGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->geometry();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -58,7 +62,7 @@ KMETHOD QLayoutItem_hasHeightForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasHeightForWidth();
 		RETURNb_(ret_v);
 	} else {
@@ -71,7 +75,7 @@ KMETHOD QLayoutItem_heightForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int w = Int_to(int, sfp[1]);
 		int ret_v = qp->heightForWidth(w);
 		RETURNi_(ret_v);
@@ -85,7 +89,7 @@ KMETHOD QLayoutItem_invalidate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->invalidate();
 	}
 	RETURNvoid_();
@@ -96,7 +100,7 @@ KMETHOD QLayoutItem_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
 		RETURNb_(ret_v);
 	} else {
@@ -109,7 +113,7 @@ KMETHOD QLayoutItem_layout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayout* ret_v = qp->layout();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QLayout*)ret_v, NULL);
 		RETURN_(rptr);
@@ -123,7 +127,7 @@ KMETHOD QLayoutItem_maximumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->maximumSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -138,7 +142,7 @@ KMETHOD QLayoutItem_minimumHeightForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int w = Int_to(int, sfp[1]);
 		int ret_v = qp->minimumHeightForWidth(w);
 		RETURNi_(ret_v);
@@ -152,7 +156,7 @@ KMETHOD QLayoutItem_minimumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -162,13 +166,13 @@ KMETHOD QLayoutItem_minimumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QLayoutItem.setAlignment(int alignment);
+//void QLayoutItem.setAlignment(QtAlignment alignment);
 KMETHOD QLayoutItem_setAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(alignment, Qt::Alignment, sfp[1]);
 		qp->setAlignment(alignment);
 	}
 	RETURNvoid_();
@@ -179,7 +183,7 @@ KMETHOD QLayoutItem_setGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  r = *RawPtr_to(const QRect *, sfp[1]);
 		qp->setGeometry(r);
 	}
@@ -191,7 +195,7 @@ KMETHOD QLayoutItem_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -206,7 +210,7 @@ KMETHOD QLayoutItem_spacerItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSpacerItem* ret_v = qp->spacerItem();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QSpacerItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -220,7 +224,7 @@ KMETHOD QLayoutItem_widget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLayoutItem *  qp = RawPtr_to(QLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->widget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -229,6 +233,24 @@ KMETHOD QLayoutItem_widget(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QLayoutItem.parents();
+KMETHOD QLayoutItem_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QLayoutItem *qp = RawPtr_to(QLayoutItem*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQLayoutItem::DummyQLayoutItem()
 {
@@ -277,17 +299,28 @@ bool DummyQLayoutItem::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQLayoutItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQLayoutItem::connection(QObject *o)
 {
-	return;
+	QLayoutItem *p = dynamic_cast<QLayoutItem*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQLayoutItem::KQLayoutItem(Qt::Alignment alignment) : QLayoutItem(alignment)
 {
 	self = NULL;
 	dummy = new DummyQLayoutItem();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QLayoutItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -342,13 +375,9 @@ static void QLayoutItem_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QLayoutItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQLayoutItem *qp = (KQLayoutItem *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -362,6 +391,8 @@ void KQLayoutItem::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQLayoutItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

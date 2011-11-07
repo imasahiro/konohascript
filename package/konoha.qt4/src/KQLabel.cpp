@@ -3,7 +3,7 @@ KMETHOD QLabel_heightForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int w = Int_to(int, sfp[1]);
 		int ret_v = qp->heightForWidth(w);
 		RETURNi_(ret_v);
@@ -17,7 +17,7 @@ KMETHOD QLabel_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -32,7 +32,7 @@ KMETHOD QLabel_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -42,12 +42,12 @@ KMETHOD QLabel_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QLabel QLabel.new(QWidget parent, int f);
+//QLabel QLabel.new(QWidget parent, QtWindowFlags f);
 KMETHOD QLabel_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
-	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[2]);
+	initFlag(f, Qt::WindowFlags, sfp[2]);
 	KQLabel *ret_v = new KQLabel(parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -55,29 +55,31 @@ KMETHOD QLabel_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//QLabel QLabel.new(String text, QWidget parent, int f);
+//QLabel QLabel.new(String text, QWidget parent, QtWindowFlags f);
 KMETHOD QLabel_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	const QString text = String_to(const QString, sfp[1]);
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
-	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[3]);
+	initFlag(f, Qt::WindowFlags, sfp[3]);
 	KQLabel *ret_v = new KQLabel(text, parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
 */
-//int QLabel.getAlignment();
+//QtAlignment QLabel.getAlignment();
 KMETHOD QLabel_getAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->alignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -86,7 +88,7 @@ KMETHOD QLabel_getBuddy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->buddy();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -100,7 +102,7 @@ KMETHOD QLabel_hasScaledContents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasScaledContents();
 		RETURNb_(ret_v);
 	} else {
@@ -113,7 +115,7 @@ KMETHOD QLabel_hasSelectedText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasSelectedText();
 		RETURNb_(ret_v);
 	} else {
@@ -126,7 +128,7 @@ KMETHOD QLabel_getIndent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->indent();
 		RETURNi_(ret_v);
 	} else {
@@ -139,7 +141,7 @@ KMETHOD QLabel_getMargin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->margin();
 		RETURNi_(ret_v);
 	} else {
@@ -152,7 +154,7 @@ KMETHOD QLabel_getMovie(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMovie* ret_v = qp->movie();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMovie*)ret_v, NULL);
 		RETURN_(rptr);
@@ -166,7 +168,7 @@ KMETHOD QLabel_getOpenExternalLinks(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->openExternalLinks();
 		RETURNb_(ret_v);
 	} else {
@@ -179,7 +181,7 @@ KMETHOD QLabel_getPicture(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPicture* ret_v = qp->picture();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPicture*)ret_v, NULL);
 		RETURN_(rptr);
@@ -193,7 +195,7 @@ KMETHOD QLabel_getPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPixmap* ret_v = qp->pixmap();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPixmap*)ret_v, NULL);
 		RETURN_(rptr);
@@ -207,7 +209,7 @@ KMETHOD QLabel_selectedText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->selectedText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -221,7 +223,7 @@ KMETHOD QLabel_selectionStart(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->selectionStart();
 		RETURNi_(ret_v);
 	} else {
@@ -229,13 +231,13 @@ KMETHOD QLabel_selectionStart(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QLabel.setAlignment(int arg0);
+//void QLabel.setAlignment(QtAlignment arg0);
 KMETHOD QLabel_setAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment arg0 = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(arg0, Qt::Alignment, sfp[1]);
 		qp->setAlignment(arg0);
 	}
 	RETURNvoid_();
@@ -246,7 +248,7 @@ KMETHOD QLabel_setBuddy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  buddy = RawPtr_to(QWidget*, sfp[1]);
 		qp->setBuddy(buddy);
 	}
@@ -258,7 +260,7 @@ KMETHOD QLabel_setIndent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setIndent(arg0);
 	}
@@ -270,7 +272,7 @@ KMETHOD QLabel_setMargin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setMargin(arg0);
 	}
@@ -282,7 +284,7 @@ KMETHOD QLabel_setOpenExternalLinks(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool open = Boolean_to(bool, sfp[1]);
 		qp->setOpenExternalLinks(open);
 	}
@@ -294,7 +296,7 @@ KMETHOD QLabel_setScaledContents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setScaledContents(arg0);
 	}
@@ -306,7 +308,7 @@ KMETHOD QLabel_setSelection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int start = Int_to(int, sfp[1]);
 		int length = Int_to(int, sfp[2]);
 		qp->setSelection(start, length);
@@ -319,20 +321,20 @@ KMETHOD QLabel_setTextFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TextFormat arg0 = Int_to(Qt::TextFormat, sfp[1]);
 		qp->setTextFormat(arg0);
 	}
 	RETURNvoid_();
 }
 
-//void QLabel.setTextInteractionFlags(int flags);
+//void QLabel.setTextInteractionFlags(QtTextInteractionFlags flags);
 KMETHOD QLabel_setTextInteractionFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
-		Qt::TextInteractionFlags flags = Int_to(Qt::TextInteractionFlags, sfp[1]);
+	if (qp) {
+		initFlag(flags, Qt::TextInteractionFlags, sfp[1]);
 		qp->setTextInteractionFlags(flags);
 	}
 	RETURNvoid_();
@@ -343,7 +345,7 @@ KMETHOD QLabel_setWordWrap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool on = Boolean_to(bool, sfp[1]);
 		qp->setWordWrap(on);
 	}
@@ -355,7 +357,7 @@ KMETHOD QLabel_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->text();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -369,7 +371,7 @@ KMETHOD QLabel_getTextFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TextFormat ret_v = qp->textFormat();
 		RETURNi_(ret_v);
 	} else {
@@ -377,16 +379,18 @@ KMETHOD QLabel_getTextFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QLabel.getTextInteractionFlags();
+//QtTextInteractionFlags QLabel.getTextInteractionFlags();
 KMETHOD QLabel_getTextInteractionFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TextInteractionFlags ret_v = qp->textInteractionFlags();
-		RETURNi_(ret_v);
+		Qt::TextInteractionFlags *ret_v_ = new Qt::TextInteractionFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -395,7 +399,7 @@ KMETHOD QLabel_getWordWrap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->wordWrap();
 		RETURNb_(ret_v);
 	} else {
@@ -408,7 +412,7 @@ KMETHOD QLabel_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -419,7 +423,7 @@ KMETHOD QLabel_setMovie(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMovie*  movie = RawPtr_to(QMovie*, sfp[1]);
 		qp->setMovie(movie);
 	}
@@ -431,7 +435,7 @@ KMETHOD QLabel_setNum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int num = Int_to(int, sfp[1]);
 		qp->setNum(num);
 	}
@@ -444,7 +448,7 @@ KMETHOD QLabel_setNum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  num = *RawPtr_to(double *, sfp[1]);
 		qp->setNum(num);
 	}
@@ -456,7 +460,7 @@ KMETHOD QLabel_setPicture(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPicture  picture = *RawPtr_to(const QPicture *, sfp[1]);
 		qp->setPicture(picture);
 	}
@@ -468,7 +472,7 @@ KMETHOD QLabel_setPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPixmap  arg0 = *RawPtr_to(const QPixmap *, sfp[1]);
 		qp->setPixmap(arg0);
 	}
@@ -480,7 +484,7 @@ KMETHOD QLabel_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLabel *  qp = RawPtr_to(QLabel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString arg0 = String_to(const QString, sfp[1]);
 		qp->setText(arg0);
 	}
@@ -572,11 +576,27 @@ bool DummyQLabel::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQLabel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, link_activated_func);
+	KNH_ADDNNREF(ctx, link_hovered_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQFrame::reftrace(ctx, p, tail_);
+}
 
 void DummyQLabel::connection(QObject *o)
 {
-	connect(o, SIGNAL(linkActivated(const QString)), this, SLOT(linkActivatedSlot(const QString)));
-	connect(o, SIGNAL(linkHovered(const QString)), this, SLOT(linkHoveredSlot(const QString)));
+	QLabel *p = dynamic_cast<QLabel*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(linkActivated(const QString)), this, SLOT(linkActivatedSlot(const QString)));
+		connect(p, SIGNAL(linkHovered(const QString)), this, SLOT(linkHoveredSlot(const QString)));
+	}
 	DummyQFrame::connection(o);
 }
 
@@ -639,21 +659,9 @@ static void QLabel_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QLabel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQLabel *qp = (KQLabel *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->link_activated_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->link_activated_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->link_hovered_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->link_hovered_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -676,6 +684,8 @@ bool KQLabel::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQLabel(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -37,15 +37,26 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+class
+QString
+name
+SectionFlags
+
 typedefed_objects
 
 parent_typedefed_objects
-Null
 ConstIterator
 Iterator
-SectionFlags
 const_iterator
 iterator
+
+class_objects
+
+parent_class_objects
+Null
 
 enums
 

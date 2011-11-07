@@ -3,7 +3,7 @@ KMETHOD QTextObjectInterface_drawObject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextObjectInterface *  qp = RawPtr_to(QTextObjectInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[2]);
 		QTextDocument*  doc = RawPtr_to(QTextDocument*, sfp[3]);
@@ -19,7 +19,7 @@ KMETHOD QTextObjectInterface_intrinsicSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextObjectInterface *  qp = RawPtr_to(QTextObjectInterface *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextDocument*  doc = RawPtr_to(QTextDocument*, sfp[1]);
 		int posInDocument = Int_to(int, sfp[2]);
 		const QTextFormat  format = *RawPtr_to(const QTextFormat *, sfp[3]);
@@ -32,6 +32,24 @@ KMETHOD QTextObjectInterface_intrinsicSize(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QTextObjectInterface.parents();
+KMETHOD QTextObjectInterface_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextObjectInterface *qp = RawPtr_to(QTextObjectInterface*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextObjectInterface::DummyQTextObjectInterface()
 {
@@ -80,17 +98,22 @@ bool DummyQTextObjectInterface::signalConnect(knh_Func_t *callback_func, string 
 	}
 }
 
+void DummyQTextObjectInterface::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextObjectInterface::connection(QObject *o)
 {
-	return;
-}
-
-KQTextObjectInterface::KQTextObjectInterface() : QTextObjectInterface()
-{
-	self = NULL;
-	dummy = new DummyQTextObjectInterface();
-	dummy->connection((QObject*)this);
+	QTextObjectInterface *p = dynamic_cast<QTextObjectInterface*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QTextObjectInterface_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -145,13 +168,9 @@ static void QTextObjectInterface_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextObjectInterface_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextObjectInterface *qp = (KQTextObjectInterface *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -165,6 +184,8 @@ void KQTextObjectInterface::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQTextObjectInterface(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

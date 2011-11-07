@@ -3,7 +3,7 @@ KMETHOD QApplication_notify(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
 		QEvent*  e = RawPtr_to(QEvent*, sfp[2]);
 		bool ret_v = qp->notify(receiver, e);
@@ -19,9 +19,11 @@ KMETHOD QApplication_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int dummy = 0;
 	char **argv = (char **)malloc(1 * sizeof(char *));
 	memset(argv, 0, sizeof(char *));
-	QApplication *app = new QApplication(dummy, argv);
+//	QApplication *app = new QApplication(dummy, argv);
+	KQApplication *app = new KQApplication(dummy, argv);
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, app, NULL);
+	app->setSelf(p);
 	RETURN_(p);
 }
 
@@ -32,9 +34,11 @@ KMETHOD QApplication_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int dummy = 0;
 	char **argv = (char **)malloc(1 * sizeof(char *));
 	memset(argv, 0, sizeof(char *));
-	QApplication *app = new QApplication(dummy, argv);
+//	QApplication *app = new QApplication(dummy, argv);
+	KQApplication *app = new KQApplication(dummy, argv);
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, app, NULL);
+	app->setSelf(p);
 	RETURN_(p);
 }
 */
@@ -45,9 +49,11 @@ KMETHOD QApplication_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int dummy = 0;
 	char **argv = (char **)malloc(1 * sizeof(char *));
 	memset(argv, 0, sizeof(char *));
-	QApplication *app = new QApplication(dummy, argv);
+//	QApplication *app = new QApplication(dummy, argv);
+	KQApplication *app = new KQApplication(dummy, argv);
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, app, NULL);
+	app->setSelf(p);
 	RETURN_(p);
 }
 */
@@ -56,7 +62,7 @@ KMETHOD QApplication_getInputContext(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QInputContext* ret_v = qp->inputContext();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QInputContext*)ret_v, NULL);
 		RETURN_(rptr);
@@ -70,7 +76,7 @@ KMETHOD QApplication_isSessionRestored(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSessionRestored();
 		RETURNb_(ret_v);
 	} else {
@@ -83,7 +89,7 @@ KMETHOD QApplication_sessionId(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->sessionId();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -97,7 +103,7 @@ KMETHOD QApplication_sessionKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->sessionKey();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -111,7 +117,7 @@ KMETHOD QApplication_setInputContext(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QInputContext*  inputContext = RawPtr_to(QInputContext*, sfp[1]);
 		qp->setInputContext(inputContext);
 	}
@@ -123,7 +129,7 @@ KMETHOD QApplication_getStyleSheet(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->styleSheet();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -136,9 +142,8 @@ KMETHOD QApplication_getStyleSheet(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_activeModalWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QWidget* ret_v = qp->activeModalWidget();
+	if (true) {
+		QWidget* ret_v = QApplication::activeModalWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -150,9 +155,8 @@ KMETHOD QApplication_activeModalWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_activePopupWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QWidget* ret_v = qp->activePopupWidget();
+	if (true) {
+		QWidget* ret_v = QApplication::activePopupWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -164,9 +168,8 @@ KMETHOD QApplication_activePopupWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getActiveWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QWidget* ret_v = qp->activeWindow();
+	if (true) {
+		QWidget* ret_v = QApplication::activeWindow();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -178,11 +181,10 @@ KMETHOD QApplication_getActiveWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_alert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		int msec = Int_to(int, sfp[2]);
-		qp->alert(widget, msec);
+		QApplication::alert(widget, msec);
 	}
 	RETURNvoid_();
 }
@@ -191,9 +193,8 @@ KMETHOD QApplication_alert(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_allWidgets(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QWidgetList ret_v = qp->allWidgets();
+	if (true) {
+		QWidgetList ret_v = QApplication::allWidgets();
 		QWidgetList *ret_v_ = new QWidgetList(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -206,9 +207,8 @@ KMETHOD QApplication_allWidgets(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_beep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		qp->beep();
+	if (true) {
+		QApplication::beep();
 	}
 	RETURNvoid_();
 }
@@ -217,10 +217,9 @@ KMETHOD QApplication_beep(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_changeOverrideCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QCursor  cursor = *RawPtr_to(const QCursor *, sfp[1]);
-		qp->changeOverrideCursor(cursor);
+		QApplication::changeOverrideCursor(cursor);
 	}
 	RETURNvoid_();
 }
@@ -229,9 +228,8 @@ KMETHOD QApplication_changeOverrideCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_clipboard(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QClipboard* ret_v = qp->clipboard();
+	if (true) {
+		QClipboard* ret_v = QApplication::clipboard();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QClipboard*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -243,9 +241,8 @@ KMETHOD QApplication_clipboard(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getColorSpec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		int ret_v = qp->colorSpec();
+	if (true) {
+		int ret_v = QApplication::colorSpec();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -256,9 +253,8 @@ KMETHOD QApplication_getColorSpec(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getCursorFlashTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		int ret_v = qp->cursorFlashTime();
+	if (true) {
+		int ret_v = QApplication::cursorFlashTime();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -269,9 +265,8 @@ KMETHOD QApplication_getCursorFlashTime(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_desktop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QDesktopWidget* ret_v = qp->desktop();
+	if (true) {
+		QDesktopWidget* ret_v = QApplication::desktop();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QDesktopWidget*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -283,9 +278,8 @@ KMETHOD QApplication_desktop(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getDesktopSettingsAware(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->desktopSettingsAware();
+	if (true) {
+		bool ret_v = QApplication::desktopSettingsAware();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -296,9 +290,8 @@ KMETHOD QApplication_getDesktopSettingsAware(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getDoubleClickInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		int ret_v = qp->doubleClickInterval();
+	if (true) {
+		int ret_v = QApplication::doubleClickInterval();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -309,9 +302,8 @@ KMETHOD QApplication_getDoubleClickInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		int ret_v = qp->exec();
+	if (true) {
+		int ret_v = QApplication::exec();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -322,9 +314,8 @@ KMETHOD QApplication_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_focusWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QWidget* ret_v = qp->focusWidget();
+	if (true) {
+		QWidget* ret_v = QApplication::focusWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -336,9 +327,8 @@ KMETHOD QApplication_focusWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QFont ret_v = qp->font();
+	if (true) {
+		QFont ret_v = QApplication::font();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -352,10 +342,9 @@ KMETHOD QApplication_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[1]);
-		QFont ret_v = qp->font(widget);
+		QFont ret_v = QApplication::font(widget);
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -369,10 +358,9 @@ KMETHOD QApplication_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const char*  className = RawPtr_to(const char*, sfp[1]);
-		QFont ret_v = qp->font(className);
+		QFont ret_v = QApplication::font(className);
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -385,9 +373,8 @@ KMETHOD QApplication_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_fontMetrics(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QFontMetrics ret_v = qp->fontMetrics();
+	if (true) {
+		QFontMetrics ret_v = QApplication::fontMetrics();
 		QFontMetrics *ret_v_ = new QFontMetrics(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -400,9 +387,8 @@ KMETHOD QApplication_fontMetrics(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getGlobalStrut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QSize ret_v = qp->globalStrut();
+	if (true) {
+		QSize ret_v = QApplication::globalStrut();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -415,10 +401,9 @@ KMETHOD QApplication_getGlobalStrut(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_isEffectEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		Qt::UIEffect effect = Int_to(Qt::UIEffect, sfp[1]);
-		bool ret_v = qp->isEffectEnabled(effect);
+		bool ret_v = QApplication::isEffectEnabled(effect);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -429,9 +414,8 @@ KMETHOD QApplication_isEffectEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_isLeftToRight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isLeftToRight();
+	if (true) {
+		bool ret_v = QApplication::isLeftToRight();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -442,9 +426,8 @@ KMETHOD QApplication_isLeftToRight(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_isRightToLeft(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isRightToLeft();
+	if (true) {
+		bool ret_v = QApplication::isRightToLeft();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -455,9 +438,8 @@ KMETHOD QApplication_isRightToLeft(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_keyboardInputDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		Qt::LayoutDirection ret_v = qp->keyboardInputDirection();
+	if (true) {
+		Qt::LayoutDirection ret_v = QApplication::keyboardInputDirection();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -468,9 +450,8 @@ KMETHOD QApplication_keyboardInputDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getKeyboardInputInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		int ret_v = qp->keyboardInputInterval();
+	if (true) {
+		int ret_v = QApplication::keyboardInputInterval();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -481,9 +462,8 @@ KMETHOD QApplication_getKeyboardInputInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_keyboardInputLocale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QLocale ret_v = qp->keyboardInputLocale();
+	if (true) {
+		QLocale ret_v = QApplication::keyboardInputLocale();
 		QLocale *ret_v_ = new QLocale(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -492,16 +472,17 @@ KMETHOD QApplication_keyboardInputLocale(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QApplication.keyboardModifiers();
+//QtKeyboardModifiers QApplication.keyboardModifiers();
 KMETHOD QApplication_keyboardModifiers(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		Qt::KeyboardModifiers ret_v = qp->keyboardModifiers();
-		RETURNi_(ret_v);
+	if (true) {
+		Qt::KeyboardModifiers ret_v = QApplication::keyboardModifiers();
+		Qt::KeyboardModifiers *ret_v_ = new Qt::KeyboardModifiers(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -509,25 +490,25 @@ KMETHOD QApplication_keyboardModifiers(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getLayoutDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		Qt::LayoutDirection ret_v = qp->layoutDirection();
+	if (true) {
+		Qt::LayoutDirection ret_v = QApplication::layoutDirection();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
 	}
 }
 
-//int QApplication.mouseButtons();
+//QtMouseButtons QApplication.mouseButtons();
 KMETHOD QApplication_mouseButtons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		Qt::MouseButtons ret_v = qp->mouseButtons();
-		RETURNi_(ret_v);
+	if (true) {
+		Qt::MouseButtons ret_v = QApplication::mouseButtons();
+		Qt::MouseButtons *ret_v_ = new Qt::MouseButtons(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -535,9 +516,8 @@ KMETHOD QApplication_mouseButtons(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getOverrideCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QCursor* ret_v = qp->overrideCursor();
+	if (true) {
+		QCursor* ret_v = QApplication::overrideCursor();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QCursor*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -549,9 +529,8 @@ KMETHOD QApplication_getOverrideCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QPalette ret_v = qp->palette();
+	if (true) {
+		QPalette ret_v = QApplication::palette();
 		QPalette *ret_v_ = new QPalette(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -565,10 +544,9 @@ KMETHOD QApplication_getPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[1]);
-		QPalette ret_v = qp->palette(widget);
+		QPalette ret_v = QApplication::palette(widget);
 		QPalette *ret_v_ = new QPalette(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -582,10 +560,9 @@ KMETHOD QApplication_getPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const char*  className = RawPtr_to(const char*, sfp[1]);
-		QPalette ret_v = qp->palette(className);
+		QPalette ret_v = QApplication::palette(className);
 		QPalette *ret_v_ = new QPalette(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -598,9 +575,8 @@ KMETHOD QApplication_getPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getQuitOnLastWindowClosed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->quitOnLastWindowClosed();
+	if (true) {
+		bool ret_v = QApplication::quitOnLastWindowClosed();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -611,9 +587,8 @@ KMETHOD QApplication_getQuitOnLastWindowClosed(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_restoreOverrideCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		qp->restoreOverrideCursor();
+	if (true) {
+		QApplication::restoreOverrideCursor();
 	}
 	RETURNvoid_();
 }
@@ -622,10 +597,9 @@ KMETHOD QApplication_restoreOverrideCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setActiveWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QWidget*  active = RawPtr_to(QWidget*, sfp[1]);
-		qp->setActiveWindow(active);
+		QApplication::setActiveWindow(active);
 	}
 	RETURNvoid_();
 }
@@ -634,10 +608,9 @@ KMETHOD QApplication_setActiveWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setColorSpec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int spec = Int_to(int, sfp[1]);
-		qp->setColorSpec(spec);
+		QApplication::setColorSpec(spec);
 	}
 	RETURNvoid_();
 }
@@ -646,10 +619,9 @@ KMETHOD QApplication_setColorSpec(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setCursorFlashTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int arg0 = Int_to(int, sfp[1]);
-		qp->setCursorFlashTime(arg0);
+		QApplication::setCursorFlashTime(arg0);
 	}
 	RETURNvoid_();
 }
@@ -658,10 +630,9 @@ KMETHOD QApplication_setCursorFlashTime(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setDesktopSettingsAware(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		bool on = Boolean_to(bool, sfp[1]);
-		qp->setDesktopSettingsAware(on);
+		QApplication::setDesktopSettingsAware(on);
 	}
 	RETURNvoid_();
 }
@@ -670,10 +641,9 @@ KMETHOD QApplication_setDesktopSettingsAware(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setDoubleClickInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int arg0 = Int_to(int, sfp[1]);
-		qp->setDoubleClickInterval(arg0);
+		QApplication::setDoubleClickInterval(arg0);
 	}
 	RETURNvoid_();
 }
@@ -682,11 +652,10 @@ KMETHOD QApplication_setDoubleClickInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setEffectEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		Qt::UIEffect effect = Int_to(Qt::UIEffect, sfp[1]);
 		bool enable = Boolean_to(bool, sfp[2]);
-		qp->setEffectEnabled(effect, enable);
+		QApplication::setEffectEnabled(effect, enable);
 	}
 	RETURNvoid_();
 }
@@ -695,11 +664,10 @@ KMETHOD QApplication_setEffectEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QFont  font = *RawPtr_to(const QFont *, sfp[1]);
 		const char*  className = RawPtr_to(const char*, sfp[2]);
-		qp->setFont(font, className);
+		QApplication::setFont(font, className);
 	}
 	RETURNvoid_();
 }
@@ -708,10 +676,9 @@ KMETHOD QApplication_setFont(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setGlobalStrut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QSize  arg0 = *RawPtr_to(const QSize *, sfp[1]);
-		qp->setGlobalStrut(arg0);
+		QApplication::setGlobalStrut(arg0);
 	}
 	RETURNvoid_();
 }
@@ -720,10 +687,9 @@ KMETHOD QApplication_setGlobalStrut(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setGraphicsSystem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString system = String_to(const QString, sfp[1]);
-		qp->setGraphicsSystem(system);
+		QApplication::setGraphicsSystem(system);
 	}
 	RETURNvoid_();
 }
@@ -732,10 +698,9 @@ KMETHOD QApplication_setGraphicsSystem(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setKeyboardInputInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int arg0 = Int_to(int, sfp[1]);
-		qp->setKeyboardInputInterval(arg0);
+		QApplication::setKeyboardInputInterval(arg0);
 	}
 	RETURNvoid_();
 }
@@ -744,10 +709,9 @@ KMETHOD QApplication_setKeyboardInputInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setLayoutDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		Qt::LayoutDirection direction = Int_to(Qt::LayoutDirection, sfp[1]);
-		qp->setLayoutDirection(direction);
+		QApplication::setLayoutDirection(direction);
 	}
 	RETURNvoid_();
 }
@@ -756,10 +720,9 @@ KMETHOD QApplication_setLayoutDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setOverrideCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QCursor  cursor = *RawPtr_to(const QCursor *, sfp[1]);
-		qp->setOverrideCursor(cursor);
+		QApplication::setOverrideCursor(cursor);
 	}
 	RETURNvoid_();
 }
@@ -768,11 +731,10 @@ KMETHOD QApplication_setOverrideCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QPalette  palette = *RawPtr_to(const QPalette *, sfp[1]);
 		const char*  className = RawPtr_to(const char*, sfp[2]);
-		qp->setPalette(palette, className);
+		QApplication::setPalette(palette, className);
 	}
 	RETURNvoid_();
 }
@@ -781,10 +743,9 @@ KMETHOD QApplication_setPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setQuitOnLastWindowClosed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		bool quit = Boolean_to(bool, sfp[1]);
-		qp->setQuitOnLastWindowClosed(quit);
+		QApplication::setQuitOnLastWindowClosed(quit);
 	}
 	RETURNvoid_();
 }
@@ -793,10 +754,9 @@ KMETHOD QApplication_setQuitOnLastWindowClosed(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setStartDragDistance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int l = Int_to(int, sfp[1]);
-		qp->setStartDragDistance(l);
+		QApplication::setStartDragDistance(l);
 	}
 	RETURNvoid_();
 }
@@ -805,10 +765,9 @@ KMETHOD QApplication_setStartDragDistance(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setStartDragTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int ms = Int_to(int, sfp[1]);
-		qp->setStartDragTime(ms);
+		QApplication::setStartDragTime(ms);
 	}
 	RETURNvoid_();
 }
@@ -817,10 +776,9 @@ KMETHOD QApplication_setStartDragTime(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QStyle*  style = RawPtr_to(QStyle*, sfp[1]);
-		qp->setStyle(style);
+		QApplication::setStyle(style);
 	}
 	RETURNvoid_();
 }
@@ -830,10 +788,9 @@ KMETHOD QApplication_setStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString style = String_to(const QString, sfp[1]);
-		QStyle* ret_v = qp->setStyle(style);
+		QStyle* ret_v = QApplication::setStyle(style);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStyle*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -845,10 +802,9 @@ KMETHOD QApplication_setStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setWheelScrollLines(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int arg0 = Int_to(int, sfp[1]);
-		qp->setWheelScrollLines(arg0);
+		QApplication::setWheelScrollLines(arg0);
 	}
 	RETURNvoid_();
 }
@@ -857,10 +813,9 @@ KMETHOD QApplication_setWheelScrollLines(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_setWindowIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[1]);
-		qp->setWindowIcon(icon);
+		QApplication::setWindowIcon(icon);
 	}
 	RETURNvoid_();
 }
@@ -869,9 +824,8 @@ KMETHOD QApplication_setWindowIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getStartDragDistance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		int ret_v = qp->startDragDistance();
+	if (true) {
+		int ret_v = QApplication::startDragDistance();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -882,9 +836,8 @@ KMETHOD QApplication_getStartDragDistance(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getStartDragTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		int ret_v = qp->startDragTime();
+	if (true) {
+		int ret_v = QApplication::startDragTime();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -895,9 +848,8 @@ KMETHOD QApplication_getStartDragTime(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QStyle* ret_v = qp->style();
+	if (true) {
+		QStyle* ret_v = QApplication::style();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStyle*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -909,9 +861,8 @@ KMETHOD QApplication_getStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_syncX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		qp->syncX();
+	if (true) {
+		QApplication::syncX();
 	}
 	RETURNvoid_();
 }
@@ -920,10 +871,9 @@ KMETHOD QApplication_syncX(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_topLevelAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
-		QWidget* ret_v = qp->topLevelAt(point);
+		QWidget* ret_v = QApplication::topLevelAt(point);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -936,11 +886,10 @@ KMETHOD QApplication_topLevelAt(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_topLevelAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
-		QWidget* ret_v = qp->topLevelAt(x, y);
+		QWidget* ret_v = QApplication::topLevelAt(x, y);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -952,9 +901,8 @@ KMETHOD QApplication_topLevelAt(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_topLevelWidgets(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QWidgetList ret_v = qp->topLevelWidgets();
+	if (true) {
+		QWidgetList ret_v = QApplication::topLevelWidgets();
 		QWidgetList *ret_v_ = new QWidgetList(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -967,9 +915,8 @@ KMETHOD QApplication_topLevelWidgets(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QApplication::Type ret_v = qp->type();
+	if (true) {
+		QApplication::Type ret_v = QApplication::type();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -980,9 +927,8 @@ KMETHOD QApplication_type(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getWheelScrollLines(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		int ret_v = qp->wheelScrollLines();
+	if (true) {
+		int ret_v = QApplication::wheelScrollLines();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -993,10 +939,9 @@ KMETHOD QApplication_getWheelScrollLines(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_widgetAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
-		QWidget* ret_v = qp->widgetAt(point);
+		QWidget* ret_v = QApplication::widgetAt(point);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -1009,11 +954,10 @@ KMETHOD QApplication_widgetAt(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_widgetAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
-		QWidget* ret_v = qp->widgetAt(x, y);
+		QWidget* ret_v = QApplication::widgetAt(x, y);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -1025,9 +969,8 @@ KMETHOD QApplication_widgetAt(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QApplication_getWindowIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
-		QIcon ret_v = qp->windowIcon();
+	if (true) {
+		QIcon ret_v = QApplication::windowIcon();
 		QIcon *ret_v_ = new QIcon(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1041,7 +984,7 @@ KMETHOD QApplication_aboutQt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->aboutQt();
 	}
 	RETURNvoid_();
@@ -1052,7 +995,7 @@ KMETHOD QApplication_getAutoSipEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->autoSipEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -1065,7 +1008,7 @@ KMETHOD QApplication_closeAllWindows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->closeAllWindows();
 	}
 	RETURNvoid_();
@@ -1076,7 +1019,7 @@ KMETHOD QApplication_setAutoSipEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const bool enabled = Boolean_to(const bool, sfp[1]);
 		qp->setAutoSipEnabled(enabled);
 	}
@@ -1088,7 +1031,7 @@ KMETHOD QApplication_setStyleSheet(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QApplication *  qp = RawPtr_to(QApplication *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString sheet = String_to(const QString, sfp[1]);
 		qp->setStyleSheet(sheet);
 	}
@@ -1195,12 +1138,29 @@ bool DummyQApplication::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQApplication::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 3;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, focus_changed_func);
+	KNH_ADDNNREF(ctx, font_database_changed_func);
+	KNH_ADDNNREF(ctx, last_window_closed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQCoreApplication::reftrace(ctx, p, tail_);
+}
 
 void DummyQApplication::connection(QObject *o)
 {
-	connect(o, SIGNAL(focusChanged(QWidget*, QWidget*)), this, SLOT(focusChangedSlot(QWidget*, QWidget*)));
-	connect(o, SIGNAL(fontDatabaseChanged()), this, SLOT(fontDatabaseChangedSlot()));
-	connect(o, SIGNAL(lastWindowClosed()), this, SLOT(lastWindowClosedSlot()));
+	QApplication *p = dynamic_cast<QApplication*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(focusChanged(QWidget*, QWidget*)), this, SLOT(focusChangedSlot(QWidget*, QWidget*)));
+		connect(p, SIGNAL(fontDatabaseChanged()), this, SLOT(fontDatabaseChangedSlot()));
+		connect(p, SIGNAL(lastWindowClosed()), this, SLOT(lastWindowClosedSlot()));
+	}
 	DummyQCoreApplication::connection(o);
 }
 
@@ -1263,25 +1223,9 @@ static void QApplication_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QApplication_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 3;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQApplication *qp = (KQApplication *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->focus_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->focus_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->font_database_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->font_database_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->last_window_closed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->last_window_closed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -1305,15 +1249,6 @@ bool KQApplication::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQApplication(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QApplication";
-	cdef->free = QApplication_free;
-	cdef->reftrace = QApplication_reftrace;
-	cdef->compareTo = QApplication_compareTo;
-}
-
 static knh_IntData_t QApplicationConstInt[] = {
 	{"NormalColor", QApplication::NormalColor},
 	{"CustomColor", QApplication::CustomColor},
@@ -1327,4 +1262,15 @@ static knh_IntData_t QApplicationConstInt[] = {
 DEFAPI(void) constQApplication(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QApplicationConstInt);
 }
+
+
+DEFAPI(void) defQApplication(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QApplication";
+	cdef->free = QApplication_free;
+	cdef->reftrace = QApplication_reftrace;
+	cdef->compareTo = QApplication_compareTo;
+}
+
 

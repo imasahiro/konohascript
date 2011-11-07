@@ -55,11 +55,25 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+class
+QStyle
+name
+State
+class
+QStyle
+name
+SubControls
+
 typedefed_objects
 
 parent_typedefed_objects
-State
-SubControls
+
+class_objects
+
+parent_class_objects
 
 enums
 

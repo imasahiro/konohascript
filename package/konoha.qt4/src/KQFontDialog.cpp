@@ -3,7 +3,7 @@ KMETHOD QFontDialog_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDialog *  qp = RawPtr_to(QFontDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setVisible(visible);
 	}
@@ -39,7 +39,7 @@ KMETHOD QFontDialog_getCurrentFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDialog *  qp = RawPtr_to(QFontDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont ret_v = qp->currentFont();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -54,7 +54,7 @@ KMETHOD QFontDialog_openOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDialog *  qp = RawPtr_to(QFontDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
 		const char*  member = RawPtr_to(const char*, sfp[2]);
 		qp->open(receiver, member);
@@ -62,16 +62,18 @@ KMETHOD QFontDialog_openOL(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//int QFontDialog.getOptions();
+//QFontDialogFontDialogOptions QFontDialog.getOptions();
 KMETHOD QFontDialog_getOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDialog *  qp = RawPtr_to(QFontDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFontDialog::FontDialogOptions ret_v = qp->options();
-		RETURNi_(ret_v);
+		QFontDialog::FontDialogOptions *ret_v_ = new QFontDialog::FontDialogOptions(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -80,7 +82,7 @@ KMETHOD QFontDialog_selectedFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDialog *  qp = RawPtr_to(QFontDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont ret_v = qp->selectedFont();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -95,7 +97,7 @@ KMETHOD QFontDialog_setCurrentFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDialog *  qp = RawPtr_to(QFontDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont  font = *RawPtr_to(const QFont *, sfp[1]);
 		qp->setCurrentFont(font);
 	}
@@ -107,7 +109,7 @@ KMETHOD QFontDialog_setOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDialog *  qp = RawPtr_to(QFontDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFontDialog::FontDialogOption option = Int_to(QFontDialog::FontDialogOption, sfp[1]);
 		bool on = Boolean_to(bool, sfp[2]);
 		qp->setOption(option, on);
@@ -115,13 +117,13 @@ KMETHOD QFontDialog_setOption(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//void QFontDialog.setOptions(int options);
+//void QFontDialog.setOptions(QFontDialogFontDialogOptions options);
 KMETHOD QFontDialog_setOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDialog *  qp = RawPtr_to(QFontDialog *, sfp[0]);
-	if (qp != NULL) {
-		QFontDialog::FontDialogOptions options = Int_to(QFontDialog::FontDialogOptions, sfp[1]);
+	if (qp) {
+		initFlag(options, QFontDialog::FontDialogOptions, sfp[1]);
 		qp->setOptions(options);
 	}
 	RETURNvoid_();
@@ -132,7 +134,7 @@ KMETHOD QFontDialog_testOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDialog *  qp = RawPtr_to(QFontDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFontDialog::FontDialogOption option = Int_to(QFontDialog::FontDialogOption, sfp[1]);
 		bool ret_v = qp->testOption(option);
 		RETURNb_(ret_v);
@@ -141,18 +143,17 @@ KMETHOD QFontDialog_testOption(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QFont QFontDialog.getFontOL(boolean ok, QFont initial, QWidget parent, String title, int options);
+//QFont QFontDialog.getFontOL(boolean ok, QFont initial, QWidget parent, String title, QFontDialogFontDialogOptions options);
 KMETHOD QFontDialog_getFontOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QFontDialog *  qp = RawPtr_to(QFontDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		const QFont  initial = *RawPtr_to(const QFont *, sfp[2]);
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[3]);
 		const QString title = String_to(const QString, sfp[4]);
-		QFontDialog::FontDialogOptions options = Int_to(QFontDialog::FontDialogOptions, sfp[5]);
-		QFont ret_v = qp->getFont(ok, initial, parent, title, options);
+		initFlag(options, QFontDialog::FontDialogOptions, sfp[5]);
+		QFont ret_v = QFontDialog::getFont(ok, initial, parent, title, options);
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -166,13 +167,12 @@ KMETHOD QFontDialog_getFontOL(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QFontDialog_getFontOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QFontDialog *  qp = RawPtr_to(QFontDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		const QFont  initial = *RawPtr_to(const QFont *, sfp[2]);
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[3]);
 		const char*  name = RawPtr_to(const char*, sfp[4]);
-		QFont ret_v = qp->getFont(ok, initial, parent, name);
+		QFont ret_v = QFontDialog::getFont(ok, initial, parent, name);
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -186,12 +186,11 @@ KMETHOD QFontDialog_getFontOL(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QFontDialog_getFontOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QFontDialog *  qp = RawPtr_to(QFontDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 		const char*  name = RawPtr_to(const char*, sfp[3]);
-		QFont ret_v = qp->getFont(ok, parent, name);
+		QFont ret_v = QFontDialog::getFont(ok, parent, name);
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -205,13 +204,12 @@ KMETHOD QFontDialog_getFontOL(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QFontDialog_getFontOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QFontDialog *  qp = RawPtr_to(QFontDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		const QFont  initial = *RawPtr_to(const QFont *, sfp[2]);
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[3]);
 		const QString title = String_to(const QString, sfp[4]);
-		QFont ret_v = qp->getFont(ok, initial, parent, title);
+		QFont ret_v = QFontDialog::getFont(ok, initial, parent, title);
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -225,12 +223,11 @@ KMETHOD QFontDialog_getFontOL(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QFontDialog_getFontOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QFontDialog *  qp = RawPtr_to(QFontDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		const QFont  initial = *RawPtr_to(const QFont *, sfp[2]);
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[3]);
-		QFont ret_v = qp->getFont(ok, initial, parent);
+		QFont ret_v = QFontDialog::getFont(ok, initial, parent);
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -244,11 +241,10 @@ KMETHOD QFontDialog_getFontOL(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QFontDialog_getFontOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QFontDialog *  qp = RawPtr_to(QFontDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
-		QFont ret_v = qp->getFont(ok, parent);
+		QFont ret_v = QFontDialog::getFont(ok, parent);
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -342,11 +338,27 @@ bool DummyQFontDialog::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQFontDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, current_font_changed_func);
+	KNH_ADDNNREF(ctx, font_selected_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQDialog::reftrace(ctx, p, tail_);
+}
 
 void DummyQFontDialog::connection(QObject *o)
 {
-	connect(o, SIGNAL(currentFontChanged(const QFont)), this, SLOT(currentFontChangedSlot(const QFont)));
-	connect(o, SIGNAL(fontSelected(const QFont)), this, SLOT(fontSelectedSlot(const QFont)));
+	QFontDialog *p = dynamic_cast<QFontDialog*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(currentFontChanged(const QFont)), this, SLOT(currentFontChangedSlot(const QFont)));
+		connect(p, SIGNAL(fontSelected(const QFont)), this, SLOT(fontSelectedSlot(const QFont)));
+	}
 	DummyQDialog::connection(o);
 }
 
@@ -409,21 +421,9 @@ static void QFontDialog_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QFontDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQFontDialog *qp = (KQFontDialog *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->current_font_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->current_font_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->font_selected_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->font_selected_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -447,6 +447,17 @@ bool KQFontDialog::event(QEvent *event)
 	return true;
 }
 
+static knh_IntData_t QFontDialogConstInt[] = {
+	{"NoButtons", QFontDialog::NoButtons},
+	{"DontUseNativeDialog", QFontDialog::DontUseNativeDialog},
+	{NULL, 0}
+};
+
+DEFAPI(void) constQFontDialog(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
+	kapi->loadClassIntConst(ctx, cid, QFontDialogConstInt);
+}
+
+
 DEFAPI(void) defQFontDialog(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	(void)ctx; (void) cid;
@@ -456,13 +467,167 @@ DEFAPI(void) defQFontDialog(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->compareTo = QFontDialog_compareTo;
 }
 
-static knh_IntData_t QFontDialogConstInt[] = {
-	{"NoButtons", QFontDialog::NoButtons},
-	{"DontUseNativeDialog", QFontDialog::DontUseNativeDialog},
-	{NULL, 0}
-};
+//## QFontDialogFontDialogOptions QFontDialogFontDialogOptions.new(int value);
+KMETHOD QFontDialogFontDialogOptions_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QFontDialog::FontDialogOption i = Int_to(QFontDialog::FontDialogOption, sfp[1]);
+	QFontDialog::FontDialogOptions *ret_v = new QFontDialog::FontDialogOptions(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
 
-DEFAPI(void) constQFontDialog(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
-	kapi->loadClassIntConst(ctx, cid, QFontDialogConstInt);
+//## QFontDialogFontDialogOptions QFontDialogFontDialogOptions.and(int mask);
+KMETHOD QFontDialogFontDialogOptions_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QFontDialog::FontDialogOptions *qp = RawPtr_to(QFontDialog::FontDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QFontDialog::FontDialogOptions ret = ((*qp) & i);
+		QFontDialog::FontDialogOptions *ret_ = new QFontDialog::FontDialogOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QFontDialogFontDialogOptions QFontDialogFontDialogOptions.iand(QFontDialog::QFontDialogFontDialogOptions other);
+KMETHOD QFontDialogFontDialogOptions_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QFontDialog::FontDialogOptions *qp = RawPtr_to(QFontDialog::FontDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QFontDialog::FontDialogOptions *other = RawPtr_to(QFontDialog::FontDialogOptions *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QFontDialogFontDialogOptions QFontDialogFontDialogOptions.or(QFontDialogFontDialogOptions f);
+KMETHOD QFontDialogFontDialogOptions_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QFontDialog::FontDialogOptions *qp = RawPtr_to(QFontDialog::FontDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QFontDialog::FontDialogOptions *f = RawPtr_to(QFontDialog::FontDialogOptions*, sfp[1]);
+		QFontDialog::FontDialogOptions ret = ((*qp) | (*f));
+		QFontDialog::FontDialogOptions *ret_ = new QFontDialog::FontDialogOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QFontDialogFontDialogOptions QFontDialogFontDialogOptions.ior(QFontDialog::QFontDialogFontDialogOptions other);
+KMETHOD QFontDialogFontDialogOptions_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QFontDialog::FontDialogOptions *qp = RawPtr_to(QFontDialog::FontDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QFontDialog::FontDialogOptions *other = RawPtr_to(QFontDialog::FontDialogOptions *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QFontDialogFontDialogOptions QFontDialogFontDialogOptions.xor(QFontDialogFontDialogOptions f);
+KMETHOD QFontDialogFontDialogOptions_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QFontDialog::FontDialogOptions *qp = RawPtr_to(QFontDialog::FontDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QFontDialog::FontDialogOptions *f = RawPtr_to(QFontDialog::FontDialogOptions*, sfp[1]);
+		QFontDialog::FontDialogOptions ret = ((*qp) ^ (*f));
+		QFontDialog::FontDialogOptions *ret_ = new QFontDialog::FontDialogOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QFontDialogFontDialogOptions QFontDialogFontDialogOptions.ixor(QFontDialog::QFontDialogFontDialogOptions other);
+KMETHOD QFontDialogFontDialogOptions_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QFontDialog::FontDialogOptions *qp = RawPtr_to(QFontDialog::FontDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QFontDialog::FontDialogOptions *other = RawPtr_to(QFontDialog::FontDialogOptions *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QFontDialogFontDialogOptions.testFlag(int flag);
+KMETHOD QFontDialogFontDialogOptions_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QFontDialog::FontDialogOptions *qp = RawPtr_to(QFontDialog::FontDialogOptions *, sfp[0]);
+	if (qp != NULL) {
+		QFontDialog::FontDialogOption flag = Int_to(QFontDialog::FontDialogOption, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QFontDialogFontDialogOptions.value();
+KMETHOD QFontDialogFontDialogOptions_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QFontDialog::FontDialogOptions *qp = RawPtr_to(QFontDialog::FontDialogOptions *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QFontDialogFontDialogOptions_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QFontDialog::FontDialogOptions *qp = (QFontDialog::FontDialogOptions *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QFontDialogFontDialogOptions_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QFontDialog::FontDialogOptions *qp = (QFontDialog::FontDialogOptions *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QFontDialogFontDialogOptions_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QFontDialog::FontDialogOptions*)p1->rawptr);
+//		int v2 = int(*(QFontDialog::FontDialogOptions*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QFontDialog::FontDialogOptions v1 = *(QFontDialog::FontDialogOptions*)p1->rawptr;
+		QFontDialog::FontDialogOptions v2 = *(QFontDialog::FontDialogOptions*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQFontDialogFontDialogOptions(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QFontDialogFontDialogOptions";
+	cdef->free = QFontDialogFontDialogOptions_free;
+	cdef->reftrace = QFontDialogFontDialogOptions_reftrace;
+	cdef->compareTo = QFontDialogFontDialogOptions_compareTo;
 }
 

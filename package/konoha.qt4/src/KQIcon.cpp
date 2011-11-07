@@ -73,7 +73,7 @@ KMETHOD QIcon_actualSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  size = *RawPtr_to(const QSize *, sfp[1]);
 		QIcon::Mode mode = Int_to(QIcon::Mode, sfp[2]);
 		QIcon::State state = Int_to(QIcon::State, sfp[3]);
@@ -91,7 +91,7 @@ KMETHOD QIcon_addFile(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
 		const QSize  size = *RawPtr_to(const QSize *, sfp[2]);
 		QIcon::Mode mode = Int_to(QIcon::Mode, sfp[3]);
@@ -106,7 +106,7 @@ KMETHOD QIcon_addPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[1]);
 		QIcon::Mode mode = Int_to(QIcon::Mode, sfp[2]);
 		QIcon::State state = Int_to(QIcon::State, sfp[3]);
@@ -120,10 +120,10 @@ KMETHOD QIcon_availableSizes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIcon::Mode mode = Int_to(QIcon::Mode, sfp[1]);
 		QIcon::State state = Int_to(QIcon::State, sfp[2]);
-		QList<QSize>ret_v = qp->availableSizes(mode, state);
+		QList<QSize> ret_v = qp->availableSizes(mode, state);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QSize"));
@@ -144,7 +144,7 @@ KMETHOD QIcon_cacheKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->cacheKey();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -154,25 +154,12 @@ KMETHOD QIcon_cacheKey(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////boolean QIcon.isNull();
-KMETHOD QIcon_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
 //String QIcon.name();
 KMETHOD QIcon_name(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->name();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -181,15 +168,15 @@ KMETHOD QIcon_name(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QIcon.paint(QPainter painter, QRect rect, int alignment, int mode, int state);
+//void QIcon.paint(QPainter painter, QRect rect, QtAlignment alignment, int mode, int state);
 KMETHOD QIcon_paint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[2]);
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[3]);
+		initFlag(alignment, Qt::Alignment, sfp[3]);
 		QIcon::Mode mode = Int_to(QIcon::Mode, sfp[4]);
 		QIcon::State state = Int_to(QIcon::State, sfp[5]);
 		qp->paint(painter, rect, alignment, mode, state);
@@ -198,18 +185,18 @@ KMETHOD QIcon_paint(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//void QIcon.paint(QPainter painter, int x, int y, int w, int h, int alignment, int mode, int state);
+//void QIcon.paint(QPainter painter, int x, int y, int w, int h, QtAlignment alignment, int mode, int state);
 KMETHOD QIcon_paint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		int x = Int_to(int, sfp[2]);
 		int y = Int_to(int, sfp[3]);
 		int w = Int_to(int, sfp[4]);
 		int h = Int_to(int, sfp[5]);
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[6]);
+		initFlag(alignment, Qt::Alignment, sfp[6]);
 		QIcon::Mode mode = Int_to(QIcon::Mode, sfp[7]);
 		QIcon::State state = Int_to(QIcon::State, sfp[8]);
 		qp->paint(painter, x, y, w, h, alignment, mode, state);
@@ -222,7 +209,7 @@ KMETHOD QIcon_pixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  size = *RawPtr_to(const QSize *, sfp[1]);
 		QIcon::Mode mode = Int_to(QIcon::Mode, sfp[2]);
 		QIcon::State state = Int_to(QIcon::State, sfp[3]);
@@ -241,7 +228,7 @@ KMETHOD QIcon_pixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int w = Int_to(int, sfp[1]);
 		int h = Int_to(int, sfp[2]);
 		QIcon::Mode mode = Int_to(QIcon::Mode, sfp[3]);
@@ -261,7 +248,7 @@ KMETHOD QIcon_pixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int extent = Int_to(int, sfp[1]);
 		QIcon::Mode mode = Int_to(QIcon::Mode, sfp[2]);
 		QIcon::State state = Int_to(QIcon::State, sfp[3]);
@@ -278,11 +265,10 @@ KMETHOD QIcon_pixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QIcon_fromTheme(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString name = String_to(const QString, sfp[1]);
 		const QIcon  fallback = *RawPtr_to(const QIcon *, sfp[2]);
-		QIcon ret_v = qp->fromTheme(name, fallback);
+		QIcon ret_v = QIcon::fromTheme(name, fallback);
 		QIcon *ret_v_ = new QIcon(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -295,10 +281,9 @@ KMETHOD QIcon_fromTheme(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QIcon_hasThemeIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString name = String_to(const QString, sfp[1]);
-		bool ret_v = qp->hasThemeIcon(name);
+		bool ret_v = QIcon::hasThemeIcon(name);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -309,10 +294,9 @@ KMETHOD QIcon_hasThemeIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QIcon_setThemeName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString name = String_to(const QString, sfp[1]);
-		qp->setThemeName(name);
+		QIcon::setThemeName(name);
 	}
 	RETURNvoid_();
 }
@@ -321,9 +305,8 @@ KMETHOD QIcon_setThemeName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QIcon_getThemeName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QIcon *  qp = RawPtr_to(QIcon *, sfp[0]);
-	if (qp != NULL) {
-		QString ret_v = qp->themeName();
+	if (true) {
+		QString ret_v = QIcon::themeName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -331,6 +314,24 @@ KMETHOD QIcon_getThemeName(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QIcon.parents();
+KMETHOD QIcon_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QIcon *qp = RawPtr_to(QIcon*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQIcon::DummyQIcon()
 {
@@ -379,17 +380,28 @@ bool DummyQIcon::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQIcon::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQIcon::connection(QObject *o)
 {
-	return;
+	QIcon *p = dynamic_cast<QIcon*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQIcon::KQIcon() : QIcon()
 {
 	self = NULL;
 	dummy = new DummyQIcon();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QIcon_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -444,13 +456,9 @@ static void QIcon_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QIcon_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQIcon *qp = (KQIcon *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -463,15 +471,6 @@ void KQIcon::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQIcon(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QIcon";
-	cdef->free = QIcon_free;
-	cdef->reftrace = QIcon_reftrace;
-	cdef->compareTo = QIcon_compareTo;
 }
 
 static knh_IntData_t QIconConstInt[] = {
@@ -487,4 +486,15 @@ static knh_IntData_t QIconConstInt[] = {
 DEFAPI(void) constQIcon(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QIconConstInt);
 }
+
+
+DEFAPI(void) defQIcon(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QIcon";
+	cdef->free = QIcon_free;
+	cdef->reftrace = QIcon_reftrace;
+	cdef->compareTo = QIcon_compareTo;
+}
+
 

@@ -14,7 +14,7 @@ KMETHOD QStatusBar_addPermanentWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStatusBar *  qp = RawPtr_to(QStatusBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		int stretch = Int_to(int, sfp[2]);
 		qp->addPermanentWidget(widget, stretch);
@@ -27,7 +27,7 @@ KMETHOD QStatusBar_addWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStatusBar *  qp = RawPtr_to(QStatusBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		int stretch = Int_to(int, sfp[2]);
 		qp->addWidget(widget, stretch);
@@ -40,7 +40,7 @@ KMETHOD QStatusBar_currentMessage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStatusBar *  qp = RawPtr_to(QStatusBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->currentMessage();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -54,7 +54,7 @@ KMETHOD QStatusBar_insertPermanentWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStatusBar *  qp = RawPtr_to(QStatusBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[2]);
 		int stretch = Int_to(int, sfp[3]);
@@ -70,7 +70,7 @@ KMETHOD QStatusBar_insertWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStatusBar *  qp = RawPtr_to(QStatusBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[2]);
 		int stretch = Int_to(int, sfp[3]);
@@ -86,7 +86,7 @@ KMETHOD QStatusBar_isSizeGripEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStatusBar *  qp = RawPtr_to(QStatusBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSizeGripEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -99,7 +99,7 @@ KMETHOD QStatusBar_removeWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStatusBar *  qp = RawPtr_to(QStatusBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->removeWidget(widget);
 	}
@@ -111,7 +111,7 @@ KMETHOD QStatusBar_setSizeGripEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStatusBar *  qp = RawPtr_to(QStatusBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setSizeGripEnabled(arg0);
 	}
@@ -123,7 +123,7 @@ KMETHOD QStatusBar_clearMessage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStatusBar *  qp = RawPtr_to(QStatusBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearMessage();
 	}
 	RETURNvoid_();
@@ -134,7 +134,7 @@ KMETHOD QStatusBar_showMessage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStatusBar *  qp = RawPtr_to(QStatusBar *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString message = String_to(const QString, sfp[1]);
 		int timeout = Int_to(int, sfp[2]);
 		qp->showMessage(message, timeout);
@@ -210,10 +210,25 @@ bool DummyQStatusBar::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQStatusBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, message_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQStatusBar::connection(QObject *o)
 {
-	connect(o, SIGNAL(messageChanged(const QString)), this, SLOT(messageChangedSlot(const QString)));
+	QStatusBar *p = dynamic_cast<QStatusBar*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(messageChanged(const QString)), this, SLOT(messageChangedSlot(const QString)));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -276,17 +291,9 @@ static void QStatusBar_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStatusBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStatusBar *qp = (KQStatusBar *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->message_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->message_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -309,6 +316,8 @@ bool KQStatusBar::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQStatusBar(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

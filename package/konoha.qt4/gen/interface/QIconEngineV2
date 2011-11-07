@@ -41,15 +41,23 @@ templateClass
 false
 
 abstractClass
-true
+false
 
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+
 typedefed_objects
-AvailableSizesArgument
 
 parent_typedefed_objects
+
+class_objects
+AvailableSizesArgument
+
+parent_class_objects
 
 enums
 class_name

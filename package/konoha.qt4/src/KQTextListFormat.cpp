@@ -13,24 +13,11 @@ KMETHOD QTextListFormat_getIndent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextListFormat *  qp = RawPtr_to(QTextListFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->indent();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
-	}
-}
-
-////boolean QTextListFormat.isValid();
-KMETHOD QTextListFormat_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextListFormat *  qp = RawPtr_to(QTextListFormat *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
 	}
 }
 
@@ -39,7 +26,7 @@ KMETHOD QTextListFormat_setIndent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextListFormat *  qp = RawPtr_to(QTextListFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int indentation = Int_to(int, sfp[1]);
 		qp->setIndent(indentation);
 	}
@@ -51,7 +38,7 @@ KMETHOD QTextListFormat_setStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextListFormat *  qp = RawPtr_to(QTextListFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextListFormat::Style style = Int_to(QTextListFormat::Style, sfp[1]);
 		qp->setStyle(style);
 	}
@@ -63,7 +50,7 @@ KMETHOD QTextListFormat_getStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextListFormat *  qp = RawPtr_to(QTextListFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextListFormat::Style ret_v = qp->style();
 		RETURNi_(ret_v);
 	} else {
@@ -122,9 +109,23 @@ bool DummyQTextListFormat::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextListFormat::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQTextFormat::reftrace(ctx, p, tail_);
+}
 
 void DummyQTextListFormat::connection(QObject *o)
 {
+	QTextListFormat *p = dynamic_cast<QTextListFormat*>(o);
+	if (p != NULL) {
+	}
 	DummyQTextFormat::connection(o);
 }
 
@@ -132,7 +133,6 @@ KQTextListFormat::KQTextListFormat() : QTextListFormat()
 {
 	self = NULL;
 	dummy = new DummyQTextListFormat();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextListFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -187,13 +187,9 @@ static void QTextListFormat_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextListFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextListFormat *qp = (KQTextListFormat *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -206,15 +202,6 @@ void KQTextListFormat::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQTextListFormat(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTextListFormat";
-	cdef->free = QTextListFormat_free;
-	cdef->reftrace = QTextListFormat_reftrace;
-	cdef->compareTo = QTextListFormat_compareTo;
 }
 
 static knh_IntData_t QTextListFormatConstInt[] = {
@@ -232,4 +219,15 @@ static knh_IntData_t QTextListFormatConstInt[] = {
 DEFAPI(void) constQTextListFormat(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTextListFormatConstInt);
 }
+
+
+DEFAPI(void) defQTextListFormat(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextListFormat";
+	cdef->free = QTextListFormat_free;
+	cdef->reftrace = QTextListFormat_reftrace;
+	cdef->compareTo = QTextListFormat_compareTo;
+}
+
 

@@ -28,7 +28,7 @@ KMETHOD QSignalTransition_getSenderObject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSignalTransition *  qp = RawPtr_to(QSignalTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject* ret_v = qp->senderObject();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QObject*)ret_v, NULL);
 		RETURN_(rptr);
@@ -42,7 +42,7 @@ KMETHOD QSignalTransition_setSenderObject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSignalTransition *  qp = RawPtr_to(QSignalTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  sender = RawPtr_to(QObject*, sfp[1]);
 		qp->setSenderObject(sender);
 	}
@@ -54,7 +54,7 @@ KMETHOD QSignalTransition_setSignal(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSignalTransition *  qp = RawPtr_to(QSignalTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  signal = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->setSignal(signal);
 	}
@@ -66,7 +66,7 @@ KMETHOD QSignalTransition_getSignal(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSignalTransition *  qp = RawPtr_to(QSignalTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->signal();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -127,9 +127,23 @@ bool DummyQSignalTransition::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
+void DummyQSignalTransition::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractTransition::reftrace(ctx, p, tail_);
+}
 
 void DummyQSignalTransition::connection(QObject *o)
 {
+	QSignalTransition *p = dynamic_cast<QSignalTransition*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractTransition::connection(o);
 }
 
@@ -192,13 +206,9 @@ static void QSignalTransition_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSignalTransition_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSignalTransition *qp = (KQSignalTransition *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -221,6 +231,8 @@ bool KQSignalTransition::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQSignalTransition(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -9,27 +9,12 @@ KMETHOD QTextBlock_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 
-//int QTextBlock.begin();
-KMETHOD QTextBlock_begin(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
-		QTextBlock::iterator ret_v = qp->begin();
-		QTextBlock::iterator *ret_v_ = new QTextBlock::iterator(ret_v);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-
 //QTextBlockFormat QTextBlock.blockFormat();
 KMETHOD QTextBlock_blockFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextBlockFormat ret_v = qp->blockFormat();
 		QTextBlockFormat *ret_v_ = new QTextBlockFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -44,7 +29,7 @@ KMETHOD QTextBlock_blockFormatIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->blockFormatIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -57,7 +42,7 @@ KMETHOD QTextBlock_blockNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->blockNumber();
 		RETURNi_(ret_v);
 	} else {
@@ -70,7 +55,7 @@ KMETHOD QTextBlock_charFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCharFormat ret_v = qp->charFormat();
 		QTextCharFormat *ret_v_ = new QTextCharFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -85,7 +70,7 @@ KMETHOD QTextBlock_charFormatIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->charFormatIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -98,7 +83,7 @@ KMETHOD QTextBlock_clearLayout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearLayout();
 	}
 	RETURNvoid_();
@@ -109,7 +94,7 @@ KMETHOD QTextBlock_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int position = Int_to(int, sfp[1]);
 		bool ret_v = qp->contains(position);
 		RETURNb_(ret_v);
@@ -123,24 +108,9 @@ KMETHOD QTextBlock_document(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextDocument* ret_v = qp->document();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextDocument*)ret_v, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-
-//int QTextBlock.end();
-KMETHOD QTextBlock_end(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
-		QTextBlock::iterator ret_v = qp->end();
-		QTextBlock::iterator *ret_v_ = new QTextBlock::iterator(ret_v);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
 	} else {
 		RETURN_(KNH_NULL);
@@ -152,24 +122,11 @@ KMETHOD QTextBlock_firstLineNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->firstLineNumber();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
-	}
-}
-
-////boolean QTextBlock.isValid();
-KMETHOD QTextBlock_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
 	}
 }
 
@@ -178,7 +135,7 @@ KMETHOD QTextBlock_isVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isVisible();
 		RETURNb_(ret_v);
 	} else {
@@ -191,7 +148,7 @@ KMETHOD QTextBlock_layout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextLayout* ret_v = qp->layout();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextLayout*)ret_v, NULL);
 		RETURN_(rptr);
@@ -205,7 +162,7 @@ KMETHOD QTextBlock_length(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->length();
 		RETURNi_(ret_v);
 	} else {
@@ -218,7 +175,7 @@ KMETHOD QTextBlock_getLineCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->lineCount();
 		RETURNi_(ret_v);
 	} else {
@@ -231,7 +188,7 @@ KMETHOD QTextBlock_next(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextBlock ret_v = qp->next();
 		QTextBlock *ret_v_ = new QTextBlock(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -246,7 +203,7 @@ KMETHOD QTextBlock_position(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->position();
 		RETURNi_(ret_v);
 	} else {
@@ -259,7 +216,7 @@ KMETHOD QTextBlock_previous(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextBlock ret_v = qp->previous();
 		QTextBlock *ret_v_ = new QTextBlock(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -274,7 +231,7 @@ KMETHOD QTextBlock_getRevision(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->revision();
 		RETURNi_(ret_v);
 	} else {
@@ -287,7 +244,7 @@ KMETHOD QTextBlock_setLineCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int count = Int_to(int, sfp[1]);
 		qp->setLineCount(count);
 	}
@@ -299,7 +256,7 @@ KMETHOD QTextBlock_setRevision(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int rev = Int_to(int, sfp[1]);
 		qp->setRevision(rev);
 	}
@@ -311,7 +268,7 @@ KMETHOD QTextBlock_setUserData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextBlockUserData*  data = RawPtr_to(QTextBlockUserData*, sfp[1]);
 		qp->setUserData(data);
 	}
@@ -323,7 +280,7 @@ KMETHOD QTextBlock_setUserState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int state = Int_to(int, sfp[1]);
 		qp->setUserState(state);
 	}
@@ -335,7 +292,7 @@ KMETHOD QTextBlock_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setVisible(visible);
 	}
@@ -347,7 +304,7 @@ KMETHOD QTextBlock_text(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->text();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -361,7 +318,7 @@ KMETHOD QTextBlock_textDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::LayoutDirection ret_v = qp->textDirection();
 		RETURNi_(ret_v);
 	} else {
@@ -374,7 +331,7 @@ KMETHOD QTextBlock_textList(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextList* ret_v = qp->textList();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextList*)ret_v, NULL);
 		RETURN_(rptr);
@@ -388,7 +345,7 @@ KMETHOD QTextBlock_getUserData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextBlockUserData* ret_v = qp->userData();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextBlockUserData*)ret_v, NULL);
 		RETURN_(rptr);
@@ -402,7 +359,7 @@ KMETHOD QTextBlock_getUserState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextBlock *  qp = RawPtr_to(QTextBlock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->userState();
 		RETURNi_(ret_v);
 	} else {
@@ -410,6 +367,24 @@ KMETHOD QTextBlock_getUserState(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QTextBlock.parents();
+KMETHOD QTextBlock_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextBlock *qp = RawPtr_to(QTextBlock*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextBlock::DummyQTextBlock()
 {
@@ -458,17 +433,28 @@ bool DummyQTextBlock::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextBlock::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextBlock::connection(QObject *o)
 {
-	return;
+	QTextBlock *p = dynamic_cast<QTextBlock*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTextBlock::KQTextBlock(const QTextBlock other) : QTextBlock(other)
 {
 	self = NULL;
 	dummy = new DummyQTextBlock();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextBlock_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -523,13 +509,9 @@ static void QTextBlock_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextBlock_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextBlock *qp = (KQTextBlock *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -543,6 +525,8 @@ void KQTextBlock::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQTextBlock(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

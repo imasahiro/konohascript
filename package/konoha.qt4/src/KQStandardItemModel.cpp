@@ -3,7 +3,7 @@ KMETHOD QStandardItemModel_getColumnCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int ret_v = qp->columnCount(parent);
 		RETURNi_(ret_v);
@@ -17,7 +17,7 @@ KMETHOD QStandardItemModel_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int role = Int_to(int, sfp[2]);
 		QVariant ret_v = qp->data(index, role);
@@ -34,7 +34,7 @@ KMETHOD QStandardItemModel_dropMimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMimeData*  data = RawPtr_to(const QMimeData*, sfp[1]);
 		Qt::DropAction action = Int_to(Qt::DropAction, sfp[2]);
 		int row = Int_to(int, sfp[3]);
@@ -47,17 +47,19 @@ KMETHOD QStandardItemModel_dropMimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual @Override int QStandardItemModel.flags(QModelIndex index);
+//@Virtual @Override QtItemFlags QStandardItemModel.flags(QModelIndex index);
 KMETHOD QStandardItemModel_flags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		Qt::ItemFlags ret_v = qp->flags(index);
-		RETURNi_(ret_v);
+		Qt::ItemFlags *ret_v_ = new Qt::ItemFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -66,7 +68,7 @@ KMETHOD QStandardItemModel_hasChildren(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		bool ret_v = qp->hasChildren(parent);
 		RETURNb_(ret_v);
@@ -80,7 +82,7 @@ KMETHOD QStandardItemModel_getHeaderData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int section = Int_to(int, sfp[1]);
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[2]);
 		int role = Int_to(int, sfp[3]);
@@ -98,7 +100,7 @@ KMETHOD QStandardItemModel_index(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -111,12 +113,12 @@ KMETHOD QStandardItemModel_index(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////@Virtual @Override boolean QStandardItemModel.insertColumns(int column, int count, QModelIndex parent);
+//@Virtual @Override boolean QStandardItemModel.insertColumns(int column, int count, QModelIndex parent);
 KMETHOD QStandardItemModel_insertColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -127,12 +129,12 @@ KMETHOD QStandardItemModel_insertColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////@Virtual @Override boolean QStandardItemModel.insertRows(int row, int count, QModelIndex parent);
+//@Virtual @Override boolean QStandardItemModel.insertRows(int row, int count, QModelIndex parent);
 KMETHOD QStandardItemModel_insertRows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -148,7 +150,7 @@ KMETHOD QStandardItemModel_mimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndexList  indexes = *RawPtr_to(const QModelIndexList *, sfp[1]);
 		QMimeData* ret_v = qp->mimeData(indexes);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMimeData*)ret_v, NULL);
@@ -163,7 +165,7 @@ KMETHOD QStandardItemModel_parent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  child = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QModelIndex ret_v = qp->parent(child);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -179,7 +181,7 @@ KMETHOD QStandardItemModel_removeColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -195,7 +197,7 @@ KMETHOD QStandardItemModel_removeRows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -211,7 +213,7 @@ KMETHOD QStandardItemModel_getRowCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int ret_v = qp->rowCount(parent);
 		RETURNi_(ret_v);
@@ -225,7 +227,7 @@ KMETHOD QStandardItemModel_setData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[2]);
 		int role = Int_to(int, sfp[3]);
@@ -241,7 +243,7 @@ KMETHOD QStandardItemModel_setHeaderData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int section = Int_to(int, sfp[1]);
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[2]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[3]);
@@ -258,7 +260,7 @@ KMETHOD QStandardItemModel_sort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[2]);
 		qp->sort(column, order);
@@ -266,16 +268,18 @@ KMETHOD QStandardItemModel_sort(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//@Virtual @Override int QStandardItemModel.supportedDropActions();
+//@Virtual @Override QtDropActions QStandardItemModel.supportedDropActions();
 KMETHOD QStandardItemModel_supportedDropActions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DropActions ret_v = qp->supportedDropActions();
-		RETURNi_(ret_v);
+		Qt::DropActions *ret_v_ = new Qt::DropActions(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -309,7 +313,7 @@ KMETHOD QStandardItemModel_appendColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<QStandardItem*> items;
@@ -327,7 +331,7 @@ KMETHOD QStandardItemModel_appendRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<QStandardItem*> items;
@@ -346,7 +350,7 @@ KMETHOD QStandardItemModel_appendRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStandardItem*  item = RawPtr_to(QStandardItem*, sfp[1]);
 		qp->appendRow(item);
 	}
@@ -358,22 +362,22 @@ KMETHOD QStandardItemModel_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
 }
 
-//Array<QStandardItem> QStandardItemModel.findItems(String text, int flags, int column);
+//Array<QStandardItem> QStandardItemModel.findItems(String text, QtMatchFlags flags, int column);
 KMETHOD QStandardItemModel_findItems(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
-		Qt::MatchFlags flags = Int_to(Qt::MatchFlags, sfp[2]);
+		initFlag(flags, Qt::MatchFlags, sfp[2]);
 		int column = Int_to(int, sfp[3]);
-		QList<QStandardItem*>ret_v = qp->findItems(text, flags, column);
+		QList<QStandardItem*> ret_v = qp->findItems(text, flags, column);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QStandardItem"));
@@ -393,7 +397,7 @@ KMETHOD QStandardItemModel_getHorizontalHeaderItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		QStandardItem* ret_v = qp->horizontalHeaderItem(column);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStandardItem*)ret_v, NULL);
@@ -408,7 +412,7 @@ KMETHOD QStandardItemModel_indexFromItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QStandardItem*  item = RawPtr_to(const QStandardItem*, sfp[1]);
 		QModelIndex ret_v = qp->indexFromItem(item);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -419,96 +423,12 @@ KMETHOD QStandardItemModel_indexFromItem(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////void QStandardItemModel.insertColumn(int column, Array<QStandardItem> items);
-KMETHOD QStandardItemModel_insertColumn(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
-		int column = Int_to(int, sfp[1]);
-		knh_Array_t *a = sfp[2].a;
-		int asize = knh_Array_size(a);
-		QList<QStandardItem*> items;
-		for (int n = 0; n < asize; n++) {
-			knh_RawPtr_t *p = (knh_RawPtr_t*)(a->list[n]);
-			items.append((QStandardItem*)p->rawptr);
-		}
-		qp->insertColumn(column, items);
-	}
-	RETURNvoid_();
-}
-
-/*
-////boolean QStandardItemModel.insertColumn(int column, QModelIndex parent);
-KMETHOD QStandardItemModel_insertColumn(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
-		int column = Int_to(int, sfp[1]);
-		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[2]);
-		bool ret_v = qp->insertColumn(column, parent);
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-*/
-////void QStandardItemModel.insertRow(int row, Array<QStandardItem> items);
-KMETHOD QStandardItemModel_insertRow(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
-		int row = Int_to(int, sfp[1]);
-		knh_Array_t *a = sfp[2].a;
-		int asize = knh_Array_size(a);
-		QList<QStandardItem*> items;
-		for (int n = 0; n < asize; n++) {
-			knh_RawPtr_t *p = (knh_RawPtr_t*)(a->list[n]);
-			items.append((QStandardItem*)p->rawptr);
-		}
-		qp->insertRow(row, items);
-	}
-	RETURNvoid_();
-}
-
-/*
-////boolean QStandardItemModel.insertRow(int row, QModelIndex parent);
-KMETHOD QStandardItemModel_insertRow(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
-		int row = Int_to(int, sfp[1]);
-		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[2]);
-		bool ret_v = qp->insertRow(row, parent);
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-*/
-/*
-////void QStandardItemModel.insertRow(int row, QStandardItem item);
-KMETHOD QStandardItemModel_insertRow(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
-		int row = Int_to(int, sfp[1]);
-		QStandardItem*  item = RawPtr_to(QStandardItem*, sfp[2]);
-		qp->insertRow(row, item);
-	}
-	RETURNvoid_();
-}
-*/
 //QStandardItem QStandardItemModel.invisibleRootItem();
 KMETHOD QStandardItemModel_invisibleRootItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStandardItem* ret_v = qp->invisibleRootItem();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStandardItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -522,7 +442,7 @@ KMETHOD QStandardItemModel_getItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		QStandardItem* ret_v = qp->item(row, column);
@@ -538,7 +458,7 @@ KMETHOD QStandardItemModel_itemFromIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QStandardItem* ret_v = qp->itemFromIndex(index);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStandardItem*)ret_v, NULL);
@@ -553,7 +473,7 @@ KMETHOD QStandardItemModel_getItemPrototype(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QStandardItem* ret_v = qp->itemPrototype();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStandardItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -567,7 +487,7 @@ KMETHOD QStandardItemModel_setColumnCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int columns = Int_to(int, sfp[1]);
 		qp->setColumnCount(columns);
 	}
@@ -579,7 +499,7 @@ KMETHOD QStandardItemModel_setHorizontalHeaderItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		QStandardItem*  item = RawPtr_to(QStandardItem*, sfp[2]);
 		qp->setHorizontalHeaderItem(column, item);
@@ -592,7 +512,7 @@ KMETHOD QStandardItemModel_setItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		QStandardItem*  item = RawPtr_to(QStandardItem*, sfp[3]);
@@ -607,7 +527,7 @@ KMETHOD QStandardItemModel_setItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		QStandardItem*  item = RawPtr_to(QStandardItem*, sfp[2]);
 		qp->setItem(row, item);
@@ -620,7 +540,7 @@ KMETHOD QStandardItemModel_setItemPrototype(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QStandardItem*  item = RawPtr_to(const QStandardItem*, sfp[1]);
 		qp->setItemPrototype(item);
 	}
@@ -632,7 +552,7 @@ KMETHOD QStandardItemModel_setRowCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int rows = Int_to(int, sfp[1]);
 		qp->setRowCount(rows);
 	}
@@ -644,7 +564,7 @@ KMETHOD QStandardItemModel_setSortRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int role = Int_to(int, sfp[1]);
 		qp->setSortRole(role);
 	}
@@ -656,7 +576,7 @@ KMETHOD QStandardItemModel_setVerticalHeaderItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		QStandardItem*  item = RawPtr_to(QStandardItem*, sfp[2]);
 		qp->setVerticalHeaderItem(row, item);
@@ -669,7 +589,7 @@ KMETHOD QStandardItemModel_getSortRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->sortRole();
 		RETURNi_(ret_v);
 	} else {
@@ -682,9 +602,9 @@ KMETHOD QStandardItemModel_takeColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
-		QList<QStandardItem*>ret_v = qp->takeColumn(column);
+		QList<QStandardItem*> ret_v = qp->takeColumn(column);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QStandardItem"));
@@ -704,7 +624,7 @@ KMETHOD QStandardItemModel_takeHorizontalHeaderItem(CTX ctx, knh_sfp_t *sfp _RIX
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		QStandardItem* ret_v = qp->takeHorizontalHeaderItem(column);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStandardItem*)ret_v, NULL);
@@ -719,7 +639,7 @@ KMETHOD QStandardItemModel_takeItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		QStandardItem* ret_v = qp->takeItem(row, column);
@@ -735,9 +655,9 @@ KMETHOD QStandardItemModel_takeRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
-		QList<QStandardItem*>ret_v = qp->takeRow(row);
+		QList<QStandardItem*> ret_v = qp->takeRow(row);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QStandardItem"));
@@ -757,7 +677,7 @@ KMETHOD QStandardItemModel_takeVerticalHeaderItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		QStandardItem* ret_v = qp->takeVerticalHeaderItem(row);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStandardItem*)ret_v, NULL);
@@ -772,7 +692,7 @@ KMETHOD QStandardItemModel_getVerticalHeaderItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStandardItemModel *  qp = RawPtr_to(QStandardItemModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		QStandardItem* ret_v = qp->verticalHeaderItem(row);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStandardItem*)ret_v, NULL);
@@ -850,10 +770,25 @@ bool DummyQStandardItemModel::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
+void DummyQStandardItemModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, item_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractItemModel::reftrace(ctx, p, tail_);
+}
 
 void DummyQStandardItemModel::connection(QObject *o)
 {
-	connect(o, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(itemChangedSlot(QStandardItem*)));
+	QStandardItemModel *p = dynamic_cast<QStandardItemModel*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(itemChangedSlot(QStandardItem*)));
+	}
 	DummyQAbstractItemModel::connection(o);
 }
 
@@ -916,17 +851,9 @@ static void QStandardItemModel_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStandardItemModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStandardItemModel *qp = (KQStandardItemModel *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->item_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->item_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -949,6 +876,8 @@ bool KQStandardItemModel::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQStandardItemModel(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

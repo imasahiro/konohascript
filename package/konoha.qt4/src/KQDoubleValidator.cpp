@@ -3,7 +3,7 @@ KMETHOD QDoubleValidator_validate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleValidator *  qp = RawPtr_to(QDoubleValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString input = String_to(QString, sfp[1]);
 		int pos = Int_to(int, sfp[2]);
 		QValidator::State ret_v = qp->validate(input, pos);
@@ -44,7 +44,7 @@ KMETHOD QDoubleValidator_getBottom(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleValidator *  qp = RawPtr_to(QDoubleValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double ret_v = qp->bottom();
 		double *ret_v_ = new double(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -59,7 +59,7 @@ KMETHOD QDoubleValidator_getDecimals(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleValidator *  qp = RawPtr_to(QDoubleValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->decimals();
 		RETURNi_(ret_v);
 	} else {
@@ -72,7 +72,7 @@ KMETHOD QDoubleValidator_getNotation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleValidator *  qp = RawPtr_to(QDoubleValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDoubleValidator::Notation ret_v = qp->notation();
 		RETURNi_(ret_v);
 	} else {
@@ -85,7 +85,7 @@ KMETHOD QDoubleValidator_setBottom(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleValidator *  qp = RawPtr_to(QDoubleValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  arg0 = *RawPtr_to(double *, sfp[1]);
 		qp->setBottom(arg0);
 	}
@@ -97,7 +97,7 @@ KMETHOD QDoubleValidator_setDecimals(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleValidator *  qp = RawPtr_to(QDoubleValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setDecimals(arg0);
 	}
@@ -109,7 +109,7 @@ KMETHOD QDoubleValidator_setNotation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleValidator *  qp = RawPtr_to(QDoubleValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDoubleValidator::Notation arg0 = Int_to(QDoubleValidator::Notation, sfp[1]);
 		qp->setNotation(arg0);
 	}
@@ -121,7 +121,7 @@ KMETHOD QDoubleValidator_setRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleValidator *  qp = RawPtr_to(QDoubleValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  minimum = *RawPtr_to(double *, sfp[1]);
 		double  maximum = *RawPtr_to(double *, sfp[2]);
 		int decimals = Int_to(int, sfp[3]);
@@ -130,24 +130,24 @@ KMETHOD QDoubleValidator_setRange(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//void QDoubleValidator.settop(double arg0);
+//void QDoubleValidator.setTop(double arg0);
 KMETHOD QDoubleValidator_setTop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleValidator *  qp = RawPtr_to(QDoubleValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  arg0 = *RawPtr_to(double *, sfp[1]);
 		qp->setTop(arg0);
 	}
 	RETURNvoid_();
 }
 
-//double QDoubleValidator.gettop();
+//double QDoubleValidator.getTop();
 KMETHOD QDoubleValidator_getTop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDoubleValidator *  qp = RawPtr_to(QDoubleValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double ret_v = qp->top();
 		double *ret_v_ = new double(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -208,9 +208,23 @@ bool DummyQDoubleValidator::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDoubleValidator::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQValidator::reftrace(ctx, p, tail_);
+}
 
 void DummyQDoubleValidator::connection(QObject *o)
 {
+	QDoubleValidator *p = dynamic_cast<QDoubleValidator*>(o);
+	if (p != NULL) {
+	}
 	DummyQValidator::connection(o);
 }
 
@@ -273,13 +287,9 @@ static void QDoubleValidator_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDoubleValidator_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDoubleValidator *qp = (KQDoubleValidator *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -303,15 +313,6 @@ bool KQDoubleValidator::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQDoubleValidator(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QDoubleValidator";
-	cdef->free = QDoubleValidator_free;
-	cdef->reftrace = QDoubleValidator_reftrace;
-	cdef->compareTo = QDoubleValidator_compareTo;
-}
-
 static knh_IntData_t QDoubleValidatorConstInt[] = {
 	{"StandardNotation", QDoubleValidator::StandardNotation},
 	{"ScientificNotation", QDoubleValidator::ScientificNotation},
@@ -321,4 +322,15 @@ static knh_IntData_t QDoubleValidatorConstInt[] = {
 DEFAPI(void) constQDoubleValidator(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QDoubleValidatorConstInt);
 }
+
+
+DEFAPI(void) defQDoubleValidator(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QDoubleValidator";
+	cdef->free = QDoubleValidator_free;
+	cdef->reftrace = QDoubleValidator_reftrace;
+	cdef->compareTo = QDoubleValidator_compareTo;
+}
+
 

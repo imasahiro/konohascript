@@ -3,7 +3,7 @@ KMETHOD QComboBox_event(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEvent*  event = RawPtr_to(QEvent*, sfp[1]);
 		bool ret_v = qp->event(event);
 		RETURNb_(ret_v);
@@ -17,7 +17,7 @@ KMETHOD QComboBox_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -32,7 +32,7 @@ KMETHOD QComboBox_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -58,7 +58,7 @@ KMETHOD QComboBox_addItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		const QVariant  userData = *RawPtr_to(const QVariant *, sfp[2]);
 		qp->addItem(text, userData);
@@ -72,7 +72,7 @@ KMETHOD QComboBox_addItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		const QVariant  userData = *RawPtr_to(const QVariant *, sfp[3]);
@@ -86,7 +86,7 @@ KMETHOD QComboBox_getCompleter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCompleter* ret_v = qp->completer();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QCompleter*)ret_v, NULL);
 		RETURN_(rptr);
@@ -100,7 +100,7 @@ KMETHOD QComboBox_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->count();
 		RETURNi_(ret_v);
 	} else {
@@ -113,7 +113,7 @@ KMETHOD QComboBox_getCurrentIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->currentIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -126,7 +126,7 @@ KMETHOD QComboBox_currentText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->currentText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -140,7 +140,7 @@ KMETHOD QComboBox_getDuplicatesEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->duplicatesEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -148,15 +148,15 @@ KMETHOD QComboBox_getDuplicatesEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QComboBox.findData(QVariant data, int role, int flags);
+//int QComboBox.findData(QVariant data, int role, QtMatchFlags flags);
 KMETHOD QComboBox_findData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QVariant  data = *RawPtr_to(const QVariant *, sfp[1]);
 		int role = Int_to(int, sfp[2]);
-		Qt::MatchFlags flags = Int_to(Qt::MatchFlags, sfp[3]);
+		initFlag(flags, Qt::MatchFlags, sfp[3]);
 		int ret_v = qp->findData(data, role, flags);
 		RETURNi_(ret_v);
 	} else {
@@ -164,14 +164,14 @@ KMETHOD QComboBox_findData(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QComboBox.findText(String text, int flags);
+//int QComboBox.findText(String text, QtMatchFlags flags);
 KMETHOD QComboBox_findText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
-		Qt::MatchFlags flags = Int_to(Qt::MatchFlags, sfp[2]);
+		initFlag(flags, Qt::MatchFlags, sfp[2]);
 		int ret_v = qp->findText(text, flags);
 		RETURNi_(ret_v);
 	} else {
@@ -184,7 +184,7 @@ KMETHOD QComboBox_hasFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasFrame();
 		RETURNb_(ret_v);
 	} else {
@@ -197,7 +197,7 @@ KMETHOD QComboBox_hidePopup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->hidePopup();
 	}
 	RETURNvoid_();
@@ -208,7 +208,7 @@ KMETHOD QComboBox_getIconSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->iconSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -223,7 +223,7 @@ KMETHOD QComboBox_insertItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		const QVariant  userData = *RawPtr_to(const QVariant *, sfp[3]);
@@ -238,7 +238,7 @@ KMETHOD QComboBox_insertItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
@@ -253,7 +253,7 @@ KMETHOD QComboBox_getInsertPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QComboBox::InsertPolicy ret_v = qp->insertPolicy();
 		RETURNi_(ret_v);
 	} else {
@@ -266,7 +266,7 @@ KMETHOD QComboBox_insertSeparator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		qp->insertSeparator(index);
 	}
@@ -278,7 +278,7 @@ KMETHOD QComboBox_isEditable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEditable();
 		RETURNb_(ret_v);
 	} else {
@@ -291,7 +291,7 @@ KMETHOD QComboBox_getItemData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		int role = Int_to(int, sfp[2]);
 		QVariant ret_v = qp->itemData(index, role);
@@ -308,7 +308,7 @@ KMETHOD QComboBox_getItemDelegate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemDelegate* ret_v = qp->itemDelegate();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractItemDelegate*)ret_v, NULL);
 		RETURN_(rptr);
@@ -322,7 +322,7 @@ KMETHOD QComboBox_getItemIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QIcon ret_v = qp->itemIcon(index);
 		QIcon *ret_v_ = new QIcon(ret_v);
@@ -338,7 +338,7 @@ KMETHOD QComboBox_getItemText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QString ret_v = qp->itemText(index);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -353,7 +353,7 @@ KMETHOD QComboBox_getLineEdit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLineEdit* ret_v = qp->lineEdit();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QLineEdit*)ret_v, NULL);
 		RETURN_(rptr);
@@ -367,7 +367,7 @@ KMETHOD QComboBox_getMaxCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->maxCount();
 		RETURNi_(ret_v);
 	} else {
@@ -380,7 +380,7 @@ KMETHOD QComboBox_getMaxVisibleItems(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->maxVisibleItems();
 		RETURNi_(ret_v);
 	} else {
@@ -393,7 +393,7 @@ KMETHOD QComboBox_getMinimumContentsLength(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->minimumContentsLength();
 		RETURNi_(ret_v);
 	} else {
@@ -406,7 +406,7 @@ KMETHOD QComboBox_getModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel* ret_v = qp->model();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractItemModel*)ret_v, NULL);
 		RETURN_(rptr);
@@ -420,7 +420,7 @@ KMETHOD QComboBox_getModelColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->modelColumn();
 		RETURNi_(ret_v);
 	} else {
@@ -433,7 +433,7 @@ KMETHOD QComboBox_removeItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		qp->removeItem(index);
 	}
@@ -445,7 +445,7 @@ KMETHOD QComboBox_getRootModelIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QModelIndex ret_v = qp->rootModelIndex();
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -460,7 +460,7 @@ KMETHOD QComboBox_setCompleter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCompleter*  completer = RawPtr_to(QCompleter*, sfp[1]);
 		qp->setCompleter(completer);
 	}
@@ -472,7 +472,7 @@ KMETHOD QComboBox_setDuplicatesEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setDuplicatesEnabled(enable);
 	}
@@ -484,7 +484,7 @@ KMETHOD QComboBox_setEditable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool editable = Boolean_to(bool, sfp[1]);
 		qp->setEditable(editable);
 	}
@@ -496,7 +496,7 @@ KMETHOD QComboBox_setFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setFrame(arg0);
 	}
@@ -508,7 +508,7 @@ KMETHOD QComboBox_setIconSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  size = *RawPtr_to(const QSize *, sfp[1]);
 		qp->setIconSize(size);
 	}
@@ -520,7 +520,7 @@ KMETHOD QComboBox_setInsertPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QComboBox::InsertPolicy policy = Int_to(QComboBox::InsertPolicy, sfp[1]);
 		qp->setInsertPolicy(policy);
 	}
@@ -532,7 +532,7 @@ KMETHOD QComboBox_setItemData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[2]);
 		int role = Int_to(int, sfp[3]);
@@ -546,7 +546,7 @@ KMETHOD QComboBox_setItemDelegate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemDelegate*  delegate = RawPtr_to(QAbstractItemDelegate*, sfp[1]);
 		qp->setItemDelegate(delegate);
 	}
@@ -558,7 +558,7 @@ KMETHOD QComboBox_setItemIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[2]);
 		qp->setItemIcon(index, icon);
@@ -571,7 +571,7 @@ KMETHOD QComboBox_setItemText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		qp->setItemText(index, text);
@@ -584,7 +584,7 @@ KMETHOD QComboBox_setLineEdit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLineEdit*  edit = RawPtr_to(QLineEdit*, sfp[1]);
 		qp->setLineEdit(edit);
 	}
@@ -596,7 +596,7 @@ KMETHOD QComboBox_setMaxCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int max = Int_to(int, sfp[1]);
 		qp->setMaxCount(max);
 	}
@@ -608,7 +608,7 @@ KMETHOD QComboBox_setMaxVisibleItems(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int maxItems = Int_to(int, sfp[1]);
 		qp->setMaxVisibleItems(maxItems);
 	}
@@ -620,7 +620,7 @@ KMETHOD QComboBox_setMinimumContentsLength(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int characters = Int_to(int, sfp[1]);
 		qp->setMinimumContentsLength(characters);
 	}
@@ -632,7 +632,7 @@ KMETHOD QComboBox_setModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel*  model = RawPtr_to(QAbstractItemModel*, sfp[1]);
 		qp->setModel(model);
 	}
@@ -644,7 +644,7 @@ KMETHOD QComboBox_setModelColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int visibleColumn = Int_to(int, sfp[1]);
 		qp->setModelColumn(visibleColumn);
 	}
@@ -656,7 +656,7 @@ KMETHOD QComboBox_setRootModelIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		qp->setRootModelIndex(index);
 	}
@@ -668,7 +668,7 @@ KMETHOD QComboBox_setSizeAdjustPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QComboBox::SizeAdjustPolicy policy = Int_to(QComboBox::SizeAdjustPolicy, sfp[1]);
 		qp->setSizeAdjustPolicy(policy);
 	}
@@ -680,7 +680,7 @@ KMETHOD QComboBox_setValidator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QValidator*  validator = RawPtr_to(const QValidator*, sfp[1]);
 		qp->setValidator(validator);
 	}
@@ -692,7 +692,7 @@ KMETHOD QComboBox_setView(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemView*  itemView = RawPtr_to(QAbstractItemView*, sfp[1]);
 		qp->setView(itemView);
 	}
@@ -704,7 +704,7 @@ KMETHOD QComboBox_showPopup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->showPopup();
 	}
 	RETURNvoid_();
@@ -715,7 +715,7 @@ KMETHOD QComboBox_getSizeAdjustPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QComboBox::SizeAdjustPolicy ret_v = qp->sizeAdjustPolicy();
 		RETURNi_(ret_v);
 	} else {
@@ -728,7 +728,7 @@ KMETHOD QComboBox_getValidator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QValidator* ret_v = qp->validator();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QValidator*)ret_v, NULL);
 		RETURN_(rptr);
@@ -742,7 +742,7 @@ KMETHOD QComboBox_getView(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemView* ret_v = qp->view();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractItemView*)ret_v, NULL);
 		RETURN_(rptr);
@@ -756,7 +756,7 @@ KMETHOD QComboBox_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -767,7 +767,7 @@ KMETHOD QComboBox_clearEditText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearEditText();
 	}
 	RETURNvoid_();
@@ -778,7 +778,7 @@ KMETHOD QComboBox_setCurrentIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		qp->setCurrentIndex(index);
 	}
@@ -790,7 +790,7 @@ KMETHOD QComboBox_setEditText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QComboBox *  qp = RawPtr_to(QComboBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setEditText(text);
 	}
@@ -865,10 +865,25 @@ bool DummyQComboBox::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQComboBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, edit_text_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQComboBox::connection(QObject *o)
 {
-	connect(o, SIGNAL(editTextChanged(const QString)), this, SLOT(editTextChangedSlot(const QString)));
+	QComboBox *p = dynamic_cast<QComboBox*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(editTextChanged(const QString)), this, SLOT(editTextChangedSlot(const QString)));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -931,17 +946,9 @@ static void QComboBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QComboBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQComboBox *qp = (KQComboBox *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->edit_text_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->edit_text_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -965,15 +972,6 @@ bool KQComboBox::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQComboBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QComboBox";
-	cdef->free = QComboBox_free;
-	cdef->reftrace = QComboBox_reftrace;
-	cdef->compareTo = QComboBox_compareTo;
-}
-
 static knh_IntData_t QComboBoxConstInt[] = {
 	{"NoInsert", QComboBox::NoInsert},
 	{"InsertAtTop", QComboBox::InsertAtTop},
@@ -992,4 +990,15 @@ static knh_IntData_t QComboBoxConstInt[] = {
 DEFAPI(void) constQComboBox(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QComboBoxConstInt);
 }
+
+
+DEFAPI(void) defQComboBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QComboBox";
+	cdef->free = QComboBox_free;
+	cdef->reftrace = QComboBox_reftrace;
+	cdef->compareTo = QComboBox_compareTo;
+}
+
 

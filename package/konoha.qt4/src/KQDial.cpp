@@ -3,7 +3,7 @@ KMETHOD QDial_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDial *  qp = RawPtr_to(QDial *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QDial_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDial *  qp = RawPtr_to(QDial *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -44,7 +44,7 @@ KMETHOD QDial_notchSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDial *  qp = RawPtr_to(QDial *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->notchSize();
 		RETURNi_(ret_v);
 	} else {
@@ -57,7 +57,7 @@ KMETHOD QDial_getNotchTarget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDial *  qp = RawPtr_to(QDial *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->notchTarget();
 		RETURNf_(ret_v);
 	} else {
@@ -70,7 +70,7 @@ KMETHOD QDial_getNotchesVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDial *  qp = RawPtr_to(QDial *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->notchesVisible();
 		RETURNb_(ret_v);
 	} else {
@@ -83,7 +83,7 @@ KMETHOD QDial_setNotchTarget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDial *  qp = RawPtr_to(QDial *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  target = *RawPtr_to(double *, sfp[1]);
 		qp->setNotchTarget(target);
 	}
@@ -95,7 +95,7 @@ KMETHOD QDial_getWrapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDial *  qp = RawPtr_to(QDial *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->wrapping();
 		RETURNb_(ret_v);
 	} else {
@@ -108,7 +108,7 @@ KMETHOD QDial_setNotchesVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDial *  qp = RawPtr_to(QDial *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setNotchesVisible(visible);
 	}
@@ -120,7 +120,7 @@ KMETHOD QDial_setWrapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDial *  qp = RawPtr_to(QDial *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool on = Boolean_to(bool, sfp[1]);
 		qp->setWrapping(on);
 	}
@@ -178,9 +178,23 @@ bool DummyQDial::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDial::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractSlider::reftrace(ctx, p, tail_);
+}
 
 void DummyQDial::connection(QObject *o)
 {
+	QDial *p = dynamic_cast<QDial*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractSlider::connection(o);
 }
 
@@ -243,13 +257,9 @@ static void QDial_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDial_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDial *qp = (KQDial *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -272,6 +282,8 @@ bool KQDial::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQDial(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

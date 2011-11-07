@@ -29,7 +29,7 @@ KMETHOD QKeyEventTransition_getKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QKeyEventTransition *  qp = RawPtr_to(QKeyEventTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->key();
 		RETURNi_(ret_v);
 	} else {
@@ -37,16 +37,18 @@ KMETHOD QKeyEventTransition_getKey(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QKeyEventTransition.getModifierMask();
+//QtKeyboardModifiers QKeyEventTransition.getModifierMask();
 KMETHOD QKeyEventTransition_getModifierMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QKeyEventTransition *  qp = RawPtr_to(QKeyEventTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::KeyboardModifiers ret_v = qp->modifierMask();
-		RETURNi_(ret_v);
+		Qt::KeyboardModifiers *ret_v_ = new Qt::KeyboardModifiers(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -55,20 +57,20 @@ KMETHOD QKeyEventTransition_setKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QKeyEventTransition *  qp = RawPtr_to(QKeyEventTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int key = Int_to(int, sfp[1]);
 		qp->setKey(key);
 	}
 	RETURNvoid_();
 }
 
-//void QKeyEventTransition.setModifierMask(int modifierMask);
+//void QKeyEventTransition.setModifierMask(QtKeyboardModifiers modifierMask);
 KMETHOD QKeyEventTransition_setModifierMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QKeyEventTransition *  qp = RawPtr_to(QKeyEventTransition *, sfp[0]);
-	if (qp != NULL) {
-		Qt::KeyboardModifiers modifierMask = Int_to(Qt::KeyboardModifiers, sfp[1]);
+	if (qp) {
+		initFlag(modifierMask, Qt::KeyboardModifiers, sfp[1]);
 		qp->setModifierMask(modifierMask);
 	}
 	RETURNvoid_();
@@ -125,9 +127,23 @@ bool DummyQKeyEventTransition::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQKeyEventTransition::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEventTransition::reftrace(ctx, p, tail_);
+}
 
 void DummyQKeyEventTransition::connection(QObject *o)
 {
+	QKeyEventTransition *p = dynamic_cast<QKeyEventTransition*>(o);
+	if (p != NULL) {
+	}
 	DummyQEventTransition::connection(o);
 }
 
@@ -190,13 +206,9 @@ static void QKeyEventTransition_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QKeyEventTransition_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQKeyEventTransition *qp = (KQKeyEventTransition *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -219,6 +231,8 @@ bool KQKeyEventTransition::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQKeyEventTransition(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

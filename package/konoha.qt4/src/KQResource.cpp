@@ -15,7 +15,7 @@ KMETHOD QResource_absoluteFilePath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QResource *  qp = RawPtr_to(QResource *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->absoluteFilePath();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -29,7 +29,7 @@ KMETHOD QResource_data(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QResource *  qp = RawPtr_to(QResource *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const uchar* ret_v = qp->data();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (uchar*)ret_v, NULL);
 		RETURN_(rptr);
@@ -43,7 +43,7 @@ KMETHOD QResource_getFileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QResource *  qp = RawPtr_to(QResource *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->fileName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -57,21 +57,8 @@ KMETHOD QResource_isCompressed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QResource *  qp = RawPtr_to(QResource *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isCompressed();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QResource.isValid();
-KMETHOD QResource_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QResource *  qp = RawPtr_to(QResource *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -83,7 +70,7 @@ KMETHOD QResource_getLocale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QResource *  qp = RawPtr_to(QResource *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLocale ret_v = qp->locale();
 		QLocale *ret_v_ = new QLocale(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -98,7 +85,7 @@ KMETHOD QResource_setFileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QResource *  qp = RawPtr_to(QResource *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString file = String_to(const QString, sfp[1]);
 		qp->setFileName(file);
 	}
@@ -110,7 +97,7 @@ KMETHOD QResource_setLocale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QResource *  qp = RawPtr_to(QResource *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QLocale  locale = *RawPtr_to(const QLocale *, sfp[1]);
 		qp->setLocale(locale);
 	}
@@ -122,7 +109,7 @@ KMETHOD QResource_size(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QResource *  qp = RawPtr_to(QResource *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->size();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -136,11 +123,10 @@ KMETHOD QResource_size(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QResource_registerResource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QResource *  qp = RawPtr_to(QResource *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString rccFileName = String_to(const QString, sfp[1]);
 		const QString mapRoot = String_to(const QString, sfp[2]);
-		bool ret_v = qp->registerResource(rccFileName, mapRoot);
+		bool ret_v = QResource::registerResource(rccFileName, mapRoot);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -152,11 +138,10 @@ KMETHOD QResource_registerResource(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QResource_registerResource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QResource *  qp = RawPtr_to(QResource *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const uchar*  rccData = RawPtr_to(const uchar*, sfp[1]);
 		const QString mapRoot = String_to(const QString, sfp[2]);
-		bool ret_v = qp->registerResource(rccData, mapRoot);
+		bool ret_v = QResource::registerResource(rccData, mapRoot);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -167,11 +152,10 @@ KMETHOD QResource_registerResource(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QResource_unregisterResource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QResource *  qp = RawPtr_to(QResource *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString rccFileName = String_to(const QString, sfp[1]);
 		const QString mapRoot = String_to(const QString, sfp[2]);
-		bool ret_v = qp->unregisterResource(rccFileName, mapRoot);
+		bool ret_v = QResource::unregisterResource(rccFileName, mapRoot);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -183,17 +167,34 @@ KMETHOD QResource_unregisterResource(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QResource_unregisterResource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QResource *  qp = RawPtr_to(QResource *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const uchar*  rccData = RawPtr_to(const uchar*, sfp[1]);
 		const QString mapRoot = String_to(const QString, sfp[2]);
-		bool ret_v = qp->unregisterResource(rccData, mapRoot);
+		bool ret_v = QResource::unregisterResource(rccData, mapRoot);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
 	}
 }
 */
+//Array<String> QResource.parents();
+KMETHOD QResource_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QResource *qp = RawPtr_to(QResource*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQResource::DummyQResource()
 {
@@ -242,17 +243,28 @@ bool DummyQResource::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQResource::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQResource::connection(QObject *o)
 {
-	return;
+	QResource *p = dynamic_cast<QResource*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQResource::KQResource(const QString file, const QLocale locale) : QResource(file, locale)
 {
 	self = NULL;
 	dummy = new DummyQResource();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QResource_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -307,13 +319,9 @@ static void QResource_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QResource_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQResource *qp = (KQResource *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -327,6 +335,8 @@ void KQResource::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQResource(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

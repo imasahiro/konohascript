@@ -25,7 +25,7 @@ KMETHOD QModelIndex_child(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QModelIndex *  qp = RawPtr_to(QModelIndex *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		QModelIndex ret_v = qp->child(row, column);
@@ -42,7 +42,7 @@ KMETHOD QModelIndex_column(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QModelIndex *  qp = RawPtr_to(QModelIndex *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->column();
 		RETURNi_(ret_v);
 	} else {
@@ -55,7 +55,7 @@ KMETHOD QModelIndex_data(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QModelIndex *  qp = RawPtr_to(QModelIndex *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int role = Int_to(int, sfp[1]);
 		QVariant ret_v = qp->data(role);
 		QVariant *ret_v_ = new QVariant(ret_v);
@@ -66,16 +66,18 @@ KMETHOD QModelIndex_data(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QModelIndex.flags();
+//QtItemFlags QModelIndex.flags();
 KMETHOD QModelIndex_flags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QModelIndex *  qp = RawPtr_to(QModelIndex *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ItemFlags ret_v = qp->flags();
-		RETURNi_(ret_v);
+		Qt::ItemFlags *ret_v_ = new Qt::ItemFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -84,7 +86,7 @@ KMETHOD QModelIndex_internalId(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QModelIndex *  qp = RawPtr_to(QModelIndex *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->internalId();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -99,7 +101,7 @@ KMETHOD QModelIndex_internalPointer(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QModelIndex *  qp = RawPtr_to(QModelIndex *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		void* ret_v = qp->internalPointer();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (void*)ret_v, NULL);
 		RETURN_(rptr);
@@ -108,25 +110,12 @@ KMETHOD QModelIndex_internalPointer(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////boolean QModelIndex.isValid();
-KMETHOD QModelIndex_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QModelIndex *  qp = RawPtr_to(QModelIndex *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
 //QAbstractItemModel QModelIndex.model();
 KMETHOD QModelIndex_model(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QModelIndex *  qp = RawPtr_to(QModelIndex *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QAbstractItemModel* ret_v = qp->model();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractItemModel*)ret_v, NULL);
 		RETURN_(rptr);
@@ -140,7 +129,7 @@ KMETHOD QModelIndex_parent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QModelIndex *  qp = RawPtr_to(QModelIndex *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QModelIndex ret_v = qp->parent();
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -155,7 +144,7 @@ KMETHOD QModelIndex_row(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QModelIndex *  qp = RawPtr_to(QModelIndex *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->row();
 		RETURNi_(ret_v);
 	} else {
@@ -168,7 +157,7 @@ KMETHOD QModelIndex_sibling(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QModelIndex *  qp = RawPtr_to(QModelIndex *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		QModelIndex ret_v = qp->sibling(row, column);
@@ -180,6 +169,24 @@ KMETHOD QModelIndex_sibling(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QModelIndex.parents();
+KMETHOD QModelIndex_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QModelIndex *qp = RawPtr_to(QModelIndex*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQModelIndex::DummyQModelIndex()
 {
@@ -228,17 +235,28 @@ bool DummyQModelIndex::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQModelIndex::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQModelIndex::connection(QObject *o)
 {
-	return;
+	QModelIndex *p = dynamic_cast<QModelIndex*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQModelIndex::KQModelIndex() : QModelIndex()
 {
 	self = NULL;
 	dummy = new DummyQModelIndex();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QModelIndex_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -293,13 +311,9 @@ static void QModelIndex_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QModelIndex_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQModelIndex *qp = (KQModelIndex *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -313,6 +327,8 @@ void KQModelIndex::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQModelIndex(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

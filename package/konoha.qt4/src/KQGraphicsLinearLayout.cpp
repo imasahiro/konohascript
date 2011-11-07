@@ -3,7 +3,7 @@ KMETHOD QGraphicsLinearLayout_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->count();
 		RETURNi_(ret_v);
 	} else {
@@ -16,7 +16,7 @@ KMETHOD QGraphicsLinearLayout_invalidate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->invalidate();
 	}
 	RETURNvoid_();
@@ -27,7 +27,7 @@ KMETHOD QGraphicsLinearLayout_itemAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QGraphicsLayoutItem* ret_v = qp->itemAt(index);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsLayoutItem*)ret_v, NULL);
@@ -42,7 +42,7 @@ KMETHOD QGraphicsLinearLayout_removeAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		qp->removeAt(index);
 	}
@@ -54,7 +54,7 @@ KMETHOD QGraphicsLinearLayout_setGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		qp->setGeometry(rect);
 	}
@@ -66,7 +66,7 @@ KMETHOD QGraphicsLinearLayout_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::SizeHint which = Int_to(Qt::SizeHint, sfp[1]);
 		const QSizeF  constraint = *RawPtr_to(const QSizeF *, sfp[2]);
 		QSizeF ret_v = qp->sizeHint(which, constraint);
@@ -107,7 +107,7 @@ KMETHOD QGraphicsLinearLayout_addItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsLayoutItem*  item = RawPtr_to(QGraphicsLayoutItem*, sfp[1]);
 		qp->addItem(item);
 	}
@@ -119,24 +119,26 @@ KMETHOD QGraphicsLinearLayout_addStretch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int stretch = Int_to(int, sfp[1]);
 		qp->addStretch(stretch);
 	}
 	RETURNvoid_();
 }
 
-//int QGraphicsLinearLayout.getAlignment(QGraphicsLayoutItem item);
+//QtAlignment QGraphicsLinearLayout.getAlignment(QGraphicsLayoutItem item);
 KMETHOD QGraphicsLinearLayout_getAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsLayoutItem*  item = RawPtr_to(QGraphicsLayoutItem*, sfp[1]);
 		Qt::Alignment ret_v = qp->alignment(item);
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -145,7 +147,7 @@ KMETHOD QGraphicsLinearLayout_insertItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QGraphicsLayoutItem*  item = RawPtr_to(QGraphicsLayoutItem*, sfp[2]);
 		qp->insertItem(index, item);
@@ -158,7 +160,7 @@ KMETHOD QGraphicsLinearLayout_insertStretch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		int stretch = Int_to(int, sfp[2]);
 		qp->insertStretch(index, stretch);
@@ -171,7 +173,7 @@ KMETHOD QGraphicsLinearLayout_getItemSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		qreal ret_v = qp->itemSpacing(index);
 		RETURNf_(ret_v);
@@ -185,7 +187,7 @@ KMETHOD QGraphicsLinearLayout_getOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation ret_v = qp->orientation();
 		RETURNi_(ret_v);
 	} else {
@@ -198,21 +200,21 @@ KMETHOD QGraphicsLinearLayout_removeItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsLayoutItem*  item = RawPtr_to(QGraphicsLayoutItem*, sfp[1]);
 		qp->removeItem(item);
 	}
 	RETURNvoid_();
 }
 
-//void QGraphicsLinearLayout.setAlignment(QGraphicsLayoutItem item, int alignment);
+//void QGraphicsLinearLayout.setAlignment(QGraphicsLayoutItem item, QtAlignment alignment);
 KMETHOD QGraphicsLinearLayout_setAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsLayoutItem*  item = RawPtr_to(QGraphicsLayoutItem*, sfp[1]);
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[2]);
+		initFlag(alignment, Qt::Alignment, sfp[2]);
 		qp->setAlignment(item, alignment);
 	}
 	RETURNvoid_();
@@ -223,7 +225,7 @@ KMETHOD QGraphicsLinearLayout_setItemSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		qreal spacing = Float_to(qreal, sfp[2]);
 		qp->setItemSpacing(index, spacing);
@@ -236,7 +238,7 @@ KMETHOD QGraphicsLinearLayout_setOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[1]);
 		qp->setOrientation(orientation);
 	}
@@ -248,7 +250,7 @@ KMETHOD QGraphicsLinearLayout_setSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal spacing = Float_to(qreal, sfp[1]);
 		qp->setSpacing(spacing);
 	}
@@ -260,7 +262,7 @@ KMETHOD QGraphicsLinearLayout_setStretchFactor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsLayoutItem*  item = RawPtr_to(QGraphicsLayoutItem*, sfp[1]);
 		int stretch = Int_to(int, sfp[2]);
 		qp->setStretchFactor(item, stretch);
@@ -273,7 +275,7 @@ KMETHOD QGraphicsLinearLayout_getSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->spacing();
 		RETURNf_(ret_v);
 	} else {
@@ -286,7 +288,7 @@ KMETHOD QGraphicsLinearLayout_getStretchFactor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLinearLayout *  qp = RawPtr_to(QGraphicsLinearLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsLayoutItem*  item = RawPtr_to(QGraphicsLayoutItem*, sfp[1]);
 		int ret_v = qp->stretchFactor(item);
 		RETURNi_(ret_v);
@@ -346,9 +348,23 @@ bool DummyQGraphicsLinearLayout::signalConnect(knh_Func_t *callback_func, string
 	}
 }
 
+void DummyQGraphicsLinearLayout::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsLayout::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsLinearLayout::connection(QObject *o)
 {
+	QGraphicsLinearLayout *p = dynamic_cast<QGraphicsLinearLayout*>(o);
+	if (p != NULL) {
+	}
 	DummyQGraphicsLayout::connection(o);
 }
 
@@ -356,7 +372,6 @@ KQGraphicsLinearLayout::KQGraphicsLinearLayout(QGraphicsLayoutItem* parent) : QG
 {
 	self = NULL;
 	dummy = new DummyQGraphicsLinearLayout();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsLinearLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -411,13 +426,9 @@ static void QGraphicsLinearLayout_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsLinearLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsLinearLayout *qp = (KQGraphicsLinearLayout *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -431,6 +442,8 @@ void KQGraphicsLinearLayout::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGraphicsLinearLayout(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

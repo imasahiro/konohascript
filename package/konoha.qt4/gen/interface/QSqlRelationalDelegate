@@ -42,13 +42,33 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+
 typedefed_objects
 
 parent_typedefed_objects
 
+class_objects
+
+parent_class_objects
+
 enums
 
 parent_enums
+class_name
+QAbstractItemDelegate
+name
+EndEditHint
+key
+NoHint
+EditNextItem
+EditPreviousItem
+SubmitModelCache
+RevertModelCache
+public_flag
+true
 
 parent_index
 405

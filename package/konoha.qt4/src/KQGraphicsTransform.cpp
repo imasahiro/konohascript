@@ -4,7 +4,7 @@ KMETHOD QGraphicsTransform_applyTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsTransform *  qp = RawPtr_to(QGraphicsTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMatrix4x4*  matrix = RawPtr_to(QMatrix4x4*, sfp[1]);
 		qp->applyTo(matrix);
 	}
@@ -62,9 +62,23 @@ bool DummyQGraphicsTransform::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
+void DummyQGraphicsTransform::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsTransform::connection(QObject *o)
 {
+	QGraphicsTransform *p = dynamic_cast<QGraphicsTransform*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
 }
 
@@ -127,13 +141,9 @@ static void QGraphicsTransform_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsTransform_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsTransform *qp = (KQGraphicsTransform *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -156,6 +166,8 @@ bool KQGraphicsTransform::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQGraphicsTransform(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

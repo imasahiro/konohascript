@@ -83,9 +83,23 @@ bool DummyQStyleOptionFrameV3::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQStyleOptionFrameV3::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOptionFrameV2::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionFrameV3::connection(QObject *o)
 {
+	QStyleOptionFrameV3 *p = dynamic_cast<QStyleOptionFrameV3*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOptionFrameV2::connection(o);
 }
 
@@ -93,7 +107,6 @@ KQStyleOptionFrameV3::KQStyleOptionFrameV3() : QStyleOptionFrameV3()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionFrameV3();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionFrameV3_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -148,13 +161,9 @@ static void QStyleOptionFrameV3_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionFrameV3_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionFrameV3 *qp = (KQStyleOptionFrameV3 *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -169,6 +178,16 @@ void KQStyleOptionFrameV3::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
+static knh_IntData_t QStyleOptionFrameV3ConstInt[] = {
+	{"Version", QStyleOptionFrameV3::Version},
+	{NULL, 0}
+};
+
+DEFAPI(void) constQStyleOptionFrameV3(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
+	kapi->loadClassIntConst(ctx, cid, QStyleOptionFrameV3ConstInt);
+}
+
+
 DEFAPI(void) defQStyleOptionFrameV3(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	(void)ctx; (void) cid;
@@ -178,12 +197,4 @@ DEFAPI(void) defQStyleOptionFrameV3(CTX ctx, knh_class_t cid, knh_ClassDef_t *cd
 	cdef->compareTo = QStyleOptionFrameV3_compareTo;
 }
 
-static knh_IntData_t QStyleOptionFrameV3ConstInt[] = {
-	{"Version", QStyleOptionFrameV3::Version},
-	{NULL, 0}
-};
-
-DEFAPI(void) constQStyleOptionFrameV3(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
-	kapi->loadClassIntConst(ctx, cid, QStyleOptionFrameV3ConstInt);
-}
 

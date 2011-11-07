@@ -66,6 +66,10 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+
 typedefed_objects
 const_pointer
 const_reference
@@ -76,6 +80,10 @@ size_type
 value_type
 
 parent_typedefed_objects
+
+class_objects
+
+parent_class_objects
 
 enums
 

@@ -14,7 +14,7 @@ KMETHOD QThread_exit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThread *  qp = RawPtr_to(QThread *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int returnCode = Int_to(int, sfp[1]);
 		qp->exit(returnCode);
 	}
@@ -26,7 +26,7 @@ KMETHOD QThread_isFinished(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThread *  qp = RawPtr_to(QThread *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isFinished();
 		RETURNb_(ret_v);
 	} else {
@@ -39,7 +39,7 @@ KMETHOD QThread_isRunning(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThread *  qp = RawPtr_to(QThread *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isRunning();
 		RETURNb_(ret_v);
 	} else {
@@ -52,7 +52,7 @@ KMETHOD QThread_getPriority(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThread *  qp = RawPtr_to(QThread *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QThread::Priority ret_v = qp->priority();
 		RETURNi_(ret_v);
 	} else {
@@ -65,7 +65,7 @@ KMETHOD QThread_setPriority(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThread *  qp = RawPtr_to(QThread *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QThread::Priority priority = Int_to(QThread::Priority, sfp[1]);
 		qp->setPriority(priority);
 	}
@@ -77,7 +77,7 @@ KMETHOD QThread_setStackSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThread *  qp = RawPtr_to(QThread *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uint  stackSize = *RawPtr_to(uint *, sfp[1]);
 		qp->setStackSize(stackSize);
 	}
@@ -89,7 +89,7 @@ KMETHOD QThread_getStackSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThread *  qp = RawPtr_to(QThread *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uint ret_v = qp->stackSize();
 		uint *ret_v_ = new uint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -99,12 +99,12 @@ KMETHOD QThread_getStackSize(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//boolean QThread.wait( long time);
+//boolean QThread.wait(long time);
 KMETHOD QThread_wait(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThread *  qp = RawPtr_to(QThread *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		unsigned long  time = *RawPtr_to(unsigned long *, sfp[1]);
 		bool ret_v = qp->wait(time);
 		RETURNb_(ret_v);
@@ -117,9 +117,8 @@ KMETHOD QThread_wait(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QThread_currentThread(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QThread *  qp = RawPtr_to(QThread *, sfp[0]);
-	if (qp != NULL) {
-		QThread* ret_v = qp->currentThread();
+	if (true) {
+		QThread* ret_v = QThread::currentThread();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QThread*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -131,9 +130,8 @@ KMETHOD QThread_currentThread(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QThread_idealThreadCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QThread *  qp = RawPtr_to(QThread *, sfp[0]);
-	if (qp != NULL) {
-		int ret_v = qp->idealThreadCount();
+	if (true) {
+		int ret_v = QThread::idealThreadCount();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -144,9 +142,8 @@ KMETHOD QThread_idealThreadCount(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QThread_yieldCurrentThread(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QThread *  qp = RawPtr_to(QThread *, sfp[0]);
-	if (qp != NULL) {
-		qp->yieldCurrentThread();
+	if (true) {
+		QThread::yieldCurrentThread();
 	}
 	RETURNvoid_();
 }
@@ -156,7 +153,7 @@ KMETHOD QThread_quit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThread *  qp = RawPtr_to(QThread *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->quit();
 	}
 	RETURNvoid_();
@@ -167,7 +164,7 @@ KMETHOD QThread_start(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThread *  qp = RawPtr_to(QThread *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QThread::Priority priority = Int_to(QThread::Priority, sfp[1]);
 		qp->start(priority);
 	}
@@ -179,7 +176,7 @@ KMETHOD QThread_terminate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QThread *  qp = RawPtr_to(QThread *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->terminate();
 	}
 	RETURNvoid_();
@@ -281,12 +278,29 @@ bool DummyQThread::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQThread::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 3;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, finished_func);
+	KNH_ADDNNREF(ctx, started_func);
+	KNH_ADDNNREF(ctx, terminated_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQThread::connection(QObject *o)
 {
-	connect(o, SIGNAL(finished()), this, SLOT(finishedSlot()));
-	connect(o, SIGNAL(started()), this, SLOT(startedSlot()));
-	connect(o, SIGNAL(terminated()), this, SLOT(terminatedSlot()));
+	QThread *p = dynamic_cast<QThread*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(finished()), this, SLOT(finishedSlot()));
+		connect(p, SIGNAL(started()), this, SLOT(startedSlot()));
+		connect(p, SIGNAL(terminated()), this, SLOT(terminatedSlot()));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -349,25 +363,9 @@ static void QThread_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QThread_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 3;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQThread *qp = (KQThread *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->finished_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->finished_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->started_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->started_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->terminated_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->terminated_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -391,15 +389,6 @@ bool KQThread::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQThread(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QThread";
-	cdef->free = QThread_free;
-	cdef->reftrace = QThread_reftrace;
-	cdef->compareTo = QThread_compareTo;
-}
-
 static knh_IntData_t QThreadConstInt[] = {
 	{"IdlePriority", QThread::IdlePriority},
 	{"LowestPriority", QThread::LowestPriority},
@@ -415,4 +404,15 @@ static knh_IntData_t QThreadConstInt[] = {
 DEFAPI(void) constQThread(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QThreadConstInt);
 }
+
+
+DEFAPI(void) defQThread(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QThread";
+	cdef->free = QThread_free;
+	cdef->reftrace = QThread_reftrace;
+	cdef->compareTo = QThread_compareTo;
+}
+
 

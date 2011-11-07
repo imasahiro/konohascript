@@ -83,9 +83,23 @@ bool DummyQStyleOptionFrameV2::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQStyleOptionFrameV2::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOptionFrame::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionFrameV2::connection(QObject *o)
 {
+	QStyleOptionFrameV2 *p = dynamic_cast<QStyleOptionFrameV2*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOptionFrame::connection(o);
 }
 
@@ -93,7 +107,6 @@ KQStyleOptionFrameV2::KQStyleOptionFrameV2() : QStyleOptionFrameV2()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionFrameV2();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionFrameV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -148,13 +161,9 @@ static void QStyleOptionFrameV2_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionFrameV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionFrameV2 *qp = (KQStyleOptionFrameV2 *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -169,15 +178,6 @@ void KQStyleOptionFrameV2::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStyleOptionFrameV2(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionFrameV2";
-	cdef->free = QStyleOptionFrameV2_free;
-	cdef->reftrace = QStyleOptionFrameV2_reftrace;
-	cdef->compareTo = QStyleOptionFrameV2_compareTo;
-}
-
 static knh_IntData_t QStyleOptionFrameV2ConstInt[] = {
 	{"None", QStyleOptionFrameV2::None},
 	{"Flat", QStyleOptionFrameV2::Flat},
@@ -187,5 +187,179 @@ static knh_IntData_t QStyleOptionFrameV2ConstInt[] = {
 
 DEFAPI(void) constQStyleOptionFrameV2(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionFrameV2ConstInt);
+}
+
+
+DEFAPI(void) defQStyleOptionFrameV2(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionFrameV2";
+	cdef->free = QStyleOptionFrameV2_free;
+	cdef->reftrace = QStyleOptionFrameV2_reftrace;
+	cdef->compareTo = QStyleOptionFrameV2_compareTo;
+}
+
+//## QStyleOptionFrameV2FrameFeatures QStyleOptionFrameV2FrameFeatures.new(int value);
+KMETHOD QStyleOptionFrameV2FrameFeatures_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionFrameV2::FrameFeature i = Int_to(QStyleOptionFrameV2::FrameFeature, sfp[1]);
+	QStyleOptionFrameV2::FrameFeatures *ret_v = new QStyleOptionFrameV2::FrameFeatures(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QStyleOptionFrameV2FrameFeatures QStyleOptionFrameV2FrameFeatures.and(int mask);
+KMETHOD QStyleOptionFrameV2FrameFeatures_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionFrameV2::FrameFeatures *qp = RawPtr_to(QStyleOptionFrameV2::FrameFeatures*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QStyleOptionFrameV2::FrameFeatures ret = ((*qp) & i);
+		QStyleOptionFrameV2::FrameFeatures *ret_ = new QStyleOptionFrameV2::FrameFeatures(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleOptionFrameV2FrameFeatures QStyleOptionFrameV2FrameFeatures.iand(QStyleOptionFrameV2::QStyleOptionFrameV2FrameFeatures other);
+KMETHOD QStyleOptionFrameV2FrameFeatures_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionFrameV2::FrameFeatures *qp = RawPtr_to(QStyleOptionFrameV2::FrameFeatures*, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionFrameV2::FrameFeatures *other = RawPtr_to(QStyleOptionFrameV2::FrameFeatures *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleOptionFrameV2FrameFeatures QStyleOptionFrameV2FrameFeatures.or(QStyleOptionFrameV2FrameFeatures f);
+KMETHOD QStyleOptionFrameV2FrameFeatures_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QStyleOptionFrameV2::FrameFeatures *qp = RawPtr_to(QStyleOptionFrameV2::FrameFeatures*, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionFrameV2::FrameFeatures *f = RawPtr_to(QStyleOptionFrameV2::FrameFeatures*, sfp[1]);
+		QStyleOptionFrameV2::FrameFeatures ret = ((*qp) | (*f));
+		QStyleOptionFrameV2::FrameFeatures *ret_ = new QStyleOptionFrameV2::FrameFeatures(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleOptionFrameV2FrameFeatures QStyleOptionFrameV2FrameFeatures.ior(QStyleOptionFrameV2::QStyleOptionFrameV2FrameFeatures other);
+KMETHOD QStyleOptionFrameV2FrameFeatures_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionFrameV2::FrameFeatures *qp = RawPtr_to(QStyleOptionFrameV2::FrameFeatures*, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionFrameV2::FrameFeatures *other = RawPtr_to(QStyleOptionFrameV2::FrameFeatures *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleOptionFrameV2FrameFeatures QStyleOptionFrameV2FrameFeatures.xor(QStyleOptionFrameV2FrameFeatures f);
+KMETHOD QStyleOptionFrameV2FrameFeatures_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QStyleOptionFrameV2::FrameFeatures *qp = RawPtr_to(QStyleOptionFrameV2::FrameFeatures*, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionFrameV2::FrameFeatures *f = RawPtr_to(QStyleOptionFrameV2::FrameFeatures*, sfp[1]);
+		QStyleOptionFrameV2::FrameFeatures ret = ((*qp) ^ (*f));
+		QStyleOptionFrameV2::FrameFeatures *ret_ = new QStyleOptionFrameV2::FrameFeatures(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleOptionFrameV2FrameFeatures QStyleOptionFrameV2FrameFeatures.ixor(QStyleOptionFrameV2::QStyleOptionFrameV2FrameFeatures other);
+KMETHOD QStyleOptionFrameV2FrameFeatures_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionFrameV2::FrameFeatures *qp = RawPtr_to(QStyleOptionFrameV2::FrameFeatures*, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionFrameV2::FrameFeatures *other = RawPtr_to(QStyleOptionFrameV2::FrameFeatures *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QStyleOptionFrameV2FrameFeatures.testFlag(int flag);
+KMETHOD QStyleOptionFrameV2FrameFeatures_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionFrameV2::FrameFeatures *qp = RawPtr_to(QStyleOptionFrameV2::FrameFeatures *, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionFrameV2::FrameFeature flag = Int_to(QStyleOptionFrameV2::FrameFeature, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QStyleOptionFrameV2FrameFeatures.value();
+KMETHOD QStyleOptionFrameV2FrameFeatures_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionFrameV2::FrameFeatures *qp = RawPtr_to(QStyleOptionFrameV2::FrameFeatures *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QStyleOptionFrameV2FrameFeatures_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QStyleOptionFrameV2::FrameFeatures *qp = (QStyleOptionFrameV2::FrameFeatures *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QStyleOptionFrameV2FrameFeatures_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QStyleOptionFrameV2::FrameFeatures *qp = (QStyleOptionFrameV2::FrameFeatures *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QStyleOptionFrameV2FrameFeatures_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QStyleOptionFrameV2::FrameFeatures*)p1->rawptr);
+//		int v2 = int(*(QStyleOptionFrameV2::FrameFeatures*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QStyleOptionFrameV2::FrameFeatures v1 = *(QStyleOptionFrameV2::FrameFeatures*)p1->rawptr;
+		QStyleOptionFrameV2::FrameFeatures v2 = *(QStyleOptionFrameV2::FrameFeatures*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQStyleOptionFrameV2FrameFeatures(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionFrameV2FrameFeatures";
+	cdef->free = QStyleOptionFrameV2FrameFeatures_free;
+	cdef->reftrace = QStyleOptionFrameV2FrameFeatures_reftrace;
+	cdef->compareTo = QStyleOptionFrameV2FrameFeatures_compareTo;
 }
 

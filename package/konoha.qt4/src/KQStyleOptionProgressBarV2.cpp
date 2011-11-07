@@ -83,9 +83,23 @@ bool DummyQStyleOptionProgressBarV2::signalConnect(knh_Func_t *callback_func, st
 	}
 }
 
+void DummyQStyleOptionProgressBarV2::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOptionProgressBar::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionProgressBarV2::connection(QObject *o)
 {
+	QStyleOptionProgressBarV2 *p = dynamic_cast<QStyleOptionProgressBarV2*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOptionProgressBar::connection(o);
 }
 
@@ -93,7 +107,6 @@ KQStyleOptionProgressBarV2::KQStyleOptionProgressBarV2() : QStyleOptionProgressB
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionProgressBarV2();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionProgressBarV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -148,13 +161,9 @@ static void QStyleOptionProgressBarV2_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionProgressBarV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionProgressBarV2 *qp = (KQStyleOptionProgressBarV2 *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -169,15 +178,6 @@ void KQStyleOptionProgressBarV2::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStyleOptionProgressBarV2(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionProgressBarV2";
-	cdef->free = QStyleOptionProgressBarV2_free;
-	cdef->reftrace = QStyleOptionProgressBarV2_reftrace;
-	cdef->compareTo = QStyleOptionProgressBarV2_compareTo;
-}
-
 static knh_IntData_t QStyleOptionProgressBarV2ConstInt[] = {
 	{"Type", QStyleOptionProgressBarV2::Type},
 	{"Version", QStyleOptionProgressBarV2::Version},
@@ -187,4 +187,15 @@ static knh_IntData_t QStyleOptionProgressBarV2ConstInt[] = {
 DEFAPI(void) constQStyleOptionProgressBarV2(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionProgressBarV2ConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionProgressBarV2(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionProgressBarV2";
+	cdef->free = QStyleOptionProgressBarV2_free;
+	cdef->reftrace = QStyleOptionProgressBarV2_reftrace;
+	cdef->compareTo = QStyleOptionProgressBarV2_compareTo;
+}
+
 

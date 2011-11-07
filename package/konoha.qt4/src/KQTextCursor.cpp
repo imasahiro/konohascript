@@ -61,7 +61,7 @@ KMETHOD QTextCursor_anchor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->anchor();
 		RETURNi_(ret_v);
 	} else {
@@ -74,7 +74,7 @@ KMETHOD QTextCursor_atBlockEnd(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->atBlockEnd();
 		RETURNb_(ret_v);
 	} else {
@@ -87,7 +87,7 @@ KMETHOD QTextCursor_atBlockStart(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->atBlockStart();
 		RETURNb_(ret_v);
 	} else {
@@ -100,7 +100,7 @@ KMETHOD QTextCursor_atEnd(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->atEnd();
 		RETURNb_(ret_v);
 	} else {
@@ -113,7 +113,7 @@ KMETHOD QTextCursor_atStart(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->atStart();
 		RETURNb_(ret_v);
 	} else {
@@ -126,7 +126,7 @@ KMETHOD QTextCursor_beginEditBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->beginEditBlock();
 	}
 	RETURNvoid_();
@@ -137,7 +137,7 @@ KMETHOD QTextCursor_block(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextBlock ret_v = qp->block();
 		QTextBlock *ret_v_ = new QTextBlock(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -152,7 +152,7 @@ KMETHOD QTextCursor_getBlockCharFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCharFormat ret_v = qp->blockCharFormat();
 		QTextCharFormat *ret_v_ = new QTextCharFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -167,7 +167,7 @@ KMETHOD QTextCursor_getBlockFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextBlockFormat ret_v = qp->blockFormat();
 		QTextBlockFormat *ret_v_ = new QTextBlockFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -182,7 +182,7 @@ KMETHOD QTextCursor_blockNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->blockNumber();
 		RETURNi_(ret_v);
 	} else {
@@ -195,7 +195,7 @@ KMETHOD QTextCursor_getCharFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCharFormat ret_v = qp->charFormat();
 		QTextCharFormat *ret_v_ = new QTextCharFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -210,7 +210,7 @@ KMETHOD QTextCursor_clearSelection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearSelection();
 	}
 	RETURNvoid_();
@@ -221,7 +221,7 @@ KMETHOD QTextCursor_columnNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->columnNumber();
 		RETURNi_(ret_v);
 	} else {
@@ -234,7 +234,7 @@ KMETHOD QTextCursor_createList(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextListFormat  format = *RawPtr_to(const QTextListFormat *, sfp[1]);
 		QTextList* ret_v = qp->createList(format);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextList*)ret_v, NULL);
@@ -250,7 +250,7 @@ KMETHOD QTextCursor_createList(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextListFormat::Style style = Int_to(QTextListFormat::Style, sfp[1]);
 		QTextList* ret_v = qp->createList(style);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextList*)ret_v, NULL);
@@ -265,7 +265,7 @@ KMETHOD QTextCursor_currentFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextFrame* ret_v = qp->currentFrame();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextFrame*)ret_v, NULL);
 		RETURN_(rptr);
@@ -279,7 +279,7 @@ KMETHOD QTextCursor_currentList(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextList* ret_v = qp->currentList();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextList*)ret_v, NULL);
 		RETURN_(rptr);
@@ -293,7 +293,7 @@ KMETHOD QTextCursor_currentTable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextTable* ret_v = qp->currentTable();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextTable*)ret_v, NULL);
 		RETURN_(rptr);
@@ -307,7 +307,7 @@ KMETHOD QTextCursor_deleteChar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->deleteChar();
 	}
 	RETURNvoid_();
@@ -318,7 +318,7 @@ KMETHOD QTextCursor_deletePreviousChar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->deletePreviousChar();
 	}
 	RETURNvoid_();
@@ -329,7 +329,7 @@ KMETHOD QTextCursor_document(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextDocument* ret_v = qp->document();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextDocument*)ret_v, NULL);
 		RETURN_(rptr);
@@ -343,7 +343,7 @@ KMETHOD QTextCursor_endEditBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->endEditBlock();
 	}
 	RETURNvoid_();
@@ -354,7 +354,7 @@ KMETHOD QTextCursor_hasComplexSelection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasComplexSelection();
 		RETURNb_(ret_v);
 	} else {
@@ -367,7 +367,7 @@ KMETHOD QTextCursor_hasSelection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasSelection();
 		RETURNb_(ret_v);
 	} else {
@@ -380,7 +380,7 @@ KMETHOD QTextCursor_insertBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->insertBlock();
 	}
 	RETURNvoid_();
@@ -392,7 +392,7 @@ KMETHOD QTextCursor_insertBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextBlockFormat  format = *RawPtr_to(const QTextBlockFormat *, sfp[1]);
 		qp->insertBlock(format);
 	}
@@ -405,7 +405,7 @@ KMETHOD QTextCursor_insertBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextBlockFormat  format = *RawPtr_to(const QTextBlockFormat *, sfp[1]);
 		const QTextCharFormat  charFormat = *RawPtr_to(const QTextCharFormat *, sfp[2]);
 		qp->insertBlock(format, charFormat);
@@ -418,7 +418,7 @@ KMETHOD QTextCursor_insertFragment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextDocumentFragment  fragment = *RawPtr_to(const QTextDocumentFragment *, sfp[1]);
 		qp->insertFragment(fragment);
 	}
@@ -430,7 +430,7 @@ KMETHOD QTextCursor_insertFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextFrameFormat  format = *RawPtr_to(const QTextFrameFormat *, sfp[1]);
 		QTextFrame* ret_v = qp->insertFrame(format);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextFrame*)ret_v, NULL);
@@ -445,7 +445,7 @@ KMETHOD QTextCursor_insertHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString html = String_to(const QString, sfp[1]);
 		qp->insertHtml(html);
 	}
@@ -457,7 +457,7 @@ KMETHOD QTextCursor_insertImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextImageFormat  format = *RawPtr_to(const QTextImageFormat *, sfp[1]);
 		qp->insertImage(format);
 	}
@@ -470,7 +470,7 @@ KMETHOD QTextCursor_insertImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextImageFormat  format = *RawPtr_to(const QTextImageFormat *, sfp[1]);
 		QTextFrameFormat::Position alignment = Int_to(QTextFrameFormat::Position, sfp[2]);
 		qp->insertImage(format, alignment);
@@ -484,7 +484,7 @@ KMETHOD QTextCursor_insertImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString name = String_to(const QString, sfp[1]);
 		qp->insertImage(name);
 	}
@@ -497,7 +497,7 @@ KMETHOD QTextCursor_insertImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QImage  image = *RawPtr_to(const QImage *, sfp[1]);
 		const QString name = String_to(const QString, sfp[2]);
 		qp->insertImage(image, name);
@@ -510,7 +510,7 @@ KMETHOD QTextCursor_insertList(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextListFormat  format = *RawPtr_to(const QTextListFormat *, sfp[1]);
 		QTextList* ret_v = qp->insertList(format);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextList*)ret_v, NULL);
@@ -526,7 +526,7 @@ KMETHOD QTextCursor_insertList(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextListFormat::Style style = Int_to(QTextListFormat::Style, sfp[1]);
 		QTextList* ret_v = qp->insertList(style);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextList*)ret_v, NULL);
@@ -541,7 +541,7 @@ KMETHOD QTextCursor_insertTable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int rows = Int_to(int, sfp[1]);
 		int columns = Int_to(int, sfp[2]);
 		const QTextTableFormat  format = *RawPtr_to(const QTextTableFormat *, sfp[3]);
@@ -559,7 +559,7 @@ KMETHOD QTextCursor_insertTable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int rows = Int_to(int, sfp[1]);
 		int columns = Int_to(int, sfp[2]);
 		QTextTable* ret_v = qp->insertTable(rows, columns);
@@ -575,7 +575,7 @@ KMETHOD QTextCursor_insertText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->insertText(text);
 	}
@@ -588,7 +588,7 @@ KMETHOD QTextCursor_insertText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		const QTextCharFormat  format = *RawPtr_to(const QTextCharFormat *, sfp[2]);
 		qp->insertText(text, format);
@@ -601,22 +601,9 @@ KMETHOD QTextCursor_isCopyOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCursor  other = *RawPtr_to(const QTextCursor *, sfp[1]);
 		bool ret_v = qp->isCopyOf(other);
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QTextCursor.isNull();
-KMETHOD QTextCursor_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -628,7 +615,7 @@ KMETHOD QTextCursor_joinPreviousEditBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->joinPreviousEditBlock();
 	}
 	RETURNvoid_();
@@ -639,7 +626,7 @@ KMETHOD QTextCursor_getKeepPositionOnInsert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->keepPositionOnInsert();
 		RETURNb_(ret_v);
 	} else {
@@ -652,7 +639,7 @@ KMETHOD QTextCursor_mergeBlockCharFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCharFormat  modifier = *RawPtr_to(const QTextCharFormat *, sfp[1]);
 		qp->mergeBlockCharFormat(modifier);
 	}
@@ -664,7 +651,7 @@ KMETHOD QTextCursor_mergeBlockFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextBlockFormat  modifier = *RawPtr_to(const QTextBlockFormat *, sfp[1]);
 		qp->mergeBlockFormat(modifier);
 	}
@@ -676,7 +663,7 @@ KMETHOD QTextCursor_mergeCharFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCharFormat  modifier = *RawPtr_to(const QTextCharFormat *, sfp[1]);
 		qp->mergeCharFormat(modifier);
 	}
@@ -688,7 +675,7 @@ KMETHOD QTextCursor_movePosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCursor::MoveOperation operation = Int_to(QTextCursor::MoveOperation, sfp[1]);
 		QTextCursor::MoveMode mode = Int_to(QTextCursor::MoveMode, sfp[2]);
 		int n = Int_to(int, sfp[3]);
@@ -704,7 +691,7 @@ KMETHOD QTextCursor_getPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->position();
 		RETURNi_(ret_v);
 	} else {
@@ -717,7 +704,7 @@ KMETHOD QTextCursor_positionInBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->positionInBlock();
 		RETURNi_(ret_v);
 	} else {
@@ -730,7 +717,7 @@ KMETHOD QTextCursor_removeSelectedText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->removeSelectedText();
 	}
 	RETURNvoid_();
@@ -741,7 +728,7 @@ KMETHOD QTextCursor_select(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCursor::SelectionType selection = Int_to(QTextCursor::SelectionType, sfp[1]);
 		qp->select(selection);
 	}
@@ -753,7 +740,7 @@ KMETHOD QTextCursor_selectedTableCells(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int* firstRow = Int_to(int*, sfp[1]);
 		int* numRows = Int_to(int*, sfp[2]);
 		int* firstColumn = Int_to(int*, sfp[3]);
@@ -768,7 +755,7 @@ KMETHOD QTextCursor_selectedText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->selectedText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -782,7 +769,7 @@ KMETHOD QTextCursor_selection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextDocumentFragment ret_v = qp->selection();
 		QTextDocumentFragment *ret_v_ = new QTextDocumentFragment(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -797,7 +784,7 @@ KMETHOD QTextCursor_selectionEnd(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->selectionEnd();
 		RETURNi_(ret_v);
 	} else {
@@ -810,7 +797,7 @@ KMETHOD QTextCursor_selectionStart(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->selectionStart();
 		RETURNi_(ret_v);
 	} else {
@@ -823,7 +810,7 @@ KMETHOD QTextCursor_setBlockCharFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCharFormat  format = *RawPtr_to(const QTextCharFormat *, sfp[1]);
 		qp->setBlockCharFormat(format);
 	}
@@ -835,7 +822,7 @@ KMETHOD QTextCursor_setBlockFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextBlockFormat  format = *RawPtr_to(const QTextBlockFormat *, sfp[1]);
 		qp->setBlockFormat(format);
 	}
@@ -847,7 +834,7 @@ KMETHOD QTextCursor_setCharFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCharFormat  format = *RawPtr_to(const QTextCharFormat *, sfp[1]);
 		qp->setCharFormat(format);
 	}
@@ -859,7 +846,7 @@ KMETHOD QTextCursor_setKeepPositionOnInsert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool b = Boolean_to(bool, sfp[1]);
 		qp->setKeepPositionOnInsert(b);
 	}
@@ -871,7 +858,7 @@ KMETHOD QTextCursor_setPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int pos = Int_to(int, sfp[1]);
 		QTextCursor::MoveMode m = Int_to(QTextCursor::MoveMode, sfp[2]);
 		qp->setPosition(pos, m);
@@ -884,7 +871,7 @@ KMETHOD QTextCursor_setVerticalMovementX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		qp->setVerticalMovementX(x);
 	}
@@ -896,7 +883,7 @@ KMETHOD QTextCursor_setVisualNavigation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool b = Boolean_to(bool, sfp[1]);
 		qp->setVisualNavigation(b);
 	}
@@ -908,7 +895,7 @@ KMETHOD QTextCursor_getVerticalMovementX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->verticalMovementX();
 		RETURNi_(ret_v);
 	} else {
@@ -921,7 +908,7 @@ KMETHOD QTextCursor_getVisualNavigation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCursor *  qp = RawPtr_to(QTextCursor *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->visualNavigation();
 		RETURNb_(ret_v);
 	} else {
@@ -929,6 +916,24 @@ KMETHOD QTextCursor_getVisualNavigation(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QTextCursor.parents();
+KMETHOD QTextCursor_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextCursor *qp = RawPtr_to(QTextCursor*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextCursor::DummyQTextCursor()
 {
@@ -977,17 +982,28 @@ bool DummyQTextCursor::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextCursor::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextCursor::connection(QObject *o)
 {
-	return;
+	QTextCursor *p = dynamic_cast<QTextCursor*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTextCursor::KQTextCursor() : QTextCursor()
 {
 	self = NULL;
 	dummy = new DummyQTextCursor();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextCursor_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1042,13 +1058,9 @@ static void QTextCursor_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextCursor_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextCursor *qp = (KQTextCursor *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -1061,15 +1073,6 @@ void KQTextCursor::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQTextCursor(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTextCursor";
-	cdef->free = QTextCursor_free;
-	cdef->reftrace = QTextCursor_reftrace;
-	cdef->compareTo = QTextCursor_compareTo;
 }
 
 static knh_IntData_t QTextCursorConstInt[] = {
@@ -1110,4 +1113,15 @@ static knh_IntData_t QTextCursorConstInt[] = {
 DEFAPI(void) constQTextCursor(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTextCursorConstInt);
 }
+
+
+DEFAPI(void) defQTextCursor(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextCursor";
+	cdef->free = QTextCursor_free;
+	cdef->reftrace = QTextCursor_reftrace;
+	cdef->compareTo = QTextCursor_compareTo;
+}
+
 

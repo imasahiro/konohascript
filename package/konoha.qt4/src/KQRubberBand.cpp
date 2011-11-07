@@ -15,7 +15,7 @@ KMETHOD QRubberBand_move(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRubberBand *  qp = RawPtr_to(QRubberBand *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		qp->move(x, y);
@@ -29,7 +29,7 @@ KMETHOD QRubberBand_move(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRubberBand *  qp = RawPtr_to(QRubberBand *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  p = *RawPtr_to(const QPoint *, sfp[1]);
 		qp->move(p);
 	}
@@ -41,7 +41,7 @@ KMETHOD QRubberBand_resize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRubberBand *  qp = RawPtr_to(QRubberBand *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int width = Int_to(int, sfp[1]);
 		int height = Int_to(int, sfp[2]);
 		qp->resize(width, height);
@@ -55,7 +55,7 @@ KMETHOD QRubberBand_resize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRubberBand *  qp = RawPtr_to(QRubberBand *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  size = *RawPtr_to(const QSize *, sfp[1]);
 		qp->resize(size);
 	}
@@ -67,7 +67,7 @@ KMETHOD QRubberBand_setGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRubberBand *  qp = RawPtr_to(QRubberBand *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		qp->setGeometry(rect);
 	}
@@ -80,7 +80,7 @@ KMETHOD QRubberBand_setGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRubberBand *  qp = RawPtr_to(QRubberBand *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -95,7 +95,7 @@ KMETHOD QRubberBand_shape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRubberBand *  qp = RawPtr_to(QRubberBand *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRubberBand::Shape ret_v = qp->shape();
 		RETURNi_(ret_v);
 	} else {
@@ -154,9 +154,23 @@ bool DummyQRubberBand::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQRubberBand::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQRubberBand::connection(QObject *o)
 {
+	QRubberBand *p = dynamic_cast<QRubberBand*>(o);
+	if (p != NULL) {
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -219,13 +233,9 @@ static void QRubberBand_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QRubberBand_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQRubberBand *qp = (KQRubberBand *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -249,15 +259,6 @@ bool KQRubberBand::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQRubberBand(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QRubberBand";
-	cdef->free = QRubberBand_free;
-	cdef->reftrace = QRubberBand_reftrace;
-	cdef->compareTo = QRubberBand_compareTo;
-}
-
 static knh_IntData_t QRubberBandConstInt[] = {
 	{"Line", QRubberBand::Line},
 	{"Rectangle", QRubberBand::Rectangle},
@@ -267,4 +268,15 @@ static knh_IntData_t QRubberBandConstInt[] = {
 DEFAPI(void) constQRubberBand(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QRubberBandConstInt);
 }
+
+
+DEFAPI(void) defQRubberBand(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QRubberBand";
+	cdef->free = QRubberBand_free;
+	cdef->reftrace = QRubberBand_reftrace;
+	cdef->compareTo = QRubberBand_compareTo;
+}
+
 

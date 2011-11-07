@@ -3,7 +3,7 @@ KMETHOD QSortFilterProxyModel_buddy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QModelIndex ret_v = qp->buddy(index);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -19,7 +19,7 @@ KMETHOD QSortFilterProxyModel_canFetchMore(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		bool ret_v = qp->canFetchMore(parent);
 		RETURNb_(ret_v);
@@ -33,7 +33,7 @@ KMETHOD QSortFilterProxyModel_columnCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int ret_v = qp->columnCount(parent);
 		RETURNi_(ret_v);
@@ -47,7 +47,7 @@ KMETHOD QSortFilterProxyModel_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int role = Int_to(int, sfp[2]);
 		QVariant ret_v = qp->data(index, role);
@@ -64,7 +64,7 @@ KMETHOD QSortFilterProxyModel_dropMimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMimeData*  data = RawPtr_to(const QMimeData*, sfp[1]);
 		Qt::DropAction action = Int_to(Qt::DropAction, sfp[2]);
 		int row = Int_to(int, sfp[3]);
@@ -82,24 +82,26 @@ KMETHOD QSortFilterProxyModel_fetchMore(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		qp->fetchMore(parent);
 	}
 	RETURNvoid_();
 }
 
-//@Virtual @Override int QSortFilterProxyModel.flags(QModelIndex index);
+//@Virtual @Override QtItemFlags QSortFilterProxyModel.flags(QModelIndex index);
 KMETHOD QSortFilterProxyModel_flags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		Qt::ItemFlags ret_v = qp->flags(index);
-		RETURNi_(ret_v);
+		Qt::ItemFlags *ret_v_ = new Qt::ItemFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -108,7 +110,7 @@ KMETHOD QSortFilterProxyModel_hasChildren(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		bool ret_v = qp->hasChildren(parent);
 		RETURNb_(ret_v);
@@ -122,7 +124,7 @@ KMETHOD QSortFilterProxyModel_getHeaderData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int section = Int_to(int, sfp[1]);
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[2]);
 		int role = Int_to(int, sfp[3]);
@@ -140,7 +142,7 @@ KMETHOD QSortFilterProxyModel_index(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -153,12 +155,12 @@ KMETHOD QSortFilterProxyModel_index(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////@Virtual @Override boolean QSortFilterProxyModel.insertColumns(int column, int count, QModelIndex parent);
+//@Virtual @Override boolean QSortFilterProxyModel.insertColumns(int column, int count, QModelIndex parent);
 KMETHOD QSortFilterProxyModel_insertColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -169,12 +171,12 @@ KMETHOD QSortFilterProxyModel_insertColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////@Virtual @Override boolean QSortFilterProxyModel.insertRows(int row, int count, QModelIndex parent);
+//@Virtual @Override boolean QSortFilterProxyModel.insertRows(int row, int count, QModelIndex parent);
 KMETHOD QSortFilterProxyModel_insertRows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -190,7 +192,7 @@ KMETHOD QSortFilterProxyModel_mapFromSource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  sourceIndex = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QModelIndex ret_v = qp->mapFromSource(sourceIndex);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -206,7 +208,7 @@ KMETHOD QSortFilterProxyModel_mapSelectionFromSource(CTX ctx, knh_sfp_t *sfp _RI
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QItemSelection  sourceSelection = *RawPtr_to(const QItemSelection *, sfp[1]);
 		QItemSelection ret_v = qp->mapSelectionFromSource(sourceSelection);
 		QItemSelection *ret_v_ = new QItemSelection(ret_v);
@@ -222,7 +224,7 @@ KMETHOD QSortFilterProxyModel_mapSelectionToSource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QItemSelection  proxySelection = *RawPtr_to(const QItemSelection *, sfp[1]);
 		QItemSelection ret_v = qp->mapSelectionToSource(proxySelection);
 		QItemSelection *ret_v_ = new QItemSelection(ret_v);
@@ -238,7 +240,7 @@ KMETHOD QSortFilterProxyModel_mapToSource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  proxyIndex = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QModelIndex ret_v = qp->mapToSource(proxyIndex);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -249,17 +251,17 @@ KMETHOD QSortFilterProxyModel_mapToSource(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual @Override QModelIndexList QSortFilterProxyModel.match(QModelIndex start, int role, QVariant value, int hits, int flags);
+//@Virtual @Override QModelIndexList QSortFilterProxyModel.match(QModelIndex start, int role, QVariant value, int hits, QtMatchFlags flags);
 KMETHOD QSortFilterProxyModel_match(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  start = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int role = Int_to(int, sfp[2]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[3]);
 		int hits = Int_to(int, sfp[4]);
-		Qt::MatchFlags flags = Int_to(Qt::MatchFlags, sfp[5]);
+		initFlag(flags, Qt::MatchFlags, sfp[5]);
 		QModelIndexList ret_v = qp->match(start, role, value, hits, flags);
 		QModelIndexList *ret_v_ = new QModelIndexList(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -274,7 +276,7 @@ KMETHOD QSortFilterProxyModel_mimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndexList  indexes = *RawPtr_to(const QModelIndexList *, sfp[1]);
 		QMimeData* ret_v = qp->mimeData(indexes);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMimeData*)ret_v, NULL);
@@ -289,7 +291,7 @@ KMETHOD QSortFilterProxyModel_parent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  child = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QModelIndex ret_v = qp->parent(child);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -305,7 +307,7 @@ KMETHOD QSortFilterProxyModel_removeColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -321,7 +323,7 @@ KMETHOD QSortFilterProxyModel_removeRows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int count = Int_to(int, sfp[2]);
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -337,7 +339,7 @@ KMETHOD QSortFilterProxyModel_rowCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  parent = *RawPtr_to(const QModelIndex *, sfp[1]);
 		int ret_v = qp->rowCount(parent);
 		RETURNi_(ret_v);
@@ -351,7 +353,7 @@ KMETHOD QSortFilterProxyModel_setData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[2]);
 		int role = Int_to(int, sfp[3]);
@@ -367,7 +369,7 @@ KMETHOD QSortFilterProxyModel_setHeaderData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int section = Int_to(int, sfp[1]);
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[2]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[3]);
@@ -384,7 +386,7 @@ KMETHOD QSortFilterProxyModel_setSourceModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel*  sourceModel = RawPtr_to(QAbstractItemModel*, sfp[1]);
 		qp->setSourceModel(sourceModel);
 	}
@@ -396,7 +398,7 @@ KMETHOD QSortFilterProxyModel_sort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[2]);
 		qp->sort(column, order);
@@ -409,7 +411,7 @@ KMETHOD QSortFilterProxyModel_span(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		QSize ret_v = qp->span(index);
 		QSize *ret_v_ = new QSize(ret_v);
@@ -420,16 +422,18 @@ KMETHOD QSortFilterProxyModel_span(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual @Override int QSortFilterProxyModel.supportedDropActions();
+//@Virtual @Override QtDropActions QSortFilterProxyModel.supportedDropActions();
 KMETHOD QSortFilterProxyModel_supportedDropActions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DropActions ret_v = qp->supportedDropActions();
-		RETURNi_(ret_v);
+		Qt::DropActions *ret_v_ = new Qt::DropActions(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -449,7 +453,7 @@ KMETHOD QSortFilterProxyModel_getDynamicSortFilter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->dynamicSortFilter();
 		RETURNb_(ret_v);
 	} else {
@@ -462,7 +466,7 @@ KMETHOD QSortFilterProxyModel_getFilterCaseSensitivity(CTX ctx, knh_sfp_t *sfp _
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::CaseSensitivity ret_v = qp->filterCaseSensitivity();
 		RETURNi_(ret_v);
 	} else {
@@ -475,7 +479,7 @@ KMETHOD QSortFilterProxyModel_getFilterKeyColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->filterKeyColumn();
 		RETURNi_(ret_v);
 	} else {
@@ -488,7 +492,7 @@ KMETHOD QSortFilterProxyModel_getFilterRegExp(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRegExp ret_v = qp->filterRegExp();
 		QRegExp *ret_v_ = new QRegExp(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -503,7 +507,7 @@ KMETHOD QSortFilterProxyModel_getFilterRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->filterRole();
 		RETURNi_(ret_v);
 	} else {
@@ -516,7 +520,7 @@ KMETHOD QSortFilterProxyModel_isSortLocaleAware(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSortLocaleAware();
 		RETURNb_(ret_v);
 	} else {
@@ -529,7 +533,7 @@ KMETHOD QSortFilterProxyModel_setDynamicSortFilter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setDynamicSortFilter(enable);
 	}
@@ -541,7 +545,7 @@ KMETHOD QSortFilterProxyModel_setFilterCaseSensitivity(CTX ctx, knh_sfp_t *sfp _
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::CaseSensitivity cs = Int_to(Qt::CaseSensitivity, sfp[1]);
 		qp->setFilterCaseSensitivity(cs);
 	}
@@ -553,7 +557,7 @@ KMETHOD QSortFilterProxyModel_setFilterKeyColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		qp->setFilterKeyColumn(column);
 	}
@@ -565,7 +569,7 @@ KMETHOD QSortFilterProxyModel_setFilterRegExp(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRegExp  regExp = *RawPtr_to(const QRegExp *, sfp[1]);
 		qp->setFilterRegExp(regExp);
 	}
@@ -577,7 +581,7 @@ KMETHOD QSortFilterProxyModel_setFilterRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int role = Int_to(int, sfp[1]);
 		qp->setFilterRole(role);
 	}
@@ -589,7 +593,7 @@ KMETHOD QSortFilterProxyModel_setSortCaseSensitivity(CTX ctx, knh_sfp_t *sfp _RI
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::CaseSensitivity cs = Int_to(Qt::CaseSensitivity, sfp[1]);
 		qp->setSortCaseSensitivity(cs);
 	}
@@ -601,7 +605,7 @@ KMETHOD QSortFilterProxyModel_setSortLocaleAware(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool on = Boolean_to(bool, sfp[1]);
 		qp->setSortLocaleAware(on);
 	}
@@ -613,7 +617,7 @@ KMETHOD QSortFilterProxyModel_setSortRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int role = Int_to(int, sfp[1]);
 		qp->setSortRole(role);
 	}
@@ -625,7 +629,7 @@ KMETHOD QSortFilterProxyModel_getSortCaseSensitivity(CTX ctx, knh_sfp_t *sfp _RI
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::CaseSensitivity ret_v = qp->sortCaseSensitivity();
 		RETURNi_(ret_v);
 	} else {
@@ -638,7 +642,7 @@ KMETHOD QSortFilterProxyModel_sortColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->sortColumn();
 		RETURNi_(ret_v);
 	} else {
@@ -651,7 +655,7 @@ KMETHOD QSortFilterProxyModel_sortOrder(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::SortOrder ret_v = qp->sortOrder();
 		RETURNi_(ret_v);
 	} else {
@@ -664,7 +668,7 @@ KMETHOD QSortFilterProxyModel_getSortRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->sortRole();
 		RETURNi_(ret_v);
 	} else {
@@ -677,7 +681,7 @@ KMETHOD QSortFilterProxyModel_invalidate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->invalidate();
 	}
 	RETURNvoid_();
@@ -688,7 +692,7 @@ KMETHOD QSortFilterProxyModel_setFilterFixedString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString pattern = String_to(const QString, sfp[1]);
 		qp->setFilterFixedString(pattern);
 	}
@@ -701,7 +705,7 @@ KMETHOD QSortFilterProxyModel_setFilterRegExp(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString pattern = String_to(const QString, sfp[1]);
 		qp->setFilterRegExp(pattern);
 	}
@@ -713,7 +717,7 @@ KMETHOD QSortFilterProxyModel_setFilterWildcard(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSortFilterProxyModel *  qp = RawPtr_to(QSortFilterProxyModel *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString pattern = String_to(const QString, sfp[1]);
 		qp->setFilterWildcard(pattern);
 	}
@@ -771,9 +775,23 @@ bool DummyQSortFilterProxyModel::signalConnect(knh_Func_t *callback_func, string
 	}
 }
 
+void DummyQSortFilterProxyModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractProxyModel::reftrace(ctx, p, tail_);
+}
 
 void DummyQSortFilterProxyModel::connection(QObject *o)
 {
+	QSortFilterProxyModel *p = dynamic_cast<QSortFilterProxyModel*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractProxyModel::connection(o);
 }
 
@@ -836,13 +854,9 @@ static void QSortFilterProxyModel_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSortFilterProxyModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSortFilterProxyModel *qp = (KQSortFilterProxyModel *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -865,6 +879,8 @@ bool KQSortFilterProxyModel::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQSortFilterProxyModel(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

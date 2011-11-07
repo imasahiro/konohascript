@@ -1,9 +1,9 @@
-//QToolBox QToolBox.new(QWidget parent, int f);
+//QToolBox QToolBox.new(QWidget parent, QtWindowFlags f);
 KMETHOD QToolBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
-	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[2]);
+	initFlag(f, Qt::WindowFlags, sfp[2]);
 	KQToolBox *ret_v = new KQToolBox(parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -15,7 +15,7 @@ KMETHOD QToolBox_addItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		const QIcon  iconSet = *RawPtr_to(const QIcon *, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
@@ -32,7 +32,7 @@ KMETHOD QToolBox_addItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  w = RawPtr_to(QWidget*, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		int ret_v = qp->addItem(w, text);
@@ -47,7 +47,7 @@ KMETHOD QToolBox_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->count();
 		RETURNi_(ret_v);
 	} else {
@@ -60,7 +60,7 @@ KMETHOD QToolBox_getCurrentIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->currentIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -73,7 +73,7 @@ KMETHOD QToolBox_getCurrentWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->currentWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -87,7 +87,7 @@ KMETHOD QToolBox_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		int ret_v = qp->indexOf(widget);
 		RETURNi_(ret_v);
@@ -101,7 +101,7 @@ KMETHOD QToolBox_insertItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[2]);
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[3]);
@@ -119,7 +119,7 @@ KMETHOD QToolBox_insertItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
@@ -135,7 +135,7 @@ KMETHOD QToolBox_isItemEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		bool ret_v = qp->isItemEnabled(index);
 		RETURNb_(ret_v);
@@ -149,7 +149,7 @@ KMETHOD QToolBox_getItemIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QIcon ret_v = qp->itemIcon(index);
 		QIcon *ret_v_ = new QIcon(ret_v);
@@ -165,7 +165,7 @@ KMETHOD QToolBox_getItemText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QString ret_v = qp->itemText(index);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -180,7 +180,7 @@ KMETHOD QToolBox_getItemToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QString ret_v = qp->itemToolTip(index);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -195,7 +195,7 @@ KMETHOD QToolBox_removeItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		qp->removeItem(index);
 	}
@@ -207,7 +207,7 @@ KMETHOD QToolBox_setItemEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		bool enabled = Boolean_to(bool, sfp[2]);
 		qp->setItemEnabled(index, enabled);
@@ -220,7 +220,7 @@ KMETHOD QToolBox_setItemIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[2]);
 		qp->setItemIcon(index, icon);
@@ -233,7 +233,7 @@ KMETHOD QToolBox_setItemText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		qp->setItemText(index, text);
@@ -246,7 +246,7 @@ KMETHOD QToolBox_setItemToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QString toolTip = String_to(const QString, sfp[2]);
 		qp->setItemToolTip(index, toolTip);
@@ -259,7 +259,7 @@ KMETHOD QToolBox_widget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QWidget* ret_v = qp->widget(index);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
@@ -274,7 +274,7 @@ KMETHOD QToolBox_setCurrentIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		qp->setCurrentIndex(index);
 	}
@@ -286,7 +286,7 @@ KMETHOD QToolBox_setCurrentWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QToolBox *  qp = RawPtr_to(QToolBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->setCurrentWidget(widget);
 	}
@@ -360,10 +360,25 @@ bool DummyQToolBox::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQToolBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, current_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQFrame::reftrace(ctx, p, tail_);
+}
 
 void DummyQToolBox::connection(QObject *o)
 {
-	connect(o, SIGNAL(currentChanged(int)), this, SLOT(currentChangedSlot(int)));
+	QToolBox *p = dynamic_cast<QToolBox*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(currentChanged(int)), this, SLOT(currentChangedSlot(int)));
+	}
 	DummyQFrame::connection(o);
 }
 
@@ -426,17 +441,9 @@ static void QToolBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QToolBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQToolBox *qp = (KQToolBox *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->current_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->current_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -459,6 +466,8 @@ bool KQToolBox::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQToolBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

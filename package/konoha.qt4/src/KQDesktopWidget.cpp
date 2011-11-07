@@ -3,7 +3,7 @@ KMETHOD QDesktopWidget_availableGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDesktopWidget *  qp = RawPtr_to(QDesktopWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int screen = Int_to(int, sfp[1]);
 		const QRect ret_v = qp->availableGeometry(screen);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -20,7 +20,7 @@ KMETHOD QDesktopWidget_availableGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDesktopWidget *  qp = RawPtr_to(QDesktopWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[1]);
 		const QRect ret_v = qp->availableGeometry(widget);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -37,7 +37,7 @@ KMETHOD QDesktopWidget_availableGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDesktopWidget *  qp = RawPtr_to(QDesktopWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  p = *RawPtr_to(const QPoint *, sfp[1]);
 		const QRect ret_v = qp->availableGeometry(p);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -53,7 +53,7 @@ KMETHOD QDesktopWidget_isVirtualDesktop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDesktopWidget *  qp = RawPtr_to(QDesktopWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isVirtualDesktop();
 		RETURNb_(ret_v);
 	} else {
@@ -66,7 +66,7 @@ KMETHOD QDesktopWidget_primaryScreen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDesktopWidget *  qp = RawPtr_to(QDesktopWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->primaryScreen();
 		RETURNi_(ret_v);
 	} else {
@@ -79,7 +79,7 @@ KMETHOD QDesktopWidget_screen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDesktopWidget *  qp = RawPtr_to(QDesktopWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int screen = Int_to(int, sfp[1]);
 		QWidget* ret_v = qp->screen(screen);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
@@ -94,7 +94,7 @@ KMETHOD QDesktopWidget_screenCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDesktopWidget *  qp = RawPtr_to(QDesktopWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->screenCount();
 		RETURNi_(ret_v);
 	} else {
@@ -107,7 +107,7 @@ KMETHOD QDesktopWidget_screenGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDesktopWidget *  qp = RawPtr_to(QDesktopWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int screen = Int_to(int, sfp[1]);
 		const QRect ret_v = qp->screenGeometry(screen);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -124,7 +124,7 @@ KMETHOD QDesktopWidget_screenGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDesktopWidget *  qp = RawPtr_to(QDesktopWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[1]);
 		const QRect ret_v = qp->screenGeometry(widget);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -141,7 +141,7 @@ KMETHOD QDesktopWidget_screenGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDesktopWidget *  qp = RawPtr_to(QDesktopWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  p = *RawPtr_to(const QPoint *, sfp[1]);
 		const QRect ret_v = qp->screenGeometry(p);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -157,7 +157,7 @@ KMETHOD QDesktopWidget_screenNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDesktopWidget *  qp = RawPtr_to(QDesktopWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[1]);
 		int ret_v = qp->screenNumber(widget);
 		RETURNi_(ret_v);
@@ -172,7 +172,7 @@ KMETHOD QDesktopWidget_screenNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDesktopWidget *  qp = RawPtr_to(QDesktopWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
 		int ret_v = qp->screenNumber(point);
 		RETURNi_(ret_v);
@@ -280,20 +280,30 @@ bool DummyQDesktopWidget::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDesktopWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 3;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, resized_func);
+	KNH_ADDNNREF(ctx, screen_count_changed_func);
+	KNH_ADDNNREF(ctx, work_area_resized_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQDesktopWidget::connection(QObject *o)
 {
-	connect(o, SIGNAL(resized(int)), this, SLOT(resizedSlot(int)));
-	connect(o, SIGNAL(screenCountChanged(int)), this, SLOT(screenCountChangedSlot(int)));
-	connect(o, SIGNAL(workAreaResized(int)), this, SLOT(workAreaResizedSlot(int)));
+	QDesktopWidget *p = dynamic_cast<QDesktopWidget*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(resized(int)), this, SLOT(resizedSlot(int)));
+		connect(p, SIGNAL(screenCountChanged(int)), this, SLOT(screenCountChangedSlot(int)));
+		connect(p, SIGNAL(workAreaResized(int)), this, SLOT(workAreaResizedSlot(int)));
+	}
 	DummyQWidget::connection(o);
-}
-
-KQDesktopWidget::KQDesktopWidget() : QDesktopWidget()
-{
-	self = NULL;
-	dummy = new DummyQDesktopWidget();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDesktopWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -348,25 +358,9 @@ static void QDesktopWidget_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDesktopWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 3;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDesktopWidget *qp = (KQDesktopWidget *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->resized_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->resized_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->screen_count_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->screen_count_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->work_area_resized_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->work_area_resized_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -389,6 +383,8 @@ bool KQDesktopWidget::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQDesktopWidget(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

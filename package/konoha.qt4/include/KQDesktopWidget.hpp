@@ -14,6 +14,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool resizedSlot(int screen);
@@ -26,7 +27,7 @@ class KQDesktopWidget : public QDesktopWidget {
 public:
 	knh_RawPtr_t *self;
 	DummyQDesktopWidget *dummy;
-	KQDesktopWidget();
+
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

@@ -14,7 +14,7 @@ KMETHOD QSignalMapper_getMapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSignalMapper *  qp = RawPtr_to(QSignalMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int id = Int_to(int, sfp[1]);
 		QObject* ret_v = qp->mapping(id);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QObject*)ret_v, NULL);
@@ -30,7 +30,7 @@ KMETHOD QSignalMapper_getMapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSignalMapper *  qp = RawPtr_to(QSignalMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString id = String_to(const QString, sfp[1]);
 		QObject* ret_v = qp->mapping(id);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QObject*)ret_v, NULL);
@@ -46,7 +46,7 @@ KMETHOD QSignalMapper_getMapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSignalMapper *  qp = RawPtr_to(QSignalMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		QObject* ret_v = qp->mapping(widget);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QObject*)ret_v, NULL);
@@ -62,7 +62,7 @@ KMETHOD QSignalMapper_getMapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSignalMapper *  qp = RawPtr_to(QSignalMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
 		QObject* ret_v = qp->mapping(object);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QObject*)ret_v, NULL);
@@ -77,7 +77,7 @@ KMETHOD QSignalMapper_removeMappings(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSignalMapper *  qp = RawPtr_to(QSignalMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  sender = RawPtr_to(QObject*, sfp[1]);
 		qp->removeMappings(sender);
 	}
@@ -89,7 +89,7 @@ KMETHOD QSignalMapper_setMapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSignalMapper *  qp = RawPtr_to(QSignalMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  sender = RawPtr_to(QObject*, sfp[1]);
 		int id = Int_to(int, sfp[2]);
 		qp->setMapping(sender, id);
@@ -103,7 +103,7 @@ KMETHOD QSignalMapper_setMapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSignalMapper *  qp = RawPtr_to(QSignalMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  sender = RawPtr_to(QObject*, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		qp->setMapping(sender, text);
@@ -117,7 +117,7 @@ KMETHOD QSignalMapper_setMapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSignalMapper *  qp = RawPtr_to(QSignalMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  sender = RawPtr_to(QObject*, sfp[1]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[2]);
 		qp->setMapping(sender, widget);
@@ -131,7 +131,7 @@ KMETHOD QSignalMapper_setMapping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSignalMapper *  qp = RawPtr_to(QSignalMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  sender = RawPtr_to(QObject*, sfp[1]);
 		QObject*  object = RawPtr_to(QObject*, sfp[2]);
 		qp->setMapping(sender, object);
@@ -144,7 +144,7 @@ KMETHOD QSignalMapper_map(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSignalMapper *  qp = RawPtr_to(QSignalMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->map();
 	}
 	RETURNvoid_();
@@ -156,7 +156,7 @@ KMETHOD QSignalMapper_map(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSignalMapper *  qp = RawPtr_to(QSignalMapper *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  sender = RawPtr_to(QObject*, sfp[1]);
 		qp->map(sender);
 	}
@@ -214,9 +214,23 @@ bool DummyQSignalMapper::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSignalMapper::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQSignalMapper::connection(QObject *o)
 {
+	QSignalMapper *p = dynamic_cast<QSignalMapper*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
 }
 
@@ -279,13 +293,9 @@ static void QSignalMapper_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSignalMapper_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSignalMapper *qp = (KQSignalMapper *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -308,6 +318,8 @@ bool KQSignalMapper::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQSignalMapper(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

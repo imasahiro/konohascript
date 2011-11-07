@@ -98,11 +98,25 @@ false
 enbeddedClass
 false
 
-typedefed_objects
+flag_objects
+class
+QMainWindow
+name
 DockOptions
 
-parent_typedefed_objects
+parent_flag_objects
+class
+QWidget
+name
 RenderFlags
+
+typedefed_objects
+
+parent_typedefed_objects
+
+class_objects
+
+parent_class_objects
 
 enums
 class_name
@@ -127,6 +141,23 @@ key
 DrawWindowBackground
 DrawChildren
 IgnoreMask
+public_flag
+true
+class_name
+QPaintDevice
+name
+PaintDeviceMetric
+key
+PdmWidth
+PdmHeight
+PdmWidthMM
+PdmHeightMM
+PdmNumColors
+PdmDepth
+PdmDpiX
+PdmDpiY
+PdmPhysicalDpiX
+PdmPhysicalDpiY
 public_flag
 true
 

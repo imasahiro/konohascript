@@ -25,7 +25,7 @@ KMETHOD QProcessEnvironment_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcessEnvironment *  qp = RawPtr_to(QProcessEnvironment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -36,7 +36,7 @@ KMETHOD QProcessEnvironment_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcessEnvironment *  qp = RawPtr_to(QProcessEnvironment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString name = String_to(const QString, sfp[1]);
 		bool ret_v = qp->contains(name);
 		RETURNb_(ret_v);
@@ -50,7 +50,7 @@ KMETHOD QProcessEnvironment_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcessEnvironment *  qp = RawPtr_to(QProcessEnvironment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString name = String_to(const QString, sfp[1]);
 		const QString value = String_to(const QString, sfp[2]);
 		qp->insert(name, value);
@@ -63,7 +63,7 @@ KMETHOD QProcessEnvironment_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcessEnvironment *  qp = RawPtr_to(QProcessEnvironment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
 		RETURNb_(ret_v);
 	} else {
@@ -76,7 +76,7 @@ KMETHOD QProcessEnvironment_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcessEnvironment *  qp = RawPtr_to(QProcessEnvironment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString name = String_to(const QString, sfp[1]);
 		qp->remove(name);
 	}
@@ -88,7 +88,7 @@ KMETHOD QProcessEnvironment_value(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProcessEnvironment *  qp = RawPtr_to(QProcessEnvironment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString name = String_to(const QString, sfp[1]);
 		const QString defaultValue = String_to(const QString, sfp[2]);
 		QString ret_v = qp->value(name, defaultValue);
@@ -103,9 +103,8 @@ KMETHOD QProcessEnvironment_value(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QProcessEnvironment_systemEnvironment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QProcessEnvironment *  qp = RawPtr_to(QProcessEnvironment *, sfp[0]);
-	if (qp != NULL) {
-		QProcessEnvironment ret_v = qp->systemEnvironment();
+	if (true) {
+		QProcessEnvironment ret_v = QProcessEnvironment::systemEnvironment();
 		QProcessEnvironment *ret_v_ = new QProcessEnvironment(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -114,6 +113,24 @@ KMETHOD QProcessEnvironment_systemEnvironment(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QProcessEnvironment.parents();
+KMETHOD QProcessEnvironment_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QProcessEnvironment *qp = RawPtr_to(QProcessEnvironment*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQProcessEnvironment::DummyQProcessEnvironment()
 {
@@ -162,17 +179,28 @@ bool DummyQProcessEnvironment::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQProcessEnvironment::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQProcessEnvironment::connection(QObject *o)
 {
-	return;
+	QProcessEnvironment *p = dynamic_cast<QProcessEnvironment*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQProcessEnvironment::KQProcessEnvironment() : QProcessEnvironment()
 {
 	self = NULL;
 	dummy = new DummyQProcessEnvironment();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QProcessEnvironment_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -227,13 +255,9 @@ static void QProcessEnvironment_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QProcessEnvironment_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQProcessEnvironment *qp = (KQProcessEnvironment *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -247,6 +271,8 @@ void KQProcessEnvironment::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQProcessEnvironment(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

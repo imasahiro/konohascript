@@ -71,9 +71,23 @@ bool DummyQStyleOptionViewItem::signalConnect(knh_Func_t *callback_func, string 
 	}
 }
 
+void DummyQStyleOptionViewItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOption::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionViewItem::connection(QObject *o)
 {
+	QStyleOptionViewItem *p = dynamic_cast<QStyleOptionViewItem*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOption::connection(o);
 }
 
@@ -81,7 +95,6 @@ KQStyleOptionViewItem::KQStyleOptionViewItem() : QStyleOptionViewItem()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionViewItem();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionViewItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,13 +149,9 @@ static void QStyleOptionViewItem_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionViewItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionViewItem *qp = (KQStyleOptionViewItem *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -155,15 +164,6 @@ void KQStyleOptionViewItem::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQStyleOptionViewItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionViewItem";
-	cdef->free = QStyleOptionViewItem_free;
-	cdef->reftrace = QStyleOptionViewItem_reftrace;
-	cdef->compareTo = QStyleOptionViewItem_compareTo;
 }
 
 static knh_IntData_t QStyleOptionViewItemConstInt[] = {
@@ -179,4 +179,15 @@ static knh_IntData_t QStyleOptionViewItemConstInt[] = {
 DEFAPI(void) constQStyleOptionViewItem(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionViewItemConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionViewItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionViewItem";
+	cdef->free = QStyleOptionViewItem_free;
+	cdef->reftrace = QStyleOptionViewItem_reftrace;
+	cdef->compareTo = QStyleOptionViewItem_compareTo;
+}
+
 

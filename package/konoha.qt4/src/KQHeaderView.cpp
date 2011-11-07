@@ -3,7 +3,7 @@ KMETHOD QHeaderView_reset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->reset();
 	}
 	RETURNvoid_();
@@ -14,7 +14,7 @@ KMETHOD QHeaderView_setModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel*  model = RawPtr_to(QAbstractItemModel*, sfp[1]);
 		qp->setModel(model);
 	}
@@ -26,7 +26,7 @@ KMETHOD QHeaderView_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -53,7 +53,7 @@ KMETHOD QHeaderView_getCascadingSectionResizes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->cascadingSectionResizes();
 		RETURNb_(ret_v);
 	} else {
@@ -66,7 +66,7 @@ KMETHOD QHeaderView_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->count();
 		RETURNi_(ret_v);
 	} else {
@@ -74,16 +74,18 @@ KMETHOD QHeaderView_count(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QHeaderView.getDefaultAlignment();
+//QtAlignment QHeaderView.getDefaultAlignment();
 KMETHOD QHeaderView_getDefaultAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->defaultAlignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -92,7 +94,7 @@ KMETHOD QHeaderView_getDefaultSectionSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->defaultSectionSize();
 		RETURNi_(ret_v);
 	} else {
@@ -105,7 +107,7 @@ KMETHOD QHeaderView_hiddenSectionCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->hiddenSectionCount();
 		RETURNi_(ret_v);
 	} else {
@@ -118,7 +120,7 @@ KMETHOD QHeaderView_hideSection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int logicalIndex = Int_to(int, sfp[1]);
 		qp->hideSection(logicalIndex);
 	}
@@ -130,7 +132,7 @@ KMETHOD QHeaderView_getHighlightSections(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->highlightSections();
 		RETURNb_(ret_v);
 	} else {
@@ -143,7 +145,7 @@ KMETHOD QHeaderView_isClickable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isClickable();
 		RETURNb_(ret_v);
 	} else {
@@ -156,7 +158,7 @@ KMETHOD QHeaderView_isMovable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isMovable();
 		RETURNb_(ret_v);
 	} else {
@@ -169,7 +171,7 @@ KMETHOD QHeaderView_isSectionHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int logicalIndex = Int_to(int, sfp[1]);
 		bool ret_v = qp->isSectionHidden(logicalIndex);
 		RETURNb_(ret_v);
@@ -183,7 +185,7 @@ KMETHOD QHeaderView_isSortIndicatorShown(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSortIndicatorShown();
 		RETURNb_(ret_v);
 	} else {
@@ -196,7 +198,7 @@ KMETHOD QHeaderView_length(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->length();
 		RETURNi_(ret_v);
 	} else {
@@ -209,7 +211,7 @@ KMETHOD QHeaderView_logicalIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int visualIndex = Int_to(int, sfp[1]);
 		int ret_v = qp->logicalIndex(visualIndex);
 		RETURNi_(ret_v);
@@ -223,7 +225,7 @@ KMETHOD QHeaderView_logicalIndexAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int position = Int_to(int, sfp[1]);
 		int ret_v = qp->logicalIndexAt(position);
 		RETURNi_(ret_v);
@@ -238,7 +240,7 @@ KMETHOD QHeaderView_logicalIndexAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int ret_v = qp->logicalIndexAt(x, y);
@@ -254,7 +256,7 @@ KMETHOD QHeaderView_logicalIndexAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 		int ret_v = qp->logicalIndexAt(pos);
 		RETURNi_(ret_v);
@@ -268,7 +270,7 @@ KMETHOD QHeaderView_getMinimumSectionSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->minimumSectionSize();
 		RETURNi_(ret_v);
 	} else {
@@ -281,7 +283,7 @@ KMETHOD QHeaderView_moveSection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int from = Int_to(int, sfp[1]);
 		int to = Int_to(int, sfp[2]);
 		qp->moveSection(from, to);
@@ -294,7 +296,7 @@ KMETHOD QHeaderView_offset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->offset();
 		RETURNi_(ret_v);
 	} else {
@@ -307,7 +309,7 @@ KMETHOD QHeaderView_orientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation ret_v = qp->orientation();
 		RETURNi_(ret_v);
 	} else {
@@ -320,7 +322,7 @@ KMETHOD QHeaderView_getResizeMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int logicalIndex = Int_to(int, sfp[1]);
 		QHeaderView::ResizeMode ret_v = qp->resizeMode(logicalIndex);
 		RETURNi_(ret_v);
@@ -334,7 +336,7 @@ KMETHOD QHeaderView_resizeSection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int logicalIndex = Int_to(int, sfp[1]);
 		int size = Int_to(int, sfp[2]);
 		qp->resizeSection(logicalIndex, size);
@@ -347,7 +349,7 @@ KMETHOD QHeaderView_resizeSections(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QHeaderView::ResizeMode mode = Int_to(QHeaderView::ResizeMode, sfp[1]);
 		qp->resizeSections(mode);
 	}
@@ -359,7 +361,7 @@ KMETHOD QHeaderView_restoreState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  state = *RawPtr_to(const QByteArray *, sfp[1]);
 		bool ret_v = qp->restoreState(state);
 		RETURNb_(ret_v);
@@ -373,7 +375,7 @@ KMETHOD QHeaderView_saveState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->saveState();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -388,7 +390,7 @@ KMETHOD QHeaderView_sectionPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int logicalIndex = Int_to(int, sfp[1]);
 		int ret_v = qp->sectionPosition(logicalIndex);
 		RETURNi_(ret_v);
@@ -402,7 +404,7 @@ KMETHOD QHeaderView_sectionSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int logicalIndex = Int_to(int, sfp[1]);
 		int ret_v = qp->sectionSize(logicalIndex);
 		RETURNi_(ret_v);
@@ -416,7 +418,7 @@ KMETHOD QHeaderView_sectionSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int logicalIndex = Int_to(int, sfp[1]);
 		int ret_v = qp->sectionSizeHint(logicalIndex);
 		RETURNi_(ret_v);
@@ -430,7 +432,7 @@ KMETHOD QHeaderView_sectionViewportPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int logicalIndex = Int_to(int, sfp[1]);
 		int ret_v = qp->sectionViewportPosition(logicalIndex);
 		RETURNi_(ret_v);
@@ -444,7 +446,7 @@ KMETHOD QHeaderView_sectionsHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->sectionsHidden();
 		RETURNb_(ret_v);
 	} else {
@@ -457,7 +459,7 @@ KMETHOD QHeaderView_sectionsMoved(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->sectionsMoved();
 		RETURNb_(ret_v);
 	} else {
@@ -470,7 +472,7 @@ KMETHOD QHeaderView_setCascadingSectionResizes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setCascadingSectionResizes(enable);
 	}
@@ -482,20 +484,20 @@ KMETHOD QHeaderView_setClickable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool clickable = Boolean_to(bool, sfp[1]);
 		qp->setClickable(clickable);
 	}
 	RETURNvoid_();
 }
 
-//void QHeaderView.setDefaultAlignment(int alignment);
+//void QHeaderView.setDefaultAlignment(QtAlignment alignment);
 KMETHOD QHeaderView_setDefaultAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(alignment, Qt::Alignment, sfp[1]);
 		qp->setDefaultAlignment(alignment);
 	}
 	RETURNvoid_();
@@ -506,7 +508,7 @@ KMETHOD QHeaderView_setDefaultSectionSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int size = Int_to(int, sfp[1]);
 		qp->setDefaultSectionSize(size);
 	}
@@ -518,7 +520,7 @@ KMETHOD QHeaderView_setHighlightSections(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool highlight = Boolean_to(bool, sfp[1]);
 		qp->setHighlightSections(highlight);
 	}
@@ -530,7 +532,7 @@ KMETHOD QHeaderView_setMinimumSectionSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int size = Int_to(int, sfp[1]);
 		qp->setMinimumSectionSize(size);
 	}
@@ -542,7 +544,7 @@ KMETHOD QHeaderView_setMovable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool movable = Boolean_to(bool, sfp[1]);
 		qp->setMovable(movable);
 	}
@@ -554,7 +556,7 @@ KMETHOD QHeaderView_setResizeMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QHeaderView::ResizeMode mode = Int_to(QHeaderView::ResizeMode, sfp[1]);
 		qp->setResizeMode(mode);
 	}
@@ -567,7 +569,7 @@ KMETHOD QHeaderView_setResizeMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int logicalIndex = Int_to(int, sfp[1]);
 		QHeaderView::ResizeMode mode = Int_to(QHeaderView::ResizeMode, sfp[2]);
 		qp->setResizeMode(logicalIndex, mode);
@@ -580,7 +582,7 @@ KMETHOD QHeaderView_setSectionHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int logicalIndex = Int_to(int, sfp[1]);
 		bool hide = Boolean_to(bool, sfp[2]);
 		qp->setSectionHidden(logicalIndex, hide);
@@ -593,7 +595,7 @@ KMETHOD QHeaderView_setSortIndicator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int logicalIndex = Int_to(int, sfp[1]);
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[2]);
 		qp->setSortIndicator(logicalIndex, order);
@@ -606,7 +608,7 @@ KMETHOD QHeaderView_setSortIndicatorShown(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool show = Boolean_to(bool, sfp[1]);
 		qp->setSortIndicatorShown(show);
 	}
@@ -618,7 +620,7 @@ KMETHOD QHeaderView_setStretchLastSection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool stretch = Boolean_to(bool, sfp[1]);
 		qp->setStretchLastSection(stretch);
 	}
@@ -630,7 +632,7 @@ KMETHOD QHeaderView_showSection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int logicalIndex = Int_to(int, sfp[1]);
 		qp->showSection(logicalIndex);
 	}
@@ -642,7 +644,7 @@ KMETHOD QHeaderView_sortIndicatorOrder(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::SortOrder ret_v = qp->sortIndicatorOrder();
 		RETURNi_(ret_v);
 	} else {
@@ -655,7 +657,7 @@ KMETHOD QHeaderView_sortIndicatorSection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->sortIndicatorSection();
 		RETURNi_(ret_v);
 	} else {
@@ -668,7 +670,7 @@ KMETHOD QHeaderView_getStretchLastSection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->stretchLastSection();
 		RETURNb_(ret_v);
 	} else {
@@ -681,7 +683,7 @@ KMETHOD QHeaderView_stretchSectionCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->stretchSectionCount();
 		RETURNi_(ret_v);
 	} else {
@@ -694,7 +696,7 @@ KMETHOD QHeaderView_swapSections(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int first = Int_to(int, sfp[1]);
 		int second = Int_to(int, sfp[2]);
 		qp->swapSections(first, second);
@@ -707,7 +709,7 @@ KMETHOD QHeaderView_visualIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int logicalIndex = Int_to(int, sfp[1]);
 		int ret_v = qp->visualIndex(logicalIndex);
 		RETURNi_(ret_v);
@@ -721,7 +723,7 @@ KMETHOD QHeaderView_visualIndexAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int position = Int_to(int, sfp[1]);
 		int ret_v = qp->visualIndexAt(position);
 		RETURNi_(ret_v);
@@ -735,7 +737,7 @@ KMETHOD QHeaderView_headerDataChanged(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[1]);
 		int logicalFirst = Int_to(int, sfp[2]);
 		int logicalLast = Int_to(int, sfp[3]);
@@ -749,7 +751,7 @@ KMETHOD QHeaderView_setOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int offset = Int_to(int, sfp[1]);
 		qp->setOffset(offset);
 	}
@@ -761,7 +763,7 @@ KMETHOD QHeaderView_setOffsetToLastSection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->setOffsetToLastSection();
 	}
 	RETURNvoid_();
@@ -772,7 +774,7 @@ KMETHOD QHeaderView_setOffsetToSectionPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHeaderView *  qp = RawPtr_to(QHeaderView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int visualIndex = Int_to(int, sfp[1]);
 		qp->setOffsetToSectionPosition(visualIndex);
 	}
@@ -1012,20 +1014,45 @@ bool DummyQHeaderView::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQHeaderView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 11;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, geometries_changed_func);
+	KNH_ADDNNREF(ctx, section_auto_resize_func);
+	KNH_ADDNNREF(ctx, section_clicked_func);
+	KNH_ADDNNREF(ctx, section_count_changed_func);
+	KNH_ADDNNREF(ctx, section_double_clicked_func);
+	KNH_ADDNNREF(ctx, section_entered_func);
+	KNH_ADDNNREF(ctx, section_handle_double_clicked_func);
+	KNH_ADDNNREF(ctx, section_moved_func);
+	KNH_ADDNNREF(ctx, section_pressed_func);
+	KNH_ADDNNREF(ctx, section_resized_func);
+	KNH_ADDNNREF(ctx, sort_indicator_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractItemView::reftrace(ctx, p, tail_);
+}
 
 void DummyQHeaderView::connection(QObject *o)
 {
-	connect(o, SIGNAL(geometriesChanged()), this, SLOT(geometriesChangedSlot()));
-	connect(o, SIGNAL(sectionAutoResize(int, QHeaderView::ResizeMode)), this, SLOT(sectionAutoResizeSlot(int, QHeaderView::ResizeMode)));
-	connect(o, SIGNAL(sectionClicked(int)), this, SLOT(sectionClickedSlot(int)));
-	connect(o, SIGNAL(sectionCountChanged(int, int)), this, SLOT(sectionCountChangedSlot(int, int)));
-	connect(o, SIGNAL(sectionDoubleClicked(int)), this, SLOT(sectionDoubleClickedSlot(int)));
-	connect(o, SIGNAL(sectionEntered(int)), this, SLOT(sectionEnteredSlot(int)));
-	connect(o, SIGNAL(sectionHandleDoubleClicked(int)), this, SLOT(sectionHandleDoubleClickedSlot(int)));
-	connect(o, SIGNAL(sectionMoved(int, int, int)), this, SLOT(sectionMovedSlot(int, int, int)));
-	connect(o, SIGNAL(sectionPressed(int)), this, SLOT(sectionPressedSlot(int)));
-	connect(o, SIGNAL(sectionResized(int, int, int)), this, SLOT(sectionResizedSlot(int, int, int)));
-	connect(o, SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)), this, SLOT(sortIndicatorChangedSlot(int, Qt::SortOrder)));
+	QHeaderView *p = dynamic_cast<QHeaderView*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(geometriesChanged()), this, SLOT(geometriesChangedSlot()));
+		connect(p, SIGNAL(sectionAutoResize(int, QHeaderView::ResizeMode)), this, SLOT(sectionAutoResizeSlot(int, QHeaderView::ResizeMode)));
+		connect(p, SIGNAL(sectionClicked(int)), this, SLOT(sectionClickedSlot(int)));
+		connect(p, SIGNAL(sectionCountChanged(int, int)), this, SLOT(sectionCountChangedSlot(int, int)));
+		connect(p, SIGNAL(sectionDoubleClicked(int)), this, SLOT(sectionDoubleClickedSlot(int)));
+		connect(p, SIGNAL(sectionEntered(int)), this, SLOT(sectionEnteredSlot(int)));
+		connect(p, SIGNAL(sectionHandleDoubleClicked(int)), this, SLOT(sectionHandleDoubleClickedSlot(int)));
+		connect(p, SIGNAL(sectionMoved(int, int, int)), this, SLOT(sectionMovedSlot(int, int, int)));
+		connect(p, SIGNAL(sectionPressed(int)), this, SLOT(sectionPressedSlot(int)));
+		connect(p, SIGNAL(sectionResized(int, int, int)), this, SLOT(sectionResizedSlot(int, int, int)));
+		connect(p, SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)), this, SLOT(sortIndicatorChangedSlot(int, Qt::SortOrder)));
+	}
 	DummyQAbstractItemView::connection(o);
 }
 
@@ -1088,57 +1115,9 @@ static void QHeaderView_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QHeaderView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 11;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQHeaderView *qp = (KQHeaderView *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->geometries_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->geometries_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->section_auto_resize_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->section_auto_resize_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->section_clicked_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->section_clicked_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->section_count_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->section_count_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->section_double_clicked_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->section_double_clicked_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->section_entered_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->section_entered_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->section_handle_double_clicked_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->section_handle_double_clicked_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->section_moved_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->section_moved_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->section_pressed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->section_pressed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->section_resized_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->section_resized_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->sort_indicator_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->sort_indicator_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -1162,15 +1141,6 @@ bool KQHeaderView::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQHeaderView(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QHeaderView";
-	cdef->free = QHeaderView_free;
-	cdef->reftrace = QHeaderView_reftrace;
-	cdef->compareTo = QHeaderView_compareTo;
-}
-
 static knh_IntData_t QHeaderViewConstInt[] = {
 	{"Interactive", QHeaderView::Interactive},
 	{"Fixed", QHeaderView::Fixed},
@@ -1183,4 +1153,15 @@ static knh_IntData_t QHeaderViewConstInt[] = {
 DEFAPI(void) constQHeaderView(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QHeaderViewConstInt);
 }
+
+
+DEFAPI(void) defQHeaderView(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QHeaderView";
+	cdef->free = QHeaderView_free;
+	cdef->reftrace = QHeaderView_reftrace;
+	cdef->compareTo = QHeaderView_compareTo;
+}
+
 

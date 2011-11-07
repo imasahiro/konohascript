@@ -1,3 +1,21 @@
+//Array<String> QSysInfo.parents();
+KMETHOD QSysInfo_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QSysInfo *qp = RawPtr_to(QSysInfo*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQSysInfo::DummyQSysInfo()
 {
@@ -46,17 +64,22 @@ bool DummyQSysInfo::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSysInfo::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQSysInfo::connection(QObject *o)
 {
-	return;
-}
-
-KQSysInfo::KQSysInfo() : QSysInfo()
-{
-	self = NULL;
-	dummy = new DummyQSysInfo();
-	dummy->connection((QObject*)this);
+	QSysInfo *p = dynamic_cast<QSysInfo*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QSysInfo_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -111,13 +134,9 @@ static void QSysInfo_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSysInfo_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSysInfo *qp = (KQSysInfo *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -132,15 +151,6 @@ void KQSysInfo::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQSysInfo(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QSysInfo";
-	cdef->free = QSysInfo_free;
-	cdef->reftrace = QSysInfo_reftrace;
-	cdef->compareTo = QSysInfo_compareTo;
-}
-
 static knh_IntData_t QSysInfoConstInt[] = {
 	{"BigEndian", QSysInfo::BigEndian},
 	{"LittleEndian", QSysInfo::LittleEndian},
@@ -152,4 +162,15 @@ static knh_IntData_t QSysInfoConstInt[] = {
 DEFAPI(void) constQSysInfo(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QSysInfoConstInt);
 }
+
+
+DEFAPI(void) defQSysInfo(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QSysInfo";
+	cdef->free = QSysInfo_free;
+	cdef->reftrace = QSysInfo_reftrace;
+	cdef->compareTo = QSysInfo_compareTo;
+}
+
 

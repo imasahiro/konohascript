@@ -3,7 +3,7 @@ KMETHOD QProxyStyle_drawComplexControl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProxyStyle::ComplexControl control = Int_to(QProxyStyle::ComplexControl, sfp[1]);
 		const QStyleOptionComplex*  option = RawPtr_to(const QStyleOptionComplex*, sfp[2]);
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[3]);
@@ -18,7 +18,7 @@ KMETHOD QProxyStyle_drawControl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProxyStyle::ControlElement element = Int_to(QProxyStyle::ControlElement, sfp[1]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[2]);
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[3]);
@@ -33,7 +33,7 @@ KMETHOD QProxyStyle_drawItemPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[2]);
 		int alignment = Int_to(int, sfp[3]);
@@ -48,7 +48,7 @@ KMETHOD QProxyStyle_drawItemText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[2]);
 		int flags = Int_to(int, sfp[3]);
@@ -66,7 +66,7 @@ KMETHOD QProxyStyle_drawPrimitive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProxyStyle::PrimitiveElement element = Int_to(QProxyStyle::PrimitiveElement, sfp[1]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[2]);
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[3]);
@@ -81,7 +81,7 @@ KMETHOD QProxyStyle_generatedIconPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIcon::Mode iconMode = Int_to(QIcon::Mode, sfp[1]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[3]);
@@ -99,7 +99,7 @@ KMETHOD QProxyStyle_hitTestComplexControl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProxyStyle::ComplexControl control = Int_to(QProxyStyle::ComplexControl, sfp[1]);
 		const QStyleOptionComplex*  option = RawPtr_to(const QStyleOptionComplex*, sfp[2]);
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[3]);
@@ -116,7 +116,7 @@ KMETHOD QProxyStyle_itemPixmapRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  r = *RawPtr_to(const QRect *, sfp[1]);
 		int flags = Int_to(int, sfp[2]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[3]);
@@ -134,7 +134,7 @@ KMETHOD QProxyStyle_itemTextRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFontMetrics  fm = *RawPtr_to(const QFontMetrics *, sfp[1]);
 		const QRect  r = *RawPtr_to(const QRect *, sfp[2]);
 		int flags = Int_to(int, sfp[3]);
@@ -154,7 +154,7 @@ KMETHOD QProxyStyle_pixelMetric(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProxyStyle::PixelMetric metric = Int_to(QProxyStyle::PixelMetric, sfp[1]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -171,7 +171,7 @@ KMETHOD QProxyStyle_polish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->polish(widget);
 	}
@@ -184,7 +184,7 @@ KMETHOD QProxyStyle_polish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette  pal = *RawPtr_to(QPalette *, sfp[1]);
 		qp->polish(pal);
 	}
@@ -197,7 +197,7 @@ KMETHOD QProxyStyle_polish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QApplication*  app = RawPtr_to(QApplication*, sfp[1]);
 		qp->polish(app);
 	}
@@ -209,7 +209,7 @@ KMETHOD QProxyStyle_sizeFromContents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProxyStyle::ContentsType type = Int_to(QProxyStyle::ContentsType, sfp[1]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QSize  size = *RawPtr_to(const QSize *, sfp[3]);
@@ -228,7 +228,7 @@ KMETHOD QProxyStyle_standardPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette ret_v = qp->standardPalette();
 		QPalette *ret_v_ = new QPalette(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -243,7 +243,7 @@ KMETHOD QProxyStyle_standardPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProxyStyle::StandardPixmap standardPixmap = Int_to(QProxyStyle::StandardPixmap, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -261,7 +261,7 @@ KMETHOD QProxyStyle_styleHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProxyStyle::StyleHint hint = Int_to(QProxyStyle::StyleHint, sfp[1]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -278,7 +278,7 @@ KMETHOD QProxyStyle_subControlRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProxyStyle::ComplexControl cc = Int_to(QProxyStyle::ComplexControl, sfp[1]);
 		const QStyleOptionComplex*  option = RawPtr_to(const QStyleOptionComplex*, sfp[2]);
 		QProxyStyle::SubControl sc = Int_to(QProxyStyle::SubControl, sfp[3]);
@@ -297,7 +297,7 @@ KMETHOD QProxyStyle_subElementRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QProxyStyle::SubElement element = Int_to(QProxyStyle::SubElement, sfp[1]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -316,7 +316,7 @@ KMETHOD QProxyStyle_unpolish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->unpolish(widget);
 	}
@@ -329,7 +329,7 @@ KMETHOD QProxyStyle_unpolish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QApplication*  app = RawPtr_to(QApplication*, sfp[1]);
 		qp->unpolish(app);
 	}
@@ -352,7 +352,7 @@ KMETHOD QProxyStyle_getBaseStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle* ret_v = qp->baseStyle();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStyle*)ret_v, NULL);
 		RETURN_(rptr);
@@ -366,7 +366,7 @@ KMETHOD QProxyStyle_setBaseStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QProxyStyle *  qp = RawPtr_to(QProxyStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle*  style = RawPtr_to(QStyle*, sfp[1]);
 		qp->setBaseStyle(style);
 	}
@@ -424,9 +424,23 @@ bool DummyQProxyStyle::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQProxyStyle::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQCommonStyle::reftrace(ctx, p, tail_);
+}
 
 void DummyQProxyStyle::connection(QObject *o)
 {
+	QProxyStyle *p = dynamic_cast<QProxyStyle*>(o);
+	if (p != NULL) {
+	}
 	DummyQCommonStyle::connection(o);
 }
 
@@ -489,13 +503,9 @@ static void QProxyStyle_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QProxyStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQProxyStyle *qp = (KQProxyStyle *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -518,6 +528,8 @@ bool KQProxyStyle::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQProxyStyle(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

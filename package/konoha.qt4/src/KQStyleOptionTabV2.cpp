@@ -83,9 +83,23 @@ bool DummyQStyleOptionTabV2::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
+void DummyQStyleOptionTabV2::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOptionTab::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionTabV2::connection(QObject *o)
 {
+	QStyleOptionTabV2 *p = dynamic_cast<QStyleOptionTabV2*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOptionTab::connection(o);
 }
 
@@ -93,7 +107,6 @@ KQStyleOptionTabV2::KQStyleOptionTabV2() : QStyleOptionTabV2()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionTabV2();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionTabV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -148,13 +161,9 @@ static void QStyleOptionTabV2_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionTabV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionTabV2 *qp = (KQStyleOptionTabV2 *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -169,6 +178,16 @@ void KQStyleOptionTabV2::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
+static knh_IntData_t QStyleOptionTabV2ConstInt[] = {
+	{"Version", QStyleOptionTabV2::Version},
+	{NULL, 0}
+};
+
+DEFAPI(void) constQStyleOptionTabV2(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
+	kapi->loadClassIntConst(ctx, cid, QStyleOptionTabV2ConstInt);
+}
+
+
 DEFAPI(void) defQStyleOptionTabV2(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	(void)ctx; (void) cid;
@@ -178,12 +197,4 @@ DEFAPI(void) defQStyleOptionTabV2(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef
 	cdef->compareTo = QStyleOptionTabV2_compareTo;
 }
 
-static knh_IntData_t QStyleOptionTabV2ConstInt[] = {
-	{"Version", QStyleOptionTabV2::Version},
-	{NULL, 0}
-};
-
-DEFAPI(void) constQStyleOptionTabV2(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
-	kapi->loadClassIntConst(ctx, cid, QStyleOptionTabV2ConstInt);
-}
 

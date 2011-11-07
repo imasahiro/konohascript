@@ -9,28 +9,13 @@ KMETHOD QTextFrame_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 
-//int QTextFrame.begin();
-KMETHOD QTextFrame_begin(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextFrame *  qp = RawPtr_to(QTextFrame *, sfp[0]);
-	if (qp != NULL) {
-		QTextFrame::iterator ret_v = qp->begin();
-		QTextFrame::iterator *ret_v_ = new QTextFrame::iterator(ret_v);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-
 //Array<QTextFrame> QTextFrame.childFrames();
 KMETHOD QTextFrame_childFrames(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFrame *  qp = RawPtr_to(QTextFrame *, sfp[0]);
-	if (qp != NULL) {
-		QList<QTextFrame*>ret_v = qp->childFrames();
+	if (qp) {
+		QList<QTextFrame*> ret_v = qp->childFrames();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QTextFrame"));
@@ -45,27 +30,12 @@ KMETHOD QTextFrame_childFrames(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 	
 
-//int QTextFrame.end();
-KMETHOD QTextFrame_end(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextFrame *  qp = RawPtr_to(QTextFrame *, sfp[0]);
-	if (qp != NULL) {
-		QTextFrame::iterator ret_v = qp->end();
-		QTextFrame::iterator *ret_v_ = new QTextFrame::iterator(ret_v);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-
 //QTextCursor QTextFrame.firstCursorPosition();
 KMETHOD QTextFrame_firstCursorPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFrame *  qp = RawPtr_to(QTextFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCursor ret_v = qp->firstCursorPosition();
 		QTextCursor *ret_v_ = new QTextCursor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -80,7 +50,7 @@ KMETHOD QTextFrame_firstPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFrame *  qp = RawPtr_to(QTextFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->firstPosition();
 		RETURNi_(ret_v);
 	} else {
@@ -93,7 +63,7 @@ KMETHOD QTextFrame_getFrameFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFrame *  qp = RawPtr_to(QTextFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextFrameFormat ret_v = qp->frameFormat();
 		QTextFrameFormat *ret_v_ = new QTextFrameFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -108,7 +78,7 @@ KMETHOD QTextFrame_lastCursorPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFrame *  qp = RawPtr_to(QTextFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCursor ret_v = qp->lastCursorPosition();
 		QTextCursor *ret_v_ = new QTextCursor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -123,7 +93,7 @@ KMETHOD QTextFrame_lastPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFrame *  qp = RawPtr_to(QTextFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->lastPosition();
 		RETURNi_(ret_v);
 	} else {
@@ -136,7 +106,7 @@ KMETHOD QTextFrame_parentFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFrame *  qp = RawPtr_to(QTextFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextFrame* ret_v = qp->parentFrame();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextFrame*)ret_v, NULL);
 		RETURN_(rptr);
@@ -150,7 +120,7 @@ KMETHOD QTextFrame_setFrameFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFrame *  qp = RawPtr_to(QTextFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextFrameFormat  format = *RawPtr_to(const QTextFrameFormat *, sfp[1]);
 		qp->setFrameFormat(format);
 	}
@@ -208,9 +178,23 @@ bool DummyQTextFrame::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextFrame::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQTextObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQTextFrame::connection(QObject *o)
 {
+	QTextFrame *p = dynamic_cast<QTextFrame*>(o);
+	if (p != NULL) {
+	}
 	DummyQTextObject::connection(o);
 }
 
@@ -273,13 +257,9 @@ static void QTextFrame_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextFrame_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextFrame *qp = (KQTextFrame *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -302,6 +282,8 @@ bool KQTextFrame::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQTextFrame(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

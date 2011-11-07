@@ -16,7 +16,7 @@ KMETHOD QHoverEvent_oldPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHoverEvent *  qp = RawPtr_to(QHoverEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint ret_v = qp->oldPos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -31,7 +31,7 @@ KMETHOD QHoverEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHoverEvent *  qp = RawPtr_to(QHoverEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint ret_v = qp->pos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -92,9 +92,23 @@ bool DummyQHoverEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQHoverEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQHoverEvent::connection(QObject *o)
 {
+	QHoverEvent *p = dynamic_cast<QHoverEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -102,7 +116,6 @@ KQHoverEvent::KQHoverEvent(QHoverEvent::Type type, const QPoint pos, const QPoin
 {
 	self = NULL;
 	dummy = new DummyQHoverEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QHoverEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -157,13 +170,9 @@ static void QHoverEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QHoverEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQHoverEvent *qp = (KQHoverEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -177,6 +186,8 @@ void KQHoverEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQHoverEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

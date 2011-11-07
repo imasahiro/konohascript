@@ -4,7 +4,7 @@ KMETHOD QGraphicsLayoutItem_contentsRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->contentsRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -19,7 +19,7 @@ KMETHOD QGraphicsLayoutItem_effectiveSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::SizeHint which = Int_to(Qt::SizeHint, sfp[1]);
 		const QSizeF  constraint = *RawPtr_to(const QSizeF *, sfp[2]);
 		QSizeF ret_v = qp->effectiveSizeHint(which, constraint);
@@ -36,7 +36,7 @@ KMETHOD QGraphicsLayoutItem_getGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->geometry();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -51,7 +51,7 @@ KMETHOD QGraphicsLayoutItem_getContentsMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal*  left = RawPtr_to(qreal*, sfp[1]);
 		qreal*  top = RawPtr_to(qreal*, sfp[2]);
 		qreal*  right = RawPtr_to(qreal*, sfp[3]);
@@ -66,7 +66,7 @@ KMETHOD QGraphicsLayoutItem_graphicsItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem* ret_v = qp->graphicsItem();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -80,7 +80,7 @@ KMETHOD QGraphicsLayoutItem_isLayout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isLayout();
 		RETURNb_(ret_v);
 	} else {
@@ -93,7 +93,7 @@ KMETHOD QGraphicsLayoutItem_getMaximumHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->maximumHeight();
 		RETURNf_(ret_v);
 	} else {
@@ -106,7 +106,7 @@ KMETHOD QGraphicsLayoutItem_getMaximumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizeF ret_v = qp->maximumSize();
 		QSizeF *ret_v_ = new QSizeF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -121,7 +121,7 @@ KMETHOD QGraphicsLayoutItem_getMaximumWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->maximumWidth();
 		RETURNf_(ret_v);
 	} else {
@@ -134,7 +134,7 @@ KMETHOD QGraphicsLayoutItem_getMinimumHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->minimumHeight();
 		RETURNf_(ret_v);
 	} else {
@@ -147,7 +147,7 @@ KMETHOD QGraphicsLayoutItem_getMinimumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizeF ret_v = qp->minimumSize();
 		QSizeF *ret_v_ = new QSizeF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -162,7 +162,7 @@ KMETHOD QGraphicsLayoutItem_getMinimumWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->minimumWidth();
 		RETURNf_(ret_v);
 	} else {
@@ -175,7 +175,7 @@ KMETHOD QGraphicsLayoutItem_ownedByLayout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->ownedByLayout();
 		RETURNb_(ret_v);
 	} else {
@@ -188,7 +188,7 @@ KMETHOD QGraphicsLayoutItem_getParentLayoutItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsLayoutItem* ret_v = qp->parentLayoutItem();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsLayoutItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -202,7 +202,7 @@ KMETHOD QGraphicsLayoutItem_getPreferredHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->preferredHeight();
 		RETURNf_(ret_v);
 	} else {
@@ -215,7 +215,7 @@ KMETHOD QGraphicsLayoutItem_getPreferredSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizeF ret_v = qp->preferredSize();
 		QSizeF *ret_v_ = new QSizeF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -230,7 +230,7 @@ KMETHOD QGraphicsLayoutItem_getPreferredWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->preferredWidth();
 		RETURNf_(ret_v);
 	} else {
@@ -243,7 +243,7 @@ KMETHOD QGraphicsLayoutItem_setGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		qp->setGeometry(rect);
 	}
@@ -255,7 +255,7 @@ KMETHOD QGraphicsLayoutItem_setMaximumHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal height = Float_to(qreal, sfp[1]);
 		qp->setMaximumHeight(height);
 	}
@@ -267,7 +267,7 @@ KMETHOD QGraphicsLayoutItem_setMaximumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSizeF  size = *RawPtr_to(const QSizeF *, sfp[1]);
 		qp->setMaximumSize(size);
 	}
@@ -280,7 +280,7 @@ KMETHOD QGraphicsLayoutItem_setMaximumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal w = Float_to(qreal, sfp[1]);
 		qreal h = Float_to(qreal, sfp[2]);
 		qp->setMaximumSize(w, h);
@@ -293,7 +293,7 @@ KMETHOD QGraphicsLayoutItem_setMaximumWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal width = Float_to(qreal, sfp[1]);
 		qp->setMaximumWidth(width);
 	}
@@ -305,7 +305,7 @@ KMETHOD QGraphicsLayoutItem_setMinimumHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal height = Float_to(qreal, sfp[1]);
 		qp->setMinimumHeight(height);
 	}
@@ -317,7 +317,7 @@ KMETHOD QGraphicsLayoutItem_setMinimumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSizeF  size = *RawPtr_to(const QSizeF *, sfp[1]);
 		qp->setMinimumSize(size);
 	}
@@ -330,7 +330,7 @@ KMETHOD QGraphicsLayoutItem_setMinimumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal w = Float_to(qreal, sfp[1]);
 		qreal h = Float_to(qreal, sfp[2]);
 		qp->setMinimumSize(w, h);
@@ -343,7 +343,7 @@ KMETHOD QGraphicsLayoutItem_setMinimumWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal width = Float_to(qreal, sfp[1]);
 		qp->setMinimumWidth(width);
 	}
@@ -355,7 +355,7 @@ KMETHOD QGraphicsLayoutItem_setParentLayoutItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsLayoutItem*  parent = RawPtr_to(QGraphicsLayoutItem*, sfp[1]);
 		qp->setParentLayoutItem(parent);
 	}
@@ -367,7 +367,7 @@ KMETHOD QGraphicsLayoutItem_setPreferredHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal height = Float_to(qreal, sfp[1]);
 		qp->setPreferredHeight(height);
 	}
@@ -379,7 +379,7 @@ KMETHOD QGraphicsLayoutItem_setPreferredSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSizeF  size = *RawPtr_to(const QSizeF *, sfp[1]);
 		qp->setPreferredSize(size);
 	}
@@ -392,7 +392,7 @@ KMETHOD QGraphicsLayoutItem_setPreferredSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal w = Float_to(qreal, sfp[1]);
 		qreal h = Float_to(qreal, sfp[2]);
 		qp->setPreferredSize(w, h);
@@ -405,7 +405,7 @@ KMETHOD QGraphicsLayoutItem_setPreferredWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal width = Float_to(qreal, sfp[1]);
 		qp->setPreferredWidth(width);
 	}
@@ -417,7 +417,7 @@ KMETHOD QGraphicsLayoutItem_setSizePolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSizePolicy  policy = *RawPtr_to(const QSizePolicy *, sfp[1]);
 		qp->setSizePolicy(policy);
 	}
@@ -430,7 +430,7 @@ KMETHOD QGraphicsLayoutItem_setSizePolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizePolicy::Policy hPolicy = Int_to(QSizePolicy::Policy, sfp[1]);
 		QSizePolicy::Policy vPolicy = Int_to(QSizePolicy::Policy, sfp[2]);
 		QSizePolicy::ControlType controlType = Int_to(QSizePolicy::ControlType, sfp[3]);
@@ -444,7 +444,7 @@ KMETHOD QGraphicsLayoutItem_getSizePolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizePolicy ret_v = qp->sizePolicy();
 		QSizePolicy *ret_v_ = new QSizePolicy(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -459,12 +459,30 @@ KMETHOD QGraphicsLayoutItem_updateGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayoutItem *  qp = RawPtr_to(QGraphicsLayoutItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->updateGeometry();
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QGraphicsLayoutItem.parents();
+KMETHOD QGraphicsLayoutItem_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGraphicsLayoutItem *qp = RawPtr_to(QGraphicsLayoutItem*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQGraphicsLayoutItem::DummyQGraphicsLayoutItem()
 {
@@ -513,17 +531,28 @@ bool DummyQGraphicsLayoutItem::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQGraphicsLayoutItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQGraphicsLayoutItem::connection(QObject *o)
 {
-	return;
+	QGraphicsLayoutItem *p = dynamic_cast<QGraphicsLayoutItem*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQGraphicsLayoutItem::KQGraphicsLayoutItem(QGraphicsLayoutItem* parent, bool isLayout) : QGraphicsLayoutItem(parent, isLayout)
 {
 	self = NULL;
 	dummy = new DummyQGraphicsLayoutItem();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsLayoutItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -578,13 +607,9 @@ static void QGraphicsLayoutItem_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsLayoutItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsLayoutItem *qp = (KQGraphicsLayoutItem *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -598,6 +623,8 @@ void KQGraphicsLayoutItem::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGraphicsLayoutItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

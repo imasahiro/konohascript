@@ -1,58 +1,27 @@
-//QGestureEvent QGestureEvent.new(QList<QGesture> gestures);
+//QGestureEvent QGestureEvent.new(Array<QGesture> gestures);
 KMETHOD QGestureEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	const QList<QGesture*>  gestures = *RawPtr_to(const QList<QGesture*> *, sfp[1]);
+	knh_Array_t *a = sfp[1].a;
+		int asize = knh_Array_size(a);
+		QList<QGesture*> gestures;
+		for (int n = 0; n < asize; n++) {
+			knh_RawPtr_t *p = (knh_RawPtr_t*)(a->list[n]);
+			gestures.append((QGesture*)p->rawptr);
+		}
 	KQGestureEvent *ret_v = new KQGestureEvent(gestures);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
 
-////void QGestureEvent.accept();
-KMETHOD QGestureEvent_accept(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
-		qp->accept();
-	}
-	RETURNvoid_();
-}
-
-/*
-////void QGestureEvent.accept(QGesture gesture);
-KMETHOD QGestureEvent_accept(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
-		QGesture*  gesture = RawPtr_to(QGesture*, sfp[1]);
-		qp->accept(gesture);
-	}
-	RETURNvoid_();
-}
-*/
-/*
-////void QGestureEvent.accept(int gestureType);
-KMETHOD QGestureEvent_accept(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
-		Qt::GestureType gestureType = Int_to(Qt::GestureType, sfp[1]);
-		qp->accept(gestureType);
-	}
-	RETURNvoid_();
-}
-*/
 //Array<QGesture> QGestureEvent.activeGestures();
 KMETHOD QGestureEvent_activeGestures(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
-		QList<QGesture*>ret_v = qp->activeGestures();
+	if (qp) {
+		QList<QGesture*> ret_v = qp->activeGestures();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGesture"));
@@ -72,8 +41,8 @@ KMETHOD QGestureEvent_canceledGestures(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
-		QList<QGesture*>ret_v = qp->canceledGestures();
+	if (qp) {
+		QList<QGesture*> ret_v = qp->canceledGestures();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGesture"));
@@ -93,7 +62,7 @@ KMETHOD QGestureEvent_gesture(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::GestureType type = Int_to(Qt::GestureType, sfp[1]);
 		QGesture* ret_v = qp->gesture(type);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGesture*)ret_v, NULL);
@@ -108,8 +77,8 @@ KMETHOD QGestureEvent_gestures(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
-		QList<QGesture*>ret_v = qp->gestures();
+	if (qp) {
+		QList<QGesture*> ret_v = qp->gestures();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGesture"));
@@ -124,92 +93,12 @@ KMETHOD QGestureEvent_gestures(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 	
 
-////void QGestureEvent.ignore();
-KMETHOD QGestureEvent_ignore(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
-		qp->ignore();
-	}
-	RETURNvoid_();
-}
-
-/*
-////void QGestureEvent.ignore(QGesture gesture);
-KMETHOD QGestureEvent_ignore(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
-		QGesture*  gesture = RawPtr_to(QGesture*, sfp[1]);
-		qp->ignore(gesture);
-	}
-	RETURNvoid_();
-}
-*/
-/*
-////void QGestureEvent.ignore(int gestureType);
-KMETHOD QGestureEvent_ignore(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
-		Qt::GestureType gestureType = Int_to(Qt::GestureType, sfp[1]);
-		qp->ignore(gestureType);
-	}
-	RETURNvoid_();
-}
-*/
-////boolean QGestureEvent.isAccepted();
-KMETHOD QGestureEvent_isAccepted(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isAccepted();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-/*
-////boolean QGestureEvent.isAccepted(QGesture gesture);
-KMETHOD QGestureEvent_isAccepted(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
-		QGesture*  gesture = RawPtr_to(QGesture*, sfp[1]);
-		bool ret_v = qp->isAccepted(gesture);
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-*/
-/*
-////boolean QGestureEvent.isAccepted(int gestureType);
-KMETHOD QGestureEvent_isAccepted(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
-		Qt::GestureType gestureType = Int_to(Qt::GestureType, sfp[1]);
-		bool ret_v = qp->isAccepted(gestureType);
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-*/
 //QPointF QGestureEvent.mapToGraphicsScene(QPointF gesturePoint);
 KMETHOD QGestureEvent_mapToGraphicsScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  gesturePoint = *RawPtr_to(const QPointF *, sfp[1]);
 		QPointF ret_v = qp->mapToGraphicsScene(gesturePoint);
 		QPointF *ret_v_ = new QPointF(ret_v);
@@ -220,52 +109,12 @@ KMETHOD QGestureEvent_mapToGraphicsScene(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//////void QGestureEvent.setAccepted(boolean accepted);
-KMETHOD QGestureEvent_setAccepted(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
-		bool accepted = Boolean_to(bool, sfp[1]);
-		qp->setAccepted(accepted);
-	}
-	RETURNvoid_();
-}
-
-/*
-////void QGestureEvent.setAccepted(QGesture gesture, boolean value);
-KMETHOD QGestureEvent_setAccepted(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
-		QGesture*  gesture = RawPtr_to(QGesture*, sfp[1]);
-		bool value = Boolean_to(bool, sfp[2]);
-		qp->setAccepted(gesture, value);
-	}
-	RETURNvoid_();
-}
-*/
-/*
-////void QGestureEvent.setAccepted(int gestureType, boolean value);
-KMETHOD QGestureEvent_setAccepted(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
-		Qt::GestureType gestureType = Int_to(Qt::GestureType, sfp[1]);
-		bool value = Boolean_to(bool, sfp[2]);
-		qp->setAccepted(gestureType, value);
-	}
-	RETURNvoid_();
-}
-*/
 //QWidget QGestureEvent.widget();
 KMETHOD QGestureEvent_widget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGestureEvent *  qp = RawPtr_to(QGestureEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->widget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -325,9 +174,23 @@ bool DummyQGestureEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQGestureEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQGestureEvent::connection(QObject *o)
 {
+	QGestureEvent *p = dynamic_cast<QGestureEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -335,7 +198,6 @@ KQGestureEvent::KQGestureEvent(const QList<QGesture*> gestures) : QGestureEvent(
 {
 	self = NULL;
 	dummy = new DummyQGestureEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGestureEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -390,13 +252,9 @@ static void QGestureEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGestureEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGestureEvent *qp = (KQGestureEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -410,6 +268,8 @@ void KQGestureEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGestureEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

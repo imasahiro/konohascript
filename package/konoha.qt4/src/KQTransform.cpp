@@ -62,7 +62,7 @@ KMETHOD QTransform_m11(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->m11();
 		RETURNf_(ret_v);
 	} else {
@@ -75,7 +75,7 @@ KMETHOD QTransform_m12(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->m12();
 		RETURNf_(ret_v);
 	} else {
@@ -88,7 +88,7 @@ KMETHOD QTransform_m13(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->m13();
 		RETURNf_(ret_v);
 	} else {
@@ -101,7 +101,7 @@ KMETHOD QTransform_m21(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->m21();
 		RETURNf_(ret_v);
 	} else {
@@ -114,7 +114,7 @@ KMETHOD QTransform_m22(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->m22();
 		RETURNf_(ret_v);
 	} else {
@@ -127,7 +127,7 @@ KMETHOD QTransform_m23(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->m23();
 		RETURNf_(ret_v);
 	} else {
@@ -140,7 +140,7 @@ KMETHOD QTransform_m31(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->m31();
 		RETURNf_(ret_v);
 	} else {
@@ -153,7 +153,7 @@ KMETHOD QTransform_m32(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->m32();
 		RETURNf_(ret_v);
 	} else {
@@ -166,7 +166,7 @@ KMETHOD QTransform_m33(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->m33();
 		RETURNf_(ret_v);
 	} else {
@@ -179,7 +179,7 @@ KMETHOD QTransform_adjoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTransform ret_v = qp->adjoint();
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -194,7 +194,7 @@ KMETHOD QTransform_determinant(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->determinant();
 		RETURNf_(ret_v);
 	} else {
@@ -207,7 +207,7 @@ KMETHOD QTransform_dx(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->dx();
 		RETURNf_(ret_v);
 	} else {
@@ -220,7 +220,7 @@ KMETHOD QTransform_dy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->dy();
 		RETURNf_(ret_v);
 	} else {
@@ -233,7 +233,7 @@ KMETHOD QTransform_inverted(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool* invertible = Boolean_to(bool*, sfp[1]);
 		QTransform ret_v = qp->inverted(invertible);
 		QTransform *ret_v_ = new QTransform(ret_v);
@@ -249,7 +249,7 @@ KMETHOD QTransform_isAffine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isAffine();
 		RETURNb_(ret_v);
 	} else {
@@ -262,7 +262,7 @@ KMETHOD QTransform_isIdentity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isIdentity();
 		RETURNb_(ret_v);
 	} else {
@@ -275,7 +275,7 @@ KMETHOD QTransform_isInvertible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isInvertible();
 		RETURNb_(ret_v);
 	} else {
@@ -288,7 +288,7 @@ KMETHOD QTransform_isRotating(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isRotating();
 		RETURNb_(ret_v);
 	} else {
@@ -301,7 +301,7 @@ KMETHOD QTransform_isScaling(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isScaling();
 		RETURNb_(ret_v);
 	} else {
@@ -314,7 +314,7 @@ KMETHOD QTransform_isTranslating(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isTranslating();
 		RETURNb_(ret_v);
 	} else {
@@ -327,7 +327,7 @@ KMETHOD QTransform_map(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal*  tx = RawPtr_to(qreal*, sfp[3]);
@@ -343,7 +343,7 @@ KMETHOD QTransform_map(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  p = *RawPtr_to(const QPointF *, sfp[1]);
 		QPointF ret_v = qp->map(p);
 		QPointF *ret_v_ = new QPointF(ret_v);
@@ -360,7 +360,7 @@ KMETHOD QTransform_map(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
 		QPoint ret_v = qp->map(point);
 		QPoint *ret_v_ = new QPoint(ret_v);
@@ -377,7 +377,7 @@ KMETHOD QTransform_map(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QLine  l = *RawPtr_to(const QLine *, sfp[1]);
 		QLine ret_v = qp->map(l);
 		QLine *ret_v_ = new QLine(ret_v);
@@ -394,7 +394,7 @@ KMETHOD QTransform_map(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QLineF  line = *RawPtr_to(const QLineF *, sfp[1]);
 		QLineF ret_v = qp->map(line);
 		QLineF *ret_v_ = new QLineF(ret_v);
@@ -411,7 +411,7 @@ KMETHOD QTransform_map(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  polygon = *RawPtr_to(const QPolygonF *, sfp[1]);
 		QPolygonF ret_v = qp->map(polygon);
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
@@ -428,7 +428,7 @@ KMETHOD QTransform_map(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygon  polygon = *RawPtr_to(const QPolygon *, sfp[1]);
 		QPolygon ret_v = qp->map(polygon);
 		QPolygon *ret_v_ = new QPolygon(ret_v);
@@ -445,7 +445,7 @@ KMETHOD QTransform_map(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRegion  region = *RawPtr_to(const QRegion *, sfp[1]);
 		QRegion ret_v = qp->map(region);
 		QRegion *ret_v_ = new QRegion(ret_v);
@@ -462,7 +462,7 @@ KMETHOD QTransform_map(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		QPainterPath ret_v = qp->map(path);
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
@@ -479,7 +479,7 @@ KMETHOD QTransform_map(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int* tx = Int_to(int*, sfp[3]);
@@ -494,7 +494,7 @@ KMETHOD QTransform_mapRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		QRectF ret_v = qp->mapRect(rectangle);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -511,7 +511,7 @@ KMETHOD QTransform_mapRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		QRect ret_v = qp->mapRect(rectangle);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -527,7 +527,7 @@ KMETHOD QTransform_mapToPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		QPolygon ret_v = qp->mapToPolygon(rectangle);
 		QPolygon *ret_v_ = new QPolygon(ret_v);
@@ -543,7 +543,7 @@ KMETHOD QTransform_reset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->reset();
 	}
 	RETURNvoid_();
@@ -554,7 +554,7 @@ KMETHOD QTransform_rotate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal angle = Float_to(qreal, sfp[1]);
 		Qt::Axis axis = Int_to(Qt::Axis, sfp[2]);
 		QTransform ret_v = qp->rotate(angle, axis);
@@ -571,7 +571,7 @@ KMETHOD QTransform_rotateRadians(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal angle = Float_to(qreal, sfp[1]);
 		Qt::Axis axis = Int_to(Qt::Axis, sfp[2]);
 		QTransform ret_v = qp->rotateRadians(angle, axis);
@@ -588,7 +588,7 @@ KMETHOD QTransform_scale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal sx = Float_to(qreal, sfp[1]);
 		qreal sy = Float_to(qreal, sfp[2]);
 		QTransform ret_v = qp->scale(sx, sy);
@@ -605,7 +605,7 @@ KMETHOD QTransform_setMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal m11 = Float_to(qreal, sfp[1]);
 		qreal m12 = Float_to(qreal, sfp[2]);
 		qreal m13 = Float_to(qreal, sfp[3]);
@@ -625,7 +625,7 @@ KMETHOD QTransform_shear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal sh = Float_to(qreal, sfp[1]);
 		qreal sv = Float_to(qreal, sfp[2]);
 		QTransform ret_v = qp->shear(sh, sv);
@@ -642,7 +642,7 @@ KMETHOD QTransform_toAffine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMatrix ret_v = qp->toAffine();
 		QMatrix *ret_v_ = new QMatrix(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -657,7 +657,7 @@ KMETHOD QTransform_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dx = Float_to(qreal, sfp[1]);
 		qreal dy = Float_to(qreal, sfp[2]);
 		QTransform ret_v = qp->translate(dx, dy);
@@ -674,7 +674,7 @@ KMETHOD QTransform_transposed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTransform ret_v = qp->transposed();
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -689,7 +689,7 @@ KMETHOD QTransform_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTransform::TransformationType ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -701,11 +701,10 @@ KMETHOD QTransform_type(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTransform_fromScale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		qreal sx = Float_to(qreal, sfp[1]);
 		qreal sy = Float_to(qreal, sfp[2]);
-		QTransform ret_v = qp->fromScale(sx, sy);
+		QTransform ret_v = QTransform::fromScale(sx, sy);
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -718,11 +717,10 @@ KMETHOD QTransform_fromScale(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTransform_fromTranslate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		qreal dx = Float_to(qreal, sfp[1]);
 		qreal dy = Float_to(qreal, sfp[2]);
-		QTransform ret_v = qp->fromTranslate(dx, dy);
+		QTransform ret_v = QTransform::fromTranslate(dx, dy);
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -735,12 +733,11 @@ KMETHOD QTransform_fromTranslate(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTransform_quadToQuad(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QPolygonF  one = *RawPtr_to(const QPolygonF *, sfp[1]);
 		const QPolygonF  two = *RawPtr_to(const QPolygonF *, sfp[2]);
 		QTransform  trans = *RawPtr_to(QTransform *, sfp[3]);
-		bool ret_v = qp->quadToQuad(one, two, trans);
+		bool ret_v = QTransform::quadToQuad(one, two, trans);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -751,11 +748,10 @@ KMETHOD QTransform_quadToQuad(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTransform_quadToSquare(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QPolygonF  quad = *RawPtr_to(const QPolygonF *, sfp[1]);
 		QTransform  trans = *RawPtr_to(QTransform *, sfp[2]);
-		bool ret_v = qp->quadToSquare(quad, trans);
+		bool ret_v = QTransform::quadToSquare(quad, trans);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -766,17 +762,34 @@ KMETHOD QTransform_quadToSquare(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTransform_squareToQuad(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTransform *  qp = RawPtr_to(QTransform *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QPolygonF  quad = *RawPtr_to(const QPolygonF *, sfp[1]);
 		QTransform  trans = *RawPtr_to(QTransform *, sfp[2]);
-		bool ret_v = qp->squareToQuad(quad, trans);
+		bool ret_v = QTransform::squareToQuad(quad, trans);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
 	}
 }
 
+//Array<String> QTransform.parents();
+KMETHOD QTransform_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTransform *qp = RawPtr_to(QTransform*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTransform::DummyQTransform()
 {
@@ -825,17 +838,28 @@ bool DummyQTransform::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTransform::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTransform::connection(QObject *o)
 {
-	return;
+	QTransform *p = dynamic_cast<QTransform*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTransform::KQTransform() : QTransform()
 {
 	self = NULL;
 	dummy = new DummyQTransform();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTransform_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -890,13 +914,9 @@ static void QTransform_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTransform_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTransform *qp = (KQTransform *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -909,15 +929,6 @@ void KQTransform::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQTransform(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTransform";
-	cdef->free = QTransform_free;
-	cdef->reftrace = QTransform_reftrace;
-	cdef->compareTo = QTransform_compareTo;
 }
 
 static knh_IntData_t QTransformConstInt[] = {
@@ -933,4 +944,15 @@ static knh_IntData_t QTransformConstInt[] = {
 DEFAPI(void) constQTransform(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTransformConstInt);
 }
+
+
+DEFAPI(void) defQTransform(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTransform";
+	cdef->free = QTransform_free;
+	cdef->reftrace = QTransform_reftrace;
+	cdef->compareTo = QTransform_compareTo;
+}
+
 

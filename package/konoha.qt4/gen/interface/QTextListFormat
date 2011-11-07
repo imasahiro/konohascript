@@ -44,10 +44,21 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+class
+QTextFormat
+name
+PageBreakFlags
+
 typedefed_objects
 
 parent_typedefed_objects
-PageBreakFlags
+
+class_objects
+
+parent_class_objects
 
 enums
 class_name

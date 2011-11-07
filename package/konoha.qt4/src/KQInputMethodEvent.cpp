@@ -9,25 +9,6 @@ KMETHOD QInputMethodEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//QInputMethodEvent QInputMethodEvent.new(String preeditText, Array<int> attributes);
-KMETHOD QInputMethodEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	const QString preeditText = String_to(const QString, sfp[1]);
-	knh_Array_t *a = sfp[2].a;
-		int asize = knh_Array_size(a);
-		QList<QInputMethodEvent::Attribute> attributes;
-		for (int n = 0; n < asize; n++) {
-			knh_RawPtr_t *p = (knh_RawPtr_t*)(a->list[n]);
-			attributes.append(*(QInputMethodEvent::Attribute*)p->rawptr);
-		}
-	KQInputMethodEvent *ret_v = new KQInputMethodEvent(preeditText, attributes);
-	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
-	ret_v->setSelf(rptr);
-	RETURN_(rptr);
-}
-*/
-/*
 //QInputMethodEvent QInputMethodEvent.new(QInputMethodEvent other);
 KMETHOD QInputMethodEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -39,34 +20,12 @@ KMETHOD QInputMethodEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 */
-//Array<int> QInputMethodEvent.attributes();
-KMETHOD QInputMethodEvent_attributes(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QInputMethodEvent *  qp = RawPtr_to(QInputMethodEvent *, sfp[0]);
-	if (qp != NULL) {
-		const QList<QInputMethodEvent::Attribute>ret_v = qp->attributes();
-		int list_size = ret_v.size();
-		knh_Array_t *a = new_Array0(ctx, list_size);
-		knh_class_t cid = knh_getcid(ctx, STEXT("QInputMethodEvent::Attribute"));
-		for (int n = 0; n < list_size; n++) {
-			QInputMethodEvent::Attribute *ret_v_ = new QInputMethodEvent::Attribute(ret_v[n]);
-			knh_RawPtr_t *p = new_RawPtr(ctx, ClassTBL(cid), ret_v_);
-			knh_Array_add(ctx, a, (knh_Object_t *)p);
-		}
-		RETURN_(a);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-	
-
 //String QInputMethodEvent.getCommitString();
 KMETHOD QInputMethodEvent_getCommitString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputMethodEvent *  qp = RawPtr_to(QInputMethodEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString ret_v = qp->commitString();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -80,7 +39,7 @@ KMETHOD QInputMethodEvent_preeditString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputMethodEvent *  qp = RawPtr_to(QInputMethodEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString ret_v = qp->preeditString();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -94,7 +53,7 @@ KMETHOD QInputMethodEvent_replacementLength(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputMethodEvent *  qp = RawPtr_to(QInputMethodEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->replacementLength();
 		RETURNi_(ret_v);
 	} else {
@@ -107,7 +66,7 @@ KMETHOD QInputMethodEvent_replacementStart(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputMethodEvent *  qp = RawPtr_to(QInputMethodEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->replacementStart();
 		RETURNi_(ret_v);
 	} else {
@@ -120,7 +79,7 @@ KMETHOD QInputMethodEvent_setCommitString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputMethodEvent *  qp = RawPtr_to(QInputMethodEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString commitString = String_to(const QString, sfp[1]);
 		int replaceFrom = Int_to(int, sfp[2]);
 		int replaceLength = Int_to(int, sfp[3]);
@@ -180,9 +139,23 @@ bool DummyQInputMethodEvent::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
+void DummyQInputMethodEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQInputMethodEvent::connection(QObject *o)
 {
+	QInputMethodEvent *p = dynamic_cast<QInputMethodEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -190,7 +163,6 @@ KQInputMethodEvent::KQInputMethodEvent() : QInputMethodEvent()
 {
 	self = NULL;
 	dummy = new DummyQInputMethodEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QInputMethodEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -245,13 +217,9 @@ static void QInputMethodEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QInputMethodEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQInputMethodEvent *qp = (KQInputMethodEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -266,15 +234,6 @@ void KQInputMethodEvent::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQInputMethodEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QInputMethodEvent";
-	cdef->free = QInputMethodEvent_free;
-	cdef->reftrace = QInputMethodEvent_reftrace;
-	cdef->compareTo = QInputMethodEvent_compareTo;
-}
-
 static knh_IntData_t QInputMethodEventConstInt[] = {
 	{"TextFormat", QInputMethodEvent::TextFormat},
 	{"Cursor", QInputMethodEvent::Cursor},
@@ -287,4 +246,15 @@ static knh_IntData_t QInputMethodEventConstInt[] = {
 DEFAPI(void) constQInputMethodEvent(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QInputMethodEventConstInt);
 }
+
+
+DEFAPI(void) defQInputMethodEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QInputMethodEvent";
+	cdef->free = QInputMethodEvent_free;
+	cdef->reftrace = QInputMethodEvent_reftrace;
+	cdef->compareTo = QInputMethodEvent_compareTo;
+}
+
 

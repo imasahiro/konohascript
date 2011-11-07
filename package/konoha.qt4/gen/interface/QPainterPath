@@ -116,10 +116,18 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+
 typedefed_objects
-Element
 
 parent_typedefed_objects
+
+class_objects
+Element
+
+parent_class_objects
 
 enums
 class_name

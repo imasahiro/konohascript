@@ -3,7 +3,7 @@ KMETHOD QTextItem_ascent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextItem *  qp = RawPtr_to(QTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->ascent();
 		RETURNf_(ret_v);
 	} else {
@@ -16,7 +16,7 @@ KMETHOD QTextItem_descent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextItem *  qp = RawPtr_to(QTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->descent();
 		RETURNf_(ret_v);
 	} else {
@@ -29,7 +29,7 @@ KMETHOD QTextItem_font(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextItem *  qp = RawPtr_to(QTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont ret_v = qp->font();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -39,16 +39,18 @@ KMETHOD QTextItem_font(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QTextItem.renderFlags();
+//QTextItemRenderFlags QTextItem.renderFlags();
 KMETHOD QTextItem_renderFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextItem *  qp = RawPtr_to(QTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextItem::RenderFlags ret_v = qp->renderFlags();
-		RETURNi_(ret_v);
+		QTextItem::RenderFlags *ret_v_ = new QTextItem::RenderFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -57,7 +59,7 @@ KMETHOD QTextItem_text(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextItem *  qp = RawPtr_to(QTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->text();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -71,7 +73,7 @@ KMETHOD QTextItem_width(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextItem *  qp = RawPtr_to(QTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->width();
 		RETURNf_(ret_v);
 	} else {
@@ -79,6 +81,24 @@ KMETHOD QTextItem_width(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QTextItem.parents();
+KMETHOD QTextItem_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextItem *qp = RawPtr_to(QTextItem*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextItem::DummyQTextItem()
 {
@@ -127,17 +147,22 @@ bool DummyQTextItem::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextItem::connection(QObject *o)
 {
-	return;
-}
-
-KQTextItem::KQTextItem() : QTextItem()
-{
-	self = NULL;
-	dummy = new DummyQTextItem();
-	dummy->connection((QObject*)this);
+	QTextItem *p = dynamic_cast<QTextItem*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QTextItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -192,13 +217,9 @@ static void QTextItem_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextItem *qp = (KQTextItem *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -213,15 +234,6 @@ void KQTextItem::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQTextItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTextItem";
-	cdef->free = QTextItem_free;
-	cdef->reftrace = QTextItem_reftrace;
-	cdef->compareTo = QTextItem_compareTo;
-}
-
 static knh_IntData_t QTextItemConstInt[] = {
 	{"RightToLeft", QTextItem::RightToLeft},
 	{"Overline", QTextItem::Overline},
@@ -232,5 +244,179 @@ static knh_IntData_t QTextItemConstInt[] = {
 
 DEFAPI(void) constQTextItem(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTextItemConstInt);
+}
+
+
+DEFAPI(void) defQTextItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextItem";
+	cdef->free = QTextItem_free;
+	cdef->reftrace = QTextItem_reftrace;
+	cdef->compareTo = QTextItem_compareTo;
+}
+
+//## QTextItemRenderFlags QTextItemRenderFlags.new(int value);
+KMETHOD QTextItemRenderFlags_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextItem::RenderFlag i = Int_to(QTextItem::RenderFlag, sfp[1]);
+	QTextItem::RenderFlags *ret_v = new QTextItem::RenderFlags(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QTextItemRenderFlags QTextItemRenderFlags.and(int mask);
+KMETHOD QTextItemRenderFlags_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextItem::RenderFlags *qp = RawPtr_to(QTextItem::RenderFlags*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QTextItem::RenderFlags ret = ((*qp) & i);
+		QTextItem::RenderFlags *ret_ = new QTextItem::RenderFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextItemRenderFlags QTextItemRenderFlags.iand(QTextItem::QTextItemRenderFlags other);
+KMETHOD QTextItemRenderFlags_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextItem::RenderFlags *qp = RawPtr_to(QTextItem::RenderFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextItem::RenderFlags *other = RawPtr_to(QTextItem::RenderFlags *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextItemRenderFlags QTextItemRenderFlags.or(QTextItemRenderFlags f);
+KMETHOD QTextItemRenderFlags_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextItem::RenderFlags *qp = RawPtr_to(QTextItem::RenderFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextItem::RenderFlags *f = RawPtr_to(QTextItem::RenderFlags*, sfp[1]);
+		QTextItem::RenderFlags ret = ((*qp) | (*f));
+		QTextItem::RenderFlags *ret_ = new QTextItem::RenderFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextItemRenderFlags QTextItemRenderFlags.ior(QTextItem::QTextItemRenderFlags other);
+KMETHOD QTextItemRenderFlags_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextItem::RenderFlags *qp = RawPtr_to(QTextItem::RenderFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextItem::RenderFlags *other = RawPtr_to(QTextItem::RenderFlags *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextItemRenderFlags QTextItemRenderFlags.xor(QTextItemRenderFlags f);
+KMETHOD QTextItemRenderFlags_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextItem::RenderFlags *qp = RawPtr_to(QTextItem::RenderFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextItem::RenderFlags *f = RawPtr_to(QTextItem::RenderFlags*, sfp[1]);
+		QTextItem::RenderFlags ret = ((*qp) ^ (*f));
+		QTextItem::RenderFlags *ret_ = new QTextItem::RenderFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextItemRenderFlags QTextItemRenderFlags.ixor(QTextItem::QTextItemRenderFlags other);
+KMETHOD QTextItemRenderFlags_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextItem::RenderFlags *qp = RawPtr_to(QTextItem::RenderFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextItem::RenderFlags *other = RawPtr_to(QTextItem::RenderFlags *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QTextItemRenderFlags.testFlag(int flag);
+KMETHOD QTextItemRenderFlags_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextItem::RenderFlags *qp = RawPtr_to(QTextItem::RenderFlags *, sfp[0]);
+	if (qp != NULL) {
+		QTextItem::RenderFlag flag = Int_to(QTextItem::RenderFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QTextItemRenderFlags.value();
+KMETHOD QTextItemRenderFlags_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextItem::RenderFlags *qp = RawPtr_to(QTextItem::RenderFlags *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QTextItemRenderFlags_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QTextItem::RenderFlags *qp = (QTextItem::RenderFlags *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QTextItemRenderFlags_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QTextItem::RenderFlags *qp = (QTextItem::RenderFlags *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QTextItemRenderFlags_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QTextItem::RenderFlags*)p1->rawptr);
+//		int v2 = int(*(QTextItem::RenderFlags*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QTextItem::RenderFlags v1 = *(QTextItem::RenderFlags*)p1->rawptr;
+		QTextItem::RenderFlags v2 = *(QTextItem::RenderFlags*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQTextItemRenderFlags(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextItemRenderFlags";
+	cdef->free = QTextItemRenderFlags_free;
+	cdef->reftrace = QTextItemRenderFlags_reftrace;
+	cdef->compareTo = QTextItemRenderFlags_compareTo;
 }
 

@@ -71,9 +71,23 @@ bool DummyQStyleOptionSpinBox::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQStyleOptionSpinBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOptionComplex::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionSpinBox::connection(QObject *o)
 {
+	QStyleOptionSpinBox *p = dynamic_cast<QStyleOptionSpinBox*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOptionComplex::connection(o);
 }
 
@@ -81,7 +95,6 @@ KQStyleOptionSpinBox::KQStyleOptionSpinBox() : QStyleOptionSpinBox()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionSpinBox();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionSpinBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,13 +149,9 @@ static void QStyleOptionSpinBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionSpinBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionSpinBox *qp = (KQStyleOptionSpinBox *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -157,15 +166,6 @@ void KQStyleOptionSpinBox::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStyleOptionSpinBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionSpinBox";
-	cdef->free = QStyleOptionSpinBox_free;
-	cdef->reftrace = QStyleOptionSpinBox_reftrace;
-	cdef->compareTo = QStyleOptionSpinBox_compareTo;
-}
-
 static knh_IntData_t QStyleOptionSpinBoxConstInt[] = {
 	{"Type", QStyleOptionSpinBox::Type},
 	{"Version", QStyleOptionSpinBox::Version},
@@ -175,4 +175,15 @@ static knh_IntData_t QStyleOptionSpinBoxConstInt[] = {
 DEFAPI(void) constQStyleOptionSpinBox(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionSpinBoxConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionSpinBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionSpinBox";
+	cdef->free = QStyleOptionSpinBox_free;
+	cdef->reftrace = QStyleOptionSpinBox_reftrace;
+	cdef->compareTo = QStyleOptionSpinBox_compareTo;
+}
+
 

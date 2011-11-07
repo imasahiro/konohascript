@@ -41,15 +41,26 @@ templateClass
 false
 
 abstractClass
-true
+false
 
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+class
+QGraphicsItem
+name
+GraphicsItemFlags
+
 typedefed_objects
 
 parent_typedefed_objects
-GraphicsItemFlags
+
+class_objects
+
+parent_class_objects
 
 enums
 

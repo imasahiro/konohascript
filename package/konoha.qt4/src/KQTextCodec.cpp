@@ -3,8 +3,8 @@ KMETHOD QTextCodec_aliases(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
-		QList<QByteArray>ret_v = qp->aliases();
+	if (qp) {
+		QList<QByteArray> ret_v = qp->aliases();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QByteArray"));
@@ -25,7 +25,7 @@ KMETHOD QTextCodec_canEncode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar  ch = *RawPtr_to(QChar *, sfp[1]);
 		bool ret_v = qp->canEncode(ch);
 		RETURNb_(ret_v);
@@ -40,7 +40,7 @@ KMETHOD QTextCodec_canEncode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString s = String_to(const QString, sfp[1]);
 		bool ret_v = qp->canEncode(s);
 		RETURNb_(ret_v);
@@ -54,7 +54,7 @@ KMETHOD QTextCodec_fromUnicode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString str = String_to(const QString, sfp[1]);
 		QByteArray ret_v = qp->fromUnicode(str);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -65,31 +65,12 @@ KMETHOD QTextCodec_fromUnicode(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-/*
-//QByteArray QTextCodec.fromUnicode(QChar input, int number, int state);
-KMETHOD QTextCodec_fromUnicode(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
-		const QChar*  input = RawPtr_to(const QChar*, sfp[1]);
-		int number = Int_to(int, sfp[2]);
-		QTextCodec::ConverterState*  state = RawPtr_to(QTextCodec::ConverterState*, sfp[3]);
-		QByteArray ret_v = qp->fromUnicode(input, number, state);
-		QByteArray *ret_v_ = new QByteArray(ret_v);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-*/
 //QTextDecoder QTextCodec.makeDecoder();
 KMETHOD QTextCodec_makeDecoder(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextDecoder* ret_v = qp->makeDecoder();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextDecoder*)ret_v, NULL);
 		RETURN_(rptr);
@@ -99,13 +80,13 @@ KMETHOD QTextCodec_makeDecoder(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//QTextDecoder QTextCodec.makeDecoder(int flags);
+//QTextDecoder QTextCodec.makeDecoder(QTextCodecConversionFlags flags);
 KMETHOD QTextCodec_makeDecoder(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
-		QTextCodec::ConversionFlags flags = Int_to(QTextCodec::ConversionFlags, sfp[1]);
+	if (qp) {
+		initFlag(flags, QTextCodec::ConversionFlags, sfp[1]);
 		QTextDecoder* ret_v = qp->makeDecoder(flags);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextDecoder*)ret_v, NULL);
 		RETURN_(rptr);
@@ -119,7 +100,7 @@ KMETHOD QTextCodec_makeEncoder(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextEncoder* ret_v = qp->makeEncoder();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextEncoder*)ret_v, NULL);
 		RETURN_(rptr);
@@ -129,13 +110,13 @@ KMETHOD QTextCodec_makeEncoder(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//QTextEncoder QTextCodec.makeEncoder(int flags);
+//QTextEncoder QTextCodec.makeEncoder(QTextCodecConversionFlags flags);
 KMETHOD QTextCodec_makeEncoder(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
-		QTextCodec::ConversionFlags flags = Int_to(QTextCodec::ConversionFlags, sfp[1]);
+	if (qp) {
+		initFlag(flags, QTextCodec::ConversionFlags, sfp[1]);
 		QTextEncoder* ret_v = qp->makeEncoder(flags);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextEncoder*)ret_v, NULL);
 		RETURN_(rptr);
@@ -149,7 +130,7 @@ KMETHOD QTextCodec_mibEnum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->mibEnum();
 		RETURNi_(ret_v);
 	} else {
@@ -162,7 +143,7 @@ KMETHOD QTextCodec_name(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->name();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -177,7 +158,7 @@ KMETHOD QTextCodec_toUnicode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  a = *RawPtr_to(const QByteArray *, sfp[1]);
 		QString ret_v = qp->toUnicode(a);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -188,30 +169,12 @@ KMETHOD QTextCodec_toUnicode(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//String QTextCodec.toUnicode(String input, int size, int state);
-KMETHOD QTextCodec_toUnicode(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
-		const char*  input = RawPtr_to(const char*, sfp[1]);
-		int size = Int_to(int, sfp[2]);
-		QTextCodec::ConverterState*  state = RawPtr_to(QTextCodec::ConverterState*, sfp[3]);
-		QString ret_v = qp->toUnicode(input, size, state);
-		const char *ret_c = ret_v.toLocal8Bit().data();
-		RETURN_(new_String(ctx, ret_c));
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-*/
-/*
 //String QTextCodec.toUnicode(String chars);
 KMETHOD QTextCodec_toUnicode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  chars = RawPtr_to(const char*, sfp[1]);
 		QString ret_v = qp->toUnicode(chars);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -225,9 +188,8 @@ KMETHOD QTextCodec_toUnicode(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextCodec_availableCodecs(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
-		QList<QByteArray>ret_v = qp->availableCodecs();
+	if (true) {
+		QList<QByteArray> ret_v = QTextCodec::availableCodecs();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QByteArray"));
@@ -247,9 +209,8 @@ KMETHOD QTextCodec_availableCodecs(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextCodec_availableMibs(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
-		QList<int>ret_v = qp->availableMibs();
+	if (true) {
+		QList<int> ret_v = QTextCodec::availableMibs();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("int"));
@@ -265,13 +226,12 @@ KMETHOD QTextCodec_availableMibs(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 	
 
-//QTextCodec QTextCodec.getCodecForCstr();
+//QTextCodec QTextCodec.getCodecForCStrings();
 KMETHOD QTextCodec_getCodecForCStrings(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
-		QTextCodec* ret_v = qp->codecForCStrings();
+	if (true) {
+		QTextCodec* ret_v = QTextCodec::codecForCStrings();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextCodec*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -283,11 +243,10 @@ KMETHOD QTextCodec_getCodecForCStrings(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextCodec_codecForHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QByteArray  ba = *RawPtr_to(const QByteArray *, sfp[1]);
 		QTextCodec*  defaultCodec = RawPtr_to(QTextCodec*, sfp[2]);
-		QTextCodec* ret_v = qp->codecForHtml(ba, defaultCodec);
+		QTextCodec* ret_v = QTextCodec::codecForHtml(ba, defaultCodec);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextCodec*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -300,10 +259,9 @@ KMETHOD QTextCodec_codecForHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextCodec_codecForHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QByteArray  ba = *RawPtr_to(const QByteArray *, sfp[1]);
-		QTextCodec* ret_v = qp->codecForHtml(ba);
+		QTextCodec* ret_v = QTextCodec::codecForHtml(ba);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextCodec*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -315,9 +273,8 @@ KMETHOD QTextCodec_codecForHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextCodec_getCodecForLocale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
-		QTextCodec* ret_v = qp->codecForLocale();
+	if (true) {
+		QTextCodec* ret_v = QTextCodec::codecForLocale();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextCodec*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -329,10 +286,9 @@ KMETHOD QTextCodec_getCodecForLocale(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextCodec_codecForMib(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int mib = Int_to(int, sfp[1]);
-		QTextCodec* ret_v = qp->codecForMib(mib);
+		QTextCodec* ret_v = QTextCodec::codecForMib(mib);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextCodec*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -344,10 +300,9 @@ KMETHOD QTextCodec_codecForMib(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextCodec_codecForName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QByteArray  name = *RawPtr_to(const QByteArray *, sfp[1]);
-		QTextCodec* ret_v = qp->codecForName(name);
+		QTextCodec* ret_v = QTextCodec::codecForName(name);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextCodec*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -360,10 +315,9 @@ KMETHOD QTextCodec_codecForName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextCodec_codecForName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const char*  name = RawPtr_to(const char*, sfp[1]);
-		QTextCodec* ret_v = qp->codecForName(name);
+		QTextCodec* ret_v = QTextCodec::codecForName(name);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextCodec*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -375,9 +329,8 @@ KMETHOD QTextCodec_codecForName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextCodec_getCodecForTr(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
-		QTextCodec* ret_v = qp->codecForTr();
+	if (true) {
+		QTextCodec* ret_v = QTextCodec::codecForTr();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextCodec*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -389,11 +342,10 @@ KMETHOD QTextCodec_getCodecForTr(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextCodec_codecForUtfText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QByteArray  ba = *RawPtr_to(const QByteArray *, sfp[1]);
 		QTextCodec*  defaultCodec = RawPtr_to(QTextCodec*, sfp[2]);
-		QTextCodec* ret_v = qp->codecForUtfText(ba, defaultCodec);
+		QTextCodec* ret_v = QTextCodec::codecForUtfText(ba, defaultCodec);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextCodec*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -406,10 +358,9 @@ KMETHOD QTextCodec_codecForUtfText(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextCodec_codecForUtfText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QByteArray  ba = *RawPtr_to(const QByteArray *, sfp[1]);
-		QTextCodec* ret_v = qp->codecForUtfText(ba);
+		QTextCodec* ret_v = QTextCodec::codecForUtfText(ba);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextCodec*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -417,14 +368,13 @@ KMETHOD QTextCodec_codecForUtfText(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 */
-//void QTextCodec.setCodecForCstr(QTextCodec codec);
+//void QTextCodec.setCodecForCStrings(QTextCodec codec);
 KMETHOD QTextCodec_setCodecForCStrings(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QTextCodec*  codec = RawPtr_to(QTextCodec*, sfp[1]);
-		qp->setCodecForCStrings(codec);
+		QTextCodec::setCodecForCStrings(codec);
 	}
 	RETURNvoid_();
 }
@@ -433,10 +383,9 @@ KMETHOD QTextCodec_setCodecForCStrings(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextCodec_setCodecForLocale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QTextCodec*  c = RawPtr_to(QTextCodec*, sfp[1]);
-		qp->setCodecForLocale(c);
+		QTextCodec::setCodecForLocale(c);
 	}
 	RETURNvoid_();
 }
@@ -445,14 +394,31 @@ KMETHOD QTextCodec_setCodecForLocale(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextCodec_setCodecForTr(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextCodec *  qp = RawPtr_to(QTextCodec *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QTextCodec*  c = RawPtr_to(QTextCodec*, sfp[1]);
-		qp->setCodecForTr(c);
+		QTextCodec::setCodecForTr(c);
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QTextCodec.parents();
+KMETHOD QTextCodec_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextCodec *qp = RawPtr_to(QTextCodec*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextCodec::DummyQTextCodec()
 {
@@ -501,17 +467,22 @@ bool DummyQTextCodec::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextCodec::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextCodec::connection(QObject *o)
 {
-	return;
-}
-
-KQTextCodec::KQTextCodec() : QTextCodec()
-{
-	self = NULL;
-	dummy = new DummyQTextCodec();
-	dummy->connection((QObject*)this);
+	QTextCodec *p = dynamic_cast<QTextCodec*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QTextCodec_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -566,13 +537,9 @@ static void QTextCodec_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextCodec_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextCodec *qp = (KQTextCodec *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -587,15 +554,6 @@ void KQTextCodec::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQTextCodec(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTextCodec";
-	cdef->free = QTextCodec_free;
-	cdef->reftrace = QTextCodec_reftrace;
-	cdef->compareTo = QTextCodec_compareTo;
-}
-
 static knh_IntData_t QTextCodecConstInt[] = {
 	{"DefaultConversion", QTextCodec::DefaultConversion},
 	{"ConvertInvalidToNull", QTextCodec::ConvertInvalidToNull},
@@ -605,5 +563,179 @@ static knh_IntData_t QTextCodecConstInt[] = {
 
 DEFAPI(void) constQTextCodec(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTextCodecConstInt);
+}
+
+
+DEFAPI(void) defQTextCodec(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextCodec";
+	cdef->free = QTextCodec_free;
+	cdef->reftrace = QTextCodec_reftrace;
+	cdef->compareTo = QTextCodec_compareTo;
+}
+
+//## QTextCodecConversionFlags QTextCodecConversionFlags.new(int value);
+KMETHOD QTextCodecConversionFlags_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextCodec::ConversionFlag i = Int_to(QTextCodec::ConversionFlag, sfp[1]);
+	QTextCodec::ConversionFlags *ret_v = new QTextCodec::ConversionFlags(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QTextCodecConversionFlags QTextCodecConversionFlags.and(int mask);
+KMETHOD QTextCodecConversionFlags_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextCodec::ConversionFlags *qp = RawPtr_to(QTextCodec::ConversionFlags*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QTextCodec::ConversionFlags ret = ((*qp) & i);
+		QTextCodec::ConversionFlags *ret_ = new QTextCodec::ConversionFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextCodecConversionFlags QTextCodecConversionFlags.iand(QTextCodec::QTextCodecConversionFlags other);
+KMETHOD QTextCodecConversionFlags_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextCodec::ConversionFlags *qp = RawPtr_to(QTextCodec::ConversionFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextCodec::ConversionFlags *other = RawPtr_to(QTextCodec::ConversionFlags *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextCodecConversionFlags QTextCodecConversionFlags.or(QTextCodecConversionFlags f);
+KMETHOD QTextCodecConversionFlags_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextCodec::ConversionFlags *qp = RawPtr_to(QTextCodec::ConversionFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextCodec::ConversionFlags *f = RawPtr_to(QTextCodec::ConversionFlags*, sfp[1]);
+		QTextCodec::ConversionFlags ret = ((*qp) | (*f));
+		QTextCodec::ConversionFlags *ret_ = new QTextCodec::ConversionFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextCodecConversionFlags QTextCodecConversionFlags.ior(QTextCodec::QTextCodecConversionFlags other);
+KMETHOD QTextCodecConversionFlags_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextCodec::ConversionFlags *qp = RawPtr_to(QTextCodec::ConversionFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextCodec::ConversionFlags *other = RawPtr_to(QTextCodec::ConversionFlags *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextCodecConversionFlags QTextCodecConversionFlags.xor(QTextCodecConversionFlags f);
+KMETHOD QTextCodecConversionFlags_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextCodec::ConversionFlags *qp = RawPtr_to(QTextCodec::ConversionFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextCodec::ConversionFlags *f = RawPtr_to(QTextCodec::ConversionFlags*, sfp[1]);
+		QTextCodec::ConversionFlags ret = ((*qp) ^ (*f));
+		QTextCodec::ConversionFlags *ret_ = new QTextCodec::ConversionFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextCodecConversionFlags QTextCodecConversionFlags.ixor(QTextCodec::QTextCodecConversionFlags other);
+KMETHOD QTextCodecConversionFlags_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextCodec::ConversionFlags *qp = RawPtr_to(QTextCodec::ConversionFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextCodec::ConversionFlags *other = RawPtr_to(QTextCodec::ConversionFlags *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QTextCodecConversionFlags.testFlag(int flag);
+KMETHOD QTextCodecConversionFlags_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextCodec::ConversionFlags *qp = RawPtr_to(QTextCodec::ConversionFlags *, sfp[0]);
+	if (qp != NULL) {
+		QTextCodec::ConversionFlag flag = Int_to(QTextCodec::ConversionFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QTextCodecConversionFlags.value();
+KMETHOD QTextCodecConversionFlags_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextCodec::ConversionFlags *qp = RawPtr_to(QTextCodec::ConversionFlags *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QTextCodecConversionFlags_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QTextCodec::ConversionFlags *qp = (QTextCodec::ConversionFlags *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QTextCodecConversionFlags_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QTextCodec::ConversionFlags *qp = (QTextCodec::ConversionFlags *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QTextCodecConversionFlags_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QTextCodec::ConversionFlags*)p1->rawptr);
+//		int v2 = int(*(QTextCodec::ConversionFlags*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QTextCodec::ConversionFlags v1 = *(QTextCodec::ConversionFlags*)p1->rawptr;
+		QTextCodec::ConversionFlags v2 = *(QTextCodec::ConversionFlags*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQTextCodecConversionFlags(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextCodecConversionFlags";
+	cdef->free = QTextCodecConversionFlags_free;
+	cdef->reftrace = QTextCodecConversionFlags_reftrace;
+	cdef->compareTo = QTextCodecConversionFlags_compareTo;
 }
 

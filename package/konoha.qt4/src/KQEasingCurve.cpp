@@ -26,7 +26,7 @@ KMETHOD QEasingCurve_getAmplitude(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEasingCurve *  qp = RawPtr_to(QEasingCurve *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->amplitude();
 		RETURNf_(ret_v);
 	} else {
@@ -39,7 +39,7 @@ KMETHOD QEasingCurve_getOvershoot(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEasingCurve *  qp = RawPtr_to(QEasingCurve *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->overshoot();
 		RETURNf_(ret_v);
 	} else {
@@ -52,7 +52,7 @@ KMETHOD QEasingCurve_getPeriod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEasingCurve *  qp = RawPtr_to(QEasingCurve *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->period();
 		RETURNf_(ret_v);
 	} else {
@@ -65,7 +65,7 @@ KMETHOD QEasingCurve_setAmplitude(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEasingCurve *  qp = RawPtr_to(QEasingCurve *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal amplitude = Float_to(qreal, sfp[1]);
 		qp->setAmplitude(amplitude);
 	}
@@ -77,7 +77,7 @@ KMETHOD QEasingCurve_setOvershoot(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEasingCurve *  qp = RawPtr_to(QEasingCurve *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal overshoot = Float_to(qreal, sfp[1]);
 		qp->setOvershoot(overshoot);
 	}
@@ -89,7 +89,7 @@ KMETHOD QEasingCurve_setPeriod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEasingCurve *  qp = RawPtr_to(QEasingCurve *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal period = Float_to(qreal, sfp[1]);
 		qp->setPeriod(period);
 	}
@@ -101,7 +101,7 @@ KMETHOD QEasingCurve_setType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEasingCurve *  qp = RawPtr_to(QEasingCurve *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEasingCurve::Type type = Int_to(QEasingCurve::Type, sfp[1]);
 		qp->setType(type);
 	}
@@ -113,7 +113,7 @@ KMETHOD QEasingCurve_getType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEasingCurve *  qp = RawPtr_to(QEasingCurve *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEasingCurve::Type ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -126,7 +126,7 @@ KMETHOD QEasingCurve_valueForProgress(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEasingCurve *  qp = RawPtr_to(QEasingCurve *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal progress = Float_to(qreal, sfp[1]);
 		qreal ret_v = qp->valueForProgress(progress);
 		RETURNf_(ret_v);
@@ -135,6 +135,24 @@ KMETHOD QEasingCurve_valueForProgress(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QEasingCurve.parents();
+KMETHOD QEasingCurve_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QEasingCurve *qp = RawPtr_to(QEasingCurve*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQEasingCurve::DummyQEasingCurve()
 {
@@ -183,17 +201,28 @@ bool DummyQEasingCurve::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQEasingCurve::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQEasingCurve::connection(QObject *o)
 {
-	return;
+	QEasingCurve *p = dynamic_cast<QEasingCurve*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQEasingCurve::KQEasingCurve(QEasingCurve::Type type) : QEasingCurve(type)
 {
 	self = NULL;
 	dummy = new DummyQEasingCurve();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QEasingCurve_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -248,13 +277,9 @@ static void QEasingCurve_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QEasingCurve_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQEasingCurve *qp = (KQEasingCurve *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -267,15 +292,6 @@ void KQEasingCurve::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQEasingCurve(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QEasingCurve";
-	cdef->free = QEasingCurve_free;
-	cdef->reftrace = QEasingCurve_reftrace;
-	cdef->compareTo = QEasingCurve_compareTo;
 }
 
 static knh_IntData_t QEasingCurveConstInt[] = {
@@ -327,4 +343,15 @@ static knh_IntData_t QEasingCurveConstInt[] = {
 DEFAPI(void) constQEasingCurve(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QEasingCurveConstInt);
 }
+
+
+DEFAPI(void) defQEasingCurve(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QEasingCurve";
+	cdef->free = QEasingCurve_free;
+	cdef->reftrace = QEasingCurve_reftrace;
+	cdef->compareTo = QEasingCurve_compareTo;
+}
+
 

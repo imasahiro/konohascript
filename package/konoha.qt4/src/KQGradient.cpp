@@ -3,7 +3,7 @@ KMETHOD QGradient_getCoordinateMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGradient *  qp = RawPtr_to(QGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGradient::CoordinateMode ret_v = qp->coordinateMode();
 		RETURNi_(ret_v);
 	} else {
@@ -16,7 +16,7 @@ KMETHOD QGradient_setColorAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGradient *  qp = RawPtr_to(QGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal position = Float_to(qreal, sfp[1]);
 		const QColor  color = *RawPtr_to(const QColor *, sfp[2]);
 		qp->setColorAt(position, color);
@@ -29,7 +29,7 @@ KMETHOD QGradient_setCoordinateMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGradient *  qp = RawPtr_to(QGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGradient::CoordinateMode mode = Int_to(QGradient::CoordinateMode, sfp[1]);
 		qp->setCoordinateMode(mode);
 	}
@@ -41,7 +41,7 @@ KMETHOD QGradient_setSpread(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGradient *  qp = RawPtr_to(QGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGradient::Spread method = Int_to(QGradient::Spread, sfp[1]);
 		qp->setSpread(method);
 	}
@@ -53,7 +53,7 @@ KMETHOD QGradient_setStops(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGradient *  qp = RawPtr_to(QGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGradientStops  stopPoints = *RawPtr_to(const QGradientStops *, sfp[1]);
 		qp->setStops(stopPoints);
 	}
@@ -65,7 +65,7 @@ KMETHOD QGradient_getSpread(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGradient *  qp = RawPtr_to(QGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGradient::Spread ret_v = qp->spread();
 		RETURNi_(ret_v);
 	} else {
@@ -78,7 +78,7 @@ KMETHOD QGradient_getStops(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGradient *  qp = RawPtr_to(QGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGradientStops ret_v = qp->stops();
 		QGradientStops *ret_v_ = new QGradientStops(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -93,7 +93,7 @@ KMETHOD QGradient_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGradient *  qp = RawPtr_to(QGradient *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGradient::Type ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -101,6 +101,24 @@ KMETHOD QGradient_type(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QGradient.parents();
+KMETHOD QGradient_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGradient *qp = RawPtr_to(QGradient*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQGradient::DummyQGradient()
 {
@@ -149,17 +167,22 @@ bool DummyQGradient::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQGradient::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQGradient::connection(QObject *o)
 {
-	return;
-}
-
-KQGradient::KQGradient() : QGradient()
-{
-	self = NULL;
-	dummy = new DummyQGradient();
-	dummy->connection((QObject*)this);
+	QGradient *p = dynamic_cast<QGradient*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QGradient_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -214,13 +237,9 @@ static void QGradient_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGradient_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGradient *qp = (KQGradient *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -233,15 +252,6 @@ void KQGradient::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQGradient(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QGradient";
-	cdef->free = QGradient_free;
-	cdef->reftrace = QGradient_reftrace;
-	cdef->compareTo = QGradient_compareTo;
 }
 
 static knh_IntData_t QGradientConstInt[] = {
@@ -261,4 +271,15 @@ static knh_IntData_t QGradientConstInt[] = {
 DEFAPI(void) constQGradient(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QGradientConstInt);
 }
+
+
+DEFAPI(void) defQGradient(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QGradient";
+	cdef->free = QGradient_free;
+	cdef->reftrace = QGradient_reftrace;
+	cdef->compareTo = QGradient_compareTo;
+}
+
 

@@ -49,7 +49,7 @@ KMETHOD QTextDocumentFragment_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocumentFragment *  qp = RawPtr_to(QTextDocumentFragment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
 		RETURNb_(ret_v);
 	} else {
@@ -62,7 +62,7 @@ KMETHOD QTextDocumentFragment_toHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocumentFragment *  qp = RawPtr_to(QTextDocumentFragment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  encoding = *RawPtr_to(const QByteArray *, sfp[1]);
 		QString ret_v = qp->toHtml(encoding);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -78,7 +78,7 @@ KMETHOD QTextDocumentFragment_toHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocumentFragment *  qp = RawPtr_to(QTextDocumentFragment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->toHtml();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -92,7 +92,7 @@ KMETHOD QTextDocumentFragment_toPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocumentFragment *  qp = RawPtr_to(QTextDocumentFragment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->toPlainText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -105,10 +105,9 @@ KMETHOD QTextDocumentFragment_toPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextDocumentFragment_fromHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextDocumentFragment *  qp = RawPtr_to(QTextDocumentFragment *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString text = String_to(const QString, sfp[1]);
-		QTextDocumentFragment ret_v = qp->fromHtml(text);
+		QTextDocumentFragment ret_v = QTextDocumentFragment::fromHtml(text);
 		QTextDocumentFragment *ret_v_ = new QTextDocumentFragment(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -122,11 +121,10 @@ KMETHOD QTextDocumentFragment_fromHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextDocumentFragment_fromHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextDocumentFragment *  qp = RawPtr_to(QTextDocumentFragment *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString text = String_to(const QString, sfp[1]);
 		const QTextDocument*  resourceProvider = RawPtr_to(const QTextDocument*, sfp[2]);
-		QTextDocumentFragment ret_v = qp->fromHtml(text, resourceProvider);
+		QTextDocumentFragment ret_v = QTextDocumentFragment::fromHtml(text, resourceProvider);
 		QTextDocumentFragment *ret_v_ = new QTextDocumentFragment(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -139,10 +137,9 @@ KMETHOD QTextDocumentFragment_fromHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTextDocumentFragment_fromPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTextDocumentFragment *  qp = RawPtr_to(QTextDocumentFragment *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString plainText = String_to(const QString, sfp[1]);
-		QTextDocumentFragment ret_v = qp->fromPlainText(plainText);
+		QTextDocumentFragment ret_v = QTextDocumentFragment::fromPlainText(plainText);
 		QTextDocumentFragment *ret_v_ = new QTextDocumentFragment(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -151,6 +148,24 @@ KMETHOD QTextDocumentFragment_fromPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QTextDocumentFragment.parents();
+KMETHOD QTextDocumentFragment_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextDocumentFragment *qp = RawPtr_to(QTextDocumentFragment*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextDocumentFragment::DummyQTextDocumentFragment()
 {
@@ -199,17 +214,28 @@ bool DummyQTextDocumentFragment::signalConnect(knh_Func_t *callback_func, string
 	}
 }
 
+void DummyQTextDocumentFragment::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextDocumentFragment::connection(QObject *o)
 {
-	return;
+	QTextDocumentFragment *p = dynamic_cast<QTextDocumentFragment*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTextDocumentFragment::KQTextDocumentFragment() : QTextDocumentFragment()
 {
 	self = NULL;
 	dummy = new DummyQTextDocumentFragment();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextDocumentFragment_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -264,13 +290,9 @@ static void QTextDocumentFragment_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextDocumentFragment_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextDocumentFragment *qp = (KQTextDocumentFragment *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -284,6 +306,8 @@ void KQTextDocumentFragment::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQTextDocumentFragment(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

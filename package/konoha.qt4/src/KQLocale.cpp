@@ -50,7 +50,7 @@ KMETHOD QLocale_amText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->amText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -64,7 +64,7 @@ KMETHOD QLocale_country(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLocale::Country ret_v = qp->country();
 		RETURNi_(ret_v);
 	} else {
@@ -77,7 +77,7 @@ KMETHOD QLocale_dateFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLocale::FormatType format = Int_to(QLocale::FormatType, sfp[1]);
 		QString ret_v = qp->dateFormat(format);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -92,7 +92,7 @@ KMETHOD QLocale_dateTimeFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLocale::FormatType format = Int_to(QLocale::FormatType, sfp[1]);
 		QString ret_v = qp->dateTimeFormat(format);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -107,7 +107,7 @@ KMETHOD QLocale_dayName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int day = Int_to(int, sfp[1]);
 		QLocale::FormatType type = Int_to(QLocale::FormatType, sfp[2]);
 		QString ret_v = qp->dayName(day, type);
@@ -123,7 +123,7 @@ KMETHOD QLocale_decimalPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar ret_v = qp->decimalPoint();
 		QChar *ret_v_ = new QChar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -138,7 +138,7 @@ KMETHOD QLocale_exponential(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar ret_v = qp->exponential();
 		QChar *ret_v_ = new QChar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -153,7 +153,7 @@ KMETHOD QLocale_groupSeparator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar ret_v = qp->groupSeparator();
 		QChar *ret_v_ = new QChar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -168,7 +168,7 @@ KMETHOD QLocale_language(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLocale::Language ret_v = qp->language();
 		RETURNi_(ret_v);
 	} else {
@@ -181,7 +181,7 @@ KMETHOD QLocale_measurementSystem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLocale::MeasurementSystem ret_v = qp->measurementSystem();
 		RETURNi_(ret_v);
 	} else {
@@ -194,7 +194,7 @@ KMETHOD QLocale_monthName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int month = Int_to(int, sfp[1]);
 		QLocale::FormatType type = Int_to(QLocale::FormatType, sfp[2]);
 		QString ret_v = qp->monthName(month, type);
@@ -210,7 +210,7 @@ KMETHOD QLocale_name(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->name();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -224,7 +224,7 @@ KMETHOD QLocale_negativeSign(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar ret_v = qp->negativeSign();
 		QChar *ret_v_ = new QChar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -234,16 +234,18 @@ KMETHOD QLocale_negativeSign(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QLocale.getNumberOptions();
+//QLocaleNumberOptions QLocale.getNumberOptions();
 KMETHOD QLocale_getNumberOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLocale::NumberOptions ret_v = qp->numberOptions();
-		RETURNi_(ret_v);
+		QLocale::NumberOptions *ret_v_ = new QLocale::NumberOptions(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -252,7 +254,7 @@ KMETHOD QLocale_percent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar ret_v = qp->percent();
 		QChar *ret_v_ = new QChar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -267,7 +269,7 @@ KMETHOD QLocale_pmText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->pmText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -281,7 +283,7 @@ KMETHOD QLocale_positiveSign(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar ret_v = qp->positiveSign();
 		QChar *ret_v_ = new QChar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -291,13 +293,13 @@ KMETHOD QLocale_positiveSign(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QLocale.setNumberOptions(int options);
+//void QLocale.setNumberOptions(QLocaleNumberOptions options);
 KMETHOD QLocale_setNumberOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
-		QLocale::NumberOptions options = Int_to(QLocale::NumberOptions, sfp[1]);
+	if (qp) {
+		initFlag(options, QLocale::NumberOptions, sfp[1]);
 		qp->setNumberOptions(options);
 	}
 	RETURNvoid_();
@@ -308,7 +310,7 @@ KMETHOD QLocale_standaloneDayName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int day = Int_to(int, sfp[1]);
 		QLocale::FormatType type = Int_to(QLocale::FormatType, sfp[2]);
 		QString ret_v = qp->standaloneDayName(day, type);
@@ -324,7 +326,7 @@ KMETHOD QLocale_standaloneMonthName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int month = Int_to(int, sfp[1]);
 		QLocale::FormatType type = Int_to(QLocale::FormatType, sfp[2]);
 		QString ret_v = qp->standaloneMonthName(month, type);
@@ -340,7 +342,7 @@ KMETHOD QLocale_textDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::LayoutDirection ret_v = qp->textDirection();
 		RETURNi_(ret_v);
 	} else {
@@ -353,7 +355,7 @@ KMETHOD QLocale_timeFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLocale::FormatType format = Int_to(QLocale::FormatType, sfp[1]);
 		QString ret_v = qp->timeFormat(format);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -368,7 +370,7 @@ KMETHOD QLocale_toDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString string = String_to(const QString, sfp[1]);
 		QLocale::FormatType format = Int_to(QLocale::FormatType, sfp[2]);
 		QDate ret_v = qp->toDate(string, format);
@@ -386,7 +388,7 @@ KMETHOD QLocale_toDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString string = String_to(const QString, sfp[1]);
 		const QString format = String_to(const QString, sfp[2]);
 		QDate ret_v = qp->toDate(string, format);
@@ -403,7 +405,7 @@ KMETHOD QLocale_toDateTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString string = String_to(const QString, sfp[1]);
 		QLocale::FormatType format = Int_to(QLocale::FormatType, sfp[2]);
 		QDateTime ret_v = qp->toDateTime(string, format);
@@ -421,7 +423,7 @@ KMETHOD QLocale_toDateTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString string = String_to(const QString, sfp[1]);
 		const QString format = String_to(const QString, sfp[2]);
 		QDateTime ret_v = qp->toDateTime(string, format);
@@ -438,7 +440,7 @@ KMETHOD QLocale_toDouble(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString s = String_to(const QString, sfp[1]);
 		bool* ok = Boolean_to(bool*, sfp[2]);
 		double ret_v = qp->toDouble(s, ok);
@@ -455,7 +457,7 @@ KMETHOD QLocale_toFloat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString s = String_to(const QString, sfp[1]);
 		bool* ok = Boolean_to(bool*, sfp[2]);
 		float ret_v = qp->toFloat(s, ok);
@@ -470,7 +472,7 @@ KMETHOD QLocale_toInt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString s = String_to(const QString, sfp[1]);
 		bool* ok = Boolean_to(bool*, sfp[2]);
 		int base = Int_to(int, sfp[3]);
@@ -486,7 +488,7 @@ KMETHOD QLocale_toLongLong(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString s = String_to(const QString, sfp[1]);
 		bool* ok = Boolean_to(bool*, sfp[2]);
 		int base = Int_to(int, sfp[3]);
@@ -504,7 +506,7 @@ KMETHOD QLocale_toShort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString s = String_to(const QString, sfp[1]);
 		bool* ok = Boolean_to(bool*, sfp[2]);
 		int base = Int_to(int, sfp[3]);
@@ -522,7 +524,7 @@ KMETHOD QLocale_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qlonglong  i = *RawPtr_to(qlonglong *, sfp[1]);
 		QString ret_v = qp->toString(i);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -538,7 +540,7 @@ KMETHOD QLocale_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDate  date = *RawPtr_to(const QDate *, sfp[1]);
 		const QString format = String_to(const QString, sfp[2]);
 		QString ret_v = qp->toString(date, format);
@@ -555,7 +557,7 @@ KMETHOD QLocale_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDate  date = *RawPtr_to(const QDate *, sfp[1]);
 		QLocale::FormatType format = Int_to(QLocale::FormatType, sfp[2]);
 		QString ret_v = qp->toString(date, format);
@@ -572,7 +574,7 @@ KMETHOD QLocale_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTime  time = *RawPtr_to(const QTime *, sfp[1]);
 		const QString format = String_to(const QString, sfp[2]);
 		QString ret_v = qp->toString(time, format);
@@ -589,7 +591,7 @@ KMETHOD QLocale_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTime  time = *RawPtr_to(const QTime *, sfp[1]);
 		QLocale::FormatType format = Int_to(QLocale::FormatType, sfp[2]);
 		QString ret_v = qp->toString(time, format);
@@ -606,7 +608,7 @@ KMETHOD QLocale_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDateTime  dateTime = *RawPtr_to(const QDateTime *, sfp[1]);
 		QLocale::FormatType format = Int_to(QLocale::FormatType, sfp[2]);
 		QString ret_v = qp->toString(dateTime, format);
@@ -623,7 +625,7 @@ KMETHOD QLocale_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDateTime  dateTime = *RawPtr_to(const QDateTime *, sfp[1]);
 		const QString format = String_to(const QString, sfp[2]);
 		QString ret_v = qp->toString(dateTime, format);
@@ -640,7 +642,7 @@ KMETHOD QLocale_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qulonglong  i = *RawPtr_to(qulonglong *, sfp[1]);
 		QString ret_v = qp->toString(i);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -656,7 +658,7 @@ KMETHOD QLocale_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  i = *RawPtr_to(double *, sfp[1]);
 		char  f = *RawPtr_to(char *, sfp[2]);
 		int prec = Int_to(int, sfp[3]);
@@ -674,7 +676,7 @@ KMETHOD QLocale_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		short  i = *RawPtr_to(short *, sfp[1]);
 		QString ret_v = qp->toString(i);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -690,7 +692,7 @@ KMETHOD QLocale_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		ushort  i = *RawPtr_to(ushort *, sfp[1]);
 		QString ret_v = qp->toString(i);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -706,7 +708,7 @@ KMETHOD QLocale_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		QString ret_v = qp->toString(i);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -722,7 +724,7 @@ KMETHOD QLocale_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uint  i = *RawPtr_to(uint *, sfp[1]);
 		QString ret_v = qp->toString(i);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -738,7 +740,7 @@ KMETHOD QLocale_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		float i = Float_to(float, sfp[1]);
 		char  f = *RawPtr_to(char *, sfp[2]);
 		int prec = Int_to(int, sfp[3]);
@@ -755,7 +757,7 @@ KMETHOD QLocale_toTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString string = String_to(const QString, sfp[1]);
 		QLocale::FormatType format = Int_to(QLocale::FormatType, sfp[2]);
 		QTime ret_v = qp->toTime(string, format);
@@ -773,7 +775,7 @@ KMETHOD QLocale_toTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString string = String_to(const QString, sfp[1]);
 		const QString format = String_to(const QString, sfp[2]);
 		QTime ret_v = qp->toTime(string, format);
@@ -790,7 +792,7 @@ KMETHOD QLocale_toUInt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString s = String_to(const QString, sfp[1]);
 		bool* ok = Boolean_to(bool*, sfp[2]);
 		int base = Int_to(int, sfp[3]);
@@ -808,7 +810,7 @@ KMETHOD QLocale_toULongLong(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString s = String_to(const QString, sfp[1]);
 		bool* ok = Boolean_to(bool*, sfp[2]);
 		int base = Int_to(int, sfp[3]);
@@ -826,7 +828,7 @@ KMETHOD QLocale_toUShort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString s = String_to(const QString, sfp[1]);
 		bool* ok = Boolean_to(bool*, sfp[2]);
 		int base = Int_to(int, sfp[3]);
@@ -844,7 +846,7 @@ KMETHOD QLocale_zeroDigit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QChar ret_v = qp->zeroDigit();
 		QChar *ret_v_ = new QChar(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -858,9 +860,8 @@ KMETHOD QLocale_zeroDigit(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QLocale_c(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
-		QLocale ret_v = qp->c();
+	if (true) {
+		QLocale ret_v = QLocale::c();
 		QLocale *ret_v_ = new QLocale(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -873,10 +874,9 @@ KMETHOD QLocale_c(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QLocale_countriesForLanguage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QLocale::Language language = Int_to(QLocale::Language, sfp[1]);
-		QList<QLocale::Country>ret_v = qp->countriesForLanguage(language);
+		QList<QLocale::Country> ret_v = QLocale::countriesForLanguage(language);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QLocale::Country"));
@@ -896,10 +896,9 @@ KMETHOD QLocale_countriesForLanguage(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QLocale_countryToString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QLocale::Country country = Int_to(QLocale::Country, sfp[1]);
-		QString ret_v = qp->countryToString(country);
+		QString ret_v = QLocale::countryToString(country);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -911,10 +910,9 @@ KMETHOD QLocale_countryToString(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QLocale_languageToString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QLocale::Language language = Int_to(QLocale::Language, sfp[1]);
-		QString ret_v = qp->languageToString(language);
+		QString ret_v = QLocale::languageToString(language);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -926,10 +924,9 @@ KMETHOD QLocale_languageToString(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QLocale_setDefault(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QLocale  locale = *RawPtr_to(const QLocale *, sfp[1]);
-		qp->setDefault(locale);
+		QLocale::setDefault(locale);
 	}
 	RETURNvoid_();
 }
@@ -938,9 +935,8 @@ KMETHOD QLocale_setDefault(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QLocale_system(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QLocale *  qp = RawPtr_to(QLocale *, sfp[0]);
-	if (qp != NULL) {
-		QLocale ret_v = qp->system();
+	if (true) {
+		QLocale ret_v = QLocale::system();
 		QLocale *ret_v_ = new QLocale(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -949,6 +945,24 @@ KMETHOD QLocale_system(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QLocale.parents();
+KMETHOD QLocale_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QLocale *qp = RawPtr_to(QLocale*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQLocale::DummyQLocale()
 {
@@ -997,17 +1011,28 @@ bool DummyQLocale::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQLocale::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQLocale::connection(QObject *o)
 {
-	return;
+	QLocale *p = dynamic_cast<QLocale*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQLocale::KQLocale() : QLocale()
 {
 	self = NULL;
 	dummy = new DummyQLocale();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QLocale_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1062,13 +1087,9 @@ static void QLocale_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QLocale_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQLocale *qp = (KQLocale *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -1081,15 +1102,6 @@ void KQLocale::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQLocale(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QLocale";
-	cdef->free = QLocale_free;
-	cdef->reftrace = QLocale_reftrace;
-	cdef->compareTo = QLocale_compareTo;
 }
 
 static knh_IntData_t QLocaleConstInt[] = {
@@ -1573,5 +1585,179 @@ static knh_IntData_t QLocaleConstInt[] = {
 
 DEFAPI(void) constQLocale(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QLocaleConstInt);
+}
+
+
+DEFAPI(void) defQLocale(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QLocale";
+	cdef->free = QLocale_free;
+	cdef->reftrace = QLocale_reftrace;
+	cdef->compareTo = QLocale_compareTo;
+}
+
+//## QLocaleNumberOptions QLocaleNumberOptions.new(int value);
+KMETHOD QLocaleNumberOptions_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QLocale::NumberOption i = Int_to(QLocale::NumberOption, sfp[1]);
+	QLocale::NumberOptions *ret_v = new QLocale::NumberOptions(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QLocaleNumberOptions QLocaleNumberOptions.and(int mask);
+KMETHOD QLocaleNumberOptions_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QLocale::NumberOptions *qp = RawPtr_to(QLocale::NumberOptions*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QLocale::NumberOptions ret = ((*qp) & i);
+		QLocale::NumberOptions *ret_ = new QLocale::NumberOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QLocaleNumberOptions QLocaleNumberOptions.iand(QLocale::QLocaleNumberOptions other);
+KMETHOD QLocaleNumberOptions_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QLocale::NumberOptions *qp = RawPtr_to(QLocale::NumberOptions*, sfp[0]);
+	if (qp != NULL) {
+		QLocale::NumberOptions *other = RawPtr_to(QLocale::NumberOptions *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QLocaleNumberOptions QLocaleNumberOptions.or(QLocaleNumberOptions f);
+KMETHOD QLocaleNumberOptions_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QLocale::NumberOptions *qp = RawPtr_to(QLocale::NumberOptions*, sfp[0]);
+	if (qp != NULL) {
+		QLocale::NumberOptions *f = RawPtr_to(QLocale::NumberOptions*, sfp[1]);
+		QLocale::NumberOptions ret = ((*qp) | (*f));
+		QLocale::NumberOptions *ret_ = new QLocale::NumberOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QLocaleNumberOptions QLocaleNumberOptions.ior(QLocale::QLocaleNumberOptions other);
+KMETHOD QLocaleNumberOptions_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QLocale::NumberOptions *qp = RawPtr_to(QLocale::NumberOptions*, sfp[0]);
+	if (qp != NULL) {
+		QLocale::NumberOptions *other = RawPtr_to(QLocale::NumberOptions *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QLocaleNumberOptions QLocaleNumberOptions.xor(QLocaleNumberOptions f);
+KMETHOD QLocaleNumberOptions_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QLocale::NumberOptions *qp = RawPtr_to(QLocale::NumberOptions*, sfp[0]);
+	if (qp != NULL) {
+		QLocale::NumberOptions *f = RawPtr_to(QLocale::NumberOptions*, sfp[1]);
+		QLocale::NumberOptions ret = ((*qp) ^ (*f));
+		QLocale::NumberOptions *ret_ = new QLocale::NumberOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QLocaleNumberOptions QLocaleNumberOptions.ixor(QLocale::QLocaleNumberOptions other);
+KMETHOD QLocaleNumberOptions_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QLocale::NumberOptions *qp = RawPtr_to(QLocale::NumberOptions*, sfp[0]);
+	if (qp != NULL) {
+		QLocale::NumberOptions *other = RawPtr_to(QLocale::NumberOptions *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QLocaleNumberOptions.testFlag(int flag);
+KMETHOD QLocaleNumberOptions_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QLocale::NumberOptions *qp = RawPtr_to(QLocale::NumberOptions *, sfp[0]);
+	if (qp != NULL) {
+		QLocale::NumberOption flag = Int_to(QLocale::NumberOption, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QLocaleNumberOptions.value();
+KMETHOD QLocaleNumberOptions_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QLocale::NumberOptions *qp = RawPtr_to(QLocale::NumberOptions *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QLocaleNumberOptions_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QLocale::NumberOptions *qp = (QLocale::NumberOptions *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QLocaleNumberOptions_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QLocale::NumberOptions *qp = (QLocale::NumberOptions *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QLocaleNumberOptions_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QLocale::NumberOptions*)p1->rawptr);
+//		int v2 = int(*(QLocale::NumberOptions*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QLocale::NumberOptions v1 = *(QLocale::NumberOptions*)p1->rawptr;
+		QLocale::NumberOptions v2 = *(QLocale::NumberOptions*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQLocaleNumberOptions(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QLocaleNumberOptions";
+	cdef->free = QLocaleNumberOptions_free;
+	cdef->reftrace = QLocaleNumberOptions_reftrace;
+	cdef->compareTo = QLocaleNumberOptions_compareTo;
 }
 

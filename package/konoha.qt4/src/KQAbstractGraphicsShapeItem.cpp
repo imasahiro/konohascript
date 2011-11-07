@@ -3,7 +3,7 @@ KMETHOD QAbstractGraphicsShapeItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractGraphicsShapeItem *  qp = RawPtr_to(QAbstractGraphicsShapeItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		bool ret_v = qp->isObscuredBy(item);
 		RETURNb_(ret_v);
@@ -17,7 +17,7 @@ KMETHOD QAbstractGraphicsShapeItem_opaqueArea(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractGraphicsShapeItem *  qp = RawPtr_to(QAbstractGraphicsShapeItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->opaqueArea();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -33,7 +33,7 @@ KMETHOD QAbstractGraphicsShapeItem_getBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractGraphicsShapeItem *  qp = RawPtr_to(QAbstractGraphicsShapeItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBrush ret_v = qp->brush();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -48,7 +48,7 @@ KMETHOD QAbstractGraphicsShapeItem_getPen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractGraphicsShapeItem *  qp = RawPtr_to(QAbstractGraphicsShapeItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPen ret_v = qp->pen();
 		QPen *ret_v_ = new QPen(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -63,7 +63,7 @@ KMETHOD QAbstractGraphicsShapeItem_setBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractGraphicsShapeItem *  qp = RawPtr_to(QAbstractGraphicsShapeItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[1]);
 		qp->setBrush(brush);
 	}
@@ -75,7 +75,7 @@ KMETHOD QAbstractGraphicsShapeItem_setPen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractGraphicsShapeItem *  qp = RawPtr_to(QAbstractGraphicsShapeItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPen  pen = *RawPtr_to(const QPen *, sfp[1]);
 		qp->setPen(pen);
 	}
@@ -133,9 +133,23 @@ bool DummyQAbstractGraphicsShapeItem::signalConnect(knh_Func_t *callback_func, s
 	}
 }
 
+void DummyQAbstractGraphicsShapeItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsItem::reftrace(ctx, p, tail_);
+}
 
 void DummyQAbstractGraphicsShapeItem::connection(QObject *o)
 {
+	QAbstractGraphicsShapeItem *p = dynamic_cast<QAbstractGraphicsShapeItem*>(o);
+	if (p != NULL) {
+	}
 	DummyQGraphicsItem::connection(o);
 }
 
@@ -143,7 +157,6 @@ KQAbstractGraphicsShapeItem::KQAbstractGraphicsShapeItem(QGraphicsItem* parent) 
 {
 	self = NULL;
 	dummy = new DummyQAbstractGraphicsShapeItem();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractGraphicsShapeItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -198,13 +211,9 @@ static void QAbstractGraphicsShapeItem_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractGraphicsShapeItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAbstractGraphicsShapeItem *qp = (KQAbstractGraphicsShapeItem *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -218,6 +227,8 @@ void KQAbstractGraphicsShapeItem::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQAbstractGraphicsShapeItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

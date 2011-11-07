@@ -2,10 +2,9 @@
 KMETHOD QWhatsThis_createAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWhatsThis *  qp = RawPtr_to(QWhatsThis *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QObject*  parent = RawPtr_to(QObject*, sfp[1]);
-		QAction* ret_v = qp->createAction(parent);
+		QAction* ret_v = QWhatsThis::createAction(parent);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAction*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -17,9 +16,8 @@ KMETHOD QWhatsThis_createAction(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWhatsThis_enterWhatsThisMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWhatsThis *  qp = RawPtr_to(QWhatsThis *, sfp[0]);
-	if (qp != NULL) {
-		qp->enterWhatsThisMode();
+	if (true) {
+		QWhatsThis::enterWhatsThisMode();
 	}
 	RETURNvoid_();
 }
@@ -28,9 +26,8 @@ KMETHOD QWhatsThis_enterWhatsThisMode(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWhatsThis_hideText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWhatsThis *  qp = RawPtr_to(QWhatsThis *, sfp[0]);
-	if (qp != NULL) {
-		qp->hideText();
+	if (true) {
+		QWhatsThis::hideText();
 	}
 	RETURNvoid_();
 }
@@ -39,9 +36,8 @@ KMETHOD QWhatsThis_hideText(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWhatsThis_inWhatsThisMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWhatsThis *  qp = RawPtr_to(QWhatsThis *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->inWhatsThisMode();
+	if (true) {
+		bool ret_v = QWhatsThis::inWhatsThisMode();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -52,9 +48,8 @@ KMETHOD QWhatsThis_inWhatsThisMode(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWhatsThis_leaveWhatsThisMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWhatsThis *  qp = RawPtr_to(QWhatsThis *, sfp[0]);
-	if (qp != NULL) {
-		qp->leaveWhatsThisMode();
+	if (true) {
+		QWhatsThis::leaveWhatsThisMode();
 	}
 	RETURNvoid_();
 }
@@ -63,16 +58,33 @@ KMETHOD QWhatsThis_leaveWhatsThisMode(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWhatsThis_showText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWhatsThis *  qp = RawPtr_to(QWhatsThis *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		QWidget*  w = RawPtr_to(QWidget*, sfp[3]);
-		qp->showText(pos, text, w);
+		QWhatsThis::showText(pos, text, w);
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QWhatsThis.parents();
+KMETHOD QWhatsThis_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QWhatsThis *qp = RawPtr_to(QWhatsThis*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQWhatsThis::DummyQWhatsThis()
 {
@@ -121,10 +133,22 @@ bool DummyQWhatsThis::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQWhatsThis::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQWhatsThis::connection(QObject *o)
 {
-	return;
+	QWhatsThis *p = dynamic_cast<QWhatsThis*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QWhatsThis_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -179,13 +203,9 @@ static void QWhatsThis_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QWhatsThis_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQWhatsThis *qp = (KQWhatsThis *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -199,6 +219,8 @@ void KQWhatsThis::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQWhatsThis(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

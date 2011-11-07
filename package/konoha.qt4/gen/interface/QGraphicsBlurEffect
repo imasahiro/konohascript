@@ -51,11 +51,25 @@ false
 enbeddedClass
 false
 
-typedefed_objects
+flag_objects
+class
+QGraphicsBlurEffect
+name
 BlurHints
 
-parent_typedefed_objects
+parent_flag_objects
+class
+QGraphicsEffect
+name
 ChangeFlags
+
+typedefed_objects
+
+parent_typedefed_objects
+
+class_objects
+
+parent_class_objects
 
 enums
 class_name

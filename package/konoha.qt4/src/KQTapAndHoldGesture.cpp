@@ -3,7 +3,7 @@ KMETHOD QTapAndHoldGesture_getPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTapAndHoldGesture *  qp = RawPtr_to(QTapAndHoldGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->position();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QTapAndHoldGesture_setPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTapAndHoldGesture *  qp = RawPtr_to(QTapAndHoldGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  pos = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setPosition(pos);
 	}
@@ -29,10 +29,9 @@ KMETHOD QTapAndHoldGesture_setPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTapAndHoldGesture_setTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTapAndHoldGesture *  qp = RawPtr_to(QTapAndHoldGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int msecs = Int_to(int, sfp[1]);
-		qp->setTimeout(msecs);
+		QTapAndHoldGesture::setTimeout(msecs);
 	}
 	RETURNvoid_();
 }
@@ -41,9 +40,8 @@ KMETHOD QTapAndHoldGesture_setTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTapAndHoldGesture_getTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTapAndHoldGesture *  qp = RawPtr_to(QTapAndHoldGesture *, sfp[0]);
-	if (qp != NULL) {
-		int ret_v = qp->timeout();
+	if (true) {
+		int ret_v = QTapAndHoldGesture::timeout();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -101,17 +99,24 @@ bool DummyQTapAndHoldGesture::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
+void DummyQTapAndHoldGesture::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGesture::reftrace(ctx, p, tail_);
+}
 
 void DummyQTapAndHoldGesture::connection(QObject *o)
 {
+	QTapAndHoldGesture *p = dynamic_cast<QTapAndHoldGesture*>(o);
+	if (p != NULL) {
+	}
 	DummyQGesture::connection(o);
-}
-
-KQTapAndHoldGesture::KQTapAndHoldGesture() : QTapAndHoldGesture()
-{
-	self = NULL;
-	dummy = new DummyQTapAndHoldGesture();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTapAndHoldGesture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -166,13 +171,9 @@ static void QTapAndHoldGesture_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTapAndHoldGesture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTapAndHoldGesture *qp = (KQTapAndHoldGesture *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -195,6 +196,8 @@ bool KQTapAndHoldGesture::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQTapAndHoldGesture(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -3,7 +3,7 @@ KMETHOD QColorDialog_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setVisible(visible);
 	}
@@ -39,7 +39,7 @@ KMETHOD QColorDialog_getCurrentColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QColor ret_v = qp->currentColor();
 		QColor *ret_v_ = new QColor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -54,7 +54,7 @@ KMETHOD QColorDialog_open(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->open();
 	}
 	RETURNvoid_();
@@ -66,7 +66,7 @@ KMETHOD QColorDialog_open(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
 		const char*  member = RawPtr_to(const char*, sfp[2]);
 		qp->open(receiver, member);
@@ -74,16 +74,18 @@ KMETHOD QColorDialog_open(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 */
-//int QColorDialog.getOptions();
+//QColorDialogColorDialogOptions QColorDialog.getOptions();
 KMETHOD QColorDialog_getOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QColorDialog::ColorDialogOptions ret_v = qp->options();
-		RETURNi_(ret_v);
+		QColorDialog::ColorDialogOptions *ret_v_ = new QColorDialog::ColorDialogOptions(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -92,7 +94,7 @@ KMETHOD QColorDialog_selectedColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QColor ret_v = qp->selectedColor();
 		QColor *ret_v_ = new QColor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -107,7 +109,7 @@ KMETHOD QColorDialog_setCurrentColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor  color = *RawPtr_to(const QColor *, sfp[1]);
 		qp->setCurrentColor(color);
 	}
@@ -119,7 +121,7 @@ KMETHOD QColorDialog_setOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QColorDialog::ColorDialogOption option = Int_to(QColorDialog::ColorDialogOption, sfp[1]);
 		bool on = Boolean_to(bool, sfp[2]);
 		qp->setOption(option, on);
@@ -127,13 +129,13 @@ KMETHOD QColorDialog_setOption(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//void QColorDialog.setOptions(int options);
+//void QColorDialog.setOptions(QColorDialogColorDialogOptions options);
 KMETHOD QColorDialog_setOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
-		QColorDialog::ColorDialogOptions options = Int_to(QColorDialog::ColorDialogOptions, sfp[1]);
+	if (qp) {
+		initFlag(options, QColorDialog::ColorDialogOptions, sfp[1]);
 		qp->setOptions(options);
 	}
 	RETURNvoid_();
@@ -144,7 +146,7 @@ KMETHOD QColorDialog_testOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QColorDialog::ColorDialogOption option = Int_to(QColorDialog::ColorDialogOption, sfp[1]);
 		bool ret_v = qp->testOption(option);
 		RETURNb_(ret_v);
@@ -157,10 +159,9 @@ KMETHOD QColorDialog_testOption(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QColorDialog_getCustomColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int index = Int_to(int, sfp[1]);
-		QRgb ret_v = qp->customColor(index);
+		QRgb ret_v = QColorDialog::customColor(index);
 		QRgb *ret_v_ = new QRgb(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -173,26 +174,24 @@ KMETHOD QColorDialog_getCustomColor(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QColorDialog_customCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
-		int ret_v = qp->customCount();
+	if (true) {
+		int ret_v = QColorDialog::customCount();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
 	}
 }
 
-//QColor QColorDialog.getColor(QColor initial, QWidget parent, String title, int options);
+//QColor QColorDialog.getColor(QColor initial, QWidget parent, String title, QColorDialogColorDialogOptions options);
 KMETHOD QColorDialog_getColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QColor  initial = *RawPtr_to(const QColor *, sfp[1]);
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
 		const QString title = String_to(const QString, sfp[3]);
-		QColorDialog::ColorDialogOptions options = Int_to(QColorDialog::ColorDialogOptions, sfp[4]);
-		QColor ret_v = qp->getColor(initial, parent, title, options);
+		initFlag(options, QColorDialog::ColorDialogOptions, sfp[4]);
+		QColor ret_v = QColorDialog::getColor(initial, parent, title, options);
 		QColor *ret_v_ = new QColor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -206,11 +205,10 @@ KMETHOD QColorDialog_getColor(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QColorDialog_getColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QColor  initial = *RawPtr_to(const QColor *, sfp[1]);
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
-		QColor ret_v = qp->getColor(initial, parent);
+		QColor ret_v = QColorDialog::getColor(initial, parent);
 		QColor *ret_v_ = new QColor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -223,11 +221,10 @@ KMETHOD QColorDialog_getColor(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QColorDialog_setCustomColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int index = Int_to(int, sfp[1]);
 		QRgb  color = *RawPtr_to(QRgb *, sfp[2]);
-		qp->setCustomColor(index, color);
+		QColorDialog::setCustomColor(index, color);
 	}
 	RETURNvoid_();
 }
@@ -236,11 +233,10 @@ KMETHOD QColorDialog_setCustomColor(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QColorDialog_setStandardColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QColorDialog *  qp = RawPtr_to(QColorDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int index = Int_to(int, sfp[1]);
 		QRgb  color = *RawPtr_to(QRgb *, sfp[2]);
-		qp->setStandardColor(index, color);
+		QColorDialog::setStandardColor(index, color);
 	}
 	RETURNvoid_();
 }
@@ -330,11 +326,27 @@ bool DummyQColorDialog::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQColorDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, color_selected_func);
+	KNH_ADDNNREF(ctx, current_color_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQDialog::reftrace(ctx, p, tail_);
+}
 
 void DummyQColorDialog::connection(QObject *o)
 {
-	connect(o, SIGNAL(colorSelected(const QColor)), this, SLOT(colorSelectedSlot(const QColor)));
-	connect(o, SIGNAL(currentColorChanged(const QColor)), this, SLOT(currentColorChangedSlot(const QColor)));
+	QColorDialog *p = dynamic_cast<QColorDialog*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(colorSelected(const QColor)), this, SLOT(colorSelectedSlot(const QColor)));
+		connect(p, SIGNAL(currentColorChanged(const QColor)), this, SLOT(currentColorChangedSlot(const QColor)));
+	}
 	DummyQDialog::connection(o);
 }
 
@@ -397,21 +409,9 @@ static void QColorDialog_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QColorDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQColorDialog *qp = (KQColorDialog *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->color_selected_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->color_selected_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->current_color_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->current_color_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -435,15 +435,6 @@ bool KQColorDialog::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQColorDialog(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QColorDialog";
-	cdef->free = QColorDialog_free;
-	cdef->reftrace = QColorDialog_reftrace;
-	cdef->compareTo = QColorDialog_compareTo;
-}
-
 static knh_IntData_t QColorDialogConstInt[] = {
 //	{"ShowAlphaChannel", QColorDialog::ShowAlphaChannel},
 	{"NoButtons", QColorDialog::NoButtons},
@@ -453,5 +444,179 @@ static knh_IntData_t QColorDialogConstInt[] = {
 
 DEFAPI(void) constQColorDialog(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QColorDialogConstInt);
+}
+
+
+DEFAPI(void) defQColorDialog(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QColorDialog";
+	cdef->free = QColorDialog_free;
+	cdef->reftrace = QColorDialog_reftrace;
+	cdef->compareTo = QColorDialog_compareTo;
+}
+
+//## QColorDialogColorDialogOptions QColorDialogColorDialogOptions.new(int value);
+KMETHOD QColorDialogColorDialogOptions_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QColorDialog::ColorDialogOption i = Int_to(QColorDialog::ColorDialogOption, sfp[1]);
+	QColorDialog::ColorDialogOptions *ret_v = new QColorDialog::ColorDialogOptions(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QColorDialogColorDialogOptions QColorDialogColorDialogOptions.and(int mask);
+KMETHOD QColorDialogColorDialogOptions_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QColorDialog::ColorDialogOptions *qp = RawPtr_to(QColorDialog::ColorDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QColorDialog::ColorDialogOptions ret = ((*qp) & i);
+		QColorDialog::ColorDialogOptions *ret_ = new QColorDialog::ColorDialogOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QColorDialogColorDialogOptions QColorDialogColorDialogOptions.iand(QColorDialog::QColorDialogColorDialogOptions other);
+KMETHOD QColorDialogColorDialogOptions_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QColorDialog::ColorDialogOptions *qp = RawPtr_to(QColorDialog::ColorDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QColorDialog::ColorDialogOptions *other = RawPtr_to(QColorDialog::ColorDialogOptions *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QColorDialogColorDialogOptions QColorDialogColorDialogOptions.or(QColorDialogColorDialogOptions f);
+KMETHOD QColorDialogColorDialogOptions_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QColorDialog::ColorDialogOptions *qp = RawPtr_to(QColorDialog::ColorDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QColorDialog::ColorDialogOptions *f = RawPtr_to(QColorDialog::ColorDialogOptions*, sfp[1]);
+		QColorDialog::ColorDialogOptions ret = ((*qp) | (*f));
+		QColorDialog::ColorDialogOptions *ret_ = new QColorDialog::ColorDialogOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QColorDialogColorDialogOptions QColorDialogColorDialogOptions.ior(QColorDialog::QColorDialogColorDialogOptions other);
+KMETHOD QColorDialogColorDialogOptions_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QColorDialog::ColorDialogOptions *qp = RawPtr_to(QColorDialog::ColorDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QColorDialog::ColorDialogOptions *other = RawPtr_to(QColorDialog::ColorDialogOptions *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QColorDialogColorDialogOptions QColorDialogColorDialogOptions.xor(QColorDialogColorDialogOptions f);
+KMETHOD QColorDialogColorDialogOptions_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QColorDialog::ColorDialogOptions *qp = RawPtr_to(QColorDialog::ColorDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QColorDialog::ColorDialogOptions *f = RawPtr_to(QColorDialog::ColorDialogOptions*, sfp[1]);
+		QColorDialog::ColorDialogOptions ret = ((*qp) ^ (*f));
+		QColorDialog::ColorDialogOptions *ret_ = new QColorDialog::ColorDialogOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QColorDialogColorDialogOptions QColorDialogColorDialogOptions.ixor(QColorDialog::QColorDialogColorDialogOptions other);
+KMETHOD QColorDialogColorDialogOptions_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QColorDialog::ColorDialogOptions *qp = RawPtr_to(QColorDialog::ColorDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QColorDialog::ColorDialogOptions *other = RawPtr_to(QColorDialog::ColorDialogOptions *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QColorDialogColorDialogOptions.testFlag(int flag);
+KMETHOD QColorDialogColorDialogOptions_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QColorDialog::ColorDialogOptions *qp = RawPtr_to(QColorDialog::ColorDialogOptions *, sfp[0]);
+	if (qp != NULL) {
+		QColorDialog::ColorDialogOption flag = Int_to(QColorDialog::ColorDialogOption, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QColorDialogColorDialogOptions.value();
+KMETHOD QColorDialogColorDialogOptions_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QColorDialog::ColorDialogOptions *qp = RawPtr_to(QColorDialog::ColorDialogOptions *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QColorDialogColorDialogOptions_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QColorDialog::ColorDialogOptions *qp = (QColorDialog::ColorDialogOptions *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QColorDialogColorDialogOptions_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QColorDialog::ColorDialogOptions *qp = (QColorDialog::ColorDialogOptions *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QColorDialogColorDialogOptions_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QColorDialog::ColorDialogOptions*)p1->rawptr);
+//		int v2 = int(*(QColorDialog::ColorDialogOptions*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QColorDialog::ColorDialogOptions v1 = *(QColorDialog::ColorDialogOptions*)p1->rawptr;
+		QColorDialog::ColorDialogOptions v2 = *(QColorDialog::ColorDialogOptions*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQColorDialogColorDialogOptions(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QColorDialogColorDialogOptions";
+	cdef->free = QColorDialogColorDialogOptions_free;
+	cdef->reftrace = QColorDialogColorDialogOptions_reftrace;
+	cdef->compareTo = QColorDialogColorDialogOptions_compareTo;
 }
 

@@ -2,10 +2,9 @@
 KMETHOD QDesktopServices_displayName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDesktopServices *  qp = RawPtr_to(QDesktopServices *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QDesktopServices::StandardLocation type = Int_to(QDesktopServices::StandardLocation, sfp[1]);
-		QString ret_v = qp->displayName(type);
+		QString ret_v = QDesktopServices::displayName(type);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -17,10 +16,9 @@ KMETHOD QDesktopServices_displayName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDesktopServices_openUrl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDesktopServices *  qp = RawPtr_to(QDesktopServices *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QUrl  url = *RawPtr_to(const QUrl *, sfp[1]);
-		bool ret_v = qp->openUrl(url);
+		bool ret_v = QDesktopServices::openUrl(url);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -31,12 +29,11 @@ KMETHOD QDesktopServices_openUrl(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDesktopServices_setUrlHandler(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDesktopServices *  qp = RawPtr_to(QDesktopServices *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString scheme = String_to(const QString, sfp[1]);
 		QObject*  receiver = RawPtr_to(QObject*, sfp[2]);
 		const char*  method = RawPtr_to(const char*, sfp[3]);
-		qp->setUrlHandler(scheme, receiver, method);
+		QDesktopServices::setUrlHandler(scheme, receiver, method);
 	}
 	RETURNvoid_();
 }
@@ -45,10 +42,9 @@ KMETHOD QDesktopServices_setUrlHandler(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDesktopServices_storageLocation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDesktopServices *  qp = RawPtr_to(QDesktopServices *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QDesktopServices::StandardLocation type = Int_to(QDesktopServices::StandardLocation, sfp[1]);
-		QString ret_v = qp->storageLocation(type);
+		QString ret_v = QDesktopServices::storageLocation(type);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -60,14 +56,31 @@ KMETHOD QDesktopServices_storageLocation(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDesktopServices_unsetUrlHandler(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDesktopServices *  qp = RawPtr_to(QDesktopServices *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString scheme = String_to(const QString, sfp[1]);
-		qp->unsetUrlHandler(scheme);
+		QDesktopServices::unsetUrlHandler(scheme);
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QDesktopServices.parents();
+KMETHOD QDesktopServices_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QDesktopServices *qp = RawPtr_to(QDesktopServices*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQDesktopServices::DummyQDesktopServices()
 {
@@ -116,17 +129,22 @@ bool DummyQDesktopServices::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDesktopServices::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQDesktopServices::connection(QObject *o)
 {
-	return;
-}
-
-KQDesktopServices::KQDesktopServices() : QDesktopServices()
-{
-	self = NULL;
-	dummy = new DummyQDesktopServices();
-	dummy->connection((QObject*)this);
+	QDesktopServices *p = dynamic_cast<QDesktopServices*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QDesktopServices_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -181,13 +199,9 @@ static void QDesktopServices_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDesktopServices_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDesktopServices *qp = (KQDesktopServices *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -200,15 +214,6 @@ void KQDesktopServices::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQDesktopServices(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QDesktopServices";
-	cdef->free = QDesktopServices_free;
-	cdef->reftrace = QDesktopServices_reftrace;
-	cdef->compareTo = QDesktopServices_compareTo;
 }
 
 static knh_IntData_t QDesktopServicesConstInt[] = {
@@ -229,4 +234,15 @@ static knh_IntData_t QDesktopServicesConstInt[] = {
 DEFAPI(void) constQDesktopServices(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QDesktopServicesConstInt);
 }
+
+
+DEFAPI(void) defQDesktopServices(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QDesktopServices";
+	cdef->free = QDesktopServices_free;
+	cdef->reftrace = QDesktopServices_reftrace;
+	cdef->compareTo = QDesktopServices_compareTo;
+}
+
 

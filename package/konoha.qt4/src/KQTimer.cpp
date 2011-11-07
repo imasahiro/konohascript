@@ -14,7 +14,7 @@ KMETHOD QTimer_getInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimer *  qp = RawPtr_to(QTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->interval();
 		RETURNi_(ret_v);
 	} else {
@@ -27,7 +27,7 @@ KMETHOD QTimer_isActive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimer *  qp = RawPtr_to(QTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isActive();
 		RETURNb_(ret_v);
 	} else {
@@ -40,7 +40,7 @@ KMETHOD QTimer_isSingleShot(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimer *  qp = RawPtr_to(QTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSingleShot();
 		RETURNb_(ret_v);
 	} else {
@@ -53,7 +53,7 @@ KMETHOD QTimer_setInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimer *  qp = RawPtr_to(QTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int msec = Int_to(int, sfp[1]);
 		qp->setInterval(msec);
 	}
@@ -65,7 +65,7 @@ KMETHOD QTimer_setSingleShot(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimer *  qp = RawPtr_to(QTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool singleShot = Boolean_to(bool, sfp[1]);
 		qp->setSingleShot(singleShot);
 	}
@@ -77,7 +77,7 @@ KMETHOD QTimer_timerId(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimer *  qp = RawPtr_to(QTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->timerId();
 		RETURNi_(ret_v);
 	} else {
@@ -89,12 +89,11 @@ KMETHOD QTimer_timerId(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QTimer_getSingleShot(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QTimer *  qp = RawPtr_to(QTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int msec = Int_to(int, sfp[1]);
 		QObject*  receiver = RawPtr_to(QObject*, sfp[2]);
 		const char*  member = RawPtr_to(const char*, sfp[3]);
-		qp->singleShot(msec, receiver, member);
+		QTimer::singleShot(msec, receiver, member);
 	}
 	RETURNvoid_();
 }
@@ -104,7 +103,7 @@ KMETHOD QTimer_start(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimer *  qp = RawPtr_to(QTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int msec = Int_to(int, sfp[1]);
 		qp->start(msec);
 	}
@@ -117,7 +116,7 @@ KMETHOD QTimer_start(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimer *  qp = RawPtr_to(QTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->start();
 	}
 	RETURNvoid_();
@@ -128,7 +127,7 @@ KMETHOD QTimer_stop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimer *  qp = RawPtr_to(QTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->stop();
 	}
 	RETURNvoid_();
@@ -200,10 +199,25 @@ bool DummyQTimer::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTimer::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, timeout_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQTimer::connection(QObject *o)
 {
-	connect(o, SIGNAL(timeout()), this, SLOT(timeoutSlot()));
+	QTimer *p = dynamic_cast<QTimer*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(timeout()), this, SLOT(timeoutSlot()));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -266,17 +280,9 @@ static void QTimer_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTimer_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTimer *qp = (KQTimer *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->timeout_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->timeout_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -299,6 +305,8 @@ bool KQTimer::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQTimer(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

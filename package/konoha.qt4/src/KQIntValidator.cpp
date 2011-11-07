@@ -3,7 +3,7 @@ KMETHOD QIntValidator_fixup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIntValidator *  qp = RawPtr_to(QIntValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString input = String_to(QString, sfp[1]);
 		qp->fixup(input);
 	}
@@ -15,7 +15,7 @@ KMETHOD QIntValidator_validate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIntValidator *  qp = RawPtr_to(QIntValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString input = String_to(QString, sfp[1]);
 		int pos = Int_to(int, sfp[2]);
 		QValidator::State ret_v = qp->validate(input, pos);
@@ -55,7 +55,7 @@ KMETHOD QIntValidator_getBottom(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIntValidator *  qp = RawPtr_to(QIntValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->bottom();
 		RETURNi_(ret_v);
 	} else {
@@ -68,7 +68,7 @@ KMETHOD QIntValidator_setBottom(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIntValidator *  qp = RawPtr_to(QIntValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setBottom(arg0);
 	}
@@ -80,7 +80,7 @@ KMETHOD QIntValidator_setRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIntValidator *  qp = RawPtr_to(QIntValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int bottom = Int_to(int, sfp[1]);
 		int top = Int_to(int, sfp[2]);
 		qp->setRange(bottom, top);
@@ -88,24 +88,24 @@ KMETHOD QIntValidator_setRange(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//void QIntValidator.settop(int arg0);
+//void QIntValidator.setTop(int arg0);
 KMETHOD QIntValidator_setTop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIntValidator *  qp = RawPtr_to(QIntValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setTop(arg0);
 	}
 	RETURNvoid_();
 }
 
-//int QIntValidator.gettop();
+//int QIntValidator.getTop();
 KMETHOD QIntValidator_getTop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIntValidator *  qp = RawPtr_to(QIntValidator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->top();
 		RETURNi_(ret_v);
 	} else {
@@ -164,9 +164,23 @@ bool DummyQIntValidator::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQIntValidator::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQValidator::reftrace(ctx, p, tail_);
+}
 
 void DummyQIntValidator::connection(QObject *o)
 {
+	QIntValidator *p = dynamic_cast<QIntValidator*>(o);
+	if (p != NULL) {
+	}
 	DummyQValidator::connection(o);
 }
 
@@ -229,13 +243,9 @@ static void QIntValidator_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QIntValidator_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQIntValidator *qp = (KQIntValidator *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -258,6 +268,8 @@ bool KQIntValidator::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQIntValidator(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

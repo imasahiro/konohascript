@@ -1,9 +1,9 @@
-//QMainWindow QMainWindow.new(QWidget parent, int flags);
+//QMainWindow QMainWindow.new(QWidget parent, QtWindowFlags flags);
 KMETHOD QMainWindow_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
-	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[2]);
+	initFlag(flags, Qt::WindowFlags, sfp[2]);
 	KQMainWindow *ret_v = new KQMainWindow(parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -15,7 +15,7 @@ KMETHOD QMainWindow_addDockWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DockWidgetArea area = Int_to(Qt::DockWidgetArea, sfp[1]);
 		QDockWidget*  dockwidget = RawPtr_to(QDockWidget*, sfp[2]);
 		qp->addDockWidget(area, dockwidget);
@@ -29,7 +29,7 @@ KMETHOD QMainWindow_addDockWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DockWidgetArea area = Int_to(Qt::DockWidgetArea, sfp[1]);
 		QDockWidget*  dockwidget = RawPtr_to(QDockWidget*, sfp[2]);
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[3]);
@@ -43,7 +43,7 @@ KMETHOD QMainWindow_addToolBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ToolBarArea area = Int_to(Qt::ToolBarArea, sfp[1]);
 		QToolBar*  toolbar = RawPtr_to(QToolBar*, sfp[2]);
 		qp->addToolBar(area, toolbar);
@@ -57,7 +57,7 @@ KMETHOD QMainWindow_addToolBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QToolBar*  toolbar = RawPtr_to(QToolBar*, sfp[1]);
 		qp->addToolBar(toolbar);
 	}
@@ -70,7 +70,7 @@ KMETHOD QMainWindow_addToolBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString title = String_to(const QString, sfp[1]);
 		QToolBar* ret_v = qp->addToolBar(title);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QToolBar*)ret_v, NULL);
@@ -85,7 +85,7 @@ KMETHOD QMainWindow_addToolBarBreak(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ToolBarArea area = Int_to(Qt::ToolBarArea, sfp[1]);
 		qp->addToolBarBreak(area);
 	}
@@ -97,7 +97,7 @@ KMETHOD QMainWindow_getCentralWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->centralWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -111,7 +111,7 @@ KMETHOD QMainWindow_getCorner(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Corner corner = Int_to(Qt::Corner, sfp[1]);
 		Qt::DockWidgetArea ret_v = qp->corner(corner);
 		RETURNi_(ret_v);
@@ -125,7 +125,7 @@ KMETHOD QMainWindow_createPopupMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMenu* ret_v = qp->createPopupMenu();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMenu*)ret_v, NULL);
 		RETURN_(rptr);
@@ -134,16 +134,18 @@ KMETHOD QMainWindow_createPopupMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QMainWindow.getDockOptions();
+//QMainWindowDockOptions QMainWindow.getDockOptions();
 KMETHOD QMainWindow_getDockOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMainWindow::DockOptions ret_v = qp->dockOptions();
-		RETURNi_(ret_v);
+		QMainWindow::DockOptions *ret_v_ = new QMainWindow::DockOptions(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -152,7 +154,7 @@ KMETHOD QMainWindow_dockWidgetArea(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDockWidget*  dockwidget = RawPtr_to(QDockWidget*, sfp[1]);
 		Qt::DockWidgetArea ret_v = qp->dockWidgetArea(dockwidget);
 		RETURNi_(ret_v);
@@ -166,7 +168,7 @@ KMETHOD QMainWindow_getDocumentMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->documentMode();
 		RETURNb_(ret_v);
 	} else {
@@ -179,7 +181,7 @@ KMETHOD QMainWindow_getIconSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->iconSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -194,7 +196,7 @@ KMETHOD QMainWindow_insertToolBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QToolBar*  before = RawPtr_to(QToolBar*, sfp[1]);
 		QToolBar*  toolbar = RawPtr_to(QToolBar*, sfp[2]);
 		qp->insertToolBar(before, toolbar);
@@ -207,7 +209,7 @@ KMETHOD QMainWindow_insertToolBarBreak(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QToolBar*  before = RawPtr_to(QToolBar*, sfp[1]);
 		qp->insertToolBarBreak(before);
 	}
@@ -219,7 +221,7 @@ KMETHOD QMainWindow_isAnimated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isAnimated();
 		RETURNb_(ret_v);
 	} else {
@@ -232,7 +234,7 @@ KMETHOD QMainWindow_isDockNestingEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isDockNestingEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -245,7 +247,7 @@ KMETHOD QMainWindow_getMenuBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMenuBar* ret_v = qp->menuBar();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMenuBar*)ret_v, NULL);
 		RETURN_(rptr);
@@ -259,7 +261,7 @@ KMETHOD QMainWindow_getMenuWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->menuWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -273,7 +275,7 @@ KMETHOD QMainWindow_removeDockWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDockWidget*  dockwidget = RawPtr_to(QDockWidget*, sfp[1]);
 		qp->removeDockWidget(dockwidget);
 	}
@@ -285,7 +287,7 @@ KMETHOD QMainWindow_removeToolBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QToolBar*  toolbar = RawPtr_to(QToolBar*, sfp[1]);
 		qp->removeToolBar(toolbar);
 	}
@@ -297,7 +299,7 @@ KMETHOD QMainWindow_removeToolBarBreak(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QToolBar*  before = RawPtr_to(QToolBar*, sfp[1]);
 		qp->removeToolBarBreak(before);
 	}
@@ -309,7 +311,7 @@ KMETHOD QMainWindow_restoreDockWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDockWidget*  dockwidget = RawPtr_to(QDockWidget*, sfp[1]);
 		bool ret_v = qp->restoreDockWidget(dockwidget);
 		RETURNb_(ret_v);
@@ -323,7 +325,7 @@ KMETHOD QMainWindow_restoreState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  state = *RawPtr_to(const QByteArray *, sfp[1]);
 		int version = Int_to(int, sfp[2]);
 		bool ret_v = qp->restoreState(state, version);
@@ -338,7 +340,7 @@ KMETHOD QMainWindow_saveState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int version = Int_to(int, sfp[1]);
 		QByteArray ret_v = qp->saveState(version);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -354,7 +356,7 @@ KMETHOD QMainWindow_setCentralWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->setCentralWidget(widget);
 	}
@@ -366,7 +368,7 @@ KMETHOD QMainWindow_setCorner(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Corner corner = Int_to(Qt::Corner, sfp[1]);
 		Qt::DockWidgetArea area = Int_to(Qt::DockWidgetArea, sfp[2]);
 		qp->setCorner(corner, area);
@@ -374,13 +376,13 @@ KMETHOD QMainWindow_setCorner(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//void QMainWindow.setDockOptions(int options);
+//void QMainWindow.setDockOptions(QMainWindowDockOptions options);
 KMETHOD QMainWindow_setDockOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
-		QMainWindow::DockOptions options = Int_to(QMainWindow::DockOptions, sfp[1]);
+	if (qp) {
+		initFlag(options, QMainWindow::DockOptions, sfp[1]);
 		qp->setDockOptions(options);
 	}
 	RETURNvoid_();
@@ -391,7 +393,7 @@ KMETHOD QMainWindow_setDocumentMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setDocumentMode(enabled);
 	}
@@ -403,7 +405,7 @@ KMETHOD QMainWindow_setIconSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  iconSize = *RawPtr_to(const QSize *, sfp[1]);
 		qp->setIconSize(iconSize);
 	}
@@ -415,7 +417,7 @@ KMETHOD QMainWindow_setMenuBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMenuBar*  menuBar = RawPtr_to(QMenuBar*, sfp[1]);
 		qp->setMenuBar(menuBar);
 	}
@@ -427,7 +429,7 @@ KMETHOD QMainWindow_setMenuWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  menuBar = RawPtr_to(QWidget*, sfp[1]);
 		qp->setMenuWidget(menuBar);
 	}
@@ -439,20 +441,20 @@ KMETHOD QMainWindow_setStatusBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStatusBar*  statusbar = RawPtr_to(QStatusBar*, sfp[1]);
 		qp->setStatusBar(statusbar);
 	}
 	RETURNvoid_();
 }
 
-//void QMainWindow.setTabPosition(int areas, int tabPosition);
+//void QMainWindow.setTabPosition(QtDockWidgetAreas areas, int tabPosition);
 KMETHOD QMainWindow_setTabPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
-		Qt::DockWidgetAreas areas = Int_to(Qt::DockWidgetAreas, sfp[1]);
+	if (qp) {
+		initFlag(areas, Qt::DockWidgetAreas, sfp[1]);
 		QTabWidget::TabPosition tabPosition = Int_to(QTabWidget::TabPosition, sfp[2]);
 		qp->setTabPosition(areas, tabPosition);
 	}
@@ -464,7 +466,7 @@ KMETHOD QMainWindow_setTabShape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTabWidget::TabShape tabShape = Int_to(QTabWidget::TabShape, sfp[1]);
 		qp->setTabShape(tabShape);
 	}
@@ -476,7 +478,7 @@ KMETHOD QMainWindow_setToolButtonStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ToolButtonStyle toolButtonStyle = Int_to(Qt::ToolButtonStyle, sfp[1]);
 		qp->setToolButtonStyle(toolButtonStyle);
 	}
@@ -488,7 +490,7 @@ KMETHOD QMainWindow_setUnifiedTitleAndToolBarOnMac(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool set = Boolean_to(bool, sfp[1]);
 		qp->setUnifiedTitleAndToolBarOnMac(set);
 	}
@@ -500,7 +502,7 @@ KMETHOD QMainWindow_splitDockWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDockWidget*  first = RawPtr_to(QDockWidget*, sfp[1]);
 		QDockWidget*  second = RawPtr_to(QDockWidget*, sfp[2]);
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[3]);
@@ -514,7 +516,7 @@ KMETHOD QMainWindow_getStatusBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStatusBar* ret_v = qp->statusBar();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStatusBar*)ret_v, NULL);
 		RETURN_(rptr);
@@ -528,7 +530,7 @@ KMETHOD QMainWindow_getTabPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DockWidgetArea area = Int_to(Qt::DockWidgetArea, sfp[1]);
 		QTabWidget::TabPosition ret_v = qp->tabPosition(area);
 		RETURNi_(ret_v);
@@ -542,7 +544,7 @@ KMETHOD QMainWindow_getTabShape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTabWidget::TabShape ret_v = qp->tabShape();
 		RETURNi_(ret_v);
 	} else {
@@ -555,9 +557,9 @@ KMETHOD QMainWindow_tabifiedDockWidgets(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDockWidget*  dockwidget = RawPtr_to(QDockWidget*, sfp[1]);
-		QList<QDockWidget*>ret_v = qp->tabifiedDockWidgets(dockwidget);
+		QList<QDockWidget*> ret_v = qp->tabifiedDockWidgets(dockwidget);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QDockWidget"));
@@ -577,7 +579,7 @@ KMETHOD QMainWindow_tabifyDockWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDockWidget*  first = RawPtr_to(QDockWidget*, sfp[1]);
 		QDockWidget*  second = RawPtr_to(QDockWidget*, sfp[2]);
 		qp->tabifyDockWidget(first, second);
@@ -590,7 +592,7 @@ KMETHOD QMainWindow_toolBarArea(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QToolBar*  toolbar = RawPtr_to(QToolBar*, sfp[1]);
 		Qt::ToolBarArea ret_v = qp->toolBarArea(toolbar);
 		RETURNi_(ret_v);
@@ -604,7 +606,7 @@ KMETHOD QMainWindow_toolBarBreak(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QToolBar*  toolbar = RawPtr_to(QToolBar*, sfp[1]);
 		bool ret_v = qp->toolBarBreak(toolbar);
 		RETURNb_(ret_v);
@@ -618,7 +620,7 @@ KMETHOD QMainWindow_getToolButtonStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ToolButtonStyle ret_v = qp->toolButtonStyle();
 		RETURNi_(ret_v);
 	} else {
@@ -631,7 +633,7 @@ KMETHOD QMainWindow_getUnifiedTitleAndToolBarOnMac(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->unifiedTitleAndToolBarOnMac();
 		RETURNb_(ret_v);
 	} else {
@@ -644,7 +646,7 @@ KMETHOD QMainWindow_setAnimated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setAnimated(enabled);
 	}
@@ -656,7 +658,7 @@ KMETHOD QMainWindow_setDockNestingEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMainWindow *  qp = RawPtr_to(QMainWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setDockNestingEnabled(enabled);
 	}
@@ -747,11 +749,27 @@ bool DummyQMainWindow::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMainWindow::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, icon_size_changed_func);
+	KNH_ADDNNREF(ctx, tool_button_style_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQMainWindow::connection(QObject *o)
 {
-	connect(o, SIGNAL(iconSizeChanged(const QSize)), this, SLOT(iconSizeChangedSlot(const QSize)));
-	connect(o, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)), this, SLOT(toolButtonStyleChangedSlot(Qt::ToolButtonStyle)));
+	QMainWindow *p = dynamic_cast<QMainWindow*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(iconSizeChanged(const QSize)), this, SLOT(iconSizeChangedSlot(const QSize)));
+		connect(p, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)), this, SLOT(toolButtonStyleChangedSlot(Qt::ToolButtonStyle)));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -814,21 +832,9 @@ static void QMainWindow_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMainWindow_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMainWindow *qp = (KQMainWindow *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->icon_size_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->icon_size_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->tool_button_style_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->tool_button_style_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -852,15 +858,6 @@ bool KQMainWindow::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQMainWindow(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QMainWindow";
-	cdef->free = QMainWindow_free;
-	cdef->reftrace = QMainWindow_reftrace;
-	cdef->compareTo = QMainWindow_compareTo;
-}
-
 static knh_IntData_t QMainWindowConstInt[] = {
 	{"AnimatedDocks", QMainWindow::AnimatedDocks},
 	{"AllowNestedDocks", QMainWindow::AllowNestedDocks},
@@ -872,5 +869,179 @@ static knh_IntData_t QMainWindowConstInt[] = {
 
 DEFAPI(void) constQMainWindow(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QMainWindowConstInt);
+}
+
+
+DEFAPI(void) defQMainWindow(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QMainWindow";
+	cdef->free = QMainWindow_free;
+	cdef->reftrace = QMainWindow_reftrace;
+	cdef->compareTo = QMainWindow_compareTo;
+}
+
+//## QMainWindowDockOptions QMainWindowDockOptions.new(int value);
+KMETHOD QMainWindowDockOptions_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMainWindow::DockOption i = Int_to(QMainWindow::DockOption, sfp[1]);
+	QMainWindow::DockOptions *ret_v = new QMainWindow::DockOptions(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QMainWindowDockOptions QMainWindowDockOptions.and(int mask);
+KMETHOD QMainWindowDockOptions_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMainWindow::DockOptions *qp = RawPtr_to(QMainWindow::DockOptions*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QMainWindow::DockOptions ret = ((*qp) & i);
+		QMainWindow::DockOptions *ret_ = new QMainWindow::DockOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMainWindowDockOptions QMainWindowDockOptions.iand(QMainWindow::QMainWindowDockOptions other);
+KMETHOD QMainWindowDockOptions_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMainWindow::DockOptions *qp = RawPtr_to(QMainWindow::DockOptions*, sfp[0]);
+	if (qp != NULL) {
+		QMainWindow::DockOptions *other = RawPtr_to(QMainWindow::DockOptions *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMainWindowDockOptions QMainWindowDockOptions.or(QMainWindowDockOptions f);
+KMETHOD QMainWindowDockOptions_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMainWindow::DockOptions *qp = RawPtr_to(QMainWindow::DockOptions*, sfp[0]);
+	if (qp != NULL) {
+		QMainWindow::DockOptions *f = RawPtr_to(QMainWindow::DockOptions*, sfp[1]);
+		QMainWindow::DockOptions ret = ((*qp) | (*f));
+		QMainWindow::DockOptions *ret_ = new QMainWindow::DockOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMainWindowDockOptions QMainWindowDockOptions.ior(QMainWindow::QMainWindowDockOptions other);
+KMETHOD QMainWindowDockOptions_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMainWindow::DockOptions *qp = RawPtr_to(QMainWindow::DockOptions*, sfp[0]);
+	if (qp != NULL) {
+		QMainWindow::DockOptions *other = RawPtr_to(QMainWindow::DockOptions *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMainWindowDockOptions QMainWindowDockOptions.xor(QMainWindowDockOptions f);
+KMETHOD QMainWindowDockOptions_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMainWindow::DockOptions *qp = RawPtr_to(QMainWindow::DockOptions*, sfp[0]);
+	if (qp != NULL) {
+		QMainWindow::DockOptions *f = RawPtr_to(QMainWindow::DockOptions*, sfp[1]);
+		QMainWindow::DockOptions ret = ((*qp) ^ (*f));
+		QMainWindow::DockOptions *ret_ = new QMainWindow::DockOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMainWindowDockOptions QMainWindowDockOptions.ixor(QMainWindow::QMainWindowDockOptions other);
+KMETHOD QMainWindowDockOptions_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMainWindow::DockOptions *qp = RawPtr_to(QMainWindow::DockOptions*, sfp[0]);
+	if (qp != NULL) {
+		QMainWindow::DockOptions *other = RawPtr_to(QMainWindow::DockOptions *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QMainWindowDockOptions.testFlag(int flag);
+KMETHOD QMainWindowDockOptions_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMainWindow::DockOptions *qp = RawPtr_to(QMainWindow::DockOptions *, sfp[0]);
+	if (qp != NULL) {
+		QMainWindow::DockOption flag = Int_to(QMainWindow::DockOption, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QMainWindowDockOptions.value();
+KMETHOD QMainWindowDockOptions_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMainWindow::DockOptions *qp = RawPtr_to(QMainWindow::DockOptions *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QMainWindowDockOptions_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QMainWindow::DockOptions *qp = (QMainWindow::DockOptions *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QMainWindowDockOptions_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QMainWindow::DockOptions *qp = (QMainWindow::DockOptions *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QMainWindowDockOptions_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QMainWindow::DockOptions*)p1->rawptr);
+//		int v2 = int(*(QMainWindow::DockOptions*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QMainWindow::DockOptions v1 = *(QMainWindow::DockOptions*)p1->rawptr;
+		QMainWindow::DockOptions v2 = *(QMainWindow::DockOptions*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQMainWindowDockOptions(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QMainWindowDockOptions";
+	cdef->free = QMainWindowDockOptions_free;
+	cdef->reftrace = QMainWindowDockOptions_reftrace;
+	cdef->compareTo = QMainWindowDockOptions_compareTo;
 }
 

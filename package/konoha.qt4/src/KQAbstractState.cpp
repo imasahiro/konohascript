@@ -3,7 +3,7 @@ KMETHOD QAbstractState_machine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractState *  qp = RawPtr_to(QAbstractState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStateMachine* ret_v = qp->machine();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStateMachine*)ret_v, NULL);
 		RETURN_(rptr);
@@ -17,7 +17,7 @@ KMETHOD QAbstractState_parentState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractState *  qp = RawPtr_to(QAbstractState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QState* ret_v = qp->parentState();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QState*)ret_v, NULL);
 		RETURN_(rptr);
@@ -107,19 +107,28 @@ bool DummyQAbstractState::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQAbstractState::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, entered_func);
+	KNH_ADDNNREF(ctx, exited_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQAbstractState::connection(QObject *o)
 {
-	connect(o, SIGNAL(entered()), this, SLOT(enteredSlot()));
-	connect(o, SIGNAL(exited()), this, SLOT(exitedSlot()));
+	QAbstractState *p = dynamic_cast<QAbstractState*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(entered()), this, SLOT(enteredSlot()));
+		connect(p, SIGNAL(exited()), this, SLOT(exitedSlot()));
+	}
 	DummyQObject::connection(o);
-}
-
-KQAbstractState::KQAbstractState(QState* parent) : QAbstractState(parent)
-{
-	self = NULL;
-	dummy = new DummyQAbstractState();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractState_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -174,21 +183,9 @@ static void QAbstractState_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAbstractState *qp = (KQAbstractState *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->entered_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->entered_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->exited_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->exited_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -211,6 +208,8 @@ bool KQAbstractState::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQAbstractState(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

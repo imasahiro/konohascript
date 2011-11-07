@@ -15,7 +15,7 @@ KMETHOD QSound_fileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSound *  qp = RawPtr_to(QSound *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->fileName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -29,7 +29,7 @@ KMETHOD QSound_isFinished(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSound *  qp = RawPtr_to(QSound *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isFinished();
 		RETURNb_(ret_v);
 	} else {
@@ -42,7 +42,7 @@ KMETHOD QSound_getLoops(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSound *  qp = RawPtr_to(QSound *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->loops();
 		RETURNi_(ret_v);
 	} else {
@@ -55,7 +55,7 @@ KMETHOD QSound_loopsRemaining(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSound *  qp = RawPtr_to(QSound *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->loopsRemaining();
 		RETURNi_(ret_v);
 	} else {
@@ -68,7 +68,7 @@ KMETHOD QSound_setLoops(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSound *  qp = RawPtr_to(QSound *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int number = Int_to(int, sfp[1]);
 		qp->setLoops(number);
 	}
@@ -79,9 +79,8 @@ KMETHOD QSound_setLoops(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QSound_isAvailable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QSound *  qp = RawPtr_to(QSound *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isAvailable();
+	if (true) {
+		bool ret_v = QSound::isAvailable();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -92,10 +91,9 @@ KMETHOD QSound_isAvailable(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QSound_play(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QSound *  qp = RawPtr_to(QSound *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString filename = String_to(const QString, sfp[1]);
-		qp->play(filename);
+		QSound::play(filename);
 	}
 	RETURNvoid_();
 }
@@ -106,7 +104,7 @@ KMETHOD QSound_play(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSound *  qp = RawPtr_to(QSound *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->play();
 	}
 	RETURNvoid_();
@@ -117,7 +115,7 @@ KMETHOD QSound_stop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSound *  qp = RawPtr_to(QSound *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->stop();
 	}
 	RETURNvoid_();
@@ -174,9 +172,23 @@ bool DummyQSound::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSound::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQSound::connection(QObject *o)
 {
+	QSound *p = dynamic_cast<QSound*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
 }
 
@@ -239,13 +251,9 @@ static void QSound_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSound_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSound *qp = (KQSound *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -268,6 +276,8 @@ bool KQSound::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQSound(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

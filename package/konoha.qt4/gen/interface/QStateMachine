@@ -72,11 +72,19 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+
 typedefed_objects
+
+parent_typedefed_objects
+
+class_objects
 SignalEvent
 WrappedEvent
 
-parent_typedefed_objects
+parent_class_objects
 
 enums
 class_name

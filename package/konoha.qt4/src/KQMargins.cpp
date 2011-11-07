@@ -28,24 +28,11 @@ KMETHOD QMargins_getBottom(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMargins *  qp = RawPtr_to(QMargins *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->bottom();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
-	}
-}
-
-////boolean QMargins.isNull();
-KMETHOD QMargins_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QMargins *  qp = RawPtr_to(QMargins *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
 	}
 }
 
@@ -54,7 +41,7 @@ KMETHOD QMargins_getLeft(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMargins *  qp = RawPtr_to(QMargins *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->left();
 		RETURNi_(ret_v);
 	} else {
@@ -67,7 +54,7 @@ KMETHOD QMargins_getRight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMargins *  qp = RawPtr_to(QMargins *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->right();
 		RETURNi_(ret_v);
 	} else {
@@ -80,7 +67,7 @@ KMETHOD QMargins_setBottom(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMargins *  qp = RawPtr_to(QMargins *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int bottom = Int_to(int, sfp[1]);
 		qp->setBottom(bottom);
 	}
@@ -92,7 +79,7 @@ KMETHOD QMargins_setLeft(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMargins *  qp = RawPtr_to(QMargins *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int left = Int_to(int, sfp[1]);
 		qp->setLeft(left);
 	}
@@ -104,31 +91,31 @@ KMETHOD QMargins_setRight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMargins *  qp = RawPtr_to(QMargins *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int right = Int_to(int, sfp[1]);
 		qp->setRight(right);
 	}
 	RETURNvoid_();
 }
 
-//void QMargins.settop(int top);
+//void QMargins.setTop(int top);
 KMETHOD QMargins_setTop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMargins *  qp = RawPtr_to(QMargins *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int Top = Int_to(int, sfp[1]);
 		qp->setTop(Top);
 	}
 	RETURNvoid_();
 }
 
-//int QMargins.gettop();
+//int QMargins.getTop();
 KMETHOD QMargins_getTop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMargins *  qp = RawPtr_to(QMargins *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->top();
 		RETURNi_(ret_v);
 	} else {
@@ -136,6 +123,24 @@ KMETHOD QMargins_getTop(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QMargins.parents();
+KMETHOD QMargins_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMargins *qp = RawPtr_to(QMargins*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQMargins::DummyQMargins()
 {
@@ -184,17 +189,28 @@ bool DummyQMargins::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMargins::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQMargins::connection(QObject *o)
 {
-	return;
+	QMargins *p = dynamic_cast<QMargins*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQMargins::KQMargins() : QMargins()
 {
 	self = NULL;
 	dummy = new DummyQMargins();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMargins_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -249,19 +265,15 @@ static void QMargins_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMargins_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMargins *qp = (KQMargins *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
 static int QMargins_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
-	return (p1->rawptr == p2->rawptr ? 0 : 1);
+	return (*static_cast<QMargins*>(p1->rawptr) == *static_cast<QMargins*>(p2->rawptr) ? 0 : 1);
 }
 
 void KQMargins::setSelf(knh_RawPtr_t *ptr)
@@ -269,6 +281,8 @@ void KQMargins::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQMargins(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

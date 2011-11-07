@@ -14,7 +14,7 @@ KMETHOD QStatusTipEvent_tip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStatusTipEvent *  qp = RawPtr_to(QStatusTipEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->tip();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -74,9 +74,23 @@ bool DummyQStatusTipEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQStatusTipEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQStatusTipEvent::connection(QObject *o)
 {
+	QStatusTipEvent *p = dynamic_cast<QStatusTipEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -84,7 +98,6 @@ KQStatusTipEvent::KQStatusTipEvent(const QString tip) : QStatusTipEvent(tip)
 {
 	self = NULL;
 	dummy = new DummyQStatusTipEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStatusTipEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -139,13 +152,9 @@ static void QStatusTipEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStatusTipEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStatusTipEvent *qp = (KQStatusTipEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -159,6 +168,8 @@ void KQStatusTipEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQStatusTipEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

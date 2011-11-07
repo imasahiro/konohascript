@@ -1,12 +1,18 @@
-//QTouchEvent QTouchEvent.new(int eventType, int deviceType, int modifiers, int touchPointStates, int touchPoints);
+//QTouchEvent QTouchEvent.new(int eventType, int deviceType, QtKeyboardModifiers modifiers, QtTouchPointStates touchPointStates, Array<int> touchPoints);
 KMETHOD QTouchEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEvent::Type eventType = Int_to(QEvent::Type, sfp[1]);
 	QTouchEvent::DeviceType deviceType = Int_to(QTouchEvent::DeviceType, sfp[2]);
-	Qt::KeyboardModifiers modifiers = Int_to(Qt::KeyboardModifiers, sfp[3]);
-	Qt::TouchPointStates  touchPointStates = *RawPtr_to(Qt::TouchPointStates *, sfp[4]);
-	const QList<QTouchEvent::TouchPoint>  touchPoints = *RawPtr_to(const QList<QTouchEvent::TouchPoint> *, sfp[5]);
+	initFlag(modifiers, Qt::KeyboardModifiers, sfp[3]);
+	initFlag(touchPointStates, Qt::TouchPointStates, sfp[4]);
+	knh_Array_t *a = sfp[5].a;
+		int asize = knh_Array_size(a);
+		QList<QTouchEvent::TouchPoint> touchPoints;
+		for (int n = 0; n < asize; n++) {
+			knh_RawPtr_t *p = (knh_RawPtr_t*)(a->list[n]);
+			touchPoints.append(*(QTouchEvent::TouchPoint*)p->rawptr);
+		}
 	KQTouchEvent *ret_v = new KQTouchEvent(eventType, deviceType, modifiers, touchPointStates, touchPoints);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -18,7 +24,7 @@ KMETHOD QTouchEvent_deviceType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTouchEvent *  qp = RawPtr_to(QTouchEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTouchEvent::DeviceType ret_v = qp->deviceType();
 		RETURNi_(ret_v);
 	} else {
@@ -26,12 +32,12 @@ KMETHOD QTouchEvent_deviceType(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QTouchEvent.touchPointStates();
+//QtTouchPointStates QTouchEvent.touchPointStates();
 KMETHOD QTouchEvent_touchPointStates(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTouchEvent *  qp = RawPtr_to(QTouchEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TouchPointStates ret_v = qp->touchPointStates();
 		Qt::TouchPointStates *ret_v_ = new Qt::TouchPointStates(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -46,8 +52,8 @@ KMETHOD QTouchEvent_touchPoints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTouchEvent *  qp = RawPtr_to(QTouchEvent *, sfp[0]);
-	if (qp != NULL) {
-		const QList<QTouchEvent::TouchPoint>ret_v = qp->touchPoints();
+	if (qp) {
+		const QList<QTouchEvent::TouchPoint> ret_v = qp->touchPoints();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QTouchEvent::TouchPoint"));
@@ -68,7 +74,7 @@ KMETHOD QTouchEvent_widget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTouchEvent *  qp = RawPtr_to(QTouchEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->widget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -128,9 +134,23 @@ bool DummyQTouchEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTouchEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQInputEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQTouchEvent::connection(QObject *o)
 {
+	QTouchEvent *p = dynamic_cast<QTouchEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQInputEvent::connection(o);
 }
 
@@ -138,7 +158,6 @@ KQTouchEvent::KQTouchEvent(QEvent::Type eventType, QTouchEvent::DeviceType devic
 {
 	self = NULL;
 	dummy = new DummyQTouchEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTouchEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -193,13 +212,9 @@ static void QTouchEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTouchEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTouchEvent *qp = (KQTouchEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -214,15 +229,6 @@ void KQTouchEvent::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQTouchEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTouchEvent";
-	cdef->free = QTouchEvent_free;
-	cdef->reftrace = QTouchEvent_reftrace;
-	cdef->compareTo = QTouchEvent_compareTo;
-}
-
 static knh_IntData_t QTouchEventConstInt[] = {
 	{"TouchScreen", QTouchEvent::TouchScreen},
 	{"TouchPad", QTouchEvent::TouchPad},
@@ -232,4 +238,15 @@ static knh_IntData_t QTouchEventConstInt[] = {
 DEFAPI(void) constQTouchEvent(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTouchEventConstInt);
 }
+
+
+DEFAPI(void) defQTouchEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTouchEvent";
+	cdef->free = QTouchEvent_free;
+	cdef->reftrace = QTouchEvent_reftrace;
+	cdef->compareTo = QTouchEvent_compareTo;
+}
+
 

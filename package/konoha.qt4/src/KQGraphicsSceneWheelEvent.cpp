@@ -1,13 +1,15 @@
-//int QGraphicsSceneWheelEvent.buttons();
+//QtMouseButtons QGraphicsSceneWheelEvent.buttons();
 KMETHOD QGraphicsSceneWheelEvent_buttons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneWheelEvent *  qp = RawPtr_to(QGraphicsSceneWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::MouseButtons ret_v = qp->buttons();
-		RETURNi_(ret_v);
+		Qt::MouseButtons *ret_v_ = new Qt::MouseButtons(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -16,7 +18,7 @@ KMETHOD QGraphicsSceneWheelEvent_delta(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneWheelEvent *  qp = RawPtr_to(QGraphicsSceneWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->delta();
 		RETURNi_(ret_v);
 	} else {
@@ -24,16 +26,18 @@ KMETHOD QGraphicsSceneWheelEvent_delta(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QGraphicsSceneWheelEvent.modifiers();
+//QtKeyboardModifiers QGraphicsSceneWheelEvent.modifiers();
 KMETHOD QGraphicsSceneWheelEvent_modifiers(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneWheelEvent *  qp = RawPtr_to(QGraphicsSceneWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::KeyboardModifiers ret_v = qp->modifiers();
-		RETURNi_(ret_v);
+		Qt::KeyboardModifiers *ret_v_ = new Qt::KeyboardModifiers(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -42,7 +46,7 @@ KMETHOD QGraphicsSceneWheelEvent_orientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneWheelEvent *  qp = RawPtr_to(QGraphicsSceneWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation ret_v = qp->orientation();
 		RETURNi_(ret_v);
 	} else {
@@ -55,7 +59,7 @@ KMETHOD QGraphicsSceneWheelEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneWheelEvent *  qp = RawPtr_to(QGraphicsSceneWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->pos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -70,7 +74,7 @@ KMETHOD QGraphicsSceneWheelEvent_scenePos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneWheelEvent *  qp = RawPtr_to(QGraphicsSceneWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->scenePos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -85,7 +89,7 @@ KMETHOD QGraphicsSceneWheelEvent_screenPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneWheelEvent *  qp = RawPtr_to(QGraphicsSceneWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPoint ret_v = qp->screenPos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -146,17 +150,24 @@ bool DummyQGraphicsSceneWheelEvent::signalConnect(knh_Func_t *callback_func, str
 	}
 }
 
+void DummyQGraphicsSceneWheelEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsSceneEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsSceneWheelEvent::connection(QObject *o)
 {
+	QGraphicsSceneWheelEvent *p = dynamic_cast<QGraphicsSceneWheelEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQGraphicsSceneEvent::connection(o);
-}
-
-KQGraphicsSceneWheelEvent::KQGraphicsSceneWheelEvent() : QGraphicsSceneWheelEvent()
-{
-	self = NULL;
-	dummy = new DummyQGraphicsSceneWheelEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsSceneWheelEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -211,13 +222,9 @@ static void QGraphicsSceneWheelEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsSceneWheelEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneWheelEvent *qp = (KQGraphicsSceneWheelEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -231,6 +238,8 @@ void KQGraphicsSceneWheelEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGraphicsSceneWheelEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

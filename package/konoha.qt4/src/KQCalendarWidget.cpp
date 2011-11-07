@@ -3,7 +3,7 @@ KMETHOD QCalendarWidget_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QCalendarWidget_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -44,7 +44,7 @@ KMETHOD QCalendarWidget_getDateEditAcceptDelay(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->dateEditAcceptDelay();
 		RETURNi_(ret_v);
 	} else {
@@ -57,7 +57,7 @@ KMETHOD QCalendarWidget_getDateTextFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDate  date = *RawPtr_to(const QDate *, sfp[1]);
 		QTextCharFormat ret_v = qp->dateTextFormat(date);
 		QTextCharFormat *ret_v_ = new QTextCharFormat(ret_v);
@@ -73,7 +73,7 @@ KMETHOD QCalendarWidget_getFirstDayOfWeek(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DayOfWeek ret_v = qp->firstDayOfWeek();
 		RETURNi_(ret_v);
 	} else {
@@ -86,7 +86,7 @@ KMETHOD QCalendarWidget_getHeaderTextFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCharFormat ret_v = qp->headerTextFormat();
 		QTextCharFormat *ret_v_ = new QTextCharFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -101,7 +101,7 @@ KMETHOD QCalendarWidget_getHorizontalHeaderFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCalendarWidget::HorizontalHeaderFormat ret_v = qp->horizontalHeaderFormat();
 		RETURNi_(ret_v);
 	} else {
@@ -114,7 +114,7 @@ KMETHOD QCalendarWidget_isDateEditEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isDateEditEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -127,7 +127,7 @@ KMETHOD QCalendarWidget_isGridVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isGridVisible();
 		RETURNb_(ret_v);
 	} else {
@@ -140,7 +140,7 @@ KMETHOD QCalendarWidget_isNavigationBarVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isNavigationBarVisible();
 		RETURNb_(ret_v);
 	} else {
@@ -153,7 +153,7 @@ KMETHOD QCalendarWidget_getMaximumDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDate ret_v = qp->maximumDate();
 		QDate *ret_v_ = new QDate(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -168,7 +168,7 @@ KMETHOD QCalendarWidget_getMinimumDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDate ret_v = qp->minimumDate();
 		QDate *ret_v_ = new QDate(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -183,7 +183,7 @@ KMETHOD QCalendarWidget_monthShown(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->monthShown();
 		RETURNi_(ret_v);
 	} else {
@@ -196,7 +196,7 @@ KMETHOD QCalendarWidget_getSelectedDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDate ret_v = qp->selectedDate();
 		QDate *ret_v_ = new QDate(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -211,7 +211,7 @@ KMETHOD QCalendarWidget_getSelectionMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCalendarWidget::SelectionMode ret_v = qp->selectionMode();
 		RETURNi_(ret_v);
 	} else {
@@ -224,7 +224,7 @@ KMETHOD QCalendarWidget_setDateEditAcceptDelay(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int delay = Int_to(int, sfp[1]);
 		qp->setDateEditAcceptDelay(delay);
 	}
@@ -236,7 +236,7 @@ KMETHOD QCalendarWidget_setDateEditEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setDateEditEnabled(enable);
 	}
@@ -248,7 +248,7 @@ KMETHOD QCalendarWidget_setDateTextFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDate  date = *RawPtr_to(const QDate *, sfp[1]);
 		const QTextCharFormat  format = *RawPtr_to(const QTextCharFormat *, sfp[2]);
 		qp->setDateTextFormat(date, format);
@@ -261,7 +261,7 @@ KMETHOD QCalendarWidget_setFirstDayOfWeek(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DayOfWeek dayOfWeek = Int_to(Qt::DayOfWeek, sfp[1]);
 		qp->setFirstDayOfWeek(dayOfWeek);
 	}
@@ -273,7 +273,7 @@ KMETHOD QCalendarWidget_setHeaderTextFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCharFormat  format = *RawPtr_to(const QTextCharFormat *, sfp[1]);
 		qp->setHeaderTextFormat(format);
 	}
@@ -285,7 +285,7 @@ KMETHOD QCalendarWidget_setHorizontalHeaderFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCalendarWidget::HorizontalHeaderFormat format = Int_to(QCalendarWidget::HorizontalHeaderFormat, sfp[1]);
 		qp->setHorizontalHeaderFormat(format);
 	}
@@ -297,7 +297,7 @@ KMETHOD QCalendarWidget_setMaximumDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDate  date = *RawPtr_to(const QDate *, sfp[1]);
 		qp->setMaximumDate(date);
 	}
@@ -309,7 +309,7 @@ KMETHOD QCalendarWidget_setMinimumDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDate  date = *RawPtr_to(const QDate *, sfp[1]);
 		qp->setMinimumDate(date);
 	}
@@ -321,7 +321,7 @@ KMETHOD QCalendarWidget_setSelectionMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCalendarWidget::SelectionMode mode = Int_to(QCalendarWidget::SelectionMode, sfp[1]);
 		qp->setSelectionMode(mode);
 	}
@@ -333,7 +333,7 @@ KMETHOD QCalendarWidget_setVerticalHeaderFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCalendarWidget::VerticalHeaderFormat format = Int_to(QCalendarWidget::VerticalHeaderFormat, sfp[1]);
 		qp->setVerticalHeaderFormat(format);
 	}
@@ -345,7 +345,7 @@ KMETHOD QCalendarWidget_setWeekdayTextFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DayOfWeek dayOfWeek = Int_to(Qt::DayOfWeek, sfp[1]);
 		const QTextCharFormat  format = *RawPtr_to(const QTextCharFormat *, sfp[2]);
 		qp->setWeekdayTextFormat(dayOfWeek, format);
@@ -358,7 +358,7 @@ KMETHOD QCalendarWidget_getVerticalHeaderFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCalendarWidget::VerticalHeaderFormat ret_v = qp->verticalHeaderFormat();
 		RETURNi_(ret_v);
 	} else {
@@ -371,7 +371,7 @@ KMETHOD QCalendarWidget_getWeekdayTextFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DayOfWeek dayOfWeek = Int_to(Qt::DayOfWeek, sfp[1]);
 		QTextCharFormat ret_v = qp->weekdayTextFormat(dayOfWeek);
 		QTextCharFormat *ret_v_ = new QTextCharFormat(ret_v);
@@ -387,7 +387,7 @@ KMETHOD QCalendarWidget_yearShown(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->yearShown();
 		RETURNi_(ret_v);
 	} else {
@@ -400,7 +400,7 @@ KMETHOD QCalendarWidget_setCurrentPage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int year = Int_to(int, sfp[1]);
 		int month = Int_to(int, sfp[2]);
 		qp->setCurrentPage(year, month);
@@ -413,7 +413,7 @@ KMETHOD QCalendarWidget_setDateRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDate  min = *RawPtr_to(const QDate *, sfp[1]);
 		const QDate  max = *RawPtr_to(const QDate *, sfp[2]);
 		qp->setDateRange(min, max);
@@ -426,7 +426,7 @@ KMETHOD QCalendarWidget_setGridVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool show = Boolean_to(bool, sfp[1]);
 		qp->setGridVisible(show);
 	}
@@ -438,7 +438,7 @@ KMETHOD QCalendarWidget_setNavigationBarVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setNavigationBarVisible(visible);
 	}
@@ -450,7 +450,7 @@ KMETHOD QCalendarWidget_setSelectedDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDate  date = *RawPtr_to(const QDate *, sfp[1]);
 		qp->setSelectedDate(date);
 	}
@@ -462,7 +462,7 @@ KMETHOD QCalendarWidget_showNextMonth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->showNextMonth();
 	}
 	RETURNvoid_();
@@ -473,7 +473,7 @@ KMETHOD QCalendarWidget_showNextYear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->showNextYear();
 	}
 	RETURNvoid_();
@@ -484,7 +484,7 @@ KMETHOD QCalendarWidget_showPreviousMonth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->showPreviousMonth();
 	}
 	RETURNvoid_();
@@ -495,7 +495,7 @@ KMETHOD QCalendarWidget_showPreviousYear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->showPreviousYear();
 	}
 	RETURNvoid_();
@@ -506,7 +506,7 @@ KMETHOD QCalendarWidget_showSelectedDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->showSelectedDate();
 	}
 	RETURNvoid_();
@@ -517,7 +517,7 @@ KMETHOD QCalendarWidget_showToday(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCalendarWidget *  qp = RawPtr_to(QCalendarWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->showToday();
 	}
 	RETURNvoid_();
@@ -640,13 +640,31 @@ bool DummyQCalendarWidget::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQCalendarWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, activated_func);
+	KNH_ADDNNREF(ctx, clicked_func);
+	KNH_ADDNNREF(ctx, current_page_changed_func);
+	KNH_ADDNNREF(ctx, selection_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQCalendarWidget::connection(QObject *o)
 {
-	connect(o, SIGNAL(activated(const QDate)), this, SLOT(activatedSlot(const QDate)));
-	connect(o, SIGNAL(clicked(const QDate)), this, SLOT(clickedSlot(const QDate)));
-	connect(o, SIGNAL(currentPageChanged(int, int)), this, SLOT(currentPageChangedSlot(int, int)));
-	connect(o, SIGNAL(selectionChanged()), this, SLOT(selectionChangedSlot()));
+	QCalendarWidget *p = dynamic_cast<QCalendarWidget*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(activated(const QDate)), this, SLOT(activatedSlot(const QDate)));
+		connect(p, SIGNAL(clicked(const QDate)), this, SLOT(clickedSlot(const QDate)));
+		connect(p, SIGNAL(currentPageChanged(int, int)), this, SLOT(currentPageChangedSlot(int, int)));
+		connect(p, SIGNAL(selectionChanged()), this, SLOT(selectionChangedSlot()));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -709,29 +727,9 @@ static void QCalendarWidget_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QCalendarWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 4;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQCalendarWidget *qp = (KQCalendarWidget *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->activated_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->activated_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->clicked_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->clicked_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->current_page_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->current_page_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->selection_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->selection_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -755,15 +753,6 @@ bool KQCalendarWidget::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQCalendarWidget(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QCalendarWidget";
-	cdef->free = QCalendarWidget_free;
-	cdef->reftrace = QCalendarWidget_reftrace;
-	cdef->compareTo = QCalendarWidget_compareTo;
-}
-
 static knh_IntData_t QCalendarWidgetConstInt[] = {
 	{"SingleLetterDayNames", QCalendarWidget::SingleLetterDayNames},
 	{"ShortDayNames", QCalendarWidget::ShortDayNames},
@@ -779,4 +768,15 @@ static knh_IntData_t QCalendarWidgetConstInt[] = {
 DEFAPI(void) constQCalendarWidget(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QCalendarWidgetConstInt);
 }
+
+
+DEFAPI(void) defQCalendarWidget(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QCalendarWidget";
+	cdef->free = QCalendarWidget_free;
+	cdef->reftrace = QCalendarWidget_reftrace;
+	cdef->compareTo = QCalendarWidget_compareTo;
+}
+
 

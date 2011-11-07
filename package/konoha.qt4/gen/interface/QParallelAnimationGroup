@@ -44,13 +44,49 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+
 typedefed_objects
 
 parent_typedefed_objects
 
+class_objects
+
+parent_class_objects
+
 enums
 
 parent_enums
+class_name
+QAbstractAnimation
+name
+DeletionPolicy
+key
+KeepWhenStopped
+DeleteWhenStopped
+public_flag
+true
+class_name
+QAbstractAnimation
+name
+Direction
+key
+Forward
+Backward
+public_flag
+true
+class_name
+QAbstractAnimation
+name
+State
+key
+Stopped
+Paused
+Running
+public_flag
+true
 
 parent_index
 567

@@ -4,7 +4,7 @@ KMETHOD QAbstractItemDelegate_createEditor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemDelegate *  qp = RawPtr_to(QAbstractItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 		const QStyleOptionViewItem  option = *RawPtr_to(const QStyleOptionViewItem *, sfp[2]);
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -21,7 +21,7 @@ KMETHOD QAbstractItemDelegate_editorEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemDelegate *  qp = RawPtr_to(QAbstractItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEvent*  event = RawPtr_to(QEvent*, sfp[1]);
 		QAbstractItemModel*  model = RawPtr_to(QAbstractItemModel*, sfp[2]);
 		const QStyleOptionViewItem  option = *RawPtr_to(const QStyleOptionViewItem *, sfp[3]);
@@ -38,7 +38,7 @@ KMETHOD QAbstractItemDelegate_paint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemDelegate *  qp = RawPtr_to(QAbstractItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QStyleOptionViewItem  option = *RawPtr_to(const QStyleOptionViewItem *, sfp[2]);
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -52,7 +52,7 @@ KMETHOD QAbstractItemDelegate_setEditorData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemDelegate *  qp = RawPtr_to(QAbstractItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  editor = RawPtr_to(QWidget*, sfp[1]);
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[2]);
 		qp->setEditorData(editor, index);
@@ -65,7 +65,7 @@ KMETHOD QAbstractItemDelegate_setModelData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemDelegate *  qp = RawPtr_to(QAbstractItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  editor = RawPtr_to(QWidget*, sfp[1]);
 		QAbstractItemModel*  model = RawPtr_to(QAbstractItemModel*, sfp[2]);
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -79,7 +79,7 @@ KMETHOD QAbstractItemDelegate_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemDelegate *  qp = RawPtr_to(QAbstractItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QStyleOptionViewItem  option = *RawPtr_to(const QStyleOptionViewItem *, sfp[1]);
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[2]);
 		QSize ret_v = qp->sizeHint(option, index);
@@ -96,7 +96,7 @@ KMETHOD QAbstractItemDelegate_updateEditorGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemDelegate *  qp = RawPtr_to(QAbstractItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  editor = RawPtr_to(QWidget*, sfp[1]);
 		const QStyleOptionViewItem  option = *RawPtr_to(const QStyleOptionViewItem *, sfp[2]);
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[3]);
@@ -110,7 +110,7 @@ KMETHOD QAbstractItemDelegate_helpEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractItemDelegate *  qp = RawPtr_to(QAbstractItemDelegate *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QHelpEvent*  event = RawPtr_to(QHelpEvent*, sfp[1]);
 		QAbstractItemView*  view = RawPtr_to(QAbstractItemView*, sfp[2]);
 		const QStyleOptionViewItem  option = *RawPtr_to(const QStyleOptionViewItem *, sfp[3]);
@@ -225,12 +225,29 @@ bool DummyQAbstractItemDelegate::signalConnect(knh_Func_t *callback_func, string
 	}
 }
 
+void DummyQAbstractItemDelegate::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 3;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, close_editor_func);
+	KNH_ADDNNREF(ctx, commit_data_func);
+	KNH_ADDNNREF(ctx, size_hint_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQAbstractItemDelegate::connection(QObject *o)
 {
-	connect(o, SIGNAL(closeEditor(QWidget*, QAbstractItemDelegate::EndEditHint)), this, SLOT(closeEditorSlot(QWidget*, QAbstractItemDelegate::EndEditHint)));
-	connect(o, SIGNAL(commitData(QWidget*)), this, SLOT(commitDataSlot(QWidget*)));
-	connect(o, SIGNAL(sizeHintChanged(const QModelIndex)), this, SLOT(sizeHintChangedSlot(const QModelIndex)));
+	QAbstractItemDelegate *p = dynamic_cast<QAbstractItemDelegate*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(closeEditor(QWidget*, QAbstractItemDelegate::EndEditHint)), this, SLOT(closeEditorSlot(QWidget*, QAbstractItemDelegate::EndEditHint)));
+		connect(p, SIGNAL(commitData(QWidget*)), this, SLOT(commitDataSlot(QWidget*)));
+		connect(p, SIGNAL(sizeHintChanged(const QModelIndex)), this, SLOT(sizeHintChangedSlot(const QModelIndex)));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -293,25 +310,9 @@ static void QAbstractItemDelegate_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractItemDelegate_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 3;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAbstractItemDelegate *qp = (KQAbstractItemDelegate *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->close_editor_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->close_editor_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->commit_data_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->commit_data_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->size_hint_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->size_hint_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -335,15 +336,6 @@ bool KQAbstractItemDelegate::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQAbstractItemDelegate(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QAbstractItemDelegate";
-	cdef->free = QAbstractItemDelegate_free;
-	cdef->reftrace = QAbstractItemDelegate_reftrace;
-	cdef->compareTo = QAbstractItemDelegate_compareTo;
-}
-
 static knh_IntData_t QAbstractItemDelegateConstInt[] = {
 	{"NoHint", QAbstractItemDelegate::NoHint},
 	{"EditNextItem", QAbstractItemDelegate::EditNextItem},
@@ -356,4 +348,15 @@ static knh_IntData_t QAbstractItemDelegateConstInt[] = {
 DEFAPI(void) constQAbstractItemDelegate(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QAbstractItemDelegateConstInt);
 }
+
+
+DEFAPI(void) defQAbstractItemDelegate(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QAbstractItemDelegate";
+	cdef->free = QAbstractItemDelegate_free;
+	cdef->reftrace = QAbstractItemDelegate_reftrace;
+	cdef->compareTo = QAbstractItemDelegate_compareTo;
+}
+
 

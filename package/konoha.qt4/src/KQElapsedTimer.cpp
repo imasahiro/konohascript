@@ -3,7 +3,7 @@ KMETHOD QElapsedTimer_elapsed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QElapsedTimer *  qp = RawPtr_to(QElapsedTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->elapsed();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QElapsedTimer_hasExpired(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QElapsedTimer *  qp = RawPtr_to(QElapsedTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 timeout = Int_to(qint64, sfp[1]);
 		bool ret_v = qp->hasExpired(timeout);
 		RETURNb_(ret_v);
@@ -32,23 +32,10 @@ KMETHOD QElapsedTimer_invalidate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QElapsedTimer *  qp = RawPtr_to(QElapsedTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->invalidate();
 	}
 	RETURNvoid_();
-}
-
-////boolean QElapsedTimer.isValid();
-KMETHOD QElapsedTimer_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QElapsedTimer *  qp = RawPtr_to(QElapsedTimer *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
 }
 
 //int QElapsedTimer.msecsSinceReference();
@@ -56,7 +43,7 @@ KMETHOD QElapsedTimer_msecsSinceReference(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QElapsedTimer *  qp = RawPtr_to(QElapsedTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->msecsSinceReference();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -71,7 +58,7 @@ KMETHOD QElapsedTimer_msecsTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QElapsedTimer *  qp = RawPtr_to(QElapsedTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QElapsedTimer  other = *RawPtr_to(const QElapsedTimer *, sfp[1]);
 		qint64 ret_v = qp->msecsTo(other);
 		qint64 *ret_v_ = new qint64(ret_v);
@@ -87,7 +74,7 @@ KMETHOD QElapsedTimer_restart(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QElapsedTimer *  qp = RawPtr_to(QElapsedTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->restart();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -102,7 +89,7 @@ KMETHOD QElapsedTimer_secsTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QElapsedTimer *  qp = RawPtr_to(QElapsedTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QElapsedTimer  other = *RawPtr_to(const QElapsedTimer *, sfp[1]);
 		qint64 ret_v = qp->secsTo(other);
 		qint64 *ret_v_ = new qint64(ret_v);
@@ -118,7 +105,7 @@ KMETHOD QElapsedTimer_start(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QElapsedTimer *  qp = RawPtr_to(QElapsedTimer *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->start();
 	}
 	RETURNvoid_();
@@ -128,9 +115,8 @@ KMETHOD QElapsedTimer_start(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QElapsedTimer_clockType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QElapsedTimer *  qp = RawPtr_to(QElapsedTimer *, sfp[0]);
-	if (qp != NULL) {
-		QElapsedTimer::ClockType ret_v = qp->clockType();
+	if (true) {
+		QElapsedTimer::ClockType ret_v = QElapsedTimer::clockType();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -141,15 +127,32 @@ KMETHOD QElapsedTimer_clockType(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QElapsedTimer_isMonotonic(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QElapsedTimer *  qp = RawPtr_to(QElapsedTimer *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isMonotonic();
+	if (true) {
+		bool ret_v = QElapsedTimer::isMonotonic();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
 	}
 }
 
+//Array<String> QElapsedTimer.parents();
+KMETHOD QElapsedTimer_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QElapsedTimer *qp = RawPtr_to(QElapsedTimer*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQElapsedTimer::DummyQElapsedTimer()
 {
@@ -198,17 +201,22 @@ bool DummyQElapsedTimer::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQElapsedTimer::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQElapsedTimer::connection(QObject *o)
 {
-	return;
-}
-
-KQElapsedTimer::KQElapsedTimer() : QElapsedTimer()
-{
-	self = NULL;
-	dummy = new DummyQElapsedTimer();
-	dummy->connection((QObject*)this);
+	QElapsedTimer *p = dynamic_cast<QElapsedTimer*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QElapsedTimer_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -263,13 +271,9 @@ static void QElapsedTimer_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QElapsedTimer_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQElapsedTimer *qp = (KQElapsedTimer *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -284,15 +288,6 @@ void KQElapsedTimer::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQElapsedTimer(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QElapsedTimer";
-	cdef->free = QElapsedTimer_free;
-	cdef->reftrace = QElapsedTimer_reftrace;
-	cdef->compareTo = QElapsedTimer_compareTo;
-}
-
 static knh_IntData_t QElapsedTimerConstInt[] = {
 	{"SystemTime", QElapsedTimer::SystemTime},
 	{"MonotonicClock", QElapsedTimer::MonotonicClock},
@@ -304,4 +299,15 @@ static knh_IntData_t QElapsedTimerConstInt[] = {
 DEFAPI(void) constQElapsedTimer(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QElapsedTimerConstInt);
 }
+
+
+DEFAPI(void) defQElapsedTimer(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QElapsedTimer";
+	cdef->free = QElapsedTimer_free;
+	cdef->reftrace = QElapsedTimer_reftrace;
+	cdef->compareTo = QElapsedTimer_compareTo;
+}
+
 

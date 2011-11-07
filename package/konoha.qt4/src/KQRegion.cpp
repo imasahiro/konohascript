@@ -79,7 +79,7 @@ KMETHOD QRegion_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->boundingRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -94,7 +94,7 @@ KMETHOD QRegion_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  p = *RawPtr_to(const QPoint *, sfp[1]);
 		bool ret_v = qp->contains(p);
 		RETURNb_(ret_v);
@@ -109,7 +109,7 @@ KMETHOD QRegion_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  r = *RawPtr_to(const QRect *, sfp[1]);
 		bool ret_v = qp->contains(r);
 		RETURNb_(ret_v);
@@ -123,7 +123,7 @@ KMETHOD QRegion_intersected(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRegion  r = *RawPtr_to(const QRegion *, sfp[1]);
 		QRegion ret_v = qp->intersected(r);
 		QRegion *ret_v_ = new QRegion(ret_v);
@@ -140,7 +140,7 @@ KMETHOD QRegion_intersected(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		QRegion ret_v = qp->intersected(rect);
 		QRegion *ret_v_ = new QRegion(ret_v);
@@ -156,7 +156,7 @@ KMETHOD QRegion_intersects(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRegion  region = *RawPtr_to(const QRegion *, sfp[1]);
 		bool ret_v = qp->intersects(region);
 		RETURNb_(ret_v);
@@ -171,7 +171,7 @@ KMETHOD QRegion_intersects(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		bool ret_v = qp->intersects(rect);
 		RETURNb_(ret_v);
@@ -185,7 +185,7 @@ KMETHOD QRegion_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
 		RETURNb_(ret_v);
 	} else {
@@ -198,7 +198,7 @@ KMETHOD QRegion_rectCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->rectCount();
 		RETURNi_(ret_v);
 	} else {
@@ -211,7 +211,7 @@ KMETHOD QRegion_setRects(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect*  rects = RawPtr_to(const QRect*, sfp[1]);
 		int number = Int_to(int, sfp[2]);
 		qp->setRects(rects, number);
@@ -224,7 +224,7 @@ KMETHOD QRegion_subtracted(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRegion  r = *RawPtr_to(const QRegion *, sfp[1]);
 		QRegion ret_v = qp->subtracted(r);
 		QRegion *ret_v_ = new QRegion(ret_v);
@@ -240,7 +240,7 @@ KMETHOD QRegion_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int dx = Int_to(int, sfp[1]);
 		int dy = Int_to(int, sfp[2]);
 		qp->translate(dx, dy);
@@ -254,7 +254,7 @@ KMETHOD QRegion_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
 		qp->translate(point);
 	}
@@ -266,7 +266,7 @@ KMETHOD QRegion_translated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int dx = Int_to(int, sfp[1]);
 		int dy = Int_to(int, sfp[2]);
 		QRegion ret_v = qp->translated(dx, dy);
@@ -284,7 +284,7 @@ KMETHOD QRegion_translated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  p = *RawPtr_to(const QPoint *, sfp[1]);
 		QRegion ret_v = qp->translated(p);
 		QRegion *ret_v_ = new QRegion(ret_v);
@@ -300,7 +300,7 @@ KMETHOD QRegion_united(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRegion  r = *RawPtr_to(const QRegion *, sfp[1]);
 		QRegion ret_v = qp->united(r);
 		QRegion *ret_v_ = new QRegion(ret_v);
@@ -317,7 +317,7 @@ KMETHOD QRegion_united(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		QRegion ret_v = qp->united(rect);
 		QRegion *ret_v_ = new QRegion(ret_v);
@@ -333,7 +333,7 @@ KMETHOD QRegion_xored(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QRegion *  qp = RawPtr_to(QRegion *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRegion  r = *RawPtr_to(const QRegion *, sfp[1]);
 		QRegion ret_v = qp->xored(r);
 		QRegion *ret_v_ = new QRegion(ret_v);
@@ -344,6 +344,24 @@ KMETHOD QRegion_xored(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QRegion.parents();
+KMETHOD QRegion_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QRegion *qp = RawPtr_to(QRegion*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQRegion::DummyQRegion()
 {
@@ -392,17 +410,28 @@ bool DummyQRegion::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQRegion::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQRegion::connection(QObject *o)
 {
-	return;
+	QRegion *p = dynamic_cast<QRegion*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQRegion::KQRegion() : QRegion()
 {
 	self = NULL;
 	dummy = new DummyQRegion();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QRegion_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -457,13 +486,9 @@ static void QRegion_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QRegion_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQRegion *qp = (KQRegion *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -478,15 +503,6 @@ void KQRegion::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQRegion(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QRegion";
-	cdef->free = QRegion_free;
-	cdef->reftrace = QRegion_reftrace;
-	cdef->compareTo = QRegion_compareTo;
-}
-
 static knh_IntData_t QRegionConstInt[] = {
 	{"Rectangle", QRegion::Rectangle},
 	{"Ellipse", QRegion::Ellipse},
@@ -496,4 +512,15 @@ static knh_IntData_t QRegionConstInt[] = {
 DEFAPI(void) constQRegion(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QRegionConstInt);
 }
+
+
+DEFAPI(void) defQRegion(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QRegion";
+	cdef->free = QRegion_free;
+	cdef->reftrace = QRegion_reftrace;
+	cdef->compareTo = QRegion_compareTo;
+}
+
 

@@ -6,7 +6,7 @@ KMETHOD QIODevice_atEnd(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->atEnd();
 		RETURNb_(ret_v);
 	} else {
@@ -19,7 +19,7 @@ KMETHOD QIODevice_bytesAvailable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->bytesAvailable();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -34,7 +34,7 @@ KMETHOD QIODevice_bytesToWrite(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->bytesToWrite();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -49,7 +49,7 @@ KMETHOD QIODevice_canReadLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->canReadLine();
 		RETURNb_(ret_v);
 	} else {
@@ -62,7 +62,7 @@ KMETHOD QIODevice_close(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->close();
 	}
 	RETURNvoid_();
@@ -73,7 +73,7 @@ KMETHOD QIODevice_errorString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->errorString();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -87,7 +87,7 @@ KMETHOD QIODevice_getChar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char*  c = RawPtr_to(char*, sfp[1]);
 		bool ret_v = qp->getChar(c);
 		RETURNb_(ret_v);
@@ -101,7 +101,7 @@ KMETHOD QIODevice_isOpen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isOpen();
 		RETURNb_(ret_v);
 	} else {
@@ -114,7 +114,7 @@ KMETHOD QIODevice_isReadable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isReadable();
 		RETURNb_(ret_v);
 	} else {
@@ -127,7 +127,7 @@ KMETHOD QIODevice_isSequential(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSequential();
 		RETURNb_(ret_v);
 	} else {
@@ -140,7 +140,7 @@ KMETHOD QIODevice_isTextModeEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isTextModeEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -153,7 +153,7 @@ KMETHOD QIODevice_isWritable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isWritable();
 		RETURNb_(ret_v);
 	} else {
@@ -161,13 +161,13 @@ KMETHOD QIODevice_isWritable(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual boolean QIODevice.open(int mode);
+//@Virtual boolean QIODevice.open(QIODeviceOpenMode mode);
 KMETHOD QIODevice_open(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
-		QIODevice::OpenMode  mode = *RawPtr_to(QIODevice::OpenMode *, sfp[1]);
+	if (qp) {
+		initFlag(mode, QIODevice::OpenMode, sfp[1]);
 		bool ret_v = qp->open(mode);
 		RETURNb_(ret_v);
 	} else {
@@ -175,12 +175,12 @@ KMETHOD QIODevice_open(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QIODevice.openMode();
+//QIODeviceOpenMode QIODevice.openMode();
 KMETHOD QIODevice_openMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIODevice::OpenMode ret_v = qp->openMode();
 		QIODevice::OpenMode *ret_v_ = new QIODevice::OpenMode(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -195,7 +195,7 @@ KMETHOD QIODevice_peek(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char*  data = RawPtr_to(char*, sfp[1]);
 		qint64 maxSize = Int_to(qint64, sfp[2]);
 		qint64 ret_v = qp->peek(data, maxSize);
@@ -213,7 +213,7 @@ KMETHOD QIODevice_peek(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 maxSize = Int_to(qint64, sfp[1]);
 		QByteArray ret_v = qp->peek(maxSize);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -229,7 +229,7 @@ KMETHOD QIODevice_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->pos();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -244,7 +244,7 @@ KMETHOD QIODevice_putChar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  c = *RawPtr_to(char *, sfp[1]);
 		bool ret_v = qp->putChar(c);
 		RETURNb_(ret_v);
@@ -258,7 +258,7 @@ KMETHOD QIODevice_read(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char*  data = RawPtr_to(char*, sfp[1]);
 		qint64 maxSize = Int_to(qint64, sfp[2]);
 		qint64 ret_v = qp->read(data, maxSize);
@@ -276,7 +276,7 @@ KMETHOD QIODevice_read(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 maxSize = Int_to(qint64, sfp[1]);
 		QByteArray ret_v = qp->read(maxSize);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -292,7 +292,7 @@ KMETHOD QIODevice_readAll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->readAll();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -307,7 +307,7 @@ KMETHOD QIODevice_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char*  data = RawPtr_to(char*, sfp[1]);
 		qint64 maxSize = Int_to(qint64, sfp[2]);
 		qint64 ret_v = qp->readLine(data, maxSize);
@@ -325,7 +325,7 @@ KMETHOD QIODevice_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 maxSize = Int_to(qint64, sfp[1]);
 		QByteArray ret_v = qp->readLine(maxSize);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -341,7 +341,7 @@ KMETHOD QIODevice_reset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->reset();
 		RETURNb_(ret_v);
 	} else {
@@ -354,7 +354,7 @@ KMETHOD QIODevice_seek(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 pos = Int_to(qint64, sfp[1]);
 		bool ret_v = qp->seek(pos);
 		RETURNb_(ret_v);
@@ -368,7 +368,7 @@ KMETHOD QIODevice_setTextModeEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setTextModeEnabled(enabled);
 	}
@@ -380,7 +380,7 @@ KMETHOD QIODevice_size(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->size();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -395,7 +395,7 @@ KMETHOD QIODevice_ungetChar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  c = *RawPtr_to(char *, sfp[1]);
 		qp->ungetChar(c);
 	}
@@ -407,7 +407,7 @@ KMETHOD QIODevice_waitForBytesWritten(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int msecs = Int_to(int, sfp[1]);
 		bool ret_v = qp->waitForBytesWritten(msecs);
 		RETURNb_(ret_v);
@@ -421,7 +421,7 @@ KMETHOD QIODevice_waitForReadyRead(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int msecs = Int_to(int, sfp[1]);
 		bool ret_v = qp->waitForReadyRead(msecs);
 		RETURNb_(ret_v);
@@ -435,7 +435,7 @@ KMETHOD QIODevice_write(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  data = RawPtr_to(const char*, sfp[1]);
 		qint64 maxSize = Int_to(qint64, sfp[2]);
 		qint64 ret_v = qp->write(data, maxSize);
@@ -453,7 +453,7 @@ KMETHOD QIODevice_write(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  data = RawPtr_to(const char*, sfp[1]);
 		qint64 ret_v = qp->write(data);
 		qint64 *ret_v_ = new qint64(ret_v);
@@ -470,7 +470,7 @@ KMETHOD QIODevice_write(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QIODevice *  qp = RawPtr_to(QIODevice *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  byteArray = *RawPtr_to(const QByteArray *, sfp[1]);
 		qint64 ret_v = qp->write(byteArray);
 		qint64 *ret_v_ = new qint64(ret_v);
@@ -594,13 +594,31 @@ bool DummyQIODevice::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQIODevice::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, about_to_close_func);
+	KNH_ADDNNREF(ctx, bytes_written_func);
+	KNH_ADDNNREF(ctx, read_channel_finished_func);
+	KNH_ADDNNREF(ctx, ready_read_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQIODevice::connection(QObject *o)
 {
-	connect(o, SIGNAL(aboutToClose()), this, SLOT(aboutToCloseSlot()));
-	connect(o, SIGNAL(bytesWritten(qint64)), this, SLOT(bytesWrittenSlot(qint64)));
-	connect(o, SIGNAL(readChannelFinished()), this, SLOT(readChannelFinishedSlot()));
-	connect(o, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
+	QIODevice *p = dynamic_cast<QIODevice*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(aboutToClose()), this, SLOT(aboutToCloseSlot()));
+		connect(p, SIGNAL(bytesWritten(qint64)), this, SLOT(bytesWrittenSlot(qint64)));
+		connect(p, SIGNAL(readChannelFinished()), this, SLOT(readChannelFinishedSlot()));
+		connect(p, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -663,29 +681,9 @@ static void QIODevice_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QIODevice_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 4;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQIODevice *qp = (KQIODevice *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->about_to_close_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->about_to_close_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->bytes_written_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->bytes_written_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->read_channel_finished_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->read_channel_finished_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->ready_read_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->ready_read_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -709,15 +707,6 @@ bool KQIODevice::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQIODevice(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QIODevice";
-	cdef->free = QIODevice_free;
-	cdef->reftrace = QIODevice_reftrace;
-	cdef->compareTo = QIODevice_compareTo;
-}
-
 static knh_IntData_t QIODeviceConstInt[] = {
 	{"NotOpen", QIODevice::NotOpen},
 	{"ReadOnly", QIODevice::ReadOnly},
@@ -732,5 +721,179 @@ static knh_IntData_t QIODeviceConstInt[] = {
 
 DEFAPI(void) constQIODevice(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QIODeviceConstInt);
+}
+
+
+DEFAPI(void) defQIODevice(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QIODevice";
+	cdef->free = QIODevice_free;
+	cdef->reftrace = QIODevice_reftrace;
+	cdef->compareTo = QIODevice_compareTo;
+}
+
+//## QIODeviceOpenMode QIODeviceOpenMode.new(int value);
+KMETHOD QIODeviceOpenMode_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QIODevice::OpenModeFlag i = Int_to(QIODevice::OpenModeFlag, sfp[1]);
+	QIODevice::OpenMode *ret_v = new QIODevice::OpenMode(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QIODeviceOpenMode QIODeviceOpenMode.and(int mask);
+KMETHOD QIODeviceOpenMode_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QIODevice::OpenMode *qp = RawPtr_to(QIODevice::OpenMode*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QIODevice::OpenMode ret = ((*qp) & i);
+		QIODevice::OpenMode *ret_ = new QIODevice::OpenMode(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QIODeviceOpenMode QIODeviceOpenMode.iand(QIODevice::QIODeviceOpenMode other);
+KMETHOD QIODeviceOpenMode_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QIODevice::OpenMode *qp = RawPtr_to(QIODevice::OpenMode*, sfp[0]);
+	if (qp != NULL) {
+		QIODevice::OpenMode *other = RawPtr_to(QIODevice::OpenMode *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QIODeviceOpenMode QIODeviceOpenMode.or(QIODeviceOpenMode f);
+KMETHOD QIODeviceOpenMode_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QIODevice::OpenMode *qp = RawPtr_to(QIODevice::OpenMode*, sfp[0]);
+	if (qp != NULL) {
+		QIODevice::OpenMode *f = RawPtr_to(QIODevice::OpenMode*, sfp[1]);
+		QIODevice::OpenMode ret = ((*qp) | (*f));
+		QIODevice::OpenMode *ret_ = new QIODevice::OpenMode(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QIODeviceOpenMode QIODeviceOpenMode.ior(QIODevice::QIODeviceOpenMode other);
+KMETHOD QIODeviceOpenMode_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QIODevice::OpenMode *qp = RawPtr_to(QIODevice::OpenMode*, sfp[0]);
+	if (qp != NULL) {
+		QIODevice::OpenMode *other = RawPtr_to(QIODevice::OpenMode *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QIODeviceOpenMode QIODeviceOpenMode.xor(QIODeviceOpenMode f);
+KMETHOD QIODeviceOpenMode_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QIODevice::OpenMode *qp = RawPtr_to(QIODevice::OpenMode*, sfp[0]);
+	if (qp != NULL) {
+		QIODevice::OpenMode *f = RawPtr_to(QIODevice::OpenMode*, sfp[1]);
+		QIODevice::OpenMode ret = ((*qp) ^ (*f));
+		QIODevice::OpenMode *ret_ = new QIODevice::OpenMode(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QIODeviceOpenMode QIODeviceOpenMode.ixor(QIODevice::QIODeviceOpenMode other);
+KMETHOD QIODeviceOpenMode_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QIODevice::OpenMode *qp = RawPtr_to(QIODevice::OpenMode*, sfp[0]);
+	if (qp != NULL) {
+		QIODevice::OpenMode *other = RawPtr_to(QIODevice::OpenMode *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QIODeviceOpenMode.testFlag(int flag);
+KMETHOD QIODeviceOpenMode_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QIODevice::OpenMode *qp = RawPtr_to(QIODevice::OpenMode *, sfp[0]);
+	if (qp != NULL) {
+		QIODevice::OpenModeFlag flag = Int_to(QIODevice::OpenModeFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QIODeviceOpenMode.value();
+KMETHOD QIODeviceOpenMode_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QIODevice::OpenMode *qp = RawPtr_to(QIODevice::OpenMode *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QIODeviceOpenMode_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QIODevice::OpenMode *qp = (QIODevice::OpenMode *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QIODeviceOpenMode_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QIODevice::OpenMode *qp = (QIODevice::OpenMode *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QIODeviceOpenMode_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QIODevice::OpenMode*)p1->rawptr);
+//		int v2 = int(*(QIODevice::OpenMode*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QIODevice::OpenMode v1 = *(QIODevice::OpenMode*)p1->rawptr;
+		QIODevice::OpenMode v2 = *(QIODevice::OpenMode*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQIODeviceOpenMode(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QIODeviceOpenMode";
+	cdef->free = QIODeviceOpenMode_free;
+	cdef->reftrace = QIODeviceOpenMode_reftrace;
+	cdef->compareTo = QIODeviceOpenMode_compareTo;
 }
 

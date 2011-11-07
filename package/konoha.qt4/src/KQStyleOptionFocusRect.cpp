@@ -71,9 +71,23 @@ bool DummyQStyleOptionFocusRect::signalConnect(knh_Func_t *callback_func, string
 	}
 }
 
+void DummyQStyleOptionFocusRect::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOption::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionFocusRect::connection(QObject *o)
 {
+	QStyleOptionFocusRect *p = dynamic_cast<QStyleOptionFocusRect*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOption::connection(o);
 }
 
@@ -81,7 +95,6 @@ KQStyleOptionFocusRect::KQStyleOptionFocusRect() : QStyleOptionFocusRect()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionFocusRect();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionFocusRect_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,13 +149,9 @@ static void QStyleOptionFocusRect_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionFocusRect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionFocusRect *qp = (KQStyleOptionFocusRect *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -157,15 +166,6 @@ void KQStyleOptionFocusRect::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStyleOptionFocusRect(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionFocusRect";
-	cdef->free = QStyleOptionFocusRect_free;
-	cdef->reftrace = QStyleOptionFocusRect_reftrace;
-	cdef->compareTo = QStyleOptionFocusRect_compareTo;
-}
-
 static knh_IntData_t QStyleOptionFocusRectConstInt[] = {
 	{"Type", QStyleOptionFocusRect::Type},
 	{"Version", QStyleOptionFocusRect::Version},
@@ -175,4 +175,15 @@ static knh_IntData_t QStyleOptionFocusRectConstInt[] = {
 DEFAPI(void) constQStyleOptionFocusRect(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionFocusRectConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionFocusRect(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionFocusRect";
+	cdef->free = QStyleOptionFocusRect_free;
+	cdef->reftrace = QStyleOptionFocusRect_reftrace;
+	cdef->compareTo = QStyleOptionFocusRect_compareTo;
+}
+
 

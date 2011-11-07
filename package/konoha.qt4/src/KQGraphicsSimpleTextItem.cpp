@@ -3,7 +3,7 @@ KMETHOD QGraphicsSimpleTextItem_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSimpleTextItem *  qp = RawPtr_to(QGraphicsSimpleTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->boundingRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QGraphicsSimpleTextItem_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSimpleTextItem *  qp = RawPtr_to(QGraphicsSimpleTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		bool ret_v = qp->contains(point);
 		RETURNb_(ret_v);
@@ -32,7 +32,7 @@ KMETHOD QGraphicsSimpleTextItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSimpleTextItem *  qp = RawPtr_to(QGraphicsSimpleTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		bool ret_v = qp->isObscuredBy(item);
 		RETURNb_(ret_v);
@@ -46,7 +46,7 @@ KMETHOD QGraphicsSimpleTextItem_opaqueArea(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSimpleTextItem *  qp = RawPtr_to(QGraphicsSimpleTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->opaqueArea();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -61,7 +61,7 @@ KMETHOD QGraphicsSimpleTextItem_paint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSimpleTextItem *  qp = RawPtr_to(QGraphicsSimpleTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
@@ -75,7 +75,7 @@ KMETHOD QGraphicsSimpleTextItem_shape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSimpleTextItem *  qp = RawPtr_to(QGraphicsSimpleTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->shape();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -90,7 +90,7 @@ KMETHOD QGraphicsSimpleTextItem_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSimpleTextItem *  qp = RawPtr_to(QGraphicsSimpleTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -127,7 +127,7 @@ KMETHOD QGraphicsSimpleTextItem_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSimpleTextItem *  qp = RawPtr_to(QGraphicsSimpleTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont ret_v = qp->font();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -142,7 +142,7 @@ KMETHOD QGraphicsSimpleTextItem_setFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSimpleTextItem *  qp = RawPtr_to(QGraphicsSimpleTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont  font = *RawPtr_to(const QFont *, sfp[1]);
 		qp->setFont(font);
 	}
@@ -154,7 +154,7 @@ KMETHOD QGraphicsSimpleTextItem_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSimpleTextItem *  qp = RawPtr_to(QGraphicsSimpleTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setText(text);
 	}
@@ -166,7 +166,7 @@ KMETHOD QGraphicsSimpleTextItem_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSimpleTextItem *  qp = RawPtr_to(QGraphicsSimpleTextItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->text();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -226,9 +226,23 @@ bool DummyQGraphicsSimpleTextItem::signalConnect(knh_Func_t *callback_func, stri
 	}
 }
 
+void DummyQGraphicsSimpleTextItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractGraphicsShapeItem::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsSimpleTextItem::connection(QObject *o)
 {
+	QGraphicsSimpleTextItem *p = dynamic_cast<QGraphicsSimpleTextItem*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractGraphicsShapeItem::connection(o);
 }
 
@@ -236,7 +250,6 @@ KQGraphicsSimpleTextItem::KQGraphicsSimpleTextItem(QGraphicsItem* parent) : QGra
 {
 	self = NULL;
 	dummy = new DummyQGraphicsSimpleTextItem();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsSimpleTextItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -291,13 +304,9 @@ static void QGraphicsSimpleTextItem_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsSimpleTextItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsSimpleTextItem *qp = (KQGraphicsSimpleTextItem *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -311,6 +320,8 @@ void KQGraphicsSimpleTextItem::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGraphicsSimpleTextItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -14,7 +14,7 @@ KMETHOD QGesture_getGestureCancelPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGesture *  qp = RawPtr_to(QGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGesture::GestureCancelPolicy ret_v = qp->gestureCancelPolicy();
 		RETURNi_(ret_v);
 	} else {
@@ -27,7 +27,7 @@ KMETHOD QGesture_gestureType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGesture *  qp = RawPtr_to(QGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::GestureType ret_v = qp->gestureType();
 		RETURNi_(ret_v);
 	} else {
@@ -40,7 +40,7 @@ KMETHOD QGesture_hasHotSpot(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGesture *  qp = RawPtr_to(QGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasHotSpot();
 		RETURNb_(ret_v);
 	} else {
@@ -53,7 +53,7 @@ KMETHOD QGesture_getHotSpot(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGesture *  qp = RawPtr_to(QGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->hotSpot();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -68,7 +68,7 @@ KMETHOD QGesture_setGestureCancelPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGesture *  qp = RawPtr_to(QGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGesture::GestureCancelPolicy policy = Int_to(QGesture::GestureCancelPolicy, sfp[1]);
 		qp->setGestureCancelPolicy(policy);
 	}
@@ -80,7 +80,7 @@ KMETHOD QGesture_setHotSpot(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGesture *  qp = RawPtr_to(QGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  value = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setHotSpot(value);
 	}
@@ -92,7 +92,7 @@ KMETHOD QGesture_state(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGesture *  qp = RawPtr_to(QGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::GestureState ret_v = qp->state();
 		RETURNi_(ret_v);
 	} else {
@@ -105,7 +105,7 @@ KMETHOD QGesture_unsetHotSpot(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGesture *  qp = RawPtr_to(QGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->unsetHotSpot();
 	}
 	RETURNvoid_();
@@ -162,9 +162,23 @@ bool DummyQGesture::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQGesture::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQGesture::connection(QObject *o)
 {
+	QGesture *p = dynamic_cast<QGesture*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
 }
 
@@ -227,13 +241,9 @@ static void QGesture_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGesture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGesture *qp = (KQGesture *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -257,15 +267,6 @@ bool KQGesture::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQGesture(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QGesture";
-	cdef->free = QGesture_free;
-	cdef->reftrace = QGesture_reftrace;
-	cdef->compareTo = QGesture_compareTo;
-}
-
 static knh_IntData_t QGestureConstInt[] = {
 	{"CancelNone", QGesture::CancelNone},
 	{"CancelAllInContext", QGesture::CancelAllInContext},
@@ -275,4 +276,15 @@ static knh_IntData_t QGestureConstInt[] = {
 DEFAPI(void) constQGesture(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QGestureConstInt);
 }
+
+
+DEFAPI(void) defQGesture(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QGesture";
+	cdef->free = QGesture_free;
+	cdef->reftrace = QGesture_reftrace;
+	cdef->compareTo = QGesture_compareTo;
+}
+
 

@@ -71,9 +71,23 @@ bool DummyQStyleOptionRubberBand::signalConnect(knh_Func_t *callback_func, strin
 	}
 }
 
+void DummyQStyleOptionRubberBand::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOption::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionRubberBand::connection(QObject *o)
 {
+	QStyleOptionRubberBand *p = dynamic_cast<QStyleOptionRubberBand*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOption::connection(o);
 }
 
@@ -81,7 +95,6 @@ KQStyleOptionRubberBand::KQStyleOptionRubberBand() : QStyleOptionRubberBand()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionRubberBand();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionRubberBand_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,13 +149,9 @@ static void QStyleOptionRubberBand_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionRubberBand_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionRubberBand *qp = (KQStyleOptionRubberBand *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -157,15 +166,6 @@ void KQStyleOptionRubberBand::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStyleOptionRubberBand(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionRubberBand";
-	cdef->free = QStyleOptionRubberBand_free;
-	cdef->reftrace = QStyleOptionRubberBand_reftrace;
-	cdef->compareTo = QStyleOptionRubberBand_compareTo;
-}
-
 static knh_IntData_t QStyleOptionRubberBandConstInt[] = {
 	{"Type", QStyleOptionRubberBand::Type},
 	{"Version", QStyleOptionRubberBand::Version},
@@ -175,4 +175,15 @@ static knh_IntData_t QStyleOptionRubberBandConstInt[] = {
 DEFAPI(void) constQStyleOptionRubberBand(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionRubberBandConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionRubberBand(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionRubberBand";
+	cdef->free = QStyleOptionRubberBand_free;
+	cdef->reftrace = QStyleOptionRubberBand_reftrace;
+	cdef->compareTo = QStyleOptionRubberBand_compareTo;
+}
+
 

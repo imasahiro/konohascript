@@ -43,7 +43,7 @@ KMETHOD QGraphicsScene_getActivePanel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem* ret_v = qp->activePanel();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -57,7 +57,7 @@ KMETHOD QGraphicsScene_getActiveWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsWidget* ret_v = qp->activeWindow();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -71,7 +71,7 @@ KMETHOD QGraphicsScene_addEllipse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		const QPen  pen = *RawPtr_to(const QPen *, sfp[2]);
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[3]);
@@ -89,7 +89,7 @@ KMETHOD QGraphicsScene_addEllipse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -109,7 +109,7 @@ KMETHOD QGraphicsScene_addItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem*  item = RawPtr_to(QGraphicsItem*, sfp[1]);
 		qp->addItem(item);
 	}
@@ -121,7 +121,7 @@ KMETHOD QGraphicsScene_addLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QLineF  line = *RawPtr_to(const QLineF *, sfp[1]);
 		const QPen  pen = *RawPtr_to(const QPen *, sfp[2]);
 		QGraphicsLineItem* ret_v = qp->addLine(line, pen);
@@ -138,7 +138,7 @@ KMETHOD QGraphicsScene_addLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x1 = Float_to(qreal, sfp[1]);
 		qreal y1 = Float_to(qreal, sfp[2]);
 		qreal x2 = Float_to(qreal, sfp[3]);
@@ -157,7 +157,7 @@ KMETHOD QGraphicsScene_addPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		const QPen  pen = *RawPtr_to(const QPen *, sfp[2]);
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[3]);
@@ -174,7 +174,7 @@ KMETHOD QGraphicsScene_addPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[1]);
 		QGraphicsPixmapItem* ret_v = qp->addPixmap(pixmap);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsPixmapItem*)ret_v, NULL);
@@ -189,7 +189,7 @@ KMETHOD QGraphicsScene_addPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  polygon = *RawPtr_to(const QPolygonF *, sfp[1]);
 		const QPen  pen = *RawPtr_to(const QPen *, sfp[2]);
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[3]);
@@ -206,7 +206,7 @@ KMETHOD QGraphicsScene_addRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		const QPen  pen = *RawPtr_to(const QPen *, sfp[2]);
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[3]);
@@ -224,7 +224,7 @@ KMETHOD QGraphicsScene_addRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -244,7 +244,7 @@ KMETHOD QGraphicsScene_addSimpleText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		const QFont  font = *RawPtr_to(const QFont *, sfp[2]);
 		QGraphicsSimpleTextItem* ret_v = qp->addSimpleText(text, font);
@@ -260,7 +260,7 @@ KMETHOD QGraphicsScene_addText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		const QFont  font = *RawPtr_to(const QFont *, sfp[2]);
 		QGraphicsTextItem* ret_v = qp->addText(text, font);
@@ -271,14 +271,14 @@ KMETHOD QGraphicsScene_addText(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QGraphicsProxyWidget QGraphicsScene.addWidget(QWidget widget, int wFlags);
+//QGraphicsProxyWidget QGraphicsScene.addWidget(QWidget widget, QtWindowFlags wFlags);
 KMETHOD QGraphicsScene_addWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
-		Qt::WindowFlags wFlags = Int_to(Qt::WindowFlags, sfp[2]);
+		initFlag(wFlags, Qt::WindowFlags, sfp[2]);
 		QGraphicsProxyWidget* ret_v = qp->addWidget(widget, wFlags);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsProxyWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -292,7 +292,7 @@ KMETHOD QGraphicsScene_getBackgroundBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBrush ret_v = qp->backgroundBrush();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -307,7 +307,7 @@ KMETHOD QGraphicsScene_getBspTreeDepth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->bspTreeDepth();
 		RETURNi_(ret_v);
 	} else {
@@ -320,7 +320,7 @@ KMETHOD QGraphicsScene_clearFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearFocus();
 	}
 	RETURNvoid_();
@@ -331,10 +331,10 @@ KMETHOD QGraphicsScene_collidingItems(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		Qt::ItemSelectionMode mode = Int_to(Qt::ItemSelectionMode, sfp[2]);
-		QList<QGraphicsItem*>ret_v = qp->collidingItems(item, mode);
+		QList<QGraphicsItem*> ret_v = qp->collidingItems(item, mode);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -354,7 +354,7 @@ KMETHOD QGraphicsScene_createItemGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<QGraphicsItem*> items;
@@ -375,7 +375,7 @@ KMETHOD QGraphicsScene_destroyItemGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItemGroup*  group = RawPtr_to(QGraphicsItemGroup*, sfp[1]);
 		qp->destroyItemGroup(group);
 	}
@@ -387,7 +387,7 @@ KMETHOD QGraphicsScene_getFocusItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem* ret_v = qp->focusItem();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -401,7 +401,7 @@ KMETHOD QGraphicsScene_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont ret_v = qp->font();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -416,7 +416,7 @@ KMETHOD QGraphicsScene_getForegroundBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBrush ret_v = qp->foregroundBrush();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -431,7 +431,7 @@ KMETHOD QGraphicsScene_hasFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasFocus();
 		RETURNb_(ret_v);
 	} else {
@@ -444,7 +444,7 @@ KMETHOD QGraphicsScene_height(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->height();
 		RETURNf_(ret_v);
 	} else {
@@ -457,7 +457,7 @@ KMETHOD QGraphicsScene_inputMethodQuery(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::InputMethodQuery query = Int_to(Qt::InputMethodQuery, sfp[1]);
 		QVariant ret_v = qp->inputMethodQuery(query);
 		QVariant *ret_v_ = new QVariant(ret_v);
@@ -468,17 +468,17 @@ KMETHOD QGraphicsScene_inputMethodQuery(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QGraphicsScene.invalidate(float x, float y, float w, float h, int layers);
+//void QGraphicsScene.invalidate(float x, float y, float w, float h, QGraphicsSceneSceneLayers layers);
 KMETHOD QGraphicsScene_invalidate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
 		qreal h = Float_to(qreal, sfp[4]);
-		QGraphicsScene::SceneLayers layers = Int_to(QGraphicsScene::SceneLayers, sfp[5]);
+		initFlag(layers, QGraphicsScene::SceneLayers, sfp[5]);
 		qp->invalidate(x, y, w, h, layers);
 	}
 	RETURNvoid_();
@@ -489,7 +489,7 @@ KMETHOD QGraphicsScene_isActive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isActive();
 		RETURNb_(ret_v);
 	} else {
@@ -502,7 +502,7 @@ KMETHOD QGraphicsScene_isSortCacheEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSortCacheEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -515,7 +515,7 @@ KMETHOD QGraphicsScene_itemAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[1]);
 		const QTransform  deviceTransform = *RawPtr_to(const QTransform *, sfp[2]);
 		QGraphicsItem* ret_v = qp->itemAt(position, deviceTransform);
@@ -532,7 +532,7 @@ KMETHOD QGraphicsScene_itemAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		const QTransform  deviceTransform = *RawPtr_to(const QTransform *, sfp[3]);
@@ -549,7 +549,7 @@ KMETHOD QGraphicsScene_getItemIndexMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsScene::ItemIndexMethod ret_v = qp->itemIndexMethod();
 		RETURNi_(ret_v);
 	} else {
@@ -562,8 +562,8 @@ KMETHOD QGraphicsScene_items(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
-		QList<QGraphicsItem*>ret_v = qp->items();
+	if (qp) {
+		QList<QGraphicsItem*> ret_v = qp->items();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -584,9 +584,9 @@ KMETHOD QGraphicsScene_items(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[1]);
-		QList<QGraphicsItem*>ret_v = qp->items(order);
+		QList<QGraphicsItem*> ret_v = qp->items(order);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -607,12 +607,12 @@ KMETHOD QGraphicsScene_items(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  pos = *RawPtr_to(const QPointF *, sfp[1]);
 		Qt::ItemSelectionMode mode = Int_to(Qt::ItemSelectionMode, sfp[2]);
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[3]);
 		const QTransform  deviceTransform = *RawPtr_to(const QTransform *, sfp[4]);
-		QList<QGraphicsItem*>ret_v = qp->items(pos, mode, order, deviceTransform);
+		QList<QGraphicsItem*> ret_v = qp->items(pos, mode, order, deviceTransform);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -633,7 +633,7 @@ KMETHOD QGraphicsScene_items(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -641,7 +641,7 @@ KMETHOD QGraphicsScene_items(CTX ctx, knh_sfp_t *sfp _RIX)
 		Qt::ItemSelectionMode mode = Int_to(Qt::ItemSelectionMode, sfp[5]);
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[6]);
 		const QTransform  deviceTransform = *RawPtr_to(const QTransform *, sfp[7]);
-		QList<QGraphicsItem*>ret_v = qp->items(x, y, w, h, mode, order, deviceTransform);
+		QList<QGraphicsItem*> ret_v = qp->items(x, y, w, h, mode, order, deviceTransform);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -662,12 +662,12 @@ KMETHOD QGraphicsScene_items(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		Qt::ItemSelectionMode mode = Int_to(Qt::ItemSelectionMode, sfp[2]);
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[3]);
 		const QTransform  deviceTransform = *RawPtr_to(const QTransform *, sfp[4]);
-		QList<QGraphicsItem*>ret_v = qp->items(rect, mode, order, deviceTransform);
+		QList<QGraphicsItem*> ret_v = qp->items(rect, mode, order, deviceTransform);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -688,12 +688,12 @@ KMETHOD QGraphicsScene_items(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  polygon = *RawPtr_to(const QPolygonF *, sfp[1]);
 		Qt::ItemSelectionMode mode = Int_to(Qt::ItemSelectionMode, sfp[2]);
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[3]);
 		const QTransform  deviceTransform = *RawPtr_to(const QTransform *, sfp[4]);
-		QList<QGraphicsItem*>ret_v = qp->items(polygon, mode, order, deviceTransform);
+		QList<QGraphicsItem*> ret_v = qp->items(polygon, mode, order, deviceTransform);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -714,12 +714,12 @@ KMETHOD QGraphicsScene_items(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		Qt::ItemSelectionMode mode = Int_to(Qt::ItemSelectionMode, sfp[2]);
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[3]);
 		const QTransform  deviceTransform = *RawPtr_to(const QTransform *, sfp[4]);
-		QList<QGraphicsItem*>ret_v = qp->items(path, mode, order, deviceTransform);
+		QList<QGraphicsItem*> ret_v = qp->items(path, mode, order, deviceTransform);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -739,7 +739,7 @@ KMETHOD QGraphicsScene_itemsBoundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->itemsBoundingRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -754,7 +754,7 @@ KMETHOD QGraphicsScene_mouseGrabberItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem* ret_v = qp->mouseGrabberItem();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -768,7 +768,7 @@ KMETHOD QGraphicsScene_getPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette ret_v = qp->palette();
 		QPalette *ret_v_ = new QPalette(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -783,7 +783,7 @@ KMETHOD QGraphicsScene_removeItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem*  item = RawPtr_to(QGraphicsItem*, sfp[1]);
 		qp->removeItem(item);
 	}
@@ -795,7 +795,7 @@ KMETHOD QGraphicsScene_render(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QRectF  target = *RawPtr_to(const QRectF *, sfp[2]);
 		const QRectF  source = *RawPtr_to(const QRectF *, sfp[3]);
@@ -810,7 +810,7 @@ KMETHOD QGraphicsScene_getSceneRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->sceneRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -825,8 +825,8 @@ KMETHOD QGraphicsScene_selectedItems(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
-		QList<QGraphicsItem*>ret_v = qp->selectedItems();
+	if (qp) {
+		QList<QGraphicsItem*> ret_v = qp->selectedItems();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -846,7 +846,7 @@ KMETHOD QGraphicsScene_getSelectionArea(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->selectionArea();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -861,7 +861,7 @@ KMETHOD QGraphicsScene_sendEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem*  item = RawPtr_to(QGraphicsItem*, sfp[1]);
 		QEvent*  event = RawPtr_to(QEvent*, sfp[2]);
 		bool ret_v = qp->sendEvent(item, event);
@@ -876,7 +876,7 @@ KMETHOD QGraphicsScene_setActivePanel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem*  item = RawPtr_to(QGraphicsItem*, sfp[1]);
 		qp->setActivePanel(item);
 	}
@@ -888,7 +888,7 @@ KMETHOD QGraphicsScene_setActiveWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsWidget*  widget = RawPtr_to(QGraphicsWidget*, sfp[1]);
 		qp->setActiveWindow(widget);
 	}
@@ -900,7 +900,7 @@ KMETHOD QGraphicsScene_setBackgroundBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[1]);
 		qp->setBackgroundBrush(brush);
 	}
@@ -912,7 +912,7 @@ KMETHOD QGraphicsScene_setBspTreeDepth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int depth = Int_to(int, sfp[1]);
 		qp->setBspTreeDepth(depth);
 	}
@@ -924,7 +924,7 @@ KMETHOD QGraphicsScene_setFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::FocusReason focusReason = Int_to(Qt::FocusReason, sfp[1]);
 		qp->setFocus(focusReason);
 	}
@@ -936,7 +936,7 @@ KMETHOD QGraphicsScene_setFocusItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem*  item = RawPtr_to(QGraphicsItem*, sfp[1]);
 		Qt::FocusReason focusReason = Int_to(Qt::FocusReason, sfp[2]);
 		qp->setFocusItem(item, focusReason);
@@ -949,7 +949,7 @@ KMETHOD QGraphicsScene_setFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont  font = *RawPtr_to(const QFont *, sfp[1]);
 		qp->setFont(font);
 	}
@@ -961,7 +961,7 @@ KMETHOD QGraphicsScene_setForegroundBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[1]);
 		qp->setForegroundBrush(brush);
 	}
@@ -973,7 +973,7 @@ KMETHOD QGraphicsScene_setItemIndexMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsScene::ItemIndexMethod method = Int_to(QGraphicsScene::ItemIndexMethod, sfp[1]);
 		qp->setItemIndexMethod(method);
 	}
@@ -985,7 +985,7 @@ KMETHOD QGraphicsScene_setPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPalette  palette = *RawPtr_to(const QPalette *, sfp[1]);
 		qp->setPalette(palette);
 	}
@@ -997,7 +997,7 @@ KMETHOD QGraphicsScene_setSceneRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		qp->setSceneRect(rect);
 	}
@@ -1010,7 +1010,7 @@ KMETHOD QGraphicsScene_setSceneRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -1025,7 +1025,7 @@ KMETHOD QGraphicsScene_setSelectionArea(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		const QTransform  deviceTransform = *RawPtr_to(const QTransform *, sfp[2]);
 		qp->setSelectionArea(path, deviceTransform);
@@ -1039,7 +1039,7 @@ KMETHOD QGraphicsScene_setSelectionArea(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		Qt::ItemSelectionMode mode = Int_to(Qt::ItemSelectionMode, sfp[2]);
 		const QTransform  deviceTransform = *RawPtr_to(const QTransform *, sfp[3]);
@@ -1053,7 +1053,7 @@ KMETHOD QGraphicsScene_setSortCacheEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setSortCacheEnabled(enabled);
 	}
@@ -1065,7 +1065,7 @@ KMETHOD QGraphicsScene_setStickyFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setStickyFocus(enabled);
 	}
@@ -1077,7 +1077,7 @@ KMETHOD QGraphicsScene_setStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle*  style = RawPtr_to(QStyle*, sfp[1]);
 		qp->setStyle(style);
 	}
@@ -1089,7 +1089,7 @@ KMETHOD QGraphicsScene_getStickyFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->stickyFocus();
 		RETURNb_(ret_v);
 	} else {
@@ -1102,7 +1102,7 @@ KMETHOD QGraphicsScene_getStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle* ret_v = qp->style();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStyle*)ret_v, NULL);
 		RETURN_(rptr);
@@ -1116,7 +1116,7 @@ KMETHOD QGraphicsScene_update(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -1131,8 +1131,8 @@ KMETHOD QGraphicsScene_views(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
-		QList<QGraphicsView*>ret_v = qp->views();
+	if (qp) {
+		QList<QGraphicsView*> ret_v = qp->views();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsView"));
@@ -1152,7 +1152,7 @@ KMETHOD QGraphicsScene_width(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->width();
 		RETURNf_(ret_v);
 	} else {
@@ -1165,7 +1165,7 @@ KMETHOD QGraphicsScene_advance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->advance();
 	}
 	RETURNvoid_();
@@ -1176,7 +1176,7 @@ KMETHOD QGraphicsScene_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -1187,21 +1187,21 @@ KMETHOD QGraphicsScene_clearSelection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearSelection();
 	}
 	RETURNvoid_();
 }
 
 /*
-//void QGraphicsScene.invalidate(QRectF rect, int layers);
+//void QGraphicsScene.invalidate(QRectF rect, QGraphicsSceneSceneLayers layers);
 KMETHOD QGraphicsScene_invalidate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
-		QGraphicsScene::SceneLayers layers = Int_to(QGraphicsScene::SceneLayers, sfp[2]);
+		initFlag(layers, QGraphicsScene::SceneLayers, sfp[2]);
 		qp->invalidate(rect, layers);
 	}
 	RETURNvoid_();
@@ -1213,7 +1213,7 @@ KMETHOD QGraphicsScene_update(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		qp->update(rect);
 	}
@@ -1646,12 +1646,45 @@ bool DummyQGraphicsScene::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQGraphicsScene::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 19;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, context_menu_event_func);
+	KNH_ADDNNREF(ctx, drag_enter_event_func);
+	KNH_ADDNNREF(ctx, drag_leave_event_func);
+	KNH_ADDNNREF(ctx, drag_move_event_func);
+	KNH_ADDNNREF(ctx, drop_event_func);
+	KNH_ADDNNREF(ctx, focus_in_event_func);
+	KNH_ADDNNREF(ctx, focus_out_event_func);
+	KNH_ADDNNREF(ctx, help_event_func);
+	KNH_ADDNNREF(ctx, input_method_event_func);
+	KNH_ADDNNREF(ctx, key_press_event_func);
+	KNH_ADDNNREF(ctx, key_release_event_func);
+	KNH_ADDNNREF(ctx, mouse_double_click_event_func);
+	KNH_ADDNNREF(ctx, mouse_move_event_func);
+	KNH_ADDNNREF(ctx, mouse_press_event_func);
+	KNH_ADDNNREF(ctx, mouse_release_event_func);
+	KNH_ADDNNREF(ctx, wheel_event_func);
+	KNH_ADDNNREF(ctx, changed_func);
+	KNH_ADDNNREF(ctx, scene_rect_changed_func);
+	KNH_ADDNNREF(ctx, selection_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsScene::connection(QObject *o)
 {
-	connect(o, SIGNAL(changed(const QList<QRectF>)), this, SLOT(changedSlot(const QList<QRectF>)));
-	connect(o, SIGNAL(sceneRectChanged(const QRectF)), this, SLOT(sceneRectChangedSlot(const QRectF)));
-	connect(o, SIGNAL(selectionChanged()), this, SLOT(selectionChangedSlot()));
+	QGraphicsScene *p = dynamic_cast<QGraphicsScene*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(changed(const QList<QRectF>)), this, SLOT(changedSlot(const QList<QRectF>)));
+		connect(p, SIGNAL(sceneRectChanged(const QRectF)), this, SLOT(sceneRectChangedSlot(const QRectF)));
+		connect(p, SIGNAL(selectionChanged()), this, SLOT(selectionChangedSlot()));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -1714,89 +1747,9 @@ static void QGraphicsScene_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsScene_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 19;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsScene *qp = (KQGraphicsScene *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->context_menu_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->context_menu_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->drag_enter_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->drag_enter_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->drag_leave_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->drag_leave_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->drag_move_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->drag_move_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->drop_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->drop_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->focus_in_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->focus_in_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->focus_out_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->focus_out_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->help_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->help_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->input_method_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->input_method_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->key_press_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->key_press_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->key_release_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->key_release_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->mouse_double_click_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->mouse_double_click_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->mouse_move_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->mouse_move_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->mouse_press_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->mouse_press_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->mouse_release_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->mouse_release_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->wheel_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->wheel_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->scene_rect_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->scene_rect_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->selection_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->selection_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -1820,15 +1773,6 @@ bool KQGraphicsScene::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQGraphicsScene(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QGraphicsScene";
-	cdef->free = QGraphicsScene_free;
-	cdef->reftrace = QGraphicsScene_reftrace;
-	cdef->compareTo = QGraphicsScene_compareTo;
-}
-
 static knh_IntData_t QGraphicsSceneConstInt[] = {
 	{"BspTreeIndex", QGraphicsScene::BspTreeIndex},
 	{"NoIndex", QGraphicsScene::NoIndex},
@@ -1841,5 +1785,179 @@ static knh_IntData_t QGraphicsSceneConstInt[] = {
 
 DEFAPI(void) constQGraphicsScene(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QGraphicsSceneConstInt);
+}
+
+
+DEFAPI(void) defQGraphicsScene(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QGraphicsScene";
+	cdef->free = QGraphicsScene_free;
+	cdef->reftrace = QGraphicsScene_reftrace;
+	cdef->compareTo = QGraphicsScene_compareTo;
+}
+
+//## QGraphicsSceneSceneLayers QGraphicsSceneSceneLayers.new(int value);
+KMETHOD QGraphicsSceneSceneLayers_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsScene::SceneLayer i = Int_to(QGraphicsScene::SceneLayer, sfp[1]);
+	QGraphicsScene::SceneLayers *ret_v = new QGraphicsScene::SceneLayers(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QGraphicsSceneSceneLayers QGraphicsSceneSceneLayers.and(int mask);
+KMETHOD QGraphicsSceneSceneLayers_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsScene::SceneLayers *qp = RawPtr_to(QGraphicsScene::SceneLayers*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QGraphicsScene::SceneLayers ret = ((*qp) & i);
+		QGraphicsScene::SceneLayers *ret_ = new QGraphicsScene::SceneLayers(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsSceneSceneLayers QGraphicsSceneSceneLayers.iand(QGraphicsScene::QGraphicsSceneSceneLayers other);
+KMETHOD QGraphicsSceneSceneLayers_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsScene::SceneLayers *qp = RawPtr_to(QGraphicsScene::SceneLayers*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsScene::SceneLayers *other = RawPtr_to(QGraphicsScene::SceneLayers *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsSceneSceneLayers QGraphicsSceneSceneLayers.or(QGraphicsSceneSceneLayers f);
+KMETHOD QGraphicsSceneSceneLayers_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGraphicsScene::SceneLayers *qp = RawPtr_to(QGraphicsScene::SceneLayers*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsScene::SceneLayers *f = RawPtr_to(QGraphicsScene::SceneLayers*, sfp[1]);
+		QGraphicsScene::SceneLayers ret = ((*qp) | (*f));
+		QGraphicsScene::SceneLayers *ret_ = new QGraphicsScene::SceneLayers(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsSceneSceneLayers QGraphicsSceneSceneLayers.ior(QGraphicsScene::QGraphicsSceneSceneLayers other);
+KMETHOD QGraphicsSceneSceneLayers_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsScene::SceneLayers *qp = RawPtr_to(QGraphicsScene::SceneLayers*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsScene::SceneLayers *other = RawPtr_to(QGraphicsScene::SceneLayers *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsSceneSceneLayers QGraphicsSceneSceneLayers.xor(QGraphicsSceneSceneLayers f);
+KMETHOD QGraphicsSceneSceneLayers_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGraphicsScene::SceneLayers *qp = RawPtr_to(QGraphicsScene::SceneLayers*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsScene::SceneLayers *f = RawPtr_to(QGraphicsScene::SceneLayers*, sfp[1]);
+		QGraphicsScene::SceneLayers ret = ((*qp) ^ (*f));
+		QGraphicsScene::SceneLayers *ret_ = new QGraphicsScene::SceneLayers(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsSceneSceneLayers QGraphicsSceneSceneLayers.ixor(QGraphicsScene::QGraphicsSceneSceneLayers other);
+KMETHOD QGraphicsSceneSceneLayers_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsScene::SceneLayers *qp = RawPtr_to(QGraphicsScene::SceneLayers*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsScene::SceneLayers *other = RawPtr_to(QGraphicsScene::SceneLayers *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QGraphicsSceneSceneLayers.testFlag(int flag);
+KMETHOD QGraphicsSceneSceneLayers_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsScene::SceneLayers *qp = RawPtr_to(QGraphicsScene::SceneLayers *, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsScene::SceneLayer flag = Int_to(QGraphicsScene::SceneLayer, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QGraphicsSceneSceneLayers.value();
+KMETHOD QGraphicsSceneSceneLayers_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsScene::SceneLayers *qp = RawPtr_to(QGraphicsScene::SceneLayers *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QGraphicsSceneSceneLayers_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QGraphicsScene::SceneLayers *qp = (QGraphicsScene::SceneLayers *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QGraphicsSceneSceneLayers_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QGraphicsScene::SceneLayers *qp = (QGraphicsScene::SceneLayers *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QGraphicsSceneSceneLayers_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QGraphicsScene::SceneLayers*)p1->rawptr);
+//		int v2 = int(*(QGraphicsScene::SceneLayers*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QGraphicsScene::SceneLayers v1 = *(QGraphicsScene::SceneLayers*)p1->rawptr;
+		QGraphicsScene::SceneLayers v2 = *(QGraphicsScene::SceneLayers*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQGraphicsSceneSceneLayers(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QGraphicsSceneSceneLayers";
+	cdef->free = QGraphicsSceneSceneLayers_free;
+	cdef->reftrace = QGraphicsSceneSceneLayers_reftrace;
+	cdef->compareTo = QGraphicsSceneSceneLayers_compareTo;
 }
 

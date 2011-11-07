@@ -34,34 +34,12 @@ KMETHOD QTextLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 */
-//Array<int> QTextLayout.getAdditionalFormats();
-KMETHOD QTextLayout_getAdditionalFormats(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
-		QList<QTextLayout::FormatRange>ret_v = qp->additionalFormats();
-		int list_size = ret_v.size();
-		knh_Array_t *a = new_Array0(ctx, list_size);
-		knh_class_t cid = knh_getcid(ctx, STEXT("QTextLayout::FormatRange"));
-		for (int n = 0; n < list_size; n++) {
-			QTextLayout::FormatRange *ret_v_ = new QTextLayout::FormatRange(ret_v[n]);
-			knh_RawPtr_t *p = new_RawPtr(ctx, ClassTBL(cid), ret_v_);
-			knh_Array_add(ctx, a, (knh_Object_t *)p);
-		}
-		RETURN_(a);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-	
-
 //void QTextLayout.beginLayout();
 KMETHOD QTextLayout_beginLayout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->beginLayout();
 	}
 	RETURNvoid_();
@@ -72,7 +50,7 @@ KMETHOD QTextLayout_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->boundingRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -87,7 +65,7 @@ KMETHOD QTextLayout_getCacheEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->cacheEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -100,7 +78,7 @@ KMETHOD QTextLayout_clearAdditionalFormats(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearAdditionalFormats();
 	}
 	RETURNvoid_();
@@ -111,7 +89,7 @@ KMETHOD QTextLayout_clearLayout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearLayout();
 	}
 	RETURNvoid_();
@@ -122,7 +100,7 @@ KMETHOD QTextLayout_createLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextLine ret_v = qp->createLine();
 		QTextLine *ret_v_ = new QTextLine(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -137,7 +115,7 @@ KMETHOD QTextLayout_drawCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[2]);
 		int cursorPosition = Int_to(int, sfp[3]);
@@ -153,7 +131,7 @@ KMETHOD QTextLayout_drawCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[2]);
 		int cursorPosition = Int_to(int, sfp[3]);
@@ -167,7 +145,7 @@ KMETHOD QTextLayout_endLayout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->endLayout();
 	}
 	RETURNvoid_();
@@ -178,7 +156,7 @@ KMETHOD QTextLayout_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont ret_v = qp->font();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -188,12 +166,12 @@ KMETHOD QTextLayout_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////boolean QTextLayout.isValidCursorPosition(int pos);
+//boolean QTextLayout.isValidCursorPosition(int pos);
 KMETHOD QTextLayout_isValidCursorPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int pos = Int_to(int, sfp[1]);
 		bool ret_v = qp->isValidCursorPosition(pos);
 		RETURNb_(ret_v);
@@ -207,7 +185,7 @@ KMETHOD QTextLayout_lineAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		QTextLine ret_v = qp->lineAt(i);
 		QTextLine *ret_v_ = new QTextLine(ret_v);
@@ -223,7 +201,7 @@ KMETHOD QTextLayout_lineCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->lineCount();
 		RETURNi_(ret_v);
 	} else {
@@ -236,7 +214,7 @@ KMETHOD QTextLayout_lineForTextPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int pos = Int_to(int, sfp[1]);
 		QTextLine ret_v = qp->lineForTextPosition(pos);
 		QTextLine *ret_v_ = new QTextLine(ret_v);
@@ -252,7 +230,7 @@ KMETHOD QTextLayout_maximumWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->maximumWidth();
 		RETURNf_(ret_v);
 	} else {
@@ -265,7 +243,7 @@ KMETHOD QTextLayout_minimumWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->minimumWidth();
 		RETURNf_(ret_v);
 	} else {
@@ -278,7 +256,7 @@ KMETHOD QTextLayout_nextCursorPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int oldPos = Int_to(int, sfp[1]);
 		QTextLayout::CursorMode mode = Int_to(QTextLayout::CursorMode, sfp[2]);
 		int ret_v = qp->nextCursorPosition(oldPos, mode);
@@ -293,7 +271,7 @@ KMETHOD QTextLayout_getPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->position();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -308,7 +286,7 @@ KMETHOD QTextLayout_preeditAreaPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->preeditAreaPosition();
 		RETURNi_(ret_v);
 	} else {
@@ -321,7 +299,7 @@ KMETHOD QTextLayout_preeditAreaText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->preeditAreaText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -335,7 +313,7 @@ KMETHOD QTextLayout_previousCursorPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int oldPos = Int_to(int, sfp[1]);
 		QTextLayout::CursorMode mode = Int_to(QTextLayout::CursorMode, sfp[2]);
 		int ret_v = qp->previousCursorPosition(oldPos, mode);
@@ -345,30 +323,12 @@ KMETHOD QTextLayout_previousCursorPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QTextLayout.setAdditionalFormats(Array<int> formatList);
-KMETHOD QTextLayout_setAdditionalFormats(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
-		knh_Array_t *a = sfp[1].a;
-		int asize = knh_Array_size(a);
-		QList<QTextLayout::FormatRange> formatList;
-		for (int n = 0; n < asize; n++) {
-			knh_RawPtr_t *p = (knh_RawPtr_t*)(a->list[n]);
-			formatList.append(*(QTextLayout::FormatRange*)p->rawptr);
-		}
-		qp->setAdditionalFormats(formatList);
-	}
-	RETURNvoid_();
-}
-
 //void QTextLayout.setCacheEnabled(boolean enable);
 KMETHOD QTextLayout_setCacheEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setCacheEnabled(enable);
 	}
@@ -380,7 +340,7 @@ KMETHOD QTextLayout_setFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont  font = *RawPtr_to(const QFont *, sfp[1]);
 		qp->setFont(font);
 	}
@@ -392,7 +352,7 @@ KMETHOD QTextLayout_setPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  p = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setPosition(p);
 	}
@@ -404,7 +364,7 @@ KMETHOD QTextLayout_setPreeditArea(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int position = Int_to(int, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		qp->setPreeditArea(position, text);
@@ -417,7 +377,7 @@ KMETHOD QTextLayout_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString string = String_to(const QString, sfp[1]);
 		qp->setText(string);
 	}
@@ -429,7 +389,7 @@ KMETHOD QTextLayout_setTextOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextOption  option = *RawPtr_to(const QTextOption *, sfp[1]);
 		qp->setTextOption(option);
 	}
@@ -441,7 +401,7 @@ KMETHOD QTextLayout_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->text();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -455,7 +415,7 @@ KMETHOD QTextLayout_getTextOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLayout *  qp = RawPtr_to(QTextLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextOption ret_v = qp->textOption();
 		QTextOption *ret_v_ = new QTextOption(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -465,6 +425,24 @@ KMETHOD QTextLayout_getTextOption(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QTextLayout.parents();
+KMETHOD QTextLayout_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextLayout *qp = RawPtr_to(QTextLayout*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextLayout::DummyQTextLayout()
 {
@@ -513,17 +491,28 @@ bool DummyQTextLayout::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextLayout::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextLayout::connection(QObject *o)
 {
-	return;
+	QTextLayout *p = dynamic_cast<QTextLayout*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTextLayout::KQTextLayout() : QTextLayout()
 {
 	self = NULL;
 	dummy = new DummyQTextLayout();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -578,13 +567,9 @@ static void QTextLayout_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextLayout *qp = (KQTextLayout *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -599,15 +584,6 @@ void KQTextLayout::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQTextLayout(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTextLayout";
-	cdef->free = QTextLayout_free;
-	cdef->reftrace = QTextLayout_reftrace;
-	cdef->compareTo = QTextLayout_compareTo;
-}
-
 static knh_IntData_t QTextLayoutConstInt[] = {
 	{"SkipCharacters", QTextLayout::SkipCharacters},
 	{"SkipWords", QTextLayout::SkipWords},
@@ -617,4 +593,15 @@ static knh_IntData_t QTextLayoutConstInt[] = {
 DEFAPI(void) constQTextLayout(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTextLayoutConstInt);
 }
+
+
+DEFAPI(void) defQTextLayout(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextLayout";
+	cdef->free = QTextLayout_free;
+	cdef->reftrace = QTextLayout_reftrace;
+	cdef->compareTo = QTextLayout_compareTo;
+}
+
 

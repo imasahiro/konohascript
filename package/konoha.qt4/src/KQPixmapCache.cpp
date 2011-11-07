@@ -2,9 +2,8 @@
 KMETHOD QPixmapCache_getCacheLimit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QPixmapCache *  qp = RawPtr_to(QPixmapCache *, sfp[0]);
-	if (qp != NULL) {
-		int ret_v = qp->cacheLimit();
+	if (true) {
+		int ret_v = QPixmapCache::cacheLimit();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -15,9 +14,8 @@ KMETHOD QPixmapCache_getCacheLimit(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QPixmapCache_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QPixmapCache *  qp = RawPtr_to(QPixmapCache *, sfp[0]);
-	if (qp != NULL) {
-		qp->clear();
+	if (true) {
+		QPixmapCache::clear();
 	}
 	RETURNvoid_();
 }
@@ -26,117 +24,70 @@ KMETHOD QPixmapCache_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QPixmapCache_find(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QPixmapCache *  qp = RawPtr_to(QPixmapCache *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString key = String_to(const QString, sfp[1]);
 		QPixmap*  pixmap = RawPtr_to(QPixmap*, sfp[2]);
-		bool ret_v = qp->find(key, pixmap);
+		bool ret_v = QPixmapCache::find(key, pixmap);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
 	}
 }
 
-/*
-//boolean QPixmapCache.find(int key, QPixmap pixmap);
-KMETHOD QPixmapCache_find(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QPixmapCache *  qp = RawPtr_to(QPixmapCache *, sfp[0]);
-	if (qp != NULL) {
-		const QPixmapCache::Key  key = *RawPtr_to(const QPixmapCache::Key *, sfp[1]);
-		QPixmap*  pixmap = RawPtr_to(QPixmap*, sfp[2]);
-		bool ret_v = qp->find(key, pixmap);
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-*/
 //boolean QPixmapCache.insert(String key, QPixmap pixmap);
 KMETHOD QPixmapCache_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QPixmapCache *  qp = RawPtr_to(QPixmapCache *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString key = String_to(const QString, sfp[1]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
-		bool ret_v = qp->insert(key, pixmap);
+		bool ret_v = QPixmapCache::insert(key, pixmap);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
 	}
 }
 
-/*
-//int QPixmapCache.insert(QPixmap pixmap);
-KMETHOD QPixmapCache_insert(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QPixmapCache *  qp = RawPtr_to(QPixmapCache *, sfp[0]);
-	if (qp != NULL) {
-		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[1]);
-		QPixmapCache::Key ret_v = qp->insert(pixmap);
-		QPixmapCache::Key *ret_v_ = new QPixmapCache::Key(ret_v);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-*/
 //void QPixmapCache.remove(String key);
 KMETHOD QPixmapCache_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QPixmapCache *  qp = RawPtr_to(QPixmapCache *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString key = String_to(const QString, sfp[1]);
-		qp->remove(key);
+		QPixmapCache::remove(key);
 	}
 	RETURNvoid_();
-}
-
-/*
-//void QPixmapCache.remove(int key);
-KMETHOD QPixmapCache_remove(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QPixmapCache *  qp = RawPtr_to(QPixmapCache *, sfp[0]);
-	if (qp != NULL) {
-		const QPixmapCache::Key  key = *RawPtr_to(const QPixmapCache::Key *, sfp[1]);
-		qp->remove(key);
-	}
-	RETURNvoid_();
-}
-*/
-//boolean QPixmapCache.replace(int key, QPixmap pixmap);
-KMETHOD QPixmapCache_replace(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QPixmapCache *  qp = RawPtr_to(QPixmapCache *, sfp[0]);
-	if (qp != NULL) {
-		const QPixmapCache::Key  key = *RawPtr_to(const QPixmapCache::Key *, sfp[1]);
-		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
-		bool ret_v = qp->replace(key, pixmap);
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
 }
 
 //void QPixmapCache.setCacheLimit(int n);
 KMETHOD QPixmapCache_setCacheLimit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QPixmapCache *  qp = RawPtr_to(QPixmapCache *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int n = Int_to(int, sfp[1]);
-		qp->setCacheLimit(n);
+		QPixmapCache::setCacheLimit(n);
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QPixmapCache.parents();
+KMETHOD QPixmapCache_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPixmapCache *qp = RawPtr_to(QPixmapCache*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQPixmapCache::DummyQPixmapCache()
 {
@@ -185,17 +136,22 @@ bool DummyQPixmapCache::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPixmapCache::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQPixmapCache::connection(QObject *o)
 {
-	return;
-}
-
-KQPixmapCache::KQPixmapCache() : QPixmapCache()
-{
-	self = NULL;
-	dummy = new DummyQPixmapCache();
-	dummy->connection((QObject*)this);
+	QPixmapCache *p = dynamic_cast<QPixmapCache*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QPixmapCache_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -250,13 +206,9 @@ static void QPixmapCache_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPixmapCache_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPixmapCache *qp = (KQPixmapCache *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -270,6 +222,8 @@ void KQPixmapCache::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQPixmapCache(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

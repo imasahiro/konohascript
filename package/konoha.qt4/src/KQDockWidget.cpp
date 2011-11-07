@@ -1,10 +1,10 @@
-//QDockWidget QDockWidget.new(String title, QWidget parent, int flags);
+//QDockWidget QDockWidget.new(String title, QWidget parent, QtWindowFlags flags);
 KMETHOD QDockWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	const QString title = String_to(const QString, sfp[1]);
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[2]);
-	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[3]);
+	initFlag(flags, Qt::WindowFlags, sfp[3]);
 	KQDockWidget *ret_v = new KQDockWidget(title, parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -12,41 +12,45 @@ KMETHOD QDockWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//QDockWidget QDockWidget.new(QWidget parent, int flags);
+//QDockWidget QDockWidget.new(QWidget parent, QtWindowFlags flags);
 KMETHOD QDockWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
-	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[2]);
+	initFlag(flags, Qt::WindowFlags, sfp[2]);
 	KQDockWidget *ret_v = new KQDockWidget(parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
 */
-//int QDockWidget.getAllowedAreas();
+//QtDockWidgetAreas QDockWidget.getAllowedAreas();
 KMETHOD QDockWidget_getAllowedAreas(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDockWidget *  qp = RawPtr_to(QDockWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DockWidgetAreas ret_v = qp->allowedAreas();
-		RETURNi_(ret_v);
+		Qt::DockWidgetAreas *ret_v_ = new Qt::DockWidgetAreas(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
-//int QDockWidget.getFeatures();
+//QDockWidgetDockWidgetFeatures QDockWidget.getFeatures();
 KMETHOD QDockWidget_getFeatures(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDockWidget *  qp = RawPtr_to(QDockWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDockWidget::DockWidgetFeatures ret_v = qp->features();
-		RETURNi_(ret_v);
+		QDockWidget::DockWidgetFeatures *ret_v_ = new QDockWidget::DockWidgetFeatures(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -55,7 +59,7 @@ KMETHOD QDockWidget_isAreaAllowed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDockWidget *  qp = RawPtr_to(QDockWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DockWidgetArea area = Int_to(Qt::DockWidgetArea, sfp[1]);
 		bool ret_v = qp->isAreaAllowed(area);
 		RETURNb_(ret_v);
@@ -69,7 +73,7 @@ KMETHOD QDockWidget_isFloating(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDockWidget *  qp = RawPtr_to(QDockWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isFloating();
 		RETURNb_(ret_v);
 	} else {
@@ -77,25 +81,25 @@ KMETHOD QDockWidget_isFloating(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QDockWidget.setAllowedAreas(int areas);
+//void QDockWidget.setAllowedAreas(QtDockWidgetAreas areas);
 KMETHOD QDockWidget_setAllowedAreas(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDockWidget *  qp = RawPtr_to(QDockWidget *, sfp[0]);
-	if (qp != NULL) {
-		Qt::DockWidgetAreas areas = Int_to(Qt::DockWidgetAreas, sfp[1]);
+	if (qp) {
+		initFlag(areas, Qt::DockWidgetAreas, sfp[1]);
 		qp->setAllowedAreas(areas);
 	}
 	RETURNvoid_();
 }
 
-//void QDockWidget.setFeatures(int features);
+//void QDockWidget.setFeatures(QDockWidgetDockWidgetFeatures features);
 KMETHOD QDockWidget_setFeatures(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDockWidget *  qp = RawPtr_to(QDockWidget *, sfp[0]);
-	if (qp != NULL) {
-		QDockWidget::DockWidgetFeatures features = Int_to(QDockWidget::DockWidgetFeatures, sfp[1]);
+	if (qp) {
+		initFlag(features, QDockWidget::DockWidgetFeatures, sfp[1]);
 		qp->setFeatures(features);
 	}
 	RETURNvoid_();
@@ -106,7 +110,7 @@ KMETHOD QDockWidget_setFloating(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDockWidget *  qp = RawPtr_to(QDockWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool floating = Boolean_to(bool, sfp[1]);
 		qp->setFloating(floating);
 	}
@@ -118,7 +122,7 @@ KMETHOD QDockWidget_setTitleBarWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDockWidget *  qp = RawPtr_to(QDockWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->setTitleBarWidget(widget);
 	}
@@ -130,7 +134,7 @@ KMETHOD QDockWidget_setWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDockWidget *  qp = RawPtr_to(QDockWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->setWidget(widget);
 	}
@@ -142,7 +146,7 @@ KMETHOD QDockWidget_getTitleBarWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDockWidget *  qp = RawPtr_to(QDockWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->titleBarWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -156,7 +160,7 @@ KMETHOD QDockWidget_toggleViewAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDockWidget *  qp = RawPtr_to(QDockWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction* ret_v = qp->toggleViewAction();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAction*)ret_v, NULL);
 		RETURN_(rptr);
@@ -170,7 +174,7 @@ KMETHOD QDockWidget_getWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDockWidget *  qp = RawPtr_to(QDockWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->widget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -220,7 +224,8 @@ bool DummyQDockWidget::allowedAreasChangedSlot(Qt::DockWidgetAreas allowedAreas)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		lsfp[K_CALLDELTA+2].ivalue = allowedAreas;
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, Qt::DockWidgetAreas, allowedAreas);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
 		knh_Func_invoke(lctx, allowed_areas_changed_func, lsfp, 2);
 		return true;
 	}
@@ -246,7 +251,8 @@ bool DummyQDockWidget::featuresChangedSlot(QDockWidget::DockWidgetFeatures featu
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		lsfp[K_CALLDELTA+2].ivalue = features;
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QDockWidget::DockWidgetFeatures, features);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
 		knh_Func_invoke(lctx, features_changed_func, lsfp, 2);
 		return true;
 	}
@@ -310,14 +316,33 @@ bool DummyQDockWidget::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDockWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 5;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, allowed_areas_changed_func);
+	KNH_ADDNNREF(ctx, dock_location_changed_func);
+	KNH_ADDNNREF(ctx, features_changed_func);
+	KNH_ADDNNREF(ctx, top_level_changed_func);
+	KNH_ADDNNREF(ctx, visibility_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQDockWidget::connection(QObject *o)
 {
-	connect(o, SIGNAL(allowedAreasChanged(Qt::DockWidgetAreas)), this, SLOT(allowedAreasChangedSlot(Qt::DockWidgetAreas)));
-	connect(o, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(dockLocationChangedSlot(Qt::DockWidgetArea)));
-	connect(o, SIGNAL(featuresChanged(QDockWidget::DockWidgetFeatures)), this, SLOT(featuresChangedSlot(QDockWidget::DockWidgetFeatures)));
-	connect(o, SIGNAL(topLevelChanged(bool)), this, SLOT(topLevelChangedSlot(bool)));
-	connect(o, SIGNAL(visibilityChanged(bool)), this, SLOT(visibilityChangedSlot(bool)));
+	QDockWidget *p = dynamic_cast<QDockWidget*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(allowedAreasChanged(Qt::DockWidgetAreas)), this, SLOT(allowedAreasChangedSlot(Qt::DockWidgetAreas)));
+		connect(p, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(dockLocationChangedSlot(Qt::DockWidgetArea)));
+		connect(p, SIGNAL(featuresChanged(QDockWidget::DockWidgetFeatures)), this, SLOT(featuresChangedSlot(QDockWidget::DockWidgetFeatures)));
+		connect(p, SIGNAL(topLevelChanged(bool)), this, SLOT(topLevelChangedSlot(bool)));
+		connect(p, SIGNAL(visibilityChanged(bool)), this, SLOT(visibilityChangedSlot(bool)));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -380,33 +405,9 @@ static void QDockWidget_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDockWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 5;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDockWidget *qp = (KQDockWidget *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->allowed_areas_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->allowed_areas_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->dock_location_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->dock_location_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->features_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->features_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->top_level_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->top_level_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->visibility_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->visibility_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -430,15 +431,6 @@ bool KQDockWidget::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQDockWidget(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QDockWidget";
-	cdef->free = QDockWidget_free;
-	cdef->reftrace = QDockWidget_reftrace;
-	cdef->compareTo = QDockWidget_compareTo;
-}
-
 static knh_IntData_t QDockWidgetConstInt[] = {
 	{"DockWidgetClosable", QDockWidget::DockWidgetClosable},
 	{"DockWidgetMovable", QDockWidget::DockWidgetMovable},
@@ -451,5 +443,179 @@ static knh_IntData_t QDockWidgetConstInt[] = {
 
 DEFAPI(void) constQDockWidget(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QDockWidgetConstInt);
+}
+
+
+DEFAPI(void) defQDockWidget(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QDockWidget";
+	cdef->free = QDockWidget_free;
+	cdef->reftrace = QDockWidget_reftrace;
+	cdef->compareTo = QDockWidget_compareTo;
+}
+
+//## QDockWidgetDockWidgetFeatures QDockWidgetDockWidgetFeatures.new(int value);
+KMETHOD QDockWidgetDockWidgetFeatures_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDockWidget::DockWidgetFeature i = Int_to(QDockWidget::DockWidgetFeature, sfp[1]);
+	QDockWidget::DockWidgetFeatures *ret_v = new QDockWidget::DockWidgetFeatures(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QDockWidgetDockWidgetFeatures QDockWidgetDockWidgetFeatures.and(int mask);
+KMETHOD QDockWidgetDockWidgetFeatures_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDockWidget::DockWidgetFeatures *qp = RawPtr_to(QDockWidget::DockWidgetFeatures*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QDockWidget::DockWidgetFeatures ret = ((*qp) & i);
+		QDockWidget::DockWidgetFeatures *ret_ = new QDockWidget::DockWidgetFeatures(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QDockWidgetDockWidgetFeatures QDockWidgetDockWidgetFeatures.iand(QDockWidget::QDockWidgetDockWidgetFeatures other);
+KMETHOD QDockWidgetDockWidgetFeatures_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDockWidget::DockWidgetFeatures *qp = RawPtr_to(QDockWidget::DockWidgetFeatures*, sfp[0]);
+	if (qp != NULL) {
+		QDockWidget::DockWidgetFeatures *other = RawPtr_to(QDockWidget::DockWidgetFeatures *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QDockWidgetDockWidgetFeatures QDockWidgetDockWidgetFeatures.or(QDockWidgetDockWidgetFeatures f);
+KMETHOD QDockWidgetDockWidgetFeatures_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QDockWidget::DockWidgetFeatures *qp = RawPtr_to(QDockWidget::DockWidgetFeatures*, sfp[0]);
+	if (qp != NULL) {
+		QDockWidget::DockWidgetFeatures *f = RawPtr_to(QDockWidget::DockWidgetFeatures*, sfp[1]);
+		QDockWidget::DockWidgetFeatures ret = ((*qp) | (*f));
+		QDockWidget::DockWidgetFeatures *ret_ = new QDockWidget::DockWidgetFeatures(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QDockWidgetDockWidgetFeatures QDockWidgetDockWidgetFeatures.ior(QDockWidget::QDockWidgetDockWidgetFeatures other);
+KMETHOD QDockWidgetDockWidgetFeatures_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDockWidget::DockWidgetFeatures *qp = RawPtr_to(QDockWidget::DockWidgetFeatures*, sfp[0]);
+	if (qp != NULL) {
+		QDockWidget::DockWidgetFeatures *other = RawPtr_to(QDockWidget::DockWidgetFeatures *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QDockWidgetDockWidgetFeatures QDockWidgetDockWidgetFeatures.xor(QDockWidgetDockWidgetFeatures f);
+KMETHOD QDockWidgetDockWidgetFeatures_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QDockWidget::DockWidgetFeatures *qp = RawPtr_to(QDockWidget::DockWidgetFeatures*, sfp[0]);
+	if (qp != NULL) {
+		QDockWidget::DockWidgetFeatures *f = RawPtr_to(QDockWidget::DockWidgetFeatures*, sfp[1]);
+		QDockWidget::DockWidgetFeatures ret = ((*qp) ^ (*f));
+		QDockWidget::DockWidgetFeatures *ret_ = new QDockWidget::DockWidgetFeatures(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QDockWidgetDockWidgetFeatures QDockWidgetDockWidgetFeatures.ixor(QDockWidget::QDockWidgetDockWidgetFeatures other);
+KMETHOD QDockWidgetDockWidgetFeatures_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDockWidget::DockWidgetFeatures *qp = RawPtr_to(QDockWidget::DockWidgetFeatures*, sfp[0]);
+	if (qp != NULL) {
+		QDockWidget::DockWidgetFeatures *other = RawPtr_to(QDockWidget::DockWidgetFeatures *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QDockWidgetDockWidgetFeatures.testFlag(int flag);
+KMETHOD QDockWidgetDockWidgetFeatures_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDockWidget::DockWidgetFeatures *qp = RawPtr_to(QDockWidget::DockWidgetFeatures *, sfp[0]);
+	if (qp != NULL) {
+		QDockWidget::DockWidgetFeature flag = Int_to(QDockWidget::DockWidgetFeature, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QDockWidgetDockWidgetFeatures.value();
+KMETHOD QDockWidgetDockWidgetFeatures_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QDockWidget::DockWidgetFeatures *qp = RawPtr_to(QDockWidget::DockWidgetFeatures *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QDockWidgetDockWidgetFeatures_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QDockWidget::DockWidgetFeatures *qp = (QDockWidget::DockWidgetFeatures *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QDockWidgetDockWidgetFeatures_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QDockWidget::DockWidgetFeatures *qp = (QDockWidget::DockWidgetFeatures *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QDockWidgetDockWidgetFeatures_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QDockWidget::DockWidgetFeatures*)p1->rawptr);
+//		int v2 = int(*(QDockWidget::DockWidgetFeatures*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QDockWidget::DockWidgetFeatures v1 = *(QDockWidget::DockWidgetFeatures*)p1->rawptr;
+		QDockWidget::DockWidgetFeatures v2 = *(QDockWidget::DockWidgetFeatures*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQDockWidgetDockWidgetFeatures(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QDockWidgetDockWidgetFeatures";
+	cdef->free = QDockWidgetDockWidgetFeatures_free;
+	cdef->reftrace = QDockWidgetDockWidgetFeatures_reftrace;
+	cdef->compareTo = QDockWidgetDockWidgetFeatures_compareTo;
 }
 

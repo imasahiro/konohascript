@@ -15,7 +15,7 @@ KMETHOD QAccessibleEvent_child(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleEvent *  qp = RawPtr_to(QAccessibleEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->child();
 		RETURNi_(ret_v);
 	} else {
@@ -28,7 +28,7 @@ KMETHOD QAccessibleEvent_setValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleEvent *  qp = RawPtr_to(QAccessibleEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setValue(text);
 	}
@@ -40,7 +40,7 @@ KMETHOD QAccessibleEvent_getValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleEvent *  qp = RawPtr_to(QAccessibleEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->value();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -100,9 +100,23 @@ bool DummyQAccessibleEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQAccessibleEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQAccessibleEvent::connection(QObject *o)
 {
+	QAccessibleEvent *p = dynamic_cast<QAccessibleEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -110,7 +124,6 @@ KQAccessibleEvent::KQAccessibleEvent(QAccessibleEvent::Type type, int child) : Q
 {
 	self = NULL;
 	dummy = new DummyQAccessibleEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAccessibleEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -165,13 +178,9 @@ static void QAccessibleEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAccessibleEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAccessibleEvent *qp = (KQAccessibleEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -185,6 +194,8 @@ void KQAccessibleEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQAccessibleEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

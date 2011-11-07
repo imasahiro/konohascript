@@ -1,9 +1,9 @@
-//QSplashScreen QSplashScreen.new(QPixmap pixmap, int f);
+//QSplashScreen QSplashScreen.new(QPixmap pixmap, QtWindowFlags f);
 KMETHOD QSplashScreen_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[1]);
-	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[2]);
+	initFlag(f, Qt::WindowFlags, sfp[2]);
 	KQSplashScreen *ret_v = new KQSplashScreen(pixmap, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -11,13 +11,13 @@ KMETHOD QSplashScreen_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//QSplashScreen QSplashScreen.new(QWidget parent, QPixmap pixmap, int f);
+//QSplashScreen QSplashScreen.new(QWidget parent, QPixmap pixmap, QtWindowFlags f);
 KMETHOD QSplashScreen_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 	const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
-	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[3]);
+	initFlag(f, Qt::WindowFlags, sfp[3]);
 	KQSplashScreen *ret_v = new KQSplashScreen(parent, pixmap, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -29,7 +29,7 @@ KMETHOD QSplashScreen_finish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplashScreen *  qp = RawPtr_to(QSplashScreen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  mainWin = RawPtr_to(QWidget*, sfp[1]);
 		qp->finish(mainWin);
 	}
@@ -41,7 +41,7 @@ KMETHOD QSplashScreen_getPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplashScreen *  qp = RawPtr_to(QSplashScreen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPixmap ret_v = qp->pixmap();
 		QPixmap *ret_v_ = new QPixmap(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -56,7 +56,7 @@ KMETHOD QSplashScreen_repaintOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplashScreen *  qp = RawPtr_to(QSplashScreen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->repaint();
 	}
 	RETURNvoid_();
@@ -67,7 +67,7 @@ KMETHOD QSplashScreen_setPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplashScreen *  qp = RawPtr_to(QSplashScreen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[1]);
 		qp->setPixmap(pixmap);
 	}
@@ -79,7 +79,7 @@ KMETHOD QSplashScreen_clearMessage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplashScreen *  qp = RawPtr_to(QSplashScreen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearMessage();
 	}
 	RETURNvoid_();
@@ -90,7 +90,7 @@ KMETHOD QSplashScreen_showMessage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplashScreen *  qp = RawPtr_to(QSplashScreen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString message = String_to(const QString, sfp[1]);
 		int alignment = Int_to(int, sfp[2]);
 		const QColor  color = *RawPtr_to(const QColor *, sfp[3]);
@@ -167,10 +167,25 @@ bool DummyQSplashScreen::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSplashScreen::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, message_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQSplashScreen::connection(QObject *o)
 {
-	connect(o, SIGNAL(messageChanged(const QString)), this, SLOT(messageChangedSlot(const QString)));
+	QSplashScreen *p = dynamic_cast<QSplashScreen*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(messageChanged(const QString)), this, SLOT(messageChangedSlot(const QString)));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -233,17 +248,9 @@ static void QSplashScreen_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSplashScreen_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSplashScreen *qp = (KQSplashScreen *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->message_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->message_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -266,6 +273,8 @@ bool KQSplashScreen::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQSplashScreen(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -1,12 +1,12 @@
-//QDragMoveEvent QDragMoveEvent.new(QPoint pos, int actions, QMimeData data, int buttons, int modifiers, int type);
+//QDragMoveEvent QDragMoveEvent.new(QPoint pos, QtDropActions actions, QMimeData data, QtMouseButtons buttons, QtKeyboardModifiers modifiers, int type);
 KMETHOD QDragMoveEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
-	Qt::DropActions actions = Int_to(Qt::DropActions, sfp[2]);
+	initFlag(actions, Qt::DropActions, sfp[2]);
 	const QMimeData*  data = RawPtr_to(const QMimeData*, sfp[3]);
-	Qt::MouseButtons buttons = Int_to(Qt::MouseButtons, sfp[4]);
-	Qt::KeyboardModifiers modifiers = Int_to(Qt::KeyboardModifiers, sfp[5]);
+	initFlag(buttons, Qt::MouseButtons, sfp[4]);
+	initFlag(modifiers, Qt::KeyboardModifiers, sfp[5]);
 	QDragMoveEvent::Type type = Int_to(QDragMoveEvent::Type, sfp[6]);
 	KQDragMoveEvent *ret_v = new KQDragMoveEvent(pos, actions, data, buttons, modifiers, type);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
@@ -14,36 +14,12 @@ KMETHOD QDragMoveEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 
-////void QDragMoveEvent.accept(QRect rectangle);
-KMETHOD QDragMoveEvent_accept(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QDragMoveEvent *  qp = RawPtr_to(QDragMoveEvent *, sfp[0]);
-	if (qp != NULL) {
-		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
-		qp->accept(rectangle);
-	}
-	RETURNvoid_();
-}
-
-/*
-////void QDragMoveEvent.accept();
-KMETHOD QDragMoveEvent_accept(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QDragMoveEvent *  qp = RawPtr_to(QDragMoveEvent *, sfp[0]);
-	if (qp != NULL) {
-		qp->accept();
-	}
-	RETURNvoid_();
-}
-*/
 //QRect QDragMoveEvent.answerRect();
 KMETHOD QDragMoveEvent_answerRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDragMoveEvent *  qp = RawPtr_to(QDragMoveEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->answerRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -53,30 +29,6 @@ KMETHOD QDragMoveEvent_answerRect(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////void QDragMoveEvent.ignore(QRect rectangle);
-KMETHOD QDragMoveEvent_ignore(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QDragMoveEvent *  qp = RawPtr_to(QDragMoveEvent *, sfp[0]);
-	if (qp != NULL) {
-		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
-		qp->ignore(rectangle);
-	}
-	RETURNvoid_();
-}
-
-/*
-////void QDragMoveEvent.ignore();
-KMETHOD QDragMoveEvent_ignore(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QDragMoveEvent *  qp = RawPtr_to(QDragMoveEvent *, sfp[0]);
-	if (qp != NULL) {
-		qp->ignore();
-	}
-	RETURNvoid_();
-}
-*/
 
 DummyQDragMoveEvent::DummyQDragMoveEvent()
 {
@@ -128,9 +80,23 @@ bool DummyQDragMoveEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDragMoveEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQDropEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQDragMoveEvent::connection(QObject *o)
 {
+	QDragMoveEvent *p = dynamic_cast<QDragMoveEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQDropEvent::connection(o);
 }
 
@@ -138,7 +104,6 @@ KQDragMoveEvent::KQDragMoveEvent(const QPoint pos, Qt::DropActions actions, cons
 {
 	self = NULL;
 	dummy = new DummyQDragMoveEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDragMoveEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -193,13 +158,9 @@ static void QDragMoveEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDragMoveEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDragMoveEvent *qp = (KQDragMoveEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -213,6 +174,8 @@ void KQDragMoveEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQDragMoveEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

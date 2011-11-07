@@ -1,22 +1,9 @@
-//void QAccessible.installFactory(int factory);
-KMETHOD QAccessible_installFactory(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QAccessible *  qp = RawPtr_to(QAccessible *, sfp[0]);
-	if (qp != NULL) {
-		QAccessible::InterfaceFactory  factory = *RawPtr_to(QAccessible::InterfaceFactory *, sfp[1]);
-		qp->installFactory(factory);
-	}
-	RETURNvoid_();
-}
-
 //boolean QAccessible.isActive();
 KMETHOD QAccessible_isActive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QAccessible *  qp = RawPtr_to(QAccessible *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isActive();
+	if (true) {
+		bool ret_v = QAccessible::isActive();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -27,10 +14,9 @@ KMETHOD QAccessible_isActive(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QAccessible_queryAccessibleInterface(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QAccessible *  qp = RawPtr_to(QAccessible *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
-		QAccessibleInterface* ret_v = qp->queryAccessibleInterface(object);
+		QAccessibleInterface* ret_v = QAccessible::queryAccessibleInterface(object);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAccessibleInterface*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -38,26 +24,13 @@ KMETHOD QAccessible_queryAccessibleInterface(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QAccessible.removeFactory(int factory);
-KMETHOD QAccessible_removeFactory(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QAccessible *  qp = RawPtr_to(QAccessible *, sfp[0]);
-	if (qp != NULL) {
-		QAccessible::InterfaceFactory  factory = *RawPtr_to(QAccessible::InterfaceFactory *, sfp[1]);
-		qp->removeFactory(factory);
-	}
-	RETURNvoid_();
-}
-
 //void QAccessible.setRootObject(QObject object);
 KMETHOD QAccessible_setRootObject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QAccessible *  qp = RawPtr_to(QAccessible *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
-		qp->setRootObject(object);
+		QAccessible::setRootObject(object);
 	}
 	RETURNvoid_();
 }
@@ -66,16 +39,33 @@ KMETHOD QAccessible_setRootObject(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QAccessible_updateAccessibility(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QAccessible *  qp = RawPtr_to(QAccessible *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
 		int child = Int_to(int, sfp[2]);
 		QAccessible::Event reason = Int_to(QAccessible::Event, sfp[3]);
-		qp->updateAccessibility(object, child, reason);
+		QAccessible::updateAccessibility(object, child, reason);
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QAccessible.parents();
+KMETHOD QAccessible_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QAccessible *qp = RawPtr_to(QAccessible*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQAccessible::DummyQAccessible()
 {
@@ -124,17 +114,22 @@ bool DummyQAccessible::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQAccessible::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQAccessible::connection(QObject *o)
 {
-	return;
-}
-
-KQAccessible::KQAccessible() : QAccessible()
-{
-	self = NULL;
-	dummy = new DummyQAccessible();
-	dummy->connection((QObject*)this);
+	QAccessible *p = dynamic_cast<QAccessible*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QAccessible_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -189,13 +184,9 @@ static void QAccessible_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAccessible_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAccessible *qp = (KQAccessible *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -208,15 +199,6 @@ void KQAccessible::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQAccessible(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QAccessible";
-	cdef->free = QAccessible_free;
-	cdef->reftrace = QAccessible_reftrace;
-	cdef->compareTo = QAccessible_compareTo;
 }
 
 static knh_IntData_t QAccessibleConstInt[] = {
@@ -393,5 +375,342 @@ static knh_IntData_t QAccessibleConstInt[] = {
 
 DEFAPI(void) constQAccessible(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QAccessibleConstInt);
+}
+
+
+DEFAPI(void) defQAccessible(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QAccessible";
+	cdef->free = QAccessible_free;
+	cdef->reftrace = QAccessible_reftrace;
+	cdef->compareTo = QAccessible_compareTo;
+}
+
+//## QAccessibleRelation QAccessibleRelation.new(int value);
+KMETHOD QAccessibleRelation_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAccessible::RelationFlag i = Int_to(QAccessible::RelationFlag, sfp[1]);
+	QAccessible::Relation *ret_v = new QAccessible::Relation(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QAccessibleRelation QAccessibleRelation.and(int mask);
+KMETHOD QAccessibleRelation_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAccessible::Relation *qp = RawPtr_to(QAccessible::Relation*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QAccessible::Relation ret = ((*qp) & i);
+		QAccessible::Relation *ret_ = new QAccessible::Relation(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAccessibleRelation QAccessibleRelation.iand(QAccessible::QAccessibleRelation other);
+KMETHOD QAccessibleRelation_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAccessible::Relation *qp = RawPtr_to(QAccessible::Relation*, sfp[0]);
+	if (qp != NULL) {
+		QAccessible::Relation *other = RawPtr_to(QAccessible::Relation *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAccessibleRelation QAccessibleRelation.or(QAccessibleRelation f);
+KMETHOD QAccessibleRelation_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QAccessible::Relation *qp = RawPtr_to(QAccessible::Relation*, sfp[0]);
+	if (qp != NULL) {
+		QAccessible::Relation *f = RawPtr_to(QAccessible::Relation*, sfp[1]);
+		QAccessible::Relation ret = ((*qp) | (*f));
+		QAccessible::Relation *ret_ = new QAccessible::Relation(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAccessibleRelation QAccessibleRelation.ior(QAccessible::QAccessibleRelation other);
+KMETHOD QAccessibleRelation_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAccessible::Relation *qp = RawPtr_to(QAccessible::Relation*, sfp[0]);
+	if (qp != NULL) {
+		QAccessible::Relation *other = RawPtr_to(QAccessible::Relation *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAccessibleRelation QAccessibleRelation.xor(QAccessibleRelation f);
+KMETHOD QAccessibleRelation_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QAccessible::Relation *qp = RawPtr_to(QAccessible::Relation*, sfp[0]);
+	if (qp != NULL) {
+		QAccessible::Relation *f = RawPtr_to(QAccessible::Relation*, sfp[1]);
+		QAccessible::Relation ret = ((*qp) ^ (*f));
+		QAccessible::Relation *ret_ = new QAccessible::Relation(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAccessibleRelation QAccessibleRelation.ixor(QAccessible::QAccessibleRelation other);
+KMETHOD QAccessibleRelation_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAccessible::Relation *qp = RawPtr_to(QAccessible::Relation*, sfp[0]);
+	if (qp != NULL) {
+		QAccessible::Relation *other = RawPtr_to(QAccessible::Relation *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QAccessibleRelation.testFlag(int flag);
+KMETHOD QAccessibleRelation_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAccessible::Relation *qp = RawPtr_to(QAccessible::Relation *, sfp[0]);
+	if (qp != NULL) {
+		QAccessible::RelationFlag flag = Int_to(QAccessible::RelationFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QAccessibleRelation.value();
+KMETHOD QAccessibleRelation_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAccessible::Relation *qp = RawPtr_to(QAccessible::Relation *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QAccessibleRelation_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QAccessible::Relation *qp = (QAccessible::Relation *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QAccessibleRelation_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QAccessible::Relation *qp = (QAccessible::Relation *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QAccessibleRelation_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QAccessible::Relation*)p1->rawptr);
+//		int v2 = int(*(QAccessible::Relation*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QAccessible::Relation v1 = *(QAccessible::Relation*)p1->rawptr;
+		QAccessible::Relation v2 = *(QAccessible::Relation*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQAccessibleRelation(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QAccessibleRelation";
+	cdef->free = QAccessibleRelation_free;
+	cdef->reftrace = QAccessibleRelation_reftrace;
+	cdef->compareTo = QAccessibleRelation_compareTo;
+}
+//## QAccessibleState QAccessibleState.new(int value);
+KMETHOD QAccessibleState_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAccessible::StateFlag i = Int_to(QAccessible::StateFlag, sfp[1]);
+	QAccessible::State *ret_v = new QAccessible::State(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QAccessibleState QAccessibleState.and(int mask);
+KMETHOD QAccessibleState_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAccessible::State *qp = RawPtr_to(QAccessible::State*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QAccessible::State ret = ((*qp) & i);
+		QAccessible::State *ret_ = new QAccessible::State(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAccessibleState QAccessibleState.iand(QAccessible::QAccessibleState other);
+KMETHOD QAccessibleState_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAccessible::State *qp = RawPtr_to(QAccessible::State*, sfp[0]);
+	if (qp != NULL) {
+		QAccessible::State *other = RawPtr_to(QAccessible::State *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAccessibleState QAccessibleState.or(QAccessibleState f);
+KMETHOD QAccessibleState_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QAccessible::State *qp = RawPtr_to(QAccessible::State*, sfp[0]);
+	if (qp != NULL) {
+		QAccessible::State *f = RawPtr_to(QAccessible::State*, sfp[1]);
+		QAccessible::State ret = ((*qp) | (*f));
+		QAccessible::State *ret_ = new QAccessible::State(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAccessibleState QAccessibleState.ior(QAccessible::QAccessibleState other);
+KMETHOD QAccessibleState_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAccessible::State *qp = RawPtr_to(QAccessible::State*, sfp[0]);
+	if (qp != NULL) {
+		QAccessible::State *other = RawPtr_to(QAccessible::State *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAccessibleState QAccessibleState.xor(QAccessibleState f);
+KMETHOD QAccessibleState_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QAccessible::State *qp = RawPtr_to(QAccessible::State*, sfp[0]);
+	if (qp != NULL) {
+		QAccessible::State *f = RawPtr_to(QAccessible::State*, sfp[1]);
+		QAccessible::State ret = ((*qp) ^ (*f));
+		QAccessible::State *ret_ = new QAccessible::State(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAccessibleState QAccessibleState.ixor(QAccessible::QAccessibleState other);
+KMETHOD QAccessibleState_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAccessible::State *qp = RawPtr_to(QAccessible::State*, sfp[0]);
+	if (qp != NULL) {
+		QAccessible::State *other = RawPtr_to(QAccessible::State *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QAccessibleState.testFlag(int flag);
+KMETHOD QAccessibleState_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAccessible::State *qp = RawPtr_to(QAccessible::State *, sfp[0]);
+	if (qp != NULL) {
+		QAccessible::StateFlag flag = Int_to(QAccessible::StateFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QAccessibleState.value();
+KMETHOD QAccessibleState_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAccessible::State *qp = RawPtr_to(QAccessible::State *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QAccessibleState_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QAccessible::State *qp = (QAccessible::State *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QAccessibleState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QAccessible::State *qp = (QAccessible::State *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QAccessibleState_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QAccessible::State*)p1->rawptr);
+//		int v2 = int(*(QAccessible::State*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QAccessible::State v1 = *(QAccessible::State*)p1->rawptr;
+		QAccessible::State v2 = *(QAccessible::State*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQAccessibleState(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QAccessibleState";
+	cdef->free = QAccessibleState_free;
+	cdef->reftrace = QAccessibleState_reftrace;
+	cdef->compareTo = QAccessibleState_compareTo;
 }
 

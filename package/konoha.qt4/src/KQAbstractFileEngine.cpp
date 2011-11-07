@@ -3,7 +3,7 @@ KMETHOD QAbstractFileEngine_atEnd(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->atEnd();
 		RETURNb_(ret_v);
 	} else {
@@ -16,7 +16,7 @@ KMETHOD QAbstractFileEngine_caseSensitive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->caseSensitive();
 		RETURNb_(ret_v);
 	} else {
@@ -29,7 +29,7 @@ KMETHOD QAbstractFileEngine_close(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->close();
 		RETURNb_(ret_v);
 	} else {
@@ -42,7 +42,7 @@ KMETHOD QAbstractFileEngine_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString new_Name = String_to(const QString, sfp[1]);
 		bool ret_v = qp->copy(new_Name);
 		RETURNb_(ret_v);
@@ -56,7 +56,7 @@ KMETHOD QAbstractFileEngine_errorString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->errorString();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -65,33 +65,19 @@ KMETHOD QAbstractFileEngine_errorString(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual boolean QAbstractFileEngine.extension(int extension, int option, int output);
-KMETHOD QAbstractFileEngine_extension(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
-		QAbstractFileEngine::Extension extension = Int_to(QAbstractFileEngine::Extension, sfp[1]);
-		const QAbstractFileEngine::ExtensionOption*  option = RawPtr_to(const QAbstractFileEngine::ExtensionOption*, sfp[2]);
-		QAbstractFileEngine::ExtensionReturn* output = Int_to(QAbstractFileEngine::ExtensionReturn*, sfp[3]);
-		bool ret_v = qp->extension(extension, option, output);
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-//@Virtual int QAbstractFileEngine.fileFlags(int type);
+//@Virtual QAbstractFileEngineFileFlags QAbstractFileEngine.fileFlags(QAbstractFileEngineFileFlags type);
 KMETHOD QAbstractFileEngine_fileFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
-		QAbstractFileEngine::FileFlags type = Int_to(QAbstractFileEngine::FileFlags, sfp[1]);
+	if (qp) {
+		initFlag(type, QAbstractFileEngine::FileFlags, sfp[1]);
 		QAbstractFileEngine::FileFlags ret_v = qp->fileFlags(type);
-		RETURNi_(ret_v);
+		QAbstractFileEngine::FileFlags *ret_v_ = new QAbstractFileEngine::FileFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -100,7 +86,7 @@ KMETHOD QAbstractFileEngine_getFileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractFileEngine::FileName file = Int_to(QAbstractFileEngine::FileName, sfp[1]);
 		QString ret_v = qp->fileName(file);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -115,7 +101,7 @@ KMETHOD QAbstractFileEngine_fileTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractFileEngine::FileTime time = Int_to(QAbstractFileEngine::FileTime, sfp[1]);
 		QDateTime ret_v = qp->fileTime(time);
 		QDateTime *ret_v_ = new QDateTime(ret_v);
@@ -131,7 +117,7 @@ KMETHOD QAbstractFileEngine_flush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->flush();
 		RETURNb_(ret_v);
 	} else {
@@ -144,7 +130,7 @@ KMETHOD QAbstractFileEngine_handle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->handle();
 		RETURNi_(ret_v);
 	} else {
@@ -157,7 +143,7 @@ KMETHOD QAbstractFileEngine_isRelativePath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isRelativePath();
 		RETURNb_(ret_v);
 	} else {
@@ -170,7 +156,7 @@ KMETHOD QAbstractFileEngine_isSequential(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSequential();
 		RETURNb_(ret_v);
 	} else {
@@ -183,7 +169,7 @@ KMETHOD QAbstractFileEngine_link(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString new_Name = String_to(const QString, sfp[1]);
 		bool ret_v = qp->link(new_Name);
 		RETURNb_(ret_v);
@@ -197,7 +183,7 @@ KMETHOD QAbstractFileEngine_mkdir(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString dirName = String_to(const QString, sfp[1]);
 		bool createParentDirectories = Boolean_to(bool, sfp[2]);
 		bool ret_v = qp->mkdir(dirName, createParentDirectories);
@@ -212,7 +198,7 @@ KMETHOD QAbstractFileEngine_open(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIODevice::OpenMode mode = Int_to(QIODevice::OpenMode, sfp[1]);
 		bool ret_v = qp->open(mode);
 		RETURNb_(ret_v);
@@ -226,7 +212,7 @@ KMETHOD QAbstractFileEngine_owner(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractFileEngine::FileOwner owner = Int_to(QAbstractFileEngine::FileOwner, sfp[1]);
 		QString ret_v = qp->owner(owner);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -241,7 +227,7 @@ KMETHOD QAbstractFileEngine_ownerId(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractFileEngine::FileOwner owner = Int_to(QAbstractFileEngine::FileOwner, sfp[1]);
 		uint ret_v = qp->ownerId(owner);
 		uint *ret_v_ = new uint(ret_v);
@@ -257,7 +243,7 @@ KMETHOD QAbstractFileEngine_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->pos();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -272,7 +258,7 @@ KMETHOD QAbstractFileEngine_read(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char*  data = RawPtr_to(char*, sfp[1]);
 		qint64 maxlen = Int_to(qint64, sfp[2]);
 		qint64 ret_v = qp->read(data, maxlen);
@@ -289,7 +275,7 @@ KMETHOD QAbstractFileEngine_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char*  data = RawPtr_to(char*, sfp[1]);
 		qint64 maxlen = Int_to(qint64, sfp[2]);
 		qint64 ret_v = qp->readLine(data, maxlen);
@@ -306,7 +292,7 @@ KMETHOD QAbstractFileEngine_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->remove();
 		RETURNb_(ret_v);
 	} else {
@@ -319,7 +305,7 @@ KMETHOD QAbstractFileEngine_rename(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString new_Name = String_to(const QString, sfp[1]);
 		bool ret_v = qp->rename(new_Name);
 		RETURNb_(ret_v);
@@ -333,7 +319,7 @@ KMETHOD QAbstractFileEngine_rmdir(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString dirName = String_to(const QString, sfp[1]);
 		bool recurseParentDirectories = Boolean_to(bool, sfp[2]);
 		bool ret_v = qp->rmdir(dirName, recurseParentDirectories);
@@ -348,7 +334,7 @@ KMETHOD QAbstractFileEngine_seek(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 offset = Int_to(qint64, sfp[1]);
 		bool ret_v = qp->seek(offset);
 		RETURNb_(ret_v);
@@ -362,7 +348,7 @@ KMETHOD QAbstractFileEngine_setFileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString file = String_to(const QString, sfp[1]);
 		qp->setFileName(file);
 	}
@@ -374,7 +360,7 @@ KMETHOD QAbstractFileEngine_setPermissions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uint  perms = *RawPtr_to(uint *, sfp[1]);
 		bool ret_v = qp->setPermissions(perms);
 		RETURNb_(ret_v);
@@ -388,7 +374,7 @@ KMETHOD QAbstractFileEngine_setSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 size = Int_to(qint64, sfp[1]);
 		bool ret_v = qp->setSize(size);
 		RETURNb_(ret_v);
@@ -402,7 +388,7 @@ KMETHOD QAbstractFileEngine_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->size();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -417,7 +403,7 @@ KMETHOD QAbstractFileEngine_supportsExtension(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractFileEngine::Extension extension = Int_to(QAbstractFileEngine::Extension, sfp[1]);
 		bool ret_v = qp->supportsExtension(extension);
 		RETURNb_(ret_v);
@@ -431,7 +417,7 @@ KMETHOD QAbstractFileEngine_unmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uchar*  address = RawPtr_to(uchar*, sfp[1]);
 		bool ret_v = qp->unmap(address);
 		RETURNb_(ret_v);
@@ -445,7 +431,7 @@ KMETHOD QAbstractFileEngine_write(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  data = RawPtr_to(const char*, sfp[1]);
 		qint64 len = Int_to(qint64, sfp[2]);
 		qint64 ret_v = qp->write(data, len);
@@ -461,10 +447,9 @@ KMETHOD QAbstractFileEngine_write(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QAbstractFileEngine_create(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QAbstractFileEngine *  qp = RawPtr_to(QAbstractFileEngine *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString fileName = String_to(const QString, sfp[1]);
-		QAbstractFileEngine* ret_v = qp->create(fileName);
+		QAbstractFileEngine* ret_v = QAbstractFileEngine::create(fileName);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractFileEngine*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -472,6 +457,24 @@ KMETHOD QAbstractFileEngine_create(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QAbstractFileEngine.parents();
+KMETHOD QAbstractFileEngine_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QAbstractFileEngine *qp = RawPtr_to(QAbstractFileEngine*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQAbstractFileEngine::DummyQAbstractFileEngine()
 {
@@ -520,17 +523,22 @@ bool DummyQAbstractFileEngine::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQAbstractFileEngine::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQAbstractFileEngine::connection(QObject *o)
 {
-	return;
-}
-
-KQAbstractFileEngine::KQAbstractFileEngine() : QAbstractFileEngine()
-{
-	self = NULL;
-	dummy = new DummyQAbstractFileEngine();
-	dummy->connection((QObject*)this);
+	QAbstractFileEngine *p = dynamic_cast<QAbstractFileEngine*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QAbstractFileEngine_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -585,13 +593,9 @@ static void QAbstractFileEngine_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractFileEngine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAbstractFileEngine *qp = (KQAbstractFileEngine *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -604,15 +608,6 @@ void KQAbstractFileEngine::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQAbstractFileEngine(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QAbstractFileEngine";
-	cdef->free = QAbstractFileEngine_free;
-	cdef->reftrace = QAbstractFileEngine_reftrace;
-	cdef->compareTo = QAbstractFileEngine_compareTo;
 }
 
 static knh_IntData_t QAbstractFileEngineConstInt[] = {
@@ -660,5 +655,179 @@ static knh_IntData_t QAbstractFileEngineConstInt[] = {
 
 DEFAPI(void) constQAbstractFileEngine(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QAbstractFileEngineConstInt);
+}
+
+
+DEFAPI(void) defQAbstractFileEngine(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QAbstractFileEngine";
+	cdef->free = QAbstractFileEngine_free;
+	cdef->reftrace = QAbstractFileEngine_reftrace;
+	cdef->compareTo = QAbstractFileEngine_compareTo;
+}
+
+//## QAbstractFileEngineFileFlags QAbstractFileEngineFileFlags.new(int value);
+KMETHOD QAbstractFileEngineFileFlags_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAbstractFileEngine::FileFlag i = Int_to(QAbstractFileEngine::FileFlag, sfp[1]);
+	QAbstractFileEngine::FileFlags *ret_v = new QAbstractFileEngine::FileFlags(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QAbstractFileEngineFileFlags QAbstractFileEngineFileFlags.and(int mask);
+KMETHOD QAbstractFileEngineFileFlags_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAbstractFileEngine::FileFlags *qp = RawPtr_to(QAbstractFileEngine::FileFlags*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QAbstractFileEngine::FileFlags ret = ((*qp) & i);
+		QAbstractFileEngine::FileFlags *ret_ = new QAbstractFileEngine::FileFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAbstractFileEngineFileFlags QAbstractFileEngineFileFlags.iand(QAbstractFileEngine::QAbstractFileEngineFileFlags other);
+KMETHOD QAbstractFileEngineFileFlags_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAbstractFileEngine::FileFlags *qp = RawPtr_to(QAbstractFileEngine::FileFlags*, sfp[0]);
+	if (qp != NULL) {
+		QAbstractFileEngine::FileFlags *other = RawPtr_to(QAbstractFileEngine::FileFlags *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAbstractFileEngineFileFlags QAbstractFileEngineFileFlags.or(QAbstractFileEngineFileFlags f);
+KMETHOD QAbstractFileEngineFileFlags_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QAbstractFileEngine::FileFlags *qp = RawPtr_to(QAbstractFileEngine::FileFlags*, sfp[0]);
+	if (qp != NULL) {
+		QAbstractFileEngine::FileFlags *f = RawPtr_to(QAbstractFileEngine::FileFlags*, sfp[1]);
+		QAbstractFileEngine::FileFlags ret = ((*qp) | (*f));
+		QAbstractFileEngine::FileFlags *ret_ = new QAbstractFileEngine::FileFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAbstractFileEngineFileFlags QAbstractFileEngineFileFlags.ior(QAbstractFileEngine::QAbstractFileEngineFileFlags other);
+KMETHOD QAbstractFileEngineFileFlags_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAbstractFileEngine::FileFlags *qp = RawPtr_to(QAbstractFileEngine::FileFlags*, sfp[0]);
+	if (qp != NULL) {
+		QAbstractFileEngine::FileFlags *other = RawPtr_to(QAbstractFileEngine::FileFlags *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAbstractFileEngineFileFlags QAbstractFileEngineFileFlags.xor(QAbstractFileEngineFileFlags f);
+KMETHOD QAbstractFileEngineFileFlags_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QAbstractFileEngine::FileFlags *qp = RawPtr_to(QAbstractFileEngine::FileFlags*, sfp[0]);
+	if (qp != NULL) {
+		QAbstractFileEngine::FileFlags *f = RawPtr_to(QAbstractFileEngine::FileFlags*, sfp[1]);
+		QAbstractFileEngine::FileFlags ret = ((*qp) ^ (*f));
+		QAbstractFileEngine::FileFlags *ret_ = new QAbstractFileEngine::FileFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QAbstractFileEngineFileFlags QAbstractFileEngineFileFlags.ixor(QAbstractFileEngine::QAbstractFileEngineFileFlags other);
+KMETHOD QAbstractFileEngineFileFlags_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAbstractFileEngine::FileFlags *qp = RawPtr_to(QAbstractFileEngine::FileFlags*, sfp[0]);
+	if (qp != NULL) {
+		QAbstractFileEngine::FileFlags *other = RawPtr_to(QAbstractFileEngine::FileFlags *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QAbstractFileEngineFileFlags.testFlag(int flag);
+KMETHOD QAbstractFileEngineFileFlags_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAbstractFileEngine::FileFlags *qp = RawPtr_to(QAbstractFileEngine::FileFlags *, sfp[0]);
+	if (qp != NULL) {
+		QAbstractFileEngine::FileFlag flag = Int_to(QAbstractFileEngine::FileFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QAbstractFileEngineFileFlags.value();
+KMETHOD QAbstractFileEngineFileFlags_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QAbstractFileEngine::FileFlags *qp = RawPtr_to(QAbstractFileEngine::FileFlags *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QAbstractFileEngineFileFlags_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QAbstractFileEngine::FileFlags *qp = (QAbstractFileEngine::FileFlags *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QAbstractFileEngineFileFlags_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QAbstractFileEngine::FileFlags *qp = (QAbstractFileEngine::FileFlags *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QAbstractFileEngineFileFlags_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QAbstractFileEngine::FileFlags*)p1->rawptr);
+//		int v2 = int(*(QAbstractFileEngine::FileFlags*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QAbstractFileEngine::FileFlags v1 = *(QAbstractFileEngine::FileFlags*)p1->rawptr;
+		QAbstractFileEngine::FileFlags v2 = *(QAbstractFileEngine::FileFlags*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQAbstractFileEngineFileFlags(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QAbstractFileEngineFileFlags";
+	cdef->free = QAbstractFileEngineFileFlags_free;
+	cdef->reftrace = QAbstractFileEngineFileFlags_reftrace;
+	cdef->compareTo = QAbstractFileEngineFileFlags_compareTo;
 }
 

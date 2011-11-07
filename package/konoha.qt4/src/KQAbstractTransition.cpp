@@ -4,7 +4,7 @@ KMETHOD QAbstractTransition_addAnimation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTransition *  qp = RawPtr_to(QAbstractTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractAnimation*  animation = RawPtr_to(QAbstractAnimation*, sfp[1]);
 		qp->addAnimation(animation);
 	}
@@ -16,8 +16,8 @@ KMETHOD QAbstractTransition_animations(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTransition *  qp = RawPtr_to(QAbstractTransition *, sfp[0]);
-	if (qp != NULL) {
-		QList<QAbstractAnimation*>ret_v = qp->animations();
+	if (qp) {
+		QList<QAbstractAnimation*> ret_v = qp->animations();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QAbstractAnimation"));
@@ -37,7 +37,7 @@ KMETHOD QAbstractTransition_machine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTransition *  qp = RawPtr_to(QAbstractTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStateMachine* ret_v = qp->machine();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStateMachine*)ret_v, NULL);
 		RETURN_(rptr);
@@ -51,7 +51,7 @@ KMETHOD QAbstractTransition_removeAnimation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTransition *  qp = RawPtr_to(QAbstractTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractAnimation*  animation = RawPtr_to(QAbstractAnimation*, sfp[1]);
 		qp->removeAnimation(animation);
 	}
@@ -63,7 +63,7 @@ KMETHOD QAbstractTransition_setTargetState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTransition *  qp = RawPtr_to(QAbstractTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractState*  target = RawPtr_to(QAbstractState*, sfp[1]);
 		qp->setTargetState(target);
 	}
@@ -75,7 +75,7 @@ KMETHOD QAbstractTransition_setTargetStates(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTransition *  qp = RawPtr_to(QAbstractTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<QAbstractState*> targets;
@@ -93,7 +93,7 @@ KMETHOD QAbstractTransition_sourceState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTransition *  qp = RawPtr_to(QAbstractTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QState* ret_v = qp->sourceState();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QState*)ret_v, NULL);
 		RETURN_(rptr);
@@ -107,7 +107,7 @@ KMETHOD QAbstractTransition_getTargetState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTransition *  qp = RawPtr_to(QAbstractTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractState* ret_v = qp->targetState();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractState*)ret_v, NULL);
 		RETURN_(rptr);
@@ -121,8 +121,8 @@ KMETHOD QAbstractTransition_getTargetStates(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTransition *  qp = RawPtr_to(QAbstractTransition *, sfp[0]);
-	if (qp != NULL) {
-		QList<QAbstractState*>ret_v = qp->targetStates();
+	if (qp) {
+		QList<QAbstractState*> ret_v = qp->targetStates();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QAbstractState"));
@@ -203,10 +203,25 @@ bool DummyQAbstractTransition::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQAbstractTransition::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, triggered_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQAbstractTransition::connection(QObject *o)
 {
-	connect(o, SIGNAL(triggered()), this, SLOT(triggeredSlot()));
+	QAbstractTransition *p = dynamic_cast<QAbstractTransition*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(triggered()), this, SLOT(triggeredSlot()));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -269,17 +284,9 @@ static void QAbstractTransition_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractTransition_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAbstractTransition *qp = (KQAbstractTransition *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->triggered_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->triggered_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -302,6 +309,8 @@ bool KQAbstractTransition::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQAbstractTransition(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

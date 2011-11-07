@@ -3,7 +3,7 @@ KMETHOD QWorkspace_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -29,7 +29,7 @@ KMETHOD QWorkspace_getActiveWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->activeWindow();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -38,14 +38,14 @@ KMETHOD QWorkspace_getActiveWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QWidget QWorkspace.addWindow(QWidget w, int flags);
+//QWidget QWorkspace.addWindow(QWidget w, QtWindowFlags flags);
 KMETHOD QWorkspace_addWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  w = RawPtr_to(QWidget*, sfp[1]);
-		Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[2]);
+		initFlag(flags, Qt::WindowFlags, sfp[2]);
 		QWidget* ret_v = qp->addWindow(w, flags);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -59,7 +59,7 @@ KMETHOD QWorkspace_getBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBrush ret_v = qp->background();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -74,7 +74,7 @@ KMETHOD QWorkspace_getScrollBarsEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->scrollBarsEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -87,7 +87,7 @@ KMETHOD QWorkspace_setBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush  background = *RawPtr_to(const QBrush *, sfp[1]);
 		qp->setBackground(background);
 	}
@@ -99,7 +99,7 @@ KMETHOD QWorkspace_setScrollBarsEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setScrollBarsEnabled(enable);
 	}
@@ -111,7 +111,7 @@ KMETHOD QWorkspace_windowList(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWorkspace::WindowOrder order = Int_to(QWorkspace::WindowOrder, sfp[1]);
 		QWidgetList ret_v = qp->windowList(order);
 		QWidgetList *ret_v_ = new QWidgetList(ret_v);
@@ -127,7 +127,7 @@ KMETHOD QWorkspace_activateNextWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->activateNextWindow();
 	}
 	RETURNvoid_();
@@ -138,7 +138,7 @@ KMETHOD QWorkspace_activatePreviousWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->activatePreviousWindow();
 	}
 	RETURNvoid_();
@@ -149,7 +149,7 @@ KMETHOD QWorkspace_arrangeIcons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->arrangeIcons();
 	}
 	RETURNvoid_();
@@ -160,7 +160,7 @@ KMETHOD QWorkspace_cascade(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->cascade();
 	}
 	RETURNvoid_();
@@ -171,7 +171,7 @@ KMETHOD QWorkspace_closeActiveWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->closeActiveWindow();
 	}
 	RETURNvoid_();
@@ -182,7 +182,7 @@ KMETHOD QWorkspace_closeAllWindows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->closeAllWindows();
 	}
 	RETURNvoid_();
@@ -193,7 +193,7 @@ KMETHOD QWorkspace_setActiveWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  w = RawPtr_to(QWidget*, sfp[1]);
 		qp->setActiveWindow(w);
 	}
@@ -205,7 +205,7 @@ KMETHOD QWorkspace_tile(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWorkspace *  qp = RawPtr_to(QWorkspace *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->tile();
 	}
 	RETURNvoid_();
@@ -279,10 +279,25 @@ bool DummyQWorkspace::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQWorkspace::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, window_activated_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQWorkspace::connection(QObject *o)
 {
-	connect(o, SIGNAL(windowActivated(QWidget*)), this, SLOT(windowActivatedSlot(QWidget*)));
+	QWorkspace *p = dynamic_cast<QWorkspace*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(windowActivated(QWidget*)), this, SLOT(windowActivatedSlot(QWidget*)));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -345,17 +360,9 @@ static void QWorkspace_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QWorkspace_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQWorkspace *qp = (KQWorkspace *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->window_activated_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->window_activated_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -379,15 +386,6 @@ bool KQWorkspace::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQWorkspace(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QWorkspace";
-	cdef->free = QWorkspace_free;
-	cdef->reftrace = QWorkspace_reftrace;
-	cdef->compareTo = QWorkspace_compareTo;
-}
-
 static knh_IntData_t QWorkspaceConstInt[] = {
 	{"CreationOrder", QWorkspace::CreationOrder},
 	{"StackingOrder", QWorkspace::StackingOrder},
@@ -397,4 +395,15 @@ static knh_IntData_t QWorkspaceConstInt[] = {
 DEFAPI(void) constQWorkspace(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QWorkspaceConstInt);
 }
+
+
+DEFAPI(void) defQWorkspace(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QWorkspace";
+	cdef->free = QWorkspace_free;
+	cdef->reftrace = QWorkspace_reftrace;
+	cdef->compareTo = QWorkspace_compareTo;
+}
+
 

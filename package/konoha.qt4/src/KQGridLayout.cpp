@@ -3,7 +3,7 @@ KMETHOD QGridLayout_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->count();
 		RETURNi_(ret_v);
 	} else {
@@ -11,16 +11,18 @@ KMETHOD QGridLayout_count(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual @Override int QGridLayout.expandingDirections();
+//@Virtual @Override QtOrientations QGridLayout.expandingDirections();
 KMETHOD QGridLayout_expandingDirections(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientations ret_v = qp->expandingDirections();
-		RETURNi_(ret_v);
+		Qt::Orientations *ret_v_ = new Qt::Orientations(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -29,7 +31,7 @@ KMETHOD QGridLayout_hasHeightForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasHeightForWidth();
 		RETURNb_(ret_v);
 	} else {
@@ -42,7 +44,7 @@ KMETHOD QGridLayout_heightForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int w = Int_to(int, sfp[1]);
 		int ret_v = qp->heightForWidth(w);
 		RETURNi_(ret_v);
@@ -56,7 +58,7 @@ KMETHOD QGridLayout_invalidate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->invalidate();
 	}
 	RETURNvoid_();
@@ -67,7 +69,7 @@ KMETHOD QGridLayout_itemAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QLayoutItem* ret_v = qp->itemAt(index);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QLayoutItem*)ret_v, NULL);
@@ -82,7 +84,7 @@ KMETHOD QGridLayout_maximumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->maximumSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -97,7 +99,7 @@ KMETHOD QGridLayout_minimumHeightForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int w = Int_to(int, sfp[1]);
 		int ret_v = qp->minimumHeightForWidth(w);
 		RETURNi_(ret_v);
@@ -111,7 +113,7 @@ KMETHOD QGridLayout_minimumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -126,7 +128,7 @@ KMETHOD QGridLayout_setGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		qp->setGeometry(rect);
 	}
@@ -138,7 +140,7 @@ KMETHOD QGridLayout_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -153,7 +155,7 @@ KMETHOD QGridLayout_takeAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QLayoutItem* ret_v = qp->takeAt(index);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QLayoutItem*)ret_v, NULL);
@@ -185,84 +187,84 @@ KMETHOD QGridLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 */
-//void QGridLayout.addItem(QLayoutItem item, int row, int column, int rowSpan, int columnSpan, int alignment);
+//void QGridLayout.addItem(QLayoutItem item, int row, int column, int rowSpan, int columnSpan, QtAlignment alignment);
 KMETHOD QGridLayout_addItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayoutItem*  item = RawPtr_to(QLayoutItem*, sfp[1]);
 		int row = Int_to(int, sfp[2]);
 		int column = Int_to(int, sfp[3]);
 		int rowSpan = Int_to(int, sfp[4]);
 		int columnSpan = Int_to(int, sfp[5]);
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[6]);
+		initFlag(alignment, Qt::Alignment, sfp[6]);
 		qp->addItem(item, row, column, rowSpan, columnSpan, alignment);
 	}
 	RETURNvoid_();
 }
 
-//void QGridLayout.addLayout(QLayout layout, int row, int column, int alignment);
+//void QGridLayout.addLayout(QLayout layout, int row, int column, QtAlignment alignment);
 KMETHOD QGridLayout_addLayout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayout*  layout = RawPtr_to(QLayout*, sfp[1]);
 		int row = Int_to(int, sfp[2]);
 		int column = Int_to(int, sfp[3]);
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[4]);
+		initFlag(alignment, Qt::Alignment, sfp[4]);
 		qp->addLayout(layout, row, column, alignment);
 	}
 	RETURNvoid_();
 }
 
 /*
-//void QGridLayout.addLayout(QLayout layout, int row, int column, int rowSpan, int columnSpan, int alignment);
+//void QGridLayout.addLayout(QLayout layout, int row, int column, int rowSpan, int columnSpan, QtAlignment alignment);
 KMETHOD QGridLayout_addLayout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayout*  layout = RawPtr_to(QLayout*, sfp[1]);
 		int row = Int_to(int, sfp[2]);
 		int column = Int_to(int, sfp[3]);
 		int rowSpan = Int_to(int, sfp[4]);
 		int columnSpan = Int_to(int, sfp[5]);
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[6]);
+		initFlag(alignment, Qt::Alignment, sfp[6]);
 		qp->addLayout(layout, row, column, rowSpan, columnSpan, alignment);
 	}
 	RETURNvoid_();
 }
 */
-//void QGridLayout.addWidget(QWidget widget, int row, int column, int alignment);
+//void QGridLayout.addWidget(QWidget widget, int row, int column, QtAlignment alignment);
 KMETHOD QGridLayout_addWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		int row = Int_to(int, sfp[2]);
 		int column = Int_to(int, sfp[3]);
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[4]);
+		initFlag(alignment, Qt::Alignment, sfp[4]);
 		qp->addWidget(widget, row, column, alignment);
 	}
 	RETURNvoid_();
 }
 
 /*
-//void QGridLayout.addWidget(QWidget widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, int alignment);
+//void QGridLayout.addWidget(QWidget widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, QtAlignment alignment);
 KMETHOD QGridLayout_addWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		int fromRow = Int_to(int, sfp[2]);
 		int fromColumn = Int_to(int, sfp[3]);
 		int rowSpan = Int_to(int, sfp[4]);
 		int columnSpan = Int_to(int, sfp[5]);
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[6]);
+		initFlag(alignment, Qt::Alignment, sfp[6]);
 		qp->addWidget(widget, fromRow, fromColumn, rowSpan, columnSpan, alignment);
 	}
 	RETURNvoid_();
@@ -273,7 +275,7 @@ KMETHOD QGridLayout_cellRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		QRect ret_v = qp->cellRect(row, column);
@@ -290,7 +292,7 @@ KMETHOD QGridLayout_columnCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->columnCount();
 		RETURNi_(ret_v);
 	} else {
@@ -303,7 +305,7 @@ KMETHOD QGridLayout_getColumnMinimumWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int ret_v = qp->columnMinimumWidth(column);
 		RETURNi_(ret_v);
@@ -317,7 +319,7 @@ KMETHOD QGridLayout_getColumnStretch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int ret_v = qp->columnStretch(column);
 		RETURNi_(ret_v);
@@ -331,7 +333,7 @@ KMETHOD QGridLayout_getItemPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		int* row = Int_to(int*, sfp[2]);
 		int* column = Int_to(int*, sfp[3]);
@@ -347,7 +349,7 @@ KMETHOD QGridLayout_getHorizontalSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->horizontalSpacing();
 		RETURNi_(ret_v);
 	} else {
@@ -360,7 +362,7 @@ KMETHOD QGridLayout_itemAtPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		QLayoutItem* ret_v = qp->itemAtPosition(row, column);
@@ -376,7 +378,7 @@ KMETHOD QGridLayout_getOriginCorner(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Corner ret_v = qp->originCorner();
 		RETURNi_(ret_v);
 	} else {
@@ -389,7 +391,7 @@ KMETHOD QGridLayout_rowCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->rowCount();
 		RETURNi_(ret_v);
 	} else {
@@ -402,7 +404,7 @@ KMETHOD QGridLayout_getRowMinimumHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int ret_v = qp->rowMinimumHeight(row);
 		RETURNi_(ret_v);
@@ -416,7 +418,7 @@ KMETHOD QGridLayout_getRowStretch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int ret_v = qp->rowStretch(row);
 		RETURNi_(ret_v);
@@ -430,7 +432,7 @@ KMETHOD QGridLayout_setColumnMinimumWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int minSize = Int_to(int, sfp[2]);
 		qp->setColumnMinimumWidth(column, minSize);
@@ -443,7 +445,7 @@ KMETHOD QGridLayout_setColumnStretch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int stretch = Int_to(int, sfp[2]);
 		qp->setColumnStretch(column, stretch);
@@ -456,7 +458,7 @@ KMETHOD QGridLayout_setHorizontalSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int spacing = Int_to(int, sfp[1]);
 		qp->setHorizontalSpacing(spacing);
 	}
@@ -468,7 +470,7 @@ KMETHOD QGridLayout_setOriginCorner(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Corner corner = Int_to(Qt::Corner, sfp[1]);
 		qp->setOriginCorner(corner);
 	}
@@ -480,7 +482,7 @@ KMETHOD QGridLayout_setRowMinimumHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int minSize = Int_to(int, sfp[2]);
 		qp->setRowMinimumHeight(row, minSize);
@@ -493,7 +495,7 @@ KMETHOD QGridLayout_setRowStretch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int stretch = Int_to(int, sfp[2]);
 		qp->setRowStretch(row, stretch);
@@ -506,7 +508,7 @@ KMETHOD QGridLayout_setSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int spacing = Int_to(int, sfp[1]);
 		qp->setSpacing(spacing);
 	}
@@ -518,7 +520,7 @@ KMETHOD QGridLayout_setVerticalSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int spacing = Int_to(int, sfp[1]);
 		qp->setVerticalSpacing(spacing);
 	}
@@ -530,7 +532,7 @@ KMETHOD QGridLayout_getSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->spacing();
 		RETURNi_(ret_v);
 	} else {
@@ -543,7 +545,7 @@ KMETHOD QGridLayout_getVerticalSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGridLayout *  qp = RawPtr_to(QGridLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->verticalSpacing();
 		RETURNi_(ret_v);
 	} else {
@@ -602,9 +604,23 @@ bool DummyQGridLayout::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQGridLayout::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQLayout::reftrace(ctx, p, tail_);
+}
 
 void DummyQGridLayout::connection(QObject *o)
 {
+	QGridLayout *p = dynamic_cast<QGridLayout*>(o);
+	if (p != NULL) {
+	}
 	DummyQLayout::connection(o);
 }
 
@@ -667,13 +683,9 @@ static void QGridLayout_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGridLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGridLayout *qp = (KQGridLayout *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -696,6 +708,8 @@ bool KQGridLayout::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQGridLayout(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

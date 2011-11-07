@@ -13,24 +13,11 @@ KMETHOD QTextImageFormat_getHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextImageFormat *  qp = RawPtr_to(QTextImageFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->height();
 		RETURNf_(ret_v);
 	} else {
 		RETURNf_(0.0f);
-	}
-}
-
-////boolean QTextImageFormat.isValid();
-KMETHOD QTextImageFormat_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextImageFormat *  qp = RawPtr_to(QTextImageFormat *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
 	}
 }
 
@@ -39,7 +26,7 @@ KMETHOD QTextImageFormat_getName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextImageFormat *  qp = RawPtr_to(QTextImageFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->name();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -53,7 +40,7 @@ KMETHOD QTextImageFormat_setHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextImageFormat *  qp = RawPtr_to(QTextImageFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal height = Float_to(qreal, sfp[1]);
 		qp->setHeight(height);
 	}
@@ -65,7 +52,7 @@ KMETHOD QTextImageFormat_setName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextImageFormat *  qp = RawPtr_to(QTextImageFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString name = String_to(const QString, sfp[1]);
 		qp->setName(name);
 	}
@@ -77,7 +64,7 @@ KMETHOD QTextImageFormat_setWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextImageFormat *  qp = RawPtr_to(QTextImageFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal width = Float_to(qreal, sfp[1]);
 		qp->setWidth(width);
 	}
@@ -89,7 +76,7 @@ KMETHOD QTextImageFormat_getWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextImageFormat *  qp = RawPtr_to(QTextImageFormat *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->width();
 		RETURNf_(ret_v);
 	} else {
@@ -148,9 +135,23 @@ bool DummyQTextImageFormat::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextImageFormat::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQTextCharFormat::reftrace(ctx, p, tail_);
+}
 
 void DummyQTextImageFormat::connection(QObject *o)
 {
+	QTextImageFormat *p = dynamic_cast<QTextImageFormat*>(o);
+	if (p != NULL) {
+	}
 	DummyQTextCharFormat::connection(o);
 }
 
@@ -158,7 +159,6 @@ KQTextImageFormat::KQTextImageFormat() : QTextImageFormat()
 {
 	self = NULL;
 	dummy = new DummyQTextImageFormat();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextImageFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -213,13 +213,9 @@ static void QTextImageFormat_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextImageFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextImageFormat *qp = (KQTextImageFormat *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -233,6 +229,8 @@ void KQTextImageFormat::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQTextImageFormat(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

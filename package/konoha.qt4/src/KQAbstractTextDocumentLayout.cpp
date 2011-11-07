@@ -4,7 +4,7 @@ KMETHOD QAbstractTextDocumentLayout_anchorAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTextDocumentLayout *  qp = RawPtr_to(QAbstractTextDocumentLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[1]);
 		QString ret_v = qp->anchorAt(position);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -19,7 +19,7 @@ KMETHOD QAbstractTextDocumentLayout_blockBoundingRect(CTX ctx, knh_sfp_t *sfp _R
 {
 	(void)ctx;
 	QAbstractTextDocumentLayout *  qp = RawPtr_to(QAbstractTextDocumentLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextBlock  block = *RawPtr_to(const QTextBlock *, sfp[1]);
 		QRectF ret_v = qp->blockBoundingRect(block);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -35,7 +35,7 @@ KMETHOD QAbstractTextDocumentLayout_document(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTextDocumentLayout *  qp = RawPtr_to(QAbstractTextDocumentLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextDocument* ret_v = qp->document();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextDocument*)ret_v, NULL);
 		RETURN_(rptr);
@@ -49,7 +49,7 @@ KMETHOD QAbstractTextDocumentLayout_documentSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTextDocumentLayout *  qp = RawPtr_to(QAbstractTextDocumentLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizeF ret_v = qp->documentSize();
 		QSizeF *ret_v_ = new QSizeF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -59,25 +59,12 @@ KMETHOD QAbstractTextDocumentLayout_documentSize(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual void QAbstractTextDocumentLayout.draw(QPainter painter, int context);
-KMETHOD QAbstractTextDocumentLayout_draw(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QAbstractTextDocumentLayout *  qp = RawPtr_to(QAbstractTextDocumentLayout *, sfp[0]);
-	if (qp != NULL) {
-		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
-		const QAbstractTextDocumentLayout::PaintContext  context = *RawPtr_to(const QAbstractTextDocumentLayout::PaintContext *, sfp[2]);
-		qp->draw(painter, context);
-	}
-	RETURNvoid_();
-}
-
 //@Virtual QRectF QAbstractTextDocumentLayout.frameBoundingRect(QTextFrame frame);
 KMETHOD QAbstractTextDocumentLayout_frameBoundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTextDocumentLayout *  qp = RawPtr_to(QAbstractTextDocumentLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextFrame*  frame = RawPtr_to(QTextFrame*, sfp[1]);
 		QRectF ret_v = qp->frameBoundingRect(frame);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -93,7 +80,7 @@ KMETHOD QAbstractTextDocumentLayout_handlerForObject(CTX ctx, knh_sfp_t *sfp _RI
 {
 	(void)ctx;
 	QAbstractTextDocumentLayout *  qp = RawPtr_to(QAbstractTextDocumentLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int objectType = Int_to(int, sfp[1]);
 		QTextObjectInterface* ret_v = qp->handlerForObject(objectType);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextObjectInterface*)ret_v, NULL);
@@ -108,7 +95,7 @@ KMETHOD QAbstractTextDocumentLayout_hitTest(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTextDocumentLayout *  qp = RawPtr_to(QAbstractTextDocumentLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		Qt::HitTestAccuracy accuracy = Int_to(Qt::HitTestAccuracy, sfp[2]);
 		int ret_v = qp->hitTest(point, accuracy);
@@ -123,7 +110,7 @@ KMETHOD QAbstractTextDocumentLayout_pageCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTextDocumentLayout *  qp = RawPtr_to(QAbstractTextDocumentLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->pageCount();
 		RETURNi_(ret_v);
 	} else {
@@ -136,7 +123,7 @@ KMETHOD QAbstractTextDocumentLayout_getPaintDevice(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTextDocumentLayout *  qp = RawPtr_to(QAbstractTextDocumentLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPaintDevice* ret_v = qp->paintDevice();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPaintDevice*)ret_v, NULL);
 		RETURN_(rptr);
@@ -150,7 +137,7 @@ KMETHOD QAbstractTextDocumentLayout_registerHandler(CTX ctx, knh_sfp_t *sfp _RIX
 {
 	(void)ctx;
 	QAbstractTextDocumentLayout *  qp = RawPtr_to(QAbstractTextDocumentLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int objectType = Int_to(int, sfp[1]);
 		QObject*  component = RawPtr_to(QObject*, sfp[2]);
 		qp->registerHandler(objectType, component);
@@ -163,7 +150,7 @@ KMETHOD QAbstractTextDocumentLayout_setPaintDevice(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractTextDocumentLayout *  qp = RawPtr_to(QAbstractTextDocumentLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPaintDevice*  device = RawPtr_to(QPaintDevice*, sfp[1]);
 		qp->setPaintDevice(device);
 	}
@@ -288,13 +275,31 @@ bool DummyQAbstractTextDocumentLayout::signalConnect(knh_Func_t *callback_func, 
 	}
 }
 
+void DummyQAbstractTextDocumentLayout::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, document_size_changed_func);
+	KNH_ADDNNREF(ctx, page_count_changed_func);
+	KNH_ADDNNREF(ctx, update_func);
+	KNH_ADDNNREF(ctx, update_block_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQAbstractTextDocumentLayout::connection(QObject *o)
 {
-	connect(o, SIGNAL(documentSizeChanged(const QSizeF)), this, SLOT(documentSizeChangedSlot(const QSizeF)));
-	connect(o, SIGNAL(pageCountChanged(int)), this, SLOT(pageCountChangedSlot(int)));
-	connect(o, SIGNAL(update(const QRectF)), this, SLOT(updateSlot(const QRectF)));
-	connect(o, SIGNAL(updateBlock(const QTextBlock)), this, SLOT(updateBlockSlot(const QTextBlock)));
+	QAbstractTextDocumentLayout *p = dynamic_cast<QAbstractTextDocumentLayout*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(documentSizeChanged(const QSizeF)), this, SLOT(documentSizeChangedSlot(const QSizeF)));
+		connect(p, SIGNAL(pageCountChanged(int)), this, SLOT(pageCountChangedSlot(int)));
+		connect(p, SIGNAL(update(const QRectF)), this, SLOT(updateSlot(const QRectF)));
+		connect(p, SIGNAL(updateBlock(const QTextBlock)), this, SLOT(updateBlockSlot(const QTextBlock)));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -357,29 +362,9 @@ static void QAbstractTextDocumentLayout_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractTextDocumentLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 4;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAbstractTextDocumentLayout *qp = (KQAbstractTextDocumentLayout *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->document_size_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->document_size_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->page_count_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->page_count_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->update_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->update_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->update_block_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->update_block_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -402,6 +387,8 @@ bool KQAbstractTextDocumentLayout::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQAbstractTextDocumentLayout(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

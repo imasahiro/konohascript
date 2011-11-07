@@ -4,7 +4,7 @@ KMETHOD QAbstractFileEngineHandler_create(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractFileEngineHandler *  qp = RawPtr_to(QAbstractFileEngineHandler *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
 		QAbstractFileEngine* ret_v = qp->create(fileName);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractFileEngine*)ret_v, NULL);
@@ -14,6 +14,24 @@ KMETHOD QAbstractFileEngineHandler_create(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QAbstractFileEngineHandler.parents();
+KMETHOD QAbstractFileEngineHandler_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QAbstractFileEngineHandler *qp = RawPtr_to(QAbstractFileEngineHandler*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQAbstractFileEngineHandler::DummyQAbstractFileEngineHandler()
 {
@@ -62,17 +80,28 @@ bool DummyQAbstractFileEngineHandler::signalConnect(knh_Func_t *callback_func, s
 	}
 }
 
+void DummyQAbstractFileEngineHandler::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQAbstractFileEngineHandler::connection(QObject *o)
 {
-	return;
+	QAbstractFileEngineHandler *p = dynamic_cast<QAbstractFileEngineHandler*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQAbstractFileEngineHandler::KQAbstractFileEngineHandler() : QAbstractFileEngineHandler()
 {
 	self = NULL;
 	dummy = new DummyQAbstractFileEngineHandler();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAbstractFileEngineHandler_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -127,13 +156,9 @@ static void QAbstractFileEngineHandler_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractFileEngineHandler_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAbstractFileEngineHandler *qp = (KQAbstractFileEngineHandler *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -147,6 +172,8 @@ void KQAbstractFileEngineHandler::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQAbstractFileEngineHandler(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

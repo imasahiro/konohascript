@@ -3,7 +3,7 @@ KMETHOD QDialog_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialog *  qp = RawPtr_to(QDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QDialog_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialog *  qp = RawPtr_to(QDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setVisible(visible);
 	}
@@ -30,7 +30,7 @@ KMETHOD QDialog_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialog *  qp = RawPtr_to(QDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -40,12 +40,12 @@ KMETHOD QDialog_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QDialog QDialog.new(QWidget parent, int f);
+//QDialog QDialog.new(QWidget parent, QtWindowFlags f);
 KMETHOD QDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
-	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[2]);
+	initFlag(f, Qt::WindowFlags, sfp[2]);
 	KQDialog *ret_v = new KQDialog(parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -57,7 +57,7 @@ KMETHOD QDialog_isSizeGripEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialog *  qp = RawPtr_to(QDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSizeGripEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -70,7 +70,7 @@ KMETHOD QDialog_getResult(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialog *  qp = RawPtr_to(QDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->result();
 		RETURNi_(ret_v);
 	} else {
@@ -83,7 +83,7 @@ KMETHOD QDialog_setModal(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialog *  qp = RawPtr_to(QDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool modal = Boolean_to(bool, sfp[1]);
 		qp->setModal(modal);
 	}
@@ -95,7 +95,7 @@ KMETHOD QDialog_setResult(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialog *  qp = RawPtr_to(QDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		qp->setResult(i);
 	}
@@ -107,20 +107,9 @@ KMETHOD QDialog_setSizeGripEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialog *  qp = RawPtr_to(QDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setSizeGripEnabled(arg0);
-	}
-	RETURNvoid_();
-}
-
-////@Virtual void QDialog.accept();
-KMETHOD QDialog_accept(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QDialog *  qp = RawPtr_to(QDialog *, sfp[0]);
-	if (qp != NULL) {
-		qp->accept();
 	}
 	RETURNvoid_();
 }
@@ -130,7 +119,7 @@ KMETHOD QDialog_done(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialog *  qp = RawPtr_to(QDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int r = Int_to(int, sfp[1]);
 		qp->done(r);
 	}
@@ -142,7 +131,7 @@ KMETHOD QDialog_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialog *  qp = RawPtr_to(QDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->exec();
 		RETURNi_(ret_v);
 	} else {
@@ -155,7 +144,7 @@ KMETHOD QDialog_open(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialog *  qp = RawPtr_to(QDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->open();
 	}
 	RETURNvoid_();
@@ -166,7 +155,7 @@ KMETHOD QDialog_reject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDialog *  qp = RawPtr_to(QDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->reject();
 	}
 	RETURNvoid_();
@@ -269,12 +258,29 @@ bool DummyQDialog::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 3;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, accepted_func);
+	KNH_ADDNNREF(ctx, finished_func);
+	KNH_ADDNNREF(ctx, rejected_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQDialog::connection(QObject *o)
 {
-	connect(o, SIGNAL(accepted()), this, SLOT(acceptedSlot()));
-	connect(o, SIGNAL(finished(int)), this, SLOT(finishedSlot(int)));
-	connect(o, SIGNAL(rejected()), this, SLOT(rejectedSlot()));
+	QDialog *p = dynamic_cast<QDialog*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(accepted()), this, SLOT(acceptedSlot()));
+		connect(p, SIGNAL(finished(int)), this, SLOT(finishedSlot(int)));
+		connect(p, SIGNAL(rejected()), this, SLOT(rejectedSlot()));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -337,25 +343,9 @@ static void QDialog_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 3;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDialog *qp = (KQDialog *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->accepted_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->accepted_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->finished_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->finished_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->rejected_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->rejected_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -379,15 +369,6 @@ bool KQDialog::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQDialog(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QDialog";
-	cdef->free = QDialog_free;
-	cdef->reftrace = QDialog_reftrace;
-	cdef->compareTo = QDialog_compareTo;
-}
-
 static knh_IntData_t QDialogConstInt[] = {
 	{"Accepted", QDialog::Accepted},
 	{"Rejected", QDialog::Rejected},
@@ -397,4 +378,15 @@ static knh_IntData_t QDialogConstInt[] = {
 DEFAPI(void) constQDialog(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QDialogConstInt);
 }
+
+
+DEFAPI(void) defQDialog(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QDialog";
+	cdef->free = QDialog_free;
+	cdef->reftrace = QDialog_reftrace;
+	cdef->compareTo = QDialog_compareTo;
+}
+
 

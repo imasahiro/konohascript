@@ -2,9 +2,8 @@
 KMETHOD QLibraryInfo_buildDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QLibraryInfo *  qp = RawPtr_to(QLibraryInfo *, sfp[0]);
-	if (qp != NULL) {
-		QDate ret_v = qp->buildDate();
+	if (true) {
+		QDate ret_v = QLibraryInfo::buildDate();
 		QDate *ret_v_ = new QDate(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -17,9 +16,8 @@ KMETHOD QLibraryInfo_buildDate(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QLibraryInfo_buildKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QLibraryInfo *  qp = RawPtr_to(QLibraryInfo *, sfp[0]);
-	if (qp != NULL) {
-		QString ret_v = qp->buildKey();
+	if (true) {
+		QString ret_v = QLibraryInfo::buildKey();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -31,9 +29,8 @@ KMETHOD QLibraryInfo_buildKey(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QLibraryInfo_licensedProducts(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QLibraryInfo *  qp = RawPtr_to(QLibraryInfo *, sfp[0]);
-	if (qp != NULL) {
-		QString ret_v = qp->licensedProducts();
+	if (true) {
+		QString ret_v = QLibraryInfo::licensedProducts();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -45,9 +42,8 @@ KMETHOD QLibraryInfo_licensedProducts(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QLibraryInfo_licensee(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QLibraryInfo *  qp = RawPtr_to(QLibraryInfo *, sfp[0]);
-	if (qp != NULL) {
-		QString ret_v = qp->licensee();
+	if (true) {
+		QString ret_v = QLibraryInfo::licensee();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -59,10 +55,9 @@ KMETHOD QLibraryInfo_licensee(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QLibraryInfo_location(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QLibraryInfo *  qp = RawPtr_to(QLibraryInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QLibraryInfo::LibraryLocation loc = Int_to(QLibraryInfo::LibraryLocation, sfp[1]);
-		QString ret_v = qp->location(loc);
+		QString ret_v = QLibraryInfo::location(loc);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -70,6 +65,24 @@ KMETHOD QLibraryInfo_location(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QLibraryInfo.parents();
+KMETHOD QLibraryInfo_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QLibraryInfo *qp = RawPtr_to(QLibraryInfo*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQLibraryInfo::DummyQLibraryInfo()
 {
@@ -118,10 +131,22 @@ bool DummyQLibraryInfo::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQLibraryInfo::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQLibraryInfo::connection(QObject *o)
 {
-	return;
+	QLibraryInfo *p = dynamic_cast<QLibraryInfo*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QLibraryInfo_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -176,13 +201,9 @@ static void QLibraryInfo_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QLibraryInfo_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQLibraryInfo *qp = (KQLibraryInfo *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -195,15 +216,6 @@ void KQLibraryInfo::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQLibraryInfo(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QLibraryInfo";
-	cdef->free = QLibraryInfo_free;
-	cdef->reftrace = QLibraryInfo_reftrace;
-	cdef->compareTo = QLibraryInfo_compareTo;
 }
 
 static knh_IntData_t QLibraryInfoConstInt[] = {
@@ -225,4 +237,15 @@ static knh_IntData_t QLibraryInfoConstInt[] = {
 DEFAPI(void) constQLibraryInfo(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QLibraryInfoConstInt);
 }
+
+
+DEFAPI(void) defQLibraryInfo(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QLibraryInfo";
+	cdef->free = QLibraryInfo_free;
+	cdef->reftrace = QLibraryInfo_reftrace;
+	cdef->compareTo = QLibraryInfo_compareTo;
+}
+
 

@@ -1,24 +1,26 @@
-////void QGraphicsSceneDragDropEvent.acceptProposedAction();
+//void QGraphicsSceneDragDropEvent.acceptProposedAction();
 KMETHOD QGraphicsSceneDragDropEvent_acceptProposedAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneDragDropEvent *  qp = RawPtr_to(QGraphicsSceneDragDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->acceptProposedAction();
 	}
 	RETURNvoid_();
 }
 
-//int QGraphicsSceneDragDropEvent.buttons();
+//QtMouseButtons QGraphicsSceneDragDropEvent.buttons();
 KMETHOD QGraphicsSceneDragDropEvent_buttons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneDragDropEvent *  qp = RawPtr_to(QGraphicsSceneDragDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::MouseButtons ret_v = qp->buttons();
-		RETURNi_(ret_v);
+		Qt::MouseButtons *ret_v_ = new Qt::MouseButtons(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -27,7 +29,7 @@ KMETHOD QGraphicsSceneDragDropEvent_getDropAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneDragDropEvent *  qp = RawPtr_to(QGraphicsSceneDragDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DropAction ret_v = qp->dropAction();
 		RETURNi_(ret_v);
 	} else {
@@ -40,7 +42,7 @@ KMETHOD QGraphicsSceneDragDropEvent_mimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneDragDropEvent *  qp = RawPtr_to(QGraphicsSceneDragDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMimeData* ret_v = qp->mimeData();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMimeData*)ret_v, NULL);
 		RETURN_(rptr);
@@ -49,16 +51,18 @@ KMETHOD QGraphicsSceneDragDropEvent_mimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QGraphicsSceneDragDropEvent.modifiers();
+//QtKeyboardModifiers QGraphicsSceneDragDropEvent.modifiers();
 KMETHOD QGraphicsSceneDragDropEvent_modifiers(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneDragDropEvent *  qp = RawPtr_to(QGraphicsSceneDragDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::KeyboardModifiers ret_v = qp->modifiers();
-		RETURNi_(ret_v);
+		Qt::KeyboardModifiers *ret_v_ = new Qt::KeyboardModifiers(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -67,7 +71,7 @@ KMETHOD QGraphicsSceneDragDropEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneDragDropEvent *  qp = RawPtr_to(QGraphicsSceneDragDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->pos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -77,16 +81,18 @@ KMETHOD QGraphicsSceneDragDropEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QGraphicsSceneDragDropEvent.possibleActions();
+//QtDropActions QGraphicsSceneDragDropEvent.possibleActions();
 KMETHOD QGraphicsSceneDragDropEvent_possibleActions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneDragDropEvent *  qp = RawPtr_to(QGraphicsSceneDragDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DropActions ret_v = qp->possibleActions();
-		RETURNi_(ret_v);
+		Qt::DropActions *ret_v_ = new Qt::DropActions(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -95,7 +101,7 @@ KMETHOD QGraphicsSceneDragDropEvent_proposedAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneDragDropEvent *  qp = RawPtr_to(QGraphicsSceneDragDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DropAction ret_v = qp->proposedAction();
 		RETURNi_(ret_v);
 	} else {
@@ -108,7 +114,7 @@ KMETHOD QGraphicsSceneDragDropEvent_scenePos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneDragDropEvent *  qp = RawPtr_to(QGraphicsSceneDragDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->scenePos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -123,7 +129,7 @@ KMETHOD QGraphicsSceneDragDropEvent_screenPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneDragDropEvent *  qp = RawPtr_to(QGraphicsSceneDragDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPoint ret_v = qp->screenPos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -138,7 +144,7 @@ KMETHOD QGraphicsSceneDragDropEvent_setDropAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneDragDropEvent *  qp = RawPtr_to(QGraphicsSceneDragDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DropAction action = Int_to(Qt::DropAction, sfp[1]);
 		qp->setDropAction(action);
 	}
@@ -150,7 +156,7 @@ KMETHOD QGraphicsSceneDragDropEvent_source(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneDragDropEvent *  qp = RawPtr_to(QGraphicsSceneDragDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->source();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -210,17 +216,24 @@ bool DummyQGraphicsSceneDragDropEvent::signalConnect(knh_Func_t *callback_func, 
 	}
 }
 
+void DummyQGraphicsSceneDragDropEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsSceneEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsSceneDragDropEvent::connection(QObject *o)
 {
+	QGraphicsSceneDragDropEvent *p = dynamic_cast<QGraphicsSceneDragDropEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQGraphicsSceneEvent::connection(o);
-}
-
-KQGraphicsSceneDragDropEvent::KQGraphicsSceneDragDropEvent() : QGraphicsSceneDragDropEvent()
-{
-	self = NULL;
-	dummy = new DummyQGraphicsSceneDragDropEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsSceneDragDropEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -275,13 +288,9 @@ static void QGraphicsSceneDragDropEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsSceneDragDropEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneDragDropEvent *qp = (KQGraphicsSceneDragDropEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -295,6 +304,8 @@ void KQGraphicsSceneDragDropEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGraphicsSceneDragDropEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

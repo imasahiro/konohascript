@@ -4,8 +4,8 @@ KMETHOD QInputContext_actions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputContext *  qp = RawPtr_to(QInputContext *, sfp[0]);
-	if (qp != NULL) {
-		QList<QAction*>ret_v = qp->actions();
+	if (qp) {
+		QList<QAction*> ret_v = qp->actions();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QAction"));
@@ -25,7 +25,7 @@ KMETHOD QInputContext_filterEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputContext *  qp = RawPtr_to(QInputContext *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QEvent*  event = RawPtr_to(const QEvent*, sfp[1]);
 		bool ret_v = qp->filterEvent(event);
 		RETURNb_(ret_v);
@@ -39,7 +39,7 @@ KMETHOD QInputContext_getFocusWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputContext *  qp = RawPtr_to(QInputContext *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->focusWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -53,7 +53,7 @@ KMETHOD QInputContext_font(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputContext *  qp = RawPtr_to(QInputContext *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont ret_v = qp->font();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -68,7 +68,7 @@ KMETHOD QInputContext_identifierName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputContext *  qp = RawPtr_to(QInputContext *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->identifierName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -82,7 +82,7 @@ KMETHOD QInputContext_isComposing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputContext *  qp = RawPtr_to(QInputContext *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isComposing();
 		RETURNb_(ret_v);
 	} else {
@@ -95,7 +95,7 @@ KMETHOD QInputContext_language(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputContext *  qp = RawPtr_to(QInputContext *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->language();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -109,7 +109,7 @@ KMETHOD QInputContext_mouseHandler(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputContext *  qp = RawPtr_to(QInputContext *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		QMouseEvent*  event = RawPtr_to(QMouseEvent*, sfp[2]);
 		qp->mouseHandler(x, event);
@@ -122,7 +122,7 @@ KMETHOD QInputContext_reset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputContext *  qp = RawPtr_to(QInputContext *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->reset();
 	}
 	RETURNvoid_();
@@ -133,7 +133,7 @@ KMETHOD QInputContext_sendEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputContext *  qp = RawPtr_to(QInputContext *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QInputMethodEvent  event = *RawPtr_to(const QInputMethodEvent *, sfp[1]);
 		qp->sendEvent(event);
 	}
@@ -145,7 +145,7 @@ KMETHOD QInputContext_setFocusWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputContext *  qp = RawPtr_to(QInputContext *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->setFocusWidget(widget);
 	}
@@ -157,7 +157,7 @@ KMETHOD QInputContext_standardFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputContext *  qp = RawPtr_to(QInputContext *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QInputContext::StandardFormat s = Int_to(QInputContext::StandardFormat, sfp[1]);
 		QTextFormat ret_v = qp->standardFormat(s);
 		QTextFormat *ret_v_ = new QTextFormat(ret_v);
@@ -173,7 +173,7 @@ KMETHOD QInputContext_update(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputContext *  qp = RawPtr_to(QInputContext *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->update();
 	}
 	RETURNvoid_();
@@ -184,7 +184,7 @@ KMETHOD QInputContext_widgetDestroyed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputContext *  qp = RawPtr_to(QInputContext *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->widgetDestroyed(widget);
 	}
@@ -242,9 +242,23 @@ bool DummyQInputContext::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQInputContext::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQInputContext::connection(QObject *o)
 {
+	QInputContext *p = dynamic_cast<QInputContext*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
 }
 
@@ -307,13 +321,9 @@ static void QInputContext_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QInputContext_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQInputContext *qp = (KQInputContext *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -337,15 +347,6 @@ bool KQInputContext::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQInputContext(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QInputContext";
-	cdef->free = QInputContext_free;
-	cdef->reftrace = QInputContext_reftrace;
-	cdef->compareTo = QInputContext_compareTo;
-}
-
 static knh_IntData_t QInputContextConstInt[] = {
 	{"PreeditFormat", QInputContext::PreeditFormat},
 	{"SelectionFormat", QInputContext::SelectionFormat},
@@ -355,4 +356,15 @@ static knh_IntData_t QInputContextConstInt[] = {
 DEFAPI(void) constQInputContext(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QInputContextConstInt);
 }
+
+
+DEFAPI(void) defQInputContext(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QInputContext";
+	cdef->free = QInputContext_free;
+	cdef->reftrace = QInputContext_reftrace;
+	cdef->compareTo = QInputContext_compareTo;
+}
+
 

@@ -29,7 +29,7 @@ KMETHOD QMouseEventTransition_getButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEventTransition *  qp = RawPtr_to(QMouseEventTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::MouseButton ret_v = qp->button();
 		RETURNi_(ret_v);
 	} else {
@@ -42,7 +42,7 @@ KMETHOD QMouseEventTransition_getHitTestPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEventTransition *  qp = RawPtr_to(QMouseEventTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->hitTestPath();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -52,16 +52,18 @@ KMETHOD QMouseEventTransition_getHitTestPath(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QMouseEventTransition.getModifierMask();
+//QtKeyboardModifiers QMouseEventTransition.getModifierMask();
 KMETHOD QMouseEventTransition_getModifierMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEventTransition *  qp = RawPtr_to(QMouseEventTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::KeyboardModifiers ret_v = qp->modifierMask();
-		RETURNi_(ret_v);
+		Qt::KeyboardModifiers *ret_v_ = new Qt::KeyboardModifiers(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -70,7 +72,7 @@ KMETHOD QMouseEventTransition_setButton(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEventTransition *  qp = RawPtr_to(QMouseEventTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::MouseButton button = Int_to(Qt::MouseButton, sfp[1]);
 		qp->setButton(button);
 	}
@@ -82,20 +84,20 @@ KMETHOD QMouseEventTransition_setHitTestPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEventTransition *  qp = RawPtr_to(QMouseEventTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		qp->setHitTestPath(path);
 	}
 	RETURNvoid_();
 }
 
-//void QMouseEventTransition.setModifierMask(int modifierMask);
+//void QMouseEventTransition.setModifierMask(QtKeyboardModifiers modifierMask);
 KMETHOD QMouseEventTransition_setModifierMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMouseEventTransition *  qp = RawPtr_to(QMouseEventTransition *, sfp[0]);
-	if (qp != NULL) {
-		Qt::KeyboardModifiers modifierMask = Int_to(Qt::KeyboardModifiers, sfp[1]);
+	if (qp) {
+		initFlag(modifierMask, Qt::KeyboardModifiers, sfp[1]);
 		qp->setModifierMask(modifierMask);
 	}
 	RETURNvoid_();
@@ -152,9 +154,23 @@ bool DummyQMouseEventTransition::signalConnect(knh_Func_t *callback_func, string
 	}
 }
 
+void DummyQMouseEventTransition::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEventTransition::reftrace(ctx, p, tail_);
+}
 
 void DummyQMouseEventTransition::connection(QObject *o)
 {
+	QMouseEventTransition *p = dynamic_cast<QMouseEventTransition*>(o);
+	if (p != NULL) {
+	}
 	DummyQEventTransition::connection(o);
 }
 
@@ -217,13 +233,9 @@ static void QMouseEventTransition_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMouseEventTransition_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMouseEventTransition *qp = (KQMouseEventTransition *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -246,6 +258,8 @@ bool KQMouseEventTransition::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQMouseEventTransition(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

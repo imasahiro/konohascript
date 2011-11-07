@@ -71,9 +71,23 @@ bool DummyQStyleOptionFrame::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
+void DummyQStyleOptionFrame::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOption::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionFrame::connection(QObject *o)
 {
+	QStyleOptionFrame *p = dynamic_cast<QStyleOptionFrame*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOption::connection(o);
 }
 
@@ -81,7 +95,6 @@ KQStyleOptionFrame::KQStyleOptionFrame() : QStyleOptionFrame()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionFrame();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionFrame_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,13 +149,9 @@ static void QStyleOptionFrame_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionFrame_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionFrame *qp = (KQStyleOptionFrame *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -157,15 +166,6 @@ void KQStyleOptionFrame::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStyleOptionFrame(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionFrame";
-	cdef->free = QStyleOptionFrame_free;
-	cdef->reftrace = QStyleOptionFrame_reftrace;
-	cdef->compareTo = QStyleOptionFrame_compareTo;
-}
-
 static knh_IntData_t QStyleOptionFrameConstInt[] = {
 	{"Type", QStyleOptionFrame::Type},
 	{"Version", QStyleOptionFrame::Version},
@@ -175,4 +175,15 @@ static knh_IntData_t QStyleOptionFrameConstInt[] = {
 DEFAPI(void) constQStyleOptionFrame(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionFrameConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionFrame(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionFrame";
+	cdef->free = QStyleOptionFrame_free;
+	cdef->reftrace = QStyleOptionFrame_reftrace;
+	cdef->compareTo = QStyleOptionFrame_compareTo;
+}
+
 

@@ -14,7 +14,7 @@ KMETHOD QWriteLocker_readWriteLock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWriteLocker *  qp = RawPtr_to(QWriteLocker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QReadWriteLock* ret_v = qp->readWriteLock();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QReadWriteLock*)ret_v, NULL);
 		RETURN_(rptr);
@@ -28,7 +28,7 @@ KMETHOD QWriteLocker_relock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWriteLocker *  qp = RawPtr_to(QWriteLocker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->relock();
 	}
 	RETURNvoid_();
@@ -39,12 +39,30 @@ KMETHOD QWriteLocker_unlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWriteLocker *  qp = RawPtr_to(QWriteLocker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->unlock();
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QWriteLocker.parents();
+KMETHOD QWriteLocker_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QWriteLocker *qp = RawPtr_to(QWriteLocker*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQWriteLocker::DummyQWriteLocker()
 {
@@ -93,17 +111,28 @@ bool DummyQWriteLocker::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQWriteLocker::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQWriteLocker::connection(QObject *o)
 {
-	return;
+	QWriteLocker *p = dynamic_cast<QWriteLocker*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQWriteLocker::KQWriteLocker(QReadWriteLock* lock) : QWriteLocker(lock)
 {
 	self = NULL;
 	dummy = new DummyQWriteLocker();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QWriteLocker_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -158,13 +187,9 @@ static void QWriteLocker_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QWriteLocker_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQWriteLocker *qp = (KQWriteLocker *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -178,6 +203,8 @@ void KQWriteLocker::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQWriteLocker(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

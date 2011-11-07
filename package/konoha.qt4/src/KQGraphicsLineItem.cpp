@@ -3,7 +3,7 @@ KMETHOD QGraphicsLineItem_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLineItem *  qp = RawPtr_to(QGraphicsLineItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->boundingRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QGraphicsLineItem_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLineItem *  qp = RawPtr_to(QGraphicsLineItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		bool ret_v = qp->contains(point);
 		RETURNb_(ret_v);
@@ -32,7 +32,7 @@ KMETHOD QGraphicsLineItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLineItem *  qp = RawPtr_to(QGraphicsLineItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		bool ret_v = qp->isObscuredBy(item);
 		RETURNb_(ret_v);
@@ -46,7 +46,7 @@ KMETHOD QGraphicsLineItem_opaqueArea(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLineItem *  qp = RawPtr_to(QGraphicsLineItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->opaqueArea();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -61,7 +61,7 @@ KMETHOD QGraphicsLineItem_paint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLineItem *  qp = RawPtr_to(QGraphicsLineItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
@@ -75,7 +75,7 @@ KMETHOD QGraphicsLineItem_shape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLineItem *  qp = RawPtr_to(QGraphicsLineItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->shape();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -90,7 +90,7 @@ KMETHOD QGraphicsLineItem_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLineItem *  qp = RawPtr_to(QGraphicsLineItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -143,7 +143,7 @@ KMETHOD QGraphicsLineItem_getLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLineItem *  qp = RawPtr_to(QGraphicsLineItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLineF ret_v = qp->line();
 		QLineF *ret_v_ = new QLineF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -158,7 +158,7 @@ KMETHOD QGraphicsLineItem_getPen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLineItem *  qp = RawPtr_to(QGraphicsLineItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPen ret_v = qp->pen();
 		QPen *ret_v_ = new QPen(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -173,7 +173,7 @@ KMETHOD QGraphicsLineItem_setLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLineItem *  qp = RawPtr_to(QGraphicsLineItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QLineF  line = *RawPtr_to(const QLineF *, sfp[1]);
 		qp->setLine(line);
 	}
@@ -186,7 +186,7 @@ KMETHOD QGraphicsLineItem_setLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLineItem *  qp = RawPtr_to(QGraphicsLineItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x1 = Float_to(qreal, sfp[1]);
 		qreal y1 = Float_to(qreal, sfp[2]);
 		qreal x2 = Float_to(qreal, sfp[3]);
@@ -201,7 +201,7 @@ KMETHOD QGraphicsLineItem_setPen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLineItem *  qp = RawPtr_to(QGraphicsLineItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPen  pen = *RawPtr_to(const QPen *, sfp[1]);
 		qp->setPen(pen);
 	}
@@ -259,9 +259,23 @@ bool DummyQGraphicsLineItem::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
+void DummyQGraphicsLineItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsItem::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsLineItem::connection(QObject *o)
 {
+	QGraphicsLineItem *p = dynamic_cast<QGraphicsLineItem*>(o);
+	if (p != NULL) {
+	}
 	DummyQGraphicsItem::connection(o);
 }
 
@@ -269,7 +283,6 @@ KQGraphicsLineItem::KQGraphicsLineItem(QGraphicsItem* parent) : QGraphicsLineIte
 {
 	self = NULL;
 	dummy = new DummyQGraphicsLineItem();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsLineItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -324,13 +337,9 @@ static void QGraphicsLineItem_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsLineItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsLineItem *qp = (KQGraphicsLineItem *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -344,6 +353,8 @@ void KQGraphicsLineItem::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGraphicsLineItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

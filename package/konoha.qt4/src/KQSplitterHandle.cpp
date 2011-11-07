@@ -3,7 +3,7 @@ KMETHOD QSplitterHandle_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitterHandle *  qp = RawPtr_to(QSplitterHandle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -30,7 +30,7 @@ KMETHOD QSplitterHandle_opaqueResize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitterHandle *  qp = RawPtr_to(QSplitterHandle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->opaqueResize();
 		RETURNb_(ret_v);
 	} else {
@@ -43,7 +43,7 @@ KMETHOD QSplitterHandle_getOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitterHandle *  qp = RawPtr_to(QSplitterHandle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation ret_v = qp->orientation();
 		RETURNi_(ret_v);
 	} else {
@@ -56,7 +56,7 @@ KMETHOD QSplitterHandle_setOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitterHandle *  qp = RawPtr_to(QSplitterHandle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation orientation = Int_to(Qt::Orientation, sfp[1]);
 		qp->setOrientation(orientation);
 	}
@@ -68,7 +68,7 @@ KMETHOD QSplitterHandle_splitter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QSplitterHandle *  qp = RawPtr_to(QSplitterHandle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSplitter* ret_v = qp->splitter();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QSplitter*)ret_v, NULL);
 		RETURN_(rptr);
@@ -128,9 +128,23 @@ bool DummyQSplitterHandle::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQSplitterHandle::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQSplitterHandle::connection(QObject *o)
 {
+	QSplitterHandle *p = dynamic_cast<QSplitterHandle*>(o);
+	if (p != NULL) {
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -193,13 +207,9 @@ static void QSplitterHandle_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QSplitterHandle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQSplitterHandle *qp = (KQSplitterHandle *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -222,6 +232,8 @@ bool KQSplitterHandle::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQSplitterHandle(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

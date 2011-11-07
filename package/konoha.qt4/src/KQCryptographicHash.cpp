@@ -14,7 +14,7 @@ KMETHOD QCryptographicHash_addData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCryptographicHash *  qp = RawPtr_to(QCryptographicHash *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  data = RawPtr_to(const char*, sfp[1]);
 		int length = Int_to(int, sfp[2]);
 		qp->addData(data, length);
@@ -28,7 +28,7 @@ KMETHOD QCryptographicHash_addData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCryptographicHash *  qp = RawPtr_to(QCryptographicHash *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  data = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->addData(data);
 	}
@@ -40,7 +40,7 @@ KMETHOD QCryptographicHash_reset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCryptographicHash *  qp = RawPtr_to(QCryptographicHash *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->reset();
 	}
 	RETURNvoid_();
@@ -51,7 +51,7 @@ KMETHOD QCryptographicHash_result(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCryptographicHash *  qp = RawPtr_to(QCryptographicHash *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->result();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -65,11 +65,10 @@ KMETHOD QCryptographicHash_result(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QCryptographicHash_hash(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QCryptographicHash *  qp = RawPtr_to(QCryptographicHash *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QByteArray  data = *RawPtr_to(const QByteArray *, sfp[1]);
 		QCryptographicHash::Algorithm method = Int_to(QCryptographicHash::Algorithm, sfp[2]);
-		QByteArray ret_v = qp->hash(data, method);
+		QByteArray ret_v = QCryptographicHash::hash(data, method);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -78,6 +77,24 @@ KMETHOD QCryptographicHash_hash(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QCryptographicHash.parents();
+KMETHOD QCryptographicHash_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QCryptographicHash *qp = RawPtr_to(QCryptographicHash*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQCryptographicHash::DummyQCryptographicHash()
 {
@@ -126,17 +143,28 @@ bool DummyQCryptographicHash::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
+void DummyQCryptographicHash::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQCryptographicHash::connection(QObject *o)
 {
-	return;
+	QCryptographicHash *p = dynamic_cast<QCryptographicHash*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQCryptographicHash::KQCryptographicHash(QCryptographicHash::Algorithm method) : QCryptographicHash(method)
 {
 	self = NULL;
 	dummy = new DummyQCryptographicHash();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QCryptographicHash_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -191,13 +219,9 @@ static void QCryptographicHash_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QCryptographicHash_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQCryptographicHash *qp = (KQCryptographicHash *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -212,15 +236,6 @@ void KQCryptographicHash::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQCryptographicHash(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QCryptographicHash";
-	cdef->free = QCryptographicHash_free;
-	cdef->reftrace = QCryptographicHash_reftrace;
-	cdef->compareTo = QCryptographicHash_compareTo;
-}
-
 static knh_IntData_t QCryptographicHashConstInt[] = {
 	{"Md4", QCryptographicHash::Md4},
 	{"Md5", QCryptographicHash::Md5},
@@ -231,4 +246,15 @@ static knh_IntData_t QCryptographicHashConstInt[] = {
 DEFAPI(void) constQCryptographicHash(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QCryptographicHashConstInt);
 }
+
+
+DEFAPI(void) defQCryptographicHash(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QCryptographicHash";
+	cdef->free = QCryptographicHash_free;
+	cdef->reftrace = QCryptographicHash_reftrace;
+	cdef->compareTo = QCryptographicHash_compareTo;
+}
+
 

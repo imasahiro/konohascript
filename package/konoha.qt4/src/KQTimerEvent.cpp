@@ -14,7 +14,7 @@ KMETHOD QTimerEvent_timerId(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTimerEvent *  qp = RawPtr_to(QTimerEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->timerId();
 		RETURNi_(ret_v);
 	} else {
@@ -73,9 +73,23 @@ bool DummyQTimerEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTimerEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQTimerEvent::connection(QObject *o)
 {
+	QTimerEvent *p = dynamic_cast<QTimerEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -83,7 +97,6 @@ KQTimerEvent::KQTimerEvent(int timerId) : QTimerEvent(timerId)
 {
 	self = NULL;
 	dummy = new DummyQTimerEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTimerEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -138,13 +151,9 @@ static void QTimerEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTimerEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTimerEvent *qp = (KQTimerEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -158,6 +167,8 @@ void KQTimerEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQTimerEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -3,7 +3,7 @@ KMETHOD QCommonStyle_drawComplexControl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCommonStyle::ComplexControl cc = Int_to(QCommonStyle::ComplexControl, sfp[1]);
 		const QStyleOptionComplex*  opt = RawPtr_to(const QStyleOptionComplex*, sfp[2]);
 		QPainter*  p = RawPtr_to(QPainter*, sfp[3]);
@@ -18,7 +18,7 @@ KMETHOD QCommonStyle_drawControl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCommonStyle::ControlElement element = Int_to(QCommonStyle::ControlElement, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		QPainter*  p = RawPtr_to(QPainter*, sfp[3]);
@@ -33,7 +33,7 @@ KMETHOD QCommonStyle_drawPrimitive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCommonStyle::PrimitiveElement pe = Int_to(QCommonStyle::PrimitiveElement, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		QPainter*  p = RawPtr_to(QPainter*, sfp[3]);
@@ -48,7 +48,7 @@ KMETHOD QCommonStyle_generatedIconPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIcon::Mode iconMode = Int_to(QIcon::Mode, sfp[1]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[3]);
@@ -66,7 +66,7 @@ KMETHOD QCommonStyle_hitTestComplexControl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCommonStyle::ComplexControl cc = Int_to(QCommonStyle::ComplexControl, sfp[1]);
 		const QStyleOptionComplex*  opt = RawPtr_to(const QStyleOptionComplex*, sfp[2]);
 		const QPoint  pt = *RawPtr_to(const QPoint *, sfp[3]);
@@ -83,7 +83,7 @@ KMETHOD QCommonStyle_pixelMetric(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCommonStyle::PixelMetric m = Int_to(QCommonStyle::PixelMetric, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -100,7 +100,7 @@ KMETHOD QCommonStyle_polish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette  pal = *RawPtr_to(QPalette *, sfp[1]);
 		qp->polish(pal);
 	}
@@ -113,7 +113,7 @@ KMETHOD QCommonStyle_polish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QApplication*  app = RawPtr_to(QApplication*, sfp[1]);
 		qp->polish(app);
 	}
@@ -126,7 +126,7 @@ KMETHOD QCommonStyle_polish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->polish(widget);
 	}
@@ -138,7 +138,7 @@ KMETHOD QCommonStyle_sizeFromContents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCommonStyle::ContentsType ct = Int_to(QCommonStyle::ContentsType, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QSize  csz = *RawPtr_to(const QSize *, sfp[3]);
@@ -157,7 +157,7 @@ KMETHOD QCommonStyle_standardPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCommonStyle::StandardPixmap sp = Int_to(QCommonStyle::StandardPixmap, sfp[1]);
 		const QStyleOption*  option = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -175,7 +175,7 @@ KMETHOD QCommonStyle_styleHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCommonStyle::StyleHint sh = Int_to(QCommonStyle::StyleHint, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -192,7 +192,7 @@ KMETHOD QCommonStyle_subControlRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCommonStyle::ComplexControl cc = Int_to(QCommonStyle::ComplexControl, sfp[1]);
 		const QStyleOptionComplex*  opt = RawPtr_to(const QStyleOptionComplex*, sfp[2]);
 		QCommonStyle::SubControl sc = Int_to(QCommonStyle::SubControl, sfp[3]);
@@ -211,7 +211,7 @@ KMETHOD QCommonStyle_subElementRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCommonStyle::SubElement sr = Int_to(QCommonStyle::SubElement, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -230,7 +230,7 @@ KMETHOD QCommonStyle_unpolish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->unpolish(widget);
 	}
@@ -243,7 +243,7 @@ KMETHOD QCommonStyle_unpolish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommonStyle *  qp = RawPtr_to(QCommonStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QApplication*  application = RawPtr_to(QApplication*, sfp[1]);
 		qp->unpolish(application);
 	}
@@ -311,9 +311,23 @@ bool DummyQCommonStyle::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQCommonStyle::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyle::reftrace(ctx, p, tail_);
+}
 
 void DummyQCommonStyle::connection(QObject *o)
 {
+	QCommonStyle *p = dynamic_cast<QCommonStyle*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyle::connection(o);
 }
 
@@ -376,13 +390,9 @@ static void QCommonStyle_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QCommonStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQCommonStyle *qp = (KQCommonStyle *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -405,6 +415,8 @@ bool KQCommonStyle::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQCommonStyle(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

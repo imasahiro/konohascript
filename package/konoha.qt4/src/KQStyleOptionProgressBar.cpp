@@ -71,9 +71,23 @@ bool DummyQStyleOptionProgressBar::signalConnect(knh_Func_t *callback_func, stri
 	}
 }
 
+void DummyQStyleOptionProgressBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOption::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionProgressBar::connection(QObject *o)
 {
+	QStyleOptionProgressBar *p = dynamic_cast<QStyleOptionProgressBar*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOption::connection(o);
 }
 
@@ -81,7 +95,6 @@ KQStyleOptionProgressBar::KQStyleOptionProgressBar() : QStyleOptionProgressBar()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionProgressBar();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionProgressBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,13 +149,9 @@ static void QStyleOptionProgressBar_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionProgressBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionProgressBar *qp = (KQStyleOptionProgressBar *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -157,15 +166,6 @@ void KQStyleOptionProgressBar::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStyleOptionProgressBar(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionProgressBar";
-	cdef->free = QStyleOptionProgressBar_free;
-	cdef->reftrace = QStyleOptionProgressBar_reftrace;
-	cdef->compareTo = QStyleOptionProgressBar_compareTo;
-}
-
 static knh_IntData_t QStyleOptionProgressBarConstInt[] = {
 	{"Type", QStyleOptionProgressBar::Type},
 	{"Version", QStyleOptionProgressBar::Version},
@@ -175,4 +175,15 @@ static knh_IntData_t QStyleOptionProgressBarConstInt[] = {
 DEFAPI(void) constQStyleOptionProgressBar(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionProgressBarConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionProgressBar(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionProgressBar";
+	cdef->free = QStyleOptionProgressBar_free;
+	cdef->reftrace = QStyleOptionProgressBar_reftrace;
+	cdef->compareTo = QStyleOptionProgressBar_compareTo;
+}
+
 

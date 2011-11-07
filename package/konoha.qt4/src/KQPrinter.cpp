@@ -3,7 +3,7 @@ KMETHOD QPrinter_paintEngine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPaintEngine* ret_v = qp->paintEngine();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPaintEngine*)ret_v, NULL);
 		RETURN_(rptr);
@@ -41,7 +41,7 @@ KMETHOD QPrinter_abort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->abort();
 		RETURNb_(ret_v);
 	} else {
@@ -54,7 +54,7 @@ KMETHOD QPrinter_getCollateCopies(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->collateCopies();
 		RETURNb_(ret_v);
 	} else {
@@ -67,7 +67,7 @@ KMETHOD QPrinter_getColorMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::ColorMode ret_v = qp->colorMode();
 		RETURNi_(ret_v);
 	} else {
@@ -80,7 +80,7 @@ KMETHOD QPrinter_getCopyCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->copyCount();
 		RETURNi_(ret_v);
 	} else {
@@ -93,7 +93,7 @@ KMETHOD QPrinter_getCreator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->creator();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -107,7 +107,7 @@ KMETHOD QPrinter_getDocName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->docName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -121,7 +121,7 @@ KMETHOD QPrinter_getDoubleSidedPrinting(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->doubleSidedPrinting();
 		RETURNb_(ret_v);
 	} else {
@@ -134,7 +134,7 @@ KMETHOD QPrinter_getDuplex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::DuplexMode ret_v = qp->duplex();
 		RETURNi_(ret_v);
 	} else {
@@ -147,7 +147,7 @@ KMETHOD QPrinter_getFontEmbeddingEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->fontEmbeddingEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -160,7 +160,7 @@ KMETHOD QPrinter_fromPage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->fromPage();
 		RETURNi_(ret_v);
 	} else {
@@ -173,7 +173,7 @@ KMETHOD QPrinter_getFullPage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->fullPage();
 		RETURNb_(ret_v);
 	} else {
@@ -186,7 +186,7 @@ KMETHOD QPrinter_getPageMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal*  left = RawPtr_to(qreal*, sfp[1]);
 		qreal*  top = RawPtr_to(qreal*, sfp[2]);
 		qreal*  right = RawPtr_to(qreal*, sfp[3]);
@@ -197,25 +197,12 @@ KMETHOD QPrinter_getPageMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-////boolean QPrinter.isValid();
-KMETHOD QPrinter_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
 //boolean QPrinter.newPage();
 KMETHOD QPrinter_newPage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->newPage();
 		RETURNb_(ret_v);
 	} else {
@@ -228,7 +215,7 @@ KMETHOD QPrinter_getOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::Orientation ret_v = qp->orientation();
 		RETURNi_(ret_v);
 	} else {
@@ -241,7 +228,7 @@ KMETHOD QPrinter_getOutputFileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->outputFileName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -255,7 +242,7 @@ KMETHOD QPrinter_getOutputFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::OutputFormat ret_v = qp->outputFormat();
 		RETURNi_(ret_v);
 	} else {
@@ -268,7 +255,7 @@ KMETHOD QPrinter_getPageOrder(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::PageOrder ret_v = qp->pageOrder();
 		RETURNi_(ret_v);
 	} else {
@@ -281,7 +268,7 @@ KMETHOD QPrinter_pageRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->pageRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -297,7 +284,7 @@ KMETHOD QPrinter_pageRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::Unit unit = Int_to(QPrinter::Unit, sfp[1]);
 		QRectF ret_v = qp->pageRect(unit);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -313,7 +300,7 @@ KMETHOD QPrinter_paperRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->paperRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -329,7 +316,7 @@ KMETHOD QPrinter_paperRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::Unit unit = Int_to(QPrinter::Unit, sfp[1]);
 		QRectF ret_v = qp->paperRect(unit);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -345,7 +332,7 @@ KMETHOD QPrinter_getPaperSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::PaperSize ret_v = qp->paperSize();
 		RETURNi_(ret_v);
 	} else {
@@ -359,7 +346,7 @@ KMETHOD QPrinter_getPaperSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::Unit unit = Int_to(QPrinter::Unit, sfp[1]);
 		QSizeF ret_v = qp->paperSize(unit);
 		QSizeF *ret_v_ = new QSizeF(ret_v);
@@ -375,7 +362,7 @@ KMETHOD QPrinter_getPaperSource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::PaperSource ret_v = qp->paperSource();
 		RETURNi_(ret_v);
 	} else {
@@ -388,7 +375,7 @@ KMETHOD QPrinter_printEngine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrintEngine* ret_v = qp->printEngine();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPrintEngine*)ret_v, NULL);
 		RETURN_(rptr);
@@ -402,7 +389,7 @@ KMETHOD QPrinter_getPrintProgram(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->printProgram();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -416,7 +403,7 @@ KMETHOD QPrinter_getPrintRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::PrintRange ret_v = qp->printRange();
 		RETURNi_(ret_v);
 	} else {
@@ -429,7 +416,7 @@ KMETHOD QPrinter_getPrinterName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->printerName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -443,7 +430,7 @@ KMETHOD QPrinter_getPrinterSelectionOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->printerSelectionOption();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -457,7 +444,7 @@ KMETHOD QPrinter_printerState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::PrinterState ret_v = qp->printerState();
 		RETURNi_(ret_v);
 	} else {
@@ -470,7 +457,7 @@ KMETHOD QPrinter_getResolution(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->resolution();
 		RETURNi_(ret_v);
 	} else {
@@ -483,7 +470,7 @@ KMETHOD QPrinter_setCollateCopies(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool collate = Boolean_to(bool, sfp[1]);
 		qp->setCollateCopies(collate);
 	}
@@ -495,7 +482,7 @@ KMETHOD QPrinter_setColorMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::ColorMode new_ColorMode = Int_to(QPrinter::ColorMode, sfp[1]);
 		qp->setColorMode(new_ColorMode);
 	}
@@ -507,7 +494,7 @@ KMETHOD QPrinter_setCopyCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int count = Int_to(int, sfp[1]);
 		qp->setCopyCount(count);
 	}
@@ -519,7 +506,7 @@ KMETHOD QPrinter_setCreator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString creator = String_to(const QString, sfp[1]);
 		qp->setCreator(creator);
 	}
@@ -531,7 +518,7 @@ KMETHOD QPrinter_setDocName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString name = String_to(const QString, sfp[1]);
 		qp->setDocName(name);
 	}
@@ -543,7 +530,7 @@ KMETHOD QPrinter_setDoubleSidedPrinting(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool doubleSided = Boolean_to(bool, sfp[1]);
 		qp->setDoubleSidedPrinting(doubleSided);
 	}
@@ -555,7 +542,7 @@ KMETHOD QPrinter_setDuplex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::DuplexMode duplex = Int_to(QPrinter::DuplexMode, sfp[1]);
 		qp->setDuplex(duplex);
 	}
@@ -567,7 +554,7 @@ KMETHOD QPrinter_setFontEmbeddingEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setFontEmbeddingEnabled(enable);
 	}
@@ -579,7 +566,7 @@ KMETHOD QPrinter_setFromTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int from = Int_to(int, sfp[1]);
 		int to = Int_to(int, sfp[2]);
 		qp->setFromTo(from, to);
@@ -592,7 +579,7 @@ KMETHOD QPrinter_setFullPage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool fp = Boolean_to(bool, sfp[1]);
 		qp->setFullPage(fp);
 	}
@@ -604,7 +591,7 @@ KMETHOD QPrinter_setOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::Orientation orientation = Int_to(QPrinter::Orientation, sfp[1]);
 		qp->setOrientation(orientation);
 	}
@@ -616,7 +603,7 @@ KMETHOD QPrinter_setOutputFileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
 		qp->setOutputFileName(fileName);
 	}
@@ -628,7 +615,7 @@ KMETHOD QPrinter_setOutputFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::OutputFormat format = Int_to(QPrinter::OutputFormat, sfp[1]);
 		qp->setOutputFormat(format);
 	}
@@ -640,7 +627,7 @@ KMETHOD QPrinter_setPageMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal left = Float_to(qreal, sfp[1]);
 		qreal top = Float_to(qreal, sfp[2]);
 		qreal right = Float_to(qreal, sfp[3]);
@@ -656,7 +643,7 @@ KMETHOD QPrinter_setPageOrder(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::PageOrder pageOrder = Int_to(QPrinter::PageOrder, sfp[1]);
 		qp->setPageOrder(pageOrder);
 	}
@@ -668,7 +655,7 @@ KMETHOD QPrinter_setPaperSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::PaperSize new_PaperSize = Int_to(QPrinter::PaperSize, sfp[1]);
 		qp->setPaperSize(new_PaperSize);
 	}
@@ -681,7 +668,7 @@ KMETHOD QPrinter_setPaperSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSizeF  paperSize = *RawPtr_to(const QSizeF *, sfp[1]);
 		QPrinter::Unit unit = Int_to(QPrinter::Unit, sfp[2]);
 		qp->setPaperSize(paperSize, unit);
@@ -694,7 +681,7 @@ KMETHOD QPrinter_setPaperSource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::PaperSource source = Int_to(QPrinter::PaperSource, sfp[1]);
 		qp->setPaperSource(source);
 	}
@@ -706,7 +693,7 @@ KMETHOD QPrinter_setPrintProgram(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString printProg = String_to(const QString, sfp[1]);
 		qp->setPrintProgram(printProg);
 	}
@@ -718,7 +705,7 @@ KMETHOD QPrinter_setPrintRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter::PrintRange range = Int_to(QPrinter::PrintRange, sfp[1]);
 		qp->setPrintRange(range);
 	}
@@ -730,7 +717,7 @@ KMETHOD QPrinter_setPrinterName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString name = String_to(const QString, sfp[1]);
 		qp->setPrinterName(name);
 	}
@@ -742,7 +729,7 @@ KMETHOD QPrinter_setPrinterSelectionOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString option = String_to(const QString, sfp[1]);
 		qp->setPrinterSelectionOption(option);
 	}
@@ -754,7 +741,7 @@ KMETHOD QPrinter_setResolution(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int dpi = Int_to(int, sfp[1]);
 		qp->setResolution(dpi);
 	}
@@ -766,8 +753,8 @@ KMETHOD QPrinter_supportedResolutions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
-		QList<int>ret_v = qp->supportedResolutions();
+	if (qp) {
+		QList<int> ret_v = qp->supportedResolutions();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("int"));
@@ -788,7 +775,7 @@ KMETHOD QPrinter_supportsMultipleCopies(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->supportsMultipleCopies();
 		RETURNb_(ret_v);
 	} else {
@@ -801,7 +788,7 @@ KMETHOD QPrinter_toPage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinter *  qp = RawPtr_to(QPrinter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->toPage();
 		RETURNi_(ret_v);
 	} else {
@@ -860,9 +847,23 @@ bool DummyQPrinter::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPrinter::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQPaintDevice::reftrace(ctx, p, tail_);
+}
 
 void DummyQPrinter::connection(QObject *o)
 {
+	QPrinter *p = dynamic_cast<QPrinter*>(o);
+	if (p != NULL) {
+	}
 	DummyQPaintDevice::connection(o);
 }
 
@@ -870,7 +871,6 @@ KQPrinter::KQPrinter(QPrinter::PrinterMode mode) : QPrinter(mode)
 {
 	self = NULL;
 	dummy = new DummyQPrinter();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPrinter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -925,13 +925,9 @@ static void QPrinter_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPrinter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPrinter *qp = (KQPrinter *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -944,15 +940,6 @@ void KQPrinter::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQPrinter(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QPrinter";
-	cdef->free = QPrinter_free;
-	cdef->reftrace = QPrinter_reftrace;
-	cdef->compareTo = QPrinter_compareTo;
 }
 
 static knh_IntData_t QPrinterConstInt[] = {
@@ -1038,4 +1025,15 @@ static knh_IntData_t QPrinterConstInt[] = {
 DEFAPI(void) constQPrinter(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QPrinterConstInt);
 }
+
+
+DEFAPI(void) defQPrinter(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QPrinter";
+	cdef->free = QPrinter_free;
+	cdef->reftrace = QPrinter_reftrace;
+	cdef->compareTo = QPrinter_compareTo;
+}
+
 

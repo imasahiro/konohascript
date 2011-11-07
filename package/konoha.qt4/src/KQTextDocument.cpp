@@ -27,7 +27,7 @@ KMETHOD QTextDocument_addResource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int type = Int_to(int, sfp[1]);
 		const QUrl  name = *RawPtr_to(const QUrl *, sfp[2]);
 		const QVariant  resource = *RawPtr_to(const QVariant *, sfp[3]);
@@ -41,7 +41,7 @@ KMETHOD QTextDocument_adjustSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->adjustSize();
 	}
 	RETURNvoid_();
@@ -52,7 +52,7 @@ KMETHOD QTextDocument_availableRedoSteps(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->availableRedoSteps();
 		RETURNi_(ret_v);
 	} else {
@@ -65,7 +65,7 @@ KMETHOD QTextDocument_availableUndoSteps(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->availableUndoSteps();
 		RETURNi_(ret_v);
 	} else {
@@ -78,7 +78,7 @@ KMETHOD QTextDocument_begin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextBlock ret_v = qp->begin();
 		QTextBlock *ret_v_ = new QTextBlock(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -93,7 +93,7 @@ KMETHOD QTextDocument_blockCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->blockCount();
 		RETURNi_(ret_v);
 	} else {
@@ -106,7 +106,7 @@ KMETHOD QTextDocument_characterAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int pos = Int_to(int, sfp[1]);
 		QChar ret_v = qp->characterAt(pos);
 		QChar *ret_v_ = new QChar(ret_v);
@@ -122,7 +122,7 @@ KMETHOD QTextDocument_characterCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->characterCount();
 		RETURNi_(ret_v);
 	} else {
@@ -135,7 +135,7 @@ KMETHOD QTextDocument_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -146,7 +146,7 @@ KMETHOD QTextDocument_clearUndoRedoStacks(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextDocument::Stacks stacksToClear = Int_to(QTextDocument::Stacks, sfp[1]);
 		qp->clearUndoRedoStacks(stacksToClear);
 	}
@@ -158,7 +158,7 @@ KMETHOD QTextDocument_clone(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 		QTextDocument* ret_v = qp->clone(parent);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextDocument*)ret_v, NULL);
@@ -173,7 +173,7 @@ KMETHOD QTextDocument_getDefaultFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont ret_v = qp->defaultFont();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -188,7 +188,7 @@ KMETHOD QTextDocument_getDefaultStyleSheet(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->defaultStyleSheet();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -202,7 +202,7 @@ KMETHOD QTextDocument_getDefaultTextOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextOption ret_v = qp->defaultTextOption();
 		QTextOption *ret_v_ = new QTextOption(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -217,7 +217,7 @@ KMETHOD QTextDocument_getDocumentLayout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractTextDocumentLayout* ret_v = qp->documentLayout();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractTextDocumentLayout*)ret_v, NULL);
 		RETURN_(rptr);
@@ -231,7 +231,7 @@ KMETHOD QTextDocument_getDocumentMargin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->documentMargin();
 		RETURNf_(ret_v);
 	} else {
@@ -244,7 +244,7 @@ KMETHOD QTextDocument_drawContents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  p = RawPtr_to(QPainter*, sfp[1]);
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[2]);
 		qp->drawContents(p, rect);
@@ -257,7 +257,7 @@ KMETHOD QTextDocument_end(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextBlock ret_v = qp->end();
 		QTextBlock *ret_v_ = new QTextBlock(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -267,15 +267,15 @@ KMETHOD QTextDocument_end(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QTextCursor QTextDocument.find(String subString, QTextCursor cursor, int options);
+//QTextCursor QTextDocument.find(String subString, QTextCursor cursor, QTextDocumentFindFlags options);
 KMETHOD QTextDocument_find(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString subString = String_to(const QString, sfp[1]);
 		const QTextCursor  cursor = *RawPtr_to(const QTextCursor *, sfp[2]);
-		QTextDocument::FindFlags options = Int_to(QTextDocument::FindFlags, sfp[3]);
+		initFlag(options, QTextDocument::FindFlags, sfp[3]);
 		QTextCursor ret_v = qp->find(subString, cursor, options);
 		QTextCursor *ret_v_ = new QTextCursor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -286,15 +286,15 @@ KMETHOD QTextDocument_find(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//QTextCursor QTextDocument.find(QRegExp expr, QTextCursor cursor, int options);
+//QTextCursor QTextDocument.find(QRegExp expr, QTextCursor cursor, QTextDocumentFindFlags options);
 KMETHOD QTextDocument_find(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRegExp  expr = *RawPtr_to(const QRegExp *, sfp[1]);
 		const QTextCursor  cursor = *RawPtr_to(const QTextCursor *, sfp[2]);
-		QTextDocument::FindFlags options = Int_to(QTextDocument::FindFlags, sfp[3]);
+		initFlag(options, QTextDocument::FindFlags, sfp[3]);
 		QTextCursor ret_v = qp->find(expr, cursor, options);
 		QTextCursor *ret_v_ = new QTextCursor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -305,15 +305,15 @@ KMETHOD QTextDocument_find(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 */
 /*
-//QTextCursor QTextDocument.find(String subString, int position, int options);
+//QTextCursor QTextDocument.find(String subString, int position, QTextDocumentFindFlags options);
 KMETHOD QTextDocument_find(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString subString = String_to(const QString, sfp[1]);
 		int position = Int_to(int, sfp[2]);
-		QTextDocument::FindFlags options = Int_to(QTextDocument::FindFlags, sfp[3]);
+		initFlag(options, QTextDocument::FindFlags, sfp[3]);
 		QTextCursor ret_v = qp->find(subString, position, options);
 		QTextCursor *ret_v_ = new QTextCursor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -324,15 +324,15 @@ KMETHOD QTextDocument_find(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 */
 /*
-//QTextCursor QTextDocument.find(QRegExp expr, int position, int options);
+//QTextCursor QTextDocument.find(QRegExp expr, int position, QTextDocumentFindFlags options);
 KMETHOD QTextDocument_find(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRegExp  expr = *RawPtr_to(const QRegExp *, sfp[1]);
 		int position = Int_to(int, sfp[2]);
-		QTextDocument::FindFlags options = Int_to(QTextDocument::FindFlags, sfp[3]);
+		initFlag(options, QTextDocument::FindFlags, sfp[3]);
 		QTextCursor ret_v = qp->find(expr, position, options);
 		QTextCursor *ret_v_ = new QTextCursor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -347,7 +347,7 @@ KMETHOD QTextDocument_findBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int pos = Int_to(int, sfp[1]);
 		QTextBlock ret_v = qp->findBlock(pos);
 		QTextBlock *ret_v_ = new QTextBlock(ret_v);
@@ -363,7 +363,7 @@ KMETHOD QTextDocument_findBlockByLineNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int lineNumber = Int_to(int, sfp[1]);
 		QTextBlock ret_v = qp->findBlockByLineNumber(lineNumber);
 		QTextBlock *ret_v_ = new QTextBlock(ret_v);
@@ -379,7 +379,7 @@ KMETHOD QTextDocument_findBlockByNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int blockNumber = Int_to(int, sfp[1]);
 		QTextBlock ret_v = qp->findBlockByNumber(blockNumber);
 		QTextBlock *ret_v_ = new QTextBlock(ret_v);
@@ -395,7 +395,7 @@ KMETHOD QTextDocument_firstBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextBlock ret_v = qp->firstBlock();
 		QTextBlock *ret_v_ = new QTextBlock(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -410,7 +410,7 @@ KMETHOD QTextDocument_idealWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->idealWidth();
 		RETURNf_(ret_v);
 	} else {
@@ -423,7 +423,7 @@ KMETHOD QTextDocument_getIndentWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->indentWidth();
 		RETURNf_(ret_v);
 	} else {
@@ -436,7 +436,7 @@ KMETHOD QTextDocument_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
 		RETURNb_(ret_v);
 	} else {
@@ -449,7 +449,7 @@ KMETHOD QTextDocument_isModified(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isModified();
 		RETURNb_(ret_v);
 	} else {
@@ -462,7 +462,7 @@ KMETHOD QTextDocument_isRedoAvailable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isRedoAvailable();
 		RETURNb_(ret_v);
 	} else {
@@ -475,7 +475,7 @@ KMETHOD QTextDocument_isUndoAvailable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isUndoAvailable();
 		RETURNb_(ret_v);
 	} else {
@@ -488,7 +488,7 @@ KMETHOD QTextDocument_isUndoRedoEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isUndoRedoEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -501,7 +501,7 @@ KMETHOD QTextDocument_lastBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextBlock ret_v = qp->lastBlock();
 		QTextBlock *ret_v_ = new QTextBlock(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -516,7 +516,7 @@ KMETHOD QTextDocument_lineCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->lineCount();
 		RETURNi_(ret_v);
 	} else {
@@ -529,7 +529,7 @@ KMETHOD QTextDocument_markContentsDirty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int position = Int_to(int, sfp[1]);
 		int length = Int_to(int, sfp[2]);
 		qp->markContentsDirty(position, length);
@@ -542,7 +542,7 @@ KMETHOD QTextDocument_getMaximumBlockCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->maximumBlockCount();
 		RETURNi_(ret_v);
 	} else {
@@ -555,7 +555,7 @@ KMETHOD QTextDocument_getMetaInformation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextDocument::MetaInformation info = Int_to(QTextDocument::MetaInformation, sfp[1]);
 		QString ret_v = qp->metaInformation(info);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -570,7 +570,7 @@ KMETHOD QTextDocument_object(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int objectIndex = Int_to(int, sfp[1]);
 		QTextObject* ret_v = qp->object(objectIndex);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextObject*)ret_v, NULL);
@@ -585,7 +585,7 @@ KMETHOD QTextDocument_objectForFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextFormat  f = *RawPtr_to(const QTextFormat *, sfp[1]);
 		QTextObject* ret_v = qp->objectForFormat(f);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextObject*)ret_v, NULL);
@@ -600,7 +600,7 @@ KMETHOD QTextDocument_pageCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->pageCount();
 		RETURNi_(ret_v);
 	} else {
@@ -613,7 +613,7 @@ KMETHOD QTextDocument_getPageSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizeF ret_v = qp->pageSize();
 		QSizeF *ret_v_ = new QSizeF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -628,7 +628,7 @@ KMETHOD QTextDocument_print(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter*  printer = RawPtr_to(QPrinter*, sfp[1]);
 		qp->print(printer);
 	}
@@ -640,7 +640,7 @@ KMETHOD QTextDocument_redo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCursor*  cursor = RawPtr_to(QTextCursor*, sfp[1]);
 		qp->redo(cursor);
 	}
@@ -652,7 +652,7 @@ KMETHOD QTextDocument_resource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int type = Int_to(int, sfp[1]);
 		const QUrl  name = *RawPtr_to(const QUrl *, sfp[2]);
 		QVariant ret_v = qp->resource(type, name);
@@ -669,7 +669,7 @@ KMETHOD QTextDocument_revision(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->revision();
 		RETURNi_(ret_v);
 	} else {
@@ -682,7 +682,7 @@ KMETHOD QTextDocument_rootFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextFrame* ret_v = qp->rootFrame();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QTextFrame*)ret_v, NULL);
 		RETURN_(rptr);
@@ -696,7 +696,7 @@ KMETHOD QTextDocument_setDefaultFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont  font = *RawPtr_to(const QFont *, sfp[1]);
 		qp->setDefaultFont(font);
 	}
@@ -708,7 +708,7 @@ KMETHOD QTextDocument_setDefaultStyleSheet(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString sheet = String_to(const QString, sfp[1]);
 		qp->setDefaultStyleSheet(sheet);
 	}
@@ -720,7 +720,7 @@ KMETHOD QTextDocument_setDefaultTextOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextOption  option = *RawPtr_to(const QTextOption *, sfp[1]);
 		qp->setDefaultTextOption(option);
 	}
@@ -732,7 +732,7 @@ KMETHOD QTextDocument_setDocumentLayout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractTextDocumentLayout*  layout = RawPtr_to(QAbstractTextDocumentLayout*, sfp[1]);
 		qp->setDocumentLayout(layout);
 	}
@@ -744,7 +744,7 @@ KMETHOD QTextDocument_setDocumentMargin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal margin = Float_to(qreal, sfp[1]);
 		qp->setDocumentMargin(margin);
 	}
@@ -756,7 +756,7 @@ KMETHOD QTextDocument_setHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString html = String_to(const QString, sfp[1]);
 		qp->setHtml(html);
 	}
@@ -768,7 +768,7 @@ KMETHOD QTextDocument_setIndentWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal width = Float_to(qreal, sfp[1]);
 		qp->setIndentWidth(width);
 	}
@@ -780,7 +780,7 @@ KMETHOD QTextDocument_setMaximumBlockCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int maximum = Int_to(int, sfp[1]);
 		qp->setMaximumBlockCount(maximum);
 	}
@@ -792,7 +792,7 @@ KMETHOD QTextDocument_setMetaInformation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextDocument::MetaInformation info = Int_to(QTextDocument::MetaInformation, sfp[1]);
 		const QString string = String_to(const QString, sfp[2]);
 		qp->setMetaInformation(info, string);
@@ -805,7 +805,7 @@ KMETHOD QTextDocument_setPageSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSizeF  size = *RawPtr_to(const QSizeF *, sfp[1]);
 		qp->setPageSize(size);
 	}
@@ -817,7 +817,7 @@ KMETHOD QTextDocument_setPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setPlainText(text);
 	}
@@ -829,7 +829,7 @@ KMETHOD QTextDocument_setTextWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal width = Float_to(qreal, sfp[1]);
 		qp->setTextWidth(width);
 	}
@@ -841,7 +841,7 @@ KMETHOD QTextDocument_setUndoRedoEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setUndoRedoEnabled(enable);
 	}
@@ -853,7 +853,7 @@ KMETHOD QTextDocument_setUseDesignMetrics(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool b = Boolean_to(bool, sfp[1]);
 		qp->setUseDesignMetrics(b);
 	}
@@ -865,7 +865,7 @@ KMETHOD QTextDocument_size(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizeF ret_v = qp->size();
 		QSizeF *ret_v_ = new QSizeF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -880,7 +880,7 @@ KMETHOD QTextDocument_getTextWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->textWidth();
 		RETURNf_(ret_v);
 	} else {
@@ -893,7 +893,7 @@ KMETHOD QTextDocument_toHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  encoding = *RawPtr_to(const QByteArray *, sfp[1]);
 		QString ret_v = qp->toHtml(encoding);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -908,7 +908,7 @@ KMETHOD QTextDocument_toPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->toPlainText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -922,7 +922,7 @@ KMETHOD QTextDocument_undo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCursor*  cursor = RawPtr_to(QTextCursor*, sfp[1]);
 		qp->undo(cursor);
 	}
@@ -934,7 +934,7 @@ KMETHOD QTextDocument_getUseDesignMetrics(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->useDesignMetrics();
 		RETURNb_(ret_v);
 	} else {
@@ -948,7 +948,7 @@ KMETHOD QTextDocument_redo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->redo();
 	}
 	RETURNvoid_();
@@ -959,7 +959,7 @@ KMETHOD QTextDocument_setModified(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool m = Boolean_to(bool, sfp[1]);
 		qp->setModified(m);
 	}
@@ -972,7 +972,7 @@ KMETHOD QTextDocument_undo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextDocument *  qp = RawPtr_to(QTextDocument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->undo();
 	}
 	RETURNvoid_();
@@ -1173,18 +1173,41 @@ bool DummyQTextDocument::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextDocument::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 9;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, block_count_changed_func);
+	KNH_ADDNNREF(ctx, contents_change_func);
+	KNH_ADDNNREF(ctx, contents_changed_func);
+	KNH_ADDNNREF(ctx, cursor_position_changed_func);
+	KNH_ADDNNREF(ctx, document_layout_changed_func);
+	KNH_ADDNNREF(ctx, modification_changed_func);
+	KNH_ADDNNREF(ctx, redo_available_func);
+	KNH_ADDNNREF(ctx, undo_available_func);
+	KNH_ADDNNREF(ctx, undo_command_added_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQTextDocument::connection(QObject *o)
 {
-	connect(o, SIGNAL(blockCountChanged(int)), this, SLOT(blockCountChangedSlot(int)));
-	connect(o, SIGNAL(contentsChange(int, int, int)), this, SLOT(contentsChangeSlot(int, int, int)));
-	connect(o, SIGNAL(contentsChanged()), this, SLOT(contentsChangedSlot()));
-	connect(o, SIGNAL(cursorPositionChanged(const QTextCursor)), this, SLOT(cursorPositionChangedSlot(const QTextCursor)));
-	connect(o, SIGNAL(documentLayoutChanged()), this, SLOT(documentLayoutChangedSlot()));
-	connect(o, SIGNAL(modificationChanged(bool)), this, SLOT(modificationChangedSlot(bool)));
-	connect(o, SIGNAL(redoAvailable(bool)), this, SLOT(redoAvailableSlot(bool)));
-	connect(o, SIGNAL(undoAvailable(bool)), this, SLOT(undoAvailableSlot(bool)));
-	connect(o, SIGNAL(undoCommandAdded()), this, SLOT(undoCommandAddedSlot()));
+	QTextDocument *p = dynamic_cast<QTextDocument*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(blockCountChanged(int)), this, SLOT(blockCountChangedSlot(int)));
+		connect(p, SIGNAL(contentsChange(int, int, int)), this, SLOT(contentsChangeSlot(int, int, int)));
+		connect(p, SIGNAL(contentsChanged()), this, SLOT(contentsChangedSlot()));
+		connect(p, SIGNAL(cursorPositionChanged(const QTextCursor)), this, SLOT(cursorPositionChangedSlot(const QTextCursor)));
+		connect(p, SIGNAL(documentLayoutChanged()), this, SLOT(documentLayoutChangedSlot()));
+		connect(p, SIGNAL(modificationChanged(bool)), this, SLOT(modificationChangedSlot(bool)));
+		connect(p, SIGNAL(redoAvailable(bool)), this, SLOT(redoAvailableSlot(bool)));
+		connect(p, SIGNAL(undoAvailable(bool)), this, SLOT(undoAvailableSlot(bool)));
+		connect(p, SIGNAL(undoCommandAdded()), this, SLOT(undoCommandAddedSlot()));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -1247,49 +1270,9 @@ static void QTextDocument_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextDocument_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 9;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextDocument *qp = (KQTextDocument *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->block_count_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->block_count_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->contents_change_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->contents_change_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->contents_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->contents_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->cursor_position_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->cursor_position_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->document_layout_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->document_layout_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->modification_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->modification_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->redo_available_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->redo_available_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->undo_available_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->undo_available_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->undo_command_added_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->undo_command_added_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -1313,15 +1296,6 @@ bool KQTextDocument::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQTextDocument(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTextDocument";
-	cdef->free = QTextDocument_free;
-	cdef->reftrace = QTextDocument_reftrace;
-	cdef->compareTo = QTextDocument_compareTo;
-}
-
 static knh_IntData_t QTextDocumentConstInt[] = {
 	{"FindBackward", QTextDocument::FindBackward},
 	{"FindCaseSensitively", QTextDocument::FindCaseSensitively},
@@ -1340,5 +1314,179 @@ static knh_IntData_t QTextDocumentConstInt[] = {
 
 DEFAPI(void) constQTextDocument(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTextDocumentConstInt);
+}
+
+
+DEFAPI(void) defQTextDocument(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextDocument";
+	cdef->free = QTextDocument_free;
+	cdef->reftrace = QTextDocument_reftrace;
+	cdef->compareTo = QTextDocument_compareTo;
+}
+
+//## QTextDocumentFindFlags QTextDocumentFindFlags.new(int value);
+KMETHOD QTextDocumentFindFlags_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextDocument::FindFlag i = Int_to(QTextDocument::FindFlag, sfp[1]);
+	QTextDocument::FindFlags *ret_v = new QTextDocument::FindFlags(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QTextDocumentFindFlags QTextDocumentFindFlags.and(int mask);
+KMETHOD QTextDocumentFindFlags_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextDocument::FindFlags *qp = RawPtr_to(QTextDocument::FindFlags*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QTextDocument::FindFlags ret = ((*qp) & i);
+		QTextDocument::FindFlags *ret_ = new QTextDocument::FindFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextDocumentFindFlags QTextDocumentFindFlags.iand(QTextDocument::QTextDocumentFindFlags other);
+KMETHOD QTextDocumentFindFlags_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextDocument::FindFlags *qp = RawPtr_to(QTextDocument::FindFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextDocument::FindFlags *other = RawPtr_to(QTextDocument::FindFlags *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextDocumentFindFlags QTextDocumentFindFlags.or(QTextDocumentFindFlags f);
+KMETHOD QTextDocumentFindFlags_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextDocument::FindFlags *qp = RawPtr_to(QTextDocument::FindFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextDocument::FindFlags *f = RawPtr_to(QTextDocument::FindFlags*, sfp[1]);
+		QTextDocument::FindFlags ret = ((*qp) | (*f));
+		QTextDocument::FindFlags *ret_ = new QTextDocument::FindFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextDocumentFindFlags QTextDocumentFindFlags.ior(QTextDocument::QTextDocumentFindFlags other);
+KMETHOD QTextDocumentFindFlags_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextDocument::FindFlags *qp = RawPtr_to(QTextDocument::FindFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextDocument::FindFlags *other = RawPtr_to(QTextDocument::FindFlags *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextDocumentFindFlags QTextDocumentFindFlags.xor(QTextDocumentFindFlags f);
+KMETHOD QTextDocumentFindFlags_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextDocument::FindFlags *qp = RawPtr_to(QTextDocument::FindFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextDocument::FindFlags *f = RawPtr_to(QTextDocument::FindFlags*, sfp[1]);
+		QTextDocument::FindFlags ret = ((*qp) ^ (*f));
+		QTextDocument::FindFlags *ret_ = new QTextDocument::FindFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextDocumentFindFlags QTextDocumentFindFlags.ixor(QTextDocument::QTextDocumentFindFlags other);
+KMETHOD QTextDocumentFindFlags_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextDocument::FindFlags *qp = RawPtr_to(QTextDocument::FindFlags*, sfp[0]);
+	if (qp != NULL) {
+		QTextDocument::FindFlags *other = RawPtr_to(QTextDocument::FindFlags *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QTextDocumentFindFlags.testFlag(int flag);
+KMETHOD QTextDocumentFindFlags_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextDocument::FindFlags *qp = RawPtr_to(QTextDocument::FindFlags *, sfp[0]);
+	if (qp != NULL) {
+		QTextDocument::FindFlag flag = Int_to(QTextDocument::FindFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QTextDocumentFindFlags.value();
+KMETHOD QTextDocumentFindFlags_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextDocument::FindFlags *qp = RawPtr_to(QTextDocument::FindFlags *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QTextDocumentFindFlags_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QTextDocument::FindFlags *qp = (QTextDocument::FindFlags *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QTextDocumentFindFlags_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QTextDocument::FindFlags *qp = (QTextDocument::FindFlags *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QTextDocumentFindFlags_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QTextDocument::FindFlags*)p1->rawptr);
+//		int v2 = int(*(QTextDocument::FindFlags*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QTextDocument::FindFlags v1 = *(QTextDocument::FindFlags*)p1->rawptr;
+		QTextDocument::FindFlags v2 = *(QTextDocument::FindFlags*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQTextDocumentFindFlags(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextDocumentFindFlags";
+	cdef->free = QTextDocumentFindFlags_free;
+	cdef->reftrace = QTextDocumentFindFlags_reftrace;
+	cdef->compareTo = QTextDocumentFindFlags_compareTo;
 }
 

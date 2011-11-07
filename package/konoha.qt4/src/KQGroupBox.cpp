@@ -3,7 +3,7 @@ KMETHOD QGroupBox_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGroupBox *  qp = RawPtr_to(QGroupBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -37,16 +37,18 @@ KMETHOD QGroupBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 */
-//int QGroupBox.getAlignment();
+//QtAlignment QGroupBox.getAlignment();
 KMETHOD QGroupBox_getAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGroupBox *  qp = RawPtr_to(QGroupBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->alignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -55,7 +57,7 @@ KMETHOD QGroupBox_isCheckable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGroupBox *  qp = RawPtr_to(QGroupBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isCheckable();
 		RETURNb_(ret_v);
 	} else {
@@ -68,7 +70,7 @@ KMETHOD QGroupBox_isChecked(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGroupBox *  qp = RawPtr_to(QGroupBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isChecked();
 		RETURNb_(ret_v);
 	} else {
@@ -81,7 +83,7 @@ KMETHOD QGroupBox_isFlat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGroupBox *  qp = RawPtr_to(QGroupBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isFlat();
 		RETURNb_(ret_v);
 	} else {
@@ -94,7 +96,7 @@ KMETHOD QGroupBox_setAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGroupBox *  qp = RawPtr_to(QGroupBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int alignment = Int_to(int, sfp[1]);
 		qp->setAlignment(alignment);
 	}
@@ -106,7 +108,7 @@ KMETHOD QGroupBox_setCheckable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGroupBox *  qp = RawPtr_to(QGroupBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool checkable = Boolean_to(bool, sfp[1]);
 		qp->setCheckable(checkable);
 	}
@@ -118,7 +120,7 @@ KMETHOD QGroupBox_setFlat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGroupBox *  qp = RawPtr_to(QGroupBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool flat = Boolean_to(bool, sfp[1]);
 		qp->setFlat(flat);
 	}
@@ -130,7 +132,7 @@ KMETHOD QGroupBox_setTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGroupBox *  qp = RawPtr_to(QGroupBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString title = String_to(const QString, sfp[1]);
 		qp->setTitle(title);
 	}
@@ -142,7 +144,7 @@ KMETHOD QGroupBox_getTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGroupBox *  qp = RawPtr_to(QGroupBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->title();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -156,7 +158,7 @@ KMETHOD QGroupBox_setChecked(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGroupBox *  qp = RawPtr_to(QGroupBox *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool checked = Boolean_to(bool, sfp[1]);
 		qp->setChecked(checked);
 	}
@@ -246,11 +248,27 @@ bool DummyQGroupBox::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQGroupBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, clicked_func);
+	KNH_ADDNNREF(ctx, toggled_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQGroupBox::connection(QObject *o)
 {
-	connect(o, SIGNAL(clicked(bool)), this, SLOT(clickedSlot(bool)));
-	connect(o, SIGNAL(toggled(bool)), this, SLOT(toggledSlot(bool)));
+	QGroupBox *p = dynamic_cast<QGroupBox*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(clicked(bool)), this, SLOT(clickedSlot(bool)));
+		connect(p, SIGNAL(toggled(bool)), this, SLOT(toggledSlot(bool)));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -313,21 +331,9 @@ static void QGroupBox_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGroupBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGroupBox *qp = (KQGroupBox *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->clicked_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->clicked_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->toggled_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->toggled_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -350,6 +356,8 @@ bool KQGroupBox::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQGroupBox(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

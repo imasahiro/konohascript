@@ -1,13 +1,15 @@
-//int QInputEvent.modifiers();
+//QtKeyboardModifiers QInputEvent.modifiers();
 KMETHOD QInputEvent_modifiers(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputEvent *  qp = RawPtr_to(QInputEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::KeyboardModifiers ret_v = qp->modifiers();
-		RETURNi_(ret_v);
+		Qt::KeyboardModifiers *ret_v_ = new Qt::KeyboardModifiers(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -62,9 +64,23 @@ bool DummyQInputEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQInputEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQInputEvent::connection(QObject *o)
 {
+	QInputEvent *p = dynamic_cast<QInputEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -120,13 +136,9 @@ static void QInputEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QInputEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQInputEvent *qp = (KQInputEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -140,6 +152,8 @@ void KQInputEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQInputEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -50,7 +50,7 @@ KMETHOD QByteArrayMatcher_indexIn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArrayMatcher *  qp = RawPtr_to(QByteArrayMatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  ba = *RawPtr_to(const QByteArray *, sfp[1]);
 		int from = Int_to(int, sfp[2]);
 		int ret_v = qp->indexIn(ba, from);
@@ -66,7 +66,7 @@ KMETHOD QByteArrayMatcher_indexIn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArrayMatcher *  qp = RawPtr_to(QByteArrayMatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  str = RawPtr_to(const char*, sfp[1]);
 		int len = Int_to(int, sfp[2]);
 		int from = Int_to(int, sfp[3]);
@@ -82,7 +82,7 @@ KMETHOD QByteArrayMatcher_getPattern(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArrayMatcher *  qp = RawPtr_to(QByteArrayMatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->pattern();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -97,13 +97,31 @@ KMETHOD QByteArrayMatcher_setPattern(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArrayMatcher *  qp = RawPtr_to(QByteArrayMatcher *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  pattern = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->setPattern(pattern);
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QByteArrayMatcher.parents();
+KMETHOD QByteArrayMatcher_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QByteArrayMatcher *qp = RawPtr_to(QByteArrayMatcher*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQByteArrayMatcher::DummyQByteArrayMatcher()
 {
@@ -152,17 +170,28 @@ bool DummyQByteArrayMatcher::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
+void DummyQByteArrayMatcher::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQByteArrayMatcher::connection(QObject *o)
 {
-	return;
+	QByteArrayMatcher *p = dynamic_cast<QByteArrayMatcher*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQByteArrayMatcher::KQByteArrayMatcher() : QByteArrayMatcher()
 {
 	self = NULL;
 	dummy = new DummyQByteArrayMatcher();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QByteArrayMatcher_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -217,13 +246,9 @@ static void QByteArrayMatcher_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QByteArrayMatcher_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQByteArrayMatcher *qp = (KQByteArrayMatcher *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -237,6 +262,8 @@ void KQByteArrayMatcher::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQByteArrayMatcher(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

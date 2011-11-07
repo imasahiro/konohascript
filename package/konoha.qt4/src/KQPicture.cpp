@@ -26,7 +26,7 @@ KMETHOD QPicture_getBoundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPicture *  qp = RawPtr_to(QPicture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->boundingRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -41,7 +41,7 @@ KMETHOD QPicture_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPicture *  qp = RawPtr_to(QPicture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char* ret_v = qp->data();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (char*)ret_v, NULL);
 		RETURN_(rptr);
@@ -50,25 +50,12 @@ KMETHOD QPicture_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////boolean QPicture.isNull();
-KMETHOD QPicture_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QPicture *  qp = RawPtr_to(QPicture *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
 //boolean QPicture.load(String fileName, String fmt);
 KMETHOD QPicture_load(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPicture *  qp = RawPtr_to(QPicture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
 		const char*  format = RawPtr_to(const char*, sfp[2]);
 		bool ret_v = qp->load(fileName, format);
@@ -84,7 +71,7 @@ KMETHOD QPicture_load(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPicture *  qp = RawPtr_to(QPicture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIODevice*  dev = RawPtr_to(QIODevice*, sfp[1]);
 		const char*  format = RawPtr_to(const char*, sfp[2]);
 		bool ret_v = qp->load(dev, format);
@@ -99,7 +86,7 @@ KMETHOD QPicture_play(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPicture *  qp = RawPtr_to(QPicture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		bool ret_v = qp->play(painter);
 		RETURNb_(ret_v);
@@ -113,7 +100,7 @@ KMETHOD QPicture_save(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPicture *  qp = RawPtr_to(QPicture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
 		const char*  format = RawPtr_to(const char*, sfp[2]);
 		bool ret_v = qp->save(fileName, format);
@@ -129,7 +116,7 @@ KMETHOD QPicture_save(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPicture *  qp = RawPtr_to(QPicture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIODevice*  dev = RawPtr_to(QIODevice*, sfp[1]);
 		const char*  format = RawPtr_to(const char*, sfp[2]);
 		bool ret_v = qp->save(dev, format);
@@ -144,7 +131,7 @@ KMETHOD QPicture_setBoundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPicture *  qp = RawPtr_to(QPicture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  r = *RawPtr_to(const QRect *, sfp[1]);
 		qp->setBoundingRect(r);
 	}
@@ -156,7 +143,7 @@ KMETHOD QPicture_setData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPicture *  qp = RawPtr_to(QPicture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  data = RawPtr_to(const char*, sfp[1]);
 		uint  size = *RawPtr_to(uint *, sfp[2]);
 		qp->setData(data, size);
@@ -169,7 +156,7 @@ KMETHOD QPicture_size(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPicture *  qp = RawPtr_to(QPicture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uint ret_v = qp->size();
 		uint *ret_v_ = new uint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -230,9 +217,23 @@ bool DummyQPicture::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPicture::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQPaintDevice::reftrace(ctx, p, tail_);
+}
 
 void DummyQPicture::connection(QObject *o)
 {
+	QPicture *p = dynamic_cast<QPicture*>(o);
+	if (p != NULL) {
+	}
 	DummyQPaintDevice::connection(o);
 }
 
@@ -240,7 +241,6 @@ KQPicture::KQPicture(int formatVersion) : QPicture(formatVersion)
 {
 	self = NULL;
 	dummy = new DummyQPicture();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPicture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -295,13 +295,9 @@ static void QPicture_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPicture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPicture *qp = (KQPicture *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -315,6 +311,8 @@ void KQPicture::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQPicture(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

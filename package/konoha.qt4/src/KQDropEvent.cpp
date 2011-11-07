@@ -3,7 +3,7 @@ KMETHOD QDropEvent_encodedData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDropEvent *  qp = RawPtr_to(QDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  format = RawPtr_to(const char*, sfp[1]);
 		QByteArray ret_v = qp->encodedData(format);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -14,12 +14,12 @@ KMETHOD QDropEvent_encodedData(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual @Override String QDropEvent.fmt(int n);
+//@Virtual @Override String QDropEvent.format(int n);
 KMETHOD QDropEvent_format(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDropEvent *  qp = RawPtr_to(QDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int n = Int_to(int, sfp[1]);
 		const char* ret_v = qp->format(n);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (char*)ret_v, NULL);
@@ -34,7 +34,7 @@ KMETHOD QDropEvent_provides(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDropEvent *  qp = RawPtr_to(QDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  mimeType = RawPtr_to(const char*, sfp[1]);
 		bool ret_v = qp->provides(mimeType);
 		RETURNb_(ret_v);
@@ -43,15 +43,15 @@ KMETHOD QDropEvent_provides(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QDropEvent QDropEvent.new(QPoint pos, int actions, QMimeData data, int buttons, int modifiers, int type);
+//QDropEvent QDropEvent.new(QPoint pos, QtDropActions actions, QMimeData data, QtMouseButtons buttons, QtKeyboardModifiers modifiers, int type);
 KMETHOD QDropEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
-	Qt::DropActions actions = Int_to(Qt::DropActions, sfp[2]);
+	initFlag(actions, Qt::DropActions, sfp[2]);
 	const QMimeData*  data = RawPtr_to(const QMimeData*, sfp[3]);
-	Qt::MouseButtons buttons = Int_to(Qt::MouseButtons, sfp[4]);
-	Qt::KeyboardModifiers modifiers = Int_to(Qt::KeyboardModifiers, sfp[5]);
+	initFlag(buttons, Qt::MouseButtons, sfp[4]);
+	initFlag(modifiers, Qt::KeyboardModifiers, sfp[5]);
 	QDropEvent::Type type = Int_to(QDropEvent::Type, sfp[6]);
 	KQDropEvent *ret_v = new KQDropEvent(pos, actions, data, buttons, modifiers, type);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
@@ -59,12 +59,12 @@ KMETHOD QDropEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 
-////void QDropEvent.acceptProposedAction();
+//void QDropEvent.acceptProposedAction();
 KMETHOD QDropEvent_acceptProposedAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDropEvent *  qp = RawPtr_to(QDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->acceptProposedAction();
 	}
 	RETURNvoid_();
@@ -75,7 +75,7 @@ KMETHOD QDropEvent_getDropAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDropEvent *  qp = RawPtr_to(QDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DropAction ret_v = qp->dropAction();
 		RETURNi_(ret_v);
 	} else {
@@ -83,16 +83,18 @@ KMETHOD QDropEvent_getDropAction(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QDropEvent.keyboardModifiers();
+//QtKeyboardModifiers QDropEvent.keyboardModifiers();
 KMETHOD QDropEvent_keyboardModifiers(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDropEvent *  qp = RawPtr_to(QDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::KeyboardModifiers ret_v = qp->keyboardModifiers();
-		RETURNi_(ret_v);
+		Qt::KeyboardModifiers *ret_v_ = new Qt::KeyboardModifiers(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -101,7 +103,7 @@ KMETHOD QDropEvent_mimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDropEvent *  qp = RawPtr_to(QDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMimeData* ret_v = qp->mimeData();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMimeData*)ret_v, NULL);
 		RETURN_(rptr);
@@ -110,16 +112,18 @@ KMETHOD QDropEvent_mimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QDropEvent.mouseButtons();
+//QtMouseButtons QDropEvent.mouseButtons();
 KMETHOD QDropEvent_mouseButtons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDropEvent *  qp = RawPtr_to(QDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::MouseButtons ret_v = qp->mouseButtons();
-		RETURNi_(ret_v);
+		Qt::MouseButtons *ret_v_ = new Qt::MouseButtons(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -128,7 +132,7 @@ KMETHOD QDropEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDropEvent *  qp = RawPtr_to(QDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint ret_v = qp->pos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -138,16 +142,18 @@ KMETHOD QDropEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QDropEvent.possibleActions();
+//QtDropActions QDropEvent.possibleActions();
 KMETHOD QDropEvent_possibleActions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDropEvent *  qp = RawPtr_to(QDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DropActions ret_v = qp->possibleActions();
-		RETURNi_(ret_v);
+		Qt::DropActions *ret_v_ = new Qt::DropActions(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -156,7 +162,7 @@ KMETHOD QDropEvent_proposedAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDropEvent *  qp = RawPtr_to(QDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DropAction ret_v = qp->proposedAction();
 		RETURNi_(ret_v);
 	} else {
@@ -169,7 +175,7 @@ KMETHOD QDropEvent_setDropAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDropEvent *  qp = RawPtr_to(QDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DropAction action = Int_to(Qt::DropAction, sfp[1]);
 		qp->setDropAction(action);
 	}
@@ -181,7 +187,7 @@ KMETHOD QDropEvent_source(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDropEvent *  qp = RawPtr_to(QDropEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->source();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -241,9 +247,23 @@ bool DummyQDropEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDropEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQDropEvent::connection(QObject *o)
 {
+	QDropEvent *p = dynamic_cast<QDropEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -251,7 +271,6 @@ KQDropEvent::KQDropEvent(const QPoint pos, Qt::DropActions actions, const QMimeD
 {
 	self = NULL;
 	dummy = new DummyQDropEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDropEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -306,13 +325,9 @@ static void QDropEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDropEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDropEvent *qp = (KQDropEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -326,6 +341,8 @@ void KQDropEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQDropEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -39,7 +39,7 @@ KMETHOD QImageWriter_canWrite(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->canWrite();
 		RETURNb_(ret_v);
 	} else {
@@ -52,7 +52,7 @@ KMETHOD QImageWriter_getCompression(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->compression();
 		RETURNi_(ret_v);
 	} else {
@@ -65,7 +65,7 @@ KMETHOD QImageWriter_getDevice(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIODevice* ret_v = qp->device();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QIODevice*)ret_v, NULL);
 		RETURN_(rptr);
@@ -79,7 +79,7 @@ KMETHOD QImageWriter_error(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QImageWriter::ImageWriterError ret_v = qp->error();
 		RETURNi_(ret_v);
 	} else {
@@ -92,7 +92,7 @@ KMETHOD QImageWriter_errorString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->errorString();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -106,7 +106,7 @@ KMETHOD QImageWriter_getFileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->fileName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -120,7 +120,7 @@ KMETHOD QImageWriter_getFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->format();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -135,7 +135,7 @@ KMETHOD QImageWriter_getGamma(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		float ret_v = qp->gamma();
 		RETURNf_(ret_v);
 	} else {
@@ -148,7 +148,7 @@ KMETHOD QImageWriter_getQuality(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->quality();
 		RETURNi_(ret_v);
 	} else {
@@ -161,7 +161,7 @@ KMETHOD QImageWriter_setCompression(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int compression = Int_to(int, sfp[1]);
 		qp->setCompression(compression);
 	}
@@ -173,7 +173,7 @@ KMETHOD QImageWriter_setDevice(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIODevice*  device = RawPtr_to(QIODevice*, sfp[1]);
 		qp->setDevice(device);
 	}
@@ -185,7 +185,7 @@ KMETHOD QImageWriter_setFileName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
 		qp->setFileName(fileName);
 	}
@@ -197,7 +197,7 @@ KMETHOD QImageWriter_setFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  format = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->setFormat(format);
 	}
@@ -209,7 +209,7 @@ KMETHOD QImageWriter_setGamma(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		float gamma = Float_to(float, sfp[1]);
 		qp->setGamma(gamma);
 	}
@@ -221,7 +221,7 @@ KMETHOD QImageWriter_setQuality(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int quality = Int_to(int, sfp[1]);
 		qp->setQuality(quality);
 	}
@@ -233,7 +233,7 @@ KMETHOD QImageWriter_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString key = String_to(const QString, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		qp->setText(key, text);
@@ -246,7 +246,7 @@ KMETHOD QImageWriter_supportsOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QImageIOHandler::ImageOption option = Int_to(QImageIOHandler::ImageOption, sfp[1]);
 		bool ret_v = qp->supportsOption(option);
 		RETURNb_(ret_v);
@@ -260,7 +260,7 @@ KMETHOD QImageWriter_write(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QImage  image = *RawPtr_to(const QImage *, sfp[1]);
 		bool ret_v = qp->write(image);
 		RETURNb_(ret_v);
@@ -273,9 +273,8 @@ KMETHOD QImageWriter_write(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QImageWriter_supportedImageFormats(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QImageWriter *  qp = RawPtr_to(QImageWriter *, sfp[0]);
-	if (qp != NULL) {
-		QList<QByteArray>ret_v = qp->supportedImageFormats();
+	if (true) {
+		QList<QByteArray> ret_v = QImageWriter::supportedImageFormats();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QByteArray"));
@@ -291,6 +290,24 @@ KMETHOD QImageWriter_supportedImageFormats(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 	
 
+//Array<String> QImageWriter.parents();
+KMETHOD QImageWriter_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QImageWriter *qp = RawPtr_to(QImageWriter*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQImageWriter::DummyQImageWriter()
 {
@@ -339,17 +356,28 @@ bool DummyQImageWriter::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQImageWriter::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQImageWriter::connection(QObject *o)
 {
-	return;
+	QImageWriter *p = dynamic_cast<QImageWriter*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQImageWriter::KQImageWriter() : QImageWriter()
 {
 	self = NULL;
 	dummy = new DummyQImageWriter();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QImageWriter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -404,13 +432,9 @@ static void QImageWriter_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QImageWriter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQImageWriter *qp = (KQImageWriter *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -425,15 +449,6 @@ void KQImageWriter::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQImageWriter(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QImageWriter";
-	cdef->free = QImageWriter_free;
-	cdef->reftrace = QImageWriter_reftrace;
-	cdef->compareTo = QImageWriter_compareTo;
-}
-
 static knh_IntData_t QImageWriterConstInt[] = {
 	{"DeviceError", QImageWriter::DeviceError},
 	{"UnsupportedFormatError", QImageWriter::UnsupportedFormatError},
@@ -444,4 +459,15 @@ static knh_IntData_t QImageWriterConstInt[] = {
 DEFAPI(void) constQImageWriter(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QImageWriterConstInt);
 }
+
+
+DEFAPI(void) defQImageWriter(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QImageWriter";
+	cdef->free = QImageWriter_free;
+	cdef->reftrace = QImageWriter_reftrace;
+	cdef->compareTo = QImageWriter_compareTo;
+}
+
 

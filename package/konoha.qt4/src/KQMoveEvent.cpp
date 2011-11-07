@@ -15,7 +15,7 @@ KMETHOD QMoveEvent_oldPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMoveEvent *  qp = RawPtr_to(QMoveEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint ret_v = qp->oldPos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -30,7 +30,7 @@ KMETHOD QMoveEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMoveEvent *  qp = RawPtr_to(QMoveEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint ret_v = qp->pos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -91,9 +91,23 @@ bool DummyQMoveEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMoveEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQMoveEvent::connection(QObject *o)
 {
+	QMoveEvent *p = dynamic_cast<QMoveEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -101,7 +115,6 @@ KQMoveEvent::KQMoveEvent(const QPoint pos, const QPoint oldPos) : QMoveEvent(pos
 {
 	self = NULL;
 	dummy = new DummyQMoveEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMoveEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -156,13 +169,9 @@ static void QMoveEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMoveEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMoveEvent *qp = (KQMoveEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -176,6 +185,8 @@ void KQMoveEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQMoveEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

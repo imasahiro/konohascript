@@ -3,7 +3,7 @@ KMETHOD QMetaMethod_access(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaMethod *  qp = RawPtr_to(QMetaMethod *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMetaMethod::Access ret_v = qp->access();
 		RETURNi_(ret_v);
 	} else {
@@ -16,7 +16,7 @@ KMETHOD QMetaMethod_invoke(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaMethod *  qp = RawPtr_to(QMetaMethod *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
 		Qt::ConnectionType connectionType = Int_to(Qt::ConnectionType, sfp[2]);
 		QGenericReturnArgument  returnValue = *RawPtr_to(QGenericReturnArgument *, sfp[3]);
@@ -34,7 +34,7 @@ KMETHOD QMetaMethod_invoke(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaMethod *  qp = RawPtr_to(QMetaMethod *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
 		QGenericReturnArgument  returnValue = *RawPtr_to(QGenericReturnArgument *, sfp[2]);
 		QGenericArgument  val0 = *RawPtr_to(QGenericArgument *, sfp[3]);
@@ -51,7 +51,7 @@ KMETHOD QMetaMethod_invoke(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaMethod *  qp = RawPtr_to(QMetaMethod *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
 		Qt::ConnectionType connectionType = Int_to(Qt::ConnectionType, sfp[2]);
 		QGenericArgument  val0 = *RawPtr_to(QGenericArgument *, sfp[3]);
@@ -68,7 +68,7 @@ KMETHOD QMetaMethod_invoke(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaMethod *  qp = RawPtr_to(QMetaMethod *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
 		QGenericArgument  val0 = *RawPtr_to(QGenericArgument *, sfp[2]);
 		bool ret_v = qp->invoke(object, val0);
@@ -83,7 +83,7 @@ KMETHOD QMetaMethod_methodIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaMethod *  qp = RawPtr_to(QMetaMethod *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->methodIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -96,7 +96,7 @@ KMETHOD QMetaMethod_methodType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaMethod *  qp = RawPtr_to(QMetaMethod *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMetaMethod::MethodType ret_v = qp->methodType();
 		RETURNi_(ret_v);
 	} else {
@@ -109,8 +109,8 @@ KMETHOD QMetaMethod_parameterNames(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaMethod *  qp = RawPtr_to(QMetaMethod *, sfp[0]);
-	if (qp != NULL) {
-		QList<QByteArray>ret_v = qp->parameterNames();
+	if (qp) {
+		QList<QByteArray> ret_v = qp->parameterNames();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QByteArray"));
@@ -131,8 +131,8 @@ KMETHOD QMetaMethod_parameterTypes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaMethod *  qp = RawPtr_to(QMetaMethod *, sfp[0]);
-	if (qp != NULL) {
-		QList<QByteArray>ret_v = qp->parameterTypes();
+	if (qp) {
+		QList<QByteArray> ret_v = qp->parameterTypes();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QByteArray"));
@@ -153,7 +153,7 @@ KMETHOD QMetaMethod_signature(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaMethod *  qp = RawPtr_to(QMetaMethod *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char* ret_v = qp->signature();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (char*)ret_v, NULL);
 		RETURN_(rptr);
@@ -167,7 +167,7 @@ KMETHOD QMetaMethod_tag(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaMethod *  qp = RawPtr_to(QMetaMethod *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char* ret_v = qp->tag();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (char*)ret_v, NULL);
 		RETURN_(rptr);
@@ -181,7 +181,7 @@ KMETHOD QMetaMethod_typeName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaMethod *  qp = RawPtr_to(QMetaMethod *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char* ret_v = qp->typeName();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (char*)ret_v, NULL);
 		RETURN_(rptr);
@@ -190,6 +190,24 @@ KMETHOD QMetaMethod_typeName(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QMetaMethod.parents();
+KMETHOD QMetaMethod_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMetaMethod *qp = RawPtr_to(QMetaMethod*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQMetaMethod::DummyQMetaMethod()
 {
@@ -238,17 +256,22 @@ bool DummyQMetaMethod::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMetaMethod::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQMetaMethod::connection(QObject *o)
 {
-	return;
-}
-
-KQMetaMethod::KQMetaMethod() : QMetaMethod()
-{
-	self = NULL;
-	dummy = new DummyQMetaMethod();
-	dummy->connection((QObject*)this);
+	QMetaMethod *p = dynamic_cast<QMetaMethod*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QMetaMethod_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -303,13 +326,9 @@ static void QMetaMethod_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMetaMethod_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMetaMethod *qp = (KQMetaMethod *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -322,15 +341,6 @@ void KQMetaMethod::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQMetaMethod(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QMetaMethod";
-	cdef->free = QMetaMethod_free;
-	cdef->reftrace = QMetaMethod_reftrace;
-	cdef->compareTo = QMetaMethod_compareTo;
 }
 
 static knh_IntData_t QMetaMethodConstInt[] = {
@@ -347,4 +357,15 @@ static knh_IntData_t QMetaMethodConstInt[] = {
 DEFAPI(void) constQMetaMethod(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QMetaMethodConstInt);
 }
+
+
+DEFAPI(void) defQMetaMethod(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QMetaMethod";
+	cdef->free = QMetaMethod_free;
+	cdef->reftrace = QMetaMethod_reftrace;
+	cdef->compareTo = QMetaMethod_compareTo;
+}
+
 

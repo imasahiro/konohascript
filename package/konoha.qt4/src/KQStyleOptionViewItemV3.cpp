@@ -83,9 +83,23 @@ bool DummyQStyleOptionViewItemV3::signalConnect(knh_Func_t *callback_func, strin
 	}
 }
 
+void DummyQStyleOptionViewItemV3::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOptionViewItemV2::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionViewItemV3::connection(QObject *o)
 {
+	QStyleOptionViewItemV3 *p = dynamic_cast<QStyleOptionViewItemV3*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOptionViewItemV2::connection(o);
 }
 
@@ -93,7 +107,6 @@ KQStyleOptionViewItemV3::KQStyleOptionViewItemV3() : QStyleOptionViewItemV3()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionViewItemV3();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionViewItemV3_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -148,13 +161,9 @@ static void QStyleOptionViewItemV3_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionViewItemV3_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionViewItemV3 *qp = (KQStyleOptionViewItemV3 *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -169,6 +178,16 @@ void KQStyleOptionViewItemV3::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
+static knh_IntData_t QStyleOptionViewItemV3ConstInt[] = {
+	{"Version", QStyleOptionViewItemV3::Version},
+	{NULL, 0}
+};
+
+DEFAPI(void) constQStyleOptionViewItemV3(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
+	kapi->loadClassIntConst(ctx, cid, QStyleOptionViewItemV3ConstInt);
+}
+
+
 DEFAPI(void) defQStyleOptionViewItemV3(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	(void)ctx; (void) cid;
@@ -178,12 +197,4 @@ DEFAPI(void) defQStyleOptionViewItemV3(CTX ctx, knh_class_t cid, knh_ClassDef_t 
 	cdef->compareTo = QStyleOptionViewItemV3_compareTo;
 }
 
-static knh_IntData_t QStyleOptionViewItemV3ConstInt[] = {
-	{"Version", QStyleOptionViewItemV3::Version},
-	{NULL, 0}
-};
-
-DEFAPI(void) constQStyleOptionViewItemV3(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
-	kapi->loadClassIntConst(ctx, cid, QStyleOptionViewItemV3ConstInt);
-}
 

@@ -16,7 +16,7 @@ KMETHOD QActionEvent_action(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QActionEvent *  qp = RawPtr_to(QActionEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction* ret_v = qp->action();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAction*)ret_v, NULL);
 		RETURN_(rptr);
@@ -30,7 +30,7 @@ KMETHOD QActionEvent_before(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QActionEvent *  qp = RawPtr_to(QActionEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction* ret_v = qp->before();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAction*)ret_v, NULL);
 		RETURN_(rptr);
@@ -90,9 +90,23 @@ bool DummyQActionEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQActionEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQActionEvent::connection(QObject *o)
 {
+	QActionEvent *p = dynamic_cast<QActionEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -100,7 +114,6 @@ KQActionEvent::KQActionEvent(int type, QAction* action, QAction* before) : QActi
 {
 	self = NULL;
 	dummy = new DummyQActionEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QActionEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -155,13 +168,9 @@ static void QActionEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QActionEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQActionEvent *qp = (KQActionEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -175,6 +184,8 @@ void KQActionEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQActionEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

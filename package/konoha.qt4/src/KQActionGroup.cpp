@@ -14,8 +14,8 @@ KMETHOD QActionGroup_actions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QActionGroup *  qp = RawPtr_to(QActionGroup *, sfp[0]);
-	if (qp != NULL) {
-		QList<QAction*>ret_v = qp->actions();
+	if (qp) {
+		QList<QAction*> ret_v = qp->actions();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QAction"));
@@ -30,60 +30,12 @@ KMETHOD QActionGroup_actions(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 	
 
-////QAction QActionGroup.addAction(QAction action);
-KMETHOD QActionGroup_addAction(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QActionGroup *  qp = RawPtr_to(QActionGroup *, sfp[0]);
-	if (qp != NULL) {
-		QAction*  action = RawPtr_to(QAction*, sfp[1]);
-		QAction* ret_v = qp->addAction(action);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAction*)ret_v, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-
-/*
-////QAction QActionGroup.addAction(String text);
-KMETHOD QActionGroup_addAction(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QActionGroup *  qp = RawPtr_to(QActionGroup *, sfp[0]);
-	if (qp != NULL) {
-		const QString text = String_to(const QString, sfp[1]);
-		QAction* ret_v = qp->addAction(text);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAction*)ret_v, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-*/
-/*
-////QAction QActionGroup.addAction(QIcon icon, String text);
-KMETHOD QActionGroup_addAction(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QActionGroup *  qp = RawPtr_to(QActionGroup *, sfp[0]);
-	if (qp != NULL) {
-		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[1]);
-		const QString text = String_to(const QString, sfp[2]);
-		QAction* ret_v = qp->addAction(icon, text);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAction*)ret_v, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-*/
 //QAction QActionGroup.checkedAction();
 KMETHOD QActionGroup_checkedAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QActionGroup *  qp = RawPtr_to(QActionGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction* ret_v = qp->checkedAction();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAction*)ret_v, NULL);
 		RETURN_(rptr);
@@ -97,7 +49,7 @@ KMETHOD QActionGroup_isEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QActionGroup *  qp = RawPtr_to(QActionGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -110,7 +62,7 @@ KMETHOD QActionGroup_isExclusive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QActionGroup *  qp = RawPtr_to(QActionGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isExclusive();
 		RETURNb_(ret_v);
 	} else {
@@ -123,7 +75,7 @@ KMETHOD QActionGroup_isVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QActionGroup *  qp = RawPtr_to(QActionGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isVisible();
 		RETURNb_(ret_v);
 	} else {
@@ -136,7 +88,7 @@ KMETHOD QActionGroup_removeAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QActionGroup *  qp = RawPtr_to(QActionGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction*  action = RawPtr_to(QAction*, sfp[1]);
 		qp->removeAction(action);
 	}
@@ -148,7 +100,7 @@ KMETHOD QActionGroup_setDisabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QActionGroup *  qp = RawPtr_to(QActionGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool b = Boolean_to(bool, sfp[1]);
 		qp->setDisabled(b);
 	}
@@ -160,7 +112,7 @@ KMETHOD QActionGroup_setEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QActionGroup *  qp = RawPtr_to(QActionGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setEnabled(arg0);
 	}
@@ -172,7 +124,7 @@ KMETHOD QActionGroup_setExclusive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QActionGroup *  qp = RawPtr_to(QActionGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setExclusive(arg0);
 	}
@@ -184,7 +136,7 @@ KMETHOD QActionGroup_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QActionGroup *  qp = RawPtr_to(QActionGroup *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setVisible(arg0);
 	}
@@ -276,11 +228,27 @@ bool DummyQActionGroup::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQActionGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, hovered_func);
+	KNH_ADDNNREF(ctx, triggered_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQActionGroup::connection(QObject *o)
 {
-	connect(o, SIGNAL(hovered(QAction*)), this, SLOT(hoveredSlot(QAction*)));
-	connect(o, SIGNAL(triggered(QAction*)), this, SLOT(triggeredSlot(QAction*)));
+	QActionGroup *p = dynamic_cast<QActionGroup*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(hovered(QAction*)), this, SLOT(hoveredSlot(QAction*)));
+		connect(p, SIGNAL(triggered(QAction*)), this, SLOT(triggeredSlot(QAction*)));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -343,21 +311,9 @@ static void QActionGroup_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QActionGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQActionGroup *qp = (KQActionGroup *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->hovered_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->hovered_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->triggered_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->triggered_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -380,6 +336,8 @@ bool KQActionGroup::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQActionGroup(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

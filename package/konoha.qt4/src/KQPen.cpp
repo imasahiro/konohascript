@@ -65,7 +65,7 @@ KMETHOD QPen_getBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBrush ret_v = qp->brush();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -80,7 +80,7 @@ KMETHOD QPen_getCapStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::PenCapStyle ret_v = qp->capStyle();
 		RETURNi_(ret_v);
 	} else {
@@ -93,7 +93,7 @@ KMETHOD QPen_getColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QColor ret_v = qp->color();
 		QColor *ret_v_ = new QColor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -108,7 +108,7 @@ KMETHOD QPen_dashOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->dashOffset();
 		RETURNf_(ret_v);
 	} else {
@@ -121,7 +121,7 @@ KMETHOD QPen_isCosmetic(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isCosmetic();
 		RETURNb_(ret_v);
 	} else {
@@ -134,7 +134,7 @@ KMETHOD QPen_isSolid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSolid();
 		RETURNb_(ret_v);
 	} else {
@@ -147,7 +147,7 @@ KMETHOD QPen_getJoinStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::PenJoinStyle ret_v = qp->joinStyle();
 		RETURNi_(ret_v);
 	} else {
@@ -160,7 +160,7 @@ KMETHOD QPen_getMiterLimit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->miterLimit();
 		RETURNf_(ret_v);
 	} else {
@@ -173,7 +173,7 @@ KMETHOD QPen_setBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[1]);
 		qp->setBrush(brush);
 	}
@@ -185,7 +185,7 @@ KMETHOD QPen_setCapStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::PenCapStyle style = Int_to(Qt::PenCapStyle, sfp[1]);
 		qp->setCapStyle(style);
 	}
@@ -197,7 +197,7 @@ KMETHOD QPen_setColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor  color = *RawPtr_to(const QColor *, sfp[1]);
 		qp->setColor(color);
 	}
@@ -209,7 +209,7 @@ KMETHOD QPen_setCosmetic(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool cosmetic = Boolean_to(bool, sfp[1]);
 		qp->setCosmetic(cosmetic);
 	}
@@ -221,7 +221,7 @@ KMETHOD QPen_setDashOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal offset = Float_to(qreal, sfp[1]);
 		qp->setDashOffset(offset);
 	}
@@ -233,7 +233,7 @@ KMETHOD QPen_setJoinStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::PenJoinStyle style = Int_to(Qt::PenJoinStyle, sfp[1]);
 		qp->setJoinStyle(style);
 	}
@@ -245,7 +245,7 @@ KMETHOD QPen_setMiterLimit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal limit = Float_to(qreal, sfp[1]);
 		qp->setMiterLimit(limit);
 	}
@@ -257,7 +257,7 @@ KMETHOD QPen_setStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::PenStyle style = Int_to(Qt::PenStyle, sfp[1]);
 		qp->setStyle(style);
 	}
@@ -269,7 +269,7 @@ KMETHOD QPen_setWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int width = Int_to(int, sfp[1]);
 		qp->setWidth(width);
 	}
@@ -281,7 +281,7 @@ KMETHOD QPen_setWidthF(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal width = Float_to(qreal, sfp[1]);
 		qp->setWidthF(width);
 	}
@@ -293,7 +293,7 @@ KMETHOD QPen_getStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::PenStyle ret_v = qp->style();
 		RETURNi_(ret_v);
 	} else {
@@ -306,7 +306,7 @@ KMETHOD QPen_getWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->width();
 		RETURNi_(ret_v);
 	} else {
@@ -319,7 +319,7 @@ KMETHOD QPen_getWidthF(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPen *  qp = RawPtr_to(QPen *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->widthF();
 		RETURNf_(ret_v);
 	} else {
@@ -327,6 +327,24 @@ KMETHOD QPen_getWidthF(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QPen.parents();
+KMETHOD QPen_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPen *qp = RawPtr_to(QPen*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQPen::DummyQPen()
 {
@@ -375,17 +393,28 @@ bool DummyQPen::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPen::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQPen::connection(QObject *o)
 {
-	return;
+	QPen *p = dynamic_cast<QPen*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQPen::KQPen() : QPen()
 {
 	self = NULL;
 	dummy = new DummyQPen();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPen_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -440,13 +469,9 @@ static void QPen_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPen_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPen *qp = (KQPen *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -460,6 +485,8 @@ void KQPen::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQPen(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

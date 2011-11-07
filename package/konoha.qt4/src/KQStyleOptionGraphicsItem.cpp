@@ -24,10 +24,9 @@ KMETHOD QStyleOptionGraphicsItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QStyleOptionGraphicsItem_levelOfDetailFromTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QStyleOptionGraphicsItem *  qp = RawPtr_to(QStyleOptionGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QTransform  worldTransform = *RawPtr_to(const QTransform *, sfp[1]);
-		qreal ret_v = qp->levelOfDetailFromTransform(worldTransform);
+		qreal ret_v = QStyleOptionGraphicsItem::levelOfDetailFromTransform(worldTransform);
 		RETURNf_(ret_v);
 	} else {
 		RETURNf_(0.0f);
@@ -85,9 +84,23 @@ bool DummyQStyleOptionGraphicsItem::signalConnect(knh_Func_t *callback_func, str
 	}
 }
 
+void DummyQStyleOptionGraphicsItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOption::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionGraphicsItem::connection(QObject *o)
 {
+	QStyleOptionGraphicsItem *p = dynamic_cast<QStyleOptionGraphicsItem*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOption::connection(o);
 }
 
@@ -95,7 +108,6 @@ KQStyleOptionGraphicsItem::KQStyleOptionGraphicsItem() : QStyleOptionGraphicsIte
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionGraphicsItem();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionGraphicsItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -150,13 +162,9 @@ static void QStyleOptionGraphicsItem_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionGraphicsItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionGraphicsItem *qp = (KQStyleOptionGraphicsItem *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -171,15 +179,6 @@ void KQStyleOptionGraphicsItem::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStyleOptionGraphicsItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionGraphicsItem";
-	cdef->free = QStyleOptionGraphicsItem_free;
-	cdef->reftrace = QStyleOptionGraphicsItem_reftrace;
-	cdef->compareTo = QStyleOptionGraphicsItem_compareTo;
-}
-
 static knh_IntData_t QStyleOptionGraphicsItemConstInt[] = {
 	{"Type", QStyleOptionGraphicsItem::Type},
 	{"Version", QStyleOptionGraphicsItem::Version},
@@ -189,4 +188,15 @@ static knh_IntData_t QStyleOptionGraphicsItemConstInt[] = {
 DEFAPI(void) constQStyleOptionGraphicsItem(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionGraphicsItemConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionGraphicsItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionGraphicsItem";
+	cdef->free = QStyleOptionGraphicsItem_free;
+	cdef->reftrace = QStyleOptionGraphicsItem_reftrace;
+	cdef->compareTo = QStyleOptionGraphicsItem_compareTo;
+}
+
 

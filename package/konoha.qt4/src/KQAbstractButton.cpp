@@ -4,7 +4,7 @@ KMETHOD QAbstractButton_getAutoExclusive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->autoExclusive();
 		RETURNb_(ret_v);
 	} else {
@@ -17,7 +17,7 @@ KMETHOD QAbstractButton_getAutoRepeat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->autoRepeat();
 		RETURNb_(ret_v);
 	} else {
@@ -30,7 +30,7 @@ KMETHOD QAbstractButton_getAutoRepeatDelay(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->autoRepeatDelay();
 		RETURNi_(ret_v);
 	} else {
@@ -43,7 +43,7 @@ KMETHOD QAbstractButton_getAutoRepeatInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->autoRepeatInterval();
 		RETURNi_(ret_v);
 	} else {
@@ -56,7 +56,7 @@ KMETHOD QAbstractButton_group(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QButtonGroup* ret_v = qp->group();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QButtonGroup*)ret_v, NULL);
 		RETURN_(rptr);
@@ -70,7 +70,7 @@ KMETHOD QAbstractButton_getIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIcon ret_v = qp->icon();
 		QIcon *ret_v_ = new QIcon(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -85,7 +85,7 @@ KMETHOD QAbstractButton_getIconSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->iconSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -100,7 +100,7 @@ KMETHOD QAbstractButton_isCheckable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isCheckable();
 		RETURNb_(ret_v);
 	} else {
@@ -113,7 +113,7 @@ KMETHOD QAbstractButton_isChecked(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isChecked();
 		RETURNb_(ret_v);
 	} else {
@@ -126,7 +126,7 @@ KMETHOD QAbstractButton_isDown(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isDown();
 		RETURNb_(ret_v);
 	} else {
@@ -139,7 +139,7 @@ KMETHOD QAbstractButton_setAutoExclusive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setAutoExclusive(arg0);
 	}
@@ -151,7 +151,7 @@ KMETHOD QAbstractButton_setAutoRepeat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setAutoRepeat(arg0);
 	}
@@ -163,7 +163,7 @@ KMETHOD QAbstractButton_setAutoRepeatDelay(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setAutoRepeatDelay(arg0);
 	}
@@ -175,7 +175,7 @@ KMETHOD QAbstractButton_setAutoRepeatInterval(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int arg0 = Int_to(int, sfp[1]);
 		qp->setAutoRepeatInterval(arg0);
 	}
@@ -187,7 +187,7 @@ KMETHOD QAbstractButton_setCheckable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setCheckable(arg0);
 	}
@@ -199,7 +199,7 @@ KMETHOD QAbstractButton_setDown(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setDown(arg0);
 	}
@@ -211,7 +211,7 @@ KMETHOD QAbstractButton_setIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[1]);
 		qp->setIcon(icon);
 	}
@@ -223,7 +223,7 @@ KMETHOD QAbstractButton_setShortcut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QKeySequence  key = *RawPtr_to(const QKeySequence *, sfp[1]);
 		qp->setShortcut(key);
 	}
@@ -235,7 +235,7 @@ KMETHOD QAbstractButton_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setText(text);
 	}
@@ -247,7 +247,7 @@ KMETHOD QAbstractButton_getShortcut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QKeySequence ret_v = qp->shortcut();
 		QKeySequence *ret_v_ = new QKeySequence(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -262,7 +262,7 @@ KMETHOD QAbstractButton_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->text();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -276,7 +276,7 @@ KMETHOD QAbstractButton_animateClick(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int msec = Int_to(int, sfp[1]);
 		qp->animateClick(msec);
 	}
@@ -288,7 +288,7 @@ KMETHOD QAbstractButton_click(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->click();
 	}
 	RETURNvoid_();
@@ -299,7 +299,7 @@ KMETHOD QAbstractButton_setChecked(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setChecked(arg0);
 	}
@@ -311,7 +311,7 @@ KMETHOD QAbstractButton_setIconSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  size = *RawPtr_to(const QSize *, sfp[1]);
 		qp->setIconSize(size);
 	}
@@ -323,7 +323,7 @@ KMETHOD QAbstractButton_toggle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractButton *  qp = RawPtr_to(QAbstractButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->toggle();
 	}
 	RETURNvoid_();
@@ -442,13 +442,31 @@ bool DummyQAbstractButton::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQAbstractButton::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, clicked_func);
+	KNH_ADDNNREF(ctx, pressed_func);
+	KNH_ADDNNREF(ctx, released_func);
+	KNH_ADDNNREF(ctx, toggled_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQAbstractButton::connection(QObject *o)
 {
-	connect(o, SIGNAL(clicked(bool)), this, SLOT(clickedSlot(bool)));
-	connect(o, SIGNAL(pressed()), this, SLOT(pressedSlot()));
-	connect(o, SIGNAL(released()), this, SLOT(releasedSlot()));
-	connect(o, SIGNAL(toggled(bool)), this, SLOT(toggledSlot(bool)));
+	QAbstractButton *p = dynamic_cast<QAbstractButton*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(clicked(bool)), this, SLOT(clickedSlot(bool)));
+		connect(p, SIGNAL(pressed()), this, SLOT(pressedSlot()));
+		connect(p, SIGNAL(released()), this, SLOT(releasedSlot()));
+		connect(p, SIGNAL(toggled(bool)), this, SLOT(toggledSlot(bool)));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -511,29 +529,9 @@ static void QAbstractButton_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 4;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAbstractButton *qp = (KQAbstractButton *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->clicked_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->clicked_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->pressed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->pressed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->released_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->released_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->toggled_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->toggled_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -556,6 +554,8 @@ bool KQAbstractButton::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQAbstractButton(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

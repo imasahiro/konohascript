@@ -38,7 +38,7 @@ KMETHOD QStylePainter_beginOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStylePainter *  qp = RawPtr_to(QStylePainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		bool ret_v = qp->begin(widget);
 		RETURNb_(ret_v);
@@ -53,7 +53,7 @@ KMETHOD QStylePainter_beginOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStylePainter *  qp = RawPtr_to(QStylePainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPaintDevice*  pd = RawPtr_to(QPaintDevice*, sfp[1]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[2]);
 		bool ret_v = qp->begin(pd, widget);
@@ -68,7 +68,7 @@ KMETHOD QStylePainter_drawComplexControl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStylePainter *  qp = RawPtr_to(QStylePainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle::ComplexControl cc = Int_to(QStyle::ComplexControl, sfp[1]);
 		const QStyleOptionComplex  option = *RawPtr_to(const QStyleOptionComplex *, sfp[2]);
 		qp->drawComplexControl(cc, option);
@@ -81,7 +81,7 @@ KMETHOD QStylePainter_drawControl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStylePainter *  qp = RawPtr_to(QStylePainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle::ControlElement ce = Int_to(QStyle::ControlElement, sfp[1]);
 		const QStyleOption  option = *RawPtr_to(const QStyleOption *, sfp[2]);
 		qp->drawControl(ce, option);
@@ -94,7 +94,7 @@ KMETHOD QStylePainter_drawItemPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStylePainter *  qp = RawPtr_to(QStylePainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		int flags = Int_to(int, sfp[2]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[3]);
@@ -108,7 +108,7 @@ KMETHOD QStylePainter_drawItemText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStylePainter *  qp = RawPtr_to(QStylePainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		int flags = Int_to(int, sfp[2]);
 		const QPalette  pal = *RawPtr_to(const QPalette *, sfp[3]);
@@ -125,7 +125,7 @@ KMETHOD QStylePainter_drawPrimitive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStylePainter *  qp = RawPtr_to(QStylePainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle::PrimitiveElement pe = Int_to(QStyle::PrimitiveElement, sfp[1]);
 		const QStyleOption  option = *RawPtr_to(const QStyleOption *, sfp[2]);
 		qp->drawPrimitive(pe, option);
@@ -138,7 +138,7 @@ KMETHOD QStylePainter_style(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStylePainter *  qp = RawPtr_to(QStylePainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle* ret_v = qp->style();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStyle*)ret_v, NULL);
 		RETURN_(rptr);
@@ -198,9 +198,23 @@ bool DummyQStylePainter::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQStylePainter::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQPainter::reftrace(ctx, p, tail_);
+}
 
 void DummyQStylePainter::connection(QObject *o)
 {
+	QStylePainter *p = dynamic_cast<QStylePainter*>(o);
+	if (p != NULL) {
+	}
 	DummyQPainter::connection(o);
 }
 
@@ -208,7 +222,6 @@ KQStylePainter::KQStylePainter() : QStylePainter()
 {
 	self = NULL;
 	dummy = new DummyQStylePainter();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStylePainter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -263,13 +276,9 @@ static void QStylePainter_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStylePainter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStylePainter *qp = (KQStylePainter *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -283,6 +292,8 @@ void KQStylePainter::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQStylePainter(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

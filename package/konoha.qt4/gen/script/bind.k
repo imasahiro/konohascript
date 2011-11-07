@@ -1,3 +1,21 @@
+String ClassDef(String class_name)
+{
+	String ret = """
+
+DEFAPI(void) def<C>(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = \"<C>\";
+	cdef->free = <C>_free;
+	cdef->reftrace = <C>_reftrace;
+	cdef->compareTo = <C>_compareTo;
+}
+""";
+
+	ret = ret.replace("<C>", class_name);
+	return ret;
+}
+
 String CppPreface(String class_name)
 {
 	String ret = """
@@ -37,6 +55,8 @@ String CommonHpp()
 #define QT_COMMON_HPP
 #include <QtCore>
 #include <QtGui>
+#include <QtWebKit>
+//#include <QtNetwork>
 #define K_INTERNAL
 #include <konoha1.h>
 #include <konoha1/inlinelibs.h>
@@ -44,6 +64,16 @@ String CommonHpp()
 #define new_RawPtrFromClass(CLASS, o) new_RawPtr(lctx, getClassTBL(CLASS), o)
 #include <map>
 #define new_QRawPtr(lctx, T, v) new_QRawPtr_(lctx, getClassTBL(T), v)
+//#define QRawPtrNull_to(T, a) ((((a.p)->rawptr) != NULL) ? (*RawPtr_to(T, a)) : 0)
+
+#define initFlag(NAME, T, a) T NAME;QRawPtrNull_to(NAME, T, a);
+#define QRawPtrNull_to(NAME, T, a) if (((a.p)->rawptr) != NULL) { \\
+(NAME) = *RawPtr_to(T*, a);								          \\
+} else {														  \\
+(NAME) = 0;														  \\
+}
+
+
 
 // template<class T>
 // inline knh_RawPtr_t *new_QRawPtr(CTX lctx, T *v)
@@ -128,6 +158,43 @@ String InitFunc()
 extern "C" {
 #endif
 
+// //Array<String> System.parents(Object c);
+// KMETHOD System_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+// {
+// 	(void)ctx;
+// 	const knh_ClassTBL_t *ct = O_cTBL(sfp[1].o);
+// 	if(IS_Class(sfp[1].o)) {
+// 		ct = ClassTBL(((knh_Class_t*)sfp[1].o)->cid);
+// 		knh_Array_t *a = new_Array0(ctx, 10);
+// 		while(ct->supcid != CLASS_Object) {
+// 			ct = ct->supTBL;
+// 			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+// 		}
+// 		RETURN_(a);
+// 	} else {
+// 		RETURN_(KNH_NULL);
+// 	}
+// }
+
+//Array<String> System.getClassParents(String class_name);
+KMETHOD System_getClassParents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	knh_String_t *class_name = sfp[1].s;
+	knh_bytes_t lname = class_name->str;
+	const knh_ClassTBL_t *ct = (const knh_ClassTBL_t *)knh_DictSet_get(ctx, ctx->share->classNameDictSet, lname);
+	if(ct != 0) {
+		knh_Array_t *a = new_Array0(ctx, 10);
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
 DEFAPI(const knh_PackageDef_t*) init(CTX, const knh_LoaderAPI_t *)
 {
 	RETURN_PKGINFO("Qt-4.7");
@@ -195,19 +262,29 @@ String String_to(String name, String type, int sfp_num)
 	return ret;
 }
 
-String RawPtr_to(String name, String type, int sfp_num)
+String RawPtr_to(String name, String type, int sfp_num, boolean object_flag = false)
 {
-	String ret = "TYPE  NAME = RawPtr_to(CAST, sfp[SFP_NUM]);\n";
-	if ("*" in? type && !("*>" in? type)) {
-		ret = ret.replace("CAST", type);
+	String ret = "";
+	if (object_flag) {
+//		ret = "TYPE NAME;\n\t\tQRawPtrNull_to(NAME, TYPE, sfp[SFP_NUM]);\n";
+//		ret = ret.replace("CAST", type + "*");
+		ret = "initFlag(NAME, TYPE, sfp[SFP_NUM]);\n";
 		ret = ret.replace("TYPE", type);
+		ret = ret.replace("NAME", name);
+		ret = ret.replace("SFP_NUM", (String)sfp_num);
 	} else {
-		ret = ret.replace("CAST", type + " *");
-		ret = ret.replace("RawPtr", "*RawPtr");
-		ret = ret.replace("TYPE", type);
+		ret = "TYPE  NAME = RawPtr_to(CAST, sfp[SFP_NUM]);\n";
+		if ("*" in? type && !("*>" in? type)) {
+			ret = ret.replace("CAST", type);
+			ret = ret.replace("TYPE", type);
+		} else {
+			ret = ret.replace("CAST", type + " *");
+			ret = ret.replace("RawPtr", "*RawPtr");
+			ret = ret.replace("TYPE", type);
+		}
+		ret = ret.replace("NAME", name);
+		ret = ret.replace("SFP_NUM", (String)sfp_num);
 	}
-	ret = ret.replace("NAME", name);
-	ret = ret.replace("SFP_NUM", (String)sfp_num);
 	return ret;
 }
 
@@ -393,7 +470,7 @@ set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g")
 set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
 set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O2 -g")
 set(CMAKE_CXX_FLAGS_DEBUG   "-Wall -O0 -g3")
-set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE DEBUG)
 
 # it must be configured
 
@@ -409,6 +486,7 @@ set(PACKAGE_EXTRA_LIBRARY
 	${QT_QTCORE_LIBRARY}
 	${QT_QTWEBKIT_LIBRARY}
 	${QT_QTGUI_LIBRARY}
+	${QT_QTNETWORK_LIBRARY}
 	)
 
 set(PACKAGE_HEADERS
@@ -445,60 +523,6 @@ endif(USE_QT4)
 	ret = ret.replace("HPPSRC", hppsrc);
 	return ret;
 }
-
-// String RETURNknh_o(String type)
-// {
-// 	String ret = "";
-// 	String exclude_const_type = type - "const ";
-// 	if ("void" == type) {
-// 		return "";
-// 	}
-// 	ret += "\t\tObject *o;\n";
-
-// 	if ("*" in? type) {
-// 		ret += "\t\to = (Object*)lsfp[0].p;\n";
-// 		// if (exclude_const_type.startsWith("i") &&
-// 		// 	"int" in? return_value_type) {
-// 		// 	ret += "o = (Object*)new_Int(lctx, <RV>);\n";
-// 		// } else if ("float" in? return_value_type ||
-// 		// 		   "qreal" in? return_value_type) {
-// 		// 	ret += "o = (Object*)new_Float(lctx, <RV>);\n";
-// 		// } else if ("bool" in? return_value_type) {
-// 		// 	ret += "o = (Object*)new_Boolean(lctx, <RV>);\n";
-// 		// } else if ("QString" in? return_value_type) {
-// 		// 	ret += "o = new_String(lctx, <RV>);";
-// 		// 	// } else if ("::" in? return_value_type && !return_value_type_object_flag) {
-// 		// 	// 	return RETURNi_();
-// 		// } else {
-// 		// 	ret += "const knh_ClassTBL_t *ct = lctx->share->ClassTBL[knh_getcid(lctx, STEXT(#CLASS))];";
-// 		// 	ret += "(Object *)new_RawPtr(lctx, ct, <RV>);";
-// 		// }
-// 		// ret += "return o;\n";
-// 	} else {
-// 		if (exclude_const_type.startsWith("i") &&
-// 			"int" in? type) {
-// 			ret += "\t\to = (Object*)new_Int(lctx, lsfp[0].ivalue);\n";
-// 		} else if ("float" in? type ||
-// 				   "qreal" in? type) {
-// 			ret += "\t\to = (Object*)new_Float(lctx, lsfp[0].fvalue);\n";
-// 		} else if ("bool" in? type) {
-// 			ret += "\t\to = (Object*)(lsfp[0].bvalue ? lctx->share->constTrue : lctx->share->constFalse);\n";
-// 		} else if ("QString" in? type) {
-// 			ret += "\t\to = (Object*)new_String(lctx, S_totext(lsfp[0].s));\n";
-// 		// } else if ("::" in? return_value_type && !return_value_type_object_flag) {
-// 		//  	return RETURNi_();
-// 		} else {
-// 			ret += "\t\tconst knh_ClassTBL_t *ct = lctx->share->ClassTBL[knh_getcid(lctx, STEXT(\"<C>\"))];\n";
-// 			ret += "\t\t(Object *)new_RawPtr(lctx, ct, lsfp[0].p);\n";
-// 		}
-// 	}
-// 	ret += """
-// 		return o;
-// 	} else {
-// 		return NULL;
-// """;
-// 		return ret;
-// }
 
 String MEMBERb_info(String label, boolean value)
 {
@@ -550,6 +574,16 @@ String MEMBERsa_info(String label, String[] values)
 		ret += "\n" + value;
 	}
 	ret += "\n";
+	return ret;
+}
+
+String MEMBERtssa_info(String label, Tuple<String, String>[] values)
+{
+	String ret = label + "\n";
+	foreach (Tuple<String, String> value in values) {
+		ret += MEMBERs_info("class", value[0]);
+		ret += MEMBERs_info("name", value[1]);
+	}
 	return ret;
 }
 
@@ -617,7 +651,7 @@ boolean toMEMBERb(InputStream ins)
 	return ret;
 }
 
-void setMEMBERea(EnumInterface[] members, Input ins)
+void setMEMBERea(EnumInterface[] members, InputStream ins)
 {
 	String line = "";
 	while ((line = ins.readLine()) != "") {
@@ -639,6 +673,22 @@ void setMEMBERea(EnumInterface[] members, Input ins)
 		}
 	}
 }
+
+void setMEMBERtssa(Tuple<String, String>[] members, InputStream ins)
+{
+	String line = "";
+	while ((line = ins.readLine()) != "") {
+		if (line == "class") {
+//			Tuple<String, String> t = ("", "");
+			t0 = ins.readLine();
+			while ((line = ins.readLine()) != "name"){;}
+			t1 = ins.readLine();
+			t = (t0, t1);
+			members <<< t;
+		}
+	}
+}
+
 
 String MEMBERb_info(String label, boolean value)
 {
@@ -874,11 +924,43 @@ KMETHOD QApplication_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	int dummy = 0;
 	char **argv = (char **)malloc(1 * sizeof(char *));
 	memset(argv, 0, sizeof(char *));
-	QApplication *app = new QApplication(dummy, argv);
+//	QApplication *app = new QApplication(dummy, argv);
+	KQApplication *app = new KQApplication(dummy, argv);
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, app, NULL);
+	app->setSelf(p);
 	RETURN_(p);
 }
 """;
 	return ret;
 }
+
+String FUNC_PARENTS(String class_name)
+{
+	String array_size = "10";
+	String ret = """
+//Array<String> <C>.parents();
+KMETHOD <C>_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	<C> *qp = RawPtr_to(<C>*, sfp[0]);
+	if (qp != NULL) {
+		int size = <SIZE>;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+""";
+	ret = ret.replace("<C>", class_name);
+	ret = ret.replace("<SIZE>", array_size);
+	return ret;
+}
+
+

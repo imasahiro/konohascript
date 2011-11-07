@@ -9,13 +9,13 @@ KMETHOD QDrag_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 
-//int QDrag.exec(int supportedActions);
+//int QDrag.exec(QtDropActions supportedActions);
 KMETHOD QDrag_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDrag *  qp = RawPtr_to(QDrag *, sfp[0]);
-	if (qp != NULL) {
-		Qt::DropActions supportedActions = Int_to(Qt::DropActions, sfp[1]);
+	if (qp) {
+		initFlag(supportedActions, Qt::DropActions, sfp[1]);
 		Qt::DropAction ret_v = qp->exec(supportedActions);
 		RETURNi_(ret_v);
 	} else {
@@ -24,13 +24,13 @@ KMETHOD QDrag_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//int QDrag.exec(int supportedActions, int defaultDropAction);
+//int QDrag.exec(QtDropActions supportedActions, int defaultDropAction);
 KMETHOD QDrag_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDrag *  qp = RawPtr_to(QDrag *, sfp[0]);
-	if (qp != NULL) {
-		Qt::DropActions supportedActions = Int_to(Qt::DropActions, sfp[1]);
+	if (qp) {
+		initFlag(supportedActions, Qt::DropActions, sfp[1]);
 		Qt::DropAction defaultDropAction = Int_to(Qt::DropAction, sfp[2]);
 		Qt::DropAction ret_v = qp->exec(supportedActions, defaultDropAction);
 		RETURNi_(ret_v);
@@ -44,7 +44,7 @@ KMETHOD QDrag_getHotSpot(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDrag *  qp = RawPtr_to(QDrag *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPoint ret_v = qp->hotSpot();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -59,7 +59,7 @@ KMETHOD QDrag_getMimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDrag *  qp = RawPtr_to(QDrag *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMimeData* ret_v = qp->mimeData();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMimeData*)ret_v, NULL);
 		RETURN_(rptr);
@@ -73,7 +73,7 @@ KMETHOD QDrag_getPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDrag *  qp = RawPtr_to(QDrag *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPixmap ret_v = qp->pixmap();
 		QPixmap *ret_v_ = new QPixmap(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -88,7 +88,7 @@ KMETHOD QDrag_setDragCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDrag *  qp = RawPtr_to(QDrag *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPixmap  cursor = *RawPtr_to(const QPixmap *, sfp[1]);
 		Qt::DropAction action = Int_to(Qt::DropAction, sfp[2]);
 		qp->setDragCursor(cursor, action);
@@ -101,7 +101,7 @@ KMETHOD QDrag_setHotSpot(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDrag *  qp = RawPtr_to(QDrag *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  hotspot = *RawPtr_to(const QPoint *, sfp[1]);
 		qp->setHotSpot(hotspot);
 	}
@@ -113,7 +113,7 @@ KMETHOD QDrag_setMimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDrag *  qp = RawPtr_to(QDrag *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMimeData*  data = RawPtr_to(QMimeData*, sfp[1]);
 		qp->setMimeData(data);
 	}
@@ -125,7 +125,7 @@ KMETHOD QDrag_setPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDrag *  qp = RawPtr_to(QDrag *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[1]);
 		qp->setPixmap(pixmap);
 	}
@@ -137,7 +137,7 @@ KMETHOD QDrag_source(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDrag *  qp = RawPtr_to(QDrag *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->source();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -151,7 +151,7 @@ KMETHOD QDrag_target(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDrag *  qp = RawPtr_to(QDrag *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->target();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -244,11 +244,27 @@ bool DummyQDrag::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDrag::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, action_changed_func);
+	KNH_ADDNNREF(ctx, target_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQDrag::connection(QObject *o)
 {
-	connect(o, SIGNAL(actionChanged(Qt::DropAction)), this, SLOT(actionChangedSlot(Qt::DropAction)));
-	connect(o, SIGNAL(targetChanged(QWidget*)), this, SLOT(targetChangedSlot(QWidget*)));
+	QDrag *p = dynamic_cast<QDrag*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(actionChanged(Qt::DropAction)), this, SLOT(actionChangedSlot(Qt::DropAction)));
+		connect(p, SIGNAL(targetChanged(QWidget*)), this, SLOT(targetChangedSlot(QWidget*)));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -311,21 +327,9 @@ static void QDrag_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDrag_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDrag *qp = (KQDrag *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->action_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->action_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->target_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->target_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -348,6 +352,8 @@ bool KQDrag::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQDrag(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

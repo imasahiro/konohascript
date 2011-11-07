@@ -3,7 +3,7 @@ KMETHOD QInputDialog_done(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int result = Int_to(int, sfp[1]);
 		qp->done(result);
 	}
@@ -15,7 +15,7 @@ KMETHOD QInputDialog_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -30,7 +30,7 @@ KMETHOD QInputDialog_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setVisible(visible);
 	}
@@ -42,7 +42,7 @@ KMETHOD QInputDialog_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -52,12 +52,12 @@ KMETHOD QInputDialog_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QInputDialog QInputDialog.new(QWidget parent, int flags);
+//QInputDialog QInputDialog.new(QWidget parent, QtWindowFlags flags);
 KMETHOD QInputDialog_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
-	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[2]);
+	initFlag(flags, Qt::WindowFlags, sfp[2]);
 	KQInputDialog *ret_v = new KQInputDialog(parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -69,7 +69,7 @@ KMETHOD QInputDialog_getCancelButtonText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->cancelButtonText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -83,7 +83,7 @@ KMETHOD QInputDialog_getDoubleDecimals(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->doubleDecimals();
 		RETURNi_(ret_v);
 	} else {
@@ -96,7 +96,7 @@ KMETHOD QInputDialog_getDoubleMaximum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double ret_v = qp->doubleMaximum();
 		double *ret_v_ = new double(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -111,7 +111,7 @@ KMETHOD QInputDialog_getDoubleMinimum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double ret_v = qp->doubleMinimum();
 		double *ret_v_ = new double(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -126,7 +126,7 @@ KMETHOD QInputDialog_getDoubleValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double ret_v = qp->doubleValue();
 		double *ret_v_ = new double(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -141,7 +141,7 @@ KMETHOD QInputDialog_getInputMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QInputDialog::InputMode ret_v = qp->inputMode();
 		RETURNi_(ret_v);
 	} else {
@@ -154,7 +154,7 @@ KMETHOD QInputDialog_getIntMaximum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->intMaximum();
 		RETURNi_(ret_v);
 	} else {
@@ -167,7 +167,7 @@ KMETHOD QInputDialog_getIntMinimum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->intMinimum();
 		RETURNi_(ret_v);
 	} else {
@@ -180,7 +180,7 @@ KMETHOD QInputDialog_getIntStep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->intStep();
 		RETURNi_(ret_v);
 	} else {
@@ -193,7 +193,7 @@ KMETHOD QInputDialog_getIntValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->intValue();
 		RETURNi_(ret_v);
 	} else {
@@ -206,7 +206,7 @@ KMETHOD QInputDialog_isComboBoxEditable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isComboBoxEditable();
 		RETURNb_(ret_v);
 	} else {
@@ -219,7 +219,7 @@ KMETHOD QInputDialog_getLabelText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->labelText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -233,7 +233,7 @@ KMETHOD QInputDialog_getOkButtonText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->okButtonText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -247,7 +247,7 @@ KMETHOD QInputDialog_open(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
 		const char*  member = RawPtr_to(const char*, sfp[2]);
 		qp->open(receiver, member);
@@ -255,16 +255,18 @@ KMETHOD QInputDialog_open(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//int QInputDialog.getOptions();
+//QInputDialogInputDialogOptions QInputDialog.getOptions();
 KMETHOD QInputDialog_getOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QInputDialog::InputDialogOptions ret_v = qp->options();
-		RETURNi_(ret_v);
+		QInputDialog::InputDialogOptions *ret_v_ = new QInputDialog::InputDialogOptions(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -273,7 +275,7 @@ KMETHOD QInputDialog_setCancelButtonText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setCancelButtonText(text);
 	}
@@ -285,7 +287,7 @@ KMETHOD QInputDialog_setComboBoxEditable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool editable = Boolean_to(bool, sfp[1]);
 		qp->setComboBoxEditable(editable);
 	}
@@ -297,7 +299,7 @@ KMETHOD QInputDialog_setDoubleDecimals(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int decimals = Int_to(int, sfp[1]);
 		qp->setDoubleDecimals(decimals);
 	}
@@ -309,7 +311,7 @@ KMETHOD QInputDialog_setDoubleMaximum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  max = *RawPtr_to(double *, sfp[1]);
 		qp->setDoubleMaximum(max);
 	}
@@ -321,7 +323,7 @@ KMETHOD QInputDialog_setDoubleMinimum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  min = *RawPtr_to(double *, sfp[1]);
 		qp->setDoubleMinimum(min);
 	}
@@ -333,7 +335,7 @@ KMETHOD QInputDialog_setDoubleRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  min = *RawPtr_to(double *, sfp[1]);
 		double  max = *RawPtr_to(double *, sfp[2]);
 		qp->setDoubleRange(min, max);
@@ -346,7 +348,7 @@ KMETHOD QInputDialog_setDoubleValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  value = *RawPtr_to(double *, sfp[1]);
 		qp->setDoubleValue(value);
 	}
@@ -358,7 +360,7 @@ KMETHOD QInputDialog_setInputMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QInputDialog::InputMode mode = Int_to(QInputDialog::InputMode, sfp[1]);
 		qp->setInputMode(mode);
 	}
@@ -370,7 +372,7 @@ KMETHOD QInputDialog_setIntMaximum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int max = Int_to(int, sfp[1]);
 		qp->setIntMaximum(max);
 	}
@@ -382,7 +384,7 @@ KMETHOD QInputDialog_setIntMinimum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int min = Int_to(int, sfp[1]);
 		qp->setIntMinimum(min);
 	}
@@ -394,7 +396,7 @@ KMETHOD QInputDialog_setIntRange(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int min = Int_to(int, sfp[1]);
 		int max = Int_to(int, sfp[2]);
 		qp->setIntRange(min, max);
@@ -407,7 +409,7 @@ KMETHOD QInputDialog_setIntStep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int step = Int_to(int, sfp[1]);
 		qp->setIntStep(step);
 	}
@@ -419,7 +421,7 @@ KMETHOD QInputDialog_setIntValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int value = Int_to(int, sfp[1]);
 		qp->setIntValue(value);
 	}
@@ -431,7 +433,7 @@ KMETHOD QInputDialog_setLabelText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setLabelText(text);
 	}
@@ -443,7 +445,7 @@ KMETHOD QInputDialog_setOkButtonText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setOkButtonText(text);
 	}
@@ -455,7 +457,7 @@ KMETHOD QInputDialog_setOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QInputDialog::InputDialogOption option = Int_to(QInputDialog::InputDialogOption, sfp[1]);
 		bool on = Boolean_to(bool, sfp[2]);
 		qp->setOption(option, on);
@@ -463,13 +465,13 @@ KMETHOD QInputDialog_setOption(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//void QInputDialog.setOptions(int options);
+//void QInputDialog.setOptions(QInputDialogInputDialogOptions options);
 KMETHOD QInputDialog_setOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
-		QInputDialog::InputDialogOptions options = Int_to(QInputDialog::InputDialogOptions, sfp[1]);
+	if (qp) {
+		initFlag(options, QInputDialog::InputDialogOptions, sfp[1]);
 		qp->setOptions(options);
 	}
 	RETURNvoid_();
@@ -480,7 +482,7 @@ KMETHOD QInputDialog_setTextEchoMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLineEdit::EchoMode mode = Int_to(QLineEdit::EchoMode, sfp[1]);
 		qp->setTextEchoMode(mode);
 	}
@@ -492,7 +494,7 @@ KMETHOD QInputDialog_setTextValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setTextValue(text);
 	}
@@ -504,7 +506,7 @@ KMETHOD QInputDialog_testOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QInputDialog::InputDialogOption option = Int_to(QInputDialog::InputDialogOption, sfp[1]);
 		bool ret_v = qp->testOption(option);
 		RETURNb_(ret_v);
@@ -518,7 +520,7 @@ KMETHOD QInputDialog_getTextEchoMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLineEdit::EchoMode ret_v = qp->textEchoMode();
 		RETURNi_(ret_v);
 	} else {
@@ -531,7 +533,7 @@ KMETHOD QInputDialog_getTextValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->textValue();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -540,12 +542,11 @@ KMETHOD QInputDialog_getTextValue(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//double QInputDialog.getDouble(QWidget parent, String title, String label, double value, double min, double max, int decimals, boolean ok, int flags);
+//double QInputDialog.getDouble(QWidget parent, String title, String label, double value, double min, double max, int decimals, boolean ok, QtWindowFlags flags);
 KMETHOD QInputDialog_getDouble(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 		const QString title = String_to(const QString, sfp[2]);
 		const QString label = String_to(const QString, sfp[3]);
@@ -554,8 +555,8 @@ KMETHOD QInputDialog_getDouble(CTX ctx, knh_sfp_t *sfp _RIX)
 		double  max = *RawPtr_to(double *, sfp[6]);
 		int decimals = Int_to(int, sfp[7]);
 		bool* ok = Boolean_to(bool*, sfp[8]);
-		Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[9]);
-		double ret_v = qp->getDouble(parent, title, label, value, min, max, decimals, ok, flags);
+		initFlag(flags, Qt::WindowFlags, sfp[9]);
+		double ret_v = QInputDialog::getDouble(parent, title, label, value, min, max, decimals, ok, flags);
 		double *ret_v_ = new double(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -564,12 +565,11 @@ KMETHOD QInputDialog_getDouble(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QInputDialog.getInt(QWidget parent, String title, String label, int value, int min, int max, int step, boolean ok, int flags);
+//int QInputDialog.getInt(QWidget parent, String title, String label, int value, int min, int max, int step, boolean ok, QtWindowFlags flags);
 KMETHOD QInputDialog_getInt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 		const QString title = String_to(const QString, sfp[2]);
 		const QString label = String_to(const QString, sfp[3]);
@@ -578,28 +578,27 @@ KMETHOD QInputDialog_getInt(CTX ctx, knh_sfp_t *sfp _RIX)
 		int max = Int_to(int, sfp[6]);
 		int step = Int_to(int, sfp[7]);
 		bool* ok = Boolean_to(bool*, sfp[8]);
-		Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[9]);
-		int ret_v = qp->getInt(parent, title, label, value, min, max, step, ok, flags);
+		initFlag(flags, Qt::WindowFlags, sfp[9]);
+		int ret_v = QInputDialog::getInt(parent, title, label, value, min, max, step, ok, flags);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
 	}
 }
 
-//String QInputDialog.getText(QWidget parent, String title, String label, int mode, String text, boolean ok, int flags);
+//String QInputDialog.getText(QWidget parent, String title, String label, int mode, String text, boolean ok, QtWindowFlags flags);
 KMETHOD QInputDialog_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QInputDialog *  qp = RawPtr_to(QInputDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 		const QString title = String_to(const QString, sfp[2]);
 		const QString label = String_to(const QString, sfp[3]);
 		QLineEdit::EchoMode mode = Int_to(QLineEdit::EchoMode, sfp[4]);
 		const QString text = String_to(const QString, sfp[5]);
 		bool* ok = Boolean_to(bool*, sfp[6]);
-		Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[7]);
-		QString ret_v = qp->getText(parent, title, label, mode, text, ok, flags);
+		initFlag(flags, Qt::WindowFlags, sfp[7]);
+		QString ret_v = QInputDialog::getText(parent, title, label, mode, text, ok, flags);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -758,15 +757,35 @@ bool DummyQInputDialog::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQInputDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 6;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, double_value_changed_func);
+	KNH_ADDNNREF(ctx, double_value_selected_func);
+	KNH_ADDNNREF(ctx, int_value_changed_func);
+	KNH_ADDNNREF(ctx, int_value_selected_func);
+	KNH_ADDNNREF(ctx, text_value_changed_func);
+	KNH_ADDNNREF(ctx, text_value_selected_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQDialog::reftrace(ctx, p, tail_);
+}
 
 void DummyQInputDialog::connection(QObject *o)
 {
-	connect(o, SIGNAL(doubleValueChanged(double)), this, SLOT(doubleValueChangedSlot(double)));
-	connect(o, SIGNAL(doubleValueSelected(double)), this, SLOT(doubleValueSelectedSlot(double)));
-	connect(o, SIGNAL(intValueChanged(int)), this, SLOT(intValueChangedSlot(int)));
-	connect(o, SIGNAL(intValueSelected(int)), this, SLOT(intValueSelectedSlot(int)));
-	connect(o, SIGNAL(textValueChanged(const QString)), this, SLOT(textValueChangedSlot(const QString)));
-	connect(o, SIGNAL(textValueSelected(const QString)), this, SLOT(textValueSelectedSlot(const QString)));
+	QInputDialog *p = dynamic_cast<QInputDialog*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(doubleValueChanged(double)), this, SLOT(doubleValueChangedSlot(double)));
+		connect(p, SIGNAL(doubleValueSelected(double)), this, SLOT(doubleValueSelectedSlot(double)));
+		connect(p, SIGNAL(intValueChanged(int)), this, SLOT(intValueChangedSlot(int)));
+		connect(p, SIGNAL(intValueSelected(int)), this, SLOT(intValueSelectedSlot(int)));
+		connect(p, SIGNAL(textValueChanged(const QString)), this, SLOT(textValueChangedSlot(const QString)));
+		connect(p, SIGNAL(textValueSelected(const QString)), this, SLOT(textValueSelectedSlot(const QString)));
+	}
 	DummyQDialog::connection(o);
 }
 
@@ -829,37 +848,9 @@ static void QInputDialog_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QInputDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 6;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQInputDialog *qp = (KQInputDialog *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->double_value_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->double_value_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->double_value_selected_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->double_value_selected_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->int_value_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->int_value_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->int_value_selected_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->int_value_selected_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->text_value_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->text_value_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->text_value_selected_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->text_value_selected_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -883,15 +874,6 @@ bool KQInputDialog::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQInputDialog(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QInputDialog";
-	cdef->free = QInputDialog_free;
-	cdef->reftrace = QInputDialog_reftrace;
-	cdef->compareTo = QInputDialog_compareTo;
-}
-
 static knh_IntData_t QInputDialogConstInt[] = {
 	{"NoButtons", QInputDialog::NoButtons},
 	{"UseListViewForComboBoxItems", QInputDialog::UseListViewForComboBoxItems},
@@ -903,5 +885,179 @@ static knh_IntData_t QInputDialogConstInt[] = {
 
 DEFAPI(void) constQInputDialog(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QInputDialogConstInt);
+}
+
+
+DEFAPI(void) defQInputDialog(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QInputDialog";
+	cdef->free = QInputDialog_free;
+	cdef->reftrace = QInputDialog_reftrace;
+	cdef->compareTo = QInputDialog_compareTo;
+}
+
+//## QInputDialogInputDialogOptions QInputDialogInputDialogOptions.new(int value);
+KMETHOD QInputDialogInputDialogOptions_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QInputDialog::InputDialogOption i = Int_to(QInputDialog::InputDialogOption, sfp[1]);
+	QInputDialog::InputDialogOptions *ret_v = new QInputDialog::InputDialogOptions(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QInputDialogInputDialogOptions QInputDialogInputDialogOptions.and(int mask);
+KMETHOD QInputDialogInputDialogOptions_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QInputDialog::InputDialogOptions *qp = RawPtr_to(QInputDialog::InputDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QInputDialog::InputDialogOptions ret = ((*qp) & i);
+		QInputDialog::InputDialogOptions *ret_ = new QInputDialog::InputDialogOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QInputDialogInputDialogOptions QInputDialogInputDialogOptions.iand(QInputDialog::QInputDialogInputDialogOptions other);
+KMETHOD QInputDialogInputDialogOptions_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QInputDialog::InputDialogOptions *qp = RawPtr_to(QInputDialog::InputDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QInputDialog::InputDialogOptions *other = RawPtr_to(QInputDialog::InputDialogOptions *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QInputDialogInputDialogOptions QInputDialogInputDialogOptions.or(QInputDialogInputDialogOptions f);
+KMETHOD QInputDialogInputDialogOptions_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QInputDialog::InputDialogOptions *qp = RawPtr_to(QInputDialog::InputDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QInputDialog::InputDialogOptions *f = RawPtr_to(QInputDialog::InputDialogOptions*, sfp[1]);
+		QInputDialog::InputDialogOptions ret = ((*qp) | (*f));
+		QInputDialog::InputDialogOptions *ret_ = new QInputDialog::InputDialogOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QInputDialogInputDialogOptions QInputDialogInputDialogOptions.ior(QInputDialog::QInputDialogInputDialogOptions other);
+KMETHOD QInputDialogInputDialogOptions_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QInputDialog::InputDialogOptions *qp = RawPtr_to(QInputDialog::InputDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QInputDialog::InputDialogOptions *other = RawPtr_to(QInputDialog::InputDialogOptions *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QInputDialogInputDialogOptions QInputDialogInputDialogOptions.xor(QInputDialogInputDialogOptions f);
+KMETHOD QInputDialogInputDialogOptions_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QInputDialog::InputDialogOptions *qp = RawPtr_to(QInputDialog::InputDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QInputDialog::InputDialogOptions *f = RawPtr_to(QInputDialog::InputDialogOptions*, sfp[1]);
+		QInputDialog::InputDialogOptions ret = ((*qp) ^ (*f));
+		QInputDialog::InputDialogOptions *ret_ = new QInputDialog::InputDialogOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QInputDialogInputDialogOptions QInputDialogInputDialogOptions.ixor(QInputDialog::QInputDialogInputDialogOptions other);
+KMETHOD QInputDialogInputDialogOptions_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QInputDialog::InputDialogOptions *qp = RawPtr_to(QInputDialog::InputDialogOptions*, sfp[0]);
+	if (qp != NULL) {
+		QInputDialog::InputDialogOptions *other = RawPtr_to(QInputDialog::InputDialogOptions *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QInputDialogInputDialogOptions.testFlag(int flag);
+KMETHOD QInputDialogInputDialogOptions_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QInputDialog::InputDialogOptions *qp = RawPtr_to(QInputDialog::InputDialogOptions *, sfp[0]);
+	if (qp != NULL) {
+		QInputDialog::InputDialogOption flag = Int_to(QInputDialog::InputDialogOption, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QInputDialogInputDialogOptions.value();
+KMETHOD QInputDialogInputDialogOptions_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QInputDialog::InputDialogOptions *qp = RawPtr_to(QInputDialog::InputDialogOptions *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QInputDialogInputDialogOptions_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QInputDialog::InputDialogOptions *qp = (QInputDialog::InputDialogOptions *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QInputDialogInputDialogOptions_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QInputDialog::InputDialogOptions *qp = (QInputDialog::InputDialogOptions *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QInputDialogInputDialogOptions_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QInputDialog::InputDialogOptions*)p1->rawptr);
+//		int v2 = int(*(QInputDialog::InputDialogOptions*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QInputDialog::InputDialogOptions v1 = *(QInputDialog::InputDialogOptions*)p1->rawptr;
+		QInputDialog::InputDialogOptions v2 = *(QInputDialog::InputDialogOptions*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQInputDialogInputDialogOptions(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QInputDialogInputDialogOptions";
+	cdef->free = QInputDialogInputDialogOptions_free;
+	cdef->reftrace = QInputDialogInputDialogOptions_reftrace;
+	cdef->compareTo = QInputDialogInputDialogOptions_compareTo;
 }
 

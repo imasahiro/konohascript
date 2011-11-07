@@ -26,7 +26,7 @@ KMETHOD QFontInfo_bold(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontInfo *  qp = RawPtr_to(QFontInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->bold();
 		RETURNb_(ret_v);
 	} else {
@@ -39,7 +39,7 @@ KMETHOD QFontInfo_exactMatch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontInfo *  qp = RawPtr_to(QFontInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->exactMatch();
 		RETURNb_(ret_v);
 	} else {
@@ -52,7 +52,7 @@ KMETHOD QFontInfo_family(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontInfo *  qp = RawPtr_to(QFontInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->family();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -66,7 +66,7 @@ KMETHOD QFontInfo_fixedPitch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontInfo *  qp = RawPtr_to(QFontInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->fixedPitch();
 		RETURNb_(ret_v);
 	} else {
@@ -79,7 +79,7 @@ KMETHOD QFontInfo_italic(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontInfo *  qp = RawPtr_to(QFontInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->italic();
 		RETURNb_(ret_v);
 	} else {
@@ -92,7 +92,7 @@ KMETHOD QFontInfo_pixelSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontInfo *  qp = RawPtr_to(QFontInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->pixelSize();
 		RETURNi_(ret_v);
 	} else {
@@ -105,7 +105,7 @@ KMETHOD QFontInfo_pointSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontInfo *  qp = RawPtr_to(QFontInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->pointSize();
 		RETURNi_(ret_v);
 	} else {
@@ -118,7 +118,7 @@ KMETHOD QFontInfo_pointSizeF(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontInfo *  qp = RawPtr_to(QFontInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->pointSizeF();
 		RETURNf_(ret_v);
 	} else {
@@ -131,7 +131,7 @@ KMETHOD QFontInfo_rawMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontInfo *  qp = RawPtr_to(QFontInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->rawMode();
 		RETURNb_(ret_v);
 	} else {
@@ -144,7 +144,7 @@ KMETHOD QFontInfo_style(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontInfo *  qp = RawPtr_to(QFontInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont::Style ret_v = qp->style();
 		RETURNi_(ret_v);
 	} else {
@@ -157,7 +157,7 @@ KMETHOD QFontInfo_styleHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontInfo *  qp = RawPtr_to(QFontInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont::StyleHint ret_v = qp->styleHint();
 		RETURNi_(ret_v);
 	} else {
@@ -170,7 +170,7 @@ KMETHOD QFontInfo_weight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontInfo *  qp = RawPtr_to(QFontInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->weight();
 		RETURNi_(ret_v);
 	} else {
@@ -178,6 +178,24 @@ KMETHOD QFontInfo_weight(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QFontInfo.parents();
+KMETHOD QFontInfo_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QFontInfo *qp = RawPtr_to(QFontInfo*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQFontInfo::DummyQFontInfo()
 {
@@ -226,17 +244,28 @@ bool DummyQFontInfo::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQFontInfo::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQFontInfo::connection(QObject *o)
 {
-	return;
+	QFontInfo *p = dynamic_cast<QFontInfo*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQFontInfo::KQFontInfo(const QFont font) : QFontInfo(font)
 {
 	self = NULL;
 	dummy = new DummyQFontInfo();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QFontInfo_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -291,13 +320,9 @@ static void QFontInfo_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QFontInfo_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQFontInfo *qp = (KQFontInfo *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -311,6 +336,8 @@ void KQFontInfo::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQFontInfo(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -14,7 +14,7 @@ KMETHOD QUndoStack_beginMacro(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->beginMacro(text);
 	}
@@ -26,7 +26,7 @@ KMETHOD QUndoStack_canRedo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->canRedo();
 		RETURNb_(ret_v);
 	} else {
@@ -39,7 +39,7 @@ KMETHOD QUndoStack_canUndo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->canUndo();
 		RETURNb_(ret_v);
 	} else {
@@ -52,7 +52,7 @@ KMETHOD QUndoStack_cleanIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->cleanIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -65,7 +65,7 @@ KMETHOD QUndoStack_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -76,7 +76,7 @@ KMETHOD QUndoStack_command(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QUndoCommand* ret_v = qp->command(index);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QUndoCommand*)ret_v, NULL);
@@ -91,7 +91,7 @@ KMETHOD QUndoStack_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->count();
 		RETURNi_(ret_v);
 	} else {
@@ -104,7 +104,7 @@ KMETHOD QUndoStack_createRedoAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 		const QString prefix = String_to(const QString, sfp[2]);
 		QAction* ret_v = qp->createRedoAction(parent, prefix);
@@ -120,7 +120,7 @@ KMETHOD QUndoStack_createUndoAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 		const QString prefix = String_to(const QString, sfp[2]);
 		QAction* ret_v = qp->createUndoAction(parent, prefix);
@@ -136,7 +136,7 @@ KMETHOD QUndoStack_endMacro(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->endMacro();
 	}
 	RETURNvoid_();
@@ -147,7 +147,7 @@ KMETHOD QUndoStack_getIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->index();
 		RETURNi_(ret_v);
 	} else {
@@ -160,7 +160,7 @@ KMETHOD QUndoStack_isActive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isActive();
 		RETURNb_(ret_v);
 	} else {
@@ -173,7 +173,7 @@ KMETHOD QUndoStack_isClean(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isClean();
 		RETURNb_(ret_v);
 	} else {
@@ -186,7 +186,7 @@ KMETHOD QUndoStack_push(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QUndoCommand*  cmd = RawPtr_to(QUndoCommand*, sfp[1]);
 		qp->push(cmd);
 	}
@@ -198,7 +198,7 @@ KMETHOD QUndoStack_redoText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->redoText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -212,7 +212,7 @@ KMETHOD QUndoStack_setUndoLimit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int limit = Int_to(int, sfp[1]);
 		qp->setUndoLimit(limit);
 	}
@@ -224,7 +224,7 @@ KMETHOD QUndoStack_text(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int idx = Int_to(int, sfp[1]);
 		QString ret_v = qp->text(idx);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -239,7 +239,7 @@ KMETHOD QUndoStack_getUndoLimit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->undoLimit();
 		RETURNi_(ret_v);
 	} else {
@@ -252,7 +252,7 @@ KMETHOD QUndoStack_undoText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->undoText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -266,7 +266,7 @@ KMETHOD QUndoStack_redo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->redo();
 	}
 	RETURNvoid_();
@@ -277,7 +277,7 @@ KMETHOD QUndoStack_setActive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool active = Boolean_to(bool, sfp[1]);
 		qp->setActive(active);
 	}
@@ -289,7 +289,7 @@ KMETHOD QUndoStack_setClean(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->setClean();
 	}
 	RETURNvoid_();
@@ -300,7 +300,7 @@ KMETHOD QUndoStack_setIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int idx = Int_to(int, sfp[1]);
 		qp->setIndex(idx);
 	}
@@ -312,7 +312,7 @@ KMETHOD QUndoStack_undo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QUndoStack *  qp = RawPtr_to(QUndoStack *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->undo();
 	}
 	RETURNvoid_();
@@ -467,15 +467,35 @@ bool DummyQUndoStack::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQUndoStack::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 6;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, can_redo_changed_func);
+	KNH_ADDNNREF(ctx, can_undo_changed_func);
+	KNH_ADDNNREF(ctx, clean_changed_func);
+	KNH_ADDNNREF(ctx, index_changed_func);
+	KNH_ADDNNREF(ctx, redo_text_changed_func);
+	KNH_ADDNNREF(ctx, undo_text_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQUndoStack::connection(QObject *o)
 {
-	connect(o, SIGNAL(canRedoChanged(bool)), this, SLOT(canRedoChangedSlot(bool)));
-	connect(o, SIGNAL(canUndoChanged(bool)), this, SLOT(canUndoChangedSlot(bool)));
-	connect(o, SIGNAL(cleanChanged(bool)), this, SLOT(cleanChangedSlot(bool)));
-	connect(o, SIGNAL(indexChanged(int)), this, SLOT(indexChangedSlot(int)));
-	connect(o, SIGNAL(redoTextChanged(const QString)), this, SLOT(redoTextChangedSlot(const QString)));
-	connect(o, SIGNAL(undoTextChanged(const QString)), this, SLOT(undoTextChangedSlot(const QString)));
+	QUndoStack *p = dynamic_cast<QUndoStack*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(canRedoChanged(bool)), this, SLOT(canRedoChangedSlot(bool)));
+		connect(p, SIGNAL(canUndoChanged(bool)), this, SLOT(canUndoChangedSlot(bool)));
+		connect(p, SIGNAL(cleanChanged(bool)), this, SLOT(cleanChangedSlot(bool)));
+		connect(p, SIGNAL(indexChanged(int)), this, SLOT(indexChangedSlot(int)));
+		connect(p, SIGNAL(redoTextChanged(const QString)), this, SLOT(redoTextChangedSlot(const QString)));
+		connect(p, SIGNAL(undoTextChanged(const QString)), this, SLOT(undoTextChangedSlot(const QString)));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -538,37 +558,9 @@ static void QUndoStack_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QUndoStack_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 6;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQUndoStack *qp = (KQUndoStack *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->can_redo_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->can_redo_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->can_undo_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->can_undo_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->clean_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->clean_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->index_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->index_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->redo_text_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->redo_text_changed_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->undo_text_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->undo_text_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -591,6 +583,8 @@ bool KQUndoStack::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQUndoStack(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

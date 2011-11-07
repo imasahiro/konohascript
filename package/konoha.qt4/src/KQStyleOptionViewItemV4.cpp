@@ -83,9 +83,23 @@ bool DummyQStyleOptionViewItemV4::signalConnect(knh_Func_t *callback_func, strin
 	}
 }
 
+void DummyQStyleOptionViewItemV4::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOptionViewItemV3::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionViewItemV4::connection(QObject *o)
 {
+	QStyleOptionViewItemV4 *p = dynamic_cast<QStyleOptionViewItemV4*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOptionViewItemV3::connection(o);
 }
 
@@ -93,7 +107,6 @@ KQStyleOptionViewItemV4::KQStyleOptionViewItemV4() : QStyleOptionViewItemV4()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionViewItemV4();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionViewItemV4_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -148,13 +161,9 @@ static void QStyleOptionViewItemV4_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionViewItemV4_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionViewItemV4 *qp = (KQStyleOptionViewItemV4 *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -167,15 +176,6 @@ void KQStyleOptionViewItemV4::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQStyleOptionViewItemV4(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionViewItemV4";
-	cdef->free = QStyleOptionViewItemV4_free;
-	cdef->reftrace = QStyleOptionViewItemV4_reftrace;
-	cdef->compareTo = QStyleOptionViewItemV4_compareTo;
 }
 
 static knh_IntData_t QStyleOptionViewItemV4ConstInt[] = {
@@ -191,4 +191,15 @@ static knh_IntData_t QStyleOptionViewItemV4ConstInt[] = {
 DEFAPI(void) constQStyleOptionViewItemV4(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionViewItemV4ConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionViewItemV4(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionViewItemV4";
+	cdef->free = QStyleOptionViewItemV4_free;
+	cdef->reftrace = QStyleOptionViewItemV4_reftrace;
+	cdef->compareTo = QStyleOptionViewItemV4_compareTo;
+}
+
 

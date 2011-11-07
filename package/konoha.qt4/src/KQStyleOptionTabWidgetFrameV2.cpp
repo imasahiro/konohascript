@@ -83,9 +83,23 @@ bool DummyQStyleOptionTabWidgetFrameV2::signalConnect(knh_Func_t *callback_func,
 	}
 }
 
+void DummyQStyleOptionTabWidgetFrameV2::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOptionTabWidgetFrame::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionTabWidgetFrameV2::connection(QObject *o)
 {
+	QStyleOptionTabWidgetFrameV2 *p = dynamic_cast<QStyleOptionTabWidgetFrameV2*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOptionTabWidgetFrame::connection(o);
 }
 
@@ -93,7 +107,6 @@ KQStyleOptionTabWidgetFrameV2::KQStyleOptionTabWidgetFrameV2() : QStyleOptionTab
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionTabWidgetFrameV2();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionTabWidgetFrameV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -148,13 +161,9 @@ static void QStyleOptionTabWidgetFrameV2_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionTabWidgetFrameV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionTabWidgetFrameV2 *qp = (KQStyleOptionTabWidgetFrameV2 *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -169,6 +178,16 @@ void KQStyleOptionTabWidgetFrameV2::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
+static knh_IntData_t QStyleOptionTabWidgetFrameV2ConstInt[] = {
+	{"Version", QStyleOptionTabWidgetFrameV2::Version},
+	{NULL, 0}
+};
+
+DEFAPI(void) constQStyleOptionTabWidgetFrameV2(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
+	kapi->loadClassIntConst(ctx, cid, QStyleOptionTabWidgetFrameV2ConstInt);
+}
+
+
 DEFAPI(void) defQStyleOptionTabWidgetFrameV2(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	(void)ctx; (void) cid;
@@ -178,12 +197,4 @@ DEFAPI(void) defQStyleOptionTabWidgetFrameV2(CTX ctx, knh_class_t cid, knh_Class
 	cdef->compareTo = QStyleOptionTabWidgetFrameV2_compareTo;
 }
 
-static knh_IntData_t QStyleOptionTabWidgetFrameV2ConstInt[] = {
-	{"Version", QStyleOptionTabWidgetFrameV2::Version},
-	{NULL, 0}
-};
-
-DEFAPI(void) constQStyleOptionTabWidgetFrameV2(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
-	kapi->loadClassIntConst(ctx, cid, QStyleOptionTabWidgetFrameV2ConstInt);
-}
 

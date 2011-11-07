@@ -41,7 +41,7 @@ KMETHOD QCommandLinkButton_getDescription(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommandLinkButton *  qp = RawPtr_to(QCommandLinkButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->description();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -55,7 +55,7 @@ KMETHOD QCommandLinkButton_setDescription(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QCommandLinkButton *  qp = RawPtr_to(QCommandLinkButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString description = String_to(const QString, sfp[1]);
 		qp->setDescription(description);
 	}
@@ -113,9 +113,23 @@ bool DummyQCommandLinkButton::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
+void DummyQCommandLinkButton::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQPushButton::reftrace(ctx, p, tail_);
+}
 
 void DummyQCommandLinkButton::connection(QObject *o)
 {
+	QCommandLinkButton *p = dynamic_cast<QCommandLinkButton*>(o);
+	if (p != NULL) {
+	}
 	DummyQPushButton::connection(o);
 }
 
@@ -178,13 +192,9 @@ static void QCommandLinkButton_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QCommandLinkButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQCommandLinkButton *qp = (KQCommandLinkButton *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -207,6 +217,8 @@ bool KQCommandLinkButton::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQCommandLinkButton(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

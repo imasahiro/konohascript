@@ -1,4 +1,4 @@
-//QTabletEvent QTabletEvent.new(int type, QPoint pos, QPoint globalPos, QPointF hiResGlobalPos, int device, int pointerType, float pressure, int xTilt, int yTilt, float tangentialPressure, float rotation, int z, int keyState, int uniqueID);
+//QTabletEvent QTabletEvent.new(int type, QPoint pos, QPoint globalPos, QPointF hiResGlobalPos, int device, int pointerType, float pressure, int xTilt, int yTilt, float tangentialPressure, float rotation, int z, QtKeyboardModifiers keyState, int uniqueID);
 KMETHOD QTabletEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -14,7 +14,7 @@ KMETHOD QTabletEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	qreal tangentialPressure = Float_to(qreal, sfp[10]);
 	qreal rotation = Float_to(qreal, sfp[11]);
 	int z = Int_to(int, sfp[12]);
-	Qt::KeyboardModifiers keyState = Int_to(Qt::KeyboardModifiers, sfp[13]);
+	initFlag(keyState, Qt::KeyboardModifiers, sfp[13]);
 	qint64 uniqueID = Int_to(qint64, sfp[14]);
 	KQTabletEvent *ret_v = new KQTabletEvent(type, pos, globalPos, hiResGlobalPos, device, pointerType, pressure, xTilt, yTilt, tangentialPressure, rotation, z, keyState, uniqueID);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
@@ -27,7 +27,7 @@ KMETHOD QTabletEvent_device(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTabletEvent::TabletDevice ret_v = qp->device();
 		RETURNi_(ret_v);
 	} else {
@@ -40,7 +40,7 @@ KMETHOD QTabletEvent_globalPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint ret_v = qp->globalPos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -55,7 +55,7 @@ KMETHOD QTabletEvent_globalX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->globalX();
 		RETURNi_(ret_v);
 	} else {
@@ -68,7 +68,7 @@ KMETHOD QTabletEvent_globalY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->globalY();
 		RETURNi_(ret_v);
 	} else {
@@ -81,7 +81,7 @@ KMETHOD QTabletEvent_hiResGlobalPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF ret_v = qp->hiResGlobalPos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -96,7 +96,7 @@ KMETHOD QTabletEvent_hiResGlobalX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->hiResGlobalX();
 		RETURNf_(ret_v);
 	} else {
@@ -109,7 +109,7 @@ KMETHOD QTabletEvent_hiResGlobalY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->hiResGlobalY();
 		RETURNf_(ret_v);
 	} else {
@@ -122,7 +122,7 @@ KMETHOD QTabletEvent_pointerType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTabletEvent::PointerType ret_v = qp->pointerType();
 		RETURNi_(ret_v);
 	} else {
@@ -135,7 +135,7 @@ KMETHOD QTabletEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint ret_v = qp->pos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -150,7 +150,7 @@ KMETHOD QTabletEvent_pressure(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->pressure();
 		RETURNf_(ret_v);
 	} else {
@@ -163,7 +163,7 @@ KMETHOD QTabletEvent_rotation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->rotation();
 		RETURNf_(ret_v);
 	} else {
@@ -176,7 +176,7 @@ KMETHOD QTabletEvent_tangentialPressure(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->tangentialPressure();
 		RETURNf_(ret_v);
 	} else {
@@ -189,7 +189,7 @@ KMETHOD QTabletEvent_uniqueId(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->uniqueId();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -204,7 +204,7 @@ KMETHOD QTabletEvent_x(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->x();
 		RETURNi_(ret_v);
 	} else {
@@ -217,7 +217,7 @@ KMETHOD QTabletEvent_xTilt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->xTilt();
 		RETURNi_(ret_v);
 	} else {
@@ -230,7 +230,7 @@ KMETHOD QTabletEvent_y(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->y();
 		RETURNi_(ret_v);
 	} else {
@@ -243,7 +243,7 @@ KMETHOD QTabletEvent_yTilt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->yTilt();
 		RETURNi_(ret_v);
 	} else {
@@ -256,7 +256,7 @@ KMETHOD QTabletEvent_z(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTabletEvent *  qp = RawPtr_to(QTabletEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->z();
 		RETURNi_(ret_v);
 	} else {
@@ -315,9 +315,23 @@ bool DummyQTabletEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTabletEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQInputEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQTabletEvent::connection(QObject *o)
 {
+	QTabletEvent *p = dynamic_cast<QTabletEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQInputEvent::connection(o);
 }
 
@@ -325,7 +339,6 @@ KQTabletEvent::KQTabletEvent(QTabletEvent::Type type, const QPoint pos, const QP
 {
 	self = NULL;
 	dummy = new DummyQTabletEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTabletEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -380,13 +393,9 @@ static void QTabletEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTabletEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTabletEvent *qp = (KQTabletEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -399,15 +408,6 @@ void KQTabletEvent::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQTabletEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTabletEvent";
-	cdef->free = QTabletEvent_free;
-	cdef->reftrace = QTabletEvent_reftrace;
-	cdef->compareTo = QTabletEvent_compareTo;
 }
 
 static knh_IntData_t QTabletEventConstInt[] = {
@@ -427,4 +427,15 @@ static knh_IntData_t QTabletEventConstInt[] = {
 DEFAPI(void) constQTabletEvent(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTabletEventConstInt);
 }
+
+
+DEFAPI(void) defQTabletEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTabletEvent";
+	cdef->free = QTabletEvent_free;
+	cdef->reftrace = QTabletEvent_reftrace;
+	cdef->compareTo = QTabletEvent_compareTo;
+}
+
 

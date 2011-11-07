@@ -38,7 +38,7 @@ KMETHOD QBitArray_at(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		bool ret_v = qp->at(i);
 		RETURNb_(ret_v);
@@ -52,7 +52,7 @@ KMETHOD QBitArray_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -63,7 +63,7 @@ KMETHOD QBitArray_clearBit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		qp->clearBit(i);
 	}
@@ -75,7 +75,7 @@ KMETHOD QBitArray_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->count();
 		RETURNi_(ret_v);
 	} else {
@@ -89,7 +89,7 @@ KMETHOD QBitArray_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool on = Boolean_to(bool, sfp[1]);
 		int ret_v = qp->count(on);
 		RETURNi_(ret_v);
@@ -103,7 +103,7 @@ KMETHOD QBitArray_fill(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool value = Boolean_to(bool, sfp[1]);
 		int size = Int_to(int, sfp[2]);
 		bool ret_v = qp->fill(value, size);
@@ -119,7 +119,7 @@ KMETHOD QBitArray_fill(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool value = Boolean_to(bool, sfp[1]);
 		int begin = Int_to(int, sfp[2]);
 		int end = Int_to(int, sfp[3]);
@@ -133,21 +133,8 @@ KMETHOD QBitArray_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QBitArray.isNull();
-KMETHOD QBitArray_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -159,7 +146,7 @@ KMETHOD QBitArray_resize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int size = Int_to(int, sfp[1]);
 		qp->resize(size);
 	}
@@ -171,7 +158,7 @@ KMETHOD QBitArray_setBit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		qp->setBit(i);
 	}
@@ -184,7 +171,7 @@ KMETHOD QBitArray_setBit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		bool value = Boolean_to(bool, sfp[2]);
 		qp->setBit(i, value);
@@ -197,7 +184,7 @@ KMETHOD QBitArray_size(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->size();
 		RETURNi_(ret_v);
 	} else {
@@ -210,7 +197,7 @@ KMETHOD QBitArray_testBit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		bool ret_v = qp->testBit(i);
 		RETURNb_(ret_v);
@@ -224,7 +211,7 @@ KMETHOD QBitArray_toggleBit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		bool ret_v = qp->toggleBit(i);
 		RETURNb_(ret_v);
@@ -238,13 +225,31 @@ KMETHOD QBitArray_truncate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QBitArray *  qp = RawPtr_to(QBitArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int pos = Int_to(int, sfp[1]);
 		qp->truncate(pos);
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QBitArray.parents();
+KMETHOD QBitArray_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QBitArray *qp = RawPtr_to(QBitArray*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQBitArray::DummyQBitArray()
 {
@@ -293,17 +298,28 @@ bool DummyQBitArray::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQBitArray::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQBitArray::connection(QObject *o)
 {
-	return;
+	QBitArray *p = dynamic_cast<QBitArray*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQBitArray::KQBitArray() : QBitArray()
 {
 	self = NULL;
 	dummy = new DummyQBitArray();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QBitArray_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -358,13 +374,9 @@ static void QBitArray_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QBitArray_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQBitArray *qp = (KQBitArray *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -378,6 +390,8 @@ void KQBitArray::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQBitArray(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -40,9 +40,17 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+
 typedefed_objects
 
 parent_typedefed_objects
+
+class_objects
+
+parent_class_objects
 
 enums
 
@@ -56,6 +64,19 @@ LeftToRight
 RightToLeft
 TopToBottom
 BottomToTop
+public_flag
+true
+class_name
+QLayout
+name
+SizeConstraint
+key
+SetDefaultConstraint
+SetFixedSize
+SetMinimumSize
+SetMaximumSize
+SetMinAndMaxSize
+SetNoConstraint
 public_flag
 true
 

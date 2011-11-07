@@ -25,7 +25,7 @@ KMETHOD QPainter_getBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->background();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -40,7 +40,7 @@ KMETHOD QPainter_getBackgroundMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::BGMode ret_v = qp->backgroundMode();
 		RETURNi_(ret_v);
 	} else {
@@ -53,7 +53,7 @@ KMETHOD QPainter_begin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPaintDevice*  device = RawPtr_to(QPaintDevice*, sfp[1]);
 		bool ret_v = qp->begin(device);
 		RETURNb_(ret_v);
@@ -67,7 +67,7 @@ KMETHOD QPainter_beginNativePainting(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->beginNativePainting();
 	}
 	RETURNvoid_();
@@ -78,7 +78,7 @@ KMETHOD QPainter_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		int flags = Int_to(int, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
@@ -97,7 +97,7 @@ KMETHOD QPainter_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		int flags = Int_to(int, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
@@ -116,7 +116,7 @@ KMETHOD QPainter_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int w = Int_to(int, sfp[3]);
@@ -138,7 +138,7 @@ KMETHOD QPainter_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		const QTextOption  option = *RawPtr_to(const QTextOption *, sfp[3]);
@@ -156,7 +156,7 @@ KMETHOD QPainter_getBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush ret_v = qp->brush();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -171,7 +171,7 @@ KMETHOD QPainter_getBrushOrigin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPoint ret_v = qp->brushOrigin();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -186,7 +186,7 @@ KMETHOD QPainter_getClipPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->clipPath();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -201,7 +201,7 @@ KMETHOD QPainter_getClipRegion(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRegion ret_v = qp->clipRegion();
 		QRegion *ret_v_ = new QRegion(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -216,7 +216,7 @@ KMETHOD QPainter_combinedTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTransform ret_v = qp->combinedTransform();
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -231,7 +231,7 @@ KMETHOD QPainter_getCompositionMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter::CompositionMode ret_v = qp->compositionMode();
 		RETURNi_(ret_v);
 	} else {
@@ -244,7 +244,7 @@ KMETHOD QPainter_device(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPaintDevice* ret_v = qp->device();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPaintDevice*)ret_v, NULL);
 		RETURN_(rptr);
@@ -258,7 +258,7 @@ KMETHOD QPainter_deviceTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTransform ret_v = qp->deviceTransform();
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -273,7 +273,7 @@ KMETHOD QPainter_drawArc(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		int startAngle = Int_to(int, sfp[2]);
 		int spanAngle = Int_to(int, sfp[3]);
@@ -288,7 +288,7 @@ KMETHOD QPainter_drawArc(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		int startAngle = Int_to(int, sfp[2]);
 		int spanAngle = Int_to(int, sfp[3]);
@@ -303,7 +303,7 @@ KMETHOD QPainter_drawArc(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -320,7 +320,7 @@ KMETHOD QPainter_drawChord(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		int startAngle = Int_to(int, sfp[2]);
 		int spanAngle = Int_to(int, sfp[3]);
@@ -335,7 +335,7 @@ KMETHOD QPainter_drawChord(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		int startAngle = Int_to(int, sfp[2]);
 		int spanAngle = Int_to(int, sfp[3]);
@@ -350,7 +350,7 @@ KMETHOD QPainter_drawChord(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -367,7 +367,7 @@ KMETHOD QPainter_drawConvexPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF*  points = RawPtr_to(const QPointF*, sfp[1]);
 		int pointCount = Int_to(int, sfp[2]);
 		qp->drawConvexPolygon(points, pointCount);
@@ -381,7 +381,7 @@ KMETHOD QPainter_drawConvexPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint*  points = RawPtr_to(const QPoint*, sfp[1]);
 		int pointCount = Int_to(int, sfp[2]);
 		qp->drawConvexPolygon(points, pointCount);
@@ -395,7 +395,7 @@ KMETHOD QPainter_drawConvexPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  polygon = *RawPtr_to(const QPolygonF *, sfp[1]);
 		qp->drawConvexPolygon(polygon);
 	}
@@ -408,7 +408,7 @@ KMETHOD QPainter_drawConvexPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygon  polygon = *RawPtr_to(const QPolygon *, sfp[1]);
 		qp->drawConvexPolygon(polygon);
 	}
@@ -420,7 +420,7 @@ KMETHOD QPainter_drawEllipse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		qp->drawEllipse(rectangle);
 	}
@@ -433,7 +433,7 @@ KMETHOD QPainter_drawEllipse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		qp->drawEllipse(rectangle);
 	}
@@ -446,7 +446,7 @@ KMETHOD QPainter_drawEllipse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -462,7 +462,7 @@ KMETHOD QPainter_drawEllipse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  center = *RawPtr_to(const QPointF *, sfp[1]);
 		qreal rx = Float_to(qreal, sfp[2]);
 		qreal ry = Float_to(qreal, sfp[3]);
@@ -477,7 +477,7 @@ KMETHOD QPainter_drawEllipse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  center = *RawPtr_to(const QPoint *, sfp[1]);
 		int rx = Int_to(int, sfp[2]);
 		int ry = Int_to(int, sfp[3]);
@@ -486,32 +486,32 @@ KMETHOD QPainter_drawEllipse(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 */
-//void QPainter.drawImage(QRectF target, QImage image, QRectF source, int flags);
+//void QPainter.drawImage(QRectF target, QImage image, QRectF source, QtImageConversionFlags flags);
 KMETHOD QPainter_drawImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  target = *RawPtr_to(const QRectF *, sfp[1]);
 		const QImage  image = *RawPtr_to(const QImage *, sfp[2]);
 		const QRectF  source = *RawPtr_to(const QRectF *, sfp[3]);
-		Qt::ImageConversionFlags flags = Int_to(Qt::ImageConversionFlags, sfp[4]);
+		initFlag(flags, Qt::ImageConversionFlags, sfp[4]);
 		qp->drawImage(target, image, source, flags);
 	}
 	RETURNvoid_();
 }
 
 /*
-//void QPainter.drawImage(QRect target, QImage image, QRect source, int flags);
+//void QPainter.drawImage(QRect target, QImage image, QRect source, QtImageConversionFlags flags);
 KMETHOD QPainter_drawImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  target = *RawPtr_to(const QRect *, sfp[1]);
 		const QImage  image = *RawPtr_to(const QImage *, sfp[2]);
 		const QRect  source = *RawPtr_to(const QRect *, sfp[3]);
-		Qt::ImageConversionFlags flags = Int_to(Qt::ImageConversionFlags, sfp[4]);
+		initFlag(flags, Qt::ImageConversionFlags, sfp[4]);
 		qp->drawImage(target, image, source, flags);
 	}
 	RETURNvoid_();
@@ -523,7 +523,7 @@ KMETHOD QPainter_drawImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		const QImage  image = *RawPtr_to(const QImage *, sfp[2]);
 		qp->drawImage(point, image);
@@ -537,7 +537,7 @@ KMETHOD QPainter_drawImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
 		const QImage  image = *RawPtr_to(const QImage *, sfp[2]);
 		qp->drawImage(point, image);
@@ -546,32 +546,32 @@ KMETHOD QPainter_drawImage(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 */
 /*
-//void QPainter.drawImage(QPointF point, QImage image, QRectF source, int flags);
+//void QPainter.drawImage(QPointF point, QImage image, QRectF source, QtImageConversionFlags flags);
 KMETHOD QPainter_drawImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		const QImage  image = *RawPtr_to(const QImage *, sfp[2]);
 		const QRectF  source = *RawPtr_to(const QRectF *, sfp[3]);
-		Qt::ImageConversionFlags flags = Int_to(Qt::ImageConversionFlags, sfp[4]);
+		initFlag(flags, Qt::ImageConversionFlags, sfp[4]);
 		qp->drawImage(point, image, source, flags);
 	}
 	RETURNvoid_();
 }
 */
 /*
-//void QPainter.drawImage(QPoint point, QImage image, QRect source, int flags);
+//void QPainter.drawImage(QPoint point, QImage image, QRect source, QtImageConversionFlags flags);
 KMETHOD QPainter_drawImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
 		const QImage  image = *RawPtr_to(const QImage *, sfp[2]);
 		const QRect  source = *RawPtr_to(const QRect *, sfp[3]);
-		Qt::ImageConversionFlags flags = Int_to(Qt::ImageConversionFlags, sfp[4]);
+		initFlag(flags, Qt::ImageConversionFlags, sfp[4]);
 		qp->drawImage(point, image, source, flags);
 	}
 	RETURNvoid_();
@@ -583,7 +583,7 @@ KMETHOD QPainter_drawImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		const QImage  image = *RawPtr_to(const QImage *, sfp[2]);
 		qp->drawImage(rectangle, image);
@@ -597,7 +597,7 @@ KMETHOD QPainter_drawImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		const QImage  image = *RawPtr_to(const QImage *, sfp[2]);
 		qp->drawImage(rectangle, image);
@@ -606,12 +606,12 @@ KMETHOD QPainter_drawImage(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 */
 /*
-//void QPainter.drawImage(int x, int y, QImage image, int sx, int sy, int sw, int sh, int flags);
+//void QPainter.drawImage(int x, int y, QImage image, int sx, int sy, int sw, int sh, QtImageConversionFlags flags);
 KMETHOD QPainter_drawImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		const QImage  image = *RawPtr_to(const QImage *, sfp[3]);
@@ -619,7 +619,7 @@ KMETHOD QPainter_drawImage(CTX ctx, knh_sfp_t *sfp _RIX)
 		int sy = Int_to(int, sfp[5]);
 		int sw = Int_to(int, sfp[6]);
 		int sh = Int_to(int, sfp[7]);
-		Qt::ImageConversionFlags flags = Int_to(Qt::ImageConversionFlags, sfp[8]);
+		initFlag(flags, Qt::ImageConversionFlags, sfp[8]);
 		qp->drawImage(x, y, image, sx, sy, sw, sh, flags);
 	}
 	RETURNvoid_();
@@ -630,7 +630,7 @@ KMETHOD QPainter_drawLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QLineF  line = *RawPtr_to(const QLineF *, sfp[1]);
 		qp->drawLine(line);
 	}
@@ -643,7 +643,7 @@ KMETHOD QPainter_drawLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QLine  line = *RawPtr_to(const QLine *, sfp[1]);
 		qp->drawLine(line);
 	}
@@ -656,7 +656,7 @@ KMETHOD QPainter_drawLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  p1 = *RawPtr_to(const QPoint *, sfp[1]);
 		const QPoint  p2 = *RawPtr_to(const QPoint *, sfp[2]);
 		qp->drawLine(p1, p2);
@@ -670,7 +670,7 @@ KMETHOD QPainter_drawLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  p1 = *RawPtr_to(const QPointF *, sfp[1]);
 		const QPointF  p2 = *RawPtr_to(const QPointF *, sfp[2]);
 		qp->drawLine(p1, p2);
@@ -684,7 +684,7 @@ KMETHOD QPainter_drawLine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x1 = Int_to(int, sfp[1]);
 		int y1 = Int_to(int, sfp[2]);
 		int x2 = Int_to(int, sfp[3]);
@@ -699,7 +699,7 @@ KMETHOD QPainter_drawLines(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QLineF*  lines = RawPtr_to(const QLineF*, sfp[1]);
 		int lineCount = Int_to(int, sfp[2]);
 		qp->drawLines(lines, lineCount);
@@ -713,7 +713,7 @@ KMETHOD QPainter_drawLines(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QLine*  lines = RawPtr_to(const QLine*, sfp[1]);
 		int lineCount = Int_to(int, sfp[2]);
 		qp->drawLines(lines, lineCount);
@@ -727,7 +727,7 @@ KMETHOD QPainter_drawLines(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF*  pointPairs = RawPtr_to(const QPointF*, sfp[1]);
 		int lineCount = Int_to(int, sfp[2]);
 		qp->drawLines(pointPairs, lineCount);
@@ -741,7 +741,7 @@ KMETHOD QPainter_drawLines(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint*  pointPairs = RawPtr_to(const QPoint*, sfp[1]);
 		int lineCount = Int_to(int, sfp[2]);
 		qp->drawLines(pointPairs, lineCount);
@@ -754,7 +754,7 @@ KMETHOD QPainter_drawPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		qp->drawPath(path);
 	}
@@ -766,7 +766,7 @@ KMETHOD QPainter_drawPicture(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		const QPicture  picture = *RawPtr_to(const QPicture *, sfp[2]);
 		qp->drawPicture(point, picture);
@@ -780,7 +780,7 @@ KMETHOD QPainter_drawPicture(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
 		const QPicture  picture = *RawPtr_to(const QPicture *, sfp[2]);
 		qp->drawPicture(point, picture);
@@ -794,7 +794,7 @@ KMETHOD QPainter_drawPicture(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		const QPicture  picture = *RawPtr_to(const QPicture *, sfp[3]);
@@ -808,7 +808,7 @@ KMETHOD QPainter_drawPie(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		int startAngle = Int_to(int, sfp[2]);
 		int spanAngle = Int_to(int, sfp[3]);
@@ -823,7 +823,7 @@ KMETHOD QPainter_drawPie(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		int startAngle = Int_to(int, sfp[2]);
 		int spanAngle = Int_to(int, sfp[3]);
@@ -838,7 +838,7 @@ KMETHOD QPainter_drawPie(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -855,7 +855,7 @@ KMETHOD QPainter_drawPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  target = *RawPtr_to(const QRectF *, sfp[1]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
 		const QRectF  source = *RawPtr_to(const QRectF *, sfp[3]);
@@ -870,7 +870,7 @@ KMETHOD QPainter_drawPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  target = *RawPtr_to(const QRect *, sfp[1]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
 		const QRect  source = *RawPtr_to(const QRect *, sfp[3]);
@@ -885,7 +885,7 @@ KMETHOD QPainter_drawPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
 		const QRectF  source = *RawPtr_to(const QRectF *, sfp[3]);
@@ -900,7 +900,7 @@ KMETHOD QPainter_drawPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
 		const QRect  source = *RawPtr_to(const QRect *, sfp[3]);
@@ -915,7 +915,7 @@ KMETHOD QPainter_drawPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
 		qp->drawPixmap(point, pixmap);
@@ -929,7 +929,7 @@ KMETHOD QPainter_drawPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
 		qp->drawPixmap(point, pixmap);
@@ -943,7 +943,7 @@ KMETHOD QPainter_drawPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[3]);
@@ -958,7 +958,7 @@ KMETHOD QPainter_drawPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
 		qp->drawPixmap(rectangle, pixmap);
@@ -972,7 +972,7 @@ KMETHOD QPainter_drawPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -989,7 +989,7 @@ KMETHOD QPainter_drawPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int w = Int_to(int, sfp[3]);
@@ -1010,7 +1010,7 @@ KMETHOD QPainter_drawPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[3]);
@@ -1023,27 +1023,12 @@ KMETHOD QPainter_drawPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 */
-//void QPainter.drawPixmapFragments(int fragments, int fragmentCount, QPixmap pixmap, int hints);
-KMETHOD QPainter_drawPixmapFragments(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
-		const QPainter::PixmapFragment*  fragments = RawPtr_to(const QPainter::PixmapFragment*, sfp[1]);
-		int fragmentCount = Int_to(int, sfp[2]);
-		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[3]);
-		QPainter::PixmapFragmentHints hints = Int_to(QPainter::PixmapFragmentHints, sfp[4]);
-		qp->drawPixmapFragments(fragments, fragmentCount, pixmap, hints);
-	}
-	RETURNvoid_();
-}
-
 //void QPainter.drawPoint(QPointF position);
 KMETHOD QPainter_drawPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->drawPoint(position);
 	}
@@ -1056,7 +1041,7 @@ KMETHOD QPainter_drawPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  position = *RawPtr_to(const QPoint *, sfp[1]);
 		qp->drawPoint(position);
 	}
@@ -1069,7 +1054,7 @@ KMETHOD QPainter_drawPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		qp->drawPoint(x, y);
@@ -1082,7 +1067,7 @@ KMETHOD QPainter_drawPoints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF*  points = RawPtr_to(const QPointF*, sfp[1]);
 		int pointCount = Int_to(int, sfp[2]);
 		qp->drawPoints(points, pointCount);
@@ -1096,7 +1081,7 @@ KMETHOD QPainter_drawPoints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint*  points = RawPtr_to(const QPoint*, sfp[1]);
 		int pointCount = Int_to(int, sfp[2]);
 		qp->drawPoints(points, pointCount);
@@ -1110,7 +1095,7 @@ KMETHOD QPainter_drawPoints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  points = *RawPtr_to(const QPolygonF *, sfp[1]);
 		qp->drawPoints(points);
 	}
@@ -1123,7 +1108,7 @@ KMETHOD QPainter_drawPoints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygon  points = *RawPtr_to(const QPolygon *, sfp[1]);
 		qp->drawPoints(points);
 	}
@@ -1135,7 +1120,7 @@ KMETHOD QPainter_drawPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF*  points = RawPtr_to(const QPointF*, sfp[1]);
 		int pointCount = Int_to(int, sfp[2]);
 		Qt::FillRule fillRule = Int_to(Qt::FillRule, sfp[3]);
@@ -1150,7 +1135,7 @@ KMETHOD QPainter_drawPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint*  points = RawPtr_to(const QPoint*, sfp[1]);
 		int pointCount = Int_to(int, sfp[2]);
 		Qt::FillRule fillRule = Int_to(Qt::FillRule, sfp[3]);
@@ -1165,7 +1150,7 @@ KMETHOD QPainter_drawPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  points = *RawPtr_to(const QPolygonF *, sfp[1]);
 		Qt::FillRule fillRule = Int_to(Qt::FillRule, sfp[2]);
 		qp->drawPolygon(points, fillRule);
@@ -1179,7 +1164,7 @@ KMETHOD QPainter_drawPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygon  points = *RawPtr_to(const QPolygon *, sfp[1]);
 		Qt::FillRule fillRule = Int_to(Qt::FillRule, sfp[2]);
 		qp->drawPolygon(points, fillRule);
@@ -1192,7 +1177,7 @@ KMETHOD QPainter_drawPolyline(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF*  points = RawPtr_to(const QPointF*, sfp[1]);
 		int pointCount = Int_to(int, sfp[2]);
 		qp->drawPolyline(points, pointCount);
@@ -1206,7 +1191,7 @@ KMETHOD QPainter_drawPolyline(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint*  points = RawPtr_to(const QPoint*, sfp[1]);
 		int pointCount = Int_to(int, sfp[2]);
 		qp->drawPolyline(points, pointCount);
@@ -1220,7 +1205,7 @@ KMETHOD QPainter_drawPolyline(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  points = *RawPtr_to(const QPolygonF *, sfp[1]);
 		qp->drawPolyline(points);
 	}
@@ -1233,7 +1218,7 @@ KMETHOD QPainter_drawPolyline(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygon  points = *RawPtr_to(const QPolygon *, sfp[1]);
 		qp->drawPolyline(points);
 	}
@@ -1245,7 +1230,7 @@ KMETHOD QPainter_drawRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		qp->drawRect(rectangle);
 	}
@@ -1258,7 +1243,7 @@ KMETHOD QPainter_drawRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		qp->drawRect(rectangle);
 	}
@@ -1271,7 +1256,7 @@ KMETHOD QPainter_drawRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -1286,7 +1271,7 @@ KMETHOD QPainter_drawRects(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF*  rectangles = RawPtr_to(const QRectF*, sfp[1]);
 		int rectCount = Int_to(int, sfp[2]);
 		qp->drawRects(rectangles, rectCount);
@@ -1300,7 +1285,7 @@ KMETHOD QPainter_drawRects(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect*  rectangles = RawPtr_to(const QRect*, sfp[1]);
 		int rectCount = Int_to(int, sfp[2]);
 		qp->drawRects(rectangles, rectCount);
@@ -1313,7 +1298,7 @@ KMETHOD QPainter_drawRoundedRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		qreal xRadius = Float_to(qreal, sfp[2]);
 		qreal yRadius = Float_to(qreal, sfp[3]);
@@ -1329,7 +1314,7 @@ KMETHOD QPainter_drawRoundedRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		qreal xRadius = Float_to(qreal, sfp[2]);
 		qreal yRadius = Float_to(qreal, sfp[3]);
@@ -1345,7 +1330,7 @@ KMETHOD QPainter_drawRoundedRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int w = Int_to(int, sfp[3]);
@@ -1363,7 +1348,7 @@ KMETHOD QPainter_drawStaticText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  topLeftPosition = *RawPtr_to(const QPointF *, sfp[1]);
 		const QStaticText  staticText = *RawPtr_to(const QStaticText *, sfp[2]);
 		qp->drawStaticText(topLeftPosition, staticText);
@@ -1377,7 +1362,7 @@ KMETHOD QPainter_drawStaticText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  topLeftPosition = *RawPtr_to(const QPoint *, sfp[1]);
 		const QStaticText  staticText = *RawPtr_to(const QStaticText *, sfp[2]);
 		qp->drawStaticText(topLeftPosition, staticText);
@@ -1391,7 +1376,7 @@ KMETHOD QPainter_drawStaticText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int left = Int_to(int, sfp[1]);
 		int top = Int_to(int, sfp[2]);
 		const QStaticText  staticText = *RawPtr_to(const QStaticText *, sfp[3]);
@@ -1405,7 +1390,7 @@ KMETHOD QPainter_drawText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		qp->drawText(position, text);
@@ -1419,7 +1404,7 @@ KMETHOD QPainter_drawText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  position = *RawPtr_to(const QPoint *, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		qp->drawText(position, text);
@@ -1433,7 +1418,7 @@ KMETHOD QPainter_drawText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		int flags = Int_to(int, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
@@ -1449,7 +1434,7 @@ KMETHOD QPainter_drawText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		int flags = Int_to(int, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
@@ -1465,7 +1450,7 @@ KMETHOD QPainter_drawText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
@@ -1480,7 +1465,7 @@ KMETHOD QPainter_drawText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -1499,7 +1484,7 @@ KMETHOD QPainter_drawText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		const QTextOption  option = *RawPtr_to(const QTextOption *, sfp[3]);
@@ -1513,7 +1498,7 @@ KMETHOD QPainter_drawTiledPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[3]);
@@ -1528,7 +1513,7 @@ KMETHOD QPainter_drawTiledPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
 		const QPoint  position = *RawPtr_to(const QPoint *, sfp[3]);
@@ -1543,7 +1528,7 @@ KMETHOD QPainter_drawTiledPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -1561,7 +1546,7 @@ KMETHOD QPainter_end(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->end();
 		RETURNb_(ret_v);
 	} else {
@@ -1574,7 +1559,7 @@ KMETHOD QPainter_endNativePainting(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->endNativePainting();
 	}
 	RETURNvoid_();
@@ -1585,7 +1570,7 @@ KMETHOD QPainter_eraseRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		qp->eraseRect(rectangle);
 	}
@@ -1598,7 +1583,7 @@ KMETHOD QPainter_eraseRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		qp->eraseRect(rectangle);
 	}
@@ -1611,7 +1596,7 @@ KMETHOD QPainter_eraseRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -1626,7 +1611,7 @@ KMETHOD QPainter_fillPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[2]);
 		qp->fillPath(path, brush);
@@ -1639,7 +1624,7 @@ KMETHOD QPainter_fillRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[2]);
 		qp->fillRect(rectangle, brush);
@@ -1653,7 +1638,7 @@ KMETHOD QPainter_fillRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -1670,7 +1655,7 @@ KMETHOD QPainter_fillRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		Qt::BrushStyle style = Int_to(Qt::BrushStyle, sfp[2]);
 		qp->fillRect(rectangle, style);
@@ -1684,7 +1669,7 @@ KMETHOD QPainter_fillRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		Qt::BrushStyle style = Int_to(Qt::BrushStyle, sfp[2]);
 		qp->fillRect(rectangle, style);
@@ -1698,7 +1683,7 @@ KMETHOD QPainter_fillRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[2]);
 		qp->fillRect(rectangle, brush);
@@ -1712,7 +1697,7 @@ KMETHOD QPainter_fillRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		const QColor  color = *RawPtr_to(const QColor *, sfp[2]);
 		qp->fillRect(rectangle, color);
@@ -1726,7 +1711,7 @@ KMETHOD QPainter_fillRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		const QColor  color = *RawPtr_to(const QColor *, sfp[2]);
 		qp->fillRect(rectangle, color);
@@ -1740,7 +1725,7 @@ KMETHOD QPainter_fillRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -1757,7 +1742,7 @@ KMETHOD QPainter_fillRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -1774,7 +1759,7 @@ KMETHOD QPainter_fillRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -1791,7 +1776,7 @@ KMETHOD QPainter_fillRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		Qt::GlobalColor color = Int_to(Qt::GlobalColor, sfp[2]);
 		qp->fillRect(rectangle, color);
@@ -1805,7 +1790,7 @@ KMETHOD QPainter_fillRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		Qt::GlobalColor color = Int_to(Qt::GlobalColor, sfp[2]);
 		qp->fillRect(rectangle, color);
@@ -1818,7 +1803,7 @@ KMETHOD QPainter_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont ret_v = qp->font();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1833,7 +1818,7 @@ KMETHOD QPainter_fontInfo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFontInfo ret_v = qp->fontInfo();
 		QFontInfo *ret_v_ = new QFontInfo(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1848,7 +1833,7 @@ KMETHOD QPainter_fontMetrics(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFontMetrics ret_v = qp->fontMetrics();
 		QFontMetrics *ret_v_ = new QFontMetrics(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1863,7 +1848,7 @@ KMETHOD QPainter_hasClipping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasClipping();
 		RETURNb_(ret_v);
 	} else {
@@ -1876,7 +1861,7 @@ KMETHOD QPainter_initFrom(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[1]);
 		qp->initFrom(widget);
 	}
@@ -1888,7 +1873,7 @@ KMETHOD QPainter_isActive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isActive();
 		RETURNb_(ret_v);
 	} else {
@@ -1901,7 +1886,7 @@ KMETHOD QPainter_getLayoutDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::LayoutDirection ret_v = qp->layoutDirection();
 		RETURNi_(ret_v);
 	} else {
@@ -1914,7 +1899,7 @@ KMETHOD QPainter_getOpacity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->opacity();
 		RETURNf_(ret_v);
 	} else {
@@ -1927,7 +1912,7 @@ KMETHOD QPainter_paintEngine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPaintEngine* ret_v = qp->paintEngine();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPaintEngine*)ret_v, NULL);
 		RETURN_(rptr);
@@ -1941,7 +1926,7 @@ KMETHOD QPainter_getPen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPen ret_v = qp->pen();
 		QPen *ret_v_ = new QPen(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1951,16 +1936,18 @@ KMETHOD QPainter_getPen(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QPainter.getRenderHints();
+//QPainterRenderHints QPainter.getRenderHints();
 KMETHOD QPainter_getRenderHints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter::RenderHints ret_v = qp->renderHints();
-		RETURNi_(ret_v);
+		QPainter::RenderHints *ret_v_ = new QPainter::RenderHints(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -1969,7 +1956,7 @@ KMETHOD QPainter_resetTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->resetTransform();
 	}
 	RETURNvoid_();
@@ -1980,7 +1967,7 @@ KMETHOD QPainter_restore(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->restore();
 	}
 	RETURNvoid_();
@@ -1991,7 +1978,7 @@ KMETHOD QPainter_rotate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal angle = Float_to(qreal, sfp[1]);
 		qp->rotate(angle);
 	}
@@ -2003,7 +1990,7 @@ KMETHOD QPainter_save(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->save();
 	}
 	RETURNvoid_();
@@ -2014,7 +2001,7 @@ KMETHOD QPainter_scale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal sx = Float_to(qreal, sfp[1]);
 		qreal sy = Float_to(qreal, sfp[2]);
 		qp->scale(sx, sy);
@@ -2027,7 +2014,7 @@ KMETHOD QPainter_setBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[1]);
 		qp->setBackground(brush);
 	}
@@ -2039,7 +2026,7 @@ KMETHOD QPainter_setBackgroundMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::BGMode mode = Int_to(Qt::BGMode, sfp[1]);
 		qp->setBackgroundMode(mode);
 	}
@@ -2051,7 +2038,7 @@ KMETHOD QPainter_setBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush  brush = *RawPtr_to(const QBrush *, sfp[1]);
 		qp->setBrush(brush);
 	}
@@ -2064,7 +2051,7 @@ KMETHOD QPainter_setBrush(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::BrushStyle style = Int_to(Qt::BrushStyle, sfp[1]);
 		qp->setBrush(style);
 	}
@@ -2076,7 +2063,7 @@ KMETHOD QPainter_setBrushOrigin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  position = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setBrushOrigin(position);
 	}
@@ -2089,7 +2076,7 @@ KMETHOD QPainter_setBrushOrigin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  position = *RawPtr_to(const QPoint *, sfp[1]);
 		qp->setBrushOrigin(position);
 	}
@@ -2102,7 +2089,7 @@ KMETHOD QPainter_setBrushOrigin(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		qp->setBrushOrigin(x, y);
@@ -2115,7 +2102,7 @@ KMETHOD QPainter_setClipPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		Qt::ClipOperation operation = Int_to(Qt::ClipOperation, sfp[2]);
 		qp->setClipPath(path, operation);
@@ -2128,7 +2115,7 @@ KMETHOD QPainter_setClipRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rectangle = *RawPtr_to(const QRectF *, sfp[1]);
 		Qt::ClipOperation operation = Int_to(Qt::ClipOperation, sfp[2]);
 		qp->setClipRect(rectangle, operation);
@@ -2142,7 +2129,7 @@ KMETHOD QPainter_setClipRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -2159,7 +2146,7 @@ KMETHOD QPainter_setClipRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		Qt::ClipOperation operation = Int_to(Qt::ClipOperation, sfp[2]);
 		qp->setClipRect(rectangle, operation);
@@ -2172,7 +2159,7 @@ KMETHOD QPainter_setClipRegion(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRegion  region = *RawPtr_to(const QRegion *, sfp[1]);
 		Qt::ClipOperation operation = Int_to(Qt::ClipOperation, sfp[2]);
 		qp->setClipRegion(region, operation);
@@ -2185,7 +2172,7 @@ KMETHOD QPainter_setClipping(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setClipping(enable);
 	}
@@ -2197,7 +2184,7 @@ KMETHOD QPainter_setCompositionMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter::CompositionMode mode = Int_to(QPainter::CompositionMode, sfp[1]);
 		qp->setCompositionMode(mode);
 	}
@@ -2209,7 +2196,7 @@ KMETHOD QPainter_setFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont  font = *RawPtr_to(const QFont *, sfp[1]);
 		qp->setFont(font);
 	}
@@ -2221,7 +2208,7 @@ KMETHOD QPainter_setLayoutDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::LayoutDirection direction = Int_to(Qt::LayoutDirection, sfp[1]);
 		qp->setLayoutDirection(direction);
 	}
@@ -2233,7 +2220,7 @@ KMETHOD QPainter_setOpacity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal opacity = Float_to(qreal, sfp[1]);
 		qp->setOpacity(opacity);
 	}
@@ -2245,7 +2232,7 @@ KMETHOD QPainter_setPen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPen  pen = *RawPtr_to(const QPen *, sfp[1]);
 		qp->setPen(pen);
 	}
@@ -2258,7 +2245,7 @@ KMETHOD QPainter_setPen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor  color = *RawPtr_to(const QColor *, sfp[1]);
 		qp->setPen(color);
 	}
@@ -2271,7 +2258,7 @@ KMETHOD QPainter_setPen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::PenStyle style = Int_to(Qt::PenStyle, sfp[1]);
 		qp->setPen(style);
 	}
@@ -2283,7 +2270,7 @@ KMETHOD QPainter_setRenderHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter::RenderHint hint = Int_to(QPainter::RenderHint, sfp[1]);
 		bool on = Boolean_to(bool, sfp[2]);
 		qp->setRenderHint(hint, on);
@@ -2291,13 +2278,13 @@ KMETHOD QPainter_setRenderHint(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//void QPainter.setRenderHints(int hints, boolean on);
+//void QPainter.setRenderHints(QPainterRenderHints hints, boolean on);
 KMETHOD QPainter_setRenderHints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
-		QPainter::RenderHints hints = Int_to(QPainter::RenderHints, sfp[1]);
+	if (qp) {
+		initFlag(hints, QPainter::RenderHints, sfp[1]);
 		bool on = Boolean_to(bool, sfp[2]);
 		qp->setRenderHints(hints, on);
 	}
@@ -2309,7 +2296,7 @@ KMETHOD QPainter_setTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTransform  transform = *RawPtr_to(const QTransform *, sfp[1]);
 		bool combine = Boolean_to(bool, sfp[2]);
 		qp->setTransform(transform, combine);
@@ -2322,7 +2309,7 @@ KMETHOD QPainter_setViewTransformEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setViewTransformEnabled(enable);
 	}
@@ -2334,7 +2321,7 @@ KMETHOD QPainter_setViewport(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		qp->setViewport(rectangle);
 	}
@@ -2347,7 +2334,7 @@ KMETHOD QPainter_setViewport(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -2362,7 +2349,7 @@ KMETHOD QPainter_setWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		qp->setWindow(rectangle);
 	}
@@ -2375,7 +2362,7 @@ KMETHOD QPainter_setWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -2390,7 +2377,7 @@ KMETHOD QPainter_setWorldMatrixEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setWorldMatrixEnabled(enable);
 	}
@@ -2402,7 +2389,7 @@ KMETHOD QPainter_setWorldTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTransform  matrix = *RawPtr_to(const QTransform *, sfp[1]);
 		bool combine = Boolean_to(bool, sfp[2]);
 		qp->setWorldTransform(matrix, combine);
@@ -2415,7 +2402,7 @@ KMETHOD QPainter_shear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal sh = Float_to(qreal, sfp[1]);
 		qreal sv = Float_to(qreal, sfp[2]);
 		qp->shear(sh, sv);
@@ -2428,7 +2415,7 @@ KMETHOD QPainter_strokePath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		const QPen  pen = *RawPtr_to(const QPen *, sfp[2]);
 		qp->strokePath(path, pen);
@@ -2441,7 +2428,7 @@ KMETHOD QPainter_testRenderHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter::RenderHint hint = Int_to(QPainter::RenderHint, sfp[1]);
 		bool ret_v = qp->testRenderHint(hint);
 		RETURNb_(ret_v);
@@ -2455,7 +2442,7 @@ KMETHOD QPainter_getTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTransform ret_v = qp->transform();
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -2470,7 +2457,7 @@ KMETHOD QPainter_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  offset = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->translate(offset);
 	}
@@ -2483,7 +2470,7 @@ KMETHOD QPainter_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  offset = *RawPtr_to(const QPoint *, sfp[1]);
 		qp->translate(offset);
 	}
@@ -2496,7 +2483,7 @@ KMETHOD QPainter_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dx = Float_to(qreal, sfp[1]);
 		qreal dy = Float_to(qreal, sfp[2]);
 		qp->translate(dx, dy);
@@ -2509,7 +2496,7 @@ KMETHOD QPainter_getViewTransformEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->viewTransformEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -2522,7 +2509,7 @@ KMETHOD QPainter_getViewport(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->viewport();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -2537,7 +2524,7 @@ KMETHOD QPainter_getWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->window();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -2552,7 +2539,7 @@ KMETHOD QPainter_getWorldMatrixEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->worldMatrixEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -2565,7 +2552,7 @@ KMETHOD QPainter_getWorldTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPainter *  qp = RawPtr_to(QPainter *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTransform ret_v = qp->worldTransform();
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -2575,6 +2562,24 @@ KMETHOD QPainter_getWorldTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QPainter.parents();
+KMETHOD QPainter_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPainter *qp = RawPtr_to(QPainter*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQPainter::DummyQPainter()
 {
@@ -2623,17 +2628,28 @@ bool DummyQPainter::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPainter::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQPainter::connection(QObject *o)
 {
-	return;
+	QPainter *p = dynamic_cast<QPainter*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQPainter::KQPainter() : QPainter()
 {
 	self = NULL;
 	dummy = new DummyQPainter();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPainter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -2688,13 +2704,9 @@ static void QPainter_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPainter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPainter *qp = (KQPainter *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -2707,15 +2719,6 @@ void KQPainter::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQPainter(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QPainter";
-	cdef->free = QPainter_free;
-	cdef->reftrace = QPainter_reftrace;
-	cdef->compareTo = QPainter_compareTo;
 }
 
 static knh_IntData_t QPainterConstInt[] = {
@@ -2763,5 +2766,342 @@ static knh_IntData_t QPainterConstInt[] = {
 
 DEFAPI(void) constQPainter(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QPainterConstInt);
+}
+
+
+DEFAPI(void) defQPainter(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QPainter";
+	cdef->free = QPainter_free;
+	cdef->reftrace = QPainter_reftrace;
+	cdef->compareTo = QPainter_compareTo;
+}
+
+//## QPainterPixmapFragmentHints QPainterPixmapFragmentHints.new(int value);
+KMETHOD QPainterPixmapFragmentHints_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPainter::PixmapFragmentHint i = Int_to(QPainter::PixmapFragmentHint, sfp[1]);
+	QPainter::PixmapFragmentHints *ret_v = new QPainter::PixmapFragmentHints(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QPainterPixmapFragmentHints QPainterPixmapFragmentHints.and(int mask);
+KMETHOD QPainterPixmapFragmentHints_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPainter::PixmapFragmentHints *qp = RawPtr_to(QPainter::PixmapFragmentHints*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QPainter::PixmapFragmentHints ret = ((*qp) & i);
+		QPainter::PixmapFragmentHints *ret_ = new QPainter::PixmapFragmentHints(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QPainterPixmapFragmentHints QPainterPixmapFragmentHints.iand(QPainter::QPainterPixmapFragmentHints other);
+KMETHOD QPainterPixmapFragmentHints_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPainter::PixmapFragmentHints *qp = RawPtr_to(QPainter::PixmapFragmentHints*, sfp[0]);
+	if (qp != NULL) {
+		QPainter::PixmapFragmentHints *other = RawPtr_to(QPainter::PixmapFragmentHints *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QPainterPixmapFragmentHints QPainterPixmapFragmentHints.or(QPainterPixmapFragmentHints f);
+KMETHOD QPainterPixmapFragmentHints_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPainter::PixmapFragmentHints *qp = RawPtr_to(QPainter::PixmapFragmentHints*, sfp[0]);
+	if (qp != NULL) {
+		QPainter::PixmapFragmentHints *f = RawPtr_to(QPainter::PixmapFragmentHints*, sfp[1]);
+		QPainter::PixmapFragmentHints ret = ((*qp) | (*f));
+		QPainter::PixmapFragmentHints *ret_ = new QPainter::PixmapFragmentHints(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QPainterPixmapFragmentHints QPainterPixmapFragmentHints.ior(QPainter::QPainterPixmapFragmentHints other);
+KMETHOD QPainterPixmapFragmentHints_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPainter::PixmapFragmentHints *qp = RawPtr_to(QPainter::PixmapFragmentHints*, sfp[0]);
+	if (qp != NULL) {
+		QPainter::PixmapFragmentHints *other = RawPtr_to(QPainter::PixmapFragmentHints *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QPainterPixmapFragmentHints QPainterPixmapFragmentHints.xor(QPainterPixmapFragmentHints f);
+KMETHOD QPainterPixmapFragmentHints_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPainter::PixmapFragmentHints *qp = RawPtr_to(QPainter::PixmapFragmentHints*, sfp[0]);
+	if (qp != NULL) {
+		QPainter::PixmapFragmentHints *f = RawPtr_to(QPainter::PixmapFragmentHints*, sfp[1]);
+		QPainter::PixmapFragmentHints ret = ((*qp) ^ (*f));
+		QPainter::PixmapFragmentHints *ret_ = new QPainter::PixmapFragmentHints(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QPainterPixmapFragmentHints QPainterPixmapFragmentHints.ixor(QPainter::QPainterPixmapFragmentHints other);
+KMETHOD QPainterPixmapFragmentHints_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPainter::PixmapFragmentHints *qp = RawPtr_to(QPainter::PixmapFragmentHints*, sfp[0]);
+	if (qp != NULL) {
+		QPainter::PixmapFragmentHints *other = RawPtr_to(QPainter::PixmapFragmentHints *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QPainterPixmapFragmentHints.testFlag(int flag);
+KMETHOD QPainterPixmapFragmentHints_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPainter::PixmapFragmentHints *qp = RawPtr_to(QPainter::PixmapFragmentHints *, sfp[0]);
+	if (qp != NULL) {
+		QPainter::PixmapFragmentHint flag = Int_to(QPainter::PixmapFragmentHint, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QPainterPixmapFragmentHints.value();
+KMETHOD QPainterPixmapFragmentHints_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPainter::PixmapFragmentHints *qp = RawPtr_to(QPainter::PixmapFragmentHints *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QPainterPixmapFragmentHints_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QPainter::PixmapFragmentHints *qp = (QPainter::PixmapFragmentHints *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QPainterPixmapFragmentHints_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QPainter::PixmapFragmentHints *qp = (QPainter::PixmapFragmentHints *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QPainterPixmapFragmentHints_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QPainter::PixmapFragmentHints*)p1->rawptr);
+//		int v2 = int(*(QPainter::PixmapFragmentHints*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QPainter::PixmapFragmentHints v1 = *(QPainter::PixmapFragmentHints*)p1->rawptr;
+		QPainter::PixmapFragmentHints v2 = *(QPainter::PixmapFragmentHints*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQPainterPixmapFragmentHints(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QPainterPixmapFragmentHints";
+	cdef->free = QPainterPixmapFragmentHints_free;
+	cdef->reftrace = QPainterPixmapFragmentHints_reftrace;
+	cdef->compareTo = QPainterPixmapFragmentHints_compareTo;
+}
+//## QPainterRenderHints QPainterRenderHints.new(int value);
+KMETHOD QPainterRenderHints_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPainter::RenderHint i = Int_to(QPainter::RenderHint, sfp[1]);
+	QPainter::RenderHints *ret_v = new QPainter::RenderHints(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QPainterRenderHints QPainterRenderHints.and(int mask);
+KMETHOD QPainterRenderHints_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPainter::RenderHints *qp = RawPtr_to(QPainter::RenderHints*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QPainter::RenderHints ret = ((*qp) & i);
+		QPainter::RenderHints *ret_ = new QPainter::RenderHints(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QPainterRenderHints QPainterRenderHints.iand(QPainter::QPainterRenderHints other);
+KMETHOD QPainterRenderHints_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPainter::RenderHints *qp = RawPtr_to(QPainter::RenderHints*, sfp[0]);
+	if (qp != NULL) {
+		QPainter::RenderHints *other = RawPtr_to(QPainter::RenderHints *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QPainterRenderHints QPainterRenderHints.or(QPainterRenderHints f);
+KMETHOD QPainterRenderHints_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPainter::RenderHints *qp = RawPtr_to(QPainter::RenderHints*, sfp[0]);
+	if (qp != NULL) {
+		QPainter::RenderHints *f = RawPtr_to(QPainter::RenderHints*, sfp[1]);
+		QPainter::RenderHints ret = ((*qp) | (*f));
+		QPainter::RenderHints *ret_ = new QPainter::RenderHints(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QPainterRenderHints QPainterRenderHints.ior(QPainter::QPainterRenderHints other);
+KMETHOD QPainterRenderHints_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPainter::RenderHints *qp = RawPtr_to(QPainter::RenderHints*, sfp[0]);
+	if (qp != NULL) {
+		QPainter::RenderHints *other = RawPtr_to(QPainter::RenderHints *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QPainterRenderHints QPainterRenderHints.xor(QPainterRenderHints f);
+KMETHOD QPainterRenderHints_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPainter::RenderHints *qp = RawPtr_to(QPainter::RenderHints*, sfp[0]);
+	if (qp != NULL) {
+		QPainter::RenderHints *f = RawPtr_to(QPainter::RenderHints*, sfp[1]);
+		QPainter::RenderHints ret = ((*qp) ^ (*f));
+		QPainter::RenderHints *ret_ = new QPainter::RenderHints(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QPainterRenderHints QPainterRenderHints.ixor(QPainter::QPainterRenderHints other);
+KMETHOD QPainterRenderHints_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPainter::RenderHints *qp = RawPtr_to(QPainter::RenderHints*, sfp[0]);
+	if (qp != NULL) {
+		QPainter::RenderHints *other = RawPtr_to(QPainter::RenderHints *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QPainterRenderHints.testFlag(int flag);
+KMETHOD QPainterRenderHints_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPainter::RenderHints *qp = RawPtr_to(QPainter::RenderHints *, sfp[0]);
+	if (qp != NULL) {
+		QPainter::RenderHint flag = Int_to(QPainter::RenderHint, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QPainterRenderHints.value();
+KMETHOD QPainterRenderHints_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QPainter::RenderHints *qp = RawPtr_to(QPainter::RenderHints *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QPainterRenderHints_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QPainter::RenderHints *qp = (QPainter::RenderHints *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QPainterRenderHints_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QPainter::RenderHints *qp = (QPainter::RenderHints *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QPainterRenderHints_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QPainter::RenderHints*)p1->rawptr);
+//		int v2 = int(*(QPainter::RenderHints*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QPainter::RenderHints v1 = *(QPainter::RenderHints*)p1->rawptr;
+		QPainter::RenderHints v2 = *(QPainter::RenderHints*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQPainterRenderHints(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QPainterRenderHints";
+	cdef->free = QPainterRenderHints_free;
+	cdef->reftrace = QPainterRenderHints_reftrace;
+	cdef->compareTo = QPainterRenderHints_compareTo;
 }
 

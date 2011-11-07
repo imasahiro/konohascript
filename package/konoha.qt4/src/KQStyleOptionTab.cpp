@@ -71,9 +71,23 @@ bool DummyQStyleOptionTab::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQStyleOptionTab::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOption::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionTab::connection(QObject *o)
 {
+	QStyleOptionTab *p = dynamic_cast<QStyleOptionTab*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOption::connection(o);
 }
 
@@ -81,7 +95,6 @@ KQStyleOptionTab::KQStyleOptionTab() : QStyleOptionTab()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionTab();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionTab_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,13 +149,9 @@ static void QStyleOptionTab_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionTab_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionTab *qp = (KQStyleOptionTab *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -155,15 +164,6 @@ void KQStyleOptionTab::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQStyleOptionTab(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionTab";
-	cdef->free = QStyleOptionTab_free;
-	cdef->reftrace = QStyleOptionTab_reftrace;
-	cdef->compareTo = QStyleOptionTab_compareTo;
 }
 
 static knh_IntData_t QStyleOptionTabConstInt[] = {
@@ -184,5 +184,179 @@ static knh_IntData_t QStyleOptionTabConstInt[] = {
 
 DEFAPI(void) constQStyleOptionTab(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionTabConstInt);
+}
+
+
+DEFAPI(void) defQStyleOptionTab(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionTab";
+	cdef->free = QStyleOptionTab_free;
+	cdef->reftrace = QStyleOptionTab_reftrace;
+	cdef->compareTo = QStyleOptionTab_compareTo;
+}
+
+//## QStyleOptionTabCornerWidgets QStyleOptionTabCornerWidgets.new(int value);
+KMETHOD QStyleOptionTabCornerWidgets_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionTab::CornerWidget i = Int_to(QStyleOptionTab::CornerWidget, sfp[1]);
+	QStyleOptionTab::CornerWidgets *ret_v = new QStyleOptionTab::CornerWidgets(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QStyleOptionTabCornerWidgets QStyleOptionTabCornerWidgets.and(int mask);
+KMETHOD QStyleOptionTabCornerWidgets_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionTab::CornerWidgets *qp = RawPtr_to(QStyleOptionTab::CornerWidgets*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QStyleOptionTab::CornerWidgets ret = ((*qp) & i);
+		QStyleOptionTab::CornerWidgets *ret_ = new QStyleOptionTab::CornerWidgets(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleOptionTabCornerWidgets QStyleOptionTabCornerWidgets.iand(QStyleOptionTab::QStyleOptionTabCornerWidgets other);
+KMETHOD QStyleOptionTabCornerWidgets_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionTab::CornerWidgets *qp = RawPtr_to(QStyleOptionTab::CornerWidgets*, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionTab::CornerWidgets *other = RawPtr_to(QStyleOptionTab::CornerWidgets *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleOptionTabCornerWidgets QStyleOptionTabCornerWidgets.or(QStyleOptionTabCornerWidgets f);
+KMETHOD QStyleOptionTabCornerWidgets_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QStyleOptionTab::CornerWidgets *qp = RawPtr_to(QStyleOptionTab::CornerWidgets*, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionTab::CornerWidgets *f = RawPtr_to(QStyleOptionTab::CornerWidgets*, sfp[1]);
+		QStyleOptionTab::CornerWidgets ret = ((*qp) | (*f));
+		QStyleOptionTab::CornerWidgets *ret_ = new QStyleOptionTab::CornerWidgets(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleOptionTabCornerWidgets QStyleOptionTabCornerWidgets.ior(QStyleOptionTab::QStyleOptionTabCornerWidgets other);
+KMETHOD QStyleOptionTabCornerWidgets_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionTab::CornerWidgets *qp = RawPtr_to(QStyleOptionTab::CornerWidgets*, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionTab::CornerWidgets *other = RawPtr_to(QStyleOptionTab::CornerWidgets *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleOptionTabCornerWidgets QStyleOptionTabCornerWidgets.xor(QStyleOptionTabCornerWidgets f);
+KMETHOD QStyleOptionTabCornerWidgets_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QStyleOptionTab::CornerWidgets *qp = RawPtr_to(QStyleOptionTab::CornerWidgets*, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionTab::CornerWidgets *f = RawPtr_to(QStyleOptionTab::CornerWidgets*, sfp[1]);
+		QStyleOptionTab::CornerWidgets ret = ((*qp) ^ (*f));
+		QStyleOptionTab::CornerWidgets *ret_ = new QStyleOptionTab::CornerWidgets(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QStyleOptionTabCornerWidgets QStyleOptionTabCornerWidgets.ixor(QStyleOptionTab::QStyleOptionTabCornerWidgets other);
+KMETHOD QStyleOptionTabCornerWidgets_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionTab::CornerWidgets *qp = RawPtr_to(QStyleOptionTab::CornerWidgets*, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionTab::CornerWidgets *other = RawPtr_to(QStyleOptionTab::CornerWidgets *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QStyleOptionTabCornerWidgets.testFlag(int flag);
+KMETHOD QStyleOptionTabCornerWidgets_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionTab::CornerWidgets *qp = RawPtr_to(QStyleOptionTab::CornerWidgets *, sfp[0]);
+	if (qp != NULL) {
+		QStyleOptionTab::CornerWidget flag = Int_to(QStyleOptionTab::CornerWidget, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QStyleOptionTabCornerWidgets.value();
+KMETHOD QStyleOptionTabCornerWidgets_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QStyleOptionTab::CornerWidgets *qp = RawPtr_to(QStyleOptionTab::CornerWidgets *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QStyleOptionTabCornerWidgets_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QStyleOptionTab::CornerWidgets *qp = (QStyleOptionTab::CornerWidgets *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QStyleOptionTabCornerWidgets_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QStyleOptionTab::CornerWidgets *qp = (QStyleOptionTab::CornerWidgets *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QStyleOptionTabCornerWidgets_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QStyleOptionTab::CornerWidgets*)p1->rawptr);
+//		int v2 = int(*(QStyleOptionTab::CornerWidgets*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QStyleOptionTab::CornerWidgets v1 = *(QStyleOptionTab::CornerWidgets*)p1->rawptr;
+		QStyleOptionTab::CornerWidgets v2 = *(QStyleOptionTab::CornerWidgets*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQStyleOptionTabCornerWidgets(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionTabCornerWidgets";
+	cdef->free = QStyleOptionTabCornerWidgets_free;
+	cdef->reftrace = QStyleOptionTabCornerWidgets_reftrace;
+	cdef->compareTo = QStyleOptionTabCornerWidgets_compareTo;
 }
 

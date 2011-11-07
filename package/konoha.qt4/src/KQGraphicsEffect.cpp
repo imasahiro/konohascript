@@ -4,7 +4,7 @@ KMETHOD QGraphicsEffect_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsEffect *  qp = RawPtr_to(QGraphicsEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->boundingRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -19,7 +19,7 @@ KMETHOD QGraphicsEffect_boundingRectFor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsEffect *  qp = RawPtr_to(QGraphicsEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		QRectF ret_v = qp->boundingRectFor(rect);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -35,7 +35,7 @@ KMETHOD QGraphicsEffect_isEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsEffect *  qp = RawPtr_to(QGraphicsEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -48,7 +48,7 @@ KMETHOD QGraphicsEffect_setEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsEffect *  qp = RawPtr_to(QGraphicsEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setEnabled(enable);
 	}
@@ -60,7 +60,7 @@ KMETHOD QGraphicsEffect_update(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsEffect *  qp = RawPtr_to(QGraphicsEffect *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->update();
 	}
 	RETURNvoid_();
@@ -133,10 +133,25 @@ bool DummyQGraphicsEffect::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQGraphicsEffect::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, enabled_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsEffect::connection(QObject *o)
 {
-	connect(o, SIGNAL(enabledChanged(bool)), this, SLOT(enabledChangedSlot(bool)));
+	QGraphicsEffect *p = dynamic_cast<QGraphicsEffect*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(enabledChanged(bool)), this, SLOT(enabledChangedSlot(bool)));
+	}
 	DummyQObject::connection(o);
 }
 
@@ -199,17 +214,9 @@ static void QGraphicsEffect_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsEffect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsEffect *qp = (KQGraphicsEffect *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->enabled_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->enabled_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -233,15 +240,6 @@ bool KQGraphicsEffect::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQGraphicsEffect(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QGraphicsEffect";
-	cdef->free = QGraphicsEffect_free;
-	cdef->reftrace = QGraphicsEffect_reftrace;
-	cdef->compareTo = QGraphicsEffect_compareTo;
-}
-
 static knh_IntData_t QGraphicsEffectConstInt[] = {
 	{"SourceAttached", QGraphicsEffect::SourceAttached},
 	{"SourceDetached", QGraphicsEffect::SourceDetached},
@@ -255,5 +253,179 @@ static knh_IntData_t QGraphicsEffectConstInt[] = {
 
 DEFAPI(void) constQGraphicsEffect(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QGraphicsEffectConstInt);
+}
+
+
+DEFAPI(void) defQGraphicsEffect(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QGraphicsEffect";
+	cdef->free = QGraphicsEffect_free;
+	cdef->reftrace = QGraphicsEffect_reftrace;
+	cdef->compareTo = QGraphicsEffect_compareTo;
+}
+
+//## QGraphicsEffectChangeFlags QGraphicsEffectChangeFlags.new(int value);
+KMETHOD QGraphicsEffectChangeFlags_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsEffect::ChangeFlag i = Int_to(QGraphicsEffect::ChangeFlag, sfp[1]);
+	QGraphicsEffect::ChangeFlags *ret_v = new QGraphicsEffect::ChangeFlags(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QGraphicsEffectChangeFlags QGraphicsEffectChangeFlags.and(int mask);
+KMETHOD QGraphicsEffectChangeFlags_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsEffect::ChangeFlags *qp = RawPtr_to(QGraphicsEffect::ChangeFlags*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QGraphicsEffect::ChangeFlags ret = ((*qp) & i);
+		QGraphicsEffect::ChangeFlags *ret_ = new QGraphicsEffect::ChangeFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsEffectChangeFlags QGraphicsEffectChangeFlags.iand(QGraphicsEffect::QGraphicsEffectChangeFlags other);
+KMETHOD QGraphicsEffectChangeFlags_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsEffect::ChangeFlags *qp = RawPtr_to(QGraphicsEffect::ChangeFlags*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsEffect::ChangeFlags *other = RawPtr_to(QGraphicsEffect::ChangeFlags *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsEffectChangeFlags QGraphicsEffectChangeFlags.or(QGraphicsEffectChangeFlags f);
+KMETHOD QGraphicsEffectChangeFlags_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGraphicsEffect::ChangeFlags *qp = RawPtr_to(QGraphicsEffect::ChangeFlags*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsEffect::ChangeFlags *f = RawPtr_to(QGraphicsEffect::ChangeFlags*, sfp[1]);
+		QGraphicsEffect::ChangeFlags ret = ((*qp) | (*f));
+		QGraphicsEffect::ChangeFlags *ret_ = new QGraphicsEffect::ChangeFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsEffectChangeFlags QGraphicsEffectChangeFlags.ior(QGraphicsEffect::QGraphicsEffectChangeFlags other);
+KMETHOD QGraphicsEffectChangeFlags_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsEffect::ChangeFlags *qp = RawPtr_to(QGraphicsEffect::ChangeFlags*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsEffect::ChangeFlags *other = RawPtr_to(QGraphicsEffect::ChangeFlags *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsEffectChangeFlags QGraphicsEffectChangeFlags.xor(QGraphicsEffectChangeFlags f);
+KMETHOD QGraphicsEffectChangeFlags_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGraphicsEffect::ChangeFlags *qp = RawPtr_to(QGraphicsEffect::ChangeFlags*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsEffect::ChangeFlags *f = RawPtr_to(QGraphicsEffect::ChangeFlags*, sfp[1]);
+		QGraphicsEffect::ChangeFlags ret = ((*qp) ^ (*f));
+		QGraphicsEffect::ChangeFlags *ret_ = new QGraphicsEffect::ChangeFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsEffectChangeFlags QGraphicsEffectChangeFlags.ixor(QGraphicsEffect::QGraphicsEffectChangeFlags other);
+KMETHOD QGraphicsEffectChangeFlags_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsEffect::ChangeFlags *qp = RawPtr_to(QGraphicsEffect::ChangeFlags*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsEffect::ChangeFlags *other = RawPtr_to(QGraphicsEffect::ChangeFlags *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QGraphicsEffectChangeFlags.testFlag(int flag);
+KMETHOD QGraphicsEffectChangeFlags_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsEffect::ChangeFlags *qp = RawPtr_to(QGraphicsEffect::ChangeFlags *, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsEffect::ChangeFlag flag = Int_to(QGraphicsEffect::ChangeFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QGraphicsEffectChangeFlags.value();
+KMETHOD QGraphicsEffectChangeFlags_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsEffect::ChangeFlags *qp = RawPtr_to(QGraphicsEffect::ChangeFlags *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QGraphicsEffectChangeFlags_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QGraphicsEffect::ChangeFlags *qp = (QGraphicsEffect::ChangeFlags *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QGraphicsEffectChangeFlags_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QGraphicsEffect::ChangeFlags *qp = (QGraphicsEffect::ChangeFlags *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QGraphicsEffectChangeFlags_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QGraphicsEffect::ChangeFlags*)p1->rawptr);
+//		int v2 = int(*(QGraphicsEffect::ChangeFlags*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QGraphicsEffect::ChangeFlags v1 = *(QGraphicsEffect::ChangeFlags*)p1->rawptr;
+		QGraphicsEffect::ChangeFlags v2 = *(QGraphicsEffect::ChangeFlags*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQGraphicsEffectChangeFlags(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QGraphicsEffectChangeFlags";
+	cdef->free = QGraphicsEffectChangeFlags_free;
+	cdef->reftrace = QGraphicsEffectChangeFlags_reftrace;
+	cdef->compareTo = QGraphicsEffectChangeFlags_compareTo;
 }
 

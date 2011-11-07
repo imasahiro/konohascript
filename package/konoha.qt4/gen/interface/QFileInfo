@@ -94,10 +94,21 @@ false
 enbeddedClass
 false
 
-typedefed_objects
+flag_objects
+class
+QFileInfo
+name
 PermissionSpec
 
+parent_flag_objects
+
+typedefed_objects
+
 parent_typedefed_objects
+
+class_objects
+
+parent_class_objects
 
 enums
 

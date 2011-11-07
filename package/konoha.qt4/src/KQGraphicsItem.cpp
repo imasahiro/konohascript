@@ -4,7 +4,7 @@ KMETHOD QGraphicsItem_getAcceptDrops(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->acceptDrops();
 		RETURNb_(ret_v);
 	} else {
@@ -17,7 +17,7 @@ KMETHOD QGraphicsItem_getAcceptHoverEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->acceptHoverEvents();
 		RETURNb_(ret_v);
 	} else {
@@ -30,7 +30,7 @@ KMETHOD QGraphicsItem_getAcceptTouchEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->acceptTouchEvents();
 		RETURNb_(ret_v);
 	} else {
@@ -38,16 +38,18 @@ KMETHOD QGraphicsItem_getAcceptTouchEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QGraphicsItem.getAcceptedMouseButtons();
+//QtMouseButtons QGraphicsItem.getAcceptedMouseButtons();
 KMETHOD QGraphicsItem_getAcceptedMouseButtons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::MouseButtons ret_v = qp->acceptedMouseButtons();
-		RETURNi_(ret_v);
+		Qt::MouseButtons *ret_v_ = new Qt::MouseButtons(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -56,7 +58,7 @@ KMETHOD QGraphicsItem_advance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int phase = Int_to(int, sfp[1]);
 		qp->advance(phase);
 	}
@@ -68,7 +70,7 @@ KMETHOD QGraphicsItem_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->boundingRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -83,7 +85,7 @@ KMETHOD QGraphicsItem_boundingRegion(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTransform  itemToDeviceTransform = *RawPtr_to(const QTransform *, sfp[1]);
 		QRegion ret_v = qp->boundingRegion(itemToDeviceTransform);
 		QRegion *ret_v_ = new QRegion(ret_v);
@@ -99,7 +101,7 @@ KMETHOD QGraphicsItem_getBoundingRegionGranularity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->boundingRegionGranularity();
 		RETURNf_(ret_v);
 	} else {
@@ -112,7 +114,7 @@ KMETHOD QGraphicsItem_getCacheMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem::CacheMode ret_v = qp->cacheMode();
 		RETURNi_(ret_v);
 	} else {
@@ -125,8 +127,8 @@ KMETHOD QGraphicsItem_childItems(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
-		QList<QGraphicsItem*>ret_v = qp->childItems();
+	if (qp) {
+		QList<QGraphicsItem*> ret_v = qp->childItems();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -146,7 +148,7 @@ KMETHOD QGraphicsItem_childrenBoundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->childrenBoundingRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -161,7 +163,7 @@ KMETHOD QGraphicsItem_clearFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearFocus();
 	}
 	RETURNvoid_();
@@ -172,7 +174,7 @@ KMETHOD QGraphicsItem_clipPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->clipPath();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -187,7 +189,7 @@ KMETHOD QGraphicsItem_collidesWithItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  other = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		Qt::ItemSelectionMode mode = Int_to(Qt::ItemSelectionMode, sfp[2]);
 		bool ret_v = qp->collidesWithItem(other, mode);
@@ -202,7 +204,7 @@ KMETHOD QGraphicsItem_collidesWithPath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		Qt::ItemSelectionMode mode = Int_to(Qt::ItemSelectionMode, sfp[2]);
 		bool ret_v = qp->collidesWithPath(path, mode);
@@ -217,9 +219,9 @@ KMETHOD QGraphicsItem_collidingItems(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ItemSelectionMode mode = Int_to(Qt::ItemSelectionMode, sfp[1]);
-		QList<QGraphicsItem*>ret_v = qp->collidingItems(mode);
+		QList<QGraphicsItem*> ret_v = qp->collidingItems(mode);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsItem"));
@@ -239,7 +241,7 @@ KMETHOD QGraphicsItem_commonAncestorItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  other = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		QGraphicsItem* ret_v = qp->commonAncestorItem(other);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsItem*)ret_v, NULL);
@@ -254,7 +256,7 @@ KMETHOD QGraphicsItem_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		bool ret_v = qp->contains(point);
 		RETURNb_(ret_v);
@@ -268,7 +270,7 @@ KMETHOD QGraphicsItem_getCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCursor ret_v = qp->cursor();
 		QCursor *ret_v_ = new QCursor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -283,7 +285,7 @@ KMETHOD QGraphicsItem_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int key = Int_to(int, sfp[1]);
 		QVariant ret_v = qp->data(key);
 		QVariant *ret_v_ = new QVariant(ret_v);
@@ -299,7 +301,7 @@ KMETHOD QGraphicsItem_deviceTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTransform  viewportTransform = *RawPtr_to(const QTransform *, sfp[1]);
 		QTransform ret_v = qp->deviceTransform(viewportTransform);
 		QTransform *ret_v_ = new QTransform(ret_v);
@@ -315,7 +317,7 @@ KMETHOD QGraphicsItem_effectiveOpacity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->effectiveOpacity();
 		RETURNf_(ret_v);
 	} else {
@@ -328,7 +330,7 @@ KMETHOD QGraphicsItem_ensureVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		int xmargin = Int_to(int, sfp[2]);
 		int ymargin = Int_to(int, sfp[3]);
@@ -343,7 +345,7 @@ KMETHOD QGraphicsItem_ensureVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -360,7 +362,7 @@ KMETHOD QGraphicsItem_getFiltersChildEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->filtersChildEvents();
 		RETURNb_(ret_v);
 	} else {
@@ -368,16 +370,18 @@ KMETHOD QGraphicsItem_getFiltersChildEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QGraphicsItem.getFlags();
+//QGraphicsItemGraphicsItemFlags QGraphicsItem.getFlags();
 KMETHOD QGraphicsItem_getFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem::GraphicsItemFlags ret_v = qp->flags();
-		RETURNi_(ret_v);
+		QGraphicsItem::GraphicsItemFlags *ret_v_ = new QGraphicsItem::GraphicsItemFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -386,7 +390,7 @@ KMETHOD QGraphicsItem_focusItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem* ret_v = qp->focusItem();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -400,7 +404,7 @@ KMETHOD QGraphicsItem_getFocusProxy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem* ret_v = qp->focusProxy();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -414,7 +418,7 @@ KMETHOD QGraphicsItem_grabKeyboard(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->grabKeyboard();
 	}
 	RETURNvoid_();
@@ -425,7 +429,7 @@ KMETHOD QGraphicsItem_grabMouse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->grabMouse();
 	}
 	RETURNvoid_();
@@ -436,7 +440,7 @@ KMETHOD QGraphicsItem_getGraphicsEffect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsEffect* ret_v = qp->graphicsEffect();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsEffect*)ret_v, NULL);
 		RETURN_(rptr);
@@ -450,7 +454,7 @@ KMETHOD QGraphicsItem_getGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItemGroup* ret_v = qp->group();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsItemGroup*)ret_v, NULL);
 		RETURN_(rptr);
@@ -464,7 +468,7 @@ KMETHOD QGraphicsItem_hasCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasCursor();
 		RETURNb_(ret_v);
 	} else {
@@ -477,7 +481,7 @@ KMETHOD QGraphicsItem_hasFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasFocus();
 		RETURNb_(ret_v);
 	} else {
@@ -490,22 +494,24 @@ KMETHOD QGraphicsItem_hide(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->hide();
 	}
 	RETURNvoid_();
 }
 
-//int QGraphicsItem.getInputMethodHints();
+//QtInputMethodHints QGraphicsItem.getInputMethodHints();
 KMETHOD QGraphicsItem_getInputMethodHints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::InputMethodHints ret_v = qp->inputMethodHints();
-		RETURNi_(ret_v);
+		Qt::InputMethodHints *ret_v_ = new Qt::InputMethodHints(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -514,7 +520,7 @@ KMETHOD QGraphicsItem_isActive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isActive();
 		RETURNb_(ret_v);
 	} else {
@@ -527,7 +533,7 @@ KMETHOD QGraphicsItem_isAncestorOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  child = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		bool ret_v = qp->isAncestorOf(child);
 		RETURNb_(ret_v);
@@ -541,7 +547,7 @@ KMETHOD QGraphicsItem_isBlockedByModalPanel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem**  blockingPanel = RawPtr_to(QGraphicsItem**, sfp[1]);
 		bool ret_v = qp->isBlockedByModalPanel(blockingPanel);
 		RETURNb_(ret_v);
@@ -555,7 +561,7 @@ KMETHOD QGraphicsItem_isClipped(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isClipped();
 		RETURNb_(ret_v);
 	} else {
@@ -568,7 +574,7 @@ KMETHOD QGraphicsItem_isEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -581,7 +587,7 @@ KMETHOD QGraphicsItem_isObscured(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isObscured();
 		RETURNb_(ret_v);
 	} else {
@@ -595,7 +601,7 @@ KMETHOD QGraphicsItem_isObscured(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -613,7 +619,7 @@ KMETHOD QGraphicsItem_isObscured(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		bool ret_v = qp->isObscured(rect);
 		RETURNb_(ret_v);
@@ -627,7 +633,7 @@ KMETHOD QGraphicsItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		bool ret_v = qp->isObscuredBy(item);
 		RETURNb_(ret_v);
@@ -641,7 +647,7 @@ KMETHOD QGraphicsItem_isPanel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isPanel();
 		RETURNb_(ret_v);
 	} else {
@@ -654,7 +660,7 @@ KMETHOD QGraphicsItem_isSelected(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSelected();
 		RETURNb_(ret_v);
 	} else {
@@ -667,7 +673,7 @@ KMETHOD QGraphicsItem_isUnderMouse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isUnderMouse();
 		RETURNb_(ret_v);
 	} else {
@@ -680,7 +686,7 @@ KMETHOD QGraphicsItem_isVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isVisible();
 		RETURNb_(ret_v);
 	} else {
@@ -693,7 +699,7 @@ KMETHOD QGraphicsItem_isVisibleTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  parent = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		bool ret_v = qp->isVisibleTo(parent);
 		RETURNb_(ret_v);
@@ -707,7 +713,7 @@ KMETHOD QGraphicsItem_isWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isWidget();
 		RETURNb_(ret_v);
 	} else {
@@ -720,7 +726,7 @@ KMETHOD QGraphicsItem_isWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isWindow();
 		RETURNb_(ret_v);
 	} else {
@@ -733,7 +739,7 @@ KMETHOD QGraphicsItem_itemTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  other = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		bool* ok = Boolean_to(bool*, sfp[2]);
 		QTransform ret_v = qp->itemTransform(other, ok);
@@ -750,7 +756,7 @@ KMETHOD QGraphicsItem_mapFromItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[2]);
 		QPointF ret_v = qp->mapFromItem(item, point);
@@ -768,7 +774,7 @@ KMETHOD QGraphicsItem_mapFromItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[2]);
 		QPolygonF ret_v = qp->mapFromItem(item, rect);
@@ -786,7 +792,7 @@ KMETHOD QGraphicsItem_mapFromItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		const QPolygonF  polygon = *RawPtr_to(const QPolygonF *, sfp[2]);
 		QPolygonF ret_v = qp->mapFromItem(item, polygon);
@@ -804,7 +810,7 @@ KMETHOD QGraphicsItem_mapFromItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[2]);
 		QPainterPath ret_v = qp->mapFromItem(item, path);
@@ -822,7 +828,7 @@ KMETHOD QGraphicsItem_mapFromItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		qreal x = Float_to(qreal, sfp[2]);
 		qreal y = Float_to(qreal, sfp[3]);
@@ -843,7 +849,7 @@ KMETHOD QGraphicsItem_mapFromItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		qreal x = Float_to(qreal, sfp[2]);
 		qreal y = Float_to(qreal, sfp[3]);
@@ -861,7 +867,7 @@ KMETHOD QGraphicsItem_mapFromParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		QPointF ret_v = qp->mapFromParent(point);
 		QPointF *ret_v_ = new QPointF(ret_v);
@@ -878,7 +884,7 @@ KMETHOD QGraphicsItem_mapFromParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		QPolygonF ret_v = qp->mapFromParent(rect);
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
@@ -895,7 +901,7 @@ KMETHOD QGraphicsItem_mapFromParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  polygon = *RawPtr_to(const QPolygonF *, sfp[1]);
 		QPolygonF ret_v = qp->mapFromParent(polygon);
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
@@ -912,7 +918,7 @@ KMETHOD QGraphicsItem_mapFromParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		QPainterPath ret_v = qp->mapFromParent(path);
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
@@ -929,7 +935,7 @@ KMETHOD QGraphicsItem_mapFromParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -949,7 +955,7 @@ KMETHOD QGraphicsItem_mapFromParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		QPointF ret_v = qp->mapFromParent(x, y);
@@ -966,7 +972,7 @@ KMETHOD QGraphicsItem_mapFromScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		QPointF ret_v = qp->mapFromScene(point);
 		QPointF *ret_v_ = new QPointF(ret_v);
@@ -983,7 +989,7 @@ KMETHOD QGraphicsItem_mapFromScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		QPolygonF ret_v = qp->mapFromScene(rect);
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
@@ -1000,7 +1006,7 @@ KMETHOD QGraphicsItem_mapFromScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  polygon = *RawPtr_to(const QPolygonF *, sfp[1]);
 		QPolygonF ret_v = qp->mapFromScene(polygon);
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
@@ -1017,7 +1023,7 @@ KMETHOD QGraphicsItem_mapFromScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		QPainterPath ret_v = qp->mapFromScene(path);
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
@@ -1034,7 +1040,7 @@ KMETHOD QGraphicsItem_mapFromScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -1054,7 +1060,7 @@ KMETHOD QGraphicsItem_mapFromScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		QPointF ret_v = qp->mapFromScene(x, y);
@@ -1071,7 +1077,7 @@ KMETHOD QGraphicsItem_mapRectFromItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[2]);
 		QRectF ret_v = qp->mapRectFromItem(item, rect);
@@ -1089,7 +1095,7 @@ KMETHOD QGraphicsItem_mapRectFromItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		qreal x = Float_to(qreal, sfp[2]);
 		qreal y = Float_to(qreal, sfp[3]);
@@ -1109,7 +1115,7 @@ KMETHOD QGraphicsItem_mapRectFromParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		QRectF ret_v = qp->mapRectFromParent(rect);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -1126,7 +1132,7 @@ KMETHOD QGraphicsItem_mapRectFromParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -1145,7 +1151,7 @@ KMETHOD QGraphicsItem_mapRectFromScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		QRectF ret_v = qp->mapRectFromScene(rect);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -1162,7 +1168,7 @@ KMETHOD QGraphicsItem_mapRectFromScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -1181,7 +1187,7 @@ KMETHOD QGraphicsItem_mapRectToItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[2]);
 		QRectF ret_v = qp->mapRectToItem(item, rect);
@@ -1199,7 +1205,7 @@ KMETHOD QGraphicsItem_mapRectToItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		qreal x = Float_to(qreal, sfp[2]);
 		qreal y = Float_to(qreal, sfp[3]);
@@ -1219,7 +1225,7 @@ KMETHOD QGraphicsItem_mapRectToParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		QRectF ret_v = qp->mapRectToParent(rect);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -1236,7 +1242,7 @@ KMETHOD QGraphicsItem_mapRectToParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -1255,7 +1261,7 @@ KMETHOD QGraphicsItem_mapRectToScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		QRectF ret_v = qp->mapRectToScene(rect);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -1272,7 +1278,7 @@ KMETHOD QGraphicsItem_mapRectToScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -1291,7 +1297,7 @@ KMETHOD QGraphicsItem_mapToItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[2]);
 		QPointF ret_v = qp->mapToItem(item, point);
@@ -1309,7 +1315,7 @@ KMETHOD QGraphicsItem_mapToItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[2]);
 		QPolygonF ret_v = qp->mapToItem(item, rect);
@@ -1327,7 +1333,7 @@ KMETHOD QGraphicsItem_mapToItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		const QPolygonF  polygon = *RawPtr_to(const QPolygonF *, sfp[2]);
 		QPolygonF ret_v = qp->mapToItem(item, polygon);
@@ -1345,7 +1351,7 @@ KMETHOD QGraphicsItem_mapToItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[2]);
 		QPainterPath ret_v = qp->mapToItem(item, path);
@@ -1363,7 +1369,7 @@ KMETHOD QGraphicsItem_mapToItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		qreal x = Float_to(qreal, sfp[2]);
 		qreal y = Float_to(qreal, sfp[3]);
@@ -1384,7 +1390,7 @@ KMETHOD QGraphicsItem_mapToItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		qreal x = Float_to(qreal, sfp[2]);
 		qreal y = Float_to(qreal, sfp[3]);
@@ -1402,7 +1408,7 @@ KMETHOD QGraphicsItem_mapToParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		QPointF ret_v = qp->mapToParent(point);
 		QPointF *ret_v_ = new QPointF(ret_v);
@@ -1419,7 +1425,7 @@ KMETHOD QGraphicsItem_mapToParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		QPolygonF ret_v = qp->mapToParent(rect);
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
@@ -1436,7 +1442,7 @@ KMETHOD QGraphicsItem_mapToParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  polygon = *RawPtr_to(const QPolygonF *, sfp[1]);
 		QPolygonF ret_v = qp->mapToParent(polygon);
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
@@ -1453,7 +1459,7 @@ KMETHOD QGraphicsItem_mapToParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		QPainterPath ret_v = qp->mapToParent(path);
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
@@ -1470,7 +1476,7 @@ KMETHOD QGraphicsItem_mapToParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -1490,7 +1496,7 @@ KMETHOD QGraphicsItem_mapToParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		QPointF ret_v = qp->mapToParent(x, y);
@@ -1507,7 +1513,7 @@ KMETHOD QGraphicsItem_mapToScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		QPointF ret_v = qp->mapToScene(point);
 		QPointF *ret_v_ = new QPointF(ret_v);
@@ -1524,7 +1530,7 @@ KMETHOD QGraphicsItem_mapToScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		QPolygonF ret_v = qp->mapToScene(rect);
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
@@ -1541,7 +1547,7 @@ KMETHOD QGraphicsItem_mapToScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  polygon = *RawPtr_to(const QPolygonF *, sfp[1]);
 		QPolygonF ret_v = qp->mapToScene(polygon);
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
@@ -1558,7 +1564,7 @@ KMETHOD QGraphicsItem_mapToScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPainterPath  path = *RawPtr_to(const QPainterPath *, sfp[1]);
 		QPainterPath ret_v = qp->mapToScene(path);
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
@@ -1575,7 +1581,7 @@ KMETHOD QGraphicsItem_mapToScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -1595,7 +1601,7 @@ KMETHOD QGraphicsItem_mapToScene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		QPointF ret_v = qp->mapToScene(x, y);
@@ -1612,7 +1618,7 @@ KMETHOD QGraphicsItem_moveBy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dx = Float_to(qreal, sfp[1]);
 		qreal dy = Float_to(qreal, sfp[2]);
 		qp->moveBy(dx, dy);
@@ -1625,7 +1631,7 @@ KMETHOD QGraphicsItem_getOpacity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->opacity();
 		RETURNf_(ret_v);
 	} else {
@@ -1638,7 +1644,7 @@ KMETHOD QGraphicsItem_opaqueArea(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->opaqueArea();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1653,7 +1659,7 @@ KMETHOD QGraphicsItem_paint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
@@ -1667,7 +1673,7 @@ KMETHOD QGraphicsItem_panel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem* ret_v = qp->panel();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -1681,7 +1687,7 @@ KMETHOD QGraphicsItem_getPanelModality(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem::PanelModality ret_v = qp->panelModality();
 		RETURNi_(ret_v);
 	} else {
@@ -1694,7 +1700,7 @@ KMETHOD QGraphicsItem_getParentItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem* ret_v = qp->parentItem();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -1708,7 +1714,7 @@ KMETHOD QGraphicsItem_parentObject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsObject* ret_v = qp->parentObject();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsObject*)ret_v, NULL);
 		RETURN_(rptr);
@@ -1722,7 +1728,7 @@ KMETHOD QGraphicsItem_parentWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsWidget* ret_v = qp->parentWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -1736,7 +1742,7 @@ KMETHOD QGraphicsItem_getPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->pos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1751,7 +1757,7 @@ KMETHOD QGraphicsItem_resetTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->resetTransform();
 	}
 	RETURNvoid_();
@@ -1762,7 +1768,7 @@ KMETHOD QGraphicsItem_getRotation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->rotation();
 		RETURNf_(ret_v);
 	} else {
@@ -1775,7 +1781,7 @@ KMETHOD QGraphicsItem_getScale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->scale();
 		RETURNf_(ret_v);
 	} else {
@@ -1788,7 +1794,7 @@ KMETHOD QGraphicsItem_scene(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsScene* ret_v = qp->scene();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsScene*)ret_v, NULL);
 		RETURN_(rptr);
@@ -1802,7 +1808,7 @@ KMETHOD QGraphicsItem_sceneBoundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->sceneBoundingRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1817,7 +1823,7 @@ KMETHOD QGraphicsItem_scenePos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->scenePos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1832,7 +1838,7 @@ KMETHOD QGraphicsItem_sceneTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTransform ret_v = qp->sceneTransform();
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1847,7 +1853,7 @@ KMETHOD QGraphicsItem_scroll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dx = Float_to(qreal, sfp[1]);
 		qreal dy = Float_to(qreal, sfp[2]);
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[3]);
@@ -1861,7 +1867,7 @@ KMETHOD QGraphicsItem_setAcceptDrops(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool on = Boolean_to(bool, sfp[1]);
 		qp->setAcceptDrops(on);
 	}
@@ -1873,7 +1879,7 @@ KMETHOD QGraphicsItem_setAcceptHoverEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setAcceptHoverEvents(enabled);
 	}
@@ -1885,20 +1891,20 @@ KMETHOD QGraphicsItem_setAcceptTouchEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setAcceptTouchEvents(enabled);
 	}
 	RETURNvoid_();
 }
 
-////void QGraphicsItem.setAcceptedMouseButtons(int buttons);
+//void QGraphicsItem.setAcceptedMouseButtons(QtMouseButtons buttons);
 KMETHOD QGraphicsItem_setAcceptedMouseButtons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
-		Qt::MouseButtons buttons = Int_to(Qt::MouseButtons, sfp[1]);
+	if (qp) {
+		initFlag(buttons, Qt::MouseButtons, sfp[1]);
 		qp->setAcceptedMouseButtons(buttons);
 	}
 	RETURNvoid_();
@@ -1909,7 +1915,7 @@ KMETHOD QGraphicsItem_setActive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool active = Boolean_to(bool, sfp[1]);
 		qp->setActive(active);
 	}
@@ -1921,7 +1927,7 @@ KMETHOD QGraphicsItem_setBoundingRegionGranularity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal granularity = Float_to(qreal, sfp[1]);
 		qp->setBoundingRegionGranularity(granularity);
 	}
@@ -1933,7 +1939,7 @@ KMETHOD QGraphicsItem_setCacheMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem::CacheMode mode = Int_to(QGraphicsItem::CacheMode, sfp[1]);
 		const QSize  logicalCacheSize = *RawPtr_to(const QSize *, sfp[2]);
 		qp->setCacheMode(mode, logicalCacheSize);
@@ -1946,7 +1952,7 @@ KMETHOD QGraphicsItem_setCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QCursor  cursor = *RawPtr_to(const QCursor *, sfp[1]);
 		qp->setCursor(cursor);
 	}
@@ -1958,7 +1964,7 @@ KMETHOD QGraphicsItem_setData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int key = Int_to(int, sfp[1]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[2]);
 		qp->setData(key, value);
@@ -1971,7 +1977,7 @@ KMETHOD QGraphicsItem_setEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setEnabled(enabled);
 	}
@@ -1983,7 +1989,7 @@ KMETHOD QGraphicsItem_setFiltersChildEvents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setFiltersChildEvents(enabled);
 	}
@@ -1995,7 +2001,7 @@ KMETHOD QGraphicsItem_setFlag(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem::GraphicsItemFlag flag = Int_to(QGraphicsItem::GraphicsItemFlag, sfp[1]);
 		bool enabled = Boolean_to(bool, sfp[2]);
 		qp->setFlag(flag, enabled);
@@ -2003,13 +2009,13 @@ KMETHOD QGraphicsItem_setFlag(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//void QGraphicsItem.setFlags(int flags);
+//void QGraphicsItem.setFlags(QGraphicsItemGraphicsItemFlags flags);
 KMETHOD QGraphicsItem_setFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
-		QGraphicsItem::GraphicsItemFlags flags = Int_to(QGraphicsItem::GraphicsItemFlags, sfp[1]);
+	if (qp) {
+		initFlag(flags, QGraphicsItem::GraphicsItemFlags, sfp[1]);
 		qp->setFlags(flags);
 	}
 	RETURNvoid_();
@@ -2020,7 +2026,7 @@ KMETHOD QGraphicsItem_setFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::FocusReason focusReason = Int_to(Qt::FocusReason, sfp[1]);
 		qp->setFocus(focusReason);
 	}
@@ -2032,7 +2038,7 @@ KMETHOD QGraphicsItem_setFocusProxy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem*  item = RawPtr_to(QGraphicsItem*, sfp[1]);
 		qp->setFocusProxy(item);
 	}
@@ -2044,7 +2050,7 @@ KMETHOD QGraphicsItem_setGraphicsEffect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsEffect*  effect = RawPtr_to(QGraphicsEffect*, sfp[1]);
 		qp->setGraphicsEffect(effect);
 	}
@@ -2056,20 +2062,20 @@ KMETHOD QGraphicsItem_setGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItemGroup*  group = RawPtr_to(QGraphicsItemGroup*, sfp[1]);
 		qp->setGroup(group);
 	}
 	RETURNvoid_();
 }
 
-//void QGraphicsItem.setInputMethodHints(int hints);
+//void QGraphicsItem.setInputMethodHints(QtInputMethodHints hints);
 KMETHOD QGraphicsItem_setInputMethodHints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
-		Qt::InputMethodHints hints = Int_to(Qt::InputMethodHints, sfp[1]);
+	if (qp) {
+		initFlag(hints, Qt::InputMethodHints, sfp[1]);
 		qp->setInputMethodHints(hints);
 	}
 	RETURNvoid_();
@@ -2080,7 +2086,7 @@ KMETHOD QGraphicsItem_setOpacity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal opacity = Float_to(qreal, sfp[1]);
 		qp->setOpacity(opacity);
 	}
@@ -2092,7 +2098,7 @@ KMETHOD QGraphicsItem_setPanelModality(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem::PanelModality panelModality = Int_to(QGraphicsItem::PanelModality, sfp[1]);
 		qp->setPanelModality(panelModality);
 	}
@@ -2104,7 +2110,7 @@ KMETHOD QGraphicsItem_setParentItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem*  new_Parent = RawPtr_to(QGraphicsItem*, sfp[1]);
 		qp->setParentItem(new_Parent);
 	}
@@ -2116,7 +2122,7 @@ KMETHOD QGraphicsItem_setPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  pos = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setPos(pos);
 	}
@@ -2129,7 +2135,7 @@ KMETHOD QGraphicsItem_setPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qp->setPos(x, y);
@@ -2142,7 +2148,7 @@ KMETHOD QGraphicsItem_setRotation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal angle = Float_to(qreal, sfp[1]);
 		qp->setRotation(angle);
 	}
@@ -2154,7 +2160,7 @@ KMETHOD QGraphicsItem_setScale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal factor = Float_to(qreal, sfp[1]);
 		qp->setScale(factor);
 	}
@@ -2166,7 +2172,7 @@ KMETHOD QGraphicsItem_setSelected(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool selected = Boolean_to(bool, sfp[1]);
 		qp->setSelected(selected);
 	}
@@ -2178,7 +2184,7 @@ KMETHOD QGraphicsItem_setToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString toolTip = String_to(const QString, sfp[1]);
 		qp->setToolTip(toolTip);
 	}
@@ -2190,7 +2196,7 @@ KMETHOD QGraphicsItem_setTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTransform  matrix = *RawPtr_to(const QTransform *, sfp[1]);
 		bool combine = Boolean_to(bool, sfp[2]);
 		qp->setTransform(matrix, combine);
@@ -2203,7 +2209,7 @@ KMETHOD QGraphicsItem_setTransformOriginPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  origin = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setTransformOriginPoint(origin);
 	}
@@ -2216,7 +2222,7 @@ KMETHOD QGraphicsItem_setTransformOriginPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qp->setTransformOriginPoint(x, y);
@@ -2229,7 +2235,7 @@ KMETHOD QGraphicsItem_setTransformations(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<QGraphicsTransform*> transformations;
@@ -2247,7 +2253,7 @@ KMETHOD QGraphicsItem_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setVisible(visible);
 	}
@@ -2259,7 +2265,7 @@ KMETHOD QGraphicsItem_setX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qp->setX(x);
 	}
@@ -2271,7 +2277,7 @@ KMETHOD QGraphicsItem_setY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal y = Float_to(qreal, sfp[1]);
 		qp->setY(y);
 	}
@@ -2283,7 +2289,7 @@ KMETHOD QGraphicsItem_setZValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal z = Float_to(qreal, sfp[1]);
 		qp->setZValue(z);
 	}
@@ -2295,7 +2301,7 @@ KMETHOD QGraphicsItem_shape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->shape();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -2310,7 +2316,7 @@ KMETHOD QGraphicsItem_show(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->show();
 	}
 	RETURNvoid_();
@@ -2321,7 +2327,7 @@ KMETHOD QGraphicsItem_stackBefore(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  sibling = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		qp->stackBefore(sibling);
 	}
@@ -2333,7 +2339,7 @@ KMETHOD QGraphicsItem_toGraphicsObject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsObject* ret_v = qp->toGraphicsObject();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsObject*)ret_v, NULL);
 		RETURN_(rptr);
@@ -2348,7 +2354,7 @@ KMETHOD QGraphicsItem_toGraphicsObject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsObject* ret_v = qp->toGraphicsObject();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsObject*)ret_v, NULL);
 		RETURN_(rptr);
@@ -2362,7 +2368,7 @@ KMETHOD QGraphicsItem_getToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->toolTip();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -2376,7 +2382,7 @@ KMETHOD QGraphicsItem_topLevelItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsItem* ret_v = qp->topLevelItem();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsItem*)ret_v, NULL);
 		RETURN_(rptr);
@@ -2390,7 +2396,7 @@ KMETHOD QGraphicsItem_topLevelWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsWidget* ret_v = qp->topLevelWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -2404,7 +2410,7 @@ KMETHOD QGraphicsItem_getTransform(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTransform ret_v = qp->transform();
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -2419,7 +2425,7 @@ KMETHOD QGraphicsItem_getTransformOriginPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->transformOriginPoint();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -2434,8 +2440,8 @@ KMETHOD QGraphicsItem_getTransformations(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
-		QList<QGraphicsTransform*>ret_v = qp->transformations();
+	if (qp) {
+		QList<QGraphicsTransform*> ret_v = qp->transformations();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QGraphicsTransform"));
@@ -2455,7 +2461,7 @@ KMETHOD QGraphicsItem_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -2468,7 +2474,7 @@ KMETHOD QGraphicsItem_ungrabKeyboard(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->ungrabKeyboard();
 	}
 	RETURNvoid_();
@@ -2479,7 +2485,7 @@ KMETHOD QGraphicsItem_ungrabMouse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->ungrabMouse();
 	}
 	RETURNvoid_();
@@ -2490,7 +2496,7 @@ KMETHOD QGraphicsItem_unsetCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->unsetCursor();
 	}
 	RETURNvoid_();
@@ -2501,7 +2507,7 @@ KMETHOD QGraphicsItem_update(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		qp->update(rect);
 	}
@@ -2514,7 +2520,7 @@ KMETHOD QGraphicsItem_update(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal width = Float_to(qreal, sfp[3]);
@@ -2529,7 +2535,7 @@ KMETHOD QGraphicsItem_window(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsWidget* ret_v = qp->window();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -2543,7 +2549,7 @@ KMETHOD QGraphicsItem_getX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->x();
 		RETURNf_(ret_v);
 	} else {
@@ -2556,7 +2562,7 @@ KMETHOD QGraphicsItem_getY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->y();
 		RETURNf_(ret_v);
 	} else {
@@ -2569,7 +2575,7 @@ KMETHOD QGraphicsItem_getZValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem *  qp = RawPtr_to(QGraphicsItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->zValue();
 		RETURNf_(ret_v);
 	} else {
@@ -2577,6 +2583,24 @@ KMETHOD QGraphicsItem_getZValue(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QGraphicsItem.parents();
+KMETHOD QGraphicsItem_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGraphicsItem *qp = RawPtr_to(QGraphicsItem*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQGraphicsItem::DummyQGraphicsItem()
 {
@@ -3004,17 +3028,47 @@ bool DummyQGraphicsItem::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQGraphicsItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 19;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, context_menu_event_func);
+	KNH_ADDNNREF(ctx, drag_enter_event_func);
+	KNH_ADDNNREF(ctx, drag_leave_event_func);
+	KNH_ADDNNREF(ctx, drag_move_event_func);
+	KNH_ADDNNREF(ctx, drop_event_func);
+	KNH_ADDNNREF(ctx, focus_in_event_func);
+	KNH_ADDNNREF(ctx, focus_out_event_func);
+	KNH_ADDNNREF(ctx, hover_enter_event_func);
+	KNH_ADDNNREF(ctx, hover_leave_event_func);
+	KNH_ADDNNREF(ctx, hover_move_event_func);
+	KNH_ADDNNREF(ctx, input_method_event_func);
+	KNH_ADDNNREF(ctx, key_press_event_func);
+	KNH_ADDNNREF(ctx, key_release_event_func);
+	KNH_ADDNNREF(ctx, mouse_double_click_event_func);
+	KNH_ADDNNREF(ctx, mouse_move_event_func);
+	KNH_ADDNNREF(ctx, mouse_press_event_func);
+	KNH_ADDNNREF(ctx, mouse_release_event_func);
+	KNH_ADDNNREF(ctx, scene_event_func);
+	KNH_ADDNNREF(ctx, wheel_event_func);
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQGraphicsItem::connection(QObject *o)
 {
-	return;
+	QGraphicsItem *p = dynamic_cast<QGraphicsItem*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQGraphicsItem::KQGraphicsItem(QGraphicsItem* parent) : QGraphicsItem(parent)
 {
 	self = NULL;
 	dummy = new DummyQGraphicsItem();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -3069,89 +3123,9 @@ static void QGraphicsItem_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 19;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsItem *qp = (KQGraphicsItem *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->context_menu_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->context_menu_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->drag_enter_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->drag_enter_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->drag_leave_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->drag_leave_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->drag_move_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->drag_move_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->drop_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->drop_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->focus_in_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->focus_in_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->focus_out_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->focus_out_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->hover_enter_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->hover_enter_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->hover_leave_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->hover_leave_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->hover_move_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->hover_move_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->input_method_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->input_method_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->key_press_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->key_press_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->key_release_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->key_release_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->mouse_double_click_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->mouse_double_click_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->mouse_move_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->mouse_move_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->mouse_press_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->mouse_press_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->mouse_release_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->mouse_release_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->scene_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->scene_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->wheel_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->wheel_event_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -3164,15 +3138,6 @@ void KQGraphicsItem::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQGraphicsItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QGraphicsItem";
-	cdef->free = QGraphicsItem_free;
-	cdef->reftrace = QGraphicsItem_reftrace;
-	cdef->compareTo = QGraphicsItem_compareTo;
 }
 
 static knh_IntData_t QGraphicsItemConstInt[] = {
@@ -3237,5 +3202,179 @@ static knh_IntData_t QGraphicsItemConstInt[] = {
 
 DEFAPI(void) constQGraphicsItem(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QGraphicsItemConstInt);
+}
+
+
+DEFAPI(void) defQGraphicsItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QGraphicsItem";
+	cdef->free = QGraphicsItem_free;
+	cdef->reftrace = QGraphicsItem_reftrace;
+	cdef->compareTo = QGraphicsItem_compareTo;
+}
+
+//## QGraphicsItemGraphicsItemFlags QGraphicsItemGraphicsItemFlags.new(int value);
+KMETHOD QGraphicsItemGraphicsItemFlags_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsItem::GraphicsItemFlag i = Int_to(QGraphicsItem::GraphicsItemFlag, sfp[1]);
+	QGraphicsItem::GraphicsItemFlags *ret_v = new QGraphicsItem::GraphicsItemFlags(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QGraphicsItemGraphicsItemFlags QGraphicsItemGraphicsItemFlags.and(int mask);
+KMETHOD QGraphicsItemGraphicsItemFlags_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsItem::GraphicsItemFlags *qp = RawPtr_to(QGraphicsItem::GraphicsItemFlags*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QGraphicsItem::GraphicsItemFlags ret = ((*qp) & i);
+		QGraphicsItem::GraphicsItemFlags *ret_ = new QGraphicsItem::GraphicsItemFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsItemGraphicsItemFlags QGraphicsItemGraphicsItemFlags.iand(QGraphicsItem::QGraphicsItemGraphicsItemFlags other);
+KMETHOD QGraphicsItemGraphicsItemFlags_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsItem::GraphicsItemFlags *qp = RawPtr_to(QGraphicsItem::GraphicsItemFlags*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsItem::GraphicsItemFlags *other = RawPtr_to(QGraphicsItem::GraphicsItemFlags *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsItemGraphicsItemFlags QGraphicsItemGraphicsItemFlags.or(QGraphicsItemGraphicsItemFlags f);
+KMETHOD QGraphicsItemGraphicsItemFlags_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGraphicsItem::GraphicsItemFlags *qp = RawPtr_to(QGraphicsItem::GraphicsItemFlags*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsItem::GraphicsItemFlags *f = RawPtr_to(QGraphicsItem::GraphicsItemFlags*, sfp[1]);
+		QGraphicsItem::GraphicsItemFlags ret = ((*qp) | (*f));
+		QGraphicsItem::GraphicsItemFlags *ret_ = new QGraphicsItem::GraphicsItemFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsItemGraphicsItemFlags QGraphicsItemGraphicsItemFlags.ior(QGraphicsItem::QGraphicsItemGraphicsItemFlags other);
+KMETHOD QGraphicsItemGraphicsItemFlags_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsItem::GraphicsItemFlags *qp = RawPtr_to(QGraphicsItem::GraphicsItemFlags*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsItem::GraphicsItemFlags *other = RawPtr_to(QGraphicsItem::GraphicsItemFlags *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsItemGraphicsItemFlags QGraphicsItemGraphicsItemFlags.xor(QGraphicsItemGraphicsItemFlags f);
+KMETHOD QGraphicsItemGraphicsItemFlags_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGraphicsItem::GraphicsItemFlags *qp = RawPtr_to(QGraphicsItem::GraphicsItemFlags*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsItem::GraphicsItemFlags *f = RawPtr_to(QGraphicsItem::GraphicsItemFlags*, sfp[1]);
+		QGraphicsItem::GraphicsItemFlags ret = ((*qp) ^ (*f));
+		QGraphicsItem::GraphicsItemFlags *ret_ = new QGraphicsItem::GraphicsItemFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QGraphicsItemGraphicsItemFlags QGraphicsItemGraphicsItemFlags.ixor(QGraphicsItem::QGraphicsItemGraphicsItemFlags other);
+KMETHOD QGraphicsItemGraphicsItemFlags_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsItem::GraphicsItemFlags *qp = RawPtr_to(QGraphicsItem::GraphicsItemFlags*, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsItem::GraphicsItemFlags *other = RawPtr_to(QGraphicsItem::GraphicsItemFlags *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QGraphicsItemGraphicsItemFlags.testFlag(int flag);
+KMETHOD QGraphicsItemGraphicsItemFlags_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsItem::GraphicsItemFlags *qp = RawPtr_to(QGraphicsItem::GraphicsItemFlags *, sfp[0]);
+	if (qp != NULL) {
+		QGraphicsItem::GraphicsItemFlag flag = Int_to(QGraphicsItem::GraphicsItemFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QGraphicsItemGraphicsItemFlags.value();
+KMETHOD QGraphicsItemGraphicsItemFlags_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QGraphicsItem::GraphicsItemFlags *qp = RawPtr_to(QGraphicsItem::GraphicsItemFlags *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QGraphicsItemGraphicsItemFlags_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QGraphicsItem::GraphicsItemFlags *qp = (QGraphicsItem::GraphicsItemFlags *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QGraphicsItemGraphicsItemFlags_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QGraphicsItem::GraphicsItemFlags *qp = (QGraphicsItem::GraphicsItemFlags *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QGraphicsItemGraphicsItemFlags_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QGraphicsItem::GraphicsItemFlags*)p1->rawptr);
+//		int v2 = int(*(QGraphicsItem::GraphicsItemFlags*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QGraphicsItem::GraphicsItemFlags v1 = *(QGraphicsItem::GraphicsItemFlags*)p1->rawptr;
+		QGraphicsItem::GraphicsItemFlags v2 = *(QGraphicsItem::GraphicsItemFlags*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQGraphicsItemGraphicsItemFlags(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QGraphicsItemGraphicsItemFlags";
+	cdef->free = QGraphicsItemGraphicsItemFlags_free;
+	cdef->reftrace = QGraphicsItemGraphicsItemFlags_reftrace;
+	cdef->compareTo = QGraphicsItemGraphicsItemFlags_compareTo;
 }
 

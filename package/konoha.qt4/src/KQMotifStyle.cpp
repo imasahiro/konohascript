@@ -3,7 +3,7 @@ KMETHOD QMotifStyle_drawComplexControl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMotifStyle *  qp = RawPtr_to(QMotifStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMotifStyle::ComplexControl cc = Int_to(QMotifStyle::ComplexControl, sfp[1]);
 		const QStyleOptionComplex*  opt = RawPtr_to(const QStyleOptionComplex*, sfp[2]);
 		QPainter*  p = RawPtr_to(QPainter*, sfp[3]);
@@ -18,7 +18,7 @@ KMETHOD QMotifStyle_drawControl(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMotifStyle *  qp = RawPtr_to(QMotifStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMotifStyle::ControlElement element = Int_to(QMotifStyle::ControlElement, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		QPainter*  p = RawPtr_to(QPainter*, sfp[3]);
@@ -33,7 +33,7 @@ KMETHOD QMotifStyle_drawPrimitive(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMotifStyle *  qp = RawPtr_to(QMotifStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMotifStyle::PrimitiveElement pe = Int_to(QMotifStyle::PrimitiveElement, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		QPainter*  p = RawPtr_to(QPainter*, sfp[3]);
@@ -48,7 +48,7 @@ KMETHOD QMotifStyle_event(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMotifStyle *  qp = RawPtr_to(QMotifStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEvent*  e = RawPtr_to(QEvent*, sfp[1]);
 		bool ret_v = qp->event(e);
 		RETURNb_(ret_v);
@@ -62,7 +62,7 @@ KMETHOD QMotifStyle_pixelMetric(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMotifStyle *  qp = RawPtr_to(QMotifStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMotifStyle::PixelMetric pm = Int_to(QMotifStyle::PixelMetric, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -78,7 +78,7 @@ KMETHOD QMotifStyle_polish(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMotifStyle *  qp = RawPtr_to(QMotifStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette  pal = *RawPtr_to(QPalette *, sfp[1]);
 		qp->polish(pal);
 	}
@@ -90,7 +90,7 @@ KMETHOD QMotifStyle_sizeFromContents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMotifStyle *  qp = RawPtr_to(QMotifStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMotifStyle::ContentsType ct = Int_to(QMotifStyle::ContentsType, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QSize  contentsSize = *RawPtr_to(const QSize *, sfp[3]);
@@ -109,7 +109,7 @@ KMETHOD QMotifStyle_standardPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMotifStyle *  qp = RawPtr_to(QMotifStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette ret_v = qp->standardPalette();
 		QPalette *ret_v_ = new QPalette(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -124,7 +124,7 @@ KMETHOD QMotifStyle_standardPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMotifStyle *  qp = RawPtr_to(QMotifStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMotifStyle::StandardPixmap standardPixmap = Int_to(QMotifStyle::StandardPixmap, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -142,7 +142,7 @@ KMETHOD QMotifStyle_styleHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMotifStyle *  qp = RawPtr_to(QMotifStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMotifStyle::StyleHint hint = Int_to(QMotifStyle::StyleHint, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -159,7 +159,7 @@ KMETHOD QMotifStyle_subControlRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMotifStyle *  qp = RawPtr_to(QMotifStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMotifStyle::ComplexControl cc = Int_to(QMotifStyle::ComplexControl, sfp[1]);
 		const QStyleOptionComplex*  opt = RawPtr_to(const QStyleOptionComplex*, sfp[2]);
 		QMotifStyle::SubControl sc = Int_to(QMotifStyle::SubControl, sfp[3]);
@@ -178,7 +178,7 @@ KMETHOD QMotifStyle_subElementRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMotifStyle *  qp = RawPtr_to(QMotifStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMotifStyle::SubElement sr = Int_to(QMotifStyle::SubElement, sfp[1]);
 		const QStyleOption*  opt = RawPtr_to(const QStyleOption*, sfp[2]);
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[3]);
@@ -207,7 +207,7 @@ KMETHOD QMotifStyle_setUseHighlightColors(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMotifStyle *  qp = RawPtr_to(QMotifStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg = Boolean_to(bool, sfp[1]);
 		qp->setUseHighlightColors(arg);
 	}
@@ -219,7 +219,7 @@ KMETHOD QMotifStyle_getUseHighlightColors(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMotifStyle *  qp = RawPtr_to(QMotifStyle *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->useHighlightColors();
 		RETURNb_(ret_v);
 	} else {
@@ -278,9 +278,23 @@ bool DummyQMotifStyle::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMotifStyle::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQCommonStyle::reftrace(ctx, p, tail_);
+}
 
 void DummyQMotifStyle::connection(QObject *o)
 {
+	QMotifStyle *p = dynamic_cast<QMotifStyle*>(o);
+	if (p != NULL) {
+	}
 	DummyQCommonStyle::connection(o);
 }
 
@@ -343,13 +357,9 @@ static void QMotifStyle_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMotifStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMotifStyle *qp = (KQMotifStyle *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -372,6 +382,8 @@ bool KQMotifStyle::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQMotifStyle(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -3,7 +3,7 @@ KMETHOD QWidget_paintEngine(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPaintEngine* ret_v = qp->paintEngine();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPaintEngine*)ret_v, NULL);
 		RETURN_(rptr);
@@ -12,12 +12,12 @@ KMETHOD QWidget_paintEngine(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QWidget QWidget.new(QWidget parent, int f);
+//QWidget QWidget.new(QWidget parent, QtWindowFlags f);
 KMETHOD QWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
-	Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[2]);
+	initFlag(f, Qt::WindowFlags, sfp[2]);
 	KQWidget *ret_v = new KQWidget(parent, f);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -29,7 +29,7 @@ KMETHOD QWidget_getAcceptDrops(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->acceptDrops();
 		RETURNb_(ret_v);
 	} else {
@@ -42,7 +42,7 @@ KMETHOD QWidget_getAccessibleDescription(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->accessibleDescription();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -56,7 +56,7 @@ KMETHOD QWidget_getAccessibleName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->accessibleName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -70,8 +70,8 @@ KMETHOD QWidget_actions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
-		QList<QAction*>ret_v = qp->actions();
+	if (qp) {
+		QList<QAction*> ret_v = qp->actions();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QAction"));
@@ -91,30 +91,18 @@ KMETHOD QWidget_activateWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->activateWindow();
 	}
 	RETURNvoid_();
 }
 
-////void QWidget.addAction(QAction action);
-KMETHOD QWidget_addAction(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
-		QAction*  action = RawPtr_to(QAction*, sfp[1]);
-		qp->addAction(action);
-	}
-	RETURNvoid_();
-}
-
-////void QWidget.addActions(Array<QAction> actions);
+//void QWidget.addActions(Array<QAction> actions);
 KMETHOD QWidget_addActions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<QAction*> actions;
@@ -132,7 +120,7 @@ KMETHOD QWidget_adjustSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->adjustSize();
 	}
 	RETURNvoid_();
@@ -143,7 +131,7 @@ KMETHOD QWidget_getAutoFillBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->autoFillBackground();
 		RETURNb_(ret_v);
 	} else {
@@ -156,7 +144,7 @@ KMETHOD QWidget_getBackgroundRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorRole ret_v = qp->backgroundRole();
 		RETURNi_(ret_v);
 	} else {
@@ -169,7 +157,7 @@ KMETHOD QWidget_getBaseSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->baseSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -184,7 +172,7 @@ KMETHOD QWidget_childAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		QWidget* ret_v = qp->childAt(x, y);
@@ -201,7 +189,7 @@ KMETHOD QWidget_childAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  p = *RawPtr_to(const QPoint *, sfp[1]);
 		QWidget* ret_v = qp->childAt(p);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
@@ -216,7 +204,7 @@ KMETHOD QWidget_childrenRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->childrenRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -231,7 +219,7 @@ KMETHOD QWidget_childrenRegion(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRegion ret_v = qp->childrenRegion();
 		QRegion *ret_v_ = new QRegion(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -246,7 +234,7 @@ KMETHOD QWidget_clearFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearFocus();
 	}
 	RETURNvoid_();
@@ -257,7 +245,7 @@ KMETHOD QWidget_clearMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearMask();
 	}
 	RETURNvoid_();
@@ -268,7 +256,7 @@ KMETHOD QWidget_contentsMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMargins ret_v = qp->contentsMargins();
 		QMargins *ret_v_ = new QMargins(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -283,7 +271,7 @@ KMETHOD QWidget_contentsRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->contentsRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -298,7 +286,7 @@ KMETHOD QWidget_getContextMenuPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ContextMenuPolicy ret_v = qp->contextMenuPolicy();
 		RETURNi_(ret_v);
 	} else {
@@ -311,7 +299,7 @@ KMETHOD QWidget_getCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QCursor ret_v = qp->cursor();
 		QCursor *ret_v_ = new QCursor(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -326,7 +314,7 @@ KMETHOD QWidget_ensurePolished(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->ensurePolished();
 	}
 	RETURNvoid_();
@@ -337,7 +325,7 @@ KMETHOD QWidget_getFocusPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::FocusPolicy ret_v = qp->focusPolicy();
 		RETURNi_(ret_v);
 	} else {
@@ -350,7 +338,7 @@ KMETHOD QWidget_getFocusProxy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->focusProxy();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -364,7 +352,7 @@ KMETHOD QWidget_focusWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->focusWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -378,7 +366,7 @@ KMETHOD QWidget_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont ret_v = qp->font();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -393,7 +381,7 @@ KMETHOD QWidget_fontInfo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFontInfo ret_v = qp->fontInfo();
 		QFontInfo *ret_v_ = new QFontInfo(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -408,7 +396,7 @@ KMETHOD QWidget_fontMetrics(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFontMetrics ret_v = qp->fontMetrics();
 		QFontMetrics *ret_v_ = new QFontMetrics(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -423,7 +411,7 @@ KMETHOD QWidget_getForegroundRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorRole ret_v = qp->foregroundRole();
 		RETURNi_(ret_v);
 	} else {
@@ -436,7 +424,7 @@ KMETHOD QWidget_frameGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->frameGeometry();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -451,7 +439,7 @@ KMETHOD QWidget_frameSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->frameSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -466,7 +454,7 @@ KMETHOD QWidget_getGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect ret_v = qp->geometry();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -481,7 +469,7 @@ KMETHOD QWidget_getContentsMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int* left = Int_to(int*, sfp[1]);
 		int* top = Int_to(int*, sfp[2]);
 		int* right = Int_to(int*, sfp[3]);
@@ -491,14 +479,14 @@ KMETHOD QWidget_getContentsMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//void QWidget.grabGesture(int gesture, int flags);
+//void QWidget.grabGesture(int gesture, QtGestureFlags flags);
 KMETHOD QWidget_grabGesture(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::GestureType gesture = Int_to(Qt::GestureType, sfp[1]);
-		Qt::GestureFlags flags = Int_to(Qt::GestureFlags, sfp[2]);
+		initFlag(flags, Qt::GestureFlags, sfp[2]);
 		qp->grabGesture(gesture, flags);
 	}
 	RETURNvoid_();
@@ -509,7 +497,7 @@ KMETHOD QWidget_grabKeyboard(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->grabKeyboard();
 	}
 	RETURNvoid_();
@@ -520,7 +508,7 @@ KMETHOD QWidget_grabMouse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->grabMouse();
 	}
 	RETURNvoid_();
@@ -532,7 +520,7 @@ KMETHOD QWidget_grabMouse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QCursor  cursor = *RawPtr_to(const QCursor *, sfp[1]);
 		qp->grabMouse(cursor);
 	}
@@ -544,7 +532,7 @@ KMETHOD QWidget_grabShortcut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QKeySequence  key = *RawPtr_to(const QKeySequence *, sfp[1]);
 		Qt::ShortcutContext context = Int_to(Qt::ShortcutContext, sfp[2]);
 		int ret_v = qp->grabShortcut(key, context);
@@ -559,7 +547,7 @@ KMETHOD QWidget_getGraphicsEffect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsEffect* ret_v = qp->graphicsEffect();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsEffect*)ret_v, NULL);
 		RETURN_(rptr);
@@ -573,7 +561,7 @@ KMETHOD QWidget_graphicsProxyWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsProxyWidget* ret_v = qp->graphicsProxyWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsProxyWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -587,7 +575,7 @@ KMETHOD QWidget_hasFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasFocus();
 		RETURNb_(ret_v);
 	} else {
@@ -600,7 +588,7 @@ KMETHOD QWidget_hasMouseTracking(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasMouseTracking();
 		RETURNb_(ret_v);
 	} else {
@@ -613,7 +601,7 @@ KMETHOD QWidget_height(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->height();
 		RETURNi_(ret_v);
 	} else {
@@ -626,7 +614,7 @@ KMETHOD QWidget_heightForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int w = Int_to(int, sfp[1]);
 		int ret_v = qp->heightForWidth(w);
 		RETURNi_(ret_v);
@@ -640,7 +628,7 @@ KMETHOD QWidget_getInputContext(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QInputContext* ret_v = qp->inputContext();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QInputContext*)ret_v, NULL);
 		RETURN_(rptr);
@@ -649,16 +637,18 @@ KMETHOD QWidget_getInputContext(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QWidget.getInputMethodHints();
+//QtInputMethodHints QWidget.getInputMethodHints();
 KMETHOD QWidget_getInputMethodHints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::InputMethodHints ret_v = qp->inputMethodHints();
-		RETURNi_(ret_v);
+		Qt::InputMethodHints *ret_v_ = new Qt::InputMethodHints(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -667,7 +657,7 @@ KMETHOD QWidget_inputMethodQuery(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::InputMethodQuery query = Int_to(Qt::InputMethodQuery, sfp[1]);
 		QVariant ret_v = qp->inputMethodQuery(query);
 		QVariant *ret_v_ = new QVariant(ret_v);
@@ -683,7 +673,7 @@ KMETHOD QWidget_insertAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction*  before = RawPtr_to(QAction*, sfp[1]);
 		QAction*  action = RawPtr_to(QAction*, sfp[2]);
 		qp->insertAction(before, action);
@@ -696,7 +686,7 @@ KMETHOD QWidget_insertActions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction*  before = RawPtr_to(QAction*, sfp[1]);
 		knh_Array_t *a = sfp[2].a;
 		int asize = knh_Array_size(a);
@@ -715,7 +705,7 @@ KMETHOD QWidget_isActiveWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isActiveWindow();
 		RETURNb_(ret_v);
 	} else {
@@ -728,7 +718,7 @@ KMETHOD QWidget_isAncestorOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QWidget*  child = RawPtr_to(const QWidget*, sfp[1]);
 		bool ret_v = qp->isAncestorOf(child);
 		RETURNb_(ret_v);
@@ -742,7 +732,7 @@ KMETHOD QWidget_isEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -755,7 +745,7 @@ KMETHOD QWidget_isEnabledTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  ancestor = RawPtr_to(QWidget*, sfp[1]);
 		bool ret_v = qp->isEnabledTo(ancestor);
 		RETURNb_(ret_v);
@@ -769,7 +759,7 @@ KMETHOD QWidget_isFullScreen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isFullScreen();
 		RETURNb_(ret_v);
 	} else {
@@ -782,7 +772,7 @@ KMETHOD QWidget_isHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isHidden();
 		RETURNb_(ret_v);
 	} else {
@@ -795,7 +785,7 @@ KMETHOD QWidget_isMaximized(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isMaximized();
 		RETURNb_(ret_v);
 	} else {
@@ -808,7 +798,7 @@ KMETHOD QWidget_isMinimized(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isMinimized();
 		RETURNb_(ret_v);
 	} else {
@@ -821,7 +811,7 @@ KMETHOD QWidget_isModal(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isModal();
 		RETURNb_(ret_v);
 	} else {
@@ -834,7 +824,7 @@ KMETHOD QWidget_isVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isVisible();
 		RETURNb_(ret_v);
 	} else {
@@ -847,7 +837,7 @@ KMETHOD QWidget_isVisibleTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  ancestor = RawPtr_to(QWidget*, sfp[1]);
 		bool ret_v = qp->isVisibleTo(ancestor);
 		RETURNb_(ret_v);
@@ -861,7 +851,7 @@ KMETHOD QWidget_isWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isWindow();
 		RETURNb_(ret_v);
 	} else {
@@ -874,7 +864,7 @@ KMETHOD QWidget_isWindowModified(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isWindowModified();
 		RETURNb_(ret_v);
 	} else {
@@ -887,7 +877,7 @@ KMETHOD QWidget_getLayout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayout* ret_v = qp->layout();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QLayout*)ret_v, NULL);
 		RETURN_(rptr);
@@ -901,7 +891,7 @@ KMETHOD QWidget_getLayoutDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::LayoutDirection ret_v = qp->layoutDirection();
 		RETURNi_(ret_v);
 	} else {
@@ -914,7 +904,7 @@ KMETHOD QWidget_getLocale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLocale ret_v = qp->locale();
 		QLocale *ret_v_ = new QLocale(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -929,7 +919,7 @@ KMETHOD QWidget_mapFrom(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[2]);
 		QPoint ret_v = qp->mapFrom(parent, pos);
@@ -946,7 +936,7 @@ KMETHOD QWidget_mapFromGlobal(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 		QPoint ret_v = qp->mapFromGlobal(pos);
 		QPoint *ret_v_ = new QPoint(ret_v);
@@ -962,7 +952,7 @@ KMETHOD QWidget_mapFromParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 		QPoint ret_v = qp->mapFromParent(pos);
 		QPoint *ret_v_ = new QPoint(ret_v);
@@ -978,7 +968,7 @@ KMETHOD QWidget_mapTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[2]);
 		QPoint ret_v = qp->mapTo(parent, pos);
@@ -995,7 +985,7 @@ KMETHOD QWidget_mapToGlobal(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 		QPoint ret_v = qp->mapToGlobal(pos);
 		QPoint *ret_v_ = new QPoint(ret_v);
@@ -1011,7 +1001,7 @@ KMETHOD QWidget_mapToParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 		QPoint ret_v = qp->mapToParent(pos);
 		QPoint *ret_v_ = new QPoint(ret_v);
@@ -1027,7 +1017,7 @@ KMETHOD QWidget_getMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRegion ret_v = qp->mask();
 		QRegion *ret_v_ = new QRegion(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1042,7 +1032,7 @@ KMETHOD QWidget_getMaximumHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->maximumHeight();
 		RETURNi_(ret_v);
 	} else {
@@ -1055,7 +1045,7 @@ KMETHOD QWidget_getMaximumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->maximumSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1070,7 +1060,7 @@ KMETHOD QWidget_getMaximumWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->maximumWidth();
 		RETURNi_(ret_v);
 	} else {
@@ -1083,7 +1073,7 @@ KMETHOD QWidget_getMinimumHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->minimumHeight();
 		RETURNi_(ret_v);
 	} else {
@@ -1096,7 +1086,7 @@ KMETHOD QWidget_getMinimumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1111,7 +1101,7 @@ KMETHOD QWidget_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1126,7 +1116,7 @@ KMETHOD QWidget_getMinimumWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->minimumWidth();
 		RETURNi_(ret_v);
 	} else {
@@ -1139,7 +1129,7 @@ KMETHOD QWidget_move(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  arg0 = *RawPtr_to(const QPoint *, sfp[1]);
 		qp->move(arg0);
 	}
@@ -1152,7 +1142,7 @@ KMETHOD QWidget_move(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		qp->move(x, y);
@@ -1165,7 +1155,7 @@ KMETHOD QWidget_nativeParentWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->nativeParentWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -1179,7 +1169,7 @@ KMETHOD QWidget_nextInFocusChain(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->nextInFocusChain();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -1193,7 +1183,7 @@ KMETHOD QWidget_normalGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->normalGeometry();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1203,13 +1193,13 @@ KMETHOD QWidget_normalGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//void QWidget.overrideWindowFlags(int flags);
+//void QWidget.overrideWindowFlags(QtWindowFlags flags);
 KMETHOD QWidget_overrideWindowFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
-		Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[1]);
+	if (qp) {
+		initFlag(flags, Qt::WindowFlags, sfp[1]);
 		qp->overrideWindowFlags(flags);
 	}
 	RETURNvoid_();
@@ -1220,7 +1210,7 @@ KMETHOD QWidget_getPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPalette ret_v = qp->palette();
 		QPalette *ret_v_ = new QPalette(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1235,7 +1225,7 @@ KMETHOD QWidget_parentWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->parentWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -1249,7 +1239,7 @@ KMETHOD QWidget_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPoint ret_v = qp->pos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1264,7 +1254,7 @@ KMETHOD QWidget_previousInFocusChain(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->previousInFocusChain();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -1278,7 +1268,7 @@ KMETHOD QWidget_rect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->rect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1293,7 +1283,7 @@ KMETHOD QWidget_releaseKeyboard(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->releaseKeyboard();
 	}
 	RETURNvoid_();
@@ -1304,7 +1294,7 @@ KMETHOD QWidget_releaseMouse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->releaseMouse();
 	}
 	RETURNvoid_();
@@ -1315,7 +1305,7 @@ KMETHOD QWidget_releaseShortcut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int id = Int_to(int, sfp[1]);
 		qp->releaseShortcut(id);
 	}
@@ -1327,39 +1317,39 @@ KMETHOD QWidget_removeAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction*  action = RawPtr_to(QAction*, sfp[1]);
 		qp->removeAction(action);
 	}
 	RETURNvoid_();
 }
 
-//void QWidget.render(QPaintDevice target, QPoint targetOffset, QRegion sourceRegion, int renderFlags);
+//void QWidget.render(QPaintDevice target, QPoint targetOffset, QRegion sourceRegion, QWidgetRenderFlags renderFlags);
 KMETHOD QWidget_render(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPaintDevice*  target = RawPtr_to(QPaintDevice*, sfp[1]);
 		const QPoint  targetOffset = *RawPtr_to(const QPoint *, sfp[2]);
 		const QRegion  sourceRegion = *RawPtr_to(const QRegion *, sfp[3]);
-		QWidget::RenderFlags renderFlags = Int_to(QWidget::RenderFlags, sfp[4]);
+		initFlag(renderFlags, QWidget::RenderFlags, sfp[4]);
 		qp->render(target, targetOffset, sourceRegion, renderFlags);
 	}
 	RETURNvoid_();
 }
 
 /*
-//void QWidget.render(QPainter painter, QPoint targetOffset, QRegion sourceRegion, int renderFlags);
+//void QWidget.render(QPainter painter, QPoint targetOffset, QRegion sourceRegion, QWidgetRenderFlags renderFlags);
 KMETHOD QWidget_render(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QPoint  targetOffset = *RawPtr_to(const QPoint *, sfp[2]);
 		const QRegion  sourceRegion = *RawPtr_to(const QRegion *, sfp[3]);
-		QWidget::RenderFlags renderFlags = Int_to(QWidget::RenderFlags, sfp[4]);
+		initFlag(renderFlags, QWidget::RenderFlags, sfp[4]);
 		qp->render(painter, targetOffset, sourceRegion, renderFlags);
 	}
 	RETURNvoid_();
@@ -1370,7 +1360,7 @@ KMETHOD QWidget_repaint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int w = Int_to(int, sfp[3]);
@@ -1386,7 +1376,7 @@ KMETHOD QWidget_repaint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		qp->repaint(rect);
 	}
@@ -1399,7 +1389,7 @@ KMETHOD QWidget_repaint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRegion  rgn = *RawPtr_to(const QRegion *, sfp[1]);
 		qp->repaint(rgn);
 	}
@@ -1411,7 +1401,7 @@ KMETHOD QWidget_resize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  arg0 = *RawPtr_to(const QSize *, sfp[1]);
 		qp->resize(arg0);
 	}
@@ -1424,7 +1414,7 @@ KMETHOD QWidget_resize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int w = Int_to(int, sfp[1]);
 		int h = Int_to(int, sfp[2]);
 		qp->resize(w, h);
@@ -1437,7 +1427,7 @@ KMETHOD QWidget_restoreGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  geometry = *RawPtr_to(const QByteArray *, sfp[1]);
 		bool ret_v = qp->restoreGeometry(geometry);
 		RETURNb_(ret_v);
@@ -1451,7 +1441,7 @@ KMETHOD QWidget_saveGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->saveGeometry();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1466,7 +1456,7 @@ KMETHOD QWidget_scroll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int dx = Int_to(int, sfp[1]);
 		int dy = Int_to(int, sfp[2]);
 		qp->scroll(dx, dy);
@@ -1480,7 +1470,7 @@ KMETHOD QWidget_scroll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int dx = Int_to(int, sfp[1]);
 		int dy = Int_to(int, sfp[2]);
 		const QRect  r = *RawPtr_to(const QRect *, sfp[3]);
@@ -1494,7 +1484,7 @@ KMETHOD QWidget_setAcceptDrops(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool on = Boolean_to(bool, sfp[1]);
 		qp->setAcceptDrops(on);
 	}
@@ -1506,7 +1496,7 @@ KMETHOD QWidget_setAccessibleDescription(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString description = String_to(const QString, sfp[1]);
 		qp->setAccessibleDescription(description);
 	}
@@ -1518,7 +1508,7 @@ KMETHOD QWidget_setAccessibleName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString name = String_to(const QString, sfp[1]);
 		qp->setAccessibleName(name);
 	}
@@ -1530,7 +1520,7 @@ KMETHOD QWidget_setAttribute(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::WidgetAttribute attribute = Int_to(Qt::WidgetAttribute, sfp[1]);
 		bool on = Boolean_to(bool, sfp[2]);
 		qp->setAttribute(attribute, on);
@@ -1543,7 +1533,7 @@ KMETHOD QWidget_setAutoFillBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setAutoFillBackground(enabled);
 	}
@@ -1555,7 +1545,7 @@ KMETHOD QWidget_setBackgroundRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorRole role = Int_to(QPalette::ColorRole, sfp[1]);
 		qp->setBackgroundRole(role);
 	}
@@ -1567,7 +1557,7 @@ KMETHOD QWidget_setBaseSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  arg0 = *RawPtr_to(const QSize *, sfp[1]);
 		qp->setBaseSize(arg0);
 	}
@@ -1580,7 +1570,7 @@ KMETHOD QWidget_setBaseSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int basew = Int_to(int, sfp[1]);
 		int baseh = Int_to(int, sfp[2]);
 		qp->setBaseSize(basew, baseh);
@@ -1593,7 +1583,7 @@ KMETHOD QWidget_setContentsMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int left = Int_to(int, sfp[1]);
 		int top = Int_to(int, sfp[2]);
 		int right = Int_to(int, sfp[3]);
@@ -1609,7 +1599,7 @@ KMETHOD QWidget_setContentsMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMargins  margins = *RawPtr_to(const QMargins *, sfp[1]);
 		qp->setContentsMargins(margins);
 	}
@@ -1621,7 +1611,7 @@ KMETHOD QWidget_setContextMenuPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ContextMenuPolicy policy = Int_to(Qt::ContextMenuPolicy, sfp[1]);
 		qp->setContextMenuPolicy(policy);
 	}
@@ -1633,7 +1623,7 @@ KMETHOD QWidget_setCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QCursor  arg0 = *RawPtr_to(const QCursor *, sfp[1]);
 		qp->setCursor(arg0);
 	}
@@ -1645,7 +1635,7 @@ KMETHOD QWidget_setFixedHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int h = Int_to(int, sfp[1]);
 		qp->setFixedHeight(h);
 	}
@@ -1657,7 +1647,7 @@ KMETHOD QWidget_setFixedSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  s = *RawPtr_to(const QSize *, sfp[1]);
 		qp->setFixedSize(s);
 	}
@@ -1670,7 +1660,7 @@ KMETHOD QWidget_setFixedSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int w = Int_to(int, sfp[1]);
 		int h = Int_to(int, sfp[2]);
 		qp->setFixedSize(w, h);
@@ -1683,7 +1673,7 @@ KMETHOD QWidget_setFixedWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int w = Int_to(int, sfp[1]);
 		qp->setFixedWidth(w);
 	}
@@ -1695,7 +1685,7 @@ KMETHOD QWidget_setFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::FocusReason reason = Int_to(Qt::FocusReason, sfp[1]);
 		qp->setFocus(reason);
 	}
@@ -1707,7 +1697,7 @@ KMETHOD QWidget_setFocusPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::FocusPolicy policy = Int_to(Qt::FocusPolicy, sfp[1]);
 		qp->setFocusPolicy(policy);
 	}
@@ -1719,7 +1709,7 @@ KMETHOD QWidget_setFocusProxy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  w = RawPtr_to(QWidget*, sfp[1]);
 		qp->setFocusProxy(w);
 	}
@@ -1731,7 +1721,7 @@ KMETHOD QWidget_setFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont  arg0 = *RawPtr_to(const QFont *, sfp[1]);
 		qp->setFont(arg0);
 	}
@@ -1743,7 +1733,7 @@ KMETHOD QWidget_setForegroundRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette::ColorRole role = Int_to(QPalette::ColorRole, sfp[1]);
 		qp->setForegroundRole(role);
 	}
@@ -1755,7 +1745,7 @@ KMETHOD QWidget_setGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  arg0 = *RawPtr_to(const QRect *, sfp[1]);
 		qp->setGeometry(arg0);
 	}
@@ -1768,7 +1758,7 @@ KMETHOD QWidget_setGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int w = Int_to(int, sfp[3]);
@@ -1783,7 +1773,7 @@ KMETHOD QWidget_setGraphicsEffect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsEffect*  effect = RawPtr_to(QGraphicsEffect*, sfp[1]);
 		qp->setGraphicsEffect(effect);
 	}
@@ -1795,20 +1785,20 @@ KMETHOD QWidget_setInputContext(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QInputContext*  context = RawPtr_to(QInputContext*, sfp[1]);
 		qp->setInputContext(context);
 	}
 	RETURNvoid_();
 }
 
-//void QWidget.setInputMethodHints(int hints);
+//void QWidget.setInputMethodHints(QtInputMethodHints hints);
 KMETHOD QWidget_setInputMethodHints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
-		Qt::InputMethodHints hints = Int_to(Qt::InputMethodHints, sfp[1]);
+	if (qp) {
+		initFlag(hints, Qt::InputMethodHints, sfp[1]);
 		qp->setInputMethodHints(hints);
 	}
 	RETURNvoid_();
@@ -1819,7 +1809,7 @@ KMETHOD QWidget_setLayout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayout*  layout = RawPtr_to(QLayout*, sfp[1]);
 		qp->setLayout(layout);
 	}
@@ -1831,7 +1821,7 @@ KMETHOD QWidget_setLayoutDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::LayoutDirection direction = Int_to(Qt::LayoutDirection, sfp[1]);
 		qp->setLayoutDirection(direction);
 	}
@@ -1843,7 +1833,7 @@ KMETHOD QWidget_setLocale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QLocale  locale = *RawPtr_to(const QLocale *, sfp[1]);
 		qp->setLocale(locale);
 	}
@@ -1855,7 +1845,7 @@ KMETHOD QWidget_setMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBitmap  bitmap = *RawPtr_to(const QBitmap *, sfp[1]);
 		qp->setMask(bitmap);
 	}
@@ -1868,7 +1858,7 @@ KMETHOD QWidget_setMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRegion  region = *RawPtr_to(const QRegion *, sfp[1]);
 		qp->setMask(region);
 	}
@@ -1880,7 +1870,7 @@ KMETHOD QWidget_setMaximumHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int maxh = Int_to(int, sfp[1]);
 		qp->setMaximumHeight(maxh);
 	}
@@ -1892,7 +1882,7 @@ KMETHOD QWidget_setMaximumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  arg0 = *RawPtr_to(const QSize *, sfp[1]);
 		qp->setMaximumSize(arg0);
 	}
@@ -1905,7 +1895,7 @@ KMETHOD QWidget_setMaximumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int maxw = Int_to(int, sfp[1]);
 		int maxh = Int_to(int, sfp[2]);
 		qp->setMaximumSize(maxw, maxh);
@@ -1918,7 +1908,7 @@ KMETHOD QWidget_setMaximumWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int maxw = Int_to(int, sfp[1]);
 		qp->setMaximumWidth(maxw);
 	}
@@ -1930,7 +1920,7 @@ KMETHOD QWidget_setMinimumHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int minh = Int_to(int, sfp[1]);
 		qp->setMinimumHeight(minh);
 	}
@@ -1942,7 +1932,7 @@ KMETHOD QWidget_setMinimumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  arg0 = *RawPtr_to(const QSize *, sfp[1]);
 		qp->setMinimumSize(arg0);
 	}
@@ -1955,7 +1945,7 @@ KMETHOD QWidget_setMinimumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int minw = Int_to(int, sfp[1]);
 		int minh = Int_to(int, sfp[2]);
 		qp->setMinimumSize(minw, minh);
@@ -1968,7 +1958,7 @@ KMETHOD QWidget_setMinimumWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int minw = Int_to(int, sfp[1]);
 		qp->setMinimumWidth(minw);
 	}
@@ -1980,7 +1970,7 @@ KMETHOD QWidget_setMouseTracking(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setMouseTracking(enable);
 	}
@@ -1992,7 +1982,7 @@ KMETHOD QWidget_setPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPalette  arg0 = *RawPtr_to(const QPalette *, sfp[1]);
 		qp->setPalette(arg0);
 	}
@@ -2004,7 +1994,7 @@ KMETHOD QWidget_setParentOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
 		qp->setParent(parent);
 	}
@@ -2012,14 +2002,14 @@ KMETHOD QWidget_setParentOL(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//void QWidget.setParentOL(QWidget parent, int f);
+//void QWidget.setParentOL(QWidget parent, QtWindowFlags f);
 KMETHOD QWidget_setParentOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
-		Qt::WindowFlags f = Int_to(Qt::WindowFlags, sfp[2]);
+		initFlag(f, Qt::WindowFlags, sfp[2]);
 		qp->setParent(parent, f);
 	}
 	RETURNvoid_();
@@ -2030,7 +2020,7 @@ KMETHOD QWidget_setShortcutAutoRepeat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int id = Int_to(int, sfp[1]);
 		bool enable = Boolean_to(bool, sfp[2]);
 		qp->setShortcutAutoRepeat(id, enable);
@@ -2043,7 +2033,7 @@ KMETHOD QWidget_setShortcutEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int id = Int_to(int, sfp[1]);
 		bool enable = Boolean_to(bool, sfp[2]);
 		qp->setShortcutEnabled(id, enable);
@@ -2056,7 +2046,7 @@ KMETHOD QWidget_setSizeIncrement(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  arg0 = *RawPtr_to(const QSize *, sfp[1]);
 		qp->setSizeIncrement(arg0);
 	}
@@ -2069,7 +2059,7 @@ KMETHOD QWidget_setSizeIncrement(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int w = Int_to(int, sfp[1]);
 		int h = Int_to(int, sfp[2]);
 		qp->setSizeIncrement(w, h);
@@ -2082,7 +2072,7 @@ KMETHOD QWidget_setSizePolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizePolicy  arg0 = *RawPtr_to(QSizePolicy *, sfp[1]);
 		qp->setSizePolicy(arg0);
 	}
@@ -2095,7 +2085,7 @@ KMETHOD QWidget_setSizePolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizePolicy::Policy horizontal = Int_to(QSizePolicy::Policy, sfp[1]);
 		QSizePolicy::Policy vertical = Int_to(QSizePolicy::Policy, sfp[2]);
 		qp->setSizePolicy(horizontal, vertical);
@@ -2108,7 +2098,7 @@ KMETHOD QWidget_setStatusTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString arg0 = String_to(const QString, sfp[1]);
 		qp->setStatusTip(arg0);
 	}
@@ -2120,7 +2110,7 @@ KMETHOD QWidget_setStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle*  style = RawPtr_to(QStyle*, sfp[1]);
 		qp->setStyle(style);
 	}
@@ -2132,7 +2122,7 @@ KMETHOD QWidget_setToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString arg0 = String_to(const QString, sfp[1]);
 		qp->setToolTip(arg0);
 	}
@@ -2144,7 +2134,7 @@ KMETHOD QWidget_setUpdatesEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setUpdatesEnabled(enable);
 	}
@@ -2156,7 +2146,7 @@ KMETHOD QWidget_setWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString arg0 = String_to(const QString, sfp[1]);
 		qp->setWhatsThis(arg0);
 	}
@@ -2168,20 +2158,20 @@ KMETHOD QWidget_setWindowFilePath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString filePath = String_to(const QString, sfp[1]);
 		qp->setWindowFilePath(filePath);
 	}
 	RETURNvoid_();
 }
 
-//void QWidget.setWindowFlags(int type);
+//void QWidget.setWindowFlags(QtWindowFlags type);
 KMETHOD QWidget_setWindowFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
-		Qt::WindowFlags type = Int_to(Qt::WindowFlags, sfp[1]);
+	if (qp) {
+		initFlag(type, Qt::WindowFlags, sfp[1]);
 		qp->setWindowFlags(type);
 	}
 	RETURNvoid_();
@@ -2192,7 +2182,7 @@ KMETHOD QWidget_setWindowIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QIcon  icon = *RawPtr_to(const QIcon *, sfp[1]);
 		qp->setWindowIcon(icon);
 	}
@@ -2204,19 +2194,19 @@ KMETHOD QWidget_setWindowIconText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString arg0 = String_to(const QString, sfp[1]);
 		qp->setWindowIconText(arg0);
 	}
 	RETURNvoid_();
 }
 
-////void QWidget.setWindowModality(int windowModality);
+//@Virtual void QWidget.setWindowModality(int windowModality);
 KMETHOD QWidget_setWindowModality(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::WindowModality windowModality = Int_to(Qt::WindowModality, sfp[1]);
 		qp->setWindowModality(windowModality);
 	}
@@ -2228,7 +2218,7 @@ KMETHOD QWidget_setWindowOpacity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal level = Float_to(qreal, sfp[1]);
 		qp->setWindowOpacity(level);
 	}
@@ -2240,33 +2230,21 @@ KMETHOD QWidget_setWindowRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString role = String_to(const QString, sfp[1]);
 		qp->setWindowRole(role);
 	}
 	RETURNvoid_();
 }
 
-//void QWidget.setWindowState(int windowState);
+//void QWidget.setWindowState(QtWindowStates windowState);
 KMETHOD QWidget_setWindowState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
-		Qt::WindowStates windowState = Int_to(Qt::WindowStates, sfp[1]);
+	if (qp) {
+		initFlag(windowState, Qt::WindowStates, sfp[1]);
 		qp->setWindowState(windowState);
-	}
-	RETURNvoid_();
-}
-
-//void QWidget.setWindowSurface(QWindowSurface surface);
-KMETHOD QWidget_setWindowSurface(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
-		QWindowSurface*  surface = RawPtr_to(QWindowSurface*, sfp[1]);
-		qp->setWindowSurface(surface);
 	}
 	RETURNvoid_();
 }
@@ -2276,7 +2254,7 @@ KMETHOD QWidget_size(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->size();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -2291,7 +2269,7 @@ KMETHOD QWidget_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -2306,7 +2284,7 @@ KMETHOD QWidget_getSizeIncrement(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeIncrement();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -2321,7 +2299,7 @@ KMETHOD QWidget_getSizePolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizePolicy ret_v = qp->sizePolicy();
 		QSizePolicy *ret_v_ = new QSizePolicy(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -2336,7 +2314,7 @@ KMETHOD QWidget_stackUnder(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  w = RawPtr_to(QWidget*, sfp[1]);
 		qp->stackUnder(w);
 	}
@@ -2348,7 +2326,7 @@ KMETHOD QWidget_getStatusTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->statusTip();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -2362,7 +2340,7 @@ KMETHOD QWidget_getStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle* ret_v = qp->style();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStyle*)ret_v, NULL);
 		RETURN_(rptr);
@@ -2376,7 +2354,7 @@ KMETHOD QWidget_getStyleSheet(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->styleSheet();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -2390,7 +2368,7 @@ KMETHOD QWidget_testAttribute(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::WidgetAttribute attribute = Int_to(Qt::WidgetAttribute, sfp[1]);
 		bool ret_v = qp->testAttribute(attribute);
 		RETURNb_(ret_v);
@@ -2404,7 +2382,7 @@ KMETHOD QWidget_getToolTip(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->toolTip();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -2418,7 +2396,7 @@ KMETHOD QWidget_underMouse(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->underMouse();
 		RETURNb_(ret_v);
 	} else {
@@ -2431,7 +2409,7 @@ KMETHOD QWidget_ungrabGesture(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::GestureType gesture = Int_to(Qt::GestureType, sfp[1]);
 		qp->ungrabGesture(gesture);
 	}
@@ -2443,7 +2421,7 @@ KMETHOD QWidget_unsetCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->unsetCursor();
 	}
 	RETURNvoid_();
@@ -2454,7 +2432,7 @@ KMETHOD QWidget_unsetLayoutDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->unsetLayoutDirection();
 	}
 	RETURNvoid_();
@@ -2465,7 +2443,7 @@ KMETHOD QWidget_unsetLocale(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->unsetLocale();
 	}
 	RETURNvoid_();
@@ -2476,7 +2454,7 @@ KMETHOD QWidget_updateOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int w = Int_to(int, sfp[3]);
@@ -2492,7 +2470,7 @@ KMETHOD QWidget_updateOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		qp->update(rect);
 	}
@@ -2505,7 +2483,7 @@ KMETHOD QWidget_updateOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRegion  rgn = *RawPtr_to(const QRegion *, sfp[1]);
 		qp->update(rgn);
 	}
@@ -2517,7 +2495,7 @@ KMETHOD QWidget_updateOLGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->updateGeometry();
 	}
 	RETURNvoid_();
@@ -2528,7 +2506,7 @@ KMETHOD QWidget_getUpdatesEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->updatesEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -2541,7 +2519,7 @@ KMETHOD QWidget_visibleRegion(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRegion ret_v = qp->visibleRegion();
 		QRegion *ret_v_ = new QRegion(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -2556,7 +2534,7 @@ KMETHOD QWidget_getWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->whatsThis();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -2570,7 +2548,7 @@ KMETHOD QWidget_width(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->width();
 		RETURNi_(ret_v);
 	} else {
@@ -2583,7 +2561,7 @@ KMETHOD QWidget_window(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->window();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -2597,7 +2575,7 @@ KMETHOD QWidget_getWindowFilePath(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->windowFilePath();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -2606,16 +2584,18 @@ KMETHOD QWidget_getWindowFilePath(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QWidget.getWindowFlags();
+//QtWindowFlags QWidget.getWindowFlags();
 KMETHOD QWidget_getWindowFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::WindowFlags ret_v = qp->windowFlags();
-		RETURNi_(ret_v);
+		Qt::WindowFlags *ret_v_ = new Qt::WindowFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -2624,7 +2604,7 @@ KMETHOD QWidget_getWindowIcon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIcon ret_v = qp->windowIcon();
 		QIcon *ret_v_ = new QIcon(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -2639,7 +2619,7 @@ KMETHOD QWidget_getWindowIconText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->windowIconText();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -2653,7 +2633,7 @@ KMETHOD QWidget_getWindowModality(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::WindowModality ret_v = qp->windowModality();
 		RETURNi_(ret_v);
 	} else {
@@ -2666,7 +2646,7 @@ KMETHOD QWidget_getWindowOpacity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->windowOpacity();
 		RETURNf_(ret_v);
 	} else {
@@ -2679,7 +2659,7 @@ KMETHOD QWidget_getWindowRole(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->windowRole();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -2688,27 +2668,15 @@ KMETHOD QWidget_getWindowRole(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QWidget.getWindowState();
+//QtWindowStates QWidget.getWindowState();
 KMETHOD QWidget_getWindowState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::WindowStates ret_v = qp->windowState();
-		RETURNi_(ret_v);
-	} else {
-		RETURNi_(0);
-	}
-}
-
-//QWindowSurface QWidget.getWindowSurface();
-KMETHOD QWidget_getWindowSurface(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
-		QWindowSurface* ret_v = qp->windowSurface();
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWindowSurface*)ret_v, NULL);
+		Qt::WindowStates *ret_v_ = new Qt::WindowStates(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
 	} else {
 		RETURN_(KNH_NULL);
@@ -2720,7 +2688,7 @@ KMETHOD QWidget_getWindowTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->windowTitle();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -2734,7 +2702,7 @@ KMETHOD QWidget_windowType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::WindowType ret_v = qp->windowType();
 		RETURNi_(ret_v);
 	} else {
@@ -2747,7 +2715,7 @@ KMETHOD QWidget_x(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->x();
 		RETURNi_(ret_v);
 	} else {
@@ -2760,7 +2728,7 @@ KMETHOD QWidget_y(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->y();
 		RETURNi_(ret_v);
 	} else {
@@ -2772,9 +2740,8 @@ KMETHOD QWidget_y(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWidget_keyboardGrabber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
-		QWidget* ret_v = qp->keyboardGrabber();
+	if (true) {
+		QWidget* ret_v = QWidget::keyboardGrabber();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -2786,9 +2753,8 @@ KMETHOD QWidget_keyboardGrabber(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWidget_mouseGrabber(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
-		QWidget* ret_v = qp->mouseGrabber();
+	if (true) {
+		QWidget* ret_v = QWidget::mouseGrabber();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -2800,11 +2766,10 @@ KMETHOD QWidget_mouseGrabber(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWidget_setTabOrder(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QWidget*  first = RawPtr_to(QWidget*, sfp[1]);
 		QWidget*  second = RawPtr_to(QWidget*, sfp[2]);
-		qp->setTabOrder(first, second);
+		QWidget::setTabOrder(first, second);
 	}
 	RETURNvoid_();
 }
@@ -2814,7 +2779,7 @@ KMETHOD QWidget_close(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->close();
 		RETURNb_(ret_v);
 	} else {
@@ -2827,7 +2792,7 @@ KMETHOD QWidget_hide(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->hide();
 	}
 	RETURNvoid_();
@@ -2838,7 +2803,7 @@ KMETHOD QWidget_lower(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->lower();
 	}
 	RETURNvoid_();
@@ -2849,7 +2814,7 @@ KMETHOD QWidget_raise(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->raise();
 	}
 	RETURNvoid_();
@@ -2861,7 +2826,7 @@ KMETHOD QWidget_repaint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->repaint();
 	}
 	RETURNvoid_();
@@ -2872,7 +2837,7 @@ KMETHOD QWidget_setDisabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool disable = Boolean_to(bool, sfp[1]);
 		qp->setDisabled(disable);
 	}
@@ -2884,7 +2849,7 @@ KMETHOD QWidget_setEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setEnabled(arg0);
 	}
@@ -2897,7 +2862,7 @@ KMETHOD QWidget_setFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->setFocus();
 	}
 	RETURNvoid_();
@@ -2908,7 +2873,7 @@ KMETHOD QWidget_setHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool hidden = Boolean_to(bool, sfp[1]);
 		qp->setHidden(hidden);
 	}
@@ -2920,7 +2885,7 @@ KMETHOD QWidget_setStyleSheet(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString styleSheet = String_to(const QString, sfp[1]);
 		qp->setStyleSheet(styleSheet);
 	}
@@ -2932,7 +2897,7 @@ KMETHOD QWidget_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setVisible(visible);
 	}
@@ -2944,19 +2909,19 @@ KMETHOD QWidget_setWindowModified(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setWindowModified(arg0);
 	}
 	RETURNvoid_();
 }
 
-//void QWidget.setWindowTitleOL(String arg0);
-KMETHOD QWidget_setWindowTitleOL(CTX ctx, knh_sfp_t *sfp _RIX)
+//@Virtual void QWidget.setWindowTitle(String arg0);
+KMETHOD QWidget_setWindowTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString arg0 = String_to(const QString, sfp[1]);
 		qp->setWindowTitle(arg0);
 	}
@@ -2968,7 +2933,7 @@ KMETHOD QWidget_show(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->show();
 	}
 	RETURNvoid_();
@@ -2979,7 +2944,7 @@ KMETHOD QWidget_showFullScreen(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->showFullScreen();
 	}
 	RETURNvoid_();
@@ -2990,7 +2955,7 @@ KMETHOD QWidget_showMaximized(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->showMaximized();
 	}
 	RETURNvoid_();
@@ -3001,7 +2966,7 @@ KMETHOD QWidget_showMinimized(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->showMinimized();
 	}
 	RETURNvoid_();
@@ -3012,7 +2977,7 @@ KMETHOD QWidget_showNormal(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->showNormal();
 	}
 	RETURNvoid_();
@@ -3024,7 +2989,7 @@ KMETHOD QWidget_updateOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget *  qp = RawPtr_to(QWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->update();
 	}
 	RETURNvoid_();
@@ -3659,10 +3624,52 @@ bool DummyQWidget::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 27;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, action_event_func);
+	KNH_ADDNNREF(ctx, change_event_func);
+	KNH_ADDNNREF(ctx, close_event_func);
+	KNH_ADDNNREF(ctx, context_menu_event_func);
+	KNH_ADDNNREF(ctx, drag_enter_event_func);
+	KNH_ADDNNREF(ctx, drag_leave_event_func);
+	KNH_ADDNNREF(ctx, drag_move_event_func);
+	KNH_ADDNNREF(ctx, drop_event_func);
+	KNH_ADDNNREF(ctx, enter_event_func);
+	KNH_ADDNNREF(ctx, focus_in_event_func);
+	KNH_ADDNNREF(ctx, focus_out_event_func);
+	KNH_ADDNNREF(ctx, hide_event_func);
+	KNH_ADDNNREF(ctx, input_method_event_func);
+	KNH_ADDNNREF(ctx, key_press_event_func);
+	KNH_ADDNNREF(ctx, key_release_event_func);
+	KNH_ADDNNREF(ctx, leave_event_func);
+	KNH_ADDNNREF(ctx, mouse_double_click_event_func);
+	KNH_ADDNNREF(ctx, mouse_move_event_func);
+	KNH_ADDNNREF(ctx, mouse_press_event_func);
+	KNH_ADDNNREF(ctx, mouse_release_event_func);
+	KNH_ADDNNREF(ctx, move_event_func);
+	KNH_ADDNNREF(ctx, paint_event_func);
+	KNH_ADDNNREF(ctx, resize_event_func);
+	KNH_ADDNNREF(ctx, show_event_func);
+	KNH_ADDNNREF(ctx, tablet_event_func);
+	KNH_ADDNNREF(ctx, wheel_event_func);
+	KNH_ADDNNREF(ctx, custom_context_menu_requested_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+	DummyQPaintDevice::reftrace(ctx, p, tail_);
+}
 
 void DummyQWidget::connection(QObject *o)
 {
-	connect(o, SIGNAL(customContextMenuRequested(const QPoint)), this, SLOT(customContextMenuRequestedSlot(const QPoint)));
+	QWidget *p = dynamic_cast<QWidget*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(customContextMenuRequested(const QPoint)), this, SLOT(customContextMenuRequestedSlot(const QPoint)));
+	}
 	DummyQObject::connection(o);
 	DummyQPaintDevice::connection(o);
 }
@@ -3726,121 +3733,9 @@ static void QWidget_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 27;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQWidget *qp = (KQWidget *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->action_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->action_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->change_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->change_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->close_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->close_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->context_menu_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->context_menu_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->drag_enter_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->drag_enter_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->drag_leave_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->drag_leave_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->drag_move_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->drag_move_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->drop_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->drop_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->enter_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->enter_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->focus_in_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->focus_in_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->focus_out_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->focus_out_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->hide_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->hide_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->input_method_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->input_method_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->key_press_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->key_press_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->key_release_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->key_release_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->leave_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->leave_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->mouse_double_click_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->mouse_double_click_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->mouse_move_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->mouse_move_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->mouse_press_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->mouse_press_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->mouse_release_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->mouse_release_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->move_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->move_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->paint_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->paint_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->resize_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->resize_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->show_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->show_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->tablet_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->tablet_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->wheel_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->wheel_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->custom_context_menu_requested_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->custom_context_menu_requested_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -3864,15 +3759,6 @@ bool KQWidget::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQWidget(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QWidget";
-	cdef->free = QWidget_free;
-	cdef->reftrace = QWidget_reftrace;
-	cdef->compareTo = QWidget_compareTo;
-}
-
 static knh_IntData_t QWidgetConstInt[] = {
 	{"DrawWindowBackground", QWidget::DrawWindowBackground},
 	{"DrawChildren", QWidget::DrawChildren},
@@ -3882,5 +3768,179 @@ static knh_IntData_t QWidgetConstInt[] = {
 
 DEFAPI(void) constQWidget(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QWidgetConstInt);
+}
+
+
+DEFAPI(void) defQWidget(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QWidget";
+	cdef->free = QWidget_free;
+	cdef->reftrace = QWidget_reftrace;
+	cdef->compareTo = QWidget_compareTo;
+}
+
+//## QWidgetRenderFlags QWidgetRenderFlags.new(int value);
+KMETHOD QWidgetRenderFlags_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QWidget::RenderFlag i = Int_to(QWidget::RenderFlag, sfp[1]);
+	QWidget::RenderFlags *ret_v = new QWidget::RenderFlags(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QWidgetRenderFlags QWidgetRenderFlags.and(int mask);
+KMETHOD QWidgetRenderFlags_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QWidget::RenderFlags *qp = RawPtr_to(QWidget::RenderFlags*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QWidget::RenderFlags ret = ((*qp) & i);
+		QWidget::RenderFlags *ret_ = new QWidget::RenderFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QWidgetRenderFlags QWidgetRenderFlags.iand(QWidget::QWidgetRenderFlags other);
+KMETHOD QWidgetRenderFlags_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QWidget::RenderFlags *qp = RawPtr_to(QWidget::RenderFlags*, sfp[0]);
+	if (qp != NULL) {
+		QWidget::RenderFlags *other = RawPtr_to(QWidget::RenderFlags *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QWidgetRenderFlags QWidgetRenderFlags.or(QWidgetRenderFlags f);
+KMETHOD QWidgetRenderFlags_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QWidget::RenderFlags *qp = RawPtr_to(QWidget::RenderFlags*, sfp[0]);
+	if (qp != NULL) {
+		QWidget::RenderFlags *f = RawPtr_to(QWidget::RenderFlags*, sfp[1]);
+		QWidget::RenderFlags ret = ((*qp) | (*f));
+		QWidget::RenderFlags *ret_ = new QWidget::RenderFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QWidgetRenderFlags QWidgetRenderFlags.ior(QWidget::QWidgetRenderFlags other);
+KMETHOD QWidgetRenderFlags_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QWidget::RenderFlags *qp = RawPtr_to(QWidget::RenderFlags*, sfp[0]);
+	if (qp != NULL) {
+		QWidget::RenderFlags *other = RawPtr_to(QWidget::RenderFlags *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QWidgetRenderFlags QWidgetRenderFlags.xor(QWidgetRenderFlags f);
+KMETHOD QWidgetRenderFlags_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QWidget::RenderFlags *qp = RawPtr_to(QWidget::RenderFlags*, sfp[0]);
+	if (qp != NULL) {
+		QWidget::RenderFlags *f = RawPtr_to(QWidget::RenderFlags*, sfp[1]);
+		QWidget::RenderFlags ret = ((*qp) ^ (*f));
+		QWidget::RenderFlags *ret_ = new QWidget::RenderFlags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QWidgetRenderFlags QWidgetRenderFlags.ixor(QWidget::QWidgetRenderFlags other);
+KMETHOD QWidgetRenderFlags_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QWidget::RenderFlags *qp = RawPtr_to(QWidget::RenderFlags*, sfp[0]);
+	if (qp != NULL) {
+		QWidget::RenderFlags *other = RawPtr_to(QWidget::RenderFlags *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QWidgetRenderFlags.testFlag(int flag);
+KMETHOD QWidgetRenderFlags_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QWidget::RenderFlags *qp = RawPtr_to(QWidget::RenderFlags *, sfp[0]);
+	if (qp != NULL) {
+		QWidget::RenderFlag flag = Int_to(QWidget::RenderFlag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QWidgetRenderFlags.value();
+KMETHOD QWidgetRenderFlags_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QWidget::RenderFlags *qp = RawPtr_to(QWidget::RenderFlags *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QWidgetRenderFlags_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QWidget::RenderFlags *qp = (QWidget::RenderFlags *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QWidgetRenderFlags_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QWidget::RenderFlags *qp = (QWidget::RenderFlags *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QWidgetRenderFlags_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QWidget::RenderFlags*)p1->rawptr);
+//		int v2 = int(*(QWidget::RenderFlags*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QWidget::RenderFlags v1 = *(QWidget::RenderFlags*)p1->rawptr;
+		QWidget::RenderFlags v2 = *(QWidget::RenderFlags*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQWidgetRenderFlags(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QWidgetRenderFlags";
+	cdef->free = QWidgetRenderFlags_free;
+	cdef->reftrace = QWidgetRenderFlags_reftrace;
+	cdef->compareTo = QWidgetRenderFlags_compareTo;
 }
 

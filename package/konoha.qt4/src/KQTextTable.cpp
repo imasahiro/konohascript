@@ -3,7 +3,7 @@ KMETHOD QTextTable_appendColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int count = Int_to(int, sfp[1]);
 		qp->appendColumns(count);
 	}
@@ -15,7 +15,7 @@ KMETHOD QTextTable_appendRows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int count = Int_to(int, sfp[1]);
 		qp->appendRows(count);
 	}
@@ -27,7 +27,7 @@ KMETHOD QTextTable_cellAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		QTextTableCell ret_v = qp->cellAt(row, column);
@@ -45,7 +45,7 @@ KMETHOD QTextTable_cellAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int position = Int_to(int, sfp[1]);
 		QTextTableCell ret_v = qp->cellAt(position);
 		QTextTableCell *ret_v_ = new QTextTableCell(ret_v);
@@ -62,7 +62,7 @@ KMETHOD QTextTable_cellAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCursor  cursor = *RawPtr_to(const QTextCursor *, sfp[1]);
 		QTextTableCell ret_v = qp->cellAt(cursor);
 		QTextTableCell *ret_v_ = new QTextTableCell(ret_v);
@@ -78,7 +78,7 @@ KMETHOD QTextTable_columns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->columns();
 		RETURNi_(ret_v);
 	} else {
@@ -91,7 +91,7 @@ KMETHOD QTextTable_getFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextTableFormat ret_v = qp->format();
 		QTextTableFormat *ret_v_ = new QTextTableFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -101,12 +101,12 @@ KMETHOD QTextTable_getFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////void QTextTable.insertColumns(int index, int columns);
+//void QTextTable.insertColumns(int index, int columns);
 KMETHOD QTextTable_insertColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		int columns = Int_to(int, sfp[2]);
 		qp->insertColumns(index, columns);
@@ -114,12 +114,12 @@ KMETHOD QTextTable_insertColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-////void QTextTable.insertRows(int index, int rows);
+//void QTextTable.insertRows(int index, int rows);
 KMETHOD QTextTable_insertRows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		int rows = Int_to(int, sfp[2]);
 		qp->insertRows(index, rows);
@@ -132,7 +132,7 @@ KMETHOD QTextTable_mergeCells(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		int numRows = Int_to(int, sfp[3]);
@@ -148,7 +148,7 @@ KMETHOD QTextTable_mergeCells(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCursor  cursor = *RawPtr_to(const QTextCursor *, sfp[1]);
 		qp->mergeCells(cursor);
 	}
@@ -160,7 +160,7 @@ KMETHOD QTextTable_removeColumns(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		int columns = Int_to(int, sfp[2]);
 		qp->removeColumns(index, columns);
@@ -173,7 +173,7 @@ KMETHOD QTextTable_removeRows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		int rows = Int_to(int, sfp[2]);
 		qp->removeRows(index, rows);
@@ -186,7 +186,7 @@ KMETHOD QTextTable_resize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int rows = Int_to(int, sfp[1]);
 		int columns = Int_to(int, sfp[2]);
 		qp->resize(rows, columns);
@@ -199,7 +199,7 @@ KMETHOD QTextTable_rowEnd(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCursor  cursor = *RawPtr_to(const QTextCursor *, sfp[1]);
 		QTextCursor ret_v = qp->rowEnd(cursor);
 		QTextCursor *ret_v_ = new QTextCursor(ret_v);
@@ -215,7 +215,7 @@ KMETHOD QTextTable_rowStart(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextCursor  cursor = *RawPtr_to(const QTextCursor *, sfp[1]);
 		QTextCursor ret_v = qp->rowStart(cursor);
 		QTextCursor *ret_v_ = new QTextCursor(ret_v);
@@ -231,7 +231,7 @@ KMETHOD QTextTable_rows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->rows();
 		RETURNi_(ret_v);
 	} else {
@@ -244,7 +244,7 @@ KMETHOD QTextTable_setFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTextTableFormat  format = *RawPtr_to(const QTextTableFormat *, sfp[1]);
 		qp->setFormat(format);
 	}
@@ -256,7 +256,7 @@ KMETHOD QTextTable_splitCell(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextTable *  qp = RawPtr_to(QTextTable *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		int numRows = Int_to(int, sfp[3]);
@@ -317,9 +317,23 @@ bool DummyQTextTable::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextTable::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQTextFrame::reftrace(ctx, p, tail_);
+}
 
 void DummyQTextTable::connection(QObject *o)
 {
+	QTextTable *p = dynamic_cast<QTextTable*>(o);
+	if (p != NULL) {
+	}
 	DummyQTextFrame::connection(o);
 }
 
@@ -375,13 +389,9 @@ static void QTextTable_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextTable_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextTable *qp = (KQTextTable *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -404,6 +414,8 @@ bool KQTextTable::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQTextTable(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

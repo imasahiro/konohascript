@@ -2,11 +2,10 @@
 KMETHOD QInputContextFactory_create(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QInputContextFactory *  qp = RawPtr_to(QInputContextFactory *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString key = String_to(const QString, sfp[1]);
 		QObject*  parent = RawPtr_to(QObject*, sfp[2]);
-		QInputContext* ret_v = qp->create(key, parent);
+		QInputContext* ret_v = QInputContextFactory::create(key, parent);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QInputContext*)ret_v, NULL);
 		RETURN_(rptr);
 	} else {
@@ -18,10 +17,9 @@ KMETHOD QInputContextFactory_create(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QInputContextFactory_description(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QInputContextFactory *  qp = RawPtr_to(QInputContextFactory *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString key = String_to(const QString, sfp[1]);
-		QString ret_v = qp->description(key);
+		QString ret_v = QInputContextFactory::description(key);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -33,10 +31,9 @@ KMETHOD QInputContextFactory_description(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QInputContextFactory_displayName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QInputContextFactory *  qp = RawPtr_to(QInputContextFactory *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString key = String_to(const QString, sfp[1]);
-		QString ret_v = qp->displayName(key);
+		QString ret_v = QInputContextFactory::displayName(key);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -44,6 +41,24 @@ KMETHOD QInputContextFactory_displayName(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QInputContextFactory.parents();
+KMETHOD QInputContextFactory_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QInputContextFactory *qp = RawPtr_to(QInputContextFactory*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQInputContextFactory::DummyQInputContextFactory()
 {
@@ -92,17 +107,22 @@ bool DummyQInputContextFactory::signalConnect(knh_Func_t *callback_func, string 
 	}
 }
 
+void DummyQInputContextFactory::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQInputContextFactory::connection(QObject *o)
 {
-	return;
-}
-
-KQInputContextFactory::KQInputContextFactory() : QInputContextFactory()
-{
-	self = NULL;
-	dummy = new DummyQInputContextFactory();
-	dummy->connection((QObject*)this);
+	QInputContextFactory *p = dynamic_cast<QInputContextFactory*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QInputContextFactory_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -157,13 +177,9 @@ static void QInputContextFactory_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QInputContextFactory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQInputContextFactory *qp = (KQInputContextFactory *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -177,6 +193,8 @@ void KQInputContextFactory::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQInputContextFactory(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

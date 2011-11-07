@@ -3,7 +3,7 @@ KMETHOD QGraphicsPolygonItem_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPolygonItem *  qp = RawPtr_to(QGraphicsPolygonItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->boundingRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QGraphicsPolygonItem_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPolygonItem *  qp = RawPtr_to(QGraphicsPolygonItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		bool ret_v = qp->contains(point);
 		RETURNb_(ret_v);
@@ -32,7 +32,7 @@ KMETHOD QGraphicsPolygonItem_isObscuredBy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPolygonItem *  qp = RawPtr_to(QGraphicsPolygonItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QGraphicsItem*  item = RawPtr_to(const QGraphicsItem*, sfp[1]);
 		bool ret_v = qp->isObscuredBy(item);
 		RETURNb_(ret_v);
@@ -46,7 +46,7 @@ KMETHOD QGraphicsPolygonItem_opaqueArea(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPolygonItem *  qp = RawPtr_to(QGraphicsPolygonItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->opaqueArea();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -61,7 +61,7 @@ KMETHOD QGraphicsPolygonItem_paint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPolygonItem *  qp = RawPtr_to(QGraphicsPolygonItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
@@ -75,7 +75,7 @@ KMETHOD QGraphicsPolygonItem_shape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPolygonItem *  qp = RawPtr_to(QGraphicsPolygonItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->shape();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -90,7 +90,7 @@ KMETHOD QGraphicsPolygonItem_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPolygonItem *  qp = RawPtr_to(QGraphicsPolygonItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -127,7 +127,7 @@ KMETHOD QGraphicsPolygonItem_getFillRule(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPolygonItem *  qp = RawPtr_to(QGraphicsPolygonItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::FillRule ret_v = qp->fillRule();
 		RETURNi_(ret_v);
 	} else {
@@ -140,7 +140,7 @@ KMETHOD QGraphicsPolygonItem_getPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPolygonItem *  qp = RawPtr_to(QGraphicsPolygonItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPolygonF ret_v = qp->polygon();
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -155,7 +155,7 @@ KMETHOD QGraphicsPolygonItem_setFillRule(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPolygonItem *  qp = RawPtr_to(QGraphicsPolygonItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::FillRule rule = Int_to(Qt::FillRule, sfp[1]);
 		qp->setFillRule(rule);
 	}
@@ -167,7 +167,7 @@ KMETHOD QGraphicsPolygonItem_setPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsPolygonItem *  qp = RawPtr_to(QGraphicsPolygonItem *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  polygon = *RawPtr_to(const QPolygonF *, sfp[1]);
 		qp->setPolygon(polygon);
 	}
@@ -225,9 +225,23 @@ bool DummyQGraphicsPolygonItem::signalConnect(knh_Func_t *callback_func, string 
 	}
 }
 
+void DummyQGraphicsPolygonItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractGraphicsShapeItem::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsPolygonItem::connection(QObject *o)
 {
+	QGraphicsPolygonItem *p = dynamic_cast<QGraphicsPolygonItem*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractGraphicsShapeItem::connection(o);
 }
 
@@ -235,7 +249,6 @@ KQGraphicsPolygonItem::KQGraphicsPolygonItem(QGraphicsItem* parent) : QGraphicsP
 {
 	self = NULL;
 	dummy = new DummyQGraphicsPolygonItem();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsPolygonItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -290,13 +303,9 @@ static void QGraphicsPolygonItem_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsPolygonItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsPolygonItem *qp = (KQGraphicsPolygonItem *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -310,6 +319,8 @@ void KQGraphicsPolygonItem::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGraphicsPolygonItem(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

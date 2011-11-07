@@ -1,11 +1,11 @@
-//QContextMenuEvent QContextMenuEvent.new(int reason, QPoint pos, QPoint globalPos, int modifiers);
+//QContextMenuEvent QContextMenuEvent.new(int reason, QPoint pos, QPoint globalPos, QtKeyboardModifiers modifiers);
 KMETHOD QContextMenuEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QContextMenuEvent::Reason reason = Int_to(QContextMenuEvent::Reason, sfp[1]);
 	const QPoint  pos = *RawPtr_to(const QPoint *, sfp[2]);
 	const QPoint  globalPos = *RawPtr_to(const QPoint *, sfp[3]);
-	Qt::KeyboardModifiers modifiers = Int_to(Qt::KeyboardModifiers, sfp[4]);
+	initFlag(modifiers, Qt::KeyboardModifiers, sfp[4]);
 	KQContextMenuEvent *ret_v = new KQContextMenuEvent(reason, pos, globalPos, modifiers);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -44,7 +44,7 @@ KMETHOD QContextMenuEvent_globalPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QContextMenuEvent *  qp = RawPtr_to(QContextMenuEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint ret_v = qp->globalPos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -59,7 +59,7 @@ KMETHOD QContextMenuEvent_globalX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QContextMenuEvent *  qp = RawPtr_to(QContextMenuEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->globalX();
 		RETURNi_(ret_v);
 	} else {
@@ -72,7 +72,7 @@ KMETHOD QContextMenuEvent_globalY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QContextMenuEvent *  qp = RawPtr_to(QContextMenuEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->globalY();
 		RETURNi_(ret_v);
 	} else {
@@ -85,7 +85,7 @@ KMETHOD QContextMenuEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QContextMenuEvent *  qp = RawPtr_to(QContextMenuEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint ret_v = qp->pos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -100,7 +100,7 @@ KMETHOD QContextMenuEvent_reason(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QContextMenuEvent *  qp = RawPtr_to(QContextMenuEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QContextMenuEvent::Reason ret_v = qp->reason();
 		RETURNi_(ret_v);
 	} else {
@@ -113,7 +113,7 @@ KMETHOD QContextMenuEvent_x(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QContextMenuEvent *  qp = RawPtr_to(QContextMenuEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->x();
 		RETURNi_(ret_v);
 	} else {
@@ -126,7 +126,7 @@ KMETHOD QContextMenuEvent_y(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QContextMenuEvent *  qp = RawPtr_to(QContextMenuEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->y();
 		RETURNi_(ret_v);
 	} else {
@@ -185,9 +185,23 @@ bool DummyQContextMenuEvent::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
+void DummyQContextMenuEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQInputEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQContextMenuEvent::connection(QObject *o)
 {
+	QContextMenuEvent *p = dynamic_cast<QContextMenuEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQInputEvent::connection(o);
 }
 
@@ -195,7 +209,6 @@ KQContextMenuEvent::KQContextMenuEvent(QContextMenuEvent::Reason reason, const Q
 {
 	self = NULL;
 	dummy = new DummyQContextMenuEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QContextMenuEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -250,13 +263,9 @@ static void QContextMenuEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QContextMenuEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQContextMenuEvent *qp = (KQContextMenuEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -271,15 +280,6 @@ void KQContextMenuEvent::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQContextMenuEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QContextMenuEvent";
-	cdef->free = QContextMenuEvent_free;
-	cdef->reftrace = QContextMenuEvent_reftrace;
-	cdef->compareTo = QContextMenuEvent_compareTo;
-}
-
 static knh_IntData_t QContextMenuEventConstInt[] = {
 	{"Mouse", QContextMenuEvent::Mouse},
 	{"Keyboard", QContextMenuEvent::Keyboard},
@@ -290,4 +290,15 @@ static knh_IntData_t QContextMenuEventConstInt[] = {
 DEFAPI(void) constQContextMenuEvent(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QContextMenuEventConstInt);
 }
+
+
+DEFAPI(void) defQContextMenuEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QContextMenuEvent";
+	cdef->free = QContextMenuEvent_free;
+	cdef->reftrace = QContextMenuEvent_reftrace;
+	cdef->compareTo = QContextMenuEvent_compareTo;
+}
+
 

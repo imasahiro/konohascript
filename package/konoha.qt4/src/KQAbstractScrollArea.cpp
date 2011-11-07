@@ -3,7 +3,7 @@ KMETHOD QAbstractScrollArea_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QAbstractScrollArea_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -29,14 +29,14 @@ KMETHOD QAbstractScrollArea_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //
-//void QAbstractScrollArea.addScrollBarWidget(QWidget widget, int alignment);
+//void QAbstractScrollArea.addScrollBarWidget(QWidget widget, QtAlignment alignment);
 KMETHOD QAbstractScrollArea_addScrollBarWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[2]);
+		initFlag(alignment, Qt::Alignment, sfp[2]);
 		qp->addScrollBarWidget(widget, alignment);
 	}
 	RETURNvoid_();
@@ -47,7 +47,7 @@ KMETHOD QAbstractScrollArea_getCornerWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->cornerWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -61,7 +61,7 @@ KMETHOD QAbstractScrollArea_getHorizontalScrollBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QScrollBar* ret_v = qp->horizontalScrollBar();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QScrollBar*)ret_v, NULL);
 		RETURN_(rptr);
@@ -75,7 +75,7 @@ KMETHOD QAbstractScrollArea_getHorizontalScrollBarPolicy(CTX ctx, knh_sfp_t *sfp
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ScrollBarPolicy ret_v = qp->horizontalScrollBarPolicy();
 		RETURNi_(ret_v);
 	} else {
@@ -88,7 +88,7 @@ KMETHOD QAbstractScrollArea_maximumViewportSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->maximumViewportSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -98,13 +98,13 @@ KMETHOD QAbstractScrollArea_maximumViewportSize(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QWidgetList QAbstractScrollArea.scrollBarWidgets(int alignment);
+//QWidgetList QAbstractScrollArea.scrollBarWidgets(QtAlignment alignment);
 KMETHOD QAbstractScrollArea_scrollBarWidgets(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(alignment, Qt::Alignment, sfp[1]);
 		QWidgetList ret_v = qp->scrollBarWidgets(alignment);
 		QWidgetList *ret_v_ = new QWidgetList(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -119,7 +119,7 @@ KMETHOD QAbstractScrollArea_setCornerWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->setCornerWidget(widget);
 	}
@@ -131,7 +131,7 @@ KMETHOD QAbstractScrollArea_setHorizontalScrollBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QScrollBar*  scrollBar = RawPtr_to(QScrollBar*, sfp[1]);
 		qp->setHorizontalScrollBar(scrollBar);
 	}
@@ -143,7 +143,7 @@ KMETHOD QAbstractScrollArea_setHorizontalScrollBarPolicy(CTX ctx, knh_sfp_t *sfp
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ScrollBarPolicy arg0 = Int_to(Qt::ScrollBarPolicy, sfp[1]);
 		qp->setHorizontalScrollBarPolicy(arg0);
 	}
@@ -155,7 +155,7 @@ KMETHOD QAbstractScrollArea_setVerticalScrollBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QScrollBar*  scrollBar = RawPtr_to(QScrollBar*, sfp[1]);
 		qp->setVerticalScrollBar(scrollBar);
 	}
@@ -167,7 +167,7 @@ KMETHOD QAbstractScrollArea_setVerticalScrollBarPolicy(CTX ctx, knh_sfp_t *sfp _
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ScrollBarPolicy arg0 = Int_to(Qt::ScrollBarPolicy, sfp[1]);
 		qp->setVerticalScrollBarPolicy(arg0);
 	}
@@ -179,7 +179,7 @@ KMETHOD QAbstractScrollArea_setViewport(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->setViewport(widget);
 	}
@@ -191,7 +191,7 @@ KMETHOD QAbstractScrollArea_getVerticalScrollBar(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QScrollBar* ret_v = qp->verticalScrollBar();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QScrollBar*)ret_v, NULL);
 		RETURN_(rptr);
@@ -205,7 +205,7 @@ KMETHOD QAbstractScrollArea_getVerticalScrollBarPolicy(CTX ctx, knh_sfp_t *sfp _
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::ScrollBarPolicy ret_v = qp->verticalScrollBarPolicy();
 		RETURNi_(ret_v);
 	} else {
@@ -218,7 +218,7 @@ KMETHOD QAbstractScrollArea_getViewport(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAbstractScrollArea *  qp = RawPtr_to(QAbstractScrollArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->viewport();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -297,9 +297,24 @@ bool DummyQAbstractScrollArea::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
+void DummyQAbstractScrollArea::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, viewport_event_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQFrame::reftrace(ctx, p, tail_);
+}
 
 void DummyQAbstractScrollArea::connection(QObject *o)
 {
+	QAbstractScrollArea *p = dynamic_cast<QAbstractScrollArea*>(o);
+	if (p != NULL) {
+	}
 	DummyQFrame::connection(o);
 }
 
@@ -362,17 +377,9 @@ static void QAbstractScrollArea_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAbstractScrollArea_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAbstractScrollArea *qp = (KQAbstractScrollArea *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->viewport_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->viewport_event_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -395,6 +402,8 @@ bool KQAbstractScrollArea::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQAbstractScrollArea(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

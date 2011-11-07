@@ -3,7 +3,7 @@ KMETHOD QGraphicsWidget_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->boundingRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QGraphicsWidget_getContentsMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal*  left = RawPtr_to(qreal*, sfp[1]);
 		qreal*  top = RawPtr_to(qreal*, sfp[2]);
 		qreal*  right = RawPtr_to(qreal*, sfp[3]);
@@ -33,7 +33,7 @@ KMETHOD QGraphicsWidget_paint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
@@ -47,7 +47,7 @@ KMETHOD QGraphicsWidget_setGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		qp->setGeometry(rect);
 	}
@@ -59,7 +59,7 @@ KMETHOD QGraphicsWidget_shape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainterPath ret_v = qp->shape();
 		QPainterPath *ret_v_ = new QPainterPath(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -74,7 +74,7 @@ KMETHOD QGraphicsWidget_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -82,12 +82,12 @@ KMETHOD QGraphicsWidget_type(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QGraphicsWidget QGraphicsWidget.new(QGraphicsItem parent, int wFlags);
+//QGraphicsWidget QGraphicsWidget.new(QGraphicsItem parent, QtWindowFlags wFlags);
 KMETHOD QGraphicsWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem*  parent = RawPtr_to(QGraphicsItem*, sfp[1]);
-	Qt::WindowFlags wFlags = Int_to(Qt::WindowFlags, sfp[2]);
+	initFlag(wFlags, Qt::WindowFlags, sfp[2]);
 	KQGraphicsWidget *ret_v = new KQGraphicsWidget(parent, wFlags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -99,8 +99,8 @@ KMETHOD QGraphicsWidget_actions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
-		QList<QAction*>ret_v = qp->actions();
+	if (qp) {
+		QList<QAction*> ret_v = qp->actions();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QAction"));
@@ -115,24 +115,12 @@ KMETHOD QGraphicsWidget_actions(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 	
 
-////void QGraphicsWidget.addAction(QAction action);
-KMETHOD QGraphicsWidget_addAction(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
-		QAction*  action = RawPtr_to(QAction*, sfp[1]);
-		qp->addAction(action);
-	}
-	RETURNvoid_();
-}
-
-////void QGraphicsWidget.addActions(Array<QAction> actions);
+//void QGraphicsWidget.addActions(Array<QAction> actions);
 KMETHOD QGraphicsWidget_addActions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<QAction*> actions;
@@ -150,7 +138,7 @@ KMETHOD QGraphicsWidget_adjustSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->adjustSize();
 	}
 	RETURNvoid_();
@@ -161,7 +149,7 @@ KMETHOD QGraphicsWidget_getAutoFillBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->autoFillBackground();
 		RETURNb_(ret_v);
 	} else {
@@ -174,7 +162,7 @@ KMETHOD QGraphicsWidget_getFocusPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::FocusPolicy ret_v = qp->focusPolicy();
 		RETURNi_(ret_v);
 	} else {
@@ -187,7 +175,7 @@ KMETHOD QGraphicsWidget_focusWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsWidget* ret_v = qp->focusWidget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -201,7 +189,7 @@ KMETHOD QGraphicsWidget_getFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFont ret_v = qp->font();
 		QFont *ret_v_ = new QFont(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -216,7 +204,7 @@ KMETHOD QGraphicsWidget_getWindowFrameMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal*  left = RawPtr_to(qreal*, sfp[1]);
 		qreal*  top = RawPtr_to(qreal*, sfp[2]);
 		qreal*  right = RawPtr_to(qreal*, sfp[3]);
@@ -231,7 +219,7 @@ KMETHOD QGraphicsWidget_grabShortcut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QKeySequence  sequence = *RawPtr_to(const QKeySequence *, sfp[1]);
 		Qt::ShortcutContext context = Int_to(Qt::ShortcutContext, sfp[2]);
 		int ret_v = qp->grabShortcut(sequence, context);
@@ -246,7 +234,7 @@ KMETHOD QGraphicsWidget_insertAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction*  before = RawPtr_to(QAction*, sfp[1]);
 		QAction*  action = RawPtr_to(QAction*, sfp[2]);
 		qp->insertAction(before, action);
@@ -259,7 +247,7 @@ KMETHOD QGraphicsWidget_insertActions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction*  before = RawPtr_to(QAction*, sfp[1]);
 		knh_Array_t *a = sfp[2].a;
 		int asize = knh_Array_size(a);
@@ -278,7 +266,7 @@ KMETHOD QGraphicsWidget_isActiveWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isActiveWindow();
 		RETURNb_(ret_v);
 	} else {
@@ -291,7 +279,7 @@ KMETHOD QGraphicsWidget_getLayout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsLayout* ret_v = qp->layout();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsLayout*)ret_v, NULL);
 		RETURN_(rptr);
@@ -305,7 +293,7 @@ KMETHOD QGraphicsWidget_getLayoutDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::LayoutDirection ret_v = qp->layoutDirection();
 		RETURNi_(ret_v);
 	} else {
@@ -318,7 +306,7 @@ KMETHOD QGraphicsWidget_paintWindowFrame(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
@@ -332,7 +320,7 @@ KMETHOD QGraphicsWidget_getPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPalette ret_v = qp->palette();
 		QPalette *ret_v_ = new QPalette(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -347,7 +335,7 @@ KMETHOD QGraphicsWidget_rect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->rect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -362,7 +350,7 @@ KMETHOD QGraphicsWidget_releaseShortcut(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int id = Int_to(int, sfp[1]);
 		qp->releaseShortcut(id);
 	}
@@ -374,7 +362,7 @@ KMETHOD QGraphicsWidget_removeAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAction*  action = RawPtr_to(QAction*, sfp[1]);
 		qp->removeAction(action);
 	}
@@ -386,7 +374,7 @@ KMETHOD QGraphicsWidget_resize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSizeF  size = *RawPtr_to(const QSizeF *, sfp[1]);
 		qp->resize(size);
 	}
@@ -399,7 +387,7 @@ KMETHOD QGraphicsWidget_resize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal w = Float_to(qreal, sfp[1]);
 		qreal h = Float_to(qreal, sfp[2]);
 		qp->resize(w, h);
@@ -412,7 +400,7 @@ KMETHOD QGraphicsWidget_setAttribute(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::WidgetAttribute attribute = Int_to(Qt::WidgetAttribute, sfp[1]);
 		bool on = Boolean_to(bool, sfp[2]);
 		qp->setAttribute(attribute, on);
@@ -425,7 +413,7 @@ KMETHOD QGraphicsWidget_setAutoFillBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setAutoFillBackground(enabled);
 	}
@@ -437,7 +425,7 @@ KMETHOD QGraphicsWidget_setContentsMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal left = Float_to(qreal, sfp[1]);
 		qreal top = Float_to(qreal, sfp[2]);
 		qreal right = Float_to(qreal, sfp[3]);
@@ -452,7 +440,7 @@ KMETHOD QGraphicsWidget_setFocusPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::FocusPolicy policy = Int_to(Qt::FocusPolicy, sfp[1]);
 		qp->setFocusPolicy(policy);
 	}
@@ -464,7 +452,7 @@ KMETHOD QGraphicsWidget_setFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont  font = *RawPtr_to(const QFont *, sfp[1]);
 		qp->setFont(font);
 	}
@@ -477,7 +465,7 @@ KMETHOD QGraphicsWidget_setGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal x = Float_to(qreal, sfp[1]);
 		qreal y = Float_to(qreal, sfp[2]);
 		qreal w = Float_to(qreal, sfp[3]);
@@ -492,7 +480,7 @@ KMETHOD QGraphicsWidget_setLayout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGraphicsLayout*  layout = RawPtr_to(QGraphicsLayout*, sfp[1]);
 		qp->setLayout(layout);
 	}
@@ -504,7 +492,7 @@ KMETHOD QGraphicsWidget_setLayoutDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::LayoutDirection direction = Int_to(Qt::LayoutDirection, sfp[1]);
 		qp->setLayoutDirection(direction);
 	}
@@ -516,7 +504,7 @@ KMETHOD QGraphicsWidget_setPalette(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPalette  palette = *RawPtr_to(const QPalette *, sfp[1]);
 		qp->setPalette(palette);
 	}
@@ -528,7 +516,7 @@ KMETHOD QGraphicsWidget_setShortcutAutoRepeat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int id = Int_to(int, sfp[1]);
 		bool enabled = Boolean_to(bool, sfp[2]);
 		qp->setShortcutAutoRepeat(id, enabled);
@@ -541,7 +529,7 @@ KMETHOD QGraphicsWidget_setShortcutEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int id = Int_to(int, sfp[1]);
 		bool enabled = Boolean_to(bool, sfp[2]);
 		qp->setShortcutEnabled(id, enabled);
@@ -554,20 +542,20 @@ KMETHOD QGraphicsWidget_setStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle*  style = RawPtr_to(QStyle*, sfp[1]);
 		qp->setStyle(style);
 	}
 	RETURNvoid_();
 }
 
-//void QGraphicsWidget.setWindowFlags(int wFlags);
+//void QGraphicsWidget.setWindowFlags(QtWindowFlags wFlags);
 KMETHOD QGraphicsWidget_setWindowFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
-		Qt::WindowFlags wFlags = Int_to(Qt::WindowFlags, sfp[1]);
+	if (qp) {
+		initFlag(wFlags, Qt::WindowFlags, sfp[1]);
 		qp->setWindowFlags(wFlags);
 	}
 	RETURNvoid_();
@@ -578,7 +566,7 @@ KMETHOD QGraphicsWidget_setWindowFrameMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal left = Float_to(qreal, sfp[1]);
 		qreal top = Float_to(qreal, sfp[2]);
 		qreal right = Float_to(qreal, sfp[3]);
@@ -593,7 +581,7 @@ KMETHOD QGraphicsWidget_setWindowTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString title = String_to(const QString, sfp[1]);
 		qp->setWindowTitle(title);
 	}
@@ -605,7 +593,7 @@ KMETHOD QGraphicsWidget_size(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSizeF ret_v = qp->size();
 		QSizeF *ret_v_ = new QSizeF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -620,7 +608,7 @@ KMETHOD QGraphicsWidget_getStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QStyle* ret_v = qp->style();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QStyle*)ret_v, NULL);
 		RETURN_(rptr);
@@ -634,7 +622,7 @@ KMETHOD QGraphicsWidget_testAttribute(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::WidgetAttribute attribute = Int_to(Qt::WidgetAttribute, sfp[1]);
 		bool ret_v = qp->testAttribute(attribute);
 		RETURNb_(ret_v);
@@ -648,7 +636,7 @@ KMETHOD QGraphicsWidget_unsetLayoutDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->unsetLayoutDirection();
 	}
 	RETURNvoid_();
@@ -659,22 +647,24 @@ KMETHOD QGraphicsWidget_unsetWindowFrameMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->unsetWindowFrameMargins();
 	}
 	RETURNvoid_();
 }
 
-//int QGraphicsWidget.getWindowFlags();
+//QtWindowFlags QGraphicsWidget.getWindowFlags();
 KMETHOD QGraphicsWidget_getWindowFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::WindowFlags ret_v = qp->windowFlags();
-		RETURNi_(ret_v);
+		Qt::WindowFlags *ret_v_ = new Qt::WindowFlags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -683,7 +673,7 @@ KMETHOD QGraphicsWidget_windowFrameGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->windowFrameGeometry();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -698,7 +688,7 @@ KMETHOD QGraphicsWidget_windowFrameRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->windowFrameRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -713,7 +703,7 @@ KMETHOD QGraphicsWidget_getWindowTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->windowTitle();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -727,7 +717,7 @@ KMETHOD QGraphicsWidget_windowType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::WindowType ret_v = qp->windowType();
 		RETURNi_(ret_v);
 	} else {
@@ -739,11 +729,10 @@ KMETHOD QGraphicsWidget_windowType(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QGraphicsWidget_setTabOrder(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QGraphicsWidget*  first = RawPtr_to(QGraphicsWidget*, sfp[1]);
 		QGraphicsWidget*  second = RawPtr_to(QGraphicsWidget*, sfp[2]);
-		qp->setTabOrder(first, second);
+		QGraphicsWidget::setTabOrder(first, second);
 	}
 	RETURNvoid_();
 }
@@ -753,7 +742,7 @@ KMETHOD QGraphicsWidget_close(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsWidget *  qp = RawPtr_to(QGraphicsWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->close();
 		RETURNb_(ret_v);
 	} else {
@@ -1096,10 +1085,38 @@ bool DummyQGraphicsWidget::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQGraphicsWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 13;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, change_event_func);
+	KNH_ADDNNREF(ctx, close_event_func);
+	KNH_ADDNNREF(ctx, grab_keyboard_event_func);
+	KNH_ADDNNREF(ctx, grab_mouse_event_func);
+	KNH_ADDNNREF(ctx, hide_event_func);
+	KNH_ADDNNREF(ctx, move_event_func);
+	KNH_ADDNNREF(ctx, polish_event_func);
+	KNH_ADDNNREF(ctx, resize_event_func);
+	KNH_ADDNNREF(ctx, show_event_func);
+	KNH_ADDNNREF(ctx, ungrab_keyboard_event_func);
+	KNH_ADDNNREF(ctx, ungrab_mouse_event_func);
+	KNH_ADDNNREF(ctx, window_frame_event_func);
+	KNH_ADDNNREF(ctx, geometry_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsObject::reftrace(ctx, p, tail_);
+	DummyQGraphicsLayoutItem::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsWidget::connection(QObject *o)
 {
-	connect(o, SIGNAL(geometryChanged()), this, SLOT(geometryChangedSlot()));
+	QGraphicsWidget *p = dynamic_cast<QGraphicsWidget*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(geometryChanged()), this, SLOT(geometryChangedSlot()));
+	}
 	DummyQGraphicsObject::connection(o);
 	DummyQGraphicsLayoutItem::connection(o);
 }
@@ -1163,65 +1180,9 @@ static void QGraphicsWidget_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 13;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsWidget *qp = (KQGraphicsWidget *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->change_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->change_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->close_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->close_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->grab_keyboard_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->grab_keyboard_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->grab_mouse_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->grab_mouse_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->hide_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->hide_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->move_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->move_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->polish_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->polish_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->resize_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->resize_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->show_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->show_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->ungrab_keyboard_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->ungrab_keyboard_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->ungrab_mouse_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->ungrab_mouse_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->window_frame_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->window_frame_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->geometry_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->geometry_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -1244,6 +1205,8 @@ bool KQGraphicsWidget::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQGraphicsWidget(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

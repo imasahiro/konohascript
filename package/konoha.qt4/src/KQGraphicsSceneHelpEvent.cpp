@@ -3,7 +3,7 @@ KMETHOD QGraphicsSceneHelpEvent_scenePos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneHelpEvent *  qp = RawPtr_to(QGraphicsSceneHelpEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->scenePos();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QGraphicsSceneHelpEvent_screenPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsSceneHelpEvent *  qp = RawPtr_to(QGraphicsSceneHelpEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPoint ret_v = qp->screenPos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -79,17 +79,24 @@ bool DummyQGraphicsSceneHelpEvent::signalConnect(knh_Func_t *callback_func, stri
 	}
 }
 
+void DummyQGraphicsSceneHelpEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsSceneEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsSceneHelpEvent::connection(QObject *o)
 {
+	QGraphicsSceneHelpEvent *p = dynamic_cast<QGraphicsSceneHelpEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQGraphicsSceneEvent::connection(o);
-}
-
-KQGraphicsSceneHelpEvent::KQGraphicsSceneHelpEvent() : QGraphicsSceneHelpEvent()
-{
-	self = NULL;
-	dummy = new DummyQGraphicsSceneHelpEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsSceneHelpEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -144,13 +151,9 @@ static void QGraphicsSceneHelpEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsSceneHelpEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneHelpEvent *qp = (KQGraphicsSceneHelpEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -164,6 +167,8 @@ void KQGraphicsSceneHelpEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGraphicsSceneHelpEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

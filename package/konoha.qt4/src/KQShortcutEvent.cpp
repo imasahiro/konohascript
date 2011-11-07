@@ -16,7 +16,7 @@ KMETHOD QShortcutEvent_isAmbiguous(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QShortcutEvent *  qp = RawPtr_to(QShortcutEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isAmbiguous();
 		RETURNb_(ret_v);
 	} else {
@@ -29,7 +29,7 @@ KMETHOD QShortcutEvent_key(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QShortcutEvent *  qp = RawPtr_to(QShortcutEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QKeySequence ret_v = qp->key();
 		QKeySequence *ret_v_ = new QKeySequence(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -44,7 +44,7 @@ KMETHOD QShortcutEvent_shortcutId(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QShortcutEvent *  qp = RawPtr_to(QShortcutEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->shortcutId();
 		RETURNi_(ret_v);
 	} else {
@@ -103,9 +103,23 @@ bool DummyQShortcutEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQShortcutEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQShortcutEvent::connection(QObject *o)
 {
+	QShortcutEvent *p = dynamic_cast<QShortcutEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -113,7 +127,6 @@ KQShortcutEvent::KQShortcutEvent(const QKeySequence key, int id, bool ambiguous)
 {
 	self = NULL;
 	dummy = new DummyQShortcutEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QShortcutEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -168,13 +181,9 @@ static void QShortcutEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QShortcutEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQShortcutEvent *qp = (KQShortcutEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -188,6 +197,8 @@ void KQShortcutEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQShortcutEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

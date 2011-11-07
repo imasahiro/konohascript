@@ -63,7 +63,7 @@ KMETHOD QByteArray_append(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  ba = *RawPtr_to(const QByteArray *, sfp[1]);
 		QByteArray ret_v = qp->append(ba);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -80,7 +80,7 @@ KMETHOD QByteArray_append(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString str = String_to(const QString, sfp[1]);
 		QByteArray ret_v = qp->append(str);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -97,7 +97,7 @@ KMETHOD QByteArray_append(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  str = RawPtr_to(const char*, sfp[1]);
 		QByteArray ret_v = qp->append(str);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -114,7 +114,7 @@ KMETHOD QByteArray_append(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  str = RawPtr_to(const char*, sfp[1]);
 		int len = Int_to(int, sfp[2]);
 		QByteArray ret_v = qp->append(str, len);
@@ -132,7 +132,7 @@ KMETHOD QByteArray_append(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  ch = *RawPtr_to(char *, sfp[1]);
 		QByteArray ret_v = qp->append(ch);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -148,7 +148,7 @@ KMETHOD QByteArray_at(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		char ret_v = qp->at(i);
 		char *ret_v_ = new char(ret_v);
@@ -164,7 +164,7 @@ KMETHOD QByteArray_capacity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->capacity();
 		RETURNi_(ret_v);
 	} else {
@@ -177,7 +177,7 @@ KMETHOD QByteArray_chop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int n = Int_to(int, sfp[1]);
 		qp->chop(n);
 	}
@@ -189,7 +189,7 @@ KMETHOD QByteArray_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -200,7 +200,7 @@ KMETHOD QByteArray_constData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char* ret_v = qp->constData();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (char*)ret_v, NULL);
 		RETURN_(rptr);
@@ -214,7 +214,7 @@ KMETHOD QByteArray_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  ba = *RawPtr_to(const QByteArray *, sfp[1]);
 		bool ret_v = qp->contains(ba);
 		RETURNb_(ret_v);
@@ -229,7 +229,7 @@ KMETHOD QByteArray_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  str = RawPtr_to(const char*, sfp[1]);
 		bool ret_v = qp->contains(str);
 		RETURNb_(ret_v);
@@ -244,7 +244,7 @@ KMETHOD QByteArray_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  ch = *RawPtr_to(char *, sfp[1]);
 		bool ret_v = qp->contains(ch);
 		RETURNb_(ret_v);
@@ -258,7 +258,7 @@ KMETHOD QByteArray_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  ba = *RawPtr_to(const QByteArray *, sfp[1]);
 		int ret_v = qp->count(ba);
 		RETURNi_(ret_v);
@@ -273,7 +273,7 @@ KMETHOD QByteArray_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  str = RawPtr_to(const char*, sfp[1]);
 		int ret_v = qp->count(str);
 		RETURNi_(ret_v);
@@ -288,7 +288,7 @@ KMETHOD QByteArray_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  ch = *RawPtr_to(char *, sfp[1]);
 		int ret_v = qp->count(ch);
 		RETURNi_(ret_v);
@@ -303,7 +303,7 @@ KMETHOD QByteArray_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->count();
 		RETURNi_(ret_v);
 	} else {
@@ -316,7 +316,7 @@ KMETHOD QByteArray_data(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char* ret_v = qp->data();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (char*)ret_v, NULL);
 		RETURN_(rptr);
@@ -331,7 +331,7 @@ KMETHOD QByteArray_data(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char* ret_v = qp->data();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (char*)ret_v, NULL);
 		RETURN_(rptr);
@@ -345,7 +345,7 @@ KMETHOD QByteArray_endsWith(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  ba = *RawPtr_to(const QByteArray *, sfp[1]);
 		bool ret_v = qp->endsWith(ba);
 		RETURNb_(ret_v);
@@ -360,7 +360,7 @@ KMETHOD QByteArray_endsWith(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  str = RawPtr_to(const char*, sfp[1]);
 		bool ret_v = qp->endsWith(str);
 		RETURNb_(ret_v);
@@ -375,7 +375,7 @@ KMETHOD QByteArray_endsWith(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  ch = *RawPtr_to(char *, sfp[1]);
 		bool ret_v = qp->endsWith(ch);
 		RETURNb_(ret_v);
@@ -389,7 +389,7 @@ KMETHOD QByteArray_fill(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  ch = *RawPtr_to(char *, sfp[1]);
 		int size = Int_to(int, sfp[2]);
 		QByteArray ret_v = qp->fill(ch, size);
@@ -406,7 +406,7 @@ KMETHOD QByteArray_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  ba = *RawPtr_to(const QByteArray *, sfp[1]);
 		int from = Int_to(int, sfp[2]);
 		int ret_v = qp->indexOf(ba, from);
@@ -422,7 +422,7 @@ KMETHOD QByteArray_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString str = String_to(const QString, sfp[1]);
 		int from = Int_to(int, sfp[2]);
 		int ret_v = qp->indexOf(str, from);
@@ -438,7 +438,7 @@ KMETHOD QByteArray_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  str = RawPtr_to(const char*, sfp[1]);
 		int from = Int_to(int, sfp[2]);
 		int ret_v = qp->indexOf(str, from);
@@ -454,7 +454,7 @@ KMETHOD QByteArray_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  ch = *RawPtr_to(char *, sfp[1]);
 		int from = Int_to(int, sfp[2]);
 		int ret_v = qp->indexOf(ch, from);
@@ -469,7 +469,7 @@ KMETHOD QByteArray_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		const QByteArray  ba = *RawPtr_to(const QByteArray *, sfp[2]);
 		QByteArray ret_v = qp->insert(i, ba);
@@ -487,7 +487,7 @@ KMETHOD QByteArray_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		const QString str = String_to(const QString, sfp[2]);
 		QByteArray ret_v = qp->insert(i, str);
@@ -505,7 +505,7 @@ KMETHOD QByteArray_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		const char*  str = RawPtr_to(const char*, sfp[2]);
 		QByteArray ret_v = qp->insert(i, str);
@@ -523,7 +523,7 @@ KMETHOD QByteArray_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		const char*  str = RawPtr_to(const char*, sfp[2]);
 		int len = Int_to(int, sfp[3]);
@@ -542,7 +542,7 @@ KMETHOD QByteArray_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		char  ch = *RawPtr_to(char *, sfp[2]);
 		QByteArray ret_v = qp->insert(i, ch);
@@ -559,21 +559,8 @@ KMETHOD QByteArray_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QByteArray.isNull();
-KMETHOD QByteArray_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -585,7 +572,7 @@ KMETHOD QByteArray_lastIndexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  ba = *RawPtr_to(const QByteArray *, sfp[1]);
 		int from = Int_to(int, sfp[2]);
 		int ret_v = qp->lastIndexOf(ba, from);
@@ -601,7 +588,7 @@ KMETHOD QByteArray_lastIndexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString str = String_to(const QString, sfp[1]);
 		int from = Int_to(int, sfp[2]);
 		int ret_v = qp->lastIndexOf(str, from);
@@ -617,7 +604,7 @@ KMETHOD QByteArray_lastIndexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  str = RawPtr_to(const char*, sfp[1]);
 		int from = Int_to(int, sfp[2]);
 		int ret_v = qp->lastIndexOf(str, from);
@@ -633,7 +620,7 @@ KMETHOD QByteArray_lastIndexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  ch = *RawPtr_to(char *, sfp[1]);
 		int from = Int_to(int, sfp[2]);
 		int ret_v = qp->lastIndexOf(ch, from);
@@ -648,7 +635,7 @@ KMETHOD QByteArray_left(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int len = Int_to(int, sfp[1]);
 		QByteArray ret_v = qp->left(len);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -664,7 +651,7 @@ KMETHOD QByteArray_leftJustified(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int width = Int_to(int, sfp[1]);
 		char  fill = *RawPtr_to(char *, sfp[2]);
 		bool truncate = Boolean_to(bool, sfp[3]);
@@ -682,7 +669,7 @@ KMETHOD QByteArray_length(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->length();
 		RETURNi_(ret_v);
 	} else {
@@ -695,7 +682,7 @@ KMETHOD QByteArray_mid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int pos = Int_to(int, sfp[1]);
 		int len = Int_to(int, sfp[2]);
 		QByteArray ret_v = qp->mid(pos, len);
@@ -712,7 +699,7 @@ KMETHOD QByteArray_prepend(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  ba = *RawPtr_to(const QByteArray *, sfp[1]);
 		QByteArray ret_v = qp->prepend(ba);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -729,7 +716,7 @@ KMETHOD QByteArray_prepend(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  str = RawPtr_to(const char*, sfp[1]);
 		QByteArray ret_v = qp->prepend(str);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -746,7 +733,7 @@ KMETHOD QByteArray_prepend(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  str = RawPtr_to(const char*, sfp[1]);
 		int len = Int_to(int, sfp[2]);
 		QByteArray ret_v = qp->prepend(str, len);
@@ -764,7 +751,7 @@ KMETHOD QByteArray_prepend(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  ch = *RawPtr_to(char *, sfp[1]);
 		QByteArray ret_v = qp->prepend(ch);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -780,7 +767,7 @@ KMETHOD QByteArray_push_back(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  other = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->push_back(other);
 	}
@@ -793,7 +780,7 @@ KMETHOD QByteArray_push_back(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  str = RawPtr_to(const char*, sfp[1]);
 		qp->push_back(str);
 	}
@@ -806,7 +793,7 @@ KMETHOD QByteArray_push_back(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  ch = *RawPtr_to(char *, sfp[1]);
 		qp->push_back(ch);
 	}
@@ -818,7 +805,7 @@ KMETHOD QByteArray_push_front(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  other = *RawPtr_to(const QByteArray *, sfp[1]);
 		qp->push_front(other);
 	}
@@ -831,7 +818,7 @@ KMETHOD QByteArray_push_front(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  str = RawPtr_to(const char*, sfp[1]);
 		qp->push_front(str);
 	}
@@ -844,7 +831,7 @@ KMETHOD QByteArray_push_front(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  ch = *RawPtr_to(char *, sfp[1]);
 		qp->push_front(ch);
 	}
@@ -856,7 +843,7 @@ KMETHOD QByteArray_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int pos = Int_to(int, sfp[1]);
 		int len = Int_to(int, sfp[2]);
 		QByteArray ret_v = qp->remove(pos, len);
@@ -873,7 +860,7 @@ KMETHOD QByteArray_repeated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int times = Int_to(int, sfp[1]);
 		QByteArray ret_v = qp->repeated(times);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -889,7 +876,7 @@ KMETHOD QByteArray_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int pos = Int_to(int, sfp[1]);
 		int len = Int_to(int, sfp[2]);
 		const QByteArray  after = *RawPtr_to(const QByteArray *, sfp[3]);
@@ -908,7 +895,7 @@ KMETHOD QByteArray_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int pos = Int_to(int, sfp[1]);
 		int len = Int_to(int, sfp[2]);
 		const char*  after = RawPtr_to(const char*, sfp[3]);
@@ -927,7 +914,7 @@ KMETHOD QByteArray_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int pos = Int_to(int, sfp[1]);
 		int len = Int_to(int, sfp[2]);
 		const char*  after = RawPtr_to(const char*, sfp[3]);
@@ -947,7 +934,7 @@ KMETHOD QByteArray_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  before = *RawPtr_to(const QByteArray *, sfp[1]);
 		const QByteArray  after = *RawPtr_to(const QByteArray *, sfp[2]);
 		QByteArray ret_v = qp->replace(before, after);
@@ -965,7 +952,7 @@ KMETHOD QByteArray_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  before = RawPtr_to(const char*, sfp[1]);
 		const QByteArray  after = *RawPtr_to(const QByteArray *, sfp[2]);
 		QByteArray ret_v = qp->replace(before, after);
@@ -983,7 +970,7 @@ KMETHOD QByteArray_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  before = RawPtr_to(const char*, sfp[1]);
 		int bsize = Int_to(int, sfp[2]);
 		const char*  after = RawPtr_to(const char*, sfp[3]);
@@ -1003,7 +990,7 @@ KMETHOD QByteArray_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  before = *RawPtr_to(const QByteArray *, sfp[1]);
 		const char*  after = RawPtr_to(const char*, sfp[2]);
 		QByteArray ret_v = qp->replace(before, after);
@@ -1021,7 +1008,7 @@ KMETHOD QByteArray_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString before = String_to(const QString, sfp[1]);
 		const QByteArray  after = *RawPtr_to(const QByteArray *, sfp[2]);
 		QByteArray ret_v = qp->replace(before, after);
@@ -1039,7 +1026,7 @@ KMETHOD QByteArray_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString before = String_to(const QString, sfp[1]);
 		const char*  after = RawPtr_to(const char*, sfp[2]);
 		QByteArray ret_v = qp->replace(before, after);
@@ -1057,7 +1044,7 @@ KMETHOD QByteArray_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  before = RawPtr_to(const char*, sfp[1]);
 		const char*  after = RawPtr_to(const char*, sfp[2]);
 		QByteArray ret_v = qp->replace(before, after);
@@ -1075,7 +1062,7 @@ KMETHOD QByteArray_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  before = *RawPtr_to(char *, sfp[1]);
 		const QByteArray  after = *RawPtr_to(const QByteArray *, sfp[2]);
 		QByteArray ret_v = qp->replace(before, after);
@@ -1093,7 +1080,7 @@ KMETHOD QByteArray_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  before = *RawPtr_to(char *, sfp[1]);
 		const QString after = String_to(const QString, sfp[2]);
 		QByteArray ret_v = qp->replace(before, after);
@@ -1111,7 +1098,7 @@ KMETHOD QByteArray_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  before = *RawPtr_to(char *, sfp[1]);
 		const char*  after = RawPtr_to(const char*, sfp[2]);
 		QByteArray ret_v = qp->replace(before, after);
@@ -1129,7 +1116,7 @@ KMETHOD QByteArray_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  before = *RawPtr_to(char *, sfp[1]);
 		char  after = *RawPtr_to(char *, sfp[2]);
 		QByteArray ret_v = qp->replace(before, after);
@@ -1146,7 +1133,7 @@ KMETHOD QByteArray_reserve(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int size = Int_to(int, sfp[1]);
 		qp->reserve(size);
 	}
@@ -1158,7 +1145,7 @@ KMETHOD QByteArray_resize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int size = Int_to(int, sfp[1]);
 		qp->resize(size);
 	}
@@ -1170,7 +1157,7 @@ KMETHOD QByteArray_right(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int len = Int_to(int, sfp[1]);
 		QByteArray ret_v = qp->right(len);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -1186,7 +1173,7 @@ KMETHOD QByteArray_rightJustified(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int width = Int_to(int, sfp[1]);
 		char  fill = *RawPtr_to(char *, sfp[2]);
 		bool truncate = Boolean_to(bool, sfp[3]);
@@ -1204,7 +1191,7 @@ KMETHOD QByteArray_setNum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int n = Int_to(int, sfp[1]);
 		int base = Int_to(int, sfp[2]);
 		QByteArray ret_v = qp->setNum(n, base);
@@ -1222,7 +1209,7 @@ KMETHOD QByteArray_setNum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uint  n = *RawPtr_to(uint *, sfp[1]);
 		int base = Int_to(int, sfp[2]);
 		QByteArray ret_v = qp->setNum(n, base);
@@ -1240,7 +1227,7 @@ KMETHOD QByteArray_setNum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		short  n = *RawPtr_to(short *, sfp[1]);
 		int base = Int_to(int, sfp[2]);
 		QByteArray ret_v = qp->setNum(n, base);
@@ -1258,7 +1245,7 @@ KMETHOD QByteArray_setNum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		ushort  n = *RawPtr_to(ushort *, sfp[1]);
 		int base = Int_to(int, sfp[2]);
 		QByteArray ret_v = qp->setNum(n, base);
@@ -1276,7 +1263,7 @@ KMETHOD QByteArray_setNum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qlonglong  n = *RawPtr_to(qlonglong *, sfp[1]);
 		int base = Int_to(int, sfp[2]);
 		QByteArray ret_v = qp->setNum(n, base);
@@ -1294,7 +1281,7 @@ KMETHOD QByteArray_setNum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qulonglong  n = *RawPtr_to(qulonglong *, sfp[1]);
 		int base = Int_to(int, sfp[2]);
 		QByteArray ret_v = qp->setNum(n, base);
@@ -1312,7 +1299,7 @@ KMETHOD QByteArray_setNum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		double  n = *RawPtr_to(double *, sfp[1]);
 		char  f = *RawPtr_to(char *, sfp[2]);
 		int prec = Int_to(int, sfp[3]);
@@ -1331,7 +1318,7 @@ KMETHOD QByteArray_setNum(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		float n = Float_to(float, sfp[1]);
 		char  f = *RawPtr_to(char *, sfp[2]);
 		int prec = Int_to(int, sfp[3]);
@@ -1349,7 +1336,7 @@ KMETHOD QByteArray_setRawData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  data = RawPtr_to(const char*, sfp[1]);
 		uint  size = *RawPtr_to(uint *, sfp[2]);
 		QByteArray ret_v = qp->setRawData(data, size);
@@ -1366,7 +1353,7 @@ KMETHOD QByteArray_simplified(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->simplified();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1381,7 +1368,7 @@ KMETHOD QByteArray_size(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->size();
 		RETURNi_(ret_v);
 	} else {
@@ -1394,9 +1381,9 @@ KMETHOD QByteArray_split(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  sep = *RawPtr_to(char *, sfp[1]);
-		QList<QByteArray>ret_v = qp->split(sep);
+		QList<QByteArray> ret_v = qp->split(sep);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QByteArray"));
@@ -1417,7 +1404,7 @@ KMETHOD QByteArray_squeeze(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->squeeze();
 	}
 	RETURNvoid_();
@@ -1428,7 +1415,7 @@ KMETHOD QByteArray_startsWith(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  ba = *RawPtr_to(const QByteArray *, sfp[1]);
 		bool ret_v = qp->startsWith(ba);
 		RETURNb_(ret_v);
@@ -1443,7 +1430,7 @@ KMETHOD QByteArray_startsWith(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  str = RawPtr_to(const char*, sfp[1]);
 		bool ret_v = qp->startsWith(str);
 		RETURNb_(ret_v);
@@ -1458,7 +1445,7 @@ KMETHOD QByteArray_startsWith(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		char  ch = *RawPtr_to(char *, sfp[1]);
 		bool ret_v = qp->startsWith(ch);
 		RETURNb_(ret_v);
@@ -1472,7 +1459,7 @@ KMETHOD QByteArray_toBase64(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->toBase64();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1487,7 +1474,7 @@ KMETHOD QByteArray_toDouble(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		double ret_v = qp->toDouble(ok);
 		double *ret_v_ = new double(ret_v);
@@ -1503,7 +1490,7 @@ KMETHOD QByteArray_toFloat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		float ret_v = qp->toFloat(ok);
 		RETURNf_(ret_v);
@@ -1517,7 +1504,7 @@ KMETHOD QByteArray_toHex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->toHex();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1532,7 +1519,7 @@ KMETHOD QByteArray_toInt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		int base = Int_to(int, sfp[2]);
 		int ret_v = qp->toInt(ok, base);
@@ -1547,7 +1534,7 @@ KMETHOD QByteArray_toLong(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		int base = Int_to(int, sfp[2]);
 		long ret_v = qp->toLong(ok, base);
@@ -1564,7 +1551,7 @@ KMETHOD QByteArray_toLongLong(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		int base = Int_to(int, sfp[2]);
 		qlonglong ret_v = qp->toLongLong(ok, base);
@@ -1581,7 +1568,7 @@ KMETHOD QByteArray_toLower(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->toLower();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1596,7 +1583,7 @@ KMETHOD QByteArray_toPercentEncoding(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  exclude = *RawPtr_to(const QByteArray *, sfp[1]);
 		const QByteArray  include = *RawPtr_to(const QByteArray *, sfp[2]);
 		char  percent = *RawPtr_to(char *, sfp[3]);
@@ -1614,7 +1601,7 @@ KMETHOD QByteArray_toShort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		int base = Int_to(int, sfp[2]);
 		short ret_v = qp->toShort(ok, base);
@@ -1631,7 +1618,7 @@ KMETHOD QByteArray_toUInt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		int base = Int_to(int, sfp[2]);
 		uint ret_v = qp->toUInt(ok, base);
@@ -1648,7 +1635,7 @@ KMETHOD QByteArray_toULong(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		int base = Int_to(int, sfp[2]);
 		ulong ret_v = qp->toULong(ok, base);
@@ -1665,7 +1652,7 @@ KMETHOD QByteArray_toULongLong(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		int base = Int_to(int, sfp[2]);
 		qulonglong ret_v = qp->toULongLong(ok, base);
@@ -1682,7 +1669,7 @@ KMETHOD QByteArray_toUShort(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool* ok = Boolean_to(bool*, sfp[1]);
 		int base = Int_to(int, sfp[2]);
 		ushort ret_v = qp->toUShort(ok, base);
@@ -1699,7 +1686,7 @@ KMETHOD QByteArray_toUpper(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->toUpper();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1714,7 +1701,7 @@ KMETHOD QByteArray_trimmed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QByteArray ret_v = qp->trimmed();
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -1729,7 +1716,7 @@ KMETHOD QByteArray_truncate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int pos = Int_to(int, sfp[1]);
 		qp->truncate(pos);
 	}
@@ -1740,10 +1727,9 @@ KMETHOD QByteArray_truncate(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QByteArray_fromBase64(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QByteArray  base64 = *RawPtr_to(const QByteArray *, sfp[1]);
-		QByteArray ret_v = qp->fromBase64(base64);
+		QByteArray ret_v = QByteArray::fromBase64(base64);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1756,10 +1742,9 @@ KMETHOD QByteArray_fromBase64(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QByteArray_fromHex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QByteArray  hexEncoded = *RawPtr_to(const QByteArray *, sfp[1]);
-		QByteArray ret_v = qp->fromHex(hexEncoded);
+		QByteArray ret_v = QByteArray::fromHex(hexEncoded);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1772,11 +1757,10 @@ KMETHOD QByteArray_fromHex(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QByteArray_fromPercentEncoding(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QByteArray  input = *RawPtr_to(const QByteArray *, sfp[1]);
 		char  percent = *RawPtr_to(char *, sfp[2]);
-		QByteArray ret_v = qp->fromPercentEncoding(input, percent);
+		QByteArray ret_v = QByteArray::fromPercentEncoding(input, percent);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1789,11 +1773,10 @@ KMETHOD QByteArray_fromPercentEncoding(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QByteArray_fromRawData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const char*  data = RawPtr_to(const char*, sfp[1]);
 		int size = Int_to(int, sfp[2]);
-		QByteArray ret_v = qp->fromRawData(data, size);
+		QByteArray ret_v = QByteArray::fromRawData(data, size);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1806,11 +1789,10 @@ KMETHOD QByteArray_fromRawData(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QByteArray_number(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int n = Int_to(int, sfp[1]);
 		int base = Int_to(int, sfp[2]);
-		QByteArray ret_v = qp->number(n, base);
+		QByteArray ret_v = QByteArray::number(n, base);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1824,11 +1806,10 @@ KMETHOD QByteArray_number(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QByteArray_number(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  n = *RawPtr_to(uint *, sfp[1]);
 		int base = Int_to(int, sfp[2]);
-		QByteArray ret_v = qp->number(n, base);
+		QByteArray ret_v = QByteArray::number(n, base);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1842,11 +1823,10 @@ KMETHOD QByteArray_number(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QByteArray_number(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		qlonglong  n = *RawPtr_to(qlonglong *, sfp[1]);
 		int base = Int_to(int, sfp[2]);
-		QByteArray ret_v = qp->number(n, base);
+		QByteArray ret_v = QByteArray::number(n, base);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1860,11 +1840,10 @@ KMETHOD QByteArray_number(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QByteArray_number(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		qulonglong  n = *RawPtr_to(qulonglong *, sfp[1]);
 		int base = Int_to(int, sfp[2]);
-		QByteArray ret_v = qp->number(n, base);
+		QByteArray ret_v = QByteArray::number(n, base);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1878,12 +1857,11 @@ KMETHOD QByteArray_number(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QByteArray_number(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QByteArray *  qp = RawPtr_to(QByteArray *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		double  n = *RawPtr_to(double *, sfp[1]);
 		char  f = *RawPtr_to(char *, sfp[2]);
 		int prec = Int_to(int, sfp[3]);
-		QByteArray ret_v = qp->number(n, f, prec);
+		QByteArray ret_v = QByteArray::number(n, f, prec);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -1892,6 +1870,24 @@ KMETHOD QByteArray_number(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 */
+//Array<String> QByteArray.parents();
+KMETHOD QByteArray_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QByteArray *qp = RawPtr_to(QByteArray*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQByteArray::DummyQByteArray()
 {
@@ -1940,17 +1936,28 @@ bool DummyQByteArray::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQByteArray::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQByteArray::connection(QObject *o)
 {
-	return;
+	QByteArray *p = dynamic_cast<QByteArray*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQByteArray::KQByteArray() : QByteArray()
 {
 	self = NULL;
 	dummy = new DummyQByteArray();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QByteArray_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -2005,13 +2012,9 @@ static void QByteArray_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QByteArray_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQByteArray *qp = (KQByteArray *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -2025,6 +2028,8 @@ void KQByteArray::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQByteArray(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -14,7 +14,7 @@ KMETHOD QObject_blockSignals(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool block = Boolean_to(bool, sfp[1]);
 		bool ret_v = qp->blockSignals(block);
 		RETURNb_(ret_v);
@@ -28,7 +28,7 @@ KMETHOD QObject_children(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QObjectList ret_v = qp->children();
 		QObjectList *ret_v_ = new QObjectList(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -43,7 +43,7 @@ KMETHOD QObject_connect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QObject*  sender = RawPtr_to(const QObject*, sfp[1]);
 		const char*  signal = RawPtr_to(const char*, sfp[2]);
 		const char*  method = RawPtr_to(const char*, sfp[3]);
@@ -60,7 +60,7 @@ KMETHOD QObject_disconnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  signal = RawPtr_to(const char*, sfp[1]);
 		const QObject*  receiver = RawPtr_to(const QObject*, sfp[2]);
 		const char*  method = RawPtr_to(const char*, sfp[3]);
@@ -77,7 +77,7 @@ KMETHOD QObject_disconnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QObject*  receiver = RawPtr_to(const QObject*, sfp[1]);
 		const char*  method = RawPtr_to(const char*, sfp[2]);
 		bool ret_v = qp->disconnect(receiver, method);
@@ -92,7 +92,7 @@ KMETHOD QObject_dumpObjectInfo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->dumpObjectInfo();
 	}
 	RETURNvoid_();
@@ -103,7 +103,7 @@ KMETHOD QObject_dumpObjectTree(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->dumpObjectTree();
 	}
 	RETURNvoid_();
@@ -114,8 +114,8 @@ KMETHOD QObject_dynamicPropertyNames(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
-		QList<QByteArray>ret_v = qp->dynamicPropertyNames();
+	if (qp) {
+		QList<QByteArray> ret_v = qp->dynamicPropertyNames();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QByteArray"));
@@ -136,7 +136,7 @@ KMETHOD QObject_event(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEvent*  e = RawPtr_to(QEvent*, sfp[1]);
 		bool ret_v = qp->event(e);
 		RETURNb_(ret_v);
@@ -150,7 +150,7 @@ KMETHOD QObject_eventFilter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  watched = RawPtr_to(QObject*, sfp[1]);
 		QEvent*  event = RawPtr_to(QEvent*, sfp[2]);
 		bool ret_v = qp->eventFilter(watched, event);
@@ -165,7 +165,7 @@ KMETHOD QObject_inherits(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  className = RawPtr_to(const char*, sfp[1]);
 		bool ret_v = qp->inherits(className);
 		RETURNb_(ret_v);
@@ -179,7 +179,7 @@ KMETHOD QObject_isWidgetType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isWidgetType();
 		RETURNb_(ret_v);
 	} else {
@@ -192,7 +192,7 @@ KMETHOD QObject_killTimer(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int id = Int_to(int, sfp[1]);
 		qp->killTimer(id);
 	}
@@ -204,7 +204,7 @@ KMETHOD QObject_metaObject(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMetaObject* ret_v = qp->metaObject();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMetaObject*)ret_v, NULL);
 		RETURN_(rptr);
@@ -218,7 +218,7 @@ KMETHOD QObject_moveToThread(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QThread*  targetThread = RawPtr_to(QThread*, sfp[1]);
 		qp->moveToThread(targetThread);
 	}
@@ -230,7 +230,7 @@ KMETHOD QObject_getObjectName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->objectName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -244,7 +244,7 @@ KMETHOD QObject_getParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject* ret_v = qp->parent();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QObject*)ret_v, NULL);
 		RETURN_(rptr);
@@ -258,7 +258,7 @@ KMETHOD QObject_getProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  name = RawPtr_to(const char*, sfp[1]);
 		QVariant ret_v = qp->property(name);
 		QVariant *ret_v_ = new QVariant(ret_v);
@@ -274,7 +274,7 @@ KMETHOD QObject_setObjectName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString name = String_to(const QString, sfp[1]);
 		qp->setObjectName(name);
 	}
@@ -286,7 +286,7 @@ KMETHOD QObject_setParent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  parent = RawPtr_to(QObject*, sfp[1]);
 		qp->setParent(parent);
 	}
@@ -298,7 +298,7 @@ KMETHOD QObject_setProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  name = RawPtr_to(const char*, sfp[1]);
 		const QVariant  value = *RawPtr_to(const QVariant *, sfp[2]);
 		bool ret_v = qp->setProperty(name, value);
@@ -313,7 +313,7 @@ KMETHOD QObject_signalsBlocked(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->signalsBlocked();
 		RETURNb_(ret_v);
 	} else {
@@ -326,7 +326,7 @@ KMETHOD QObject_startTimer(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int interval = Int_to(int, sfp[1]);
 		int ret_v = qp->startTimer(interval);
 		RETURNi_(ret_v);
@@ -340,7 +340,7 @@ KMETHOD QObject_thread(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QThread* ret_v = qp->thread();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QThread*)ret_v, NULL);
 		RETURN_(rptr);
@@ -354,14 +354,13 @@ KMETHOD QObject_thread(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QObject_connect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QObject*  sender = RawPtr_to(const QObject*, sfp[1]);
 		const char*  signal = RawPtr_to(const char*, sfp[2]);
 		const QObject*  receiver = RawPtr_to(const QObject*, sfp[3]);
 		const char*  method = RawPtr_to(const char*, sfp[4]);
 		Qt::ConnectionType type = Int_to(Qt::ConnectionType, sfp[5]);
-		bool ret_v = qp->connect(sender, signal, receiver, method, type);
+		bool ret_v = QObject::connect(sender, signal, receiver, method, type);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -373,13 +372,12 @@ KMETHOD QObject_connect(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QObject_disconnect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QObject*  sender = RawPtr_to(const QObject*, sfp[1]);
 		const char*  signal = RawPtr_to(const char*, sfp[2]);
 		const QObject*  receiver = RawPtr_to(const QObject*, sfp[3]);
 		const char*  method = RawPtr_to(const char*, sfp[4]);
-		bool ret_v = qp->disconnect(sender, signal, receiver, method);
+		bool ret_v = QObject::disconnect(sender, signal, receiver, method);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -390,12 +388,11 @@ KMETHOD QObject_disconnect(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QObject_tr(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const char*  sourceText = RawPtr_to(const char*, sfp[1]);
 		const char*  disambiguation = RawPtr_to(const char*, sfp[2]);
 		int n = Int_to(int, sfp[3]);
-		QString ret_v = qp->tr(sourceText, disambiguation, n);
+		QString ret_v = QObject::tr(sourceText, disambiguation, n);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -407,12 +404,11 @@ KMETHOD QObject_tr(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QObject_trUtf8(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const char*  sourceText = RawPtr_to(const char*, sfp[1]);
 		const char*  disambiguation = RawPtr_to(const char*, sfp[2]);
 		int n = Int_to(int, sfp[3]);
-		QString ret_v = qp->trUtf8(sourceText, disambiguation, n);
+		QString ret_v = QObject::trUtf8(sourceText, disambiguation, n);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -425,12 +421,30 @@ KMETHOD QObject_deleteLater(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QObject *  qp = RawPtr_to(QObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->deleteLater();
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QObject.parents();
+KMETHOD QObject_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QObject *qp = RawPtr_to(QObject*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQObject::DummyQObject()
 {
@@ -554,11 +568,27 @@ bool DummyQObject::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQObject::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 4;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, child_event_func);
+	KNH_ADDNNREF(ctx, custom_event_func);
+	KNH_ADDNNREF(ctx, timer_event_func);
+	KNH_ADDNNREF(ctx, destroyed_func);
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQObject::connection(QObject *o)
 {
-	connect(o, SIGNAL(destroyed(QObject*)), this, SLOT(destroyedSlot(QObject*)));
-	return;
+	QObject *p = dynamic_cast<QObject*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(destroyed(QObject*)), this, SLOT(destroyedSlot(QObject*)));
+	}
 }
 
 KQObject::KQObject(QObject* parent) : QObject(parent)
@@ -620,29 +650,9 @@ static void QObject_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QObject_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 4;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQObject *qp = (KQObject *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->child_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->child_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->custom_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->custom_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->timer_event_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->timer_event_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->destroyed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->destroyed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -665,6 +675,8 @@ bool KQObject::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQObject(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

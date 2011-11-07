@@ -3,7 +3,7 @@ KMETHOD QMetaClassInfo_name(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaClassInfo *  qp = RawPtr_to(QMetaClassInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char* ret_v = qp->name();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (char*)ret_v, NULL);
 		RETURN_(rptr);
@@ -17,7 +17,7 @@ KMETHOD QMetaClassInfo_value(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaClassInfo *  qp = RawPtr_to(QMetaClassInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char* ret_v = qp->value();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (char*)ret_v, NULL);
 		RETURN_(rptr);
@@ -26,6 +26,24 @@ KMETHOD QMetaClassInfo_value(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QMetaClassInfo.parents();
+KMETHOD QMetaClassInfo_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMetaClassInfo *qp = RawPtr_to(QMetaClassInfo*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQMetaClassInfo::DummyQMetaClassInfo()
 {
@@ -74,17 +92,22 @@ bool DummyQMetaClassInfo::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMetaClassInfo::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQMetaClassInfo::connection(QObject *o)
 {
-	return;
-}
-
-KQMetaClassInfo::KQMetaClassInfo() : QMetaClassInfo()
-{
-	self = NULL;
-	dummy = new DummyQMetaClassInfo();
-	dummy->connection((QObject*)this);
+	QMetaClassInfo *p = dynamic_cast<QMetaClassInfo*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QMetaClassInfo_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -139,13 +162,9 @@ static void QMetaClassInfo_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMetaClassInfo_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMetaClassInfo *qp = (KQMetaClassInfo *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -159,6 +178,8 @@ void KQMetaClassInfo::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQMetaClassInfo(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

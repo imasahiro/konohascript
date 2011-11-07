@@ -71,9 +71,23 @@ bool DummyQStyleOptionSlider::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
+void DummyQStyleOptionSlider::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOptionComplex::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionSlider::connection(QObject *o)
 {
+	QStyleOptionSlider *p = dynamic_cast<QStyleOptionSlider*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOptionComplex::connection(o);
 }
 
@@ -81,7 +95,6 @@ KQStyleOptionSlider::KQStyleOptionSlider() : QStyleOptionSlider()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionSlider();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionSlider_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,13 +149,9 @@ static void QStyleOptionSlider_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionSlider_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionSlider *qp = (KQStyleOptionSlider *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -157,15 +166,6 @@ void KQStyleOptionSlider::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQStyleOptionSlider(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionSlider";
-	cdef->free = QStyleOptionSlider_free;
-	cdef->reftrace = QStyleOptionSlider_reftrace;
-	cdef->compareTo = QStyleOptionSlider_compareTo;
-}
-
 static knh_IntData_t QStyleOptionSliderConstInt[] = {
 	{"Type", QStyleOptionSlider::Type},
 	{"Version", QStyleOptionSlider::Version},
@@ -175,4 +175,15 @@ static knh_IntData_t QStyleOptionSliderConstInt[] = {
 DEFAPI(void) constQStyleOptionSlider(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionSliderConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionSlider(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionSlider";
+	cdef->free = QStyleOptionSlider_free;
+	cdef->reftrace = QStyleOptionSlider_reftrace;
+	cdef->compareTo = QStyleOptionSlider_compareTo;
+}
+
 

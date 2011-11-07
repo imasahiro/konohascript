@@ -59,10 +59,21 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+class
+QGraphicsEffect
+name
+ChangeFlags
+
 typedefed_objects
 
 parent_typedefed_objects
-ChangeFlags
+
+class_objects
+
+parent_class_objects
 
 enums
 

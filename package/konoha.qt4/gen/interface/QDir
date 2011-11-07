@@ -107,13 +107,27 @@ false
 enbeddedClass
 false
 
+flag_objects
+class
+QDir
+name
+Filters
+class
+QDir
+name
+SortFlags
+
+parent_flag_objects
+
 typedefed_objects
 FilterSpec
-Filters
-SortFlags
 SortSpec
 
 parent_typedefed_objects
+
+class_objects
+
+parent_class_objects
 
 enums
 class_name

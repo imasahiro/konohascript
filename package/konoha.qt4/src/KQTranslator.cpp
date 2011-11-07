@@ -14,7 +14,7 @@ KMETHOD QTranslator_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTranslator *  qp = RawPtr_to(QTranslator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
 		RETURNb_(ret_v);
 	} else {
@@ -27,7 +27,7 @@ KMETHOD QTranslator_load(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTranslator *  qp = RawPtr_to(QTranslator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString filename = String_to(const QString, sfp[1]);
 		const QString directory = String_to(const QString, sfp[2]);
 		const QString search_delimiters = String_to(const QString, sfp[3]);
@@ -45,7 +45,7 @@ KMETHOD QTranslator_load(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTranslator *  qp = RawPtr_to(QTranslator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const uchar*  data = RawPtr_to(const uchar*, sfp[1]);
 		int len = Int_to(int, sfp[2]);
 		bool ret_v = qp->load(data, len);
@@ -60,7 +60,7 @@ KMETHOD QTranslator_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTranslator *  qp = RawPtr_to(QTranslator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  context = RawPtr_to(const char*, sfp[1]);
 		const char*  sourceText = RawPtr_to(const char*, sfp[2]);
 		const char*  disambiguation = RawPtr_to(const char*, sfp[3]);
@@ -78,7 +78,7 @@ KMETHOD QTranslator_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTranslator *  qp = RawPtr_to(QTranslator *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  context = RawPtr_to(const char*, sfp[1]);
 		const char*  sourceText = RawPtr_to(const char*, sfp[2]);
 		const char*  disambiguation = RawPtr_to(const char*, sfp[3]);
@@ -142,9 +142,23 @@ bool DummyQTranslator::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTranslator::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQTranslator::connection(QObject *o)
 {
+	QTranslator *p = dynamic_cast<QTranslator*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
 }
 
@@ -207,13 +221,9 @@ static void QTranslator_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTranslator_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTranslator *qp = (KQTranslator *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -236,6 +246,8 @@ bool KQTranslator::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQTranslator(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

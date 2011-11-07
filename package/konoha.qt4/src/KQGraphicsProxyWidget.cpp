@@ -3,7 +3,7 @@ KMETHOD QGraphicsProxyWidget_paint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsProxyWidget *  qp = RawPtr_to(QGraphicsProxyWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
 		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
@@ -17,7 +17,7 @@ KMETHOD QGraphicsProxyWidget_setGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsProxyWidget *  qp = RawPtr_to(QGraphicsProxyWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRectF  rect = *RawPtr_to(const QRectF *, sfp[1]);
 		qp->setGeometry(rect);
 	}
@@ -29,7 +29,7 @@ KMETHOD QGraphicsProxyWidget_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsProxyWidget *  qp = RawPtr_to(QGraphicsProxyWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -37,12 +37,12 @@ KMETHOD QGraphicsProxyWidget_type(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QGraphicsProxyWidget QGraphicsProxyWidget.new(QGraphicsItem parent, int wFlags);
+//QGraphicsProxyWidget QGraphicsProxyWidget.new(QGraphicsItem parent, QtWindowFlags wFlags);
 KMETHOD QGraphicsProxyWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsItem*  parent = RawPtr_to(QGraphicsItem*, sfp[1]);
-	Qt::WindowFlags wFlags = Int_to(Qt::WindowFlags, sfp[2]);
+	initFlag(wFlags, Qt::WindowFlags, sfp[2]);
 	KQGraphicsProxyWidget *ret_v = new KQGraphicsProxyWidget(parent, wFlags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -54,7 +54,7 @@ KMETHOD QGraphicsProxyWidget_createProxyForChildWidget(CTX ctx, knh_sfp_t *sfp _
 {
 	(void)ctx;
 	QGraphicsProxyWidget *  qp = RawPtr_to(QGraphicsProxyWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  child = RawPtr_to(QWidget*, sfp[1]);
 		QGraphicsProxyWidget* ret_v = qp->createProxyForChildWidget(child);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsProxyWidget*)ret_v, NULL);
@@ -69,7 +69,7 @@ KMETHOD QGraphicsProxyWidget_setWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsProxyWidget *  qp = RawPtr_to(QGraphicsProxyWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->setWidget(widget);
 	}
@@ -81,7 +81,7 @@ KMETHOD QGraphicsProxyWidget_subWidgetRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsProxyWidget *  qp = RawPtr_to(QGraphicsProxyWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[1]);
 		QRectF ret_v = qp->subWidgetRect(widget);
 		QRectF *ret_v_ = new QRectF(ret_v);
@@ -97,7 +97,7 @@ KMETHOD QGraphicsProxyWidget_getWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsProxyWidget *  qp = RawPtr_to(QGraphicsProxyWidget *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->widget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -157,9 +157,23 @@ bool DummyQGraphicsProxyWidget::signalConnect(knh_Func_t *callback_func, string 
 	}
 }
 
+void DummyQGraphicsProxyWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsProxyWidget::connection(QObject *o)
 {
+	QGraphicsProxyWidget *p = dynamic_cast<QGraphicsProxyWidget*>(o);
+	if (p != NULL) {
+	}
 	DummyQGraphicsWidget::connection(o);
 }
 
@@ -222,13 +236,9 @@ static void QGraphicsProxyWidget_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsProxyWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsProxyWidget *qp = (KQGraphicsProxyWidget *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -251,6 +261,8 @@ bool KQGraphicsProxyWidget::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQGraphicsProxyWidget(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -15,7 +15,7 @@ KMETHOD QFocusEvent_gotFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFocusEvent *  qp = RawPtr_to(QFocusEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->gotFocus();
 		RETURNb_(ret_v);
 	} else {
@@ -28,7 +28,7 @@ KMETHOD QFocusEvent_lostFocus(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFocusEvent *  qp = RawPtr_to(QFocusEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->lostFocus();
 		RETURNb_(ret_v);
 	} else {
@@ -41,7 +41,7 @@ KMETHOD QFocusEvent_reason(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFocusEvent *  qp = RawPtr_to(QFocusEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::FocusReason ret_v = qp->reason();
 		RETURNi_(ret_v);
 	} else {
@@ -100,9 +100,23 @@ bool DummyQFocusEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQFocusEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQFocusEvent::connection(QObject *o)
 {
+	QFocusEvent *p = dynamic_cast<QFocusEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -110,7 +124,6 @@ KQFocusEvent::KQFocusEvent(QFocusEvent::Type type, Qt::FocusReason reason) : QFo
 {
 	self = NULL;
 	dummy = new DummyQFocusEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QFocusEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -165,13 +178,9 @@ static void QFocusEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QFocusEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQFocusEvent *qp = (KQFocusEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -185,6 +194,8 @@ void KQFocusEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQFocusEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

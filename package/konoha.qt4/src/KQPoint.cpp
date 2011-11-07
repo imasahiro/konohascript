@@ -21,25 +21,12 @@ KMETHOD QPoint_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 */
-////boolean QPoint.isNull();
-KMETHOD QPoint_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QPoint *  qp = RawPtr_to(QPoint *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
 //int QPoint.manhattanLength();
 KMETHOD QPoint_manhattanLength(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPoint *  qp = RawPtr_to(QPoint *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->manhattanLength();
 		RETURNi_(ret_v);
 	} else {
@@ -52,7 +39,7 @@ KMETHOD QPoint_rx(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPoint *  qp = RawPtr_to(QPoint *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->rx();
 		RETURNi_(ret_v);
 	} else {
@@ -65,7 +52,7 @@ KMETHOD QPoint_ry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPoint *  qp = RawPtr_to(QPoint *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->ry();
 		RETURNi_(ret_v);
 	} else {
@@ -78,7 +65,7 @@ KMETHOD QPoint_setX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPoint *  qp = RawPtr_to(QPoint *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		qp->setX(x);
 	}
@@ -90,7 +77,7 @@ KMETHOD QPoint_setY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPoint *  qp = RawPtr_to(QPoint *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int y = Int_to(int, sfp[1]);
 		qp->setY(y);
 	}
@@ -102,7 +89,7 @@ KMETHOD QPoint_getX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPoint *  qp = RawPtr_to(QPoint *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->x();
 		RETURNi_(ret_v);
 	} else {
@@ -115,7 +102,7 @@ KMETHOD QPoint_getY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPoint *  qp = RawPtr_to(QPoint *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->y();
 		RETURNi_(ret_v);
 	} else {
@@ -123,6 +110,24 @@ KMETHOD QPoint_getY(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QPoint.parents();
+KMETHOD QPoint_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPoint *qp = RawPtr_to(QPoint*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQPoint::DummyQPoint()
 {
@@ -171,17 +176,28 @@ bool DummyQPoint::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPoint::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQPoint::connection(QObject *o)
 {
-	return;
+	QPoint *p = dynamic_cast<QPoint*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQPoint::KQPoint() : QPoint()
 {
 	self = NULL;
 	dummy = new DummyQPoint();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPoint_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -236,19 +252,15 @@ static void QPoint_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPoint_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPoint *qp = (KQPoint *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
 static int QPoint_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
-	return (p1->rawptr == p2->rawptr ? 0 : 1);
+	return (*static_cast<QPoint*>(p1->rawptr) == *static_cast<QPoint*>(p2->rawptr) ? 0 : 1);
 }
 
 void KQPoint::setSelf(knh_RawPtr_t *ptr)
@@ -256,6 +268,8 @@ void KQPoint::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQPoint(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

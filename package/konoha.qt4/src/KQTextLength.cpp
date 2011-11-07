@@ -26,7 +26,7 @@ KMETHOD QTextLength_rawValue(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLength *  qp = RawPtr_to(QTextLength *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->rawValue();
 		RETURNf_(ret_v);
 	} else {
@@ -39,7 +39,7 @@ KMETHOD QTextLength_type(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLength *  qp = RawPtr_to(QTextLength *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextLength::Type ret_v = qp->type();
 		RETURNi_(ret_v);
 	} else {
@@ -52,7 +52,7 @@ KMETHOD QTextLength_value(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextLength *  qp = RawPtr_to(QTextLength *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal maximumLength = Float_to(qreal, sfp[1]);
 		qreal ret_v = qp->value(maximumLength);
 		RETURNf_(ret_v);
@@ -61,6 +61,24 @@ KMETHOD QTextLength_value(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QTextLength.parents();
+KMETHOD QTextLength_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextLength *qp = RawPtr_to(QTextLength*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextLength::DummyQTextLength()
 {
@@ -109,17 +127,28 @@ bool DummyQTextLength::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextLength::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextLength::connection(QObject *o)
 {
-	return;
+	QTextLength *p = dynamic_cast<QTextLength*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTextLength::KQTextLength() : QTextLength()
 {
 	self = NULL;
 	dummy = new DummyQTextLength();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextLength_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -174,13 +203,9 @@ static void QTextLength_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextLength_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextLength *qp = (KQTextLength *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -195,15 +220,6 @@ void KQTextLength::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQTextLength(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTextLength";
-	cdef->free = QTextLength_free;
-	cdef->reftrace = QTextLength_reftrace;
-	cdef->compareTo = QTextLength_compareTo;
-}
-
 static knh_IntData_t QTextLengthConstInt[] = {
 	{"VariableLength", QTextLength::VariableLength},
 	{"FixedLength", QTextLength::FixedLength},
@@ -214,4 +230,15 @@ static knh_IntData_t QTextLengthConstInt[] = {
 DEFAPI(void) constQTextLength(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTextLengthConstInt);
 }
+
+
+DEFAPI(void) defQTextLength(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextLength";
+	cdef->free = QTextLength_free;
+	cdef->reftrace = QTextLength_reftrace;
+	cdef->compareTo = QTextLength_compareTo;
+}
+
 

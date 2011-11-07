@@ -22,13 +22,13 @@ KMETHOD QPixmap_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 */
 /*
-//QPixmap QPixmap.new(String fileName, String fmt, int flags);
+//QPixmap QPixmap.new(String fileName, String fmt, QtImageConversionFlags flags);
 KMETHOD QPixmap_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	const QString fileName = String_to(const QString, sfp[1]);
 	const char*  format = RawPtr_to(const char*, sfp[2]);
-	Qt::ImageConversionFlags flags = Int_to(Qt::ImageConversionFlags, sfp[3]);
+	initFlag(flags, Qt::ImageConversionFlags, sfp[3]);
 	KQPixmap *ret_v = new KQPixmap(fileName, format, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -64,7 +64,7 @@ KMETHOD QPixmap_cacheKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->cacheKey();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -74,14 +74,14 @@ KMETHOD QPixmap_cacheKey(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//boolean QPixmap.convertFromImage(QImage image, int flags);
+//boolean QPixmap.convertFromImage(QImage image, QtImageConversionFlags flags);
 KMETHOD QPixmap_convertFromImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QImage  image = *RawPtr_to(const QImage *, sfp[1]);
-		Qt::ImageConversionFlags flags = Int_to(Qt::ImageConversionFlags, sfp[2]);
+		initFlag(flags, Qt::ImageConversionFlags, sfp[2]);
 		bool ret_v = qp->convertFromImage(image, flags);
 		RETURNb_(ret_v);
 	} else {
@@ -94,7 +94,7 @@ KMETHOD QPixmap_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[1]);
 		QPixmap ret_v = qp->copy(rectangle);
 		QPixmap *ret_v_ = new QPixmap(ret_v);
@@ -111,7 +111,7 @@ KMETHOD QPixmap_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int y = Int_to(int, sfp[2]);
 		int width = Int_to(int, sfp[3]);
@@ -130,7 +130,7 @@ KMETHOD QPixmap_createHeuristicMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool clipTight = Boolean_to(bool, sfp[1]);
 		QBitmap ret_v = qp->createHeuristicMask(clipTight);
 		QBitmap *ret_v_ = new QBitmap(ret_v);
@@ -146,7 +146,7 @@ KMETHOD QPixmap_createMaskFromColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor  maskColor = *RawPtr_to(const QColor *, sfp[1]);
 		Qt::MaskMode mode = Int_to(Qt::MaskMode, sfp[2]);
 		QBitmap ret_v = qp->createMaskFromColor(maskColor, mode);
@@ -164,7 +164,7 @@ KMETHOD QPixmap_createMaskFromColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor  maskColor = *RawPtr_to(const QColor *, sfp[1]);
 		QBitmap ret_v = qp->createMaskFromColor(maskColor);
 		QBitmap *ret_v_ = new QBitmap(ret_v);
@@ -180,7 +180,7 @@ KMETHOD QPixmap_depth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->depth();
 		RETURNi_(ret_v);
 	} else {
@@ -193,7 +193,7 @@ KMETHOD QPixmap_detach(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->detach();
 	}
 	RETURNvoid_();
@@ -204,7 +204,7 @@ KMETHOD QPixmap_fill(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QColor  color = *RawPtr_to(const QColor *, sfp[1]);
 		qp->fill(color);
 	}
@@ -217,7 +217,7 @@ KMETHOD QPixmap_fill(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[1]);
 		const QPoint  offset = *RawPtr_to(const QPoint *, sfp[2]);
 		qp->fill(widget, offset);
@@ -231,7 +231,7 @@ KMETHOD QPixmap_fill(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[1]);
 		int x = Int_to(int, sfp[2]);
 		int y = Int_to(int, sfp[3]);
@@ -245,7 +245,7 @@ KMETHOD QPixmap_hasAlpha(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasAlpha();
 		RETURNb_(ret_v);
 	} else {
@@ -258,7 +258,7 @@ KMETHOD QPixmap_hasAlphaChannel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasAlphaChannel();
 		RETURNb_(ret_v);
 	} else {
@@ -271,24 +271,11 @@ KMETHOD QPixmap_height(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->height();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
-	}
-}
-
-////boolean QPixmap.isNull();
-KMETHOD QPixmap_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
 	}
 }
 
@@ -297,7 +284,7 @@ KMETHOD QPixmap_isQBitmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isQBitmap();
 		RETURNb_(ret_v);
 	} else {
@@ -305,15 +292,15 @@ KMETHOD QPixmap_isQBitmap(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//boolean QPixmap.load(String fileName, String fmt, int flags);
+//boolean QPixmap.load(String fileName, String fmt, QtImageConversionFlags flags);
 KMETHOD QPixmap_load(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
 		const char*  format = RawPtr_to(const char*, sfp[2]);
-		Qt::ImageConversionFlags flags = Int_to(Qt::ImageConversionFlags, sfp[3]);
+		initFlag(flags, Qt::ImageConversionFlags, sfp[3]);
 		bool ret_v = qp->load(fileName, format, flags);
 		RETURNb_(ret_v);
 	} else {
@@ -321,16 +308,16 @@ KMETHOD QPixmap_load(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//boolean QPixmap.loadFromData(String data, int len, String fmt, int flags);
+//boolean QPixmap.loadFromData(String data, int len, String fmt, QtImageConversionFlags flags);
 KMETHOD QPixmap_loadFromData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const uchar*  data = RawPtr_to(const uchar*, sfp[1]);
 		uint  len = *RawPtr_to(uint *, sfp[2]);
 		const char*  format = RawPtr_to(const char*, sfp[3]);
-		Qt::ImageConversionFlags flags = Int_to(Qt::ImageConversionFlags, sfp[4]);
+		initFlag(flags, Qt::ImageConversionFlags, sfp[4]);
 		bool ret_v = qp->loadFromData(data, len, format, flags);
 		RETURNb_(ret_v);
 	} else {
@@ -339,15 +326,15 @@ KMETHOD QPixmap_loadFromData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//boolean QPixmap.loadFromData(QByteArray data, String fmt, int flags);
+//boolean QPixmap.loadFromData(QByteArray data, String fmt, QtImageConversionFlags flags);
 KMETHOD QPixmap_loadFromData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QByteArray  data = *RawPtr_to(const QByteArray *, sfp[1]);
 		const char*  format = RawPtr_to(const char*, sfp[2]);
-		Qt::ImageConversionFlags flags = Int_to(Qt::ImageConversionFlags, sfp[3]);
+		initFlag(flags, Qt::ImageConversionFlags, sfp[3]);
 		bool ret_v = qp->loadFromData(data, format, flags);
 		RETURNb_(ret_v);
 	} else {
@@ -360,7 +347,7 @@ KMETHOD QPixmap_getMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBitmap ret_v = qp->mask();
 		QBitmap *ret_v_ = new QBitmap(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -375,7 +362,7 @@ KMETHOD QPixmap_rect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->rect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -390,7 +377,7 @@ KMETHOD QPixmap_save(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString fileName = String_to(const QString, sfp[1]);
 		const char*  format = RawPtr_to(const char*, sfp[2]);
 		int quality = Int_to(int, sfp[3]);
@@ -407,7 +394,7 @@ KMETHOD QPixmap_save(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QIODevice*  device = RawPtr_to(QIODevice*, sfp[1]);
 		const char*  format = RawPtr_to(const char*, sfp[2]);
 		int quality = Int_to(int, sfp[3]);
@@ -423,7 +410,7 @@ KMETHOD QPixmap_scaled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QSize  size = *RawPtr_to(const QSize *, sfp[1]);
 		Qt::AspectRatioMode aspectRatioMode = Int_to(Qt::AspectRatioMode, sfp[2]);
 		Qt::TransformationMode transformMode = Int_to(Qt::TransformationMode, sfp[3]);
@@ -442,7 +429,7 @@ KMETHOD QPixmap_scaled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int width = Int_to(int, sfp[1]);
 		int height = Int_to(int, sfp[2]);
 		Qt::AspectRatioMode aspectRatioMode = Int_to(Qt::AspectRatioMode, sfp[3]);
@@ -461,7 +448,7 @@ KMETHOD QPixmap_scaledToHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int height = Int_to(int, sfp[1]);
 		Qt::TransformationMode mode = Int_to(Qt::TransformationMode, sfp[2]);
 		QPixmap ret_v = qp->scaledToHeight(height, mode);
@@ -478,7 +465,7 @@ KMETHOD QPixmap_scaledToWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int width = Int_to(int, sfp[1]);
 		Qt::TransformationMode mode = Int_to(Qt::TransformationMode, sfp[2]);
 		QPixmap ret_v = qp->scaledToWidth(width, mode);
@@ -495,7 +482,7 @@ KMETHOD QPixmap_scroll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int dx = Int_to(int, sfp[1]);
 		int dy = Int_to(int, sfp[2]);
 		int x = Int_to(int, sfp[3]);
@@ -514,7 +501,7 @@ KMETHOD QPixmap_scroll(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int dx = Int_to(int, sfp[1]);
 		int dy = Int_to(int, sfp[2]);
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[3]);
@@ -529,7 +516,7 @@ KMETHOD QPixmap_setMask(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBitmap  mask = *RawPtr_to(const QBitmap *, sfp[1]);
 		qp->setMask(mask);
 	}
@@ -541,7 +528,7 @@ KMETHOD QPixmap_size(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->size();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -556,7 +543,7 @@ KMETHOD QPixmap_toImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QImage ret_v = qp->toImage();
 		QImage *ret_v_ = new QImage(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -566,47 +553,12 @@ KMETHOD QPixmap_toImage(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////QPixmap QPixmap.transformed(QTransform transform, int mode);
-KMETHOD QPixmap_transformed(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
-		const QTransform  transform = *RawPtr_to(const QTransform *, sfp[1]);
-		Qt::TransformationMode mode = Int_to(Qt::TransformationMode, sfp[2]);
-		QPixmap ret_v = qp->transformed(transform, mode);
-		QPixmap *ret_v_ = new QPixmap(ret_v);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-
-/*
-////QPixmap QPixmap.transformed(QMatrix matrix, int mode);
-KMETHOD QPixmap_transformed(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
-		const QMatrix  matrix = *RawPtr_to(const QMatrix *, sfp[1]);
-		Qt::TransformationMode mode = Int_to(Qt::TransformationMode, sfp[2]);
-		QPixmap ret_v = qp->transformed(matrix, mode);
-		QPixmap *ret_v_ = new QPixmap(ret_v);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
-		RETURN_(rptr);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-*/
 //int QPixmap.width();
 KMETHOD QPixmap_width(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->width();
 		RETURNi_(ret_v);
 	} else {
@@ -618,24 +570,22 @@ KMETHOD QPixmap_width(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QPixmap_defaultDepth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
-		int ret_v = qp->defaultDepth();
+	if (true) {
+		int ret_v = QPixmap::defaultDepth();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
 	}
 }
 
-//QPixmap QPixmap.fromImageOL(QImage image, int flags);
+//QPixmap QPixmap.fromImageOL(QImage image, QtImageConversionFlags flags);
 KMETHOD QPixmap_fromImageOL(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QImage  image = *RawPtr_to(const QImage *, sfp[1]);
-		Qt::ImageConversionFlags flags = Int_to(Qt::ImageConversionFlags, sfp[2]);
-		QPixmap ret_v = qp->fromImage(image, flags);
+		initFlag(flags, Qt::ImageConversionFlags, sfp[2]);
+		QPixmap ret_v = QPixmap::fromImage(image, flags);
 		QPixmap *ret_v_ = new QPixmap(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -644,15 +594,14 @@ KMETHOD QPixmap_fromImageOL(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QPixmap QPixmap.fromImageOLReader(QImageReader imageReader, int flags);
+//QPixmap QPixmap.fromImageOLReader(QImageReader imageReader, QtImageConversionFlags flags);
 KMETHOD QPixmap_fromImageOLReader(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QImageReader*  imageReader = RawPtr_to(QImageReader*, sfp[1]);
-		Qt::ImageConversionFlags flags = Int_to(Qt::ImageConversionFlags, sfp[2]);
-		QPixmap ret_v = qp->fromImageReader(imageReader, flags);
+		initFlag(flags, Qt::ImageConversionFlags, sfp[2]);
+		QPixmap ret_v = QPixmap::fromImageReader(imageReader, flags);
 		QPixmap *ret_v_ = new QPixmap(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -665,11 +614,10 @@ KMETHOD QPixmap_fromImageOLReader(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QPixmap_grabWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		const QRect  rectangle = *RawPtr_to(const QRect *, sfp[2]);
-		QPixmap ret_v = qp->grabWidget(widget, rectangle);
+		QPixmap ret_v = QPixmap::grabWidget(widget, rectangle);
 		QPixmap *ret_v_ = new QPixmap(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -683,14 +631,13 @@ KMETHOD QPixmap_grabWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QPixmap_grabWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		int x = Int_to(int, sfp[2]);
 		int y = Int_to(int, sfp[3]);
 		int width = Int_to(int, sfp[4]);
 		int height = Int_to(int, sfp[5]);
-		QPixmap ret_v = qp->grabWidget(widget, x, y, width, height);
+		QPixmap ret_v = QPixmap::grabWidget(widget, x, y, width, height);
 		QPixmap *ret_v_ = new QPixmap(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -703,12 +650,11 @@ KMETHOD QPixmap_grabWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QPixmap_trueMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QTransform  matrix = *RawPtr_to(const QTransform *, sfp[1]);
 		int width = Int_to(int, sfp[2]);
 		int height = Int_to(int, sfp[3]);
-		QTransform ret_v = qp->trueMatrix(matrix, width, height);
+		QTransform ret_v = QPixmap::trueMatrix(matrix, width, height);
 		QTransform *ret_v_ = new QTransform(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -722,12 +668,11 @@ KMETHOD QPixmap_trueMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QPixmap_trueMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QPixmap *  qp = RawPtr_to(QPixmap *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QMatrix  m = *RawPtr_to(const QMatrix *, sfp[1]);
 		int w = Int_to(int, sfp[2]);
 		int h = Int_to(int, sfp[3]);
-		QMatrix ret_v = qp->trueMatrix(m, w, h);
+		QMatrix ret_v = QPixmap::trueMatrix(m, w, h);
 		QMatrix *ret_v_ = new QMatrix(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -787,9 +732,23 @@ bool DummyQPixmap::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPixmap::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQPaintDevice::reftrace(ctx, p, tail_);
+}
 
 void DummyQPixmap::connection(QObject *o)
 {
+	QPixmap *p = dynamic_cast<QPixmap*>(o);
+	if (p != NULL) {
+	}
 	DummyQPaintDevice::connection(o);
 }
 
@@ -797,7 +756,6 @@ KQPixmap::KQPixmap() : QPixmap()
 {
 	self = NULL;
 	dummy = new DummyQPixmap();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPixmap_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -852,13 +810,9 @@ static void QPixmap_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPixmap_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPixmap *qp = (KQPixmap *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -873,15 +827,6 @@ void KQPixmap::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQPixmap(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QPixmap";
-	cdef->free = QPixmap_free;
-	cdef->reftrace = QPixmap_reftrace;
-	cdef->compareTo = QPixmap_compareTo;
-}
-
 static knh_IntData_t QPixmapConstInt[] = {
 //	{"NoAlpha", QPixmap::NoAlpha},
 //	{"PremultipliedAlpha", QPixmap::PremultipliedAlpha},
@@ -894,4 +839,15 @@ static knh_IntData_t QPixmapConstInt[] = {
 DEFAPI(void) constQPixmap(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QPixmapConstInt);
 }
+
+
+DEFAPI(void) defQPixmap(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QPixmap";
+	cdef->free = QPixmap_free;
+	cdef->reftrace = QPixmap_reftrace;
+	cdef->compareTo = QPixmap_compareTo;
+}
+
 

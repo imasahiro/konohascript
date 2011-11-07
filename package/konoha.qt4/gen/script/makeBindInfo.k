@@ -1,3 +1,13 @@
+void debugBindInfo(BindInfo[] bia, String class_name)
+{
+	foreach (bi in bia) {
+		if (class_name == bi.class_name) {
+			print bi;
+			return;
+		}
+	}
+}
+
 int BIsearchClassIndex(BindInfo[] bia, String class_name)
 {
 	int i;
@@ -25,6 +35,8 @@ void BIsetParentIndex(BindInfo[] bia, QtHierarchy hierarchy)
 		if (bia[cci].parent_index.indexOf(pci) == -1) {
 			bia[cci].parent_index <<< pci;
 			bia[cci].parent_name <<< token[2];
+			bia[pci].children_index <<< cci;
+			bia[pci].children_name <<< token[0];
 		}
 	}
 	return;
@@ -52,8 +64,18 @@ int BIsetHierarchyDepth(BindInfo[] bia, BindInfo bi)
 	}
 }
 
+void setInheritsQObjectFlag(BindInfo[] bia, BindInfo bi)
+{
+	bi.inherits_qobject_flag = true;
+	foreach (int index in bi.children_index) {
+		setInheritsQObjectFlag(bia, bia[index]);
+	}
+}
+
 BindInfo[] makeBindInfo(QtInterface[] interfaces, QtHierarchy hierarchy) {
-	String[] supported_domain = ["QtGui", "QtCore"/*, "QtWebKit", "QtOpenGL"*/];
+	OUT << "make BindInfo" << EOL;
+
+	String[] supported_domain = ["QtGui", "QtCore", "QtWebKit"/*, "QtOpenGL"*/, "QtNetwork"];
 	String[] binding_class = [];
 	foreach (domain in supported_domain) {
 		Dir dir = System.openDir(QT_INCLUDE_DIR + domain);
@@ -63,21 +85,30 @@ BindInfo[] makeBindInfo(QtInterface[] interfaces, QtHierarchy hierarchy) {
 			}
 		}
 	}
+
 	BindInfo[] bia = [];
 	for (int i = 0; i < |interfaces|; i++) {
 		if (interfaces[i].class_name in? binding_class) {
 			if (GEN_CPP_SRC) {
 				BindInfo bi = new BindInfo(interfaces[i]);
 				bi.qtInterfaceIndex = i;
-				bia <<< bi;
+				bia << bi;
 			}
 		}
 	}
 	BIsetParentIndex(bia, hierarchy);
-	foreach (BindInfo bi in bia) {
-		BIsetHierarchyDepth(bia, bi);
-		bi.checkInheritsQObject();
-		if (bi.class_name == "QAbstractButton") print bi.checkInheritsQObject();
+	int qobject_index = -1;
+//	foreach (BindInfo bi in bia) {
+	for (int i = 0; i < |bia|; i++) {
+		BIsetHierarchyDepth(bia, bia[i]);
+		if (bia[i].class_name == "QObject") qobject_index = i;
 	}
+	setInheritsQObjectFlag(bia, bia[qobject_index]);
+//	debugBindInfo(bia, "QWidget");
+	// foreach (bi in bia) {
+	// 	if (bi.class_name == "QStyle") {
+	// 		print bi;
+	// 	}
+	// }
 	return bia;
 }

@@ -3,7 +3,7 @@ KMETHOD QPanGesture_getAcceleration(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPanGesture *  qp = RawPtr_to(QPanGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->acceleration();
 		RETURNf_(ret_v);
 	} else {
@@ -16,7 +16,7 @@ KMETHOD QPanGesture_delta(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPanGesture *  qp = RawPtr_to(QPanGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->delta();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -31,7 +31,7 @@ KMETHOD QPanGesture_lastOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPanGesture *  qp = RawPtr_to(QPanGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->lastOffset();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -46,7 +46,7 @@ KMETHOD QPanGesture_offset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPanGesture *  qp = RawPtr_to(QPanGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPointF ret_v = qp->offset();
 		QPointF *ret_v_ = new QPointF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -61,7 +61,7 @@ KMETHOD QPanGesture_setAcceleration(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPanGesture *  qp = RawPtr_to(QPanGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal value = Float_to(qreal, sfp[1]);
 		qp->setAcceleration(value);
 	}
@@ -73,7 +73,7 @@ KMETHOD QPanGesture_setLastOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPanGesture *  qp = RawPtr_to(QPanGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  value = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setLastOffset(value);
 	}
@@ -85,7 +85,7 @@ KMETHOD QPanGesture_setOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPanGesture *  qp = RawPtr_to(QPanGesture *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  value = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->setOffset(value);
 	}
@@ -143,17 +143,24 @@ bool DummyQPanGesture::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPanGesture::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGesture::reftrace(ctx, p, tail_);
+}
 
 void DummyQPanGesture::connection(QObject *o)
 {
+	QPanGesture *p = dynamic_cast<QPanGesture*>(o);
+	if (p != NULL) {
+	}
 	DummyQGesture::connection(o);
-}
-
-KQPanGesture::KQPanGesture() : QPanGesture()
-{
-	self = NULL;
-	dummy = new DummyQPanGesture();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPanGesture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -208,13 +215,9 @@ static void QPanGesture_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPanGesture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPanGesture *qp = (KQPanGesture *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -237,6 +240,8 @@ bool KQPanGesture::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQPanGesture(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

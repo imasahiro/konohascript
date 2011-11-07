@@ -3,7 +3,7 @@ KMETHOD QFormLayout_addItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayoutItem*  item = RawPtr_to(QLayoutItem*, sfp[1]);
 		qp->addItem(item);
 	}
@@ -15,7 +15,7 @@ KMETHOD QFormLayout_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->count();
 		RETURNi_(ret_v);
 	} else {
@@ -23,16 +23,18 @@ KMETHOD QFormLayout_count(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual @Override int QFormLayout.expandingDirections();
+//@Virtual @Override QtOrientations QFormLayout.expandingDirections();
 KMETHOD QFormLayout_expandingDirections(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientations ret_v = qp->expandingDirections();
-		RETURNi_(ret_v);
+		Qt::Orientations *ret_v_ = new Qt::Orientations(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -41,7 +43,7 @@ KMETHOD QFormLayout_hasHeightForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasHeightForWidth();
 		RETURNb_(ret_v);
 	} else {
@@ -54,7 +56,7 @@ KMETHOD QFormLayout_heightForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int width = Int_to(int, sfp[1]);
 		int ret_v = qp->heightForWidth(width);
 		RETURNi_(ret_v);
@@ -68,7 +70,7 @@ KMETHOD QFormLayout_invalidate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->invalidate();
 	}
 	RETURNvoid_();
@@ -79,7 +81,7 @@ KMETHOD QFormLayout_itemAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QLayoutItem* ret_v = qp->itemAt(index);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QLayoutItem*)ret_v, NULL);
@@ -94,7 +96,7 @@ KMETHOD QFormLayout_minimumSize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSize();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -109,7 +111,7 @@ KMETHOD QFormLayout_setGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QRect  rect = *RawPtr_to(const QRect *, sfp[1]);
 		qp->setGeometry(rect);
 	}
@@ -121,7 +123,7 @@ KMETHOD QFormLayout_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -136,7 +138,7 @@ KMETHOD QFormLayout_takeAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QLayoutItem* ret_v = qp->takeAt(index);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QLayoutItem*)ret_v, NULL);
@@ -162,7 +164,7 @@ KMETHOD QFormLayout_addRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  label = RawPtr_to(QWidget*, sfp[1]);
 		QWidget*  field = RawPtr_to(QWidget*, sfp[2]);
 		qp->addRow(label, field);
@@ -176,7 +178,7 @@ KMETHOD QFormLayout_addRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  label = RawPtr_to(QWidget*, sfp[1]);
 		QLayout*  field = RawPtr_to(QLayout*, sfp[2]);
 		qp->addRow(label, field);
@@ -190,7 +192,7 @@ KMETHOD QFormLayout_addRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString labelText = String_to(const QString, sfp[1]);
 		QWidget*  field = RawPtr_to(QWidget*, sfp[2]);
 		qp->addRow(labelText, field);
@@ -204,7 +206,7 @@ KMETHOD QFormLayout_addRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString labelText = String_to(const QString, sfp[1]);
 		QLayout*  field = RawPtr_to(QLayout*, sfp[2]);
 		qp->addRow(labelText, field);
@@ -218,7 +220,7 @@ KMETHOD QFormLayout_addRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->addRow(widget);
 	}
@@ -231,7 +233,7 @@ KMETHOD QFormLayout_addRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayout*  layout = RawPtr_to(QLayout*, sfp[1]);
 		qp->addRow(layout);
 	}
@@ -243,7 +245,7 @@ KMETHOD QFormLayout_getFieldGrowthPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFormLayout::FieldGrowthPolicy ret_v = qp->fieldGrowthPolicy();
 		RETURNi_(ret_v);
 	} else {
@@ -251,16 +253,18 @@ KMETHOD QFormLayout_getFieldGrowthPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//int QFormLayout.getFormAlignment();
+//QtAlignment QFormLayout.getFormAlignment();
 KMETHOD QFormLayout_getFormAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->formAlignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -269,7 +273,7 @@ KMETHOD QFormLayout_getItemPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		int* rowPtr = Int_to(int*, sfp[2]);
 		QFormLayout::ItemRole* rolePtr = Int_to(QFormLayout::ItemRole*, sfp[3]);
@@ -283,7 +287,7 @@ KMETHOD QFormLayout_getLayoutPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayout*  layout = RawPtr_to(QLayout*, sfp[1]);
 		int* rowPtr = Int_to(int*, sfp[2]);
 		QFormLayout::ItemRole* rolePtr = Int_to(QFormLayout::ItemRole*, sfp[3]);
@@ -297,7 +301,7 @@ KMETHOD QFormLayout_getWidgetPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		int* rowPtr = Int_to(int*, sfp[2]);
 		QFormLayout::ItemRole* rolePtr = Int_to(QFormLayout::ItemRole*, sfp[3]);
@@ -311,7 +315,7 @@ KMETHOD QFormLayout_getHorizontalSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->horizontalSpacing();
 		RETURNi_(ret_v);
 	} else {
@@ -319,100 +323,13 @@ KMETHOD QFormLayout_getHorizontalSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////void QFormLayout.insertRow(int row, QWidget label, QWidget field);
-KMETHOD QFormLayout_insertRow(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
-		int row = Int_to(int, sfp[1]);
-		QWidget*  label = RawPtr_to(QWidget*, sfp[2]);
-		QWidget*  field = RawPtr_to(QWidget*, sfp[3]);
-		qp->insertRow(row, label, field);
-	}
-	RETURNvoid_();
-}
-
-/*
-////void QFormLayout.insertRow(int row, QWidget label, QLayout field);
-KMETHOD QFormLayout_insertRow(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
-		int row = Int_to(int, sfp[1]);
-		QWidget*  label = RawPtr_to(QWidget*, sfp[2]);
-		QLayout*  field = RawPtr_to(QLayout*, sfp[3]);
-		qp->insertRow(row, label, field);
-	}
-	RETURNvoid_();
-}
-*/
-/*
-////void QFormLayout.insertRow(int row, String labelText, QWidget field);
-KMETHOD QFormLayout_insertRow(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
-		int row = Int_to(int, sfp[1]);
-		const QString labelText = String_to(const QString, sfp[2]);
-		QWidget*  field = RawPtr_to(QWidget*, sfp[3]);
-		qp->insertRow(row, labelText, field);
-	}
-	RETURNvoid_();
-}
-*/
-/*
-////void QFormLayout.insertRow(int row, String labelText, QLayout field);
-KMETHOD QFormLayout_insertRow(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
-		int row = Int_to(int, sfp[1]);
-		const QString labelText = String_to(const QString, sfp[2]);
-		QLayout*  field = RawPtr_to(QLayout*, sfp[3]);
-		qp->insertRow(row, labelText, field);
-	}
-	RETURNvoid_();
-}
-*/
-/*
-////void QFormLayout.insertRow(int row, QWidget widget);
-KMETHOD QFormLayout_insertRow(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
-		int row = Int_to(int, sfp[1]);
-		QWidget*  widget = RawPtr_to(QWidget*, sfp[2]);
-		qp->insertRow(row, widget);
-	}
-	RETURNvoid_();
-}
-*/
-/*
-////void QFormLayout.insertRow(int row, QLayout layout);
-KMETHOD QFormLayout_insertRow(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
-		int row = Int_to(int, sfp[1]);
-		QLayout*  layout = RawPtr_to(QLayout*, sfp[2]);
-		qp->insertRow(row, layout);
-	}
-	RETURNvoid_();
-}
-*/
 /*
 //QLayoutItem QFormLayout.itemAt(int row, int role);
 KMETHOD QFormLayout_itemAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		QFormLayout::ItemRole role = Int_to(QFormLayout::ItemRole, sfp[2]);
 		QLayoutItem* ret_v = qp->itemAt(row, role);
@@ -423,16 +340,18 @@ KMETHOD QFormLayout_itemAt(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 */
-//int QFormLayout.getLabelAlignment();
+//QtAlignment QFormLayout.getLabelAlignment();
 KMETHOD QFormLayout_getLabelAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->labelAlignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -441,7 +360,7 @@ KMETHOD QFormLayout_labelForField(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  field = RawPtr_to(QWidget*, sfp[1]);
 		QWidget* ret_v = qp->labelForField(field);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
@@ -457,7 +376,7 @@ KMETHOD QFormLayout_labelForField(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QLayout*  field = RawPtr_to(QLayout*, sfp[1]);
 		QWidget* ret_v = qp->labelForField(field);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
@@ -472,7 +391,7 @@ KMETHOD QFormLayout_rowCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->rowCount();
 		RETURNi_(ret_v);
 	} else {
@@ -485,7 +404,7 @@ KMETHOD QFormLayout_getRowWrapPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFormLayout::RowWrapPolicy ret_v = qp->rowWrapPolicy();
 		RETURNi_(ret_v);
 	} else {
@@ -498,20 +417,20 @@ KMETHOD QFormLayout_setFieldGrowthPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFormLayout::FieldGrowthPolicy policy = Int_to(QFormLayout::FieldGrowthPolicy, sfp[1]);
 		qp->setFieldGrowthPolicy(policy);
 	}
 	RETURNvoid_();
 }
 
-//void QFormLayout.setFormAlignment(int alignment);
+//void QFormLayout.setFormAlignment(QtAlignment alignment);
 KMETHOD QFormLayout_setFormAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(alignment, Qt::Alignment, sfp[1]);
 		qp->setFormAlignment(alignment);
 	}
 	RETURNvoid_();
@@ -522,7 +441,7 @@ KMETHOD QFormLayout_setHorizontalSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int spacing = Int_to(int, sfp[1]);
 		qp->setHorizontalSpacing(spacing);
 	}
@@ -534,7 +453,7 @@ KMETHOD QFormLayout_setItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		QFormLayout::ItemRole role = Int_to(QFormLayout::ItemRole, sfp[2]);
 		QLayoutItem*  item = RawPtr_to(QLayoutItem*, sfp[3]);
@@ -543,13 +462,13 @@ KMETHOD QFormLayout_setItem(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//void QFormLayout.setLabelAlignment(int alignment);
+//void QFormLayout.setLabelAlignment(QtAlignment alignment);
 KMETHOD QFormLayout_setLabelAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(alignment, Qt::Alignment, sfp[1]);
 		qp->setLabelAlignment(alignment);
 	}
 	RETURNvoid_();
@@ -560,7 +479,7 @@ KMETHOD QFormLayout_setLayout(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		QFormLayout::ItemRole role = Int_to(QFormLayout::ItemRole, sfp[2]);
 		QLayout*  layout = RawPtr_to(QLayout*, sfp[3]);
@@ -574,7 +493,7 @@ KMETHOD QFormLayout_setRowWrapPolicy(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QFormLayout::RowWrapPolicy policy = Int_to(QFormLayout::RowWrapPolicy, sfp[1]);
 		qp->setRowWrapPolicy(policy);
 	}
@@ -586,7 +505,7 @@ KMETHOD QFormLayout_setSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int spacing = Int_to(int, sfp[1]);
 		qp->setSpacing(spacing);
 	}
@@ -598,7 +517,7 @@ KMETHOD QFormLayout_setVerticalSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int spacing = Int_to(int, sfp[1]);
 		qp->setVerticalSpacing(spacing);
 	}
@@ -610,7 +529,7 @@ KMETHOD QFormLayout_setWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		QFormLayout::ItemRole role = Int_to(QFormLayout::ItemRole, sfp[2]);
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
@@ -624,7 +543,7 @@ KMETHOD QFormLayout_getSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->spacing();
 		RETURNi_(ret_v);
 	} else {
@@ -637,7 +556,7 @@ KMETHOD QFormLayout_getVerticalSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFormLayout *  qp = RawPtr_to(QFormLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->verticalSpacing();
 		RETURNi_(ret_v);
 	} else {
@@ -696,9 +615,23 @@ bool DummyQFormLayout::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQFormLayout::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQLayout::reftrace(ctx, p, tail_);
+}
 
 void DummyQFormLayout::connection(QObject *o)
 {
+	QFormLayout *p = dynamic_cast<QFormLayout*>(o);
+	if (p != NULL) {
+	}
 	DummyQLayout::connection(o);
 }
 
@@ -761,13 +694,9 @@ static void QFormLayout_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QFormLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQFormLayout *qp = (KQFormLayout *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -791,15 +720,6 @@ bool KQFormLayout::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQFormLayout(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QFormLayout";
-	cdef->free = QFormLayout_free;
-	cdef->reftrace = QFormLayout_reftrace;
-	cdef->compareTo = QFormLayout_compareTo;
-}
-
 static knh_IntData_t QFormLayoutConstInt[] = {
 	{"FieldsStayAtSizeHint", QFormLayout::FieldsStayAtSizeHint},
 	{"ExpandingFieldsGrow", QFormLayout::ExpandingFieldsGrow},
@@ -816,4 +736,15 @@ static knh_IntData_t QFormLayoutConstInt[] = {
 DEFAPI(void) constQFormLayout(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QFormLayoutConstInt);
 }
+
+
+DEFAPI(void) defQFormLayout(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QFormLayout";
+	cdef->free = QFormLayout_free;
+	cdef->reftrace = QFormLayout_reftrace;
+	cdef->compareTo = QFormLayout_compareTo;
+}
+
 

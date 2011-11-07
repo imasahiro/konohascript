@@ -13,7 +13,7 @@ KMETHOD QFontDatabase_bold(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString family = String_to(const QString, sfp[1]);
 		const QString style = String_to(const QString, sfp[2]);
 		bool ret_v = qp->bold(family, style);
@@ -28,7 +28,7 @@ KMETHOD QFontDatabase_font(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString family = String_to(const QString, sfp[1]);
 		const QString style = String_to(const QString, sfp[2]);
 		int pointSize = Int_to(int, sfp[3]);
@@ -46,7 +46,7 @@ KMETHOD QFontDatabase_isBitmapScalable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString family = String_to(const QString, sfp[1]);
 		const QString style = String_to(const QString, sfp[2]);
 		bool ret_v = qp->isBitmapScalable(family, style);
@@ -61,7 +61,7 @@ KMETHOD QFontDatabase_isFixedPitch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString family = String_to(const QString, sfp[1]);
 		const QString style = String_to(const QString, sfp[2]);
 		bool ret_v = qp->isFixedPitch(family, style);
@@ -76,7 +76,7 @@ KMETHOD QFontDatabase_isScalable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString family = String_to(const QString, sfp[1]);
 		const QString style = String_to(const QString, sfp[2]);
 		bool ret_v = qp->isScalable(family, style);
@@ -91,7 +91,7 @@ KMETHOD QFontDatabase_isSmoothlyScalable(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString family = String_to(const QString, sfp[1]);
 		const QString style = String_to(const QString, sfp[2]);
 		bool ret_v = qp->isSmoothlyScalable(family, style);
@@ -106,7 +106,7 @@ KMETHOD QFontDatabase_italic(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString family = String_to(const QString, sfp[1]);
 		const QString style = String_to(const QString, sfp[2]);
 		bool ret_v = qp->italic(family, style);
@@ -121,10 +121,10 @@ KMETHOD QFontDatabase_pointSizes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString family = String_to(const QString, sfp[1]);
 		const QString style = String_to(const QString, sfp[2]);
-		QList<int>ret_v = qp->pointSizes(family, style);
+		QList<int> ret_v = qp->pointSizes(family, style);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("int"));
@@ -145,10 +145,10 @@ KMETHOD QFontDatabase_smoothSizes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString family = String_to(const QString, sfp[1]);
 		const QString style = String_to(const QString, sfp[2]);
-		QList<int>ret_v = qp->smoothSizes(family, style);
+		QList<int> ret_v = qp->smoothSizes(family, style);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("int"));
@@ -169,7 +169,7 @@ KMETHOD QFontDatabase_styleString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFont  font = *RawPtr_to(const QFont *, sfp[1]);
 		QString ret_v = qp->styleString(font);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -185,7 +185,7 @@ KMETHOD QFontDatabase_styleString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QFontInfo  fontInfo = *RawPtr_to(const QFontInfo *, sfp[1]);
 		QString ret_v = qp->styleString(fontInfo);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -200,7 +200,7 @@ KMETHOD QFontDatabase_weight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString family = String_to(const QString, sfp[1]);
 		const QString style = String_to(const QString, sfp[2]);
 		int ret_v = qp->weight(family, style);
@@ -215,8 +215,8 @@ KMETHOD QFontDatabase_writingSystems(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
-		QList<QFontDatabase::WritingSystem>ret_v = qp->writingSystems();
+	if (qp) {
+		QList<QFontDatabase::WritingSystem> ret_v = qp->writingSystems();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QFontDatabase::WritingSystem"));
@@ -238,9 +238,9 @@ KMETHOD QFontDatabase_writingSystems(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString family = String_to(const QString, sfp[1]);
-		QList<QFontDatabase::WritingSystem>ret_v = qp->writingSystems(family);
+		QList<QFontDatabase::WritingSystem> ret_v = qp->writingSystems(family);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QFontDatabase::WritingSystem"));
@@ -260,10 +260,9 @@ KMETHOD QFontDatabase_writingSystems(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QFontDatabase_addApplicationFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString fileName = String_to(const QString, sfp[1]);
-		int ret_v = qp->addApplicationFont(fileName);
+		int ret_v = QFontDatabase::addApplicationFont(fileName);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -274,10 +273,9 @@ KMETHOD QFontDatabase_addApplicationFont(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QFontDatabase_addApplicationFontFromData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QByteArray  fontData = *RawPtr_to(const QByteArray *, sfp[1]);
-		int ret_v = qp->addApplicationFontFromData(fontData);
+		int ret_v = QFontDatabase::addApplicationFontFromData(fontData);
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -288,9 +286,8 @@ KMETHOD QFontDatabase_addApplicationFontFromData(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QFontDatabase_removeAllApplicationFonts(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->removeAllApplicationFonts();
+	if (true) {
+		bool ret_v = QFontDatabase::removeAllApplicationFonts();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -301,10 +298,9 @@ KMETHOD QFontDatabase_removeAllApplicationFonts(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QFontDatabase_removeApplicationFont(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		int id = Int_to(int, sfp[1]);
-		bool ret_v = qp->removeApplicationFont(id);
+		bool ret_v = QFontDatabase::removeApplicationFont(id);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -315,9 +311,8 @@ KMETHOD QFontDatabase_removeApplicationFont(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QFontDatabase_standardSizes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
-		QList<int>ret_v = qp->standardSizes();
+	if (true) {
+		QList<int> ret_v = QFontDatabase::standardSizes();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("int"));
@@ -337,9 +332,8 @@ KMETHOD QFontDatabase_standardSizes(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QFontDatabase_supportsThreadedFontRendering(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->supportsThreadedFontRendering();
+	if (true) {
+		bool ret_v = QFontDatabase::supportsThreadedFontRendering();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -350,10 +344,9 @@ KMETHOD QFontDatabase_supportsThreadedFontRendering(CTX ctx, knh_sfp_t *sfp _RIX
 KMETHOD QFontDatabase_writingSystemName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QFontDatabase::WritingSystem writingSystem = Int_to(QFontDatabase::WritingSystem, sfp[1]);
-		QString ret_v = qp->writingSystemName(writingSystem);
+		QString ret_v = QFontDatabase::writingSystemName(writingSystem);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -365,10 +358,9 @@ KMETHOD QFontDatabase_writingSystemName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QFontDatabase_writingSystemSample(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QFontDatabase *  qp = RawPtr_to(QFontDatabase *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QFontDatabase::WritingSystem writingSystem = Int_to(QFontDatabase::WritingSystem, sfp[1]);
-		QString ret_v = qp->writingSystemSample(writingSystem);
+		QString ret_v = QFontDatabase::writingSystemSample(writingSystem);
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
 	} else {
@@ -376,6 +368,24 @@ KMETHOD QFontDatabase_writingSystemSample(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QFontDatabase.parents();
+KMETHOD QFontDatabase_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QFontDatabase *qp = RawPtr_to(QFontDatabase*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQFontDatabase::DummyQFontDatabase()
 {
@@ -424,17 +434,28 @@ bool DummyQFontDatabase::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQFontDatabase::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQFontDatabase::connection(QObject *o)
 {
-	return;
+	QFontDatabase *p = dynamic_cast<QFontDatabase*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQFontDatabase::KQFontDatabase() : QFontDatabase()
 {
 	self = NULL;
 	dummy = new DummyQFontDatabase();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QFontDatabase_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -489,13 +510,9 @@ static void QFontDatabase_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QFontDatabase_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQFontDatabase *qp = (KQFontDatabase *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -508,15 +525,6 @@ void KQFontDatabase::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQFontDatabase(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QFontDatabase";
-	cdef->free = QFontDatabase_free;
-	cdef->reftrace = QFontDatabase_reftrace;
-	cdef->compareTo = QFontDatabase_compareTo;
 }
 
 static knh_IntData_t QFontDatabaseConstInt[] = {
@@ -561,4 +569,15 @@ static knh_IntData_t QFontDatabaseConstInt[] = {
 DEFAPI(void) constQFontDatabase(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QFontDatabaseConstInt);
 }
+
+
+DEFAPI(void) defQFontDatabase(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QFontDatabase";
+	cdef->free = QFontDatabase_free;
+	cdef->reftrace = QFontDatabase_reftrace;
+	cdef->compareTo = QFontDatabase_compareTo;
+}
+
 

@@ -37,21 +37,8 @@ KMETHOD QPrinterInfo_isDefault(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinterInfo *  qp = RawPtr_to(QPrinterInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isDefault();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QPrinterInfo.isNull();
-KMETHOD QPrinterInfo_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QPrinterInfo *  qp = RawPtr_to(QPrinterInfo *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -63,7 +50,7 @@ KMETHOD QPrinterInfo_printerName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinterInfo *  qp = RawPtr_to(QPrinterInfo *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->printerName();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -77,8 +64,8 @@ KMETHOD QPrinterInfo_supportedPaperSizes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrinterInfo *  qp = RawPtr_to(QPrinterInfo *, sfp[0]);
-	if (qp != NULL) {
-		QList<QPrinter::PaperSize>ret_v = qp->supportedPaperSizes();
+	if (qp) {
+		QList<QPrinter::PaperSize> ret_v = qp->supportedPaperSizes();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QPrinter::PaperSize"));
@@ -98,9 +85,8 @@ KMETHOD QPrinterInfo_supportedPaperSizes(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QPrinterInfo_availablePrinters(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QPrinterInfo *  qp = RawPtr_to(QPrinterInfo *, sfp[0]);
-	if (qp != NULL) {
-		QList<QPrinterInfo>ret_v = qp->availablePrinters();
+	if (true) {
+		QList<QPrinterInfo> ret_v = QPrinterInfo::availablePrinters();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QPrinterInfo"));
@@ -120,9 +106,8 @@ KMETHOD QPrinterInfo_availablePrinters(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QPrinterInfo_defaultPrinter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QPrinterInfo *  qp = RawPtr_to(QPrinterInfo *, sfp[0]);
-	if (qp != NULL) {
-		QPrinterInfo ret_v = qp->defaultPrinter();
+	if (true) {
+		QPrinterInfo ret_v = QPrinterInfo::defaultPrinter();
 		QPrinterInfo *ret_v_ = new QPrinterInfo(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -131,6 +116,24 @@ KMETHOD QPrinterInfo_defaultPrinter(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QPrinterInfo.parents();
+KMETHOD QPrinterInfo_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QPrinterInfo *qp = RawPtr_to(QPrinterInfo*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQPrinterInfo::DummyQPrinterInfo()
 {
@@ -179,17 +182,28 @@ bool DummyQPrinterInfo::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPrinterInfo::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQPrinterInfo::connection(QObject *o)
 {
-	return;
+	QPrinterInfo *p = dynamic_cast<QPrinterInfo*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQPrinterInfo::KQPrinterInfo() : QPrinterInfo()
 {
 	self = NULL;
 	dummy = new DummyQPrinterInfo();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QPrinterInfo_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -244,13 +258,9 @@ static void QPrinterInfo_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPrinterInfo_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPrinterInfo *qp = (KQPrinterInfo *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -264,6 +274,8 @@ void KQPrinterInfo::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQPrinterInfo(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

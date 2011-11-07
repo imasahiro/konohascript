@@ -14,7 +14,7 @@ KMETHOD QWizardPage_getButtonText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWizard::WizardButton which = Int_to(QWizard::WizardButton, sfp[1]);
 		QString ret_v = qp->buttonText(which);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -29,7 +29,7 @@ KMETHOD QWizardPage_cleanupPage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->cleanupPage();
 	}
 	RETURNvoid_();
@@ -40,7 +40,7 @@ KMETHOD QWizardPage_initializePage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->initializePage();
 	}
 	RETURNvoid_();
@@ -51,7 +51,7 @@ KMETHOD QWizardPage_isCommitPage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isCommitPage();
 		RETURNb_(ret_v);
 	} else {
@@ -64,7 +64,7 @@ KMETHOD QWizardPage_isComplete(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isComplete();
 		RETURNb_(ret_v);
 	} else {
@@ -77,7 +77,7 @@ KMETHOD QWizardPage_isFinalPage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isFinalPage();
 		RETURNb_(ret_v);
 	} else {
@@ -90,7 +90,7 @@ KMETHOD QWizardPage_nextId(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->nextId();
 		RETURNi_(ret_v);
 	} else {
@@ -103,7 +103,7 @@ KMETHOD QWizardPage_getPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWizard::WizardPixmap which = Int_to(QWizard::WizardPixmap, sfp[1]);
 		QPixmap ret_v = qp->pixmap(which);
 		QPixmap *ret_v_ = new QPixmap(ret_v);
@@ -119,7 +119,7 @@ KMETHOD QWizardPage_setButtonText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWizard::WizardButton which = Int_to(QWizard::WizardButton, sfp[1]);
 		const QString text = String_to(const QString, sfp[2]);
 		qp->setButtonText(which, text);
@@ -132,7 +132,7 @@ KMETHOD QWizardPage_setCommitPage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool commitPage = Boolean_to(bool, sfp[1]);
 		qp->setCommitPage(commitPage);
 	}
@@ -144,7 +144,7 @@ KMETHOD QWizardPage_setFinalPage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool finalPage = Boolean_to(bool, sfp[1]);
 		qp->setFinalPage(finalPage);
 	}
@@ -156,7 +156,7 @@ KMETHOD QWizardPage_setPixmap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWizard::WizardPixmap which = Int_to(QWizard::WizardPixmap, sfp[1]);
 		const QPixmap  pixmap = *RawPtr_to(const QPixmap *, sfp[2]);
 		qp->setPixmap(which, pixmap);
@@ -169,7 +169,7 @@ KMETHOD QWizardPage_setSubTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString subTitle = String_to(const QString, sfp[1]);
 		qp->setSubTitle(subTitle);
 	}
@@ -181,7 +181,7 @@ KMETHOD QWizardPage_setTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString title = String_to(const QString, sfp[1]);
 		qp->setTitle(title);
 	}
@@ -193,7 +193,7 @@ KMETHOD QWizardPage_getSubTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->subTitle();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -207,7 +207,7 @@ KMETHOD QWizardPage_getTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->title();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -221,7 +221,7 @@ KMETHOD QWizardPage_validatePage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWizardPage *  qp = RawPtr_to(QWizardPage *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->validatePage();
 		RETURNb_(ret_v);
 	} else {
@@ -295,10 +295,25 @@ bool DummyQWizardPage::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQWizardPage::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, complete_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQWizardPage::connection(QObject *o)
 {
-	connect(o, SIGNAL(completeChanged()), this, SLOT(completeChangedSlot()));
+	QWizardPage *p = dynamic_cast<QWizardPage*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(completeChanged()), this, SLOT(completeChangedSlot()));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -361,17 +376,9 @@ static void QWizardPage_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QWizardPage_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQWizardPage *qp = (KQWizardPage *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->complete_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->complete_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -394,6 +401,8 @@ bool KQWizardPage::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQWizardPage(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

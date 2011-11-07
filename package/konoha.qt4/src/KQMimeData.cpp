@@ -13,7 +13,7 @@ KMETHOD QMimeData_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clear();
 	}
 	RETURNvoid_();
@@ -24,7 +24,7 @@ KMETHOD QMimeData_getColorData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QVariant ret_v = qp->colorData();
 		QVariant *ret_v_ = new QVariant(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -39,7 +39,7 @@ KMETHOD QMimeData_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString mimeType = String_to(const QString, sfp[1]);
 		QByteArray ret_v = qp->data(mimeType);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -55,7 +55,7 @@ KMETHOD QMimeData_hasColor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasColor();
 		RETURNb_(ret_v);
 	} else {
@@ -68,7 +68,7 @@ KMETHOD QMimeData_hasFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString mimeType = String_to(const QString, sfp[1]);
 		bool ret_v = qp->hasFormat(mimeType);
 		RETURNb_(ret_v);
@@ -82,7 +82,7 @@ KMETHOD QMimeData_hasHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasHtml();
 		RETURNb_(ret_v);
 	} else {
@@ -95,7 +95,7 @@ KMETHOD QMimeData_hasImage(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasImage();
 		RETURNb_(ret_v);
 	} else {
@@ -108,7 +108,7 @@ KMETHOD QMimeData_hasText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasText();
 		RETURNb_(ret_v);
 	} else {
@@ -121,7 +121,7 @@ KMETHOD QMimeData_hasUrls(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->hasUrls();
 		RETURNb_(ret_v);
 	} else {
@@ -134,7 +134,7 @@ KMETHOD QMimeData_getHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->html();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -148,7 +148,7 @@ KMETHOD QMimeData_getImageData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QVariant ret_v = qp->imageData();
 		QVariant *ret_v_ = new QVariant(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -163,7 +163,7 @@ KMETHOD QMimeData_removeFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString mimeType = String_to(const QString, sfp[1]);
 		qp->removeFormat(mimeType);
 	}
@@ -175,7 +175,7 @@ KMETHOD QMimeData_setColorData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QVariant  color = *RawPtr_to(const QVariant *, sfp[1]);
 		qp->setColorData(color);
 	}
@@ -187,7 +187,7 @@ KMETHOD QMimeData_setData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString mimeType = String_to(const QString, sfp[1]);
 		const QByteArray  data = *RawPtr_to(const QByteArray *, sfp[2]);
 		qp->setData(mimeType, data);
@@ -200,7 +200,7 @@ KMETHOD QMimeData_setHtml(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString html = String_to(const QString, sfp[1]);
 		qp->setHtml(html);
 	}
@@ -212,7 +212,7 @@ KMETHOD QMimeData_setImageData(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QVariant  image = *RawPtr_to(const QVariant *, sfp[1]);
 		qp->setImageData(image);
 	}
@@ -224,7 +224,7 @@ KMETHOD QMimeData_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString text = String_to(const QString, sfp[1]);
 		qp->setText(text);
 	}
@@ -236,7 +236,7 @@ KMETHOD QMimeData_setUrls(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<QUrl> urls;
@@ -254,7 +254,7 @@ KMETHOD QMimeData_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->text();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -268,8 +268,8 @@ KMETHOD QMimeData_getUrls(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMimeData *  qp = RawPtr_to(QMimeData *, sfp[0]);
-	if (qp != NULL) {
-		QList<QUrl>ret_v = qp->urls();
+	if (qp) {
+		QList<QUrl> ret_v = qp->urls();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QUrl"));
@@ -336,9 +336,23 @@ bool DummyQMimeData::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMimeData::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQObject::reftrace(ctx, p, tail_);
+}
 
 void DummyQMimeData::connection(QObject *o)
 {
+	QMimeData *p = dynamic_cast<QMimeData*>(o);
+	if (p != NULL) {
+	}
 	DummyQObject::connection(o);
 }
 
@@ -401,13 +415,9 @@ static void QMimeData_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMimeData_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMimeData *qp = (KQMimeData *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -430,6 +440,8 @@ bool KQMimeData::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQMimeData(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

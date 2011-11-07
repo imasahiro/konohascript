@@ -15,7 +15,7 @@ KMETHOD QGenericArgument_data(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGenericArgument *  qp = RawPtr_to(QGenericArgument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		void* ret_v = qp->data();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (void*)ret_v, NULL);
 		RETURN_(rptr);
@@ -29,7 +29,7 @@ KMETHOD QGenericArgument_name(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGenericArgument *  qp = RawPtr_to(QGenericArgument *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char* ret_v = qp->name();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (char*)ret_v, NULL);
 		RETURN_(rptr);
@@ -38,6 +38,24 @@ KMETHOD QGenericArgument_name(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QGenericArgument.parents();
+KMETHOD QGenericArgument_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGenericArgument *qp = RawPtr_to(QGenericArgument*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQGenericArgument::DummyQGenericArgument()
 {
@@ -86,17 +104,28 @@ bool DummyQGenericArgument::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQGenericArgument::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQGenericArgument::connection(QObject *o)
 {
-	return;
+	QGenericArgument *p = dynamic_cast<QGenericArgument*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQGenericArgument::KQGenericArgument(const char* name, const void* data) : QGenericArgument(name, data)
 {
 	self = NULL;
 	dummy = new DummyQGenericArgument();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGenericArgument_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -151,13 +180,9 @@ static void QGenericArgument_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGenericArgument_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGenericArgument *qp = (KQGenericArgument *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -171,6 +196,8 @@ void KQGenericArgument::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGenericArgument(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

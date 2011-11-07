@@ -95,9 +95,23 @@ bool DummyQStyleOptionTabV3::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
+void DummyQStyleOptionTabV3::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOptionTabV2::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionTabV3::connection(QObject *o)
 {
+	QStyleOptionTabV3 *p = dynamic_cast<QStyleOptionTabV3*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOptionTabV2::connection(o);
 }
 
@@ -105,7 +119,6 @@ KQStyleOptionTabV3::KQStyleOptionTabV3() : QStyleOptionTabV3()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionTabV3();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionTabV3_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -160,13 +173,9 @@ static void QStyleOptionTabV3_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionTabV3_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionTabV3 *qp = (KQStyleOptionTabV3 *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -181,6 +190,16 @@ void KQStyleOptionTabV3::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
+static knh_IntData_t QStyleOptionTabV3ConstInt[] = {
+	{"Version", QStyleOptionTabV3::Version},
+	{NULL, 0}
+};
+
+DEFAPI(void) constQStyleOptionTabV3(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
+	kapi->loadClassIntConst(ctx, cid, QStyleOptionTabV3ConstInt);
+}
+
+
 DEFAPI(void) defQStyleOptionTabV3(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	(void)ctx; (void) cid;
@@ -190,12 +209,4 @@ DEFAPI(void) defQStyleOptionTabV3(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef
 	cdef->compareTo = QStyleOptionTabV3_compareTo;
 }
 
-static knh_IntData_t QStyleOptionTabV3ConstInt[] = {
-	{"Version", QStyleOptionTabV3::Version},
-	{NULL, 0}
-};
-
-DEFAPI(void) constQStyleOptionTabV3(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
-	kapi->loadClassIntConst(ctx, cid, QStyleOptionTabV3ConstInt);
-}
 

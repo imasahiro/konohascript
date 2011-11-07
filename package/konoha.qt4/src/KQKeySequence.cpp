@@ -77,7 +77,7 @@ KMETHOD QKeySequence_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QKeySequence *  qp = RawPtr_to(QKeySequence *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uint ret_v = qp->count();
 		uint *ret_v_ = new uint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -92,7 +92,7 @@ KMETHOD QKeySequence_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QKeySequence *  qp = RawPtr_to(QKeySequence *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isEmpty();
 		RETURNb_(ret_v);
 	} else {
@@ -105,7 +105,7 @@ KMETHOD QKeySequence_matches(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QKeySequence *  qp = RawPtr_to(QKeySequence *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QKeySequence  seq = *RawPtr_to(const QKeySequence *, sfp[1]);
 		QKeySequence::SequenceMatch ret_v = qp->matches(seq);
 		RETURNi_(ret_v);
@@ -119,7 +119,7 @@ KMETHOD QKeySequence_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QKeySequence *  qp = RawPtr_to(QKeySequence *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QKeySequence::SequenceFormat format = Int_to(QKeySequence::SequenceFormat, sfp[1]);
 		QString ret_v = qp->toString(format);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -133,11 +133,10 @@ KMETHOD QKeySequence_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QKeySequence_fromString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QKeySequence *  qp = RawPtr_to(QKeySequence *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString str = String_to(const QString, sfp[1]);
 		QKeySequence::SequenceFormat format = Int_to(QKeySequence::SequenceFormat, sfp[2]);
-		QKeySequence ret_v = qp->fromString(str, format);
+		QKeySequence ret_v = QKeySequence::fromString(str, format);
 		QKeySequence *ret_v_ = new QKeySequence(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -150,10 +149,9 @@ KMETHOD QKeySequence_fromString(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QKeySequence_keyBindings(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QKeySequence *  qp = RawPtr_to(QKeySequence *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QKeySequence::StandardKey key = Int_to(QKeySequence::StandardKey, sfp[1]);
-		QList<QKeySequence>ret_v = qp->keyBindings(key);
+		QList<QKeySequence> ret_v = QKeySequence::keyBindings(key);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QKeySequence"));
@@ -173,10 +171,9 @@ KMETHOD QKeySequence_keyBindings(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QKeySequence_mnemonic(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QKeySequence *  qp = RawPtr_to(QKeySequence *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString text = String_to(const QString, sfp[1]);
-		QKeySequence ret_v = qp->mnemonic(text);
+		QKeySequence ret_v = QKeySequence::mnemonic(text);
 		QKeySequence *ret_v_ = new QKeySequence(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -185,6 +182,24 @@ KMETHOD QKeySequence_mnemonic(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QKeySequence.parents();
+KMETHOD QKeySequence_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QKeySequence *qp = RawPtr_to(QKeySequence*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQKeySequence::DummyQKeySequence()
 {
@@ -233,17 +248,28 @@ bool DummyQKeySequence::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQKeySequence::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQKeySequence::connection(QObject *o)
 {
-	return;
+	QKeySequence *p = dynamic_cast<QKeySequence*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQKeySequence::KQKeySequence() : QKeySequence()
 {
 	self = NULL;
 	dummy = new DummyQKeySequence();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QKeySequence_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -298,13 +324,9 @@ static void QKeySequence_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QKeySequence_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQKeySequence *qp = (KQKeySequence *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -317,15 +339,6 @@ void KQKeySequence::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQKeySequence(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QKeySequence";
-	cdef->free = QKeySequence_free;
-	cdef->reftrace = QKeySequence_reftrace;
-	cdef->compareTo = QKeySequence_compareTo;
 }
 
 static knh_IntData_t QKeySequenceConstInt[] = {
@@ -406,4 +419,15 @@ static knh_IntData_t QKeySequenceConstInt[] = {
 DEFAPI(void) constQKeySequence(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QKeySequenceConstInt);
 }
+
+
+DEFAPI(void) defQKeySequence(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QKeySequence";
+	cdef->free = QKeySequence_free;
+	cdef->reftrace = QKeySequence_reftrace;
+	cdef->compareTo = QKeySequence_compareTo;
+}
+
 

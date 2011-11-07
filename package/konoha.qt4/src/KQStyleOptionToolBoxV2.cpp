@@ -83,9 +83,23 @@ bool DummyQStyleOptionToolBoxV2::signalConnect(knh_Func_t *callback_func, string
 	}
 }
 
+void DummyQStyleOptionToolBoxV2::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOptionToolBox::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionToolBoxV2::connection(QObject *o)
 {
+	QStyleOptionToolBoxV2 *p = dynamic_cast<QStyleOptionToolBoxV2*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOptionToolBox::connection(o);
 }
 
@@ -93,7 +107,6 @@ KQStyleOptionToolBoxV2::KQStyleOptionToolBoxV2() : QStyleOptionToolBoxV2()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionToolBoxV2();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionToolBoxV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -148,13 +161,9 @@ static void QStyleOptionToolBoxV2_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionToolBoxV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionToolBoxV2 *qp = (KQStyleOptionToolBoxV2 *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -167,15 +176,6 @@ void KQStyleOptionToolBoxV2::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQStyleOptionToolBoxV2(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionToolBoxV2";
-	cdef->free = QStyleOptionToolBoxV2_free;
-	cdef->reftrace = QStyleOptionToolBoxV2_reftrace;
-	cdef->compareTo = QStyleOptionToolBoxV2_compareTo;
 }
 
 static knh_IntData_t QStyleOptionToolBoxV2ConstInt[] = {
@@ -193,4 +193,15 @@ static knh_IntData_t QStyleOptionToolBoxV2ConstInt[] = {
 DEFAPI(void) constQStyleOptionToolBoxV2(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionToolBoxV2ConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionToolBoxV2(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionToolBoxV2";
+	cdef->free = QStyleOptionToolBoxV2_free;
+	cdef->reftrace = QStyleOptionToolBoxV2_reftrace;
+	cdef->compareTo = QStyleOptionToolBoxV2_compareTo;
+}
+
 

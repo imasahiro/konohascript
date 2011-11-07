@@ -107,9 +107,11 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+
 typedefed_objects
-const_iterator
-iterator
 ConstIterator
 Iterator
 difference_type
@@ -118,6 +120,12 @@ mapped_type
 size_type
 
 parent_typedefed_objects
+
+class_objects
+const_iterator
+iterator
+
+parent_class_objects
 
 enums
 

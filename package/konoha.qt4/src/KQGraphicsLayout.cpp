@@ -3,7 +3,7 @@ KMETHOD QGraphicsLayout_getContentsMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayout *  qp = RawPtr_to(QGraphicsLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal*  left = RawPtr_to(qreal*, sfp[1]);
 		qreal*  top = RawPtr_to(qreal*, sfp[2]);
 		qreal*  right = RawPtr_to(qreal*, sfp[3]);
@@ -18,7 +18,7 @@ KMETHOD QGraphicsLayout_updateGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayout *  qp = RawPtr_to(QGraphicsLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->updateGeometry();
 	}
 	RETURNvoid_();
@@ -30,7 +30,7 @@ KMETHOD QGraphicsLayout_activate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayout *  qp = RawPtr_to(QGraphicsLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->activate();
 	}
 	RETURNvoid_();
@@ -41,7 +41,7 @@ KMETHOD QGraphicsLayout_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayout *  qp = RawPtr_to(QGraphicsLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->count();
 		RETURNi_(ret_v);
 	} else {
@@ -54,7 +54,7 @@ KMETHOD QGraphicsLayout_invalidate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayout *  qp = RawPtr_to(QGraphicsLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->invalidate();
 	}
 	RETURNvoid_();
@@ -65,7 +65,7 @@ KMETHOD QGraphicsLayout_isActivated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayout *  qp = RawPtr_to(QGraphicsLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isActivated();
 		RETURNb_(ret_v);
 	} else {
@@ -78,7 +78,7 @@ KMETHOD QGraphicsLayout_itemAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayout *  qp = RawPtr_to(QGraphicsLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int i = Int_to(int, sfp[1]);
 		QGraphicsLayoutItem* ret_v = qp->itemAt(i);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QGraphicsLayoutItem*)ret_v, NULL);
@@ -93,7 +93,7 @@ KMETHOD QGraphicsLayout_removeAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayout *  qp = RawPtr_to(QGraphicsLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		qp->removeAt(index);
 	}
@@ -105,7 +105,7 @@ KMETHOD QGraphicsLayout_setContentsMargins(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayout *  qp = RawPtr_to(QGraphicsLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal left = Float_to(qreal, sfp[1]);
 		qreal top = Float_to(qreal, sfp[2]);
 		qreal right = Float_to(qreal, sfp[3]);
@@ -120,7 +120,7 @@ KMETHOD QGraphicsLayout_widgetEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QGraphicsLayout *  qp = RawPtr_to(QGraphicsLayout *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEvent*  e = RawPtr_to(QEvent*, sfp[1]);
 		qp->widgetEvent(e);
 	}
@@ -178,9 +178,23 @@ bool DummyQGraphicsLayout::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQGraphicsLayout::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQGraphicsLayoutItem::reftrace(ctx, p, tail_);
+}
 
 void DummyQGraphicsLayout::connection(QObject *o)
 {
+	QGraphicsLayout *p = dynamic_cast<QGraphicsLayout*>(o);
+	if (p != NULL) {
+	}
 	DummyQGraphicsLayoutItem::connection(o);
 }
 
@@ -188,7 +202,6 @@ KQGraphicsLayout::KQGraphicsLayout(QGraphicsLayoutItem* parent) : QGraphicsLayou
 {
 	self = NULL;
 	dummy = new DummyQGraphicsLayout();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QGraphicsLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -243,13 +256,9 @@ static void QGraphicsLayout_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QGraphicsLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQGraphicsLayout *qp = (KQGraphicsLayout *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -263,6 +272,8 @@ void KQGraphicsLayout::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQGraphicsLayout(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

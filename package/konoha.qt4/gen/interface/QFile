@@ -91,14 +91,28 @@ false
 enbeddedClass
 false
 
+flag_objects
+class
+QFile
+name
+Permissions
+
+parent_flag_objects
+class
+QIODevice
+name
+OpenMode
+
 typedefed_objects
 DecoderFn
 EncoderFn
 PermissionSpec
-Permissions
 
 parent_typedefed_objects
-OpenMode
+
+class_objects
+
+parent_class_objects
 
 enums
 class_name

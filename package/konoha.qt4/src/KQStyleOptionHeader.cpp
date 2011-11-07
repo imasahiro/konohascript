@@ -71,9 +71,23 @@ bool DummyQStyleOptionHeader::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
+void DummyQStyleOptionHeader::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOption::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionHeader::connection(QObject *o)
 {
+	QStyleOptionHeader *p = dynamic_cast<QStyleOptionHeader*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOption::connection(o);
 }
 
@@ -81,7 +95,6 @@ KQStyleOptionHeader::KQStyleOptionHeader() : QStyleOptionHeader()
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionHeader();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionHeader_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -136,13 +149,9 @@ static void QStyleOptionHeader_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionHeader_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionHeader *qp = (KQStyleOptionHeader *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -155,15 +164,6 @@ void KQStyleOptionHeader::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQStyleOptionHeader(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOptionHeader";
-	cdef->free = QStyleOptionHeader_free;
-	cdef->reftrace = QStyleOptionHeader_reftrace;
-	cdef->compareTo = QStyleOptionHeader_compareTo;
 }
 
 static knh_IntData_t QStyleOptionHeaderConstInt[] = {
@@ -186,4 +186,15 @@ static knh_IntData_t QStyleOptionHeaderConstInt[] = {
 DEFAPI(void) constQStyleOptionHeader(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionHeaderConstInt);
 }
+
+
+DEFAPI(void) defQStyleOptionHeader(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOptionHeader";
+	cdef->free = QStyleOptionHeader_free;
+	cdef->reftrace = QStyleOptionHeader_reftrace;
+	cdef->compareTo = QStyleOptionHeader_compareTo;
+}
+
 

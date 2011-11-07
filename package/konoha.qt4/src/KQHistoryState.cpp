@@ -27,7 +27,7 @@ KMETHOD QHistoryState_getDefaultState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHistoryState *  qp = RawPtr_to(QHistoryState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractState* ret_v = qp->defaultState();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QAbstractState*)ret_v, NULL);
 		RETURN_(rptr);
@@ -41,7 +41,7 @@ KMETHOD QHistoryState_getHistoryType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHistoryState *  qp = RawPtr_to(QHistoryState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QHistoryState::HistoryType ret_v = qp->historyType();
 		RETURNi_(ret_v);
 	} else {
@@ -54,7 +54,7 @@ KMETHOD QHistoryState_setDefaultState(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHistoryState *  qp = RawPtr_to(QHistoryState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractState*  state = RawPtr_to(QAbstractState*, sfp[1]);
 		qp->setDefaultState(state);
 	}
@@ -66,7 +66,7 @@ KMETHOD QHistoryState_setHistoryType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHistoryState *  qp = RawPtr_to(QHistoryState *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QHistoryState::HistoryType type = Int_to(QHistoryState::HistoryType, sfp[1]);
 		qp->setHistoryType(type);
 	}
@@ -124,9 +124,23 @@ bool DummyQHistoryState::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQHistoryState::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractState::reftrace(ctx, p, tail_);
+}
 
 void DummyQHistoryState::connection(QObject *o)
 {
+	QHistoryState *p = dynamic_cast<QHistoryState*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractState::connection(o);
 }
 
@@ -189,13 +203,9 @@ static void QHistoryState_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QHistoryState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQHistoryState *qp = (KQHistoryState *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -219,15 +229,6 @@ bool KQHistoryState::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQHistoryState(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QHistoryState";
-	cdef->free = QHistoryState_free;
-	cdef->reftrace = QHistoryState_reftrace;
-	cdef->compareTo = QHistoryState_compareTo;
-}
-
 static knh_IntData_t QHistoryStateConstInt[] = {
 	{"ShallowHistory", QHistoryState::ShallowHistory},
 	{"DeepHistory", QHistoryState::DeepHistory},
@@ -237,4 +238,15 @@ static knh_IntData_t QHistoryStateConstInt[] = {
 DEFAPI(void) constQHistoryState(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QHistoryStateConstInt);
 }
+
+
+DEFAPI(void) defQHistoryState(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QHistoryState";
+	cdef->free = QHistoryState_free;
+	cdef->reftrace = QHistoryState_reftrace;
+	cdef->compareTo = QHistoryState_compareTo;
+}
+
 

@@ -3,7 +3,7 @@ KMETHOD QAccessibleObject_actionText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleObject *  qp = RawPtr_to(QAccessibleObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int action = Int_to(int, sfp[1]);
 		QAccessibleObject::Text t = Int_to(QAccessibleObject::Text, sfp[2]);
 		int child = Int_to(int, sfp[3]);
@@ -20,24 +20,11 @@ KMETHOD QAccessibleObject_doAction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleObject *  qp = RawPtr_to(QAccessibleObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int action = Int_to(int, sfp[1]);
 		int child = Int_to(int, sfp[2]);
 		const QVariantList  params = *RawPtr_to(const QVariantList *, sfp[3]);
 		bool ret_v = qp->doAction(action, child, params);
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////@Virtual @Override boolean QAccessibleObject.isValid();
-KMETHOD QAccessibleObject_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QAccessibleObject *  qp = RawPtr_to(QAccessibleObject *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -49,7 +36,7 @@ KMETHOD QAccessibleObject_object(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleObject *  qp = RawPtr_to(QAccessibleObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject* ret_v = qp->object();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QObject*)ret_v, NULL);
 		RETURN_(rptr);
@@ -63,7 +50,7 @@ KMETHOD QAccessibleObject_rect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleObject *  qp = RawPtr_to(QAccessibleObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int child = Int_to(int, sfp[1]);
 		QRect ret_v = qp->rect(child);
 		QRect *ret_v_ = new QRect(ret_v);
@@ -79,7 +66,7 @@ KMETHOD QAccessibleObject_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleObject *  qp = RawPtr_to(QAccessibleObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAccessibleObject::Text t = Int_to(QAccessibleObject::Text, sfp[1]);
 		int child = Int_to(int, sfp[2]);
 		const QString text = String_to(const QString, sfp[3]);
@@ -93,7 +80,7 @@ KMETHOD QAccessibleObject_userActionCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QAccessibleObject *  qp = RawPtr_to(QAccessibleObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int child = Int_to(int, sfp[1]);
 		int ret_v = qp->userActionCount(child);
 		RETURNi_(ret_v);
@@ -154,9 +141,23 @@ bool DummyQAccessibleObject::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
+void DummyQAccessibleObject::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAccessibleInterface::reftrace(ctx, p, tail_);
+}
 
 void DummyQAccessibleObject::connection(QObject *o)
 {
+	QAccessibleObject *p = dynamic_cast<QAccessibleObject*>(o);
+	if (p != NULL) {
+	}
 	DummyQAccessibleInterface::connection(o);
 }
 
@@ -164,7 +165,6 @@ KQAccessibleObject::KQAccessibleObject(QObject* object) : QAccessibleObject(obje
 {
 	self = NULL;
 	dummy = new DummyQAccessibleObject();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QAccessibleObject_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -219,13 +219,9 @@ static void QAccessibleObject_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QAccessibleObject_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQAccessibleObject *qp = (KQAccessibleObject *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -239,6 +235,8 @@ void KQAccessibleObject::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQAccessibleObject(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -51,7 +51,7 @@ KMETHOD QDateTime_addDays(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ndays = Int_to(int, sfp[1]);
 		QDateTime ret_v = qp->addDays(ndays);
 		QDateTime *ret_v_ = new QDateTime(ret_v);
@@ -67,7 +67,7 @@ KMETHOD QDateTime_addMSecs(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 msecs = Int_to(qint64, sfp[1]);
 		QDateTime ret_v = qp->addMSecs(msecs);
 		QDateTime *ret_v_ = new QDateTime(ret_v);
@@ -83,7 +83,7 @@ KMETHOD QDateTime_addMonths(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int nmonths = Int_to(int, sfp[1]);
 		QDateTime ret_v = qp->addMonths(nmonths);
 		QDateTime *ret_v_ = new QDateTime(ret_v);
@@ -99,7 +99,7 @@ KMETHOD QDateTime_addSecs(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int s = Int_to(int, sfp[1]);
 		QDateTime ret_v = qp->addSecs(s);
 		QDateTime *ret_v_ = new QDateTime(ret_v);
@@ -115,7 +115,7 @@ KMETHOD QDateTime_addYears(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int nyears = Int_to(int, sfp[1]);
 		QDateTime ret_v = qp->addYears(nyears);
 		QDateTime *ret_v_ = new QDateTime(ret_v);
@@ -131,7 +131,7 @@ KMETHOD QDateTime_getDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDate ret_v = qp->date();
 		QDate *ret_v_ = new QDate(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -146,7 +146,7 @@ KMETHOD QDateTime_daysTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDateTime  other = *RawPtr_to(const QDateTime *, sfp[1]);
 		int ret_v = qp->daysTo(other);
 		RETURNi_(ret_v);
@@ -155,38 +155,12 @@ KMETHOD QDateTime_daysTo(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-////boolean QDateTime.isNull();
-KMETHOD QDateTime_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isNull();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QDateTime.isValid();
-KMETHOD QDateTime_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
 //int QDateTime.msecsTo(QDateTime other);
 KMETHOD QDateTime_msecsTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDateTime  other = *RawPtr_to(const QDateTime *, sfp[1]);
 		qint64 ret_v = qp->msecsTo(other);
 		qint64 *ret_v_ = new qint64(ret_v);
@@ -202,7 +176,7 @@ KMETHOD QDateTime_secsTo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDateTime  other = *RawPtr_to(const QDateTime *, sfp[1]);
 		int ret_v = qp->secsTo(other);
 		RETURNi_(ret_v);
@@ -216,7 +190,7 @@ KMETHOD QDateTime_setDate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QDate  date = *RawPtr_to(const QDate *, sfp[1]);
 		qp->setDate(date);
 	}
@@ -228,7 +202,7 @@ KMETHOD QDateTime_setMSecsSinceEpoch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 msecs = Int_to(qint64, sfp[1]);
 		qp->setMSecsSinceEpoch(msecs);
 	}
@@ -240,7 +214,7 @@ KMETHOD QDateTime_setTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QTime  time = *RawPtr_to(const QTime *, sfp[1]);
 		qp->setTime(time);
 	}
@@ -252,7 +226,7 @@ KMETHOD QDateTime_setTimeSpec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TimeSpec spec = Int_to(Qt::TimeSpec, sfp[1]);
 		qp->setTimeSpec(spec);
 	}
@@ -264,7 +238,7 @@ KMETHOD QDateTime_setTime_t(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uint  seconds = *RawPtr_to(uint *, sfp[1]);
 		qp->setTime_t(seconds);
 	}
@@ -276,7 +250,7 @@ KMETHOD QDateTime_getTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTime ret_v = qp->time();
 		QTime *ret_v_ = new QTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -291,7 +265,7 @@ KMETHOD QDateTime_getTimeSpec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TimeSpec ret_v = qp->timeSpec();
 		RETURNi_(ret_v);
 	} else {
@@ -304,7 +278,7 @@ KMETHOD QDateTime_toLocalTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDateTime ret_v = qp->toLocalTime();
 		QDateTime *ret_v_ = new QDateTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -319,7 +293,7 @@ KMETHOD QDateTime_toMSecsSinceEpoch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qint64 ret_v = qp->toMSecsSinceEpoch();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -334,7 +308,7 @@ KMETHOD QDateTime_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString format = String_to(const QString, sfp[1]);
 		QString ret_v = qp->toString(format);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -350,7 +324,7 @@ KMETHOD QDateTime_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::DateFormat format = Int_to(Qt::DateFormat, sfp[1]);
 		QString ret_v = qp->toString(format);
 		const char *ret_c = ret_v.toLocal8Bit().data();
@@ -365,7 +339,7 @@ KMETHOD QDateTime_toTimeSpec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::TimeSpec specification = Int_to(Qt::TimeSpec, sfp[1]);
 		QDateTime ret_v = qp->toTimeSpec(specification);
 		QDateTime *ret_v_ = new QDateTime(ret_v);
@@ -381,7 +355,7 @@ KMETHOD QDateTime_toTime_t(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		uint ret_v = qp->toTime_t();
 		uint *ret_v_ = new uint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -396,7 +370,7 @@ KMETHOD QDateTime_toUTC(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QDateTime ret_v = qp->toUTC();
 		QDateTime *ret_v_ = new QDateTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -410,9 +384,8 @@ KMETHOD QDateTime_toUTC(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDateTime_currentDateTime(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
-		QDateTime ret_v = qp->currentDateTime();
+	if (true) {
+		QDateTime ret_v = QDateTime::currentDateTime();
 		QDateTime *ret_v_ = new QDateTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -425,9 +398,8 @@ KMETHOD QDateTime_currentDateTime(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDateTime_currentDateTimeUtc(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
-		QDateTime ret_v = qp->currentDateTimeUtc();
+	if (true) {
+		QDateTime ret_v = QDateTime::currentDateTimeUtc();
 		QDateTime *ret_v_ = new QDateTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -440,9 +412,8 @@ KMETHOD QDateTime_currentDateTimeUtc(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDateTime_currentMSecsSinceEpoch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
-		qint64 ret_v = qp->currentMSecsSinceEpoch();
+	if (true) {
+		qint64 ret_v = QDateTime::currentMSecsSinceEpoch();
 		qint64 *ret_v_ = new qint64(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -455,10 +426,9 @@ KMETHOD QDateTime_currentMSecsSinceEpoch(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDateTime_fromMSecsSinceEpoch(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		qint64 msecs = Int_to(qint64, sfp[1]);
-		QDateTime ret_v = qp->fromMSecsSinceEpoch(msecs);
+		QDateTime ret_v = QDateTime::fromMSecsSinceEpoch(msecs);
 		QDateTime *ret_v_ = new QDateTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -471,11 +441,10 @@ KMETHOD QDateTime_fromMSecsSinceEpoch(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDateTime_fromString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString string = String_to(const QString, sfp[1]);
 		Qt::DateFormat format = Int_to(Qt::DateFormat, sfp[2]);
-		QDateTime ret_v = qp->fromString(string, format);
+		QDateTime ret_v = QDateTime::fromString(string, format);
 		QDateTime *ret_v_ = new QDateTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -489,11 +458,10 @@ KMETHOD QDateTime_fromString(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDateTime_fromString(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const QString string = String_to(const QString, sfp[1]);
 		const QString format = String_to(const QString, sfp[2]);
-		QDateTime ret_v = qp->fromString(string, format);
+		QDateTime ret_v = QDateTime::fromString(string, format);
 		QDateTime *ret_v_ = new QDateTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -506,10 +474,9 @@ KMETHOD QDateTime_fromString(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QDateTime_fromTime_t(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QDateTime *  qp = RawPtr_to(QDateTime *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		uint  seconds = *RawPtr_to(uint *, sfp[1]);
-		QDateTime ret_v = qp->fromTime_t(seconds);
+		QDateTime ret_v = QDateTime::fromTime_t(seconds);
 		QDateTime *ret_v_ = new QDateTime(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -518,6 +485,24 @@ KMETHOD QDateTime_fromTime_t(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QDateTime.parents();
+KMETHOD QDateTime_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QDateTime *qp = RawPtr_to(QDateTime*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQDateTime::DummyQDateTime()
 {
@@ -566,17 +551,28 @@ bool DummyQDateTime::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQDateTime::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQDateTime::connection(QObject *o)
 {
-	return;
+	QDateTime *p = dynamic_cast<QDateTime*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQDateTime::KQDateTime() : QDateTime()
 {
 	self = NULL;
 	dummy = new DummyQDateTime();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QDateTime_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -631,13 +627,9 @@ static void QDateTime_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QDateTime_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQDateTime *qp = (KQDateTime *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -651,6 +643,8 @@ void KQDateTime::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQDateTime(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

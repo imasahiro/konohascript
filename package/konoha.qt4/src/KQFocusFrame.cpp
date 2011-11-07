@@ -14,7 +14,7 @@ KMETHOD QFocusFrame_setWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFocusFrame *  qp = RawPtr_to(QFocusFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->setWidget(widget);
 	}
@@ -26,7 +26,7 @@ KMETHOD QFocusFrame_getWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QFocusFrame *  qp = RawPtr_to(QFocusFrame *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->widget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -86,9 +86,23 @@ bool DummyQFocusFrame::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQFocusFrame::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQFocusFrame::connection(QObject *o)
 {
+	QFocusFrame *p = dynamic_cast<QFocusFrame*>(o);
+	if (p != NULL) {
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -151,13 +165,9 @@ static void QFocusFrame_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QFocusFrame_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQFocusFrame *qp = (KQFocusFrame *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -180,6 +190,8 @@ bool KQFocusFrame::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQFocusFrame(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -3,7 +3,7 @@ KMETHOD QPrintDialog_done(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintDialog *  qp = RawPtr_to(QPrintDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int result = Int_to(int, sfp[1]);
 		qp->done(result);
 	}
@@ -15,7 +15,7 @@ KMETHOD QPrintDialog_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintDialog *  qp = RawPtr_to(QPrintDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->exec();
 		RETURNi_(ret_v);
 	} else {
@@ -28,7 +28,7 @@ KMETHOD QPrintDialog_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintDialog *  qp = RawPtr_to(QPrintDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool visible = Boolean_to(bool, sfp[1]);
 		qp->setVisible(visible);
 	}
@@ -64,7 +64,7 @@ KMETHOD QPrintDialog_open(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintDialog *  qp = RawPtr_to(QPrintDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  receiver = RawPtr_to(QObject*, sfp[1]);
 		const char*  member = RawPtr_to(const char*, sfp[2]);
 		qp->open(receiver, member);
@@ -72,16 +72,18 @@ KMETHOD QPrintDialog_open(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//int QPrintDialog.getOptions();
+//QAbstractPrintDialogPrintDialogOptions QPrintDialog.getOptions();
 KMETHOD QPrintDialog_getOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintDialog *  qp = RawPtr_to(QPrintDialog *, sfp[0]);
-	if (qp != NULL) {
-		QPrintDialog::PrintDialogOptions ret_v = qp->options();
-		RETURNi_(ret_v);
+	if (qp) {
+		QAbstractPrintDialog::PrintDialogOptions ret_v = qp->options();
+		QAbstractPrintDialog::PrintDialogOptions *ret_v_ = new QAbstractPrintDialog::PrintDialogOptions(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -90,7 +92,7 @@ KMETHOD QPrintDialog_printer(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintDialog *  qp = RawPtr_to(QPrintDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrinter* ret_v = qp->printer();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QPrinter*)ret_v, NULL);
 		RETURN_(rptr);
@@ -104,7 +106,7 @@ KMETHOD QPrintDialog_setOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintDialog *  qp = RawPtr_to(QPrintDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrintDialog::PrintDialogOption option = Int_to(QPrintDialog::PrintDialogOption, sfp[1]);
 		bool on = Boolean_to(bool, sfp[2]);
 		qp->setOption(option, on);
@@ -112,13 +114,13 @@ KMETHOD QPrintDialog_setOption(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//void QPrintDialog.setOptions(int options);
+//void QPrintDialog.setOptions(QAbstractPrintDialogPrintDialogOptions options);
 KMETHOD QPrintDialog_setOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintDialog *  qp = RawPtr_to(QPrintDialog *, sfp[0]);
-	if (qp != NULL) {
-		QPrintDialog::PrintDialogOptions options = Int_to(QPrintDialog::PrintDialogOptions, sfp[1]);
+	if (qp) {
+		initFlag(options, QAbstractPrintDialog::PrintDialogOptions, sfp[1]);
 		qp->setOptions(options);
 	}
 	RETURNvoid_();
@@ -129,7 +131,7 @@ KMETHOD QPrintDialog_testOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPrintDialog *  qp = RawPtr_to(QPrintDialog *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPrintDialog::PrintDialogOption option = Int_to(QPrintDialog::PrintDialogOption, sfp[1]);
 		bool ret_v = qp->testOption(option);
 		RETURNb_(ret_v);
@@ -206,10 +208,25 @@ bool DummyQPrintDialog::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPrintDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, accepted_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractPrintDialog::reftrace(ctx, p, tail_);
+}
 
 void DummyQPrintDialog::connection(QObject *o)
 {
-	connect(o, SIGNAL(accepted(QPrinter*)), this, SLOT(acceptedSlot(QPrinter*)));
+	QPrintDialog *p = dynamic_cast<QPrintDialog*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(accepted(QPrinter*)), this, SLOT(acceptedSlot(QPrinter*)));
+	}
 	DummyQAbstractPrintDialog::connection(o);
 }
 
@@ -272,17 +289,9 @@ static void QPrintDialog_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPrintDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPrintDialog *qp = (KQPrintDialog *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->accepted_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->accepted_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -305,6 +314,8 @@ bool KQPrintDialog::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQPrintDialog(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

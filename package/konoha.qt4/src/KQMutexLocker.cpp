@@ -14,7 +14,7 @@ KMETHOD QMutexLocker_mutex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMutexLocker *  qp = RawPtr_to(QMutexLocker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMutex* ret_v = qp->mutex();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMutex*)ret_v, NULL);
 		RETURN_(rptr);
@@ -28,7 +28,7 @@ KMETHOD QMutexLocker_relock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMutexLocker *  qp = RawPtr_to(QMutexLocker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->relock();
 	}
 	RETURNvoid_();
@@ -39,12 +39,30 @@ KMETHOD QMutexLocker_unlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMutexLocker *  qp = RawPtr_to(QMutexLocker *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->unlock();
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QMutexLocker.parents();
+KMETHOD QMutexLocker_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMutexLocker *qp = RawPtr_to(QMutexLocker*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQMutexLocker::DummyQMutexLocker()
 {
@@ -93,17 +111,28 @@ bool DummyQMutexLocker::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMutexLocker::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQMutexLocker::connection(QObject *o)
 {
-	return;
+	QMutexLocker *p = dynamic_cast<QMutexLocker*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQMutexLocker::KQMutexLocker(QMutex* mutex) : QMutexLocker(mutex)
 {
 	self = NULL;
 	dummy = new DummyQMutexLocker();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMutexLocker_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -158,13 +187,9 @@ static void QMutexLocker_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMutexLocker_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMutexLocker *qp = (KQMutexLocker *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -178,6 +203,8 @@ void KQMutexLocker::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQMutexLocker(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

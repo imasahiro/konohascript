@@ -27,13 +27,31 @@ KMETHOD QStyleOption_initFrom(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QStyleOption *  qp = RawPtr_to(QStyleOption *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QWidget*  widget = RawPtr_to(const QWidget*, sfp[1]);
 		qp->initFrom(widget);
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QStyleOption.parents();
+KMETHOD QStyleOption_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QStyleOption *qp = RawPtr_to(QStyleOption*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQStyleOption::DummyQStyleOption()
 {
@@ -82,17 +100,28 @@ bool DummyQStyleOption::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQStyleOption::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQStyleOption::connection(QObject *o)
 {
-	return;
+	QStyleOption *p = dynamic_cast<QStyleOption*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQStyleOption::KQStyleOption(int version, int type) : QStyleOption(version, type)
 {
 	self = NULL;
 	dummy = new DummyQStyleOption();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOption_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -147,13 +176,9 @@ static void QStyleOption_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOption_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOption *qp = (KQStyleOption *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -166,15 +191,6 @@ void KQStyleOption::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQStyleOption(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QStyleOption";
-	cdef->free = QStyleOption_free;
-	cdef->reftrace = QStyleOption_reftrace;
-	cdef->compareTo = QStyleOption_compareTo;
 }
 
 static knh_IntData_t QStyleOptionConstInt[] = {
@@ -215,4 +231,15 @@ static knh_IntData_t QStyleOptionConstInt[] = {
 DEFAPI(void) constQStyleOption(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QStyleOptionConstInt);
 }
+
+
+DEFAPI(void) defQStyleOption(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QStyleOption";
+	cdef->free = QStyleOption_free;
+	cdef->reftrace = QStyleOption_reftrace;
+	cdef->compareTo = QStyleOption_compareTo;
+}
+
 

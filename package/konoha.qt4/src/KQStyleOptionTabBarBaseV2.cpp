@@ -83,9 +83,23 @@ bool DummyQStyleOptionTabBarBaseV2::signalConnect(knh_Func_t *callback_func, str
 	}
 }
 
+void DummyQStyleOptionTabBarBaseV2::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQStyleOptionTabBarBase::reftrace(ctx, p, tail_);
+}
 
 void DummyQStyleOptionTabBarBaseV2::connection(QObject *o)
 {
+	QStyleOptionTabBarBaseV2 *p = dynamic_cast<QStyleOptionTabBarBaseV2*>(o);
+	if (p != NULL) {
+	}
 	DummyQStyleOptionTabBarBase::connection(o);
 }
 
@@ -93,7 +107,6 @@ KQStyleOptionTabBarBaseV2::KQStyleOptionTabBarBaseV2() : QStyleOptionTabBarBaseV
 {
 	self = NULL;
 	dummy = new DummyQStyleOptionTabBarBaseV2();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QStyleOptionTabBarBaseV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -148,13 +161,9 @@ static void QStyleOptionTabBarBaseV2_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QStyleOptionTabBarBaseV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQStyleOptionTabBarBaseV2 *qp = (KQStyleOptionTabBarBaseV2 *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -169,6 +178,16 @@ void KQStyleOptionTabBarBaseV2::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
+static knh_IntData_t QStyleOptionTabBarBaseV2ConstInt[] = {
+	{"Version", QStyleOptionTabBarBaseV2::Version},
+	{NULL, 0}
+};
+
+DEFAPI(void) constQStyleOptionTabBarBaseV2(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
+	kapi->loadClassIntConst(ctx, cid, QStyleOptionTabBarBaseV2ConstInt);
+}
+
+
 DEFAPI(void) defQStyleOptionTabBarBaseV2(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	(void)ctx; (void) cid;
@@ -178,12 +197,4 @@ DEFAPI(void) defQStyleOptionTabBarBaseV2(CTX ctx, knh_class_t cid, knh_ClassDef_
 	cdef->compareTo = QStyleOptionTabBarBaseV2_compareTo;
 }
 
-static knh_IntData_t QStyleOptionTabBarBaseV2ConstInt[] = {
-	{"Version", QStyleOptionTabBarBaseV2::Version},
-	{NULL, 0}
-};
-
-DEFAPI(void) constQStyleOptionTabBarBaseV2(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
-	kapi->loadClassIntConst(ctx, cid, QStyleOptionTabBarBaseV2ConstInt);
-}
 

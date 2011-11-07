@@ -9,11 +9,11 @@ KMETHOD QTextOption_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//QTextOption QTextOption.new(int alignment);
+//QTextOption QTextOption.new(QtAlignment alignment);
 KMETHOD QTextOption_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[1]);
+	initFlag(alignment, Qt::Alignment, sfp[1]);
 	KQTextOption *ret_v = new KQTextOption(alignment);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -32,51 +32,55 @@ KMETHOD QTextOption_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 */
-//int QTextOption.getAlignment();
+//QtAlignment QTextOption.getAlignment();
 KMETHOD QTextOption_getAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Alignment ret_v = qp->alignment();
-		RETURNi_(ret_v);
+		Qt::Alignment *ret_v_ = new Qt::Alignment(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
-//int QTextOption.getFlags();
+//QTextOptionFlags QTextOption.getFlags();
 KMETHOD QTextOption_getFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextOption::Flags ret_v = qp->flags();
-		RETURNi_(ret_v);
+		QTextOption::Flags *ret_v_ = new QTextOption::Flags(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
-//void QTextOption.setAlignment(int alignment);
+//void QTextOption.setAlignment(QtAlignment alignment);
 KMETHOD QTextOption_setAlignment(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
-		Qt::Alignment alignment = Int_to(Qt::Alignment, sfp[1]);
+	if (qp) {
+		initFlag(alignment, Qt::Alignment, sfp[1]);
 		qp->setAlignment(alignment);
 	}
 	RETURNvoid_();
 }
 
-//void QTextOption.setFlags(int flags);
+//void QTextOption.setFlags(QTextOptionFlags flags);
 KMETHOD QTextOption_setFlags(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
-		QTextOption::Flags flags = Int_to(QTextOption::Flags, sfp[1]);
+	if (qp) {
+		initFlag(flags, QTextOption::Flags, sfp[1]);
 		qp->setFlags(flags);
 	}
 	RETURNvoid_();
@@ -87,7 +91,7 @@ KMETHOD QTextOption_setTabArray(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		knh_Array_t *a = sfp[1].a;
 		int asize = knh_Array_size(a);
 		QList<qreal> tabStops;
@@ -105,27 +109,9 @@ KMETHOD QTextOption_setTabStop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal tabStop = Float_to(qreal, sfp[1]);
 		qp->setTabStop(tabStop);
-	}
-	RETURNvoid_();
-}
-
-//void QTextOption.setTabs(Array<int> tabStops);
-KMETHOD QTextOption_setTabs(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
-		knh_Array_t *a = sfp[1].a;
-		int asize = knh_Array_size(a);
-		QList<QTextOption::Tab> tabStops;
-		for (int n = 0; n < asize; n++) {
-			knh_RawPtr_t *p = (knh_RawPtr_t*)(a->list[n]);
-			tabStops.append(*(QTextOption::Tab*)p->rawptr);
-		}
-		qp->setTabs(tabStops);
 	}
 	RETURNvoid_();
 }
@@ -135,7 +121,7 @@ KMETHOD QTextOption_setTextDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::LayoutDirection direction = Int_to(Qt::LayoutDirection, sfp[1]);
 		qp->setTextDirection(direction);
 	}
@@ -147,7 +133,7 @@ KMETHOD QTextOption_setUseDesignMetrics(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setUseDesignMetrics(enable);
 	}
@@ -159,7 +145,7 @@ KMETHOD QTextOption_setWrapMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextOption::WrapMode mode = Int_to(QTextOption::WrapMode, sfp[1]);
 		qp->setWrapMode(mode);
 	}
@@ -171,8 +157,8 @@ KMETHOD QTextOption_getTabArray(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
-		QList<qreal>ret_v = qp->tabArray();
+	if (qp) {
+		QList<qreal> ret_v = qp->tabArray();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("qreal"));
@@ -193,7 +179,7 @@ KMETHOD QTextOption_getTabStop(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal ret_v = qp->tabStop();
 		RETURNf_(ret_v);
 	} else {
@@ -201,34 +187,12 @@ KMETHOD QTextOption_getTabStop(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//Array<int> QTextOption.getTabs();
-KMETHOD QTextOption_getTabs(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
-		QList<QTextOption::Tab>ret_v = qp->tabs();
-		int list_size = ret_v.size();
-		knh_Array_t *a = new_Array0(ctx, list_size);
-		knh_class_t cid = knh_getcid(ctx, STEXT("QTextOption::Tab"));
-		for (int n = 0; n < list_size; n++) {
-			QTextOption::Tab *ret_v_ = new QTextOption::Tab(ret_v[n]);
-			knh_RawPtr_t *p = new_RawPtr(ctx, ClassTBL(cid), ret_v_);
-			knh_Array_add(ctx, a, (knh_Object_t *)p);
-		}
-		RETURN_(a);
-	} else {
-		RETURN_(KNH_NULL);
-	}
-}
-	
-
 //int QTextOption.getTextDirection();
 KMETHOD QTextOption_getTextDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::LayoutDirection ret_v = qp->textDirection();
 		RETURNi_(ret_v);
 	} else {
@@ -241,7 +205,7 @@ KMETHOD QTextOption_getUseDesignMetrics(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->useDesignMetrics();
 		RETURNb_(ret_v);
 	} else {
@@ -254,7 +218,7 @@ KMETHOD QTextOption_getWrapMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextOption *  qp = RawPtr_to(QTextOption *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextOption::WrapMode ret_v = qp->wrapMode();
 		RETURNi_(ret_v);
 	} else {
@@ -262,6 +226,24 @@ KMETHOD QTextOption_getWrapMode(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QTextOption.parents();
+KMETHOD QTextOption_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextOption *qp = RawPtr_to(QTextOption*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextOption::DummyQTextOption()
 {
@@ -310,17 +292,28 @@ bool DummyQTextOption::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextOption::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextOption::connection(QObject *o)
 {
-	return;
+	QTextOption *p = dynamic_cast<QTextOption*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTextOption::KQTextOption() : QTextOption()
 {
 	self = NULL;
 	dummy = new DummyQTextOption();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextOption_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -375,13 +368,9 @@ static void QTextOption_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextOption_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextOption *qp = (KQTextOption *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -394,15 +383,6 @@ void KQTextOption::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
-}
-
-DEFAPI(void) defQTextOption(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QTextOption";
-	cdef->free = QTextOption_free;
-	cdef->reftrace = QTextOption_reftrace;
-	cdef->compareTo = QTextOption_compareTo;
 }
 
 static knh_IntData_t QTextOptionConstInt[] = {
@@ -425,5 +405,179 @@ static knh_IntData_t QTextOptionConstInt[] = {
 
 DEFAPI(void) constQTextOption(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QTextOptionConstInt);
+}
+
+
+DEFAPI(void) defQTextOption(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextOption";
+	cdef->free = QTextOption_free;
+	cdef->reftrace = QTextOption_reftrace;
+	cdef->compareTo = QTextOption_compareTo;
+}
+
+//## QTextOptionFlags QTextOptionFlags.new(int value);
+KMETHOD QTextOptionFlags_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextOption::Flag i = Int_to(QTextOption::Flag, sfp[1]);
+	QTextOption::Flags *ret_v = new QTextOption::Flags(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QTextOptionFlags QTextOptionFlags.and(int mask);
+KMETHOD QTextOptionFlags_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextOption::Flags *qp = RawPtr_to(QTextOption::Flags*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QTextOption::Flags ret = ((*qp) & i);
+		QTextOption::Flags *ret_ = new QTextOption::Flags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextOptionFlags QTextOptionFlags.iand(QTextOption::QTextOptionFlags other);
+KMETHOD QTextOptionFlags_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextOption::Flags *qp = RawPtr_to(QTextOption::Flags*, sfp[0]);
+	if (qp != NULL) {
+		QTextOption::Flags *other = RawPtr_to(QTextOption::Flags *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextOptionFlags QTextOptionFlags.or(QTextOptionFlags f);
+KMETHOD QTextOptionFlags_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextOption::Flags *qp = RawPtr_to(QTextOption::Flags*, sfp[0]);
+	if (qp != NULL) {
+		QTextOption::Flags *f = RawPtr_to(QTextOption::Flags*, sfp[1]);
+		QTextOption::Flags ret = ((*qp) | (*f));
+		QTextOption::Flags *ret_ = new QTextOption::Flags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextOptionFlags QTextOptionFlags.ior(QTextOption::QTextOptionFlags other);
+KMETHOD QTextOptionFlags_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextOption::Flags *qp = RawPtr_to(QTextOption::Flags*, sfp[0]);
+	if (qp != NULL) {
+		QTextOption::Flags *other = RawPtr_to(QTextOption::Flags *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextOptionFlags QTextOptionFlags.xor(QTextOptionFlags f);
+KMETHOD QTextOptionFlags_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextOption::Flags *qp = RawPtr_to(QTextOption::Flags*, sfp[0]);
+	if (qp != NULL) {
+		QTextOption::Flags *f = RawPtr_to(QTextOption::Flags*, sfp[1]);
+		QTextOption::Flags ret = ((*qp) ^ (*f));
+		QTextOption::Flags *ret_ = new QTextOption::Flags(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QTextOptionFlags QTextOptionFlags.ixor(QTextOption::QTextOptionFlags other);
+KMETHOD QTextOptionFlags_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextOption::Flags *qp = RawPtr_to(QTextOption::Flags*, sfp[0]);
+	if (qp != NULL) {
+		QTextOption::Flags *other = RawPtr_to(QTextOption::Flags *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QTextOptionFlags.testFlag(int flag);
+KMETHOD QTextOptionFlags_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextOption::Flags *qp = RawPtr_to(QTextOption::Flags *, sfp[0]);
+	if (qp != NULL) {
+		QTextOption::Flag flag = Int_to(QTextOption::Flag, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QTextOptionFlags.value();
+KMETHOD QTextOptionFlags_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QTextOption::Flags *qp = RawPtr_to(QTextOption::Flags *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QTextOptionFlags_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QTextOption::Flags *qp = (QTextOption::Flags *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QTextOptionFlags_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QTextOption::Flags *qp = (QTextOption::Flags *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QTextOptionFlags_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QTextOption::Flags*)p1->rawptr);
+//		int v2 = int(*(QTextOption::Flags*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QTextOption::Flags v1 = *(QTextOption::Flags*)p1->rawptr;
+		QTextOption::Flags v2 = *(QTextOption::Flags*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQTextOptionFlags(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QTextOptionFlags";
+	cdef->free = QTextOptionFlags_free;
+	cdef->reftrace = QTextOptionFlags_reftrace;
+	cdef->compareTo = QTextOptionFlags_compareTo;
 }
 

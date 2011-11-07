@@ -1,11 +1,11 @@
-//QWheelEvent QWheelEvent.new(QPoint pos, int delta, int buttons, int modifiers, int orient);
+//QWheelEvent QWheelEvent.new(QPoint pos, int delta, QtMouseButtons buttons, QtKeyboardModifiers modifiers, int orient);
 KMETHOD QWheelEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 	int delta = Int_to(int, sfp[2]);
-	Qt::MouseButtons buttons = Int_to(Qt::MouseButtons, sfp[3]);
-	Qt::KeyboardModifiers modifiers = Int_to(Qt::KeyboardModifiers, sfp[4]);
+	initFlag(buttons, Qt::MouseButtons, sfp[3]);
+	initFlag(modifiers, Qt::KeyboardModifiers, sfp[4]);
 	Qt::Orientation orient = Int_to(Qt::Orientation, sfp[5]);
 	KQWheelEvent *ret_v = new KQWheelEvent(pos, delta, buttons, modifiers, orient);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
@@ -14,15 +14,15 @@ KMETHOD QWheelEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /*
-//QWheelEvent QWheelEvent.new(QPoint pos, QPoint globalPos, int delta, int buttons, int modifiers, int orient);
+//QWheelEvent QWheelEvent.new(QPoint pos, QPoint globalPos, int delta, QtMouseButtons buttons, QtKeyboardModifiers modifiers, int orient);
 KMETHOD QWheelEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 	const QPoint  globalPos = *RawPtr_to(const QPoint *, sfp[2]);
 	int delta = Int_to(int, sfp[3]);
-	Qt::MouseButtons buttons = Int_to(Qt::MouseButtons, sfp[4]);
-	Qt::KeyboardModifiers modifiers = Int_to(Qt::KeyboardModifiers, sfp[5]);
+	initFlag(buttons, Qt::MouseButtons, sfp[4]);
+	initFlag(modifiers, Qt::KeyboardModifiers, sfp[5]);
 	Qt::Orientation orient = Int_to(Qt::Orientation, sfp[6]);
 	KQWheelEvent *ret_v = new KQWheelEvent(pos, globalPos, delta, buttons, modifiers, orient);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
@@ -30,16 +30,18 @@ KMETHOD QWheelEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 */
-//int QWheelEvent.buttons();
+//QtMouseButtons QWheelEvent.buttons();
 KMETHOD QWheelEvent_buttons(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWheelEvent *  qp = RawPtr_to(QWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::MouseButtons ret_v = qp->buttons();
-		RETURNi_(ret_v);
+		Qt::MouseButtons *ret_v_ = new Qt::MouseButtons(ret_v);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
+		RETURN_(rptr);
 	} else {
-		RETURNi_(0);
+		RETURN_(KNH_NULL);
 	}
 }
 
@@ -48,7 +50,7 @@ KMETHOD QWheelEvent_delta(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWheelEvent *  qp = RawPtr_to(QWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->delta();
 		RETURNi_(ret_v);
 	} else {
@@ -61,7 +63,7 @@ KMETHOD QWheelEvent_globalPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWheelEvent *  qp = RawPtr_to(QWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint ret_v = qp->globalPos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -76,7 +78,7 @@ KMETHOD QWheelEvent_globalX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWheelEvent *  qp = RawPtr_to(QWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->globalX();
 		RETURNi_(ret_v);
 	} else {
@@ -89,7 +91,7 @@ KMETHOD QWheelEvent_globalY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWheelEvent *  qp = RawPtr_to(QWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->globalY();
 		RETURNi_(ret_v);
 	} else {
@@ -102,7 +104,7 @@ KMETHOD QWheelEvent_orientation(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWheelEvent *  qp = RawPtr_to(QWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::Orientation ret_v = qp->orientation();
 		RETURNi_(ret_v);
 	} else {
@@ -115,7 +117,7 @@ KMETHOD QWheelEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWheelEvent *  qp = RawPtr_to(QWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint ret_v = qp->pos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -130,7 +132,7 @@ KMETHOD QWheelEvent_x(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWheelEvent *  qp = RawPtr_to(QWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->x();
 		RETURNi_(ret_v);
 	} else {
@@ -143,7 +145,7 @@ KMETHOD QWheelEvent_y(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWheelEvent *  qp = RawPtr_to(QWheelEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->y();
 		RETURNi_(ret_v);
 	} else {
@@ -202,9 +204,23 @@ bool DummyQWheelEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQWheelEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQInputEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQWheelEvent::connection(QObject *o)
 {
+	QWheelEvent *p = dynamic_cast<QWheelEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQInputEvent::connection(o);
 }
 
@@ -212,7 +228,6 @@ KQWheelEvent::KQWheelEvent(const QPoint pos, int delta, Qt::MouseButtons buttons
 {
 	self = NULL;
 	dummy = new DummyQWheelEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QWheelEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -267,13 +282,9 @@ static void QWheelEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QWheelEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQWheelEvent *qp = (KQWheelEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -287,6 +298,8 @@ void KQWheelEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQWheelEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

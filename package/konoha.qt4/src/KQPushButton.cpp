@@ -3,7 +3,7 @@ KMETHOD QPushButton_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPushButton *  qp = RawPtr_to(QPushButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QPushButton_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPushButton *  qp = RawPtr_to(QPushButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -71,7 +71,7 @@ KMETHOD QPushButton_getAutoDefault(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPushButton *  qp = RawPtr_to(QPushButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->autoDefault();
 		RETURNb_(ret_v);
 	} else {
@@ -84,7 +84,7 @@ KMETHOD QPushButton_isDefault(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPushButton *  qp = RawPtr_to(QPushButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isDefault();
 		RETURNb_(ret_v);
 	} else {
@@ -97,7 +97,7 @@ KMETHOD QPushButton_isFlat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPushButton *  qp = RawPtr_to(QPushButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isFlat();
 		RETURNb_(ret_v);
 	} else {
@@ -110,7 +110,7 @@ KMETHOD QPushButton_getMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPushButton *  qp = RawPtr_to(QPushButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMenu* ret_v = qp->menu();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMenu*)ret_v, NULL);
 		RETURN_(rptr);
@@ -124,7 +124,7 @@ KMETHOD QPushButton_setAutoDefault(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPushButton *  qp = RawPtr_to(QPushButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setAutoDefault(arg0);
 	}
@@ -136,7 +136,7 @@ KMETHOD QPushButton_setDefault(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPushButton *  qp = RawPtr_to(QPushButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setDefault(arg0);
 	}
@@ -148,7 +148,7 @@ KMETHOD QPushButton_setFlat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPushButton *  qp = RawPtr_to(QPushButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool arg0 = Boolean_to(bool, sfp[1]);
 		qp->setFlat(arg0);
 	}
@@ -160,7 +160,7 @@ KMETHOD QPushButton_setMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPushButton *  qp = RawPtr_to(QPushButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMenu*  menu = RawPtr_to(QMenu*, sfp[1]);
 		qp->setMenu(menu);
 	}
@@ -172,7 +172,7 @@ KMETHOD QPushButton_showMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPushButton *  qp = RawPtr_to(QPushButton *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->showMenu();
 	}
 	RETURNvoid_();
@@ -229,9 +229,23 @@ bool DummyQPushButton::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQPushButton::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractButton::reftrace(ctx, p, tail_);
+}
 
 void DummyQPushButton::connection(QObject *o)
 {
+	QPushButton *p = dynamic_cast<QPushButton*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractButton::connection(o);
 }
 
@@ -294,13 +308,9 @@ static void QPushButton_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QPushButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQPushButton *qp = (KQPushButton *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -323,6 +333,8 @@ bool KQPushButton::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQPushButton(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -1,12 +1,16 @@
 class FunctionElement {
 	String return_value_type;
+	String knh_return_value_type;
 	String func_name;
 	String declation;
 	String class_name;
 	String default_getter_name;
-	String[] argument_type;
-	String[] argument_name;
+	String[] argument_types;
+	String[] argument_names;
+//	String[] default_arguments;
+	String[] knh_argument_types;
 	int argument_number;
+	boolean staticFlag;
 	boolean virtualFlag;
 	boolean constructorFlag;
 	boolean destructorFlag;
@@ -15,18 +19,17 @@ class FunctionElement {
 	boolean overloadFlag;
 	boolean overrideFlag;
 	boolean pureVirtualFlag;
-	String[] knh_token;
 	boolean return_value_type_enum_flag;
 	boolean return_value_type_object_flag;
-	boolean[] argument_type_enum_flag;
-	boolean[] argument_type_object_flag;
+	boolean[] argument_type_object_flags;
 
 	FunctionElement(String dec, String cn) {
-		argument_type = [];
-		argument_name = [];
+		argument_types = [];
+		argument_names = [];
+		knh_argument_types = [];
+		knh_return_value_type = "";
 		class_name = cn;
 		declation = dec;
-		knh_token = [];
 		argument_number = 0;
 		funcGetterFlag = false;
 		virtualFlag = false;
@@ -35,17 +38,21 @@ class FunctionElement {
 		notMakeFlag = false;
 		overloadFlag = false;
 		overrideFlag = false;
-		return_value_enum_flag = false;
-		return_value_object_flag = false;
 		pureVirtualFlag = false;
-		argument_type_enum_flag = [];
-		argument_type_object_flag = [];
-		parse(declation);
-		for (int i = 0; i < |argument_type|; i++) {argument_type_enum_flag <<< false;}
-		for (int i = 0; i < |argument_type|; i++) {argument_type_object_flag <<< false;}
+		staticFlag = false;
+		default_arguments = [];
+
+		parse();
+
+		return_value_type_object_flag = false;
+		argument_type_object_flags = [];
+		for (int i = 0; i < |argument_types|; i++) {argument_type_object_flags <<< false;}
+//		if (class_name == "QWidget" && func_name == "render") print this;
+//		print declation;
+//		print default_arguments;
 	}
 
-	Array<String> tokenize(String declation) {
+	Array<String> tokenize() {
 		declation = declation.replace("QList<", "Array<");
 		String[] token = declation.split(" ");
 		if (token[|token| - 1] == "const") token.pop();
@@ -74,7 +81,6 @@ class FunctionElement {
 			case "=":
 				boolean objFlag = false;
 				while (true) {
-//					print token;
 					token.remove(i);
 					if (|token| <= i) {
 						break;
@@ -135,7 +141,10 @@ class FunctionElement {
 		return token;
 	}
 
+
+
 	void setElements(String[] token) {
+//		print "setElements";
 //		print token;
 		int tc = 0;
 		if (token[0].startsWith("~")) {
@@ -175,20 +184,48 @@ class FunctionElement {
 				int ac = 0;
 				for (; token[tc] != ")"; ac++) {
 					token[tc] -= ",";
-					argument_type <<< token[tc];
+					argument_types <<< token[tc];
 					an = "arg" + (String)ac;
-					argument_name <<< an;
+					argument_names <<< an;
 					tc++;
 				}
 				argument_number = ac;
 			} else {
+//				print token[tc];
 				int ac = 0;
 				for (; token[tc] != ")"; ac++) {
-					argument_type <<< token[tc];
+//					print token[tc];
+					argument_types <<< token[tc];
 					tc++;
 					token[tc] -= ",";
-					argument_name <<< token[tc];
+					argument_names <<< token[tc];
 					tc++;
+// 					if (token[tc] == "=") {
+// 						String tmp = "";
+// 						boolean objFlag = false;
+// 						while (true) {
+// 							tc++;
+// 							tmp += token[tc];
+// 							if ("," in? token[tc]) {
+// 								if (!objFlag) {
+// //									tmp += token[tc];
+// 									tc++;
+// 									break;
+// 								}
+// 							} else if (token[tc] == ")") {
+// 								if (objFlag) {
+// 									tmp += token[tc];
+// 								}
+// 								break;
+// 							} else if (token[tc] == "(") {
+// 								objFlag = true;
+// 							}
+// //							tmp += token[tc];
+// 						}
+// 						default_arguments.add(tmp);
+// 					} else {
+// 						default_arguments.add("");
+// 					}
 				}
 				argument_number = ac;
 			}
@@ -207,82 +244,90 @@ class FunctionElement {
 		return false;
 	}
 
-	void renamePublicTypes(String[] public_enums, String[] typedefed_objects) {
+	void renamePublicTypes(String[] public_enums, String[] typedefed_objects, Tuple<String, String>[] flag_objects, String[] class_objects) {
+
+		// if (class_name == "QWidget" && func_name == "new") {
+		// 	print flag_objects;
+		// }
+
+		String comp_return_type = return_value_type - "Array<" - ">" - "*" - "const" - " ";
+		String[] comp_arg_types = [];
+		foreach (String type in argument_types) {
+			comp_arg_types <<< (type - "Array<" - ">" - "*" - "const" - " ");
+		}
+
+		foreach (String typedefed_object in typedefed_objects) {
+			if (comp_return_type == typedefed_object) {
+				notMakeFlag = true;
+				return;
+			}
+			foreach (String type in comp_arg_types) {
+				if (type == typedefed_object) {
+					notMakeFlag = true;
+					return;
+				}
+			}
+		}
+
+		foreach (String class_object in class_objects) {
+			if (comp_return_type == class_object) {
+				notMakeFlag = true;
+				return;
+			}
+			foreach (String type in comp_arg_types) {
+				if (type == class_object) {
+					notMakeFlag = true;
+					return;
+				}
+			}
+		}
+
 		foreach (String public_enum in public_enums) {
-			if (public_enum in? return_value_type &&
-				!upperCheck(return_value_type[1])) {
-				if (!("::" in? return_value_type)) {
+			if (comp_return_type == public_enum) {
+				if (!("::" in? comp_return_type)) {
 						return_value_type = return_value_type.replace(public_enum, class_name + "::" + public_enum);
 				}
-				return_value_type_enum_flag = true;
-				break;
 			}
-		}
-		foreach (String typedefed_object in typedefed_objects) {
-			if (typedefed_object in? return_value_type &&
-				!upperCheck(return_value_type[1])) {
-				if (!("::" in? return_value_type)) {
-					return_value_type = return_value_type.replace(typedefed_object, class_name + "::" + typedefed_object);
-				}
-				return_value_type_enum_flag = false;
-				return_value_type_object_flag = true;
-				break;
-			}
-		}
-		if (!return_value_type_enum_flag &&
-			!return_value_type_object_flag &&
-			!("Array" in? return_value_type)) {
-			if (upperCheck(return_value_type[0]) &&
-				!return_value_type.startsWith("Q")) {
-				return_value_type = class_name + "::" + return_value_type;
-			}
-		}
-
-		if ("iterator" in? return_value_type) return_value_type_object_flag = true;
-
-		for (int i = 0; i < |argument_type|; i++) {
-			if ("iterator" in? argument_type[i]) {
-				return_value_type_object_flag = true;
-				continue;
-			}
-			foreach (String public_enum in public_enums) {
-				if (public_enum in? argument_type[i] &&
-					!upperCheck(argument_type[i][1])) {
-					if (!("::" in? argument_type[i])) {
-						argument_type[i] = argument_type[i].replace(public_enum, class_name + "::" + public_enum);
+			for (int i = 0; i < |argument_types|; i++) {
+				if (comp_arg_types[i] == public_enum) {
+					if (!("::" in? argument_types[i])) {
+						argument_types[i] = argument_types[i].replace(public_enum, class_name + "::" + public_enum);
 					}
-					argument_type_enum_flag[i] = true;
-					break;
-				}
-			}
-			foreach (String typedefed_object in typedefed_objects) {
-				if (typedefed_object in? argument_type[i] &&
-					!upperCheck(argument_type[i][1])) {
-					if (!("::" in? argument_type[i])) {
-						argument_type[i] = argument_type[i].replace(typedefed_object, class_name + "::" + typedefed_object);
-					}
-					argument_type_enum_flag[i] = false;
-					argument_type_object_flag[i] = true;
-					break;
-				}
-			}
-
-			if (!argument_type_enum_flag[i] &&
-				!argument_type_object_flag[i] &&
-				!("Array" in? argument_type[i])) {
-				if (upperCheck(argument_type[i][0]) &&
-					!argument_type[i].startsWith("Q")) {
-					argument_type[i] = class_name + "::" + argument_type[i];
 				}
 			}
 		}
+
+		// if (class_name == "QWidget" && func_name == "new") {
+		// 	print flag_objects;
+		// 	print comp_return_type;
+		// 	print comp_arg_types;
+		// }
+		foreach (Tuple<String, String> flag_object in flag_objects) {
+			if (comp_return_type == flag_object[1] ||
+				comp_return_type == (flag_object[0] + "::" + flag_object[1])) {
+				if (!("::" in? comp_return_type)) {
+						return_value_type = return_value_type.replace(flag_object[1], flag_object[0] + "::" + flag_object[1]);
+				}
+				return_value_type_object_flag = true;
+			}
+			for (int i = 0; i < |argument_types|; i++) {
+				if (comp_arg_types[i] == flag_object[1] ||
+					comp_arg_types[i] == (flag_object[0] + "::" + flag_object[1])) {
+					if (!("::" in? argument_types[i])) {
+						argument_types[i] = argument_types[i].replace(flag_object[1], flag_object[0] + "::" + flag_object[1]);
+					}
+					argument_type_object_flags[i] = true;
+				}
+			}
+		}
+
 		return;
 	}
 
-	Array<String> parse(String declation) {
-		String[] token = tokenize(declation);
+	Array<String> parse() {
+		String[] token = tokenize();
 		setElements(token);
-		convertUnusedArgName(argument_name);
+		convertUnusedArgName(argument_names);
 //		if (class_name == "QLineEdit") print this;
 		return token;
 	}
@@ -292,8 +337,8 @@ class FunctionElement {
 		if (argument_number == 0)
 			return str;
 		for (int i = 0; i < argument_number; i++) {
-			type = argument_type[i];
-			name = argument_name[i];
+			type = argument_types[i];
+			name = argument_names[i];
 			int j = i + 1;
 			if (constructorFlag == false) {
 				str += "\t\t";
@@ -301,8 +346,8 @@ class FunctionElement {
 				str += "\t";
 			}
 			String exclude_const_type = type - "const ";
-			knh_token << exclude_const_type;
-			knh_token << name;
+//			knh_token << exclude_const_type;
+//			knh_token << name;
 			if ((exclude_const_type.startsWith("i") || exclude_const_type.startsWith("q"))
 				&& "int" in? type) {
 				str += Int_to(name, type, j);
@@ -317,17 +362,17 @@ class FunctionElement {
 				if ("Array<" in? type) {
 					str += Array_to(name, type, j);
 				} else if ("::" in? type &&
-						   !argument_type_object_flag[i]) {
+						   !argument_type_object_flags[i]) {
 					str += Int_to(name, type, j);
 				} else {
-					str += RawPtr_to(name, type, j);
+					str += RawPtr_to(name, type, j, argument_type_object_flags[i]);
 				}
 			}
 		}
 		return str;
 	}
 
-	String callFuncFormat(boolean make_rapper_class_flag = false) {
+	String callFuncFormat(boolean make_rapper_class_flag = false, boolean have_private_destructor_flag = false) {
 //		if (class_name == "QWidget") print make_rapper_class_flag;
 		string str;
 		int array_flag = -1, string_flag = 0, bool_flag = 0;
@@ -351,28 +396,35 @@ class FunctionElement {
 				break;
 			}
 			if (array_flag != -1) {
-				str += (return_value_type.replace("Array<", "QList<") + "ret_v = ");
+				str += (return_value_type.replace("Array<", "QList<") + " ret_v = ");
 			} else if (return_value_type != "void") {
 				str += (return_value_type + " ret_v = ");
 			}
-			if (funcGetterFlag == false) {
-				str += ("qp->" + func_name + "(");
+			if (staticFlag) {
+				str += class_name + "::";
+			} else if (have_private_destructor_flag) {
+				str += "qp->q_self->";
 			} else {
-				str += ("qp->" + default_getter_name + "(");
+				str += "qp->";
+			}
+			if (funcGetterFlag == false) {
+				str += func_name + "(";
+			} else {
+				str += default_getter_name + "(";
 			}
 		}
 		for (int i = 0; i < (argument_number - 1); i++) {
-			str += (argument_name[i] + ", ");
+			str += (argument_names[i] + ", ");
 		}
 		if (argument_number != 0)
-			str += argument_name[argument_number - 1];
+			str += argument_names[argument_number - 1];
 		str += ");\n";
 		return str;
 	}
 
 	String returnFormat(boolean make_rapper_class_flag = false) {
 		if (constructorFlag) {
-			knh_token.insert(0, class_name);
+//			knh_token.insert(0, class_name);
 			if (make_rapper_class_flag) {
 				return RETURNrc_();
 			} else {
@@ -380,7 +432,7 @@ class FunctionElement {
 			}
 		}
 		String exclude_const_type = return_value_type - "const ";
-		knh_token.insert(0, exclude_const_type);
+//		knh_token.insert(0, exclude_const_type);
 		if ("Array<" in? return_value_type) {
 			return RETURNa_(return_value_type)
 		} else if ("void" == return_value_type) {
@@ -414,25 +466,28 @@ class FunctionElement {
 		}
 	}
 
-	String genBind(boolean make_rapper_class_flag) {
+	String genBind(boolean make_rapper_class_flag, boolean have_private_destructor_flag) {
 //		if (class_name == "QWidget") print make_rapper_class_flag;
 		if (pureVirtualFlag) return "";
 		String bind = "";
 		bind += ("KMETHOD " + class_name + "_" + func_name + "(CTX ctx, knh_sfp_t *sfp _RIX)\n");
 		bind += "{\n";
 		bind += "\t(void)ctx;\n";
-		if (constructorFlag == false) {
-			knh_token << class_name;
-			knh_token << func_name;
-			bind += "\t" + RawPtr_to("qp", class_name + " *", 0);
-			bind += "\tif (qp != NULL) {\n";
+		if (staticFlag) {
+			bind += "\tif (true) {\n";
 			bind += argumentFormat();
 			bind += callFuncFormat();
 			bind += returnFormat();
 			bind += "\n";
+		} else if (!constructorFlag) {
+			bind += "\t" + RawPtr_to("qp", (have_private_destructor_flag ? "K" : "") + class_name + " *", 0);
+			bind += "\tif (qp) {\n";
+//			bind += "\tif (qp != NULL) {\n";
+			bind += argumentFormat();
+			bind += callFuncFormat(false, have_private_destructor_flag);
+			bind += returnFormat();
+			bind += "\n";
 		} else {
-			knh_token << class_name;
-			knh_token << "new";
 			bind += argumentFormat();
 			bind += callFuncFormat(make_rapper_class_flag);
 			bind += returnFormat(make_rapper_class_flag);
@@ -444,98 +499,84 @@ class FunctionElement {
 	void convertUnusedArgName(String[] ans) {
 		for (int i = 0; i < |ans|; i++) {
 			foreach (String[] unused_arg_name in UNUSED_ARG_NAMES) {
-//				if ("new" == argument_name[i]) {
-//					print class_name;
-//					print argument_name[i];
-//				}
 				ans[i] = ans[i].replace(unused_arg_name[0], unused_arg_name[1]);
-//				if ("new" in? argument_name[i]) print argument_name[i];
 			}
 		}
 	}
 
-	String genKonohaInterface()	{
-		if (pureVirtualFlag) return "";
-		for (int i = 0; i < |knh_token|; i++) {
-			String token = knh_token[i];
-//		knh_token[i] = knh_token[i].replace("const", "");
-			knh_token[i] = knh_token[i].replace("*", "");
-			knh_token[i] = knh_token[i].replace("bool", "boolean");
-			knh_token[i] = knh_token[i].replace("qreal", "float");
-			knh_token[i] = knh_token[i].replace("QString", "String");
-			knh_token[i] = knh_token[i].replace("uchar", "String");
-//		knh_token[i] = knh_token[i].replace("char", "String");
-			knh_token[i] = knh_token[i].replace("unsigned", "");
-			knh_token[i] = knh_token[i].replace("string", "str");
-			knh_token[i] = knh_token[i].replace("Strings", "str");
-			knh_token[i] = knh_token[i].replace("Stringacters", "str");
-			knh_token[i] = knh_token[i].replace("include", "inc");
-//			knh_token[i] = knh_token[i].replace("from", "from_");
-//			knh_token[i] = knh_token[i].replace("to", "to_");
-			knh_token[i] = knh_token[i].replace("Top", "top");
-			if ((knh_token[i].startsWith("i") || knh_token[i].startsWith("q")) &&
-				"int" in? knh_token[i]) {
-				if (knh_token[0] != "//" &&
-					i != 2 &&
-					((i % 2) == 1 ||
-					 i == 0)) {
-					knh_token[i] = "int";
-				}
-				if (knh_token[0] == "//" &&
-					i != 3 &&
-					(i % 2) == 0) {
-					knh_token[i] = "int";
-				}
-			}
-			if (knh_token[i] == "from") knh_token[i] = "from_";
-			if (knh_token[i] == "to") knh_token[i] = "to_";
-			if (knh_token[i] == "char") knh_token[i] = "String";
-			if (knh_token[i] == "uint") knh_token[i] = "int";
-			if (knh_token[i] == "ushort") knh_token[i] = "int";
-			if (knh_token[i] == "ulong") knh_token[i] = "int";
-			if (knh_token[i] == "qlonglong") knh_token[i] = "int";
-			if (knh_token[i] == "qulonglong") knh_token[i] = "int";
-			if (knh_token[i] == "format") knh_token[i] = "fmt";
-			if ("Array" in? token) {
-				if ("::" in? token) knh_token[i] = "Array<int>";
-			} else {
-				if ("::" in? token) knh_token[i] = "int";
-			}
-		}
-		if (knh_token == null) return;
-		String knh_interface = "";
-		if (knh_token[0] == "//") {
-			knh_interface += "//";
-			knh_token.remove(0);
-		}
-		if (virtualFlag) knh_interface += "@Virtual ";
-		if (overrideFlag) knh_interface += "@Override ";
-		if (|knh_token| < 3) {
-			//print "Error!!";
-			//print knh_token;
-			return;
-		}
-		knh_interface += knh_token[0];
-		knh_interface += " " + knh_token[1];//class name;
-		knh_interface += "." + knh_token[2];//mtd name
-		knh_interface += "(";
-		for (i = 3; i < |knh_token|; i++) {
-			knh_interface += knh_token[i];
-			if (|knh_token| == i+1) break;
-			if (i % 2 == 0) knh_interface += ", ";
-			else knh_interface += " ";
-		}
-		knh_interface += ");\n";
+	String genKonohaInterface() {
+		String konoha_interface = "";
 
-		String[] unsupported_methods = [ //these methods are final
-			"isNull", "isValid", "insertColumn", "insertRow",
-			"addAction", /*"depth", "height", "width",*/ "accept",
-			"ignore", "isAccepted", "setAccepted", "setWindowModality",
-			"transformed", "from_Image"
-			];
-		foreach (um in unsupported_methods) {
-			if (um in? knh_interface) knh_interface = "//" + knh_interface;
+		if (pureVirtualFlag) return "";
+		if (virtualFlag) konoha_interface += "@Virtual ";
+		if (overrideFlag) konoha_interface += "@Override ";
+
+		konoha_interface += toKonohaType(return_value_type, return_value_type_object_flag) + " ";
+		konoha_interface += class_name + ".";
+		konoha_interface += func_name + "(";
+		for (int i = 0; i < |argument_types|; i++) {
+			konoha_interface += toKonohaType(argument_types[i], argument_type_object_flags[i]) + " ";
+			konoha_interface += toKonohaArgName(argument_names[i]);
+			if (i < |argument_types| - 1) {
+				konoha_interface += ", ";
+			}
 		}
-		return knh_interface;
+		konoha_interface += ");\n";
+
+		return konoha_interface;
+	}
+
+	String toKonohaArgName(String arg_name) {
+		String konoha_arg_name = arg_name;
+
+		konoha_arg_name = konoha_arg_name.replace("Top", "top");
+		konoha_arg_name = konoha_arg_name.replace("include", "inc");
+		konoha_arg_name = konoha_arg_name.replace("string", "str");
+		konoha_arg_name = konoha_arg_name.replace("Strings", "str");
+		konoha_arg_name = konoha_arg_name.replace("Stringacters", "str");
+		if (konoha_arg_name == "from") konoha_arg_name = "from_";
+		if (konoha_arg_name == "to") konoha_arg_name = "to_";
+		if (konoha_arg_name == "format") konoha_arg_name = "fmt";
+
+		return konoha_arg_name;
+	}
+
+	void setKonohaTypes() {
+		knh_return_value_type = toKonohaType(return_value_type, return_value_type_object_flag);
+		for (int i = 0; i < |argument_types|; i++) {
+			knh_argument_types <<< toKonohaType(argument_types[i], argument_type_object_flags[i]);
+		}
+	}
+
+	String toKonohaType(String cpp_type, boolean object_flag = false) {
+		String konoha_type = cpp_type;
+
+		konoha_type = konoha_type.replace(" ", "");
+		konoha_type = konoha_type.replace("const", "");
+		konoha_type = konoha_type.replace("*", "");
+		konoha_type = konoha_type.replace("bool", "boolean");
+		konoha_type = konoha_type.replace("qreal", "float");
+		konoha_type = konoha_type.replace("QString", "String");
+		konoha_type = konoha_type.replace("uchar", "String");
+		konoha_type = konoha_type.replace("unsigned", "");
+		if (konoha_type == "char") konoha_type = "String";
+		if (konoha_type == "uint") konoha_type = "int";
+		if (konoha_type == "ushort") konoha_type = "int";
+		if (konoha_type == "ulong") konoha_type = "int";
+		if (konoha_type == "qlonglong") konoha_type = "int";
+		if (konoha_type == "qulonglong") konoha_type = "int";
+		if ("qint" in? konoha_type) konoha_type = "int";
+		if ("quint" in? konoha_type) konoha_type = "int";
+
+		if ("::" in? konoha_type) {
+			String elem = konoha_type - "Array<" - ">";
+			if (object_flag) {
+				konoha_type = konoha_type.replace(elem, elem - "::");
+			} else {
+				konoha_type = konoha_type.replace(elem, "int");
+			}
+		}
+
+		return konoha_type;
 	}
 }

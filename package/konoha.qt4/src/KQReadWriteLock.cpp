@@ -25,7 +25,7 @@ KMETHOD QReadWriteLock_lockForRead(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QReadWriteLock *  qp = RawPtr_to(QReadWriteLock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->lockForRead();
 	}
 	RETURNvoid_();
@@ -36,7 +36,7 @@ KMETHOD QReadWriteLock_lockForWrite(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QReadWriteLock *  qp = RawPtr_to(QReadWriteLock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->lockForWrite();
 	}
 	RETURNvoid_();
@@ -47,7 +47,7 @@ KMETHOD QReadWriteLock_tryLockForRead(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QReadWriteLock *  qp = RawPtr_to(QReadWriteLock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->tryLockForRead();
 		RETURNb_(ret_v);
 	} else {
@@ -61,7 +61,7 @@ KMETHOD QReadWriteLock_tryLockForRead(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QReadWriteLock *  qp = RawPtr_to(QReadWriteLock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int timeout = Int_to(int, sfp[1]);
 		bool ret_v = qp->tryLockForRead(timeout);
 		RETURNb_(ret_v);
@@ -75,7 +75,7 @@ KMETHOD QReadWriteLock_tryLockForWrite(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QReadWriteLock *  qp = RawPtr_to(QReadWriteLock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->tryLockForWrite();
 		RETURNb_(ret_v);
 	} else {
@@ -89,7 +89,7 @@ KMETHOD QReadWriteLock_tryLockForWrite(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QReadWriteLock *  qp = RawPtr_to(QReadWriteLock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int timeout = Int_to(int, sfp[1]);
 		bool ret_v = qp->tryLockForWrite(timeout);
 		RETURNb_(ret_v);
@@ -103,12 +103,30 @@ KMETHOD QReadWriteLock_unlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QReadWriteLock *  qp = RawPtr_to(QReadWriteLock *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->unlock();
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QReadWriteLock.parents();
+KMETHOD QReadWriteLock_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QReadWriteLock *qp = RawPtr_to(QReadWriteLock*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQReadWriteLock::DummyQReadWriteLock()
 {
@@ -157,17 +175,28 @@ bool DummyQReadWriteLock::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQReadWriteLock::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQReadWriteLock::connection(QObject *o)
 {
-	return;
+	QReadWriteLock *p = dynamic_cast<QReadWriteLock*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQReadWriteLock::KQReadWriteLock() : QReadWriteLock()
 {
 	self = NULL;
 	dummy = new DummyQReadWriteLock();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QReadWriteLock_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -222,13 +251,9 @@ static void QReadWriteLock_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QReadWriteLock_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQReadWriteLock *qp = (KQReadWriteLock *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -243,15 +268,6 @@ void KQReadWriteLock::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQReadWriteLock(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QReadWriteLock";
-	cdef->free = QReadWriteLock_free;
-	cdef->reftrace = QReadWriteLock_reftrace;
-	cdef->compareTo = QReadWriteLock_compareTo;
-}
-
 static knh_IntData_t QReadWriteLockConstInt[] = {
 	{"Recursive", QReadWriteLock::Recursive},
 	{"NonRecursive", QReadWriteLock::NonRecursive},
@@ -261,4 +277,15 @@ static knh_IntData_t QReadWriteLockConstInt[] = {
 DEFAPI(void) constQReadWriteLock(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QReadWriteLockConstInt);
 }
+
+
+DEFAPI(void) defQReadWriteLock(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QReadWriteLock";
+	cdef->free = QReadWriteLock_free;
+	cdef->reftrace = QReadWriteLock_reftrace;
+	cdef->compareTo = QReadWriteLock_compareTo;
+}
+
 

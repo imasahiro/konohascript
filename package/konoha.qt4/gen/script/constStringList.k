@@ -1,5 +1,12 @@
 OBSOLATE_CLASS = [
-	"QPictureIO", "QMatrix", "QMimeSource",
+	"QPictureIO", "QMatrix", "QMimeSource", "QHttpHeader", "QHttpRequestHeader", "QHttpResponseHeader"
+	];
+
+ABSTRACT_CLASSES = [ // if add items, re-make interface files
+	"QGraphicsLayout", "QGraphicsLayoutItem", "QGraphicsEffect", "QAccessibleObject",
+	"QGraphicsItem", "QIODevice", "QValidator", "QRunnable", "QGraphicsObject",
+	"QLayout", "QLayoutItem", "QStyle", "QGraphicsTransform", "QInputContext", "QPaintEngine",
+	"QWebHistoryInterface", "QHttpHeader", "QNetworkProxyFactory", "QNetworkProxyFactory"
 	];
 
 UNUSED_CLASSES = [
@@ -25,7 +32,7 @@ UNUSED_CLASSES = [
 	"QExplicitlySharedDataPointer",
 	"QFuture", "QFile",	"QFSFileEngine", "QFlag",	"QFontEngineInfo",
 	"QGestureRecognizer", /* "QGraphicsObject",*/ "QGenericMatrix",
-	/*"QGraphicsTransform",*/ "QGraphicsAnchor",
+	/*"QGraphicsTransform",*/ /*"QGraphicsAnchor",*/
 	"QGtkStyle" /*cannot compile on MacOSX*/,
 	"QHash",
 	"QImageIOHandler", "QItemEditorCreator",
@@ -34,7 +41,7 @@ UNUSED_CLASSES = [
 	"QListWidget", "QListWidgetItem",/*"QLayout",*/ "QLinkedList",
 	"QMouseDriverFactory"/*for embedded linux*/, "QMenuItem"/*part of the Qt3 support library*/,
 	"QMultiHash", "QMutableLinkedListIterator", "QMap", "QMultiMap", "QMultiMap", "QMetaType",
-	"QPair", "QPointer", "QProxyScreen", "QPolygon", "QPolygonF", "QPlastiqueStyle",
+	"QPair", "QPointer", "QProxyScreen", /*"QPolygon", "QPolygonF",*/ "QPlastiqueStyle",
 	"QQueue",
 	"QString"/*use konoha types : QString => String*/, "QSet",
 	"QStack", "QStringList", "QSharedPointer", "QSharedPointer", "QScreenCursor",
@@ -43,7 +50,15 @@ UNUSED_CLASSES = [
 	"QSessionManager",
 	"QThreadStorage", "QTextOStream", "QTableWidget", "QTemporaryFile",
 	"QVector", "QVectorIterator", "QVariant", "QVarLengthArray",
-	"qwsSetCustomColors", "QWS", "QWeakPointer","QWSClient", "QWindows",
+	"qwsSetCustomColors", "QWS", "QWeakPointer","QWSClient", "QWindows"
+//	"QWebFrame" /*have private destructor*/
+	];
+
+UNUSED_METHOD = [ //these methods are final
+	"isNull", "isValid", "insertColumn", "insertRow",
+	"addAction", /*"depth", "height", "width",*/ "accept",
+	"ignore", "isAccepted", "setAccepted",// "setWindowModality",
+	"transformed", "from_Image"
 	];
 
 UNUSED_WORDS = [
@@ -70,7 +85,21 @@ UNUSED_WORDS = [
 	"allowX11ColorNames", "setAllowX11ColorNames", /*[QColor API] : cannot compile on MacOSX*/
 //	"qint64 readData", "qint64 readLineData", "qint64 writeData", /*pure virtual method in QIODevice*/
 //	"virtual bool viewportEvent ( QEvent * event )", /*QAbstractScrollArea*/
-	"operator", /*"virtual",*/ "~", "...","const[]"
+	"windowSurface", "WindowSurface", /*This function is under development and is subjet to change*/
+	"operator", /*"virtual",*/ /*"~",*/ "...","const[]",
+	"QTextOption::Tab", /*"Attribute",*/ "QPainterPath::Element", "iterator", "ConverterState", /*class defined in class*/
+	"PixmapFragment", "ExtensionOption", "PaintContext",/*class defined in class*/
+//	"blurHintsChanged", /*cannnot define corresponding slot, in order to use BlurHints*/
+	"QMultiMap" /*template class*/
+	];
+
+GLOBAL_FLAG_LIST = [
+	("Qt", "Alignment"), ("Qt", "DockWidgetAreas"),
+	("Qt", "DropActions"), ("Qt", "GestureFlags"), ("Qt", "ImageConversionFlags"),
+	("Qt", "InputMethodHints"), ("Qt", "ItemFlags"), ("Qt", "KeyboardModifiers"),
+	("Qt", "MatchFlags"), ("Qt", "MouseButtons"), ("Qt", "Orientations"),
+	("Qt", "TextInteractionFlags"), ("Qt", "ToolBarAreas"), ("Qt", "TouchPointStates"),
+	("Qt", "WindowFlags"), ("Qt", "WindowStates")
 	];
 
 UNUSED_ENUM_NAME = [
@@ -91,11 +120,11 @@ UNUSED_ARG_NAMES = [
 	["new", "new_"]
 	];
 
-NOT_INHERITS_QOBJECT = [
-	"QTextCodec", "QAccessibleWidget", "QPrinter", "QStandardItem",
-	"QGraphicsLayoutItem", "QResource", "QTreeWidgetItem",
-	"QGraphicsLayout", "QPaintDevice", "QGraphicsItem", "QReadLocker"
-	];
+// NOT_INHERITS_QOBJECT = [
+// 	"QTextCodec", "QAccessibleWidget", "QPrinter", "QStandardItem",
+// 	"QGraphicsLayoutItem", "QResource", "QTreeWidgetItem", "QDate",
+// 	"QGraphicsLayout", "QPaintDevice", "QGraphicsItem", "QReadLocker"
+// 	];
 
 ADD_VIRTUAL_FUNCTION_LIST = [
 	["QPaintDevice", "depth"],
@@ -103,7 +132,9 @@ ADD_VIRTUAL_FUNCTION_LIST = [
 	["QPaintDevice", "width"],
 	["QAbstractPrintDialog", "printer"],
 	["QLayout", "setSpacing"],
-	["QLayout", "getSpacing"]
+	["QLayout", "getSpacing"],
+	["QWidget", "setWindowModality"],
+	["QWidget", "setWindowTitle"]
 	];
 
 RENAME_FUNCTION_LIST = [
@@ -120,20 +151,24 @@ RENAME_FUNCTION_LIST = [
 //	["QObject", "setParent"],
 	["QWidget", "update"],
 	["QWidget", "setParent"],
-	["QWidget", "setWindowTitle"],
 //	["QWidget", "repaint"],
 	["QSplashScreen", "repaint"],
 //	["QDialog", "open"],
 	["QFontDialog", "open"],
 //	["QWidget, getFont"],
-	["QFontDialog", "getFont"]
+	["QFontDialog", "getFont"],
+	["QProgressDialog", "open"]
 	];
 
-NOT_HAVE_CONSTRUCTOR = [
-	"QGraphicsSceneEvent", "QInputEvent", "QSessionManager",
-	"QTextList", "QTextTable", "QWindowStateChangeEvent",
-	"QLibraryInfo", "QToolTip", "QWhatsThis"
-	];
+// NOT_HAVE_CONSTRUCTOR = [
+// 	"QGraphicsSceneEvent", "QInputEvent", "QSessionManager",
+// 	"QTextList", "QTextTable", "QWindowStateChangeEvent",
+// 	"QLibraryInfo", "QToolTip", "QWhatsThis"
+// 	];
+
+HAVE_PRIVATE_DESTRUCTOR_LIST = [
+	"QWebFrame"
+]
 
 NOT_HAVE_EVENT_METHOD = [ // these class do not have method "bool event()"
 	"QAbstractFileEngine", "QAbstractFileEngineHandler",
@@ -200,6 +235,14 @@ NOT_HAVE_EVENT_METHOD = [ // these class do not have method "bool event()"
 	"QToolTip", "QTouchEvent","QTransform", "QUndoCommand", "QUrl",
 	"QUuid", "QWaitCondition", "QWhatsThis", "QWhatsThisClickedEvent",
 	"QWheelEvent", "QWidgetItem", "QWindowStateChangeEvent", "QWriteLocker",
-	"QPaintDevice", "QPrinter", "QResource", "QStandardItem", "QTextCodec",
-	"QTreeWidgetItem"
+	"QWebDatabase", "QWebElement", "QWebElementCollection", "QWebHistory",
+	"QWebHistoryItem", "QWebHitTestResult", "QWebSecurityOrigin", "QWebSettings",
+	"QPaintDevice", "QPrinter", "QPolygon", "QPolygonF",
+	"QResource", "QStandardItem", "QTextCodec",
+	"QTreeWidgetItem",
+	"QAuthenticator", "QHostAddress", "QHostInfo", "QHttpHeader", "QHttpRequestHeader",
+	"QHttpResponseHeader", "QNetworkAddressEntry", "QNetworkCacheMetaData",
+	"QNetworkConfiguration", "QNetworkCookie", "QNetworkInterface", "QNetworkProxy",
+	"QNetworkProxyFactory",	"QNetworkProxyQuery", "QNetworkRequest", "QSslCertificate",
+	"QSslCipher", "QSslConfiguration", "QSslError",	"QSslKey", "QUrlInfo"
 	];

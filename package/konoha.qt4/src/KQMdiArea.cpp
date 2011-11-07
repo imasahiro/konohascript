@@ -3,7 +3,7 @@ KMETHOD QMdiArea_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QMdiArea_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -44,7 +44,7 @@ KMETHOD QMdiArea_getActivationOrder(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMdiArea::WindowOrder ret_v = qp->activationOrder();
 		RETURNi_(ret_v);
 	} else {
@@ -57,7 +57,7 @@ KMETHOD QMdiArea_getActiveSubWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMdiSubWindow* ret_v = qp->activeSubWindow();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMdiSubWindow*)ret_v, NULL);
 		RETURN_(rptr);
@@ -66,14 +66,14 @@ KMETHOD QMdiArea_getActiveSubWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QMdiSubWindow QMdiArea.addSubWindow(QWidget widget, int windowFlags);
+//QMdiSubWindow QMdiArea.addSubWindow(QWidget widget, QtWindowFlags windowFlags);
 KMETHOD QMdiArea_addSubWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
-		Qt::WindowFlags windowFlags = Int_to(Qt::WindowFlags, sfp[2]);
+		initFlag(windowFlags, Qt::WindowFlags, sfp[2]);
 		QMdiSubWindow* ret_v = qp->addSubWindow(widget, windowFlags);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMdiSubWindow*)ret_v, NULL);
 		RETURN_(rptr);
@@ -87,7 +87,7 @@ KMETHOD QMdiArea_getBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QBrush ret_v = qp->background();
 		QBrush *ret_v_ = new QBrush(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -102,7 +102,7 @@ KMETHOD QMdiArea_currentSubWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMdiSubWindow* ret_v = qp->currentSubWindow();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMdiSubWindow*)ret_v, NULL);
 		RETURN_(rptr);
@@ -116,7 +116,7 @@ KMETHOD QMdiArea_getDocumentMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->documentMode();
 		RETURNb_(ret_v);
 	} else {
@@ -129,7 +129,7 @@ KMETHOD QMdiArea_removeSubWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->removeSubWindow(widget);
 	}
@@ -141,7 +141,7 @@ KMETHOD QMdiArea_setActivationOrder(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMdiArea::WindowOrder order = Int_to(QMdiArea::WindowOrder, sfp[1]);
 		qp->setActivationOrder(order);
 	}
@@ -153,7 +153,7 @@ KMETHOD QMdiArea_setBackground(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QBrush  background = *RawPtr_to(const QBrush *, sfp[1]);
 		qp->setBackground(background);
 	}
@@ -165,7 +165,7 @@ KMETHOD QMdiArea_setDocumentMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enabled = Boolean_to(bool, sfp[1]);
 		qp->setDocumentMode(enabled);
 	}
@@ -177,7 +177,7 @@ KMETHOD QMdiArea_setOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMdiArea::AreaOption option = Int_to(QMdiArea::AreaOption, sfp[1]);
 		bool on = Boolean_to(bool, sfp[2]);
 		qp->setOption(option, on);
@@ -190,7 +190,7 @@ KMETHOD QMdiArea_setTabPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTabWidget::TabPosition position = Int_to(QTabWidget::TabPosition, sfp[1]);
 		qp->setTabPosition(position);
 	}
@@ -202,7 +202,7 @@ KMETHOD QMdiArea_setTabShape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTabWidget::TabShape shape = Int_to(QTabWidget::TabShape, sfp[1]);
 		qp->setTabShape(shape);
 	}
@@ -214,7 +214,7 @@ KMETHOD QMdiArea_setViewMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMdiArea::ViewMode mode = Int_to(QMdiArea::ViewMode, sfp[1]);
 		qp->setViewMode(mode);
 	}
@@ -226,9 +226,9 @@ KMETHOD QMdiArea_subWindowList(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMdiArea::WindowOrder order = Int_to(QMdiArea::WindowOrder, sfp[1]);
-		QList<QMdiSubWindow*>ret_v = qp->subWindowList(order);
+		QList<QMdiSubWindow*> ret_v = qp->subWindowList(order);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QMdiSubWindow"));
@@ -248,7 +248,7 @@ KMETHOD QMdiArea_getTabPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTabWidget::TabPosition ret_v = qp->tabPosition();
 		RETURNi_(ret_v);
 	} else {
@@ -261,7 +261,7 @@ KMETHOD QMdiArea_getTabShape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTabWidget::TabShape ret_v = qp->tabShape();
 		RETURNi_(ret_v);
 	} else {
@@ -274,7 +274,7 @@ KMETHOD QMdiArea_testOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMdiArea::AreaOption option = Int_to(QMdiArea::AreaOption, sfp[1]);
 		bool ret_v = qp->testOption(option);
 		RETURNb_(ret_v);
@@ -288,7 +288,7 @@ KMETHOD QMdiArea_getViewMode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMdiArea::ViewMode ret_v = qp->viewMode();
 		RETURNi_(ret_v);
 	} else {
@@ -301,7 +301,7 @@ KMETHOD QMdiArea_activateNextSubWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->activateNextSubWindow();
 	}
 	RETURNvoid_();
@@ -312,7 +312,7 @@ KMETHOD QMdiArea_activatePreviousSubWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->activatePreviousSubWindow();
 	}
 	RETURNvoid_();
@@ -323,7 +323,7 @@ KMETHOD QMdiArea_cascadeSubWindows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->cascadeSubWindows();
 	}
 	RETURNvoid_();
@@ -334,7 +334,7 @@ KMETHOD QMdiArea_closeActiveSubWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->closeActiveSubWindow();
 	}
 	RETURNvoid_();
@@ -345,7 +345,7 @@ KMETHOD QMdiArea_closeAllSubWindows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->closeAllSubWindows();
 	}
 	RETURNvoid_();
@@ -356,7 +356,7 @@ KMETHOD QMdiArea_setActiveSubWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMdiSubWindow*  window = RawPtr_to(QMdiSubWindow*, sfp[1]);
 		qp->setActiveSubWindow(window);
 	}
@@ -368,7 +368,7 @@ KMETHOD QMdiArea_tileSubWindows(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiArea *  qp = RawPtr_to(QMdiArea *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->tileSubWindows();
 	}
 	RETURNvoid_();
@@ -442,10 +442,25 @@ bool DummyQMdiArea::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMdiArea::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 1;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, sub_window_activated_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractScrollArea::reftrace(ctx, p, tail_);
+}
 
 void DummyQMdiArea::connection(QObject *o)
 {
-	connect(o, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(subWindowActivatedSlot(QMdiSubWindow*)));
+	QMdiArea *p = dynamic_cast<QMdiArea*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(subWindowActivatedSlot(QMdiSubWindow*)));
+	}
 	DummyQAbstractScrollArea::connection(o);
 }
 
@@ -508,17 +523,9 @@ static void QMdiArea_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMdiArea_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 1;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMdiArea *qp = (KQMdiArea *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->sub_window_activated_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->sub_window_activated_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -542,15 +549,6 @@ bool KQMdiArea::event(QEvent *event)
 	return true;
 }
 
-DEFAPI(void) defQMdiArea(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QMdiArea";
-	cdef->free = QMdiArea_free;
-	cdef->reftrace = QMdiArea_reftrace;
-	cdef->compareTo = QMdiArea_compareTo;
-}
-
 static knh_IntData_t QMdiAreaConstInt[] = {
 	{"DontMaximizeSubWindowOnActivation", QMdiArea::DontMaximizeSubWindowOnActivation},
 	{"SubWindowView", QMdiArea::SubWindowView},
@@ -563,5 +561,179 @@ static knh_IntData_t QMdiAreaConstInt[] = {
 
 DEFAPI(void) constQMdiArea(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QMdiAreaConstInt);
+}
+
+
+DEFAPI(void) defQMdiArea(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QMdiArea";
+	cdef->free = QMdiArea_free;
+	cdef->reftrace = QMdiArea_reftrace;
+	cdef->compareTo = QMdiArea_compareTo;
+}
+
+//## QMdiAreaAreaOptions QMdiAreaAreaOptions.new(int value);
+KMETHOD QMdiAreaAreaOptions_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMdiArea::AreaOption i = Int_to(QMdiArea::AreaOption, sfp[1]);
+	QMdiArea::AreaOptions *ret_v = new QMdiArea::AreaOptions(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
+
+//## QMdiAreaAreaOptions QMdiAreaAreaOptions.and(int mask);
+KMETHOD QMdiAreaAreaOptions_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMdiArea::AreaOptions *qp = RawPtr_to(QMdiArea::AreaOptions*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QMdiArea::AreaOptions ret = ((*qp) & i);
+		QMdiArea::AreaOptions *ret_ = new QMdiArea::AreaOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMdiAreaAreaOptions QMdiAreaAreaOptions.iand(QMdiArea::QMdiAreaAreaOptions other);
+KMETHOD QMdiAreaAreaOptions_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMdiArea::AreaOptions *qp = RawPtr_to(QMdiArea::AreaOptions*, sfp[0]);
+	if (qp != NULL) {
+		QMdiArea::AreaOptions *other = RawPtr_to(QMdiArea::AreaOptions *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMdiAreaAreaOptions QMdiAreaAreaOptions.or(QMdiAreaAreaOptions f);
+KMETHOD QMdiAreaAreaOptions_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMdiArea::AreaOptions *qp = RawPtr_to(QMdiArea::AreaOptions*, sfp[0]);
+	if (qp != NULL) {
+		QMdiArea::AreaOptions *f = RawPtr_to(QMdiArea::AreaOptions*, sfp[1]);
+		QMdiArea::AreaOptions ret = ((*qp) | (*f));
+		QMdiArea::AreaOptions *ret_ = new QMdiArea::AreaOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMdiAreaAreaOptions QMdiAreaAreaOptions.ior(QMdiArea::QMdiAreaAreaOptions other);
+KMETHOD QMdiAreaAreaOptions_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMdiArea::AreaOptions *qp = RawPtr_to(QMdiArea::AreaOptions*, sfp[0]);
+	if (qp != NULL) {
+		QMdiArea::AreaOptions *other = RawPtr_to(QMdiArea::AreaOptions *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMdiAreaAreaOptions QMdiAreaAreaOptions.xor(QMdiAreaAreaOptions f);
+KMETHOD QMdiAreaAreaOptions_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMdiArea::AreaOptions *qp = RawPtr_to(QMdiArea::AreaOptions*, sfp[0]);
+	if (qp != NULL) {
+		QMdiArea::AreaOptions *f = RawPtr_to(QMdiArea::AreaOptions*, sfp[1]);
+		QMdiArea::AreaOptions ret = ((*qp) ^ (*f));
+		QMdiArea::AreaOptions *ret_ = new QMdiArea::AreaOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMdiAreaAreaOptions QMdiAreaAreaOptions.ixor(QMdiArea::QMdiAreaAreaOptions other);
+KMETHOD QMdiAreaAreaOptions_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMdiArea::AreaOptions *qp = RawPtr_to(QMdiArea::AreaOptions*, sfp[0]);
+	if (qp != NULL) {
+		QMdiArea::AreaOptions *other = RawPtr_to(QMdiArea::AreaOptions *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QMdiAreaAreaOptions.testFlag(int flag);
+KMETHOD QMdiAreaAreaOptions_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMdiArea::AreaOptions *qp = RawPtr_to(QMdiArea::AreaOptions *, sfp[0]);
+	if (qp != NULL) {
+		QMdiArea::AreaOption flag = Int_to(QMdiArea::AreaOption, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QMdiAreaAreaOptions.value();
+KMETHOD QMdiAreaAreaOptions_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMdiArea::AreaOptions *qp = RawPtr_to(QMdiArea::AreaOptions *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QMdiAreaAreaOptions_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QMdiArea::AreaOptions *qp = (QMdiArea::AreaOptions *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QMdiAreaAreaOptions_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QMdiArea::AreaOptions *qp = (QMdiArea::AreaOptions *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QMdiAreaAreaOptions_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QMdiArea::AreaOptions*)p1->rawptr);
+//		int v2 = int(*(QMdiArea::AreaOptions*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QMdiArea::AreaOptions v1 = *(QMdiArea::AreaOptions*)p1->rawptr;
+		QMdiArea::AreaOptions v2 = *(QMdiArea::AreaOptions*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQMdiAreaAreaOptions(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QMdiAreaAreaOptions";
+	cdef->free = QMdiAreaAreaOptions_free;
+	cdef->reftrace = QMdiAreaAreaOptions_reftrace;
+	cdef->compareTo = QMdiAreaAreaOptions_compareTo;
 }
 

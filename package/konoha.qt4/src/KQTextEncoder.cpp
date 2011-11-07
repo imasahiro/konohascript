@@ -27,7 +27,7 @@ KMETHOD QTextEncoder_fromUnicode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEncoder *  qp = RawPtr_to(QTextEncoder *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QString str = String_to(const QString, sfp[1]);
 		QByteArray ret_v = qp->fromUnicode(str);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
@@ -44,7 +44,7 @@ KMETHOD QTextEncoder_fromUnicode(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextEncoder *  qp = RawPtr_to(QTextEncoder *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QChar*  uc = RawPtr_to(const QChar*, sfp[1]);
 		int len = Int_to(int, sfp[2]);
 		QByteArray ret_v = qp->fromUnicode(uc, len);
@@ -56,6 +56,24 @@ KMETHOD QTextEncoder_fromUnicode(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 */
+//Array<String> QTextEncoder.parents();
+KMETHOD QTextEncoder_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextEncoder *qp = RawPtr_to(QTextEncoder*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextEncoder::DummyQTextEncoder()
 {
@@ -104,17 +122,28 @@ bool DummyQTextEncoder::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextEncoder::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextEncoder::connection(QObject *o)
 {
-	return;
+	QTextEncoder *p = dynamic_cast<QTextEncoder*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTextEncoder::KQTextEncoder(const QTextCodec* codec) : QTextEncoder(codec)
 {
 	self = NULL;
 	dummy = new DummyQTextEncoder();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextEncoder_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -169,13 +198,9 @@ static void QTextEncoder_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextEncoder_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextEncoder *qp = (KQTextEncoder *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -189,6 +214,8 @@ void KQTextEncoder::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQTextEncoder(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

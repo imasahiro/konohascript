@@ -28,7 +28,7 @@ KMETHOD QEventTransition_getEventSource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEventTransition *  qp = RawPtr_to(QEventTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject* ret_v = qp->eventSource();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QObject*)ret_v, NULL);
 		RETURN_(rptr);
@@ -42,7 +42,7 @@ KMETHOD QEventTransition_getEventType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEventTransition *  qp = RawPtr_to(QEventTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEvent::Type ret_v = qp->eventType();
 		RETURNi_(ret_v);
 	} else {
@@ -55,7 +55,7 @@ KMETHOD QEventTransition_setEventSource(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEventTransition *  qp = RawPtr_to(QEventTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
 		qp->setEventSource(object);
 	}
@@ -67,7 +67,7 @@ KMETHOD QEventTransition_setEventType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QEventTransition *  qp = RawPtr_to(QEventTransition *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QEvent::Type type = Int_to(QEvent::Type, sfp[1]);
 		qp->setEventType(type);
 	}
@@ -125,9 +125,23 @@ bool DummyQEventTransition::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQEventTransition::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractTransition::reftrace(ctx, p, tail_);
+}
 
 void DummyQEventTransition::connection(QObject *o)
 {
+	QEventTransition *p = dynamic_cast<QEventTransition*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractTransition::connection(o);
 }
 
@@ -190,13 +204,9 @@ static void QEventTransition_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QEventTransition_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQEventTransition *qp = (KQEventTransition *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -219,6 +229,8 @@ bool KQEventTransition::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQEventTransition(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

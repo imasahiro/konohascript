@@ -16,7 +16,7 @@ KMETHOD QHelpEvent_globalPos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHelpEvent *  qp = RawPtr_to(QHelpEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint ret_v = qp->globalPos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -31,7 +31,7 @@ KMETHOD QHelpEvent_globalX(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHelpEvent *  qp = RawPtr_to(QHelpEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->globalX();
 		RETURNi_(ret_v);
 	} else {
@@ -44,7 +44,7 @@ KMETHOD QHelpEvent_globalY(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHelpEvent *  qp = RawPtr_to(QHelpEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->globalY();
 		RETURNi_(ret_v);
 	} else {
@@ -57,7 +57,7 @@ KMETHOD QHelpEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHelpEvent *  qp = RawPtr_to(QHelpEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint ret_v = qp->pos();
 		QPoint *ret_v_ = new QPoint(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -72,7 +72,7 @@ KMETHOD QHelpEvent_x(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHelpEvent *  qp = RawPtr_to(QHelpEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->x();
 		RETURNi_(ret_v);
 	} else {
@@ -85,7 +85,7 @@ KMETHOD QHelpEvent_y(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QHelpEvent *  qp = RawPtr_to(QHelpEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->y();
 		RETURNi_(ret_v);
 	} else {
@@ -144,9 +144,23 @@ bool DummyQHelpEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQHelpEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQHelpEvent::connection(QObject *o)
 {
+	QHelpEvent *p = dynamic_cast<QHelpEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -154,7 +168,6 @@ KQHelpEvent::KQHelpEvent(QHelpEvent::Type type, const QPoint pos, const QPoint g
 {
 	self = NULL;
 	dummy = new DummyQHelpEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QHelpEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -209,13 +222,9 @@ static void QHelpEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QHelpEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQHelpEvent *qp = (KQHelpEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -229,6 +238,8 @@ void KQHelpEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQHelpEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

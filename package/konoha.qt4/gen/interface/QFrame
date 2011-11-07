@@ -62,10 +62,21 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+class
+QWidget
+name
+RenderFlags
+
 typedefed_objects
 
 parent_typedefed_objects
-RenderFlags
+
+class_objects
+
+parent_class_objects
 
 enums
 class_name
@@ -111,6 +122,23 @@ key
 DrawWindowBackground
 DrawChildren
 IgnoreMask
+public_flag
+true
+class_name
+QPaintDevice
+name
+PaintDeviceMetric
+key
+PdmWidth
+PdmHeight
+PdmWidthMM
+PdmHeightMM
+PdmNumColors
+PdmDepth
+PdmDpiX
+PdmDpiY
+PdmPhysicalDpiX
+PdmPhysicalDpiY
 public_flag
 true
 

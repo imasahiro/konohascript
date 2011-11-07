@@ -3,7 +3,7 @@ KMETHOD QMdiSubWindow_minimumSizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->minimumSizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -18,7 +18,7 @@ KMETHOD QMdiSubWindow_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QSize ret_v = qp->sizeHint();
 		QSize *ret_v_ = new QSize(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -28,12 +28,12 @@ KMETHOD QMdiSubWindow_sizeHint(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//QMdiSubWindow QMdiSubWindow.new(QWidget parent, int flags);
+//QMdiSubWindow QMdiSubWindow.new(QWidget parent, QtWindowFlags flags);
 KMETHOD QMdiSubWindow_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QWidget*  parent = RawPtr_to(QWidget*, sfp[1]);
-	Qt::WindowFlags flags = Int_to(Qt::WindowFlags, sfp[2]);
+	initFlag(flags, Qt::WindowFlags, sfp[2]);
 	KQMdiSubWindow *ret_v = new KQMdiSubWindow(parent, flags);
 	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
@@ -45,7 +45,7 @@ KMETHOD QMdiSubWindow_isShaded(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isShaded();
 		RETURNb_(ret_v);
 	} else {
@@ -58,7 +58,7 @@ KMETHOD QMdiSubWindow_getKeyboardPageStep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->keyboardPageStep();
 		RETURNi_(ret_v);
 	} else {
@@ -71,7 +71,7 @@ KMETHOD QMdiSubWindow_getKeyboardSingleStep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->keyboardSingleStep();
 		RETURNi_(ret_v);
 	} else {
@@ -84,7 +84,7 @@ KMETHOD QMdiSubWindow_mdiArea(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMdiArea* ret_v = qp->mdiArea();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMdiArea*)ret_v, NULL);
 		RETURN_(rptr);
@@ -98,7 +98,7 @@ KMETHOD QMdiSubWindow_setKeyboardPageStep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int step = Int_to(int, sfp[1]);
 		qp->setKeyboardPageStep(step);
 	}
@@ -110,7 +110,7 @@ KMETHOD QMdiSubWindow_setKeyboardSingleStep(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int step = Int_to(int, sfp[1]);
 		qp->setKeyboardSingleStep(step);
 	}
@@ -122,7 +122,7 @@ KMETHOD QMdiSubWindow_setOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMdiSubWindow::SubWindowOption option = Int_to(QMdiSubWindow::SubWindowOption, sfp[1]);
 		bool on = Boolean_to(bool, sfp[2]);
 		qp->setOption(option, on);
@@ -135,7 +135,7 @@ KMETHOD QMdiSubWindow_setSystemMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMenu*  systemMenu = RawPtr_to(QMenu*, sfp[1]);
 		qp->setSystemMenu(systemMenu);
 	}
@@ -147,7 +147,7 @@ KMETHOD QMdiSubWindow_setWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget*  widget = RawPtr_to(QWidget*, sfp[1]);
 		qp->setWidget(widget);
 	}
@@ -159,7 +159,7 @@ KMETHOD QMdiSubWindow_getSystemMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMenu* ret_v = qp->systemMenu();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMenu*)ret_v, NULL);
 		RETURN_(rptr);
@@ -173,7 +173,7 @@ KMETHOD QMdiSubWindow_testOption(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMdiSubWindow::SubWindowOption option = Int_to(QMdiSubWindow::SubWindowOption, sfp[1]);
 		bool ret_v = qp->testOption(option);
 		RETURNb_(ret_v);
@@ -187,7 +187,7 @@ KMETHOD QMdiSubWindow_getWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QWidget* ret_v = qp->widget();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QWidget*)ret_v, NULL);
 		RETURN_(rptr);
@@ -201,7 +201,7 @@ KMETHOD QMdiSubWindow_showShaded(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->showShaded();
 	}
 	RETURNvoid_();
@@ -212,7 +212,7 @@ KMETHOD QMdiSubWindow_showSystemMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMdiSubWindow *  qp = RawPtr_to(QMdiSubWindow *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->showSystemMenu();
 	}
 	RETURNvoid_();
@@ -265,8 +265,10 @@ bool DummyQMdiSubWindow::windowStateChangedSlot(Qt::WindowStates oldState, Qt::W
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		lsfp[K_CALLDELTA+2].ivalue = oldState;
-		lsfp[K_CALLDELTA+3].ivalue = new_State;
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, Qt::WindowStates, oldState);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_RawPtr_t *p2 = new_QRawPtr(lctx, Qt::WindowStates, new_State);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+3].o, UPCAST(p2));
 		knh_Func_invoke(lctx, window_state_changed_func, lsfp, 3);
 		return true;
 	}
@@ -301,11 +303,27 @@ bool DummyQMdiSubWindow::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMdiSubWindow::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+//	(void)ctx; (void)p; (void)tail_;
+	int list_size = 2;
+	KNH_ENSUREREF(ctx, list_size);
+
+	KNH_ADDNNREF(ctx, about_to_activate_func);
+	KNH_ADDNNREF(ctx, window_state_changed_func);
+
+	KNH_SIZEREF(ctx);
+
+	DummyQWidget::reftrace(ctx, p, tail_);
+}
 
 void DummyQMdiSubWindow::connection(QObject *o)
 {
-	connect(o, SIGNAL(aboutToActivate()), this, SLOT(aboutToActivateSlot()));
-	connect(o, SIGNAL(windowStateChanged(Qt::WindowStates, Qt::WindowStates)), this, SLOT(windowStateChangedSlot(Qt::WindowStates, Qt::WindowStates)));
+	QMdiSubWindow *p = dynamic_cast<QMdiSubWindow*>(o);
+	if (p != NULL) {
+		connect(p, SIGNAL(aboutToActivate()), this, SLOT(aboutToActivateSlot()));
+		connect(p, SIGNAL(windowStateChanged(Qt::WindowStates, Qt::WindowStates)), this, SLOT(windowStateChangedSlot(Qt::WindowStates, Qt::WindowStates)));
+	}
 	DummyQWidget::connection(o);
 }
 
@@ -368,21 +386,9 @@ static void QMdiSubWindow_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMdiSubWindow_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-//	(void)ctx; (void)p; (void)tail_;
-	int list_size = 2;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMdiSubWindow *qp = (KQMdiSubWindow *)p->rawptr;
-//		(void)qp;
-		if (qp->dummy->about_to_activate_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->about_to_activate_func);
-			KNH_SIZEREF(ctx);
-		}
-		if (qp->dummy->window_state_changed_func != NULL) {
-			KNH_ADDREF(ctx, qp->dummy->window_state_changed_func);
-			KNH_SIZEREF(ctx);
-		}
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -406,6 +412,17 @@ bool KQMdiSubWindow::event(QEvent *event)
 	return true;
 }
 
+static knh_IntData_t QMdiSubWindowConstInt[] = {
+	{"RubberBandResize", QMdiSubWindow::RubberBandResize},
+	{"RubberBandMove", QMdiSubWindow::RubberBandMove},
+	{NULL, 0}
+};
+
+DEFAPI(void) constQMdiSubWindow(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
+	kapi->loadClassIntConst(ctx, cid, QMdiSubWindowConstInt);
+}
+
+
 DEFAPI(void) defQMdiSubWindow(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
 	(void)ctx; (void) cid;
@@ -415,13 +432,167 @@ DEFAPI(void) defQMdiSubWindow(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->compareTo = QMdiSubWindow_compareTo;
 }
 
-static knh_IntData_t QMdiSubWindowConstInt[] = {
-	{"RubberBandResize", QMdiSubWindow::RubberBandResize},
-	{"RubberBandMove", QMdiSubWindow::RubberBandMove},
-	{NULL, 0}
-};
+//## QMdiSubWindowSubWindowOptions QMdiSubWindowSubWindowOptions.new(int value);
+KMETHOD QMdiSubWindowSubWindowOptions_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMdiSubWindow::SubWindowOption i = Int_to(QMdiSubWindow::SubWindowOption, sfp[1]);
+	QMdiSubWindow::SubWindowOptions *ret_v = new QMdiSubWindow::SubWindowOptions(i);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	RETURN_(rptr);
+}
 
-DEFAPI(void) constQMdiSubWindow(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
-	kapi->loadClassIntConst(ctx, cid, QMdiSubWindowConstInt);
+//## QMdiSubWindowSubWindowOptions QMdiSubWindowSubWindowOptions.and(int mask);
+KMETHOD QMdiSubWindowSubWindowOptions_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMdiSubWindow::SubWindowOptions *qp = RawPtr_to(QMdiSubWindow::SubWindowOptions*, sfp[0]);
+	if (qp != NULL) {
+		int i = Int_to(int, sfp[1]);
+		QMdiSubWindow::SubWindowOptions ret = ((*qp) & i);
+		QMdiSubWindow::SubWindowOptions *ret_ = new QMdiSubWindow::SubWindowOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMdiSubWindowSubWindowOptions QMdiSubWindowSubWindowOptions.iand(QMdiSubWindow::QMdiSubWindowSubWindowOptions other);
+KMETHOD QMdiSubWindowSubWindowOptions_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMdiSubWindow::SubWindowOptions *qp = RawPtr_to(QMdiSubWindow::SubWindowOptions*, sfp[0]);
+	if (qp != NULL) {
+		QMdiSubWindow::SubWindowOptions *other = RawPtr_to(QMdiSubWindow::SubWindowOptions *, sfp[1]);
+		*qp = ((*qp) & (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMdiSubWindowSubWindowOptions QMdiSubWindowSubWindowOptions.or(QMdiSubWindowSubWindowOptions f);
+KMETHOD QMdiSubWindowSubWindowOptions_or(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMdiSubWindow::SubWindowOptions *qp = RawPtr_to(QMdiSubWindow::SubWindowOptions*, sfp[0]);
+	if (qp != NULL) {
+		QMdiSubWindow::SubWindowOptions *f = RawPtr_to(QMdiSubWindow::SubWindowOptions*, sfp[1]);
+		QMdiSubWindow::SubWindowOptions ret = ((*qp) | (*f));
+		QMdiSubWindow::SubWindowOptions *ret_ = new QMdiSubWindow::SubWindowOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMdiSubWindowSubWindowOptions QMdiSubWindowSubWindowOptions.ior(QMdiSubWindow::QMdiSubWindowSubWindowOptions other);
+KMETHOD QMdiSubWindowSubWindowOptions_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMdiSubWindow::SubWindowOptions *qp = RawPtr_to(QMdiSubWindow::SubWindowOptions*, sfp[0]);
+	if (qp != NULL) {
+		QMdiSubWindow::SubWindowOptions *other = RawPtr_to(QMdiSubWindow::SubWindowOptions *, sfp[1]);
+		*qp = ((*qp) | (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMdiSubWindowSubWindowOptions QMdiSubWindowSubWindowOptions.xor(QMdiSubWindowSubWindowOptions f);
+KMETHOD QMdiSubWindowSubWindowOptions_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMdiSubWindow::SubWindowOptions *qp = RawPtr_to(QMdiSubWindow::SubWindowOptions*, sfp[0]);
+	if (qp != NULL) {
+		QMdiSubWindow::SubWindowOptions *f = RawPtr_to(QMdiSubWindow::SubWindowOptions*, sfp[1]);
+		QMdiSubWindow::SubWindowOptions ret = ((*qp) ^ (*f));
+		QMdiSubWindow::SubWindowOptions *ret_ = new QMdiSubWindow::SubWindowOptions(ret);
+		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		RETURN_(rptr);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## QMdiSubWindowSubWindowOptions QMdiSubWindowSubWindowOptions.ixor(QMdiSubWindow::QMdiSubWindowSubWindowOptions other);
+KMETHOD QMdiSubWindowSubWindowOptions_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMdiSubWindow::SubWindowOptions *qp = RawPtr_to(QMdiSubWindow::SubWindowOptions*, sfp[0]);
+	if (qp != NULL) {
+		QMdiSubWindow::SubWindowOptions *other = RawPtr_to(QMdiSubWindow::SubWindowOptions *, sfp[1]);
+		*qp = ((*qp) ^ (*other));
+		RETURN_(qp);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## boolean QMdiSubWindowSubWindowOptions.testFlag(int flag);
+KMETHOD QMdiSubWindowSubWindowOptions_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMdiSubWindow::SubWindowOptions *qp = RawPtr_to(QMdiSubWindow::SubWindowOptions *, sfp[0]);
+	if (qp != NULL) {
+		QMdiSubWindow::SubWindowOption flag = Int_to(QMdiSubWindow::SubWindowOption, sfp[1]);
+		bool ret = qp->testFlag(flag);
+		RETURNb_(ret);
+	} else {
+		RETURNb_(false);
+	}
+}
+
+//## int QMdiSubWindowSubWindowOptions.value();
+KMETHOD QMdiSubWindowSubWindowOptions_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+	(void)ctx;
+	QMdiSubWindow::SubWindowOptions *qp = RawPtr_to(QMdiSubWindow::SubWindowOptions *, sfp[0]);
+	if (qp != NULL) {
+		int ret = int(*qp);
+		RETURNi_(ret);
+	} else {
+		RETURNi_(0);
+	}
+}
+
+static void QMdiSubWindowSubWindowOptions_free(CTX ctx, knh_RawPtr_t *p)
+{
+	(void)ctx;
+	if (p->rawptr != NULL) {
+		QMdiSubWindow::SubWindowOptions *qp = (QMdiSubWindow::SubWindowOptions *)p->rawptr;
+		(void)qp;
+		//delete qp;
+	}
+}
+
+static void QMdiSubWindowSubWindowOptions_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	if (p->rawptr != NULL) {
+		QMdiSubWindow::SubWindowOptions *qp = (QMdiSubWindow::SubWindowOptions *)p->rawptr;
+		(void)qp;
+	}
+}
+
+static int QMdiSubWindowSubWindowOptions_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+{
+	if (p1->rawptr == NULL || p2->rawptr == NULL) {
+		return 1;
+	} else {
+//		int v1 = int(*(QMdiSubWindow::SubWindowOptions*)p1->rawptr);
+//		int v2 = int(*(QMdiSubWindow::SubWindowOptions*)p2->rawptr);
+//		return (v1 == v2 ? 0 : 1);
+		QMdiSubWindow::SubWindowOptions v1 = *(QMdiSubWindow::SubWindowOptions*)p1->rawptr;
+		QMdiSubWindow::SubWindowOptions v2 = *(QMdiSubWindow::SubWindowOptions*)p2->rawptr;
+//		return (v1 == v2 ? 0 : 1);
+		return (v1 == v2 ? 0 : 1);
+
+	}
+}
+
+DEFAPI(void) defQMdiSubWindowSubWindowOptions(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QMdiSubWindowSubWindowOptions";
+	cdef->free = QMdiSubWindowSubWindowOptions_free;
+	cdef->reftrace = QMdiSubWindowSubWindowOptions_reftrace;
+	cdef->compareTo = QMdiSubWindowSubWindowOptions_compareTo;
 }
 

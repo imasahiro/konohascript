@@ -15,7 +15,7 @@ KMETHOD QChildEvent_added(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChildEvent *  qp = RawPtr_to(QChildEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->added();
 		RETURNb_(ret_v);
 	} else {
@@ -28,7 +28,7 @@ KMETHOD QChildEvent_child(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChildEvent *  qp = RawPtr_to(QChildEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QObject* ret_v = qp->child();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QObject*)ret_v, NULL);
 		RETURN_(rptr);
@@ -42,7 +42,7 @@ KMETHOD QChildEvent_polished(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChildEvent *  qp = RawPtr_to(QChildEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->polished();
 		RETURNb_(ret_v);
 	} else {
@@ -55,7 +55,7 @@ KMETHOD QChildEvent_removed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QChildEvent *  qp = RawPtr_to(QChildEvent *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->removed();
 		RETURNb_(ret_v);
 	} else {
@@ -114,9 +114,23 @@ bool DummyQChildEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQChildEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQChildEvent::connection(QObject *o)
 {
+	QChildEvent *p = dynamic_cast<QChildEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -124,7 +138,6 @@ KQChildEvent::KQChildEvent(QChildEvent::Type type, QObject* child) : QChildEvent
 {
 	self = NULL;
 	dummy = new DummyQChildEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QChildEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -179,13 +192,9 @@ static void QChildEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QChildEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQChildEvent *qp = (KQChildEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -199,6 +208,8 @@ void KQChildEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQChildEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

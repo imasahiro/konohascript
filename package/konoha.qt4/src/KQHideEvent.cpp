@@ -59,9 +59,23 @@ bool DummyQHideEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQHideEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQEvent::reftrace(ctx, p, tail_);
+}
 
 void DummyQHideEvent::connection(QObject *o)
 {
+	QHideEvent *p = dynamic_cast<QHideEvent*>(o);
+	if (p != NULL) {
+	}
 	DummyQEvent::connection(o);
 }
 
@@ -69,7 +83,6 @@ KQHideEvent::KQHideEvent() : QHideEvent()
 {
 	self = NULL;
 	dummy = new DummyQHideEvent();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QHideEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -124,13 +137,9 @@ static void QHideEvent_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QHideEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQHideEvent *qp = (KQHideEvent *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -144,6 +153,8 @@ void KQHideEvent::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQHideEvent(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

@@ -2,6 +2,8 @@
 #define QT_COMMON_HPP
 #include <QtCore>
 #include <QtGui>
+#include <QtWebKit>
+//#include <QtNetwork>
 #define K_INTERNAL
 #include <konoha1.h>
 #include <konoha1/inlinelibs.h>
@@ -9,6 +11,16 @@
 #define new_RawPtrFromClass(CLASS, o) new_RawPtr(lctx, getClassTBL(CLASS), o)
 #include <map>
 #define new_QRawPtr(lctx, T, v) new_QRawPtr_(lctx, getClassTBL(T), v)
+//#define QRawPtrNull_to(T, a) ((((a.p)->rawptr) != NULL) ? (*RawPtr_to(T, a)) : 0)
+
+#define initFlag(NAME, T, a) T NAME;QRawPtrNull_to(NAME, T, a);
+#define QRawPtrNull_to(NAME, T, a) if (((a.p)->rawptr) != NULL) { \
+(NAME) = *RawPtr_to(T*, a);								          \
+} else {														  \
+(NAME) = 0;														  \
+}
+
+
 
 // template<class T>
 // inline knh_RawPtr_t *new_QRawPtr(CTX lctx, T *v)

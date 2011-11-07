@@ -14,7 +14,7 @@ KMETHOD QMutex_lock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMutex *  qp = RawPtr_to(QMutex *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->lock();
 	}
 	RETURNvoid_();
@@ -25,7 +25,7 @@ KMETHOD QMutex_tryLock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMutex *  qp = RawPtr_to(QMutex *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->tryLock();
 		RETURNb_(ret_v);
 	} else {
@@ -39,7 +39,7 @@ KMETHOD QMutex_tryLock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMutex *  qp = RawPtr_to(QMutex *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int timeout = Int_to(int, sfp[1]);
 		bool ret_v = qp->tryLock(timeout);
 		RETURNb_(ret_v);
@@ -53,12 +53,30 @@ KMETHOD QMutex_unlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMutex *  qp = RawPtr_to(QMutex *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->unlock();
 	}
 	RETURNvoid_();
 }
 
+//Array<String> QMutex.parents();
+KMETHOD QMutex_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMutex *qp = RawPtr_to(QMutex*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQMutex::DummyQMutex()
 {
@@ -107,17 +125,28 @@ bool DummyQMutex::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMutex::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQMutex::connection(QObject *o)
 {
-	return;
+	QMutex *p = dynamic_cast<QMutex*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQMutex::KQMutex(QMutex::RecursionMode mode) : QMutex(mode)
 {
 	self = NULL;
 	dummy = new DummyQMutex();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QMutex_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -172,13 +201,9 @@ static void QMutex_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMutex_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMutex *qp = (KQMutex *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -193,15 +218,6 @@ void KQMutex::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-DEFAPI(void) defQMutex(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-{
-	(void)ctx; (void) cid;
-	cdef->name = "QMutex";
-	cdef->free = QMutex_free;
-	cdef->reftrace = QMutex_reftrace;
-	cdef->compareTo = QMutex_compareTo;
-}
-
 static knh_IntData_t QMutexConstInt[] = {
 	{"Recursive", QMutex::Recursive},
 	{"NonRecursive", QMutex::NonRecursive},
@@ -211,4 +227,15 @@ static knh_IntData_t QMutexConstInt[] = {
 DEFAPI(void) constQMutex(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, QMutexConstInt);
 }
+
+
+DEFAPI(void) defQMutex(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+{
+	(void)ctx; (void) cid;
+	cdef->name = "QMutex";
+	cdef->free = QMutex_free;
+	cdef->reftrace = QMutex_reftrace;
+	cdef->compareTo = QMutex_compareTo;
+}
+
 

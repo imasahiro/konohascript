@@ -3,7 +3,7 @@ KMETHOD QTableView_indexAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  pos = *RawPtr_to(const QPoint *, sfp[1]);
 		QModelIndex ret_v = qp->indexAt(pos);
 		QModelIndex *ret_v_ = new QModelIndex(ret_v);
@@ -19,7 +19,7 @@ KMETHOD QTableView_setModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QAbstractItemModel*  model = RawPtr_to(QAbstractItemModel*, sfp[1]);
 		qp->setModel(model);
 	}
@@ -31,7 +31,7 @@ KMETHOD QTableView_setRootIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QModelIndex  index = *RawPtr_to(const QModelIndex *, sfp[1]);
 		qp->setRootIndex(index);
 	}
@@ -43,7 +43,7 @@ KMETHOD QTableView_setSelectionModel(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QItemSelectionModel*  selectionModel = RawPtr_to(QItemSelectionModel*, sfp[1]);
 		qp->setSelectionModel(selectionModel);
 	}
@@ -66,7 +66,7 @@ KMETHOD QTableView_clearSpans(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->clearSpans();
 	}
 	RETURNvoid_();
@@ -77,7 +77,7 @@ KMETHOD QTableView_columnAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int x = Int_to(int, sfp[1]);
 		int ret_v = qp->columnAt(x);
 		RETURNi_(ret_v);
@@ -91,7 +91,7 @@ KMETHOD QTableView_columnSpan(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		int ret_v = qp->columnSpan(row, column);
@@ -106,7 +106,7 @@ KMETHOD QTableView_columnViewportPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int ret_v = qp->columnViewportPosition(column);
 		RETURNi_(ret_v);
@@ -120,7 +120,7 @@ KMETHOD QTableView_getColumnWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int ret_v = qp->columnWidth(column);
 		RETURNi_(ret_v);
@@ -134,7 +134,7 @@ KMETHOD QTableView_getGridStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::PenStyle ret_v = qp->gridStyle();
 		RETURNi_(ret_v);
 	} else {
@@ -147,7 +147,7 @@ KMETHOD QTableView_getHorizontalHeader(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QHeaderView* ret_v = qp->horizontalHeader();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QHeaderView*)ret_v, NULL);
 		RETURN_(rptr);
@@ -161,7 +161,7 @@ KMETHOD QTableView_isColumnHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		bool ret_v = qp->isColumnHidden(column);
 		RETURNb_(ret_v);
@@ -175,7 +175,7 @@ KMETHOD QTableView_isCornerButtonEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isCornerButtonEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -188,7 +188,7 @@ KMETHOD QTableView_isRowHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		bool ret_v = qp->isRowHidden(row);
 		RETURNb_(ret_v);
@@ -202,7 +202,7 @@ KMETHOD QTableView_isSortingEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isSortingEnabled();
 		RETURNb_(ret_v);
 	} else {
@@ -215,7 +215,7 @@ KMETHOD QTableView_rowAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int y = Int_to(int, sfp[1]);
 		int ret_v = qp->rowAt(y);
 		RETURNi_(ret_v);
@@ -229,7 +229,7 @@ KMETHOD QTableView_getRowHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int ret_v = qp->rowHeight(row);
 		RETURNi_(ret_v);
@@ -243,7 +243,7 @@ KMETHOD QTableView_rowSpan(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		int ret_v = qp->rowSpan(row, column);
@@ -258,7 +258,7 @@ KMETHOD QTableView_rowViewportPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int ret_v = qp->rowViewportPosition(row);
 		RETURNi_(ret_v);
@@ -272,7 +272,7 @@ KMETHOD QTableView_setColumnHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		bool hide = Boolean_to(bool, sfp[2]);
 		qp->setColumnHidden(column, hide);
@@ -285,7 +285,7 @@ KMETHOD QTableView_setColumnWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		int width = Int_to(int, sfp[2]);
 		qp->setColumnWidth(column, width);
@@ -298,7 +298,7 @@ KMETHOD QTableView_setCornerButtonEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setCornerButtonEnabled(enable);
 	}
@@ -310,7 +310,7 @@ KMETHOD QTableView_setGridStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		Qt::PenStyle style = Int_to(Qt::PenStyle, sfp[1]);
 		qp->setGridStyle(style);
 	}
@@ -322,7 +322,7 @@ KMETHOD QTableView_setHorizontalHeader(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QHeaderView*  header = RawPtr_to(QHeaderView*, sfp[1]);
 		qp->setHorizontalHeader(header);
 	}
@@ -334,7 +334,7 @@ KMETHOD QTableView_setRowHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int height = Int_to(int, sfp[2]);
 		qp->setRowHeight(row, height);
@@ -347,7 +347,7 @@ KMETHOD QTableView_setRowHidden(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		bool hide = Boolean_to(bool, sfp[2]);
 		qp->setRowHidden(row, hide);
@@ -360,7 +360,7 @@ KMETHOD QTableView_setSortingEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool enable = Boolean_to(bool, sfp[1]);
 		qp->setSortingEnabled(enable);
 	}
@@ -372,7 +372,7 @@ KMETHOD QTableView_setSpan(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		int column = Int_to(int, sfp[2]);
 		int rowSpanCount = Int_to(int, sfp[3]);
@@ -387,7 +387,7 @@ KMETHOD QTableView_setVerticalHeader(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QHeaderView*  header = RawPtr_to(QHeaderView*, sfp[1]);
 		qp->setVerticalHeader(header);
 	}
@@ -399,7 +399,7 @@ KMETHOD QTableView_setWordWrap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool on = Boolean_to(bool, sfp[1]);
 		qp->setWordWrap(on);
 	}
@@ -411,7 +411,7 @@ KMETHOD QTableView_getShowGrid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->showGrid();
 		RETURNb_(ret_v);
 	} else {
@@ -424,7 +424,7 @@ KMETHOD QTableView_sortByColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		Qt::SortOrder order = Int_to(Qt::SortOrder, sfp[2]);
 		qp->sortByColumn(column, order);
@@ -437,7 +437,7 @@ KMETHOD QTableView_getVerticalHeader(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QHeaderView* ret_v = qp->verticalHeader();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QHeaderView*)ret_v, NULL);
 		RETURN_(rptr);
@@ -451,7 +451,7 @@ KMETHOD QTableView_getWordWrap(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->wordWrap();
 		RETURNb_(ret_v);
 	} else {
@@ -464,7 +464,7 @@ KMETHOD QTableView_hideColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		qp->hideColumn(column);
 	}
@@ -476,7 +476,7 @@ KMETHOD QTableView_hideRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		qp->hideRow(row);
 	}
@@ -488,7 +488,7 @@ KMETHOD QTableView_resizeColumnToContents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		qp->resizeColumnToContents(column);
 	}
@@ -500,7 +500,7 @@ KMETHOD QTableView_resizeColumnsToContents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->resizeColumnsToContents();
 	}
 	RETURNvoid_();
@@ -511,7 +511,7 @@ KMETHOD QTableView_resizeRowToContents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		qp->resizeRowToContents(row);
 	}
@@ -523,7 +523,7 @@ KMETHOD QTableView_resizeRowsToContents(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qp->resizeRowsToContents();
 	}
 	RETURNvoid_();
@@ -534,7 +534,7 @@ KMETHOD QTableView_selectColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		qp->selectColumn(column);
 	}
@@ -546,7 +546,7 @@ KMETHOD QTableView_selectRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		qp->selectRow(row);
 	}
@@ -558,7 +558,7 @@ KMETHOD QTableView_setShowGrid(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool show = Boolean_to(bool, sfp[1]);
 		qp->setShowGrid(show);
 	}
@@ -570,7 +570,7 @@ KMETHOD QTableView_showColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int column = Int_to(int, sfp[1]);
 		qp->showColumn(column);
 	}
@@ -582,7 +582,7 @@ KMETHOD QTableView_showRow(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTableView *  qp = RawPtr_to(QTableView *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int row = Int_to(int, sfp[1]);
 		qp->showRow(row);
 	}
@@ -640,9 +640,23 @@ bool DummyQTableView::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTableView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+	DummyQAbstractItemView::reftrace(ctx, p, tail_);
+}
 
 void DummyQTableView::connection(QObject *o)
 {
+	QTableView *p = dynamic_cast<QTableView*>(o);
+	if (p != NULL) {
+	}
 	DummyQAbstractItemView::connection(o);
 }
 
@@ -705,13 +719,9 @@ static void QTableView_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTableView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTableView *qp = (KQTableView *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -734,6 +744,8 @@ bool KQTableView::event(QEvent *event)
 	}
 	return true;
 }
+
+
 
 DEFAPI(void) defQTableView(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

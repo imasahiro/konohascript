@@ -156,11 +156,19 @@ false
 enbeddedClass
 false
 
+flag_objects
+
+parent_flag_objects
+
 typedefed_objects
 QS60MainApplicationFactory
 
 parent_typedefed_objects
 EventFilter
+
+class_objects
+
+parent_class_objects
 
 enums
 class_name

@@ -3,7 +3,7 @@ KMETHOD QMetaObject_classInfo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QMetaClassInfo ret_v = qp->classInfo(index);
 		QMetaClassInfo *ret_v_ = new QMetaClassInfo(ret_v);
@@ -19,7 +19,7 @@ KMETHOD QMetaObject_classInfoCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->classInfoCount();
 		RETURNi_(ret_v);
 	} else {
@@ -32,7 +32,7 @@ KMETHOD QMetaObject_classInfoOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->classInfoOffset();
 		RETURNi_(ret_v);
 	} else {
@@ -45,7 +45,7 @@ KMETHOD QMetaObject_className(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char* ret_v = qp->className();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (char*)ret_v, NULL);
 		RETURN_(rptr);
@@ -59,7 +59,7 @@ KMETHOD QMetaObject_constructor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QMetaMethod ret_v = qp->constructor(index);
 		QMetaMethod *ret_v_ = new QMetaMethod(ret_v);
@@ -75,7 +75,7 @@ KMETHOD QMetaObject_constructorCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->constructorCount();
 		RETURNi_(ret_v);
 	} else {
@@ -88,7 +88,7 @@ KMETHOD QMetaObject_enumerator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QMetaEnum ret_v = qp->enumerator(index);
 		QMetaEnum *ret_v_ = new QMetaEnum(ret_v);
@@ -104,7 +104,7 @@ KMETHOD QMetaObject_enumeratorCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->enumeratorCount();
 		RETURNi_(ret_v);
 	} else {
@@ -117,7 +117,7 @@ KMETHOD QMetaObject_enumeratorOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->enumeratorOffset();
 		RETURNi_(ret_v);
 	} else {
@@ -130,7 +130,7 @@ KMETHOD QMetaObject_indexOfClassInfo(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  name = RawPtr_to(const char*, sfp[1]);
 		int ret_v = qp->indexOfClassInfo(name);
 		RETURNi_(ret_v);
@@ -144,7 +144,7 @@ KMETHOD QMetaObject_indexOfConstructor(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  constructor = RawPtr_to(const char*, sfp[1]);
 		int ret_v = qp->indexOfConstructor(constructor);
 		RETURNi_(ret_v);
@@ -158,7 +158,7 @@ KMETHOD QMetaObject_indexOfEnumerator(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  name = RawPtr_to(const char*, sfp[1]);
 		int ret_v = qp->indexOfEnumerator(name);
 		RETURNi_(ret_v);
@@ -172,7 +172,7 @@ KMETHOD QMetaObject_indexOfMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  method = RawPtr_to(const char*, sfp[1]);
 		int ret_v = qp->indexOfMethod(method);
 		RETURNi_(ret_v);
@@ -186,7 +186,7 @@ KMETHOD QMetaObject_indexOfProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  name = RawPtr_to(const char*, sfp[1]);
 		int ret_v = qp->indexOfProperty(name);
 		RETURNi_(ret_v);
@@ -200,7 +200,7 @@ KMETHOD QMetaObject_indexOfSignal(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  signal = RawPtr_to(const char*, sfp[1]);
 		int ret_v = qp->indexOfSignal(signal);
 		RETURNi_(ret_v);
@@ -214,7 +214,7 @@ KMETHOD QMetaObject_indexOfSlot(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const char*  slot = RawPtr_to(const char*, sfp[1]);
 		int ret_v = qp->indexOfSlot(slot);
 		RETURNi_(ret_v);
@@ -228,7 +228,7 @@ KMETHOD QMetaObject_method(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QMetaMethod ret_v = qp->method(index);
 		QMetaMethod *ret_v_ = new QMetaMethod(ret_v);
@@ -244,7 +244,7 @@ KMETHOD QMetaObject_methodCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->methodCount();
 		RETURNi_(ret_v);
 	} else {
@@ -257,7 +257,7 @@ KMETHOD QMetaObject_methodOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->methodOffset();
 		RETURNi_(ret_v);
 	} else {
@@ -270,7 +270,7 @@ KMETHOD QMetaObject_newInstance(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QGenericArgument  val0 = *RawPtr_to(QGenericArgument *, sfp[1]);
 		QObject* ret_v = qp->newInstance(val0);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QObject*)ret_v, NULL);
@@ -285,7 +285,7 @@ KMETHOD QMetaObject_property(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QMetaProperty ret_v = qp->property(index);
 		QMetaProperty *ret_v_ = new QMetaProperty(ret_v);
@@ -301,7 +301,7 @@ KMETHOD QMetaObject_propertyCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->propertyCount();
 		RETURNi_(ret_v);
 	} else {
@@ -314,7 +314,7 @@ KMETHOD QMetaObject_propertyOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->propertyOffset();
 		RETURNi_(ret_v);
 	} else {
@@ -327,7 +327,7 @@ KMETHOD QMetaObject_superClass(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QMetaObject* ret_v = qp->superClass();
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, (QMetaObject*)ret_v, NULL);
 		RETURN_(rptr);
@@ -341,7 +341,7 @@ KMETHOD QMetaObject_userProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QMetaProperty ret_v = qp->userProperty();
 		QMetaProperty *ret_v_ = new QMetaProperty(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -355,11 +355,10 @@ KMETHOD QMetaObject_userProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QMetaObject_checkConnectArgs(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const char*  signal = RawPtr_to(const char*, sfp[1]);
 		const char*  method = RawPtr_to(const char*, sfp[2]);
-		bool ret_v = qp->checkConnectArgs(signal, method);
+		bool ret_v = QMetaObject::checkConnectArgs(signal, method);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -370,10 +369,9 @@ KMETHOD QMetaObject_checkConnectArgs(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QMetaObject_connectSlotsByName(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QObject*  object = RawPtr_to(QObject*, sfp[1]);
-		qp->connectSlotsByName(object);
+		QMetaObject::connectSlotsByName(object);
 	}
 	RETURNvoid_();
 }
@@ -382,14 +380,13 @@ KMETHOD QMetaObject_connectSlotsByName(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QMetaObject_invokeMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QObject*  obj = RawPtr_to(QObject*, sfp[1]);
 		const char*  member = RawPtr_to(const char*, sfp[2]);
 		Qt::ConnectionType type = Int_to(Qt::ConnectionType, sfp[3]);
 		QGenericReturnArgument  ret = *RawPtr_to(QGenericReturnArgument *, sfp[4]);
 		QGenericArgument  val0 = *RawPtr_to(QGenericArgument *, sfp[5]);
-		bool ret_v = qp->invokeMethod(obj, member, type, ret, val0);
+		bool ret_v = QMetaObject::invokeMethod(obj, member, type, ret, val0);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -401,13 +398,12 @@ KMETHOD QMetaObject_invokeMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QMetaObject_invokeMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QObject*  obj = RawPtr_to(QObject*, sfp[1]);
 		const char*  member = RawPtr_to(const char*, sfp[2]);
 		QGenericReturnArgument  ret = *RawPtr_to(QGenericReturnArgument *, sfp[3]);
 		QGenericArgument  val0 = *RawPtr_to(QGenericArgument *, sfp[4]);
-		bool ret_v = qp->invokeMethod(obj, member, ret, val0);
+		bool ret_v = QMetaObject::invokeMethod(obj, member, ret, val0);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -419,13 +415,12 @@ KMETHOD QMetaObject_invokeMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QMetaObject_invokeMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QObject*  obj = RawPtr_to(QObject*, sfp[1]);
 		const char*  member = RawPtr_to(const char*, sfp[2]);
 		Qt::ConnectionType type = Int_to(Qt::ConnectionType, sfp[3]);
 		QGenericArgument  val0 = *RawPtr_to(QGenericArgument *, sfp[4]);
-		bool ret_v = qp->invokeMethod(obj, member, type, val0);
+		bool ret_v = QMetaObject::invokeMethod(obj, member, type, val0);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -437,12 +432,11 @@ KMETHOD QMetaObject_invokeMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QMetaObject_invokeMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		QObject*  obj = RawPtr_to(QObject*, sfp[1]);
 		const char*  member = RawPtr_to(const char*, sfp[2]);
 		QGenericArgument  val0 = *RawPtr_to(QGenericArgument *, sfp[3]);
-		bool ret_v = qp->invokeMethod(obj, member, val0);
+		bool ret_v = QMetaObject::invokeMethod(obj, member, val0);
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -453,10 +447,9 @@ KMETHOD QMetaObject_invokeMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QMetaObject_normalizedSignature(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const char*  method = RawPtr_to(const char*, sfp[1]);
-		QByteArray ret_v = qp->normalizedSignature(method);
+		QByteArray ret_v = QMetaObject::normalizedSignature(method);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -469,10 +462,9 @@ KMETHOD QMetaObject_normalizedSignature(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QMetaObject_normalizedType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QMetaObject *  qp = RawPtr_to(QMetaObject *, sfp[0]);
-	if (qp != NULL) {
+	if (true) {
 		const char*  type = RawPtr_to(const char*, sfp[1]);
-		QByteArray ret_v = qp->normalizedType(type);
+		QByteArray ret_v = QMetaObject::normalizedType(type);
 		QByteArray *ret_v_ = new QByteArray(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -481,6 +473,24 @@ KMETHOD QMetaObject_normalizedType(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QMetaObject.parents();
+KMETHOD QMetaObject_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QMetaObject *qp = RawPtr_to(QMetaObject*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQMetaObject::DummyQMetaObject()
 {
@@ -529,17 +539,22 @@ bool DummyQMetaObject::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQMetaObject::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQMetaObject::connection(QObject *o)
 {
-	return;
-}
-
-KQMetaObject::KQMetaObject() : QMetaObject()
-{
-	self = NULL;
-	dummy = new DummyQMetaObject();
-	dummy->connection((QObject*)this);
+	QMetaObject *p = dynamic_cast<QMetaObject*>(o);
+	if (p != NULL) {
+	}
 }
 
 KMETHOD QMetaObject_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -594,13 +609,9 @@ static void QMetaObject_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QMetaObject_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQMetaObject *qp = (KQMetaObject *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -614,6 +625,8 @@ void KQMetaObject::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQMetaObject(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {

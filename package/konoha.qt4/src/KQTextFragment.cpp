@@ -25,7 +25,7 @@ KMETHOD QTextFragment_charFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFragment *  qp = RawPtr_to(QTextFragment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QTextCharFormat ret_v = qp->charFormat();
 		QTextCharFormat *ret_v_ = new QTextCharFormat(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -40,7 +40,7 @@ KMETHOD QTextFragment_charFormatIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFragment *  qp = RawPtr_to(QTextFragment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->charFormatIndex();
 		RETURNi_(ret_v);
 	} else {
@@ -53,22 +53,9 @@ KMETHOD QTextFragment_contains(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFragment *  qp = RawPtr_to(QTextFragment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int position = Int_to(int, sfp[1]);
 		bool ret_v = qp->contains(position);
-		RETURNb_(ret_v);
-	} else {
-		RETURNb_(false);
-	}
-}
-
-////boolean QTextFragment.isValid();
-KMETHOD QTextFragment_isValid(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QTextFragment *  qp = RawPtr_to(QTextFragment *, sfp[0]);
-	if (qp != NULL) {
-		bool ret_v = qp->isValid();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -80,7 +67,7 @@ KMETHOD QTextFragment_length(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFragment *  qp = RawPtr_to(QTextFragment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->length();
 		RETURNi_(ret_v);
 	} else {
@@ -93,7 +80,7 @@ KMETHOD QTextFragment_position(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFragment *  qp = RawPtr_to(QTextFragment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int ret_v = qp->position();
 		RETURNi_(ret_v);
 	} else {
@@ -106,7 +93,7 @@ KMETHOD QTextFragment_text(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QTextFragment *  qp = RawPtr_to(QTextFragment *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QString ret_v = qp->text();
 		const char *ret_c = ret_v.toLocal8Bit().data();
 		RETURN_(new_String(ctx, ret_c));
@@ -115,6 +102,24 @@ KMETHOD QTextFragment_text(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+//Array<String> QTextFragment.parents();
+KMETHOD QTextFragment_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QTextFragment *qp = RawPtr_to(QTextFragment*, sfp[0]);
+	if (qp != NULL) {
+		int size = 10;
+		knh_Array_t *a = new_Array0(ctx, size);
+		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
+		while(ct->supcid != CLASS_Object) {
+			ct = ct->supTBL;
+			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+		}
+		RETURN_(a);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
 
 DummyQTextFragment::DummyQTextFragment()
 {
@@ -163,17 +168,28 @@ bool DummyQTextFragment::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+void DummyQTextFragment::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+	int list_size = 0;
+	KNH_ENSUREREF(ctx, list_size);
+
+
+	KNH_SIZEREF(ctx);
+
+}
 
 void DummyQTextFragment::connection(QObject *o)
 {
-	return;
+	QTextFragment *p = dynamic_cast<QTextFragment*>(o);
+	if (p != NULL) {
+	}
 }
 
 KQTextFragment::KQTextFragment() : QTextFragment()
 {
 	self = NULL;
 	dummy = new DummyQTextFragment();
-	dummy->connection((QObject*)this);
 }
 
 KMETHOD QTextFragment_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -228,13 +244,9 @@ static void QTextFragment_free(CTX ctx, knh_RawPtr_t *p)
 }
 static void QTextFragment_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
 		KQTextFragment *qp = (KQTextFragment *)p->rawptr;
-		(void)qp;
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
@@ -248,6 +260,8 @@ void KQTextFragment::setSelf(knh_RawPtr_t *ptr)
 	self = ptr;
 	dummy->setSelf(ptr);
 }
+
+
 
 DEFAPI(void) defQTextFragment(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
