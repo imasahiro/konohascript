@@ -1,0 +1,8 @@
+2011-11-07  Shinpei Nakata  <shinpei_NKT>
+
+	* memcached.c: add low-level APIs
+
+2011-11-02  Shinpei Nakata  <shinpei_NKT>
+
+	* memcached.k: starts low-level API, binding with class Memcached
+
