@@ -53,6 +53,11 @@ static void *spawn_start(void *v)
 	knh_context_t *ctx = t->ctx;
 
 	KONOHA_BEGIN(ctx);
+	// set ExceptionHandler
+	//knh_ExceptionHandler_t* hdr = new_(ExceptionHandler);
+	//ctx->esp[0].hdr = hdr;
+	//ctx->esp++;
+	// set args
 	knh_sfp_t *sfp = ctx->esp;
 	int i, argc = knh_Array_size(t->args);
 	for(i=0; i<argc; i++) {
@@ -72,6 +77,20 @@ static void *spawn_start(void *v)
 		}
 	}
 	knh_Func_invoke(ctx, t->func, sfp, argc);
+
+	//int jump = knh_setjmp(DP(hdr)->jmpbuf);
+	//if(jump == 0) {
+	//	hdr->espidx = (ctx->esp - ctx->stack);
+	//	hdr->parentNC = ctx->ehdrNC;
+	//	((knh_context_t*)ctx)->ehdrNC = hdr;
+	//	knh_Func_invoke(ctx, t->func, sfp, argc);
+	//} else {
+	//	/* catch exception */
+	//	hdr = ctx->ehdrNC;
+	//	((knh_context_t*)ctx)->ehdrNC = hdr->parentNC;
+	//}
+	//knh_thread_detach(ctx, t->thread);
+	//KNH_FREE(ctx, t, sizeof(Thread_t));
 
 	KNH_SYSLOCK(ctx);
 	ctx->ctxobjNC = NULL;
@@ -109,12 +128,7 @@ KMETHOD Thread_spawn(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *args = sfp[2].a;
 	if(IS_NOTNULL(((knh_Object_t *)f))) {
 		Thread_t *t = (Thread_t *)KNH_MALLOC(ctx, sizeof(Thread_t));
-
-		KNH_SYSLOCK(ctx);
 		knh_context_t *newCtx = new_ThreadContext(WCTX(ctx));
-		ctx->wshare->threadCounter++;
-		KNH_SYSUNLOCK(ctx);
-
 		t->ctx = newCtx;
 		t->func = f;
 		t->args = args;
@@ -126,8 +140,7 @@ KMETHOD Thread_spawn(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Native void Thread.join();
 KMETHOD Thread_join(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_RawPtr_t *f = sfp[0].p;
-	Thread_t *t = (Thread_t *)f->rawptr;
+	Thread_t *t = RawPtr_to(Thread_t *, sfp[0]);
 	void *v;
 
 	KNH_SYSLOCK(ctx);
@@ -156,15 +169,15 @@ KMETHOD Object_synchronized(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Native Mutex Mutex.new()
 KMETHOD Mutex_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-  knh_RawPtr_t *p = sfp[0].p;
-  p->rawptr = (void *)knh_mutex_malloc(ctx);
-  RETURN_(p);
+	knh_RawPtr_t *p = sfp[0].p;
+	p->rawptr = (void *)knh_mutex_malloc(ctx);
+	RETURN_(p);
 }
 
 //## @Native void Mutex.lock()
 KMETHOD Mutex_lock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-  knh_mutex_t *m = RawPtr_to(knh_mutex_t *, sfp[0]);
+	knh_mutex_t *m = RawPtr_to(knh_mutex_t *, sfp[0]);
 
 	KNH_SYSLOCK(ctx);
 	ctx->wshare->stopCounter++;
@@ -173,21 +186,21 @@ KMETHOD Mutex_lock(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	KNH_SYSUNLOCK(ctx);
 
-  knh_mutex_lock(m);
+	knh_mutex_lock(m);
 
 	KNH_SYSLOCK(ctx);
 	ctx->wshare->stopCounter--;
 	KNH_SYSUNLOCK(ctx);
 
-  RETURNvoid_();
+	RETURNvoid_();
 }
 
 //## @Native void Mutex.unlock()
 KMETHOD Mutex_unlock(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-  knh_mutex_t *m = RawPtr_to(knh_mutex_t *, sfp[0]);
-  knh_mutex_unlock(m);
-  RETURNvoid_();
+	knh_mutex_t *m = RawPtr_to(knh_mutex_t *, sfp[0]);
+	knh_mutex_unlock(m);
+	RETURNvoid_();
 }
 
 /* ======================================================================== */

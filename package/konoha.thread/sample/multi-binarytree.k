@@ -52,7 +52,7 @@ void binarytree_main(int id, int n) {
 }
 
 void main(String[] args) {
-	n = 20;
+	n = 16;
 	if (args.size > 0) n = (int)args[0];
 
 	t = 4;
