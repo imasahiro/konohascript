@@ -31,6 +31,7 @@ include "lib:gluelink";
 @Native class ResultSet;
 @Native Connection Connection.new(String urn);
 @Native ResultSet Connection.query(String query);
+@Native int Connection.getInsertId();
 @Native void Connection.exec(String query);
 @Native void Connection.close();
 

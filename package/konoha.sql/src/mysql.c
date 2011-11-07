@@ -37,8 +37,6 @@ extern "C" {
 #endif
 
 #include "../include/konoha_query.h"
-//#ifdef K_USING_MYSQL
-#include <mysql.h>
 
 #define MYSQL_USER_MAXLEN 16
 #define MYSQL_PASS_MAXLEN 255
@@ -214,6 +212,7 @@ void MYSQL_qclose(CTX ctx, knh_qconn_t *hdr)
 {
 	mysql_close((MYSQL*)hdr);
 }
+
 /* ------------------------------------------------------------------------ */
 
 //static void MYSQL_qfree(knh_qcur_t *qcur)
