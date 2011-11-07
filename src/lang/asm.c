@@ -2593,7 +2593,8 @@ static void _PRINTln(CTX ctx, knh_sfp_t *sfp, knh_OutputStream_t *w, struct klr_
 			char buf[80];
 			knh_write_dots(ctx, w);
 			knh_flush(ctx, w);
-			fgets(buf, sizeof(buf), stdin);
+			char *ret = fgets(buf, sizeof(buf), stdin);
+			(void)ret;
 		}
 		knh_write_ascii(ctx, w, TERM_ENOTE(ctx, LOG_NOTICE));
 		knh_write_EOL(ctx, w);
