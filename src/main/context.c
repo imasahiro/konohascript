@@ -347,6 +347,7 @@ static knh_context_t* new_RootContext(void)
 
 knh_context_t *new_ThreadContext(CTX ctx)
 {
+	KNH_SYSLOCK(ctx);
 	knh_context_t *newCtx = new_hcontext(ctx);
 	newCtx->share = ctx->share;
 	newCtx->stat = ctx->stat;
@@ -361,11 +362,13 @@ knh_context_t *new_ThreadContext(CTX ctx)
 	knh_stack_initexpand(newCtx, NULL, K_STACKSIZE);
 
 	ctx->wshare->contextCounter++;
+	ctx->wshare->threadCounter++;
 	if(newCtx->ctxobjNC == NULL) {
 		newCtx->ctxobjNC = knh_toContext(newCtx);
 	}
 	knh_Array_add(ctx, ctx->share->contextListNULL, newCtx->ctxobjNC);
 	newCtx->safepoint = ctx->share->ctx0->safepoint;
+	KNH_SYSUNLOCK(ctx);
 	return newCtx;
 }
 
@@ -730,7 +733,7 @@ knh_Object_t **knh_reftraceRoot(CTX ctx FTRARG)
 	return tail_;
 }
 
-void check_allThreadExit(CTX ctx)
+static void check_allThreadExit(CTX ctx)
 {
 	int i;
 	KNH_SYSLOCK(ctx);

@@ -81,14 +81,17 @@ static knh_uint64_t memlog_start = 0;
 
 /* ------------------------------------------------------------------------ */
 
+#define KNH_ATOMIC_ADD(a, b) __sync_add_and_fetch(&(a), b)
+#define KNH_ATOMIC_SUB(a, b) __sync_sub_and_fetch(&(a), b)
+
 #ifdef K_USING_MEMSTAT
 #define STAT_mem(ctx, SIZE) { \
 		knh_stat_t *stat = ctx->stat;\
-		stat->usedMemorySize += (SIZE);\
+		KNH_ATOMIC_ADD(stat->usedMemorySize, (SIZE));\
 		if(stat->usedMemorySize > stat->maxMemoryUsage) stat->maxMemoryUsage = stat->usedMemorySize;\
 	}\
 
-#define STAT_dmem(ctx, SIZE)   (ctx->stat)->usedMemorySize -= (SIZE)
+#define STAT_dmem(ctx, SIZE)   KNH_ATOMIC_SUB((ctx->stat)->usedMemorySize, (SIZE))
 
 #define STAT_Object(ctx, ct) { \
 		((knh_ClassTBL_t*)ct)->count += 1; \
@@ -351,7 +354,7 @@ struct knh_MemoryArenaTBL_t {
 
 static knh_memslot_t *new_FastMemoryList(CTX ctx)
 {
-	OLD_LOCK(ctx, LOCK_MEMORY, NULL);
+	KNH_MEMLOCK(ctx);
 	knh_share_t *ctxshare = (knh_share_t*)ctx->share;
 	size_t pageindex = ctxshare->sizeMemoryArenaTBL;
 	if(unlikely(!(pageindex < ctxshare->capacityMemoryArenaTBL))) {
@@ -360,7 +363,7 @@ static knh_memslot_t *new_FastMemoryList(CTX ctx)
 		ctxshare->capacityMemoryArenaTBL = newsize;
 	}
 	ctxshare->sizeMemoryArenaTBL += 1;
-	OLD_UNLOCK(ctx, LOCK_MEMORY, NULL);
+	KNH_MEMUNLOCK(ctx);
 	{
 		knh_MemoryArenaTBL_t *at = &ctxshare->MemoryArenaTBL[pageindex];
 		knh_memslot_t *mslot = (knh_memslot_t*)KNH_MALLOC(ctx, K_PAGESIZE * 8);
@@ -470,14 +473,12 @@ void *knh_fastmalloc(CTX ctx, size_t size)
 	DBG_ASSERT(size != 0);
 	if(size <= K_FASTMALLOC_SIZE) {
 		knh_memslot_t *m;
-		KNH_MEMLOCK(ctx);
 		if(ctx->freeMemoryList == NULL) {
 			((knh_context_t*)ctx)->freeMemoryList = new_FastMemoryList(ctx);
 		}
 		m = ctx->freeMemoryList;
 		((knh_context_t*)ctx)->freeMemoryList = m->ref;
 		m->ref = NULL;
-		KNH_MEMUNLOCK(ctx);
 		MEMLOG("fastmalloc", "ptr=%p, size=%lu", m, size);
 		return (void*)m;
 	}
@@ -498,10 +499,8 @@ void knh_fastfree(CTX ctx, void *block, size_t size)
 	if(size <= K_FASTMALLOC_SIZE) {
 		knh_memslot_t *m = (knh_memslot_t*)block;
 		KNH_FREEZERO(m, K_FASTMALLOC_SIZE);
-		KNH_MEMLOCK(ctx);
 		m->ref = ctx->freeMemoryList;
 		((knh_context_t*)ctx)->freeMemoryList = m;
-		KNH_MEMUNLOCK(ctx);
 	}
 	else {
 		KNH_FREEZERO(block, size);

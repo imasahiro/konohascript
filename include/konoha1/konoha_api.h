@@ -535,7 +535,6 @@ void knh_beginContext(CTX ctx, void **bottom);
 void knh_endContext(CTX ctx);
 konoha_t konoha_open(void);
 knh_Object_t **knh_reftraceRoot(CTX ctx FTRARG);
-void check_allThreadExit(CTX ctx);
 void konoha_close(konoha_t konoha);
 const char* knh_sfile(const char *file);
 void knh_write_now(CTX ctx, knh_OutputStream_t *w);
