@@ -15,7 +15,7 @@ void evalMsg(String role, String task, String msg) {
 	ldata["role"] = role;
 	ldata["task"] = task;
 	System.ntrace_notice("actor:startTask", ldata);
-	Proc p = new Proc([$konoha.bin.path, "--enforce-security=" + role, "-"]);
+	Proc p = new Proc([$konoha.bin.path, "--enforce-security=" + role, "-a", "-"]);
 	OutputStream ous = p.getOutputStream();
 	ous << msg << EOL;
 	ous.close();
