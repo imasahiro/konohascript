@@ -1,32 +1,76 @@
 using konoha.proc.*;
+using konoha.ntrace.*;
 
-Proc actsrv_p;
+Proc mailbox;
 
 @Around void System.exit(int status) {
-	if (actsrv_p != null) {
-		actsrv_p.terminate();
+	if (mailbox != null) {
+		mailbox.terminate();
 	}
 	proceed(status);
 }
 
-void main(String[] actsrv_args)
+void evalMsg(String role, String task, String msg) {
+	Map ldata = {};
+	ldata["role"] = role;
+	ldata["task"] = task;
+	System.ntrace_notice("actor:startTask", ldata);
+	Proc p = new Proc([$konoha.bin.path, "--enforce-security=" + role, "-"]);
+	OutputStream ous = p.getOutputStream();
+	ous << msg << EOL;
+	ous.close();
+	InputStream ins = p.getInputStream();
+	foreach(String s in ins) {
+		OUT << s << EOL;
+	}
+	InputStream err = p.getErrorInputStream();
+	foreach(String s in err) {
+		ERR << s << EOL;
+	}
+	p.wait();
+	System.ntrace_notice("actor:endTask", ldata);
+}
+
+void main(String[] args)
 {
-	int actsrv_port = 2000;
-	if (|actsrv_args| > 0) {
-		actsrv_port = (to int)actsrv_args[0];
+	int port = 2000;
+	if (|args| > 0) {
+		port = (to int)args[0];
 	}
 
-	OUT << "start an ActorServer with port: " + (to String)actsrv_port << EOL;
-	actsrv_p = new Proc([$konoha.bin.path, $konoha.script.path + "/mailbox.k", (String)actsrv_port]);
-	InputStream actsrv_ins = actsrv_p.getInputStream();
-	String actsrv_recvmsg = "";
-	while (actsrv_p.isAlive()) {
-		String actsrv_line = actsrv_ins.readLine();
-		if (actsrv_line == "" && actsrv_recvmsg != "") {
-			System.eval(actsrv_recvmsg);
-			actsrv_recvmsg = "";
-		} else if (actsrv_line != "") {
-			actsrv_recvmsg += actsrv_line + EOL;
+	OUT << "start an ActorServer with port: " + (to String)port << EOL;
+	mailbox = new Proc([$konoha.bin.path, $konoha.script.path + "/mailbox.k", (String)port]);
+	InputStream ins = mailbox.getInputStream();
+
+	String recvmsg = "";
+	String task = "";
+	String role = "";
+	while (mailbox.isAlive()) {
+		String line = ins.readLine();
+		if (line == "ping") continue;
+		if (role == "") {
+			String[] matches = line.match($/<<\s*\w+:\w+$/);
+			if (|matches| > 0) {
+				// start of Task
+				String[] role_task = matches[0].replace($/<<\s*(\w+):(\w+)$/,
+						"$1:$2").split(":");
+				role = role_task[0];
+				task = role_task[1];
+				continue;
+			}
+		} else {
+			String[] matches = line.match($/>>\s*\w+:\w+$/);
+			if (|matches| > 0 &&
+					role + ":" + task == matches[0].replace($/>>\s*(\w+):(\w+)$/,
+						"$1:$2")) {
+				// end of Task
+				evalMsg(role, task, recvmsg);
+				recvmsg = "";
+				role = "";
+				task = "";
+				continue;
+			}
 		}
+		recvmsg += line + EOL;
 	}
 }

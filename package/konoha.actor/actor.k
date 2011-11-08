@@ -42,6 +42,8 @@ class Actor
 	String name;
 	String host;
 	int port;
+	String role;
+	String task;
 
 	Actor(String name, String host, int port) {
 		_name = name;
@@ -54,6 +56,9 @@ class Actor
 			ldata["host"] = host;
 			ldata["port"] = port;
 			System.ntrace_notice("actor:new", ldata);
+			OutputStream ous = s.getOutputStream();
+			ous.writeMsgPack("ping");
+			ous.close();
 			s.close();
 		} else {
 			throw new Script!!("cannot establish connection to host: " + host + ", port: " + (to String)port);
@@ -74,8 +79,7 @@ class Actor
 		try {
 			Socket s = new Socket(this.host, this.port);
 			OutputStream ous = s.getOutputStream();
-			//TODO: we need EOL as a termination term
-			ous.writeMsgPack(script + EOL);
+			ous.writeMsgPack(script);
 			ous.flush();
 			ous.close();
 			s.close();
@@ -89,17 +93,46 @@ class Actor
 		InputStream ins = new InputStream(urn, "r");
 		String buf = "";
 		foreach (String line in ins) {
-			if (line.trim() != "") {
-				buf += line + EOL;
-			}
+			buf += line + EOL;
 		}
 		this.eval(buf);
 		ins.close();
 		return true;
 	}
 
+	void interactive(String task_name) {
+		String script = "";
+		int n = 1;
+		while (true) {
+			String line = System.readLine("(ash:" + n++ + ") ");
+			if (line == null) {
+				break;
+			}
+			script += line + EOL;
+		}
+		OUT << EOL;
+		startTask(task_name);
+		eval(script);
+		endTask();
+	}
+
+	void startTask(String task_name) {
+		task = task_name;
+		role = "Role"; // TODO
+		this.eval("<< " + role + ":" + task);
+	}
+
+	void endTask() {
+		this.eval(">> " + role + ":" + task);
+	}
+
 	boolean close() {
 		this.eval("close()");
+		Map ldata = {};
+		ldata["name"] = name;
+		ldata["host"] = host;
+		ldata["port"] = port;
+		System.ntrace_notice("actor:close", ldata);
 		return true;
 	}
 }
