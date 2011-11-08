@@ -124,7 +124,7 @@ int MYSQL_qnext(CTX ctx, knh_qcur_t *qcur, struct knh_ResultSet_t *rs)
 			switch (DP(rs)->column[i].dbtype) {
 			case MYSQL_TYPE_TINY:			case MYSQL_TYPE_SHORT:
 			case MYSQL_TYPE_INT24:			case MYSQL_TYPE_LONG:
-			//case MYSQL_TYPE_LONGLONG:
+			case MYSQL_TYPE_LONGLONG:
 			case MYSQL_TYPE_YEAR:
 				knh_bytes_parseint(B(row[i]), &ival);
 				ResultSet_setInt(ctx, rs, i, ival);
