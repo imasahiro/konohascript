@@ -94,5 +94,11 @@ include "lib:gluelink";
 
 @Native @Public String Map.toJsonString();
 
+/**
+  * Stream API
+  */
 @Native @Public Tvar InputStream.readJson(Class _);
+@Native @Public void OutputStream.writeJson(Object data);
 
+@Native @Public void Bytes.writeJson(Object data);
+@Native @Public Tvar Bytes.readJson(int offset, int len, Class _);

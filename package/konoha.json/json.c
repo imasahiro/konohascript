@@ -533,22 +533,97 @@ static knh_type_t json_unpackTo(CTX ctx, const char *buf, size_t size, knh_sfp_t
 	return CLASS_Tvoid;
 }
 //[{"hello" : "world"}, {"key0" : {"hello" : "world"}}]
+static void *json_init(CTX ctx, knh_packer_t *pk)
+{
+	return pk;
+}
+
+static void json_flushfree(CTX ctx, knh_packer_t *pk)
+{
+	knh_OutputStream_flush(ctx, pk->w, 0); /* TODO need flush? */
+}
+
+#define W(pkp) (((knh_packer_t*)pkp)->w)
+static void json_null(CTX ctx, void *pkp)
+{
+	knh_bytes_t t = STEXT("null");
+	knh_OutputStream_write(ctx, W(pkp), t);
+}
+
+static void json_bool(CTX ctx, void *pkp, int b)
+{
+	knh_bytes_t t = STEXT("true");
+	knh_bytes_t f = STEXT("false");
+	knh_OutputStream_write(ctx, W(pkp), (b)?t:f);
+}
+
+static void json_int(CTX ctx, void *pkp, knh_int_t i)
+{
+	knh_write_ifmt(ctx, W(pkp), K_INT_FMT, i);
+}
+
+static void json_float(CTX ctx, void *pkp, knh_float_t f)
+{
+	knh_write_ffmt(ctx, W(pkp), K_FLOAT_FMT, f);
+}
+
+static void json_string(CTX ctx, void *pkp, const char *str, size_t len)
+{
+	knh_bytes_t t = {{str}, len};
+	knh_putc(ctx, W(pkp), '"');
+	knh_write(ctx, W(pkp), t);
+	knh_putc(ctx, W(pkp), '"');
+}
+
+static void json_raw(CTX ctx, void *pkp, const char *str, size_t len)
+{
+	knh_bytes_t t = {{str}, len};
+	knh_putc(ctx, W(pkp), '"');
+	knh_write(ctx, W(pkp), t);
+	knh_putc(ctx, W(pkp), '"');
+}
+
+static void json_putc(CTX ctx, void *pkp, int ch)
+{
+	knh_putc(ctx, W(pkp), ch);
+}
+
+static void json_array(CTX ctx, void *pkp, size_t array_size)
+{
+	knh_putc(ctx, W(pkp), '[');
+}
+
+static void json_array_end(CTX ctx, void *pkp)
+{
+	knh_putc(ctx, W(pkp), ']');
+}
+
+static void json_map(CTX ctx, void *pkp, size_t map_size)
+{
+	knh_putc(ctx, W(pkp), '{');
+}
+
+static void json_map_end(CTX ctx, void *pkp)
+{
+	knh_putc(ctx, W(pkp), '}');
+}
+
 
 static const knh_PackSPI_t pack = {
 	"json",
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
+	json_init,
+	json_flushfree,
+	json_null,
+	json_bool,
+	json_int,
+	json_float,
+	json_string,
+	json_raw,
+	json_putc,
+	json_array,
+	json_array_end,
+	json_map,
+	json_map_end,
 	json_unpackTo,
 };
 
@@ -570,7 +645,7 @@ static void RETURN_T(CTX ctx, knh_sfp_t *sfp, knh_class_t scid, knh_class_t tcid
 	RETURN_(vsfp[0].o);
 }
 
-//## method Tvar InputStream.readJson(Class _);
+//## method @Native @Public Tvar InputStream.readJson(Class _);
 
 KMETHOD InputStream_readJson(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -586,6 +661,51 @@ KMETHOD InputStream_readJson(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_type_t type = packspi->unpack(ctx, blob.text, blob.len, sfp+2);
 	CWB_close(cwb);
 	RETURN_T(ctx, sfp, type, (sfp[1].c)->cid, sfp+2, K_RIX);
+}
+
+//## method @Native @Public void OutputStream.writeJson(Object data);
+
+KMETHOD OutputStream_writeJson(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_OutputStream_t *w = sfp[0].w;
+	knh_RawPtr_t *o = sfp[1].p;
+	const knh_PackSPI_t *packspi = &pack;
+	knh_packer_t packer = {w, NULL, NULL};
+	knh_packer_t *pkr = packspi->pack_init(ctx, &packer);
+	O_cTBL(o)->cdef->wdata(ctx, o, pkr, packspi);
+	packspi->pack_flushfree(ctx, pkr);
+	RETURNvoid_();
+}
+
+//## method @Native @Public void Bytes.writeJson(Object data);
+
+KMETHOD Bytes_writeJson(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_RawPtr_t *o = sfp[1].p;
+	const knh_PackSPI_t *packspi = &pack;
+	KNH_SETv(ctx, sfp[0].o, new_BytesOutputStream(ctx, sfp[0].ba));
+	knh_packer_t packer = {sfp[0].w, NULL, NULL};
+	knh_packer_t *pkr = packspi->pack_init(ctx, &packer);
+	O_cTBL(o)->cdef->wdata(ctx, o, pkr, packspi);
+	packspi->pack_flushfree(ctx, pkr);
+	RETURNvoid_();
+}
+
+//## method @Native @Public Tvar Bytes.readJson(int offset, int len, Class _);
+
+KMETHOD Bytes_readJson(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_bytes_t b = BA_tobytes(sfp[0].ba);
+	if(sfp[1].ivalue > 0 && sfp[1].ivalue < b.len) {
+		b.text = b.text + (size_t)sfp[1].ivalue;
+		b.len  = b.len - (size_t)sfp[1].ivalue;
+	}
+	if(sfp[2].ivalue > 0 && sfp[2].ivalue < b.len) {
+		b.len = (size_t)sfp[2].ivalue;
+	}
+	const knh_PackSPI_t *packspi = &pack;
+	knh_type_t type = packspi->unpack(ctx, b.text, b.len, sfp+4);
+	RETURN_T(ctx, sfp, type, (sfp[3].c)->cid, sfp+4, K_RIX);
 }
 
 
