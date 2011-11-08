@@ -10,7 +10,7 @@ if [ -e $PKGDIR/$logfile ] ;then
 	rm $PKGDIR/$logfile
 fi
 
-for utest in `find $PKGDIR -name "*.k"`; do
+for utest in `find $PKGDIR/ac -name "*.k"`; do
     echo $utest
     konoha -l "+$PKGDIR/$logfile" $utest
 done
