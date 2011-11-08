@@ -93,3 +93,6 @@ include "lib:gluelink";
 @Native @Public Json Map.toJson();
 
 @Native @Public String Map.toJsonString();
+
+@Native @Public Tvar InputStream.readJson(Class _);
+

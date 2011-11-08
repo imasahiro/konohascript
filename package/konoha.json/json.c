@@ -32,8 +32,13 @@
 // **************************************************************************
 
 #define K_INTERNAL
+
+#define USE_STRUCT_InputStream
+#define USE_STRUCT_OutputStream
 #include <konoha1.h>
+#include <konoha1/inlinelibs.h>
 #include <json/json.h>
+#include <json/json_object_private.h>
 
 #define CLASSNAME_Json "konoha.json.Json"
 
@@ -466,6 +471,123 @@ KMETHOD Map_toJsonString(CTX ctx, knh_sfp_t *sfp _RIX)
 	char *buf = (char*)json_object_to_json_string(_json);
 	RETURN_(new_String(ctx, buf));
 }
+
+/* ======================================================================== */
+// [PACK/UNPACK]
+
+static knh_type_t json_read(CTX ctx, json_object *json, knh_sfp_t *sfp)
+{
+	json_type type = json_object_get_type(json);
+	switch (type) {
+		case json_type_null:
+			KNH_SETv(ctx, sfp[0].o, KNH_NULL);
+			return CLASS_Tdynamic;
+		case json_type_boolean:
+			sfp[0].bvalue = json_object_get_boolean(json);
+			return CLASS_Boolean;
+		case json_type_int:
+			sfp[0].ivalue = json_object_get_int(json);
+			return CLASS_Int;
+		case json_type_double:
+			sfp[0].fvalue = json_object_get_double(json);
+			return CLASS_Float;
+		case json_type_string:
+			KNH_SETv(ctx, sfp[0].o, new_String(ctx, json_object_get_string(json)));
+			return CLASS_String;
+		case json_type_array:
+		{
+			size_t i, length = json_object_array_length(json);
+			KNH_SETv(ctx, sfp[0].o, new_Array(ctx, CLASS_Tdynamic, length));
+			for (i = 0; i < length; ++i) {
+				json_object *elem = json_object_array_get_idx(json, i);
+				knh_type_t type = json_read(ctx, elem, sfp+1);
+				knh_boxing(ctx, sfp+1, type);
+				knh_Array_add(ctx, sfp[0].a, sfp[1].o);
+			}
+			return CLASS_Array;
+		}
+		case json_type_object:
+		{
+			struct json_object_iter itr = {};
+			KNH_SETv(ctx, sfp[0].o, new_DataMap(ctx));
+			json_object_object_foreachC(json, itr) {
+				knh_type_t type = json_read(ctx, itr.val, sfp+1);
+				knh_boxing(ctx, sfp+1, type);
+				klr_setesp(ctx, sfp+2);
+				knh_DataMap_set(ctx, sfp[0].m, new_String(ctx, itr.key), sfp[1].o);
+			}
+			return CLASS_Map;
+		}
+	}
+	return CLASS_Tvoid;
+}
+
+static knh_type_t json_unpackTo(CTX ctx, const char *buf, size_t size, knh_sfp_t *sfp)
+{
+	if (size > 0) {
+		json_object *json = json_tokener_parse(buf);
+		knh_type_t type = json_read(ctx, json, sfp);
+		json_object_put(json);
+		return type;
+	}
+	return CLASS_Tvoid;
+}
+//[{"hello" : "world"}, {"key0" : {"hello" : "world"}}]
+
+static const knh_PackSPI_t pack = {
+	"json",
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	json_unpackTo,
+};
+
+static void RETURN_T(CTX ctx, knh_sfp_t *sfp, knh_class_t scid, knh_class_t tcid, knh_sfp_t *vsfp _RIX)
+{
+	if(tcid != scid) {
+		knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, scid, tcid);
+		if(tmr != NULL) {
+			klr_setesp(ctx, vsfp+1);
+			knh_TypeMap_exec(ctx, tmr, vsfp, sfp - vsfp + K_RIX);
+			return;
+		}
+		else {
+			sfp[K_RIX].ivalue = 0;
+			RETURN_(KNH_NULVAL(tcid));
+		}
+	}
+	sfp[K_RIX].ndata = vsfp[0].ndata;
+	RETURN_(vsfp[0].o);
+}
+
+//## method Tvar InputStream.readJson(Class _);
+
+KMETHOD InputStream_readJson(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_InputStream_t *in = sfp[0].in;
+	const knh_PackSPI_t *packspi = &pack;
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+	char buf[K_PAGESIZE];
+	long ssize = 0;
+	while((ssize = in->dpi->freadSPI(ctx, DP(in)->fio, buf, sizeof(buf))) > 0) {
+		knh_Bytes_write2(ctx, cwb->ba, buf, ssize);
+	}
+	knh_bytes_t blob = CWB_tobytes(cwb);
+	knh_type_t type = packspi->unpack(ctx, blob.text, blob.len, sfp+2);
+	CWB_close(cwb);
+	RETURN_T(ctx, sfp, type, (sfp[1].c)->cid, sfp+2, K_RIX);
+}
+
 
 /* ======================================================================== */
 // [DEFAPI]
