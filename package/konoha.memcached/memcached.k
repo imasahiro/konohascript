@@ -48,8 +48,10 @@ include "lib:gluelink";
 @Native @Public Boolean Memcache.delete_by_key(String group_key, String key, int expiration_sec);
 
 /* Determine if a keys exists */
-//@Native @Public Boolean Memcache.exist(String key);
-//@Native @Public Boolean Memcache.exist_by_key(String group_key, String key);
+if (Memcache.LIBMEMCACHED_VERSION_HEX >= 0x00053000) {
+	@Native @Public Boolean Memcache.exist(String key);
+	@Native @Public Boolean Memcache.exist_by_key(String group_key, String key);
+}
 
 /* Flushing client buffers */
 @Native @Public Boolean Memcache.flushBuffers(void);
