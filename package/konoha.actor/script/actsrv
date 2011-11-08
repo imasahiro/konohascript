@@ -49,19 +49,19 @@ void main(String[] args)
 		String line = ins.readLine();
 		if (line == "ping") continue;
 		if (role == "") {
-			String[] matches = line.match($/<<\s*\w+:\w+$/);
+			String[] matches = line.match($/<<\s*[a-zA-Z0-9\.\-_]+:[a-zA-Z0-9\.\-_]+$/);
 			if (|matches| > 0) {
 				// start of Task
-				String[] role_task = matches[0].replace($/<<\s*(\w+):(\w+)$/,
+				String[] role_task = matches[0].replace($/<<\s*([a-zA-Z0-9\.\-_]+):([a-zA-Z0-9\.\-_]+)$/,
 						"$1:$2").split(":");
 				role = role_task[0];
 				task = role_task[1];
 				continue;
 			}
 		} else {
-			String[] matches = line.match($/>>\s*\w+:\w+$/);
+			String[] matches = line.match($/>>\s*[a-zA-Z0-9\.\-_]+:[a-zA-Z0-9\.\-_]+$/);
 			if (|matches| > 0 &&
-					role + ":" + task == matches[0].replace($/>>\s*(\w+):(\w+)$/,
+					role + ":" + task == matches[0].replace($/>>\s*([a-zA-Z0-9\.\-_]+):([a-zA-Z0-9\.\-_]+)$/,
 						"$1:$2")) {
 				// end of Task
 				evalMsg(role, task, recvmsg);
