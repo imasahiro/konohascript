@@ -886,10 +886,11 @@ static void regmatch_init(knh_regmatch_t *pmatch, int nmatch)
 
 static void LOG_regex(CTX ctx, knh_sfp_t *sfp, int res, knh_Regex_t *re, const char *str)
 {
-	char ebuf[512];
-	re->spi->regerror(res, re->reg, ebuf, 512);
-	knh_ldata_t ldata[] = {LOG_s("driver", re->spi->name), LOG_s("pattern", S_totext(re->pattern)), LOG_s("text", str), LOG_msg(ebuf), LOG_END};
-	KNH_NTRACE(ctx, "regex", K_FAILED, ldata);
+	char ebuf[512] = {0};
+	if (re->spi->regerror(res, re->reg, ebuf, 512) > 0) {
+		knh_ldata_t ldata[] = {LOG_s("driver", re->spi->name), LOG_s("pattern", S_totext(re->pattern)), LOG_s("text", str), LOG_msg(ebuf), LOG_END};
+		KNH_NTRACE(ctx, "regex", K_FAILED, ldata);
+	}
 }
 
 static void CWB_write_regexfmt(CTX ctx, CWB_t *cwb, knh_bytes_t *fmt, const char *base, knh_regmatch_t *r, size_t matched)

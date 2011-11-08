@@ -869,7 +869,7 @@ static size_t pcre_regerror(int res, knh_regex_t *reg, char *ebuf, size_t ebufsi
 {
 	PCRE_regex_t *pcre = (PCRE_regex_t*)reg;
 	snprintf(ebuf, ebufsize, "[%d]: %s", pcre->erroffset, pcre->err);
-	return 0;
+	return (pcre->err != NULL) ? strlen(pcre->err) : 0;
 }
 
 static int pcre_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, int cflags)
@@ -974,8 +974,9 @@ static void re2_regex_regfree(CTX ctx, knh_regex_t *reg)
 static size_t re2_regex_regerror(int res, knh_regex_t *reg, char *ebuf, size_t ebufsize)
 {
 	re2::RE2 *r = static_cast<re2::RE2*>(((RE2_regex_t*)reg)->r);
-	snprintf(ebuf, ebufsize, "%s", (*r).error().c_str());
-	return 0;
+	const char *err = (*r).error().c_str();
+	snprintf(ebuf, ebufsize, "%s", err);
+	return (err != NULL) ? strlen(err) : 0;
 }
 
 static int re2_regex_parsecflags(CTX ctx, const char *option)
